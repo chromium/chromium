@@ -9,6 +9,8 @@ source_set("projects") {
     "projects_panel_controller.h",
     "projects_panel_controls_view.cc",
     "projects_panel_controls_view.h",
+    "projects_panel_no_tab_groups_view.cc",
+    "projects_panel_no_tab_groups_view.h",
     "projects_panel_recent_threads_view.cc",
     "projects_panel_recent_threads_view.h",
     "projects_panel_tab_groups_item_view.cc",

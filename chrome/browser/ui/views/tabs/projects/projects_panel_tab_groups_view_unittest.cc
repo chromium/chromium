@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_controller.h"
+#include "chrome/browser/ui/views/tabs/projects/projects_panel_no_tab_groups_view.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_tab_groups_item_view.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/test_support/mock_tab_group_sync_service.h"
@@ -55,13 +56,36 @@ class ProjectsPanelTabGroupsViewTest : public views::ViewsTestBase {
   std::unique_ptr<actions::ActionItem> root_action_item_;
   std::unique_ptr<views::ActionViewController> action_view_controller_;
   std::unique_ptr<ProjectsPanelTabGroupsView> tab_groups_view_;
+
+  void VerifyNoTabGroupsView() {
+    // Should contain the title and no item views.
+    EXPECT_EQ(2u, tab_groups_view_->children().size());
+    ProjectsPanelNoTabGroupsView* no_tab_groups_view =
+        static_cast<ProjectsPanelNoTabGroupsView*>(
+            tab_groups_view_->children()[1]);
+    EXPECT_EQ(1u, no_tab_groups_view->children().size());
+    views::Label* no_tabs_label =
+        static_cast<views::Label*>(no_tab_groups_view->children()[0]);
+    EXPECT_EQ(
+        u"Organize your tabs by grouping them together and label them with a "
+        u"custom name and color",
+        no_tabs_label->GetText());
+  }
 };
 
 TEST_F(ProjectsPanelTabGroupsViewTest, EmptyTabGroups) {
   tab_groups_view_->SetTabGroups({});
+  VerifyNoTabGroupsView();
+}
 
-  // Should contain the title and no item views.
-  EXPECT_EQ(1u, tab_groups_view_->children().size());
+TEST_F(ProjectsPanelTabGroupsViewTest, EnsureNoTabGroupsRemovedCorrectly) {
+  tab_groups_view_->SetTabGroups({});
+  VerifyNoTabGroupsView();
+  tab_groups_view_->SetTabGroups(
+      {CreateGroup(u"Group 1"), CreateGroup(u"Group 2")});
+  EXPECT_EQ(nullptr, tab_groups_view_->no_tab_groups_view_for_testing());
+  tab_groups_view_->SetTabGroups({});
+  VerifyNoTabGroupsView();
 }
 
 TEST_F(ProjectsPanelTabGroupsViewTest, PopulatesTabGroups) {

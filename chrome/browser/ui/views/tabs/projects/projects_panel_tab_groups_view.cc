@@ -9,6 +9,7 @@
 #include "base/notimplemented.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_controller.h"
+#include "chrome/browser/ui/views/tabs/projects/projects_panel_no_tab_groups_view.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_tab_groups_item_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -22,6 +23,7 @@
 
 namespace {
 constexpr gfx::Insets kTitleInteriorMargins = gfx::Insets::VH(12, 8);
+constexpr gfx::Insets kNoTabsInteriorMargins = gfx::Insets::TLBR(0, 8, 0, 0);
 }  // namespace
 
 ProjectsPanelTabGroupsView::ProjectsPanelTabGroupsView(
@@ -58,6 +60,15 @@ void ProjectsPanelTabGroupsView::SetTabGroups(
   for (const auto& group : tab_groups) {
     item_views_.emplace_back(
         AddChildView(std::make_unique<ProjectsPanelTabGroupsItemView>(group)));
+  }
+  if (no_tab_groups_view_) {
+    RemoveChildViewT(std::exchange(no_tab_groups_view_, nullptr));
+  }
+  if (tab_groups.empty()) {
+    no_tab_groups_view_ =
+        AddChildView(std::make_unique<ProjectsPanelNoTabGroupsView>());
+    no_tab_groups_view_->SetProperty(views::kMarginsKey,
+                                     kNoTabsInteriorMargins);
   }
 }
 

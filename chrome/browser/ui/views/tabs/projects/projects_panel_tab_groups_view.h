@@ -22,6 +22,7 @@ class ActionViewController;
 class Label;
 }  // namespace views
 
+class ProjectsPanelNoTabGroupsView;
 class ProjectsPanelTabGroupsItemView;
 
 // Contains the Tab Groups inside the Projects Panel.
@@ -40,9 +41,14 @@ class ProjectsPanelTabGroupsView : public views::View {
   // Sets the tab groups shown in the list.
   void SetTabGroups(const std::vector<tab_groups::SavedTabGroup>& tab_groups);
 
+  ProjectsPanelNoTabGroupsView* no_tab_groups_view_for_testing() {
+    return no_tab_groups_view_;
+  }
+
  private:
   raw_ptr<views::Label> title_ = nullptr;
   std::vector<raw_ptr<ProjectsPanelTabGroupsItemView>> item_views_;
+  raw_ptr<ProjectsPanelNoTabGroupsView> no_tab_groups_view_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_PROJECTS_PROJECTS_PANEL_TAB_GROUPS_VIEW_H_

@@ -10475,6 +10475,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
           </message>
         </else>
       </if>
+      <message name="IDS_TAB_GROUPS_NO_TAB_GROUPS" desc="Text indicating the user has no Tab groups.">
+        Organize your tabs by grouping them together and label them with a custom name and color
+      </message>
       <!-- /Projects Panel Strings -->
 
       <!-- Strings for intent picker -->
