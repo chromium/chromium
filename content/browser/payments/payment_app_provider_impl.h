@@ -15,6 +15,8 @@
 
 namespace content {
 
+class PaymentHandlerWebContentsObserver;
+
 // Lives on the UI thread.
 class CONTENT_EXPORT PaymentAppProviderImpl
     : public PaymentAppProvider,
@@ -64,6 +66,8 @@ class CONTENT_EXPORT PaymentAppProviderImpl
   void CloseOpenedWindow() override;
   void OnClosingOpenedWindow(
       payments::mojom::PaymentEventResponseType reason) override;
+  void SetRegistrationId(int64_t registration_id) override;
+  void OnPaymentHandlerDisconnected() override;
 
   DevToolsBackgroundServicesContextImpl* GetDevTools(
       const url::Origin& sw_origin);
@@ -78,6 +82,7 @@ class CONTENT_EXPORT PaymentAppProviderImpl
  private:
   explicit PaymentAppProviderImpl(WebContents* payment_request_web_contents);
   friend class WebContentsUserData<PaymentAppProviderImpl>;
+  friend class PaymentAppProviderTest;
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
   void StartServiceWorkerForDispatch(
@@ -97,6 +102,14 @@ class CONTENT_EXPORT PaymentAppProviderImpl
   raw_ptr<WebContents> payment_request_web_contents_;
 
   std::unique_ptr<PaymentEventDispatcher> event_dispatcher_;
+
+  std::unique_ptr<PaymentHandlerWebContentsObserver>
+      payment_handler_web_contents_observer_;
+
+  int64_t registration_id_ = blink::mojom::kInvalidServiceWorkerRegistrationId;
+
+  // Used to verify that OnPaymentHandlerDisconnected() is called in tests.
+  bool payment_handler_disconnected_for_test_ = false;
 
   base::WeakPtrFactory<PaymentAppProviderImpl> weak_ptr_factory_{this};
 };

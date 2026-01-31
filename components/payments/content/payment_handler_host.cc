@@ -173,6 +173,9 @@ void PaymentHandlerHost::OnPaymentDetailsNotUpdated() {
 
 void PaymentHandlerHost::Disconnect() {
   receiver_.reset();
+  if (disconnect_callback_) {
+    std::move(disconnect_callback_).Run();
+  }
 }
 
 base::WeakPtr<PaymentHandlerHost> PaymentHandlerHost::AsWeakPtr() {

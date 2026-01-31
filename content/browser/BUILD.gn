@@ -1541,6 +1541,8 @@ source_set("browser") {
     "payments/payment_app_provider_util.cc",
     "payments/payment_event_dispatcher.cc",
     "payments/payment_event_dispatcher.h",
+    "payments/payment_handler_web_contents_observer.cc",
+    "payments/payment_handler_web_contents_observer.h",
     "payments/payment_instrument_icon_fetcher.cc",
     "payments/payment_instrument_icon_fetcher.h",
     "payments/payment_manager.cc",

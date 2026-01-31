@@ -134,6 +134,8 @@ class ServiceWorkerPaymentApp : public PaymentApp {
 
   content::PaymentAppProvider* GetPaymentAppProvider();
 
+  void OnPaymentHandlerDisconnected();
+
   GURL top_origin_;
   GURL frame_origin_;
   base::WeakPtr<PaymentRequestSpec> spec_;

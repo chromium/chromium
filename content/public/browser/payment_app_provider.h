@@ -92,6 +92,14 @@ class CONTENT_EXPORT PaymentAppProvider {
   virtual void OnClosingOpenedWindow(
       payments::mojom::PaymentEventResponseType reason) = 0;
 
+  // Sets the service worker registration ID for the payment handler. Used by
+  // OnPaymentHandlerDisconnected() to notify the service worker when the
+  // payment handler window's renderer crashes or becomes unresponsive.
+  virtual void SetRegistrationId(int64_t registration_id) = 0;
+
+  // Notify the payment handler is disconnected.
+  virtual void OnPaymentHandlerDisconnected() = 0;
+
   // A test-only method for installing a service worker based payment app.
   // Invokes the `callback` when done.
   virtual void InstallPaymentAppForTesting(

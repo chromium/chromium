@@ -88,6 +88,10 @@ class PaymentHandlerHost : public mojom::PaymentHandlerHost {
     return !!change_payment_request_details_callback_;
   }
 
+  void set_disconnect_callback(base::OnceClosure callback) {
+    disconnect_callback_ = std::move(callback);
+  }
+
   // Binds to an IPC endpoint and returns it.
   mojo::PendingRemote<mojom::PaymentHandlerHost> Bind();
 
@@ -146,6 +150,8 @@ class PaymentHandlerHost : public mojom::PaymentHandlerHost {
   // The identifier for the Payment Request object. Used for developer tools
   // logging.
   std::string payment_request_id_for_logs_;
+
+  base::OnceClosure disconnect_callback_;
 
   base::WeakPtr<content::WebContents> web_contents_;
 

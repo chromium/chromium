@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/payments/payment_app_provider_impl.h"
+
 #include <cstddef>
 #include <string>
 #include <utility>
@@ -9,8 +11,10 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/run_until.h"
 #include "content/browser/payments/installed_payment_apps_finder_impl.h"
 #include "content/browser/payments/payment_app_content_unittest_base.h"
+#include "content/browser/payments/payment_handler_web_contents_observer.h"
 #include "content/public/browser/payment_app_provider.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_permission_manager.h"
@@ -148,6 +152,33 @@ class PaymentAppProviderTest : public PaymentAppContentUnitTestBase {
         ->OnClosingOpenedWindow(payments::mojom::PaymentEventResponseType::
                                     PAYMENT_HANDLER_WINDOW_CLOSING);
     base::RunLoop().RunUntilIdle();
+  }
+
+  void SetOpenedWindow() {
+    WebContents* payment_handler_web_contents =
+        test_web_contents_factory_.CreateWebContents(browser_context());
+    PaymentAppProvider::GetOrCreateForWebContents(web_contents_)
+        ->SetOpenedWindow(payment_handler_web_contents);
+  }
+
+  PaymentHandlerWebContentsObserver* GetPaymentHandlerWebContentsObserver() {
+    PaymentAppProvider* provider =
+        PaymentAppProvider::GetOrCreateForWebContents(web_contents_);
+    return static_cast<PaymentAppProviderImpl*>(provider)
+        ->payment_handler_web_contents_observer_.get();
+  }
+
+  void SetRegistrationId(int64_t registration_id) {
+    PaymentAppProvider* provider =
+        PaymentAppProvider::GetOrCreateForWebContents(web_contents_);
+    provider->SetRegistrationId(registration_id);
+  }
+
+  bool PaymentHandlerDisconnected() {
+    PaymentAppProvider* provider =
+        PaymentAppProvider::GetOrCreateForWebContents(web_contents_);
+    return static_cast<PaymentAppProviderImpl*>(provider)
+        ->payment_handler_disconnected_for_test_;
   }
 
  private:
@@ -364,6 +395,21 @@ TEST_F(PaymentAppProviderTest, AbortPaymentWhenClosingOpenedWindow) {
   RespondPendingPaymentRequest();
   base::RunLoop().RunUntilIdle();
   ASSERT_FALSE(called);
+}
+
+TEST_F(PaymentAppProviderTest, OnPaymentHandlerDisconnectedTest) {
+  PaymentManager* manager = CreatePaymentManager(
+      GURL("https://example.test"), GURL("https://example.test/script.js"));
+  PaymentHandlerStatus status;
+  SetPaymentInstrument(manager, "payment_instrument_key",
+                       payments::mojom::PaymentInstrument::New(),
+                       base::BindOnce(&SetPaymentInstrumentCallback, &status));
+  SetRegistrationId(last_sw_registration_id());
+  SetOpenedWindow();
+  ASSERT_FALSE(PaymentHandlerDisconnected());
+  GetPaymentHandlerWebContentsObserver()->PrimaryMainFrameRenderProcessGone(
+      base::TERMINATION_STATUS_PROCESS_CRASHED);
+  ASSERT_TRUE(PaymentHandlerDisconnected());
 }
 
 }  // namespace content

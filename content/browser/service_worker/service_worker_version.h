@@ -750,6 +750,8 @@ class CONTENT_EXPORT ServiceWorkerVersion
     return synthetic_response_head_;
   }
 
+  void OnPaymentHandlerDisconnect();
+
   // Timeout for a request to be handled.
   static constexpr base::TimeDelta kRequestTimeout = base::Minutes(5);
 
@@ -1067,6 +1069,16 @@ class CONTENT_EXPORT ServiceWorkerVersion
                                  GetClientCallback callback,
                                  bool success);
 
+  void DidShowPaymentHandlerWindow(
+      const GURL& url,
+      const blink::StorageKey& key,
+      const base::WeakPtr<ServiceWorkerContextCore>& context,
+      blink::mojom::ServiceWorkerHost::OpenPaymentHandlerWindowCallback
+          callback,
+      bool success,
+      int render_process_id,
+      int render_frame_id);
+
   const int64_t version_id_;
   const int64_t registration_id_;
   const GURL script_url_;
@@ -1278,6 +1290,8 @@ class CONTENT_EXPORT ServiceWorkerVersion
   bool stop_when_devtools_detached_ = false;
 
   bool is_stopping_warmed_up_worker_ = false;
+
+  bool payment_handler_connected_ = false;
 
   // This is the set of features that were used up until installation of this
   // version completed, or used during the lifetime of |this|.

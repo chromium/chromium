@@ -157,26 +157,6 @@ void OnOpenWindowFinished(
   std::move(callback).Run(success, std::move(client_info), error_msg);
 }
 
-void DidShowPaymentHandlerWindow(
-    const GURL& url,
-    const blink::StorageKey& key,
-    const base::WeakPtr<ServiceWorkerContextCore>& context,
-    blink::mojom::ServiceWorkerHost::OpenPaymentHandlerWindowCallback callback,
-    bool success,
-    int render_process_id,
-    int render_frame_id) {
-  if (success) {
-    service_worker_client_utils::DidNavigate(
-        context, url, key,
-        base::BindOnce(&OnOpenWindowFinished, std::move(callback)),
-        GlobalRenderFrameHostId(render_process_id, render_frame_id));
-  } else {
-    OnOpenWindowFinished(std::move(callback),
-                         blink::ServiceWorkerStatusCode::kErrorFailed,
-                         nullptr /* client_info */);
-  }
-}
-
 void DidNavigateClient(
     blink::mojom::ServiceWorkerHost::NavigateClientCallback callback,
     const GURL& url,
@@ -1767,11 +1747,37 @@ void ServiceWorkerVersion::OpenPaymentHandlerWindow(
 
   PaymentHandlerSupport::ShowPaymentHandlerWindow(
       url, context_.get(),
-      base::BindOnce(&DidShowPaymentHandlerWindow, url, key_, context_),
+      base::BindOnce(&ServiceWorkerVersion::DidShowPaymentHandlerWindow,
+                     weak_factory_.GetWeakPtr(), url, key_, context_),
       base::BindOnce(
           &ServiceWorkerVersion::OpenWindow, weak_factory_.GetWeakPtr(), url,
           service_worker_client_utils::WindowType::PAYMENT_HANDLER_WINDOW),
       std::move(callback));
+}
+
+void ServiceWorkerVersion::DidShowPaymentHandlerWindow(
+    const GURL& url,
+    const blink::StorageKey& key,
+    const base::WeakPtr<ServiceWorkerContextCore>& context,
+    blink::mojom::ServiceWorkerHost::OpenPaymentHandlerWindowCallback callback,
+    bool success,
+    int render_process_id,
+    int render_frame_id) {
+  if (success) {
+    payment_handler_connected_ = true;
+    service_worker_client_utils::DidNavigate(
+        context, url, key,
+        base::BindOnce(&OnOpenWindowFinished, std::move(callback)),
+        GlobalRenderFrameHostId(render_process_id, render_frame_id));
+  } else {
+    OnOpenWindowFinished(std::move(callback),
+                         blink::ServiceWorkerStatusCode::kErrorFailed,
+                         nullptr /* client_info */);
+  }
+}
+
+void ServiceWorkerVersion::OnPaymentHandlerDisconnect() {
+  payment_handler_connected_ = false;
 }
 
 void ServiceWorkerVersion::PostMessageToClient(
@@ -2546,6 +2552,13 @@ void ServiceWorkerVersion::OnTimeoutTimer() {
       << static_cast<int>(running_status());
 
   if (!context_) {
+    return;
+  }
+
+  // Suppress timeout while a Payment Handler window is open.
+  if (base::FeatureList::IsEnabled(
+          features::kServiceWorkerSuppressTimeoutWhenPaymentWindowOpen) &&
+      payment_handler_connected_) {
     return;
   }
 

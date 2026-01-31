@@ -22,6 +22,7 @@
 #include "content/browser/devtools/devtools_background_services_context_impl.h"
 #include "content/browser/payments/payment_app_context_impl.h"
 #include "content/browser/payments/payment_app_installer.h"
+#include "content/browser/payments/payment_handler_web_contents_observer.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_metrics.h"
 #include "content/browser/service_worker/service_worker_version.h"
@@ -282,10 +283,19 @@ void PaymentAppProviderImpl::SetOpenedWindow(
   DCHECK(!payment_handler_window_);
 
   payment_handler_window_ = payment_handler_web_contents->GetWeakPtr();
+
+  payment_handler_disconnected_for_test_ = false;
+  payment_handler_web_contents_observer_ =
+      std::make_unique<PaymentHandlerWebContentsObserver>(
+          payment_handler_web_contents,
+          base::BindOnce(&PaymentAppProviderImpl::OnPaymentHandlerDisconnected,
+                         weak_ptr_factory_.GetWeakPtr()));
 }
 
 void PaymentAppProviderImpl::CloseOpenedWindow() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  payment_handler_web_contents_observer_.reset();
 
   if (payment_handler_window_)
     payment_handler_window_->Close();
@@ -316,6 +326,30 @@ void PaymentAppProviderImpl::InstallPaymentAppForTesting(
       service_worker_scope, /*use_cache=*/false, payment_method_identifier,
       content::SupportedDelegations(),
       base::BindOnce(&CheckRegistrationSuccess, std::move(callback)));
+}
+
+void PaymentAppProviderImpl::SetRegistrationId(int64_t registration_id) {
+  registration_id_ = registration_id;
+}
+
+void PaymentAppProviderImpl::OnPaymentHandlerDisconnected() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  payment_handler_disconnected_for_test_ = true;
+  payment_handler_web_contents_observer_.reset();
+  StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
+      payment_request_web_contents_->GetBrowserContext()
+          ->GetDefaultStoragePartition());
+  ServiceWorkerContextWrapper* service_worker_context =
+      partition->GetServiceWorkerContext();
+  service_worker_context->FindReadyRegistrationForIdOnly(
+      registration_id_,
+      base::BindOnce([](blink::ServiceWorkerStatusCode find_status,
+                        scoped_refptr<ServiceWorkerRegistration> registration) {
+        if (registration && registration->active_version()) {
+          registration->active_version()->OnPaymentHandlerDisconnect();
+        }
+      }));
 }
 
 DevToolsBackgroundServicesContextImpl* PaymentAppProviderImpl::GetDevTools(

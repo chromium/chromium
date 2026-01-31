@@ -657,6 +657,11 @@ BASE_FEATURE(kServiceWorkerStaticRouterRaceRequestFix2,
 BASE_FEATURE(kServiceWorkerStaticRouterStartServiceWorker,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, suppresses the service worker timeout when a payment handler
+// window is open.
+BASE_FEATURE(kServiceWorkerSuppressTimeoutWhenPaymentWindowOpen,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // (crbug.com/41337436): Enabled feature will have the ServiceWorker Client.url
 // property be the creation URL. This means it does not reflect changes to the
 // URL made by history.pushState() or similar history APIs.
