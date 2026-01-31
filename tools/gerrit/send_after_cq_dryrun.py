@@ -71,20 +71,26 @@ class ReviewMonitor:
 
     def __init__(self,
                  issue_id,
+                 issue_url,
                  host,
                  patchset,
                  reviewers,
                  dry_run=False,
-                 verbose=False):
+                 verbose=False,
+                 is_bg=False):
         self.issue_id = issue_id
+        self.issue_url = issue_url
         self.host = host
         self.patchset = patchset
         self.reviewers = reviewers
         self.dry_run = dry_run
         self.verbose = verbose
+        self.is_bg = is_bg
         self.gerrit_client = find_gerrit_client()
         if not self.gerrit_client:
-            print("❌ Could not find gerrit_client.py in your PATH.")
+            print(f"❌ [CL {self.issue_id} PS {self.patchset}] "
+                  f"({self.issue_url})\n"
+                  "   Could not find gerrit_client.py in your PATH.")
             sys.exit(1)
 
     def get_try_results(self):
@@ -145,7 +151,8 @@ class ReviewMonitor:
 
         out, code = run_command(cmd)
         if code != 0 and not any(msg in out for msg in ignorable_msgs):
-            print(f"      ❌ Failed: {out}")
+            print(f"      ❌ [CL {self.issue_id} PS {self.patchset}] "
+                  f"({self.issue_url}) Failed: {out}")
         else:
             print(f"      ✅ Success")
 
@@ -236,6 +243,7 @@ class ReviewMonitor:
     def monitor(self):
         print(f"🚀 Monitoring CQ for CL {self.issue_id} "
               f"(Patchset: {self.patchset})")
+        print(f"🔗 URL: {self.issue_url}")
         print(f"🌐 Host: {self.host}")
         print(f"📧 Target Reviewers: {', '.join(self.reviewers)}")
         if self.dry_run:
@@ -243,22 +251,21 @@ class ReviewMonitor:
         print(f"⏱️  Timeout: {TIMEOUT_HOURS} hours\n")
 
         self.set_wip(
-            message=
-            "[automated] Triggering and monitoring CQ dry run; will mark "
-            "Ready for Review upon success (via send_after_cq_dryrun.py).")
+            message="Triggering and monitoring CQ dry run; will mark Ready "
+            "for Review upon success (automated via send_after_cq_dryrun.py).")
 
         if self.get_cq_label() < 1:
-            self.trigger_dry_run(
-                message=
-                "[automated] Triggering CQ dry run (via send_after_cq_dryrun.py)."
-            )
+            self.trigger_dry_run(message="Triggering CQ dry run "
+                                 "(automated via send_after_cq_dryrun.py).")
 
         start_time = time.time()
         try:
             while True:
                 elapsed_total_seconds = int(time.time() - start_time)
                 if elapsed_total_seconds > TIMEOUT_SECONDS:
-                    print(f"\n\n⏰ Timeout reached after {TIMEOUT_HOURS} "
+                    print(f"\n\n⏰ [CL {self.issue_id} PS {self.patchset}] "
+                          f"({self.issue_url})\n"
+                          f"   Timeout reached after {TIMEOUT_HOURS} "
                           "hours. Stopping monitoring.")
                     sys.exit(1)
 
@@ -267,11 +274,16 @@ class ReviewMonitor:
 
                 elapsed = str(timedelta(seconds=elapsed_total_seconds))
 
-                # Update the same line in terminal
-                sys.stdout.write(
-                    f"\r[{elapsed}] {stats} | "
-                    f"{len(results) if results else 0} bots found...   ")
-                sys.stdout.flush()
+                if not self.is_bg:
+                    # Update the same line in terminal
+                    sys.stdout.write(
+                        f"\r[{elapsed}] {stats} | "
+                        f"{len(results) if results else 0} bots found...   ")
+                    sys.stdout.flush()
+                else:
+                    # Periodic log update
+                    print(f"[{elapsed}] {stats} | "
+                          f"{len(results) if results else 0} bots found...")
 
                 if finished:
                     if success:
@@ -283,17 +295,49 @@ class ReviewMonitor:
                             self.add_reviewer(r)
 
                         self.set_ready(
-                            message="[automated] CQ dry run passed! "
-                            "Sending for review (via send_after_cq_dryrun.py)."
-                        )
+                            message="CQ dry run passed! Sending for review "
+                            "(automated via send_after_cq_dryrun.py).")
                     else:
-                        msg = f"CQ failed on: {', '.join(names)}"
+                        msg = (f"[CL {self.issue_id} PS {self.patchset}] "
+                               f"({self.issue_url}) "
+                               f"CQ failed on: {', '.join(names)}")
                         print(f"\n\n🛑 {msg}")
                     break
 
                 time.sleep(POLL_INTERVAL_SECONDS)
         except KeyboardInterrupt:
             print("\n\n👋 Monitoring cancelled.")
+
+
+def detach_process(issue_id, patchset):
+    """Detaches the current process from the terminal."""
+    log_path = f"/tmp/cq_monitor_{issue_id}_{patchset}.log"
+    try:
+        pid = os.fork()
+        if pid > 0:
+            print(f"🚀 Monitoring started in background (PID: {pid})")
+            print(f"📄 Log file: {log_path}")
+            sys.exit(0)
+    except OSError as e:
+        print(f"❌ fork failed: {e}")
+        sys.exit(1)
+
+    os.setsid()
+
+    # Redirect stdin, stdout, stderr
+    try:
+        si = open(os.devnull, 'r')
+        so = open(log_path, 'a+')
+        se = open(log_path, 'a+')
+        os.dup2(si.fileno(), sys.stdin.fileno())
+        os.dup2(so.fileno(), sys.stdout.fileno())
+        os.dup2(se.fileno(), sys.stderr.fileno())
+    except Exception as e:
+        # Fallback to devnull if log file fails
+        devnull = os.open(os.devnull, os.O_RDWR)
+        os.dup2(devnull, 0)
+        os.dup2(devnull, 1)
+        os.dup2(devnull, 2)
 
 
 def main():
@@ -310,6 +354,9 @@ def main():
     parser.add_argument('--verbose',
                         action='store_true',
                         help='Print internal commands')
+    parser.add_argument('--bg',
+                        action='store_true',
+                        help='Run monitoring in background and detach')
     args = parser.parse_args()
 
     if not args.dry_run and not args.reviewers:
@@ -323,12 +370,17 @@ def main():
         if r.strip()
     ]
 
+    if args.bg:
+        detach_process(issue_id, target_patchset)
+
     monitor = ReviewMonitor(issue_id=issue_id,
+                            issue_url=issue_url,
                             host=host,
                             patchset=target_patchset,
                             reviewers=final_reviewers,
                             dry_run=args.dry_run,
-                            verbose=args.verbose)
+                            verbose=args.verbose,
+                            is_bg=args.bg)
     monitor.monitor()
 
 
