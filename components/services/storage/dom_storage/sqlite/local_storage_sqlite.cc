@@ -122,6 +122,9 @@ DbStatus LocalStorageSqlite::Open(
 
 StatusOr<std::map<DomStorageDatabase::Key, DomStorageDatabase::Value>>
 LocalStorageSqlite::ReadMapKeyValues(MapLocator map_locator) {
+  CHECK_EQ(map_locator.session_ids().size(), 1u);
+  CHECK_EQ(map_locator.session_ids()[0], kLocalStorageSessionId);
+
   sql::Transaction transaction(database_.get());
   RETURN_UNEXPECTED_ON_ERROR(transaction.Begin());
 
@@ -145,7 +148,11 @@ DbStatus LocalStorageSqlite::UpdateMaps(
   RETURN_STATUS_ON_ERROR(transaction.Begin());
 
   for (MapBatchUpdate& map_update : map_updates) {
-    const blink::StorageKey& storage_key = map_update.map_locator.storage_key();
+    const MapLocator& map_locator = map_update.map_locator;
+    CHECK_EQ(map_locator.session_ids().size(), 1u);
+    CHECK_EQ(map_locator.session_ids()[0], kLocalStorageSessionId);
+
+    const blink::StorageKey& storage_key = map_locator.storage_key();
     const std::optional<MapBatchUpdate::Usage>& map_usage =
         map_update.map_usage;
 
@@ -224,6 +231,9 @@ StatusOr<DomStorageDatabase::Metadata> LocalStorageSqlite::ReadAllMetadata() {
 }
 
 DbStatus LocalStorageSqlite::PutMetadata(Metadata metadata) {
+  // Local storage does not record the next map id in SQLite.
+  CHECK(!metadata.next_map_id);
+
   sql::Transaction transaction(database_.get());
   RETURN_STATUS_ON_ERROR(transaction.Begin());
 
@@ -289,7 +299,7 @@ DbStatus LocalStorageSqlite::PutVersionForTesting(int64_t version) {
 StatusOr<std::optional<int64_t>> LocalStorageSqlite::FindMapId(
     const blink::StorageKey& storage_key) {
   constexpr const char kSelectMapId[] =
-      "SELECT row_id FROM maps WHERE storage_key=?";
+      "SELECT row_id FROM maps WHERE storage_key = ?";
 
   sql::Statement statement(
       database_->GetCachedStatement(SQL_FROM_HERE, kSelectMapId));
@@ -360,9 +370,14 @@ DbStatus LocalStorageSqlite::DeleteMapUsageMetadata(
 
   // Delete the usage metadata by setting all fields to `NULL`.
   constexpr const char kDeleteUsage[] =
-      "UPDATE maps SET "
-      "last_accessed=NULL,last_modified=NULL,total_size=NULL "
-      "WHERE storage_key=?";
+      // clang-format off
+      "UPDATE maps "
+      "SET "
+        "last_accessed = NULL,"
+        "last_modified = NULL,"
+        "total_size = NULL "
+      "WHERE storage_key = ?";
+  // clang-format on
 
   sql::Statement delete_statement(
       database_->GetCachedStatement(SQL_FROM_HERE, kDeleteUsage));

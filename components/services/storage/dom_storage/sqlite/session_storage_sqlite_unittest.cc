@@ -13,6 +13,7 @@
 #include "components/services/storage/dom_storage/features.h"
 #include "components/services/storage/dom_storage/sqlite/sqlite_database_utils.h"
 #include "components/services/storage/dom_storage/test_support/dom_storage_database_testing.h"
+#include "sql/statement.h"
 #include "sql/test/test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -328,6 +329,56 @@ TEST_F(SessionStorageSqliteTest, MetadataPersistence) {
   }
 }
 
+// Verifies that `ReadAllMetadata()` returns a corruption error when the
+// database contains a storage key that cannot be deserialized.
+TEST_F(SessionStorageSqliteTest, ReadAllMetadataWithInvalidStorageKey) {
+  // Write valid metadata to ensure the table exists and works.
+  {
+    std::unique_ptr<SessionStorageSqlite> database;
+    ASSERT_NO_FATAL_FAILURE(OpenOnDisk(&database));
+
+    DomStorageDatabase::Metadata valid_metadata;
+    valid_metadata.map_metadata.push_back({
+        .map_locator{kFirstSessionId, kFirstStorageKey, kFirstMapId},
+    });
+    DbStatus status = database->PutMetadata(std::move(valid_metadata));
+    EXPECT_TRUE(status.ok()) << status.ToString();
+  }
+
+  // Use `sql::Database` directly to insert an invalid storage key.
+  {
+    base::FilePath database_path;
+    ASSERT_NO_FATAL_FAILURE(GetDatabasePath(&database_path));
+
+    sql::Database database(sql::test::kTestTag);
+    EXPECT_TRUE(database.Open(database_path));
+
+    static constexpr char kInsertInvalidStorageKey[] =
+        "INSERT INTO session_metadata (session_id, storage_key, map_id) "
+        "VALUES (?, ?, ?)";
+
+    sql::Statement statement(
+        database.GetUniqueStatement(kInsertInvalidStorageKey));
+    statement.BindString(0, kSecondSessionId);
+    statement.BindBlob(
+        1, /*storage_key=*/std::vector<uint8_t>{0xFF, 0xFE, 0x00, 0x01});
+    statement.BindInt64(2, kSecondMapId);
+
+    EXPECT_TRUE(statement.Run());
+  }
+
+  // Re-open the database and verify that `ReadAllMetadata()` returns a
+  // corruption error due to the invalid storage key.
+  {
+    std::unique_ptr<SessionStorageSqlite> database;
+    ASSERT_NO_FATAL_FAILURE(OpenOnDisk(&database));
+
+    StatusOr<DomStorageDatabase::Metadata> result = database->ReadAllMetadata();
+    ASSERT_FALSE(result.has_value());
+    EXPECT_TRUE(result.error().IsCorruption());
+  }
+}
+
 // Verifies that `UpdateMaps()` correctly adds, modifies, and deletes key/value
 // pairs across multiple maps.
 TEST_F(SessionStorageSqliteTest, UpdateMaps) {
@@ -551,7 +602,7 @@ TEST_F(SessionStorageSqliteTest, DeleteSessionsWithMapExcluded) {
                                              /*maps_to_delete=*/{});
   EXPECT_TRUE(status.ok()) << status.ToString();
 
-  // Verify the metadata was removed but the map key/values remains.
+  // Verify the metadata was removed but the map key/values remain.
   ASSERT_OK_AND_ASSIGN(DomStorageDatabase::Metadata read_metadata,
                        database->ReadAllMetadata());
   EXPECT_EQ(read_metadata.map_metadata.size(), 0u);

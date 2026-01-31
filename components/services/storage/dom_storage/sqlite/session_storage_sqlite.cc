@@ -99,6 +99,9 @@ DbStatus SessionStorageSqlite::UpdateMaps(
   RETURN_STATUS_ON_ERROR(transaction.Begin());
 
   for (MapBatchUpdate& map_update : map_updates) {
+    // Session storage does not record map usage metadata.
+    CHECK(!map_update.map_usage.has_value());
+
     DB_RETURN_IF_ERROR(map_entries_table_->UpdateMap(std::move(map_update)));
   }
 
