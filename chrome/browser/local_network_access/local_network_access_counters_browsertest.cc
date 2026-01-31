@@ -432,11 +432,8 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessCountersBrowserTest,
 // This test verifies that resources proxied through a proxy on localhost can
 // be fetched from documents in the public IP address space.
 // Regression test for https://crbug.com/1253239.
-//
-// TODO(crbug.com/465260276): Fix test; it is flaking and possibly not even
-// accurate after the port from PNA.
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessCountersBrowserTest,
-                       DISABLED_ProxiedResourcesAllowed) {
+                       ProxiedResourcesAllowed) {
   EXPECT_TRUE(
       content::NavigateToURL(web_contents(), PublicSecureURL(https_server())));
 
@@ -446,6 +443,19 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessCountersBrowserTest,
           https_server().host_port_pair().ToString(), ""));
   ProfileNetworkContextServiceFactory::GetForContext(browser()->profile())
       ->FlushProxyConfigMonitorForTesting();
+
+  // FlushProxyConfigMonitorForTesting() ensures the proxy config message is
+  // sent over the Mojo pipe, but does not guarantee the network service has
+  // finished processing it. Without this additional flush, there is a race
+  // condition where fetch() may execute before the proxy is active, causing
+  // the request to go directly to localhost instead of through the proxy.
+  // When that happens, the network detects a public-to-loopback access and
+  // records kAddressSpacePublicSecureContextEmbeddedLoopbackV2, which fails
+  // the test expectation.
+  browser()
+      ->profile()
+      ->GetDefaultStoragePartition()
+      ->FlushNetworkInterfaceForTesting();
 
   WebFeatureHistogramTester feature_histogram_tester;
 
