@@ -404,6 +404,22 @@ class SmartCardEmulationBrowserTest : public IsolatedWebAppBrowserTestHarness {
     }
   }
 
+  void HandleReleaseContext(
+      int context_id = 123,
+      std::optional<std::string> error_code = std::nullopt) {
+    auto params =
+        WaitForNotificationParams("SmartCardEmulation.releaseContextRequested");
+
+    EXPECT_EQ(params.FindInt("contextId"), context_id);
+
+    if (error_code.has_value()) {
+      SendResponse("SmartCardEmulation.reportError", params,
+                   base::DictValue().Set("resultCode", *error_code));
+    } else {
+      SendResponse("SmartCardEmulation.reportReleaseContextResult", params, {});
+    }
+  }
+
   void ReloadPage() {
     content::TestNavigationObserver observer(web_contents_);
     web_contents_->GetController().Reload(content::ReloadType::NORMAL, false);
@@ -1376,6 +1392,76 @@ IN_PROC_BROWSER_TEST_F(SmartCardEmulationBrowserTest,
   std::string message;
   ASSERT_TRUE(message_queue.WaitForMessage(&message));
   EXPECT_EQ("\"Success\"", message);
+}
+
+IN_PROC_BROWSER_TEST_F(SmartCardEmulationBrowserTest, ReleaseContextSuccess) {
+  ASSERT_THAT(SendCommand("SmartCardEmulation.enable"), IsSuccess());
+  content::DOMMessageQueue message_queue(app_frame());
+
+  const std::string kScript = R"(
+    (async () => {
+      try {
+        const context = await navigator.smartCard.establishContext();
+        window.domAutomationController.send("Success");
+      } catch (e) {
+        window.domAutomationController.send("Error: " + e.message);
+      }
+    })();
+  )";
+  content::ExecuteScriptAsync(app_frame(), kScript);
+
+  HandleEstablishContext();
+  HandleReleaseContext();
+
+  std::string message;
+  ASSERT_TRUE(message_queue.WaitForMessage(&message));
+  EXPECT_EQ("\"Success\"", message);
+}
+
+IN_PROC_BROWSER_TEST_F(SmartCardEmulationBrowserTest,
+                       ReleaseContextOnNavigation) {
+  ASSERT_THAT(SendCommand("SmartCardEmulation.enable"), IsSuccess());
+  content::DOMMessageQueue message_queue(app_frame());
+
+  const std::string kSetupScript = R"(
+    (async () => {
+      window.smartCardContext = await navigator.smartCard.establishContext();
+      window.domAutomationController.send("Success");
+    })();
+  )";
+  content::ExecuteScriptAsync(app_frame(), kSetupScript);
+
+  HandleEstablishContext(123);
+
+  std::string message;
+  ASSERT_TRUE(message_queue.WaitForMessage(&message));
+  EXPECT_EQ("\"Success\"", message);
+
+  content::ExecuteScriptAsync(app_frame(), "window.location.reload();");
+  HandleReleaseContext();
+}
+
+IN_PROC_BROWSER_TEST_F(SmartCardEmulationBrowserTest, ReleaseContextFailure) {
+  ASSERT_THAT(SendCommand("SmartCardEmulation.enable"), IsSuccess());
+  content::DOMMessageQueue message_queue(app_frame());
+
+  const std::string kSetupScript = R"(
+    (async () => {
+      window.smartCardContext = await navigator.smartCard.establishContext();
+      window.domAutomationController.send("Success");
+    })();
+  )";
+  content::ExecuteScriptAsync(app_frame(), kSetupScript);
+
+  HandleEstablishContext(123);
+
+  std::string message;
+  ASSERT_TRUE(message_queue.WaitForMessage(&message));
+  EXPECT_EQ("\"Success\"", message);
+
+  content::ExecuteScriptAsync(app_frame(), "window.location.reload();");
+
+  HandleReleaseContext(123, "internal-error");
 }
 
 }  // namespace web_app
