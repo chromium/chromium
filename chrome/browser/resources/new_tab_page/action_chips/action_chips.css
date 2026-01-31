@@ -31,7 +31,7 @@
 }
 
 .action-chips-wrapper {
-  margin-bottom: 62px;
+  margin-bottom: 48px;
   margin-top: 8px;
   max-width: calc(var(--ntp-chips-container-width) + 2px);
 }
@@ -84,8 +84,8 @@
 }
 
 :host([show-simplified-ui_]) .banana {
-  background-size: 20px;
-  mask-size: 20px;
+  background-size: 16px;
+  mask-size: 16px;
 }
 
 .deep-dive {
@@ -95,8 +95,8 @@
 }
 
 :host([show-simplified-ui_]) .deep-dive {
-  background-size: 20px;
-  mask-size: 20px;
+  background-size: 16px;
+  mask-size: 16px;
 }
 
 .deep-search {
@@ -106,8 +106,8 @@
 }
 
 :host([show-simplified-ui_]) .deep-search {
-  background-size: 20px;
-  mask-size: 20px;
+  background-size: 16px;
+  mask-size: 16px;
 }
 
 .action-chip {
@@ -119,22 +119,44 @@
   display: flex;
   font-family: inherit;
   gap: 12px;
-  height: 56px;
+  height: min-content;
   isolation: isolate;
   opacity: 0;
   overflow: hidden;
   padding: 8px 14px;
   position: relative;
   transform: translateY(-56px);
+  transition: max-height 350ms ease;
   width: 240px;
+}
+
+.chip-button-wrapper {
+  max-height: 56px;
+  min-height: 56px;
+}
+
+:host(:not([show-simplified-ui_])) .action-chip:hover,
+:host(:not([show-simplified-ui_])) .action-chip:focus {
+  max-height: 88px;
+}
+
+:host(:not([show-simplified-ui_])) .action-chip {
+  max-height: 56px;
+  min-height: 56px;
 }
 
 :host([show-simplified-ui_]) .action-chip {
   background-color: transparent;
   border-radius: 12px;
-  gap: 6px;
+  gap: 16px;
   height: 36px;
-  padding: 0px 8px;
+  padding: 0px 10px;
+  width: 100%;
+}
+
+:host([show-simplified-ui_]) .chip-button-wrapper {
+  max-height: 36px;
+  min-height: 36px;
   width: 100%;
 }
 
@@ -186,9 +208,14 @@
   width: 24px;
 }
 
+:host(:not([show-simplified-ui_])) .action-chip-icon-container {
+  align-self: flex-start;
+  margin-top: 8px;
+}
+
 :host([show-simplified-ui_]) .action-chip-icon-container {
-  height: 20px;
-  width: 20px;
+  height: 16px;
+  width: 16px;
 }
 
 .action-chip-recent-tab-favicon {
@@ -198,8 +225,8 @@
 }
 
 :host([show-simplified-ui_]) .action-chip-recent-tab-favicon {
-  height: 20px;
-  width: 20px;
+  height: 16px;
+  width: 16px;
 }
 
 .action-chip-text-container {
@@ -208,6 +235,16 @@
   flex-direction: column;
   min-width: 0;
   width: 100%;
+}
+
+:host(:not([show-simplified-ui_])) .action-chip-text-container {
+  align-self: flex-start;
+  margin-bottom: auto;
+  margin-top: auto;
+}
+
+:host(:not([show-simplified-ui_])) .deep-dive-chip .action-chip-text-container {
+  padding: 2px 0px;
 }
 
 :host([show-simplified-ui_]) .action-chip-text-container {
@@ -272,6 +309,14 @@
   white-space: normal;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
+}
+
+:host(:not([show-simplified-ui_])) .deep-dive-chip:hover .chip-body,
+:host(:not([show-simplified-ui_])) .deep-dive-chip:focus .chip-body {
+  word-break: break-word;
+  white-space: normal;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: unset;
 }
 
 .chip-remove-button {
