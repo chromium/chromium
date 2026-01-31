@@ -63,7 +63,7 @@ struct WebEmbeddedWorkerStartData {
   WebFetchClientSettingsObject outside_fetch_client_settings_object;
 
   // Whether the worker has access to cross-origin isolated APIs.
-  bool is_cross_origin_isolated;
+  bool is_cross_origin_isolated = false;
 
   // Unique token that identifies this worker across the browser and renderer
   // processes. This is not persistent across worker restarts.

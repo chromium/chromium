@@ -631,12 +631,7 @@ class WebEmbeddedWorkerImplTest : public testing::Test {
 
 }  // namespace
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_TerminateSoonAfterStart DISABLED_TerminateSoonAfterStart
-#else
-#define MAYBE_TerminateSoonAfterStart TerminateSoonAfterStart
-#endif
-TEST_F(WebEmbeddedWorkerImplTest, MAYBE_TerminateSoonAfterStart) {
+TEST_F(WebEmbeddedWorkerImplTest, TerminateSoonAfterStart) {
   FakeBrowserInterfaceBroker browser_interface_broker;
   worker_->StartWorkerContext(
       CreateStartData(),
