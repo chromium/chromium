@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<!-- Generate token with the command:
+generate_token.py https://127.0.0.1:8443 WebMachineLearningNeuralNetwork --expire-timestamp=2000000000
+-- -->
+<meta http-equiv="origin-trial"
+  content="A73/pxo9MHE14u1sN5L3xHlxbpnDMtnmTEN0W4NExkSMO4kNhwDidywcc/8sgevmxvJmZiRW+ZVQ5xQFpNFpQQ4AAABoeyJvcmlnaW4iOiAiaHR0cHM6Ly8xMjcuMC4wLjE6ODQ0MyIsICJmZWF0dXJlIjogIldlYk1hY2hpbmVMZWFybmluZ05ldXJhbE5ldHdvcmsiLCAiZXhwaXJ5IjogMjAwMDAwMDAwMH0=" />
+
+<title>WebNN API</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/origin-trials-helper.js"></script>
+<script>
+test(t => {
+  OriginTrialsHelper.check_properties_exist(this,
+      {
+        'Navigator': ['ml'],
+        'ML': ['createContext'],
+        'MLContext': ['lost', 'destroy', 'createTensor', 'createConstantTensor',
+                      'createExportableTensor', 'writeTensor', 'readTensor',
+                      'dispatch', 'opSupportLimits', 'exportToGPU'],
+        'MLGraph': ['devices', 'destroy'],
+        // Intentionally not enumerating all of the MLGraphBuilder methods.
+        'MLGraphBuilder': ['build'],
+        'MLOperand': ['dataType', 'shape'],
+        'MLTensor': ['dataType', 'shape', 'gpuDevice', 'readable', 'writable',
+                     'constant', 'destroy'],
+      },
+  );
+}, "WebNN related interfaces in Origin-Trial enabled document.");
+</script>

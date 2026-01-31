@@ -3380,6 +3380,7 @@
     },
     {
       name: "MachineLearningNeuralNetwork",
+      origin_trial_feature_name: "WebMachineLearningNeuralNetwork",
       // Enabled by webnn::mojom::features::kWebMachineLearningNeuralNetwork.
       base_feature: "none",
     },

@@ -8,7 +8,7 @@ module webnn.mojom.features;
 // https://github.com/webmachinelearning/webnn/blob/main/explainer.md
 feature kWebMachineLearningNeuralNetwork {
   const string name = "WebMachineLearningNeuralNetwork";
-  const bool default_state = false;
+  const bool default_state = true;
 };
 
 // Enables experimental Web Machine Learning Neural Network API features.

@@ -22,5 +22,5 @@ declare_args() {
 
   # Enable installation of the Windows App Runtime package in the Chrome
   # installer.
-  webnn_install_runtime_in_chrome_installer = false
+  webnn_install_runtime_in_chrome_installer = true
 }
