@@ -194,6 +194,29 @@ void TestUpdateMaps(DomStorageDatabase& database,
   EXPECT_EQ(actual_entries, map2_entries);
 }
 
+void InsertMapEntries(DomStorageDatabase& database,
+                      const DomStorageDatabase::MapLocator& map_locator,
+                      const std::map<DomStorageDatabase::Key,
+                                     DomStorageDatabase::Value>& entries) {
+  // Write the `entries` to `database`.
+  DomStorageDatabase::MapBatchUpdate map_update(map_locator.Clone());
+  for (const auto& entry : entries) {
+    map_update.entries_to_add.emplace_back(entry.first, entry.second);
+  }
+
+  std::vector<DomStorageDatabase::MapBatchUpdate> map_updates;
+  map_updates.push_back(std::move(map_update));
+
+  DbStatus status = database.UpdateMaps(std::move(map_updates));
+  EXPECT_TRUE(status.ok()) << status.ToString();
+
+  // Read back the entries and verify they match what was inserted.
+  ASSERT_OK_AND_ASSIGN((std::map<DomStorageDatabase::Key,
+                                 DomStorageDatabase::Value> actual_entries),
+                       database.ReadMapKeyValues(map_locator.Clone()));
+  EXPECT_EQ(actual_entries, entries);
+}
+
 void OpenAsyncDomStorageDatabaseInMemorySync(
     StorageType storage_type,
     std::unique_ptr<AsyncDomStorageDatabase>* result) {

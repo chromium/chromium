@@ -53,15 +53,25 @@ class SessionStorageSqliteTest : public testing::Test {
 
   void OpenInMemory(std::unique_ptr<SessionStorageSqlite>* result);
 
+  // Writes `metadata` to the database and verifies it was persisted correctly.
+  void InitializeMetadata(DomStorageDatabase& database,
+                          const DomStorageDatabase::Metadata& metadata);
+
   const blink::StorageKey kFirstStorageKey =
       blink::StorageKey::CreateFromStringForTesting(kFirstUrlString);
 
   const blink::StorageKey kSecondStorageKey =
       blink::StorageKey::CreateFromStringForTesting(kSecondUrlString);
 
+  const DomStorageDatabase::MapLocator kFirstMapLocator{
+      kFirstSessionId, kFirstStorageKey, kFirstMapId};
+
+  const DomStorageDatabase::MapLocator kSecondMapLocator{
+      kSecondSessionId, kSecondStorageKey, kSecondMapId};
+
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::ScopedTempDir temp_dir_;
   base::test::TaskEnvironment task_environment_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 SessionStorageSqliteTest::SessionStorageSqliteTest() {
@@ -110,6 +120,32 @@ void SessionStorageSqliteTest::OpenInMemory(
 
   ASSERT_TRUE(status.ok()) << status.ToString();
   *result = std::move(instance);
+}
+
+void SessionStorageSqliteTest::InitializeMetadata(
+    DomStorageDatabase& database,
+    const DomStorageDatabase::Metadata& metadata) {
+  // Write `metadata` to `database`.
+  DomStorageDatabase::Metadata metadata_to_write;
+  metadata_to_write.next_map_id = metadata.next_map_id;
+  metadata_to_write.map_metadata =
+      CloneMapMetadataVector(metadata.map_metadata);
+
+  DbStatus status = database.PutMetadata(std::move(metadata_to_write));
+  EXPECT_TRUE(status.ok()) << status.ToString();
+
+  // Read back the metadata from the database to verify persistence.
+  ASSERT_OK_AND_ASSIGN(DomStorageDatabase::Metadata actual_metadata,
+                       database.ReadAllMetadata());
+
+  // Verify `next_map_id`. `SessionStorageSqlite` uses 0 as the default value
+  // when `next_map_id` does not exist in the database.
+  int64_t expected_next_map_id =
+      metadata.next_map_id ? *metadata.next_map_id : 0;
+  EXPECT_EQ(actual_metadata.next_map_id, expected_next_map_id);
+
+  ExpectEqualsMapMetadataSpan(actual_metadata.map_metadata,
+                              metadata.map_metadata);
 }
 
 TEST_F(SessionStorageSqliteTest, OpenInMemory) {
@@ -170,31 +206,21 @@ TEST_F(SessionStorageSqliteTest, PutNextMapId) {
   ASSERT_NO_FATAL_FAILURE(OpenInMemory(&database));
 
   // Write the first `next_map_id` value.
-  constexpr int64_t kFirstNextMapId = 56;
-  DomStorageDatabase::Metadata first_metadata_to_write;
-  first_metadata_to_write.next_map_id = kFirstNextMapId;
-
-  DbStatus status = database->PutMetadata(std::move(first_metadata_to_write));
-  EXPECT_TRUE(status.ok()) << status.ToString();
-
-  // Verify the first `next_map_id` was persisted.
-  ASSERT_OK_AND_ASSIGN(DomStorageDatabase::Metadata read_metadata,
-                       database->ReadAllMetadata());
-
-  ASSERT_TRUE(read_metadata.next_map_id.has_value());
-  EXPECT_EQ(*read_metadata.next_map_id, kFirstNextMapId);
-  EXPECT_EQ(read_metadata.map_metadata.size(), 0u);
+  DomStorageDatabase::Metadata metadata;
+  metadata.next_map_id = 56;
+  ASSERT_NO_FATAL_FAILURE(InitializeMetadata(*database, metadata));
 
   // Write a second `next_map_id` value to overwrite the first.
   constexpr int64_t kSecondNextMapId = 57;
   DomStorageDatabase::Metadata second_metadata_to_write;
   second_metadata_to_write.next_map_id = kSecondNextMapId;
 
-  status = database->PutMetadata(std::move(second_metadata_to_write));
+  DbStatus status = database->PutMetadata(std::move(second_metadata_to_write));
   EXPECT_TRUE(status.ok()) << status.ToString();
 
   // Verify the second `next_map_id` replaced the first.
-  ASSERT_OK_AND_ASSIGN(read_metadata, database->ReadAllMetadata());
+  ASSERT_OK_AND_ASSIGN(DomStorageDatabase::Metadata read_metadata,
+                       database->ReadAllMetadata());
   ASSERT_TRUE(read_metadata.next_map_id.has_value());
   EXPECT_EQ(*read_metadata.next_map_id, kSecondNextMapId);
   EXPECT_EQ(read_metadata.map_metadata.size(), 0u);
@@ -212,21 +238,9 @@ TEST_F(SessionStorageSqliteTest, PutMapMetadata) {
           .map_locator{kFirstSessionId, kFirstStorageKey, kFirstMapId},
       },
   };
-
-  DomStorageDatabase::Metadata first_metadata_to_write;
-  first_metadata_to_write.map_metadata =
-      CloneMapMetadataVector(kMapMetadataToInsert);
-
-  DbStatus status = database->PutMetadata(std::move(first_metadata_to_write));
-  EXPECT_TRUE(status.ok()) << status.ToString();
-
-  // Verify the map metadata was persisted.
-  ASSERT_OK_AND_ASSIGN(DomStorageDatabase::Metadata read_metadata,
-                       database->ReadAllMetadata());
-
-  ASSERT_TRUE(read_metadata.next_map_id.has_value());
-  EXPECT_EQ(*read_metadata.next_map_id, 0);
-  ExpectEqualsMapMetadataSpan(read_metadata.map_metadata, kMapMetadataToInsert);
+  ASSERT_NO_FATAL_FAILURE(InitializeMetadata(
+      *database, DomStorageDatabase::Metadata(
+                     CloneMapMetadataVector(kMapMetadataToInsert))));
 
   // Replace the map metadata with a new `map_id` for the same session and
   // storage key.
@@ -235,21 +249,9 @@ TEST_F(SessionStorageSqliteTest, PutMapMetadata) {
           .map_locator{kFirstSessionId, kFirstStorageKey, kSecondMapId},
       },
   };
-
-  DomStorageDatabase::Metadata second_metadata_to_write;
-  second_metadata_to_write.map_metadata =
-      CloneMapMetadataVector(kReplacementMapMetadata);
-
-  status = database->PutMetadata(std::move(second_metadata_to_write));
-  EXPECT_TRUE(status.ok()) << status.ToString();
-
-  // Verify the replacement map metadata overwrote the original.
-  ASSERT_OK_AND_ASSIGN(read_metadata, database->ReadAllMetadata());
-
-  ASSERT_TRUE(read_metadata.next_map_id.has_value());
-  EXPECT_EQ(*read_metadata.next_map_id, 0);
-  ExpectEqualsMapMetadataSpan(read_metadata.map_metadata,
-                              kReplacementMapMetadata);
+  ASSERT_NO_FATAL_FAILURE(InitializeMetadata(
+      *database, DomStorageDatabase::Metadata(
+                     CloneMapMetadataVector(kReplacementMapMetadata))));
 }
 
 // Verifies that `PutMetadata()` correctly handles multiple sessions and storage
@@ -282,17 +284,7 @@ TEST_F(SessionStorageSqliteTest, PutMapMetadataWithMultipleSessions) {
   metadata.next_map_id = kNextMapId;
   metadata.map_metadata = CloneMapMetadataVector(expected_map_metadata);
 
-  DbStatus status = database->PutMetadata(std::move(metadata));
-  EXPECT_TRUE(status.ok()) << status.ToString();
-
-  // Verify all map metadata was persisted correctly.
-  ASSERT_OK_AND_ASSIGN(DomStorageDatabase::Metadata read_metadata,
-                       database->ReadAllMetadata());
-
-  ASSERT_TRUE(read_metadata.next_map_id.has_value());
-  EXPECT_EQ(*read_metadata.next_map_id, kNextMapId);
-  ExpectEqualsMapMetadataSpan(read_metadata.map_metadata,
-                              expected_map_metadata);
+  ASSERT_NO_FATAL_FAILURE(InitializeMetadata(*database, metadata));
 }
 
 // Verifies that metadata written to the database is persisted across opens and
@@ -314,18 +306,7 @@ TEST_F(SessionStorageSqliteTest, MetadataPersistence) {
     DomStorageDatabase::Metadata metadata;
     metadata.next_map_id = kNextMapId;
     metadata.map_metadata = CloneMapMetadataVector(expected_map_metadata);
-
-    DbStatus status = database->PutMetadata(std::move(metadata));
-    EXPECT_TRUE(status.ok()) << status.ToString();
-
-    // Verify metadata was written correctly before closing.
-    ASSERT_OK_AND_ASSIGN(DomStorageDatabase::Metadata read_metadata,
-                         database->ReadAllMetadata());
-
-    ASSERT_TRUE(read_metadata.next_map_id.has_value());
-    EXPECT_EQ(*read_metadata.next_map_id, kNextMapId);
-    ExpectEqualsMapMetadataSpan(read_metadata.map_metadata,
-                                expected_map_metadata);
+    ASSERT_NO_FATAL_FAILURE(InitializeMetadata(*database, metadata));
   }
 
   // Re-open the database and verify metadata persisted.
@@ -364,9 +345,9 @@ TEST_F(SessionStorageSqliteTest, CloneMap) {
   std::unique_ptr<SessionStorageSqlite> database;
   ASSERT_NO_FATAL_FAILURE(OpenInMemory(&database));
 
-  DomStorageDatabase::MapLocator source_map_locator{
+  const DomStorageDatabase::MapLocator kSourceMapLocator{
       kFirstSessionId, kFirstStorageKey, kFirstMapId};
-  DomStorageDatabase::MapLocator target_map_locator{
+  const DomStorageDatabase::MapLocator kTargetMapLocator{
       kSecondSessionId, kSecondStorageKey, kSecondMapId};
 
   // Insert key/value pairs into the source map.
@@ -376,37 +357,303 @@ TEST_F(SessionStorageSqliteTest, CloneMap) {
           {ToBytes("key_2"), ToBytes("value_2")},
           {ToBytes("key_3"), ToBytes("value_3")},
       };
-
-  std::vector<DomStorageDatabase::MapBatchUpdate> source_update;
-  source_update.emplace_back(source_map_locator.Clone());
-  for (const auto& entry : kSourceMapEntries) {
-    source_update.back().entries_to_add.emplace_back(entry.first, entry.second);
-  }
-
-  DbStatus status = database->UpdateMaps(std::move(source_update));
-  EXPECT_TRUE(status.ok()) << status.ToString();
-
-  // Verify the source map has the expected entries.
-  ASSERT_OK_AND_ASSIGN((std::map<DomStorageDatabase::Key,
-                                 DomStorageDatabase::Value> source_entries),
-                       database->ReadMapKeyValues(source_map_locator.Clone()));
-  EXPECT_EQ(source_entries, kSourceMapEntries);
+  ASSERT_NO_FATAL_FAILURE(InsertMapEntries(*database, kSourceMapLocator.Clone(),
+                                           kSourceMapEntries));
 
   // Clone the source map to the target map.
-  status = database->CloneMap(source_map_locator.Clone(),
-                              target_map_locator.Clone());
+  DbStatus status =
+      database->CloneMap(kSourceMapLocator.Clone(), kTargetMapLocator.Clone());
   EXPECT_TRUE(status.ok()) << status.ToString();
 
   // Verify the target map now contains the same entries as the source map.
   ASSERT_OK_AND_ASSIGN((std::map<DomStorageDatabase::Key,
                                  DomStorageDatabase::Value> target_entries),
-                       database->ReadMapKeyValues(target_map_locator.Clone()));
+                       database->ReadMapKeyValues(kTargetMapLocator.Clone()));
   EXPECT_EQ(target_entries, kSourceMapEntries);
 
   // Verify the source map is unchanged.
-  ASSERT_OK_AND_ASSIGN(source_entries,
-                       database->ReadMapKeyValues(source_map_locator.Clone()));
+  ASSERT_OK_AND_ASSIGN((std::map<DomStorageDatabase::Key,
+                                 DomStorageDatabase::Value> source_entries),
+                       database->ReadMapKeyValues(kSourceMapLocator.Clone()));
   EXPECT_EQ(source_entries, kSourceMapEntries);
+}
+
+// Verifies deleting a session removes its metadata from the database.
+TEST_F(SessionStorageSqliteTest, DeleteSessionsWithMetadata) {
+  std::unique_ptr<SessionStorageSqlite> database;
+  ASSERT_NO_FATAL_FAILURE(OpenInMemory(&database));
+
+  // Add one metadata row to the database.
+  ASSERT_NO_FATAL_FAILURE(InitializeMetadata(
+      *database, DomStorageDatabase::Metadata(CloneMapMetadataVector(
+                     {{.map_locator{kFirstMapLocator.Clone()}}}))));
+
+  // Delete the session, which should remove its metadata.
+  DbStatus status = database->DeleteSessions({kFirstSessionId},
+                                             /*maps_to_delete=*/{});
+  EXPECT_TRUE(status.ok()) << status.ToString();
+
+  // Verify the metadata was removed.
+  ASSERT_OK_AND_ASSIGN(DomStorageDatabase::Metadata read_metadata,
+                       database->ReadAllMetadata());
+  EXPECT_EQ(read_metadata.map_metadata.size(), 0u);
+}
+
+// Verifies deleting multiple sessions removes all their metadata,
+// including when a session has multiple storage keys (multiple maps).
+TEST_F(SessionStorageSqliteTest, DeleteMultipleSessionsWithMultipleMetadata) {
+  std::unique_ptr<SessionStorageSqlite> database;
+  ASSERT_NO_FATAL_FAILURE(OpenInMemory(&database));
+
+  // Create additional maps for this test. The first session has two maps (one
+  // for each storage key).
+  const DomStorageDatabase::MapLocator kFirstSessionSecondMapLocator{
+      kFirstSessionId, kSecondStorageKey, kThirdMapId};
+  const DomStorageDatabase::MapLocator kThirdMapLocator{
+      kThirdSessionId, kFirstStorageKey, /*map_id=*/4};
+
+  // Add metadata for multiple sessions to the database. The first session has
+  // two maps. The second and third sessions have one each.
+  ASSERT_NO_FATAL_FAILURE(InitializeMetadata(
+      *database, DomStorageDatabase::Metadata(CloneMapMetadataVector({
+                     {.map_locator{kFirstMapLocator.Clone()}},
+                     {.map_locator{kFirstSessionSecondMapLocator.Clone()}},
+                     {.map_locator{kSecondMapLocator.Clone()}},
+                     {.map_locator{kThirdMapLocator.Clone()}},
+                 }))));
+
+  // Delete the first two sessions, leaving the third session intact.
+  DbStatus status =
+      database->DeleteSessions({kFirstSessionId, kSecondSessionId},
+                               /*maps_to_delete=*/{});
+  EXPECT_TRUE(status.ok()) << status.ToString();
+
+  // Verify only the third session's metadata remains.
+  ASSERT_OK_AND_ASSIGN(DomStorageDatabase::Metadata read_metadata,
+                       database->ReadAllMetadata());
+  ExpectEqualsMapMetadataSpan(read_metadata.map_metadata,
+                              {{.map_locator{kThirdMapLocator.Clone()}}});
+}
+
+// Verifies deleting a session removes its map key/value pairs when the map is
+// no longer referenced by other sessions.
+TEST_F(SessionStorageSqliteTest, DeleteSessionsWithMapKeyValues) {
+  std::unique_ptr<SessionStorageSqlite> database;
+  ASSERT_NO_FATAL_FAILURE(OpenInMemory(&database));
+
+  // Add map key/value pairs to the database.
+  const std::map<DomStorageDatabase::Key, DomStorageDatabase::Value>
+      kMapEntries{
+          {ToBytes("key_1"), ToBytes("value_1")},
+          {ToBytes("key_2"), ToBytes("value_2")},
+      };
+  ASSERT_NO_FATAL_FAILURE(
+      InsertMapEntries(*database, kFirstMapLocator.Clone(), kMapEntries));
+
+  // Delete the session and its map key/value pairs.
+  std::vector<DomStorageDatabase::MapLocator> maps_to_delete;
+  maps_to_delete.push_back(kFirstMapLocator.Clone());
+  maps_to_delete.back().RemoveSession(kFirstSessionId);
+
+  DbStatus status =
+      database->DeleteSessions({kFirstSessionId}, std::move(maps_to_delete));
+  EXPECT_TRUE(status.ok()) << status.ToString();
+
+  // Verify the map is now empty.
+  ASSERT_OK_AND_ASSIGN((std::map<DomStorageDatabase::Key,
+                                 DomStorageDatabase::Value> actual_entries),
+                       database->ReadMapKeyValues(kFirstMapLocator.Clone()));
+  EXPECT_EQ(actual_entries.size(), 0u);
+}
+
+// Verifies deleting a session removes key/value pairs from multiple maps
+// when all maps are no longer referenced by other sessions.
+TEST_F(SessionStorageSqliteTest, DeleteSessionsWithMultipleMaps) {
+  std::unique_ptr<SessionStorageSqlite> database;
+  ASSERT_NO_FATAL_FAILURE(OpenInMemory(&database));
+
+  // Create a second map for the first session with a different storage key.
+  const DomStorageDatabase::MapLocator kFirstSessionSecondMapLocator{
+      kFirstSessionId, kSecondStorageKey, kSecondMapId};
+
+  // Add key/value pairs to the first map.
+  const std::map<DomStorageDatabase::Key, DomStorageDatabase::Value>
+      kFirstMapEntries{
+          {ToBytes("key_1"), ToBytes("value_1")},
+          {ToBytes("key_2"), ToBytes("value_2")},
+      };
+  ASSERT_NO_FATAL_FAILURE(
+      InsertMapEntries(*database, kFirstMapLocator.Clone(), kFirstMapEntries));
+
+  // Add key/value pairs to the second map.
+  const std::map<DomStorageDatabase::Key, DomStorageDatabase::Value>
+      kSecondMapEntries{
+          {ToBytes("key_3"), ToBytes("value_3")},
+      };
+  ASSERT_NO_FATAL_FAILURE(InsertMapEntries(
+      *database, kFirstSessionSecondMapLocator.Clone(), kSecondMapEntries));
+
+  // Delete the session and both of its maps.
+  std::vector<DomStorageDatabase::MapLocator> maps_to_delete;
+  maps_to_delete.push_back(kFirstMapLocator.Clone());
+  maps_to_delete.back().RemoveSession(kFirstSessionId);
+  maps_to_delete.push_back(kFirstSessionSecondMapLocator.Clone());
+  maps_to_delete.back().RemoveSession(kFirstSessionId);
+
+  DbStatus status =
+      database->DeleteSessions({kFirstSessionId}, std::move(maps_to_delete));
+  EXPECT_TRUE(status.ok()) << status.ToString();
+
+  // Verify the metadata was removed.
+  ASSERT_OK_AND_ASSIGN(DomStorageDatabase::Metadata read_metadata,
+                       database->ReadAllMetadata());
+  EXPECT_EQ(read_metadata.map_metadata.size(), 0u);
+
+  // Verify both maps are now empty.
+  ASSERT_OK_AND_ASSIGN((std::map<DomStorageDatabase::Key,
+                                 DomStorageDatabase::Value> actual_map_entries),
+                       database->ReadMapKeyValues(kFirstMapLocator.Clone()));
+  EXPECT_EQ(actual_map_entries.size(), 0u);
+
+  ASSERT_OK_AND_ASSIGN(
+      actual_map_entries,
+      database->ReadMapKeyValues(kFirstSessionSecondMapLocator.Clone()));
+  EXPECT_EQ(actual_map_entries.size(), 0u);
+}
+
+// Verifies deleting a session removes its metadata but leaves the map key/value
+// pairs intact when the map is not included in `maps_to_delete`.
+TEST_F(SessionStorageSqliteTest, DeleteSessionsWithMapExcluded) {
+  std::unique_ptr<SessionStorageSqlite> database;
+  ASSERT_NO_FATAL_FAILURE(OpenInMemory(&database));
+
+  // Add one metadata row to the database.
+  ASSERT_NO_FATAL_FAILURE(InitializeMetadata(
+      *database, DomStorageDatabase::Metadata(CloneMapMetadataVector(
+                     {{.map_locator{kFirstMapLocator.Clone()}}}))));
+
+  // Add some key/values to the database.
+  const std::map<DomStorageDatabase::Key, DomStorageDatabase::Value>
+      kMapEntries{
+          {ToBytes("key_1"), ToBytes("value_1")},
+          {ToBytes("key_2"), ToBytes("value_2")},
+          {ToBytes("key_3"), ToBytes("value_3")},
+      };
+  ASSERT_NO_FATAL_FAILURE(
+      InsertMapEntries(*database, kFirstMapLocator.Clone(), kMapEntries));
+
+  // Delete the session metadata but not the map key/value entries.
+  DbStatus status = database->DeleteSessions({kFirstSessionId},
+                                             /*maps_to_delete=*/{});
+  EXPECT_TRUE(status.ok()) << status.ToString();
+
+  // Verify the metadata was removed but the map key/values remains.
+  ASSERT_OK_AND_ASSIGN(DomStorageDatabase::Metadata read_metadata,
+                       database->ReadAllMetadata());
+  EXPECT_EQ(read_metadata.map_metadata.size(), 0u);
+
+  ASSERT_OK_AND_ASSIGN((std::map<DomStorageDatabase::Key,
+                                 DomStorageDatabase::Value> actual_entries),
+                       database->ReadMapKeyValues(kFirstMapLocator.Clone()));
+  EXPECT_EQ(actual_entries, kMapEntries);
+}
+
+// Verifies deleting multiple sessions removes their metadata and selectively
+// deletes map key/value pairs based on whether they're still referenced by
+// other sessions (cloned maps).
+TEST_F(SessionStorageSqliteTest, DeleteSessionsWithMultipleStorageKeys) {
+  std::unique_ptr<SessionStorageSqlite> database;
+  ASSERT_NO_FATAL_FAILURE(OpenInMemory(&database));
+
+  // Create two maps and two cloned maps used by two storage keys across three
+  // sessions. This adds four metadata rows with one row for each map usage.
+  std::vector<DomStorageDatabase::MapMetadata> expected_map_metadata;
+  expected_map_metadata.push_back({.map_locator{kFirstMapLocator.Clone()}});
+  expected_map_metadata.push_back({.map_locator{kSecondMapLocator.Clone()}});
+
+  // Clone `kFirstMapLocator` for `kSecondSessionId`.
+  expected_map_metadata[0].map_locator.AddSession(kSecondSessionId);
+
+  // Clone `kSecondMapLocator` for `kThirdSessionId`.
+  expected_map_metadata[1].map_locator.AddSession(kThirdSessionId);
+
+  ASSERT_NO_FATAL_FAILURE(InitializeMetadata(
+      *database, DomStorageDatabase::Metadata(
+                     CloneMapMetadataVector(expected_map_metadata))));
+
+  // Write the first map's key/value pairs.
+  const std::map<DomStorageDatabase::Key, DomStorageDatabase::Value>
+      kFirstMapEntries{
+          {ToBytes("key_1"), ToBytes("value_1")},
+          {ToBytes("key_2"), ToBytes("value_2")},
+      };
+  ASSERT_NO_FATAL_FAILURE(
+      InsertMapEntries(*database, kFirstMapLocator.Clone(), kFirstMapEntries));
+
+  // Write the second map's key/value pairs.
+  const std::map<DomStorageDatabase::Key, DomStorageDatabase::Value>
+      kSecondMapEntries{
+          {ToBytes("key_3"), ToBytes("value_4")},
+      };
+  ASSERT_NO_FATAL_FAILURE(InsertMapEntries(*database, kSecondMapLocator.Clone(),
+                                           kSecondMapEntries));
+
+  // Delete `kFirstSessionId`, which must remove one metadata row.
+  DbStatus status = database->DeleteSessions({kFirstSessionId},
+                                             /*maps_to_delete=*/{});
+  EXPECT_TRUE(status.ok()) << status.ToString();
+
+  // Verify what remains:
+  //  - Three metadata rows: Two for `kSecondSessionId` and one for
+  //    `kThirdSessionId`.
+  //  - Three map key/value entries: Two for `kFirstMapId` and one for
+  //    `kSecondMapId`.
+  ASSERT_OK_AND_ASSIGN(DomStorageDatabase::Metadata read_metadata,
+                       database->ReadAllMetadata());
+
+  // Remove `kFirstSessionId` from the front of `expected_map_metadata`.
+  expected_map_metadata[0].map_locator.RemoveSession(kFirstSessionId);
+  ExpectEqualsMapMetadataSpan(read_metadata.map_metadata,
+                              expected_map_metadata);
+
+  ASSERT_OK_AND_ASSIGN((std::map<DomStorageDatabase::Key,
+                                 DomStorageDatabase::Value> actual_entries),
+                       database->ReadMapKeyValues(kFirstMapLocator.Clone()));
+  EXPECT_EQ(actual_entries, kFirstMapEntries);
+
+  ASSERT_OK_AND_ASSIGN(actual_entries,
+                       database->ReadMapKeyValues(kSecondMapLocator.Clone()));
+  EXPECT_EQ(actual_entries, kSecondMapEntries);
+
+  // Delete `kSecondSessionId` along with its no longer referenced map:
+  // `kFirstMapId`. This must remove one metadata row and two map key/value
+  // entries.
+  std::vector<DomStorageDatabase::MapLocator> maps_to_delete;
+  maps_to_delete.emplace_back(kSecondSessionId, kFirstStorageKey, kFirstMapId);
+  maps_to_delete.back().RemoveSession(kSecondSessionId);
+
+  status =
+      database->DeleteSessions({kSecondSessionId}, std::move(maps_to_delete));
+  EXPECT_TRUE(status.ok()) << status.ToString();
+
+  // Verify one metadata row for `kThirdSessionId` and one map's key/values
+  // remain.
+  ASSERT_OK_AND_ASSIGN(read_metadata, database->ReadAllMetadata());
+
+  // Pop `kSecondSessionId` from the front of `expected_map_metadata`.
+  expected_map_metadata.erase(expected_map_metadata.begin());
+  expected_map_metadata[0].map_locator.RemoveSession(kSecondSessionId);
+  ExpectEqualsMapMetadataSpan(read_metadata.map_metadata,
+                              expected_map_metadata);
+
+  // Verify only the second map's key/value entries remains.
+  ASSERT_OK_AND_ASSIGN(actual_entries,
+                       database->ReadMapKeyValues(kFirstMapLocator.Clone()));
+  EXPECT_EQ(actual_entries.size(), 0u);
+
+  ASSERT_OK_AND_ASSIGN(actual_entries,
+                       database->ReadMapKeyValues(kSecondMapLocator.Clone()));
+  EXPECT_EQ(actual_entries, kSecondMapEntries);
 }
 
 }  // namespace storage

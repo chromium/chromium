@@ -177,9 +177,33 @@ DbStatus SessionStorageSqlite::DeleteStorageKeysFromSession(
 DbStatus SessionStorageSqlite::DeleteSessions(
     std::vector<std::string> session_ids,
     std::vector<MapLocator> maps_to_delete) {
-  // TODO(crbug.com/377242771): Fully implement `DomStorageDatabase` interface
-  // using SQLite.
-  return DbStatus::NotSupported("");
+  sql::Transaction transaction(database_.get());
+  RETURN_STATUS_ON_ERROR(transaction.Begin());
+
+  // Delete each session's metadata.
+  constexpr const char kDeleteSessionMetadata[] =
+      "DELETE FROM session_metadata WHERE session_id = ?";
+
+  sql::Statement delete_metadata_statement(
+      database_->GetCachedStatement(SQL_FROM_HERE, kDeleteSessionMetadata));
+
+  for (const std::string& session_id : session_ids) {
+    delete_metadata_statement.BindString(0, session_id);
+    RETURN_STATUS_ON_ERROR(delete_metadata_statement.Run());
+    delete_metadata_statement.Reset(/*clear_bound_vars=*/true);
+  }
+
+  // Delete the key/value pairs in `maps_to_delete`.
+  for (const MapLocator& map_locator : maps_to_delete) {
+    // The map must be unreferenced with no sessions remaining.
+    CHECK(map_locator.session_ids().empty());
+
+    DB_RETURN_IF_ERROR(
+        map_entries_table_->DeleteMap(map_locator.map_id().value()));
+  }
+
+  RETURN_STATUS_ON_ERROR(transaction.Commit());
+  return DbStatus::OK();
 }
 
 DbStatus SessionStorageSqlite::PurgeOrigins(std::set<url::Origin> origins) {
