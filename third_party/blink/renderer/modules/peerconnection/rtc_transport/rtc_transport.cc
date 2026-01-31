@@ -348,7 +348,7 @@ RtcTransport::ParseStunServers(const RtcTransportConfig* config,
 RtcTransport::RtcTransport(PassKey, ExecutionContext* context)
     : ExecutionContextLifecycleObserver(context),
       task_runner_(context->GetTaskRunner(TaskType::kNetworking)),
-      digest_(0, kMaxDigestSize) {
+      digest_(webrtc::Buffer::CreateWithCapacity(kMaxDigestSize)) {
   // Should this be done async? cf
   // RTCCertificateGenerator::GenerateCertificateAsync.
   certificate_ = webrtc::RTCCertificateGenerator::GenerateCertificate(
