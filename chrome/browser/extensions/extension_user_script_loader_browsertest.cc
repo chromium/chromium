@@ -9,15 +9,17 @@
 #include "base/test/values_test_util.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/scripting_constants.h"
 #include "extensions/browser/scripting_utils.h"
 #include "extensions/browser/state_store.h"
 #include "extensions/browser/user_script_manager.h"
+#include "extensions/buildflags/buildflags.h"
 #include "net/dns/mock_host_resolver.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -104,10 +106,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionUserScriptLoaderBrowserTest,
                        PRE_OldDynamicContentScriptEntriesAreMigrated) {
   WaitForSystemReady();
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
+  content::WebContents* active_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(
+      active_contents,
       embedded_test_server()->GetURL("example.com", "/simple.html")));
-  EXPECT_EQ(u"script injected", GetActiveWebContents()->GetTitle());
+  EXPECT_EQ(u"script injected", active_contents->GetTitle());
 
   const Extension* extension = nullptr;
   for (const auto& entry :
@@ -179,10 +182,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionUserScriptLoaderBrowserTest,
 IN_PROC_BROWSER_TEST_F(ExtensionUserScriptLoaderBrowserTest,
                        OldDynamicContentScriptEntriesAreMigrated) {
   WaitForSystemReady();
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
+  content::WebContents* active_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(
+      active_contents,
       embedded_test_server()->GetURL("example.com", "/simple.html")));
-  EXPECT_EQ(u"script injected", GetActiveWebContents()->GetTitle());
+  EXPECT_EQ(u"script injected", active_contents->GetTitle());
 }
 
 }  // namespace extensions
