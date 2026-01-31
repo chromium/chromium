@@ -37,6 +37,7 @@ import java.util.List;
 @NullMarked
 public abstract class MultiInstanceManager {
     public static final int INVALID_TASK_ID = -1; // Defined in android.app.ActivityTaskManager.
+    public static final int INVALID_WINDOW_ID = -1;
     public static final String NEW_WINDOW_APP_SOURCE_HISTOGRAM =
             "Android.MultiWindowMode.NewWindow.AppSource2";
 
@@ -201,23 +202,12 @@ public abstract class MultiInstanceManager {
     public abstract void maybeMergeTabs();
 
     /**
-     * Open a new instance of the ChromeTabbedActivity window and move the specified tabs from
-     * existing instance to the new one.
-     *
-     * @param tabs Tabs that are to be moved to a new Chrome instance.
-     * @param source The new window creation source used for metrics.
-     */
-    public void moveTabsToNewWindow(List<Tab> tabs, @NewWindowAppSource int source) {
-        // Not implemented
-    }
-
-    /**
      * Moves the specified tabs to the specified ChromeTabbedActivity instance. This accepts inputs
      * to determine the position of the moved tabs in the destination window and an intent to create
      * a new window.
      *
      * @param destWindowId The id of the destination window. To move tabs to a new window, set this
-     *     to {@code TabWindowManager.INVALID_WINDOW_ID}.
+     *     to {@link INVALID_WINDOW_ID}.
      * @param tabs The list of tabs that will be moved to the destination window.
      * @param destTabIndex The tab index in the destination window where the tabs will be
      *     positioned. This will be ignored if {@code destGroupTabId} is set. To use the default tab
@@ -272,20 +262,6 @@ public abstract class MultiInstanceManager {
      */
     public void moveTabsToWindow(
             InstanceInfo info, List<Tab> tabs, int atIndex, @NewWindowAppSource int source) {
-        // Not implemented
-    }
-
-    /**
-     * Move the specified tabs to the specified instance of the ChromeTabbedActivity window and
-     * merge with the destination tab group. The tabs are added to the end of the destination tab
-     * group. If the activity from {@code info} does not exist, this will not create a new window.
-     *
-     * @param info {@link InstanceInfo} describing the destination window.
-     * @param tabs The list of ungrouped tabs that is to be moved to the current instance.
-     * @param destTabId The id of the tab in the destination tab group. The tab with this ID must
-     *     exist in the destination window, otherwise this operation will fail.
-     */
-    public void moveTabsToWindowAndMergeToDest(InstanceInfo info, List<Tab> tabs, int destTabId) {
         // Not implemented
     }
 

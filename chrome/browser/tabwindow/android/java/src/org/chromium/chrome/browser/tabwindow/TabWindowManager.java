@@ -45,7 +45,7 @@ public interface TabWindowManager {
     /**
      * An index that represents the invalid state (i.e. when the window wasn't found in the list).
      */
-    @WindowId int INVALID_WINDOW_ID = -1;
+    @WindowId int INVALID_WINDOW_ID = MultiInstanceManager.INVALID_WINDOW_ID;
 
     /** Represents an invalid task ID (i.e. when the task wasn't found in the list). */
     int INVALID_TASK_ID = -1;

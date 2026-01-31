@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -113,6 +114,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadataExtractor;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -1535,8 +1537,12 @@ public class MultiInstanceManagerApi31UnitTest {
                                 NewWindowAppSource.MENU)
                         .build();
         // Action
-        mMultiInstanceManager.moveTabsToNewWindow(
-                Collections.singletonList(mTab1), NewWindowAppSource.MENU);
+        mMultiInstanceManager.moveTabsToWindow(
+                /* destWindowId= */ INVALID_WINDOW_ID,
+                Collections.singletonList(mTab1),
+                /* destTabIndex= */ TabList.INVALID_TAB_INDEX,
+                /* destGroupTabId= */ TabList.INVALID_TAB_INDEX,
+                NewWindowAppSource.MENU);
 
         // Verify the call is made with desired parameters. The moveAndReparentTabToNewWindow method
         // is validated in integration test here
@@ -1557,7 +1563,12 @@ public class MultiInstanceManagerApi31UnitTest {
         setupTwoInstances();
         List<Tab> tabs = List.of(mTab1, mTab2);
 
-        mMultiInstanceManager.moveTabsToNewWindow(tabs, NewWindowAppSource.KEYBOARD_SHORTCUT);
+        mMultiInstanceManager.moveTabsToWindow(
+                /* destWindowId= */ INVALID_WINDOW_ID,
+                tabs,
+                /* destTabIndex= */ TabList.INVALID_TAB_INDEX,
+                /* destGroupTabId= */ TabList.INVALID_TAB_INDEX,
+                NewWindowAppSource.KEYBOARD_SHORTCUT);
 
         verify(mMultiInstanceManager, times(1))
                 .moveAndReparentTabsToNewWindow(
@@ -1596,7 +1607,12 @@ public class MultiInstanceManagerApi31UnitTest {
 
         when(mCurrentActivity.isInMultiWindowMode()).thenReturn(false);
 
-        mMultiInstanceManager.moveTabsToNewWindow(tabs, NewWindowAppSource.KEYBOARD_SHORTCUT);
+        mMultiInstanceManager.moveTabsToWindow(
+                /* destWindowId= */ INVALID_WINDOW_ID,
+                tabs,
+                /* destTabIndex= */ TabList.INVALID_TAB_INDEX,
+                /* destGroupTabId= */ TabList.INVALID_TAB_INDEX,
+                NewWindowAppSource.KEYBOARD_SHORTCUT);
 
         Intent intent = mMultiInstanceManager.getReparentingTabsIntent();
         assertNotEquals("Intent should not be null.", null, intent);
@@ -1617,7 +1633,12 @@ public class MultiInstanceManagerApi31UnitTest {
                 MultiWindowUtils.OPEN_ADJACENTLY_PARAM,
                 false);
 
-        mMultiInstanceManager.moveTabsToNewWindow(tabs, NewWindowAppSource.KEYBOARD_SHORTCUT);
+        mMultiInstanceManager.moveTabsToWindow(
+                /* destWindowId= */ INVALID_WINDOW_ID,
+                tabs,
+                /* destTabIndex= */ TabList.INVALID_TAB_INDEX,
+                /* destGroupTabId= */ TabList.INVALID_TAB_INDEX,
+                NewWindowAppSource.KEYBOARD_SHORTCUT);
 
         Intent intent = mMultiInstanceManager.getReparentingTabsIntent();
         assertNotEquals("Intent should not be null.", null, intent);
@@ -1625,6 +1646,45 @@ public class MultiInstanceManagerApi31UnitTest {
         assertFalse(
                 "FLAG_ACTIVITY_LAUNCH_ADJACENT should not be set.",
                 (flags & Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT) != 0);
+    }
+
+    @Test
+    public void testMoveTabsToWindow_InvalidParams() {
+        List<Tab> tabs = List.of(mTab1, mTab2);
+
+        // destTabIndex should not be specified when moving tabs to a new window.
+        assertThrows(
+                AssertionError.class,
+                () ->
+                        mMultiInstanceManager.moveTabsToWindow(
+                                /* destWindowId= */ INVALID_WINDOW_ID,
+                                tabs,
+                                /* destTabIndex= */ 2,
+                                /* destGroupTabId= */ TabList.INVALID_TAB_INDEX,
+                                NewWindowAppSource.KEYBOARD_SHORTCUT));
+
+        // destGroupTabId should not be specified when moving tabs to a new window.
+        assertThrows(
+                AssertionError.class,
+                () ->
+                        mMultiInstanceManager.moveTabsToWindow(
+                                /* destWindowId= */ INVALID_WINDOW_ID,
+                                tabs,
+                                /* destTabIndex= */ TabList.INVALID_TAB_INDEX,
+                                /* destGroupTabId= */ 2,
+                                NewWindowAppSource.KEYBOARD_SHORTCUT));
+
+        // destTabIndex and destGroupTabId should not both be specified when moving tabs to a
+        // window.
+        assertThrows(
+                AssertionError.class,
+                () ->
+                        mMultiInstanceManager.moveTabsToWindow(
+                                /* destWindowId= */ 1,
+                                tabs,
+                                /* destTabIndex= */ 1,
+                                /* destGroupTabId= */ 2,
+                                NewWindowAppSource.OTHER));
     }
 
     @Test
@@ -1688,8 +1748,12 @@ public class MultiInstanceManagerApi31UnitTest {
         setupMaxInstances();
 
         // Action
-        mMultiInstanceManager.moveTabsToNewWindow(
-                Collections.singletonList(mTab1), NewWindowAppSource.KEYBOARD_SHORTCUT);
+        mMultiInstanceManager.moveTabsToWindow(
+                /* destWindowId= */ INVALID_WINDOW_ID,
+                Collections.singletonList(mTab1),
+                /* destTabIndex= */ TabList.INVALID_TAB_INDEX,
+                /* destGroupTabId= */ TabList.INVALID_TAB_INDEX,
+                NewWindowAppSource.KEYBOARD_SHORTCUT);
 
         // Verify only openNewWindow is called and moveAndReparentTabToNewWindow is not called.
         verify(mMultiInstanceManager, times(0))
@@ -1709,7 +1773,12 @@ public class MultiInstanceManagerApi31UnitTest {
         List<Tab> tabs = List.of(mTab1, mTab2);
 
         // Action
-        mMultiInstanceManager.moveTabsToNewWindow(tabs, NewWindowAppSource.KEYBOARD_SHORTCUT);
+        mMultiInstanceManager.moveTabsToWindow(
+                /* destWindowId= */ INVALID_WINDOW_ID,
+                tabs,
+                /* destTabIndex= */ TabList.INVALID_TAB_INDEX,
+                /* destGroupTabId= */ TabList.INVALID_TAB_INDEX,
+                NewWindowAppSource.KEYBOARD_SHORTCUT);
 
         // Verify only openNewWindow is called and moveAndReparentTabsToNewWindow is not called.
         verify(mMultiInstanceManager, times(0))
@@ -1987,8 +2056,12 @@ public class MultiInstanceManagerApi31UnitTest {
         when(mTab1.getTabGroupId()).thenReturn(null);
         when(mTab2.getTabGroupId()).thenReturn(null);
         // Action
-        InstanceInfo info = mMultiInstanceManager.getInstanceInfoFor(mTabbedActivityTask63);
-        mMultiInstanceManager.moveTabsToWindowAndMergeToDest(info, tabs, /* destTabId= */ 3);
+        mMultiInstanceManager.moveTabsToWindow(
+                /* destWindowId= */ 1,
+                tabs,
+                /* destTabIndex= */ TabList.INVALID_TAB_INDEX,
+                /* destGroupTabId= */ 3,
+                NewWindowAppSource.OTHER);
 
         // Verify reparentTabsToRunningActivityAndMergeToDest is called once.
         verify(mMultiInstanceManager, times(1))
@@ -2669,14 +2742,20 @@ public class MultiInstanceManagerApi31UnitTest {
         MultiWindowUtils.setIncognitoInstanceCountForTesting(1);
         List<Tab> tabs = List.of(mTab1);
         when(mTab1.isIncognitoBranded()).thenReturn(true);
-        doNothing().when(mMultiInstanceManager).moveTabsToNewWindow(tabs, NewWindowAppSource.OTHER);
 
-        mMultiInstanceManager.moveTabsToOtherWindow(tabs, NewWindowAppSource.OTHER);
+        mMultiInstanceManager.moveTabsToOtherWindow(tabs, NewWindowAppSource.MENU);
 
         verify(mMultiInstanceManager, Mockito.never())
                 .showTargetSelectorDialog(
                         any(), anyInt(), eq(R.string.menu_move_tab_to_other_window));
-        verify(mMultiInstanceManager, times(1)).moveTabsToNewWindow(tabs, NewWindowAppSource.OTHER);
+        verify(mMultiInstanceManager, times(1))
+                .moveAndReparentTabsToNewWindow(
+                        eq(tabs),
+                        eq(INVALID_WINDOW_ID),
+                        eq(true),
+                        eq(true),
+                        eq(true),
+                        eq(NewWindowAppSource.MENU));
     }
 
     @Test
@@ -2704,14 +2783,20 @@ public class MultiInstanceManagerApi31UnitTest {
         MultiWindowUtils.setInstanceCountForTesting(1);
         List<Tab> tabs = List.of(mTab1, mTab2);
         when(mTab1.isIncognitoBranded()).thenReturn(false);
-        doNothing().when(mMultiInstanceManager).moveTabsToNewWindow(tabs, NewWindowAppSource.OTHER);
 
-        mMultiInstanceManager.moveTabsToOtherWindow(tabs, NewWindowAppSource.OTHER);
+        mMultiInstanceManager.moveTabsToOtherWindow(tabs, NewWindowAppSource.MENU);
 
         verify(mMultiInstanceManager, Mockito.never())
                 .showTargetSelectorDialog(
                         any(), anyInt(), eq(R.string.menu_move_tab_to_other_window));
-        verify(mMultiInstanceManager, times(1)).moveTabsToNewWindow(tabs, NewWindowAppSource.OTHER);
+        verify(mMultiInstanceManager, times(1))
+                .moveAndReparentTabsToNewWindow(
+                        eq(tabs),
+                        eq(INVALID_WINDOW_ID),
+                        eq(true),
+                        eq(true),
+                        eq(true),
+                        eq(NewWindowAppSource.MENU));
     }
 
     @Test

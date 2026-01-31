@@ -255,29 +255,44 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
             @NewWindowAppSource int source) {
         if (tabs.isEmpty()) return;
 
-        // Move tabs to a new window if a valid |instanceId| is not specified.
+        // Move tabs to a new window if a valid |destWindowId| is not specified.
         if (destWindowId == INVALID_WINDOW_ID) {
             assert destTabIndex == TabList.INVALID_TAB_INDEX
                             && destGroupTabId == TabList.INVALID_TAB_INDEX
-                    : "Unexpected atIndex and destTabId detected with request to move tabs to a new"
-                            + " window.";
+                    : "Unexpected destTabIndex and destGroupTabId detected with request to move"
+                            + " tabs to a new window.";
             moveTabsToNewWindow(tabs, source);
             return;
         }
 
-        // If |destTabId| is valid, move tabs to the tab group containing this tab in the
+        // If |destGroupTabId| is valid, move tabs to the tab group containing this tab in the
         // destination window. Avoid creating a new window if the destination window is not found.
         if (destGroupTabId != TabList.INVALID_TAB_INDEX) {
             assert destTabIndex == TabList.INVALID_TAB_INDEX
-                    : "Unexpected atIndex detected with request to move tabs to a tab group in the "
-                            + "destination window.";
+                    : "Unexpected destTabIndex detected with request to move tabs to a tab group in"
+                            + " the destination window.";
             moveTabsToWindowAndMergeToDest(destWindowId, tabs, destGroupTabId);
             return;
         }
 
-        // Move tabs to the specified window. If a destination window for the specified |instanceId|
-        // is not found, create a new window to move the tabs to.
+        // Move tabs to the specified window. If a destination window for the specified
+        // |destWindowId| is not found, create a new window to move the tabs to.
         moveTabsToWindow(destWindowId, tabs, destTabIndex, source);
+    }
+
+    private void moveTabsToNewWindow(List<Tab> tabs, @NewWindowAppSource int source) {
+        boolean openAdjacently =
+                !mActivity.isInMultiWindowMode() && MultiWindowUtils.shouldOpenInAdjacentWindow();
+        moveToNewWindowIfPossible(
+                () ->
+                        moveAndReparentTabsToNewWindow(
+                                tabs,
+                                INVALID_WINDOW_ID,
+                                /* preferNew= */ true,
+                                openAdjacently,
+                                /* addTrustedIntentExtras= */ true,
+                                source),
+                source);
     }
 
     private void moveTabsToWindowAndMergeToDest(
@@ -472,11 +487,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
     public void moveTabsToWindow(
             InstanceInfo info, List<Tab> tabs, int tabAtIndex, @NewWindowAppSource int source) {
         moveTabsToWindow(info.instanceId, tabs, tabAtIndex, source);
-    }
-
-    @Override
-    public void moveTabsToWindowAndMergeToDest(InstanceInfo info, List<Tab> tabs, int destTabId) {
-        moveTabsToWindowAndMergeToDest(info.instanceId, tabs, destTabId);
     }
 
     @Override
@@ -1760,22 +1770,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
                     "Android.MultiInstance.TotalDuration", current - startTime);
             prefs.writeLong(ChromePreferenceKeys.MULTI_INSTANCE_START_TIME, 0);
         }
-    }
-
-    @Override
-    public void moveTabsToNewWindow(List<Tab> tabs, @NewWindowAppSource int source) {
-        boolean openAdjacently =
-                !mActivity.isInMultiWindowMode() && MultiWindowUtils.shouldOpenInAdjacentWindow();
-        moveToNewWindowIfPossible(
-                () ->
-                        moveAndReparentTabsToNewWindow(
-                                tabs,
-                                INVALID_WINDOW_ID,
-                                /* preferNew= */ true,
-                                openAdjacently,
-                                /* addTrustedIntentExtras= */ true,
-                                source),
-                source);
     }
 
     @Override

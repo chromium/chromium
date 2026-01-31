@@ -1153,8 +1153,12 @@ public class TabContextMenuCoordinatorUnitTest {
                         Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
         StripLayoutContextMenuCoordinatorTestUtils.clickMoveToNewWindow(modelList, 1, mView);
         verify(mMultiInstanceManager, times(1))
-                .moveTabsToNewWindow(
-                        Collections.singletonList(mTabOutsideOfGroup), NewWindowAppSource.MENU);
+                .moveTabsToWindow(
+                        /* destWindowId= */ MultiInstanceManager.INVALID_WINDOW_ID,
+                        Collections.singletonList(mTabOutsideOfGroup),
+                        /* destTabIndex= */ TabList.INVALID_TAB_INDEX,
+                        /* destGroupTabId= */ TabList.INVALID_TAB_INDEX,
+                        NewWindowAppSource.MENU);
     }
 
     @Test

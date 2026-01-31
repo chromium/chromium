@@ -69,6 +69,7 @@ import org.chromium.chrome.browser.tabmodel.RedirectTabCreator;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabstrip.StripVisibilityState;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -1177,9 +1178,13 @@ public class ChromeTabbedActivityTest {
 
         // 6. Move tab2 to activity2 and merge with tab1.
         ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mim1.moveTabsToWindowAndMergeToDest(instanceInfo2, List.of(tab2), tab1.getId());
-                });
+                () ->
+                        mim1.moveTabsToWindow(
+                                activity2.getWindowIdForTesting(),
+                                List.of(tab2),
+                                /* destTabIndex= */ TabList.INVALID_TAB_INDEX,
+                                /* destGroupTabId= */ tab1.getId(),
+                                NewWindowAppSource.OTHER));
 
         // 7. Verify tab2 is in activity2 and merged with tab1.
         CriteriaHelper.pollUiThread(

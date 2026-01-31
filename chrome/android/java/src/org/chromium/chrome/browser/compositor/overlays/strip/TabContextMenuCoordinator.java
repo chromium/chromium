@@ -89,10 +89,10 @@ import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
@@ -628,10 +628,11 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
 
         // TODO(crbug.com/437327793): Stop filtering out Inactive windows if we can support moving a
         // tab to a group in an Inactive window.
-        Map<Integer, InstanceInfo> activeInstancesById = new HashMap<>();
-        List<InstanceInfo> activeInstances = assumeNonNull(mMultiInstanceManager).getInstanceInfo(ACTIVE);
+        Set<Integer> activeInstanceIds = new HashSet<>();
+        List<InstanceInfo> activeInstances =
+                assumeNonNull(mMultiInstanceManager).getInstanceInfo(ACTIVE);
         for (InstanceInfo activeInstance : activeInstances) {
-            activeInstancesById.put(activeInstance.instanceId, activeInstance);
+            activeInstanceIds.add(activeInstance.instanceId);
         }
 
         for (SavedTabGroup tabGroup : sortedTabGroups) {
@@ -645,7 +646,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
             @WindowId int windowId = tabWindowManager.findWindowIdForTabGroup(groupId);
             boolean isGroupInCurrentWindow =
                     windowId == mMultiInstanceManager.getCurrentInstanceId();
-            if (!activeInstancesById.containsKey(windowId)) {
+            if (!activeInstanceIds.contains(windowId)) {
                 continue; // Skip groups w/o active window.
             }
 
@@ -672,8 +673,12 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                                     mTabGroupModelFilter,
                                     /* tabMovedCallback= */ null);
                         } else {
-                            mMultiInstanceManager.moveTabsToWindowAndMergeToDest(
-                                    activeInstancesById.get(windowId), tabs, firstTabInGroupTabId);
+                            mMultiInstanceManager.moveTabsToWindow(
+                                    windowId,
+                                    tabs,
+                                    /* destTabIndex= */ TabList.INVALID_TAB_INDEX,
+                                    /* destGroupTabId= */ firstTabInGroupTabId,
+                                    NewWindowAppSource.MENU);
                         }
                     };
             result.add(
@@ -765,7 +770,13 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         if (tabs.isEmpty()) return;
         ungroupTabs(tabs);
         recordMenuAction(R.id.move_to_new_window_sub_menu_id, tabs.size() > 1);
-        assumeNonNull(mMultiInstanceManager).moveTabsToNewWindow(tabs, NewWindowAppSource.MENU);
+        assumeNonNull(mMultiInstanceManager)
+                .moveTabsToWindow(
+                        /* destWindowId= */ MultiInstanceManager.INVALID_WINDOW_ID,
+                        tabs,
+                        /* destTabIndex= */ TabList.INVALID_TAB_INDEX,
+                        /* destGroupTabId= */ TabList.INVALID_TAB_INDEX,
+                        NewWindowAppSource.MENU);
     }
 
     @Override
