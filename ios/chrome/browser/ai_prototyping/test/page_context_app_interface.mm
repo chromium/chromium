@@ -248,7 +248,11 @@ NSString* StringFromPageContextWrapperError(PageContextWrapperError error) {
       if ([sanitizedUrl length] > kMaxUrlChars) {
         sanitizedUrl = [sanitizedUrl substringToIndex:kMaxUrlChars];
       }
-      NSString* fileName = [sanitizedUrl stringByAppendingString:@".txtpb"];
+      NSString* fileName =
+          self.config.filePrefix
+              ? [NSString stringWithFormat:@"%@_%@.txtpb",
+                                           self.config.filePrefix, sanitizedUrl]
+              : [sanitizedUrl stringByAppendingString:@".txtpb"];
       result = SaveSerializedPageContextToDisk(
           *response.value(), base::SysNSStringToUTF8(self.config.outputDir),
           base::SysNSStringToUTF8(fileName));

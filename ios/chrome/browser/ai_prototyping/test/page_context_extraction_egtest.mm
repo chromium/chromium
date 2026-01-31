@@ -5,6 +5,7 @@
 #import <XCTest/XCTest.h>
 
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/ios/wait_util.h"
 #import "components/optimization_guide/core/feature_registry/feature_registration.h"
 #import "ios/chrome/browser/ai_prototyping/test/page_context_app_interface.h"
 #import "ios/chrome/browser/ai_prototyping/test/page_context_extraction_data.h"
@@ -19,8 +20,12 @@
 #import "url/gurl.h"
 
 namespace {
-// Timeout for page load + duration of page context extraction.
-NSInteger kPageContextExtractionTimeout = 40;
+constexpr base::TimeDelta kWaitForPageLoadTimeout = base::Seconds(60);
+// Additional time to wait after page load before starting context extraction.
+constexpr base::TimeDelta kPageContextExtractionAdditionalWaitTime =
+    base::Seconds(5);
+// Timeout for page context extraction.
+NSInteger kPageContextExtractionTimeout = 10;
 NSInteger kPageContextExtractionTimeoutErrorCode = 0;
 NSString* kErrorDomain = @"PageContextExtraction";
 }  // namespace
@@ -28,9 +33,14 @@ NSString* kErrorDomain = @"PageContextExtraction";
 // Test case for page context extraction.
 @interface PageContextExtraction : ChromeTestCase
 
-@property(strong, nonatomic) PageContextExtractionConfig* config;
+@property(nonatomic, assign) BOOL shouldStorePageContextLocally;
+@property(nonatomic, copy) NSString* outputDir;
+@property(nonatomic, assign) BOOL shouldUploadToMQLS;
+@property(nonatomic, copy) NSString* mqlsLoggingTag;
+@property(nonatomic, copy) NSString* modelQuery;
 @property(strong, nonatomic)
     NSMutableArray<PageContextExtractionResult*>* results;
+@property(nonatomic, assign) BOOL loadExternalUrl;
 @end
 
 @interface PageContextExtraction ()
@@ -42,19 +52,18 @@ NSString* kErrorDomain = @"PageContextExtraction";
 
 - (void)setUp {
   [super setUp];
-  self.config = [[PageContextExtractionConfig alloc]
-      initWithShouldStorePageContextLocally:
-          [TestArgs shouldStorePageContextLocallyFromTestArgs]
-                         shouldUploadToMQLS:[TestArgs
-                                                shouldUploadToMQLSFromTestArgs]
-                                  outputDir:[TestArgs
-                                                readOutputDirNameFromTestArgs]
-                                 modelQuery:[TestArgs
-                                                readModelQueryFromTestArgs]
-                             mqlsLoggingTag:
-                                 [TestArgs readMQLSLoggingTagFromTestArgs]];
+  // Check if this execution will load external sites. This only occur when it
+  // is trigger manually with additional arguments. On bots, no external site
+  // should be loaded and the timeout duration will be kept minimal.
+  self.loadExternalUrl = [TestArgs readUrlListFilePathTestArgs] ? YES : NO;
+  self.shouldStorePageContextLocally =
+      [TestArgs shouldStorePageContextLocallyFromTestArgs];
+  self.outputDir = [TestArgs readOutputDirNameFromTestArgs];
+  self.shouldUploadToMQLS = [TestArgs shouldUploadToMQLSFromTestArgs];
+  self.mqlsLoggingTag = [TestArgs readMQLSLoggingTagFromTestArgs];
+  self.modelQuery = [TestArgs readModelQueryFromTestArgs];
   self.results = [NSMutableArray array];
-  if (self.config.shouldUploadToMQLS) {
+  if (self.shouldUploadToMQLS) {
     [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
     // Metrics consent must be granted to upload to MQLS.
     GREYAssertFalse(
@@ -107,13 +116,38 @@ NSString* kErrorDomain = @"PageContextExtraction";
 }
 
 // Trigger page context extraction for `url` and wait for result.
-- (PageContextExtractionResult*)triggerPageContextExtractionAndWaitForResult:
-    (NSString*)url {
-  // Navigate to a site. Intentionally not wait for loading as default timeout
-  // could be too short for some sites.
-  [ChromeEarlGrey loadURL:GURL(base::SysNSStringToUTF8(url))];
-  [PageContextAppInterface triggerPageContextCaptureWithConfig:self.config
-                                                           url:url];
+- (PageContextExtractionResult*)
+    triggerPageContextExtractionAndWaitForResult:(NSString*)url
+                                          config:(PageContextExtractionConfig*)
+                                                     config {
+  // Navigate to a site, waiting for it to finish loading.
+  NSError* loadError =
+      [ChromeEarlGrey loadURL:GURL(base::SysNSStringToUTF8(url))
+             timeoutWithError:kWaitForPageLoadTimeout];
+  if (loadError) {
+    NSDictionary* userInfo = @{
+      NSLocalizedDescriptionKey :
+          [NSString stringWithFormat:@"Error loading url: %@ reason: %@", url,
+                                     loadError.localizedDescription]
+    };
+    NSError* error =
+        [NSError errorWithDomain:kErrorDomain
+                            code:kPageContextExtractionTimeoutErrorCode
+                        userInfo:userInfo];
+    return [[PageContextExtractionResult alloc] initWithPageContext:nil
+                                                       wrapperError:error
+                                                         storeError:nil
+                                                          mqlsError:nil
+                                                           filePath:nil];
+  }
+  if (self.loadExternalUrl) {
+    // Wait for longer after website is loaded as some sites may still be
+    // populating content.
+    base::test::ios::SpinRunLoopWithMinDelay(
+        kPageContextExtractionAdditionalWaitTime);
+  }
+
+  [PageContextAppInterface triggerPageContextCaptureWithConfig:config url:url];
 
   GREYCondition* condition = [GREYCondition
       conditionWithName:@"Page context extraction completed"
@@ -144,9 +178,10 @@ NSString* kErrorDomain = @"PageContextExtraction";
 }
 
 // Extract page context for `url` and store the result.
-- (void)handlePageContextExtractionForUrl:(NSString*)url {
+- (void)handlePageContextExtractionForUrl:(NSString*)url
+                                   config:(PageContextExtractionConfig*)config {
   PageContextExtractionResult* result =
-      [self triggerPageContextExtractionAndWaitForResult:url];
+      [self triggerPageContextExtractionAndWaitForResult:url config:config];
 
   if ([self hasAnyError:result]) {
     NSLog(@"[PageContextExtraction] Failed to extract page context for url:%@ "
@@ -175,15 +210,26 @@ NSString* kErrorDomain = @"PageContextExtraction";
     NSLog(@"[PageContextExtraction] input file for url not specified");
     // Use place holder url when input file is not given. This is the case when
     // this test is triggered by trybots.
-    urlsArray = @[ @"https://www.youtube.com/" ];
+    urlsArray = @[ @"about:blank" ];
   }
   NSUInteger urlsSize = [urlsArray count];
   [urlsArray enumerateObjectsUsingBlock:^(NSString* url, NSUInteger index,
                                           BOOL*) {
     NSLog(
-        @"[PageContextExtraction] extracting page context for url:%@ (%tu/%tu)",
-        url, index + 1, urlsSize);
-    [self handlePageContextExtractionForUrl:url];
+        @"[PageContextExtraction] extracting page context for url:%@ (%lu/%lu)",
+        url, (unsigned long)index + 1, (unsigned long)urlsSize);
+    PageContextExtractionConfig* perUrlConfig = [[PageContextExtractionConfig
+        alloc]
+        initWithShouldStorePageContextLocally:self.shouldStorePageContextLocally
+                                    outputDir:self.outputDir
+                                   filePrefix:[NSString
+                                                  stringWithFormat:
+                                                      @"%lu",
+                                                      (unsigned long)index + 1]
+                           shouldUploadToMQLS:self.shouldUploadToMQLS
+                               mqlsLoggingTag:self.mqlsLoggingTag
+                                   modelQuery:self.modelQuery];
+    [self handlePageContextExtractionForUrl:url config:perUrlConfig];
   }];
 
   BOOL hasErrors = [self processAndLogResultsForUrls:urlsArray];
@@ -203,7 +249,8 @@ NSString* kErrorDomain = @"PageContextExtraction";
                     PageContextExtractionResult* result, NSUInteger index,
                     BOOL*) {
     NSString* urlString = urlsArray[index];
-    [summaryLog appendFormat:@"%tu. URL: %@\n", index + 1, urlString];
+    [summaryLog
+        appendFormat:@"%lu. URL: %@\n", (unsigned long)index + 1, urlString];
 
     if (![self hasAnyError:(result)]) {
       [summaryLog appendString:@"   - Success\n"];
@@ -224,7 +271,7 @@ NSString* kErrorDomain = @"PageContextExtraction";
       }
     }
 
-    if (self.config.shouldStorePageContextLocally) {
+    if (self.shouldStorePageContextLocally) {
       if (result.filePath) {
         [summaryLog appendFormat:@"     - Saved to: %@\n", result.filePath];
       } else {
@@ -234,11 +281,11 @@ NSString* kErrorDomain = @"PageContextExtraction";
       }
     }
 
-    if (self.config.shouldUploadToMQLS && !result.mqlsError) {
-      if ([self.config.mqlsLoggingTag length] > 0) {
+    if (self.shouldUploadToMQLS && !result.mqlsError) {
+      if ([self.mqlsLoggingTag length] > 0) {
         [summaryLog
             appendFormat:@"     - Uploaded to MQLS with logging tag: %@\n",
-                         self.config.mqlsLoggingTag];
+                         self.mqlsLoggingTag];
       } else {
         [summaryLog appendString:@"     - Uploaded to MQLS\n"];
       }

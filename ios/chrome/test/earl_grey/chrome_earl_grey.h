@@ -151,17 +151,29 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 - (void)sceneOpenURL:(const GURL&)URL;
 
 // Loads `URL` in the current WebState with transition type
+// ui::PAGE_TRANSITION_TYPED, and waits for the loading to complete within a
+// specified `timeout`. This timeout is used for both webView appearance and
+// page load; time taken is approximately `timeout` for page load but total time
+// could take up to double the `timeout`.
+- (void)loadURL:(const GURL&)URL withTimeout:(base::TimeDelta)timeout;
+
+// Loads `URL` in the current WebState with transition type
+// ui::PAGE_TRANSITION_TYPED, and waits for the loading to complete within a
+// specified `timeout`. This timeout is used for both webView appearance and
+// page load; time taken is approximately `timeout` for page load but total time
+// could take up to double the `timeout`. Returns nil on success, or else an
+// NSError indicating why the operation failed.
+- (NSError*)loadURL:(const GURL&)URL
+    timeoutWithError:(base::TimeDelta)timeout [[nodiscard]];
+
+// Loads `URL` in the current WebState with transition type
 // ui::PAGE_TRANSITION_TYPED, and if waitForCompletion is YES
 // waits for the loading to complete within a timeout.
-// Returns nil on success, or else an NSError indicating why the operation
-// failed.
 - (void)loadURL:(const GURL&)URL waitForCompletion:(BOOL)wait;
 
 // Loads `URL` in the current WebState with transition type
 // ui::PAGE_TRANSITION_TYPED, and waits for the loading to complete within a
 // timeout.
-// If the condition is not met within a timeout returns an NSError indicating
-// why the operation failed, otherwise nil.
 - (void)loadURL:(const GURL&)URL;
 
 // Returns YES if the current WebState is loading.

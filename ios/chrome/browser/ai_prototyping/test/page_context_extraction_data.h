@@ -20,6 +20,9 @@
 // Output directory where page context should be saved to.
 @property(nonatomic, copy, readonly) NSString* outputDir;
 
+// Prefix of the page context file name.
+@property(nonatomic, copy, readonly) NSString* filePrefix;
+
 // Query to send to the model.
 @property(nonatomic, copy, readonly) NSString* modelQuery;
 
@@ -27,10 +30,11 @@
 @property(nonatomic, copy, readonly) NSString* mqlsLoggingTag;
 
 - (instancetype)initWithShouldStorePageContextLocally:(BOOL)shouldStore
-                                   shouldUploadToMQLS:(BOOL)shouldUpload
                                             outputDir:(NSString*)outputDir
-                                           modelQuery:(NSString*)modelQuery
-                                       mqlsLoggingTag:(NSString*)mqlsLoggingTag;
+                                           filePrefix:(NSString*)filePrefix
+                                   shouldUploadToMQLS:(BOOL)shouldUpload
+                                       mqlsLoggingTag:(NSString*)mqlsLoggingTag
+                                           modelQuery:(NSString*)modelQuery;
 @end
 
 // Response containing the result of a page context capture.

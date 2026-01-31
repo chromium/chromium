@@ -7,16 +7,17 @@
 @implementation PageContextExtractionConfig
 
 - (instancetype)initWithShouldStorePageContextLocally:(BOOL)shouldStore
-                                   shouldUploadToMQLS:(BOOL)shouldUpload
                                             outputDir:(NSString*)outputDir
-                                           modelQuery:(NSString*)modelQuery
-                                       mqlsLoggingTag:
-                                           (NSString*)mqlsLoggingTag {
+                                           filePrefix:(NSString*)filePrefix
+                                   shouldUploadToMQLS:(BOOL)shouldUpload
+                                       mqlsLoggingTag:(NSString*)mqlsLoggingTag
+                                           modelQuery:(NSString*)modelQuery {
   self = [super init];
   if (self) {
     _shouldStorePageContextLocally = shouldStore;
     _shouldUploadToMQLS = shouldUpload;
     _outputDir = outputDir;
+    _filePrefix = filePrefix;
     _modelQuery = modelQuery;
     _mqlsLoggingTag = mqlsLoggingTag;
   }
@@ -34,6 +35,7 @@
              forKey:@"shouldStorePageContextLocally"];
   [coder encodeBool:self.shouldUploadToMQLS forKey:@"shouldUploadToMQLS"];
   [coder encodeObject:self.outputDir forKey:@"outputDir"];
+  [coder encodeObject:self.filePrefix forKey:@"filePrefix"];
   [coder encodeObject:self.modelQuery forKey:@"modelQuery"];
   [coder encodeObject:self.mqlsLoggingTag forKey:@"mqlsLoggingTag"];
 }
@@ -46,6 +48,8 @@
     _shouldUploadToMQLS = [coder decodeBoolForKey:@"shouldUploadToMQLS"];
     _outputDir = [coder decodeObjectOfClass:[NSString class]
                                      forKey:@"outputDir"];
+    _filePrefix = [coder decodeObjectOfClass:[NSString class]
+                                      forKey:@"filePrefix"];
     _modelQuery = [coder decodeObjectOfClass:[NSString class]
                                       forKey:@"modelQuery"];
     _mqlsLoggingTag = [coder decodeObjectOfClass:[NSString class]
