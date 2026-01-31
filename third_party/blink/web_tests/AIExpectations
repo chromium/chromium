@@ -31,7 +31,7 @@ crbug.com/460555196 external/wpt/ai/language-model/language-model-create-multimo
 
 # These tests frequently time out on Mac platforms.
 # Disables tests on all platforms, since disabling these tests on Mac only is not supported.
-crbug.com/460555196 external/wpt/ai/language-model/language-model-prompt-multimodal.tentative.https.window.html [ Timeout Failure Pass ]
-crbug.com/460799715 external/wpt/ai/language-model/language-model-prompt.tentative.https.window.html [ Timeout ]
+crbug.com/460555196 external/wpt/ai/language-model/language-model-prompt-multimodal.tentative.https.window.html [ Timeout Pass ]
+crbug.com/460799715 external/wpt/ai/language-model/language-model-prompt.tentative.https.window.html [ Timeout Pass ]
 
 
