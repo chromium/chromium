@@ -7,8 +7,11 @@
 #include <string_view>
 
 #include "components/favicon_base/favicon_url_parser.h"
+#include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
