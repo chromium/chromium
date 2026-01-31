@@ -473,6 +473,9 @@ void TabStripSceneLayer::PutStripTabLayer(
     int32_t media_indicator_resource_id,
     int32_t media_indicator_tint,
     float media_indicator_width,
+    float media_indicator_spacing,
+    float media_indicator_internal_padding,
+    float title_to_media_indicator_spacing,
     float toolbar_width,
     float x,
     float y,
@@ -538,19 +541,28 @@ void TabStripSceneLayer::PutStripTabLayer(
         media_indicator_resource_id, media_indicator_tint);
   }
 
+  float media_indicator_opacity = 1.0f;
+  if (media_indicator_tint == close_tint) {
+    // Match close button opacity (0.7) if tints are the same, as the
+    // media indicator is expected to look like the close button in such cases.
+    media_indicator_opacity = 0.7f;
+  }
+
   layer->SetProperties(
       id, close_button_resource, close_button_hover_resource,
       is_close_keyboard_focused, close_button_keyboard_focus_ring_resource,
       divider_resource, tab_handle_resource, tab_handle_outline_resource,
       foreground, is_pinned, shouldShowTabOutline, close_pressed,
       should_hide_favicon, should_show_media_indicator,
-      media_indicator_drawable, media_indicator_width, toolbar_width, x, y,
-      width, height, content_offset_y, divider_offset_x, bottom_margin,
-      top_margin, close_button_padding, close_button_alpha,
-      is_start_divider_visible, is_end_divider_visible, is_loading,
-      spinner_rotation, opacity, is_keyboard_focused,
-      keyboard_focus_ring_drawable, keyboard_focus_ring_offset, stroke_width,
-      folio_foot_length, width_to_hide_tab_title);
+      media_indicator_drawable, media_indicator_width, media_indicator_spacing,
+      media_indicator_internal_padding, title_to_media_indicator_spacing,
+      media_indicator_opacity, toolbar_width, x, y, width, height,
+      content_offset_y, divider_offset_x, bottom_margin, top_margin,
+      close_button_padding, close_button_alpha, is_start_divider_visible,
+      is_end_divider_visible, is_loading, spinner_rotation, opacity,
+      is_keyboard_focused, keyboard_focus_ring_drawable,
+      keyboard_focus_ring_offset, stroke_width, folio_foot_length,
+      width_to_hide_tab_title);
 }
 
 void TabStripSceneLayer::PutGroupIndicatorLayer(
