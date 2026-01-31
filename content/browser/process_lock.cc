@@ -4,9 +4,12 @@
 
 #include "content/browser/process_lock.h"
 
+#include "base/feature_list.h"
 #include "base/strings/stringprintf.h"
 #include "content/browser/agent_cluster_key.h"
+#include "content/common/features.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_exposed_isolation_level.h"
 
 namespace content {
@@ -160,6 +163,19 @@ bool ProcessLock::IsCompatibleWithWebExposedIsolation(
     return false;
   }
 
+  // Without SiteIsolation or partial SiteIsolation, DocumentIsolationPolicy is
+  // not backed by process isolation. If it is not backed by process isolation,
+  // a process that allows any site can host any context regardless of the
+  // cross-origin isolation status of the context set by
+  // DocumentIsolationPolicy.
+  if (AllowsAnySite() &&
+      !SiteIsolationPolicy::UseDedicatedProcessesForAllSites() &&
+      !SiteIsolationPolicy::AreDynamicIsolatedOriginsEnabled() &&
+      base::FeatureList::IsEnabled(
+          features::kDocumentIsolationPolicyWithoutSiteIsolation)) {
+    return true;
+  }
+
   // Check if the CrossOriginIsolationKeys are compatible.
   //
   // TODO(crbug.com/349755777): Currently, this prevents a RenderProcessHost
@@ -167,19 +183,15 @@ bool ProcessLock::IsCompatibleWithWebExposedIsolation(
   // reused for navigations to documents with DocumentIsolationPolicy, even if
   // the RenderProcessHost has not been used and it would be safe to reuse it.
   //
-  // Unfortunately, ProcessLock::CreateAllowAnySite will result in the
+  // Historically, ProcessLock::CreateAllowAnySite would result in the
   // associated RenderProcessHost to be marked as crossOriginIsolated or not,
-  // depending on the passed WebExposedIsolationInfo. It cannot be set to a
-  // different crossOriginIsolated status again (without removing checks that
-  // the COI status of the process cannot change).
+  // depending on the passed WebExposedIsolationInfo. It could not be set to a
+  // different crossOriginIsolated status again without removing checks that the
+  // COI status of the process could not change.
   //
-  // Therefore, we need this check to avoid reusing a process matching a
-  // ProcessLock created ProcessLock::CreateAllowAnySite, and triggering the COI
-  // state change check in the renderer process.
-  //
-  // We should refactor how COI status is set in the renderer process, so that
-  // unused RenderProcessHosts are not assigned a COI status. This will allow
-  // them to be reused regardless of the COI status of the navigation.
+  // However, we're now checking COI status per agent-cluster, so the code could
+  // be refactored to update the process lock of an unused process to whatever
+  // COI state is needed for the navigation, and allow process reuse.
   return site_info_->agent_cluster_key().GetCrossOriginIsolationKey() ==
          site_info.agent_cluster_key().GetCrossOriginIsolationKey();
 }

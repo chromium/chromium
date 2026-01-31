@@ -51,7 +51,8 @@ class CONTENT_EXPORT AgentClusterKey {
   struct CONTENT_EXPORT CrossOriginIsolationKey {
     CrossOriginIsolationKey(
         const url::Origin& common_coi_origin,
-        blink::mojom::CrossOriginIsolationMode cross_origin_isolation_mode);
+        blink::mojom::CrossOriginIsolationMode cross_origin_isolation_mode,
+        bool cross_origin_isolated_through_dip);
     CrossOriginIsolationKey(const CrossOriginIsolationKey& other);
     ~CrossOriginIsolationKey();
     bool operator==(const CrossOriginIsolationKey& b) const;
@@ -69,6 +70,11 @@ class CONTENT_EXPORT AgentClusterKey {
     // but do not lead to access to extra APIs. This is logical cross-origin
     // isolation.
     blink::mojom::CrossOriginIsolationMode cross_origin_isolation_mode;
+
+    // Whether cross-origin isolation was obtained through
+    // DocumentIsolationPolicy or through COOP and COEP. This impacts process
+    // allocation when SiteIsolation is not available.
+    bool cross_origin_isolated_through_dip;
   };
 
   // Tracks the state of an Origin-Agent-Cluster request for a document.

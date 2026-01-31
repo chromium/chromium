@@ -310,7 +310,10 @@ SiteInfo SiteInfo::Create(const IsolationContext& isolation_context,
                   site_url, isolation_context, browser_context,
                   url_info.requests_coop_isolation(),
                   !url_info.oac_header_request.has_value(),
-                  url_info.is_sandboxed, url_info.is_pdf)
+                  url_info.is_sandboxed, url_info.is_pdf,
+                  url_info.cross_origin_isolation_key.has_value() &&
+                      url_info.cross_origin_isolation_key
+                          ->cross_origin_isolated_through_dip)
           ? GURL()
           : agent_cluster_key.GetURL();
   is_jitless =
@@ -685,7 +688,10 @@ bool SiteInfo::RequiresDedicatedProcess(
   return RequiresDedicatedProcessInternal(
       site_url_, isolation_context, browser_context,
       does_site_request_dedicated_process_for_coop_,
-      agent_cluster_key_.IsOriginKeyed(), is_sandboxed_, is_pdf_);
+      agent_cluster_key_.IsOriginKeyed(), is_sandboxed_, is_pdf_,
+      agent_cluster_key_.IsCrossOriginIsolated() &&
+          agent_cluster_key_.GetCrossOriginIsolationKey()
+              ->cross_origin_isolated_through_dip);
 }
 
 bool SiteInfo::ShouldLockProcessToSite(
@@ -1097,9 +1103,17 @@ bool SiteInfo::RequiresDedicatedProcessInternal(
     bool does_site_request_dedicated_process_for_coop,
     bool requires_origin_keyed_process,
     bool is_sandboxed,
-    bool is_pdf) {
+    bool is_pdf,
+    bool cross_origin_isolated_through_dip) {
   // If --site-per-process is enabled, site isolation is enabled everywhere.
   if (SiteIsolationPolicy::UseDedicatedProcessesForAllSites()) {
+    return true;
+  }
+
+  // If we have access to some form of SiteIsolation, require a dedicated
+  // process for content cross-origin isolated through DocumentIsolationPolicy.
+  if (SiteIsolationPolicy::AreDynamicIsolatedOriginsEnabled() &&
+      cross_origin_isolated_through_dip) {
     return true;
   }
 

@@ -171,6 +171,11 @@ BASE_FEATURE(kDeviceBoundSessionsDevTools, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kDisableAutoResizeOutputSurface, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+// Enable DocumentIsolationPolicy even if the platform does not support full
+// SiteIsolation.
+BASE_FEATURE(kDocumentIsolationPolicyWithoutSiteIsolation,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable document policy negotiation mechanism.
 BASE_FEATURE(kDocumentPolicyNegotiation, base::FEATURE_DISABLED_BY_DEFAULT);
 

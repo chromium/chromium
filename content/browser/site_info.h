@@ -154,7 +154,8 @@ class CONTENT_EXPORT SiteInfo {
       bool does_site_request_dedicated_process_for_coop,
       bool requires_origin_keyed_process,
       bool is_sandboxed,
-      bool is_pdf);
+      bool is_pdf,
+      bool cross_origin_isolated_through_dip);
 
   // Exposes functionality of `GetSiteForURLInternal so tests can do effective
   // URL translation.

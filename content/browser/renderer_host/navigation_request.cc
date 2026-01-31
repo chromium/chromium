@@ -4126,7 +4126,8 @@ void NavigationRequest::DetermineAgentClusterKeyForCommit() {
             ->GetSiteInstance()
             ->GetWebExposedIsolationInfo()
             .origin(),
-        blink::mojom::CrossOriginIsolationMode::kConcrete);
+        blink::mojom::CrossOriginIsolationMode::kConcrete,
+        /*cross_origin_isolated_through_dip=*/false);
   }
 
   // Update the AgentClusterKey in CommitNavigationParams to the correct
@@ -11165,7 +11166,8 @@ NavigationRequest::ComputeCrossOriginIsolationKey() {
   policy_container_builder_->SetCrossOriginIsolationEnabledByDIP();
 
   return AgentClusterKey::CrossOriginIsolationKey(
-      origin, blink::mojom::CrossOriginIsolationMode::kConcrete);
+      origin, blink::mojom::CrossOriginIsolationMode::kConcrete,
+      /*cross_origin_isolated_through_dip=*/true);
 }
 
 std::optional<WebExposedIsolationInfo>
@@ -12135,10 +12137,31 @@ void NavigationRequest::SanitizeDocumentIsolationPolicyHeader() {
     return;
   }
 
-  // DocumentIsolationPolicy is only supported in strict SiteIsolation mode for
-  // now. Set it to its default value if the platform does not support strict
+  // Check if the process model of the platform supports
+  // DocumentIsolationPolicy.
+  bool document_isolation_policy_supported = false;
+
+  // DocumentIsolationPolicy is supported in full SiteIsolation mode.
+  document_isolation_policy_supported |=
+      SiteIsolationPolicy::UseDedicatedProcessesForAllSites();
+
+  // When kDocumentIsolationPolicyWithoutSiteIsolation is enabled,
+  // DocumentIsolationPolicy is also supported in some modes without full
   // SiteIsolation.
-  if (!SiteIsolationPolicy::UseDedicatedProcessesForAllSites()) {
+  if (base::FeatureList::IsEnabled(
+          features::kDocumentIsolationPolicyWithoutSiteIsolation)) {
+    // DocumentIsolationPolicy is supported in partial SiteIsolation mode.
+    document_isolation_policy_supported |=
+        SiteIsolationPolicy::AreDynamicIsolatedOriginsEnabled();
+
+    // DocumentIsolationPolicy is supported in no-SiteIsolation mode iff
+    // default SiteInstanceGroups are enabled.
+    document_isolation_policy_supported |= ShouldUseDefaultSiteInstanceGroup();
+  }
+
+  // If the process model cannot support DocumentIoslationPolicy, set the header
+  // to its default value.
+  if (!document_isolation_policy_supported) {
     response_head_->parsed_headers->document_isolation_policy =
         network::DocumentIsolationPolicy();
     return;

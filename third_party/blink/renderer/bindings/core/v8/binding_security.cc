@@ -112,13 +112,20 @@ bool CanAccessWindow(const LocalDOMWindow* accessing_window,
                       kDomainNotRelevantAgentClusterMismatch) {
       // Assert that because the agent clusters are different than the
       // WindowAgentFactories must also be different unless they differ in
-      // being explicitly origin keyed.
+      // being explicitly origin keyed or they have different cross-origin
+      // isolation keys.
       SECURITY_CHECK(
           !IsSameWindowAgentFactory(accessing_window, local_target_window) ||
           (accessing_window->GetAgent()->GetAgentClusterKey().IsOriginKeyed() !=
            local_target_window->GetAgent()
                ->GetAgentClusterKey()
                .IsOriginKeyed()) ||
+          (accessing_window->GetAgent()
+               ->GetAgentClusterKey()
+               .GetCrossOriginIsolationKey() !=
+           local_target_window->GetAgent()
+               ->GetAgentClusterKey()
+               .GetCrossOriginIsolationKey()) ||
           (WebTestSupport::IsRunningWebTest() &&
            local_target_window->GetFrame()->PagePopupOwner()));
     }
