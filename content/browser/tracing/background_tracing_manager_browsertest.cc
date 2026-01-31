@@ -973,7 +973,14 @@ IN_PROC_BROWSER_TEST_F(ProtoBackgroundTracingTest,
   background_tracing_helper.WaitForScenarioIdle();
 }
 
-IN_PROC_BROWSER_TEST_F(ProtoBackgroundTracingTest, ProtoTraceReceived) {
+// TODO(crbug.com/478626922): This test is flaky on TSan builds. Re-enable it
+// once the data race is fixed.
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_ProtoTraceReceived DISABLED_ProtoTraceReceived
+#else
+#define MAYBE_ProtoTraceReceived ProtoTraceReceived
+#endif
+IN_PROC_BROWSER_TEST_F(ProtoBackgroundTracingTest, MAYBE_ProtoTraceReceived) {
   TestBackgroundTracingHelper background_tracing_helper;
 
   EXPECT_TRUE(BackgroundTracingManager::GetInstance().InitializeFieldScenarios(
