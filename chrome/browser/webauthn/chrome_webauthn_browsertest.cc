@@ -25,6 +25,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
+#include "chrome/browser/actor/actor_task_metadata.h"
+#include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/ui/test_support/mock_event_dispatcher.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -1661,18 +1663,17 @@ class WebAuthnActorBrowserTest : public WebAuthnBrowserTest {
   void CreateActingTask() {
     auto* actor_service = actor::ActorKeyedService::Get(browser()->profile());
     actor::TaskId task_id = actor_service->CreateTask();
-    actor::ActorTask* actor_task = actor_service->GetTask(task_id);
 
-    actor_task->SetState(actor::ActorTask::State::kActing);
-
-    base::RunLoop loop;
-    actor_task->AddTab(
-        browser()->GetActiveTabInterface()->GetHandle(),
-        base::BindLambdaForTesting([&](actor::mojom::ActionResultPtr result) {
-          EXPECT_TRUE(actor::IsOk(*result));
-          loop.Quit();
-        }));
-    loop.Run();
+    // Perform an arbitrary action in a tab to put the task into
+    // UnderActorControl state and add the tab to the task.
+    tabs::TabInterface* tab = browser()->GetActiveTabInterface();
+    CHECK(tab);
+    auto click = actor::MakeClickRequest(*tab, gfx::Point(1, 1));
+    actor::PerformActionsFuture future;
+    actor_service->PerformActions(task_id, ToRequestList(std::move(click)),
+                                  actor::ActorTaskMetadata(),
+                                  future.GetCallback());
+    EXPECT_TRUE(future.Wait());
   }
 
   void PostRunTestOnMainThread() override {

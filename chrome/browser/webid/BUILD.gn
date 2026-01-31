@@ -186,6 +186,7 @@ if (!is_android) {
     deps = [
       ":webid",
       "//chrome/browser/actor",
+      "//chrome/browser/actor:test_support",
       "//chrome/browser/actor/ui:test_support",
       "//chrome/browser/password_manager/factories:password_factory_headers",
       "//chrome/browser/profiles:profile",
