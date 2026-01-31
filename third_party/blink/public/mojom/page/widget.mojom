@@ -107,13 +107,15 @@ interface FrameWidget {
   DragTargetDragLeave(gfx.mojom.PointF point_in_viewport,
                       gfx.mojom.PointF screen_point);
 
-  // Notifies the Widget of a drag drop operation.
+  // Notifies the Widget that a drop with an effect (`link`, `copy` or `move`)
+  // happened in it.
   DragTargetDrop(DragData drag_data,
                  gfx.mojom.PointF point_in_viewport,
                  gfx.mojom.PointF screen_point,
                  uint32 key_modifiers) => ();
 
-  // Notifies the Widget that a drag has terminated.
+  // Notifies the Widget that a drag it started has terminated, regardless of
+  // where the drop happened or if it had any effect.
   DragSourceEndedAt(gfx.mojom.PointF point_in_viewport,
                     gfx.mojom.PointF screen_point,
                     ui.mojom.DragOperation drag_operation) => ();
