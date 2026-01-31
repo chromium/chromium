@@ -45,6 +45,12 @@ SkillsServiceImpl::SkillsServiceImpl(
 
 SkillsServiceImpl::~SkillsServiceImpl() = default;
 
+void SkillsServiceImpl::Shutdown() {
+  for (Observer& observer : observers_) {
+    observer.OnSkillsServiceShuttingDown();
+  }
+}
+
 void SkillsServiceImpl::NotifySkillChanged(std::string_view skill_id,
                                            UpdateSource update_source) {
   for (Observer& observer : observers_) {

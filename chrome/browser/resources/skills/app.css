@@ -13,6 +13,9 @@
   display: flex;
   flex-direction: column;
   height: 100%;
+  --sidebar-width: 250px;
+  /* Controls the size of the search bar contained within cr-toolbar */
+  --cr-toolbar-field-width: 680px;
 }
 
 #content {
@@ -23,7 +26,7 @@
 }
 
 #left {
-  flex: 0 0 250px;
+  flex: 0 0 var(--sidebar-width);
   height: 100%;
   position: sticky;
   top: 0;
@@ -45,9 +48,14 @@ cr-page-selector {
   display: flex;
   flex-direction: column;
 
-  /* max-width to align with the searchbar */
-  max-width: 960px;
-  margin: 0 auto;
+  max-width: 850px;
+  /* Align the left edge of the page selector with the left edge of
+   * the search bar contained within cr-toolbar. If the window is too narrow
+   * the searchbar disappears, max(0px,...) ensures the content is not being
+   * pushed off screen. */
+  margin-inline-start: max(0px, calc(50vw -
+    var(--cr-toolbar-field-width) / 2 - var(--sidebar-width)));
+  margin-inline-end: 20px;
   padding-top: 16px;
 }
 

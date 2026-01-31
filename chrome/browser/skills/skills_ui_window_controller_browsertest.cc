@@ -162,11 +162,11 @@ IN_PROC_BROWSER_TEST_F(SkillsUiWindowControllerBrowserTest,
     const root = document.querySelector('skills-dialog-app').shadowRoot;
 
     for (let i = 0; i < 50; i++) {
-      const btn = root.querySelector('#save-button');
+      const btn = root.querySelector('#saveButton');
       if (btn && !btn.disabled) { btn.click(); return 'CLICKED'; }
 
       // Fill inputs if found & empty
-      ['#name-text', '#instructions-text'].forEach(id => {
+      ['#nameText', '#instructionsText'].forEach(id => {
         const el = root.querySelector(id);
         if (el && !el.value) {
           el.value = 'Test';

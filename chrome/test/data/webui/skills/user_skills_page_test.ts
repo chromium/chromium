@@ -5,14 +5,22 @@
 import 'chrome://skills/user_skills_page.js';
 
 import {CrRouter} from 'chrome://resources/js/cr_router.js';
+import {SkillSource} from 'chrome://skills/skill.mojom-webui.js';
+import {SkillsDialogType} from 'chrome://skills/skills.mojom-webui.js';
+import {SkillsPageBrowserProxy} from 'chrome://skills/skills_page_browser_proxy.js';
 import type {UserSkillsPageElement} from 'chrome://skills/user_skills_page.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
+import {TestSkillsBrowserProxy} from './test_skills_browser_proxy.js';
+
 suite('UserSkillsPage', function() {
   let page: UserSkillsPageElement;
+  let browserProxy: TestSkillsBrowserProxy;
 
   setup(function() {
+    browserProxy = new TestSkillsBrowserProxy();
+    SkillsPageBrowserProxy.setInstance(browserProxy);
     window.history.replaceState({}, '', '/');
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     CrRouter.resetForTesting();
@@ -22,16 +30,46 @@ suite('UserSkillsPage', function() {
   });
 
   test('InitialPageLoadsCorrectly', function() {
-    const title = page.shadowRoot.querySelector('#skills-title');
+    const title = page.$['skillsTitle'];
     assertTrue(!!title);
     assertEquals('Your skills', title.textContent.trim());
 
-    const emptyState = page.shadowRoot.querySelector('#empty-state');
+    const emptyState = page.$['emptyState'];
     assertTrue(!!emptyState);
-    const notice = emptyState.querySelector('#notice-message');
+    const notice = page.$['noticeMessage'];
     assertTrue(!!notice);
     assertEquals(
         'Skills help simplify and automate repetitive tasks',
         notice.textContent.trim());
+  });
+
+  test('AddSkillButtonTriggersDialog', async function() {
+    const addButton = page.$['addSkillButton'];
+    assertTrue(!!addButton);
+    (addButton as HTMLElement).click();
+    const [dialogType, skill] =
+        await browserProxy.handler.whenCalled('openSkillsDialog');
+    assertEquals(SkillsDialogType.kAdd, dialogType);
+    assertEquals(null, skill);
+  });
+
+  test('UpdateSkillUpdatesPage', async function() {
+    const testSkill = {
+      id: '123',
+      name: 'Test Skill',
+      icon: 'icon',
+      prompt: 'prompt',
+      source: SkillSource.kUserCreated,
+      creationTime: {internalValue: 0n},
+      lastUpdateTime: {internalValue: 0n},
+    };
+
+    browserProxy.remote.updateSkill(testSkill);
+    await microtasksFinished();
+
+    const skillItems = page.shadowRoot.querySelectorAll('li');
+    assertEquals(1, skillItems.length);
+    assertTrue(!!skillItems[0]);
+    assertEquals('Test Skill', skillItems[0].textContent.trim());
   });
 });

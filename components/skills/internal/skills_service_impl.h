@@ -42,6 +42,9 @@ class SkillsServiceImpl : public SkillsService {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   ~SkillsServiceImpl() override;
 
+  // KeyedService implementation.
+  void Shutdown() override;
+
   // SkillsService implementation.
   bool IsInitialized() const override;
   void LoadInitialSkills(

@@ -29,20 +29,14 @@ suite('SkillsDialogAppPage', function() {
   });
 
   test('SkillsDialogAppLoads', function() {
-    assertEquals(
-        'Add Skill',
-        skillsDialogApp.shadowRoot.querySelector('h1')!.textContent);
+    assertEquals('Add Skill', skillsDialogApp.$['header']!.textContent);
   });
 
   test('SaveButtonDisabledStates', async function() {
-    const saveButton =
-        skillsDialogApp.shadowRoot.querySelector<CrButtonElement>(
-            '#save-button')!;
-    const nameInput =
-        skillsDialogApp.shadowRoot.querySelector<CrInputElement>('#name-text')!;
+    const saveButton = skillsDialogApp.$['saveButton'] as CrButtonElement;
+    const nameInput = skillsDialogApp.$['nameText'] as CrInputElement;
     const instructionsInput =
-        skillsDialogApp.shadowRoot.querySelector<CrTextareaElement>(
-            '#instructions-text')!;
+        skillsDialogApp.$['instructionsText'] as CrTextareaElement;
 
     // 1. Initial state: disabled.
     assertEquals(true, saveButton.disabled);
@@ -70,14 +64,10 @@ suite('SkillsDialogAppPage', function() {
   });
 
   test('SaveButtonSubmitsSkill', async function() {
-    const saveButton =
-        skillsDialogApp.shadowRoot.querySelector<CrButtonElement>(
-            '#save-button')!;
-    const nameInput =
-        skillsDialogApp.shadowRoot.querySelector<CrInputElement>('#name-text')!;
+    const saveButton = skillsDialogApp.$['saveButton'] as CrButtonElement;
+    const nameInput = skillsDialogApp.$['nameText'] as CrInputElement;
     const instructionsInput =
-        skillsDialogApp.shadowRoot.querySelector<CrTextareaElement>(
-            '#instructions-text')!;
+        skillsDialogApp.$['instructionsText'] as CrTextareaElement;
 
     // Populate the fields to enable the save button.
     const testName = 'test skill';
@@ -120,15 +110,11 @@ suite('SkillsDialogAppPage', function() {
 
     assertEquals('🐶', emojiTrigger.value);
 
-    const saveButton =
-        skillsDialogApp.shadowRoot.querySelector<CrButtonElement>(
-            '#save-button')!;
+    const saveButton = skillsDialogApp.$['saveButton'] as CrButtonElement;
 
-    const nameInput =
-        skillsDialogApp.shadowRoot.querySelector<CrInputElement>('#name-text')!;
+    const nameInput = skillsDialogApp.$['nameText'] as CrInputElement;
     const instructionsInput =
-        skillsDialogApp.shadowRoot.querySelector<CrTextareaElement>(
-            '#instructions-text')!;
+        skillsDialogApp.$['instructionsText'] as CrTextareaElement;
 
     nameInput.value = 'name';
     nameInput.dispatchEvent(

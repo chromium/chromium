@@ -22,12 +22,11 @@ suite('DiscoverSkillsPage', function() {
   });
 
   test('InitialPageLoadsCorrectly', function() {
-    const title = page.shadowRoot.querySelector('#top-picks-title');
+    const title = page.$['topPicksTitle'];
     assertTrue(!!title);
     assertEquals('Our top picks', title.textContent.trim());
 
-    const discoverTitle =
-        page.shadowRoot.querySelector('#discover-skills-title');
+    const discoverTitle = page.$['discoverSkillsTitle'];
     assertTrue(!!discoverTitle);
     assertEquals('Discover skills', discoverTitle.textContent.trim());
   });

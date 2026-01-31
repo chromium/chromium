@@ -13,10 +13,10 @@ export function getHtml(this: DiscoverSkillsPageElement) {
   /* TODO(b/475606460): Replace this with cards */
   return html`
 ${this.topSkills_().length > 0 ? html`
-<h1 id="top-picks-title" class="page-title">Our top picks</h1>
+<h1 id="topPicksTitle" class="page-title">Our top picks</h1>
 ${this.topSkills_().map(skill => html`<li>${skill.name}</li>`)}` : ''}
-<h1 id="discover-skills-title" class="page-title">Discover skills</h1>
-<div id="discover-categories">
+<h1 id="discoverSkillsTitle" class="page-title">Discover skills</h1>
+<div id="discoverCategories">
   ${this.getOtherCategories_().map(category => html`
     <cr-chip ?selected="${this.isCategorySelected_(category)}"
         data-category="${category}" @click="${this.onCategoryClick_}">

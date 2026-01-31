@@ -34,13 +34,14 @@ export function getHtml(this: SkillsAppElement) {
       </skills-sidebar>
     </cr-drawer>
   </div>
-<cr-page-selector id="page" attr-for-selected="page-index"
-    .selected="${this.selectedPage_}">
-  <user-skills-page id="userSkillsPage" page-index="${Page.USER_SKILLS}">
-  </user-skills-page>
-  <discover-skills-page id="discoverSkillsPage"
-      page-index="${Page.DISCOVER_SKILLS}">
-  </discover-skills-page>
-</cr-page-selector>`;
+  <cr-page-selector id="page" attr-for-selected="page-index"
+      .selected="${this.selectedPage_}">
+    <user-skills-page id="userSkillsPage" page-index="${Page.USER_SKILLS}">
+    </user-skills-page>
+    <discover-skills-page id="discoverSkillsPage"
+        page-index="${Page.DISCOVER_SKILLS}">
+    </discover-skills-page>
+  </cr-page-selector>
+</div>`;
   // clang-format on
 }

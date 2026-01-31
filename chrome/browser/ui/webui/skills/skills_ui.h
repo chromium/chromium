@@ -40,7 +40,10 @@ class SkillsUI : public ui::MojoWebUIController,
   }
 
  private:
+  // The PendingRemote must be valid and bind to a receiver in order to start
+  // sending messages to the receiver.
   void CreatePageHandler(
+      mojo::PendingRemote<skills::mojom::SkillsPage> page,
       mojo::PendingReceiver<skills::mojom::PageHandler> receiver) override;
 
   void CreateDialogHandler(

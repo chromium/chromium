@@ -232,7 +232,7 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
       const getButton = () => {
         const app = document.querySelector('skills-dialog-app');
         if (!app || !app.shadowRoot) return null;
-        return app.shadowRoot.querySelector('#cancel-button');
+        return app.$['cancelButton'];
       };
 
       for (let i = 0; i < 20; i++) {

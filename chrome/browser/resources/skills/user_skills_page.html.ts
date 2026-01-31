@@ -12,24 +12,38 @@ export function getHtml(this: UserSkillsPageElement) {
   // clang-format off
   return html`
 <div id="header">
-  <h1 id="skills-title" class="page-title">Your skills</h1>
-  <p id="subtitle">Skills help simplify and automate repetitive tasks</p>
-</div>
-<div id="empty-state">
-  <picture>
-    <source srcset="images/skills_empty_dark.svg"
-        media="(prefers-color-scheme: dark)">
-    <img src="images/skills_empty.svg" alt="No skills">
-  </picture>
-  <p id="headline">You'll find your skills here</p>
-  <p id="notice-message">
-    Skills help simplify and automate repetitive tasks
-  </p>
-  <cr-button id="browse-skills-button" class="floating-button"
-      @click="${this.onExploreButtonClick_}">
-    <cr-icon icon="skills:explore" slot="prefix-icon"></cr-icon>
-    Browse skills
+  <div id="headerText">
+    <h2 id="skillsTitle" class="page-title">Your skills</h2>
+    <p id="subtitle">Skills help simplify and automate repetitive tasks</p>
+  </div>
+  <cr-button id="addSkillButton" class="action-button"
+      @click="${this.onAddSkillButtonClick_}">
+    <cr-icon icon="cr:add" slot="prefix-icon"></cr-icon>
+    Add skill
   </cr-button>
-</div>`;
+</div>
+${this.skills_.size === 0 ? html`
+  <div id="emptyState">
+    <picture>
+      <source srcset="images/skills_empty_dark.svg"
+          media="(prefers-color-scheme: dark)">
+      <img src="images/skills_empty.svg" alt="No skills">
+    </picture>
+    <p id="headline">You'll find your skills here</p>
+    <p id="noticeMessage">
+      Skills help simplify and automate repetitive tasks
+    </p>
+    <cr-button id="browseSkillsButton" class="floating-button"
+        @click="${this.onExploreButtonClick_}">
+      <cr-icon icon="skills:explore" slot="prefix-icon"></cr-icon>
+      Browse skills
+    </cr-button>
+  </div>` : html`
+  <ul>
+    ${Array.from(this.skills_.values()).map((skill) => html`
+    <!-- TODO(b/475605779): Replace this with cards -->
+    <li>${skill.name}</li>`)}
+  </ul>`}
+`;
   // clang-format on
 }

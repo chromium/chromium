@@ -18,7 +18,7 @@
   overflow: hidden;
 }
 
-#empty-state {
+#emptyState {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -35,7 +35,7 @@
   color: var(--color-sys-on-surface);
 }
 
-#notice-message {
+#noticeMessage {
   font-weight: 400;
   font-size: 14px;
   line-height: 20px;
@@ -51,6 +51,20 @@
   color: var(--color-sys-on-surface-variant);
 }
 
-cr-button {
+#browseSkillsButton {
   margin-top: 12px;
+}
+
+#header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* TODO(b/479210761): Fix the cut-off issue when tabbed. */
+#addSkillButton {
+  flex-shrink: 0;
 }

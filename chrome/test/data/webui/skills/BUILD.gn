@@ -8,6 +8,7 @@ build_webui_tests("build") {
     "discover_skills_page_test.ts",
     "skills_dialog_test.ts",
     "skills_test.ts",
+    "test_skills_browser_proxy.ts",
     "test_skills_dialog_browser_proxy.ts",
     "user_skills_page_test.ts",
   ]

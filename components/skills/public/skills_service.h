@@ -55,6 +55,10 @@ class SkillsService : public KeyedService {
     // new map or nullptr if map has not changed.
     virtual void OnDiscoverySkillsUpdated(
         std::unique_ptr<SkillsDownloader::SkillsMap> skills_map) {}
+
+    // Called when the service is shutting down. Observers should remove
+    // themselves.
+    virtual void OnSkillsServiceShuttingDown() {}
   };
 
   SkillsService();

@@ -8,7 +8,6 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/skills/skills.mojom.h"
 #include "components/skills/public/skill.mojom-forward.h"
-#include "components/skills/public/skills_service.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
 namespace content {
