@@ -486,7 +486,7 @@ public class StatusBarColorController
                 mEdgeToEdgeSystemBarColorHelper,
                 mActivity,
                 statusBarColor,
-                mForceLightIconColorForNtp && isStandardNtp());
+                mForceLightIconColorForNtp && isStandardNtp() && !mIsOmniboxFocused);
     }
 
     /**
