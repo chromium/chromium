@@ -54,6 +54,17 @@
   display: block;
 }
 
+/* Provides a fading effect to containerScroller after scrolling. */
+.sp-scroller.fade {
+  --scrollbar-margin: calc(var(--sp-card-block-padding) * 2);
+  --text-top-margin: calc((var(--letter-spacing) + var(--font-size)) / 2);
+
+  /* Fade out the text at the top of the scroller. */
+  mask-image: linear-gradient(to bottom, transparent, black var(--text-top-margin)),
+  /* Prevent fading from extending to the scrollbar. */
+  linear-gradient(to left, black var(--scrollbar-margin),transparent var(--scrollbar-margin));
+}
+
 #toolbar-container {
   width: 100%;
 }

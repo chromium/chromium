@@ -4,10 +4,10 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {AppElement, LanguageToastElement, SpEmptyStateElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {BrowserProxy, ContentController, ContentType, LineFocusController, LineFocusMovement, LineFocusStyle, NodeStore, ReadAloudNode, setInstance, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoiceClientSideStatusCode, VoiceLanguageController, VoiceNotificationManager} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {AppStyleUpdater, BrowserProxy, ContentController, ContentType, LineFocusController, LineFocusMovement, LineFocusStyle, NodeStore, ReadAloudNode, setInstance, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoiceClientSideStatusCode, VoiceLanguageController, VoiceNotificationManager} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertNotEquals, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {keyDownOn} from 'chrome-untrusted://webui-test/keyboard_mock_interactions.js';
-import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
+import {microtasksFinished, whenCheck} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {createApp, emitEvent, setContent, setupBasicSpeech} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
@@ -961,5 +961,45 @@ suite('AppContent', () => {
     app.onNeedScrollForLineFocus(scrollDiff);
 
     assertEquals(startingScrollTop + scrollDiff, scrollTo);
+  });
+
+  suite('Immersive Mode app content styling', () => {
+    let appStyleUpdater: AppStyleUpdater;
+
+    setup(async () => {
+      app.remove();
+      chrome.readingMode.isImmersiveEnabled = true;
+      app = await createApp();
+      appStyleUpdater = new AppStyleUpdater(app);
+    });
+
+    test(
+        'onContainerScroll adds fade class to scroller when IM is enabled',
+        async () => {
+          const fontSize = 16;
+          const text = 'This is a sample text.\n'.repeat(10000);
+
+          app.$.container.style.fontSize = `${fontSize}px`;
+          appStyleUpdater.setFontSize();
+          readingMode.getTextContent = () => text;
+          app.updateContent();
+          await microtasksFinished();
+
+          assertFalse(app.$.containerScroller.classList.contains('fade'));
+
+          app.$.containerScroller.scrollTop = fontSize + 1;
+          app.$.containerScroller.dispatchEvent(new Event('scroll'));
+          await whenCheck(
+              app.$.containerScroller,
+              () => app.$.containerScroller.classList.contains('fade'));
+          assertTrue(app.$.containerScroller.classList.contains('fade'));
+
+          app.$.containerScroller.scrollTop = fontSize - 1;
+          app.$.containerScroller.dispatchEvent(new Event('scroll'));
+          await whenCheck(
+              app.$.containerScroller,
+              () => !app.$.containerScroller.classList.contains('fade'));
+          assertFalse(app.$.containerScroller.classList.contains('fade'));
+        });
   });
 });
