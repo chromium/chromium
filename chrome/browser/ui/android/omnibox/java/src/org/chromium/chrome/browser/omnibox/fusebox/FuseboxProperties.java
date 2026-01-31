@@ -139,10 +139,6 @@ class FuseboxProperties {
     public static final WritableBooleanPropertyKey POPUP_TAB_PICKER_ENABLED =
             new WritableBooleanPropertyKey();
 
-    /** Whether the recent tabs header is visible. */
-    public static final WritableBooleanPropertyKey RECENT_TABS_HEADER_VISIBLE =
-            new WritableBooleanPropertyKey();
-
     /** Whether to show the dedicated AIMode button directly in the Fusebox. */
     public static final WritableBooleanPropertyKey SHOW_DEDICATED_MODE_BUTTON =
             new WritableBooleanPropertyKey();
@@ -178,7 +174,6 @@ class FuseboxProperties {
         POPUP_GALLERY_CLICKED,
         POPUP_TAB_PICKER_CLICKED,
         POPUP_TAB_PICKER_ENABLED,
-        RECENT_TABS_HEADER_VISIBLE,
         SHOW_DEDICATED_MODE_BUTTON
         // go/keep-sorted end
     };
