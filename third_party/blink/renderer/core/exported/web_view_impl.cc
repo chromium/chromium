@@ -3274,10 +3274,8 @@ void WebViewImpl::OnWindowShowStateChanged(
     return;
   }
 
+  CHECK_NE(old_state, new_state);
   using ui::mojom::blink::WindowShowState;
-  if (old_state == new_state) {
-    return;
-  }
   switch (new_state) {
     case WindowShowState::kDefault:
     case WindowShowState::kNormal:
