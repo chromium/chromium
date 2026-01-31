@@ -41,11 +41,6 @@
                            action:@selector(didTapCancelButton)];
   _navigationController.delegate = self;
   _navigationController.modalInPresentation = YES;
-
-  // Opening the Safari Data import steps page marks the Safari Import item as
-  // completed in prefs.
-  set_up_list_prefs::MarkItemComplete(GetApplicationContext()->GetLocalState(),
-                                      SetUpListItemType::kSafariImport);
   [self.baseViewController presentViewController:_navigationController
                                         animated:YES
                                       completion:nil];

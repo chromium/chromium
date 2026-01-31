@@ -129,6 +129,9 @@ class UserUploadedImageManager;
 // Update the background of the NTP.
 - (void)updateBackground;
 
+// Marks the Safari Data Import item in the setup list as completed.
+- (void)markSafariDataImportSetupListItemAsComplete;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_MEDIATOR_H_

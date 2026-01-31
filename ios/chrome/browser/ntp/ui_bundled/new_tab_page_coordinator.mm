@@ -1094,6 +1094,7 @@
           initWithBaseViewController:self.NTPViewController
                              browser:self.browser];
   _safariDataImportExportCoordinator.delegate = self;
+  [self.NTPMediator markSafariDataImportSetupListItemAsComplete];
   [_safariDataImportExportCoordinator start];
 }
 

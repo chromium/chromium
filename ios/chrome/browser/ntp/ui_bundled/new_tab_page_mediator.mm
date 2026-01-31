@@ -48,6 +48,8 @@
 #import "ios/chrome/browser/metrics/model/new_tab_page_uma.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/model/ntp_background_image_cache_service.h"
+#import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
+#import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
 #import "ios/chrome/browser/ntp/search_engine_logo/ui/search_engine_logo_state.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_constants.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_recorder.h"
@@ -859,6 +861,11 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
       }),
       image_fetcher::ImageFetcherParams(kTrafficAnnotation,
                                         kImageFetcherUmaClient));
+}
+
+- (void)markSafariDataImportSetupListItemAsComplete {
+  set_up_list_prefs::MarkItemComplete(GetApplicationContext()->GetLocalState(),
+                                      SetUpListItemType::kSafariImport);
 }
 
 @end

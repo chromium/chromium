@@ -41,7 +41,8 @@ class SafariDataImportEntryPointMediatorTest : public PlatformTest {
     mediator_ = [[SafariDataImportEntryPointMediator alloc]
          initWithUIBlockerTarget:scene_state_
                    promosManager:promos_manager_.get()
-        featureEngagementTracker:tracker_.get()];
+        featureEngagementTracker:tracker_.get()
+                     prefService:nil];
 
     // Set a consistent start time for the mock clock to avoid midnight issues.
     base::Time next_day = base::Time::Now() + base::Days(1);

@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/safari_data_import/public/safari_data_import_ui_handler.h"
 #import "ios/chrome/browser/safari_data_import/ui/safari_data_import_entry_point_view_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
@@ -73,7 +74,8 @@
   _mediator = [[SafariDataImportEntryPointMediator alloc]
        initWithUIBlockerTarget:self.browser->GetSceneState()
                  promosManager:promosManager
-      featureEngagementTracker:tracker];
+      featureEngagementTracker:tracker
+                   prefService:GetApplicationContext()->GetLocalState()];
   _navigationController = [[UINavigationController alloc]
       initWithRootViewController:_viewController];
   [self.baseViewController presentViewController:_navigationController
@@ -114,6 +116,13 @@
       initWithBaseViewController:_navigationController
                          browser:self.browser];
   _exportCoordinator.delegate = self;
+  // Presenting the Safari data import flow is not always sufficient to mark the
+  // setup list item as complete. In some cases (e.g. when the view controller
+  // is automatically presented as part of the FRE), the item should remain
+  // incomplete until the user explicitly engages with the flow.
+  if (_entryPoint != SafariDataImportEntryPoint::kFirstRun) {
+    [_mediator markSetUpListItemAsComplete];
+  }
   [_exportCoordinator start];
 }
 

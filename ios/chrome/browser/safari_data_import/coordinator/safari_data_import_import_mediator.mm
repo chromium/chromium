@@ -24,6 +24,8 @@
 #import "ios/chrome/browser/data_import/public/password_import_item.h"
 #import "ios/chrome/browser/data_import/ui/data_import_import_stage_transition_handler.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
+#import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
+#import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
 #import "ios/chrome/browser/safari_data_import/model/ios_safari_data_import_client.h"
 #import "ios/chrome/browser/safari_data_import/public/safari_data_import_stage.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -54,6 +56,8 @@
   BOOL _disconnected;
   /// The URL of the file being imported, which requires security-scoped access.
   NSURL* _currentSecurityScopedURL;
+  // Local State prefs.
+  raw_ptr<PrefService> _localState;
 }
 
 - (instancetype)
@@ -67,6 +71,7 @@
                    readingListModel:(ReadingListModel*)readingListModel
                         syncService:(syncer::SyncService*)syncService
                         prefService:(PrefService*)prefService
+                         localState:(PrefService*)localState
                       faviconLoader:(FaviconLoader*)faviconLoader {
   self = [super init];
   if (self) {
@@ -82,6 +87,7 @@
     _savedPasswordsPresenter->Init();
     std::unique_ptr<user_data_importer::IOSBookmarkParser> bookmarkParser =
         std::make_unique<user_data_importer::IOSBookmarkParser>();
+    _localState = localState;
     std::string locale =
         GetApplicationContext()->GetApplicationLocaleStorage()->Get();
     _importer = std::make_unique<user_data_importer::SafariDataImporter>(
@@ -127,11 +133,17 @@
   return error;
 }
 
+- (void)markSetUpListItemAsComplete {
+  set_up_list_prefs::MarkItemComplete(_localState,
+                                      SetUpListItemType::kSafariImport);
+}
+
 - (void)disconnect {
   [self reset];
   _importer.reset();
   _savedPasswordsPresenter.reset();
   _importClient.reset();
+  _localState = nil;
   _disconnected = YES;
 }
 

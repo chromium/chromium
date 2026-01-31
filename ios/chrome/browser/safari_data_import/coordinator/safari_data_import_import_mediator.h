@@ -60,6 +60,7 @@ class PrefService;
                    readingListModel:(ReadingListModel*)readingListModel
                         syncService:(syncer::SyncService*)syncService
                         prefService:(PrefService*)prefService
+                         localState:(PrefService*)prefService
                       faviconLoader:(FaviconLoader*)faviconLoader
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
@@ -82,6 +83,9 @@ class PrefService;
 /// Delete the imported ZIP file. Returns an error if deletion could not be
 /// performed, otherwise return `nil`.
 - (NSError*)deleteFile;
+
+// Marks the Safari Data Import item in the setup list as completed.
+- (void)markSetUpListItemAsComplete;
 
 /// Disconnect mediator dependencies; needs to be invoked before deallocating
 /// the coordinator.

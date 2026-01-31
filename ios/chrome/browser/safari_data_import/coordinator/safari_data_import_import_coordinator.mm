@@ -38,6 +38,7 @@
 #import "ios/chrome/browser/safari_data_import/public/metrics.h"
 #import "ios/chrome/browser/safari_data_import/public/safari_data_import_stage.h"
 #import "ios/chrome/browser/safari_data_import/ui/safari_data_import_import_view_controller.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
@@ -147,6 +148,7 @@ constexpr NSInteger kExpectedItemsCount = 4;
     syncer::SyncService* syncService =
         SyncServiceFactory::GetForProfile(profile);
     PrefService* prefService = profile->GetPrefs();
+    PrefService* localState = GetApplicationContext()->GetLocalState();
     FaviconLoader* faviconLoader =
         IOSChromeFaviconLoaderFactory::GetForProfile(profile);
     /// Initialize mediator.
@@ -159,6 +161,7 @@ constexpr NSInteger kExpectedItemsCount = 4;
                        readingListModel:readingListModel
                             syncService:syncService
                             prefService:prefService
+                             localState:localState
                           faviconLoader:faviconLoader];
     _mediator.importStageTransitionHandler = self;
     _mediator.itemConsumer = _tableView;
@@ -217,6 +220,7 @@ constexpr NSInteger kExpectedItemsCount = 4;
       NOTREACHED() << "button should be disabled";
     case SafariDataImportStage::kImported:
       [self presentViewController:self.fileDeletionAlert];
+      [self.mediator markSetUpListItemAsComplete];
       break;
     default:
       break;
