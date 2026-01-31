@@ -45,6 +45,7 @@ domains = [
   "domains/Preload.pdl",
   "domains/Security.pdl",
   "domains/ServiceWorker.pdl",
+  "domains/SmartCardEmulation.pdl",
   "domains/Storage.pdl",
   "domains/SystemInfo.pdl",
   "domains/Target.pdl",

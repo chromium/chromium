@@ -15,6 +15,7 @@
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/types/expected.h"
 #include "components/cbor/values.h"
 #include "device/fido/attested_credential_data.h"
 #include "device/fido/authenticator_data.h"
@@ -71,6 +72,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualCtap2Device
     uint8_t bio_enrollment_samples_required = 4;
     bool cred_protect_support = false;
     bool hmac_secret_support = false;
+    bool hmac_secret_mc_support = false;
     bool prf_support = false;
     bool large_blob_support = false;
     // large_blob_extension_support indicates support for the single-extension
@@ -250,6 +252,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualCtap2Device
     // kCtap2ErrInvalidCBOR if the display name is not present, simulating the
     // behaviour of iPhones.
     bool reject_missing_display_name = false;
+
+    std::optional<std::pair<uint8_t, uint8_t>> make_credential_hmac_key_byte;
   };
 
   VirtualCtap2Device();
@@ -277,6 +281,12 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualCtap2Device
   base::WeakPtr<FidoDevice> GetWeakPtr() override;
 
  private:
+  using DecryptedRequestHMACSecret = base::expected<
+      std::tuple<std::vector<uint8_t>,                     // hmac_shared_key
+                 std::array<uint8_t, 32>,                  // hmac_salt1
+                 std::optional<std::array<uint8_t, 32>>>,  // hmac_salt2
+      CtapDeviceResponseCode>;
+
   // RequestState encapsulates state for what CTAP 2.1 calls "stateful commands"
   // (https://drafts.fidoalliance.org/fido-2/latest/fido-client-to-authenticator-protocol-v2.1-rd-20210308.html#authenticator-api).
   struct RequestState {
@@ -372,6 +382,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualCtap2Device
 
   size_t remaining_resident_credentials() const;
   bool SupportsAtLeast(Ctap2Version ctap2_version) const;
+
+  DecryptedRequestHMACSecret DecryptRequestHMACSecret(
+      const HMACSecret& request_hmac_secret,
+      const std::optional<PINUVAuthProtocol>& request_pin_protocol);
 
   std::unique_ptr<VirtualU2fDevice> u2f_device_;
 

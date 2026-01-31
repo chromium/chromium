@@ -37,15 +37,26 @@ inline constexpr char kAutofillAiIdentityEntitiesEnabled[] =
 // `kAutofillAiOptInStatus` will have its current value migrated to
 // `kAutofillAiSyncedOptInStatus` at start-up time, this way users will not need
 // to opt-in into the feature twice.
+// TODO(crbug.com/459767753): Delete this pref as feature is obsolete.
 inline constexpr char kAutofillAiSyncedOptInStatus[] =
     "autofill.autofill_ai.synced_opt_in_status";
 // A dictionary that contains (hashed) GAIA ids and their opt-in status for
-// Autofill AI. This pref is in the process of being deprecated by
-// `kAutofillAiSyncedOptInStatus`, which is a simple synced pref (not keyed by
-// GAIA ids).
-// TODO(crbug.com/459767753): Clean up pref once fully deprecated.
+// Autofill AI.
+// Note that the feature AutofillAiAvailableByDefault is currently in the
+// process of being launched. Once this is done, this pref will not control
+// whether Autofill AI is available, but whether online model calls and MQLS
+// logging (Enhanced Autofill) are.
 inline constexpr char kAutofillAiOptInStatus[] =
     "autofill.autofill_ai.opt_in_status";
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(IS_CHROMEOS)
+// Boolean that is true if re-authentication is required before viewing Autofill
+// AI values. This could happen during the filling moment or when visiting the
+// management page.
+inline constexpr char kAutofillAiReauthBeforeViewingSensitiveData[] =
+    "autofill.autofill_ai.reauth_before_viewing_sensitive_data";
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) ||
+        // BUILDFLAG(IS_CHROMEOS)
 // Integer that is set to the last version where the Autofill AI deduping
 // routine was run. This routine will be run once per version.
 inline constexpr char kAutofillAiLastVersionDeduped[] =
@@ -54,14 +65,10 @@ inline constexpr char kAutofillAiLastVersionDeduped[] =
 // Otherwise, saving and filling of these entities is disabled.
 inline constexpr char kAutofillAiTravelEntitiesEnabled[] =
     "autofill.autofill_ai.travel_entities_enabled";
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 // Boolean that is true if BNPL on Autofill is enabled.
 inline constexpr char kAutofillBnplEnabled[] = "autofill.bnpl_enabled";
 // Boolean that is true if the user has ever seen a BNPL suggestion.
 inline constexpr char kAutofillHasSeenBnpl[] = "autofill.has_seen_bnpl";
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 // Boolean that is true if the Chrome user has seen the Amount Extraction AI
 // terms.
 inline constexpr char kAutofillAmountExtractionAiTermsSeen[] =
@@ -96,12 +103,6 @@ inline constexpr char kAutofillPaymentCardBenefits[] =
 // Boolean that is true if Autofill is enabled and allowed to save profile data.
 // Do not get/set the value of this pref directly. Use provided getter/setter.
 inline constexpr char kAutofillProfileEnabled[] = "autofill.profile_enabled";
-// To simplify the rollout of `kAutofillDeduplicateAccountAddresses`,
-// deduplication can be run a second time per milestone for users enrolled in
-// the experiment. This pref tracks whether deduplication was run a second time.
-// TODO(crbug.com/357074792): Remove after the rollout finished.
-inline constexpr char kAutofillRanExtraDeduplication[] =
-    "autofill.ran_extra_deduplication";
 // The opt-ins for Sync Transport features for each client.
 inline constexpr char kAutofillSyncTransportOptIn[] =
     "autofill.sync_transport_opt_ins";
@@ -177,20 +178,24 @@ inline constexpr char
 // the setup on each device requires steps outside the browser. Enabling this
 // pref on a device without a proper provider may yield a surprising absence of
 // filling.
-inline constexpr char kAutofillUsingVirtualViewStructure[] =
+inline constexpr char kAutofillUsingPlatformAutofill[] =
     "autofill.using_virtual_view_structure";
 // Boolean set by the `ThirdPartyPasswordManagersAllowed` policy. Defaults to
-// true which allows users to set the `kAutofillUsingVirtualViewStructure` pref.
+// true which allows users to set the `kAutofillUsingPlatformAutofill` pref.
 // If set to false, user can only use the built-in password manager.
 inline constexpr char kAutofillThirdPartyPasswordManagersAllowed[] =
     "autofill.third_party_password_managers_allowed";
+// String storing the active autofill service when the user last decided to use
+// the virtual view structure for autofilling. Defaults to an empty string. The
+// empty string means no autofill service was selected and default built-in
+// Autofill should be used.
+inline constexpr char kAutofillThirdPartyPackageUsedForPlatformAutofill[] =
+    "autofill.third_party_package_used_for_platform_autofill";
 inline constexpr char kFacilitatedPaymentsEwallet[] =
     "facilitated_payments.ewallet";
 inline constexpr char kFacilitatedPaymentsPix[] = "facilitated_payments.pix";
 inline constexpr char kFacilitatedPaymentsPixAccountLinking[] =
     "facilitated_payments.pix_account_linking_enabled";
-inline constexpr char kFacilitatedPaymentsPixAccountLinkingDeprecated[] =
-    "facilitated_payments.pix_account_linking";
 inline constexpr char kFacilitatedPaymentsA2AEnabled[] =
     "facilitated_payments.a2a_enabled";
 // Whether the user has seen the A2A flow at least once.
@@ -252,6 +257,10 @@ bool IsAutofillAiSyncedOptInStatusEnabled(const PrefService* prefs);
 
 void SetAutofillAiSyncedOptInStatus(PrefService* prefs, bool enabled);
 
+bool IsAutofillAiReauthBeforeFillingEnabled(const PrefService* prefs);
+
+void SetAutofillAiReauthBeforeFillingEnabled(PrefService* prefs, bool enabled);
+
 bool IsPaymentMethodsMandatoryReauthEnabled(const PrefService* prefs);
 
 // Returns true if the user has ever made an explicit decision for
@@ -293,21 +302,13 @@ bool IsFacilitatedPaymentsA2AEnabled(const PrefService* prefs);
 
 void SetFacilitatedPaymentsA2ATriggeredOnce(PrefService* prefs, bool value);
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 void SetAutofillBnplEnabled(PrefService* prefs, bool value);
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 
 bool IsAutofillBnplEnabled(const PrefService* prefs);
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 void SetAutofillHasSeenBnpl(PrefService* prefs);
 
 bool HasSeenBnpl(const PrefService* prefs);
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 
 void SetAutofillAmountExtractionAiTermsSeen(PrefService* prefs);
 

@@ -7,7 +7,6 @@
 
 #include <iosfwd>
 
-#include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips.mojom-data-view.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips.mojom-forward.h"
 
 namespace action_chips::mojom {

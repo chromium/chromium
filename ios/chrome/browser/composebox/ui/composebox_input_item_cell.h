@@ -22,6 +22,9 @@
 // A versatile cell for displaying any ComposeboxInputItem.
 @interface ComposeboxInputItemCell : UICollectionViewCell
 
+// The item that was used to configure this cell.
+@property(nonatomic, weak, readonly) ComposeboxInputItem* associatedItem;
+
 // The delegate for the cell.
 @property(nonatomic, weak) id<ComposeboxInputItemCellDelegate> delegate;
 

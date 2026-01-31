@@ -47,13 +47,13 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
@@ -191,7 +191,7 @@ void ProfileMenuView::OnClose() {
     // Launch a HaTS survey only if the user dismissed the menu without
     // selecting an item (e.g., by clicking outside or pressing ESC), and the
     // browser window remains active.
-    signin::LaunchSigninHatsSurveyForProfile(
+    signin::LaunchHatsSurveyForProfile(
         kHatsSurveyTriggerIdentityProfileMenuDismissed, &profile());
   }
 }
@@ -322,7 +322,9 @@ void ProfileMenuView::OnPasskeyUnlockButtonClicked() {
   if (!perform_menu_actions()) {
     return;
   }
-  webauthn::PasskeyUnlockManager::OpenTabWithPasskeyUnlockChallenge(&browser());
+  webauthn::PasskeyUnlockManager::OpenTabWithPasskeyUnlockChallenge(
+      &browser(), trusted_vault::TrustedVaultUserActionTriggerForUMA::
+                      kPasskeyUnlockProfileMenu);
 }
 
 void ProfileMenuView::OnSyncErrorButtonClicked(
@@ -388,8 +390,10 @@ void ProfileMenuView::OnSyncErrorButtonClicked(
       chrome::ShowSettingsSubPage(&browser(), chrome::kSyncSetupSubPage);
       break;
     case syncer::SyncService::UserActionableError::kBookmarksLimitExceeded:
-      // TODO(crbug.com/452968646): Adjust this with providing the concrete
-      // help center article link.
+      ShowBookmarksLimitExceededHelp(
+          &browser(), SyncServiceFactory::GetForProfile(&profile()),
+          syncer::SyncService::BookmarksLimitExceededHelpClickedSource::
+              kProfileMenu);
       break;
     case syncer::SyncService::UserActionableError::kNone:
       NOTREACHED();
@@ -453,7 +457,7 @@ void ProfileMenuView::OnOtherProfileSelected(
           if (!browser) {
             return;
           }
-          signin::LaunchSigninHatsSurveyForProfile(
+          signin::LaunchHatsSurveyForProfile(
               kHatsSurveyTriggerIdentitySwitchProfileFromProfileMenu,
               browser->GetProfile());
         }));
@@ -953,17 +957,8 @@ void ProfileMenuView::MaybeBuildBatchUploadButton() {
 void ProfileMenuView::BuildAutofillSettingsButton() {
   CHECK(!profile().IsGuestSession());
 
-  bool use_your_saved_info_branding =
-      base::FeatureList::IsEnabled(
-          autofill::features::kYourSavedInfoSettingsPage) ||
-      base::FeatureList::IsEnabled(
-          autofill::features::kYourSavedInfoBrandingInSettings);
-  int message_id = use_your_saved_info_branding
-                       ? IDS_SETTINGS_YOUR_SAVED_INFO
-                       : IDS_PROFILE_MENU_AUTOFILL_SETTINGS_BUTTON;
-  const gfx::VectorIcon& icon = use_your_saved_info_branding
-                                    ? vector_icons::kPersonTextIcon
-                                    : vector_icons::kPasswordManagerIcon;
+  int message_id = IDS_PROFILE_MENU_AUTOFILL_SETTINGS_BUTTON;
+  const gfx::VectorIcon& icon = vector_icons::kPasswordManagerIcon;
   auto action = base::FeatureList::IsEnabled(
                     autofill::features::kYourSavedInfoSettingsPage)
                     ? &ProfileMenuView::OnYourSavedInfoSettingsButtonClicked

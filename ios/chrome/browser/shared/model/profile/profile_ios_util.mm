@@ -10,8 +10,12 @@
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 
 bool IsPersonalProfile(ProfileIOS* profile) {
-  return profile->GetProfileName() == GetApplicationContext()
-                                          ->GetProfileManager()
-                                          ->GetProfileAttributesStorage()
-                                          ->GetPersonalProfileName();
+  return IsPersonalProfile(profile->GetProfileName());
+}
+
+bool IsPersonalProfile(std::string_view profile_name) {
+  return profile_name == GetApplicationContext()
+                             ->GetProfileManager()
+                             ->GetProfileAttributesStorage()
+                             ->GetPersonalProfileName();
 }

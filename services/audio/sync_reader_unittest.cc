@@ -21,6 +21,7 @@
 #include "base/time/time.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
+#include "media/media_buildflags.h"
 #include "services/audio/output_glitch_counter.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -40,6 +41,7 @@ namespace {
 
 void NoLog(const std::string&) {}
 
+#if BUILDFLAG(ENABLE_PASSTHROUGH_AUDIO_CODECS)
 static_assert(
     std::is_unsigned<
         decltype(AudioOutputBufferParameters::bitstream_data_size)>::value,
@@ -54,13 +56,13 @@ enum OverflowTestCase {
   kOverflowByMax
 };
 
-static const OverflowTestCase overflow_test_case_values[]{
+static constexpr auto kOverflowTestCaseValues[]{
     kZero, kNoOverflow, kOverflowByOne, kOverflowByOneThousand, kOverflowByMax};
 
 class SyncReaderBitstreamTest : public TestWithParam<OverflowTestCase> {
  public:
-  SyncReaderBitstreamTest() {}
-  ~SyncReaderBitstreamTest() override {}
+  SyncReaderBitstreamTest() = default;
+  ~SyncReaderBitstreamTest() override = default;
 
  private:
   base::test::TaskEnvironment env_;
@@ -122,7 +124,22 @@ TEST_P(SyncReaderBitstreamTest, BitstreamBufferOverflow_DoesNotWriteOOB) {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          SyncReaderBitstreamTest,
-                         ::testing::ValuesIn(overflow_test_case_values));
+                         ::testing::ValuesIn(kOverflowTestCaseValues));
+
+#else
+TEST(SyncReaderBitstreamTest, BitstreamNotSupported) {
+  const int kSampleRate = 44100;
+  const int kFramesPerBuffer = 1;
+  AudioParameters params(AudioParameters::AUDIO_BITSTREAM_AC3,
+                         media::ChannelLayoutConfig::Stereo(), kSampleRate,
+                         kFramesPerBuffer);
+
+  auto socket = std::make_unique<base::CancelableSyncSocket>();
+  EXPECT_DEATH_IF_SUPPORTED(
+      { SyncReader reader(base::BindRepeating(&NoLog), params, socket.get()); },
+      "");
+}
+#endif
 
 class MockOutputGlitchCounter : public OutputGlitchCounter {
  public:
@@ -137,7 +154,7 @@ class MockOutputGlitchCounter : public OutputGlitchCounter {
 class SyncReaderTest : public ::testing::Test {
  public:
   SyncReaderTest()
-      : params_(AudioParameters(AudioParameters::AUDIO_BITSTREAM_AC3,
+      : params_(AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
                                 media::ChannelLayoutConfig::Stereo(),
                                 kSampleRate,
                                 kFramesPerBuffer)) {}
@@ -194,8 +211,6 @@ TEST_F(SyncReaderTest, CallsGlitchCounter) {
     uint32_t signal;
     EXPECT_EQ(socket_->Receive(base::byte_span_from_ref(signal)),
               sizeof(signal));
-    buffer_->params.bitstream_data_size =
-        shmem_.mapped_size() - sizeof(AudioOutputBufferParameters);
     std::unique_ptr<AudioBus> output_bus = AudioBus::Create(params_);
 
     ++buffer_index;
@@ -212,8 +227,6 @@ TEST_F(SyncReaderTest, CallsGlitchCounter) {
     uint32_t signal;
     EXPECT_EQ(socket_->Receive(base::byte_span_from_ref(signal)),
               sizeof(signal));
-    buffer_->params.bitstream_data_size =
-        shmem_.mapped_size() - sizeof(AudioOutputBufferParameters);
     std::unique_ptr<AudioBus> output_bus = AudioBus::Create(params_);
 
     ++buffer_index;
@@ -230,8 +243,6 @@ TEST_F(SyncReaderTest, CallsGlitchCounter) {
     uint32_t signal;
     EXPECT_EQ(socket_->Receive(base::byte_span_from_ref(signal)),
               sizeof(signal));
-    buffer_->params.bitstream_data_size =
-        shmem_.mapped_size() - sizeof(AudioOutputBufferParameters);
     std::unique_ptr<AudioBus> output_bus = AudioBus::Create(params_);
 
     // Send an incorrect buffer index, which will count as a missed callback.
@@ -249,8 +260,6 @@ TEST_F(SyncReaderTest, CallsGlitchCounter) {
     uint32_t signal;
     EXPECT_EQ(socket_->Receive(base::byte_span_from_ref(signal)),
               sizeof(signal));
-    buffer_->params.bitstream_data_size =
-        shmem_.mapped_size() - sizeof(AudioOutputBufferParameters);
     std::unique_ptr<AudioBus> output_bus = AudioBus::Create(params_);
 
     // Send an incorrect buffer index, which will count as a missed callback.
@@ -271,8 +280,6 @@ TEST_F(SyncReaderTest, PropagatesDelay) {
   reader_->RequestMoreData(delay, delay_timestamp, {});
   uint32_t signal;
   EXPECT_EQ(socket_->Receive(base::byte_span_from_ref(signal)), sizeof(signal));
-  buffer_->params.bitstream_data_size =
-      shmem_.mapped_size() - sizeof(AudioOutputBufferParameters);
   std::unique_ptr<AudioBus> output_bus = AudioBus::Create(params_);
 
   EXPECT_EQ(buffer_->params.delay_us, delay.InMicroseconds());
@@ -281,21 +288,22 @@ TEST_F(SyncReaderTest, PropagatesDelay) {
 }
 
 TEST_F(SyncReaderTest, PropagatesGlitchInfo) {
+  media::AudioGlitchInfo cumulative_glitch_info;
   {
     media::AudioGlitchInfo glitch_info{.duration = base::Seconds(1),
                                        .count = 123};
+    cumulative_glitch_info += glitch_info;
 
     reader_->RequestMoreData(base::TimeDelta(), base::TimeTicks(), glitch_info);
     uint32_t signal;
     EXPECT_EQ(socket_->Receive(base::byte_span_from_ref(signal)),
               sizeof(signal));
-    buffer_->params.bitstream_data_size =
-        shmem_.mapped_size() - sizeof(AudioOutputBufferParameters);
     std::unique_ptr<AudioBus> output_bus = AudioBus::Create(params_);
 
-    EXPECT_EQ(buffer_->params.glitch_duration_us,
-              base::Seconds(1).InMicroseconds());
-    EXPECT_EQ(buffer_->params.glitch_count, 123u);
+    EXPECT_EQ(buffer_->params.cumulative_glitch_duration_us,
+              cumulative_glitch_info.duration.InMicroseconds());
+    EXPECT_EQ(static_cast<uint32_t>(buffer_->params.cumulative_glitch_count),
+              cumulative_glitch_info.count);
 
     // Set a clearly incorrect buffer index. This means that the reader will
     // assume it's got the wrong data back from the Renderer process, and will
@@ -309,21 +317,22 @@ TEST_F(SyncReaderTest, PropagatesGlitchInfo) {
   {
     media::AudioGlitchInfo glitch_info{.duration = base::Seconds(2),
                                        .count = 246};
+    cumulative_glitch_info += glitch_info;
 
     reader_->RequestMoreData(base::TimeDelta(), base::TimeTicks(), glitch_info);
     uint32_t signal;
     EXPECT_EQ(socket_->Receive(base::byte_span_from_ref(signal)),
               sizeof(signal));
-    buffer_->params.bitstream_data_size =
-        shmem_.mapped_size() - sizeof(AudioOutputBufferParameters);
     std::unique_ptr<AudioBus> output_bus = AudioBus::Create(params_);
 
     // Since there was a glitch on the last read, this time there will be an
     // extra glitch reflected in the propagated info.
-    EXPECT_EQ(
-        buffer_->params.glitch_duration_us,
-        (base::Seconds(2) + params_.GetBufferDuration()).InMicroseconds());
-    EXPECT_EQ(buffer_->params.glitch_count, 246u + 1u);
+    cumulative_glitch_info += media::AudioGlitchInfo{
+        .duration = params_.GetBufferDuration(), .count = 1};
+    EXPECT_EQ(buffer_->params.cumulative_glitch_duration_us,
+              cumulative_glitch_info.duration.InMicroseconds());
+    EXPECT_EQ(static_cast<uint32_t>(buffer_->params.cumulative_glitch_count),
+              cumulative_glitch_info.count);
 
     // This time, send the correct buffer index.
     uint32_t buffer_index = 2;
@@ -335,19 +344,18 @@ TEST_F(SyncReaderTest, PropagatesGlitchInfo) {
   {
     media::AudioGlitchInfo glitch_info{.duration = base::Seconds(3),
                                        .count = 321};
+    cumulative_glitch_info += glitch_info;
 
     reader_->RequestMoreData(base::TimeDelta(), base::TimeTicks(), glitch_info);
     uint32_t signal;
     EXPECT_EQ(socket_->Receive(base::byte_span_from_ref(signal)),
               sizeof(signal));
-    buffer_->params.bitstream_data_size =
-        shmem_.mapped_size() - sizeof(AudioOutputBufferParameters);
     std::unique_ptr<AudioBus> output_bus = AudioBus::Create(params_);
 
-    // This time there should be no added glitches.
-    EXPECT_EQ(buffer_->params.glitch_duration_us,
-              base::Seconds(3).InMicroseconds());
-    EXPECT_EQ(buffer_->params.glitch_count, 321u);
+    EXPECT_EQ(buffer_->params.cumulative_glitch_duration_us,
+              cumulative_glitch_info.duration.InMicroseconds());
+    EXPECT_EQ(static_cast<uint32_t>(buffer_->params.cumulative_glitch_count),
+              cumulative_glitch_info.count);
   }
 }
 

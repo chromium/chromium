@@ -43,7 +43,7 @@ void EarlyPrefsWriter::StoreUserPref(const std::string& key,
                                      const base::Value& value) {
   // Check if value is the same.
   auto* existing = data_->FindDict(key);
-  base::Value::Dict new_value;
+  base::DictValue new_value;
   SerializeUserPref(value, new_value);
   if (existing) {
     if (new_value == *existing) {
@@ -60,7 +60,7 @@ void EarlyPrefsWriter::StorePolicy(const std::string& key,
                                    bool is_recommended) {
   // Check if value is the same.
   auto* existing = data_->FindDict(key);
-  base::Value::Dict new_value;
+  base::DictValue new_value;
   SerializePolicy(value, is_recommended, new_value);
   if (existing) {
     if (new_value == *existing) {
@@ -73,14 +73,14 @@ void EarlyPrefsWriter::StorePolicy(const std::string& key,
 }
 
 void EarlyPrefsWriter::SerializeUserPref(const base::Value& value,
-                                         base::Value::Dict& result) const {
+                                         base::DictValue& result) const {
   result.Set(early_prefs::kPrefIsManagedKey, false);
   result.Set(early_prefs::kPrefValueKey, value.Clone());
 }
 
 void EarlyPrefsWriter::SerializePolicy(const base::Value& value,
                                        bool is_recommended,
-                                       base::Value::Dict& result) const {
+                                       base::DictValue& result) const {
   result.Set(early_prefs::kPrefIsManagedKey, true);
   result.Set(early_prefs::kPrefIsRecommendedKey, is_recommended);
   result.Set(early_prefs::kPrefValueKey, value.Clone());

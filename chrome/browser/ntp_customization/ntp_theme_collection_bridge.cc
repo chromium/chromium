@@ -20,7 +20,7 @@
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
-static jlong JNI_NtpThemeCollectionBridge_Init(
+static int64_t JNI_NtpThemeCollectionBridge_Init(
     JNIEnv* env,
     const JavaRef<jobject>& j_profile,
     const JavaRef<jobject>& j_java_obj) {
@@ -109,8 +109,8 @@ void NtpThemeCollectionBridge::OnCollectionInfoAvailable() {
         base::android::ConvertUTF8ToJavaString(env, collection.collection_name);
     ScopedJavaLocalRef<jobject> j_url =
         url::GURLAndroid::FromNativeGURL(env, collection.preview_image_url);
-    jint j_hash =
-        static_cast<jint>(base::PersistentHash(collection.collection_id));
+    int32_t j_hash =
+        static_cast<int32_t>(base::PersistentHash(collection.collection_id));
     ScopedJavaLocalRef<jobject> j_collection =
         Java_NtpThemeCollectionBridge_createCollection(env, j_id, j_label,
                                                        j_url, j_hash);

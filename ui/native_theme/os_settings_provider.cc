@@ -16,7 +16,6 @@
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_provider_key.h"
@@ -54,9 +53,9 @@ std::forward_list<OsSettingsProvider*>& GetOsSettingsProviders(
 
   static base::NoDestructor<std::array<
       std::forward_list<OsSettingsProvider*>,
-      base::to_underlying(OsSettingsProvider::PriorityLevel::kLast) + 1>>
+      std::to_underlying(OsSettingsProvider::PriorityLevel::kLast) + 1>>
       s_providers;
-  return (*s_providers)[base::to_underlying(priority_level)];
+  return (*s_providers)[std::to_underlying(priority_level)];
 }
 
 // Returns the global list of callbacks to notify on setting changes. This is
@@ -103,7 +102,7 @@ OsSettingsProvider::~OsSettingsProvider() {
 OsSettingsProvider& OsSettingsProvider::Get() {
   // Return any higher-than-production-priority providers first.
   for (auto i = PriorityLevel::kLast; i > PriorityLevel::kProduction;
-       i = static_cast<PriorityLevel>(base::to_underlying(i) - 1)) {
+       i = static_cast<PriorityLevel>(std::to_underlying(i) - 1)) {
     if (const auto& providers = GetOsSettingsProviders(i); !providers.empty()) {
       return *providers.front();
     }

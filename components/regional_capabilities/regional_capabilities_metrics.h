@@ -8,76 +8,16 @@
 #include <string>
 
 #include "components/country_codes/country_codes.h"
+#include "components/regional_capabilities/enums.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
-
-namespace search_engines {
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// LINT.IfChange(SearchEngineChoiceScreenConditions)
-enum class SearchEngineChoiceScreenConditions {
-  // The user has a custom search engine set.
-  kHasCustomSearchEngine = 0,
-  // The user has a search provider list override.
-  kSearchProviderOverride = 1,
-  // The user is not in the regional scope.
-  kNotInRegionalScope = 2,
-  // A policy sets the default search engine or disables search altogether.
-  kControlledByPolicy = 3,
-  // The profile is out of scope.
-  kProfileOutOfScope = 4,
-  // An extension controls the default search engine.
-  kExtensionControlled = 5,
-  // The user is eligible to see the screen at the next opportunity.
-  kEligible = 6,
-  // The choice has already been completed.
-  kAlreadyCompleted = 7,
-  // The browser type is unsupported.
-  kUnsupportedBrowserType = 8,
-  // The feature can't run, it is disabled by local or remote configuration.
-  kFeatureSuppressed = 9,
-  // Some other dialog is showing and interfering with the choice one.
-  kSuppressedByOtherDialog = 10,
-  // The browser window can't fit the dialog's smallest variant.
-  kBrowserWindowTooSmall = 11,
-  // The user has a distribution custom search engine set as default.
-  kHasDistributionCustomSearchEngine = 12,
-  // The user has an unknown (which we assume is because it has been removed)
-  // prepopulated search engine set as default.
-  kHasRemovedPrepopulatedSearchEngine = 13,
-  // The user does not have Google as the default search engine.
-  kHasNonGoogleSearchEngine = 14,
-  // The user is eligible, the app could have presented a dialog but the
-  // application was started via an external intent and the dialog skipped.
-  kAppStartedByExternalIntent = 15,
-  // The browser attempting to show the choice screen in a dialog is already
-  // showing a choice screen.
-  kAlreadyBeingShown = 16,
-  // The user made the choice in the guest session and opted to save it across
-  // guest sessions.
-  kUsingPersistedGuestSessionChoice = 17,
-  // The user's current location is not compatible with the regional scope *and*
-  // the regional program requires restricting to its associated countries.
-  kIncompatibleCurrentLocation = 18,
-  // The user is not eligible to make the choice because of their account
-  // capabilities.
-  kAccountNotEligible = 19,
-  // The choice screen could not be presented because program settings require
-  // it to not be shown on the UI surface that triggered it.
-  kIneligibleSurface = 20,
-  // The user is not eligible to make the choice because of their management
-  // status.
-  kManaged = 21,
-
-  kMaxValue = kManaged,
-};
-// LINT.ThenChange(/tools/metrics/histograms/metadata/search/enums.xml:SearchEngineChoiceScreenConditions)
-}  // namespace search_engines
 
 namespace regional_capabilities {
 
-using search_engines::SearchEngineChoiceScreenConditions;
-
 std::string ToString(SearchEngineChoiceScreenConditions condition);
+
+// Return whether `condition` describes the profile as being eligible or not to
+// proceed with showing choice screens.
+bool IsEligible(SearchEngineChoiceScreenConditions condition);
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -116,6 +56,19 @@ void RecordVariationsCountryMatching(
     country_codes::CountryId persisted_profile_country,
     country_codes::CountryId current_device_country,
     bool is_device_country_from_fallback);
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(AndroidProgramResolution)
+enum class AndroidProgramResolution {
+  kSuccess = 0,
+  kDefaultForOutOfProgramCountry = 1,
+  kMaxValue = kDefaultForOutOfProgramCountry,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/regional_capabilities/enums.xml:AndroidProgramResolution)
+
+void RecordAndroidProgramResolution(AndroidProgramResolution resolution);
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.

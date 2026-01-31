@@ -20,7 +20,6 @@
 #include "extensions/browser/null_app_sorting.h"
 #include "extensions/browser/safe_browsing_delegate.h"
 #include "extensions/browser/updater/null_extension_cache.h"
-#include "extensions/browser/updater/scoped_extension_updater_keep_alive.h"
 #include "extensions/browser/url_request_util.h"
 #include "extensions/common/features/feature_channel.h"
 #include "google_apis/gaia/gaia_urls.h"

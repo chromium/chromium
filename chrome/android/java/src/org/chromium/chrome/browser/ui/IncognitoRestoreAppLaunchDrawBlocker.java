@@ -4,13 +4,17 @@
 
 package org.chromium.chrome.browser.ui;
 
+import static org.chromium.chrome.browser.incognito.reauth.IncognitoReauthControllerImpl.PREVIOUS_VERSION_CODE;
+
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.CommandLine;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.crypto.CipherFactory;
@@ -34,11 +38,16 @@ public class IncognitoRestoreAppLaunchDrawBlocker {
      */
     public static final String IS_INCOGNITO_SELECTED = "is_incognito_selected";
 
+    public static final String SUPPORTED_PROFILE_TYPE = "supported_profile_type";
+
     /** A {@link Supplier<Bundle>} for the saved instance state supplier. */
     private final Supplier<Bundle> mSavedInstanceStateSupplier;
 
+    /** A {@link Supplier<PersistableBundle>} for the persistent state supplier. */
+    private final Supplier<PersistableBundle> mPersistentStateSupplier;
+
     /** A supplier of {@link TabModelSelector} instance. */
-    private final ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
+    private final MonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
 
     /**
      * A {@link ActivityLifecycleDispatcher} instance which allows to listen for {@link
@@ -107,7 +116,10 @@ public class IncognitoRestoreAppLaunchDrawBlocker {
      * @param savedInstanceStateSupplier A {@link Supplier<Bundle>} instance to pass in the bundle
      *     that was persisted during onSaveInstanceState that allows to look for signals on whether
      *     to block the draw or not.
-     * @param tabModelSelectorSupplier A {@link ObservableSupplier<TabModelSelector>} that allows to
+     * @param persistentStateSupplier A {@link Supplier<PersistableBundle>} instance to pass in the
+     *     PersistableBundle that was persisted during onSaveInstanceState that allows to look for
+     *     signals on whether to block the draw or not.
+     * @param tabModelSelectorSupplier A {@link MonotonicObservableSupplier <TabModelSelector>} that allows to
      *     listen for onTabStateInitialized signals which is used a fallback to unblock draw.
      * @param intentSupplier The {@link Supplier<Intent>} which is passed when Chrome was launched
      *     through Intent.
@@ -120,13 +132,15 @@ public class IncognitoRestoreAppLaunchDrawBlocker {
      */
     IncognitoRestoreAppLaunchDrawBlocker(
             Supplier<Bundle> savedInstanceStateSupplier,
-            ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
+            Supplier<PersistableBundle> persistentStateSupplier,
+            MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             Supplier<Intent> intentSupplier,
             Supplier<Boolean> shouldIgnoreIntentSupplier,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             Runnable unblockDrawRunnable,
             CipherFactory cipherFactory) {
         mSavedInstanceStateSupplier = savedInstanceStateSupplier;
+        mPersistentStateSupplier = persistentStateSupplier;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mIntentSupplier = intentSupplier;
         mShouldIgnoreIntentSupplier = shouldIgnoreIntentSupplier;
@@ -157,7 +171,36 @@ public class IncognitoRestoreAppLaunchDrawBlocker {
         if (!IncognitoReauthManager.isIncognitoReauthFeatureAvailable()) return false;
         if (CommandLine.getInstance().hasSwitch(ChromeSwitches.NO_RESTORE_STATE)) return false;
 
-        // A valid saved instance state is needed here.
+        boolean isIncognitoFiredFromLauncherShortcut =
+                !mShouldIgnoreIntentSupplier.get()
+                        && mIntentSupplier.get() != null
+                        && mIntentSupplier
+                                .get()
+                                .getBooleanExtra(
+                                        IntentHandler.EXTRA_INVOKED_FROM_LAUNCH_NEW_INCOGNITO_TAB,
+                                        false);
+
+        // A valid saved instance state or persistent state is needed here.
+        boolean validSavedIncognitoState =
+                hasValidSavedIncognitoState(isIncognitoFiredFromLauncherShortcut);
+        boolean validPersistentIncognitoState =
+                hasValidPersistentIncognitoState(isIncognitoFiredFromLauncherShortcut);
+        if (!validSavedIncognitoState && !validPersistentIncognitoState) return false;
+
+        // This is part of the environment that is required to make decisions. Therefore we need
+        // this and we block.
+        if (mTabModelSelectorSupplier.get() == null) return true;
+
+        if (mTabModelSelectorSupplier.get().isTabStateInitialized()
+                && mIsNativeInitializationFinished) {
+            return false;
+        }
+
+        // We block the draw.
+        return true;
+    }
+
+    private boolean hasValidSavedIncognitoState(boolean isIncognitoFiredFromLauncherShortcut) {
         Bundle savedInstanceState = mSavedInstanceStateSupplier.get();
         if (savedInstanceState == null) return false;
 
@@ -172,29 +215,39 @@ public class IncognitoRestoreAppLaunchDrawBlocker {
 
         boolean isLastSelectedModelIncognito =
                 savedInstanceState.getBoolean(IS_INCOGNITO_SELECTED, false);
-        boolean isIncognitoFiredFromLauncherShortcut =
-                !mShouldIgnoreIntentSupplier.get()
-                        && mIntentSupplier.get() != null
-                        && mIntentSupplier
-                                .get()
-                                .getBooleanExtra(
-                                        IntentHandler.EXTRA_INVOKED_FROM_LAUNCH_NEW_INCOGNITO_TAB,
-                                        false);
-
         // We have re-auth pending but we don't need to block draw if last tab model was regular and
         // we are not trying to create a new incognito tab from launcher shortcut.
         if (!isLastSelectedModelIncognito && !isIncognitoFiredFromLauncherShortcut) return false;
 
-        // This is part of the environment that is required to make decisions. Therefore we need
-        // this and we block.
-        if (mTabModelSelectorSupplier.get() == null) return true;
+        return true;
+    }
 
-        if (mTabModelSelectorSupplier.get().isTabStateInitialized()
-                && mIsNativeInitializationFinished) {
+    private boolean hasValidPersistentIncognitoState(boolean isIncognitoFiredFromLauncherShortcut) {
+        PersistableBundle persistentState = mPersistentStateSupplier.get();
+        if (persistentState == null) return false;
+
+        // Only restore incognito state if the data was persisted for an app update.
+        // TODO(crbug.com/474348773): Test more rigorously to see whether this check is needed.
+        if (BuildConfig.VERSION_CODE
+                == persistentState.getLong(PREVIOUS_VERSION_CODE, BuildConfig.VERSION_CODE)) {
             return false;
         }
 
-        // We block the draw.
+        if (!mCipherFactory.restoreFromPersistableBundle(persistentState)) return false;
+
+        // There were no Incognito tabs before the Activity got destroyed. So we don't need to block
+        // draw here.
+        if (!persistentState.getBoolean(
+                IncognitoReauthControllerImpl.KEY_IS_INCOGNITO_REAUTH_PENDING, false)) {
+            return false;
+        }
+
+        boolean isLastSelectedModelIncognito =
+                persistentState.getBoolean(IS_INCOGNITO_SELECTED, false);
+        // We have re-auth pending but we don't need to block draw if last tab model was regular and
+        // we are not trying to create a new incognito tab from launcher shortcut.
+        if (!isLastSelectedModelIncognito && !isIncognitoFiredFromLauncherShortcut) return false;
+
         return true;
     }
 

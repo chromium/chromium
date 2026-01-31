@@ -32,9 +32,11 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kAndroidCaretBrowsing,
     &features::kAndroidDevToolsFrontend,
     &features::kAccessibilityCheckJavaNodeCacheFreshness,
+    &features::kAccessibilityAtomicLiveRegions,
     &features::kAccessibilityDeprecateJavaNodeCache,
     &features::kAccessibilityDeprecateTypeAnnounce,
     &features::kAccessibilityExtendedSelection,
+    &features::kAccessibilityImeGetFormattedText,
     &features::kAccessibilityImproveLiveRegionAnnounce,
     &features::kAccessibilityMagnificationFollowsFocus,
     &features::kAccessibilityRequestLayoutBasedActions,
@@ -48,9 +50,11 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kAndroidFallbackToNextSlot,
     &features::kAndroidMediaInsertion,
     &features::kAndroidPkAutocorrectUnderline,
+    &features::kAndroidSpellingUnderlineInCompositionMode,
     &features::kStrictHighRankProcessLRU,
     &features::kFedCm,
     &features::kHidePastePopupOnGSB,
+    &features::kNoSelectionMenuCaching,
     &features::kReduceGpuPriorityOnBackground,
     &features::kRemoveCachedProcessFromBindingManager,
     &features::kContinueGestureOnLosingFocus,
@@ -74,8 +78,8 @@ base::android::FeatureMap* GetFeatureMap() {
 
 }  // namespace
 
-static jlong JNI_ContentFeatureMap_GetNativeMap(JNIEnv* env) {
-  return reinterpret_cast<jlong>(GetFeatureMap());
+static int64_t JNI_ContentFeatureMap_GetNativeMap(JNIEnv* env) {
+  return reinterpret_cast<int64_t>(GetFeatureMap());
 }
 
 }  // namespace content::android

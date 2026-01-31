@@ -79,14 +79,13 @@ class CORE_EXPORT CharacterData : public Node {
   }
 
   CharacterData(TreeScope& tree_scope, String&& text, ConstructionType type)
-      : Node(&tree_scope, type), data_(std::move(text)), is_parkable_(false) {
+      : Node(&tree_scope, type),
+        data_(!text.IsNull() ? std::move(text) : g_empty_string),
+        is_parkable_(false) {
     DCHECK(type == kCreateComment || type == kCreateText ||
            type == kCreateCdataSection ||
            type == kCreateProcessingInstruction || type == kCreateEditingText);
     DCHECK(!is_parkable_);
-    if (data_.IsNull()) {
-      data_ = g_empty_string;
-    }
   }
 
   ~CharacterData() noexcept override {

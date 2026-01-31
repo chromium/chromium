@@ -31,8 +31,6 @@ bool IsRuleSegmentVisible(const GridTrackSizingDirection track_direction,
   switch (rule_visibility) {
     case RuleVisibilityItems::kAll:
       return true;
-    case RuleVisibilityItems::kNone:
-      return false;
     case RuleVisibilityItems::kAround:
       // Paint if either side of the segment is occupied (i.e. not empty on both
       // sides).
@@ -308,10 +306,10 @@ void GapDecorationsPainter::Paint(GridTrackSizingDirection track_direction,
       // intersection point.
       // https://drafts.csswg.org/css-gaps-1/#propdef-column-rule-inset
       LayoutUnit start_inset =
-          gap_geometry.ComputeStartInset(style, gap_index, start, intersections,
+          gap_geometry.ComputeInsetStart(style, gap_index, start, intersections,
                                          is_column_gap, is_main, start_width);
       LayoutUnit end_inset =
-          gap_geometry.ComputeEndInset(style, gap_index, end, intersections,
+          gap_geometry.ComputeInsetEnd(style, gap_index, end, intersections,
                                        is_column_gap, is_main, end_width);
       // Compute the gap decorations offset as half of the `crossing_gap_width`
       // plus the inset.

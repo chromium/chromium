@@ -10,10 +10,8 @@
 #include <cstdio>
 #include <map>
 #include <optional>
-#include <unordered_set>
 #include <utility>
 
-#include "absl/container/flat_hash_map.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
@@ -43,6 +41,8 @@
 #include "components/sync_device_info/device_info_proto_enum_util.h"
 #include "components/sync_device_info/device_info_util.h"
 #include "components/sync_device_info/local_device_info_util.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace syncer {
 
@@ -185,7 +185,8 @@ DeviceInfo SpecificsToModel(const DeviceInfoSpecifics& specifics) {
       specifics.invalidation_fields().instance_id_token(),
       GetDataTypeSetFromSpecificsFieldNumberList(
           specifics.invalidation_fields().interested_data_type_ids()),
-      SpecificsToAutoSignOutLastSigninTimestamp(specifics));
+      SpecificsToAutoSignOutLastSigninTimestamp(specifics),
+      specifics.feature_fields().desktop_to_ios_promo_receiving_enabled());
 }
 
 // Allocate a EntityData and copies |specifics| into it.
@@ -244,6 +245,8 @@ std::unique_ptr<DeviceInfoSpecifics> MakeLocalDeviceSpecifics(
       info.send_tab_to_self_receiving_enabled());
   feature_fields->set_send_tab_to_self_receiving_type(
       info.send_tab_to_self_receiving_type());
+  feature_fields->set_desktop_to_ios_promo_receiving_enabled(
+      info.desktop_to_ios_promo_receiving_enabled());
   if (info.auto_sign_out_last_signin_timestamp().has_value()) {
     feature_fields
         ->set_auto_sign_out_last_signin_timestamp_windows_epoch_micros(
@@ -322,6 +325,8 @@ bool StoredDeviceInfoStillAccurate(const DeviceInfo* stored,
              stored->send_tab_to_self_receiving_enabled() &&
          current->send_tab_to_self_receiving_type() ==
              stored->send_tab_to_self_receiving_type() &&
+         current->desktop_to_ios_promo_receiving_enabled() ==
+             stored->desktop_to_ios_promo_receiving_enabled() &&
          current->sharing_info() == stored->sharing_info() &&
          ArePaaskInfosEqual(current->paask_info(), stored->paask_info()) &&
          current->fcm_registration_token() ==
@@ -366,7 +371,11 @@ DeviceInfoSyncBridge::DeviceInfoSyncBridge(
   DCHECK(!local_device_info_provider_->GetLocalDeviceInfo());
 
   DCHECK(pulse_task_runner);
-  pulse_timer_.SetTaskRunner(std::move(pulse_task_runner));
+  if (base::FeatureList::IsEnabled(kSyncDeviceInfoUseWallClockTimer)) {
+    wall_clock_pulse_timer_.SetTaskRunner(std::move(pulse_task_runner));
+  } else {
+    pulse_timer_.SetTaskRunner(std::move(pulse_task_runner));
+  }
 
   std::move(store_factory)
       .Run(DEVICE_INFO, base::BindOnce(&DeviceInfoSyncBridge::OnStoreCreated,
@@ -563,6 +572,7 @@ void DeviceInfoSyncBridge::ApplyDisableSyncChanges(
   local_device_info_provider_->Clear();
   local_cache_guid_.clear();
   pulse_timer_.Stop();
+  wall_clock_pulse_timer_.Stop();
 
   // Remove all local data, if sync is being disabled, the user has expressed
   // their desire to not have knowledge about other devices.
@@ -660,12 +670,12 @@ bool DeviceInfoSyncBridge::IsRecentLocalCacheGuid(
 
 bool DeviceInfoSyncBridge::IsPulseTimerRunningForTest() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return pulse_timer_.IsRunning();
+  return pulse_timer_.IsRunning() || wall_clock_pulse_timer_.IsRunning();
 }
 
 void DeviceInfoSyncBridge::ForcePulseForTest() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (pulse_timer_.IsRunning()) {
+  if (pulse_timer_.IsRunning() || wall_clock_pulse_timer_.IsRunning()) {
     // FireNow() can't be used with SetTaskRunner, so re-set the timer to fire
     // with no delay, and don't return until it's done.
 
@@ -681,7 +691,12 @@ void DeviceInfoSyncBridge::ForcePulseForTest() {
     base::RunLoop run_loop;
     done_pulse_timer_callback_for_test_ = run_loop.QuitClosure();
 
-    pulse_timer_.Start(FROM_HERE, base::TimeDelta(), std::move(timer_task));
+    if (wall_clock_pulse_timer_.IsRunning()) {
+      wall_clock_pulse_timer_.Start(FROM_HERE, base::Time::Now(),
+                                    std::move(timer_task));
+    } else {
+      pulse_timer_.Start(FROM_HERE, base::TimeDelta(), std::move(timer_task));
+    }
     run_loop.Run();
     return;
   }
@@ -927,7 +942,7 @@ bool DeviceInfoSyncBridge::ReconcileLocalAndStored() {
   const DeviceInfo& previous_device_info = iter->second.device_info();
   if (StoredDeviceInfoStillAccurate(&previous_device_info, current_info) &&
       !force_reupload_for_test_) {
-    if (pulse_timer_.IsRunning()) {
+    if (pulse_timer_.IsRunning() || wall_clock_pulse_timer_.IsRunning()) {
       // No need to update the |pulse_timer| since nothing has changed.
       return false;
     }
@@ -935,9 +950,16 @@ bool DeviceInfoSyncBridge::ReconcileLocalAndStored() {
     const base::TimeDelta pulse_delay(DeviceInfoUtil::CalculatePulseDelay(
         GetLastUpdateTime(iter->second.specifics()), Time::Now()));
     if (!pulse_delay.is_zero()) {
-      pulse_timer_.Start(FROM_HERE, pulse_delay,
-                         base::BindOnce(&DeviceInfoSyncBridge::SendLocalData,
-                                        base::Unretained(this)));
+      if (base::FeatureList::IsEnabled(kSyncDeviceInfoUseWallClockTimer)) {
+        wall_clock_pulse_timer_.Start(
+            FROM_HERE, base::Time::Now() + pulse_delay,
+            base::BindOnce(&DeviceInfoSyncBridge::SendLocalData,
+                           base::Unretained(this)));
+      } else {
+        pulse_timer_.Start(FROM_HERE, pulse_delay,
+                           base::BindOnce(&DeviceInfoSyncBridge::SendLocalData,
+                                          base::Unretained(this)));
+      }
       return false;
     }
   }
@@ -981,9 +1003,16 @@ void DeviceInfoSyncBridge::SendLocalDataWithBatch(
   StoreSpecifics(std::move(*specifics), batch.get());
   CommitAndNotify(std::move(batch), /*should_notify=*/true);
 
-  pulse_timer_.Start(FROM_HERE, DeviceInfoUtil::GetPulseInterval(),
-                     base::BindOnce(&DeviceInfoSyncBridge::SendLocalData,
-                                    base::Unretained(this)));
+  if (base::FeatureList::IsEnabled(kSyncDeviceInfoUseWallClockTimer)) {
+    wall_clock_pulse_timer_.Start(
+        FROM_HERE, base::Time::Now() + DeviceInfoUtil::GetPulseInterval(),
+        base::BindOnce(&DeviceInfoSyncBridge::SendLocalData,
+                       base::Unretained(this)));
+  } else {
+    pulse_timer_.Start(FROM_HERE, DeviceInfoUtil::GetPulseInterval(),
+                       base::BindOnce(&DeviceInfoSyncBridge::SendLocalData,
+                                      base::Unretained(this)));
+  }
   if (done_pulse_timer_callback_for_test_) {
     std::move(done_pulse_timer_callback_for_test_).Run();
   }
@@ -1065,7 +1094,7 @@ void DeviceInfoSyncBridge::ExpireOldEntries() {
   TRACE_EVENT0("sync", "DeviceInfoSyncBridge::ExpireOldEntries");
   const base::Time expiration_threshold =
       base::Time::Now() - kExpirationThreshold;
-  std::unordered_set<std::string> cache_guids_to_expire;
+  absl::flat_hash_set<std::string> cache_guids_to_expire;
   // Just collecting cache guids to expire to avoid modifying |all_data_| via
   // DeleteSpecifics() while iterating over it.
   for (const auto& [cache_guid, device_info_and_specifics] : all_data_) {

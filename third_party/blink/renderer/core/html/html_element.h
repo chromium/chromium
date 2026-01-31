@@ -368,8 +368,7 @@ class CORE_EXPORT HTMLElement : public Element {
   // See: crbug.com/1490919, https://open-ui.org/components/invokers.explainer/
   bool IsValidBuiltinCommand(HTMLElement& invoker,
                              CommandEventType command) override;
-  bool IsValidBuiltinPopoverCommand(HTMLElement& invoker,
-                                    CommandEventType command);
+  bool IsValidBuiltinPopoverCommand(CommandEventType command);
   bool HandleCommandInternal(HTMLElement& invoker,
                              CommandEventType command) override;
   // This is true if this element *can* be a command invoker: it is an element
@@ -378,8 +377,8 @@ class CORE_EXPORT HTMLElement : public Element {
   // function doesn't connect directly to the `command*` attributes themselves;
   // i.e. this will not change state if the `commandfor` attribute is changed.
   virtual bool CanBeCommandInvoker() const;
-  CommandEventType GetCommandEventType(const AtomicString& type,
-                                       ExecutionContext*) const;
+  static CommandEventType GetCommandEventType(const AtomicString& type,
+                                              ExecutionContext*);
   virtual bool HandleCommandForActivation();
   Element* commandForElement() const;
   AtomicString command() const;

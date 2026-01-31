@@ -4,6 +4,7 @@
 
 #include "chrome/browser/android/usage_stats/usage_stats_database.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -86,7 +87,7 @@ bool DoesNotContainFilter(const base::flat_set<std::string>& set,
 
 bool KeyContainsDomainFilter(const base::flat_set<std::string>& domains,
                              const std::string& key) {
-  return domains.contains(key.substr(kUnixTimeDigits + 1));
+  return domains.contains(std::string_view(key).substr(kUnixTimeDigits + 1));
 }
 
 UsageStatsDatabase::Error ToError(bool isSuccess) {

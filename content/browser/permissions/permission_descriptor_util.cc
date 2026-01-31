@@ -76,14 +76,17 @@ content::PermissionDescriptorUtil::CreatePermissionDescriptorForPermissionType(
     case blink::PermissionType::GEOLOCATION:
       return CreatePermissionDescriptor(
           blink::mojom::PermissionName::GEOLOCATION);
+    case blink::PermissionType::GEOLOCATION_APPROXIMATE:
+      return CreatePermissionDescriptor(
+          blink::mojom::PermissionName::GEOLOCATION_APPROXIMATE);
     case blink::PermissionType::PROTECTED_MEDIA_IDENTIFIER:
       return CreatePermissionDescriptor(
           blink::mojom::PermissionName::PROTECTED_MEDIA_IDENTIFIER);
     case blink::PermissionType::MIDI:
       return CreateMidiPermissionDescriptor(false);
-    case blink::PermissionType::DURABLE_STORAGE:
+    case blink::PermissionType::PERSISTENT_STORAGE:
       return CreatePermissionDescriptor(
-          blink::mojom::PermissionName::DURABLE_STORAGE);
+          blink::mojom::PermissionName::PERSISTENT_STORAGE);
     case blink::PermissionType::AUDIO_CAPTURE:
       return CreatePermissionDescriptor(
           blink::mojom::PermissionName::AUDIO_CAPTURE);

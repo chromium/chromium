@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/metrics/user_metrics.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace chromecast {
 namespace {

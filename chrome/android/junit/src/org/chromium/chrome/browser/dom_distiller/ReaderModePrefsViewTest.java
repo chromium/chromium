@@ -34,14 +34,20 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
 import org.chromium.components.dom_distiller.core.DistilledPagePrefs;
+import org.chromium.components.dom_distiller.core.DomDistillerFeatures;
 import org.chromium.dom_distiller.mojom.FontFamily;
 import org.chromium.dom_distiller.mojom.Theme;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /** Tests for the {@link ReaderModePrefsView} class. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -161,6 +167,7 @@ public class ReaderModePrefsViewTest {
         Assert.assertEquals(
                 1, mActionTester.getActionCount("DomDistiller.Android.FontFamilyChanged"));
         histogramSerif.assertExpected();
+        mReaderModePrefsView.onChangeFontFamily(FontFamily.SERIF);
 
         HistogramWatcher histogramMonospace =
                 HistogramWatcher.newBuilder()
@@ -172,6 +179,7 @@ public class ReaderModePrefsViewTest {
         Assert.assertEquals(
                 2, mActionTester.getActionCount("DomDistiller.Android.FontFamilyChanged"));
         histogramMonospace.assertExpected();
+        mReaderModePrefsView.onChangeFontFamily(FontFamily.MONOSPACE);
 
         // Test clicking the first option again.
         HistogramWatcher histogramSansSerif2 =
@@ -188,10 +196,43 @@ public class ReaderModePrefsViewTest {
 
     @Test
     @SmallTest
-    public void testFontScalingSlider() {
+    @EnableFeatures({
+        DomDistillerFeatures.READER_MODE_DISTILL_IN_APP,
+        DomDistillerFeatures.READER_MODE_SUPPORT_NEW_FONTS
+    })
+    public void testAdditionalFontFamilyButtonsVisibility_NewFontsEnabled() {
+        assertEquals(
+                View.VISIBLE, mReaderModePrefsView.findViewById(R.id.font_lexend).getVisibility());
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(DomDistillerFeatures.READER_MODE_SUPPORT_NEW_FONTS)
+    public void testAdditionalFontFamilyButtonsVisibility_NewFontsDisabled() {
+        assertEquals(
+                View.GONE, mReaderModePrefsView.findViewById(R.id.font_lexend).getVisibility());
+    }
+
+    @Test
+    @SmallTest
+    @Config(qualifiers = "sw320dp")
+    public void testFontScalingSliderPhone() {
+        verifyFontScalingSlider(1.75f, 175);
+    }
+
+    @Test
+    @SmallTest
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    @Config(qualifiers = "sw600dp")
+    public void testFontScalingSliderTablet() {
+        verifyFontScalingSlider(2.0f, 200);
+    }
+
+    private void verifyFontScalingSlider(float expectedMaxScaling, int expectedMaxPercent) {
         HistogramWatcher histograms =
                 HistogramWatcher.newBuilder()
-                        .expectIntRecord("DomDistiller.Android.FontScalingSelected", 250)
+                        .expectIntRecord(
+                                "DomDistiller.Android.FontScalingSelected", expectedMaxPercent)
                         .build();
         Slider slider = (Slider) mReaderModePrefsView.findViewById(R.id.font_size_slider);
 
@@ -225,7 +266,7 @@ public class ReaderModePrefsViewTest {
         slider.dispatchTouchEvent(upEvent);
 
         // Verify that the listener was triggered with the new value.
-        verify(mDistilledPagePrefs).setFontScaling(2.5f);
+        verify(mDistilledPagePrefs).setFontScaling(expectedMaxScaling);
         Assert.assertEquals(
                 1, mActionTester.getActionCount("DomDistiller.Android.FontScalingChanged"));
         histograms.assertExpected();

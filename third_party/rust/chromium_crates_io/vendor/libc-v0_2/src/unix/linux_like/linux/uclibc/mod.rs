@@ -36,7 +36,7 @@ s! {
         #[cfg(target_endian = "little")]
         pub f_fsid: c_ulong,
         #[cfg(target_pointer_width = "32")]
-        __f_unused: c_int,
+        __f_unused: Padding<c_int>,
         #[cfg(target_endian = "big")]
         pub f_fsid: c_ulong,
         pub f_flag: c_ulong,
@@ -404,7 +404,6 @@ pub const O_TMPFILE: c_int = 0o20000000 | O_DIRECTORY;
 pub const PACKET_MR_UNICAST: c_int = 3;
 pub const PF_NFC: c_int = 39;
 pub const PF_VSOCK: c_int = 40;
-pub const POSIX_MADV_DONTNEED: c_int = 4;
 pub const PTRACE_EVENT_STOP: c_int = 128;
 pub const PTRACE_GETSIGMASK: c_uint = 0x420a;
 pub const PTRACE_PEEKSIGINFO: c_int = 0x4209;

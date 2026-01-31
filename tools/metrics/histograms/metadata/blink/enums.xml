@@ -211,7 +211,8 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="kImageICO"/>
   <int value="6" label="kImageBMP"/>
   <int value="7" label="kImageAVIF"/>
-  <int value="8" label="(obsolete) kImageJXL"/>
+  <int value="8" label="kImageJXLDeprecated"/>
+  <int value="9" label="kImageJXL"/>
 </enum>
 
 <enum name="DigitalIdentityInterstitialClosedReason">
@@ -1658,9 +1659,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="1366" label="AudioListenerSetPosition"/>
   <int value="1367" label="AudioListenerSetOrientation"/>
   <int value="1368" label="IntersectionObserver_Constructor"/>
-  <int value="1369" label="DurableStoragePersist"/>
-  <int value="1370" label="DurableStoragePersisted"/>
-  <int value="1371" label="DurableStorageEstimate"/>
+  <int value="1369" label="PersistentStoragePersist"/>
+  <int value="1370" label="PersistentStoragePersisted"/>
+  <int value="1371" label="PersistentStorageEstimate"/>
   <int value="1372" label="UntrustedEventDefaultHandled"/>
   <int value="1373" label="FixedRasterScaleBlurryContent"/>
   <int value="1374" label="FixedRasterScalePotentialPerformanceRegression"/>
@@ -2732,8 +2733,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="2399" label="ReadableStreamConstructor"/>
   <int value="2400" label="WritableStreamConstructor"/>
   <int value="2401" label="TransformStreamConstructor"/>
-  <int value="2402" label="NegativeBackgroundSize"/>
-  <int value="2403" label="NegativeMaskSize"/>
+  <int value="2402" label="OBSOLETE_NegativeBackgroundSize"/>
+  <int value="2403" label="OBSOLETE_NegativeMaskSize"/>
   <int value="2404" label="ClientHintsRtt_DEPRECATED"/>
   <int value="2405" label="ClientHintsDownlink_DEPRECATED"/>
   <int value="2406" label="ClientHintsEct_DEPRECATED"/>
@@ -4624,7 +4625,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4169" label="OBSOLETE_BlobStoreAccessAcrossTopLevelSite"/>
   <int value="4170" label="OBSOLETE_BlobStoreAccessUnknownTopLevelSite"/>
   <int value="4171" label="CrossOriginAccessBasedOnDocumentDomain"/>
-  <int value="4172" label="CookieWithTruncatingChar"/>
+  <int value="4172" label="OBSOLETE_CookieWithTruncatingChar"/>
   <int value="4173" label="VideoTrackGenerator"/>
   <int value="4174" label="MediaCapabilitiesDecodingInfoWebrtc"/>
   <int value="4175" label="MediaCapabilitiesEncodingInfoWebrtc"/>
@@ -5430,12 +5431,12 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4882" label="ViewportSegments"/>
   <int value="4883" label="PrivateNetworkAccessWebSocketConnected"/>
   <int value="4884" label="WebAppTitle"/>
-  <int value="4885" label="DOMSubtreeModifiedEventFired"/>
-  <int value="4886" label="DOMNodeInsertedEventFired"/>
-  <int value="4887" label="DOMNodeRemovedEventFired"/>
-  <int value="4888" label="DOMNodeRemovedFromDocumentEventFired"/>
-  <int value="4889" label="DOMNodeInsertedIntoDocumentEventFired"/>
-  <int value="4890" label="DOMCharacterDataModifiedEventFired"/>
+  <int value="4885" label="OBSOLETE_DOMSubtreeModifiedEventFired"/>
+  <int value="4886" label="OBSOLETE_DOMNodeInsertedEventFired"/>
+  <int value="4887" label="OBSOLETE_DOMNodeRemovedEventFired"/>
+  <int value="4888" label="OBSOLETE_DOMNodeRemovedFromDocumentEventFired"/>
+  <int value="4889" label="OBSOLETE_DOMNodeInsertedIntoDocumentEventFired"/>
+  <int value="4890" label="OBSOLETE_DOMCharacterDataModifiedEventFired"/>
   <int value="4891" label="OBSOLETE_AnyMutationEventFired"/>
   <int value="4892" label="OBSOLETE_AnyMutationEventListenerAdded"/>
   <int value="4893"
@@ -6347,7 +6348,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5720" label="LcpCandidateRemovedWhilePaintTimePending"/>
   <int value="5721" label="GetBBoxForElementWithZeroWidthOrHeight"/>
   <int value="5722" label="GetBBoxForNestedSVGElementWithZeroWidthOrHeight"/>
-  <int value="5723" label="XMLExternalResourceLoadEntitiesOnly"/>
+  <int value="5723" label="OBSOLETE_kXMLExternalResourceLoadEntitiesOnly"/>
   <int value="5724" label="V8Origin_IsSameOrigin_Method"/>
   <int value="5725" label="V8Origin_IsSameSite_Method"/>
   <int value="5726" label="V8Origin_From_Method"/>
@@ -6399,6 +6400,19 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5767" label="DigitalCredentialsProtocolOpenId4VpMultisigned"/>
   <int value="5768" label="DigitalCredentialsProtocolOrgIsoMdoc"/>
   <int value="5769" label="DigitalCredentialsProtocolOpenId4Vci"/>
+  <int value="5770" label="DigitalCredentialsProtocolUnknown"/>
+  <int value="5771" label="SetCookieWithEmptyName"/>
+  <int value="5772" label="SetCookieWithEmptyNameAndAmbiguousValue"/>
+  <int value="5773"
+      label="StorageAccessAPI_requestStorageAccessFor_Method_AsyncSuccess"/>
+  <int value="5774" label="WebAudioRenderSizeHint"/>
+  <int value="5775" label="WebAudioRenderQuantumSize"/>
+  <int value="5776" label="ImageElementTimingNotImageOrVideoNode"/>
+  <int value="5777" label="XSLPIInSVGImage"/>
+  <int value="5778" label="XSLPIInSVGStandaloneDoc"/>
+  <int value="5779" label="AudioContextAsyncStateTransitions"/>
+  <int value="5780" label="AudioContextAsyncTransitionToRunningStateRead"/>
+  <int value="5781" label="AudioContextAsyncTransitionToSuspendedStateRead"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
@@ -6553,6 +6567,8 @@ Called by update_permissions_policy_enum.py.-->
   <int value="141" label="DigitalCredentialsCreate"/>
   <int value="142" label="MulticastInDirectSockets"/>
   <int value="143" label="ManualText"/>
+  <int value="144" label="LocalNetwork"/>
+  <int value="145" label="LoopbackNetwork"/>
 </enum>
 
 <!-- LINT.IfChange(FedCmAccountChooserResult) -->
@@ -8116,13 +8132,13 @@ Called by update_use_counter_css.py.-->
   <int value="805" label="text-wrap-mode"/>
   <int value="806" label="text-wrap-style"/>
   <int value="807" label="masonry-track (obsolete)"/>
-  <int value="808" label="item-tolerance"/>
+  <int value="808" label="flow-tolerance"/>
   <int value="809" label="caret-animation"/>
   <int value="810" label="view-transition-capture-mode (obsolete)"/>
   <int value="811" label="interactivity"/>
-  <int value="812" label="grid-lanes-fill"/>
+  <int value="812" label="grid-lanes-fill (obsolete)"/>
   <int value="813" label="grid-lanes-direction"/>
-  <int value="814" label="grid-lanes-flow"/>
+  <int value="814" label="grid-lanes-flow (obsolete)"/>
   <int value="815" label="masonry-auto-tracks (obsolete)"/>
   <int value="816" label="result"/>
   <int value="817" label="animation-trigger-type (obsolete)"/>
@@ -8164,8 +8180,8 @@ Called by update_use_counter_css.py.-->
   <int value="853" label="rule-style"/>
   <int value="854" label="caret-shape"/>
   <int value="855" label="row-rule"/>
-  <int value="856" label="text-grow"/>
-  <int value="857" label="text-shrink"/>
+  <int value="856" label="text-grow (obsolete)"/>
+  <int value="857" label="text-shrink (obsolete)"/>
   <int value="858" label="rule"/>
   <int value="859" label="origin-trial-test-shorthand (obsolete)"/>
   <int value="860" label="corner-top-shape"/>
@@ -8181,10 +8197,10 @@ Called by update_use_counter_css.py.-->
   <int value="870" label="animation-trigger-behavior (obsolete)"/>
   <int value="871" label="timeline-trigger-name"/>
   <int value="872" label="timeline-trigger-behavior"/>
-  <int value="873" label="timeline-trigger-range-start"/>
-  <int value="874" label="timeline-trigger-range-end"/>
-  <int value="875" label="timeline-trigger-exit-range-start"/>
-  <int value="876" label="timeline-trigger-exit-range-end"/>
+  <int value="873" label="timeline-trigger-range-start (obsolete)"/>
+  <int value="874" label="timeline-trigger-range-end (obsolete)"/>
+  <int value="875" label="timeline-trigger-exit-range-start (obsolete)"/>
+  <int value="876" label="timeline-trigger-exit-range-end (obsolete)"/>
   <int value="877" label="timeline-trigger-source"/>
   <int value="878" label="timeline-trigger"/>
   <int value="879" label="grid-lanes"/>
@@ -8199,17 +8215,41 @@ Called by update_use_counter_css.py.-->
   <int value="888" label="rule-inset"/>
   <int value="889" label="column-rule-visibility-items"/>
   <int value="890" label="row-rule-visibility-items"/>
-  <int value="891" label="column-rule-edge-start-inset"/>
-  <int value="892" label="column-rule-edge-end-inset"/>
-  <int value="893" label="column-rule-interior-start-inset"/>
-  <int value="894" label="column-rule-interior-end-inset"/>
-  <int value="895" label="row-rule-edge-start-inset"/>
-  <int value="896" label="row-rule-edge-end-inset"/>
-  <int value="897" label="row-rule-interior-start-inset"/>
-  <int value="898" label="row-rule-interior-end-inset"/>
-  <int value="899" label="timeline-trigger-range"/>
-  <int value="900" label="timeline-trigger-exit-range"/>
+  <int value="891" label="column-rule-edge-inset-start"/>
+  <int value="892" label="column-rule-edge-inset-end"/>
+  <int value="893" label="column-rule-interior-inset-start"/>
+  <int value="894" label="column-rule-interior-inset-end"/>
+  <int value="895" label="row-rule-edge-inset-start"/>
+  <int value="896" label="row-rule-edge-inset-end"/>
+  <int value="897" label="row-rule-interior-inset-start"/>
+  <int value="898" label="row-rule-interior-inset-end"/>
+  <int value="899" label="timeline-trigger-range (obsolete)"/>
+  <int value="900" label="timeline-trigger-exit-range (obsolete)"/>
   <int value="901" label="trigger-scope"/>
+  <int value="902" label="protocol"/>
+  <int value="903" label="hostname"/>
+  <int value="904" label="port"/>
+  <int value="905" label="pathname"/>
+  <int value="906" label="search"/>
+  <int value="907" label="hash"/>
+  <int value="908" label="base-url"/>
+  <int value="909" label="pattern"/>
+  <int value="910" label="column-rule-edge-inset"/>
+  <int value="911" label="row-rule-edge-inset"/>
+  <int value="912" label="column-rule-interior-inset"/>
+  <int value="913" label="row-rule-interior-inset"/>
+  <int value="914" label="rule-edge-inset"/>
+  <int value="915" label="rule-interior-inset"/>
+  <int value="916" label="page-margin-safety"/>
+  <int value="917" label="timeline-trigger-entry-range-start"/>
+  <int value="918" label="timeline-trigger-entry-range-end"/>
+  <int value="919" label="timeline-trigger-active-range-start"/>
+  <int value="920" label="timeline-trigger-active-range-end"/>
+  <int value="921" label="timeline-trigger-entry-range"/>
+  <int value="922" label="timeline-trigger-active-range"/>
+  <int value="923" label="grid-lanes-pack"/>
+  <int value="924" label="text-fit"/>
+  <int value="925" label="view-transition-scope"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom:CSSSampleId) -->
@@ -8624,7 +8664,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="278" label="Profiler"/>
   <int value="279" label="AsyncIterableStreams"/>
   <int value="280" label="ContainerScrollStateQueries"/>
-  <int value="281" label="DRAFT_ScopedViewTransitions"/>
+  <int value="281" label="ViewTransitionsElementScoped"/>
   <int value="282" label="AttributionReporting"/>
   <int value="283" label="CookieStore"/>
   <int value="284" label="Fencedframe"/>
@@ -8760,6 +8800,13 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="414" label="TextJustify"/>
   <int value="415" label="Summarizer"/>
   <int value="416" label="TranslationApi"/>
+  <int value="417" label="DRAFT_MetaTextScale"/>
+  <int value="418" label="Jpegxl"/>
+  <int value="419" label="PartitionedCookies"/>
+  <int value="420" label="Prompt"/>
+  <int value="421" label="Proofreader"/>
+  <int value="422" label="Rewriter"/>
+  <int value="423" label="Writer"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

@@ -20,26 +20,27 @@
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
-#include "third_party/blink/renderer/platform/wtf/text/case_folding_hash.h"
+#include "third_party/blink/renderer/platform/wtf/text/ignoring_ascii_case_hash.h"
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 
 namespace blink {
 
 namespace {
 
-using CaseFoldingHashSet = HashSet<String, CaseFoldingHashTraits<String>>;
+using IgnoringCaseHashSet =
+    HashSet<String, IgnoringAsciiCaseHashTraits<String>>;
 
-CaseFoldingHashSet CreateMacrolanguageChineseLanguageTags() {
+IgnoringCaseHashSet CreateMacrolanguageChineseLanguageTags() {
   // This list is from the IANA language-subtag-registry:
   // https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry
   // where "Type: language" and "Macrolanguage: zh".
-  return CaseFoldingHashSet{"cdo", "cjy", "cmn", "cnp", "cpx", "csp", "czh",
-                            "czo", "gan", "hak", "hnm", "hsn", "luh", "lzh",
-                            "mnp", "nan", "sjc", "wuu", "yue", "zh"};
+  return IgnoringCaseHashSet{"cdo", "cjy", "cmn", "cnp", "cpx", "csp", "czh",
+                             "czo", "gan", "hak", "hnm", "hsn", "luh", "lzh",
+                             "mnp", "nan", "sjc", "wuu", "yue", "zh"};
 }
 
-CaseFoldingHashSet MacrolanguageChineseLanguageTags() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(CaseFoldingHashSet, tags,
+IgnoringCaseHashSet MacrolanguageChineseLanguageTags() {
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(IgnoringCaseHashSet, tags,
                                   (CreateMacrolanguageChineseLanguageTags()));
   return tags;
 }
@@ -56,7 +57,7 @@ bool ComputeIsMacrolanguageChinese(const String& value) {
 struct PerThreadData {
   HashMap<AtomicString,
           scoped_refptr<LayoutLocale>,
-          CaseFoldingHashTraits<AtomicString>>
+          IgnoringAsciiCaseHashTraits<AtomicString>>
       locale_map;
   raw_ptr<const LayoutLocale> default_locale = nullptr;
   raw_ptr<const LayoutLocale> system_locale = nullptr;

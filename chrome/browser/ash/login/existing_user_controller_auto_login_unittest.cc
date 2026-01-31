@@ -64,12 +64,12 @@ class ExistingUserControllerAutoLoginTest : public ::testing::Test {
         FakeSessionManagerClient::Get(), new ownership::MockOwnerKeyUtil());
     DeviceSettingsService::Get()->Load();
 
-    base::Value::Dict account;
+    base::DictValue account;
     account.Set(kAccountsPrefDeviceLocalAccountsKeyId, auto_login_user_id_);
     account.Set(
         kAccountsPrefDeviceLocalAccountsKeyType,
         static_cast<int>(policy::DeviceLocalAccountType::kPublicSession));
-    base::Value::List accounts;
+    base::ListValue accounts;
     accounts.Append(std::move(account));
     settings_helper_.Set(kAccountsPrefDeviceLocalAccounts,
                          base::Value(std::move(accounts)));

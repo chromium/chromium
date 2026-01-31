@@ -23,6 +23,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -33,11 +34,12 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/views/frame/horizontal_tab_strip_region_view.h"
-#include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/chrome_features.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_match.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/buildflags.h"
@@ -202,7 +204,8 @@ BrowserRootView::~BrowserRootView() {
 bool BrowserRootView::GetDropFormats(
     int* formats,
     std::set<ui::ClipboardFormatType>* format_types) {
-  if (tabstrip()->GetVisible() || toolbar()->GetVisible()) {
+  if (browser_view_->tab_strip_view()->GetVisible() ||
+      toolbar()->GetVisible()) {
     *formats = ui::OSExchangeData::URL | ui::OSExchangeData::STRING;
     return true;
   }
@@ -219,7 +222,8 @@ bool BrowserRootView::CanDrop(const ui::OSExchangeData& data) {
     return false;
   }
 
-  if (!tabstrip()->GetVisible() && !toolbar()->GetVisible()) {
+  if (!browser_view_->tab_strip_view()->GetVisible() &&
+      !toolbar()->GetVisible()) {
     return false;
   }
 
@@ -325,16 +329,17 @@ bool BrowserRootView::OnMouseWheel(const ui::MouseWheelEvent& event) {
   // TODO(dfried): See if it's possible to move this logic deeper into the view
   // hierarchy - ideally to HorizontalTabStripRegionView.
 
-  // Scroll-event-changes-tab is incompatible with scrolling tabstrip, so
+  // Scroll-event-changes-tab is incompatible with vertical tabstrip, so
   // disable it if the latter feature is enabled.
-  if (browser_defaults::kScrollEventChangesTab) {
+  if (browser_defaults::kScrollEventChangesTab &&
+      !browser_view_->ShouldDrawVerticalTabStrip()) {
     // Switch to the left/right tab if the wheel-scroll happens over the
     // tabstrip, or the empty space beside the tabstrip.
     views::View* hit_view = GetEventHandlerForPoint(event.location());
     int hittest =
         GetWidget()->non_client_view()->NonClientHitTest(event.location());
-    if (tabstrip()->Contains(hit_view) || hittest == HTCAPTION ||
-        hittest == HTTOP) {
+    if (browser_view_->tab_strip_view()->Contains(hit_view) ||
+        hittest == HTCAPTION || hittest == HTTOP) {
       scroll_remainder_x_ += event.x_offset();
       scroll_remainder_y_ += event.y_offset();
 
@@ -415,88 +420,93 @@ void BrowserRootView::PaintChildren(const views::PaintInfo& paint_info) {
   // offset from the widget by a few DIPs, which is troublesome for computing a
   // subpixel offset when using fractional scale factors.  So we're forced to
   // put this drawing in the BrowserRootView.
-  if (tabstrip()->ShouldDrawStrokes() && browser_view_->IsToolbarVisible() &&
-      browser_view_->ShouldDrawTabStrip() &&
-      !browser_view_->ShouldDrawVerticalTabStrip() &&
-      !browser_view_->IsFullscreen()) {
-    ui::PaintRecorder recorder(paint_info.context(),
-                               paint_info.paint_recording_size(),
-                               paint_info.paint_recording_scale_x(),
-                               paint_info.paint_recording_scale_y(), nullptr);
-    gfx::Canvas* canvas = recorder.canvas();
-
-    const float scale = canvas->image_scale();
-
-    gfx::RectF tabstrip_bounds(browser_view_->tabstrip()->GetLocalBounds());
-    ConvertRectToTarget(browser_view_->tabstrip(), this, &tabstrip_bounds);
-    gfx::RectF browser_bounds(browser_view_->GetLocalBounds());
-    ConvertRectToTarget(browser_view_, this, &browser_bounds);
-    const float unscaled_bottom =
-        tabstrip_bounds.bottom() - GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP);
-    const int bottom = std::round(unscaled_bottom * scale);
-    const int x = std::round(browser_bounds.x() * scale);
-    const int width = std::round(browser_bounds.width() * scale);
-
-    gfx::ScopedCanvas scoped_canvas(canvas);
-    const std::optional<int> active_tab_index = tabstrip()->GetActiveIndex();
-    if (active_tab_index.has_value()) {
-      Tab* active_tab = tabstrip()->tab_at(active_tab_index.value());
-      if (active_tab && active_tab->GetVisible()) {
-        auto clip_rect_for_tab = [canvas, this](Tab* tab) {
-          gfx::RectF bounds(tab->GetMirroredBounds());
-          // The root of the views tree that hosts tabstrip is BrowserRootView.
-          // Except in Mac Immersive Fullscreen where the tabstrip is hosted in
-          // `overlay_widget` or `tab_overlay_widget`, each have their own root
-          // view.
-          ConvertRectToTarget(tabstrip(),
-                              tabstrip()->GetWidget()->GetRootView(), &bounds);
-          // Extend the bounds to cover the curve at the end of the toolbar.
-          bounds.set_height(bounds.height() +
-                            GetLayoutConstant(TOOLBAR_CORNER_RADIUS));
-          canvas->ClipRect(bounds, SkClipOp::kDifference);
-        };
-
-        if (active_tab->split()) {
-          for (Tab* split_tab :
-               active_tab->controller()->GetTabsInSplit(active_tab)) {
-            clip_rect_for_tab(split_tab);
-          }
-        } else {
-          clip_rect_for_tab(active_tab);
-        }
-      }
-    }
-    canvas->UndoDeviceScaleFactor();
-
-    const auto* widget = GetWidget();
-    DCHECK(widget);
-    const SkColor toolbar_top_separator_color =
-        widget->GetColorProvider()->GetColor(
-            GetWidget()->ShouldPaintAsActive()
-                ? kColorToolbarTopSeparatorFrameActive
-                : kColorToolbarTopSeparatorFrameInactive);
-
-    cc::PaintFlags flags;
-    flags.setColor(toolbar_top_separator_color);
-    flags.setAntiAlias(true);
-    const float stroke_width = scale;
-    // Outset the rectangle and corner radius by half the stroke width
-    // to draw an outer stroke.
-    const float stroke_outset = stroke_width / 2;
-    const float corner_radius =
-        GetLayoutConstant(TOOLBAR_CORNER_RADIUS) * scale + stroke_outset;
-
-    flags.setStyle(cc::PaintFlags::kStroke_Style);
-    flags.setStrokeWidth(stroke_width);
-
-    // Only draw the top half of the rounded rect.
-    canvas->ClipRect(gfx::RectF(x, 0, width, bottom + corner_radius),
-                     SkClipOp::kIntersect);
-
-    gfx::RectF rect(x, bottom, width, 2 * corner_radius);
-    rect.Outset(stroke_outset);
-    canvas->DrawRoundRect(rect, corner_radius, flags);
+  if (!browser_view_->ShouldDrawTabStrokes() ||
+      !browser_view_->IsToolbarVisible() ||
+      !browser_view_->ShouldDrawTabStrip() || browser_view_->IsFullscreen()) {
+    return;
   }
+
+  views::View* tab_strip_view =
+      browser_view_->tab_strip_view()->GetTabStripView();
+  CHECK(tab_strip_view);
+
+  gfx::RectF tabstrip_bounds(tab_strip_view->GetLocalBounds());
+  ConvertRectToTarget(tab_strip_view, this, &tabstrip_bounds);
+  gfx::RectF browser_bounds(browser_view_->GetLocalBounds());
+  ConvertRectToTarget(browser_view_, this, &browser_bounds);
+
+  ui::PaintRecorder recorder(paint_info.context(),
+                             paint_info.paint_recording_size(),
+                             paint_info.paint_recording_scale_x(),
+                             paint_info.paint_recording_scale_y(), nullptr);
+
+  gfx::Canvas* canvas = recorder.canvas();
+  const float scale = canvas->image_scale();
+
+  const float unscaled_bottom =
+      tabstrip_bounds.bottom() -
+      GetLayoutConstant(LayoutConstant::kTabstripToolbarOverlap);
+  const int bottom = std::round(unscaled_bottom * scale);
+  const int x = std::round(browser_bounds.x() * scale);
+  const int width = std::round(browser_bounds.width() * scale);
+
+  TabStripModel* model = browser_view_->browser()->tab_strip_model();
+  std::vector<tabs::TabInterface*> active_tabs = model->GetForegroundTabs();
+  for (tabs::TabInterface* active_tab : active_tabs) {
+    int index = model->GetIndexOfTab(active_tab);
+    views::View* tab_view =
+        browser_view_->tab_strip_view()->GetTabAnchorViewAt(index);
+
+    if (tab_view && tab_view->GetVisible()) {
+      gfx::RectF bounds(tab_view->GetMirroredBounds());
+
+      // The root of the views tree that hosts tabstrip is BrowserRootView.
+      // Except in Mac Immersive Fullscreen where the tabstrip is hosted in
+      // `overlay_widget` or `tab_overlay_widget`, each have their own root
+      // view.
+      ConvertRectToTarget(tab_strip_view,
+                          tab_strip_view->GetWidget()->GetRootView(), &bounds);
+
+      // Extend the bounds to cover the curve at the end of the toolbar.
+      bounds.set_height(
+          bounds.height() +
+          GetLayoutConstant(LayoutConstant::kToolbarCornerRadius));
+      canvas->ClipRect(bounds, SkClipOp::kDifference);
+    }
+  }
+
+  canvas->UndoDeviceScaleFactor();
+
+  const auto* widget = GetWidget();
+  DCHECK(widget);
+
+  const SkColor toolbar_top_separator_color =
+      widget->GetColorProvider()->GetColor(
+          GetWidget()->ShouldPaintAsActive()
+              ? kColorToolbarTopSeparatorFrameActive
+              : kColorToolbarTopSeparatorFrameInactive);
+
+  cc::PaintFlags flags;
+  flags.setColor(toolbar_top_separator_color);
+  flags.setAntiAlias(true);
+
+  // Outset the rectangle and corner radius by half the stroke width
+  // to draw an outer stroke.
+  const float stroke_width = scale;
+  const float stroke_outset = stroke_width / 2;
+  const float corner_radius =
+      GetLayoutConstant(LayoutConstant::kToolbarCornerRadius) * scale +
+      stroke_outset;
+  flags.setStyle(cc::PaintFlags::kStroke_Style);
+  flags.setStrokeWidth(stroke_width);
+
+  // Only draw the top half of the rounded rect.
+  canvas->ClipRect(gfx::RectF(x, 0, width, bottom + corner_radius),
+                   SkClipOp::kIntersect);
+
+  gfx::RectF rect(x, bottom, width, 2 * corner_radius);
+  rect.Outset(stroke_outset);
+  canvas->DrawRoundRect(rect, corner_radius, flags);
 }
 
 BrowserRootView::DropTarget* BrowserRootView::GetDropTarget(
@@ -505,8 +515,8 @@ BrowserRootView::DropTarget* BrowserRootView::GetDropTarget(
 
   // See if we should drop links onto tabstrip first.
   gfx::Point loc_in_tabstrip(event.location());
-  ConvertPointToTarget(this, tabstrip(), &loc_in_tabstrip);
-  target = tabstrip()->GetDropTarget(loc_in_tabstrip);
+  ConvertPointToTarget(this, browser_view_->tab_strip_view(), &loc_in_tabstrip);
+  target = browser_view_->tab_strip_view()->GetDropTarget(loc_in_tabstrip);
 
   // See if we can drop links onto toolbar.
   if (!target) {
@@ -547,10 +557,6 @@ void BrowserRootView::OnFilteringComplete(int sequence,
 void BrowserRootView::SetOnFilteringCompleteClosureForTesting(
     base::OnceClosure closure) {
   on_filtering_complete_closure_ = std::move(closure);
-}
-
-TabStrip* BrowserRootView::tabstrip() {
-  return browser_view_->tabstrip();
 }
 
 ToolbarView* BrowserRootView::toolbar() {

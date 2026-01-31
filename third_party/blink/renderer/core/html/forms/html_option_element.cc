@@ -77,6 +77,8 @@ class OptionTextObserver : public MutationObserver::Delegate {
     option_->DidChangeTextContent();
   }
 
+  void Disconnect() { observer_->disconnect(); }
+
   void Trace(Visitor* visitor) const override {
     visitor->Trace(option_);
     visitor->Trace(observer_);
@@ -144,7 +146,7 @@ FocusableState HTMLOptionElement::SupportsFocus(
     bool base_with_picker =
         select->UsesMenuList() && popover && popover->popoverOpen();
     bool base_in_page =
-        RuntimeEnabledFeatures::CustomizableSelectInPageEnabled() &&
+        RuntimeEnabledFeatures::CustomizableSelectListboxEnabled() &&
         !select->UsesMenuList() && select->IsAppearanceBase();
     if (base_with_picker || base_in_page) {
       // If this option is being rendered as regular web content inside a
@@ -166,7 +168,7 @@ bool HTMLOptionElement::IsKeyboardFocusableSlow(
   if (!HTMLElement::IsKeyboardFocusableSlow(update_behavior)) {
     return false;
   }
-  if (!RuntimeEnabledFeatures::CustomizableSelectInPageEnabled() ||
+  if (!RuntimeEnabledFeatures::CustomizableSelectListboxEnabled() ||
       !OwnerSelectElement() || OwnerSelectElement()->UsesMenuList()) {
     return true;
   }
@@ -344,7 +346,8 @@ void HTMLOptionElement::setSelectedForBinding(bool selected) {
   is_dirty_ = true;
 }
 
-void HTMLOptionElement::SetSelectedState(bool selected) {
+void HTMLOptionElement::SetSelectedState(bool selected,
+                                         bool skip_mutation_observer_update) {
   if (is_selected_ == selected)
     return;
 
@@ -364,6 +367,11 @@ void HTMLOptionElement::SetSelectedState(bool selected) {
         cache->ListboxSelectedChildrenChanged(select);
       }
     }
+  }
+
+  if (RuntimeEnabledFeatures::OptionMutationObserverImprovementEnabled() &&
+      !skip_mutation_observer_update) {
+    UpdateMutationObserver(/*in_style_recalc=*/false);
   }
 }
 
@@ -392,8 +400,68 @@ void HTMLOptionElement::ChildrenChanged(const ChildrenChange& change) {
 
   // If an element is inserted, We need to use MutationObserver to detect
   // textContent changes.
-  if (change.type == ChildrenChangeType::kElementInserted && !text_observer_)
-    text_observer_ = MakeGarbageCollected<OptionTextObserver>(*this);
+  if (change.type == ChildrenChangeType::kElementInserted &&
+      !was_element_inserted_) {
+    was_element_inserted_ = true;
+    UpdateMutationObserver(/*in_style_recalc=*/false);
+  }
+}
+
+void HTMLOptionElement::UpdateMutationObserver(bool in_style_recalc) {
+  if (NeedsMutationObserver()) {
+    if (!text_observer_) {
+      if (in_style_recalc) {
+        update_label_task_ = PostCancellableTask(
+            *GetDocument().GetTaskRunner(TaskType::kDOMManipulation), FROM_HERE,
+            BindOnce(&HTMLOptionElement::DidChangeTextContent,
+                     WrapWeakPersistent(this)));
+      } else {
+        DidChangeTextContent();
+      }
+      text_observer_ = MakeGarbageCollected<OptionTextObserver>(*this);
+    }
+  } else if (text_observer_) {
+    text_observer_->Disconnect();
+    text_observer_ = nullptr;
+  }
+}
+
+bool HTMLOptionElement::NeedsMutationObserver() {
+  if (!was_element_inserted_) {
+    return false;
+  }
+
+  // This flag check runs after was_element_inserted_ in order to match the
+  // behavior before the flag was added, which was that a MutationObserver is
+  // always registered when an element is inserted.
+  if (!RuntimeEnabledFeatures::OptionMutationObserverImprovementEnabled()) {
+    return true;
+  }
+
+  HTMLSelectElement* select = OwnerSelectElement();
+  if (!select) {
+    return false;
+  }
+
+  if (select->UsesMenuList()) {
+    if (select->IsAppearanceBase() && select->SlottedButton()) {
+      // The author provided button is being rendered instead of the
+      // MenuListInnerElement, so we don't need to keep its text up to date.
+      return false;
+    }
+    // If this option is selected, then it is being rendered in the
+    // MenuListInnerElement.
+    return Selected();
+  } else {
+    if (!select->GetComputedStyle()) {
+      // If style recalc hasn't been done yet, then don't eagerly create a
+      // MutationObserver. Otherwise, in the base appearance case, we would
+      // create a MutationObserver and then quickly remove it as soon as style
+      // recalc is done.
+      return false;
+    }
+    return !select->IsAppearanceBase();
+  }
 }
 
 void HTMLOptionElement::DidChangeTextContent() {
@@ -571,7 +639,7 @@ void HTMLOptionElement::DefaultEventHandlerInternal(Event& event) {
   }
 
   const bool appearance_base_in_page =
-      RuntimeEnabledFeatures::CustomizableSelectInPageEnabled() &&
+      RuntimeEnabledFeatures::CustomizableSelectListboxEnabled() &&
       !select->UsesMenuList() && select->IsAppearanceBase();
 
   if (!appearance_base_in_page && !select->PickerIsPopover()) {

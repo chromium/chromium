@@ -95,7 +95,7 @@ class ClipboardJavaScriptFeatureTest : public WebTestWithWebState {
   // Simulates a script message from the web page.
   void SimulateScriptMessage(const std::string& command,
                              std::optional<int> request_id = std::nullopt) {
-    base::Value::Dict body;
+    base::DictValue body;
     body.Set(kCommandKey, command);
     if (request_id) {
       body.Set(kRequestIdKey, *request_id);

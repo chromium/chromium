@@ -25,7 +25,6 @@ ThrottleManagerTestSupport::ThrottleManagerTestSupport(
       /*restore_session=*/false, /*should_record_metrics=*/false);
   cookie_settings_ = base::MakeRefCounted<content_settings::CookieSettings>(
       settings_map_.get(), &prefs_,
-      /*tracking_protection_settings=*/nullptr,
       /*is_incognito=*/false,
       content_settings::CookieSettings::NoFedCmSharingPermissionsCallback(),
       /*tpcd_metadata_manager=*/nullptr, "");

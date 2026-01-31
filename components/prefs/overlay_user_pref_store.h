@@ -45,7 +45,7 @@ class COMPONENTS_PREFS_EXPORT OverlayUserPrefStore
   bool IsInitializationComplete() const override;
   bool GetValue(std::string_view key,
                 const base::Value** result) const override;
-  base::Value::Dict GetValues() const override;
+  base::DictValue GetValues() const override;
 
   // Methods of PersistentPrefStore.
   bool GetMutableValue(std::string_view key, base::Value** result) override;

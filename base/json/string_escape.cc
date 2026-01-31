@@ -90,7 +90,7 @@ bool EscapeJSONStringImpl(const S& str, bool put_in_quotes, std::string* dest) {
   const size_t length = str.length();
   for (size_t i = 0; i < length; ++i) {
     base_icu::UChar32 code_point;
-    if (!ReadUnicodeCharacter(str.data(), length, &i, &code_point) ||
+    if (!ReadUnicodeCharacter(str, &i, &code_point) ||
         code_point == CBU_SENTINEL) {
       code_point = kReplacementCodePoint;
       did_replacement = true;

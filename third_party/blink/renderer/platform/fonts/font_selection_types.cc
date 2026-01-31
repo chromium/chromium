@@ -58,7 +58,7 @@ String FontSelectionValue::ToString() const {
 String FontSelectionRequest::ToString() const {
   return String::Format(
       "weight=%s, width=%s, slope=%s", weight.ToString().Ascii().c_str(),
-      width.ToString().Ascii().data(), slope.ToString().Ascii().c_str());
+      width.ToString().Ascii().c_str(), slope.ToString().Ascii().c_str());
 }
 
 }  // namespace blink

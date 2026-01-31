@@ -32,7 +32,7 @@ function getDefaultAnnotation(): TextAnnotation {
     textBoxRect: {height: 100, locationX: 400, locationY: 300, width: 100},
     textOrientation: 0,
     id: 0,
-    pageNumber: 0,
+    pageIndex: 0,
   };
 }
 
@@ -614,7 +614,7 @@ chrome.test.runTests([
             textBoxRect: {height, locationX: x, locationY: y, width},
             textOrientation: orientation,
             id: 0,
-            pageNumber: 0,
+            pageIndex: 0,
           },
           pageDimensions: orientation % 2 === 0 ? {x: 15, y: 3} : {x: 5, y: 3},
         },
@@ -1119,8 +1119,10 @@ chrome.test.runTests([
     viewport.goToPageAndXy(0, 0, 0);
 
     // Using manager initialization to get correct coordinates for the zoom
-    // level.
-    manager.initializeTextAnnotation({x: 60, y: 60});
+    // level. A click position of 72 will offset the y location by
+    // zoom * text size / 2 = text size = 12 by default. So this initializes
+    // the top left corner to 60, 60.
+    manager.initializeTextAnnotation({x: 60, y: 72});
     await eventToPromise('textbox-focused-for-test', textbox);
     await microtasksFinished();
     const styles = getComputedStyle(textbox);

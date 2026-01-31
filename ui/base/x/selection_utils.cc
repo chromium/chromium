@@ -6,12 +6,12 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <set>
 #include <string>
 #include <string_view>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/i18n/icu_string_conversions.h"
 #include "base/memory/ref_counted_memory.h"
@@ -45,8 +45,9 @@ void GetAtomIntersection(const std::vector<x11::Atom>& desired,
                          const std::vector<x11::Atom>& offered,
                          std::vector<x11::Atom>* output) {
   for (const auto& desired_atom : desired) {
-    if (base::Contains(offered, desired_atom))
+    if (std::ranges::contains(offered, desired_atom)) {
       output->push_back(desired_atom);
+    }
   }
 }
 

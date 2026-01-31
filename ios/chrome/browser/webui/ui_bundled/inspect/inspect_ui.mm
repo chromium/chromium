@@ -73,7 +73,7 @@ class InspectDOMHandler : public web::WebUIIOSMessageHandler,
 
  private:
   // Handles the message from JavaScript to enable or disable console logging.
-  void HandleSetLoggingEnabled(const base::Value::List& args);
+  void HandleSetLoggingEnabled(const base::ListValue& args);
 
   // Enables or disables console logging.
   void SetLoggingEnabled(bool enabled);
@@ -89,7 +89,7 @@ InspectDOMHandler::~InspectDOMHandler() {
   SetLoggingEnabled(false);
 }
 
-void InspectDOMHandler::HandleSetLoggingEnabled(const base::Value::List& args) {
+void InspectDOMHandler::HandleSetLoggingEnabled(const base::ListValue& args) {
   if (args.size() != 1) {
     NOTREACHED();
   }
@@ -146,14 +146,13 @@ void InspectDOMHandler::DidReceiveConsoleMessage(
   std::string main_web_frame_id =
       main_web_frame ? main_web_frame->GetFrameId() : sender_frame_id;
 
-  auto params = base::Value::List()
-                    .Append(main_web_frame_id)
-                    .Append(sender_frame_id)
-                    .Append(message.url.spec())
-                    .Append(base::SysNSStringToUTF8(message.level))
-                    .Append(base::SysNSStringToUTF8(message.message));
-  inspect_ui_main_frame->CallJavaScriptFunction(
-      "inspectWebUI.logMessageReceived", params);
+  std::string url = message.url.spec();
+  std::string level = base::SysNSStringToUTF8(message.level);
+  std::string js_message = base::SysNSStringToUTF8(message.message);
+  base::ValueView js_args[] = {main_web_frame_id, sender_frame_id, url, level,
+                               js_message};
+
+  web_ui()->CallJavascriptFunction("logMessageReceived", js_args);
 }
 
 }  // namespace

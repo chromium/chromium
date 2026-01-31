@@ -40,9 +40,8 @@ namespace trace_event {
 
 class JsonStringOutputWriter;
 
-class BASE_EXPORT TraceLog : public perfetto::TrackEventSessionObserver {
+class BASE_EXPORT TraceLog {
  public:
-
   static TraceLog* GetInstance();
 
   TraceLog(const TraceLog&) = delete;
@@ -60,77 +59,6 @@ class BASE_EXPORT TraceLog : public perfetto::TrackEventSessionObserver {
 
   // Disables tracing for all categories.
   void SetDisabled();
-
-  // Returns true if TraceLog is enabled (i.e. there's an active tracing
-  // session).
-  bool IsEnabled() {
-    // We don't rely on TrackEvent::IsEnabled() because it can be true before
-    // TraceLog has processed its TrackEventSessionObserver callbacks.
-    // For example, the code
-    // if (TrackEvent::IsEnabled()) {
-    //   auto config = TraceLog::GetCurrentTrackEventDataSourceConfig();
-    //   ...
-    // }
-    // can fail in a situation when TrackEvent::IsEnabled() is already true, but
-    // TraceLog::OnSetup() hasn't been called yet, so we don't know the config.
-    // Instead, we make sure that both OnSetup() and OnStart() have been called
-    // by tracking the number of active sessions that TraceLog has seen.
-    AutoLock lock(track_event_lock_);
-    return active_track_event_sessions_ > 0;
-  }
-
-  // Enabled state listeners give a callback when tracing is enabled or
-  // disabled. This can be used to tie into other library's tracing systems
-  // on-demand.
-  class BASE_EXPORT EnabledStateObserver {
-   public:
-    virtual ~EnabledStateObserver() = default;
-
-    // Called just after the tracing system becomes enabled, outside of the
-    // |lock_|. TraceLog::IsEnabled() is true at this point.
-    virtual void OnTraceLogEnabled() = 0;
-
-    // Called just after the tracing system disables, outside of the |lock_|.
-    // TraceLog::IsEnabled() is false at this point.
-    virtual void OnTraceLogDisabled() = 0;
-  };
-  // Adds an observer. Cannot be called from within the observer callback.
-  void AddEnabledStateObserver(EnabledStateObserver* listener);
-  // Removes an observer. Cannot be called from within the observer callback.
-  void RemoveEnabledStateObserver(EnabledStateObserver* listener);
-  // Adds an observer that is owned by TraceLog. This is useful for agents that
-  // implement tracing feature that needs to stay alive as long as TraceLog
-  // does.
-  void AddOwnedEnabledStateObserver(
-      std::unique_ptr<EnabledStateObserver> listener);
-  bool HasEnabledStateObserver(EnabledStateObserver* listener) const;
-
-  // Asynchronous enabled state listeners. When tracing is enabled or disabled,
-  // for each observer, a task for invoking its appropriate callback is posted
-  // to the `SequencedTaskRunner` from which AddAsyncEnabledStateObserver() was
-  // called. This allows the observer to be safely destroyed, provided that it
-  // happens on the same `SequencedTaskRunner` that invoked
-  // AddAsyncEnabledStateObserver().
-  class BASE_EXPORT AsyncEnabledStateObserver {
-   public:
-    virtual ~AsyncEnabledStateObserver() = default;
-
-    // Posted just after the tracing system becomes enabled, outside |lock_|.
-    // TraceLog::IsEnabled() is true at this point.
-    virtual void OnTraceLogEnabled() = 0;
-
-    // Posted just after the tracing system becomes disabled, outside |lock_|.
-    // TraceLog::IsEnabled() is false at this point.
-    virtual void OnTraceLogDisabled() = 0;
-  };
-  // TODO(oysteine): This API originally needed to use WeakPtrs as the observer
-  // list was copied under the global trace lock, but iterated over outside of
-  // that lock so that observers could add tracing. The list is now protected by
-  // its own lock, so this can be changed to a raw ptr.
-  void AddAsyncEnabledStateObserver(
-      WeakPtr<AsyncEnabledStateObserver> listener);
-  void RemoveAsyncEnabledStateObserver(AsyncEnabledStateObserver* listener);
-  bool HasAsyncEnabledStateObserver(AsyncEnabledStateObserver* listener) const;
 
   void SetArgumentFilterPredicate(
       const ArgumentFilterPredicate& argument_filter_predicate);
@@ -166,22 +94,14 @@ class BASE_EXPORT TraceLog : public perfetto::TrackEventSessionObserver {
 
   void SetProcessID(ProcessId process_id);
 
-  size_t GetObserverCountForTest() const;
-
-  void SetEnabledImpl(const TraceConfig& trace_config,
-                      const perfetto::TraceConfig& perfetto_config);
-
-  // perfetto::TrackEventSessionObserver implementation.
-  void OnStart(const perfetto::DataSourceBase::StartArgs&) override;
-  void OnStop(const perfetto::DataSourceBase::StopArgs&) override;
-
  private:
   friend class base::NoDestructor<TraceLog>;
 
-  struct RegisteredAsyncObserver;
-
   TraceLog();
-  ~TraceLog() override;
+  ~TraceLog();
+
+  void SetEnabledImpl(const TraceConfig& trace_config,
+                      const perfetto::TraceConfig& perfetto_config);
 
   void SetDisabledWhileLocked() EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
@@ -195,18 +115,6 @@ class BASE_EXPORT TraceLog : public perfetto::TrackEventSessionObserver {
   // by thread_info_lock_) from arbitrary threads.
   mutable Lock lock_;
 
-  // The lock protects observers access.
-  mutable Lock observers_lock_;
-  bool dispatching_to_observers_ = false;
-  std::vector<raw_ptr<EnabledStateObserver, VectorExperimental>>
-      enabled_state_observers_ GUARDED_BY(observers_lock_);
-  std::map<AsyncEnabledStateObserver*, RegisteredAsyncObserver> async_observers_
-      GUARDED_BY(observers_lock_);
-  // Manages ownership of the owned observers. The owned observers will also be
-  // added to |enabled_state_observers_|.
-  std::vector<std::unique_ptr<EnabledStateObserver>>
-      owned_enabled_state_observer_copy_ GUARDED_BY(observers_lock_);
-
   ProcessId process_id_;
 
   // Set when asynchronous Flush is in progress.
@@ -215,8 +123,6 @@ class BASE_EXPORT TraceLog : public perfetto::TrackEventSessionObserver {
 
   std::unique_ptr<perfetto::TracingSession> tracing_session_;
   perfetto::TraceConfig perfetto_config_;
-  int active_track_event_sessions_ = 0;
-  mutable Lock track_event_lock_;
 #if BUILDFLAG(USE_PERFETTO_TRACE_PROCESSOR)
   std::unique_ptr<perfetto::trace_processor::TraceProcessorStorage>
       trace_processor_;

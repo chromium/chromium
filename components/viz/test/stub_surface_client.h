@@ -5,11 +5,11 @@
 #ifndef COMPONENTS_VIZ_TEST_STUB_SURFACE_CLIENT_H_
 #define COMPONENTS_VIZ_TEST_STUB_SURFACE_CLIENT_H_
 
+#include <memory>
 #include <vector>
 
-#include "components/viz/service/surfaces/surface_client.h"
-
 #include "base/memory/weak_ptr.h"
+#include "components/viz/service/surfaces/surface_client.h"
 
 namespace viz {
 
@@ -24,11 +24,11 @@ class StubSurfaceClient : public SurfaceClient {
   void OnSurfaceWillDraw(Surface* surface) override {}
   void RefResources(
       const std::vector<TransferableResource>& resources) override {}
-  void UnrefResources(std::vector<ReturnedResource> resources) override {}
+  void UnrefResources(std::vector<ReturnedResourceViz> resources) override {}
   void ReturnResources(std::vector<ReturnedResource> resources) override {}
   void ReceiveFromChild(
       const std::vector<TransferableResource>& resources) override {}
-  std::vector<PendingCopyOutputRequest> TakeCopyOutputRequests(
+  std::vector<std::unique_ptr<PendingCopyOutputRequest>> TakeCopyOutputRequests(
       const LocalSurfaceId& latest_surface_id) override;
   void OnFrameTokenChanged(uint32_t frame_token) override {}
   void SendCompositorFrameAck() override {}

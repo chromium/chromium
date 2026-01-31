@@ -63,8 +63,6 @@
 #include "chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_internals_ui.h"
 #include "chrome/browser/ui/webui/privacy_sandbox/private_state_tokens/private_state_tokens.mojom.h"
 #include "chrome/browser/ui/webui/privacy_sandbox/related_website_sets/related_website_sets.mojom.h"
-#include "chrome/browser/ui/webui/reload_button/reload_button.mojom.h"
-#include "chrome/browser/ui/webui/reload_button/reload_button_ui.h"
 #include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice.mojom.h"  // nogncheck crbug.com/1125897
 #include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice_ui.h"
 #include "chrome/browser/ui/webui/settings/settings_ui.h"
@@ -88,10 +86,12 @@
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals.mojom.h"
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals_ui.h"
 #include "chrome/browser/ui/webui/webui_gallery/webui_gallery_ui.h"
+#include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_ui.h"
 #include "chrome/browser/ui/webui_browser/webui_browser.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_ui.h"
 #include "chrome/common/chrome_features.h"
 #include "components/autofill/core/browser/ml_model/logging/autofill_ml_internals.mojom.h"
+#include "components/browser_apis/browser_controls/browser_controls_api.mojom.h"
 #include "components/commerce/core/mojom/product_specifications.mojom.h"
 #include "components/commerce/core/mojom/shopping_service.mojom.h"  // nogncheck crbug.com/1125897
 #include "components/contextual_tasks/public/features.h"
@@ -139,8 +139,15 @@
 #include "chrome/browser/ui/webui/signin/history_sync_optin/history_sync_optin_ui.h"
 #include "chrome/browser/ui/webui/signin/profile_customization_ui.h"
 #include "chrome/browser/ui/webui/signin/profile_picker_ui.h"
+#include "chrome/browser/ui/webui/updater/updater_ui.h"
+#include "chrome/browser/ui/webui/updater/updater_ui.mojom.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_ui.h"
 #endif
+
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/ui/webui/unexportable_keys_internals/unexportable_keys_internals.mojom.h"
+#include "chrome/browser/ui/webui/unexportable_keys_internals/unexportable_keys_internals_ui.h"
+#endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/webui/diagnostics_ui/diagnostics_ui.h"
@@ -574,6 +581,17 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
             ContextualTasksInternalsPageHandlerFactory,
         ContextualTasksUI>(map);
   }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  RegisterWebUIControllerInterfaceBinder<updater_ui::mojom::PageHandlerFactory,
+                                         UpdaterUI>(map);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+#if BUILDFLAG(IS_MAC)
+  RegisterWebUIControllerInterfaceBinder<
+      unexportable_keys_internals::mojom::PageHandlerFactory,
+      UnexportableKeysInternalsUI>(map);
+#endif  // BUILDFLAG(IS_MAC)
 }
 
 void PopulateChromeWebUIFrameInterfaceBrokersTrustedPartsDesktop(
@@ -621,9 +639,10 @@ void PopulateChromeWebUIFrameInterfaceBrokersTrustedPartsDesktop(
         .Add<tracked_element::mojom::TrackedElementHandler>();
   }
 
-  if (features::IsWebUIReloadButtonEnabled()) {
-    registry.ForWebUI<ReloadButtonUI>()
-        .Add<reload_button::mojom::PageHandlerFactory>();
+  if (features::IsWebUIToolbarEnabled()) {
+    registry.ForWebUI<WebUIToolbarUI>()
+        .Add<browser_controls_api::mojom::BrowserControlsFactory>()
+        .Add<tracked_element::mojom::TrackedElementHandler>();
   }
 
   // TODO(crbug.com/452983498): Migrate all remaining

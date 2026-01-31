@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -247,7 +246,7 @@ void CrostiniExportImport::ImportContainer(
     CrostiniManager::CrostiniResultCallback callback) {
   std::vector<guest_os::GuestId> existing_containers =
       guest_os::GetContainers(profile_, guest_os::VmType::TERMINA);
-  if (!base::Contains(existing_containers, container_id)) {
+  if (!std::ranges::contains(existing_containers, container_id)) {
     LOG(ERROR) << "Attempting to import Crostini container backup into "
                   "non-existent container: "
                << container_id;
@@ -518,9 +517,6 @@ void CrostiniExportImport::EnsureLxdStartedThenSharePath(
   auto* crostini_manager = crostini::CrostiniManager::GetForProfile(profile_);
   crostini::CrostiniManager::RestartOptions options;
   options.stop_after_lxd_available = true;
-  if (create_new_container) {
-    options.restart_source = crostini::RestartSource::kMultiContainerCreation;
-  }
   crostini_manager->RestartCrostiniWithOptions(
       container_id, std::move(options),
       base::BindOnce(&CrostiniExportImport::SharePath,

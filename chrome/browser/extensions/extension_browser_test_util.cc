@@ -52,19 +52,18 @@ bool CreateTempDirectoryCopy(const base::FilePath& temp_dir,
 
 // Moves match patterns from the `permissions_key` list to the
 // `host_permissions_key` list.
-void DoMoveHostPermissions(base::Value::Dict& manifest_dict,
+void DoMoveHostPermissions(base::DictValue& manifest_dict,
                            const char* permissions_key,
                            const char* host_permissions_key) {
-  base::Value::List* const permissions =
-      manifest_dict.FindList(permissions_key);
+  base::ListValue* const permissions = manifest_dict.FindList(permissions_key);
   if (!permissions) {
     return;
   }
 
   // Add the permissions to the appropriate destinations, then update/add
   // the target lists as appropriate.
-  base::Value::List permissions_list;
-  base::Value::List host_permissions_list;
+  base::ListValue permissions_list;
+  base::ListValue host_permissions_list;
   for (auto& value : *permissions) {
     CHECK(value.is_string());
     const std::string& str_value = value.GetString();
@@ -89,7 +88,7 @@ void DoMoveHostPermissions(base::Value::Dict& manifest_dict,
 
 // Moves match patterns from permissions/optional_permissions to the
 // host_permissions/optional_host_permissions.
-void MoveHostPermissions(base::Value::Dict& manifest_dict) {
+void MoveHostPermissions(base::DictValue& manifest_dict) {
   DoMoveHostPermissions(manifest_dict, manifest_keys::kPermissions,
                         manifest_keys::kHostPermissions);
   DoMoveHostPermissions(manifest_dict, manifest_keys::kOptionalPermissions,
@@ -100,8 +99,8 @@ using web_accessible_resource =
     api::web_accessible_resources::WebAccessibleResource;
 
 // Upgrades MV2 format to MV3 format.
-void UpgradeWebAccessibleResources(base::Value::Dict& manifest_dict) {
-  base::Value::List* const web_accessible_resources = manifest_dict.FindList(
+void UpgradeWebAccessibleResources(base::DictValue& manifest_dict) {
+  base::ListValue* const web_accessible_resources = manifest_dict.FindList(
       api::web_accessible_resources::ManifestKeys::kWebAccessibleResources);
   if (!web_accessible_resources) {
     return;
@@ -109,11 +108,11 @@ void UpgradeWebAccessibleResources(base::Value::Dict& manifest_dict) {
 
   // Copy all of the entries to a single dictionary entry that matches all
   // URLs.
-  auto war_dict = base::Value::Dict()
+  auto war_dict = base::DictValue()
                       .Set(web_accessible_resource::kResources,
                            web_accessible_resources->Clone())
                       .Set(web_accessible_resource::kMatches,
-                           base::Value::List().Append("<all_urls>"));
+                           base::ListValue().Append("<all_urls>"));
 
   // Clear the list and append the dictionary.
   web_accessible_resources->clear();
@@ -121,7 +120,7 @@ void UpgradeWebAccessibleResources(base::Value::Dict& manifest_dict) {
 }
 
 // Modifies `manifest_dict` changing its manifest version to 3.
-bool ModifyManifestForManifestVersion3(base::Value::Dict& manifest_dict) {
+bool ModifyManifestForManifestVersion3(base::DictValue& manifest_dict) {
   // This should only be used for manifest v2 extension.
   std::optional<int> current_manifest_version =
       manifest_dict.FindInt(manifest_keys::kManifestVersion);
@@ -144,13 +143,13 @@ bool ModifyManifestForManifestVersion3(base::Value::Dict& manifest_dict) {
 // requires the background.persistent key. The background.page key is not
 // supported.
 bool ModifyExtensionForServiceWorker(const base::FilePath& extension_root,
-                                     base::Value::Dict& manifest_dict) {
+                                     base::DictValue& manifest_dict) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   // Retrieve the value of the `background` key and verify that it has
   // the `persistent` key and specifies JS files.
   // Background pages that specify HTML files are not supported.
-  base::Value::Dict* background_dict = manifest_dict.FindDict("background");
+  base::DictValue* background_dict = manifest_dict.FindDict("background");
   if (!background_dict) {
     ADD_FAILURE() << extension_root.value()
                   << " 'background' key not found in manifest.json";
@@ -166,7 +165,7 @@ bool ModifyExtensionForServiceWorker(const base::FilePath& extension_root,
       return false;
     }
   }
-  base::Value::List* background_scripts_list =
+  base::ListValue* background_scripts_list =
       background_dict->FindList("scripts");
   // Number of JS scripts must be >= 1.
   if (!background_scripts_list || background_scripts_list->empty()) {
@@ -267,7 +266,7 @@ bool ModifyExtensionIfNeeded(const LoadOptions& options,
   }
 
   std::string error;
-  std::optional<base::Value::Dict> manifest_dict =
+  std::optional<base::DictValue> manifest_dict =
       extensions::file_util::LoadManifest(extension_root, &error);
   if (!manifest_dict) {
     ADD_FAILURE() << extension_root.value()

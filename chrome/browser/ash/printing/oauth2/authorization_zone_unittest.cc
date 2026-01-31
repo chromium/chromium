@@ -89,7 +89,7 @@ class PrintingOAuth2AuthorizationZoneTest : public testing::Test {
 
   // Simulates Registration Request described in rfc7591, section 3.
   void ProcessRegistrationRequest(const std::string& client_id) {
-    base::Value::Dict fields;
+    base::DictValue fields;
     EXPECT_EQ("", server_.ReceivePOSTWithJSON(registration_uri_, fields));
     fields.Set("client_id", client_id);
     server_.ResponseWithJSON(net::HttpStatusCode::HTTP_CREATED, fields);
@@ -102,7 +102,7 @@ class PrintingOAuth2AuthorizationZoneTest : public testing::Test {
     base::flat_map<std::string, std::string> params;
     EXPECT_EQ("", server_.ReceivePOSTWithURLParams(token_uri_, params));
     EXPECT_EQ(params["code"], auth_code);
-    base::Value::Dict fields;
+    base::DictValue fields;
     fields.Set("access_token", access_token);
     fields.Set("token_type", "bearer");
     if (!refresh_token.empty()) {
@@ -117,7 +117,7 @@ class PrintingOAuth2AuthorizationZoneTest : public testing::Test {
     base::flat_map<std::string, std::string> params;
     EXPECT_EQ("", server_.ReceivePOSTWithURLParams(token_uri_, params));
     EXPECT_EQ(params["code"], auth_code);
-    base::Value::Dict fields;
+    base::DictValue fields;
     fields.Set("error", error);
     server_.ResponseWithJSON(net::HttpStatusCode::HTTP_BAD_REQUEST, fields);
   }
@@ -129,7 +129,7 @@ class PrintingOAuth2AuthorizationZoneTest : public testing::Test {
     base::flat_map<std::string, std::string> params;
     EXPECT_EQ("", server_.ReceivePOSTWithURLParams(token_uri_, params));
     EXPECT_EQ(params["refresh_token"], current_refresh_token);
-    base::Value::Dict fields;
+    base::DictValue fields;
     fields.Set("access_token", access_token);
     fields.Set("token_type", "bearer");
     if (!new_refresh_token.empty()) {
@@ -146,7 +146,7 @@ class PrintingOAuth2AuthorizationZoneTest : public testing::Test {
     EXPECT_EQ("", server_.ReceivePOSTWithURLParams(token_uri_, params));
     EXPECT_EQ(params["resource"], ipp_endpoint.GetNormalized());
     EXPECT_EQ(params["subject_token"], access_token);
-    base::Value::Dict fields;
+    base::DictValue fields;
     fields.Set("access_token", endpoint_access_token);
     fields.Set("issued_token_type",
                "urn:ietf:params:oauth:token-type:access_token");
@@ -162,7 +162,7 @@ class PrintingOAuth2AuthorizationZoneTest : public testing::Test {
     EXPECT_EQ("", server_.ReceivePOSTWithURLParams(token_uri_, params));
     EXPECT_EQ(params["resource"], ipp_endpoint.GetNormalized());
     EXPECT_EQ(params["subject_token"], access_token);
-    base::Value::Dict fields;
+    base::DictValue fields;
     fields.Set("error", error);
     server_.ResponseWithJSON(net::HttpStatusCode::HTTP_BAD_REQUEST, fields);
   }

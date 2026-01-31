@@ -18,10 +18,19 @@ config("warnings_config") {
     "-Wno-implicit-const-int-float-conversion",
     "-Wno-deprecated-declarations",
     "-Wno-shadow",
+    "-Wno-enum-compare-switch",
+    "-Wno-deprecated-enum-compare",
+    "-Wno-extra-semi",
+    "-Wno-thread-safety-analysis",
+    "-Wno-loop-analysis",
 
     # TODO(crbug.com/1147556): Try to clean/remove no-sign-compare if possible.
     "-Wno-sign-compare",
   ]
+  if (is_win) {
+    # Override warnings in litert_shared_library.cc.
+    cflags += [ "-Wno-microsoft-cast" ]
+  }
   visibility = [ ":*" ]
 }
 
@@ -75,6 +84,7 @@ source_set("litert_headers") {
     "src/litert/c/internal/litert_delegate_wrapper.h",
     "src/litert/c/internal/litert_logging.h",
     "src/litert/c/internal/litert_tensor_buffer_registry.h",
+    "src/litert/c/litert_builder.h",
     "src/litert/c/litert_common.h",
     "src/litert/c/litert_compiled_model.h",
     "src/litert/c/litert_custom_tensor_buffer.h",
@@ -102,6 +112,7 @@ source_set("litert_headers") {
     "src/litert/cc/internal/litert_op_options.h",
     "src/litert/cc/internal/litert_shared_library.h",
     "src/litert/cc/internal/litert_tensor_buffer_utils.h",
+    "src/litert/cc/internal/scoped_file.h",
     "src/litert/cc/litert_buffer_ref.h",
     "src/litert/cc/litert_compiled_model.h",
     "src/litert/cc/litert_element_type.h",
@@ -149,6 +160,7 @@ source_set("litert_headers") {
     "src/litert/runtime/ion_buffer.h",
     "src/litert/runtime/magic_number_utils.h",
     "src/litert/runtime/profiler.h",
+    "src/litert/runtime/profiler_summarizer.h",
     "src/litert/runtime/tensor_buffer.h",
     "src/litert/runtime/tensor_buffer_registry.h",
     "src/litert/runtime/tensor_buffer_requirements.h",
@@ -160,12 +172,12 @@ source_set("litert_headers") {
     "//third_party/flatbuffers",
     "//third_party/zlib",
   ]
-  public_configs = [ ":litert_config" ]
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [
-    "//build/config/compiler:no_chromium_code",
+  public_configs = [
+    ":litert_config",
     ":warnings_config",
   ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [
     ":litert_build_config",
     ":mutable_tflite_schema",
@@ -193,6 +205,7 @@ source_set("litert_c") {
     "src/litert/c/internal/litert_delegate_wrapper.cc",
     "src/litert/c/internal/litert_logging.cc",
     "src/litert/c/internal/litert_tensor_buffer_registry.cc",
+    "src/litert/c/litert_builder.cc",
     "src/litert/c/litert_common.cc",
     "src/litert/c/litert_compiled_model.cc",
     "src/litert/c/litert_environment.cc",
@@ -207,7 +220,11 @@ source_set("litert_c") {
     "src/litert/c/litert_tensor_buffer_requirements.cc",
     "src/litert/c/options/litert_compiler_options.cc",
     "src/litert/c/options/litert_cpu_options.cc",
+    "src/litert/c/options/litert_google_tensor_options.cc",
     "src/litert/c/options/litert_gpu_options.cc",
+    "src/litert/c/options/litert_intel_openvino_options.cc",
+    "src/litert/c/options/litert_mediatek_options.cc",
+    "src/litert/c/options/litert_qualcomm_options.cc",
     "src/litert/c/options/litert_runtime_options.cc",
   ]
   deps = [ ":litert_headers" ]
@@ -221,15 +238,27 @@ source_set("litert_cc") {
     "src/litert/cc/internal/litert_op_options.cc",
     "src/litert/cc/internal/litert_shared_library.cc",
     "src/litert/cc/internal/litert_tensor_buffer_utils.cc",
+    "src/litert/cc/internal/scoped_file.cc",
     "src/litert/cc/litert_compiled_model.cc",
     "src/litert/cc/litert_macros.cc",
     "src/litert/cc/litert_model.cc",
+    "src/litert/cc/litert_options.cc",
     "src/litert/cc/litert_tensor_buffer.cc",
+    "src/litert/cc/options/litert_compiler_options.cc",
     "src/litert/cc/options/litert_cpu_options.cc",
+    "src/litert/cc/options/litert_google_tensor_options.cc",
     "src/litert/cc/options/litert_gpu_options.cc",
+    "src/litert/cc/options/litert_intel_openvino_options.cc",
     "src/litert/cc/options/litert_magic_number_options.cc",
+    "src/litert/cc/options/litert_mediatek_options.cc",
+    "src/litert/cc/options/litert_qualcomm_options.cc",
     "src/litert/cc/options/litert_runtime_options.cc",
   ]
+  if (is_win) {
+    sources += [ "src/litert/cc/internal/scoped_file_win.cc" ]
+  } else {
+    sources += [ "src/litert/cc/internal/scoped_file_posix.cc" ]
+  }
   deps = [ ":litert_headers" ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
@@ -285,7 +314,10 @@ source_set("litert_core") {
   }
   deps = [ ":litert_headers" ]
   configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//build/config/compiler:rtti",
+  ]
   visibility = [ ":litert" ]
 }
 
@@ -306,6 +338,7 @@ source_set("litert_runtime") {
     "src/litert/runtime/ion_buffer.cc",
     "src/litert/runtime/magic_number_utils.cc",
     "src/litert/runtime/profiler.cc",
+    "src/litert/runtime/profiler_summarizer.cc",
     "src/litert/runtime/tensor_buffer.cc",
     "src/litert/runtime/tensor_buffer_registry.cc",
     "src/litert/runtime/tensor_buffer_requirements.cc",
@@ -322,6 +355,9 @@ source_set("litert_runtime") {
     "//third_party/xnnpack",
   ]
   configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//build/config/compiler:rtti",
+  ]
   visibility = [ ":*" ]
 }

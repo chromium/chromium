@@ -13,6 +13,7 @@
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "chromeos/dbus/common/dbus_callback.h"
@@ -99,10 +100,8 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
   };
 
   // Interface for observing changes from the session manager.
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
-    virtual ~Observer() {}
-
     // Called when the owner key is set.
     virtual void OwnerKeySet(bool success) {}
 
@@ -127,6 +126,9 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
 
     // Called when session stopping signal is received
     virtual void SessionStopping() {}
+
+   protected:
+    ~Observer() override = default;
   };
 
   // Interface for performing actions on behalf of the stub implementation.

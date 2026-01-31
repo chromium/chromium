@@ -48,7 +48,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PaymentRequest.CheckoutFunnel"
-    enum="PaymentRequestCheckoutFunnelSteps" expires_after="2026-05-24">
+    enum="PaymentRequestCheckoutFunnelSteps" expires_after="2026-07-26">
   <owner>smcgruer@chromium.org</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
@@ -80,6 +80,29 @@ chromium-metrics-reviews@google.com.
     not reflect what the outcome of the hasEnrolledInstrument call would have
     been, only if it was allowed or blocked by the preference. It is recorded
     once per PaymentRequest.hasEnrolledInstrument call.
+  </summary>
+</histogram>
+
+<histogram name="PaymentRequest.InternalAppAvailability"
+    enum="InternalPaymentAppAvailability" expires_after="2027-01-14">
+  <owner>smcgruer@chromium.org</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <summary>
+    Records whether an internal app was found to be available when a Payment
+    Request is created for a URL that is expected to have an internal app.
+    Recorded once per 'new PaymentRequest(..)' call, albeit asychronously (as
+    Payment Request creation is async). Only the first-encountered failure
+    reason is recorded for a given Payment Request construction, which may hide
+    other failure reasons that could occur later in the flow.
+
+    Note that the &quot;Not Applicable&quot; case of the
+    InternalPaymentAppAvailability enum is not recorded in practice, as it is
+    not relevant to record. It exists only for completeness in the internal
+    code.
+
+    This histogram is not recorded if the internal app factory is disabled or is
+    not available for a given platform (WebView, all other non-Android
+    platforms).
   </summary>
 </histogram>
 
@@ -156,7 +179,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PaymentRequest.PaymentDetailsUpdateService.ChangePaymentMethod"
-    enum="Boolean" expires_after="2026-03-22">
+    enum="Boolean" expires_after="2026-07-12">
   <owner>smcgruer@chromium.org</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
@@ -324,7 +347,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PaymentRequest.Show.TryShowOutcome"
-    enum="PaymentRequestTryShowOutcome" expires_after="2026-04-05">
+    enum="PaymentRequestTryShowOutcome" expires_after="2026-06-21">
   <owner>smcgruer@chromium.org</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>

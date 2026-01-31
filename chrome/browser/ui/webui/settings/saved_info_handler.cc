@@ -12,7 +12,10 @@
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/hats/hats_service.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
@@ -37,6 +40,10 @@ void SavedInfoHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "getLoyaltyCardsCount",
       base::BindRepeating(&SavedInfoHandler::HandleGetLoyaltyCardsCount,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "requestDataManagementSurvey",
+      base::BindRepeating(&SavedInfoHandler::HandleRequestDataManagementSurvey,
                           base::Unretained(this)));
 }
 
@@ -96,8 +103,8 @@ void SavedInfoHandler::OnValuablesDataChanged() {
   FireWebUIListener("loyalty-cards-count-changed", GetLoyaltyCardsCount());
 }
 
-base::Value::Dict SavedInfoHandler::GetPasswordCounts() {
-  base::Value::Dict dict;
+base::DictValue SavedInfoHandler::GetPasswordCounts() {
+  base::DictValue dict;
   auto* passwords_presenter = password_observation_.GetSource();
   if (passwords_presenter) {
     const size_t password_count = passwords_presenter->GetSavedPasswords().size();
@@ -115,7 +122,7 @@ base::Value::Dict SavedInfoHandler::GetPasswordCounts() {
   return dict;
 }
 
-void SavedInfoHandler::HandleGetPasswordCount(const base::Value::List& args) {
+void SavedInfoHandler::HandleGetPasswordCount(const base::ListValue& args) {
   AllowJavascript();
   const base::Value& callback_id = args[0];
   ResolveJavascriptCallback(callback_id, GetPasswordCounts());
@@ -131,11 +138,89 @@ base::Value SavedInfoHandler::GetLoyaltyCardsCount() {
   return base::Value(static_cast<int>(loyalty_cards_count));
 }
 
-void SavedInfoHandler::HandleGetLoyaltyCardsCount(
-    const base::Value::List& args) {
+void SavedInfoHandler::HandleGetLoyaltyCardsCount(const base::ListValue& args) {
   AllowJavascript();
   const base::Value& callback_id = args[0];
   ResolveJavascriptCallback(callback_id, GetLoyaltyCardsCount());
+}
+
+// Type of HaTS survey, used to gauge user perception on a data management
+// surface.
+// LINT.IfChange(DataManagementSurvey)
+enum class DataManagementSurvey {
+  kYourSavedInfo = 0,
+  kPasswords = 1,
+  kPayments = 2,
+  kContactInfo = 3,
+  kIdentityDocs = 4,
+  kTravel = 5,
+};
+// LINT.ThenChange(/chrome/browser/resources/settings/your_saved_info_page/saved_info_handler_proxy.ts:DataManagementSurvey)
+
+const std::string GetManagementSurveyTrigger(DataManagementSurvey survey) {
+  switch (survey) {
+    case DataManagementSurvey::kYourSavedInfo:
+      return kHatsSurveyTriggerManageYourSavedInfoPerception;
+    case DataManagementSurvey::kPasswords:
+      return kHatsSurveyTriggerManagePasswordsPerception;
+    case DataManagementSurvey::kPayments:
+      return kHatsSurveyTriggerManagePaymentsPerception;
+    case DataManagementSurvey::kContactInfo:
+      return kHatsSurveyTriggerManageContactInfoPerception;
+    case DataManagementSurvey::kIdentityDocs:
+      return kHatsSurveyTriggerManageIdentityDocsPerception;
+    case DataManagementSurvey::kTravel:
+      return kHatsSurveyTriggerManageTravelPerception;
+  }
+  NOTREACHED();
+}
+
+const base::Feature& GetManagementSurveyFeature(DataManagementSurvey survey) {
+  switch (survey) {
+    case DataManagementSurvey::kYourSavedInfo:
+      return autofill::features::kManageYourSavedInfoPerceptionSurvey;
+    case DataManagementSurvey::kPasswords:
+      return autofill::features::kManagePasswordsPerceptionSurvey;
+    case DataManagementSurvey::kPayments:
+      return autofill::features::kManagePaymentsPerceptionSurvey;
+    case DataManagementSurvey::kContactInfo:
+      return autofill::features::kManageContactInfoPerceptionSurvey;
+    case DataManagementSurvey::kIdentityDocs:
+      return autofill::features::kManageIdentityDocsPerceptionSurvey;
+    case DataManagementSurvey::kTravel:
+      return autofill::features::kManageTravelPerceptionSurvey;
+  }
+  NOTREACHED();
+}
+
+void SavedInfoHandler::HandleRequestDataManagementSurvey(
+    const base::ListValue& args) {
+  AllowJavascript();
+  CHECK_EQ(2U, args.size());
+  auto survey = static_cast<DataManagementSurvey>(args[0].GetInt());
+  bool is_from_home_page = args[1].GetBool();
+
+  auto& feature = GetManagementSurveyFeature(survey);
+  if (!base::FeatureList::IsEnabled(feature) ||
+      !base::FeatureList::IsEnabled(
+          autofill::features::kYourSavedInfoSettingsPage)) {
+    return;
+  }
+
+  HatsService* hats_service =
+      HatsServiceFactory::GetForProfile(profile_, /*create_if_necessary=*/true);
+  // The HaTS service may not be available for the profile, for example if it
+  // is a guest profile.
+  if (!hats_service) {
+    return;
+  }
+
+  const std::string trigger = GetManagementSurveyTrigger(survey);
+  const SurveyBitsData product_specific_bits_data = {
+      {"Visit from Your saved info", is_from_home_page},
+  };
+  hats_service->LaunchDelayedSurvey(trigger, 10000, product_specific_bits_data,
+                                    /*product_specific_string_data=*/{});
 }
 
 }  // namespace settings

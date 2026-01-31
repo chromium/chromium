@@ -65,6 +65,30 @@ to the milestone for which the launch approval was granted. If the
 *since_version* is set to a earlier milestone, you need to merge back all
 necessary commits.
 
+### Android Desktop policy launch special guidance
+In general, all policies that work for Android Mobile can be launched as long
+as they're ready while the Desktop part should be held back.
+
+| Target Scope | Existing policy with Android support | Existing policy without Android | New Policy |
+| :--- | :--- | :--- | :--- |
+| **Target: Desktop Only** | N/A | Hold | Hold |
+| **Target: Mobile & Desktop** | Test | Launch | Launch |
+
+* N/A: Not a valid case.
+* Test: Test the policy. Fix issues if found.
+* Hold: The policy launch process should be held until Android
+  Desktop is ready.
+* Launch: The policy can be launched for Android Mobile as long as it's ready.
+  But the Android Desktop part must remains on hold
+
+For example, a new policy controls bookmarks can be launched while a policy for
+extensions has to wait. Because bookmarks is a mobile+desktop feature but
+extensions will only be available for Android Desktop.
+
+Note that policies should aim for supporting both Mobile and Desktop together
+if possible. And even the desktop part won't be launched immediately, it still
+needs to be tested.
+
 ## Deprecating a policy
 
 A policy is deprecated when admins should stop using it. This is often because

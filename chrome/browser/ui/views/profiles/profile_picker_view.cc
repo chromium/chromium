@@ -4,7 +4,8 @@
 
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -45,6 +46,7 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_glic_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_sign_in_toolbar.h"
 #include "chrome/browser/ui/webui/signin/profile_picker_ui.h"
+#include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/common/pref_names.h"
@@ -65,7 +67,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/webview/webview.h"
-#include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/fill_layout.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
@@ -826,24 +828,22 @@ bool ProfilePickerView::GetAcceleratorForCommandId(
   return false;
 }
 
-void ProfilePickerView::BuildLayout() {
-  SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetOrientation(views::LayoutOrientation::kVertical)
-      .SetMainAxisAlignment(views::LayoutAlignment::kStart)
-      .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
-      .SetDefault(
-          views::kFlexBehaviorKey,
-          views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
-                                   views::MaximumFlexSizeRule::kUnbounded));
+void ProfilePickerView::Layout(PassKey) {
+  LayoutSuperclass<views::WidgetDelegateView>(this);
+  CHECK(toolbar_);
+  toolbar_->SetBoundsRect(gfx::Rect(toolbar_->GetPreferredSize()));
+}
 
-  auto toolbar = std::make_unique<ProfilePickerSignInToolbar>();
-  toolbar_ = AddChildView(std::move(toolbar));
-  // Toolbar gets built and set visible once we it's needed for the signin.
-  SetNativeToolbarVisible(false);
+void ProfilePickerView::BuildLayout() {
+  SetLayoutManager(std::make_unique<views::FillLayout>());
 
   auto web_view = std::make_unique<views::WebView>();
   web_view->set_allow_accelerators(true);
   web_view_ = AddChildView(std::move(web_view));
+
+  // Toolbar gets built and set visible once it's needed for the signin.
+  toolbar_ = AddChildView(std::make_unique<ProfilePickerSignInToolbar>());
+  SetNativeToolbarVisible(false);
 
   web_contents_attached_subscription_ =
       web_view_->AddWebContentsAttachedCallback(base::BindRepeating(
@@ -874,7 +874,8 @@ void ProfilePickerView::NavigateBack() {
 void ProfilePickerView::ConfigureAccelerators() {
   const std::vector<AcceleratorMapping> accelerator_list(GetAcceleratorList());
   for (const auto& entry : accelerator_list) {
-    if (!base::Contains(kSupportedAcceleratorCommands, entry.command_id)) {
+    if (!std::ranges::contains(kSupportedAcceleratorCommands,
+                               entry.command_id)) {
       continue;
     }
     ui::Accelerator accelerator(entry.keycode, entry.modifiers);
@@ -925,19 +926,17 @@ void ProfilePickerView::UpdateAccessibleNameForRootView(views::WebView*) {
   }
 }
 
-void ProfilePickerView::ShowForceSigninErrorDialog(
-    const ForceSigninUIError& error,
+void ProfilePickerView::ShowSigninErrorDialog(
+    const std::variant<ForceSigninUIError, SigninUIError>& error,
     bool switch_step_success) {
   if (!switch_step_success) {
     return;
   }
-
-  CHECK(signin_util::IsForceSigninEnabled());
   ProfilePickerUI* web_ui = web_view_->GetWebContents()
                                 ->GetWebUI()
                                 ->GetController()
                                 ->GetAs<ProfilePickerUI>();
-  web_ui->ShowForceSigninErrorDialog(error);
+  web_ui->ShowSigninErrorDialog(error);
 }
 
 BEGIN_METADATA(ProfilePickerView)

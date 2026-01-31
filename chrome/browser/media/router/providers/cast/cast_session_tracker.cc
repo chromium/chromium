@@ -86,8 +86,8 @@ void CastSessionTracker::InitOnIoThread() {
 
 void CastSessionTracker::HandleReceiverStatusMessage(
     const MediaSinkInternal& sink,
-    const base::Value::Dict& message) {
-  const base::Value::Dict* status = message.FindDict("status");
+    const base::DictValue& message) {
+  const base::DictValue* status = message.FindDict("status");
   auto session = status ? CastSession::From(sink, *status) : nullptr;
   const MediaSink::Id& sink_id = sink.sink().id();
   if (!session) {
@@ -113,7 +113,7 @@ void CastSessionTracker::HandleReceiverStatusMessage(
 
 void CastSessionTracker::HandleMediaStatusMessage(
     const MediaSinkInternal& sink,
-    const base::Value::Dict& message) {
+    const base::DictValue& message) {
   auto session_it = sessions_by_sink_id_.find(sink.sink().id());
   if (session_it == sessions_by_sink_id_.end()) {
     DVLOG(2) << "Got media status message, but no session for: "
@@ -130,10 +130,10 @@ void CastSessionTracker::HandleMediaStatusMessage(
   // for the session we happen to currently know is on that sink.
   CastSession* session = session_it->second.get();
   const std::string& session_id = session->session_id();
-  base::Value::Dict updated_message = message.Clone();
+  base::DictValue updated_message = message.Clone();
   updated_message.Set("sessionId", session_id);
 
-  base::Value::List* updated_status = updated_message.FindList("status");
+  base::ListValue* updated_status = updated_message.FindList("status");
   if (!updated_status) {
     DVLOG(2) << "No status list in media status message.";
     return;
@@ -144,7 +144,7 @@ void CastSessionTracker::HandleMediaStatusMessage(
 
   // Backfill messages from receivers to make them compatible with Cast SDK.
   for (auto& media : *updated_status) {
-    base::Value::Dict& media_dict = media.GetDict();
+    base::DictValue& media_dict = media.GetDict();
     media_dict.Set("sessionId", session_id);
     std::optional<int> supported_media_commands =
         media_dict.FindInt("supportedMediaCommands");
@@ -173,18 +173,18 @@ void CastSessionTracker::HandleMediaStatusMessage(
 
 void CastSessionTracker::CopySavedMediaFieldsToMediaList(
     CastSession* session,
-    base::Value::List& media_list) {
+    base::ListValue& media_list) {
   // When |session| has saved media objects with a mediaSessionId corresponding
   // to a value in |media_list|, copy the 'media' field from the saved objects
   // to the corresponding objects in |media_list|.
-  const base::Value::List* session_media_value_list =
+  const base::ListValue* session_media_value_list =
       session->value().FindList("media");
   if (!session_media_value_list) {
     return;
   }
 
   for (auto& media : media_list) {
-    base::Value::Dict& media_dict = media.GetDict();
+    base::DictValue& media_dict = media.GetDict();
     std::optional<int> media_session_id = media_dict.FindInt("mediaSessionId");
     if (!media_session_id.has_value() || media_dict.Find("media")) {
       continue;

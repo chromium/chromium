@@ -8,11 +8,14 @@
 #include <optional>
 #include <string>
 
+#include "base/types/optional_ref.h"
 #include "base/values.h"
 #include "net/base/net_export.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/privacy_mode.h"
+#include "net/dns/host_resolver.h"
 #include "net/dns/public/secure_dns_policy.h"
+#include "net/http/alternative_service.h"
 #include "net/quic/quic_session_alias_key.h"
 #include "net/quic/quic_session_key.h"
 #include "net/socket/socket_tag.h"
@@ -27,12 +30,20 @@ namespace net {
 class NET_EXPORT_PRIVATE HttpStreamKey {
  public:
   HttpStreamKey();
-  HttpStreamKey(url::SchemeHostPort destination,
-                PrivacyMode privacy_mode,
-                SocketTag socket_tag,
-                NetworkAnonymizationKey network_anonymization_key,
-                SecureDnsPolicy secure_dns_policy,
-                bool disable_cert_network_fetches);
+  // `alt_service` is only used for HttpStreamKeys generated for alt-service
+  // requests. Note that these keys for alt-service connection attempts will
+  // never match the key for a non-alt-service attempt. For destinations with an
+  // alt service entry, two different HttpStreamKeys will be used: One with a
+  // null alt service, and one with a populate alt service value. All other
+  // fields will be the same.
+  HttpStreamKey(
+      url::SchemeHostPort destination,
+      PrivacyMode privacy_mode,
+      SocketTag socket_tag,
+      NetworkAnonymizationKey network_anonymization_key,
+      SecureDnsPolicy secure_dns_policy,
+      bool disable_cert_network_fetches,
+      base::optional_ref<const AlternativeService> alt_service = std::nullopt);
 
   ~HttpStreamKey();
 
@@ -60,7 +71,7 @@ class NET_EXPORT_PRIVATE HttpStreamKey {
 
   std::string ToString() const;
 
-  base::Value::Dict ToValue() const;
+  base::DictValue ToValue() const;
 
   // Calculate a SpdySessionKey from `this`. Unlike
   // CalculateQuicSessionAliasKey(), this method doesn't take an optional
@@ -72,14 +83,21 @@ class NET_EXPORT_PRIVATE HttpStreamKey {
   // not cryptographic.
   SpdySessionKey CalculateSpdySessionKey() const;
 
-  // Calculates a QuicSessionAliasKey from `this`. When
-  // `optional_alias_name` is provided, use the destination as the destination
-  // of QuicSessionAliasKey. See the comment of QuicSessionAliasKey about the
-  // difference between the server id and the destination. Returns a key with
-  // empty server_id/destination when the scheme is not cryptographic.
-  QuicSessionAliasKey CalculateQuicSessionAliasKey(
-      std::optional<url::SchemeHostPort> optional_alias_name =
-          std::nullopt) const;
+  const std::optional<AlternativeService>& alt_service() const {
+    return alt_service_;
+  }
+
+  // Returns the host that needs to be resolved to establish a connection to.
+  // This is typically `destination_`, except in the case `alt_service_` is
+  // non-null, in which case it's the alt service destination.
+  HostResolver::Host GetHostToResolve() const;
+
+  // Calculates a QuicSessionAliasKey from `this`. Takes `alt_service_` into
+  // consideration, when populated and for the QUIC protocol. See the comment of
+  // QuicSessionAliasKey about the difference between the server id and the
+  // destination. Returns a key with empty server_id/destination when the scheme
+  // is not cryptographic.
+  QuicSessionAliasKey CalculateQuicSessionAliasKey() const;
 
  private:
   url::SchemeHostPort destination_;
@@ -88,6 +106,7 @@ class NET_EXPORT_PRIVATE HttpStreamKey {
   NetworkAnonymizationKey network_anonymization_key_;
   SecureDnsPolicy secure_dns_policy_ = SecureDnsPolicy::kAllow;
   bool disable_cert_network_fetches_ = false;
+  std::optional<AlternativeService> alt_service_;
 };
 
 }  // namespace net

@@ -51,11 +51,11 @@ void ScopedPageFocusOverride::DispatchProtocolMessage(
 void ScopedPageFocusOverride::AgentHostClosed(DevToolsAgentHost* agent_host) {}
 
 void ScopedPageFocusOverride::SetFocusEmulationEnabled(bool enabled) {
-  base::Value::Dict command =
-      base::Value::Dict()
+  base::DictValue command =
+      base::DictValue()
           .Set("id", ++last_sent_id_)
           .Set("method", "Emulation.setFocusEmulationEnabled")
-          .Set("params", base::Value::Dict().Set("enabled", enabled));
+          .Set("params", base::DictValue().Set("enabled", enabled));
 
   std::string json_command = base::WriteJson(command).value_or("");
   agent_host_->DispatchProtocolMessage(this, base::as_byte_span(json_command));

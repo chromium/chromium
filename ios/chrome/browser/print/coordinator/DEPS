@@ -1,6 +1,8 @@
 include_rules = [
-  "+ios/chrome/browser/web/model/print/web_state_printer.h",
-  "+ios/chrome/browser/tabs/model/tab_title_util.h"
+  # keep-sorted start
+  "+ios/chrome/browser/tabs/model/tab_title_util.h",
+  "+ios/chrome/browser/web/model/print/print_handler.h",
+  # keep-sorted end
 ]
 
 specific_include_rules = {

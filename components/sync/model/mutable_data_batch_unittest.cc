@@ -11,82 +11,89 @@
 namespace syncer {
 
 TEST(MutableDataBatchTest, PutAndNextWithReuse) {
-  EntityData* entity1 = new EntityData();
-  EntityData* entity2 = new EntityData();
+  auto entity1 = std::make_unique<EntityData>();
+  EntityData* entity1_ptr = entity1.get();
+  auto entity2 = std::make_unique<EntityData>();
+  EntityData* entity2_ptr = entity2.get();
 
   MutableDataBatch batch;
   EXPECT_FALSE(batch.HasNext());
 
-  batch.Put("one", base::WrapUnique(entity1));
+  batch.Put("one", std::move(entity1));
   EXPECT_TRUE(batch.HasNext());
 
   auto [key1, data1] = batch.Next();
   EXPECT_FALSE(batch.HasNext());
   EXPECT_EQ("one", key1);
-  EXPECT_EQ(entity1, data1.get());
+  EXPECT_EQ(entity1_ptr, data1.get());
 
-  batch.Put("two", base::WrapUnique(entity2));
+  batch.Put("two", std::move(entity2));
   EXPECT_TRUE(batch.HasNext());
 
   auto [key2, data2] = batch.Next();
   EXPECT_FALSE(batch.HasNext());
   EXPECT_EQ("two", key2);
-  EXPECT_EQ(entity2, data2.get());
+  EXPECT_EQ(entity2_ptr, data2.get());
 }
 
 TEST(MutableDataBatchTest, PutAndNextInterleaved) {
-  EntityData* entity1 = new EntityData();
-  EntityData* entity2 = new EntityData();
-  EntityData* entity3 = new EntityData();
+  auto entity1 = std::make_unique<EntityData>();
+  EntityData* entity1_ptr = entity1.get();
+  auto entity2 = std::make_unique<EntityData>();
+  EntityData* entity2_ptr = entity2.get();
+  auto entity3 = std::make_unique<EntityData>();
+  EntityData* entity3_ptr = entity3.get();
 
   MutableDataBatch batch;
   EXPECT_FALSE(batch.HasNext());
 
-  batch.Put("one", base::WrapUnique(entity1));
+  batch.Put("one", std::move(entity1));
   EXPECT_TRUE(batch.HasNext());
-  batch.Put("two", base::WrapUnique(entity2));
+  batch.Put("two", std::move(entity2));
   EXPECT_TRUE(batch.HasNext());
 
   auto [key1, data1] = batch.Next();
   EXPECT_TRUE(batch.HasNext());
   EXPECT_EQ("one", key1);
-  EXPECT_EQ(entity1, data1.get());
+  EXPECT_EQ(entity1_ptr, data1.get());
 
-  batch.Put("three", base::WrapUnique(entity3));
+  batch.Put("three", std::move(entity3));
   EXPECT_TRUE(batch.HasNext());
 
   auto [key2, data2] = batch.Next();
   EXPECT_TRUE(batch.HasNext());
   EXPECT_EQ("two", key2);
-  EXPECT_EQ(entity2, data2.get());
+  EXPECT_EQ(entity2_ptr, data2.get());
 
   auto [key3, data3] = batch.Next();
   EXPECT_FALSE(batch.HasNext());
   EXPECT_EQ("three", key3);
-  EXPECT_EQ(entity3, data3.get());
+  EXPECT_EQ(entity3_ptr, data3.get());
 }
 
 TEST(MutableDataBatchTest, PutAndNextSharedKey) {
-  EntityData* entity1 = new EntityData();
-  EntityData* entity2 = new EntityData();
+  auto entity1 = std::make_unique<EntityData>();
+  EntityData* entity1_ptr = entity1.get();
+  auto entity2 = std::make_unique<EntityData>();
+  EntityData* entity2_ptr = entity2.get();
 
   MutableDataBatch batch;
   EXPECT_FALSE(batch.HasNext());
 
-  batch.Put("same", base::WrapUnique(entity1));
+  batch.Put("same", std::move(entity1));
   EXPECT_TRUE(batch.HasNext());
-  batch.Put("same", base::WrapUnique(entity2));
+  batch.Put("same", std::move(entity2));
   EXPECT_TRUE(batch.HasNext());
 
   auto [key1, data1] = batch.Next();
   EXPECT_TRUE(batch.HasNext());
   EXPECT_EQ("same", key1);
-  EXPECT_EQ(entity1, data1.get());
+  EXPECT_EQ(entity1_ptr, data1.get());
 
   auto [key2, data2] = batch.Next();
   EXPECT_FALSE(batch.HasNext());
   EXPECT_EQ("same", key2);
-  EXPECT_EQ(entity2, data2.get());
+  EXPECT_EQ(entity2_ptr, data2.get());
 }
 
 }  // namespace syncer

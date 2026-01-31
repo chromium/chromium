@@ -15,7 +15,6 @@
 
 #import "base/apple/foundation_util.h"
 #include "base/apple/owned_objc.h"
-#include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
 #import "base/mac/mac_util.h"
 #include "base/memory/raw_ptr.h"
@@ -793,6 +792,17 @@ static NSWindow* __weak _deferredResignKeyWindow;
       [self acceptsMouseEventsOption] > AcceptMouseEvents::kWhenInActiveWindow;
 }
 
+- (AcceptTooltipEvents)acceptsTooltipEvents {
+  // The embedder may override this behavior to mimic native UI.
+  if (_responderDelegate &&
+      [_responderDelegate respondsToSelector:@selector(acceptsTooltipEvents)]) {
+    return [_responderDelegate acceptsTooltipEvents];
+  }
+
+  // By default, only the key window accepts tooltip events.
+  return AcceptTooltipEvents::kWhenInKeyWindow;
+}
+
 - (void)setCloseOnDeactivate:(BOOL)b {
   _closeOnDeactivate = b;
 }
@@ -1153,7 +1163,7 @@ static NSWindow* __weak _deferredResignKeyWindow;
   // to exit fullscreen and we don't want to prevent them from exiting.
   ui::DomCode domCode = ui::KeycodeConverter::NativeKeycodeToDomCode(keyCode);
   return _keyboardLockActive && domCode != ui::DomCode::ESCAPE &&
-         (!_lockedKeys || base::Contains(_lockedKeys.value(), domCode));
+         (!_lockedKeys || _lockedKeys.value().contains(domCode));
 }
 
 - (BOOL)performKeyEquivalent:(NSEvent*)theEvent {
@@ -1756,8 +1766,16 @@ static NSWindow* __weak _deferredResignKeyWindow;
 }
 
 - (BOOL)canBecomeKeyView {
-  if ([self hostIsDisconnected])
+  if ([self hostIsDisconnected]) {
     return NO;
+  }
+
+  if (_responderDelegate &&
+      [_responderDelegate
+          respondsToSelector:@selector(shouldRefuseBecomingKeyView)] &&
+      [_responderDelegate shouldRefuseBecomingKeyView]) {
+    return NO;
+  }
 
   return _canBeKeyView;
 }

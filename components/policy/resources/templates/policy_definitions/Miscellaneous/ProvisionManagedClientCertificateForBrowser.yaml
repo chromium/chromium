@@ -11,6 +11,8 @@ desc: |-
 supported_on:
 - chrome.*:136-
 - android:143-
+future_on:
+- ios
 features:
   dynamic_refresh: true
   per_profile: false

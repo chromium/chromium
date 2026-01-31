@@ -26,14 +26,14 @@ class StubPolicyConversionsClient : public PolicyConversionsClient {
  private:
   // PolicyConversionsClient.
   bool HasUserPolicies() const override { return false; }
-  base::Value::List GetExtensionPolicies(PolicyDomain policy_domain) override {
-    return base::Value::List();
+  base::ListValue GetExtensionPolicies(PolicyDomain policy_domain) override {
+    return base::ListValue();
   }
 #if BUILDFLAG(IS_CHROMEOS)
-  base::Value::List GetDeviceLocalAccountPolicies() override {
-    return base::Value::List();
+  base::ListValue GetDeviceLocalAccountPolicies() override {
+    return base::ListValue();
   }
-  base::Value::Dict GetIdentityFields() override { return base::Value::Dict(); }
+  base::DictValue GetIdentityFields() override { return base::DictValue(); }
 #endif
   PolicyService* GetPolicyService() const override { return nullptr; }
   SchemaRegistry* GetPolicySchemaRegistry() const override { return nullptr; }
@@ -48,13 +48,13 @@ class PolicyConversionsClientTest : public ::testing::Test {
     PolicyMap::Entry entry(policy::POLICY_LEVEL_MANDATORY,
                            policy::POLICY_SCOPE_MACHINE,
                            policy::POLICY_SOURCE_ENTERPRISE_DEFAULT,
-                           base::Value(base::Value::List()), nullptr);
+                           base::Value(base::ListValue()), nullptr);
     if (set_is_default)
       entry.SetIsDefaultValue();
     return entry;
   }
 
-  base::Value::Dict GetPolicyValues(
+  base::DictValue GetPolicyValues(
       const PolicyConversionsClient& client,
       const PolicyMap& map,
       const std::optional<PolicyConversions::PolicyToSchemaMap>&
@@ -81,7 +81,7 @@ TEST_F(PolicyConversionsClientTest, SetDropDefaultValues) {
 
   // All policies should exist because |drop_default_values_enabled_| is false
   // by default.
-  base::Value::Dict policies1 =
+  base::DictValue policies1 =
       GetPolicyValues(client, policy_map, policy_schemas);
   EXPECT_EQ(3u, policies1.size());
   EXPECT_NE(nullptr, policies1.FindDict(kPolicyName1));
@@ -90,7 +90,7 @@ TEST_F(PolicyConversionsClientTest, SetDropDefaultValues) {
 
   // Enable dropping default values.
   client.SetDropDefaultValues(true);
-  base::Value::Dict policies2 =
+  base::DictValue policies2 =
       GetPolicyValues(client, policy_map, policy_schemas);
 
   // A default valued policy should not exist.
@@ -112,7 +112,7 @@ TEST_F(PolicyConversionsClientTest, HideMachineValues) {
           {{kPolicyName1, policy::Schema()}}};
   StubPolicyConversionsClient client;
 
-  base::Value::Dict policies =
+  base::DictValue policies =
       GetPolicyValues(client, policy_map, policy_schemas);
   EXPECT_EQ(value,
             *policies.FindByDottedPath(base::StrCat({kPolicyName1, ".value"})));
@@ -143,11 +143,10 @@ TEST_F(PolicyConversionsClientTest, PolicyIgnoredStatus) {
 
   StubPolicyConversionsClient client;
 
-  base::Value::Dict policies =
-      GetPolicyValues(client, policy_map, std::nullopt);
+  base::DictValue policies = GetPolicyValues(client, policy_map, std::nullopt);
 
   // Ignored policies should show "ignored" flag.
-  const base::Value::Dict* policy_dict = policies.FindDict(kPolicyName1);
+  const base::DictValue* policy_dict = policies.FindDict(kPolicyName1);
   ASSERT_NE(nullptr, policy_dict);
   EXPECT_TRUE(policy_dict->FindBool("ignored").value_or(false));
 }

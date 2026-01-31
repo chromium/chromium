@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/devtools/features.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
+#include "chrome/browser/glic/widget/local_hotkey_manager.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_queue_manager.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
@@ -50,7 +51,7 @@
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_icon_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
-#include "chrome/browser/ui/views/tabs/glic_button.h"
+#include "chrome/browser/ui/views/tabs/glic/glic_button.h"
 #include "chrome/browser/ui/views/tabs/tab_icon.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.h"
 #include "chrome/browser/ui/views/user_education/autofill_help_bubble_factory.h"
@@ -89,7 +90,6 @@
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/lens/lens_features.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/pdf/browser/pdf_document_helper.h"
 #include "components/plus_addresses/core/browser/grit/plus_addresses_strings.h"
 #include "components/plus_addresses/core/common/features.h"
@@ -526,7 +526,7 @@ void MaybeRegisterChromeFeaturePromos(
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForCustomAction(
           feature_engagement::kIPHDesktopCustomizeChromeExperimentFeature,
-          kTopContainerElementId,
+          kBrowserDialogAnchorElementId,
           IDS_TUTORIAL_CUSTOMIZE_CHROME_START_TUTORIAL_IPH,
           IDS_PROMO_SHOW_TUTORIAL_BUTTON,
           base::BindRepeating(
@@ -734,6 +734,40 @@ void MaybeRegisterChromeFeaturePromos(
           .SetMetadata(
               142, "dewittj@chromium.org",
               "Attempts to trigger when the user is on a supported page.")));
+
+  // kGlicTrustFirstOnboarding shortcut toast IPH:
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForToastPromo(
+          feature_engagement::
+              kIPHGlicTrustFirstOnboardingShortcutToastPromoFeature,
+          kGlicButtonElementId, IDS_GLIC_SHORTCUT_IPH_TEXT_TEMPLATE,
+          IDS_GLIC_SHORTCUT_IPH_SCREENREADER,
+          FeaturePromoSpecification::AcceleratorInfo(
+              glic::LocalHotkeyManager::GetConfigurableAccelerator(
+                  glic::LocalHotkeyManager::Hotkey::kFocusToggle)))
+          .SetAdditionalConditions(std::move(
+              AdditionalConditions().AddAdditionalCondition(AdditionalCondition{
+                  feature_engagement::events::kGlicOnboardingCompleted,
+                  AdditionalConditions::Constraint::kAtLeast, 1})))
+          .SetBubbleArrow(HelpBubbleArrow::kTopRight)
+          .SetMetadata(144, "zalmashni@google.com",
+                       "Triggered after the Glic side panel is closed or the "
+                       "user navigates to a new tab.")));
+
+  // kGlicTrustFirstOnboarding shortcut snooze IPH:
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForSnoozePromo(
+          feature_engagement::
+              kIPHGlicTrustFirstOnboardingShortcutSnoozePromoFeature,
+          kGlicButtonElementId, IDS_GLIC_SHORTCUT_IPH_TEXT_TEMPLATE)
+          .SetAdditionalConditions(std::move(
+              AdditionalConditions().AddAdditionalCondition(AdditionalCondition{
+                  feature_engagement::events::kGlicOnboardingCompleted,
+                  AdditionalConditions::Constraint::kAtLeast, 1})))
+          .SetBubbleArrow(HelpBubbleArrow::kTopRight)
+          .SetMetadata(144, "zalmashni@google.com",
+                       "Triggered after the Glic side panel is closed or the "
+                       "user navigates to a new tab.")));
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
   // kIPHGMCCastStartStopFeature:
@@ -825,8 +859,9 @@ void MaybeRegisterChromeFeaturePromos(
   // kIPHPdfSearchifyFeature:
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForToastPromo(
-          feature_engagement::kIPHPdfSearchifyFeature, kTopContainerElementId,
-          IDS_PDF_SEARCHIFY_IPH_BODY, IDS_PDF_SEARCHIFY_IPH_BODY_SCREEN_READER,
+          feature_engagement::kIPHPdfSearchifyFeature,
+          kBrowserDialogAnchorElementId, IDS_PDF_SEARCHIFY_IPH_BODY,
+          IDS_PDF_SEARCHIFY_IPH_BODY_SCREEN_READER,
           FeaturePromoSpecification::AcceleratorInfo())
           .SetBubbleArrow(HelpBubbleArrow::kNone)
           .SetBubbleTitleText(IDS_PDF_SEARCHIFY_IPH_TITLE)
@@ -1035,8 +1070,8 @@ void MaybeRegisterChromeFeaturePromos(
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForTutorialPromo(
           feature_engagement::kIPHSideBySideTabSwitchFeature,
-          kTopContainerElementId, IDS_SPLIT_VIEW_TAB_SWITCH_ENTRY_IPH_BODY,
-          kSplitViewTutorialId)
+          kBrowserDialogAnchorElementId,
+          IDS_SPLIT_VIEW_TAB_SWITCH_ENTRY_IPH_BODY, kSplitViewTutorialId)
           .SetBubbleArrow(HelpBubbleArrow::kNone)
           .SetBubbleIcon(kLightbulbOutlineIcon)
           .SetBubbleTitleText(IDS_SPLIT_VIEW_TAB_SWITCH_ENTRY_IPH_TITLE)
@@ -1119,6 +1154,10 @@ void MaybeRegisterChromeFeaturePromos(
                       views::ElementTrackerViews::GetInstance()
                           ->GetFirstMatchingViewAs<BrowserView>(
                               kBrowserViewElementId, elements[0]->context());
+                  if (!browser_view) {
+                    // The browser_view may be null in tests.
+                    return nullptr;
+                  }
                   IconLabelBubbleView* page_action_view =
                       browser_view->toolbar_button_provider()
                           ->GetPageActionView(kActionSidePanelShowReadAnything);
@@ -1169,8 +1208,8 @@ void MaybeRegisterChromeFeaturePromos(
     registry.RegisterFeature(std::move(
         FeaturePromoSpecification::CreateForCustomAction(
             feature_engagement::kIPHTabGroupsSharedTabChangedFeature,
-            kTopContainerElementId, IDS_DATA_SHARING_USER_ED_FIRST_TAB_CHANGE,
-            IDS_LEARN_MORE,
+            kBrowserDialogAnchorElementId,
+            IDS_DATA_SHARING_USER_ED_FIRST_TAB_CHANGE, IDS_LEARN_MORE,
             CreateNavigationAction(GURL(
                 data_sharing::features::kLearnMoreSharedTabGroupPageURL.Get())))
             .SetBubbleArrow(HelpBubbleArrow::kTopLeft)
@@ -1302,11 +1341,11 @@ void MaybeRegisterChromeFeaturePromos(
                        "into the toolbar.")));
 
   // kIPHDesktopSharedHighlightingFeature:
-  registry.RegisterFeature(
-      std::move(FeaturePromoSpecification::CreateForLegacyPromo(
-                    &feature_engagement::kIPHDesktopSharedHighlightingFeature,
-                    kTopContainerElementId, IDS_SHARED_HIGHLIGHTING_PROMO)
-                    .SetBubbleArrow(HelpBubbleArrow::kNone)));
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForLegacyPromo(
+          &feature_engagement::kIPHDesktopSharedHighlightingFeature,
+          kBrowserDialogAnchorElementId, IDS_SHARED_HIGHLIGHTING_PROMO)
+          .SetBubbleArrow(HelpBubbleArrow::kNone)));
 
   // kIPHWebUiHelpBubbleTestFeature
   registry.RegisterFeature(std::move(
@@ -1585,12 +1624,11 @@ void MaybeRegisterChromeFeaturePromos(
     registry.RegisterFeature(
         std::move(FeaturePromoSpecification::CreateForCustomUi(
                       feature_engagement::kIPHiOSLensPromoDesktopFeature,
-                      kSidePanelElementId,
+                      kToolbarAppMenuButtonElementId,
                       user_education::CreateCustomHelpBubbleViewFactoryCallback(
                           base::BindRepeating(
                               &IOSPromoBubbleView::Create,
                               desktop_to_mobile_promos::PromoType::kLens)))
-                      .SetBubbleArrow(HelpBubbleArrow::kLeftCenter)
                       .SetMetadata(144, "scottyoder@google.com",
                                    "Triggered when Lens Overlay is used.")));
   }
@@ -1955,40 +1993,6 @@ void MaybeRegisterChromeNewBadges(user_education::NewBadgeRegistry& registry) {
                                "Used to test \"New\" Badge logic.")));
 
   registry.RegisterFeature(user_education::NewBadgeSpecification(
-      features::kDevToolsAiAssistanceFileAgent,
-      user_education::Metadata(132, "wolfi@chromium.org, kimanh@chromium.org",
-                               "Shown in the Sources panel in the AI menu item "
-                               "when opening the context menu of a file.")));
-  registry.RegisterFeature(user_education::NewBadgeSpecification(
-      features::kDevToolsAiAssistanceNetworkAgent,
-      user_education::Metadata(
-          132, "wolfi@chromium.org, kimanh@chromium.org",
-          "Shown in the Network panel in the AI menu item "
-          "when opening the context menu of a network request.")));
-  registry.RegisterFeature(user_education::NewBadgeSpecification(
-      features::kDevToolsAiAssistancePerformanceAgent,
-      user_education::Metadata(
-          132, "jacktfranklin@chromium.org, kimanh@chromium.org",
-          "Shown in the Performance panel in the AI menu item "
-          "when opening the context menu of a main thread task.")));
-  registry.RegisterFeature(user_education::NewBadgeSpecification(
-      features::kDevToolsFreestyler,
-      user_education::Metadata(
-          131, "wolfi@chromium.org, kimanh@chromium.org",
-          "Shown in the Elements panel in the AI menu item "
-          "when opening the context menu of a DOM element.")));
-  registry.RegisterFeature(user_education::NewBadgeSpecification(
-      features::kDevToolsAiSubmenuPrompts,
-      user_education::Metadata(
-          142, "kprokopenko@chromium.org, kimanh@chromium.org",
-          "Shows AI submenu prompts in the AI menu item.")));
-  registry.RegisterFeature(user_education::NewBadgeSpecification(
-      features::kDevToolsAiDebugWithAi,
-      user_education::Metadata(
-          142, "kprokopenko@chromium.org, kimanh@chromium.org",
-          "Shows Debug with AI menu item for AI assistance.")));
-
-  registry.RegisterFeature(user_education::NewBadgeSpecification(
       compose::features::kEnableCompose,
       user_education::Metadata(124, "dewittj@chromium.org",
                                "Shown in Help Me Write context menu item.", {},
@@ -2023,12 +2027,6 @@ void MaybeRegisterChromeNewBadges(user_education::NewBadgeRegistry& registry) {
       user_education::Metadata(128, "jkeitel@google.com",
                                "Shown in the autofill popup for suggestions to "
                                "create a new plus address.")));
-
-  registry.RegisterFeature(user_education::NewBadgeSpecification(
-      password_manager::features::kPasswordManualFallbackAvailable,
-      user_education::Metadata(
-          128, "brunobraga@google.com",
-          "For passwords manual fallback; shown in the context menu.")));
 
   registry.RegisterFeature(user_education::NewBadgeSpecification(
       features::kTabstripDeclutter,

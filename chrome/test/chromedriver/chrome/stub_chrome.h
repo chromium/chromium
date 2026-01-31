@@ -43,14 +43,14 @@ class StubChrome : public Chrome {
                    std::string* window_handle) override;
   Status GetWindowRect(const std::string& id, WindowRect* rect) override;
   Status SetWindowRect(const std::string& target_id,
-                       const base::Value::Dict& params) override;
+                       const base::DictValue& params) override;
   Status MaximizeWindow(const std::string& target_id) override;
   Status MinimizeWindow(const std::string& target_id) override;
   Status FullScreenWindow(const std::string& target_id) override;
   Status CloseWebView(const std::string& id) override;
   Status ActivateWebView(const std::string& id) override;
   Status SetAcceptInsecureCerts() override;
-  Status SetPermission(std::unique_ptr<base::Value::Dict> permission_descriptor,
+  Status SetPermission(std::unique_ptr<base::DictValue> permission_descriptor,
                        Chrome::PermissionState desired_state,
                        WebView* current_view,
                        const std::string& current_frame_id) override;

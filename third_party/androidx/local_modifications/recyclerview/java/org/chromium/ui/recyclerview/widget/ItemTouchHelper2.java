@@ -49,9 +49,9 @@ import android.view.animation.Interpolator;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
 import androidx.recyclerview.R;
+import androidx.recyclerview.widget.ItemTouchHelper.ViewDropHandler;
 import androidx.recyclerview.widget.ItemTouchUIUtil;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.ItemTouchHelper.ViewDropHandler;
 import androidx.recyclerview.widget.RecyclerView.OnItemTouchListener;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
@@ -62,7 +62,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This is a utility class to add swipe to dismiss and drag & drop support to RecyclerView.
+ * This is a fork of {@link androidx.recyclerview.widget.ItemTouchHelper}.
+ *
+ * <p>This is a utility class to add swipe to dismiss and drag & drop support to RecyclerView.
  *
  * <p>It works with a RecyclerView and a Callback class, which configures what type of interactions
  * are enabled and also receives events when user performs these actions.
@@ -2453,6 +2455,15 @@ public class ItemTouchHelper2 extends RecyclerView.ItemDecoration
         public void onAnimationRepeat(Animator animation) {}
     }
 
+    /** Stops the internal drag. */
+    public void stopInternalDrag() {
+        select(null, ACTION_STATE_IDLE);
+    }
+
+    public boolean isDragInProcess() {
+        return mActionState == ACTION_STATE_DRAG;
+    }
+
     /******************************************************************
      * BEGIN: External drag support
      ******************************************************************/
@@ -2529,7 +2540,7 @@ public class ItemTouchHelper2 extends RecyclerView.ItemDecoration
     }
 
     /**
-     * Stops the external drag.
+     * Run after external drag has been stopped.
      *
      * @param recoverItem whether the item should be recovered at its' original state and place.
      */

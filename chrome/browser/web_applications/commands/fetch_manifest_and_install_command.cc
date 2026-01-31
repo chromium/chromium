@@ -118,7 +118,7 @@ std::optional<PlayStoreIntent> GetPlayStoreIntentFromManifest(
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-void LogInstallInfoForFallbackData(base::Value::Dict& dict,
+void LogInstallInfoForFallbackData(base::DictValue& dict,
                                    const WebAppInstallInfo& install_info) {
   dict.Set("manifest_id", install_info.manifest_id().spec());
   dict.Set("start_url", install_info.start_url().spec());
@@ -219,7 +219,7 @@ void FetchManifestAndInstallCommand::GetScreenshot(
         callback) {
   // If the screenshot for a specific index has been downloaded, run the
   // callback instantly.
-  if (base::Contains(screenshots_downloaded_, index)) {
+  if (screenshots_downloaded_.contains(index)) {
     auto screenshot_info = screenshots_downloaded_.at(index);
     std::move(callback).Run(
         std::get<SkBitmap>(screenshot_info),
@@ -609,10 +609,10 @@ void FetchManifestAndInstallCommand::OnIconsDownloadedForFallbackInfoShowDialog(
     Abort(webapps::InstallResultCode::kWebContentsDestroyed);
     return;
   }
-  base::Value::Dict* icons_downloaded =
+  base::DictValue* icons_downloaded =
       GetMutableDebugValue().EnsureDict("icons_retrieved");
   for (const auto& [url, bitmap_vector] : icons_map) {
-    base::Value::List* sizes = icons_downloaded->EnsureList(url.spec());
+    base::ListValue* sizes = icons_downloaded->EnsureList(url.spec());
     for (const SkBitmap& bitmap : bitmap_vector) {
       sizes->Append(bitmap.width());
     }

@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/lock.h"
@@ -505,8 +506,17 @@ void RecordModelExecutionResult(SegmentId segment_id,
     std::string histogram_name = "SegmentationPlatform.ModelExecution.Result." +
                                  base::NumberToString(i) + "." +
                                  SegmentIdToHistogramVariant(segment_id);
-    int scaled_model_score = is_probability_score ? result[i] * 100 : result[i];
+    int scaled_model_score = is_probability_score
+                                 ? base::ClampRound(result[i] * 100)
+                                 : base::ClampRound(result[i]);
+    // TODO(crbug.com/384798365): Remove this histogram after the new ones are
+    // established.
     base::UmaHistogramPercentage(histogram_name, scaled_model_score);
+
+    base::UmaHistogramPercentage(histogram_name + ".Raw",
+                                 base::ClampRound(result[i]));
+    base::UmaHistogramPercentage(histogram_name + ".Scaled100",
+                                 base::ClampRound(result[i] * 100));
   }
 }
 

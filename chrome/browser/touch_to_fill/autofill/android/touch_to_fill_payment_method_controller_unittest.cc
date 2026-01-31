@@ -27,6 +27,7 @@
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/integrators/touch_to_fill/touch_to_fill_delegate.h"
 #include "components/autofill/core/browser/payments/bnpl_util.h"
+#include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/payments/test_legal_message_line.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
@@ -70,22 +71,25 @@ class MockTouchToFillPaymentMethodViewImpl : public TouchToFillPaymentMethodView
               ShowPaymentMethods,
               ((TouchToFillPaymentMethodViewController * controller),
                (base::span<const Suggestion> suggestions),
-               (bool should_show_scan_credit_card)));
+               (const payments::TouchToFillDisplayOptions& options)));
   MOCK_METHOD(bool,
               ShowIbans,
               (TouchToFillPaymentMethodViewController * controller,
                base::span<const Iban> ibans_to_suggest));
   MOCK_METHOD(bool,
-              ShowLoyaltyCards,
+              ShowAffiliatedLoyaltyCards,
               (TouchToFillPaymentMethodViewController * controller,
                base::span<const LoyaltyCard> affiliated_loyalty_cards,
                base::span<const LoyaltyCard> all_loyalty_cards,
                bool first_time_usage));
+  MOCK_METHOD(bool,
+              ShowAllLoyaltyCards,
+              (TouchToFillPaymentMethodViewController * controller,
+               base::span<const LoyaltyCard> all_loyalty_cards));
   MOCK_METHOD(
       bool,
       OnPurchaseAmountExtracted,
-      (const TouchToFillPaymentMethodViewController& controller,
-       base::span<const payments::BnplIssuerContext> bnpl_issuer_contexts,
+      (base::span<const payments::BnplIssuerContext> bnpl_issuer_contexts,
        std::optional<int64_t> extracted_amount,
        bool is_amount_supported_by_any_issuer,
        const std::optional<std::string>& app_locale));
@@ -95,8 +99,7 @@ class MockTouchToFillPaymentMethodViewImpl : public TouchToFillPaymentMethodView
   MOCK_METHOD(
       bool,
       ShowBnplIssuers,
-      (const TouchToFillPaymentMethodViewController& controller,
-       base::span<const payments::BnplIssuerContext> bnpl_issuer_contexts,
+      (base::span<const payments::BnplIssuerContext> bnpl_issuer_contexts,
        const std::string& app_locale));
   MOCK_METHOD(bool,
               ShowErrorScreen,
@@ -105,8 +108,7 @@ class MockTouchToFillPaymentMethodViewImpl : public TouchToFillPaymentMethodView
                const std::u16string& description));
   MOCK_METHOD(bool,
               ShowBnplIssuerTos,
-              (const TouchToFillPaymentMethodViewController& controller,
-               const payments::BnplIssuerTosDetail& bnpl_issuer_tos_detail));
+              (const payments::BnplIssuerTosDetail& bnpl_issuer_tos_detail));
   MOCK_METHOD(void, Hide, ());
   MOCK_METHOD(void, SetVisible, (bool visible));
 };
@@ -118,6 +120,7 @@ class MockTouchToFillDelegateAndroidImpl
       TestBrowserAutofillManager* autofill_manager)
       : TouchToFillDelegateAndroidImpl(autofill_manager) {
     ON_CALL(*this, ShouldShowScanCreditCard).WillByDefault(Return(true));
+    ON_CALL(*this, ShouldShowGPayLogo).WillByDefault(Return(true));
   }
   ~MockTouchToFillDelegateAndroidImpl() override = default;
 
@@ -131,6 +134,7 @@ class MockTouchToFillDelegateAndroidImpl
               (FormGlobalId, FieldGlobalId),
               (override));
   MOCK_METHOD(bool, ShouldShowScanCreditCard, (), (override));
+  MOCK_METHOD(bool, ShouldShowGPayLogo, (), (const, override));
   MOCK_METHOD(void, ScanCreditCard, (), (override));
   MOCK_METHOD(void, OnCreditCardScanned, (const CreditCard& card), (override));
   MOCK_METHOD(void, ShowPaymentMethodSettings, (), (override));
@@ -306,9 +310,10 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
        ShowPaymentMethodsPassesCreditCardsToTheView) {
   // Test that the cards have propagated to the view.
   EXPECT_CALL(*mock_view_,
-              ShowPaymentMethods(&payment_method_controller(),
-                                 ElementsAreArray(suggestions_),
-                                 /*should_show_scan_credit_card=*/true));
+              ShowPaymentMethods(
+                  &payment_method_controller(), ElementsAreArray(suggestions_),
+                  payments::TouchToFillDisplayOptions{
+                      .show_scan_credit_card = true, .show_gpay_logo = true}));
   OnBeforeAskForValuesToFill();
   payment_method_controller().ShowPaymentMethods(
       std::move(mock_view_), ttf_delegate().GetWeakPointer(), suggestions_);
@@ -327,16 +332,16 @@ TEST_F(TouchToFillPaymentMethodControllerTest, ShowIbansPassesIbansToTheView) {
 }
 
 TEST_F(TouchToFillPaymentMethodControllerTest,
-       ShowLoyaltyCardsPassesLoyaltyCardsToTheView) {
+       ShowAffiliatedLoyaltyCardsPassesLoyaltyCardsToTheView) {
   SetUpLoyaltyCardFormField();
   // Test that the loyalty cards have propagated to the view.
-  EXPECT_CALL(*mock_view_,
-              ShowLoyaltyCards(&payment_method_controller(),
+  EXPECT_CALL(*mock_view_, ShowAffiliatedLoyaltyCards(
+                               &payment_method_controller(),
                                ElementsAreArray(affiliated_loyalty_cards_),
                                ElementsAreArray(all_loyalty_cards_),
                                /*first_time_usage*/ true));
   OnBeforeAskForValuesToFill();
-  payment_method_controller().ShowLoyaltyCards(
+  payment_method_controller().ShowAffiliatedLoyaltyCards(
       std::move(mock_view_), ttf_delegate().GetWeakPointer(),
       affiliated_loyalty_cards_, all_loyalty_cards_, /*first_time_usage*/ true);
   OnAfterAskForValuesToFill();
@@ -377,12 +382,12 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
   std::optional<int64_t> extracted_amount = 12345;
   std::optional<std::string> app_locale = "en-US";
   EXPECT_CALL(*mock_view_,
-              ShowPaymentMethods(&payment_method_controller(),
-                                 ElementsAreArray(suggestions_),
-                                 /*should_show_scan_credit_card=*/true));
+              ShowPaymentMethods(
+                  &payment_method_controller(), ElementsAreArray(suggestions_),
+                  payments::TouchToFillDisplayOptions{
+                      .show_scan_credit_card = true, .show_gpay_logo = true}));
   EXPECT_CALL(*mock_view_,
               OnPurchaseAmountExtracted(
-                  Ref(payment_method_controller()),
                   testing::ElementsAre(
                       EqualBnplIssuerContext(bnpl_issuer_contexts_[0]),
                       EqualBnplIssuerContext(bnpl_issuer_contexts_[1]),
@@ -417,9 +422,10 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
 TEST_F(TouchToFillPaymentMethodControllerTest,
        ShowProgressScreenOnPreexistingView) {
   EXPECT_CALL(*mock_view_,
-              ShowPaymentMethods(&payment_method_controller(),
-                                 ElementsAreArray(suggestions_),
-                                 /*should_show_scan_credit_card=*/true));
+              ShowPaymentMethods(
+                  &payment_method_controller(), ElementsAreArray(suggestions_),
+                  payments::TouchToFillDisplayOptions{
+                      .show_scan_credit_card = true, .show_gpay_logo = true}));
   EXPECT_CALL(*mock_view_, ShowProgressScreen(&payment_method_controller()))
       .WillOnce(Return(true));
 
@@ -457,9 +463,10 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
       std::make_unique<MockTouchToFillPaymentMethodViewImpl>();
 
   EXPECT_CALL(*mock_view_,
-              ShowPaymentMethods(&payment_method_controller(),
-                                 ElementsAreArray(suggestions_),
-                                 /*should_show_scan_credit_card=*/true));
+              ShowPaymentMethods(
+                  &payment_method_controller(), ElementsAreArray(suggestions_),
+                  payments::TouchToFillDisplayOptions{
+                      .show_scan_credit_card = true, .show_gpay_logo = true}));
   EXPECT_CALL(*mock_view_, ShowProgressScreen).Times(0);
   EXPECT_CALL(*new_mock_view, ShowProgressScreen(&payment_method_controller()))
       .WillOnce(Return(true));
@@ -478,8 +485,7 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
   ASSERT_EQ(3U, bnpl_issuer_contexts_.size());
   EXPECT_CALL(
       *mock_view_,
-      ShowBnplIssuers(Ref(payment_method_controller()),
-                      testing::ElementsAre(
+      ShowBnplIssuers(testing::ElementsAre(
                           EqualBnplIssuerContext(bnpl_issuer_contexts_[0]),
                           EqualBnplIssuerContext(bnpl_issuer_contexts_[1]),
                           EqualBnplIssuerContext(bnpl_issuer_contexts_[2])),
@@ -501,12 +507,12 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
   base::MockOnceCallback<void(autofill::BnplIssuer)>
       mock_selected_issuer_callback;
   EXPECT_CALL(*mock_view_,
-              ShowPaymentMethods(&payment_method_controller(),
-                                 ElementsAreArray(suggestions_),
-                                 /*should_show_scan_credit_card=*/true));
+              ShowPaymentMethods(
+                  &payment_method_controller(), ElementsAreArray(suggestions_),
+                  payments::TouchToFillDisplayOptions{
+                      .show_scan_credit_card = true, .show_gpay_logo = true}));
   EXPECT_CALL(*mock_view_,
-              ShowBnplIssuers(Ref(payment_method_controller()),
-                              ElementsAreArray(bnpl_issuer_contexts_), "en-US"))
+              ShowBnplIssuers(ElementsAreArray(bnpl_issuer_contexts_), "en-US"))
       .WillOnce(Return(true));
   EXPECT_CALL(ttf_delegate(), SetCancelCallback);
   EXPECT_CALL(ttf_delegate(), SetSelectedIssuerCallback);
@@ -545,13 +551,9 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
       TestLegalMessageLine("This is the entire message.")};
 
   // Test that the BNPL issuer ToS info have propagated to the view.
-  EXPECT_CALL(*mock_view_,
-              ShowBnplIssuerTos(
-                  Ref(payment_method_controller()),
-                  FieldsAre(BnplIssuer::IssuerId::kBnplAffirm,
-                            IDR_AUTOFILL_GOOGLE_PAY_AFFIRM,
-                            IDR_AUTOFILL_GOOGLE_PAY_AFFIRM_DARK, true,
-                            u"Affirm", bnpl_tos_model.legal_message_lines)));
+  EXPECT_CALL(*mock_view_, ShowBnplIssuerTos(FieldsAre(
+                               BnplIssuer::IssuerId::kBnplAffirm, true,
+                               u"Affirm", bnpl_tos_model.legal_message_lines)));
   EXPECT_CALL(ttf_delegate(), SetCancelCallback);
   EXPECT_CALL(ttf_delegate(), SetBnplTosAcceptCallback);
 
@@ -574,13 +576,9 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
   bnpl_tos_model.issuer.set_issuer_id(BnplIssuer::IssuerId::kBnplZip);
 
   // Test that the BNPL issuer ToS info have propagated to the view.
-  EXPECT_CALL(
-      *mock_view_,
-      ShowBnplIssuerTos(
-          Ref(payment_method_controller()),
-          FieldsAre(BnplIssuer::IssuerId::kBnplZip, IDR_AUTOFILL_GOOGLE_PAY_ZIP,
-                    IDR_AUTOFILL_GOOGLE_PAY_ZIP_DARK, false, u"Zip",
-                    bnpl_tos_model.legal_message_lines)));
+  EXPECT_CALL(*mock_view_, ShowBnplIssuerTos(FieldsAre(
+                               BnplIssuer::IssuerId::kBnplZip, false, u"Zip",
+                               bnpl_tos_model.legal_message_lines)));
   EXPECT_CALL(ttf_delegate(), SetCancelCallback);
   EXPECT_CALL(ttf_delegate(), SetBnplTosAcceptCallback);
 
@@ -626,9 +624,10 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
   const std::u16string description = u"Error Description";
 
   EXPECT_CALL(*mock_view_,
-              ShowPaymentMethods(&payment_method_controller(),
-                                 ElementsAreArray(suggestions_),
-                                 /*should_show_scan_credit_card=*/true))
+              ShowPaymentMethods(
+                  &payment_method_controller(), ElementsAreArray(suggestions_),
+                  payments::TouchToFillDisplayOptions{
+                      .show_scan_credit_card = true, .show_gpay_logo = true}))
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_view_,
               ShowErrorScreen(&payment_method_controller(), title, description))
@@ -661,9 +660,10 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
   const std::u16string description = u"Error Description";
 
   EXPECT_CALL(*mock_view_,
-              ShowPaymentMethods(&payment_method_controller(),
-                                 ElementsAreArray(suggestions_),
-                                 /*should_show_scan_credit_card=*/true))
+              ShowPaymentMethods(
+                  &payment_method_controller(), ElementsAreArray(suggestions_),
+                  payments::TouchToFillDisplayOptions{
+                      .show_scan_credit_card = true, .show_gpay_logo = true}))
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_view_, ShowErrorScreen).Times(0);
   EXPECT_CALL(*new_mock_view,
@@ -729,8 +729,7 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
 TEST_F(TouchToFillPaymentMethodControllerTest,
        OnBnplIssuerSuggestionSelected_ForwardsCallToDelegate) {
   EXPECT_CALL(*mock_view_,
-              ShowBnplIssuers(Ref(payment_method_controller()),
-                              ElementsAreArray(bnpl_issuer_contexts_), "en-US"))
+              ShowBnplIssuers(ElementsAreArray(bnpl_issuer_contexts_), "en-US"))
       .WillOnce(Return(true));
   EXPECT_CALL(ttf_delegate(),
               OnBnplIssuerSuggestionSelected(/*issuer_id=*/"affirm"));

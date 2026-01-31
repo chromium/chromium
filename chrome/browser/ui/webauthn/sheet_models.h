@@ -556,15 +556,15 @@ class AuthenticatorCableErrorSheetModel : public AuthenticatorSheetModelBase {
   std::u16string GetCancelButtonLabel() const override;
 };
 
-class AuthenticatorCreatePasskeySheetModel
+class AuthenticatorChromeProfileCreatePasskeySheetModel
     : public AuthenticatorSheetModelBase {
  public:
-  explicit AuthenticatorCreatePasskeySheetModel(
+  explicit AuthenticatorChromeProfileCreatePasskeySheetModel(
       AuthenticatorRequestDialogModel* dialog_model);
-  ~AuthenticatorCreatePasskeySheetModel() override;
+  ~AuthenticatorChromeProfileCreatePasskeySheetModel() override;
 
-  // An additional label that `AuthenticatorCreatePasskeySheetView` includes in
-  // the `BuildStepSpecificContent()` view.
+  // An additional label that `AuthenticatorChromeProfileCreatePasskeySheetView`
+  // includes in the `BuildStepSpecificContent()` view.
   std::u16string passkey_storage_description() const;
 
  private:

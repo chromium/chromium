@@ -20,7 +20,6 @@ class DrmThreadProxy;
 class DrmOverlayManagerGpu : public DrmOverlayManager {
  public:
   DrmOverlayManagerGpu(DrmThreadProxy* drm_thread_proxy,
-                       bool handle_overlays_swap_failure,
                        bool allow_sync_and_real_buffer_page_flip_testing);
 
   DrmOverlayManagerGpu(const DrmOverlayManagerGpu&) = delete;

@@ -34,6 +34,7 @@
 #include "components/signin/public/base/session_binding_test_utils.h"
 #include "components/signin/public/base/session_binding_utils.h"
 #include "components/signin/public/base/test_signin_client.h"
+#include "components/unexportable_keys/background_task_origin.h"
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "components/unexportable_keys/unexportable_key_service_impl.h"
@@ -77,7 +78,7 @@ constexpr char kCachedSecSessionChallengeResponse[] =
 
 MATCHER_P3(JwtHasExpectedFields, session_id, challenge, destination_url, "") {
   std::string_view jwt = arg;
-  std::optional<base::Value::Dict> payload_dict =
+  std::optional<base::DictValue> payload_dict =
       signin::ExtractPayloadFromJwt(jwt);
   if (!payload_dict) {
     *result_listener << "Couldn't parse payload from JWT: " << jwt;
@@ -86,7 +87,7 @@ MATCHER_P3(JwtHasExpectedFields, session_id, challenge, destination_url, "") {
 
   *result_listener << " with payload " << payload_dict->DebugString();
   return testing::ExplainMatchResult(
-      base::test::DictionaryHasValues(base::Value::Dict()
+      base::test::DictionaryHasValues(base::DictValue()
                                           .Set("sub", session_id)
                                           .Set("jti", challenge)
                                           .Set("aud", destination_url.spec())),
@@ -345,6 +346,8 @@ class BoundSessionRefreshCookieFetcherImplTest : public ::testing::Test {
   unexportable_keys::UnexportableKeyTaskManager unexportable_key_task_manager_;
   unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_{
       unexportable_key_task_manager_,
+      unexportable_keys::BackgroundTaskOrigin::
+          kDeviceBoundSessionCredentialsPrototype,
       crypto::UnexportableKeyProvider::Config()};
   UnexportableKeyId binding_key_id_;
   std::unique_ptr<SessionBindingHelper> session_binding_helper_;

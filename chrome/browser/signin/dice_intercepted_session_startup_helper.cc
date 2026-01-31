@@ -4,9 +4,9 @@
 
 #include "chrome/browser/signin/dice_intercepted_session_startup_helper.h"
 
+#include <algorithm>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/task/single_thread_task_runner.h"
@@ -34,7 +34,7 @@ bool CookieInfoContains(const signin::AccountsInCookieJarInfo& cookie_info,
                         const CoreAccountId& account_id) {
   const std::vector<gaia::ListedAccount>& accounts =
       cookie_info.GetPotentiallyInvalidSignedInAccounts();
-  return base::Contains(accounts, account_id, &gaia::ListedAccount::id);
+  return std::ranges::contains(accounts, account_id, &gaia::ListedAccount::id);
 }
 
 }  // namespace

@@ -48,7 +48,7 @@ using network::mojom::ContentSecurityPolicyType;
 namespace {
 
 String GetRawDirectiveForMessage(
-    const HashMap<CSPDirectiveName, String> raw_directives,
+    const HashMap<CSPDirectiveName, String>& raw_directives,
     CSPDirectiveName directive_name) {
   return StrCat({ContentSecurityPolicy::GetDirectiveName(directive_name), " ",
                  raw_directives.at(directive_name)});
@@ -277,6 +277,14 @@ bool CheckWasmEval(const network::mojom::blink::ContentSecurityPolicy& csp,
   return !directive || directive->allow_eval ||
          (SupportsWasmEval(csp, policy) && directive->allow_wasm_eval) ||
          directive->allow_wasm_unsafe_eval;
+}
+
+bool CheckTrustedTypesEval(
+    const network::mojom::blink::ContentSecurityPolicy& csp,
+    const ContentSecurityPolicy* policy) {
+  const network::mojom::blink::CSPSourceList* directive =
+      OperativeDirective(csp, CSPDirectiveName::ScriptSrc).source_list;
+  return directive && directive->allow_trusted_types_eval;
 }
 
 bool CheckHash(const network::mojom::blink::CSPSourceList* directive,
@@ -878,6 +886,16 @@ bool CSPDirectiveListAllowWasmCodeGeneration(
   return CSPDirectiveListIsReportOnly(csp) || CheckWasmEval(csp, policy);
 }
 
+CORE_EXPORT
+bool CSPDirectiveListAllowTrustedTypesEval(
+    const network::mojom::blink::ContentSecurityPolicy& csp,
+    ContentSecurityPolicy* policy,
+    ReportingDisposition reporting_disposition,
+    ContentSecurityPolicy::ExceptionStatus exception_status) {
+  return !CSPDirectiveListIsReportOnly(csp) &&
+         CheckTrustedTypesEval(csp, policy);
+}
+
 bool CSPDirectiveListShouldDisableEval(
     const network::mojom::blink::ContentSecurityPolicy& csp,
     String& error_message,
@@ -943,19 +961,15 @@ bool CSPDirectiveListShouldDisableWasmEval(
               "following Content Security policy directive because ",
               infix,
               " an allowed source of script in the following Content Security "
-              "Policy directive: "});
+              "Policy directive: \"",
+              raw_directive, "\"."});
   return true;
 }
 
-String JoinPath(const Vector<String>& tokens) {
+String JoinPath(const Vector<StringView>& tokens) {
   StringBuilder b;
-  for (size_t i = 0; i < tokens.size(); i++) {
-    b.Append(tokens[i]);
-    if (i != tokens.size() - 1) {
-      b.Append("/");
-    }
-  }
-  return b.ToString();
+  b.AppendRange(tokens, "/");
+  return b.ReleaseString();
 }
 
 String GetRelativeScriptUrl(const KURL& document_url, const KURL& script_url) {
@@ -968,7 +982,7 @@ String GetRelativeScriptUrl(const KURL& document_url, const KURL& script_url) {
   }
   // Ignore URLs with empty paths. This also covers cases like
   // https://example.com?abc#def.
-  if (script_url.GetPath().ToString() == "/") {
+  if (script_url.GetPath() == "/") {
     return String();
   }
   // For the document URL, use its base string as the starting point. This
@@ -977,18 +991,16 @@ String GetRelativeScriptUrl(const KURL& document_url, const KURL& script_url) {
   // after the origin except for the fragment, which is stripped due to privacy
   // reasons (see https://www.w3.org/TR/CSP3/#strip-url-for-use-in-reports).
   KURL document_base(document_url.BaseAsString().ToString());
-  String document_path = document_base.GetPath().ToString();
-  String script_path = StrCat({script_url.GetPath().ToString(),
-                               script_url.QueryWithLeadingQuestionMark()});
+  StringView document_path = document_base.GetPath();
+  String script_path =
+      StrCat({script_url.GetPath(), script_url.QueryWithLeadingQuestionMark()});
 
-  Vector<String> document_path_tokens;
-  Vector<String> script_path_tokens;
   // Paths of resolved KURLs always start with "/", even if the actual path is
   // empty. Remove it then split.
-  document_path.Substring(1).Split("/", /*allow_empty_entries=*/false,
-                                   document_path_tokens);
-  script_path.Substring(1).Split("/", /*allow_empty_entries=*/false,
-                                 script_path_tokens);
+  Vector<StringView> document_path_tokens =
+      document_path.substr(1).SplitSkippingEmpty('/');
+  Vector<StringView> script_path_tokens =
+      StringView(script_path).substr(1).SplitSkippingEmpty('/');
 
   size_t common_prefix_len = 0;
   size_t min_len =
@@ -1000,7 +1012,7 @@ String GetRelativeScriptUrl(const KURL& document_url, const KURL& script_url) {
   }
 
   int level_difference = document_path_tokens.size() - common_prefix_len;
-  Vector<String> relative_path_tokens;
+  Vector<StringView> relative_path_tokens;
   for (int i = 0; i < level_difference; i++) {
     relative_path_tokens.push_back("..");
   }
@@ -1155,8 +1167,16 @@ bool CSPDirectiveListAllowTrustedTypePolicy(
 
 bool CSPDirectiveListRequiresTrustedTypes(
     const network::mojom::blink::ContentSecurityPolicy& csp) {
+  // Do we have "require-trusted-types-for 'script'", enforcing or not?
   return csp.require_trusted_types_for ==
          network::mojom::blink::CSPRequireTrustedTypesFor::Script;
+}
+
+bool CSPDirectiveListRequiresTrustedTypesEnforcing(
+    const network::mojom::blink::ContentSecurityPolicy& csp) {
+  // Do we have "require-trusted-types-for 'script'" in an enforcing policy?
+  return CSPDirectiveListRequiresTrustedTypes(csp) &&
+         !CSPDirectiveListIsReportOnly(csp);
 }
 
 std::optional<HashAlgorithm> CSPDirectiveListHashToReport(

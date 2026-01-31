@@ -73,7 +73,7 @@ void ReadJsonTraceData(
 
 }  // namespace
 
-static jlong JNI_TracingControllerAndroidImpl_Init(
+static int64_t JNI_TracingControllerAndroidImpl_Init(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& obj) {
   TracingControllerAndroid* profiler = new TracingControllerAndroid(env, obj);
@@ -205,7 +205,7 @@ void TracingControllerAndroid::OnKnownCategoriesReceived(
     const ScopedJavaGlobalRef<jobject>& callback,
     const std::set<std::string>& categories_received) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  base::Value::List category_list;
+  base::ListValue category_list;
   for (const std::string& category : categories_received)
     category_list.Append(category);
   std::string received_category_list =

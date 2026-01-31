@@ -13,7 +13,6 @@
 
 #include "base/check.h"
 #include "base/check_deref.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -253,7 +252,7 @@ bool GenerateTouchPoints(
                                   ? blink::WebTouchPoint::State::kStateCancelled
                                   : blink::WebTouchPoint::State::kStateReleased;
     event->SetType(type);
-  } else if (!base::Contains(points, changing.id)) {
+  } else if (!points.contains(changing.id)) {
     event->touches[0].state = blink::WebTouchPoint::State::kStatePressed;
     event->SetType(blink::WebInputEvent::Type::kTouchStart);
   } else {
@@ -536,7 +535,7 @@ CreateWebTouchEvents(
   std::vector<blink::WebTouchEvent> events;
   bool ok = true;
   for (auto& id_point : points) {
-    if (base::Contains(touched_points, id_point.first) &&
+    if (touched_points.contains(id_point.first) &&
         type == blink::WebInputEvent::Type::kTouchMove &&
         touched_points[id_point.first].PositionInWidget() ==
             id_point.second.PositionInWidget()) {
@@ -783,7 +782,8 @@ class InputHandler::InputInjector
 
  private:
   void OnInputEvent(const RenderWidgetHost& widget,
-                    const blink::WebInputEvent& event) override {
+                    const blink::WebInputEvent& event,
+                    InputEventSource source) override {
     input_queued_ = true;
   }
 
@@ -1309,7 +1309,8 @@ void InputHandler::ImeSetComposition(
 
   widget_host->GetWidgetInputHandler()->ImeSetComposition(
       text16, std::vector<ui::ImeTextSpan>(), replacement_range,
-      selection_start, selection_end, std::move(closure));
+      selection_start, selection_end, blink::mojom::ImeState::kNone,
+      std::move(closure));
 }
 
 void InputHandler::DispatchMouseEvent(
@@ -1806,7 +1807,7 @@ void InputHandler::DispatchSyntheticPointerActionTouch(
 
     SyntheticPointerActionParams::PointerActionType action_type =
         SyntheticPointerActionParams::PointerActionType::MOVE;
-    if (!base::Contains(pointer_ids_, id)) {
+    if (!pointer_ids_.contains(id)) {
       pointer_ids_.insert(id);
       action_type = SyntheticPointerActionParams::PointerActionType::PRESS;
     }
@@ -1829,7 +1830,7 @@ void InputHandler::DispatchSyntheticPointerActionTouch(
           SyntheticPointerActionParams::PointerActionType::MOVE &&
       current_pointer_ids.size() < pointer_ids_.size()) {
     for (auto it = pointer_ids_.begin(); it != pointer_ids_.end();) {
-      if (base::Contains(current_pointer_ids, *it)) {
+      if (current_pointer_ids.contains(*it)) {
         it++;
         continue;
       }
@@ -2152,9 +2153,10 @@ void InputHandler::SynthesizeRepeatingScroll(
 
   if (!interaction_marker_name.empty()) {
     // TODO(alexclarke): Can we move this elsewhere? It doesn't really fit here.
-    TRACE_EVENT_COPY_NESTABLE_ASYNC_BEGIN0(
-        "benchmark", interaction_marker_name.c_str(),
-        TRACE_ID_WITH_SCOPE(interaction_marker_name.c_str(), id));
+    TRACE_EVENT_BEGIN(
+        "benchmark", perfetto::DynamicString(interaction_marker_name),
+        perfetto::NamedTrack(perfetto::DynamicString(interaction_marker_name),
+                             id));
   }
 
   root_view->host()->QueueSyntheticGesture(
@@ -2174,9 +2176,9 @@ void InputHandler::OnScrollFinished(
     std::unique_ptr<SynthesizeScrollGestureCallback> callback,
     SyntheticGesture::Result result) {
   if (!interaction_marker_name.empty()) {
-    TRACE_EVENT_COPY_NESTABLE_ASYNC_END0(
-        "benchmark", interaction_marker_name.c_str(),
-        TRACE_ID_WITH_SCOPE(interaction_marker_name.c_str(), id));
+    TRACE_EVENT_END("benchmark",
+                    perfetto::NamedTrack(
+                        perfetto::DynamicString(interaction_marker_name), id));
   }
 
   if (repeat_count > 0) {

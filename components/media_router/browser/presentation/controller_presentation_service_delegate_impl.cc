@@ -12,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/containers/small_map.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
@@ -264,7 +263,7 @@ void PresentationFrame::ConnectToPresentation(
         std::move(receiver_connection_receiver), pid_route_it->second);
   } else {
     MediaRoute::Id route_id = pid_route_it->second.media_route_id();
-    if (base::Contains(browser_connection_proxies_, route_id)) {
+    if (browser_connection_proxies_.contains(route_id)) {
       return;
     }
 
@@ -518,8 +517,8 @@ void ControllerPresentationServiceDelegateImpl::ReconnectPresentation(
   if (local_presentation_manager->IsLocalPresentation(presentation_id)) {
     auto* route = local_presentation_manager->GetRoute(presentation_id);
 
-    if (!route ||
-        !base::Contains(presentation_urls, route->media_source().url())) {
+    if (!route || !std::ranges::contains(presentation_urls,
+                                         route->media_source().url())) {
       return;
     }
 
@@ -628,8 +627,9 @@ void ControllerPresentationServiceDelegateImpl::OnPresentationResponse(
     const content::PresentationRequest& presentation_request,
     mojom::RoutePresentationConnectionPtr connection,
     const RouteRequestResult& result) {
-  if (!result.route() || !base::Contains(presentation_request.presentation_urls,
-                                         result.presentation_url())) {
+  if (!result.route() ||
+      !std::ranges::contains(presentation_request.presentation_urls,
+                             result.presentation_url())) {
     return;
   }
 

@@ -4,10 +4,16 @@
 
 package org.chromium.chrome.browser.ntp;
 
+import android.content.res.Resources;
 import android.net.Uri;
+import android.view.View;
+import android.view.ViewGroup;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.chrome.R;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 
 /** Collection of util methods for help launching a NewTabPage. */
@@ -19,8 +25,9 @@ public class NewTabPageUtils {
     /**
      * @return The NTP url encoded with {@link NewTabPageLaunchOrigin} information.
      */
-    public static String encodeNtpUrl(@NewTabPageLaunchOrigin int launchOrigin) {
-        Uri.Builder uriBuilder = Uri.parse(UrlConstants.NTP_URL).buildUpon();
+    public static String encodeNtpUrl(Profile profile, @NewTabPageLaunchOrigin int launchOrigin) {
+        UrlConstantResolver resolver = UrlConstantResolverFactory.getForProfile(profile);
+        Uri.Builder uriBuilder = Uri.parse(resolver.getNtpUrl()).buildUpon();
         switch (launchOrigin) {
             case NewTabPageLaunchOrigin.WEB_FEED:
                 uriBuilder.appendQueryParameter(ORIGIN_PARAMETER_KEY, WEB_FEED_PARAMETER);
@@ -45,5 +52,59 @@ public class NewTabPageUtils {
             return NewTabPageLaunchOrigin.WEB_FEED;
         }
         return NewTabPageLaunchOrigin.UNKNOWN;
+    }
+
+    /**
+     * Applies the layout parameters to the composeplate view when NTP theme customization is
+     * enabled.
+     */
+    static void applyUpdatedLayoutParamsForComposeplateView(View view) {
+        ViewGroup.MarginLayoutParams marginLayoutParams =
+                (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+        Resources resources = view.getResources();
+
+        int paddingBottomPx =
+                resources.getDimensionPixelSize(
+                        R.dimen.composeplate_view_button_padding_for_shadow_bottom);
+        // Updates the top and bottom padding from 2dp to 4dp.
+        view.setPaddingRelative(
+                view.getPaddingStart(), paddingBottomPx, view.getPaddingEnd(), paddingBottomPx);
+
+        marginLayoutParams.height =
+                resources.getDimensionPixelSize(
+                        R.dimen.composeplate_view_height_with_padding_for_shadow);
+        // Reduces the top margin from 6dp to 4dp. The gap between fake search box and the
+        // composeplate button remains 8dp.
+        marginLayoutParams.topMargin = paddingBottomPx;
+        view.setLayoutParams(marginLayoutParams);
+    }
+
+    /**
+     * Updates the margins for the most visited tiles layout based on whether to apply a white
+     * background with shadow on the search box.
+     */
+    static void updateTilesLayoutTopMargin(
+            View view,
+            boolean shouldShowLogo,
+            boolean isWhiteBackgroundOnSearchBoxApplied,
+            boolean isTablet) {
+        ViewGroup.MarginLayoutParams marginLayoutParams =
+                (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+        Resources resources = view.getResources();
+
+        int paddingBottomPx =
+                resources.getDimensionPixelSize(
+                        R.dimen.composeplate_view_button_padding_for_shadow_bottom);
+        int topMargin =
+                resources.getDimensionPixelSize(
+                        (shouldShowLogo || isTablet)
+                                ? R.dimen.mvt_container_top_margin
+                                : R.dimen.tile_layout_no_logo_top_margin);
+        if (Boolean.TRUE.equals(isWhiteBackgroundOnSearchBoxApplied)) {
+            topMargin -= paddingBottomPx;
+        }
+
+        marginLayoutParams.topMargin = topMargin;
+        view.setLayoutParams(marginLayoutParams);
     }
 }

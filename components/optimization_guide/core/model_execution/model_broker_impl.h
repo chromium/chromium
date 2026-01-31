@@ -89,9 +89,6 @@ class ModelBrokerImpl final : public mojom::ModelBroker {
   // Get (or construct) the solution provider for the feature.
   SolutionProvider& GetSolutionProvider(mojom::OnDeviceFeature feature);
 
-  // Get the set of capability keys that have solutions or subscribers.
-  absl::flat_hash_set<mojom::OnDeviceFeature> GetCapabilityKeys() const;
-
  private:
   // mojom::ModelBroker:
   void Subscribe(

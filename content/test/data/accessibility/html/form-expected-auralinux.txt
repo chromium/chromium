@@ -1,5 +1,5 @@
 [document web]
 ++[section]
 ++++[push button] name='Submit' default
-++[form] name='Name'
+++[landmark] name='Name'
 ++++[push button] name='Submit' default

@@ -105,13 +105,13 @@ class MockCWSInfoService : public CWSInfoServiceInterface {
 
 const scoped_refptr<const Extension> CreateExtension(
     const std::string& name,
-    base::Value::List permissions,
+    base::ListValue permissions,
     mojom::ManifestLocation location,
     const std::string& update_url = extension_urls::kChromeWebstoreUpdateURL) {
   const ExtensionId kId = crx_file::id_util::GenerateId(name);
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
-          .SetManifest(base::Value::Dict()
+          .SetManifest(base::DictValue()
                            .Set("name", name)
                            .Set("description", "an extension")
                            .Set("manifest_version", 2)
@@ -201,7 +201,7 @@ TEST_F(SafetyCheckExtensionUtilsTest, SafetyCheck_Malware) {
   // Test that a malware extension will trigger the Extension
   // Review Panel based on if it has been kept or not.
   const scoped_refptr<const Extension> extension = CreateExtension(
-      "test", base::Value::List(), mojom::ManifestLocation::kInternal);
+      "test", base::ListValue(), mojom::ManifestLocation::kInternal);
   {
     // CWSInfo - Malware.
     EXPECT_CALL(mock_cws_info_service_, GetCWSInfo(testing::_))
@@ -272,7 +272,7 @@ TEST_F(SafetyCheckExtensionUtilsTest, SafetyCheck_PrefMigration) {
   // Test that the `PrefAcknowledgeSafetyCheckWarningReason` migration
   // works as intended
   const scoped_refptr<const Extension> extension = CreateExtension(
-      "test", base::Value::List(), mojom::ManifestLocation::kInternal);
+      "test", base::ListValue(), mojom::ManifestLocation::kInternal);
   {
     // Verify that the boolean `kPrefAcknowledgeSafetyCheckWarning` is
     // deleted if the `kPrefAcknowledgeSafetyCheckWarningReason` warning
@@ -345,7 +345,7 @@ TEST_F(SafetyCheckExtensionUtilsTest, SafetyCheck_NoPrivacyPractice) {
   // Test that a extension without proper privacy practices will trigger
   // the Extension Review Panel based on if it has been kept or not.
   const scoped_refptr<const Extension> extension = CreateExtension(
-      "test", base::Value::List(), mojom::ManifestLocation::kInternal);
+      "test", base::ListValue(), mojom::ManifestLocation::kInternal);
   {
     // CWSInfo - No Privacy Practice.
     EXPECT_CALL(mock_cws_info_service_, GetCWSInfo(testing::_))
@@ -407,7 +407,7 @@ TEST_F(SafetyCheckExtensionUtilsTest, SafetyCheck_OffStore) {
   // Test that a off store extension will trigger the Extension Review
   // Panel based on if it has been kept or not.
   const scoped_refptr<const Extension> extension_unpacked = CreateExtension(
-      "test2", base::Value::List(), mojom::ManifestLocation::kUnpacked);
+      "test2", base::ListValue(), mojom::ManifestLocation::kUnpacked);
   {
     // CWSInfo - No Trigger - Unpacked extension not in dev mode.
     profile_.get()->GetPrefs()->SetBoolean(prefs::kExtensionsUIDeveloperMode,
@@ -443,7 +443,7 @@ TEST_F(SafetyCheckExtensionUtilsTest, SafetyCheck_OffStore) {
   {
     // CWSInfo - No Trigger - Extension does not update from the webstore.
     const scoped_refptr<const Extension> extension_not_webstore =
-        CreateExtension("test", base::Value::List(),
+        CreateExtension("test", base::ListValue(),
                         mojom::ManifestLocation::kInternal,
                         "https://example.com");
     EXPECT_CALL(mock_cws_info_service_, GetCWSInfo(testing::_))
@@ -461,7 +461,7 @@ TEST_F(SafetyCheckExtensionUtilsTest, SafetyCheck_OffStore) {
   {
     // CWSInfo - Normal extension without CWS info.
     const scoped_refptr<const Extension> extension_normal = CreateExtension(
-        "test", base::Value::List(), mojom::ManifestLocation::kInternal);
+        "test", base::ListValue(), mojom::ManifestLocation::kInternal);
     CWSInfoService::CWSInfo cws_not_present;
     EXPECT_CALL(mock_cws_info_service_, GetCWSInfo(testing::_))
         .Times(1)
@@ -481,7 +481,7 @@ TEST_F(SafetyCheckExtensionUtilsTest, SafetyCheck_Policy) {
   // Test that a extension with a policy violation will trigger
   // the Extension Review Panel based on if it has been kept or not.
   const scoped_refptr<const Extension> extension = CreateExtension(
-      "test", base::Value::List(), mojom::ManifestLocation::kInternal);
+      "test", base::ListValue(), mojom::ManifestLocation::kInternal);
   {
     // CWSInfo - Policy.
     EXPECT_CALL(mock_cws_info_service_, GetCWSInfo(testing::_))
@@ -555,7 +555,7 @@ TEST_F(SafetyCheckExtensionUtilsTest, SafetyCheck_PotentiallyUnwanted) {
   // Test that a potentially unwanted extension will trigger the Extension
   // Review Panel based on if it has been kept or not.
   const scoped_refptr<const Extension> extension = CreateExtension(
-      "test", base::Value::List(), mojom::ManifestLocation::kInternal);
+      "test", base::ListValue(), mojom::ManifestLocation::kInternal);
   // Blocklist - Potentially unwanted.
   EXPECT_CALL(mock_cws_info_service_, GetCWSInfo(testing::_))
       .Times(1)
@@ -575,7 +575,7 @@ TEST_F(SafetyCheckExtensionUtilsTest, SafetyCheck_Unpublished) {
   // Test that a unpublished extension will trigger the Extension
   // Review Panel based on if it has been kept or not.
   const scoped_refptr<const Extension> extension = CreateExtension(
-      "test", base::Value::List(), mojom::ManifestLocation::kInternal);
+      "test", base::ListValue(), mojom::ManifestLocation::kInternal);
   // Blocklist -  unpublished.
   EXPECT_CALL(mock_cws_info_service_, GetCWSInfo(testing::_))
       .Times(1)
@@ -595,7 +595,7 @@ TEST_F(SafetyCheckExtensionUtilsTest, SafetyCheck_No_Warning) {
     // Test that no warning is shown for an extension without any store
     // violations.
     const scoped_refptr<const Extension> extension = CreateExtension(
-        "test", base::Value::List(), mojom::ManifestLocation::kInternal);
+        "test", base::ListValue(), mojom::ManifestLocation::kInternal);
     EXPECT_CALL(mock_cws_info_service_, GetCWSInfo(testing::_))
         .Times(1)
         .WillOnce(testing::Return(MockCWSInfoService::GetCWSInfoNone()));
@@ -609,7 +609,7 @@ TEST_F(SafetyCheckExtensionUtilsTest, SafetyCheck_No_Warning) {
   {
     // Test that no warning is shown for a component extension.
     const scoped_refptr<const Extension> extension_component_location =
-        CreateExtension("test", base::Value::List(),
+        CreateExtension("test", base::ListValue(),
                         mojom::ManifestLocation::kComponent);
     api::developer_private::SafetyCheckWarningReason no_warning =
         ExtensionSafetyCheckUtils::GetSafetyCheckWarningReasonHelper(
@@ -625,7 +625,7 @@ TEST_F(SafetyCheckExtensionUtilsTest, SafetyCheck_No_Warning) {
     using PolicyUpdater = extensions::ExtensionManagementPrefUpdater<
         sync_preferences::TestingPrefServiceSyncable>;
     const scoped_refptr<const Extension> extension_policy_location =
-        CreateExtension("test", base::Value::List(),
+        CreateExtension("test", base::ListValue(),
                         mojom::ManifestLocation::kInternal);
     sync_preferences::TestingPrefServiceSyncable* prefs =
         profile_->GetTestingPrefService();
@@ -645,7 +645,7 @@ TEST_F(SafetyCheckExtensionUtilsTest, SafetyCheck_No_Warning) {
     using PolicyUpdater = extensions::ExtensionManagementPrefUpdater<
         sync_preferences::TestingPrefServiceSyncable>;
     const scoped_refptr<const Extension> extension_policy_location =
-        CreateExtension("test", base::Value::List(),
+        CreateExtension("test", base::ListValue(),
                         mojom::ManifestLocation::kInternal);
     sync_preferences::TestingPrefServiceSyncable* prefs =
         profile_->GetTestingPrefService();

@@ -473,14 +473,27 @@ component("net") {
     "cookies/static_cookie_policy.h",
     "cookies/unique_cookie_key.cc",
     "cookies/unique_cookie_key.h",
+    "device_bound_sessions/challenge_result.h",
+    "device_bound_sessions/cookie_craving_display.cc",
+    "device_bound_sessions/cookie_craving_display.h",
     "device_bound_sessions/deletion_reason.h",
+    "device_bound_sessions/inclusion_result.h",
     "device_bound_sessions/session_access.cc",
     "device_bound_sessions/session_access.h",
+    "device_bound_sessions/session_display.cc",
+    "device_bound_sessions/session_display.h",
+    "device_bound_sessions/session_event.cc",
+    "device_bound_sessions/session_event.h",
+    "device_bound_sessions/session_inclusion_rules_display.cc",
+    "device_bound_sessions/session_inclusion_rules_display.h",
     "device_bound_sessions/session_key.cc",
     "device_bound_sessions/session_key.h",
     "device_bound_sessions/session_params.cc",
     "device_bound_sessions/session_params.h",
+    "device_bound_sessions/session_usage.cc",
     "device_bound_sessions/session_usage.h",
+    "device_bound_sessions/url_rule_display.cc",
+    "device_bound_sessions/url_rule_display.h",
     "disk_cache/backend_cleanup_tracker.cc",
     "disk_cache/backend_cleanup_tracker.h",
     "disk_cache/backend_experiment.cc",
@@ -704,6 +717,8 @@ component("net") {
     "http/http_stream_parser.h",
     "http/http_stream_pool.cc",
     "http/http_stream_pool.h",
+    "http/http_stream_pool_attempt.cc",
+    "http/http_stream_pool_attempt.h",
     "http/http_stream_pool_attempt_manager.cc",
     "http/http_stream_pool_attempt_manager.h",
     "http/http_stream_pool_group.cc",
@@ -2335,6 +2350,10 @@ static_library("test_support") {
     "//third_party/zlib",
   ]
 
+  if (chrome_root_store_supported) {
+    deps += [ "//net/cert:root_store_proto_lite" ]
+  }
+
   allow_circular_includes_from = [ "//net/dns:test_support" ]
 
   # Data dependencies shared with suites other than net_unittests.
@@ -2705,20 +2724,28 @@ if (is_ios) {
   }
 }
 
+# TODO(crbug.com/477528387): Consider enabling net_fuzztests for cronet builds.
 if (!is_cronet_build) {
   test("net_fuzztests") {
     sources = [
       "cert/qwac_fuzztest.cc",
       "cert/x509_certificate_fuzztest.cc",
       "http/http_cookie_indices_fuzztest.cc",
+      "http/http_security_headers_hsts_fuzzer.cc",
     ]
 
     fuzztests = [
       "CookieIndicesFuzzTest.FuzzParseFromHeader",
+      "HttpSecurityHeadersHstsFuzzer.TestParseHSTSHeader",
       "QwacFuzzTest.FuzzParseQcStatements",
       "QwacFuzzTest.FuzzParseQcTypeInfo",
       "QwacFuzzTest.FuzzParseTwoQwacCertBinding",
       "X509CertificateFuzzTest.FuzzCreateFromDERCertChain",
+    ]
+
+    data = [
+      "data/fuzzer_data/",
+      "data/fuzzer_dictionaries/",
     ]
 
     deps = [
@@ -2837,6 +2864,7 @@ target(_test_target_type, "net_unittests") {
     "cookies/parsed_cookie_unittest.cc",
     "cookies/site_for_cookies_unittest.cc",
     "cookies/static_cookie_policy_unittest.cc",
+    "device_bound_sessions/session_usage_unittest.cc",
     "disk_cache/backend_cleanup_tracker_unittest.cc",
     "disk_cache/backend_unittest.cc",
     "disk_cache/blockfile/addr_unittest.cc",
@@ -2908,6 +2936,7 @@ target(_test_target_type, "net_unittests") {
     "http/http_stream_key_unittest.cc",
     "http/http_stream_parser_unittest.cc",
     "http/http_stream_pool_attempt_manager_unittest.cc",
+    "http/http_stream_pool_attempt_unittest.cc",
     "http/http_stream_pool_group_unittest.cc",
     "http/http_stream_pool_ip_endpoint_state_tracker_unittest.cc",
     "http/http_stream_request_unittest.cc",
@@ -3188,6 +3217,7 @@ target(_test_target_type, "net_unittests") {
     "//crypto:test_support",
     "//net/base/registry_controlled_domains",
     "//net/base/registry_controlled_domains:lookup_strings_test_sets",
+    "//net/base/registry_controlled_domains:registry_controlled_domains_test_dafsas",
     "//net/cert:root_store_proto_lite",
     "//net/dns:tests",
     "//net/dns/public:tests",
@@ -3248,7 +3278,6 @@ target(_test_target_type, "net_unittests") {
       "reporting/mock_persistent_reporting_store_unittest.cc",
       "reporting/reporting_browsing_data_remover_unittest.cc",
       "reporting/reporting_cache_unittest.cc",
-      "reporting/reporting_context_unittest.cc",
       "reporting/reporting_delivery_agent_unittest.cc",
       "reporting/reporting_endpoint_manager_unittest.cc",
       "reporting/reporting_garbage_collector_unittest.cc",
@@ -4199,16 +4228,6 @@ fuzzer_test("net_auth_challenge_tokenizer_fuzzer") {
   ]
 }
 
-fuzzer_test("net_http_security_headers_hsts_fuzzer") {
-  sources = [ "http/http_security_headers_hsts_fuzzer.cc" ]
-  deps = [
-    "//base",
-    "//net",
-  ]
-  dict = "data/fuzzer_dictionaries/net_http_security_headers_fuzzer.dict"
-  seed_corpus = "data/fuzzer_data/http_security_headers/"
-}
-
 fuzzer_test("net_http_transport_security_state_static_fuzzer") {
   sources = [ "http/transport_security_state_static_fuzzer.cc" ]
   deps = [
@@ -4283,6 +4302,17 @@ fuzzer_test("net_quic_session_pool_fuzzer") {
     "//net",
     "//net/data/ssl/certificates:generate_fuzzer_cert_includes",
   ]
+}
+
+if (is_apple) {
+  fuzzer_test("net_url_conversions_fuzzer") {
+    sources = [ "base/apple/url_conversions_fuzzer.mm" ]
+    deps = [
+      "//base",
+      "//net",
+    ]
+    frameworks = [ "Foundation.framework" ]
+  }
 }
 
 if (is_linux || is_chromeos) {

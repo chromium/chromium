@@ -23,6 +23,7 @@
 #include "content/browser/background_fetch/background_fetch.pb.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/safe_url_pattern.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/liburlpattern/part.h"
 #include "ui/gfx/geometry/size.h"
@@ -302,6 +303,54 @@ proto::WebApp::RunOnOsLoginMode ToWebAppProtoRunOnOsLoginMode(
       return proto::WebApp::RUN_ON_OS_LOGIN_MODE_WINDOWED;
     case RunOnOsLoginMode::kNotRun:
       return proto::WebApp::RUN_ON_OS_LOGIN_MODE_NOT_RUN;
+  }
+}
+
+blink::mojom::DisplayMode ToMojomDisplayMode(
+    proto::WebApp::DisplayMode display_mode) {
+  switch (display_mode) {
+    case proto::WebApp::DISPLAY_MODE_UNSPECIFIED:
+      return blink::mojom::DisplayMode::kUndefined;
+    case proto::WebApp::DISPLAY_MODE_BROWSER:
+      return blink::mojom::DisplayMode::kBrowser;
+    case proto::WebApp::DISPLAY_MODE_MINIMAL_UI:
+      return blink::mojom::DisplayMode::kMinimalUi;
+    case proto::WebApp::DISPLAY_MODE_STANDALONE:
+      return blink::mojom::DisplayMode::kStandalone;
+    case proto::WebApp::DISPLAY_MODE_FULLSCREEN:
+      return blink::mojom::DisplayMode::kFullscreen;
+    case proto::WebApp::DISPLAY_MODE_WINDOW_CONTROLS_OVERLAY:
+      return blink::mojom::DisplayMode::kWindowControlsOverlay;
+    case proto::WebApp::DISPLAY_MODE_TABBED:
+      return blink::mojom::DisplayMode::kTabbed;
+    case proto::WebApp::DISPLAY_MODE_BORDERLESS:
+      return blink::mojom::DisplayMode::kBorderless;
+    case proto::WebApp::DISPLAY_MODE_PICTURE_IN_PICTURE:
+      return blink::mojom::DisplayMode::kPictureInPicture;
+  }
+}
+
+proto::WebApp::DisplayMode ToWebAppProtoDisplayMode(
+    blink::mojom::DisplayMode display_mode) {
+  switch (display_mode) {
+    case blink::mojom::DisplayMode::kBrowser:
+      return proto::WebApp::DISPLAY_MODE_BROWSER;
+    case blink::mojom::DisplayMode::kMinimalUi:
+      return proto::WebApp::DISPLAY_MODE_MINIMAL_UI;
+    case blink::mojom::DisplayMode::kUndefined:
+      return proto::WebApp::DISPLAY_MODE_UNSPECIFIED;
+    case blink::mojom::DisplayMode::kStandalone:
+      return proto::WebApp::DISPLAY_MODE_STANDALONE;
+    case blink::mojom::DisplayMode::kFullscreen:
+      return proto::WebApp::DISPLAY_MODE_FULLSCREEN;
+    case blink::mojom::DisplayMode::kWindowControlsOverlay:
+      return proto::WebApp::DISPLAY_MODE_WINDOW_CONTROLS_OVERLAY;
+    case blink::mojom::DisplayMode::kTabbed:
+      return proto::WebApp::DISPLAY_MODE_TABBED;
+    case blink::mojom::DisplayMode::kBorderless:
+      return proto::WebApp::DISPLAY_MODE_BORDERLESS;
+    case blink::mojom::DisplayMode::kPictureInPicture:
+      return proto::WebApp::DISPLAY_MODE_PICTURE_IN_PICTURE;
   }
 }
 

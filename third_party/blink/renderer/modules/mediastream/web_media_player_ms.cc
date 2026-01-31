@@ -34,7 +34,7 @@
 #include "media/base/video_types.h"
 #include "media/mojo/mojom/media_metrics_provider.mojom-blink.h"
 #include "media/mojo/mojom/watch_time_recorder.mojom-blink.h"
-#include "media/video/gpu_memory_buffer_video_frame_pool.h"
+#include "media/video/mappable_shared_image_video_frame_pool.h"
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
@@ -153,12 +153,12 @@ constexpr base::TimeDelta kForceBeginFramesTimeout = base::Seconds(1);
 }  // namespace
 
 #if BUILDFLAG(IS_WIN)
-// Since we do not have native GMB support in Windows, using GMBs can cause a
-// CPU regression. This is more apparent and can have adverse affects in lower
-// resolution content which are defined by these thresholds, see
-// https://crbug.com/835752.
+// Since we do not have native MappableSharedImage support in Windows, using
+// mappable SharedImages can cause a CPU regression. This is more apparent and
+// can have adverse affects in lower resolution content which are defined by
+// these thresholds, see https://crbug.com/835752.
 // static
-const gfx::Size WebMediaPlayerMS::kUseGpuMemoryBufferVideoFramesMinResolution =
+const gfx::Size WebMediaPlayerMS::kUseMappableSIVideoFramesMinResolution =
     gfx::Size(1920, 1080);
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -185,7 +185,7 @@ class WebMediaPlayerMS::FrameDeliverer {
         gpu_factories_(gpu_factories) {
     DETACH_FROM_SEQUENCE(video_sequence_checker_);
 
-    CreateGpuMemoryBufferPoolIfNecessary();
+    CreateMappableSharedImagePoolIfNecessary();
   }
 
   FrameDeliverer(const FrameDeliverer&) = delete;
@@ -193,7 +193,7 @@ class WebMediaPlayerMS::FrameDeliverer {
 
   ~FrameDeliverer() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(video_sequence_checker_);
-    FreeGpuMemoryBufferPool();
+    FreeMappableSharedImagePool();
   }
 
   void OnVideoFrame(scoped_refptr<media::VideoFrame> frame) {
@@ -205,27 +205,27 @@ class WebMediaPlayerMS::FrameDeliverer {
       return;
 #endif  // BUILDFLAG(IS_ANDROID)
 
-    if (!gpu_memory_buffer_pool_) {
+    if (!mappable_shared_image_pool_) {
       const media::VideoFrame::ID original_frame_id = frame->unique_id();
       EnqueueFrame(original_frame_id, std::move(frame));
       return;
     }
 
     // If |render_frame_suspended_|, we can keep passing the frames to keep the
-    // latest frame in compositor up to date. However, creating GMB backed
-    // frames is unnecessary, because the frames are not going to be shown for
-    // the time period.
-    bool skip_creating_gpu_memory_buffer = render_frame_suspended_;
+    // latest frame in compositor up to date. However, creating
+    // MappableSharedImage-backed frames is unnecessary, because the frames are
+    // not going to be shown for the time period.
+    bool skip_creating_mappable_si = render_frame_suspended_;
 
 #if BUILDFLAG(IS_WIN)
-    skip_creating_gpu_memory_buffer |=
+    skip_creating_mappable_si |=
         frame->visible_rect().width() <
-            kUseGpuMemoryBufferVideoFramesMinResolution.width() ||
+            kUseMappableSIVideoFramesMinResolution.width() ||
         frame->visible_rect().height() <
-            kUseGpuMemoryBufferVideoFramesMinResolution.height();
+            kUseMappableSIVideoFramesMinResolution.height();
 #endif  // BUILDFLAG(IS_WIN)
 
-    if (skip_creating_gpu_memory_buffer) {
+    if (skip_creating_mappable_si) {
       media::VideoFrame::ID original_frame_id = frame->unique_id();
       EnqueueFrame(original_frame_id, std::move(frame));
       // If there are any existing MaybeCreateHardwareFrame() calls, we do not
@@ -237,14 +237,14 @@ class WebMediaPlayerMS::FrameDeliverer {
 
     const media::VideoFrame::ID original_frame_id = frame->unique_id();
 
-    // |gpu_memory_buffer_pool_| deletion is going to be posted to
+    // |mappable_shared_image_pool_| deletion is going to be posted to
     // |media_task_runner_|. base::Unretained() usage is fine since
-    // |gpu_memory_buffer_pool_| outlives the task.
+    // |mappable_shared_image_pool_| outlives the task.
     PostCrossThreadTask(
         *media_task_runner_, FROM_HERE,
         CrossThreadBindOnce(
-            &media::GpuMemoryBufferVideoFramePool::MaybeCreateHardwareFrame,
-            CrossThreadUnretained(gpu_memory_buffer_pool_.get()),
+            &media::MappableSharedImageVideoFramePool::MaybeCreateHardwareFrame,
+            CrossThreadUnretained(mappable_shared_image_pool_.get()),
             std::move(frame),
             base::BindPostTaskToCurrentDefault(blink::BindOnce(
                 &FrameDeliverer::EnqueueFrame,
@@ -255,10 +255,10 @@ class WebMediaPlayerMS::FrameDeliverer {
     DCHECK_CALLED_ON_VALID_SEQUENCE(video_sequence_checker_);
     render_frame_suspended_ = render_frame_suspended;
     if (render_frame_suspended_) {
-      // Drop GpuMemoryBuffer pool to free memory.
-      FreeGpuMemoryBufferPool();
+      // Drop MappableSharedImage pool to free memory.
+      FreeMappableSharedImagePool();
     } else {
-      CreateGpuMemoryBufferPoolIfNecessary();
+      CreateMappableSharedImagePoolIfNecessary();
     }
   }
 
@@ -271,23 +271,23 @@ class WebMediaPlayerMS::FrameDeliverer {
  private:
   friend class WebMediaPlayerMS;
 
-  void CreateGpuMemoryBufferPoolIfNecessary() {
-    if (!gpu_memory_buffer_pool_ && gpu_factories_ &&
-        gpu_factories_->ShouldUseGpuMemoryBuffersForVideoFrames(
+  void CreateMappableSharedImagePoolIfNecessary() {
+    if (!mappable_shared_image_pool_ && gpu_factories_ &&
+        gpu_factories_->ShouldUseMappableSharedImagesForVideoFrames(
             true /* for_media_stream */)) {
-      gpu_memory_buffer_pool_ =
-          std::make_unique<media::GpuMemoryBufferVideoFramePool>(
+      mappable_shared_image_pool_ =
+          std::make_unique<media::MappableSharedImageVideoFramePool>(
               media_task_runner_, worker_task_runner_, gpu_factories_);
     }
   }
 
-  void FreeGpuMemoryBufferPool() {
+  void FreeMappableSharedImagePool() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(video_sequence_checker_);
 
-    if (gpu_memory_buffer_pool_) {
+    if (mappable_shared_image_pool_) {
       DropCurrentPoolTasks();
       media_task_runner_->DeleteSoon(FROM_HERE,
-                                     gpu_memory_buffer_pool_.release());
+                                     mappable_shared_image_pool_.release());
     }
   }
 
@@ -296,9 +296,7 @@ class WebMediaPlayerMS::FrameDeliverer {
     DCHECK_CALLED_ON_VALID_SEQUENCE(video_sequence_checker_);
 
     {
-      bool tracing_enabled = false;
-      TRACE_EVENT_CATEGORY_GROUP_ENABLED("media", &tracing_enabled);
-      if (tracing_enabled) {
+      if (TRACE_EVENT_CATEGORY_ENABLED("media")) {
         if (frame->metadata().reference_time.has_value()) {
           TRACE_EVENT1("media", "EnqueueFrame", "Ideal Render Instant",
                        frame->metadata().reference_time->ToInternalValue());
@@ -314,19 +312,19 @@ class WebMediaPlayerMS::FrameDeliverer {
 
   void DropCurrentPoolTasks() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(video_sequence_checker_);
-    DCHECK(gpu_memory_buffer_pool_);
+    DCHECK(mappable_shared_image_pool_);
 
     if (!weak_factory_for_pool_.HasWeakPtrs())
       return;
 
-    //  |gpu_memory_buffer_pool_| deletion is going to be posted to
+    //  |mappable_shared_image_pool_| deletion is going to be posted to
     //  |media_task_runner_|. CrossThreadUnretained() usage is fine since
-    //  |gpu_memory_buffer_pool_| outlives the task.
+    //  |mappable_shared_image_pool_| outlives the task.
     PostCrossThreadTask(
         *media_task_runner_, FROM_HERE,
         CrossThreadBindOnce(
-            &media::GpuMemoryBufferVideoFramePool::Abort,
-            CrossThreadUnretained(gpu_memory_buffer_pool_.get())));
+            &media::MappableSharedImageVideoFramePool::Abort,
+            CrossThreadUnretained(mappable_shared_image_pool_.get())));
     weak_factory_for_pool_.InvalidateWeakPtrs();
   }
 
@@ -336,8 +334,9 @@ class WebMediaPlayerMS::FrameDeliverer {
   const base::WeakPtr<WebMediaPlayerMS> player_;
   RepaintCB enqueue_frame_cb_;
 
-  // Pool of GpuMemoryBuffers and resources used to create hardware frames.
-  std::unique_ptr<media::GpuMemoryBufferVideoFramePool> gpu_memory_buffer_pool_;
+  // Pool of MappableSharedImages and resources used to create hardware frames.
+  std::unique_ptr<media::MappableSharedImageVideoFramePool>
+      mappable_shared_image_pool_;
   const scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
   const scoped_refptr<base::TaskRunner> worker_task_runner_;
 
@@ -399,10 +398,10 @@ WebMediaPlayerMS::WebMediaPlayerMS(
   DCHECK(delegate_);
   weak_this_ = weak_factory_.GetWeakPtr();
   delegate_id_ = delegate_->AddObserver(this);
-  SendLogMessage(String::Format(
+  SendLogMessage(UNSAFE_TODO(String::Format(
       "%s({delegate_id=%d}, {is_audio_element=%s}, {sink_id=%s})", __func__,
       delegate_id_, client_->IsAudioElement() ? "true" : "false",
-      sink_id.Utf8().c_str()));
+      sink_id.Utf8().c_str())));
 
   // TODO(tmathmeyer) WebMediaPlayerImpl gets the URL from the WebLocalFrame.
   // doing that here causes a nullptr deref.
@@ -483,8 +482,8 @@ WebMediaPlayer::LoadTiming WebMediaPlayerMS::Load(
     CorsMode /*cors_mode*/,
     bool is_cache_disabled) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  SendLogMessage(String::Format("%s({load_type=%s})", __func__,
-                                LoadTypeToString(load_type)));
+  SendLogMessage(UNSAFE_TODO(String::Format("%s({load_type=%s})", __func__,
+                                            LoadTypeToString(load_type))));
 
   // TODO(acolwell): Change this to DCHECK_EQ(load_type, LoadTypeMediaStream)
   // once Blink-side changes land.
@@ -610,6 +609,10 @@ WebMediaPlayer::LoadTiming WebMediaPlayerMS::Load(
       /* is_encrypted_media */ false);
   delegate_->DidMediaMetadataChange(delegate_id_, HasAudio(), HasVideo(),
                                     media::MediaContentType::kOneShot);
+
+  client_->DidPlayerMediaPositionStateChange(
+      /*playback_rate=*/1.0, base::Seconds(Duration()),
+      base::Seconds(CurrentTime()), /*end_of_media=*/false);
 
   return WebMediaPlayer::LoadTiming::kImmediate;
 }
@@ -1382,8 +1385,8 @@ void WebMediaPlayerMS::RepaintInternal() {
 
 void WebMediaPlayerMS::SetNetworkState(WebMediaPlayer::NetworkState state) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  SendLogMessage(String::Format("%s => (state=%s)", __func__,
-                                NetworkStateToString(network_state_)));
+  SendLogMessage(UNSAFE_TODO(String::Format(
+      "%s => (state=%s)", __func__, NetworkStateToString(network_state_))));
   network_state_ = state;
   // Always notify to ensure client has the latest value.
   get_client()->NetworkStateChanged();
@@ -1391,8 +1394,8 @@ void WebMediaPlayerMS::SetNetworkState(WebMediaPlayer::NetworkState state) {
 
 void WebMediaPlayerMS::SetReadyState(WebMediaPlayer::ReadyState state) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  SendLogMessage(String::Format("%s => (state=%s)", __func__,
-                                ReadyStateToString(ready_state_)));
+  SendLogMessage(UNSAFE_TODO(String::Format("%s => (state=%s)", __func__,
+                                            ReadyStateToString(ready_state_))));
   ready_state_ = state;
   // Always notify to ensure client has the latest value.
   get_client()->ReadyStateChanged();
@@ -1417,10 +1420,11 @@ void WebMediaPlayerMS::TriggerResize() {
     UpdateWatchTimeReporterSecondaryProperties();
 }
 
-void WebMediaPlayerMS::SetGpuMemoryBufferVideoForTesting(
-    media::GpuMemoryBufferVideoFramePool* gpu_memory_buffer_pool) {
+void WebMediaPlayerMS::SetMappableSharedImagePoolForTesting(
+    media::MappableSharedImageVideoFramePool* mappable_shared_image_pool) {
   CHECK(frame_deliverer_);
-  frame_deliverer_->gpu_memory_buffer_pool_.reset(gpu_memory_buffer_pool);
+  frame_deliverer_->mappable_shared_image_pool_.reset(
+      mappable_shared_image_pool);
 }
 
 void WebMediaPlayerMS::SetMediaStreamRendererFactoryForTesting(

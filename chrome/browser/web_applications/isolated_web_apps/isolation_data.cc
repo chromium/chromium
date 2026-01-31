@@ -57,7 +57,7 @@ IsolationData& IsolationData::operator=(IsolationData&&) = default;
 
 base::Value IsolationData::AsDebugValue() const {
   auto debug_dict =
-      base::Value::Dict()
+      base::DictValue()
           .Set("isolated_web_app_location", location_.ToDebugValue())
           .Set("version", version_.GetString())
           .Set("controlled_frame_partitions (on-disk)",
@@ -101,7 +101,7 @@ IsolationData::PendingUpdateInfo& IsolationData::PendingUpdateInfo::operator=(
 
 base::Value IsolationData::PendingUpdateInfo::AsDebugValue() const {
   return base::Value(
-      base::Value::Dict()
+      base::DictValue()
           .Set("isolated_web_app_location", location.ToDebugValue())
           .Set("version", version.GetString())
           .Set("integrity_block_data",

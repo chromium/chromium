@@ -35,8 +35,8 @@ export function getHtml(this: ProductViewerAppElement) {
         </tr>
         <tr>
           <td>Image URL: </td>
-          <td><a href="${this.product_.imageUrl.url}" target="_blank">${
-                            this.product_.imageUrl.url}</a></td>
+          <td><a href="${this.product_.imageUrl}" target="_blank">${
+                            this.product_.imageUrl}</a></td>
         </tr>
         <tr>
           <td>Price: </td>

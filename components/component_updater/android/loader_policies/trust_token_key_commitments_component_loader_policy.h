@@ -43,7 +43,7 @@ class TrustTokenKeyCommitmentsComponentLoaderPolicy
   // The following methods override ComponentLoaderPolicy.
   void ComponentLoaded(const base::Version& version,
                        base::flat_map<std::string, base::ScopedFD>& fd_map,
-                       base::Value::Dict manifest) override;
+                       base::DictValue manifest) override;
   void ComponentLoadFailed(ComponentLoadResult error) override;
   void GetHash(std::vector<uint8_t>* hash) const override;
   std::string GetMetricsSuffix() const override;

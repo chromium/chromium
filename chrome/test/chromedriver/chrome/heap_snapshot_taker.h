@@ -31,7 +31,7 @@ class HeapSnapshotTaker : public DevToolsEventListener {
   bool ListensToConnections() const override;
   Status OnEvent(DevToolsClient* client,
                  const std::string& method,
-                 const base::Value::Dict& params) override;
+                 const base::DictValue& params) override;
 
  private:
   Status TakeSnapshotInternal();

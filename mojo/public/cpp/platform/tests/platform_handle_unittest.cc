@@ -74,18 +74,22 @@ class PlatformHandleTest : public testing::Test,
     test_type_ = TestType::kFile;
 
 #if BUILDFLAG(IS_FUCHSIA)
-    if (GetParam() == HandleType::kHandle)
+    if (GetParam() == HandleType::kHandle) {
       test_type_ = TestType::kSharedMemory;
+    }
 #elif BUILDFLAG(IS_MAC)
-    if (GetParam() == HandleType::kMachPort)
+    if (GetParam() == HandleType::kMachPort) {
       test_type_ = TestType::kSharedMemory;
+    }
 #endif
 
-    if (test_type_ == TestType::kFile)
+    if (test_type_ == TestType::kFile) {
       test_handle_ = SetUpFile();
+    }
 #if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_MAC)
-    else
+    else {
       test_handle_ = SetUpSharedMemory();
+    }
 #endif
   }
 
@@ -93,8 +97,9 @@ class PlatformHandleTest : public testing::Test,
   // PlatformHandle wrapping it. Used to verify that a |handle| refers to some
   // expected platform object.
   std::string GetObjectContents(PlatformHandle& handle) {
-    if (test_type_ == TestType::kFile)
+    if (test_type_ == TestType::kFile) {
       return GetFileContents(handle);
+    }
 #if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_MAC)
     return GetSharedMemoryContents(handle);
 #else
@@ -263,7 +268,6 @@ TEST_P(PlatformHandleTest, InvalidHandles) {
   EXPECT_EQ(cloned.ReleaseHandle(), nullptr);
 }
 #endif  // BUILDFLAG(IS_WIN) && !DCHECK_IS_ON()
-
 
 INSTANTIATE_TEST_SUITE_P(All,
                          PlatformHandleTest,

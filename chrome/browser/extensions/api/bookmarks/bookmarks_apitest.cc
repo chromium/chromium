@@ -21,6 +21,7 @@
 #include "chrome/common/extensions/api/bookmarks.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
+#include "components/bookmarks/common/bookmark_constants.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/managed/managed_bookmark_service.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
@@ -33,6 +34,7 @@
 #include "extensions/browser/test_event_router_observer.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/test/extension_test_message_listener.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 
@@ -166,18 +168,18 @@ IN_PROC_BROWSER_TEST_P(BookmarksApiTest, Bookmarks) {
       ManagedBookmarkServiceFactory::GetForProfile(profile());
   bookmarks::test::WaitForBookmarkModelToLoad(model);
 
-  base::Value::List list;
+  base::ListValue list;
   {
-    base::Value::Dict node;
+    base::DictValue node;
     node.Set("name", "Managed Bookmark");
     node.Set("url", "http://www.chromium.org");
     list.Append(std::move(node));
   }
 
   {
-    base::Value::Dict node;
+    base::DictValue node;
     node.Set("name", "Managed Folder");
-    node.Set("children", base::Value::List());
+    node.Set("children", base::ListValue());
     list.Append(std::move(node));
   }
 
@@ -186,6 +188,15 @@ IN_PROC_BROWSER_TEST_P(BookmarksApiTest, Bookmarks) {
   ASSERT_EQ(2u, managed->managed_node()->children().size());
 
   ASSERT_TRUE(RunExtensionTest("bookmarks")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_P(BookmarksApiTest, RootNodeId) {
+  ExtensionTestMessageListener listener;
+
+  ASSERT_TRUE(RunExtensionTest("bookmarks_root_node_id"));
+  ASSERT_TRUE(listener.WaitUntilSatisfied());
+
+  EXPECT_EQ(base::NumberToString(bookmarks::kRootNodeId), listener.message());
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -268,12 +279,11 @@ class BookmarksApiEventsTest : public ExtensionApiTest {
   }
 
   // Returns a List of BookmarkTreeNode.
-  base::Value::List GetVisiblePermanentFolders() {
+  base::ListValue GetVisiblePermanentFolders() {
     auto get_function = base::MakeRefCounted<BookmarksGetChildrenFunction>();
     return extensions::api_test_utils::RunFunctionAndReturnSingleResult(
                get_function.get(),
-               absl::StrFormat(R"(["%lu"])", model()->root_node()->id()),
-               profile())
+               absl::StrFormat(R"(["%lu"])", bookmarks::kRootNodeId), profile())
         .value()
         .GetList()
         .Clone();

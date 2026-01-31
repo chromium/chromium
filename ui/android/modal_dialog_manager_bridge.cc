@@ -50,14 +50,14 @@ void ModalDialogManagerBridge::DismissDialog(
 // `ui/android/ui_android_jni_headers/ModalDialogManagerBridge_jni.h`
 // implementations.
 
-static jlong JNI_ModalDialogManagerBridge_Create(
+static int64_t JNI_ModalDialogManagerBridge_Create(
     JNIEnv* env,
     const jni_zero::JavaRef<jobject>& manager) {
   return reinterpret_cast<intptr_t>(new ModalDialogManagerBridge(manager));
 }
 
 static void JNI_ModalDialogManagerBridge_Destroy(JNIEnv* env,
-                                                 jlong mNativeBridgePtr) {
+                                                 int64_t mNativeBridgePtr) {
   delete reinterpret_cast<ModalDialogManagerBridge*>(mNativeBridgePtr);
 }
 

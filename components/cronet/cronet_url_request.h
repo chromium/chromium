@@ -79,7 +79,8 @@ class CronetURLRequest {
                                    bool was_cached,
                                    const std::string& negotiated_protocol,
                                    const std::string& proxy_server,
-                                   int64_t received_byte_count) = 0;
+                                   int64_t received_byte_count,
+                                   bool is_proxied) = 0;
 
     // Invoked whenever part of the response body has been read. Only part of
     // the buffer may be populated, even if the entire response body has not yet

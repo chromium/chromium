@@ -2,14 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Returns whether the current platform is Android.
-async function isAndroid() {
-  const os = await new Promise((resolve) => {
-    chrome.runtime.getPlatformInfo(info => resolve(info.os));
-  });
-  return os === 'android';
-}
-
 chrome.test.runTests([
   function typeNormal() {
     chrome.windows.create({'type': 'normal'}, chrome.test.callbackPass(w => {
@@ -17,12 +9,6 @@ chrome.test.runTests([
     }));
   },
   async function typePopup() {
-    if (await isAndroid()) {
-      // TODO(https://crbug.com/431004500): Enable this test on android.
-      chrome.test.succeed();
-      return;
-    }
-
     const w = await new Promise((resolve) => {
         chrome.windows.create({'type': 'popup'}, resolve);
     });

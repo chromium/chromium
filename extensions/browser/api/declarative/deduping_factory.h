@@ -12,7 +12,6 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/ref_counted.h"
@@ -105,7 +104,7 @@ void DedupingFactory<BaseClassT, ValueT>::RegisterFactoryMethod(
     const std::string& instance_type,
     typename DedupingFactory<BaseClassT, ValueT>::Parameterized parameterized,
     FactoryMethod factory_method) {
-  DCHECK(!base::Contains(factory_methods_, instance_type));
+  DCHECK(!factory_methods_.contains(instance_type));
   factory_methods_[instance_type] = factory_method;
   if (parameterized == IS_PARAMETERIZED) {
     parameterized_types_.insert(instance_type);
@@ -134,7 +133,7 @@ DedupingFactory<BaseClassT, ValueT>::Instantiate(
   // We can take a shortcut for objects that are not parameterized. For those
   // only a single instance may ever exist so we can simplify the creation
   // logic.
-  if (!base::Contains(parameterized_types_, instance_type)) {
+  if (!parameterized_types_.contains(instance_type)) {
     if (prototypes.empty()) {
       scoped_refptr<const BaseClassT> new_object =
           (*factory_method)(instance_type, value, error, bad_message);

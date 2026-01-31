@@ -50,7 +50,7 @@ void AnnotationsJavaScriptFeature::ExtractText(WebState* web_state,
     return;
   }
 
-  base::Value::List parameters;
+  base::ListValue parameters;
   CallJavaScriptFunction(frame, "annotations.start", parameters);
 }
 
@@ -63,7 +63,7 @@ void AnnotationsJavaScriptFeature::DecorateAnnotations(WebState* web_state,
     return;
   }
 
-  base::Value::List parameters;
+  base::ListValue parameters;
   parameters.Append(std::move(annotations));
   parameters.Append(seq_id);
   CallJavaScriptFunction(frame, "annotations.decorateAnnotations", parameters);
@@ -88,7 +88,7 @@ void AnnotationsJavaScriptFeature::RemoveDecorationsWithType(
     return;
   }
 
-  base::Value::List parameters;
+  base::ListValue parameters;
   parameters.Append(std::move(type));
 
   CallJavaScriptFunction(frame, "annotations.removeDecorationsWithType",
@@ -124,7 +124,7 @@ void AnnotationsJavaScriptFeature::ScriptMessageReceived(
     return;
   }
 
-  const base::Value::Dict& dict = response->GetDict();
+  const base::DictValue& dict = response->GetDict();
 
   const std::string* command = dict.FindString("command");
   if (!command) {
@@ -141,7 +141,7 @@ void AnnotationsJavaScriptFeature::ScriptMessageReceived(
   if (*command == "annotations.extractedText") {
     const std::string* text = dict.FindString("text");
     std::optional<double> seq_id = dict.FindDouble("seqId");
-    const base::Value::Dict* metadata = dict.FindDict("metadata");
+    const base::DictValue* metadata = dict.FindDict("metadata");
     if (!text || !seq_id || !metadata) {
       return;
     }
@@ -151,7 +151,7 @@ void AnnotationsJavaScriptFeature::ScriptMessageReceived(
     std::optional<double> optional_annotations = dict.FindDouble("annotations");
     std::optional<double> optional_successes = dict.FindDouble("successes");
     std::optional<double> optional_failures = dict.FindDouble("failures");
-    const base::Value::List* cancelled = dict.FindList("cancelled");
+    const base::ListValue* cancelled = dict.FindList("cancelled");
     if (!optional_annotations || !optional_successes || !optional_failures ||
         !cancelled) {
       return;

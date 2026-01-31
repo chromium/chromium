@@ -338,7 +338,7 @@ std::unique_ptr<WebAppInstallInfo> GetInstallInfoForCurrentManifest(
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   auto* provider = WebAppProvider::GetForTest(profile);
-  base::Value::Dict debug_data;
+  base::DictValue debug_data;
   base::test::TestFuture<std::unique_ptr<WebAppInstallInfo>> test_future;
   std::unique_ptr<WebAppDataRetriever> retriever =
       provider->web_contents_manager().CreateDataRetriever();

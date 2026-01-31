@@ -5,8 +5,10 @@
 #ifndef REMOTING_HOST_SECURITY_KEY_SECURITY_KEY_MESSAGE_WRITER_IMPL_H_
 #define REMOTING_HOST_SECURITY_KEY_SECURITY_KEY_MESSAGE_WRITER_IMPL_H_
 
+#include <cstdint>
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "remoting/host/security_key/security_key_message.h"
 #include "remoting/host/security_key/security_key_message_writer.h"
@@ -30,8 +32,8 @@ class SecurityKeyMessageWriterImpl : public SecurityKeyMessageWriter {
   bool WriteMessageWithPayload(SecurityKeyMessageType message_type,
                                const std::string& message_payload) override;
 
-  // Writes |bytes_to_write| bytes from |message| to |output_stream_|.
-  bool WriteBytesToOutput(const char* message, int bytes_to_write);
+  // Writes `message` to `output_stream_`.
+  bool WriteBytesToOutput(base::span<const uint8_t> message);
 
   base::File output_stream_;
   bool write_failed_ = false;

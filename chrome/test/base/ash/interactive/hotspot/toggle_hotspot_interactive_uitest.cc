@@ -62,16 +62,15 @@ class ToggleHotspotInteractiveUITest : public InteractiveAshTest {
   void SimulateHotspotUsedBefore() {
     ShillManagerClient::Get()->GetTestInterface()->SetManagerProperty(
         shill::kTetheringStatusProperty,
-        base::Value(
-            base::Value::Dict().Set(shill::kTetheringStatusStateProperty,
-                                    shill::kTetheringStateActive)));
+        base::Value(base::DictValue().Set(shill::kTetheringStatusStateProperty,
+                                          shill::kTetheringStateActive)));
     base::RunLoop().RunUntilIdle();
 
     // Set the hotspot state back to idle.
     ShillManagerClient::Get()->GetTestInterface()->SetManagerProperty(
         shill::kTetheringStatusProperty,
-        base::Value(base::Value::Dict().Set(
-            shill::kTetheringStatusStateProperty, shill::kTetheringStateIdle)));
+        base::Value(base::DictValue().Set(shill::kTetheringStatusStateProperty,
+                                          shill::kTetheringStateIdle)));
     base::RunLoop().RunUntilIdle();
 
     SetTetheringReadinessCheckSuccessResult(shill::kTetheringReadinessReady);
@@ -85,7 +84,7 @@ class ToggleHotspotInteractiveUITest : public InteractiveAshTest {
     return Steps(Do([&]() {
       ShillManagerClient::Get()->GetTestInterface()->SetManagerProperty(
           shill::kTetheringStatusProperty,
-          base::Value(base::Value::Dict()
+          base::Value(base::DictValue()
                           .Set(shill::kTetheringStatusStateProperty,
                                shill::kTetheringStateIdle)
                           .Set(shill::kTetheringStatusIdleReasonProperty,

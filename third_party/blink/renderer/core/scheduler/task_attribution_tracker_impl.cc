@@ -53,6 +53,8 @@ perfetto::protos::pbzero::BlinkTaskScope::TaskScopeType ToProtoEnum(
       return ProtoType::TASK_SCOPE_XML_HTTP_REQUEST;
     case TaskAttributionTracker::TaskScopeType::kSoftNavigation:
       return ProtoType::TASK_SCOPE_SOFT_NAVIGATION;
+    case TaskAttributionTracker::TaskScopeType::kResourceTiming:
+      return ProtoType::TASK_SCOPE_RESOURCE_TIMING;
     case TaskAttributionTracker::TaskScopeType::kMiscEvent:
       return ProtoType::TASK_SCOPE_MISC_EVENT;
     case TaskAttributionTracker::TaskScopeType::kMicrotask:
@@ -115,7 +117,7 @@ TaskAttributionTrackerImpl::TaskAttributionTrackerImpl(v8::Isolate* isolate)
     // the main thread, since otherwise the `isolate_` might not be the current
     // isolate, so we need to use an async observer.
     if (base::SingleThreadTaskRunner::HasCurrentDefault()) {
-      trace_event::AddAsyncEnabledStateObserver(weak_factory_.GetWeakPtr());
+      trace_event::AddTraceSessionObserver(this);
     }
     // If tracing was already enabled, we won't get a callback, so check if we
     // need to register the promise hook.
@@ -129,7 +131,7 @@ TaskAttributionTrackerImpl::~TaskAttributionTrackerImpl() {
   if (base::FeatureList::IsEnabled(
           features::kTaskAttributionTraceMicrotaskTaskState)) {
     // Note that it's safe to remove a non-existent observer.
-    trace_event::RemoveAsyncEnabledStateObserver(this);
+    trace_event::RemoveTraceSessionObserver(this);
   }
 }
 
@@ -171,18 +173,53 @@ TaskAttributionTrackerImpl::SetCurrentTaskState(
 TaskAttributionTracker::TaskScope
 TaskAttributionTrackerImpl::SetTaskStateVariable(
     SoftNavigationContext* soft_navigation_context) {
-  auto* task_state = MakeGarbageCollected<TaskAttributionInfoImpl>(
-      next_task_id_, soft_navigation_context);
+  TaskAttributionTaskState* previous_task_state =
+      TaskAttributionTaskState::GetCurrent(isolate_);
+
+  TaskAttributionTaskState* next_task_state =
+      previous_task_state ? previous_task_state->ForkAndSetVariable(
+                                next_task_id_, soft_navigation_context)
+                          : MakeGarbageCollected<TaskAttributionInfoImpl>(
+                                next_task_id_, soft_navigation_context,
+                                /*resource_timing_context=*/nullptr);
+
   next_task_id_ = next_task_id_.NextId();
-  return SetCurrentTaskStateImpl(task_state, TaskScopeType::kSoftNavigation);
+  return SetCurrentTaskStateImpl(next_task_state, previous_task_state,
+                                 TaskScopeType::kSoftNavigation);
+}
+
+TaskAttributionTracker::TaskScope
+TaskAttributionTrackerImpl::SetTaskStateVariable(
+    ResourceTimingContext* resource_timing_context) {
+  TaskAttributionTaskState* previous_task_state =
+      TaskAttributionTaskState::GetCurrent(isolate_);
+
+  TaskAttributionTaskState* next_task_state =
+      previous_task_state
+          ? previous_task_state->ForkAndSetVariable(next_task_id_,
+                                                    resource_timing_context)
+          : MakeGarbageCollected<TaskAttributionInfoImpl>(
+                next_task_id_, /*soft_navigation_context=*/nullptr,
+                resource_timing_context);
+
+  next_task_id_ = next_task_id_.NextId();
+  return SetCurrentTaskStateImpl(next_task_state, previous_task_state,
+                                 TaskScopeType::kResourceTiming);
 }
 
 TaskAttributionTracker::TaskScope
 TaskAttributionTrackerImpl::SetCurrentTaskStateImpl(
     TaskAttributionTaskState* task_state,
     TaskScopeType type) {
-  TaskAttributionTaskState* previous_task_state =
-      TaskAttributionTaskState::GetCurrent(isolate_);
+  return SetCurrentTaskStateImpl(
+      task_state, TaskAttributionTaskState::GetCurrent(isolate_), type);
+}
+
+TaskAttributionTracker::TaskScope
+TaskAttributionTrackerImpl::SetCurrentTaskStateImpl(
+    TaskAttributionTaskState* task_state,
+    TaskAttributionTaskState* previous_task_state,
+    TaskScopeType type) {
   if (task_state != previous_task_state) {
     TaskAttributionTaskState::SetCurrent(isolate_, task_state);
   }
@@ -230,14 +267,20 @@ TaskAttributionInfo* TaskAttributionTrackerImpl::CommitSameDocumentNavigation(
   return nullptr;
 }
 
-void TaskAttributionTrackerImpl::OnTraceLogEnabled() {
+void TaskAttributionTrackerImpl::OnStart(
+    const perfetto::DataSourceBase::StartArgs&) {
   if (IsTracingCategoryEnabled()) {
     isolate_->SetPromiseHook(TaskAttributionPromiseHook);
   }
 }
 
-void TaskAttributionTrackerImpl::OnTraceLogDisabled() {
-  isolate_->SetPromiseHook(nullptr);
+void TaskAttributionTrackerImpl::OnStop(
+    const perfetto::DataSourceBase::StopArgs& args) {
+  bool should_stop = !base::trace_event::IsCategoryEnabledOnStop(
+      PERFETTO_GET_CATEGORY_INDEX(kTracingCategory), args);
+  if (should_stop) {
+    isolate_->SetPromiseHook(nullptr);
+  }
 }
 
 void TaskAttributionTrackerImpl::BeginMicrotaskTrace() {

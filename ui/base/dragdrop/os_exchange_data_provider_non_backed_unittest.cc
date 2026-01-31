@@ -34,7 +34,8 @@ TEST(OSExchangeDataProviderNonBackedTest, CloneTest) {
   OSExchangeDataProviderNonBacked original;
 
   original.SetString(kTestString);
-  original.SetURL(GURL(kUrl), kUrlTitle);
+  ClipboardUrlInfo url_info(GURL(kUrl), kUrlTitle);
+  original.SetURLs(base::span_from_ref(url_info));
 
   base::Pickle original_pickle;
   original_pickle.WriteString16(kTestString);
@@ -51,11 +52,11 @@ TEST(OSExchangeDataProviderNonBackedTest, CloneTest) {
   std::optional<std::u16string> copy_string = copy->GetString();
   EXPECT_EQ(kTestString, copy_string);
 
-  std::optional<OSExchangeDataProvider::UrlInfo> url_info =
-      copy->GetURLAndTitle(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
-  EXPECT_TRUE(url_info.has_value());
-  EXPECT_EQ(GURL(kUrl), url_info->url);
-  EXPECT_EQ(kUrlTitle, url_info->title);
+  const std::vector<ClipboardUrlInfo> url_infos =
+      copy->GetURLs(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
+  EXPECT_FALSE(url_infos.empty());
+  EXPECT_EQ(GURL(kUrl), url_infos.front().url);
+  EXPECT_EQ(kUrlTitle, url_infos.front().title);
 
   std::optional<base::Pickle> copy_pickle =
       copy->GetPickledData(ClipboardFormatType::PlainTextType());

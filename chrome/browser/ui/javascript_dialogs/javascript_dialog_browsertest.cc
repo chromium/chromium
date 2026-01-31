@@ -513,7 +513,7 @@ IN_PROC_BROWSER_TEST_F(JavaScriptDialogTest,
   tab_strip_model()->ActivateTabAt(0);
   ASSERT_TRUE(browser()
                   ->GetBrowserView()
-                  .tabstrip()
+                  .horizontal_tab_strip_for_testing()
                   ->tab_at(2)
                   ->GetTabIconForTesting()
                   ->GetShowingAttentionIndicator());

@@ -271,15 +271,15 @@ FindBarView::FindBarView(FindBarHost* host) {
   main_container->SetFlexForView(find_text_, 1, true);
 
   // Theme-aware image models.
-  views::SetImageFromVectorIconWithColorId(
+  views::SetImageFromVectorIconWithColor(
       find_previous_button_, kKeyboardArrowUpChromeRefreshIcon,
-      kColorFindBarButtonIcon, kColorFindBarButtonIconDisabled);
-  views::SetImageFromVectorIconWithColorId(
+      {kColorFindBarButtonIcon, kColorFindBarButtonIconDisabled});
+  views::SetImageFromVectorIconWithColor(
       find_next_button_, kKeyboardArrowDownChromeRefreshIcon,
-      kColorFindBarButtonIcon, kColorFindBarButtonIconDisabled);
-  views::SetImageFromVectorIconWithColorId(
-      close_button_, kCloseChromeRefreshIcon, kColorFindBarButtonIcon,
-      kColorFindBarButtonIconDisabled);
+      {kColorFindBarButtonIcon, kColorFindBarButtonIconDisabled});
+  views::SetImageFromVectorIconWithColor(
+      close_button_, kCloseChromeRefreshIcon,
+      {kColorFindBarButtonIcon, kColorFindBarButtonIconDisabled});
 
   SetOrientation(views::BoxLayout::Orientation::kVertical);
   SetHost(host);
@@ -470,6 +470,21 @@ bool FindBarView::HandleKeyEvent(views::Textfield* sender,
     }
     return true;
   }
+
+  return false;
+}
+
+bool FindBarView::HandleMouseEvent(views::Textfield* sender,
+                                   const ui::MouseEvent& key_event) {
+#if BUILDFLAG(IS_MAC)
+  if (key_event.type() == ui::EventType::kMousePressed) {
+    // On macOS, clicking on the find text field should also activate the owner
+    // widget (if it isn't already), so that the user can interact with the text
+    // field.
+    DCHECK(find_bar_host_);
+    find_bar_host_->ActivateOwnerWidgetIfNecessary();
+  }
+#endif  // BUILDFLAG(IS_MAC)
 
   return false;
 }

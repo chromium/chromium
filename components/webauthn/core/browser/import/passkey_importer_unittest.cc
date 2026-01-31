@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/rand_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
@@ -71,6 +72,7 @@ class PasskeyImporterTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestPasskeyModel> passkey_model_;
   std::unique_ptr<PasskeyImporter> passkey_importer_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(PasskeyImporterTest, ProcessesValidPasskeys) {
@@ -91,6 +93,9 @@ TEST_F(PasskeyImporterTest, ProcessesInvalidPasskeys) {
                                  kRpId, "username",
                                  ImportedPasskeyStatus::kPrivateKeyMissing)));
   EXPECT_THAT(result.conflicts, IsEmpty());
+  histogram_tester_.ExpectUniqueSample(
+      "WebAuthentication.CredentialExchange.PasskeyImportStatus",
+      ImportedPasskeyStatus::kPrivateKeyMissing, 1);
 }
 
 TEST_F(PasskeyImporterTest, ProcessesDuplicatePasskey) {
@@ -107,6 +112,8 @@ TEST_F(PasskeyImporterTest, ProcessesDuplicatePasskey) {
       passkey_model_->GetPasskeys(PasskeyModel::AnyRp(),
                                   PasskeyModel::ShadowedCredentials::kInclude),
       SizeIs(1));
+  histogram_tester_.ExpectUniqueSample(
+      "WebAuthentication.CredentialExchange.PasskeyDuplicatesCount", 1, 1);
 }
 
 TEST_F(PasskeyImporterTest, ProcessesConflictingPasskeys) {
@@ -130,6 +137,8 @@ TEST_F(PasskeyImporterTest, ImportsValidPasskeys) {
       passkey_model_->GetPasskeys(PasskeyModel::AnyRp(),
                                   PasskeyModel::ShadowedCredentials::kInclude),
       SizeIs(2));
+  histogram_tester_.ExpectUniqueSample(
+      "WebAuthentication.CredentialExchange.PasskeysImportedCount", 2, 1);
 }
 
 TEST_F(PasskeyImporterTest, ImportsIncomingConflictingPasskey) {
@@ -145,6 +154,13 @@ TEST_F(PasskeyImporterTest, ImportsIncomingConflictingPasskey) {
       passkey_model_->GetPasskeys(PasskeyModel::AnyRp(),
                                   PasskeyModel::ShadowedCredentials::kInclude),
       SizeIs(3));
+  histogram_tester_.ExpectUniqueSample(
+      "WebAuthentication.CredentialExchange.PasskeyConflictsCount", 1, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "WebAuthentication.CredentialExchange.PasskeyConflictsResolvedCount", 1,
+      1);
+  histogram_tester_.ExpectUniqueSample(
+      "WebAuthentication.CredentialExchange.PasskeysImportedCount", 2, 1);
 }
 
 TEST_F(PasskeyImporterTest, IgnoresNotSelectedConflictingPasskey) {

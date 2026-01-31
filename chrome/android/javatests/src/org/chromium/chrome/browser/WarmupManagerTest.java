@@ -119,11 +119,7 @@ public class WarmupManagerTest {
         mTabModel = mActivityTestRule.getActivity().getTabModelSelector().getModel(false);
 
         mTabGroupModelFilter =
-                mActivityTestRule
-                        .getActivity()
-                        .getTabModelSelector()
-                        .getTabGroupModelFilterProvider()
-                        .getTabGroupModelFilter(false);
+                mActivityTestRule.getActivity().getTabModelSelector().getTabGroupModelFilter(false);
 
         // Unlike most of Chrome, the WarmupManager inflates layouts with the application context.
         // This is because the inflation happens before an activity exists. If you're trying to fix

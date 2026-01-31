@@ -33,18 +33,11 @@ public class CleanupReferenceTest {
 
         private final CleanupReference mRef;
 
-        // Remember: this MUST be a static class, to avoid an implicit ref back to the
-        // owning ReferredObject instance which would defeat GC of that object.
-        private static class DestroyRunnable implements Runnable {
-            @Override
-            public void run() {
-                sObjectCount.decrementAndGet();
-            }
-        }
-
         public ReferredObject() {
             sObjectCount.incrementAndGet();
-            mRef = new CleanupReference(this, new DestroyRunnable());
+            // This cleanup lambda MUST NOT refer to the ReferredObject instance, as that would
+            // create a reference cycle and defeat GC of this object.
+            mRef = new CleanupReference(this, (e) -> sObjectCount.decrementAndGet());
         }
     }
 

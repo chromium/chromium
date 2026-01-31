@@ -129,8 +129,8 @@ void VolumeControlAndroid::SetOutputLimit(AudioContentType type, float limit) {
 }
 
 void VolumeControlAndroid::OnVolumeChange(JNIEnv* env,
-                                          jint type,
-                                          jfloat level) {
+                                          int32_t type,
+                                          float level) {
   thread_.task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(&VolumeControlAndroid::ReportVolumeChangeOnThread,
@@ -138,9 +138,7 @@ void VolumeControlAndroid::OnVolumeChange(JNIEnv* env,
                      static_cast<AudioContentType>(type), level));
 }
 
-void VolumeControlAndroid::OnMuteChange(JNIEnv* env,
-                                        jint type,
-                                        jboolean muted) {
+void VolumeControlAndroid::OnMuteChange(JNIEnv* env, int32_t type, bool muted) {
   thread_.task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&VolumeControlAndroid::ReportMuteChangeOnThread,
                                 base::Unretained(this),

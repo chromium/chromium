@@ -14,12 +14,12 @@ import {HelpContentType} from './os_feedback_ui.mojom-webui.js';
 export const fakePopularHelpContentList: HelpContentList = [
   {
     title: 'fake article',
-    url: {url: 'https://support.google.com/chromebook/?q=article'},
+    url: 'https://support.google.com/chromebook/?q=article',
     contentType: HelpContentType.kArticle,
   },
   {
     title: 'fake forum',
-    url: {url: 'https://support.google.com/chromebook/?q=forum'},
+    url: 'https://support.google.com/chromebook/?q=forum',
     contentType: HelpContentType.kForum,
   },
 ];
@@ -27,27 +27,27 @@ export const fakePopularHelpContentList: HelpContentList = [
 export const fakeHelpContentList: HelpContentList = [
   {
     title: 'Fix connection problems',
-    url: {url: 'https://support.google.com/chromebook/?q=6318213'},
+    url: 'https://support.google.com/chromebook/?q=6318213',
     contentType: HelpContentType.kArticle,
   },
   {
     title: 'Why won\'t my wireless mouse with a USB piece wor...?',
-    url: {url: 'https://support.google.com/chromebook/?q=123920509'},
+    url: 'https://support.google.com/chromebook/?q=123920509',
     contentType: HelpContentType.kForum,
   },
   {
     title: 'Wifi Issues - only on Chromebooks',
-    url: {url: 'https://support.google.com/chromebook/?q=114174470'},
+    url: 'https://support.google.com/chromebook/?q=114174470',
     contentType: HelpContentType.kForum,
   },
   {
     title: 'Network Connectivity Fault',
-    url: {url: 'https://support.google.com/chromebook/?q=131459420'},
+    url: 'https://support.google.com/chromebook/?q=131459420',
     contentType: HelpContentType.kForum,
   },
   {
     title: 'Connected to WiFi but can\'t connect to the internet',
-    url: {url: 'https://support.google.com/chromebook/?q=22864239'},
+    url: 'https://support.google.com/chromebook/?q=22864239',
     contentType: HelpContentType.kUnknown,
   },
 ];
@@ -78,7 +78,7 @@ export const fakeFeedbackContext: FeedbackContext = {
   settingsSearchDoNotRecordMetrics: true,
   hasLinkedCrossDevicePhone: false,
   isInternalAccount: false,
-  pageUrl: {url: 'chrome://tab/'},
+  pageUrl: 'chrome://tab/',
   traceId: 1,
   wifiDebugLogsAllowed: false,
 };
@@ -92,7 +92,7 @@ export const fakeEmptyFeedbackContext: FeedbackContext = {
   settingsSearchDoNotRecordMetrics: true,
   hasLinkedCrossDevicePhone: false,
   isInternalAccount: false,
-  pageUrl: {url: ''},
+  pageUrl: '',
   traceId: 0,
   wifiDebugLogsAllowed: false,
 };
@@ -107,7 +107,7 @@ export const fakeLoginFlowFeedbackContext: FeedbackContext = {
   settingsSearchDoNotRecordMetrics: true,
   hasLinkedCrossDevicePhone: false,
   isInternalAccount: false,
-  pageUrl: {url: ''},
+  pageUrl: '',
   traceId: 0,
   wifiDebugLogsAllowed: false,
 };
@@ -121,7 +121,7 @@ export const fakeInternalUserFeedbackContext: FeedbackContext = {
   settingsSearchDoNotRecordMetrics: false,
   hasLinkedCrossDevicePhone: true,
   isInternalAccount: true,
-  pageUrl: {url: 'chrome://tab/'},
+  pageUrl: 'chrome://tab/',
   traceId: 1,
   wifiDebugLogsAllowed: false,
 };
@@ -136,7 +136,7 @@ export const fakeFeedbackContextWithoutLinkedCrossDevicePhone:
       settingsSearchDoNotRecordMetrics: false,
       hasLinkedCrossDevicePhone: false,
       isInternalAccount: true,
-      pageUrl: {url: 'chrome://tab/'},
+      pageUrl: 'chrome://tab/',
       traceId: 1,
       wifiDebugLogsAllowed: false,
     };
@@ -150,7 +150,7 @@ export const fakeFeedbackContextWithExtraDiagnostics: FeedbackContext = {
   settingsSearchDoNotRecordMetrics: false,
   hasLinkedCrossDevicePhone: false,
   isInternalAccount: true,
-  pageUrl: {url: 'chrome://tab/'},
+  pageUrl: 'chrome://tab/',
   traceId: 1,
   wifiDebugLogsAllowed: false,
 };

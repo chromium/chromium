@@ -20,7 +20,7 @@ constexpr char kApiRequestBodyTaskTitleKey[] = "title";
 }  // namespace
 
 std::string TaskRequestPayload::ToJson() const {
-  base::Value::Dict root;
+  base::DictValue root;
 
   if (!title.empty()) {
     root.Set(kApiRequestBodyTaskTitleKey, title);

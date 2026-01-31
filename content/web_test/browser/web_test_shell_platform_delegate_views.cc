@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/containers/contains.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/shell/browser/shell.h"
@@ -49,7 +48,7 @@ void WebTestShellPlatformDelegate::CreatePlatformWindow(
     return;
   }
 
-  DCHECK(!base::Contains(web_test_shell_data_map_, shell));
+  DCHECK(!web_test_shell_data_map_.contains(shell));
   WebTestShellData& shell_data = web_test_shell_data_map_[shell];
 
   shell_data.content_size = initial_size;
@@ -70,7 +69,7 @@ void WebTestShellPlatformDelegate::CleanUp(Shell* shell) {
     return;
   }
 
-  DCHECK(base::Contains(web_test_shell_data_map_, shell));
+  DCHECK(web_test_shell_data_map_.contains(shell));
   web_test_shell_data_map_.erase(shell);
 }
 
@@ -80,7 +79,7 @@ void WebTestShellPlatformDelegate::SetContents(Shell* shell) {
     return;
   }
 
-  DCHECK(base::Contains(web_test_shell_data_map_, shell));
+  DCHECK(web_test_shell_data_map_.contains(shell));
   WebTestShellData& shell_data = web_test_shell_data_map_[shell];
 
   aura::Window* content = shell->web_contents()->GetNativeView();

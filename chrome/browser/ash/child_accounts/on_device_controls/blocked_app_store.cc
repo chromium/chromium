@@ -38,12 +38,12 @@ BlockedAppStore::~BlockedAppStore() = default;
 BlockedAppMap BlockedAppStore::GetFromPref() const {
   VLOG(1) << "app-controls: reading blocked apps from pref ";
 
-  const base::Value::List& list =
+  const base::ListValue& list =
       pref_service_->GetList(prefs::kOnDeviceAppControlsBlockedApps);
 
   BlockedAppMap apps_from_pref;
   for (const auto& item : list) {
-    const base::Value::Dict* dict = item.GetIfDict();
+    const base::DictValue* dict = item.GetIfDict();
     if (!dict) {
       LOG(WARNING) << "app-controls: invalid block app dictionary";
       continue;
@@ -79,14 +79,14 @@ void BlockedAppStore::SaveToPref(const BlockedAppMap& apps) {
   ScopedListPrefUpdate update(pref_service_,
                               prefs::kOnDeviceAppControlsBlockedApps);
 
-  base::Value::List& list = update.Get();
+  base::ListValue& list = update.Get();
   list.clear();
 
   for (const auto& app : apps) {
     const std::string& app_id = app.first;
     const BlockedAppDetails& app_details = app.second;
 
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set(kAppIdKey, app_id);
     dict.Set(kBlockTimestampKey,
              base::TimeToValue(app_details.block_timestamp()));

@@ -8,9 +8,12 @@ desc: |-
 
   If this policy is set, <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME">DeveloperToolsAvailability</ph> can no longer control extensions developer mode.
 
+  Note: This policy only applies to platforms that support extensions.
+
 supported_on:
 - chrome.*:128-
 - chrome_os:128-
+- android:146-
 features:
   dynamic_refresh: true
   per_profile: true

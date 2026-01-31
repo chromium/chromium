@@ -47,7 +47,7 @@ void CryptAuthDeviceRegistryImpl::RegisterPrefs(PrefRegistrySimple* registry) {
 CryptAuthDeviceRegistryImpl::CryptAuthDeviceRegistryImpl(
     PrefService* pref_service)
     : pref_service_(pref_service) {
-  const base::Value::Dict& dict =
+  const base::DictValue& dict =
       pref_service_->GetDict(prefs::kCryptAuthDeviceRegistry);
 
   CryptAuthDeviceRegistry::InstanceIdToDeviceMap instance_id_to_device_map;
@@ -73,8 +73,8 @@ void CryptAuthDeviceRegistryImpl::OnDeviceRegistryUpdated() {
   pref_service_->SetDict(prefs::kCryptAuthDeviceRegistry, AsDictionary());
 }
 
-base::Value::Dict CryptAuthDeviceRegistryImpl::AsDictionary() const {
-  base::Value::Dict dict;
+base::DictValue CryptAuthDeviceRegistryImpl::AsDictionary() const {
+  base::DictValue dict;
   for (const std::pair<std::string, CryptAuthDevice>& id_device_pair :
        instance_id_to_device_map()) {
     dict.Set(util::EncodeAsString(id_device_pair.first),

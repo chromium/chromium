@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/animated_scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_recorder.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter_observer_bridge.h"
@@ -41,6 +42,7 @@
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/page_action_menu_entry_point_commands.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
@@ -109,6 +111,8 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   BubbleViewControllerPresenter* _bottomToolbarTipBubblePresenter;
   BubbleViewControllerPresenter* _discoverFeedHeaderMenuTipBubblePresenter;
   BubbleViewControllerPresenter* _homeCustomizationMenuTipBubblePresenter;
+  BubbleViewControllerPresenter*
+      _homeBackgroundCustomizationMenuTipBubblePresenter;
   BubbleViewControllerPresenter* _readingListTipBubblePresenter;
   BubbleViewControllerPresenter* _defaultPageModeTipBubblePresenter;
   BubbleViewControllerPresenter* _whatsNewBubblePresenter;
@@ -122,6 +126,8 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   BubbleViewControllerPresenter* _feedSwipeBubblePresenter;
   BubbleViewControllerPresenter* _pageActionMenuBubblePresenter;
   BubbleViewControllerPresenter* _readerModeOptionsBubblePresenter;
+  BubbleViewControllerPresenter* _geminiImageRemixBubblePresenter;
+  BubbleViewControllerPresenter* _pinSiteToMostVisitedTilesBubblePresenter;
 
   // List of existing gestural IPH views.
   GestureInProductHelpView* _pullToRefreshGestureIPH;
@@ -186,6 +192,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   [_bottomToolbarTipBubblePresenter dismissAnimated:NO];
   [_discoverFeedHeaderMenuTipBubblePresenter dismissAnimated:NO];
   [_homeCustomizationMenuTipBubblePresenter dismissAnimated:NO];
+  [_homeBackgroundCustomizationMenuTipBubblePresenter dismissAnimated:NO];
   [_readingListTipBubblePresenter dismissAnimated:NO];
   [_priceNotificationsWhileBrowsingBubbleTipPresenter dismissAnimated:NO];
   [_whatsNewBubblePresenter dismissAnimated:NO];
@@ -194,6 +201,8 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   [_lensOverlayEntrypointBubblePresenter dismissAnimated:NO];
   [_pageActionMenuBubblePresenter dismissAnimated:NO];
   [_readerModeOptionsBubblePresenter dismissAnimated:NO];
+  [_geminiImageRemixBubblePresenter dismissAnimated:NO];
+  [_pinSiteToMostVisitedTilesBubblePresenter dismissAnimated:NO];
   [self hideAllGestureInProductHelpViewsForReason:IPHDismissalReasonType::
                                                       kUnknown];
 }
@@ -283,6 +292,43 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   }
 
   _homeCustomizationMenuTipBubblePresenter = presenter;
+}
+
+- (void)presentHomeBackgroundCustomizationTipBubble {
+  // Scroll the NTP to top to show the IPH on the home customization button.
+  [self.delegate scrollNTPToTopForBubblePresenter:self];
+
+  NSString* text = l10n_util::GetNSStringWithFixup(
+      IDS_IOS_HOME_BACKGROUND_CUSTOMIZATION_IPH);
+
+  UIView* menuButton =
+      [_layoutGuideCenter referencedViewUnderName:kFeedIPHNamedGuide];
+  // Checks "canPresentBubble" after checking that the NTP with feed is visible.
+  // This ensures that the feature tracker doesn't trigger the IPH event if the
+  // bubble isn't shown, which would prevent it from ever being shown again.
+  if (!menuButton || ![self canPresentBubble]) {
+    return;
+  }
+  CGPoint customizationMenuAnchor =
+      [menuButton.superview convertPoint:menuButton.frame.origin toView:nil];
+
+  // Slightly move IPH to ensure that the bubble doesn't bleed out the screen.
+  customizationMenuAnchor.x += menuButton.frame.size.width / 2;
+  customizationMenuAnchor.y += menuButton.frame.size.height;
+
+  BubbleViewControllerPresenter* presenter =
+      [self presentBubbleForFeature:
+                feature_engagement::kIPHiOSPromoBackgroundCustomizationFeature
+                          direction:BubbleArrowDirectionUp
+                          alignment:BubbleAlignmentTopOrLeading
+                               text:text
+              voiceOverAnnouncement:text
+                        anchorPoint:customizationMenuAnchor];
+  if (!presenter) {
+    return;
+  }
+
+  _homeBackgroundCustomizationMenuTipBubblePresenter = presenter;
 }
 
 - (void)presentDefaultSiteViewTipBubbleWithSettingsMap:
@@ -528,6 +574,27 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   }
 }
 
+- (void)presentPinSiteToMostVisitedTilesBubble {
+  if (![self canPresentBubble]) {
+    return;
+  }
+  NSString* text = l10n_util::GetNSString(
+      IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_IN_PRODUCT_HELP);
+  BubbleViewControllerPresenter* presenter = [self
+      presentBubbleForFeature:feature_engagement::
+                                  kIPHiOSPinMostVisitedSiteFeature
+                    direction:BubbleArrowDirectionUp
+                    alignment:BubbleAlignmentTopOrLeading
+                         text:text
+        voiceOverAnnouncement:text
+                  anchorPoint:
+                      [self anchorPointToGuide:kNTPFirstMostVisitedTileGuide
+                                     direction:BubbleArrowDirectionUp]];
+  if (presenter) {
+    _pinSiteToMostVisitedTilesBubblePresenter = presenter;
+  }
+}
+
 - (void)
     presentPullToRefreshGestureInProductHelpWithDeviceSwitcherResultDispatcher:
         (raw_ptr<segmentation_platform::DeviceSwitcherResultDispatcher>)
@@ -752,7 +819,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
         [weakSelf.pageActionMenuEntryPointHandler
             toggleEntryPointHighlight:YES];
       }
-      dismissAction:^{
+      dismissAction:^(IPHDismissalReasonType reason) {
         [weakSelf.pageActionMenuEntryPointHandler toggleEntryPointHighlight:NO];
       }];
 
@@ -798,6 +865,63 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
 
   if (presenter) {
     _readerModeOptionsBubblePresenter = presenter;
+  }
+}
+
+- (void)presentGeminiImageRemixBubbleWithBWGHandler:(id<BWGCommands>)BWGHandler
+                    pageActionMenuEntryPointHandler:
+                        (id<PageActionMenuEntryPointCommands>)
+                            pageActionMenuEntryPointHandler {
+  if (![self canPresentBubbleWithCheckTabScrolledToTop:NO]) {
+    return;
+  }
+
+  BOOL isBottomOmnibox = IsBottomOmniboxAvailable() &&
+                         GetApplicationContext()->GetLocalState()->GetBoolean(
+                             prefs::kBottomOmnibox);
+  BubbleArrowDirection arrowDirection =
+      isBottomOmnibox ? BubbleArrowDirectionDown : BubbleArrowDirectionUp;
+  NSString* text =
+      l10n_util::GetNSString(IDS_IOS_GEMINI_IMAGE_REMIX_ENTRY_POINT_IPH);
+
+  CGPoint pageActionMenuEntrypointAnchor =
+      [self anchorPointToGuide:kPageActionMenuEntrypointGuide
+                     direction:arrowDirection];
+  // To prevent the bubble from extending beyond the screen's edge, an offset is
+  // added, with the anchor point positioned at the top left corner.
+  // TODO(crbug.com/365049480): Remove this offset once the bubble view margins
+  // are fixed.
+  CGFloat anchorXOffset = UseRTLLayout() ? -2 : 2;
+
+  BubbleViewControllerPresenter* presenter = [self
+      presentBubbleForFeature:feature_engagement::kIPHiOSGeminiImageRemixFeature
+      direction:arrowDirection
+      alignment:BubbleAlignmentTopOrLeading
+      text:text
+      voiceOverAnnouncement:text
+      anchorPoint:CGPoint(pageActionMenuEntrypointAnchor.x + anchorXOffset,
+                          pageActionMenuEntrypointAnchor.y)
+      anchorViewFrame:
+          [self anchorViewFrameForGuide:kPageActionMenuEntrypointGuide]
+      presentAction:^{
+        [pageActionMenuEntryPointHandler toggleEntryPointHighlight:YES];
+      }
+      dismissAction:^(IPHDismissalReasonType reason) {
+        [pageActionMenuEntryPointHandler toggleEntryPointHighlight:NO];
+        base::UmaHistogramEnumeration(
+            "IOS.Gemini.ImageRemix.IPH.DismissalReason", reason);
+
+        if (reason == IPHDismissalReasonType::kTappedIPH ||
+            reason == IPHDismissalReasonType::kTappedAnchorView) {
+          base::RecordAction(
+              base::UserMetricsAction("MobileGeminiImageRemixIPHTapped"));
+          [BWGHandler
+              startGeminiFlowWithEntryPoint:gemini::EntryPoint::ImageRemixIPH];
+        }
+      }];
+
+  if (presenter) {
+    _geminiImageRemixBubblePresenter = presenter;
   }
 }
 
@@ -890,6 +1014,28 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
                          dismissAction:nil];
 }
 
+// Convenience method that calls -presentBubbleForFeature with a CGRectZero
+// `anchorViewFrame`.
+- (BubbleViewControllerPresenter*)
+    presentBubbleForFeature:(const base::Feature&)feature
+                  direction:(BubbleArrowDirection)direction
+                  alignment:(BubbleAlignment)alignment
+                       text:(NSString*)text
+      voiceOverAnnouncement:(NSString*)voiceOverAnnouncement
+                anchorPoint:(CGPoint)anchorPoint
+              presentAction:(ProceduralBlock)presentAction
+              dismissAction:(void (^)(IPHDismissalReasonType))dismissAction {
+  return [self presentBubbleForFeature:feature
+                             direction:direction
+                             alignment:alignment
+                                  text:text
+                 voiceOverAnnouncement:voiceOverAnnouncement
+                           anchorPoint:anchorPoint
+                       anchorViewFrame:CGRectZero
+                         presentAction:presentAction
+                         dismissAction:dismissAction];
+}
+
 // Presents and returns a bubble view controller for the `feature` with an arrow
 // `direction`, an arrow `alignment` and a `text` on an `anchorPoint`.
 - (BubbleViewControllerPresenter*)
@@ -899,8 +1045,9 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
                        text:(NSString*)text
       voiceOverAnnouncement:(NSString*)voiceOverAnnouncement
                 anchorPoint:(CGPoint)anchorPoint
+            anchorViewFrame:(CGRect)anchorViewFrame
               presentAction:(ProceduralBlock)presentAction
-              dismissAction:(ProceduralBlock)dismissAction {
+              dismissAction:(void (^)(IPHDismissalReasonType))dismissAction {
   DCHECK(_engagementTracker);
   BubbleViewControllerPresenter* presenter =
       [self bubblePresenterForFeature:feature
@@ -920,7 +1067,8 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
       [self startAnimatedFullscreenDisabler];
     }
     [presenter presentInViewController:self.rootViewController
-                           anchorPoint:anchorPoint];
+                           anchorPoint:anchorPoint
+                       anchorViewFrame:anchorViewFrame];
     if (presentAction) {
       presentAction();
     }
@@ -955,6 +1103,19 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
                               toView:guide.owningView.window];
   [self.rootViewController.view removeLayoutGuide:guide];
   return anchorPointInWindow;
+}
+
+// Returns the frame of a layout guide used as anchor view for a bubble. The
+// frame is in the window coordinates.
+- (CGRect)anchorViewFrameForGuide:(GuideName*)guideName {
+  UILayoutGuide* guide = [_layoutGuideCenter makeLayoutGuideNamed:guideName];
+  CHECK(guide);
+  [self.rootViewController.view addLayoutGuide:guide];
+  CGRect frame = guide.layoutFrame;
+  CGRect frameInWindow = [guide.owningView convertRect:frame
+                                                toView:guide.owningView.window];
+  [self.rootViewController.view removeLayoutGuide:guide];
+  return frameInWindow;
 }
 
 // Returns whether the tab can present a bubble tip.
@@ -1019,7 +1180,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
                     direction:(BubbleArrowDirection)direction
                     alignment:(BubbleAlignment)alignment
                          text:(NSString*)text
-                dismissAction:(ProceduralBlock)dismissAction {
+                dismissAction:(void (^)(IPHDismissalReasonType))dismissAction {
   DCHECK(_engagementTracker);
   // Capture `weakSelf` instead of the feature engagement tracker object
   // because `weakSelf` will safely become `nil` if it is deallocated, whereas
@@ -1029,7 +1190,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   CallbackWithIPHDismissalReasonType dismissalCallback =
       ^(IPHDismissalReasonType IPHDismissalReasonType) {
         if (dismissAction) {
-          dismissAction();
+          dismissAction(IPHDismissalReasonType);
         }
         [weakSelf stopAnimatedFullscreenDisabler];
         [weakSelf featureDismissed:feature];
@@ -1056,8 +1217,11 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
            feature_engagement::kIPHiOSLensOverlayEntrypointTipFeature.name);
   BOOL isPageActionMenuIPH =
       feature.name == feature_engagement::kIPHIOSPageActionMenu.name;
+  BOOL isGeminiImageRemixIPH =
+      feature.name == feature_engagement::kIPHiOSGeminiImageRemixFeature.name;
   bubbleViewControllerPresenter.forceDisablePanGestureRecognizer =
-      (shouldDisablePanRecognizer && isLensOverlayIPH) || isPageActionMenuIPH;
+      (shouldDisablePanRecognizer && isLensOverlayIPH) || isPageActionMenuIPH ||
+      isGeminiImageRemixIPH;
 
   return bubbleViewControllerPresenter;
 }
@@ -1154,6 +1318,11 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   if (!_engagementTracker) {
     return;
   }
+  // Don't alert FET if bubble was force presented, because in that case, the
+  // FET was never informed of the initial presentation.
+  if ([self shouldForcePresentBubbleForFeature:feature]) {
+    return;
+  }
   _engagementTracker->Dismissed(feature);
 }
 
@@ -1163,7 +1332,8 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
     (const base::Feature&)feature {
   // Display FollowWhileBrowsing in-product help bubble with custom duration.
   if (feature.name == feature_engagement::kIPHFollowWhileBrowsingFeature.name ||
-      feature.name == feature_engagement::kIPHIOSPageActionMenu.name) {
+      feature.name == feature_engagement::kIPHIOSPageActionMenu.name ||
+      feature.name == feature_engagement::kIPHiOSGeminiImageRemixFeature.name) {
     return kDefaultLongDurationBubbleVisibility;
   }
 
@@ -1174,7 +1344,8 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
 // given feature.
 - (BOOL)shouldIgnoreWebContentAreaInteractionsForFeature:
     (const base::Feature&)feature {
-  if (feature.name == feature_engagement::kIPHIOSPageActionMenu.name) {
+  if (feature.name == feature_engagement::kIPHIOSPageActionMenu.name ||
+      feature.name == feature_engagement::kIPHiOSGeminiImageRemixFeature.name) {
     return YES;
   }
 
@@ -1184,7 +1355,8 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
 // Returns whether fullscreen should be disabled before presenting the bubble
 // for a given feature.
 - (BOOL)shouldDisableFullscreenForFeature:(const base::Feature&)feature {
-  if (feature.name == feature_engagement::kIPHIOSPageActionMenu.name) {
+  if (feature.name == feature_engagement::kIPHIOSPageActionMenu.name ||
+      feature.name == feature_engagement::kIPHiOSGeminiImageRemixFeature.name) {
     return YES;
   }
 
@@ -1192,8 +1364,16 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
 }
 
 // Return YES if the bubble should always be presented. Ex. if force present
-// bubble set by system experimental settings.
+// bubble set by system experimental settings. The bubble presenter will not
+// inform the FET of dismissal in this case. The client is responsible for
+// informing the FET.
 - (BOOL)shouldForcePresentBubbleForFeature:(const base::Feature&)feature {
+  // The background customization feature bubble is tied in with other IPH, so
+  // the feature engagement tracker is checked externally to this class.
+  if (feature.name ==
+      feature_engagement::kIPHiOSPromoBackgroundCustomizationFeature.name) {
+    return YES;
+  }
   return NO;
 }
 

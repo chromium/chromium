@@ -42,12 +42,12 @@ class ReportingServerConnector::TestEnvironment {
     return &url_loader_factory_;
   }
 
-  base::Value::Dict request_body(size_t index);
+  base::DictValue request_body(size_t index);
 
   void SimulateResponseForRequest(size_t index);
 
   void SimulateCustomResponseForRequest(size_t index,
-                                        StatusOr<base::Value::Dict> response);
+                                        StatusOr<base::DictValue> response);
 
   void SetDMToken(const std::string& dm_token) const;
 

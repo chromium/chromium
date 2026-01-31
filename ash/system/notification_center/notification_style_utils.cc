@@ -88,7 +88,7 @@ SkColor CalculateIconBackgroundColor(
   auto color_id = notification->accent_color_id();
   std::optional<SkColor> accent_color = notification->accent_color();
 
-  if (!color_id || !accent_color.has_value()) {
+  if (!color_id && !accent_color.has_value()) {
     return default_color;
   }
 

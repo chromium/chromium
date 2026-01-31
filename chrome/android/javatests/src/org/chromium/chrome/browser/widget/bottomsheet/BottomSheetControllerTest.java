@@ -168,10 +168,13 @@ public class BottomSheetControllerTest {
     public void testSheetPeek_hideKeyboard() {
         KeyboardVisibilityDelegate keyboardDelegate = KeyboardVisibilityDelegate.getInstance();
         ThreadUtils.runOnUiThreadBlocking(
-                () -> keyboardDelegate.showKeyboard(mActivity.getTabsView()));
+                () -> keyboardDelegate.showKeyboard(mActivity.getTabsViewForTesting()));
         requestContentInSheet(mLowPriorityContent, true);
         ThreadUtils.runOnUiThreadBlocking(
-                () -> assertFalse(keyboardDelegate.isKeyboardShowing(mActivity.getTabsView())));
+                () ->
+                        assertFalse(
+                                keyboardDelegate.isKeyboardShowing(
+                                        mActivity.getTabsViewForTesting())));
         BottomSheetTestSupport.waitForContentChange(mSheetController, mLowPriorityContent);
         BottomSheetTestSupport.waitForState(mSheetController, SheetState.PEEK);
     }
@@ -577,7 +580,10 @@ public class BottomSheetControllerTest {
         requestContentInSheet(mLowPriorityContent, false);
 
         TestBottomSheetContent customLifecycleContent =
-                new TestBottomSheetContent(mActivity, BottomSheetContent.ContentPriority.LOW, true);
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                new TestBottomSheetContent(
+                                        mActivity, BottomSheetContent.ContentPriority.LOW, true));
         requestContentInSheet(customLifecycleContent, false);
         assertEquals(mHighPriorityContent, mSheetController.getCurrentSheetContent());
 
@@ -630,7 +636,10 @@ public class BottomSheetControllerTest {
     @MediumTest
     public void testCustomScrimLifecycle() {
         TestBottomSheetContent customScrimContent =
-                new TestBottomSheetContent(mActivity, BottomSheetContent.ContentPriority.LOW, true);
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                new TestBottomSheetContent(
+                                        mActivity, BottomSheetContent.ContentPriority.LOW, true));
         customScrimContent.setHasCustomScrimLifecycle(true);
         requestContentInSheet(customScrimContent, true);
 

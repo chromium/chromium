@@ -63,6 +63,9 @@ bool CSPDirectiveListAllowTrustedTypePolicy(
 CORE_EXPORT
 bool CSPDirectiveListRequiresTrustedTypes(
     const network::mojom::blink::ContentSecurityPolicy& csp);
+CORE_EXPORT
+bool CSPDirectiveListRequiresTrustedTypesEnforcing(
+    const network::mojom::blink::ContentSecurityPolicy& csp);
 
 CORE_EXPORT
 std::optional<HashAlgorithm> CSPDirectiveListHashToReport(
@@ -103,6 +106,13 @@ bool CSPDirectiveListAllowWasmCodeGeneration(
     ReportingDisposition reporting_disposition,
     ContentSecurityPolicy::ExceptionStatus exception_status,
     const String& content);
+
+CORE_EXPORT
+bool CSPDirectiveListAllowTrustedTypesEval(
+    const network::mojom::blink::ContentSecurityPolicy& csp,
+    ContentSecurityPolicy* policy,
+    ReportingDisposition reporting_disposition,
+    ContentSecurityPolicy::ExceptionStatus exception_status);
 
 CORE_EXPORT
 bool CSPDirectiveListShouldDisableEval(

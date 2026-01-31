@@ -64,8 +64,8 @@ SkColor GetProfileHighlightColor(Profile* profile) {
   return entry->GetProfileThemeColors().profile_highlight_color;
 }
 
-base::Value::Dict GetAccountInfoValue(const AccountInfo& info) {
-  base::Value::Dict account_info_value;
+base::DictValue GetAccountInfoValue(const AccountInfo& info) {
+  base::DictValue account_info_value;
   std::string_view avatar_badge = "";
   std::string avatar_badge_alt_text = "";
   if (info.IsManaged() == signin::Tribool::kTrue) {
@@ -168,22 +168,20 @@ const AccountInfo& DiceWebSigninInterceptHandler::intercepted_account() {
   return bubble_parameters_.intercepted_account;
 }
 
-void DiceWebSigninInterceptHandler::HandleAccept(
-    const base::Value::List& args) {
+void DiceWebSigninInterceptHandler::HandleAccept(const base::ListValue& args) {
   if (completion_callback_) {
     std::move(completion_callback_).Run(SigninInterceptionUserChoice::kAccept);
   }
 }
 
-void DiceWebSigninInterceptHandler::HandleCancel(
-    const base::Value::List& args) {
+void DiceWebSigninInterceptHandler::HandleCancel(const base::ListValue& args) {
   if (completion_callback_) {
     std::move(completion_callback_).Run(SigninInterceptionUserChoice::kDecline);
   }
 }
 
 void DiceWebSigninInterceptHandler::HandlePageLoaded(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
 
   UpdateExtendedAccountsInfo();
@@ -207,7 +205,7 @@ void DiceWebSigninInterceptHandler::HandlePageLoaded(
 }
 
 void DiceWebSigninInterceptHandler::HandleChromeSigninPageLoaded(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
 
   // Image might not be loaded yet.
@@ -220,7 +218,7 @@ void DiceWebSigninInterceptHandler::HandleChromeSigninPageLoaded(
 }
 
 void DiceWebSigninInterceptHandler::HandleInitializedWithHeight(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   CHECK_EQ(1u, args.size());
   int height = args[0].GetInt();
@@ -249,9 +247,9 @@ void DiceWebSigninInterceptHandler::UpdateExtendedAccountsInfo() {
   }
 }
 
-base::Value::Dict
+base::DictValue
 DiceWebSigninInterceptHandler::GetInterceptionChromeSigninParametersValue() {
-  base::Value::Dict parameters;
+  base::DictValue parameters;
   parameters.Set("title", GetChromeSigninTitle());
   parameters.Set("subtitle", GetChromeSigninSubtitle());
   parameters.Set("email", intercepted_account().email);
@@ -272,9 +270,9 @@ DiceWebSigninInterceptHandler::GetInterceptionChromeSigninParametersValue() {
   return parameters;
 }
 
-base::Value::Dict
+base::DictValue
 DiceWebSigninInterceptHandler::GetInterceptionParametersValue() {
-  base::Value::Dict parameters;
+  base::DictValue parameters;
   parameters.Set("headerText", GetHeaderText());
   parameters.Set("bodyTitle", GetBodyTitle());
   parameters.Set("bodyText", GetBodyText());

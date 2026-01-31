@@ -37,8 +37,8 @@ suite('SidePanelShoppingListTest', () => {
         title: 'Product Foo',
         clusterTitle: 'Product Cluster Foo',
         domain: 'foo.com',
-        imageUrl: {url: 'chrome://resources/images/error.svg'},
-        productUrl: {url: 'https://foo.com/product'},
+        imageUrl: 'chrome://resources/images/error.svg',
+        productUrl: 'https://foo.com/product',
         currentPrice: '$12',
         previousPrice: '$34',
         clusterId: BigInt(12345),
@@ -52,8 +52,8 @@ suite('SidePanelShoppingListTest', () => {
         title: 'Product bar',
         clusterTitle: 'Product Cluster bar',
         domain: 'bar.com',
-        imageUrl: {url: ''},
-        productUrl: {url: 'https://foo.com/product'},
+        imageUrl: '',
+        productUrl: 'https://foo.com/product',
         currentPrice: '$15',
         previousPrice: '',
         clusterId: BigInt(12345),
@@ -80,7 +80,7 @@ suite('SidePanelShoppingListTest', () => {
     const imageElement =
         element.querySelector<HTMLElement>('.product-image-container');
     const faviconElement = element.querySelector<HTMLElement>('.favicon-image');
-    if (!product.info.imageUrl.url) {
+    if (!product.info.imageUrl) {
       assertFalse(isVisible(imageElement));
       assertTrue(isVisible(faviconElement));
     } else {
@@ -89,7 +89,7 @@ suite('SidePanelShoppingListTest', () => {
       const productImage =
           imageElement!.querySelector<HTMLElement>(
                            '.product-image')!.getAttribute('auto-src');
-      assertEquals(productImage, product.info.imageUrl.url);
+      assertEquals(productImage, product.info.imageUrl);
     }
     const priceElements = Array.from(element.querySelectorAll('.price'));
     if (!product.info.previousPrice) {
@@ -303,8 +303,8 @@ suite('SidePanelShoppingListTest', () => {
         title: 'Product Baz',
         clusterTitle: 'Product Cluster Baz',
         domain: 'baz.com',
-        imageUrl: {url: 'https://baz.com/image'},
-        productUrl: {url: 'https://baz.com/product'},
+        imageUrl: 'https://baz.com/image',
+        productUrl: 'https://baz.com/product',
         currentPrice: '$56',
         previousPrice: '$78',
         clusterId: BigInt(12345),
@@ -374,8 +374,8 @@ suite('SidePanelShoppingListTest', () => {
         title: 'Product Baz',
         clusterTitle: 'Product Cluster Baz',
         domain: 'baz.com',
-        imageUrl: {url: 'chrome://resources/images/error.svg'},
-        productUrl: {url: 'https://baz.com/product'},
+        imageUrl: 'chrome://resources/images/error.svg',
+        productUrl: 'https://baz.com/product',
         currentPrice: '$56',
         previousPrice: '$78',
         clusterId: BigInt(12345),

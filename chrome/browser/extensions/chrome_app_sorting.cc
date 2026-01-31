@@ -19,7 +19,9 @@
 #include "chrome/browser/extensions/sync/extension_sync_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -341,14 +343,11 @@ void ChromeAppSorting::OnExtensionMoved(
 
 syncer::StringOrdinal ChromeAppSorting::GetAppLaunchOrdinal(
     const ExtensionId& extension_id) const {
-  // TODO(crbug.com/379136842): Verify and reduce the allowed states called
-  // within IsInstallState() if needed.
+  // TODO(crbug.com/379136842): Verify that the allowed states as part of
+  // IsAppSurfaceableToUser() is correct.
   if (web_app_registrar_ &&
-      web_app_registrar_->IsInstallState(
-          extension_id,
-          {web_app::proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-           web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-           web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
+      web_app_registrar_->AppMatches(
+          extension_id, web_app::WebAppFilter::IsAppSurfaceableToUser())) {
     return web_app_registrar_->GetAppById(extension_id)->user_launch_ordinal();
   }
 
@@ -375,14 +374,11 @@ void ChromeAppSorting::SetAppLaunchOrdinal(
       extension_id, page_ordinal, GetAppLaunchOrdinal(extension_id));
   AddOrdinalMapping(extension_id, page_ordinal, new_app_launch_ordinal);
 
-  // TODO(crbug.com/379136842): Verify and reduce the allowed states called
-  // within IsInstallState() if needed.
+  // TODO(crbug.com/379136842): Verify that the allowed states as part of
+  // IsAppSurfaceableToUser() is correct.
   if (web_app_registrar_ &&
-      web_app_registrar_->IsInstallState(
-          extension_id,
-          {web_app::proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-           web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-           web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
+      web_app_registrar_->AppMatches(
+          extension_id, web_app::WebAppFilter::IsAppSurfaceableToUser())) {
     web_app_sync_bridge_->SetUserLaunchOrdinal(extension_id,
                                                new_app_launch_ordinal);
     return;
@@ -446,14 +442,11 @@ syncer::StringOrdinal ChromeAppSorting::GetNaturalAppPageOrdinal() const {
 
 syncer::StringOrdinal ChromeAppSorting::GetPageOrdinal(
     const ExtensionId& extension_id) const {
-  // TODO(crbug.com/379136842): Verify and reduce the allowed states called
-  // within IsInstallState() if needed.
+  // TODO(crbug.com/379136842): Verify that the allowed states as part of
+  // IsAppSurfaceableToUser() is correct.
   if (web_app_registrar_ &&
-      web_app_registrar_->IsInstallState(
-          extension_id,
-          {web_app::proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-           web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-           web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
+      web_app_registrar_->AppMatches(
+          extension_id, web_app::WebAppFilter::IsAppSurfaceableToUser())) {
     return web_app_registrar_->GetAppById(extension_id)->user_page_ordinal();
   }
 
@@ -477,14 +470,11 @@ void ChromeAppSorting::SetPageOrdinal(
       extension_id, GetPageOrdinal(extension_id), app_launch_ordinal);
   AddOrdinalMapping(extension_id, new_page_ordinal, app_launch_ordinal);
 
-  // TODO(crbug.com/379136842): Verify and reduce the allowed states called
-  // within IsInstallState() if needed.
+  // TODO(crbug.com/379136842): Verify that the allowed states as part of
+  // IsAppSurfaceableToUser() is correct.
   if (web_app_registrar_ &&
-      web_app_registrar_->IsInstallState(
-          extension_id,
-          {web_app::proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-           web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-           web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
+      web_app_registrar_->AppMatches(
+          extension_id, web_app::WebAppFilter::IsAppSurfaceableToUser())) {
     web_app_sync_bridge_->SetUserPageOrdinal(extension_id, new_page_ordinal);
     return;
   }

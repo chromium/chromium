@@ -8,6 +8,8 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeBookmarksUrl;
+
 import android.graphics.Bitmap;
 import android.os.Build.VERSION_CODES;
 
@@ -183,7 +185,7 @@ public class ScreenshotCaptureTest {
     public void testNavigatingAwayFromNativeBookmarkToNormalPage(boolean nightModeEnabled)
             throws IOException, TimeoutException, InterruptedException {
         mActivityTestRule
-                .startOnUrlTo(UrlConstants.BOOKMARKS_NATIVE_URL)
+                .startOnUrlTo(getOriginalNativeBookmarksUrl())
                 .executeTriggerWithoutTransition();
         UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
 

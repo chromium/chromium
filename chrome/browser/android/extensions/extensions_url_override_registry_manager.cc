@@ -23,7 +23,7 @@
 
 namespace extensions {
 
-static jlong JNI_ExtensionsUrlOverrideRegistryManager_Initialize(
+static int64_t JNI_ExtensionsUrlOverrideRegistryManager_Initialize(
     JNIEnv* env,
     const jni_zero::JavaRef<jobject>& j_object,
     Profile* profile) {

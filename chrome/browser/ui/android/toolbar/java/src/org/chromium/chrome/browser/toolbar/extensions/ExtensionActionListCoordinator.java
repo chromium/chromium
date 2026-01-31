@@ -7,6 +7,10 @@ package org.chromium.chrome.browser.toolbar.extensions;
 import android.content.Context;
 import android.view.LayoutInflater;
 
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.lifetime.LifetimeAssert;
 import org.chromium.base.supplier.NullableObservableSupplier;
@@ -15,11 +19,15 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.extensions.ExtensionActionButtonProperties.ListItemType;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
+import org.chromium.chrome.browser.ui.extensions.ExtensionsToolbarBridge;
 import org.chromium.chrome.browser.ui.extensions.R;
+import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter;
+import org.chromium.components.browser_ui.widget.dragreorder.DragTouchHandler.DragListener;
+import org.chromium.components.browser_ui.widget.dragreorder.DragTouchHandler.DraggabilityProvider;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
-import org.chromium.ui.modelutil.ViewGroupAdapter;
+import org.chromium.ui.modelutil.PropertyModel;
 
 /**
  * Root component for the extension action buttons. Exposes public API for external consumers to
@@ -27,37 +35,81 @@ import org.chromium.ui.modelutil.ViewGroupAdapter;
  */
 @NullMarked
 public class ExtensionActionListCoordinator implements Destroyable {
-    private final ExtensionActionListContainer mContainer;
+    private final Context mContext;
+    private final ExtensionActionListRecyclerView mContainer;
     private final ModelList mModels;
     private final ExtensionActionListMediator mMediator;
-    private final ViewGroupAdapter mAdapter;
+    private final DragReorderableRecyclerViewAdapter mAdapter;
     @Nullable private final LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
 
     public ExtensionActionListCoordinator(
             Context context,
-            ExtensionActionListContainer container,
+            ExtensionActionListRecyclerView container,
             WindowAndroid windowAndroid,
             ChromeAndroidTask task,
-            NullableObservableSupplier<Tab> currentTabSupplier) {
+            NullableObservableSupplier<Tab> currentTabSupplier,
+            ExtensionsToolbarBridge extensionsToolbarBridge) {
+        mContext = context;
         mContainer = container;
 
         mModels = new ModelList();
         mMediator =
                 new ExtensionActionListMediator(
-                        context, windowAndroid, mModels, task, currentTabSupplier);
-        mAdapter =
-                new ViewGroupAdapter.Builder(mContainer, mModels)
-                        .registerType(
-                                ListItemType.EXTENSION_ACTION,
-                                parent ->
-                                        (ListMenuButton)
-                                                LayoutInflater.from(context)
-                                                        .inflate(
-                                                                R.layout.extension_action_button,
-                                                                parent,
-                                                                /* attachToRoot= */ false),
-                                ExtensionActionButtonViewBinder::bind)
-                        .build();
+                        context,
+                        windowAndroid,
+                        mModels,
+                        task,
+                        currentTabSupplier,
+                        container,
+                        extensionsToolbarBridge);
+
+        ExtensionsToolbarDragTouchHandler dragTouchHandler =
+                new ExtensionsToolbarDragTouchHandler(context, mModels);
+        mAdapter = new DragReorderableRecyclerViewAdapter(context, mModels, dragTouchHandler);
+
+        dragTouchHandler.setDefaultLongPressDragEnabled(false);
+
+        mAdapter.registerDraggableType(
+                ListItemType.EXTENSION_ACTION,
+                parent ->
+                        (ListMenuButton)
+                                LayoutInflater.from(context)
+                                        .inflate(
+                                                R.layout.extension_action_button,
+                                                parent,
+                                                /* attachToRoot= */ false),
+                ExtensionActionButtonViewBinder::bind,
+                this::bindDragProperties,
+                new DraggabilityProvider() {
+                    @Override
+                    public boolean isActivelyDraggable(PropertyModel propertyModel) {
+                        return true;
+                    }
+
+                    @Override
+                    public boolean isPassivelyDraggable(PropertyModel propertyModel) {
+                        return true;
+                    }
+                });
+        dragTouchHandler.addDragListener(
+                new DragListener() {
+                    @Override
+                    public void onSwap(int targetIndex) {
+                        mMediator.onActionsSwapped(targetIndex);
+                    }
+                });
+
+        mContainer.setLayoutManager(
+                new LinearLayoutManager(
+                        context, LinearLayoutManager.HORIZONTAL, /* reverseLayout= */ false) {
+                    @Override
+                    public boolean canScrollHorizontally() {
+                        return false;
+                    }
+                });
+        mContainer.setAdapter(mAdapter);
+
+        mAdapter.enableDrag();
     }
 
     @Override
@@ -71,9 +123,30 @@ public class ExtensionActionListCoordinator implements Destroyable {
     public void click(String actionId) {
         for (int i = 0; i < mModels.size(); i++) {
             if (mModels.get(i).model.get(ExtensionActionButtonProperties.ID).equals(actionId)) {
-                mContainer.getChildAt(i).performClick();
+                RecyclerView.ViewHolder holder = mContainer.findViewHolderForAdapterPosition(i);
+                if (holder == null) {
+                    // TODO(crbug.com/478113313): Pop out action in so that the view exists for
+                    // non-pinned actions.
+                    return;
+                }
+
+                holder.itemView.performClick();
                 return;
             }
         }
+    }
+
+    private void bindDragProperties(
+            RecyclerView.ViewHolder viewHolder, ItemTouchHelper itemTouchHelper) {
+        int position = viewHolder.getBindingAdapterPosition();
+        if (position == RecyclerView.NO_POSITION) return;
+
+        PropertyModel model = mModels.get(position).model;
+
+        ExtensionActionDragHelper dragHelper =
+                new ExtensionActionDragHelper(mContext, itemTouchHelper, viewHolder);
+
+        model.set(ExtensionActionButtonProperties.DRAG_HELPER, dragHelper);
+        model.set(ExtensionActionButtonProperties.TOUCH_LISTENER, dragHelper::onTouch);
     }
 }

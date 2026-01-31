@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/containers/contains.h"
 #include "base/containers/to_vector.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/data_model_utils.h"
@@ -643,7 +642,7 @@ void FormStructureRationalizer::RationalizeCreditCardNumberOffsets(
                CREDIT_CARD_NUMBER &&
            group.front()->renderer_form_id() ==
                group.back()->renderer_form_id() &&
-           group.front()->IsFocusable() == group.back()->IsFocusable() &&
+           group.front()->is_focusable() == group.back()->is_focusable() &&
            (group.size() == 1 || group.front()->max_length() ==
                                      group[group.size() - 2]->max_length());
   };
@@ -951,7 +950,7 @@ void FormStructureRationalizer::RationalizeRepeatedStreetAddressFields(
   // Group ADDRESS_HOME_STREET_ADDRESS `fields_` by section.
   std::map<Section, std::vector<AutofillField*>> street_address_fields;
   for (const std::unique_ptr<AutofillField>& field : fields_) {
-    if (field->IsFocusable() &&
+    if (field->is_focusable() &&
         field->ComputedType().GetAddressType() == ADDRESS_HOME_STREET_ADDRESS) {
       street_address_fields[field->section()].push_back(field.get());
     }

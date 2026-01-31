@@ -32,9 +32,12 @@ namespace device_event_log {
 
 namespace {
 
+// LINT.IfChange
 const auto kLogLevelName =
     std::to_array<const char*>({"Error", "User", "Event", "Debug"});
+// LINT.ThenChange(/chrome/browser/resources/device_log/browser_proxy.ts)
 
+// LINT.IfChange
 const char kLogTypeNetworkDesc[] = "Network";
 const char kLogTypePowerDesc[] = "Power";
 const char kLogTypeLoginDesc[] = "Login";
@@ -50,6 +53,7 @@ const char kLogTypeGeolocationDesc[] = "Geolocation";
 const char kLogTypeExtensionsDesc[] = "Extensions";
 const char kLogTypeDisplayDesc[] = "Display";
 const char kLogTypeFirmwareDesc[] = "Firmware";
+// LINT.ThenChange(/chrome/browser/resources/device_log/app.ts)
 
 enum class ShowTime {
   kNone,
@@ -162,9 +166,9 @@ std::string LogEntryToString(const DeviceEventLogImpl::LogEntry& log_entry,
   return line;
 }
 
-base::Value::Dict LogEntryToDictionary(
+base::DictValue LogEntryToDictionary(
     const DeviceEventLogImpl::LogEntry& log_entry) {
-  base::Value::Dict entry_dict;
+  base::DictValue entry_dict;
   entry_dict.Set("timestamp", DateAndTimeWithMicroseconds(log_entry.time));
   entry_dict.Set("timestampshort", TimeWithSeconds(log_entry.time));
   entry_dict.Set("level", kLogLevelName[log_entry.log_level]);
@@ -371,19 +375,25 @@ std::string DeviceEventLogImpl::GetAsString(StringOrder order,
                                             LogLevel max_level,
                                             size_t max_events) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  if (entries_.empty())
-    return "No Log Entries.";
 
   ShowTime show_time;
   bool show_file, show_type, show_level, format_json;
   GetFormat(format, &show_time, &show_file, &show_type, &show_level,
             &format_json);
 
+  if (entries_.empty()) {
+    if (format_json) {
+      return "[]";
+    } else {
+      return "No Log Entries.";
+    }
+  }
+
   std::set<LogType> include_types, exclude_types;
   GetLogTypes(types, &include_types, &exclude_types);
 
   std::string result;
-  base::Value::List log_entries;
+  base::ListValue log_entries;
   if (order == OLDEST_FIRST) {
     size_t offset = 0;
     if (max_events > 0 && max_events < entries_.size()) {

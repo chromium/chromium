@@ -23,6 +23,9 @@ static_assert(std::copyable<ElapsedTimer>);
 static_assert(std::movable<ElapsedThreadTimer>);
 static_assert(std::copyable<ElapsedThreadTimer>);
 
+static_assert(std::movable<ElapsedLiveTimer>);
+static_assert(std::copyable<ElapsedLiveTimer>);
+
 TEST(ElapsedTimerTest, Simple) {
   ElapsedTimer timer;
 
@@ -102,6 +105,28 @@ TEST_F(ElapsedThreadTimerTest, Mocked) {
   ScopedMockElapsedTimersForTest mock_elapsed_timer;
 
   ElapsedThreadTimer timer;
+  EXPECT_EQ(timer.Elapsed(), ScopedMockElapsedTimersForTest::kMockElapsedTime);
+
+  // Real-time doesn't matter.
+  PlatformThread::Sleep(kSleepDuration);
+  EXPECT_EQ(timer.Elapsed(), ScopedMockElapsedTimersForTest::kMockElapsedTime);
+}
+
+TEST(ElapsedLiveTimerTest, Simple) {
+  ElapsedLiveTimer timer;
+
+  PlatformThread::Sleep(kSleepDuration);
+  EXPECT_GE(timer.Elapsed(), kSleepDuration);
+
+  // Can call |Elapsed()| multiple times.
+  PlatformThread::Sleep(kSleepDuration);
+  EXPECT_GE(timer.Elapsed(), 2 * kSleepDuration);
+}
+
+TEST(ElapsedLiveTimerTest, Mocked) {
+  ScopedMockElapsedTimersForTest mock_elapsed_timer;
+
+  ElapsedLiveTimer timer;
   EXPECT_EQ(timer.Elapsed(), ScopedMockElapsedTimersForTest::kMockElapsedTime);
 
   // Real-time doesn't matter.

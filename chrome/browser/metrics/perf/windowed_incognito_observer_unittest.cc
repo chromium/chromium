@@ -29,15 +29,15 @@ class TestWindowedIncognitoMonitor : public WindowedIncognitoMonitor {
   using WindowedIncognitoMonitor::num_incognito_window_opened;
 
  private:
-  // BrowserListObserver implementation.
-  void OnBrowserAdded(Browser* browser) override {
+  // BrowserCollectionObserver implementation.
+  void OnBrowserCreated(BrowserWindowInterface* browser) override {
     num_on_browser_added_++;
-    WindowedIncognitoMonitor::OnBrowserAdded(browser);
+    WindowedIncognitoMonitor::OnBrowserCreated(browser);
   }
 
-  void OnBrowserRemoved(Browser* browser) override {
+  void OnBrowserClosed(BrowserWindowInterface* browser) override {
     num_on_browser_removed_++;
-    WindowedIncognitoMonitor::OnBrowserRemoved(browser);
+    WindowedIncognitoMonitor::OnBrowserClosed(browser);
   }
 
   int num_on_browser_added_ = 0;
@@ -103,7 +103,7 @@ class WindowedIncognitoMonitorTest : public testing::Test {
 
 size_t WindowedIncognitoMonitorTest::next_browser_id = 1;
 
-// Test that BrowserListObserver callbacks work as expected.
+// Test that BrowserCollectionObserver callbacks work as expected.
 TEST_F(WindowedIncognitoMonitorTest, CheckSetup) {
   // Open a normal window.
   size_t window1 = OpenBrowserWindow(false);

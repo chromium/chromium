@@ -53,14 +53,14 @@ export async function renderPromo(promo: Promo):
   const commandIds: Command[] = [];
 
   function createAnchor(target: Url) {
-    const commandIdMatch = /^command:(\d+)$/.exec(target.url);
-    if (!commandIdMatch && !target.url.startsWith('https://')) {
+    const commandIdMatch = /^command:(\d+)$/.exec(target);
+    if (!commandIdMatch && !target.startsWith('https://')) {
       return null;
     }
     const el = document.createElement('a');
     let commandId: Command|null = null;
     if (!commandIdMatch) {
-      el.href = target.url;
+      el.href = target;
     } else {
       assert(commandIdMatch[1]);
       commandId = +commandIdMatch[1];
@@ -98,7 +98,7 @@ export async function renderPromo(promo: Promo):
     let el;
     if (image) {
       el = new CrAutoImgElement();
-      el.autoSrc = image.imageUrl.url;
+      el.autoSrc = image.imageUrl;
       el.staticEncode = true;
       if (image.target) {
         const anchor = createAnchor(image.target);

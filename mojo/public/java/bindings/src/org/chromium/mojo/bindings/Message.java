@@ -51,7 +51,7 @@ public class Message {
     }
 
     /** Returns the message interpreted as a message for a mojo service. */
-    public ServiceMessage asServiceMessage() {
+    public ServiceMessage asServiceMessage() throws DeserializationException {
         if (mWithHeader == null) {
             mWithHeader = new ServiceMessage(this);
         }

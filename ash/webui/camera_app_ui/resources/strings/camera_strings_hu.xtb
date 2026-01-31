@@ -48,6 +48,7 @@
 <translation id="2761536921376153655">Szkennelés típusa</translation>
 <translation id="28682968802727151">Tükrözés előnézete</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> csatlakoztatva.</translation>
+<translation id="3063987824612038785">A Kamera összes fájlja el lesz mentve a Google Drive-ra</translation>
 <translation id="3067436040345934772">Pásztázás jobbra</translation>
 <translation id="3081586908890909590">Váltás videófelvételre</translation>
 <translation id="3091480460059548935">Szövegészlelés előnézetben</translation>
@@ -67,6 +68,7 @@
 <translation id="3642192109456033823">Videó feldolgozása…</translation>
 <translation id="3789724198583203151">Forgatás 90 fokkal az óramutató járásával ellentétesen</translation>
 <translation id="3810838688059735925">Videó</translation>
+<translation id="386366972082231038">A Kamera összes fájlja el lesz mentve a OneDrive-ra</translation>
 <translation id="4060608699153044055">Nem tud felvételt készíteni, mert az eszközön kevés a tárhely. A felvétel elindításához tárhelyet kell felszabadítania az eszközön.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Felvétel szüneteltetése</translation>
@@ -100,6 +102,7 @@
 <translation id="5634947914995388399">Párbeszédpanel kibontása és beolvasás leállítása</translation>
 <translation id="5662366948659129155"><ph name="COUNT" />. oldal beolvasása</translation>
 <translation id="5671277269877808209">Négyzet</translation>
+<translation id="5725797473946373607">Legközelebb ne jelenjen meg ez a párbeszédpanel</translation>
 <translation id="574392208103952083">Közepes</translation>
 <translation id="5746169159649715125">Mentés PDF-ként</translation>
 <translation id="5753488212459587150">Szakértői mód bekapcsolása</translation>
@@ -156,6 +159,7 @@ Ha visszajelzése a kép vagy a videó minőségével kapcsolatos, kérjük, mel
 <translation id="7983668134180549431">Szöveg észlelve.</translation>
 <translation id="8079255378695216066">Nem sikerült elindítani a felvételt</translation>
 <translation id="8120146556401698679">Pásztázás, döntés, nagyítás/kicsinyítés</translation>
+<translation id="8127459436205030819">Lehetséges, hogy a fájljai láthatók a rendszergazdája számára</translation>
 <translation id="8131740175452115882">Megerősítés</translation>
 <translation id="8145038249676204903">Váltás fotókészítésre</translation>
 <translation id="8167081290930651932">Mentés fotóként</translation>
@@ -165,6 +169,7 @@ Ha visszajelzése a kép vagy a videó minőségével kapcsolatos, kérjük, mel
 <translation id="8609951387004618906"><ph name="URL" /> megnyitása</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Némítsa el a mikrofont. A némítás be van kapcsolva.</translation>
+<translation id="8712637175834984815">Értem</translation>
 <translation id="8730621377337864115">Kész</translation>
 <translation id="8732462232047530626">Metaadatok előnézete</translation>
 <translation id="874854738381978209">Wi-Fi-hálózat észlelve.</translation>

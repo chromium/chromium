@@ -4,12 +4,14 @@
 
 #include "content/browser/preloading/prerender/prerender_host.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 
 #include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/run_loop.h"
@@ -58,6 +60,14 @@ namespace content {
 
 namespace {
 
+// Returns the map from PrerenderHostId to FrameTreeNodeId. Entries are added in
+// the PrerenderHost constructor and removed in the destructor.
+base::flat_map<PrerenderHostId, FrameTreeNodeId>& GetPrerenderHostIdMap() {
+  static base::NoDestructor<base::flat_map<PrerenderHostId, FrameTreeNodeId>>
+      g_prerender_host_id_map;
+  return *g_prerender_host_id_map;
+}
+
 // When enabled, the SiteInstance used to initialize a prerender frame tree is
 // associated with a SiteInfo derived from the prerendering URL, rather than an
 // empty SiteInfo. This ensures that RenderProcessHost selection for a prerender
@@ -91,10 +101,17 @@ namespace {
 // RenderProcessHost as the 1st SiteInstance is what makes it important to
 // carefully choose the RenderProcessHost for the 1st SiteInstance.
 BASE_FEATURE(kCreatePrerenderSiteInstanceWithURL,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_ANDROID)
+             // TODO(crbug.com/444530329): Fix incompatibility with the
+             // Android-only `kProcessReuseOnPrerenderCOOPSwap` feature.
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 
-base::OnceCallback<void(FrameTreeNodeId)>& GetHostCreationCallback() {
-  static base::NoDestructor<base::OnceCallback<void(FrameTreeNodeId)>>
+base::OnceCallback<void(PrerenderHostId)>& GetHostCreationCallback() {
+  static base::NoDestructor<base::OnceCallback<void(PrerenderHostId)>>
       host_creation_callback;
   return *host_creation_callback;
 }
@@ -221,6 +238,11 @@ bool PrerenderHost::PrerenderFrameTreeDelegate::
   return false;
 }
 
+PrerenderHostId
+PrerenderHost::PrerenderFrameTreeDelegate::GetPrerenderHostId() {
+  return prerender_host_->prerender_host_id();
+}
+
 void PrerenderHost::PrerenderFrameTreeDelegate::
     ActivateAndShowRepostFormWarningDialog() {
   // Not supported, cancel pending reload.
@@ -315,6 +337,16 @@ PrerenderHost& PrerenderHost::GetFromFrameTree(FrameTree* frame_tree) {
 }
 
 // static
+FrameTreeNodeId PrerenderHost::GetFrameTreeNodeIdForId(PrerenderHostId id) {
+  auto& map = GetPrerenderHostIdMap();
+  auto it = map.find(id);
+  if (it == map.end()) {
+    return FrameTreeNodeId();
+  }
+  return it->second;
+}
+
+// static
 bool PrerenderHost::AreHttpRequestHeadersCompatible(
     const std::string& potential_activation_headers_str,
 #if BUILDFLAG(IS_ANDROID)
@@ -405,7 +437,7 @@ bool PrerenderHost::AreHttpRequestHeadersCompatible(
 
 // static
 void PrerenderHost::SetHostCreationCallbackForTesting(
-    base::OnceCallback<void(FrameTreeNodeId host_id)> callback) {
+    base::OnceCallback<void(PrerenderHostId host_id)> callback) {
   GetHostCreationCallback() = std::move(callback);
 }
 
@@ -477,10 +509,11 @@ PrerenderHost::PrerenderHost(
   }
 
   frame_tree_node_id_ = GetFrameTree()->root()->frame_tree_node_id();
+  GetPrerenderHostIdMap()[prerender_host_id_] = frame_tree_node_id_;
 
   if (GetHostCreationCallback()) {
     CHECK_IS_TEST();
-    std::move(GetHostCreationCallback()).Run(frame_tree_node_id_);
+    std::move(GetHostCreationCallback()).Run(prerender_host_id_);
   }
 }
 
@@ -561,6 +594,7 @@ bool PrerenderHost::IsActivationHeaderMatch(
 }
 
 PrerenderHost::~PrerenderHost() {
+  GetPrerenderHostIdMap().erase(prerender_host_id_);
   if (!final_status_.has_value()) {
     RecordFailedFinalStatusImpl(
         PrerenderCancellationReason(PrerenderFinalStatus::kDestroyed));
@@ -601,6 +635,8 @@ bool PrerenderHost::StartPrerendering() {
   load_url_params.override_user_agent =
       web_contents_->GetDelegate()->ShouldOverrideUserAgentForPreloading(
           attributes_.prerendering_url);
+
+  load_url_params.is_form_submission = attributes_.form_submission;
 
   // TODO(https://crbug.com/1406149, https://crbug.com/1378921): Set
   // `override_user_agent` for Android. This field is determined on the Java
@@ -710,7 +746,7 @@ void PrerenderHost::ReadyToCommitNavigation(
         base::FeatureList::IsEnabled(
             blink::features::kPrerender2CrossOriginIframes);
     if (is_prerender_2_cross_origin_iframes_enabled &&
-        base::Contains(
+        std::ranges::contains(
             parsed_headers->supports_loading_mode,
             network::mojom::LoadingMode::kPrerenderCrossOriginFrames)) {
       allow_cross_origin_subframe_navigation_ = true;
@@ -807,8 +843,6 @@ std::unique_ptr<StoredPage> PrerenderHost::Activate(
   FrameTree& target_frame_tree = web_contents_->GetPrimaryFrameTree();
 
   // There should be no ongoing main-frame navigation during activation.
-  // TODO(crbug.com/40174232): Make sure sub-frame navigations are
-  // fine.
   CHECK(!GetFrameTree()->root()->HasNavigation());
 
   // Before the root's current_frame_host is cleared, collect the subframes of
@@ -1035,6 +1069,15 @@ bool PrerenderHost::AreInitialPrerenderNavigationParamsCompatibleWithNavigation(
     return false;
   }
 
+  // Compare CommitNavigationParams.
+  result = AreCommitNavigationParamsCompatibleWithNavigation(
+      navigation_request.commit_params());
+  if (result != ActivationNavigationParamsMatch::kOk) {
+    RecordPrerenderActivationNavigationParamsMatch(result,
+                                                   GetHistogramSuffix());
+    return false;
+  }
+
   RecordPrerenderActivationNavigationParamsMatch(
       ActivationNavigationParamsMatch::kOk, GetHistogramSuffix());
   return true;
@@ -1109,8 +1152,6 @@ PrerenderHost::AreBeginNavigationParamsCompatibleWithNavigation(
     return ActivationNavigationParamsMatch::kMixedContentContextType;
   }
 
-  // Initial prerender navigation cannot be a form submission.
-  CHECK(!begin_params_->is_form_submission);
   if (potential_activation.is_form_submission !=
       begin_params_->is_form_submission) {
     return ActivationNavigationParamsMatch::kIsFormSubmission;
@@ -1142,6 +1183,7 @@ PrerenderHost::AreBeginNavigationParamsCompatibleWithNavigation(
   switch (potential_activation.request_context_type) {
     case blink::mojom::RequestContextType::HYPERLINK:
     case blink::mojom::RequestContextType::LOCATION:
+    case blink::mojom::RequestContextType::FORM:
       break;
     default:
       return ActivationNavigationParamsMatch::kRequestContextType;
@@ -1287,6 +1329,31 @@ PrerenderHost::AreCommonNavigationParamsCompatibleWithNavigation(
   return ActivationNavigationParamsMatch::kOk;
 }
 
+// Kill switch.
+BASE_FEATURE(kPrerenderActivationCheckForCommitNavigationParams,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+PrerenderHost::ActivationNavigationParamsMatch
+PrerenderHost::AreCommitNavigationParamsCompatibleWithNavigation(
+    const blink::mojom::CommitNavigationParams& potential_activation) {
+  if (!base::FeatureList::IsEnabled(
+          kPrerenderActivationCheckForCommitNavigationParams)) {
+    return ActivationNavigationParamsMatch::kOk;
+  }
+
+  // A mitigation for DCHECK failures happening on Android Desktop. Tentatively
+  // allowing parameter discrepancies at this point for prerender triggered by
+  // speculation rules to narrow the mitigation scope. See crbug.com/40252581
+  // and crbug.com/461578988 for details.
+  if (!IsSpeculationRuleType(trigger_type()) &&
+      (potential_activation.is_overriding_user_agent !=
+       commit_params_is_overriding_user_agent_)) {
+    return ActivationNavigationParamsMatch::kIsOverridingUserAgent;
+  }
+
+  return ActivationNavigationParamsMatch::kOk;
+}
+
 RenderFrameHostImpl* PrerenderHost::GetPrerenderedMainFrameHost() {
   CHECK(GetFrameTree());
   CHECK(GetFrameTree()->root()->current_frame_host());
@@ -1323,10 +1390,6 @@ void PrerenderHost::RecordFailedFinalStatusImpl(
 void PrerenderHost::RecordActivation(NavigationRequest& navigation_request) {
   CHECK(!final_status_);
   final_status_ = PrerenderFinalStatus::kActivated;
-
-  // TODO(crbug.com/40215894): Replace
-  // `navigation_request.GetNextPageUkmSourceId()` with prerendered page's UKM
-  // source ID.
   ReportSuccessActivation(attributes_,
                           navigation_request.GetNextPageUkmSourceId());
 }
@@ -1356,6 +1419,8 @@ void PrerenderHost::SetInitialNavigation(NavigationRequest* navigation) {
   initial_navigation_id_ = navigation->GetNavigationId();
   begin_params_ = navigation->begin_params().Clone();
   common_params_ = navigation->common_params().Clone();
+  commit_params_is_overriding_user_agent_ =
+      navigation->commit_params().is_overriding_user_agent;
 
   // The prerendered page should be checked by the main world CSP. See also
   // relevant comments in AreCommonNavigationParamsCompatibleWithNavigation().
@@ -1586,7 +1651,7 @@ void PrerenderHost::Cancel(PrerenderFinalStatus status) {
   PrerenderHostRegistry* registry =
       host->delegate()->GetPrerenderHostRegistry();
   CHECK(registry);
-  registry->CancelHost(frame_tree_node_id_, status);
+  registry->CancelHost(prerender_host_id_, status);
 }
 
 void PrerenderHost::MaybeSetNoVarySearch(
@@ -1841,12 +1906,6 @@ void PrerenderHost::AddAdditionalRequestHeaders(
       !GetInitialNavigationId().has_value() && tags.has_value()) {
     headers.SetHeader(blink::kSecSpeculationTagsHeaderName,
                       tags->ConvertStringToHeaderString().value());
-  }
-}
-
-void PrerenderHost::NotifyReused() {
-  for (auto& observer : observers_) {
-    observer.OnHostReused();
   }
 }
 

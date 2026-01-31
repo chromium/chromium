@@ -36,11 +36,7 @@ bool ShouldShowSafariDataImportEntryPoint(PrefService* pref_service) {
   }
 
   // Safari export is not available on iOS versions earlier than 18.2.
-  if (@available(iOS 18.2, *)) {
-    if (!base::FeatureList::IsEnabled(kImportPasswordsFromSafari)) {
-      return false;
-    }
-  } else {
+  if (!@available(iOS 18.2, *)) {
     return false;
   }
 

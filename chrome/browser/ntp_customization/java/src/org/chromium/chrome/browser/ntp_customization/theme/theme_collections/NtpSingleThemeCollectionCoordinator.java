@@ -110,7 +110,7 @@ public class NtpSingleThemeCollectionCoordinator {
                 context.getResources()
                                 .getDimensionPixelSize(
                                         R.dimen
-                                                .ntp_customization_theme_collection_list_item_padding_horizontal)
+                                                .ntp_customization_theme_collection_list_item_margin_horizontal)
                         * 2;
 
         mNtpSingleThemeCollectionBottomSheetView =
@@ -302,13 +302,6 @@ public class NtpSingleThemeCollectionCoordinator {
                         // it's either displayed for the first time or if the previous theme
                         // collections bottom sheet was in a half state.
                         mBottomSheetDelegate.getBottomSheetController().expandSheet();
-                    }
-
-                    if (!mHasDisplayedBefore) {
-                        // After setting items, apply the current selection from the manager.
-                        mNtpThemeCollectionsAdapter.setSelection(
-                                mNtpThemeCollectionManager.getSelectedThemeCollectionId(),
-                                mNtpThemeCollectionManager.getSelectedThemeCollectionImageUrl());
                         mHasDisplayedBefore = true;
                     }
                 });
@@ -326,7 +319,7 @@ public class NtpSingleThemeCollectionCoordinator {
         // Temporarily detach the listener to prevent onCheckedChanged from being triggered
         // unnecessarily.
         mDailyRefreshSwitchButton.setOnCheckedChangeListener(null);
-        mDailyRefreshSwitchButton.setChecked(isChecked);
+        mDailyRefreshSwitchButton.setCheckedWithoutAnimation(isChecked);
         mDailyRefreshSwitchButton.setOnCheckedChangeListener(this::handleDailyRefreshClick);
     }
 

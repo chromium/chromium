@@ -8,6 +8,8 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#include "extensions/browser/management_policy.h"
 #include "extensions/browser/preload_check.h"
 
 namespace content {
@@ -35,8 +37,14 @@ class PolicyCheck : public PreloadCheck {
   std::u16string GetErrorMessage() const override;
 
  private:
+  // Called when the ManagementPolicy::UserMayInstall check is complete.
+  void OnUserMayInstallDone(ResultCallback callback,
+                            ManagementPolicy::Decision decision);
+
   raw_ptr<content::BrowserContext, AcrossTasksDanglingUntriaged> context_;
   std::u16string error_;
+
+  base::WeakPtrFactory<PolicyCheck> weak_ptr_factory_{this};
 };
 
 }  // namespace extensions

@@ -42,9 +42,6 @@ class FaviconLoader : public KeyedService {
   //      or equivalent checks.
   //      ======================================================================
   //   3. Create a favicon base on the fallback style from `large_icon_service`.
-  // TODO(crbug.com/40266381): Remove the `fallback_to_google_server` param, and
-  // instead have FaviconLoader determine this internally, based on
-  // `CanSendHistoryData()`.
   virtual void FaviconForPageUrl(
       const GURL& page_url,
       float size_in_points,

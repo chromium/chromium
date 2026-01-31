@@ -4,8 +4,6 @@
 
 import("//chrome/common/features.gni")
 
-assert(!is_android)
-
 source_set("actor") {
   sources = [
     "click_dispatcher.cc",
@@ -57,18 +55,20 @@ source_set("actor") {
   ]
 }
 
-source_set("browser_tests") {
-  testonly = true
-  sources = [
-    "paint_stability_monitor_browsertest.cc",
-    "tool_utils_browsertest.cc",
-  ]
-  deps = [
-    ":actor",
-    "//base/test:test_support",
-    "//chrome/test:test_support",
-    "//chrome/test:test_support_ui",
-    "//content/test:test_support",
-    "//testing/gtest",
-  ]
+if (!skip_android_unmigrated_actor_files) {
+  source_set("browser_tests") {
+    testonly = true
+    sources = [
+      "paint_stability_monitor_browsertest.cc",
+      "tool_utils_browsertest.cc",
+    ]
+    deps = [
+      ":actor",
+      "//base/test:test_support",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//content/test:test_support",
+      "//testing/gtest",
+    ]
+  }
 }

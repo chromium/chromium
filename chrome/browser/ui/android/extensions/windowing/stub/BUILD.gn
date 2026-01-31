@@ -14,6 +14,7 @@ android_library("java") {
   sources = [ "java/src/org/chromium/chrome/browser/ui/extensions/windowing/ExtensionWindowControllerBridgeFactory.java" ]
   deps = [
     "//build/android:build_java",
+    "//chrome/browser/profiles/android:java",
     "//chrome/browser/ui/android/extensions/windowing:java",
     "//chrome/browser/ui/browser_window/public/android:java",
   ]

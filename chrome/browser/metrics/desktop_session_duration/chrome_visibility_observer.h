@@ -6,12 +6,15 @@
 #define CHROME_BROWSER_METRICS_DESKTOP_SESSION_DURATION_CHROME_VISIBILITY_OBSERVER_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
+
+class GlobalBrowserCollection;
 
 namespace metrics {
 // Observer for tracking browser visibility events.
-class ChromeVisibilityObserver : public BrowserListObserver {
+class ChromeVisibilityObserver : public BrowserCollectionObserver {
  public:
   ChromeVisibilityObserver();
 
@@ -21,7 +24,7 @@ class ChromeVisibilityObserver : public BrowserListObserver {
   ~ChromeVisibilityObserver() override;
 
  private:
-  friend class ChromeVisibilityObserverInteractiveTest;
+  friend class ChromeVisibilityObserverInteractiveTestImpl;
 
   // Notifies |DesktopSessionDurationTracker| of visibility changes. Overridden
   // by tests.
@@ -31,10 +34,10 @@ class ChromeVisibilityObserver : public BrowserListObserver {
   // short gap.
   void CancelVisibilityChange();
 
-  // BrowserListObserver:
-  void OnBrowserSetLastActive(Browser* browser) override;
-  void OnBrowserNoLongerActive(Browser* browser) override;
-  void OnBrowserRemoved(Browser* browser) override;
+  // BrowserCollectionObserver:
+  void OnBrowserActivated(BrowserWindowInterface* browser) override;
+  void OnBrowserDeactivated(BrowserWindowInterface* browser) override;
+  void OnBrowserClosed(BrowserWindowInterface* browser) override;
 
   // Sets |visibility_gap_timeout_| based on variation params.
   void InitVisibilityGapTimeout();
@@ -45,6 +48,9 @@ class ChromeVisibilityObserver : public BrowserListObserver {
   // two visibility session if they happened very shortly after each other, for
   // example, when user switching between two browser windows.
   base::TimeDelta visibility_gap_timeout_;
+
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
 
   base::WeakPtrFactory<ChromeVisibilityObserver> weak_factory_{this};
 };

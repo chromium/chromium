@@ -83,8 +83,8 @@ class GbmSurfaceFactory : public SurfaceFactoryOzone {
   void SetDrmModifiersFilter(
       std::unique_ptr<DrmModifiersFilter> filter) override;
 
-  std::vector<gfx::BufferFormat> GetSupportedFormatsForTexturing()
-      const override;
+  bool IsFormatSupportedForTexturing(
+      viz::SharedImageFormat format) const override;
 
  private:
   scoped_refptr<gfx::NativePixmap> CreateNativePixmapFromHandleInternal(

@@ -19,6 +19,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "components/unexportable_keys/background_task_origin.h"
 #include "components/unexportable_keys/mock_unexportable_key_service.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
 #include "components/unexportable_keys/unexportable_key_service_impl.h"
@@ -99,6 +100,9 @@ constexpr unexportable_keys::BackgroundTaskPriority kTaskPriority =
 constexpr char kSessionChallengeHeaderName[] = "Secure-Session-Challenge";
 constexpr char kSessionResponseHeaderName[] = "Secure-Session-Response";
 constexpr char kSessionIdHeaderName[] = "Sec-Secure-Session-Id";
+
+constexpr unexportable_keys::BackgroundTaskOrigin kTaskOrigin =
+    unexportable_keys::BackgroundTaskOrigin::kDeviceBoundSessionCredentials;
 
 std::vector<crypto::SignatureVerifier::SignatureAlgorithm> CreateAlgArray() {
   return {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
@@ -193,7 +197,8 @@ class RegistrationTest : public TestWithTaskEnvironment {
     }
 
     return RegistrationRequestParam::CreateForTesting(
-        *url, /*session_identifier=*/std::nullopt, std::string(kChallenge));
+        *url, /*session_identifier=*/std::nullopt, std::string(kChallenge),
+        /*authorization=*/std::nullopt);
   }
 
   unexportable_keys::UnexportableKeyId CreateKey() {
@@ -240,7 +245,7 @@ class RegistrationTest : public TestWithTaskEnvironment {
   const url::Origin kOrigin = url::Origin::Create(GURL("https://origin/"));
   unexportable_keys::UnexportableKeyTaskManager task_manager_;
   unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_{
-      task_manager_, crypto::UnexportableKeyProvider::Config()};
+      task_manager_, kTaskOrigin, crypto::UnexportableKeyProvider::Config()};
   SessionServiceMock session_service_;
   scoped_refptr<net::RuleBasedHostResolverProc> host_resolver_;
 };
@@ -422,7 +427,7 @@ std::optional<std::string> GetRequestChallenge(
                              &payload)) {
     return std::nullopt;
   }
-  const std::optional<base::Value::Dict> payload_json =
+  const std::optional<base::DictValue> payload_json =
       base::JSONReader::ReadDict(payload, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!payload_json.has_value()) {
     return std::nullopt;
@@ -1315,7 +1320,8 @@ TEST_F(RegistrationTest, ServerErrorReturnOne403ThenSuccess) {
   TestRegistrationCallback callback;
 
   auto param = RegistrationRequestParam::CreateForTesting(
-      GetBaseURL(), kSessionIdentifier, std::string(kChallenge));
+      GetBaseURL(), kSessionIdentifier, std::string(kChallenge),
+      /*authorization=*/std::nullopt);
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
           param, session_service(), unexportable_key_service(), context_.get(),
@@ -1457,7 +1463,8 @@ TEST_F(RegistrationTest, BasicSuccessForExistingKey) {
 
   auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
   auto request_param = RegistrationRequestParam::CreateForTesting(
-      GetBaseURL(), kSessionIdentifier, kChallenge);
+      GetBaseURL(), kSessionIdentifier, kChallenge,
+      /*authorization=*/std::nullopt);
   unexportable_keys::UnexportableKeyId key = CreateKey();
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
@@ -1497,7 +1504,8 @@ TEST_F(RegistrationTest, FetchRegistrationWithCachedChallenge) {
   TestRegistrationCallback callback;
 
   auto request_param = RegistrationRequestParam::CreateForTesting(
-      GetBaseURL(), kSessionIdentifier, kChallenge);
+      GetBaseURL(), kSessionIdentifier, kChallenge,
+      /*authorization=*/std::nullopt);
   auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
   unexportable_keys::UnexportableKeyId key = CreateKey();
   std::unique_ptr<RegistrationFetcher> fetcher =
@@ -1534,7 +1542,8 @@ TEST_F(RegistrationTest, FetchRegistrationAndChallengeRequired) {
   TestRegistrationCallback callback;
 
   auto request_param = RegistrationRequestParam::CreateForTesting(
-      GetBaseURL(), /*session_identifier=*/std::nullopt, kChallenge);
+      GetBaseURL(), /*session_identifier=*/std::nullopt, kChallenge,
+      /*authorization=*/std::nullopt);
   auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
   unexportable_keys::UnexportableKeyId key = CreateKey();
   std::unique_ptr<RegistrationFetcher> fetcher =
@@ -1566,7 +1575,8 @@ TEST_F(RegistrationTest, FetchRefreshAndChallengeRequired_NoChallenge) {
   TestRegistrationCallback callback;
 
   auto request_param = RegistrationRequestParam::CreateForTesting(
-      GetBaseURL(), "session_identifier", kChallenge);
+      GetBaseURL(), "session_identifier", kChallenge,
+      /*authorization=*/std::nullopt);
   auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
   unexportable_keys::UnexportableKeyId key = CreateKey();
   std::unique_ptr<RegistrationFetcher> fetcher =
@@ -1744,7 +1754,8 @@ TEST_F(RegistrationTest, TerminateSessionOnRepeatedFailure_Refresh) {
 
   auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
   auto request_param = RegistrationRequestParam::CreateForTesting(
-      GetBaseURL(), kSessionIdentifier, kChallenge);
+      GetBaseURL(), kSessionIdentifier, kChallenge,
+      /*authorization=*/std::nullopt);
   unexportable_keys::UnexportableKeyId key = CreateKey();
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
@@ -1785,7 +1796,8 @@ TEST_F(RegistrationTest, TerminateSessionOnRepeatedFailure_Registration) {
 
   auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
   auto request_param = RegistrationRequestParam::CreateForTesting(
-      GetBaseURL(), /*session_identifier=*/std::nullopt, kChallenge);
+      GetBaseURL(), /*session_identifier=*/std::nullopt, kChallenge,
+      /*authorization=*/std::nullopt);
   unexportable_keys::UnexportableKeyId key = CreateKey();
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
@@ -1836,7 +1848,8 @@ TEST_F(RegistrationTest, NetLogRefreshResultLogged) {
   TestRegistrationCallback callback;
   auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
   auto request_param = RegistrationRequestParam::CreateForTesting(
-      GetBaseURL(), kSessionIdentifier, kChallenge);
+      GetBaseURL(), kSessionIdentifier, kChallenge,
+      /*authorization=*/std::nullopt);
   unexportable_keys::UnexportableKeyId key = CreateKey();
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
@@ -1875,7 +1888,8 @@ TEST_F(RegistrationTest, TerminateSessionOnRepeatedChallenge) {
 
   auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
   auto request_param = RegistrationRequestParam::CreateForTesting(
-      GetBaseURL(), kSessionIdentifier, kChallenge);
+      GetBaseURL(), kSessionIdentifier, kChallenge,
+      /*authorization=*/std::nullopt);
   unexportable_keys::UnexportableKeyId key = CreateKey();
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
@@ -1929,7 +1943,8 @@ TEST_F(RegistrationTest, RefreshCachesSignedChallenge) {
 
   auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
   auto request_param = RegistrationRequestParam::CreateForTesting(
-      GetBaseURL(), kSessionIdentifier, kChallenge);
+      GetBaseURL(), kSessionIdentifier, kChallenge,
+      /*authorization=*/std::nullopt);
   unexportable_keys::UnexportableKeyId key =
       unexportable_keys::UnexportableKeyId();
   std::unique_ptr<RegistrationFetcher> fetcher =
@@ -1977,7 +1992,8 @@ TEST_F(RegistrationTest, RefreshCachedSignedChallengeUsed) {
 
   auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
   auto request_param = RegistrationRequestParam::CreateForTesting(
-      GetBaseURL(), kSessionIdentifier, kChallenge);
+      GetBaseURL(), kSessionIdentifier, kChallenge,
+      /*authorization=*/std::nullopt);
   unexportable_keys::UnexportableKeyId key = cached_challenge.key_id;
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
@@ -2032,7 +2048,8 @@ TEST_F(RegistrationTest, RefreshCachedSignedChallengeDoesNotMatch) {
 
   auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
   auto request_param = RegistrationRequestParam::CreateForTesting(
-      GetBaseURL(), kSessionIdentifier, kChallenge);
+      GetBaseURL(), kSessionIdentifier, kChallenge,
+      /*authorization=*/std::nullopt);
   unexportable_keys::UnexportableKeyId key =
       unexportable_keys::UnexportableKeyId();
   std::unique_ptr<RegistrationFetcher> fetcher =
@@ -2094,7 +2111,8 @@ TEST_F(RegistrationTest, RefreshWithNewSessionIdFails) {
 
   auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
   auto request_param = RegistrationRequestParam::CreateForTesting(
-      GetBaseURL(), "old_session_id", kChallenge);
+      GetBaseURL(), "old_session_id", kChallenge,
+      /*authorization=*/std::nullopt);
   unexportable_keys::UnexportableKeyId key = CreateKey();
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
@@ -2144,7 +2162,8 @@ TEST_F(RegistrationTest, RegistrationWithNonStringRefreshInitiatorsFails) {
 
   auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
   auto request_param = RegistrationRequestParam::CreateForTesting(
-      GetBaseURL(), kSessionIdentifier, kChallenge);
+      GetBaseURL(), kSessionIdentifier, kChallenge,
+      /*authorization=*/std::nullopt);
   unexportable_keys::UnexportableKeyId key = CreateKey();
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
@@ -2278,7 +2297,8 @@ TEST_F(RegistrationTest, EmptyResponseOnRefresh) {
   TestRegistrationCallback callback;
 
   auto request_param = RegistrationRequestParam::CreateForTesting(
-      GetBaseURL(), kSessionIdentifier, kChallenge);
+      GetBaseURL(), kSessionIdentifier, kChallenge,
+      /*authorization=*/std::nullopt);
   unexportable_keys::UnexportableKeyId key = CreateKey();
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
@@ -2560,7 +2580,8 @@ TEST_F(RegistrationTest, FederatedSuccess) {
 
   unexportable_keys::UnexportableKeyId key = CreateKey();
   auto param = RegistrationRequestParam::CreateForTesting(
-      server_.GetURL("rp.a.test", "/"), kSessionIdentifier, kChallenge);
+      server_.GetURL("rp.a.test", "/"), kSessionIdentifier, kChallenge,
+      /*authorization=*/std::nullopt);
   auto session_or_error =
       FetchWithFederatedKey(param, key, server_.GetURL("provider.a.test", "/"));
   EXPECT_EQ(session_or_error.SessionForTesting().unexportable_key_id(), key);
@@ -2589,7 +2610,8 @@ TEST_F(RegistrationTest, FederatedProviderHasProvider) {
 
   unexportable_keys::UnexportableKeyId key = CreateKey();
   auto param = RegistrationRequestParam::CreateForTesting(
-      server_.GetURL("rp.a.test", "/"), kSessionIdentifier, kChallenge);
+      server_.GetURL("rp.a.test", "/"), kSessionIdentifier, kChallenge,
+      /*authorization=*/std::nullopt);
   auto session_or_error =
       FetchWithFederatedKey(param, key, server_.GetURL("provider.a.test", "/"));
 
@@ -2616,7 +2638,8 @@ TEST_F(RegistrationTest, FederatedProviderUnvailable) {
 
   unexportable_keys::UnexportableKeyId key = CreateKey();
   auto param = RegistrationRequestParam::CreateForTesting(
-      server_.GetURL("rp.a.test", "/"), kSessionIdentifier, kChallenge);
+      server_.GetURL("rp.a.test", "/"), kSessionIdentifier, kChallenge,
+      /*authorization=*/std::nullopt);
   auto session_or_error =
       FetchWithFederatedKey(param, key, server_.GetURL("provider.a.test", "/"));
 
@@ -2646,7 +2669,8 @@ TEST_F(RegistrationTest, FederatedProviderUnauthorized) {
 
   unexportable_keys::UnexportableKeyId key = CreateKey();
   auto param = RegistrationRequestParam::CreateForTesting(
-      server_.GetURL("rp.a.test", "/"), kSessionIdentifier, kChallenge);
+      server_.GetURL("rp.a.test", "/"), kSessionIdentifier, kChallenge,
+      /*authorization=*/std::nullopt);
   auto session_or_error =
       FetchWithFederatedKey(param, key, server_.GetURL("provider.a.test", "/"));
 
@@ -2673,7 +2697,8 @@ TEST_F(RegistrationTest, FederatedRelyingUnavailable) {
 
   unexportable_keys::UnexportableKeyId key = CreateKey();
   auto param = RegistrationRequestParam::CreateForTesting(
-      server_.GetURL("rp.a.test", "/"), kSessionIdentifier, kChallenge);
+      server_.GetURL("rp.a.test", "/"), kSessionIdentifier, kChallenge,
+      /*authorization=*/std::nullopt);
   auto session_or_error =
       FetchWithFederatedKey(param, key, server_.GetURL("provider.a.test", "/"));
 
@@ -2704,7 +2729,8 @@ TEST_F(RegistrationTest, FederatedRelyingHasRelying) {
 
   unexportable_keys::UnexportableKeyId key = CreateKey();
   auto param = RegistrationRequestParam::CreateForTesting(
-      server_.GetURL("rp.a.test", "/"), kSessionIdentifier, kChallenge);
+      server_.GetURL("rp.a.test", "/"), kSessionIdentifier, kChallenge,
+      /*authorization=*/std::nullopt);
   auto session_or_error =
       FetchWithFederatedKey(param, key, server_.GetURL("provider.a.test", "/"));
 
@@ -2734,7 +2760,8 @@ TEST_F(RegistrationTest, FederatedRelyingNotAuthorized) {
 
   unexportable_keys::UnexportableKeyId key = CreateKey();
   auto param = RegistrationRequestParam::CreateForTesting(
-      server_.GetURL("rp.a.test", "/"), kSessionIdentifier, kChallenge);
+      server_.GetURL("rp.a.test", "/"), kSessionIdentifier, kChallenge,
+      /*authorization=*/std::nullopt);
   auto session_or_error =
       FetchWithFederatedKey(param, key, server_.GetURL("provider.a.test", "/"));
 
@@ -2771,7 +2798,8 @@ TEST_F(RegistrationTest, FederatedTooManyRelying) {
 
   unexportable_keys::UnexportableKeyId key = CreateKey();
   auto param = RegistrationRequestParam::CreateForTesting(
-      server_.GetURL("rp.a.test", "/"), kSessionIdentifier, kChallenge);
+      server_.GetURL("rp.a.test", "/"), kSessionIdentifier, kChallenge,
+      /*authorization=*/std::nullopt);
   auto session_or_error =
       FetchWithFederatedKey(param, key, server_.GetURL("provider.a.test", "/"));
   EXPECT_EQ(session_or_error.SessionErrorForTesting().type,
@@ -2808,7 +2836,8 @@ TEST_F(RegistrationTest, FederatedTooManyRelyingFirstLabelAllowed) {
 
   unexportable_keys::UnexportableKeyId key = CreateKey();
   auto param = RegistrationRequestParam::CreateForTesting(
-      server_.GetURL("rp.a.test", "/"), kSessionIdentifier, kChallenge);
+      server_.GetURL("rp.a.test", "/"), kSessionIdentifier, kChallenge,
+      /*authorization=*/std::nullopt);
   auto session_or_error =
       FetchWithFederatedKey(param, key, server_.GetURL("provider.a.test", "/"));
   EXPECT_EQ(session_or_error.SessionForTesting().unexportable_key_id(), key);
@@ -2843,7 +2872,8 @@ TEST_F(RegistrationTest, FederatedNotRegistrableDoesNotCount) {
 
   unexportable_keys::UnexportableKeyId key = CreateKey();
   auto param = RegistrationRequestParam::CreateForTesting(
-      server_.GetURL("rp.a.test", "/"), kSessionIdentifier, kChallenge);
+      server_.GetURL("rp.a.test", "/"), kSessionIdentifier, kChallenge,
+      /*authorization=*/std::nullopt);
   auto session_or_error =
       FetchWithFederatedKey(param, key, server_.GetURL("provider.a.test", "/"));
   EXPECT_EQ(session_or_error.SessionForTesting().unexportable_key_id(), key);
@@ -2879,6 +2909,33 @@ TEST_F(RegistrationTest, RegistrationFailsIfCantSetCookies) {
             SessionError::kBoundCookieSetForbidden);
 }
 
+TEST_F(RegistrationTest, RegisterAuthorizationNoChallenge) {
+  base::HistogramTester histogram_tester;
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
+  server_.RegisterRequestHandler(
+      base::BindRepeating(&ReturnResponse, HTTP_OK, kBasicValidJson));
+  ASSERT_TRUE(server_.Start());
+
+  RecordingNetLogObserver net_log_observer;
+  TestRegistrationCallback callback;
+
+  auto param = RegistrationRequestParam::CreateForTesting(
+      GetBaseURL(), /*session_identifier=*/std::nullopt,
+      /*challenge=*/std::nullopt, "authorization");
+  std::unique_ptr<RegistrationFetcher> fetcher =
+      RegistrationFetcher::CreateFetcher(
+          param, session_service(), unexportable_key_service(), context_.get(),
+          IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          /*net_log_source=*/std::nullopt,
+          /*original_request_initiator=*/std::nullopt);
+  fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
+                                    callback.callback());
+  callback.WaitForCall();
+
+  // Validate the result is a session instead of an error.
+  callback.outcome().SessionForTesting();
+}
+
 class RegistrationTokenHelperTest : public testing::Test {
  public:
   unexportable_keys::UnexportableKeyService& unexportable_key_service() {
@@ -2893,7 +2950,7 @@ class RegistrationTokenHelperTest : public testing::Test {
       base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED};
   unexportable_keys::UnexportableKeyTaskManager task_manager_;
   unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_{
-      task_manager_, crypto::UnexportableKeyProvider::Config()};
+      task_manager_, kTaskOrigin, crypto::UnexportableKeyProvider::Config()};
 };
 
 TEST_F(RegistrationTokenHelperTest, CreateSuccess) {

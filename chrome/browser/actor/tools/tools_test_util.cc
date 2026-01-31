@@ -75,6 +75,7 @@ void MockActorLoginService::AttemptLogin(
     const actor_login::Credential& credential,
     bool should_store_permission,
     base::WeakPtr<actor_login::ActorLoginQualityLoggerInterface> mqls_logger,
+    base::TimeTicks attempt_login_tool_start_time,
     actor_login::LoginStatusResultOrErrorReply callback) {
   last_credential_used_ = credential;
   last_permission_was_permanent_ = should_store_permission;
@@ -105,9 +106,13 @@ bool MockActorLoginService::last_permission_was_permanent() const {
 }
 
 ActorToolsTest::ActorToolsTest() {
-  scoped_feature_list_.InitWithFeatures(
-      /*enabled_features=*/{features::kGlic, features::kTabstripComboButton,
-                            features::kGlicActor},
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {
+          {features::kGlic, {}},
+          {features::kGlicActor,
+           {{features::kGlicActorPolicyControlExemption.name, "true"}}},
+      },
       /*disabled_features=*/{features::kGlicWarming, kGlicActionAllowlist});
 }
 
@@ -117,9 +122,6 @@ void ActorToolsTest::SetUpOnMainThread() {
   InProcessBrowserTest::SetUpOnMainThread();
   host_resolver()->AddRule("*", "127.0.0.1");
 
-  auto* actor_service = ActorKeyedService::Get(browser()->profile());
-  actor_service->GetPolicyChecker().SetActOnWebForTesting(
-      ShouldForceActOnWeb());
   task_id_ = CreateNewTask();
 
   // Optimization guide uses this histogram to signal initialization in tests.
@@ -190,17 +192,14 @@ std::unique_ptr<ExecutionEngine> ActorToolsTest::CreateExecutionEngine(
   return std::make_unique<ExecutionEngine>(profile);
 }
 
-bool ActorToolsTest::ShouldForceActOnWeb() {
-  return true;
-}
-
 TaskId ActorToolsTest::CreateNewTask() {
   auto execution_engine = CreateExecutionEngine(browser()->profile());
   auto event_dispatcher = ui::NewUiEventDispatcher(
       ActorKeyedService::Get(browser()->profile())->GetActorUiStateManager());
   auto actor_task = std::make_unique<ActorTask>(browser()->profile(),
                                                 std::move(execution_engine),
-                                                std::move(event_dispatcher));
+                                                std::move(event_dispatcher),
+                                                /*options=*/nullptr);
   return ActorKeyedService::Get(browser()->profile())
       ->AddActiveTask(std::move(actor_task));
 }
@@ -255,17 +254,6 @@ gfx::RectF GetBoundingClientRect(content::RenderFrameHost& rfh,
           .ExtractDouble();
 
   return gfx::RectF(x, y, width, height);
-}
-
-std::string DescribePaintStabilityMode(features::ActorPaintStabilityMode mode) {
-  switch (mode) {
-    case features::ActorPaintStabilityMode::kDisabled:
-      return "Disabled";
-    case features::ActorPaintStabilityMode::kLogOnly:
-      return "LogOnly";
-    case features::ActorPaintStabilityMode::kEnabled:
-      return "Enabled";
-  }
 }
 
 }  // namespace actor

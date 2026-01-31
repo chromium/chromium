@@ -31,7 +31,7 @@ base::FilePath IwaStorageOwnedBundle::GetPath(
 }
 
 base::Value IwaStorageOwnedBundle::ToDebugValue() const {
-  return base::Value(base::Value::Dict()
+  return base::Value(base::DictValue()
                          .Set("dir_name_ascii", dir_name_ascii_)
                          .Set("dev_mode", dev_mode_));
 }
@@ -49,7 +49,7 @@ bool IwaStorageUnownedBundle::operator==(
 
 base::Value IwaStorageUnownedBundle::ToDebugValue() const {
   return base::Value(
-      base::Value::Dict().Set("path", base::FilePathToValue(path_)));
+      base::DictValue().Set("path", base::FilePathToValue(path_)));
 }
 
 std::ostream& operator<<(std::ostream& os, IwaStorageUnownedBundle location) {
@@ -64,7 +64,7 @@ bool IwaStorageProxy::operator==(const IwaStorageProxy& other) const = default;
 
 base::Value IwaStorageProxy::ToDebugValue() const {
   return base::Value(
-      base::Value::Dict().Set("proxy_url", proxy_url_.GetDebugString()));
+      base::DictValue().Set("proxy_url", proxy_url_.GetDebugString()));
 }
 
 std::ostream& operator<<(std::ostream& os, IwaStorageProxy location) {
@@ -88,7 +88,7 @@ bool IsolatedWebAppStorageLocation::dev_mode() const {
 }
 
 base::Value IsolatedWebAppStorageLocation::ToDebugValue() const {
-  base::Value::Dict value;
+  base::DictValue value;
   std::visit(absl::Overload{
                  [&value](const OwnedBundle& bundle) {
                    value.Set("owned_bundle", bundle.ToDebugValue());

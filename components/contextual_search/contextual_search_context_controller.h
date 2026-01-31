@@ -10,11 +10,13 @@
 #include <optional>
 #include <string>
 
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/observer_list_types.h"
 #include "components/contextual_search/contextual_search_types.h"
 #include "components/lens/lens_bitmap_processing.h"
+#include "components/lens/lens_overlay_invocation_source.h"
 #include "third_party/lens_server_proto/aim_communication.pb.h"
+#include "third_party/lens_server_proto/aim_query.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_client_context.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_cluster_info.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_selection_type.pb.h"
@@ -45,6 +47,8 @@ namespace contextual_search {
 class ContextualSearchContextController {
  public:
   // Struct containing configuration params for the context controller.
+  // Note: When the ContextualTasks feature is enabled, some of these parameters
+  // are overridden by the ComposeboxQueryController.
   struct ConfigParams {
    public:
     // Whether to send the `lns_surface` parameter in search URLs.
@@ -66,9 +70,6 @@ class ContextualSearchContextController {
     // attachments are available (true), or the only attachment if exactly one
     // attachment is available (false).
     bool prioritize_suggestions_for_the_first_attached_document = false;
-    // Whether or not to support the context_id migration on the server, for
-    // the multi-context input flow.
-    bool enable_context_id_migration = false;
     // Whether or not to attach the page title and url directly to the suggest
     // request params.
     bool attach_page_title_and_url_to_suggest_requests = false;
@@ -123,6 +124,9 @@ class ContextualSearchContextController {
     // The selection type corresponding to the interaction.
     std::optional<lens::LensOverlaySelectionType> lens_overlay_selection_type;
 
+    // The invocation source of the interaction.
+    std::optional<lens::LensOverlayInvocationSource> invocation_source;
+
     // The image crop corresponding to the interaction. This should only be set
     // if the selection type is set for an interaction.
     // TODO(crbug.com/462509452): Consider passing a OnceCallback that returns
@@ -132,6 +136,10 @@ class ContextualSearchContextController {
     // The client logs corresponding to the interaction. This should only be set
     // if the selection type is set for an interaction.
     std::optional<lens::LensOverlayClientLogs> client_logs;
+
+    // The callback to run when the interaction response is received.
+    base::OnceCallback<void(lens::LensOverlayInteractionResponse)>
+        interaction_response_callback;
   };
 
   // Struct containing information needed to create a ClientToAimMessage.
@@ -159,6 +167,13 @@ class ContextualSearchContextController {
 
     // Whether create images is selected.
     bool create_images_selected = false;
+
+    // Additional CGI params to append to the search request URL.
+    std::map<std::string, std::string> additional_cgi_params;
+
+    // Metadata for context that is turn-specific. There is at most one entry
+    // per context id.
+    std::vector<lens::ContextTurnMetadata> context_turn_metadata;
   };
 
   virtual ~ContextualSearchContextController() = default;
@@ -203,6 +218,9 @@ class ContextualSearchContextController {
 
   // Return the file infos for all files in the request.
   virtual std::vector<const FileInfo*> GetFileInfoList() = 0;
+
+  // Returns a weak pointer to the context controller.
+  virtual base::WeakPtr<ContextualSearchContextController> AsWeakPtr() = 0;
 };
 
 }  // namespace contextual_search

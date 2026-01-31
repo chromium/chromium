@@ -9,6 +9,7 @@
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/ozone/platform/wayland/host/wayland_seat.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"

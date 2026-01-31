@@ -16,21 +16,19 @@
 #include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/ash/lobster/lobster_candidate_id_generator.h"
 #include "chrome/browser/ash/lobster/lobster_image_fetcher.h"
 #include "chrome/browser/ash/lobster/lobster_image_provider_from_memory.h"
 #include "chrome/browser/ash/lobster/lobster_image_provider_from_snapper.h"
 #include "chrome/browser/ash/lobster/lobster_system_state_provider.h"
 #include "chrome/browser/ash/lobster/lobster_system_state_provider_impl.h"
-#include "chrome/browser/ash/magic_boost/magic_boost_controller_ash.h"
+#include "chrome/browser/ash/magic_boost/magic_boost_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_consent_status.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
-#include "chromeos/crosapi/mojom/magic_boost.mojom.h"
 #include "components/manta/snapper_provider.h"
 #include "ui/display/screen.h"
 
@@ -76,7 +74,7 @@ LobsterService::LobsterService(
                       chromeos::editor_menu::EditorConsentStatus::kDeclined) {
                 pref_service->SetInteger(
                     ash::prefs::kOrcaConsentStatus,
-                    base::to_underlying(
+                    std::to_underlying(
                         chromeos::editor_menu::EditorConsentStatus::kUnset));
               }
             },
@@ -119,13 +117,10 @@ void LobsterService::QueueInsertion(const std::string& image_bytes,
 
 void LobsterService::ShowDisclaimerUI() {
   if (chromeos::MagicBoostState::Get()->IsUserEligibleForGenAIFeatures()) {
-    ash::MagicBoostControllerAsh::Get()->ShowDisclaimerUi(
-        /*display_id=*/display::Screen::Get()->GetPrimaryDisplay().id(),
-        /*action=*/
-        crosapi::mojom::MagicBoostController::TransitionAction::
-            kShowLobsterPanel,
-        /*opt_in_features=*/
-        crosapi::mojom::MagicBoostController::OptInFeatures::kOrcaAndHmr);
+    ash::MagicBoostController::Get()->ShowDisclaimerUi(
+        display::Screen::Get()->GetPrimaryDisplay().id(),
+        ash::magic_boost::TransitionAction::kShowLobsterPanel,
+        ash::magic_boost::OptInFeatures::kOrcaAndHmr);
   }
 }
 
@@ -137,8 +132,8 @@ void LobsterService::LoadUI(std::optional<std::string> query,
       /*should_show_feedback=*/
       profile_->GetPrefs()->GetInteger(
           ash::prefs::kLobsterEnterprisePolicySettings) ==
-              base::to_underlying(ash::LobsterEnterprisePolicyValue::
-                                      kAllowedWithModelImprovement) &&
+              std::to_underlying(ash::LobsterEnterprisePolicyValue::
+                                     kAllowedWithModelImprovement) &&
           base::FeatureList::IsEnabled(ash::features::kLobsterFeedback));
 }
 

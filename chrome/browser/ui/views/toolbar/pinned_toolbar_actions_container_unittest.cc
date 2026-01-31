@@ -33,7 +33,6 @@
 #include "ui/actions/action_id.h"
 #include "ui/actions/actions.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
-#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/events/base_event_utils.h"
@@ -156,7 +155,7 @@ class PinnedToolbarActionsContainerTest : public TestWithBrowserView {
 
   void UpdatePref(const std::vector<actions::ActionId>& updated_list) {
     ScopedListPrefUpdate update(profile()->GetPrefs(), prefs::kPinnedActions);
-    base::Value::List& list_of_values = update.Get();
+    base::ListValue& list_of_values = update.Get();
     list_of_values.clear();
     for (auto id : updated_list) {
       const std::optional<std::string>& id_string =
@@ -208,7 +207,7 @@ TEST_F(PinnedToolbarActionsContainerTest, ContainerMargins) {
           container()->GetAnimatingLayoutManager()->target_layout_manager())
           ->interior_margin()
           .right(),
-      -GetLayoutConstant(TOOLBAR_ICON_DEFAULT_MARGIN));
+      -GetLayoutConstant(LayoutConstant::kToolbarIconDefaultMargin));
 }
 
 TEST_F(PinnedToolbarActionsContainerTest, PinningAndUnpinning) {

@@ -25,7 +25,7 @@ class CookieControlsBubbleViewImpl : public CookieControlsBubbleView,
   METADATA_HEADER(CookieControlsBubbleViewImpl, LocationBarBubbleDelegateView)
 
  public:
-  CookieControlsBubbleViewImpl(views::View* anchor_view,
+  CookieControlsBubbleViewImpl(views::BubbleAnchor anchor,
                                content::WebContents* web_contents,
                                OnCloseBubbleCallback callback);
   ~CookieControlsBubbleViewImpl() override;

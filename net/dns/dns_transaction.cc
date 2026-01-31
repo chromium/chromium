@@ -156,9 +156,8 @@ bool IsIPLiteral(const std::string& hostname) {
   return ip.AssignFromIPLiteral(hostname);
 }
 
-base::Value::Dict NetLogStartParams(const std::string& hostname,
-                                    uint16_t qtype) {
-  base::Value::Dict dict;
+base::DictValue NetLogStartParams(const std::string& hostname, uint16_t qtype) {
+  base::DictValue dict;
   dict.Set("hostname", hostname);
   dict.Set("query_type", qtype);
   return dict;
@@ -200,8 +199,8 @@ class DnsAttempt {
   // Returns a Value representing the received response, along with a reference
   // to the NetLog source source of the UDP socket used.  The request must have
   // completed before this is called.
-  base::Value::Dict NetLogResponseParams(NetLogCaptureMode capture_mode) const {
-    base::Value::Dict dict;
+  base::DictValue NetLogResponseParams(NetLogCaptureMode capture_mode) const {
+    base::DictValue dict;
 
     if (GetResponse()) {
       DCHECK(GetResponse()->IsValid());

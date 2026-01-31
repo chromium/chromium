@@ -74,7 +74,7 @@ bool CheckIPCIDRSanityList(const std::vector<std::string>& list,
 }
 
 void ConvertParameters(const api_vpn::Parameters& parameters,
-                       base::Value::Dict* parameter_value,
+                       base::DictValue* parameter_value,
                        std::string* error) {
   if (!CheckIPCIDRSanity(parameters.address, true /* CIDR */,
                          false /*IPV4 */)) {
@@ -239,7 +239,7 @@ ExtensionFunction::ResponseAction VpnProviderSetParametersFunction::Run() {
     return RespondNow(Error("Invalid profile."));
   }
 
-  base::Value::Dict parameter_value;
+  base::DictValue parameter_value;
   std::string error;
   ConvertParameters(params->parameters, &parameter_value, &error);
   if (!error.empty()) {

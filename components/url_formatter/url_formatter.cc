@@ -526,9 +526,7 @@ ComponentResult IDNToUnicodeOneComponent(
 bool HasTwoViewSourceSchemes(std::string_view spec) {
   static constexpr char kViewSource[] = "view-source";
   url::Component scheme;
-  if (!url::FindAndCompareScheme(spec.data(),
-                                 base::checked_cast<int>(spec.size()),
-                                 kViewSource, &scheme)) {
+  if (!url::FindAndCompareScheme(spec, kViewSource, &scheme)) {
     return false;
   }
   // Consume the scheme.
@@ -540,8 +538,7 @@ bool HasTwoViewSourceSchemes(std::string_view spec) {
   }
   spec.remove_prefix(1);
 
-  return url::FindAndCompareScheme(
-      spec.data(), base::checked_cast<int>(spec.size()), kViewSource, &scheme);
+  return url::FindAndCompareScheme(spec, kViewSource, &scheme);
 }
 
 }  // namespace

@@ -16,8 +16,11 @@ import org.chromium.chrome.browser.tab.Tab;
 @MockedInTests // Needed due to R8's computeDelayedInterfaceMethodSyntheticBridges. b/147584922
 @NullMarked
 public interface TabList extends Iterable<Tab> {
-    // Keep this in sync with chrome/browser/ui/android/tab_model/tab_model.cc
+    // LINT.IfChange(INVALID_TAB_INDEX)
+    // Keep this in sync with chrome/browser/ui/android/tab_model/tab_model.h
     int INVALID_TAB_INDEX = -1;
+
+    // LINT.ThenChange(//chrome/browser/ui/android/tab_model/tab_model.h:kInvalidIndex)
 
     /**
      * TODO(crbug.com/350654700): clean up usages and remove isIncognito.

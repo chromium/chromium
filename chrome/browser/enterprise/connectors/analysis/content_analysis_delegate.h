@@ -30,12 +30,12 @@ struct ClipboardPasteData;
 }  // namespace content
 
 namespace safe_browsing {
-class BinaryUploadService;
 class SafeBrowsingNavigationObserverManager;
 }  // namespace safe_browsing
 
 namespace enterprise_connectors {
 
+class BinaryUploadService;
 class ClipboardRequestHandler;
 class ContentAnalysisDialogController;
 class FilesRequestHandler;
@@ -211,6 +211,8 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase,
 
   std::optional<std::u16string> OverrideCancelButtonText() const override;
 
+  std::optional<std::u16string> GetFilename() const override;
+
   // Returns true if the deep scanning feature is enabled in the upload
   // direction via enterprise policies.  If the appropriate enterprise policies
   // are not set this feature is not enabled.
@@ -301,10 +303,6 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase,
   // Callback called after all files are scanned by the FilesRequestHandler.
   void FilesRequestCallback(std::vector<RequestHandlerResult> results);
 
-  base::WeakPtr<ContentAnalysisDelegate> GetWeakPtr() {
-    return weak_ptr_factory_.GetWeakPtr();
-  }
-
   FilesRequestHandler* GetFilesRequestHandlerForTesting();
 
   const Data& GetDataForTesting() { return data_; }
@@ -387,7 +385,7 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase,
 
   // Returns the BinaryUploadService used to upload content for deep scanning.
   // Virtual to override in tests.
-  virtual safe_browsing::BinaryUploadService* GetBinaryUploadService();
+  virtual BinaryUploadService* GetBinaryUploadService();
 
   safe_browsing::SafeBrowsingNavigationObserverManager*
   GetNavigationObserverManager() const;

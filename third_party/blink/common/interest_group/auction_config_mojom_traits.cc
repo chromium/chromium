@@ -8,7 +8,6 @@
 #include <optional>
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
@@ -327,8 +326,7 @@ bool StructTraits<blink::mojom::AuctionAdConfigNonSharedParamsDataView,
     }
 
     // If `all_slots_requested_sizes` is set, `requested_size` must be in it.
-    if (out->requested_size &&
-        !base::Contains(ad_sizes, *out->requested_size)) {
+    if (out->requested_size && !ad_sizes.contains(*out->requested_size)) {
       return false;
     }
   }

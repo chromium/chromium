@@ -109,7 +109,7 @@ class MediaDevicesSelectionHandlerTest
 
   void SendSetPreferredCaptureDeviceMessage(const std::string& type,
                                             const std::string id) {
-    base::Value::List setDefaultArgs;
+    base::ListValue setDefaultArgs;
     setDefaultArgs.Append(type);
     setDefaultArgs.Append(id);
     test_web_ui_.ProcessWebUIMessage(GURL(), "setPreferredCaptureDevice",
@@ -117,7 +117,7 @@ class MediaDevicesSelectionHandlerTest
   }
 
   void SendInitializeCaptureDevicesMessage(const std::string& type) {
-    base::Value::List getDefaultArgs;
+    base::ListValue getDefaultArgs;
     getDefaultArgs.Append(kMic);
     test_web_ui_.ProcessWebUIMessage(GURL(), "initializeCaptureDevices",
                                      std::move(getDefaultArgs));

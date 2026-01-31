@@ -10,7 +10,7 @@ import android.os.Looper;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ActivityTabProvider;
@@ -58,7 +58,8 @@ public class CustomTabMinimizationManagerHolder implements DestroyObserver {
         destroyMinimizationManager();
     }
 
-    public void maybeCreateMinimizationManager(ObservableSupplier<Profile> profileSupplier) {
+    public void maybeCreateMinimizationManager(
+            MonotonicObservableSupplier<Profile> profileSupplier) {
         if (MinimizedFeatureUtils.isMinimizedCustomTabAvailable(mActivity)
                 && MinimizedFeatureUtils.shouldEnableMinimizedCustomTabs(mIntentDataProvider)) {
             mIphController =

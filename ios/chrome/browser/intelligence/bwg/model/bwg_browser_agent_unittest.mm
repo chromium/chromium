@@ -4,6 +4,10 @@
 
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_browser_agent.h"
 
+#import "base/run_loop.h"
+#import "base/test/ios/wait_util.h"
+#import "base/test/run_until.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/favicon/core/favicon_service.h"
 #import "components/favicon/ios/web_favicon_driver.h"
@@ -11,16 +15,32 @@
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/page_context_extractor_java_script_feature.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
+#import "ios/chrome/browser/snapshots/model/fake_snapshot_generator_delegate.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_source_tab_helper.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
+#import "ios/chrome/browser/web/model/web_view_proxy/web_view_proxy_tab_helper.h"
+#import "ios/web/find_in_page/find_in_page_java_script_feature.h"
+#import "ios/web/js_messaging/java_script_feature_manager.h"
+#import "ios/web/public/js_messaging/java_script_feature_util.h"
+#import "ios/web/public/test/fakes/fake_web_client.h"
+#import "ios/web/public/test/fakes/fake_web_frame.h"
+#import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "ios/web/public/test/js_test_util.h"
+#import "ios/web/public/test/scoped_testing_web_client.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
@@ -28,12 +48,22 @@
 // Test fixture for BwgBrowserAgent.
 class BwgBrowserAgentTest : public PlatformTest {
  protected:
-  BwgBrowserAgentTest() {
+  BwgBrowserAgentTest() : web_client_(std::make_unique<web::FakeWebClient>()) {
+    feature_list_.InitWithFeatures(
+        {kPageContextExtractorRefactored, kGeminiRefactoredFRE}, {});
+    static_cast<web::FakeWebClient*>(web_client_.Get())
+        ->SetJavaScriptFeatures(
+            {web::FindInPageJavaScriptFeature::GetInstance(),
+             PageContextExtractorJavaScriptFeature::GetInstance()});
     TestProfileIOS::Builder profile_builder;
     profile_builder.AddTestingFactory(
         OptimizationGuideServiceFactory::GetInstance(),
         OptimizationGuideServiceFactory::GetDefaultFactory());
     profile_ = std::move(profile_builder).Build();
+    web::JavaScriptFeatureManager::FromBrowserState(profile_.get())
+        ->ConfigureFeatures(
+            {web::FindInPageJavaScriptFeature::GetInstance(),
+             PageContextExtractorJavaScriptFeature::GetInstance()});
     browser_ = std::make_unique<TestBrowser>(profile_.get());
     BwgBrowserAgent::CreateForBrowser(browser_.get());
     bwg_browser_agent_ = BwgBrowserAgent::FromBrowser(browser_.get());
@@ -52,28 +82,64 @@ class BwgBrowserAgentTest : public PlatformTest {
 
     std::unique_ptr<web::FakeWebState> web_state =
         std::make_unique<web::FakeWebState>();
+    web_state_ = web_state.get();
     web_state->SetBrowserState(profile_.get());
     BwgTabHelper::CreateForWebState(web_state.get());
     bwg_tab_helper_ = BwgTabHelper::FromWebState(web_state.get());
+
+    SnapshotTabHelper::CreateForWebState(web_state.get());
+    SnapshotSourceTabHelper::CreateForWebState(web_state.get());
+    fake_snapshot_delegate_ = [[FakeSnapshotGeneratorDelegate alloc] init];
+    fake_snapshot_delegate_.view = [[UIView alloc] init];
+    web_state->SetView(fake_snapshot_delegate_.view);
+    web_state->SetCanTakeSnapshot(true);
+    SnapshotTabHelper::FromWebState(web_state.get())
+        ->SetDelegate(fake_snapshot_delegate_);
 
     favicon::WebFaviconDriver::CreateForWebState(
         web_state.get(),
         ios::FaviconServiceFactory::GetForProfile(
             profile_.get(), ServiceAccessType::IMPLICIT_ACCESS));
 
+    auto web_frames_manager = std::make_unique<web::FakeWebFramesManager>();
+    auto main_frame =
+        web::FakeWebFrame::CreateMainWebFrame(GURL("https://example.com"));
+    fake_main_frame_ = main_frame.get();
+    main_frame->set_browser_state(profile_.get());
+    web_frames_manager->AddWebFrame(std::move(main_frame));
+    web_state->SetWebFramesManager(web::ContentWorld::kIsolatedWorld,
+                                   std::move(web_frames_manager));
+
+    // Also set for kPageContentWorld as PageContextExtractor might use it
+    // depending on flags
+    auto page_content_frames_manager =
+        std::make_unique<web::FakeWebFramesManager>();
+    auto main_frame_page_content =
+        web::FakeWebFrame::CreateMainWebFrame(GURL("https://example.com"));
+    main_frame_page_content->set_browser_state(profile_.get());
+    page_content_frames_manager->AddWebFrame(
+        std::move(main_frame_page_content));
+    web_state->SetWebFramesManager(web::ContentWorld::kPageContentWorld,
+                                   std::move(page_content_frames_manager));
+
     browser_->GetWebStateList()->InsertWebState(
         std::move(web_state),
         WebStateList::InsertionParams::Automatic().Activate(true));
   }
 
-  base::test::TaskEnvironment task_environment_;
+  base::test::ScopedFeatureList feature_list_;
+  web::ScopedTestingWebClient web_client_;
+  web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   raw_ptr<BwgBrowserAgent> bwg_browser_agent_;
   raw_ptr<BwgTabHelper> bwg_tab_helper_;
   raw_ptr<OptimizationGuideService> optimization_guide_service_;
+  raw_ptr<web::FakeWebState> web_state_;
+  raw_ptr<web::FakeWebFrame> fake_main_frame_;
   id mock_settings_handler_;
   id mock_bwg_handler_;
+  FakeSnapshotGeneratorDelegate* fake_snapshot_delegate_;
 };
 
 // Tests that the BwgBrowserAgent can be instantiated.
@@ -83,7 +149,63 @@ TEST_F(BwgBrowserAgentTest, TestBwgBrowserAgentInstantiation) {
 
 // Tests the presentation of the BWG overlay and state of tab helper side
 // effects.
-TEST_F(BwgBrowserAgentTest, TestBwgBrowserAgentPresentBwgOverlay) {
+TEST_F(BwgBrowserAgentTest, TestBwgBrowserAgentStartGeminiFlow) {
+  UIViewController* base_view_controller = [[UIViewController alloc] init];
+
+  // Set a valid URL.
+  web_state_->SetCurrentURL(GURL("https://example.com"));
+
+  // Add a fake JS result for page context extraction.
+  base::DictValue result;
+  result.Set("currentNodeInnerText", "Example Text");
+  fake_main_frame_->AddJsResultForFunctionCall(
+      std::make_unique<base::Value>(std::move(result)).release(),
+      "pageContextExtractor.extractPageContext");
+
+  // Set the BWG tab helper as backgrounded and assert.
+  bwg_tab_helper_->PrepareBwgFreBackgrounding();
+  ASSERT_TRUE(bwg_tab_helper_->GetIsBwgSessionActiveInBackground());
+
+  // Simulate FRE completion.
+  profile_->GetPrefs()->SetBoolean(prefs::kIOSBwgConsent, true);
+
+  // Create a protocol mock to intercept the delegate call.
+  id mock_delegate = OCMProtocolMock(@protocol(SnapshotGeneratorDelegate));
+
+  // Set the mock as the delegate.
+  SnapshotTabHelper::FromWebState(web_state_)->SetDelegate(mock_delegate);
+
+  // Expect the snapshot delegate to be notified. Use a flag to wait for the
+  // async call. Use shared_ptr to safely share state between ObjC block and C++
+  // lambda.
+  auto delegate_called = std::make_shared<bool>(false);
+  [[[mock_delegate expect] andDo:^(NSInvocation*) {
+    *delegate_called = true;
+  }] willUpdateSnapshotWithWebStateInfo:[OCMArg any]];
+
+  // Stub the canTakeSnapshot method to return YES.
+  OCMStub([mock_delegate canTakeSnapshotWithWebStateInfo:[OCMArg any]])
+      .andReturn(YES);
+
+  // Ensure the WebState is visible so PageContextWrapper attempts a snapshot.
+  web_state_->WasShown();
+
+  bwg_browser_agent_->StartGeminiFlow(base_view_controller, nil,
+                                      gemini::EntryPoint::Promo);
+
+  // Wait for the delegate method to be called.
+  ASSERT_TRUE(
+      base::test::RunUntil([delegate_called]() { return *delegate_called; }));
+
+  [mock_delegate verify];
+
+  // Assert the BWG tab helper was set as foregrounded.
+  ASSERT_FALSE(bwg_tab_helper_->GetIsBwgSessionActiveInBackground());
+}
+
+// Tests the presentation of the floaty and state of tab helper side
+// effects.
+TEST_F(BwgBrowserAgentTest, TestBwgBrowserAgentPresentFloatyWithPageContext) {
   UIViewController* base_view_controller = [[UIViewController alloc] init];
   std::unique_ptr<optimization_guide::proto::PageContext> page_context =
       std::make_unique<optimization_guide::proto::PageContext>();
@@ -94,14 +216,15 @@ TEST_F(BwgBrowserAgentTest, TestBwgBrowserAgentPresentBwgOverlay) {
   bwg_tab_helper_->PrepareBwgFreBackgrounding();
   ASSERT_TRUE(bwg_tab_helper_->GetIsBwgSessionActiveInBackground());
 
-  bwg_browser_agent_->PresentBwgOverlay(base_view_controller,
-                                        std::move(response));
+  bwg_browser_agent_->PresentFloatyWithPageContext(
+      base_view_controller, std::move(response), gemini::EntryPoint::Promo);
 
   // Assert the BWG tab helper was set as foregrounded.
   ASSERT_FALSE(bwg_tab_helper_->GetIsBwgSessionActiveInBackground());
 }
 
-TEST_F(BwgBrowserAgentTest, TestBwgBrowserAgentPresentPendingBwgOverlay) {
+TEST_F(BwgBrowserAgentTest,
+       TestBwgBrowserAgentPresentFloatyWithPendingContext) {
   UIViewController* base_view_controller = [[UIViewController alloc] init];
   std::unique_ptr<optimization_guide::proto::PageContext> page_context =
       std::make_unique<optimization_guide::proto::PageContext>();
@@ -110,9 +233,94 @@ TEST_F(BwgBrowserAgentTest, TestBwgBrowserAgentPresentPendingBwgOverlay) {
   bwg_tab_helper_->PrepareBwgFreBackgrounding();
   ASSERT_TRUE(bwg_tab_helper_->GetIsBwgSessionActiveInBackground());
 
-  bwg_browser_agent_->PresentPendingBwgOverlay(base_view_controller,
-                                               std::move(page_context));
+  bwg_browser_agent_->PresentFloatyWithPendingContext(
+      base_view_controller, std::move(page_context), gemini::EntryPoint::Promo);
 
   // Assert the BWG tab helper was set as foregrounded.
   ASSERT_FALSE(bwg_tab_helper_->GetIsBwgSessionActiveInBackground());
+}
+
+// Tests that switching active web states handles observations correctly.
+TEST_F(BwgBrowserAgentTest, TestActiveWebStateChanged) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kGeminiCopresence);
+
+  // Create a new browser to ensure the BwgBrowserAgent is initialized with the
+  // feature flag enabled.
+
+  std::unique_ptr<TestBrowser> scoped_browser =
+      std::make_unique<TestBrowser>(profile_.get());
+  BwgBrowserAgent::CreateForBrowser(scoped_browser.get());
+  BwgBrowserAgent* agent = BwgBrowserAgent::FromBrowser(scoped_browser.get());
+
+  std::unique_ptr<web::FakeWebState> web_state1 =
+      std::make_unique<web::FakeWebState>();
+  web_state1->SetBrowserState(profile_.get());
+  BwgTabHelper::CreateForWebState(web_state1.get());
+  WebViewProxyTabHelper::CreateForWebState(web_state1.get());
+  BwgTabHelper* helper1 = BwgTabHelper::FromWebState(web_state1.get());
+
+  scoped_browser->GetWebStateList()->InsertWebState(
+      std::move(web_state1),
+      WebStateList::InsertionParams::Automatic().Activate(true));
+
+  // Verify that the agent is observing the first tab helper.
+  EXPECT_TRUE(helper1->HasObserver(agent));
+
+  std::unique_ptr<web::FakeWebState> web_state2 =
+      std::make_unique<web::FakeWebState>();
+  web_state2->SetBrowserState(profile_.get());
+  BwgTabHelper::CreateForWebState(web_state2.get());
+  WebViewProxyTabHelper::CreateForWebState(web_state2.get());
+  BwgTabHelper* helper2 = BwgTabHelper::FromWebState(web_state2.get());
+
+  // Switch to new web state.
+  scoped_browser->GetWebStateList()->InsertWebState(
+      std::move(web_state2),
+      WebStateList::InsertionParams::Automatic().Activate(true));
+
+  // Verify that the agent stopped observing the first tab helper and started
+  // observing the second one.
+  EXPECT_FALSE(helper1->HasObserver(agent));
+  EXPECT_TRUE(helper2->HasObserver(agent));
+}
+
+// Tests that OnGeminiViewStateExpanded triggers page context generation.
+TEST_F(BwgBrowserAgentTest, TestOnGeminiViewStateExpanded) {
+  // Set a valid URL.
+  web_state_->SetCurrentURL(GURL("https://example.com"));
+
+  // Add a fake JS result for page context extraction.
+  base::DictValue result;
+  result.Set("currentNodeInnerText", "Example Text");
+  fake_main_frame_->AddJsResultForFunctionCall(
+      std::make_unique<base::Value>(std::move(result)).release(),
+      "pageContextExtractor.extractPageContext");
+
+  // Create a protocol mock to intercept the delegate call.
+  id mock_delegate = OCMProtocolMock(@protocol(SnapshotGeneratorDelegate));
+
+  // Set the mock as the delegate.
+  SnapshotTabHelper::FromWebState(web_state_)->SetDelegate(mock_delegate);
+
+  // Expect the snapshot delegate to be notified.
+  auto delegate_called = std::make_shared<bool>(false);
+  [[[mock_delegate expect] andDo:^(NSInvocation*) {
+    *delegate_called = true;
+  }] willUpdateSnapshotWithWebStateInfo:[OCMArg any]];
+
+  // Stub the canTakeSnapshot method to return YES.
+  OCMStub([mock_delegate canTakeSnapshotWithWebStateInfo:[OCMArg any]])
+      .andReturn(YES);
+
+  // Ensure the WebState is visible so PageContextWrapper attempts a snapshot.
+  web_state_->WasShown();
+
+  bwg_browser_agent_->OnGeminiViewStateExpanded();
+
+  // Wait for the delegate method to be called.
+  ASSERT_TRUE(
+      base::test::RunUntil([delegate_called]() { return *delegate_called; }));
+
+  [mock_delegate verify];
 }

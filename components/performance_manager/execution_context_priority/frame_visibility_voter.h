@@ -14,13 +14,11 @@ namespace execution_context_priority {
 
 // This voter tracks frame nodes and casts a vote for each of them, whose value
 // depends on their visibility. A visible frame will receive a
-// TaskPriority::USER_BLOCKING vote, while a non-visible frame will receive a
-// TaskPriority::LOWEST vote.
-// If the kUnimportantFrame feature is enabled, a lesser
-// TaskPriority::USER_VISIBLE vote is cast for frames that are deemed
-// unimportant.
-// Note: This FrameNodeObserver can affect the initial priority of a frame and
-// thus uses `OnBeforeFrameNodeAdded`.
+// Process::Priority::kUserBlocking vote, while a non-visible frame will receive
+// a Process::Priority::kMinValue vote. If the kUnimportantFrame feature is
+// enabled, a lesser ProcessPriority::kUserVisible vote is cast for frames that
+// are deemed unimportant. Note: This FrameNodeObserver can affect the initial
+// priority of a frame and thus uses `OnBeforeFrameNodeAdded`.
 class FrameVisibilityVoter : public PriorityVoter, public FrameNodeObserver {
  public:
   static const char kFrameVisibilityReason[];

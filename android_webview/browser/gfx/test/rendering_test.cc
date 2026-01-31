@@ -134,7 +134,9 @@ std::unique_ptr<viz::CompositorFrame> RenderingTest::ConstructEmptyFrame() {
 std::unique_ptr<viz::CompositorFrame> RenderingTest::ConstructFrame(
     viz::ResourceId resource_id) {
   std::unique_ptr<viz::CompositorFrame> compositor_frame(ConstructEmptyFrame());
-  viz::TransferableResource resource;
+  viz::TransferableResource resource = viz::TransferableResource::Make(
+      gpu::ClientSharedImage::CreateForTesting(),
+      viz::TransferableResource::ResourceSource::kTest, gpu::SyncToken());
   resource.id = resource_id;
   compositor_frame->resource_list.push_back(resource);
   return compositor_frame;

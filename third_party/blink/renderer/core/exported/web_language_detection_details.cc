@@ -4,6 +4,8 @@
 
 #include "third_party/blink/public/web/web_language_detection_details.h"
 
+#include <algorithm>
+
 #include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/common/metrics/accept_language_and_content_language_usage.h"
 #include "third_party/blink/public/web/web_document.h"
@@ -66,12 +68,11 @@ String GetLanguageCode(const String& language) {
     return language;
   }
 
-  Vector<String> language_codes;
-  language.Split("-", language_codes);
+  Vector<StringView> language_codes = StringView(language).Split('-');
   // Split function default is not allowed empty entry which cause potentical
   // crash when |langauge_codes| may be empty (for example, if |language| is
   // '-').
-  return language_codes.empty() ? "" : language_codes[0];
+  return language_codes.empty() ? "" : language_codes[0].ToString();
 }
 
 void MatchTargetLanguageWithAcceptLanguages(
@@ -104,8 +105,8 @@ void MatchTargetLanguageWithAcceptLanguages(
                           kXmlLangMatchesPrimaryAcceptLanguage
                     : AcceptLanguageAndXmlHtmlLangUsage::
                           kHtmlLangMatchesPrimaryAcceptLanguage);
-  } else if (base::Contains(accept_languages, target_language,
-                            &GetLanguageCode)) {
+  } else if (std::ranges::contains(accept_languages, target_language,
+                                   &GetLanguageCode)) {
     base::UmaHistogramEnumeration(
         language_histogram_name,
         is_xml_lang ? AcceptLanguageAndXmlHtmlLangUsage::

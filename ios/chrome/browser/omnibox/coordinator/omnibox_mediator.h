@@ -13,9 +13,8 @@
 #import "ios/chrome/browser/omnibox/ui/omnibox_mutator.h"
 
 class FaviconLoader;
+@protocol BrowserCoordinatorCommands;
 @protocol LensCommands;
-@protocol LoadQueryCommands;
-@protocol OmniboxCommands;
 @protocol OmniboxConsumer;
 @protocol OmniboxMediatorDelegate;
 @class OmniboxTextController;
@@ -53,9 +52,9 @@ class Tracker;
 /// object and may be nil.
 @property(nonatomic, weak) id<OmniboxConsumer> consumer;
 
-@property(nonatomic, weak) id<LoadQueryCommands> loadQueryCommandsHandler;
 @property(nonatomic, weak) id<LensCommands> lensCommandsHandler;
-@property(nonatomic, weak) id<OmniboxCommands> omniboxCommandsHandler;
+@property(nonatomic, weak) id<BrowserCoordinatorCommands>
+    browserCoordinatorCommandsHandler;
 
 /// The favicon loader.
 @property(nonatomic, assign) FaviconLoader* faviconLoader;

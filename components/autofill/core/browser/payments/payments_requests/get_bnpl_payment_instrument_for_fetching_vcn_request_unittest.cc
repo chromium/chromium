@@ -13,7 +13,7 @@
 
 namespace {
 using base::MockCallback;
-using Dict = base::Value::Dict;
+using Dict = base::DictValue;
 using testing::Field;
 }  // namespace
 

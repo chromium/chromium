@@ -12,6 +12,8 @@
 #include "third_party/jni_zero/system_jni/List_jni.h"
 #include "third_party/jni_zero/system_jni/Long_jni.h"
 #include "third_party/jni_zero/system_jni/Map_jni.h"
+#include "third_party/jni_zero/system_jni/Process_jni.h"
+#include "third_party/jni_zero/system_jni_unchecked_exceptions/ByteBuffer_jni.h"
 
 namespace jni_zero {
 
@@ -42,13 +44,13 @@ ScopedJavaLocalRef<jobject> ArrayToMap(JNIEnv* env,
 
 ScopedJavaLocalRef<jobject> ListGet(JNIEnv* env,
                                     const JavaRef<jobject>& list,
-                                    jint idx) {
+                                    int32_t idx) {
   return JNI_List::Java_List_get(env, list, idx);
 }
 
 ScopedJavaLocalRef<jobject> ListSet(JNIEnv* env,
                                     const JavaRef<jobject>& list,
-                                    jint idx,
+                                    int32_t idx,
                                     const JavaRef<jobject>& value) {
   return JNI_List::Java_List_set(env, list, idx, value);
 }
@@ -79,7 +81,7 @@ bool CollectionContains(JNIEnv* env,
   return JNI_Collection::Java_Collection_contains(env, collection, value);
 }
 
-jint CollectionSize(JNIEnv* env, const JavaRef<jobject>& collection) {
+int32_t CollectionSize(JNIEnv* env, const JavaRef<jobject>& collection) {
   return JNI_Collection::Java_Collection_size(env, collection);
 }
 
@@ -112,7 +114,7 @@ ScopedJavaLocalRef<jobject> MapRemove(JNIEnv* env,
   return JNI_Map::Java_Map_remove(env, map, key);
 }
 
-jint MapSize(JNIEnv* env, const JavaRef<jobject>& map) {
+int32_t MapSize(JNIEnv* env, const JavaRef<jobject>& map) {
   return JNI_Map::Java_Map_size(env, map);
 }
 
@@ -142,6 +144,25 @@ int64_t FromJavaLong(JNIEnv* env, const JavaRef<jobject>& j_long) {
 
 ScopedJavaLocalRef<jobject> ToJavaLong(JNIEnv* env, int64_t val) {
   return JNI_Long::Java_Long_valueOf__long(env, val);
+}
+
+//
+// android.os.Process
+//
+
+bool ProcessIsIsolated(JNIEnv* env) {
+  return JNI_Process::Java_Process_isIsolated(env);
+}
+
+//
+// java.nio.ByteBuffer
+//
+
+ScopedJavaLocalRef<jobject> ByteBufferAllocateDirect(JNIEnv* env, int size) {
+  ScopedJavaLocalRef<jobject> ret =
+      JNI_ByteBuffer::Java_ByteBuffer_allocateDirect(env, size);
+  ClearException(env);
+  return ret;
 }
 
 }  // namespace jni_zero

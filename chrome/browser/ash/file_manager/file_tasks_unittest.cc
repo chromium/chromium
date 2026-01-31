@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "base/command_line.h"
 #include "base/containers/to_vector.h"
@@ -147,9 +148,9 @@ TEST(FileManagerFileTasksTest, BaseContainsFindsTaskDescriptors) {
   tasks.insert(task_2);
   tasks.insert(task_3);
 
-  ASSERT_TRUE(base::Contains(tasks, task_1));
-  ASSERT_TRUE(base::Contains(tasks, task_2));
-  ASSERT_TRUE(base::Contains(tasks, task_3));
+  ASSERT_TRUE(tasks.contains(task_1));
+  ASSERT_TRUE(tasks.contains(task_2));
+  ASSERT_TRUE(tasks.contains(task_3));
 }
 
 TEST(FileManagerFileTasksTest, EqualTaskDescriptors) {
@@ -271,7 +272,7 @@ class FileManagerFileTaskPolicyDefaultHandlersTest
  protected:
   void UpdateDefaultHandlersPrefs(
       const std::vector<std::pair<std::string, std::string>>& handlers = {}) {
-    base::Value::Dict pref_dict;
+    base::DictValue pref_dict;
     for (const auto& [file_extension, policy_id] : handlers) {
       pref_dict.Set(file_extension, policy_id);
     }
@@ -427,8 +428,12 @@ class FileManagerFileTaskVirtualTaskPolicyDefaultHandlersTest
 // Check that virtual tasks are handled by the policy.
 TEST_P(FileManagerFileTaskVirtualTaskPolicyDefaultHandlersTest, VirtualTask) {
   auto [policy_id, action_id, file_extension] = GetParam();
-
+  if (action_id == kActionIdInstallIsolatedWebApp) {
+    profile()->GetPrefs()->SetBoolean(ash::prefs::kIsolatedWebAppsEnabled,
+                                      true);
+  }
   const std::string file_name = base::StrCat({"foo", file_extension});
+
   entries().emplace_back(base::FilePath::FromUTF8Unsafe(file_name),
                          /*mime_type=*/"", /*is_directory=*/false);
 
@@ -556,20 +561,20 @@ class FileManagerFileTaskPreferencesTest
  public:
   // Updates the default task preferences per the given dictionary values.
   // Used for testing ChooseAndSetDefaultTask.
-  void UpdateDefaultTaskPreferences(const base::Value::Dict& mime_types,
-                                    const base::Value::Dict& suffixes) {
+  void UpdateDefaultTaskPreferences(const base::DictValue& mime_types,
+                                    const base::DictValue& suffixes) {
     profile()->GetTestingPrefService()->SetDict(prefs::kDefaultTasksByMimeType,
                                                 mime_types.Clone());
     profile()->GetTestingPrefService()->SetDict(prefs::kDefaultTasksBySuffix,
                                                 suffixes.Clone());
   }  // namespace file_manager::file_tasks
 
-  const base::Value::Dict& tasks_by_mime_type() {
+  const base::DictValue& tasks_by_mime_type() {
     return profile()->GetTestingPrefService()->GetDict(
         prefs::kDefaultTasksByMimeType);
   }
 
-  const base::Value::Dict& tasks_by_suffix() {
+  const base::DictValue& tasks_by_suffix() {
     return profile()->GetTestingPrefService()->GetDict(
         prefs::kDefaultTasksBySuffix);
   }
@@ -613,8 +618,8 @@ TEST_F(FileManagerFileTaskPreferencesTest,
   EXPECT_FALSE(tasks[1].is_default);
 
   // Set Text.app as default for "text/plain" in the preferences.
-  base::Value::Dict empty;
-  base::Value::Dict mime_types;
+  base::DictValue empty;
+  base::DictValue mime_types;
   mime_types.Set("text/plain", base::Value(TaskDescriptorToId(text_app_task)));
   UpdateDefaultTaskPreferences(mime_types, empty);
 
@@ -633,7 +638,7 @@ TEST_F(FileManagerFileTaskPreferencesTest,
   EXPECT_FALSE(tasks[1].is_default);
 
   // Set Nice.app as default for ".txt" in the preferences.
-  base::Value::Dict suffixes;
+  base::DictValue suffixes;
   suffixes.Set(".txt", base::Value(TaskDescriptorToId(nice_app_task)));
   UpdateDefaultTaskPreferences(empty, suffixes);
 
@@ -811,7 +816,7 @@ TEST_F(FileManagerFileTaskPreferencesTest,
   // Set the default app preference.
   std::string files_app_id = package + "/" + activity;
   TaskDescriptor file_task(files_app_id, task_type, "view");
-  base::Value::Dict mime_types;
+  base::DictValue mime_types;
   mime_types.Set("image/png", base::Value(TaskDescriptorToId(file_task)));
   UpdateDefaultTaskPreferences(mime_types, {});
 

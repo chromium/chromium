@@ -308,11 +308,15 @@ IOSWebViewPaymentsAutofillClient::GetRiskBasedAuthenticator() {
 bool IOSWebViewPaymentsAutofillClient::IsRiskBasedAuthEffectivelyAvailable()
     const {
   return GetPrefService()->GetBoolean(
-      ios_web_view::kCWVAutofillVCNUsageEnabled);
+      ios_web_view::kRiskBasedAuthenticationEnabled);
 }
 
 bool IOSWebViewPaymentsAutofillClient::IsMandatoryReauthEnabled() {
   return false;
+}
+
+bool IOSWebViewPaymentsAutofillClient::IsUsingCustomCardIconEnabled() const {
+  return GetPrefService()->GetBoolean(ios_web_view::kUseCardCustomImageEnabled);
 }
 
 void IOSWebViewPaymentsAutofillClient::ShowMandatoryReauthOptInPrompt(
@@ -374,7 +378,13 @@ bool IOSWebViewPaymentsAutofillClient::ShowTouchToFillIban(
   return false;
 }
 
-bool IOSWebViewPaymentsAutofillClient::ShowTouchToFillLoyaltyCard(
+bool IOSWebViewPaymentsAutofillClient::ShowTouchToFillAffiliatedLoyaltyCard(
+    base::WeakPtr<TouchToFillDelegate> delegate,
+    std::vector<LoyaltyCard> loyalty_cards_to_suggest) {
+  return false;
+}
+
+bool IOSWebViewPaymentsAutofillClient::ShowTouchToFillForAllLoyaltyCards(
     base::WeakPtr<TouchToFillDelegate> delegate,
     std::vector<LoyaltyCard> loyalty_cards_to_suggest) {
   return false;
@@ -445,8 +455,8 @@ void IOSWebViewPaymentsAutofillClient::ShowCreditCardUploadSaveAndFillDialog(
     const LegalMessageLines& legal_message_lines,
     CardSaveAndFillDialogCallback callback) {}
 
-void IOSWebViewPaymentsAutofillClient::
-    ShowCreditCardSaveAndFillPendingDialog() {}
+void IOSWebViewPaymentsAutofillClient::ShowCreditCardSaveAndFillPendingDialog(
+    CardSaveAndFillDialogCallback callback) {}
 
 void IOSWebViewPaymentsAutofillClient::HideCreditCardSaveAndFillDialog() {}
 

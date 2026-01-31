@@ -565,7 +565,7 @@ void CellularNetworkMetricsLogger::OnConnectionResult(
 
   size_t custom_apns_count = 0u;
   size_t enabled_custom_apns_count = 0u;
-  const base::Value::List* custom_apn_list =
+  const base::ListValue* custom_apn_list =
       network_metadata_store_->GetCustomApnList(network_state->guid());
   if (custom_apn_list) {
     custom_apns_count = custom_apn_list->size();

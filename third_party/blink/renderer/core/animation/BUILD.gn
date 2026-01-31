@@ -20,8 +20,6 @@ buildflag_header("buildflags") {
 
 blink_core_sources("animation") {
   sources = [
-    "animatable.cc",
-    "animatable.h",
     "animation.cc",
     "animation.h",
     "animation_clock.cc",
@@ -63,6 +61,7 @@ blink_core_sources("animation") {
     "css/css_animations.h",
     "css/css_keyframe_effect_model.cc",
     "css/css_keyframe_effect_model.h",
+    "css/css_timeline_map.cc",
     "css/css_timeline_map.h",
     "css/css_timing_data.cc",
     "css/css_timing_data.h",
@@ -299,6 +298,10 @@ blink_core_sources("animation") {
     "timeline_range.h",
     "timeline_trigger.cc",
     "timeline_trigger.h",
+    "timeline_trigger_range.cc",
+    "timeline_trigger_range.h",
+    "timeline_trigger_range_list.cc",
+    "timeline_trigger_range_list.h",
     "timing.cc",
     "timing.h",
     "timing_calculations.cc",

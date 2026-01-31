@@ -4,15 +4,18 @@
 
 #include "media/audio/audio_output_device_thread_callback.h"
 
+#include <atomic>
 #include <utility>
 
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "media/audio/audio_device_stats_reporter.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_glitch_info.h"
+#include "media/media_buildflags.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace media {
@@ -33,6 +36,9 @@ AudioOutputDeviceThreadCallback::AudioOutputDeviceThreadCallback(
   // CHECK that the shared memory is large enough. The memory allocated must be
   // at least as large as expected.
   CHECK(memory_length_ <= shared_memory_region_.GetSize());
+#if !BUILDFLAG(ENABLE_PASSTHROUGH_AUDIO_CODECS)
+  CHECK(!audio_parameters_.IsBitstreamFormat());
+#endif
 }
 
 AudioOutputDeviceThreadCallback::~AudioOutputDeviceThreadCallback() {
@@ -54,22 +60,21 @@ void AudioOutputDeviceThreadCallback::MapSharedMemory() {
   CHECK_EQ(audio_data_span.data(), buffer->audio);
 
   output_bus_ = media::AudioBus::WrapMemory(audio_parameters_, audio_data_span);
+#if BUILDFLAG(ENABLE_PASSTHROUGH_AUDIO_CODECS)
   output_bus_->set_is_bitstream_format(audio_parameters_.IsBitstreamFormat());
+#endif
 }
 
 // Called whenever we receive notifications about pending data.
 void AudioOutputDeviceThreadCallback::Process(uint32_t control_signal) {
   callback_num_++;
 
-  // Read and reset the glitch info.
   media::AudioOutputBuffer* buffer =
       reinterpret_cast<media::AudioOutputBuffer*>(
           shared_memory_mapping_.memory());
-  media::AudioGlitchInfo glitch_info{
-      .duration = base::Microseconds(buffer->params.glitch_duration_us),
-      .count = buffer->params.glitch_count};
-  buffer->params.glitch_duration_us = {};
-  buffer->params.glitch_count = 0;
+  // Read the glitch info.
+  media::AudioGlitchInfo glitch_info =
+      buffer_helper_.GetGlitchIncrementSinceLastCall(buffer->params);
 
   base::TimeDelta delay = base::Microseconds(buffer->params.delay_us);
 
@@ -103,11 +108,12 @@ void AudioOutputDeviceThreadCallback::Process(uint32_t control_signal) {
                            output_bus_.get());
   stats_reporter_.ReportCallback(delay, glitch_info);
 
+#if BUILDFLAG(ENABLE_PASSTHROUGH_AUDIO_CODECS)
   if (audio_parameters_.IsBitstreamFormat()) {
     buffer->params.bitstream_data_size = output_bus_->bitstream_data().size();
     buffer->params.bitstream_frames = output_bus_->GetBitstreamFrames();
   }
-
+#endif
 }
 
 void AudioOutputDeviceThreadCallback::OnSocketError() {

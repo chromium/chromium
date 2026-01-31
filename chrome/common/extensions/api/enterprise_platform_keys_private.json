@@ -20,7 +20,7 @@
         ],
         "returns_async": {
           "name": "callback",
-          "description": "Callback function.",
+          "description": "Resolves with the response.",
           "parameters": [
             {
               "name": "response",
@@ -48,7 +48,7 @@
         ],
         "returns_async": {
           "name": "callback",
-          "description": "Callback function.",
+          "description": "Resolves with the response.",
           "parameters": [
             {
               "name": "response",

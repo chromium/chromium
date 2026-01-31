@@ -13,7 +13,6 @@
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/environment.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -262,6 +261,10 @@
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #endif
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/themes/theme_service_factory.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 using bookmarks::BookmarkModel;
 using content::BrowserThread;
@@ -662,7 +665,8 @@ void ProfileImpl::LoadPrefsForNormalStartup(bool async_prefs) {
       profile_policy_connector_->policy_service(),
       g_browser_process->browser_policy_connector(),
       std::move(pref_validation_delegate), GetIOTaskRunner(), key_.get(), path_,
-      async_prefs, g_browser_process->os_crypt_async());
+      async_prefs, g_browser_process->os_crypt_async(),
+      g_browser_process->device_parental_controls());
   key_->SetPrefs(prefs_.get());
 }
 
@@ -1030,7 +1034,7 @@ void ProfileImpl::DestroyOffTheRecordProfile(Profile* otr_profile) {
 }
 
 bool ProfileImpl::HasOffTheRecordProfile(const OTRProfileID& otr_profile_id) {
-  return base::Contains(otr_profiles_, otr_profile_id);
+  return otr_profiles_.contains(otr_profile_id);
 }
 
 bool ProfileImpl::HasAnyOffTheRecordProfile() {
@@ -1093,6 +1097,9 @@ void ProfileImpl::OnLocaleReady(CreateMode create_mode) {
   CHECK(!ProfilePasswordStoreFactory::HasStore(this));
   CHECK(!AccountPasswordStoreFactory::HasStore(this));
   CHECK(!ReadingListModelFactory::HasModel(this));
+#if !BUILDFLAG(IS_ANDROID)
+  CHECK(!ThemeServiceFactory::GetForProfileIfExists(this));
+#endif  // !BUILDFLAG(IS_ANDROID)
   browser_sync::MaybeMigrateSyncingUserToSignedIn(GetPath(), GetPrefs());
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1596,8 +1603,8 @@ GURL ProfileImpl::GetHomePage() {
 
   if (GetPrefs()->GetBoolean(prefs::kHomePageIsNewTabPage))
     return GURL(chrome::kChromeUINewTabURL);
-  GURL home_page(url_formatter::FixupURL(
-      GetPrefs()->GetString(prefs::kHomePage), std::string()));
+  GURL home_page(
+      url_formatter::FixupURL(GetPrefs()->GetString(prefs::kHomePage)));
   if (!home_page.is_valid())
     return GURL(chrome::kChromeUINewTabURL);
   return home_page;

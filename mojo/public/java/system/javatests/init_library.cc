@@ -9,8 +9,9 @@
 JNI_EXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
   base::android::InitVM(vm);
 
-  if (!base::android::OnJNIOnLoadInit())
+  if (!base::android::OnJNIOnLoadInit()) {
     return -1;
+  }
 
   mojo::core::Init();
   return JNI_VERSION_1_4;

@@ -784,7 +784,7 @@ TEST_F(WebBundleParserTest, SignedBundleIntegrityBlockIsParsedCorrectly) {
 
 TEST_F(WebBundleParserTest,
        SignedBundleSignatureStackWithMultipleEntries_AllValid) {
-  unsigned long num_signatures = base::RandInt(2, 15);
+  unsigned long num_signatures = base::RandIntInclusive(2, 15);
 
   auto unsigned_bundle = CreateSmallBundle();
   auto bundle_and_keys =

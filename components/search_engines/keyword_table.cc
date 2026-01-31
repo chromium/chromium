@@ -658,7 +658,7 @@ void KeywordTable::BindURLToStatement(const TemplateURLData& data,
   // TODO(crbug.com/40950727): Check what it would take to use a new table to
   // store alternate_urls while keeping backups and table signature in a good
   // state.
-  base::Value::List alternate_urls_value;
+  base::ListValue alternate_urls_value;
   for (const auto& alternate_url : data.alternate_urls) {
     alternate_urls_value.Append(alternate_url);
   }

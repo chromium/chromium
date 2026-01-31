@@ -77,7 +77,6 @@
 #include "third_party/blink/renderer/core/style/shadow_list.h"
 #include "third_party/blink/renderer/core/style/shape_offset_path_operation.h"
 #include "third_party/blink/renderer/core/style/style_difference.h"
-#include "third_party/blink/renderer/core/style/style_fetched_image.h"
 #include "third_party/blink/renderer/core/style/style_generated_image.h"
 #include "third_party/blink/renderer/core/style/style_image.h"
 #include "third_party/blink/renderer/core/style/style_inherited_variables.h"
@@ -96,6 +95,7 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/capitalize.h"
 #include "third_party/blink/renderer/platform/text/character.h"
+#include "third_party/blink/renderer/platform/text/layout_locale.h"
 #include "third_party/blink/renderer/platform/text/quotes_data.h"
 #include "third_party/blink/renderer/platform/transforms/rotate_transform_operation.h"
 #include "third_party/blink/renderer/platform/transforms/scale_transform_operation.h"
@@ -275,22 +275,28 @@ static bool DiffAffectsContainerQueries(const ComputedStyle& old_style,
 
 static bool DiffAffectsScrollAnimations(const ComputedStyle& old_style,
                                         const ComputedStyle& new_style) {
-  if (!base::ValuesEquivalent(old_style.ScrollTimelineName(),
-                              new_style.ScrollTimelineName()) ||
+  if ((old_style.ScrollTimelineName() != new_style.ScrollTimelineName()) ||
       (old_style.ScrollTimelineAxis() != new_style.ScrollTimelineAxis())) {
     return true;
   }
-  if (!base::ValuesEquivalent(old_style.ViewTimelineName(),
-                              new_style.ViewTimelineName()) ||
+  if ((old_style.ViewTimelineName() != new_style.ViewTimelineName()) ||
       (old_style.ViewTimelineAxis() != new_style.ViewTimelineAxis()) ||
       (old_style.ViewTimelineInset() != new_style.ViewTimelineInset())) {
     return true;
   }
-  if (!base::ValuesEquivalent(old_style.TimelineScope(),
-                              new_style.TimelineScope())) {
+  if (old_style.TimelineScope() != new_style.TimelineScope()) {
     return true;
   }
   return false;
+}
+
+static bool DiffNeedsFullLayoutForAnimationTriggers(
+    const ComputedStyle& old_style,
+    const ComputedStyle& new_style) {
+  const CSSAnimationData* old_animations = old_style.Animations();
+  const CSSAnimationData* new_animations = new_style.Animations();
+  return CSSAnimationData::TimelineTriggerDataChanged(old_animations,
+                                                      new_animations);
 }
 
 bool ComputedStyle::NeedsReattachLayoutTree(const Element& element,
@@ -318,7 +324,8 @@ bool ComputedStyle::NeedsReattachLayoutTree(const Element& element,
   if (!old_style->ScrollMarkerGroupEqual(*new_style)) {
     return true;
   }
-  if (old_style->OverscrollArea() != new_style->OverscrollArea()) {
+  if (old_style->IsInternalOverscrollAreaAuto() !=
+      new_style->IsInternalOverscrollAreaAuto()) {
     return true;
   }
   // We need to perform a reattach if a "display: layout(foo)" has changed to a
@@ -366,6 +373,19 @@ bool ComputedStyle::NeedsReattachLayoutTree(const Element& element,
   if (old_style->ListStylePosition() != new_style->ListStylePosition()) {
     return true;
   }
+  return false;
+}
+
+bool ComputedStyle::NeedsReinsertLayoutTree(const ComputedStyle& old_style,
+                                            const ComputedStyle& new_style) {
+  if (old_style.IsFloating() != new_style.IsFloating()) {
+    return true;
+  }
+
+  if (old_style.HasOutOfFlowPosition() != new_style.HasOutOfFlowPosition()) {
+    return true;
+  }
+
   return false;
 }
 
@@ -451,7 +471,8 @@ ComputedStyle::ComputeDifferenceIgnoringInheritedFirstLineStyle(
     }
     return Difference::kPseudoElementStyle;
   }
-  if (old_style.OverscrollArea() != new_style.OverscrollArea()) {
+  if (old_style.IsInternalOverscrollAreaAuto() !=
+      new_style.IsInternalOverscrollAreaAuto()) {
     // TODO(crbug.com/447642032): Should we return kDescendantAffecting since
     // descendants may move into or out of a newly declared or no longer
     // declared overscroll area?
@@ -472,13 +493,13 @@ ComputedStyle::ComputeDifferenceIgnoringInheritedFirstLineStyle(
 StyleSelfAlignmentData ResolvedSelfAlignment(
     const StyleSelfAlignmentData& value,
     const StyleSelfAlignmentData& normal_value_behavior,
-    bool has_out_of_flow_position) {
+    bool has_anchor_center_offset) {
   if (value.GetPosition() == ItemPosition::kLegacy ||
       value.GetPosition() == ItemPosition::kNormal ||
       value.GetPosition() == ItemPosition::kAuto) {
     return normal_value_behavior;
   }
-  if (!has_out_of_flow_position &&
+  if (!has_anchor_center_offset &&
       value.GetPosition() == ItemPosition::kAnchorCenter) {
     return {ItemPosition::kCenter, value.Overflow(), value.PositionType()};
   }
@@ -492,12 +513,13 @@ StyleSelfAlignmentData ComputedStyle::ResolvedAlignSelf(
   // of each layout model.
   if (!parent_style || AlignSelf().GetPosition() != ItemPosition::kAuto) {
     return ResolvedSelfAlignment(AlignSelf(), normal_value_behavior,
-                                 HasOutOfFlowPosition());
+                                 AnchorCenterOffset().has_value());
   }
 
   // The 'auto' keyword computes to the parent's align-items computed value.
   return ResolvedSelfAlignment(parent_style->AlignItems(),
-                               normal_value_behavior, HasOutOfFlowPosition());
+                               normal_value_behavior,
+                               AnchorCenterOffset().has_value());
 }
 
 StyleSelfAlignmentData ComputedStyle::ResolvedJustifySelf(
@@ -507,12 +529,13 @@ StyleSelfAlignmentData ComputedStyle::ResolvedJustifySelf(
   // of each layout model.
   if (!parent_style || JustifySelf().GetPosition() != ItemPosition::kAuto) {
     return ResolvedSelfAlignment(JustifySelf(), normal_value_behavior,
-                                 HasOutOfFlowPosition());
+                                 AnchorCenterOffset().has_value());
   }
 
   // The auto keyword computes to the parent's justify-items computed value.
   return ResolvedSelfAlignment(parent_style->JustifyItems(),
-                               normal_value_behavior, HasOutOfFlowPosition());
+                               normal_value_behavior,
+                               AnchorCenterOffset().has_value());
 }
 
 bool ComputedStyle::operator==(const ComputedStyle& o) const {
@@ -1008,6 +1031,10 @@ bool ComputedStyle::DiffNeedsFullLayout(const Document& document,
     }
   }
 
+  if (DiffNeedsFullLayoutForAnimationTriggers(*this, other)) {
+    return true;
+  }
+
   return false;
 }
 
@@ -1417,19 +1444,6 @@ InterpolationQuality ComputedStyle::GetInterpolationQuality() const {
   }
 
   return GetDefaultInterpolationQuality();
-}
-
-void ComputedStyle::LoadDeferredImages(Document& document) const {
-  if (HasBackgroundImage()) {
-    for (const FillLayer* background_layer = &BackgroundLayers();
-         background_layer; background_layer = background_layer->Next()) {
-      if (StyleImage* image = background_layer->GetImage()) {
-        if (image->IsImageResource() && image->IsLazyloadPossiblyDeferred()) {
-          To<StyleFetchedImage>(image)->LoadDeferredImage(document);
-        }
-      }
-    }
-  }
 }
 
 ETransformBox ComputedStyle::UsedTransformBox(
@@ -2196,6 +2210,12 @@ LineLogicalSide ComputedStyle::GetTextEmphasisLineLogicalSide() const {
   if (RuntimeEnabledFeatures::TextEmphasisPositionAutoEnabled() &&
       position == TextEmphasisPosition::kAuto) {
     if (IsHorizontalWritingMode()) {
+      // In Chinese, emphasis marks appear below the text.
+      // https://drafts.csswg.org/css-text-decor/#text-emphasis-position-property
+      const LayoutLocale* locale = GetFontDescription().Locale();
+      if (locale && locale->IsMacrolanguageChinese()) {
+        return LineLogicalSide::kUnder;
+      }
       return LineLogicalSide::kOver;
     }
     switch (GetWritingMode()) {
@@ -3066,8 +3086,10 @@ bool ComputedStyle::GapRuleColorIsTransparent(
 }
 
 bool ComputedStyle::IsRenderedInTopLayer(const Element& element) const {
-  return (element.IsInTopLayer() && Overlay() == EOverlay::kAuto) ||
-         StyleType() == kPseudoIdBackdrop;
+  return StyleType() == kPseudoIdBackdrop ||
+         (element.IsInTopLayer() &&
+          (!RuntimeEnabledFeatures::OverlayPropertyEnabled() ||
+           Overlay() == EOverlay::kAuto));
 }
 
 bool ComputedStyle::ApplyControlFixedSize(const Node* node) const {
@@ -3090,11 +3112,16 @@ bool ComputedStyle::HasAnimationTrigger() const {
     return false;
   }
 
-  return std::any_of(data->TriggerAttachmentsList().begin(),
-                     data->TriggerAttachmentsList().end(),
-                     [](Member<StyleTriggerAttachmentVector> attachments_list) {
-                       return attachments_list.Get();
-                     });
+  return std::any_of(
+             data->TriggerAttachmentsList().begin(),
+             data->TriggerAttachmentsList().end(),
+             [](const Member<StyleTriggerAttachmentVector>& attachments_list) {
+               return attachments_list.Get();
+             }) ||
+         std::any_of(
+             data->TimelineTriggerNameList().begin(),
+             data->TimelineTriggerNameList().end(),
+             [](const Member<ScopedCSSName>& name) { return name.Get(); });
 }
 
 bool ComputedStyle::HasBaseEffectiveAppearance() const {

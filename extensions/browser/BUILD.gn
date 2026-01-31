@@ -254,6 +254,8 @@ source_set("browser_sources") {
     "content_verifier/content_verify_job.cc",
     "content_verifier/content_verify_job.h",
     "content_verifier/scoped_uma_recorder.h",
+    "convert_user_script.cc",
+    "convert_user_script.h",
     "crx_file_info.cc",
     "crx_file_info.h",
     "deferred_start_render_host.h",
@@ -290,6 +292,8 @@ source_set("browser_sources") {
     "extension_action_manager.h",
     "extension_api_frame_id_map.cc",
     "extension_api_frame_id_map.h",
+    "extension_assets_manager.cc",
+    "extension_assets_manager.h",
     "extension_creator.cc",
     "extension_creator.h",
     "extension_creator_filter.cc",
@@ -544,6 +548,8 @@ source_set("browser_sources") {
     "ui_util.h",
     "uninstall_reason.h",
     "unloaded_extension_reason.h",
+    "unpacked_installer.cc",
+    "unpacked_installer.h",
     "update_install_gate.cc",
     "update_install_gate.h",
     "update_observer.h",
@@ -616,13 +622,13 @@ source_set("browser_sources") {
     "//content/public/common",
     "//content/public/common:buildflags",
     "//extensions:extensions_browser_resources",
+    "//extensions/browser:keepalive",
     "//extensions/browser/api:extensions_api_client",
     "//extensions/browser/api/messaging:native_messaging",
     "//extensions/browser/api/storage:settings_namespace",
     "//extensions/browser/api/storage:settings_observer",
     "//extensions/browser/api/system_display:display_info_provider",
     "//extensions/browser/api/virtual_keyboard_private:virtual_keyboard_delegate",
-    "//extensions/browser/updater:keepalive",
     "//extensions/buildflags",
     "//extensions/common",
     "//extensions/common/api",
@@ -683,13 +689,33 @@ source_set("browser_sources") {
   # TODO(crbug.com/41323543): Ideally web_view should be a separate target on
   # which the extension system depends.
   if (enable_guest_view) {
+    if (enable_platform_apps) {
+      sources += [
+        "guest_view/app_view/app_view_constants.cc",
+        "guest_view/app_view/app_view_constants.h",
+        "guest_view/app_view/app_view_guest.cc",
+        "guest_view/app_view/app_view_guest.h",
+        "guest_view/app_view/app_view_guest_delegate.cc",
+        "guest_view/app_view/app_view_guest_delegate.h",
+      ]
+    }
+    if (enable_extensions) {
+      sources += [
+        "guest_view/mime_handler_view/mime_handler_stream_manager.cc",
+        "guest_view/mime_handler_view/mime_handler_stream_manager.h",
+        "guest_view/mime_handler_view/mime_handler_view_attach_helper.cc",
+        "guest_view/mime_handler_view/mime_handler_view_attach_helper.h",
+        "guest_view/mime_handler_view/mime_handler_view_constants.cc",
+        "guest_view/mime_handler_view/mime_handler_view_constants.h",
+        "guest_view/mime_handler_view/mime_handler_view_embedder.cc",
+        "guest_view/mime_handler_view/mime_handler_view_embedder.h",
+        "guest_view/mime_handler_view/mime_handler_view_guest.cc",
+        "guest_view/mime_handler_view/mime_handler_view_guest.h",
+        "guest_view/mime_handler_view/mime_handler_view_guest_delegate.cc",
+        "guest_view/mime_handler_view/mime_handler_view_guest_delegate.h",
+      ]
+    }
     sources += [
-      "guest_view/app_view/app_view_constants.cc",
-      "guest_view/app_view/app_view_constants.h",
-      "guest_view/app_view/app_view_guest.cc",
-      "guest_view/app_view/app_view_guest.h",
-      "guest_view/app_view/app_view_guest_delegate.cc",
-      "guest_view/app_view/app_view_guest_delegate.h",
       "guest_view/extension_options/extension_options_constants.cc",
       "guest_view/extension_options/extension_options_constants.h",
       "guest_view/extension_options/extension_options_guest.cc",
@@ -702,18 +728,6 @@ source_set("browser_sources") {
       "guest_view/extensions_guest_view_manager_delegate.h",
       "guest_view/guest_view_events.cc",
       "guest_view/guest_view_events.h",
-      "guest_view/mime_handler_view/mime_handler_stream_manager.cc",
-      "guest_view/mime_handler_view/mime_handler_stream_manager.h",
-      "guest_view/mime_handler_view/mime_handler_view_attach_helper.cc",
-      "guest_view/mime_handler_view/mime_handler_view_attach_helper.h",
-      "guest_view/mime_handler_view/mime_handler_view_constants.cc",
-      "guest_view/mime_handler_view/mime_handler_view_constants.h",
-      "guest_view/mime_handler_view/mime_handler_view_embedder.cc",
-      "guest_view/mime_handler_view/mime_handler_view_embedder.h",
-      "guest_view/mime_handler_view/mime_handler_view_guest.cc",
-      "guest_view/mime_handler_view/mime_handler_view_guest.h",
-      "guest_view/mime_handler_view/mime_handler_view_guest_delegate.cc",
-      "guest_view/mime_handler_view/mime_handler_view_guest_delegate.h",
       "guest_view/web_view/controlled_frame_embedder_url_fetcher.cc",
       "guest_view/web_view/controlled_frame_embedder_url_fetcher.h",
       "guest_view/web_view/javascript_dialog_helper.cc",
@@ -818,6 +832,13 @@ source_set("browser_sources") {
   ]
 }
 
+source_set("keepalive") {
+  sources = [
+    "scoped_extension_keep_alive.cc",
+    "scoped_extension_keep_alive.h",
+  ]
+}
+
 source_set("test_support") {
   testonly = true
   sources = [
@@ -872,6 +893,7 @@ source_set("test_support") {
     "//components/safe_browsing/core/browser/db:database_manager",
     "//components/safe_browsing/core/browser/db:util",
     "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
+    "//components/safe_browsing/core/browser/db:v4_test_util",
     "//components/safe_browsing/core/common/proto:crx_info_proto_gen",
     "//components/sync/model",
     "//components/sync_preferences",
@@ -973,6 +995,7 @@ source_set("unit_tests") {
     "content_verifier/content_verifier_unittest.cc",
     "content_verifier/content_verifier_utils_unittest.cc",
     "content_verifier/content_verify_job_unittest.cc",
+    "convert_user_script_unittest.cc",
     "error_map_unittest.cc",
     "event_listener_map_unittest.cc",
     "event_router_unittest.cc",

@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/widget/glic_window_animator.h"
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/glic/widget/glic_widget.h"
 #include "chrome/browser/glic/widget/glic_window_resize_animation.h"
 #include "ui/compositor/layer.h"

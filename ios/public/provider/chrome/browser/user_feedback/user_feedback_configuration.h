@@ -10,7 +10,7 @@
 #import "ios/public/provider/chrome/browser/signin/signin_sso_api.h"
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_data.h"
 
-@protocol ApplicationCommands;
+@protocol SceneCommands;
 
 // Configuration object used by the User Feedback view controller.
 @interface UserFeedbackConfiguration : NSObject
@@ -21,8 +21,8 @@
 // SingleSignOnService used by the User Feedback view controller.
 @property(nonatomic, weak) id<SingleSignOnService> singleSignOnService;
 
-// ApplicationCommands used by the User Feedback view controller.
-@property(nonatomic, weak) id<ApplicationCommands> handler;
+// SceneCommands used by the User Feedback view controller.
+@property(nonatomic, weak) id<SceneCommands> sceneHandler;
 
 @end
 

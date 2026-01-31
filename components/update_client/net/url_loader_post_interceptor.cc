@@ -4,8 +4,9 @@
 
 #include "components/update_client/net/url_loader_post_interceptor.h"
 
+#include <algorithm>
+
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
@@ -165,7 +166,7 @@ void URLLoaderPostInterceptor::InitializeWithInterceptor() {
           replacements.ClearQuery();
           url = url.ReplaceComponents(replacements);
         }
-        if (!base::Contains(filtered_urls_, url)) {
+        if (!std::ranges::contains(filtered_urls_, url)) {
           return;
         }
 
@@ -217,7 +218,7 @@ URLLoaderPostInterceptor::RequestHandler(
     replacements.ClearQuery();
     url = url.ReplaceComponents(replacements);
   }
-  if (!base::Contains(filtered_urls_, url)) {
+  if (!std::ranges::contains(filtered_urls_, url)) {
     return nullptr;
   }
 

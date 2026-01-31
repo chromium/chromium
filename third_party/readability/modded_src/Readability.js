@@ -1446,6 +1446,28 @@ Readability.prototype = {
         articleContent.id = "readability-content";
       }
 
+      // Check for lead image before top candidate, to account for cases where
+      // the lead image is not already inside `topCandidate`.
+      const leadImageData = this._getLeadImageData(topCandidate);
+      if (leadImageData) {
+        // Remove affected elements to prevent redundant inclusion as sibling.
+        for (const el of leadImageData.affectedElements) {
+          el.remove();
+        }
+        // Create <figure> element and add to beginning of article.
+        const figure = doc.createElement('figure');
+        const img = doc.createElement('img');
+        img.src = leadImageData.imageUrl;
+        figure.appendChild(img);
+
+        if (leadImageData.captionHtml) {
+          const figcaption = doc.createElement('figcaption');
+          figcaption.innerHTML = leadImageData.captionHtml;
+          figure.appendChild(figcaption);
+        }
+        articleContent.appendChild(figure);
+      }
+
       var siblingScoreThreshold = Math.max(
         10,
         topCandidate.readability.contentScore * 0.2
@@ -1886,6 +1908,179 @@ Readability.prototype = {
     metadata.publishedTime = this._unescapeHtmlEntities(metadata.publishedTime);
 
     return metadata;
+  },
+
+  /**
+   * Finds the first `itemList` (non-empty) entry that has maximal score.
+   *
+   * @param {Array<!Object>} itemList - The non-empty list of items to score.
+   * @param {Function} scoreFun - The function to score each item.
+   * @return {[Object, number]} An array containing the best item and its index.
+   */
+  _argmax(itemList, scoreFun) {
+    let bestIndex = 0;
+    let bestScore = scoreFun(itemList[0]);
+    for (let i = 1; i < itemList.length; ++i) {
+      const score = scoreFun(itemList[i]);
+      if (bestScore < score) {
+        bestIndex = i;
+        bestScore = score;
+      }
+    }
+    return [itemList[bestIndex], bestIndex];
+  },
+
+  /**
+   * Collects up to `count` previous sibling elements of a starting element,
+   * moving up the DOM tree to parent's previous siblings on exhaustion.
+   *
+   * @param {Element} el - The starting element for the traversal.
+   * @param {number} count - The maximum number of previous elements to get.
+   * @return {Array<Element>} An array of previous elements found.
+   */
+  _getPreviousElements(el, count) {
+    const ret = [];
+    for (let i = 0; i < count; i++) {
+      while (el && !el.previousElementSibling) {
+        el = el.parentNode;
+      }
+      if (!el) break;
+      el = el.previousElementSibling;
+      ret.push(el);
+    }
+    return ret;
+  },
+
+  /**
+   * Rates a given element's likelihood of containing a lead image. The score is
+   * based on CSS classes/IDs, and attributes of the most promising image within.
+   *
+   * @param {Element} el - The element to rate.
+   * @return {?{score: number, bestImg: Element}} An object containing the score
+   *     and the best image element, or null if no images are found.
+   */
+  _rateLeadImageIn(el) {
+    const imgs = Array.from(el.getElementsByTagName('img'));
+    if (imgs.length === 0) {
+      return null;
+    }
+
+    let score = 0;
+    // Boost element with favorable names.
+    if (el.className.includes('hero') || el.id.includes('hero')) {
+      score += 100;
+    }
+    // Penalize element with unfavorable names.
+    if (this.REGEXPS.negative.test(el.className) ||
+        this.REGEXPS.negative.test(el.id)) {
+      score -= 50;
+    }
+
+    const scoreImage = (img) => {
+      let imgScore = 0;
+      const srcset = img.getAttribute('srcset') || '';
+      if (srcset) {
+        imgScore += 30 + Math.min(10, 0.1 * srcset.length);
+      }
+      const alt = img.getAttribute('alt') || '';
+      if (alt.length > 10) {
+        imgScore += 30 + Math.min(10, 0.1 * alt.length);
+      }
+      return imgScore;
+    };
+
+    // Find the image with the most promising attributes.
+    const bestImg = this._argmax(imgs, scoreImage)[0];
+    score += scoreImage(bestImg);
+
+    // Penalize element that has a lot of text.
+    const textContent = el.textContent.trim();
+    if (textContent.length > 300) {
+      score -= 50;
+    }
+    return {score, bestImg};
+  },
+
+  /**
+   * Rates a given element's likelihood of containing a lead image caption.
+   * Prefers <figcaption> tags, then synthesizes a caption from <p> tags.
+   *
+   * @param {Element} el - The element to rate.
+   * @return {?{score: number, captionFun: Function}} An object containing the
+   *     score and a function (reduces useless work) to create the caption
+   *     element, or null if no suitable caption is found.
+   */
+  _rateLeadCaptionIn(el) {
+    // Prefer <figcaption> since it has  to clear semantic.
+    const figcaption = el.querySelector('figcaption');
+    if (figcaption) {
+      // Return `captionFun` to avoid useless work.
+      return {score: 100, captionFun: () => figcaption.cloneNode(true)};
+    }
+
+    // Synthesize caption from <p> tags.
+    const pList = Array.from(el.getElementsByTagName('p'));
+    let pString = pList.map((p) => p.textContent).join(' ');
+    if (pString.length > 0) {
+      let score = 80;
+      if (/\b(credit|source|photo:)\b/i.test(pString)) {
+        score = 95;
+      }
+      return {score: score, captionFun: () => {
+        const figcaption = this._doc.createElement('figcaption');
+        figcaption.textContent = pString;
+        return figcaption;
+      }};
+    }
+
+    return null;
+  },
+
+  /**
+   * Searches for a lead image and its caption from the siblings preceding
+   * `topCandidate`. It returns the data and the DOM elements where the
+   * data was found.
+   *
+   * @param {Element} topCandidate - The main article content element.
+   * @return {?{imageUrl: string, captionHtml: ?string, affectedElements: Set<Element>}}
+   *     An object containing the lead image data and the DOM elements that
+   *     contain this data, or null if no suitable lead image is found.
+   */
+  _getLeadImageData(topCandidate) {
+    const NUM_SIBLINGS_TO_SCAN = 4;
+    const MIN_LEAD_IMAGE_SCORE = 40;
+    const leadCandidates =
+        this._getPreviousElements(topCandidate, NUM_SIBLINGS_TO_SCAN);
+    if (leadCandidates.length === 0) {
+      return null;
+    }
+
+    // First pass: Find the best image.
+    const imageRatings = leadCandidates.map((el) => this._rateLeadImageIn(el));
+    const [bestImageRating, bestImageRatingIndex] =
+        this._argmax(imageRatings, (rating) => rating?.score ?? -1);
+
+    if (!bestImageRating || bestImageRating.score < MIN_LEAD_IMAGE_SCORE) {
+      return null;
+    }
+
+    // Second pass: Find the best caption from the relevant slice.
+    const captionCandidates = leadCandidates.slice(0, bestImageRatingIndex + 1);
+    const captionRatings =
+        captionCandidates.map((el) => this._rateLeadCaptionIn(el));
+    const [bestCaptionRating, bestCaptionRatingIndex] =
+        this._argmax(captionRatings, (rating) => rating?.score ?? -1);
+
+    const imageUrl = bestImageRating.bestImg.getAttribute('src');
+    const captionHtml = bestCaptionRating?.captionFun().innerHTML;
+
+    const affectedElements = new Set();
+    affectedElements.add(leadCandidates[bestImageRatingIndex]);
+    if (bestCaptionRating) {
+      affectedElements.add(captionCandidates[bestCaptionRatingIndex]);
+    }
+
+    return {imageUrl, captionHtml, affectedElements};
   },
 
   /**

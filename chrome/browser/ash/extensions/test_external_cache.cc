@@ -21,7 +21,7 @@ TestExternalCache::TestExternalCache(ExternalCacheDelegate* delegate,
 
 TestExternalCache::~TestExternalCache() = default;
 
-const base::Value::Dict& TestExternalCache::GetCachedExtensions() {
+const base::DictValue& TestExternalCache::GetCachedExtensions() {
   return cached_extensions_;
 }
 
@@ -29,7 +29,7 @@ void TestExternalCache::Shutdown(base::OnceClosure callback) {
   std::move(callback).Run();
 }
 
-void TestExternalCache::UpdateExtensionsList(base::Value::Dict prefs) {
+void TestExternalCache::UpdateExtensionsList(base::DictValue prefs) {
   configured_extensions_ = std::move(prefs);
   cached_extensions_.clear();
 
@@ -143,8 +143,7 @@ void TestExternalCache::AddEntryToCrxCache(const std::string& id,
                                            const std::string& version) {
   crx_cache_[id] = {crx_path, version};
 
-  if (const base::Value::Dict* extension =
-          configured_extensions_.FindDict(id)) {
+  if (const base::DictValue* extension = configured_extensions_.FindDict(id)) {
     cached_extensions_.Set(
         id, GetExtensionValueToCache(*extension, crx_path, version));
     delegate_->OnExtensionListsUpdated(cached_extensions_);

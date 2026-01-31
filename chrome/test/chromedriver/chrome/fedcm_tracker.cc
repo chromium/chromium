@@ -15,7 +15,7 @@ FedCmTracker::FedCmTracker(DevToolsClient* client) {
 FedCmTracker::~FedCmTracker() = default;
 
 Status FedCmTracker::Enable(DevToolsClient* client) {
-  return client->SendCommand("FedCm.enable", base::Value::Dict());
+  return client->SendCommand("FedCm.enable", base::DictValue());
 }
 
 bool FedCmTracker::ListensToConnections() const {
@@ -24,7 +24,7 @@ bool FedCmTracker::ListensToConnections() const {
 
 Status FedCmTracker::OnEvent(DevToolsClient* client,
                              const std::string& method,
-                             const base::Value::Dict& params) {
+                             const base::DictValue& params) {
   if (method == "FedCm.dialogClosed") {
     DialogClosed();
     return Status(kOk);
@@ -42,11 +42,11 @@ Status FedCmTracker::OnEvent(DevToolsClient* client,
   last_subtitle_ = str ? std::make_optional(*str) : std::nullopt;
   str = params.FindString("dialogType");
   last_dialog_type_ = str ? *str : "";
-  const base::Value::List* accounts = params.FindList("accounts");
+  const base::ListValue* accounts = params.FindList("accounts");
   if (accounts) {
     last_accounts_ = accounts->Clone();
   } else {
-    last_accounts_ = base::Value::List();
+    last_accounts_ = base::ListValue();
   }
   return Status(kOk);
 }

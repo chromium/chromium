@@ -113,7 +113,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer4.GpuRasterizationEnabled" enum="BooleanEnabled"
-    expires_after="2026-05-03">
+    expires_after="2026-07-05">
   <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
@@ -124,7 +124,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Renderer4.ImageDecodeTaskDurationUs{ImageOrTaskType}.{DecodeType}"
-    units="microseconds" expires_after="2026-04-26">
+    units="microseconds" expires_after="2026-06-28">
   <owner>cblume@chromium.org</owner>
   <owner>vmpstr@chromium.org</owner>
   <owner>sashamcintosh@chromium.org</owner>
@@ -152,6 +152,7 @@ chromium-metrics-reviews@google.com.
     <variant name=".Gif"/>
     <variant name=".Ico"/>
     <variant name=".Jpeg"/>
+    <variant name=".Jxl"/>
     <variant name=".Other"/>
     <variant name=".OutOfRaster"/>
     <variant name=".Png"/>
@@ -166,7 +167,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer4.MainThreadGestureScrollReason2"
-    enum="MainThreadScrollingReason2" expires_after="2026-05-24">
+    enum="MainThreadScrollingReason2" expires_after="2026-07-26">
   <owner>flackr@chromium.org</owner>
   <owner>pdr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
@@ -185,7 +186,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer4.MainThreadWheelScrollReason2"
-    enum="MainThreadScrollingReason2" expires_after="2026-05-24">
+    enum="MainThreadScrollingReason2" expires_after="2026-07-26">
   <owner>flackr@chromium.org</owner>
   <owner>pdr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
@@ -205,7 +206,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer4.Renderer.RasterTaskTotalDuration{RasterTaskTypeGpu}"
-    units="microseconds" expires_after="2026-04-12">
+    units="microseconds" expires_after="2026-06-14">
   <owner>khushalsagar@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@google.com</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -221,7 +222,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer4.ScrollingThread.{ScrollSourceDevice}"
-    enum="ScrollingThreadStatus" expires_after="2026-05-03">
+    enum="ScrollingThreadStatus" expires_after="2026-07-05">
   <owner>bokan@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>

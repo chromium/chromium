@@ -5,14 +5,14 @@
 #include "extensions/browser/disable_reason.h"
 
 #include <ostream>
+#include <utility>
 
 #include "base/check_op.h"
-#include "base/types/cxx23_to_underlying.h"
 
 namespace extensions {
 
 bool IsValidDisableReason(int reason) {
-  static_assert(extensions::disable_reason::DISABLE_REASON_LAST == (1LL << 26),
+  static_assert(extensions::disable_reason::DISABLE_REASON_LAST == (1LL << 27),
                 "Please update this method whenever a new disable reason is "
                 "added / removed.");
   return reason == disable_reason::DISABLE_NONE ||
@@ -37,6 +37,7 @@ bool IsValidDisableReason(int reason) {
              disable_reason::DISABLE_PUBLISHED_IN_STORE_REQUIRED_BY_POLICY ||
          reason == disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION ||
          reason == disable_reason::DISABLE_UNSUPPORTED_DEVELOPER_EXTENSION ||
+         reason == disable_reason::DISABLE_BLOCKED_BY_CLOUD_POLICY_CHECK ||
          reason == disable_reason::DISABLE_UNKNOWN;
 }
 
@@ -64,7 +65,7 @@ base::flat_set<int> BitflagToIntegerSet(int bit_flag) {
 base::flat_set<int> DisableReasonSetToIntegerSet(const DisableReasonSet& set) {
   base::flat_set<int> result;
   for (disable_reason::DisableReason reason : set) {
-    result.insert(base::to_underlying(reason));
+    result.insert(std::to_underlying(reason));
   }
   return result;
 }

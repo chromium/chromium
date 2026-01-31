@@ -10,8 +10,8 @@
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
-class GetAllCommandsFunction : public ExtensionFunction {
-  ~GetAllCommandsFunction() override = default;
+class CommandsGetAllFunction : public ExtensionFunction {
+  ~CommandsGetAllFunction() override = default;
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("commands.getAll", COMMANDS_GETALL)
 };

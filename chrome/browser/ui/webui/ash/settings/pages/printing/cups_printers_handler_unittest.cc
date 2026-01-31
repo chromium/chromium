@@ -238,7 +238,7 @@ class CupsPrintersHandlerTest : public testing::Test {
   void CallRetrieveCupsPpd(const std::string& printer_id,
                            const std::string& license_url = "",
                            const std::string& printer_name = kPpdPrinterName) {
-    base::Value::List args;
+    base::ListValue args;
     args.Append(printer_id);
     args.Append(printer_name);
     args.Append(license_url);
@@ -248,7 +248,7 @@ class CupsPrintersHandlerTest : public testing::Test {
   }
 
   void CallGetCupsSavedPrintersList() {
-    base::Value::List args;
+    base::ListValue args;
     args.Append(kHandlerFunctionName);
     web_ui_.HandleReceivedMessage("getCupsSavedPrintersList", args);
   }
@@ -323,7 +323,7 @@ TEST_F(CupsPrintersHandlerTest, VerifyOnlyPpdFilesAllowed) {
   ui::SelectFileDialog::SetFactory(
       std::make_unique<TestSelectFileDialogFactory>(&expected_file_type_info));
 
-  base::Value::List args;
+  base::ListValue args;
   args.Append("handleFunctionName");
   web_ui_.HandleReceivedMessage("selectPPDFile", args);
 }

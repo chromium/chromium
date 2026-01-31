@@ -12,6 +12,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/ui/autofill_image_fetcher_base.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
@@ -66,6 +67,10 @@ class ValuablesDataManager : public KeyedService,
   // no such loyaty card.
   std::optional<LoyaltyCard> GetLoyaltyCardById(const ValuableId& id) const;
 
+  // Records the date a loyalty card was used and also increments the number of
+  // times it was used.
+  void RecordLoyaltyCardUsed(const ValuableId& id, base::Time use_date);
+
   // Returns if there are any pending queries to the web database.
   bool HasPendingQueries() const;
 
@@ -91,6 +96,9 @@ class ValuablesDataManager : public KeyedService,
 
  private:
   friend class ValuablesDataManagerTestApi;
+
+  base::optional_ref<LoyaltyCard> GetMutableLoyaltyCardById(
+      const ValuableId& id);
 
   // Handler method called when `pending_query_` finishes.
   void OnDataRetrieved(WebDataServiceBase::Handle handle,

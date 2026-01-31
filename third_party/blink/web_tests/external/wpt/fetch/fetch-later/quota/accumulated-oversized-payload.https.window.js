@@ -23,8 +23,10 @@ const halfQuota = Math.ceil(quota / 2);
 
 // Tests that a reporting origin only allow queuing requests within its quota.
 test(
-    () => {
+    (t) => {
       const controller = new AbortController();
+      // Release quota taken by the pending requests for subsequent tests.
+      t.add_cleanup(() => controller.abort());
 
       // Queues with the 1st call (POST) that sends max/2 quota.
       fetchLater(requestUrl, {
@@ -45,7 +47,7 @@ test(
           // Required, as the size of referrer also take up quota.
           referrer: '',
         });
-      }, null, null);
+      }, QUOTA_PER_ORIGIN, halfQuota - 1);
 
       // Makes the 3rd call (GET) to the same reporting origin, where its
       // request size is len(requestUrl) + headers, which should be accepted.
@@ -55,9 +57,6 @@ test(
         // Required, as the size of referrer also take up quota.
         referrer: '',
       });
-
-      // Release quota taken by the pending requests for subsequent tests.
-      controller.abort();
     },
     `The 2nd fetchLater(same-origin) call in the top-level document is not allowed to exceed per-origin quota for its POST body of ${
         dataType}.`);

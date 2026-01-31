@@ -1801,7 +1801,7 @@ void WebAppIconManager::OverwriteAppIconsFromPendingIcons(
     OverwriteAppIconsFromPendingIconsCallback callback) {
   TRACE_EVENT0("ui", "WebAppIconManager::OverwriteIconsFromPendingIcons");
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!provider_->registrar_unsafe().IsInRegistrar(app_id)) {
+  if (!provider_->registrar_unsafe().GetInstallState(app_id)) {
     std::move(callback).Run(false);
     return;
   }
@@ -1829,7 +1829,7 @@ void WebAppIconManager::DeletePendingIconData(
     DeletePendingIconDataCallback callback) {
   TRACE_EVENT0("ui", "WebAppIconManager::DeletePendingIconData");
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!provider_->registrar_unsafe().IsInRegistrar(app_id)) {
+  if (!provider_->registrar_unsafe().GetInstallState(app_id)) {
     std::move(callback).Run(false);
     return;
   }

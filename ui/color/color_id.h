@@ -224,6 +224,15 @@
   E_CPONLY(kColorSysIlloNeutralMid) \
   E_CPONLY(kColorSysIlloNeutralHigh) \
   E_CPONLY(kColorSysIlloNeutralMax) \
+  /* ActorUi */ \
+  E_CPONLY(kColorSysActorUiBorder) \
+  E_CPONLY(kColorSysActorUiGradientStart) \
+  E_CPONLY(kColorSysActorUiGradientMiddle) \
+  E_CPONLY(kColorSysActorUiGradientEnd) \
+  /* Glic */ \
+  E_CPONLY(kColorGlicTabUnderline1) \
+  E_CPONLY(kColorGlicTabUnderline2) \
+  E_CPONLY(kColorGlicTabUnderline3) \
   /* AI. */ \
   E_CPONLY(kColorSysAiIllustrationShapeSurface1) \
   E_CPONLY(kColorSysAiIllustrationShapeSurface2) \

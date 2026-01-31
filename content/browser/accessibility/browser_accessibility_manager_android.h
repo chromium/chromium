@@ -44,6 +44,15 @@ enum {
   ANDROID_ACCESSIBILITY_EVENT_TEXT_TRAVERSED_AT_MOVEMENT_GRANULARITY = 131072
 };
 
+// From android.view.accessibility.AccessibilityEvent in Java:
+enum {
+  ANDROID_ACCESSIBILITY_EVENT_TEXT_CHANGE_TYPE_UNDEFINED = 0,
+  ANDROID_ACCESSIBILITY_EVENT_TEXT_CHANGE_TYPE_IN_COMPOSITION = 1,
+  ANDROID_ACCESSIBILITY_EVENT_TEXT_CHANGE_TYPE_COMMITTED_BY_IME = 2,
+  ANDROID_ACCESSIBILITY_EVENT_TEXT_CHANGE_TYPE_CONVERSION_SUGGESTION_SELECTED_BY_IME =
+      4,
+};
+
 class BrowserAccessibilityAndroid;
 class WebContentsAccessibilityAndroid;
 
@@ -117,9 +126,9 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAndroid
       const std::vector<ui::AXLocationChange>& changes) override;
   ui::AXNode* RetargetForEvents(ui::AXNode* node,
                                 RetargetEventType type) const override;
-  void FireBlinkEvent(ax::mojom::Event event_type,
-                      ui::BrowserAccessibility* node,
-                      int action_request_id) override;
+  void FireSourceEvent(ax::mojom::Event event_type,
+                       ui::BrowserAccessibility* node,
+                       int action_request_id) override;
   void FireGeneratedEvent(ui::AXEventGenerator::Event event_type,
                           const ui::AXNode* node) override;
 
@@ -136,8 +145,9 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAndroid
   // forwards or backwards by character, word, or line. This part is
   // unit-tested; the Java interfaces above are just wrappers. Both of these
   // take a single cursor index as input and return the boundaries surrounding
-  // the next word or line. If moving by character, the output start and
-  // end index will be the same.
+  // the next character, word or line.
+  // The function returns false if the cursor cannot be moved further in the
+  // given direction and granularity.
   bool NextAtGranularity(int32_t granularity,
                          int cursor_index,
                          BrowserAccessibilityAndroid* node,

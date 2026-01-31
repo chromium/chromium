@@ -5,7 +5,7 @@
 package org.chromium.chrome.browser.tabmodel;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -226,7 +226,7 @@ public class TabModelUtils {
      * @return A oneshot supplier that will only be set when initialization is done.
      */
     public static OneshotSupplier<TabModelSelector> onInitializedTabModelSelector(
-            ObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
+            MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
         OneshotSupplierImpl<TabModelSelector> delegate = new OneshotSupplierImpl<>();
         new OneShotCallback<>(
                 tabModelSelectorSupplier,
@@ -260,19 +260,17 @@ public class TabModelUtils {
                 ArchivedTabModelSelectorHolder.getInstance(tab.getProfile());
         if (archivedTabModelSelector != null
                 && archivedTabModelSelector.getTabById(tab.getId()) != null) {
-            return archivedTabModelSelector
-                    .getTabGroupModelFilterProvider()
-                    .getTabGroupModelFilter(/* isIncognito= */ false);
+            return archivedTabModelSelector.getTabGroupModelFilter(/* isIncognito= */ false);
         }
 
-        final ObservableSupplier<TabModelSelector> supplier =
+        final MonotonicObservableSupplier<TabModelSelector> supplier =
                 TabModelSelectorSupplier.from(windowAndroid);
         if (supplier == null) return null;
 
         final TabModelSelector selector = supplier.get();
         if (selector == null) return null;
 
-        return selector.getTabGroupModelFilterProvider().getTabGroupModelFilter(tab.isIncognito());
+        return selector.getTabGroupModelFilter(tab.isIncognito());
     }
 
     /** Converts a {@link TabList} to a {@link List<Tab>}. */

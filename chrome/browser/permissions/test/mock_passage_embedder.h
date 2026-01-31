@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/run_loop.h"
-#include "components/passage_embeddings/passage_embeddings_test_util.h"
+#include "components/passage_embeddings/core/passage_embeddings_test_util.h"
 
 namespace test {
 

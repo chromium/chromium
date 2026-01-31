@@ -34,7 +34,7 @@ class HostResolverManager::ServiceEndpointRequestImpl
     : public HostResolver::ServiceEndpointRequest,
       public base::LinkNode<HostResolverManager::ServiceEndpointRequestImpl> {
  public:
-  ServiceEndpointRequestImpl(url::SchemeHostPort scheme_host_port,
+  ServiceEndpointRequestImpl(HostResolver::Host host,
                              NetworkAnonymizationKey network_anonymization_key,
                              NetLogWithSource net_log,
                              ResolveHostParameters parameters,

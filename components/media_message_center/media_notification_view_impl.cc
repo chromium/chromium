@@ -7,7 +7,6 @@
 #include <string_view>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/media_message_center/media_notification_background_ash_impl.h"
@@ -504,7 +503,7 @@ void MediaNotificationViewImpl::UpdateActionButtonsVisibility() {
   for (views::View* view : GetButtons()) {
     views::Button* action_button = views::Button::AsButton(view);
     bool should_show =
-        base::Contains(visible_actions, GetActionFromButtonTag(*action_button));
+        visible_actions.contains(GetActionFromButtonTag(*action_button));
     bool should_invalidate = should_show != action_button->GetVisible();
 
     action_button->SetVisible(should_show);
@@ -736,24 +735,24 @@ void MediaNotificationViewImpl::UpdateForegroundColor() {
   views::SetImageFromVectorIconWithColor(
       play_pause_button_,
       *GetVectorIconForMediaAction(MediaSessionAction::kPlay),
-      kMediaButtonIconSize, theme.enabled_icon_color,
-      theme.disabled_icon_color);
+      kMediaButtonIconSize,
+      {theme.enabled_icon_color, theme.disabled_icon_color});
   views::SetToggledImageFromVectorIconWithColor(
       play_pause_button_,
       *GetVectorIconForMediaAction(MediaSessionAction::kPause),
-      kMediaButtonIconSize, theme.enabled_icon_color,
-      theme.disabled_icon_color);
+      kMediaButtonIconSize,
+      {theme.enabled_icon_color, theme.disabled_icon_color});
 
   views::SetImageFromVectorIconWithColor(
       picture_in_picture_button_,
       *GetVectorIconForMediaAction(MediaSessionAction::kEnterPictureInPicture),
-      kMediaButtonIconSize, theme.enabled_icon_color,
-      theme.disabled_icon_color);
+      kMediaButtonIconSize,
+      {theme.enabled_icon_color, theme.disabled_icon_color});
   views::SetToggledImageFromVectorIconWithColor(
       picture_in_picture_button_,
       *GetVectorIconForMediaAction(MediaSessionAction::kExitPictureInPicture),
-      kMediaButtonIconSize, theme.enabled_icon_color,
-      theme.disabled_icon_color);
+      kMediaButtonIconSize,
+      {theme.enabled_icon_color, theme.disabled_icon_color});
 
   // Update action buttons.
   for (views::View* child : playback_button_container_->children()) {
@@ -766,8 +765,8 @@ void MediaNotificationViewImpl::UpdateForegroundColor() {
 
     views::SetImageFromVectorIconWithColor(
         button, *GetVectorIconForMediaAction(GetActionFromButtonTag(*button)),
-        kMediaButtonIconSize, theme.enabled_icon_color,
-        theme.disabled_icon_color);
+        kMediaButtonIconSize,
+        {theme.enabled_icon_color, theme.disabled_icon_color});
 
     button->SchedulePaint();
   }

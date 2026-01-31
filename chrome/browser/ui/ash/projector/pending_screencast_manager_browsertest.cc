@@ -12,6 +12,7 @@
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "ash/webui/projector_app/test/mock_xhr_sender.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -173,9 +174,7 @@ class PendingScreencastMangerBrowserTest : public InProcessBrowserTest {
 
     base::File file(folder_path.Append(relative_file_path.BaseName()),
                     base::File::FLAG_CREATE | base::File::FLAG_WRITE);
-    UNSAFE_TODO(EXPECT_EQ(static_cast<int>(file_content.size()),
-                          file.Write(/*offset=*/0, file_content.data(),
-                                     /*size=*/file_content.size())));
+    EXPECT_TRUE(file.WriteAndCheck(0, base::as_byte_span(file_content)));
     EXPECT_TRUE(file.IsValid());
     file.Close();
   }

@@ -4,7 +4,8 @@
 
 #include "third_party/blink/renderer/core/speculation_rules/speculation_rule_set.h"
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "services/network/public/mojom/no_vary_search.mojom-shared.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-shared.h"
@@ -153,7 +154,7 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
 
   for (wtf_size_t i = 0; i < input->size(); ++i) {
     const String& input_key = input->at(i).first;
-    if (!base::Contains(kKnownKeys, input_key)) {
+    if (!std::ranges::contains(kKnownKeys, input_key)) {
       SetParseErrorMessage(
           out_error,
           StrCat({"A rule contains an unknown key: \"", input_key, "\"."}));
@@ -220,7 +221,7 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
       // If relativeTo is neither the string "ruleset" nor the string
       // "document", then return null.
       if (!relative_to->AsString(&value) ||
-          !base::Contains(kKnownRelativeToValues, value)) {
+          !std::ranges::contains(kKnownRelativeToValues, value)) {
         SetParseErrorMessage(out_error,
                              "A rule has an unknown \"relative_to\" value.");
         return nullptr;
@@ -650,7 +651,7 @@ SpeculationRuleSet* SpeculationRuleSet::Parse(Source* source,
       duplicate_key_warning = StrCat(
           {"An object contained more than one key named ",
            key.EncodeForDebugging(), ". All but the last are ignored.",
-           (base::Contains(action_allow_list, key)
+           (std::ranges::contains(action_allow_list, key)
                 ? " It is likely that either one of them was intended to be "
                   "another action, or that their rules should be merged into a "
                   "single array."
@@ -787,14 +788,6 @@ SpeculationRuleSet* SpeculationRuleSet::Parse(Source* source,
       /*allow_form_submission=*/false,
       /*allow_requires_anonymous_client_ip_when_cross_origin=*/true);
 
-  // If parsed["prefetch_with_subresources"] exists and is a list, then for
-  // each...
-  parse_for_action(
-      "prefetch_with_subresources", result->prefetch_with_subresources_rules_,
-      /*allow_target_hint=*/false,
-      /*allow_form_submission=*/false,
-      /*allow_requires_anonymous_client_ip_when_cross_origin=*/false);
-
   // If parsed["prerender"] exists and is a list, then for each...
   parse_for_action(
       "prerender", result->prerender_rules_,
@@ -852,7 +845,6 @@ SpeculationRuleSet::SpeculationTargetHintFromString(
 
 void SpeculationRuleSet::Trace(Visitor* visitor) const {
   visitor->Trace(prefetch_rules_);
-  visitor->Trace(prefetch_with_subresources_rules_);
   visitor->Trace(prerender_rules_);
   visitor->Trace(prerender_until_script_rules_);
   visitor->Trace(source_);

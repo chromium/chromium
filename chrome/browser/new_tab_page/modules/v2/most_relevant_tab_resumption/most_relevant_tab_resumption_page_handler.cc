@@ -75,7 +75,7 @@ ntp::most_relevant_tab_resumption::mojom::URLVisitPtr TabToMojom(
   url_visit_mojom->form_factor = tab.visit.device_type;
   url_visit_mojom->session_name = tab.session_name;
 
-  base::Value::Dict dictionary;
+  base::DictValue dictionary;
   NewTabUI::SetUrlTitleAndDirection(&dictionary, tab.visit.title,
                                     tab.visit.url);
   url_visit_mojom->title = *dictionary.FindString("title");
@@ -97,7 +97,7 @@ ntp::most_relevant_tab_resumption::mojom::URLVisitPtr HistoryEntryVisitToMojom(
     url_visit_mojom->session_name = client_name.value();
   }
 
-  base::Value::Dict dictionary;
+  base::DictValue dictionary;
   NewTabUI::SetUrlTitleAndDirection(&dictionary, visit.url_row.title(),
                                     visit.url_row.url());
   url_visit_mojom->title = *dictionary.FindString("title");
@@ -489,14 +489,13 @@ void MostRelevantTabResumptionPageHandler::OnGotDecoratedURLVisitAggregates(
 // static
 void MostRelevantTabResumptionPageHandler::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
-  registry->RegisterDictionaryPref(kDismissedVisitsPrefName,
-                                   base::Value::Dict());
+  registry->RegisterDictionaryPref(kDismissedVisitsPrefName, base::DictValue());
 }
 
 bool MostRelevantTabResumptionPageHandler::IsNewURL(
     const std::string& url_key,
     const base::Time& timestamp) {
-  const base::Value::Dict& cached_urls =
+  const base::DictValue& cached_urls =
       profile_->GetPrefs()->GetDict(kDismissedVisitsPrefName);
   auto* val = cached_urls.Find(url_key);
   if (val) {

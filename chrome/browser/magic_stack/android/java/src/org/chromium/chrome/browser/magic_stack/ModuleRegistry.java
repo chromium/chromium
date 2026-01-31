@@ -13,10 +13,11 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.LifecycleObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
-import org.chromium.components.segmentation_platform.InputContext;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /** A class which is responsible for registering module builders {@link ModuleProviderBuilder}. */
@@ -115,6 +116,22 @@ public class ModuleRegistry {
         return builder.build(moduleDelegate, onModuleBuiltCallback);
     }
 
+    /**
+     * Returns the builder {@link ModuleProviderBuilder} for a given module type.
+     *
+     * @param moduleType The type of the module.
+     * @return The object of the module builder.
+     */
+    public ModuleProviderBuilder getModuleProviderBuilder(@ModuleType int moduleType) {
+        assert mModuleBuildersMap.containsKey(moduleType);
+        return mModuleBuildersMap.get(moduleType);
+    }
+
+    /** Returns a list of all registered module types. */
+    public List<Integer> getAllRegisteredModuleTypes() {
+        return new ArrayList<>(mModuleBuildersMap.keySet());
+    }
+
     /** Destroys the registry. */
     @SuppressWarnings("NullAway") // Restrict non-@Nullable assumptions to before destroy().
     public void destroy() {
@@ -127,14 +144,5 @@ public class ModuleRegistry {
         mActivityLifecycleDispatcher.unregister(mLifecycleObserver);
         mLifecycleObserver = null;
         mActivityLifecycleDispatcher = null;
-    }
-
-    /** Creates an instance of InputContext. */
-    InputContext createInputContext() {
-        InputContext inputContext = new InputContext();
-        for (ModuleProviderBuilder builder : mModuleBuildersMap.values()) {
-            inputContext.mergeFrom(builder.createInputContext());
-        }
-        return inputContext;
     }
 }

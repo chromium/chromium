@@ -23,7 +23,6 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.ColorInt;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
-import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
 import org.chromium.base.ActivityState;
@@ -500,26 +499,6 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     }
 
     // Activity:
-
-    @Override
-    public void onAttachFragment(Fragment fragment) {
-        if (!(fragment instanceof FirstRunFragment)) return;
-
-        FirstRunFragment page = (FirstRunFragment) fragment;
-        // Delay notifying the child page until native and the TemplateUrlService are initialized.
-        // Tracked by mNativeSideIsInitialized is ready. Otherwise if the next page handles
-        // the default search engine, it will be missing dependencies. See https://crbug.com/1275950
-        // for when this didn't work.
-        if (mNativeInitializationPromise.isFulfilled()) {
-            page.onNativeInitialized();
-        } else {
-            mNativeInitializationPromise.then(
-                    (ignored) -> {
-                        page.onNativeInitialized();
-                    });
-        }
-    }
-
     @Override
     public void onRestoreInstanceState(@Nullable Bundle state) {
         // Don't automatically restore state here. This is a counterpart to the override

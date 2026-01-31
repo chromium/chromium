@@ -185,7 +185,9 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
 
         PropertyModelChangeProcessor.create(model, view, BaseCarouselSuggestionViewBinder::bind);
 
-        verify(view).setBackgroundColor(mContext.getColor(R.color.omnibox_suggestion_bg_incognito));
+        verify(view)
+                .setBackgroundColor(
+                        mContext.getColor(R.color.search_suggestion_bg_color_incognito));
         // Same as in the non-incognito variant.
         verify(view).setOutlineProvider(notNull());
         verify(view).setClipToOutline(true);

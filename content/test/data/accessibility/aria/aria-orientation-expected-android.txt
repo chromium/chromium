@@ -23,9 +23,9 @@ android.webkit.WebView focusable focused
 ++android.view.View role_description='splitter'
 ++android.view.View role_description='splitter'
 ++android.view.View role_description='splitter'
-++android.widget.TabWidget role_description='tab list'
-++android.widget.TabWidget role_description='tab list'
-++android.widget.TabWidget role_description='tab list'
+++android.view.ViewGroup role_description='tab list' collection column_count=1
+++android.view.ViewGroup role_description='tab list' collection column_count=1
+++android.view.ViewGroup role_description='tab list' collection column_count=1
 ++android.view.View role_description='toolbar'
 ++android.view.View role_description='toolbar'
 ++android.view.View role_description='toolbar'

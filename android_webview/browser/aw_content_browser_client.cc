@@ -55,7 +55,6 @@
 #include "base/base_paths_android.h"
 #include "base/base_switches.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
@@ -238,7 +237,7 @@ std::string AwContentBrowserClient::GetAcceptLangsImpl() {
 
   // If accept languages do not contain en-US, add in en-US which will be
   // used with a lower q-value.
-  if (!base::Contains(locales_string, "en-US")) {
+  if (!locales_string.contains("en-US")) {
     locales_string += ",en-US";
   }
   return locales_string;
@@ -323,10 +322,13 @@ AwContentBrowserClient::CreateBrowserMainParts(bool /* is_integration_test */) {
   return std::make_unique<AwBrowserMainParts>(this);
 }
 
-bool IsAnyStartupTaskExperimentEnabled() {
+bool AwContentBrowserClient::IsAnyStartupTaskExperimentEnabled() {
   return AwBrowserMainParts::isWebViewStartupTasksExperimentEnabled() ||
          AwBrowserMainParts::isWebViewStartupTasksExperimentEnabledP2() ||
-         AwBrowserMainParts::isStartupTaskYieldToNativeExperimentEnabled();
+         AwBrowserMainParts::isStartupTaskYieldToNativeExperimentEnabled() ||
+         startup_tasks_logic_enabled_for_testing_ ||
+         startup_tasks_logic_p2_enabled_for_testing_ ||
+         startup_tasks_yield_to_native_experiment_enabled_for_testing_;
 }
 
 void AwContentBrowserClient::PostAfterStartupTask(
@@ -356,7 +358,8 @@ void AwContentBrowserClient::OnStartupComplete() {
   DCHECK(!startup_info_.startup_complete);
 
   startup_info_.startup_complete = true;
-  if (AwBrowserMainParts::isStartupTaskYieldToNativeExperimentEnabled()) {
+  if (AwBrowserMainParts::isStartupTaskYieldToNativeExperimentEnabled() ||
+      startup_tasks_yield_to_native_experiment_enabled_for_testing_) {
     YieldToLooperChecker::GetInstance().SetStartupRunning(false);
   }
 
@@ -383,7 +386,8 @@ void AwContentBrowserClient::OnUiTaskRunnerReady(
   startup_info_.enable_native_task_execution_callback =
       std::move(enable_native_task_execution_callback);
 
-  if (AwBrowserMainParts::isStartupTaskYieldToNativeExperimentEnabled()) {
+  if (AwBrowserMainParts::isStartupTaskYieldToNativeExperimentEnabled() ||
+      startup_tasks_yield_to_native_experiment_enabled_for_testing_) {
     YieldToLooperChecker::GetInstance().SetStartupRunning(true);
   }
 }
@@ -1090,12 +1094,6 @@ bool AwContentBrowserClient::ShouldLockProcessToSite(
   return false;
 }
 
-bool AwContentBrowserClient::ShouldEnforceNewCanCommitUrlChecks() {
-  // TODO(https://crbug.com/326250356): Diagnose any remaining Android WebView
-  // crashes from these new checks and then remove this function.
-  return true;
-}
-
 void AwContentBrowserClient::WillCreateURLLoaderFactory(
     content::BrowserContext* browser_context,
     content::RenderFrameHost* frame,
@@ -1298,16 +1296,16 @@ void AwContentBrowserClient::LogWebDXFeatureForCurrentPage(
       render_frame_host, feature);
 }
 
-content::ContentBrowserClient::PrivateNetworkRequestPolicyOverride
-AwContentBrowserClient::ShouldOverridePrivateNetworkRequestPolicy(
+content::ContentBrowserClient::LocalNetworkAccessRequestPolicyOverride
+AwContentBrowserClient::ShouldOverrideLocalNetworkAccessRequestPolicy(
     content::BrowserContext* browser_context,
     const url::Origin& origin) {
   // Webview does not implement support for deprecation trials, so webview apps
-  // broken by Private Network Access restrictions cannot help themselves by
+  // broken by Local Network Access restrictions cannot help themselves by
   // registering for the trial.
   // See crbug.com/1255675.
-  return content::ContentBrowserClient::PrivateNetworkRequestPolicyOverride::
-      kForceAllow;
+  return content::ContentBrowserClient::
+      LocalNetworkAccessRequestPolicyOverride::kForceAllow;
 }
 
 content::SpeechRecognitionManagerDelegate*

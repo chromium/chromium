@@ -6,8 +6,6 @@
 
 #include <limits.h>
 
-#include "base/check_is_test.h"
-#include "base/command_line.h"
 #include "base/test/test_future.h"
 #include "base/unguessable_token.h"
 #include "services/webnn/public/cpp/context_properties.h"
@@ -714,11 +712,6 @@ ContextProperties GetContextPropertiesForTesting() {
        {SupportedDataTypes::All(), kMaxRank},
        /*where_condition=*/{SupportedDataTypes::All(), kMaxRank},
        /*where_value=*/{SupportedDataTypes::All(), kMaxRank}}));
-}
-
-bool UseGPUInTests() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kUseGpuInTests);
 }
 
 }  // namespace webnn

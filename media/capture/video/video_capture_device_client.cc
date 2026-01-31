@@ -15,7 +15,6 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -32,7 +31,6 @@
 #include "media/base/video_frame_metadata.h"
 #include "media/base/video_types.h"
 #include "media/capture/capture_switches.h"
-#include "media/capture/mojom/video_capture_buffer.mojom-forward.h"
 #include "media/capture/mojom/video_capture_buffer.mojom.h"
 #include "media/capture/mojom/video_capture_types.mojom-forward.h"
 #include "media/capture/video/scoped_buffer_pool_reservation.h"
@@ -480,7 +478,7 @@ void VideoCaptureDeviceClient::OnIncomingCapturedImage(
     int frame_feedback_id) {
   DFAKE_SCOPED_RECURSIVE_LOCK(call_from_producer_);
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
-               "VideoCaptureDeviceClient::OnIncomingCapturedGfxBuffer");
+               "VideoCaptureDeviceClient::OnIncomingCapturedImage");
 
   if (last_captured_pixel_format_ != frame_format.pixel_format) {
     OnLog("Pixel format: " +
@@ -493,6 +491,16 @@ void VideoCaptureDeviceClient::OnIncomingCapturedImage(
         VideoCaptureFrameDropReason::kDeviceClientFrameHasInvalidFormat);
     return;
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(media::kAndroidZeroCopyVideoCapture)) {
+    OnIncomingCapturedImageZeroCopy(std::move(shared_image), frame_format,
+                                    clockwise_rotation, reference_time,
+                                    timestamp, capture_begin_timestamp,
+                                    metadata, frame_feedback_id);
+    return;
+  }
+#endif
 
   int destination_width = shared_image->size().width();
   int destination_height = shared_image->size().height();
@@ -561,6 +569,51 @@ void VideoCaptureDeviceClient::OnIncomingCapturedImage(
                            metadata);
 }
 
+void VideoCaptureDeviceClient::OnIncomingCapturedImageZeroCopy(
+    scoped_refptr<gpu::ClientSharedImage> shared_image,
+    const VideoCaptureFormat& frame_format,
+    int clockwise_rotation,
+    base::TimeTicks reference_time,
+    base::TimeDelta timestamp,
+    std::optional<base::TimeTicks> capture_begin_timestamp,
+    const std::optional<VideoFrameMetadata>& metadata,
+    int frame_feedback_id) {
+  gfx::ColorSpace color_space = shared_image->color_space();
+  CapturedExternalVideoBuffer buffer = CapturedExternalVideoBuffer(
+      std::move(shared_image), frame_format, color_space);
+
+  VideoFrameMetadata new_metadata = metadata.value_or(VideoFrameMetadata());
+  media::VideoRotation video_rotation = media::VIDEO_ROTATION_0;
+  switch (clockwise_rotation) {
+    case 0:
+      video_rotation = media::VIDEO_ROTATION_0;
+      break;
+    case 90:
+      video_rotation = media::VIDEO_ROTATION_90;
+      break;
+    case 180:
+      video_rotation = media::VIDEO_ROTATION_180;
+      break;
+    case 270:
+      video_rotation = media::VIDEO_ROTATION_270;
+      break;
+  }
+  new_metadata.transformation = media::VideoTransformation(video_rotation);
+
+  const gfx::Size buffer_size = buffer.client_shared_image->size();
+  ReadyFrameInBuffer ready_frame;
+  if (CreateReadyFrameFromExternalBuffer(
+          std::move(buffer), reference_time, timestamp, capture_begin_timestamp,
+          gfx::Rect(buffer_size), new_metadata,
+          &ready_frame) != ReserveResult::kSucceeded) {
+    DVLOG(2) << __func__
+             << " CreateReadyFrameFromExternalBuffer failed: reservation "
+                "tracker failed.";
+    return;
+  }
+  receiver_->OnFrameReadyInBuffer(std::move(ready_frame));
+}
+
 void VideoCaptureDeviceClient::OnIncomingCapturedExternalBuffer(
     CapturedExternalVideoBuffer buffer,
     base::TimeTicks reference_time,
@@ -605,6 +658,8 @@ VideoCaptureDeviceClient::CreateReadyFrameFromExternalBuffer(
   CapturedExternalVideoBuffer buffer_for_reserve_id =
       CapturedExternalVideoBuffer(std::move(buffer.handle), buffer.format,
                                   buffer.color_space);
+  buffer_for_reserve_id.client_shared_image =
+      std::move(buffer.client_shared_image);
 #if BUILDFLAG(IS_WIN)
   buffer_for_reserve_id.imf_buffer = std::move(buffer.imf_buffer);
 #endif
@@ -627,13 +682,9 @@ VideoCaptureDeviceClient::CreateReadyFrameFromExternalBuffer(
   }
 
   // Register the buffer with the receiver if it is new.
-  if (!base::Contains(buffer_ids_known_by_receiver_, buffer_id)) {
-    // On windows, 'GetGpuMemoryBufferHandle' will duplicate a new handle which
-    // refers to the same object as the original handle.
-    // https://learn.microsoft.com/en-us/windows/win32/api/handleapi/nf-handleapi-duplicatehandle
+  if (!std::ranges::contains(buffer_ids_known_by_receiver_, buffer_id)) {
     media::mojom::VideoBufferHandlePtr buffer_handle =
-        media::mojom::VideoBufferHandle::NewGpuMemoryBufferHandle(
-            buffer_pool_->GetGpuMemoryBufferHandle(buffer_id));
+        buffer_pool_->GetVideoBufferHandle(buffer_id);
     receiver_->OnNewBuffer(buffer_id, std::move(buffer_handle));
     buffer_ids_known_by_receiver_.push_back(buffer_id);
   }
@@ -699,24 +750,9 @@ VideoCaptureDeviceClient::ReserveOutputBuffer(const gfx::Size& frame_size,
 
   CHECK_NE(VideoCaptureBufferPool::kInvalidId, buffer_id);
 
-  if (!base::Contains(buffer_ids_known_by_receiver_, buffer_id)) {
-    const VideoCaptureBufferType target_buffer_type =
-        buffer_pool_->GetBufferType(buffer_id);
-
-    media::mojom::VideoBufferHandlePtr buffer_handle;
-    switch (target_buffer_type) {
-      case VideoCaptureBufferType::kSharedMemory:
-        buffer_handle = media::mojom::VideoBufferHandle::NewUnsafeShmemRegion(
-            buffer_pool_->DuplicateAsUnsafeRegion(buffer_id));
-        break;
-      case VideoCaptureBufferType::kMailboxHolder:
-        NOTREACHED();
-      case VideoCaptureBufferType::kGpuMemoryBuffer:
-        buffer_handle =
-            media::mojom::VideoBufferHandle::NewGpuMemoryBufferHandle(
-                buffer_pool_->GetGpuMemoryBufferHandle(buffer_id));
-        break;
-    }
+  if (!std::ranges::contains(buffer_ids_known_by_receiver_, buffer_id)) {
+    media::mojom::VideoBufferHandlePtr buffer_handle =
+        buffer_pool_->GetVideoBufferHandle(buffer_id);
     receiver_->OnNewBuffer(buffer_id, std::move(buffer_handle));
     if (require_new_buffer_id) {
       *require_new_buffer_id = buffer_id;

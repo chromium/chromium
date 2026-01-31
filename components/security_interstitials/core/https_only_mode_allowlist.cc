@@ -4,7 +4,6 @@
 
 #include "components/security_interstitials/core/https_only_mode_allowlist.h"
 
-#include "base/containers/contains.h"
 #include "base/json/values_util.h"
 #include "base/time/clock.h"
 #include "base/values.h"
@@ -53,7 +52,7 @@ void HttpsOnlyModeAllowlist::AllowHttpForHost(const std::string& host,
   // directly storing a string value.
   GURL url = GetSecureGURLForHost(host);
   base::Time expiration_time = clock_->Now() + expiration_timeout_;
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set(kHTTPAllowlistExpirationTimeKey, base::TimeToValue(expiration_time));
   host_content_settings_map_->SetWebsiteSettingDefaultScope(
       url, GURL(), ContentSettingsType::HTTP_ALLOWED,
@@ -76,8 +75,8 @@ bool HttpsOnlyModeAllowlist::IsHttpAllowedForHost(
     const std::string& host,
     bool is_nondefault_storage) const {
   if (is_nondefault_storage) {
-    return base::Contains(
-        allowed_http_hosts_for_non_default_storage_partitions_, host);
+    return allowed_http_hosts_for_non_default_storage_partitions_.contains(
+        host);
   }
 
   GURL url = GetSecureGURLForHost(host);

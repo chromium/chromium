@@ -268,6 +268,8 @@ struct Config {
     !defined(GPU_FUZZER_USE_RASTER_DECODER)
     gl_context_attribs.webgl_compatibility_context =
         IsWebGLContextType(context_type);
+    gl_context_attribs.hardened_context =
+        !gl_context_attribs.webgl_compatibility_context;
     gl_context_attribs.global_texture_share_group = true;
     gl_context_attribs.robust_resource_initialization = true;
     gl_context_attribs.robust_buffer_access = true;

@@ -1,4 +1,4 @@
-\b([a-z]+)(strasse|str|weg|allee|all|chaussee|gasse|kreis)\b	\1 \2
+\b([a-z]+)(strasse|str|weg|allee|all|chaussee|gasse|kreis)\b	$1 $2
 \bappenzell\s+rhodes\s+exterieures\b	ar
 \bfaubourg\s+philippe\s+suchard\b	fbg ph suchard
 \bappenzell\s+ausserrhoden\b	ar

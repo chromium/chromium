@@ -13,7 +13,6 @@
 #include <utility>
 
 #include "base/auto_reset.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/i18n/rtl.h"
@@ -496,13 +495,13 @@ void TableView::SetSortDescriptors(const SortDescriptors& sort_descriptors) {
 }
 
 bool TableView::IsColumnVisible(int id) const {
-  return base::Contains(visible_columns_, id, [](const VisibleColumn& column) {
-    return column.column.id;
-  });
+  return std::ranges::contains(
+      visible_columns_, id,
+      [](const VisibleColumn& column) { return column.column.id; });
 }
 
 bool TableView::HasColumn(int id) const {
-  return base::Contains(columns_, id, &ui::TableColumn::id);
+  return std::ranges::contains(columns_, id, &ui::TableColumn::id);
 }
 
 bool TableView::GetHasFocusIndicator() const {
@@ -1576,6 +1575,12 @@ void TableView::SortItemsAndUpdateMapping(bool schedule_paint) {
 
   GetViewAccessibility().SetTableRowCount(static_cast<int32_t>(GetRowCount()));
   UpdateVirtualAccessibilityChildrenBounds();
+
+  // Clear the selection if the active row is out of bounds.
+  if (selection_model_.active().has_value() &&
+      selection_model_.active().value() >= row_count) {
+    selection_model_.Clear();
+  }
 
   if (schedule_paint) {
     SchedulePaint();

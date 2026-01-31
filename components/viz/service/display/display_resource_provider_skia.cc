@@ -4,11 +4,11 @@
 
 #include "components/viz/service/display/display_resource_provider_skia.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "build/build_config.h"
 #include "components/viz/service/display/resource_fence.h"
@@ -37,15 +37,15 @@ DisplayResourceProviderSkia::~DisplayResourceProviderSkia() {
   Destroy();
 }
 
-std::vector<ReturnedResource>
+std::vector<ReturnedResourceViz>
 DisplayResourceProviderSkia::DeleteAndReturnUnusedResourcesToChildImpl(
     Child& child_info,
     DeleteStyle style,
     const std::vector<ResourceId>& unused) {
-  std::vector<ReturnedResource> to_return;
+  std::vector<ReturnedResourceViz> to_return;
   std::vector<std::unique_ptr<ExternalUseClient::ImageContext>>
       image_contexts_to_return;
-  std::vector<ReturnedResource*> external_used_resources;
+  std::vector<ReturnedResourceViz*> external_used_resources;
 
   // Reserve enough space to avoid re-allocating, so we can keep item pointers
   // for later using.
@@ -147,7 +147,7 @@ DisplayResourceProviderSkia::LockSetForExternalUse::LockResource(
   DCHECK(resource.is_gpu_resource_type());
 
   if (!resource.locked_for_external_use) {
-    DCHECK(!base::Contains(resources_, std::make_pair(id, &resource)));
+    DCHECK(!std::ranges::contains(resources_, std::make_pair(id, &resource)));
     resources_.emplace_back(id, &resource);
 
     if (!resource.image_context) {
@@ -178,7 +178,7 @@ DisplayResourceProviderSkia::LockSetForExternalUse::LockResource(
     }
   }
 
-  DCHECK(base::Contains(resources_, std::make_pair(id, &resource)));
+  DCHECK(std::ranges::contains(resources_, std::make_pair(id, &resource)));
   return resource.image_context.get();
 }
 

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -19,7 +20,9 @@
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 
+class BuildState;
 class PrefRegistrySimple;
+class PrefService;
 
 namespace ash {
 class NetworkStateHandler;
@@ -32,6 +35,8 @@ class Time;
 }  // namespace base
 
 namespace policy {
+
+class BrowserPolicyConnectorAsh;
 
 // This class observes the device setting |kDeviceMinimumVersion|, and
 // checks if respective requirement is met. If an update is not required, all
@@ -64,7 +69,7 @@ class MinimumVersionPolicyHandler : public BuildStateObserver,
 
     // Checks if the user is logged in as any kiosk app or this is an
     // auto-launch kiosk device.
-    virtual bool IsKioskMode() const = 0;
+    virtual bool IsKioskMode(const PrefService& local_state) const = 0;
 
     // Checks if the device is enterprise managed.
     virtual bool IsDeviceEnterpriseManaged() const = 0;
@@ -105,7 +110,7 @@ class MinimumVersionPolicyHandler : public BuildStateObserver,
     // Method used to create an instance of MinimumVersionRequirement from
     // dictionary if it contains valid version string.
     static std::unique_ptr<MinimumVersionRequirement> CreateInstanceIfValid(
-        const base::Value::Dict& dict);
+        const base::DictValue& dict);
 
     // This is used to compare two MinimumVersionRequirement objects
     // and returns 1 if the first object has version or warning time
@@ -132,8 +137,14 @@ class MinimumVersionPolicyHandler : public BuildStateObserver,
     kEolReached
   };
 
-  explicit MinimumVersionPolicyHandler(Delegate* delegate,
-                                       ash::CrosSettings* cros_settings);
+  // `local_state`, `build_state`, and `browser_policy_connector_ash` must be
+  // non-null and must outlive `this`.
+  MinimumVersionPolicyHandler(
+      PrefService* local_state,
+      BuildState* build_state,
+      BrowserPolicyConnectorAsh* browser_policy_connector_ash,
+      Delegate* delegate,
+      ash::CrosSettings* cros_settings);
 
   MinimumVersionPolicyHandler(const MinimumVersionPolicyHandler&) = delete;
   MinimumVersionPolicyHandler& operator=(const MinimumVersionPolicyHandler&) =
@@ -262,6 +273,10 @@ class MinimumVersionPolicyHandler : public BuildStateObserver,
 
   // Resets the local state prefs to default values.
   void ResetLocalState();
+
+  const raw_ref<PrefService> local_state_;
+  const raw_ref<BuildState> build_state_;
+  const raw_ref<BrowserPolicyConnectorAsh> browser_policy_connector_ash_;
 
   // This delegate instance is owned by the owner of
   // MinimumVersionPolicyHandler. The owner is responsible to make sure that the

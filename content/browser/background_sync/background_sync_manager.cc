@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/barrier_closure.h"
-#include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -1531,7 +1530,7 @@ bool BackgroundSyncManager::AllConditionsExceptConnectivitySatisfied(
   if (registration.is_suspended())
     return false;
 
-  if (base::Contains(emulated_offline_sw_, service_worker_id))
+  if (emulated_offline_sw_.contains(service_worker_id))
     return false;
 
   return true;
@@ -2373,7 +2372,7 @@ blink::ServiceWorkerStatusCode BackgroundSyncManager::CanEmulateSyncEvent(
   if (!network_observer_->NetworkSufficient())
     return blink::ServiceWorkerStatusCode::kErrorEventWaitUntilRejected;
   int64_t registration_id = active_version->registration_id();
-  if (base::Contains(emulated_offline_sw_, registration_id))
+  if (emulated_offline_sw_.contains(registration_id))
     return blink::ServiceWorkerStatusCode::kErrorEventWaitUntilRejected;
   return blink::ServiceWorkerStatusCode::kOk;
 }

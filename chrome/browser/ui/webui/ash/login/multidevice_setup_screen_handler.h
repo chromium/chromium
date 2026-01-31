@@ -41,7 +41,7 @@ class MultiDeviceSetupScreenHandler final : public BaseScreenHandler,
   // BaseScreenHandler:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void GetAdditionalParameters(base::Value::Dict* dict) override;
+  void GetAdditionalParameters(base::DictValue* dict) override;
 
   // MultiDeviceSetupScreenView:
   void Show() override;

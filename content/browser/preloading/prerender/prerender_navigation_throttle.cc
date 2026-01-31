@@ -4,6 +4,8 @@
 
 #include "content/browser/preloading/prerender/prerender_navigation_throttle.h"
 
+#include <algorithm>
+
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_split.h"
@@ -251,7 +253,7 @@ PrerenderNavigationThrottle::WillProcessResponse() {
   bool is_credentialed_prerender =
       navigation_request->response() &&
       navigation_request->response()->parsed_headers &&
-      base::Contains(
+      std::ranges::contains(
           navigation_request->response()->parsed_headers->supports_loading_mode,
           network::mojom::LoadingMode::kCredentialedPrerender);
   // Cancel prerendering when this is same-site cross-origin navigation but the
@@ -315,7 +317,7 @@ void PrerenderNavigationThrottle::CancelPrerendering(
       frame_tree_node->current_frame_host()
           ->delegate()
           ->GetPrerenderHostRegistry();
-  prerender_host_registry->CancelHost(prerender_host_->frame_tree_node_id(),
+  prerender_host_registry->CancelHost(prerender_host_->prerender_host_id(),
                                       final_status);
 }
 

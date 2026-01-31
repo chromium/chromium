@@ -150,7 +150,7 @@ export function emptyState(): WallpaperState {
         photosByAlbumId: {},
       },
     },
-    local: {images: null, data: {[kDefaultImageSymbol]: {url: ''}}},
+    local: {images: null, data: {[kDefaultImageSymbol]: ''}},
     attribution: null,
     currentSelected: null,
     pendingSelected: null,

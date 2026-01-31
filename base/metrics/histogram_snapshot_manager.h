@@ -20,7 +20,6 @@
 namespace base {
 
 class HistogramSamples;
-class HistogramFlattener;
 
 // HistogramSnapshotManager handles the logistics of gathering up available
 // histograms for recording either to disk or for transmission (such as from
@@ -29,16 +28,18 @@ class HistogramFlattener;
 // corruption, this class also validates as much redundancy as it can before
 // calling for the marginal change (a.k.a., delta) in a histogram to be
 // recorded.
-class BASE_EXPORT HistogramSnapshotManager final {
+// Recording changes is done using abstract RecordDelta() method that needs
+// to be defined in a subclass.
+class BASE_EXPORT HistogramSnapshotManager {
  public:
-  explicit HistogramSnapshotManager(HistogramFlattener* histogram_flattener);
+  HistogramSnapshotManager() = default;
 
   HistogramSnapshotManager(const HistogramSnapshotManager&) = delete;
   HistogramSnapshotManager& operator=(const HistogramSnapshotManager&) = delete;
 
-  ~HistogramSnapshotManager();
+  virtual ~HistogramSnapshotManager();
 
-  // Snapshots all histograms and asks |histogram_flattener_| to record the
+  // Snapshots all histograms using RecordDelta() abstract method to record the
   // delta. |flags_to_set| is used to set flags for each histogram.
   // |required_flags| is used to select which histograms to record. Only
   // histograms with all of the required flags are selected. If all histograms
@@ -55,10 +56,6 @@ class BASE_EXPORT HistogramSnapshotManager final {
   void PrepareDelta(HistogramBase* histogram);
   void PrepareFinalDelta(const HistogramBase* histogram);
 
-  // Used to avoid a dangling pointer `histogram_flattener_` if the referenced
-  // `HistogramFlattener` is destroyed first.
-  void ResetFlattener() { histogram_flattener_ = nullptr; }
-
  private:
   FRIEND_TEST_ALL_PREFIXES(HistogramSnapshotManagerTest, CheckMerge);
 
@@ -67,9 +64,9 @@ class BASE_EXPORT HistogramSnapshotManager final {
   void PrepareSamples(const HistogramBase* histogram,
                       const HistogramSamples& samples);
 
-  // |histogram_flattener_| handles the logistics of recording the histogram
-  // deltas.
-  raw_ptr<HistogramFlattener> histogram_flattener_;  // Weak.
+  // Called for each histogram with a |snapshot| of the new samples (delta).
+  virtual void RecordDelta(const HistogramBase& histogram,
+                           const HistogramSamples& snapshot) = 0;
 };
 
 }  // namespace base

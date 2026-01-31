@@ -30,7 +30,7 @@ class SpellcheckLanguageBlocklistPolicyHandler
 
  private:
   void SortBlocklistedLanguages(const policy::PolicyMap& policies,
-                                base::Value::List* const blocklisted,
+                                base::ListValue* const blocklisted,
                                 std::vector<std::string>* const unknown,
                                 std::vector<std::string>* const duplicates);
 };

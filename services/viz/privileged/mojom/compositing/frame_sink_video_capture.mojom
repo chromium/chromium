@@ -92,7 +92,7 @@ interface FrameSinkVideoConsumer {
 // buffers are returned via read only shared memory.
 enum BufferFormatPreference {
   kDefault = 0,
-  kPreferGpuMemoryBuffer,
+  kPreferMappableSharedImage,
   // Indicates a preference for using SharedImages that have exportable native
   // handles (e.g., DMA BUF FDs on Linux). These buffers may not be CPU
   // mappable, allowing for more efficient GPU usage. This option is useful

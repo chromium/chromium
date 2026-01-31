@@ -86,9 +86,12 @@ source_set("impl") {
   } else {
     sources += [ "legion_model_execution_fetcher.cc" ]
     deps += [
+      "//chrome/browser/legion",
+      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:tab_strip",
       "//components/legion",
       "//components/legion:proto",
+      "//components/legion/phosphor",
     ]
   }
 }
@@ -104,7 +107,7 @@ source_set("optimization_guide_on_device_model_installer") {
     "//chrome/browser:browser_process",
     "//components/component_updater",
     "//components/crx_file",
-    "//components/optimization_guide/core:model_execution",
+    "//components/optimization_guide/core",
     "//components/update_client",
     "//content/public/browser",
     "//crypto",
@@ -199,6 +202,10 @@ source_set("unit_tests") {
       # Android uses a different way of showing browser windows.
       "optimization_guide_tab_url_provider_unittest.cc",
     ]
-    deps += [ "//components/legion" ]
+    deps += [
+      "//components/legion",
+      "//components/legion:proto",
+      "//components/legion:testing",
+    ]
   }
 }

@@ -282,7 +282,7 @@ void ClientResourceProvider::ReceiveReturnsFromParent(
   std::vector<base::OnceClosure> main_impl_release_callbacks;
   main_impl_release_callbacks.reserve(resources.size());
 
-  for (const auto& returned : resources) {
+  for (auto& returned : resources) {
     auto imported_it = imported_resources_.find(returned.id);
     if (imported_it == imported_resources_.end()) {
       // TODO(zmo): In theory, everything being returned should already be in
@@ -303,8 +303,11 @@ void ClientResourceProvider::ReceiveReturnsFromParent(
 
     // Save the sync token only when the exported count is going to 0. Or IOW
     // drop all by the last returned sync token.
-    if (returned.sync_token.HasData()) {
-      imported.returned_sync_token = returned.sync_token;
+    gpu::SyncToken returned_sync_token =
+        imported.resource.shared_image()->EndExport(
+            std::move(returned.shared_image_export_result));
+    if (returned_sync_token.HasData()) {
+      imported.returned_sync_token = returned_sync_token;
     }
 
     if (!imported.marked_for_deletion) {

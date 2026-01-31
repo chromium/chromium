@@ -760,6 +760,17 @@ class CONTENT_EXPORT WebContentsDelegate {
   virtual PictureInPictureResult EnterPictureInPicture(
       WebContents* web_contents);
 
+  // Returns the bounds of the window that this `WebContents` is contained
+  // within, if it exists, `std::nullopt` otherwise.
+  //
+  // The exact rectangle returned is operating system dependent. Implementations
+  // should return the bounds of the native window as reported by the OS. This
+  // may or may not include window decorations rendered by the OS compositor,
+  // such as shadows. For example, Linux includes shadows in the window rect,
+  // whereas macOS does not. Callers should not make bounds assumptions
+  // regarding such visual effects.
+  virtual std::optional<gfx::Rect> GetWindowBoundsInScreen();
+
   // Updates the Picture-in-Picture controller with a signal that
   // Picture-in-Picture mode has ended.
   virtual void ExitPictureInPicture() {}

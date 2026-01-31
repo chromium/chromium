@@ -13,7 +13,6 @@
 #include "services/webnn/ort/ort_session_options.h"
 #include "services/webnn/ort/scoped_ort_types.h"
 #include "services/webnn/public/cpp/execution_providers_info.h"
-#include "services/webnn/public/mojom/webnn_device.mojom.h"
 #include "services/webnn/public/mojom/webnn_tensor.mojom-forward.h"
 
 namespace webnn::ort {
@@ -30,8 +29,7 @@ class DeviceAllocator final : public base::RefCounted<DeviceAllocator> {
   // TODO(crbug.com/445971854): Use device allocator to create tensors for
   // other EPs.
   static scoped_refptr<DeviceAllocator> Create(
-      mojom::Device device_type,
-      const OrtSessionOptions* session_options,
+      scoped_refptr<SessionOptions> session_options,
       scoped_refptr<Environment> env);
 
   DeviceAllocator(base::PassKey<DeviceAllocator>,

@@ -14,26 +14,25 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/android/extensions/extension_keybinding_registry_android.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
-#include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/extension_action_icon_factory.h"
 #include "third_party/jni_zero/jni_zero.h"
 
+class BrowserWindowInterface;
+
 namespace extensions {
 
-class ExtensionActionsBridge : public ToolbarActionsModel::Observer,
-                               public KeyedService {
+// The JNI bridge for the extensions UI.
+// This bridge is created and owned by Java UI code.
+class ExtensionActionsBridge : public ToolbarActionsModel::Observer {
  public:
-  explicit ExtensionActionsBridge(Profile* profile);
+  ExtensionActionsBridge(BrowserWindowInterface* browser,
+                         const base::android::JavaRef<jobject>& java_object);
   ExtensionActionsBridge(const ExtensionActionsBridge&) = delete;
   ExtensionActionsBridge& operator=(const ExtensionActionsBridge&) = delete;
   ~ExtensionActionsBridge() override;
 
-  // Convenience function to get the ExtensionActionsBridge for a profile.
-  static ExtensionActionsBridge* Get(Profile* profile);
-
-  base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
-
   // JNI implementations.
+  void Destroy(JNIEnv* env);
   bool AreActionsInitialized(JNIEnv* env);
   std::vector<ToolbarActionsModel::ActionId> GetActionIds(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jobject> GetAction(
@@ -100,12 +99,15 @@ class ExtensionActionsBridge : public ToolbarActionsModel::Observer,
   // Called by IconObserver to notify that the icon of an action was updated.
   void OnToolbarIconUpdated(const ToolbarActionsModel::ActionId& action_id);
 
-  raw_ptr<Profile> profile_;
-  raw_ptr<ToolbarActionsModel> model_;
-  std::unique_ptr<ExtensionKeybindingRegistryAndroid> keybinding_registry_;
+  const raw_ptr<BrowserWindowInterface> browser_;
+  const raw_ptr<Profile> profile_;
+  const base::android::ScopedJavaGlobalRef<jobject> java_object_;
+  const raw_ptr<ToolbarActionsModel> model_;
+  const std::unique_ptr<ExtensionKeybindingRegistryAndroid>
+      keybinding_registry_;
+
   std::map<ToolbarActionsModel::ActionId, std::unique_ptr<IconObserver>>
       icon_observers_;
-  base::android::ScopedJavaGlobalRef<jobject> java_object_;
   base::ScopedObservation<ToolbarActionsModel, ToolbarActionsModel::Observer>
       model_observation_{this};
 };

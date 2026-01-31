@@ -7,7 +7,6 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base::test {
@@ -71,8 +70,8 @@ TEST(ActionVariantsReaderTest, OneResult) {
       kTestActionXml, "Action.WithSingleToken", /*separator=*/".");
   ASSERT_EQ(1U, results.size());
   EXPECT_EQ(2U, results[0].size());
-  EXPECT_TRUE(Contains(results[0], "Variant1"));
-  EXPECT_TRUE(Contains(results[0], "Variant2"));
+  EXPECT_TRUE(results[0].contains("Variant1"));
+  EXPECT_TRUE(results[0].contains("Variant2"));
 }
 
 TEST(ActionVariantsReaderTest, MultipleTokens) {
@@ -80,10 +79,10 @@ TEST(ActionVariantsReaderTest, MultipleTokens) {
       kTestActionXml, "Action.WithMultipleTokens", /*separator=*/".");
   ASSERT_EQ(2U, results.size());
   EXPECT_EQ(2U, results[0].size());
-  EXPECT_TRUE(Contains(results[0], "Variant1"));
-  EXPECT_TRUE(Contains(results[0], "Variant2"));
+  EXPECT_TRUE(results[0].contains("Variant1"));
+  EXPECT_TRUE(results[0].contains("Variant2"));
   EXPECT_EQ(1U, results[1].size());
-  EXPECT_TRUE(Contains(results[1], "Variant3"));
+  EXPECT_TRUE(results[1].contains("Variant3"));
 }
 
 TEST(ActionVariantsReaderTest, InlineToken) {
@@ -91,7 +90,7 @@ TEST(ActionVariantsReaderTest, InlineToken) {
       kTestActionXml, "Action.WithInlineToken", /*separator=*/".");
   ASSERT_EQ(1U, results.size());
   EXPECT_EQ(1U, results[0].size());
-  EXPECT_TRUE(Contains(results[0], "InlineVariant"));
+  EXPECT_TRUE(results[0].contains("InlineVariant"));
 }
 
 TEST(ActionVariantsReaderTest, MixedTokens) {
@@ -99,10 +98,10 @@ TEST(ActionVariantsReaderTest, MixedTokens) {
       kTestActionXml, "Action.WithMixedTokens", /*separator=*/"");
   ASSERT_EQ(2U, results.size());
   EXPECT_EQ(2U, results[0].size());
-  EXPECT_TRUE(Contains(results[0], ".Variant1"));
-  EXPECT_TRUE(Contains(results[0], ".Variant2"));
+  EXPECT_TRUE(results[0].contains(".Variant1"));
+  EXPECT_TRUE(results[0].contains(".Variant2"));
   EXPECT_EQ(1U, results[1].size());
-  EXPECT_TRUE(Contains(results[1], ".InlineVariant"));
+  EXPECT_TRUE(results[1].contains(".InlineVariant"));
 }
 // TODO: crbug.com/374120501 - bring test back when actions.xml has variants.
 // TEST(ActionVariantsReaderTest, CallActualMethod) {
@@ -129,7 +128,7 @@ TEST(ActionVariantsReaderTest, DotSeparator) {
       kTestActionWithSeparatorXml, "Action.WithSeparator", /*separator=*/".");
   ASSERT_EQ(1U, results.size());
   EXPECT_EQ(1U, results[0].size());
-  EXPECT_TRUE(Contains(results[0], "Variant1"));
+  EXPECT_TRUE(results[0].contains("Variant1"));
 }
 
 TEST(ActionVariantsReaderTest, NoSeparator) {
@@ -137,7 +136,7 @@ TEST(ActionVariantsReaderTest, NoSeparator) {
       kTestActionWithSeparatorXml, "Action.WithSeparator", /*separator=*/"");
   ASSERT_EQ(1U, results.size());
   EXPECT_EQ(1U, results[0].size());
-  EXPECT_TRUE(Contains(results[0], ".Variant1"));
+  EXPECT_TRUE(results[0].contains(".Variant1"));
 }
 
 }  // namespace base::test

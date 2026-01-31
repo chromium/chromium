@@ -181,6 +181,11 @@ class WaylandToplevelWindow : public WaylandWindow,
   bool ShouldTriggerStateChange(PlatformWindowState state,
                                 int64_t target_display_id) const;
 
+  // We want to remember whether it was previously maximized, for cases like
+  // restoring from fullscreen or compositor-initiated tiling, so we can
+  // restore back to the correct state.
+  void UpdatePreviouslyMaximized(PlatformWindowState new_state);
+
   // Activates the surface using XDG activation given an activation token.
   void ActivateWithToken(std::string token);
 

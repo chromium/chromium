@@ -191,7 +191,7 @@ ukm::SourceId SegmentationUkmHelper::RecordModelExecutionResult(
     return source_id;
   }
 
-  if (base::RandInt(1, sampling_rate_) > 1) {
+  if (base::RandIntInclusive(1, sampling_rate_) > 1) {
     return source_id;
   }
   ukm::builders::Segmentation_ModelExecution execution_result(source_id);

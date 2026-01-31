@@ -27,15 +27,16 @@ void OpenUrlInNewTab(BrowserContext* context,
   // Create a new tab.
   std::unique_ptr<WebContents> contents =
       WebContents::Create(WebContents::CreateParams(context));
-  WebContents* second_web_contents = contents.release();
-  tab_model->CreateTab(TabAndroid::FromWebContents(parent), second_web_contents,
-                       /*select=*/true);
+  WebContents* raw_web_contents = contents.get();
+  tab_model->CreateTab(TabAndroid::FromWebContents(parent), std::move(contents),
+                       TabModel::kInvalidIndex,
+                       TabModel::TabLaunchType::FROM_RECENT_TABS_FOREGROUND,
+                       /*should_pin=*/false);
 
-  content::NavigateToURLBlockUntilNavigationsComplete(second_web_contents, url,
-                                                      1);
+  content::NavigateToURLBlockUntilNavigationsComplete(raw_web_contents, url, 1);
   ASSERT_EQ(tab_count + 1, tab_model->GetTabCount());
-  ASSERT_NE(parent, second_web_contents);
-  ASSERT_EQ(second_web_contents, tab_model->GetActiveWebContents());
+  ASSERT_NE(parent, raw_web_contents);
+  ASSERT_EQ(raw_web_contents, tab_model->GetActiveWebContents());
 }
 
 }  // namespace android_ui_test_utils

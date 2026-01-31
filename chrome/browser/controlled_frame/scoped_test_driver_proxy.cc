@@ -21,14 +21,14 @@ namespace controlled_frame {
 namespace {
 
 void HandleSetPermission(content::TestDevToolsProtocolClient& devtools_client,
-                         const base::Value::Dict& arguments) {
+                         const base::DictValue& arguments) {
   const std::string* name = arguments.FindString("name");
   const std::string* state = arguments.FindString("state");
   const std::string* origin = arguments.FindString("origin");
   CHECK(name && state) << "Invalid set_permission arguments: " << arguments;
 
-  base::Value::Dict args;
-  args.Set("permission", base::Value::Dict().Set("name", *name));
+  base::DictValue args;
+  args.Set("permission", base::DictValue().Set("name", *name));
   args.Set("setting", *state);
   if (origin) {
     args.Set("origin", *origin);
@@ -81,7 +81,7 @@ void ScopedTestDriverProxy::HandleMessages() {
   while (message_queue_.HasMessages()) {
     std::string message_json;
     CHECK(message_queue_.PopMessage(&message_json));
-    std::optional<base::Value::Dict> message = base::JSONReader::ReadDict(
+    std::optional<base::DictValue> message = base::JSONReader::ReadDict(
         message_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     if (!message.has_value()) {
       LOG(ERROR) << "Invalid message from domAutomationController: "
@@ -90,7 +90,7 @@ void ScopedTestDriverProxy::HandleMessages() {
     }
     std::string* action = message->FindString("action");
     std::string* callback = message->FindString("callback");
-    base::Value::Dict* arguments = message->FindDict("arguments");
+    base::DictValue* arguments = message->FindDict("arguments");
     if (!action || !callback || !arguments) {
       LOG(ERROR) << "Invalid message from domAutomationController: "
                  << message_json;

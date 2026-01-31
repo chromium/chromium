@@ -25,7 +25,7 @@ namespace remoting {
 // over a Native Messaging channel.
 class LogMessageHandler {
  public:
-  using Delegate = base::RepeatingCallback<void(base::Value::Dict message)>;
+  using Delegate = base::RepeatingCallback<void(base::DictValue message)>;
 
   explicit LogMessageHandler(const Delegate& delegate);
   ~LogMessageHandler();

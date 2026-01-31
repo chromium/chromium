@@ -8,6 +8,7 @@
 #include "base/functional/bind.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_paths.h"
@@ -17,6 +18,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
+#include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -269,6 +271,40 @@ IN_PROC_BROWSER_TEST_F(FileChooserImplBrowserTest, UploadFolderWithDirSymlink) {
   EXPECT_EQ(
       "foo.txt",
       EvalJs(shell(), "document.getElementById('fileinput').files[0].name;"));
+}
+
+// Ensure that FileChooserImpl::FileSelected does not grant permissions if
+// invoked with Mode::kSave, as a defense against compromised renderers.
+// See https://crbug.com/435684924.
+IN_PROC_BROWSER_TEST_F(FileChooserImplBrowserTest,
+                       FileSelectedWithSaveModeDoesNotGrantPermission) {
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
+
+  auto* rfh = static_cast<RenderFrameHostImpl*>(
+      shell()->web_contents()->GetPrimaryMainFrame());
+  auto chooser_and_remote = FileChooserImpl::CreateForTesting(rfh);
+  auto* chooser = chooser_and_remote.first;
+
+  base::FilePath test_file;
+  EXPECT_TRUE(base::PathService::Get(base::DIR_TEMP, &test_file));
+  test_file = test_file.AppendASCII("sensitive_file.txt");
+
+  // Ensure renderer doesn't have access initially.
+  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
+  EXPECT_FALSE(policy->CanReadFile(rfh->GetProcess()->GetID(), test_file));
+
+  std::vector<blink::mojom::FileChooserFileInfoPtr> files;
+  files.emplace_back(blink::mojom::FileChooserFileInfo::NewNativeFile(
+      blink::mojom::NativeFileInfo::New(test_file, std::u16string(),
+                                        std::vector<std::u16string>())));
+
+  // Call FileSelected with kSave.
+  chooser->FileSelected(base::FilePath(),
+                        blink::mojom::FileChooserParams::Mode::kSave,
+                        std::move(files));
+
+  // Verify renderer STILL doesn't have access.
+  EXPECT_FALSE(policy->CanReadFile(rfh->GetProcess()->GetID(), test_file));
 }
 
 }  // namespace content

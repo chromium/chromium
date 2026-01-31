@@ -199,14 +199,14 @@ TestSearchAggregator kTestSearchAggregatorNoStringReplacementSearchUrl = {
 
 void SetFieldIfNotEmpty(const std::string& field,
                         const char* value,
-                        base::Value::Dict* dict) {
+                        base::DictValue* dict) {
   if (value) {
     dict->Set(field, value);
   }
 }
 
-base::Value::Dict GeneratePolicyEntry(TestSearchAggregator test_case) {
-  base::Value::Dict entry;
+base::DictValue GeneratePolicyEntry(TestSearchAggregator test_case) {
+  base::DictValue entry;
   SetFieldIfNotEmpty(SearchAggregatorPolicyHandler::kIconUrl,
                      test_case.icon_url, &entry);
   SetFieldIfNotEmpty(SearchAggregatorPolicyHandler::kName, test_case.name,
@@ -330,7 +330,7 @@ TEST(SearchAggregatorPolicyHandlerTest, Valid) {
       policy::Schema::Wrap(policy::GetChromeSchemaData()));
 
   policy::PolicyMap policies;
-  base::Value::Dict policy_value =
+  base::DictValue policy_value =
       GeneratePolicyEntry(kValidTestSearchAggregator);
   policies.Set(key::kEnterpriseSearchAggregatorSettings,
                policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
@@ -373,7 +373,7 @@ TEST(SearchAggregatorPolicyHandlerTest, ValidWithRequireShortcutTrue) {
       policy::Schema::Wrap(policy::GetChromeSchemaData()));
 
   policy::PolicyMap policies;
-  base::Value::Dict entry =
+  base::DictValue entry =
       GeneratePolicyEntry(kValidTestSearchAggregatorWithRequireShortcutTrue);
   policies.Set(key::kEnterpriseSearchAggregatorSettings,
                policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
@@ -416,7 +416,7 @@ TEST(SearchAggregatorPolicyHandlerTest, Valid_NoIcon) {
       policy::Schema::Wrap(policy::GetChromeSchemaData()));
 
   policy::PolicyMap policies;
-  base::Value::Dict policy_value =
+  base::DictValue policy_value =
       GeneratePolicyEntry(kValidTestSearchAggregatorNoIcon);
   policies.Set(key::kEnterpriseSearchAggregatorSettings,
                policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
@@ -516,7 +516,7 @@ TEST(SearchAggregatorPolicyHandlerTest, UnknownField) {
       policy::Schema::Wrap(policy::GetChromeSchemaData()));
 
   policy::PolicyMap policies;
-  base::Value::Dict entry = GeneratePolicyEntry(kValidTestSearchAggregator);
+  base::DictValue entry = GeneratePolicyEntry(kValidTestSearchAggregator);
   entry.Set(kUnknownFieldName, true);
   policies.Set(key::kEnterpriseSearchAggregatorSettings,
                policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,

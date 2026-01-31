@@ -121,12 +121,6 @@ COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kOzoneBubblesUsePlatformWidgets);
 
 COMPONENT_EXPORT(UI_BASE_FEATURES)
-BASE_DECLARE_FEATURE(kWaylandLinuxDrmSyncobj);
-
-COMPONENT_EXPORT(UI_BASE_FEATURES)
-BASE_DECLARE_FEATURE(kWaylandPerSurfaceScale);
-
-COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kWaylandTextInputV3);
 
 COMPONENT_EXPORT(UI_BASE_FEATURES)
@@ -269,6 +263,12 @@ BASE_DECLARE_FEATURE(kUseSystemDefaultAccentColors);
 
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kStringWidthCache);
+
+// Fix for ZIP Shell Folder virtual file detection. When enabled,
+// HasVirtualFilenames() checks if CF_HDROP actually returns data
+// (not just advertises it) before treating files as real.
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+BASE_DECLARE_FEATURE(kUseClipboardStrictVirtualFileCheck);
 
 }  // namespace features
 

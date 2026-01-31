@@ -23,8 +23,8 @@ class WhatsNewStorageService {
   WhatsNewStorageService& operator=(const WhatsNewStorageService&) = delete;
 
   // Read-only access.
-  virtual const base::Value::List& ReadModuleData() const = 0;
-  virtual const base::Value::Dict& ReadEditionData() const = 0;
+  virtual const base::ListValue& ReadModuleData() const = 0;
+  virtual const base::DictValue& ReadEditionData() const = 0;
   virtual std::optional<int> ReadVersionData() const = 0;
 
   // Get the version this edition was used. Return nullopt if unused.
@@ -55,10 +55,10 @@ class WhatsNewStorageService {
   virtual void SetVersionUsed() = 0;
 
   // Clear module from stored data.
-  virtual void ClearModules(std::set<std::string_view> modules_to_clear) = 0;
+  virtual void ClearModules(std::set<std::string> modules_to_clear) = 0;
 
   // Clear edition from stored data.
-  virtual void ClearEditions(std::set<std::string_view> editions_to_clear) = 0;
+  virtual void ClearEditions(std::set<std::string> editions_to_clear) = 0;
 
   // Reset all stored data for manual testing.
   // This should only be called from the internal testing page.

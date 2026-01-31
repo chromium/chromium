@@ -113,7 +113,8 @@ class WTF_EXPORT TextCodec {
                                                UnencodableHandling);
 };
 
-typedef void (*EncodingNameRegistrar)(const char* alias, const char* name);
+using EncodingNameRegistrar = void (*)(const char* alias,
+                                       const AtomicString& canonical_name);
 
 typedef std::unique_ptr<TextCodec> (*NewTextCodecFunction)(const TextEncoding&);
 using TextCodecRegistrar = void (*)(const char* canonical_name,

@@ -55,10 +55,6 @@ bool WebContentsBasedCanceller::CanShowForRFHActiveState() {
 }
 
 bool WebContentsBasedCanceller::CanShowForTabState() {
-  if (!base::FeatureList::IsEnabled(
-          features::kSideBySideFilePickerCancelling)) {
-    return true;
-  }
   // Within Split View, it is possible for the tab containing a WebContents to
   // be visible but not active. This scenario is considered a cancel condition
   // for kVisibility rather than kActiveState because kActiveState is determined

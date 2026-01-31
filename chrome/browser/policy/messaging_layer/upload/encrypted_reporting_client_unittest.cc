@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
@@ -146,14 +145,14 @@ class EncryptedReportingClientTest : public ::testing::Test {
 
   void DecrementSequenceId(int64_t by = 0L) { sequence_id_ -= (by + 1L); }
 
-  base::Value::Dict GetRequestBody(size_t index, bool expect_dm_token = true) {
+  base::DictValue GetRequestBody(size_t index, bool expect_dm_token = true) {
     CHECK_LT(index, url_loader_factory_.pending_requests()->size());
     const network::ResourceRequest& request =
         (*url_loader_factory_.pending_requests())[index].request;
     if (expect_dm_token) {
-      EXPECT_TRUE(base::Contains(request.headers.ToString(), kDmToken));
+      EXPECT_TRUE(request.headers.ToString().contains(kDmToken));
     } else {
-      EXPECT_FALSE(base::Contains(request.headers.ToString(), kDmToken));
+      EXPECT_FALSE(request.headers.ToString().contains(kDmToken));
     }
     CHECK(request.request_body);
     CHECK(request.request_body->elements());
@@ -170,7 +169,7 @@ class EncryptedReportingClientTest : public ::testing::Test {
   }
 
   void SimulateCustomResponseForRequest(size_t index,
-                                        StatusOr<base::Value::Dict> response) {
+                                        StatusOr<base::DictValue> response) {
     ASSERT_THAT(index, Lt(url_loader_factory_.pending_requests()->size()));
     const std::string& pending_request_url =
         (*url_loader_factory_.pending_requests())[index].request.url.spec();
@@ -217,7 +216,7 @@ class EncryptedReportingClientTest : public ::testing::Test {
           policy::EnterpriseManagementAuthority::CLOUD_DOMAIN);
 
   scoped_refptr<ResourceManager> memory_resource_;
-  base::Value::Dict context_;
+  base::DictValue context_;
   bool need_encryption_key_ = false;
   int config_file_version_ = 0;
   std::vector<EncryptedRecord> payload_records_;

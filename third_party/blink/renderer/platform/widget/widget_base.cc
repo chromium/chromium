@@ -12,7 +12,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/common/task_annotator.h"
-#include "base/task/single_thread_task_runner.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "cc/animation/animation_host.h"
 #include "cc/animation/animation_id_provider.h"
@@ -58,6 +58,7 @@
 #include "third_party/blink/renderer/platform/widget/input/main_thread_event_queue.h"
 #include "third_party/blink/renderer/platform/widget/input/widget_input_handler_manager.h"
 #include "third_party/blink/renderer/platform/widget/widget_base_client.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 #include "ui/base/ime/mojom/text_input_state.mojom-blink.h"
 #include "ui/base/mojom/menu_source_type.mojom-blink-forward.h"
 #include "ui/display/display.h"
@@ -517,6 +518,15 @@ void WidgetBase::UpdateVisualProperties(
   VisualProperties visual_properties = visual_properties_from_browser;
   auto& screen_info = visual_properties.screen_infos.mutable_current();
 
+  // Update the handwriting radius on the input thread since the value read in
+  // the browser proc could have potentially changed.
+  if (screen_info.handwriting_radius > 0) {
+    // TODO(crbug.com/355578906): Turn ScreenInfo::handwriting_radius into an
+    // optional. There's currently no way to differentiate 0 from uninitialized.
+    widget_input_handler_manager_->PostHandwritingRadiusToInputThread(
+        screen_info.handwriting_radius);
+  }
+
   // Web tests can override the device scale factor in the renderer.
   if (auto scale_factor = client_->GetTestingDeviceScaleFactorOverride()) {
     screen_info.device_scale_factor = scale_factor;
@@ -574,8 +584,8 @@ void WidgetBase::WasShown(bool was_evicted,
   // provisional) before changing visibility.
   DCHECK(!IsForProvisionalFrame());
 
-  TRACE_EVENT_WITH_FLOW0("renderer", "WidgetBase::WasShown", this,
-                         TRACE_EVENT_FLAG_FLOW_IN);
+  TRACE_EVENT("renderer", "WidgetBase::WasShown",
+              perfetto::TerminatingFlow::FromPointer(this));
 
   SetHidden(false);
 
@@ -1495,7 +1505,8 @@ void WidgetBase::ImeSetComposition(
     const Vector<ui::ImeTextSpan>& ime_text_spans,
     const gfx::Range& replacement_range,
     int selection_start,
-    int selection_end) {
+    int selection_end,
+    mojom::blink::ImeState ime_state) {
   if (!ShouldHandleImeEvents())
     return;
 
@@ -1511,7 +1522,8 @@ void WidgetBase::ImeSetComposition(
 
   ImeEventGuard guard(weak_ptr_factory_.GetWeakPtr());
   if (!frame_widget->SetComposition(text, ime_text_spans, replacement_range,
-                                    selection_start, selection_end)) {
+                                    selection_start, selection_end,
+                                    ime_state)) {
     // If we failed to set the composition text, then we need to let the browser
     // process to cancel the input method's ongoing composition session, to make
     // sure we are in a consistent state.

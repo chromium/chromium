@@ -1,0 +1,26 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module skills.mojom;
+
+import "components/skills/public/skill.mojom";
+
+// Used by the WebUI page for communication.
+interface PageHandlerFactory {
+  // The WebUI page's |BrowserProxy| singleton calls this method when the page
+  // is first initialized.
+  CreatePageHandler(pending_receiver<PageHandler> handler);
+};
+
+// Called from TS side of chrome://skills (Renderer -> Browser)
+interface PageHandler {
+  // Called when the user clicks the "Save" button in the dialog.
+  SubmitSkill(skills.mojom.Skill skill);
+
+  // Called when the user clicks the "Cancel" button in the dialog.
+  CloseDialog();
+
+  // TODO(marissashen): Add `GetInitialSkill` to pass in initial skill and
+  // dialog state (add/edit).
+};

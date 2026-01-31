@@ -11,13 +11,13 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/sparse_histogram.h"
@@ -43,7 +43,10 @@
 #include "net/base/privacy_mode.h"
 #include "net/base/session_usage.h"
 #include "net/base/url_util.h"
+#include "net/cert/cert_status_flags.h"
 #include "net/cert/signed_certificate_timestamp_and_status.h"
+#include "net/cert/x509_certificate.h"
+#include "net/cert/x509_util.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/http/transport_security_state.h"
 #include "net/log/net_log_event_type.h"
@@ -72,6 +75,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/websockets/websocket_quic_spdy_stream.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
+#include "third_party/boringssl/src/pki/signature_algorithm.h"
 #include "url/origin.h"
 #include "url/scheme_host_port.h"
 
@@ -270,43 +274,43 @@ void LogConnectionDurationMetrics(
   }
 }
 
-base::Value::Dict NetLogQuicMigrationFailureParams(
+base::DictValue NetLogQuicMigrationFailureParams(
     quic::QuicConnectionId connection_id,
     std::string_view reason) {
-  return base::Value::Dict()
+  return base::DictValue()
       .Set("connection_id", connection_id.ToString())
       .Set("reason", reason);
 }
 
-base::Value::Dict NetLogQuicMigrationSuccessParams(
+base::DictValue NetLogQuicMigrationSuccessParams(
     quic::QuicConnectionId connection_id) {
-  return base::Value::Dict().Set("connection_id", connection_id.ToString());
+  return base::DictValue().Set("connection_id", connection_id.ToString());
 }
 
-base::Value::Dict NetLogProbingResultParams(
+base::DictValue NetLogProbingResultParams(
     handles::NetworkHandle network,
     const quic::QuicSocketAddress* peer_address,
     bool is_success) {
-  return base::Value::Dict()
+  return base::DictValue()
       .Set("network", base::NumberToString(network))
       .Set("peer address", peer_address->ToString())
       .Set("is_success", is_success);
 }
 
-base::Value::Dict NetLogAcceptChFrameReceivedParams(
+base::DictValue NetLogAcceptChFrameReceivedParams(
     spdy::AcceptChOriginValuePair entry) {
-  return base::Value::Dict()
+  return base::DictValue()
       .Set("origin", entry.origin)
       .Set("accept_ch", entry.value);
 }
 
-base::Value::Dict NetLogReceivedOrigins(
+base::DictValue NetLogReceivedOrigins(
     const std::set<url::SchemeHostPort>& received_origins) {
-  base::Value::List origins;
+  base::ListValue origins;
   for (const auto& origin : received_origins) {
     origins.Append(origin.Serialize());
   }
-  return base::Value::Dict().Set("origins", std::move(origins));
+  return base::DictValue().Set("origins", std::move(origins));
 }
 
 // Histogram for recording the different reasons that a QUIC session is unable
@@ -325,7 +329,7 @@ void RecordHandshakeFailureReason(HandshakeFailureReason reason) {
 }
 
 // Note: these values must be kept in sync with the corresponding values in:
-// tools/metrics/histograms/histograms.xml
+// tools/metrics/histograms/metadata/net/histograms.xml
 enum HandshakeState {
   STATE_STARTED = 0,
   STATE_ENCRYPTION_ESTABLISHED = 1,
@@ -386,7 +390,7 @@ std::string MigrationCauseToString(MigrationCause cause) {
   return "InvalidCause";
 }
 
-base::Value::Dict NetLogQuicClientSessionParams(
+base::DictValue NetLogQuicClientSessionParams(
     const NetLogWithSource& net_log,
     const QuicSessionKey* session_key,
     const quic::QuicConnectionId& connection_id,
@@ -396,7 +400,7 @@ base::Value::Dict NetLogQuicClientSessionParams(
     bool require_confirmation,
     base::span<const uint8_t> ech_config_list) {
   auto dict =
-      base::Value::Dict()
+      base::DictValue()
           .Set("host", session_key->server_id().host())
           .Set("port", session_key->server_id().port())
           .Set("connection_id", connection_id.ToString())
@@ -629,6 +633,12 @@ int QuicChromiumClientSession::Handle::GetSelfAddress(
 
   *address = ToIPEndPoint(session_->self_address());
   return OK;
+}
+
+void QuicChromiumClientSession::Handle::AssertIsValidFor(
+    const GURL& url) const {
+  CHECK(session_);
+  session_->AssertIsValidFor(url);
 }
 
 bool QuicChromiumClientSession::Handle::WasEverUsed() const {
@@ -1280,12 +1290,12 @@ void QuicChromiumClientSession::AddHandle(Handle* handle) {
     return;
   }
 
-  DCHECK(!base::Contains(handles_, handle));
+  DCHECK(!handles_.contains(handle));
   handles_.insert(handle);
 }
 
 void QuicChromiumClientSession::RemoveHandle(Handle* handle) {
-  DCHECK(base::Contains(handles_, handle));
+  DCHECK(handles_.contains(handle));
   handles_.erase(handle);
 }
 
@@ -1461,7 +1471,7 @@ bool QuicChromiumClientSession::GetSSLInfo(SSLInfo* ssl_info) const {
   ssl_info->signed_certificate_timestamps = cert_verify_result_->scts;
   ssl_info->ct_policy_compliance = cert_verify_result_->policy_compliance;
 
-  DCHECK(connection()->version().UsesTls());
+  DCHECK(connection()->version().IsIetfQuic());
   const auto& crypto_params = crypto_stream_->crypto_negotiated_params();
   uint16_t cipher_suite = crypto_params.cipher_suite;
   int ssl_connection_status = 0;
@@ -1704,12 +1714,19 @@ quic::QuicSSLConfig QuicChromiumClientSession::GetSSLConfig() const {
     config.ech_config_list.assign(ech_config_list_.begin(),
                                   ech_config_list_.end());
   }
-  if (!ssl_context_config.trust_anchor_ids.empty() &&
-      base::FeatureList::IsEnabled(features::kTLSTrustAnchorIDs)) {
+  if (ssl_context_config.ShouldAdvertiseTrustAnchorIDs()) {
     config.trust_anchor_ids = base::as_string_view(
         ssl_context_config.SelectTrustAnchorIDs(trust_anchor_ids_));
   }
   return config;
+}
+
+void QuicChromiumClientSession::OnConfigNegotiated() {
+  connection_migration_disabled_ = config()->DisableConnectionMigration();
+  if (config()->HasReceivedConnectionOptions()) {
+    received_connection_options_ = config()->ReceivedConnectionOptions();
+  }
+  QuicSession::OnConfigNegotiated();
 }
 
 void QuicChromiumClientSession::SetDefaultEncryptionLevel(
@@ -1844,8 +1861,22 @@ void QuicChromiumClientSession::LogZeroRttStats() {
   }
 
   net_log_.AddEvent(NetLogEventType::QUIC_SESSION_ZERO_RTT_STATE, [&] {
-    return base::Value::Dict().Set("state", ZeroRttStateToString(state));
+    return base::DictValue().Set("state", ZeroRttStateToString(state));
   });
+}
+
+void QuicChromiumClientSession::AssertIsValidFor(const GURL& url) const {
+  if (allow_any_url_for_testing_) {
+    return;
+  }
+  CHECK(cert_verify_result_);
+
+  // Don't check host for HTTP schemes. Non-tunnelled HTTP requests may be sent
+  // directly to a QUIC proxy - while we currently use tunnels for that case,
+  // best not to prohibit doing so at this layer.
+  if (!url.SchemeIs(url::kHttpsScheme)) {
+    CHECK(cert_verify_result_->verified_cert->VerifyNameMatch(url.host()));
+  }
 }
 
 void QuicChromiumClientSession::OnCryptoHandshakeMessageSent(
@@ -2115,7 +2146,7 @@ void QuicChromiumClientSession::OnConnectionClosed(
         session_creation_initiator_);
 
     // KeyUpdates are used in TLS, but we no longer support pre-TLS QUIC.
-    DCHECK(connection()->version().UsesTls());
+    DCHECK(connection()->version().IsIetfQuic());
     base::UmaHistogramCounts100("Net.QuicSession.KeyUpdate.PerConnection2",
                                 connection()->GetStats().key_update_count);
     base::UmaHistogramCounts100(
@@ -2307,7 +2338,7 @@ void QuicChromiumClientSession::MigrateSessionOnWriteError(
   }
 
   // Do not migrate if connection migration is disabled.
-  if (config()->DisableConnectionMigration()) {
+  if (connection_migration_disabled_) {
     HistogramAndLogMigrationFailure(MIGRATION_STATUS_DISABLED_BY_CONFIG,
                                     connection_id(),
                                     "Migration disabled by config");
@@ -2842,7 +2873,7 @@ void QuicChromiumClientSession::MigrateNetworkImmediately(
   }
 
   // Do not migrate if connection migration is disabled.
-  if (config()->DisableConnectionMigration()) {
+  if (connection_migration_disabled_) {
     HistogramAndLogMigrationFailure(MIGRATION_STATUS_DISABLED_BY_CONFIG,
                                     connection_id(),
                                     "Migration disabled by config");
@@ -3003,6 +3034,126 @@ void QuicChromiumClientSession::OnProofValid(
   server_info_->Persist();
 }
 
+static std::vector<std::vector<uint8_t>> ServerTrustAnchorIDs(SSL* ssl) {
+  const uint8_t* peer_trust_anchors;
+  size_t peer_trust_anchors_len;
+  SSL_get0_peer_available_trust_anchors(ssl, &peer_trust_anchors,
+                                        &peer_trust_anchors_len);
+  return x509_util::ParseTlsTrustAnchorIDs(
+      // SAFETY:
+      // SSL_get0_peer_available_trust_anchors sets peer_trust_anchors to point
+      // to peer_trust_anchors_len bytes. See
+      // https://commondatastorage.googleapis.com/chromium-boringssl-docs/ssl.h.html#Trust-Anchor-Identifiers
+      UNSAFE_BUFFERS(base::span(peer_trust_anchors, peer_trust_anchors_len)));
+}
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(MTCResult)
+enum class MTCResult {
+  kValidMTC = 0,
+  kInvalidMTC = 1,
+  kClassicalCertExpectedMTC = 2,
+  kClassicalCertOldClient = 3,
+  kClassicalCertUnknownLandmarkDelta = 4,
+  kResumption = 5,
+  kMaxValue = kResumption,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:MTCResult)
+
+constexpr uint8_t kMtcExperimentBaseId[] = {0x82, 0xda, 0x4b, 0x30, 0x07};
+
+// Logs the Net.QuicSession.MTCResult and Net.QuicSession.MTCLandmarkDelta
+// histograms.
+static void LogMTCCertVerifyMetrics(
+    const std::vector<std::vector<uint8_t>>& client_mtc_tais,
+    const std::vector<std::vector<uint8_t>>& server_tais,
+    const ProofVerifyDetailsChromium* verify_details,
+    bool is_resumption,
+    int64_t mtc_update_time_seconds) {
+  std::optional<uint64_t> client_landmark;
+  std::optional<uint64_t> server_landmark;
+  for (const auto& id : client_mtc_tais) {
+    auto landmark =
+        x509_util::LastOidComponentFromBase(id, kMtcExperimentBaseId);
+    if (landmark.has_value()) {
+      client_landmark = landmark;
+      break;
+    }
+  }
+  for (const auto& id : server_tais) {
+    auto landmark =
+        x509_util::LastOidComponentFromBase(id, kMtcExperimentBaseId);
+    if (landmark.has_value()) {
+      server_landmark = landmark;
+      break;
+    }
+  }
+  bool have_landmark_delta = false;
+  bool old_client = false;
+  if (client_landmark.has_value() && server_landmark.has_value()) {
+    have_landmark_delta = true;
+    if (*server_landmark > *client_landmark) {
+      old_client = true;
+      UMA_HISTOGRAM_COUNTS_1000("Net.QuicSession.MTCLandmarkDelta.OldClient",
+                                *server_landmark - *client_landmark);
+    } else {
+      UMA_HISTOGRAM_COUNTS_1000(
+          "Net.QuicSession.MTCLandmarkDelta.CurrentClient",
+          *client_landmark - *server_landmark);
+    }
+  }
+  if (mtc_update_time_seconds != 0) {
+    base::TimeDelta landmark_age =
+        base::Time::Now() -
+        base::Time::FromSecondsSinceUnixEpoch(mtc_update_time_seconds);
+    // The MTCMetadata is only useful for a max of 7 days. The histogram logs
+    // thru 10 days so that if clients are out of date, we have somewhat of an
+    // idea of how out of date they are.
+    UMA_HISTOGRAM_CUSTOM_TIMES("Net.QuicSession.MTCMetadataAge", landmark_age,
+                               base::Seconds(1), base::Days(10), 100);
+    UMA_HISTOGRAM_BOOLEAN("Net.QuicSession.HasMTCMetadata", true);
+  } else {
+    UMA_HISTOGRAM_BOOLEAN("Net.QuicSession.HasMTCMetadata", false);
+  }
+
+  bool cert_is_mtc =
+      verify_details->cert_verify_result.verified_cert->signature_algorithm() ==
+      bssl::SignatureAlgorithm::kMtcProofDraftDavidben08;
+
+  MTCResult result;
+  if (is_resumption) {
+    result = MTCResult::kResumption;
+  } else if (cert_is_mtc) {
+    if (MapCertStatusToNetError(
+            verify_details->cert_verify_result.cert_status) == OK) {
+      result = MTCResult::kValidMTC;
+    } else {
+      result = MTCResult::kInvalidMTC;
+    }
+  } else {
+    // Classical cert
+    if (!have_landmark_delta) {
+      result = MTCResult::kClassicalCertUnknownLandmarkDelta;
+    } else if (old_client) {
+      result = MTCResult::kClassicalCertOldClient;
+    } else {
+      result = MTCResult::kClassicalCertExpectedMTC;
+    }
+  }
+  UMA_HISTOGRAM_ENUMERATION("Net.QuicSession.MTCResult", result);
+
+  base::UmaHistogramSparse(
+      "Net.QuicSession.CertVerificationResult.MTCAdvertised",
+      -verify_details->cert_verify_net_error_for_metrics_only);
+  if (cert_is_mtc) {
+    base::UmaHistogramSparse(
+        "Net.QuicSession.CertVerificationResult.MTCReceived",
+        -verify_details->cert_verify_net_error_for_metrics_only);
+  }
+}
+
 void QuicChromiumClientSession::OnProofVerifyDetailsAvailable(
     const quic::ProofVerifyDetails& verify_details) {
   const ProofVerifyDetailsChromium* verify_details_chromium =
@@ -3012,6 +3163,31 @@ void QuicChromiumClientSession::OnProofVerifyDetailsAvailable(
   logger_->OnCertificateVerified(*cert_verify_result_);
   pkp_bypassed_ = verify_details_chromium->pkp_bypassed;
   is_fatal_cert_error_ = verify_details_chromium->is_fatal_cert_error;
+
+  std::vector<std::vector<uint8_t>> server_tais =
+      ServerTrustAnchorIDs(crypto_stream_->GetSsl());
+  for (const auto& id : server_tais) {
+    // 44363.48.7 encoded as a relative OID
+    if (x509_util::LastOidComponentFromBase(id, kMtcExperimentBaseId) !=
+        std::nullopt) {
+      server_advertised_mtc_tai_ = true;
+    }
+  }
+
+  bool verify_mtcs_enabled = false;
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  verify_mtcs_enabled =
+      base::FeatureList::IsEnabled(net::features::kVerifyMTCs);
+#endif
+  if (server_advertised_mtc_tai_ && verify_mtcs_enabled) {
+    auto client_mtc_tais =
+        ssl_config_service_->GetSSLContextConfig().mtc_trust_anchor_ids;
+    int64_t mtc_update_time_seconds =
+        ssl_config_service_->GetSSLContextConfig().mtc_update_time_seconds;
+    LogMTCCertVerifyMetrics(
+        client_mtc_tais, server_tais, verify_details_chromium,
+        crypto_stream_->IsResumption(), mtc_update_time_seconds);
+  }
 }
 
 void QuicChromiumClientSession::StartReading() {
@@ -3119,7 +3295,7 @@ void QuicChromiumClientSession::MaybeMigrateToDifferentPortOnPathDegrading() {
     return;
   }
 
-  if (config()->DisableConnectionMigration()) {
+  if (connection_migration_disabled_) {
     HistogramAndLogMigrationFailure(MIGRATION_STATUS_DISABLED_BY_CONFIG,
                                     connection_id(),
                                     "Migration disabled by config");
@@ -3226,7 +3402,7 @@ void QuicChromiumClientSession::MaybeStartProbing(
     return;
   }
 
-  if (config()->DisableConnectionMigration()) {
+  if (connection_migration_disabled_) {
     DVLOG(1) << "Client disables probing network with connection migration "
              << "disabled by config";
     HistogramAndLogMigrationFailure(MIGRATION_STATUS_DISABLED_BY_CONFIG,
@@ -3680,13 +3856,13 @@ void QuicChromiumClientSession::HistogramAndLogMigrationSuccess(
   LogMigrationResultToHistogram(MIGRATION_STATUS_SUCCESS);
 }
 
-base::Value::Dict QuicChromiumClientSession::GetInfoAsValue(
+base::DictValue QuicChromiumClientSession::GetInfoAsValue(
     const std::set<HostPortPair>& aliases) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("version", ParsedQuicVersionToString(connection()->version()));
   dict.Set("open_streams", static_cast<int>(GetNumActiveStreams()));
 
-  base::Value::List stream_list;
+  base::ListValue stream_list;
   auto* stream_list_ptr = &stream_list;
 
   PerformActionOnActiveStreams([stream_list_ptr](quic::QuicStream* stream) {
@@ -3712,7 +3888,7 @@ base::Value::Dict QuicChromiumClientSession::GetInfoAsValue(
   dict.Set("packets_lost", static_cast<int>(stats.packets_lost));
   SSLInfo ssl_info;
 
-  base::Value::List alias_list;
+  base::ListValue alias_list;
   for (const auto& alias : aliases) {
     alias_list.Append(alias.ToString());
   }
@@ -3824,6 +4000,14 @@ void QuicChromiumClientSession::OnCryptoHandshakeComplete() {
       connect_timing_.connect_end - connect_timing_.connect_start;
   UMA_HISTOGRAM_TIMES("Net.QuicSession.HandshakeConfirmedTime",
                       handshake_confirmed_time);
+  if (server_advertised_mtc_tai_) {
+    UMA_HISTOGRAM_TIMES("Net.QuicSession.HandshakeConfirmedTime.MTC",
+                        handshake_confirmed_time);
+    size_t handshake_bytes = crypto_stream_->crypto_bytes_read() +
+                             crypto_stream_->crypto_bytes_written();
+    UMA_HISTOGRAM_COUNTS_100000("Net.QuicSession.TLSHandshakeBytes.MTC",
+                                handshake_bytes);
+  }
 
   // Indicate that the handshake is complete so that we can safely send pings
   // to the peer.
@@ -4193,6 +4377,7 @@ QuicChromiumClientSession::CreateWebSocketQuicStreamAdapter(
 
   return CreateWebSocketQuicStreamAdapterImpl(delegate);
 }
+
 #endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
 
 }  // namespace net

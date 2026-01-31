@@ -20,7 +20,6 @@
 #include "components/guest_view/common/guest_view_constants.h"
 #include "components/zoom/zoom_observer.h"
 #include "content/public/browser/browser_plugin_guest_delegate.h"
-#include "content/public/browser/child_process_id.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/guest_page_holder.h"
@@ -28,6 +27,8 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/common/child_process_id.h"
+#include "third_party/blink/public/mojom/page/draggable_region.mojom-forward.h"
 
 namespace content {
 class NavigationHandle;
@@ -152,16 +153,16 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
       base::OnceCallback<void(std::unique_ptr<GuestViewBase> guest)>;
   void Init(std::unique_ptr<GuestViewBase> owned_this,
             scoped_refptr<content::SiteInstance> site_instance,
-            const base::Value::Dict& create_params,
+            const base::DictValue& create_params,
             GuestCreatedCallback callback);
 
-  void InitWithWebContents(const base::Value::Dict& create_params,
+  void InitWithWebContents(const base::DictValue& create_params,
                            content::WebContents* guest_web_contents);
-  void InitWithGuestPageHolder(const base::Value::Dict& create_params,
+  void InitWithGuestPageHolder(const base::DictValue& create_params,
                                content::GuestPageHolder* guest_page_holder);
 
   void SetCreateParams(
-      const base::Value::Dict& create_params,
+      const base::DictValue& create_params,
       const content::WebContents::CreateParams& web_contents_create_params);
 
   // As part of the migration of GuestViews to MPArch, we need to know what the
@@ -202,7 +203,7 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
 
   // Returns the parameters associated with the element hosting this GuestView
   // passed in from JavaScript.
-  const base::Value::Dict& attach_params() const { return attach_params_; }
+  const base::DictValue& attach_params() const { return attach_params_; }
 
   // Returns whether this guest has an associated embedder.
   bool attached() const {
@@ -254,7 +255,7 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   bool IsOwnedByControlledFrameEmbedder() const;
 
   // Saves the attach state of the custom element hosting this GuestView.
-  void SetAttachParams(const base::Value::Dict& params);
+  void SetAttachParams(const base::DictValue& params);
 
   // Starts the attaching process for a (frame-based) GuestView.
   // |outer_contents_frame| is a frame in the embedder WebContents (owned by a
@@ -298,7 +299,7 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   void SetOpener(GuestViewBase* opener);
 
   const std::optional<
-      std::pair<base::Value::Dict, content::WebContents::CreateParams>>&
+      std::pair<base::DictValue, content::WebContents::CreateParams>>&
   GetCreateParams() const;
 
   zoom::ZoomController* GetZoomController() const;
@@ -349,7 +350,7 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   virtual void CreateInnerPage(
       std::unique_ptr<GuestViewBase> owned_this,
       scoped_refptr<content::SiteInstance> site_instance,
-      const base::Value::Dict& create_params,
+      const base::DictValue& create_params,
       GuestPageCreatedCallback callback) = 0;
 
   // This method is called after the guest has been attached to an embedder and
@@ -363,7 +364,7 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   //
   // This gives the derived class an opportunity to perform additional
   // initialization.
-  virtual void DidInitialize(const base::Value::Dict& create_params) {}
+  virtual void DidInitialize(const base::DictValue& create_params) {}
 
   // This method is called when embedder WebContents's fullscreen is toggled.
   //
@@ -496,6 +497,9 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   void UpdatePreferredSize(content::WebContents* web_contents,
                            const gfx::Size& pref_size) final;
   void UpdateTargetURL(content::WebContents* source, const GURL& url) final;
+  void DraggableRegionsChanged(
+      const std::vector<blink::mojom::DraggableRegionPtr>& regions,
+      content::WebContents* contents) final;
 
   // WebContentsObserver implementation.
   void DidStopLoading() final;
@@ -510,7 +514,7 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
 
   void SendQueuedEvents();
 
-  void CompleteInit(base::Value::Dict create_params,
+  void CompleteInit(base::DictValue create_params,
                     GuestCreatedCallback callback,
                     std::unique_ptr<GuestViewBase> owned_this,
                     GuestPageVariant guest_page);
@@ -525,7 +529,7 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   // Get the zoom factor for the embedder's web contents.
   double GetEmbedderZoomFactor() const;
 
-  void SetUpSizing(const base::Value::Dict& params);
+  void SetUpSizing(const base::DictValue& params);
 
   void StartTrackingEmbedderZoomLevel();
   void StopTrackingEmbedderZoomLevel();
@@ -573,7 +577,7 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   // are passed in from JavaScript. This will typically be the view instance ID,
   // and element-specific parameters. These parameters are passed along to new
   // guests that are created from this guest.
-  base::Value::Dict attach_params_;
+  base::DictValue attach_params_;
 
   // This observer ensures that this guest self-destructs if the embedder goes
   // away. It also tracks when the embedder's fullscreen is toggled so the guest
@@ -614,8 +618,7 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   // The params used when creating the guest contents. These are saved here in
   // case we need to recreate the guest contents. Not all guest types need to
   // store these.
-  std::optional<
-      std::pair<base::Value::Dict, content::WebContents::CreateParams>>
+  std::optional<std::pair<base::DictValue, content::WebContents::CreateParams>>
       create_params_;
 
   // Indicates whether autosize mode is enabled or not.

@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.ntp;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
-import android.content.Context;
+import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -16,6 +16,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.RecentlyClosedEntriesManager;
+import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.invalidation.SessionsInvalidationManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -31,20 +32,26 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
 import org.chromium.chrome.browser.ui.signin.SyncPromoController;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.signin_promo.RecentTabsSigninPromoDelegate;
 import org.chromium.chrome.browser.ui.signin.signin_promo.SigninPromoCoordinator;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
+import org.chromium.ui.base.ActivityResultTracker;
+import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 /** Provides the domain logic and data for RecentTabsPage and RecentTabsRowAdapter. */
 @NullMarked
@@ -93,14 +100,24 @@ public class RecentTabsManager
      * Create an RecentTabsManager to be used with RecentTabsPage and RecentTabsRowAdapter.
      *
      * @param tab The Tab that is showing this recent tabs page.
+     * @param windowAndroid The window showing this recent tabs page.
+     * @param activity The Android Activity this manager will work in.
      * @param profile Profile that is associated with the current session.
-     * @param context the Android context this manager will work in.
+     * @param activityResultTracker Tracker of activity results.
+     * @param bottomSheetController Used to interact with the bottom sheet.
+     * @param modalDialogManagerSupplier Supplies the {@link ModalDialogManager}.
+     * @param snackbarManager Manages snackbars shown in the app.
      * @param showHistoryManager Runnable showing history manager UI.
      */
     public RecentTabsManager(
             Tab tab,
+            WindowAndroid windowAndroid,
+            Activity activity,
             Profile profile,
-            Context context,
+            ActivityResultTracker activityResultTracker,
+            BottomSheetController bottomSheetController,
+            Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            SnackbarManager snackbarManager,
             Runnable showHistoryManager,
             RecentlyClosedEntriesManager recentlyClosedEntriesManager) {
         mProfile = profile;
@@ -114,10 +131,10 @@ public class RecentTabsManager
 
         mProfileDataCache =
                 ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
-                        context, mSignInManager.getIdentityManager());
+                        activity, mSignInManager.getIdentityManager());
         AccountPickerBottomSheetStrings bottomSheetStrings =
                 new AccountPickerBottomSheetStrings.Builder(
-                                context.getString(
+                                activity.getString(
                                         R.string.signin_account_picker_bottom_sheet_title))
                         .build();
         mSyncPromoController =
@@ -129,10 +146,17 @@ public class RecentTabsManager
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)) {
             mSigninPromoCoordinator =
                     new SigninPromoCoordinator(
-                            context,
+                            windowAndroid,
+                            activity,
                             profile,
+                            activityResultTracker,
+                            SigninAndHistorySyncActivityLauncherImpl.get(),
+                            bottomSheetController,
+                            modalDialogManagerSupplier,
+                            snackbarManager,
+                            DeviceLockActivityLauncherImpl.get(),
                             new RecentTabsSigninPromoDelegate(
-                                    context,
+                                    activity,
                                     profile,
                                     SigninAndHistorySyncActivityLauncherImpl.get(),
                                     this::updatePromoState));
@@ -298,12 +322,10 @@ public class RecentTabsManager
      * @param entry The entry to open.
      */
     public void openRecentlyClosedEntry(RecentlyClosedEntry entry) {
-        // TODO(crbug.com/444680856): implement open closed window logic.
         if (mIsDestroyed) return;
 
         assert !(entry instanceof RecentlyClosedTab)
                 : "Opening a RecentlyClosedTab should use openRecentlyClosedTab().";
-        assert entry instanceof SessionRecentlyClosedEntry;
 
         if (entry instanceof RecentlyClosedGroup closedGroup) {
             mGroupSessionIdsRestored.put(closedGroup.getSessionId(), true);
@@ -311,6 +333,10 @@ public class RecentTabsManager
         } else if (entry instanceof RecentlyClosedBulkEvent closedBulkEvent) {
             mBulkSessionIdsRestored.put(closedBulkEvent.getSessionId(), true);
             RecordUserAction.record("MobileRecentTabManagerRecentBulkEventOpened");
+        } else if (entry instanceof RecentlyClosedWindow closedWindow) {
+            int instanceId = closedWindow.getInstanceId();
+            mWindowInstanceIdsRestored.put(instanceId, true);
+            RecordUserAction.record("MobileRecentTabManagerRecentWindowOpened");
         }
         mRecentlyClosedEntriesManager.openRecentlyClosedEntry(entry);
     }

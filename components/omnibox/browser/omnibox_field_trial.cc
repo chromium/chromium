@@ -110,11 +110,11 @@ bool IsKoreanLocale(const std::string& locale) {
   return locale == "ko" || locale == "ko-KR";
 }
 
-#if !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 bool IsEnglishLocale(const std::string& locale) {
   return base::StartsWith(locale, "en", base::CompareCase::SENSITIVE);
 }
-#endif  // !BUILDFLAG(IS_IOS)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 }  // namespace
 
@@ -210,8 +210,6 @@ size_t OmniboxFieldTrial::GetProviderMaxMatches(
 
   return default_max_matches_per_provider;
 }
-
-
 
 void OmniboxFieldTrial::GetDefaultHUPScoringParams(
     HUPScoringParams* scoring_params) {
@@ -441,15 +439,13 @@ bool OmniboxFieldTrial::IsOnDeviceTailSuggestEnabled(
     return false;
   }
 
-  // Currently only launch for English locales. Remove this flag once i18n is
-  // also launched.
-  // Do not launch for iOS since the feature is not supported in iOS yet.
-#if !BUILDFLAG(IS_IOS)
+// On Desktop the model is only launched for English locales.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   if (IsEnglishLocale(locale)) {
     return base::FeatureList::IsEnabled(
         omnibox::kOnDeviceTailEnableEnglishModel);
   }
-#endif  // !BUILDFLAG(IS_IOS)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   return base::FeatureList::IsEnabled(omnibox::kOnDeviceTailModel);
 }
@@ -458,17 +454,6 @@ bool OmniboxFieldTrial::ShouldEncodeLeadingSpaceForOnDeviceTailSuggest() {
   return base::GetFieldTrialParamByFeatureAsBool(omnibox::kOnDeviceTailModel,
                                                  "ShouldEncodeLeadingSpace",
                                                  /*default_value=*/false);
-}
-
-bool OmniboxFieldTrial::ShouldApplyOnDeviceHeadModelSelectionFix() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-             omnibox::kOnDeviceHeadProviderNonIncognito,
-             OmniboxFieldTrial::kOnDeviceHeadModelSelectionFix,
-             /*default_value=*/true) ||
-         base::GetFieldTrialParamByFeatureAsBool(
-             omnibox::kOnDeviceHeadProviderIncognito,
-             OmniboxFieldTrial::kOnDeviceHeadModelSelectionFix,
-             /*default_value=*/true);
 }
 
 bool OmniboxFieldTrial::IsOnDeviceHeadSuggestEnabledForLocale(
@@ -558,7 +543,6 @@ const char OmniboxFieldTrial::kSuppressPsuggestBackfillWithMIAParam[] =
 
 const char OmniboxFieldTrial::kOnDeviceHeadModelLocaleConstraint[] =
     "ForceModelLocaleConstraint";
-const char OmniboxFieldTrial::kOnDeviceHeadModelSelectionFix[] = "SelectionFix";
 
 int OmniboxFieldTrial::kDefaultMinimumTimeBetweenSuggestQueriesMs = 100;
 
@@ -636,24 +620,11 @@ bool IsHideSuggestionGroupHeadersEnabledInContext(
   }
 }
 
-bool IsDeterministicAimActionInTypedStateEnabled(
-    AutocompleteProviderClient* client) {
-  ui::DeviceFormFactor factor = ui::GetDeviceFormFactor();
-  if (!(factor == ui::DEVICE_FORM_FACTOR_PHONE ||
-        factor == ui::DEVICE_FORM_FACTOR_FOLDABLE)) {
-    return false;
-  }
-
-  return AimEligibilityService::GenericKillSwitchFeatureCheck(
-      client->GetAimEligibilityService(),
-      omnibox::kOmniboxAimShortcutTypedState);
-}
-
 bool IsAimOmniboxEntrypointEnabled(
     const AimEligibilityService* aim_eligibility_service) {
-  return AimEligibilityService::GenericKillSwitchFeatureCheck(
-      aim_eligibility_service, omnibox::kAiModeOmniboxEntryPoint,
-      omnibox::kAiModeOmniboxEntryPointEnUs);
+  // `aim_eligibility_service` can be null in tests.
+  return base::FeatureList::IsEnabled(omnibox::kAiModeOmniboxEntryPoint) &&
+         aim_eligibility_service && aim_eligibility_service->IsAimEligible();
 }
 
 bool IsAimStarterPackEnabled(

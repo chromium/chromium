@@ -148,9 +148,9 @@ class TabSearchPageHandler
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
-  void TabChangedAt(content::WebContents* contents,
-                    int index,
-                    TabChangeType change_type) override;
+  void OnTabChangedAt(tabs::TabInterface* tab,
+                      int index,
+                      TabChangeType change_type) override;
   void OnSplitTabChanged(const SplitTabChange& change) override;
 
   // TabDeclutterObserver:

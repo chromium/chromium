@@ -1,14 +1,10 @@
 // Contains helpers for calculating the dimensions for the various
 // scrollbar parts.
 
-function fluentOverlayScrollbarsEnabled() {
-  return internals.runtimeFlags.fluentOverlayScrollbarsEnabled;
-}
-
 // Helper to calculate track-width for non-custom standard
 // scrollbars.
 function calculateScrollbarThickness() {
-    if (fluentOverlayScrollbarsEnabled()) {
+    if (internals.overlayScrollbarsEnabled) {
       // LINT.IfChange(FluentScrollbarThickness)
       return 15;
       // LINT.ThenChange(//ui/native_theme/native_theme_fluent.h:FluentScrollbarThickness)
@@ -38,7 +34,7 @@ function calculateScrollbarThickness() {
 // Returns the width of a acrollbar button. On platforms where there are no
 // scrollbar buttons (i.e. there are overlay scrollbars) returns 0.
 function calculateScrollbarButtonWidth() {
-  if (fluentOverlayScrollbarsEnabled()) {
+  if (internals.overlayScrollbarsEnabled) {
     // Fluent overlay scrollbars have a little margin over the scrollbar's
     // button that causes the button to be separated from the edges of the
     // screen.

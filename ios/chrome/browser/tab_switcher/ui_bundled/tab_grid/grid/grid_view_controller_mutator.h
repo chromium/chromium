@@ -9,7 +9,7 @@
 
 @class GridItemIdentifier;
 class TabGroup;
-@class TabGroupItem;
+@class TabGroupInfo;
 @class TabInfo;
 
 // Reflects user’s change in grid's model.
@@ -41,7 +41,7 @@ class TabGroup;
               toGroup:(const TabGroup*)group;
 
 // Merge `droppedGroup` into `destinationItem`.
-- (void)mergeGroup:(TabGroupItem*)droppedGroup
+- (void)mergeGroup:(TabGroupInfo*)droppedGroup
     intoDestinationItem:(GridItemIdentifier*)destinationItem;
 
 @end

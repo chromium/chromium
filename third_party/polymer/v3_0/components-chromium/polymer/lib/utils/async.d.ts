@@ -104,6 +104,6 @@ declare namespace microTask {
 
 export {microTask};
 
-import {AsyncInterface} from '../../interfaces';
+import {AsyncInterface} from '../../interfaces.js';
 
-import {IdleDeadline} from '../../interfaces';
+import {IdleDeadline} from '../../interfaces.js';

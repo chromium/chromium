@@ -32,11 +32,10 @@ TEST(ClientFilterableStateTest, IsEnterprise) {
 
 TEST(ClientFilterableStateTest, GoogleGroups) {
   // Test that google_groups_function_ is called once.
-  base::flat_set<uint64_t> expected_google_groups =
-      base::flat_set<uint64_t>(1234, 5678);
+  base::flat_set<uint64_t> expected_google_groups({1234, 5678});
   ClientFilterableState client(
       base::BindOnce([] { return false; }),
-      base::BindOnce([] { return base::flat_set<uint64_t>(1234, 5678); }));
+      base::BindOnce([] { return base::flat_set<uint64_t>({1234, 5678}); }));
   EXPECT_EQ(client.GoogleGroups(), expected_google_groups);
   EXPECT_EQ(client.GoogleGroups(), expected_google_groups);
 }

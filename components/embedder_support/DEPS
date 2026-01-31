@@ -14,6 +14,7 @@ include_rules = [
   "+net",
   "+services/device/public/cpp/device_features.h",
   "+services/device/public/cpp/geolocation/buildflags.h",
+  "+services/network/public/cpp/features.h",
   "+third_party/blink/public/common",
   "+third_party/blink/public/mojom/worker/shared_worker_info.mojom.h",
   "+third_party/re2",

@@ -2,18 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <arm_neon.h>
+
+#include <array>
+
 #include "base/compiler_specific.h"
-#include "build/build_config.h"
 #include "third_party/blink/renderer/modules/webaudio/oscillator_handler.h"
 #include "third_party/blink/renderer/modules/webaudio/periodic_wave.h"
 
-#if defined(CPU_ARM_NEON)
-#include <arm_neon.h>
-#endif
-
 namespace blink {
 
-#if defined(CPU_ARM_NEON)
 namespace {
 
 float32x4_t WrapVirtualIndexVector(float32x4_t x,
@@ -48,8 +46,8 @@ std::tuple<int, double> OscillatorHandler::ProcessKRateVector(
   const unsigned periodic_wave_size = periodic_wave_->PeriodicWaveSize();
   const double inv_periodic_wave_size = 1.0 / periodic_wave_size;
 
-  float* higher_wave_data = nullptr;
-  float* lower_wave_data = nullptr;
+  base::span<const float> lower_wave_data;
+  base::span<const float> higher_wave_data;
   float table_interpolation_factor = 0;
   const float incr = frequency * rate_scale;
   DCHECK_GE(incr, kInterpolate2Point);
@@ -107,10 +105,10 @@ std::tuple<int, double> OscillatorHandler::ProcessKRateVector(
     vst1q_u32(r1, read_index_1);
 
     for (int m = 0; m < 4; ++m) {
-      UNSAFE_TODO(sample1_lower[m]) = UNSAFE_TODO(lower_wave_data[r0[m])];
-      UNSAFE_TODO(sample2_lower[m]) = UNSAFE_TODO(lower_wave_data[r1[m])];
-      UNSAFE_TODO(sample1_higher[m]) = UNSAFE_TODO(higher_wave_data[r0[m])];
-      UNSAFE_TODO(sample2_higher[m]) = UNSAFE_TODO(higher_wave_data[r1[m])];
+      UNSAFE_TODO(sample1_lower[m]) = lower_wave_data[UNSAFE_TODO(r0[m])];
+      UNSAFE_TODO(sample2_lower[m]) = lower_wave_data[UNSAFE_TODO(r1[m])];
+      UNSAFE_TODO(sample1_higher[m]) = higher_wave_data[UNSAFE_TODO(r0[m])];
+      UNSAFE_TODO(sample2_higher[m]) = higher_wave_data[UNSAFE_TODO(r1[m])];
     }
 
     const float32x4_t s1_low = vld1q_f32(sample1_lower);
@@ -150,11 +148,11 @@ std::tuple<int, double> OscillatorHandler::ProcessKRateVector(
 double OscillatorHandler::ProcessARateVectorKernel(
     float* destination,
     double virtual_read_index,
-    const float* phase_increments,
+    base::span<const float> phase_increments,
     unsigned periodic_wave_size,
-    const float* const lower_wave_data[4],
-    const float* const higher_wave_data[4],
-    const float table_interpolation_factor[4]) const {
+    const std::array<base::span<const float>, 4>& lower_wave_data,
+    const std::array<base::span<const float>, 4>& higher_wave_data,
+    const std::array<float, 4>& table_interpolation_factor) const {
   // See the scalar version in oscillator_node.cc for the basic algorithm.
   double inv_periodic_wave_size = 1.0 / periodic_wave_size;
   unsigned read_index_mask = periodic_wave_size - 1;
@@ -162,11 +160,10 @@ double OscillatorHandler::ProcessARateVectorKernel(
   // Accumulate the phase increments so we can set up the virtual read index
   // vector appropriately.  This must be a double to preserve accuracy and
   // to match the scalar version.
-  double incr_sum[4];
+  std::array<double, 4> incr_sum;
   incr_sum[0] = phase_increments[0];
   for (int m = 1; m < 4; ++m) {
-    UNSAFE_TODO(incr_sum[m]) =
-        UNSAFE_TODO(incr_sum[m - 1] + phase_increments[m]);
+    incr_sum[m] = incr_sum[m - 1] + phase_increments[m];
   }
 
   // It's really important for accuracy that we use doubles instead of
@@ -214,10 +211,10 @@ double OscillatorHandler::ProcessARateVectorKernel(
     UNSAFE_TODO(DCHECK_LT(read0[m], periodic_wave_size));
     UNSAFE_TODO(DCHECK_LT(read1[m], periodic_wave_size));
 
-    UNSAFE_TODO(sample1_lower[m]) = UNSAFE_TODO(lower_wave_data[m][read0[m])];
-    UNSAFE_TODO(sample2_lower[m]) = UNSAFE_TODO(lower_wave_data[m][read1[m])];
-    UNSAFE_TODO(sample1_higher[m]) = UNSAFE_TODO(higher_wave_data[m][read0[m])];
-    UNSAFE_TODO(sample2_higher[m]) = UNSAFE_TODO(higher_wave_data[m][read1[m])];
+    UNSAFE_TODO(sample1_lower[m]) = lower_wave_data[m][UNSAFE_TODO(read0[m])];
+    UNSAFE_TODO(sample2_lower[m]) = lower_wave_data[m][UNSAFE_TODO(read1[m])];
+    UNSAFE_TODO(sample1_higher[m]) = higher_wave_data[m][UNSAFE_TODO(read0[m])];
+    UNSAFE_TODO(sample2_higher[m]) = higher_wave_data[m][UNSAFE_TODO(read1[m])];
   }
 
   // Compute factor for linear interpolation within a wave table.
@@ -236,7 +233,7 @@ double OscillatorHandler::ProcessARateVectorKernel(
   // Linearly interpolate between wave tables to get the desired
   // output samples.
   const float32x4_t sample =
-      vmlaq_f32(sample_higher, vld1q_f32(table_interpolation_factor),
+      vmlaq_f32(sample_higher, vld1q_f32(table_interpolation_factor.data()),
                 vsubq_f32(sample_lower, sample_higher));
 
   vst1q_f32(destination, sample);
@@ -249,6 +246,5 @@ double OscillatorHandler::ProcessARateVectorKernel(
 
   return virtual_read_index;
 }
-#endif
 
 }  // namespace blink

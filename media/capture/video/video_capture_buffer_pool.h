@@ -60,6 +60,9 @@ class CAPTURE_EXPORT VideoCaptureBufferPool
   virtual gfx::GpuMemoryBufferHandle GetGpuMemoryBufferHandle(
       int buffer_id) = 0;
 
+  virtual media::mojom::VideoBufferHandlePtr GetVideoBufferHandle(
+      int buffer_id) = 0;
+
   // Returns the buffer type of the buffer. Useful when deciding whether to
   // serialize the buffer for IPC either as shared memory or GMB.
   virtual VideoCaptureBufferType GetBufferType(int buffer_id) = 0;

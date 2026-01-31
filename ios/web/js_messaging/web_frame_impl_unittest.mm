@@ -91,7 +91,7 @@ TEST_F(WebFrameImplTest, CallJavaScriptFunctionMainFrame) {
                          /*is_main_frame=*/true, security_origin_,
                          &fake_web_state_, ContentWorld::kPageContentWorld);
 
-  base::Value::List function_params;
+  base::ListValue function_params;
   EXPECT_TRUE(
       web_frame.CallJavaScriptFunction("functionName", function_params));
   EXPECT_NSEQ(@"__gCrWeb.callFunctionInGcrWeb(\"\", \"functionName\", [])",
@@ -123,7 +123,7 @@ TEST_F(WebFrameImplTest, CallJavaScriptFunctionIFrame) {
                          /*is_main_frame=*/false, security_origin_,
                          &fake_web_state_, ContentWorld::kIsolatedWorld);
 
-  base::Value::List function_params;
+  base::ListValue function_params;
 
   EXPECT_TRUE(
       web_frame.CallJavaScriptFunction("functionName", function_params));

@@ -135,7 +135,7 @@ bool ShouldFindNewCheckTime(Profile* profile) {
   //   },
   //   ...
   // }
-  const base::Value::Dict& check_schedule_dict = profile->GetPrefs()->GetDict(
+  const base::DictValue& check_schedule_dict = profile->GetPrefs()->GetDict(
       safety_hub_prefs::kBackgroundPasswordCheckTimeAndInterval);
 
   // If the check time is not set yet, a new check time should be found.
@@ -179,8 +179,8 @@ bool ShouldFindNewCheckTime(Profile* profile) {
 }
 
 // Helper functions for displaying passwords in the UI
-base::Value::Dict GetCompromisedPasswordCardData(int compromised_count) {
-  base::Value::Dict result;
+base::DictValue GetCompromisedPasswordCardData(int compromised_count) {
+  base::DictValue result;
 
   result.Set(safety_hub::kCardHeaderKey,
              l10n_util::GetPluralStringFUTF16(
@@ -195,8 +195,8 @@ base::Value::Dict GetCompromisedPasswordCardData(int compromised_count) {
   return result;
 }
 
-base::Value::Dict GetReusedPasswordCardData(int reused_count, bool signed_in) {
-  base::Value::Dict result;
+base::DictValue GetReusedPasswordCardData(int reused_count, bool signed_in) {
+  base::DictValue result;
 
   result.Set(safety_hub::kCardHeaderKey,
              l10n_util::GetPluralStringFUTF16(
@@ -212,8 +212,8 @@ base::Value::Dict GetReusedPasswordCardData(int reused_count, bool signed_in) {
   return result;
 }
 
-base::Value::Dict GetWeakPasswordCardData(int weak_count, bool signed_in) {
-  base::Value::Dict result;
+base::DictValue GetWeakPasswordCardData(int weak_count, bool signed_in) {
+  base::DictValue result;
 
   result.Set(safety_hub::kCardHeaderKey,
              l10n_util::GetPluralStringFUTF16(
@@ -229,8 +229,8 @@ base::Value::Dict GetWeakPasswordCardData(int weak_count, bool signed_in) {
   return result;
 }
 
-base::Value::Dict GetSafePasswordCardData(base::Time last_check) {
-  base::Value::Dict result;
+base::DictValue GetSafePasswordCardData(base::Time last_check) {
+  base::DictValue result;
 
   result.Set(safety_hub::kCardHeaderKey,
              l10n_util::GetPluralStringFUTF16(
@@ -257,8 +257,8 @@ base::Value::Dict GetSafePasswordCardData(base::Time last_check) {
   return result;
 }
 
-base::Value::Dict GetNoWeakOrReusedPasswordCardData(bool signed_in) {
-  base::Value::Dict result;
+base::DictValue GetNoWeakOrReusedPasswordCardData(bool signed_in) {
+  base::DictValue result;
   result.Set(
       safety_hub::kCardHeaderKey,
       l10n_util::GetStringUTF16(
@@ -274,8 +274,8 @@ base::Value::Dict GetNoWeakOrReusedPasswordCardData(bool signed_in) {
   return result;
 }
 
-base::Value::Dict GetNoPasswordCardData(bool password_saving_allowed) {
-  base::Value::Dict result;
+base::DictValue GetNoPasswordCardData(bool password_saving_allowed) {
+  base::DictValue result;
 
   result.Set(safety_hub::kCardHeaderKey,
              l10n_util::GetStringUTF16(
@@ -684,7 +684,7 @@ void PasswordStatusCheckService::SetPasswordCheckSchedulePrefsWithInterval(
   base::TimeDelta check_interval =
       safety_check::features::kBackgroundPasswordCheckInterval.Get();
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set(safety_hub_prefs::kNextPasswordCheckTimeKey,
            base::TimeToValue(check_time));
   dict.Set(safety_hub_prefs::kPasswordCheckIntervalKey,
@@ -701,7 +701,7 @@ void PasswordStatusCheckService::SetPasswordCheckSchedulePrefsWithInterval(
 }
 
 base::Time PasswordStatusCheckService::GetScheduledPasswordCheckTime() const {
-  const base::Value::Dict& check_schedule_dict = profile_->GetPrefs()->GetDict(
+  const base::DictValue& check_schedule_dict = profile_->GetPrefs()->GetDict(
       safety_hub_prefs::kBackgroundPasswordCheckTimeAndInterval);
   std::optional<base::Time> check_time = base::ValueToTime(
       check_schedule_dict.Find(safety_hub_prefs::kNextPasswordCheckTimeKey));
@@ -711,7 +711,7 @@ base::Time PasswordStatusCheckService::GetScheduledPasswordCheckTime() const {
 
 base::TimeDelta PasswordStatusCheckService::GetScheduledPasswordCheckInterval()
     const {
-  const base::Value::Dict& check_schedule_dict = profile_->GetPrefs()->GetDict(
+  const base::DictValue& check_schedule_dict = profile_->GetPrefs()->GetDict(
       safety_hub_prefs::kBackgroundPasswordCheckTimeAndInterval);
   std::optional<base::TimeDelta> check_interval = base::ValueToTimeDelta(
       check_schedule_dict.Find(safety_hub_prefs::kPasswordCheckIntervalKey));
@@ -719,7 +719,7 @@ base::TimeDelta PasswordStatusCheckService::GetScheduledPasswordCheckInterval()
   return check_interval.value();
 }
 
-base::Value::Dict PasswordStatusCheckService::GetPasswordCardData(
+base::DictValue PasswordStatusCheckService::GetPasswordCardData(
     bool signed_in) {
   if (no_passwords_saved()) {
     bool password_saving_allowed = profile_->GetPrefs()->GetBoolean(
@@ -753,7 +753,7 @@ base::Value::Dict PasswordStatusCheckService::GetPasswordCardData(
   return GetNoWeakOrReusedPasswordCardData(signed_in);
 }
 
-base::Value::Dict PasswordStatusCheckService::GetPasswordCardData() {
+base::DictValue PasswordStatusCheckService::GetPasswordCardData() {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile_);
   bool signed_in = identity_manager && identity_manager->HasPrimaryAccount(

@@ -49,15 +49,15 @@ void MetricsReportingHandler::OnJavascriptDisallowed() {
 }
 
 void MetricsReportingHandler::HandleGetMetricsReporting(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   CHECK_GT(args.size(), 0u);
   const base::Value& callback_id = args[0];
   ResolveJavascriptCallback(callback_id, CreateMetricsReportingDict());
 }
 
-base::Value::Dict MetricsReportingHandler::CreateMetricsReportingDict() {
-  base::Value::Dict dict;
+base::DictValue MetricsReportingHandler::CreateMetricsReportingDict() {
+  base::DictValue dict;
   dict.Set("enabled",
            ChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled());
   dict.Set("managed", IsMetricsReportingPolicyManaged());
@@ -65,7 +65,7 @@ base::Value::Dict MetricsReportingHandler::CreateMetricsReportingDict() {
 }
 
 void MetricsReportingHandler::HandleSetMetricsReportingEnabled(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   if (IsMetricsReportingPolicyManaged()) {
     // NOTE: ChangeMetricsReportingState() already checks whether metrics
     // reporting is managed by policy. Also, the UI really shouldn't be able to

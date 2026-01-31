@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "third_party/blink/public/mojom/input/input_handler.mojom-forward.h"
 #include "third_party/blink/public/platform/web_text_input_info.h"
 #include "third_party/blink/public/web/web_range.h"
 #include "third_party/blink/public/web/web_widget.h"
@@ -35,6 +36,13 @@ class WebInputMethodController {
   // text will be canceled. |replacementRange| (when not null) is the range in
   // current text which should be replaced by |text|. Returns true if the
   // composition text was set successfully.
+  virtual bool SetComposition(
+      const WebString& text,
+      const std::vector<ui::ImeTextSpan>& ime_text_spans,
+      const WebRange& replacement_range,
+      int selection_start,
+      int selection_end,
+      mojom::ImeState ime_state) = 0;
   virtual bool SetComposition(
       const WebString& text,
       const std::vector<ui::ImeTextSpan>& ime_text_spans,

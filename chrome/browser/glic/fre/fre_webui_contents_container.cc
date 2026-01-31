@@ -5,10 +5,13 @@
 #include "chrome/browser/glic/fre/fre_webui_contents_container.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/user_metrics.h"
 #include "chrome/browser/glic/fre/glic_fre.mojom.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/input/native_web_keyboard_event.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 
 namespace glic {
 
@@ -40,6 +43,18 @@ void FreWebUIContentsContainer::SetContentsBounds(content::WebContents* source,
   fre_web_view_->SetPreferredSize(new_size);
   fre_web_view_->SizeToPreferredSize();
   fre_controller_->UpdateFreWidgetSize(new_size);
+}
+
+bool FreWebUIContentsContainer::HandleKeyboardEvent(
+    content::WebContents* source,
+    const input::NativeWebKeyboardEvent& event) {
+  if (event.GetType() == input::NativeWebKeyboardEvent::Type::kRawKeyDown &&
+      event.windows_key_code == ui::VKEY_ESCAPE) {
+    base::RecordAction(base::UserMetricsAction("Glic.Fre.CloseWithEsc"));
+  }
+  return fre_web_view_->GetWidget() &&
+         unhandled_keyboard_event_handler_.HandleKeyboardEvent(
+             event, fre_web_view_->GetWidget()->GetFocusManager());
 }
 
 void FreWebUIContentsContainer::PrimaryMainFrameRenderProcessGone(

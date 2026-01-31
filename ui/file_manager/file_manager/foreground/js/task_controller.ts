@@ -4,7 +4,6 @@
 
 import {assertInstanceof, assertNotReached} from 'chrome://resources/ash/common/assert.js';
 
-import type {Crostini} from '../../background/js/crostini.js';
 import type {ProgressCenter} from '../../background/js/progress_center.js';
 import type {VolumeManager} from '../../background/js/volume_manager.js';
 import {getMimeType, startIOTask} from '../../common/js/api.js';
@@ -68,7 +67,7 @@ export class TaskController {
       private directoryModel_: DirectoryModel,
       private selectionHandler_: FileSelectionHandler,
       private metadataUpdateController_: MetadataUpdateController,
-      private crostini_: Crostini, private progressCenter_: ProgressCenter) {
+      private progressCenter_: ProgressCenter) {
     this.taskHistory_ = new TaskHistory();
     this.defaultTaskCommand_ =
         assertInstanceof(document.querySelector('#default-task'), Command);
@@ -545,7 +544,7 @@ export class TaskController {
     return FileTasks.create(
         this.volumeManager_, this.metadataModel_, this.directoryModel_,
         this.ui_, this.fileTransferController_!, [entry], this.taskHistory_,
-        this.crostini_, this.progressCenter_, this);
+        this.progressCenter_, this);
   }
 
   async executeEntryTask(entry: Entry) {

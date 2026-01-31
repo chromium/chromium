@@ -53,6 +53,7 @@ class DataSharingBubbleController;
 class DesktopBrowserWindowCapabilities;
 class DevtoolsUIController;
 class EmbedderBrowserWindowFeatures;
+class ExtensionInstalledWatcher;
 class ExtensionKeybindingRegistryViews;
 class ExclusiveAccessManager;
 class FindBarController;
@@ -63,10 +64,13 @@ class HistorySidePanelCoordinator;
 class IncognitoClearBrowsingDataDialogCoordinator;
 class ImmersiveModeController;
 class IOSPromoController;
+class InitialWebUIManager;
+class InitialWebUIWindowMetricsManager;
 class LocationBarModel;
 class MemorySaverOptInIPHController;
 class PinnedToolbarActionsController;
 class ProfileMenuCoordinator;
+class ProjectsPanelStateController;
 class ReadingListSidePanelCoordinator;
 class RecentActivityBubbleCoordinator;
 class BrowserSelectFileDialogController;
@@ -110,6 +114,12 @@ class SessionRestoreInfobarController;
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
+#if BUILDFLAG(IS_CHROMEOS)
+namespace ash::boca {
+class OnTaskLockedController;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 #if !BUILDFLAG(IS_CHROMEOS)
 class DownloadToolbarUIController;
 #endif
@@ -143,6 +153,7 @@ class ProductSpecificationsEntryPointController;
 namespace contextual_tasks {
 class ActiveTaskContextProvider;
 class ContextualTasksSidePanelCoordinator;
+class EntryPointEligibilityManager;
 }  // namespace contextual_tasks
 
 namespace tabs {
@@ -200,6 +211,10 @@ namespace omnibox {
 class AiModePageActionController;
 class OmniboxPopupCloser;
 }  // namespace omnibox
+
+namespace skills {
+class SkillsUiController;
+}  // namespace skills
 
 // This class owns the core controllers for features that are scoped to a given
 // browser window on desktop.
@@ -266,6 +281,10 @@ class BrowserWindowFeatures {
 
   CommentsSidePanelCoordinator* comments_side_panel_coordinator() {
     return comments_side_panel_coordinator_.get();
+  }
+
+  ExtensionInstalledWatcher* extension_installed_watcher() {
+    return extension_installed_watcher_.get();
   }
 
 #if BUILDFLAG(ENABLE_GLIC)
@@ -546,6 +565,11 @@ class BrowserWindowFeatures {
 
   std::unique_ptr<FullscreenControlHost> fullscreen_control_host_;
 
+  std::unique_ptr<InitialWebUIManager> initial_web_ui_manager_;
+
+  std::unique_ptr<InitialWebUIWindowMetricsManager>
+      initial_webui_window_metrics_manager_;
+
   std::unique_ptr<IOSPromoController> ios_promo_controller_;
 
   std::unique_ptr<lens::LensOverlayEntryPointController>
@@ -562,6 +586,9 @@ class BrowserWindowFeatures {
   std::unique_ptr<tabs::VerticalTabStripStateController>
       vertical_tab_strip_state_controller_;
 
+  std::unique_ptr<ProjectsPanelStateController>
+      projects_panel_state_controller_;
+
   std::unique_ptr<MemorySaverOptInIPHController>
       memory_saver_opt_in_iph_controller_;
 
@@ -575,6 +602,8 @@ class BrowserWindowFeatures {
 
   std::unique_ptr<PinnedToolbarActionsController>
       pinned_toolbar_actions_controller_;
+
+  std::unique_ptr<ExtensionInstalledWatcher> extension_installed_watcher_;
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   std::unique_ptr<pdf::infobar::PdfInfoBarController> pdf_infobar_controller_;
@@ -631,6 +660,9 @@ class BrowserWindowFeatures {
   std::unique_ptr<session_restore_infobar::SessionRestoreInfobarController>
       session_restore_infobar_controller_;
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+  std::unique_ptr<contextual_tasks::EntryPointEligibilityManager>
+      contextual_tasks_entry_point_eligibility_manager_;
 
   std::unique_ptr<ContextualTasksEphemeralButtonController>
       contextual_tasks_ephemeral_button_controller_;
@@ -776,6 +808,12 @@ class BrowserWindowFeatures {
   std::unique_ptr<SearchboxContextData> searchbox_context_data_;
 
   std::unique_ptr<omnibox::OmniboxPopupCloser> omnibox_popup_closer_;
+
+  std::unique_ptr<skills::SkillsUiController> skills_ui_controller_;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  std::unique_ptr<ash::boca::OnTaskLockedController> on_task_locked_controller_;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Keep this member last to ensure embedder features are torn down first, in
   // reverse order of initialization.

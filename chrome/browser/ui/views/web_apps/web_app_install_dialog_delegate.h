@@ -72,6 +72,7 @@ bool IsWidgetCurrentSizeSmallerThanPreferredSize(views::Widget* widget);
 class WebAppInstallDialogDelegate : public WebAppModalDialogDelegate {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kDiyAppsDialogOkButtonId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kDiyAppsDialogInputTextId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPwaInstallDialogInstallButton);
   DECLARE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(kInstalledPWAEventId);
 

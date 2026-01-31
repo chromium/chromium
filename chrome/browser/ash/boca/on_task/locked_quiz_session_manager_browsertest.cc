@@ -11,6 +11,7 @@
 #include "chrome/browser/ash/boca/on_task/locked_quiz_session_manager.h"
 #include "chrome/browser/ash/boca/on_task/locked_quiz_session_manager_factory.h"
 #include "chrome/browser/ash/boca/on_task/locked_session_window_tracker_factory.h"
+#include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
 #include "chrome/browser/ash/boca/on_task/on_task_locked_session_window_tracker.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/platform_util.h"
@@ -109,7 +110,8 @@ IN_PROC_BROWSER_TEST_F(LockedQuizSessionManagerBrowserTest,
   navigation_observer_1.Wait();
   ASSERT_THAT(boca_app_browser, NotNull());
   ASSERT_EQ(boca_app_browser, FindBocaSystemWebAppBrowser());
-  ASSERT_TRUE(boca_app_browser->IsLockedForOnTask());
+  ASSERT_TRUE(
+      OnTaskLockedController::From(boca_app_browser)->is_locked_for_on_task());
   ASSERT_TRUE(platform_util::IsBrowserLockedFullscreen(boca_app_browser));
   EXPECT_FALSE(chromeos::wm::CanFloatWindow(
       boca_app_browser->window()->GetNativeWindow()));
@@ -142,7 +144,8 @@ IN_PROC_BROWSER_TEST_F(LockedQuizSessionManagerBrowserTest,
   navigation_observer_1.Wait();
   ASSERT_THAT(boca_app_browser_1, NotNull());
   ASSERT_EQ(boca_app_browser_1, FindBocaSystemWebAppBrowser());
-  ASSERT_TRUE(boca_app_browser_1->IsLockedForOnTask());
+  ASSERT_TRUE(OnTaskLockedController::From(boca_app_browser_1)
+                  ->is_locked_for_on_task());
 
   base::test::TestFuture<const SessionID&> future_2;
   GetLockedQuizSessionManager()->OpenLockedQuiz(GURL(kQuizUrl2),
@@ -153,7 +156,8 @@ IN_PROC_BROWSER_TEST_F(LockedQuizSessionManagerBrowserTest,
   navigation_observer_2.Wait();
   ASSERT_THAT(boca_app_browser_2, NotNull());
   ASSERT_EQ(boca_app_browser_2, FindBocaSystemWebAppBrowser());
-  ASSERT_TRUE(boca_app_browser_2->IsLockedForOnTask());
+  ASSERT_TRUE(OnTaskLockedController::From(boca_app_browser_2)
+                  ->is_locked_for_on_task());
   ASSERT_TRUE(platform_util::IsBrowserLockedFullscreen(boca_app_browser_2));
   EXPECT_FALSE(chromeos::wm::CanFloatWindow(
       boca_app_browser_2->window()->GetNativeWindow()));

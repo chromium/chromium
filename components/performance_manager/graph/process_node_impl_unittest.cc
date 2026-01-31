@@ -4,10 +4,10 @@
 
 #include "components/performance_manager/graph/process_node_impl.h"
 
+#include <algorithm>
 #include <optional>
 
 #include "base/byte_count.h"
-#include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
@@ -81,8 +81,8 @@ TEST_F(ProcessNodeImplTest, ProcessLifeCycle) {
   EXPECT_TRUE(process_node->GetPrivateFootprint().is_zero());
   EXPECT_TRUE(process_node->GetResidentSet().is_zero());
 
-  process_node->set_private_footprint(base::KiB(10));
-  process_node->set_resident_set(base::KiB(20));
+  process_node->set_private_footprint(base::KiBU(10));
+  process_node->set_resident_set(base::KiBU(20));
 
   // Kill it again.
   // Verify that the process is cleared, but the properties stick around.
@@ -91,8 +91,8 @@ TEST_F(ProcessNodeImplTest, ProcessLifeCycle) {
   EXPECT_EQ(self.Pid(), process_node->GetProcessId());
 
   EXPECT_EQ(launch_time, process_node->GetLaunchTime());
-  EXPECT_EQ(base::KiB(10), process_node->GetPrivateFootprint());
-  EXPECT_EQ(base::KiB(20), process_node->GetResidentSet());
+  EXPECT_EQ(base::KiBU(10), process_node->GetPrivateFootprint());
+  EXPECT_EQ(base::KiBU(20), process_node->GetResidentSet());
 
   // Resurrect again and verify the launch time and measurements
   // are cleared.
@@ -195,12 +195,12 @@ TEST_F(ProcessNodeImplTest, ObserverWorks) {
   EXPECT_EQ(raw_process_node, obs.TakeNotifiedProcessNode());
 
   // This call does nothing as the priority is initialized at HIGHEST.
-  EXPECT_EQ(base::TaskPriority::HIGHEST, process_node->GetPriority());
-  process_node->set_priority(base::TaskPriority::HIGHEST);
+  EXPECT_EQ(base::Process::Priority::kMaxValue, process_node->GetPriority());
+  process_node->set_priority(base::Process::Priority::kMaxValue);
 
   // This call should fire a notification.
-  EXPECT_CALL(obs, OnPriorityChanged(_, base::TaskPriority::HIGHEST));
-  process_node->set_priority(base::TaskPriority::LOWEST);
+  EXPECT_CALL(obs, OnPriorityChanged(_, base::Process::Priority::kMaxValue));
+  process_node->set_priority(base::Process::Priority::kMinValue);
 
   EXPECT_CALL(obs, OnAllFramesInProcessFrozen(_))
       .WillOnce(Invoke(&obs, &MockObserver::SetNotifiedProcessNode));
@@ -210,7 +210,7 @@ TEST_F(ProcessNodeImplTest, ObserverWorks) {
   // Re-entrant iteration should work.
   EXPECT_CALL(obs, OnMainThreadTaskLoadIsLow(raw_process_node))
       .WillOnce(InvokeWithoutArgs([&] {
-        process_node->set_priority(base::TaskPriority::USER_BLOCKING);
+        process_node->set_priority(base::Process::Priority::kUserBlocking);
       }));
   EXPECT_CALL(obs, OnPriorityChanged(raw_process_node, _));
   process_node->SetMainThreadTaskLoadIsLow(false);
@@ -284,7 +284,7 @@ TEST_F(ProcessNodeImplTest, PublicInterface) {
   EXPECT_EQ(frame_nodes.size(), public_frame_nodes.size());
   for (const FrameNodeImpl* frame_node : frame_nodes) {
     const FrameNode* public_frame_node = frame_node;
-    EXPECT_TRUE(base::Contains(public_frame_nodes, public_frame_node));
+    EXPECT_TRUE(std::ranges::contains(public_frame_nodes, public_frame_node));
   }
 }
 

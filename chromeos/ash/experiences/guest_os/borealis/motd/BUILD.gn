@@ -2,15 +2,29 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//mojo/public/tools/bindings/mojom.gni")
+
 assert(is_chromeos)
+
+mojom("mojo_bindings") {
+  sources = [ "borealis_motd.mojom" ]
+  webui_module_path = "/chromeos/ash/experiences/guest_os/borealis/motd"
+}
 
 static_library("motd") {
   sources = [
     "borealis_motd_dialog.cc",
     "borealis_motd_dialog.h",
+    "borealis_motd_page_handler.cc",
+    "borealis_motd_page_handler.h",
+    "borealis_motd_ui.cc",
+    "borealis_motd_ui.h",
+    "borealis_motd_util.cc",
+    "borealis_motd_util.h",
   ]
 
   deps = [
+    ":mojo_bindings",
     "//ash",
     "//ash/strings:strings_grit",
     "//chromeos/ash/experiences/guest_os/borealis:borealis_features",

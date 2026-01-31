@@ -6,11 +6,12 @@
 
 #import <UserNotifications/UserNotifications.h>
 
+#import <utility>
+
 #import "base/apple/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
-#import "base/types/cxx23_to_underlying.h"
 #import "base/values.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
@@ -91,7 +92,7 @@
 - (NSDictionary<NSString*, NSNumber*>*)deliveredNotifications {
   if (!_deliveredNotifications) {
     // Load from local state prefs.
-    const base::Value::Dict& dict =
+    const base::DictValue& dict =
         self.localState->GetDict(prefs::kHandledDeliveredNotificationIds);
     NSMutableDictionary<NSString*, NSNumber*>* newDict =
         [NSMutableDictionary dictionary];
@@ -109,7 +110,7 @@
 - (void)setDeliveredNotifications:
     (NSDictionary<NSString*, NSNumber*>*)notifications {
   // Persist to local state prefs.
-  base::Value::Dict newDict;
+  base::DictValue newDict;
   for (NSString* identifier in notifications) {
     newDict.Set(base::SysNSStringToUTF8(identifier),
                 notifications[identifier].intValue);
@@ -134,7 +135,7 @@
                             type:(NotificationType)type {
   NSMutableDictionary<NSString*, NSNumber*>* newDict =
       [self.deliveredNotifications mutableCopy];
-  newDict[identifier] = @(base::to_underlying(type));
+  newDict[identifier] = @(std::to_underlying(type));
   self.deliveredNotifications = newDict;
 }
 
@@ -160,7 +161,7 @@
       continue;
     }
     NotificationType type = [self.classifier classifyNotification:notification];
-    newDeliveredNotifications[identifier] = @(base::to_underlying(type));
+    newDeliveredNotifications[identifier] = @(std::to_underlying(type));
     [self recordTypeReceived:type];
   }
 

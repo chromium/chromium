@@ -9,7 +9,7 @@
 
 #include "ash/clipboard/test_support/mock_clipboard_history_controller.h"
 #include "base/unguessable_token.h"
-#include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
+#include "chromeos/ui/clipboard_history/clipboard_history_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/events/event_constants.h"
@@ -50,8 +50,7 @@ TEST_F(QuickInsertPasteRequestTest, PastesOnNewFocus) {
   EXPECT_CALL(clipboard_history_controller,
               PasteClipboardItemById(
                   item_id.ToString(), ui::EF_NONE,
-                  crosapi::mojom::ClipboardHistoryControllerShowSource::
-                      kVirtualKeyboard))
+                  chromeos::clipboard_history::ShowSource::kVirtualKeyboard))
       .Times(1);
 
   QuickInsertPasteRequest request(

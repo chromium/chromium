@@ -26,19 +26,15 @@ bool GeolocationPermissionContextDelegate::DecidePermission(
     permissions::GeolocationPermissionContext* context) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  bool permission_set;
-  bool new_permission;
-  if (extensions_context_.DecidePermission(request_data.id,
-                                           request_data.requesting_origin,
-                                           request_data.user_gesture, callback,
-                                           &permission_set, &new_permission)) {
-    DCHECK_EQ(!!*callback, permission_set);
-    if (permission_set) {
-      PermissionDecision decision = new_permission ? PermissionDecision::kAllow
-                                                   : PermissionDecision::kDeny;
+  if (std::optional<GeolocationPermissionContextExtensions::Decision>
+          extension_decision = extensions_context_.DecidePermission(
+              request_data.id, request_data.requesting_origin,
+              request_data.user_gesture, callback)) {
+    CHECK_EQ(!!*callback, extension_decision->permission_set);
+    if (extension_decision->permission_set) {
       context->NotifyPermissionSet(request_data, std::move(*callback),
-                                   /*persist=*/false, decision,
-                                   /*is_final_decision=*/true);
+                                   /*persist=*/false,
+                                   extension_decision->decision);
     }
     return true;
   }

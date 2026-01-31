@@ -329,14 +329,14 @@ class SegmentationPlatformServiceImplMultiClientTest
     : public SegmentationPlatformServiceImplTest {
   void SetUpPrefs() override {
     ScopedDictPrefUpdate update(&pref_service_, kSegmentationResultPref);
-    base::Value::Dict& dictionary = update.Get();
+    base::DictValue& dictionary = update.Get();
 
-    base::Value::Dict segmentation_result;
+    base::DictValue segmentation_result;
     segmentation_result.Set("segment_id",
                             SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
     dictionary.Set(kTestSegmentationKey1, std::move(segmentation_result));
 
-    base::Value::Dict segmentation_result2;
+    base::DictValue segmentation_result2;
     segmentation_result2.Set("segment_id",
                              SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_VOICE);
     dictionary.Set(kTestSegmentationKey2, std::move(segmentation_result2));

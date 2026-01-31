@@ -6,10 +6,10 @@
 
 #include <concepts>
 #include <string>
+#include <utility>
 
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 
 namespace ash::cloud_upload {
@@ -33,7 +33,7 @@ std::ostream& operator<<(std::ostream& os, T metric) {
         return os << "WVL";
     }
   }
-  return os << base::to_underlying(metric);
+  return os << std::to_underlying(metric);
 }
 
 // Print debug information about this metric.

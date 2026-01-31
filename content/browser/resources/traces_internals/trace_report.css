@@ -125,7 +125,7 @@
 }
 
 .value {
-  color: var(--cr-primary-text-color)
+  color: var(--cr-primary-text-color);
 }
 
 .spinner {

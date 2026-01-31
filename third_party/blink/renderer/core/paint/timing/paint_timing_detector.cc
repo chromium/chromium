@@ -157,14 +157,14 @@ PaintTimingDetector::PaintTimingDetector(LocalFrameView* frame_view)
       image_paint_timing_detector_(
           MakeGarbageCollected<ImagePaintTimingDetector>(frame_view)) {
   if (PaintTimingVisualizer::IsTracingEnabled()) {
-    visualizer_.emplace();
+    visualizer_ = std::make_unique<PaintTimingVisualizer>();
   }
 }
 
 void PaintTimingDetector::NotifyPaintFinished() {
   if (PaintTimingVisualizer::IsTracingEnabled()) {
     if (!visualizer_) {
-      visualizer_.emplace();
+      visualizer_ = std::make_unique<PaintTimingVisualizer>();
     }
     visualizer_->RecordMainFrameViewport(*frame_view_);
   } else {
@@ -371,7 +371,7 @@ PaintTimingDetector::GetLargestContentfulPaintCalculator() {
   return largest_contentful_paint_calculator_.Get();
 }
 
-void PaintTimingDetector::UpdateMetricsLcp() {
+void PaintTimingDetector::OnLcpMetricsForReportingChanged() {
   // The DidChangePerformanceTiming method which triggers the reporting of
   // metrics LCP would not be called when we are not recording metrics LCP.
   if (!first_input_or_scroll_notified_timestamp_.is_null()) {
@@ -450,27 +450,11 @@ void PaintTimingDetector::UpdateLcpCandidate() {
   if (!lcp_calculator) {
     return;
   }
-
   CHECK_EQ(first_input_or_scroll_notified_timestamp_.is_null(),
            image_paint_timing_detector_->IsRecordingLargestImagePaint());
   CHECK_EQ(first_input_or_scroll_notified_timestamp_.is_null(),
            text_paint_timing_detector_->IsRecordingLargestTextPaint());
-
-  // * nullptr means there is no new candidate update, which could be caused by
-  // user input or no content show up on the page.
-  // * Record.paint_time == 0 means there is an image but the image is still
-  // loading. The perf API should wait until the paint-time is available.
-  std::pair<TextRecord*, bool> text_update_result =
-      text_paint_timing_detector_->UpdateMetricsCandidate();
-  std::pair<ImageRecord*, bool> image_update_result =
-      image_paint_timing_detector_->UpdateMetricsCandidate();
-
-  if (image_update_result.second || text_update_result.second) {
-    UpdateMetricsLcp();
-  }
-
-  lcp_calculator->UpdateWebExposedLargestContentfulPaintIfNeeded(
-      text_update_result.first, image_update_result.first);
+  lcp_calculator->MaybeFlushCandidates();
 }
 
 void PaintTimingDetector::ReportIgnoredContent() {
@@ -483,7 +467,7 @@ PaintTimingDetector::LatestLcpDetailsForTest() {
   return GetLargestContentfulPaintCalculator()->LatestLcpDetails();
 }
 
-void PaintTimingDetector::EmitPerformanceEntry(
+void PaintTimingDetector::EmitLcpPerformanceEntry(
     const DOMPaintTimingInfo& paint_timing_info,
     uint64_t paint_size,
     base::TimeTicks load_time,

@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/containers/map_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_delta_serialization.h"
@@ -33,20 +32,20 @@ void UmaStabilityHistogramBoolean(const std::string& name, bool sample) {
 
 }  // namespace
 
-class HistogramFlattenerDeltaRecorder : public HistogramFlattener {
+class HistogramSnapshotManagerDeltaRecorder : public HistogramSnapshotManager {
  public:
-  HistogramFlattenerDeltaRecorder() = default;
+  HistogramSnapshotManagerDeltaRecorder() = default;
 
-  HistogramFlattenerDeltaRecorder(const HistogramFlattenerDeltaRecorder&) =
-      delete;
-  HistogramFlattenerDeltaRecorder& operator=(
-      const HistogramFlattenerDeltaRecorder&) = delete;
+  HistogramSnapshotManagerDeltaRecorder(
+      const HistogramSnapshotManagerDeltaRecorder&) = delete;
+  HistogramSnapshotManagerDeltaRecorder& operator=(
+      const HistogramSnapshotManagerDeltaRecorder&) = delete;
 
   void RecordDelta(const HistogramBase& histogram,
                    const HistogramSamples& snapshot) override {
     recorded_delta_histograms_.push_back(&histogram);
     // Use CHECK instead of ASSERT to get full stack-trace and thus origin.
-    CHECK(!Contains(recorded_delta_histogram_sum_, histogram.histogram_name()));
+    CHECK(!recorded_delta_histogram_sum_.contains(histogram.histogram_name()));
     // Keep pointer to snapshot for testing. This really isn't ideal but the
     // snapshot-manager keeps the snapshot alive until it's "forgotten".
     InsertOrAssign(recorded_delta_histogram_sum_, histogram.histogram_name(),
@@ -64,7 +63,7 @@ class HistogramFlattenerDeltaRecorder : public HistogramFlattener {
   }
 
   int64_t GetRecordedDeltaHistogramSum(const std::string& name) {
-    EXPECT_TRUE(Contains(recorded_delta_histogram_sum_, name));
+    EXPECT_TRUE(recorded_delta_histogram_sum_.contains(name));
     return recorded_delta_histogram_sum_[name];
   }
 
@@ -77,19 +76,16 @@ class HistogramFlattenerDeltaRecorder : public HistogramFlattener {
 class HistogramSnapshotManagerTest : public testing::Test {
  protected:
   HistogramSnapshotManagerTest()
-      : statistics_recorder_(StatisticsRecorder::CreateTemporaryForTesting()),
-        histogram_snapshot_manager_(&histogram_flattener_delta_recorder_) {}
+      : statistics_recorder_(StatisticsRecorder::CreateTemporaryForTesting()) {}
 
   ~HistogramSnapshotManagerTest() override = default;
 
   int64_t GetRecordedDeltaHistogramSum(const std::string& name) {
-    return histogram_flattener_delta_recorder_.GetRecordedDeltaHistogramSum(
-        name);
+    return histogram_snapshot_manager_.GetRecordedDeltaHistogramSum(name);
   }
 
   std::unique_ptr<StatisticsRecorder> statistics_recorder_;
-  HistogramFlattenerDeltaRecorder histogram_flattener_delta_recorder_;
-  HistogramSnapshotManager histogram_snapshot_manager_;
+  HistogramSnapshotManagerDeltaRecorder histogram_snapshot_manager_;
 };
 
 TEST_F(HistogramSnapshotManagerTest, PrepareDeltasNoFlagsFilter) {
@@ -103,8 +99,7 @@ TEST_F(HistogramSnapshotManagerTest, PrepareDeltasNoFlagsFilter) {
 
   // Verify that the snapshots were recorded.
   const std::vector<raw_ptr<const HistogramBase, VectorExperimental>>&
-      histograms =
-          histogram_flattener_delta_recorder_.GetRecordedDeltaHistograms();
+      histograms = histogram_snapshot_manager_.GetRecordedDeltaHistograms();
   ASSERT_EQ(2U, histograms.size());
   ASSERT_EQ(kHistogramName, histograms[0]->histogram_name());
   EXPECT_EQ(GetRecordedDeltaHistogramSum(kHistogramName), 1);
@@ -128,8 +123,7 @@ TEST_F(HistogramSnapshotManagerTest, PrepareDeltasUmaHistogramFlagFilter) {
 
   // Verify that the snapshots were recorded.
   const std::vector<raw_ptr<const HistogramBase, VectorExperimental>>&
-      histograms =
-          histogram_flattener_delta_recorder_.GetRecordedDeltaHistograms();
+      histograms = histogram_snapshot_manager_.GetRecordedDeltaHistograms();
   ASSERT_EQ(2U, histograms.size());
   ASSERT_EQ(kHistogramName, histograms[0]->histogram_name());
   EXPECT_EQ(GetRecordedDeltaHistogramSum(kHistogramName), 1);
@@ -153,8 +147,7 @@ TEST_F(HistogramSnapshotManagerTest,
 
   // Verify that only the stability histogram was snapshotted and recorded.
   const std::vector<raw_ptr<const HistogramBase, VectorExperimental>>&
-      histograms =
-          histogram_flattener_delta_recorder_.GetRecordedDeltaHistograms();
+      histograms = histogram_snapshot_manager_.GetRecordedDeltaHistograms();
   ASSERT_EQ(1U, histograms.size());
   ASSERT_EQ(kStabilityHistogramName, histograms[0]->histogram_name());
   EXPECT_EQ(GetRecordedDeltaHistogramSum(kStabilityHistogramName), 1);

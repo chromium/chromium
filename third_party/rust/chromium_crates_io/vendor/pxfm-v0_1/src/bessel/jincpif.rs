@@ -1,0 +1,417 @@
+/*
+ * // Copyright (c) Radzivon Bartoshyk 7/2025. All rights reserved.
+ * //
+ * // Redistribution and use in source and binary forms, with or without modification,
+ * // are permitted provided that the following conditions are met:
+ * //
+ * // 1.  Redistributions of source code must retain the above copyright notice, this
+ * // list of conditions and the following disclaimer.
+ * //
+ * // 2.  Redistributions in binary form must reproduce the above copyright notice,
+ * // this list of conditions and the following disclaimer in the documentation
+ * // and/or other materials provided with the distribution.
+ * //
+ * // 3.  Neither the name of the copyright holder nor the names of its
+ * // contributors may be used to endorse or promote products derived from
+ * // this software without specific prior written permission.
+ * //
+ * // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * // AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * // IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * // DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * // FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * // DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * // SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * // CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+#![allow(clippy::too_many_arguments)]
+use crate::bessel::j0f::j1f_rsqrt;
+use crate::bessel::j1_coeffs::{J1_ZEROS, J1_ZEROS_VALUE};
+use crate::bessel::j1f::{j1f_asympt_alpha, j1f_asympt_beta};
+use crate::bessel::j1f_coeffs::J1F_COEFFS;
+use crate::bessel::trigo_bessel::sin_small;
+use crate::common::f_fmla;
+use crate::double_double::DoubleDouble;
+use crate::rounding::CpuCeil;
+use crate::rounding::CpuRound;
+
+pub(crate) trait JincpifBackend {
+    fn fma(&self, x: f64, y: f64, z: f64) -> f64;
+    fn round(&self, x: f64) -> f64;
+    fn ceil(&self, x: f64) -> f64;
+    fn polyeval6(&self, x: f64, a0: f64, a1: f64, a2: f64, a3: f64, a4: f64, a5: f64) -> f64;
+    fn polyeval14(
+        &self,
+        x: f64,
+        a0: f64,
+        a1: f64,
+        a2: f64,
+        a3: f64,
+        a4: f64,
+        a5: f64,
+        a6: f64,
+        a7: f64,
+        a8: f64,
+        a9: f64,
+        a10: f64,
+        a11: f64,
+        a12: f64,
+        a13: f64,
+    ) -> f64;
+}
+
+struct GenJincpifBackend {}
+
+impl JincpifBackend for GenJincpifBackend {
+    #[inline(always)]
+    fn fma(&self, x: f64, y: f64, z: f64) -> f64 {
+        f_fmla(x, y, z)
+    }
+
+    #[inline(always)]
+    fn round(&self, x: f64) -> f64 {
+        x.cpu_round()
+    }
+
+    #[inline(always)]
+    fn ceil(&self, x: f64) -> f64 {
+        x.cpu_ceil()
+    }
+
+    #[inline(always)]
+    fn polyeval6(&self, x: f64, a0: f64, a1: f64, a2: f64, a3: f64, a4: f64, a5: f64) -> f64 {
+        use crate::polyeval::f_polyeval6;
+        f_polyeval6(x, a0, a1, a2, a3, a4, a5)
+    }
+
+    #[inline(always)]
+    fn polyeval14(
+        &self,
+        x: f64,
+        a0: f64,
+        a1: f64,
+        a2: f64,
+        a3: f64,
+        a4: f64,
+        a5: f64,
+        a6: f64,
+        a7: f64,
+        a8: f64,
+        a9: f64,
+        a10: f64,
+        a11: f64,
+        a12: f64,
+        a13: f64,
+    ) -> f64 {
+        use crate::polyeval::f_polyeval14;
+        f_polyeval14(
+            x, a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13,
+        )
+    }
+}
+
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+struct FmaJincpifBackend {}
+
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+impl JincpifBackend for FmaJincpifBackend {
+    #[inline(always)]
+    fn fma(&self, x: f64, y: f64, z: f64) -> f64 {
+        f64::mul_add(x, y, z)
+    }
+
+    #[inline(always)]
+    fn round(&self, x: f64) -> f64 {
+        x.round()
+    }
+
+    #[inline(always)]
+    fn ceil(&self, x: f64) -> f64 {
+        x.ceil()
+    }
+
+    #[inline(always)]
+    fn polyeval6(&self, x: f64, a0: f64, a1: f64, a2: f64, a3: f64, a4: f64, a5: f64) -> f64 {
+        use crate::polyeval::d_polyeval6;
+        d_polyeval6(x, a0, a1, a2, a3, a4, a5)
+    }
+
+    #[inline(always)]
+    fn polyeval14(
+        &self,
+        x: f64,
+        a0: f64,
+        a1: f64,
+        a2: f64,
+        a3: f64,
+        a4: f64,
+        a5: f64,
+        a6: f64,
+        a7: f64,
+        a8: f64,
+        a9: f64,
+        a10: f64,
+        a11: f64,
+        a12: f64,
+        a13: f64,
+    ) -> f64 {
+        use crate::polyeval::d_polyeval14;
+        d_polyeval14(
+            x, a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13,
+        )
+    }
+}
+
+#[inline(always)]
+fn jincpif_gen<B: JincpifBackend>(x: f32, backend: B) -> f32 {
+    let ux = x.to_bits().wrapping_shl(1);
+    if ux >= 0xffu32 << 24 || ux <= 0x6800_0000u32 {
+        // |x| <= f32::EPSILON, |x| == inf, |x| == NaN
+        if ux <= 0x6800_0000u32 {
+            // |x| == 0
+            return 1.;
+        }
+        if x.is_infinite() {
+            return 0.;
+        }
+        return x + f32::NAN; // x == NaN
+    }
+
+    let ax = x.to_bits() & 0x7fff_ffff;
+
+    if ax < 0x429533c2u32 {
+        // |x| < 74.60109
+        if ax <= 0x3e800000u32 {
+            // |x| < 0.25
+            return jincf_near_zero(f32::from_bits(ax), &backend);
+        }
+        let scaled_pix = f32::from_bits(ax) * std::f32::consts::PI; // just test boundaries
+        if scaled_pix < 74.60109 {
+            return jincpif_small_argument(f32::from_bits(ax), &backend);
+        }
+    }
+
+    jincpif_asympt(f32::from_bits(ax), &backend) as f32
+}
+
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+#[target_feature(enable = "avx", enable = "fma")]
+unsafe fn jincpif_fma_impl(x: f32) -> f32 {
+    jincpif_gen(x, FmaJincpifBackend {})
+}
+
+/// Normalized jinc 2*J1(PI\*x)/(pi\*x)
+///
+pub fn f_jincpif(x: f32) -> f32 {
+    #[cfg(not(any(target_arch = "x86", target_arch = "x86_64")))]
+    {
+        jincpif_gen(x, GenJincpifBackend {})
+    }
+    #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+    {
+        use std::sync::OnceLock;
+        static EXECUTOR: OnceLock<unsafe fn(f32) -> f32> = OnceLock::new();
+        let q = EXECUTOR.get_or_init(|| {
+            if std::arch::is_x86_feature_detected!("avx")
+                && std::arch::is_x86_feature_detected!("fma")
+            {
+                jincpif_fma_impl
+            } else {
+                fn def_jincpif(x: f32) -> f32 {
+                    jincpif_gen(x, GenJincpifBackend {})
+                }
+                def_jincpif
+            }
+        });
+        unsafe { q(x) }
+    }
+}
+
+#[inline(always)]
+fn jincf_near_zero<B: JincpifBackend>(x: f32, backend: &B) -> f32 {
+    let dx = x as f64;
+    // Generated in Wolfram Mathematica:
+    // <<FunctionApproximations`
+    // ClearAll["Global`*"]
+    // f[x_]:=2*BesselJ[1,x*Pi]/(x*Pi)
+    // {err,approx}=MiniMaxApproximation[f[z],{z,{2^-23,0.3},5,5},WorkingPrecision->60]
+    // poly=Numerator[approx][[1]];
+    // coeffs=CoefficientList[poly,z];
+    // TableForm[Table[Row[{"'",NumberForm[coeffs[[i+1]],{50,50},ExponentFunction->(Null&)],"',"}],{i,0,Length[coeffs]-1}]]
+    // poly=Denominator[approx][[1]];
+    // coeffs=CoefficientList[poly,z];
+    // TableForm[Table[Row[{"'",NumberForm[coeffs[[i+1]],{50,50},ExponentFunction->(Null&)],"',"}],{i,0,Length[coeffs]-1}]]
+    let p_num = backend.polyeval6(
+        dx,
+        f64::from_bits(0x3ff0000000000002),
+        f64::from_bits(0xbfe46cd1822a5aa0),
+        f64::from_bits(0xbfee583c923dc6f4),
+        f64::from_bits(0x3fe3834f47496519),
+        f64::from_bits(0x3fc8118468756e6f),
+        f64::from_bits(0xbfbfaff09f13df88),
+    );
+    let p_den = backend.polyeval6(
+        dx,
+        f64::from_bits(0x3ff0000000000000),
+        f64::from_bits(0xbfe46cd1822a4cb0),
+        f64::from_bits(0x3fd2447a026f477a),
+        f64::from_bits(0xbfc6bdf2192404e5),
+        f64::from_bits(0x3fa0cf182218e448),
+        f64::from_bits(0xbf939ab46c3f7a7d),
+    );
+    (p_num / p_den) as f32
+}
+
+/// This method on small range searches for nearest zero or extremum.
+/// Then picks stored series expansion at the point end evaluates the poly at the point.
+#[inline(always)]
+fn jincpif_small_argument<B: JincpifBackend>(ox: f32, backend: &B) -> f32 {
+    const PI: f64 = f64::from_bits(0x400921fb54442d18);
+    let x = ox as f64 * PI;
+    let x_abs = f64::from_bits(x.to_bits() & 0x7fff_ffff_ffff_ffff);
+
+    // let avg_step = 74.60109 / 47.0;
+    // let inv_step = 1.0 / avg_step;
+
+    const INV_STEP: f64 = 0.6300176043004198;
+
+    let inv_scale = x;
+
+    let fx = x_abs * INV_STEP;
+    const J1_ZEROS_COUNT: f64 = (J1_ZEROS.len() - 1) as f64;
+    let idx0 = unsafe { fx.min(J1_ZEROS_COUNT).to_int_unchecked::<usize>() };
+    let idx1 = unsafe {
+        backend
+            .ceil(fx)
+            .min(J1_ZEROS_COUNT)
+            .to_int_unchecked::<usize>()
+    };
+
+    let found_zero0 = DoubleDouble::from_bit_pair(J1_ZEROS[idx0]);
+    let found_zero1 = DoubleDouble::from_bit_pair(J1_ZEROS[idx1]);
+
+    let dist0 = (found_zero0.hi - x_abs).abs();
+    let dist1 = (found_zero1.hi - x_abs).abs();
+
+    let (found_zero, idx, dist) = if dist0 < dist1 {
+        (found_zero0, idx0, dist0)
+    } else {
+        (found_zero1, idx1, dist1)
+    };
+
+    if idx == 0 {
+        return jincf_near_zero(ox, backend);
+    }
+
+    // We hit exact zero, value, better to return it directly
+    if dist == 0. {
+        return (f64::from_bits(J1_ZEROS_VALUE[idx]) / inv_scale * 2.) as f32;
+    }
+
+    let c = &J1F_COEFFS[idx - 1];
+
+    let r = (x_abs - found_zero.hi) - found_zero.lo;
+
+    let p = backend.polyeval14(
+        r,
+        f64::from_bits(c[0]),
+        f64::from_bits(c[1]),
+        f64::from_bits(c[2]),
+        f64::from_bits(c[3]),
+        f64::from_bits(c[4]),
+        f64::from_bits(c[5]),
+        f64::from_bits(c[6]),
+        f64::from_bits(c[7]),
+        f64::from_bits(c[8]),
+        f64::from_bits(c[9]),
+        f64::from_bits(c[10]),
+        f64::from_bits(c[11]),
+        f64::from_bits(c[12]),
+        f64::from_bits(c[13]),
+    );
+
+    (p / inv_scale * 2.) as f32
+}
+
+/*
+   Evaluates:
+   J1 = sqrt(2/(PI*x)) * beta(x) * cos(x - 3*PI/4 - alpha(x))
+   discarding 1*PI/2 using identities gives:
+   J1 = sqrt(2/(PI*x)) * beta(x) * sin(x - PI/4 - alpha(x))
+
+   to avoid squashing small (-PI/4 - alpha(x)) into a large x actual expansion is:
+
+   J1 = sqrt(2/(PI*x)) * beta(x) * sin((x mod 2*PI) - PI/4 - alpha(x))
+*/
+#[inline(always)]
+pub(crate) fn jincpif_asympt<B: JincpifBackend>(x: f32, backend: &B) -> f64 {
+    const PI: f64 = f64::from_bits(0x400921fb54442d18);
+
+    let dox = x as f64;
+    let dx = dox * PI;
+
+    let alpha = j1f_asympt_alpha(dx);
+    let beta = j1f_asympt_beta(dx);
+
+    // argument reduction assuming x here value is already multiple of PI.
+    // k = round((x*Pi) / (pi*2))
+    let kd = backend.round(dox * 0.5);
+    //  y = (x * Pi) - k * 2
+    let angle = backend.fma(kd, -2., dox) * PI;
+
+    // 2^(3/2)/(Pi^2)
+    // reduce argument 2*sqrt(2/(PI*(x*PI))) = 2*sqrt(2)/PI
+    // adding additional pi from division then 2*sqrt(2)/PI^2
+    const Z2_3_2_OVER_PI_SQR: f64 = f64::from_bits(0x3fd25751e5614413);
+    const MPI_OVER_4: f64 = f64::from_bits(0xbfe921fb54442d18);
+
+    let x0pi34 = MPI_OVER_4 - alpha;
+    let r0 = angle + x0pi34;
+
+    let m_sin = sin_small(r0);
+
+    let z0 = beta * m_sin;
+    let scale = Z2_3_2_OVER_PI_SQR * j1f_rsqrt(dox);
+
+    let j1pix = scale * z0;
+    j1pix / dox
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_jincpif() {
+        assert_eq!(f_jincpif(-102.59484), 0.00024380769);
+        assert_eq!(f_jincpif(102.59484), 0.00024380769);
+        assert_eq!(f_jincpif(100.08199), -0.00014386141);
+        assert_eq!(f_jincpif(0.27715185), 0.9081822);
+        assert_eq!(f_jincpif(0.007638072), 0.99992806);
+        assert_eq!(f_jincpif(-f32::EPSILON), 1.0);
+        assert_eq!(f_jincpif(f32::EPSILON), 1.0);
+        assert_eq!(
+            f_jincpif(0.000000000000000000000000000000000000008827127),
+            1.0
+        );
+        assert_eq!(f_jincpif(5.4), -0.010821743);
+        assert_eq!(
+            f_jincpif(77.743162408196766932633181568235159),
+            -0.00041799102
+        );
+        assert_eq!(
+            f_jincpif(-77.743162408196766932633181568235159),
+            -0.00041799102
+        );
+        assert_eq!(
+            f_jincpif(84.027189586293545175976760219782591),
+            -0.00023927793
+        );
+        assert_eq!(f_jincpif(f32::INFINITY), 0.);
+        assert_eq!(f_jincpif(f32::NEG_INFINITY), 0.);
+        assert!(f_jincpif(f32::NAN).is_nan());
+        assert_eq!(f_jincpif(-1.7014118e38), -0.0);
+    }
+}

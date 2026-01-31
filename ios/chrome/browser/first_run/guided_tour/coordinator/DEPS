@@ -1,0 +1,6 @@
+include_rules = [
+  # keep-sorted start
+  "+ios/chrome/browser/bubble/ui_bundled/guided_tour/guided_tour_bubble_view_controller_presenter.h",
+  "+ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/legacy_toolbar_button.h",
+  # keep-sorted end
+]

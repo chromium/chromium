@@ -61,22 +61,24 @@ class MojoVideoFrameHandleReleaser
       delete;
 
   void ReleaseVideoFrame(const base::UnguessableToken& release_token,
+                         scoped_refptr<gpu::ClientSharedImage> shared_image,
                          const gpu::SyncToken& release_sync_token) {
     TRACE_EVENT1("media", "MojoVideoFrameHandleReleaser::ReleaseVideoFrame",
                  "release_token", release_token.ToString());
     DVLOG(3) << __func__ << "(" << release_token << ")";
-    video_frame_handle_releaser_->ReleaseVideoFrame(release_token,
-                                                    release_sync_token);
+    video_frame_handle_releaser_->ReleaseVideoFrame(
+        release_token, shared_image->EndImport(release_sync_token));
   }
 
   // Create a ReleaseMailboxCB that calls Release(). Since the callback holds a
   // reference to |this|, |this| will remain alive as long as there are
   // outstanding VideoFrames.
   VideoFrame::ReleaseMailboxCB CreateReleaseMailboxCB(
-      const base::UnguessableToken& release_token) {
+      const base::UnguessableToken& release_token,
+      scoped_refptr<gpu::ClientSharedImage> shared_image) {
     DVLOG(3) << __func__ << "(" << release_token.ToString() << ")";
     return base::BindOnce(&MojoVideoFrameHandleReleaser::ReleaseVideoFrame,
-                          this, release_token);
+                          this, release_token, std::move(shared_image));
   }
 
  private:
@@ -273,7 +275,7 @@ void MojoVideoDecoder::OnVideoFrameDecoded(
   if (release_token) {
     frame->SetReleaseMailboxCB(
         mojo_video_frame_handle_releaser_->CreateReleaseMailboxCB(
-            release_token.value()));
+            release_token.value(), frame->shared_image()));
   }
   const int64_t timestamp = frame->timestamp().InMilliseconds();
   const auto timestamp_it = timestamps_.Peek(timestamp);

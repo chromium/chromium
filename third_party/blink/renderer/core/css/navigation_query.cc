@@ -43,12 +43,18 @@ void NavigationLocation::SerializeTo(StringBuilder& builder) const {
   }
 }
 
-bool NavigationTestExpression::Matches(Document& document) const {
+void NavigationLocationTestExpression::Trace(Visitor* visitor) const {
+  visitor->Trace(navigation_location_);
+  NavigationTestExpression::Trace(visitor);
+}
+
+bool NavigationLocationTestExpression::Matches(Document& document) const {
   const Route* route = navigation_location_->FindOrCreateRoute(document);
   return route && route->Matches(preposition_);
 }
 
-void NavigationTestExpression::SerializeTo(StringBuilder& builder) const {
+void NavigationLocationTestExpression::SerializeTo(
+    StringBuilder& builder) const {
   switch (preposition_) {
     case NavigationPreposition::kAt:
       builder.Append("at: ");
@@ -61,6 +67,37 @@ void NavigationTestExpression::SerializeTo(StringBuilder& builder) const {
       break;
   }
   navigation_location_->SerializeTo(builder);
+}
+
+bool NavigationTypeTestExpression::Matches(Document& document) const {
+  const auto* route_map = RouteMap::Get(&document);
+  if (!route_map) {
+    return false;
+  }
+  switch (route_map->GetHistoryTraverseType()) {
+    case RouteMap::kNotTraversing:
+      return false;
+    case RouteMap::kBack:
+      return type_ == kTraverse || type_ == kBack;
+    case RouteMap::kForward:
+      return type_ == kTraverse || type_ == kForward;
+  }
+}
+
+void NavigationTypeTestExpression::SerializeTo(StringBuilder& builder) const {
+  builder.Append("history: ");
+  switch (type_) {
+    case kTraverse:
+      builder.Append("traverse");
+      break;
+    case kBack:
+      builder.Append("back");
+      break;
+    case kForward:
+      builder.Append("forward");
+      break;
+      // TODO(crbug.com/436805487): Support "reload".
+  }
 }
 
 void NavigationExpNode::Trace(Visitor* v) const {
@@ -82,6 +119,11 @@ void NavigationQuery::Trace(Visitor* v) const {
 }
 
 bool NavigationQuery::Evaluate(Document* document) const {
+  // TODO(crbug.com/436805487): Detect history navigation queries properly,
+  // instead of assuming that we have those just because there's at least one
+  // @navigation rule to evaluate.
+  RouteMap::Ensure(*document).SetHasHistoryRules();
+
   class Handler : public ConditionalExpNodeVisitor {
     STACK_ALLOCATED();
 

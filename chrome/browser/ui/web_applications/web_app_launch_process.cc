@@ -5,11 +5,10 @@
 #include "chrome/browser/ui/web_applications/web_app_launch_process.h"
 
 #include "base/debug/crash_logging.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
 #include "base/memory/values_equivalent.h"
+#include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
-#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -25,6 +24,7 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
+#include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
@@ -61,6 +61,17 @@ std::optional<GURL> GetProtocolHandlingTranslatedUrl(
 
   return translated_url;
 }
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange
+enum class LaunchUrlInScopeResult {
+  kInScope = 0,
+  kNotInScope = 1,
+  kInScopeMissingTrainingSlash = 2,
+  kMaxValue = kInScopeMissingTrainingSlash
+};
+// LINT.ThenChange(tools/metrics/histograms/metadata/webapps/enums.xml)
 
 }  // namespace
 
@@ -102,7 +113,8 @@ WebAppLaunchProcess::WebAppLaunchProcess(
 content::WebContents* WebAppLaunchProcess::Run() {
   if (Browser::GetCreationStatusForProfile(&profile_.get()) !=
           Browser::CreationStatus::kOk ||
-      !registrar_->IsInRegistrar(params_->app_id)) {
+      !registrar_->AppMatches(params_->app_id,
+                              WebAppFilter::IsAppSurfaceableToUser())) {
     return nullptr;
   }
 
@@ -115,6 +127,12 @@ content::WebContents* WebAppLaunchProcess::Run() {
   const apps::ShareTarget* share_target = MaybeGetShareTarget();
   auto [launch_url, is_file_handling] = GetLaunchUrl(share_target);
 
+  auto web_app_scope = registrar_->GetEffectiveScope(params_->app_id);
+  CHECK(web_app_scope);
+  LaunchUrlInScopeResult in_scope_result =
+      web_app_scope->GetScopeScore(launch_url) > 0
+          ? LaunchUrlInScopeResult::kInScope
+          : LaunchUrlInScopeResult::kNotInScope;
 #if BUILDFLAG(IS_CHROMEOS)
   bool is_url_in_system_web_app_scope =
       ash::GetSystemWebAppTypeForAppId(&*profile_, params_->app_id) &&
@@ -125,30 +143,30 @@ content::WebContents* WebAppLaunchProcess::Run() {
           ->GetSystemApp(
               *ash::GetSystemWebAppTypeForAppId(&*profile_, params_->app_id))
           ->IsUrlInSystemAppScope(launch_url);
-
-  // TODO(crbug.com/40071115): Figure out why this is getting hit.
-  if (!registrar_->IsUrlInAppExtendedScope(launch_url, params_->app_id) &&
-      !is_url_in_system_web_app_scope) {
-    SCOPED_CRASH_KEY_STRING256("crbug1477991", "launch_url", launch_url.spec());
-    SCOPED_CRASH_KEY_STRING256("crbug1477991", "app_scope",
-                               web_app_->scope().spec());
-    base::debug::DumpWithoutCrashing();
-    DCHECK(false) << "Url " << launch_url.spec() << " not in scope for app "
-                  << params_->app_id;
-  }
-#else
-  // TODO(crbug.com/338406726): Figure out why this is failing. If no longer
-  // failing, then we can reject the launch by returning a nullptr.
-  if (!registrar_->IsUrlInAppExtendedScope(launch_url, params_->app_id)) {
-    SCOPED_CRASH_KEY_STRING256("crbug338406726", "launch_url",
-                               launch_url.spec());
-    SCOPED_CRASH_KEY_STRING256("crbug338406726", "app_scope",
-                               web_app_->scope().spec());
-    base::debug::DumpWithoutCrashing();
-    DCHECK(false) << "Url " << launch_url.spec() << " not in scope for app "
-                  << params_->app_id;
+  if (is_url_in_system_web_app_scope) {
+    in_scope_result = LaunchUrlInScopeResult::kInScope;
   }
 #endif
+
+  if (in_scope_result == LaunchUrlInScopeResult::kNotInScope) {
+    if (web_app_scope->scope().spec().back() == '/') {
+      // Special case to allow urls at the root of the scope to match even if
+      // they are missing the trailing slash. This allows
+      // http://example.com/scope/ to contain http://example.com/scope?query
+      // even though it doesn't pass a StartsWith() check.
+      GURL::Replacements replacements;
+      replacements.ClearQuery();
+      replacements.ClearRef();
+      auto launch_url_without_params_and_query =
+          launch_url.ReplaceComponents(replacements).spec();
+      launch_url_without_params_and_query.push_back('/');
+      if (web_app_scope->scope().spec() ==
+          launch_url_without_params_and_query) {
+        in_scope_result = LaunchUrlInScopeResult::kInScopeMissingTrainingSlash;
+      }
+    }
+  }
+  base::UmaHistogramEnumeration("WebApp.LaunchUrlIsInScope", in_scope_result);
 
 #if BUILDFLAG(IS_CHROMEOS)
   // System Web Apps have their own launch code path.

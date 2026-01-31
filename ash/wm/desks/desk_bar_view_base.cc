@@ -558,7 +558,7 @@ class DeskBarViewBase::AddDeskAnimation
     // nature the layout operation.
     auto new_mini_view_it = new_mini_views_.begin();
     while (new_mini_view_it != new_mini_views_.end()) {
-      if (base::Contains(bar_view_->mini_views_, *new_mini_view_it)) {
+      if (std::ranges::contains(bar_view_->mini_views_, *new_mini_view_it)) {
         ++new_mini_view_it;
       } else {
         new_mini_view_it = new_mini_views_.erase(new_mini_view_it);
@@ -1028,7 +1028,7 @@ void DeskBarViewBase::ScrollToShowViewIfNecessary(const views::View* view) {
   if (!IsScrollingInitialized()) {
     return;
   }
-  CHECK(base::Contains(contents_view_->children(), view));
+  CHECK(std::ranges::contains(contents_view_->children(), view));
   const gfx::Rect visible_bounds = scroll_view_->GetVisibleRect();
   const gfx::Rect view_bounds = view->bounds();
   const bool beyond_left = view_bounds.x() < visible_bounds.x();

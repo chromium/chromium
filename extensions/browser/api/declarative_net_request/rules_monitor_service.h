@@ -130,8 +130,8 @@ class RulesMonitorService : public BrowserContextKeyedAPI,
                           ApiCallbackToGetDisabledRuleIds callback);
 
   // Returns the list of session scoped rules for `extension_id` as a
-  // base::Value::List.
-  const base::Value::List& GetSessionRulesValue(
+  // base::ListValue.
+  const base::ListValue& GetSessionRulesValue(
       const ExtensionId& extension_id) const;
 
   // Returns a copy of the session scoped rules for the given `extension_id`.
@@ -286,10 +286,10 @@ class RulesMonitorService : public BrowserContextKeyedAPI,
 
   // Session scoped rules value corresponding to extensions.
   // TODO(crbug.com/40733652): Currently we are storing session scoped rules in
-  // two forms: one as a base::Value::List and second in the indexed format as
+  // two forms: one as a base::ListValue and second in the indexed format as
   // part of RulesetMatcher, leading to double memory usage. We should be able
-  // to do away with the base::Value::List representation.
-  base::flat_map<ExtensionId, base::Value::List> session_rules_;
+  // to do away with the base::ListValue representation.
+  base::flat_map<ExtensionId, base::ListValue> session_rules_;
 
   // Must be the last member variable. See WeakPtrFactory documentation for
   // details.

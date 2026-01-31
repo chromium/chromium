@@ -57,7 +57,7 @@ class LoginScreenI18nApitest
   }
 
  private:
-  base::Value::Dict config_;
+  base::DictValue config_;
 };
 
 IN_PROC_BROWSER_TEST_P(LoginScreenI18nApitest, GetMessage) {

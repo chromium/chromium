@@ -283,8 +283,7 @@ public class SyncPromoController {
                 IdentityServicesProvider.get().getIdentityManager(mProfile);
         final @Nullable AccountInfo accountInfo =
                 identityManager != null
-                        ? identityManager.findExtendedAccountInfoByEmailAddress(
-                                visibleAccount.getEmail())
+                        ? identityManager.findExtendedAccountInfoByAccountId(visibleAccount.getId())
                         : null;
         return accountInfo != null;
     }

@@ -262,7 +262,7 @@ void EnrollmentScreenHandler::ShowAuthError(
     case GoogleServiceAuthError::CHALLENGE_RESPONSE_REQUIRED:
       ShowError(IDS_ENTERPRISE_ENROLLMENT_AUTH_FATAL_ERROR, /*retry=*/false);
       return;
-    case GoogleServiceAuthError::USER_NOT_SIGNED_UP:
+    case GoogleServiceAuthError::ACCOUNT_NOT_FOUND:
       ShowError(IDS_ENTERPRISE_ENROLLMENT_AUTH_ACCOUNT_ERROR, /*retry=*/true);
       return;
     case GoogleServiceAuthError::CONNECTION_FAILED:
@@ -799,7 +799,7 @@ void EnrollmentScreenHandler::DoShowWithPartition(
   DoShowWithData(ScreenDataForOAuthEnrollment());
 }
 
-void EnrollmentScreenHandler::DoShowWithData(base::Value::Dict screen_data) {
+void EnrollmentScreenHandler::DoShowWithData(base::DictValue screen_data) {
   ShowInWebUI(std::move(screen_data));
   if (first_show_) {
     first_show_ = false;
@@ -807,14 +807,14 @@ void EnrollmentScreenHandler::DoShowWithData(base::Value::Dict screen_data) {
   }
 }
 
-base::Value::Dict EnrollmentScreenHandler::ScreenDataForAutomaticEnrollment() {
+base::DictValue EnrollmentScreenHandler::ScreenDataForAutomaticEnrollment() {
   // Automatic enrollment (attestation or token-based) doesn't require
   // additional screen data.
   return ScreenDataCommon();
 }
 
-base::Value::Dict EnrollmentScreenHandler::ScreenDataForOAuthEnrollment() {
-  base::Value::Dict screen_data = ScreenDataCommon();
+base::DictValue EnrollmentScreenHandler::ScreenDataForOAuthEnrollment() {
+  base::DictValue screen_data = ScreenDataCommon();
 
   screen_data.Set("webviewPartitionName", signin_partition_name_);
   screen_data.Set("gaiaUrl", GaiaUrls::GetInstance()->gaia_url().spec());
@@ -838,8 +838,8 @@ base::Value::Dict EnrollmentScreenHandler::ScreenDataForOAuthEnrollment() {
   return screen_data;
 }
 
-base::Value::Dict EnrollmentScreenHandler::ScreenDataCommon() {
-  base::Value::Dict screen_data;
+base::DictValue EnrollmentScreenHandler::ScreenDataCommon() {
+  base::DictValue screen_data;
 
   screen_data.Set("enrollment_mode", EnrollmentModeToUIMode(config_.mode));
   screen_data.Set("is_enrollment_enforced", config_.is_forced());

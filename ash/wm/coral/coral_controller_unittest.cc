@@ -4,6 +4,9 @@
 
 #include "ash/wm/coral/coral_controller.h"
 
+#include <algorithm>
+#include <utility>
+
 #include "ash/birch/birch_coral_provider.h"
 #include "ash/birch/birch_item_remover.h"
 #include "ash/birch/birch_model.h"
@@ -182,9 +185,10 @@ TEST_F(CoralControllerTest, SnapGroupOneWindowInCoralGroup) {
   // snap groups.
   const std::vector<std::unique_ptr<Desk>>& desks =
       DesksController::Get()->desks();
+  EXPECT_TRUE(std::ranges::contains(desks[0]->windows(),
+                                    app_window_not_in_group.get()));
   EXPECT_TRUE(
-      base::Contains(desks[0]->windows(), app_window_not_in_group.get()));
-  EXPECT_TRUE(base::Contains(desks[1]->windows(), app_window_in_group.get()));
+      std::ranges::contains(desks[1]->windows(), app_window_in_group.get()));
   EXPECT_FALSE(SnapGroupController::Get()->AreWindowsInSnapGroup(
       app_window_not_in_group.get(), app_window_in_group.get()));
 }
@@ -213,8 +217,8 @@ TEST_F(CoralControllerTest, SnapGroupTwoWindowsInCoralGroup) {
   // Tests that the two windows are on new desk and still in a snap group.
   const std::vector<std::unique_ptr<Desk>>& desks =
       DesksController::Get()->desks();
-  EXPECT_TRUE(base::Contains(desks[1]->windows(), window1.get()));
-  EXPECT_TRUE(base::Contains(desks[1]->windows(), window2.get()));
+  EXPECT_TRUE(std::ranges::contains(desks[1]->windows(), window1.get()));
+  EXPECT_TRUE(std::ranges::contains(desks[1]->windows(), window2.get()));
   EXPECT_TRUE(SnapGroupController::Get()->AreWindowsInSnapGroup(window1.get(),
                                                                 window2.get()));
 }
@@ -375,7 +379,7 @@ class CoralSavedGroupTest : public CoralControllerTest {
         model_adapter->root_for_testing()->GetSubmenu()->GetMenuItemAt(1);
     if (!save_as_group_item ||
         save_as_group_item->GetCommand() !=
-            base::to_underlying(
+            std::to_underlying(
                 BirchChipContextMenuModel::CommandId::kCoralSaveForLater)) {
       return nullptr;
     }

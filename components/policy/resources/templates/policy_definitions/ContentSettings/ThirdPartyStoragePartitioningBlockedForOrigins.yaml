@@ -8,7 +8,7 @@ desc: |-
 
   For detailed information on third-party storage partitioning, please see https://developers.google.com/privacy-sandbox/cookies/storage-partitioning.
 
-  This will be removed in Chrome 145, and the requestStorageAccess method is recommended for use instead: https://developer.mozilla.org/en-US/docs/Web/API/Document/requestStorageAccess. Feedback can be left at https://crbug.com/425248669.
+  This was removed in Chrome 145, and the requestStorageAccess method is recommended for use instead: https://developer.mozilla.org/en-US/docs/Web/API/Document/requestStorageAccess. Feedback can be left at https://crbug.com/425248669.
 example_value:
 - www.example.com
 - '[*.]example.edu'
@@ -25,9 +25,9 @@ schema:
     type: string
   type: array
 supported_on:
-- android:113-
-- chrome.*:113-
-- chrome_os:113-
+- android:113-145
+- chrome.*:113-145
+- chrome_os:113-145
 deprecated: true
 tags: []
 type: list

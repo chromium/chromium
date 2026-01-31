@@ -9,10 +9,13 @@
 #import "components/favicon_base/favicon_types.h"
 #import "components/password_manager/core/browser/ui/affiliated_group.h"
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
+#import "components/sync/service/sync_service.h"
 #import "components/webauthn/core/browser/passkey_model.h"
 #import "ios/chrome/browser/credential_exchange/model/credential_exporter.h"
 #import "ios/chrome/browser/credential_exchange/ui/credential_group_identifier.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
+#import "ios/chrome/browser/passwords/coordinator/password_exporter.h"
+#import "ios/chrome/browser/passwords/model/password_manager_util_ios.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_view_controller_items.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 
@@ -22,6 +25,9 @@ const CGFloat kFaviconSize = 24.0;
 const CGFloat kMinFaviconSize = 16.0;
 
 }  // namespace
+
+@interface CredentialExportMediator () <PasswordExporterDelegate>
+@end
 
 @implementation CredentialExportMediator {
   // Used as a presentation anchor for OS views. Must not be nil.
@@ -39,19 +45,42 @@ const CGFloat kMinFaviconSize = 16.0;
 
   // Service used to retrieve favicons.
   raw_ptr<FaviconLoader> _faviconLoader;
+
+  // Maintains state about the "Export Passwords..." flow, and handles the
+  // actual serialization of the passwords.
+  PasswordExporter* _passwordExporter;
+
+  // Delegate capable of showing alerts needed in the password export flow.
+  __weak id<PasswordExportHandler> _exportHandler;
+
+  // Service to know whether passwords are synced.
+  raw_ptr<syncer::SyncService> _syncService;
+
+  // Email of the signed-in user account.
+  NSString* _userEmail;
 }
 
 - (instancetype)initWithWindow:(UIWindow*)window
               affiliatedGroups:(std::vector<password_manager::AffiliatedGroup>)
                                    affiliatedGroups
                   passkeyModel:(webauthn::PasskeyModel*)passkeyModel
-                 faviconLoader:(FaviconLoader*)faviconLoader {
+                 faviconLoader:(FaviconLoader*)faviconLoader
+        reauthenticationModule:(id<ReauthenticationProtocol>)reauthModule
+                 exportHandler:(id<PasswordExportHandler>)exportHandler
+                   syncService:(syncer::SyncService*)syncService
+                     userEmail:(NSString*)userEmail {
   self = [super init];
   if (self) {
     _window = window;
     _affiliatedGroups = std::move(affiliatedGroups);
     _passkeyModel = passkeyModel;
     _faviconLoader = faviconLoader;
+    _exportHandler = exportHandler;
+    _syncService = syncService;
+    _userEmail = userEmail;
+    _passwordExporter =
+        [[PasswordExporter alloc] initWithReauthenticationModule:reauthModule
+                                                        delegate:self];
   }
   return self;
 }
@@ -121,6 +150,41 @@ const CGFloat kMinFaviconSize = 16.0;
   }
 }
 
+- (void)exportCredentialsToCSV:
+    (std::vector<password_manager::CredentialUIEntry>)credentials {
+  if (_passwordExporter.exportState != ExportState::IDLE) {
+    return;
+  }
+
+  [_passwordExporter startExportFlow:credentials];
+}
+
+#pragma mark - PasswordExporterDelegate
+
+- (void)showActivityViewWithActivityItems:(NSArray*)activityItems
+                        completionHandler:
+                            (void (^)(NSString*, BOOL, NSArray*, NSError*))
+                                completionHandler {
+  [_exportHandler showActivityViewWithActivityItems:activityItems
+                                  completionHandler:completionHandler];
+}
+
+- (void)showExportErrorAlertWithLocalizedReason:(NSString*)errorReason {
+  [_exportHandler showExportErrorAlertWithLocalizedReason:errorReason];
+}
+
+- (void)showPreparingPasswordsAlert {
+  [_exportHandler showPreparingPasswordsAlert];
+}
+
+- (void)showSetPasscodeForPasswordExportDialog {
+  [_exportHandler showSetPasscodeForPasswordExportDialog];
+}
+
+- (void)updateExportPasswordsButton {
+  // No-op.
+}
+
 #pragma mark - Private
 
 - (void)
@@ -133,10 +197,10 @@ const CGFloat kMinFaviconSize = 16.0;
                                         passkeys {
   if (@available(iOS 26, *)) {
     _credentialExporter = [[CredentialExporter alloc] initWithWindow:_window];
-
     [_credentialExporter startExportWithPasswords:std::move(passwords)
                                          passkeys:std::move(passkeys)
-                                 trustedVaultKeys:trustedVaultKeys];
+                                 trustedVaultKeys:trustedVaultKeys
+                                        userEmail:_userEmail];
   }
 }
 
@@ -149,9 +213,14 @@ const CGFloat kMinFaviconSize = 16.0;
     return;
   }
 
+  // Only fallback to Google server if the user is syncing passwords, ensuring
+  // privacy for non-syncing users.
+  bool fallbackToGoogleServer =
+      password_manager_util::IsSavingPasswordsToAccountWithNormalEncryption(
+          _syncService);
+
   _faviconLoader->FaviconForPageUrl(
-      URL, kFaviconSize, kMinFaviconSize,
-      /*fallback_to_google_server=*/false,
+      URL, kFaviconSize, kMinFaviconSize, fallbackToGoogleServer,
       ^(FaviconAttributes* attributes, bool cached) {
         completion(attributes, cached);
       });

@@ -12,6 +12,8 @@ import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {NavigationPredictor} from 'chrome://resources/mojo/components/omnibox/browser/omnibox.mojom-webui.js';
 import type {AutocompleteMatch} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {RenderType, SideType} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {InputState} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
+import {ToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
@@ -44,7 +46,7 @@ function createUrlMatch(modifiers: Partial<AutocompleteMatch> = {}):
         swapContentsAndDescription: true,
         contents: 'helloworld.com',
         contentsClass: [{offset: 0, style: 1}],
-        destinationUrl: {url: 'https://helloworld.com/'},
+        destinationUrl: 'https://helloworld.com/',
         fillIntoEdit: 'https://helloworld.com',
         type: 'url-what-you-typed',
       },
@@ -60,7 +62,7 @@ function createCalculatorMatch(modifiers: Partial<AutocompleteMatch>):
         contentsClass: [{offset: 0, style: 0}],
         description: '5',
         descriptionClass: [{offset: 0, style: 0}],
-        destinationUrl: {url: 'https://www.google.com/search?q=2+%2B+3'},
+        destinationUrl: 'https://www.google.com/search?q=2+%2B+3',
         fillIntoEdit: '5',
         type: 'search-calculator-answer',
         iconPath: 'calculator.svg',
@@ -515,7 +517,7 @@ suite('NewTabPageRealboxTest', () => {
 
     // Assert.
     const event = await whenOpenComposeBox;
-    assertEquals('deep-search', event.detail.mode);
+    assertEquals(ToolMode.kDeepSearch, event.detail.mode);
     // Calling deep search should not be logged as context being added.
     assertEquals(
         0,
@@ -558,7 +560,7 @@ suite('NewTabPageRealboxTest', () => {
 
     // Assert.
     const event = await whenOpenComposeBox;
-    assertEquals('create-image', event.detail.mode);
+    assertEquals(ToolMode.kImageGen, event.detail.mode);
   });
 
   //============================================================================
@@ -697,7 +699,7 @@ suite('NewTabPageRealboxTest', () => {
     // Query zero-prefix matches.
     realbox.$.input.value = '';
     realbox.$.input.dispatchEvent(new MouseEvent('mousedown', {button: 0}));
-    let args = await testProxy.handler.whenCalled('queryAutocomplete');
+    const args = await testProxy.handler.whenCalled('queryAutocomplete');
     assertEquals(args.input, realbox.$.input.value);
     assertFalse(args.preventInlineAutocomplete);
     assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
@@ -733,16 +735,20 @@ suite('NewTabPageRealboxTest', () => {
       relatedTarget: document.body,
     }));
 
-    // Arrow up/down keys query autocomplete.
+    // Arrow up/down keys in multiline input do not query autocomplete.
+    realbox.multiLineEnabled = true;
+    await microtasksFinished();
+    Object.defineProperty(realbox.$.input, 'scrollHeight', {
+      value: 51,
+      configurable: true,
+    });
+
     realbox.$.input.dispatchEvent(new KeyboardEvent('keydown', {
       bubbles: true,
       cancelable: true,
       key: 'ArrowDown',
     }));
-    args = await testProxy.handler.whenCalled('queryAutocomplete');
-    assertEquals(args.input, realbox.$.input.value);
-    assertTrue(args.preventInlineAutocomplete);
-    assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
+    assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
   });
 
   // TODO: Fix before submitting.
@@ -1356,7 +1362,7 @@ suite('NewTabPageRealboxTest', () => {
     // Navigates to the first match.
     const args = await testProxy.handler.whenCalled('openAutocompleteMatch');
     assertEquals(0, args.line);
-    assertEquals(matches[0]!.destinationUrl.url, args.url.url);
+    assertEquals(matches[0]!.destinationUrl, args.url);
     assertTrue(args.areMatchesShowing);
     assertTrue(args.shiftKey);
     assertEquals(1, testProxy.handler.getCallCount('openAutocompleteMatch'));
@@ -1445,7 +1451,7 @@ suite('NewTabPageRealboxTest', () => {
         const args =
             await testProxy.handler.whenCalled('openAutocompleteMatch');
         assertEquals(0, args.line);
-        assertEquals(matches[0]!.destinationUrl.url, args.url.url);
+        assertEquals(matches[0]!.destinationUrl, args.url);
         assertFalse(args.areMatchesShowing);
         assertTrue(args.shiftKey);
         assertEquals(
@@ -1619,7 +1625,7 @@ suite('NewTabPageRealboxTest', () => {
     // Navigates to the first match immediately without further user action.
     const args = await testProxy.handler.whenCalled('openAutocompleteMatch');
     assertEquals(0, args.line);
-    assertEquals(matches[0]!.destinationUrl.url, args.url.url);
+    assertEquals(matches[0]!.destinationUrl, args.url);
     assertTrue(args.areMatchesShowing);
     assertTrue(args.shiftKey);
     assertEquals(1, testProxy.handler.getCallCount('openAutocompleteMatch'));
@@ -1665,7 +1671,7 @@ suite('NewTabPageRealboxTest', () => {
     // Navigates to the first match is selected.
     const args = await testProxy.handler.whenCalled('openAutocompleteMatch');
     assertEquals(0, args.line);
-    assertEquals(matches[0]!.destinationUrl.url, args.url.url);
+    assertEquals(matches[0]!.destinationUrl, args.url);
     assertTrue(args.areMatchesShowing);
     assertTrue(args.shiftKey);
     assertEquals(1, testProxy.handler.getCallCount('openAutocompleteMatch'));
@@ -2422,11 +2428,11 @@ suite('NewTabPageRealboxTest', () => {
 
         const matches = [
           createUrlMatch({
-            iconUrl: {url: 'https://helloworld.com/url.png'},
+            iconUrl: 'https://helloworld.com/url.png',
             iconPath: 'page.svg',
           }),
           createSearchMatch({
-            iconUrl: {url: 'https://helloworld.com/search.png'},
+            iconUrl: 'https://helloworld.com/search.png',
             iconPath: 'clock.svg',
             imageUrl: 'https://gstatic.com/',
             imageDominantColor: '#757575',
@@ -2448,12 +2454,12 @@ suite('NewTabPageRealboxTest', () => {
         assertIconState(
             matchEls[0], /*hasEntityImage=*/ false, /*expectUseIconImg=*/ false,
             `//image?staticEncode=true&encodeType=webp&url=${
-                matches[0]!.iconUrl.url}`);
+                matches[0]!.iconUrl}`);
         // Test initial icon state for the second match: icon image not used.
         assertIconState(
             matchEls[1], /*hasEntityImage=*/ true, /*expectUseIconImg=*/ false,
             `//image?staticEncode=true&encodeType=webp&url=${
-                matches[1]!.iconUrl.url}`);
+                matches[1]!.iconUrl}`);
 
         // Select the first match.
         let arrowDownEvent = arrowDown(realbox);
@@ -2468,18 +2474,18 @@ suite('NewTabPageRealboxTest', () => {
         assertIconState(
             realbox, /*hasEntityImage=*/ false, /*expectUseIconImg=*/ false,
             `//image?staticEncode=true&encodeType=webp&url=${
-                matches[0]!.iconUrl.url}`);
+                matches[0]!.iconUrl}`);
 
         // Mock icon image finishing loading for the first match and the realbox
         // itself. The icon image should be used icon.
         await assertAndLoadIcon(
             matchEls[0], /*hasEntityImage=*/ false,
             `//image?staticEncode=true&encodeType=webp&url=${
-                matches[0]!.iconUrl.url}`);
+                matches[0]!.iconUrl}`);
         await assertAndLoadIcon(
             realbox, /*hasEntityImage=*/ false,
             `//image?staticEncode=true&encodeType=webp&url=${
-                matches[0]!.iconUrl.url}`);
+                matches[0]!.iconUrl}`);
 
         // Select the second match.
         arrowDownEvent = arrowDown(realbox);
@@ -2494,17 +2500,17 @@ suite('NewTabPageRealboxTest', () => {
         assertIconState(
             realbox, /*hasEntityImage=*/ false, /*expectUseIconImg=*/ false,
             `//image?staticEncode=true&encodeType=webp&url=${
-                matches[1]!.iconUrl.url}`);
+                matches[1]!.iconUrl}`);
         // Mock icon image finishing loading for the second match and the
         // realbox itself. The icon image should be used.
         await assertAndLoadIcon(
             matchEls[1], /*hasEntityImage=*/ true,
             `//image?staticEncode=true&encodeType=webp&url=${
-                matches[1]!.iconUrl.url}`);
+                matches[1]!.iconUrl}`);
         await assertAndLoadIcon(
             realbox, /*hasEntityImage=*/ false,
             `//image?staticEncode=true&encodeType=webp&url=${
-                matches[1]!.iconUrl.url}`);
+                matches[1]!.iconUrl}`);
 
         // Select the first match by pressing 'Escape'.
         const escapeEvent = new KeyboardEvent('keydown', {
@@ -2525,13 +2531,13 @@ suite('NewTabPageRealboxTest', () => {
         assertIconState(
             realbox, /*hasEntityImage=*/ false, /*expectUseIconImg=*/ false,
             `//image?staticEncode=true&encodeType=webp&url=${
-                matches[0]!.iconUrl.url}`);
+                matches[0]!.iconUrl}`);
         // Mock icon image finishing loading for the realbox (now showing the
         // first match's icon image again).
         await assertAndLoadIcon(
             realbox, /*hasEntityImage=*/ false,
             `//image?staticEncode=true&encodeType=webp&url=${
-                matches[0]!.iconUrl.url}`);
+                matches[0]!.iconUrl}`);
       });
 
 
@@ -2550,11 +2556,11 @@ suite('NewTabPageRealboxTest', () => {
         isEnterpriseSearchAggregatorPeopleType: true,
       }),
       createUrlMatch({
-        iconUrl: {url: 'https://helloworld-2.com/url.png'},
+        iconUrl: 'https://helloworld-2.com/url.png',
         iconPath: fallbackIconPath,
         isEnterpriseSearchAggregatorPeopleType: true,
         contents: 'helloworld-2.com',
-        destinationUrl: {url: 'https://helloworld-2.com/'},
+        destinationUrl: 'https://helloworld-2.com/',
         fillIntoEdit: 'https://helloworld-2.com',
       }),
     ];
@@ -3116,6 +3122,23 @@ suite('NewTabPageRealboxTest', () => {
     assertFalse(backspaceEvent.defaultPrevented);
   });
 
+  test('onInputStateChanged updates inputState', async () => {
+    realbox = await createAndAppendRealbox();
+    const inputState = {
+      allowedModels: [],
+      allowedTools: [],
+      allowedInputTypes: [],
+      activeModel: 0,
+      activeTool: 0,
+      disabledModels: [],
+      disabledTools: [],
+      disabledInputTypes: [],
+    } as InputState;
+    testProxy.callbackRouterRemote.onInputStateChanged(inputState);
+    await microtasksFinished();
+    assertDeepEquals((realbox as any).inputState_, inputState);
+  });
+
   suite('NtpRealboxNext', () => {
     test(
         'Contextual component empty area click focuses search input',
@@ -3309,14 +3332,14 @@ suite('NewTabPageRealboxTabsTest', () => {
       {
         tabId: 1,
         title: 'Sample Tab 1',
-        url: {url: 'https://example.com/1'},
+        url: 'https://example.com/1',
         showInRecentTabChip: true,
         lastActive: {internalValue: BigInt(1)},
       },
       {
         tabId: 2,
         title: 'Sample Tab 2',
-        url: {url: 'https://example.com/2'},
+        url: 'https://example.com/2',
         showInRecentTabChip: true,
         lastActive: {internalValue: BigInt(2)},
       },

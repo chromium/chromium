@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/common/android/cpu_time_metrics_internal.h"
-
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
-#include "content/common/process_visibility_tracker.h"
+#include "content/common/android/cpu_time_metrics_internal.h"
+#include "content/common/process_priority_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
@@ -27,7 +26,7 @@ void WorkForOneCpuSec(base::WaitableEvent* event) {
 
 TEST(CpuTimeMetricsTest, RecordsMetricsForeground) {
   // Ensure the visibility tracker is created on the test runner thread.
-  ProcessVisibilityTracker::GetInstance();
+  ProcessPriorityTracker::GetInstance();
   base::test::TaskEnvironment task_environment;
 
   base::HistogramTester histograms;
@@ -46,7 +45,8 @@ TEST(CpuTimeMetricsTest, RecordsMetricsForeground) {
   metrics->WaitForCollectionForTesting();
 
   // Start out in the foreground and spend one CPU second there.
-  ProcessVisibilityTracker::GetInstance()->OnProcessVisibilityChanged(true);
+  ProcessPriorityTracker::GetInstance()->OnProcessPriorityChanged(
+      base::Process::Priority::kUserBlocking);
   metrics->WaitForCollectionForTesting();
 
   thread1.task_runner()->PostTask(
@@ -57,7 +57,8 @@ TEST(CpuTimeMetricsTest, RecordsMetricsForeground) {
 
   // Update the state to background to trigger the collection of high level
   // metrics.
-  ProcessVisibilityTracker::GetInstance()->OnProcessVisibilityChanged(false);
+  ProcessPriorityTracker::GetInstance()->OnProcessPriorityChanged(
+      base::Process::Priority::kBestEffort);
   metrics->WaitForCollectionForTesting();
 
   // The test process has no process-type command line flag, so is recognized as
@@ -88,7 +89,7 @@ TEST(CpuTimeMetricsTest, RecordsMetricsForeground) {
 
 TEST(CpuTimeMetricsTest, RecordsMetricsBackground) {
   // Ensure the visibility tracker is created on the test runner thread.
-  ProcessVisibilityTracker::GetInstance();
+  ProcessPriorityTracker::GetInstance();
   base::test::TaskEnvironment task_environment;
 
   base::HistogramTester histograms;
@@ -107,7 +108,8 @@ TEST(CpuTimeMetricsTest, RecordsMetricsBackground) {
   metrics->WaitForCollectionForTesting();
 
   // Start out in the background and spend one CPU second there.
-  ProcessVisibilityTracker::GetInstance()->OnProcessVisibilityChanged(false);
+  ProcessPriorityTracker::GetInstance()->OnProcessPriorityChanged(
+      base::Process::Priority::kBestEffort);
   metrics->WaitForCollectionForTesting();
 
   thread1.task_runner()->PostTask(
@@ -118,7 +120,8 @@ TEST(CpuTimeMetricsTest, RecordsMetricsBackground) {
 
   // Update the state to foreground to trigger the collection of high level
   // metrics.
-  ProcessVisibilityTracker::GetInstance()->OnProcessVisibilityChanged(true);
+  ProcessPriorityTracker::GetInstance()->OnProcessPriorityChanged(
+      base::Process::Priority::kUserBlocking);
   metrics->WaitForCollectionForTesting();
 
   // The test process has no process-type command line flag, so is recognized as

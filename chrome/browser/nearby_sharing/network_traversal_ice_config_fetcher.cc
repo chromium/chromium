@@ -101,14 +101,14 @@ std::vector<::sharing::mojom::IceServerPtr> ParseIceConfigJson(
   if (!response)
     return ice_servers;
 
-  base::Value::List* ice_servers_json =
+  base::ListValue* ice_servers_json =
       response->GetDict().FindList("iceServers");
   if (!ice_servers_json)
     return ice_servers;
 
   for (base::Value& server : *ice_servers_json) {
-    base::Value::Dict& server_dict = server.GetDict();
-    const base::Value::List* urls_json = server_dict.FindList("urls");
+    base::DictValue& server_dict = server.GetDict();
+    const base::ListValue* urls_json = server_dict.FindList("urls");
     if (!urls_json)
       continue;
 

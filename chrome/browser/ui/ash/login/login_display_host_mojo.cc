@@ -122,7 +122,7 @@ bool AllAllowlistedUsersPresent() {
     return false;
   }
 
-  const base::Value::List* allowlist = nullptr;
+  const base::ListValue* allowlist = nullptr;
   if (!cros_settings->GetList(kAccountsPrefUsers, &allowlist) || !allowlist) {
     return false;
   }

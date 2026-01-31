@@ -28,20 +28,6 @@ using ::extensions::ErrorConsole;
 enum class ManifestVersion { kTwo, kThree };
 class FullscreenMagnifierController;
 
-// A class used to define the parameters of an API test case.
-class ApiTestConfig {
- public:
-  ApiTestConfig(ContextType context_type, ManifestVersion version)
-      : context_type_(context_type), version_(version) {}
-
-  ContextType context_type() const { return context_type_; }
-  ManifestVersion version() const { return version_; }
-
- private:
-  ContextType context_type_;
-  ManifestVersion version_;
-};
-
 // A class that waits for caret bounds changed.
 class CaretBoundsChangedWaiter : public ui::InputMethodObserver {
  public:

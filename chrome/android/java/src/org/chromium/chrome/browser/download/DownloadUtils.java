@@ -82,6 +82,7 @@ import org.chromium.ui.widget.Toast;
 import org.chromium.url.GURL;
 
 import java.io.File;
+import java.util.Locale;
 
 /** A class containing some utility static methods. */
 @NullMarked
@@ -401,40 +402,72 @@ public class DownloadUtils {
     }
 
     /**
-     * Opens a file in Chrome or in another app if appropriate.
+     * Opens a file using a {@link DownloadOpenRequest}. Attempts the provided MIME type,
+     * then falls back to one inferred from the file extension.
      *
-     * @param filePath Path to the file to open, can be a content Uri.
-     * @param mimeType mime type of the file.
-     * @param downloadGuid The associated download GUID.
-     * @param otrProfileId The {@link OtrProfileId} of the download. Null if in regular mode.
-     * @param originalUrl The original url of the downloaded file.
-     * @param referrer Referrer of the downloaded file.
-     * @param source The source that tries to open the download file.
-     * @return whether the file could successfully be opened.
+     * @param req The {@link DownloadOpenRequest} containing file path, MIME, GUID,
+     *         profile, URLs, source, and context.
      */
-    public static boolean openFile(
-            String filePath,
-            @Nullable String mimeType,
-            @Nullable String downloadGuid,
-            @Nullable OtrProfileId otrProfileId,
-            @Nullable String originalUrl,
-            @Nullable String referrer,
-            @DownloadOpenSource int source,
-            Context context) {
-        DownloadMetrics.recordDownloadOpen(source, mimeType);
+    public static boolean openFile(DownloadOpenRequest req) {
+        DownloadMetrics.recordDownloadOpen(req.mSource, req.mMimeType);
+
+        boolean canOpen = doOpenFile(req);
+        if (!canOpen) {
+            String nameForExt =
+                    !TextUtils.isEmpty(req.mFileName) ? req.mFileName : req.mFilePath;
+            String ext = FileUtils.getExtension(nameForExt);
+            String inferred = null;
+            if (!TextUtils.isEmpty(ext)) {
+                inferred = android.webkit.MimeTypeMap.getSingleton()
+                        .getMimeTypeFromExtension(ext.toLowerCase(Locale.ROOT));
+            }
+
+            if (!TextUtils.isEmpty(inferred)
+                    && !TextUtils.equals(inferred, req.mMimeType)) {
+                DownloadOpenRequest inferredReq =
+                    DownloadOpenRequest.builder(req.mContext, req.mFilePath)
+                        .mimeType(inferred)
+                        .downloadGuid(req.mDownloadGuid)
+                        .otrProfileId(req.mOtrProfileId)
+                        .originalUrl(req.mOriginalUrl)
+                        .referrer(req.mReferrer)
+                        .source(req.mSource)
+                        .fileName(req.mFileName)
+                        .build();
+                canOpen = doOpenFile(inferredReq);
+            }
+        }
+
+        if (!canOpen
+                && req.mSource != DownloadOpenSource.DOWNLOAD_PROGRESS_INFO_BAR) {
+            Toast.makeText(
+                            req.mContext,
+                            req.mContext.getString(R.string.download_cant_open_file),
+                            Toast.LENGTH_SHORT)
+                    .show();
+        }
+        return canOpen;
+    }
+
+    /**
+     * Core implementation for opening files. Does not show failure toasts.
+     *
+     * @param req The {@link DownloadOpenRequest} with all open-file parameters.
+     */
+    private static boolean doOpenFile(DownloadOpenRequest req) {
         DownloadManagerService service = DownloadManagerService.getDownloadManagerService();
 
         // Check if Chrome should open the file itself.
-        if (service.isDownloadOpenableInBrowser(mimeType)) {
+        if (service.isDownloadOpenableInBrowser(req.mMimeType)) {
             // Share URIs use the content:// scheme when able, which looks bad when displayed
             // in the URL bar.
-            Uri contentUri = getUriForItem(filePath);
+            Uri contentUri = getUriForItem(req.mFilePath);
             Uri fileUri = contentUri;
-            if (!ContentUriUtils.isContentUri(filePath)) {
-                File file = new File(filePath);
+            if (!ContentUriUtils.isContentUri(req.mFilePath)) {
+                File file = new File(req.mFilePath);
                 fileUri = Uri.fromFile(file);
             }
-            String normalizedMimeType = Intent.normalizeMimeType(mimeType);
+            String normalizedMimeType = Intent.normalizeMimeType(req.mMimeType);
 
             // Sharing for media files is disabled on automotive.
             boolean isAutomotive = DeviceInfo.isAutomotive();
@@ -445,49 +478,41 @@ public class DownloadUtils {
                             normalizedMimeType,
                             !isAutomotive,
                             !isAutomotive,
-                            context);
-            IntentHandler.startActivityForTrustedIntent(context, intent);
-            service.updateLastAccessTime(downloadGuid, otrProfileId);
+                            req.mContext);
+            IntentHandler.startActivityForTrustedIntent(req.mContext, intent);
+            service.updateLastAccessTime(req.mDownloadGuid, req.mOtrProfileId);
             return true;
         }
 
         // Check if any apps can open the file.
         if (openFileWithExternalApps(
-                filePath,
-                mimeType,
-                originalUrl,
-                referrer,
-                context,
+                req.mFilePath,
+                req.mMimeType,
+                req.mOriginalUrl,
+                req.mReferrer,
+                req.mContext,
                 OpenWithExternalAppsSource.OPEN_FILE)) {
-            service.updateLastAccessTime(downloadGuid, otrProfileId);
+            service.updateLastAccessTime(req.mDownloadGuid, req.mOtrProfileId);
             return true;
         }
 
         // If this is a zip file, check if Android Files app exists.
-        if (MIME_TYPE_ZIP.equals(mimeType)) {
+        if (MIME_TYPE_ZIP.equals(req.mMimeType)) {
             try {
                 PackageInfo packageInfo =
-                        context.getPackageManager()
+                        req.mContext.getPackageManager()
                                 .getPackageInfo(
                                         DOCUMENTS_UI_PACKAGE_NAME, PackageManager.GET_ACTIVITIES);
                 if (packageInfo != null) {
                     Intent viewDownloadsIntent = new Intent(DownloadManager.ACTION_VIEW_DOWNLOADS);
                     viewDownloadsIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     viewDownloadsIntent.setPackage(DOCUMENTS_UI_PACKAGE_NAME);
-                    context.startActivity(viewDownloadsIntent);
+                    req.mContext.startActivity(viewDownloadsIntent);
                     return true;
                 }
             } catch (Exception e) {
                 Log.e(TAG, "Cannot find files app for openning zip files", e);
             }
-        }
-        // Can't launch the Intent.
-        if (source != DownloadOpenSource.DOWNLOAD_PROGRESS_INFO_BAR) {
-            Toast.makeText(
-                            context,
-                            context.getString(R.string.download_cant_open_file),
-                            Toast.LENGTH_SHORT)
-                    .show();
         }
         return false;
     }
@@ -502,6 +527,7 @@ public class DownloadUtils {
      * @param originalUrl URL which initially triggered the download itself.
      * @param referer URL of the page which redirected to the download URL.
      * @param source Where this download was initiated from.
+     * @param fileName File name of the downloaded item.
      */
     @CalledByNative
     public static void openDownload(
@@ -511,7 +537,8 @@ public class DownloadUtils {
             OtrProfileId otrProfileId,
             @JniType("std::string") @Nullable String originalUrl,
             @JniType("std::string") @Nullable String referer,
-            @DownloadOpenSource int source) {
+            @DownloadOpenSource int source,
+            @Nullable String fileName) {
         // Mapping generic MIME type to android openable type based on URL and file extension.
         String newMimeType = MimeUtils.remapGenericMimeType(mimeType, originalUrl, filePath);
         Activity activity = ApplicationStatus.getLastTrackedFocusedActivity();
@@ -542,16 +569,17 @@ public class DownloadUtils {
             delegate.launchNewTab(params, TabLaunchType.FROM_CHROME_UI, /* parent= */ null);
             return;
         }
-        boolean canOpen =
-                DownloadUtils.openFile(
-                        filePath,
-                        newMimeType,
-                        downloadGuid,
-                        otrProfileId,
-                        originalUrl,
-                        referer,
-                        source,
-                        activity == null ? ContextUtils.getApplicationContext() : activity);
+        DownloadOpenRequest req =
+            DownloadOpenRequest.builder(ContextUtils.getApplicationContext(), filePath)
+                .mimeType(newMimeType)
+                .downloadGuid(downloadGuid)
+                .otrProfileId(otrProfileId)
+                .originalUrl(originalUrl)
+                .referrer(referer)
+                .source(source)
+                .fileName(fileName)
+                .build();
+        boolean canOpen = DownloadUtils.openFile(req);
         if (!canOpen) {
             DownloadUtils.showDownloadManager(null, null, otrProfileId, source);
         }

@@ -31,7 +31,7 @@ TEST(RegisterReceiverRequestTest, RequestBody) {
   RegisterReceiverRequest request(kFcmToken, base::DoNothing());
   std::optional<std::string> request_body = request.GetRequestBody();
   ASSERT_TRUE(request_body.has_value());
-  std::optional<base::Value::Dict> request_dict = base::JSONReader::ReadDict(
+  std::optional<base::DictValue> request_dict = base::JSONReader::ReadDict(
       request_body.value(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(request_dict.has_value());
   ASSERT_THAT(request_dict.value().FindString("token"), testing::NotNull());
@@ -46,7 +46,7 @@ TEST(RegisterReceiverRequestTest, OnSuccess) {
                      [&response_body](std::optional<std::string> response) {
                        response_body = std::move(response);
                      }));
-  base::Value::Dict response_dict;
+  base::DictValue response_dict;
   response_dict.Set("receiverId", kReceiverId);
   request.OnSuccess(std::make_unique<base::Value>(std::move(response_dict)));
 
@@ -80,7 +80,7 @@ TEST(RegisterReceiverRequestTest, OnSuccess_ReceiverIdMissing) {
             called = true;
             response_body = std::move(response);
           }));
-  base::Value::Dict response_dict;
+  base::DictValue response_dict;
   response_dict.Set("invalid_key", kReceiverId);
   request.OnSuccess(std::make_unique<base::Value>(std::move(response_dict)));
 

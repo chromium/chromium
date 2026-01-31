@@ -83,10 +83,11 @@ class TriggerHelper {
     }
 
     void Notify(const MojoTrapEvent& event) {
-      if (event.result == MOJO_RESULT_CANCELLED && cancel_callback_)
+      if (event.result == MOJO_RESULT_CANCELLED && cancel_callback_) {
         std::move(cancel_callback_).Run();
-      else
+      } else {
         callback_.Run(event);
+      }
     }
 
    private:
@@ -1649,8 +1650,9 @@ TEST_F(TrapTest, ArmFailureCirculation) {
     ready_contexts.insert(blocking_event.trigger_context);
   }
 
-  for (size_t i = 0; i < kNumTestHandles; ++i)
+  for (size_t i = 0; i < kNumTestHandles; ++i) {
     EXPECT_EQ(MOJO_RESULT_OK, MojoClose(handles[i]));
+  }
   EXPECT_EQ(MOJO_RESULT_OK, MojoClose(t));
 }
 
@@ -1862,22 +1864,25 @@ void ReadAllMessages(const MojoTrapEvent* event) {
   if (event->result == MOJO_RESULT_OK) {
     MojoHandle handle = static_cast<MojoHandle>(event->trigger_context);
     MojoMessageHandle message;
-    while (MojoReadMessage(handle, nullptr, &message) == MOJO_RESULT_OK)
+    while (MojoReadMessage(handle, nullptr, &message) == MOJO_RESULT_OK) {
       MojoDestroyMessage(message);
+    }
   }
 
   constexpr size_t kNumRandomThingsToDoOnNotify = 5;
-  for (size_t i = 0; i < kNumRandomThingsToDoOnNotify; ++i)
+  for (size_t i = 0; i < kNumRandomThingsToDoOnNotify; ++i) {
     g_do_random_thing_callback.Run();
+  }
 }
 
 MojoHandle RandomHandle(base::span<MojoHandle> handles) {
-  return handles[base::RandInt(0, static_cast<int>(handles.size()) - 1)];
+  return handles[base::RandIntInclusive(0,
+                                        static_cast<int>(handles.size()) - 1)];
 }
 
 void DoRandomThing(base::span<MojoHandle> traps,
                    base::span<MojoHandle> watched_handles) {
-  switch (base::RandInt(0, 10)) {
+  switch (base::RandIntInclusive(0, 10)) {
     case 0:
       MojoClose(RandomHandle(traps));
       break;
@@ -1947,25 +1952,31 @@ TEST_F(TrapTest, ConcurrencyStressTest) {
   g_do_random_thing_callback = base::BindRepeating(
       &DoRandomThing, base::span(traps), base::span(watched_handles));
 
-  for (size_t i = 0; i < kNumTraps; ++i)
+  for (size_t i = 0; i < kNumTraps; ++i) {
     MojoCreateTrap(&ReadAllMessages, nullptr, &traps[i]);
-  for (size_t i = 0; i < kNumWatchedHandles; i += 2)
+  }
+  for (size_t i = 0; i < kNumWatchedHandles; i += 2) {
     CreateMessagePipe(&watched_handles[i], &watched_handles[i + 1]);
+  }
 
   std::array<std::unique_ptr<ThreadedRunner>, kNumThreads> threads;
   for (size_t i = 0; i < kNumThreads; ++i) {
     threads[i] = std::make_unique<ThreadedRunner>(base::BindOnce([] {
-      for (size_t i = 0; i < kNumOperationsPerThread; ++i)
+      for (size_t i = 0; i < kNumOperationsPerThread; ++i) {
         g_do_random_thing_callback.Run();
+      }
     }));
     threads[i]->Start();
   }
-  for (size_t i = 0; i < kNumThreads; ++i)
+  for (size_t i = 0; i < kNumThreads; ++i) {
     threads[i]->Join();
-  for (size_t i = 0; i < kNumTraps; ++i)
+  }
+  for (size_t i = 0; i < kNumTraps; ++i) {
     MojoClose(traps[i]);
-  for (size_t i = 0; i < kNumWatchedHandles; ++i)
+  }
+  for (size_t i = 0; i < kNumWatchedHandles; ++i) {
     MojoClose(watched_handles[i]);
+  }
 
   g_do_random_thing_callback.Reset();
 }

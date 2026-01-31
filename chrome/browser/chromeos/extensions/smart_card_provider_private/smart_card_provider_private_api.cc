@@ -159,7 +159,7 @@ ToSmartCardProviderReaderStateOutVector(
   return result_vector;
 }
 
-base::Value::Dict ToValue(
+base::DictValue ToValue(
     const device::mojom::SmartCardReaderStateFlags& state_flags) {
   scard_api::ReaderStateFlags result;
 
@@ -182,9 +182,8 @@ base::Value::Dict ToValue(
   return result.ToValue();
 }
 
-base::Value::Dict ToValue(
-    const device::mojom::SmartCardReaderStateIn& state_in) {
-  return base::Value::Dict()
+base::DictValue ToValue(const device::mojom::SmartCardReaderStateIn& state_in) {
+  return base::DictValue()
       .Set("reader", state_in.reader)
       .Set("currentState", ToValue(*state_in.current_state.get()))
       .Set("currentCount", state_in.current_count);
@@ -206,7 +205,7 @@ base::Value ToValue(device::mojom::SmartCardShareMode share_mode) {
   return base::Value(scard_api::ToString(ToApiShareMode(share_mode)));
 }
 
-base::Value::Dict ToValue(const device::mojom::SmartCardProtocols& protocols) {
+base::DictValue ToValue(const device::mojom::SmartCardProtocols& protocols) {
   scard_api::Protocols result;
 
   result.t0 = protocols.t0;
@@ -546,7 +545,7 @@ void SmartCardProviderPrivateAPI::SendReleaseContext(ContextId scard_context) {
       extensions::events::
           SMART_CARD_PROVIDER_PRIVATE_ON_RELEASE_CONTEXT_REQUESTED,
       scard_api::OnReleaseContextRequested::kEventName,
-      base::Value::List()
+      base::ListValue()
           .Append(request_id.GetUnsafeValue())
           .Append(scard_context.GetUnsafeValue()),
       &*browser_context_);
@@ -583,7 +582,7 @@ void SmartCardProviderPrivateAPI::SendDisconnect(
       std::move(process_result), std::move(callback),
       &SmartCardProviderPrivateAPI::OnDisconnectTimeout,
       /*event_arguments=*/
-      base::Value::List()
+      base::ListValue()
           .Append(handle.GetUnsafeValue())
           .Append(ToValue(disposition)));
 }
@@ -604,7 +603,7 @@ void SmartCardProviderPrivateAPI::SendTransmit(
       std::move(process_result), std::move(callback),
       &SmartCardProviderPrivateAPI::OnTransmitTimeout,
       /*event_arguments=*/
-      base::Value::List()
+      base::ListValue()
           .Append(handle.GetUnsafeValue())
           .Append(ToValue(protocol))
           .Append(base::Value(std::move(data))));
@@ -625,7 +624,7 @@ void SmartCardProviderPrivateAPI::SendControl(ContextId scard_context,
       std::move(process_result), std::move(callback),
       &SmartCardProviderPrivateAPI::OnControlTimeout,
       /*event_arguments=*/
-      base::Value::List()
+      base::ListValue()
           .Append(handle.GetUnsafeValue())
           .Append(int(control_code))
           .Append(base::Value(std::move(data))));
@@ -645,7 +644,7 @@ void SmartCardProviderPrivateAPI::SendGetAttrib(ContextId scard_context,
       std::move(process_result), std::move(callback),
       &SmartCardProviderPrivateAPI::OnGetAttribTimeout,
       /*event_arguments=*/
-      base::Value::List().Append(handle.GetUnsafeValue()).Append(int(id)));
+      base::ListValue().Append(handle.GetUnsafeValue()).Append(int(id)));
 }
 
 void SmartCardProviderPrivateAPI::SendSetAttrib(
@@ -664,7 +663,7 @@ void SmartCardProviderPrivateAPI::SendSetAttrib(
       std::move(process_result), std::move(callback),
       &SmartCardProviderPrivateAPI::OnSetAttribTimeout,
       /*event_arguments=*/
-      base::Value::List()
+      base::ListValue()
           .Append(handle.GetUnsafeValue())
           .Append(int(id))
           .Append(base::Value(data)));
@@ -683,7 +682,7 @@ void SmartCardProviderPrivateAPI::SendStatus(ContextId scard_context,
       std::move(process_result), std::move(callback),
       &SmartCardProviderPrivateAPI::OnStatusTimeout,
       /*event_arguments=*/
-      base::Value::List().Append(handle.GetUnsafeValue()));
+      base::ListValue().Append(handle.GetUnsafeValue()));
 }
 
 void SmartCardProviderPrivateAPI::SendBeginTransaction(
@@ -701,7 +700,7 @@ void SmartCardProviderPrivateAPI::SendBeginTransaction(
       std::move(process_result), std::move(callback),
       &SmartCardProviderPrivateAPI::OnBeginTransactionTimeout,
       /*event_arguments=*/
-      base::Value::List().Append(handle.GetUnsafeValue()));
+      base::ListValue().Append(handle.GetUnsafeValue()));
 }
 
 void SmartCardProviderPrivateAPI::SendEndTransaction(
@@ -720,7 +719,7 @@ void SmartCardProviderPrivateAPI::SendEndTransaction(
       std::move(process_result), std::move(callback),
       &SmartCardProviderPrivateAPI::OnEndTransactionTimeout,
       /*event_arguments=*/
-      base::Value::List()
+      base::ListValue()
           .Append(handle.GetUnsafeValue())
           .Append(ToValue(disposition)));
 }
@@ -1105,7 +1104,7 @@ void SmartCardProviderPrivateAPI::DispatchEventWithTimeout(
     base::OnceCallback<void(ResultPtr)> callback,
     void (SmartCardProviderPrivateAPI::*OnTimeout)(const std::string&,
                                                    RequestId),
-    base::Value::List event_arguments,
+    base::ListValue event_arguments,
     std::optional<base::TimeDelta> timeout) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -1169,7 +1168,7 @@ void SmartCardProviderPrivateAPI::SendListReaders(
       extensions::events::SMART_CARD_PROVIDER_PRIVATE_ON_LIST_READERS_REQUESTED,
       std::move(process_result), std::move(callback),
       &SmartCardProviderPrivateAPI::OnListReadersTimeout,
-      base::Value::List().Append(scard_context.GetUnsafeValue()));
+      base::ListValue().Append(scard_context.GetUnsafeValue()));
 }
 
 void SmartCardProviderPrivateAPI::GetStatusChange(
@@ -1205,12 +1204,12 @@ void SmartCardProviderPrivateAPI::SendGetStatusChange(
     timeout.milliseconds = int(time_delta.InMilliseconds());
   }
 
-  base::Value::List reader_states_list;
+  base::ListValue reader_states_list;
   for (const auto& reader_state : reader_states) {
     reader_states_list.Append(ToValue(*reader_state.get()));
   }
 
-  auto event_args = base::Value::List()
+  auto event_args = base::ListValue()
                         .Append(scard_context.GetUnsafeValue())
                         .Append(timeout.ToValue())
                         .Append(std::move(reader_states_list));
@@ -1247,7 +1246,7 @@ void SmartCardProviderPrivateAPI::Cancel(CancelCallback callback) {
       std::move(process_result), std::move(callback),
       &SmartCardProviderPrivateAPI::OnCancelTimeout,
       /*event_arguments=*/
-      base::Value::List().Append(scard_context.GetUnsafeValue()));
+      base::ListValue().Append(scard_context.GetUnsafeValue()));
 }
 
 void SmartCardProviderPrivateAPI::Connect(
@@ -1281,7 +1280,7 @@ void SmartCardProviderPrivateAPI::SendConnect(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(scard_context);
 
-  auto event_args = base::Value::List()
+  auto event_args = base::ListValue()
                         .Append(scard_context.GetUnsafeValue())
                         .Append(reader)
                         .Append(ToValue(share_mode))

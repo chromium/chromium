@@ -48,6 +48,7 @@
 #include "ui/base/ui_base_switches.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/dom/dom_code.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
@@ -154,6 +155,11 @@ class DiceWebSigninInterceptionBubbleBrowserTest
 
   std::optional<SigninInterceptionResult> callback_result_;
   std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle> bubble_handle_;
+
+ private:
+  gfx::ScopedAnimationDurationScaleMode zero_duration_mode_ =
+      gfx::ScopedAnimationDurationScaleMode(
+          gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 };
 
 // Tests that the callback is called once when the bubble is ignored.

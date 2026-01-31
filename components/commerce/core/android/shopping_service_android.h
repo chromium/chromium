@@ -65,34 +65,34 @@ class ShoppingServiceAndroid : public base::SupportsUserData::Data,
   void ScheduleSavedProductUpdate(JNIEnv* env);
 
   void Subscribe(JNIEnv* env,
-                 jint j_type,
-                 jint j_id_type,
-                 jint j_management_type,
+                 int32_t j_type,
+                 int32_t j_id_type,
+                 int32_t j_management_type,
                  const JavaRef<jstring>& j_id,
                  const JavaRef<jstring>& j_seen_offer_id,
-                 jlong j_seen_price,
+                 int64_t j_seen_price,
                  const JavaRef<jstring>& j_seen_country,
                  const JavaRef<jstring>& j_seen_locale,
                  const JavaRef<jobject>& j_callback);
 
   void Unsubscribe(JNIEnv* env,
-                   jint j_type,
-                   jint j_id_type,
-                   jint j_management_type,
+                   int32_t j_type,
+                   int32_t j_id_type,
+                   int32_t j_management_type,
                    const JavaRef<jstring>& j_id,
                    const JavaRef<jobject>& j_callback);
 
   void IsSubscribed(JNIEnv* env,
-                    jint j_type,
-                    jint j_id_type,
-                    jint j_management_type,
+                    int32_t j_type,
+                    int32_t j_id_type,
+                    int32_t j_management_type,
                     const JavaRef<jstring>& j_id,
                     const JavaRef<jobject>& j_callback);
 
   bool IsSubscribedFromCache(JNIEnv* env,
-                             jint j_type,
-                             jint j_id_type,
-                             jint j_management_type,
+                             int32_t j_type,
+                             int32_t j_id_type,
+                             int32_t j_management_type,
                              const JavaRef<jstring>& j_id);
 
   void GetAllPriceTrackedBookmarks(JNIEnv* env,

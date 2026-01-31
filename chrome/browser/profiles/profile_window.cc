@@ -33,7 +33,8 @@
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/startup/startup_tab_provider.h"
 #include "chrome/browser/ui/startup/startup_types.h"
 #include "chrome/common/chrome_switches.h"
@@ -234,9 +235,7 @@ bool HasProfileSwitchTargets(Profile* profile) {
 
 void CloseProfileWindows(Profile* profile) {
   DCHECK(profile);
-  BrowserList::CloseAllBrowsersWithProfile(profile,
-                                           BrowserList::CloseCallback(),
-                                           BrowserList::CloseCallback(), false);
+  chrome::CloseAllBrowsersWithProfile(profile, /*skip_beforeunload=*/false);
 }
 
 BrowserAddedForProfileObserver::BrowserAddedForProfileObserver(

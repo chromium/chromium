@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/containers/adapters.h"
-#include "base/containers/contains.h"
 #include "base/i18n/rtl.h"
 #include "base/lazy_instance.h"
 #include "base/strings/string_util.h"
@@ -117,7 +116,7 @@ bool MessageBundle::AppendReservedMessagesForLocale(
   // Add all reserved messages to the dictionary, but check for collisions.
   auto it = append_messages.begin();
   for (; it != append_messages.end(); ++it) {
-    if (base::Contains(dictionary_, it->first)) {
+    if (dictionary_.contains(it->first)) {
       *error = ErrorUtils::FormatErrorMessage(
           errors::kReservedMessageFound, it->first);
       return false;
@@ -134,7 +133,7 @@ bool MessageBundle::GetMessageValue(const std::string& key,
                                     std::string* value,
                                     std::string* error) const {
   // Get the top level tree for given key (name part).
-  const base::Value::Dict* name_tree = name_value.GetIfDict();
+  const base::DictValue* name_tree = name_value.GetIfDict();
   if (!name_tree) {
     *error = base::StringPrintf("Not a valid tree for key %s.", key.c_str());
     return false;
@@ -163,7 +162,7 @@ bool MessageBundle::GetMessageValue(const std::string& key,
 MessageBundle::MessageBundle() {
 }
 
-bool MessageBundle::GetPlaceholders(const base::Value::Dict& name_tree,
+bool MessageBundle::GetPlaceholders(const base::DictValue& name_tree,
                                     const std::string& name_key,
                                     SubstitutionMap* placeholders,
                                     std::string* error) const {
@@ -171,7 +170,7 @@ bool MessageBundle::GetPlaceholders(const base::Value::Dict& name_tree,
     return true;
   }
 
-  const base::Value::Dict* placeholders_tree =
+  const base::DictValue* placeholders_tree =
       name_tree.FindDict(kPlaceholdersKey);
   if (!placeholders_tree) {
     *error = base::StringPrintf("Not a valid \"%s\" element for key %s.",
@@ -184,7 +183,7 @@ bool MessageBundle::GetPlaceholders(const base::Value::Dict& name_tree,
     if (!IsValidName(content_key)) {
       return BadKeyMessage(content_key, error);
     }
-    const base::Value::Dict* placeholder = it.second.GetIfDict();
+    const base::DictValue* placeholder = it.second.GetIfDict();
     if (!placeholder) {
       *error = base::StringPrintf("Invalid placeholder %s for key %s",
                                   content_key.c_str(),

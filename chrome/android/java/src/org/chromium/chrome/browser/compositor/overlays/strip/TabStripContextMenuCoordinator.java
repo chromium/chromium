@@ -22,9 +22,8 @@ import org.chromium.base.MathUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
-import org.chromium.chrome.browser.multiwindow.UiUtils.NameWindowDialogSource;
+import org.chromium.chrome.browser.tabmodel.TabModel.RecentlyClosedEntryType;
 import org.chromium.chrome.browser.tasks.tab_management.TabOverflowMenuCoordinator;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.ListItemBuilder;
@@ -46,18 +45,16 @@ import java.util.Set;
 @NullMarked
 public class TabStripContextMenuCoordinator {
     private final Context mContext;
-    private final MultiInstanceManager mMultiInstanceManager;
+    private final TabStripContextMenuDelegate mDelegate;
     private @Nullable AnchoredPopupWindow mMenuWindow;
 
     /**
      * @param context The {@link Context} to build the menu with.
-     * @param multiInstanceManager The {@link MultiInstanceManager} instance to facilitate window
-     *     tasks.
+     * @param delegate The {@link TabStripContextMenuDelegate} to handle menu actions.
      */
-    public TabStripContextMenuCoordinator(
-            Context context, MultiInstanceManager multiInstanceManager) {
+    public TabStripContextMenuCoordinator(Context context, TabStripContextMenuDelegate delegate) {
         mContext = context;
-        mMultiInstanceManager = multiInstanceManager;
+        mDelegate = delegate;
     }
 
     /**
@@ -111,6 +108,33 @@ public class TabStripContextMenuCoordinator {
     }
 
     private void configureMenuItems(ModelList itemList, boolean isIncognito) {
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.TAB_STRIP_EMPTY_SPACE_CONTEXT_MENU_ANDROID)) {
+            // Add "New tab" option.
+            itemList.add(
+                    new ListItemBuilder()
+                            .withTitleRes(R.string.menu_new_tab)
+                            .withMenuId(R.id.new_tab_menu_id)
+                            .withIsIncognito(isIncognito)
+                            .build());
+            // Add "Reopen closed tab/tabs/group" option.
+            @RecentlyClosedEntryType
+            int recentlyClosedEntryType = mDelegate.getRecentlyClosedEntryType();
+            if (recentlyClosedEntryType != RecentlyClosedEntryType.NONE) {
+                int titleRes = R.string.menu_reopen_closed_tab;
+                if (recentlyClosedEntryType == RecentlyClosedEntryType.TABS) {
+                    titleRes = R.string.menu_reopen_closed_tabs;
+                } else if (recentlyClosedEntryType == RecentlyClosedEntryType.GROUP) {
+                    titleRes = R.string.menu_reopen_closed_group;
+                }
+                itemList.add(
+                        new ListItemBuilder()
+                                .withTitleRes(titleRes)
+                                .withMenuId(R.id.reopen_closed_entry)
+                                .withIsIncognito(false)
+                                .build());
+            }
+        }
         // Add "Name window" option.
         if (MultiWindowUtils.isMultiInstanceApi31Enabled()
                 && ChromeFeatureList.sRobustWindowManagement.isEnabled()) {
@@ -147,8 +171,12 @@ public class TabStripContextMenuCoordinator {
                 model.get(CLICK_LISTENER).onClick(contentView);
                 return;
             }
-            if (model.get(MENU_ITEM_ID) == R.id.name_window) {
-                mMultiInstanceManager.showNameWindowDialog(NameWindowDialogSource.TAB_STRIP);
+            if (model.get(MENU_ITEM_ID) == R.id.new_tab_menu_id) {
+                mDelegate.onNewTab();
+            } else if (model.get(MENU_ITEM_ID) == R.id.reopen_closed_entry) {
+                mDelegate.onReopenClosedEntry();
+            } else if (model.get(MENU_ITEM_ID) == R.id.name_window) {
+                mDelegate.onNameWindow();
             }
             assumeNonNull(mMenuWindow).dismiss();
         };

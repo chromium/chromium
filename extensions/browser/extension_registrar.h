@@ -133,7 +133,7 @@ class ExtensionRegistrar : public KeyedService,
         const Extension* extension,
         const syncer::StringOrdinal& page_ordinal,
         int install_flags,
-        base::Value::Dict ruleset_install_prefs) = 0;
+        base::DictValue ruleset_install_prefs) = 0;
   };
 
   explicit ExtensionRegistrar(content::BrowserContext* browser_context);
@@ -183,7 +183,7 @@ class ExtensionRegistrar : public KeyedService,
                                 int install_flags,
                                 const syncer::StringOrdinal& page_ordinal,
                                 const std::string& install_parameter,
-                                base::Value::Dict ruleset_install_prefs);
+                                base::DictValue ruleset_install_prefs);
 
   // Informs the service that an extension's files are in place for loading.
   //
@@ -196,7 +196,7 @@ class ExtensionRegistrar : public KeyedService,
   void OnExtensionInstalled(const Extension* extension,
                             const syncer::StringOrdinal& page_ordinal,
                             int install_flags,
-                            base::Value::Dict ruleset_install_prefs = {});
+                            base::DictValue ruleset_install_prefs = {});
   void OnExtensionInstalled(const Extension* extension,
                             const syncer::StringOrdinal& page_ordinal) {
     OnExtensionInstalled(extension, page_ordinal,

@@ -1133,7 +1133,7 @@ bool FileMetricsProvider::SimulateIndependentMetrics() {
 
   ScopedListPrefUpdate list_pref(pref_service_,
                                  metrics::prefs::kMetricsFileMetricsMetadata);
-  base::Value::List& list_value = list_pref.Get();
+  base::ListValue& list_value = list_pref.Get();
   if (list_value.empty())
     return false;
 

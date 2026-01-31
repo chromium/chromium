@@ -4,8 +4,6 @@
 
 #include "fake_quick_start_decoder.h"
 
-#include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-forward.h"
-#include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-shared.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
 
 namespace ash::quick_start {

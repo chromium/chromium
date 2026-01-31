@@ -20,6 +20,7 @@
 <translation id="1499635324672558517">Uždaryti visus inkognito skirtukus?</translation>
 <translation id="1501480321619201731">Ištrinti grupę</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> neaktyvus elementas}one{<ph name="TABS_COUNT_MANY" /> neaktyvus elementas}few{<ph name="TABS_COUNT_MANY" /> neaktyvūs elementai}many{<ph name="TABS_COUNT_MANY" /> neaktyvaus elemento}other{<ph name="TABS_COUNT_MANY" /> neaktyvių elementų}}</translation>
+<translation id="1568067597247500137">Nutildyti svetainę</translation>
 <translation id="1645759014353344461">Sugrupuota tiek skirtukų: <ph name="TABS_COUNT_MANY" /></translation>
 <translation id="1657719826150349398">Perkelti skirtuką į apačią</translation>
 <translation id="1670942869417022142">Nutildytas garso įrašas</translation>
@@ -82,13 +83,13 @@
 <translation id="3619255692378312441">Prieigos tvarkymas</translation>
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{Uždaryti elementą}one{Uždaryti elementus}few{Uždaryti elementus}many{Uždaryti elementus}other{Uždaryti elementus}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" /> iš <ph name="RATING_BASELINE" /></translation>
+<translation id="3714430408451673233">Skirtuko apatinis lapas atidarytas iki pusės ekrano aukščio.</translation>
 <translation id="374923079891132274">Bendrinimo lapo peržiūros miniatiūra.</translation>
 <translation id="3776329373944672717">Skirtukų grupės pavadinimas „<ph name="TITLE_OF_GROUP" />“</translation>
 <translation id="3810973564298564668">Tvarkyti</translation>
 <translation id="3849789634341518784">{TAB_COUNT,plural, =1{Atsegti skirtuką}one{Atsegti skirtukus}few{Atsegti skirtukus}many{Atsegti skirtukus}other{Atsegti skirtukus}}</translation>
 <translation id="3940195383040445971">Stebėti kainas skirtukuose</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> naujas skirtukas, uždaryta: <ph name="ANY_CLOSED" />}one{<ph name="MANY_ADDED" /> naujas skirtukas, uždaryta: <ph name="ANY_CLOSED" />}few{<ph name="MANY_ADDED" /> nauji skirtukai, uždaryta: <ph name="ANY_CLOSED" />}many{<ph name="MANY_ADDED" /> naujo skirtuko, uždaryta: <ph name="ANY_CLOSED" />}other{<ph name="MANY_ADDED" /> naujų skirtukų, uždaryta: <ph name="ANY_CLOSED" />}}</translation>
-<translation id="3954615705217314756">{TABS_COUNT,plural, =1{Grupuoti skirtuką}one{Grupuoti skirtukus}few{Grupuoti skirtukus}many{Grupuoti skirtukus}other{Grupuoti skirtukus}}</translation>
 <translation id="3962134438902735041">{TABS_COUNT,plural, =1{Atsegti <ph name="TABS_COUNT_ONE" /> pasirinktą skirtuką}one{Atsegti <ph name="TABS_COUNT_MANY" /> pasirinktą skirtuką}few{Atsegti <ph name="TABS_COUNT_MANY" /> pasirinktus skirtukus}many{Atsegti <ph name="TABS_COUNT_MANY" /> pasirinkto skirtuko}other{Atsegti <ph name="TABS_COUNT_MANY" /> pasirinktų skirtukų}}</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{Sukurta prieš <ph name="NUM_DAYS_ONE" /> dieną}one{Sukurta prieš <ph name="NUM_DAYS_MANY" /> dieną}few{Sukurta prieš <ph name="NUM_DAYS_MANY" /> dienas}many{Sukurta prieš <ph name="NUM_DAYS_MANY" /> dienos}other{Sukurta prieš <ph name="NUM_DAYS_MANY" /> dienų}}</translation>
 <translation id="4076226664360336092">Skirtukų grupių sąrašas, atidarytas per visą ekrano aukštį</translation>
@@ -126,8 +127,10 @@
 <translation id="5339733443032484186">Jūsų paskutinis skirtukas</translation>
 <translation id="5380159289133845234">Archyvuoti tikslias skirtukų kopijas</translation>
 <translation id="5446043142172831860">Pašalinti skirtuką ir išeiti iš grupės</translation>
+<translation id="5465437530117042974">Skirtuko apatinio lapo pakeitimai uždaryti.</translation>
 <translation id="5490235265819901748">Skirtukų grupė išskleista</translation>
 <translation id="5494920125229734069">Pasirinkti viską</translation>
+<translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{Pridėkite ne daugiau kaip <ph name="LIMIT_COUNT_ONE" /> failą, skirtuką arba vaizdą}one{Pridėkite ne daugiau kaip <ph name="LIMIT_COUNT_MANY" /> failą, skirtuką arba vaizdą}few{Pridėkite ne daugiau kaip <ph name="LIMIT_COUNT_MANY" /> failus, skirtukus arba vaizdus}many{Pridėkite ne daugiau kaip <ph name="LIMIT_COUNT_MANY" /> failo, skirtuko arba vaizdo}other{Pridėkite ne daugiau kaip <ph name="LIMIT_COUNT_MANY" /> failų, skirtukų arba vaizdų}}</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Uždaryti skirtukų grupę su <ph name="TABS_COUNT_ONE" /> skirtuku, kurio spalva <ph name="COLOR_NAME" />.}one{Uždaryti skirtukų grupę su <ph name="TABS_COUNT_MANY" /> skirtuku, kurio spalva <ph name="COLOR_NAME" />.}few{Uždaryti skirtukų grupę su <ph name="TABS_COUNT_MANY" /> skirtukais, kurių spalva <ph name="COLOR_NAME" />.}many{Uždaryti skirtukų grupę su <ph name="TABS_COUNT_MANY" /> skirtuko, kurių spalva <ph name="COLOR_NAME" />.}other{Uždaryti skirtukų grupę su <ph name="TABS_COUNT_MANY" /> skirtukų, kurių spalva <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Peržiūrėkite parduotuvės informaciją; parinktis pasiekiama ekrano viršuje</translation>
 <translation id="5627941783489838464">Nėra skirtukų atnaujinimų</translation>
@@ -140,7 +143,9 @@
 <translation id="6040143037577758943">Uždaryti</translation>
 <translation id="6051432659151380973">Skirtukų grupės išsaugomos automatiškai</translation>
 <translation id="6054741997831917303">Šios prekės kaina neseniai sumažėjo nuo <ph name="PREVIOUS_PRICE" /> iki <ph name="NEW_PRICE" /></translation>
+<translation id="606985262342505139">Skirtuko apatinis lapas per visą aukštį</translation>
 <translation id="6109251075362363230">Visos tikslios skirtukų kopijos dabar taip pat bus suarchyvuotos, išskyrus neseniai naudotą kopiją.</translation>
+<translation id="612596694132302162">Įjungti svetainės garsą</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Uždaryti <ph name="TABS_COUNT_ONE" /> pasirinktą elementą}one{Uždaryti <ph name="TABS_COUNT_MANY" /> pasirinktą elementą}few{Uždaryti <ph name="TABS_COUNT_MANY" /> pasirinktus elementus}many{Uždaryti <ph name="TABS_COUNT_MANY" /> pasirinkto elemento}other{Uždaryti <ph name="TABS_COUNT_MANY" /> pasirinktų elementų}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Perkelti grupę į naują langą}one{Perkelti grupę į kitą langą}few{Perkelti grupę į kitą langą}many{Perkelti grupę į kitą langą}other{Perkelti grupę į kitą langą}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{Perkelti skirtuką dešinėn}one{Perkelti skirtukus dešinėn}few{Perkelti skirtukus dešinėn}many{Perkelti skirtukus dešinėn}other{Perkelti skirtukus dešinėn}}</translation>
@@ -195,7 +200,6 @@
 <translation id="7792771145871471484">Peržiūrėkite pasiūlymus.</translation>
 <translation id="7792860826279960128">Pranešimas apie bendrinamos skirtukų grupės pakeitimus atidarytas per pusę ekrano aukščio</translation>
 <translation id="7825973332242257878">Skirtukų grupės</translation>
-<translation id="7838146321400849846">{TABS_COUNT,plural, =1{Grupuoti <ph name="TABS_COUNT_ONE" /> pasirinktą skirtuką}one{Grupuoti <ph name="TABS_COUNT_MANY" /> pasirinktą skirtuką}few{Grupuoti <ph name="TABS_COUNT_MANY" /> pasirinktus skirtukus}many{Grupuoti <ph name="TABS_COUNT_MANY" /> pasirinkto skirtuko}other{Grupuoti <ph name="TABS_COUNT_MANY" /> pasirinktų skirtukų}}</translation>
 <translation id="7853202427316060426">Veikla</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Įvertinimas: <ph name="CURRENT_RATING" /> iš <ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> atsiliepimas}one{Įvertinimas: <ph name="CURRENT_RATING" /> iš <ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> atsiliepimas}few{Įvertinimas: <ph name="CURRENT_RATING" /> iš <ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> atsiliepimai}many{Įvertinimas: <ph name="CURRENT_RATING" /> iš <ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> atsiliepimo}other{Įvertinimas: <ph name="CURRENT_RATING" /> iš <ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> atsiliepimų}}</translation>
 <translation id="7885132941432959125">Perkelti skirtuką į dešinę</translation>
@@ -223,7 +227,6 @@
 <translation id="8428213095426709021">Nustatymai</translation>
 <translation id="855081842937141170">Pažymėti skirtuką</translation>
 <translation id="8633025649649592204">Naujausia veikla</translation>
-<translation id="8635822281281406185">Pridėkite ne daugiau kaip 10 failų, skirtukų arba vaizdų</translation>
 <translation id="8712637175834984815">Supratau</translation>
 <translation id="8714939927607906138">Žemesnė kaina</translation>
 <translation id="8730621377337864115">Atlikta</translation>

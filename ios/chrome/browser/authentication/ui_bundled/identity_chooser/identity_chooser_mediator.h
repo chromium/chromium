@@ -23,12 +23,11 @@ class IdentityManager;
 - (instancetype)
     initWithIdentityManager:(signin::IdentityManager*)identityManager
       accountManagerService:(ChromeAccountManagerService*)accountManagerService
+            defaultIdentity:(id<SystemIdentity>)defaultIdentity
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// Selected Chrome identity.
-@property(nonatomic, strong) id<SystemIdentity> selectedIdentity;
 // View controller.
 @property(nonatomic, weak) id<IdentityChooserConsumer> consumer;
 
@@ -37,9 +36,6 @@ class IdentityManager;
 
 // Disconnect the mediator.
 - (void)disconnect;
-
-// Selects an identity with a Gaia ID.
-- (void)selectIdentityWithGaiaID:(const GaiaId&)gaiaID;
 
 @end
 

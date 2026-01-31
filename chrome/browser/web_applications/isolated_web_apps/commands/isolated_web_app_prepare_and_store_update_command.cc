@@ -29,7 +29,7 @@
 #include "chrome/browser/web_applications/callback_utils.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_install_command_helper.h"
-#include "chrome/browser/web_applications/isolated_web_apps/install/pending_install_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/install/non_installed_bundle_inspection_context.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/jobs/prepare_install_info_job.h"
@@ -170,12 +170,14 @@ void IsolatedWebAppUpdatePrepareAndStoreCommand::ReportVersionValidationFailure(
 
 void IsolatedWebAppUpdatePrepareAndStoreCommand::CheckIfUpdateIsStillApplicable(
     base::OnceClosure next_step_callback) {
-  ASSIGN_OR_RETURN(
-      const WebApp& iwa,
-      GetIsolatedWebAppById(lock_->registrar(), url_info_.app_id()),
-      [&](const std::string& error) { ReportFailure(error); });
+  const WebApp* iwa = lock_->registrar().GetAppById(
+      url_info_.app_id(), WebAppFilter::IsIsolatedApp());
+  if (!iwa) {
+    ReportFailure("App is not installed.");
+    return;
+  }
 
-  const auto& isolation_data = *iwa.isolation_data();
+  const auto& isolation_data = *iwa->isolation_data();
   installed_version_ = isolation_data.version();
 
   GetMutableDebugValue().Set("installed_version",
@@ -391,7 +393,7 @@ IsolatedWebAppUpdatePrepareAndStoreCommandUpdateInfo::operator=(
 base::Value IsolatedWebAppUpdatePrepareAndStoreCommandUpdateInfo::AsDebugValue()
     const {
   return base::Value(
-      base::Value::Dict()
+      base::DictValue()
           .Set("source", source_.ToDebugValue())
           .Set("expected_version", expected_version_.has_value()
                                        ? expected_version_->GetString()

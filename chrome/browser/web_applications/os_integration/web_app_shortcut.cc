@@ -349,7 +349,7 @@ ShortcutLocations::ShortcutLocations() = default;
 ShortcutLocations::~ShortcutLocations() = default;
 
 base::Value ShortcutLocations::ToDebugValue() const {
-  base::Value::Dict debug_log;
+  base::DictValue debug_log;
   debug_log.Set("on_desktop", on_desktop);
   debug_log.Set("in_quick_launch_bar", in_quick_launch_bar);
   debug_log.Set("in_startup", in_startup);

@@ -11,11 +11,12 @@
 #include <sstream>
 #include <utility>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/check_op.h"
 #include "base/debug/debugging_buildflags.h"
 #include "base/features.h"
 #include "base/numerics/clamped_math.h"
+#include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "build/config/compiler/compiler_buildflags.h"
 
@@ -325,8 +326,10 @@ void StackTrace::InitializeFeatures() {
   if (FeatureList::IsEnabled(
           features::kStackScanMaxFramePointerToStackEndGap)) {
     g_stack_scan_max_fp_to_stack_end_gap_bytes =
-        MiB(features::kStackScanMaxFramePointerToStackEndGapThresholdMB.Get())
-            .InBytesUnsigned();
+        MiBU(checked_cast<unsigned>(
+                 features::kStackScanMaxFramePointerToStackEndGapThresholdMB
+                     .Get()))
+            .InBytes();
   }
 #endif  // BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
 }

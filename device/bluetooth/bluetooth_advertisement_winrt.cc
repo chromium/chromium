@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -121,7 +122,7 @@ bool BluetoothAdvertisementWinrt::Initialize(
     const std::vector<uint8_t>& data = pair.second;
 
     ComPtr<IBuffer> buffer;
-    hr = base::win::CreateIBufferFromData(data.data(), data.size(), &buffer);
+    hr = base::win::CreateIBufferFromData(data, &buffer);
     if (FAILED(hr)) {
       BLUETOOTH_LOG(ERROR) << "CreateIBufferFromData() failed: "
                            << logging::SystemErrorCodeToString(hr);

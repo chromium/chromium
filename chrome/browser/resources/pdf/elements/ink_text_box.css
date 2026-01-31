@@ -33,7 +33,7 @@
   z-index: 1;
 }
 
-:host([text-rotations_="1"]), :host([text-rotations_="3"]) {
+:host([text-rotations_='1']), :host([text-rotations_='3']) {
   /* Flip the padding values, since the text is oriented vertically. */
   --textarea-padding-inline: calc(8px - var(--border-padding));
   --textarea-padding-vert: calc(10px - var(--border-padding));
@@ -113,14 +113,14 @@ textarea {
   resize: none;
 }
 
-:host([text-rotations_="1"]) textarea {
+:host([text-rotations_='1']) textarea {
   writing-mode: vertical-rl;
 }
 
-:host([text-rotations_="2"]) textarea {
+:host([text-rotations_='2']) textarea {
   transform: rotate(180deg);
 }
 
-:host([text-rotations_="3"]) textarea {
+:host([text-rotations_='3']) textarea {
   writing-mode: sideways-lr;
 }

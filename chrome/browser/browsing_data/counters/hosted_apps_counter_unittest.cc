@@ -46,8 +46,8 @@ class HostedAppsCounterTest : public testing::Test {
   std::string AddPackagedApp() {
     return AddItem(
         base::Uuid::GenerateRandomV4().AsLowercaseString(),
-        base::Value::Dict().Set(
-            "launch", base::Value::Dict().Set("local_path", "index.html")));
+        base::DictValue().Set(
+            "launch", base::DictValue().Set("local_path", "index.html")));
   }
 
   std::string AddHostedApp() {
@@ -57,16 +57,15 @@ class HostedAppsCounterTest : public testing::Test {
 
   std::string AddHostedAppWithName(const std::string& name) {
     return AddItem(
-        name,
-        base::Value::Dict()
-            .Set("urls", base::Value::List().Append("https://example.com"))
-            .Set("launch",
-                 base::Value::Dict().Set("web_url", "https://example.com")));
+        name, base::DictValue()
+                  .Set("urls", base::ListValue().Append("https://example.com"))
+                  .Set("launch", base::DictValue().Set("web_url",
+                                                       "https://example.com")));
   }
 
   std::string AddItem(const std::string& name,
-                      std::optional<base::Value::Dict> app_manifest) {
-    auto manifest_builder = base::Value::Dict()
+                      std::optional<base::DictValue> app_manifest) {
+    auto manifest_builder = base::DictValue()
                                 .Set("manifest_version", 2)
                                 .Set("name", name)
                                 .Set("version", "1");

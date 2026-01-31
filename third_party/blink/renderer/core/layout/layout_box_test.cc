@@ -1436,7 +1436,6 @@ TEST_F(LayoutBoxTest, GeometriesWithScrollbarsNonScrollable) {
   // 50 = border_left, 20 = border_top
   // 445 = padding_left + (width - scrollbar_width) + padding_right
   // 324 = padding_top + (height - scrollbar_height) + padding_bottom
-  EXPECT_EQ(PhysicalRect(50, 20, 445, 324), normal->NoOverflowRect());
   EXPECT_EQ(PhysicalRect(50, 20, 445, 324), normal->PhysicalPaddingBoxRect());
   // 90 = border_left + padding_left, 30 = border_top + padding_top
   // 385 = width - scrollbar_width, 284 = height - scrollbar_height
@@ -1448,7 +1447,6 @@ TEST_F(LayoutBoxTest, GeometriesWithScrollbarsNonScrollable) {
   EXPECT_ZERO_SCROLL(vlr);
   EXPECT_EQ(gfx::Vector2d(), vlr->OriginAdjustmentForScrollbars());
   EXPECT_EQ(PhysicalRect(0, 0, 540, 400), vlr->PhysicalBorderBoxRect());
-  EXPECT_EQ(PhysicalRect(50, 20, 445, 324), vlr->NoOverflowRect());
   EXPECT_EQ(PhysicalRect(50, 20, 445, 324), vlr->PhysicalPaddingBoxRect());
   EXPECT_EQ(PhysicalRect(90, 30, 385, 284), vlr->PhysicalContentBoxRect());
   EXPECT_EQ(PhysicalRect(50, 20, 445, 324), vlr->ScrollableOverflowRect());
@@ -1458,7 +1456,6 @@ TEST_F(LayoutBoxTest, GeometriesWithScrollbarsNonScrollable) {
   EXPECT_ZERO_SCROLL(vrl);
   EXPECT_EQ(gfx::Vector2d(), vrl->OriginAdjustmentForScrollbars());
   EXPECT_EQ(PhysicalRect(0, 0, 540, 400), vrl->PhysicalBorderBoxRect());
-  EXPECT_EQ(PhysicalRect(50, 20, 445, 324), vrl->NoOverflowRect());
   EXPECT_EQ(PhysicalRect(50, 20, 445, 324), vrl->PhysicalPaddingBoxRect());
   EXPECT_EQ(PhysicalRect(90, 30, 385, 284), vrl->PhysicalContentBoxRect());
   EXPECT_EQ(PhysicalRect(50, 20, 445, 324), vrl->ScrollableOverflowRect());
@@ -1469,7 +1466,6 @@ TEST_F(LayoutBoxTest, GeometriesWithScrollbarsNonScrollable) {
   // right by 15px.
   EXPECT_EQ(gfx::Vector2d(15, 0), rtl->OriginAdjustmentForScrollbars());
   EXPECT_EQ(PhysicalRect(0, 0, 540, 400), rtl->PhysicalBorderBoxRect());
-  EXPECT_EQ(PhysicalRect(65, 20, 445, 324), rtl->NoOverflowRect());
   EXPECT_EQ(PhysicalRect(65, 20, 445, 324), rtl->PhysicalPaddingBoxRect());
   EXPECT_EQ(PhysicalRect(105, 30, 385, 284), rtl->PhysicalContentBoxRect());
   EXPECT_EQ(PhysicalRect(65, 20, 445, 324), rtl->ScrollableOverflowRect());
@@ -1479,7 +1475,6 @@ TEST_F(LayoutBoxTest, GeometriesWithScrollbarsNonScrollable) {
   EXPECT_ZERO_SCROLL(rtl_vlr);
   EXPECT_EQ(gfx::Vector2d(), rtl_vlr->OriginAdjustmentForScrollbars());
   EXPECT_EQ(PhysicalRect(0, 0, 540, 400), rtl_vlr->PhysicalBorderBoxRect());
-  EXPECT_EQ(PhysicalRect(50, 20, 445, 324), rtl_vlr->NoOverflowRect());
   EXPECT_EQ(PhysicalRect(50, 20, 445, 324), rtl_vlr->PhysicalPaddingBoxRect());
   EXPECT_EQ(PhysicalRect(90, 30, 385, 284), rtl_vlr->PhysicalContentBoxRect());
   EXPECT_EQ(PhysicalRect(50, 20, 445, 324), rtl_vlr->ScrollableOverflowRect());
@@ -1489,7 +1484,6 @@ TEST_F(LayoutBoxTest, GeometriesWithScrollbarsNonScrollable) {
   EXPECT_ZERO_SCROLL(rtl_vrl);
   EXPECT_EQ(gfx::Vector2d(), rtl_vrl->OriginAdjustmentForScrollbars());
   EXPECT_EQ(PhysicalRect(0, 0, 540, 400), rtl_vrl->PhysicalBorderBoxRect());
-  EXPECT_EQ(PhysicalRect(50, 20, 445, 324), rtl_vrl->NoOverflowRect());
   EXPECT_EQ(PhysicalRect(50, 20, 445, 324), rtl_vrl->PhysicalPaddingBoxRect());
   EXPECT_EQ(PhysicalRect(90, 30, 385, 284), rtl_vrl->PhysicalContentBoxRect());
   EXPECT_EQ(PhysicalRect(50, 20, 445, 324), rtl_vrl->ScrollableOverflowRect());
@@ -1533,7 +1527,6 @@ TEST_F(LayoutBoxTest, GeometriesWithScrollbarsScrollable) {
   EXPECT_EQ(gfx::PointF(), scrollable_area->ScrollPosition());
   // These are the same as in the NonScrollable test.
   EXPECT_EQ(PhysicalRect(0, 0, 540, 400), normal->PhysicalBorderBoxRect());
-  EXPECT_EQ(PhysicalRect(50, 20, 445, 324), normal->NoOverflowRect());
   EXPECT_EQ(PhysicalRect(50, 20, 445, 324), normal->PhysicalPaddingBoxRect());
   EXPECT_EQ(PhysicalRect(90, 30, 385, 284), normal->PhysicalContentBoxRect());
 
@@ -1550,7 +1543,6 @@ TEST_F(LayoutBoxTest, GeometriesWithScrollbarsScrollable) {
   EXPECT_EQ(gfx::PointF(), scrollable_area->ScrollPosition());
   // These are the same as in the NonScrollable test.
   EXPECT_EQ(PhysicalRect(0, 0, 540, 400), vlr->PhysicalBorderBoxRect());
-  EXPECT_EQ(PhysicalRect(50, 20, 445, 324), vlr->NoOverflowRect());
   EXPECT_EQ(PhysicalRect(50, 20, 445, 324), vlr->PhysicalPaddingBoxRect());
   EXPECT_EQ(PhysicalRect(90, 30, 385, 284), vlr->PhysicalContentBoxRect());
 
@@ -1567,7 +1559,6 @@ TEST_F(LayoutBoxTest, GeometriesWithScrollbarsScrollable) {
   EXPECT_EQ(gfx::PointF(1615, 0), scrollable_area->ScrollPosition());
   // These are the same as in the NonScrollable test.
   EXPECT_EQ(PhysicalRect(0, 0, 540, 400), vrl->PhysicalBorderBoxRect());
-  EXPECT_EQ(PhysicalRect(50, 20, 445, 324), vrl->NoOverflowRect());
   EXPECT_EQ(PhysicalRect(50, 20, 445, 324), vrl->PhysicalPaddingBoxRect());
   EXPECT_EQ(PhysicalRect(90, 30, 385, 284), vrl->PhysicalContentBoxRect());
 
@@ -1583,7 +1574,6 @@ TEST_F(LayoutBoxTest, GeometriesWithScrollbarsScrollable) {
   EXPECT_EQ(gfx::PointF(1615, 0), scrollable_area->ScrollPosition());
   // These are the same as in the NonScrollable test.
   EXPECT_EQ(PhysicalRect(0, 0, 540, 400), rtl->PhysicalBorderBoxRect());
-  EXPECT_EQ(PhysicalRect(65, 20, 445, 324), rtl->NoOverflowRect());
   EXPECT_EQ(PhysicalRect(65, 20, 445, 324), rtl->PhysicalPaddingBoxRect());
   EXPECT_EQ(PhysicalRect(105, 30, 385, 284), rtl->PhysicalContentBoxRect());
 
@@ -1600,7 +1590,6 @@ TEST_F(LayoutBoxTest, GeometriesWithScrollbarsScrollable) {
   EXPECT_EQ(gfx::PointF(0, 716), scrollable_area->ScrollPosition());
   // These are the same as in the NonScrollable test.
   EXPECT_EQ(PhysicalRect(0, 0, 540, 400), rtl_vlr->PhysicalBorderBoxRect());
-  EXPECT_EQ(PhysicalRect(50, 20, 445, 324), rtl_vlr->NoOverflowRect());
   EXPECT_EQ(PhysicalRect(50, 20, 445, 324), rtl_vlr->PhysicalPaddingBoxRect());
   EXPECT_EQ(PhysicalRect(90, 30, 385, 284), rtl_vlr->PhysicalContentBoxRect());
 
@@ -1620,7 +1609,6 @@ TEST_F(LayoutBoxTest, GeometriesWithScrollbarsScrollable) {
   EXPECT_EQ(gfx::Vector2d(), rtl_vrl->OriginAdjustmentForScrollbars());
   // These are the same as in the NonScrollable test.
   EXPECT_EQ(PhysicalRect(0, 0, 540, 400), rtl_vrl->PhysicalBorderBoxRect());
-  EXPECT_EQ(PhysicalRect(50, 20, 445, 324), rtl_vrl->NoOverflowRect());
   EXPECT_EQ(PhysicalRect(50, 20, 445, 324), rtl_vrl->PhysicalPaddingBoxRect());
   EXPECT_EQ(PhysicalRect(90, 30, 385, 284), rtl_vrl->PhysicalContentBoxRect());
 }

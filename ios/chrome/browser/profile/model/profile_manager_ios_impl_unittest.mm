@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/profile/model/profile_manager_ios_impl.h"
 
-#import "base/containers/contains.h"
 #import "base/files/file_util.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
@@ -117,7 +116,7 @@ class ProfileManagerIOSImplTest : public TestWithProfile {
 
       const std::string& profile_name = profile->GetProfileName();
 
-      CHECK(!base::Contains(profile_names, profile_name));
+      CHECK(!profile_names.contains(profile_name));
       profile_names.insert(profile_name);
     }
     return profile_names;

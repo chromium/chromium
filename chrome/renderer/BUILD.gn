@@ -141,6 +141,7 @@ static_library("renderer") {
     "//chrome/common/net",
     "//chrome/common/request_header_integrity:buildflags",
     "//chrome/common/search:mojo_bindings",
+    "//chrome/renderer/actor",
     "//chrome/services/speech/buildflags",
     "//components/autofill/content/renderer",
     "//components/autofill/core/common:features",
@@ -364,7 +365,6 @@ static_library("renderer") {
 
     deps += [
       "//chrome/common/read_anything:mojo_bindings",
-      "//chrome/renderer/actor",
       "//chrome/renderer/webui_browser",
       "//components/crx_file",
       "//components/trusted_vault",

@@ -85,7 +85,7 @@ void ParsePolicy(const RegistryDict* gpo_dict,
 
   std::optional<base::Value> policy_value(gpo_dict->ConvertToJSON(schema));
   DCHECK(policy_value);
-  const base::Value::Dict* policy_dict = policy_value->GetIfDict();
+  const base::DictValue* policy_dict = policy_value->GetIfDict();
   if (!policy_dict) {
     SYSLOG(WARNING) << "Root policy object is not a dictionary!";
     return;

@@ -51,6 +51,7 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.test.util.AccountCapabilitiesBuilder;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.DataType;
@@ -244,6 +245,20 @@ public class AccountManagementFragmentTest {
         onView(withText(R.string.sign_out_unsaved_data_title))
                 .inRoot(isDialog())
                 .check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
+    public void testSignOut() {
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+        mSettingsActivityTestRule.startSettingsActivity();
+
+        onView(withText(R.string.sign_out)).perform(click());
+
+        CriteriaHelper.pollUiThread(
+                () ->
+                        mSyncTestRule.getSigninTestRule().getPrimaryAccount(ConsentLevel.SIGNIN)
+                                == null);
     }
 
     @Test

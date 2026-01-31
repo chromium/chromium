@@ -219,7 +219,7 @@ bool ParseHostAndPort(std::string_view input, std::string* host, int* port) {
 
   int parsed_port_number = -1;
   if (port_component.is_nonempty()) {
-    parsed_port_number = url::ParsePort(input.data(), port_component);
+    parsed_port_number = url::ParsePort(input, port_component);
 
     // If parsing failed, port_number will be either PORT_INVALID or
     // PORT_UNSPECIFIED, both of which are negative.

@@ -17,7 +17,12 @@
 namespace blink {
 namespace scheduler {
 
-EventLoop::EventLoop(EventLoop::Delegate* delegate,
+EventLoop::PauseMicrotasksHandle::PauseMicrotasksHandle(
+    v8::Isolate* isolate,
+    v8::MicrotaskQueue* queue)
+    : scope_(isolate, queue) {}
+
+EventLoop::EventLoop(Delegate* delegate,
                      v8::Isolate* isolate,
                      std::unique_ptr<v8::MicrotaskQueue> microtask_queue)
     : delegate_(delegate),
@@ -94,6 +99,11 @@ void EventLoop::DetachScheduler(FrameOrWorkerScheduler* scheduler) {
 
 bool EventLoop::IsSchedulerAttachedForTest(FrameOrWorkerScheduler* scheduler) {
   return schedulers_.Contains(scheduler);
+}
+
+std::unique_ptr<EventLoop::PauseMicrotasksHandle> EventLoop::PauseMicrotasks() {
+  return base::WrapUnique(
+      new PauseMicrotasksHandle(isolate_, microtask_queue_.get()));
 }
 
 // static

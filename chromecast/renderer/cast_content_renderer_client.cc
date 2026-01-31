@@ -54,8 +54,6 @@
 #include "chromecast/media/audio/cast_audio_device_factory.h"
 #include "components/cdm/renderer/key_system_support_update.h"
 #include "media/base/android/media_codec_util.h"
-#else
-#include "chromecast/renderer/memory_pressure_observer_impl.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace chromecast {
@@ -113,19 +111,6 @@ void CastContentRendererClient::RenderThreadStarted() {
   media_caps_observer_.reset(
       new media::MediaCapsObserverImpl(&proxy, supported_profiles_.get()));
   media_caps->AddObserver(std::move(proxy));
-
-#if !BUILDFLAG(IS_ANDROID)
-  // Register to observe memory pressure changes
-  mojo::Remote<chromecast::mojom::MemoryPressureController>
-      memory_pressure_controller;
-  thread->BindHostReceiver(
-      memory_pressure_controller.BindNewPipeAndPassReceiver());
-  mojo::PendingRemote<chromecast::mojom::MemoryPressureObserver>
-      memory_pressure_proxy;
-  memory_pressure_observer_.reset(
-      new MemoryPressureObserverImpl(&memory_pressure_proxy));
-  memory_pressure_controller->AddObserver(std::move(memory_pressure_proxy));
-#endif
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 

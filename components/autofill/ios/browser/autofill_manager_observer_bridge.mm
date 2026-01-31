@@ -34,4 +34,14 @@ void AutofillManagerObserverBridge::OnFieldTypesDetermined(
   [observer_ onFieldTypesDetermined:manager forForm:form fromSource:source];
 }
 
+void AutofillManagerObserverBridge::OnAfterFormSubmitted(
+    AutofillManager& manager,
+    const FormData& form) {
+  const SEL selector = @selector(onAfterFormSubmitted:formData:);
+  if (![observer_ respondsToSelector:selector]) {
+    return;
+  }
+  [observer_ onAfterFormSubmitted:manager formData:form];
+}
+
 }  // namespace autofill

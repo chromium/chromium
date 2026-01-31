@@ -24,8 +24,7 @@ constexpr char kEndSuffix[] = "end";
 constexpr char companionAppKey[] = "EXTRA_COMPANION_APP=";
 }  // namespace
 
-namespace ash {
-namespace quick_pair {
+namespace ash::quick_pair {
 
 CompanionAppParser::CompanionAppParser() = default;
 
@@ -109,5 +108,4 @@ std::optional<std::string> CompanionAppParser::GetCompanionAppExtra(
   return companionAppId.substr(0, companionAppId.find(';'));
 }
 
-}  // namespace quick_pair
-}  // namespace ash
+}  // namespace ash::quick_pair

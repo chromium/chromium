@@ -35,8 +35,7 @@ std::string RandomPassage() {
   std::vector<std::string> pieces;
   pieces.reserve(kWordCount);
   for (size_t i = 0; i < kWordCount; i++) {
-    pieces.emplace_back(
-        kLoremIpsumPieces[base::RandInt(0, kLoremIpsumPieces.size() - 1)]);
+    pieces.emplace_back(base::RandomChoice(kLoremIpsumPieces));
   }
   return base::JoinString(pieces, " ");
 }

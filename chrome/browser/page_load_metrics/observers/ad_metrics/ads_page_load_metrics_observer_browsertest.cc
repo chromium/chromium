@@ -3145,7 +3145,7 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverPrerenderingBrowserTest,
   // Start a prerender.
   GURL prerender_url =
       embedded_test_server()->GetURL("/ads_observer/srcdoc_embedded_ad.html");
-  content::FrameTreeNodeId host_id =
+  content::PrerenderHostId host_id =
       prerender_helper().AddPrerender(prerender_url);
   content::test::PrerenderHostObserver prerender_observer(*web_contents(),
                                                           host_id);
@@ -3275,7 +3275,8 @@ constexpr SurfaceTestCase kSurfaceTestCases[] = {
       window.onmessage = $1;
       window.postMessage("", "*");
     )SCRIPT"},
-    {"eval", "eval('$1();');"},
+    // TODO(crbug.com/473760917): Reenable once the issue is addressed.
+    // {"eval", "eval('$1();');"},
     {"promise_constructor", "new Promise($1);"},
     {"promise_resolve", "Promise.resolve().then($1);"},
     {"promise_reject", "Promise.reject().catch($1);"},

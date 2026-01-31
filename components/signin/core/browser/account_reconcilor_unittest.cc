@@ -13,7 +13,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -178,7 +177,7 @@ class DummyAccountReconcilorWithDelegate : public AccountReconcilor {
       case signin::AccountConsistencyMethod::kDice:
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
         return std::make_unique<signin::DiceAccountReconcilorDelegate>(
-            identity_manager, client);
+            identity_manager);
 #else
         NOTREACHED();
 #endif
@@ -383,7 +382,6 @@ AccountReconcilorTest::AccountReconcilorTest()
       identity_test_env_(/*test_url_loader_factory=*/nullptr,
                          &pref_service_,
                          &test_signin_client_) {
-  AccountReconcilor::RegisterProfilePrefs(pref_service_.registry());
   signin::SetListAccountsResponseHttpNotFound(&test_url_loader_factory_);
 
   // The reconcilor should not be built before the test can set the account
@@ -675,7 +673,7 @@ class BaseAccountReconcilorTestTable : public AccountReconcilorTest {
       }
       cookies_after_reconcile = cookies_before_reconcile;
       for (Cookie& cookie : cookies_after_reconcile) {
-        if (base::Contains(gaia_ids, cookie.gaia_id)) {
+        if (std::ranges::contains(gaia_ids, cookie.gaia_id)) {
           cookie.is_valid = true;
           gaia_ids.erase(std::ranges::find(gaia_ids, cookie.gaia_id));
         } else {
@@ -1054,9 +1052,7 @@ INSTANTIATE_TEST_SUITE_P(
 class AccountReconcilorDiceTest : public AccountReconcilorTest {
  public:
   AccountReconcilorDiceTest() {
-    // TODO(https://crbug.com.1464264): Migrate away from `ConsentLevel::kSync`
-    // on desktop platforms.
-    consent_level_for_reconcile_ = signin::ConsentLevel::kSync;
+    consent_level_for_reconcile_ = signin::ConsentLevel::kSignin;
     SetAccountConsistency(signin::AccountConsistencyMethod::kDice);
   }
 
@@ -1451,140 +1447,6 @@ TEST_F(AccountReconcilorDiceTest, DeleteCookieForSignedInUser) {
   EXPECT_FALSE(
       identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
           account_info.account_id));
-}
-
-TEST_F(AccountReconcilorDiceTest, DeleteCookieForSyncingUser) {
-  auto* identity_manager = identity_test_env()->identity_manager();
-  signin::SetListAccountsResponseOneAccount(kFakeEmail, kFakeGaiaId,
-                                            &test_url_loader_factory_);
-  AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
-      kFakeEmail, signin::ConsentLevel::kSync);
-
-  ASSERT_TRUE(
-      identity_manager->HasAccountWithRefreshToken(account_info.account_id));
-  ASSERT_FALSE(
-      identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
-          account_info.account_id));
-
-  AccountReconcilor* reconcilor = GetMockReconcilor();
-  reconcilor->OnAccountsCookieDeletedByUserAction();
-
-  EXPECT_TRUE(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
-  EXPECT_TRUE(
-      identity_manager->HasAccountWithRefreshToken(account_info.account_id));
-  EXPECT_FALSE(
-      identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
-          account_info.account_id));
-}
-
-TEST_F(AccountReconcilorDiceTest, CookieSettingMigrationExplicitSignin) {
-  ASSERT_FALSE(pref_service()->GetBoolean(
-      prefs::kCookieClearOnExitMigrationNoticeComplete));
-  AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
-      kFakeEmail, signin::ConsentLevel::kSignin);
-  ASSERT_TRUE(pref_service()->GetBoolean(prefs::kExplicitBrowserSignin));
-
-  // Explicit signin is auto-migrated.
-  GetMockReconcilor();
-  EXPECT_TRUE(pref_service()->GetBoolean(
-      prefs::kCookieClearOnExitMigrationNoticeComplete));
-}
-
-TEST_F(AccountReconcilorDiceTest,
-       CookieSettingMigrationExplicitSigninWithClearOnExit) {
-  ASSERT_FALSE(pref_service()->GetBoolean(
-      prefs::kCookieClearOnExitMigrationNoticeComplete));
-  AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
-      kFakeEmail, signin::ConsentLevel::kSignin);
-  ASSERT_TRUE(pref_service()->GetBoolean(prefs::kExplicitBrowserSignin));
-  test_signin_client()->set_are_signin_cookies_deleted_on_exit(true);
-
-  // Explicit signin is not auto-migrated when the setting exists.
-  content_settings::Observer* reconcilor = GetMockReconcilor();
-  EXPECT_FALSE(pref_service()->GetBoolean(
-      prefs::kCookieClearOnExitMigrationNoticeComplete));
-
-  // Changing cookie settings should trigger the migration.
-  test_signin_client()->set_are_signin_cookies_deleted_on_exit(false);
-  reconcilor->OnContentSettingChanged(
-      /*primary_pattern=*/ContentSettingsPattern(),
-      /*secondary_pattern=*/ContentSettingsPattern(),
-      ContentSettingsTypeSet(ContentSettingsType::COOKIES));
-  EXPECT_TRUE(pref_service()->GetBoolean(
-      prefs::kCookieClearOnExitMigrationNoticeComplete));
-}
-
-TEST_F(AccountReconcilorDiceTest, CookieSettingMigrationImplicitSignin) {
-  ASSERT_FALSE(pref_service()->GetBoolean(
-      prefs::kCookieClearOnExitMigrationNoticeComplete));
-  AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
-      kFakeEmail, signin::ConsentLevel::kSignin);
-  pref_service()->ClearPref(prefs::kExplicitBrowserSignin);
-  ASSERT_FALSE(pref_service()->GetBoolean(prefs::kExplicitBrowserSignin));
-
-  // Implicit signin is not auto-migrated.
-  content_settings::Observer* reconcilor = GetMockReconcilor();
-  EXPECT_FALSE(pref_service()->GetBoolean(
-      prefs::kCookieClearOnExitMigrationNoticeComplete));
-
-  // Changing cookie settings should not trigger the migration.
-  reconcilor->OnContentSettingChanged(
-      /*primary_pattern=*/ContentSettingsPattern(),
-      /*secondary_pattern=*/ContentSettingsPattern(),
-      ContentSettingsTypeSet(ContentSettingsType::COOKIES));
-  EXPECT_FALSE(pref_service()->GetBoolean(
-      prefs::kCookieClearOnExitMigrationNoticeComplete));
-}
-
-TEST_F(AccountReconcilorDiceTest, CookieSettingMigrationSignedOut) {
-  ASSERT_FALSE(pref_service()->GetBoolean(
-      prefs::kCookieClearOnExitMigrationNoticeComplete));
-  ASSERT_FALSE(pref_service()->GetBoolean(prefs::kExplicitBrowserSignin));
-  ASSERT_FALSE(identity_test_env()->identity_manager()->HasPrimaryAccount(
-      signin::ConsentLevel::kSignin));
-
-  // Signed out state is auto-migrated.
-  GetMockReconcilor();
-  EXPECT_TRUE(pref_service()->GetBoolean(
-      prefs::kCookieClearOnExitMigrationNoticeComplete));
-}
-
-TEST_F(AccountReconcilorDiceTest, CookieSettingMigrationSync) {
-  ASSERT_FALSE(pref_service()->GetBoolean(
-      prefs::kCookieClearOnExitMigrationNoticeComplete));
-  AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
-      kFakeEmail, signin::ConsentLevel::kSync);
-  ASSERT_TRUE(pref_service()->GetBoolean(prefs::kExplicitBrowserSignin));
-
-  // Sync is auto-migrated.
-  GetMockReconcilor();
-  EXPECT_TRUE(pref_service()->GetBoolean(
-      prefs::kCookieClearOnExitMigrationNoticeComplete));
-
-  // It is auto-migrated when clearing the primary account (and turning sync
-  // off).
-  identity_test_env()->ClearPrimaryAccount();
-  EXPECT_TRUE(pref_service()->GetBoolean(
-      prefs::kCookieClearOnExitMigrationNoticeComplete));
-}
-
-TEST_F(AccountReconcilorDiceTest, CookieSettingMigrationExplicitPref) {
-  ASSERT_FALSE(pref_service()->GetBoolean(
-      prefs::kCookieClearOnExitMigrationNoticeComplete));
-  AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
-      kFakeEmail, signin::ConsentLevel::kSignin);
-  pref_service()->ClearPref(prefs::kExplicitBrowserSignin);
-  ASSERT_FALSE(pref_service()->GetBoolean(prefs::kExplicitBrowserSignin));
-
-  // Implicit signin is not auto-migrated.
-  GetMockReconcilor();
-  EXPECT_FALSE(pref_service()->GetBoolean(
-      prefs::kCookieClearOnExitMigrationNoticeComplete));
-
-  // Make the signin explicit, this triggers the migration.
-  pref_service()->SetBoolean(prefs::kExplicitBrowserSignin, true);
-  EXPECT_TRUE(pref_service()->GetBoolean(
-      prefs::kCookieClearOnExitMigrationNoticeComplete));
 }
 
 TEST_F(AccountReconcilorDiceTest, PendingStateThenClearPrimaryAccount) {
@@ -3242,9 +3104,7 @@ class AccountReconcilorThrottlerTest : public AccountReconcilorTest {
  public:
   AccountReconcilorThrottlerTest() {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-    // TODO(https://crbug.com.1464264): Migrate away from `ConsentLevel::kSync`
-    // on desktop platforms.
-    consent_level_for_reconcile_ = signin::ConsentLevel::kSync;
+    consent_level_for_reconcile_ = signin::ConsentLevel::kSignin;
     signin::AccountConsistencyMethod account_consistency =
         signin::AccountConsistencyMethod::kDice;
     SetAccountConsistency(account_consistency);

@@ -445,8 +445,7 @@ class PageNode extends GraphNode {
   }
 
   override get title() {
-    return this.page.mainFrameUrl.url.length > 0 ? this.page.mainFrameUrl.url :
-                                                   'Page';
+    return this.page.mainFrameUrl.length > 0 ? this.page.mainFrameUrl : 'Page';
   }
 
   override get targetYPositionStrength() {
@@ -492,7 +491,7 @@ class FrameNode extends GraphNode {
   }
 
   override get title() {
-    return this.frame.url.url.length > 0 ? this.frame.url.url : 'Frame';
+    return this.frame.url.length > 0 ? this.frame.url : 'Frame';
   }
 
   override targetPositionY(_graphHeight: number) {
@@ -559,7 +558,7 @@ class WorkerNode extends GraphNode {
   }
 
   override get title() {
-    return this.worker.url.url.length > 0 ? this.worker.url.url : 'Worker';
+    return this.worker.url.length > 0 ? this.worker.url : 'Worker';
   }
 
   override get targetYPositionStrength() {

@@ -342,6 +342,7 @@
 <translation id="2201071101391734388">Соңғы фото: <ph name="INDEX" />/<ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Google Tasks интерфейсін жию</translation>
 <translation id="2208323208084708176">Бірыңғай жұмыс үстелі режимі</translation>
+<translation id="2210311543574621570">Ctrl + V тіркесімін басып тұрған кезде буферді көресіз. chrome://flags ішінде #clipboard-history-longpress жалаушасын өшіру арқылы осы пернелер тіркесімін өшіруге болады.</translation>
 <translation id="2215920961700443347">Интернет жоқ. Интернетке қосылып, әрекетті қайталап көріңіз.</translation>
 <translation id="2222841058024245321">7-ші жұмыс үстелі</translation>
 <translation id="2223384056430485343">Бөлінген экранда</translation>
@@ -2443,7 +2444,7 @@
 <translation id="9151906066336345901">end</translation>
 <translation id="9159421884295554245">Буферден іздеу</translation>
 <translation id="9161053988251441839">ҰСЫНЫЛҒАН ҚОЛДАНБАЛАР</translation>
-<translation id="9168436347345867845">Кейінірек</translation>
+<translation id="9168436347345867845">Кейін</translation>
 <translation id="9178475906033259337"><ph name="QUERY" /> бойынша 1 нәтиже көрсетілуде</translation>
 <translation id="9179259655489829027">Бұл функция аккаунтқа кірген кез келген пайдаланушыға құпия сөзсіз жылдам кіруге мүмкіндік береді. Оны тек сенімді аккаунттармен пайдаланыңыз.</translation>
 <translation id="9183302530794969518">Google Docs</translation>

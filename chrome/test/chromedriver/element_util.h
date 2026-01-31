@@ -19,7 +19,7 @@ std::string GetElementKey(bool w3c_compliant);
 
 base::Value CreateElement(const std::string& element_id, bool w3c_compliant);
 
-base::Value::Dict CreateValueFrom(const WebPoint& point);
+base::DictValue CreateValueFrom(const WebPoint& point);
 
 // |root_element_id| could be null when no root element is given.
 Status FindElement(int interval_ms,
@@ -27,7 +27,7 @@ Status FindElement(int interval_ms,
                    const std::string* root_element_id,
                    Session* session,
                    WebView* web_view,
-                   const base::Value::Dict& params,
+                   const base::DictValue& params,
                    std::unique_ptr<base::Value>* value);
 
 Status FindShadowElement(int interval_ms,
@@ -35,7 +35,7 @@ Status FindShadowElement(int interval_ms,
                          const std::string* shadow_root_id,
                          Session* session,
                          WebView* web_view,
-                         const base::Value::Dict& params,
+                         const base::DictValue& params,
                          std::unique_ptr<base::Value>* value);
 
 Status GetActiveElement(Session* session,

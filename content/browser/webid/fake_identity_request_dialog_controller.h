@@ -89,6 +89,8 @@ class CONTENT_EXPORT FakeIdentityRequestDialogController
 
   void CloseModalDialog() override;
 
+  void OnFlowCompleted(bool success) override;
+
   void WebContentsDestroyed() override;
 
   void RequestIdPRegistrationPermision(

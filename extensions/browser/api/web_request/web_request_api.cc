@@ -118,7 +118,7 @@ enum class ProxyDecisionDetailsForExtension {
 
 // Converts an HttpHeaders dictionary to a |name|, |value| pair. Returns
 // true if successful.
-bool FromHeaderDictionary(const base::Value::Dict& header_value,
+bool FromHeaderDictionary(const base::DictValue& header_value,
                           std::string* name,
                           std::string* out_value) {
   const std::string* name_ptr = header_value.FindString(keys::kHeaderNameKey);
@@ -1063,7 +1063,7 @@ WebRequestInternalEventHandledFunction::Run() {
   std::unique_ptr<WebRequestEventRouter::EventResponse> response;
   if (HasOptionalArgument(4)) {
     EXTENSION_FUNCTION_VALIDATE(args()[4].is_dict());
-    const base::Value::Dict& dict_value = args()[4].GetDict();
+    const base::DictValue& dict_value = args()[4].GetDict();
 
     if (!dict_value.empty()) {
       base::Time install_time = GetLastUpdateTime(
@@ -1114,7 +1114,7 @@ WebRequestInternalEventHandledFunction::Run() {
         return RespondNow(Error(keys::kInvalidHeaderKeyCombination));
       }
 
-      const base::Value::List* headers_value = nullptr;
+      const base::ListValue* headers_value = nullptr;
       std::unique_ptr<net::HttpRequestHeaders> request_headers;
       std::unique_ptr<helpers::ResponseHeaders> response_headers;
       if (has_request_headers) {
@@ -1128,7 +1128,7 @@ WebRequestInternalEventHandledFunction::Run() {
 
       for (const base::Value& elem : *headers_value) {
         EXTENSION_FUNCTION_VALIDATE(elem.is_dict());
-        const base::Value::Dict& header_value = elem.GetDict();
+        const base::DictValue& header_value = elem.GetDict();
         std::string name;
         std::string value;
         if (!FromHeaderDictionary(header_value, &name, &value)) {
@@ -1162,7 +1162,7 @@ WebRequestInternalEventHandledFunction::Run() {
     }
 
     if (auth_credentials_value) {
-      const base::Value::Dict* credentials_value =
+      const base::DictValue* credentials_value =
           auth_credentials_value->GetIfDict();
       EXTENSION_FUNCTION_VALIDATE(credentials_value);
       const std::string* username =

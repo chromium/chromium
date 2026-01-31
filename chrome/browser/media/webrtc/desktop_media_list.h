@@ -75,9 +75,6 @@ class DesktopMediaList {
     // A preview for this source, used when both a thumbnail and preview are
     // used. Currently only the case in the tab_desktop_media_list.
     gfx::ImageSkia preview;
-
-    // Set to true if this source represents a Chromium window.
-    std::optional<bool> is_chromium_window;
   };
 
   using UpdateCallback = base::OnceClosure;

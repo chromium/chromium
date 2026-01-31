@@ -101,8 +101,6 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
   out->allow_running_insecure_content = data.allow_running_insecure_content();
   out->disable_reading_from_canvas = data.disable_reading_from_canvas();
   out->strict_mixed_content_checking = data.strict_mixed_content_checking();
-  out->strict_powerful_feature_restrictions =
-      data.strict_powerful_feature_restrictions();
   out->allow_geolocation_on_insecure_origins =
       data.allow_geolocation_on_insecure_origins();
   out->strictly_block_blockable_mixed_content =
@@ -198,6 +196,8 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
   out->disable_accelerated_small_canvases =
       data.disable_accelerated_small_canvases();
   out->long_press_link_select_text = data.long_press_link_select_text();
+  out->scale_all_fonts_if_no_meta_text_scale_tag =
+      data.scale_all_fonts_if_no_meta_text_scale_tag();
   out->dynamic_safe_area_insets_enabled =
       data.dynamic_safe_area_insets_enabled();
 #endif  // BUILDFLAG(IS_ANDROID)

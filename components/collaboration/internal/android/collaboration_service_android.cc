@@ -74,7 +74,7 @@ bool CollaborationServiceAndroid::IsEmptyService(JNIEnv* env) {
 }
 
 void CollaborationServiceAndroid::StartJoinFlow(JNIEnv* env,
-                                                jlong delegateNativePtr,
+                                                int64_t delegateNativePtr,
                                                 const JavaRef<jobject>& j_url) {
   collaboration_service_->StartJoinFlow(
       conversion::GetDelegateUniquePtrFromJava(delegateNativePtr),
@@ -83,10 +83,10 @@ void CollaborationServiceAndroid::StartJoinFlow(JNIEnv* env,
 
 void CollaborationServiceAndroid::StartShareOrManageFlow(
     JNIEnv* env,
-    jlong delegateNativePtr,
+    int64_t delegateNativePtr,
     const JavaRef<jstring>& j_sync_group_id,
     const JavaRef<jobject>& j_local_group_id,
-    jint entry) {
+    int32_t entry) {
   tab_groups::EitherGroupID either_id =
       tab_groups::JavaSyncOrLocalGroupIdToEitherGroupId(env, j_sync_group_id,
                                                         j_local_group_id);
@@ -98,10 +98,10 @@ void CollaborationServiceAndroid::StartShareOrManageFlow(
 
 void CollaborationServiceAndroid::StartLeaveOrDeleteFlow(
     JNIEnv* env,
-    jlong delegateNativePtr,
+    int64_t delegateNativePtr,
     const JavaRef<jstring>& j_sync_group_id,
     const JavaRef<jobject>& j_local_group_id,
-    jint entry) {
+    int32_t entry) {
   tab_groups::EitherGroupID either_id =
       tab_groups::JavaSyncOrLocalGroupIdToEitherGroupId(env, j_sync_group_id,
                                                         j_local_group_id);
@@ -121,14 +121,14 @@ ScopedJavaLocalRef<jobject> CollaborationServiceAndroid::GetServiceStatus(
       static_cast<int>(status.collaboration_status));
 }
 
-jint CollaborationServiceAndroid::GetCurrentUserRoleForGroup(
+int32_t CollaborationServiceAndroid::GetCurrentUserRoleForGroup(
     JNIEnv* env,
     const JavaRef<jstring>& group_id) {
   data_sharing::MemberRole role =
       collaboration_service_->GetCurrentUserRoleForGroup(
           GroupId(ConvertJavaStringToUTF8(env, group_id)));
 
-  return static_cast<jint>(role);
+  return static_cast<int32_t>(role);
 }
 
 jni_zero::ScopedJavaLocalRef<jobject> CollaborationServiceAndroid::GetGroupData(

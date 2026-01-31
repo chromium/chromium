@@ -46,6 +46,8 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameCaptionButtonContainerView
   METADATA_HEADER(FrameCaptionButtonContainerView, views::BoxLayoutView)
 
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kElementId);
+
   // `frame` is the views::Widget that the caption buttons act on.
   // `custom_button` is an optional caption button. It is placed as the
   // left-most caption button (in LTR mode).

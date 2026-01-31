@@ -18,6 +18,8 @@
 
                 var list3 = document.getElementById("list3");
                 list3.start = 20;
+                list3.removeAttribute("reversed");
+                list3.setAttribute("reversed", "");
                 document.getElementById("console3").innerHTML = dumpList(list3);
 
                 var list4 = document.getElementById("list4");

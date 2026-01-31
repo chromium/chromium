@@ -9,13 +9,20 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sharing/sharing_service_factory.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/desktop_to_mobile_promos/features.h"
 #include "components/desktop_to_mobile_promos/pref_names.h"
 #include "components/desktop_to_mobile_promos/promos_types.h"
 #include "components/prefs/pref_service.h"
+#include "components/sharing_message/mock_sharing_service.h"
+#include "components/sharing_message/proto/sharing_message.pb.h"
+#include "components/sharing_message/sharing_constants.h"
+#include "components/sharing_message/sharing_target_device_info.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/fake_device_info_sync_service.h"
 #include "components/sync_device_info/fake_device_info_tracker.h"
@@ -25,10 +32,16 @@
 namespace {
 
 using desktop_to_mobile_promos::PromoType;
+using testing::_;
 
 std::unique_ptr<KeyedService> BuildFakeDeviceInfoSyncService(
     content::BrowserContext* context) {
   return std::make_unique<syncer::FakeDeviceInfoSyncService>();
+}
+
+std::unique_ptr<KeyedService> BuildMockSharingService(
+    content::BrowserContext* context) {
+  return std::make_unique<MockSharingService>();
 }
 
 std::unique_ptr<syncer::DeviceInfo> CreateDeviceInfo(
@@ -51,7 +64,8 @@ std::unique_ptr<syncer::DeviceInfo> CreateDeviceInfo(
       /*paask_info=*/std::nullopt,
       /*fcm_registration_token=*/std::string(),
       /*interested_data_types=*/syncer::DataTypeSet::All(),
-      /*auto_sign_out_last_signin_timestamp=*/std::nullopt);
+      /*auto_sign_out_last_signin_timestamp=*/std::nullopt,
+      /*desktop_to_ios_promo_receiving_enabled=*/false);
 }
 
 }  // namespace
@@ -62,11 +76,17 @@ class IOSPromoTriggerServiceTest : public testing::Test {
   ~IOSPromoTriggerServiceTest() override = default;
 
   void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        kMobilePromoOnDesktopWithReminder,
+        {{kMobilePromoOnDesktopNotificationParam, "true"}});
+
     TestingProfile::Builder builder;
     profile_ = builder.Build();
 
     DeviceInfoSyncServiceFactory::GetInstance()->SetTestingFactory(
         profile_.get(), base::BindRepeating(&BuildFakeDeviceInfoSyncService));
+    SharingServiceFactory::GetInstance()->SetTestingFactory(
+        profile_.get(), base::BindRepeating(&BuildMockSharingService));
 
     service_ = std::make_unique<IOSPromoTriggerService>(profile_.get());
 
@@ -89,6 +109,12 @@ class IOSPromoTriggerServiceTest : public testing::Test {
     return device_ptr;
   }
 
+  MockSharingService* GetMockSharingService() {
+    return static_cast<MockSharingService*>(
+        SharingServiceFactory::GetForBrowserContext(profile_.get()));
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<IOSPromoTriggerService> service_;
@@ -217,9 +243,23 @@ TEST_F(IOSPromoTriggerServiceTest,
 }
 
 TEST_F(IOSPromoTriggerServiceTest, SetReminderForIOSDevice) {
+  AddDevice("test_guid", syncer::DeviceInfo::OsType::kIOS,
+            syncer::DeviceInfo::FormFactor::kPhone, base::Time::Now());
+
+  EXPECT_CALL(*GetMockSharingService(), GetDeviceByGuid("test_guid"))
+      .WillOnce(testing::Return(std::make_optional(SharingTargetDeviceInfo(
+          "test_guid", "name", SharingDevicePlatform::kIOS, base::Minutes(10),
+          syncer::DeviceInfo::FormFactor::kPhone, base::Time::Now()))));
+
+  EXPECT_CALL(
+      *GetMockSharingService(),
+      SendUnencryptedMessageToDevice(
+          testing::Property(&SharingTargetDeviceInfo::guid, "test_guid"), _, _))
+      .Times(1);
+
   service_->SetReminderForIOSDevice(PromoType::kPassword, "test_guid");
 
-  const base::Value::Dict& promo_reminder_data =
+  const base::DictValue& promo_reminder_data =
       profile_->GetPrefs()->GetDict(prefs::kIOSPromoReminder);
   ASSERT_TRUE(promo_reminder_data.FindInt(prefs::kIOSPromoReminderPromoType));
   EXPECT_EQ(

@@ -11,6 +11,8 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.Card
 import android.content.Context;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.tasks.tab_management.IphMessageService.IphMessageData;
+import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ServiceDismissActionProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -22,16 +24,14 @@ public class IphMessageCardViewModel {
      * Create a {@link PropertyModel} for IphMessageCardView.
      *
      * @param context The {@link Context} to use.
-     * @param msgServiceDismissActionProvider The {@link
-     *     MessageCardView.ServiceDismissActionProvider} to set.
-     * @param data The {@link IphMessageService.IphMessageData} to use.
+     * @param msgServiceDismissActionProvider The {@link ServiceDismissActionProvider} to set.
+     * @param data The {@link IphMessageData} to use.
      * @return A {@link PropertyModel} for the given {@code data}.
      */
     public static PropertyModel create(
             Context context,
-            MessageCardView.ServiceDismissActionProvider<@MessageType Integer>
-                    msgServiceDismissActionProvider,
-            IphMessageService.IphMessageData data) {
+            ServiceDismissActionProvider<@MessageType Integer> msgServiceDismissActionProvider,
+            IphMessageData data) {
         String descriptionText = context.getString(R.string.iph_drag_and_drop_introduction);
         String actionText = context.getString(R.string.iph_drag_and_drop_show_me);
         String dismissButtonContextDescription =

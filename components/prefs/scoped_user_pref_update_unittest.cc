@@ -70,17 +70,17 @@ TEST_F(ScopedUserPrefUpdateTest, ScopedDictPrefUpdateRegularUse) {
 }
 
 TEST_F(ScopedUserPrefUpdateTest, ScopedDictPrefUpdateNeverTouchAnything) {
-  const base::Value::Dict& old_value = prefs_.GetDict(kDictPref);
+  const base::DictValue& old_value = prefs_.GetDict(kDictPref);
   EXPECT_CALL(dict_observer_, OnPreferenceChanged(_)).Times(0);
   { ScopedDictPrefUpdate update(&prefs_, kDictPref); }
-  const base::Value::Dict& new_value = prefs_.GetDict(kDictPref);
+  const base::DictValue& new_value = prefs_.GetDict(kDictPref);
   EXPECT_EQ(old_value, new_value);
   Mock::VerifyAndClearExpectations(&dict_observer_);
 }
 
 TEST_F(ScopedUserPrefUpdateTest, ScopedDictPrefUpdateWithDefaults) {
   auto defaults =
-      base::Value::Dict().Set("firstkey", "value").Set("secondkey", "value");
+      base::DictValue().Set("firstkey", "value").Set("secondkey", "value");
 
   std::string pref_name = "mypref";
   prefs_.registry()->RegisterDictionaryPref(pref_name, std::move(defaults));
@@ -117,16 +117,16 @@ TEST_F(ScopedUserPrefUpdateTest, ScopedListPrefUpdateRegularUse) {
 }
 
 TEST_F(ScopedUserPrefUpdateTest, ScopedListPrefUpdateNeverTouchAnything) {
-  const base::Value::List& old_value = prefs_.GetList(kListPref);
+  const base::ListValue& old_value = prefs_.GetList(kListPref);
   EXPECT_CALL(dict_observer_, OnPreferenceChanged(_)).Times(0);
   { ScopedListPrefUpdate update(&prefs_, kListPref); }
-  const base::Value::List& new_value = prefs_.GetList(kListPref);
+  const base::ListValue& new_value = prefs_.GetList(kListPref);
   EXPECT_EQ(old_value, new_value);
   Mock::VerifyAndClearExpectations(&dict_observer_);
 }
 
 TEST_F(ScopedUserPrefUpdateTest, ScopedListPrefUpdateWithDefaults) {
-  base::Value::List defaults;
+  base::ListValue defaults;
   defaults.Append("firstvalue");
   defaults.Append("secondvalue");
 

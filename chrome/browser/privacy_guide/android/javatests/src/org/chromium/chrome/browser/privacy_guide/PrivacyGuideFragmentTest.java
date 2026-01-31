@@ -31,6 +31,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
+import static org.chromium.base.test.transit.ViewElement.displayingAtLeastOption;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.app.Activity;
@@ -94,10 +95,7 @@ import java.util.Set;
 @EnableFeatures({
     ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY,
 })
-@DisableFeatures({
-    ChromeFeatureList.TRACKING_PROTECTION_3PCD,
-    ChromeFeatureList.SETTINGS_MULTI_COLUMN
-})
+@DisableFeatures({ChromeFeatureList.SETTINGS_MULTI_COLUMN})
 @DoNotBatch(reason = "Manages sign-in state, which is global.")
 public class PrivacyGuideFragmentTest {
     private static final String SETTINGS_STATES_HISTOGRAM = "Settings.PrivacyGuide.SettingsStates";
@@ -578,7 +576,8 @@ public class PrivacyGuideFragmentTest {
 
         executeWhileCapturingIntents(
                 () -> {
-                    onViewWaiting(withId(R.id.waa_button)).perform(scrollTo(), click());
+                    onViewWaiting(withId(R.id.waa_button), displayingAtLeastOption(0))
+                            .perform(scrollTo(), click());
                     intended(
                             IntentMatchers.hasData(
                                     UrlConstants.GOOGLE_ACCOUNT_ACTIVITY_CONTROLS_FROM_PG_URL));
@@ -593,7 +592,9 @@ public class PrivacyGuideFragmentTest {
         goToCard(FragmentType.DONE);
 
         executeWhileCapturingIntents(
-                () -> onViewWaiting(withId(R.id.waa_button)).perform(scrollTo(), click()));
+                () ->
+                        onViewWaiting(withId(R.id.waa_button), displayingAtLeastOption(0))
+                                .perform(scrollTo(), click()));
 
         assertTrue(
                 mActionTester.getActions().contains("Settings.PrivacyGuide.CompletionSWAAClick"));
@@ -611,7 +612,9 @@ public class PrivacyGuideFragmentTest {
                         ENTRY_EXIT_HISTOGRAM, PrivacyGuideInteractions.SWAA_COMPLETION_LINK);
 
         executeWhileCapturingIntents(
-                () -> onViewWaiting(withId(R.id.waa_button)).perform(scrollTo(), click()));
+                () ->
+                        onViewWaiting(withId(R.id.waa_button), displayingAtLeastOption(0))
+                                .perform(scrollTo(), click()));
 
         histogram.assertExpected();
     }

@@ -5,11 +5,14 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_OSAUTH_IMPL_REQUEST_PASSWORD_MANAGER_AUTH_REQUEST_H_
 #define CHROMEOS_ASH_COMPONENTS_OSAUTH_IMPL_REQUEST_PASSWORD_MANAGER_AUTH_REQUEST_H_
 
+#include <memory>
 #include <string>
 
 #include "chromeos/ash/components/osauth/impl/request/token_based_auth_request.h"
 
 namespace ash {
+
+class UserContext;
 
 // Passed to `ActiveSessionAuthController::ShowAuthDialog` when authenticating
 // from Google Password Manager, handles behavior specific to those requests.
@@ -25,6 +28,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH)
   ~PasswordManagerAuthRequest() override;
 
   // AuthRequest:
+  void NotifyAuthResult(std::unique_ptr<UserContext> user_context,
+                        AuthResult result) override;
   AuthSessionIntent GetAuthSessionIntent() const override;
   AuthRequest::Reason GetAuthReason() const override;
   const std::u16string GetDescription() const override;

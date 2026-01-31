@@ -322,7 +322,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, DispatchEventDuringShutdown) {
   // Broadcast an event to the event router. Since a shutdown is occurring, it
   // should be ignored and cause no problems.
   event_router->BroadcastEvent(std::make_unique<Event>(
-      events::FOR_TEST, "tabs.onActivated", base::Value::List()));
+      events::FOR_TEST, "tabs.onActivated", base::ListValue()));
 }
 
 class EventsApiTest : public ExtensionApiTest {

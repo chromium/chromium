@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+#include "ui/gfx/geometry/size.h"
 
 class BrowserWindowInterface;
 class BrowserWindow;
@@ -43,6 +44,11 @@ class DesktopBrowserWindowCapabilities {
 
   // See Browser::IsAttemptingToCloseBrowser() for more details.
   bool IsAttemptingToCloseBrowser() const;
+
+  // Returns the size of `WebContents` in the browser. This may be called before
+  // the `TabStripModel` has an active tab.
+  // Returns the size of the active `WebContents` if in a split view.
+  gfx::Size GetContentsSize() const;
 
   // Changes the blocked state of |web_contents|. WebContentses are considered
   // blocked while displaying a web contents modal dialog. During that time

@@ -99,17 +99,17 @@ static void JNI_TranslateBridge_ManualTranslateWhenReady(
   client->ManualTranslateWhenReady();
 }
 
-static jboolean JNI_TranslateBridge_CanManuallyTranslate(
+static bool JNI_TranslateBridge_CanManuallyTranslate(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_web_contents,
-    jboolean menuLogging) {
+    bool menuLogging) {
   ChromeTranslateClient* client = GetTranslateClient(j_web_contents);
   translate::TranslateManager* manager = client->GetTranslateManager();
   CHECK(manager);
   return manager->CanManuallyTranslate(menuLogging);
 }
 
-static jboolean JNI_TranslateBridge_ShouldShowManualTranslateIph(
+static bool JNI_TranslateBridge_ShouldShowManualTranslateIph(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_web_contents) {
   ChromeTranslateClient* client = GetTranslateClient(j_web_contents);
@@ -130,7 +130,7 @@ static void JNI_TranslateBridge_SetPredefinedTargetLanguage(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_web_contents,
     std::string& translate_language,
-    jboolean j_should_auto_translate) {
+    bool j_should_auto_translate) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(j_web_contents);
 
@@ -168,7 +168,7 @@ static void JNI_TranslateBridge_SetDefaultTargetLanguage(
 }
 
 // Determines whether the given language is blocked for translation.
-static jboolean JNI_TranslateBridge_IsBlockedLanguage(
+static bool JNI_TranslateBridge_IsBlockedLanguage(
     JNIEnv* env,
     const JavaRef<jobject>& j_profile,
     std::string& language_code) {
@@ -208,7 +208,7 @@ static void JNI_TranslateBridge_SetLanguageAlwaysTranslateState(
     JNIEnv* env,
     const JavaRef<jobject>& j_profile,
     std::string& language_code,
-    jboolean alwaysTranslate) {
+    bool alwaysTranslate) {
   std::unique_ptr<translate::TranslatePrefs> translate_prefs =
       ChromeTranslateClient::CreateTranslatePrefs(GetPrefService(j_profile));
 
@@ -359,7 +359,7 @@ static void JNI_TranslateBridge_UpdateUserAcceptLanguages(
     JNIEnv* env,
     const JavaRef<jobject>& j_profile,
     std::string& language_code,
-    jboolean is_add) {
+    bool is_add) {
   std::unique_ptr<translate::TranslatePrefs> translate_prefs =
       ChromeTranslateClient::CreateTranslatePrefs(GetPrefService(j_profile));
 
@@ -374,7 +374,7 @@ static void JNI_TranslateBridge_MoveAcceptLanguage(
     JNIEnv* env,
     const JavaRef<jobject>& j_profile,
     std::string& language_code,
-    jint offset) {
+    int32_t offset) {
   std::unique_ptr<translate::TranslatePrefs> translate_prefs =
       ChromeTranslateClient::CreateTranslatePrefs(GetPrefService(j_profile));
 
@@ -398,7 +398,7 @@ static void JNI_TranslateBridge_SetLanguageBlockedState(
     JNIEnv* env,
     const JavaRef<jobject>& j_profile,
     std::string& language_code,
-    jboolean blocked) {
+    bool blocked) {
   std::unique_ptr<translate::TranslatePrefs> translate_prefs =
       ChromeTranslateClient::CreateTranslatePrefs(GetPrefService(j_profile));
 
@@ -409,7 +409,7 @@ static void JNI_TranslateBridge_SetLanguageBlockedState(
   }
 }
 
-static jboolean JNI_TranslateBridge_GetAppLanguagePromptShown(
+static bool JNI_TranslateBridge_GetAppLanguagePromptShown(
     JNIEnv* env,
     const JavaRef<jobject>& j_profile) {
   std::unique_ptr<translate::TranslatePrefs> translate_prefs =
@@ -436,7 +436,7 @@ static std::string JNI_TranslateBridge_GetCurrentLanguage(
   return client->GetLanguageState().current_language();
 }
 
-static jboolean JNI_TranslateBridge_IsPageTranslated(
+static bool JNI_TranslateBridge_IsPageTranslated(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_web_contents) {
   content::WebContents* web_contents =
@@ -447,7 +447,7 @@ static jboolean JNI_TranslateBridge_IsPageTranslated(
   return client->GetLanguageState().IsPageTranslated();
 }
 
-static jlong JNI_TranslateBridge_AddTranslationObserver(
+static int64_t JNI_TranslateBridge_AddTranslationObserver(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_web_contents,
     const base::android::JavaRef<jobject>& j_observer) {
@@ -455,13 +455,13 @@ static jlong JNI_TranslateBridge_AddTranslationObserver(
   GetTranslateClient(j_web_contents)
       ->translate_driver()
       ->AddTranslationObserver(observer);
-  return reinterpret_cast<jlong>(observer);
+  return reinterpret_cast<int64_t>(observer);
 }
 
 static void JNI_TranslateBridge_RemoveTranslationObserver(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_web_contents,
-    jlong j_observer_native_ptr) {
+    int64_t j_observer_native_ptr) {
   TranslationObserver* observer =
       reinterpret_cast<TranslationObserver*>(j_observer_native_ptr);
   GetTranslateClient(j_web_contents)
@@ -472,7 +472,7 @@ static void JNI_TranslateBridge_RemoveTranslationObserver(
 
 static void JNI_TranslateBridge_SetIgnoreMissingKeyForTesting(  // IN-TEST
     JNIEnv* env,
-    jboolean ignore) {
+    bool ignore) {
   translate::TranslateManager::SetIgnoreMissingKeyForTesting(  // IN-TEST
       ignore);
 }

@@ -10,7 +10,7 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.IntDef;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -112,7 +112,7 @@ public class ColorPickerCoordinator implements ColorPicker {
 
     /** Retrieve the currently selected color supplier in the color picker. */
     @Override
-    public ObservableSupplier<Integer> getSelectedColorSupplier() {
+    public MonotonicObservableSupplier<Integer> getSelectedColorSupplier() {
         return mMediator.getSelectedColorSupplier();
     }
 }

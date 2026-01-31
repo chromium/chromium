@@ -49,7 +49,7 @@ extern const char kReactivationNotificationsCanceledCount[];
 // The type of Tips Notification, for an individual notification.
 // Always keep this enum in sync with
 // the corresponding IOSTipsNotificationType in enums.xml.
-// LINT.IfChange
+// LINT.IfChange(TipsNotificationType)
 enum class TipsNotificationType {
   kDefaultBrowser = 0,
   kWhatsNew = 1,
@@ -66,17 +66,17 @@ enum class TipsNotificationType {
   kTrustedVaultKeyRetrieval = 12,
   kMaxValue = kTrustedVaultKeyRetrieval,
 };
-// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml)
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSTipsNotificationType)
 
 // An enum to store a classification of Tips Notification users.
-// LINT.IfChange
+// LINT.IfChange(TipsNotificationUserType)
 enum class TipsNotificationUserType {
   kUnknown = 0,
   kLessEngaged = 1,
   kActiveSeeker = 2,
   kMaxValue = kActiveSeeker,
 };
-// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml)
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSTipsNotificationUserType)
 
 // Enum for the IOS.PasswordManager.TrustedVaultNotification.Events
 // histogram.

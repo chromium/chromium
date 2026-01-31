@@ -427,12 +427,25 @@ bool SelectionController::HandleSingleClick(
       Selection().ComputeVisibleSelectionInFlatTree();
   const bool is_editable = IsEditable(*inner_node);
 
-  if (frame_->GetEditor().Behavior().ShouldToggleMenuWhenCaretTapped() &&
-      is_editable && event.Event().FromTouch() && selection.IsCaret() &&
-      selection.Anchor() == position_to_use.GetPosition()) {
+  // `IsEquivalent` accounts for sub-pixel layout offsets in high-DPI
+  // environments to ensure clicks visually on the caret are correctly
+  // identified.
+  const bool is_click_on_existing_caret =
+      is_editable && selection.IsCaret() &&
+      selection.Anchor().IsEquivalent(position_to_use.GetPosition());
+
+  if (is_click_on_existing_caret) {
+    // Setting this flag informs UpdateSelectionForContextMenuEvent that
+    // the click was on the caret, preventing it from expanding to a word.
     mouse_down_was_single_click_on_caret_ = true;
-    HandleTapOnCaret(event, selection.AsSelection());
-    return false;
+
+    if (event.Event().FromTouch() &&
+        frame_->GetEditor().Behavior().ShouldToggleMenuWhenCaretTapped()) {
+      // For touch, we must trigger the selection handles and the mobile-style
+      // floating menu (lollipops).
+      HandleTapOnCaret(event, selection.AsSelection());
+      return false;
+    }
   }
 
   // Don't restart the selection when the mouse is pressed on an

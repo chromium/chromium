@@ -24,8 +24,7 @@
 #import "ios/chrome/credential_provider_extension/ui/feature_flags.h"
 #import "ios/chrome/credential_provider_extension/ui/new_password_coordinator.h"
 
-@interface CredentialListCoordinator () <ConfirmationAlertActionHandler,
-                                         CredentialListUIHandler,
+@interface CredentialListCoordinator () <CredentialListUIHandler,
                                          CredentialDetailsConsumerDelegate,
                                          NewPasswordCoordinatorDelegate>
 
@@ -119,7 +118,6 @@
 - (void)showEmptyCredentials {
   EmptyCredentialsViewController* emptyCredentialsViewController =
       [[EmptyCredentialsViewController alloc] init];
-  emptyCredentialsViewController.actionHandler = self;
   UINavigationController* navigationController = [[UINavigationController alloc]
       initWithRootViewController:emptyCredentialsViewController];
   navigationController.modalPresentationStyle =
@@ -201,12 +199,6 @@
                            completionHandler(credential.password);
                          }
                        }];
-}
-
-#pragma mark - ConfirmationAlertActionHandler
-
-- (void)confirmationAlertPrimaryAction {
-  // No-op.
 }
 
 #pragma mark - NewPasswordCoordinatorDelegate

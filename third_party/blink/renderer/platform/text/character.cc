@@ -413,6 +413,18 @@ UScriptCode Character::GetScriptBasedOnUnicodeBlock(int ucs4) {
   }
 }
 
+bool Character::IsCursiveScript(UChar32 code_point) {
+  ICUError err;
+  UScriptCode script = uscript_getScript(code_point, &err);
+  if (!U_SUCCESS(err)) {
+    return false;
+  }
+  return script == USCRIPT_ARABIC || script == USCRIPT_HANIFI_ROHINGYA ||
+         script == USCRIPT_MANDAIC || script == USCRIPT_MONGOLIAN ||
+         script == USCRIPT_NKO || script == USCRIPT_PHAGS_PA ||
+         script == USCRIPT_SYRIAC;
+}
+
 // https://w3c.github.io/mathml-core/#stretchy-operator-axis
 static const UChar stretchy_operator_with_inline_axis[]{
     0x003D, 0x005E, 0x005F, 0x007E, 0x00AF, 0x02C6, 0x02C7, 0x02C9, 0x02CD,

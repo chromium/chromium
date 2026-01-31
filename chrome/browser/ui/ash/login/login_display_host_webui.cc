@@ -57,6 +57,7 @@
 #include "chrome/browser/ash/system/timezone_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
@@ -400,9 +401,13 @@ void TriggerShowLoginWizardFinish(
     locale_util::SwitchLanguageCallback callback(
         base::BindOnce(&OnLanguageSwitchedCallback, std::move(data)));
 
+    // TODO(crbug.com/404133029): Avoid g_browser_process usage.
+    ApplicationLocaleStorage* application_locale_storage =
+        g_browser_process->GetFeatures()->application_locale_storage();
+
     // Load locale keyboards here. Hardware layout would be automatically
     // enabled.
-    locale_util::SwitchLanguage(switch_locale,
+    locale_util::SwitchLanguage(application_locale_storage, switch_locale,
                                 /*enable_locale_keyboard_layouts=*/true,
                                 login_input_methods_only, std::move(callback),
                                 ProfileManager::GetActiveUserProfile());
@@ -413,7 +418,7 @@ void TriggerShowLoginWizardFinish(
 // if no policy-specified locale is set.
 std::string GetManagedLoginScreenLocale() {
   auto* cros_settings = CrosSettings::Get();
-  const base::Value::List* login_screen_locales = nullptr;
+  const base::ListValue* login_screen_locales = nullptr;
   if (!cros_settings->GetList(kDeviceLoginScreenLocales,
                               &login_screen_locales)) {
     return std::string();
@@ -506,7 +511,7 @@ class LoginDisplayHostWebUI::KeyboardDrivenOobeKeyHandler
 LoginDisplayHostWebUI::LoginDisplayHostWebUI()
     : LoginDisplayHostCommon(/*update_geolocation_usage_allowed=*/true),
       oobe_startup_sound_played_(StartupUtils::IsOobeCompleted()) {
-  SessionManagerClient::Get()->AddObserver(this);
+  session_manager_client_observation_.Observe(SessionManagerClient::Get());
   CrasAudioHandler::Get()->AddAudioObserver(this);
 
   ui::DeviceDataManager::GetInstance()->AddObserver(this);
@@ -525,7 +530,6 @@ LoginDisplayHostWebUI::LoginDisplayHostWebUI()
 LoginDisplayHostWebUI::~LoginDisplayHostWebUI() {
   VLOG(4) << __func__;
 
-  SessionManagerClient::Get()->RemoveObserver(this);
   CrasAudioHandler::Get()->RemoveAudioObserver(this);
 
   if (waiting_for_configuration_) {

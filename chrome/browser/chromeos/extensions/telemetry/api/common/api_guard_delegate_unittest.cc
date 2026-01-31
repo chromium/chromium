@@ -221,11 +221,11 @@ class ApiGuardDelegateTest
   void CreateExtension() {
     extension_ =
         extensions::ExtensionBuilder("Test ChromeOS System Extension")
-            .SetManifestKey("chromeos_system_extension", base::Value::Dict())
+            .SetManifestKey("chromeos_system_extension", base::DictValue())
             .SetManifestKey(
                 "externally_connectable",
-                base::Value::Dict().Set(
-                    "matches", base::Value::List().Append(matches_origin())))
+                base::DictValue().Set(
+                    "matches", base::ListValue().Append(matches_origin())))
             .SetID(extension_id())
             .SetLocation(extensions::mojom::ManifestLocation::kInternal)
             .Build();

@@ -1,6 +1,6 @@
 [package]
 name = "syn"
-version = "2.0.111"
+version = "2.0.114"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 categories = ["development-tools::procedural-macro-helpers", "parser-implementations"]
 description = "Parser for Rust source code"
@@ -51,7 +51,7 @@ termcolor = "1"
 [target.'cfg(not(miri))'.dev-dependencies]
 flate2 = "1"
 rayon = "1"
-reqwest = { version = "0.12", features = ["blocking"] }
+reqwest = { version = "0.13", features = ["blocking"] }
 tar = "0.4.16"
 walkdir = "2.3.2"
 

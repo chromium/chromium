@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/rand_util.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -168,7 +167,7 @@ TEST_F(ChromeWebAuthenticationDelegateTest, IndividualAttestation) {
     PrefService* prefs =
         Profile::FromBrowserContext(GetBrowserContext())->GetPrefs();
     if (!test.permit_attestation_policy_values.empty()) {
-      base::Value::List policy_values;
+      base::ListValue policy_values;
       for (const std::string& v : test.permit_attestation_policy_values) {
         policy_values.Append(v);
       }

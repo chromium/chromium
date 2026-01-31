@@ -53,7 +53,7 @@ TEST_F(ChromeComponentExtensionResourceManagerTest,
 
   // Load the manifest data.
   std::string error;
-  std::optional<base::Value::Dict> manifest(file_util::LoadManifest(
+  std::optional<base::DictValue> manifest(file_util::LoadManifest(
       test_path, FILE_PATH_LITERAL("app.json"), &error));
   ASSERT_TRUE(manifest) << error;
 

@@ -86,7 +86,7 @@ class ComponentLoaderPolicy {
   virtual void ComponentLoaded(
       const base::Version& version,
       base::flat_map<std::string, base::ScopedFD>& fd_map,
-      base::Value::Dict manifest) = 0;
+      base::DictValue manifest) = 0;
 
   // Called if connection to the service fails, components files are not found
   // or if the manifest file is missing or invalid.
@@ -136,7 +136,7 @@ class AndroidComponentLoaderPolicy {
   void ComponentLoaded(JNIEnv* env,
                        const base::android::JavaRef<jobjectArray>& jfile_names,
                        const base::android::JavaRef<jintArray>& jfds);
-  void ComponentLoadFailed(JNIEnv* env, jint error_code);
+  void ComponentLoadFailed(JNIEnv* env, int32_t error_code);
   base::android::ScopedJavaLocalRef<jstring> GetComponentId(JNIEnv* env);
 
  private:
@@ -148,8 +148,8 @@ class AndroidComponentLoaderPolicy {
 
   void NotifyNewVersion(
       base::flat_map<std::string, base::ScopedFD>& fd_map,
-      std::pair<std::optional<base::Value::Dict>,
-                std::optional<base::Value::Dict>> component_files);
+      std::pair<std::optional<base::DictValue>, std::optional<base::DictValue>>
+          component_files);
 
   void ComponentLoadFailedInternal(ComponentLoadResult error);
 

@@ -214,6 +214,16 @@ const LayoutResult* LayoutBox::CachedLayoutResult(
       return nullptr;
   }
 
+  // Break appeal may have been reduced because the fragment crosses the
+  // fragmentation line, to send a strong signal to break before it instead. If
+  // we actually ended up breaking before it, this break appeal may no longer be
+  // valid, since there could be more room in the next fragmentainer. Miss the
+  // cache.
+  if (break_token && break_token->IsBreakBefore() &&
+      cached_layout_result->GetBreakAppeal() < kBreakAppealPerfect) {
+    return nullptr;
+  }
+
   LayoutUnit bfc_line_offset = new_space.GetBfcOffset().line_offset;
   std::optional<LayoutUnit> bfc_block_offset =
       cached_layout_result->BfcBlockOffset();
@@ -308,20 +318,6 @@ const LayoutResult* LayoutBox::CachedLayoutResult(
         return nullptr;
 
       if (column_spanner_path || cached_layout_result->GetColumnSpannerPath()) {
-        return nullptr;
-      }
-
-      // Break appeal may have been reduced because the fragment crosses the
-      // fragmentation line, to send a strong signal to break before it
-      // instead. If we actually ended up breaking before it, this break appeal
-      // may no longer be valid, since there could be more room in the next
-      // fragmentainer. Miss the cache.
-      //
-      // TODO(mstensho): Maybe this shouldn't be necessary. Look into how
-      // FinishFragmentation() clamps break appeal down to
-      // kBreakAppealLastResort. Maybe there are better ways.
-      if (break_token && break_token->IsBreakBefore() &&
-          cached_layout_result->GetBreakAppeal() < kBreakAppealPerfect) {
         return nullptr;
       }
 

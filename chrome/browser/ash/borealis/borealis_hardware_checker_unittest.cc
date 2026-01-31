@@ -32,7 +32,7 @@ bool check(std::string board,
   SetCpuForTesting(&cpu);
   // For some reason we're not allowed to pretend to have 0 memory.
   base::test::ScopedAmountOfPhysicalMemoryOverride mem_override(
-      std::max(base::GiB(mem_gib), base::MiB(1)));
+      std::max(base::GiBU(mem_gib), base::MiBU(1)));
 
   // Now do the actual check
   base::test::TestFuture<bool> result_f;

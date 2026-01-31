@@ -114,13 +114,13 @@ TEST_F(SurfaceTest, CopyRequestLifetime) {
 
   bool copy_called = false;
   base::RunLoop copy_runloop;
-  support->RequestCopyOfOutput(PendingCopyOutputRequest{
+  support->RequestCopyOfOutput(std::make_unique<PendingCopyOutputRequest>(
       local_surface_id, SubtreeCaptureId(),
       std::make_unique<CopyOutputRequest>(
           CopyOutputRequest::ResultFormat::RGBA,
           CopyOutputRequest::ResultDestination::kSystemMemory,
           base::BindOnce(&TestCopyResultCallback, &copy_called,
-                         copy_runloop.QuitClosure()))});
+                         copy_runloop.QuitClosure()))));
   surface->TakeCopyOutputRequestsFromClient();
   EXPECT_TRUE(surface_manager->GetSurfaceForId(surface_id));
   EXPECT_FALSE(copy_called);

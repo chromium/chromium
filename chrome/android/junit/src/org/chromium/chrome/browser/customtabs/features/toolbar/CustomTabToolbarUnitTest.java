@@ -72,7 +72,8 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.Callback;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.UserDataHost;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -111,7 +112,6 @@ import org.chromium.chrome.browser.toolbar.top.ToolbarSnapshotDifference;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuObserver;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
-import org.chromium.components.content_settings.CookieBlocking3pcdStatus;
 import org.chromium.components.content_settings.CookieControlsState;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
@@ -212,7 +212,8 @@ public class CustomTabToolbarUnitTest {
         mToolbar =
                 (CustomTabToolbar)
                         LayoutInflater.from(mActivity).inflate(toolbarLayout, null, false);
-        ObservableSupplierImpl<Tracker> trackerSupplier = new ObservableSupplierImpl<>();
+        SettableMonotonicObservableSupplier<Tracker> trackerSupplier =
+                ObservableSuppliers.createMonotonic();
         trackerSupplier.set(mTracker);
         mToolbarProgressBar = new ToolbarProgressBar(mActivity, null);
         mToolbar.initialize(
@@ -547,33 +548,12 @@ public class CustomTabToolbarUnitTest {
     }
 
     @Test
-    public void
-            testCookieControlsIcon_trackingProtectionsEnabled_cookieBlockingDisabled_doesNotDisplayIph() {
+    public void testCookieControlsIcon_cookieBlockingEnabled_displaysCookieControlsIph() {
         verify(mAnimationDelegate, never()).updateSecurityButton(anyInt());
 
         mLocationBar.onHighlightCookieControl(true);
         mLocationBar.onStatusChanged(
-                CookieControlsState.HIDDEN,
-                /* enforcement= */ 0,
-                CookieBlocking3pcdStatus.LIMITED,
-                /* expiration= */ 0);
-
-        // None of the IPHs should be shown.
-        mLocationBar.onPageLoadStopped();
-        verify(mPageInfoIphController, never()).showCookieControlsIph(anyInt(), anyInt());
-    }
-
-    @Test
-    public void
-            testCookieControlsIcon_trackingProtectionDisabled_cookieBlockingEnabled_displaysCookieControlsIph() {
-        verify(mAnimationDelegate, never()).updateSecurityButton(anyInt());
-
-        mLocationBar.onHighlightCookieControl(true);
-        mLocationBar.onStatusChanged(
-                CookieControlsState.BLOCKED3PC,
-                /* enforcement= */ 0,
-                CookieBlocking3pcdStatus.NOT_IN3PCD,
-                /* expiration= */ 0);
+                CookieControlsState.BLOCKED3PC, /* enforcement= */ 0, /* expiration= */ 0);
 
         // Should show only the Cookie controls IPH.
         mLocationBar.onPageLoadStopped();

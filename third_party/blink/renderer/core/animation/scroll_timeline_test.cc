@@ -72,11 +72,20 @@ class ScrollTimelineTest : public RenderingTest {
     RenderingTest::SetUp();
   }
 
- public:
-  void SimulateFrame() {
+  void ServiceScriptedAnimations() {
     // Advance time by 100 ms.
     auto new_time = GetAnimationClock().CurrentTime() + base::Milliseconds(100);
     GetPage().Animator().ServiceScriptedAnimations(new_time);
+  }
+
+ public:
+  void SimulateFrame() {
+    ServiceScriptedAnimations();
+    if (RuntimeEnabledFeatures::RunSnapshotPostLayoutStateStepsEnabled()) {
+      UpdateAllLifecyclePhasesForTest();
+      // Needed to dispatch events in the next frame.
+      ServiceScriptedAnimations();
+    }
   }
 
   wtf_size_t TimelinesCount() const {
@@ -1157,7 +1166,8 @@ TEST_F(ScrollTimelineTest, CompositedDeferredTimelineReattachment) {
   animation->play();
   UpdateAllLifecyclePhasesForTest();
 
-  EXPECT_EQ(animation->CheckCanStartAnimationOnCompositor(nullptr),
+  EXPECT_EQ(animation->CheckCanStartAnimationOnCompositor(
+                nullptr, StartOnCompositorReason::kGeneric),
             CompositorAnimations::kNoFailure);
 
   EXPECT_FALSE(animation->CompositorPending());

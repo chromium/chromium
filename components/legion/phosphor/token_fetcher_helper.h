@@ -60,11 +60,6 @@ class TokenFetcherHelper {
   static std::optional<BlindSignedAuthToken> CreateBlindSignedAuthToken(
       const quiche::BlindSignToken& bsa_token);
 
-  // Service type used for GetInitialData and AuthAndSign requests.
-  // TODO(b:457425177): Make sure this is the correct service type to use for
-  // GetInitialData and AuthAndSign requests.
-  static constexpr char kPrivateAratea[] = "privateAratea";
-
  protected:
   SEQUENCE_CHECKER(sequence_checker_);
 };

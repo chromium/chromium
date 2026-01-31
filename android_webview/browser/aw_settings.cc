@@ -22,7 +22,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/supports_user_data.h"
@@ -81,6 +80,7 @@ void PopulateFixedWebPreferences(WebPreferences* web_prefs) {
   web_prefs->disable_accelerated_small_canvases = true;
   // WebView has historically not adjusted font scale for text autosizing.
   web_prefs->device_scale_adjustment = 1.0;
+  web_prefs->scale_all_fonts_if_no_meta_text_scale_tag = true;
 }
 
 const void* const kAwSettingsUserDataKey = &kAwSettingsUserDataKey;
@@ -255,7 +255,7 @@ void AwSettings::UpdateUserAgentLocked(JNIEnv* env,
           FromJavaAwUserAgentMetadata(env, java_ua_metadata);
       LogUserAgentMetadataAvailableType(
           UserAgentMetadataAvailableType::kUserOverrides);
-    } else if (base::Contains(ua_string_override, ua_default)) {
+    } else if (ua_string_override.contains(ua_default)) {
       override_ua_with_metadata.ua_metadata_override =
           AwClientHintsControllerDelegate::GetUserAgentMetadataOverrideBrand();
       LogUserAgentMetadataAvailableType(
@@ -515,7 +515,7 @@ void AwSettings::UpdateBackForwardCacheEnabledLocked(
 void AwSettings::UpdateBackForwardCacheSettingsTimeoutLocked(
     JNIEnv* env,
     const JavaRef<jobject>& obj) {
-  int timeout_in_seconds =
+  int64_t timeout_in_seconds =
       Java_AwSettings_getBackForwardCacheSettingsTimeout(env, obj);
   if (web_contents()) {
     if (timeout_in_seconds != back_forward_cache_timeout_in_seconds_) {
@@ -572,12 +572,12 @@ void AwSettings::PopulateWebPreferences(WebPreferences* web_prefs) {
     return;
   // Grab the lock and call PopulateWebPreferencesLocked.
   Java_AwSettings_populateWebPreferences(env, scoped_obj,
-                                         reinterpret_cast<jlong>(web_prefs));
+                                         reinterpret_cast<int64_t>(web_prefs));
 }
 
 void AwSettings::PopulateWebPreferencesLocked(JNIEnv* env,
                                               const JavaRef<jobject>& obj,
-                                              jlong web_prefs_ptr) {
+                                              int64_t web_prefs_ptr) {
   AwRenderViewHostExt* render_view_host_ext = GetAwRenderViewHostExt();
   if (!render_view_host_ext)
     return;
@@ -590,8 +590,8 @@ void AwSettings::PopulateWebPreferencesLocked(JNIEnv* env,
       !base::FeatureList::IsEnabled(blink::features::kForceOffTextAutosizing);
 
   int text_size_percent = Java_AwSettings_getTextSizePercentLocked(env, obj);
+  web_prefs->font_scale_factor = text_size_percent / 100.0f;
   if (web_prefs->text_autosizing_enabled) {
-    web_prefs->font_scale_factor = text_size_percent / 100.0f;
     web_prefs->force_enable_zoom = text_size_percent >= 130;
     // Use the default zoom factor value when Text Autosizer is turned on.
     render_view_host_ext->SetTextZoomFactor(1);
@@ -808,7 +808,7 @@ base::android::ScopedJavaLocalRef<jobject> AwSettings::GetJavaObject() {
 void AwSettings::SetEnterpriseAuthenticationAppLinkPolicyEnabled(
     JNIEnv* env,
     const JavaRef<jobject>& obj,
-    jboolean enabled) {
+    bool enabled) {
   enterprise_authentication_app_link_policy_enabled_ = enabled;
 }
 
@@ -826,9 +826,9 @@ bool AwSettings::GetAllowFileAccessFromFileURLs() {
   return allow_file_access_from_file_urls_;
 }
 
-static jlong JNI_AwSettings_Init(JNIEnv* env,
-                                 const JavaRef<jobject>& obj,
-                                 const JavaRef<jobject>& web_contents) {
+static int64_t JNI_AwSettings_Init(JNIEnv* env,
+                                   const JavaRef<jobject>& obj,
+                                   const JavaRef<jobject>& web_contents) {
   content::WebContents* contents =
       content::WebContents::FromJavaWebContents(web_contents);
   AwSettings* settings = new AwSettings(env, obj, contents);

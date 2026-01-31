@@ -485,7 +485,7 @@ ScriptPromise<MediaStream> MediaDevices::getUserMedia(
   auto* resolver = MakeGarbageCollected<
       ScriptPromiseResolverWithTracker<UserMediaRequestResult, MediaStream>>(
       script_state, "Media.MediaDevices.GetUserMedia", base::Seconds(8));
-  resolver->SetResultSuffix("Result2");
+  resolver->SetResultSuffix("Result3");
   const auto promise = resolver->Promise();
 
   DCHECK(options);  // Guaranteed by the default value in the IDL.
@@ -611,7 +611,7 @@ ScriptPromise<IDLSequence<MediaStream>> MediaDevices::getAllScreensMedia(
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolverWithTracker<
       UserMediaRequestResult, IDLSequence<MediaStream>>>(
       script_state, "Media.MediaDevices.GetAllScreensMedia", base::Seconds(6));
-  resolver->SetResultSuffix("Result2");
+  resolver->SetResultSuffix("Result3");
   auto promise = resolver->Promise();
 
   ExecutionContext* const context = GetExecutionContext();
@@ -669,7 +669,7 @@ ScriptPromise<MediaStream> MediaDevices::getDisplayMedia(
       script_state, "Media.MediaDevices.GetDisplayMedia", base::Seconds(30),
       /*min_latency_bucket=*/base::Seconds(1),
       /*max_latency_bucket*/ base::Seconds(60), /*n_buckets=*/100);
-  resolver->SetResultSuffix("Result2");
+  resolver->SetResultSuffix("Result3");
   resolver->SetLatencySuffix("Latency2");
 
   auto promise = resolver->Promise();

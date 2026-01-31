@@ -6,7 +6,6 @@
 
 #import <Foundation/Foundation.h>
 
-#import "base/containers/contains.h"
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/metrics/histogram_functions.h"
@@ -165,7 +164,7 @@ void SafeBrowsingTabHelper::ShowEnhancedSafeBrowsingInfobar() {
 SafeBrowsingTabHelper::PolicyDecider::PolicyDecider(web::WebState* web_state,
                                                     SafeBrowsingClient* client)
     : web::WebStatePolicyDecider(web_state),
-      query_manager_(SafeBrowsingQueryManager::FromWebState(web_state)),
+      web_state_(web_state),
       client_(client) {}
 
 SafeBrowsingTabHelper::PolicyDecider::~PolicyDecider() = default;
@@ -341,7 +340,10 @@ void SafeBrowsingTabHelper::PolicyDecider::ShouldAllowRequest(
   }
 
   // Start the URL check.
-  query_manager_->StartQuery(SafeBrowsingQueryManager::Query(
+  SafeBrowsingQueryManager* query_manager =
+      SafeBrowsingQueryManager::FromWebState(web_state_);
+  CHECK(query_manager);
+  query_manager->StartQuery(SafeBrowsingQueryManager::Query(
       request_url, base::SysNSStringToUTF8([request HTTPMethod])));
 
   // Allow all requests to continue.  If a safe browsing error is detected, the

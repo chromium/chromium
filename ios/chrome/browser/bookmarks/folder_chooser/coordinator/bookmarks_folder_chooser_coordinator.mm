@@ -208,7 +208,9 @@
 
 - (void)showBookmarksFolderEditorWithParentFolderNode:
     (const bookmarks::BookmarkNode*)parentNode {
-  CHECK(!_folderEditorCoordinator, base::NotFatalUntil::M150);
+  if (_folderEditorCoordinator) {
+    return;
+  }
   CHECK(parentNode, base::NotFatalUntil::M150);
   _folderEditorCoordinator = [[BookmarksFolderEditorCoordinator alloc]
       initWithBaseNavigationController:(_baseNavigationController

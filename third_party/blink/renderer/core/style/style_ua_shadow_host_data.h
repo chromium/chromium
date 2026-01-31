@@ -21,6 +21,8 @@ class CORE_EXPORT StyleUAShadowHostData {
  public:
   StyleUAShadowHostData(const Length& width,
                         const Length& height,
+                        const Length& max_width,
+                        const Length& max_height,
                         const StyleAspectRatio& aspect_ratio,
                         const String& alt_text,
                         const AtomicString& alt_attribute,
@@ -28,6 +30,8 @@ class CORE_EXPORT StyleUAShadowHostData {
                         const bool has_appearance)
       : width_(width),
         height_(height),
+        max_width_(max_width),
+        max_height_(max_height),
         aspect_ratio_(aspect_ratio),
         alt_text_(alt_text),
         alt_attribute_(alt_attribute),
@@ -40,6 +44,8 @@ class CORE_EXPORT StyleUAShadowHostData {
 
   const Length& Width() const { return width_; }
   const Length& Height() const { return height_; }
+  const Length& MaxWidth() const { return max_width_; }
+  const Length& MaxHeight() const { return max_height_; }
   const StyleAspectRatio& AspectRatio() const { return aspect_ratio_; }
   const String& AltText() const { return alt_text_; }
   const AtomicString& AltAttribute() const { return alt_attribute_; }
@@ -47,6 +53,7 @@ class CORE_EXPORT StyleUAShadowHostData {
 
   bool operator==(const StyleUAShadowHostData& o) const {
     return width_ == o.width_ && height_ == o.height_ &&
+           max_width_ == o.max_width_ && max_height_ == o.max_height_ &&
            aspect_ratio_ == o.aspect_ratio_ && alt_text_ == o.alt_text_ &&
            alt_attribute_ == o.alt_attribute_ &&
            src_attribute_ == o.src_attribute_ &&
@@ -56,6 +63,8 @@ class CORE_EXPORT StyleUAShadowHostData {
  private:
   Length width_;
   Length height_;
+  Length max_width_;
+  Length max_height_;
   StyleAspectRatio aspect_ratio_;
   String alt_text_;
   AtomicString alt_attribute_;

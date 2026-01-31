@@ -42,10 +42,14 @@ suite('ScalingSettingsTest', function() {
         const customOption =
             scalingSection.shadowRoot!.querySelector<HTMLOptionElement>(
                 `[value="${ScalingType.CUSTOM}"]`)!;
+        const actualSizeOption =
+            scalingSection.shadowRoot!.querySelector<HTMLOptionElement>(
+                `[value="${ScalingType.ACTUAL_SIZE}"]`)!;
         assertTrue(fitToPageOption.hidden && fitToPageOption.disabled);
         assertTrue(fitToPaperOption.hidden && fitToPaperOption.disabled);
         assertFalse(defaultOption.hidden && !defaultOption.disabled);
         assertFalse(customOption.hidden && !customOption.disabled);
+        assertTrue(actualSizeOption.hidden && actualSizeOption.disabled);
 
         // Fit to page and paper available -> All 4 options.
         setDocumentPdf(true);
@@ -53,7 +57,20 @@ suite('ScalingSettingsTest', function() {
         assertFalse(fitToPaperOption.hidden && !fitToPaperOption.disabled);
         assertFalse(defaultOption.hidden && !defaultOption.disabled);
         assertFalse(customOption.hidden && !customOption.disabled);
+        assertTrue(actualSizeOption.hidden && actualSizeOption.disabled);
       });
+
+  test('ShowActualSizeOption', function() {
+    // Not a PDF document -> No actual size option.
+    const actualSizeOption =
+        scalingSection.shadowRoot!.querySelector<HTMLOptionElement>(
+            `[value="${ScalingType.ACTUAL_SIZE}"]`)!;
+    assertTrue(actualSizeOption.hidden && actualSizeOption.disabled);
+
+    // Actual size option is available.
+    setDocumentPdf(true);
+    assertFalse(actualSizeOption.hidden && !actualSizeOption.disabled);
+  });
 
   /**
    * @param expectedScaling The expected scaling value.
@@ -135,6 +152,11 @@ suite('ScalingSettingsTest', function() {
     await selectOption(scalingSection, ScalingType.FIT_TO_PAPER.toString());
     validateState(
         '105', true, ScalingType.CUSTOM, ScalingType.FIT_TO_PAPER, '105');
+
+    // Change to actual size.
+    await selectOption(scalingSection, ScalingType.ACTUAL_SIZE.toString());
+    validateState(
+        '105', true, ScalingType.CUSTOM, ScalingType.ACTUAL_SIZE, '105');
 
     // Go back to custom. Restores 105 value.
     await selectOption(scalingSection, ScalingType.CUSTOM.toString());

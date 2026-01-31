@@ -4,7 +4,6 @@
 
 #import "ios/components/security_interstitials/safe_browsing/url_checker_delegate_impl.h"
 
-#import "base/containers/contains.h"
 #import "components/safe_browsing/core/browser/db/database_manager.h"
 #import "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
@@ -71,7 +70,7 @@ void UrlCheckerDelegateImpl::StartDisplayingBlockingPageHelper(
   SafeBrowsingUrlAllowList* allow_list =
       SafeBrowsingUrlAllowList::FromWebState(web_state);
   if (allow_list->AreUnsafeNavigationsAllowed(url, &allowed_threats)) {
-    if (base::Contains(allowed_threats, threat_type)) {
+    if (allowed_threats.contains(threat_type)) {
       resource.DispatchCallback(FROM_HERE, /*proceed=*/true,
                                 /*showed_interstitial=*/false,
                                 /*has_post_commit_interstitial_skipped=*/false);

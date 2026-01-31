@@ -38,7 +38,7 @@ class MockEventRouterForwarder : public EventRouterForwarder {
   void CallEventRouter(Profile* profile,
                        events::HistogramValue histogram_value,
                        const std::string& event_name,
-                       base::Value::List args) override {
+                       base::ListValue args) override {
     CallEventRouter(profile, histogram_value, event_name);
   }
 
@@ -52,7 +52,7 @@ static void BroadcastEventToRenderers(
     const std::string& event_name,
     bool dispatch_to_off_the_record_profiles) {
   event_router->BroadcastEventToRenderers(histogram_value, event_name,
-                                          base::Value::List(),
+                                          base::ListValue(),
                                           dispatch_to_off_the_record_profiles);
 }
 

@@ -25,6 +25,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/fake_iwa_runtime_data_provider_mixin.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test_update_server.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_apply_task.h"
@@ -288,6 +289,9 @@ class KioskIwaVersionManagementBaseTest
     // Prevents a race condition (often in debug builds) where a network service
     // process is not yet started when kiosk downloads the IWA update manifest.
     content::ForceInProcessNetworkService();
+    data_provider_->Update([&](auto& update) {
+      update.AddToManagedAllowlist(GetTestWebBundleId());
+    });
   }
 
   ~KioskIwaVersionManagementBaseTest() override = default;
@@ -346,6 +350,7 @@ class KioskIwaVersionManagementBaseTest
   }
 
   web_app::IsolatedWebAppTestUpdateServer iwa_test_update_server_;
+  web_app::FakeIwaRuntimeDataProviderMixin data_provider_{&mixin_host_};
   KioskMixin kiosk_mixin_;
   base::FilePath cache_root_dir_;
   std::unique_ptr<base::ScopedPathOverride> cache_root_dir_override_;
@@ -604,7 +609,10 @@ IN_PROC_BROWSER_TEST_F(KioskIwaSimpleUpdateTest, UpdatesToLatestAtExit) {
   ExpectAppUpdateSkipped();
 
   AddTestBundle(kVersionString2);
-  EXPECT_EQ(GetWebAppProvider().iwa_update_manager().DiscoverUpdatesNow(), 1UL);
+  EXPECT_EQ(GetWebAppProvider()
+                .isolated_web_app_update_manager()
+                .DiscoverUpdatesNow(),
+            1UL);
 
   ExpectAppUpdateDiscovered();
   kiosk::test::CloseAppWindow(TheKioskApp());
@@ -840,7 +848,9 @@ class KioskIwaVersionPinningUpdateTest
   static void CheckUpdateStatusForTestCase() {
     switch (GetTestCase()) {
       case KioskIwaVersionPinningUpdateTestParams::TestCase::kNoUpdateQueued:
-        EXPECT_EQ(GetWebAppProvider().iwa_update_manager().DiscoverUpdatesNow(),
+        EXPECT_EQ(GetWebAppProvider()
+                      .isolated_web_app_update_manager()
+                      .DiscoverUpdatesNow(),
                   0UL);
         break;
       case KioskIwaVersionPinningUpdateTestParams::TestCase::kUpdateApplied:

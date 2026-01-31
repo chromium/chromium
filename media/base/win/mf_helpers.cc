@@ -922,22 +922,17 @@ HRESULT GenerateSampleFromVideoFrame(
     Microsoft::WRL::ComPtr<ID3D11Texture2D>* staging_texture,
     DWORD buffer_alignment,
     IMFSample** sample_out) {
-  // A shared image sample cannot be created synchronously.  Use
-  // GenerateSampleFromSharedImageVideoFrame. Note that this is not true for
-  // mappable shared image since it has a GpuMemoryBufferHandle. So skipping the
-  // CHECK when frame has a mappable buffer.
-  if (!frame->HasMappableSharedImage()) {
-    CHECK(!frame->HasSharedImage());
-  }
+  // A shared image sample for a non-mappable SharedImage cannot be created
+  // synchronously; instead, GenerateSampleFromSharedImageVideoFrame should be
+  // used.
+  CHECK(!frame->HasSharedImage() || frame->HasMappableSharedImage());
 
   HRESULT hr;
   Microsoft::WRL::ComPtr<IMFSample> sample;
   hr = MFCreateSample(&sample);
   RETURN_ON_HR_FAILURE(hr, "Failed to create sample", hr);
 
-  if (frame->storage_type() ==
-          VideoFrame::StorageType::STORAGE_MAPPABLE_SHARED_IMAGE &&
-      dxgi_device_manager != nullptr) {
+  if (frame->HasMappableSharedImage() && dxgi_device_manager != nullptr) {
     gfx::GpuMemoryBufferHandle buffer_handle =
         frame->GetGpuMemoryBufferHandle();
     if (buffer_handle.is_null()) {

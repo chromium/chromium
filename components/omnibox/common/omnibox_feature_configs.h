@@ -167,11 +167,8 @@ struct AiMode : Config<AiMode> {
 // If enabled, show the AIM entrypoint in the omnibox.
 struct AiModeOmniboxEntryPoint : Config<AiModeOmniboxEntryPoint> {
   AiModeOmniboxEntryPoint();
-  // Whether the AIM entrypoint is enabled for all users.
+  // Whether the AIM entrypoint is enabled.
   bool enabled;
-  // Whether the AIM entrypoint is enabled only for users whose locale is set to
-  // English and who are located in the US. Has no effect if `enabled` is true.
-  bool enabledEnUs;
 
   // Never display AIM hint text.
   bool hide_aim_hint_text;
@@ -538,7 +535,7 @@ struct SearchAggregatorProvider : Config<SearchAggregatorProvider> {
 
   bool AreMockEnginesValid() const;
   std::vector<base::Value> CreateMockSearchEngines() const;
-  base::Value::Dict CreateMockSearchAggregator(bool featured_by_policy) const;
+  base::DictValue CreateMockSearchAggregator(bool featured_by_policy) const;
 
   // The search engine name, shown in the Omnibox.
   std::string name;

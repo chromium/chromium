@@ -13,7 +13,6 @@
 #include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
 #include "chrome/browser/devtools/protocol/extensions.h"
 #include "chrome/browser/devtools/protocol/protocol.h"
-#include "chrome/browser/extensions/unpacked_installer.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/service_worker_context.h"
@@ -22,6 +21,7 @@
 #include "extensions/browser/api/storage/storage_utils.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/unpacked_installer.h"
 
 namespace {
 
@@ -272,9 +272,9 @@ void ExtensionsHandler::OnGetStorageItemsFinished(
     return;
   }
 
-  base::Value::Dict data = std::move(*result.data);
+  base::DictValue data = std::move(*result.data);
   std::move(callback)->sendSuccess(
-      std::make_unique<base::Value::Dict>(std::move(data)));
+      std::make_unique<base::DictValue>(std::move(data)));
 }
 
 void ExtensionsHandler::SetStorageItems(

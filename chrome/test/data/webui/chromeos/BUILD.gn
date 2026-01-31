@@ -75,7 +75,6 @@ if (include_js2gtest_tests) {
     test_type = "mojo_webui"
     sources = [
       "crostini_installer_browsertest.js",
-      "crostini_upgrader_browsertest.js",
       "manage_mirrorsync/manage_mirrorsync_browsertest.js",
       "nearby_share/nearby_browsertest.js",
       "nearby_share/shared/nearby_shared_v3_browsertest.js",
@@ -129,7 +128,6 @@ build_webui_tests("build") {
     "chai_assert.js",
     "cr_focus_row_behavior_test.ts",
     "crostini_installer_app_test.js",
-    "crostini_upgrader_app_test.js",
     "fake_network_config_mojom.js",
     "fake_passpoint_service_mojom.ts",
     "internet_config_dialog_test.ts",

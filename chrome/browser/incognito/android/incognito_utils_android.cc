@@ -12,8 +12,8 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/incognito/jni_headers/IncognitoUtils_jni.h"
 
-static jboolean JNI_IncognitoUtils_GetIncognitoModeEnabled(JNIEnv* env,
-                                                           Profile* profile) {
+static bool JNI_IncognitoUtils_GetIncognitoModeEnabled(JNIEnv* env,
+                                                       Profile* profile) {
   PrefService* prefs = profile->GetPrefs();
   policy::IncognitoModeAvailability incognito_pref =
       IncognitoModePrefs::GetAvailability(prefs);
@@ -24,11 +24,15 @@ static jboolean JNI_IncognitoUtils_GetIncognitoModeEnabled(JNIEnv* env,
   return incognito_pref != policy::IncognitoModeAvailability::kDisabled;
 }
 
-static jboolean JNI_IncognitoUtils_GetIncognitoModeManaged(JNIEnv* env,
-                                                           Profile* profile) {
+static bool JNI_IncognitoUtils_GetIncognitoModeManaged(JNIEnv* env,
+                                                       Profile* profile) {
   PrefService* prefs = profile->GetPrefs();
   return prefs->IsManagedPreference(
-      policy::policy_prefs::kIncognitoModeAvailability);
+             policy::policy_prefs::kIncognitoModeAvailability) ||
+         prefs->IsManagedPreference(
+             policy::policy_prefs::kIncognitoModeUrlAllowlist) ||
+         prefs->IsManagedPreference(
+             policy::policy_prefs::kIncognitoModeUrlBlocklist);
 }
 
 DEFINE_JNI(IncognitoUtils)

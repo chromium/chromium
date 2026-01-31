@@ -26,6 +26,8 @@ mojom::CommitNavigationParamsPtr CreateCommitNavigationParams() {
       mojom::NavigationApiHistoryEntryArrays::New();
   commit_params->content_settings = CreateDefaultRendererContentSettings();
   commit_params->navigation_metrics_token = base::UnguessableToken::Create();
+  commit_params->agent_cluster_key =
+      blink::mojom::AgentClusterKey::NewSiteKey(GURL());
 
   return commit_params;
 }

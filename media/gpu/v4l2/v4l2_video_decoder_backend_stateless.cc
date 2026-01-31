@@ -13,9 +13,9 @@
 #include <linux/media.h>
 #include <sys/ioctl.h>
 
+#include <algorithm>
 #include <memory>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
@@ -540,7 +540,7 @@ void V4L2StatelessVideoDecoderBackend::PumpOutputSurfaces() {
           const auto flat_timestamp = timestamp.InMilliseconds();
           // TODO(b/190615065) |flat_timestamp| might be repeated with H.264
           // bitstreams, investigate why, and change the if() to DCHECK().
-          if (base::Contains(enqueuing_timestamps_, flat_timestamp)) {
+          if (enqueuing_timestamps_.contains(flat_timestamp)) {
             const auto decoding_begin = enqueuing_timestamps_[flat_timestamp];
             const auto decoding_end = base::TimeTicks::Now();
             UMA_HISTOGRAM_TIMES("Media.PlatformVideoDecoding.Decode",
@@ -715,7 +715,7 @@ bool V4L2StatelessVideoDecoderBackend::IsSupportedProfile(
     for (const auto& entry : profiles)
       supported_profiles_.push_back(entry.profile);
   }
-  return base::Contains(supported_profiles_, profile);
+  return std::ranges::contains(supported_profiles_, profile);
 }
 
 bool V4L2StatelessVideoDecoderBackend::CreateDecoder() {

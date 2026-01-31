@@ -12,7 +12,6 @@
 
 #include "base/base_paths.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -51,8 +50,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ssl/stateful_ssl_host_state_delegate_factory.h"
-#include "chrome/browser/supervised_user/supervised_user_content_filters_service_factory.h"
-#include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
+#include "chrome/browser/supervised_user/family_link_settings_service_factory.h"
 #include "chrome/browser/transition_manager/full_browser_transition_manager.h"
 #include "chrome/browser/ui/zoom/chrome_zoom_level_prefs.h"
 #include "chrome/common/buildflags.h"
@@ -88,7 +86,7 @@
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/supervised_user/core/browser/supervised_user_settings_service.h"
+#include "components/supervised_user/core/browser/family_link_settings_service.h"
 #include "components/supervised_user/core/browser/supervised_user_test_environment.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
@@ -366,7 +364,8 @@ void TestingProfile::Init(bool is_supervised_profile, CreateMode create_mode) {
 
   if (!IsOffTheRecord()) {
     supervised_user::InitializeSettingsServiceForTesting(
-        SupervisedUserSettingsServiceFactory::GetForKey(key_.get()));
+        supervised_user::FamilyLinkSettingsServiceFactory::GetForKey(
+            key_.get()));
   }
 
   if (prefs_.get()) {
@@ -556,6 +555,12 @@ TestingProfile::~TestingProfile() {
   if (user_cloud_policy_manager_)
     user_cloud_policy_manager_->Shutdown();
 
+#if !BUILDFLAG(IS_CHROMEOS)
+  if (profile_cloud_policy_manager_) {
+    profile_cloud_policy_manager_->Shutdown();
+  }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
   if (host_content_settings_map_.get())
     host_content_settings_map_->ShutdownOnUIThread();
 
@@ -672,7 +677,7 @@ void TestingProfile::DestroyOffTheRecordProfile(Profile* otr_profile) {
 
 bool TestingProfile::HasOffTheRecordProfile(
     const OTRProfileID& otr_profile_id) {
-  return base::Contains(otr_profiles_, otr_profile_id);
+  return otr_profiles_.contains(otr_profile_id);
 }
 
 bool TestingProfile::HasAnyOffTheRecordProfile() {
@@ -733,8 +738,9 @@ void TestingProfile::CreateTestingPrefService() {
       /*managed_prefs=*/base::MakeRefCounted<TestingPrefStore>(),
       /*supervised_user_prefs=*/
       supervised_user::CreateTestingPrefStore(
-          SupervisedUserSettingsServiceFactory::GetForKey(key_.get()),
-          SupervisedUserContentFiltersServiceFactory::GetForKey(key_.get())),
+          supervised_user::FamilyLinkSettingsServiceFactory::GetForKey(
+              key_.get()),
+          g_browser_process->device_parental_controls()),
       /*extension_prefs=*/base::MakeRefCounted<TestingPrefStore>(),
       /*user_prefs=*/base::MakeRefCounted<TestingPrefStore>(),
       /*recommended_prefs=*/base::MakeRefCounted<TestingPrefStore>(),

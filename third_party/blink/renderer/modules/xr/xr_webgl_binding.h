@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_WEBGL_BINDING_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_WEBGL_BINDING_H_
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_xr_layer_layout.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_xr_texture_type.h"
 #include "third_party/blink/renderer/modules/webgl/webgl2_rendering_context.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context.h"
 #include "third_party/blink/renderer/modules/xr/xr_graphics_binding.h"
@@ -101,15 +103,23 @@ class XRWebGLBinding final : public ScriptWrappable, public XRGraphicsBinding {
   bool CanCreateShapedLayer(const XRLayerInit*, ExceptionState&);
   bool ValidateShapedLayerTextureType(const V8XRTextureType, ExceptionState&);
   bool ValidateShapedLayerData(const XRLayerInit*, ExceptionState&);
+  bool ValidateTextureSize(const XRLayerInit*,
+                           V8XRLayerLayout::Enum layout,
+                           ExceptionState&);
   GLenum FormatForLayerFormat(GLenum format);
   GLenum InternalFormatForLayerFormat(GLenum format);
   GLenum TypeForLayerFormat(GLenum format);
+  V8XRLayerLayout::Enum DetermineLayout(V8XRLayerLayout layout,
+                                        V8XRTextureType::Enum texture_type);
 
-  gfx::Size GetTextureSizeForLayer(const XRLayerInit*) const;
+  gfx::Size GetTextureSizeForLayer(const XRLayerInit*,
+                                   V8XRLayerLayout::Enum final_layout) const;
   gfx::Rect GetViewportForLayer(const XRCompositionLayer&, V8XREye) const;
 
   XRWebGLSwapChain* CreateColorSwapchain(GLenum layer_format,
-                                         gfx::Size layer_size);
+                                         gfx::Size layer_size,
+                                         V8XRTextureType texture_type,
+                                         V8XRLayerLayout::Enum final_layout);
   XRWebGLSwapChain* GetSwapchainForLayer(XRCompositionLayer* layer);
 
   Member<WebGLRenderingContextBase> webgl_context_;

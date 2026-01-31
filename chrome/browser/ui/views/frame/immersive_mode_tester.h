@@ -86,6 +86,12 @@ class ImmersiveModeTester : public ImmersiveModeController::Observer {
   // immersive fullscreen already ended).
   void WaitForFullscreenToExit();
 
+  // Waits for the revaled state.
+  void WaitForRevealStarted();
+
+  // Waits for the reveal ended state.
+  void WaitForRevealEnded();
+
   // ImmersiveModeController::Observer:
   void OnImmersiveRevealStarted() override;
   void OnImmersiveRevealEnded() override;

@@ -1,0 +1,31 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+module cc.mojom;
+
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "mojo/public/mojom/base/token.mojom";
+
+// NOTE: we use a TrackedElementRectData instead of a map below due to
+// our need to serialize to blink objects, where blink::HashMap only allows a
+// very limited set of objects to be used as a key. The pair includes a tracked
+// element ID corresponding to an HTMLElement that has tracked element data, and
+// its associated bounds translated to the coordinate space of the outputted
+// pixels.
+struct TrackedElementRectData {
+  // The tracked_element_id is represented over mojom as a base::Token,
+  // although in practice it is generated as a GUID. Since these are consumed
+  // only internally in Chrome, we use base::Token for the representation.
+  mojo_base.mojom.Token tracked_element_id;
+
+  // Screen-space rectangle representing the visible bounds of the tracked
+  // element.
+  gfx.mojom.Rect visible_bounds;
+};
+
+// TrackedElementBounds are used for passing in tracked element IDs mapped
+// to a gfx::Rect representing the region of the viewport where the element
+// is rendered in a frame.
+struct TrackedElementBounds {
+  array<TrackedElementRectData> element_data;
+};

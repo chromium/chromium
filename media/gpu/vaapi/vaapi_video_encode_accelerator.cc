@@ -14,7 +14,6 @@
 #include <variant>
 
 #include "base/bits.h"
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -577,10 +576,9 @@ void VaapiVideoEncodeAccelerator::EncodeTask(scoped_refptr<VideoFrame> frame,
     TRACE_EVENT1("media,gpu", "VAVEA::EncodeTask", "timestamp",
                  frame->timestamp().InMicroseconds());
     // |frame| can be nullptr to indicate a flush.
-    const bool is_expected_storage_type =
-        native_input_mode_
-            ? frame->storage_type() == VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE
-            : frame->IsMappable();
+    const bool is_expected_storage_type = native_input_mode_
+                                              ? frame->HasMappableSharedImage()
+                                              : frame->IsMappable();
     if (!is_expected_storage_type) {
       NotifyError({EncoderStatus::Codes::kInvalidInputFrame,
                    "Unexpected storage: " +
@@ -593,7 +591,7 @@ void VaapiVideoEncodeAccelerator::EncodeTask(scoped_refptr<VideoFrame> frame,
   EncodePendingInputs();
 }
 
-bool VaapiVideoEncodeAccelerator::CreateSurfacesForGpuMemoryBufferEncoding(
+bool VaapiVideoEncodeAccelerator::CreateSurfacesForMappableSIEncoding(
     const VideoFrame& frame,
     const std::vector<gfx::Size>& spatial_layer_resolutions,
     std::vector<std::unique_ptr<ScopedVASurfaceWrapper>>* input_surfaces,
@@ -602,8 +600,8 @@ bool VaapiVideoEncodeAccelerator::CreateSurfacesForGpuMemoryBufferEncoding(
   DVLOGF(4);
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
   DCHECK(native_input_mode_);
-  DCHECK_EQ(frame.storage_type(), VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE);
-  TRACE_EVENT0("media,gpu", "VAVEA::CreateSurfacesForGpuMemoryBuffer");
+  DCHECK(frame.HasMappableSharedImage());
+  TRACE_EVENT0("media,gpu", "VAVEA::CreateSurfacesForMappableSIEncoding");
 
   if (frame.format() != PIXEL_FORMAT_NV12) {
     NotifyError(
@@ -625,9 +623,9 @@ bool VaapiVideoEncodeAccelerator::CreateSurfacesForGpuMemoryBufferEncoding(
 
   std::unique_ptr<ScopedVASurface> source_surface;
   {
-    TRACE_EVENT0("media,gpu", "VAVEA::ImportGpuMemoryBufferToVASurface");
+    TRACE_EVENT0("media,gpu", "VAVEA::ImportMappableSIToVASurface");
 
-    // Create VASurface from GpuMemory-based VideoFrame.
+    // Create VASurface from MappableSI-based VideoFrame.
     scoped_refptr<gfx::NativePixmap> pixmap = CreateNativePixmapDmaBuf(&frame);
     if (!pixmap) {
       NotifyError({EncoderStatus::Codes::kSystemAPICallError,
@@ -742,7 +740,7 @@ VaapiVideoEncodeAccelerator::GetOrCreateInputSurface(
     const gfx::Size& encode_size,
     const std::vector<VaapiWrapper::SurfaceUsageHint>& surface_usage_hints) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
-  if (!base::Contains(input_surfaces_, encode_size)) {
+  if (!input_surfaces_.contains(encode_size)) {
     auto surface =
         CreateScopedSurface(vaapi_wrapper, encode_size, surface_usage_hints);
     if (!surface) {
@@ -769,7 +767,7 @@ VaapiVideoEncodeAccelerator::GetOrCreateReconstructedSurface(
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
   const size_t max_allocated_surfaces = num_frames_in_flight_ + 1;
   const bool no_surfaces_available =
-      !base::Contains(available_encode_surfaces_, encode_size) ||
+      !available_encode_surfaces_.contains(encode_size) ||
       available_encode_surfaces_[encode_size].empty();
   if (no_surfaces_available &&
       encode_surfaces_count_[encode_size] >= max_allocated_surfaces) {
@@ -958,7 +956,7 @@ void VaapiVideoEncodeAccelerator::EncodePendingInputs() {
     std::vector<std::unique_ptr<ScopedVASurfaceWrapper>> input_surfaces;
     std::vector<std::unique_ptr<ScopedVASurfaceWrapper>> reconstructed_surfaces;
     if (native_input_mode_) {
-      if (!CreateSurfacesForGpuMemoryBufferEncoding(
+      if (!CreateSurfacesForMappableSIEncoding(
               *input_frame.frame, spatial_layer_resolutions, &input_surfaces,
               &reconstructed_surfaces)) {
         return;
@@ -1214,7 +1212,7 @@ void VaapiVideoEncodeAccelerator::SetState(State state) {
         {{kUninitialized, "kUninitialized"},
          {kEncoding, "kEncoding"},
          {kError, "kError"}});
-    CHECK(base::Contains(kStateToString, state));
+    CHECK(kStateToString.contains(state));
     VLOGF(2) << "setting state to: " << kStateToString.at(state);
   }
 

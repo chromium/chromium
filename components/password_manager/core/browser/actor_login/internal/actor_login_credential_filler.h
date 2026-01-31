@@ -20,6 +20,10 @@
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "url/gurl.h"
 
+namespace affiliations {
+struct Facet;
+}  // namespace affiliations
+
 namespace password_manager {
 class PasswordManagerInterface;
 }  // namespace password_manager
@@ -39,6 +43,7 @@ class ActorLoginCredentialFiller {
       bool should_store_permission,
       password_manager::PasswordManagerClient* client,
       base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
+      base::TimeTicks attempt_login_start_time,
       IsTaskInFocus is_task_in_focus,
       LoginStatusResultOrErrorReply callback);
   ~ActorLoginCredentialFiller();
@@ -54,6 +59,12 @@ class ActorLoginCredentialFiller {
 
  private:
   enum class FieldType { kUsername, kPassword };
+
+  // Called when the affiliations for `credential_.request_origin` have been
+  // retrieved. `results` contains facets affiliated with the
+  // `credential_.request_origin`.
+  void OnAffiliationsReceived(const std::vector<affiliations::Facet>& results,
+                              bool success);
 
   void FetchEligibleForms(
       base::OnceCallback<
@@ -159,6 +170,10 @@ class ActorLoginCredentialFiller {
 
   // Used to compute the request duration. Excludes reauth duration.
   base::TimeTicks start_time_;
+
+  // Used to compute the time it took from the tool creation
+  // until different actions in the filler.
+  const base::TimeTicks attempt_login_start_time_;
 
   // Used to compute the reauth duration if it was initiated. The duration is
   // subtracted from the request duration.

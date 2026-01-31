@@ -18,65 +18,65 @@ import getopt
 from grit import util
 
 import grit.extern.FP
+import grit.tool.android2grd
+import grit.tool.build
+import grit.tool.buildinfo
+import grit.tool.count
+import grit.tool.diff_structures
+import grit.tool.menu_from_parts
+import grit.tool.newgrd
+import grit.tool.rc2grd
+import grit.tool.resize
+import grit.tool.test
+import grit.tool.transl2tc
+import grit.tool.unit
+import grit.tool.update_resource_ids
+import grit.tool.xmb
 
 # Tool info factories; these import only within each factory to avoid
 # importing most of the GRIT code until required.
 def ToolFactoryBuild():
-  import grit.tool.build
   return grit.tool.build.RcBuilder()
 
 def ToolFactoryBuildInfo():
-  import grit.tool.buildinfo
   return grit.tool.buildinfo.DetermineBuildInfo()
 
 def ToolFactoryCount():
-  import grit.tool.count
   return grit.tool.count.CountMessage()
 
 def ToolFactoryDiffStructures():
-  import grit.tool.diff_structures
   return grit.tool.diff_structures.DiffStructures()
 
 def ToolFactoryMenuTranslationsFromParts():
-  import grit.tool.menu_from_parts
   return grit.tool.menu_from_parts.MenuTranslationsFromParts()
 
 def ToolFactoryNewGrd():
-  import grit.tool.newgrd
   return grit.tool.newgrd.NewGrd()
 
 def ToolFactoryResizeDialog():
-  import grit.tool.resize
   return grit.tool.resize.ResizeDialog()
 
 def ToolFactoryRc2Grd():
-  import grit.tool.rc2grd
   return grit.tool.rc2grd.Rc2Grd()
 
 def ToolFactoryTest():
-  import grit.tool.test
   return grit.tool.test.TestTool()
 
 def ToolFactoryTranslationToTc():
-  import grit.tool.transl2tc
   return grit.tool.transl2tc.TranslationToTc()
 
 def ToolFactoryUnit():
-  import grit.tool.unit
   return grit.tool.unit.UnitTestTool()
 
 
 def ToolFactoryUpdateResourceIds():
-  import grit.tool.update_resource_ids
   return grit.tool.update_resource_ids.UpdateResourceIds()
 
 
 def ToolFactoryXmb():
-  import grit.tool.xmb
   return grit.tool.xmb.OutputXmb()
 
 def ToolAndroid2Grd():
-  import grit.tool.android2grd
   return grit.tool.android2grd.Android2Grd()
 
 # Keys for the following map

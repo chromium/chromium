@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/css/style_environment_variables.h"
 
-#include "base/containers/contains.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 namespace blink {
@@ -108,8 +107,6 @@ const AtomicString StyleEnvironmentVariables::GetVariableName(
       return AtomicString("titlebar-area-height");
     case UADefinedVariable::kPreferredTextScale:
       return AtomicString("preferred-text-scale");
-    case UADefinedVariable::kSafePrintableInset:
-      return AtomicString("safe-printable-inset");
     default:
       break;
   }
@@ -301,8 +298,7 @@ void StyleEnvironmentVariables::ParentInvalidatedVariable(
     const AtomicString& name) {
   // If we have not overridden the variable then we should invalidate it
   // locally.
-  if (!base::Contains(data_, name) &&
-      !base::Contains(two_dimension_data_, name)) {
+  if (!data_.Contains(name) && !two_dimension_data_.Contains(name)) {
     InvalidateVariable(name);
   }
 }

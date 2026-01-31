@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/to_vector.h"
 #include "base/logging.h"
@@ -299,11 +298,11 @@ TEST_F(TemplateURLPrepopulateDataTest,
 TEST_F(TemplateURLPrepopulateDataTest, ProvidersFromPrefs) {
   pref_service()->SetUserPref(prefs::kSearchProviderOverridesVersion,
                               std::make_unique<base::Value>(1));
-  base::Value::List overrides;
+  base::ListValue overrides;
 
   // Set only the minimal required settings for a search provider configuration.
-  base::Value::Dict entry =
-      base::Value::Dict()
+  base::DictValue entry =
+      base::DictValue()
           .Set("name", "foo")
           .Set("keyword", "fook")
           .Set("search_url", "http://foo.com/s?q={searchTerms}")
@@ -335,10 +334,10 @@ TEST_F(TemplateURLPrepopulateDataTest, ProvidersFromPrefs) {
 
   // Test the optional settings too.
   entry.Set("suggest_url", "http://foo.com/suggest?q={searchTerms}");
-  entry.Set("alternate_urls", base::Value::List().Append(
+  entry.Set("alternate_urls", base::ListValue().Append(
                                   "http://foo.com/alternate?q={searchTerms}"));
 
-  overrides = base::Value::List().Append(entry.Clone());
+  overrides = base::ListValue().Append(entry.Clone());
   pref_service()->SetUserPref(prefs::kSearchProviderOverrides,
                               std::move(overrides));
 
@@ -358,7 +357,7 @@ TEST_F(TemplateURLPrepopulateDataTest, ProvidersFromPrefs) {
 
   // Test that subsequent providers are loaded even if an intermediate
   // provider has an incomplete configuration.
-  overrides = base::Value::List().Append(entry.Clone());
+  overrides = base::ListValue().Append(entry.Clone());
   entry.Set("id", 1002);
   entry.Set("name", "bar");
   entry.Set("keyword", "bark");
@@ -382,15 +381,15 @@ TEST_F(TemplateURLPrepopulateDataTest, ClearProvidersFromPrefs) {
                               std::make_unique<base::Value>(1));
 
   // Set only the minimal required settings for a search provider configuration.
-  base::Value::Dict entry =
-      base::Value::Dict()
+  base::DictValue entry =
+      base::DictValue()
           .Set("name", "foo")
           .Set("keyword", "fook")
           .Set("search_url", "http://foo.com/s?q={searchTerms}")
           .Set("favicon_url", "http://foi.com/favicon.ico")
           .Set("encoding", "UTF-8")
           .Set("id", 1001);
-  base::Value::List overrides = base::Value::List().Append(std::move(entry));
+  base::ListValue overrides = base::ListValue().Append(std::move(entry));
   pref_service()->SetUserPref(prefs::kSearchProviderOverrides,
                               std::move(overrides));
 
@@ -586,7 +585,7 @@ TEST_F(TemplateURLPrepopulateDataTest, HttpsUrls) {
   for (const PrepopulatedEngine* engine : all_engines) {
     std::unique_ptr<TemplateURLData> data =
         TemplateURLDataFromPrepopulatedEngine(*engine);
-    if (base::Contains(exceptions, data->prepopulate_id))
+    if (exceptions.contains(data->prepopulate_id))
       continue;
 
     GURL logo_url = data->logo_url;

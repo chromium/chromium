@@ -103,7 +103,7 @@ class MediaRouterDesktop : public MediaRouterBase, public mojom::MediaRouter {
       mojo::PendingReceiver<mojom::MediaController> controller,
       mojo::PendingRemote<mojom::MediaStatusObserver> observer) final;
   base::Value GetLogs() const final;
-  base::Value::Dict GetState() const override;
+  base::DictValue GetState() const override;
   void GetProviderState(
       mojom::MediaRouteProviderId provider_id,
       mojom::MediaRouteProvider::GetStateCallback callback) const override;

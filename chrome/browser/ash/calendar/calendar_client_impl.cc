@@ -10,7 +10,6 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/glanceables/glanceables_metrics.h"
-#include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -46,9 +45,8 @@ bool CalendarClientImpl::IsDisabledByAdmin() const {
   // 1) Check the Calendar pref.
   if (!pref_service_ ||
       !pref_service_->GetBoolean(prefs::kCalendarIntegrationEnabled) ||
-      !base::Contains(pref_service_->GetList(
-                          prefs::kContextualGoogleIntegrationsConfiguration),
-                      prefs::kGoogleCalendarIntegrationName)) {
+      !pref_service_->GetList(prefs::kContextualGoogleIntegrationsConfiguration)
+           .contains(prefs::kGoogleCalendarIntegrationName)) {
     RecordContextualGoogleIntegrationStatus(
         prefs::kGoogleCalendarIntegrationName,
         ContextualGoogleIntegrationStatus::kDisabledByPolicy);

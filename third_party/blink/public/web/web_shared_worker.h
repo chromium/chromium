@@ -101,7 +101,8 @@ class BLINK_EXPORT WebSharedWorker {
       CrossVariantMojoReceiver<mojom::ReportingObserverInterfaceBase>
           coep_reporting_observer,
       CrossVariantMojoReceiver<mojom::ReportingObserverInterfaceBase>
-          dip_reporting_observer);
+          dip_reporting_observer,
+      bool is_cross_origin_isolated);
 
   // Sends a connect event to the SharedWorker context.
   virtual void Connect(int connection_request_id,
@@ -110,6 +111,14 @@ class BLINK_EXPORT WebSharedWorker {
   // Invoked to shutdown the worker when there are no more associated documents.
   // This eventually deletes this instance.
   virtual void TerminateWorkerContext() = 0;
+
+  // Freezes the WorkerThread. This is called when all connected clients are in
+  // back/forward cache.
+  virtual void Freeze() = 0;
+
+  // Resumes the WorkerThread. This is called when the frozen worker gains an
+  // active client.
+  virtual void Resume() = 0;
 };
 
 }  // namespace blink

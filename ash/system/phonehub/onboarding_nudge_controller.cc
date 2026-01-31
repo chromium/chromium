@@ -168,9 +168,9 @@ void OnboardingNudgeController::OnEligiblePhoneHubHostFound(
 void OnboardingNudgeController::AddToEligibleDevicesPref(
     const multidevice::RemoteDeviceRef& device) {
   PrefService* pref_service = GetPrefService();
-  const base::Value::List& devices_in_pref =
+  const base::ListValue& devices_in_pref =
       pref_service->GetList(kSyncedDevices);
-  base::Value::List updated_device_list = devices_in_pref.Clone();
+  base::ListValue updated_device_list = devices_in_pref.Clone();
   updated_device_list.Append(device.instance_id());
   pref_service->SetList(kSyncedDevices, std::move(updated_device_list));
 }
@@ -189,9 +189,9 @@ void OnboardingNudgeController::ResetNudgePrefs() {
 bool OnboardingNudgeController::IsDeviceStoredInPref(
     const multidevice::RemoteDeviceRef& device) {
   PrefService* pref_service = GetPrefService();
-  const base::Value::List& devices_in_pref =
+  const base::ListValue& devices_in_pref =
       pref_service->GetList(kSyncedDevices);
-  return base::Contains(devices_in_pref, base::Value(device.instance_id()));
+  return devices_in_pref.contains(device.instance_id());
 }
 
 bool OnboardingNudgeController::ShouldShowNudge() {

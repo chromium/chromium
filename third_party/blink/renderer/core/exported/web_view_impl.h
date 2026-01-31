@@ -597,19 +597,22 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void DidAccessInitialMainDocument();
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  using WindowShowStateChangeCallback = base::OnceCallback<void(bool)>;
+  // Additional Windowing Controls API.
+  using WindowingControlsChangeCallback = base::OnceCallback<void(bool)>;
   // Sends window.minimize() requests to the browser window.
-  void Minimize(WindowShowStateChangeCallback);
+  void Minimize(WindowingControlsChangeCallback);
   // Sends window.maximize() requests to the browser window.
-  void Maximize(WindowShowStateChangeCallback);
+  void Maximize(WindowingControlsChangeCallback);
   // Sends window.restore() requests to the browser window.
-  void Restore(WindowShowStateChangeCallback);
+  void Restore(WindowingControlsChangeCallback);
   // Sends window.setResizable() requests to the browser window.
-  void SetResizable(bool resizable);
+  void SetResizable(bool resizable, WindowingControlsChangeCallback);
 
+  // Resolve promises to window functions above.
   void OnWindowShowStateChanged(ui::mojom::blink::WindowShowState old_state,
                                 ui::mojom::blink::WindowShowState new_state);
-#endif  //  !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  void OnResizableChanged(bool new_resizable);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   // TODO(crbug.com/1149992): This is called from the associated widget and this
   // code should eventually move out of WebView into somewhere else.
@@ -799,6 +802,19 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // trigger recalculation of zoom factor for all affected widgets.
   void UpdateWidgetZoomFactors();
   void UpdateInspectorDeviceScaleFactorOverride();
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  void WasMaximized();
+  void WasMinimized();
+  void WasRestored();
+
+  enum class WindowShowStateChangeType {
+    kMaximize,
+    kMinimize,
+    kRestore,
+  };
+  void HandleWindowShowStateChangeCallbackWith(WindowShowStateChangeType type);
+#endif
 
   // A value provided by the browser to state that all Widgets in this
   // WebView's frame tree will never be user-visible and thus never need to
@@ -1018,14 +1034,11 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // All the registered observers.
   base::ObserverList<WebViewObserver> observers_;
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  enum class WindowShowStateChangeType {
-    Maximize,
-    Minimize,
-    Restore,
-  };
   std::optional<
-      std::pair<WindowShowStateChangeType, WindowShowStateChangeCallback>>
+      std::pair<WindowShowStateChangeType, WindowingControlsChangeCallback>>
       window_show_state_change_callback_;
+  std::optional<std::pair<bool, WindowingControlsChangeCallback>>
+      set_resizable_change_callback_;
 #endif
 };
 

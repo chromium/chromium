@@ -369,6 +369,8 @@ class PropertyTreeManager {
   uint32_t NonCompositedMainThreadRepaintReasons(
       const TransformPaintPropertyNode& scroll_translation) const;
 
+  // The current effect state. Virtually it's the top of the effect stack if
+  // it and effect_stack_ are treated as a whole stack.
   EffectState current_;
   PropertyTreeManagerClient& client_;
 
@@ -386,9 +388,6 @@ class PropertyTreeManager {
   cc::Layer& root_layer_;
 
   LayerListBuilder& layer_list_builder_;
-
-  // The current effect state. Virtually it's the top of the effect stack if
-  // it and effect_stack_ are treated as a whole stack.
 
   // This keep track of cc effect stack. Whenever a new cc effect is nested,
   // a new entry is pushed, and the entry will be popped when the effect closed.

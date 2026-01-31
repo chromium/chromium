@@ -96,6 +96,7 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.browser_ui.settings.SpinnerPreference;
+import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.test.util.TestAccounts;
@@ -126,6 +127,8 @@ public class ClearBrowsingDataFragmentTest {
     @Mock private BrowsingDataBridge.Natives mBrowsingDataBridgeMock;
 
     @Mock private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
+
+    @Mock private SettingsIndexData mSearchIndexDataMock;
 
     private final CallbackHelper mCallbackHelper = new CallbackHelper();
 
@@ -430,6 +433,32 @@ public class ClearBrowsingDataFragmentTest {
         startPreferences();
         ViewUtils.waitForVisibleView(withId(R.id.menu_id_targeted_help));
         onView(withText(R.string.clear_browsing_data_title)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    public void testSearchableIndex_SignOutText_AlwaysRemoved() {
+        var indexProvider = ClearBrowsingDataFragment.SEARCH_INDEX_DATA_PROVIDER;
+        indexProvider.updateDynamicPreferences(
+                mActivityTestRule.getActivity(), mSearchIndexDataMock, null);
+        verify(mSearchIndexDataMock)
+                .removeEntry(
+                        indexProvider.getUniqueId(
+                                ClearBrowsingDataFragment.PREF_SIGN_OUT_OF_CHROME_TEXT));
+    }
+
+    @Test
+    @MediumTest
+    public void testSearchableIndex_ClearTabs_NotRemovedIfContextIsNotSearchActivity() {
+        var indexProvider = ClearBrowsingDataFragment.SEARCH_INDEX_DATA_PROVIDER;
+        // Using ChromeTabbedActivity (from rule) which is not SearchActivity.
+        indexProvider.updateDynamicPreferences(
+                mActivityTestRule.getActivity(), mSearchIndexDataMock, null);
+        verify(mSearchIndexDataMock, never())
+                .removeEntry(
+                        indexProvider.getUniqueId(
+                                ClearBrowsingDataFragment.getPreferenceKey(
+                                        DialogOption.CLEAR_TABS)));
     }
 
     /**

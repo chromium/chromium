@@ -40,8 +40,7 @@ class WTF_EXPORT TextEncoding final {
 
  public:
   TextEncoding() = default;
-  explicit TextEncoding(const char* name);
-  explicit TextEncoding(const String& name);
+  explicit TextEncoding(StringView name);
 
   bool IsValid() const { return !name_.IsNull(); }
   const AtomicString& GetName() const { return name_; }

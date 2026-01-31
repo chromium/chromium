@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-syntax = "proto2";
+edition = "2023";
 
 option optimize_for = LITE_RUNTIME;
 option java_package = "org.chromium.components.metrics";
@@ -13,14 +13,17 @@ package dwa;
 
 import "system_profile.proto";
 
+option features.enum_type = CLOSED;
+option features.utf8_validation = NONE;
+
 // A report containing deidentified web analytics data. One report is sent per
 // 5-30 minutes depending on the client.
 // Next tag: 7
 message DeidentifiedWebAnalyticsReport {
-  optional CoarseSystemInfo coarse_system_info = 1;
+  CoarseSystemInfo coarse_system_info = 1;
 
   // Temporary identifier that gets generated once a day.
-  optional fixed64 dwa_ephemeral_id = 2;
+  fixed64 dwa_ephemeral_id = 2;
 
   // This field should not be used. Use `dwa_events` instead.
   repeated PageLoadEvents page_load_events = 3;
@@ -28,7 +31,7 @@ message DeidentifiedWebAnalyticsReport {
   reserved 4;
 
   // Unix timestamp of when the report was generated and sent.
-  optional int64 timestamp = 5;
+  int64 timestamp = 5;
 
   // A collection of deidentified web analytics events.
   repeated DeidentifiedWebAnalyticsEvent dwa_events = 6;
@@ -48,7 +51,7 @@ message CoarseSystemInfo {
     CHANNEL_NOT_STABLE = 2;
   }
 
-  optional Channel channel = 1;
+  Channel channel = 1;
 
   // Platform and activity type, 4 bits allocated.
   // PLATFORM_INVALID is an invalid value and should never used. The client
@@ -69,7 +72,7 @@ message CoarseSystemInfo {
     PLATFORM_ANDROID = 12;
   }
 
-  optional Platform platform = 2;
+  Platform platform = 2;
 
   // Geo designation, 1 bit allocated.
   // GEO_DESIGNATION_INVALID is an invalid value and should never used. The
@@ -80,7 +83,7 @@ message CoarseSystemInfo {
     GEO_DESIGNATION_ROW = 2;  // Rest of the world.
   }
 
-  optional GeoDesignation geo_designation = 3;
+  GeoDesignation geo_designation = 3;
 
   // An indicator of whether this is a recent (week old) client install or
   // not, 1 bit allocated.
@@ -96,13 +99,13 @@ message CoarseSystemInfo {
     CLIENT_AGE_NOT_RECENT = 2;
   }
 
-  optional ClientAge client_age = 4;
+  ClientAge client_age = 4;
 
   // First 3 digits of the milestone mod (%) 16, 4 bits allocated.
-  optional int32 milestone_prefix_trimmed = 5;
+  int32 milestone_prefix_trimmed = 5;
 
   // Whether UKM logging is enabled, 1 bit allocated.
-  optional bool is_ukm_enabled = 6;
+  bool is_ukm_enabled = 6;
 }
 
 // Events that occurred in a single page load.
@@ -115,7 +118,7 @@ message DeidentifiedWebAnalyticsEvent {
   // A hash of the event name/type (such as "ReportingAPIUsage").
   // Uses the same hash function as UMA.
   // http://cs.chromium.org/chromium/src/base/metrics/metrics_hashes.cc?q=HashMetricName
-  optional fixed64 event_hash = 1;
+  fixed64 event_hash = 1;
 
   // The type of content that the event is associated with.
   // CONTENT_TYPE_INVALID is an invalid value and should never used. The
@@ -129,12 +132,12 @@ message DeidentifiedWebAnalyticsEvent {
       CONTENT_TYPE_URL = 1;
     }
 
-    optional ContentType content_type = 1;
+    ContentType content_type = 1;
 
     // A hash of the content (e.g. hash("example.com")).
     // Uses the same hash function as UMA.
     // http://cs.chromium.org/chromium/src/base/metrics/metrics_hashes.cc?q=HashMetricName
-    optional fixed64 content_hash = 2;
+    fixed64 content_hash = 2;
 
     // A set of metrics collected as part of a single entry. A single entry
     // defines a series of metrics collected in one instance.
@@ -143,9 +146,9 @@ message DeidentifiedWebAnalyticsEvent {
     message EntryMetrics {
       // A single metric, which is defined by a name hash and a value.
       message Metric {
-        optional fixed64 name_hash = 1;
+        fixed64 name_hash = 1;
 
-        optional int64 value = 2;
+        int64 value = 2;
       }
 
       repeated Metric metric = 1;
@@ -163,18 +166,18 @@ message DeidentifiedWebAnalyticsEvent {
   repeated metrics.SystemProfileProto.FieldTrial field_trials = 3;
 
   // Coarse system information associated with this event.
-  optional CoarseSystemInfo coarse_system_info = 4;
+  CoarseSystemInfo coarse_system_info = 4;
 
   // A hash of the content (e.g. hash("example.com")).
   // Uses the same hash function as UMA.
   // http://cs.chromium.org/chromium/src/base/metrics/metrics_hashes.cc?q=HashMetricName
-  optional fixed64 content_hash = 7;
+  fixed64 content_hash = 7;
 
   // A single metric, which is defined by a name hash and a value.
   message Metric {
-    optional fixed64 name_hash = 1;
+    fixed64 name_hash = 1;
 
-    optional int64 value = 2;
+    int64 value = 2;
   }
 
   repeated Metric metric = 9;

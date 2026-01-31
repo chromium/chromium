@@ -115,7 +115,7 @@ class DeviceOAuth2TokenService : public OAuth2AccessTokenManager::Delegate,
   // gaia::GaiaOAuthClient::Delegate implementation.
   void OnRefreshTokenResponse(const std::string& access_token,
                               int expires_in_seconds) override;
-  void OnGetTokenInfoResponse(const base::Value::Dict& token_info) override;
+  void OnGetTokenInfoResponse(const base::DictValue& token_info) override;
   void OnOAuthError() override;
   void OnNetworkError(int response_code) override;
 

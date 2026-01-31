@@ -4,6 +4,7 @@
 
 #include "ash/system/holding_space/holding_space_view_delegate.h"
 
+#include <algorithm>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
@@ -23,7 +24,6 @@
 #include "ash/system/holding_space/holding_space_tray.h"
 #include "ash/system/holding_space/holding_space_tray_bubble.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -520,7 +520,7 @@ void HoldingSpaceViewDelegate::ExecuteCommand(int command, int event_flags) {
           [](const std::vector<const HoldingSpaceItem*>& items,
              std::vector<base::FilePath>& suggested_file_paths,
              const HoldingSpaceItem* item) {
-            const bool remove = base::Contains(items, item);
+            const bool remove = std::ranges::contains(items, item);
             if (remove) {
               if (HoldingSpaceItem::IsSuggestionType(item->type())) {
                 suggested_file_paths.push_back(item->file().file_path);
@@ -752,7 +752,7 @@ void HoldingSpaceViewDelegate::SetSelection(
 
   if (bubble_) {  // May be `nullptr` in testing.
     for (HoldingSpaceItemView* view : bubble_->GetHoldingSpaceItemViews()) {
-      view->SetSelected(base::Contains(item_ids, view->item_id()));
+      view->SetSelected(std::ranges::contains(item_ids, view->item_id()));
       if (view->selected())
         selection.push_back(view);
     }

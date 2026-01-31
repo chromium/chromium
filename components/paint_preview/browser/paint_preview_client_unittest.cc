@@ -19,8 +19,6 @@
 #include "components/paint_preview/common/capture_result.h"
 #include "components/paint_preview/common/file_stream.h"
 #include "components/paint_preview/common/mock_paint_preview_recorder.h"
-#include "components/paint_preview/common/mojom/paint_preview_recorder.mojom-data-view.h"
-#include "components/paint_preview/common/mojom/paint_preview_recorder.mojom-forward.h"
 #include "components/paint_preview/common/mojom/paint_preview_recorder.mojom.h"
 #include "components/paint_preview/common/proto/paint_preview.pb.h"
 #include "components/paint_preview/common/redaction_params.h"

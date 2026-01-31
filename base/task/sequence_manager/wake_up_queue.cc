@@ -117,8 +117,8 @@ std::optional<WakeUp> WakeUpQueue::GetNextDelayedWakeUp() const {
   return wake_up;
 }
 
-Value::Dict WakeUpQueue::AsValue(TimeTicks now) const {
-  Value::Dict state;
+DictValue WakeUpQueue::AsValue(TimeTicks now) const {
+  DictValue state;
   state.Set("name", GetName());
   // TODO(crbug.com/40228085): Make base::Value able to store an int64_t and
   // remove this cast.

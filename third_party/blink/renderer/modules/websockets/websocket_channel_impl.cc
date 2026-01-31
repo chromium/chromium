@@ -719,9 +719,14 @@ WebSocketChannelImpl::Message::GetBlobDataHandle() {
   return blob_data_handle_;
 }
 
-base::span<const uint8_t>&
-WebSocketChannelImpl::Message::MutablePendingPayload() {
+base::span<const uint8_t> WebSocketChannelImpl::Message::PendingPayload()
+    const {
   return pending_payload_;
+}
+
+void WebSocketChannelImpl::Message::ConsumePendingPayload(
+    size_t bytes_consumed) {
+  pending_payload_ = pending_payload_.subspan(bytes_consumed);
 }
 
 WebSocketChannelImpl::Message::DidCallSendMessage
@@ -810,7 +815,9 @@ bool WebSocketChannelImpl::MaybeSendSynchronously(
   DCHECK(!wait_for_writable_);
 
   websocket_->SendMessage(frame_type, data->size());
-  return SendMessageData(data);
+  const auto [was_all_sent, sent_bytes] = SendMessageData(*data);
+  *data = data->subspan(sent_bytes);
+  return was_all_sent;
 }
 
 void WebSocketChannelImpl::ProcessSendQueue() {
@@ -825,13 +832,16 @@ void WebSocketChannelImpl::ProcessSendQueue() {
         message_type = MessageTypeForMojo::TEXT;
         [[fallthrough]];
       case kMessageTypeArrayBuffer: {
-        base::span<const uint8_t>& data_frame = message.MutablePendingPayload();
+        base::span<const uint8_t> data_frame = message.PendingPayload();
         if (!message.GetDidCallSendMessage()) {
           websocket_->SendMessage(message_type, data_frame.size());
           message.SetDidCallSendMessage(Message::DidCallSendMessage(true));
         }
-        if (!SendMessageData(&data_frame))
+        const auto [was_all_sent, sent_bytes] = SendMessageData(data_frame);
+        message.ConsumePendingPayload(sent_bytes);
+        if (!was_all_sent) {
           return;
+        }
         auto watcher = messages_.front().TakeSendCompletionWatcher();
         if (watcher) {
           watcher->OnMessageSent(/*synchronously=*/false);
@@ -860,14 +870,16 @@ void WebSocketChannelImpl::ProcessSendQueue() {
   }
 }
 
-bool WebSocketChannelImpl::SendMessageData(base::span<const uint8_t>* data) {
-  if (data->size() > 0) {
-    uint64_t consumed_buffered_amount = 0;
-    ProduceData(data, &consumed_buffered_amount);
-    if (client_ && consumed_buffered_amount > 0)
+std::pair<bool, size_t> WebSocketChannelImpl::SendMessageData(
+    base::span<const uint8_t> data) {
+  size_t consumed_buffered_amount = 0;
+  if (!data.empty()) {
+    data = ProduceData(data, &consumed_buffered_amount);
+    if (client_ && consumed_buffered_amount > 0) {
       client_->DidConsumeBufferedAmount(consumed_buffered_amount);
-    if (data->size() > 0) {
-      // The |writable_| datapipe is full.
+    }
+    if (!data.empty()) {
+      // The `writable_` datapipe is full.
       wait_for_writable_ = true;
       if (writable_) {
         writable_watcher_.ArmOrNotify();
@@ -883,13 +895,13 @@ bool WebSocketChannelImpl::SendMessageData(base::span<const uint8_t>* data) {
         // The corresponding test case is
         // browser_tests WebRequestApiTest.WebSocketCleanClose.
         if (client_) {
-          client_->DidConsumeBufferedAmount(data->size());
+          client_->DidConsumeBufferedAmount(data.size());
         }
       }
-      return false;
+      return {false, consumed_buffered_amount};
     }
   }
-  return true;
+  return {true, consumed_buffered_amount};
 }
 
 void WebSocketChannelImpl::AbortAsyncOperations() {
@@ -1137,20 +1149,17 @@ void WebSocketChannelImpl::OnWritable(MojoResult result,
   ProcessSendQueue();
 }
 
-MojoResult WebSocketChannelImpl::ProduceData(
-    base::span<const uint8_t>* data,
-    uint64_t* consumed_buffered_amount) {
+base::span<const uint8_t> WebSocketChannelImpl::ProduceData(
+    base::span<const uint8_t> data,
+    size_t* consumed_buffered_amount) {
   MojoResult begin_result = MOJO_RESULT_OK;
   base::span<uint8_t> buffer;
-  while (!data->empty() && (begin_result = writable_->BeginWriteData(
-                                data->size(), MOJO_WRITE_DATA_FLAG_NONE,
-                                buffer)) == MOJO_RESULT_OK) {
-    const size_t size_to_write = std::min(buffer.size(), data->size());
+  while (!data.empty() && (begin_result = writable_->BeginWriteData(
+                               data.size(), MOJO_WRITE_DATA_FLAG_NONE,
+                               buffer)) == MOJO_RESULT_OK) {
+    const size_t size_to_write = std::min(buffer.size(), data.size());
     DCHECK_GT(size_to_write, 0u);
-
-    buffer.copy_prefix_from(data->first(size_to_write));
-    *data = data->subspan(size_to_write);
-
+    buffer.copy_prefix_from(data.take_first(size_to_write));
     const MojoResult end_result = writable_->EndWriteData(size_to_write);
     DCHECK_EQ(end_result, MOJO_RESULT_OK);
     *consumed_buffered_amount += size_to_write;
@@ -1161,7 +1170,7 @@ MojoResult WebSocketChannelImpl::ProduceData(
     DCHECK_EQ(begin_result, MOJO_RESULT_FAILED_PRECONDITION);
     writable_.reset();
   }
-  return begin_result;
+  return data;
 }
 
 String WebSocketChannelImpl::GetTextMessage(

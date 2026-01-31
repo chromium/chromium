@@ -31,10 +31,7 @@ void ImmersiveModeTester::RunCommand(int command, int expected_index) {
 }
 
 void ImmersiveModeTester::VerifyTabIndexAfterReveal(int expected_index) {
-  if (!reveal_ended_) {
-    reveal_loop_ = std::make_unique<base::RunLoop>();
-    reveal_loop_->Run();
-  }
+  WaitForRevealEnded();
   EXPECT_TRUE(reveal_ended_);
   EXPECT_EQ(expected_index, browser_->tab_strip_model()->active_index());
 }
@@ -57,11 +54,29 @@ void ImmersiveModeTester::WaitForFullscreenToExit() {
   ASSERT_FALSE(GetBrowserView()->IsFullscreen());
 }
 
+void ImmersiveModeTester::WaitForRevealEnded() {
+  while (!reveal_ended_) {
+    reveal_loop_ = std::make_unique<base::RunLoop>();
+    reveal_loop_->Run();
+  }
+}
+
+void ImmersiveModeTester::WaitForRevealStarted() {
+  while (!reveal_started_) {
+    reveal_loop_ = std::make_unique<base::RunLoop>();
+    reveal_loop_->Run();
+  }
+}
+
 void ImmersiveModeTester::OnImmersiveRevealStarted() {
   EXPECT_FALSE(reveal_started_);
   EXPECT_FALSE(reveal_ended_);
   reveal_started_ = true;
   EXPECT_TRUE(GetController()->IsRevealed());
+
+  if (reveal_loop_ && reveal_loop_->running()) {
+    reveal_loop_->Quit();
+  }
 }
 
 void ImmersiveModeTester::OnImmersiveRevealEnded() {

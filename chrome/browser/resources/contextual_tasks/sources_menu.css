@@ -17,17 +17,18 @@
 .dropdown-item {
   display: flex;
   align-items: center;
-  padding: 0px var(--mwb-list-item-horizontal-margin);
+  padding: 5px var(--mwb-list-item-horizontal-margin);
+  width: 320px;
 }
 
 cr-action-menu {
   --cr-menu-border-radius: 16px;
-  padding: 25px 0;
+  --cr-action-menu-padding: 25px 0px;
 }
 
 .header {
   color: var(--cr-primary-text-color);
-  padding: 6px var(--mwb-list-item-horizontal-margin);
+  padding: 8px var(--mwb-list-item-horizontal-margin);
 }
 
 /* Top padding for the main header, "Shared tabs and files" */
@@ -37,14 +38,14 @@ cr-action-menu > .header:first-child {
 
 .icon-container {
   align-items: center;
-  background-color: var(--color-list-item-url-favicon-background);
+  background-color: var(--cr-fallback-color-disabled-background);
   border-radius: 8px;
   display: flex;
   height: 40px;
+  width: 40px;
   justify-content: center;
   overflow: hidden;
   margin-inline-end: 16px;
-  width: 40px;
 }
 
 .tab-favicon {
@@ -70,4 +71,44 @@ cr-action-menu > .header:first-child {
   color: var(--cr-secondary-text-color);
   font-size: var(--mwb-secondary-text-font-size);
   font-weight: 400;
+}
+
+.file-icon {
+  background-color: var(--color-composebox-pdf-chip-icon-background,
+      --color-composebox-background);
+  border-radius: var(--pdf-icon-border-radius, 4px);
+  box-sizing: border-box;
+  color: var(--color-composebox-pdf-chip-icon-border);
+  height: var(--mwb-icon-size);
+  width: var(--mwb-icon-size);
+}
+
+.file-name {
+  color: var(--cr-primary-text-color);
+  font-size: var(--mwb-primary-text-font-size);
+  font-weight: 500;
+}
+
+.image-container {
+  align-items: center;
+  border-radius: 8px;
+  display: flex;
+  height: 40px;
+  width: 40px;
+  justify-content: center;
+  overflow: hidden;
+  margin-inline-end: 16px;
+}
+
+.image-thumbnail {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.image-title {
+  color: var(--cr-primary-text-color);
+  font-size: var(--mwb-primary-text-font-size);
+  font-weight: 500;
 }

@@ -40,7 +40,7 @@ found in the LICENSE file.
         </item>
         <item
             android:id="@+id/edit_menu_id"
-            android:icon="@drawable/material_ic_edit_24dp"
+            android:icon="@drawable/ic_edit_24dp"
             android:title="@string/edit_folder"
             android:visible="false"
             app:showAsAction="ifRoom"
@@ -63,7 +63,7 @@ found in the LICENSE file.
         android:visible="false" >
         <item
             android:id="@+id/selection_mode_edit_menu_id"
-            android:icon="@drawable/material_ic_edit_24dp"
+            android:icon="@drawable/ic_edit_24dp"
             android:title="@string/edit_bookmark"
             app:showAsAction="ifRoom"
             app:iconTint="@color/default_icon_color_secondary_tint_list" />
@@ -86,6 +86,10 @@ found in the LICENSE file.
         <item
             android:id="@+id/selection_open_in_incognito_tab_id"
             android:title="@string/contextmenu_open_in_incognito_tab"
+            app:showAsAction="never" />
+        <item
+            android:id="@+id/selection_mode_copy_link"
+            android:title="@string/copy_link"
             app:showAsAction="never" />
         <item
             android:id="@+id/reading_list_mark_as_read_id"

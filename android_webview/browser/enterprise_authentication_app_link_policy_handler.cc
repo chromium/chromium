@@ -35,7 +35,7 @@ bool EnterpriseAuthenticationAppLinkPolicyHandler::CheckPolicySettings(
     return true;
   }
 
-  const base::Value::List& policy_list = value->GetList();
+  const base::ListValue& policy_list = value->GetList();
   if (policy_list.empty()) {
     return true;
   }
@@ -75,7 +75,7 @@ void EnterpriseAuthenticationAppLinkPolicyHandler::ApplyPolicySettings(
   if (!value)
     return;
 
-  base::Value::List filtered_values;
+  base::ListValue filtered_values;
   for (const auto& entry : value->GetList()) {
     const std::string* url = entry.GetDict().FindString("url");
     if (ValidatePolicyEntry(url))

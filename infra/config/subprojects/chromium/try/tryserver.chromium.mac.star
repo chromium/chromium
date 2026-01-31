@@ -30,6 +30,7 @@ try_.defaults.set(
     orchestrator_cores = 2,
     orchestrator_siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
     service_account = try_constants.DEFAULT_SERVICE_ACCOUNT,
+    siso_keep_going = siso.KEEP_GOING,
     siso_project = siso.project.DEFAULT_UNTRUSTED,
 )
 
@@ -749,6 +750,7 @@ ios_builder(
     gn_args = "ci/ios-wpt-fyi-rel",
     builderless = True,
     cpu = cpu.ARM64,
+    contact_team_email = "chrome-product-engprod@google.com",
 )
 
 ios_builder(
@@ -840,7 +842,7 @@ ios_builder(
 
 gpu.try_.optional_tests_builder(
     name = "mac_optional_gpu_tests_rel",
-    branch_selector = branches.selector.IOS_BRANCHES,
+    branch_selector = branches.selector.MAC_BRANCHES,
     description_html = ("Runs GPU tests on Mac Minis with Intel UHD 630 GPUs and Macbook Pros with AMD GPUs. " +
                         "Only automatically added to CLs that touch GPU-related files."),
     builder_spec = builder_config.builder_spec(
@@ -889,34 +891,33 @@ gpu.try_.optional_tests_builder(
     main_list_view = "try",
     max_concurrent_builds = 7,
     tryjob = try_.job(
-        location_filters = [
-            # Inclusion filters.
-            cq.location_filter(path_regexp = "chrome/browser/vr/.+"),
-            cq.location_filter(path_regexp = "content/browser/xr/.+"),
-            cq.location_filter(path_regexp = "content/test/data/gpu/.+"),
-            cq.location_filter(path_regexp = "content/test/gpu/.+"),
-            cq.location_filter(path_regexp = "gpu/.+"),
-            cq.location_filter(path_regexp = "media/audio/.+"),
-            cq.location_filter(path_regexp = "media/base/.+"),
-            cq.location_filter(path_regexp = "media/capture/.+"),
-            cq.location_filter(path_regexp = "media/filters/.+"),
-            cq.location_filter(path_regexp = "media/gpu/.+"),
-            cq.location_filter(path_regexp = "media/mojo/.+"),
-            cq.location_filter(path_regexp = "media/renderers/.+"),
-            cq.location_filter(path_regexp = "media/video/.+"),
-            cq.location_filter(path_regexp = "services/shape_detection/.+"),
-            cq.location_filter(path_regexp = "testing/buildbot/tryserver.chromium.mac.json"),
-            cq.location_filter(path_regexp = "testing/trigger_scripts/.+"),
-            cq.location_filter(path_regexp = "third_party/blink/renderer/modules/mediastream/.+"),
-            cq.location_filter(path_regexp = "third_party/blink/renderer/modules/webcodecs/.+"),
-            cq.location_filter(path_regexp = "third_party/blink/renderer/modules/webgl/.+"),
-            cq.location_filter(path_regexp = "third_party/blink/renderer/modules/webgpu/.+"),
-            cq.location_filter(path_regexp = "third_party/blink/renderer/platform/graphics/gpu/.+"),
-            cq.location_filter(path_regexp = "tools/clang/scripts/update.py"),
-            cq.location_filter(path_regexp = "ui/gl/.+"),
+        location_filters = gpu.try_.optional_trybot_location_filters.MAC,
+    ),
+)
 
-            # Exclusion filters.
-            cq.location_filter(exclude = True, path_regexp = ".*\\.md"),
-        ],
+gpu.try_.optional_tests_builder(
+    name = "gpu-fyi-cq-mac-arm64",
+    branch_selector = branches.selector.MAC_BRANCHES,
+    description_html = ("Runs GPU tests on M2 Macbook Pros. Only automatically added to CLs that " +
+                        "touch GPU-related files"),
+    mirrors = [
+        "ci/GPU FYI Mac arm64 Builder",
+        "ci/Mac FYI Retina Release (Apple M2)",
+    ],
+    builder_config_settings = builder_config.try_settings(
+        retry_failed_shards = False,
+    ),
+    gn_args = "ci/GPU FYI Mac arm64 Builder",
+    pool = "luci.chromium.gpu.try",
+    builderless = True,
+    cpu = "arm64",
+    ssd = None,
+    free_space = None,
+    alerts_enabled = False,
+    contact_team_email = "chrome-gpu-infra@google.com",
+    main_list_view = "try",
+    max_concurrent_builds = 7,
+    tryjob = try_.job(
+        location_filters = gpu.try_.optional_trybot_location_filters.MAC,
     ),
 )

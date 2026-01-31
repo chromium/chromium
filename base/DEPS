@@ -17,6 +17,7 @@ include_rules = [
   # in the gn build; see //base/BUILD.gn's conditional dependency on
   # //build/rust:cxx_cppdeps.
   "+third_party/rust/cxx",
+  "+third_party/simdutf/simdutf.h",
   "+third_party/test_fonts",
   # JSON Deserialization.
   "+third_party/rust/serde_json_lenient/v0_2/wrapper",

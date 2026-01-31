@@ -30,7 +30,7 @@ TEST_F(PolicyManagerTests, NoPolicies) {
 }
 
 TEST_F(PolicyManagerTests, InvalidPolicies) {
-  base::Value::Dict policies;
+  base::DictValue policies;
   policies.Set("autoupdatecheckperiodminutes", "NotAnInteger");
 
   scoped_refptr<PolicyManagerInterface> policy_manager =
@@ -69,7 +69,7 @@ TEST_F(PolicyManagerTests, InvalidPolicies) {
 }
 
 TEST_F(PolicyManagerTests, PolicyRead) {
-  base::Value::Dict policies;
+  base::DictValue policies;
 
   policies.Set("autoupdatecheckperiodminutes", 480);
   policies.Set("updatessuppressedstarthour", 2);
@@ -157,7 +157,7 @@ TEST_F(PolicyManagerTests, PolicyRead) {
 }
 
 TEST_F(PolicyManagerTests, WrongPolicyValueType) {
-  base::Value::Dict policies;
+  base::DictValue policies;
 
   // Set global policies.
   policies.Set("autoupdatecheckperiodminutes", "NotAnInteger");

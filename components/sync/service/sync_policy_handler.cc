@@ -73,7 +73,7 @@ bool SyncPolicyHandler::CheckPolicySettings(const policy::PolicyMap& policies,
   const base::Value* disabled_sync_types_value = policies.GetValue(
       policy::key::kSyncTypesListDisabled, base::Value::Type::LIST);
   if (disabled_sync_types_value) {
-    const base::Value::List& list = disabled_sync_types_value->GetList();
+    const base::ListValue& list = disabled_sync_types_value->GetList();
     for (const base::Value& type_name : list) {
       if (!type_name.is_string()) {
         errors->AddError(policy::key::kSyncTypesListDisabled,
@@ -106,7 +106,7 @@ void SyncPolicyHandler::ApplyPolicySettings(const policy::PolicyMap& policies,
   const base::Value* disabled_sync_types_value = policies.GetValue(
       policy::key::kSyncTypesListDisabled, base::Value::Type::LIST);
   if (disabled_sync_types_value) {
-    const base::Value::List& list = disabled_sync_types_value->GetList();
+    const base::ListValue& list = disabled_sync_types_value->GetList();
     for (const base::Value& type_name : list) {
       if (!type_name.is_string()) {
         continue;

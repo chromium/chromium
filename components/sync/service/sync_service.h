@@ -479,11 +479,26 @@ class SyncService : public KeyedService {
   virtual void TriggerLocalDataMigrationForItems(
       std::map<DataType, std::vector<LocalDataItemModel::DataId>> items) = 0;
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(BookmarksLimitExceededHelpClickedSource)
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.sync
+  enum class BookmarksLimitExceededHelpClickedSource {
+    kSettings = 0,
+    kSyncErrorMessage = 1,
+    kProfileMenu = 2,
+    kIdentityErrorInfoPill = 3,
+    kAccountMenu = 4,
+    kMaxValue = kAccountMenu,
+  };
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:BookmarksLimitExceededHelpClickedSource)
+
   // Acknowledges the `kBookmarksLimitExceeded` user-actionable error. Once
   // acknowledged, `GetUserActionableError()` will no longer report this error
   // until the next browser restart. This is used to hide the error UI
   // after the user has interacted with it.
-  virtual void AcknowledgeBookmarksLimitExceededError() = 0;
+  virtual void AcknowledgeBookmarksLimitExceededError(
+      BookmarksLimitExceededHelpClickedSource source) = 0;
 
   // Requests sync service to first enable account storage for the `data_type`
   // and then asynchronously move the specified local data `items` to account.
@@ -615,7 +630,7 @@ class SyncService : public KeyedService {
   // Asynchronously fetches base::Value representations of all sync nodes and
   // returns them to the specified callback on this thread.
   virtual void GetAllNodesForDebugging(
-      base::OnceCallback<void(base::Value::List)> callback) = 0;
+      base::OnceCallback<void(base::ListValue)> callback) = 0;
 };
 
 }  // namespace syncer

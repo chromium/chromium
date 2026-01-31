@@ -78,6 +78,12 @@ const wchar *uiGetMonthName(uint Month)
 {
   return L"";
 }
+
+
+const wchar *uiGetWeekDayName(uint Day)
+{
+  return L"";
+}
 #endif
 
 

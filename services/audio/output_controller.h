@@ -240,11 +240,15 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
    private:
     void WedgeCheck();
 
+    void LogGlitchStats(const std::string& call_name, base::TimeTicks now);
+
     // RAW_PTR_EXCLUSION: OutputController object will outlive the
     // ErrorStatisticsTracker object.
     RAW_PTR_EXCLUSION OutputController* const controller_;
 
     const base::TimeTicks start_time_;
+
+    base::TimeTicks last_periodic_log_time_;
 
     // Accumulates AudioGlitchInfo provided in OnMoreData callbacks. Only used
     // for logging purposes.

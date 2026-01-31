@@ -10,7 +10,6 @@
 #include <string>
 #include <type_traits>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
@@ -36,7 +35,6 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "ui/actions/action_id.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
-#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -141,7 +139,7 @@ PinnedToolbarActionsContainer::PinnedToolbarActionsContainer(
   // is the same size regardless of where and if the divider is in the
   // container.
   layout->SetInteriorMargin(gfx::Insets::TLBR(
-      0, 0, 0, -GetLayoutConstant(TOOLBAR_ICON_DEFAULT_MARGIN)));
+      0, 0, 0, -GetLayoutConstant(LayoutConstant::kToolbarIconDefaultMargin)));
 
   // Animations.
   GetAnimatingLayoutManager()->SetDefaultFadeMode(
@@ -160,16 +158,17 @@ PinnedToolbarActionsContainer::PinnedToolbarActionsContainer(
   toolbar_divider->SetProperty(views::kElementIdentifierKey,
                                kPinnedToolbarActionsContainerDividerElementId);
   toolbar_divider->SetPreferredSize(
-      gfx::Size(GetLayoutConstant(TOOLBAR_DIVIDER_WIDTH),
-                GetLayoutConstant(TOOLBAR_DIVIDER_HEIGHT)));
+      gfx::Size(GetLayoutConstant(LayoutConstant::kToolbarDividerWidth),
+                GetLayoutConstant(LayoutConstant::kToolbarDividerHeight)));
   // The divider only exists if there are pinned buttons, which have padding on
   // the right. Remove that amount of padding to compensate.
   toolbar_divider->SetProperty(
       views::kMarginsKey,
-      gfx::Insets::TLBR(0,
-                        GetLayoutConstant(TOOLBAR_DIVIDER_SPACING) -
-                            GetLayoutConstant(TOOLBAR_ICON_DEFAULT_MARGIN),
-                        0, GetLayoutConstant(TOOLBAR_DIVIDER_SPACING)));
+      gfx::Insets::TLBR(
+          0,
+          GetLayoutConstant(LayoutConstant::kToolbarDividerSpacing) -
+              GetLayoutConstant(LayoutConstant::kToolbarIconDefaultMargin),
+          0, GetLayoutConstant(LayoutConstant::kToolbarDividerSpacing)));
   toolbar_divider_ = AddChildView(std::move(toolbar_divider));
 
   // Initialize the pinned action buttons.
@@ -189,8 +188,9 @@ int PinnedToolbarActionsContainer::CalculatePoppedOutButtonsWidth() {
     popped_out_buttons_width += popped_button->GetPreferredSize().width();
   }
 
-  popped_out_buttons_width += (popped_out_buttons_.size() - 1) *
-                              (GetLayoutConstant(TOOLBAR_ICON_DEFAULT_MARGIN));
+  popped_out_buttons_width +=
+      (popped_out_buttons_.size() - 1) *
+      (GetLayoutConstant(LayoutConstant::kToolbarIconDefaultMargin));
 
   return popped_out_buttons_width;
 }
@@ -301,7 +301,8 @@ void PinnedToolbarActionsContainer::OnThemeChanged() {
   const SkColor toolbar_divider_color =
       GetColorProvider()->GetColor(kColorToolbarExtensionSeparatorEnabled);
   toolbar_divider_->SetBackground(views::CreateRoundedRectBackground(
-      toolbar_divider_color, GetLayoutConstant(TOOLBAR_DIVIDER_CORNER_RADIUS)));
+      toolbar_divider_color,
+      GetLayoutConstant(LayoutConstant::kToolbarDividerCornerRadius)));
   ToolbarIconContainerView::OnThemeChanged();
 }
 
@@ -752,7 +753,7 @@ void PinnedToolbarActionsContainer::UpdateViews() {
   // 1. Remove buttons for actions in the UI that are not present in the
   // model.
   for (actions::ActionId id : old_ids) {
-    if (base::Contains(new_ids, id)) {
+    if (std::ranges::contains(new_ids, id)) {
       continue;
     }
 
@@ -766,7 +767,7 @@ void PinnedToolbarActionsContainer::UpdateViews() {
 
   // 2. Add buttons for actions that are in the model but not in the UI.
   for (actions::ActionId id : new_ids) {
-    if (base::Contains(old_ids, id)) {
+    if (std::ranges::contains(old_ids, id)) {
       continue;
     }
 
@@ -830,7 +831,8 @@ size_t PinnedToolbarActionsContainer::WidthToIconCount(int x_offset) {
   if (!button_provider_) {
     return 0;
   }
-  const int element_padding = GetLayoutConstant(TOOLBAR_ELEMENT_PADDING);
+  const int element_padding =
+      GetLayoutConstant(LayoutConstant::kToolbarElementPadding);
   size_t unclamped_count = std::max(
       (x_offset + element_padding) /
           (button_provider_->GetToolbarButtonSize().width() + element_padding),

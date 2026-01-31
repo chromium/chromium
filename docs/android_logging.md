@@ -175,14 +175,16 @@ For more, see the [related page on developer.android.com]
 ## Logs in JUnit tests
 
 We use [robolectric](http://robolectric.org/) to run our JUnit tests. It
-replaces some of the Android framework classes with "Shadow" classes
-to ensure that we can run our code in a regular JVM. `android.util.Log` is one
-of those replaced classes, and by default calling `Log` methods doesn't print
-anything.
+replaces some of the Android framework classes with "Shadow" classes to ensure
+that we can run our code in a regular JVM. `android.util.Log` is one of those
+replaced classes, and by default calling `Log` methods doesn't print anything.
 
-That default is not changed in the normal configuration, but if you need to
-enable logging locally or for a specific test, just add those few lines to your
-test:
+In Chromium, `BaseRobolectricTestRule` (used by `BaseRobolectricTestRunner`)
+automatically configures `ShadowLog` to print to `System.out`, so you should
+see your logs in the test output without any additional setup.
+
+If you are not using `BaseRobolectricTestRunner`, you may need to manually
+enable logging in your `@Before` method:
 
 ```java
 @Before

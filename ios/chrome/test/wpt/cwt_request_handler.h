@@ -114,7 +114,7 @@ class CWTRequestHandler {
   //    value returned by this method is a default-constructed base::Value.
   base::Value ExecuteScript(const std::string* script,
                             bool is_async_function,
-                            const base::Value::List* args);
+                            const base::ListValue* args);
 
   // Takes a snapshot of the target tab. Returns an error value if the target
   // tab is no longer open. Otherwise, returns the snapshot as a base64-encoded

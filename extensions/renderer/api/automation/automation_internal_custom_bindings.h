@@ -79,7 +79,7 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler,
   // accessibility events forwarded to this process.
   void StopCachingAccessibilityTrees() override;
   void DispatchEvent(const std::string& event_name,
-                     const base::Value::List& event_args) const override;
+                     const base::ListValue& event_args) const override;
 
  private:
   // ObjectBackedNativeHandler overrides:

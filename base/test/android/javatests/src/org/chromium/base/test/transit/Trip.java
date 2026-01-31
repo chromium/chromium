@@ -20,8 +20,8 @@ public class Trip extends Transition {
     private final @Nullable Station<?> mDestinationStation;
     private final List<Facility<?>> mFacilitiesToExit;
     private final List<Facility<?>> mFacilitiesToEnter;
-    private final List<CarryOn> mCarryOnsToDrop;
-    private final List<CarryOn> mCarryOnsToPickUp;
+    private final List<State> mStatesToExit;
+    private final List<State> mStatesToEnter;
     private final String mTransitionName;
 
     /** Use {@link TripBuilder} to create a Trip. */
@@ -30,21 +30,21 @@ public class Trip extends Transition {
             @Nullable Station<?> destinationStation,
             List<Facility<?>> facilitiesToExit,
             List<Facility<?>> facilitiesToEnter,
-            List<CarryOn> carryOnsToDrop,
-            List<CarryOn> carryOnsToPickUp,
+            List<State> statesToExit,
+            List<State> statesToEnter,
             TransitionOptions options,
             @Nullable Trigger trigger) {
         super(
                 options,
-                aggregateStates(originStation, facilitiesToExit, carryOnsToDrop),
-                aggregateStates(destinationStation, facilitiesToEnter, carryOnsToPickUp),
+                aggregateStates(originStation, facilitiesToExit, statesToExit),
+                aggregateStates(destinationStation, facilitiesToEnter, statesToEnter),
                 trigger);
         mOriginStation = originStation;
         mDestinationStation = destinationStation;
         mFacilitiesToExit = facilitiesToExit;
         mFacilitiesToEnter = facilitiesToEnter;
-        mCarryOnsToDrop = carryOnsToDrop;
-        mCarryOnsToPickUp = carryOnsToPickUp;
+        mStatesToExit = statesToExit;
+        mStatesToEnter = statesToEnter;
 
         String transitionTypeName = determineTransitionTypeName();
         mTransitionName = determineTransitionName(transitionTypeName);
@@ -69,14 +69,14 @@ public class Trip extends Transition {
     }
 
     private static List<? extends ConditionalState> aggregateStates(
-            @Nullable Station<?> station, List<Facility<?>> facilities, List<CarryOn> carryOns) {
-        List<ConditionalState> states = new ArrayList<>();
+            @Nullable Station<?> station, List<Facility<?>> facilities, List<State> states) {
+        List<ConditionalState> conditionalStates = new ArrayList<>();
         if (station != null) {
-            states.add(station);
+            conditionalStates.add(station);
         }
-        states.addAll(facilities);
-        states.addAll(carryOns);
-        return states;
+        conditionalStates.addAll(facilities);
+        conditionalStates.addAll(states);
+        return conditionalStates;
     }
 
     private String determineTransitionTypeName() {
@@ -102,14 +102,14 @@ public class Trip extends Transition {
             return "FacilityCheckOut";
         }
 
-        if (!mCarryOnsToPickUp.isEmpty()) {
-            if (!mCarryOnsToDrop.isEmpty()) {
-                return "CarryOnSwap";
+        if (!mStatesToEnter.isEmpty()) {
+            if (!mStatesToExit.isEmpty()) {
+                return "StateSwap";
             } else {
-                return "CarryOnPickUp";
+                return "StateEnter";
             }
-        } else if (!mCarryOnsToDrop.isEmpty()) {
-            return "CarryOnDrop";
+        } else if (!mStatesToExit.isEmpty()) {
+            return "StateExit";
         }
 
         return "GenericTrip";
@@ -171,23 +171,23 @@ public class Trip extends Transition {
                 throw new IllegalArgumentException(
                         String.format("No entered Facility is a %s", stateClass.getName()));
             }
-        } else if (CarryOn.class.isAssignableFrom(stateClass)) {
-            for (CarryOn carryOn : mCarryOnsToPickUp) {
-                if (stateClass.isAssignableFrom(carryOn.getClass())) {
+        } else if (State.class.isAssignableFrom(stateClass)) {
+            for (State state : mStatesToEnter) {
+                if (stateClass.isAssignableFrom(state.getClass())) {
                     if (candidate != null) {
                         throw new IllegalArgumentException(
                                 String.format(
-                                        "Two or more CarryOns are a %s: %s, %s",
+                                        "Two or more States are a %s: %s, %s",
                                         stateClass.getName(),
                                         candidate.getName(),
-                                        carryOn.getName()));
+                                        state.getName()));
                     }
-                    candidate = carryOn;
+                    candidate = state;
                 }
             }
             if (candidate == null) {
                 throw new IllegalArgumentException(
-                        String.format("No CarryOn picked up matches %s", stateClass.getName()));
+                        String.format("No State entered matches %s", stateClass.getName()));
             }
         }
         StateT result = stateClass.cast(candidate);

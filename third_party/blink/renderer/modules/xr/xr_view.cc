@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/containers/contains.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_eye.h"
 #include "third_party/blink/renderer/modules/xr/xr_camera.h"
@@ -161,8 +160,7 @@ XRViewData::XRViewData(
       index_(index),
       eye_(view->eye),
       viewport_(view->viewport) {
-  if (base::Contains(enabled_feature_set,
-                     device::mojom::XRSessionFeature::DEPTH)) {
+  if (enabled_feature_set.Contains(device::mojom::XRSessionFeature::DEPTH)) {
     if (!device_config.depth_configuration) {
       DCHECK(false)
           << "The session reports that depth sensing is supported but "

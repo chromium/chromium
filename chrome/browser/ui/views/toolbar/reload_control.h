@@ -25,10 +25,6 @@ class ReloadControl : public ui::SimpleMenuModel::Delegate {
   // Gets/Sets whether reload drop-down menu is enabled.
   virtual bool GetMenuEnabled() const = 0;
   virtual void SetMenuEnabled(bool is_menu_enabled) = 0;
-
-  // If the implementation is also a views::View, returns the underlying view
-  // for ui test.
-  virtual views::View* GetAsViewClassForTesting() = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_RELOAD_CONTROL_H_

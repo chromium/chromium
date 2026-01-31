@@ -70,10 +70,9 @@ class PaymentManifestDownloaderTestBase : public testing::Test {
     scoped_refptr<net::HttpResponseHeaders> headers;
     if (send_headers == Headers::kSend) {
       headers = base::MakeRefCounted<net::HttpResponseHeaders>(std::string());
-      headers->ReplaceStatusLine(base::StringPrintf(
-          "HTTP/1.1 %d %s", response_code,
-          net::GetHttpReasonPhrase(
-              static_cast<net::HttpStatusCode>(response_code))));
+      headers->ReplaceStatusLine(
+          base::StringPrintf("HTTP/1.1 %d %s", response_code,
+                             net::GetHttpReasonPhrase(response_code)));
 
       if (link_header.has_value()) {
         headers->SetHeader("Link", *link_header);

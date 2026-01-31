@@ -55,7 +55,7 @@ FilePath ThreadTypeToCgroupDirectory(const FilePath& cgroup_filepath,
       return cgroup_filepath.Append(FILE_PATH_LITERAL("non-urgent"));
     case ThreadType::kDefault:
       return cgroup_filepath;
-    case ThreadType::kDisplayCritical:
+    case ThreadType::kPresentation:
     case ThreadType::kInteractive:
     case ThreadType::kRealtimeAudio:
       return cgroup_filepath.Append(FILE_PATH_LITERAL("urgent"));
@@ -92,7 +92,7 @@ void SetThreadCgroupForThreadType(PlatformThreadId thread_id,
 namespace internal {
 
 const ThreadTypeToNiceValuePairForTest kThreadTypeToNiceValueMapForTest[7] = {
-    {ThreadType::kRealtimeAudio, -10}, {ThreadType::kDisplayCritical, -8},
+    {ThreadType::kRealtimeAudio, -10}, {ThreadType::kPresentation, -8},
     {ThreadType::kDefault, 0},         {ThreadType::kUtility, 2},
     {ThreadType::kBackground, 10},
 };
@@ -110,7 +110,8 @@ bool CanSetThreadTypeToRealtimeAudio() {
 }
 
 void SetCurrentThreadTypeImpl(ThreadType thread_type,
-                              MessagePumpType pump_type_hint) {
+                              MessagePumpType pump_type_hint,
+                              bool may_change_affinity) {
   const PlatformThreadId thread_id = PlatformThread::CurrentId();
 
   if (g_thread_type_delegate &&
@@ -140,9 +141,10 @@ PlatformPriorityOverride SetThreadTypeOverride(
   return false;
 }
 
-void RemoveThreadTypeOverrideImpl(
+void RemoveThreadTypeOverride(
+    PlatformThreadHandle thread_handle,
     const PlatformPriorityOverride& priority_override_handle,
-    ThreadType thread_type) {}
+    ThreadType initial_thread_type) {}
 
 }  // namespace internal
 
@@ -282,7 +284,7 @@ int ThreadTypeToNiceValue(const ThreadType thread_type) {
       return 2;
     case ThreadType::kDefault:
       return 0;
-    case ThreadType::kDisplayCritical:
+    case ThreadType::kPresentation:
     case ThreadType::kInteractive:
       return -8;
     case ThreadType::kRealtimeAudio:

@@ -38,8 +38,7 @@ class ConfigSource {
   const AuthenticatorsMap& config_map() const { return config_map_; }
 
   // Updates the persisted config for that particular user.
-  void UpdateConfigForUser(const AccountId& account_id,
-                           base::Value::Dict config);
+  void UpdateConfigForUser(const AccountId& account_id, base::DictValue config);
 
   // Removes the persisted config for that particular user.
   void RemoveConfigForUser(const AccountId& account_id);
@@ -47,11 +46,11 @@ class ConfigSource {
  private:
   // Reloads the Parent Access Code config for that particular user.
   void LoadConfigForUser(const AccountId& account_id,
-                         const base::Value::Dict& dictionary);
+                         const base::DictValue& dictionary);
 
   // Creates and adds an authenticator to the |config_map_|. |dict| corresponds
   // to an AccessCodeConfig in its serialized format.
-  void AddAuthenticator(const base::Value::Dict& dict,
+  void AddAuthenticator(const base::DictValue& dict,
                         const AccountId& account_id);
 
   const raw_ref<PrefService> local_state_;

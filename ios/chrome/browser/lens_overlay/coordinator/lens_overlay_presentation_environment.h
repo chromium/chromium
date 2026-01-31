@@ -13,11 +13,17 @@
 // of the Lens Overlay's presentation lifecycle.
 @protocol LensOverlayPresentationEnvironment <NSObject>
 
+// Notifies the embedder that Lens Overlay was prepared.
+- (void)lensOverlayDidPrepare;
+
 // Notifies the embedder that Lens Overlay is about to appear.
 - (void)lensOverlayWillAppear;
 
 // Notifies the embedder that Lens Overlay is about to disappear.
 - (void)lensOverlayWillDisappear;
+
+// Notifies the embedder that Lens Overlay did disappear.
+- (void)lensOverlayDidDisappear;
 
 // Notifies the embedder that Lens Overlay readjusted its presentation.
 - (void)lensOverlayDidReadjustPresentation;

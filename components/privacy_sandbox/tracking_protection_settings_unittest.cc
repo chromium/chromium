@@ -9,90 +9,25 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/task_environment.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
-#include "components/privacy_sandbox/tracking_protection_prefs.h"
-#include "components/privacy_sandbox/tracking_protection_settings_observer.h"
-#include "components/sync/test/test_sync_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "components/version_info/channel.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace privacy_sandbox {
 namespace {
 
-class MockTrackingProtectionSettingsObserver
-    : public TrackingProtectionSettingsObserver {
- public:
-  MOCK_METHOD(void, OnBlockAllThirdPartyCookiesChanged, (), (override));
-  MOCK_METHOD(void, OnTrackingProtection3pcdChanged, (), (override));
-};
-
-class TrackingProtectionSettingsTest : public testing::Test {
- public:
-  TrackingProtectionSettingsTest()
-      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    content_settings::CookieSettings::RegisterProfilePrefs(prefs()->registry());
-    HostContentSettingsMap::RegisterProfilePrefs(prefs()->registry());
-    RegisterProfilePrefs(prefs()->registry());
-  }
-
-  GURL GetTestUrl() { return GURL("http://cool.things.com"); }
-
-  virtual std::vector<base::test::FeatureRef> EnabledFeatures() { return {}; }
-
-  void SetUp() override {
-    feature_list_.InitWithFeatures(EnabledFeatures(), {});
-    tracking_protection_settings_ =
-        std::make_unique<TrackingProtectionSettings>(prefs(),
-                                                     /*is_incognito=*/false);
-  }
-
-  void TearDown() override {
-    tracking_protection_settings_->Shutdown();
-    feature_list_.Reset();
-  }
-
-  TrackingProtectionSettings* tracking_protection_settings() {
-    return tracking_protection_settings_.get();
-  }
-
-  sync_preferences::TestingPrefServiceSyncable* prefs() { return &prefs_; }
-
- private:
-  sync_preferences::TestingPrefServiceSyncable prefs_;
-  base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<TrackingProtectionSettings> tracking_protection_settings_;
-  base::test::SingleThreadTaskEnvironment task_environment_;
-};
-
-// Calls observers
-
-TEST_F(TrackingProtectionSettingsTest, CorrectlyCallsObserversForBlockAll3pc) {
-  MockTrackingProtectionSettingsObserver observer;
-  tracking_protection_settings()->AddObserver(&observer);
-
-  EXPECT_CALL(observer, OnBlockAllThirdPartyCookiesChanged());
-  prefs()->SetBoolean(prefs::kBlockAll3pcToggleEnabled, true);
-  testing::Mock::VerifyAndClearExpectations(&observer);
-
-  EXPECT_CALL(observer, OnBlockAllThirdPartyCookiesChanged());
-  prefs()->SetBoolean(prefs::kBlockAll3pcToggleEnabled, false);
-  testing::Mock::VerifyAndClearExpectations(&observer);
-}
-
 // Rollback does not apply to iOS.
 #if !BUILDFLAG(IS_IOS)
 
-class MaybeSetRollbackPrefsModeBTest : public TrackingProtectionSettingsTest {
+class MaybeSetRollbackPrefsModeBTest : public testing::Test {
  public:
-  std::vector<base::test::FeatureRef> EnabledFeatures() override {
-    return {privacy_sandbox::kRollBackModeB};
+  MaybeSetRollbackPrefsModeBTest() {
+    content_settings::CookieSettings::RegisterProfilePrefs(prefs()->registry());
+    RegisterProfilePrefs(prefs()->registry());
   }
 
   void Initialize3pcdState(content_settings::CookieControlsMode cookies_mode,
@@ -114,47 +49,31 @@ class MaybeSetRollbackPrefsModeBTest : public TrackingProtectionSettingsTest {
         "Privacy.3PCD.RollbackNotice.ShouldShow", show_rollback_ui, 1);
   }
 
-  void SetSyncStatus(syncer::SyncService::DataTypeDownloadStatus status) {
-    test_sync_service_.SetDownloadStatusFor({syncer::DataType::PREFERENCES},
-                                            status);
-  }
-
-  syncer::TestSyncService* test_sync_service() { return &test_sync_service_; }
+  sync_preferences::TestingPrefServiceSyncable* prefs() { return &prefs_; }
 
  private:
-  syncer::TestSyncService test_sync_service_;
+  sync_preferences::TestingPrefServiceSyncable prefs_;
   base::HistogramTester histogram_tester_;
 };
 
 TEST_F(MaybeSetRollbackPrefsModeBTest, ShowsNoticeWhen3pcsAllowed) {
-  SetSyncStatus(syncer::SyncService::DataTypeDownloadStatus::kUpToDate);
   Initialize3pcdState(content_settings::CookieControlsMode::kOff, false);
-  MaybeSetRollbackPrefsModeB(test_sync_service(), prefs());
+  MaybeSetRollbackPrefsModeB(prefs());
   VerifyRollbackState(content_settings::CookieControlsMode::kOff, true);
-}
-
-TEST_F(MaybeSetRollbackPrefsModeBTest, DoesNotOffboardWhenWaitingForPrefSync) {
-  SetSyncStatus(
-      syncer::SyncService::DataTypeDownloadStatus::kWaitingForUpdates);
-  Initialize3pcdState(content_settings::CookieControlsMode::kOff, false);
-  MaybeSetRollbackPrefsModeB(test_sync_service(), prefs());
-  EXPECT_TRUE(prefs()->GetBoolean(prefs::kTrackingProtection3pcdEnabled));
 }
 
 TEST_F(MaybeSetRollbackPrefsModeBTest,
        Blocks3pcsAndDoesNotShowNoticeWhen3pcsBlockedIn3pcd) {
-  SetSyncStatus(syncer::SyncService::DataTypeDownloadStatus::kUpToDate);
   Initialize3pcdState(content_settings::CookieControlsMode::kOff, true);
-  MaybeSetRollbackPrefsModeB(test_sync_service(), prefs());
+  MaybeSetRollbackPrefsModeB(prefs());
   VerifyRollbackState(content_settings::CookieControlsMode::kBlockThirdParty,
                       false);
 }
 
 TEST_F(MaybeSetRollbackPrefsModeBTest, DoesNotShowNoticeWhen3pcsBlocked) {
-  SetSyncStatus(syncer::SyncService::DataTypeDownloadStatus::kUpToDate);
   Initialize3pcdState(content_settings::CookieControlsMode::kBlockThirdParty,
                       false);
-  MaybeSetRollbackPrefsModeB(test_sync_service(), prefs());
+  MaybeSetRollbackPrefsModeB(prefs());
   VerifyRollbackState(content_settings::CookieControlsMode::kBlockThirdParty,
                       false);
 }

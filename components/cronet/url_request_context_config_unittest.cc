@@ -8,7 +8,6 @@
 #include <string_view>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
@@ -62,7 +61,7 @@ TEST(URLRequestContextConfigTest, TestExperimentalOptionParsing) {
       base::test::TaskEnvironment::MainThreadType::IO);
 
   // Create JSON for experimental options.
-  base::Value::Dict options;
+  base::DictValue options;
   options.SetByDottedPath("QUIC.max_server_configs_stored_in_properties", 2);
   options.SetByDottedPath("QUIC.idle_connection_timeout_seconds", 300);
   options.SetByDottedPath("QUIC.close_sessions_on_ip_change", true);
@@ -1057,8 +1056,8 @@ TEST(URLRequestContextConfigTest, SetQuicHostWhitelist) {
   const net::HttpNetworkSessionParams* params =
       context->GetNetworkSessionParams();
 
-  EXPECT_TRUE(base::Contains(params->quic_host_allowlist, "www.example.com"));
-  EXPECT_TRUE(base::Contains(params->quic_host_allowlist, "www.example.org"));
+  EXPECT_TRUE(params->quic_host_allowlist.contains("www.example.com"));
+  EXPECT_TRUE(params->quic_host_allowlist.contains("www.example.org"));
 }
 
 TEST(URLRequestContextConfigTest, SetQuicMaxTimeBeforeCryptoHandshake) {

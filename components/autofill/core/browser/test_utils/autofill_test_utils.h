@@ -189,7 +189,7 @@ CreditCard GetVirtualCard();
 
 // Returns a randomly generated credit card of |record_type|. Note that the
 // card is not guaranteed to be valid/sane from a card validation standpoint.
-CreditCard GetRandomCreditCard(CreditCard::RecordType record_Type);
+CreditCard GetRandomCreditCard(CreditCard::RecordType record_type);
 
 // Returns a copy of `credit_card` with `cvc` set as specified.
 CreditCard WithCvc(CreditCard credit_card, std::u16string cvc = u"123");
@@ -511,6 +511,23 @@ EntityInstance GetFlightReservationEntityInstance(
 EntityInstance GetFlightReservationEntityInstanceWithRandomGuid(
     FlightReservationOptions options = {});
 
+template <typename = void>
+struct EntityOptionsT {
+  std::string_view guid = "00000000-0000-4000-8000-000000000000";
+  std::string_view nickname = "Mine";
+  base::Time date_modified = kJune2017;
+  base::Time use_date = kJune2017;
+  std::string_view app_locale = "en-US";
+  EntityInstance::RecordType record_type = EntityInstance::RecordType::kLocal;
+  EntityInstance::AreAttributesReadOnly are_attributes_read_only =
+      EntityInstance::AreAttributesReadOnly(false);
+  int use_count = 0;
+};
+using EntityOptions = EntityOptionsT<>;
+
+EntityInstance GetEntityInstance(std::vector<AttributeInstance> attributes,
+                                 EntityOptions options = {});
+
 // Adds `possible_types` at the end of `possible_field_types`.
 void InitializePossibleTypes(std::vector<FieldTypeSet>& possible_field_types,
                              const std::vector<FieldType>& possible_types);
@@ -526,13 +543,14 @@ void FillUploadField(AutofillUploadContents::Field* field,
 
 // Creates the structure of signatures that would be encoded by
 // `EncodeUploadRequest()` and `EncodeAutofillPageQueryRequest()`
-// and consumed by `ParseServerPredictionsQueryResponse()` and
-// `ProcessServerPredictionsQueryResponse()`.
+// and consumed by `ParseServerPredictionsFromQueryResponse()`.
 //
 // Perhaps a neater way would be to move this to TestFormStructure.
 std::vector<FormSignature> GetEncodedSignatures(const FormStructure& form);
 std::vector<FormSignature> GetEncodedSignatures(
     const std::vector<raw_ref<FormStructure>>& forms);
+std::vector<FormSignature> GetEncodedSignatures(
+    base::span<const FormData> forms);
 
 std::vector<FormSignature> GetEncodedAlternativeSignatures(
     const FormStructure& form);

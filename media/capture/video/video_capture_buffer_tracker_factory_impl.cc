@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "build/build_config.h"
+#include "media/capture/video/shared_image_buffer_tracker.h"
 #include "media/capture/video/shared_memory_buffer_tracker.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -51,6 +52,8 @@ VideoCaptureBufferTrackerFactoryImpl::CreateTracker(
 #else
       return nullptr;
 #endif
+    case VideoCaptureBufferType::kSharedImage:
+      return nullptr;
     default:
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
       // Since Windows and macOS capturer outputs NV12 only for GMBs and I420
@@ -66,8 +69,13 @@ VideoCaptureBufferTrackerFactoryImpl::CreateTracker(
 }
 
 std::unique_ptr<VideoCaptureBufferTracker>
-VideoCaptureBufferTrackerFactoryImpl::CreateTrackerForExternalGpuMemoryBuffer(
-    gfx::GpuMemoryBufferHandle handle) {
+VideoCaptureBufferTrackerFactoryImpl::CreateTrackerForExternalBuffer(
+    CapturedExternalVideoBuffer buffer) {
+  if (buffer.client_shared_image) {
+    return std::make_unique<SharedImageBufferTracker>(
+        std::move(buffer.client_shared_image));
+  }
+  gfx::GpuMemoryBufferHandle handle = std::move(buffer.handle);
 #if BUILDFLAG(IS_APPLE)
   return std::make_unique<GpuMemoryBufferTrackerApple>(handle.io_surface());
 #elif BUILDFLAG(IS_WIN)

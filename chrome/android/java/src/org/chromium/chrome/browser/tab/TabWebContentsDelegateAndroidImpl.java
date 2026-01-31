@@ -20,6 +20,7 @@ import android.os.Handler;
 import android.view.KeyEvent;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.AndroidInfo;
@@ -45,10 +46,10 @@ import org.chromium.chrome.browser.policy.PolicyAuditor;
 import org.chromium.chrome.browser.policy.PolicyAuditorJni;
 import org.chromium.chrome.browser.serial.SerialNotificationManager;
 import org.chromium.chrome.browser.usb.UsbNotificationManager;
+import org.chromium.chrome.browser.util.PictureInPictureWindowOptions;
 import org.chromium.chrome.browser.util.WindowFeatures;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
-import org.chromium.components.embedder_support.delegate.ScreenshotResult;
 import org.chromium.components.find_in_page.FindMatchRectsDetails;
 import org.chromium.components.find_in_page.FindNotificationDetails;
 import org.chromium.content_public.browser.InvalidateTypes;
@@ -56,6 +57,7 @@ import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.navigation_controller.UserAgentOverrideOption;
 import org.chromium.content_public.common.ResourceRequestBody;
+import org.chromium.ui.resources.dynamics.CaptureResult;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -93,17 +95,6 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
         while (observers.hasNext()) observers.next().onFindMatchRectsAvailable(result);
     }
 
-    // Helper functions used to create types that are part of the public interface
-    @CalledByNative
-    private static Rect createRect(int x, int y, int right, int bottom) {
-        return new Rect(x, y, right, bottom);
-    }
-
-    @CalledByNative
-    private static RectF createRectF(float x, float y, float right, float bottom) {
-        return new RectF(x, y, right, bottom);
-    }
-
     @CalledByNative
     public List<Rect> createRectList() {
         return new ArrayList<Rect>();
@@ -132,9 +123,15 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
     }
 
     @CalledByNative
+    private static PictureInPictureWindowOptions createPictureInPictureWindowOptions(
+            @JniType("gfx::Rect") Rect windowBounds, boolean disallowReturnToOpener) {
+        return new PictureInPictureWindowOptions(windowBounds, disallowReturnToOpener);
+    }
+
+    @CalledByNative
     private static FindNotificationDetails createFindNotificationDetails(
             int numberOfMatches,
-            Rect rendererSelectionRect,
+            @JniType("gfx::Rect") Rect rendererSelectionRect,
             int activeMatchOrdinal,
             boolean finalUpdate) {
         return new FindNotificationDetails(
@@ -143,13 +140,15 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
 
     @CalledByNative
     private static FindMatchRectsDetails createFindMatchRectsDetails(
-            int version, int numRects, RectF activeRect) {
+            int version, int numRects, @JniType("gfx::RectF") RectF activeRect) {
         return new FindMatchRectsDetails(version, numRects, activeRect);
     }
 
     @CalledByNative
     private static void setMatchRectByIndex(
-            FindMatchRectsDetails findMatchRectsDetails, int index, RectF rect) {
+            FindMatchRectsDetails findMatchRectsDetails,
+            int index,
+            @JniType("gfx::RectF") RectF rect) {
         findMatchRectsDetails.rects[index] = rect;
     }
 
@@ -172,19 +171,20 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
             GURL targetUrl,
             int disposition,
             WindowFeatures windowFeatures,
-            boolean userGesture) {
+            boolean userGesture,
+            @Nullable PictureInPictureWindowOptions pictureInPictureWindowOptions) {
         return mDelegate.addNewContents(
                 sourceWebContents,
                 webContents,
                 targetUrl,
                 disposition,
                 windowFeatures,
-                userGesture);
+                userGesture,
+                pictureInPictureWindowOptions);
     }
 
-    @CalledByNative
     @Override
-    protected void setContentsBounds(WebContents source, Rect bounds) {
+    public void setContentsBounds(WebContents source, Rect bounds) {
         mDelegate.setContentsBounds(source, bounds);
     }
 
@@ -288,8 +288,9 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
         return mDelegate.takeFocus(reverse);
     }
 
+    @CalledByNative
     @Override
-    public boolean preHandleKeyboardEvent(long nativeKeyEvent) {
+    protected boolean preHandleKeyboardEvent(long nativeKeyEvent) {
         return mDelegate.preHandleKeyboardEvent(nativeKeyEvent);
     }
 
@@ -601,8 +602,8 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
 
     @Override
     public boolean maybeCopyContentArea(
-            Callback<@Nullable ScreenshotResult> callback,
-            ScreenshotResult.Destination destination) {
+            Callback<@Nullable CaptureResult> callback,
+            @CaptureResult.Destination int destination) {
         return NativePageBitmapCapturer.maybeCaptureNativeView(mTab, callback, destination);
     }
 

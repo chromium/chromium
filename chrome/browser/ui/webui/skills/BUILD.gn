@@ -1,0 +1,53 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+assert(is_win || is_mac || is_linux || is_chromeos,
+       "This target is only supported on Windows, Mac, Linux, or ChromeOS.")
+
+mojom("mojo_bindings") {
+  sources = [ "skills.mojom" ]
+  webui_module_path = "/"
+  public_deps = [
+    "//components/skills/public:mojo_bindings",
+    "//mojo/public/mojom/base",
+    "//ui/base/mojom",
+    "//url/mojom:url_mojom_gurl",
+  ]
+}
+
+source_set("skills") {
+  public = [
+    "skills_dialog.h",
+    "skills_ui.h",
+  ]
+
+  sources = [
+    "skills_dialog.cc",
+    "skills_page_handler.cc",
+    "skills_page_handler.h",
+    "skills_ui.cc",
+  ]
+
+  deps = [
+    ":mojo_bindings",
+    "//base",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles/keep_alive",
+    "//chrome/browser/resources/skills:resources",
+    "//chrome/browser/skills",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/webui",
+    "//chrome/common",
+    "//components/skills:features",
+    "//components/skills/public",
+    "//components/skills/public:mojo_bindings",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/web_dialogs",
+    "//ui/webui",
+  ]
+}

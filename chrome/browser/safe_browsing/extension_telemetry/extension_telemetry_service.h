@@ -283,7 +283,7 @@ class ExtensionTelemetryService : public KeyedService {
   // saved to Prefs and the next extension file data collection is initiated.
   void OnOffstoreFileDataCollected(
       base::flat_set<OffstoreExtensionFileDataContext>::iterator context,
-      base::Value::Dict file_data);
+      base::DictValue file_data);
 
   // Stops and clears any offstore file data collection objects/contexts.
   void StopOffstoreFileDataCollection();

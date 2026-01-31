@@ -38,7 +38,7 @@ void AppendRequiredCellularProperties(
     const dbus::ObjectPath& euicc_path,
     const dbus::ObjectPath& profile_path,
     const NetworkProfile* profile,
-    base::Value::Dict* shill_properties_to_update) {
+    base::DictValue* shill_properties_to_update) {
   HermesEuiccClient::Properties* euicc_properties =
       HermesEuiccClient::Get()->GetProperties(euicc_path);
   HermesProfileClient::Properties* profile_properties =
@@ -57,7 +57,7 @@ void AppendRequiredCellularProperties(
   }
 }
 
-bool IsManagedNetwork(const base::Value::Dict& new_shill_properties) {
+bool IsManagedNetwork(const base::DictValue& new_shill_properties) {
   std::unique_ptr<NetworkUIData> ui_data =
       shill_property_util::GetUIDataFromProperties(new_shill_properties);
   return ui_data && (ui_data->onc_source() == ::onc::ONC_SOURCE_DEVICE_POLICY ||
@@ -150,7 +150,7 @@ void CellularESimInstaller::InstallProfileFromActivationCode(
     const std::string& activation_code,
     const std::string& confirmation_code,
     const dbus::ObjectPath& euicc_path,
-    base::Value::Dict new_shill_properties,
+    base::DictValue new_shill_properties,
     InstallProfileFromActivationCodeCallback callback,
     bool is_initial_install,
     ProfileInstallMethod install_method) {
@@ -167,7 +167,7 @@ void CellularESimInstaller::PerformInstallProfileFromActivationCode(
     const std::string& activation_code,
     const std::string& confirmation_code,
     const dbus::ObjectPath& euicc_path,
-    base::Value::Dict new_shill_properties,
+    base::DictValue new_shill_properties,
     bool is_initial_install,
     ProfileInstallMethod install_method,
     InstallProfileFromActivationCodeCallback callback,
@@ -202,7 +202,7 @@ void CellularESimInstaller::OnProfileInstallResult(
     InstallProfileFromActivationCodeCallback callback,
     std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
     const dbus::ObjectPath& euicc_path,
-    const base::Value::Dict& new_shill_properties,
+    const base::DictValue& new_shill_properties,
     bool is_initial_install,
     ProfileInstallMethod install_method,
     const base::Time installation_start_time,
@@ -235,7 +235,7 @@ void CellularESimInstaller::OnProfileInstallResult(
 }
 
 void CellularESimInstaller::ConfigureESimService(
-    const base::Value::Dict& new_shill_properties,
+    const base::DictValue& new_shill_properties,
     const dbus::ObjectPath& euicc_path,
     const dbus::ObjectPath& profile_path,
     ConfigureESimServiceCallback callback) {
@@ -250,7 +250,7 @@ void CellularESimInstaller::ConfigureESimService(
     return;
   }
 
-  base::Value::Dict properties_to_set = new_shill_properties.Clone();
+  base::DictValue properties_to_set = new_shill_properties.Clone();
   AppendRequiredCellularProperties(euicc_path, profile_path, profile,
                                    &properties_to_set);
   NET_LOG(EVENT)

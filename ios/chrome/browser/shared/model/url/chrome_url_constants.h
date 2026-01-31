@@ -48,6 +48,8 @@ inline constexpr char kChromeUICrashHost[] = "crash";
 inline constexpr char kChromeUIChromeURLsHost[] = "chrome-urls";
 inline constexpr char kChromeUICrashesHost[] = "crashes";
 inline constexpr char kChromeUICreditsHost[] = "credits";
+inline constexpr char kChromeUIConnectorsInternalsHost[] =
+    "connectors-internals";
 inline constexpr char kChromeUIDataSharingInternalsHost[] =
     "data-sharing-internals";
 inline constexpr char kChromeUIDinoHost[] = "dino";
@@ -192,6 +194,10 @@ inline constexpr char kEnhancedSafeBrowsingLearnMoreURL[] =
 // "My Activity" URL for managing the user's activity
 inline constexpr char kMyActivityURL[] =
     "https://myactivity.google.com/myactivity";
+
+// Help center URL for the Bookmarks limit exceeded error.
+inline constexpr char kBookmarksLimitExceededHelpCenter[] =
+    "https://support.google.com/chrome?p=manage_bookmarks_ios";
 
 // "Learn more" URL for the Lens Overlay.
 inline constexpr char kLearnMoreLensURL[] =

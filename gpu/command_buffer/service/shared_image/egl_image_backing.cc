@@ -369,7 +369,9 @@ void EGLImageBacking::EndWrite() {
   }
 
   is_writing_ = false;
-  write_fence_ = gl::GLFenceEGL::Create();
+  if (have_context()) {
+    write_fence_ = gl::GLFenceEGL::Create();
+  }
 }
 
 bool EGLImageBacking::BeginRead(const GLRepresentationShared* reader) {

@@ -393,7 +393,7 @@ class SecurityTokenLoginTest : public MixinBasedInProcessBrowserTest,
     challenge_response_key.set_extension_id(
         TestCertificateProviderExtension::extension_id());
 
-    base::Value::List challenge_response_keys_list =
+    base::ListValue challenge_response_keys_list =
         SerializeChallengeResponseKeysForKnownUser({challenge_response_key});
     user_manager::KnownUser(g_browser_process->local_state())
         .SetChallengeResponseKeys(GetChallengeResponseAccountId(),

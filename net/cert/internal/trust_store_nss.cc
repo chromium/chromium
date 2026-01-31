@@ -307,6 +307,11 @@ bssl::CertificateTrust TrustStoreNSS::GetTrust(
   return GetTrustIgnoringSystemTrust(nss_cert.get());
 }
 
+std::shared_ptr<const bssl::MTCAnchor> TrustStoreNSS::GetTrustedMTCIssuerOf(
+    const bssl::ParsedCertificate* cert) {
+  return nullptr;
+}
+
 bssl::CertificateTrust TrustStoreNSS::GetTrustIgnoringSystemTrust(
     CERTCertificate* nss_cert) const {
   // See if NSS has any trust settings for the certificate at all. If not,

@@ -21,10 +21,10 @@
 #include "base/time/time.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/file_analysis_request.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/multipart_uploader.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/resumable_uploader.h"
@@ -32,6 +32,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_request.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/connectors/core/features.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -59,21 +60,23 @@ enterprise_connectors::CloudAnalysisSettings CloudAnalysisSettingsWithUrl(
 
 }  // namespace
 
+using ::enterprise_connectors::BinaryUploadRequest;
 using ::enterprise_connectors::ConnectorUploadRequest;
 using ::enterprise_connectors::ConnectorUploadRequestFactory;
+using ::enterprise_connectors::GetBrowserPolicyConnector;
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::SaveArg;
 
-class MockRequest : public BinaryUploadService::Request {
+class MockRequest : public BinaryUploadRequest {
  public:
-  MockRequest(BinaryUploadService::ContentAnalysisCallback callback,
+  MockRequest(BinaryUploadRequest::ContentAnalysisCallback callback,
               enterprise_connectors::CloudAnalysisSettings settings)
-      : BinaryUploadService::Request(
-            std::move(callback),
-            enterprise_connectors::CloudOrLocalAnalysisSettings(
-                std::move(settings))) {}
+      : BinaryUploadRequest(std::move(callback),
+                            enterprise_connectors::CloudOrLocalAnalysisSettings(
+                                std::move(settings)),
+                            base::BindRepeating(&GetBrowserPolicyConnector)) {}
   MOCK_METHOD1(GetRequestData, void(DataCallback));
 };
 

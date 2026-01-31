@@ -5,11 +5,13 @@
 #include "components/permissions/contexts/webxr_permission_context.h"
 
 #include <memory>
+#include <variant>
 
 #include "base/check.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/permissions/permission_decision.h"
+#include "components/permissions/permission_prompt_decision.h"
 #include "components/permissions/permission_request_data.h"
 #include "device/vr/buildflags/buildflags.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
@@ -53,9 +55,8 @@ void WebXrPermissionContext::NotifyPermissionSet(
     const PermissionRequestData& request_data,
     BrowserPermissionCallback callback,
     bool persist,
-    PermissionDecision decision,
-    bool is_final_decision) {
-  DCHECK(is_final_decision);
+    const permissions::PermissionPromptDecision& decision) {
+  DCHECK(decision.is_final);
 
   // Note that this method calls into base class implementation version of
   // `NotifyPermissionSet()`, which would call `UpdateTabContext()`.
@@ -68,7 +69,8 @@ void WebXrPermissionContext::NotifyPermissionSet(
   // If permission was denied, we don't need to check for additional
   // permissions. We also don't need to check for additional permissions for
   // non-OpenXR VR.
-  const bool permission_granted = decision == PermissionDecision::kAllow;
+  const bool permission_granted =
+      decision.overall_decision == PermissionDecision::kAllow;
   bool is_openxr = false;
 #if BUILDFLAG(ENABLE_OPENXR)
   is_openxr = content_settings_type_ == ContentSettingsType::VR &&
@@ -81,8 +83,7 @@ void WebXrPermissionContext::NotifyPermissionSet(
       permission_granted && (is_ar || is_openxr || is_hands);
   if (!additional_permissions_needed) {
     ContentSettingPermissionContextBase::NotifyPermissionSet(
-        request_data, std::move(callback), persist, decision,
-        is_final_decision);
+        request_data, std::move(callback), persist, decision);
     return;
   }
 
@@ -98,12 +99,12 @@ void WebXrPermissionContext::NotifyPermissionSet(
     auto previous_setting = GetContentSettingStatusInternal(
         rfh, request_data.requesting_origin, request_data.embedding_origin);
     auto new_content_setting = std::get<ContentSetting>(
-        request_data.resolver->ComputePermissionDecisionResult(
-            previous_setting, decision, request_data.prompt_options));
+        request_data.resolver->ComputePermissionDecisionResult(previous_setting,
+                                                               decision));
 
     ContentSettingPermissionContextBase::UpdateContentSetting(
         request_data, new_content_setting,
-        decision == PermissionDecision::kAllowThisTime);
+        decision.overall_decision == PermissionDecision::kAllowThisTime);
   }
 
   content::WebContents* web_contents =
@@ -172,8 +173,10 @@ void WebXrPermissionContext::OnAndroidPermissionDecided(
   PermissionDecision decision = permission_granted ? PermissionDecision::kAllow
                                                    : PermissionDecision::kDeny;
   ContentSettingPermissionContextBase::NotifyPermissionSet(
-      request_data, std::move(callback), false /*persist*/, decision,
-      /*is_final_decision=*/true);
+      request_data, std::move(callback), /*persist=*/false,
+      PermissionPromptDecision{.overall_decision = decision,
+                               .prompt_options = std::monostate(),
+                               .is_final = true});
 }
 
 void WebXrPermissionContext::UpdateTabContext(

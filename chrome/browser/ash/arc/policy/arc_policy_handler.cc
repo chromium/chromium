@@ -53,7 +53,7 @@ std::optional<std::string_view> FindUnknownVariable(const std::string& input) {
 // |managed_configutation|.
 void WarnInvalidVariablesInManagedConfiguration(
     const std::string& application_package_name,
-    const base::Value::Dict& managed_configuration,
+    const base::DictValue& managed_configuration,
     policy::PolicyMap::Entry* arc_policy) {
   DCHECK(arc_policy);
 
@@ -100,9 +100,9 @@ void ArcPolicyHandler::PrepareForDisplaying(policy::PolicyMap* policies) const {
       value->GetString(), base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
   if (!json.has_value())
     return;
-  const base::Value::Dict& arc_policy = json->GetDict();
+  const base::DictValue& arc_policy = json->GetDict();
 
-  const base::Value::List* apps =
+  const base::ListValue* apps =
       arc_policy.FindList(policy_util::kArcPolicyKeyApplications);
   if (!apps)
     return;
@@ -110,9 +110,9 @@ void ArcPolicyHandler::PrepareForDisplaying(policy::PolicyMap* policies) const {
   for (const base::Value& app_value : *apps) {
     if (!app_value.is_dict())
       continue;
-    const base::Value::Dict& application = app_value.GetDict();
+    const base::DictValue& application = app_value.GetDict();
 
-    const base::Value::Dict* managed_configuration =
+    const base::DictValue* managed_configuration =
         application.FindDict(ArcPolicyBridge::kManagedConfiguration);
     if (!managed_configuration)
       continue;

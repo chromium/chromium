@@ -37,18 +37,18 @@ namespace net {
 
 namespace {
 
-base::Value::Dict NetLogHeadersParams(const quiche::HttpHeaderBlock* headers,
-                                      NetLogCaptureMode capture_mode) {
-  base::Value::Dict dict;
+base::DictValue NetLogHeadersParams(const quiche::HttpHeaderBlock* headers,
+                                    NetLogCaptureMode capture_mode) {
+  base::DictValue dict;
   dict.Set("headers", ElideHttpHeaderBlockForNetLog(*headers, capture_mode));
   return dict;
 }
 
-base::Value::Dict NetLogParams(const GURL& url,
-                               const std::string& method,
-                               const HttpRequestHeaders* headers,
-                               NetLogCaptureMode capture_mode) {
-  base::Value::Dict dict;
+base::DictValue NetLogParams(const GURL& url,
+                             const std::string& method,
+                             const HttpRequestHeaders* headers,
+                             NetLogCaptureMode capture_mode) {
+  base::DictValue dict;
   dict.Set("url", url.possibly_invalid_spec());
   dict.Set("method", method);
   base::Value headers_param(
@@ -261,7 +261,7 @@ void BidirectionalStream::OnHeadersReceived(
   session_->http_stream_factory()->ProcessAlternativeServices(
       session_, NetworkAnonymizationKey(), response_info.headers.get(),
       url::SchemeHostPort(request_info_->url));
-  delegate_->OnHeadersReceived(response_headers);
+  delegate_->OnHeadersReceived(response_headers, used_proxy_info_);
 }
 
 void BidirectionalStream::OnDataRead(int bytes_read) {
@@ -357,6 +357,8 @@ void BidirectionalStream::OnBidirectionalStreamImplReady(
             "This feature is not used in Chrome."
         }
     )");
+
+  used_proxy_info_ = used_proxy_info;
 
   stream_request_.reset();
   stream_impl_ = std::move(stream);

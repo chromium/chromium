@@ -26,7 +26,7 @@ std::optional<PublicKey> GetPublicKey(base::Value& value) {
     return std::nullopt;
   }
 
-  base::Value::Dict& dict = value.GetDict();
+  base::DictValue& dict = value.GetDict();
   std::string* key_id = dict.FindString("id");
   if (!key_id) {
     return std::nullopt;
@@ -63,7 +63,7 @@ std::vector<PublicKey> GetPublicKeys(base::Value& value) {
     return {};
   }
 
-  base::Value::List* keys_json = value.GetDict().FindList("keys");
+  base::ListValue* keys_json = value.GetDict().FindList("keys");
   if (!keys_json) {
     return {};
   }

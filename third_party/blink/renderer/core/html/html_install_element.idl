@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://github.com/mikewest/pepc-install/
+// https://github.com/WICG/install-element
 
 [RuntimeEnabled=InstallElement, Exposed=Window]
 interface HTMLInstallElement : HTMLPermissionElement {
   [HTMLConstructor] constructor();
 
-  [CEReactions, Reflect, URL] attribute USVString manifest;
+  [CEReactions, Reflect, URL] attribute USVString? installURL;
+  [CEReactions, Reflect, URL] attribute USVString? manifestId;
 };
 // TODO(455783637): HTMLPermissionElement should shift to `InPagePermissionMixin`.

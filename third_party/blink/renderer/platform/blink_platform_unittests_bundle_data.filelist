@@ -141,6 +141,11 @@
 ../../web_tests/external/wpt/fonts/pass.woff
 ../../web_tests/external/wpt/fonts/sileot-webfont.woff
 ../../web_tests/external/wpt/fonts/tcu-font.woff
+../../web_tests/external/wpt/jpegxl/resources/3x3_jpeg_recompression.jxl
+../../web_tests/external/wpt/jpegxl/resources/3x3_srgb_lossless.jxl
+../../web_tests/external/wpt/jpegxl/resources/3x3_srgb_lossy.jxl
+../../web_tests/external/wpt/jpegxl/resources/3x3a_srgb_lossless.jxl
+../../web_tests/external/wpt/jpegxl/resources/3x3a_srgb_lossy.jxl
 ../../web_tests/images/bmp-suite/bad/badbitcount.bmp
 ../../web_tests/images/bmp-suite/bad/badbitssize.bmp
 ../../web_tests/images/bmp-suite/bad/baddens1.bmp
@@ -239,11 +244,13 @@
 ../../web_tests/images/resources/23-55.jpg
 ../../web_tests/images/resources/2entries.ico
 ../../web_tests/images/resources/32bit.ico
+../../web_tests/images/resources/3x3_gray_lossless.jxl
 ../../web_tests/images/resources/5000x5000.png
 ../../web_tests/images/resources/55.jpg
 ../../web_tests/images/resources/57.jpg
 ../../web_tests/images/resources/58.jpg
 ../../web_tests/images/resources/59.jpg
+../../web_tests/images/resources/5_frames_numbered.jxl
 ../../web_tests/images/resources/8bit.ico
 ../../web_tests/images/resources/animated-10color-fast.gif
 ../../web_tests/images/resources/animated-10color.gif
@@ -275,6 +282,7 @@
 ../../web_tests/images/resources/avif/gracehopper_422_12b_grid2x4.avif
 ../../web_tests/images/resources/avif/gray1024x704.avif
 ../../web_tests/images/resources/avif/green-no-alpha-ispe.avif
+../../web_tests/images/resources/avif/hdr-base-with-yuv400-gainmap.avif
 ../../web_tests/images/resources/avif/kodim03.avif
 ../../web_tests/images/resources/avif/peach.avif
 ../../web_tests/images/resources/avif/peach_13000000.avif
@@ -434,6 +442,7 @@
 ../../web_tests/images/resources/half-circles.svg
 ../../web_tests/images/resources/half_scan-2.jpg
 ../../web_tests/images/resources/half_scan.jpg
+../../web_tests/images/resources/high_bit_depth_1x1.jxl
 ../../web_tests/images/resources/icc-v2-gbr-420-height-not-whole-mcu.jpg
 ../../web_tests/images/resources/icc-v2-gbr-420-width-not-whole-mcu.jpg
 ../../web_tests/images/resources/icc-v2-gbr-422-whole-mcus.jpg
@@ -487,6 +496,7 @@
 ../../web_tests/images/resources/missing-plte-before-trns.png
 ../../web_tests/images/resources/motion-jpeg-single-frame.jpg
 ../../web_tests/images/resources/mu.png
+../../web_tests/images/resources/newtons_cradle.jxl
 ../../web_tests/images/resources/non-interleaved_progressive-1.jpg
 ../../web_tests/images/resources/non-interleaved_progressive.jpg
 ../../web_tests/images/resources/oval.png
@@ -626,6 +636,7 @@
 ../../web_tests/images/resources/ycbcr-progressive-003.jpg
 ../../web_tests/images/resources/ycbcr-with-cmyk-color-profile.jpg
 ../../web_tests/images/resources/ycbcr-with-no-color-profile.jpg
+../../web_tests/images/resources/zoltan.jxl
 ../../web_tests/third_party/AdobeVF/AdobeVFPrototype.otf
 ../../web_tests/third_party/Amstelvar/Amstelvar.ttf
 ../../web_tests/third_party/DroidSans/DroidSans.ttf.subset-U002E-U0041-42.ttf

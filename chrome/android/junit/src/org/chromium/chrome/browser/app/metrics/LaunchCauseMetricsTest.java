@@ -21,9 +21,12 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 /** Tests basic functionality of LaunchCauseMetrics. */
 @RunWith(BaseRobolectricTestRunner.class)
+@EnableFeatures({ChromeFeatureList.LAUNCH_CAUSE_SCREEN_OFF_FIX})
 public final class LaunchCauseMetricsTest {
     @Mock private Activity mActivity;
 
@@ -154,6 +157,19 @@ public final class LaunchCauseMetricsTest {
     }
 
     @Test
+    public void testLaunchedFromRecreation() throws Throwable {
+        int count = histogramCountForValue(LaunchCauseMetrics.LaunchCause.RECREATION);
+        TestLaunchCauseMetrics metrics = new TestLaunchCauseMetrics(mActivity);
+        metrics.onRecreated();
+        int launchCause = metrics.recordLaunchCause();
+        count++;
+
+        Assert.assertEquals(LaunchCauseMetrics.LaunchCause.RECREATION, launchCause);
+        Assert.assertEquals(
+                count, histogramCountForValue(LaunchCauseMetrics.LaunchCause.RECREATION));
+    }
+
+    @Test
     public void testResumedFromScreenOn() throws Throwable {
         int count = histogramCountForValue(LaunchCauseMetrics.LaunchCause.FOREGROUND_WHEN_LOCKED);
         TestLaunchCauseMetrics metrics = new TestLaunchCauseMetrics(mActivity);
@@ -166,6 +182,19 @@ public final class LaunchCauseMetricsTest {
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.STARTED);
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.RESUMED);
         int launchCause = metrics.recordLaunchCause();
+        Assert.assertEquals(LaunchCauseMetrics.LaunchCause.FOREGROUND_WHEN_LOCKED, launchCause);
+        count++;
+        Assert.assertEquals(
+                count,
+                histogramCountForValue(LaunchCauseMetrics.LaunchCause.FOREGROUND_WHEN_LOCKED));
+
+        metrics.setDisplayOff(false);
+        ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.PAUSED);
+        metrics.setDisplayOff(true);
+        ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.STOPPED);
+        ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.STARTED);
+        ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.RESUMED);
+        launchCause = metrics.recordLaunchCause();
         Assert.assertEquals(LaunchCauseMetrics.LaunchCause.FOREGROUND_WHEN_LOCKED, launchCause);
         count++;
         Assert.assertEquals(

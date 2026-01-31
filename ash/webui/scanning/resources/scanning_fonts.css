@@ -10,15 +10,15 @@
 
 :host {
   --scanning-action-toolbar-font-family: Roboto;
-  --scanning-app-title-font-family: "Google Sans", Roboto, sans-serif;
+  --scanning-app-title-font-family: 'Google Sans', Roboto, sans-serif;
   --scanning-done-section-option-font-family: Roboto;
   --scanning-helper-text-font-family: Roboto;
   --scanning-more-settings-font-family: Roboto;
   --scanning-multi-page-checkbox-font-family: Roboto;
   --scanning-no-scanners-subtext-font-family: Roboto;
-  --scanning-progress-text-font-family: "Google Sans", Roboto, sans-serif;
+  --scanning-progress-text-font-family: 'Google Sans', Roboto, sans-serif;
   --scanning-scan-setting-font-family: Roboto;
-  --scanning-scanners-loading-font-family: "Google Sans", Roboto, sans-serif;
+  --scanning-scanners-loading-font-family: 'Google Sans', Roboto, sans-serif;
 
   --scanning-action-toolbar-font-size: 13px;
   --scanning-app-title-font-size: 22px;

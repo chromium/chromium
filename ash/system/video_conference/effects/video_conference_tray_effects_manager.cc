@@ -178,7 +178,7 @@ video_conference::VcTileUiController*
 VideoConferenceTrayEffectsManager::GetUiControllerForEffectId(
     VcEffectId effect_id) {
   CHECK(features::IsVcDlcUiEnabled());
-  if (!base::Contains(controller_for_effect_id_, effect_id)) {
+  if (!controller_for_effect_id_.contains(effect_id)) {
     for (auto* effect : GetToggleEffects()) {
       if (effect_id == effect->id()) {
         controller_for_effect_id_[effect_id] =
@@ -249,7 +249,7 @@ void VideoConferenceTrayEffectsManager::RemoveTileControllers(
   }
   for (auto* effect : delegate->GetAllEffects(VcEffectType::kToggle)) {
     const VcEffectId id = effect->id();
-    if (base::Contains(controller_for_effect_id_, id)) {
+    if (controller_for_effect_id_.contains(id)) {
       controller_for_effect_id_.erase(id);
     }
   }

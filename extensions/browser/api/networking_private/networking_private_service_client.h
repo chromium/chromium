@@ -56,12 +56,12 @@ class NetworkingPrivateServiceClient
                 DictionaryCallback success_callback,
                 FailureCallback failure_callback) override;
   void SetProperties(const std::string& guid,
-                     base::Value::Dict properties_dict,
+                     base::DictValue properties_dict,
                      bool allow_set_shared_config,
                      VoidCallback success_callback,
                      FailureCallback failure_callback) override;
   void CreateNetwork(bool shared,
-                     base::Value::Dict properties_dict,
+                     base::DictValue properties_dict,
                      StringCallback success_callback,
                      FailureCallback failure_callback) override;
   void ForgetNetwork(const std::string& guid,
@@ -137,11 +137,11 @@ class NetworkingPrivateServiceClient
   // Callback wrappers.
   void AfterGetProperties(PropertiesCallback callback,
                           const std::string& network_guid,
-                          std::unique_ptr<base::Value::Dict> properties,
+                          std::unique_ptr<base::DictValue> properties,
                           const std::string* error);
   void AfterGetState(ServiceCallbacksID callback_id,
                      const std::string& network_guid,
-                     std::unique_ptr<base::Value::Dict> properties,
+                     std::unique_ptr<base::DictValue> properties,
                      const std::string* error);
   void AfterSetProperties(ServiceCallbacksID callback_id,
                           const std::string* error);
@@ -149,7 +149,7 @@ class NetworkingPrivateServiceClient
                           const std::string* network_guid,
                           const std::string* error);
   void AfterGetVisibleNetworks(ServiceCallbacksID callback_id,
-                               std::unique_ptr<base::Value::List> networks);
+                               std::unique_ptr<base::ListValue> networks);
   void AfterStartConnect(ServiceCallbacksID callback_id,
                          const std::string* error);
   void AfterStartDisconnect(ServiceCallbacksID callback_id,

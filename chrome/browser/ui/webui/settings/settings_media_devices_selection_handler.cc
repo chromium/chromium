@@ -106,7 +106,7 @@ void MediaDevicesSelectionHandler::SetWebUiForTest(content::WebUI* web_ui) {
 }
 
 void MediaDevicesSelectionHandler::InitializeCaptureDevices(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   DCHECK_EQ(1U, args.size());
   if (!args[0].is_string()) {
     NOTREACHED();
@@ -124,7 +124,7 @@ void MediaDevicesSelectionHandler::InitializeCaptureDevices(
 }
 
 void MediaDevicesSelectionHandler::SetPreferredCaptureDevice(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CHECK_EQ(2U, args.size());
   if (!args[0].is_string() || !args[1].is_string()) {
     NOTREACHED();
@@ -159,7 +159,7 @@ void MediaDevicesSelectionHandler::UpdateDevicesMenu(
 
   std::string selected_device_id;
   // Build the list of devices to send to JS.
-  base::Value::List device_list;
+  base::ListValue device_list;
   for (const auto& device : devices) {
     if (real_default_device_id.has_value() &&
         media::AudioDeviceDescription::IsDefaultDevice(device.unique_id)) {
@@ -168,7 +168,7 @@ void MediaDevicesSelectionHandler::UpdateDevicesMenu(
     if (selected_device_id.empty()) {
       selected_device_id = device.unique_id;
     }
-    base::Value::Dict entry;
+    base::DictValue entry;
     entry.Set("name", GetDeviceDisplayName(device));
     entry.Set("id", device.unique_id);
     device_list.Append(std::move(entry));
@@ -186,9 +186,9 @@ void MediaDevicesSelectionHandler::UpdateDevicesMenu(
   AllowJavascript();
 
   // Build the list of devices to send to JS.
-  base::Value::List device_list;
+  base::ListValue device_list;
   for (const auto& device : devices) {
-    base::Value::Dict entry;
+    base::DictValue entry;
     entry.Set("name", GetDeviceDisplayName(device));
     entry.Set("id", device.descriptor.device_id);
     device_list.Append(std::move(entry));

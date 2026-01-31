@@ -199,7 +199,7 @@ class FileModificationTracker {
     FilePathSet result;
     PathToTimeMap state = EnumerateFiles();
     for (const auto& [name, _] : snapshot_) {
-      if (!base::Contains(state, name)) {
+      if (!state.contains(name)) {
         result.insert(name);
       }
     }

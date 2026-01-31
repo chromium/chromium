@@ -196,7 +196,7 @@ class ChromePasswordProtectionServiceBrowserTest : public InProcessBrowserTest {
 
     CoreAccountInfo account_info =
         identity_test_env()->MakePrimaryAccountAvailable(
-            user_manager::kStubUserEmail, signin::ConsentLevel::kSync);
+            user_manager::kStubUserEmail, signin::ConsentLevel::kSignin);
 
     ASSERT_EQ(account_info.email, user_manager::kStubUserEmail);
 
@@ -983,6 +983,74 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
     run_loop.Run();
     EXPECT_FALSE(is_phishing_verdict);
   }
+}
+
+IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
+                       VerifyPasswordReuseLookupUserEventRecorded) {
+  base::HistogramTester histogram_tester;
+  SetUpPrimaryAccountWithHostedDomain(kNoHostedDomainFound);
+  ChromePasswordProtectionService* service = GetService(/*is_incognito=*/false);
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Initialize and verify initial state.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(kLoginPageUrl)));
+  ASSERT_EQ(1, browser()->tab_strip_model()->count());
+  ASSERT_FALSE(
+      ChromePasswordProtectionService::ShouldShowPasswordReusePageInfoBubble(
+          web_contents, PasswordType::PRIMARY_ACCOUNT_PASSWORD));
+  ASSERT_EQ(security_state::NONE, GetSecurityLevel(web_contents));
+  ASSERT_EQ(security_state::MALICIOUS_CONTENT_STATUS_NONE,
+            GetVisibleSecurityState(web_contents)->malicious_content_status);
+
+  // Shows modal dialog on current web_contents.
+  ReusedPasswordAccountType account_type;
+  account_type.set_account_type(ReusedPasswordAccountType::GSUITE);
+  account_type.set_is_account_syncing(true);
+  scoped_refptr<PasswordProtectionRequest> request =
+      CreateDummyRequest(web_contents);
+  service->ShowModalWarning(
+      request.get(), LoginReputationClientResponse::VERDICT_TYPE_UNSPECIFIED,
+      "unused_token", account_type);
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(
+      ChromePasswordProtectionService::ShouldShowPasswordReusePageInfoBubble(
+          web_contents, PasswordType::PRIMARY_ACCOUNT_PASSWORD));
+  ASSERT_EQ(security_state::DANGEROUS, GetSecurityLevel(web_contents));
+  ASSERT_EQ(
+      security_state::MALICIOUS_CONTENT_STATUS_SIGNED_IN_SYNC_PASSWORD_REUSE,
+      GetVisibleSecurityState(web_contents)->malicious_content_status);
+
+  // Simulates clicking "Ignore" button on the modal dialog.
+  service->OnUserAction(web_contents, account_type, RequestOutcome::UNKNOWN,
+                        LoginReputationClientResponse::VERDICT_TYPE_UNSPECIFIED,
+                        "unused_token", WarningUIType::MODAL_DIALOG,
+                        WarningAction::IGNORE_WARNING);
+  // Ensures that all asynchronous tasks are completed before verifying the
+  // histogram sample.
+  content::RunAllTasksUntilIdle();
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.ClientSafeBrowsingReport.PasswordReuse.RepeatVisit2", false,
+      1);
+
+  // Navigate to a different page, then navigate back.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(kLoginPageUrl)));
+
+  // Simulates clicking "Change password" button on the modal dialog.
+  service->OnUserAction(web_contents, account_type, RequestOutcome::UNKNOWN,
+                        LoginReputationClientResponse::VERDICT_TYPE_UNSPECIFIED,
+                        "unused_token", WarningUIType::MODAL_DIALOG,
+                        WarningAction::CHANGE_PASSWORD);
+  // Ensures that all asynchronous tasks are completed before verifying the
+  // histogram sample.
+  content::RunAllTasksUntilIdle();
+  histogram_tester.ExpectBucketCount(
+      "SafeBrowsing.ClientSafeBrowsingReport.PasswordReuse.RepeatVisit2", true,
+      1);
 }
 
 // Test fixture for testing the navigation deferral mechanism while a modal

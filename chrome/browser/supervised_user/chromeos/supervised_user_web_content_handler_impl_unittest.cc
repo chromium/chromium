@@ -14,7 +14,7 @@
 #include "chrome/browser/supervised_user/chromeos/mock_large_icon_service.h"
 #include "chrome/browser/supervised_user/chromeos/supervised_user_favicon_request_handler.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/supervised_user/core/browser/supervised_user_settings_service.h"
+#include "components/supervised_user/core/browser/family_link_settings_service.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "content/public/test/browser_task_environment.h"
@@ -24,8 +24,8 @@
 #include "url/gurl.h"
 
 namespace {
-class MockSupervisedUserSettingsService
-    : public supervised_user::SupervisedUserSettingsService {
+class MockFamilyLinkSettingsService
+    : public supervised_user::FamilyLinkSettingsService {
  public:
   MOCK_METHOD1(RecordLocalWebsiteApproval, void(const std::string& host));
 };
@@ -68,9 +68,9 @@ TEST_F(SupervisedUserWebContentHandlerImplTest,
   base::HistogramTester histogram_tester;
   const GURL url("http://www.example.com");
 
-  testing::NiceMock<MockSupervisedUserSettingsService>
-      supervisedUserSettingsServiceMock;
-  EXPECT_CALL(supervisedUserSettingsServiceMock,
+  testing::NiceMock<MockFamilyLinkSettingsService>
+      FamilyLinkSettingsServiceMock;
+  EXPECT_CALL(FamilyLinkSettingsServiceMock,
               RecordLocalWebsiteApproval(url.GetHost()));
 
   auto result = std::make_unique<ash::ParentAccessDialog::Result>();
@@ -93,7 +93,7 @@ TEST_F(SupervisedUserWebContentHandlerImplTest,
       /*interstitial_navigation_id=*/0);
 
   web_content_handler.OnLocalApprovalRequestCompleted(
-      supervisedUserSettingsServiceMock, url, start_time, std::move(result));
+      FamilyLinkSettingsServiceMock, url, start_time, std::move(result));
 
   histogram_tester.ExpectUniqueSample(
       supervised_user::WebContentHandler::GetLocalApprovalResultHistogram(),
@@ -113,9 +113,9 @@ TEST_F(SupervisedUserWebContentHandlerImplTest,
   base::HistogramTester histogram_tester;
   const GURL url("http://www.example.com");
 
-  testing::NiceMock<MockSupervisedUserSettingsService>
-      supervisedUserSettingsServiceMock;
-  EXPECT_CALL(supervisedUserSettingsServiceMock,
+  testing::NiceMock<MockFamilyLinkSettingsService>
+      FamilyLinkSettingsServiceMock;
+  EXPECT_CALL(FamilyLinkSettingsServiceMock,
               RecordLocalWebsiteApproval(url.GetHost()))
       .Times(0);
 
@@ -136,7 +136,7 @@ TEST_F(SupervisedUserWebContentHandlerImplTest,
       /*interstitial_navigation_id=*/0);
 
   web_content_handler.OnLocalApprovalRequestCompleted(
-      supervisedUserSettingsServiceMock, url, start_time, std::move(result));
+      FamilyLinkSettingsServiceMock, url, start_time, std::move(result));
 
   histogram_tester.ExpectUniqueSample(
       supervised_user::WebContentHandler::GetLocalApprovalResultHistogram(),
@@ -156,9 +156,9 @@ TEST_F(SupervisedUserWebContentHandlerImplTest,
   base::HistogramTester histogram_tester;
   const GURL url("http://www.example.com");
 
-  testing::NiceMock<MockSupervisedUserSettingsService>
-      supervisedUserSettingsServiceMock;
-  EXPECT_CALL(supervisedUserSettingsServiceMock,
+  testing::NiceMock<MockFamilyLinkSettingsService>
+      FamilyLinkSettingsServiceMock;
+  EXPECT_CALL(FamilyLinkSettingsServiceMock,
               RecordLocalWebsiteApproval(url.GetHost()))
       .Times(0);
 
@@ -179,7 +179,7 @@ TEST_F(SupervisedUserWebContentHandlerImplTest,
       /*interstitial_navigation_id=*/0);
 
   web_content_handler.OnLocalApprovalRequestCompleted(
-      supervisedUserSettingsServiceMock, url, start_time, std::move(result));
+      FamilyLinkSettingsServiceMock, url, start_time, std::move(result));
 
   // Check that the approval duration was NOT recorded for canceled request.
   histogram_tester.ExpectTotalCount(
@@ -196,9 +196,9 @@ TEST_F(SupervisedUserWebContentHandlerImplTest,
   base::HistogramTester histogram_tester;
   const GURL url("http://www.example.com");
 
-  testing::NiceMock<MockSupervisedUserSettingsService>
-      supervisedUserSettingsServiceMock;
-  EXPECT_CALL(supervisedUserSettingsServiceMock,
+  testing::NiceMock<MockFamilyLinkSettingsService>
+      FamilyLinkSettingsServiceMock;
+  EXPECT_CALL(FamilyLinkSettingsServiceMock,
               RecordLocalWebsiteApproval(url.GetHost()))
       .Times(0);
 
@@ -219,7 +219,7 @@ TEST_F(SupervisedUserWebContentHandlerImplTest,
       /*interstitial_navigation_id=*/0);
 
   web_content_handler.OnLocalApprovalRequestCompleted(
-      supervisedUserSettingsServiceMock, url, start_time, std::move(result));
+      FamilyLinkSettingsServiceMock, url, start_time, std::move(result));
 
   // Check that the approval duration was NOT recorded on error.
   histogram_tester.ExpectTotalCount(

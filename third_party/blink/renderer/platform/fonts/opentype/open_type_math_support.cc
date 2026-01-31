@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/fonts/opentype/open_type_math_support.h"
 
+#include <array>
+
 // clang-format off
 #include <hb.h>
 #include <hb-ot.h>
@@ -169,10 +171,10 @@ Vector<RecordType> GetHarfBuzzMathRecord(
   // provide a few GlyphVariantRecords (size variants of increasing sizes) and
   // GlyphPartRecords (parts of a glyph assembly) so it is safe to truncate
   // the result vector to a small size.
-  HarfBuzzRecordType chunk[kMaxHarfBuzzRecords];
+  std::array<HarfBuzzRecordType, kMaxHarfBuzzRecords> chunk;
   unsigned int count = kMaxHarfBuzzRecords;
   std::move(getter).Run(hb_font, base_glyph, hb_stretch_axis,
-                        0 /* start_offset */, &count, chunk);
+                        0 /* start_offset */, &count, chunk.data());
 
   // Create the vector to the determined size and initialize it with the results
   // converted from HarfBuzz's ones, prepending any optional record.
@@ -181,7 +183,7 @@ Vector<RecordType> GetHarfBuzzMathRecord(
   if (prepended_record)
     result.push_back(*prepended_record);
   for (unsigned i = 0; i < count; i++) {
-    result.push_back(converter.Run(UNSAFE_TODO(chunk[i])));
+    result.push_back(converter.Run(chunk[i]));
   }
   return result;
 }

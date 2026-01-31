@@ -4,6 +4,8 @@
 
 #include "ui/accessibility/ax_tree.h"
 
+#include <algorithm>
+
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 
@@ -11,7 +13,6 @@
 #include <atk/atk.h>
 #endif  // BUILDFLAG(IS_LINUX)
 
-#include "base/containers/contains.h"
 #include "base/scoped_observation.h"
 #include "base/strings/to_string.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -1121,9 +1122,9 @@ TEST(AXTreeTest, ReparentingDoesNotTriggerNodeCreated) {
       test_observer.subtree_reparented_finished_ids();
   std::vector<int> node_reparented =
       test_observer.node_reparented_finished_ids();
-  ASSERT_FALSE(base::Contains(created, 3));
-  ASSERT_TRUE(base::Contains(subtree_reparented, 3));
-  ASSERT_FALSE(base::Contains(node_reparented, 3));
+  ASSERT_FALSE(std::ranges::contains(created, 3));
+  ASSERT_TRUE(std::ranges::contains(subtree_reparented, 3));
+  ASSERT_FALSE(std::ranges::contains(node_reparented, 3));
 }
 
 TEST(AXTreeTest, MultipleIgnoredChangesDoesNotBreakCache) {
@@ -1889,7 +1890,7 @@ TEST(AXTreeTest, IntReverseRelations) {
   auto reverse_active_descendant =
       tree.GetReverseRelations(ax::mojom::IntAttribute::kActivedescendantId, 2);
   ASSERT_EQ(1U, reverse_active_descendant.size());
-  EXPECT_TRUE(base::Contains(reverse_active_descendant, 1));
+  EXPECT_TRUE(reverse_active_descendant.contains(1));
 
   reverse_active_descendant =
       tree.GetReverseRelations(ax::mojom::IntAttribute::kActivedescendantId, 1);
@@ -1919,7 +1920,7 @@ TEST(AXTreeTest, IntReverseRelations) {
   reverse_active_descendant =
       tree.GetReverseRelations(ax::mojom::IntAttribute::kActivedescendantId, 5);
   ASSERT_EQ(1U, reverse_active_descendant.size());
-  EXPECT_TRUE(base::Contains(reverse_active_descendant, 1));
+  EXPECT_TRUE(reverse_active_descendant.contains(1));
 
   reverse_member_of =
       tree.GetReverseRelations(ax::mojom::IntAttribute::kMemberOfId, 1);
@@ -1955,7 +1956,7 @@ TEST(AXTreeTest, DeletingNodeUpdatesReverseRelations) {
   auto reverse_active_descendant =
       tree.GetReverseRelations(ax::mojom::IntAttribute::kActivedescendantId, 2);
   ASSERT_EQ(1U, reverse_active_descendant.size());
-  EXPECT_TRUE(base::Contains(reverse_active_descendant, 3));
+  EXPECT_TRUE(reverse_active_descendant.contains(3));
 
   AXTreeUpdate update;
   update.root_id = 1;
@@ -3101,12 +3102,12 @@ TEST(AXTreeTest, ChildTreeIds) {
 
   auto child_tree_2_nodes = tree.GetNodeIdsForChildTreeId(tree_id_2);
   EXPECT_EQ(1U, child_tree_2_nodes.size());
-  EXPECT_TRUE(base::Contains(child_tree_2_nodes, 2));
+  EXPECT_TRUE(child_tree_2_nodes.contains(2));
 
   auto child_tree_3_nodes = tree.GetNodeIdsForChildTreeId(tree_id_3);
   EXPECT_EQ(2U, child_tree_3_nodes.size());
-  EXPECT_TRUE(base::Contains(child_tree_3_nodes, 3));
-  EXPECT_TRUE(base::Contains(child_tree_3_nodes, 4));
+  EXPECT_TRUE(child_tree_3_nodes.contains(3));
+  EXPECT_TRUE(child_tree_3_nodes.contains(4));
 
   AXTreeUpdate update = initial_state;
   update.nodes[2].string_attributes.clear();
@@ -3117,8 +3118,8 @@ TEST(AXTreeTest, ChildTreeIds) {
 
   child_tree_2_nodes = tree.GetNodeIdsForChildTreeId(tree_id_2);
   EXPECT_EQ(2U, child_tree_2_nodes.size());
-  EXPECT_TRUE(base::Contains(child_tree_2_nodes, 2));
-  EXPECT_TRUE(base::Contains(child_tree_2_nodes, 3));
+  EXPECT_TRUE(child_tree_2_nodes.contains(2));
+  EXPECT_TRUE(child_tree_2_nodes.contains(3));
 
   child_tree_3_nodes = tree.GetNodeIdsForChildTreeId(tree_id_3);
   EXPECT_EQ(0U, child_tree_3_nodes.size());
@@ -5332,5 +5333,42 @@ TEST(AXTreeTest, ReparentToNewRoot) {
                             "orphaned node is being reparented.");
 }
 #endif
+
+TEST(AXTreeTest, SetSizePosInSetRadioButtonsWithGroupIds) {
+  AXTreeUpdate update;
+  update.root_id = 1;
+  update.nodes.resize(4);
+  update.nodes[0].id = 1;
+  update.nodes[0].role = ax::mojom::Role::kGroup;
+  update.nodes[0].child_ids = {2, 3, 4};
+
+  update.nodes[1].id = 2;
+  update.nodes[1].role = ax::mojom::Role::kRadioButton;
+  update.nodes[1].AddIntListAttribute(
+      ax::mojom::IntListAttribute::kRadioGroupIds, {2, 3});
+
+  update.nodes[2].id = 3;
+  update.nodes[2].role = ax::mojom::Role::kRadioButton;
+  update.nodes[2].AddIntListAttribute(
+      ax::mojom::IntListAttribute::kRadioGroupIds, {2, 3});
+
+  update.nodes[3].id = 4;
+  update.nodes[3].role = ax::mojom::Role::kRadioButton;
+  update.nodes[3].AddIntListAttribute(
+      ax::mojom::IntListAttribute::kRadioGroupIds, {4});
+
+  AXTree tree(update);
+
+  // Group 1: nodes 2 and 3. SetSize = 2.
+  EXPECT_EQ(1, tree.GetPosInSet(*tree.GetFromId(2)));
+  EXPECT_EQ(2, tree.GetSetSize(*tree.GetFromId(2)));
+
+  EXPECT_EQ(2, tree.GetPosInSet(*tree.GetFromId(3)));
+  EXPECT_EQ(2, tree.GetSetSize(*tree.GetFromId(3)));
+
+  // Group 2: node 4. SetSize = 1.
+  EXPECT_EQ(1, tree.GetPosInSet(*tree.GetFromId(4)));
+  EXPECT_EQ(1, tree.GetSetSize(*tree.GetFromId(4)));
+}
 
 }  // namespace ui

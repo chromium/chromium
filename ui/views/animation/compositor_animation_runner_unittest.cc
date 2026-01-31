@@ -75,7 +75,8 @@ class TestAnimationDelegateViews : public AnimationDelegateViews {
 #if BUILDFLAG(IS_CHROMEOS)
 // Tests that ui::CompositorMetricsTracker will report for gfx::Animation. Only
 // supported on ChromeOS.
-TEST_F(CompositorAnimationRunnerTest, ThroughputTracker) {
+// TODO(crbug.com/470035500): Re-enable the tests after flakiness is fixed.
+TEST_F(CompositorAnimationRunnerTest, DISABLED_ThroughputTracker) {
   WidgetAutoclosePtr widget(CreateTopLevelPlatformWidget());
   widget->Show();
 

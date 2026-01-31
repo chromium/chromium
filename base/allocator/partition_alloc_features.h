@@ -26,6 +26,10 @@ enum class PAFeatureEnabledProcesses {
   kBrowserAndRenderer,
   // Enabled in all processes, except renderer.
   kNonRenderer,
+  // Enabled only in the GPU process.
+  kGPUOnly,
+  // Enabled only in the browser and tne GPU process.
+  kBrowserAndGPU,
   // Enabled only in renderer processes.
   kRendererOnly,
   // Enabled in all child processes, except zygote.
@@ -81,6 +85,9 @@ using PartitionAllocWithAdvancedChecksEnabledProcesses =
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocLargeThreadCacheSize);
 
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocLargeEmptySlotSpanRing);
+BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kPartitionAllocLargeEmptySlotSpanRingSize);
 
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocWithAdvancedChecks);
 BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(
@@ -196,6 +203,12 @@ BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(
 // When set, partitions use a larger ring buffer and free memory less
 // aggressively when in the foreground.
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocAdjustSizeWhenInForeground);
+BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kPartitionAllocForegroundEmptySlotSpanRingSize);
+BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kPartitionAllocBackgroundEmptySlotSpanRingSize);
 
 // When enabled, uses a more nuanced heuristic to determine if slot
 // spans can be treated as "single-slot."

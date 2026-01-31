@@ -37,9 +37,9 @@
 #import "testing/platform_test.h"
 #import "ui/base/device_form_factor.h"
 
-using search_engines::SearchEngineChoiceScreenConditions;
-
 namespace {
+
+using ::regional_capabilities::SearchEngineChoiceScreenConditions;
 
 std::unique_ptr<KeyedService> BuildRegionalCapabilitiesServiceWithFakeClient(
     country_codes::CountryId country_id,

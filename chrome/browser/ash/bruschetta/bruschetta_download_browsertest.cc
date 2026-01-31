@@ -64,9 +64,9 @@ class BruschettaHttpsDownloadBrowserTest
         browser()->tab_strip_model()->GetActiveWebContents();
     Profile* profile = Profile::FromBrowserContext(tab->GetBrowserContext());
     DCHECK(profile);
-    base::Value::List filters;
-    filters.Append(base::Value::Dict());
-    base::Value::Dict setting;
+    base::ListValue filters;
+    filters.Append(base::DictValue());
+    base::DictValue setting;
     setting.Set("filters", std::move(filters));
     HostContentSettingsMapFactory::GetForProfile(profile)
         ->SetWebsiteSettingDefaultScope(

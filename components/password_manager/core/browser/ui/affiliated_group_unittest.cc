@@ -16,11 +16,13 @@ class AffiliatedGroupTest : public testing::Test {
   AffiliatedGroupTest() = default;
 
   void EnableSyncForTestAccount() {
+    sync_service_.SetSignedIn(signin::ConsentLevel::kSync);
     sync_service_.GetUserSettings()->SetSelectedTypes(
         /*sync_everything=*/false, {syncer::UserSelectableType::kPasswords});
   }
 
   void DisableSyncFeature() {
+    sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
     sync_service_.GetUserSettings()->SetSelectedTypes(
         /*sync_everything=*/false, /*types=*/{});
   }

@@ -10,8 +10,8 @@
 #include "base/functional/bind.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/actor/resources/grit/actor_browser_resources.h"
-#include "chrome/browser/actor/resources/grit/actor_common_resources.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/skills/skills_ui_controller.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -289,6 +289,7 @@ void ToastService::RegisterToasts(
         ToastId::kGeminiWorkingOnTask,
         ToastSpecification::Builder(GetTaskInProgressIcon(),
                                     IDS_TASK_IN_PROGRESS_TOAST_BODY)
+            .AddGlobalScoped()
             .AddCloseButton()
             .Build());
   }
@@ -325,5 +326,45 @@ void ToastService::RegisterToasts(
   toast_registry_->RegisterToast(
       ToastId::kCopiedToClipboard,
       ToastSpecification::Builder(kInfoIcon, IDS_COPIED_TO_CLIPBOARD_TOAST_BODY)
+          .Build());
+
+  toast_registry_->RegisterToast(
+      ToastId::kEnhancedBundledSecuritySettings,
+      ToastSpecification::Builder(
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+          vector_icons::kGshieldIcon,
+#else
+          kSecurityIcon,
+#endif
+          IDS_SETTINGS_SECURITY_BUNDLE_TOAST_FOR_USER_OPTED_INTO_ENHANCED_BUNDLE)
+          .AddActionButton(
+              IDS_SETTINGS_SETTINGS,
+              base::BindRepeating(
+                  [](BrowserWindowInterface* window) {
+                    window->OpenGURL(
+                        chrome::GetSettingsUrl(chrome::kSecuritySubPage),
+                        WindowOpenDisposition::NEW_FOREGROUND_TAB);
+                  },
+                  base::Unretained(browser_window_interface)))
+          .AddCloseButton()
+          .Build());
+
+  toast_registry_->RegisterToast(
+      ToastId::kSkillSaved,
+      ToastSpecification::Builder(kCheckIcon, IDS_SKILL_SAVED_TOAST_BODY)
+          .AddCloseButton()
+          .AddActionButton(IDS_SKILL_SAVED_TOAST_BUTTON,
+                           base::BindRepeating(
+                               [](BrowserWindowInterface* window) {
+                                 skills::SkillsUiController::From(window)
+                                     ->InvokeLastSavedSkill();
+                               },
+                               base::Unretained(browser_window_interface)))
+          .AddGlobalScoped()
+          .Build());
+
+  toast_registry_->RegisterToast(
+      ToastId::kSkillDeleted,
+      ToastSpecification::Builder(kDeleteIcon, IDS_SKILL_DELETED_TOAST_BODY)
           .Build());
 }  // RegisterToasts() end.

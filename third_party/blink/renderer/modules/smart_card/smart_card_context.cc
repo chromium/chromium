@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/smart_card/smart_card_context.h"
+
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_smart_card_connect_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_smart_card_connect_result.h"

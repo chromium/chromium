@@ -12,6 +12,7 @@
 
 #include "google_apis/google_api_keys_unittest.h"
 
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -332,6 +333,81 @@ TEST_F(GoogleAPIKeysTest, OverrideAllKeys) {
   EXPECT_EQ("SECRET_REMOTING_HOST", secret_remoting_host);
 }
 
+// Override API key via an experiment feature.
+namespace override_api_key_via_feature_without_param {
+
+// We start every test by creating a clean environment for the
+// preprocessor defines used in define_baked_in_api_keys-inc.cc
+#undef GOOGLE_API_KEY
+#undef GOOGLE_CLIENT_ID_MAIN
+#undef GOOGLE_CLIENT_SECRET_MAIN
+#undef GOOGLE_CLIENT_ID_REMOTING
+#undef GOOGLE_CLIENT_SECRET_REMOTING
+#undef GOOGLE_CLIENT_ID_REMOTING_HOST
+#undef GOOGLE_CLIENT_SECRET_REMOTING_HOST
+#undef GOOGLE_DEFAULT_CLIENT_ID
+#undef GOOGLE_DEFAULT_CLIENT_SECRET
+
+#define GOOGLE_API_KEY "API_KEY"
+
+#include "google_apis/default_api_keys-inc.cc"
+
+}  // namespace override_api_key_via_feature_without_param
+
+TEST_F(GoogleAPIKeysTest, OverrideApiKeyViaFeatureWithNoParamIsIgnored) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(google_apis::kOverrideAPIKeyFeature);
+
+  base::HistogramTester tester;
+
+  google_apis::ApiKeyCache api_key_cache(
+      override_api_key_via_feature_without_param::
+          GetDefaultApiKeysFromDefinedValues());
+  auto scoped_override =
+      google_apis::SetScopedApiKeyCacheForTesting(&api_key_cache);
+
+  EXPECT_EQ("API_KEY", google_apis::GetAPIKey());
+
+  tester.ExpectUniqueSample("Signin.APIKeyMatchesFeatureOnStartup", 0, 1);
+}
+
+// Override API key via an experiment feature.
+namespace override_api_key_via_feature {
+
+// We start every test by creating a clean environment for the
+// preprocessor defines used in define_baked_in_api_keys-inc.cc
+#undef GOOGLE_API_KEY
+#undef GOOGLE_CLIENT_ID_MAIN
+#undef GOOGLE_CLIENT_SECRET_MAIN
+#undef GOOGLE_CLIENT_ID_REMOTING
+#undef GOOGLE_CLIENT_SECRET_REMOTING
+#undef GOOGLE_CLIENT_ID_REMOTING_HOST
+#undef GOOGLE_CLIENT_SECRET_REMOTING_HOST
+#undef GOOGLE_DEFAULT_CLIENT_ID
+#undef GOOGLE_DEFAULT_CLIENT_SECRET
+
+#define GOOGLE_API_KEY "API_KEY"
+
+#include "google_apis/default_api_keys-inc.cc"
+
+}  // namespace override_api_key_via_feature
+
+TEST_F(GoogleAPIKeysTest, OverrideApiKeyViaFeature) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      google_apis::kOverrideAPIKeyFeature, {{"api_key", "API_KEY2"}});
+  base::HistogramTester tester;
+
+  google_apis::ApiKeyCache api_key_cache(
+      override_api_key_via_feature::GetDefaultApiKeysFromDefinedValues());
+  auto scoped_override =
+      google_apis::SetScopedApiKeyCacheForTesting(&api_key_cache);
+
+  EXPECT_EQ("API_KEY2", google_apis::GetAPIKey());
+
+  tester.ExpectUniqueSample("Signin.APIKeyMatchesFeatureOnStartup", 1, 1);
+}
+
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 // Override all keys using both preprocessor defines and environment
@@ -500,10 +576,12 @@ namespace override_all_keys_config {
 }  // namespace override_all_keys_config
 
 TEST_F(GoogleAPIKeysTest, OverrideAllKeysUsingConfig) {
-  auto command_line = std::make_unique<base::test::ScopedCommandLine>();
-  command_line->GetProcessCommandLine()->AppendSwitchPath(
-      "gaia-config", GetTestFilePath("api_keys.json"));
-  GaiaConfig::ResetInstanceForTesting();
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchPath(
+      switches::kGaiaConfigPath, GetTestFilePath("api_keys.json"));
+  auto scoped_config_override = GaiaConfig::SetScopedConfigForTesting(
+      GaiaConfig::CreateFromCommandLineForTesting(
+          scoped_command_line.GetProcessCommandLine()));
 
   google_apis::ApiKeyCache api_key_cache(
       override_all_keys_config::GetDefaultApiKeysFromDefinedValues());
@@ -529,9 +607,4 @@ TEST_F(GoogleAPIKeysTest, OverrideAllKeysUsingConfig) {
   EXPECT_EQ(
       "config-SECRET_REMOTING_HOST",
       google_apis::GetOAuth2ClientSecret(google_apis::CLIENT_REMOTING_HOST));
-
-  // It's important to reset the global config state for other tests running in
-  // the same process.
-  command_line.reset();
-  GaiaConfig::ResetInstanceForTesting();
 }

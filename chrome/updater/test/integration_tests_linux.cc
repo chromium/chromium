@@ -240,7 +240,7 @@ base::CommandLine MakeElevated(base::CommandLine command_line) {
   return command_line;
 }
 
-void SetPlatformPolicies(const base::Value::Dict& values) {}
+void SetPlatformPolicies(const base::DictValue& values) {}
 
 void ExpectAppVersion(UpdaterScope scope,
                       const std::string& app_id,

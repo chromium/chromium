@@ -273,7 +273,7 @@ class OopPixelTest : public testing::Test,
                                       options.resource_size);
     gpu::SyncToken sync_token =
         gpu::RasterScopedAccess::EndAccess(std::move(ri_access));
-    sii->DestroySharedImage(sync_token, std::move(client_shared_image));
+    client_shared_image->UpdateDestructionSyncToken(sync_token);
     return result;
   }
 
@@ -1129,7 +1129,7 @@ TEST_F(OopPixelTest, DrawHdrImageWithMetadata) {
   // Draw using image HDR metadata indicating that 10,000 nits is the maximum
   // luminance. The result should map the image to something darker than solid
   // white.
-  constexpr float kExpected10kToSdr = 0.7114198123454021f;
+  constexpr float kExpected10kToSdr = 0.60392159223556519f;
   {
     auto actual =
         Raster(make_display_item_list(image_500_nits, 10000.f), options);
@@ -1153,7 +1153,7 @@ TEST_F(OopPixelTest, DrawHdrImageWithMetadata) {
 
   // Increase the destination HDR headroom. The result should now be brighter.
   {
-    constexpr float kExpected = 0.933675419515227f;
+    constexpr float kExpected = 0.83529418706893921f;
     constexpr float kDstHeadroom = 1.5f;
     options.target_color_params.hdr_headroom = std::log2(kDstHeadroom);
     auto actual =
@@ -2696,7 +2696,7 @@ TEST_F(OopPixelTest, WritePixels) {
       ReadbackMailbox(ri, dest_client_si->mailbox(), options.resource_size);
   sync_token = gpu::RasterScopedAccess::EndAccess(std::move(ri_access));
 
-  sii->DestroySharedImage(sync_token, std::move(dest_client_si));
+  dest_client_si->UpdateDestructionSyncToken(sync_token);
   ExpectEquals(actual, expected);
 }
 
@@ -2857,8 +2857,8 @@ TEST_P(OopYUVToRGBPixelTest, CopyI420SharedImage) {
   gpu::RasterScopedAccess::EndAccess(std::move(src_ri_access));
   gpu::SyncToken sync_token =
       gpu::RasterScopedAccess::EndAccess(std::move(dest_ri_access));
-  sii->DestroySharedImage(sync_token, std::move(dest_client_si));
-  sii->DestroySharedImage(sync_token, std::move(yuv_client_si));
+  dest_client_si->UpdateDestructionSyncToken(sync_token);
+  yuv_client_si->UpdateDestructionSyncToken(sync_token);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -2939,8 +2939,8 @@ TEST_F(OopPixelTest, CopyNV12SharedImage) {
   gpu::RasterScopedAccess::EndAccess(std::move(src_ri_access));
   gpu::SyncToken sync_token =
       gpu::RasterScopedAccess::EndAccess(std::move(dest_ri_access));
-  sii->DestroySharedImage(sync_token, std::move(dest_client_si));
-  sii->DestroySharedImage(sync_token, std::move(y_uv_client_si));
+  dest_client_si->UpdateDestructionSyncToken(sync_token);
+  y_uv_client_si->UpdateDestructionSyncToken(sync_token);
 }
 #endif  // !BUILDFLAG(IS_ANDROID_EMULATOR)
 

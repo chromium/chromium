@@ -85,16 +85,10 @@ BASE_FEATURE(kDefaultAllowPrivacySandboxAttestations,
 const char kPrivacySandboxEnrollmentOverrides[] =
     "privacy-sandbox-enrollment-overrides";
 
-BASE_FEATURE(kAttributionDebugReportingCookieDeprecationTesting,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kPrivacySandboxAttestationsLoadFromAPKAsset,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
-
-BASE_FEATURE(kPrivateAggregationDebugReportingCookieDeprecationTesting,
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPrivateAggregationDebugReportingIgnoreSiteExceptions,
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -104,12 +98,6 @@ BASE_FEATURE(kPrivacySandboxInternalsDevUI, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kRelatedWebsiteSetsDevUI, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kRelatedWebsiteSetsUi, base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kRollBackModeB, base::FEATURE_ENABLED_BY_DEFAULT);
-
-const char kRollBackModeBForcedName[] = "force";
-const base::FeatureParam<bool> kRollBackModeBForced{
-    &kRollBackModeB, kRollBackModeBForcedName, false};
 
 BASE_FEATURE(kPsDualWritePrefsToNoticeStorage,
              base::FEATURE_ENABLED_BY_DEFAULT);

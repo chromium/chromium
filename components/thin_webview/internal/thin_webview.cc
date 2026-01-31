@@ -22,10 +22,11 @@ using web_contents_delegate_android::WebContentsDelegateAndroid;
 namespace thin_webview {
 namespace android {
 
-static jlong JNI_ThinWebViewImpl_Init(JNIEnv* env,
-                                      const JavaRef<jobject>& obj,
-                                      const JavaRef<jobject>& jcompositor_view,
-                                      const JavaRef<jobject>& jwindow_android) {
+static int64_t JNI_ThinWebViewImpl_Init(
+    JNIEnv* env,
+    const JavaRef<jobject>& obj,
+    const JavaRef<jobject>& jcompositor_view,
+    const JavaRef<jobject>& jwindow_android) {
   CompositorView* compositor_view =
       CompositorViewImpl::FromJavaObject(jcompositor_view);
   ui::WindowAndroid* window_android =
@@ -89,9 +90,7 @@ void ThinWebView::SetWebContents(content::WebContents* web_contents,
   ThinWebViewInitializer::GetInstance()->AttachTabHelpers(web_contents);
 }
 
-void ThinWebView::SizeChanged(JNIEnv* env,
-                              jint width,
-                              jint height) {
+void ThinWebView::SizeChanged(JNIEnv* env, int32_t width, int32_t height) {
   view_size_ = gfx::Size(width, height);
 
   // TODO(shaktisahu): If we want to use a different size for WebContents, e.g.

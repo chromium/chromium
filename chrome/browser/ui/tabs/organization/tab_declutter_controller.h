@@ -33,9 +33,6 @@ class TabInterface;
 // browser.
 class TabDeclutterController {
  public:
-  static void EmitEntryPointHistogram(
-      tab_search::mojom::TabDeclutterEntryPoint entry_point);
-
   explicit TabDeclutterController(
       BrowserWindowInterface* browser_window_interface);
   TabDeclutterController(const TabDeclutterController&) = delete;
@@ -132,8 +129,6 @@ class TabDeclutterController {
   void ProcessTabs();
 
   void StartNudgeTimer();
-
-  void LogExcludedDuplicateTabMetrics();
 
   bool IsTabExcluded(tabs::TabInterface* tab) const;
 

@@ -49,32 +49,15 @@ class IsolatedWebAppResponseReaderFactory {
       base::expected<std::unique_ptr<IsolatedWebAppResponseReader>,
                      UnusableSwbnFileError>)>;
 
-  enum class Flag {
-    kMinValue,
-    kDevModeBundle = kMinValue,
-    kSkipSignatureVerification,
-    kMaxValue = kSkipSignatureVerification
-  };
-  using Flags = base::EnumSet<Flag, Flag::kMinValue, Flag::kMaxValue>;
-
   virtual void CreateResponseReader(
       const base::FilePath& web_bundle_path,
       const web_package::SignedWebBundleId& web_bundle_id,
-      Flags flags,
+      bool verify_signatures,
       Callback callback);
-
-  static std::string ErrorToString(const UnusableSwbnFileError& error);
 
  private:
-  void CreateResponseReaderImpl(
-      const base::FilePath& web_bundle_path,
-      const web_package::SignedWebBundleId& web_bundle_id,
-      Flags flags,
-      Callback callback);
-
   void OnReaderCreated(const base::FilePath& web_bundle_path,
                        const web_package::SignedWebBundleId& web_bundle_id,
-                       Flags flags,
                        Callback callback,
                        base::expected<std::unique_ptr<SignedWebBundleReader>,
                                       UnusableSwbnFileError> status);

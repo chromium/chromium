@@ -8,13 +8,18 @@ source_set("eg2_tests") {
   sources = [ "file_upload_panel_egtest.mm" ]
   deps = [
     "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
     "//ios/chrome/browser/download/model:eg_test_support+eg2",
+    "//ios/chrome/browser/drive_file_picker/ui:constants",
     "//ios/chrome/browser/file_upload_panel/ui:constants",
     "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/test:buildflags",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/web/public/test:element_selector",
     "//net:test_support",
   ]
+  frameworks = [ "Photos.framework" ]
 }

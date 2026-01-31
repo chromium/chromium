@@ -28,7 +28,6 @@
 <translation id="2329392777730037872">Не успеа да отвори <ph name="URL" /> на клиентот.</translation>
 <translation id="2359808026110333948">Продолжи</translation>
 <translation id="2366718077645204424">Не може да се добие домаќинот. Тоа е веројатно поради конфигурацијата на мрежата што ја користите.</translation>
-<translation id="242591256144136845">Авторски права за 2025 г. на Google LLC. Сите права се задржани.</translation>
 <translation id="2504109125669302160">Одобрете дозвола за „Пристапност“ на <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">Поврзано со <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">Дали би сакале да го споделите овој компјутер за друг корисник да го гледа и контролира?</translation>
@@ -47,6 +46,7 @@
 <translation id="3150823315463303127">Домаќинот не успеа да ја прочита политиката.</translation>
 <translation id="3171922709365450819">Клиентов не го поддржува уредов бидејќи бара автентикација од трета страна.</translation>
 <translation id="3197730452537982411">Далечински десктоп</translation>
+<translation id="3236334139428307578">Авторски права за 2026 г. на The Chromium Authors. Сите права се задржани.</translation>
 <translation id="324272851072175193">Испрати е-пошта со упатствава</translation>
 <translation id="3305934114213025800"><ph name="PRODUCT_NAME" /> сака да изврши промени.</translation>
 <translation id="3339299787263251426">Безбедно пристапете до компјутерот преку интернет</translation>
@@ -111,6 +111,7 @@
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> побара пристап да го гледа вашиот екран и да ги контролира тастатурата и глувчето. Притиснете „<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />“ ако не го очекувате ова барање. Во спротивно, изберете „<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />“ за да го дозволите поврзувањето кога ќе бидете спремни.</translation>
 <translation id="5823658491130719298">На компјутерот до којшто сакате да пристапите од далечина, отворете го Chrome и одете на <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">Опции за приказ</translation>
+<translation id="5965133372831030509">Авторски права за 2026 г. на Google LLC. Сите права се задржани.</translation>
 <translation id="6033507038939587647">Опции за тастатура</translation>
 <translation id="6040143037577758943">Затвори</translation>
 <translation id="6062854958530969723">Иницијализирањето на домаќинот не успеа.</translation>
@@ -138,7 +139,6 @@
 <translation id="7067321367069083429">Екранот дејствува како екран на допир</translation>
 <translation id="7116737094673640201">Добре дојдовте на „Пристап оддалеку за Chrome“</translation>
 <translation id="7144878232160441200">Обиди се повторно</translation>
-<translation id="7298392173540380852">Авторски права за 2025 г. на The Chromium Authors. Сите права се задржани.</translation>
 <translation id="7312846573060934304">Домаќинот е исклучен.</translation>
 <translation id="7319983568955948908">Запри споделување</translation>
 <translation id="7359298090707901886">Избраниот прелистувач не може да се користи за отворање URL-адреси на локален компјутер.</translation>

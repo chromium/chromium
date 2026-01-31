@@ -26,6 +26,7 @@
 #include "content/browser/renderer_host/navigation_throttle_runner.h"
 #include "content/browser/renderer_host/navigation_throttle_runner2.h"
 #include "content/browser/renderer_host/navigator_delegate.h"
+#include "content/browser/renderer_host/network_restrictions_navigation_throttle.h"
 #include "content/browser/renderer_host/renderer_cancellation_throttle.h"
 #include "content/browser/renderer_host/subframe_history_navigation_throttle.h"
 #include "content/browser/webid/navigation_interceptor.h"
@@ -59,6 +60,7 @@ NavigationThrottleRegistryBase::~NavigationThrottleRegistryBase() = default;
 NavigationThrottleRegistryImpl::NavigationThrottleRegistryImpl(
     NavigationRequest* navigation_request)
     : navigation_request_(CHECK_DEREF(navigation_request)),
+      weak_navigation_request_(navigation_request->GetWeakPtr()),
       navigation_throttle_runner_(CreateNavigationThrottleRunner(
           this,
           navigation_request->GetNavigationId(),
@@ -144,6 +146,8 @@ void NavigationThrottleRegistryImpl::RegisterNavigationThrottles() {
   // subframe navigations should not proceed.
   SubframeHistoryNavigationThrottle::MaybeCreateAndAdd(*this);
 
+  NetworkRestrictionsNavigationThrottle::MaybeCreateAndAdd(*this);
+
   // Defer subframe navigation in bfcached page if it hasn't sent a network
   // request.
   // This must be the last throttle to run. See https://crrev.com/c/5316738.
@@ -190,6 +194,10 @@ void NavigationThrottleRegistryImpl::
 
   // Defer subframe navigation in bfcached page.
   BackForwardCacheSubframeNavigationThrottle::MaybeCreateAndAdd(*this);
+
+  // Add NetworkRestrictionsNavigationThrottle to defer commit until network
+  // restrictions are applied.
+  NetworkRestrictionsNavigationThrottle::MaybeCreateAndAdd(*this);
 
   RendererCancellationThrottle::MaybeCreateAndAdd(*this);
 
@@ -311,6 +319,9 @@ bool NavigationThrottleRegistryImpl::IsHTTPOrHTTPS() {
 void NavigationThrottleRegistryImpl::OnEventProcessed(
     NavigationThrottleEvent event,
     NavigationThrottle::ThrottleCheckResult result) {
+  if (!weak_navigation_request_) {
+    return;
+  }
   navigation_request_->OnNavigationEventProcessed(event, result);
 }
 

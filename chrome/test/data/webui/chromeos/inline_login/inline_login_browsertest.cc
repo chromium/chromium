@@ -19,8 +19,7 @@ class InlineLoginBrowserTest : public WebUIMochaBrowserTest {
     WebUIMochaBrowserTest::RunTest(
         base::StringPrintf(
             "chromeos/inline_login/inline_login_test.js&reason=%d",
-            static_cast<int>(
-                signin_metrics::Reason::kForcedSigninPrimaryAccount)),
+            static_cast<int>(signin_metrics::Reason::kFetchLstOnly)),
         base::StringPrintf("runMochaTest('InlineLoginTest', '%s');",
                            testCase.c_str()));
   }
@@ -56,8 +55,7 @@ class InlineLoginWelcomePageBrowserTest : public WebUIMochaBrowserTest {
     WebUIMochaBrowserTest::RunTest(
         base::StringPrintf(
             "chromeos/inline_login/inline_login_welcome_page_test.js&reason=%d",
-            static_cast<int>(
-                signin_metrics::Reason::kForcedSigninPrimaryAccount)),
+            static_cast<int>(signin_metrics::Reason::kFetchLstOnly)),
         base::StringPrintf("runMochaTest('InlineLoginWelcomePageTest', '%s');",
                            testCase.c_str()));
   }

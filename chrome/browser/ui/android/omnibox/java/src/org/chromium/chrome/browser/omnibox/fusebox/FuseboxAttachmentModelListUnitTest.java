@@ -29,7 +29,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerViewAdapter.FuseboxAttachmentType;
@@ -53,7 +53,7 @@ public class FuseboxAttachmentModelListUnitTest {
     private Resources mResources;
     private FuseboxAttachmentModelList mFuseboxAttachmentModelList;
     private FuseboxAttachment mTestAttachment;
-    private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
+    private MonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
 
     private FuseboxAttachment createTestAttachment(String title) {
         return FuseboxAttachment.forFile(
@@ -456,6 +456,72 @@ public class FuseboxAttachmentModelListUnitTest {
         mFuseboxAttachmentModelList.add(tabAttachment);
 
         assertEquals("token", tabAttachment.getToken());
+    }
+
+    @Test
+    public void testIncognitoTabDoesNotUseCache() {
+        Tab tab = mock(Tab.class);
+        WebContents webContents = mock(WebContents.class);
+        RenderWidgetHostView renderWidgetHostView = mock(RenderWidgetHostView.class);
+        doReturn(1).when(tab).getId();
+        doReturn(true).when(tab).isInitialized();
+        doReturn(false).when(tab).isFrozen();
+        doReturn(true).when(tab).isIncognitoBranded();
+        doReturn(webContents).when(tab).getWebContents();
+        doReturn(renderWidgetHostView).when(webContents).getRenderWidgetHostView();
+        when(mComposeBoxQueryControllerBridge.addTabContext(tab)).thenReturn("token");
+        doReturn(null).when(mTabModelSelector).getCurrentTab();
+
+        FuseboxAttachment tabAttachment = FuseboxAttachment.forTab(tab, mResources);
+        mFuseboxAttachmentModelList.add(tabAttachment);
+
+        assertEquals("token", tabAttachment.getToken());
+    }
+
+    @Test
+    public void testRetryTabUpload_failedImmediately() {
+        Tab tab = mock(Tab.class);
+        WebContents webContents = mock(WebContents.class);
+        RenderWidgetHostView renderWidgetHostView = mock(RenderWidgetHostView.class);
+        doReturn(1).when(tab).getId();
+        doReturn(true).when(tab).isInitialized();
+        doReturn(false).when(tab).isFrozen();
+        doReturn(webContents).when(tab).getWebContents();
+        doReturn(renderWidgetHostView).when(webContents).getRenderWidgetHostView();
+        when(mComposeBoxQueryControllerBridge.addTabContext(tab)).thenReturn("token2");
+        when(mComposeBoxQueryControllerBridge.addTabContextFromCache(1)).thenReturn("");
+        doReturn(null).when(mTabModelSelector).getCurrentTab();
+
+        FuseboxAttachment tabAttachment = FuseboxAttachment.forTab(tab, mResources);
+        mFuseboxAttachmentModelList.add(tabAttachment);
+        assertEquals("token2", tabAttachment.getToken());
+    }
+
+    @Test
+    public void testRetryTabUpload_failedAfterTokenGenerated() {
+        Tab tab = mock(Tab.class);
+        WebContents webContents = mock(WebContents.class);
+        RenderWidgetHostView renderWidgetHostView = mock(RenderWidgetHostView.class);
+        doReturn(1).when(tab).getId();
+        doReturn(true).when(tab).isInitialized();
+        doReturn(false).when(tab).isFrozen();
+        doReturn(webContents).when(tab).getWebContents();
+        doReturn(renderWidgetHostView).when(webContents).getRenderWidgetHostView();
+        when(mComposeBoxQueryControllerBridge.addTabContextFromCache(1)).thenReturn("token");
+        doReturn(null).when(mTabModelSelector).getCurrentTab();
+
+        FuseboxAttachment tabAttachment = FuseboxAttachment.forTab(tab, mResources);
+        mFuseboxAttachmentModelList.add(tabAttachment);
+        assertEquals("token", tabAttachment.getToken());
+
+        when(mComposeBoxQueryControllerBridge.addTabContext(tab)).thenReturn("token2");
+        mFuseboxAttachmentModelList.onFileUploadStatusChanged(
+                "token", FileUploadStatus.VALIDATION_FAILED);
+        assertEquals("token2", tabAttachment.getToken());
+
+        mFuseboxAttachmentModelList.onFileUploadStatusChanged(
+                "token2", FileUploadStatus.VALIDATION_FAILED);
+        assertTrue(mFuseboxAttachmentModelList.isEmpty());
     }
 
     @Test

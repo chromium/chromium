@@ -67,7 +67,7 @@ bool PopulateMojoEnumValueIfValid(int possible_enum, T* valid_enum_out) {
 }
 
 std::string CreatePayload(ash::cros_healthd::mojom::RoutineUpdatePtr update) {
-  auto root_dict = base::Value::Dict().Set(
+  auto root_dict = base::DictValue().Set(
       kProgressPercentFieldName, static_cast<int>(update->progress_percent));
   if (update->output.is_valid()) {
     // TODO(crbug.com/1056323): Serialize update->output. For now, set a dummy
@@ -80,7 +80,7 @@ std::string CreatePayload(ash::cros_healthd::mojom::RoutineUpdatePtr update) {
     const auto& noninteractive_update =
         routine_update_union->get_noninteractive_update();
     auto noninteractive_dict =
-        base::Value::Dict()
+        base::DictValue()
             .Set(kStatusFieldName,
                  static_cast<int>(noninteractive_update->status))
             .Set(kStatusMessageFieldName,
@@ -88,7 +88,7 @@ std::string CreatePayload(ash::cros_healthd::mojom::RoutineUpdatePtr update) {
     root_dict.Set(kNonInteractiveUpdateFieldName,
                   std::move(noninteractive_dict));
   } else if (routine_update_union->is_interactive_update()) {
-    auto interactive_dict = base::Value::Dict().Set(
+    auto interactive_dict = base::DictValue().Set(
         kUserMessageFieldName,
         static_cast<int>(
             routine_update_union->get_interactive_update()->user_message));
@@ -114,7 +114,7 @@ em::RemoteCommand_Type DeviceCommandGetRoutineUpdateJob::GetType() const {
 
 bool DeviceCommandGetRoutineUpdateJob::ParseCommandPayload(
     const std::string& command_payload) {
-  std::optional<base::Value::Dict> root = base::JSONReader::ReadDict(
+  std::optional<base::DictValue> root = base::JSONReader::ReadDict(
       command_payload, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!root) {
     return false;

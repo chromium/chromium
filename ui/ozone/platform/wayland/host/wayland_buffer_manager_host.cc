@@ -94,9 +94,9 @@ void WaylandBufferManagerHost::OnCommitOverlayError(
   TerminateGpuProcess();
 }
 
-wl::BufferFormatsWithModifiersMap
-WaylandBufferManagerHost::GetSupportedBufferFormats() const {
-  return connection_->buffer_factory()->GetSupportedBufferFormats();
+wl::SharedImageFormatsWithModifiersMap
+WaylandBufferManagerHost::GetSupportedSharedImageFormats() const {
+  return connection_->buffer_factory()->GetSupportedSharedImageFormats();
 }
 
 bool WaylandBufferManagerHost::SupportsDmabuf() const {

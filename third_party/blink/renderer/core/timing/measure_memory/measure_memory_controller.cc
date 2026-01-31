@@ -190,7 +190,7 @@ struct RandomBitGenerator {
     return static_cast<size_t>(std::numeric_limits<int>::max());
   }
   size_t operator()() {
-    return static_cast<size_t>(base::RandInt(min(), max()));
+    return static_cast<size_t>(base::RandIntInclusive(min(), max()));
   }
 };
 
@@ -266,7 +266,7 @@ MemoryBreakdownEntry* ConvertCanvasBreakdown(
 }
 
 MemoryBreakdownEntry* CreateUnattributedBreakdown(
-    std::optional<base::ByteCount> memory,
+    std::optional<base::ByteSize> memory,
     const String& memory_type) {
   auto* result = MemoryBreakdownEntry::Create();
   result->setBytes(memory->InBytes());

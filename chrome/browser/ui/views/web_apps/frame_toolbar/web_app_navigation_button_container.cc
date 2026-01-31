@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/views/toolbar/back_forward_button.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_utils.h"
+#include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/hit_test.h"
@@ -73,7 +74,8 @@ WebAppNavigationButtonContainer::WebAppNavigationButtonContainer(
   const auto* app_controller = browser_->app_controller();
   if (app_controller->HasReloadButton()) {
     reload_button_ = AddChildView(std::make_unique<ReloadButton>(
-        browser_->GetProfile(), browser_->command_controller()));
+        browser_->profile(), browser_->command_controller(),
+        InitialWebUIWindowMetricsManager::From(browser_)));
     reload_button_->set_tag(IDC_RELOAD);
     ConfigureWebAppToolbarButton(reload_button_, toolbar_button_provider);
     views::SetHitTestComponent(reload_button_, static_cast<int>(HTCLIENT));

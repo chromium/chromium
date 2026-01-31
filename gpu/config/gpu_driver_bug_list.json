@@ -430,13 +430,13 @@
     },
     {
       "id": 95,
-      "cr_bugs": [421271],
+      "cr_bugs": [421271, 471017396],
       "description": "glClear does not always work on these drivers",
       "os": {
         "type": "android"
       },
       "gl_version": {
-        "op": "<",
+        "op": "<=",
         "value": "3.0"
       },
       "gl_vendor": "Imagination.*",
@@ -3799,6 +3799,20 @@
       "driver_version": {
         "op": "<",
         "value": "30.0.100.9955"
+      },
+      "features": [
+        "disable_d3d12_video_encoder"
+      ]
+    },
+    {
+      "id": 470,
+      "description": "Disable D3D12 video encoder on Windows versions older 11 24H2",
+      "os": {
+        "type": "win",
+        "version": {
+          "op": "<",
+          "value": "10.0.26100.2033"
+        }
       },
       "features": [
         "disable_d3d12_video_encoder"

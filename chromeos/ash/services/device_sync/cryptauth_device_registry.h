@@ -47,7 +47,7 @@ class CryptAuthDeviceRegistry {
   bool SetRegistry(const InstanceIdToDeviceMap& instance_id_to_device_map);
 
   // Converts the registry to a human-readable dictionary.
-  base::Value::Dict AsReadableDictionary() const;
+  base::DictValue AsReadableDictionary() const;
 
  protected:
   CryptAuthDeviceRegistry();

@@ -6,8 +6,9 @@
 
 #include "chrome/browser/metrics/desktop_session_duration/desktop_session_duration_tracker.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 
@@ -15,25 +16,21 @@ namespace metrics {
 
 AudibleContentsTracker::AudibleContentsTracker(Observer* observer)
     : observer_(observer) {
-  BrowserList* browser_list = BrowserList::GetInstance();
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
       [this](BrowserWindowInterface* browser) {
         browser->GetTabStripModel()->AddObserver(this);
         return true;
       });
-  browser_list->AddObserver(this);
+
+  browser_collection_observation_.Observe(
+      GlobalBrowserCollection::GetInstance());
 }
 
-AudibleContentsTracker::~AudibleContentsTracker() {
-  BrowserList::GetInstance()->RemoveObserver(this);
-}
+AudibleContentsTracker::~AudibleContentsTracker() = default;
 
-void AudibleContentsTracker::OnBrowserAdded(Browser* browser) {
-  browser->tab_strip_model()->AddObserver(this);
-}
-
-void AudibleContentsTracker::OnBrowserRemoved(Browser* browser) {
-  browser->tab_strip_model()->RemoveObserver(this);
+void AudibleContentsTracker::OnBrowserCreated(BrowserWindowInterface* browser) {
+  // TODO(crbug.com/452120900): TabStripModel auto-unregistered by dtor
+  browser->GetTabStripModel()->AddObserver(this);
 }
 
 void AudibleContentsTracker::OnTabStripModelChanged(
@@ -58,13 +55,14 @@ void AudibleContentsTracker::OnTabStripModelChanged(
   }
 }
 
-void AudibleContentsTracker::TabChangedAt(content::WebContents* web_contents,
-                                          int index,
-                                          TabChangeType change_type) {
+void AudibleContentsTracker::OnTabChangedAt(tabs::TabInterface* tab,
+                                            int index,
+                                            TabChangeType change_type) {
   // Ignore 'loading' and 'title' changes.
   if (change_type != TabChangeType::kAll)
     return;
 
+  auto* web_contents = tab->GetContents();
   auto* audible_helper = RecentlyAudibleHelper::FromWebContents(web_contents);
   if (audible_helper->WasRecentlyAudible())
     AddAudibleWebContents(web_contents);

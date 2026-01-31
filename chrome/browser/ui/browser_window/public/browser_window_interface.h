@@ -145,14 +145,6 @@ class BrowserWindowInterface : public content::PageNavigator {
     // AppBrowserController) but looks like a popup (e.g. it never has a tab
     // strip).
     TYPE_APP_POPUP,
-#if BUILDFLAG(IS_CHROMEOS)
-    // Browser for ARC++ Chrome custom tabs.
-    // It's an enhanced version of TYPE_POPUP, and is used to show the Chrome
-    // Custom Tab toolbar for ARC++ apps. It has UI customizations like using
-    // the Android app's theme color, and the three dot menu in
-    // CustomTabToolbarview.
-    TYPE_CUSTOM_TAB,
-#endif
 #if !BUILDFLAG(IS_ANDROID)
     // Document picture-in-picture browser.  It's mostly the same as a
     // TYPE_POPUP, except that it floats above other windows.  It also has some
@@ -193,6 +185,13 @@ class BrowserWindowInterface : public content::PageNavigator {
   // Please do not add new features here without consulting desktop leads
   // (erikchen@) and Clank leads (twellington@, dtrainor@). See comment at the
   // top of this file.
+  //
+  // As alternatives, consider:
+  // Tab/Navigation: `TabListInterface::From(BrowserWindowInterface*)`.
+  // Windowing: `base::Window* GetWindow()`.
+  //
+  // For other methods, consult the leads above for guidance.
+  //
   // The following methods will be removed in the future.
 
 #if !BUILDFLAG(IS_ANDROID)

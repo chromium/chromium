@@ -57,12 +57,6 @@ found in the LICENSE file.
             android:visibility="gone"
             android:background="@android:color/transparent" />
 
-        <org.chromium.chrome.browser.ui.BottomContainer
-            android:id="@+id/bottom_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start|bottom" />
-
         <org.chromium.ui.AsyncViewStub
             android:id="@+id/keyboard_accessory_stub"
             android:inflatedId="@+id/keyboard_accessory"
@@ -73,8 +67,7 @@ found in the LICENSE file.
             android:id="@+id/keyboard_accessory_sheet_stub"
             android:inflatedId="@+id/keyboard_accessory_sheet_container"
             android:layout_height="@dimen/keyboard_accessory_sheet_height"
-            android:layout_width="match_parent"
-            android:layout_gravity="start|bottom"/>
+            android:layout_width="match_parent"/>
 
         <ViewStub
             android:id="@+id/bottombar_stub"
@@ -104,6 +97,12 @@ found in the LICENSE file.
             android:layout_height="match_parent"
             android:inflatedId="@+id/omnibox_results_container"
             app:layout="@layout/omnibox_results_container" />
+
+      <org.chromium.chrome.browser.ui.BottomContainer
+          android:id="@+id/bottom_container"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_gravity="start|bottom" />
 
         <!-- Toolbar size area painted black to avoid the action bar showing the window background -->
         <View

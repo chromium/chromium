@@ -306,8 +306,8 @@ bool AppPreloadService::ShouldInstallApp(const PreloadAppDefinition& app) {
   return !installed;
 }
 
-const base::Value::Dict& AppPreloadService::GetStateManager() const {
-  const base::Value::Dict& value =
+const base::DictValue& AppPreloadService::GetStateManager() const {
+  const base::DictValue& value =
       profile_->GetPrefs()->GetDict(prefs::kApsStateManager);
   return value;
 }

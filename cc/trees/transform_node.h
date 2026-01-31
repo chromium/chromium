@@ -170,9 +170,7 @@ struct CC_EXPORT TransformNode {
   bool SetDamageReasonsForDeserialization(DamageReasonSet reasons);
   DamageReasonSet damage_reasons() const { return damage_reasons_; }
 
-#if DCHECK_IS_ON()
-  bool operator==(const TransformNode& other) const;
-#endif
+  bool operator==(const TransformNode& other) const = default;
 
   void set_to_parent(const gfx::Transform& transform) {
     to_parent = transform;

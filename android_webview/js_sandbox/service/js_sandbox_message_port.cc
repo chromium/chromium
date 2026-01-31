@@ -215,7 +215,7 @@ void JsSandboxMessagePort::HandleArrayBufferOnIsolateThread(
       v8::ArrayBuffer::New(isolate, length);
   void* buffer_data = v8_array_buffer->GetBackingStore()->Data();
   env->GetByteArrayRegion(j_array_buffer.obj(), 0, length,
-                          static_cast<jbyte*>(buffer_data));
+                          static_cast<int8_t*>(buffer_data));
 
   MessageEvent* event = cppgc::MakeGarbageCollected<MessageEvent>(
       isolate->GetCppHeap()->GetAllocationHandle(), isolate, v8_array_buffer);

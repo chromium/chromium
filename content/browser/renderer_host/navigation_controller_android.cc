@@ -69,7 +69,7 @@ JNI_NavigationControllerImpl_CreateJavaNavigationEntry(
     j_bitmap = gfx::ConvertToJavaBitmap(*status.image.ToSkBitmap(),
                                         gfx::OomBehavior::kReturnNullOnOom);
   }
-  jlong j_timestamp = entry->GetTimestamp().InMillisecondsSinceUnixEpoch();
+  int64_t j_timestamp = entry->GetTimestamp().InMillisecondsSinceUnixEpoch();
 
   return content::Java_NavigationControllerImpl_createNavigationEntry(
       env, index, j_url, j_virtual_url, j_original_url, j_title, j_bitmap,
@@ -140,15 +140,15 @@ NavigationControllerAndroid::GetJavaObject() {
   return base::android::ScopedJavaLocalRef<jobject>(obj_);
 }
 
-jboolean NavigationControllerAndroid::CanGoBack(JNIEnv* env) {
+bool NavigationControllerAndroid::CanGoBack(JNIEnv* env) {
   return navigation_controller_->CanGoBack();
 }
 
-jboolean NavigationControllerAndroid::CanGoForward(JNIEnv* env) {
+bool NavigationControllerAndroid::CanGoForward(JNIEnv* env) {
   return navigation_controller_->CanGoForward();
 }
 
-jboolean NavigationControllerAndroid::CanGoToOffset(JNIEnv* env, jint offset) {
+bool NavigationControllerAndroid::CanGoToOffset(JNIEnv* env, int32_t offset) {
   return navigation_controller_->CanGoToOffsetWithSkipping(offset);
 }
 
@@ -160,12 +160,11 @@ void NavigationControllerAndroid::GoForward(JNIEnv* env) {
   navigation_controller_->GoForward();
 }
 
-void NavigationControllerAndroid::GoToOffset(JNIEnv* env,
-                                             jint offset) {
+void NavigationControllerAndroid::GoToOffset(JNIEnv* env, int32_t offset) {
   navigation_controller_->GoToOffsetWithSkipping(offset);
 }
 
-jboolean NavigationControllerAndroid::IsInitialNavigation(JNIEnv* env) {
+bool NavigationControllerAndroid::IsInitialNavigation(JNIEnv* env) {
   return navigation_controller_->IsInitialNavigation();
 }
 
@@ -177,22 +176,20 @@ void NavigationControllerAndroid::ContinuePendingReload(JNIEnv* env) {
   navigation_controller_->ContinuePendingReload();
 }
 
-void NavigationControllerAndroid::Reload(JNIEnv* env,
-                                         jboolean check_for_repost) {
+void NavigationControllerAndroid::Reload(JNIEnv* env, bool check_for_repost) {
   SCOPED_CRASH_KEY_BOOL("nav_reentrancy_caller2", "Reload_check",
                         (bool)check_for_repost);
   navigation_controller_->Reload(ReloadType::NORMAL, check_for_repost);
 }
 
-void NavigationControllerAndroid::ReloadBypassingCache(
-    JNIEnv* env,
-    jboolean check_for_repost) {
+void NavigationControllerAndroid::ReloadBypassingCache(JNIEnv* env,
+                                                       bool check_for_repost) {
   SCOPED_CRASH_KEY_BOOL("nav_reentrancy_caller2", "ReloadB_check",
                         (bool)check_for_repost);
   navigation_controller_->Reload(ReloadType::BYPASSING_CACHE, check_for_repost);
 }
 
-jboolean NavigationControllerAndroid::NeedsReload(JNIEnv* env) {
+bool NavigationControllerAndroid::NeedsReload(JNIEnv* env) {
   return navigation_controller_->NeedsReload();
 }
 
@@ -204,33 +201,34 @@ void NavigationControllerAndroid::CancelPendingReload(JNIEnv* env) {
   navigation_controller_->CancelPendingReload();
 }
 
-void NavigationControllerAndroid::GoToNavigationIndex(JNIEnv* env, jint index) {
+void NavigationControllerAndroid::GoToNavigationIndex(JNIEnv* env,
+                                                      int32_t index) {
   navigation_controller_->GoToIndex(index);
 }
 
 base::android::ScopedJavaLocalRef<jobject> NavigationControllerAndroid::LoadUrl(
     JNIEnv* env,
     const JavaRef<jstring>& url,
-    jint load_url_type,
-    jint transition_type,
+    int32_t load_url_type,
+    int32_t transition_type,
     const JavaRef<jstring>& j_referrer_url,
-    jint referrer_policy,
-    jint ua_override_option,
+    int32_t referrer_policy,
+    int32_t ua_override_option,
     const JavaRef<jstring>& extra_headers,
     const JavaRef<jobject>& j_post_data,
     const JavaRef<jstring>& base_url_for_data_url,
     const JavaRef<jstring>& virtual_url_for_special_cases,
     const JavaRef<jstring>& data_url_as_string,
-    jboolean can_load_local_resources,
-    jboolean is_renderer_initiated,
-    jboolean should_replace_current_entry,
+    bool can_load_local_resources,
+    bool is_renderer_initiated,
+    bool should_replace_current_entry,
     const JavaRef<jobject>& j_initiator_origin,
-    jboolean has_user_gesture,
-    jboolean should_clear_history_list,
+    bool has_user_gesture,
+    bool should_clear_history_list,
     const base::android::JavaRef<jobject>& j_additional_navigation_params,
-    jlong input_start,
-    jlong navigation_ui_data_ptr,
-    jboolean is_pdf) {
+    int64_t input_start,
+    int64_t navigation_ui_data_ptr,
+    bool is_pdf) {
   DCHECK(url);
   NavigationController::LoadURLParams params(
       GURL(ConvertJavaStringToUTF8(env, url)));
@@ -336,7 +334,7 @@ void NavigationControllerAndroid::ClearHistory(JNIEnv* env) {
     navigation_controller_->PruneAllButLastCommitted();
 }
 
-jint NavigationControllerAndroid::GetNavigationHistory(
+int32_t NavigationControllerAndroid::GetNavigationHistory(
     JNIEnv* env,
     const JavaRef<jobject>& history) {
   // Iterate through navigation entries to populate the list
@@ -352,8 +350,8 @@ jint NavigationControllerAndroid::GetNavigationHistory(
 void NavigationControllerAndroid::GetDirectedNavigationHistory(
     JNIEnv* env,
     const JavaRef<jobject>& history,
-    jboolean is_forward,
-    jint max_entries) {
+    bool is_forward,
+    int32_t max_entries) {
   // Iterate through navigation entries to populate the list
   int count = navigation_controller_->GetEntryCount();
   int num_added = 0;
@@ -383,9 +381,9 @@ bool NavigationControllerAndroid::GetUseDesktopUserAgent(JNIEnv* env) {
 
 void NavigationControllerAndroid::SetUseDesktopUserAgent(
     JNIEnv* env,
-    jboolean enabled,
-    jboolean reload_on_state_change,
-    jboolean skip_on_initial_navigation) {
+    bool enabled,
+    bool reload_on_state_change,
+    bool skip_on_initial_navigation) {
   SCOPED_CRASH_KEY_BOOL("nav_reentrancy_caller2", "SetUA_enabled",
                         (bool)enabled);
   if (GetUseDesktopUserAgent(env) == enabled) {
@@ -478,15 +476,15 @@ NavigationControllerAndroid::GetPendingEntry(JNIEnv* env) {
       env, entry, navigation_controller_->GetPendingEntryIndex());
 }
 
-jint NavigationControllerAndroid::GetLastCommittedEntryIndex(JNIEnv* env) {
+int32_t NavigationControllerAndroid::GetLastCommittedEntryIndex(JNIEnv* env) {
   return navigation_controller_->GetLastCommittedEntryIndex();
 }
 
-jboolean NavigationControllerAndroid::CanViewSource(JNIEnv* env) {
+bool NavigationControllerAndroid::CanViewSource(JNIEnv* env) {
   return navigation_controller_->CanViewSource();
 }
-jboolean NavigationControllerAndroid::RemoveEntryAtIndex(JNIEnv* env,
-                                                         jint index) {
+bool NavigationControllerAndroid::RemoveEntryAtIndex(JNIEnv* env,
+                                                     int32_t index) {
   return navigation_controller_->RemoveEntryAtIndex(index);
 }
 
@@ -496,7 +494,7 @@ void NavigationControllerAndroid::PruneForwardEntries(JNIEnv* env) {
 
 ScopedJavaLocalRef<jstring> NavigationControllerAndroid::GetEntryExtraData(
     JNIEnv* env,
-    jint index,
+    int32_t index,
     const JavaRef<jstring>& jkey) {
   if (index < 0 || index >= navigation_controller_->GetEntryCount())
     return ScopedJavaLocalRef<jstring>();
@@ -511,7 +509,7 @@ ScopedJavaLocalRef<jstring> NavigationControllerAndroid::GetEntryExtraData(
 
 void NavigationControllerAndroid::SetEntryExtraData(
     JNIEnv* env,
-    jint index,
+    int32_t index,
     const JavaRef<jstring>& jkey,
     const JavaRef<jstring>& jvalue) {
   if (index < 0 || index >= navigation_controller_->GetEntryCount())
@@ -526,8 +524,8 @@ void NavigationControllerAndroid::SetEntryExtraData(
 
 void NavigationControllerAndroid::CopyStateFrom(
     JNIEnv* env,
-    jlong source_navigation_controller_ptr,
-    jboolean needs_reload) {
+    int64_t source_navigation_controller_ptr,
+    bool needs_reload) {
   navigation_controller_->CopyStateFrom(
       reinterpret_cast<NavigationControllerAndroid*>(
           source_navigation_controller_ptr)

@@ -9,7 +9,7 @@
 
 <cr-action-menu id="actionMenu"
     role-description="$i18n{moduleHeaderMoreActionsMenu}">
-  ${this.menuItems.map(item => html`
+  ${this.visibleMenuItems_.map(item => html`
     <button id="${item.action}" class="dropdown-item"
         @click="${this.onButtonClick_}" data-action="${item.action}">
       <cr-icon class="action-menu-icon cr-icon" icon="${item.icon}"></cr-icon>

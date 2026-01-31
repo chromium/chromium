@@ -29,13 +29,14 @@ const observedElements_: Element[] = [];
  * Must be in sync with what is supported in showBottomSheet.
  * @private
  */
-function isObservable(element: HTMLElement): boolean {
+function isObservable(
+    element: HTMLElement, allowPasskeyFields: boolean): boolean {
   // Ignore passkey fields, which contain the 'webauthn' autofill tag.
   const autocomplete_attribute = element.getAttribute('autocomplete');
   const isPasskeyField = autocomplete_attribute?.includes('webauthn');
   return ((element instanceof HTMLInputElement) ||
           (element instanceof HTMLFormElement)) &&
-      !isPasskeyField;
+      (allowPasskeyFields || !isPasskeyField);
 }
 
 /*
@@ -67,10 +68,6 @@ function showBottomSheet(hasUserGesture: boolean): void {
   } else if (lastBlurredElement_ instanceof HTMLFormElement) {
     form = lastBlurredElement_;
   }
-
-  // TODO(crbug.com/40261693): convert these "gCrWebLegacy.fill" and
-  // "gCrWebLegacy.form" calls to import and call the functions directly once
-  // the conversion to TypeScript is done.
 
   const msg = {
     'frameID': gCrWeb.getFrameId(),
@@ -173,8 +170,8 @@ function detachListenersInternal(rendererIds: number[]): void {
  */
 // TODO(crbug.com/454044167): Cleanup autofill TS type casting.
 function attachListeners(
-    rendererIds: number[], allowAutofocus: boolean,
-    useMousedownBlur: boolean): void {
+    rendererIds: number[], allowAutofocus: boolean, useMousedownBlur: boolean,
+    allowPasskeyFields: boolean): void {
   // Build list of elements
   let elementToBlur: HTMLElement|null = null;
   const elementsToObserve: Element[] = [];
@@ -182,7 +179,8 @@ function attachListeners(
     const element = getElementByUniqueID(renderer_id);
     // Only add element to list of observed elements if we aren't already
     // observing it.
-    if (element && (element instanceof HTMLElement) && isObservable(element) &&
+    if (element && (element instanceof HTMLElement) &&
+        isObservable(element, allowPasskeyFields) &&
         !observedElements_.find(elem => elem === element)) {
       const autofocused = document.activeElement === element;
       if (allowAutofocus || !autofocused) {

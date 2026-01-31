@@ -45,17 +45,17 @@ void PredictorsHandler::RegisterMessages() {
 }
 
 void PredictorsHandler::RequestAutocompleteActionPredictorDb(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   const bool enabled = !!autocomplete_action_predictor_;
-  auto dict = base::Value::Dict().Set("enabled", enabled);
+  auto dict = base::DictValue().Set("enabled", enabled);
   if (enabled) {
-    base::Value::List db;
+    base::ListValue db;
     for (AutocompleteActionPredictor::DBCacheMap::const_iterator it =
              autocomplete_action_predictor_->db_cache_.begin();
          it != autocomplete_action_predictor_->db_cache_.end(); ++it) {
       db.Append(
-          base::Value::Dict()
+          base::DictValue()
               .Set("user_text", it->first.user_text)
               .Set("url", it->first.url.spec())
               .Set("hit_count", it->second.number_of_hits)
@@ -70,10 +70,10 @@ void PredictorsHandler::RequestAutocompleteActionPredictorDb(
 }
 
 void PredictorsHandler::RequestResourcePrefetchPredictorDb(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   const bool enabled = (loading_predictor_ != nullptr);
-  auto dict = base::Value::Dict().Set("enabled", enabled);
+  auto dict = base::DictValue().Set("enabled", enabled);
 
   if (enabled) {
     auto* resource_prefetch_predictor =
@@ -86,7 +86,7 @@ void PredictorsHandler::RequestResourcePrefetchPredictorDb(
       // TODO(alexilin): Add redirects table.
 
       // Origin table cache.
-      base::Value::List db;
+      base::ListValue db;
       AddOriginDataMapToListValue(
           resource_prefetch_predictor->origin_data_->GetAllCached(), &db);
       dict.Set("origin_db", std::move(db));
@@ -98,13 +98,13 @@ void PredictorsHandler::RequestResourcePrefetchPredictorDb(
 
 void PredictorsHandler::AddOriginDataMapToListValue(
     const std::map<std::string, predictors::OriginData>& data_map,
-    base::Value::List* db) const {
+    base::ListValue* db) const {
   for (const auto& p : data_map) {
-    auto main = base::Value::Dict().Set("main_frame_host", p.first);
-    base::Value::List origins;
+    auto main = base::DictValue().Set("main_frame_host", p.first);
+    base::ListValue origins;
     for (const predictors::OriginStat& o : p.second.origins()) {
       origins.Append(
-          base::Value::Dict()
+          base::DictValue()
               .Set("origin", o.origin())
               .Set("number_of_hits", static_cast<int>(o.number_of_hits()))
               .Set("number_of_misses", static_cast<int>(o.number_of_misses()))

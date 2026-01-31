@@ -1285,7 +1285,7 @@ policies:
   1284: SystemShortcutBehavior
   1285: DeletingUndecryptablePasswordsEnabled
   1286: StandardizedBrowserZoomEnabled
-  1287: ReportingEndpoints
+  1287: ''
   1288: PrintingLPACSandboxEnabled
   1289: ShowGeminiIntroScreenEnabled
   1290: DeviceRestrictionSchedule
@@ -1390,8 +1390,8 @@ policies:
   1389: AutoSignOutEnabled
   1390: ExtensionInstallCloudPolicyChecksEnabled
   1391: DevToolsGoogleDeveloperProgramProfileAvailability
-  1392: IncognitoModeBlocklist
-  1393: IncognitoModeAllowlist
+  1392: IncognitoModeUrlBlocklist
+  1393: IncognitoModeUrlAllowlist
   1394: PreferSlowKexAlgorithms
   1395: ExtensionForceInstallWithNonMalwareViolationsEnabled
   1396: CacheEncryptionEnabled
@@ -1403,7 +1403,7 @@ policies:
   1402: GeminiActOnWebSettings
   1403: LocalAuthFactorsComplexity
   1404: ProxyOverrideRules
-  1405: LocalAuthFactors
+  1405: AllowedLocalAuthFactors
   1406: EnableProxyOverrideRulesForAllUsers
   1407: DefaultIdleDetectionSetting
   1408: IdleDetectionAllowedForUrls
@@ -1416,8 +1416,13 @@ policies:
   1415: DeviceLoginScreenPreferSlowCiphers
   1416: SearchContentSharingSettings
   1417: StaticStorageQuotaEnabled
-  1418: SaaSReportDomainUrlsForBrowser
-  1419: SaaSReportDomainUrlsForProfile
+  1418: SaasUsageReportingDomainUrlsForBrowsers
+  1419: SaasUsageReportingDomainUrlsForProfiles
+  1420: GeminiActOnWebAllowedForURLs
+  1421: GeminiActOnWebBlockedForURLs
+  1422: WebAppInstallByUserEnabled
+  1423: LocalNetworkAccessIpAddressSpaceOverrides
+  1424: RestrictPdfSaveToGoogleDriveAccountsToPattern
 
 atomic_groups:
   1: Homepage
@@ -1473,7 +1478,7 @@ atomic_groups:
   51: WebPrintingSettings
   52: DirectSocketsSettings
   53: SkyVaultSettings
-  54: BrowserEventReporting
+  54: ''
   55: SmartCardConnectSettings
   56: WebRtc
   57: ControlledFrameSettings

@@ -32,7 +32,7 @@ BaseScreenHandler::BaseScreenHandler(OobeScreenId oobe_screen)
 
 BaseScreenHandler::~BaseScreenHandler() = default;
 
-void BaseScreenHandler::ShowInWebUI(std::optional<base::Value::Dict> data) {
+void BaseScreenHandler::ShowInWebUI(std::optional<base::DictValue> data) {
   if (!GetOobeUI()) {
     return;
   }
@@ -50,11 +50,11 @@ void BaseScreenHandler::RegisterMessages() {
   BaseWebUIHandler::RegisterMessages();
 }
 
-void BaseScreenHandler::HandleUserAction(const base::Value::List& args) {
+void BaseScreenHandler::HandleUserAction(const base::ListValue& args) {
   HandleUserActionImpl(args);
 }
 
-bool BaseScreenHandler::HandleUserActionImpl(const base::Value::List& args) {
+bool BaseScreenHandler::HandleUserActionImpl(const base::ListValue& args) {
   LoginDisplayHost* host = LoginDisplayHost::default_host();
   if (!host) {
     return false;

@@ -51,6 +51,8 @@ class MockSharedWorker : public blink::mojom::SharedWorker {
   bool CheckNotReceivedConnect();
   bool CheckReceivedTerminate();
 
+  bool IsFrozen() const;
+
   void Disconnect();
 
   void SetConnectCallback(base::OnceClosure callback);
@@ -60,10 +62,13 @@ class MockSharedWorker : public blink::mojom::SharedWorker {
   void Connect(int connection_request_id,
                blink::MessagePortDescriptor port) override;
   void Terminate() override;
+  void Freeze() override;
+  void Resume() override;
 
   mojo::Receiver<blink::mojom::SharedWorker> receiver_;
   std::queue<std::pair<int, blink::MessagePortChannel>> connect_received_;
   bool terminate_received_ = false;
+  int freeze_count_ = 0;
   base::OnceClosure connect_callback_;
 };
 
@@ -122,7 +127,8 @@ class MockSharedWorkerFactory : public blink::mojom::SharedWorkerFactory {
       mojo::PendingReceiver<blink::mojom::ReportingObserver>
           coep_reporting_observer,
       mojo::PendingReceiver<blink::mojom::ReportingObserver>
-          dip_reporting_observer) override;
+          dip_reporting_observer,
+      bool cross_origin_isolated) override;
 
   struct CreateParams {
     CreateParams();

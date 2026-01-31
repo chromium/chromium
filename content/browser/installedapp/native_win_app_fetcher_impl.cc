@@ -81,9 +81,9 @@ void NativeWinAppFetcherImpl::FetchAppsForUrl(
   base::win::PostAsyncHandlers(
       enum_operation_.Get(),
       base::BindOnce(&NativeWinAppFetcherImpl::OnGetAppUriHandlers,
-                     weak_ptr_factory_.GetWeakPtr())),
+                     weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&NativeWinAppFetcherImpl::OnFailure,
-                     weak_ptr_factory_.GetWeakPtr());
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void NativeWinAppFetcherImpl::OnGetAppUriHandlers(

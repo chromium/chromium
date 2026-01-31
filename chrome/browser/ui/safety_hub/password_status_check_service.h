@@ -67,10 +67,10 @@ class PasswordStatusCheckService
   void UpdateInsecureCredentialCountAsync();
 
   // Helper function for displaying the status in UI given the sign-in state.
-  base::Value::Dict GetPasswordCardData(bool signed_in);
+  base::DictValue GetPasswordCardData(bool signed_in);
 
   // Helper function for displaying the current status in the UI.
-  base::Value::Dict GetPasswordCardData();
+  base::DictValue GetPasswordCardData();
 
   // Returns the latest PasswordStatusCheckResult that is available in memory.
   // TODO(crbug.com/40267370): This will be a SafetyHubResult implementation.

@@ -8,5 +8,7 @@ proto_library("ftl_messages") {
   sources = [
     "chromoting_message.proto",
     "ftl_messages.proto",
+    "webrtc.proto",
+    "xmpp.proto",
   ]
 }

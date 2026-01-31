@@ -38,11 +38,12 @@ found in the LICENSE file.
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:visibility="gone"
+            android:layout_marginStart="@dimen/omnibox_verbose_text_negative_start_margin"
             android:paddingStart="@dimen/location_bar_verbose_start_padding_verbose_text"
             android:paddingEnd="8dp"
             android:gravity="center_vertical"
             android:textAlignment="viewStart"
-            android:textAppearance="@style/TextAppearance.OmniboxVerboseStatus"
+            android:textAppearance="@style/TextAppearance.TextLarge.Primary"
             android:ellipsize="end"
             android:maxLines="1"
             android:focusable="false"/>

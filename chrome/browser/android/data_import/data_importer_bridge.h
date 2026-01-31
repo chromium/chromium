@@ -26,15 +26,15 @@ class DataImporterBridge {
   void Destroy(JNIEnv* env);
 
   void ImportBookmarks(JNIEnv* env,
-                       jint owned_fd,
+                       int32_t owned_fd,
                        const base::android::JavaRef<jobject>& j_callback);
 
   void ImportReadingList(JNIEnv* env,
-                         jint owned_fd,
+                         int32_t owned_fd,
                          const base::android::JavaRef<jobject>& j_callback);
 
   void ImportHistory(JNIEnv* env,
-                     jint owned_fd,
+                     int32_t owned_fd,
                      const base::android::JavaRef<jobject>& j_callback);
 
  private:

@@ -7,11 +7,14 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_service_user_test_base.h"
 #include "chrome/browser/profiles/profile.h"
+#include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using extensions::profile_util::ProfileCanUseNonComponentExtensions;
 

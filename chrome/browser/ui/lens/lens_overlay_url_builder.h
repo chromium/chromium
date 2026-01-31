@@ -27,6 +27,12 @@ void AppendStickinessSignalForFormula(
     std::map<std::string, std::string>& params,
     const std::string& formula);
 
+void AppendLensOverlaySidePanelParams(
+    std::map<std::string, std::string>& params,
+    uint64_t gen204_id,
+    bool has_text,
+    bool has_image);
+
 GURL AppendCommonSearchParametersToURL(const GURL& url_to_modify,
                                        bool use_dark_mode);
 
@@ -34,10 +40,6 @@ GURL AppendVideoContextParamToURL(const GURL& url_to_modify,
                                   std::optional<GURL> page_url);
 
 GURL AppendDarkModeParamToURL(const GURL& url_to_modify, bool use_dark_mode);
-
-GURL AppendInvocationSourceParamToURL(
-    const GURL& url_to_modify,
-    lens::LensOverlayInvocationSource invocation_source);
 
 GURL BuildTextOnlySearchURL(
     base::Time query_start_time,

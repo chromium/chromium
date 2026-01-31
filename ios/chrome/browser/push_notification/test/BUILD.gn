@@ -1,0 +1,47 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "scoped_notification_auth_swizzler.h",
+    "scoped_notification_auth_swizzler.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "notifications_opt_in_egtest.mm",
+    "prominence_notification_setting_alert_egtest.mm",
+    "push_notification_egtest.mm",
+  ]
+  deps = [
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
+    "//ios/chrome/browser/content_suggestions/public:constants",
+    "//ios/chrome/browser/content_suggestions/set_up_list/public:constants",
+    "//ios/chrome/browser/content_suggestions/test:eg_test_support+eg2",
+    "//ios/chrome/browser/push_notification/public:constants",
+    "//ios/chrome/browser/settings/ui_bundled/notifications:constants",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/tips_notifications/model:utils",
+    "//ios/chrome/common/ui/promo_style:constants",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ui/base",
+    "//ui/strings",
+  ]
+}

@@ -56,7 +56,7 @@ class COMPONENTS_PREFS_EXPORT SegregatedPrefStore : public PersistentPrefStore {
   bool IsInitializationComplete() const override;
   bool GetValue(std::string_view key,
                 const base::Value** result) const override;
-  base::Value::Dict GetValues() const override;
+  base::DictValue GetValues() const override;
 
   // WriteablePrefStore implementation
   void SetValue(std::string_view key,

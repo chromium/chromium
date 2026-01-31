@@ -185,7 +185,7 @@ std::string ProxyList::ToDebugString() const {
 }
 
 base::Value ProxyList::ToValue() const {
-  base::Value::List list;
+  base::ListValue list;
   for (const auto& proxy_chain : proxy_chains_) {
     if (proxy_chain.is_direct()) {
       list.Append("direct://");

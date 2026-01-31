@@ -12,12 +12,11 @@
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/webgpu_interface.h"
-#include "gpu/command_buffer/common/mailbox_holder.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/dawn_control_client_holder.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/xr_webgl_drawing_buffer.h"
 #include "third_party/blink/renderer/platform/graphics/image_to_buffer_copier.h"
-#include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/mojo/mojo_binding_context.h"
 #include "ui/gfx/gpu_fence.h"
 
@@ -52,8 +51,7 @@ bool XRFrameTransport::DrawingIntoSharedBuffer() {
   switch (transport_options_->transport_method) {
     case device::mojom::blink::XRPresentationTransportMethod::
         SUBMIT_AS_TEXTURE_HANDLE:
-    case device::mojom::blink::XRPresentationTransportMethod::
-        SUBMIT_AS_MAILBOX_HOLDER:
+    case device::mojom::blink::XRPresentationTransportMethod::SUBMIT_AS_TEST:
       return false;
     case device::mojom::blink::XRPresentationTransportMethod::
         DRAW_INTO_TEXTURE_MAILBOX:
@@ -94,7 +92,7 @@ bool XRFrameTransport::FrameSubmit(
     device::mojom::blink::XRPresentationProvider* vr_presentation_provider,
     XRFrameTransportDelegate* delegate,
     Vector<device::LayerId> layer_ids,
-    Vector<scoped_refptr<StaticBitmapImage>> image_refs,
+    Vector<std::unique_ptr<SharedImageHolder>> image_refs,
     int16_t vr_frame_id) {
   DCHECK(transport_options_);
   CHECK(delegate);
@@ -112,8 +110,8 @@ bool XRFrameTransport::FrameSubmit(
     // TODO(crbug.com/359418629): This only works because we're restricted to a
     // single layer at the moment.
     CHECK_EQ(image_refs.size(), 1UL);
-    auto [gpu_memory_buffer_handle, sync_token] =
-        delegate->CopyImage(*image_refs.begin(), last_transfer_succeeded_);
+    auto [gpu_memory_buffer_handle, sync_token] = delegate->CopyImage(
+        image_refs.begin()->get(), last_transfer_succeeded_);
 
     // We can fail to obtain a GMB handle if we don't have GPU support, or
     // for some out-of-memory situations.
@@ -140,15 +138,8 @@ bool XRFrameTransport::FrameSubmit(
 #endif
   } else if (transport_options_->transport_method ==
              device::mojom::blink::XRPresentationTransportMethod::
-                 SUBMIT_AS_MAILBOX_HOLDER) {
+                 SUBMIT_AS_TEST) {
     CHECK_EQ(image_refs.size(), 1UL);
-
-    // The AcceleratedStaticBitmapImage must be kept alive until the
-    // mailbox is used via CreateAndTexStorage2DSharedImageCHROMIUM, the mailbox
-    // itself does not keep it alive. We must keep a reference to the
-    // image until the mailbox was consumed.
-    StaticBitmapImage* static_image = image_refs.begin()->get();
-    static_image->EnsureSyncTokenVerified();
 
     // Conditionally wait for the previous render to finish. A late wait here
     // attempts to overlap work in parallel with the previous frame's
@@ -167,14 +158,8 @@ bool XRFrameTransport::FrameSubmit(
     }
     previous_images_ = std::move(image_refs);
 
-    // Create mailbox and sync token for transfer.
-    TRACE_EVENT_BEGIN0("gpu", "XRFrameTransport::GetMailbox");
-    auto mailbox_holder = static_image->GetMailboxHolder();
-    TRACE_EVENT_END0("gpu", "XRFrameTransport::GetMailbox");
-
     TRACE_EVENT_BEGIN0("gpu", "XRFrameTransport::SubmitFrame");
-    vr_presentation_provider->SubmitFrame(vr_frame_id, mailbox_holder,
-                                          frame_wait_time_);
+    vr_presentation_provider->SubmitFrame(vr_frame_id, frame_wait_time_);
     TRACE_EVENT_END0("gpu", "XRFrameTransport::SubmitFrame");
   } else if (transport_options_->transport_method ==
              device::mojom::blink::XRPresentationTransportMethod::

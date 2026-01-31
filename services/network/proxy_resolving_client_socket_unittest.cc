@@ -4,7 +4,6 @@
 
 #include "services/network/proxy_resolving_client_socket.h"
 
-#include <set>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -1221,42 +1220,6 @@ TEST_P(ReconsiderProxyAfterErrorTest,
   EXPECT_TRUE(ssl_data2.ConnectDataConsumed());
   // This depends on whether the consumer has requested to use TLS.
   EXPECT_EQ(use_tls_, ssl_data3.ConnectDataConsumed());
-}
-
-TEST_P(ProxyResolvingClientSocketTest,
-       OnDestinationDnsAliasesResolved_ReturnsOK) {
-  const GURL kDestination("https://dest.test/");
-  std::vector<std::string> aliases(
-      {"alias1", "alias2", kDestination.GetHost()});
-  std::set<std::string> aliases_set(aliases.begin(), aliases.end());
-
-  // Create mock host resolver to return DNS aliases during host resolution.
-  std::unique_ptr<net::MockHostResolver> host_resolver_ =
-      std::make_unique<net::MockHostResolver>(
-          /*default_result=*/net::MockHostResolverBase::RuleResolver::
-              GetLocalhostResult());
-  host_resolver_->rules()->AddIPLiteralRuleWithDnsAliases(
-      kDestination.GetHost(), "2.2.2.2", std::move(aliases));
-
-  std::unique_ptr<net::URLRequestContextBuilder> url_request_context_builder =
-      CreateBuilder("DIRECT");
-  url_request_context_builder->set_host_resolver(std::move(host_resolver_));
-  auto url_request_context = url_request_context_builder->Build();
-
-  net::StaticSocketDataProvider socket_data;
-  mock_client_socket_factory_.AddSocketDataProvider(&socket_data);
-  net::SSLSocketDataProvider ssl_data(net::ASYNC, net::OK);
-  mock_client_socket_factory_.AddSSLSocketDataProvider(&ssl_data);
-
-  ProxyResolvingClientSocketFactory proxy_resolving_socket_factory(
-      url_request_context.get());
-  std::unique_ptr<ProxyResolvingClientSocket> socket =
-      proxy_resolving_socket_factory.CreateSocket(
-          kDestination, net::NetworkAnonymizationKey(), use_tls_);
-
-  net::TestCompletionCallback callback;
-  int status = socket->Connect(callback.callback());
-  EXPECT_THAT(callback.GetResult(status), net::test::IsOk());
 }
 
 }  // namespace network

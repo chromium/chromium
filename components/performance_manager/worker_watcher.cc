@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
@@ -237,7 +236,7 @@ void WorkerWatcher::OnBeforeWorkerDestroyed(
   }
 
 #if DCHECK_IS_ON()
-  DCHECK(!base::Contains(detached_frame_count_per_worker_, worker_node.get()));
+  DCHECK(!detached_frame_count_per_worker_.contains(worker_node.get()));
 #endif  // DCHECK_IS_ON()
   PerformanceManagerImpl::DeleteNode(std::move(worker_node));
 
@@ -302,7 +301,7 @@ void WorkerWatcher::OnBeforeWorkerDestroyed(
   }
 
 #if DCHECK_IS_ON()
-  DCHECK(!base::Contains(detached_frame_count_per_worker_, worker_node.get()));
+  DCHECK(!detached_frame_count_per_worker_.contains(worker_node.get()));
 #endif  // DCHECK_IS_ON()
   PerformanceManagerImpl::DeleteNode(std::move(worker_node));
 
@@ -374,8 +373,7 @@ void WorkerWatcher::OnVersionStoppedRunning(int64_t version_id) {
   DisconnectAllServiceWorkerClients(service_worker_node.get(), version_id);
 
 #if DCHECK_IS_ON()
-  DCHECK(!base::Contains(detached_frame_count_per_worker_,
-                         service_worker_node.get()));
+  DCHECK(!detached_frame_count_per_worker_.contains(service_worker_node.get()));
 #endif  // DCHECK_IS_ON()
   PerformanceManagerImpl::DeleteNode(std::move(service_worker_node));
 
@@ -443,7 +441,7 @@ void WorkerWatcher::OnControlleeRemoved(int64_t version_id,
     // |client_uuid| should not be part of this service worker's clients.
     auto it = service_worker_clients_.find(version_id);
     if (it != service_worker_clients_.end())
-      DCHECK(!base::Contains(it->second, client_uuid));
+      DCHECK(!it->second.contains(client_uuid));
 #endif  // DCHECK_IS_ON()
     return;
   }

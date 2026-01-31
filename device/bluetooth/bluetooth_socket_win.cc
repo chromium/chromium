@@ -63,20 +63,11 @@ std::string IPEndPointToBluetoothAddress(const net::IPEndPoint& end_point) {
 namespace device {
 
 struct BluetoothSocketWin::ServiceRegData {
-  ServiceRegData() {
-    UNSAFE_TODO({
-      ZeroMemory(&address, sizeof(address));
-      ZeroMemory(&address_info, sizeof(address_info));
-      ZeroMemory(&uuid, sizeof(uuid));
-      ZeroMemory(&service, sizeof(service));
-    });
-  }
-
-  SOCKADDR_BTH address;
-  CSADDR_INFO address_info;
-  GUID uuid;
+  SOCKADDR_BTH address = {};
+  CSADDR_INFO address_info = {};
+  GUID uuid = {};
   std::u16string name;
-  WSAQUERYSET service;
+  WSAQUERYSET service = {};
 };
 
 // static

@@ -1826,6 +1826,7 @@ fn write_unique_ptr_common(out: &mut OutFile, ty: &Type) {
 
     if can_construct_from_value {
         out.builtin.maybe_uninit = true;
+        out.pragma.mismatched_new_delete = true;
         begin_function_definition(out);
         writeln!(
             out,
@@ -1921,6 +1922,7 @@ fn write_shared_ptr(out: &mut OutFile, key: &NamedImplKey) {
 
     if can_construct_from_value {
         out.builtin.maybe_uninit = true;
+        out.pragma.mismatched_new_delete = true;
         begin_function_definition(out);
         writeln!(
             out,

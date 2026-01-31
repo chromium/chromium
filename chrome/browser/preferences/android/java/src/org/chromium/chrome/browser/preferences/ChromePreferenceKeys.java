@@ -195,6 +195,9 @@ public final class ChromePreferenceKeys {
     public static final String CONTEXT_MENU_SHOP_IMAGE_WITH_GOOGLE_LENS_CLICKED =
             "Chrome.ContextMenu.ShopImageWithGoogleLensClicked";
 
+    public static final String NTP_CUSTOMIZATION_BACKGROUND_ENABLED =
+            "Chrome.Policy.NtpCustomBackgroundEnabled";
+
     /** The Uri of the NTP's background image. */
     public static final String NTP_CUSTOMIZATION_BACKGROUND_IMAGE_TYPE =
             "Chrome.NtpCustomization.NtpBackgroundImageType";
@@ -895,6 +898,30 @@ public final class ChromePreferenceKeys {
     // Segmentation platform related prefs.
     public static final String SEGMENTATION_FEED_ACTIVE_USER = "Chrome.Segmentation.FeedActiveUser";
 
+    /** Timestamp for when the user first saw the Setup List on the New Tab Page. */
+    public static final String SETUP_LIST_FIRST_SHOWN_TIMESTAMP =
+            "Chrome.SetupList.FirstShownTimestamp";
+
+    /** Whether the user has ever Signed in */
+    public static final String SETUP_LIST_SIGN_IN_PROMO_COMPLETED =
+            "Chrome.SetupList.SignInPromoCompleted";
+
+    /** Whether the user has ever enabled Enhanced Safe Browsing */
+    public static final String SETUP_LIST_ENHANCED_SAFE_BROWSING_PROMO_COMPLETED =
+            "Chrome.SetupList.EnhancedSafeBrowsingPromoCompleted";
+
+    /** Whether the user has ever completed the Save Passwords promo from the Setup List. */
+    public static final String SETUP_LIST_SAVE_PASSWORDS_PROMO_COMPLETED =
+            "Chrome.SetupList.SavePasswordsPromoCompleted";
+
+    /** Whether the user has ever completed the Password Checkup promo from the Setup List. */
+    public static final String SETUP_LIST_PASSWORD_CHECKUP_PROMO_COMPLETED =
+            "Chrome.SetupList.PasswordCheckupPromoCompleted";
+
+    /** Whether the user has ever completed the Address Bar promo from the Setup List. */
+    public static final String SETUP_LIST_ADDRESS_BAR_PROMO_COMPLETED =
+            "Chrome.SetupList.AddressBarPromoCompleted";
+
     // Tracks which GUIDs there is an active notification for.
     public static final String SEND_TAB_TO_SELF_ACTIVE_NOTIFICATIONS =
             "send_tab_to_self.notification.active";
@@ -1176,6 +1203,7 @@ public final class ChromePreferenceKeys {
                 CONTEXT_MENU_OPEN_IN_EPHEMERAL_TAB_CLICKED,
                 CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS_CLICKED,
                 CONTEXT_MENU_SHOP_IMAGE_WITH_GOOGLE_LENS_CLICKED,
+                NTP_CUSTOMIZATION_BACKGROUND_ENABLED,
                 NTP_CUSTOMIZATION_BACKGROUND_IMAGE_TYPE,
                 NTP_CUSTOMIZATION_THEME_COLOR_ID,
                 NTP_CUSTOMIZATION_BACKGROUND_COLOR,
@@ -1308,6 +1336,12 @@ public final class ChromePreferenceKeys {
                 SEARCH_ENGINE_CHOICE_PENDING_OS_CHOICE_DIALOG_SHOWN_ATTEMPTS,
                 SEGMENTATION_FEED_ACTIVE_USER,
                 SERIAL_NOTIFICATION_IDS,
+                SETUP_LIST_FIRST_SHOWN_TIMESTAMP,
+                SETUP_LIST_SIGN_IN_PROMO_COMPLETED,
+                SETUP_LIST_ENHANCED_SAFE_BROWSING_PROMO_COMPLETED,
+                SETUP_LIST_SAVE_PASSWORDS_PROMO_COMPLETED,
+                SETUP_LIST_PASSWORD_CHECKUP_PROMO_COMPLETED,
+                SETUP_LIST_ADDRESS_BAR_PROMO_COMPLETED,
                 SETTINGS_SAFETY_CHECK_LAST_RUN_TIMESTAMP,
                 SETTINGS_SAFETY_CHECK_RUN_COUNTER,
                 SHARING_LAST_SHARED_COMPONENT_NAME,

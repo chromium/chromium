@@ -15,10 +15,10 @@
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/autofill_util.h"
+#import "components/autofill/ios/common/features.h"
 #import "components/autofill/ios/common/field_data_manager_factory_ios.h"
 #import "components/autofill/ios/common/javascript_feature_util.h"
 #import "components/autofill/ios/form_util/autofill_form_features_java_script_feature.h"
-#import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
@@ -47,9 +47,17 @@ AutofillJavaScriptFeature::AutofillJavaScriptFeature()
               kScriptName,
               FeatureScript::InjectionTime::kDocumentStart,
               FeatureScript::TargetFrames::kAllFrames,
-              FeatureScript::ReinjectionBehavior::kInjectOncePerWindow)},
-          {FormUtilJavaScriptFeature::GetInstance(),
-           AutofillFormFeaturesJavaScriptFeature::GetInstance()}) {}
+              FeatureScript::ReinjectionBehavior::kInjectOncePerWindow,
+              base::BindRepeating(
+                  []() -> FeatureScript::PlaceholderReplacements {
+                    bool use_undo =
+                        base::FeatureList::IsEnabled(kAutofillUndoIos);
+                    return @{
+                      @"window.gCrWebPlaceholderAutofillUndo" :
+                              use_undo ? @"true" : @"false"
+                    };
+                  }))},
+          {AutofillFormFeaturesJavaScriptFeature::GetInstance()}) {}
 
 AutofillJavaScriptFeature::~AutofillJavaScriptFeature() = default;
 
@@ -61,41 +69,41 @@ void AutofillJavaScriptFeature::FetchForms(
   bool restrict_unowned_fields_to_formless_checkout = false;
   CallJavaScriptFunction(
       frame, "autofill.extractForms",
-      base::Value::List().Append(restrict_unowned_fields_to_formless_checkout),
+      base::ListValue().Append(restrict_unowned_fields_to_formless_checkout),
       autofill::CreateStringCallback(std::move(callback)),
       base::Seconds(kJavaScriptExecutionTimeoutInSeconds));
 }
 
 void AutofillJavaScriptFeature::FillActiveFormField(
     web::WebFrame* frame,
-    base::Value::Dict data,
+    base::DictValue data,
     base::OnceCallback<void(BOOL)> callback) {
   CallJavaScriptFunction(frame, "autofill.fillActiveFormField",
-                         base::Value::List().Append(std::move(data)),
+                         base::ListValue().Append(std::move(data)),
                          autofill::CreateBoolCallback(std::move(callback)),
                          base::Seconds(kJavaScriptExecutionTimeoutInSeconds));
 }
 
 void AutofillJavaScriptFeature::FillSpecificFormField(
     web::WebFrame* frame,
-    base::Value::Dict data,
+    base::DictValue data,
     base::OnceCallback<void(BOOL)> callback) {
   CallJavaScriptFunction(frame, "autofill.fillSpecificFormField",
-                         base::Value::List().Append(std::move(data)),
+                         base::ListValue().Append(std::move(data)),
                          autofill::CreateBoolCallback(std::move(callback)),
                          base::Seconds(kJavaScriptExecutionTimeoutInSeconds));
 }
 
 void AutofillJavaScriptFeature::FillForm(
     web::WebFrame* frame,
-    base::Value::Dict data,
+    base::DictValue data,
     autofill::FieldRendererId force_fill_field_id,
     base::OnceCallback<void(NSString*)> callback) {
   DCHECK(!callback.is_null());
 
   CallJavaScriptFunction(
       frame, "autofill.fillForm",
-      base::Value::List()
+      base::ListValue()
           .Append(std::move(data))
           .Append(static_cast<int>(force_fill_field_id.value())),
       autofill::CreateStringCallback(std::move(callback)),
@@ -111,7 +119,7 @@ void AutofillJavaScriptFeature::ClearAutofilledFieldsForForm(
 
   CallJavaScriptFunction(
       frame, "autofill.clearAutofilledFields",
-      base::Value::List()
+      base::ListValue()
           .Append(static_cast<int>(form_renderer_id.value()))
           .Append(static_cast<int>(field_renderer_id.value())),
       autofill::CreateStringCallback(std::move(callback)),
@@ -119,9 +127,9 @@ void AutofillJavaScriptFeature::ClearAutofilledFieldsForForm(
 }
 
 void AutofillJavaScriptFeature::FillPredictionData(web::WebFrame* frame,
-                                                   base::Value::Dict data) {
+                                                   base::DictValue data) {
   CallJavaScriptFunction(frame, "autofill.fillPredictionData",
-                         base::Value::List().Append(std::move(data)));
+                         base::ListValue().Append(std::move(data)));
 }
 
 std::optional<std::string>
@@ -137,7 +145,7 @@ void AutofillJavaScriptFeature::ScriptMessageReceived(
   }
   const std::string* command = message.body()->GetDict().FindString("command");
   const std::string* frame_id = message.body()->GetDict().FindString("frame");
-  const base::Value::Dict* form_dict =
+  const base::DictValue* form_dict =
       message.body()->GetDict().FindDict("form_data");
   if (!command || !frame_id || !form_dict || *command != kFormFilledCommand) {
     return;
@@ -155,11 +163,13 @@ void AutofillJavaScriptFeature::ScriptMessageReceived(
   const scoped_refptr<FieldDataManager> field_data_manager =
       FieldDataManagerFactoryIOS::GetRetainable(frame);
 
-  if (std::optional<autofill::FormData> form_data = ExtractFormData(
-          *form_dict, /*filtered=*/false, /*form_name=*/u"",
-          web_state->GetLastCommittedURL(), frame->GetSecurityOrigin(),
-          *field_data_manager, frame->GetFrameId())) {
-    driver->DidAutofillForm(*std::move(form_data));
+  if (base::expected<autofill::FormData, ExtractFormDataFailure> form_data =
+          ExtractFormData(*form_dict, /*form_name_filter=*/std::nullopt,
+                          web_state->GetLastCommittedURL(),
+                          frame->GetSecurityOrigin(), frame->GetUrl(),
+                          *field_data_manager, frame->GetFrameId());
+      form_data.has_value()) {
+    driver->DidAutofillForm(std::move(form_data).value());
   }
 }
 

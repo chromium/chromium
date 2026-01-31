@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "content/public/browser/web_contents.h"
@@ -105,10 +106,9 @@ void RecordNavigationCapturingDisplayModeMetrics(
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   WebAppProvider* web_app_provider = WebAppProvider::GetForWebApps(profile);
-  DisplayMode display_mode =
-      web_app_provider->registrar_unsafe().GetAppEffectiveDisplayMode(app_id);
-  CHECK_NE(display_mode, DisplayMode::kUndefined);
-  bool is_display_mode_browser = display_mode == DisplayMode::kBrowser;
+  bool is_display_mode_browser =
+      web_app_provider->registrar_unsafe().AppMatches(
+          app_id, WebAppFilter::OpensInBrowserTab());
 
   NavigationCapturingDisplayModeResult display_mode_result;
   if (is_launch_container_tab && is_display_mode_browser) {

@@ -35,13 +35,14 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.home_page_button.HomePageButtonsCoordinator.HomePageButtonsState;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone.VisualState;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.function.Supplier;
@@ -68,12 +69,13 @@ public class HomePageButtonsCoordinatorUnitTest {
         mHomePageButtonsCoordinator =
                 new HomePageButtonsCoordinator(
                         mContext,
-                        mock(ObservableSupplier.class),
+                        mock(MonotonicObservableSupplier.class),
                         mView,
                         mock(Callback.class),
                         mock(Supplier.class),
                         mBottomSheetController,
-                        mOnHomeButtonClickListener);
+                        mOnHomeButtonClickListener,
+                        mock(WindowAndroid.class));
         mHomePageButtonsCoordinator.setMediatorForTesting(mMediator);
         mHomePageButtonsCoordinator.setModelForTesting(mModel);
     }

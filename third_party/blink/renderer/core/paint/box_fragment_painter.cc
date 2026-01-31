@@ -1327,11 +1327,8 @@ void BoxFragmentPainter::PaintBoxDecorationBackground(
         visual_rect, paint_rect, *background_client);
 
     Element* element = DynamicTo<Element>(layout_object.GetNode());
-    if (element && element->GetRegionCaptureCropId()) {
-      paint_info.context.GetPaintController().RecordRegionCaptureData(
-          *background_client, *(element->GetRegionCaptureCropId()),
-          ToPixelSnappedRect(paint_rect));
-    }
+    RecordRegionCaptureAndTrackedElementData(element, paint_info, paint_rect,
+                                             *background_client);
   }
 
   if (!suppress_box_decoration_background && box_fragment_.GetGapGeometry() &&
@@ -1946,11 +1943,8 @@ inline void BoxFragmentPainter::PaintLineBox(
                                                   line_fragment_id);
 
   Element* element = DynamicTo<Element>(line_box_fragment.GetNode());
-  if (element && element->GetRegionCaptureCropId()) {
-    paint_info.context.GetPaintController().RecordRegionCaptureData(
-        display_item_client, *(element->GetRegionCaptureCropId()),
-        ToPixelSnappedRect(border_box));
-  }
+  RecordRegionCaptureAndTrackedElementData(element, paint_info, border_box,
+                                           display_item_client);
 
   // Paint the background of the `::first-line` line box.
   if (LineBoxFragmentPainter::NeedsPaint(line_box_fragment)) {
@@ -3013,6 +3007,25 @@ gfx::Rect BoxFragmentPainter::VisualRect(const PhysicalOffset& paint_offset) {
   PhysicalRect ink_overflow = box_item_->InkOverflowRect();
   ink_overflow.Move(paint_offset);
   return ToEnclosingRect(ink_overflow);
+}
+
+void BoxFragmentPainter::RecordRegionCaptureAndTrackedElementData(
+    Element* element,
+    const PaintInfo& paint_info,
+    const PhysicalRect& paint_rect,
+    const DisplayItemClient& display_item_client) {
+  if (element && element->GetRegionCaptureCropId()) {
+    paint_info.context.GetPaintController().RecordRegionCaptureData(
+        display_item_client, *(element->GetRegionCaptureCropId()),
+        ToPixelSnappedRect(paint_rect));
+  }
+
+  if (element && element->GetTrackedElementRect()) {
+    const auto* tracked_element_rect = element->GetTrackedElementRect();
+    paint_info.context.GetPaintController().RecordTrackedElementData(
+        display_item_client, *tracked_element_rect,
+        ToPixelSnappedRect(paint_rect));
+  }
 }
 
 }  // namespace blink

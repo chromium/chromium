@@ -47,8 +47,13 @@ bool LayoutBlockFlow::CreatesNewFormattingContext() const {
   if (IsRenderedLegend())
     return true;
 
-  if (ShouldBeConsideredAsReplaced())
+  if (IsAtomicInlineLevel()) {
     return true;
+  }
+
+  if (IsSemiReplaced()) {
+    return true;
+  }
 
   return false;
 }

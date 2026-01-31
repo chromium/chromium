@@ -17,11 +17,10 @@ namespace {
 using AccessTokenInfo = DeviceAccountsProvider::AccessTokenInfo;
 using AccessTokenResult = DeviceAccountsProvider::AccessTokenResult;
 
-// Helper function converting `error` for `identity` to an
-// AuthenticationErrorCategory.
-AuthenticationErrorCategory AuthenticationErrorCategoryFromError(
-    CWVIdentity* identity,
-    NSError* error) {
+// Helper function converting `error` for `identity` to a
+// GoogleServiceAuthError.
+GoogleServiceAuthError GoogleServiceAuthErrorFromError(CWVIdentity* identity,
+                                                       NSError* error) {
   DCHECK(error);
 
   CWVSyncError sync_error =
@@ -29,17 +28,23 @@ AuthenticationErrorCategory AuthenticationErrorCategoryFromError(
                                                identity:identity];
   switch (sync_error) {
     case CWVSyncErrorInvalidGAIACredentials:
-      return kAuthenticationErrorCategoryAuthorizationErrors;
+      return GoogleServiceAuthError(
+          GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS);
     case CWVSyncErrorUserNotSignedUp:
-      return kAuthenticationErrorCategoryUnknownIdentityErrors;
+      return GoogleServiceAuthError(
+          GoogleServiceAuthError::State::ACCOUNT_NOT_FOUND);
     case CWVSyncErrorConnectionFailed:
-      return kAuthenticationErrorCategoryNetworkServerErrors;
+      return GoogleServiceAuthError::FromConnectionError(net::ERR_FAILED);
     case CWVSyncErrorServiceUnavailable:
-      return kAuthenticationErrorCategoryAuthorizationForbiddenErrors;
+      return GoogleServiceAuthError(
+          GoogleServiceAuthError::State::SERVICE_UNAVAILABLE);
     case CWVSyncErrorRequestCanceled:
-      return kAuthenticationErrorCategoryUserCancellationErrors;
+      return GoogleServiceAuthError(
+          GoogleServiceAuthError::State::REQUEST_CANCELED);
     case CWVSyncErrorUnexpectedServiceResponse:
-      return kAuthenticationErrorCategoryUnknownErrors;
+    default:
+      return GoogleServiceAuthError(
+          GoogleServiceAuthError::State::UNEXPECTED_SERVICE_RESPONSE);
   }
 }
 
@@ -51,8 +56,7 @@ AccessTokenResult AccessTokenResultFrom(NSString* token,
                                         CWVIdentity* identity,
                                         NSError* error) {
   if (error) {
-    return base::unexpected(
-        AuthenticationErrorCategoryFromError(identity, error));
+    return base::unexpected(GoogleServiceAuthErrorFromError(identity, error));
   }
 
   AccessTokenInfo info{base::SysNSStringToUTF8(token),
@@ -108,20 +112,20 @@ void WebViewDeviceAccountsProviderImpl::GetAccessToken(
                 }];
 }
 
-std::vector<DeviceAccountsProvider::AccountInfo>
+std::vector<DeviceAccountsProvider::DeviceAccountInfo>
 WebViewDeviceAccountsProviderImpl::GetAccountsForProfile() const {
   // WebView doesn't have profiles, so the accounts for this profile are the
   // same as the accounts on the device.
   return GetAccountsOnDevice();
 }
 
-std::vector<DeviceAccountsProvider::AccountInfo>
+std::vector<DeviceAccountsProvider::DeviceAccountInfo>
 WebViewDeviceAccountsProviderImpl::GetAccountsOnDevice() const {
   DCHECK(CWVSyncController.dataSource);
 
   NSArray<CWVIdentity*>* identities =
       [CWVSyncController.dataSource allKnownIdentities];
-  std::vector<AccountInfo> account_infos;
+  std::vector<DeviceAccountInfo> account_infos;
   for (CWVIdentity* identity in identities) {
     account_infos.emplace_back(GaiaId(identity.gaiaID),
                                base::SysNSStringToUTF8(identity.email),

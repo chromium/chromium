@@ -2234,32 +2234,23 @@ TEST_F(EventHandlerSimTest, TestUpdateHoverAfterJSScrollAtBeginFrame) {
   // Find the scrollable area and set scroll offset.
   ScrollableArea* scrollable_area =
       GetDocument().GetLayoutView()->GetScrollableArea();
-  bool finished = false;
-  scrollable_area->SetScrollOffset(
-      ScrollOffset(0, 1000), mojom::blink::ScrollType::kProgrammatic,
-      cc::ScrollSourceType::kAbsoluteScroll,
-      mojom::blink::ScrollBehavior::kSmooth,
-      ScrollableArea::ScrollCallback(BindOnce(
-          [](bool* finished, ScrollableArea::ScrollCompletionMode) {
-            *finished = true;
-          },
-          Unretained(&finished))));
+  scrollable_area->SetScrollOffset(ScrollOffset(0, 1000),
+                                   mojom::blink::ScrollType::kProgrammatic,
+                                   cc::ScrollSourceType::kAbsoluteScroll,
+                                   mojom::blink::ScrollBehavior::kSmooth);
   Compositor().BeginFrame();
   LocalFrameView* frame_view = GetDocument().View();
   ASSERT_EQ(0, frame_view->LayoutViewport()->GetScrollOffset().y());
-  ASSERT_FALSE(finished);
   // Scrolling is in progress but the hover is not updated yet.
   Compositor().BeginFrame();
   // Start scroll animation, but it is not finished.
   Compositor().BeginFrame();
   ASSERT_GT(frame_view->LayoutViewport()->GetScrollOffset().y(), 0);
-  ASSERT_FALSE(finished);
 
   // Mark hover state dirty but the hover state does not change after the
   // animation finishes.
   Compositor().BeginFrame(1);
   ASSERT_EQ(1000, frame_view->LayoutViewport()->GetScrollOffset().y());
-  ASSERT_TRUE(finished);
   EXPECT_TRUE(element->IsHovered());
 
   // Hover state is updated after the begin frame.
@@ -2399,6 +2390,49 @@ TEST_F(EventHandlerSimTest, SmallCustomCursorIntersectsViewport) {
         GetDocument().GetFrame()->GetChromeClient().LastSetCursorForTesting();
     EXPECT_EQ(ui::mojom::blink::CursorType::kCustom, cursor.type());
   }
+}
+
+TEST_F(EventHandlerSimTest, LargeCustomHiDpiSvgCursorIsRejected) {
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+  DeviceEmulationParams params;
+  // At a DSF of 1.2, the dimensions of the image (128x128 CSS pixels) will not
+  // round-trip between CSS pixels and device pixels.
+  params.device_scale_factor = 1.2;
+  WebView().EnableDeviceEmulation(params);
+
+  SimRequest request("https://example.com/test.html", "text/html");
+  SimSubresourceRequest cursor_request("https://example.com/128x128.svg",
+                                       "image/svg+xml");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+    #target {
+      width: 100vw;
+      height: 100vh;
+      cursor: url('128x128.svg'), auto;
+     }
+     </style>
+     <div id="target"></div>
+  )HTML");
+  GetDocument().UpdateStyleAndLayoutTree();
+
+  cursor_request.Complete(R"SVG(
+    <svg xmlns="http://www.w3.org/2000/svg" width="128px" height="128px">
+    </svg>
+  )SVG");
+
+  Compositor().BeginFrame();
+
+  EventHandler& event_handler = GetDocument().GetFrame()->GetEventHandler();
+  const gfx::PointF point(400, 300);
+  WebMouseEvent mouse_move_event(WebMouseEvent::Type::kMouseMove, point, point,
+                                 WebPointerProperties::Button::kNoButton, 0, 0,
+                                 WebInputEvent::GetStaticTimeStampForTests());
+  event_handler.HandleMouseMoveEvent(mouse_move_event, {}, {});
+  const ui::Cursor& cursor =
+      GetDocument().GetFrame()->GetChromeClient().LastSetCursorForTesting();
+  EXPECT_EQ(ui::mojom::blink::CursorType::kPointer, cursor.type());
 }
 
 TEST_F(EventHandlerSimTest, NeverExposeKeyboardEvent) {

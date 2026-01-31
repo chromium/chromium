@@ -47,22 +47,25 @@ bool SyncEventWatcher::SyncWatch(base::span<const bool*> stop_flags) {
   bool result = registry_->Wait(should_stop_array);
 
   // This object has been destroyed.
-  if (destroyed->data)
+  if (destroyed->data) {
     return false;
+  }
 
   DecrementRegisterCount();
   return result;
 }
 
 void SyncEventWatcher::IncrementRegisterCount() {
-  if (register_request_count_++ == 0)
+  if (register_request_count_++ == 0) {
     subscription_ = registry_->RegisterEvent(event_, callback_);
+  }
 }
 
 void SyncEventWatcher::DecrementRegisterCount() {
   DCHECK_GT(register_request_count_, 0u);
-  if (--register_request_count_ == 0)
+  if (--register_request_count_ == 0) {
     subscription_.reset();
+  }
 }
 
 }  // namespace mojo

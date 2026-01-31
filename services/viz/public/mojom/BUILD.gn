@@ -175,6 +175,16 @@ mojom("mojom") {
           cpp = "::viz::BeginFrameAck"
         },
       ]
+
+      if (is_mac) {
+        types += [
+          {
+            mojom = "viz.mojom.CADisplayLinkParams"
+            cpp = "::viz::CADisplayLinkParams"
+          },
+        ]
+      }
+
       traits_sources = [ "//services/viz/public/cpp/compositing/begin_frame_args_mojom_traits.cc" ]
       traits_headers =
           [ "//components/viz/common/frame_sinks/begin_frame_args.h" ]
@@ -575,7 +585,6 @@ mojom("mojom") {
       ]
       traits_headers = [ "//components/viz/common/quads/compositor_frame.h" ]
       traits_private_headers = [
-        "//gpu/ipc/common/mailbox_holder_mojom_traits.h",
         "//gpu/ipc/common/mailbox_mojom_traits.h",
         "//gpu/ipc/common/sync_token_mojom_traits.h",
         "//ipc/param_traits_utils.h",

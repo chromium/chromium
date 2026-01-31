@@ -3460,7 +3460,7 @@ TEST_P(GcpGaiaCredentialBaseUploadDeviceDetailsTest, UploadDeviceDetails) {
   ASSERT_TRUE(has_upload_failed ? FAILED(hr) : SUCCEEDED(hr));
 
   // Assert on the request parameters sent in the UploadDeviceDetails rpc.
-  const base::Value::Dict& request_dict =
+  const base::DictValue& request_dict =
       fake_gem_device_details_manager()->GetRequestDictForTesting();
   ASSERT_NE(nullptr, request_dict.FindString("machine_guid"));
   ASSERT_EQ(*request_dict.FindString("machine_guid"),
@@ -3480,8 +3480,7 @@ TEST_P(GcpGaiaCredentialBaseUploadDeviceDetailsTest, UploadDeviceDetails) {
   ASSERT_EQ(*request_dict.FindString("os_edition"), os_version);
   ASSERT_TRUE(request_dict.FindBool("is_ad_joined_user").has_value());
   ASSERT_EQ(request_dict.FindBool("is_ad_joined_user").value(), true);
-  const base::Value::List* wlan_mac_addr =
-      request_dict.FindList("wlan_mac_addr");
+  const base::ListValue* wlan_mac_addr = request_dict.FindList("wlan_mac_addr");
   ASSERT_TRUE(wlan_mac_addr);
   ASSERT_EQ(*request_dict.FindString("dm_token"), dm_token);
 
@@ -3795,7 +3794,7 @@ TEST_P(GcpGaiaCredentialBaseFetchCloudPoliciesTest, FetchAndStore) {
       UserPolicies policies;
       base::Value policies_value = policies.ToValue();
       auto expected_response_value =
-          base::Value::Dict().Set("policies", std::move(policies_value));
+          base::DictValue().Set("policies", std::move(policies_value));
       expected_response = base::WriteJson(expected_response_value).value_or("");
     }
 

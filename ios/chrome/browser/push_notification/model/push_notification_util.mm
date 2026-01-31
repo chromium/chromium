@@ -7,9 +7,10 @@
 #import <UIKit/UIKit.h>
 #import <UserNotifications/UserNotifications.h>
 
+#import <utility>
+
 #import "base/metrics/histogram_functions.h"
 #import "base/task/sequenced_task_runner.h"
-#import "base/types/cxx23_to_underlying.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -227,7 +228,7 @@ UNAuthorizationOptions AuthorizationOptions() {
                                                  status]];
   if (changeWasLogged) {
     prefService->SetInteger(prefs::kPushNotificationAuthorizationStatus,
-                            base::to_underlying(status));
+                            std::to_underlying(status));
   }
 }
 

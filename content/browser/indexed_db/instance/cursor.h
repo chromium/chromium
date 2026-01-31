@@ -24,14 +24,20 @@ struct BucketLocator;
 
 namespace content::indexed_db {
 
-enum class CursorType { kKeyAndValue = 0, kKeyOnly = 1 };
-
 class Cursor : public blink::mojom::IDBCursor {
  public:
+  struct Type {
+    enum class Source { kObjectStore = 0, kIndex = 1 };
+
+    Source source;
+    blink::mojom::IDBCursorDirection direction;
+    bool key_only;
+  };
+
   // Creates a new self-owned instance and binds to `pending_remote`.
   static Cursor* CreateAndBind(
       std::unique_ptr<BackingStore::Cursor> cursor,
-      indexed_db::CursorType cursor_type,
+      Type type,
       blink::mojom::IDBTaskType task_type,
       base::WeakPtr<Transaction> transaction,
       mojo::PendingAssociatedRemote<blink::mojom::IDBCursor>& pending_remote);
@@ -56,16 +62,14 @@ class Cursor : public blink::mojom::IDBCursor {
     return cursor_->GetPrimaryKey();
   }
   IndexedDBValue* Value() const {
-    return (cursor_type_ == indexed_db::CursorType::kKeyOnly)
-               ? nullptr
-               : &cursor_->GetValue();
+    return type_.key_only ? nullptr : &cursor_->GetValue();
   }
 
   void Close();
 
  private:
   Cursor(std::unique_ptr<BackingStore::Cursor> cursor,
-         indexed_db::CursorType cursor_type,
+         Type type,
          blink::mojom::IDBTaskType task_type,
          base::WeakPtr<Transaction> transaction);
 
@@ -82,8 +86,8 @@ class Cursor : public blink::mojom::IDBCursor {
       Transaction* transaction);
 
   const storage::BucketLocator bucket_locator_;
+  Type type_;
   blink::mojom::IDBTaskType task_type_;
-  indexed_db::CursorType cursor_type_;
 
   // We rely on the transaction calling Close() to clear this.
   base::WeakPtr<Transaction> transaction_;

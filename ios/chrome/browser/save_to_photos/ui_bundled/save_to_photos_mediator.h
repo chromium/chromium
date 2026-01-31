@@ -7,7 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-@protocol ApplicationCommands;
 class ChromeAccountManagerService;
 @protocol GoogleOneCommands;
 class GURL;
@@ -15,6 +14,7 @@ class GURL;
 class PhotosService;
 class PrefService;
 @protocol SaveToPhotosMediatorDelegate;
+@protocol SceneCommands;
 @protocol SnackbarCommands;
 @protocol SystemIdentity;
 
@@ -60,8 +60,7 @@ extern NSString* const kGooglePhotosAppURLScheme;
                       identityManager:(signin::IdentityManager*)identityManager
             manageStorageAlertHandler:
                 (id<ManageStorageAlertCommands>)manageStorageAlertHandler
-                   applicationHandler:
-                       (id<ApplicationCommands>)applicationHandler
+                         sceneHandler:(id<SceneCommands>)sceneHandler
                      googleOneHandler:(id<GoogleOneCommands>)googleOneHandler;
 - (instancetype)init NS_UNAVAILABLE;
 

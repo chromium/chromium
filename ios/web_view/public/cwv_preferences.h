@@ -71,6 +71,14 @@ CWV_EXPORT
 @property(nonatomic, assign, getter=isUseImageFetcherEnabled)
     BOOL useImageFetcherEnabled;
 
+// Whether or not card custom image usage is enabled.
+@property(nonatomic, assign, getter=isUseCardCustomImageEnabled)
+    BOOL useCardCustomImageEnabled;
+
+// Whether or not risk based authentication is enabled.
+@property(nonatomic, assign, getter=isRiskBasedAuthenticationEnabled)
+    BOOL riskBasedAuthenticationEnabled;
+
 - (instancetype)init NS_UNAVAILABLE;
 
 // Resets all translation settings back to default. In particular, this will

@@ -2,7 +2,10 @@
 <grit-part>
   <!-- Contextual Tasks -->
   <message name ="IDS_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_TITLE" desc="The title of contextual tasks.">
-    Contextual tasks
+    Browse with AI
+  </message>
+  <message name ="IDS_CONTEXTUAL_TASKS_ENTRY_POINT_TOOLTIP" desc="The tooltip text used for contextual task entry points.">
+    Browse with AI
   </message>
   <message name="IDS_CONTEXTUAL_TASKS_AI_MODE_TITLE" desc="The title shown in the location bar and tab for AI Mode before a thread title is available.">
     AI Mode
@@ -37,6 +40,9 @@
   <message name="IDS_CONTEXTUAL_TASKS_FIRST_RUN_EXPERIENCE_LEARN_MORE" desc="Learn more clickable span shown on the first run experience of the contextual task page.">
     Learn more
   </message>
+  <message name="IDS_CONTEXTUAL_TASKS_FIRST_RUN_EXPERIENCE_ACCEPT_BUTTON" desc="Accept button shown on the first run experience of the contextual task page.">
+    Got it
+  </message>
   <message name="IDS_CONTEXTUAL_TASKS_CONTINUE_THREAD_MESSAGE" desc="Text on the side panel to ask user whether they want to continue the current thread.">
     Continue this thread?
   </message>
@@ -54,6 +60,12 @@
   </message>
   <message name="IDS_CONTEXTUAL_TASKS_AI_SIDE_PANEL_TOOL_TIP" desc="Tool tip text displayed on the AI side panel button on the Chrome tool bar to open side panel when contextual task is enabled.">
     AI side panel
+  </message>
+  <message name="IDS_CONTEXTUAL_TASKS_CONTEXT_MENU_MOST_RECENT_TABS" desc="Section header in the compose box context menu for the most recent tabs.">
+    Most recent tabs
+  </message>
+  <message name="IDS_CONTEXTUAL_TASKS_CONTEXT_MENU_GEMINI_MODELS" desc="Section header in the compose box context menu for Gemini models.">
+    Gemini 3 models
   </message>
   <message name="IDS_CONTEXTUAL_TASKS_SIDE_PANEL_NEW_THREAD_TOOL_TIP" desc="Tool tip text displayed on the create thread button on the side panel to create a new contextual task.">
     New thread

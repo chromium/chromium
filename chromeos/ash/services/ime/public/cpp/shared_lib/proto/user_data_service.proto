@@ -2,7 +2,6 @@ syntax = "proto2";
 
 package chromeos_input;
 
-import "fetch_japanese_legacy_config.proto";
 import "japanese_dictionary.proto";
 
 message Status {
@@ -16,9 +15,9 @@ message ClearPersonalizationDataRequest {
 }
 
 message UserDataRequest {
+  reserved 1;
+
   oneof request {
-    // Directly reads the Japanese settings from the extension.
-    FetchJapaneseLegacyConfigRequest fetch_japanese_legacy_config = 1;
     // Get all user dictionary data.
     FetchJapaneseDictionaryRequest fetch_japanese_dictionary = 2;
     // Add japanese dictionary entry.
@@ -43,9 +42,10 @@ message UserDataRequest {
 }
 
 message UserDataResponse {
+  reserved 2;
+
   optional Status status = 1;
   oneof response {
-    FetchJapaneseLegacyConfigResponse fetch_japanese_legacy_config = 2;
     // Get all user dictionary data.
     FetchJapaneseDictionaryResponse fetch_japanese_dictionary = 3;
     // Dictionary Data as TSV

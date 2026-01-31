@@ -68,4 +68,10 @@ public class NtpSyncedThemeBridgeUnitTest {
         mNtpSyncedThemeBridge.onCustomBackgroundImageUpdated();
         verify(mCallback).onResult(info);
     }
+
+    @Test
+    public void testFetchNextThemeCollectionImage() {
+        mNtpSyncedThemeBridge.fetchNextThemeCollectionImage();
+        verify(mNatives).fetchNextThemeCollectionImage(NATIVE_NTP_SYNCED_THEME_BRIDGE);
+    }
 }

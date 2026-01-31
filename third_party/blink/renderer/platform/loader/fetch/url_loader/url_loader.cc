@@ -64,6 +64,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader_client.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 using base::Time;
 using base::TimeTicks;
@@ -202,8 +203,8 @@ URLLoader::Context::GetMaybeUnfreezableTaskRunner() {
 }
 
 void URLLoader::Context::Cancel() {
-  TRACE_EVENT_WITH_FLOW0("loading", "URLLoader::Context::Cancel", this,
-                         TRACE_EVENT_FLAG_FLOW_IN);
+  TRACE_EVENT("loading", "URLLoader::Context::Cancel",
+              perfetto::TerminatingFlow::FromPointer(this));
   if (request_id_ != -1) {
     // TODO(https://crbug.com/1137682): Change this to use
     // |unfreezable_task_runner_| instead?
@@ -288,8 +289,8 @@ void URLLoader::Context::Start(
     return;
   }
 
-  TRACE_EVENT_WITH_FLOW0("loading", "URLLoader::Context::Start", this,
-                         TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("loading", "URLLoader::Context::Start",
+              perfetto::Flow::FromPointer(this));
   net::NetworkTrafficAnnotationTag tag =
       FetchUtils::GetTrafficAnnotationTag(*request);
   request_id_ = resource_request_sender_->SendAsync(
@@ -323,9 +324,8 @@ void URLLoader::Context::OnReceivedRedirect(
     return;
   }
 
-  TRACE_EVENT_WITH_FLOW0("loading", "URLLoader::Context::OnReceivedRedirect",
-                         this,
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("loading", "URLLoader::Context::OnReceivedRedirect",
+              perfetto::Flow::FromPointer(this));
 
   WebURLResponse response = WebURLResponse::Create(
       url_, *head, has_devtools_request_id_, request_id_);
@@ -354,9 +354,8 @@ void URLLoader::Context::OnReceivedResponse(
     return;
   }
 
-  TRACE_EVENT_WITH_FLOW0("loading", "URLLoader::Context::OnReceivedResponse",
-                         this,
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("loading", "URLLoader::Context::OnReceivedResponse",
+              perfetto::Flow::FromPointer(this));
 
   // These headers must be stripped off before entering into the renderer
   // (see also https://crbug.com/1019732).
@@ -380,8 +379,8 @@ void URLLoader::Context::OnCompletedRequest(
   int64_t encoded_body_size = status.encoded_body_length;
 
   if (client_) {
-    TRACE_EVENT_WITH_FLOW0("loading", "URLLoader::Context::OnCompletedRequest",
-                           this, TRACE_EVENT_FLAG_FLOW_IN);
+    TRACE_EVENT("loading", "URLLoader::Context::OnCompletedRequest",
+                perfetto::TerminatingFlow::FromPointer(this));
 
     if (status.error_code != net::OK) {
       client_->DidFail(WebURLError::Create(status, url_),
@@ -523,8 +522,8 @@ void URLLoader::LoadAsynchronously(
     return;
   }
 
-  TRACE_EVENT_WITH_FLOW0("loading", "URLLoader::loadAsynchronously", this,
-                         TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("loading", "URLLoader::loadAsynchronously",
+              perfetto::Flow::FromPointer(this));
   DCHECK(!context_->client());
 
   context_->set_client(client);

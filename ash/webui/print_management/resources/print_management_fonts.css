@@ -7,7 +7,7 @@
  * #css_wrapper_metadata_end */
 
 :host {
-  --print-management-title-font-family: "Google Sans", Roboto, sans-serif;
+  --print-management-title-font-family: 'Google Sans', Roboto, sans-serif;
   --print-management-default-font-family: Roboto, sans-serif;
   --print-management-header-font-family: Roboto, sans-serif;
   --print-management-button-font-family: Roboto, sans-serif;

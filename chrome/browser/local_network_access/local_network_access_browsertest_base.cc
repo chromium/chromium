@@ -20,6 +20,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/test_data_directory.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/ip_address_space_overrides_test_utils.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 
@@ -28,7 +29,9 @@ namespace local_network_access {
 LocalNetworkAccessBrowserTestBase::LocalNetworkAccessBrowserTestBase(
     bool map_all_hosts_to_localhost)
     : map_all_hosts_to_localhost_(map_all_hosts_to_localhost),
-      https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+      https_server_(net::EmbeddedTestServer::TYPE_HTTPS),
+      https_local_server_(net::EmbeddedTestServer::TYPE_HTTPS),
+      https_public_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
   // Some builders run with field_trial disabled, need to enable this
   // manually.
   base::FieldTrialParams params;
@@ -97,14 +100,25 @@ void LocalNetworkAccessBrowserTestBase::SetUpCommandLine(
     base::CommandLine* command_line) {
   // Ignore cert errors when connecting to https_server()
   command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
-  // Clear default from InProcessBrowserTest as test doesn't want 127.0.0.1 in
-  // the public address space
-  command_line->AppendSwitchASCII(network::switches::kIpAddressSpaceOverrides,
-                                  "");
   https_server_.AddDefaultHandlers(GetChromeTestDataDir());
   https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
+  https_local_server_.AddDefaultHandlers(GetChromeTestDataDir());
+  https_local_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
+  https_public_server_.AddDefaultHandlers(GetChromeTestDataDir());
+  https_public_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
   ASSERT_TRUE(https_server_.Start());
+  ASSERT_TRUE(https_local_server_.Start());
+  ASSERT_TRUE(https_public_server_.Start());
   ASSERT_TRUE(embedded_test_server()->Start());
+  // Clear default from InProcessBrowserTest as test doesn't want 127.0.0.1 in
+  // the public address space, but add the https_local_server_ as the kLocal
+  // address space and the https_public_server_ as the kPublic address space.
+  network::AddIpAddressSpaceOverridesToCommandLine(
+      {network::GenerateIpAddressSpaceOverride(
+           https_local_server_, network::mojom::IPAddressSpace::kLocal),
+       network::GenerateIpAddressSpaceOverride(
+           https_public_server_, network::mojom::IPAddressSpace::kPublic)},
+      *command_line);
 }
 
 }  // namespace local_network_access

@@ -108,10 +108,10 @@ class ArcKeyPermissionsManagerDelegateTest : public testing::Test {
 
   void SetCorporateUsageInPolicyForPackage(const std::string& package_name,
                                            bool allowed) {
-    base::Value::Dict corporate_key_usage;
+    base::DictValue corporate_key_usage;
     corporate_key_usage.SetByDottedPath("allowCorporateKeyUsage", allowed);
 
-    base::Value::Dict policy_value;
+    base::DictValue policy_value;
     policy_value.Set(package_name, base::Value(std::move(corporate_key_usage)));
 
     policy::PolicyMap policy_map;

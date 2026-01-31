@@ -33,6 +33,7 @@ static_library("presence") {
     "//components/pref_registry",
     "//components/prefs",
     "//components/push_notification",
+    "//components/signin/public/identity_manager",
     "//content/public/browser",
   ]
 

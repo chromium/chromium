@@ -4,18 +4,22 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {ReadAloudSettingsChange, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {DEFAULT_SETTINGS, ReadAloudSettingsChange, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {RateMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertNotEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {assertCheckMarksForDropdown, mockMetrics} from './common.js';
+import {assertCheckMarksForDropdown, assertHeadersForDropdown, assertTestSettingsAreNotDefaultSettings, mockMetrics, TEST_RANDOM_VALUE_SETTINGS} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 suite('RateMenuElement', () => {
   let rateMenu: RateMenuElement;
   let metrics: TestMetricsBrowserProxy;
+
+  suiteSetup(() => {
+    assertTestSettingsAreNotDefaultSettings();
+  });
 
   setup(() => {
     // Clearing the DOM should always be done first.
@@ -30,6 +34,10 @@ suite('RateMenuElement', () => {
 
   test('has checkmarks', () => {
     assertCheckMarksForDropdown(rateMenu);
+  });
+
+  test('does not have headers', () => {
+    assertHeadersForDropdown(rateMenu.$.menu, /*shouldHaveHeaders=*/ false);
   });
 
   test('rate change is propagated', async () => {
@@ -69,12 +77,8 @@ suite('RateMenuElement', () => {
     assertNotEquals(rate, startingIndex);
 
     rateMenu.settingsPrefs = {
-      letterSpacing: 0,
-      lineSpacing: 0,
-      theme: 0,
+      ...DEFAULT_SETTINGS,
       speechRate: rate,
-      font: '',
-      highlightGranularity: 0,
     };
     await microtasksFinished();
 
@@ -85,12 +89,8 @@ suite('RateMenuElement', () => {
     const startingIndex = rateMenu.$.menu.currentSelectedIndex;
 
     rateMenu.settingsPrefs = {
-      letterSpacing: 100,
-      lineSpacing: 101,
-      theme: 102,
+      ...TEST_RANDOM_VALUE_SETTINGS,
       speechRate: 0,
-      font: 'font',
-      highlightGranularity: 103,
     };
     await microtasksFinished();
 

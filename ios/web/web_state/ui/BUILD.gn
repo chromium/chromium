@@ -110,6 +110,7 @@ source_set("crw_web_view_navigation_proxy") {
 
 source_set("crw_context_menu_controller") {
   deps = [
+    ":buildflags",
     ":wk_web_view_configuration_provider",
     "//base",
     "//ios/web/common",
@@ -122,6 +123,10 @@ source_set("crw_context_menu_controller") {
     "//ui/gfx/geometry",
   ]
 
+  if (use_be_deferred_context_menu) {
+    frameworks = [ "BrowserEngineKit.framework" ]
+  }
+
   sources = [
     "crw_context_menu_controller.h",
     "crw_context_menu_controller.mm",
@@ -130,6 +135,11 @@ source_set("crw_context_menu_controller") {
     "crw_html_element_fetch_request.h",
     "crw_html_element_fetch_request.mm",
   ]
+}
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags = [ "IOS_USE_BE_DEFERRED_CONTEXT_MENU=$use_be_deferred_context_menu" ]
 }
 
 source_set("wk_web_view_configuration_provider_header") {

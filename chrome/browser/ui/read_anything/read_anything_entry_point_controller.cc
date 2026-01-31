@@ -6,6 +6,7 @@
 
 #include <type_traits>
 
+#include "chrome/browser/dom_distiller/tab_utils.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/read_anything/read_anything_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_enums.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "components/prefs/pref_filter.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/accessibility/accessibility_features.h"
 
 namespace {
@@ -87,15 +89,20 @@ void ReadAnythingEntryPointController::ShowUI(
     return;
   }
 
-  SidePanelOpenTrigger side_panel_open_trigger =
-      read_anything::ReadAnythingToSidePanelOpenTrigger(open_trigger);
   if (features::IsImmersiveReadAnythingEnabled()) {
+    // TODO(crbug.com/471001915): Once IRM flag is enabled by default, change
+    // IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE, one of the triggers of this
+    // method, to reflect that it's opening Immersive mode instead of Side
+    // Panel.
     if (tabs::TabInterface* tab = bwi->GetActiveTabInterface()) {
       auto* controller = ReadAnythingController::From(tab);
       CHECK(controller);
-      controller->ShowUI(side_panel_open_trigger);
+      controller->ShowImmersiveUI(open_trigger);
     }
   } else {
+    SidePanelOpenTrigger side_panel_open_trigger =
+        read_anything::ReadAnythingToSidePanelOpenTrigger(open_trigger);
+
     bwi->GetFeatures().side_panel_ui()->Show(
         SidePanelEntryKey(SidePanelEntryId::kReadAnything),
         side_panel_open_trigger);
@@ -110,18 +117,35 @@ void ReadAnythingEntryPointController::ToggleUI(
     return;
   }
 
-  SidePanelOpenTrigger side_panel_open_trigger =
-      read_anything::ReadAnythingToSidePanelOpenTrigger(open_trigger);
   if (features::IsImmersiveReadAnythingEnabled()) {
     if (tabs::TabInterface* tab = bwi->GetActiveTabInterface()) {
       auto* controller = ReadAnythingController::From(tab);
       CHECK(controller);
-      controller->ToggleReadAnythingSidePanel(side_panel_open_trigger);
+      controller->ToggleUI(open_trigger);
     }
   } else {
+    SidePanelOpenTrigger side_panel_open_trigger =
+        read_anything::ReadAnythingToSidePanelOpenTrigger(open_trigger);
+
     bwi->GetFeatures().side_panel_ui()->Toggle(
         SidePanelEntryKey(SidePanelEntryId::kReadAnything),
         side_panel_open_trigger);
+  }
+}
+
+// static
+bool ReadAnythingEntryPointController::IsUIShowing(
+    BrowserWindowInterface* bwi) {
+  if (features::IsImmersiveReadAnythingEnabled()) {
+    auto* controller =
+        ReadAnythingController::From(bwi->GetActiveTabInterface());
+    CHECK(controller);
+    auto state = controller->GetPresentationState();
+    return state ==
+               ReadAnythingController::PresentationState::kInImmersiveOverlay ||
+           state == ReadAnythingController::PresentationState::kInSidePanel;
+  } else {
+    return IsReadAnythingEntryShowing(bwi);
   }
 }
 
@@ -140,8 +164,7 @@ void ReadAnythingEntryPointController::UpdatePageActionVisibility(
       bwi->GetActiveTabInterface()->GetTabFeatures()->page_action_controller();
   auto* const user_ed = BrowserUserEducationInterface::From(bwi);
   // No need to show the button if reading mode is already open.
-  // TODO(crbug.com/447418049): Check for immersive reading mode here too.
-  if (should_show_page_action && !IsReadAnythingEntryShowing(bwi)) {
+  if (should_show_page_action && !IsUIShowing(bwi)) {
     page_action_controller->Show(kActionSidePanelShowReadAnything);
     if (ShouldShowOmniboxChip(bwi)) {
       page_action_controller->ShowSuggestionChip(
@@ -158,6 +181,29 @@ void ReadAnythingEntryPointController::UpdatePageActionVisibility(
         feature_engagement::kIPHReadingModePageActionLabelFeature);
     page_action_controller->Hide(kActionSidePanelShowReadAnything);
   }
+}
+
+// static
+void ReadAnythingEntryPointController::CheckIfShouldSuggestReadingMode(
+    BrowserWindowInterface* bwi,
+    base::OnceCallback<void(bool)> result_callback) {
+  if (!features::IsReadAnythingOmniboxChipEnabled() || !bwi) {
+    return;
+  }
+
+  // Don't show the omnibox entrypoint for non-HTTP(S) URLs. These URLs are
+  // not supported by Readability, which is used to check whether the current
+  // page is a good candidate for distillation.
+  content::WebContents* contents = bwi->GetActiveTabInterface()->GetContents();
+  const GURL& url = contents->GetLastCommittedURL();
+  if (!url.SchemeIsHTTPOrHTTPS()) {
+    std::move(result_callback).Run(false);
+    return;
+  }
+
+  // Readability will callback with whether or not the current contents are a
+  // good candidate for distillation.
+  RunReadabilityHeuristicsOnWebContents(contents, std::move(result_callback));
 }
 
 // static

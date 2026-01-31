@@ -6,7 +6,6 @@
 
 #include "base/task/sequenced_task_runner.h"
 #include "media/base/win/dcomp_texture_wrapper.h"
-#include "media/base/win/mf_feature_checks.h"
 #include "media/base/win/mf_helpers.h"
 #include "media/mojo/clients/mojo_media_log_service.h"
 #include "media/mojo/clients/mojo_renderer.h"

@@ -18,6 +18,10 @@ declare_args() {
   # If true, use PFFFT for WebAudio FFT support. Do not use for Mac because the
   # FFT library there is much faster.
   use_webaudio_pffft = target_os != "mac"
+
+  # Enable JXL decoder in Blink for JPEG XL image decoding.
+  # Downstream builds can set this to false to exclude JXL code.
+  enable_jxl_decoder = true
 }
 
 declare_args() {

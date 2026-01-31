@@ -673,7 +673,7 @@ TEST_F(AccountManagerTest, AccessTokenFetchFailsForUnknownAccounts) {
   EXPECT_CALL(consumer,
               OnGetTokenFailure(Property(
                   &GoogleServiceAuthError::state,
-                  Eq(GoogleServiceAuthError::State::USER_NOT_SIGNED_UP))));
+                  Eq(GoogleServiceAuthError::State::ACCOUNT_NOT_FOUND))));
 
   std::unique_ptr<OAuth2AccessTokenFetcher> access_token_fetcher =
       account_manager()->CreateAccessTokenFetcher(kGaiaAccountKey, &consumer);

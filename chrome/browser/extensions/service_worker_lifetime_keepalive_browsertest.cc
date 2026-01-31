@@ -197,7 +197,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeKeepaliveBrowsertest,
 // allowlisted via policy and the port is not closed.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeKeepaliveBrowsertest,
                        ServiceWorkersDoNotTimeOutWithPolicy) {
-  base::Value::List urls;
+  base::ListValue urls;
   // Both extensions receive extended lifetime.
   urls.Append(kTestOpenerExtensionUrl);
   urls.Append(kTestReceiverExtensionUrl);
@@ -248,7 +248,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeKeepaliveBrowsertest,
 // extended lifetime.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeKeepaliveBrowsertest,
                        ServiceWorkersTimeOutWhenOnlyOneHasExtendedLifetime) {
-  base::Value::List urls;
+  base::ListValue urls;
   // Opener extension will receive extended lifetime because it connects to a
   // policy allowlisted extension.
   urls.Append(kTestReceiverExtensionUrl);
@@ -303,7 +303,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeKeepaliveBrowsertest,
 // via policy and the port is disconnected.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeKeepaliveBrowsertest,
                        ServiceWorkersTimeOutWhenPortIsDisconnected) {
-  base::Value::List urls;
+  base::ListValue urls;
   // Both extensions receive extended lifetime.
   urls.Append(kTestReceiverExtensionUrl);
   urls.Append(kTestOpenerExtensionUrl);
@@ -1168,7 +1168,7 @@ IN_PROC_BROWSER_TEST_F(IWAServiceWorkerLifetimeKeepaliveBrowsertest,
                        ServiceWorkersDoNotTimeOutWithPolicy) {
   web_app::IsolatedWebAppUrlInfo opener_url_info = InstallWebApp();
 
-  base::Value::List urls;
+  base::ListValue urls;
   // Only the receiver must get extended lifetime, because IWA
   // is kept opened.
   urls.Append(opener_url_info.origin().Serialize());

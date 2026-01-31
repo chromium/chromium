@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/check_is_test.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/logging.h"
@@ -60,8 +59,7 @@ std::vector<std::unique_ptr<TemplateURLData>> GetOverriddenTemplateURLData(
     PrefService& prefs) {
   std::vector<std::unique_ptr<TemplateURLData>> t_urls;
 
-  const base::Value::List& list =
-      prefs.GetList(prefs::kSearchProviderOverrides);
+  const base::ListValue& list = prefs.GetList(prefs::kSearchProviderOverrides);
 
   for (const base::Value& engine : list) {
     if (engine.is_dict()) {

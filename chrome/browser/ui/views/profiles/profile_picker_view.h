@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_VIEW_H_
 
 #include <optional>
+#include <variant>
 
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
@@ -31,6 +32,7 @@ class ProfileManagementFlowController;
 class ProfilePickerFlowController;
 class ProfilePickerFeaturePromoController;
 class ForceSigninUIError;
+class SigninUIError;
 
 namespace content {
 struct ContextMenuParams;
@@ -68,8 +70,9 @@ class ProfilePickerView : public views::WidgetDelegateView,
       override;
   content::WebContentsDelegate* GetWebContentsDelegate() override;
   void Reset(StepSwitchFinishedCallback callback) override;
-  void ShowForceSigninErrorDialog(const ForceSigninUIError& error,
-                                  bool success) override;
+  void ShowSigninErrorDialog(
+      const std::variant<ForceSigninUIError, SigninUIError>& error,
+      bool success) override;
   void SetNativeToolbarVisible(bool visible) override;
   bool IsNativeToolbarVisibleForTesting() const;
   SkColor GetPreferredBackgroundColor() const override;
@@ -91,6 +94,7 @@ class ProfilePickerView : public views::WidgetDelegateView,
   void WindowClosing() override;
   views::ClientView* CreateClientView(views::Widget* widget) override;
   views::View* GetContentsView() override;
+  void Layout(PassKey) override;
   std::u16string GetAccessibleWindowTitle() const override;
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;

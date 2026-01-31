@@ -11,6 +11,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNonNativeNtpGurl;
+
 import android.content.Context;
 
 import androidx.test.filters.MediumTest;
@@ -25,7 +27,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
@@ -53,7 +55,6 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -114,7 +115,7 @@ public class LocationBarModelTest {
                 () -> {
                     TestLocationBarModel model =
                             new TestLocationBarModel(mActivityTestRule.getActivity());
-                    model.setVisibleGurl(UrlConstants.ntpGurl());
+                    model.setVisibleGurl(getOriginalNonNativeNtpGurl());
                     assertDisplayAndEditText(model, "", null);
 
                     model.setVisibleGurl(JUnitTestGURLs.CHROME_ABOUT);
@@ -360,7 +361,7 @@ public class LocationBarModelTest {
                     NewTabPageDelegate.EMPTY,
                     DomDistillerTabUtils::getFormattedUrlFromOriginalDistillerUrl,
                     new LocationBarModel.OfflineStatus() {},
-                    new ObservableSupplierImpl(ControlsPosition.TOP));
+                    ObservableSuppliers.createNonNull(ControlsPosition.TOP));
             initializeWithNative();
 
             Tab tab =

@@ -327,6 +327,7 @@ message ContentAnalysisResponse {
       enum ForceSaveToCloudDestination {
         UNSPECIFIED = 0;
         CORP_G_DRIVE = 1;
+        CORP_ONEDRIVE = 2;
       }
 
       optional ForceSaveToCloudDestination force_save_to_cloud_destination = 7;

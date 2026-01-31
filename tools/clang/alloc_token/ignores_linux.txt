@@ -1,0 +1,3 @@
+[alloc-token]
+# Enabling alloc-token on weston causes "free() invalid pointer" errors.
+src:*weston/*

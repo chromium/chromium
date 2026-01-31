@@ -441,8 +441,8 @@ def CopyDlls(target_dir, configuration, target_cpu):
 
 
 def _CopyDebugger(target_dir, target_cpu):
-  """Copy dbghelp.dll, dbgcore.dll, and msdia140.dll into the requested
-  directory.
+  """Copy dbghelp.dll, dbgcore.dll, msdia140.dll, and symsrv.dll into the
+  requested directory.
 
   target_cpu is one of 'x86', 'x64' or 'arm64'.
 
@@ -455,6 +455,9 @@ def _CopyDebugger(target_dir, target_cpu):
   dbgcore.dll is needed when using some functions from dbghelp.dll (like
   MinidumpWriteDump).
 
+  symsrv.dll, if present, is used by dbghelp.dll to fetch symbols from a
+  developer's configured symbol server(s).
+
   msdia140.dll is needed for tools like symupload.exe and dump_syms.exe.
   """
   win_sdk_dir = SetEnvironmentAndGetSDKDir()
@@ -463,7 +466,8 @@ def _CopyDebugger(target_dir, target_cpu):
 
   # List of debug files that should be copied, the first element of the tuple is
   # the name of the file and the second indicates if it's optional.
-  debug_files = [('dbghelp.dll', False), ('dbgcore.dll', True)]
+  debug_files = [('dbghelp.dll', False), ('dbgcore.dll', True),
+                 ('symsrv.dll', True)]
   for debug_file, is_optional in debug_files:
     full_path = os.path.join(win_sdk_dir, 'Debuggers', target_cpu, debug_file)
     if not os.path.exists(full_path):

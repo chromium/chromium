@@ -92,7 +92,8 @@ enum class ReaderModeFontFamily {
   kSansSerif = 0,
   kSerif = 1,
   kMonospace = 2,
-  kMaxValue = kMonospace,
+  kLexend = 3,
+  kMaxValue = kLexend,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:ReaderModeFontFamily)
 
@@ -179,6 +180,9 @@ extern const char kReaderModeDistillerLatencyHistogram[];
 
 // Histogram name for Reader Mode distillation result.
 extern const char kReaderModeDistillerResultHistogram[];
+
+// Histogram name for Reader Mode data load latency.
+extern const char kReaderModeDataLoadLatencyHistogram[];
 
 // Histogram name for Reader Mode theme customization.
 extern const char kReaderModeThemeCustomizationHistogram[];

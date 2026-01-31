@@ -6,8 +6,8 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/web/model/print/print_handler.h"
 #import "ios/chrome/browser/web/model/print/print_tab_helper.h"
-#import "ios/chrome/browser/web/model/print/web_state_printer.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/scoped_testing_web_client.h"
 #import "ios/web/public/test/web_state_test_util.h"
@@ -23,16 +23,23 @@ const char kButtonPageHtml[] =
     "</body></html>";
 }
 
-@interface PrintJavaScriptFeatureTestPrinter : NSObject <WebStatePrinter>
+@interface PrintJavaScriptFeatureTestPrinter : NSObject <PrintHandler>
 @property(nonatomic, readwrite) BOOL printInvoked;
 @end
 
 @implementation PrintJavaScriptFeatureTestPrinter
-- (void)printWebState:(web::WebState*)webState {
+- (void)printView:(UIView*)view withTitle:(NSString*)title {
   self.printInvoked = YES;
 }
 
-- (void)printWebState:(web::WebState*)webState
+- (void)printView:(UIView*)view
+             withTitle:(NSString*)title
+    baseViewController:(UIViewController*)baseViewController {
+  self.printInvoked = YES;
+}
+
+- (void)printImage:(UIImage*)image
+                 title:(NSString*)title
     baseViewController:(UIViewController*)baseViewController {
   self.printInvoked = YES;
 }

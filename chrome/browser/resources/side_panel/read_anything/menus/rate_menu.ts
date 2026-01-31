@@ -9,6 +9,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {SettingsPrefs} from '../content/read_anything_types.js';
+import {DEFAULT_SETTINGS} from '../content/read_anything_types.js';
 import {ReadAloudSettingsChange} from '../shared/metrics_browser_proxy.js';
 import {ReadAnythingLogger} from '../shared/read_anything_logger.js';
 
@@ -45,14 +46,7 @@ export class RateMenuElement extends RateMenuElementBase {
     return {settingsPrefs: {type: Object}};
   }
 
-  accessor settingsPrefs: SettingsPrefs = {
-    letterSpacing: 0,
-    lineSpacing: 0,
-    theme: 0,
-    speechRate: 0,
-    font: '',
-    highlightGranularity: 0,
-  };
+  accessor settingsPrefs: SettingsPrefs = DEFAULT_SETTINGS;
 
   protected options_: Array<MenuStateItem<number>> = RATE_OPTIONS.map(rate => {
     return {

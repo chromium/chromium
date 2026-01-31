@@ -40,7 +40,7 @@ base::expected<base::Value, int> LoadFileToDict(
   return std::move(*root);
 }
 
-std::vector<int64_t> DecodeNodeIds(const base::Value::List& list) {
+std::vector<int64_t> DecodeNodeIds(const base::ListValue& list) {
   std::vector<int64_t> ids;
   for (const base::Value& id_value : list) {
     int64_t id = 0;
@@ -97,7 +97,7 @@ void BookmarkMergedSurfaceOrderingStorage::Loader::OnLoadedComplete(
     return;
   }
 
-  base::Value::Dict& result = result_or_error.value().GetDict();
+  base::DictValue& result = result_or_error.value().GetDict();
   LoadResult loaded_results;
 
   for (const auto [name_key, type] :
@@ -137,9 +137,9 @@ BookmarkMergedSurfaceOrderingStorage::BookmarkMergedSurfaceOrderingStorage(
 base::ImportantFileWriter::BackgroundDataProducerCallback
 BookmarkMergedSurfaceOrderingStorage::
     GetSerializedDataProducerForBackgroundSequence() {
-  base::Value::Dict value = EncodeOrderingToDict();
+  base::DictValue value = EncodeOrderingToDict();
   return base::BindOnce(
-      [](base::Value::Dict value) -> std::optional<std::string> {
+      [](base::DictValue value) -> std::optional<std::string> {
         // This runs on the background sequence.
         return base::WriteJsonWithOptions(
             value, base::JSONWriter::OPTIONS_PRETTY_PRINT);
@@ -161,7 +161,7 @@ void BookmarkMergedSurfaceOrderingStorage::SaveNowIfScheduled() {
   }
 }
 
-base::Value::Dict BookmarkMergedSurfaceOrderingStorage::EncodeOrderingToDict()
+base::DictValue BookmarkMergedSurfaceOrderingStorage::EncodeOrderingToDict()
     const {
   const std::vector<std::pair<BookmarkParentFolder, std::string_view>>
       permanent_folders{
@@ -169,7 +169,7 @@ base::Value::Dict BookmarkMergedSurfaceOrderingStorage::EncodeOrderingToDict()
            kBookmarkBarFolderNameKey},
           {BookmarkParentFolder::OtherFolder(), kOtherBookmarkFolderNameKey},
           {BookmarkParentFolder::MobileFolder(), kMobileFolderNameKey}};
-  base::Value::Dict main;
+  base::DictValue main;
   for (const auto& [folder, key] : permanent_folders) {
     if (!service_->IsNonDefaultOrderingTracked(folder)) {
       continue;
@@ -182,9 +182,9 @@ base::Value::Dict BookmarkMergedSurfaceOrderingStorage::EncodeOrderingToDict()
 }
 
 // static
-base::Value::List BookmarkMergedSurfaceOrderingStorage::EncodeChildren(
+base::ListValue BookmarkMergedSurfaceOrderingStorage::EncodeChildren(
     const BookmarkParentFolderChildren& children) {
-  base::Value::List child_values;
+  base::ListValue child_values;
   for (const bookmarks::BookmarkNode* child : children) {
     child_values.Append(base::NumberToString(child->id()));
   }

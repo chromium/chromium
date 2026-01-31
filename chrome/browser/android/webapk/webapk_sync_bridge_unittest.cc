@@ -4,7 +4,6 @@
 
 #include "chrome/browser/android/webapk/webapk_sync_bridge.h"
 
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -88,7 +87,7 @@ void InsertAppIntoRegistry(Registry* registry,
                            std::unique_ptr<WebApkProto> app) {
   webapps::AppId app_id =
       GenerateAppIdFromManifestId(GURL(app->sync_data().manifest_id()));
-  ASSERT_FALSE(base::Contains(*registry, app_id));
+  ASSERT_FALSE(registry->contains(app_id));
   registry->emplace(std::move(app_id), std::move(app));
 }
 

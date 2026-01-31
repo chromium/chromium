@@ -23,7 +23,6 @@
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/mailbox.h"
-#include "gpu/command_buffer/common/mailbox_holder.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "gpu/ipc/common/gpu_surface_tracker.h"
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
@@ -174,9 +173,7 @@ void MailboxToSurfaceBridgeImpl::DestroySharedImage(
   DCHECK(IsConnected());
   DCHECK(shared_image);
 
-  auto* sii = context_provider_->SharedImageInterface();
-  DCHECK(sii);
-  sii->DestroySharedImage(sync_token, std::move(shared_image));
+  shared_image->UpdateDestructionSyncToken(sync_token);
 }
 
 std::unique_ptr<device::MailboxToSurfaceBridge>

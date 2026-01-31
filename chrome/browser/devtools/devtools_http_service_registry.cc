@@ -9,6 +9,45 @@
 #include "chrome/browser/devtools/aida_service_handler.h"
 #include "chrome/browser/devtools/gdp_service_handler.h"
 
+namespace {
+
+using Service = DevToolsHttpServiceRegistry::Service;
+using Result = DevToolsHttpServiceHandler::Result;
+
+void DispatchRequest(
+    const std::vector<DevToolsHttpServiceRegistry::Service>& services,
+    Profile* profile,
+    const DevToolsDispatchHttpRequestParams& params,
+    std::optional<DevToolsHttpServiceHandler::StreamWriter> stream_writer,
+    DevToolsHttpServiceHandler::Callback callback) {
+  // Service exists?
+  auto service_it =
+      std::ranges::find(services, params.service, &Service::service);
+  if (service_it == services.end()) {
+    auto result = std::make_unique<DevToolsHttpServiceHandler::Result>();
+    result->error = DevToolsHttpServiceHandler::Result::Error::kServiceNotFound;
+    std::move(callback).Run(std::move(result));
+    return;
+  }
+
+  // Endpoint allowed?
+  if (std::ranges::none_of(service_it->endpoints,
+                           [&params](const Service::Endpoint& endpoint) {
+                             return endpoint.path == params.path &&
+                                    endpoint.method == params.method;
+                           })) {
+    auto result = std::make_unique<DevToolsHttpServiceHandler::Result>();
+    result->error = DevToolsHttpServiceHandler::Result::Error::kAccessDenied;
+    std::move(callback).Run(std::move(result));
+    return;
+  }
+
+  service_it->handler->Request(profile, params, std::move(stream_writer),
+                               std::move(callback));
+}
+
+}  // namespace
+
 DevToolsHttpServiceRegistry::Service::Service(
     std::string service,
     std::vector<Endpoint> endpoints,
@@ -25,6 +64,7 @@ DevToolsHttpServiceRegistry::DevToolsHttpServiceRegistry() {
                                   {"/v1/aida:codeComplete", "POST"},
                                   {"/v1/registerClientEvent", "POST"},
                                   {"/v1/aida:generateCode", "POST"},
+                                  {"/v1/aida:doConversation", "POST"},
                               },
                               std::make_unique<AidaServiceHandler>()));
   services_.push_back(
@@ -45,27 +85,15 @@ void DevToolsHttpServiceRegistry::Request(
     Profile* profile,
     const DevToolsDispatchHttpRequestParams& params,
     DevToolsHttpServiceHandler::Callback callback) {
-  // Service exists?
-  auto service_it =
-      std::ranges::find(services_, params.service, &Service::service);
-  if (service_it == services_.end()) {
-    auto result = std::make_unique<DevToolsHttpServiceHandler::Result>();
-    result->error = DevToolsHttpServiceHandler::Result::Error::kServiceNotFound;
-    std::move(callback).Run(std::move(result));
-    return;
-  }
+  DispatchRequest(services_, profile, params, std::nullopt,
+                  std::move(callback));
+}
 
-  // Endpoint allowed?
-  if (std::ranges::none_of(service_it->endpoints,
-                           [&params](const Service::Endpoint& endpoint) {
-                             return endpoint.path == params.path &&
-                                    endpoint.method == params.method;
-                           })) {
-    auto result = std::make_unique<DevToolsHttpServiceHandler::Result>();
-    result->error = DevToolsHttpServiceHandler::Result::Error::kAccessDenied;
-    std::move(callback).Run(std::move(result));
-    return;
-  }
-
-  service_it->handler->Request(profile, params, std::move(callback));
+void DevToolsHttpServiceRegistry::RequestAsStream(
+    Profile* profile,
+    const DevToolsDispatchHttpRequestParams& params,
+    DevToolsHttpServiceHandler::StreamWriter stream_writer,
+    DevToolsHttpServiceHandler::Callback callback) {
+  DispatchRequest(services_, profile, params, std::move(stream_writer),
+                  std::move(callback));
 }

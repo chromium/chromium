@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
@@ -109,7 +108,7 @@ ChromeComponentExtensionResourceManager::Data::Data() {
         base::FilePath("file_manager").AppendASCII(resource.path);
     resource_path = resource_path.NormalizePathSeparators();
 
-    DCHECK(!base::Contains(path_to_resource_id_, resource_path));
+    DCHECK(!path_to_resource_id_.contains(resource_path));
     path_to_resource_id_[resource_path] = resource.id;
   }
 
@@ -136,7 +135,7 @@ ChromeComponentExtensionResourceManager::Data::Data() {
 
   // ResourceBundle is not always initialized in unit tests.
   if (ui::ResourceBundle::HasSharedInstance()) {
-    base::Value::Dict dict = pdf_extension_util::GetStrings(
+    base::DictValue dict = pdf_extension_util::GetStrings(
         pdf_extension_util::PdfViewerContext::kPdfViewer);
 
     ui::TemplateReplacements pdf_viewer_replacements;
@@ -153,7 +152,7 @@ void ChromeComponentExtensionResourceManager::Data::AddComponentResourceEntries(
     base::FilePath resource_path = base::FilePath().AppendASCII(entry.path);
     resource_path = resource_path.NormalizePathSeparators();
 
-    DCHECK(!base::Contains(path_to_resource_id_, resource_path));
+    DCHECK(!path_to_resource_id_.contains(resource_path));
     path_to_resource_id_[resource_path] = entry.id;
   }
 }

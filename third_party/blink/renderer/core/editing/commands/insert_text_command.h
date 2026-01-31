@@ -40,6 +40,7 @@ class CORE_EXPORT InsertTextCommand : public CompositeEditCommand {
 
   InsertTextCommand(Document&,
                     const String& text,
+                    PasswordEchoBehavior,
                     RebalanceType = kRebalanceLeadingAndTrailingWhitespaces);
 
   String TextDataForInputEvent() const final;
@@ -57,6 +58,7 @@ class CORE_EXPORT InsertTextCommand : public CompositeEditCommand {
   friend class TypingCommand;
 
   String text_;
+  PasswordEchoBehavior password_echo_behavior_;
   RebalanceType rebalance_type_;
 };
 

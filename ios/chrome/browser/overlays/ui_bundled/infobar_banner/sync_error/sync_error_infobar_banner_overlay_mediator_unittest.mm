@@ -31,9 +31,9 @@
 #import "third_party/ocmock/gtest_support.h"
 
 namespace {
-const std::u16string kTitleText = u"title_text";
-const std::u16string kMessageText = u"message_text";
-const std::u16string kButtonLabelText = u"button_label_text";
+constexpr char16_t kTitleText[] = u"title_text";
+constexpr char16_t kMessageText[] = u"message_text";
+constexpr char16_t kButtonLabelText[] = u"button_label_text";
 }  // namespace
 
 // Test fixture for SyncErrorInfobarBannerOverlayMediator.
@@ -136,8 +136,6 @@ TEST_F(SyncErrorInfobarBannerOverlayMediatorTest,
 
 TEST_F(SyncErrorInfobarBannerOverlayMediatorTest,
        BannerDismissAfterTimeoutSetsInfobarTimeoutPref) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(switches::kEnableIdentityInAuthError);
   base::Time startTime = base::Time::Now();
 
   [mediator_ dismissInfobarBannerForUserInteraction:false];

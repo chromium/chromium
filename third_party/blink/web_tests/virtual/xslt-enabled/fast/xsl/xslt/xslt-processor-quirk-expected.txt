@@ -1,0 +1,13 @@
+CONSOLE WARNING: XSLTProcessor and XSLT Processing Instructions have been deprecated by all browsers. These features will be removed from this browser soon. See https://chromestatus.com/feature/4709671889534976.
+CONSOLE ERROR: Uncaught NetworkError: Failed to execute 'send' on 'XMLHttpRequest': Failed to load 'xslt-enc.xsl'.
+0.1 original xml:
+<?xml version="1.0" encoding="UTF-8"?><?xml-stylesheet type="text/xsl" href="xslt-text.xsl"?><TEST>SOURCE XML: &lt;&lt;&lt;&amp;тест&amp;&gt;&gt;&gt;</TEST>
+0.2 xsl1:
+<?xml version="1.0" encoding="UTF-8"?><xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
+
+<xsl:output method="text" encoding="KOI8-R"/>
+<xsl:template match="TEST">CHARACTERS IN XSLT: &lt;&lt;&lt;&amp;тест&amp;&gt;&gt;&gt;
+<xsl:apply-templates/><xsl:text>
+</xsl:text></xsl:template>
+
+</xsl:stylesheet>

@@ -93,7 +93,7 @@ void OSAuthErrorScreen::ShowImpl() {
   view_->Show();
 }
 
-void OSAuthErrorScreen::OnUserAction(const base::Value::List& args) {
+void OSAuthErrorScreen::OnUserAction(const base::ListValue& args) {
   CHECK_GE(args.size(), 1u);
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionCanel) {

@@ -13,7 +13,6 @@
 
 #include "base/barrier_closure.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/containers/enum_set.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
@@ -513,6 +512,50 @@ void MarkNoWithMultipleFeatures(BackForwardCacheCanStoreDocumentResult* result,
   DCHECK(features == features_added);
 }
 
+// Feature that controls if the BFCache reacts to memory pressure.
+BASE_FEATURE(kBFCachePerformanceManagerPolicy,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// The foregrounded tab's cache limit on moderate memory pressure. The negative
+// value means no limit.
+int ForegroundCacheSizeOnModeratePressure() {
+  static constexpr base::FeatureParam<int>
+      foreground_cache_size_on_moderate_pressure{
+          &kBFCachePerformanceManagerPolicy,
+          "foreground_cache_size_on_moderate_pressure", 3};
+  return foreground_cache_size_on_moderate_pressure.Get();
+}
+
+// The backgrounded tab's cache limit on moderate memory pressure. The negative
+// value means no limit.
+int BackgroundCacheSizeOnModeratePressure() {
+  static constexpr base::FeatureParam<int>
+      background_cache_size_on_moderate_pressure{
+          &kBFCachePerformanceManagerPolicy,
+          "background_cache_size_on_moderate_pressure", 1};
+  return background_cache_size_on_moderate_pressure.Get();
+}
+
+// The foregrounded tab's cache limit on critical memory pressure. The negative
+// value means no limit.
+int ForegroundCacheSizeOnCriticalPressure() {
+  static constexpr base::FeatureParam<int>
+      foreground_cache_size_on_critical_pressure{
+          &kBFCachePerformanceManagerPolicy,
+          "foreground_cache_size_on_critical_pressure", 0};
+  return foreground_cache_size_on_critical_pressure.Get();
+}
+
+// The backgrounded tab's cache limit on critical memory pressure. The negative
+// value means no limit.
+int BackgroundCacheSizeOnCriticalPressure() {
+  static constexpr base::FeatureParam<int>
+      background_cache_size_on_critical_pressure{
+          &kBFCachePerformanceManagerPolicy,
+          "background_cache_size_on_critical_pressure", 0};
+  return background_cache_size_on_critical_pressure.Get();
+}
+
 }  // namespace
 
 // static
@@ -642,6 +685,11 @@ BackForwardCacheImpl::BackForwardCacheImpl(BrowserContext* browser_context)
               browser_context) &&
       GetCacheControlNoStoreLevel() >
           CacheControlNoStoreExperimentLevel::kDoNotStore;
+
+  if (base::FeatureList::IsEnabled(kBFCachePerformanceManagerPolicy)) {
+    memory_pressure_listener_registration_.emplace(
+        base::MemoryPressureListenerTag::kBackForwardCacheImpl, this);
+  }
 }
 
 BackForwardCacheImpl::~BackForwardCacheImpl() {
@@ -1713,6 +1761,73 @@ void BackForwardCacheImpl::RenderViewHostNoLongerStored(
   RenderViewHostNoLongerStoredInternal(rvh);
 }
 
+void BackForwardCacheImpl::OnMemoryPressure(
+    base::MemoryPressureLevel memory_pressure_level) {
+  if (memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_NONE) {
+    return;
+  }
+
+  // Nothing to do if there is no entries.
+  if (entries_.empty()) {
+    return;
+  }
+
+  // Check if the page is backgrounded or has a pending navigation.
+  // Since BackForwardCacheImpl is instantiated per
+  // WebContents/NavigationController, we can just check the status of the first
+  // entry.
+  RenderFrameHostImpl* rfh = entries_.front()->render_frame_host();
+
+  int cache_size = -1;
+  BackForwardCache::NotRestoredReason reason;
+  bool foregrounded = rfh->delegate()->GetVisibility() == Visibility::VISIBLE;
+  switch (memory_pressure_level) {
+    case base::MEMORY_PRESSURE_LEVEL_MODERATE:
+      cache_size = foregrounded ? ForegroundCacheSizeOnModeratePressure()
+                                : BackgroundCacheSizeOnModeratePressure();
+      reason = BackForwardCache::NotRestoredReason::
+          kCacheLimitPrunedOnModerateMemoryPressure;
+      break;
+    case base::MEMORY_PRESSURE_LEVEL_CRITICAL:
+      cache_size = foregrounded ? ForegroundCacheSizeOnCriticalPressure()
+                                : BackgroundCacheSizeOnCriticalPressure();
+      reason = BackForwardCache::NotRestoredReason::
+          kCacheLimitPrunedOnCriticalMemoryPressure;
+      break;
+    default:
+      NOTREACHED();
+  }
+
+  // Do not flush BFCache if cache_size is negative (such as -1).
+  if (cache_size < 0) {
+    return;
+  }
+
+  // Do not flush the BFCache if there's a pending navigation as this could stop
+  // it.
+  // TODO(431957711): Check if this is really needed.
+  // TODO(431957711): `number_of_tabs` can only ever be 0 or 1. Consider fixing
+  // it or removing it the metric.
+  auto& navigation_controller =
+      rfh->frame_tree_node()->navigator().controller();
+  size_t number_of_tabs = 0;
+  size_t number_of_cached_entries = 0;
+  if (!navigation_controller.GetPendingEntry()) {
+    size_t count = Prune(cache_size, reason);
+    if (count > 0) {
+      number_of_tabs++;
+      number_of_cached_entries += count;
+    }
+  }
+
+  base::UmaHistogramCounts1000(
+      "BackForwardCache.Pruning.NumberOfTabsWithBackForwardCache",
+      number_of_tabs);
+  base::UmaHistogramCounts1000(
+      "BackForwardCache.Pruning.NumberOfBackForwardCacheEntries",
+      number_of_cached_entries);
+}
+
 void BackForwardCacheImpl::RenderViewHostNoLongerStoredInternal(
     RenderViewHostImpl* rvh) {
   RenderProcessHostImpl* process =
@@ -1807,7 +1922,7 @@ bool BackForwardCacheImpl::IsQueryAllowed(const GURL& current_url) {
       base::SplitString(current_url.query(), "&", base::TRIM_WHITESPACE,
                         base::SplitResult::SPLIT_WANT_NONEMPTY);
   for (const std::string& cgi_param : cgi_params) {
-    if (base::Contains(blocked_cgi_params_, cgi_param)) {
+    if (blocked_cgi_params_.contains(cgi_param)) {
       return false;
     }
   }
@@ -2013,7 +2128,7 @@ BackForwardCacheCanStoreTreeResult::GetWebExposedNotRestoredReasons() {
   DCHECK(is_root_outermost_main_frame_);
   uint32_t count = GetCrossOriginReachableFrameCount();
   int exposed_cross_origin_iframe_index =
-      count == 0 ? 0 : base::RandInt(0, count - 1);
+      count == 0 ? 0 : base::RandIntInclusive(0, count - 1);
   return GetWebExposedNotRestoredReasonsInternal(
       exposed_cross_origin_iframe_index);
 }

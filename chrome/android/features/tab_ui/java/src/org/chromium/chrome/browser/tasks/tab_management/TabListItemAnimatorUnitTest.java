@@ -37,7 +37,8 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -50,8 +51,8 @@ public class TabListItemAnimatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Spy
-    private ObservableSupplierImpl<Boolean> mIsAnimatorRunningSupplier =
-            new ObservableSupplierImpl<>(false);
+    private SettableNonNullObservableSupplier<Boolean> mIsAnimatorRunningSupplier =
+            ObservableSuppliers.createNonNull(false);
 
     private TabListItemAnimator mItemAnimator;
 

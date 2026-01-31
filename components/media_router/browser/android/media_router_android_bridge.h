@@ -56,20 +56,20 @@ class MediaRouterAndroidBridge {
   // Methods called by the Java counterpart.
   void OnSinksReceived(JNIEnv* env,
                        const base::android::JavaRef<jstring>& jsource_urn,
-                       jint jcount);
+                       int32_t jcount);
   void OnRouteCreated(JNIEnv* env,
                       const base::android::JavaRef<jstring>& jmedia_route_id,
                       const base::android::JavaRef<jstring>& jmedia_sink_id,
-                      jint jroute_request_id,
-                      jboolean jis_local);
+                      int32_t jroute_request_id,
+                      bool jis_local);
   void OnCreateRouteRequestError(
       JNIEnv* env,
       const base::android::JavaRef<jstring>& jerror_text,
-      jint jroute_request_id);
+      int32_t jroute_request_id);
   void OnJoinRouteRequestError(
       JNIEnv* env,
       const base::android::JavaRef<jstring>& jerror_text,
-      jint jroute_request_id);
+      int32_t jroute_request_id);
   void OnRouteTerminated(
       JNIEnv* env,
       const base::android::JavaRef<jstring>& jmedia_route_id);

@@ -114,7 +114,7 @@ base::Value ConvertAttributeValueToBaseValue(
       break;
     }
     case FPDF_OBJECT_ARRAY: {
-      base::Value::List array_list;
+      base::ListValue array_list;
       int count = FPDF_StructElement_Attr_CountChildren(attr_value);
       for (int i = 0; i < count; ++i) {
         FPDF_STRUCTELEMENT_ATTR_VALUE child_value =
@@ -132,10 +132,10 @@ base::Value ConvertAttributeValueToBaseValue(
   return base::Value();
 }
 
-base::Value::List ConvertHeaderIDsToTagType(
+base::ListValue ConvertHeaderIDsToTagType(
     const base::Value& headers_ids,
     const absl::flat_hash_map<std::u16string, std::u16string>& id_to_type_map) {
-  base::Value::List tag_list;
+  base::ListValue tag_list;
   for (const auto& header_id : headers_ids.GetList()) {
     if (header_id.is_string()) {
       std::u16string header_id_str = base::UTF8ToUTF16(header_id.GetString());
@@ -151,10 +151,10 @@ base::Value::List ConvertHeaderIDsToTagType(
   return tag_list;
 }
 
-base::Value::Dict ConvertPDFAttributeGroupToDict(
+base::DictValue ConvertPDFAttributeGroupToDict(
     FPDF_STRUCTELEMENT_ATTR attr_group,
     const absl::flat_hash_map<std::u16string, std::u16string>& id_to_type_map) {
-  base::Value::Dict attr_group_dict;
+  base::DictValue attr_group_dict;
   int attribute_count = FPDF_StructElement_Attr_GetCount(attr_group);
 
   for (int i = 0; i < attribute_count; ++i) {
@@ -185,7 +185,7 @@ base::Value::Dict ConvertPDFAttributeGroupToDict(
     // TODO(crbug.com/447444686): The header might not be encountered yet, and
     // other attributes may refer to ID. Account for this.
     if (attr_name == kPDFTableCellHeadersAttribute && value.is_list()) {
-      base::Value::List headers =
+      base::ListValue headers =
           ConvertHeaderIDsToTagType(value, id_to_type_map);
       attr_group_dict.Set(*attr_name, std::move(headers));
     } else {
@@ -216,7 +216,7 @@ base::Value RecursiveGetStructTree(
     id_to_type_map[*opt_id] = *opt_type;
   }
 
-  base::Value::Dict result;
+  base::DictValue result;
   result.Set("type", *opt_type);
 
   std::optional<std::u16string> opt_alt =
@@ -232,7 +232,7 @@ base::Value RecursiveGetStructTree(
   if (opt_lang)
     result.Set("lang", *opt_lang);
 
-  base::Value::List attribute_groups;
+  base::ListValue attribute_groups;
   int attribute_group_count = FPDF_StructElement_GetAttributeCount(struct_elem);
   for (int i = 0; i < attribute_group_count; i++) {
     FPDF_STRUCTELEMENT_ATTR attr_group =
@@ -241,7 +241,7 @@ base::Value RecursiveGetStructTree(
       continue;
     }
 
-    base::Value::Dict attr_group_dict =
+    base::DictValue attr_group_dict =
         ConvertPDFAttributeGroupToDict(attr_group, id_to_type_map);
     if (!attr_group_dict.empty()) {
       attribute_groups.Append(std::move(attr_group_dict));
@@ -252,7 +252,7 @@ base::Value RecursiveGetStructTree(
     result.Set("attributes", std::move(attribute_groups));
   }
 
-  base::Value::List children;
+  base::ListValue children;
   for (int i = 0; i < children_count; i++) {
     FPDF_STRUCTELEMENT child_elem =
         FPDF_StructElement_GetChildAtIndex(struct_elem, i);

@@ -22,7 +22,7 @@ class CategoriesSelectionScreenView {
   // Shows the contents of the screen.
   virtual void Show() = 0;
 
-  virtual void SetCategoriesData(base::Value::Dict categories) = 0;
+  virtual void SetCategoriesData(base::DictValue categories) = 0;
   virtual void SetOverviewStep() = 0;
 
   // Gets a WeakPtr to the instance.
@@ -49,7 +49,7 @@ class CategoriesSelectionScreenHandler : public BaseScreenHandler,
 
   // CategoriesSelectionScreenView:
   void Show() override;
-  void SetCategoriesData(base::Value::Dict categories) override;
+  void SetCategoriesData(base::DictValue categories) override;
   void SetOverviewStep() override;
   base::WeakPtr<CategoriesSelectionScreenView> AsWeakPtr() override;
 

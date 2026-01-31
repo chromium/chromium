@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/paint/filter_effect_builder.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/filter_operations.h"
+#include "third_party/blink/renderer/core/style/shadow_data.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_2d_recorder_context.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_filter.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_rendering_context_2d.h"
@@ -648,14 +649,14 @@ sk_sp<cc::DrawLooper>& CanvasRenderingContext2DState::EmptyDrawLooper() const {
 }
 
 float CanvasRenderingContext2DState::ShadowBlurAsSigma() const {
-  return BlurRadiusToStdDev(ClampTo<float>(shadow_blur_));
+  return ShadowData::BlurRadiusToStdDev(ClampTo<float>(shadow_blur_));
 }
 
 sk_sp<cc::DrawLooper>& CanvasRenderingContext2DState::ShadowOnlyDrawLooper()
     const {
   if (!shadow_only_draw_looper_) {
     DrawLooperBuilder draw_looper_builder;
-    draw_looper_builder.AddShadow(shadow_offset_, ClampTo<float>(shadow_blur_),
+    draw_looper_builder.AddShadow(shadow_offset_, ShadowBlurAsSigma(),
                                   shadow_color_,
                                   DrawLooperBuilder::kShadowIgnoresTransforms,
                                   DrawLooperBuilder::kShadowRespectsAlpha);
@@ -668,7 +669,7 @@ sk_sp<cc::DrawLooper>&
 CanvasRenderingContext2DState::ShadowAndForegroundDrawLooper() const {
   if (!shadow_and_foreground_draw_looper_) {
     DrawLooperBuilder draw_looper_builder;
-    draw_looper_builder.AddShadow(shadow_offset_, ClampTo<float>(shadow_blur_),
+    draw_looper_builder.AddShadow(shadow_offset_, ShadowBlurAsSigma(),
                                   shadow_color_,
                                   DrawLooperBuilder::kShadowIgnoresTransforms,
                                   DrawLooperBuilder::kShadowRespectsAlpha);

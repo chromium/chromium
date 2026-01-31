@@ -4,8 +4,9 @@
 
 #include "chromeos/ash/services/multidevice_setup/public/cpp/first_run_field_trial.h"
 
+#include <algorithm>
+
 #include "ash/constants/ash_features.h"
-#include "base/containers/contains.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/system/sys_info.h"
@@ -29,8 +30,8 @@ constexpr const char* const kBoardsToEnableInstantTethering[] = {"eve",
 void CreateFirstRunFieldTrial(base::FeatureList* feature_list) {
   // If the hardware name of the current device is not one of the board names in
   // |kBoardsToEnableInstantTethering|, nothing needs to be done.
-  if (!base::Contains(kBoardsToEnableInstantTethering,
-                      base::SysInfo::HardwareModelName())) {
+  if (!std::ranges::contains(kBoardsToEnableInstantTethering,
+                             base::SysInfo::HardwareModelName())) {
     return;
   }
 

@@ -26,6 +26,7 @@ found in the LICENSE file.
     <color name="control_highlight_color" tools:ignore="UnusedResources">
         @color/default_control_color_highlight_light
     </color>
+    <color name="iph_highlight_color">@color/color_primary_with_alpha_10</color>
 
     <!-- Favicons -->
     <color name="default_favicon_background_color">@color/default_control_color_normal_light</color>

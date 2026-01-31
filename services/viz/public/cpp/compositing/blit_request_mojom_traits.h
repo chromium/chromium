@@ -42,9 +42,9 @@ struct StructTraits<viz::mojom::BlitRequestDataView, viz::BlitRequest> {
     return blit_request.sync_token();
   }
 
-  static bool populates_gpu_memory_buffer(
+  static bool populates_mappable_shared_image(
       const viz::BlitRequest& blit_request) {
-    return blit_request.populates_gpu_memory_buffer();
+    return blit_request.populates_mappable_shared_image();
   }
 
   static bool Read(viz::mojom::BlitRequestDataView data, viz::BlitRequest* out);

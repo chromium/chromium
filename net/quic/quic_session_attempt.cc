@@ -145,6 +145,7 @@ void QuicSessionAttempt::PopulateNetErrorDetails(
 int QuicSessionAttempt::DoLoop(int rv) {
   CHECK(!in_loop_);
   CHECK_NE(next_state_, State::kNone);
+  CHECK_NE(rv, ERR_IO_PENDING);
 
   base::AutoReset<bool> auto_reset(&in_loop_, true);
   do {
@@ -223,6 +224,9 @@ int QuicSessionAttempt::DoCreateSessionComplete(int rv) {
   session_creation_finished_ = true;
   if (rv != OK) {
     CHECK(!session_);
+    // Log end event with error since we're skipping DoConfirmConnection().
+    net_log().EndEventWithNetErrorCode(
+        NetLogEventType::QUIC_SESSION_POOL_JOB_CONNECT, rv);
     return rv;
   }
 
@@ -248,6 +252,9 @@ int QuicSessionAttempt::DoCreateSessionComplete(int rv) {
 
 int QuicSessionAttempt::DoCryptoConnect(int rv) {
   if (rv != OK) {
+    // Log end event with error since we're skipping DoConfirmConnection().
+    net_log().EndEventWithNetErrorCode(
+        NetLogEventType::QUIC_SESSION_POOL_JOB_CONNECT, rv);
     // Reset `session_` to avoid dangling pointer.
     ResetSession();
     return rv;

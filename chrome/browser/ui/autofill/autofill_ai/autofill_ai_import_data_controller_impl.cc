@@ -18,6 +18,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/autofill/autofill_ai/autofill_ai_import_data_controller.h"
 #include "chrome/browser/ui/autofill/autofill_ai/autofill_ai_import_string_utils.h"
+#include "chrome/browser/ui/autofill/autofill_ai/entity_attribute_update_details.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
@@ -43,8 +44,6 @@
 namespace autofill {
 
 namespace {
-
-using enum AutofillAiImportDataController::EntityAttributeUpdateType;
 
 std::u16string GetPrimaryAccountEmailFromProfile(Profile* profile) {
   if (!profile) {
@@ -89,29 +88,33 @@ AutofillAiImportDataController* AutofillAiImportDataController::GetOrCreate(
 void AutofillAiImportDataControllerImpl::ShowPrompt(
     EntityInstance new_entity,
     std::optional<EntityInstance> old_entity,
-    AutofillClient::EntityImportPromptResultCallback prompt_closed_callback) {
+    AutofillClient::EntityImportPromptResultCallback prompt_result_callback) {
   // Don't show the bubble if it's already visible.
   if (bubble_view() || !MaySetUpBubble()) {
+    if (!prompt_result_callback.is_null()) {
+      std::move(prompt_result_callback)
+          .Run(AutofillClient::AutofillAiBubbleResult::kUnknown);
+    }
     return;
   }
 
   SetupPrompt(std::move(new_entity), std::move(old_entity),
-              std::move(prompt_closed_callback));
+              std::move(prompt_result_callback));
   QueueOrShowBubble();
 }
 
 void AutofillAiImportDataControllerImpl::SetupPrompt(
     EntityInstance new_entity,
     std::optional<EntityInstance> old_entity,
-    AutofillClient::EntityImportPromptResultCallback prompt_closed_callback) {
+    AutofillClient::EntityImportPromptResultCallback prompt_result_callback) {
   was_bubble_shown_ = false;
   new_entity_ = std::move(new_entity);
   old_entity_ = std::move(old_entity);
-  prompt_closed_callback_ = std::move(prompt_closed_callback);
+  prompt_result_callback_ = std::move(prompt_result_callback);
 }
 
 void AutofillAiImportDataControllerImpl::OnSaveButtonClicked() {
-  OnBubbleClosed(AutofillClient::AutofillAiBubbleClosedReason::kAccepted);
+  OnBubbleClosed(AutofillClient::AutofillAiBubbleResult::kAccepted);
 }
 
 std::u16string AutofillAiImportDataControllerImpl::GetPrimaryAccountEmail()
@@ -120,74 +123,19 @@ std::u16string AutofillAiImportDataControllerImpl::GetPrimaryAccountEmail()
       Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
 }
 
+std::u16string AutofillAiImportDataControllerImpl::GetDialogPrimaryButtonText()
+    const {
+  return GetPrimaryButtonText(IsSavePrompt());
+}
+
 bool AutofillAiImportDataControllerImpl::IsSavePrompt() const {
   return !old_entity_.has_value();
 }
 
-std::vector<AutofillAiImportDataController::EntityAttributeUpdateDetails>
+std::vector<EntityAttributeUpdateDetails>
 AutofillAiImportDataControllerImpl::GetUpdatedAttributesDetails() const {
-  std::vector<EntityAttributeUpdateDetails> details;
-
-  auto get_attribute_update_type =
-      [&](const AttributeInstance& new_entity_attribute) {
-        if (!old_entity_) {
-          return kNewEntityAttributeAdded;
-        }
-
-        base::optional_ref<const AttributeInstance> old_entity_attribute =
-            old_entity_->attribute(new_entity_attribute.type());
-        if (!old_entity_attribute) {
-          return kNewEntityAttributeAdded;
-        }
-
-        return std::ranges::all_of(
-                   new_entity_attribute.type().field_subtypes(),
-                   [&](FieldType type) {
-                     return old_entity_attribute->GetInfo(
-                                type, app_locale_,
-                                /*format_string=*/std::nullopt) ==
-                            new_entity_attribute.GetInfo(
-                                type, app_locale_,
-                                /*format_string=*/std::nullopt);
-                   })
-                   ? kNewEntityAttributeUnchanged
-                   : kNewEntityAttributeUpdated;
-      };
-
-  for (const AttributeInstance& attribute : new_entity_->attributes()) {
-    EntityAttributeUpdateType update_type =
-        get_attribute_update_type(attribute);
-    std::u16string attribute_value;
-    if (std::optional<std::u16string> date = MaybeGetLocalizedDate(attribute)) {
-      attribute_value = *std::move(date);
-    } else {
-      attribute_value = attribute.GetCompleteInfo(app_locale_);
-    }
-    if (!attribute_value.empty()) {
-      details.emplace_back(attribute.type().GetNameForI18n(),
-                           std::move(attribute_value), update_type);
-    }
-  }
-
-  // Move new entity values that were either added or updated to the top.
-  std::ranges::stable_sort(details, [](const EntityAttributeUpdateDetails& a,
-                                       const EntityAttributeUpdateDetails& b) {
-    // Returns true if `attribute` is a new entity attribute that was either
-    // added or updated.
-    auto added_or_updated = [](const EntityAttributeUpdateDetails& attribute) {
-      return attribute.update_type == kNewEntityAttributeAdded ||
-             attribute.update_type == kNewEntityAttributeUpdated;
-    };
-    if (added_or_updated(a) && !added_or_updated(b)) {
-      return true;
-    }
-
-    if (!added_or_updated(a) && added_or_updated(b)) {
-      return false;
-    }
-    return false;
-  });
-  return details;
+  return EntityAttributeUpdateDetails::GetUpdatedAttributesDetails(
+      *new_entity_, old_entity_, app_locale_);
 }
 
 std::u16string AutofillAiImportDataControllerImpl::GetDialogTitle() const {
@@ -225,22 +173,22 @@ void AutofillAiImportDataControllerImpl::OnVisibilityChanged(
 }
 
 void AutofillAiImportDataControllerImpl::OnBubbleClosed(
-    AutofillClient::AutofillAiBubbleClosedReason close_reason) {
+    AutofillClient::AutofillAiBubbleResult result) {
   ResetBubbleViewAndInformBubbleManager();
   UpdatePageActionIcon();
 
   if (!bubble_hide_initiated_by_bubble_manager_ &&
-      !prompt_closed_callback_.is_null()) {
-    std::move(prompt_closed_callback_).Run(close_reason);
+      !prompt_result_callback_.is_null()) {
+    std::move(prompt_result_callback_).Run(result);
   }
 }
 
 void AutofillAiImportDataControllerImpl::OnBubbleDiscarded() {
-  if (!prompt_closed_callback_.is_null()) {
-    std::move(prompt_closed_callback_)
+  if (!prompt_result_callback_.is_null()) {
+    std::move(prompt_result_callback_)
         .Run(was_bubble_shown_
-                 ? AutofillClient::AutofillAiBubbleClosedReason::kNotInteracted
-                 : AutofillClient::AutofillAiBubbleClosedReason::kUnknown);
+                 ? AutofillClient::AutofillAiBubbleResult::kNotInteracted
+                 : AutofillClient::AutofillAiBubbleResult::kUnknown);
   }
 }
 

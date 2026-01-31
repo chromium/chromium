@@ -4,13 +4,16 @@
 
 #include "chrome/browser/android/tab_features.h"
 
+#include "chrome/browser/glic/public/widget/glic_side_panel_coordinator_android.h"
+#include "chrome/browser/glic/service/glic_instance_helper.h"
 #include "chrome/browser/net/qwac_web_contents_observer.h"
 #include "chrome/browser/preloading/new_tab_page_preload/new_tab_page_preload_pipeline_manager.h"
 #include "chrome/browser/sync/sessions/sync_sessions_router_tab_helper.h"
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
+#include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
+#include "chrome/common/buildflags.h"
 #include "components/favicon/content/content_favicon_driver.h"
-#include "components/lens/tab_contextualization_controller.h"
 #include "components/tabs/public/tab_interface.h"
 #include "net/base/features.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
@@ -38,6 +41,12 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
   tab_contextualization_controller_ =
       GetUserDataFactory().CreateInstance<lens::TabContextualizationController>(
           *tab, tab);
+
+  glic_instance_helper_ =
+      GetUserDataFactory().CreateInstance<glic::GlicInstanceHelper>(*tab, tab);
+  glic_side_panel_coordinator_ =
+      GetUserDataFactory()
+          .CreateInstance<glic::GlicSidePanelCoordinatorAndroid>(*tab, tab);
 }
 
 TabFeatures::~TabFeatures() = default;

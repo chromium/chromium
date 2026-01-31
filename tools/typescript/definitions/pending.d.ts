@@ -110,3 +110,48 @@ interface ImageCapture {
 interface PerformanceObserverInit {
   durationThreshold?: number;
 }
+
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DurationFormat
+declare namespace Intl {
+  interface DurationFormatOptions {
+    localeMatcher?: 'best fit'|'lookup';
+    style?: 'long'|'short'|'narrow'|'digital';
+    years?: 'long'|'short'|'narrow';
+    months?: 'long'|'short'|'narrow';
+    weeks?: 'long'|'short'|'narrow';
+    days?: 'long'|'short'|'narrow';
+    hours?: 'long'|'short'|'narrow'|'numeric'|'2-digit';
+    minutes?: 'long'|'short'|'narrow'|'numeric'|'2-digit';
+    seconds?: 'long'|'short'|'narrow'|'numeric'|'2-digit';
+    milliseconds?: 'long'|'short'|'narrow'|'numeric';
+    microseconds?: 'long'|'short'|'narrow'|'numeric';
+    nanoseconds?: 'long'|'short'|'narrow'|'numeric';
+    fractionalDigits?: 0|1|2|3|4|5|6|7|8|9;
+    numberingSystem?: string;
+  }
+
+  interface Duration {
+    years?: number;
+    months?: number;
+    weeks?: number;
+    days?: number;
+    hours?: number;
+    minutes?: number;
+    seconds?: number;
+    milliseconds?: number;
+    microseconds?: number;
+    nanoseconds?: number;
+  }
+
+  interface DurationFormat {
+    format(duration: Duration): string;
+    resolvedOptions(): DurationFormatOptions;
+  }
+
+  const DurationFormat: {
+    new (locales?: string|string[], options?: DurationFormatOptions):
+        DurationFormat,
+    supportedLocalesOf(
+        locales: string|string[], options?: DurationFormatOptions): string[],
+  };
+}

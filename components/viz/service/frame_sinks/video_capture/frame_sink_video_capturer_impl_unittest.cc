@@ -43,7 +43,7 @@
 #include "media/base/video_util.h"
 #include "media/capture/mojom/video_capture_buffer.mojom.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
-#include "media/video/renderable_gpu_memory_buffer_video_frame_pool.h"
+#include "media/video/renderable_mappable_shared_image_video_frame_pool.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -295,7 +295,7 @@ class MockConsumer : public mojom::FrameSinkVideoConsumer {
           info->pixel_format, info->coded_size);
       // Create a mappable shared image.
       auto shared_image = test_sii_->CreateSharedImage(
-          {si_format, si_size, gfx::ColorSpace(),
+          {si_format, si_size, info->color_space,
            gpu::SharedImageUsageSet(si_usage), "FrameSinkVideoCapturerTest"},
           gpu::kNullSurfaceHandle, gfx::BufferUsage::GPU_READ);
       // The frame is only gonna tell Letterbox to skip the test.
@@ -461,11 +461,11 @@ class FakeCapturableFrameSink : public CapturableFrameSink {
 
   void OnClientCaptureStopped() override { --number_clients_capturing_; }
 
-  void RequestCopyOfOutput(
-      PendingCopyOutputRequest pending_copy_output_request) override {
-    auto& request = pending_copy_output_request.copy_output_request;
+  void RequestCopyOfOutput(std::unique_ptr<PendingCopyOutputRequest>
+                               pending_copy_output_request) override {
+    auto& request = pending_copy_output_request->copy_output_request;
     EXPECT_NE(base::UnguessableToken(), request->source());
-    if (pending_copy_output_request.subtree_capture_id.is_valid()) {
+    if (pending_copy_output_request->subtree_capture_id.is_valid()) {
       EXPECT_EQ(capture_bounds_, request->area());
     } else {
       EXPECT_TRUE(gfx::Rect(size_set_.source_size).Contains(request->area()));
@@ -754,7 +754,7 @@ class TestVideoCaptureOverlay : public VideoCaptureOverlay {
 };
 
 class TestGmbVideoFramePoolContext
-    : public media::RenderableGpuMemoryBufferVideoFramePool::Context {
+    : public media::RenderableMappableSharedImageVideoFramePool::Context {
  public:
   TestGmbVideoFramePoolContext()
       : context_provider_(TestContextProvider::CreateGLES()) {}
@@ -793,7 +793,7 @@ class TestGmbVideoFramePoolContextProvider
  public:
   ~TestGmbVideoFramePoolContextProvider() override = default;
 
-  std::unique_ptr<media::RenderableGpuMemoryBufferVideoFramePool::Context>
+  std::unique_ptr<media::RenderableMappableSharedImageVideoFramePool::Context>
   CreateContext(base::OnceClosure on_context_lost) final {
     return std::make_unique<TestGmbVideoFramePoolContext>();
   }
@@ -874,7 +874,7 @@ class FrameSinkVideoCapturerTest
 
   bool IsUsingGpuMemoryBuffer() {
     return buffer_format_preference_ ==
-           mojom::BufferFormatPreference::kPreferGpuMemoryBuffer;
+           mojom::BufferFormatPreference::kPreferMappableSharedImage;
   }
 
   base::TimeTicks GetNextVsync() const {
@@ -2255,22 +2255,25 @@ TEST_P(FrameSinkVideoCapturerTest, HandlesNullSubTargetPtrCorrectly) {
 // Tests that buffer_format_preference is correctly passed to the
 // GpuVideoFramePool
 TEST_P(FrameSinkVideoCapturerTest, BufferFormatPreferencePassedToGpuFramePool) {
-  // GpuMemoryBuffer only kicks in for ARGB and NV12 pixel formats.
+  // MappableSharedImageVideoFramePool is only used for the
+  // kPreferMappableSharedImage and kPreferSharedImageWithNativeHandle format
+  // preferences.
+  if (buffer_format_preference_ == mojom::BufferFormatPreference::kDefault) {
+    return;
+  }
+
+  // Additionally, the format itself must be ARGB or NV12 for
+  // MappableSharedImageVideoFramePool to be used.
   if (pixel_format_ != media::PIXEL_FORMAT_ARGB &&
       pixel_format_ != media::PIXEL_FORMAT_NV12) {
     return;
   }
 
-  // GpuMemoryBuffer only kicks in for the kPreferGpuMemoryBuffer and
-  // kPreferSharedImageWithNativeHandle formats.
-  if (buffer_format_preference_ == mojom::BufferFormatPreference::kDefault) {
-    return;
-  }
-
   NiceMock<MockConsumer> consumer;
   StartCapture(&consumer);
-  EXPECT_EQ(capturer_->gpu_frame_pool_buffer_format_for_testing(),
-            buffer_format_preference_);
+  EXPECT_EQ(
+      capturer_->mappable_si_frame_pool_buffer_format_preference_for_testing(),
+      buffer_format_preference_);
   StopCapture();
 }
 
@@ -2282,11 +2285,11 @@ INSTANTIATE_TEST_SUITE_P(
                    media::PIXEL_FORMAT_I420),
         std::tuple(mojom::BufferFormatPreference::kDefault,
                    media::PIXEL_FORMAT_ARGB),
-        std::tuple(mojom::BufferFormatPreference::kPreferGpuMemoryBuffer,
+        std::tuple(mojom::BufferFormatPreference::kPreferMappableSharedImage,
                    media::PIXEL_FORMAT_NV12),
-        std::tuple(mojom::BufferFormatPreference::kPreferGpuMemoryBuffer,
+        std::tuple(mojom::BufferFormatPreference::kPreferMappableSharedImage,
                    media::PIXEL_FORMAT_ARGB),
-        std::tuple(mojom::BufferFormatPreference::kPreferGpuMemoryBuffer,
+        std::tuple(mojom::BufferFormatPreference::kPreferMappableSharedImage,
                    media::PIXEL_FORMAT_RGBAF16)));
 
 }  // namespace viz

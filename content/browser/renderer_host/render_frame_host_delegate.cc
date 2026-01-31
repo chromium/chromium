@@ -18,7 +18,6 @@
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "third_party/blink/public/mojom/frame/text_autosizer_page_info.mojom.h"
-#include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "ui/base/clipboard/clipboard_metadata.h"
 #include "ui/gfx/native_ui_types.h"
@@ -203,12 +202,6 @@ bool RenderFrameHostDelegate::IsJavaScriptDialogShowing() const {
 
 bool RenderFrameHostDelegate::ShouldIgnoreUnresponsiveRenderer() {
   return false;
-}
-
-std::optional<network::ParsedPermissionsPolicy>
-RenderFrameHostDelegate::GetPermissionsPolicyForIsolatedWebApp(
-    RenderFrameHostImpl* source) {
-  return network::ParsedPermissionsPolicy();
 }
 
 bool RenderFrameHostDelegate::IsPopup() const {

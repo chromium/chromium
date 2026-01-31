@@ -94,7 +94,7 @@ void PeripheralDataAccessHandler::OnJavascriptAllowed() {}
 void PeripheralDataAccessHandler::OnJavascriptDisallowed() {}
 
 void PeripheralDataAccessHandler::HandleThunderboltSupported(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   CHECK_EQ(1u, args.size());
   const std::string& callback_id = args[0].GetString();
@@ -108,7 +108,7 @@ void PeripheralDataAccessHandler::HandleThunderboltSupported(
 }
 
 void PeripheralDataAccessHandler::HandleGetPolicyState(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   CHECK_EQ(1u, args.size());
   const std::string& callback_id = args[0].GetString();
@@ -117,7 +117,7 @@ void PeripheralDataAccessHandler::HandleGetPolicyState(
                                      ? local_state_pref_name
                                      : cros_setting_pref_name;
 
-  base::Value::Dict response;
+  base::DictValue response;
   response.Set("prefName", pref_name);
   response.Set("isUserConfigurable", is_user_configurable_);
   ResolveJavascriptCallback(base::Value(callback_id), response);

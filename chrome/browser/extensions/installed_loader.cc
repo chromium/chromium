@@ -114,7 +114,7 @@ enum class ExternalItemState {
   kMaxValue = kNonwebstoreUninstalled
 };
 
-bool IsManifestCorrupt(const base::Value::Dict& manifest) {
+bool IsManifestCorrupt(const base::DictValue& manifest) {
   // Because of bug #272524 sometimes manifests got mangled in the preferences
   // file, one particularly bad case resulting in having both a background page
   // and background scripts values. In those situations we want to reload the
@@ -398,7 +398,7 @@ void InstalledLoader::LoadAllExtensions(Profile* profile) {
         continue;
       }
 
-      info.extension_manifest = std::make_unique<base::Value::Dict>(
+      info.extension_manifest = std::make_unique<base::DictValue>(
           extension->manifest()->value()->Clone());
       should_write_prefs = true;
     }

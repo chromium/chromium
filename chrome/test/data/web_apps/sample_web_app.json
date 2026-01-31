@@ -7,7 +7,6 @@
    "app_service_icon_url": "chrome://app-icon/ejhkbejlajgoplgondfmjmplbdjaofok/32",
    "app_size_in_bytes": "382722586",
    "background_color": "rgba(151,34,83,1)",
-   "borderless_url_patterns": [  ],
    "current_os_integration_states": {
       "file_handling": {
          "file_handlers": [ {
@@ -184,7 +183,7 @@
       "source": "GENERATED_ICON_FIX_SOURCE_RETROACTIVE",
       "window_start_time": "363425051"
    },
-   "install_state": "1",
+   "install_state": "2",
    "installed_by": [ {
       "install_api_call_time": "1970-02-07 12:05:51.959000 UTC",
       "requesting_url": "https://example.com/installed_by1_1234/"
@@ -199,7 +198,7 @@
    "isolation_data": null,
    "last_badging_time": "1970-01-28 05:07:28.623000 UTC",
    "last_launch_time": "1970-01-27 09:52:51.713000 UTC",
-   "latest_install_source": "api custom tab",
+   "latest_install_source": "profile menu",
    "latest_install_time": "1970-02-02 18:30:20.433000 UTC",
    "launch_handler": {
       "client_mode": "kAuto",
@@ -263,6 +262,10 @@
    "manifest_url": "https://example.com/manifest1234.json",
    "note_taking_new_note_url": "https://example.com/scope1234/new_note1308772041",
    "parent_app_id": null,
+   "pending_migration_info": {
+      "behavior": "WEB_APP_MIGRATION_BEHAVIOR_FORCE",
+      "manifest_id": "https://example.com/manifest_id_1830320160"
+   },
    "pending_update_info": {
       "downloaded_manifest_icons": [ {
          "icon_sizes": [ 512 ],
@@ -493,26 +496,6 @@
    },
    "supported_links_offer_dismiss_count": -1211954529,
    "supported_links_offer_ignore_count": -1319474860,
-   "sync_proto": {
-      "icon_infos": [ {
-         "purpose": "MONOCHROME",
-         "size_in_px": "96",
-         "url": "https://example.com/icons322714900"
-      }, {
-         "purpose": "MASKABLE",
-         "size_in_px": "512",
-         "url": "https://example.com/icons2945661221"
-      } ],
-      "name": "SyncName1234",
-      "relative_manifest_id": "manifest_id_1234?query=test",
-      "scope": "https://example.com/scope1234/",
-      "start_url": "https://example.com/scope1234/start1234",
-      "theme_color": "4284470843",
-      "user_display_mode_cros": "STANDALONE",
-      "user_display_mode_default": "TABBED",
-      "user_launch_ordinal": "n",
-      "user_page_ordinal": "n"
-   },
    "tab_strip": {
       "home_tab": {
          "icons": [ {
@@ -560,7 +543,25 @@
       "square_size_px": 48,
       "url": "https://example.com/icons798475713"
    } ],
+   "unvalidated_migration_sources": [ {
+      "behavior": "WEB_APP_MIGRATION_BEHAVIOR_FORCE",
+      "install_url": "https://example.com/install_url_343454109",
+      "manifest_id": "https://example.com/manifest_id_1788065845"
+   }, {
+      "behavior": "WEB_APP_MIGRATION_BEHAVIOR_FORCE",
+      "install_url": "https://example.com/install_url_2200790091",
+      "manifest_id": "https://example.com/manifest_id_3915964839"
+   } ],
    "user_link_capturing_preference": "1",
+   "validated_migration_sources": [ {
+      "behavior": "WEB_APP_MIGRATION_BEHAVIOR_FORCE",
+      "install_url": "https://example.com/install_url_343454109",
+      "manifest_id": "https://example.com/manifest_id_1788065845"
+   }, {
+      "behavior": "WEB_APP_MIGRATION_BEHAVIOR_FORCE",
+      "install_url": "https://example.com/install_url_2200790091",
+      "manifest_id": "https://example.com/manifest_id_3915964839"
+   } ],
    "was_shortcut_app": true,
    "window_controls_overlay_enabled": false
 }

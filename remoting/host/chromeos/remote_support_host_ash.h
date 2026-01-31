@@ -82,7 +82,7 @@ class RemoteSupportHostAsh {
   void OnSessionRetrieved(SessionId session_id,
                           const std::string& access_token,
                           StartSessionCallback callback,
-                          std::optional<base::Value::Dict> session);
+                          std::optional<base::DictValue> session);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

@@ -14,7 +14,6 @@
 #include "extensions/browser/suggest_permission_util.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/permissions/api_permission.h"
-#include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/blink/public/mojom/input/pointer_lock_result.mojom.h"
 
@@ -29,24 +28,6 @@ AppWebContentsHelper::AppWebContentsHelper(
       extension_id_(extension_id),
       web_contents_(web_contents),
       app_delegate_(app_delegate) {}
-
-// static
-bool AppWebContentsHelper::ShouldSuppressGestureEvent(
-    const blink::WebGestureEvent& event) {
-  // Disable "smart zoom" (double-tap with two fingers on Mac trackpad).
-  if (event.GetType() == blink::WebInputEvent::Type::kGestureDoubleTap)
-    return true;
-
-  // Disable pinch zooming in app windows.
-  if (blink::WebInputEvent::IsPinchGestureEventType(event.GetType())) {
-    // Only suppress pinch events that cause a scale change. We still
-    // allow synthetic wheel events for touchpad pinch to go to the page.
-    return !(event.SourceDevice() == blink::WebGestureDevice::kTouchpad &&
-             event.NeedsWheelEvent());
-  }
-
-  return false;
-}
 
 content::WebContents* AppWebContentsHelper::OpenURLFromTab(
     const content::OpenURLParams& params,

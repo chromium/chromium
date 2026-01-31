@@ -66,7 +66,7 @@ VSyncThreadWin::VSyncThreadWin() : vsync_thread_("GpuVSyncThread") {
   is_suspended_ = base::PowerMonitor::GetInstance()
                       ->AddPowerSuspendObserverAndReturnSuspendedState(this);
   vsync_thread_.StartWithOptions(
-      base::Thread::Options(base::ThreadType::kDisplayCritical));
+      base::Thread::Options(base::ThreadType::kPresentation));
 }
 
 VSyncThreadWin::~VSyncThreadWin() {

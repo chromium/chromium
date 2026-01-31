@@ -9,7 +9,7 @@
 
 #include "base/base_paths.h"
 #include "base/check_is_test.h"
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -124,8 +124,7 @@ void LogError(base::File& error_log_file,
   std::string log_entry =
       absl::StrFormat("%s - %s\n", file_path.AsUTF8Unsafe(),
                       FormatErrorMessage(destination, error));
-  UNSAFE_TODO(
-      error_log_file.WriteAtCurrentPos(log_entry.c_str(), log_entry.size()));
+  error_log_file.WriteAtCurrentPosAndCheck(base::as_byte_span(log_entry));
 }
 
 }  // namespace

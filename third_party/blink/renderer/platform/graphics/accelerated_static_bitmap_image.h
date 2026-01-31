@@ -21,6 +21,7 @@ struct ExportedSharedImage;
 }  // namespace gpu
 
 namespace blink {
+class CanvasResourceProviderSharedImageNon2D;
 class MailboxTextureBacking;
 class WebGraphicsContext3DProviderWrapper;
 
@@ -91,7 +92,7 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
                      const gfx::Rect& src_rect) override;
 
   bool CopyToResourceProvider(
-      CanvasResourceProviderSharedImage* resource_provider,
+      CanvasResourceProviderSharedImageNon2D* resource_provider,
       const gfx::Rect& copy_rect) override;
 
   // To be called on sender thread before performing a transfer to a different
@@ -110,7 +111,6 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
 
   // Provides the mailbox backing for this image. The caller must wait on the
   // sync token before accessing this mailbox.
-  gpu::MailboxHolder GetMailboxHolder() const final;
   scoped_refptr<gpu::ClientSharedImage> GetSharedImage() const final;
   gpu::SyncToken GetSyncToken() const final;
 

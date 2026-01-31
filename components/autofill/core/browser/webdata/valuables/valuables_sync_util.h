@@ -29,6 +29,15 @@ std::unique_ptr<syncer::EntityData> CreateEntityDataFromEntityInstance(
 LoyaltyCard CreateAutofillLoyaltyCardFromSpecifics(
     const sync_pb::AutofillValuableSpecifics& specifics);
 
+// Converts the given `ValuableMetadata` into a `syncer::EntityData`.
+std::unique_ptr<syncer::EntityData> CreateEntityDataFromValuableMetadata(
+    const ValuableMetadata& metadata);
+
+// For a given `ValuableMetadata`, returns the corresponding
+// `sync_pb::AutofillValuableMetadataSpecifics`.
+sync_pb::AutofillValuableMetadataSpecifics CreateSpecificsFromValuableMetadata(
+    const ValuableMetadata& metadata);
+
 // Clears all supported fields from `specifics`. Supported
 // fields are all fields in the protobuf definition that have already been
 // included in the client version.

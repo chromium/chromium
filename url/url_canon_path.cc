@@ -51,7 +51,7 @@ enum CharacterFlags {
 // bit.
 //
 // clang-format off
-const unsigned char kPathCharLookup[0x100] = {
+constexpr std::array<unsigned char, 0x100> kPathCharLookup = {
 //   NULL     control chars...
      ESCAPE , ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,
 //   control chars...
@@ -188,6 +188,9 @@ bool DoPartialPathInternal(std::optional<std::basic_string_view<CHAR>> path,
 
   auto& path_value = *path;
 
+  const bool is_preserving_percent_encoded_dot_in_path =
+      IsPreservingPercentEncodedDotInPath();
+
   bool success = true;
   for (size_t i = 0; i < path_value.size(); i++) {
     UCHAR uch = static_cast<UCHAR>(path_value[i]);
@@ -201,7 +204,7 @@ bool DoPartialPathInternal(std::optional<std::basic_string_view<CHAR>> path,
     } else {
       // Normal ASCII character or 8-bit input, use the lookup table.
       unsigned char out_ch = static_cast<unsigned char>(uch);
-      unsigned char flags = UNSAFE_TODO(kPathCharLookup[out_ch]);
+      unsigned char flags = kPathCharLookup[out_ch];
       if (flags & SPECIAL) {
         // Needs special handling of some sort.
         size_t dotlen;
@@ -214,13 +217,22 @@ bool DoPartialPathInternal(std::optional<std::basic_string_view<CHAR>> path,
           // slightly).
           if (output->length() > path_begin_in_output &&
               output->at(output->length() - 1) == '/') {
-            // Slash followed by a dot, check to see if this is means relative
+            // Slash followed by a dot: check for single- or double-dot URL
+            // path segments
+            // (https://url.spec.whatwg.org/#single-dot-path-segment).
             size_t consumed_len;
             switch (ClassifyAfterDot(path_value.substr(i + dotlen),
                                      &consumed_len)) {
               case NOT_A_DIRECTORY:
                 // Copy the dot to the output, it means nothing special.
-                output->push_back('.');
+                if (dotlen == 3 && is_preserving_percent_encoded_dot_in_path) {
+                  // Preserve %2E/%2e case.
+                  output->push_back('%');
+                  output->push_back('2');
+                  output->push_back(path_value[i + 2]);
+                } else {
+                  output->push_back('.');
+                }
                 i += dotlen - 1;
                 break;
               case DIRECTORY_CUR:  // Current directory, just skip the input.
@@ -234,7 +246,14 @@ bool DoPartialPathInternal(std::optional<std::basic_string_view<CHAR>> path,
           } else {
             // This dot is not preceded by a slash, it is just part of some
             // file name.
-            output->push_back('.');
+            if (dotlen == 3 && is_preserving_percent_encoded_dot_in_path) {
+              // Preserve %2E/%2e case.
+              output->push_back('%');
+              output->push_back('2');
+              output->push_back(path_value[i + 2]);
+            } else {
+              output->push_back('.');
+            }
             i += dotlen - 1;
           }
 
@@ -312,7 +331,18 @@ bool DoPath(std::optional<std::basic_string_view<CHAR>> path,
     // and then canonicalize it, it will of course have a slash already. This
     // check is for the replacement and relative URL resolving cases of file
     // URLs.
-    if (!IsSlashOrBackslash((*path)[0])) {
+    bool has_leading_slash;
+    if (IsNonSpecialLeadingSlashHandlingEnabled()) {
+      // For non-special URLs, backslash is NOT a path separator, so only check
+      // for forward slash.
+      has_leading_slash =
+          ((*path)[0] == '/') || ((canon_mode == CanonMode::kSpecialURL ||
+                                   canon_mode == CanonMode::kFileURL) &&
+                                  (*path)[0] == '\\');
+    } else {
+      has_leading_slash = IsSlashOrBackslash((*path)[0]);
+    }
+    if (!has_leading_slash) {
       output->push_back('/');
     }
 

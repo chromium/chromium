@@ -5,7 +5,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/login_screen_test_api.h"
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -129,8 +129,10 @@ IN_PROC_BROWSER_TEST_F(DrivePinningScreenTest, Accept) {
   test::OobeJS().ExpectElementText(
       l10n_util::GetStringFUTF8(
           IDS_OOBE_DRIVE_PINNING_TOGGLE_SUBTITLE,
-          ui::FormatBytes(base::ByteCount(current_progress.required_space)),
-          ui::FormatBytes(base::ByteCount(current_progress.free_space))),
+          ui::FormatBytes(base::ByteSize(
+              base::checked_cast<uint64_t>(current_progress.required_space))),
+          ui::FormatBytes(base::ByteSize(
+              base::checked_cast<uint64_t>(current_progress.free_space)))),
       kSpaceInformationPath);
   test::OobeJS().TapOnPath(kNextButtonPath);
 

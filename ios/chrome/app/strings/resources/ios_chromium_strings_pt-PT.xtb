@@ -34,11 +34,16 @@
 <translation id="159029779861043703">O Chromium mantém os seus dados confidenciais seguros com o Face ID.</translation>
 <translation id="1591119736686995611">Abre a grelha de separadores do Chromium.</translation>
 <translation id="16001233025397167">A verificação de segurança protege contra violações de dados, Websites inseguros e muito mais. Receba alertas sobre quaisquer problemas de privacidade ou segurança detetados pelo Chromium.</translation>
+<translation id="1614362805233822594">Já tem palavras-passe ou chaves de acesso no Gestor de Palavras-passe para os sites apresentados. Selecione uma conta para manter as informações de início de sessão apresentadas, substituindo as informações no Gestor de Palavras-passe.</translation>
 <translation id="1617663976202781617">Dados da sincronização do Chromium</translation>
 <translation id="164952285225495380">Esta embalagem já foi acompanhada no Chromium.</translation>
+<translation id="1703338211136118534">As seguintes palavras-passe não foram importadas para o Gestor de Palavras-passe porque não correspondem aos requisitos.</translation>
 <translation id="1707458603865303524">Use o Chromium sempre que tocar em links em mensagens ou noutras apps.</translation>
 <translation id="1722370509450468186">A palavra-passe será guardada na sua Conta (<ph name="EMAIL" />).</translation>
 <translation id="1747088204252710672">Um feed personalizado criado para si</translation>
+<translation id="1761196287436320018">Atingiu o limite de <ph name="LIMIT" /> marcadores do Chromium, por isso, alguns dos seus marcadores ainda não foram guardados na sua Conta Google.
+
+Não é possível guardar novos marcadores na sua conta até eliminar alguns. Se terminar sessão agora, os marcadores não guardados são eliminados.</translation>
 <translation id="1811860791247653035">Para usar a personalização e outras funcionalidades, inclua o Chromium na <ph name="FEATURE_NAME_1" /> e nos <ph name="FEATURE_NAME_2" /></translation>
 <translation id="1838412507805038478">O Chromium confirmou que a <ph name="ISSUER" /> emitiu o certificado deste Website.</translation>
 <translation id="1839447949248872139">Abra links no Chromium por predefinição</translation>
@@ -47,6 +52,7 @@
 <translation id="1847960401032164406">Maps no Chromium</translation>
 <translation id="1867772173333403444">4. Selecione o Chromium</translation>
 <translation id="1965068424387304464">Dica do Chromium: guarde palavras-passe</translation>
+<translation id="1992653360331625459">Já tem palavras-passe para estas contas no Gestor de Palavras-passe. Se optar por importar uma das palavras-passe abaixo, esta irá substituir a palavra-passe existente.</translation>
 <translation id="2006345422933397527">O Chromium não conseguiu verificar se existem atualizações. Experimente verificar a sua ligação à Internet.</translation>
 <translation id="2042889939382983733">Veja o histórico do Chromium</translation>
 <translation id="2052320862053429062">O Chromium verifica periodicamente se as suas palavras-passe fazem parte das listas publicadas online. Ao fazê-lo, as suas palavras-passe e nomes de utilizador estão encriptados, pelo que não podem ser lidos por ninguém, incluindo a Google.</translation>
@@ -65,6 +71,7 @@
 <translation id="2326738825692478496">Alguns dos seus dados do Chromium ainda não foram guardados na sua Conta Google.
 
 Experimente aguardar alguns minutos antes de terminar sessão. Se terminar sessão agora, estes dados vão ser eliminados.</translation>
+<translation id="2334943301233020675">As seguintes chaves de acesso não foram importadas para o Gestor de Palavras-passe porque não correspondem aos requisitos.</translation>
 <translation id="2337722506862731008">Partilhar Chromium</translation>
 <translation id="2340423701577464731">Adicione o item da Lista de leitura ao Chromium</translation>
 <translation id="2374627437126809292">O Chromium usa o Google Maps para lhe dar direções e informações locais sobre moradas detetadas.</translation>
@@ -125,6 +132,7 @@ Experimente aguardar alguns minutos antes de mudar de conta. Se mudar de conta a
 <translation id="3728124580182886854">Associe o Chromium e outros serviços Google para personalização e outras finalidades</translation>
 <translation id="377649297473651452">Vista expandida do preenchimento automático do Chromium</translation>
 <translation id="3780779443901618967">Envia-lhe avisos sobre sites perigosos, mesmo aqueles que a Google desconhecia, ao analisar mais dados de sites do que a Proteção padrão. Pode optar por ignorar os avisos do Chromium.</translation>
+<translation id="3793136096560888222">Editar imagem com o Gemini no Chromium</translation>
 <translation id="3805899903892079518">O Chromium não tem acesso aos seus vídeos ou fotos. Ative o acesso nas Definições do iOS &gt; Privacidade &gt; Fotos.</translation>
 <translation id="3816686541346279443">O Chromium vai oferecer a opção de guardar a sua palavra-passe.</translation>
 <translation id="3827545470516145620">Vai obter a proteção de segurança padrão neste dispositivo</translation>
@@ -292,7 +300,6 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="7554983317097061001">Sugestão do Chromium: mova o Chromium para a dock</translation>
 <translation id="7576863740961052505">Faça a gestão das definições do Chromium</translation>
 <translation id="7674213385180944843">Abra Definições &gt; Privacidade &gt; Câmara &gt; Chromium e ative a câmara.</translation>
-<translation id="7685160423563372998">Criar imagem com o Gemini no Chromium</translation>
 <translation id="7733418656985455268">Sugestão do Chromium: pesquise com o Lens</translation>
 <translation id="7747820849741499258">Pesquisar no Chromium</translation>
 <translation id="7753923083404296545">Aberto na Navegação anónima do Chromium</translation>

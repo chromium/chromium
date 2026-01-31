@@ -21,7 +21,6 @@
 #include "base/notreached.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/strings/stringprintf.h"
-#include "base/types/cxx23_to_underlying.h"
 
 namespace base {
 

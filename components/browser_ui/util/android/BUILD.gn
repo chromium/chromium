@@ -11,6 +11,7 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/util/BitmapCache.java",
     "java/src/org/chromium/components/browser_ui/util/BrowserControlsVisibilityDelegate.java",
     "java/src/org/chromium/components/browser_ui/util/BrowserUiUtilsCachedFlags.java",
+    "java/src/org/chromium/components/browser_ui/util/ChromeItemPickerExtras.java",
     "java/src/org/chromium/components/browser_ui/util/ComposedBrowserControlsVisibilityDelegate.java",
     "java/src/org/chromium/components/browser_ui/util/ConversionUtils.java",
     "java/src/org/chromium/components/browser_ui/util/DimensionCompat.java",
@@ -76,6 +77,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/components/browser_ui/util/BitmapCacheTest.java",
     "java/src/org/chromium/components/browser_ui/util/ComposedBrowserControlsVisibilityDelegateTest.java",
     "java/src/org/chromium/components/browser_ui/util/DimensionCompatUnitTest.java",
+    "java/src/org/chromium/components/browser_ui/util/DownloadUtilsTest.java",
     "java/src/org/chromium/components/browser_ui/util/TimeTextResolverUnitTest.java",
   ]
   deps = [
@@ -85,9 +87,12 @@ robolectric_library("junit") {
     "//base:base_junit_test_support",
     "//base/test:test_support_java",
     "//cc:cc_java",
+    "//components/embedder_support/android:util_java",
+    "//components/url_formatter/android:url_formatter_java",
     "//content/public/android:content_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
+    "//url:gurl_java",
   ]
 }
 

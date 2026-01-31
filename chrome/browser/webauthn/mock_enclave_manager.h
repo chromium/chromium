@@ -18,9 +18,9 @@ class MockEnclaveManager : public EnclaveManagerInterface {
   MockEnclaveManager& operator=(const MockEnclaveManager&) = delete;
 
   MOCK_METHOD(void, Unenroll, (EnclaveManagerInterface::Callback), (override));
-  MOCK_METHOD(bool, is_registered, (), (const override));
-  MOCK_METHOD(bool, is_loaded, (), (const override));
-  MOCK_METHOD(bool, is_ready, (), (const override));
+  MOCK_METHOD(bool, IsRegistered, (), (const override));
+  MOCK_METHOD(bool, IsLoaded, (), (const override));
+  MOCK_METHOD(bool, IsReady, (), (const override));
   MOCK_METHOD(void,
               CheckGpmPinAvailability,
               (EnclaveManagerInterface::GpmPinAvailabilityCallback),

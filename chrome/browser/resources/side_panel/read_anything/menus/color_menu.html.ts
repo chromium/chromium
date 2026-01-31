@@ -15,6 +15,7 @@ export function getHtml(this: ColorMenuElement) {
     id="menu"
     label="$i18n{themeTitle}"
     .menuItems="${this.options_}"
+    .nonModal="${this.nonModal}"
     event-name="${ToolbarEvent.THEME}"
     current-selected-index="${this.restoredThemeIndex_()}"
     @theme-change="${this.onThemeChange_}">

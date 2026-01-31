@@ -9,16 +9,17 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
- * Holds a Pref's `value`, the time of its last observed change,
- * and the Sync Cache GUID of the source device.
+ * Holds a Pref's `value`, the time of its last observed change, and the Sync Cache GUID of the
+ * source device.
  *
  * @param <T> The type of the preference value.
  */
 @NullMarked
 @JNINamespace("sync_preferences")
-public class TimestampedPrefValue<T> {
+public class TimestampedPrefValue<T extends @Nullable Object> {
     private final T mValue;
     private final long mLastObservedChangeTimeMillis;
     private final String mDeviceSyncCacheGuid;
@@ -66,5 +67,12 @@ public class TimestampedPrefValue<T> {
         long time,
         @JniType("std::string") String deviceSyncCacheGuid) {
         return new TimestampedPrefValue<>(s, time, deviceSyncCacheGuid);
+    }
+
+    @CalledByNative
+    public static TimestampedPrefValue<@Nullable Void> createNullPrefValue(
+            long time, @JniType("std::string") String deviceSyncCacheGuid) {
+        return new TimestampedPrefValue<@Nullable Void>(
+                /* value= */ null, time, deviceSyncCacheGuid);
     }
 }

@@ -33,6 +33,7 @@ static_library("boca") {
     "//chrome/browser/ash/settings",
     "//chrome/browser/device_identity",
     "//chrome/browser/feedback",
+    "//chrome/browser/gcm",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/signin",
     "//chromeos/ash/components/boca",

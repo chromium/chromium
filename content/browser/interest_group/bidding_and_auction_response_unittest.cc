@@ -229,70 +229,70 @@ BiddingAndAuctionResponse CreateExpectedValidResponse() {
   return response;
 }
 
-base::Value::Dict CreateValidResponseDict() {
-  return base::Value::Dict()
+base::DictValue CreateValidResponseDict() {
+  return base::DictValue()
       .Set("isChaff", false)
       .Set("adRenderURL", kAdURL)
-      .Set("components", base::Value(base::Value::List().Append(
+      .Set("components", base::Value(base::ListValue().Append(
                              "https://example.com/component")))
       .Set("interestGroupName", "name")
       .Set("interestGroupOwner", kOwnerOrigin)
       .Set("biddingGroups",
-           base::Value(base::Value::Dict().Set(
+           base::Value(base::DictValue().Set(
                kOwnerOrigin,
-               base::Value(base::Value::List().Append(0).Append(1)))));
+               base::Value(base::ListValue().Append(0).Append(1)))));
 }
 
-base::Value::List CreateBasicContributions() {
+base::ListValue CreateBasicContributions() {
   std::vector<uint8_t> bucket_byte_string = base::Value::BlobStorage(
       {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
        0x00, 0x00, 0x00, 0x01});
-  return base::Value::List().Append(
-      base::Value::Dict()
+  return base::ListValue().Append(
+      base::DictValue()
           .Set("bucket", base::Value(bucket_byte_string))
           .Set("value", 123));
 }
 
-base::Value::List CreateBasicEventContributions(
+base::ListValue CreateBasicEventContributions(
     const std::string& event = "reserved.win") {
-  return base::Value::List().Append(
-      base::Value::Dict()
+  return base::ListValue().Append(
+      base::DictValue()
           .Set("event", event)
           .Set("contributions", CreateBasicContributions()));
 }
 
-base::Value::Dict CreateResponseDictWithPAggResponse(
-    base::Value::List contributions,
+base::DictValue CreateResponseDictWithPAggResponse(
+    base::ListValue contributions,
     const std::optional<std::string>& event,
     bool component_win) {
-  base::Value::Dict event_contribution;
+  base::DictValue event_contribution;
   if (event.has_value()) {
     event_contribution.Set("event", *event);
   }
   event_contribution.Set("contributions", std::move(contributions));
 
-  base::Value::List event_contributions;
+  base::ListValue event_contributions;
   event_contributions.Append(std::move(event_contribution));
 
   return CreateValidResponseDict().Set(
       "paggResponse",
-      base::Value::List().Append(
-          base::Value::Dict()
+      base::ListValue().Append(
+          base::DictValue()
               .Set("reportingOrigin", kOwnerOrigin)
               .Set("igContributions",
-                   base::Value::List().Append(
-                       base::Value::Dict()
+                   base::ListValue().Append(
+                       base::DictValue()
                            .Set("componentWin", component_win)
                            .Set("igIndex", 1)
                            .Set("eventContributions",
                                 std::move(event_contributions))))));
 }
 
-base::Value::Dict CreateResponseDictWithDebugReports(
+base::DictValue CreateResponseDictWithDebugReports(
     std::optional<bool> maybe_component_win,
     std::optional<bool> maybe_is_seller_report,
     std::optional<bool> maybe_is_win_report) {
-  base::Value::Dict report;
+  base::DictValue report;
   report.Set("url", kDebugReportingURL);
   if (maybe_component_win.has_value()) {
     report.Set("componentWin", *maybe_component_win);
@@ -306,10 +306,10 @@ base::Value::Dict CreateResponseDictWithDebugReports(
 
   return CreateValidResponseDict().Set(
       "debugReports",
-      base::Value::List().Append(
-          base::Value::Dict()
+      base::ListValue().Append(
+          base::DictValue()
               .Set("adTechOrigin", kOwnerOrigin)
-              .Set("reports", base::Value::List().Append(std::move(report)))));
+              .Set("reports", base::ListValue().Append(std::move(report)))));
 }
 using ReservedNonErrorEventType =
     auction_worklet::mojom::ReservedNonErrorEventType;
@@ -651,8 +651,8 @@ MATCHER_P(EqualsBiddingAndAuctionResponse,
 
 TEST(BiddingAndAuctionResponseTest, ParseFails) {
   static const base::Value kTestCases[] = {
-      base::Value(1),                                      // Not a dict
-      base::Value(base::Value::Dict().Set("isChaff", 1)),  // wrong type
+      base::Value(1),                                    // Not a dict
+      base::Value(base::DictValue().Set("isChaff", 1)),  // wrong type
       base::Value(
           CreateValidResponseDict().Set("adRenderURL", 1)),  // not a string
       base::Value(
@@ -661,10 +661,10 @@ TEST(BiddingAndAuctionResponseTest, ParseFails) {
           CreateValidResponseDict().Set("adRenderURL", "not a valid URL")),
       base::Value(CreateValidResponseDict().Set("components", "not a list")),
       base::Value(CreateValidResponseDict().Set(
-          "components", base::Value(base::Value::List().Append(5)))),
+          "components", base::Value(base::ListValue().Append(5)))),
       base::Value(CreateValidResponseDict().Set(
           "components",
-          base::Value(base::Value::List().Append("not a valid URL")))),
+          base::Value(base::ListValue().Append("not a valid URL")))),
       base::Value(CreateValidResponseDict().Set("interestGroupOwner", 2)),
 
       base::Value(CreateValidResponseDict().Set("interestGroupOwner",
@@ -673,13 +673,13 @@ TEST(BiddingAndAuctionResponseTest, ParseFails) {
       base::Value(CreateValidResponseDict().Set("biddingGroups", "not a dict")),
       base::Value(CreateValidResponseDict().Set(
           "biddingGroups",
-          base::Value(base::Value::Dict().Set(
-              "not an owner", base::Value(base::Value::List().Append(0)))))),
+          base::Value(base::DictValue().Set(
+              "not an owner", base::Value(base::ListValue().Append(0)))))),
       base::Value(CreateValidResponseDict().Set(
-          "biddingGroups", base::Value(base::Value::Dict().Set(
-                               kOwnerOrigin,
-                               base::Value(base::Value::List().Append(
-                                   1000)))))),  // out of bounds
+          "biddingGroups",
+          base::Value(base::DictValue().Set(
+              kOwnerOrigin,
+              base::Value(base::ListValue().Append(1000)))))),  // out of bounds
       base::Value(CreateValidResponseDict().Set("topLevelSeller",
                                                 "not a valid Origin")),
   };
@@ -704,7 +704,7 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
     BiddingAndAuctionResponse output;
   } kTestCases[] = {
       {
-          base::Value(base::Value::Dict().Set("isChaff", true)),
+          base::Value(base::DictValue().Set("isChaff", true)),
           []() {
             BiddingAndAuctionResponse response;
             response.is_chaff = true;
@@ -712,9 +712,9 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
           }(),
       },
       {
-          base::Value(base::Value::Dict().Set(
-              "error", base::Value(base::Value::Dict().Set("message",
-                                                           "error message")))),
+          base::Value(base::DictValue().Set(
+              "error",
+              base::Value(base::DictValue().Set("message", "error message")))),
           []() {
             BiddingAndAuctionResponse response;
             response.is_chaff = true;
@@ -723,10 +723,10 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
           }(),
       },
       {
-          base::Value(base::Value::Dict()),
+          base::Value(base::DictValue()),
           {},
       },
-      {base::Value(base::Value::Dict().Set("isChaff", false)), {}},
+      {base::Value(base::DictValue().Set("isChaff", false)), {}},
       {
           base::Value(CreateValidResponseDict()),
           CreateExpectedValidResponse(),
@@ -762,7 +762,7 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
           CreateExpectedValidResponse(),
       },
       {base::Value(CreateValidResponseDict().Set(
-           "error", base::Value(base::Value::Dict().Set("message", 1)))),
+           "error", base::Value(base::DictValue().Set("message", 1)))),
        []() {
          BiddingAndAuctionResponse response;
          response.is_chaff = true;
@@ -771,8 +771,8 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
        }()},
       {
           base::Value(CreateValidResponseDict().Set(
-              "error", base::Value(base::Value::Dict().Set("message",
-                                                           "error message")))),
+              "error",
+              base::Value(base::DictValue().Set("message", "error message")))),
           []() {
             BiddingAndAuctionResponse response;
             response.is_chaff = true;
@@ -787,15 +787,15 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
       },
       {
           base::Value(CreateValidResponseDict().Set(
-              "winReportingURLs", base::Value(base::Value::Dict().Set(
+              "winReportingURLs", base::Value(base::DictValue().Set(
                                       "buyerReportingURLs", "not a dict")))),
           CreateExpectedValidResponse(),  // ignore the error
       },
       {
           base::Value(CreateValidResponseDict().Set(
               "winReportingURLs",
-              base::Value(base::Value::Dict().Set(
-                  "buyerReportingURLs", base::Value(base::Value::Dict().Set(
+              base::Value(base::DictValue().Set(
+                  "buyerReportingURLs", base::Value(base::DictValue().Set(
                                             "reportingURL", "not a URL")))))),
           []() {
             BiddingAndAuctionResponse response = CreateExpectedValidResponse();
@@ -807,8 +807,8 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
       {
           base::Value(CreateValidResponseDict().Set(
               "winReportingURLs",
-              base::Value(base::Value::Dict().Set(
-                  "buyerReportingURLs", base::Value(base::Value::Dict().Set(
+              base::Value(base::DictValue().Set(
+                  "buyerReportingURLs", base::Value(base::DictValue().Set(
                                             "reportingURL", kUntrustedURL)))))),
           []() {
             BiddingAndAuctionResponse response = CreateExpectedValidResponse();
@@ -820,8 +820,8 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
       {
           base::Value(CreateValidResponseDict().Set(
               "winReportingURLs",
-              base::Value(base::Value::Dict().Set(
-                  "buyerReportingURLs", base::Value(base::Value::Dict().Set(
+              base::Value(base::DictValue().Set(
+                  "buyerReportingURLs", base::Value(base::DictValue().Set(
                                             "reportingURL", kReportingURL)))))),
           []() {
             BiddingAndAuctionResponse response = CreateExpectedValidResponse();
@@ -833,10 +833,10 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
       {
           base::Value(CreateValidResponseDict().Set(
               "winReportingURLs",
-              base::Value(base::Value::Dict().Set(
+              base::Value(base::DictValue().Set(
                   "buyerReportingURLs",
-                  base::Value(base::Value::Dict().Set(
-                      "interactionReportingURLs", "not a dict")))))),
+                  base::Value(base::DictValue().Set("interactionReportingURLs",
+                                                    "not a dict")))))),
           []() {
             BiddingAndAuctionResponse response = CreateExpectedValidResponse();
             response.buyer_reporting.emplace();
@@ -847,11 +847,11 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
       {
           base::Value(CreateValidResponseDict().Set(
               "winReportingURLs",
-              base::Value(base::Value::Dict().Set(
+              base::Value(base::DictValue().Set(
                   "buyerReportingURLs",
-                  base::Value(base::Value::Dict().Set(
+                  base::Value(base::DictValue().Set(
                       "interactionReportingURLs",
-                      base::Value(base::Value::Dict().Set("click", 5)))))))),
+                      base::Value(base::DictValue().Set("click", 5)))))))),
           []() {
             BiddingAndAuctionResponse response = CreateExpectedValidResponse();
             response.buyer_reporting.emplace();
@@ -862,10 +862,10 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
       {
           base::Value(CreateValidResponseDict().Set(
               "winReportingURLs",
-              base::Value(base::Value::Dict().Set(
-                  "buyerReportingURLs", base::Value(base::Value::Dict().Set(
+              base::Value(base::DictValue().Set(
+                  "buyerReportingURLs", base::Value(base::DictValue().Set(
                                             "interactionReportingURLs",
-                                            base::Value(base::Value::Dict().Set(
+                                            base::Value(base::DictValue().Set(
                                                 "click", kUntrustedURL)))))))),
           []() {
             BiddingAndAuctionResponse response = CreateExpectedValidResponse();
@@ -877,10 +877,10 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
       {
           base::Value(CreateValidResponseDict().Set(
               "winReportingURLs",
-              base::Value(base::Value::Dict().Set(
-                  "buyerReportingURLs", base::Value(base::Value::Dict().Set(
+              base::Value(base::DictValue().Set(
+                  "buyerReportingURLs", base::Value(base::DictValue().Set(
                                             "interactionReportingURLs",
-                                            base::Value(base::Value::Dict().Set(
+                                            base::Value(base::DictValue().Set(
                                                 "click", kReportingURL)))))))),
           []() {
             BiddingAndAuctionResponse response = CreateExpectedValidResponse();
@@ -893,15 +893,15 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
       {
           base::Value(CreateValidResponseDict().Set(
               "winReportingURLs",
-              base::Value(base::Value::Dict().Set("topLevelSellerReportingURLs",
-                                                  "not a dict")))),
+              base::Value(base::DictValue().Set("topLevelSellerReportingURLs",
+                                                "not a dict")))),
           CreateExpectedValidResponse(),  // ignore the error
       },
       {
           base::Value(CreateValidResponseDict().Set(
-              "winReportingURLs", base::Value(base::Value::Dict().Set(
+              "winReportingURLs", base::Value(base::DictValue().Set(
                                       "topLevelSellerReportingURLs",
-                                      base::Value(base::Value::Dict().Set(
+                                      base::Value(base::DictValue().Set(
                                           "reportingURL", "not a URL")))))),
           []() {
             BiddingAndAuctionResponse response = CreateExpectedValidResponse();
@@ -912,9 +912,9 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
       },
       {
           base::Value(CreateValidResponseDict().Set(
-              "winReportingURLs", base::Value(base::Value::Dict().Set(
+              "winReportingURLs", base::Value(base::DictValue().Set(
                                       "topLevelSellerReportingURLs",
-                                      base::Value(base::Value::Dict().Set(
+                                      base::Value(base::DictValue().Set(
                                           "reportingURL", kUntrustedURL)))))),
           []() {
             BiddingAndAuctionResponse response = CreateExpectedValidResponse();
@@ -925,9 +925,9 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
       },
       {
           base::Value(CreateValidResponseDict().Set(
-              "winReportingURLs", base::Value(base::Value::Dict().Set(
+              "winReportingURLs", base::Value(base::DictValue().Set(
                                       "topLevelSellerReportingURLs",
-                                      base::Value(base::Value::Dict().Set(
+                                      base::Value(base::DictValue().Set(
                                           "reportingURL", kReportingURL)))))),
           []() {
             BiddingAndAuctionResponse response = CreateExpectedValidResponse();
@@ -940,10 +940,10 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
       {
           base::Value(CreateValidResponseDict().Set(
               "winReportingURLs",
-              base::Value(base::Value::Dict().Set(
+              base::Value(base::DictValue().Set(
                   "topLevelSellerReportingURLs",
-                  base::Value(base::Value::Dict().Set(
-                      "interactionReportingURLs", "not a dict")))))),
+                  base::Value(base::DictValue().Set("interactionReportingURLs",
+                                                    "not a dict")))))),
           []() {
             BiddingAndAuctionResponse response = CreateExpectedValidResponse();
             response.top_level_seller_reporting.emplace();
@@ -954,11 +954,11 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
       {
           base::Value(CreateValidResponseDict().Set(
               "winReportingURLs",
-              base::Value(base::Value::Dict().Set(
+              base::Value(base::DictValue().Set(
                   "topLevelSellerReportingURLs",
-                  base::Value(base::Value::Dict().Set(
+                  base::Value(base::DictValue().Set(
                       "interactionReportingURLs",
-                      base::Value(base::Value::Dict().Set("click", 5)))))))),
+                      base::Value(base::DictValue().Set("click", 5)))))))),
           []() {
             BiddingAndAuctionResponse response = CreateExpectedValidResponse();
             response.top_level_seller_reporting.emplace();
@@ -968,11 +968,11 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
       },
       {
           base::Value(CreateValidResponseDict().Set(
-              "winReportingURLs", base::Value(base::Value::Dict().Set(
+              "winReportingURLs", base::Value(base::DictValue().Set(
                                       "topLevelSellerReportingURLs",
-                                      base::Value(base::Value::Dict().Set(
+                                      base::Value(base::DictValue().Set(
                                           "interactionReportingURLs",
-                                          base::Value(base::Value::Dict().Set(
+                                          base::Value(base::DictValue().Set(
                                               "click", kUntrustedURL)))))))),
           []() {
             BiddingAndAuctionResponse response = CreateExpectedValidResponse();
@@ -983,11 +983,11 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
       },
       {
           base::Value(CreateValidResponseDict().Set(
-              "winReportingURLs", base::Value(base::Value::Dict().Set(
+              "winReportingURLs", base::Value(base::DictValue().Set(
                                       "topLevelSellerReportingURLs",
-                                      base::Value(base::Value::Dict().Set(
+                                      base::Value(base::DictValue().Set(
                                           "interactionReportingURLs",
-                                          base::Value(base::Value::Dict().Set(
+                                          base::Value(base::DictValue().Set(
                                               "click", kReportingURL)))))))),
           []() {
             BiddingAndAuctionResponse response = CreateExpectedValidResponse();
@@ -1000,15 +1000,15 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
       {
           base::Value(CreateValidResponseDict().Set(
               "winReportingURLs",
-              base::Value(base::Value::Dict().Set(
-                  "componentSellerReportingURLs", "not a dict")))),
+              base::Value(base::DictValue().Set("componentSellerReportingURLs",
+                                                "not a dict")))),
           CreateExpectedValidResponse(),  // ignore the error
       },
       {
           base::Value(CreateValidResponseDict().Set(
-              "winReportingURLs", base::Value(base::Value::Dict().Set(
+              "winReportingURLs", base::Value(base::DictValue().Set(
                                       "componentSellerReportingURLs",
-                                      base::Value(base::Value::Dict().Set(
+                                      base::Value(base::DictValue().Set(
                                           "reportingURL", "not a URL")))))),
           []() {
             BiddingAndAuctionResponse response = CreateExpectedValidResponse();
@@ -1019,9 +1019,9 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
       },
       {
           base::Value(CreateValidResponseDict().Set(
-              "winReportingURLs", base::Value(base::Value::Dict().Set(
+              "winReportingURLs", base::Value(base::DictValue().Set(
                                       "componentSellerReportingURLs",
-                                      base::Value(base::Value::Dict().Set(
+                                      base::Value(base::DictValue().Set(
                                           "reportingURL", kUntrustedURL)))))),
           []() {
             BiddingAndAuctionResponse response = CreateExpectedValidResponse();
@@ -1032,9 +1032,9 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
       },
       {
           base::Value(CreateValidResponseDict().Set(
-              "winReportingURLs", base::Value(base::Value::Dict().Set(
+              "winReportingURLs", base::Value(base::DictValue().Set(
                                       "componentSellerReportingURLs",
-                                      base::Value(base::Value::Dict().Set(
+                                      base::Value(base::DictValue().Set(
                                           "reportingURL", kReportingURL)))))),
           []() {
             BiddingAndAuctionResponse response = CreateExpectedValidResponse();
@@ -1047,10 +1047,10 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
       {
           base::Value(CreateValidResponseDict().Set(
               "winReportingURLs",
-              base::Value(base::Value::Dict().Set(
+              base::Value(base::DictValue().Set(
                   "componentSellerReportingURLs",
-                  base::Value(base::Value::Dict().Set(
-                      "interactionReportingURLs", "not a dict")))))),
+                  base::Value(base::DictValue().Set("interactionReportingURLs",
+                                                    "not a dict")))))),
           []() {
             BiddingAndAuctionResponse response = CreateExpectedValidResponse();
             response.component_seller_reporting.emplace();
@@ -1061,11 +1061,11 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
       {
           base::Value(CreateValidResponseDict().Set(
               "winReportingURLs",
-              base::Value(base::Value::Dict().Set(
+              base::Value(base::DictValue().Set(
                   "componentSellerReportingURLs",
-                  base::Value(base::Value::Dict().Set(
+                  base::Value(base::DictValue().Set(
                       "interactionReportingURLs",
-                      base::Value(base::Value::Dict().Set("click", 5)))))))),
+                      base::Value(base::DictValue().Set("click", 5)))))))),
           []() {
             BiddingAndAuctionResponse response = CreateExpectedValidResponse();
             response.component_seller_reporting.emplace();
@@ -1075,11 +1075,11 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
       },
       {
           base::Value(CreateValidResponseDict().Set(
-              "winReportingURLs", base::Value(base::Value::Dict().Set(
+              "winReportingURLs", base::Value(base::DictValue().Set(
                                       "componentSellerReportingURLs",
-                                      base::Value(base::Value::Dict().Set(
+                                      base::Value(base::DictValue().Set(
                                           "interactionReportingURLs",
-                                          base::Value(base::Value::Dict().Set(
+                                          base::Value(base::DictValue().Set(
                                               "click", kUntrustedURL)))))))),
           []() {
             BiddingAndAuctionResponse response = CreateExpectedValidResponse();
@@ -1090,11 +1090,11 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
       },
       {
           base::Value(CreateValidResponseDict().Set(
-              "winReportingURLs", base::Value(base::Value::Dict().Set(
+              "winReportingURLs", base::Value(base::DictValue().Set(
                                       "componentSellerReportingURLs",
-                                      base::Value(base::Value::Dict().Set(
+                                      base::Value(base::DictValue().Set(
                                           "interactionReportingURLs",
-                                          base::Value(base::Value::Dict().Set(
+                                          base::Value(base::DictValue().Set(
                                               "click", kReportingURL)))))))),
           []() {
             BiddingAndAuctionResponse response = CreateExpectedValidResponse();
@@ -1145,43 +1145,42 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
       },
       {
           base::Value(CreateValidResponseDict().Set(
-              "updateGroups",
-              base::Value(base::Value::Dict().Set(
-                  "invalid", base::Value(base::Value::List()))))),
+              "updateGroups", base::Value(base::DictValue().Set(
+                                  "invalid", base::Value(base::ListValue()))))),
           CreateExpectedValidResponse(),  // ignore error
       },
       {
           base::Value(CreateValidResponseDict().Set(
               "updateGroups",
-              base::Value(base::Value::Dict().Set(
-                  kOwnerOrigin, base::Value(base::Value::List()))))),
+              base::Value(base::DictValue().Set(
+                  kOwnerOrigin, base::Value(base::ListValue()))))),
           CreateExpectedValidResponse(),
       },
       {
           base::Value(CreateValidResponseDict().Set(
               "updateGroups",
-              base::Value(base::Value::Dict().Set(
+              base::Value(base::DictValue().Set(
                   kOwnerOrigin,
-                  base::Value(base::Value::List().Append(
-                      base::Value(base::Value::Dict().Set("index", 0)))))))),
+                  base::Value(base::ListValue().Append(
+                      base::Value(base::DictValue().Set("index", 0)))))))),
           CreateExpectedValidResponse(),  // ignore error
       },
       {
           base::Value(CreateValidResponseDict().Set(
               "updateGroups",
-              base::Value(base::Value::Dict().Set(
+              base::Value(base::DictValue().Set(
                   kOwnerOrigin,
-                  base::Value(base::Value::List().Append(base::Value(
-                      base::Value::Dict().Set("updateIfOlderThanMs", 0)))))))),
+                  base::Value(base::ListValue().Append(base::Value(
+                      base::DictValue().Set("updateIfOlderThanMs", 0)))))))),
           CreateExpectedValidResponse(),  // ignore error
       },
       {
           base::Value(CreateValidResponseDict().Set(
               "updateGroups",
-              base::Value(base::Value::Dict().Set(
+              base::Value(base::DictValue().Set(
                   kOwnerOrigin,
-                  base::Value(base::Value::List().Append(
-                      base::Value(base::Value::Dict()
+                  base::Value(base::ListValue().Append(
+                      base::Value(base::DictValue()
                                       .Set("index", "invalid")
                                       .Set("updateIfOlderThanMs", 0)))))))),
           CreateExpectedValidResponse(),  // ignore error
@@ -1189,10 +1188,10 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
       {
           base::Value(CreateValidResponseDict().Set(
               "updateGroups",
-              base::Value(base::Value::Dict().Set(
+              base::Value(base::DictValue().Set(
                   kOwnerOrigin,
-                  base::Value(base::Value::List().Append(base::Value(
-                      base::Value::Dict()
+                  base::Value(base::ListValue().Append(base::Value(
+                      base::DictValue()
                           .Set("index", 0)
                           .Set("updateIfOlderThanMs", "invalid")))))))),
           CreateExpectedValidResponse(),  // ignore error
@@ -1200,10 +1199,10 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
       {
           base::Value(CreateValidResponseDict().Set(
               "updateGroups",
-              base::Value(base::Value::Dict().Set(
+              base::Value(base::DictValue().Set(
                   kOwnerOrigin,
-                  base::Value(base::Value::List().Append(
-                      base::Value(base::Value::Dict()
+                  base::Value(base::ListValue().Append(
+                      base::Value(base::DictValue()
                                       .Set("index", -1)
                                       .Set("updateIfOlderThanMs", 0)))))))),
           CreateExpectedValidResponse(),  // ignore error
@@ -1211,10 +1210,10 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
       {
           base::Value(CreateValidResponseDict().Set(
               "updateGroups",
-              base::Value(base::Value::Dict().Set(
+              base::Value(base::DictValue().Set(
                   kOwnerOrigin,
-                  base::Value(base::Value::List().Append(
-                      base::Value(base::Value::Dict()
+                  base::Value(base::ListValue().Append(
+                      base::Value(base::DictValue()
                                       .Set("index", 10)
                                       .Set("updateIfOlderThanMs", 0)))))))),
           CreateExpectedValidResponse(),  // ignore error
@@ -1222,10 +1221,10 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
       {
           base::Value(CreateValidResponseDict().Set(
               "updateGroups",
-              base::Value(base::Value::Dict().Set(
+              base::Value(base::DictValue().Set(
                   kOwnerOrigin,
-                  base::Value(base::Value::List().Append(
-                      base::Value(base::Value::Dict()
+                  base::Value(base::ListValue().Append(
+                      base::Value(base::DictValue()
                                       .Set("index", 0)
                                       .Set("updateIfOlderThanMs", 0)))))))),
           []() {
@@ -1254,7 +1253,7 @@ TEST(BiddingAndAuctionResponseTest, SelectedBuyerAndSellerReportingId) {
   scoped_feature_list.InitAndEnableFeature(
       blink::features::kFledgeAuctionDealSupport);
 
-  base::Value::Dict response = CreateValidResponseDict().Set(
+  base::DictValue response = CreateValidResponseDict().Set(
       "selectedBuyerAndSellerReportingId", "selectable");
   std::optional<BiddingAndAuctionResponse> result =
       BiddingAndAuctionResponse::TryParse(base::Value(response.Clone()),
@@ -1271,7 +1270,7 @@ TEST(BiddingAndAuctionResponseTest, DealsDisabled) {
   scoped_feature_list.InitAndDisableFeature(
       blink::features::kFledgeAuctionDealSupport);
 
-  base::Value::Dict response = CreateValidResponseDict().Set(
+  base::DictValue response = CreateValidResponseDict().Set(
       "selectedBuyerAndSellerReportingId", "selectable");
   std::optional<BiddingAndAuctionResponse> result =
       BiddingAndAuctionResponse::TryParse(base::Value(response.Clone()),
@@ -1318,7 +1317,7 @@ TEST(BiddingAndAuctionResponseTest, PrivateAggregationDisabled) {
   scoped_feature_list.InitAndDisableFeature(
       blink::features::kPrivateAggregationApi);
 
-  base::Value::Dict response = CreateResponseDictWithPAggResponse(
+  base::DictValue response = CreateResponseDictWithPAggResponse(
       CreateBasicContributions(), "reserved.win",
       /*component_win=*/true);
 
@@ -1342,7 +1341,7 @@ TEST(BiddingAndAuctionResponseTest, BAndAPrivateAggregationDisabled) {
         {{"enabled_in_fledge", "true"}}}},
       /*disabled_features=*/{features::kEnableBandAPrivateAggregation});
 
-  base::Value::Dict response = CreateResponseDictWithPAggResponse(
+  base::DictValue response = CreateResponseDictWithPAggResponse(
       CreateBasicContributions(), "reserved.win",
       /*component_win=*/true);
 
@@ -1363,7 +1362,7 @@ TEST(BiddingAndAuctionResponseTest, BAndASampleDebugReportsDisabled) {
   scoped_feature_list.InitAndDisableFeature(
       features::kEnableBandASampleDebugReports);
 
-  base::Value::Dict response = CreateResponseDictWithDebugReports(
+  base::DictValue response = CreateResponseDictWithDebugReports(
       /*maybe_component_win=*/false, /*maybe_is_seller_report=*/std::nullopt,
       /*maybe_is_win_report=*/false);
 
@@ -1397,7 +1396,7 @@ TEST(BiddingAndAuctionResponseTest, kAnonJoinCandidates) {
           // missing reportingIdHash
           base::Value(CreateValidResponseDict().Set(
               "kAnonWinnerJoinCandidates",
-              base::Value(base::Value::Dict().Set(
+              base::Value(base::DictValue().Set(
                   "adRenderURLHash", std::vector<uint8_t>{0x01, 0x02})))),
           CreateExpectedValidResponse(),
       },
@@ -1405,7 +1404,7 @@ TEST(BiddingAndAuctionResponseTest, kAnonJoinCandidates) {
           // missing adRenderURLHash
           base::Value(CreateValidResponseDict().Set(
               "kAnonWinnerJoinCandidates",
-              base::Value(base::Value::Dict().Set(
+              base::Value(base::DictValue().Set(
                   "reportingIdHash", std::vector<uint8_t>{0x04, 0x01})))),
           CreateExpectedValidResponse(),
       },
@@ -1413,7 +1412,7 @@ TEST(BiddingAndAuctionResponseTest, kAnonJoinCandidates) {
           // bad type for adRenderURLHash
           base::Value(CreateValidResponseDict().Set(
               "kAnonWinnerJoinCandidates",
-              base::Value(base::Value::Dict()
+              base::Value(base::DictValue()
                               .Set("adRenderURLHash", "Not a blob")
                               .Set("reportingIdHash",
                                    std::vector<uint8_t>{0x04, 0x01})))),
@@ -1424,7 +1423,7 @@ TEST(BiddingAndAuctionResponseTest, kAnonJoinCandidates) {
           base::Value(CreateValidResponseDict().Set(
               "kAnonWinnerJoinCandidates",
               base::Value(
-                  base::Value::Dict()
+                  base::DictValue()
                       .Set("adRenderURLHash", std::vector<uint8_t>{0x01, 0x02})
                       .Set("reportingIdHash", 5)))),
           CreateExpectedValidResponse(),
@@ -1434,7 +1433,7 @@ TEST(BiddingAndAuctionResponseTest, kAnonJoinCandidates) {
           base::Value(CreateValidResponseDict().Set(
               "kAnonWinnerJoinCandidates",
               base::Value(
-                  base::Value::Dict()
+                  base::DictValue()
                       .Set("adRenderURLHash", std::vector<uint8_t>{0x01, 0x02})
                       .Set("reportingIdHash",
                            std::vector<uint8_t>{0x04, 0x01})))),
@@ -1451,7 +1450,7 @@ TEST(BiddingAndAuctionResponseTest, kAnonJoinCandidates) {
           base::Value(CreateValidResponseDict().Set(
               "kAnonWinnerJoinCandidates",
               base::Value(
-                  base::Value::Dict()
+                  base::DictValue()
                       .Set("adRenderURLHash", std::vector<uint8_t>{0x01, 0x02})
                       .Set("reportingIdHash", std::vector<uint8_t>{0x04, 0x01})
                       .Set("adComponentRenderURLsHash", "Not a list")))),
@@ -1462,12 +1461,12 @@ TEST(BiddingAndAuctionResponseTest, kAnonJoinCandidates) {
           base::Value(CreateValidResponseDict().Set(
               "kAnonWinnerJoinCandidates",
               base::Value(
-                  base::Value::Dict()
+                  base::DictValue()
                       .Set("adRenderURLHash", std::vector<uint8_t>{0x01, 0x02})
                       .Set("reportingIdHash", std::vector<uint8_t>{0x04, 0x01})
                       .Set("adComponentRenderURLsHash",
                            base::Value(
-                               base::Value::List().Append("Not a blob")))))),
+                               base::ListValue().Append("Not a blob")))))),
           CreateExpectedValidResponse(),
       },
       {
@@ -1475,12 +1474,12 @@ TEST(BiddingAndAuctionResponseTest, kAnonJoinCandidates) {
           base::Value(CreateValidResponseDict().Set(
               "kAnonWinnerJoinCandidates",
               base::Value(
-                  base::Value::Dict()
+                  base::DictValue()
                       .Set("adRenderURLHash", std::vector<uint8_t>{0x01, 0x02})
                       .Set("reportingIdHash", std::vector<uint8_t>{0x04, 0x01})
                       .Set("adComponentRenderURLsHash",
                            base::Value(
-                               base::Value::List()
+                               base::ListValue()
                                    .Append(std::vector<uint8_t>{0x03, 0x04})
                                    .Append("Not a blob")))))),
           CreateExpectedValidResponse(),
@@ -1490,11 +1489,11 @@ TEST(BiddingAndAuctionResponseTest, kAnonJoinCandidates) {
           base::Value(CreateValidResponseDict().Set(
               "kAnonWinnerJoinCandidates",
               base::Value(
-                  base::Value::Dict()
+                  base::DictValue()
                       .Set("adRenderURLHash", std::vector<uint8_t>{0x01, 0x02})
                       .Set("reportingIdHash", std::vector<uint8_t>{0x04, 0x01})
                       .Set("adComponentRenderURLsHash",
-                           base::Value(base::Value::List().Append(
+                           base::Value(base::ListValue().Append(
                                std::vector<uint8_t>{0x03, 0x04})))))),
           []() {
             auto response = CreateExpectedValidResponse();
@@ -1512,12 +1511,12 @@ TEST(BiddingAndAuctionResponseTest, kAnonJoinCandidates) {
           base::Value(CreateValidResponseDict().Set(
               "kAnonWinnerJoinCandidates",
               base::Value(
-                  base::Value::Dict()
+                  base::DictValue()
                       .Set("adRenderURLHash", std::vector<uint8_t>{0x01, 0x02})
                       .Set("reportingIdHash", std::vector<uint8_t>{0x04, 0x01})
                       .Set("adComponentRenderURLsHash",
                            base::Value(
-                               base::Value::List()
+                               base::ListValue()
                                    .Append(std::vector<uint8_t>{0x03, 0x04})
                                    .Append(
                                        std::vector<uint8_t>{0x05, 0x06})))))),
@@ -1551,10 +1550,10 @@ TEST(BiddingAndAuctionResponseTest, kAnonGhostWinners) {
   scoped_feature_list.InitAndEnableFeature(
       features::kEnableBandAKAnonEnforcement);
 
-  const base::Value::Dict kValidMinimalkAnonGhostWinnersDict =
-      base::Value::Dict()
+  const base::DictValue kValidMinimalkAnonGhostWinnersDict =
+      base::DictValue()
           .Set("kAnonJoinCandidates",
-               base::Value::Dict()
+               base::DictValue()
                    .Set("adRenderURLHash", std::vector<uint8_t>{0x07, 0x08})
                    .Set("reportingIdHash", std::vector<uint8_t>{0x09, 0x0a}))
           .Set("interestGroupIndex", 0)
@@ -1581,21 +1580,21 @@ TEST(BiddingAndAuctionResponseTest, kAnonGhostWinners) {
       {
           // Empty list
           base::Value(CreateValidResponseDict().Set(
-              "kAnonGhostWinners", base::Value(base::Value::List()))),
+              "kAnonGhostWinners", base::Value(base::ListValue()))),
           CreateExpectedValidResponse(),
       },
       {
           // Empty dict in list
           base::Value(CreateValidResponseDict().Set(
               "kAnonGhostWinners",
-              base::Value(base::Value::List().Append(base::Value::Dict())))),
+              base::Value(base::ListValue().Append(base::DictValue())))),
           CreateExpectedValidResponse(),
       },
       {
           // Missing kAnonJoinCandidates
           base::Value(CreateValidResponseDict().Set(
-              "kAnonGhostWinners", base::Value(base::Value::List().Append(
-                                       base::Value::Dict()
+              "kAnonGhostWinners", base::Value(base::ListValue().Append(
+                                       base::DictValue()
                                            .Set("interestGroupIndex", 0)
                                            .Set("owner", kOwnerOrigin))))),
           CreateExpectedValidResponse(),
@@ -1604,10 +1603,10 @@ TEST(BiddingAndAuctionResponseTest, kAnonGhostWinners) {
           // Invalid kAnonJoinCandidates
           base::Value(CreateValidResponseDict().Set(
               "kAnonGhostWinners",
-              base::Value(base::Value::List().Append(
-                  base::Value::Dict()
+              base::Value(base::ListValue().Append(
+                  base::DictValue()
                       .Set("kAnonJoinCandidates",
-                           base::Value::Dict()
+                           base::DictValue()
                                .Set("adRenderURLHash", "Not a blob")
                                .Set("reportingIdHash",
                                     std::vector<uint8_t>{0x09, 0x0a}))
@@ -1619,10 +1618,10 @@ TEST(BiddingAndAuctionResponseTest, kAnonGhostWinners) {
           // Invalid type for interestGroupIndex
           base::Value(CreateValidResponseDict().Set(
               "kAnonGhostWinners",
-              base::Value(base::Value::List().Append(
-                  base::Value::Dict()
+              base::Value(base::ListValue().Append(
+                  base::DictValue()
                       .Set("kAnonJoinCandidates",
-                           base::Value::Dict()
+                           base::DictValue()
                                .Set("adRenderURLHash",
                                     std::vector<uint8_t>{0x07, 0x08})
                                .Set("reportingIdHash",
@@ -1635,10 +1634,10 @@ TEST(BiddingAndAuctionResponseTest, kAnonGhostWinners) {
           // Out of range for interestGroupIndex (too small)
           base::Value(CreateValidResponseDict().Set(
               "kAnonGhostWinners",
-              base::Value(base::Value::List().Append(
-                  base::Value::Dict()
+              base::Value(base::ListValue().Append(
+                  base::DictValue()
                       .Set("kAnonJoinCandidates",
-                           base::Value::Dict()
+                           base::DictValue()
                                .Set("adRenderURLHash",
                                     std::vector<uint8_t>{0x07, 0x08})
                                .Set("reportingIdHash",
@@ -1651,10 +1650,10 @@ TEST(BiddingAndAuctionResponseTest, kAnonGhostWinners) {
           // Out of range for interestGroupIndex (too big)
           base::Value(CreateValidResponseDict().Set(
               "kAnonGhostWinners",
-              base::Value(base::Value::List().Append(
-                  base::Value::Dict()
+              base::Value(base::ListValue().Append(
+                  base::DictValue()
                       .Set("kAnonJoinCandidates",
-                           base::Value::Dict()
+                           base::DictValue()
                                .Set("adRenderURLHash",
                                     std::vector<uint8_t>{0x07, 0x08})
                                .Set("reportingIdHash",
@@ -1667,10 +1666,10 @@ TEST(BiddingAndAuctionResponseTest, kAnonGhostWinners) {
           // Owner wrong type
           base::Value(CreateValidResponseDict().Set(
               "kAnonGhostWinners",
-              base::Value(base::Value::List().Append(
-                  base::Value::Dict()
+              base::Value(base::ListValue().Append(
+                  base::DictValue()
                       .Set("kAnonJoinCandidates",
-                           base::Value::Dict()
+                           base::DictValue()
                                .Set("adRenderURLHash",
                                     std::vector<uint8_t>{0x07, 0x08})
                                .Set("reportingIdHash",
@@ -1683,10 +1682,10 @@ TEST(BiddingAndAuctionResponseTest, kAnonGhostWinners) {
           // Owner not secure
           base::Value(CreateValidResponseDict().Set(
               "kAnonGhostWinners",
-              base::Value(base::Value::List().Append(
-                  base::Value::Dict()
+              base::Value(base::ListValue().Append(
+                  base::DictValue()
                       .Set("kAnonJoinCandidates",
-                           base::Value::Dict()
+                           base::DictValue()
                                .Set("adRenderURLHash",
                                     std::vector<uint8_t>{0x07, 0x08})
                                .Set("reportingIdHash",
@@ -1699,10 +1698,10 @@ TEST(BiddingAndAuctionResponseTest, kAnonGhostWinners) {
           // Owner not in list
           base::Value(CreateValidResponseDict().Set(
               "kAnonGhostWinners",
-              base::Value(base::Value::List().Append(
-                  base::Value::Dict()
+              base::Value(base::ListValue().Append(
+                  base::DictValue()
                       .Set("kAnonJoinCandidates",
-                           base::Value::Dict()
+                           base::DictValue()
                                .Set("adRenderURLHash",
                                     std::vector<uint8_t>{0x07, 0x08})
                                .Set("reportingIdHash",
@@ -1715,7 +1714,7 @@ TEST(BiddingAndAuctionResponseTest, kAnonGhostWinners) {
           // Valid (minimal)
           base::Value(CreateValidResponseDict().Set(
               "kAnonGhostWinners",
-              base::Value(base::Value::List().Append(
+              base::Value(base::ListValue().Append(
                   kValidMinimalkAnonGhostWinnersDict.Clone())))),
           CreateMinimalkAnonGhostWinnersServerResponse(),
       },
@@ -1723,7 +1722,7 @@ TEST(BiddingAndAuctionResponseTest, kAnonGhostWinners) {
           // Private aggregation not a dict
           base::Value(CreateValidResponseDict().Set(
               "kAnonGhostWinners",
-              base::Value(base::Value::List().Append(
+              base::Value(base::ListValue().Append(
                   kValidMinimalkAnonGhostWinnersDict.Clone().Set(
                       "ghostWinnerPrivateAggregationSignals",
                       base::Value(1)))))),
@@ -1733,10 +1732,10 @@ TEST(BiddingAndAuctionResponseTest, kAnonGhostWinners) {
           // Private aggregation bad type for bucket
           base::Value(CreateValidResponseDict().Set(
               "kAnonGhostWinners",
-              base::Value(base::Value::List().Append(
+              base::Value(base::ListValue().Append(
                   kValidMinimalkAnonGhostWinnersDict.Clone().Set(
                       "ghostWinnerPrivateAggregationSignals",
-                      base::Value(base::Value::Dict()
+                      base::Value(base::DictValue()
                                       .Set("bucket", base::Value(1))
                                       .Set("value", base::Value(1)))))))),
           CreateExpectedValidResponse(),
@@ -1745,11 +1744,11 @@ TEST(BiddingAndAuctionResponseTest, kAnonGhostWinners) {
           // Private aggregation bucket too big (17 bytes > 16)
           base::Value(CreateValidResponseDict().Set(
               "kAnonGhostWinners",
-              base::Value(base::Value::List().Append(
+              base::Value(base::ListValue().Append(
                   kValidMinimalkAnonGhostWinnersDict.Clone().Set(
                       "ghostWinnerPrivateAggregationSignals",
                       base::Value(
-                          base::Value::Dict()
+                          base::DictValue()
                               .Set("bucket",
                                    base::Value(std::vector<uint8_t>{
                                        0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06,
@@ -1762,11 +1761,11 @@ TEST(BiddingAndAuctionResponseTest, kAnonGhostWinners) {
           // Private aggregation bad type for value
           base::Value(CreateValidResponseDict().Set(
               "kAnonGhostWinners",
-              base::Value(base::Value::List().Append(
+              base::Value(base::ListValue().Append(
                   kValidMinimalkAnonGhostWinnersDict.Clone().Set(
                       "ghostWinnerPrivateAggregationSignals",
                       base::Value(
-                          base::Value::Dict()
+                          base::DictValue()
                               .Set("bucket", base::Value(std::vector<uint8_t>{
                                                  0x00, 0x01}))
                               .Set("value", base::Value(std::vector<uint8_t>{
@@ -1776,11 +1775,11 @@ TEST(BiddingAndAuctionResponseTest, kAnonGhostWinners) {
       {// 1 Valid private aggregation
        base::Value(CreateValidResponseDict().Set(
            "kAnonGhostWinners",
-           base::Value(base::Value::List().Append(
+           base::Value(base::ListValue().Append(
                kValidMinimalkAnonGhostWinnersDict.Clone().Set(
                    "ghostWinnerPrivateAggregationSignals",
-                   base::Value(base::Value::List().Append(base::Value(
-                       base::Value::Dict()
+                   base::Value(base::ListValue().Append(base::Value(
+                       base::DictValue()
                            .Set("bucket",
                                 base::Value(std::vector<uint8_t>{0x04, 0x01}))
                            .Set("value", base::Value(2)))))))))),
@@ -1802,19 +1801,19 @@ TEST(BiddingAndAuctionResponseTest, kAnonGhostWinners) {
       {// Multiple valid private aggregation
        base::Value(CreateValidResponseDict().Set(
            "kAnonGhostWinners",
-           base::Value(base::Value::List().Append(
+           base::Value(base::ListValue().Append(
                kValidMinimalkAnonGhostWinnersDict.Clone().Set(
                    "ghostWinnerPrivateAggregationSignals",
                    base::Value(
-                       base::Value::List()
+                       base::ListValue()
                            .Append(base::Value(
-                               base::Value::Dict()
+                               base::DictValue()
                                    .Set("bucket",
                                         base::Value(
                                             std::vector<uint8_t>{0x04, 0x01}))
                                    .Set("value", base::Value(2))))
                            .Append(base::Value(base::Value(
-                               base::Value::Dict()
+                               base::DictValue()
                                    .Set("bucket",
                                         base::Value(
                                             std::vector<uint8_t>{0x06, 0x02}))
@@ -1849,7 +1848,7 @@ TEST(BiddingAndAuctionResponseTest, kAnonGhostWinners) {
           // Bad ghost_winner type
           base::Value(CreateValidResponseDict().Set(
               "kAnonGhostWinners",
-              base::Value(base::Value::List().Append(
+              base::Value(base::ListValue().Append(
                   kValidMinimalkAnonGhostWinnersDict.Clone().Set(
                       "ghostWinnerForTopLevelAuction", 5))))),
           CreateExpectedValidResponse(),
@@ -1858,19 +1857,19 @@ TEST(BiddingAndAuctionResponseTest, kAnonGhostWinners) {
           // Bad ghost_winner - missing all fields
           base::Value(CreateValidResponseDict().Set(
               "kAnonGhostWinners",
-              base::Value(base::Value::List().Append(
+              base::Value(base::ListValue().Append(
                   kValidMinimalkAnonGhostWinnersDict.Clone().Set(
-                      "ghostWinnerForTopLevelAuction", base::Value::Dict()))))),
+                      "ghostWinnerForTopLevelAuction", base::DictValue()))))),
           CreateExpectedValidResponse(),
       },
       {
           // Bad ghost_winner - bad adRenderURL type
           base::Value(CreateValidResponseDict().Set(
               "kAnonGhostWinners",
-              base::Value(base::Value::List().Append(
+              base::Value(base::ListValue().Append(
                   kValidMinimalkAnonGhostWinnersDict.Clone().Set(
                       "ghostWinnerForTopLevelAuction",
-                      base::Value::Dict()
+                      base::DictValue()
                           .Set("adRenderURL", 5)
                           .Set("modifiedBid", 1.0)))))),
           CreateExpectedValidResponse(),
@@ -1879,10 +1878,10 @@ TEST(BiddingAndAuctionResponseTest, kAnonGhostWinners) {
           // Bad ghost_winner - insecure adRenderURL
           base::Value(CreateValidResponseDict().Set(
               "kAnonGhostWinners",
-              base::Value(base::Value::List().Append(
+              base::Value(base::ListValue().Append(
                   kValidMinimalkAnonGhostWinnersDict.Clone().Set(
                       "ghostWinnerForTopLevelAuction",
-                      base::Value::Dict()
+                      base::DictValue()
                           .Set("adRenderURL", kUntrustedURL)
                           .Set("modifiedBid", 1.0)))))),
           CreateExpectedValidResponse(),
@@ -1891,10 +1890,10 @@ TEST(BiddingAndAuctionResponseTest, kAnonGhostWinners) {
           // Bad ghost_winner - wrong modifiedBid type
           base::Value(CreateValidResponseDict().Set(
               "kAnonGhostWinners",
-              base::Value(base::Value::List().Append(
+              base::Value(base::ListValue().Append(
                   kValidMinimalkAnonGhostWinnersDict.Clone().Set(
                       "ghostWinnerForTopLevelAuction",
-                      base::Value::Dict()
+                      base::DictValue()
                           .Set("adRenderURL", kAdURL)
                           .Set("modifiedBid", "not a number")))))),
           CreateExpectedValidResponse(),
@@ -1903,10 +1902,10 @@ TEST(BiddingAndAuctionResponseTest, kAnonGhostWinners) {
           // Valid ghost_winner
           base::Value(CreateValidResponseDict().Set(
               "kAnonGhostWinners",
-              base::Value(base::Value::List().Append(
+              base::Value(base::ListValue().Append(
                   kValidMinimalkAnonGhostWinnersDict.Clone().Set(
                       "ghostWinnerForTopLevelAuction",
-                      base::Value::Dict()
+                      base::DictValue()
                           .Set("adRenderURL", kAdURL)
                           .Set("modifiedBid", 1.0)))))),
           [&]() {
@@ -1922,10 +1921,10 @@ TEST(BiddingAndAuctionResponseTest, kAnonGhostWinners) {
           // Invalid ad components type in ghost winner
           base::Value(CreateValidResponseDict().Set(
               "kAnonGhostWinners",
-              base::Value(base::Value::List().Append(
+              base::Value(base::ListValue().Append(
                   kValidMinimalkAnonGhostWinnersDict.Clone().Set(
                       "ghostWinnerForTopLevelAuction",
-                      base::Value::Dict()
+                      base::DictValue()
                           .Set("adRenderURL", kAdURL)
                           .Set("adComponentRenderURLs", 5)
                           .Set("modifiedBid", 1.0)))))),
@@ -1935,12 +1934,12 @@ TEST(BiddingAndAuctionResponseTest, kAnonGhostWinners) {
           // Empty list for ad components URL in ghost winner is okay
           base::Value(CreateValidResponseDict().Set(
               "kAnonGhostWinners",
-              base::Value(base::Value::List().Append(
+              base::Value(base::ListValue().Append(
                   kValidMinimalkAnonGhostWinnersDict.Clone().Set(
                       "ghostWinnerForTopLevelAuction",
-                      base::Value::Dict()
+                      base::DictValue()
                           .Set("adRenderURL", kAdURL)
-                          .Set("adComponentRenderURLs", base::Value::List())
+                          .Set("adComponentRenderURLs", base::ListValue())
                           .Set("modifiedBid", 1.0)))))),
           [&]() {
             auto response = CreateMinimalkAnonGhostWinnersServerResponse();
@@ -1955,13 +1954,13 @@ TEST(BiddingAndAuctionResponseTest, kAnonGhostWinners) {
           // Insecure ad component in ghost winner
           base::Value(CreateValidResponseDict().Set(
               "kAnonGhostWinners",
-              base::Value(base::Value::List().Append(
+              base::Value(base::ListValue().Append(
                   kValidMinimalkAnonGhostWinnersDict.Clone().Set(
                       "ghostWinnerForTopLevelAuction",
-                      base::Value::Dict()
+                      base::DictValue()
                           .Set("adRenderURL", kAdURL)
                           .Set("adComponentRenderURLs",
-                               base::Value::List().Append(kUntrustedURL))
+                               base::ListValue().Append(kUntrustedURL))
                           .Set("modifiedBid", 1.0)))))),
           CreateExpectedValidResponse(),
       },
@@ -1969,13 +1968,13 @@ TEST(BiddingAndAuctionResponseTest, kAnonGhostWinners) {
           // One insecure ad component in ghost winner
           base::Value(CreateValidResponseDict().Set(
               "kAnonGhostWinners",
-              base::Value(base::Value::List().Append(
+              base::Value(base::ListValue().Append(
                   kValidMinimalkAnonGhostWinnersDict.Clone().Set(
                       "ghostWinnerForTopLevelAuction",
-                      base::Value::Dict()
+                      base::DictValue()
                           .Set("adRenderURL", kAdURL)
                           .Set("adComponentRenderURLs",
-                               base::Value::List().Append(kAdURL).Append(
+                               base::ListValue().Append(kAdURL).Append(
                                    kUntrustedURL))
                           .Set("modifiedBid", 1.0)))))),
           CreateExpectedValidResponse(),
@@ -1984,14 +1983,13 @@ TEST(BiddingAndAuctionResponseTest, kAnonGhostWinners) {
           // Multiple valid ad components in ghost winner
           base::Value(CreateValidResponseDict().Set(
               "kAnonGhostWinners",
-              base::Value(base::Value::List().Append(
+              base::Value(base::ListValue().Append(
                   kValidMinimalkAnonGhostWinnersDict.Clone().Set(
                       "ghostWinnerForTopLevelAuction",
-                      base::Value::Dict()
+                      base::DictValue()
                           .Set("adRenderURL", kAdURL)
-                          .Set(
-                              "adComponentRenderURLs",
-                              base::Value::List().Append(kAdURL).Append(kAdURL))
+                          .Set("adComponentRenderURLs",
+                               base::ListValue().Append(kAdURL).Append(kAdURL))
                           .Set("modifiedBid", 1.0)))))),
           [&]() {
             auto response = CreateMinimalkAnonGhostWinnersServerResponse();
@@ -2010,10 +2008,10 @@ TEST(BiddingAndAuctionResponseTest, kAnonGhostWinners) {
           // Bad bid currency type
           base::Value(CreateValidResponseDict().Set(
               "kAnonGhostWinners",
-              base::Value(base::Value::List().Append(
+              base::Value(base::ListValue().Append(
                   kValidMinimalkAnonGhostWinnersDict.Clone().Set(
                       "ghostWinnerForTopLevelAuction",
-                      base::Value::Dict()
+                      base::DictValue()
                           .Set("adRenderURL", kAdURL)
                           .Set("modifiedBid", 1.0)
                           .Set("bidCurrency", 1)))))),
@@ -2023,10 +2021,10 @@ TEST(BiddingAndAuctionResponseTest, kAnonGhostWinners) {
           // Bad bid currency
           base::Value(CreateValidResponseDict().Set(
               "kAnonGhostWinners",
-              base::Value(base::Value::List().Append(
+              base::Value(base::ListValue().Append(
                   kValidMinimalkAnonGhostWinnersDict.Clone().Set(
                       "ghostWinnerForTopLevelAuction",
-                      base::Value::Dict()
+                      base::DictValue()
                           .Set("adRenderURL", kAdURL)
                           .Set("modifiedBid", 1.0)
                           .Set("bidCurrency", "Not a Currency")))))),
@@ -2036,10 +2034,10 @@ TEST(BiddingAndAuctionResponseTest, kAnonGhostWinners) {
           // Valid bid currency
           base::Value(CreateValidResponseDict().Set(
               "kAnonGhostWinners",
-              base::Value(base::Value::List().Append(
+              base::Value(base::ListValue().Append(
                   kValidMinimalkAnonGhostWinnersDict.Clone().Set(
                       "ghostWinnerForTopLevelAuction",
-                      base::Value::Dict()
+                      base::DictValue()
                           .Set("adRenderURL", kAdURL)
                           .Set("modifiedBid", 1.0)
                           .Set("bidCurrency", "USD")))))),
@@ -2058,10 +2056,10 @@ TEST(BiddingAndAuctionResponseTest, kAnonGhostWinners) {
           // Wrong adMetadata type
           base::Value(CreateValidResponseDict().Set(
               "kAnonGhostWinners",
-              base::Value(base::Value::List().Append(
+              base::Value(base::ListValue().Append(
                   kValidMinimalkAnonGhostWinnersDict.Clone().Set(
                       "ghostWinnerForTopLevelAuction",
-                      base::Value::Dict()
+                      base::DictValue()
                           .Set("adRenderURL", kAdURL)
                           .Set("modifiedBid", 1.0)
                           .Set("adMetadata", 1)))))),
@@ -2071,10 +2069,10 @@ TEST(BiddingAndAuctionResponseTest, kAnonGhostWinners) {
           // Valid adMetadata
           base::Value(CreateValidResponseDict().Set(
               "kAnonGhostWinners",
-              base::Value(base::Value::List().Append(
+              base::Value(base::ListValue().Append(
                   kValidMinimalkAnonGhostWinnersDict.Clone().Set(
                       "ghostWinnerForTopLevelAuction",
-                      base::Value::Dict()
+                      base::DictValue()
                           .Set("adRenderURL", kAdURL)
                           .Set("modifiedBid", 1.0)
                           .Set("adMetadata", "meta")))))),
@@ -2093,10 +2091,10 @@ TEST(BiddingAndAuctionResponseTest, kAnonGhostWinners) {
           // Invalid buyerReportingId type
           base::Value(CreateValidResponseDict().Set(
               "kAnonGhostWinners",
-              base::Value(base::Value::List().Append(
+              base::Value(base::ListValue().Append(
                   kValidMinimalkAnonGhostWinnersDict.Clone().Set(
                       "ghostWinnerForTopLevelAuction",
-                      base::Value::Dict()
+                      base::DictValue()
                           .Set("adRenderURL", kAdURL)
                           .Set("modifiedBid", 1.0)
                           .Set("buyerReportingId", 1)))))),
@@ -2106,10 +2104,10 @@ TEST(BiddingAndAuctionResponseTest, kAnonGhostWinners) {
           // Invalid buyerAndSellerReportingId type
           base::Value(CreateValidResponseDict().Set(
               "kAnonGhostWinners",
-              base::Value(base::Value::List().Append(
+              base::Value(base::ListValue().Append(
                   kValidMinimalkAnonGhostWinnersDict.Clone().Set(
                       "ghostWinnerForTopLevelAuction",
-                      base::Value::Dict()
+                      base::DictValue()
                           .Set("adRenderURL", kAdURL)
                           .Set("modifiedBid", 1.0)
                           .Set("buyerAndSellerReportingId", 1)))))),
@@ -2119,10 +2117,10 @@ TEST(BiddingAndAuctionResponseTest, kAnonGhostWinners) {
           // Invalid selectedBuyerAndSellerReportingId type
           base::Value(CreateValidResponseDict().Set(
               "kAnonGhostWinners",
-              base::Value(base::Value::List().Append(
+              base::Value(base::ListValue().Append(
                   kValidMinimalkAnonGhostWinnersDict.Clone().Set(
                       "ghostWinnerForTopLevelAuction",
-                      base::Value::Dict()
+                      base::DictValue()
                           .Set("adRenderURL", kAdURL)
                           .Set("modifiedBid", 1.0)
                           .Set("selectedBuyerAndSellerReportingId", 1)))))),
@@ -2132,14 +2130,13 @@ TEST(BiddingAndAuctionResponseTest, kAnonGhostWinners) {
           // Everything all together correct
           base::Value(CreateValidResponseDict().Set(
               "kAnonGhostWinners",
-              base::Value(base::Value::List().Append(
+              base::Value(base::ListValue().Append(
                   kValidMinimalkAnonGhostWinnersDict.Clone().Set(
                       "ghostWinnerForTopLevelAuction",
-                      base::Value::Dict()
+                      base::DictValue()
                           .Set("adRenderURL", kAdURL)
-                          .Set(
-                              "adComponentRenderURLs",
-                              base::Value::List().Append(kAdURL).Append(kAdURL))
+                          .Set("adComponentRenderURLs",
+                               base::ListValue().Append(kAdURL).Append(kAdURL))
                           .Set("modifiedBid", 1.0)
                           .Set("bidCurrency", "USD")
                           .Set("adMetadata", "meta")
@@ -2192,20 +2189,20 @@ TEST(BiddingAndAuctionResponseTest, kAnonDisabled) {
           .Set(
               "kAnonWinnerJoinCandidates",
               base::Value(
-                  base::Value::Dict()
+                  base::DictValue()
                       .Set("adRenderURLHash", std::vector<uint8_t>{0x01, 0x02})
                       .Set("reportingIdHash", std::vector<uint8_t>{0x04, 0x01})
                       .Set("adComponentRenderURLsHash",
                            base::Value(
-                               base::Value::List()
+                               base::ListValue()
                                    .Append(std::vector<uint8_t>{0x03, 0x04})
                                    .Append(std::vector<uint8_t>{0x05, 0x06})))))
           .Set("kAnonGhostWinners",
-               base::Value(base::Value::List().Append(
+               base::Value(base::ListValue().Append(
 
-                   base::Value::Dict()
+                   base::DictValue()
                        .Set("kAnonJoinCandidates",
-                            base::Value::Dict()
+                            base::DictValue()
                                 .Set("adRenderURLHash",
                                      std::vector<uint8_t>{0x07, 0x08})
                                 .Set("reportingIdHash",
@@ -2213,10 +2210,10 @@ TEST(BiddingAndAuctionResponseTest, kAnonDisabled) {
                        .Set("interestGroupIndex", 0)
                        .Set("owner", kOwnerOrigin)
                        .Set("ghostWinnerForTopLevelAuction",
-                            base::Value::Dict()
+                            base::DictValue()
                                 .Set("adRenderURL", kAdURL)
                                 .Set("adComponentRenderURLs",
-                                     base::Value::List().Append(kAdURL).Append(
+                                     base::ListValue().Append(kAdURL).Append(
                                          kAdURL))
                                 .Set("modifiedBid", 1.0)
                                 .Set("bidCurrency", "USD")
@@ -2247,29 +2244,29 @@ class BiddingAndAuctionPAggResponseTest : public testing::Test {
 };
 
 TEST_F(BiddingAndAuctionPAggResponseTest, ParsePAggResponse) {
-  base::Value::List ig_contributions;
+  base::ListValue ig_contributions;
   ig_contributions.Append(
-      base::Value::Dict()
+      base::DictValue()
           .Set("componentWin", false)
           .Set("igIndex", 0)
           .Set("eventContributions",
                CreateBasicEventContributions("reserved.loss")));
   ig_contributions.Append(
-      base::Value::Dict()
+      base::DictValue()
           .Set("componentWin", true)
           .Set("igIndex", 1)
           .Set("eventContributions", CreateBasicEventContributions("click")));
   ig_contributions.Append(
-      base::Value::Dict()
+      base::DictValue()
           .Set("componentWin", true)
           .Set("coordinator", "https://seller.coordinator.com")
           .Set("eventContributions",
                CreateBasicEventContributions("reserved.win")));
 
-  base::Value::Dict response = CreateValidResponseDict().Set(
+  base::DictValue response = CreateValidResponseDict().Set(
       "paggResponse",
-      base::Value::List().Append(
-          base::Value::Dict()
+      base::ListValue().Append(
+          base::DictValue()
               .Set("reportingOrigin", kOwnerOrigin)
               .Set("igContributions", std::move(ig_contributions))));
 
@@ -2329,20 +2326,20 @@ TEST_F(BiddingAndAuctionPAggResponseTest, ParsePAggResponseIgnoreErrors) {
       {"missing required reporting origin",
        base::Value(CreateValidResponseDict().Set(
            "paggResponse",
-           base::Value::List().Append(base::Value::Dict().Set(
+           base::ListValue().Append(base::DictValue().Set(
                "igContributions",
-               base::Value::List().Append(base::Value::Dict().Set(
+               base::ListValue().Append(base::DictValue().Set(
                    "eventContributions", CreateBasicEventContributions()))))))},
       {
           "negative igIndex",
           base::Value(CreateValidResponseDict().Set(
               "paggResponse",
-              base::Value::List().Append(
-                  base::Value::Dict()
+              base::ListValue().Append(
+                  base::DictValue()
                       .Set("reportingOrigin", kOwnerOrigin)
                       .Set("igContributions",
-                           base::Value::List().Append(
-                               base::Value::Dict()
+                           base::ListValue().Append(
+                               base::DictValue()
                                    .Set("igIndex", -1)
                                    .Set("eventContributions",
                                         CreateBasicEventContributions())))))),
@@ -2351,12 +2348,12 @@ TEST_F(BiddingAndAuctionPAggResponseTest, ParsePAggResponseIgnoreErrors) {
           "too big igIndex",
           base::Value(CreateValidResponseDict().Set(
               "paggResponse",
-              base::Value::List().Append(
-                  base::Value::Dict()
+              base::ListValue().Append(
+                  base::DictValue()
                       .Set("reportingOrigin", kOwnerOrigin)
                       .Set("igContributions",
-                           base::Value::List().Append(
-                               base::Value::Dict()
+                           base::ListValue().Append(
+                               base::DictValue()
                                    .Set("igIndex", 100000)
                                    .Set("eventContributions",
                                         CreateBasicEventContributions())))))),
@@ -2365,12 +2362,12 @@ TEST_F(BiddingAndAuctionPAggResponseTest, ParsePAggResponseIgnoreErrors) {
           "HTTP coordinator",
           base::Value(CreateValidResponseDict().Set(
               "paggResponse",
-              base::Value::List().Append(
-                  base::Value::Dict()
+              base::ListValue().Append(
+                  base::DictValue()
                       .Set("reportingOrigin", kOwnerOrigin)
                       .Set("igContributions",
-                           base::Value::List().Append(
-                               base::Value::Dict()
+                           base::ListValue().Append(
+                               base::DictValue()
                                    .Set("coordinator", "http://a.com")
                                    .Set("eventContributions",
                                         CreateBasicEventContributions())))))),
@@ -2471,7 +2468,7 @@ TEST_F(BiddingAndAuctionPAggResponseTest, ParsePAggResponseContribution) {
       url::Origin::Create(GURL(kAggregationCoordinator2))};
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.description);
-    base::Value::Dict contribution;
+    base::DictValue contribution;
     if (test_case.bucket.has_value()) {
       contribution.Set("bucket", base::Value(std::move(*test_case.bucket)));
     }
@@ -2481,9 +2478,9 @@ TEST_F(BiddingAndAuctionPAggResponseTest, ParsePAggResponseContribution) {
     if (test_case.filtering_id.has_value()) {
       contribution.Set("filteringId", *test_case.filtering_id);
     }
-    base::Value::List contributions;
+    base::ListValue contributions;
     contributions.Append(std::move(contribution));
-    base::Value::Dict response = CreateResponseDictWithPAggResponse(
+    base::DictValue response = CreateResponseDictWithPAggResponse(
         std::move(contributions), "reserved.win", /*component_win=*/true);
 
     std::optional<BiddingAndAuctionResponse> result =
@@ -2541,7 +2538,7 @@ TEST_F(BiddingAndAuctionPAggResponseTest, ParsePAggResponseComponentWinEvents) {
   };
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.event);
-    base::Value::Dict response = CreateResponseDictWithPAggResponse(
+    base::DictValue response = CreateResponseDictWithPAggResponse(
         CreateBasicContributions(), test_case.event,
         /*component_win=*/true);
     std::optional<BiddingAndAuctionResponse> result =
@@ -2589,7 +2586,7 @@ TEST_F(BiddingAndAuctionPAggResponseTest,
   };
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.event);
-    base::Value::Dict response = CreateResponseDictWithPAggResponse(
+    base::DictValue response = CreateResponseDictWithPAggResponse(
         CreateBasicContributions(), test_case.event,
         /*component_win=*/false);
     std::optional<BiddingAndAuctionResponse> result =
@@ -2645,14 +2642,14 @@ TEST_F(BiddingAndAuctionPAggResponseTest, ParsePAggResponseErrorReporting) {
       url::Origin::Create(GURL(kAggregationCoordinator2))};
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.event_string);
-    base::Value::Dict contribution;
+    base::DictValue contribution;
     contribution.Set("bucket", base::Value(bucket_byte_string));
     contribution.Set("value", 123);
     contribution.Set("filteringId", 45);
 
-    base::Value::List contributions;
+    base::ListValue contributions;
     contributions.Append(std::move(contribution));
-    base::Value::Dict response = CreateResponseDictWithPAggResponse(
+    base::DictValue response = CreateResponseDictWithPAggResponse(
         std::move(contributions), test_case.event_string,
         /*component_win=*/true);
 
@@ -2699,14 +2696,14 @@ TEST_F(BiddingAndAuctionPAggResponseTest,
       url::Origin::Create(GURL(kAggregationCoordinator2))};
   for (const auto& event_string : kEventTestCases) {
     SCOPED_TRACE(event_string);
-    base::Value::Dict contribution;
+    base::DictValue contribution;
     contribution.Set("bucket", base::Value(bucket_byte_string));
     contribution.Set("value", 123);
     contribution.Set("filteringId", 45);
 
-    base::Value::List contributions;
+    base::ListValue contributions;
     contributions.Append(std::move(contribution));
-    base::Value::Dict response = CreateResponseDictWithPAggResponse(
+    base::DictValue response = CreateResponseDictWithPAggResponse(
         std::move(contributions), event_string,
         /*component_win=*/true);
 
@@ -2749,23 +2746,23 @@ TEST_F(BiddingAndAuctionSampleDebugReportsTest, ForDebuggingOnlyReports) {
       .emplace_back(kDebugReportingURL);
   output.debugging_only_report_origins.emplace(
       url::Origin::Create(GURL(kOwnerOrigin)));
-  base::Value::List reports;
-  reports.Append(base::Value::Dict()
+  base::ListValue reports;
+  reports.Append(base::DictValue()
                      .Set("isWinReport", true)
                      .Set("componentWin", true)
                      .Set("url", "https://component-win.win-debug-report.com"));
   reports.Append(
-      base::Value::Dict()
+      base::DictValue()
           .Set("isWinReport", false)
           .Set("componentWin", true)
           .Set("url", "https://component-win.loss-debug-report.com"));
-  reports.Append(base::Value::Dict().Set("url", kDebugReportingURL));
+  reports.Append(base::DictValue().Set("url", kDebugReportingURL));
 
-  base::Value::Dict response = CreateValidResponseDict().Set(
+  base::DictValue response = CreateValidResponseDict().Set(
       "debugReports",
-      base::Value::List().Append(base::Value::Dict()
-                                     .Set("adTechOrigin", kOwnerOrigin)
-                                     .Set("reports", std::move(reports))));
+      base::ListValue().Append(base::DictValue()
+                                   .Set("adTechOrigin", kOwnerOrigin)
+                                   .Set("reports", std::move(reports))));
   std::optional<BiddingAndAuctionResponse> result =
       BiddingAndAuctionResponse::TryParse(base::Value(response.Clone()),
                                           GroupNames(),
@@ -2787,15 +2784,15 @@ TEST_F(BiddingAndAuctionSampleDebugReportsTest,
       },
       {
           base::Value(CreateValidResponseDict().Set(
-              "debugReports", base::Value::List().Append("not a dict"))),
+              "debugReports", base::ListValue().Append("not a dict"))),
           CreateExpectedValidResponse(),
       },
       // Miss required ad tech origin.
       {
           base::Value(CreateValidResponseDict().Set(
               "debugReports",
-              base::Value::List().Append(base::Value::Dict().Set(
-                  "reports", base::Value::List().Append(base::Value::Dict().Set(
+              base::ListValue().Append(base::DictValue().Set(
+                  "reports", base::ListValue().Append(base::DictValue().Set(
                                  "url", "https://fdo.com")))))),
           CreateExpectedValidResponse(),
       },
@@ -2803,11 +2800,11 @@ TEST_F(BiddingAndAuctionSampleDebugReportsTest,
       {
           base::Value(CreateValidResponseDict().Set(
               "debugReports",
-              base::Value::List().Append(
-                  base::Value::Dict()
+              base::ListValue().Append(
+                  base::DictValue()
                       .Set("adTechOrigin", "http://adtech.com")
                       .Set("reports",
-                           base::Value::List().Append(base::Value::Dict().Set(
+                           base::ListValue().Append(base::DictValue().Set(
                                "url", "https://fdo.com")))))),
           CreateExpectedValidResponse(),
       },
@@ -2815,11 +2812,11 @@ TEST_F(BiddingAndAuctionSampleDebugReportsTest,
       {
           base::Value(CreateValidResponseDict().Set(
               "debugReports",
-              base::Value::List().Append(
-                  base::Value::Dict()
+              base::ListValue().Append(
+                  base::DictValue()
                       .Set("adTechOrigin", "https://adtech.com")
                       .Set("reports",
-                           base::Value::List().Append(base::Value::Dict().Set(
+                           base::ListValue().Append(base::DictValue().Set(
                                "url", "http://fdo.com")))))),
           []() {
             auto response = CreateExpectedValidResponse();
@@ -2832,12 +2829,12 @@ TEST_F(BiddingAndAuctionSampleDebugReportsTest,
       {
           base::Value(CreateValidResponseDict().Set(
               "debugReports",
-              base::Value::List().Append(
-                  base::Value::Dict()
+              base::ListValue().Append(
+                  base::DictValue()
                       .Set("adTechOrigin", "https://adtech.com")
                       .Set("reports",
-                           base::Value::List().Append(
-                               base::Value::Dict().Set("url", "not a url")))))),
+                           base::ListValue().Append(
+                               base::DictValue().Set("url", "not a url")))))),
           []() {
             auto response = CreateExpectedValidResponse();
             response.debugging_only_report_origins.emplace(
@@ -2881,7 +2878,7 @@ TEST_F(BiddingAndAuctionSampleDebugReportsTest,
     output.debugging_only_report_origins.emplace(
         url::Origin::Create(GURL(kOwnerOrigin)));
 
-    base::Value::Dict response = CreateResponseDictWithDebugReports(
+    base::DictValue response = CreateResponseDictWithDebugReports(
         /*maybe_component_win=*/true, test_case.is_seller_report,
         test_case.is_win_report);
     SCOPED_TRACE(response.DebugString());
@@ -2909,7 +2906,7 @@ TEST_F(BiddingAndAuctionSampleDebugReportsTest,
         .emplace_back(kDebugReportingURL);
     output.debugging_only_report_origins.emplace(
         url::Origin::Create(GURL(kOwnerOrigin)));
-    base::Value::Dict response = CreateResponseDictWithDebugReports(
+    base::DictValue response = CreateResponseDictWithDebugReports(
         /*maybe_component_win=*/false,
         /*maybe_is_seller_report=*/std::nullopt,
         /*maybe_is_win_report=*/test_case);

@@ -81,7 +81,8 @@ class InteractiveViewsTestApi : virtual public ui::test::InteractiveTestApi {
   //     ...
   //     NameView(kThirdTabName,
   //              base::BindLambdaForTesting([&](){
-  //                return browser_view->tabstrip()->tab_at(3);
+  //                return
+  //                browser_view->horizontal_tab_strip_for_testing()->tab_at(3);
   //              }))
   //     WithElement(kThirdTabName, ...)
   //     ...

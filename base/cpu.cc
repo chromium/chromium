@@ -102,33 +102,31 @@ namespace {
 #if defined(__pic__) && defined(__i386__)
 
 // Requests extended feature information via |ecx|.
-void __cpuidex(int cpu_info[4], int eax, int ecx) {
-  // SAFETY: `cpu_info` has length 4 and therefore all accesses below are valid.
-  UNSAFE_BUFFERS(
-      __asm__ volatile("mov %%ebx, %%edi\n"
-                       "cpuid\n"
-                       "xchg %%edi, %%ebx\n"
-                       : "=a"(cpu_info[0]), "=D"(cpu_info[1]),
-                         "=c"(cpu_info[2]), "=d"(cpu_info[3])
-                       : "a"(eax), "c"(ecx)));
+void __cpuidex(base::span<int, 4> cpu_info, int eax, int ecx) {
+  __asm__ volatile(
+      "mov %%ebx, %%edi\n"
+      "cpuid\n"
+      "xchg %%edi, %%ebx\n"
+      : "=a"(cpu_info[0]), "=D"(cpu_info[1]), "=c"(cpu_info[2]),
+        "=d"(cpu_info[3])
+      : "a"(eax), "c"(ecx));
 }
 
-void __cpuid(int cpu_info[4], int info_type) {
+void __cpuid(base::span<int, 4> cpu_info, int info_type) {
   __cpuidex(cpu_info, info_type, /*ecx=*/0);
 }
 
 #else
 
 // Requests extended feature information via |ecx|.
-void __cpuidex(int cpu_info[4], int eax, int ecx) {
-  // SAFETY: `cpu_info` has length 4 and therefore all accesses below are valid.
-  UNSAFE_BUFFERS(__asm__ volatile("cpuid\n"
-                                  : "=a"(cpu_info[0]), "=b"(cpu_info[1]),
-                                    "=c"(cpu_info[2]), "=d"(cpu_info[3])
-                                  : "a"(eax), "c"(ecx)));
+void __cpuidex(base::span<int, 4> cpu_info, int eax, int ecx) {
+  __asm__ volatile("cpuid\n"
+                   : "=a"(cpu_info[0]), "=b"(cpu_info[1]), "=c"(cpu_info[2]),
+                     "=d"(cpu_info[3])
+                   : "a"(eax), "c"(ecx));
 }
 
-void __cpuid(int cpu_info[4], int info_type) {
+void __cpuid(base::span<int, 4> cpu_info, int info_type) {
   __cpuidex(cpu_info, info_type, /*ecx=*/0);
 }
 

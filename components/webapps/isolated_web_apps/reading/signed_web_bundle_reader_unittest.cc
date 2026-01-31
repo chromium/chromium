@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <utility>
 #include <variant>
 #include <vector>
 
@@ -23,7 +24,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/repeating_test_future.h"
 #include "base/test/test_future.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "base/types/expected.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
@@ -83,9 +83,6 @@ class SignedWebBundleReaderWithRealBundlesTest : public testing::Test {
  protected:
   void SetUp() override {
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
-    ON_CALL(iwa_client_,
-            ValidateTrust(_, test::GetDefaultEd25519WebBundleId(), _))
-        .WillByDefault(testing::Return(base::ok()));
     IwaIdentityValidator::CreateSingleton();
   }
 
@@ -140,7 +137,7 @@ class SignedWebBundleReaderWithRealBundlesTest : public testing::Test {
       reset_signature_verifier_ =
           web_app::SignedWebBundleReader::SetSignatureVerifierForTesting(
               &signature_verifier_);
-  testing::NiceMock<test::MockIwaClient> iwa_client_;
+  test::TestIwaClient iwa_client_;
 };
 
 // Note that Isolated Web Apps (IWAs) don't support having primary URLs, but the
@@ -890,12 +887,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 class UnsecureSignedWebBundleReaderTest : public testing::Test {
  protected:
-  void SetUp() override {
-    EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
-    ON_CALL(iwa_client_,
-            ValidateTrust(_, test::GetDefaultEd25519WebBundleId(), _))
-        .WillByDefault(testing::Return(base::ok()));
-  }
+  void SetUp() override { EXPECT_TRUE(temp_dir_.CreateUniqueTempDir()); }
 
   void TearDown() override {
     // Allow cleanup tasks posted by the destructor of `web_package::SharedFile`
@@ -906,7 +898,7 @@ class UnsecureSignedWebBundleReaderTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   base::ScopedTempDir temp_dir_;
-  testing::NiceMock<test::MockIwaClient> iwa_client_;
+  test::TestIwaClient iwa_client_;
 };
 
 TEST_F(UnsecureSignedWebBundleReaderTest, ReadValidId) {
@@ -938,7 +930,7 @@ TEST_F(UnsecureSignedWebBundleReaderTest, ErrorId) {
                      IntegritySignatureErrorForTesting::
                          kAdditionalSignatureStackEntryElement}) {
     std::string swbn_file_name =
-        base::NumberToString(base::to_underlying(error)) + "_test.swbn";
+        base::NumberToString(std::to_underlying(error)) + "_test.swbn";
     SCOPED_TRACE(Message() << "Running testcase: "
                            << " " << swbn_file_name);
 

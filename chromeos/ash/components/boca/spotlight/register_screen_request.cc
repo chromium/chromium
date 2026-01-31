@@ -80,19 +80,19 @@ bool RegisterScreenRequest::GetContentData(std::string* upload_content_type,
                                            std::string* upload_content) {
   *upload_content_type = boca::kContentTypeApplicationJson;
 
-  base::Value::Dict root;
-  base::Value::Dict connection_param;
-  base::Value::Dict host_device_info;
+  base::DictValue root;
+  base::DictValue connection_param;
+  base::DictValue host_device_info;
 
   connection_param.Set(kSpotlightConnectionCode,
                        register_screen_param_.connection_code);
   root.Set(kSpotlightConnectionParam, std::move(connection_param));
 
-  base::Value::Dict host;
+  base::DictValue host;
   host.Set(kGaiaId, register_screen_param_.student_gaia_id);
   host_device_info.Set(kUser, std::move(host));
 
-  base::Value::Dict host_device;
+  base::DictValue host_device;
   host_device.Set(kDeviceId, register_screen_param_.student_device_id);
   host_device_info.Set(kDeviceInfo, std::move(host_device));
   root.Set(kHostDevice, std::move(host_device_info));

@@ -29,8 +29,17 @@ static NSString* const kNotificationFileName = @"credential_created_time";
   }
 
   // Make sure this file presenter is properly set up with a presented item.
-  if (![self presentedItemURL]) {
+  NSURL* fileURL = [self presentedItemURL];
+  if (!fileURL) {
     return nil;
+  }
+
+  // Ensure the presented file exists. Otherwise, the file presenter would not
+  // be notified about the changes.
+  if (![[NSFileManager defaultManager] fileExistsAtPath:fileURL.path]) {
+    [[NSFileManager defaultManager] createFileAtPath:fileURL.path
+                                            contents:nil
+                                          attributes:nil];
   }
 
   [NSFileCoordinator addFilePresenter:self];

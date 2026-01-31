@@ -172,6 +172,7 @@ RootCompositorFrameSinkImpl::Create(
             std::move(params->external_begin_frame_controller_client),
             restart_id);
 #else
+    // On MacOS, CADisplayLink created in the browser does not take this path.
     external_begin_frame_source =
         std::make_unique<ExternalBeginFrameSourceMojo>(
             frame_sink_manager,
@@ -216,11 +217,14 @@ RootCompositorFrameSinkImpl::Create(
                 restart_id, base::SingleThreadTaskRunner::GetCurrentDefault());
       }
 #elif BUILDFLAG(IS_MAC)
-        external_begin_frame_source =
-            std::make_unique<ExternalBeginFrameSourceMac>(
-                restart_id, params->renderer_settings.display_id,
-                output_surface.get());
-        created_external_begin_frame_source_mac = true;
+      // ExternalBeginFrameSourceMac is utilized for both CVDisplayLink
+      // instances (originating in the GPU process) and CADisplayLink instances
+      // (originating in the Browser process).
+      external_begin_frame_source =
+          std::make_unique<ExternalBeginFrameSourceMac>(
+              restart_id, params->renderer_settings.display_id,
+              output_surface.get());
+      created_external_begin_frame_source_mac = true;
 #endif
       if (!external_begin_frame_source && !synthetic_begin_frame_source) {
         auto time_source = std::make_unique<DelayBasedTimeSource>(
@@ -368,7 +372,7 @@ void RootCompositorFrameSinkImpl::SetDisplayColorSpaces(
 
 #if BUILDFLAG(IS_MAC)
 void RootCompositorFrameSinkImpl::SetVSyncDisplayID(int64_t display_id) {
-  begin_frame_source()->SetVSyncDisplayID(display_id);
+  begin_frame_source()->SetVSyncDisplayID(display_id, /*force_update=*/false);
 }
 #endif
 
@@ -468,14 +472,27 @@ void RootCompositorFrameSinkImpl::UpdateRefreshRate(float refresh_rate) {
 }
 
 void RootCompositorFrameSinkImpl::SetAdaptiveRefreshRateInfo(
-    bool has_support,
-    float suggested_high,
-    float device_scale_factor) {
+    mojom::AdaptiveRefreshRateInfoPtr info) {
   supports_adaptive_refresh_rate_ =
-      has_support && base::FeatureList::IsEnabled(
-                         features::kUseFrameIntervalDeciderAdaptiveFrameRate);
-  suggested_frame_interval_high_ = base::Hertz(suggested_high);
-  device_scale_factor_ = device_scale_factor;
+      info->has_support &&
+      base::FeatureList::IsEnabled(
+          features::kUseFrameIntervalDeciderAdaptiveFrameRate);
+  suggested_frame_interval_high_ = base::Hertz(info->suggested_high);
+  device_scale_factor_ = info->device_scale_factor;
+  adaptive_refresh_rate_velocity_points_.clear();
+  if (!info->velocity_mapping.empty()) {
+    adaptive_refresh_rate_velocity_points_.reserve(
+        info->velocity_mapping.size());
+    for (auto& point : info->velocity_mapping) {
+      adaptive_refresh_rate_velocity_points_.push_back(*point);
+    }
+  } else {
+    // The hard-coded values are copied from AOSP
+    // View.convertVelocityToFrameRate.
+    adaptive_refresh_rate_velocity_points_.emplace_back(120, 300);
+    adaptive_refresh_rate_velocity_points_.emplace_back(80, 125);
+    adaptive_refresh_rate_velocity_points_.emplace_back(60, 0);
+  }
   UpdateFrameIntervalDeciderSettings();
 }
 
@@ -660,8 +677,10 @@ void RootCompositorFrameSinkImpl::UpdateFrameIntervalDeciderSettings() {
 #if BUILDFLAG(IS_ANDROID)
   if (supports_adaptive_refresh_rate_) {
     matchers.push_back(std::make_unique<UserInputBoostMatcher>());
-    matchers.push_back(
-        std::make_unique<SlowScrollThrottleMatcher>(device_scale_factor_));
+    if (!adaptive_refresh_rate_velocity_points_.empty()) {
+      matchers.push_back(std::make_unique<SlowScrollThrottleMatcher>(
+          device_scale_factor_, adaptive_refresh_rate_velocity_points_));
+    }
   } else {
     matchers.push_back(std::make_unique<InputBoostMatcher>());
   }

@@ -31,21 +31,20 @@ class BookmarksMessageHandler : public content::WebUIMessageHandler,
   friend class BookmarkMessageHandlerTest;
 
   int GetIncognitoAvailability();
-  void HandleGetIncognitoAvailability(const base::Value::List& args);
+  void HandleGetIncognitoAvailability(const base::ListValue& args);
   void UpdateIncognitoAvailability();
 
   bool CanEditBookmarks();
-  void HandleGetCanEditBookmarks(const base::Value::List& args);
+  void HandleGetCanEditBookmarks(const base::ListValue& args);
   void UpdateCanEditBookmarks();
 
   bool CanUploadBookmarkToAccountStorage(const std::string& id);
-  void HandleGetCanUploadBookmarkToAccountStorage(
-      const base::Value::List& args);
-  void HandleSingleUploadClicked(const base::Value::List& args);
+  void HandleGetCanUploadBookmarkToAccountStorage(const base::ListValue& args);
+  void HandleSingleUploadClicked(const base::ListValue& args);
 
-  void HandleGetBatchUploadPromoData(const base::Value::List& args);
-  void HandleOnBatchUploadPromoClicked(const base::Value::List& args);
-  void HandleOnBatchUploadPromoDismissed(const base::Value::List& args);
+  void HandleGetBatchUploadPromoData(const base::ListValue& args);
+  void HandleOnBatchUploadPromoClicked(const base::ListValue& args);
+  void HandleOnBatchUploadPromoDismissed(const base::ListValue& args);
 
   void OnGetLocalDataDescriptionReceived(
       base::Value callback_id,

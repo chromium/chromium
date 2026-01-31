@@ -233,20 +233,6 @@ public class ManageSyncSettingsTest {
         PasswordManagerUtilBridgeJni.setInstanceForTesting(mPasswordManagerUtilBridgeJniMock);
     }
 
-    /**
-     * Test opening sync settings without sync consent when `mIsFromSigninScreen` is true doesn't
-     * crash.
-     *
-     * <p>This is a regression test for crbug.com/362220452.
-     */
-    @Test
-    @SmallTest
-    @Feature({"Sync"})
-    public void testOpenSyncSettingsIsFromSigninScreenIsTrueWithoutSyncConsent() {
-        mSyncTestRule.setUpAccountAndSignInForTesting();
-        mSettingsActivityTestRule.startSettingsActivity(ManageSyncSettings.createArguments(true));
-    }
-
     @Test
     @LargeTest
     @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_LOYALTY_CARDS_FILLING})

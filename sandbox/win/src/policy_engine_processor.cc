@@ -11,13 +11,20 @@
 
 namespace sandbox {
 
-void PolicyProcessor::SetInternalState(size_t index, EvalResult result) {
+void PolicyProcessor::SetInternalState(size_t index,
+                                       EvalResult result,
+                                       uintptr_t constant) {
   state_.current_index_ = index;
   state_.current_result_ = result;
+  state_.current_constant_ = constant;
 }
 
 EvalResult PolicyProcessor::GetAction() const {
   return state_.current_result_;
+}
+
+uintptr_t PolicyProcessor::GetConstant() const {
+  return state_.current_constant_;
 }
 
 // Decides if an opcode can be skipped (not evaluated) or not. The function
@@ -51,7 +58,7 @@ PolicyResult PolicyProcessor::Evaluate(uint32_t options,
   MatchContext context;
   bool evaluation = false;
   bool skip_group = false;
-  SetInternalState(0, EVAL_FALSE);
+  SetInternalState(0, EVAL_FALSE, 0U);
   size_t count = policy_->opcode_count;
 
   // Loop over all the opcodes Evaluating in sequence. Since we only support
@@ -72,6 +79,7 @@ PolicyResult PolicyProcessor::Evaluate(uint32_t options,
     }
     // Evaluation block.
     EvalResult result = opcode.Evaluate(parameters, param_count, &context);
+    uintptr_t constant = 0;
     switch (result) {
       case EVAL_FALSE:
         evaluation = false;
@@ -89,7 +97,10 @@ PolicyResult PolicyProcessor::Evaluate(uint32_t options,
         break;
       default:
         // We have evaluated an action.
-        SetInternalState(ix, result);
+        if (result == RETURN_CONST) {
+          opcode.GetArgument(1, &constant);
+        }
+        SetInternalState(ix, result, constant);
         return POLICY_MATCH;
     }
   }

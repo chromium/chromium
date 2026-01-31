@@ -21,6 +21,7 @@
 #import "base/logging.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
+#import "base/no_destructor.h"
 #import "base/path_service.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
@@ -54,53 +55,11 @@ BASE_FEATURE(kIOSCrashUploadKillSwitch, base::FEATURE_DISABLED_BY_DEFAULT);
 const char kUptimeAtRestoreInMs[] = "uptime_at_restore_in_ms";
 const char kUploadedInRecoveryMode[] = "uploaded_in_recovery_mode";
 
-// This mirrors the logic in MobileSessionShutdownMetricsProvider to avoid a
-// dependency loop.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum MobileSessionShutdownType {
-  SHUTDOWN_IN_BACKGROUND = 0,
-  SHUTDOWN_IN_FOREGROUND_NO_CRASH_LOG_NO_MEMORY_WARNING,
-  SHUTDOWN_IN_FOREGROUND_WITH_CRASH_LOG_NO_MEMORY_WARNING,
-  SHUTDOWN_IN_FOREGROUND_NO_CRASH_LOG_WITH_MEMORY_WARNING,
-  SHUTDOWN_IN_FOREGROUND_WITH_CRASH_LOG_WITH_MEMORY_WARNING,
-  FIRST_LAUNCH_AFTER_UPGRADE,
-  SHUTDOWN_IN_FOREGROUND_WITH_MAIN_THREAD_FROZEN,
-  MOBILE_SESSION_SHUTDOWN_TYPE_COUNT,
-};
-
-// This mirrors the logic in MobileSessionShutdownMetricsProvider, which
-// currently calls crash_helper::HasReportToUpload() before Crashpad calls
-// ProcessIntermediateDumps. Experiment with instead calling this later during
-// startup, but after Crashpad can process intermediate dumps.
-MobileSessionShutdownType GetLastShutdownType(bool has_reports_to_upload) {
-  if ([[PreviousSessionInfo sharedInstance] isFirstSessionAfterUpgrade]) {
-    return FIRST_LAUNCH_AFTER_UPGRADE;
-  }
-
-  // If the last app lifetime did not end with a crash, then log it as a normal
-  // shutdown while in the background.
-  if (GetApplicationContext()->WasLastShutdownClean()) {
-    return SHUTDOWN_IN_BACKGROUND;
-  }
-
-  if (has_reports_to_upload) {
-    // The cause of the crash is known.
-    if ([[PreviousSessionInfo sharedInstance]
-            didSeeMemoryWarningShortlyBeforeTerminating]) {
-      return SHUTDOWN_IN_FOREGROUND_WITH_CRASH_LOG_WITH_MEMORY_WARNING;
-    }
-    return SHUTDOWN_IN_FOREGROUND_WITH_CRASH_LOG_NO_MEMORY_WARNING;
-  }
-
-  // The cause of the crash is not known. Check the common causes in order of
-  // severity and likeliness to have caused the crash.
-  if ([[PreviousSessionInfo sharedInstance]
-          didSeeMemoryWarningShortlyBeforeTerminating]) {
-    return SHUTDOWN_IN_FOREGROUND_NO_CRASH_LOG_WITH_MEMORY_WARNING;
-  }
-  // There is no known cause.
-  return SHUTDOWN_IN_FOREGROUND_NO_CRASH_LOG_NO_MEMORY_WARNING;
+base::RepeatingCallbackList<void(bool)>&
+GetProcessIntermediateDumpsFinishedCallbackList() {
+  static base::NoDestructor<base::RepeatingCallbackList<void(bool)>>
+      callback_list;
+  return *callback_list;
 }
 
 // Cleaning up the cache is best effort. Ignore removal results and errors.
@@ -137,25 +96,19 @@ void ProcessIntermediateDumps() {
   crashpad::UserStreamDataSources user_stream_data_sources;
   user_stream_data_sources.push_back(
       std::make_unique<gwp_asan::UserStreamDataSource>());
+  int pending_reports = GetPendingCrashReportCount();
   crash_reporter::ProcessIntermediateDumps({}, &user_stream_data_sources);
+  bool has_new_pending_reports = GetPendingCrashReportCount() > pending_reports;
   crash_reporter::StartProcessingPendingReports();
 
   // Remove this after a few milestones.
   ClearMainThreadFreezeDetectorCache();
 
-  bool has_reports_to_upload = HasReportToUpload();
-
   // Wait until after processing intermediate dumps to record last shutdown
   // type.
   dispatch_async(dispatch_get_main_queue(), ^{
-    // This histogram is similar to MobileSessionShutdownType, but will not
-    // appear in the initial stability log. Because of this, the stability flag
-    // on this histogram doesn't matter. It will be reported like any other
-    // metric.
-    UMA_STABILITY_HISTOGRAM_ENUMERATION(
-        "Stability.MobileSessionShutdownType2",
-        GetLastShutdownType(has_reports_to_upload),
-        MOBILE_SESSION_SHUTDOWN_TYPE_COUNT);
+    GetProcessIntermediateDumpsFinishedCallbackList().Notify(
+        has_new_pending_reports);
   });
 }
 
@@ -177,6 +130,11 @@ int64_t GetUptimeMilliseconds() {
 }
 
 }  // namespace
+
+base::CallbackListSubscription AddProcessIntermediateDumpsFinishedCallback(
+    const base::RepeatingCallback<void(bool)>& callback) {
+  return GetProcessIntermediateDumpsFinishedCallbackList().Add(callback);
+}
 
 void Start() {
   DCHECK(!crash_reporter::IsCrashpadRunning());
@@ -259,34 +217,6 @@ int GetPendingCrashReportCount() {
     }
   }
   return count;
-}
-
-bool HasReportToUpload() {
-  int pending_reports = GetPendingCrashReportCount();
-
-  // This can get called before crash_reporter::StartProcessingPendingReports()
-  // is called, which means we need to look for non-zero length files in
-  // common::CrashpadDumpLocation()/ dir. See crbug.com/1365765 for details,
-  // but this should be removed once MobileSessionShutdownType2 is validated.
-  if (crash_reporter::IsCrashpadRunning()) {
-    const base::FilePath path =
-        common::CrashpadDumpLocation().Append("pending-serialized-ios-dump");
-    NSString* path_ns = base::SysUTF8ToNSString(path.value());
-    NSArray<NSString*>* pending_files =
-        [[NSFileManager defaultManager] contentsOfDirectoryAtPath:path_ns
-                                                            error:nil];
-    for (NSString* pending_filename : pending_files) {
-      NSString* pending_file =
-          [path_ns stringByAppendingPathComponent:pending_filename];
-      NSDictionary* fileAttributes =
-          [[NSFileManager defaultManager] attributesOfItemAtPath:pending_file
-                                                           error:nil];
-      if ([[fileAttributes objectForKey:NSFileSize] longLongValue] > 0) {
-        pending_reports++;
-      }
-    }
-  }
-  return pending_reports > 0;
 }
 
 // Records the current process uptime in the kUptimeAtRestoreInMs. This

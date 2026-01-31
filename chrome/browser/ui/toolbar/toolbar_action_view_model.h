@@ -34,6 +34,7 @@ class ToolbarActionViewModel {
  public:
   // The source for the action invocation. Used in UMA; do not reorder or delete
   // entries.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.ui.toolbar
   enum class InvocationSource {
     // The action was invoked from a command (keyboard shortcut).
     kCommand = 0,
@@ -99,8 +100,8 @@ class ToolbarActionViewModel {
   // the extension id; for component actions, this is the name of the component.
   virtual std::string GetId() const = 0;
 
-  // Registers an update observer of the view model.
-  virtual base::CallbackListSubscription RegisterUpdateObserver(
+  // Registers an update observer of the action's icon.
+  virtual base::CallbackListSubscription RegisterIconUpdateObserver(
       base::RepeatingClosure observer) = 0;
 
   // Returns the icon to use for the given |web_contents| and |size|.

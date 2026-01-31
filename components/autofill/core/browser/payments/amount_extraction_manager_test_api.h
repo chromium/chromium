@@ -23,6 +23,10 @@ class AmountExtractionManagerTestApi {
       const AmountExtractionManagerTestApi&) = delete;
   ~AmountExtractionManagerTestApi() = default;
 
+  AutofillDriver* GetMainFrameDriver() {
+    return amount_extraction_manager_->GetMainFrameDriver();
+  }
+
   bool GetSearchRequestPending() {
     return amount_extraction_manager_->search_request_pending_;
   }
@@ -37,6 +41,10 @@ class AmountExtractionManagerTestApi {
   }
 
   void Reset() { amount_extraction_manager_->Reset(); }
+
+  void SetAiAmountExtractionStartTime(base::TimeTicks time) {
+    amount_extraction_manager_->ai_amount_extraction_start_time_ = time;
+  }
 
  private:
   const raw_ref<AmountExtractionManager> amount_extraction_manager_;

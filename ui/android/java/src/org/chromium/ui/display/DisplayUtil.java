@@ -29,6 +29,7 @@ import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /**
  * Helper functions relevant to working with displays, but have no parallel in the native
@@ -45,6 +46,7 @@ public abstract class DisplayUtil {
     private static final String CARMA_DISPLAY_COMPAT_APP_META_DATA =
             "android.software.car.display_compatibility";
     private static @Nullable Boolean sCarmaPhase1Version2ComplianceForTesting;
+    private static @Nullable Boolean sIsGlobalDefaultDisplayTabletSized;
     private static @Nullable Boolean sIsDisplayCompatAppForTesting;
     private static @Nullable Integer sSmallestScreenWidthForTesting;
     private static @Nullable Boolean sIsOnDefaultDisplayForTesting;
@@ -126,6 +128,41 @@ public abstract class DisplayUtil {
         int width = display.getDisplayWidth();
         int height = display.getDisplayHeight();
         return width < height ? width : height;
+    }
+
+    /**
+     * Determines if the device's built-in display is tablet-sized based on physical metrics.
+     *
+     * <p>This checks the physical screen size (smallest width in dp) of the default display against
+     * the minimum tablet threshold ({@link DeviceFormFactor#MINIMUM_TABLET_WIDTH_DP}).
+     *
+     * <p><strong>Warning:</strong> This method calculates size based on raw display metrics and
+     * does <em>not</em> check which resource bucket (e.g., {@code -sw600dp}) was actually loaded.
+     * Historically, some "phablet" devices have a physical smallest width &gt; 600dp but are
+     * configured by the manufacturer to load phone resources. This method will return {@code true}
+     * for such devices, whereas resource-based checks would treat them as phones.
+     *
+     * <p><strong>Warning:</strong> Do not use this method on devices with multiple built-in
+     * displays, such as foldables. The "default" display on these devices may correspond to the
+     * smaller outer screen or the larger inner screen depending on the device state, rendering this
+     * static check unreliable.
+     *
+     * <p>Note: This returns {@code true} for a tablet device even if the app is currently running
+     * in a small multi-window on that device.
+     *
+     * @return {@code true} if the built-in display's smallest width is greater than or equal to
+     *     600dp (standard tablet threshold).
+     */
+    public static boolean isGlobalDefaultDisplayTabletSized() {
+        if (sIsGlobalDefaultDisplayTabletSized != null) {
+            return sIsGlobalDefaultDisplayTabletSized;
+        }
+        DisplayAndroid displayAndroid = DisplayAndroid.getGlobalDefaultDisplay();
+        int smallestWidth =
+                DisplayUtil.pxToDp(displayAndroid, DisplayUtil.getSmallestWidth(displayAndroid));
+        sIsGlobalDefaultDisplayTabletSized =
+                smallestWidth >= DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP;
+        return sIsGlobalDefaultDisplayTabletSized;
     }
 
     /** Returns the given value converted from px to dp. */

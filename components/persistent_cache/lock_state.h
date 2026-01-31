@@ -10,6 +10,8 @@ namespace persistent_cache {
 // Values of this enum represent the state of a PersistentCache lock at a set
 // moment in time. These values are persisted to logs. Entries should not be
 // renumbered and numeric values should never be reused.
+// Note: This enum is currently a copy of sqlite_vfs::LockState.
+// LINT.IfChange(LockState)
 enum class LockState {
   // The lock is not held by readers or writers.
   kNotHeld = 0,
@@ -23,6 +25,7 @@ enum class LockState {
 
   kMaxValue = kWriting
 };
+// LINT.ThenChange(//components/sqlite_vfs/lock_state.h:LockState)
 
 }  // namespace persistent_cache
 

@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/task/single_thread_task_runner.h"
+#include "extensions/renderer/bindings/api_binding_util.h"
 #include "gin/array_buffer.h"
 #include "gin/public/context_holder.h"
 #include "gin/public/isolate_holder.h"
@@ -44,6 +45,8 @@ void APIBindingTest::SetUp() {
   context->Enter();
   main_context_holder_ = std::make_unique<gin::ContextHolder>(isolate());
   main_context_holder_->SetContext(context);
+
+  binding::InitializeContext(context);
 }
 
 void APIBindingTest::TearDown() {
@@ -102,6 +105,7 @@ v8::Local<v8::Context> APIBindingTest::AddContext() {
       v8::Context::New(isolate(), GetV8ExtensionConfiguration());
   holder->SetContext(context);
   additional_context_holders_.push_back(std::move(holder));
+  binding::InitializeContext(context);
   return context;
 }
 

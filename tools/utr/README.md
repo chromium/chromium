@@ -14,7 +14,7 @@ uses. It also bypasses Gerrit entirely, avoiding the need to upload patchsets
 & wait for CQ build triggers. Everything is driven locally on your workstation,
 allowing for quick edit->debug cycles.
 
-See the [Google-only design doc](https://goto.google.com/chrome-utr) for
+See the [Google-only design doc](https://goto.google.com/chrome-utr-dd) for
 further context. Note: most tests on Chrome bots run remotely on Swarming. In
 the context of a UTR invocation, these tests will still run remotely on
 Swarming. They'll just be _triggered_ and subsequently _collected_

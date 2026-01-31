@@ -74,6 +74,10 @@ const char kAppModeOAuth2Token[] = "app-mode-oauth-token";
 // OS login, and which mode the app was launched in.
 const char kAppRunOnOsLoginMode[] = "app-run-on-os-login-mode";
 
+// A process type (switches::kProcessType) that is used by App Shim processes.
+// See chrome/app_shim/app_shim_main_delegate.mm.
+const char kAppShim[] = "app-shim";
+
 // Overrides the URL that the webstore APIs download extensions from.
 // Note: the URL must contain one '%s' for the extension ID.
 const char kAppsGalleryDownloadURL[] = "apps-gallery-download-url";
@@ -752,6 +756,9 @@ const char kWebRtcRemoteEventLogUploadNoSuppression[] =
 // handling policy is specified in Preferences.
 const char kWebRtcIPHandlingPolicy[] = "webrtc-ip-handling-policy";
 
+// Force What's New on Desktop to request from the staging environment.
+const char kWhatsNewUseStaging[] = "whats-new-use-staging";
+
 // Specify the initial window user title: --window-name="My custom title"
 const char kWindowName[] = "window-name";
 
@@ -932,6 +939,10 @@ const char kSourceAppId[] = "source-app-id";
 // metrics.
 const char kSourceShortcut[] = "source-shortcut";
 
+// Identifies Chrome instances that start in foreground mode at startup to
+// record related metrics.
+const char kStartupForegroundLaunch[] = "startup-foreground-launch";
+
 // Runs un-installation steps that were done by chrome first-run.
 const char kUninstall[] = "uninstall";
 
@@ -958,8 +969,6 @@ const char kEnableNewAppMenuIcon[] = "enable-new-app-menu-icon";
 // Causes the browser to launch directly in guest mode.
 const char kGuest[] = "guest";
 
-// Forces the NTP mobile promo to appear without any preconditions.
-const char kForceNtpMobilePromo[] = "force-ntp-mobile-promo";
 #endif
 
 #if BUILDFLAG(ENABLE_GLIC)
@@ -989,6 +998,22 @@ const char kGlicAlwaysShowWebActuationToggle[] =
 // List of URL patterns in the glic webview to redirect to an admin blocked
 // panel, as a space-separated list.
 const char kGlicAdminRedirectPatterns[] = "glic-admin-redirect-patterns";
+
+// Reset local state pref kGlicMultiInstanceEnabledBySubscriptionTier to false.
+// Intended for manual testing only.
+const char kGlicResetMultiInstanceEnabledByTier[] =
+    "glic-reset-mi-enabled-by-tier";
+
+// Override actual AI subscription tier by forcing G1 status, specifically for
+// multi-instance enablement. Intended for manual testing only.
+const char kGlicForceG1StatusForMultiInstance[] = "glic-force-g1-for-mi";
+
+// Configure preset guest URLs for manual testing. These are saved to profile
+// prefs and can be selected to override the default glic guest URL through
+// corresponding entries in chrome://flags.
+const char kGlicGuestUrlPresetAutopush[] = "glic-guest-url-preset-autopush";
+const char kGlicGuestUrlPresetPreprod[] = "glic-guest-url-preset-preprod";
+const char kGlicGuestUrlPresetProd[] = "glic-guest-url-preset-prod";
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

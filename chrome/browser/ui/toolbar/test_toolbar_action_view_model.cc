@@ -23,9 +23,9 @@ std::string TestToolbarActionViewModel::GetId() const {
 }
 
 base::CallbackListSubscription
-TestToolbarActionViewModel::RegisterUpdateObserver(
+TestToolbarActionViewModel::RegisterIconUpdateObserver(
     base::RepeatingClosure observer) {
-  return observers_.Add(observer);
+  return icon_observers_.Add(observer);
 }
 
 ui::ImageModel TestToolbarActionViewModel::GetIcon(
@@ -105,29 +105,44 @@ void TestToolbarActionViewModel::ShowPopup(bool by_user) {
 
 void TestToolbarActionViewModel::SetActionName(const std::u16string& name) {
   action_name_ = name;
-  NotifyObservers();
+
+  // TODO(crbug.com/461983701): We're using the icon observer as a view model
+  // observer for testing purposes.
+  NotifyIconObservers();
 }
 
 void TestToolbarActionViewModel::SetActionTitle(const std::u16string& title) {
   action_title_ = title;
-  NotifyObservers();
+
+  // TODO(crbug.com/461983701): We're using the icon observer as a view model
+  // observer for testing purposes.
+  NotifyIconObservers();
 }
 
 void TestToolbarActionViewModel::SetAccessibleName(const std::u16string& name) {
   accessible_name_ = name;
-  NotifyObservers();
+
+  // TODO(crbug.com/461983701): We're using the icon observer as a view model
+  // observer for testing purposes.
+  NotifyIconObservers();
 }
 
 void TestToolbarActionViewModel::SetTooltip(const std::u16string& tooltip) {
   tooltip_ = tooltip;
-  NotifyObservers();
+
+  // TODO(crbug.com/461983701): We're using the icon observer as a view model
+  // observer for testing purposes.
+  NotifyIconObservers();
 }
 
 void TestToolbarActionViewModel::SetEnabled(bool is_enabled) {
   is_enabled_ = is_enabled;
-  NotifyObservers();
+
+  // TODO(crbug.com/461983701): We're using the icon observer as a view model
+  // observer for testing purposes.
+  NotifyIconObservers();
 }
 
-void TestToolbarActionViewModel::NotifyObservers() {
-  observers_.Notify();
+void TestToolbarActionViewModel::NotifyIconObservers() {
+  icon_observers_.Notify();
 }

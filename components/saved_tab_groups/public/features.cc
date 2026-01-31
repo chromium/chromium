@@ -44,9 +44,6 @@ BASE_FEATURE(kEnableUrlRestriction, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kEnableOriginatingSavedGroupCleanUp,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Swaps the click actions for the tab group header.
-BASE_FEATURE(kLeftClickOpensTabGroupBubble, base::FEATURE_DISABLED_BY_DEFAULT);
-
 bool IsTabGroupSyncDelegateAndroidEnabled() {
   return base::FeatureList::IsEnabled(kTabGroupSyncDelegateAndroid);
 }

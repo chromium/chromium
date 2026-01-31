@@ -79,7 +79,7 @@ class UserDemographicsPrefsTest : public testing::Test {
   void SetDemographicsImpl(const std::string& pref_name,
                            int birth_year,
                            UserDemographicsProto::Gender gender) {
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set(kSyncDemographicsBirthYearPath, birth_year);
     dict.Set(kSyncDemographicsGenderPath, static_cast<int>(gender));
     GetProfilePrefs()->SetDict(pref_name, std::move(dict));

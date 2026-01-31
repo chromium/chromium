@@ -36,7 +36,7 @@ class WebDialogView;
 // 2. Any extra scopes provided through flags.
 // 3. A URL loader that will be used by various OAuth fetchers.
 using HandleGcpwSigninCompleteResult =
-    base::OnceCallback<void(base::Value::Dict,
+    base::OnceCallback<void(base::DictValue,
                             const std::string& additional_mdm_oauth_scopes,
                             scoped_refptr<network::SharedURLLoaderFactory>)>;
 

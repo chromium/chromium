@@ -52,28 +52,15 @@ using ::content::TestNavigationThrottle;
 using ::content::TestNavigationThrottleInserter;
 using optimization_guide::proto::ClickAction;
 
-std::string DescribePaintStabilityMode(
-    ::features::ActorPaintStabilityMode paint_monitor_mode) {
-  std::stringstream params_description;
-  switch (paint_monitor_mode) {
-    case ::features::ActorPaintStabilityMode::kDisabled:
-      params_description << "PaintMonitorDisabled";
-      break;
-    case ::features::ActorPaintStabilityMode::kLogOnly:
-      params_description << "PaintMonitorLog";
-      break;
-    case ::features::ActorPaintStabilityMode::kEnabled:
-      params_description << "PaintMonitorEnabled";
-      break;
-  }
-  return params_description.str();
-}
-
 // Tests for the PageStabilityMonitor's functionality of delaying renderer-tool
 // completion until the page is ready for an observation.
 class ActorPageStabilityTestBase : public PageStabilityTest {
  public:
-  ActorPageStabilityTestBase() = default;
+  ActorPageStabilityTestBase() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kGlicActor,
+        {{features::kGlicActorPolicyControlExemption.name, "true"}});
+  }
   ActorPageStabilityTestBase(const ActorPageStabilityTestBase&) = delete;
   ActorPageStabilityTestBase& operator=(const ActorPageStabilityTestBase&) =
       delete;
@@ -88,12 +75,10 @@ class ActorPageStabilityTestBase : public PageStabilityTest {
     auto event_dispatcher = ui::NewUiEventDispatcher(
         actor_keyed_service()->GetActorUiStateManager());
     auto actor_task = std::make_unique<ActorTask>(
-        GetProfile(), std::move(execution_engine), std::move(event_dispatcher));
+        GetProfile(), std::move(execution_engine), std::move(event_dispatcher),
+        /*options=*/nullptr);
     task_id_ = ActorKeyedService::Get(browser()->profile())
                    ->AddActiveTask(std::move(actor_task));
-    ActorKeyedService::Get(browser()->profile())
-        ->GetPolicyChecker()
-        .SetActOnWebForTesting(true);
   }
 
   void TearDownOnMainThread() override {
@@ -113,21 +98,16 @@ class ActorPageStabilityTestBase : public PageStabilityTest {
   }
 
   mojo::Remote<mojom::PageStabilityMonitor> CreatePageStabilityMonitor(
-      features::ActorPaintStabilityMode paint_stability_mode) {
-    // TODO(bokan): Once paint stability ships, the param should be replaced by
-    // a new one since some tools will continue to not support it.
-    bool use_paint_stability =
-        paint_stability_mode != features::ActorPaintStabilityMode::kDisabled;
-    return PageStabilityTest::CreatePageStabilityMonitor(use_paint_stability);
+      bool uses_paint_stability) {
+    return PageStabilityTest::CreatePageStabilityMonitor(uses_paint_stability);
   }
 
  protected:
   TaskId task_id_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-class ActorPageStabilityTimeoutTest : public ActorPageStabilityTestBase,
-                                      public ::testing::WithParamInterface<
-                                          ::features::ActorPaintStabilityMode> {
+class ActorPageStabilityTimeoutTest : public ActorPageStabilityTestBase {
  public:
   ActorPageStabilityTimeoutTest() {
     // Shorten the timeout to test it works.
@@ -138,11 +118,10 @@ class ActorPageStabilityTimeoutTest : public ActorPageStabilityTestBase,
     std::string paint_timeout = absl::StrFormat("%dms", kTimeoutInMs);
     timeout_scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kGlicActor,
-        {{"glic-actor-page-stability-timeout", timeout},
+        {{features::kGlicActorPolicyControlExemption.name, "true"},
+         {"glic-actor-page-stability-timeout", timeout},
          // Do not use min wait.
          {"glic-actor-page-stability-min-wait", "0ms"},
-         {::features::kActorPaintStabilityMode.name,
-          ::features::kActorPaintStabilityMode.GetName(GetParam())},
          {::features::kActorPaintStabilityIntialPaintTimeout.name,
           paint_timeout},
          {::features::kActorPaintStabilitySubsequentPaintTimeout.name,
@@ -160,7 +139,7 @@ class ActorPageStabilityTimeoutTest : public ActorPageStabilityTestBase,
 
 // Ensure that if a network request runs long, the stability monitor will
 // eventually timeout.
-IN_PROC_BROWSER_TEST_P(ActorPageStabilityTimeoutTest, NetworkTimeout) {
+IN_PROC_BROWSER_TEST_F(ActorPageStabilityTimeoutTest, NetworkTimeout) {
   ASSERT_TRUE(
       content::NavigateToURL(web_contents(), GetPageStabilityTestURL()));
 
@@ -184,7 +163,7 @@ IN_PROC_BROWSER_TEST_P(ActorPageStabilityTimeoutTest, NetworkTimeout) {
 
 // Ensure that if the main thread never becomes idle the stability monitor will
 // eventually timeout.
-IN_PROC_BROWSER_TEST_P(ActorPageStabilityTimeoutTest, BusyMainThread) {
+IN_PROC_BROWSER_TEST_F(ActorPageStabilityTimeoutTest, BusyMainThread) {
   ASSERT_TRUE(
       content::NavigateToURL(web_contents(), GetPageStabilityTestURL()));
 
@@ -199,13 +178,6 @@ IN_PROC_BROWSER_TEST_P(ActorPageStabilityTimeoutTest, BusyMainThread) {
   ExpectOkResult(result);
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    ActorPageStabilityTimeoutTest,
-    testing::Values(::features::ActorPaintStabilityMode::kDisabled,
-                    ::features::ActorPaintStabilityMode::kLogOnly,
-                    ::features::ActorPaintStabilityMode::kEnabled));
-
 enum class NavigationDelay { kInstant, kDelayed };
 enum class NavigationType { kSameDocument, kSameSite, kCrossSite };
 
@@ -218,14 +190,12 @@ enum class NavigationType { kSameDocument, kSameSite, kCrossSite };
 class ActorPageStabilityNavigationTypesTest
     : public ActorPageStabilityTestBase,
       public testing::WithParamInterface<
-          std::tuple<NavigationDelay,
-                     NavigationType,
-                     ::features::ActorPaintStabilityMode>> {
+          std::tuple<NavigationDelay, NavigationType>> {
  public:
   // Provides meaningful param names instead of /0, /1, ...
   static std::string DescribeParams(
       const testing::TestParamInfo<ParamType>& info) {
-    auto [delay, navigation_type, paint_monitor_mode] = info.param;
+    auto [delay, navigation_type] = info.param;
     std::stringstream params_description;
     switch (delay) {
       case NavigationDelay::kInstant:
@@ -246,17 +216,6 @@ class ActorPageStabilityNavigationTypesTest
         params_description << "_CrossSite";
         break;
     }
-    switch (paint_monitor_mode) {
-      case ::features::ActorPaintStabilityMode::kDisabled:
-        params_description << "_PaintMonitorDisabled";
-        break;
-      case ::features::ActorPaintStabilityMode::kLogOnly:
-        params_description << "_PaintMonitorLog";
-        break;
-      case ::features::ActorPaintStabilityMode::kEnabled:
-        params_description << "_PaintMonitorEnabled";
-        break;
-    }
     return params_description.str();
   }
 
@@ -266,11 +225,10 @@ class ActorPageStabilityNavigationTypesTest
     allowlist_params["allowlist_only"] = "true";
 
     page_tools_feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{features::kGlicActor,
-                               {{::features::kActorPaintStabilityMode.name,
-                                 ::features::kActorPaintStabilityMode.GetName(
-                                     std::get<2>(GetParam()))}}},
-                              {kGlicActionAllowlist, allowlist_params}},
+        /*enabled_features=*/{{kGlicActionAllowlist, allowlist_params},
+                              {kGlicCrossOriginNavigationGating,
+                               {{"confirm_navigation_to_new_origins",
+                                 "false"}}}},
         /*disabled_features=*/{});
   }
 
@@ -375,34 +333,33 @@ IN_PROC_BROWSER_TEST_P(ActorPageStabilityNavigationTypesTest, Test) {
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     ActorPageStabilityNavigationTypesTest,
-    testing::Combine(
-        testing::Values(NavigationDelay::kInstant, NavigationDelay::kDelayed),
-        testing::Values(NavigationType::kSameDocument,
-                        NavigationType::kSameSite,
-                        NavigationType::kCrossSite),
-        testing::Values(::features::ActorPaintStabilityMode::kDisabled,
-                        ::features::ActorPaintStabilityMode::kLogOnly,
-                        ::features::ActorPaintStabilityMode::kEnabled)),
+    testing::Combine(testing::Values(NavigationDelay::kInstant,
+                                     NavigationDelay::kDelayed),
+                     testing::Values(NavigationType::kSameDocument,
+                                     NavigationType::kSameSite,
+                                     NavigationType::kCrossSite)),
     ActorPageStabilityNavigationTypesTest::DescribeParams);
 
 // Tests specifically using the general page stability mechanism, allowing
 // direct instantiation of the monitor in a renderer via Mojo.
-class ActorGeneralPageStabilityTest : public ActorPageStabilityTestBase,
-                                      public ::testing::WithParamInterface<
-                                          ::features::ActorPaintStabilityMode> {
+//
+// The boolean param indicates whether to use paint stability.
+class ActorGeneralPageStabilityTest
+    : public ActorPageStabilityTestBase,
+      public ::testing::WithParamInterface<bool> {
  public:
   ActorGeneralPageStabilityTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         ::features::kGlicActor,
-        {{::features::kActorPaintStabilityMode.name,
-          ::features::kActorPaintStabilityMode.GetName(GetParam())},
-         // Effectively disable the timeout to prevent flakes.
+        {// Effectively disable the timeout to prevent flakes.
          {"glic-actor-page-stability-timeout", "30000ms"}});
   }
 
   mojo::Remote<mojom::PageStabilityMonitor> CreatePageStabilityMonitor() {
+    // Some tools don't support paint stability, therefore need test coverage
+    // for both cases.
     return ActorPageStabilityTestBase::CreatePageStabilityMonitor(
-        /*paint_stability_mode=*/GetParam());
+        /*uses_paint_stability=*/GetParam());
   }
 
   std::unique_ptr<TestNavigationThrottleInserter>
@@ -423,14 +380,7 @@ class ActorGeneralPageStabilityTest : public ActorPageStabilityTestBase,
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    ActorGeneralPageStabilityTest,
-    testing::Values(::features::ActorPaintStabilityMode::kDisabled,
-                    ::features::ActorPaintStabilityMode::kLogOnly,
-                    ::features::ActorPaintStabilityMode::kEnabled),
-    [](const testing::TestParamInfo<::features::ActorPaintStabilityMode>&
-           info) { return DescribePaintStabilityMode(info.param); });
+INSTANTIATE_TEST_SUITE_P(, ActorGeneralPageStabilityTest, testing::Bool());
 
 // Ensure the page isn't considered stable until after a network fetch is
 // resolved.
@@ -698,9 +648,10 @@ IN_PROC_BROWSER_TEST_P(ActorGeneralPageStabilityTest,
   EXPECT_TRUE(result.Wait());
 }
 
-class ActorPageStabilityMinWaitTest : public ActorPageStabilityTestBase,
-                                      public ::testing::WithParamInterface<
-                                          ::features::ActorPaintStabilityMode> {
+// The boolean param indicates whether to use paint stability.
+class ActorPageStabilityMinWaitTest
+    : public ActorPageStabilityTestBase,
+      public ::testing::WithParamInterface<bool> {
  public:
   static constexpr int kMinWaitInMs = 3000;
 
@@ -708,12 +659,12 @@ class ActorPageStabilityMinWaitTest : public ActorPageStabilityTestBase,
     std::string min_wait = absl::StrFormat("%dms", kMinWaitInMs);
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         ::features::kGlicActor,
-        {{::features::kActorPaintStabilityMode.name,
-          ::features::kActorPaintStabilityMode.GetName(GetParam())},
-         {"glic-actor-page-stability-min-wait", min_wait}});
+        {{"glic-actor-page-stability-min-wait", min_wait}});
   }
 
   mojo::Remote<mojom::PageStabilityMonitor> CreatePageStabilityMonitor() {
+    // Some tools don't support paint stability, therefore need test coverage
+    // for both cases.
     return ActorPageStabilityTestBase::CreatePageStabilityMonitor(
         /*paint_stability_mode=*/GetParam());
   }
@@ -745,11 +696,7 @@ IN_PROC_BROWSER_TEST_P(ActorPageStabilityMinWaitTest, MinWaitTimeRespected) {
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     ActorPageStabilityMinWaitTest,
-    testing::Values(::features::ActorPaintStabilityMode::kDisabled,
-                    ::features::ActorPaintStabilityMode::kLogOnly,
-                    ::features::ActorPaintStabilityMode::kEnabled),
-    [](const testing::TestParamInfo<::features::ActorPaintStabilityMode>&
-           info) { return DescribePaintStabilityMode(info.param); });
+    testing::Bool());
 
 }  // namespace
 

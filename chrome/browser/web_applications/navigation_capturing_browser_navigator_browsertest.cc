@@ -355,6 +355,56 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
+                       FocusExistingUsesLatestActivatedAppWindow) {
+  const webapps::AppId& app_id =
+      InstallWebAppFromPageAndCloseAppBrowser(browser(), GetFocusExistingUrl());
+#if BUILDFLAG(IS_CHROMEOS)
+  EXPECT_EQ(apps::test::EnableLinkCapturingByUser(profile(), app_id),
+            base::ok());
+#endif
+
+  // Launch 2 distinct app_browsers for the same app_id. Since `app_browser_2`
+  // is created last, ensure that is activated, and will be used for launching
+  // a web app.
+  Browser* app_browser_1 = nullptr;
+  Browser* app_browser_2 = nullptr;
+  std::tie(app_browser_1, app_browser_2) =
+      GetTwoDistinctBrowsersForSameApp(app_id, GetFocusExistingUrl());
+  EXPECT_TRUE(WebAppBrowserController::IsForWebApp(app_browser_1, app_id));
+  EXPECT_TRUE(WebAppBrowserController::IsForWebApp(app_browser_2, app_id));
+
+  // Since the web_app has a client_mode of `focus-existing`, `app_browser_2`
+  // should be activated with no navigations happening.
+  {
+    NavigateParams params(browser()->profile(), GetFocusExistingSecondUrl(),
+                          ui::PAGE_TRANSITION_LINK);
+    params.source_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    Navigate(&params);
+  }
+
+  test::CompletePageLoadForAllWebContents();
+  apps::test::FlushLaunchQueuesForAllBrowserTabs();
+
+  content::WebContents* contents_to_finish =
+      app_browser_2->tab_strip_model()->GetActiveWebContents();
+
+  // `kFocusExistingUrl` should be obtained first when the browser is launched,
+  // and `kFocusExistingSecondUrl` is added later when navigation capturing
+  // happens.
+  EXPECT_THAT(
+      apps::test::GetLaunchParamUrlsInContents(contents_to_finish,
+                                               "launchParamsTargetUrls"),
+      testing::ElementsAre(GetFocusExistingUrl(), GetFocusExistingSecondUrl()));
+
+  // `app_browser_2` should still be at the starting page.
+  EXPECT_EQ(GetFocusExistingUrl(), app_browser_2->tab_strip_model()
+                                       ->GetActiveWebContents()
+                                       ->GetLastCommittedURL());
+}
+
+IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
                        FocusExistingWithBrowserAvoidsOutOfScope) {
   const webapps::AppId& app_id = InstallTestWebApp(
       GetLandingPage(), mojom::UserDisplayMode::kStandalone,

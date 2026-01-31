@@ -7,7 +7,7 @@
 
 #include "base/debug/crash_logging.h"
 #include "content/common/buildflags.h"
-#include "content/public/browser/child_process_id.h"
+#include "content/public/common/child_process_id.h"
 
 namespace content {
 class RenderProcessHost;
@@ -358,6 +358,7 @@ enum BadMessageReason {
   RFH_CRASH_REPORT_STORAGE_SIZE_TOO_LARGE = 330,
   RFH_CRASH_REPORT_STORAGE_ALREADY_INITIALIZED = 331,
   RFH_INVALID_DOCUMENT_SEQUENCE_NUMBER = 332,
+  RFH_NEW_ISOLATED_WEB_APP_PERMISSION_POLICIES = 333,
 
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. RenderFrameHost becomes RFH) plus a unique description of the

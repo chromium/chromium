@@ -37,6 +37,7 @@ import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.ImportantFormFactors;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
@@ -121,14 +122,11 @@ public class TabModelMultiWindowTest {
     }
 
     @Test
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
     @LargeTest
     public void testMoveTabGroupToWindow() {
         ChromeTabbedActivity activity1 = mActivityTestRule.getActivity();
-        TabGroupModelFilter filter =
-                activity1
-                        .getTabModelSelector()
-                        .getTabGroupModelFilterProvider()
-                        .getTabGroupModelFilter(false);
+        TabGroupModelFilter filter = activity1.getTabModelSelector().getTabGroupModelFilter(false);
         List<Tab> group = createTabGroup(2, filter);
         Token groupId = group.get(0).getTabGroupId();
         int initialTabCount = getTabCountOnUiThread(mTabModelJni);

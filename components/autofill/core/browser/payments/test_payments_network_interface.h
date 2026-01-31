@@ -54,7 +54,7 @@ class TestPaymentsNetworkInterface : public payments::PaymentsNetworkInterface {
       const std::string& app_locale,
       base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
                               const std::u16string&,
-                              std::unique_ptr<base::Value::Dict>,
+                              std::unique_ptr<base::DictValue>,
                               std::vector<std::pair<int, int>>)> callback,
       const int billable_service_number,
       const int64_t billing_customer_number,
@@ -178,7 +178,7 @@ class TestPaymentsNetworkInterface : public payments::PaymentsNetworkInterface {
   UploadCardSource upload_card_source_;
   bool use_invalid_legal_message_ = false;
   bool use_legal_message_with_multiple_lines_ = false;
-  std::unique_ptr<base::Value::Dict> LegalMessage();
+  std::unique_ptr<base::DictValue> LegalMessage();
   std::optional<PaymentsAutofillClient::PaymentsRpcResult>
       select_challenge_option_result_;
   std::optional<PaymentsAutofillClient::PaymentsRpcResult>

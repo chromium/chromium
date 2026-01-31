@@ -35,6 +35,32 @@ bool DeprecationTrialURLLoaderInterceptor::HandleRequest(
     return true;
   }
 
+  // This is a script that EnabledHttpWorkerUrl() html page refers to.
+  // The page is split into separate html and js files to prevent unsafe inline
+  // issues on environments with strict csp.
+  const GURL enabled_http_page_js_url{
+      "http://enabled.test/request-from-worker-as-public-address-page.js"};
+  if (url == enabled_http_page_js_url) {
+    URLLoaderInterceptor::WriteResponse(
+        "chrome/test/data/local_network_access/"
+        "request-from-worker-as-public-address-page.js",
+        request_params->client.get());
+    return true;
+  }
+
+  // This is a script that EnabledHttpSharedWorkerUrl() html page refers to.
+  // The page is split into separate html and js files to prevent unsafe inline
+  // issues on environments with strict csp.
+  const GURL enabled_http_shared_worker_page_js_url{
+      "http://enabled.test/fetch-from-shared-worker-as-public-address-page.js"};
+  if (url == enabled_http_shared_worker_page_js_url) {
+    URLLoaderInterceptor::WriteResponse(
+        "chrome/test/data/local_network_access/"
+        "fetch-from-shared-worker-as-public-address-page.js",
+        request_params->client.get());
+    return true;
+  }
+
   if (url == enabled_http_worker_js_url_) {
     // Served off of the http://enabled.test domain, but no origin trial token
     // served. This is needed because the worker html hosting will request the
@@ -47,7 +73,7 @@ bool DeprecationTrialURLLoaderInterceptor::HandleRequest(
     // like in https://crbug.com/40860522#comment8.
     URLLoaderInterceptor::WriteResponse(
         "chrome/test/data/local_network_access/"
-        "request-from-worker-as-public-address.js",
+        "request-from-worker-as-public-address-worker.js",
         request_params->client.get());
     return true;
   }
@@ -55,7 +81,7 @@ bool DeprecationTrialURLLoaderInterceptor::HandleRequest(
   if (url == enabled_http_shared_worker_js_url_) {
     URLLoaderInterceptor::WriteResponse(
         "chrome/test/data/local_network_access/"
-        "fetch-from-shared-worker-as-public-address.js",
+        "fetch-from-shared-worker-as-public-address-worker.js",
         request_params->client.get());
     return true;
   }

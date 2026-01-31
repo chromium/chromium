@@ -122,8 +122,8 @@ class AshAttestationServiceImplTest : public testing::Test {
     ash::AttestationClient::Shutdown();
   }
 
-  base::Value::Dict CreateSignals() {
-    base::Value::Dict signals;
+  base::DictValue CreateSignals() {
+    base::DictValue signals;
     signals.Set(device_signals::names::kDisplayName, kDisplayName);
     return signals;
   }

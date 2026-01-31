@@ -4,8 +4,8 @@
 
 #include "components/policy/test_support/request_handler_for_policy.h"
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
+#include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -26,10 +26,42 @@ namespace em = enterprise_management;
 
 namespace policy {
 
+namespace {
+
 // As policy test server can be used not only for regular managed users,
 // but also for unicorn users, we need to handle some policy aspects for
 // them in a special way.
 inline constexpr char kUnicornUsersDomain[] = "gmail.com";
+
+// Returns a string representation of the given `extension_ids_and_versions`,
+// for logging.
+std::string JoinExtensionIdsAndVersions(
+    const google::protobuf::RepeatedPtrField<em::ExtensionIdAndVersion>&
+        extension_ids_and_versions) {
+  std::vector<std::string> extension_ids_and_versions_strings;
+  for (const auto& extension_id_and_version : extension_ids_and_versions) {
+    extension_ids_and_versions_strings.push_back(base::StringPrintf(
+        "'%s@%s'", extension_id_and_version.extension_id().c_str(),
+        extension_id_and_version.extension_version().c_str()));
+  }
+  return "[" + base::JoinString(extension_ids_and_versions_strings, ", ") + "]";
+}
+
+// Returns a string representation of the given `fetch_request`, for logging.
+std::string FetchRequestToString(const em::PolicyFetchRequest& fetch_request) {
+  std::string result = "{ policy_type: '";
+  result += fetch_request.policy_type();
+  result += "'";
+  if (fetch_request.has_settings_entity_id()) {
+    result += ", settings_entity_id: '";
+    result += fetch_request.settings_entity_id();
+    result += "'";
+  }
+  result += " }";
+  return result;
+}
+
+}  // namespace
 
 RequestHandlerForPolicy::RequestHandlerForPolicy(
     EmbeddedPolicyTestServer* parent)
@@ -60,6 +92,10 @@ std::unique_ptr<HttpResponse> RequestHandlerForPolicy::HandleRequest(
       dm_protocol::kChromeExtensionPolicyType,
       dm_protocol::kChromeMachineLevelExtensionCloudPolicyType,
       dm_protocol::kChromeSigninExtensionPolicyType,
+      dm_protocol::kChromeExtensionInstallUserCloudPolicyType,
+      dm_protocol::kChromeExtensionInstallMachineLevelCloudPolicyType,
+  };
+  const base::flat_set<std::string> kExtensionInstallPolicyTypes{
       dm_protocol::kChromeExtensionInstallUserCloudPolicyType,
       dm_protocol::kChromeExtensionInstallMachineLevelCloudPolicyType,
   };
@@ -117,26 +153,38 @@ std::unique_ptr<HttpResponse> RequestHandlerForPolicy::HandleRequest(
   for (const auto& fetch_request : fetch_requests) {
     const std::string& policy_type = fetch_request.policy_type();
     // TODO(crbug.com/40773420): Add other policy types as needed.
-    if (!base::Contains(kCloudPolicyTypes, policy_type)) {
+    if (!kCloudPolicyTypes.contains(policy_type)) {
       return CreateHttpResponse(
           net::HTTP_BAD_REQUEST,
           base::StringPrintf("Invalid policy_type: %s", policy_type.c_str()));
     }
 
+    LOG(INFO) << "PolicyFetchRequest: " << FetchRequestToString(fetch_request);
     std::string error_msg;
-    if (base::Contains(kExtensionPolicyTypes, policy_type)) {
+    if (kExtensionInstallPolicyTypes.contains(policy_type) &&
+        fetch_request.extension_ids_and_version_size() > 0) {
+      if (!ProcessCloudPolicyForExtensionInstall(
+              fetch_request, *client_info,
+              device_management_response.mutable_policy_response(),
+              &error_msg)) {
+        return CreateHttpResponse(net::HTTP_BAD_REQUEST, error_msg);
+      }
+    } else if (kExtensionPolicyTypes.contains(policy_type)) {
       if (!ProcessCloudPolicyForExtensions(
               fetch_request, *client_info,
               device_management_response.mutable_policy_response(),
               &error_msg)) {
         return CreateHttpResponse(net::HTTP_BAD_REQUEST, error_msg);
       }
-    } else if (!ProcessCloudPolicy(
-                   fetch_request, *client_info,
-                   device_management_response.mutable_policy_response()
-                       ->add_responses(),
-                   &error_msg)) {
-      return CreateHttpResponse(net::HTTP_BAD_REQUEST, error_msg);
+    } else {
+      LOG(INFO) << "Processing cloud policy.";
+      if (!ProcessCloudPolicy(
+              fetch_request, *client_info,
+              device_management_response.mutable_policy_response()
+                  ->add_responses(),
+              &error_msg)) {
+        return CreateHttpResponse(net::HTTP_BAD_REQUEST, error_msg);
+      }
     }
   }
 
@@ -322,6 +370,7 @@ bool RequestHandlerForPolicy::ProcessCloudPolicyForExtensions(
     const ClientStorage::ClientInfo& client_info,
     em::DevicePolicyResponse* response,
     std::string* error_msg) {
+  LOG(INFO) << "Processing policy for extensions.";
   // Send one PolicyFetchResponse for each extension configured on the server as
   // the client does not actually tell us which extensions it has installed to
   // protect user privacy.
@@ -336,6 +385,61 @@ bool RequestHandlerForPolicy::ProcessCloudPolicyForExtensions(
       return false;
     }
   }
+
+  return true;
+}
+
+bool RequestHandlerForPolicy::ProcessCloudPolicyForExtensionInstall(
+    const em::PolicyFetchRequest& fetch_request,
+    const ClientStorage::ClientInfo& client_info,
+    em::DevicePolicyResponse* response,
+    std::string* error_msg) {
+  LOG(INFO) << "Processing policy for extension install.";
+  LOG(INFO) << "extension_ids_and_version = "
+            << JoinExtensionIdsAndVersions(
+                   fetch_request.extension_ids_and_version());
+
+  // Merge the ExtensionInstallPolicies protos into one uber-proto based on the
+  // request's extension_ids_and_version list.
+  em::ExtensionInstallPolicies result;
+  for (const auto& extension : fetch_request.extension_ids_and_version()) {
+    em::PolicyFetchRequest fetch_request_with_id;
+    fetch_request_with_id.CopyFrom(fetch_request);
+    fetch_request_with_id.set_settings_entity_id(
+        extension.extension_id() + "@" + extension.extension_version());
+    em::PolicyFetchResponse inner_response;
+    if (!ProcessCloudPolicy(fetch_request_with_id, client_info, &inner_response,
+                            error_msg)) {
+      return false;
+    }
+    // Get the payload from the inner response.
+    em::PolicyData policy_data;
+    policy_data.ParseFromString(inner_response.policy_data());
+    em::ExtensionInstallPolicies extension_install_policies;
+    if (!extension_install_policies.ParseFromString(
+            policy_data.policy_value())) {
+      *error_msg = "Failed to parse payload as ExtensionInstallPolicies.";
+      return false;
+    }
+    if (extension_install_policies.policies_size() > 1) {
+      *error_msg = "More than one extension install policy found.";
+      return false;
+    }
+    if (extension_install_policies.policies_size() == 1) {
+      result.add_policies()->CopyFrom(extension_install_policies.policies(0));
+    }
+  }
+
+  // Wrap the uber-proto with PolicyData and add it to the response.
+  em::PolicyData policy_data;
+  policy_data.set_policy_type(fetch_request.policy_type());
+  policy_data.set_policy_value(result.SerializeAsString());
+  if (fetch_request.extension_ids_and_version_size() == 1) {
+    policy_data.set_settings_entity_id(
+        fetch_request.extension_ids_and_version(0).extension_id());
+  }
+  policy_data.SerializeToString(
+      response->add_responses()->mutable_policy_data());
 
   return true;
 }

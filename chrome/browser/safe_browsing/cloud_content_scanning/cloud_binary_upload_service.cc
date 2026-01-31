@@ -43,6 +43,9 @@
 namespace safe_browsing {
 namespace {
 
+using ::enterprise_connectors::BinaryUploadRequest;
+using ::enterprise_connectors::GetBrowserPolicyConnector;
+
 // The default maximum number of concurrent active requests. This is used to
 // limit the number of requests that are actively being uploaded. This is set to
 // default of 15 because it was determined to be a good value through
@@ -57,8 +60,6 @@ const char kSbEnterpriseUploadUrl[] =
 
 const char kSbConsumerUploadUrl[] =
     "https://safebrowsing.google.com/safebrowsing/uploads/consumer";
-
-using ::enterprise_connectors::BinaryUploadRequest;
 
 net::NetworkTrafficAnnotationTag GetTrafficAnnotationTag(bool is_app) {
   if (is_app) {
@@ -303,7 +304,8 @@ void CloudBinaryUploadService::MaybeCancelRequests(
   // `request_queue_`.
 }
 
-base::WeakPtr<BinaryUploadService> CloudBinaryUploadService::AsWeakPtr() {
+base::WeakPtr<enterprise_connectors::BinaryUploadService>
+CloudBinaryUploadService::AsWeakPtr() {
   return weakptr_factory_.GetWeakPtr();
 }
 
@@ -313,8 +315,6 @@ void CloudBinaryUploadService::MaybeUploadForDeepScanningCallback(
   // Ignore the request if the browser cannot upload data.
   if (auth_check_result !=
       enterprise_connectors::ScanRequestUploadResult::kSuccess) {
-    // TODO(crbug.com/40660637): Add extra logic to handle UX for non-authorized
-    // users.
     request->FinishRequest(auth_check_result,
                            enterprise_connectors::ContentAnalysisResponse());
     return;
@@ -835,22 +835,22 @@ BinaryUploadRequest* CloudBinaryUploadService::GetRequest(
   return nullptr;
 }
 
-class ValidateDataUploadRequest : public CloudBinaryUploadService::Request {
+class ValidateDataUploadRequest : public BinaryUploadRequest {
  public:
   ValidateDataUploadRequest(
-      CloudBinaryUploadService::ContentAnalysisCallback callback,
+      BinaryUploadRequest::ContentAnalysisCallback callback,
       enterprise_connectors::CloudAnalysisSettings settings)
-      : CloudBinaryUploadService::Request(
-            std::move(callback),
-            enterprise_connectors::CloudOrLocalAnalysisSettings(
-                std::move(settings))) {}
+      : BinaryUploadRequest(std::move(callback),
+                            enterprise_connectors::CloudOrLocalAnalysisSettings(
+                                std::move(settings)),
+                            base::BindRepeating(&GetBrowserPolicyConnector)) {}
   ValidateDataUploadRequest(const ValidateDataUploadRequest&) = delete;
   ValidateDataUploadRequest& operator=(const ValidateDataUploadRequest&) =
       delete;
   ~ValidateDataUploadRequest() override = default;
 
  private:
-  // CloudBinaryUploadService::Request implementation.
+  // BinaryUploadRequest implementation.
   void GetRequestData(DataCallback callback) override;
 
   bool IsAuthRequest() const override;
@@ -859,7 +859,7 @@ class ValidateDataUploadRequest : public CloudBinaryUploadService::Request {
 inline void ValidateDataUploadRequest::GetRequestData(DataCallback callback) {
   std::move(callback).Run(
       enterprise_connectors::ScanRequestUploadResult::kSuccess,
-      CloudBinaryUploadService::Request::Data());
+      BinaryUploadRequest::Data());
 }
 
 bool ValidateDataUploadRequest::IsAuthRequest() const {

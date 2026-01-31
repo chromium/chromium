@@ -152,6 +152,9 @@ class ContactInfoSyncBridgeTest : public testing::Test {
   }
 
   ContactInfoSyncBridge& bridge() { return *bridge_; }
+  AutofillSyncMetadataTable& sync_metadata_table() {
+    return sync_metadata_table_;
+  }
 
  private:
   base::ScopedTempDir temp_dir_;
@@ -230,6 +233,13 @@ TEST_F(ContactInfoSyncBridgeTest, ApplyIncrementalSyncChanges) {
   entity_change_list.push_back(
       syncer::EntityChange::CreateUpdate(kGUID2, ProfileToEntity(remote)));
 
+  // Create a metadata change list and add a change.
+  std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
+      bridge().CreateMetadataChangeList();
+  sync_pb::EntityMetadata metadata;
+  metadata.set_sequence_number(123);
+  metadata_change_list->UpdateMetadata(kGUID2, metadata);
+
   // Expect no changes to the remote profiles.
   EXPECT_CALL(mock_processor(), Delete).Times(0);
   EXPECT_CALL(mock_processor(), Put).Times(0);
@@ -238,10 +248,17 @@ TEST_F(ContactInfoSyncBridgeTest, ApplyIncrementalSyncChanges) {
 
   // `ApplyIncrementalSyncChanges()` returns an error if it fails.
   EXPECT_FALSE(bridge().ApplyIncrementalSyncChanges(
-      bridge().CreateMetadataChangeList(), std::move(entity_change_list)));
+      std::move(metadata_change_list), std::move(entity_change_list)));
 
   // Expect that the local profiles have changed.
   EXPECT_THAT(GetAllDataFromTable(), ElementsAre(remote));
+
+  // Verify that the metadata was written to the table.
+  syncer::MetadataBatch batch;
+  ASSERT_TRUE(
+      sync_metadata_table().GetAllSyncMetadata(syncer::CONTACT_INFO, &batch));
+  EXPECT_TRUE(batch.GetAllMetadata().count(kGUID2));
+  EXPECT_EQ(batch.GetAllMetadata().at(kGUID2)->sequence_number(), 123);
 }
 
 // Regression test checking that the modification date of incoming profiles is
@@ -429,9 +446,28 @@ TEST_F(ContactInfoSyncBridgeTest, ApplyDisableSyncChanges) {
   EXPECT_CALL(backend(), CommitChanges());
   EXPECT_CALL(backend(), NotifyOnAutofillChangedBySync(syncer::CONTACT_INFO));
 
-  bridge().ApplyDisableSyncChanges(bridge().CreateMetadataChangeList());
+  // Add initial metadata to the table.
+  syncer::MetadataBatch initial_metadata;
+  sync_metadata_table().UpdateEntityMetadata(syncer::CONTACT_INFO, kGUID1,
+                                             sync_pb::EntityMetadata());
+  ASSERT_TRUE(sync_metadata_table().GetAllSyncMetadata(syncer::CONTACT_INFO,
+                                                       &initial_metadata));
+  ASSERT_TRUE(initial_metadata.GetAllMetadata().count(kGUID1));
+
+  // Create a delete metadata change list.
+  std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
+      bridge().CreateMetadataChangeList();
+  metadata_change_list->ClearMetadata(kGUID1);
+
+  bridge().ApplyDisableSyncChanges(std::move(metadata_change_list));
 
   EXPECT_TRUE(GetAllDataFromTable().empty());
+
+  // Verify that the metadata was deleted from the table.
+  syncer::MetadataBatch final_metadata;
+  ASSERT_TRUE(sync_metadata_table().GetAllSyncMetadata(syncer::CONTACT_INFO,
+                                                       &final_metadata));
+  EXPECT_FALSE(final_metadata.GetAllMetadata().count(kGUID1));
 }
 
 // Tests that trimming `ContactInfoSpecifics` with only supported values set
@@ -483,6 +519,34 @@ TEST_F(ContactInfoSyncBridgeTest, PendingChanges) {
   EXPECT_CALL(mock_processor(),
               Put(kGUID1, ContactInfoSpecificsEqualsProfile(profile), _));
   ASSERT_TRUE(StartSyncing(/*remote_profiles=*/{}));
+}
+
+// Tests that local changes trigger metadata updates via the processor, and
+// those updates are written to the table.
+TEST_F(ContactInfoSyncBridgeTest, AutofillProfileChanged_CommitsMetadata) {
+  ASSERT_TRUE(StartSyncing(/*remote_profiles=*/{}));
+  const AutofillProfile profile = TestProfile(kGUID1);
+
+  // Mock the processor to write to the metadata change list when Put is called.
+  EXPECT_CALL(mock_processor(),
+              Put(kGUID1, ContactInfoSpecificsEqualsProfile(profile), _))
+      .WillOnce([&](const std::string& storage_key,
+                    std::unique_ptr<syncer::EntityData> entity_data,
+                    syncer::MetadataChangeList* metadata_change_list) {
+        sync_pb::EntityMetadata metadata;
+        metadata.set_sequence_number(456);
+        metadata_change_list->UpdateMetadata(storage_key, metadata);
+      });
+
+  bridge().AutofillProfileChanged(
+      {AutofillProfileChange::ADD, kGUID1, profile});
+
+  // Verify that the metadata was written to the table.
+  syncer::MetadataBatch batch;
+  ASSERT_TRUE(
+      sync_metadata_table().GetAllSyncMetadata(syncer::CONTACT_INFO, &batch));
+  EXPECT_TRUE(batch.GetAllMetadata().count(kGUID1));
+  EXPECT_EQ(batch.GetAllMetadata().at(kGUID1)->sequence_number(), 456);
 }
 
 }  // namespace

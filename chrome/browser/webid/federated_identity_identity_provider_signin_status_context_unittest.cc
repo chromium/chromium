@@ -113,7 +113,7 @@ TEST_F(FederatedIdentityIdentityProviderSigninStatusContextTest,
   options.accounts.push_back(kAccountA);
 
   context()->SetSigninStatus(kIdpOriginA, true, options);
-  base::Value::List returned_accounts = context()->GetAccounts(kIdpOriginA);
+  base::ListValue returned_accounts = context()->GetAccounts(kIdpOriginA);
   EXPECT_EQ(1U, returned_accounts.size());
 }
 
@@ -145,18 +145,16 @@ TEST_F(FederatedIdentityIdentityProviderSigninStatusContextTest,
 
   // The accounts should be expired for IdpA, but the login status should've
   // been preserved.
-  base::Value::List returned_accounts_idp_a =
-      context()->GetAccounts(kIdpOriginA);
+  base::ListValue returned_accounts_idp_a = context()->GetAccounts(kIdpOriginA);
   EXPECT_EQ(0U, returned_accounts_idp_a.size());
   EXPECT_TRUE(context()->GetSigninStatus(kIdpOriginA).value_or(false));
 
   // The accounts should still be valid for IdpB, and the login status should be
   // preserved.
-  base::Value::List returned_accounts_idp_b =
-      context()->GetAccounts(kIdpOriginB);
+  base::ListValue returned_accounts_idp_b = context()->GetAccounts(kIdpOriginB);
   EXPECT_EQ(1U, returned_accounts_idp_b.size());
 
-  base::Value::Dict& account_dict = returned_accounts_idp_b[0].GetDict();
+  base::DictValue& account_dict = returned_accounts_idp_b[0].GetDict();
   EXPECT_EQ(*account_dict.FindString(content::webid::kAccountIdKey),
             kAccountB.id);
   EXPECT_EQ(*account_dict.FindString(content::webid::kAccountNameKey),
@@ -215,7 +213,7 @@ TEST_F(FederatedIdentityIdentityProviderSigninStatusContextTest,
   options.accounts.push_back(kAccountA);
 
   context()->SetSigninStatus(kIdpOriginA, true, options);
-  base::Value::List returned_accounts = context()->GetAccounts(kIdpOriginA);
+  base::ListValue returned_accounts = context()->GetAccounts(kIdpOriginA);
   EXPECT_EQ(1U, returned_accounts.size());
 
   context()->SetSigninStatus(kIdpOriginA, true, /*options=*/std::nullopt);

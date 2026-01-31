@@ -1152,8 +1152,8 @@ suite('WallpaperSearchTest', () => {
                   {
                     id: {high: BigInt(10), low: BigInt(1)},
                     description: 'Description',
-                    backgroundUrl: {url: 'https://example.com/foo_1.png'},
-                    thumbnailUrl: {url: 'https://example.com/foo_2.png'},
+                    backgroundUrl: 'https://example.com/foo_1.png',
+                    thumbnailUrl: 'https://example.com/foo_2.png',
                   },
                 ],
               },
@@ -1191,8 +1191,8 @@ suite('WallpaperSearchTest', () => {
                       {
                         id: {high: BigInt(10), low: BigInt(1)},
                         description: 'Description',
-                        backgroundUrl: {url: 'https://example.com/foo_1.png'},
-                        thumbnailUrl: {url: 'https://example.com/foo_2.png'},
+                        backgroundUrl: 'https://example.com/foo_1.png',
+                        thumbnailUrl: 'https://example.com/foo_2.png',
                       },
                     ],
                   },
@@ -1425,8 +1425,8 @@ suite('WallpaperSearchTest', () => {
             {
               id: {high: BigInt(10), low: BigInt(1)},
               description: 'Description',
-              backgroundUrl: {url: 'https://example.com/foo_1.png'},
-              thumbnailUrl: {url: 'https://example.com/foo_2.png'},
+              backgroundUrl: 'https://example.com/foo_1.png',
+              thumbnailUrl: 'https://example.com/foo_2.png',
             },
           ],
         }]);
@@ -1468,8 +1468,8 @@ suite('WallpaperSearchTest', () => {
                 {
                   id: {high: BigInt(10), low: BigInt(1)},
                   description: 'Description',
-                  backgroundUrl: {url: 'https://example.com/foo_1.png'},
-                  thumbnailUrl: {url: 'https://example.com/foo_2.png'},
+                  backgroundUrl: 'https://example.com/foo_1.png',
+                  thumbnailUrl: 'https://example.com/foo_2.png',
                 },
               ],
             }]);
@@ -1843,8 +1843,8 @@ suite('WallpaperSearchTest', () => {
                 {
                   id: {high: BigInt(10), low: BigInt(1)},
                   description: 'Description',
-                  backgroundUrl: {url: 'https://example.com/foo_1.png'},
-                  thumbnailUrl: {url: 'https://example.com/foo_2.png'},
+                  backgroundUrl: 'https://example.com/foo_1.png',
+                  thumbnailUrl: 'https://example.com/foo_2.png',
                 },
               ],
             },
@@ -1900,14 +1900,14 @@ suite('WallpaperSearchTest', () => {
                 {
                   id: {high: BigInt(10), low: BigInt(1)},
                   description: 'Description foo',
-                  backgroundUrl: {url: 'https://example.com/foo_1.png'},
-                  thumbnailUrl: {url: 'https://example.com/foo_2.png'},
+                  backgroundUrl: 'https://example.com/foo_1.png',
+                  thumbnailUrl: 'https://example.com/foo_2.png',
                 },
                 {
                   id: {high: BigInt(8), low: BigInt(2)},
                   description: 'Description bar',
-                  backgroundUrl: {url: 'https://example.com/bar_1.png'},
-                  thumbnailUrl: {url: 'https://example.com/bar_2.png'},
+                  backgroundUrl: 'https://example.com/bar_1.png',
+                  thumbnailUrl: 'https://example.com/bar_2.png',
                 },
               ],
             },
@@ -1922,8 +1922,8 @@ suite('WallpaperSearchTest', () => {
                 {
                   id: {high: BigInt(7), low: BigInt(2)},
                   description: 'Description baz',
-                  backgroundUrl: {url: 'https://example.com/baz_1.png'},
-                  thumbnailUrl: {url: 'https://example.com/baz_2.png'},
+                  backgroundUrl: 'https://example.com/baz_1.png',
+                  thumbnailUrl: 'https://example.com/baz_2.png',
                 },
               ],
             },
@@ -1986,8 +1986,8 @@ suite('WallpaperSearchTest', () => {
                 {
                   id: {high: BigInt(10), low: BigInt(1)},
                   description: 'Description',
-                  backgroundUrl: {url: 'https://example.com/foo_1.png'},
-                  thumbnailUrl: {url: 'https://example.com/foo_2.png'},
+                  backgroundUrl: 'https://example.com/foo_1.png',
+                  thumbnailUrl: 'https://example.com/foo_2.png',
                 },
               ],
             },
@@ -2002,8 +2002,8 @@ suite('WallpaperSearchTest', () => {
                 {
                   id: {high: BigInt(10), low: BigInt(1)},
                   description: 'Description',
-                  backgroundUrl: {url: 'https://example.com/foo_1.png'},
-                  thumbnailUrl: {url: 'https://example.com/foo_2.png'},
+                  backgroundUrl: 'https://example.com/foo_1.png',
+                  thumbnailUrl: 'https://example.com/foo_2.png',
                 },
               ],
             },
@@ -2039,8 +2039,8 @@ suite('WallpaperSearchTest', () => {
                 {
                   id: {high: BigInt(10), low: BigInt(1)},
                   description: 'Description',
-                  backgroundUrl: {url: 'https://example.com/foo_1.png'},
-                  thumbnailUrl: {url: 'https://example.com/foo_2.png'},
+                  backgroundUrl: 'https://example.com/foo_1.png',
+                  thumbnailUrl: 'https://example.com/foo_2.png',
                 },
               ],
             },
@@ -2060,7 +2060,7 @@ suite('WallpaperSearchTest', () => {
           handler.getArgs('setBackgroundToInspirationImage')[0][0].low);
       assertEquals(
           'https://example.com/foo_1.png',
-          handler.getArgs('setBackgroundToInspirationImage')[0][1].url);
+          handler.getArgs('setBackgroundToInspirationImage')[0][1]);
     });
 
     test('inspration group titles update selected descriptors', async () => {
@@ -2095,8 +2095,8 @@ suite('WallpaperSearchTest', () => {
                 {
                   id: {high: BigInt(10), low: BigInt(1)},
                   description: 'Description foo',
-                  backgroundUrl: {url: 'https://example.com/foo_1.png'},
-                  thumbnailUrl: {url: 'https://example.com/foo_2.png'},
+                  backgroundUrl: 'https://example.com/foo_1.png',
+                  thumbnailUrl: 'https://example.com/foo_2.png',
                 },
               ],
             },
@@ -2111,8 +2111,8 @@ suite('WallpaperSearchTest', () => {
                 {
                   id: {high: BigInt(10), low: BigInt(1)},
                   description: 'Description foo',
-                  backgroundUrl: {url: 'https://example.com/foo_1.png'},
-                  thumbnailUrl: {url: 'https://example.com/foo_2.png'},
+                  backgroundUrl: 'https://example.com/foo_1.png',
+                  thumbnailUrl: 'https://example.com/foo_2.png',
                 },
               ],
             },
@@ -2197,8 +2197,8 @@ suite('WallpaperSearchTest', () => {
                 {
                   id: {high: BigInt(10), low: BigInt(1)},
                   description: 'Description foo',
-                  backgroundUrl: {url: 'https://example.com/foo_1.png'},
-                  thumbnailUrl: {url: 'https://example.com/foo_2.png'},
+                  backgroundUrl: 'https://example.com/foo_1.png',
+                  thumbnailUrl: 'https://example.com/foo_2.png',
                 },
               ],
             },
@@ -2213,8 +2213,8 @@ suite('WallpaperSearchTest', () => {
                 {
                   id: {high: BigInt(10), low: BigInt(1)},
                   description: 'Description bar',
-                  backgroundUrl: {url: 'https://example.com/bar_1.png'},
-                  thumbnailUrl: {url: 'https://example.com/bar_2.png'},
+                  backgroundUrl: 'https://example.com/bar_1.png',
+                  thumbnailUrl: 'https://example.com/bar_2.png',
                 },
               ],
             },
@@ -2327,8 +2327,8 @@ suite('WallpaperSearchTest', () => {
           {
             id: {high: BigInt(10), low: BigInt(1)},
             description: 'Description',
-            backgroundUrl: {url: 'https://example.com/foo_1.png'},
-            thumbnailUrl: {url: 'https://example.com/foo_2.png'},
+            backgroundUrl: 'https://example.com/foo_1.png',
+            thumbnailUrl: 'https://example.com/foo_2.png',
           },
         ],
       }]);
@@ -2389,8 +2389,8 @@ suite('WallpaperSearchTest', () => {
                 {
                   id: {high: BigInt(10), low: BigInt(1)},
                   description: 'Description',
-                  backgroundUrl: {url: 'https://example.com/foo_1.png'},
-                  thumbnailUrl: {url: 'https://example.com/foo_2.png'},
+                  backgroundUrl: 'https://example.com/foo_1.png',
+                  thumbnailUrl: 'https://example.com/foo_2.png',
                 },
               ],
             },
@@ -2416,14 +2416,14 @@ suite('WallpaperSearchTest', () => {
                 {
                   id: {high: BigInt(10), low: BigInt(1)},
                   description: 'Description foo',
-                  backgroundUrl: {url: 'https://example.com/foo_1.png'},
-                  thumbnailUrl: {url: 'https://example.com/foo_2.png'},
+                  backgroundUrl: 'https://example.com/foo_1.png',
+                  thumbnailUrl: 'https://example.com/foo_2.png',
                 },
                 {
                   id: {high: BigInt(8), low: BigInt(2)},
                   description: 'Description bar',
-                  backgroundUrl: {url: 'https://example.com/bar_1.png'},
-                  thumbnailUrl: {url: 'https://example.com/bar_2.png'},
+                  backgroundUrl: 'https://example.com/bar_1.png',
+                  thumbnailUrl: 'https://example.com/bar_2.png',
                 },
               ],
             },

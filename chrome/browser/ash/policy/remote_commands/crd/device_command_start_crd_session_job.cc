@@ -102,7 +102,7 @@ const bool kAllowRemoteInput = true;
 // session.
 const bool kAllowClipboardSync = true;
 
-std::optional<std::string> FindString(const base::Value::Dict& dict,
+std::optional<std::string> FindString(const base::DictValue& dict,
                                       std::string_view key) {
   if (!dict.contains(key)) {
     return std::nullopt;
@@ -122,7 +122,7 @@ void SendResultCodeToUma(CrdSessionType crd_session_type,
 
 std::string CreateSuccessPayload(const std::string& access_code) {
   return base::WriteJson(
-             base::Value::Dict()
+             base::DictValue()
                  .Set(kResultCodeFieldName,
                       static_cast<int>(
                           StartCrdSessionResultCode::START_CRD_SESSION_SUCCESS))
@@ -132,7 +132,7 @@ std::string CreateSuccessPayload(const std::string& access_code) {
 
 std::string CreateNonIdlePayload(const base::TimeDelta& time_delta) {
   return base::WriteJson(
-             base::Value::Dict()
+             base::DictValue()
                  .Set(kResultCodeFieldName,
                       static_cast<int>(
                           StartCrdSessionResultCode::FAILURE_NOT_IDLE))
@@ -146,7 +146,7 @@ std::string CreateErrorPayload(StartCrdSessionResultCode result_code,
   CHECK_NE(result_code, StartCrdSessionResultCode::START_CRD_SESSION_SUCCESS);
   CHECK_NE(result_code, StartCrdSessionResultCode::FAILURE_NOT_IDLE);
 
-  auto payload = base::Value::Dict()  //
+  auto payload = base::DictValue()  //
                      .Set(kResultCodeFieldName, static_cast<int>(result_code));
   if (!error_message.empty()) {
     payload.Set(kResultMessageFieldName, error_message);
@@ -217,7 +217,7 @@ DeviceCommandStartCrdSessionJob::GetType() const {
 
 bool DeviceCommandStartCrdSessionJob::ParseCommandPayload(
     const std::string& command_payload) {
-  std::optional<base::Value::Dict> root = base::JSONReader::ReadDict(
+  std::optional<base::DictValue> root = base::JSONReader::ReadDict(
       command_payload, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!root) {
     LOG(WARNING) << "Rejecting remote command with invalid payload: "

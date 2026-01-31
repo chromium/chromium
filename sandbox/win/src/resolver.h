@@ -30,9 +30,7 @@ class [[clang::lto_visibility_public]] ResolverThunk {
 
   // Performs the actual interception of a function.
   // target_name is an exported function from the module loaded at
-  // target_module, and must be replaced by interceptor_name, exported from
-  // interceptor_module. interceptor_entry_point can be provided instead of
-  // interceptor_name / interceptor_module.
+  // target_module, and must be replaced by interceptor_entry_point.
   // thunk_storage must point to a buffer on the child's address space, to hold
   // the patch thunk, and related data. If provided, storage_used will receive
   // the number of bytes used from thunk_storage.
@@ -42,31 +40,25 @@ class [[clang::lto_visibility_public]] ResolverThunk {
   // size_t size = resolver.GetThunkSize();
   // char* buffer = ::VirtualAllocEx(child_process, nullptr, size,
   //                                 MEM_COMMIT, PAGE_READWRITE);
-  // resolver.Setup(ntdll_module, nullptr, L"NtCreateFile", nullptr,
-  //                &MyReplacementFunction, buffer, size, nullptr);
+  // resolver.Setup(ntdll_module, L"NtCreateFile", &MyReplacementFunction,
+  // buffer, size,
+  //                nullptr);
   //
   // In general, the idea is to allocate a single big buffer for all
   // interceptions on the same dll, and call Setup n times.
   // WARNING: This means that any data member that is specific to a single
   // interception must be reset within this method.
   virtual NTSTATUS Setup(const void* target_module,
-                         const void* interceptor_module,
                          const char* target_name,
-                         const char* interceptor_name,
                          const void* interceptor_entry_point,
                          void* thunk_storage,
                          size_t storage_bytes,
                          size_t* storage_used) = 0;
 
-  // Gets the address of function_name inside module (main exe).
-  virtual NTSTATUS ResolveInterceptor(const void* module,
-                                      const char* function_name,
-                                      const void** address);
-
   // Gets the address of an exported function_name inside module.
   virtual NTSTATUS ResolveTarget(const void* module,
                                  const char* function_name,
-                                 void** address);
+                                 void** address) = 0;
 
   // Gets the required buffer size for this type of thunk.
   virtual size_t GetThunkSize() const = 0;
@@ -77,15 +69,11 @@ class [[clang::lto_visibility_public]] ResolverThunk {
   // and the interceptor into the member variables.
   //
   // target_name is an exported function from the module loaded at
-  // target_module, and must be replaced by interceptor_name, exported from
-  // interceptor_module. interceptor_entry_point can be provided instead of
-  // interceptor_name / interceptor_module.
+  // target_module, and must be replaced by interceptor_entry_point.
   // thunk_storage must point to a buffer on the child's address space, to hold
   // the patch thunk, and related data.
   virtual NTSTATUS Init(const void* target_module,
-                        const void* interceptor_module,
                         const char* target_name,
-                        const char* interceptor_name,
                         const void* interceptor_entry_point,
                         void* thunk_storage,
                         size_t storage_bytes);

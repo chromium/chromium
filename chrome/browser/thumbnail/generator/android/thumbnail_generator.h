@@ -36,7 +36,7 @@ class ThumbnailGenerator {
                          const base::android::JavaRef<jstring>& jcontent_id,
                          const base::android::JavaRef<jstring>& jfile_path,
                          const base::android::JavaRef<jstring>& jmime_type,
-                         jint icon_size,
+                         int32_t icon_size,
                          const base::android::JavaRef<jobject>& callback);
 
  private:

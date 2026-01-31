@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_TAB_TAB_STATE_STORAGE_BACKEND_H_
 
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -22,7 +23,8 @@ namespace tabs {
 // layer.
 class TabStateStorageBackend {
  public:
-  explicit TabStateStorageBackend(const base::FilePath& profile_path);
+  TabStateStorageBackend(const base::FilePath& profile_path,
+                         bool support_off_the_record_data);
   TabStateStorageBackend(const TabStateStorageBackend&) = delete;
   TabStateStorageBackend& operator=(const TabStateStorageBackend&) = delete;
   ~TabStateStorageBackend();
@@ -41,14 +43,25 @@ class TabStateStorageBackend {
 
   using OnStorageLoadedData =
       base::OnceCallback<void(std::unique_ptr<StorageLoadedData>)>;
-  void LoadAllNodes(const std::string& window_tag,
+  void LoadAllNodes(std::string_view window_tag,
                     bool is_off_the_record,
                     std::unique_ptr<StorageLoadedData::Builder> builder,
                     OnStorageLoadedData on_storage_loaded_data);
 
   void ClearAllNodes();
 
-  void ClearWindow(const std::string& window_tag);
+  void ClearWindow(std::string_view window_tag);
+
+  void ClearNodesForWindowExcept(std::string_view window_tag,
+                                 bool is_off_the_record,
+                                 std::vector<StorageId> ids);
+
+  void SetKey(std::string_view window_tag, std::vector<uint8_t> key);
+  void RemoveKey(std::string_view window_tag);
+
+#if defined(NDEBUG)
+  void PrintAll();
+#endif
 
  private:
   void OnDBReady(bool success);
@@ -60,6 +73,7 @@ class TabStateStorageBackend {
                   std::unique_ptr<StorageLoadedData> storage_loaded_data);
 
   const base::FilePath profile_path_;
+  const bool support_off_the_record_data_;
   scoped_refptr<base::UpdateableSequencedTaskRunner> db_task_runner_;
   int boosted_priority_count_{0};
 

@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/growth/metrics.h"
@@ -17,18 +18,37 @@
 #include "chromeos/ash/components/growth/campaigns_manager_client.h"
 #include "components/component_updater/ash/component_manager_ash.h"
 
+class ApplicationLocaleStorage;
+class PrefService;
+
 namespace base {
 class Version;
 }
+
+namespace component_updater {
+class ComponentManagerAsh;
+}  // namespace component_updater
 
 namespace growth {
 class CampaignsManager;
 }  // namespace growth
 
+namespace variations {
+class VariationsService;
+}  // namespace variations
+
 class CampaignsManagerClientImpl : public growth::CampaignsManagerClient,
                                    public UiActionPerformer::Observer {
  public:
-  CampaignsManagerClientImpl();
+  // `local_state`, `application_locale_storage`, and `variations_service` must
+  // be non-null and must outlive `this`.
+  // `component_manager_ash` must be non-null.
+  CampaignsManagerClientImpl(
+      PrefService* local_state,
+      ApplicationLocaleStorage* application_locale_storage,
+      variations::VariationsService* variations_service,
+      scoped_refptr<component_updater::ComponentManagerAsh>
+          component_manager_ash);
   CampaignsManagerClientImpl(const CampaignsManagerClientImpl&) = delete;
   CampaignsManagerClientImpl& operator=(const CampaignsManagerClientImpl&) =
       delete;
@@ -87,6 +107,11 @@ class CampaignsManagerClientImpl : public growth::CampaignsManagerClient,
                             bool init_success);
   void UpdateConfig(const std::map<std::string, std::string>& params);
   void RecordDismissalEvents(int campaign_id, std::optional<int> group_id);
+
+  const raw_ref<ApplicationLocaleStorage> application_locale_storage_;
+  const raw_ref<variations::VariationsService> variations_service_;
+  const scoped_refptr<component_updater::ComponentManagerAsh>
+      component_manager_ash_;
 
   growth::CampaignsConfigurationProvider config_provider_;
   std::unique_ptr<growth::CampaignsManager> campaigns_manager_;

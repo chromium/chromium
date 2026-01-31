@@ -335,8 +335,19 @@ export class SearchboxMatchElement extends CrLitElement {
     return this.match.a11yLabel;
   }
 
-  private sanitizeInnerHtml_(html: string): TrustedHTML {
-    return sanitizeInnerHtml(html, {attrs: ['class']});
+  /**
+   * Sanitizes .innerHTML from `renderTextWithClassifications_()` through
+   * `sanitizeInnerHtml` to ensure it only contains allowed tags.
+   * @param innerHtml The .innerHTML from `renderTextWithClassifications_()`
+   * @return Sanitized TrustedHTML safe for rendering
+   */
+  private sanitizeInnerHtml_(innerHtml: string): TrustedHTML {
+    try {
+      return sanitizeInnerHtml(innerHtml, {attrs: ['class']});
+    } catch (e) {
+      // If sanitization fails return empty HTML.
+      return window.trustedTypes!.emptyHTML;
+    }
   }
 
   private computeContentsHtml_(): TrustedHTML {
@@ -360,14 +371,11 @@ export class SearchboxMatchElement extends CrLitElement {
     if (!this.match) {
       return window.trustedTypes!.emptyHTML;
     }
-    const match = this.match;
-    if (match.answer) {
-      return this.sanitizeInnerHtml_(this.getMatchDescription_());
-    }
     return this.sanitizeInnerHtml_(
         this.renderTextWithClassifications_(
                 this.getMatchDescription_(),
-                this.getMatchDescriptionClassifications_())
+                this.match.answer ? [] :
+                                    this.getMatchDescriptionClassifications_())
             .innerHTML);
   }
 
@@ -463,17 +471,36 @@ export class SearchboxMatchElement extends CrLitElement {
    */
   private renderTextWithClassifications_(
       text: string, classifications: ACMatchClassification[]): Element {
-    return classifications
-        .map(({offset, style}, index) => {
-          const next = classifications[index + 1] || {offset: text.length};
-          const subText = text.substring(offset, next.offset);
-          const classes = this.convertClassificationStyleToCssClasses_(style);
-          return this.createSpanWithClasses_(subText, classes);
-        })
-        .reduce((container, currentElement) => {
-          container.appendChild(currentElement);
-          return container;
-        }, document.createElement('span'));
+    const container = document.createElement('span');
+
+    // If no classifications are provided, render the entire text unstyled.
+    if (classifications.length === 0) {
+      container.appendChild(this.createSpanWithClasses_(text, []));
+      return container;
+    }
+
+    // If the first classification doesn't start at 0, render the prefix text
+    // unstyled. `AutocompleteMatch::ValidateClassifications()` guarantees the
+    // first offset is 0, however this is only validated in debug builds.
+    const firstClassification = classifications[0]!;
+    if (firstClassification.offset > 0) {
+      const prefix = text.substring(0, firstClassification.offset);
+      container.appendChild(this.createSpanWithClasses_(prefix, []));
+    }
+
+    classifications.map(({offset, style}, index) => {
+      // Each classification defines a region from its offset to the next
+      // classification's offset or end of string for the last one. This covers
+      // the entire string with no gaps.
+      const nextOffset = index + 1 < classifications.length ?
+          classifications[index + 1]!.offset :
+          text.length;
+      const subString = text.substring(offset, nextOffset);
+      const classes = this.convertClassificationStyleToCssClasses_(style);
+      container.appendChild(this.createSpanWithClasses_(subString, classes));
+    });
+
+    return container;
   }
 
   private getMatchContents_(): string {

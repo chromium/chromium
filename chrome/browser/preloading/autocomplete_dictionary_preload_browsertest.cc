@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <optional>
 
-#include "base/memory/memory_pressure_listener.h"
+#include "base/memory/memory_pressure_listener_registry.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -51,7 +51,7 @@ class AutocompleteDictionaryPreloadBrowserTest
   }
 
   void SendMemoryPressureToNetworkService() {
-    content::GetNetworkService()->OnMemoryPressure(
+    base::MemoryPressureListenerRegistry::NotifyMemoryPressure(
         base::MEMORY_PRESSURE_LEVEL_CRITICAL);
     // To make sure that OnMemoryPressure has been received by the network
     // service, send a GetNetworkList IPC and wait for the result.

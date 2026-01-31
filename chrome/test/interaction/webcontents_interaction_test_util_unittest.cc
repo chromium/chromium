@@ -17,10 +17,10 @@ TEST(WebContentsInteractionTestUtilTest, IsTruthy) {
   EXPECT_FALSE(WebContentsInteractionTestUtil::IsTruthy(base::Value("")));
   EXPECT_TRUE(WebContentsInteractionTestUtil::IsTruthy(base::Value("abc")));
   // Even empty lists and objects/dictionaries are truthy.
-  EXPECT_TRUE(WebContentsInteractionTestUtil::IsTruthy(
-      base::Value(base::Value::List())));
-  EXPECT_TRUE(WebContentsInteractionTestUtil::IsTruthy(
-      base::Value(base::Value::Dict())));
+  EXPECT_TRUE(
+      WebContentsInteractionTestUtil::IsTruthy(base::Value(base::ListValue())));
+  EXPECT_TRUE(
+      WebContentsInteractionTestUtil::IsTruthy(base::Value(base::DictValue())));
 }
 
 TEST(WebContentsInteractionTestUtilTest, DeepQueryAddSegment) {

@@ -42,7 +42,7 @@ class MahiMediaAppContentManagerImpl
   std::optional<std::string> GetFileName(
       const base::UnguessableToken client_id) override;
   void GetContent(base::UnguessableToken client_id,
-                  chromeos::GetMediaAppContentCallback callback) override;
+                  chromeos::MahiGetContentCallback callback) override;
   void OnMahiContextMenuClicked(int64_t display_id,
                                 chromeos::mahi::ButtonType button_type,
                                 std::u16string_view question,

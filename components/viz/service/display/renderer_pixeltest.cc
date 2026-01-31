@@ -322,13 +322,15 @@ void CreateTestTwoColoredTextureDrawQuad(
   ResourceId mapped_resource = resource_map[resource];
 
   bool needs_blending = true;
-  const gfx::PointF uv_top_left(0.0f, 0.0f);
-  const gfx::PointF uv_bottom_right(1.0f, 1.0f);
+  const gfx::PointF tex_coord_top_left(0.0f, 0.0f);
+  const gfx::PointF tex_coord_bottom_right(rect.width(), rect.height());
   const bool nearest_neighbor = false;
   auto* quad = render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
   quad->SetNew(shared_state, rect, rect, needs_blending, mapped_resource,
-               uv_top_left, uv_bottom_right, background_color, nearest_neighbor,
-               /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
+               tex_coord_top_left, tex_coord_bottom_right, background_color,
+               nearest_neighbor,
+               /*secure_output=*/false, gfx::ProtectedVideoType::kClear,
+               /*is_tex_coords_normalized=*/false);
 }
 
 // TODO(crbug.com/40219248): Make this function use SkColor4f
@@ -394,13 +396,15 @@ void CreateTestTextureDrawQuad(
   ResourceId mapped_resource = resource_map[resource];
 
   bool needs_blending = true;
-  const gfx::PointF uv_top_left(0.0f, 0.0f);
-  const gfx::PointF uv_bottom_right(1.0f, 1.0f);
+  const gfx::PointF tex_coord_top_left(0.0f, 0.0f);
+  const gfx::PointF tex_coord_bottom_right(rect.width(), rect.height());
   const bool nearest_neighbor = false;
   auto* quad = render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
   quad->SetNew(shared_state, rect, rect, needs_blending, mapped_resource,
-               uv_top_left, uv_bottom_right, background_color, nearest_neighbor,
-               /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
+               tex_coord_top_left, tex_coord_bottom_right, background_color,
+               nearest_neighbor,
+               /*secure_output=*/false, gfx::ProtectedVideoType::kClear,
+               /*is_tex_coords_normalized=*/false);
 }
 
 void CreateTestY16TextureDrawQuad_FromVideoFrame(
@@ -1716,7 +1720,8 @@ TEST_P(GPURendererPixelTest, OverlayHintRequiredFallback) {
   quad->SetNew(texture_quad_state, gfx::Rect(this->device_viewport_size_),
                gfx::Rect(this->device_viewport_size_), false, ResourceId{1},
                gfx::PointF(), gfx::PointF(), SkColors::kTransparent, false,
-               false, gfx::ProtectedVideoType::kClear);
+               false, gfx::ProtectedVideoType::kClear,
+               /*is_tex_coords_normalized=*/false);
   quad->overlay_priority_hint = OverlayPriority::kRequired;
 
   // Add a background that's not the expected fallback color.
@@ -1762,7 +1767,8 @@ TEST_P(GPURendererPixelTest, OverlayHintRequiredFallbackRPDQBypassCase) {
     quad->SetNew(sqs, gfx::Rect(this->device_viewport_size_),
                  gfx::Rect(this->device_viewport_size_), false, ResourceId{1},
                  gfx::PointF(), gfx::PointF(), SkColors::kTransparent, false,
-                 false, gfx::ProtectedVideoType::kClear);
+                 false, gfx::ProtectedVideoType::kClear,
+                 /*is_tex_coords_normalized=*/false);
     quad->overlay_priority_hint = OverlayPriority::kRequired;
 
     pass_list.push_back(std::move(pass));
@@ -4869,9 +4875,10 @@ TEST_F(SoftwareRendererPixelTest, TextureDrawQuadNearestNeighbor) {
 
   auto* quad = pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
   quad->SetNew(shared_state, viewport, viewport, needs_blending,
-               mapped_resource, gfx::PointF(0, 0), gfx::PointF(1, 1),
+               mapped_resource, gfx::PointF(0, 0), gfx::PointF(2, 2),
                SkColors::kBlack, nearest_neighbor,
-               /*secure_output_only=*/false, gfx::ProtectedVideoType::kClear);
+               /*secure_output=*/false, gfx::ProtectedVideoType::kClear,
+               /*is_tex_coords_normalized=*/false);
 
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(pass));
@@ -4922,9 +4929,10 @@ TEST_F(SoftwareRendererPixelTest, TextureDrawQuadLinear) {
 
   auto* quad = pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
   quad->SetNew(shared_state, viewport, viewport, needs_blending,
-               mapped_resource, gfx::PointF(0, 0), gfx::PointF(1, 1),
+               mapped_resource, gfx::PointF(0, 0), gfx::PointF(2, 2),
                SkColors::kBlack, nearest_neighbor,
-               /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
+               /*secure_output=*/false, gfx::ProtectedVideoType::kClear,
+               /*is_tex_coords_normalized=*/false);
 
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(pass));
@@ -5297,14 +5305,15 @@ TEST_P(GPURendererPixelTest, TextureQuadBatching) {
       DCHECK_LE(y_end, rect.height());
 
       gfx::Rect layer_rect(x_start, y_start, x_end - x_start, y_end - y_start);
-      gfx::RectF uv_rect = gfx::ScaleRect(
-          gfx::RectF(layer_rect), 1.f / rect.width(), 1.f / rect.height());
+      gfx::RectF tex_coord_rect = gfx::RectF(layer_rect);
 
       auto* texture_quad = pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
       texture_quad->SetNew(
           shared_state, layer_rect, layer_rect, needs_blending, mapped_resource,
-          uv_rect.origin(), uv_rect.bottom_right(), SkColors::kWhite, false,
-          /*secure_output_only=*/false, gfx::ProtectedVideoType::kClear);
+          tex_coord_rect.origin(), tex_coord_rect.bottom_right(),
+          SkColors::kWhite, false,
+          /*secure_output=*/false, gfx::ProtectedVideoType::kClear,
+          /*is_tex_coords_normalized=*/false);
     }
   }
 
@@ -5463,14 +5472,15 @@ TEST_P(GPURendererPixelTest, RoundedCornerSimpleTextureDrawQuad) {
           this->child_context_provider_->SharedImageInterface());
   ResourceId mapped_resource = resource_map[resource];
   bool needs_blending = true;
-  const gfx::PointF uv_top_left(0.0f, 0.0f);
-  const gfx::PointF uv_bottom_right(1.0f, 1.0f);
+  const gfx::PointF tex_coord_top_left(0.0f, 0.0f);
+  const gfx::PointF tex_coord_bottom_right(2.0f, 2.0f);
   const bool nearest_neighbor = false;
   auto* blue = root_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
   blue->SetNew(shared_state_rounded, blue_rect, blue_rect, needs_blending,
-               mapped_resource, uv_top_left, uv_bottom_right, SkColors::kBlack,
-               nearest_neighbor,
-               /*secure_output_only=*/false, gfx::ProtectedVideoType::kClear);
+               mapped_resource, tex_coord_top_left, tex_coord_bottom_right,
+               SkColors::kBlack, nearest_neighbor,
+               /*secure_output=*/false, gfx::ProtectedVideoType::kClear,
+               /*is_tex_coords_normalized=*/false);
 
   SharedQuadState* shared_state_normal = CreateTestSharedQuadState(
       quad_to_target_transform, viewport_rect, root_pass.get(), gfx::MaskFilterInfo());
@@ -6209,6 +6219,7 @@ class ColorTransformPixelTest
     this->dst_color_space_ = GetColorSpace(std::get<2>(GetParam()));
     this->display_color_spaces_ =
         gfx::DisplayColorSpaces(this->dst_color_space_);
+    this->display_color_spaces_.SetHDRMaxLuminanceRelative(64.f);
     if (this->dst_color_space_.IsWide()) {
       this->display_color_spaces_.SetOutputFormats(
           SinglePlaneFormat::kRGBA_F16, SinglePlaneFormat::kRGBA_F16);
@@ -6250,7 +6261,6 @@ class ColorTransformPixelTest
     }
 
     gfx::ColorTransform::Options options;
-    options.tone_map_pq_and_hlg_to_dst = true;
     gfx::ColorTransform::RuntimeOptions runtime_options;
     runtime_options.dst_sdr_max_luminance_nits =
         this->display_color_spaces_.GetSDRMaxLuminanceNits();
@@ -6315,15 +6325,16 @@ class ColorTransformPixelTest
       ResourceId mapped_resource = resource_map[resource];
 
       bool needs_blending = true;
-      const gfx::PointF uv_top_left(0.0f, 0.0f);
-      const gfx::PointF uv_bottom_right(1.0f, 1.0f);
+      const gfx::PointF tex_coord_top_left(0.0f, 0.0f);
+      const gfx::PointF tex_coord_bottom_right(rect.width(), rect.height());
       const bool nearest_neighbor = false;
       auto* quad = pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
 
       quad->SetNew(shared_state, rect, rect, needs_blending, mapped_resource,
-                   uv_top_left, uv_bottom_right, SkColors::kBlack,
+                   tex_coord_top_left, tex_coord_bottom_right, SkColors::kBlack,
                    nearest_neighbor,
-                   /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
+                   /*secure_output=*/false, gfx::ProtectedVideoType::kClear,
+                   /*is_tex_coords_normalized=*/false);
 
       auto* color_quad = pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
       color_quad->SetNew(shared_state, rect, rect, SkColors::kBlack, false);

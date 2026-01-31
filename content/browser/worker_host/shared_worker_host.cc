@@ -19,8 +19,9 @@
 #include "content/browser/devtools/shared_worker_devtools_manager.h"
 #include "content/browser/loader/url_loader_factory_utils.h"
 #include "content/browser/network/cross_origin_embedder_policy_reporter.h"
+#include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
-#include "content/browser/renderer_host/private_network_access_util.h"
+#include "content/browser/renderer_host/local_network_access_util.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/security/dip/document_isolation_policy_reporter.h"
 #include "content/browser/service_worker/service_worker_client.h"
@@ -260,7 +261,7 @@ void SharedWorkerHost::Start(
     if (creator_policy_container_host_) {
       worker_client_security_state_ =
           DeriveClientSecurityState(creator_policy_container_host_->policies(),
-                                    PrivateNetworkRequestContext::kWorker);
+                                    LocalNetworkAccessRequestContext::kWorker);
     } else {
       // Create a maximally restricted client security state if the policy
       // container is missing.
@@ -293,8 +294,13 @@ void SharedWorkerHost::Start(
         creator_policy_container_host_->policies()
             .allow_non_secure_local_network_access;
 
+    policies.ip_address_space = CalculateIPAddressSpace(
+        result.final_response_url,
+        result.main_script_load_params->response_head.get(),
+        GetContentClient()->browser());
+
     worker_client_security_state_ = DeriveClientSecurityState(
-        policies, PrivateNetworkRequestContext::kWorker);
+        policies, LocalNetworkAccessRequestContext::kWorker);
 
     // Check for policy overrides on LNA. For shared workers, we apply
     // policy overrides based on the renderer_origin() when the shared worker
@@ -302,8 +308,9 @@ void SharedWorkerHost::Start(
     // TODO(crbug.com/452389539): Centralize these policy overrides.
     BrowserContext* context = GetProcessHost()->GetBrowserContext();
     url::Origin origin = instance_.renderer_origin();
-    ContentBrowserClient::PrivateNetworkRequestPolicyOverride policy_override =
-        client->ShouldOverridePrivateNetworkRequestPolicy(context, origin);
+    ContentBrowserClient::LocalNetworkAccessRequestPolicyOverride
+        policy_override = client->ShouldOverrideLocalNetworkAccessRequestPolicy(
+            context, origin);
     worker_client_security_state_->private_network_request_policy =
         OverrideLocalNetworkAccessPolicy(
             worker_client_security_state_->private_network_request_policy,
@@ -431,6 +438,16 @@ void SharedWorkerHost::Start(
     dip_reporter_->BindObserver(std::move(dip_reporting_remote));
   }
 
+  // Check whether the shared worker has access to cross-origin isolated APIs.
+  bool cross_origin_isolated = GetProcessHost()
+                                   ->GetProcessLock()
+                                   .agent_cluster_key()
+                                   .IsCrossOriginIsolated() ||
+                               GetProcessHost()
+                                   ->GetProcessLock()
+                                   .GetWebExposedIsolationInfo()
+                                   .is_isolated();
+
   // Send the CreateSharedWorker message.
   factory_.Bind(std::move(factory));
   factory_->CreateSharedWorker(
@@ -449,7 +466,8 @@ void SharedWorkerHost::Start(
       receiver_.BindNewPipeAndPassRemote(), std::move(worker_receiver_),
       std::move(browser_interface_broker), ukm_source_id_,
       instance_.DoesRequireCrossSiteRequestForCookies(),
-      std::move(coep_reporting_observer), std::move(dip_reporting_observer));
+      std::move(coep_reporting_observer), std::move(dip_reporting_observer),
+      cross_origin_isolated);
   if (service_worker_handle_->service_worker_client()) {
     service_worker_handle_->service_worker_client()->SetContainerReady();
   }
@@ -560,6 +578,12 @@ void SharedWorkerHost::BindCacheStorageInternal(
       cross_origin_embedder_policy(), std::move(coep_reporter),
       worker_client_security_state_->document_isolation_policy,
       std::move(dip_reporter), bucket_locator, std::move(receiver));
+}
+
+void SharedWorkerHost::CreateLockManager(
+    mojo::PendingReceiver<blink::mojom::LockManager> receiver) {
+  static_cast<StoragePartitionImpl*>(GetProcessHost()->GetStoragePartition())
+      ->BindLockManager(GetStorageKey(), token().value(), std::move(receiver));
 }
 
 void SharedWorkerHost::GetSandboxedFileSystemForBucket(

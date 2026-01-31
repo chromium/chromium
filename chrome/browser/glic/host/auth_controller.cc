@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/glic/host/glic_cookie_synchronizer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/signin_ui_util.h"
@@ -183,9 +184,11 @@ void AuthController::ShowReauthForAccount(base::OnceClosure after_signin) {
       base::TimeTicks::Now() + base::Minutes(5);
   CoreAccountInfo primary_account_info =
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+#if !BUILDFLAG(IS_ANDROID)  // TODO(b/477997050): Implement for android
   signin_ui_util::ShowReauthForAccount(
       profile_, primary_account_info.email,
       signin_metrics::AccessPoint::kGlicLaunchButton);
+#endif
 }
 
 void AuthController::OnGlicWindowOpened() {

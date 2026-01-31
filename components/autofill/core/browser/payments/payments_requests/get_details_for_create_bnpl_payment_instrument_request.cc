@@ -41,8 +41,8 @@ GetDetailsForCreateBnplPaymentInstrumentRequest::GetRequestContentType() {
 
 std::string
 GetDetailsForCreateBnplPaymentInstrumentRequest::GetRequestContent() {
-  base::Value::Dict request_dict;
-  base::Value::Dict context;
+  base::DictValue request_dict;
+  base::DictValue context;
   context.Set("language_code", request_details_.app_locale);
   context.Set("billable_service",
               payments::kUploadPaymentMethodBillableServiceNumber);
@@ -53,11 +53,11 @@ GetDetailsForCreateBnplPaymentInstrumentRequest::GetRequestContent() {
   }
   request_dict.Set("context", std::move(context));
 
-  base::Value::Dict chrome_user_context = BuildChromeUserContext(
+  base::DictValue chrome_user_context = BuildChromeUserContext(
       request_details_.client_behavior_signals, full_sync_enabled_);
   request_dict.Set("chrome_user_context", std::move(chrome_user_context));
 
-  base::Value::Dict buy_now_pay_later_info;
+  base::DictValue buy_now_pay_later_info;
   buy_now_pay_later_info.Set("issuer_id", request_details_.issuer_id);
   request_dict.Set("buy_now_pay_later_info", std::move(buy_now_pay_later_info));
 
@@ -65,12 +65,12 @@ GetDetailsForCreateBnplPaymentInstrumentRequest::GetRequestContent() {
 }
 
 void GetDetailsForCreateBnplPaymentInstrumentRequest::ParseResponse(
-    const base::Value::Dict& response) {
+    const base::DictValue& response) {
   if (const std::string* context_token = response.FindString("context_token")) {
     context_token_ = context_token ? *context_token : std::string();
   }
 
-  if (const base::Value::Dict* legal_message_value =
+  if (const base::DictValue* legal_message_value =
           response.FindDict("legal_message")) {
     LegalMessageLine::Parse(*legal_message_value, &legal_message_,
                             /*escape_apostrophes=*/true);

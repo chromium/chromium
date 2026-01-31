@@ -5,19 +5,26 @@
 #ifndef CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_UI_SERVICE_H_
 #define CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_UI_SERVICE_H_
 
+#include <list>
 #include <map>
+#include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks.mojom.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/frame_tree_node_id.h"
+#include "net/base/backoff_entry.h"
 #include "url/gurl.h"
 
+class AimEligibilityService;
 class BrowserWindowInterface;
 class ContextualTasksUI;
+class GoogleServiceAuthError;
 class Profile;
+class TabStripModel;
 
 namespace base {
 class Uuid;
@@ -29,6 +36,8 @@ class WebContents;
 }  // namespace content
 
 namespace signin {
+class AccessTokenFetcher;
+struct AccessTokenInfo;
 class IdentityManager;
 }  // namespace signin
 
@@ -37,20 +46,24 @@ class TabInterface;
 }  // namespace tabs
 
 namespace contextual_tasks {
-
-class ContextualTasksContextController;
+class ContextualTasksService;
 
 // A service used to coordinate all of the side panel instances showing an AI
 // thread. Events like tab switching and Intercepted navigations from both the
 // sidepanel and omnibox will be routed here.
 class ContextualTasksUiService : public KeyedService {
  public:
-  ContextualTasksUiService(Profile* profile,
-                           ContextualTasksContextController* context_controller,
-                           signin::IdentityManager* identity_manager);
+  ContextualTasksUiService(
+      Profile* profile,
+      contextual_tasks::ContextualTasksService* contextual_tasks_service,
+      signin::IdentityManager* identity_manager,
+      AimEligibilityService* aim_eligibility_service);
   ContextualTasksUiService(const ContextualTasksUiService&) = delete;
   ContextualTasksUiService operator=(const ContextualTasksUiService&) = delete;
   ~ContextualTasksUiService() override;
+
+  // KeyedService:
+  void Shutdown() override;
 
   // A notification that the browser attempted to navigate to the AI page. If
   // this method is being called, it means the navigation was blocked and it
@@ -112,13 +125,13 @@ class ContextualTasksUiService : public KeyedService {
   // loaded in the absence of any other context.
   virtual GURL GetDefaultAiPageUrl();
 
-  // Called when the side panel in a given browser window started showing a new
-  // task. If |task_id| is invalid, the panel is in a zero-state that is waiting
-  // for user to create a new task.
-  virtual void OnTaskChangedInPanel(
-      BrowserWindowInterface* browser_window_interface,
-      content::WebContents* web_contents,
-      const base::Uuid& task_id);
+  // Called when a UI in a given browser window started showing a new task,
+  // either in a full tab or in the side panel. If |task_id| is invalid, the
+  // UI is in a zero-state that is waiting for user to create a new task.
+  virtual void OnTaskChanged(BrowserWindowInterface* browser_window_interface,
+                             content::WebContents* web_contents,
+                             const base::Uuid& task_id,
+                             bool is_shown_in_tab);
 
   // Opens the contextual tasks side panel and creates a new task with the given
   // URL as its initial thread URL.
@@ -130,10 +143,26 @@ class ContextualTasksUiService : public KeyedService {
           session_handle);
 
   // Returns whether the provided URL is to an AI page.
-  bool IsAiUrl(const GURL& url);
+  virtual bool IsAiUrl(const GURL& url);
 
-  // Returns whether the provided URL is for the search results page.
-  bool IsSearchResultsPage(const GURL& url);
+  // Returns whether the provided URL is to a contextual tasks WebUI page.
+  bool IsContextualTasksUrl(const GURL& url);
+
+  // Returns whether the provided URL is a Google search results page. This
+  // method does not check for the validity of any parameters that
+  // differentiate different modes or queries.
+  bool IsSearchResultsUrl(const GURL& url);
+
+  // Returns whether the provided URL is for a valid (e.g. can be loaded in
+  // the embedded page in the WebUI) search results page that contains the
+  // correct params and isn't a shopping query.
+  bool IsValidSearchResultsPage(const GURL& url);
+
+  // Called when the Lens overlay is shown/hidden. No-op if the active UI is not
+  // in the side panel since the Lens button is always hidden in a tab.
+  virtual void OnLensOverlayStateChanged(
+      BrowserWindowInterface* browser_window_interface,
+      bool is_showing);
 
   // Associates a WebContents with a task, assuming the URL of the WebContents'
   // main frame or side panel is a contextual task URL.
@@ -147,9 +176,19 @@ class ContextualTasksUiService : public KeyedService {
 
   // Called when a tab in the sources menu is clicked. Switches to the tab or
   // reopens the tab depending on whether the tab is already open on tab strip.
-  void OnTabClickedFromSourcesMenu(int32_t tab_id,
-                                   const GURL& url,
-                                   BrowserWindowInterface* browser);
+  virtual void OnTabClickedFromSourcesMenu(int32_t tab_id,
+                                           const GURL& url,
+                                           BrowserWindowInterface* browser);
+
+  // Called when a file in the sources menu is clicked. Opens the file in a new
+  // foreground tab.
+  virtual void OnFileClickedFromSourcesMenu(const GURL& url,
+                                            BrowserWindowInterface* browser);
+
+  // Called when an image in the sources menu is clicked. Opens the image in a
+  // new foreground tab.
+  virtual void OnImageClickedFromSourcesMenu(const GURL& url,
+                                             BrowserWindowInterface* browser);
 
   void set_auto_tab_context_suggestion_enabled(bool enabled) {
     auto_tab_context_suggestion_enabled_ = enabled;
@@ -157,6 +196,21 @@ class ContextualTasksUiService : public KeyedService {
 
   bool auto_tab_context_suggestion_enabled() const {
     return auto_tab_context_suggestion_enabled_;
+  }
+
+  // Return whether there is a user signed into the browser with valid
+  // credentials (aka, an OAuth token can be obtained).
+  virtual bool IsSignedInToBrowserWithValidCredentials();
+
+  // Return whether the cookie jar contains the primary account.
+  virtual bool CookieJarContainsPrimaryAccount();
+
+  // Fetches an access token for the primary account.
+  using GetAccessTokenCallback = base::OnceCallback<void(const std::string&)>;
+  virtual void GetAccessToken(GetAccessTokenCallback callback);
+
+  base::WeakPtr<ContextualTasksUiService> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
   }
 
  protected:
@@ -172,20 +226,51 @@ class ContextualTasksUiService : public KeyedService {
   // Returns whether the provided URL is for the primary account in Chrome.
   virtual bool IsUrlForPrimaryAccount(const GURL& url);
 
-  // Return whether there is a user is either signed into the browser or has
-  // an account tied to the provided URL.
-  virtual bool IsSignedInToWebOrBrowser(const GURL& url);
-
  private:
+  void StartAccessTokenFetch();
+
+  // Called when the OAuth token is received. If the token is valid, it is
+  // passed to all pending access token callbacks. Otherwise, the fetch is
+  // retried if the error is transient, or an empty token is passed to the
+  // callbacks if the error is persistent.
+  void OnOAuthTokenReceived(GoogleServiceAuthError error,
+                            signin::AccessTokenInfo access_token_info);
+
+  // Runs all pending access token callbacks with the provided token.
+  void RunPendingAccessTokenCallbacks(const std::string& token);
+
+  // Focus an existing tab based on the provided URL if it exists. The URLs must
+  // be identical in order for the existing tab to be selected.
+  bool MaybeFocusExistingOpenTab(const GURL& url,
+                                 TabStripModel* tab_strip_model,
+                                 const base::Uuid& task_id);
+
+  // Checks if the provided URL matches any of the allowed hosts.
+  bool IsAllowedHost(const GURL& url);
+
   const raw_ptr<Profile> profile_;
 
-  raw_ptr<contextual_tasks::ContextualTasksContextController>
-      context_controller_;
+  const raw_ptr<contextual_tasks::ContextualTasksService>
+      contextual_tasks_service_;
 
-  raw_ptr<signin::IdentityManager> identity_manager_;
+  const raw_ptr<signin::IdentityManager> identity_manager_;
 
-  // The host of the AI page that is loaded into the WebUI.
-  GURL ai_page_host_;
+  const raw_ptr<AimEligibilityService> aim_eligibility_service_;
+
+  // The access token fetcher for the current request.
+  std::unique_ptr<signin::AccessTokenFetcher> access_token_fetcher_;
+
+  // Pending access token callbacks.
+  std::vector<GetAccessTokenCallback> pending_access_token_callbacks_;
+
+  // Backoff entry used to control the retry logic for the OAuth token request.
+  net::BackoffEntry request_access_token_backoff_;
+
+  // A timer used to refresh the OAuth token before it expires.
+  base::OneShotTimer token_refresh_timer_;
+
+  // The hosts of the AI page that is loaded into the WebUI.
+  std::vector<GURL> ai_page_hosts_;
 
   // Map a task's ID to the URL that was used to create it, if it exists. This
   // is primarily used in init flows where the contextual tasks UI is

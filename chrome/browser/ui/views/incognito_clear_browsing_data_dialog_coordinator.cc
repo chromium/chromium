@@ -22,9 +22,14 @@ IncognitoClearBrowsingDataDialogCoordinator::
 void IncognitoClearBrowsingDataDialogCoordinator::Show(
     IncognitoClearBrowsingDataDialogInterface::Type type,
     views::View* anchor_view) {
+  if (bubble_tracker_.view() && bubble_tracker_.view()->GetWidget()) {
+    // Ensure the previous bubble is closed before creating and showing the new
+    // one.
+    bubble_tracker_.view()->GetWidget()->Close();
+  }
+
   auto bubble = std::make_unique<IncognitoClearBrowsingDataDialog>(
       anchor_view, profile_, type);
-  DCHECK_EQ(nullptr, bubble_tracker_.view());
   bubble_tracker_.SetView(bubble.get());
 
   auto* widget =

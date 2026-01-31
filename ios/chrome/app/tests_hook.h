@@ -10,6 +10,7 @@
 
 #import "base/containers/span.h"
 
+class AimEligibilityService;
 class PrefService;
 class ProfileIOS;
 class ProfileOAuth2TokenServiceDelegate;
@@ -19,6 +20,11 @@ class SystemIdentityManager;
 class TabGroupService;
 class TrustedVaultClientBackend;
 @class UIImage;
+@class UIWindow;
+
+namespace contextual_search {
+class ContextualSearchService;
+}  // namespace contextual_search
 
 namespace base {
 class TimeDelta;
@@ -130,9 +136,12 @@ bool DelayAppLaunchPromos();
 // of identifiers that contains identifiers of UIScene that are active.
 bool NeverPurgeDiscardedSessionsData();
 
-// Returns true if the UI should be minimal for testing (after loading a
+// Returns true if the UI should be minimal for testing.
+bool ShouldLoadMinimalAppUI();
+
+// Loads a minimal UI for testing in the given window (usually after loading a
 // simple UILabel into the first UIWindow).
-bool LoadMinimalAppUI();
+void LoadMinimalAppUI(UIWindow* window);
 
 // Returns a policy provider that should be installed as the platform policy
 // provider when testing. May return nullptr.
@@ -226,9 +235,22 @@ GetOverriddenDelayForRequestingTurningOnCredentialProviderExtension();
 // Returns the default value for the snackbar message duration.
 base::TimeDelta GetSnackbarMessageDuration();
 
+// Returns override duration for infobar if exists.
+std::optional<base::TimeDelta> GetOverrideInfobarDuration();
+
 // Returns a UIImage for users of PHPickerViewController to use to skip
 // presenting that picker view controller in tests.
 UIImage* GetPHPickerViewControllerImage();
+
+// Returns a mock AimEligibilityService for testing.
+// The real factory will be used if this hook returns null.
+std::unique_ptr<AimEligibilityService> CreateAimEligibilityService(
+    ProfileIOS* profile);
+
+// Returns a mock ContextualSearchService for testing.
+// The real factory will be used if this hook returns null.
+std::unique_ptr<contextual_search::ContextualSearchService>
+CreateContextualSearchService(ProfileIOS* profile);
 
 }  // namespace tests_hook
 

@@ -11,8 +11,7 @@
 #include "chromeos/ash/services/nearby/public/cpp/nearby_process_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace ash {
-namespace nearby {
+namespace ash::nearby {
 
 class MockNearbyProcessManager : public NearbyProcessManager {
  public:
@@ -62,7 +61,6 @@ class MockNearbyProcessManager : public NearbyProcessManager {
   MOCK_METHOD(void, ShutDownProcess, (), (override));
 };
 
-}  // namespace nearby
-}  // namespace ash
+}  // namespace ash::nearby
 
 #endif  // CHROMEOS_ASH_SERVICES_NEARBY_PUBLIC_CPP_MOCK_NEARBY_PROCESS_MANAGER_H_

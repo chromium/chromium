@@ -57,10 +57,12 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.RecentlyClosedEntriesManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
@@ -75,6 +77,11 @@ import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.messages.MessageDispatcher;
+import org.chromium.components.messages.MessageDispatcherProvider;
+import org.chromium.components.messages.MessageIdentifier;
+import org.chromium.components.messages.MessageStateHandler;
+import org.chromium.components.messages.MessagesTestHelper;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.tab_groups.TabGroupColorId;
@@ -85,6 +92,7 @@ import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -111,7 +119,7 @@ public class RecentTabsPageTest {
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(9)
+                    .setRevision(10)
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_RECENT_TABS)
                     .build();
 
@@ -169,6 +177,37 @@ public class RecentTabsPageTest {
                 view, RecentTabsRowAdapter.RecentlyClosedTabsGroup.ID_REMOVE_ALL);
         assertEquals(0, mManager.getRecentlyClosedEntries(1).size());
         waitForViewToDisappear(title);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RecentTabsPage"})
+    public void testRecentlyClosedTabs_specialUrls() throws ExecutionException {
+        mPage = loadRecentTabsPage();
+
+        final RecentlyClosedTab aboutTab =
+                new RecentlyClosedTab(0, 0, "About", new GURL("about:blank"), null);
+        final RecentlyClosedTab chromeTab =
+                new RecentlyClosedTab(1, 0, "Chrome", new GURL("chrome://version"), null);
+        final RecentlyClosedTab chromeNativeTab =
+                new RecentlyClosedTab(
+                        2, 0, "Chrome-Native", new GURL("chrome-native://newtab"), null);
+
+        setRecentlyClosedEntries(Arrays.asList(aboutTab, chromeTab, chromeNativeTab));
+        assertEquals(3, mManager.getRecentlyClosedEntries(3).size());
+
+        // For special URLs, the domain part should show the full URL spec.
+        View aboutDomainView = waitForView("about:blank");
+        assertThat(aboutDomainView, instanceOf(TextView.class));
+        assertEquals(View.VISIBLE, aboutDomainView.getVisibility());
+
+        View chromeDomainView = waitForView("chrome://version");
+        assertThat(chromeDomainView, instanceOf(TextView.class));
+        assertEquals(View.VISIBLE, chromeDomainView.getVisibility());
+
+        View chromeNativeDomainView = waitForView("chrome-native://newtab");
+        assertThat(chromeNativeDomainView, instanceOf(TextView.class));
+        assertEquals(View.VISIBLE, chromeNativeDomainView.getVisibility());
     }
 
     @Test
@@ -479,6 +518,154 @@ public class RecentTabsPageTest {
                 view, RecentTabsRowAdapter.RecentlyClosedTabsGroup.ID_REMOVE_ALL);
         assertEquals(0, mManager.getRecentlyClosedEntries(1).size());
         waitForViewToDisappear(eventString);
+    }
+
+    @Test
+    @LargeTest
+    @EnableFeatures(ChromeFeatureList.RECENTLY_CLOSED_TABS_AND_WINDOWS)
+    @Feature({"RecentTabsPage", "RenderTest"})
+    // Disable sign-in to suppress sign-in promo, as it's unrelated to this render test.
+    @Policies.Add(@Policies.Item(key = "BrowserSignin", string = "0"))
+    public void testRecentlyClosedWindows() throws Exception {
+        mPage = loadRecentTabsPage();
+        long time = 904881600000L;
+        String title1 = "Window 1";
+        String activeTabTitle1 = "Google";
+        String activeTabUrl1 = "https://www.google.com";
+        String title2 = "Window 2";
+        String activeTabTitle2 = "Experiments";
+        String activeTabUrl2 = "chrome://flags";
+        int tabCount = 3;
+        // Set recently closed window events and confirm views are rendered for them.
+        final RecentlyClosedWindow window1 =
+                new RecentlyClosedWindow(
+                        time,
+                        /* instanceId= */ 0,
+                        activeTabUrl1,
+                        title1,
+                        activeTabTitle1,
+                        tabCount);
+        final RecentlyClosedWindow window2 =
+                new RecentlyClosedWindow(
+                        time,
+                        /* instanceId= */ 1,
+                        activeTabUrl2,
+                        title2,
+                        activeTabTitle2,
+                        tabCount);
+        RecentlyClosedEntriesManager recentlyClosedEntriesManager =
+                mActivity.getRecentlyClosedEntriesManagerForTesting();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    recentlyClosedEntriesManager.onWindowClosed(
+                            window2, /* isPermanentDeletion= */ false);
+                    recentlyClosedEntriesManager.onWindowClosed(
+                            window1, /* isPermanentDeletion= */ false);
+                });
+        assertEquals(2, recentlyClosedEntriesManager.getRecentlyClosedEntries().size());
+
+        final String eventDescriptionString1 = "google.com and " + (tabCount - 1) + " other tabs";
+        final String eventDescriptionString2 =
+                activeTabUrl2 + " and " + (tabCount - 1) + " other tabs";
+        waitForView(title1);
+        waitForView(eventDescriptionString1);
+        waitForView(title2);
+        waitForView(eventDescriptionString2);
+
+        mRenderTestRule.render(mPage.getView(), "recently_closed_windows");
+
+        // Simulate restoration of a window.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> recentlyClosedEntriesManager.onWindowRestored(window1.getInstanceId()));
+
+        // Verify that the entry for the restored window is removed.
+        assertEquals(1, recentlyClosedEntriesManager.getRecentlyClosedEntries().size());
+        waitForViewToDisappear(eventDescriptionString1);
+    }
+
+    @Test
+    @LargeTest
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    @EnableFeatures(ChromeFeatureList.RECENTLY_CLOSED_TABS_AND_WINDOWS)
+    public void testRecentlyClosedWindows_reachInstanceLimit_showInstanceCreationLimitMessage()
+            throws Exception {
+        // Simulate reaching the instance limit.
+        MultiWindowUtils.setInstanceCountForTesting(3);
+        MultiWindowUtils.setMaxInstancesForTesting(3);
+
+        mPage = loadRecentTabsPage();
+        long time = 904881600000L;
+        String title1 = "Window 1";
+        String activeTabTitle1 = "Google";
+        String activeTabUrl1 = "https://www.google.com";
+        int tabCount = 3;
+
+        // Create a recently closed window.
+        final RecentlyClosedWindow window1 =
+                new RecentlyClosedWindow(
+                        time,
+                        /* instanceId= */ 0,
+                        activeTabUrl1,
+                        title1,
+                        activeTabTitle1,
+                        tabCount);
+        RecentlyClosedEntriesManager recentlyClosedEntriesManager =
+                mActivity.getRecentlyClosedEntriesManagerForTesting();
+
+        // Simulate open a recently closed window.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> recentlyClosedEntriesManager.openRecentlyClosedEntry(window1));
+
+        // Verify the instance creation limit message is shown and entry is not removed.
+        mActivityTestRule.waitForActivityCompletelyLoaded();
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    MessageDispatcher messageDispatcher =
+                            MessageDispatcherProvider.from(mActivity.getWindowAndroid());
+                    List<MessageStateHandler> messages =
+                            MessagesTestHelper.getEnqueuedMessages(
+                                    messageDispatcher,
+                                    MessageIdentifier.MULTI_INSTANCE_CREATION_LIMIT);
+                    return !messages.isEmpty();
+                });
+    }
+
+    @Test
+    @LargeTest
+    @EnableFeatures(ChromeFeatureList.RECENTLY_CLOSED_TABS_AND_WINDOWS)
+    @Feature({"RecentTabsPage", "RenderTest"})
+    // Disable sign-in to suppress sign-in promo, as it's unrelated to this render test.
+    @Policies.Add(@Policies.Item(key = "BrowserSignin", string = "0"))
+    public void testRemoveAllRecentlyClosedEntries() throws Exception {
+        mPage = loadRecentTabsPage();
+        String windowTitle = "Window 1";
+        String activeTabTitle = "Google";
+        String activeTabUrl = "https://www.google.com";
+        int tabCount = 3;
+        // Set a recently closed tab and a window event and confirm views are rendered.
+        final RecentlyClosedWindow window =
+                new RecentlyClosedWindow(
+                        904881600000L, 0, activeTabUrl, windowTitle, activeTabTitle, tabCount);
+        final RecentlyClosedTab tab =
+                new RecentlyClosedTab(
+                        0, 0, "Tab Title", new GURL("https://www.example.com/"), null);
+        setRecentlyClosedEntries(Arrays.asList(tab, window));
+        assertEquals(2, mManager.getRecentlyClosedEntries(2).size());
+
+        final String windowDescriptionString = "google.com and " + (tabCount - 1) + " other tabs";
+        View windowView = waitForView(windowTitle);
+        waitForView(windowDescriptionString);
+        waitForView(tab.getTitle());
+
+        mRenderTestRule.render(mPage.getView(), "recently_closed_entries");
+
+        // Confirm the recently closed entries are all gone after "Remove all" is clicked.
+        openContextMenuAndInvokeItem(
+                windowView, RecentTabsRowAdapter.RecentlyClosedTabsGroup.ID_REMOVE_ALL);
+        RecentlyClosedEntriesManager recentlyClosedEntriesManager =
+                mActivity.getRecentlyClosedEntriesManagerForTesting();
+        assertEquals(0, recentlyClosedEntriesManager.getRecentlyClosedEntries().size());
+        waitForViewToDisappear(windowDescriptionString);
     }
 
     @Test

@@ -24,7 +24,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -49,8 +50,8 @@ public class RecentTabsPageUnitTest {
     @Captor ArgumentCaptor<EdgeToEdgePadAdjuster> mPadAdjusterCaptor;
 
     private RecentTabsPage mRecentTabsPage;
-    private final ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier =
+            ObservableSuppliers.createMonotonic();
 
     @Before
     public void setup() {
@@ -61,7 +62,7 @@ public class RecentTabsPageUnitTest {
                         mRecentTabsManager,
                         /* navigationDelegate */ null,
                         mBrowserControlsStateProvider,
-                        new ObservableSupplierImpl<>(0),
+                        ObservableSuppliers.alwaysZero(),
                         mEdgeToEdgeSupplier);
     }
 

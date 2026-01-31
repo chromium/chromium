@@ -23,7 +23,7 @@ class WindowState;
 // and handling swipe-to-dismiss.
 class ASH_EXPORT PipWindowResizer : public WindowResizer {
  public:
-  explicit PipWindowResizer(WindowState* window_state);
+  PipWindowResizer(WindowState* window_state, bool for_pinch);
 
   PipWindowResizer(const PipWindowResizer&) = delete;
   PipWindowResizer& operator=(const PipWindowResizer&) = delete;

@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import os
 
 def _GenerateTestCommand(input_api, output_api, file_name, affected_list):
     if not input_api.AffectedFiles(
@@ -36,6 +37,13 @@ def _GenerateTestCommand(input_api, output_api, file_name, affected_list):
 
 
 def _RunTests(input_api, output_api):
+    # The presubmit tests are all run together with the module scheme set to
+    # "flat" at the recipe level. But these presubmit tests run through
+    # a test runner that parses the test as a "pyunit" test. The environment
+    # variable forces the test runner to parse the tests as a flat test,
+    # otherwise resultdb will give an error saying a field in the "flat" type
+    # is unexpectedly not empty.
+    os.environ['RESULTDB_MODULE_SCHEME'] = 'flat'
     tests = [{
         'file_name': 'json5_generator_unittest.py',
         'affected_list': [r'.*json5_generator.*', r'.*\btests[\\\/].*']

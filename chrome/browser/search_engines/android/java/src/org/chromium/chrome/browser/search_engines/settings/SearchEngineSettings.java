@@ -11,16 +11,19 @@ import android.widget.ListView;
 
 import androidx.fragment.app.ListFragment;
 
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.regional_capabilities.RegionalCapabilitiesServiceFactory;
 import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.regional_capabilities.RegionalCapabilitiesService;
 
 /**
@@ -35,7 +38,8 @@ public class SearchEngineSettings extends ListFragment
         implements EmbeddableSettingsPage, ProfileDependentSetting {
     private SearchEngineAdapter mSearchEngineAdapter;
     private @Nullable Profile mProfile;
-    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<String> mPageTitle =
+            ObservableSuppliers.createMonotonic();
 
     String getValueForTesting() {
         return mSearchEngineAdapter.getValueForTesting();
@@ -58,7 +62,7 @@ public class SearchEngineSettings extends ListFragment
     }
 
     @Override
-    public ObservableSupplier<String> getPageTitle() {
+    public MonotonicObservableSupplier<String> getPageTitle() {
         return mPageTitle;
     }
 
@@ -104,7 +108,12 @@ public class SearchEngineSettings extends ListFragment
     private void createAdapterIfNecessary() {
         if (mSearchEngineAdapter != null) return;
         assert mProfile != null;
-        mSearchEngineAdapter = new SearchEngineAdapter(getActivity(), mProfile);
+        Runnable siteSearchClickHandler =
+                OmniboxFeatures.sOmniboxSiteSearch.isEnabled()
+                        ? this::openSiteSearchSettings
+                        : null;
+        mSearchEngineAdapter =
+                new SearchEngineAdapter(getActivity(), mProfile, siteSearchClickHandler);
     }
 
     @Override
@@ -124,5 +133,10 @@ public class SearchEngineSettings extends ListFragment
     @Override
     public @Nullable String getMainMenuKey() {
         return "search_engine";
+    }
+
+    private void openSiteSearchSettings() {
+        SettingsNavigationFactory.createSettingsNavigation()
+                .startSettings(getContext(), SiteSearchSettings.class);
     }
 }

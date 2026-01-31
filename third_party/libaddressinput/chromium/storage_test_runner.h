@@ -8,6 +8,7 @@
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/storage.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 namespace autofill {
@@ -29,7 +30,9 @@ class StorageTestRunner {
  private:
   void ClearValues();
   std::unique_ptr<::i18n::addressinput::Storage::Callback> BuildCallback();
-  void OnDataReady(bool success, const std::string& key, std::string* data);
+  void OnDataReady(bool success,
+                   const std::string& key,
+                   std::optional<std::string> data);
 
   // Test suite.
   void GetWithoutPutReturnsEmptyData();

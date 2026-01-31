@@ -74,17 +74,24 @@ class InstallAppLocallyCommandTest : public WebAppTest {
   }
 
   webapps::AppId InstallNonLocallyInstalledAppWithIcons(
-      std::map<SquareSizePx, SkBitmap> icon_map) {
+      std::map<SquareSizePx, SkBitmap> icon_map,
+      proto::InstallState install_state =
+          proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE) {
     std::unique_ptr<WebAppInstallInfo> info =
         WebAppInstallInfo::CreateWithStartUrlForTesting(kWebAppUrl);
     info->title = u"Test App";
     info->user_display_mode = mojom::UserDisplayMode::kStandalone;
     info->icon_bitmaps.any = std::move(icon_map);
+    if (install_state == proto::InstallState::SUGGESTED_FROM_MIGRATION) {
+      web_app::proto::WebAppMigrationSource source;
+      source.set_manifest_id("https://migration.example.com/start.html");
+      info->migration_sources.push_back(std::move(source));
+    }
     base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
         result;
 
     web_app::WebAppInstallParams params;
-    params.install_state = proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE;
+    params.install_state = install_state;
     params.add_to_applications_menu = false;
     params.add_to_desktop = false;
     params.add_to_quick_launch_bar = false;
@@ -226,7 +233,30 @@ TEST_F(InstallAppLocallyCommandTest, AppNotInRegistrar) {
   fake_provider().scheduler().InstallAppLocally(app_id,
                                                 test_future.GetCallback());
   EXPECT_TRUE(test_future.Wait());
-  EXPECT_FALSE(fake_provider().registrar_unsafe().IsInRegistrar(app_id));
+  EXPECT_FALSE(
+      fake_provider().registrar_unsafe().GetInstallState(app_id).has_value());
+}
+
+TEST_F(InstallAppLocallyCommandTest, MigrationPWAsNotAllowed) {
+  std::map<SquareSizePx, SkBitmap> icon_map;
+  icon_map[icon_size::k128] =
+      CreateSolidColorIcon(icon_size::k128, SK_ColorGREEN);
+  const webapps::AppId& app_id = InstallNonLocallyInstalledAppWithIcons(
+      std::move(icon_map), proto::InstallState::SUGGESTED_FROM_MIGRATION);
+
+  base::test::TestFuture<void> test_future;
+  fake_provider().scheduler().InstallAppLocally(app_id,
+                                                test_future.GetCallback());
+  EXPECT_TRUE(test_future.Wait());
+
+  // Install state not migrated, no OS integration done.
+  auto state =
+      fake_provider().registrar_unsafe().GetAppCurrentOsIntegrationState(
+          app_id);
+  EXPECT_TRUE(state.has_value());
+  EXPECT_FALSE(state.value().has_shortcut());
+  EXPECT_TRUE(fake_provider().registrar_unsafe().AppMatches(
+      app_id, WebAppFilter::IsAppSuggestedForMigration()));
 }
 
 }  // namespace

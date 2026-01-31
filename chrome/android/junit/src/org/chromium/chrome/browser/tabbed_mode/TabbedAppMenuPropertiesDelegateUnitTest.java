@@ -28,6 +28,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
+
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.view.ContextThemeWrapper;
@@ -42,6 +44,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -54,8 +57,9 @@ import org.robolectric.shadows.ShadowPackageManager;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -99,7 +103,6 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
@@ -111,6 +114,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemWithSubmenuProperties;
+import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsBuildflags;
 import org.chromium.chrome.browser.ui.extensions.FakeExtensionUiBackendRule;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -126,7 +130,6 @@ import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.dom_distiller.core.DomDistillerFeatures;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtilsJni;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridgeJni;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
@@ -165,6 +168,7 @@ import java.util.List;
     ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY,
     ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION,
     ChromeFeatureList.FEED_AUDIO_OVERVIEWS,
+    ChromeFeatureList.GLIC,
     DomDistillerFeatures.READER_MODE_IMPROVEMENTS,
     DomDistillerFeatures.READER_MODE_DISTILL_IN_APP
 })
@@ -202,6 +206,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     public FakeExtensionUiBackendRule mFakeExtensionUiBackendRule =
             new FakeExtensionUiBackendRule();
 
+    @Rule public TestName mTestName = new TestName();
+
     @Mock private Tab mTab;
     @Mock private WebContents mWebContents;
     @Mock private NativePage mNativePage;
@@ -224,7 +230,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Mock private SigninManager mSigninManager;
     @Mock private IdentityManager mIdentityManager;
     @Mock private IdentityServicesProvider mIdentityService;
-    @Mock private TabGroupModelFilterProvider mTabGroupModelFilterProvider;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private IncognitoUtils.Natives mIncognitoUtilsJniMock;
     @Mock public WebsitePreferenceBridge.Natives mWebsitePreferenceBridgeJniMock;
@@ -243,6 +248,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Mock private DomDistillerUrlUtilsJni mDomDistillerUrlUtilsJni;
     @Mock private FeedServiceBridge.Natives mFeedServiceBridgeJniMock;
     @Mock private PageZoomManager mPageZoomManagerMock;
+    @Mock private DefaultBrowserPromoUtils mMockDefaultBrowserPromoUtils;
 
     private ShadowPackageManager mShadowPackageManager;
 
@@ -251,10 +257,10 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
             new OneshotSupplierImpl<>();
     private final OneshotSupplierImpl<IncognitoReauthController>
             mIncognitoReauthControllerSupplier = new OneshotSupplierImpl<>();
-    private final ObservableSupplierImpl<BookmarkModel> mBookmarkModelSupplier =
-            new ObservableSupplierImpl<>();
-    private final ObservableSupplierImpl<ReadAloudController> mReadAloudControllerSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<BookmarkModel> mBookmarkModelSupplier =
+            ObservableSuppliers.createMonotonic();
+    private final SettableMonotonicObservableSupplier<ReadAloudController>
+            mReadAloudControllerSupplier = ObservableSuppliers.createMonotonic();
 
     private TabbedAppMenuPropertiesDelegate mTabbedAppMenuPropertiesDelegate;
     private MenuUiState mUpdateAvailableMenuUiState;
@@ -279,7 +285,9 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
         mLayoutStateProviderSupplier.set(mLayoutStateProvider);
         mIncognitoReauthControllerSupplier.set(mIncognitoReauthControllerMock);
-        mReadAloudControllerSupplier.set(mReadAloudController);
+        if (!mTestName.getMethodName().equals("testReadAloudMenuItem_readAloudNotEnabled")) {
+            mReadAloudControllerSupplier.set(mReadAloudController);
+        }
         when(mTab.getWebContents()).thenReturn(mWebContents);
         when(mTab.getProfile()).thenReturn(mProfile);
         when(mWebContents.getNavigationController()).thenReturn(mNavigationController);
@@ -290,10 +298,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(mTabModelSelector.getModel(true)).thenReturn(mIncognitoTabModel);
         when(mTabModel.isIncognito()).thenReturn(false);
         when(mIncognitoTabModel.isIncognito()).thenReturn(true);
-        when(mTabModelSelector.getTabGroupModelFilterProvider())
-                .thenReturn(mTabGroupModelFilterProvider);
-        when(mTabGroupModelFilterProvider.getCurrentTabGroupModelFilter())
-                .thenReturn(mTabGroupModelFilter);
+        when(mTabModelSelector.getCurrentTabGroupModelFilter()).thenReturn(mTabGroupModelFilter);
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabModel.getProfile()).thenReturn(mProfile);
         ManagedBrowserUtilsJni.setInstanceForTesting(mManagedBrowserUtilsJniMock);
@@ -358,7 +363,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         mSnackbarManager,
                         mIncognitoReauthControllerSupplier,
                         mReadAloudControllerSupplier,
-                        mPageZoomManagerMock);
+                        mPageZoomManagerMock,
+                        /* openInAppMenuItemProvider= */ null);
         BaseRobolectricTestRule.runAllBackgroundAndUi();
         mTabbedAppMenuPropertiesDelegate = Mockito.spy(delegate);
 
@@ -370,6 +376,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         LargeIconBridgeJni.setInstanceForTesting(mLargeIconBridgeJni);
 
         DomDistillerUrlUtilsJni.setInstanceForTesting(mDomDistillerUrlUtilsJni);
+        DefaultBrowserPromoUtils.setInstanceForTesting(mMockDefaultBrowserPromoUtils);
     }
 
     @After
@@ -993,6 +1000,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Config(qualifiers = "sw600dp")
     @EnableFeatures({ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW})
     public void testOverviewMenuItems_Tablet_SelectTabs_incognitoWindowEnabled() {
+        IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
         when(mTabModel.getCount()).thenReturn(1);
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
         when(mLayoutStateProvider.isLayoutVisible(LayoutType.TAB_SWITCHER)).thenReturn(true);
@@ -1050,6 +1058,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Config(qualifiers = "sw600dp")
     @EnableFeatures({ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW})
     public void testOverviewMenuItems_Tablet_IncognitoWindow_incognitoWindowEnabled() {
+        IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
         when(mIncognitoTabModel.getCount()).thenReturn(1);
         when(mTabModelSelector.getCurrentModel()).thenReturn(mIncognitoTabModel);
         when(mIncognitoTabModel.isIncognito()).thenReturn(true);
@@ -1195,6 +1204,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Config(qualifiers = "sw600dp")
     @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testOverviewMenuItems_Tablet_NoTabs_withNewIncognitoWindow() {
+        IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
         checkOverviewMenuItems(/* newIncognitoWindowEnabled= */ true);
     }
 
@@ -1637,7 +1647,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @EnableFeatures(DomDistillerFeatures.READER_MODE_DISTILL_IN_APP)
     public void readerModeEntryPointEnabled_chromePage() {
         setUpMocksForPageMenu();
-        when(mTab.getUrl()).thenReturn(new GURL(UrlConstants.NTP_URL));
+        when(mTab.getUrl()).thenReturn(new GURL(getOriginalNativeNtpUrl()));
 
         MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
 
@@ -1647,6 +1657,47 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         modelList,
                         R.id.reader_mode_menu_id,
                         context.getString(R.string.hide_reading_mode_text)));
+    }
+
+    @Test
+    @Config(qualifiers = "sw320dp")
+    @EnableFeatures({
+        ChromeFeatureList.DEFAULT_BROWSER_PROMO_ENTRY_POINT + ":show_app_menu_item/true"
+    })
+    public void testDefaultBrowserPromo_Enabled() {
+        setUpMocksForPageMenu();
+        setMenuOptions(new MenuOptions());
+        doReturn(true).when(mMockDefaultBrowserPromoUtils).shouldShowAppMenuItemEntryPoint();
+
+        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+
+        // Verify that that the menu item exists.
+        assertTrue(
+                "Default Browser Promo item should be visible",
+                isMenuVisible(modelList, R.id.default_browser_promo_menu_id));
+
+        // Verify that it has the correct title.
+        assertTrue(
+                "Title should match",
+                isMenuVisibleWithCorrectTitle(
+                        modelList,
+                        R.id.default_browser_promo_menu_id,
+                        ContextUtils.getApplicationContext()
+                                .getString(R.string.make_chrome_default)));
+    }
+
+    @Test
+    @Config(qualifiers = "sw320dp")
+    @DisableFeatures(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ENTRY_POINT)
+    public void testDefaultBrowserPromo_Disabled() {
+        setUpMocksForPageMenu();
+        setMenuOptions(new MenuOptions());
+
+        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+
+        assertFalse(
+                "Default Browser Promo item should not be visible",
+                isMenuVisible(modelList, R.id.default_browser_promo_menu_id));
     }
 
     @Test
@@ -1751,7 +1802,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @EnableFeatures({ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION})
     public void testCustomizeNewTabPageOption() {
         MockTab ntpTab = new MockTab(1, mProfile);
-        ntpTab.setUrl(new GURL(UrlConstants.NTP_URL));
+        ntpTab.setUrl(new GURL(getOriginalNativeNtpUrl()));
 
         setUpMocksForPageMenu();
         setMenuOptions(new MenuOptions());
@@ -1767,7 +1818,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @EnableFeatures({ChromeFeatureList.FEED_AUDIO_OVERVIEWS})
     public void testListenToFeedMenuItem_available() {
         MockTab ntpTab = new MockTab(1, mProfile);
-        ntpTab.setUrl(new GURL(UrlConstants.NTP_URL));
+        ntpTab.setUrl(new GURL(getOriginalNativeNtpUrl()));
 
         setUpMocksForPageMenu();
         setMenuOptions(new MenuOptions());
@@ -1785,7 +1836,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @EnableFeatures({ChromeFeatureList.FEED_AUDIO_OVERVIEWS})
     public void testListenToFeedMenuItem_unavailableWhenNotNtp() {
         MockTab ntpTab = new MockTab(1, mProfile);
-        ntpTab.setUrl(new GURL(UrlConstants.NTP_URL));
+        ntpTab.setUrl(new GURL(getOriginalNativeNtpUrl()));
 
         setUpMocksForPageMenu();
         setMenuOptions(new MenuOptions());
@@ -1803,7 +1854,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @EnableFeatures({ChromeFeatureList.FEED_AUDIO_OVERVIEWS})
     public void testListenToFeedMenuItem_unavailableWhenFeedDisabled() {
         MockTab ntpTab = new MockTab(1, mProfile);
-        ntpTab.setUrl(new GURL(UrlConstants.NTP_URL));
+        ntpTab.setUrl(new GURL(getOriginalNativeNtpUrl()));
 
         setUpMocksForPageMenu();
         setMenuOptions(new MenuOptions());
@@ -1821,7 +1872,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @EnableFeatures({ChromeFeatureList.FEED_AUDIO_OVERVIEWS})
     public void testListenToFeedMenuItem_unavailableWhenFeedHidden() {
         MockTab ntpTab = new MockTab(1, mProfile);
-        ntpTab.setUrl(new GURL(UrlConstants.NTP_URL));
+        ntpTab.setUrl(new GURL(getOriginalNativeNtpUrl()));
 
         setUpMocksForPageMenu();
         setMenuOptions(new MenuOptions());
@@ -1839,7 +1890,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @EnableFeatures({ChromeFeatureList.FEED_AUDIO_OVERVIEWS})
     public void testListenToFeedMenuItem_unavailableWhenReadAloudNotAvailable() {
         MockTab ntpTab = new MockTab(1, mProfile);
-        ntpTab.setUrl(new GURL(UrlConstants.NTP_URL));
+        ntpTab.setUrl(new GURL(getOriginalNativeNtpUrl()));
 
         setUpMocksForPageMenu();
         setMenuOptions(new MenuOptions());
@@ -1960,6 +2011,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Config(qualifiers = "sw600dp")
     @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testShouldShowNewMenu_isTabletSizedScreen_returnsTrue_withNewIncognitoWindow() {
+        IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
         assertTrue(
                 doTestShouldShowNewMenu(
                         /* isAutomotive= */ false,
@@ -2153,7 +2205,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
     @Test
     public void testReadAloudMenuItem_readAloudNotEnabled() {
-        mReadAloudControllerSupplier.set(null);
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
         setUpMocksForPageMenu();
         MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();

@@ -133,7 +133,7 @@ std::string LoggerImpl::GetLogsAsJson() const {
 }
 
 base::Value LoggerImpl::GetLogsAsValue() const {
-  base::Value::List entries_val;
+  base::ListValue entries_val;
   for (const auto& entry : entries_) {
     entries_val.Append(AsValue(entry));
   }
@@ -170,8 +170,8 @@ LoggerImpl::Entry::Entry(Entry&& other)
 LoggerImpl::Entry::~Entry() = default;
 
 // static
-base::Value::Dict LoggerImpl::AsValue(const LoggerImpl::Entry& entry) {
-  base::Value::Dict entry_val;
+base::DictValue LoggerImpl::AsValue(const LoggerImpl::Entry& entry) {
+  base::DictValue entry_val;
   entry_val.Set("severity", base::Value(AsString(entry.severity)));
   entry_val.Set("category", base::Value(AsString(entry.category)));
   entry_val.Set(

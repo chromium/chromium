@@ -49,11 +49,10 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.MaxAndroidSdkLevel;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.external_intents.ExternalNavigationHandler.IncognitoDialogDelegate;
 import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResult;
 import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResultType;
-import org.chromium.components.external_intents.ExternalNavigationHandler.QueryIntentActivitiesSupplier;
-import org.chromium.components.external_intents.ExternalNavigationHandler.ResolveActivitySupplier;
 import org.chromium.components.external_intents.ExternalNavigationParams.AsyncActionTakenParams;
 import org.chromium.components.external_intents.ExternalNavigationParams.AsyncActionTakenParams.AsyncActionTakenType;
 import org.chromium.content_public.browser.WebContents;
@@ -1217,10 +1216,10 @@ public class ExternalNavigationHandlerTest {
                                 filter,
                                 new Instrumentation.ActivityResult(Activity.RESULT_OK, null),
                                 true);
-        Intent dummyIntent = new Intent(mRealApplicationContext, BlankUiTestActivity.class);
-        dummyIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        Intent testIntent = new Intent(mRealApplicationContext, BlankUiTestActivity.class);
+        testIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         Activity activity =
-                InstrumentationRegistry.getInstrumentation().startActivitySync(dummyIntent);
+                InstrumentationRegistry.getInstrumentation().startActivitySync(testIntent);
         mDelegate.setContext(activity);
         mDelegate.setCanLoadUrlInTab(true);
         try {
@@ -1285,10 +1284,10 @@ public class ExternalNavigationHandlerTest {
 
     private void doTestFallbackUrl_ChromeCanHandle_Incognito(final boolean clearRedirectHandler) {
         mDelegate.add(new IntentActivity("https", "package"));
-        Intent dummyIntent = new Intent(mRealApplicationContext, BlankUiTestActivity.class);
-        dummyIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        Intent testIntent = new Intent(mRealApplicationContext, BlankUiTestActivity.class);
+        testIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         Activity activity =
-                InstrumentationRegistry.getInstrumentation().startActivitySync(dummyIntent);
+                InstrumentationRegistry.getInstrumentation().startActivitySync(testIntent);
         mDelegate.setContext(activity);
         mDelegate.setCanLoadUrlInTab(true);
         try {
@@ -1373,10 +1372,10 @@ public class ExternalNavigationHandlerTest {
                                 filter,
                                 new Instrumentation.ActivityResult(Activity.RESULT_OK, null),
                                 true);
-        Intent dummyIntent = new Intent(mRealApplicationContext, BlankUiTestActivity.class);
-        dummyIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        Intent testIntent = new Intent(mRealApplicationContext, BlankUiTestActivity.class);
+        testIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         Activity activity =
-                InstrumentationRegistry.getInstrumentation().startActivitySync(dummyIntent);
+                InstrumentationRegistry.getInstrumentation().startActivitySync(testIntent);
         mDelegate.setContext(activity);
         mDelegate.setCanLoadUrlInTab(true);
         mDelegate.setShouldPresentLeavingIncognitoDialog(true);
@@ -1454,10 +1453,10 @@ public class ExternalNavigationHandlerTest {
     @MediumTest
     public void testFallbackUrl_ChromeCanHandle_Incognito_DelegateHandleDialogPresentation() {
         mDelegate.add(new IntentActivity("https", "package"));
-        Intent dummyIntent = new Intent(mRealApplicationContext, BlankUiTestActivity.class);
-        dummyIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        Intent testIntent = new Intent(mRealApplicationContext, BlankUiTestActivity.class);
+        testIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         Activity activity =
-                InstrumentationRegistry.getInstrumentation().startActivitySync(dummyIntent);
+                InstrumentationRegistry.getInstrumentation().startActivitySync(testIntent);
         mDelegate.setContext(activity);
         mDelegate.setCanLoadUrlInTab(true);
         mDelegate.setShouldPresentLeavingIncognitoDialog(true);
@@ -1552,10 +1551,10 @@ public class ExternalNavigationHandlerTest {
     public void runIncognitoAlertDialogDismissedTest(
             long navId, Runnable testCallback, boolean shouldDismiss) {
         mDelegate.add(new IntentActivity("imdb:", INTENT_APP_PACKAGE_NAME));
-        Intent dummyIntent = new Intent(mRealApplicationContext, BlankUiTestActivity.class);
-        dummyIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        Intent testIntent = new Intent(mRealApplicationContext, BlankUiTestActivity.class);
+        testIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         Activity activity =
-                InstrumentationRegistry.getInstrumentation().startActivitySync(dummyIntent);
+                InstrumentationRegistry.getInstrumentation().startActivitySync(testIntent);
         mDelegate.setContext(activity);
         mDelegate.setCanLoadUrlInTab(true);
         try {
@@ -1645,10 +1644,10 @@ public class ExternalNavigationHandlerTest {
                                 filter,
                                 new Instrumentation.ActivityResult(Activity.RESULT_OK, null),
                                 true);
-        Intent dummyIntent = new Intent(mRealApplicationContext, BlankUiTestActivity.class);
-        dummyIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        Intent testIntent = new Intent(mRealApplicationContext, BlankUiTestActivity.class);
+        testIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         Activity activity =
-                InstrumentationRegistry.getInstrumentation().startActivitySync(dummyIntent);
+                InstrumentationRegistry.getInstrumentation().startActivitySync(testIntent);
         mDelegate.setContext(activity);
         mDelegate.setCanLoadUrlInTab(true);
 
@@ -1696,10 +1695,10 @@ public class ExternalNavigationHandlerTest {
                                 filter,
                                 new Instrumentation.ActivityResult(Activity.RESULT_OK, null),
                                 true);
-        Intent dummyIntent = new Intent(mRealApplicationContext, BlankUiTestActivity.class);
-        dummyIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        Intent testIntent = new Intent(mRealApplicationContext, BlankUiTestActivity.class);
+        testIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         Activity activity =
-                InstrumentationRegistry.getInstrumentation().startActivitySync(dummyIntent);
+                InstrumentationRegistry.getInstrumentation().startActivitySync(testIntent);
         mDelegate.setContext(activity);
         mDelegate.setCanLoadUrlInTab(true);
 
@@ -1745,10 +1744,10 @@ public class ExternalNavigationHandlerTest {
                                 filter,
                                 new Instrumentation.ActivityResult(Activity.RESULT_OK, null),
                                 true);
-        Intent dummyIntent = new Intent(mRealApplicationContext, BlankUiTestActivity.class);
-        dummyIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        Intent testIntent = new Intent(mRealApplicationContext, BlankUiTestActivity.class);
+        testIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         Activity activity =
-                InstrumentationRegistry.getInstrumentation().startActivitySync(dummyIntent);
+                InstrumentationRegistry.getInstrumentation().startActivitySync(testIntent);
         mDelegate.setContext(activity);
         mDelegate.setCanLoadUrlInTab(true);
 
@@ -1785,10 +1784,10 @@ public class ExternalNavigationHandlerTest {
             long navId, Runnable testCallback, boolean shouldDismiss) {
         mDelegate.add(
                 new IntentActivity("openid4vp-v1-unsigned", DIGITAL_CREDENTIALS_PACKAGE_NAME));
-        Intent dummyIntent = new Intent(mRealApplicationContext, BlankUiTestActivity.class);
-        dummyIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        Intent testIntent = new Intent(mRealApplicationContext, BlankUiTestActivity.class);
+        testIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         Activity activity =
-                InstrumentationRegistry.getInstrumentation().startActivitySync(dummyIntent);
+                InstrumentationRegistry.getInstrumentation().startActivitySync(testIntent);
         mDelegate.setContext(activity);
         mDelegate.setCanLoadUrlInTab(true);
         try {
@@ -2057,7 +2056,7 @@ public class ExternalNavigationHandlerTest {
                 .expecting(OverrideUrlLoadingResultType.OVERRIDE_WITH_NAVIGATE_TAB, IGNORE);
 
         mDelegate.setCanResolveActivityForExternalSchemes(true);
-        // As a result of intent resolution fallback, we have clobberred the current tab and the
+        // As a result of intent resolution fallback, we have clobbered the current tab and the
         // sending site has learned that an app is not installed. In order to prevent chaining this
         // and learning about more not-installed apps, even URLs that would otherwise successfully
         // launch an app will use the fallback URL.
@@ -3674,6 +3673,27 @@ public class ExternalNavigationHandlerTest {
             return false;
         }
 
+        @Override
+        public boolean shouldLaunchNewWindow(ExternalNavigationParams params) {
+            return false;
+        }
+
+        @Override
+        public boolean shouldSelfNavigationLaunchAsMultipleTask(ExternalNavigationParams params) {
+            return false;
+        }
+
+        @Override
+        public boolean shouldSetAppForCurrentPage() {
+            return false;
+        }
+
+        @Override
+        public void setAppForCurrentPage(@Nullable ResolveInfo resolveInfo, Runnable openInApp) {}
+
+        @Override
+        public void clearAppForCurrentPage() {}
+
         public void reset() {
             startIncognitoIntentCalled = false;
         }
@@ -3783,7 +3803,7 @@ public class ExternalNavigationHandlerTest {
         private Intent mSafeBrowsingIntent;
     }
 
-    private void checkIntentSanity(Intent intent, String name) {
+    private void checkIntentValidity(Intent intent, String name) {
         Assert.assertTrue(
                 "The invoked " + name + " doesn't have the BROWSABLE category set\n",
                 intent.hasCategory(Intent.CATEGORY_BROWSABLE));
@@ -3949,9 +3969,9 @@ public class ExternalNavigationHandlerTest {
             Assert.assertEquals(expectStartFile, mUrlHandler.mRequestFilePermissionsCalled);
 
             if (startActivityCalled && expectSaneIntent) {
-                checkIntentSanity(startActivityIntent, "Intent");
+                checkIntentValidity(startActivityIntent, "Intent");
                 if (startActivityIntent.getSelector() != null) {
-                    checkIntentSanity(startActivityIntent.getSelector(), "Intent's selector");
+                    checkIntentValidity(startActivityIntent.getSelector(), "Intent's selector");
                 }
             }
         }

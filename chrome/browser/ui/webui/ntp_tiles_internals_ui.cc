@@ -71,8 +71,7 @@ class ChromeNTPTilesInternalsMessageHandlerClient
   PrefService* GetPrefs() override;
   void RegisterMessageCallback(
       std::string_view message,
-      base::RepeatingCallback<void(const base::Value::List&)> callback)
-      override;
+      base::RepeatingCallback<void(const base::ListValue&)> callback) override;
   void CallJavascriptFunctionSpan(
       std::string_view name,
       base::span<const base::ValueView> values) override;
@@ -108,11 +107,11 @@ ChromeNTPTilesInternalsMessageHandlerClient::MakeMostVisitedSites() {
   most_visited_sites->EnableTileTypes(
       ntp_tiles::MostVisitedSites::EnableTileTypesOptions()
           .with_top_sites(
-              base::Contains(enabled_types, ntp_tiles::TileType::kTopSites))
+              enabled_types.contains(ntp_tiles::TileType::kTopSites))
           .with_custom_links(
-              base::Contains(enabled_types, ntp_tiles::TileType::kCustomLinks))
-          .with_enterprise_shortcuts(base::Contains(
-              enabled_types, ntp_tiles::TileType::kEnterpriseShortcuts)));
+              enabled_types.contains(ntp_tiles::TileType::kCustomLinks))
+          .with_enterprise_shortcuts(enabled_types.contains(
+              ntp_tiles::TileType::kEnterpriseShortcuts)));
 #endif
   return most_visited_sites;
 }
@@ -123,7 +122,7 @@ PrefService* ChromeNTPTilesInternalsMessageHandlerClient::GetPrefs() {
 
 void ChromeNTPTilesInternalsMessageHandlerClient::RegisterMessageCallback(
     std::string_view message,
-    base::RepeatingCallback<void(const base::Value::List&)> callback) {
+    base::RepeatingCallback<void(const base::ListValue&)> callback) {
   web_ui()->RegisterMessageCallback(message, std::move(callback));
 }
 

@@ -204,14 +204,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   }
 
   private computeThirdPartyCookiesSublabel_(): string {
-    // Handle the correct pref in Mode B.
-    if (loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled')) {
-      if (this.getPref('tracking_protection.block_all_3pc_toggle_enabled')
-              .value) {
-        return this.i18n('thirdPartyCookiesLinkRowSublabelDisabled');
-      }
-      return this.i18n('thirdPartyCookiesLinkRowSublabelLimited');
-    }
     const currentCookieSetting =
         this.getPref('profile.cookie_controls_mode').value;
     switch (currentCookieSetting) {
@@ -300,7 +292,9 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
       case 'siteSettingsJavascriptOptimizer':
       case 'siteSettingsKeyboardLock':
       case 'siteSettingsLocalFonts':
+      case 'siteSettingsLocalNetwork':
       case 'siteSettingsLocalNetworkAccess':
+      case 'siteSettingsLoopbackNetwork':
       case 'siteSettingsLocation':
       case 'siteSettingsMicrophone':
       case 'siteSettingsMidiDevices':

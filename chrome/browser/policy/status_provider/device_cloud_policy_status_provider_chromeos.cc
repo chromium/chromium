@@ -22,9 +22,8 @@ DeviceCloudPolicyStatusProviderChromeOS::
 DeviceCloudPolicyStatusProviderChromeOS::
     ~DeviceCloudPolicyStatusProviderChromeOS() = default;
 
-base::Value::Dict DeviceCloudPolicyStatusProviderChromeOS::GetStatus() {
-  base::Value::Dict dict =
-      policy::PolicyStatusProvider::GetStatusFromCore(core_);
+base::DictValue DeviceCloudPolicyStatusProviderChromeOS::GetStatus() {
+  base::DictValue dict = policy::PolicyStatusProvider::GetStatusFromCore(core_);
   dict.Set(policy::kEnterpriseDomainManagerKey, enterprise_domain_manager_);
   dict.Set(policy::kPolicyDescriptionKey, kDevicePolicyStatusDescription);
   GetOffHoursStatus(&dict);

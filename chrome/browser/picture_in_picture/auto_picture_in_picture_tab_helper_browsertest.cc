@@ -154,7 +154,8 @@ class MockInputObserver : public content::RenderWidgetHost::InputEventObserver {
   MOCK_METHOD(void,
               OnInputEvent,
               (const content::RenderWidgetHost& widget,
-               const blink::WebInputEvent&),
+               const blink::WebInputEvent&,
+               input::InputEventSource),
               (override));
 };
 
@@ -274,7 +275,7 @@ class AutoPipInfoDevToolsWaiter : public content::DevToolsInspectorLogWatcher::
 void OpenPageInfoBubble(Browser* browser) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
   LocationIconView* location_icon_view =
-      browser_view->toolbar()->location_bar()->location_icon_view();
+      browser_view->toolbar()->location_bar_view()->location_icon_view();
   ASSERT_TRUE(location_icon_view);
   ui::test::TestEvent event;
   location_icon_view->ShowBubble(event);
@@ -796,7 +797,7 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
     auto* rwh = web_contents->GetRenderWidgetHostView()->GetRenderWidgetHost();
     MockInputObserver input_observer;
     rwh->AddInputEventObserver(&input_observer);
-    EXPECT_CALL(input_observer, OnInputEvent(_, _))
+    EXPECT_CALL(input_observer, OnInputEvent(_, _, _))
         .Times(expect_events ? 4 : 0);
 
     blink::WebMouseEvent mouse_event(
@@ -1830,7 +1831,9 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
                              new_pip_contents->GetTopLevelNativeWindow())
                              ->GetWidget();
   EXPECT_NE(moved_bounds, new_pip_widget->GetWindowBoundsInScreen());
-  EXPECT_EQ(initial_bounds, new_pip_widget->GetWindowBoundsInScreen());
+  WidgetBoundsChangeWaiter(new_pip_widget,
+                           WidgetBoundsChangeWaiter::Comparison::kIsEqual)
+      .Wait(initial_bounds);
 }
 
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,

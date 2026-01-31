@@ -110,8 +110,9 @@ void SendInvitation(ScopedInvitationHandle invitation,
       invitation.get().value(), process_handle.get(), &endpoint, error_handler,
       error_handler_context, &options);
   // If successful, the invitation handle is already closed for us.
-  if (result == MOJO_RESULT_OK)
+  if (result == MOJO_RESULT_OK) {
     std::ignore = invitation.release();
+  }
 }
 
 #if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_IOS)
@@ -322,8 +323,9 @@ IncomingInvitation IncomingInvitation::Accept(
   MojoHandle invitation_handle;
   MojoResult result =
       MojoAcceptInvitation(&transport_endpoint, &options, &invitation_handle);
-  if (result != MOJO_RESULT_OK)
+  if (result != MOJO_RESULT_OK) {
     return IncomingInvitation();
+  }
 
   return IncomingInvitation(
       ScopedInvitationHandle(InvitationHandle(invitation_handle)));
@@ -346,8 +348,9 @@ IncomingInvitation IncomingInvitation::AcceptAsync(
   MojoHandle invitation_handle;
   MojoResult result =
       MojoAcceptInvitation(&transport_endpoint, nullptr, &invitation_handle);
-  if (result != MOJO_RESULT_OK)
+  if (result != MOJO_RESULT_OK) {
     return IncomingInvitation();
+  }
 
   return IncomingInvitation(
       ScopedInvitationHandle(InvitationHandle(invitation_handle)));
@@ -374,8 +377,9 @@ ScopedMessagePipeHandle IncomingInvitation::AcceptIsolated(
   MojoHandle invitation_handle;
   MojoResult result =
       MojoAcceptInvitation(&transport_endpoint, &options, &invitation_handle);
-  if (result != MOJO_RESULT_OK)
+  if (result != MOJO_RESULT_OK) {
     return ScopedMessagePipeHandle();
+  }
 
   IncomingInvitation invitation{
       ScopedInvitationHandle(InvitationHandle(invitation_handle))};

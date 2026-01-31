@@ -375,7 +375,7 @@ class FakeTenorServer {
   bool HandleSearchOrFeatured(
       content::URLLoaderInterceptor::RequestParams* params) {
     // Build up a fake set of GIFs
-    base::Value::List results;
+    base::ListValue results;
     for (int i = 0; i < 10; ++i) {
       results.Append(base::test::ParseJson(R"json({
           "id": "0",
@@ -400,8 +400,7 @@ class FakeTenorServer {
         "HTTP/1.1 200 OK\nContent-Type: text/json\n\n";
     content::URLLoaderInterceptor::WriteResponse(
         headers,
-        *base::WriteJson(
-            base::Value::Dict().Set("results", std::move(results))),
+        *base::WriteJson(base::DictValue().Set("results", std::move(results))),
         params->client.get());
     return true;
   }

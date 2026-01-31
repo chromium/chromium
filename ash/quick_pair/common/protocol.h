@@ -8,8 +8,7 @@
 #include <ostream>
 #include "base/component_export.h"
 
-namespace ash {
-namespace quick_pair {
+namespace ash::quick_pair {
 
 enum class Protocol {
   // Google Fast Pair
@@ -21,7 +20,6 @@ enum class Protocol {
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 std::ostream& operator<<(std::ostream& stream, Protocol protocol);
 
-}  // namespace quick_pair
-}  // namespace ash
+}  // namespace ash::quick_pair
 
 #endif  // ASH_QUICK_PAIR_COMMON_PROTOCOL_H_

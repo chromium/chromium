@@ -12,6 +12,7 @@
 #include "chrome/browser/site_protection/site_familiarity_process_selection_user_data.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/site_engagement/content/site_engagement_service.h"
 #include "extensions/common/constants.h"
 #include "url/origin.h"
 
@@ -76,6 +77,14 @@ void SiteFamiliarityFetcher::Start(const GURL& url,
                      weak_factory_.GetWeakPtr()),
       &task_tracker_);
   StartFetchingSafeBrowsingHighConfidenceAllowlist();
+
+  // The SiteEngagementService provides a synchronous API, so just compute that
+  // familiarity component now.
+  site_engagement::SiteEngagementService* site_engagement_service =
+      site_engagement::SiteEngagementService::Get(profile_);
+  has_engagement_score_higher_than_threshold_ =
+      site_engagement_service->GetScore(fetch_url_) >=
+      kMinSiteEngagementScoreForFamiliarity;
 }
 
 void SiteFamiliarityFetcher::
@@ -139,7 +148,8 @@ void SiteFamiliarityFetcher::RunCallbackIfFinished() {
     return;
   }
 
-  Verdict verdict = (has_record_older_than_threshold_ || is_on_sb_list_)
+  Verdict verdict = (has_engagement_score_higher_than_threshold_ ||
+                     has_record_older_than_threshold_ || is_on_sb_list_)
                         ? Verdict::kFamiliar
                         : Verdict::kUnfamiliar;
   std::move(callback_).Run(verdict);

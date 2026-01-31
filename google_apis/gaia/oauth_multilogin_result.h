@@ -163,18 +163,18 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuthMultiloginResult {
                            ParseRealResponseFromGaia_2021_10);
 
   void TryParseCookiesFromValue(
-      const base::Value::Dict& json_value,
+      const base::DictValue& json_value,
       const CookieDecryptor& decryptor = base::NullCallback());
 
   // If `status_` is `kInvalidTokens` or `kRetryWithTokenBindingChallenge`, the
   // response is expected to have a list of failed accounts for which tokens are
   // either not valid or required to sign over a token binding challenge.
-  void TryParseFailedAccountsFromValue(const base::Value::Dict& json_value);
+  void TryParseFailedAccountsFromValue(const base::DictValue& json_value);
 
   // It parses the device-bound sessions info from the response. It is expected
   // to be called only if the response status is `kOk`.
   void TryParseDeviceBoundSessionsFromValue(
-      const base::Value::Dict& json_value,
+      const base::DictValue& json_value,
       bool standard_device_bound_session_credentials);
 
   std::vector<net::CanonicalCookie> cookies_;

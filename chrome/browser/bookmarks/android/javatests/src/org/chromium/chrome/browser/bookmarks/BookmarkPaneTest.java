@@ -33,7 +33,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
@@ -70,13 +69,14 @@ public class BookmarkPaneTest {
     public void tearDown() {
         ChromeTabbedActivity cta = mCtaTestRule.getActivity();
         runOnUiThreadBlocking(
-                () -> clearBookmarks(cta.getProfileProviderSupplier().get().getOriginalProfile()));
+                () -> {
+                    clearBookmarks(cta.getProfileProviderSupplier().get().getOriginalProfile());
+                });
     }
 
     @Test
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
-    @DisabledTest(message = "crbug.com/464481832")
     public void testBookmarkIsDisplayed() {
         ChromeTabbedActivity cta = mCtaTestRule.getActivity();
         String urlOne =
@@ -113,8 +113,8 @@ public class BookmarkPaneTest {
         enterBookmarkPane();
 
         // Search for "One" in the history search box.
-        onView(withId(R.id.row_search_text)).perform(click());
-        onView(withId(R.id.row_search_text)).perform(replaceText("One"));
+        BookmarkTestUtil.getSearchBoxViewInteraction().perform(click());
+        BookmarkTestUtil.getSearchBoxViewInteraction().perform(replaceText("One"));
 
         // Verify that "One" is displayed as a match.
         onViewWaiting(allOf(withText("One"), withId(R.id.title))).check(matches(isDisplayed()));
@@ -123,7 +123,6 @@ public class BookmarkPaneTest {
     @Test
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
-    @DisabledTest(message = "crbug.com/444494388")
     public void testBookmarkClickOpens() {
         ChromeTabbedActivity cta = mCtaTestRule.getActivity();
         String urlOne =
@@ -155,9 +154,11 @@ public class BookmarkPaneTest {
                                 isDescendantOfA(withId(R.id.pane_switcher)),
                                 withContentDescription(containsString("Bookmarks"))))
                 .perform(click());
+        BookmarkTestUtil.waitForBookmarkModelLoaded();
     }
 
     private void clearBookmarks(Profile profile) {
-        BookmarkModel.getForProfile(profile).removeAllUserBookmarks();
+        BookmarkModel model = BookmarkModel.getForProfile(profile);
+        model.finishLoadingBookmarkModel(() -> model.removeAllUserBookmarks());
     }
 }

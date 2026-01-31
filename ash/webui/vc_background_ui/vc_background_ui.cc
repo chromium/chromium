@@ -44,7 +44,7 @@ void AddStrings(content::WebUIDataSource* source) {
 }
 
 void AddResources(content::WebUIDataSource* source) {
-  source->AddResourcePath("", IDR_ASH_VC_BACKGROUND_INDEX_HTML);
+  source->SetDefaultResource(IDR_ASH_VC_BACKGROUND_INDEX_HTML);
   source->AddResourcePaths(kAshVcBackgroundResources);
 
 #if !DCHECK_IS_ON()

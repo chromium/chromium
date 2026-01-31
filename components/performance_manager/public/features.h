@@ -30,10 +30,6 @@ namespace performance_manager::features {
 BASE_DECLARE_FEATURE(kUnthrottledTabProcessReporting);
 #endif
 
-// Enable background tab loading of pages (restored via session restore)
-// directly from Performance Manager rather than via TabLoader.
-BASE_DECLARE_FEATURE(kBackgroundTabLoadingFromPerformanceManager);
-
 // Make the Battery Saver Modes available to users. If this is enabled, it
 // doesn't mean the mode is enabled, just that the user has the option of
 // toggling it.
@@ -121,10 +117,6 @@ extern const base::FeatureParam<bool> kNonSpareRendererHighInitialPriority;
 
 BASE_DECLARE_FEATURE(kPMLoadingPageVoter);
 
-// Policy that evicts the BFCache of pages that become non visible or the
-// BFCache of all pages when the system is under memory pressure.
-BASE_DECLARE_FEATURE(kBFCachePerformanceManagerPolicy);
-
 // Whether tabs are discarded under high memory pressure.
 BASE_DECLARE_FEATURE(kUrgentPageDiscarding);
 
@@ -160,16 +152,6 @@ BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kFreezingVisibleProtectionTime);
 
 // Time for which a page cannot be frozen after being audible.
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kFreezingAudioProtectionTime);
-
-// When enabled, browsing instances with high CPU usage in background are frozen
-// when Battery Saver is active. Depends on `kCPUMeasurementInFreezingPolicy`.
-BASE_DECLARE_FEATURE(kFreezingOnBatterySaver);
-
-// This is the similar to `kFreezingOnBatterySaver`, with some changes to
-// facilitate testing:
-// - Pretend that Battery Saver is active even if it's not.
-// - Pretend that all tabs have high CPU usage in background.
-BASE_DECLARE_FEATURE(kFreezingOnBatterySaverForTesting);
 
 // When enabled, the freezing policy won't freeze pages that are opted out of
 // tab discarding.
@@ -236,6 +218,11 @@ BASE_DECLARE_FEATURE(kKeepDefaultSearchEngineRendererAlive);
 
 // A feature to boost the priority of tabs that are being closed.
 BASE_DECLARE_FEATURE(kBoostClosingTabs);
+
+// A feature to force foreground priority for all frames and workers. Intended
+// for ad-hoc debugging, to determine if a background tab issue is caused
+// specifically by low priority.
+BASE_DECLARE_FEATURE(kForceForegroundPriority);
 
 BASE_DECLARE_FEATURE(kTransientKeepAlivePolicy);
 

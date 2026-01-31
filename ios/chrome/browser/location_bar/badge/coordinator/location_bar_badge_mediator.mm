@@ -35,9 +35,11 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_iph_commands.h"
+#import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -175,6 +177,10 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
     _infobarBadgeObservation->Reset();
   }
 
+  if (status.old_active_web_state) {
+    [self updateOldActiveWebstate:status.old_active_web_state];
+  }
+
   [self resetTimersAndUIStateAnimated:NO];
 
   // Return early if no new webstates are active.
@@ -193,7 +199,10 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
 
 - (void)webState:(web::WebState*)webState
     didStartNavigation:(web::NavigationContext*)navigationContext {
-  [self.consumer hideBadge];
+  // Do not modify badge state if the navigation is on the same document.
+  if (!navigationContext->IsSameDocument()) {
+    [self.consumer hideBadge];
+  }
 }
 
 - (void)webStateWasDestroyed:(web::WebState*)webState {
@@ -320,9 +329,14 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
         }
       }
       [self.BWGCommandHandler
-          startGeminiFlowWithEntryPoint:bwg::EntryPoint::OmniboxChip];
+          startGeminiFlowWithEntryPoint:gemini::EntryPoint::OmniboxChip];
       _tracker->NotifyEvent(
           feature_engagement::events::kIOSGeminiContextualCueChipUsed);
+      break;
+    case LocationBarBadgeType::kContextualPanelEntryPointSample:
+    case LocationBarBadgeType::kPriceInsights:
+    case LocationBarBadgeType::kReaderMode:
+      [self contextualPanelEntrypointBadgeTapped];
       break;
     default:
       break;
@@ -362,12 +376,12 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
 // Timer to end the promo.
 - (void)startEndPromoTimer {
   __weak LocationBarBadgeMediator* weakSelf = self;
-  _promoStartTimer = std::make_unique<base::OneShotTimer>();
-  _promoStartTimer->Start(FROM_HERE,
-                          base::Seconds(kStartCollapseTransitionTimeInSeconds),
-                          base::BindOnce(^{
-                            [weakSelf cleanupAndTransitionToDefaultBadgeState];
-                          }));
+  _promoEndTimer = std::make_unique<base::OneShotTimer>();
+  _promoEndTimer->Start(FROM_HERE,
+                        base::Seconds(kStartCollapseTransitionTimeInSeconds),
+                        base::BindOnce(^{
+                          [weakSelf cleanupAndTransitionToDefaultBadgeState];
+                        }));
 }
 
 // Starts the promo timer for an IPH.
@@ -384,8 +398,7 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
 // Transforms the badge into a chip and starts the timers to transition back to
 // the default badge state.
 - (void)setupAndExpandChip:(LocationBarBadgeConfiguration*)badgeConfig {
-  if (![self shouldShowChip:badgeConfig] ||
-      ![self.delegate canShowLargeContextualPanelEntrypoint:self]) {
+  if (![self shouldShowChip:badgeConfig] || ![self.delegate canShowChip:self]) {
     // Enable fullscreen in case it was disabled when trying to show the IPH.
     [self.delegate enableFullscreen];
     return;
@@ -395,6 +408,7 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
   [self.consumer expandBadgeContainer];
   [self chipShown:badgeConfig.badgeType];
   [self startEndPromoTimer];
+  _promoStartTimer = nullptr;
 }
 
 // Shows the IPH related to the `badgeConfig`.
@@ -462,6 +476,7 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
   [self dismissIPHAnimated:YES];
   [self.consumer collapseBadgeContainer];
   [self.delegate enableFullscreen];
+  _promoEndTimer = nullptr;
 }
 
 // Cancels pending timers, dismisses any showing IPH and removes any active
@@ -489,6 +504,36 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
   // Register observer bridge for the new WebState's InfobarBadgeTabHelper.
   _infobarBadgeObservation->Observe(
       InfobarBadgeTabHelper::GetOrCreateForWebState(_activeWebState));
+
+  ContextualPanelTabHelper* contextualPanelTabHelper =
+      ContextualPanelTabHelper::FromWebState(_activeWebState);
+  // In some cases (e.g. tests), an OTR web state (without a
+  // ContextualPanelTabHelper) can be added to the web state list being
+  // observed, even though this mediator is only created for non-OTR browsers.
+  // Just in case, make sure there actually is a ContextualPanelTabHelper.
+  if (!contextualPanelTabHelper) {
+    return;
+  }
+  [self activeTabHasNewData:contextualPanelTabHelper->GetFirstCachedConfig()
+                                .get()];
+}
+
+// Update old active WebState.
+- (void)updateOldActiveWebstate:(web::WebState*)webState {
+  if (!IsLocationBarBadgeMigrationEnabled()) {
+    return;
+  }
+
+  // Update old active web state's visible time for ContextualPanelEntrypoint.
+  ContextualPanelTabHelper* contextualPanelTabHelper =
+      ContextualPanelTabHelper::FromWebState(webState);
+  std::optional<ContextualPanelTabHelper::EntrypointMetricsData>& metricsData =
+      contextualPanelTabHelper->GetMetricsData();
+  if (metricsData && metricsData->appearance_time) {
+    metricsData->time_visible +=
+        base::Time::Now() - metricsData->appearance_time.value();
+    metricsData->appearance_time = std::nullopt;
+  }
 }
 
 // Checks FET (Feature Engagement Tracker) criteria for a given `badgeType`. By
@@ -625,9 +670,22 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
     return YES;
   }
 
+  // If the promo timers have already started, do not allow the chip to show to
+  // avoid calling `ShouldTriggerHelpUI()` when the chip is in the process of
+  // being displayed.
+  if ([self arePromoTimersRunning]) {
+    return NO;
+  }
+
   return isPageEligible && isConsentEligible && eligibleTimeWindow &&
          _tracker->ShouldTriggerHelpUI(
              feature_engagement::kIPHiOSGeminiContextualCueChip);
+}
+
+// Returns whether the promo timers exist which implies a promo is in the
+// process of being displayed.
+- (BOOL)arePromoTimersRunning {
+  return _promoStartTimer != nullptr || _promoEndTimer != nullptr;
 }
 
 #pragma mark - Private ContextualPanelEntrypoint
@@ -635,6 +693,10 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
 // Updates the entrypoint state whenever the active tab changes or new data is
 // provided.
 - (void)activeTabHasNewData:(ContextualPanelItemConfiguration*)config {
+  if ([self arePromoTimersRunning]) {
+    return;
+  }
+
   [self resetTimersAndUIStateAnimated:NO];
 
   if (!config) {
@@ -696,7 +758,7 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
          !contextualPanelTabHelper->IsContextualPanelCurrentlyOpened() &&
          !contextualPanelTabHelper->WasLoudMomentEntrypointShown() &&
          !contextualPanelTabHelper->WasLoudMomentEntrypointCanceled() &&
-         [self.delegate canShowLargeContextualPanelEntrypoint:self];
+         [self.delegate canShowChip:self];
 }
 
 // Creates a `LocationBarBadgeConfiguration` from
@@ -784,6 +846,53 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
     (ContextualPanelItemConfiguration*)config {
   return [self canShowLoudEntrypointMoment] && config &&
          config->CanShowLargeEntrypoint();
+}
+
+- (void)contextualPanelEntrypointBadgeTapped {
+  // Cancel any pending transition timers since user interacted with entrypoint.
+  [self resetTimersAndUIStateAnimated:YES];
+
+  ContextualPanelTabHelper* contextualPanelTabHelper =
+      ContextualPanelTabHelper::FromWebState(
+          _webStateList->GetActiveWebState());
+  ContextualPanelItemConfiguration* config =
+      contextualPanelTabHelper->GetFirstCachedConfig().get();
+  std::optional<ContextualPanelTabHelper::EntrypointMetricsData>& metricsData =
+      contextualPanelTabHelper->GetMetricsData();
+
+  if (contextualPanelTabHelper->IsContextualPanelCurrentlyOpened()) {
+    [LocationBarBadgeMetrics
+        logContextualPanelEntrypointDismissMetrics:metricsData];
+    [_contextualSheetHandler closeContextualSheet];
+  } else {
+    [LocationBarBadgeMetrics
+        logFirstTapMetricsContextualPanelEntrypointMetrics:metricsData];
+    if (!config || !config->entrypoint_custom_action) {
+      // The contextual panel should not be opened if there is a primary item
+      // with a custom action.
+      [_contextualSheetHandler openContextualSheet];
+    }
+  }
+
+  if (config && config->entrypoint_custom_action) {
+    // Regardless of whether the contextual panel is opened or closed, if the
+    // primary item has a custom action, then it should be triggered when upon
+    // being tapped.
+    config->entrypoint_custom_action.Run();
+  }
+
+  if (!config || config->iph_entrypoint_used_event_name.empty()) {
+    return;
+  }
+  _tracker->NotifyEvent(config->iph_entrypoint_used_event_name);
+}
+
+- (void)cancelContextualPanelEntrypointLoudMoment {
+  [self resetTimersAndUIStateAnimated:YES];
+  ContextualPanelTabHelper* contextualPanelTabHelper =
+      ContextualPanelTabHelper::FromWebState(
+          _webStateList->GetActiveWebState());
+  contextualPanelTabHelper->SetLoudMomentEntrypointCanceled(true);
 }
 
 @end

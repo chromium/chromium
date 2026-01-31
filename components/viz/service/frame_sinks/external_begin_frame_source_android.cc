@@ -257,7 +257,7 @@ ExternalBeginFrameSourceAndroid::ExternalBeginFrameSourceAndroid(
   }
   if (!achoreographer_) {
     j_object_ = Java_ExternalBeginFrameSourceAndroid_Constructor(
-        base::android::AttachCurrentThread(), reinterpret_cast<jlong>(this),
+        base::android::AttachCurrentThread(), reinterpret_cast<int64_t>(this),
         refresh_rate);
   }
 }
@@ -267,8 +267,8 @@ ExternalBeginFrameSourceAndroid::~ExternalBeginFrameSourceAndroid() {
 }
 
 void ExternalBeginFrameSourceAndroid::OnVSync(JNIEnv* env,
-                                              jlong time_micros,
-                                              jlong period_micros) {
+                                              int64_t time_micros,
+                                              int64_t period_micros) {
   OnVSyncImpl(time_micros * 1000, base::Microseconds(period_micros),
               /*possible_deadlines=*/std::nullopt);
 }
@@ -286,7 +286,8 @@ void ExternalBeginFrameSourceAndroid::OnVSyncImpl(
   base::TimeTicks deadline = frame_time + vsync_period;
 
   auto begin_frame_args = begin_frame_args_generator_.GenerateBeginFrameArgs(
-      source_id(), frame_time, deadline, vsync_period);
+      source_id(), frame_time, deadline, vsync_period,
+      GetMinimumFrameInterval());
   if (features::IsAndroidFrameDeadlineEnabled()) {
     begin_frame_args.possible_deadlines = std::move(possible_deadlines);
   }

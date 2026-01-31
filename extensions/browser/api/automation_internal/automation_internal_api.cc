@@ -69,7 +69,7 @@ AutomationInternalPerformActionFunction::Result ConvertToAXActionData(
     int32_t automation_node_id,
     const std::string& action_type_string,
     int request_id,
-    const base::Value::Dict& additional_properties,
+    const base::DictValue& additional_properties,
     const ExtensionId& extension_id,
     ui::AXActionData* action) {
   AutomationInternalPerformActionFunction::Result validation_error_result;

@@ -42,7 +42,17 @@ class PaintImageGenerator;
 class PaintWorkletInput;
 class TextureBacking;
 
-enum class ImageType { kPNG, kJPEG, kWEBP, kGIF, kICO, kBMP, kAVIF, kInvalid };
+enum class ImageType {
+  kPNG,
+  kJPEG,
+  kWEBP,
+  kGIF,
+  kICO,
+  kBMP,
+  kAVIF,
+  kJXL,
+  kInvalid
+};
 
 // An encoded image may include several auxiliary images within it. This enum
 // is used to index those images. Auxiliary images can have different sizes and

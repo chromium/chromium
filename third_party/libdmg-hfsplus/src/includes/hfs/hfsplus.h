@@ -183,7 +183,7 @@ typedef struct Rect   Rect;
 typedef uint32_t        FourCharCode;
 typedef FourCharCode    OSType;
 
-#endif
+#endif  /* ifndef __MACTYPES__ */
 
 /* Finder flags (finderFlags, fdFlags and frFlags) */
 enum {
@@ -293,8 +293,8 @@ typedef struct ExtendedFolderInfo   ExtendedFolderInfo;
 #define S_IFLNK  0120000    /* symbolic link */
 #define S_IFSOCK 0140000    /* socket */
 #define S_IFWHT  0160000    /* whiteout */
-#endif
-#endif
+#endif  /* ifndef _SYS_STAT_H */
+#endif  /* ifndef _STAT_H_ */
 
 #define UF_COMPRESSED 040
 
@@ -312,11 +312,13 @@ struct HFSPlusBSDInfo {
 } __attribute__((__packed__));
 typedef struct HFSPlusBSDInfo HFSPlusBSDInfo;
 
+/* Identifiers for HFSPlusCatalogRecord types. Stored as `int16_t recordType`
+   inside HFSPlusCatalog-family types. */
 enum {
-	kHFSPlusFolderRecord        = 0x0001,
-	kHFSPlusFileRecord          = 0x0002,
-	kHFSPlusFolderThreadRecord  = 0x0003,
-	kHFSPlusFileThreadRecord    = 0x0004
+	kHFSPlusFolderRecord        = 0x0001,  /* HFSPlusCatalogFolder */
+	kHFSPlusFileRecord          = 0x0002,  /* HFSPlusCatalogFile */
+	kHFSPlusFolderThreadRecord  = 0x0003,  /* HFSPlusCatalogThread */
+	kHFSPlusFileThreadRecord    = 0x0004   /* HFSPlusCatalogThread */
 };
 
 enum {
@@ -439,14 +441,21 @@ enum {
 	kHFSPlusCreator   = 0x6866732B   /* 'hfs+' */
 };
 
-#endif
+#endif  /* ifndef __HFS_FORMAT__ */
 
+/* HFSPlusCatalogRecord contains a record for some item inside an HFSPlus file
+   system's catalog, of indefinite size. Use the recordType field to
+   determine how to interpret the record (generally by casting the pointer to
+   FSPlusCatalogFolder, HFSPlusCatalogFile, or HFSPlusCatalogThread). */
 struct HFSPlusCatalogRecord {
 	int16_t recordType;
 	unsigned char data[0];
 } __attribute__((__packed__));
 typedef struct HFSPlusCatalogRecord HFSPlusCatalogRecord;
 
+/* CatalogRecordList is a singly-linked list of HFSPlusCatalogRecord entries,
+   each associated with a name. To recursively free CatalogRecordList, use
+   releaseCatalogRecordList(CatalogRecordList*). */
 struct CatalogRecordList {
 	HFSUniStr255 name;
 	HFSPlusCatalogRecord* record;
@@ -454,6 +463,10 @@ struct CatalogRecordList {
 };
 typedef struct CatalogRecordList CatalogRecordList;
 
+/* XAttrList is a singly-linked list of extended attribute names. Names are
+   null-terminated Unicode strings uniquely owned by the XAttrList instance.
+   The owner of the list is responsible for walking the list and recursively
+   freeing all data in it when the list should be disposed. */
 struct XAttrList {
   char* name;
   struct XAttrList* next;
@@ -585,11 +598,10 @@ extern "C" {
 
 	int removeFromBTree(BTree* tree, BTKey* searchKey);
 
-	int32_t FastUnicodeCompare ( register uint16_t str1[], register uint16_t length1,
-	                             register uint16_t str2[], register uint16_t length2);
+	int32_t FastUnicodeCompare (register uint16_t str1[], register uint16_t length1, register uint16_t str2[], register uint16_t length2);
 #ifdef __cplusplus
 }
 #endif
 
-#endif
+#endif  /* ifndef HFSPLUS_H */
 

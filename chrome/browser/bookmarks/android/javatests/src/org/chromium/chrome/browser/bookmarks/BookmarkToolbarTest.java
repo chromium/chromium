@@ -81,7 +81,8 @@ public class BookmarkToolbarTest {
                     R.id.selection_open_in_new_tab_id,
                     R.id.selection_open_in_incognito_tab_id,
                     R.id.reading_list_mark_as_read_id,
-                    R.id.reading_list_mark_as_unread_id);
+                    R.id.reading_list_mark_as_unread_id,
+                    R.id.selection_mode_copy_link);
     private static final BookmarkId BOOKMARK_ID_ROOT = new BookmarkId(0, BookmarkType.NORMAL);
     private static final BookmarkId BOOKMARK_ID_FOLDER = new BookmarkId(1, BookmarkType.NORMAL);
     private static final BookmarkId BOOKMARK_ID_ONE = new BookmarkId(2, BookmarkType.NORMAL);
@@ -392,6 +393,14 @@ public class BookmarkToolbarTest {
     @Test
     @SmallTest
     @UiThreadTest
+    public void testSelectionShowCopyLink() {
+        verifySelectionModeMenuItem(
+                mBookmarkToolbar::setSelectionShowCopyLink, R.id.selection_mode_copy_link);
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
     public void testOnDragStateChange() {
         initializeNormal();
 
@@ -431,7 +440,8 @@ public class BookmarkToolbarTest {
                 R.id.selection_open_in_new_tab_id,
                 R.id.selection_open_in_incognito_tab_id,
                 R.id.reading_list_mark_as_read_id,
-                R.id.reading_list_mark_as_unread_id);
+                R.id.reading_list_mark_as_unread_id,
+                R.id.selection_mode_copy_link);
 
         when(mSelectionDelegate.isSelectionEnabled()).thenReturn(false);
         mBookmarkToolbar.onSelectionStateChange(Collections.emptyList());

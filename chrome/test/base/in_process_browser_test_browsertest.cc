@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "chrome/test/base/in_process_browser_test.h"
 
 #include <stddef.h>
@@ -14,6 +13,7 @@
 #include "base/path_service.h"
 #include "build/build_config.h"
 #include "chrome/browser/after_startup_task_utils.h"
+#include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -50,8 +50,9 @@ class LoadFailObserver : public content::WebContentsObserver {
 
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override {
-    if (navigation_handle->GetNetErrorCode() == net::OK)
+    if (navigation_handle->GetNetErrorCode() == net::OK) {
       return;
+    }
 
     failed_load_ = true;
     error_code_ = navigation_handle->GetNetErrorCode();
@@ -87,10 +88,19 @@ INSTANTIATE_TEST_SUITE_P(IPBTP,
                          InProcessBrowserTestP,
                          ::testing::Values("foo"));
 
+class InProcessBrowserTestExternalConnectionFail : public InProcessBrowserTest {
+ private:
+  // Without this, prewarming fetches https://www.google.com/warmup.html which
+  // leads to flakiness in the test.
+  test::ScopedPrewarmFeatureList prewarm_feature_list_{
+      test::ScopedPrewarmFeatureList::PrewarmState::kEnabledWithNoTrigger};
+};
+
 // Tests that InProcessBrowserTest cannot resolve external host, in this case
 // "google.com" and "cnn.com". Using external resources is disabled by default
 // in InProcessBrowserTest because it causes flakiness.
-IN_PROC_BROWSER_TEST_F(InProcessBrowserTest, ExternalConnectionFail) {
+IN_PROC_BROWSER_TEST_F(InProcessBrowserTestExternalConnectionFail,
+                       ExternalConnectionFail) {
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 

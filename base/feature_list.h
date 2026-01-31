@@ -96,15 +96,13 @@ enum FeatureState {
   constinit const base::Feature feature(                           \
       name, default_state, base::internal::FeatureMacroHandshake::kSecret)
 
-// TODO(crbug.com/436274260): Use constexpr lambda to avoid the namespace hack
-// after C++23 is supported. See https://godbolt.org/z/W3sdhresP for the syntax.
-#define BASE_FEATURE_INTERNAL_2_ARGS(feature, default_state)                \
-  namespace base_feature_internal_##feature {                               \
-    static_assert(#feature[0] == 'k');                                      \
-    static constexpr base::internal::StringStorage feature##Name(#feature); \
-  }                                                                         \
-  constinit const base::Feature feature(                                    \
-      base_feature_internal_##feature::feature##Name.storage.data(),        \
+#define BASE_FEATURE_INTERNAL_2_ARGS(feature, default_state)              \
+  constinit const base::Feature feature(                                  \
+      []() {                                                              \
+        static_assert(#feature[0] == 'k');                                \
+        static constexpr base::internal::StringStorage storage(#feature); \
+        return storage.storage.data();                                    \
+      }(),                                                                \
       default_state, base::internal::FeatureMacroHandshake::kSecret)
 
 #define GET_BASE_FEATURE_MACRO(_1, _2, _3, NAME, ...) NAME

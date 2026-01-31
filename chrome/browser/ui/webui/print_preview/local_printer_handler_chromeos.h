@@ -47,7 +47,7 @@ inline constexpr char kManagedPrintOptions_PrintAsImage[] = "printAsImage";
 class LocalPrinterHandlerChromeos : public PrinterHandler {
  public:
   using AshJobSettingsCallback =
-      base::OnceCallback<void(base::Value::Dict settings)>;
+      base::OnceCallback<void(base::DictValue settings)>;
 
   static std::unique_ptr<LocalPrinterHandlerChromeos> Create(
       content::WebContents* preview_web_contents);
@@ -69,22 +69,22 @@ class LocalPrinterHandlerChromeos : public PrinterHandler {
 
   // Returns a LocalDestinationInfo object (defined in
   // chrome/browser/resources/print_preview/data/local_parsers.js).
-  static base::Value::Dict PrinterToValue(
+  static base::DictValue PrinterToValue(
       const crosapi::mojom::LocalDestinationInfo& printer);
 
   // Returns a CapabilitiesResponse object (defined in
   // chrome/browser/resources/print_preview/native_layer.js).
-  static base::Value::Dict CapabilityToValue(
+  static base::DictValue CapabilityToValue(
       crosapi::mojom::CapabilitiesResponsePtr caps);
 
   // Returns a PrinterStatus object (defined in
   // chrome/browser/resources/print_preview/data/printer_status_cros.ts).
-  static base::Value::Dict StatusToValue(
+  static base::DictValue StatusToValue(
       const crosapi::mojom::PrinterStatus& status);
 
   // Return a ManagedPrintOptions object (defined in
   // chrome/browser/resources/print_preview/data/managed_print_options_cros.ts).
-  static base::Value::Dict ManagedPrintOptionsToValue(
+  static base::DictValue ManagedPrintOptionsToValue(
       const crosapi::mojom::ManagedPrintOptions& managed_print_options);
 
   // PrinterHandler implementation.
@@ -95,7 +95,7 @@ class LocalPrinterHandlerChromeos : public PrinterHandler {
   void StartGetCapability(const std::string& destination_id,
                           GetCapabilityCallback callback) override;
   void StartPrint(const std::u16string& job_title,
-                  base::Value::Dict settings,
+                  base::DictValue settings,
                   scoped_refptr<base::RefCountedMemory> print_data,
                   PrintCallback callback) override;
   void StartGetEulaUrl(const std::string& destination_id,
@@ -107,32 +107,32 @@ class LocalPrinterHandlerChromeos : public PrinterHandler {
   // Public wrapper for `GetAshJobSettings` to use in tests.
   void GetAshJobSettingsForTesting(std::string printer_id,
                                    AshJobSettingsCallback callback,
-                                   base::Value::Dict settings);
+                                   base::DictValue settings);
 
  private:
   // Get ash-specific job settings for the specified printer, merge them with
   // `settings`, and run `callback` with the result.
   void GetAshJobSettings(std::string printer_id,
                          AshJobSettingsCallback callback,
-                         base::Value::Dict settings);
+                         base::DictValue settings);
 
   // These functions call the corresponding `LocalPrinter` function, convert the
   // result to a job setting, add it to `settings`, and call `callback` with the
   // result.
   void GetUsernamePerPolicy(AshJobSettingsCallback callback,
-                            base::Value::Dict settings) const;
+                            base::DictValue settings) const;
   void GetOAuthToken(const std::string& printer_id,
                      AshJobSettingsCallback callback,
-                     base::Value::Dict settings) const;
+                     base::DictValue settings) const;
   void GetIppClientInfo(const std::string& printer_id,
                         AshJobSettingsCallback callback,
-                        base::Value::Dict settings) const;
+                        base::DictValue settings) const;
 
   // Wrapper for `printing::StartLocalPrint()` to use as a callback bound to the
   // lifetime of `this`.
   void CallStartLocalPrint(scoped_refptr<base::RefCountedMemory> print_data,
                            PrinterHandler::PrintCallback callback,
-                           base::Value::Dict settings);
+                           base::DictValue settings);
 
   const raw_ptr<content::WebContents> preview_web_contents_;
   raw_ptr<crosapi::mojom::LocalPrinter> local_printer_ = nullptr;

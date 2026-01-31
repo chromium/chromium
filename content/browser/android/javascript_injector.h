@@ -28,8 +28,7 @@ class JavascriptInjector : public WebContentsUserData<JavascriptInjector> {
 
   ~JavascriptInjector() override;
 
-  void SetAllowInspection(JNIEnv* env,
-                          jboolean allow);
+  void SetAllowInspection(JNIEnv* env, bool allow);
 
   // See GinJavaBridgeDispatcherHost::AddNamedObject more information.
   void AddInterface(JNIEnv* env,

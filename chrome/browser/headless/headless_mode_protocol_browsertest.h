@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "base/command_line.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/headless/headless_mode_devtooled_browsertest.h"
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
@@ -28,7 +29,7 @@ class HeadlessModeProtocolBrowserTest
 
   // Implement this for tests that need to pass extra parameters to
   // JavaScript code.
-  virtual base::Value::Dict GetPageUrlExtraParams();
+  virtual base::DictValue GetPageUrlExtraParams();
 
   // Returns relative test data directory.
   base::FilePath GetTestDataDir();
@@ -52,9 +53,9 @@ class HeadlessModeProtocolBrowserTest
   // HeadlessModeDevTooledBrowserTest:
   void RunDevTooledTest() override;
 
-  void OnDevToolsProtocolExposed(base::Value::Dict params);
-  void OnLoadEventFired(const base::Value::Dict& params);
-  void OnEvaluateResult(base::Value::Dict params);
+  void OnDevToolsProtocolExposed(base::DictValue params);
+  void OnLoadEventFired(const base::DictValue& params);
+  void OnEvaluateResult(base::DictValue params);
 
   void ProcessTestResult(const std::string& test_result);
 
@@ -63,6 +64,7 @@ class HeadlessModeProtocolBrowserTest
   test::ScopedPrewarmFeatureList prewarm_feature_list_{
       test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
   TestMetaInfo test_meta_info_;
+  std::unique_ptr<base::test::ScopedFeatureList> feature_list_;
 };
 
 #define HEADLESS_MODE_PROTOCOL_TEST(TEST_NAME, SCRIPT_NAME)           \

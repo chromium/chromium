@@ -11,7 +11,6 @@
 
 #include "base/android/jni_android.h"
 #include "base/barrier_callback.h"
-#include "base/containers/contains.h"
 #include "base/containers/queue.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -36,6 +35,7 @@
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "device/vr/public/mojom/xr_session.mojom.h"
 #include "device/vr/util/transform_utils.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/transform_util.h"
@@ -224,11 +224,11 @@ void ArCoreGl::Initialize(
 
   device::DomOverlaySetup dom_setup = device::DomOverlaySetup::kNone;
   if (CanRenderDOMContent()) {
-    if (base::Contains(required_features,
-                       device::mojom::XRSessionFeature::DOM_OVERLAY)) {
+    if (required_features.contains(
+            device::mojom::XRSessionFeature::DOM_OVERLAY)) {
       dom_setup = device::DomOverlaySetup::kRequired;
-    } else if (base::Contains(optional_features,
-                              device::mojom::XRSessionFeature::DOM_OVERLAY)) {
+    } else if (optional_features.contains(
+                   device::mojom::XRSessionFeature::DOM_OVERLAY)) {
       dom_setup = device::DomOverlaySetup::kOptional;
     }
   }
@@ -1092,26 +1092,20 @@ void ArCoreGl::GetRenderedFrameStats(WebXrFrame* frame) {
   static uint32_t frame_id_for_tracing = 0;
   uint32_t trace_id = ++frame_id_for_tracing;
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1("xr", "ArCoreGl::Animating",
-                                                   trace_id, frame->time_pose,
-                                                   "frame", frame->index);
-  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP1(
-      "xr", "ArCoreGl::Animating", trace_id, frame->time_js_submit, "frame",
-      frame->index);
+  TRACE_EVENT_BEGIN("xr", "ArCoreGl::Animating", perfetto::Track(trace_id),
+                    frame->time_pose, "frame", frame->index);
+  TRACE_EVENT_END("xr", /*"ArCoreGl::Animating"*/ perfetto::Track(trace_id),
+                  frame->time_js_submit, "frame", frame->index);
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
-      "xr", "ArCoreGl::Processing", trace_id, frame->time_js_submit, "frame",
-      frame->index);
-  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP1("xr", "ArCoreGl::Processing",
-                                                 trace_id, frame->time_copied,
-                                                 "frame", frame->index);
+  TRACE_EVENT_BEGIN("xr", "ArCoreGl::Processing", perfetto::Track(trace_id),
+                    frame->time_js_submit, "frame", frame->index);
+  TRACE_EVENT_END("xr", /*"ArCoreGl::Processing"*/ perfetto::Track(trace_id),
+                  frame->time_copied, "frame", frame->index);
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1("xr", "ArCoreGl::Rendering",
-                                                   trace_id, frame->time_copied,
-                                                   "frame", frame->index);
-  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP1("xr", "ArCoreGl::Rendering",
-                                                 trace_id, completion_time,
-                                                 "frame", frame->index);
+  TRACE_EVENT_BEGIN("xr", "ArCoreGl::Rendering", perfetto::Track(trace_id),
+                    frame->time_copied, "frame", frame->index);
+  TRACE_EVENT_END("xr", /*"ArCoreGl::Rendering"*/ perfetto::Track(trace_id),
+                  completion_time, "frame", frame->index);
 }
 
 void ArCoreGl::SubmitFrameMissing(int16_t frame_index,
@@ -1171,7 +1165,6 @@ void ArCoreGl::DidNotProduceVizFrame(int16_t frame_index) {
 }
 
 void ArCoreGl::SubmitFrame(int16_t frame_index,
-                           const gpu::MailboxHolder& mailbox,
                            base::TimeDelta time_waited) {
   NOTREACHED();
 }
@@ -1491,7 +1484,7 @@ void ArCoreGl::OnScreenTouch(bool is_primary,
            << ", pointer_id=" << pointer_id << ", touching=" << touching
            << ", touch_point=" << touch_point.ToString();
 
-  if (!base::Contains(pointer_id_to_input_source_id_, pointer_id)) {
+  if (!pointer_id_to_input_source_id_.contains(pointer_id)) {
     // assign ID
     DCHECK(next_input_source_id_ != 0) << "ID equal to 0 cannot be used!";
     pointer_id_to_input_source_id_[pointer_id] = next_input_source_id_;
@@ -1672,7 +1665,7 @@ std::vector<mojom::XRInputSourceStatePtr> ArCoreGl::GetInputSourceStates() {
 }
 
 bool ArCoreGl::IsFeatureEnabled(mojom::XRSessionFeature feature) {
-  return base::Contains(enabled_features_, feature);
+  return enabled_features_.contains(feature);
 }
 
 void ArCoreGl::Pause() {

@@ -5,4 +5,5 @@
 #import "ios/chrome/browser/composebox/coordinator/composebox_constants.h"
 
 const NSUInteger kAttachmentLimit = 10;
+const NSUInteger kAttachmentLimitForImageGeneration = 1;
 const NSUInteger kMaxPDFFileSize = 200 * 1024 * 1024;

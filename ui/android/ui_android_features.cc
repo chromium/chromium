@@ -9,10 +9,12 @@ namespace ui {
 
 BASE_FEATURE(kAndroidHDR, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAndroidHistoryPaneFavicons, base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kAndroidUseCorrectDisplayWorkArea,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kAndroidUseCorrectWindowBounds, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAndroidUseCorrectWindowBounds, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidUseDisplayTopology, base::FEATURE_DISABLED_BY_DEFAULT);
 

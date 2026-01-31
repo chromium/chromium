@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -687,7 +686,7 @@ void CastActivityManager::OnSessionRemoved(const MediaSinkInternal& sink) {
 
 void CastActivityManager::OnMediaStatusUpdated(
     const MediaSinkInternal& sink,
-    const base::Value::Dict& media_status,
+    const base::DictValue& media_status,
     std::optional<int> request_id) {
   auto it = FindActivityBySink(sink);
   if (it != activities_.end()) {
@@ -954,10 +953,10 @@ void CastActivityManager::HandleLaunchSessionResponse(
 
   activity_it->second->SetOrUpdateSession(*session, sink, hash_token_);
 
-  if (!client_id.empty() && base::Contains(session->message_namespaces(),
-                                           cast_channel::kMediaNamespace)) {
+  if (!client_id.empty() &&
+      session->message_namespaces().contains(cast_channel::kMediaNamespace)) {
     // Request media status from the receiver.
-    base::Value::Dict request;
+    base::DictValue request;
     request.Set("type", cast_util::EnumToString<
                             cast_channel::V2MessageType,
                             cast_channel::V2MessageType::kMediaGetStatus>());

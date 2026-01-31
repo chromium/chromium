@@ -65,6 +65,9 @@ class RecentlyAudibleHelper
   void SetRecentlyAudibleForTesting();
   void SetNotRecentlyAudibleForTesting();
 
+  // Simulates the recently audible timer firing.
+  void FireRecentlyAudibleTimerForTesting();
+
  private:
   friend class RecentlyAudibleHelperTest;
   friend class content::WebContentsUserData<RecentlyAudibleHelper>;

@@ -85,6 +85,7 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
     kContents,
     kPositionTry,
     kCustomMedia,
+    kRoute,
   };
 
   // Name of a cascade layer as given by an @layer rule, split at '.' into a
@@ -121,6 +122,7 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
   bool IsPageRule() const { return GetType() == kPage; }
   bool IsPageRuleMargin() const { return GetType() == kPageMargin; }
   bool IsPropertyRule() const { return GetType() == kProperty; }
+  bool IsRouteRule() const { return GetType() == kRoute; }
   bool IsNavigationRule() const { return GetType() == kNavigation; }
   bool IsStyleRule() const { return GetType() == kStyle; }
   bool IsScopeRule() const { return GetType() == kScope; }
@@ -257,10 +259,10 @@ class CORE_EXPORT StyleRule : public StyleRuleBase {
   // Partial subset of the CSSSelector API.
   const CSSSelector* FirstSelector() const { return SelectorArray(); }
   const CSSSelector& SelectorAt(wtf_size_t index) const {
-    return UNSAFE_TODO(SelectorArray()[index]);
+    return UNSAFE_BUFFERS(SelectorArray()[index]);
   }
   CSSSelector& MutableSelectorAt(wtf_size_t index) {
-    return UNSAFE_TODO(SelectorArray()[index]);
+    return UNSAFE_BUFFERS(SelectorArray()[index]);
   }
   wtf_size_t SelectorIndex(const CSSSelector& selector) const {
     return static_cast<wtf_size_t>(&selector - FirstSelector());
@@ -319,9 +321,9 @@ class CORE_EXPORT StyleRule : public StyleRuleBase {
   bool HasParsedProperties() const;
 
   CSSSelector* SelectorArray() {
-    return reinterpret_cast<CSSSelector*>(
-        base::bits::AlignUp(UNSAFE_TODO(reinterpret_cast<uint8_t*>(this + 1)),
-                            alignof(CSSSelector)));
+    return reinterpret_cast<CSSSelector*>(base::bits::AlignUp(
+        UNSAFE_BUFFERS(reinterpret_cast<uint8_t*>(this + 1)),
+        alignof(CSSSelector)));
   }
   const CSSSelector* SelectorArray() const {
     return const_cast<StyleRule*>(this)->SelectorArray();

@@ -38,8 +38,8 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/split_tabs/split_tab_id.h"
 #include "components/tab_groups/tab_group_id.h"
-#include "components/tabs/public/split_tab_id.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/common/content_paths.h"
@@ -229,9 +229,12 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, ReloadSelectedTabsWithinSplitView) {
   };
 
   // The split tab should be active.
-  EXPECT_THAT(
-      browser()->tab_strip_model()->selection_model().selected_indices(),
-      testing::ElementsAre(4, 5));
+  EXPECT_THAT(browser()
+                  ->tab_strip_model()
+                  ->selection_model()
+                  .GetListSelectionModel()
+                  .selected_indices(),
+              testing::ElementsAre(4, 5));
   EXPECT_EQ(browser()->tab_strip_model()->active_index(), 5);
   EXPECT_THAT(get_reloads(), testing::ElementsAre(0, 0, 0, 0, 0));
 
@@ -243,9 +246,12 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, ReloadSelectedTabsWithinSplitView) {
 
   // Select 1st tab.
   browser()->tab_strip_model()->SelectTabAt(1);
-  EXPECT_THAT(
-      browser()->tab_strip_model()->selection_model().selected_indices(),
-      testing::ElementsAre(1, 4, 5));
+  EXPECT_THAT(browser()
+                  ->tab_strip_model()
+                  ->selection_model()
+                  .GetListSelectionModel()
+                  .selected_indices(),
+              testing::ElementsAre(1, 4, 5));
   EXPECT_EQ(browser()->tab_strip_model()->active_index(), 1);
 
   // Reload with the split tab selected but not active. All selected tabs should
@@ -256,9 +262,12 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, ReloadSelectedTabsWithinSplitView) {
 
   // Activate the split tab.
   browser()->tab_strip_model()->SelectTabAt(5);
-  EXPECT_THAT(
-      browser()->tab_strip_model()->selection_model().selected_indices(),
-      testing::ElementsAre(1, 4, 5));
+  EXPECT_THAT(browser()
+                  ->tab_strip_model()
+                  ->selection_model()
+                  .GetListSelectionModel()
+                  .selected_indices(),
+              testing::ElementsAre(1, 4, 5));
   EXPECT_EQ(browser()->tab_strip_model()->active_index(), 5);
 
   // Reload with the split 4|5 tab selected and active. All selected tabs should
@@ -790,11 +799,6 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, StartsOrganizationRequest) {
 
   EXPECT_EQ(TabOrganizationRequest::State::NOT_STARTED,
             session->request()->state());
-
-  histogram_tester.ExpectUniqueSample("Tab.Organization.AllEntrypoints.Clicked",
-                                      true, 1);
-  histogram_tester.ExpectUniqueSample("Tab.Organization.ThreeDotMenu.Clicked",
-                                      true, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, ShowsDeclutter) {

@@ -28,9 +28,12 @@ import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.SessionModel;
 import org.chromium.components.embedder_support.util.Origin;
+import org.chromium.components.permissions.AndroidPermissionRequester;
+import org.chromium.components.permissions.AndroidPermissionRequester.RequestDelegate;
 import org.chromium.components.permissions.PermissionUtil;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.WindowAndroid;
 
 import java.util.Collection;
 import java.util.List;
@@ -90,7 +93,7 @@ public class PageInfoPermissionsController extends PageInfoPreferenceSubpageCont
         mPageUrl = mainController.getURL().getSpec();
         mHighlightedPermission = highlightedPermission;
         Resources resources = mRowView.getContext().getResources();
-        mHighlightColor = R.color.iph_highlight_blue;
+        mHighlightColor = R.color.iph_highlight_color;
         mTitle = resources.getString(R.string.page_info_permissions_title);
     }
 
@@ -135,8 +138,8 @@ public class PageInfoPermissionsController extends PageInfoPreferenceSubpageCont
         // was being requested, we should resolve the permission request as denied as the user did
         // not explicitly grant the permission via clicking the "Subscribe" button.
         if (mHasRequestedNotificationsPermission) {
-            PermissionUtil.resolvePermissionRequest(
-                    mWebContents, ContentSettingsType.NOTIFICATIONS, ContentSetting.BLOCK);
+            PermissionUtil.resolveNotificationsPermissionRequest(
+                    mWebContents, ContentSetting.BLOCK);
             // Reset the requested permission state to false, as the permission has been denied and
             // is not longer in request. This will ensure that the notification permission request
             // will not be accidentally shown again when the user navigates back to the permission
@@ -308,8 +311,8 @@ public class PageInfoPermissionsController extends PageInfoPreferenceSubpageCont
     @Override
     public void onPermissionsReset() {
         if (mHasRequestedNotificationsPermission) {
-            PermissionUtil.resolvePermissionRequest(
-                    mWebContents, ContentSettingsType.NOTIFICATIONS, ContentSetting.DEFAULT);
+            PermissionUtil.resolveNotificationsPermissionRequest(
+                    mWebContents, ContentSetting.DEFAULT);
             mHasRequestedNotificationsPermission = false;
         }
 
@@ -333,13 +336,54 @@ public class PageInfoPermissionsController extends PageInfoPreferenceSubpageCont
 
     @Override
     public void onNotificationSubscribeClicked() {
+        WindowAndroid windowAndroid = mWebContents.getTopLevelNativeWindow();
+        if (windowAndroid == null) {
+            resolvePermissionRequest(true);
+            return;
+        }
+        boolean requestSent =
+                requestAndroidPermissions(
+                        windowAndroid,
+                        new int[] {ContentSettingsType.NOTIFICATIONS},
+                        new RequestDelegate() {
+                            @Override
+                            public void onAndroidPermissionAccepted() {
+                                RecordHistogram.recordBooleanHistogram(
+                                        "Permissions.ClapperLoud.PageInfo.OsPromptResolved", true);
+                                resolvePermissionRequest(true);
+                            }
+
+                            @Override
+                            public void onAndroidPermissionCanceled() {
+                                RecordHistogram.recordBooleanHistogram(
+                                        "Permissions.ClapperLoud.PageInfo.OsPromptResolved", false);
+                                resolvePermissionRequest(false);
+                            }
+                        });
+        if (!requestSent) {
+            resolvePermissionRequest(true);
+        }
+    }
+
+    @VisibleForTesting
+    protected boolean requestAndroidPermissions(
+            WindowAndroid windowAndroid, int[] contentSettingsTypes, RequestDelegate delegate) {
+        return AndroidPermissionRequester.requestAndroidPermissions(
+                windowAndroid, contentSettingsTypes, delegate);
+    }
+
+    private void resolvePermissionRequest(boolean isGranted) {
         // Reset the requested permission state to false, as the permission has been granted and is
         // not longer in request. This will ensure that the notification permission request will not
         // be accidentally denied when the user navigates away from the permission subpage.
         mHasRequestedNotificationsPermission = false;
 
-        PermissionUtil.resolvePermissionRequest(
-                mWebContents, ContentSettingsType.NOTIFICATIONS, ContentSetting.ALLOW);
+        if (isGranted) {
+            PermissionUtil.resolveNotificationsPermissionRequest(
+                    mWebContents, ContentSetting.ALLOW);
+        } else {
+            PermissionUtil.dismissNotificationsPermissionRequest(mWebContents);
+        }
 
         // `updateRowIfNeeded` will update the permission row in the main view of PageInfo. It will
         // not update the permission row in the subpage.
@@ -350,16 +394,20 @@ public class PageInfoPermissionsController extends PageInfoPreferenceSubpageCont
         // As the Notification permission is granted, we need to add the permission to the Website
         // object, as it was not there before. This will ensure that the notification permission is
         // displayed as "Allow" in the PageInfo.
-        if (mSubPage != null && mSubPage.getSite() != null) {
-            PermissionInfo permissionInfo =
-                    new PermissionInfo(
-                            ContentSettingsType.NOTIFICATIONS,
-                            /* origin= */ mPageUrl,
-                            /* embedder= */ mPageUrl,
-                            /* isEmbargoed= */ false,
-                            SessionModel.DURABLE);
+        if (mSubPage != null) {
+            if (mSubPage.getSite() != null) {
+                PermissionInfo permissionInfo =
+                        new PermissionInfo(
+                                ContentSettingsType.NOTIFICATIONS,
+                                /* origin= */ mPageUrl,
+                                /* embedder= */ mPageUrl,
+                                /* isEmbargoed= */ false,
+                                SessionModel.DURABLE);
 
-            mSubPage.getSite().setPermissionInfo(permissionInfo);
+                mSubPage.getSite().setPermissionInfo(permissionInfo);
+            }
+            mSubPage.setHasRequestedNotificationsPermission(false);
+            mSubPage.refreshSitePermissions();
         }
     }
 }

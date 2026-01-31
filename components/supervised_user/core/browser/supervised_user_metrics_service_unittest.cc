@@ -9,13 +9,11 @@
 #include <utility>
 
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_test_environment.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
-#include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -25,6 +23,7 @@ namespace {
 
 using ::testing::_;
 using ::testing::Eq;
+using ::testing::Ne;
 
 constexpr char kWebFilterTypeHistogramName[] = "FamilyUser.WebFilterType";
 constexpr char kWebFilterTypeForFamilyUserHistogramName[] =
@@ -54,11 +53,6 @@ class SupervisedUserMetricsServiceTest : public ::testing::Test {
     return supervised_user_test_environment_->pref_service()->GetInteger(
         prefs::kSupervisedUserMetricsDayId);
   }
-
-#if BUILDFLAG(IS_ANDROID)
-  base::test::ScopedFeatureList scoped_feature_list_{
-      kPropagateDeviceContentFiltersToSupervisedUser};
-#endif  // BUILDFLAG(IS_ANDROID)
 
   base::HistogramTester histogram_tester_;
   base::test::TaskEnvironment task_environment_{
@@ -137,7 +131,7 @@ TEST_F(SupervisedUserMetricsServiceTest,
   histogram_tester_.ExpectUniqueSample(
       kManagedSiteListHistogramName,
       /*sample=*/
-      SupervisedUserURLFilter::ManagedSiteList::kEmpty,
+      FamilyLinkUrlFilter::ManagedSiteList::kEmpty,
       /*expected_bucket_count=*/1);
   histogram_tester_.ExpectUniqueSample(kApprovedSitesCountHistogramName,
                                        /*sample=*/0,
@@ -177,31 +171,27 @@ class SupervisedUserMetricsServiceFieldTrialTest
         << "Create test environment first with CreateTestEnvironment().";
 
     if (GetFieldTrialName() == "AndroidDeviceSearchContentFilters") {
-      test_environment_->service()
-          ->GetSearchContentFiltersObserverWeakPtrForTesting()
-          ->SetEnabledForTesting(enabled);
+      test_environment_->device_parental_controls()
+          .SetSearchContentFiltersEnabledForTesting(enabled);
       return;
     } else if (GetFieldTrialName() == "AndroidDeviceBrowserContentFilters") {
-      test_environment_->service()
-          ->GetBrowserContentFiltersObserverWeakPtrForTesting()
-          ->SetEnabledForTesting(enabled);
+      test_environment_->device_parental_controls()
+          .SetBrowserContentFiltersEnabledForTesting(enabled);
       return;
     }
 
     NOTREACHED() << "Unsupported field trial name: " << GetFieldTrialName();
   }
 
-  void CreateTestEnvironment(std::unique_ptr<MetricsServiceAccessorDelegateMock>
-                                 metrics_service_accessor_delegate) {
+  void CreateTestEnvironment(std::unique_ptr<SynteticFieldTrialDelegateMock>
+                                 synthetic_field_trial_delegate) {
     test_environment_ = std::make_unique<SupervisedUserTestEnvironment>(
-        std::move(metrics_service_accessor_delegate));
+        std::move(synthetic_field_trial_delegate));
   }
 
   static FieldTrialName GetFieldTrialName() { return GetParam(); }
 
  private:
-  base::test::ScopedFeatureList feature_list{
-      kPropagateDeviceContentFiltersToSupervisedUser};
   base::test::TaskEnvironment task_environment;
   std::unique_ptr<SupervisedUserTestEnvironment> test_environment_;
 };
@@ -210,13 +200,17 @@ TEST_P(SupervisedUserMetricsServiceFieldTrialTest,
        SyntheticFieldTrialRegistered) {
   // Register calls before environment's created, because the metrics service
   // calls field trial registration on creation.
-  auto mock = std::make_unique<MetricsServiceAccessorDelegateMock>();
-  EXPECT_CALL(*mock, RegisterSyntheticFieldTrial(_, "Disabled")).Times(1);
+  auto mock = std::make_unique<SynteticFieldTrialDelegateMock>();
+  // Current filter it disabled on mock registration (when the environment is
+  // created), and then once for each toggle.
   EXPECT_CALL(*mock, RegisterSyntheticFieldTrial(Eq(GetParam()), "Disabled"))
       .Times(2);
+  // Tested filter is registered as enabled when it's toggled on.
   EXPECT_CALL(*mock, RegisterSyntheticFieldTrial(Eq(GetParam()), "Enabled"))
       .Times(1);
 
+  // Other filter is interacted similarly: subscribe, enable, disable.
+  EXPECT_CALL(*mock, RegisterSyntheticFieldTrial(Ne(GetParam()), _)).Times(3);
   CreateTestEnvironment(std::move(mock));
 
   // This cycles all possible combinations of states for each filter:

@@ -441,34 +441,6 @@ TEST_P(ManagerCohortsTest, DTRP_LT_Rand) {
   }
 }
 
-TEST_P(ManagerCohortsTest, MetadataCohortDistributionUma) {
-  Metadata metadata;
-  for (const auto& source : testing::Range<int32_t>(
-           static_cast<int32_t>(TpcdMetadataRuleSource::kMinValue),
-           static_cast<int32_t>(TpcdMetadataRuleSource::kMaxValue) + 1,
-           /*step=*/1)) {
-    helpers::AddEntryToMetadata(
-        metadata, "*",
-        base::StrCat({"[*.]foo-", base::NumberToString(source), ".com"}),
-        ToRuleSourceStr(static_cast<TpcdMetadataRuleSource>(source)),
-        /*dtrp=*/0);
-  }
-  helpers::AddEntryToMetadata(metadata, "*", "[*.]foo.com");
-
-  base::HistogramTester histogram_tester;
-  GetParser()->ParseMetadata(metadata.SerializeAsString());
-  EXPECT_EQ(GetManager()->GetGrants().size(), 9u);
-
-  if (IsTpcdMetadataStagedRollbackEnabled()) {
-    histogram_tester.ExpectUniqueSample(
-        helpers::kMetadataCohortDistributionHistogram,
-        content_settings::mojom::TpcdMetadataCohort::GRACE_PERIOD_FORCED_ON, 1);
-  } else {
-    histogram_tester.ExpectTotalCount(
-        helpers::kMetadataCohortDistributionHistogram, 0);
-  }
-}
-
 class ManagerPrefsTest : public testing::Test {
  public:
   ManagerPrefsTest() {

@@ -143,7 +143,7 @@ TEST_F(DriverMemoryTest, Map) {
 
   DriverMemoryMapping mapping = memory.Map();
   EXPECT_TRUE(mapping.is_valid());
-  EXPECT_EQ(kMappingAddress, mapping.address());
+  EXPECT_EQ(kMappingAddress, mapping.bytes().data());
   EXPECT_EQ(&data[0], mapping.bytes().data());
   EXPECT_EQ(kSize, mapping.bytes().size());
 

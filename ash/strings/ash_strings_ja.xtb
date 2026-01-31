@@ -342,6 +342,7 @@
 <translation id="2201071101391734388">最近の <ph name="INDEX" /> / <ph name="TOTAL_COUNT" /> 件の写真。</translation>
 <translation id="2201687081523799384">Google ToDo リストを折りたたむ</translation>
 <translation id="2208323208084708176">デスクトップ統合モード</translation>
+<translation id="2210311543574621570">Ctrl+V キーを長押しするとクリップボードが表示されます。このショートカットをオフにするには、chrome://flags で #clipboard-history-longpress フラグを無効にします。</translation>
 <translation id="2215920961700443347">インターネットに接続されていません。インターネットに接続してから、もう一度お試しください。</translation>
 <translation id="2222841058024245321">デスク 7</translation>
 <translation id="2223384056430485343">分割画面表示</translation>

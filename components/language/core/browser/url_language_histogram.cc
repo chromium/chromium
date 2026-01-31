@@ -25,7 +25,7 @@ const float kCutoffRatio = 0.005f;
 const float kDiscountFactor = 0.75f;
 
 // Gets the sum of the counter for all languages in the histogram.
-int GetCountersSum(const base::Value::Dict& dict) {
+int GetCountersSum(const base::DictValue& dict) {
   int sum = 0;
   for (const auto itr : dict) {
     if (itr.second.is_int())
@@ -35,7 +35,7 @@ int GetCountersSum(const base::Value::Dict& dict) {
 }
 
 // Removes languages with small counter values and discount remaining counters.
-void DiscountAndCleanCounters(base::Value::Dict& dict) {
+void DiscountAndCleanCounters(base::DictValue& dict) {
   std::set<std::string> remove_keys;
 
   for (const auto itr : dict) {
@@ -56,7 +56,7 @@ void DiscountAndCleanCounters(base::Value::Dict& dict) {
 
 // Transforms the counters from prefs into a list of LanguageInfo structs.
 std::vector<UrlLanguageHistogram::LanguageInfo> GetAllLanguages(
-    const base::Value::Dict& dict) {
+    const base::DictValue& dict) {
   int counters_sum = GetCountersSum(dict);
 
   // If the sample is not large enough yet, pretend there are no top languages.
@@ -102,7 +102,7 @@ UrlLanguageHistogram::GetTopLanguages() const {
 
 float UrlLanguageHistogram::GetLanguageFrequency(
     const std::string& language_code) const {
-  const base::Value::Dict& dict =
+  const base::DictValue& dict =
       pref_service_->GetDict(kUrlLanguageHistogramCounters);
   int counters_sum = GetCountersSum(dict);
   // If the sample is not large enough yet, pretend there are no top languages.
@@ -117,7 +117,7 @@ float UrlLanguageHistogram::GetLanguageFrequency(
 
 void UrlLanguageHistogram::OnPageVisited(const std::string& language_code) {
   ScopedDictPrefUpdate update(pref_service_, kUrlLanguageHistogramCounters);
-  base::Value::Dict& dict = update.Get();
+  base::DictValue& dict = update.Get();
   // If the key |language_code| does not exist, |counter_value| stays 0.
   int counter_value = dict.FindInt(language_code).value_or(0);
   dict.Set(language_code, counter_value + 1);

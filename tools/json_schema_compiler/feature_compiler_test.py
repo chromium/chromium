@@ -545,7 +545,7 @@ class FeatureCompilerTest(unittest.TestCase):
     feature->set_name("feature_cups");
     feature->set_channel(version_info::Channel::BETA);
     feature->set_contexts({mojom::ContextType::kPrivilegedExtension});
-    feature->set_extension_types({Manifest::TYPE_EXTENSION});
+    feature->set_extension_types({Manifest::Type::kExtension});
     provider->AddFeature("feature_cups", feature);
     #endif
   }''')

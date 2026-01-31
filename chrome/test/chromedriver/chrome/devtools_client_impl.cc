@@ -86,7 +86,7 @@ std::ostream& operator<<(std::ostream& os, const SessionId& ses_manip) {
 }
 
 Status IsBidiMessage(const std::string& method,
-                     const base::Value::Dict& params,
+                     const base::DictValue& params,
                      bool& is_bidi_message) {
   is_bidi_message = false;
   if (method != "Runtime.bindingCalled") {
@@ -105,8 +105,8 @@ Status IsBidiMessage(const std::string& method,
   return Status{kOk};
 }
 
-Status DeserializePayload(const base::Value::Dict& params,
-                          base::Value::Dict* result) {
+Status DeserializePayload(const base::DictValue& params,
+                          base::DictValue* result) {
   result->clear();
   const std::string* payload = params.FindString("payload");
   if (!payload) {
@@ -124,8 +124,8 @@ Status DeserializePayload(const base::Value::Dict& params,
   return Status{kOk};
 }
 
-Status WrapCdpCommandInBidiCommand(base::Value::Dict cdp_cmd,
-                                   base::Value::Dict* bidi_cmd) {
+Status WrapCdpCommandInBidiCommand(base::DictValue cdp_cmd,
+                                   base::DictValue* bidi_cmd) {
   std::optional<int> cdp_cmd_id = cdp_cmd.FindInt("id");
   if (!cdp_cmd_id) {
     return Status(kUnknownError, "CDP command has no 'id' field");
@@ -137,9 +137,9 @@ Status WrapCdpCommandInBidiCommand(base::Value::Dict cdp_cmd,
   }
 
   std::string* cdp_session_id = cdp_cmd.FindString("sessionId");
-  base::Value::Dict* cdp_params = cdp_cmd.FindDict("params");
+  base::DictValue* cdp_params = cdp_cmd.FindDict("params");
 
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("method", std::move(*cdp_method));
   if (cdp_session_id) {
     params.Set("session", std::move(*cdp_session_id));
@@ -148,7 +148,7 @@ Status WrapCdpCommandInBidiCommand(base::Value::Dict cdp_cmd,
     params.Set("params", std::move(*cdp_params));
   }
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("id", *cdp_cmd_id);
   dict.Set("method", "goog:cdp.sendCommand");
   dict.Set("params", std::move(params));
@@ -158,9 +158,9 @@ Status WrapCdpCommandInBidiCommand(base::Value::Dict cdp_cmd,
 }
 
 Status WrapBidiCommandInMapperCdpCommand(int cdp_cmd_id,
-                                         const base::Value::Dict& bidi_cmd,
+                                         const base::DictValue& bidi_cmd,
                                          std::string mapper_session_id,
-                                         base::Value::Dict* cmd) {
+                                         base::DictValue* cmd) {
   std::string json;
   Status status = SerializeAsJson(bidi_cmd, &json);
   if (status.IsError()) {
@@ -172,10 +172,10 @@ Status WrapBidiCommandInMapperCdpCommand(int cdp_cmd_id,
     return status;
   }
   std::string expression = "onBidiMessage(" + arg + ")";
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("expression", std::move(expression));
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("id", cdp_cmd_id);
   dict.Set("method", "Runtime.evaluate");
   dict.Set("params", std::move(params));
@@ -185,7 +185,7 @@ Status WrapBidiCommandInMapperCdpCommand(int cdp_cmd_id,
   return Status{kOk};
 }
 
-bool ParseCdpTunnelMessage(base::Value::Dict payload,
+bool ParseCdpTunnelMessage(base::DictValue payload,
                            std::string& session_id,
                            internal::InspectorMessageType& type,
                            InspectorEvent& event,
@@ -196,7 +196,7 @@ bool ParseCdpTunnelMessage(base::Value::Dict payload,
   // CDP events in BiDi have format "goog:cdp.<CDP EVENT NAME>".
   if (payload_method && base::StartsWith(*payload_method, "goog:cdp.",
                                          base::CompareCase::SENSITIVE)) {
-    base::Value::Dict* payload_params = payload.FindDict("params");
+    base::DictValue* payload_params = payload.FindDict("params");
     if (!payload_params) {
       LOG(WARNING) << "params field is missing in the payload of "
                       "Runtime.bindingCalled message";
@@ -214,11 +214,11 @@ bool ParseCdpTunnelMessage(base::Value::Dict payload,
     const std::string* cdp_session = payload_params->FindString("session");
     session_id = cdp_session ? *cdp_session : "";
 
-    base::Value::Dict* cdp_params = payload_params->FindDict("params");
+    base::DictValue* cdp_params = payload_params->FindDict("params");
     if (cdp_params) {
       event.params = std::move(*cdp_params);
     } else {
-      event.params = base::Value::Dict();
+      event.params = base::DictValue();
     }
   } else {  // CDP command response
 
@@ -231,8 +231,8 @@ bool ParseCdpTunnelMessage(base::Value::Dict payload,
     const std::string* cdp_session = payload.FindString("session");
     session_id = cdp_session ? *cdp_session : "";
 
-    base::Value::Dict* cdp_result = payload.FindDict("result");
-    const base::Value::Dict* cdp_error = payload.FindDict("error");
+    base::DictValue* cdp_result = payload.FindDict("result");
+    const base::DictValue* cdp_error = payload.FindDict("error");
 
     type = internal::kCommandResponseMessageType;
     command_response.id = *cdp_id;
@@ -246,7 +246,7 @@ bool ParseCdpTunnelMessage(base::Value::Dict payload,
     } else if (cdp_error) {
       command_response.error = base::WriteJson(*cdp_error).value_or("");
     } else {
-      command_response.result = base::Value::Dict();
+      command_response.result = base::DictValue();
     }
   }
   return true;
@@ -333,7 +333,7 @@ Status DevToolsClientImpl::StartBidiServer(
   // Page clients have target_id coinciding with id
   std::string target_id = id_;
   {
-    base::Value::Dict params;
+    base::DictValue params;
     params.Set("bindingName", "cdp");
     params.Set("targetId", target_id);
     // Additional permissions are needed if enable_unsafe_extension_debugging is
@@ -350,7 +350,7 @@ Status DevToolsClientImpl::StartBidiServer(
     }
   }
   {
-    base::Value::Dict params;
+    base::DictValue params;
     params.Set("name", "sendBidiResponse");
     status =
         SendCommandAndIgnoreResponse("Runtime.addBinding", std::move(params));
@@ -360,7 +360,7 @@ Status DevToolsClientImpl::StartBidiServer(
   }
   if (IsVLogOn(Log::kDebug)) {
     // If debug logs are on, provide a channel for Mapper debug logs.
-    base::Value::Dict params;
+    base::DictValue params;
     params.Set("name", "sendDebugMessage");
     status =
         SendCommandAndIgnoreResponse("Runtime.addBinding", std::move(params));
@@ -371,7 +371,7 @@ Status DevToolsClientImpl::StartBidiServer(
   {
     // Click on the Mapper tab to interact with the page in order to
     // "beforeunload" being triggered when the tab is closed.
-    base::Value::Dict params;
+    base::DictValue params;
     params.Set("expression", "document.body.click()");
     params.Set("userGesture", true);
     status =
@@ -381,9 +381,9 @@ Status DevToolsClientImpl::StartBidiServer(
     }
   }
   {
-    base::Value::Dict params;
+    base::DictValue params;
     params.Set("expression", std::move(bidi_mapper_script));
-    base::Value::Dict result;
+    base::DictValue result;
     status = SendCommandAndGetResultWithTimeout(
         "Runtime.evaluate", std::move(params), &timeout, &result);
 
@@ -402,8 +402,8 @@ Status DevToolsClientImpl::StartBidiServer(
     }
   }
   {
-    base::Value::Dict result;
-    base::Value::Dict params;
+    base::DictValue result;
+    base::DictValue params;
     std::string window_id;
     status = SerializeAsJson(target_id, &window_id);
     if (status.IsError()) {
@@ -432,9 +432,9 @@ Status DevToolsClientImpl::StartBidiServer(
   tunnel_session_id_ = session_id_;
 
   if (event_tunneling_is_enabled_) {
-    base::Value::Dict params;
+    base::DictValue params;
     params.Set("events", "goog:cdp");
-    base::Value::Dict bidi_cmd;
+    base::DictValue bidi_cmd;
     bidi_cmd.Set("id", AdvanceNextMessageId());
     bidi_cmd.Set("method", "session.subscribe");
     bidi_cmd.Set("params", std::move(params));
@@ -556,7 +556,7 @@ Status DevToolsClientImpl::OnConnected() {
 }
 
 Status DevToolsClientImpl::SetupTabTarget() {
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("autoAttach", true);
   params.Set("flatten", true);
   params.Set("waitForDebuggerOnStart", false);
@@ -579,10 +579,10 @@ Status DevToolsClientImpl::SetUpDevTools() {
     // In rare occasions (2% of cases) they kick in too late and therefore the
     // tests like testExecuteScriptWithDeletedGlobalJSON can fail.
     // To avoid such flakiness we enable the Page domain first.
-    SendCommandAndIgnoreResponse("Page.enable", base::Value::Dict());
+    SendCommandAndIgnoreResponse("Page.enable", base::DictValue());
 
     // This is a page or frame level DevToolsClient
-    base::Value::Dict params;
+    base::DictValue params;
     std::string script =
         "(function () {"
         "window.cdc_adoQpoasnfa76pfcZLmcfl_Array = window.Array;"
@@ -609,7 +609,7 @@ Status DevToolsClientImpl::SetUpDevTools() {
   return Status{kOk};
 }
 
-Status DevToolsClientImpl::PostBidiCommand(base::Value::Dict command) {
+Status DevToolsClientImpl::PostBidiCommand(base::DictValue command) {
   std::string* maybe_channel = command.FindString("goog:channel");
   std::string channel =
       maybe_channel ? *maybe_channel + DevToolsClientImpl::kBidiChannelSuffix
@@ -638,47 +638,46 @@ Status DevToolsClientImpl::PostBidiCommand(base::Value::Dict command) {
 }
 
 Status DevToolsClientImpl::SendCommand(const std::string& method,
-                                       const base::Value::Dict& params) {
+                                       const base::DictValue& params) {
   return SendCommandWithTimeout(method, params, nullptr);
 }
 
 Status DevToolsClientImpl::SendCommandFromWebSocket(
     const std::string& method,
-    const base::Value::Dict& params,
+    const base::DictValue& params,
     int client_command_id) {
   return SendCommandInternal(method, params, session_id_, nullptr, false, false,
                              client_command_id, nullptr);
 }
 
-Status DevToolsClientImpl::SendCommandWithTimeout(
-    const std::string& method,
-    const base::Value::Dict& params,
-    const Timeout* timeout) {
-  base::Value::Dict result;
+Status DevToolsClientImpl::SendCommandWithTimeout(const std::string& method,
+                                                  const base::DictValue& params,
+                                                  const Timeout* timeout) {
+  base::DictValue result;
   return SendCommandInternal(method, params, session_id_, &result, true, true,
                              0, timeout);
 }
 
 Status DevToolsClientImpl::SendAsyncCommand(const std::string& method,
-                                            const base::Value::Dict& params) {
-  base::Value::Dict result;
+                                            const base::DictValue& params) {
+  base::DictValue result;
   return SendCommandInternal(method, params, session_id_, &result, false, false,
                              0, nullptr);
 }
 
 Status DevToolsClientImpl::SendCommandAndGetResult(
     const std::string& method,
-    const base::Value::Dict& params,
-    base::Value::Dict* result) {
+    const base::DictValue& params,
+    base::DictValue* result) {
   return SendCommandAndGetResultWithTimeout(method, params, nullptr, result);
 }
 
 Status DevToolsClientImpl::SendCommandAndGetResultWithTimeout(
     const std::string& method,
-    const base::Value::Dict& params,
+    const base::DictValue& params,
     const Timeout* timeout,
-    base::Value::Dict* result) {
-  base::Value::Dict intermediate_result;
+    base::DictValue* result) {
+  base::DictValue intermediate_result;
   Status status =
       SendCommandInternal(method, params, session_id_, &intermediate_result,
                           true, true, 0, timeout);
@@ -690,7 +689,7 @@ Status DevToolsClientImpl::SendCommandAndGetResultWithTimeout(
 
 Status DevToolsClientImpl::SendCommandAndIgnoreResponse(
     const std::string& method,
-    const base::Value::Dict& params) {
+    const base::DictValue& params) {
   return SendCommandInternal(method, params, session_id_, nullptr, true, false,
                              0, nullptr);
 }
@@ -819,7 +818,7 @@ int DevToolsClientImpl::AdvanceNextMessageId() {
 }
 
 Status DevToolsClientImpl::PostBidiCommandInternal(std::string channel,
-                                                   base::Value::Dict command) {
+                                                   base::DictValue command) {
   if (tunnel_session_id_.empty()) {
     return Status{
         kUnknownError,
@@ -843,7 +842,7 @@ Status DevToolsClientImpl::PostBidiCommandInternal(std::string channel,
 
   std::string expression = "onBidiMessage(" + arg + ")";
 
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("expression", expression);
 
   // Send command and ignore the response
@@ -872,9 +871,9 @@ bool DevToolsClientImpl::HasMessageForAnySession() const {
 }
 
 Status DevToolsClientImpl::SendCommandInternal(const std::string& method,
-                                               const base::Value::Dict& params,
+                                               const base::DictValue& params,
                                                const std::string& session_id,
-                                               base::Value::Dict* result,
+                                               base::DictValue* result,
                                                bool expect_response,
                                                bool wait_for_response,
                                                const int client_command_id,
@@ -888,7 +887,7 @@ Status DevToolsClientImpl::SendCommandInternal(const std::string& method,
   // |client_command_id| will be 0 for commands sent by ChromeDriver
   int command_id =
       client_command_id ? client_command_id : AdvanceNextMessageId();
-  base::Value::Dict command;
+  base::DictValue command;
   command.Set("id", command_id);
   command.Set("method", method);
   command.Set("params", params.Clone());
@@ -899,7 +898,7 @@ Status DevToolsClientImpl::SendCommandInternal(const std::string& method,
   // if BiDi session id is known
   // and if the command is not already sent within the BiDi session
   if (!tunnel_session_id_.empty() && tunnel_session_id_ != session_id) {
-    base::Value::Dict bidi_command;
+    base::DictValue bidi_command;
     Status status =
         WrapCdpCommandInBidiCommand(std::move(command), &bidi_command);
     if (status.IsError()) {
@@ -1090,8 +1089,7 @@ Status DevToolsClientImpl::HandleMessage(int expected_id,
   }
 }
 
-Status DevToolsClientImpl::HandleDialogOpening(
-    const base::Value::Dict& params) {
+Status DevToolsClientImpl::HandleDialogOpening(const base::DictValue& params) {
   const std::string* message = params.FindString("message");
   if (!message) {
     return Status(kUnknownError, "dialog event missing or invalid 'message'");
@@ -1119,7 +1117,7 @@ Status DevToolsClientImpl::HandleDialogOpening(
   return Status{kOk};
 }
 
-Status DevToolsClientImpl::HandleDialogClosed(const base::Value::Dict& params) {
+Status DevToolsClientImpl::HandleDialogClosed(const base::DictValue& params) {
   // Inspector only sends this event when all dialogs have been closed.
   // Clear the unhandled queue in case the user closed a dialog manually.
   unhandled_dialog_queue_.clear();
@@ -1176,7 +1174,7 @@ Status DevToolsClientImpl::ProcessEvent(InspectorEvent event) {
     // commands as blocked and return the error. This is better than risking
     // a hang.
     int max_id = NextMessageId();
-    base::Value::Dict enable_params;
+    base::DictValue enable_params;
     enable_params.Set("purpose", "detect if alert blocked any cmds");
     Status enable_status = SendCommand("Inspector.enable", enable_params);
     for (const auto& [cmd_id, response] : response_info_map_) {
@@ -1268,7 +1266,7 @@ Status DevToolsClientImpl::EnsureListenersNotifiedOfEvent() {
   while (unnotified_event_listeners_.size()) {
     DevToolsEventListener* listener = unnotified_event_listeners_.front();
     unnotified_event_listeners_.pop_front();
-    const base::Value::Dict& dict = *unnotified_event_->params;
+    const base::DictValue& dict = *unnotified_event_->params;
     Status status = listener->OnEvent(this, unnotified_event_->method, dict);
     if (status.IsError()) {
       unnotified_event_listeners_.clear();
@@ -1334,7 +1332,7 @@ Status DevToolsClientImpl::HandleDialog(
     return Status(kNoSuchAlert);
   }
 
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("accept", accept);
   if (text) {
     params.Set("promptText", *text);
@@ -1376,7 +1374,7 @@ bool ParseInspectorMessage(const std::string& message,
   // strings. For example, webplatform tests use this to check string handling
   std::optional<base::Value> message_value =
       base::JSONReader::Read(message, base::JSON_REPLACE_INVALID_CHARACTERS);
-  base::Value::Dict* message_dict =
+  base::DictValue* message_dict =
       message_value ? message_value->GetIfDict() : nullptr;
   if (!message_dict)
     return false;
@@ -1390,7 +1388,7 @@ bool ParseInspectorMessage(const std::string& message,
     if (!method)
       return false;
     bool is_bidi_message = false;
-    base::Value::Dict* params = message_dict->FindDict("params");
+    base::DictValue* params = message_dict->FindDict("params");
     if (params) {
       Status status = IsBidiMessage(*method, *params, is_bidi_message);
       if (status.IsError()) {
@@ -1400,7 +1398,7 @@ bool ParseInspectorMessage(const std::string& message,
     }
 
     if (is_bidi_message) {
-      base::Value::Dict payload;
+      base::DictValue payload;
       Status status = DeserializePayload(*params, &payload);
       if (status.IsError()) {
         LOG(WARNING) << status.message();
@@ -1432,7 +1430,7 @@ bool ParseInspectorMessage(const std::string& message,
     if (params) {
       event.params = params->Clone();
     } else {
-      event.params = base::Value::Dict();
+      event.params = base::DictValue();
     }
     return true;
   } else if (id_value->is_int()) {
@@ -1443,13 +1441,13 @@ bool ParseInspectorMessage(const std::string& message,
     // Tracing.start and Tracing.end command responses do not contain one.
     // So, if neither "error" nor "result" keys are present, just provide
     // a blank result dictionary.
-    if (base::Value::Dict* unscoped_result = message_dict->FindDict("result")) {
+    if (base::DictValue* unscoped_result = message_dict->FindDict("result")) {
       command_response.result = std::move(*unscoped_result);
-    } else if (base::Value::Dict* unscoped_error =
+    } else if (base::DictValue* unscoped_error =
                    message_dict->FindDict("error")) {
       command_response.error = base::WriteJson(*unscoped_error).value_or("");
     } else {
-      command_response.result = base::Value::Dict();
+      command_response.result = base::DictValue();
     }
     return true;
   }
@@ -1459,7 +1457,7 @@ bool ParseInspectorMessage(const std::string& message,
 Status ParseInspectorError(const std::string& error_json) {
   std::optional<base::Value> error =
       base::JSONReader::Read(error_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
-  base::Value::Dict* error_dict = error ? error->GetIfDict() : nullptr;
+  base::DictValue* error_dict = error ? error->GetIfDict() : nullptr;
   if (!error_dict)
     return Status(kUnknownError, "inspector error with no error message");
 

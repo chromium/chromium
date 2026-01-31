@@ -244,21 +244,16 @@ class PaymentRequestBackArrowButton : public views::ImageButton {
       views::Button::PressedCallback back_arrow_callback)
       : views::ImageButton(std::move(back_arrow_callback)) {
     ConfigureVectorImageButton(this);
+    views::SetImageFromVectorIconWithColor(
+        this, vector_icons::kBackArrowIcon,
+        {kColorPaymentsRequestBackArrowButtonIcon,
+         kColorPaymentsRequestBackArrowButtonIconDisabled});
     constexpr int kBackArrowSize = 16;
     SetSize(gfx::Size(kBackArrowSize, kBackArrowSize));
     SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
     SetID(static_cast<int>(DialogViewID::BACK_BUTTON));
     GetViewAccessibility().SetName(
         l10n_util::GetStringUTF16(IDS_PAYMENTS_BACK));
-  }
-
-  void OnThemeChanged() override {
-    views::View::OnThemeChanged();
-    const auto* const cp = GetColorProvider();
-    views::SetImageFromVectorIconWithColor(
-        this, vector_icons::kBackArrowIcon,
-        cp->GetColor(kColorPaymentsRequestBackArrowButtonIcon),
-        cp->GetColor(kColorPaymentsRequestBackArrowButtonIconDisabled));
   }
 };
 

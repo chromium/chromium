@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/auto_reset.h"
-#include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/origin_matcher/origin_matcher.h"
@@ -45,7 +44,7 @@ void GinJavaBridgeDispatcher::DidClearWindowObject() {
     // deleted after its wrapper will be collected.
     // On the browser side, we ignore wrapper deletion events for named objects,
     // as they are only removed upon embedder's request (RemoveNamedObject).
-    if (base::Contains(objects_, iter->second.object_id)) {
+    if (objects_.contains(iter->second.object_id)) {
       objects_.erase(iter->second.object_id);
     }
 
@@ -82,7 +81,7 @@ void GinJavaBridgeDispatcher::AddNamedObject(
 void GinJavaBridgeDispatcher::RemoveNamedObject(const std::string& name) {
   // Removal becomes in effect on next reload. We simply removing the entry
   // from the map here.
-  DCHECK(base::Contains(named_objects_, name));
+  DCHECK(named_objects_.contains(name));
   named_objects_.erase(name);
 }
 

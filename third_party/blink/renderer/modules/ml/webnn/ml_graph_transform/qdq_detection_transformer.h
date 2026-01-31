@@ -48,6 +48,8 @@ class MODULES_EXPORT QDQDetectionTransformer : public MLGraphTransformer {
 
   void Transform(MLNamedOperands& named_outputs) override;
 
+  const StringView Name() const override { return "QDQDetectionTransformer"; }
+
  private:
   void HandleQuantize(
       MLOperator* quantize,

@@ -1023,9 +1023,9 @@ void InputMethodEngine::HideInputView() {
 }
 
 void InputMethodEngine::OnInputMethodOptionsChanged() {
-  const base::Value::Dict& new_settings = profile_->GetPrefs()->GetDict(
+  const base::DictValue& new_settings = profile_->GetPrefs()->GetDict(
       ::prefs::kLanguageInputMethodSpecificSettings);
-  const base::Value::Dict& old_settings = input_method_settings_snapshot_;
+  const base::DictValue& old_settings = input_method_settings_snapshot_;
   for (const auto&& [path, value] : new_settings) {
     if (const base::Value* old_value = old_settings.Find(path)) {
       if (*old_value != value) {

@@ -48,7 +48,7 @@ class FederatedIdentityIdentityProviderSigninStatusContext
   // information was stored, or the stored accounts have expired, this returns
   // an empty List. The consumer must validate that the accounts contain all
   // required fields.
-  base::Value::List GetAccounts(const url::Origin& identity_provider);
+  base::ListValue GetAccounts(const url::Origin& identity_provider);
 
   void SetSigninStatus(
       const url::Origin& identity_provider,
@@ -57,15 +57,15 @@ class FederatedIdentityIdentityProviderSigninStatusContext
           options);
 
   // permissions::ObjectPermissionContextBase:
-  std::string GetKeyForObject(const base::Value::Dict& object) override;
+  std::string GetKeyForObject(const base::DictValue& object) override;
 
   // permissions::ObjectPermissionContextBase:
   void FlushScheduledSaveSettingsCalls();
 
  private:
   // permissions::ObjectPermissionContextBase:
-  bool IsValidObject(const base::Value::Dict& object) override;
-  std::u16string GetObjectDisplayName(const base::Value::Dict& object) override;
+  bool IsValidObject(const base::DictValue& object) override;
+  std::u16string GetObjectDisplayName(const base::DictValue& object) override;
 };
 
 #endif  // CHROME_BROWSER_WEBID_FEDERATED_IDENTITY_IDENTITY_PROVIDER_SIGNIN_STATUS_CONTEXT_H_

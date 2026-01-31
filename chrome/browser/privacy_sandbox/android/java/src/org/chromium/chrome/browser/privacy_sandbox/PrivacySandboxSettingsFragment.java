@@ -9,8 +9,9 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.content.Context;
 import android.os.Bundle;
 
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -32,7 +33,8 @@ public class PrivacySandboxSettingsFragment extends PrivacySandboxSettingsBaseFr
     private @Nullable ChromeBasePreference mFledgePref;
 
     private ChromeBasePreference mAdMeasurementPref;
-    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<String> mPageTitle =
+            ObservableSuppliers.createMonotonic();
 
     @Override
     public void onCreatePreferences(@Nullable Bundle bundle, @Nullable String s) {
@@ -59,7 +61,7 @@ public class PrivacySandboxSettingsFragment extends PrivacySandboxSettingsBaseFr
     }
 
     @Override
-    public ObservableSupplier<String> getPageTitle() {
+    public MonotonicObservableSupplier<String> getPageTitle() {
         return mPageTitle;
     }
 
@@ -75,6 +77,7 @@ public class PrivacySandboxSettingsFragment extends PrivacySandboxSettingsBaseFr
     }
 
     private void updatePrefDescription() {
+        // LINT.IfChange(RestrictedPrefsSummary)
         if (!showRestrictedView()) {
             assumeNonNull(mTopicsPref);
             mTopicsPref.setSummary(
@@ -93,6 +96,7 @@ public class PrivacySandboxSettingsFragment extends PrivacySandboxSettingsBaseFr
                 AdMeasurementFragment.isAdMeasurementPrefEnabled(getProfile())
                         ? R.string.ad_privacy_page_ad_measurement_link_row_sub_label_enabled
                         : R.string.ad_privacy_page_ad_measurement_link_row_sub_label_disabled);
+        // LINT.ThenChange(:DynamicPrefsSummary)
     }
 
     @Override
@@ -105,13 +109,51 @@ public class PrivacySandboxSettingsFragment extends PrivacySandboxSettingsBaseFr
                     PrivacySandboxSettingsFragment.class.getName(),
                     R.xml.privacy_sandbox_preferences) {
                 @Override
+                public Bundle getExtras() {
+                    Bundle args = new Bundle();
+                    args.putInt(PRIVACY_SANDBOX_REFERRER, PrivacySandboxReferrer.PRIVACY_SETTINGS);
+                    return args;
+                }
+
+                @Override
                 public void updateDynamicPreferences(
                         Context context, SettingsIndexData indexData, Profile profile) {
                     PrivacySandboxBridge bridge = new PrivacySandboxBridge(profile);
+                    String prefFragment = PrivacySandboxSettingsFragment.class.getName();
 
                     if (bridge.isPrivacySandboxRestricted()) {
                         indexData.removeEntry(getUniqueId(TOPICS_PREF));
                         indexData.removeEntry(getUniqueId(FLEDGE_PREF));
+                    } else {
+                        // LINT.IfChange(DynamicPrefsSummary)
+                        // The summary for enabled/disable is the same except for the trailing info
+                        // (on/off). To reflect that, an index refresh is required and for now that
+                        // is not necessary.
+                        indexData.updateEntrySummaryForKey(
+                                prefFragment,
+                                TOPICS_PREF,
+                                TopicsFragment.isTopicsPrefEnabled(profile)
+                                        ? R.string.ad_privacy_page_topics_link_row_sub_label_enabled
+                                        : R.string
+                                                .ad_privacy_page_topics_link_row_sub_label_disabled);
+
+                        indexData.updateEntrySummaryForKey(
+                                prefFragment,
+                                FLEDGE_PREF,
+                                FledgeFragment.isFledgePrefEnabled(profile)
+                                        ? R.string.ad_privacy_page_fledge_link_row_sub_label_enabled
+                                        : R.string
+                                                .ad_privacy_page_fledge_link_row_sub_label_disabled);
+
+                        indexData.updateEntrySummaryForKey(
+                                prefFragment,
+                                AD_MEASUREMENT_PREF,
+                                AdMeasurementFragment.isAdMeasurementPrefEnabled(profile)
+                                        ? R.string
+                                                .ad_privacy_page_ad_measurement_link_row_sub_label_enabled
+                                        : R.string
+                                                .ad_privacy_page_ad_measurement_link_row_sub_label_disabled);
+                        // LINT.ThenChange()
                     }
                 }
             };

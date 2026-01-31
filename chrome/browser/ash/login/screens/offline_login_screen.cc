@@ -99,7 +99,7 @@ void OfflineLoginScreen::ShowImpl() {
   scoped_observer_->Observe(network_state_informer_.get());
   StartIdleDetection();
 
-  base::Value::Dict params;
+  base::DictValue params;
   const std::string enterprise_domain_manager(GetEnterpriseDomainManager());
   if (!enterprise_domain_manager.empty()) {
     params.Set("enterpriseDomainManager", enterprise_domain_manager);
@@ -122,7 +122,7 @@ void OfflineLoginScreen::HideImpl() {
   }
 }
 
-void OfflineLoginScreen::OnUserAction(const base::Value::List& args) {
+void OfflineLoginScreen::OnUserAction(const base::ListValue& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionCancel) {
     exit_callback_.Run(Result::BACK);

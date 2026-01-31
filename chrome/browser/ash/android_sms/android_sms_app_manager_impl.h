@@ -11,9 +11,9 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/ash/android_sms/android_sms_app_manager.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "url/gurl.h"
 
 class PrefService;

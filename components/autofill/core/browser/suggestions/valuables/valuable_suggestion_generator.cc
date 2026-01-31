@@ -155,12 +155,14 @@ std::vector<Suggestion> GetSuggestionsForLoyaltyCards(
     const FormStructure* form_structure,
     const FormFieldData& field,
     const AutofillField* autofill_field,
+    const PasswordFormClassification& password_form_classification,
     const AutofillClient& client) {
   if (!client.GetValuablesDataManager()) {
     return {};
   }
   std::vector<Suggestion> suggestions;
-  LoyaltyCardSuggestionGenerator loyalty_card_suggestion_generator;
+  LoyaltyCardSuggestionGenerator loyalty_card_suggestion_generator(
+      password_form_classification);
 
   auto on_suggestions_generated =
       [&suggestions](
@@ -251,7 +253,9 @@ void ExtendEmailSuggestionsWithLoyaltyCardSuggestions(
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
-LoyaltyCardSuggestionGenerator::LoyaltyCardSuggestionGenerator() = default;
+LoyaltyCardSuggestionGenerator::LoyaltyCardSuggestionGenerator(
+    const PasswordFormClassification& password_form_classification)
+    : password_form_classification_(password_form_classification) {}
 
 LoyaltyCardSuggestionGenerator::~LoyaltyCardSuggestionGenerator() = default;
 
@@ -309,7 +313,7 @@ void LoyaltyCardSuggestionGenerator::FetchSuggestionData(
   }
 
   if (SuppressSuggestionsForAutocompleteUnrecognizedField(
-          *trigger_autofill_field)) {
+          *trigger_autofill_field, GetAcUnrecognizedBehavior(client))) {
     callback({SuggestionDataSource::kLoyaltyCard, {}});
     return;
   }
@@ -331,6 +335,7 @@ void LoyaltyCardSuggestionGenerator::GenerateSuggestions(
     const base::flat_map<SuggestionDataSource, std::vector<SuggestionData>>&
         all_suggestion_data,
     base::FunctionRef<void(ReturnedSuggestions)> callback) {
+  using enum PasswordFormClassification::Type;
   auto it = all_suggestion_data.find(SuggestionDataSource::kLoyaltyCard);
   std::vector<SuggestionData> loyalty_card_suggestion_data =
       it != all_suggestion_data.end() ? it->second
@@ -357,14 +362,37 @@ void LoyaltyCardSuggestionGenerator::GenerateSuggestions(
   UNSAFE_BUFFERS(std::vector<LoyaltyCard> affiliated_cards(
       all_loyalty_cards.begin(), non_affiliated_cards.begin()));
 
+  const bool autofill_non_affiliated_cards_enabled =
+      base::FeatureList::IsEnabled(
+          features::kAutofillEnableNonAffiliatedLoyaltyCardsFilling);
+
   // Show suggestions only in case there is a card that matches current domain.
-  if (affiliated_cards.empty()) {
+  if (affiliated_cards.empty() && !autofill_non_affiliated_cards_enabled) {
+    callback({FillingProduct::kLoyaltyCard, {}});
+    return;
+  }
+
+  // If only non-affiliated cards are available, make sure those are never shown
+  // on a password-related form.
+  if (affiliated_cards.empty() &&
+      password_form_classification_.type != kNoPasswordForm &&
+      autofill_non_affiliated_cards_enabled) {
     callback({FillingProduct::kLoyaltyCard, {}});
     return;
   }
 
   // If no submenu is needed.
 #if BUILDFLAG(IS_ANDROID)
+  if (affiliated_cards.empty() && autofill_non_affiliated_cards_enabled) {
+    Suggestion all_loyalty_cards_entry(
+        l10n_util::GetStringUTF16(
+            IDS_AUTOFILL_LOYALTY_CARDS_ALL_YOUR_CARDS_SUGGESTION),
+        SuggestionType::kAllLoyaltyCardsEntry);
+    callback(
+        {FillingProduct::kLoyaltyCard, {std::move(all_loyalty_cards_entry)}});
+    return;
+  }
+
   const bool generate_flat_suggestions = true;
 #else
   const bool generate_flat_suggestions = non_affiliated_cards.empty();
@@ -381,9 +409,14 @@ void LoyaltyCardSuggestionGenerator::GenerateSuggestions(
   }
 
   // Build suggestions with 'all loyalty cards' submenu.
-  std::vector<Suggestion> suggestions = CreateSuggestionsFromLoyaltyCards(
-      affiliated_cards, *client.GetValuablesDataManager());
-  suggestions.emplace_back(SuggestionType::kSeparator);
+  std::vector<Suggestion> suggestions;
+
+  // Build affiliated cards suggestions section if affiliated cards exist.
+  if (!affiliated_cards.empty()) {
+    suggestions = CreateSuggestionsFromLoyaltyCards(
+        affiliated_cards, *client.GetValuablesDataManager());
+    suggestions.emplace_back(SuggestionType::kSeparator);
+  }
 
   // Build 'all loyalty cards' submenu.
   Suggestion& submenu_suggestion = suggestions.emplace_back(

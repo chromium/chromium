@@ -8,7 +8,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
-#include "base/strings/latin1_string_conversions.h"
+
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/base/big_buffer_mojom_traits.h"
 
@@ -30,12 +30,10 @@ MaybeOwnedString16
 StructTraits<mojo_base::mojom::String16DataView, blink::String>::data(
     const blink::String& input) {
   if (input.Is8Bit()) {
-    return MaybeOwnedString16(base::Latin1OrUTF16ToUTF16(
-        input.length(), UNSAFE_TODO(input.Characters8()), nullptr));
+    auto latin1 = input.Span8();
+    return MaybeOwnedString16(std::u16string(latin1.begin(), latin1.end()));
   }
-  return MaybeOwnedString16(UNSAFE_TODO(
-      base::span(reinterpret_cast<const uint16_t*>(input.Characters16()),
-                 input.length())));
+  return MaybeOwnedString16(input.SpanUint16());
 }
 
 // static
@@ -56,8 +54,8 @@ mojo_base::BigBuffer
 StructTraits<mojo_base::mojom::BigString16DataView, blink::String>::data(
     const blink::String& input) {
   if (input.Is8Bit()) {
-    std::u16string input16(UNSAFE_TODO(input.Characters8()),
-                           UNSAFE_TODO(input.Characters8() + input.length()));
+    auto latin1 = input.Span8();
+    std::u16string input16(latin1.begin(), latin1.end());
     return mojo_base::BigBuffer(base::as_byte_span(input16));
   }
 

@@ -498,6 +498,17 @@ class StatusAreaWidgetCollapseStateTest : public AshTestBase {
     select_to_speak_->SetVisiblePreferred(true);
   }
 
+  void TearDown() override {
+    select_to_speak_ = nullptr;
+    dictation_button_ = nullptr;
+    palette_ = nullptr;
+    ime_menu_ = nullptr;
+    virtual_keyboard_ = nullptr;
+    overflow_button_ = nullptr;
+    status_area_ = nullptr;
+    AshTestBase::TearDown();
+  }
+
   void SetCollapseState(StatusAreaWidget::CollapseState collapse_state) {
     status_area_->set_collapse_state_for_test(collapse_state);
 
@@ -512,13 +523,13 @@ class StatusAreaWidgetCollapseStateTest : public AshTestBase {
     return status_area_->collapse_state();
   }
 
-  raw_ptr<StatusAreaWidget, DanglingUntriaged> status_area_;
-  raw_ptr<StatusAreaOverflowButtonTray, DanglingUntriaged> overflow_button_;
-  raw_ptr<TrayBackgroundView, DanglingUntriaged> virtual_keyboard_;
-  raw_ptr<TrayBackgroundView, DanglingUntriaged> ime_menu_;
-  raw_ptr<TrayBackgroundView, DanglingUntriaged> palette_;
-  raw_ptr<TrayBackgroundView, DanglingUntriaged> dictation_button_;
-  raw_ptr<TrayBackgroundView, DanglingUntriaged> select_to_speak_;
+  raw_ptr<StatusAreaWidget> status_area_;
+  raw_ptr<StatusAreaOverflowButtonTray> overflow_button_;
+  raw_ptr<TrayBackgroundView> virtual_keyboard_;
+  raw_ptr<TrayBackgroundView> ime_menu_;
+  raw_ptr<TrayBackgroundView> palette_;
+  raw_ptr<TrayBackgroundView> dictation_button_;
+  raw_ptr<TrayBackgroundView> select_to_speak_;
 };
 
 TEST_F(StatusAreaWidgetCollapseStateTest, TrayVisibility) {

@@ -349,7 +349,7 @@ void ExecutePopulatedAction(
 }
 
 void OnFeedbackFormSendButtonClicked(const AccountId& account_id,
-                                     base::Value::Dict action_dict,
+                                     base::DictValue action_dict,
                                      ScannerFeedbackInfo feedback_info,
                                      const std::string& user_description) {
   RecordScannerFeatureUserState(ScannerFeatureUserState::kFeedbackSent);
@@ -371,7 +371,7 @@ void OnFeedbackFormSendButtonClicked(const AccountId& account_id,
       /*image_mime_type=*/"image/jpeg");
 }
 
-void SetStringIfPresent(const base::Value::Dict* dict,
+void SetStringIfPresent(const base::DictValue* dict,
                         const std::string& key,
                         auto* field) {
   if (const std::string* value = dict->FindString(key)) {
@@ -380,18 +380,18 @@ void SetStringIfPresent(const base::Value::Dict* dict,
 }
 
 manta::proto::ScannerAction ScannerActionFromValue(
-    const base::Value::Dict& dict) {
+    const base::DictValue& dict) {
   manta::proto::ScannerAction action;
 
   // The input dictionary dict is expected to contain exactly one of the
   // following top-level keys, representing the type of action to perform.
-  if (const base::Value::Dict* new_event = dict.FindDict("new_event")) {
+  if (const base::DictValue* new_event = dict.FindDict("new_event")) {
     auto* event = action.mutable_new_event();
     SetStringIfPresent(new_event, "title", event->mutable_title());
     SetStringIfPresent(new_event, "dates", event->mutable_dates());
     SetStringIfPresent(new_event, "description", event->mutable_description());
     SetStringIfPresent(new_event, "location", event->mutable_location());
-  } else if (const base::Value::Dict* copy_action =
+  } else if (const base::DictValue* copy_action =
                  dict.FindDict("copy_to_clipboard")) {
     auto* clipboard = action.mutable_copy_to_clipboard();
     SetStringIfPresent(copy_action, "plain_text",
@@ -419,7 +419,7 @@ std::unique_ptr<manta::proto::ScannerOutput> CreateMockScannerOutput(
       continue;
     }
 
-    base::Value::Dict& action_dict = parsed_json->GetDict();
+    base::DictValue& action_dict = parsed_json->GetDict();
     manta::proto::ScannerAction action = ScannerActionFromValue(action_dict);
     if (action.action_case() != manta::proto::ScannerAction::ACTION_NOT_SET) {
       *object->add_actions() = std::move(action);
@@ -733,7 +733,7 @@ void ScannerController::OpenFeedbackDialog(
     manta::proto::ScannerAction action,
     scoped_refptr<base::RefCountedMemory> screenshot) {
   RecordScannerFeatureUserState(ScannerFeatureUserState::kFeedbackFormOpened);
-  base::Value::Dict action_dict = ScannerActionToDict(std::move(action));
+  base::DictValue action_dict = ScannerActionToDict(std::move(action));
 
   std::optional<std::string> user_facing_string = ValueToUserFacingString(
       action_dict, kUserFacingStringDepthLimit, kUserFacingStringOutputLimit);

@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/external_install_manager_factory.h"
@@ -105,7 +104,7 @@ void ExternalInstallManager::Shutdown() {
 void ExternalInstallManager::AddExternalInstallError(const Extension* extension,
                                                      bool is_new_profile) {
   // Error already exists or has been previously shown.
-  if (base::Contains(errors_, extension->id()) ||
+  if (errors_.contains(extension->id()) ||
       shown_ids_.count(extension->id()) > 0) {
     return;
   }
@@ -156,7 +155,7 @@ void ExternalInstallManager::UpdateExternalExtensionAlert() {
   // The list of ids can be mutated during this loop, so make a copy.
   const std::set<ExtensionId> ids_copy = unacknowledged_ids_;
   for (const auto& id : ids_copy) {
-    if (base::Contains(errors_, id) || shown_ids_.count(id) > 0) {
+    if (errors_.contains(id) || shown_ids_.count(id) > 0) {
       continue;
     }
 
@@ -263,7 +262,7 @@ void ExternalInstallManager::OnExtensionUninstalled(
     content::BrowserContext* browser_context,
     const Extension* extension,
     extensions::UninstallReason reason) {
-  if (base::Contains(errors_, extension->id())) {
+  if (errors_.contains(extension->id())) {
     RemoveExternalInstallError(extension->id());
   }
   unacknowledged_ids_.erase(extension->id());

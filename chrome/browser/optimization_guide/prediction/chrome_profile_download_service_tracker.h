@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_OPTIMIZATION_GUIDE_PREDICTION_CHROME_PROFILE_DOWNLOAD_SERVICE_TRACKER_H_
 #define CHROME_BROWSER_OPTIMIZATION_GUIDE_PREDICTION_CHROME_PROFILE_DOWNLOAD_SERVICE_TRACKER_H_
 
-#include "base/scoped_multi_source_observation.h"
+#include <vector>
+
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/profiles/profile_observer.h"
@@ -40,8 +42,11 @@ class ChromeProfileDownloadServiceTracker
 
   base::ScopedObservation<ProfileManager, ProfileManagerObserver>
       profile_manager_observation_{this};
-  base::ScopedMultiSourceObservation<Profile, ProfileObserver>
-      active_profile_observers_{this};
+
+  // Observed Profile instances. Cannot use base::ScopedMultiSourceObservation
+  // as ChromeProfileDownloadServiceTracker depends on the source ordering but
+  // base::ScopedMultiSourceObservation does not.
+  std::vector<raw_ptr<Profile>> observed_profiles_;
 };
 
 }  // namespace optimization_guide

@@ -30,7 +30,7 @@ LocalTabID FromJavaTabId(int tab_id) {
   return tab_id;
 }
 
-jint ToJavaTabId(const std::optional<LocalTabID>& tab_id) {
+int32_t ToJavaTabId(const std::optional<LocalTabID>& tab_id) {
   return tab_id.value_or(kInvalidTabId);
 }
 

@@ -30,7 +30,7 @@ CommerceWebExtractor::CommerceWebExtractor(
 CommerceWebExtractor::~CommerceWebExtractor() = default;
 
 void CommerceWebExtractor::ExtractMetaInfo(ExtractMetaInfoCallback callback) {
-  auto result = base::Value::Dict();
+  auto result = base::DictValue();
   blink::WebDocument doc = render_frame_->GetWebFrame()->GetDocument();
   blink::WebElementCollection collection =
       doc.GetElementsByHTMLTagName(kPageMeta);

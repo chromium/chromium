@@ -137,7 +137,7 @@ class KioskAppData : public KioskAppDataBase,
   // `response`. Passes `key`'s content via `value` and returns
   // true when `key` is present.
   bool CheckResponseKeyValue(const std::string& extension_id,
-                             const base::Value::Dict& response,
+                             const base::DictValue& response,
                              const char* key,
                              std::string* value);
 

@@ -44,8 +44,7 @@ IN_PROC_BROWSER_TEST_F(GlicApiUiTest, testAllTestsAreRegistered) {
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiUiTest, testOpenGlic) {
-  RunTestSequence(
-      OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone));
+  RunTestSequence(OpenGlic(GlicInstrumentMode::kNone));
   ExecuteJsTest();
 }
 

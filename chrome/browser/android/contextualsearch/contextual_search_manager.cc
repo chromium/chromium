@@ -104,7 +104,7 @@ void ContextualSearchManager::GatherSurroundingText(
 void ContextualSearchManager::RemoveLastHistoryEntry(
     JNIEnv* env,
     std::string& search_url,
-    jlong search_start_time_ms) {
+    int64_t search_start_time_ms) {
   // The deletion window is from the time a search URL was put in history, up
   // to a short amount of time later.
   base::Time begin_time =
@@ -156,15 +156,15 @@ void ContextualSearchManager::OnTextSurroundingSelectionAvailable(
       env, java_manager_, encoding, surrounding_text, start_offset, end_offset);
 }
 
-static jlong JNI_ContextualSearchManager_Init(JNIEnv* env,
-                                              const JavaRef<jobject>& obj,
-                                              Profile* profile) {
+static int64_t JNI_ContextualSearchManager_Init(JNIEnv* env,
+                                                const JavaRef<jobject>& obj,
+                                                Profile* profile) {
   ContextualSearchManager* manager =
       new ContextualSearchManager(env, obj, profile);
   return reinterpret_cast<intptr_t>(manager);
 }
 
-static jboolean JNI_ContextualSearchPolicy_IsContextualSearchResolutionUrlValid(
+static bool JNI_ContextualSearchPolicy_IsContextualSearchResolutionUrlValid(
     JNIEnv* env,
     Profile* profile) {
   // Attempt to resolve a (empty) query. Return whether resulting URL is

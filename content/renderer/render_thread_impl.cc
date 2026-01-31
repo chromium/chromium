@@ -17,7 +17,6 @@
 #include "base/allocator/partition_alloc_support.h"
 #include "base/at_exit.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -75,7 +74,7 @@
 #include "content/common/content_switches_internal.h"
 #include "content/common/features.h"
 #include "content/common/main_frame_counter.h"
-#include "content/common/process_visibility_tracker.h"
+#include "content/common/process_priority_tracker.h"
 #include "content/common/pseudonymization_salt.h"
 #include "content/public/common/buildflags.h"
 #include "content/public/common/content_client.h"
@@ -137,6 +136,7 @@
 #include "services/viz/public/cpp/gpu/gpu.h"
 #include "skia/ext/font_utils.h"
 #include "skia/ext/skia_memory_dump_provider.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/origin_trials/origin_trials_settings_provider.h"
 #include "third_party/blink/public/common/page/launching_process_state.h"
 #include "third_party/blink/public/common/switches.h"
@@ -184,8 +184,6 @@
 #include <windows.h>
 
 #include "content/renderer/media/win/dcomp_texture_factory.h"
-#include "content/renderer/media/win/overlay_state_service_provider.h"
-#include "media/base/win/mf_feature_checks.h"
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -296,36 +294,6 @@ bool IsBackgrounded(std::optional<base::Process::Priority> process_priority) {
   }
 }
 
-perfetto::StaticString ProcessPriorityToString(
-    std::optional<base::Process::Priority> priority) {
-  if (!priority) {
-    return "Unknown";
-  }
-  switch (*priority) {
-    case base::Process::Priority::kBestEffort:
-      return "Best effort";
-    case base::Process::Priority::kUserVisible:
-      return "User visible";
-    case base::Process::Priority::kUserBlocking:
-      return "User blocking";
-  }
-  NOTREACHED();
-}
-
-perfetto::StaticString ProcessVisibilityToString(
-    std::optional<mojom::RenderProcessVisibleState> visible_state) {
-  if (!visible_state) {
-    return "Unknown";
-  }
-  switch (*visible_state) {
-    case mojom::RenderProcessVisibleState::kVisible:
-      return "Visible";
-    case mojom::RenderProcessVisibleState::kHidden:
-      return "Hidden";
-  }
-  NOTREACHED();
-}
-
 }  // namespace
 
 RenderThreadImpl::HistogramCustomizer::HistogramCustomizer() {
@@ -356,7 +324,7 @@ std::string RenderThreadImpl::HistogramCustomizer::ConvertToCustomHistogramName(
     const char* histogram_name) const {
   std::string name(histogram_name);
   if (!common_host_histogram_suffix_.empty() &&
-      base::Contains(custom_histograms_, name)) {
+      custom_histograms_.contains(name)) {
     name += common_host_histogram_suffix_;
   }
   return name;
@@ -491,13 +459,6 @@ RenderThreadImpl::RenderThreadImpl(
 }
 
 void RenderThreadImpl::Init() {
-  TRACE_EVENT_BEGIN("renderer", ProcessPriorityToString(std::nullopt),
-                    process_priority_track_);
-  TRACE_EVENT_BEGIN("renderer", ProcessVisibilityToString(std::nullopt),
-                    process_visibility_track_);
-  base::trace_event::TraceLog::GetInstance()->AddAsyncEnabledStateObserver(
-      weak_factory_.GetWeakPtr());
-
   TRACE_EVENT0("startup", "RenderThreadImpl::Init");
 
   SCOPED_UMA_HISTOGRAM_TIMER("Renderer.RenderThreadImpl.Init");
@@ -566,7 +527,9 @@ void RenderThreadImpl::Init() {
   is_threaded_animation_enabled_ =
       !command_line.HasSwitch(switches::kDisableThreadedAnimation);
 
-  is_elastic_overscroll_enabled_ = switches::IsElasticOverscrollEnabled();
+  is_elastic_overscroll_enabled_on_root_ =
+      switches::IsElasticOverscrollEnabledOnRoot();
+  is_elastic_overscroll_supported_ = switches::IsElasticOverscrollSupported();
 
   if (command_line.HasSwitch(switches::kDisableLCDText)) {
     is_lcd_text_enabled_ = false;
@@ -607,7 +570,7 @@ void RenderThreadImpl::Init() {
       discardable_memory_allocator_.get());
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  ChildProcess::current()->SetIOThreadType(base::ThreadType::kDisplayCritical);
+  ChildProcess::current()->SetIOThreadType(base::ThreadType::kPresentation);
 #endif
 
   process_foregrounded_count_ = 0;
@@ -622,9 +585,6 @@ void RenderThreadImpl::Init() {
   variations_observer_ = std::make_unique<VariationsRenderThreadObserver>();
   AddObserver(variations_observer_.get());
 
-  base::ThreadPool::PostTask(FROM_HERE,
-                             base::BindOnce([] { skia::DefaultFontMgr(); }));
-
   UpdateForegroundCrashKey(
       /*foreground=*/!blink::kLaunchingProcessIsBackgrounded);
 
@@ -638,12 +598,6 @@ void RenderThreadImpl::Init() {
 }
 
 RenderThreadImpl::~RenderThreadImpl() {
-  base::trace_event::TraceLog::GetInstance()->RemoveAsyncEnabledStateObserver(
-      this);
-
-  TRACE_EVENT_END("renderer", process_priority_track_);
-  TRACE_EVENT_END("renderer", process_visibility_track_);
-
   // The destructor should not run in multi-process mode because Shutdown()
   // terminates the process. The destructor only needs to clean up for tests.
   CHECK(IsSingleProcess());
@@ -701,18 +655,6 @@ std::string RenderThreadImpl::GetLocale() {
   DCHECK(!lang.empty());
   return lang;
 }
-
-void RenderThreadImpl::OnTraceLogEnabled() {
-  TRACE_EVENT_END("renderer", process_priority_track_);
-  TRACE_EVENT_BEGIN("renderer", ProcessPriorityToString(process_priority_),
-                    process_priority_track_);
-
-  TRACE_EVENT_END("renderer", process_visibility_track_);
-  TRACE_EVENT_BEGIN("renderer", ProcessVisibilityToString(visible_state_),
-                    process_visibility_track_);
-}
-
-void RenderThreadImpl::OnTraceLogDisabled() {}
 
 mojom::RendererHost* RenderThreadImpl::GetRendererHost() {
   if (!renderer_host_) {
@@ -1144,28 +1086,6 @@ scoped_refptr<DCOMPTextureFactory> RenderThreadImpl::GetDCOMPTextureFactory() {
   }
   return dcomp_texture_factory_;
 }
-
-scoped_refptr<OverlayStateServiceProvider>
-RenderThreadImpl::GetOverlayStateServiceProvider() {
-  DCHECK(IsMainThread());
-  // Only set 'overlay_state_service_provider_' if Media Foundation for clear
-  // is enabled.
-  if (media::SupportMediaFoundationClearPlayback()) {
-    if (!overlay_state_service_provider_ ||
-        overlay_state_service_provider_->IsLost()) {
-      scoped_refptr<gpu::GpuChannelHost> channel = EstablishGpuChannelSync();
-      if (!channel) {
-        overlay_state_service_provider_ = nullptr;
-        return nullptr;
-      }
-      overlay_state_service_provider_ =
-          base::MakeRefCounted<OverlayStateServiceProviderImpl>(
-              std::move(channel));
-    }
-  }
-
-  return overlay_state_service_provider_;
-}
 #endif  // BUILDFLAG(IS_WIN)
 
 base::WaitableEvent* RenderThreadImpl::GetShutdownEvent() {
@@ -1207,8 +1127,12 @@ bool RenderThreadImpl::IsLcdTextEnabled() {
   return is_lcd_text_enabled_;
 }
 
-bool RenderThreadImpl::IsElasticOverscrollEnabled() {
-  return is_elastic_overscroll_enabled_;
+bool RenderThreadImpl::IsElasticOverscrollEnabledOnRoot() {
+  return is_elastic_overscroll_enabled_on_root_;
+}
+
+bool RenderThreadImpl::IsElasticOverscrollSupported() {
+  return is_elastic_overscroll_supported_;
 }
 
 blink::scheduler::WebThreadScheduler*
@@ -1293,14 +1217,16 @@ void RenderThreadImpl::SetProcessState(
     }
   }
 
+  if (!process_priority_.has_value() || process_priority != process_priority_) {
+    if (!IsInBrowserProcess()) {
+      ProcessPriorityTracker::GetInstance()->OnProcessPriorityChanged(
+          process_priority);
+    }
+  }
+
   if (visible_state != visible_state_) {
     bool is_visible =
         visible_state == mojom::RenderProcessVisibleState::kVisible;
-
-    if (!IsInBrowserProcess()) {
-      ProcessVisibilityTracker::GetInstance()->OnProcessVisibilityChanged(
-          is_visible);
-    }
 
     if (is_visible) {
       OnRendererVisible();
@@ -1331,10 +1257,6 @@ void RenderThreadImpl::WriteClangProfilingProfile(
   std::move(callback).Run();
 }
 #endif
-
-void RenderThreadImpl::SetIsCrossOriginIsolated(bool value) {
-  blink::SetIsCrossOriginIsolated(value);
-}
 
 void RenderThreadImpl::SetIsWebSecurityDisabled(bool value) {
   blink::SetIsWebSecurityDisabled(value);
@@ -1460,47 +1382,33 @@ void RenderThreadImpl::OnNetworkQualityChanged(
       transport_rtt, downlink_throughput_kbps);
 }
 
-void RenderThreadImpl::SetWebKitSharedTimersSuspended(bool suspend) {
 #if BUILDFLAG(IS_ANDROID)
+void RenderThreadImpl::SetWebKitSharedTimersSuspended(bool suspend) {
   if (suspend) {
     main_thread_scheduler_->PauseTimersForAndroidWebView();
   } else {
     main_thread_scheduler_->ResumeTimersForAndroidWebView();
   }
-#else
-  NOTREACHED();
-#endif
 }
+#endif
 
+#if BUILDFLAG(IS_MAC)
 void RenderThreadImpl::UpdateScrollbarTheme(
     mojom::UpdateScrollbarThemeParamsPtr params) {
-#if BUILDFLAG(IS_MAC)
   blink::WebScrollbarTheme::UpdateScrollbarsWithNSDefaults(
-      params->has_initial_button_delay
-          ? std::make_optional(params->initial_button_delay)
-          : std::nullopt,
-      params->has_autoscroll_button_delay
-          ? std::make_optional(params->autoscroll_button_delay)
-          : std::nullopt,
+      params->initial_button_delay, params->autoscroll_button_delay,
       params->preferred_scroller_style, params->redraw,
       params->jump_on_track_click);
-#endif  // BUILDFLAG(IS_MAC)
-#if BUILDFLAG(IS_APPLE)
-  is_elastic_overscroll_enabled_ = params->scroll_view_rubber_banding;
-#else
-  NOTREACHED();
-#endif  // BUILDFLAG(IS_APPLE)
+  is_elastic_overscroll_enabled_on_root_ = params->scroll_view_rubber_banding;
+  is_elastic_overscroll_supported_ = params->scroll_view_rubber_banding;
 }
 
 void RenderThreadImpl::OnSystemColorsChanged(int32_t aqua_color_variant) {
-#if BUILDFLAG(IS_MAC)
   // Let blink know it should invalidate and recalculate styles for elements
   // that rely on system colors, such as the accent and highlight colors.
   blink::SystemColorsChanged();
-#else
-  NOTREACHED();
-#endif
 }
+#endif
 
 void RenderThreadImpl::UpdateSystemColorInfo(
     mojom::UpdateSystemColorInfoParamsPtr params) {
@@ -1544,6 +1452,9 @@ RenderThreadImpl::GetMediaSequencedTaskRunner() {
   DCHECK(main_thread_runner()->BelongsToCurrentThread());
   if (base::FeatureList::IsEnabled(kUseThreadPoolForMediaTaskRunner)) {
     if (!media_task_runner_) {
+      // TODO(crbug.com/470337728): ensure the sequenced task runner is executed
+      // in the right priority when blink::features::kWebRtcUseMediaThreadTypes
+      // is enabled.
       media_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
           base::TaskTraits{base::TaskPriority::USER_VISIBLE,
                            base::WithBaseSyncPrimitives(), base::MayBlock()});
@@ -1557,9 +1468,13 @@ RenderThreadImpl::GetMediaSequencedTaskRunner() {
     base::Thread::Options options(base::MessagePumpType::IO, 0);
     // TODO(crbug.com/40250424): Use kDisplayCritical to address media latency
     // on Fuchsia until alignment on new media thread types is achieved.
-    options.thread_type = base::ThreadType::kDisplayCritical;
+    options.thread_type = base::ThreadType::kPresentation;
 #else
     base::Thread::Options options;
+    if (base::FeatureList::IsEnabled(
+            blink::features::kWebRtcUseMediaThreadTypes)) {
+      options.thread_type = base::ThreadType::kPresentation;
+    }
 #endif
     media_thread_->StartWithOptions(std::move(options));
   }

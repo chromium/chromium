@@ -82,11 +82,9 @@ StructuredMetricsService::StructuredMetricsService(
 #if BUILDFLAG(IS_CHROMEOS)
   // Because of construction order of the recorder and service, the service
   // needs to be set on the storage manager after it is created.
-  if (base::FeatureList::IsEnabled(kEventStorageManager)) {
-    StorageManager* storage_manager =
-        static_cast<StorageManager*>(recorder_->event_storage());
-    storage_manager->set_delegate(this);
-  }
+  StorageManager* storage_manager =
+      static_cast<StorageManager*>(recorder_->event_storage());
+  storage_manager->set_delegate(this);
 #endif
 
   // Setup the reporting service.
@@ -123,11 +121,9 @@ StructuredMetricsService::~StructuredMetricsService() {
 #if BUILDFLAG(IS_CHROMEOS)
   // Because of construction order of the recorder and service, the delegate
   // must be unset here to avoid dangling pointers.
-  if (base::FeatureList::IsEnabled(kEventStorageManager)) {
-    StorageManager* storage_manager =
-        static_cast<StorageManager*>(recorder_->event_storage());
-    storage_manager->unset_delegate(this);
-  }
+  StorageManager* storage_manager =
+      static_cast<StorageManager*>(recorder_->event_storage());
+  storage_manager->unset_delegate(this);
 #endif
 }
 

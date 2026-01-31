@@ -33,6 +33,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_item_identifier.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_context_menu/tab_cell.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_context_menu/tab_item.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_metrics.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_item.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_switcher_item.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_utils.h"
@@ -285,6 +286,25 @@ using tab_groups::SharingState;
     [menuElements addObject:collectionsMenu];
   }
 
+  if (IsCloseOtherTabsEnabled()) {
+    if ([self canCloseOtherTabsForTabWithID:tabID]) {
+      UIAction* closeOtherTabsAction =
+          [actionFactory actionToCloseAllOtherTabsWithBlock:^{
+            RecordTabGridCloseOtherTabs(weakSelf.incognito);
+            [weakSelf.contextMenuDelegate
+                closeTabsExceptIdentifier:tabID
+                                incognito:weakSelf.incognito];
+          }];
+
+      UIMenu* closeOtherMenu = [UIMenu menuWithTitle:@""
+                                               image:nil
+                                          identifier:nil
+                                             options:UIMenuOptionsDisplayInline
+                                            children:@[ closeOtherTabsAction ]];
+      [menuElements addObject:closeOtherMenu];
+    }
+  }
+
   return menuElements;
 }
 
@@ -503,6 +523,30 @@ using tab_groups::SharingState;
     }
   }
   return nil;
+}
+
+// Returns `YES` if "Close Other Tabs" should be enabled for the tab with
+// `tabID`. Returns `NO` if the tab is pinned.
+- (BOOL)canCloseOtherTabsForTabWithID:(web::WebStateID)tabID {
+  for (Browser* browser : [self currentBrowsersIncludingInactive]) {
+    WebStateList* webStateList = browser->GetWebStateList();
+    WebStateSearchCriteria criteria{.identifier = tabID};
+    int index = GetWebStateIndex(webStateList, criteria);
+    if (index != WebStateList::kInvalidIndex) {
+      if (webStateList->IsWebStatePinnedAt(index)) {
+        return webStateList->regular_tabs_count() > 0;
+      }
+      const TabGroup* group = webStateList->GetGroupOfWebStateAt(index);
+      if (group) {
+        // If the tab is in a group, the "Close Other Tabs" action is scoped to
+        // the group. It should only be enabled if there are other tabs in the
+        // group.
+        return group->range().count() > 1;
+      }
+      return webStateList->regular_tabs_count() > 1;
+    }
+  }
+  return NO;
 }
 
 // Returns the list of browsers for the current `incognito` state. It only

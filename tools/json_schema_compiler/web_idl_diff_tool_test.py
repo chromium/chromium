@@ -41,6 +41,15 @@ class WebIdlDiffToolTest(unittest.TestCase):
         ('clipboard.idl', 'clipboard.webidl'),
         ('system_display.idl', 'system_display.webidl'),
         ('usb.idl', 'usb.webidl'),
+        ('chrome_url_overrides.idl', 'chrome_url_overrides.webidl'),
+        ('cross_origin_isolation.idl', 'cross_origin_isolation.webidl'),
+        ('file_handlers.idl', 'file_handlers.webidl'),
+        ('oauth2.idl', 'oauth2.webidl'),
+        ('protocol_handlers.idl', 'protocol_handlers.webidl'),
+        ('shared_module.idl', 'shared_module.webidl'),
+        ('web_accessible_resources.idl', 'web_accessible_resources.webidl'),
+        ('web_accessible_resources_mv2.idl',
+         'web_accessible_resources_mv2.webidl'),
     ]
     # LoadAndReturnUnifiedDiff expects file paths relative to the repo root.
     converted_schema_path = 'tools/json_schema_compiler/test/converted_schemas/'

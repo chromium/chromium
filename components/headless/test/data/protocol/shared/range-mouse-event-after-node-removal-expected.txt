@@ -1,0 +1,3 @@
+Tests dispatch of mouse events to <input type="range"> after DOM node removal.
+Original value: 5
+Final value: 10

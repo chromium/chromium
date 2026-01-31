@@ -4,6 +4,7 @@
 
 #include "net/cert/cert_verify_proc_builtin.h"
 
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
@@ -94,9 +95,9 @@ DEFINE_CERT_ERROR_ID(kPathLacksQwacPolicy, "Path does not have QWAC policies");
 DEFINE_CERT_ERROR_ID(kChromeRootConstraintsFailed,
                      "Path does not satisfy CRS constraints");
 
-base::Value::Dict NetLogCertParams(const CRYPTO_BUFFER* cert_handle,
-                                   const bssl::CertErrors& errors) {
-  base::Value::Dict results;
+base::DictValue NetLogCertParams(const CRYPTO_BUFFER* cert_handle,
+                                 const bssl::CertErrors& errors) {
+  base::DictValue results;
 
   std::string pem_encoded;
   if (X509Certificate::GetPEMEncodedFromDER(
@@ -111,19 +112,26 @@ base::Value::Dict NetLogCertParams(const CRYPTO_BUFFER* cert_handle,
   return results;
 }
 
-base::Value::Dict NetLogAdditionalCert(const CRYPTO_BUFFER* cert_handle,
-                                       const bssl::CertificateTrust& trust,
-                                       const bssl::CertErrors& errors) {
-  base::Value::Dict results = NetLogCertParams(cert_handle, errors);
+base::DictValue NetLogAdditionalCert(const CRYPTO_BUFFER* cert_handle,
+                                     const bssl::CertificateTrust& trust,
+                                     const bssl::CertErrors& errors) {
+  base::DictValue results = NetLogCertParams(cert_handle, errors);
   results.Set("trust", trust.ToDebugString());
   return results;
 }
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-base::Value::Dict NetLogChromeRootStoreVersion(
-    int64_t chrome_root_store_version) {
-  base::Value::Dict results;
+base::DictValue NetLogChromeRootStoreVersion(
+    int64_t chrome_root_store_version,
+    std::optional<base::Time> mtc_metadata_update_time) {
+  base::DictValue results;
   results.Set("version_major", NetLogNumberValue(chrome_root_store_version));
+  if (mtc_metadata_update_time.has_value()) {
+    results.Set(
+        "mtc_metadata_update_time",
+        NetLogNumberValue(
+            mtc_metadata_update_time->InMillisecondsSinceUnixEpoch() / 1000));
+  }
   return results;
 }
 
@@ -196,8 +204,8 @@ QwacQcStatementsStatus GetQwacQcStatementsStatus(
 }
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 
-base::Value::List PEMCertValueList(const bssl::ParsedCertificateList& certs) {
-  base::Value::List value;
+base::ListValue PEMCertValueList(const bssl::ParsedCertificateList& certs) {
+  base::ListValue value;
   for (const auto& cert : certs) {
     std::string pem;
     X509Certificate::GetPEMEncodedFromDER(
@@ -207,11 +215,12 @@ base::Value::List PEMCertValueList(const bssl::ParsedCertificateList& certs) {
   return value;
 }
 
-base::Value::Dict NetLogPathBuilderResultPath(
+base::DictValue NetLogPathBuilderResultPath(
     const bssl::CertPathBuilderResultPath& result_path) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("is_valid", result_path.IsValid());
-  dict.Set("last_cert_trust", result_path.last_cert_trust.ToDebugString());
+  dict.Set("last_cert_trust",
+           result_path.trust_anchor.CertTrust().ToDebugString());
   dict.Set("certificates", PEMCertValueList(result_path.certs));
   // TODO(crbug.com/40479281): netlog user_constrained_policy_set.
   std::string errors_string =
@@ -221,9 +230,9 @@ base::Value::Dict NetLogPathBuilderResultPath(
   return dict;
 }
 
-base::Value::Dict NetLogPathBuilderResult(
+base::DictValue NetLogPathBuilderResult(
     const bssl::CertPathBuilder::Result& result) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   // TODO(crbug.com/40479281): include debug data (or just have things netlog it
   // directly).
   dict.Set("has_valid_path", result.HasValidPath());
@@ -347,10 +356,19 @@ class CertVerifyProcTrustStore {
     return system_trust_store_->IsKnownRoot(trust_anchor);
   }
 
+  bool IsKnownMtcAnchor(const bssl::MTCAnchor* anchor) const {
+    return system_trust_store_->IsKnownMtcAnchor(anchor);
+  }
+
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   base::span<const ChromeRootCertConstraints> GetChromeRootConstraints(
       const bssl::ParsedCertificate* cert) const {
     return system_trust_store_->GetChromeRootConstraints(cert);
+  }
+
+  const TrustStoreChrome::MtcAnchorExtraData* GetMTCAnchorData(
+      base::span<const uint8_t> log_id) const {
+    return system_trust_store_->GetMTCAnchorData(log_id);
   }
 
   bool IsNonChromeRootStoreTrustAnchor(
@@ -469,19 +487,24 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
     PathBuilderDelegateDataImpl* delegate_data =
         PathBuilderDelegateDataImpl::GetOrCreate(path);
 
-    // TODO(https://crbug.com/1211074, https://crbug.com/848277): making a
-    // temporary X509Certificate just to pass into CTVerifier and
-    // CTPolicyEnforcer is silly, refactor so they take CRYPTO_BUFFER or
-    // ParsedCertificate or something.
-    std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates;
-    if (path->certs.size() > 1) {
-      intermediates.push_back(bssl::UpRef(path->certs[1]->cert_buffer()));
+    scoped_refptr<X509Certificate> cert_for_ct_verify;
+    // Only check CT if the path ends in a traditional (non-MTC) anchor.
+    if (!path->trust_anchor.MTCAnchor()) {
+      // TODO(https://crbug.com/1211074, https://crbug.com/848277): making a
+      // temporary X509Certificate just to pass into CTVerifier and
+      // CTPolicyEnforcer is silly, refactor so they take CRYPTO_BUFFER or
+      // ParsedCertificate or something.
+      std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates;
+      if (path->certs.size() > 1) {
+        intermediates.push_back(bssl::UpRef(path->certs[1]->cert_buffer()));
+      }
+      cert_for_ct_verify = X509Certificate::CreateFromBuffer(
+          bssl::UpRef(path->certs[0]->cert_buffer()), std::move(intermediates));
+      ct_verifier_->Verify(cert_for_ct_verify.get(),
+                           stapled_leaf_ocsp_response_,
+                           sct_list_from_tls_extension_, current_time_,
+                           &delegate_data->scts, *net_log_);
     }
-    auto cert_for_ct_verify = X509Certificate::CreateFromBuffer(
-        bssl::UpRef(path->certs[0]->cert_buffer()), std::move(intermediates));
-    ct_verifier_->Verify(cert_for_ct_verify.get(), stapled_leaf_ocsp_response_,
-                         sct_list_from_tls_extension_, current_time_,
-                         &delegate_data->scts, *net_log_);
 
     // Check any extra constraints that might exist outside of the certificates.
     CheckExtraConstraints(path->certs, &path->errors);
@@ -527,6 +550,13 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
         break;
     }
 
+    if (path->trust_anchor.MTCAnchor()) {
+      // MTCs don't use traditional revocation checks or certificate
+      // transparency.
+      CheckMTCRevocation(path);
+      return;
+    }
+
     if (policy.check_revocation) {
       *checked_revocation_for_some_path_ = true;
     }
@@ -541,6 +571,37 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
                                   &delegate_data->stapled_ocsp_verify_result);
 
     CheckCertificateTransparency(path, cert_for_ct_verify.get(), delegate_data);
+  }
+
+  void CheckMTCRevocation(bssl::CertPathBuilderResultPath* path) {
+    // Revocation information for MTCs is distributed in the PKI Metadata
+    // Fastpush component, which is part of the Chrome Root Store. This method
+    // should never be reached in the non-CRS case since we also would not have
+    // any MTC anchors configured. If we ever support non-CRS MTC anchors, we
+    // may need to pull the revocation information definitions out of CRS code
+    // into a place that can be shared by both.
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+    const TrustStoreChrome::MtcAnchorExtraData* mtc_anchor_data =
+        trust_store_->GetMTCAnchorData(
+            path->trust_anchor.MTCAnchor()->log_id());
+    if (!mtc_anchor_data) {
+      return;
+    }
+
+    const auto& leaf = path->certs.front();
+    uint64_t index;
+    // This method is only called on MTCs that boringssl verified successfully,
+    // so the serial number is already known to be valid and we don't need to
+    // gracefully handle a failure here.
+    CHECK(bssl::der::ParseUint64(leaf->tbs().serial_number, &index));
+
+    auto it = mtc_anchor_data->revoked_indices.upper_bound(index);
+    if (it != mtc_anchor_data->revoked_indices.end() && index >= it->second) {
+      path->errors.GetErrorsForCert(0)->AddError(
+          bssl::cert_errors::kCertificateRevoked);
+      return;
+    }
+#endif
   }
 
   void CheckCertificateTransparency(
@@ -1052,7 +1113,7 @@ CertVerifyProcBuiltin::CertVerifyProcBuiltin(
     additional_trust_store_.AddDistrustedCertificateBySPKI(
         std::string(base::as_string_view(spki)));
     net_log.AddEvent(NetLogEventType::CERT_VERIFY_PROC_ADDITIONAL_CERT, [&] {
-      base::Value::Dict results;
+      base::DictValue results;
       results.Set("spki", NetLogBinaryValue(base::span(spki)));
       results.Set("trust",
                   bssl::CertificateTrust::ForDistrusted().ToDebugString());
@@ -1388,8 +1449,13 @@ int AssignVerifyResult(
 
   const bssl::ParsedCertificate* trusted_cert = partial_path.GetTrustedCert();
   if (trusted_cert) {
-    verify_result->is_issued_by_known_root =
-        trust_store->IsKnownRoot(trusted_cert);
+    if (partial_path.trust_anchor.MTCAnchor()) {
+      verify_result->is_issued_by_known_root = trust_store->IsKnownMtcAnchor(
+          partial_path.trust_anchor.MTCAnchor().get());
+    } else {
+      verify_result->is_issued_by_known_root =
+          trust_store->IsKnownRoot(trusted_cert);
+    }
   }
 
   if (path_is_valid && (verification_type == VerificationType::kEV)) {
@@ -1468,10 +1534,13 @@ void CertVerifyProcBuiltin::LogChromeRootStoreVersion(
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   int64_t chrome_root_store_version =
       system_trust_store_->chrome_root_store_version();
-  if (chrome_root_store_version != 0) {
+  std::optional<base::Time> mtc_metadata_update_time =
+      system_trust_store_->mtc_metadata_update_time();
+  if (chrome_root_store_version != 0 || mtc_metadata_update_time.has_value()) {
     net_log.AddEvent(
         NetLogEventType::CERT_VERIFY_PROC_CHROME_ROOT_STORE_VERSION, [&] {
-          return NetLogChromeRootStoreVersion(chrome_root_store_version);
+          return NetLogChromeRootStoreVersion(chrome_root_store_version,
+                                              mtc_metadata_update_time);
         });
   }
 #endif
@@ -1571,7 +1640,7 @@ int CertVerifyProcBuiltin::VerifyInternal(X509Certificate* input_cert,
     cur_attempt = attempts[cur_attempt_index];
     net_log.BeginEvent(
         NetLogEventType::CERT_VERIFY_PROC_PATH_BUILD_ATTEMPT, [&] {
-          base::Value::Dict results;
+          base::DictValue results;
           if (cur_attempt.verification_type == VerificationType::kEV) {
             results.Set("is_ev_attempt", true);
           }
@@ -1670,7 +1739,7 @@ void NetLog2QwacBindingError(const NetLogWithSource& net_log,
                              std::string_view message,
                              std::string_view details = {}) {
   net_log.EndEvent(NetLogEventType::CERT_VERIFY_PROC_2QWAC_BINDING, [&] {
-    base::Value::Dict dict;
+    base::DictValue dict;
     // Including a net_error will cause the netlog-viewer to display this event
     // as an error.
     dict.Set("net_error", ERR_FAILED);
@@ -1690,7 +1759,7 @@ scoped_refptr<X509Certificate> CertVerifyProcBuiltin::Verify2QwacBinding(
     base::span<const uint8_t> tls_cert,
     const NetLogWithSource& net_log) {
   net_log.BeginEvent(NetLogEventType::CERT_VERIFY_PROC_2QWAC_BINDING, [&] {
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set("binding", NetLogStringValue(binding));
     dict.Set("host", NetLogStringValue(hostname));
 
@@ -1732,7 +1801,7 @@ scoped_refptr<X509Certificate> CertVerifyProcBuiltin::Verify2QwacBinding(
   }
   HistogramVerify2QwacResult(Verify2QwacBindingResult::kValid2QwacBinding);
   net_log.EndEvent(NetLogEventType::CERT_VERIFY_PROC_2QWAC_BINDING, [&] {
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set("is_valid_2qwac_binding", true);
     return dict;
   });
@@ -1747,7 +1816,7 @@ int CertVerifyProcBuiltin::Verify2Qwac(X509Certificate* cert,
   CHECK(verify_result);
 
   net_log.BeginEvent(NetLogEventType::CERT_VERIFY_PROC_2QWAC, [&] {
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set("host", NetLogStringValue(hostname));
     dict.Set("certificates", NetLogX509CertificateList(cert));
     return dict;
@@ -1854,7 +1923,7 @@ int CertVerifyProcBuiltin::Verify2QwacInternal(
   }
 
   net_log.BeginEvent(NetLogEventType::CERT_VERIFY_PROC_PATH_BUILD_ATTEMPT, [&] {
-    base::Value::Dict results;
+    base::DictValue results;
     results.Set("is_qwac_attempt", true);
     return results;
   });
@@ -1968,7 +2037,7 @@ void CertVerifyProcBuiltin::MaybeVerify1QWAC(
   OneQwacPathBuilderDelegateImpl path_builder_delegate(net_log);
 
   net_log.BeginEvent(NetLogEventType::CERT_VERIFY_PROC_PATH_BUILD_ATTEMPT, [&] {
-    base::Value::Dict results;
+    base::DictValue results;
     results.Set("is_qwac_attempt", true);
     return results;
   });

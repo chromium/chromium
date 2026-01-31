@@ -27,10 +27,6 @@ namespace base {
 class OneShotTimer;
 }  // namespace base
 
-namespace network::mojom {
-class CookieManager;
-}  // namespace network::mojom
-
 namespace url {
 class Origin;
 }  // namespace url
@@ -47,7 +43,6 @@ class PrefetchServingHandle;
 class PrefetchServingPageMetricsContainer;
 class PrefetchSingleRedirectHop;
 class PrefetchStreamingURLLoader;
-class ProxyLookupClientImpl;
 enum class PrefetchPotentialCandidateServingResult;
 enum class PrefetchProbeResult;
 enum class PrefetchServableState;
@@ -283,12 +278,6 @@ class CONTENT_EXPORT PrefetchContainer {
 
   const PrefetchRequest& request() const { return *request_; }
 
-  // Controls ownership of the |ProxyLookupClientImpl| used during the
-  // eligibility check.
-  void TakeProxyLookupClient(
-      std::unique_ptr<ProxyLookupClientImpl> proxy_lookup_client);
-  std::unique_ptr<ProxyLookupClientImpl> ReleaseProxyLookupClient();
-
   // Called when it is added to `PrefetchService::owned_prefetches_`.
   void OnAddedToPrefetchService();
 
@@ -297,6 +286,17 @@ class CONTENT_EXPORT PrefetchContainer {
 
   // Adds a the new URL to |redirect_chain_|.
   void AddRedirectHop(const net::RedirectInfo& redirect_info);
+
+  // Returns a tuple of `PrefetchUpdateHeadersParams`s that indicates the header
+  // modification upon redirect, to be passed to `UpdateResourceRequest()` and
+  // `URLLoader::FollowRedirect()`, respectively.
+  // TODO(crbug.com/467177773): Ideally these two should be equal, but currently
+  // we are incrementally adding headers to the latter.
+  std::tuple<PrefetchUpdateHeadersParams, PrefetchUpdateHeadersParams>
+  PrepareUpdateHeaders(const GURL& url) const;
+  // Performs the actual modification to `resource_request_` upon redirect.
+  void UpdateResourceRequest(const net::RedirectInfo& redirect_info,
+                             PrefetchUpdateHeadersParams params);
 
   // The length of the redirect chain for this prefetch.
   size_t GetRedirectChainSize() const { return redirect_chain_.size(); }
@@ -316,9 +316,9 @@ class CONTENT_EXPORT PrefetchContainer {
   bool IsCrossSiteContaminated() const { return is_cross_site_contaminated_; }
   void MarkCrossSiteContaminated();
 
-  // Allows for |PrefetchCookieListener|s to be reigsitered for
+  // Allows for |PrefetchCookieListener|s to be registered for
   // `GetCurrentSingleRedirectHopToPrefetch()`.
-  void RegisterCookieListener(network::mojom::CookieManager* cookie_manager);
+  void RegisterCookieListener();
   void PauseAllCookieListeners();
   void ResumeAllCookieListeners();
 
@@ -598,7 +598,7 @@ class CONTENT_EXPORT PrefetchContainer {
       network::ResourceRequest& resource_request);
   // Adds client hints headers to a request bound for |origin|.
   void AddClientHintsHeaders(const url::Origin& origin,
-                             net::HttpRequestHeaders* request_headers);
+                             net::HttpRequestHeaders* request_headers) const;
   // Adds X-Client-Data request header to a request.
   void AddXClientDataHeader(network::ResourceRequest& request);
 
@@ -616,6 +616,11 @@ class CONTENT_EXPORT PrefetchContainer {
 
   // Returns "Sec-Purpose" header value for a prefetch request to `request_url`.
   const char* GetSecPurposeHeaderValue(const GURL& request_url) const;
+
+  // Adds Speculation Rules Tags headers for a prefetch request to `request_url`
+  // to `headers`.
+  void AddSpeculationTagsHeader(const GURL& request_url,
+                                net::HttpRequestHeaders& headers) const;
 
   // Called when a prefetch request could not be started because of eligibility
   // reasons. Should only be called for the initial prefetch request and not
@@ -700,10 +705,6 @@ class CONTENT_EXPORT PrefetchContainer {
 
   // The current status of the prefetch.
   LoadState load_state_ = LoadState::kNotStarted;
-
-  // Looks up the proxy settings in the default network context all URLs in
-  // |redirect_chain_|.
-  std::unique_ptr<ProxyLookupClientImpl> proxy_lookup_client_;
 
   // Whether this prefetch is a decoy or not. If the prefetch is a decoy then
   // any prefetched resources will not be served.

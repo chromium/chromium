@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<title>Page margin safety on page margin boxes</title>
+<script>
+  if (window.testRunner) {
+    testRunner.setPrinting();
+    testRunner.setSafePrintableInset(0);
+    if (window.internals)
+      internals.settings.setShouldPrintBackgrounds(true);
+  }
+</script>
+<style>
+  @page {
+    size: 400px 250px;
+    margin: 0;
+  }
+  html, body {
+    margin: 0;
+    height: 100%;
+  }
+</style>
+<div style="display:grid; grid-template-rows:50px 1fr 50px; height:100%;">
+  <div style="display:grid; grid-template-columns:50px 1fr 1fr 1fr 50px;">
+    <div></div>
+    <div style="margin-top:20px; background:blue;"></div>
+    <div style="margin-top:30px; background:blue;"></div>
+    <div style="margin-top:20px; background:blue;"></div>
+    <div style="margin-top:30px; width:20px; height:20px; background:hotpink;"></div>
+  </div>
+  <div style="display:grid; grid-template-columns:50px 1fr 50px;">
+    <div style="display:grid; grid-template-rows:1fr 1fr 1fr;">
+      <div style="width:10px; margin-left:20px; background:gray;"></div>
+      <div style="width:30px; margin-left:20px; background:gray;"></div>
+      <div style="width:40px; margin-left:10px; background:gray;"></div>
+    </div>
+    <div style="border:1px solid;"></div>
+  </div>
+  <div style="display:grid; grid-template-columns:50px 1fr 1fr 1fr 50px;">
+    <div style="margin:auto; margin-top:20px; width:10px; height:10px; background:hotpink;"></div>
+    <div style="background:yellow;"></div>
+    <div style="height:20px; background:yellow;"></div>
+    <div style="margin-top:10px; height:20px; background:yellow;"></div>
+    <div style="width:30px; height:30px; background:hotpink;"></div>
+  </div>
+</div>

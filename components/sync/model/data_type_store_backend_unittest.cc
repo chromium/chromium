@@ -9,6 +9,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/sync/protocol/data_type_store_schema_descriptor.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -420,6 +421,37 @@ TEST_F(DataTypeStoreBackendTest, RecoverAfterCorruption) {
       DataTypeStoreBackend::CreateUninitialized();
   std::optional<ModelError> error = backend->Init(temp_dir.GetPath(), {});
   ASSERT_FALSE(error) << error->ToString();
+}
+
+class InjectedErrorEnv : public leveldb::EnvWrapper {
+ public:
+  InjectedErrorEnv() : leveldb::EnvWrapper(leveldb::Env::Default()) {}
+
+  leveldb::Status LockFile(const std::string& fname,
+                           leveldb::FileLock** lock) override {
+    return leveldb_env::MakeIOError(fname, "Injected Error",
+                                    leveldb_env::kLockFile,
+                                    base::File::FILE_ERROR_ACCESS_DENIED);
+  }
+};
+
+TEST_F(DataTypeStoreBackendTest, ReportIOError) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  auto env = std::make_unique<InjectedErrorEnv>();
+  scoped_refptr<DataTypeStoreBackend> backend =
+      DataTypeStoreBackend::CreateWithCustomEnvForTest(std::move(env));
+
+  base::HistogramTester histogram_tester;
+  std::optional<ModelError> error = backend->Init(temp_dir.GetPath(), {});
+  ASSERT_TRUE(error);
+
+  // base::File::Error error codes are negative, but are recorded as positive
+  // values in the UMA histogram.
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DataTypeStoreBackendError.Init.IOError",
+      -base::File::FILE_ERROR_ACCESS_DENIED, 1);
 }
 
 }  // namespace

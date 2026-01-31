@@ -26,7 +26,7 @@ void NavigationHandler::RegisterMessages() {
                           base::Unretained(this)));
 }
 
-void NavigationHandler::HandleNavigateToUrl(const base::Value::List& list) {
+void NavigationHandler::HandleNavigateToUrl(const base::ListValue& list) {
   const std::string& url_string = list[0].GetString();
   const std::string& target_string = list[1].GetString();
   double button = list[2].GetDouble();

@@ -59,7 +59,7 @@ bool ChromeOSLoginAndLockMediaAccessHandler::CheckMediaAccessPermission(
     return false;
 
   // The following checks are for SAML logins.
-  const base::Value::List* allowed_urls_list;
+  const base::ListValue* allowed_urls_list;
   if (!settings->GetList(ash::kLoginVideoCaptureAllowedUrls,
                          &allowed_urls_list))
     return false;

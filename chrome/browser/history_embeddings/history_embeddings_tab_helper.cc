@@ -4,10 +4,10 @@
 
 #include "chrome/browser/history_embeddings/history_embeddings_tab_helper.h"
 
+#include <algorithm>
 #include <numeric>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -93,7 +93,7 @@ void OnGotInnerText(mojo::Remote<blink::mojom::InnerTextAgent> remote,
 
   bool title_inserted = false;
   if (history_embeddings::GetFeatureParameters().insert_title_passage &&
-      !title.empty() && !base::Contains(valid_passages, title)) {
+      !title.empty() && !std::ranges::contains(valid_passages, title)) {
     VLOG(2) << "Title passage inserted: " << title;
     valid_passages.insert(valid_passages.begin(), std::move(title));
     if (valid_passages.size() >

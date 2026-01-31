@@ -9,8 +9,7 @@
 #include "ash/shell.h"
 #include "ash/style/color_palette_controller.h"
 #include "ash/style/mojom/color_scheme.mojom-shared.h"
-#include "ash/webui/personalization_app/mojom/personalization_app.mojom-forward.h"
-#include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
+#include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "base/metrics/histogram_functions.h"
 #include "ui/gfx/color_palette.h"
 

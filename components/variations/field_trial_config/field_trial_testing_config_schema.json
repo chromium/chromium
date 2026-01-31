@@ -82,18 +82,6 @@
                 "type": "string"
               },
               {
-                "field": "override_ui_string",
-                "type": "array",
-                "contents": {
-                  "type_name": "OverrideUIString",
-                  "type": "struct",
-                  "fields": [
-                    {"field": "name_hash", "type": "int"},
-                    {"field": "value", "type": "string"}
-                  ]
-                }
-              },
-              {
                 "field": "hardware_classes",
                 "type": "array",
                 "contents": { "type": "string"}

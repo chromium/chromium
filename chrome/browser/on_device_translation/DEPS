@@ -1,9 +1,9 @@
 specific_include_rules = {
   "on_device_translation_browsertest.cc": [
-    "+components/services/on_device_translation/test/test_util.h",
+    "+components/on_device_translation/service/test/test_util.h",
   ],
   "file_operation_proxy_impl_unittest.cc": [
-    "+components/services/on_device_translation/test/test_util.h",
+    "+components/on_device_translation/service/test/test_util.h",
   ],
 }
 include_rules = [

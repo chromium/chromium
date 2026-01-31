@@ -141,13 +141,13 @@ void DeviceSwitcherResultDispatcher::RegisterFieldTrials() {
 void DeviceSwitcherResultDispatcher::SaveResultToPref(
     const ClassificationResult& result) {
   ScopedDictPrefUpdate update(prefs_, kDeviceSwitcherUserSegmentPrefKey);
-  base::Value::Dict& dictionary = update.Get();
+  base::DictValue& dictionary = update.Get();
   if (result.status != PredictionStatus::kSucceeded) {
     dictionary.Remove("result");
     return;
   }
-  base::Value::Dict segmentation_result;
-  base::Value::List labels;
+  base::DictValue segmentation_result;
+  base::ListValue labels;
   for (const auto& label : result.ordered_labels) {
     labels.Append(label);
   }
@@ -158,15 +158,14 @@ void DeviceSwitcherResultDispatcher::SaveResultToPref(
 std::optional<ClassificationResult>
 DeviceSwitcherResultDispatcher::ReadResultFromPref() const {
   ClassificationResult result(PredictionStatus::kNotReady);
-  const base::Value::Dict& dictionary =
+  const base::DictValue& dictionary =
       prefs_->GetDict(kDeviceSwitcherUserSegmentPrefKey);
   const base::Value* value = dictionary.Find("result");
   if (!value) {
     return std::nullopt;
   }
-  const base::Value::Dict& segmentation_result = value->GetDict();
-  const base::Value::List* labels_value =
-      segmentation_result.FindList("labels");
+  const base::DictValue& segmentation_result = value->GetDict();
+  const base::ListValue* labels_value = segmentation_result.FindList("labels");
   if (!labels_value) {
     return std::nullopt;
   }

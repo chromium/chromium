@@ -54,6 +54,7 @@
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/render_process_host_priority_client.h"
 #include "content/public/browser/render_widget_host.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -110,10 +111,6 @@ class FlingSchedulerBase;
 namespace ui {
 enum class DomCode : uint32_t;
 }
-
-namespace viz {
-struct CopyOutputBitmapWithMetadata;
-}  // namespace viz
 
 namespace content {
 class FrameTree;
@@ -196,6 +193,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   RenderWidgetHostImpl& operator=(const RenderWidgetHostImpl&) = delete;
 
   ~RenderWidgetHostImpl() override;
+
+  void SimulateUserInteraction(const blink::WebInputEvent& event) override;
 
   // Similar to RenderWidgetHost::FromID, but returning the Impl object.
   static RenderWidgetHostImpl* FromID(int32_t process_id, int32_t routing_id);
@@ -318,6 +317,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
       const gfx::Point& point,
       const ui::mojom::MenuSourceType source_type) override;
   void InsertVisualStateCallback(VisualStateCallback callback) override;
+  void SetHungRendererDelay(const base::TimeDelta& delay) override;
 
   // RenderProcessHostPriorityClient implementation.
   RenderProcessHostPriorityClient::Priority GetPriority() override;
@@ -374,6 +374,9 @@ class CONTENT_EXPORT RenderWidgetHostImpl
       bool& ended_delegated_ink_trail) override;
   void NotifyObserversOfInputEvent(const blink::WebInputEvent& event,
                                    bool dispatched_to_renderer) override;
+  void NotifyObserversOfInputEventWithSource(const blink::WebInputEvent& event,
+                                             input::InputEventSource source,
+                                             bool dispatched_to_renderer);
   void NotifyObserversOfInputEventAcks(
       blink::mojom::InputEventResultSource ack_source,
       blink::mojom::InputEventResultState ack_result,
@@ -635,11 +638,13 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   //   (on Windows);
   // * when it receives a "preedit_changed" signal of GtkIMContext (on Linux);
   // * when markedText of NSTextInput is called (on Mac).
-  void ImeSetComposition(const std::u16string& text,
-                         const std::vector<ui::ImeTextSpan>& ime_text_spans,
-                         const gfx::Range& replacement_range,
-                         int selection_start,
-                         int selection_end);
+  void ImeSetComposition(
+      const std::u16string& text,
+      const std::vector<ui::ImeTextSpan>& ime_text_spans,
+      const gfx::Range& replacement_range,
+      int selection_start,
+      int selection_end,
+      blink::mojom::ImeState ime_state = blink::mojom::ImeState::kNone);
 
   // Deletes the ongoing composition if any, inserts the specified text, and
   // moves the cursor.
@@ -1032,6 +1037,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
     return synthetic_gesture_controller_.get();
   }
 
+  base::TimeDelta GetHungRendererDelayForTesting();
+
  protected:
   // |routing_id| must not be IPC::mojom::kRoutingIdNone.
   // If this object outlives |delegate|, DetachDelegate() must be called when
@@ -1181,7 +1188,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void OnSnapshotFromSurfaceReceived(
       int snapshot_id,
       int retry_count,
-      const viz::CopyOutputBitmapWithMetadata& result);
+      const content::CopyFromSurfaceResult& result);
 
   void OnSnapshotReceived(int snapshot_id, gfx::Image image);
 
@@ -1507,6 +1514,9 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // This value indicates how long to wait for a new compositor frame from a
   // renderer process before clearing any previously displayed content.
   base::TimeDelta new_content_rendering_delay_;
+
+  // This value indicates how long to wait before we consider a renderer hung.
+  base::TimeDelta hung_renderer_delay_;
 
   // When true, the RenderWidget is regularly sending updates regarding
   // composition info. It should only be true when there is a focused editable

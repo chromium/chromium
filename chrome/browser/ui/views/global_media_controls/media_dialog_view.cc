@@ -48,7 +48,6 @@
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/web_contents.h"
-#include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/url_util.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
@@ -429,11 +428,7 @@ MediaDialogView::MediaDialogView(
                           base::Unretained(this)));
 
 #if !BUILDFLAG(IS_CHROMEOS)
-  // MediaDialogView can be built on CrOS but the updated UI should only be
-  // enabled for non-CrOS platforms.
-  if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsUpdatedUI)) {
-    media_color_theme_ = GetMediaColorTheme();
-  }
+  media_color_theme_ = GetMediaColorTheme();
 #endif
 }
 

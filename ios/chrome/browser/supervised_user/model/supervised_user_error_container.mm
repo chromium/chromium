@@ -10,11 +10,11 @@
 #import "base/memory/ptr_util.h"
 #import "base/notreached.h"
 #import "components/supervised_user/core/browser/supervised_user_service.h"
-#import "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/parent_access_commands.h"
 #import "ios/chrome/browser/supervised_user/model/ios_web_content_handler_impl.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_service_factory.h"
+#import "ios/chrome/browser/supervised_user/model/supervised_user_url_filtering_service_factory.h"
 #import "ios/components/security_interstitials/ios_blocking_page_tab_helper.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
@@ -52,6 +52,10 @@ SupervisedUserErrorContainer::SupervisedUserErrorContainer(
     web::WebState* web_state)
     : supervised_user_service_(*SupervisedUserServiceFactory::GetForProfile(
           ProfileIOS::FromBrowserState(web_state->GetBrowserState()))),
+      supervised_user_url_filtering_service_(
+          *supervised_user::SupervisedUserUrlFilteringServiceFactory::
+              GetForProfile(
+                  ProfileIOS::FromBrowserState(web_state->GetBrowserState()))),
       web_state_(web_state) {
   CHECK(SupervisedUserServiceFactory::GetForProfile(
       ProfileIOS::FromBrowserState(web_state->GetBrowserState())));
@@ -63,13 +67,10 @@ SupervisedUserErrorContainer::~SupervisedUserErrorContainer() {
 }
 
 SupervisedUserErrorContainer::SupervisedUserErrorInfo::SupervisedUserErrorInfo(
-    const GURL& request_url,
-    bool is_main_frame,
-    supervised_user::FilteringBehaviorReason filtering_behavior_reason) {
-  request_url_ = request_url;
-  is_main_frame_ = is_main_frame;
-  filtering_behavior_reason_ = filtering_behavior_reason;
-}
+    supervised_user::WebFilteringResult filtering_result,
+    bool is_main_frame)
+    : filtering_result_(filtering_result), is_main_frame_(is_main_frame) {}
+
 void SupervisedUserErrorContainer::SetSupervisedUserErrorInfo(
     std::unique_ptr<SupervisedUserErrorInfo> error_info) {
   supervised_user_error_info_ = std::move(error_info);
@@ -85,11 +86,10 @@ SupervisedUserErrorContainer::CreateSupervisedUserInterstitial(
   std::unique_ptr<supervised_user::SupervisedUserInterstitial> interstitial =
       supervised_user::SupervisedUserInterstitial::Create(
           std::move(web_content_handler), supervised_user_service_.get(),
-          error_info.request_url(),
+          error_info.filtering_result(),
           // User name needed only for the local web approval flow, not
           // applicable for iOS.
-          /*supervised_user_name=*/std::u16string(),
-          error_info.filtering_behavior_reason());
+          /*supervised_user_name=*/std::u16string());
   return interstitial;
 }
 
@@ -104,7 +104,7 @@ void SupervisedUserErrorContainer::HandleCommand(
     interstitial.RequestUrlAccessRemote(
         base::BindOnce(&SupervisedUserErrorContainer::OnRequestCreated,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                       interstitial.url()));
+                       interstitial.filtering_result().url));
   } else if (command ==
              security_interstitials::SecurityInterstitialCommand::CMD_PROCEED) {
     interstitial.RequestUrlAccessLocal(base::DoNothing());
@@ -116,11 +116,11 @@ void SupervisedUserErrorContainer::HandleCommand(
 
 bool SupervisedUserErrorContainer::IsRemoteApprovalPendingForUrl(
     const GURL& url) {
-  return base::Contains(requested_hosts_, url.GetHost());
+  return requested_hosts_.contains(url.GetHost());
 }
 
 void SupervisedUserErrorContainer::URLFilterCheckCallback(
-    supervised_user::SupervisedUserURLFilter::Result result) {
+    supervised_user::WebFilteringResult result) {
   auto* blocking_tab_helper =
       security_interstitials::IOSBlockingPageTabHelper::FromWebState(
           web_state_);
@@ -142,7 +142,8 @@ void SupervisedUserErrorContainer::URLFilterCheckCallback(
     SupervisedUserInterstitialBlockingPage* supervised_user_blocking_page =
         static_cast<SupervisedUserInterstitialBlockingPage*>(blocking_page);
     is_showing_supervised_user_interstitial_for_url =
-        supervised_user_blocking_page->interstitial().url() == result.url;
+        supervised_user_blocking_page->interstitial().filtering_result().url ==
+        result.url;
     is_main_frame = supervised_user_blocking_page->interstitial()
                         .web_content_handler()
                         ->IsMainFrame();
@@ -162,12 +163,12 @@ void SupervisedUserErrorContainer::URLFilterCheckCallback(
 }
 
 void SupervisedUserErrorContainer::OnURLFilterChanged() {
-  supervised_user_service_->GetURLFilter()->GetFilteringBehaviorWithAsyncChecks(
+  supervised_user_url_filtering_service_->GetFilteringBehavior(
       web_state_->GetLastCommittedURL(),
+      /*skip_manual_parent_filter=*/false,
       base::BindOnce(&SupervisedUserErrorContainer::URLFilterCheckCallback,
                      weak_ptr_factory_.GetWeakPtr()),
-      /*skip_manual_parent_filter=*/false);
-
+      supervised_user::WebFilterMetricsOptions());
   MaybeUpdatePendingApprovals();
 }
 
@@ -182,12 +183,10 @@ void SupervisedUserErrorContainer::OnRequestCreated(
 }
 
 void SupervisedUserErrorContainer::MaybeUpdatePendingApprovals() {
-  supervised_user::SupervisedUserURLFilter* url_filter =
-      supervised_user_service_->GetURLFilter();
-
   for (auto iter = requested_hosts_.begin(); iter != requested_hosts_.end();) {
-    supervised_user::SupervisedUserURLFilter::Result result =
-        url_filter->GetFilteringBehavior(GURL(*iter));
+    supervised_user::WebFilteringResult result =
+        supervised_user_url_filtering_service_->GetFilteringBehavior(
+            GURL(*iter));
 
     if (result.IsFromManualList() && result.IsAllowed()) {
       iter = requested_hosts_.erase(iter);
@@ -215,7 +214,7 @@ SupervisedUserInterstitialBlockingPage::SupervisedUserInterstitialBlockingPage(
     web::WebState* web_state)
     : security_interstitials::IOSSecurityInterstitialPage(
           web_state,
-          interstitial->url(),
+          interstitial->filtering_result().url,
           controller_client.get()),
       interstitial_(std::move(interstitial)),
       controller_client_(std::move(controller_client)),
@@ -239,7 +238,7 @@ bool SupervisedUserInterstitialBlockingPage::ShouldCreateNewNavigation() const {
 }
 
 void SupervisedUserInterstitialBlockingPage::PopulateInterstitialStrings(
-    base::Value::Dict& load_time_data) const {
+    base::DictValue& load_time_data) const {
   NOTREACHED();
 }
 

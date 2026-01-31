@@ -45,7 +45,7 @@ namespace {
 const char kDevOverrideFileName[] = "overrides.json";
 
 std::vector<GURL> GURLVectorFromStringList(
-    const base::Value::List& update_url_list) {
+    const base::ListValue& update_url_list) {
   std::vector<GURL> ret;
   ret.reserve(update_url_list.size());
   for (const base::Value& url : update_url_list) {
@@ -85,7 +85,7 @@ std::optional<base::FilePath> GetOverrideFilePath(UpdaterScope scope) {
 }
 
 ExternalConstantsOverrider::ExternalConstantsOverrider(
-    base::Value::Dict override_values,
+    base::DictValue override_values,
     scoped_refptr<ExternalConstants> next_provider)
     : ExternalConstants(std::move(next_provider)),
       override_values_(std::move(override_values)) {}
@@ -261,7 +261,7 @@ ExternalConstantsOverrider::GetEventLoggingPermissionProvider() const {
   return provider;
 }
 
-base::Value::Dict ExternalConstantsOverrider::DictPolicies() const {
+base::DictValue ExternalConstantsOverrider::DictPolicies() const {
   if (!override_values_.contains(kDevOverrideKeyDictPolicies)) {
     return next_provider_->DictPolicies();
   }

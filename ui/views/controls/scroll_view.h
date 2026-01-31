@@ -175,6 +175,15 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
                                    int thickness,
                                    bool fills_opaquely);
 
+  // Direction of linear opacity gradient applied when overflow content exists.
+  enum class GradientDirection { kNone = 0, kHorizontal = 1, kVertical = 2 };
+
+  // Sets which direction a opacity gradient should be shown when content
+  // overflows. Gradient can only be applied to one direction at a time, so in
+  // cases where both horizontal and vertical scroll overflows, only one can
+  // have a opacity gradient.
+  void SetOverflowGradientMask(GradientDirection direction);
+
   // Turns this scroll view into a bounded scroll view, with a fixed height.
   // By default, a ScrollView will stretch to fill its outer container.
   void ClipHeightTo(int min_height, int max_height);
@@ -334,6 +343,10 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
 
   View* GetContentsViewportForTest() const;
 
+  // Update gradient mask for a single direction - horizontal or vertical.
+  // Only one gradient at a time is allowed.
+  void UpdateGradientMask();
+
   // The current contents and its viewport. |contents_| is contained in
   // |contents_viewport_|.
   // Can dangle in practice during out-of-order view tree destruction.
@@ -420,6 +433,14 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
 
   // Post-layout callback.
   base::RepeatingCallback<void(ScrollView*)> post_layout_callback_;
+
+  GradientDirection gradient_direction_ = GradientDirection::kNone;
+
+  // Track if the leading gradient is shown
+  bool is_leading_gradient_visible_ = false;
+
+  // Track if the trailing gradient is shown
+  bool is_trailing_gradient_visible_ = false;
 };
 
 // When building with GCC this ensures that an instantiation of the

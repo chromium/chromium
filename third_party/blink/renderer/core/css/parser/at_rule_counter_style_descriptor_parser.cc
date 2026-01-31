@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/css/media_values.h"
 #include "third_party/blink/renderer/core/css/parser/at_rule_descriptor_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_local_context.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 
@@ -16,7 +17,8 @@ namespace blink {
 namespace {
 
 CSSValue* ConsumeCounterStyleSymbol(CSSParserTokenStream& stream,
-                                    const CSSParserContext& context) {
+                                    const CSSParserContext& context,
+                                    CSSParserLocalContext& local_context) {
   // <symbol> = <string> | <image> | <custom-ident>
   if (CSSValue* string = css_parsing_utils::ConsumeString(stream)) {
     return string;
@@ -25,19 +27,21 @@ CSSValue* ConsumeCounterStyleSymbol(CSSParserTokenStream& stream,
     // TODO(crbug.com/40747846): Image values may contain relative units and
     // tree counting functions. They need to handled somehow. <image> values are
     // marked at-risk in the spec.
-    if (CSSValue* image = css_parsing_utils::ConsumeImage(stream, context)) {
+    if (CSSValue* image =
+            css_parsing_utils::ConsumeImage(stream, context, local_context)) {
       return image;
     }
   }
-  if (CSSCustomIdentValue* custom_ident =
-          css_parsing_utils::ConsumeCustomIdent(stream, context)) {
+  if (CSSCustomIdentValue* custom_ident = css_parsing_utils::ConsumeCustomIdent(
+          stream, context, local_context)) {
     return custom_ident;
   }
   return nullptr;
 }
 
 CSSValue* ConsumeCounterStyleSystem(CSSParserTokenStream& stream,
-                                    const CSSParserContext& context) {
+                                    const CSSParserContext& context,
+                                    CSSParserLocalContext& local_context) {
   // Syntax: cyclic | numeric | alphabetic | symbolic | additive |
   // [ fixed <integer>? ] | [ extends <counter-style-name> ]
   if (CSSValue* ident = css_parsing_utils::ConsumeIdent<
@@ -49,7 +53,7 @@ CSSValue* ConsumeCounterStyleSystem(CSSParserTokenStream& stream,
   if (CSSValue* ident =
           css_parsing_utils::ConsumeIdent<CSSValueID::kFixed>(stream)) {
     CSSPrimitiveValue* first_symbol_value =
-        css_parsing_utils::ConsumeInteger(stream, context);
+        css_parsing_utils::ConsumeInteger(stream, context, local_context);
     if (!first_symbol_value) {
       first_symbol_value = CSSNumericLiteralValue::Create(
           1, CSSPrimitiveValue::UnitType::kInteger);
@@ -95,9 +99,10 @@ CSSValue* ConsumeCounterStyleSystem(CSSParserTokenStream& stream,
 }
 
 CSSValue* ConsumeCounterStyleNegative(CSSParserTokenStream& stream,
-                                      const CSSParserContext& context) {
+                                      const CSSParserContext& context,
+                                      CSSParserLocalContext& local_context) {
   // Syntax: <symbol> <symbol>?
-  CSSValue* prepend = ConsumeCounterStyleSymbol(stream, context);
+  CSSValue* prepend = ConsumeCounterStyleSymbol(stream, context, local_context);
   if (!prepend) {
     return nullptr;
   }
@@ -105,7 +110,7 @@ CSSValue* ConsumeCounterStyleNegative(CSSParserTokenStream& stream,
     return prepend;
   }
 
-  CSSValue* append = ConsumeCounterStyleSymbol(stream, context);
+  CSSValue* append = ConsumeCounterStyleSymbol(stream, context, local_context);
   if (!append || !stream.AtEnd()) {
     return nullptr;
   }
@@ -115,13 +120,14 @@ CSSValue* ConsumeCounterStyleNegative(CSSParserTokenStream& stream,
 }
 
 CSSValue* ConsumeCounterStyleRangeBound(CSSParserTokenStream& stream,
-                                        const CSSParserContext& context) {
+                                        const CSSParserContext& context,
+                                        CSSParserLocalContext& local_context) {
   if (CSSValue* infinite =
           css_parsing_utils::ConsumeIdent<CSSValueID::kInfinite>(stream)) {
     return infinite;
   }
   if (CSSPrimitiveValue* integer =
-          css_parsing_utils::ConsumeInteger(stream, context)) {
+          css_parsing_utils::ConsumeInteger(stream, context, local_context)) {
     if (!integer->IsElementDependent()) {
       return integer;
     }
@@ -130,7 +136,8 @@ CSSValue* ConsumeCounterStyleRangeBound(CSSParserTokenStream& stream,
 }
 
 CSSValue* ConsumeCounterStyleRange(CSSParserTokenStream& stream,
-                                   const CSSParserContext& context) {
+                                   const CSSParserContext& context,
+                                   CSSParserLocalContext& local_context) {
   // Syntax: [ [ <integer> | infinite ]{2} ]# | auto
   if (CSSValue* auto_value =
           css_parsing_utils::ConsumeIdent<CSSValueID::kAuto>(stream)) {
@@ -139,11 +146,13 @@ CSSValue* ConsumeCounterStyleRange(CSSParserTokenStream& stream,
 
   CSSValueList* list = CSSValueList::CreateCommaSeparated();
   do {
-    CSSValue* lower_bound = ConsumeCounterStyleRangeBound(stream, context);
+    CSSValue* lower_bound =
+        ConsumeCounterStyleRangeBound(stream, context, local_context);
     if (!lower_bound) {
       return nullptr;
     }
-    CSSValue* upper_bound = ConsumeCounterStyleRangeBound(stream, context);
+    CSSValue* upper_bound =
+        ConsumeCounterStyleRangeBound(stream, context, local_context);
     if (!upper_bound) {
       return nullptr;
     }
@@ -168,13 +177,15 @@ CSSValue* ConsumeCounterStyleRange(CSSParserTokenStream& stream,
 }
 
 CSSValue* ConsumeCounterStylePad(CSSParserTokenStream& stream,
-                                 const CSSParserContext& context) {
+                                 const CSSParserContext& context,
+                                 CSSParserLocalContext& local_context) {
   // Syntax: <integer [0,∞]> && <symbol>
   CSSPrimitiveValue* integer = nullptr;
   CSSValue* symbol = nullptr;
   while (!integer || !symbol) {
     if (!integer) {
-      integer = css_parsing_utils::ConsumeInteger(stream, context, 0);
+      integer =
+          css_parsing_utils::ConsumeInteger(stream, context, local_context, 0);
       if (integer) {
         if (integer->IsElementDependent()) {
           return nullptr;
@@ -183,7 +194,7 @@ CSSValue* ConsumeCounterStylePad(CSSParserTokenStream& stream,
       }
     }
     if (!symbol) {
-      symbol = ConsumeCounterStyleSymbol(stream, context);
+      symbol = ConsumeCounterStyleSymbol(stream, context, local_context);
       if (symbol) {
         continue;
       }
@@ -199,11 +210,13 @@ CSSValue* ConsumeCounterStylePad(CSSParserTokenStream& stream,
 }
 
 CSSValue* ConsumeCounterStyleSymbols(CSSParserTokenStream& stream,
-                                     const CSSParserContext& context) {
+                                     const CSSParserContext& context,
+                                     CSSParserLocalContext& local_context) {
   // Syntax: <symbol>+
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
   while (!stream.AtEnd()) {
-    CSSValue* symbol = ConsumeCounterStyleSymbol(stream, context);
+    CSSValue* symbol =
+        ConsumeCounterStyleSymbol(stream, context, local_context);
     if (!symbol) {
       return nullptr;
     }
@@ -215,8 +228,10 @@ CSSValue* ConsumeCounterStyleSymbols(CSSParserTokenStream& stream,
   return list;
 }
 
-CSSValue* ConsumeCounterStyleAdditiveSymbols(CSSParserTokenStream& stream,
-                                             const CSSParserContext& context) {
+CSSValue* ConsumeCounterStyleAdditiveSymbols(
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    CSSParserLocalContext& local_context) {
   // Syntax: [ <integer [0,∞]> && <symbol> ]#
   CSSValueList* list = CSSValueList::CreateCommaSeparated();
   CSSPrimitiveValue* last_integer = nullptr;
@@ -225,7 +240,8 @@ CSSValue* ConsumeCounterStyleAdditiveSymbols(CSSParserTokenStream& stream,
     CSSValue* symbol = nullptr;
     while (!integer || !symbol) {
       if (!integer) {
-        integer = css_parsing_utils::ConsumeInteger(stream, context, 0);
+        integer = css_parsing_utils::ConsumeInteger(stream, context,
+                                                    local_context, 0);
         if (integer) {
           if (integer->IsElementDependent()) {
             return nullptr;
@@ -234,7 +250,7 @@ CSSValue* ConsumeCounterStyleAdditiveSymbols(CSSParserTokenStream& stream,
         }
       }
       if (!symbol) {
-        symbol = ConsumeCounterStyleSymbol(stream, context);
+        symbol = ConsumeCounterStyleSymbol(stream, context, local_context);
         if (symbol) {
           continue;
         }
@@ -285,28 +301,33 @@ CSSValue* AtRuleDescriptorParser::ParseAtCounterStyleDescriptor(
     AtRuleDescriptorID id,
     CSSParserTokenStream& stream,
     const CSSParserContext& context) {
+  // TODO(crbug.com/475808971): Store correct property name in
+  // CSSParserLocalContext for random().
+  CSSParserLocalContext local_context =
+      CSSParserLocalContext::CreateWithoutPropertyForAtRules();
   CSSValue* parsed_value = nullptr;
   switch (id) {
     case AtRuleDescriptorID::System:
       stream.ConsumeWhitespace();
-      parsed_value = ConsumeCounterStyleSystem(stream, context);
+      parsed_value = ConsumeCounterStyleSystem(stream, context, local_context);
       break;
     case AtRuleDescriptorID::Negative:
       stream.ConsumeWhitespace();
-      parsed_value = ConsumeCounterStyleNegative(stream, context);
+      parsed_value =
+          ConsumeCounterStyleNegative(stream, context, local_context);
       break;
     case AtRuleDescriptorID::Prefix:
     case AtRuleDescriptorID::Suffix:
       stream.ConsumeWhitespace();
-      parsed_value = ConsumeCounterStyleSymbol(stream, context);
+      parsed_value = ConsumeCounterStyleSymbol(stream, context, local_context);
       break;
     case AtRuleDescriptorID::Range:
       stream.ConsumeWhitespace();
-      parsed_value = ConsumeCounterStyleRange(stream, context);
+      parsed_value = ConsumeCounterStyleRange(stream, context, local_context);
       break;
     case AtRuleDescriptorID::Pad:
       stream.ConsumeWhitespace();
-      parsed_value = ConsumeCounterStylePad(stream, context);
+      parsed_value = ConsumeCounterStylePad(stream, context, local_context);
       break;
     case AtRuleDescriptorID::Fallback:
       stream.ConsumeWhitespace();
@@ -315,11 +336,12 @@ CSSValue* AtRuleDescriptorParser::ParseAtCounterStyleDescriptor(
       break;
     case AtRuleDescriptorID::Symbols:
       stream.ConsumeWhitespace();
-      parsed_value = ConsumeCounterStyleSymbols(stream, context);
+      parsed_value = ConsumeCounterStyleSymbols(stream, context, local_context);
       break;
     case AtRuleDescriptorID::AdditiveSymbols:
       stream.ConsumeWhitespace();
-      parsed_value = ConsumeCounterStyleAdditiveSymbols(stream, context);
+      parsed_value =
+          ConsumeCounterStyleAdditiveSymbols(stream, context, local_context);
       break;
     case AtRuleDescriptorID::SpeakAs:
       stream.ConsumeWhitespace();

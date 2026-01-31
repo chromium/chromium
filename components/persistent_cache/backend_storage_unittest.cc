@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/persistent_cache/backend.h"
+#include "components/persistent_cache/client.h"
 #include "components/persistent_cache/mock/mock_backend.h"
 #include "components/persistent_cache/mock/mock_backend_storage_delegate.h"
 #include "components/persistent_cache/transaction_error.h"
@@ -32,6 +33,8 @@ using testing::Optional;
 using testing::Property;
 using testing::Return;
 
+}  // namespace
+
 class BackendStorageTest : public testing::Test {
  protected:
   void SetUp() override {
@@ -40,7 +43,8 @@ class BackendStorageTest : public testing::Test {
     auto delegate =
         std::make_unique<testing::StrictMock<MockBackendStorageDelegate>>();
     mock_delegate_ = delegate.get();
-    backend_storage_.emplace(std::move(delegate), GetStorageDir());
+    backend_storage_.emplace(Client::kTest, std::move(delegate),
+                             GetStorageDir());
   }
 
   base::FilePath GetStorageDir() const {
@@ -69,8 +73,9 @@ TEST_F(BackendStorageTest, ConstructionWorks) {
 TEST_F(BackendStorageTest, MakePendingBackendFails) {
   base::FilePath base_name(FILE_PATH_LITERAL("some_base_name"));
 
-  EXPECT_CALL(mock_delegate(),
-              MakePendingBackend(GetStorageDir(), base_name, true, true))
+  EXPECT_CALL(
+      mock_delegate(),
+      MakePendingBackend(Client::kTest, GetStorageDir(), base_name, true, true))
       .WillOnce(Return(std::nullopt));
   auto result = backend_storage().MakePendingBackend(
       base_name, /*single_connection=*/true, /*journal_mode_wal=*/true);
@@ -81,14 +86,16 @@ TEST_F(BackendStorageTest, MakePendingBackendSucceeds) {
   base::FilePath base_name(FILE_PATH_LITERAL("some_base_name"));
 
   PendingBackend pending_backend;
-  pending_backend.read_write = true;
-  EXPECT_CALL(mock_delegate(),
-              MakePendingBackend(GetStorageDir(), base_name, true, true))
+  pending_backend.pending_file_set.read_write = true;
+  EXPECT_CALL(
+      mock_delegate(),
+      MakePendingBackend(Client::kTest, GetStorageDir(), base_name, true, true))
       .WillOnce(Return(std::move(pending_backend)));
   auto result = backend_storage().MakePendingBackend(base_name,
                                                      /*single_connection=*/true,
                                                      /*journal_mode_wal=*/true);
-  EXPECT_THAT(result, Optional(Field(&PendingBackend::read_write, Eq(true))));
+  ASSERT_TRUE(result.has_value());
+  EXPECT_TRUE(result->pending_file_set.read_write);
 }
 
 TEST_F(BackendStorageTest, DeleteAllFiles) {
@@ -224,8 +231,8 @@ TEST_F(BackendStorageTest, BringDownTotalFootprintOfFilesAboveThreshold) {
     ASSERT_TRUE(base::TouchFile(path, last_access_time, last_modified_time));
 
     // The delegate should be asked to delete these two files.
-    EXPECT_CALL(mock_delegate(),
-                DeleteFiles(GetStorageDir(), base::FilePath::FromASCII(ascii)))
+    EXPECT_CALL(mock_delegate(), DeleteFiles(Client::kTest, GetStorageDir(),
+                                             base::FilePath::FromASCII(ascii)))
         .WillOnce(Return(data.size() * 2));
   }
 
@@ -239,7 +246,5 @@ TEST_F(BackendStorageTest, BringDownTotalFootprintOfFilesAboveThreshold) {
   ASSERT_EQ(result.number_of_bytes_deleted,
             static_cast<int64_t>(data.size()) * 4);
 }
-
-}  // namespace
 
 }  // namespace persistent_cache

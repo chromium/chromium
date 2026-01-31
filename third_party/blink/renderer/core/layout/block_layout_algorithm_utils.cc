@@ -157,8 +157,11 @@ LayoutUnit CalculateOutOfFlowStaticInlineLevelOffset(
     inline_offset += opportunity.rect.InlineSize() - line_offset;
 
   // Adjust for the text-indent.
-  inline_offset += MinimumValueForLength(container_style.TextIndent(),
-                                         child_available_inline_size);
+  const Length& text_indent = container_style.TextIndent();
+  if (!text_indent.IsZero() && !container_style.IsTextIndentHanging()) {
+    inline_offset +=
+        MinimumValueForLength(text_indent, child_available_inline_size);
+  }
 
   return inline_offset;
 }

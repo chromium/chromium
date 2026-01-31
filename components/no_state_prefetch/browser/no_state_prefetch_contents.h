@@ -179,7 +179,7 @@ class NoStatePrefetchContents
   // NoStatePrefetchManager's pending deletes list.
   void Destroy(FinalStatus reason);
 
-  std::optional<base::Value::Dict> GetAsDict() const;
+  std::optional<base::DictValue> GetAsDict() const;
 
   // This function is not currently called in production since prerendered
   // contents are never used (only prefetch is supported), but it may be used in

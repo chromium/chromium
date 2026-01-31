@@ -751,7 +751,7 @@ TEST_P(RecordHandlerImplTest, HandleUnknownResponseFromServer) {
   ASSERT_THAT(*test_env_->url_loader_factory()->pending_requests(), SizeIs(1u));
   EXPECT_THAT(test_env_->request_body(0), IsDataUploadRequestValid());
 
-  test_env_->SimulateCustomResponseForRequest(0, base::Value::Dict());
+  test_env_->SimulateCustomResponseForRequest(0, base::DictValue());
 
   const auto result = response_event.result();
   EXPECT_THAT(result.error(),

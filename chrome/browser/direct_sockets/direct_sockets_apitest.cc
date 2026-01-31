@@ -306,9 +306,9 @@ const std::string kMulticastFunctionsScript = R"(
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 
-base::Value::Dict GenerateManifest(
-    std::optional<base::Value::Dict> socket_permissions = {}) {
-  auto manifest = base::Value::Dict()
+base::DictValue GenerateManifest(
+    std::optional<base::DictValue> socket_permissions = {}) {
+  auto manifest = base::DictValue()
                       .Set(extensions::manifest_keys::kName,
                            "Direct Sockets in Chrome Apps")
                       .Set(extensions::manifest_keys::kManifestVersion, 2)
@@ -316,7 +316,7 @@ base::Value::Dict GenerateManifest(
 
   manifest.SetByDottedPath(
       extensions::manifest_keys::kPlatformAppBackgroundScripts,
-      base::Value::List().Append("background.js"));
+      base::ListValue().Append("background.js"));
 
   if (socket_permissions) {
     manifest.Set(extensions::manifest_keys::kSockets,
@@ -480,14 +480,14 @@ class ChromeAppApiTest : public extensions::ExtensionApiTest {
     });
   )";
   content::RenderFrameHost* InstallAndOpenChromeApp(
-      const base::Value::Dict& manifest) {
+      const base::DictValue& manifest) {
     dir_.WriteManifest(manifest);
     dir_.WriteFile(FILE_PATH_LITERAL("background.js"), "");
     return InstallAndOpenChromeApp();
   }
 
   content::RenderFrameHost* InstallAndOpenChromeAppWithWorkerScript(
-      const base::Value::Dict& manifest,
+      const base::DictValue& manifest,
       std::string_view worker_script) {
     dir_.WriteManifest(manifest);
     dir_.WriteFile(FILE_PATH_LITERAL("background.js"), "");
@@ -513,8 +513,8 @@ using ChromeDirectSocketsTcpApiTest =
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpApiTest, TcpReadWrite) {
   content::RenderFrameHost* app_frame = InstallAndOpenChromeApp(
       GenerateManifest(/*socket_permissions=*/
-                       base::Value::Dict().Set(
-                           "tcp", base::Value::Dict().Set("connect", "*"))));
+                       base::DictValue().Set(
+                           "tcp", base::DictValue().Set("connect", "*"))));
 
   ASSERT_THAT(
       EvalJs(app_frame, content::JsReplace(kTcpReadWriteScript, kHostname,
@@ -528,8 +528,8 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpApiTest, TcpReadWriteFromWorker) {
                                                 test_server()->port()));
 
   content::RenderFrameHost* app_frame = InstallAndOpenChromeAppWithWorkerScript(
-      GenerateManifest(/*socket_permissions=*/base::Value::Dict().Set(
-          "tcp", base::Value::Dict().Set("connect", "*"))),
+      GenerateManifest(/*socket_permissions=*/base::DictValue().Set(
+          "tcp", base::DictValue().Set("connect", "*"))),
       worker_script);
 
   ASSERT_THAT(EvalJs(app_frame, kWorkerConnect), IsOk());
@@ -556,7 +556,7 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpApiTest,
                        TcpFailsWithoutSocketsTcpConnectPermission) {
   // "sockets" key is present in the manifest, but "sockets.tcp.connect" is not.
   content::RenderFrameHost* app_frame = InstallAndOpenChromeApp(
-      GenerateManifest(/*socket_permissions=*/base::Value::Dict()));
+      GenerateManifest(/*socket_permissions=*/base::DictValue()));
 
   static constexpr std::string_view kScript = R"(
     (async () => {
@@ -575,8 +575,8 @@ using ChromeDirectSocketsUdpApiTest =
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpApiTest, UdpReadWrite) {
   content::RenderFrameHost* app_frame = InstallAndOpenChromeApp(
-      GenerateManifest(/*socket_permissions=*/base::Value::Dict().Set(
-          "udp", base::Value::Dict().Set("send", "*"))));
+      GenerateManifest(/*socket_permissions=*/base::DictValue().Set(
+          "udp", base::DictValue().Set("send", "*"))));
 
   ASSERT_THAT(
       EvalJs(app_frame, content::JsReplace(kUdpConnectedReadWriteScript,
@@ -591,8 +591,8 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpApiTest, UdpReadWriteFromWorker) {
                                             kHostname, test_server()->port()));
 
   content::RenderFrameHost* app_frame = InstallAndOpenChromeAppWithWorkerScript(
-      GenerateManifest(/*socket_permissions=*/base::Value::Dict().Set(
-          "udp", base::Value::Dict().Set("send", "*"))),
+      GenerateManifest(/*socket_permissions=*/base::DictValue().Set(
+          "udp", base::DictValue().Set("send", "*"))),
       worker_script);
 
   ASSERT_THAT(EvalJs(app_frame, kWorkerConnect), IsOk());
@@ -620,7 +620,7 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpApiTest,
   // "sockets" key is present in the manifest, but "sockets.udp.send" is
   // not.
   content::RenderFrameHost* app_frame = InstallAndOpenChromeApp(
-      GenerateManifest(/*socket_permissions=*/base::Value::Dict()));
+      GenerateManifest(/*socket_permissions=*/base::DictValue()));
 
   static constexpr std::string_view kScript = R"(
     (async () => {
@@ -639,7 +639,7 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpApiTest,
   // "sockets" key is present in the manifest as well as "sockets.udp.send",
   // but "sockets.udp.bind" is not.
   content::RenderFrameHost* app_frame = InstallAndOpenChromeApp(
-      GenerateManifest(/*socket_permissions=*/base::Value::Dict()));
+      GenerateManifest(/*socket_permissions=*/base::DictValue()));
 
   static constexpr std::string_view kScript = R"(
     (async () => {
@@ -653,8 +653,8 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpApiTest,
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpApiTest, UdpServerReadWrite) {
   content::RenderFrameHost* app_frame = InstallAndOpenChromeApp(
-      GenerateManifest(/*socket_permissions=*/base::Value::Dict().Set(
-          "udp", base::Value::Dict().Set("bind", "*").Set("send", "*"))));
+      GenerateManifest(/*socket_permissions=*/base::DictValue().Set(
+          "udp", base::DictValue().Set("bind", "*").Set("send", "*"))));
 
   ASSERT_THAT(
       EvalJs(app_frame, content::JsReplace(kUdpBoundReadWriteScript, kHostname,
@@ -665,8 +665,8 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpApiTest, UdpServerReadWrite) {
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpApiTest,
                        UdpServerNotAffectedByPNAContentSettingInChromeApps) {
   content::RenderFrameHost* app_frame = InstallAndOpenChromeApp(
-      GenerateManifest(/*socket_permissions=*/base::Value::Dict().Set(
-          "udp", base::Value::Dict().Set("bind", "*").Set("send", "*"))));
+      GenerateManifest(/*socket_permissions=*/base::DictValue().Set(
+          "udp", base::DictValue().Set("bind", "*").Set("send", "*"))));
 
   HostContentSettingsMapFactory::GetForProfile(profile())
       ->SetDefaultContentSetting(
@@ -706,7 +706,7 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpServerApiTest,
   // "sockets" key is present in the manifest, but "sockets.tcpServer.listen" is
   // not.
   content::RenderFrameHost* app_frame = InstallAndOpenChromeApp(
-      GenerateManifest(/*socket_permissions=*/base::Value::Dict()));
+      GenerateManifest(/*socket_permissions=*/base::DictValue()));
 
   static constexpr std::string_view kScript = R"(
     (async () => {
@@ -722,9 +722,9 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpServerApiTest,
                        TcpServerExchangePacketWithTcpSocket) {
   content::RenderFrameHost* app_frame =
       InstallAndOpenChromeApp(GenerateManifest(
-          /*socket_permissions=*/base::Value::Dict()
-              .Set("tcpServer", base::Value::Dict().Set("listen", "*"))
-              .Set("tcp", base::Value::Dict().Set("connect", "*"))));
+          /*socket_permissions=*/base::DictValue()
+              .Set("tcpServer", base::DictValue().Set("listen", "*"))
+              .Set("tcp", base::DictValue().Set("connect", "*"))));
 
   EXPECT_THAT(EvalJs(app_frame, kTcpServerExchangePacketWithTcpScript), IsOk());
 }

@@ -9,9 +9,3 @@ NSString* const kPasswordBreachViewAccessibilityIdentifier =
 
 NSString* const kPasswordProtectionViewAccessibilityIdentifier =
     @"kPasswordProtectionViewAccessibilityIdentifier";
-
-NSString* const kPasswordSuggestionViewAccessibilityIdentifier =
-    @"kPasswordSuggestionViewAccessibilityIdentifier";
-
-NSString* const kRecoveryPasswordSuggestionIconAccessibilityIdentifier =
-    @"kRecoveryPasswordSuggestionIconAccessibilityIdentifier";

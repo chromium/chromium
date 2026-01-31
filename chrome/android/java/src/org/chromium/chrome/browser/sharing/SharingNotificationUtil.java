@@ -96,7 +96,7 @@ public final class SharingNotificationUtil {
         }
         if (cancelIntent != null) {
             builder.addAction(
-                    R.drawable.ic_cancel_circle,
+                    R.drawable.ic_cancel_24dp,
                     resources.getString(R.string.cancel),
                     cancelIntent,
                     NotificationUmaTracker.ActionType.SHARING_CANCEL);
@@ -183,7 +183,7 @@ public final class SharingNotificationUtil {
         if (tryAgainIntent != null) {
             builder.setContentIntent(tryAgainIntent)
                     .addAction(
-                            R.drawable.ic_cancel_circle,
+                            R.drawable.ic_cancel_24dp,
                             resources.getString(R.string.try_again),
                             tryAgainIntent,
                             NotificationUmaTracker.ActionType.SHARING_TRY_AGAIN);

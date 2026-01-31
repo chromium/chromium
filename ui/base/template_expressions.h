@@ -25,7 +25,7 @@ typedef std::map<std::string, std::string> TemplateReplacements;
 // TODO(dschuyler): remove this function by using TemplateReplacements directly.
 COMPONENT_EXPORT(UI_BASE)
 void TemplateReplacementsFromDictionaryValue(
-    const base::Value::Dict& dictionary,
+    const base::DictValue& dictionary,
     TemplateReplacements* replacements);
 
 // Replace $i18n*{foo} in the format string with the value for the foo key in

@@ -9,9 +9,9 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace metrics {
@@ -66,7 +66,9 @@ void WindowedIncognitoMonitor::RegisterInstance() {
   // access to it.
   if (running_sessions_++)
     return;
-  BrowserList::AddObserver(this);
+
+  browser_collection_observation_.Observe(
+      GlobalBrowserCollection::GetInstance());
 
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
       [this](BrowserWindowInterface* browser) {
@@ -82,8 +84,9 @@ void WindowedIncognitoMonitor::UnregisterInstance() {
   // and UnregisterInstance. Therefore, we don't need to explicitly synchronize
   // access to it.
   DCHECK_GT(running_sessions_, 0);
-  if (!--running_sessions_)
-    BrowserList::RemoveObserver(this);
+  if (!--running_sessions_) {
+    browser_collection_observation_.Reset();
+  }
 }
 
 std::unique_ptr<WindowedIncognitoObserver>
@@ -106,22 +109,26 @@ bool WindowedIncognitoMonitor::IncognitoLaunched(
   return prev_num_incognito_opened < num_incognito_window_opened_;
 }
 
-void WindowedIncognitoMonitor::OnBrowserAdded(Browser* browser) {
+void WindowedIncognitoMonitor::OnBrowserCreated(
+    BrowserWindowInterface* browser) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!browser->profile()->IsOffTheRecord())
+  if (!browser->GetProfile()->IsOffTheRecord()) {
     return;
+  }
 
   base::AutoLock lock(lock_);
   num_active_incognito_windows_++;
   num_incognito_window_opened_++;
 }
 
-void WindowedIncognitoMonitor::OnBrowserRemoved(Browser* browser) {
+void WindowedIncognitoMonitor::OnBrowserClosed(
+    BrowserWindowInterface* browser) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!browser->profile()->IsOffTheRecord())
+  if (!browser->GetProfile()->IsOffTheRecord()) {
     return;
+  }
 
   base::AutoLock lock(lock_);
   DCHECK(num_active_incognito_windows_ > 0);

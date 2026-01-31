@@ -31,7 +31,7 @@
 #include "components/reporting/util/status_macros.h"
 #include "components/reporting/util/statusor.h"
 #include "components/reporting/util/test_support_callbacks.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -85,8 +85,8 @@ class TestUploadClient : public UploaderInterface {
     {
       std::string serialized_record;
       wrapped_record.record().SerializeToString(&serialized_record);
-      const auto record_digest = crypto::SHA256HashString(serialized_record);
-      CHECK_EQ(record_digest.size(), crypto::kSHA256Length);
+      const auto record_digest = std::string(
+          base::as_string_view(crypto::hash::Sha256(serialized_record)));
       ASSERT_THAT(record_digest, Eq(wrapped_record.record_digest()));
       // Store record digest for the next record in sequence to verify.
       last_record_digest_map_->emplace(

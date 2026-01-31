@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
 #include "base/task/single_thread_task_runner.h"
@@ -29,11 +30,6 @@
 #include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
-#include "chrome/browser/ui/browser_navigator.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/tabs/tab_model.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/journal_details_builder.h"
@@ -48,12 +44,20 @@
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "ui/base/window_open_disposition.h"
 
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+#include "chrome/browser/ui/browser_navigator.h"         // nogncheck
+#include "chrome/browser/ui/browser_navigator_params.h"  // nogncheck
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#endif
+
 namespace {
 void RunLater(base::OnceClosure task) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
                                                               std::move(task));
 }
 
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
 void OnCreateActorTabComplete(
     actor::ActorTask& task,
     actor::ActorKeyedService::CreateActorTabCallback callback,
@@ -82,10 +86,16 @@ void OnCreateActorTabComplete(
     std::move(callback).Run(tab);
   }
 }
+#endif
 
 }  // namespace
 
 namespace actor {
+
+namespace {
+BASE_FEATURE(kGlicActorFixPageObservationCrash,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+}
 
 std::optional<page_content_annotations::PaintPreviewOptions>
 CreateOptionalPaintPreviewOptions() {
@@ -137,7 +147,7 @@ void ActorKeyedService::SetActorUiStateManagerForTesting(
 const ActorTask* ActorKeyedService::GetActingActorTaskForWebContents(
     content::WebContents* web_contents) {
   if (auto* tab_interface =
-          tabs::TabModel::MaybeGetFromContents(web_contents)) {
+          tabs::TabInterface::MaybeGetFromContents(web_contents)) {
     // There should only be one active task per tab.
     for (const auto& [task_id, actor_task] : GetActiveTasks()) {
       if (actor_task->IsActingOnTab(tab_interface->GetHandle())) {
@@ -166,8 +176,11 @@ void ActorKeyedService::CreateActorTab(TaskId task_id,
   if (!task) {
     GetJournal().Log(GURL(), task_id, "CreateActorTab",
                      JournalDetailsBuilder().AddError("Invalid Task").Build());
+    std::move(callback).Run(nullptr);
+    return;
   }
 
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
   BrowserWindowInterface* window_for_new_tab = nullptr;
   tabs::TabInterface* initiator_tab = initiator_tab_handle.Get();
 
@@ -265,6 +278,7 @@ void ActorKeyedService::CreateActorTab(TaskId task_id,
   // navigating to about:blank it probably doesn't matter in practice.
   OnCreateActorTabComplete(*task, std::move(callback), journal_,
                            tabs::TabInterface::GetFromContents(contents));
+#endif
 }
 
 base::WeakPtr<ActorKeyedService> ActorKeyedService::GetWeakPtr() {
@@ -273,12 +287,13 @@ base::WeakPtr<ActorKeyedService> ActorKeyedService::GetWeakPtr() {
 
 TaskId ActorKeyedService::AddActiveTask(std::unique_ptr<ActorTask> task) {
   TRACE_EVENT0("actor", "ActorKeyedService::AddActiveTask");
-  TaskId task_id = next_task_id_.GenerateNextId();
+  const TaskId task_id = next_task_id_.GenerateNextId();
   task->SetId(base::PassKey<ActorKeyedService>(), task_id);
   task->GetExecutionEngine()->SetOwner(task.get());
-  // Notify of task creation now that the task id is set.
-  NotifyTaskStateChanged(task->id(), task->GetState());
+
+  const ActorTask::State task_state = task->GetState();
   active_tasks_[task_id] = std::move(task);
+  NotifyTaskStateChanged(task_id, task_state);
   return task_id;
 }
 
@@ -307,7 +322,7 @@ TaskId ActorKeyedService::CreateTaskWithOptions(
     webui::mojom::TaskOptionsPtr options,
     base::WeakPtr<ActorTaskDelegate> delegate) {
   TRACE_EVENT0("actor", "ActorKeyedService::CreateTask");
-  if (!policy_checker_->can_act_on_web()) {
+  if (!policy_checker_->CanActOnWeb()) {
     RecordActorTaskCreated(false);
     GetJournal().Log(GURL(), TaskId(), "ActorKeyedService::CreateTask",
                      JournalDetailsBuilder()
@@ -387,6 +402,14 @@ void ActorKeyedService::RequestTabObservation(
              const GURL& last_committed_url,
              page_content_annotations::FetchPageContextResultCallbackArg
                  result) {
+            if (base::FeatureList::IsEnabled(
+                    kGlicActorFixPageObservationCrash)) {
+              if (!result.has_value()) {
+                std::move(callback).Run(base::unexpected(result.error()));
+                return;
+              }
+            }
+
             if (result.has_value() &&
                 result.value()->annotated_page_content_result.has_value() &&
                 result.value()->screenshot_result.has_value()) {

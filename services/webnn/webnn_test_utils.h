@@ -593,16 +593,6 @@ mojom::GraphInfoPtr CloneGraphInfoForTesting(
 // A default set of WebNNContext properties for testing purposes.
 ContextProperties GetContextPropertiesForTesting();
 
-bool UseGPUInTests();
-
-// GTEST_SKIP() will let method return directly.
-#define SKIP_TEST_IF(condition)   \
-  do {                            \
-    if (condition) {              \
-      GTEST_SKIP() << #condition; \
-    }                             \
-  } while (0)
-
 }  // namespace webnn
 
 #endif  // SERVICES_WEBNN_WEBNN_TEST_UTILS_H_

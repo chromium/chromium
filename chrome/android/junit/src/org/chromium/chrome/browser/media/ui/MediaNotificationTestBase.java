@@ -25,7 +25,6 @@ import org.junit.Before;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.shadows.ShadowLog;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ContextUtils;
@@ -99,7 +98,6 @@ public class MediaNotificationTestBase {
     @Before
     @SuppressWarnings("DirectInvocationOnMock") // For mMockUmaTracker
     public void setUp() {
-        ShadowLog.stream = System.out;
 
         mMockContext = spy(RuntimeEnvironment.application);
         ContextUtils.initApplicationContextForTests(mMockContext);

@@ -38,7 +38,7 @@ namespace {
 using InteractionWithControls = GetDisplayMediaUserInteractionWithControls;
 constexpr auto kCapturedSurfaceControlIndicatorButtonInsets =
     gfx::Insets::VH(4, 8);
-
+constexpr auto kRefreshButtonInsets = gfx::Insets::VH(6, 12);
 url::Origin GetOriginFromId(content::GlobalRenderFrameHostId rfh_id) {
   content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(rfh_id);
   if (!rfh) {
@@ -88,11 +88,11 @@ TabSharingInfoBar::TabSharingInfoBar(
                 use_text_color_for_icon));
 
         if (base::FeatureList::IsEnabled(features::kInfobarRefresh)) {
-          button->SetCustomPadding(
-              gfx::Insets::VH(ChromeLayoutProvider::Get()->GetDistanceMetric(
-                                  DISTANCE_INFOBAR_BUTTON_VERTICAL_PADDING),
-                              ChromeLayoutProvider::Get()->GetDistanceMetric(
-                                  DISTANCE_INFOBAR_BUTTON_HORIZONTAL_PADDING)));
+          button->SetCustomPadding(kRefreshButtonInsets);
+
+          button->SetProperty(views::kCrossAxisAlignmentKey,
+                              views::LayoutAlignment::kCenter);
+
         } else {
           button->SetProperty(
               views::kMarginsKey,
@@ -114,12 +114,23 @@ TabSharingInfoBar::TabSharingInfoBar(
   if (buttons & TabSharingInfoBarDelegate::kStop) {
     stop_button_ = create_button(TabSharingInfoBarDelegate::kStop,
                                  &TabSharingInfoBar::StopButtonPressed);
+    if (base::FeatureList::IsEnabled(features::kInfobarRefresh)) {
+      stop_button_->SetProperty(views::kMarginsKey,
+                                gfx::Insets::TLBR(0, 12, 0, 0));
+    }
   }
 
   if (buttons & TabSharingInfoBarDelegate::kShareThisTabInstead) {
     share_this_tab_instead_button_ =
         create_button(TabSharingInfoBarDelegate::kShareThisTabInstead,
                       &TabSharingInfoBar::ShareThisTabInsteadButtonPressed);
+
+    if (base::FeatureList::IsEnabled(features::kInfobarRefresh)) {
+      bool has_stop_button = (buttons & TabSharingInfoBarDelegate::kStop);
+      int left_margin = has_stop_button ? 8 : 0;
+      share_this_tab_instead_button_->SetProperty(
+          views::kMarginsKey, gfx::Insets::TLBR(0, left_margin, 0, 0));
+    }
   }
 
   if (buttons & TabSharingInfoBarDelegate::kQuickNav &&
@@ -136,28 +147,79 @@ TabSharingInfoBar::TabSharingInfoBar(
         CONTEXT_OMNIBOX_PRIMARY);
     csc_indicator_button_->SetStyle(ui::ButtonStyle::kDefault);
     csc_indicator_button_->SetCornerRadius(
-        GetLayoutConstant(TOOLBAR_CORNER_RADIUS));
+        GetLayoutConstant(LayoutConstant::kToolbarCornerRadius));
     csc_indicator_button_->SetCustomPadding(
         kCapturedSurfaceControlIndicatorButtonInsets);
     csc_indicator_button_->SetTextColor(
         views::Button::ButtonState::STATE_NORMAL, ui::kColorSysOnSurface);
+
+    if (base::FeatureList::IsEnabled(features::kInfobarRefresh)) {
+      csc_indicator_button_->SetProperty(views::kMarginsKey,
+                                         gfx::Insets::TLBR(0, 12, 0, 0));
+      csc_indicator_button_->SetProperty(views::kCrossAxisAlignmentKey,
+                                         views::LayoutAlignment::kCenter);
+    }
   }
 
   // TODO(crbug.com/378107817): It seems like link_ isn't always needed, but
   // it's added regardless. See about only adding when necessary.
   link_ = AddContentChildView(CreateLink(delegate_ptr->GetLinkText()));
+
+  if (base::FeatureList::IsEnabled(features::kInfobarRefresh)) {
+    // With FlexLayout, the order of buttons is determined by the order they
+    // are added as children. To ensure the button order matches the platform
+    // style , we may need to re-order the buttons in the content view.
+    std::vector<views::View*> order_of_buttons;
+    if (stop_button_) {
+      order_of_buttons.push_back(stop_button_);
+    }
+    if (share_this_tab_instead_button_) {
+      order_of_buttons.push_back(share_this_tab_instead_button_);
+    }
+    if (quick_nav_button_) {
+      order_of_buttons.push_back(quick_nav_button_);
+    }
+    if (csc_indicator_button_) {
+      order_of_buttons.push_back(csc_indicator_button_);
+    }
+
+    if (order_of_buttons.empty()) {
+    } else if constexpr (!views::PlatformStyle::kIsOkButtonLeading) {
+      std::ranges::reverse(order_of_buttons);
+    }
+
+    if (!order_of_buttons.empty()) {
+      views::View* first_button_in_layout = nullptr;
+      if (stop_button_) {
+        first_button_in_layout = stop_button_;
+      } else if (share_this_tab_instead_button_) {
+        first_button_in_layout = share_this_tab_instead_button_;
+      } else if (quick_nav_button_) {
+        first_button_in_layout = quick_nav_button_;
+      } else if (csc_indicator_button_) {
+        first_button_in_layout = csc_indicator_button_;
+      }
+
+      if (first_button_in_layout) {
+        views::View* button_parent = first_button_in_layout->parent();
+        const auto& children = button_parent->children();
+        auto it =
+            std::find(children.begin(), children.end(), first_button_in_layout);
+        if (it != children.end()) {
+          int first_button_index = std::distance(children.begin(), it);
+          for (size_t i = 0; i < order_of_buttons.size(); ++i) {
+            button_parent->ReorderChildView(order_of_buttons[i],
+                                            first_button_index + i);
+          }
+        }
+      }
+    }
+  }
 }
 
 TabSharingInfoBar::~TabSharingInfoBar() = default;
 
 void TabSharingInfoBar::Layout(PassKey) {
-  // If Refresh is enabled, InfoBarView uses a FlexLayout that handles centering
-  // automatically.
-  if (base::FeatureList::IsEnabled(features::kInfobarRefresh)) {
-    LayoutSuperclass<InfoBarView>(this);
-    return;
-  }
-
   LayoutSuperclass<InfoBarView>(this);
 
   if (stop_button_) {
@@ -174,6 +236,12 @@ void TabSharingInfoBar::Layout(PassKey) {
 
   if (csc_indicator_button_) {
     csc_indicator_button_->SizeToPreferredSize();
+  }
+
+  // If Refresh is enabled, InfoBarView uses a FlexLayout that handles centering
+  // automatically.
+  if (base::FeatureList::IsEnabled(features::kInfobarRefresh)) {
+    return;
   }
 
   int x = GetStartX();

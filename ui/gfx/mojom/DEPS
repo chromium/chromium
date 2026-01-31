@@ -10,4 +10,7 @@ specific_include_rules = {
     "+services/viz/public/cpp/compositing/shared_image_format_mojom_traits.h",
     "+skia/public/mojom/skcolorspace_primaries_mojom_traits.h",
   ],
+  "hdr_metadata_mojom_traits.*" : [
+    "+skia/public/mojom/hdr_metadata_mojom_traits.h",
+  ],
 }

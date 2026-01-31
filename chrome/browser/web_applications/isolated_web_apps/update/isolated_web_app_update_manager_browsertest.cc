@@ -44,7 +44,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
-#include "chrome/browser/web_applications/isolated_web_apps/test/fake_chrome_iwa_runtime_data_provider.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/fake_iwa_runtime_data_provider_mixin.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/integrity_block_data_matcher.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test_update_server.h"
@@ -63,6 +63,7 @@
 #include "components/webapps/isolated_web_apps/types/iwa_version.h"
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
 #include "components/webapps/isolated_web_apps/types/update_channel.h"
+#include "components/webapps/services/web_app_origin_association/test/test_web_app_origin_association_fetcher.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/service_worker_context_observer.h"
@@ -72,6 +73,7 @@
 #include "content/public/test/test_launcher.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace web_app {
@@ -152,6 +154,14 @@ void CheckBundleExists(Profile* profile, const base::FilePath& directory) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+std::string OriginAssociationFileFromAppIdentity(std::string iwa_bundle_id) {
+  constexpr char kOriginAssociationTemplate[] = R"(
+    { "isolated-app://$1/": { "scope": "/" } }
+    )";
+  return base::ReplaceStringPlaceholders(kOriginAssociationTemplate,
+                                         {iwa_bundle_id}, nullptr);
+}
+
 class ServiceWorkerVersionStartedRunningWaiter
     : public content::ServiceWorkerContextObserver {
  public:
@@ -222,6 +232,20 @@ class IsolatedWebAppUpdateManagerBrowserTest
     return app;
   }
 
+  void SetFakeOriginAssociationFetcher(
+      url::Origin request_origin,
+      const web_package::SignedWebBundleId& bundle_id) {
+    auto origin_association_fetcher =
+        std::make_unique<webapps::TestWebAppOriginAssociationFetcher>();
+
+    origin_association_fetcher->SetData(
+        {{std::move(request_origin),
+          OriginAssociationFileFromAppIdentity(bundle_id.id())}});
+
+    provider().origin_association_manager().SetFetcherForTest(
+        std::move(origin_association_fetcher));
+  }
+
   url::Origin GetAppOrigin() const {
     return IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(GetWebBundleId())
         .origin();
@@ -243,13 +267,9 @@ class IsolatedWebAppUpdateManagerBrowserTest
  protected:
   void SetUpOnMainThread() override {
     IsolatedWebAppBrowserTestHarness::SetUpOnMainThread();
-    data_provider_.Update(
+    data_provider_->Update(
         [&](auto& update) { update.AddToManagedAllowlist(kWebBundleId1); });
     AddInitialBundle();
-  }
-
-  ChromeIwaRuntimeDataProvider* GetRuntimeDataProvider() override {
-    return &data_provider_;
   }
 
   void AddInitialBundle() {
@@ -263,7 +283,9 @@ class IsolatedWebAppUpdateManagerBrowserTest
   }
 
   IsolatedWebAppTestUpdateServer iwa_test_update_server_;
-  FakeIwaRuntimeDataProvider data_provider_;
+  FakeIwaRuntimeDataProviderMixin data_provider_{&mixin_host_};
+  base::test::ScopedFeatureList scoped_feature_list_{
+      blink::features::kWebAppEnableScopeExtensionsForIsolatedWebApps};
 };
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest, Succeeds) {
@@ -271,7 +293,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest, Succeeds) {
 
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
-      base::Value::List().Append(
+      base::ListValue().Append(
           iwa_test_update_server_.CreateForceInstallPolicyEntry(
               GetWebBundleId())));
 
@@ -284,7 +306,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest, Succeeds) {
       &provider().install_manager());
   manifest_updated_observer.BeginListening({GetAppId()});
 
-  EXPECT_THAT(provider().iwa_update_manager().DiscoverUpdatesNow(), Eq(1ul));
+  EXPECT_THAT(provider().isolated_web_app_update_manager().DiscoverUpdatesNow(),
+              Eq(1ul));
 
   manifest_updated_observer.Wait();
 
@@ -307,6 +330,113 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest, Succeeds) {
                                     /*expected_count=*/0);
 }
 
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
+                       SucceedsWithScopeExtensionsUpdated) {
+  // Install IWA without scope extensions.
+  {
+    IsolatedWebAppBuilder(
+        ManifestBuilder().SetName("app-3.0.4").SetVersion("3.0.4"))
+        .AddHtml("/", kIndexHtml304WithServiceWorker)
+        .AddJs("/register-sw.js", kRegisterServiceWorkerScript)
+        .AddJs("/sw.js", kServiceWorkerScript)
+        .BuildBundle(GetWebBundleId(), {kKeyPair1})
+        ->InstallChecked(browser()->profile());
+
+    const WebApp* web_app = GetIsolatedWebApp(GetAppId());
+    ASSERT_EQ(0UL, web_app->scope_extensions().size());
+    ASSERT_EQ(0UL, web_app->validated_scope_extensions().size());
+  }
+
+  profile()->GetPrefs()->SetList(
+      prefs::kIsolatedWebAppInstallForceList,
+      base::ListValue().Append(
+          iwa_test_update_server_.CreateForceInstallPolicyEntry(
+              GetWebBundleId())));
+
+  web_app::WebAppTestInstallObserver(browser()->profile())
+      .BeginListeningAndWait({GetAppId()});
+
+  // Update bundle with scope extension origin https://fakeorigin.com.
+  {
+    // This is needed to validate scope extensions.
+    url::Origin scope_extension_origin1 =
+        url::Origin::Create(GURL("https://fakeorigin.com"));
+    SetFakeOriginAssociationFetcher(scope_extension_origin1, GetWebBundleId());
+
+    iwa_test_update_server_.AddBundle(
+        IsolatedWebAppBuilder(
+            ManifestBuilder()
+                .AddScopeExtension(scope_extension_origin1,
+                                   /*has_origin_wildcard=*/false)
+                .SetName("app-4.0.0")
+                .SetVersion("4.0.0"))
+            .AddHtml("/", kIndexHtml706)
+            .BuildBundle(GetWebBundleId(), {kKeyPair1}));
+
+    WebAppTestManifestUpdatedObserver manifest_updated_observer(
+        &provider().install_manager());
+    manifest_updated_observer.BeginListening({GetAppId()});
+
+    EXPECT_THAT(
+        provider().isolated_web_app_update_manager().DiscoverUpdatesNow(),
+        Eq(1ul));
+
+    manifest_updated_observer.Wait();
+
+    const WebApp* web_app = GetIsolatedWebApp(GetAppId());
+
+    ASSERT_EQ("app-4.0.0", web_app->untranslated_name());
+    ASSERT_EQ(1UL, web_app->scope_extensions().size());
+    ASSERT_EQ(1UL, web_app->validated_scope_extensions().size());
+
+    ASSERT_EQ(scope_extension_origin1,
+              web_app->scope_extensions().begin()->origin);
+    ASSERT_EQ(scope_extension_origin1,
+              web_app->validated_scope_extensions().begin()->origin);
+  }
+
+  // Update bundle with scope extension origin https://anotherfakeorigin.com to
+  // ensure that existing scope extensions are overwritten on update.
+  {
+    // This is needed to validate scope extensions.
+    url::Origin scope_extension_origin =
+        url::Origin::Create(GURL("https://anotherfakeorigin.com"));
+    SetFakeOriginAssociationFetcher(scope_extension_origin, GetWebBundleId());
+
+    iwa_test_update_server_.AddBundle(
+        IsolatedWebAppBuilder(
+            ManifestBuilder()
+                .AddScopeExtension(scope_extension_origin,
+                                   /*has_origin_wildcard=*/false)
+                .SetName("app-5.0.0")
+                .SetVersion("5.0.0"))
+            .AddHtml("/", kIndexHtml706)
+            .BuildBundle(GetWebBundleId(), {kKeyPair1}));
+
+    WebAppTestManifestUpdatedObserver manifest_updated_observer(
+        &provider().install_manager());
+    manifest_updated_observer.BeginListening({GetAppId()});
+
+    EXPECT_THAT(
+        provider().isolated_web_app_update_manager().DiscoverUpdatesNow(),
+        Eq(1ul));
+
+    manifest_updated_observer.Wait();
+
+    const WebApp* web_app = GetIsolatedWebApp(GetAppId());
+
+    ASSERT_EQ("app-5.0.0", web_app->untranslated_name());
+    ASSERT_EQ(1UL, web_app->scope_extensions().size());
+    ASSERT_EQ(1UL, web_app->validated_scope_extensions().size());
+
+    // Ensure that old origin got replaced.
+    ASSERT_EQ(scope_extension_origin,
+              web_app->scope_extensions().begin()->origin);
+    ASSERT_EQ(scope_extension_origin,
+              web_app->validated_scope_extensions().begin()->origin);
+  }
+}
+
 // The case of allowlisted app being installed and updated is covered by
 // IsolatedWebAppUpdateManagerBrowserTest::Succeeds
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
@@ -316,7 +446,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
   // Initially app is allowlisted in the class setup to be installable
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
-      base::Value::List().Append(
+      base::ListValue().Append(
           iwa_test_update_server_.CreateForceInstallPolicyEntry(
               GetWebBundleId())));
 
@@ -328,13 +458,14 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
   IwaVersion installed_version = app_isolation_data.version();
 
   // Clear the allowlist, so the app is not allowlisted
-  data_provider_.Update([&](auto& update) { update.SetManagedAllowlist({}); });
+  data_provider_->Update([&](auto& update) { update.SetManagedAllowlist({}); });
 
   AddNewBundleToUpdateServer("app-7.0.6", "7.0.6");
 
   ASSERT_FALSE(web_app::ChromeIwaRuntimeDataProvider::GetInstance()
                    .IsManagedUpdatePermitted(GetWebBundleId().id()));
-  EXPECT_THAT(provider().iwa_update_manager().DiscoverUpdatesNow(), Eq(0ul));
+  EXPECT_THAT(provider().isolated_web_app_update_manager().DiscoverUpdatesNow(),
+              Eq(0ul));
 
   histogram_tester.ExpectBucketCount("WebApp.Isolated.UpdateSuccess",
                                      /*sample=*/true, /*expected_count=*/0);
@@ -354,7 +485,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
   {
     profile()->GetPrefs()->SetList(
         prefs::kIsolatedWebAppInstallForceList,
-        base::Value::List().Append(
+        base::ListValue().Append(
             iwa_test_update_server_.CreateForceInstallPolicyEntry(
                 /*web_bundle_id=*/GetWebBundleId(),
                 /*update_channel=*/std::nullopt,
@@ -373,7 +504,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
       &provider().install_manager());
   manifest_updated_observer.BeginListening({GetAppId()});
 
-  EXPECT_THAT(provider().iwa_update_manager().DiscoverUpdatesNow(), Eq(0ul));
+  EXPECT_THAT(provider().isolated_web_app_update_manager().DiscoverUpdatesNow(),
+              Eq(0ul));
 
   EXPECT_THAT(GetIsolatedWebApp(GetAppId()),
               test::IwaIs(Eq("app-3.0.4"),
@@ -401,7 +533,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
   {
     profile()->GetPrefs()->SetList(
         prefs::kIsolatedWebAppInstallForceList,
-        base::Value::List().Append(
+        base::ListValue().Append(
             iwa_test_update_server_.CreateForceInstallPolicyEntry(
                 /*web_bundle_id=*/GetWebBundleId(),
                 /*update_channel=*/std::nullopt,
@@ -421,7 +553,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
       &provider().install_manager());
   manifest_updated_observer.BeginListening({GetAppId()});
 
-  EXPECT_THAT(provider().iwa_update_manager().DiscoverUpdatesNow(), Eq(0ul));
+  EXPECT_THAT(provider().isolated_web_app_update_manager().DiscoverUpdatesNow(),
+              Eq(0ul));
 
   EXPECT_THAT(GetIsolatedWebApp(GetAppId()),
               test::IwaIs(Eq("app-3.0.4"),
@@ -445,7 +578,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
                        SucceedsWithDowngrade) {
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
-      base::Value::List().Append(
+      base::ListValue().Append(
           iwa_test_update_server_.CreateForceInstallPolicyEntry(
               GetWebBundleId())));
 
@@ -458,7 +591,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
   // Pin IWA to version 1.0.0 and allow downgrading.
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
-      base::Value::List().Append(
+      base::ListValue().Append(
           iwa_test_update_server_.CreateForceInstallPolicyEntry(
               /*web_bundle_id=*/GetWebBundleId(),
               /*update_channel=*/std::nullopt,
@@ -482,7 +615,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
         std::move(callback).Run();
       }));
 
-  EXPECT_THAT(provider().iwa_update_manager().DiscoverUpdatesNow(), Eq(1ul));
+  EXPECT_THAT(provider().isolated_web_app_update_manager().DiscoverUpdatesNow(),
+              Eq(1ul));
 
   manifest_updated_observer.Wait();
   EXPECT_TRUE(future.Wait());
@@ -503,7 +637,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
                        FailToDowngradeToNotExistentVersion) {
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
-      base::Value::List().Append(
+      base::ListValue().Append(
           iwa_test_update_server_.CreateForceInstallPolicyEntry(
               GetWebBundleId())));
 
@@ -516,7 +650,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
   // Pin IWA to version 1.0.0 and allow downgrading.
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
-      base::Value::List().Append(
+      base::ListValue().Append(
           iwa_test_update_server_.CreateForceInstallPolicyEntry(
               /*web_bundle_id=*/GetWebBundleId(),
               /*update_channel=*/kBetaChannel,
@@ -529,7 +663,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
   UpdateDiscoveryTaskResultWaiter initial_update_waiter(
       provider(), GetAppId(), initial_update_future.GetCallback());
 
-  EXPECT_THAT(provider().iwa_update_manager().DiscoverUpdatesNow(), Eq(1ul));
+  EXPECT_THAT(provider().isolated_web_app_update_manager().DiscoverUpdatesNow(),
+              Eq(1ul));
   EXPECT_THAT(initial_update_future.Take(),
               ErrorIs(IsolatedWebAppUpdateDiscoveryTask::Error::
                           kPinnedVersionNotFoundInUpdateManifest));
@@ -541,7 +676,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
 
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
-      base::Value::List().Append(
+      base::ListValue().Append(
           iwa_test_update_server_.CreateForceInstallPolicyEntry(
               GetWebBundleId())));
 
@@ -554,7 +689,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
   // Pin IWA to version 5.0.5 and allow downgrading.
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
-      base::Value::List().Append(
+      base::ListValue().Append(
           iwa_test_update_server_.CreateForceInstallPolicyEntry(
               /*web_bundle_id=*/GetWebBundleId(),
               /*update_channel=*/std::nullopt,
@@ -567,7 +702,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
       &provider().install_manager());
   manifest_updated_observer.BeginListening({GetAppId()});
 
-  EXPECT_THAT(provider().iwa_update_manager().DiscoverUpdatesNow(), Eq(1ul));
+  EXPECT_THAT(provider().isolated_web_app_update_manager().DiscoverUpdatesNow(),
+              Eq(1ul));
 
   manifest_updated_observer.Wait();
 
@@ -585,7 +721,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
   // Add new version 7.0.6
   AddNewBundleToUpdateServer("app-7.0.6", "7.0.6");
 
-  EXPECT_THAT(provider().iwa_update_manager().DiscoverUpdatesNow(), Eq(0ul));
+  EXPECT_THAT(provider().isolated_web_app_update_manager().DiscoverUpdatesNow(),
+              Eq(0ul));
 
   EXPECT_EQ(GetIsolatedWebApp(GetAppId())->isolation_data()->version(),
             *IwaVersion::Create("1.0.5"));
@@ -603,7 +740,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
   {
     profile()->GetPrefs()->SetList(
         prefs::kIsolatedWebAppInstallForceList,
-        base::Value::List().Append(
+        base::ListValue().Append(
             iwa_test_update_server_.CreateForceInstallPolicyEntry(
                 /*web_bundle_id=*/GetWebBundleId())));
 
@@ -614,7 +751,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
   // Pin IWA to version 7.0.6.
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
-      base::Value::List().Append(
+      base::ListValue().Append(
           iwa_test_update_server_.CreateForceInstallPolicyEntry(
               /*web_bundle_id=*/GetWebBundleId(),
               /*update_channel=*/std::nullopt,
@@ -629,7 +766,9 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
     UpdateDiscoveryTaskResultWaiter initial_update_waiter(
         provider(), GetAppId(), initial_update_future.GetCallback());
 
-    EXPECT_THAT(provider().iwa_update_manager().DiscoverUpdatesNow(), Eq(1ul));
+    EXPECT_THAT(
+        provider().isolated_web_app_update_manager().DiscoverUpdatesNow(),
+        Eq(1ul));
     EXPECT_THAT(initial_update_future.Take(),
                 ErrorIs(IsolatedWebAppUpdateDiscoveryTask::Error::
                             kPinnedVersionNotFoundInUpdateManifest));
@@ -659,7 +798,9 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
     UpdateDiscoveryTaskResultWaiter second_update_waiter(
         provider(), GetAppId(), second_update_future.GetCallback());
 
-    EXPECT_THAT(provider().iwa_update_manager().DiscoverUpdatesNow(), Eq(1ul));
+    EXPECT_THAT(
+        provider().isolated_web_app_update_manager().DiscoverUpdatesNow(),
+        Eq(1ul));
     EXPECT_THAT(second_update_future.Take(),
                 ValueIs(IsolatedWebAppUpdateDiscoveryTask::Success::
                             kPinnedVersionUpdateFoundAndSavedInDatabase));
@@ -685,7 +826,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
 
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
-      base::Value::List().Append(
+      base::ListValue().Append(
           iwa_test_update_server_.CreateForceInstallPolicyEntry(
               /*web_bundle_id=*/GetWebBundleId(),
               /*update_channel=*/std::nullopt,
@@ -703,14 +844,15 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
 
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
-      base::Value::List().Append(
+      base::ListValue().Append(
           iwa_test_update_server_.CreateForceInstallPolicyEntry(
               /*web_bundle_id=*/GetWebBundleId(),
               /*update_channel=*/std::nullopt,
               /*pinned_version=*/*IwaVersion::Create("5.0.5"))));
   manifest_updated_observer.BeginListening({GetAppId()});
 
-  EXPECT_THAT(provider().iwa_update_manager().DiscoverUpdatesNow(), Eq(1ul));
+  EXPECT_THAT(provider().isolated_web_app_update_manager().DiscoverUpdatesNow(),
+              Eq(1ul));
 
   manifest_updated_observer.Wait();
 
@@ -736,7 +878,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest, Unpinning) {
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
-      base::Value::List().Append(
+      base::ListValue().Append(
           iwa_test_update_server_.CreateForceInstallPolicyEntry(
               /*web_bundle_id=*/GetWebBundleId(),
               /*update_channel=*/std::nullopt,
@@ -749,7 +891,9 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest, Unpinning) {
   // pinned.
   {
     AddNewBundleToUpdateServer("app-7.0.6", "7.0.6");
-    EXPECT_THAT(provider().iwa_update_manager().DiscoverUpdatesNow(), Eq(0ul));
+    EXPECT_THAT(
+        provider().isolated_web_app_update_manager().DiscoverUpdatesNow(),
+        Eq(0ul));
   }
 
   // After pinned_version is unset, the app is updated to the latest version
@@ -761,11 +905,13 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest, Unpinning) {
 
     profile()->GetPrefs()->SetList(
         prefs::kIsolatedWebAppInstallForceList,
-        base::Value::List().Append(
+        base::ListValue().Append(
             iwa_test_update_server_.CreateForceInstallPolicyEntry(
                 /*web_bundle_id=*/GetWebBundleId())));
 
-    EXPECT_THAT(provider().iwa_update_manager().DiscoverUpdatesNow(), Eq(1ul));
+    EXPECT_THAT(
+        provider().isolated_web_app_update_manager().DiscoverUpdatesNow(),
+        Eq(1ul));
 
     manifest_updated_observer.Wait();
 
@@ -789,7 +935,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
 
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
-      base::Value::List().Append(
+      base::ListValue().Append(
           iwa_test_update_server_.CreateForceInstallPolicyEntry(
               GetWebBundleId())));
 
@@ -802,7 +948,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
 
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
-      base::Value::List().Append(
+      base::ListValue().Append(
           iwa_test_update_server_.CreateForceInstallPolicyEntry(
               /*web_bundle_id=*/GetWebBundleId(),
               /*update_channel=*/kBetaChannel,
@@ -812,7 +958,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
       &provider().install_manager());
   manifest_updated_observer.BeginListening({GetAppId()});
 
-  EXPECT_THAT(provider().iwa_update_manager().DiscoverUpdatesNow(), Eq(1ul));
+  EXPECT_THAT(provider().isolated_web_app_update_manager().DiscoverUpdatesNow(),
+              Eq(1ul));
 
   manifest_updated_observer.Wait();
 
@@ -841,7 +988,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
 
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
-      base::Value::List().Append(
+      base::ListValue().Append(
           iwa_test_update_server_.CreateForceInstallPolicyEntry(
               GetWebBundleId())));
 
@@ -853,7 +1000,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
   {
     profile()->GetPrefs()->SetList(
         prefs::kIsolatedWebAppInstallForceList,
-        base::Value::List().Append(
+        base::ListValue().Append(
             iwa_test_update_server_.CreateForceInstallPolicyEntry(
                 /*web_bundle_id=*/GetWebBundleId(),
                 /*update_channel=*/kBetaChannel,
@@ -863,7 +1010,9 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
     UpdateDiscoveryTaskResultWaiter initial_update_waiter(
         provider(), GetAppId(), future.GetCallback());
 
-    EXPECT_THAT(provider().iwa_update_manager().DiscoverUpdatesNow(), Eq(1ul));
+    EXPECT_THAT(
+        provider().isolated_web_app_update_manager().DiscoverUpdatesNow(),
+        Eq(1ul));
     EXPECT_THAT(future.Take(),
                 ErrorIs(IsolatedWebAppUpdateDiscoveryTask::Error::
                             kPinnedVersionNotFoundInUpdateManifest));
@@ -880,7 +1029,9 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
     AddNewBundleToUpdateServer("app-6.0.0", "6.0.0", {{kBetaChannel}});
     AddNewBundleToUpdateServer("app-7.0.6", "7.0.6");
 
-    EXPECT_THAT(provider().iwa_update_manager().DiscoverUpdatesNow(), Eq(1ul));
+    EXPECT_THAT(
+        provider().isolated_web_app_update_manager().DiscoverUpdatesNow(),
+        Eq(1ul));
 
     manifest_updated_observer.Wait();
 
@@ -915,7 +1066,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
 
     profile()->GetPrefs()->SetList(
         prefs::kIsolatedWebAppInstallForceList,
-        base::Value::List().Append(
+        base::ListValue().Append(
             iwa_test_update_server_.CreateForceInstallPolicyEntry(
                 GetWebBundleId(), kBetaChannel)));
 
@@ -935,7 +1086,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
       &provider().install_manager());
   manifest_updated_observer.BeginListening({GetAppId()});
 
-  EXPECT_THAT(provider().iwa_update_manager().DiscoverUpdatesNow(), Eq(1ul));
+  EXPECT_THAT(provider().isolated_web_app_update_manager().DiscoverUpdatesNow(),
+              Eq(1ul));
   EXPECT_THAT(future.Take(),
               ValueIs(IsolatedWebAppUpdateDiscoveryTask::Success::
                           kUpdateFoundAndSavedInDatabase));
@@ -970,7 +1122,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
 
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
-      base::Value::List().Append(
+      base::ListValue().Append(
           iwa_test_update_server_.CreateForceInstallPolicyEntry(
               GetWebBundleId())));
 
@@ -983,7 +1135,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
 
   // Adding new version for an IWA triggers Discovery Task, but no updates will
   // be applied as new version is not meant for the "default" channel.
-  EXPECT_THAT(provider().iwa_update_manager().DiscoverUpdatesNow(), Eq(1ul));
+  EXPECT_THAT(provider().isolated_web_app_update_manager().DiscoverUpdatesNow(),
+              Eq(1ul));
   EXPECT_THAT(
       future.Take(),
       ValueIs(IsolatedWebAppUpdateDiscoveryTask::Success::kNoUpdateFound));
@@ -1013,7 +1166,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
 
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
-      base::Value::List().Append(
+      base::ListValue().Append(
           iwa_test_update_server_.CreateForceInstallPolicyEntry(
               GetWebBundleId())));
 
@@ -1031,7 +1184,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
   UpdateDiscoveryTaskResultWaiter waiter(provider(), GetAppId(),
                                          future.GetCallback());
 
-  EXPECT_THAT(provider().iwa_update_manager().DiscoverUpdatesNow(), Eq(1ul));
+  EXPECT_THAT(provider().isolated_web_app_update_manager().DiscoverUpdatesNow(),
+              Eq(1ul));
   EXPECT_THAT(
       future.Take(),
       ValueIs(IsolatedWebAppUpdateDiscoveryTask::Success::kNoUpdateFound));
@@ -1054,11 +1208,12 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
 
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
-      base::Value::List().Append(
+      base::ListValue().Append(
           iwa_test_update_server_.CreateForceInstallPolicyEntry(
               GetWebBundleId(), kBetaChannel)));
 
-  EXPECT_THAT(provider().iwa_update_manager().DiscoverUpdatesNow(), Eq(1ul));
+  EXPECT_THAT(provider().isolated_web_app_update_manager().DiscoverUpdatesNow(),
+              Eq(1ul));
 
   manifest_updated_observer.Wait();
   EXPECT_THAT(GetIsolatedWebApp(GetAppId()),
@@ -1092,7 +1247,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
                        MAYBE_SucceedsWithServiceWorkerWithFetchHandler) {
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
-      base::Value::List().Append(
+      base::ListValue().Append(
           iwa_test_update_server_.CreateForceInstallPolicyEntry(
               GetWebBundleId())));
 
@@ -1117,7 +1272,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
       GetAppOrigin().GetURL(), storage_partition,
       content::ServiceWorkerCapability::SERVICE_WORKER_WITH_FETCH_HANDLER);
 
-  EXPECT_THAT(provider().iwa_update_manager().DiscoverUpdatesNow(), Eq(1ul));
+  EXPECT_THAT(provider().isolated_web_app_update_manager().DiscoverUpdatesNow(),
+              Eq(1ul));
 
   // Updates will be applied once the app's window is closed.
   Browser* app_browser = GetBrowserFromFrame(app_frame);
@@ -1146,7 +1302,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
                        PRE_AppliesUpdateOnStartupIfAppWindowNeverCloses) {
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
-      base::Value::List().Append(
+      base::ListValue().Append(
           iwa_test_update_server_.CreateForceInstallPolicyEntry(
               GetWebBundleId())));
 
@@ -1163,7 +1319,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
   EXPECT_THAT(provider().ui_manager().GetNumWindowsForApp(GetAppId()), Eq(1ul));
 
   AddNewBundleToUpdateServer("app-7.0.6", "7.0.6");
-  EXPECT_THAT(provider().iwa_update_manager().DiscoverUpdatesNow(), Eq(1ul));
+  EXPECT_THAT(provider().isolated_web_app_update_manager().DiscoverUpdatesNow(),
+              Eq(1ul));
 
   ASSERT_TRUE(base::test::RunUntil([this]() {
     const WebApp* app = GetIsolatedWebApp(GetAppId());
@@ -1229,7 +1386,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
   WebAppTestManifestUpdatedObserver manifest_updated_observer(
       &provider().install_manager());
   manifest_updated_observer.BeginListening({app_id});
-  EXPECT_THAT(provider().iwa_update_manager().DiscoverUpdatesNow(), Eq(1ul));
+  EXPECT_THAT(provider().isolated_web_app_update_manager().DiscoverUpdatesNow(),
+              Eq(1ul));
   manifest_updated_observer.Wait();
 
   // Verify the app is updated.
@@ -1245,7 +1403,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
                        PendingUpdateDoesNotGetCleanedUp) {
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
-      base::Value::List().Append(
+      base::ListValue().Append(
           iwa_test_update_server_.CreateForceInstallPolicyEntry(
               GetWebBundleId())));
 
@@ -1262,7 +1420,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
   EXPECT_THAT(provider().ui_manager().GetNumWindowsForApp(GetAppId()), Eq(1ul));
 
   AddNewBundleToUpdateServer("app-7.0.6", "7.0.6");
-  EXPECT_THAT(provider().iwa_update_manager().DiscoverUpdatesNow(), Eq(1ul));
+  EXPECT_THAT(provider().isolated_web_app_update_manager().DiscoverUpdatesNow(),
+              Eq(1ul));
 
   ASSERT_TRUE(base::test::RunUntil([this]() {
     const WebApp* app = GetIsolatedWebApp(GetAppId());
@@ -1312,10 +1471,6 @@ class IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest
   }
 
  protected:
-  ChromeIwaRuntimeDataProvider* GetRuntimeDataProvider() override {
-    return &data_provider_;
-  }
-
   void AddBundleSignedBy(const web_package::test::KeyPair& key_pair) {
     iwa_test_update_server_.AddBundle(
         IsolatedWebAppBuilder(
@@ -1334,13 +1489,13 @@ class IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest
   }
 
   IsolatedWebAppTestUpdateServer iwa_test_update_server_;
-  FakeIwaRuntimeDataProvider data_provider_;
+  FakeIwaRuntimeDataProviderMixin data_provider_{&mixin_host_};
   web_package::SignedWebBundleId web_bundle_id_ = kWebBundleId1;
 };
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
                        Succeeds) {
-  data_provider_.Update(
+  data_provider_->Update(
       [&](auto& update) { update.AddToManagedAllowlist(web_bundle_id_); });
   auto app_id =
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id_)
@@ -1352,7 +1507,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
 
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
-      base::Value::List().Append(
+      base::ListValue().Append(
           iwa_test_update_server_.CreateForceInstallPolicyEntry(
               web_bundle_id_)));
 
@@ -1377,7 +1532,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
       &provider().install_manager());
   manifest_updated_observer.BeginListening({app_id});
   // Key rotation should trigger a discovery in the update manager.
-  data_provider_.Update([&](auto& update) {
+  data_provider_->Update([&](auto& update) {
     update.AddToKeyRotations(kWebBundleId1, kKeyPair2.public_key.bytes());
   });
   manifest_updated_observer.Wait();
@@ -1397,7 +1552,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
                        AppStopsOpeningOnUpdateFailure) {
-  data_provider_.Update(
+  data_provider_->Update(
       [&](auto& update) { update.AddToManagedAllowlist(web_bundle_id_); });
   auto app_id =
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id_)
@@ -1409,7 +1564,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
 
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
-      base::Value::List().Append(
+      base::ListValue().Append(
           iwa_test_update_server_.CreateForceInstallPolicyEntry(
               web_bundle_id_)));
 
@@ -1442,7 +1597,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
 
   // Key rotation should trigger an unsuccessful discovery in the update manager
   // and clear the reader cache.
-  data_provider_.Update([&](auto& update) {
+  data_provider_->Update([&](auto& update) {
     update.AddToKeyRotations(kWebBundleId1, kKeyPair2.public_key.bytes());
   });
 
@@ -1468,7 +1623,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
 
     // Add a bundle with version 1.0.0 signed by a rotated key.
     AddBundleSignedBy(kKeyPair2);
-    EXPECT_EQ(provider().iwa_update_manager().DiscoverUpdatesNow(), 1u);
+    EXPECT_EQ(provider().isolated_web_app_update_manager().DiscoverUpdatesNow(),
+              1u);
     manifest_updated_observer.Wait();
   }
 
@@ -1485,7 +1641,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
                        DoesntAffectRunningApps) {
-  data_provider_.Update(
+  data_provider_->Update(
       [&](auto& update) { update.AddToManagedAllowlist(web_bundle_id_); });
   auto url_info =
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id_);
@@ -1497,7 +1653,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
 
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
-      base::Value::List().Append(
+      base::ListValue().Append(
           iwa_test_update_server_.CreateForceInstallPolicyEntry(
               web_bundle_id_)));
 
@@ -1528,7 +1684,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
 
   // Key rotation should trigger an unsuccessful discovery in the update manager
   // and queue a cache clear request for this bundle reader.
-  data_provider_.Update([&](auto& update) {
+  data_provider_->Update([&](auto& update) {
     update.AddToKeyRotations(kWebBundleId1, kKeyPair2.public_key.bytes());
   });
 
@@ -1561,7 +1717,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
                        PolicyReprocessOnComponentUpdate) {
-  data_provider_.Update(
+  data_provider_->Update(
       [&](auto& update) { update.AddToManagedAllowlist(web_bundle_id_); });
   base::HistogramTester ht;
 
@@ -1581,7 +1737,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
 
     profile()->GetPrefs()->SetList(
         prefs::kIsolatedWebAppInstallForceList,
-        base::Value::List().Append(
+        base::ListValue().Append(
             iwa_test_update_server_.CreateForceInstallPolicyEntry(
                 web_bundle_id_)));
 
@@ -1600,7 +1756,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
   waiter.BeginListening({app_id});
 
   // Key rotation should trigger a policy reprocess.
-  data_provider_.Update([&](auto& update) {
+  data_provider_->Update([&](auto& update) {
     update.AddToKeyRotations(kWebBundleId1, kKeyPair2.public_key.bytes());
   });
 

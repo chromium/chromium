@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/base64.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -299,7 +298,7 @@ std::unique_ptr<net::test_server::HttpResponse> FakeSamlIdpMixin::HandleRequest(
   // if some credentials were provided. If not, respond with an authentication
   // request that should make the browser pop up a credentials entry UI.
   if (require_http_basic_auth_ &&
-      !base::Contains(request.headers, kAuthorizationRequestHeader)) {
+      !request.headers.contains(kAuthorizationRequestHeader)) {
     auto http_response =
         std::make_unique<net::test_server::BasicHttpResponse>();
     http_response->set_code(net::HTTP_UNAUTHORIZED);
@@ -409,8 +408,7 @@ FakeSamlIdpMixin::BuildResponseForLoginWithDeviceTrust(
     const GURL& request_url) {
   std::string relay_state = GetRelayState(request);
 
-  device_trust_header_recieved_ =
-      base::Contains(request.headers, kDeviceTrustHeader);
+  device_trust_header_recieved_ = request.headers.contains(kDeviceTrustHeader);
 
   GURL redirect_url = GetSamlWithCheckDeviceAnswerUrl();
   redirect_url =
@@ -423,7 +421,7 @@ FakeSamlIdpMixin::BuildResponseForLoginWithDeviceTrust(
   // Device Trust only supports V2 challenges, which are formatted as a JSON
   // object with only one "challenge" property (containing the value from V1).
   // TODO(b:253427534): Update code to handle V1 challenges.
-  base::Value::Dict challenge_value;
+  base::DictValue challenge_value;
   challenge_value.Set("challenge", GetTpmChallengeBase64());
   std::string challenge_json_value;
   EXPECT_TRUE(base::JSONWriter::Write(challenge_value, &challenge_json_value));

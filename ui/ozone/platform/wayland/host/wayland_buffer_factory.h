@@ -57,8 +57,9 @@ class WaylandBufferFactory {
       const gfx::Size& size,
       bool with_alpha_channel = true) const;
 
-  // Returns supported buffer formats received from the Wayland compositor.
-  wl::BufferFormatsWithModifiersMap GetSupportedBufferFormats() const;
+  // Returns supported shared image formats received from the Wayland
+  // compositor.
+  wl::SharedImageFormatsWithModifiersMap GetSupportedSharedImageFormats() const;
 
   // Returns true if dmabuf is supported.
   bool SupportsDmabuf() const;

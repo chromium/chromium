@@ -100,7 +100,7 @@ BluetoothPairingDialog::BluetoothPairingDialog(
   set_dialog_size(gfx::Size(SystemWebDialogDelegate::kDialogWidth,
                             kBluetoothPairingDialogHeight));
 
-  base::Value::Dict device_data;
+  base::DictValue device_data;
   if (canonical_device_address.has_value()) {
     device_data.Set("address", canonical_device_address.value());
   }

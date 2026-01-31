@@ -6,7 +6,8 @@
 
 #include <stddef.h>
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "build/build_config.h"
@@ -91,7 +92,8 @@ TEST(AcceleratorTableTest, CheckDuplicatedAcceleratorsAsh) {
     // A few shortcuts are defined in the browser as well as in ash so that web
     // contents can consume them. http://crbug.com/309915, 370019, 412435,
     // 321568.
-    if (base::Contains(ash::kActionsInterceptableByBrowser, ash_entry.action)) {
+    if (std::ranges::contains(ash::kActionsInterceptableByBrowser,
+                              ash_entry.action)) {
       continue;
     }
 
@@ -99,7 +101,8 @@ TEST(AcceleratorTableTest, CheckDuplicatedAcceleratorsAsh) {
     // list to ensure BrowserView can retrieve browser command id from the
     // accelerator without needing to know ash.
     // See http://crbug.com/737307 for details.
-    if (base::Contains(ash::kActionsDuplicatedWithBrowser, ash_entry.action)) {
+    if (std::ranges::contains(ash::kActionsDuplicatedWithBrowser,
+                              ash_entry.action)) {
       AcceleratorMapping entry;
       entry.keycode = ash_entry.keycode;
       entry.modifiers = ash_entry.modifiers;

@@ -29,6 +29,7 @@
 #include "base/notreached.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/run_loop.h"
+#include "base/strings/cstring_view.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -2861,9 +2862,9 @@ class BaseFilePathWatcherDelegate final : public InotifyAddWatchDelegate {
     base::File temp_file_again(temp_file_path_, base::File::FLAG_OPEN |
                                                     base::File::FLAG_READ |
                                                     base::File::FLAG_WRITE);
-    char buf2[] = "a";
-    UNSAFE_TODO(BPF_ASSERT_EQ(temp_file_again.Write(0, buf2, sizeof(buf2)),
-                              sizeof(buf2)));
+    BPF_ASSERT_EQ(
+        temp_file_again.Write(0, base::byte_span_with_nul_from_cstring("a")),
+        2);
     temp_file_again.Flush();
     temp_file_again.Close();
     // Wait until we receive a notification about the file modification.

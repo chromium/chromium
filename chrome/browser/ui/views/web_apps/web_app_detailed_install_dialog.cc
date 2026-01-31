@@ -366,7 +366,7 @@ class ImageCarouselView : public views::View {
   // of the throbber container, or the maximum w/h ratio of screenshots.
   int GetScaledWidthBasedOnThrobberHeight(const gfx::Size& size) {
     const int throbber_height = GetFullThrobberHeight();
-    CHECK_GE(size.height(), 0) << "screenshot cannot have an empty height";
+    CHECK_GT(size.height(), 0) << "screenshot cannot have an empty height";
     int height_limited_width = base::checked_cast<int>(
         size.width() *
         (base::checked_cast<float>(throbber_height) / size.height()));
@@ -442,9 +442,9 @@ void ShowWebAppDetailedInstallDialog(
           start_url);
 
   const std::u16string description = gfx::TruncateString(
-      install_info->description, webapps::kMaximumDescriptionLength,
+      install_info->description.value(), webapps::kMaximumDescriptionLength,
       gfx::CHARACTER_BREAK);
-  auto manifest_id = install_info->manifest_id();
+  webapps::ManifestId manifest_id = install_info->manifest_id();
 
   auto delegate = std::make_unique<WebAppInstallDialogDelegate>(
       web_contents, std::move(install_info), std::move(install_tracker),

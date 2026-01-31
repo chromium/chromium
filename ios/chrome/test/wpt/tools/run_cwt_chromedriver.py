@@ -48,11 +48,18 @@ parser.add_argument('--asan-build', help='Use ASan-related libraries',
 parser.set_defaults(asan_build=False)
 parser.add_argument('--version', help='Get the version of current browser app.',
     action='store_true')
+parser.add_argument('--verbose', help='Enable verbose logging.',
+    action='store_true')
 args, _ = parser.parse_known_args()
 
-test_app = os.path.join(
-    args.build_dir, 'ios_cwt_chromedriver_tests_module-Runner.app')
-host_app = os.path.join(args.build_dir, 'ios_cwt_chromedriver_tests.app')
+if args.verbose:
+  import logging
+  logging.basicConfig(level=logging.DEBUG)
+
+test_app = os.path.abspath(os.path.join(
+    args.build_dir, 'ios_cwt_chromedriver_tests_module-Runner.app'))
+host_app = os.path.abspath(os.path.join(
+    args.build_dir, 'ios_cwt_chromedriver_tests.app'))
 
 if args.version:
     plist_path = os.path.join(host_app, 'Info.plist')

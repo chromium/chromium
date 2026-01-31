@@ -10,8 +10,6 @@
 #include "components/infobars/core/infobar_manager.h"
 #import "ios/web/public/web_state_user_data.h"
 
-class InfobarOverlayRequestInserter;
-
 // Helper class that creates OverlayRequests for the banner UI for InfoBars
 // added to an InfoBarManager.
 class InfobarOverlayTabHelper
@@ -23,17 +21,11 @@ class InfobarOverlayTabHelper
   friend class web::WebStateUserData<InfobarOverlayTabHelper>;
   InfobarOverlayTabHelper(web::WebState* web_state);
 
-  // Getter for the request inserter.
-  InfobarOverlayRequestInserter* request_inserter() {
-    return request_inserter_;
-  }
-
   // Helper object that schedules OverlayRequests for the banner UI for InfoBars
   // added to a WebState's InfoBarManager.
   class OverlayRequestScheduler : public infobars::InfoBarManager::Observer {
    public:
-    OverlayRequestScheduler(web::WebState* web_state,
-                            InfobarOverlayTabHelper* tab_helper);
+    OverlayRequestScheduler(web::WebState* web_state);
     ~OverlayRequestScheduler() override;
 
    private:
@@ -42,16 +34,12 @@ class InfobarOverlayTabHelper
     void OnManagerWillBeDestroyed(infobars::InfoBarManager* manager) override;
 
    private:
-    // The owning tab helper.
-    raw_ptr<InfobarOverlayTabHelper> tab_helper_ = nullptr;
     raw_ptr<web::WebState> web_state_ = nullptr;
     base::ScopedObservation<infobars::InfoBarManager,
                             infobars::InfoBarManager::Observer>
         scoped_observation_{this};
   };
 
-  // The inserter used to add infobar OverlayRequests to the WebState's queue.
-  raw_ptr<InfobarOverlayRequestInserter, DanglingUntriaged> request_inserter_;
   // The scheduler used to create OverlayRequests for InfoBars added to the
   // corresponding WebState's InfoBarManagerImpl.
   OverlayRequestScheduler request_scheduler_;

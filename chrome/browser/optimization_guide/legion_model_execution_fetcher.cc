@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/strings/string_split.h"
+#include "base/types/expected.h"
 #include "components/legion/client.h"
 #include "components/legion/error_code.h"
 #include "components/legion/proto/legion.pb.h"
@@ -38,48 +39,6 @@ OptimizationGuideModelExecutionError ToModelExecutionError(
       OptimizationGuideModelExecutionError::ModelExecutionError::kUnknown);
 }
 
-constexpr char prompt[] =
-    "Please provide 3 short suggestions for what you could ask Gemini\n"
-    "about the content of the following list of websites.\n"
-    "Please provide each suggestion on a separate line and no other\n"
-    "content in your response. No more than 30 characters per\n"
-    "suggestion.\n"
-    "Websites:\n";
-
-std::string ToLegionRequest(
-    ModelBasedCapabilityKey feature,
-    const google::protobuf::MessageLite& request_metadata) {
-  CHECK_EQ(feature, ModelBasedCapabilityKey::kZeroStateSuggestions);
-  // TODO(crbug.com/460052805): Send proto directly.
-  std::stringstream request;
-  request << prompt;
-  auto* zss_request = static_cast<
-      const optimization_guide::proto::ZeroStateSuggestionsRequest*>(
-      &request_metadata);
-  if (zss_request->has_page_context()) {
-    request << zss_request->page_context().url() << " - "
-            << zss_request->page_context().title() << '\n';
-  }
-  if (zss_request->has_page_context_list()) {
-    auto& contexts = zss_request->page_context_list().page_contexts();
-    for (auto& context : contexts) {
-      request << context.page_context().url() << " - "
-              << context.page_context().title() << '\n';
-    }
-  }
-  return request.str();
-}
-
-proto::ZeroStateSuggestionsResponse ToZSSResponse(const std::string& result) {
-  proto::ZeroStateSuggestionsResponse zss;
-  for (auto line : base::SplitStringPiece(
-           result, "\n", base::WhitespaceHandling::TRIM_WHITESPACE,
-           base::SplitResult::SPLIT_WANT_NONEMPTY)) {
-    zss.add_suggestions()->set_label(line);
-  }
-  return zss;
-}
-
 }  // namespace
 
 LegionModelExecutionFetcher::LegionModelExecutionFetcher(
@@ -97,35 +56,39 @@ void LegionModelExecutionFetcher::ExecuteModel(
     std::optional<base::TimeDelta> timeout,
     ModelExecuteResponseCallback callback) {
   auto legion_feature_name = ToLegionFeatureName(feature);
-  auto request = ToLegionRequest(feature, request_metadata);
+
+  legion::proto::PaicMessage paic_message;
+  paic_message.set_feature_name(legion_feature_name);
+  *paic_message.mutable_execute_request_ext() =
+      ToExecuteRequest(feature, request_metadata);
 
   legion::Client::RequestOptions options;
   if (timeout) {
     options.timeout = *timeout;
   }
 
-  legion_client_->SendTextRequest(
-      legion_feature_name, request,
+  legion_client_->SendPaicRequest(
+      legion_feature_name, paic_message,
       base::BindOnce(
           [](ModelBasedCapabilityKey feature,
              ModelExecuteResponseCallback callback,
-             base::expected<std::string, legion::ErrorCode> result) {
+             base::expected<legion::proto::PaicMessage, legion::ErrorCode>
+                 result) {
             if (!result.has_value()) {
               std::move(callback).Run(
                   base::unexpected(ToModelExecutionError(result.error())));
               return;
             }
-            proto::ExecuteResponse response;
-            auto* metadata = response.mutable_response_metadata();
-            switch (feature) {
-              case ModelBasedCapabilityKey::kZeroStateSuggestions: {
-                *metadata = AnyWrapProto(ToZSSResponse(result.value()));
-                break;
-              }
-              default:
-                NOTREACHED() << feature;
+
+            if (!result->has_execute_response_ext()) {
+              std::move(callback).Run(base::unexpected(
+                  OptimizationGuideModelExecutionError::FromModelExecutionError(
+                      OptimizationGuideModelExecutionError::
+                          ModelExecutionError::kUnknown)));
+              return;
             }
-            std::move(callback).Run(base::ok(response));
+
+            std::move(callback).Run(base::ok(result->execute_response_ext()));
           },
           feature, std::move(callback)),
       options);

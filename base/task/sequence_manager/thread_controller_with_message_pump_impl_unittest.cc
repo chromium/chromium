@@ -67,9 +67,9 @@ class ThreadControllerForTest : public ThreadControllerWithMessagePumpImpl {
   class MockTraceObserver
       : public ThreadController::RunLevelTracker::TraceObserverForTesting {
    public:
-    MOCK_METHOD0(OnThreadControllerActiveBegin, void());
-    MOCK_METHOD0(OnThreadControllerActiveEnd, void());
-    MOCK_METHOD1(OnPhaseRecorded, void(Phase));
+    MOCK_METHOD(void, OnThreadControllerActiveBegin, (), (override));
+    MOCK_METHOD(void, OnThreadControllerActiveEnd, (), (override));
+    MOCK_METHOD(void, OnPhaseRecorded, (Phase), (override));
   };
 
   void InstallTraceObserver() {
@@ -93,10 +93,10 @@ class MockMessagePump : public MessagePump {
   MockMessagePump() = default;
   ~MockMessagePump() override = default;
 
-  MOCK_METHOD1(Run, void(MessagePump::Delegate*));
-  MOCK_METHOD0(Quit, void());
-  MOCK_METHOD0(ScheduleWork, void());
-  MOCK_METHOD1(ScheduleDelayedWork_TimeTicks, void(const TimeTicks&));
+  MOCK_METHOD(void, Run, (MessagePump::Delegate*), (override));
+  MOCK_METHOD(void, Quit, (), (override));
+  MOCK_METHOD(void, ScheduleWork, (), (override));
+  MOCK_METHOD(void, ScheduleDelayedWork_TimeTicks, (const TimeTicks&));
 
   void ScheduleDelayedWork(
       const MessagePump::Delegate::NextWorkInfo& next_work_info) override {

@@ -4,10 +4,11 @@
 
 #include "chrome/browser/ui/views/overlay/video_overlay_window_views.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
-#include "base/containers/contains.h"
+#include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -153,7 +154,9 @@ class TestVideoPictureInPictureWindowController
               (const media_session::MediaImage& image,
                int minimum_size_px,
                int desired_size_px));
-  std::optional<gfx::Rect> GetWindowBounds() override { return std::nullopt; }
+  std::optional<gfx::Rect> GetWindowBoundsInScreen() override {
+    return std::nullopt;
+  }
   std::optional<url::Origin> GetOrigin() override { return std::nullopt; }
   void SetOnWindowCreatedNotifyObserversCallback(base::OnceClosure) override {}
 
@@ -735,8 +738,8 @@ TEST_F(VideoOverlayWindowViewsTest, IsTrackedByTheOcclusionObserver) {
 
   // Check that the PictureInPictureOcclusionTracker is observing the
   // VideoOverlayWindowViews.
-  EXPECT_TRUE(base::Contains(tracker->GetPictureInPictureWidgetsForTesting(),
-                             &overlay_window()));
+  EXPECT_TRUE(std::ranges::contains(
+      tracker->GetPictureInPictureWidgetsForTesting(), &overlay_window()));
 
   // Check that it's no longer observed when the widget is destroyed.
   DestroyOverlayWindow();
@@ -1058,6 +1061,22 @@ TEST_F(VideoOverlayWindowViewsTest, DisplaysOrigin) {
 
   overlay_window().SetSourceTitle(u"google.com");
   EXPECT_EQ(origin->GetText(), u"google.com");
+}
+
+TEST_F(VideoOverlayWindowViewsTest, OriginLabelHasCorrectDirectionality) {
+  views::Label* origin = overlay_window().origin_for_testing();
+  ASSERT_NE(nullptr, origin);
+
+  // The directionality should be LTR to prevent spoofing.
+  EXPECT_EQ(base::i18n::LEFT_TO_RIGHT, origin->GetTextDirectionForTesting());
+
+  // Set the source title to a RTL string.
+  const char16_t kRtl[] = u"אבג";
+  overlay_window().SetSourceTitle(kRtl);
+  EXPECT_EQ(kRtl, origin->GetText());
+
+  // The directionality should still be LTR to prevent spoofing.
+  EXPECT_EQ(base::i18n::LEFT_TO_RIGHT, origin->GetTextDirectionForTesting());
 }
 
 TEST_F(VideoOverlayWindowViewsTest,

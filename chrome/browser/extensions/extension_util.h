@@ -63,7 +63,7 @@ void SetAllowFileAccess(const std::string& extension_id,
 
 // Sets the name, id, and icon resource path of the given extension into the
 // returned dictionary.
-base::Value::Dict GetExtensionInfo(const Extension* extension);
+base::DictValue GetExtensionInfo(const Extension* extension);
 
 // Returns a PermissionSet configured with the permissions that should be
 // displayed in an extension installation prompt for the specified `extension`.

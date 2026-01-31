@@ -4,9 +4,10 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/test/fake_chrome_iwa_runtime_data_provider.h"
 
+#include <algorithm>
+
 #include "base/base64.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/containers/map_util.h"
 #include "base/containers/to_vector.h"
 #include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
@@ -38,7 +39,7 @@ FakeIwaRuntimeDataProviderBase::OnRuntimeDataChanged(
 }
 
 void FakeIwaRuntimeDataProviderBase::WriteDebugMetadata(
-    base::Value::Dict& log) const {}
+    base::DictValue& log) const {}
 
 void FakeIwaRuntimeDataProviderBase::DispatchRuntimeDataUpdate() {
   subscriptions_.Notify();
@@ -50,6 +51,7 @@ ScopedIwaRuntimeDataUpdate::ScopedIwaRuntimeDataUpdate(
       blocklist_(provider.blocklist_),
       key_rotations_(provider.key_rotations_),
       special_permissions_(provider.special_permissions_),
+      user_install_allowlist_(provider.user_install_allowlist_),
       data_provider_(provider) {}
 
 ScopedIwaRuntimeDataUpdate::~ScopedIwaRuntimeDataUpdate() {
@@ -57,6 +59,7 @@ ScopedIwaRuntimeDataUpdate::~ScopedIwaRuntimeDataUpdate() {
   data_provider_->blocklist_ = std::move(blocklist_);
   data_provider_->key_rotations_ = std::move(key_rotations_);
   data_provider_->special_permissions_ = std::move(special_permissions_);
+  data_provider_->user_install_allowlist_ = std::move(user_install_allowlist_);
   data_provider_->DispatchRuntimeDataUpdate();
 }
 
@@ -111,6 +114,20 @@ ScopedIwaRuntimeDataUpdate& ScopedIwaRuntimeDataUpdate::SetSpecialPermissions(
   return *this;
 }
 
+ScopedIwaRuntimeDataUpdate&
+ScopedIwaRuntimeDataUpdate::AddToUserInstallAllowlist(
+    const web_package::SignedWebBundleId& web_bundle_id,
+    const UserInstallAllowlistItemData& data) {
+  user_install_allowlist_.insert_or_assign(web_bundle_id.id(), data);
+  return *this;
+}
+
+ScopedIwaRuntimeDataUpdate& ScopedIwaRuntimeDataUpdate::SetUserInstallAllowlist(
+    UserInstallAllowlist user_install_allowlist) {
+  user_install_allowlist_ = std::move(user_install_allowlist);
+  return *this;
+}
+
 FakeIwaRuntimeDataProvider::FakeIwaRuntimeDataProvider() = default;
 FakeIwaRuntimeDataProvider::~FakeIwaRuntimeDataProvider() = default;
 
@@ -128,20 +145,20 @@ FakeIwaRuntimeDataProvider::GetUserInstallAllowlistData(
 
 bool FakeIwaRuntimeDataProvider::IsManagedInstallPermitted(
     std::string_view web_bundle_id) const {
-  return base::Contains(managed_allowlist_, web_bundle_id,
-                        &web_package::SignedWebBundleId::id);
+  return std::ranges::contains(managed_allowlist_, web_bundle_id,
+                               &web_package::SignedWebBundleId::id);
 }
 
 bool FakeIwaRuntimeDataProvider::IsManagedUpdatePermitted(
     std::string_view web_bundle_id) const {
-  return base::Contains(managed_allowlist_, web_bundle_id,
-                        &web_package::SignedWebBundleId::id);
+  return std::ranges::contains(managed_allowlist_, web_bundle_id,
+                               &web_package::SignedWebBundleId::id);
 }
 
 bool FakeIwaRuntimeDataProvider::IsBundleBlocklisted(
     std::string_view web_bundle_id) const {
-  return base::Contains(blocklist_, web_bundle_id,
-                        &web_package::SignedWebBundleId::id);
+  return std::ranges::contains(blocklist_, web_bundle_id,
+                               &web_package::SignedWebBundleId::id);
 }
 
 const ChromeIwaRuntimeDataProvider::SpecialAppPermissionsInfo*
@@ -159,18 +176,6 @@ FakeIwaRuntimeDataProvider::GetSkipMultiCaptureNotificationBundleIds() const {
     }
   }
   return bundle_ids;
-}
-
-FakeIwaRuntimeDataProviderInitializer::FakeIwaRuntimeDataProviderInitializer(
-    ChromeIwaRuntimeDataProvider& data_provider)
-    : data_provider_(data_provider) {}
-
-FakeIwaRuntimeDataProviderInitializer::
-    ~FakeIwaRuntimeDataProviderInitializer() = default;
-
-void FakeIwaRuntimeDataProviderInitializer::PreCreateThreads() {
-  resetter_ =
-      ChromeIwaRuntimeDataProvider::SetInstanceForTesting(&*data_provider_);
 }
 
 }  // namespace web_app

@@ -52,7 +52,7 @@ HttpStreamPool::QuicAttempt::QuicAttempt(AttemptManager* manager,
 
   net_log_.BeginEvent(
       NetLogEventType::HTTP_STREAM_POOL_QUIC_ATTEMPT_ALIVE, [&] {
-        base::Value::Dict dict;
+        base::DictValue dict;
         dict.Set("quic_version",
                  quic::ParsedQuicVersionToString(quic_endpoint_.quic_version));
         dict.Set("ip_endpoint", quic_endpoint_.ip_endpoint.ToString());
@@ -117,8 +117,8 @@ void HttpStreamPool::QuicAttempt::Start() {
   }
 }
 
-base::Value::Dict HttpStreamPool::QuicAttempt::GetInfoAsValue() const {
-  base::Value::Dict dict;
+base::DictValue HttpStreamPool::QuicAttempt::GetInfoAsValue() const {
+  base::DictValue dict;
   dict.Set("quic_version",
            quic::ParsedQuicVersionToString(quic_endpoint_.quic_version));
   dict.Set("ip_endpoint", quic_endpoint_.ip_endpoint.ToString());

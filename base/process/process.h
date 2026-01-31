@@ -33,12 +33,6 @@
 namespace base {
 
 #if BUILDFLAG(IS_CHROMEOS)
-// OneGroupPerRenderer feature places each foreground renderer process into
-// its own cgroup. This will cause the scheduler to use the aggregate runtime
-// of all threads in the process when deciding on the next thread to schedule.
-// It will help guarantee fairness between renderers.
-BASE_EXPORT BASE_DECLARE_FEATURE(kOneGroupPerRenderer);
-
 // Set all threads of a background process as backgrounded, which changes the
 // thread attributes including c-group, latency sensitivity. But the nice value
 // is unchanged, since background process is under the spell of the background
@@ -142,14 +136,6 @@ class BASE_EXPORT Process {
   // Returns true if this process is the current process.
   bool is_current() const;
 
-#if BUILDFLAG(IS_CHROMEOS)
-  // A unique token generated for each process, this is used to create a unique
-  // cgroup for each renderer.
-  const std::string& unique_token() const LIFETIME_BOUND {
-    return unique_token_;
-  }
-#endif
-
   // Close the process handle. This will not terminate the process.
   void Close();
 
@@ -206,12 +192,12 @@ class BASE_EXPORT Process {
   void Exited(int exit_code) const;
 
   // The different priorities that a process can have.
-  // TODO(pmonette): Consider merging with base::TaskPriority when the API is
-  //                 stable.
   enum class Priority {
+    kMinValue = 0,
+
     // The process does not contribute to content that is currently important
     // to the user. Lowest priority.
-    kBestEffort,
+    kBestEffort = kMinValue,
 
     // The process contributes to content that is visible to the user, but the
     // work don't have significant performance or latency requirement, so it can
@@ -272,14 +258,6 @@ class BASE_EXPORT Process {
   // must be externally synchronized with any call to base::Process methods.
   static void SetProcessPriorityDelegate(ProcessPriorityDelegate* delegate);
 
-  // Exposes OneGroupPerRendererEnabled() to unit tests.
-  static bool OneGroupPerRendererEnabledForTesting();
-
-  // If OneGroupPerRenderer is enabled, runs at process startup to clean up
-  // any stale cgroups that were left behind from any unclean exits of the
-  // browser process.
-  static void CleanUpStaleProcessStates();
-
   // Initializes the process's priority.
   //
   // This should be called before SetPriority().
@@ -329,20 +307,6 @@ class BASE_EXPORT Process {
 #endif
 
  private:
-#if BUILDFLAG(IS_CHROMEOS)
-  // Cleans up process state. If OneGroupPerRenderer is enabled, it cleans up
-  // the cgroup created by InitializePriority(). If the process has not
-  // fully terminated yet, it will post a background task to try again.
-  void CleanUpProcess(int remaining_retries) const;
-
-  // Calls CleanUpProcess() on a background thread.
-  void CleanUpProcessAsync() const;
-
-  // Used to call CleanUpProcess() on a background thread because Process is not
-  // refcounted.
-  static void CleanUpProcessScheduled(Process process, int remaining_retries);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 #if !BUILDFLAG(IS_IOS) || (BUILDFLAG(IS_IOS) && TARGET_OS_SIMULATOR)
   bool TerminateInternal(int exit_code, bool wait) const;
   bool WaitForExitWithTimeoutImpl(base::ProcessHandle handle,
@@ -369,15 +333,10 @@ class BASE_EXPORT Process {
   // for termination we defer to some globally initialized callbacks.
   bool content_process_ = false;
 #endif
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // A unique token per process not per class instance (`base::Process`). This
-  // is similar to the PID of a process but should not be reused after the
-  // process's termination. The token will be copied during Duplicate()
-  // and move semantics as is the PID/ProcessHandle.
-  std::string unique_token_;
-#endif
 };
+
+BASE_EXPORT const char* ProcessPriorityToString(
+    Process::Priority process_priority);
 
 #if BUILDFLAG(IS_CHROMEOS)
 // Exposed for testing.

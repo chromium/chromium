@@ -36,6 +36,7 @@
 #include "components/sync/service/data_type_controller.h"
 #include "components/sync/service/data_type_manager.h"
 #include "components/sync/service/data_type_manager_observer.h"
+#include "components/sync/service/device_statistics_tracker.h"
 #include "components/sync/service/local_data_migration_item_queue.h"
 #include "components/sync/service/sync_auth_manager.h"
 #include "components/sync/service/sync_client.h"
@@ -159,7 +160,7 @@ class SyncServiceImpl : public SyncService,
   void AddProtocolEventObserver(ProtocolEventObserver* observer) override;
   void RemoveProtocolEventObserver(ProtocolEventObserver* observer) override;
   void GetAllNodesForDebugging(
-      base::OnceCallback<void(base::Value::List)> callback) override;
+      base::OnceCallback<void(base::ListValue)> callback) override;
   DataTypeDownloadStatus GetDownloadStatusFor(DataType type) const override;
   void GetTypesWithUnsyncedData(
       DataTypeSet requested_types,
@@ -176,7 +177,8 @@ class SyncServiceImpl : public SyncService,
   void SelectTypeAndMigrateLocalDataItemsWhenActive(
       DataType data_type,
       std::vector<LocalDataItemModel::DataId> items) override;
-  void AcknowledgeBookmarksLimitExceededError() override;
+  void AcknowledgeBookmarksLimitExceededError(
+      BookmarksLimitExceededHelpClickedSource source) override;
 
   // SyncEngineHost implementation.
   void OnEngineInitialized(bool success,
@@ -408,6 +410,9 @@ class SyncServiceImpl : public SyncService,
       base::OnceCallback<void(std::map<DataType, LocalDataDescription>)>
           callback);
 
+  void MaybeStartDeviceStatisticsTracker();
+  void DeviceStatisticsTrackerDone();
+
   // This profile's SyncClient.
   const std::unique_ptr<SyncClient> sync_client_;
 
@@ -537,6 +542,8 @@ class SyncServiceImpl : public SyncService,
 
   // Tasks that should run after the engine is initialized.
   std::vector<base::OnceClosure> tasks_waiting_for_engine_initialization_;
+
+  std::unique_ptr<DeviceStatisticsTracker> device_statistics_tracker_;
 
 #if BUILDFLAG(IS_ANDROID)
   // Manage and fetch the java object that wraps this SyncService on

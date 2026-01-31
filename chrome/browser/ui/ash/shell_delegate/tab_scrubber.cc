@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/browser_delegate/browser_controller.h"
 #include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
@@ -277,7 +278,11 @@ void TabScrubber::BeginScrub(BrowserView* browser_view, float x_offset) {
   DCHECK(browser_view->browser());
 
   scrubbing_start_time_ = base::TimeTicks::Now();
-  tab_strip_ = browser_view->tabstrip();
+  // TODO(crbug.com/465835455): Move TabScrubber into
+  // HorizontalTabStripRegionView since the current implementation won't work
+  // for Vertical Tabs.
+  tab_strip_ = views::AsViewClass<TabStrip>(
+      browser_view->tab_strip_view()->GetTabStripView());
   scrubbing_ = true;
   browser_ =
       BrowserController::GetInstance()->GetDelegate(browser_view->browser());

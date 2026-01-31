@@ -7,7 +7,6 @@
 
 #include <unordered_map>
 
-#include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "base/time/default_clock.h"
 #include "base/unguessable_token.h"
@@ -65,7 +64,7 @@ class FakeConnectionAttempt : public ConnectionAttempt<FailureDetailType> {
       std::unique_ptr<PendingConnectionRequest<FailureDetailType>> request)
       override {
     DCHECK(request);
-    DCHECK(!base::Contains(id_to_request_map_, request->GetRequestId()));
+    DCHECK(!id_to_request_map_.contains(request->GetRequestId()));
 
     id_to_request_map_[request->GetRequestId()] = std::move(request);
   }

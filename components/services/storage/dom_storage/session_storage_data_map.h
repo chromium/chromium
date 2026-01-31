@@ -22,8 +22,7 @@ class AsyncDomStorageDatabase;
 // namespace-origin area has a data map. To support shallow copying of the data
 // (copy-on-write), a single data map can be shared between multiple namespaces.
 // Thus this class is refcounted. This class has a one-to-one relationship with
-// the SessionStorageMetadata::MapData object, accessible from
-// |map_data()|.
+// the `SharedMapLocator` object, accessible from `map_locator()`.
 //
 // Neither this data map nor the inner StorageArea is bound to, as it needs
 // to be shared between multiple connections if it is shallow-copied. However,
@@ -36,25 +35,25 @@ class SessionStorageDataMap final
   class Listener {
    public:
     virtual ~Listener() = default;
-    virtual void OnDataMapCreation(const std::vector<uint8_t>& map_id,
+    virtual void OnDataMapCreation(int64_t map_id,
                                    SessionStorageDataMap* map) = 0;
-    virtual void OnDataMapDestruction(const std::vector<uint8_t>& map_id) = 0;
+    virtual void OnDataMapDestruction(int64_t map_id) = 0;
     virtual void OnCommitResult(DbStatus status) = 0;
   };
 
   static scoped_refptr<SessionStorageDataMap> CreateFromDisk(
       Listener* listener,
-      scoped_refptr<SessionStorageMetadata::MapData> map_data,
+      scoped_refptr<DomStorageDatabase::SharedMapLocator> map_locator,
       AsyncDomStorageDatabase* database);
 
   static scoped_refptr<SessionStorageDataMap> CreateEmpty(
       Listener* listener,
-      scoped_refptr<SessionStorageMetadata::MapData> map_data,
+      scoped_refptr<DomStorageDatabase::SharedMapLocator> map_locator,
       AsyncDomStorageDatabase* database);
 
   static scoped_refptr<SessionStorageDataMap> CreateClone(
       Listener* listener,
-      scoped_refptr<SessionStorageMetadata::MapData> map_data,
+      scoped_refptr<DomStorageDatabase::SharedMapLocator> map_locator,
       scoped_refptr<SessionStorageDataMap> clone_from);
 
   SessionStorageDataMap(const SessionStorageDataMap&) = delete;
@@ -64,8 +63,8 @@ class SessionStorageDataMap final
 
   StorageAreaImpl* storage_area() { return storage_area_ptr_; }
 
-  scoped_refptr<SessionStorageMetadata::MapData> map_data() {
-    return map_data_.get();
+  const DomStorageDatabase::SharedMapLocator& map_locator() {
+    return *map_locator_;
   }
 
   int binding_count() { return binding_count_; }
@@ -84,12 +83,12 @@ class SessionStorageDataMap final
 
   SessionStorageDataMap(
       Listener* listener,
-      scoped_refptr<SessionStorageMetadata::MapData> map_entry,
+      scoped_refptr<DomStorageDatabase::SharedMapLocator> map_locator,
       AsyncDomStorageDatabase* database,
       bool is_empty);
   SessionStorageDataMap(
       Listener* listener,
-      scoped_refptr<SessionStorageMetadata::MapData> map_entry,
+      scoped_refptr<DomStorageDatabase::SharedMapLocator> map_locator,
       scoped_refptr<SessionStorageDataMap> forking_from);
   ~SessionStorageDataMap() override;
 
@@ -105,7 +104,7 @@ class SessionStorageDataMap final
   // completes synchronously.
   scoped_refptr<SessionStorageDataMap> clone_from_data_map_;
 
-  scoped_refptr<SessionStorageMetadata::MapData> map_data_;
+  scoped_refptr<DomStorageDatabase::SharedMapLocator> map_locator_;
   std::unique_ptr<StorageAreaImpl> storage_area_impl_;
   // Holds the same value as |storage_area_impl_|. The reason for this is that
   // during destruction of the StorageAreaImpl instance we might still get

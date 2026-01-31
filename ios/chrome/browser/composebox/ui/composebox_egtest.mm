@@ -4,15 +4,20 @@
 
 #import <XCTest/XCTest.h>
 
+#import "components/omnibox/browser/aim_eligibility_service_features.h"
+#import "ios/chrome/browser/composebox/ui/composebox_app_interface.h"
 #import "ios/chrome/browser/composebox/ui/composebox_ui_constants.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/test/tabs_egtest_util.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
+#import "ui/base/l10n/l10n_util.h"
 
 namespace {
 
@@ -28,6 +33,39 @@ id<GREYMatcher> ComposeboxClearButtonMatcher() {
       grey_sufficientlyVisible(), nil);
 }
 
+// A long text used to ensure the composebox is expanded when it is on a compact
+// mode.
+NSString* kLongText =
+    @"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod "
+    @"tempor incididunt ut labore et dolore magna aliqua.";
+
+// Opens the tab picker from the composebox.
+void OpenTabPicker() {
+  NSError* error = nil;
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
+      performAction:grey_tap()
+              error:&error];
+  if (error) {
+    [ChromeEarlGreyUI focusOmnibox];
+  }
+
+  // Wait for the composebox to be visible.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:ComposeboxMatcher()];
+
+  // Tap the plus button.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kComposeboxPlusButtonAccessibilityIdentifier)]
+      performAction:grey_tap()];
+
+  // Tap the select tabs button.
+  id<GREYMatcher> selectTabsMatcher =
+      chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
+          IDS_IOS_COMPOSEBOX_SELECT_TAB_ACTION);
+  [[EarlGrey selectElementWithMatcher:selectTabsMatcher]
+      performAction:grey_tap()];
+}
+
 }  // namespace
 
 @interface ComposeboxTestCase : ChromeTestCase
@@ -38,6 +76,9 @@ id<GREYMatcher> ComposeboxClearButtonMatcher() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   config.features_enabled.push_back(kComposeboxIOS);
+  // Only rely on local conditions for AIM eligibility, so disable the
+  // server-side checks.
+  config.features_disabled.push_back(omnibox::kAimServerEligibilityEnabled);
   return config;
 }
 
@@ -78,6 +119,25 @@ id<GREYMatcher> ComposeboxClearButtonMatcher() {
       assertWithMatcher:grey_notVisible()];
 }
 
+// Tests that the Composebox is hidden when not eligible.
+- (void)testComposeboxHiddenWhenNotEligible {
+  // Composebox is not available on iPad.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad as composebox is not available.");
+  }
+
+  [ComposeboxAppInterface setAimEligible:NO];
+
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
+  [ChromeEarlGreyUI focusOmnibox];
+
+  // Check that Composebox elements are NOT visible.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kComposeboxPlusButtonAccessibilityIdentifier)]
+      assertWithMatcher:grey_notVisible()];
+}
+
 // Tests that typing in the Composebox shows the Send button.
 - (void)testComposeboxSendButtonVisibility {
   // Composebox is not available on iPad.
@@ -88,9 +148,12 @@ id<GREYMatcher> ComposeboxClearButtonMatcher() {
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
   [ChromeEarlGreyUI focusOmnibox];
 
-  // Type some text.
+  // Wait for the composebox to be visible.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:ComposeboxMatcher()];
+
+  // Type some long text that expands the composebox.
   [[EarlGrey selectElementWithMatcher:ComposeboxMatcher()]
-      performAction:grey_typeText(@"test")];
+      performAction:grey_typeText(kLongText)];
 
   // Send button is visible.
   [[EarlGrey
@@ -106,6 +169,270 @@ id<GREYMatcher> ComposeboxClearButtonMatcher() {
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(
                                    kComposeboxMicButtonAccessibilityIdentifier)]
+      assertWithMatcher:grey_notVisible()];
+}
+
+// Tests that image generation action is present when eligible.
+- (void)testComposeboxCreateImageEligible {
+  // Composebox is not available on iPad.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad as composebox is not available.");
+  }
+
+  [ComposeboxAppInterface setCreateImagesEligible:YES];
+
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
+  [ChromeEarlGreyUI focusOmnibox];
+
+  // Wait for the composebox to be visible.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:ComposeboxMatcher()];
+
+  // Tap the plus button.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kComposeboxPlusButtonAccessibilityIdentifier)]
+      performAction:grey_tap()];
+
+  // Tap the "Create image" button.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kComposeboxImageGenerationActionAccessibilityIdentifier)]
+      performAction:grey_tap()];
+
+  // Verify that the image generation button is visible.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:
+          grey_accessibilityID(
+              kComposeboxImageGenerationButtonAccessibilityIdentifier)];
+}
+
+// Tests that the image generation action is not available when not eligible.
+- (void)testComposeboxCreateImageNotEligible {
+  // Composebox is not available on iPad.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad as composebox is not available.");
+  }
+
+  [ComposeboxAppInterface setCreateImagesEligible:NO];
+
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
+  [ChromeEarlGreyUI focusOmnibox];
+
+  // Wait for the composebox to be visible.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:ComposeboxMatcher()];
+
+  // Tap the plus button.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kComposeboxPlusButtonAccessibilityIdentifier)]
+      performAction:grey_tap()];
+
+  // Verify that the "Create image" action is NOT visible.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kComposeboxImageGenerationActionAccessibilityIdentifier)]
+      assertWithMatcher:grey_notVisible()];
+}
+
+// Tests that the AI mode action works as expected.
+- (void)testComposeboxAIModeAction {
+  // Composebox is not available on iPad.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad as composebox is not available.");
+  }
+
+  [ComposeboxAppInterface setAimEligible:YES];
+
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
+  [ChromeEarlGreyUI focusOmnibox];
+
+  // Wait for the composebox to be visible.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:ComposeboxMatcher()];
+
+  // Tap the plus button.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kComposeboxPlusButtonAccessibilityIdentifier)]
+      performAction:grey_tap()];
+
+  // Tap the "AI Mode" action.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kComposeboxAIMActionAccessibilityIdentifier)]
+      performAction:grey_tap()];
+
+  // Verify that the AI mode button is visible.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:
+          grey_accessibilityID(kComposeboxAIMButtonAccessibilityIdentifier)];
+
+  // Tap the AI mode button to disable AI mode.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kComposeboxAIMButtonAccessibilityIdentifier)]
+      performAction:grey_tap()];
+
+  // Verify that the AI mode button disappears.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kComposeboxAIMButtonAccessibilityIdentifier)]
+      assertWithMatcher:grey_notVisible()];
+}
+
+// Tests that all buttons in the plus menu are enabled.
+- (void)testPlusMenuButtonsEnabled {
+  // Composebox is not available on iPad.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad as composebox is not available.");
+  }
+
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
+  [ChromeEarlGreyUI focusOmnibox];
+
+  // Wait for the composebox to be visible.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:ComposeboxMatcher()];
+
+  // Tap the plus button.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kComposeboxPlusButtonAccessibilityIdentifier)]
+      performAction:grey_tap()];
+
+  // Check that the buttons are enabled.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kComposeboxImageGenerationActionAccessibilityIdentifier)]
+      assertWithMatcher:grey_enabled()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kComposeboxAIMActionAccessibilityIdentifier)]
+      assertWithMatcher:grey_enabled()];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kComposeboxSelectTabsActionAccessibilityIdentifier)]
+      assertWithMatcher:grey_enabled()];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kComposeboxAttachFileActionAccessibilityIdentifier)]
+      assertWithMatcher:grey_enabled()];
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kComposeboxGalleryActionAccessibilityIdentifier)]
+      assertWithMatcher:grey_enabled()];
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kComposeboxCameraActionAccessibilityIdentifier)]
+      assertWithMatcher:grey_enabled()];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kComposeboxAttachCurrentTabActionAccessibilityIdentifier)]
+      assertWithMatcher:grey_enabled()];
+}
+
+// Tests that tapping the attach tabs button opens the tab picker. Ensures that
+// the title is set correctly and buttons are correctly enabled or disabled.
+- (void)testTabPickerUI {
+  // Composebox is not available on iPad.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad as composebox is not available.");
+  }
+
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
+  OpenTabPicker();
+
+  // Check that the tab picker is visible.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kComposeboxTabPickerCollectionViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_text(l10n_util::GetNSString(
+                     IDS_IOS_COMPOSEBOX_TAB_PICKER_ADD_TABS_TITLE))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Check that the current tab cell is visible.
+  NSString* pageTitle = [ChromeEarlGrey currentTabTitle];
+  id<GREYMatcher> tabMatcher = TabWithTitle(pageTitle);
+  [[EarlGrey selectElementWithMatcher:tabMatcher]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Check that the Done button is disabled.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
+      assertWithMatcher:grey_allOf(grey_notNil(),
+                                   grey_accessibilityTrait(
+                                       UIAccessibilityTraitNotEnabled),
+                                   nil)];
+
+  // Tap the tab to select it.
+  [[EarlGrey selectElementWithMatcher:tabMatcher] performAction:grey_tap()];
+
+  // Check that the Done button is enabled.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
+      assertWithMatcher:grey_enabled()];
+
+  // Ensure the tab picker title is updated correctly.
+  [[EarlGrey
+      selectElementWithMatcher:grey_text(l10n_util::GetPluralNSStringF(
+                                   IDS_IOS_TAB_GRID_SELECTED_TABS_TITLE, 1))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap the tab again to deselect it.
+  [[EarlGrey selectElementWithMatcher:tabMatcher] performAction:grey_tap()];
+
+  // Check that the Done button is disabled again and the tab picker's title is
+  // back to its initial state.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
+      assertWithMatcher:grey_allOf(grey_notNil(),
+                                   grey_accessibilityTrait(
+                                       UIAccessibilityTraitNotEnabled),
+                                   nil)];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_text(l10n_util::GetNSString(
+                     IDS_IOS_COMPOSEBOX_TAB_PICKER_ADD_TABS_TITLE))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that the empty state view is displayed when only NTPs are available
+// (User should not be able to attach NTPs to the composebox). It also ensure
+// that the user can dismiss the view.
+- (void)testTabPickerEmptyStateView {
+  // Composebox is not available on iPad.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad as composebox is not available.");
+  }
+
+  [ChromeEarlGrey closeAllNormalTabs];
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey waitForMainTabCount:1];
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey waitForMainTabCount:2];
+
+  OpenTabPicker();
+
+  // Check that the empty state view is visible.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kComposeboxTabPickerEmptyStateViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Check that the Done button is disabled and Cancel is enabled.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
+      assertWithMatcher:grey_allOf(grey_notNil(),
+                                   grey_accessibilityTrait(
+                                       UIAccessibilityTraitNotEnabled),
+                                   nil)];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::NavigationBarCancelButton()]
+      performAction:grey_tap()];
+
+  // Check that the tab picker is not visible anymore.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kComposeboxTabPickerCollectionViewAccessibilityIdentifier)]
       assertWithMatcher:grey_notVisible()];
 }
 

@@ -39,7 +39,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
-import org.robolectric.shadows.ShadowLog;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
@@ -99,7 +98,6 @@ public final class WebFeedMainMenuItemTest {
     @Before
     public void setUp() {
         // Print logs to stdout.
-        ShadowLog.stream = System.out;
         WebFeedBridgeJni.setInstanceForTesting(mWebFeedBridgeJniMock);
 
         when(mWebFeedBridgeJniMock.isCormorantEnabledForLocale()).thenReturn(true);

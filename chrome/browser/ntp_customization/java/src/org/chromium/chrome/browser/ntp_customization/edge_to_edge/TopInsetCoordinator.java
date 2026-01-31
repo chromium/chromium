@@ -29,24 +29,13 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSupplierObserver;
+import org.chromium.chrome.browser.ui.edge_to_edge.TopInsetProvider;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.ui.insets.InsetObserver;
 
 @NullMarked
 /** Class to consume top Insets to make supported native page (NTP) truly edge to edge. */
-public class TopInsetCoordinator implements InsetObserver.WindowInsetsConsumer {
-    /** Observer to notify when a change has been made in the top inset. */
-    public interface Observer {
-        /**
-         * Notifies that a change has been made in the top inset and supplies the new inset.
-         *
-         * @param systemTopInset The system's top inset. This represents the height of the status
-         *     bar, regardless of whether the page is drawing edge-to-edge.
-         * @param consumeTopInset Whether the system's top inset will be removed.
-         */
-        void onToEdgeChange(int systemTopInset, boolean consumeTopInset);
-    }
-
+public class TopInsetCoordinator implements InsetObserver.WindowInsetsConsumer, TopInsetProvider {
     private final ObserverList<Observer> mObservers = new ObserverList<>();
     private final NullableObservableSupplier<Tab> mTabSupplier;
     private final TabObserver mTabObserver;
@@ -163,6 +152,11 @@ public class TopInsetCoordinator implements InsetObserver.WindowInsetsConsumer {
                     }
 
                     @Override
+                    public void onBackgroundReset(@NtpBackgroundImageType int oldType) {
+                        onNtpBackgroundReset(oldType);
+                    }
+
+                    @Override
                     public void refreshWindowInsets(boolean consumeTopInset) {
                         TopInsetCoordinator.this.refreshWindowInsets(consumeTopInset);
                     }
@@ -211,11 +205,13 @@ public class TopInsetCoordinator implements InsetObserver.WindowInsetsConsumer {
     }
 
     /** Adds an observer. */
+    @Override
     public void addObserver(Observer observer) {
         mObservers.addObserver(observer);
     }
 
     /** Removes an observer. */
+    @Override
     public void removeObserver(Observer observer) {
         mObservers.removeObserver(observer);
     }
@@ -280,6 +276,7 @@ public class TopInsetCoordinator implements InsetObserver.WindowInsetsConsumer {
     }
 
     /** Destroys the TopInsetCoordinator instance. */
+    @Override
     public void destroy() {
         mObservers.clear();
         removeObservers();
@@ -287,28 +284,36 @@ public class TopInsetCoordinator implements InsetObserver.WindowInsetsConsumer {
         NtpCustomizationConfigManager.getInstance().removeListener(mHomepageStateListener);
     }
 
-    // Called when a customized background of NTP is selected or removed. It initializes or removes
-    // observers which track the Tab and Layout transitions.
+    // Called when a customized background of NTP is selected. It initializes observers which track
+    // the Tab and Layout transitions.
     @VisibleForTesting
     void onNtpBackgroundChanged(
             boolean fromInitialization,
             @NtpBackgroundImageType int oldType,
             @NtpBackgroundImageType int newType) {
+        if (oldType == newType) return;
+
         boolean shouldRefreshWindowInsets = false;
-        if (oldType != newType && newType == NtpBackgroundImageType.DEFAULT) {
-            removeObservers();
-            shouldRefreshWindowInsets = true;
-        } else if (oldType != newType && oldType == NtpBackgroundImageType.DEFAULT) {
+        if (oldType == NtpBackgroundImageType.DEFAULT) {
             addObservers();
             shouldRefreshWindowInsets = true;
         }
 
         if (fromInitialization || !shouldRefreshWindowInsets) return;
 
-        refreshWindowInsets(newType != NtpBackgroundImageType.DEFAULT);
+        refreshWindowInsets(/* consumeTopInset= */ true);
+    }
+
+    @VisibleForTesting
+    void onNtpBackgroundReset(@NtpBackgroundImageType int oldType) {
+        if (oldType == NtpBackgroundImageType.DEFAULT) return;
+
+        removeObservers();
+        refreshWindowInsets(/* consumeTopInset= */ false);
     }
 
     /** Returns the system's top inset. */
+    @Override
     public int getSystemTopInset() {
         return mSystemInsets.top;
     }

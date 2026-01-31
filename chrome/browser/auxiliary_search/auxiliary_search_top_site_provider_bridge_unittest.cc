@@ -20,15 +20,17 @@ constexpr size_t kMaxNumMostVisitedSites = 4;
 class MockMostVisitedSites : public ntp_tiles::MostVisitedSites {
  public:
   explicit MockMostVisitedSites(PrefService* prefs)
-      : ntp_tiles::MostVisitedSites(prefs,
-                                    /*identity_manager*/ nullptr,
-                                    /*supervised_user_service*/ nullptr,
-                                    /*top_sites*/ nullptr,
-                                    /*popular_sites*/ nullptr,
-                                    /*custom_links*/ nullptr,
-                                    /*enterprise_shortcuts*/ nullptr,
-                                    /*icon_cacher*/ nullptr,
-                                    /*is_default_chrome_app_migrated*/ true) {}
+      : ntp_tiles::MostVisitedSites(
+            prefs,
+            /*identity_manager=*/nullptr,
+            /*supervised_user_service=*/nullptr,
+            /*supervised_user_url_filtering_service=*/nullptr,
+            /*top_site=s*/ nullptr,
+            /*popular_sites=*/nullptr,
+            /*custom_links=*/nullptr,
+            /*enterprise_shortcuts=*/nullptr,
+            /*icon_cacher=*/nullptr,
+            /*is_default_chrome_app_migrated=*/true) {}
 
   MockMostVisitedSites(const MockMostVisitedSites&) = delete;
   MockMostVisitedSites& operator=(const MockMostVisitedSites&) = delete;

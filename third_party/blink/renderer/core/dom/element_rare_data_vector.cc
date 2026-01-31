@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/dom/element_rare_data_vector.h"
 
 #include "third_party/blink/renderer/core/animation/element_animations.h"
+#include "third_party/blink/renderer/core/animation/scroll_timeline.h"
 #include "third_party/blink/renderer/core/css/container_query_data.h"
 #include "third_party/blink/renderer/core/css/cssom/inline_style_property_map.h"
 #include "third_party/blink/renderer/core/css/inline_css_style_declaration.h"
@@ -12,17 +13,22 @@
 #include "third_party/blink/renderer/core/css/style_scope_data.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_context.h"
 #include "third_party/blink/renderer/core/dom/attr.h"
+#include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/css_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/dataset_dom_string_map.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/element_rare_data_vector.h"
 #include "third_party/blink/renderer/core/dom/explicitly_set_attr_elements_map.h"
+#include "third_party/blink/renderer/core/dom/flat_tree_node_data.h"
 #include "third_party/blink/renderer/core/dom/has_invalidation_flags.h"
 #include "third_party/blink/renderer/core/dom/interest_invoker_target_data.h"
 #include "third_party/blink/renderer/core/dom/invoker_data.h"
+#include "third_party/blink/renderer/core/dom/mutation_observer_registration.h"
 #include "third_party/blink/renderer/core/dom/named_node_map.h"
 #include "third_party/blink/renderer/core/dom/names_map.h"
-#include "third_party/blink/renderer/core/dom/node_rare_data.h"
+#include "third_party/blink/renderer/core/dom/node_lists_node_data.h"
+#include "third_party/blink/renderer/core/dom/part.h"
 #include "third_party/blink/renderer/core/dom/popover_data.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_group_data.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -36,36 +42,96 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/intersection_observer/element_intersection_observer_data.h"
 #include "third_party/blink/renderer/core/layout/anchor_position_scroll_data.h"
+#include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/overscroll/overscroll_area_tracker.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observation.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/content_data.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/wtf/size_assertions.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
-
-ElementRareDataVector::ElementRareDataVector() = default;
 
 ElementRareDataVector::~ElementRareDataVector() {
   DCHECK(!GetField(FieldId::kPseudoElementData));
 }
 
 ElementRareDataField* ElementRareDataVector::GetField(FieldId field_id) const {
-  if (fields_.HasField(field_id)) {
-    return fields_.GetField(field_id).Get();
+  if (HasField(field_id)) {
+    return ArraySlot(field_id);
   }
   return nullptr;
 }
 
-void ElementRareDataVector::SetField(FieldId field_id,
-                                     ElementRareDataField* field) {
-  if (field) {
-    fields_.SetField(field_id, field);
-  } else {
-    fields_.EraseField(field_id);
+ElementRareDataVector* ElementRareDataVector::SetField(
+    FieldId field_id,
+    ElementRareDataField* field) {
+  ElementRareDataVector* vec = this;
+  if (!HasField(field_id)) {
+    if (field == nullptr) {
+      return vec;
+    }
+    size_t current_size = size();
+    if (current_size >= kMinimumVectorSize &&
+        (current_size & (current_size - 1)) == 0) {
+      // We're at a power of two elements, so we're out of capacity and need to
+      // reallocate.
+      size_t new_size = std::max<size_t>(current_size * 2, 1);
+      vec = MakeGarbageCollected<ElementRareDataVector>(
+          AdditionalBytes(kSlotSizeBytes * new_size), PassKey(),
+          std::move(*this));
+    }
+
+    // Update the bitfield first, so that if we're tracing in parallel,
+    // we're not missing the last field. AdditionalBytes is guaranteed to
+    // initially be zero, so tracing the newly visible member is safe.
+    vec->fields_bitfield_ |= FieldIdMask(field_id);
+
+    size_t idx = GetFieldIndex(field_id);
+    UNSAFE_BUFFERS(
+        VectorTypeOperations<Member<ElementRareDataField>, HeapAllocator>::
+            MoveOverlapping(vec->ArrayBase() + idx,
+                            vec->ArrayBase() + current_size,
+                            vec->ArrayBase() + idx + 1,
+                            VectorOperationOrigin::kRegularModification));
   }
+  vec->ArraySlot(field_id) = field;
+  return vec;
+}
+
+void ElementRareDataVector::SetFieldToNullIfExists(FieldId field_id) {
+  ElementRareDataVector* vec = this;
+  if (HasField(field_id)) {
+    vec->ArraySlot(field_id) = nullptr;
+  }
+}
+
+NodeListsNodeData* ElementRareDataVector::NodeLists() const {
+  return static_cast<NodeListsNodeData*>(GetField(FieldId::kNodeLists));
+}
+
+std::pair<std::reference_wrapper<NodeListsNodeData>, ElementRareDataVector*>
+ElementRareDataVector::EnsureNodeLists() {
+  return EnsureField<NodeListsNodeData>(FieldId::kNodeLists);
+}
+
+FlatTreeNodeData* ElementRareDataVector::GetFlatTreeNodeData() const {
+  return static_cast<FlatTreeNodeData*>(GetField(FieldId::kFlatTreeNodeData));
+}
+
+NodeMutationObserverData* ElementRareDataVector::MutationObserverData() {
+  return static_cast<NodeMutationObserverData*>(
+      GetField(FieldId::kMutationObserverData));
+}
+std::pair<std::reference_wrapper<NodeMutationObserverData>,
+          ElementRareDataVector*>
+ElementRareDataVector::EnsureMutationObserverData() {
+  return EnsureField<NodeMutationObserverData>(FieldId::kMutationObserverData);
 }
 
 bool ElementRareDataVector::HasPseudoElements() const {
@@ -80,22 +146,24 @@ void ElementRareDataVector::ClearPseudoElements() {
       static_cast<PseudoElementData*>(GetField(FieldId::kPseudoElementData));
   if (data) {
     data->ClearPseudoElements();
-    SetField(FieldId::kPseudoElementData, nullptr);
+    SetFieldToNullIfExists(FieldId::kPseudoElementData);
   }
 }
-void ElementRareDataVector::SetPseudoElement(
+ElementRareDataVector* ElementRareDataVector::SetPseudoElement(
     PseudoId pseudo_id,
     PseudoElement* element,
     const AtomicString& document_transition_tag) {
   PseudoElementData* data =
       static_cast<PseudoElementData*>(GetField(FieldId::kPseudoElementData));
+  ElementRareDataVector* vec = this;
   if (!data) {
     if (!element)
-      return;
+      return this;
     data = MakeGarbageCollected<PseudoElementData>();
-    SetField(FieldId::kPseudoElementData, data);
+    vec = SetField(FieldId::kPseudoElementData, data);
   }
   data->SetPseudoElement(pseudo_id, element, document_transition_tag);
+  return vec;
 }
 PseudoElement* ElementRareDataVector::GetPseudoElement(
     PseudoId pseudo_id,
@@ -121,15 +189,12 @@ ElementRareDataVector::GetPseudoElements() const {
     return {};
   return data->GetPseudoElements();
 }
-void ElementRareDataVector::AddColumnPseudoElement(
+ElementRareDataVector* ElementRareDataVector::AddColumnPseudoElement(
     ColumnPseudoElement& column_pseudo_element) {
-  PseudoElementData* data =
-      static_cast<PseudoElementData*>(GetField(FieldId::kPseudoElementData));
-  if (!data) {
-    data = MakeGarbageCollected<PseudoElementData>();
-    SetField(FieldId::kPseudoElementData, data);
-  }
-  data->AddColumnPseudoElement(column_pseudo_element);
+  auto [data, vec] =
+      EnsureField<PseudoElementData>(FieldId::kPseudoElementData);
+  data.get().AddColumnPseudoElement(column_pseudo_element);
+  return vec;
 }
 
 const ColumnPseudoElementsVector*
@@ -161,38 +226,8 @@ void ElementRareDataVector::ClearColumnPseudoElements(wtf_size_t to_keep) {
   data->ClearColumnPseudoElements(to_keep);
 }
 
-void ElementRareDataVector::AddOverscrollPseudoElement(PseudoElement& element) {
-  PseudoElementData* data =
-      static_cast<PseudoElementData*>(GetField(FieldId::kPseudoElementData));
-  if (!data) {
-    data = MakeGarbageCollected<PseudoElementData>();
-    SetField(FieldId::kPseudoElementData, data);
-  }
-  data->SetPseudoElement(element.GetPseudoId(), &element,
-                         element.GetPseudoArgument());
-}
-
-const OverscrollPseudoElementData*
-ElementRareDataVector::GetOverscrollPseudoElementData() const {
-  PseudoElementData* data =
-      static_cast<PseudoElementData*>(GetField(FieldId::kPseudoElementData));
-  if (!data) {
-    return nullptr;
-  }
-  return data->GetOverscrollAreaData();
-}
-
-void ElementRareDataVector::ClearOverscrollPseudoElements() {
-  PseudoElementData* data =
-      static_cast<PseudoElementData*>(GetField(FieldId::kPseudoElementData));
-  if (!data) {
-    return;
-  }
-  data->ClearOverscrollAreas();
-}
-
-CSSStyleDeclaration& ElementRareDataVector::EnsureInlineCSSStyleDeclaration(
-    Element* owner_element) {
+std::pair<std::reference_wrapper<CSSStyleDeclaration>, ElementRareDataVector*>
+ElementRareDataVector::EnsureInlineCSSStyleDeclaration(Element* owner_element) {
   return EnsureField<InlineCSSStyleDeclaration>(FieldId::kCssomWrapper,
                                                 owner_element);
 }
@@ -200,30 +235,34 @@ CSSStyleDeclaration& ElementRareDataVector::EnsureInlineCSSStyleDeclaration(
 ShadowRoot* ElementRareDataVector::GetShadowRoot() const {
   return static_cast<ShadowRoot*>(GetField(FieldId::kShadowRoot));
 }
-void ElementRareDataVector::SetShadowRoot(ShadowRoot& shadow_root) {
+ElementRareDataVector* ElementRareDataVector::SetShadowRoot(
+    ShadowRoot& shadow_root) {
   DCHECK(!GetField(FieldId::kShadowRoot));
-  SetField(FieldId::kShadowRoot, &shadow_root);
+  return SetField(FieldId::kShadowRoot, &shadow_root);
 }
 
 NamedNodeMap* ElementRareDataVector::AttributeMap() const {
   return static_cast<NamedNodeMap*>(GetField(FieldId::kAttributeMap));
 }
-void ElementRareDataVector::SetAttributeMap(NamedNodeMap* attribute_map) {
-  SetField(FieldId::kAttributeMap, attribute_map);
+ElementRareDataVector* ElementRareDataVector::SetAttributeMap(
+    NamedNodeMap* attribute_map) {
+  return SetField(FieldId::kAttributeMap, attribute_map);
 }
 
 DOMTokenList* ElementRareDataVector::GetClassList() const {
   return static_cast<DOMTokenList*>(GetField(FieldId::kClassList));
 }
-void ElementRareDataVector::SetClassList(DOMTokenList* class_list) {
-  SetField(FieldId::kClassList, class_list);
+ElementRareDataVector* ElementRareDataVector::SetClassList(
+    DOMTokenList* class_list) {
+  return SetField(FieldId::kClassList, class_list);
 }
 
 DatasetDOMStringMap* ElementRareDataVector::Dataset() const {
   return static_cast<DatasetDOMStringMap*>(GetField(FieldId::kDataset));
 }
-void ElementRareDataVector::SetDataset(DatasetDOMStringMap* dataset) {
-  SetField(FieldId::kDataset, dataset);
+ElementRareDataVector* ElementRareDataVector::SetDataset(
+    DatasetDOMStringMap* dataset) {
+  return SetField(FieldId::kDataset, dataset);
 }
 
 ScrollOffset ElementRareDataVector::SavedLayerScrollOffset() const {
@@ -234,29 +273,34 @@ ScrollOffset ElementRareDataVector::SavedLayerScrollOffset() const {
   static ScrollOffset offset;
   return offset;
 }
-void ElementRareDataVector::SetSavedLayerScrollOffset(ScrollOffset offset) {
-  SetWrappedField<ScrollOffset>(FieldId::kSavedLayerScrollOffset, offset);
+ElementRareDataVector* ElementRareDataVector::SetSavedLayerScrollOffset(
+    ScrollOffset offset) {
+  return SetWrappedField<ScrollOffset>(FieldId::kSavedLayerScrollOffset,
+                                       offset);
 }
 
 ElementAnimations* ElementRareDataVector::GetElementAnimations() {
   return static_cast<ElementAnimations*>(GetField(FieldId::kElementAnimations));
 }
-void ElementRareDataVector::SetElementAnimations(
+ElementRareDataVector* ElementRareDataVector::SetElementAnimations(
     ElementAnimations* element_animations) {
-  SetField(FieldId::kElementAnimations, element_animations);
+  return SetField(FieldId::kElementAnimations, element_animations);
 }
 
-AttrNodeList& ElementRareDataVector::EnsureAttrNodeList() {
+std::pair<std::reference_wrapper<AttrNodeList>, ElementRareDataVector*>
+ElementRareDataVector::EnsureAttrNodeList() {
   return EnsureWrappedField<AttrNodeList>(FieldId::kAttrNodeList);
 }
 AttrNodeList* ElementRareDataVector::GetAttrNodeList() {
   return GetWrappedField<AttrNodeList>(FieldId::kAttrNodeList);
 }
 void ElementRareDataVector::RemoveAttrNodeList() {
-  SetField(FieldId::kAttrNodeList, nullptr);
+  SetFieldToNullIfExists(FieldId::kAttrNodeList);
 }
-void ElementRareDataVector::AddAttr(Attr* attr) {
-  EnsureAttrNodeList().push_back(attr);
+ElementRareDataVector* ElementRareDataVector::AddAttr(Attr* attr) {
+  auto [node_list, vec] = EnsureAttrNodeList();
+  node_list.get().push_back(attr);
+  return vec;
 }
 
 ElementIntersectionObserverData*
@@ -264,7 +308,8 @@ ElementRareDataVector::IntersectionObserverData() const {
   return static_cast<ElementIntersectionObserverData*>(
       GetField(FieldId::kIntersectionObserverData));
 }
-ElementIntersectionObserverData&
+std::pair<std::reference_wrapper<ElementIntersectionObserverData>,
+          ElementRareDataVector*>
 ElementRareDataVector::EnsureIntersectionObserverData() {
   return EnsureField<ElementIntersectionObserverData>(
       FieldId::kIntersectionObserverData);
@@ -277,54 +322,67 @@ ContainerQueryEvaluator* ElementRareDataVector::GetContainerQueryEvaluator()
     return nullptr;
   return container_query_data->GetContainerQueryEvaluator();
 }
-void ElementRareDataVector::SetContainerQueryEvaluator(
+ElementRareDataVector* ElementRareDataVector::SetContainerQueryEvaluator(
     ContainerQueryEvaluator* evaluator) {
   ContainerQueryData* container_query_data = GetContainerQueryData();
-  if (container_query_data)
+  if (container_query_data) {
     container_query_data->SetContainerQueryEvaluator(evaluator);
-  else if (evaluator)
-    EnsureContainerQueryData().SetContainerQueryEvaluator(evaluator);
+    return this;
+  } else if (evaluator) {
+    auto [new_container_query_data, vec] = EnsureContainerQueryData();
+    new_container_query_data.get().SetContainerQueryEvaluator(evaluator);
+    return vec;
+  } else {
+    return this;
+  }
 }
 
 const AtomicString& ElementRareDataVector::GetNonce() const {
   auto* value = GetWrappedField<AtomicString>(FieldId::kNonce);
   return value ? *value : g_null_atom;
 }
-void ElementRareDataVector::SetNonce(const AtomicString& nonce) {
-  SetWrappedField<AtomicString>(FieldId::kNonce, nonce);
+ElementRareDataVector* ElementRareDataVector::SetNonce(
+    const AtomicString& nonce) {
+  return SetWrappedField<AtomicString>(FieldId::kNonce, nonce);
 }
 
 const AtomicString& ElementRareDataVector::IsValue() const {
   auto* value = GetWrappedField<AtomicString>(FieldId::kIsValue);
   return value ? *value : g_null_atom;
 }
-void ElementRareDataVector::SetIsValue(const AtomicString& is_value) {
-  SetWrappedField<AtomicString>(FieldId::kIsValue, is_value);
+ElementRareDataVector* ElementRareDataVector::SetIsValue(
+    const AtomicString& is_value) {
+  return SetWrappedField<AtomicString>(FieldId::kIsValue, is_value);
 }
 
 EditContext* ElementRareDataVector::GetEditContext() const {
   return static_cast<EditContext*>(GetField(FieldId::kEditContext));
 }
-void ElementRareDataVector::SetEditContext(EditContext* edit_context) {
-  SetField(FieldId::kEditContext, edit_context);
+ElementRareDataVector* ElementRareDataVector::SetEditContext(
+    EditContext* edit_context) {
+  return SetField(FieldId::kEditContext, edit_context);
 }
 
-void ElementRareDataVector::SetPart(DOMTokenList* part) {
-  SetField(FieldId::kPart, part);
+ElementRareDataVector* ElementRareDataVector::SetPart(DOMTokenList* part) {
+  return SetField(FieldId::kPart, part);
 }
 DOMTokenList* ElementRareDataVector::GetPart() const {
   return static_cast<DOMTokenList*>(GetField(FieldId::kPart));
 }
 
-void ElementRareDataVector::SetPartNamesMap(const AtomicString part_names) {
-  EnsureField<NamesMap>(FieldId::kPartNamesMap).Set(part_names);
+ElementRareDataVector* ElementRareDataVector::SetPartNamesMap(
+    const AtomicString part_names) {
+  auto [names_map, vec] = EnsureField<NamesMap>(FieldId::kPartNamesMap);
+  names_map.get().Set(part_names);
+  return vec;
 }
 const NamesMap* ElementRareDataVector::PartNamesMap() const {
   return static_cast<NamesMap*>(GetField(FieldId::kPartNamesMap));
 }
 
-InlineStylePropertyMap& ElementRareDataVector::EnsureInlineStylePropertyMap(
-    Element* owner_element) {
+std::pair<std::reference_wrapper<InlineStylePropertyMap>,
+          ElementRareDataVector*>
+ElementRareDataVector::EnsureInlineStylePropertyMap(Element* owner_element) {
   return EnsureField<InlineStylePropertyMap>(FieldId::kCssomMapWrapper,
                                              owner_element);
 }
@@ -336,22 +394,22 @@ InlineStylePropertyMap* ElementRareDataVector::GetInlineStylePropertyMap() {
 const ElementInternals* ElementRareDataVector::GetElementInternals() const {
   return static_cast<ElementInternals*>(GetField(FieldId::kElementInternals));
 }
-ElementInternals& ElementRareDataVector::EnsureElementInternals(
-    HTMLElement& target) {
+std::pair<std::reference_wrapper<ElementInternals>, ElementRareDataVector*>
+ElementRareDataVector::EnsureElementInternals(HTMLElement& target) {
   return EnsureField<ElementInternals>(FieldId::kElementInternals, target);
 }
 
-DisplayLockContext* ElementRareDataVector::EnsureDisplayLockContext(
-    Element* element) {
-  return &EnsureField<DisplayLockContext>(FieldId::kDisplayLockContext,
-                                          element);
+std::pair<std::reference_wrapper<DisplayLockContext>, ElementRareDataVector*>
+ElementRareDataVector::EnsureDisplayLockContext(Element* element) {
+  return EnsureField<DisplayLockContext>(FieldId::kDisplayLockContext, element);
 }
 DisplayLockContext* ElementRareDataVector::GetDisplayLockContext() const {
   return static_cast<DisplayLockContext*>(
       GetField(FieldId::kDisplayLockContext));
 }
 
-ContainerQueryData& ElementRareDataVector::EnsureContainerQueryData() {
+std::pair<std::reference_wrapper<ContainerQueryData>, ElementRareDataVector*>
+ElementRareDataVector::EnsureContainerQueryData() {
   return EnsureField<ContainerQueryData>(FieldId::kContainerQueryData);
 }
 ContainerQueryData* ElementRareDataVector::GetContainerQueryData() const {
@@ -359,17 +417,19 @@ ContainerQueryData* ElementRareDataVector::GetContainerQueryData() const {
       GetField(FieldId::kContainerQueryData));
 }
 void ElementRareDataVector::ClearContainerQueryData() {
-  SetField(FieldId::kContainerQueryData, nullptr);
+  SetFieldToNullIfExists(FieldId::kContainerQueryData);
 }
 
-StyleScopeData& ElementRareDataVector::EnsureStyleScopeData() {
+std::pair<std::reference_wrapper<StyleScopeData>, ElementRareDataVector*>
+ElementRareDataVector::EnsureStyleScopeData() {
   return EnsureField<StyleScopeData>(FieldId::kStyleScopeData);
 }
 StyleScopeData* ElementRareDataVector::GetStyleScopeData() const {
   return static_cast<StyleScopeData*>(GetField(FieldId::kStyleScopeData));
 }
 
-OutOfFlowData& ElementRareDataVector::EnsureOutOfFlowData() {
+std::pair<std::reference_wrapper<OutOfFlowData>, ElementRareDataVector*>
+ElementRareDataVector::EnsureOutOfFlowData() {
   return EnsureField<OutOfFlowData>(FieldId::kOutOfFlowData);
 }
 
@@ -378,7 +438,7 @@ OutOfFlowData* ElementRareDataVector::GetOutOfFlowData() const {
 }
 
 void ElementRareDataVector::ClearOutOfFlowData() {
-  SetField(FieldId::kOutOfFlowData, nullptr);
+  SetFieldToNullIfExists(FieldId::kOutOfFlowData);
 }
 
 const RegionCaptureCropId* ElementRareDataVector::GetRegionCaptureCropId()
@@ -387,12 +447,12 @@ const RegionCaptureCropId* ElementRareDataVector::GetRegionCaptureCropId()
       FieldId::kRegionCaptureCropId);
   return value ? value->get() : nullptr;
 }
-void ElementRareDataVector::SetRegionCaptureCropId(
+ElementRareDataVector* ElementRareDataVector::SetRegionCaptureCropId(
     std::unique_ptr<RegionCaptureCropId> crop_id) {
   CHECK(!GetRegionCaptureCropId());
   CHECK(crop_id);
   CHECK(!crop_id->value().is_zero());
-  SetWrappedField<std::unique_ptr<RegionCaptureCropId>>(
+  return SetWrappedField<std::unique_ptr<RegionCaptureCropId>>(
       FieldId::kRegionCaptureCropId, std::move(crop_id));
 }
 
@@ -402,13 +462,32 @@ const RestrictionTargetId* ElementRareDataVector::GetRestrictionTargetId()
       FieldId::kRestrictionTargetId);
   return value ? value->get() : nullptr;
 }
-void ElementRareDataVector::SetRestrictionTargetId(
+ElementRareDataVector* ElementRareDataVector::SetRestrictionTargetId(
     std::unique_ptr<RestrictionTargetId> id) {
   CHECK(!GetRestrictionTargetId());
   CHECK(id);
   CHECK(!id->value().is_zero());
-  SetWrappedField<std::unique_ptr<RestrictionTargetId>>(
+  return SetWrappedField<std::unique_ptr<RestrictionTargetId>>(
       FieldId::kRestrictionTargetId, std::move(id));
+}
+
+const TrackedElementRect* ElementRareDataVector::GetTrackedElementRect() const {
+  auto* value = GetWrappedField<std::unique_ptr<TrackedElementRect>>(
+      FieldId::kTrackedElementRect);
+  return value ? value->get() : nullptr;
+}
+
+void ElementRareDataVector::ClearTrackedElementRect() {
+  SetFieldToNullIfExists(FieldId::kTrackedElementRect);
+}
+
+ElementRareDataVector* ElementRareDataVector::SetTrackedElementRect(
+    std::unique_ptr<TrackedElementRect> rect) {
+  CHECK(!GetTrackedElementRect());
+  CHECK(rect);
+  CHECK(!rect->id.value().is_zero());
+  return SetWrappedField<std::unique_ptr<TrackedElementRect>>(
+      FieldId::kTrackedElementRect, std::move(rect));
 }
 
 ElementRareDataVector::ResizeObserverDataMap*
@@ -416,15 +495,17 @@ ElementRareDataVector::ResizeObserverData() const {
   return GetWrappedField<ElementRareDataVector::ResizeObserverDataMap>(
       FieldId::kResizeObserverData);
 }
-ElementRareDataVector::ResizeObserverDataMap&
+
+std::pair<std::reference_wrapper<ElementRareDataVector::ResizeObserverDataMap>,
+          ElementRareDataVector*>
 ElementRareDataVector::EnsureResizeObserverData() {
   return EnsureWrappedField<ElementRareDataVector::ResizeObserverDataMap>(
       FieldId::kResizeObserverData);
 }
 
-void ElementRareDataVector::SetCustomElementDefinition(
+ElementRareDataVector* ElementRareDataVector::SetCustomElementDefinition(
     CustomElementDefinition* definition) {
-  SetField(FieldId::kCustomElementDefinition, definition);
+  return SetField(FieldId::kCustomElementDefinition, definition);
 }
 CustomElementDefinition* ElementRareDataVector::GetCustomElementDefinition()
     const {
@@ -432,13 +513,13 @@ CustomElementDefinition* ElementRareDataVector::GetCustomElementDefinition()
       GetField(FieldId::kCustomElementDefinition));
 }
 
-void ElementRareDataVector::SetLastRememberedBlockSize(
+ElementRareDataVector* ElementRareDataVector::SetLastRememberedBlockSize(
     std::optional<LayoutUnit> size) {
-  SetOptionalField(FieldId::kLastRememberedBlockSize, size);
+  return SetOptionalField(FieldId::kLastRememberedBlockSize, size);
 }
-void ElementRareDataVector::SetLastRememberedInlineSize(
+ElementRareDataVector* ElementRareDataVector::SetLastRememberedInlineSize(
     std::optional<LayoutUnit> size) {
-  SetOptionalField(FieldId::kLastRememberedInlineSize, size);
+  return SetOptionalField(FieldId::kLastRememberedInlineSize, size);
 }
 
 std::optional<LayoutUnit> ElementRareDataVector::LastRememberedBlockSize()
@@ -453,17 +534,19 @@ std::optional<LayoutUnit> ElementRareDataVector::LastRememberedInlineSize()
 PopoverData* ElementRareDataVector::GetPopoverData() const {
   return static_cast<PopoverData*>(GetField(FieldId::kPopoverData));
 }
-PopoverData& ElementRareDataVector::EnsurePopoverData() {
+std::pair<std::reference_wrapper<PopoverData>, ElementRareDataVector*>
+ElementRareDataVector::EnsurePopoverData() {
   return EnsureField<PopoverData>(FieldId::kPopoverData);
 }
 void ElementRareDataVector::RemovePopoverData() {
-  SetField(FieldId::kPopoverData, nullptr);
+  SetFieldToNullIfExists(FieldId::kPopoverData);
 }
 
 InvokerData* ElementRareDataVector::GetInvokerData() const {
   return static_cast<InvokerData*>(GetField(FieldId::kInvokerData));
 }
-InvokerData& ElementRareDataVector::EnsureInvokerData() {
+std::pair<std::reference_wrapper<InvokerData>, ElementRareDataVector*>
+ElementRareDataVector::EnsureInvokerData() {
   return EnsureField<InvokerData>(FieldId::kInvokerData);
 }
 InterestInvokerTargetData* ElementRareDataVector::GetInterestInvokerTargetData()
@@ -471,13 +554,14 @@ InterestInvokerTargetData* ElementRareDataVector::GetInterestInvokerTargetData()
   return static_cast<InterestInvokerTargetData*>(
       GetField(FieldId::kInterestInvokerTargetData));
 }
-InterestInvokerTargetData&
+std::pair<std::reference_wrapper<InterestInvokerTargetData>,
+          ElementRareDataVector*>
 ElementRareDataVector::EnsureInterestInvokerTargetData() {
   return EnsureField<InterestInvokerTargetData>(
       FieldId::kInterestInvokerTargetData);
 }
 void ElementRareDataVector::RemoveInterestInvokerTargetData() {
-  SetField(FieldId::kInterestInvokerTargetData, nullptr);
+  SetFieldToNullIfExists(FieldId::kInterestInvokerTargetData);
 }
 
 ScrollMarkerGroupData* ElementRareDataVector::GetScrollMarkerGroupData() const {
@@ -485,17 +569,17 @@ ScrollMarkerGroupData* ElementRareDataVector::GetScrollMarkerGroupData() const {
       GetField(FieldId::kScrollMarkerGroupData));
 }
 void ElementRareDataVector::RemoveScrollMarkerGroupData() {
-  SetField(FieldId::kScrollMarkerGroupData, nullptr);
+  SetFieldToNullIfExists(FieldId::kScrollMarkerGroupData);
 }
-ScrollMarkerGroupData& ElementRareDataVector::EnsureScrollMarkerGroupData(
-    Element* element) {
+std::pair<std::reference_wrapper<ScrollMarkerGroupData>, ElementRareDataVector*>
+ElementRareDataVector::EnsureScrollMarkerGroupData(Element* element) {
   return EnsureField<ScrollMarkerGroupData>(FieldId::kScrollMarkerGroupData,
                                             element->GetDocument().GetFrame());
 }
 
-void ElementRareDataVector::SetScrollMarkerGroupContainerData(
+ElementRareDataVector* ElementRareDataVector::SetScrollMarkerGroupContainerData(
     ScrollMarkerGroupData* data) {
-  SetField(FieldId::kScrollMarkerGroupContainerData, data);
+  return SetField(FieldId::kScrollMarkerGroupContainerData, data);
 }
 ScrollMarkerGroupData*
 ElementRareDataVector::GetScrollMarkerGroupContainerData() const {
@@ -503,12 +587,13 @@ ElementRareDataVector::GetScrollMarkerGroupContainerData() const {
       GetField(FieldId::kScrollMarkerGroupContainerData));
 }
 
-void ElementRareDataVector::CacheCSSPseudoElement(
+ElementRareDataVector* ElementRareDataVector::CacheCSSPseudoElement(
     PseudoId pseudo_id,
     CSSPseudoElement& pseudo_element) {
-  auto& data =
+  auto [data, vec] =
       EnsureField<CSSPseudoElementsCacheData>(FieldId::kCSSPseudoElementData);
-  data.CacheCSSPseudoElement(pseudo_id, pseudo_element);
+  data.get().CacheCSSPseudoElement(pseudo_id, pseudo_element);
+  return vec;
 }
 
 CSSPseudoElement* ElementRareDataVector::GetCSSPseudoElement(
@@ -527,9 +612,11 @@ AnchorPositionScrollData* ElementRareDataVector::GetAnchorPositionScrollData()
       GetField(FieldId::kAnchorPositionScrollData));
 }
 void ElementRareDataVector::RemoveAnchorPositionScrollData() {
-  SetField(FieldId::kAnchorPositionScrollData, nullptr);
+  SetFieldToNullIfExists(FieldId::kAnchorPositionScrollData);
 }
-AnchorPositionScrollData& ElementRareDataVector::EnsureAnchorPositionScrollData(
+std::pair<std::reference_wrapper<AnchorPositionScrollData>,
+          ElementRareDataVector*>
+ElementRareDataVector::EnsureAnchorPositionScrollData(
     Element* anchored_element) {
   DCHECK(!GetAnchorPositionScrollData() ||
          GetAnchorPositionScrollData()->AnchoredElement() == anchored_element);
@@ -543,13 +630,15 @@ ElementRareDataVector::GetExplicitlySetElementsForAttr() const {
       GetField(FieldId::kExplicitlySetElementsForAttr));
 }
 
-ExplicitlySetAttrElementsMap&
+std::pair<std::reference_wrapper<ExplicitlySetAttrElementsMap>,
+          ElementRareDataVector*>
 ElementRareDataVector::EnsureExplicitlySetElementsForAttr() {
   return EnsureField<ExplicitlySetAttrElementsMap>(
       FieldId::kExplicitlySetElementsForAttr);
 }
 
-AnchorElementObserver& ElementRareDataVector::EnsureAnchorElementObserver(
+std::pair<std::reference_wrapper<AnchorElementObserver>, ElementRareDataVector*>
+ElementRareDataVector::EnsureAnchorElementObserver(
     Element* new_source_element) {
   DCHECK(!GetAnchorElementObserver() ||
          GetAnchorElementObserver()->GetSourceElement() == new_source_element);
@@ -565,17 +654,18 @@ AnchorElementObserver* ElementRareDataVector::GetAnchorElementObserver() const {
 
 bool ElementRareDataVector::HasCustomElementRegistrySet() const {
   DCHECK(RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled());
-  return fields_.HasField(FieldId::kCustomElementRegistry);
+  return flags_.has_custom_element_registry_;
 }
 
 CustomElementRegistry* ElementRareDataVector::GetCustomElementRegistry() const {
   DCHECK(RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled());
   DCHECK(HasCustomElementRegistrySet());
   return static_cast<CustomElementRegistry*>(
-      fields_.GetField(FieldId::kCustomElementRegistry).Get());
+      GetField(FieldId::kCustomElementRegistry));
 }
 
-void ElementRareDataVector::SetCustomElementRegistry(CustomElementRegistry* registry) {
+ElementRareDataVector* ElementRareDataVector::SetCustomElementRegistry(
+    CustomElementRegistry* registry) {
   // An element's custom element registry should only be set once unless the
   // registry is a global registry and can be reset during cross document node
   // adoption.
@@ -588,12 +678,14 @@ void ElementRareDataVector::SetCustomElementRegistry(CustomElementRegistry* regi
   // erase the field if we set null to the field. However, when we want an
   // element to have null registry explicitly, we want to keep the existence of
   // field while setting it to null.
-  fields_.SetField(FieldId::kCustomElementRegistry, registry);
+  flags_.has_custom_element_registry_ = true;
+  return SetField(FieldId::kCustomElementRegistry, registry);
 }
 
 void ElementRareDataVector::ClearCustomElementRegistry() {
   DCHECK(RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled());
-  fields_.EraseField(FieldId::kCustomElementRegistry);
+  flags_.has_custom_element_registry_ = false;
+  SetFieldToNullIfExists(FieldId::kCustomElementRegistry);
 }
 
 ElementAnimationTriggerData* ElementRareDataVector::AnimationTriggerData() {
@@ -601,7 +693,8 @@ ElementAnimationTriggerData* ElementRareDataVector::AnimationTriggerData() {
       GetField(FieldId::kAnimationTriggerData));
 }
 
-ElementAnimationTriggerData&
+std::pair<std::reference_wrapper<ElementAnimationTriggerData>,
+          ElementRareDataVector*>
 ElementRareDataVector::EnsureAnimationTriggerData() {
   return EnsureField<ElementAnimationTriggerData>(
       FieldId::kAnimationTriggerData);
@@ -613,16 +706,18 @@ DisplayAdElementMonitor* ElementRareDataVector::GetDisplayAdElementMonitor()
       GetField(FieldId::kDisplayAdElementMonitor));
 }
 
-DisplayAdElementMonitor& ElementRareDataVector::EnsureDisplayAdElementMonitor(
-    Element* element) {
+std::pair<std::reference_wrapper<DisplayAdElementMonitor>,
+          ElementRareDataVector*>
+ElementRareDataVector::EnsureDisplayAdElementMonitor(Element* element) {
   return EnsureField<DisplayAdElementMonitor>(FieldId::kDisplayAdElementMonitor,
                                               element);
 }
 
-void ElementRareDataVector::SetFocusgroupLastFocused(Element* element) {
+ElementRareDataVector* ElementRareDataVector::SetFocusgroupLastFocused(
+    Element* element) {
   // Store weak reference, this should not keep the element alive.
-  SetWrappedField<WeakMember<Element>>(FieldId::kFocusgroupLastFocused,
-                                       element);
+  return SetWrappedField<WeakMember<Element>>(FieldId::kFocusgroupLastFocused,
+                                              element);
 }
 
 Element* ElementRareDataVector::GetFocusgroupLastFocused() const {
@@ -641,17 +736,33 @@ ContentData* ElementRareDataVector::GetAltContentData() const {
   return nullptr;
 }
 
-void ElementRareDataVector::SetAltContentData(ContentData* content_data) {
+ElementRareDataVector* ElementRareDataVector::SetAltContentData(
+    ContentData* content_data) {
   if (content_data) {
-    SetWrappedField<Member<ContentData>>(FieldId::kAltContentData,
-                                         content_data);
+    return SetWrappedField<Member<ContentData>>(FieldId::kAltContentData,
+                                                content_data);
   } else {
-    SetField(FieldId::kAltContentData, nullptr);
+    SetFieldToNullIfExists(FieldId::kAltContentData);
+    return this;
   }
 }
 
-OverscrollAreaTracker& ElementRareDataVector::EnsureOverscrollAreaTracker(
+ElementRareDataVector* ElementRareDataVector::SetOverscrollContainer(
     Element* element) {
+  return SetWrappedField<WeakMember<Element>>(FieldId::kOverscrollContainer,
+                                              element);
+}
+
+Element* ElementRareDataVector::GetOverscrollContainer() const {
+  if (auto* value =
+          GetWrappedField<WeakMember<Element>>(FieldId::kOverscrollContainer)) {
+    return value->Get();
+  }
+  return nullptr;
+}
+
+std::pair<std::reference_wrapper<OverscrollAreaTracker>, ElementRareDataVector*>
+ElementRareDataVector::EnsureOverscrollAreaTracker(Element* element) {
   return EnsureField<class OverscrollAreaTracker>(
       FieldId::kOverscrollAreaTracker, element);
 }
@@ -661,8 +772,123 @@ OverscrollAreaTracker* ElementRareDataVector::OverscrollAreaTracker() const {
 }
 
 void ElementRareDataVector::Trace(blink::Visitor* visitor) const {
-  visitor->Trace(fields_);
-  NodeRareData::Trace(visitor);
+  visitor->TraceMultiple(ArrayBase(), size());
 }
+
+void NodeMutationObserverData::Trace(Visitor* visitor) const {
+  ElementRareDataField::Trace(visitor);
+  visitor->Trace(registry_);
+  visitor->Trace(transient_registry_);
+}
+
+void ScrollTimelineHashSet::Trace(Visitor* visitor) const {
+  ElementRareDataField::Trace(visitor);
+  visitor->Trace(set_);
+}
+
+void NodePartsListData::Trace(Visitor* visitor) const {
+  ElementRareDataField::Trace(visitor);
+  visitor->Trace(parts_list_);
+}
+
+void NodeMutationObserverData::AddTransientRegistration(
+    MutationObserverRegistration* registration) {
+  transient_registry_.insert(registration);
+}
+
+void NodeMutationObserverData::RemoveTransientRegistration(
+    MutationObserverRegistration* registration) {
+  DCHECK(transient_registry_.Contains(registration));
+  transient_registry_.erase(registration);
+}
+
+void NodeMutationObserverData::AddRegistration(
+    MutationObserverRegistration* registration) {
+  registry_.push_back(registration);
+}
+
+void NodeMutationObserverData::RemoveRegistration(
+    MutationObserverRegistration* registration) {
+  DCHECK(registry_.Contains(registration));
+  registry_.EraseAt(registry_.Find(registration));
+}
+
+ElementRareDataVector* ElementRareDataVector::RegisterScrollTimeline(
+    ScrollTimeline* timeline) {
+  auto [timeline_set, vec] =
+      EnsureField<ScrollTimelineHashSet>(FieldId::kScrollTimelines);
+  timeline_set.get().set_.insert(timeline);
+  return vec;
+}
+ElementRareDataVector* ElementRareDataVector::UnregisterScrollTimeline(
+    ScrollTimeline* timeline) {
+  auto [timeline_set, vec] =
+      EnsureField<ScrollTimelineHashSet>(FieldId::kScrollTimelines);
+  timeline_set.get().set_.erase(timeline);
+  return vec;
+}
+
+ElementRareDataVector* ElementRareDataVector::AddDOMPart(Part& part) {
+  DCHECK(!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
+  auto [dom_parts_ptr, vec] =
+      EnsureField<NodePartsListData>(FieldId::kDomParts);
+  auto& dom_parts = dom_parts_ptr.get().parts_list_;
+  DCHECK(!std::ranges::contains(dom_parts, &part));
+  dom_parts.push_back(&part);
+  return vec;
+}
+
+void ElementRareDataVector::RemoveDOMPart(Part& part) {
+  DCHECK(!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
+  NodePartsListData* parts_data =
+      static_cast<NodePartsListData*>(GetField(FieldId::kDomParts));
+  DCHECK(parts_data);
+  PartsList& dom_parts = parts_data->parts_list_;
+  DCHECK(std::ranges::contains(dom_parts, &part));
+  // Common case is that one node has one part:
+  if (dom_parts.size() == 1) {
+    DCHECK_EQ(dom_parts.front(), &part);
+    dom_parts.clear();
+  } else {
+    // This is the very slow case - multiple parts for a single node.
+    TemporaryPartsList new_list;
+    for (auto p : dom_parts) {
+      if (p != &part) {
+        new_list.push_back(p);
+      }
+    }
+    dom_parts.Swap(new_list);
+  }
+  if (dom_parts.empty()) {
+    SetFieldToNullIfExists(FieldId::kDomParts);
+  }
+}
+
+PartsList* ElementRareDataVector::GetDOMParts() const {
+  DCHECK(!HasField(FieldId::kDomParts) ||
+         !RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
+  NodePartsListData* parts_data =
+      static_cast<NodePartsListData*>(GetField(FieldId::kDomParts));
+  return parts_data ? &parts_data->parts_list_ : nullptr;
+}
+
+void ElementRareDataVector::IncrementConnectedSubframeCount() {
+  SECURITY_CHECK((flags_.connected_frame_count_ + 1) <=
+                 Page::MaxNumberOfFrames());
+  ++flags_.connected_frame_count_;
+}
+
+std::pair<std::reference_wrapper<FlatTreeNodeData>, ElementRareDataVector*>
+ElementRareDataVector::EnsureFlatTreeNodeData() {
+  return EnsureField<FlatTreeNodeData>(FieldId::kFlatTreeNodeData);
+}
+
+static_assert(static_cast<int>(ElementRareDataVector::kNumberOfElementFlags) ==
+                  static_cast<int>(ElementFlags::kNumberOfElementFlags),
+              "kNumberOfElementFlags must match.");
+static_assert(
+    static_cast<int>(ElementRareDataVector::kNumberOfDynamicRestyleFlags) ==
+        static_cast<int>(DynamicRestyleFlags::kNumberOfDynamicRestyleFlags),
+    "kNumberOfDynamicRestyleFlags must match.");
 
 }  // namespace blink

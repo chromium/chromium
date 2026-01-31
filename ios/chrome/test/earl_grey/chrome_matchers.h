@@ -208,6 +208,9 @@ id<GREYMatcher> OmniboxContainingAutocompleteText(NSString* text);
 // view.
 id<GREYMatcher> LocationViewContainingText(const std::string& text);
 
+// Returns matcher for the location view being empty.
+id<GREYMatcher> LocationViewEmpty();
+
 // Returns a matcher for Tools menu button.
 id<GREYMatcher> ToolsMenuButton();
 

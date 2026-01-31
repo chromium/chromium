@@ -20,26 +20,9 @@
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/android/search_permissions/search_permissions_service.h"
 #include "components/location/android/location_settings_dialog_outcome.h"
 #include "components/location/android/mock_location_settings.h"
 #include "components/permissions/contexts/geolocation_permission_context_android.h"
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
-namespace {
-constexpr char kDSETestUrl[] = "https://www.dsetest.com";
-
-class TestSearchEngineDelegate
-    : public SearchPermissionsService::SearchEngineDelegate {
- public:
-  std::u16string GetDSEName() override { return std::u16string(); }
-
-  url::Origin GetDSEOrigin() override {
-    return url::Origin::Create(GURL(kDSETestUrl));
-  }
-};
-}  // namespace
 #endif
 
 class GeolocationPermissionContextDelegateTests
@@ -122,7 +105,7 @@ TEST_F(GeolocationPermissionContextDelegateTests, TabContentSettingIsUpdated) {
           &run_loop));
   task_environment()->RunUntilIdle();
   ASSERT_TRUE(manager->IsRequestInProgress());
-  manager->Accept();
+  manager->Accept(/*prompt_options=*/std::monostate());
   run_loop.Run();
   content_settings::PageSpecificContentSettings* content_settings =
       content_settings::PageSpecificContentSettings::GetForFrame(
@@ -130,35 +113,3 @@ TEST_F(GeolocationPermissionContextDelegateTests, TabContentSettingIsUpdated) {
   EXPECT_TRUE(
       content_settings->IsContentAllowed(ContentSettingsType::GEOLOCATION));
 }
-
-#if BUILDFLAG(IS_ANDROID)
-// TODO(crbug.com/40835241): Flaky.
-TEST_F(GeolocationPermissionContextDelegateTests,
-       DISABLED_SearchGeolocationInIncognito) {
-  url::Origin requesting_frame_url = url::Origin::Create(GURL(kDSETestUrl));
-
-  SearchPermissionsService* service =
-      SearchPermissionsService::Factory::GetForBrowserContext(profile());
-  std::unique_ptr<TestSearchEngineDelegate> delegate =
-      std::make_unique<TestSearchEngineDelegate>();
-  service->SetSearchEngineDelegateForTest(std::move(delegate));
-  service->InitializeSettingsIfNeeded();
-
-  // The DSE geolocation should not be auto-granted even in a non-OTR profile.
-  ASSERT_EQ(
-      blink::mojom::PermissionStatus::ASK,
-      GetPermissionResultForOriginWithoutContext(
-          profile(), blink::PermissionType::GEOLOCATION, requesting_frame_url)
-          .status);
-
-  Profile* otr_profile =
-      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
-
-  // The DSE geolocation should not be auto-granted in an OTR profile.
-  ASSERT_EQ(
-      blink::mojom::PermissionStatus::ASK,
-      GetPermissionResultForOriginWithoutContext(
-          otr_profile, blink::PermissionType::GEOLOCATION, requesting_frame_url)
-          .status);
-}
-#endif

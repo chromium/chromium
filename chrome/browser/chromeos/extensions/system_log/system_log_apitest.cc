@@ -268,7 +268,7 @@ class SystemLogManagedGuestSessionApitest
  protected:
   ash::EmbeddedPolicyTestServerMixin policy_test_server_mixin_{&mixin_host_};
   policy::UserPolicyBuilder user_policy_builder_;
-  base::Value::Dict config_;
+  base::DictValue config_;
   ExtensionForceInstallMixin extension_force_install_mixin_{&mixin_host_};
 };
 

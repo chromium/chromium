@@ -6,8 +6,9 @@
 #define CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_DATA_FORMAT_VERSION_H_
 
 #include <cstdint>
+#include <optional>
 
-#include "base/check_op.h"
+#include "base/numerics/safe_conversions.h"
 #include "content/common/content_export.h"
 
 namespace content::indexed_db {
@@ -45,12 +46,15 @@ class IndexedDBDataFormatVersion {
     // Since negative values are considered invalid, this scheme will only work
     // as long as the v8 version would not overflow int32_t.  We check both
     // components, to be consistent.
-    DCHECK_GE(static_cast<int32_t>(v8_version_), 0);
-    DCHECK_GE(static_cast<int32_t>(blink_version_), 0);
+    base::checked_cast<int32_t>(v8_version_);
+    base::checked_cast<int32_t>(blink_version_);
+
     return (static_cast<int64_t>(v8_version_) << 32) | blink_version_;
   }
-  static IndexedDBDataFormatVersion Decode(int64_t encoded) {
-    DCHECK_GE(encoded, 0);
+  static std::optional<IndexedDBDataFormatVersion> Decode(int64_t encoded) {
+    if (encoded < 0) {
+      return std::nullopt;
+    }
     return IndexedDBDataFormatVersion(encoded >> 32, encoded);
   }
 

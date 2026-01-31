@@ -11,6 +11,7 @@
 #include "cc/mojom/render_frame_metadata.mojom-shared.h"
 #include "components/viz/common/quads/compositor_frame_metadata.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 namespace blink {
 
@@ -102,15 +103,16 @@ void RenderFrameMetadataObserverImpl::OnRenderFrameSubmission(
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
     last_root_scroll_offset_ = metadata_copy.root_scroll_offset;
 #endif
-    TRACE_EVENT_WITH_FLOW1(
+    TRACE_EVENT(
         TRACE_DISABLED_BY_DEFAULT("viz.surface_id_flow"),
         "RenderFrameMetadataObserverImpl::OnRenderFrameSubmission",
-        metadata_copy.local_surface_id &&
-                metadata_copy.local_surface_id->is_valid()
-            ? metadata_copy.local_surface_id->submission_trace_id() +
-                  metadata_copy.local_surface_id->embed_trace_id()
-            : 0,
-        TRACE_EVENT_FLAG_FLOW_OUT, "local_surface_id",
+        perfetto::Flow::ProcessScoped(
+            metadata_copy.local_surface_id &&
+                    metadata_copy.local_surface_id->is_valid()
+                ? metadata_copy.local_surface_id->submission_trace_id() +
+                      metadata_copy.local_surface_id->embed_trace_id()
+                : 0),
+        "local_surface_id",
         metadata_copy.local_surface_id
             ? metadata_copy.local_surface_id->ToString()
             : "null");
@@ -190,6 +192,7 @@ bool RenderFrameMetadataObserverImpl::ShouldSendRenderFrameMetadata(
       rfm1.top_controls_height != rfm2.top_controls_height ||
       rfm1.top_controls_shown_ratio != rfm2.top_controls_shown_ratio ||
       rfm1.local_surface_id != rfm2.local_surface_id ||
+      rfm1.tracked_element_bounds != rfm2.tracked_element_bounds ||
       rfm2.new_vertical_scroll_direction !=
           viz::VerticalScrollDirection::kNull ||
       (rfm2.primary_main_frame_item_sequence_number !=

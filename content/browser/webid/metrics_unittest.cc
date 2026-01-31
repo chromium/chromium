@@ -17,7 +17,8 @@ IdentityRequestAccountPtr CreateEmptyAccount() {
       /*id=*/"",
       /*display_identifier=*/"", /*display_name=*/"", /*email=*/"",
       /*name=*/"", /*given_name=*/"", /*picture=*/GURL(), /*phone=*/"",
-      /*username=*/"", /*login_hints=*/empty, /*domain_hints=*/empty,
+      /*username=*/"", /*potentially_approved_origin_hashes=*/empty,
+      /*login_hints=*/empty, /*domain_hints=*/empty,
       /*labels=*/empty);
 }
 }  // namespace

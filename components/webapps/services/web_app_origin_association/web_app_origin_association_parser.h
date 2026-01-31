@@ -24,6 +24,7 @@ extern const char kInvalidScopeUrl[];
 struct AssociatedWebApp {
   GURL web_app_identity;
   GURL scope;
+  bool allow_migration = false;
 
   bool operator==(const AssociatedWebApp&) const = default;
 };

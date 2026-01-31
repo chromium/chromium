@@ -63,6 +63,8 @@ class GlicZeroStateSuggestionsManager {
   void Reset();
 
  private:
+  void FilterTabs(std::vector<content::WebContents*>& tabs);
+
   // A helper function to route GetZeroStateSuggestionsForFocusedTabCallback
   // callbacks.
   void OnZeroStateSuggestionsFetched(

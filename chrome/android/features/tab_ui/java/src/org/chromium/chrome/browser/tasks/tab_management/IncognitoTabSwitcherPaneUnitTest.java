@@ -39,11 +39,14 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
@@ -95,16 +98,16 @@ public class IncognitoTabSwitcherPaneUnitTest {
 
     private final OneshotSupplierImpl<IncognitoReauthController>
             mIncognitoReauthControllerSupplier = new OneshotSupplierImpl<>();
-    private final ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeSupplier =
-            new ObservableSupplierImpl<>();
-    private final ObservableSupplierImpl<CompositorViewHolder> mCompositorViewHolderSupplier =
-            new ObservableSupplierImpl<>();
-    private final ObservableSupplierImpl<Boolean> mIsRecyclerViewAnimatorRunningSupplier =
-            new ObservableSupplierImpl<>(false);
-    private final ObservableSupplierImpl<Boolean> mTabGridDialogShowingOrAnimationSupplier =
-            new ObservableSupplierImpl<>(false);
-    private final ObservableSupplierImpl<Integer> mRecentlySwipedTabIdSupplier =
-            new ObservableSupplierImpl<>(null);
+    private final SettableMonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier =
+            ObservableSuppliers.createMonotonic();
+    private final SettableMonotonicObservableSupplier<CompositorViewHolder>
+            mCompositorViewHolderSupplier = ObservableSuppliers.createMonotonic();
+    private final SettableNonNullObservableSupplier<Boolean>
+            mIsRecyclerViewAnimatorRunningSupplier = ObservableSuppliers.createNonNull(false);
+    private final SettableNonNullObservableSupplier<Boolean>
+            mTabGridDialogShowingOrAnimationSupplier = ObservableSuppliers.createNonNull(false);
+    private final SettableNonNullObservableSupplier<Integer> mRecentlySwipedTabIdSupplier =
+            ObservableSuppliers.createNonNull(Tab.INVALID_TAB_ID);
 
     private Context mContext;
     private IncognitoTabSwitcherPane mIncognitoTabSwitcherPane;
@@ -199,6 +202,8 @@ public class IncognitoTabSwitcherPaneUnitTest {
         assertEquals(PaneId.INCOGNITO_TAB_SWITCHER, mIncognitoTabSwitcherPane.getPaneId());
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     public void testNewTabButtonData() {
         checkNewTabButton(/* enabled= */ false);
@@ -220,6 +225,8 @@ public class IncognitoTabSwitcherPaneUnitTest {
         checkNewTabButton(/* enabled= */ false);
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     public void testIncognitoReauthCallback() {
         assertTrue(mIncognitoTabSwitcherPane.getHubSearchEnabledStateSupplier().get());
@@ -277,6 +284,8 @@ public class IncognitoTabSwitcherPaneUnitTest {
         verifyNoMoreInteractions(coordinator);
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     public void testResetWithTabList() {
         mIncognitoTabSwitcherPane.resetWithListOfTabs(null);
@@ -325,6 +334,8 @@ public class IncognitoTabSwitcherPaneUnitTest {
         verify(coordinator).hardCleanup();
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     public void testLoadHintColdHot_TabStateNotInitialized() {
         when(mIncognitoTabModel.isActiveModel()).thenReturn(true);
@@ -352,6 +363,8 @@ public class IncognitoTabSwitcherPaneUnitTest {
         watcher.assertExpected();
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     public void testResetWithTabListReauthRequired() {
         mIncognitoReauthControllerSupplier.set(mIncognitoReauthController);

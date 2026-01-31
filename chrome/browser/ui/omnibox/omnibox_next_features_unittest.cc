@@ -14,6 +14,9 @@
 #include "chrome/browser/autocomplete/chrome_aim_eligibility_service.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/omnibox/browser/omnibox_prefs.h"
+#include "components/omnibox/common/omnibox_features.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -78,13 +81,15 @@ TEST_F(OmniboxNextFeaturesTest, ComposeboxConfigEnabled_DefaultConfiguration) {
   EXPECT_EQ(image_upload.downscale_max_image_width(), 1600);
   EXPECT_EQ(image_upload.downscale_max_image_height(), 1600);
   EXPECT_EQ(image_upload.image_compression_quality(), 40);
-  EXPECT_THAT(image_upload.mime_types_allowed(), "image/*");
+  EXPECT_THAT(image_upload.mime_types_allowed(),
+              "image/avif,image/bmp,image/jpeg,image/png,image/webp,image/"
+              "heif,image/heic");
 
   auto attachment_upload = config.composebox().attachment_upload();
   EXPECT_EQ(attachment_upload.max_size_bytes(), 200000000);
   EXPECT_THAT(attachment_upload.mime_types_allowed(), ".pdf,application/pdf");
 
-  EXPECT_EQ(composebox.max_num_files(), 1);
+  EXPECT_EQ(composebox.max_num_files(), 10);
   EXPECT_EQ(composebox.input_placeholder_text(),
             l10n_util::GetStringUTF8(IDS_NTP_COMPOSE_PLACEHOLDER_TEXT));
   EXPECT_EQ(composebox.is_pdf_upload_enabled(), true);
@@ -234,12 +239,35 @@ TEST_F(OmniboxNextFeaturesTest, ComposeboxConfigEnabled_Valid_ClearMimeTypes) {
   omnibox::NTPComposeboxConfig config = scoped_config_.Get().config;
   // Check that both default mime type lists were cleared.
   EXPECT_THAT(config.composebox().image_upload().mime_types_allowed(),
-              "image/*");
+              "image/avif,image/bmp,image/jpeg,image/png,image/webp,image/"
+              "heif,image/heic");
   EXPECT_THAT(config.composebox().attachment_upload().mime_types_allowed(),
               ".pdf,application/pdf");
 
   histogram_tester.ExpectUniqueSample(kConfigParamParseSuccessHistogram, true,
                                       1);
+}
+
+TEST_F(OmniboxNextFeaturesTest, CreateQueryControllerConfigParams) {
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        internal::kWebUIOmniboxAimPopup,
+        {{"AttachPageTitleAndUrlToSuggestRequest", "true"}});
+
+    auto config_params = CreateQueryControllerConfigParams();
+    EXPECT_TRUE(config_params->attach_page_title_and_url_to_suggest_requests);
+  }
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        internal::kWebUIOmniboxAimPopup,
+        {{"AttachPageTitleAndUrlToSuggestRequest", "false"}});
+
+    auto config_params = CreateQueryControllerConfigParams();
+    EXPECT_FALSE(config_params->attach_page_title_and_url_to_suggest_requests);
+  }
 }
 
 class TestingAimEligibilityService : public ChromeAimEligibilityService {
@@ -253,6 +281,7 @@ class TestingAimEligibilityService : public ChromeAimEligibilityService {
         is_aim_eligible_(is_aim_eligible) {}
 
   bool IsAimEligible() const override { return is_aim_eligible_; }
+  bool IsAimAllowedByDse() const override { return is_aim_eligible_; }
 
  private:
   const bool is_aim_eligible_;
@@ -302,6 +331,66 @@ TEST_F(OmniboxNextAimEligibilityTest, IsAimPopupEnabled) {
 
     EXPECT_EQ(omnibox::IsAimPopupEnabled(profile()),
               test_case.expected_popup_enabled);
+  }
+}
+
+TEST_F(OmniboxNextAimEligibilityTest, ShouldShowAimContextMenuOption) {
+  profile_.GetPrefs()->SetInteger(omnibox::kAIModeSettings, 0);
+  struct TestCase {
+    bool is_aim_eligible;
+    bool aim_enabled;
+    bool ai_mode_entry_point_enabled;
+    bool webui_aim_popup_enabled;
+    const char* context_button_variant;
+    bool expected_should_show;
+  };
+  std::vector<TestCase> test_cases = {
+      // If either AIM feature is enabled, then menu option should be shown.
+      // Entry point is enabled:
+      {true, false, true, false, "", true},
+      // Context button is enabled:
+      {true, false, false, true, "below_results", true},
+      // If the user is AIM ineligible, then the menu option should be hidden
+      // even if both features are enabled:
+      {false, true, true, true, "below_results", false},
+  };
+
+  for (size_t i = 0; i < test_cases.size(); ++i) {
+    const auto& test_case = test_cases[i];
+
+    SetUpAimEligibilityService(test_case.is_aim_eligible);
+    base::test::ScopedFeatureList feature_list;
+    std::vector<base::test::FeatureRefAndParams> features_with_params;
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    if (test_case.aim_enabled) {
+      features_with_params.push_back({omnibox::kAimEnabled, {}});
+    } else {
+      disabled_features.push_back(omnibox::kAimEnabled);
+    }
+
+    if (test_case.ai_mode_entry_point_enabled) {
+      features_with_params.push_back({omnibox::kAiModeOmniboxEntryPoint, {}});
+    } else {
+      disabled_features.push_back(omnibox::kAiModeOmniboxEntryPoint);
+    }
+
+    if (test_case.webui_aim_popup_enabled) {
+      base::FieldTrialParams params;
+      params[omnibox::kWebUIOmniboxAimPopupAddContextButtonVariantParam.name] =
+          test_case.context_button_variant;
+      features_with_params.emplace_back(internal::kWebUIOmniboxAimPopup,
+                                        params);
+    } else {
+      disabled_features.push_back(internal::kWebUIOmniboxAimPopup);
+    }
+
+    feature_list.InitWithFeaturesAndParameters(features_with_params,
+                                               disabled_features);
+
+    EXPECT_EQ(ShouldShowAimContextMenuOption(profile()),
+              test_case.expected_should_show)
+        << " case " << i;
   }
 }
 

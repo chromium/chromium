@@ -62,9 +62,8 @@ void FileSuggestKeyedService::GetSuggestFileData(
     GetSuggestFileDataCallback callback) {
   const auto* const pref_service = profile_->GetPrefs();
   if (!pref_service ||
-      (!base::Contains(pref_service->GetList(
-                           prefs::kContextualGoogleIntegrationsConfiguration),
-                       prefs::kGoogleDriveIntegrationName) &&
+      (!pref_service->GetList(prefs::kContextualGoogleIntegrationsConfiguration)
+            .contains(prefs::kGoogleDriveIntegrationName) &&
        type == FileSuggestionType::kDriveFile)) {
     // When drive is disabled by policy, return an empty list to indicate no
     // further waiting on results is necessary.

@@ -22,7 +22,7 @@ suite('cr-history-embeddings-result-image', () => {
   function generateResult(): SearchResultItem {
     return {
       title: 'Google',
-      url: {url: 'http://google.com'},
+      url: 'http://google.com',
       urlForDisplay: 'google.com',
       relativeTime: '2 hours ago',
       shortDateTime: 'Sept 2, 2022',
@@ -68,7 +68,7 @@ suite('cr-history-embeddings-result-image', () => {
     const requestArgs = await imageServiceHandler.whenCalled('getPageImageUrl');
     assertEquals(1, imageServiceHandler.getCallCount('getPageImageUrl'));
     assertEquals(PageImageServiceClientId.HistoryEmbeddings, requestArgs[0]);
-    assertDeepEquals({url: 'http://google.com'}, requestArgs[1]);
+    assertDeepEquals('http://google.com', requestArgs[1]);
     assertDeepEquals(
         {suggestImages: true, optimizationGuideImages: true}, requestArgs[2]);
   });
@@ -91,8 +91,7 @@ suite('cr-history-embeddings-result-image', () => {
     imageServiceHandler.reset();
     const imageUrl = 'https://some-server/some-image.png';
     imageServiceHandler.setResultFor(
-        'getPageImageUrl',
-        Promise.resolve({result: {imageUrl: {url: imageUrl}}}));
+        'getPageImageUrl', Promise.resolve({result: {imageUrl: imageUrl}}));
     element.searchResult =
         Object.assign(generateResult(), {isUrlKnownToSync: true});
     await element.updateComplete;

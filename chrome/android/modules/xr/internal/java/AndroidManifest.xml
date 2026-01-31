@@ -1,0 +1,22 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:dist="http://schemas.android.com/apk/distribution"
+    featureSplit="xr">
+
+    <dist:module
+      dist:title="@string/xr_module_title">
+      <dist:delivery>
+        <dist:on-demand />
+        <dist:install-time>
+          <dist:conditions>
+          <!--TODO(crbug.com/474430698): Replace with the correct device feature when fixed. -->
+           <dist:device-feature
+               dist:name="android.hardware.xr.input.hand_tracking"/>
+          </dist:conditions>
+        </dist:install-time>
+      </dist:delivery>
+      <dist:fusing dist:include="false"/>
+    </dist:module>
+
+    <application />
+
+</manifest>

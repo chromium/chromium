@@ -21,8 +21,7 @@ extensions::api::odfs_config_private::Mount GetMicrosoftOneDriveMount(
 
 // Returns the mount mode derived from the MicrosoftOneDriveAccountRestrictions
 // policy.
-base::Value::List GetMicrosoftOneDriveAccountRestrictions(
-    const Profile* profile);
+base::ListValue GetMicrosoftOneDriveAccountRestrictions(const Profile* profile);
 
 }  // namespace chromeos::cloud_storage
 

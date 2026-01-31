@@ -117,7 +117,7 @@ void PrintingContextAndroid::AskUserForSettings(
 }
 
 void PrintingContextAndroid::AskUserForSettingsReply(JNIEnv* env,
-                                                     jboolean success) {
+                                                     bool success) {
   DCHECK(callback_);
   if (!success) {
     // TODO(cimamoglu): Differentiate between `kFailed` And `kCancel`.

@@ -8,11 +8,14 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 #include "chromeos/ash/experiences/arc/mojom/intent_helper.mojom-forward.h"
 #include "chromeos/ash/experiences/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 
+class ApplicationLocaleStorage;
+class PrefService;
 class Profile;
 
 namespace content {
@@ -53,6 +56,9 @@ class ArcSettingsService
  private:
   void SetInitialSettingsPending(bool pending);
   bool IsInitialSettingsPending() const;
+
+  const raw_ref<PrefService> local_state_;
+  const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
 
   const raw_ptr<Profile> profile_;
   const raw_ptr<ArcBridgeService>

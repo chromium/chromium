@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
+import android.view.View.OnClickListener;
 
 import org.chromium.base.Callback;
 import org.chromium.base.lifetime.Destroyable;
@@ -56,6 +57,9 @@ public class TabListEditorActionProperties {
     public static final WritableObjectPropertyKey<Destroyable> DESTROYABLE =
             new WritableObjectPropertyKey<>();
 
+    public static final WritableObjectPropertyKey<OnClickListener> CLICK_LISTENER =
+            new WritableObjectPropertyKey<>();
+
     /** Keys for the {@link TabListEditorAction}. */
     public static final PropertyKey[] ACTION_KEYS = {
         MENU_ITEM_ID,
@@ -86,6 +90,7 @@ public class TabListEditorActionProperties {
         ICON,
         ICON_TINT,
         ENABLED,
-        ITEM_COUNT
+        ITEM_COUNT,
+        CLICK_LISTENER
     };
 }

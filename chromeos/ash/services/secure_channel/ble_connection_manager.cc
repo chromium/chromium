@@ -4,7 +4,6 @@
 
 #include "chromeos/ash/services/secure_channel/ble_connection_manager.h"
 
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
@@ -45,7 +44,7 @@ void BleConnectionManager::AttemptBleInitiatorConnection(
     ConnectionPriority connection_priority,
     ConnectionSuccessCallback success_callback,
     const BleInitiatorFailureCallback& failure_callback) {
-  if (base::Contains(id_pair_to_initiator_metadata_map_, device_id_pair)) {
+  if (id_pair_to_initiator_metadata_map_.contains(device_id_pair)) {
     NOTREACHED() << "BleConnectionManager::AttemptBleInitiatorConnection(): "
                  << "Tried to add BLE initiator connection attempt, but one "
                  << "was already active. Device IDs: " << device_id_pair
@@ -108,7 +107,7 @@ void BleConnectionManager::AttemptBleListenerConnection(
     ConnectionPriority connection_priority,
     ConnectionSuccessCallback success_callback,
     const BleListenerFailureCallback& failure_callback) {
-  if (base::Contains(id_pair_to_listener_metadata_map_, device_id_pair)) {
+  if (id_pair_to_listener_metadata_map_.contains(device_id_pair)) {
     NOTREACHED() << "BleConnectionManager::AttemptBleListenerConnection(): "
                  << "Tried to add BLE listener connection attempt, but one "
                  << "was already active. Device IDs: " << device_id_pair
@@ -180,7 +179,7 @@ ConnectionPriority BleConnectionManager::GetPriorityForAttempt(
 const base::flat_set<ConnectionAttemptDetails>&
 BleConnectionManager::GetDetailsForRemoteDevice(
     const std::string& remote_device_id) {
-  if (!base::Contains(remote_device_id_to_details_map_, remote_device_id)) {
+  if (!remote_device_id_to_details_map_.contains(remote_device_id)) {
     NOTREACHED() << "BleConnectionManager::GetDetailsForRemoteDevice(): Tried "
                  << "to get details for a remote device, but no device with "
                  << "the provided ID existed. ID: "
@@ -195,9 +194,9 @@ bool BleConnectionManager::DoesAttemptExist(const DeviceIdPair& device_id_pair,
                                             ConnectionRole connection_role) {
   switch (connection_role) {
     case ConnectionRole::kInitiatorRole:
-      return base::Contains(id_pair_to_initiator_metadata_map_, device_id_pair);
+      return id_pair_to_initiator_metadata_map_.contains(device_id_pair);
     case ConnectionRole::kListenerRole:
-      return base::Contains(id_pair_to_listener_metadata_map_, device_id_pair);
+      return id_pair_to_listener_metadata_map_.contains(device_id_pair);
   }
 }
 
@@ -250,7 +249,7 @@ void BleConnectionManager::NotifyConnectionSuccess(
 
 BleConnectionManager::InitiatorConnectionAttemptMetadata&
 BleConnectionManager::GetInitiatorEntry(const DeviceIdPair& device_id_pair) {
-  if (!base::Contains(id_pair_to_initiator_metadata_map_, device_id_pair)) {
+  if (!id_pair_to_initiator_metadata_map_.contains(device_id_pair)) {
     NOTREACHED() << "BleConnectionManager::GetInitiatorEntry(): Tried to get "
                  << "map entry, but it did not exist. Device IDs: "
                  << device_id_pair;
@@ -264,7 +263,7 @@ BleConnectionManager::GetInitiatorEntry(const DeviceIdPair& device_id_pair) {
 
 BleConnectionManager::ListenerConnectionAttemptMetadata&
 BleConnectionManager::GetListenerEntry(const DeviceIdPair& device_id_pair) {
-  if (!base::Contains(id_pair_to_listener_metadata_map_, device_id_pair)) {
+  if (!id_pair_to_listener_metadata_map_.contains(device_id_pair)) {
     NOTREACHED() << "BleConnectionManager::GetListenerEntry(): Tried to get "
                  << "map entry, but it did not exist. Device IDs: "
                  << device_id_pair;
@@ -281,7 +280,7 @@ void BleConnectionManager::RemoveRequestMetadata(
     ConnectionRole connection_role) {
   switch (connection_role) {
     case ConnectionRole::kInitiatorRole:
-      if (!base::Contains(id_pair_to_initiator_metadata_map_, device_id_pair)) {
+      if (!id_pair_to_initiator_metadata_map_.contains(device_id_pair)) {
         NOTREACHED() << "BleConnectionManager::RemoveRequestMetadata(): Tried "
                      << "to remove BLE initiator attempt, but no attempt "
                      << "existed. Device IDs: " << device_id_pair;
@@ -291,7 +290,7 @@ void BleConnectionManager::RemoveRequestMetadata(
       break;
 
     case ConnectionRole::kListenerRole:
-      if (!base::Contains(id_pair_to_listener_metadata_map_, device_id_pair)) {
+      if (!id_pair_to_listener_metadata_map_.contains(device_id_pair)) {
         NOTREACHED() << "BleConnectionManager::RemoveRequestMetadata(): Tried "
                      << "to remove BLE listener attempt, but no attempt "
                      << "existed. Device IDs: " << device_id_pair;

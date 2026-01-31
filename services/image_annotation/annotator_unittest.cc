@@ -2,41 +2,40 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
+#include "services/image_annotation/annotator.h"
 
-#include "base/memory/ptr_util.h"
-#include "base/test/scoped_feature_list.h"
-#include "base/values.h"
-#include "components/manta/anchovy/anchovy_provider.h"
-#include "components/manta/manta_status.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "ui/accessibility/accessibility_features.h"
-
+#include <algorithm>
 #include <array>
 #include <cstring>
+#include <memory>
 #include <optional>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "base/values.h"
+#include "components/manta/anchovy/anchovy_provider.h"
+#include "components/manta/manta_status.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
-#include "services/image_annotation/annotator.h"
 #include "services/image_annotation/image_annotation_metrics.h"
 #include "services/image_annotation/public/mojom/image_annotation.mojom.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader.mojom-shared.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/accessibility_features.h"
 
 namespace image_annotation {
 
@@ -2447,7 +2446,7 @@ TEST(AnnotatorTest, FetchServerLanguages) {
 
   // Assert that initially server_languages_ doesn't contain the made-up
   // language code zz.
-  EXPECT_FALSE(base::Contains(annotator.server_languages_, "zz"));
+  EXPECT_FALSE(std::ranges::contains(annotator.server_languages_, "zz"));
 
   test_url_factory.ExpectRequestAndSimulateResponse(
       "langs", {} /* expected headers */, "" /* body */,
@@ -2463,7 +2462,7 @@ TEST(AnnotatorTest, FetchServerLanguages) {
       net::HTTP_OK);
   test_task_env.RunUntilIdle();
 
-  EXPECT_TRUE(base::Contains(annotator.server_languages_, "zz"));
+  EXPECT_TRUE(std::ranges::contains(annotator.server_languages_, "zz"));
 }
 
 // If the server langs don't contain English, they're ignored.
@@ -2481,7 +2480,7 @@ TEST(AnnotatorTest, ServerLanguagesMustContainEnglish) {
 
   // Assert that initially server_languages_ does contain "en" but
   // doesn't contain the made-up language code zz.
-  EXPECT_FALSE(base::Contains(annotator.server_languages_, "zz"));
+  EXPECT_FALSE(std::ranges::contains(annotator.server_languages_, "zz"));
 
   // The server response doesn't include "en", so we should ignore it.
   test_url_factory.ExpectRequestAndSimulateResponse(
@@ -2498,15 +2497,15 @@ TEST(AnnotatorTest, ServerLanguagesMustContainEnglish) {
 
   // We shouldn't have updated our languages because the response didn't
   // include "en".
-  EXPECT_TRUE(base::Contains(annotator.server_languages_, "en"));
-  EXPECT_FALSE(base::Contains(annotator.server_languages_, "zz"));
+  EXPECT_TRUE(std::ranges::contains(annotator.server_languages_, "en"));
+  EXPECT_FALSE(std::ranges::contains(annotator.server_languages_, "zz"));
 }
 
 // Alternative Routing Tests.
 
 class FakeAnchovyProvider : public manta::AnchovyProvider {
  public:
-  explicit FakeAnchovyProvider(base::Value::Dict fake_result)
+  explicit FakeAnchovyProvider(base::DictValue fake_result)
       : manta::AnchovyProvider(nullptr, nullptr, {}),
         fake_result_(std::move(fake_result)) {}
 
@@ -2524,7 +2523,7 @@ class FakeAnchovyProvider : public manta::AnchovyProvider {
   }
 
  private:
-  base::Value::Dict fake_result_;
+  base::DictValue fake_result_;
 };
 
 void RunAnchovyAnnotatorTest(
@@ -2575,12 +2574,12 @@ void SimpleAnchovySuccessTest(std::string str_type,
   const std::string other_text = "other";
   const double other_score = 0.8;
 
-  base::Value::List results;
-  results.Append(base::Value::Dict()
+  base::ListValue results;
+  results.Append(base::DictValue()
                      .Set("type", type)
                      .Set("score", best_score)
                      .Set("text", best_text));
-  results.Append(base::Value::Dict()
+  results.Append(base::DictValue()
                      .Set("type", type)
                      .Set("score", other_score)
                      .Set("text", other_text));
@@ -2588,7 +2587,7 @@ void SimpleAnchovySuccessTest(std::string str_type,
   std::vector<mojom::Annotation> annotations;
   RunAnchovyAnnotatorTest(
       std::make_unique<FakeAnchovyProvider>(
-          base::Value::Dict().Set("results", std::move(results))),
+          base::DictValue().Set("results", std::move(results))),
       &annotations);
 
   EXPECT_FALSE(annotations.empty());
@@ -2602,7 +2601,7 @@ void SimpleAnchovySuccessTest(std::string str_type,
 TEST(AnnotatorTest, EmptyResultIfDictIsEmpty) {
   std::vector<mojom::Annotation> annotations;
   RunAnchovyAnnotatorTest(
-      std::make_unique<FakeAnchovyProvider>(base::Value::Dict()), &annotations);
+      std::make_unique<FakeAnchovyProvider>(base::DictValue()), &annotations);
   EXPECT_TRUE(annotations.empty());
 }
 
@@ -2610,7 +2609,7 @@ TEST(AnnotatorTest, EmptyResultIfListIsEmpty) {
   std::vector<mojom::Annotation> annotations;
   RunAnchovyAnnotatorTest(
       std::make_unique<FakeAnchovyProvider>(
-          base::Value::Dict().Set("results", base::Value::List())),
+          base::DictValue().Set("results", base::ListValue())),
       &annotations);
   EXPECT_TRUE(annotations.empty());
 }
@@ -2622,12 +2621,12 @@ TEST(AnnotatorTest, AnchovySuccessMultiple) {
   const std::string text_caption = "caption";
   const std::string type_caption = "CAPTION";
 
-  base::Value::List results;
-  results.Append(base::Value::Dict()
+  base::ListValue results;
+  results.Append(base::DictValue()
                      .Set("type", type_ocr)
                      .Set("score", score)
                      .Set("text", text_ocr));
-  results.Append(base::Value::Dict()
+  results.Append(base::DictValue()
                      .Set("type", type_caption)
                      .Set("score", score)
                      .Set("text", text_caption));
@@ -2635,7 +2634,7 @@ TEST(AnnotatorTest, AnchovySuccessMultiple) {
   std::vector<mojom::Annotation> annotations;
   RunAnchovyAnnotatorTest(
       std::make_unique<FakeAnchovyProvider>(
-          base::Value::Dict().Set("results", std::move(results))),
+          base::DictValue().Set("results", std::move(results))),
       &annotations);
 
   EXPECT_FALSE(annotations.empty());
@@ -2663,12 +2662,12 @@ TEST(AnnotatorTest, AnchovySuccessLabel) {
 }
 
 TEST(AnnotatorTest, CrashIfNoText) {
-  base::Value::List results;
-  results.Append(base::Value::Dict().Set("type", "OCR").Set("score", 12));
+  base::ListValue results;
+  results.Append(base::DictValue().Set("type", "OCR").Set("score", 12));
 
   std::unique_ptr<manta::AnchovyProvider> fake_provider_ptr =
       std::make_unique<FakeAnchovyProvider>(
-          base::Value::Dict().Set("results", std::move(results)));
+          base::DictValue().Set("results", std::move(results)));
   EXPECT_DEATH_IF_SUPPORTED(
       RunAnchovyAnnotatorTest(std::move(fake_provider_ptr), {}), "");
 }

@@ -72,6 +72,17 @@ bool HasCallback(
       [](const auto& variant) { return static_cast<bool>(variant); }, callback);
 }
 
+#if !BUILDFLAG(IS_APPLE)
+bool UseDesktopWidgetOverride(WidgetDelegate* delegate) {
+#if BUILDFLAG(IS_CHROMEOS)
+  return false;
+#else
+  return delegate->use_desktop_widget_override();
+#endif
+}
+
+#endif  // !BUILDFLAG(IS_APPLE)
+
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -167,7 +178,7 @@ Widget::InitParams DialogDelegate::GetDialogWidgetInitParams(
   // simultaneously.
   params.child = parent &&
                  (delegate->GetModalType() == ui::mojom::ModalType::kChild) &&
-                 !delegate->use_desktop_widget_override();
+                 !UseDesktopWidgetOverride(delegate);
 #endif
 
   if (BubbleDialogDelegate* bubble = delegate->AsBubbleDialogDelegate()) {
@@ -616,7 +627,7 @@ int DialogDelegate::GetCornerRadius() const {
     return 0;
   }
 #if BUILDFLAG(IS_MAC)
-  // TODO(crbug.com/40144839): On Mac MODAL_TYPE_WINDOW is implemented using
+  // TODO(crbug.com/40144839): On Mac ModalType::kWindow is implemented using
   // sheets which causes visual artifacts when corner radius is increased for
   // modal types. Remove this after this issue has been addressed.
   if (GetModalType() == ui::mojom::ModalType::kWindow) {

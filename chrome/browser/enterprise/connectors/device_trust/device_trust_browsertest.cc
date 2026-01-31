@@ -235,9 +235,6 @@ class DeviceTrustDelayedManagementBrowserTest
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
         {
-#if BUILDFLAG(IS_MAC)
-            kDTCKeyRotationUploadedBySharedAPIEnabled,
-#endif  // BUILDFLAG(IS_MAC)
             kDTCKeyUploadedBySharedAPIEnabled,
 #if BUILDFLAG(IS_CHROMEOS)
             ash::features::kUnmanagedDeviceDeviceTrustConnectorEnabled
@@ -299,14 +296,14 @@ IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTest, SignalsContract) {
       DeviceTrustServiceFactory::GetForProfile(browser()->profile());
   ASSERT_TRUE(device_trust_service);
 
-  base::test::TestFuture<base::Value::Dict> future;
+  base::test::TestFuture<base::DictValue> future;
   device_trust_service->GetSignals(future.GetCallback());
 
   // This error most likely indicates that one of the signals decorators did
   // not invoke its done_closure in time.
   ASSERT_TRUE(future.Wait()) << "Timed out while collecting signals.";
 
-  const base::Value::Dict& signals_dict = future.Get();
+  const base::DictValue& signals_dict = future.Get();
 
   const auto signals_contract_map =
       device_signals::test::GetSignalsContract(IsDTCAntivirusSignalEnabled());
@@ -491,9 +488,6 @@ class DeviceTrustBrowserTestWithConsent
         {
             enterprise_signals::features::kDeviceSignalsConsentDialog,
             kDTCKeyUploadedBySharedAPIEnabled,
-#if BUILDFLAG(IS_MAC)
-            kDTCKeyRotationUploadedBySharedAPIEnabled,
-#endif  // BUILDFLAG(IS_MAC)
         },
         /*disabled_features=*/{});
   }
@@ -900,14 +894,14 @@ IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTestSignalsContractForUnmanagedDevices,
       DeviceTrustServiceFactory::GetForProfile(browser()->profile());
   ASSERT_TRUE(device_trust_service);
 
-  base::test::TestFuture<base::Value::Dict> future;
+  base::test::TestFuture<base::DictValue> future;
   device_trust_service->GetSignals(future.GetCallback());
 
   // This error most likely indicates that one of the signals decorators did
   // not invoke its done_closure in time.
   ASSERT_TRUE(future.Wait()) << "Timed out while collecting signals.";
 
-  const base::Value::Dict& signals_dict = future.Get();
+  const base::DictValue& signals_dict = future.Get();
 
   const auto signals_contract_map =
       device_signals::test::GetSignalsContractForUnmanagedDevices(

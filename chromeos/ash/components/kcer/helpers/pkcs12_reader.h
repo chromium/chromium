@@ -62,7 +62,7 @@ enum class Pkcs12ReaderStatusCode {
   kPkcs12RsaModulusEmpty = 32,
   kEcKeyBytesEmpty = 33,
   kEcCkaIdExtractionFailed = 34,
-  kPkeyComparisonFailure = 35,
+  // kPkeyComparisonFailure = 35,  // No longer used
   kPkcs12WrongPassword = 36,
   kPkcs12InvalidMac = 37,
   kPkcs12InvalidFile = 38,

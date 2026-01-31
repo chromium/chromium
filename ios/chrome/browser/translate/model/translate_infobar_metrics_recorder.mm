@@ -26,9 +26,4 @@
                             presentEvent);
 }
 
-+ (void)recordUnusedInfobar {
-  // TODO(crbug.com/40107868): Use function version of macros.
-  UMA_HISTOGRAM_COUNTS_10M("Mobile.Translate.Unused.Count", 1);
-}
-
 @end

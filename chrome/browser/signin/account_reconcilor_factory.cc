@@ -136,11 +136,6 @@ AccountReconcilorFactory::BuildServiceInstanceForBrowserContext(
   return reconcilor;
 }
 
-void AccountReconcilorFactory::RegisterProfilePrefs(
-    user_prefs::PrefRegistrySyncable* registry) {
-  AccountReconcilor::RegisterProfilePrefs(registry);
-}
-
 // static
 std::unique_ptr<signin::AccountReconcilorDelegate>
 AccountReconcilorFactory::CreateAccountReconcilorDelegate(Profile* profile) {
@@ -165,8 +160,7 @@ AccountReconcilorFactory::CreateAccountReconcilorDelegate(Profile* profile) {
     case signin::AccountConsistencyMethod::kDice:
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
       return std::make_unique<signin::DiceAccountReconcilorDelegate>(
-          IdentityManagerFactory::GetForProfile(profile),
-          ChromeSigninClientFactory::GetForProfile(profile));
+          IdentityManagerFactory::GetForProfile(profile));
 #else
       NOTREACHED();
 #endif

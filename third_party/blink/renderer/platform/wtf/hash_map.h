@@ -65,7 +65,8 @@ struct KeyValuePairExtractor {
     if (IsTraceableV<ValueType>) {
       AtomicMemzero<sizeof(ValueType), alignof(ValueType)>(&p.value);
     } else {
-      UNSAFE_TODO(memset(static_cast<void*>(&p.value), 0, sizeof(p.value)));
+      // SAFETY: Passing the address and the size of `p.value` correctly.
+      UNSAFE_BUFFERS(memset(static_cast<void*>(&p.value), 0, sizeof(p.value)));
     }
   }
 };

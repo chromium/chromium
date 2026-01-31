@@ -54,9 +54,15 @@ MATCHER_P(SamePtr, ptr_to_expected, "") {
 }
 
 static void CollectResources(std::vector<ReturnedResource>* array,
-                             std::vector<ReturnedResource> returned) {
-  array->insert(array->end(), std::make_move_iterator(returned.begin()),
-                std::make_move_iterator(returned.end()));
+                             std::vector<ReturnedResourceViz> returned) {
+  for (auto& resource_viz : returned) {
+    ReturnedResource resource{
+        resource_viz.id,
+        gpu::SharedImageExportResult::CreateForTesting(resource_viz.sync_token),
+        std::move(resource_viz.release_fence), resource_viz.count,
+        resource_viz.lost};
+    array->emplace_back(std::move(resource));
+  }
 }
 
 class MockExternalUseClient : public ExternalUseClient {
@@ -183,7 +189,8 @@ TEST_F(DisplayResourceProviderSkiaTest, LockForExternalUse) {
   lock_set_->UnlockResources(sync_token2);
   // The resource should be returned after the lock is released.
   EXPECT_EQ(1u, returned_to_child.size());
-  EXPECT_EQ(sync_token3, returned_to_child[0].sync_token);
+  EXPECT_TRUE(returned_to_child[0].shared_image_export_result.IsEqualForTesting(
+      sync_token3));
   child_resource_provider_->ReceiveReturnsFromParent(
       std::move(returned_to_child));
   child_resource_provider_->RemoveImportedResource(id1);
@@ -259,7 +266,8 @@ TEST_F(DisplayResourceProviderSkiaTest, LockForExternalUseWebView) {
 
   // The resource should be returned after the lock is released.
   EXPECT_EQ(1u, returned_to_child.size());
-  EXPECT_EQ(sync_token3, returned_to_child[0].sync_token);
+  EXPECT_TRUE(returned_to_child[0].shared_image_export_result.IsEqualForTesting(
+      sync_token3));
   child_resource_provider_->ReceiveReturnsFromParent(
       std::move(returned_to_child));
   child_resource_provider_->RemoveImportedResource(id1);
@@ -684,8 +692,11 @@ TEST_F(DisplayResourceProviderSkiaTest,
   }
   EXPECT_EQ(kLockedResources, returned_to_child.size());
   // Returned resources that were locked share the same sync token.
-  for (const auto& resource : returned_to_child)
-    EXPECT_EQ(resource.sync_token, returned_to_child[0].sync_token);
+  for (const auto& resource : returned_to_child) {
+    EXPECT_TRUE(
+        returned_to_child[0].shared_image_export_result.IsEqualForTesting(
+            resource.shared_image_export_result));
+  }
 
   child_resource_provider_->ReceiveReturnsFromParent(
       std::move(returned_to_child));

@@ -208,9 +208,10 @@ bool ContentScriptsHandler::Parse(Extension* extension, std::u16string* error) {
                                                   extension->location());
   const bool all_urls_includes_chrome_urls =
       PermissionsData::AllUrlsIncludesChromeUrls(extension->id());
-  for (size_t i = 0; i < manifest_keys.content_scripts.size(); ++i) {
+  CHECK(manifest_keys.content_scripts.has_value());
+  for (size_t i = 0; i < manifest_keys.content_scripts->size(); ++i) {
     std::unique_ptr<UserScript> user_script =
-        CreateUserScript(std::move(manifest_keys.content_scripts[i]), i,
+        CreateUserScript(std::move((*manifest_keys.content_scripts)[i]), i,
                          can_execute_script_everywhere,
                          all_urls_includes_chrome_urls, extension, error);
     if (!user_script) {

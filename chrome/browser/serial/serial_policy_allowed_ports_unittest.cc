@@ -4,7 +4,6 @@
 
 #include "chrome/browser/serial/serial_policy_allowed_ports.h"
 
-#include "base/containers/contains.h"
 #include "base/test/values_test_util.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/common/pref_names.h"
@@ -119,11 +118,11 @@ TEST_F(SerialPolicyAllowedPortsTest, InitializeWithPrefValues) {
               UnorderedElementsAre(kYoutubeOrigin));
 
   const auto device_key = std::make_pair(1234, 5678);
-  ASSERT_TRUE(base::Contains(policy()->usb_device_policy(), device_key));
+  ASSERT_TRUE(policy()->usb_device_policy().contains(device_key));
   EXPECT_THAT(policy()->usb_device_policy().at(device_key),
               UnorderedElementsAre(kGoogleOrigin, kCrbugOrigin));
 
-  ASSERT_TRUE(base::Contains(policy()->usb_vendor_policy(), 4321));
+  ASSERT_TRUE(policy()->usb_vendor_policy().contains(4321));
   EXPECT_THAT(policy()->usb_vendor_policy().at(4321),
               UnorderedElementsAre(kGoogleOrigin, kCrbugOrigin));
 
@@ -185,11 +184,11 @@ TEST_F(SerialPolicyAllowedPortsTest,
               UnorderedElementsAre(kYoutubeOrigin));
 
   const auto device_key = std::make_pair(1234, 5678);
-  ASSERT_TRUE(base::Contains(policy()->usb_device_policy(), device_key));
+  ASSERT_TRUE(policy()->usb_device_policy().contains(device_key));
   EXPECT_THAT(policy()->usb_device_policy().at(device_key),
               UnorderedElementsAre(kGoogleOrigin, kCrbugOrigin));
 
-  ASSERT_TRUE(base::Contains(policy()->usb_vendor_policy(), 4321));
+  ASSERT_TRUE(policy()->usb_vendor_policy().contains(4321));
   EXPECT_THAT(policy()->usb_vendor_policy().at(4321),
               UnorderedElementsAre(kGoogleOrigin, kCrbugOrigin));
 
@@ -281,20 +280,20 @@ TEST_F(SerialPolicyAllowedPortsTest, MultipleItemsWithOverlap) {
   EXPECT_EQ(0u, policy()->all_ports_policy().size());
 
   const auto device1_key = std::make_pair(1234, 5678);
-  ASSERT_TRUE(base::Contains(policy()->usb_device_policy(), device1_key));
+  ASSERT_TRUE(policy()->usb_device_policy().contains(device1_key));
   EXPECT_THAT(policy()->usb_device_policy().at(device1_key),
               UnorderedElementsAre(kGoogleOrigin, kCrbugOrigin));
 
   const auto device2_key = std::make_pair(4321, 8765);
-  ASSERT_TRUE(base::Contains(policy()->usb_device_policy(), device2_key));
+  ASSERT_TRUE(policy()->usb_device_policy().contains(device2_key));
   EXPECT_THAT(policy()->usb_device_policy().at(device2_key),
               UnorderedElementsAre(kCrbugOrigin, kYoutubeOrigin));
 
-  ASSERT_TRUE(base::Contains(policy()->usb_vendor_policy(), 1234));
+  ASSERT_TRUE(policy()->usb_vendor_policy().contains(1234));
   EXPECT_THAT(policy()->usb_vendor_policy().at(1234),
               UnorderedElementsAre(kCrbugOrigin, kYoutubeOrigin));
 
-  ASSERT_TRUE(base::Contains(policy()->usb_vendor_policy(), 4321));
+  ASSERT_TRUE(policy()->usb_vendor_policy().contains(4321));
   EXPECT_THAT(policy()->usb_vendor_policy().at(4321),
               UnorderedElementsAre(kGoogleOrigin, kCrbugOrigin));
 

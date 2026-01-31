@@ -28,16 +28,15 @@ chrome.test.runTests([
   },
 
   function recordExtensionUsageUkm() {
-    chrome.metricsPrivate.recordExtensionUsageUkm('www.google.com', 'kPinned');
+    const EXTENSION_ID = 'a'.repeat(32);
+    chrome.metricsPrivate.recordExtensionUsageUkm(EXTENSION_ID, 'kPinned');
+    chrome.metricsPrivate.recordExtensionUsageUkm(EXTENSION_ID, 'kUnpinned');
     chrome.metricsPrivate.recordExtensionUsageUkm(
-        'www.google.com', 'kUnpinned');
+        EXTENSION_ID, 'kContextMenuInit');
     chrome.metricsPrivate.recordExtensionUsageUkm(
-        'www.google.com', 'kContextMenuInit');
-    chrome.metricsPrivate.recordExtensionUsageUkm(
-        'www.google.com', 'kActionClicked');
-    chrome.metricsPrivate.recordExtensionUsageUkm('www.google.com', 'kEnabled');
-    chrome.metricsPrivate.recordExtensionUsageUkm(
-        'www.google.com', 'kDisabled');
+        EXTENSION_ID, 'kActionClicked');
+    chrome.metricsPrivate.recordExtensionUsageUkm(EXTENSION_ID, 'kEnabled');
+    chrome.metricsPrivate.recordExtensionUsageUkm(EXTENSION_ID, 'kDisabled');
     chrome.test.succeed();
   },
 

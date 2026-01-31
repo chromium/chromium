@@ -11,7 +11,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
-#include "gpu/ipc/common/gpu_channel.mojom.h"
 #include "media/base/media_resource.h"
 #include "media/base/media_switches.h"
 #include "media/base/renderer.h"
@@ -104,8 +103,7 @@ class MediaFoundationRendererClient : public Renderer, public RendererClient {
       const std::optional<base::UnguessableToken>& token,
       const std::string& error);
   void OnDCOMPSurfaceHandleSet(bool success);
-  void OnVideoFrameCreated(scoped_refptr<VideoFrame> video_frame,
-                           const gpu::Mailbox& mailbox);
+  void OnVideoFrameCreated(scoped_refptr<VideoFrame> video_frame);
   void OnCdmAttached(bool success);
   void SignalMediaPlayingStateChange(bool is_playing);
 

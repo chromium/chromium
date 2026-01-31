@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<title>page-margin-safety: clamp</title>
+<script>
+  if (window.testRunner) {
+    testRunner.setPrinting();
+    testRunner.setSafePrintableInset(50);
+    if (window.internals)
+      internals.settings.setShouldPrintBackgrounds(true);
+  }
+</script>
+<style>
+  @page {
+    margin: 0;
+    margin-top: 80px;
+    margin-right: 80px;
+    page-margin-safety: clamp;
+  }
+  body {
+    background: yellow;
+  }
+</style>
+There should be a white margin around this page. It should be larger on the top
+and on the right.

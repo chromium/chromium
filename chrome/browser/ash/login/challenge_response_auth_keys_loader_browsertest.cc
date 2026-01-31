@@ -86,7 +86,7 @@ class ChallengeResponseAuthKeysLoaderBrowserTest : public OobeBaseTest {
       challenge_response_key.set_extension_id(extension_id());
 
     challenge_response_keys.push_back(challenge_response_key);
-    base::Value::List challenge_response_keys_value =
+    base::ListValue challenge_response_keys_value =
         SerializeChallengeResponseKeysForKnownUser(challenge_response_keys);
     user_manager::KnownUser(g_browser_process->local_state())
         .SetChallengeResponseKeys(account_id_,

@@ -18,7 +18,6 @@
 #include "ash/public/cpp/personalization_app/time_of_day_test_utils.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/webui/personalization_app/personalization_app_url_constants.h"
-#include "ash/webui/personalization_app/search/search.mojom-shared.h"
 #include "ash/webui/personalization_app/search/search.mojom.h"
 #include "ash/webui/personalization_app/search/search_concept.h"
 #include "ash/webui/personalization_app/search/search_tag_registry.h"
@@ -28,7 +27,6 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "chromeos/ash/components/local_search_service/public/cpp/local_search_service_proxy.h"
 #include "chromeos/ash/components/test/ash_test_suite.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -73,7 +71,7 @@ bool HasSearchResult(const std::vector<mojom::SearchResultPtr>& search_results,
 
 std::string SearchConceptIdToString(
     mojom::SearchConceptId search_result_concept) {
-  return base::NumberToString(base::to_underlying(search_result_concept));
+  return base::NumberToString(std::to_underlying(search_result_concept));
 }
 
 class TestSearchResultsObserver : public mojom::SearchResultsObserver {

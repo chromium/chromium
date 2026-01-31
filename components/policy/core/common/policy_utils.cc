@@ -38,10 +38,9 @@ bool IsPolicyTestingEnabled(PrefService* pref_service,
 #endif
 }
 
-base::Value::Dict GetPolicyNameToTypeMapping(
-    const base::Value::List& policy_names,
-    const policy::Schema& schema) {
-  base::Value::Dict result;
+base::DictValue GetPolicyNameToTypeMapping(const base::ListValue& policy_names,
+                                           const policy::Schema& schema) {
+  base::DictValue result;
   for (auto& policy_name : policy_names) {
     base::Value::Type policy_type =
         schema.GetKnownProperty(policy_name.GetString()).type();

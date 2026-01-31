@@ -4,7 +4,6 @@
 
 #include "chromeos/ash/components/multidevice/expiring_remote_device_cache.h"
 
-#include "base/containers/contains.h"
 #include "chromeos/ash/components/multidevice/remote_device_cache.h"
 
 namespace ash::multidevice {
@@ -30,11 +29,10 @@ RemoteDeviceRefList ExpiringRemoteDeviceCache::GetNonExpiredRemoteDevices()
   RemoteDeviceRefList remote_devices;
   for (auto device : remote_device_cache_->GetRemoteDevices()) {
     if ((!device.instance_id().empty() &&
-         base::Contains(instance_ids_from_last_set_call_,
-                        device.instance_id())) ||
+         instance_ids_from_last_set_call_.contains(device.instance_id())) ||
         (!device.GetDeviceId().empty() &&
-         base::Contains(legacy_device_ids_from_last_set_call_,
-                        device.GetDeviceId()))) {
+         legacy_device_ids_from_last_set_call_.contains(
+             device.GetDeviceId()))) {
       remote_devices.push_back(device);
     }
   }

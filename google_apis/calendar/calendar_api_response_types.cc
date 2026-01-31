@@ -240,7 +240,7 @@ bool CalculateHasOtherAttendee(const base::Value& value) {
 // Pulls the video conference URI out of the conferenceData field, if there is
 // one on the event. Returns the first one it finds or an empty GURL if there is
 // none.
-GURL GetConferenceDataUri(const base::Value::Dict& dict) {
+GURL GetConferenceDataUri(const base::DictValue& dict) {
   const auto* entry_points =
       dict.FindListByDottedPath(kConferenceDataEntryPoints);
   if (!entry_points) {
@@ -276,7 +276,7 @@ GURL GetConferenceDataUri(const base::Value::Dict& dict) {
 
 // Pulls the attachments out of the attachments field, if there is one on the
 // event. Returns all attachments or an empty vector if there is none.
-std::vector<Attachment> GetAttachments(const base::Value::Dict& dict) {
+std::vector<Attachment> GetAttachments(const base::DictValue& dict) {
   const auto* attachments = dict.FindList(kAttachments);
   std::vector<Attachment> result;
 
@@ -285,7 +285,7 @@ std::vector<Attachment> GetAttachments(const base::Value::Dict& dict) {
   }
 
   for (const auto& it : *attachments) {
-    const base::Value::Dict* attachment_dict = it.GetIfDict();
+    const base::DictValue* attachment_dict = it.GetIfDict();
     if (!attachment_dict) {
       continue;
     }

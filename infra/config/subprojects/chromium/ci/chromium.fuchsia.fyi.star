@@ -99,6 +99,7 @@ ci.builder(
             "chrome_wpt_tests": targets.remove(
                 reason = "Wptrunner does not work on Fuchsia",
             ),
+            "content_browsertests": targets.mixin(swarming = targets.swarming(shards = 28)),
             "headless_shell_wpt_tests": targets.remove(
                 reason = "Wptrunner does not work on Fuchsia",
             ),

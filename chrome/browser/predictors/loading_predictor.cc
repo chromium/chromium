@@ -314,11 +314,11 @@ void LoadingPredictor::OnNavigationFinished(NavigationId navigation_id,
 
   loading_data_collector()->RecordFinishNavigation(
       navigation_id, new_main_frame_url, is_error_page);
-  if (active_urls_to_navigations_.find(old_main_frame_url) !=
-      active_urls_to_navigations_.end()) {
-    active_urls_to_navigations_[old_main_frame_url].erase(navigation_id);
-    if (active_urls_to_navigations_[old_main_frame_url].empty()) {
-      active_urls_to_navigations_.erase(old_main_frame_url);
+  if (auto it = active_urls_to_navigations_.find(old_main_frame_url);
+      it != active_urls_to_navigations_.end()) {
+    it->second.erase(navigation_id);
+    if (it->second.empty()) {
+      active_urls_to_navigations_.erase(it);
     }
   }
   active_navigations_.erase(navigation_id);
@@ -435,7 +435,8 @@ bool LoadingPredictor::HandleHintByOrigin(const GURL& url,
     preconnect_manager()->StartPreresolveHost(
         url, network_anonymization_key,
         kLoadingPredictorPreconnectTrafficAnnotation,
-        /*storage_partition_config=*/nullptr);
+        /*storage_partition_config=*/nullptr,
+        /*network_restrictions_id=*/std::nullopt);
     return true;
   }
 

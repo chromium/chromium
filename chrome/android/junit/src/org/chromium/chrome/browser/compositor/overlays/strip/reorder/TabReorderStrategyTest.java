@@ -31,7 +31,8 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Token;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -84,8 +85,8 @@ public class TabReorderStrategyTest extends ReorderStrategyTestBase {
     private StripLayoutGroupTitle mExpandedTitle;
 
     // Dependencies
-    private final ObservableSupplierImpl<Boolean> mInReorderModeSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableNonNullObservableSupplier<Boolean> mInReorderModeSupplier =
+            ObservableSuppliers.createNonNull(false);
 
     // Target
     private TabReorderStrategy mStrategy;
@@ -94,10 +95,9 @@ public class TabReorderStrategyTest extends ReorderStrategyTestBase {
     @Override
     public void setup() {
         super.setup();
-        mockTabGroup(GROUP_ID1, TAB_ID1, mModel.getTabById(TAB_ID1));
-        mockTabGroup(GROUP_ID2, TAB_ID4, mModel.getTabById(TAB_ID4), mModel.getTabById(TAB_ID5));
+        mockTabGroup(GROUP_ID1, mModel.getTabById(TAB_ID1));
+        mockTabGroup(GROUP_ID2, mModel.getTabById(TAB_ID4), mModel.getTabById(TAB_ID5));
 
-        mInReorderModeSupplier.set(false);
         mStrategy =
                 new TabReorderStrategy(
                         mReorderDelegate,
@@ -165,7 +165,7 @@ public class TabReorderStrategyTest extends ReorderStrategyTestBase {
         // [CollapsedGroup]  [Tab]  [Tab]  [ExpandedGroup]  [Tab]
         // Mock the last tab as grouped, so both edge tabs are grouped (and edge margins are set).
         int tabId = mLastTab.getTabId();
-        mockTabGroup(GROUP_ID3, tabId, mModel.getTabById(tabId));
+        mockTabGroup(GROUP_ID3, mModel.getTabById(tabId));
 
         // Start reordering the second ungrouped tab.
         startReorder(mUngroupedTab2);

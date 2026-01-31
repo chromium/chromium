@@ -43,6 +43,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Set;
 import java.util.concurrent.Executors;
 
 /**
@@ -286,7 +287,31 @@ public class WebViewBrowserActivity extends AppCompatActivity {
                 WebViewCompat.getProfile(mWebView).preconnect(url);
             }
             return true;
+        } else if (itemId == R.id.menu_add_quic_hint) {
+            String url = mFragment.getUrlFromUrlBar();
+            if (url == null || url.equals("about:blank")) {
+                Toast.makeText(this, "Please enter URL in URL bar.", Toast.LENGTH_SHORT).show();
+            } else {
+                try {
+                    WebViewCompat.getProfile(mWebView).addQuicHints(Set.of(url));
+                    Toast.makeText(this, "QUIC hint added for " + url, Toast.LENGTH_SHORT).show();
+                } catch (IllegalArgumentException e) {
+                    Log.e(TAG, "Failed to add QUIC hint: ", e);
+                    Toast.makeText(this, "Please enter valid URL in URL bar.", Toast.LENGTH_SHORT)
+                            .show();
+                }
+            }
+            return true;
+        } else if (itemId == R.id.menu_check_protocol) {
+            mWebView.evaluateJavascript(
+                    "performance.getEntriesByType(\"navigation\")[0].nextHopProtocol",
+                    (result) -> {
+                        String msg = "Page was loaded with \"" + result + "\" protocol.";
+                        Log.i(TAG, msg);
+                        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+                    });
         }
+
         return super.onOptionsItemSelected(item);
     }
 

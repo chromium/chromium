@@ -42,6 +42,7 @@ enum DataCollectorType {
   CHROMEOS_APP_SERVICE = 26;
   CHROMEOS_PERIODIC_LOG_UPLOAD_SYSTEM_LOGS = 27;
   CHROMEOS_KIOSK_APP_LEVEL_LOGS = 28;
+  CHROME_UPDATER = 29;
 }
 
 // PiiType represent the different known categories of PII that can exist in

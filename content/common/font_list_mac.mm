@@ -179,7 +179,7 @@ class FontFamilyResolver {
 
 }  // namespace
 
-base::Value::List GetFontList_SlowBlocking() {
+base::ListValue GetFontList_SlowBlocking() {
   @autoreleasepool {
     FontFamilyResolver resolver;
 
@@ -213,11 +213,11 @@ base::Value::List GetFontList_SlowBlocking() {
     NSArray* sorted_localized_family_names = [family_name_map
         keysSortedByValueUsingSelector:@selector(localizedStandardCompare:)];
 
-    base::Value::List font_list;
+    base::ListValue font_list;
     for (NSString* localized_family_name in sorted_localized_family_names) {
       NSString* family_name = family_name_map[localized_family_name];
 
-      base::Value::List font_list_item;
+      base::ListValue font_list_item;
       font_list_item.reserve(2);
       font_list_item.Append(base::SysNSStringToUTF8(family_name));
       font_list_item.Append(base::SysNSStringToUTF8(localized_family_name));

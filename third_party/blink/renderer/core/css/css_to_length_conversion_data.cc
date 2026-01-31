@@ -579,4 +579,8 @@ void CSSToLengthConversionData::ReferenceSibling() const {
   SetFlag(Flag::kSiblingRelative);
 }
 
+void CSSToLengthConversionData::ReferenceElementDependentRandom() const {
+  SetFlag(Flag::kElementDependentRandom);
+}
+
 }  // namespace blink

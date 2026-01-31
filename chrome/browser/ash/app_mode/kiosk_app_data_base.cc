@@ -56,9 +56,9 @@ void SaveIconToLocalOnBlockingPool(const base::FilePath& icon_path,
   }
 }
 
-void RemoveDictionaryPath(base::Value::Dict& dict, std::string_view path) {
+void RemoveDictionaryPath(base::DictValue& dict, std::string_view path) {
   std::string_view current_path(path);
-  base::Value::Dict* current_dictionary = &dict;
+  base::DictValue* current_dictionary = &dict;
   size_t delimiter_position = current_path.rfind('.');
   if (delimiter_position != std::string_view::npos) {
     current_dictionary =
@@ -105,7 +105,7 @@ void KioskAppDataBase::SaveIconToDictionary(ScopedDictPrefUpdate& dict_update) {
   dict_update->SetByDottedPath(icon_path_key, icon_path_.value());
 }
 
-bool KioskAppDataBase::LoadFromDictionary(const base::Value::Dict& dict) {
+bool KioskAppDataBase::LoadFromDictionary(const base::DictValue& dict) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   const std::string app_key =
       std::string(KioskAppDataBase::kKeyApps) + '.' + app_id_;

@@ -27,6 +27,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/features.h"
+#include "components/sync/base/pref_names.h"
 #include "components/sync/model/sync_change_processor.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
@@ -89,14 +90,14 @@ bool HasNonDefaultBrowserColorScheme(
              ThemeService::BrowserColorScheme::kSystem;
 }
 
-std::optional<base::Value::Dict> NtpBackgroundDictFromSpecifics(
+std::optional<base::DictValue> NtpBackgroundDictFromSpecifics(
     const sync_pb::ThemeSpecifics& theme_specifics) {
   if (!theme_specifics.has_ntp_background()) {
     return std::nullopt;
   }
   const sync_pb::NtpCustomBackground& ntp_background =
       theme_specifics.ntp_background();
-  base::Value::Dict dict;
+  base::DictValue dict;
   if (ntp_background.has_url()) {
     dict.Set(kNtpCustomBackgroundURL, ntp_background.url());
   }
@@ -131,7 +132,7 @@ std::optional<base::Value::Dict> NtpBackgroundDictFromSpecifics(
 }
 
 sync_pb::NtpCustomBackground SpecificsNtpBackgroundFromDict(
-    const base::Value::Dict& dict) {
+    const base::DictValue& dict) {
   sync_pb::NtpCustomBackground ntp_background;
   if (const std::string* value = dict.FindString(kNtpCustomBackgroundURL)) {
     ntp_background.set_url(*value);
@@ -637,7 +638,7 @@ ThemeSyncableService::ThemeSyncState ThemeSyncableService::MaybeSetTheme(
 
   PrefService* prefs = profile_->GetPrefs();
   // NTP background can exist along with the other (non-extension) themes.
-  if (std::optional<base::Value::Dict> dict =
+  if (std::optional<base::DictValue> dict =
           NtpBackgroundDictFromSpecifics(new_specs);
       dict && !dict->empty()) {
     DVLOG(1) << "Applying custom NTP background";
@@ -877,6 +878,13 @@ void ThemeSyncableService::NotifyOnSyncStarted(ThemeSyncState startup_state) {
   for (Observer& observer : observer_list_) {
     observer.OnThemeSyncStarted(startup_state);
   }
+
+  if (profile_->GetPrefs()->GetBoolean(
+          syncer::prefs::internal::kMigrateThemeFromLocalToAccount)) {
+    DeduplicateLocalThemeIfSameAsAccountTheme();
+    profile_->GetPrefs()->ClearPref(
+        syncer::prefs::internal::kMigrateThemeFromLocalToAccount);
+  }
 }
 
 std::optional<sync_pb::ThemeSpecifics>
@@ -925,4 +933,19 @@ bool ThemeSyncableService::ApplySavedLocalThemeIfExistsAndClear() {
   }
   profile_->GetPrefs()->ClearPref(prefs::kSavedLocalTheme);
   return local_theme_specifics.has_value();
+}
+
+void ThemeSyncableService::DeduplicateLocalThemeIfSameAsAccountTheme() {
+  std::optional<sync_pb::ThemeSpecifics> saved_local_theme_specifics =
+      GetSavedLocalTheme();
+  if (!saved_local_theme_specifics.has_value()) {
+    return;
+  }
+  if (!AreThemeSpecificsEquivalent(
+          GetThemeSpecificsFromCurrentTheme(),
+          saved_local_theme_specifics.value(),
+          theme_service_->IsSystemThemeDistinctFromDefaultTheme())) {
+    return;
+  }
+  profile_->GetPrefs()->ClearPref(prefs::kSavedLocalTheme);
 }

@@ -4,12 +4,12 @@
 
 package org.chromium.chrome.browser.ntp_customization.theme.upload_image;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.graphics.Bitmap;
+import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -18,7 +18,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -80,19 +79,19 @@ public class UploadImagePreviewLayoutViewBinderUnitTest {
 
     @Test
     public void testSetLogoBitmap() {
-        mModel.set(NtpThemeProperty.SET_LOGO_BITMAP, mBitmap);
+        mModel.set(NtpThemeProperty.LOGO_BITMAP, mBitmap);
         verify(mLayoutView).setLogo(eq(mBitmap));
 
-        mModel.set(NtpThemeProperty.SET_LOGO_BITMAP, null);
+        mModel.set(NtpThemeProperty.LOGO_BITMAP, null);
         verify(mLayoutView).setLogo(eq(null));
     }
 
     @Test
     public void testSetLogoVisibility() {
-        mModel.set(NtpThemeProperty.SET_LOGO_VISIBILITY, View.VISIBLE);
+        mModel.set(NtpThemeProperty.LOGO_VISIBILITY, View.VISIBLE);
         verify(mLayoutView).setLogoVisibility(eq(View.VISIBLE));
 
-        mModel.set(NtpThemeProperty.SET_LOGO_VISIBILITY, View.GONE);
+        mModel.set(NtpThemeProperty.LOGO_VISIBILITY, View.GONE);
         verify(mLayoutView).setLogoVisibility(eq(View.GONE));
     }
 
@@ -104,20 +103,44 @@ public class UploadImagePreviewLayoutViewBinderUnitTest {
         int[] params = new int[] {expectedHeight, expectedTopMargin};
 
         ViewGroup.MarginLayoutParams initialParams = new ViewGroup.MarginLayoutParams(100, 100);
-        initialParams.topMargin = 0;
+        initialParams.topMargin = 3; // Ensure it's different from expected
         when(mLogoView.getLayoutParams()).thenReturn(initialParams);
 
-        mModel.set(NtpThemeProperty.SET_LOGO_PARAMS, params);
+        mModel.set(NtpThemeProperty.LOGO_PARAMS, params);
 
-        ArgumentCaptor<ViewGroup.LayoutParams> captor =
-                ArgumentCaptor.forClass(ViewGroup.LayoutParams.class);
-        verify(mLogoView).setLayoutParams(captor.capture());
+        // Verifies that the binder called the correct method on the layout view with the correct
+        // parameters.
+        verify(mLayoutView).setLogoViewLayoutParams(eq(expectedHeight), eq(expectedTopMargin));
+    }
 
-        ViewGroup.MarginLayoutParams updatedParams =
-                (ViewGroup.MarginLayoutParams) captor.getValue();
+    @Test
+    public void testSetLogoSearchBoxMargin() {
+        int expectedMargin = 45;
+        mModel.set(NtpThemeProperty.SEARCH_BOX_TOP_MARGIN, expectedMargin);
 
-        assertEquals("Height should match the value", expectedHeight, updatedParams.height);
-        assertEquals(
-                "Top margin should match the value", expectedTopMargin, updatedParams.topMargin);
+        verify(mLayoutView).setSearchBoxTopMargin(eq(expectedMargin));
+    }
+
+    @Test
+    public void testSetSearchBoxHeight() {
+        int expectedHeight = 56;
+        mModel.set(NtpThemeProperty.SEARCH_BOX_HEIGHT, expectedHeight);
+
+        verify(mLayoutView).setSearchBoxHeight(eq(expectedHeight));
+    }
+
+    @Test
+    public void testTopGuidelineBegin() {
+        int topMargin = 105;
+        mModel.set(NtpThemeProperty.TOP_GUIDELINE_BEGIN, topMargin);
+        verify(mLayoutView).setTopGuidelineBegin(eq(topMargin));
+    }
+
+    @Test
+    public void testSetSideAndBottomInsets() {
+        Rect expectedInsets =
+                new Rect(/* left= */ 10, /* top= */ 0, /* right= */ 20, /* bottom= */ 30);
+        mModel.set(NtpThemeProperty.SIDE_AND_BOTTOM_INSETS, expectedInsets);
+        verify(mLayoutView).setSideAndBottomInsets(eq(expectedInsets));
     }
 }

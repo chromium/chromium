@@ -165,13 +165,13 @@ TEST_F(SharedImageGLBackingProduceDawnTest, Basic) {
     WebGPUTextureScopedAccess::EndAccess(std::move(webgpu_scoped_access));
 
     // Map the buffer and assert the pixel is the correct value.
-    readback_buffer.MapAsync(wgpu::MapMode::Read, 0, 4,
-                             wgpu::CallbackMode::AllowSpontaneous,
-                             ToMockBufferMapCallback);
+    wgpu::FutureWaitInfo wait_info{readback_buffer.MapAsync(
+        wgpu::MapMode::Read, 0, 4, wgpu::CallbackMode::AllowSpontaneous,
+        ToMockBufferMapCallback)};
     EXPECT_CALL(*mock_buffer_map_callback,
                 Call(wgpu::MapAsyncStatus::Success, testing::_))
         .Times(1);
-    WaitForCompletion(device);
+    WaitForFutureCompletion(device, wait_info);
 
     const void* data = readback_buffer.GetConstMappedRange(0, 4);
     EXPECT_EQ(0xFF00FF00, *static_cast<const uint32_t*>(data));

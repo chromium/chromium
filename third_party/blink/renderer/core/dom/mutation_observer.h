@@ -37,7 +37,6 @@
 #include "third_party/blink/renderer/core/dom/mutation_observer_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_state_observer.h"
 #include "third_party/blink/renderer/core/inspector/dom_patch_support.h"
-#include "third_party/blink/renderer/core/patching/patch.h"
 #include "third_party/blink/renderer/core/probe/async_task_context.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -103,8 +102,6 @@ class CORE_EXPORT MutationObserver final
   static void DeliverMutations();
   static void EnqueueSlotChange(HTMLSlotElement&);
   static void CleanSlotChangeList(Document&);
-  static void EnqueuePatch(Patch&);
-  static void CleanPatchList(Document&);
 
   MutationObserver(ExecutionContext*, Delegate*);
   ~MutationObserver() override;

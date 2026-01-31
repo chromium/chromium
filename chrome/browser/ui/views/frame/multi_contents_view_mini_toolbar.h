@@ -53,9 +53,9 @@ class MultiContentsViewMiniToolbar : public views::View,
 
  private:
   // TabStripModelObserver:
-  void TabChangedAt(content::WebContents* contents,
-                    int index,
-                    TabChangeType change_type) override;
+  void OnTabChangedAt(tabs::TabInterface* tab,
+                      int index,
+                      TabChangeType change_type) override;
 
   // View:
   void OnPaint(gfx::Canvas* canvas) override;

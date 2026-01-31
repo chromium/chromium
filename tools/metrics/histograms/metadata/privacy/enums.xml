@@ -83,7 +83,6 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Off"/>
   <int value="1" label="BlockThirdParty"/>
   <int value="2" label="IncognitoOnly"/>
-  <int value="3" label="Limited"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/content_settings/core/browser/cookie_settings.h:CookieControlsMode, //chrome/browser/resources/settings/site_settings/constants.ts:CookieControlsMode) -->

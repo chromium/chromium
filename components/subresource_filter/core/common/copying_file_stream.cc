@@ -32,8 +32,8 @@ CopyingFileOutputStream::CopyingFileOutputStream(base::File file)
     : file_(std::move(file)) {}
 
 bool CopyingFileOutputStream::Write(const void* buffer, int size) {
-  return UNSAFE_TODO(
-      file_.WriteAtCurrentPos(static_cast<const char*>(buffer), size) == size);
+  return file_.WriteAtCurrentPosAndCheck(UNSAFE_TODO(base::span(
+      static_cast<const uint8_t*>(buffer), base::checked_cast<size_t>(size))));
 }
 
 }  // namespace subresource_filter

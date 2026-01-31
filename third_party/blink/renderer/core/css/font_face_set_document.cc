@@ -25,6 +25,8 @@
 
 #include "third_party/blink/renderer/core/css/font_face_set_document.h"
 
+#include <optional>
+
 #include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
@@ -183,9 +185,12 @@ const Font* FontFaceSetDocument::ResolveFontStyle(const String& font_string) {
 
   if (!GetDocument()->documentElement()) {
     auto* font_selector = GetDocument()->GetStyleEngine().GetFontSelector();
-    FontDescription description =
+    std::optional<FontDescription> maybe_description =
         FontStyleResolver::ComputeFont(*parsed_style, font_selector);
-    return MakeGarbageCollected<Font>(description, font_selector);
+    if (!maybe_description.has_value()) {
+      return nullptr;
+    }
+    return MakeGarbageCollected<Font>(maybe_description.value(), font_selector);
   }
 
   ComputedStyleBuilder builder =

@@ -38,6 +38,7 @@ Note: This is a jinja2 template, processed at build time into the final resource
         <item name="colorSurfaceBright">@color/gm3_baseline_surface_bright_light</item>
         <item name="colorSurfaceDim">@color/gm3_baseline_surface_dim_light</item>
         <item name="colorOnSurfaceVariant">@color/baseline_neutral_variant_30</item>
+        <item name="colorSurfaceInverse">@color/baseline_neutral_20</item>
         <item name="colorOnSurfaceInverse">@color/baseline_neutral_95</item>
         <item name="colorOutline">@color/baseline_neutral_variant_50</item>
         <item name="colorOutlineVariant">@color/baseline_neutral_variant_80</item>
@@ -268,6 +269,7 @@ Note: This is a jinja2 template, processed at build time into the final resource
         <item name="colorOnSurface">@color/baseline_neutral_90</item>
         <item name="colorSurfaceVariant">@color/baseline_neutral_variant_30</item>
         <item name="colorOnSurfaceVariant">@color/baseline_neutral_variant_80</item>
+        <item name="colorSurfaceInverse">@color/baseline_neutral_95</item>
         <item name="colorOnSurfaceInverse">@color/baseline_neutral_20</item>
         <item name="colorSurfaceBright">@color/gm3_baseline_surface_bright_dark</item>
         <item name="colorSurfaceDim">@color/gm3_baseline_surface_dim_dark</item>

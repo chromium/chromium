@@ -12,10 +12,9 @@
 #include "chrome/browser/enterprise/util/jni_headers/EnterpriseInfo_jni.h"
 
 // Forward declaration
-static void JNI_EnterpriseInfo_UpdateNativeOwnedState(
-    JNIEnv* env,
-    jboolean hasProfileOwnerApp,
-    jboolean hasDeviceOwnerApp);
+static void JNI_EnterpriseInfo_UpdateNativeOwnedState(JNIEnv* env,
+                                                      bool hasProfileOwnerApp,
+                                                      bool hasDeviceOwnerApp);
 
 namespace enterprise_util {
 AndroidEnterpriseInfo::AndroidEnterpriseInfo() = default;
@@ -68,8 +67,8 @@ class AndroidEnterpriseInfoFriendHelper {
  private:
   friend void ::JNI_EnterpriseInfo_UpdateNativeOwnedState(
       JNIEnv* env,
-      jboolean hasProfileOwnerApp,
-      jboolean hasDeviceOwnerApp);
+      bool hasProfileOwnerApp,
+      bool hasDeviceOwnerApp);
 
   static void ForwardToServiceCallbacks(bool profile_owned, bool device_owned) {
     AndroidEnterpriseInfo::GetInstance()->ServiceCallbacks(profile_owned,
@@ -79,13 +78,11 @@ class AndroidEnterpriseInfoFriendHelper {
 
 }  // namespace enterprise_util
 
-static void JNI_EnterpriseInfo_UpdateNativeOwnedState(
-    JNIEnv* env,
-    jboolean hasProfileOwnerApp,
-    jboolean hasDeviceOwnerApp) {
+static void JNI_EnterpriseInfo_UpdateNativeOwnedState(JNIEnv* env,
+                                                      bool hasProfileOwnerApp,
+                                                      bool hasDeviceOwnerApp) {
   enterprise_util::AndroidEnterpriseInfoFriendHelper::ForwardToServiceCallbacks(
-      static_cast<bool>(hasProfileOwnerApp),
-      static_cast<bool>(hasDeviceOwnerApp));
+      hasProfileOwnerApp, hasDeviceOwnerApp);
 }
 
 DEFINE_JNI(EnterpriseInfo)

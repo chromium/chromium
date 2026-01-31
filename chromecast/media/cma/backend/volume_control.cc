@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -244,7 +243,7 @@ class VolumeControlInternal : public SystemVolumeControl::Delegate {
     DCHECK(thread_.task_runner()->BelongsToCurrentThread());
     DCHECK_NE(AudioContentType::kOther, type);
     DCHECK(!from_system || type == AudioContentType::kMedia);
-    DCHECK(base::Contains(volume_multipliers_, type));
+    DCHECK(volume_multipliers_.contains(type));
 
     {
       base::AutoLock lock(volume_lock_);
@@ -357,7 +356,7 @@ class VolumeControlInternal : public SystemVolumeControl::Delegate {
   }
 
   base::FilePath storage_path_;
-  base::Value::Dict stored_values_;
+  base::DictValue stored_values_;
 
   base::Lock volume_lock_;
   base::flat_map<AudioContentType, float> volumes_;

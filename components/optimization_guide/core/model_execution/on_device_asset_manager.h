@@ -47,7 +47,7 @@ class OnDeviceAssetManager final
   void RegisterTextSafetyAndLanguageModels();
 
   // OnDeviceModelComponentStateManager::Observer:
-  void StateChanged(const OnDeviceModelComponentState* state) override;
+  void StateChanged(MaybeOnDeviceModelComponentState state) override;
 
   // UsageTracker::Observer:
   void OnDeviceEligibleFeatureFirstUsed(mojom::OnDeviceFeature feature) final;

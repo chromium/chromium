@@ -31,6 +31,7 @@
 #include <utility>
 
 #include "base/atomic_sequence_num.h"
+#include "base/byte_size.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/common/features.h"
@@ -64,6 +65,13 @@
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
+
+namespace {
+
+BASE_FEATURE(kIDBDatabaseExternalMemoryAccounting,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+}  // namespace
 
 const char IDBDatabase::kIndexDeletedErrorMessage[] =
     "The index or its object store has been deleted.";
@@ -111,6 +119,19 @@ IDBDatabase::IDBDatabase(
       database_remote_(context),
       scheduling_priority_(connection_priority),
       callbacks_receiver_(this, context) {
+  if (base::FeatureList::IsEnabled(kIDBDatabaseExternalMemoryAccounting)) {
+    if (v8::Isolate* isolate = v8::Isolate::TryGetCurrent()) {
+      // This object indirectly retains memory in the browser process via
+      // `database_remote_` (mostly internal Mojo structures for
+      // IndexedDBClientStateChecker, IDBDatabase, and DatabaseCallbacks). The
+      // size was derived empirically by measuring the browser process memory
+      // delta from retaining 100k connections in a renderer process.
+      constexpr base::ByteSize kExternalMemorySize = base::KiBU(90);
+      external_memory_accounter_.Increase(isolate,
+                                          kExternalMemorySize.InBytes());
+    }
+  }
+
   database_remote_.Bind(std::move(pending_database),
                         context->GetTaskRunner(TaskType::kDatabaseAccess));
   callbacks_receiver_.Bind(std::move(callbacks_receiver),
@@ -123,6 +144,10 @@ IDBDatabase::IDBDatabase(
                     WrapWeakPersistent(this)));
 
   UpdateStateIfNeeded();
+}
+
+IDBDatabase::~IDBDatabase() {
+  ClearExternalMemory();
 }
 
 void IDBDatabase::Trace(Visitor* visitor) const {
@@ -483,6 +508,7 @@ void IDBDatabase::CloseConnection() {
   DCHECK(transactions_.empty());
 
   if (database_remote_.is_bound()) {
+    ClearExternalMemory();
     database_remote_.reset();
   }
 
@@ -581,6 +607,7 @@ void IDBDatabase::ContextDestroyed() {
   // normal close() since that may wait on transactions which require a
   // round trip to the back-end to abort.
   if (database_remote_.is_bound()) {
+    ClearExternalMemory();
     database_remote_.reset();
   }
 }
@@ -784,6 +811,12 @@ void IDBDatabase::OnSchedulerLifecycleStateChanged(
   scheduling_priority_ = new_priority;
   if (database_remote_) {
     database_remote_->UpdatePriority(scheduling_priority_);
+  }
+}
+
+void IDBDatabase::ClearExternalMemory() {
+  if (v8::Isolate* isolate = v8::Isolate::TryGetCurrent()) {
+    external_memory_accounter_.Clear(isolate);
   }
 }
 

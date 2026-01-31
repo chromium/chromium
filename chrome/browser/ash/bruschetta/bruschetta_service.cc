@@ -104,7 +104,7 @@ void BruschettaService::OnPolicyChanged() {
       continue;
     }
 
-    std::optional<const base::Value::Dict*> config_opt =
+    std::optional<const base::DictValue*> config_opt =
         GetRunnableConfig(profile_, config_id);
     if (!config_opt.has_value()) {
       // config is either unset or explicitly blocked from running.
@@ -132,7 +132,7 @@ void BruschettaService::OnPolicyChanged() {
 void BruschettaService::StopVmIfRequiredByPolicy(
     std::string vm_name,
     std::string config_id,
-    const base::Value::Dict* config) {
+    const base::DictValue* config) {
   auto it = running_vms_.find(vm_name);
   if (it != running_vms_.end()) {
     auto old_policy = it->second;
@@ -228,7 +228,7 @@ void BruschettaService::StopVm(std::string vm_name) {
 
 void BruschettaService::RegisterInPrefs(const guest_os::GuestId& guest_id,
                                         const std::string& config_id) {
-  base::Value::Dict properties;
+  base::DictValue properties;
   properties.Set(guest_os::prefs::kBruschettaConfigId, config_id);
   guest_os::AddContainerToPrefs(profile_, guest_id, std::move(properties));
 

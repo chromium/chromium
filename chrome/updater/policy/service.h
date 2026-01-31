@@ -16,12 +16,14 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/updater/event_history.h"
 #include "chrome/updater/external_constants.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/policy/manager.h"
+#include "chrome/updater/update_service.h"
 
 namespace policy {
 enum class PolicyFetchReason;
@@ -30,6 +32,11 @@ enum class PolicyFetchReason;
 namespace updater {
 
 class PolicyFetcher;
+
+struct PolicyValue {
+  std::string policy_value;
+  std::string policy_source;
+};
 
 // This class contains the aggregate status of a policy value. It determines
 // whether a conflict exists when multiple policy providers set the same policy.
@@ -41,6 +48,8 @@ class PolicyStatus {
     Entry(const std::string& s, T p) : source(s), policy(p) {}
     std::string source;
     T policy{};
+
+    std::string ToString() const { return base::ToString(policy); }
   };
 
   PolicyStatus() = default;
@@ -60,6 +69,50 @@ class PolicyStatus {
                policy != effective_policy_.value().policy) {
       conflict_policy_ = std::make_optional<Entry>(source, policy);
     }
+  }
+
+  PolicyValue ToPolicyValue() const {
+    return {effective_policy()->ToString(), effective_policy()->source};
+  }
+
+  // Creates a base::DictValue representation of an individual policy adhering
+  // to the format defined by //docs/updater/history_log.md.
+  base::DictValue ToDict() const {
+    base::DictValue values_by_source;
+    for (const auto& entry : all_policies()) {
+      if constexpr (std::is_same_v<T, base::TimeDelta>) {
+        values_by_source.Set(entry.source,
+                             base::TimeDeltaToValue(entry.policy));
+      } else if constexpr (std::is_same_v<T, UpdatesSuppressedTimes>) {
+        values_by_source.Set(
+            entry.source, base::DictValue()
+                              .Set("StartHour", entry.policy.start_hour_)
+                              .Set("StartMinute", entry.policy.start_minute_)
+                              .Set("Duration", entry.policy.duration_minute_));
+      } else {
+        values_by_source.Set(entry.source, entry.policy);
+      }
+    }
+    return base::DictValue()
+        .Set("valuesBySource", std::move(values_by_source))
+        .Set("prevailingSource", effective_policy()->source);
+  }
+
+  void AddPolicyToContainer(const std::string& name,
+                            base::DictValue& policies) {
+    if (!*this) {
+      return;
+    }
+    policies.Set(name, ToDict());
+  }
+
+  void AddPolicyToContainer(
+      const std::string& name,
+      base::flat_map<std::string, PolicyValue>& policies) {
+    if (!*this) {
+      return;
+    }
+    policies.insert({name, ToPolicyValue()});
   }
 
   const std::optional<Entry>& effective_policy() const {
@@ -170,7 +223,53 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
   PolicyStatus<int> DeprecatedGetLastCheckPeriodMinutes() const;
 
   // Helper methods.
-  base::Value::Dict GetAllPolicies() const;
+  base::DictValue GetAllPolicies() const;
+
+  template <typename PolicyContainer>
+  PolicyContainer GetUpdaterPolicies() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    PolicyContainer policies;
+    CloudPolicyOverridesPlatformPolicy().AddPolicyToContainer(
+        "CloudPolicyOverridesPlatformPolicy", policies);
+    GetLastCheckPeriod().AddPolicyToContainer("LastCheckPeriod", policies);
+    GetUpdatesSuppressedTimes().AddPolicyToContainer("UpdatesSuppressed",
+                                                     policies);
+    GetDownloadPreference().AddPolicyToContainer("DownloadPreference",
+                                                 policies);
+    GetPackageCacheSizeLimitMBytes().AddPolicyToContainer(
+        "PackageCacheSizeLimit", policies);
+    GetPackageCacheExpirationTimeDays().AddPolicyToContainer(
+        "PackageCacheExpires", policies);
+    GetProxyMode().AddPolicyToContainer("ProxyMode", policies);
+    GetProxyPacUrl().AddPolicyToContainer("ProxyPacURL", policies);
+    GetProxyServer().AddPolicyToContainer("ProxyServer", policies);
+    return policies;
+  }
+
+  template <typename PolicyContainer>
+  base::flat_map<std::string, PolicyContainer> GetAppPolicies() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    base::flat_map<std::string, PolicyContainer> policies;
+    for (const std::string& app_id : GetAppsWithPolicy()) {
+      PolicyContainer app_policies;
+      GetPolicyForAppInstalls(app_id).AddPolicyToContainer("Install",
+                                                           app_policies);
+      GetPolicyForAppUpdates(app_id).AddPolicyToContainer("Update",
+                                                          app_policies);
+      GetTargetChannel(app_id).AddPolicyToContainer("TargetChannel",
+                                                    app_policies);
+      GetTargetVersionPrefix(app_id).AddPolicyToContainer("TargetVersionPrefix",
+                                                          app_policies);
+      IsRollbackToTargetVersionAllowed(app_id).AddPolicyToContainer(
+          "RollbackToTargetVersionAllowed", app_policies);
+      policies.insert({app_id, std::move(app_policies)});
+    }
+
+    return policies;
+  }
+
   std::string GetAllPoliciesAsString() const;
   bool AreUpdatesSuppressedNow(base::Time now = base::Time::Now()) const;
 

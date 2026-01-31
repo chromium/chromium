@@ -46,8 +46,7 @@ network::mojom::FirstPartySetsReadyEventPtr MakeReadyEvent(
   return ready_event;
 }
 
-const base::Value::Dict* GetOverridesPolicyForProfile(
-    const PrefService* prefs) {
+const base::DictValue* GetOverridesPolicyForProfile(const PrefService* prefs) {
   if (!prefs) {
     return nullptr;
   }

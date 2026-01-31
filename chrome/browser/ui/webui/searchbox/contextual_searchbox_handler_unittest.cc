@@ -11,16 +11,18 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "base/version_info/channel.h"
-#include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
+#include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
@@ -35,9 +37,10 @@
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/contextual_search/contextual_search_service.h"
 #include "components/contextual_search/internal/test_composebox_query_controller.h"
-#include "components/lens/tab_contextualization_controller.h"
+#include "components/lens/lens_overlay_invocation_source.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
 #include "components/omnibox/composebox/composebox_query.mojom.h"
+#include "components/omnibox/composebox/contextual_search_mojom_traits.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -80,11 +83,13 @@ class FakeContextualSearchboxHandler : public ContextualSearchboxHandler {
       mojo::PendingReceiver<searchbox::mojom::PageHandler> pending_page_handler,
       Profile* profile,
       content::WebContents* web_contents,
-      std::unique_ptr<OmniboxController> controller)
+      std::unique_ptr<OmniboxController> controller,
+      GetSessionHandleCallback get_session_callback)
       : ContextualSearchboxHandler(std::move(pending_page_handler),
                                    profile,
                                    web_contents,
-                                   std::move(controller)) {}
+                                   std::move(controller),
+                                   std::move(get_session_callback)) {}
   ~FakeContextualSearchboxHandler() override = default;
 
   // searchbox::mojom::PageHandler
@@ -101,6 +106,17 @@ class FakeContextualSearchboxHandler : public ContextualSearchboxHandler {
 
   contextual_search::ContextualSearchMetricsRecorder* GetMetricsRecorder() {
     return ContextualSearchboxHandler::GetMetricsRecorder();
+  }
+
+  void NotifySessionStateChanged(
+      contextual_search::SessionState session_state) {
+    GetContextualSessionHandle()
+        ->GetMetricsRecorder()
+        ->NotifySessionStateChanged(session_state);
+  }
+
+  contextual_search::InputStateModel* input_state_model() {
+    return input_state_model_.get();
   }
 };
 }  // namespace
@@ -130,23 +146,38 @@ class ContextualSearchboxHandlerTest
     auto metrics_recorder_ptr =
         std::make_unique<MockContextualSearchMetricsRecorder>();
 
-    service_ = std::make_unique<contextual_search::ContextualSearchService>(
-        /*identity_manager=*/nullptr, url_loader_factory(),
-        template_url_service(), fake_variations_client(),
-        version_info::Channel::UNKNOWN, "en-US");
-    auto contextual_session_handle = service_->CreateSessionForTesting(
+    service_ = ContextualSearchServiceFactory::GetForProfile(profile());
+    contextual_session_handle_ = service_->CreateSessionForTesting(
         std::move(query_controller_ptr), std::move(metrics_recorder_ptr));
-    ContextualSearchWebContentsHelper::GetOrCreateForWebContents(web_contents())
-        ->set_session_handle(std::move(contextual_session_handle));
+    // Check the search content sharing settings to notify the session handle
+    // that the policy has been checked.
+    contextual_session_handle_->CheckSearchContentSharingSettings(
+        profile()->GetPrefs());
 
     web_contents()->SetDelegate(&delegate_);
     handler_ = std::make_unique<FakeContextualSearchboxHandler>(
         mojo::PendingReceiver<searchbox::mojom::PageHandler>(), profile(),
         web_contents(),
         std::make_unique<OmniboxController>(
-            std::make_unique<TestOmniboxClient>()));
-
+            std::make_unique<TestOmniboxClient>()),
+        base::BindLambdaForTesting(
+            [&]() { return contextual_session_handle_.get(); }));
     handler_->SetPage(mock_searchbox_page_.BindAndGetRemote());
+
+    ON_CALL(query_controller(), CreateSearchUrl)
+        .WillByDefault(
+            [](auto&& request_info, base::OnceCallback<void(GURL)> callback) {
+              GURL url("https://www.google.com/search?q=" +
+                       request_info->query_text);
+              for (auto const& [key, val] : request_info->additional_params) {
+                url = net::AppendOrReplaceQueryParameter(url, key, val);
+              }
+              url = net::AppendOrReplaceQueryParameter(
+                  url, kQuerySubmissionTimeQueryParameter, "0");
+              url = net::AppendOrReplaceQueryParameter(
+                  url, kClientUploadDurationQueryParameter, "0");
+              std::move(callback).Run(url);
+            });
   }
 
   void SubmitQueryAndWaitForNavigation() {
@@ -176,19 +207,21 @@ class ContextualSearchboxHandlerTest
     query_controller_ = nullptr;
     metrics_recorder_ = nullptr;
     handler_.reset();
-    service_.reset();
+    service_ = nullptr;
     ContextualSearchboxHandlerTestHarness::TearDown();
   }
 
  protected:
   testing::NiceMock<MockSearchboxPage> mock_searchbox_page_;
+  std::unique_ptr<FakeContextualSearchboxHandler> handler_;
+  std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+      contextual_session_handle_;
 
  private:
   TestWebContentsDelegate delegate_;
   raw_ptr<MockQueryController> query_controller_;
-  std::unique_ptr<contextual_search::ContextualSearchService> service_;
+  raw_ptr<contextual_search::ContextualSearchService> service_;
   raw_ptr<MockContextualSearchMetricsRecorder> metrics_recorder_;
-  std::unique_ptr<FakeContextualSearchboxHandler> handler_;
 };
 
 TEST_F(ContextualSearchboxHandlerTest, SessionStarted) {
@@ -289,11 +322,11 @@ TEST_F(ContextualSearchboxHandlerTest, ClearFiles) {
 
   handler().AddFileContext(std::move(file_info), std::move(file_data),
                            callback.Get());
-  EXPECT_EQ(handler().GetUploadedContextTokensForTesting().size(), 1u);
+  EXPECT_EQ(handler().GetUploadedContextTokens().size(), 1u);
 
   EXPECT_CALL(query_controller(), ClearFiles).Times(0);
   handler().ClearFiles();
-  EXPECT_EQ(handler().GetUploadedContextTokensForTesting().size(), 0u);
+  EXPECT_EQ(handler().GetUploadedContextTokens().size(), 0u);
 }
 
 TEST_F(ContextualSearchboxHandlerTest, SubmitQuery) {
@@ -386,10 +419,9 @@ TEST_F(ContextualSearchboxHandlerTest, SubmitQuery_DelayUpload) {
                                 &MockQueryController::InitializeIfNeededBase));
 
   // Set a cached tab context snapshot.
-  auto* contextual_search_web_contents_helper =
-      ContextualSearchWebContentsHelper::FromWebContents(web_contents());
   auto token = base::UnguessableToken::Create();
-  contextual_search_web_contents_helper->session_handle()
+  handler()
+      .GetContextualSessionHandle()
       ->GetUploadedContextTokensForTesting()
       .push_back(token);
   handler().tab_context_snapshot_ =
@@ -434,6 +466,57 @@ TEST_F(ContextualSearchboxHandlerTest, SubmitQuery_DelayUpload) {
                                    SessionState::kNavigationOccurred));
 }
 
+TEST_F(ContextualSearchboxHandlerTest, OnInputStateChanged) {
+  composebox_query::mojom::InputStatePtr received_state_1;
+  composebox_query::mojom::InputStatePtr received_state_2;
+
+  EXPECT_CALL(mock_searchbox_page_, OnInputStateChanged)
+      .Times(2)
+      .WillOnce([&](composebox_query::mojom::InputStatePtr state) {
+        received_state_1 = std::move(state);
+      })
+      .WillOnce([&](composebox_query::mojom::InputStatePtr state) {
+        received_state_2 = std::move(state);
+      });
+
+  handler().SetActiveToolMode(omnibox::ToolMode::TOOL_MODE_CANVAS);
+  mock_searchbox_page_.FlushForTesting();
+  ASSERT_TRUE(received_state_1);
+  EXPECT_EQ(received_state_1->active_tool, omnibox::ToolMode::TOOL_MODE_CANVAS);
+
+  handler().SetActiveModelMode(omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
+  mock_searchbox_page_.FlushForTesting();
+  ASSERT_TRUE(received_state_2);
+  EXPECT_EQ(received_state_2->active_tool, omnibox::ToolMode::TOOL_MODE_CANVAS);
+  EXPECT_EQ(received_state_2->active_model,
+            omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
+}
+TEST_F(ContextualSearchboxHandlerTest, SubmitQueryWithAdditionalParams) {
+  // Set deep search tool.
+  handler().input_state_model()->setActiveTool(
+      omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+
+  SubmitQueryAndWaitForNavigation();
+  GURL query_url =
+      web_contents()->GetController().GetLastCommittedEntry()->GetURL();
+  std::string dr_param;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(query_url, "dr", &dr_param));
+  EXPECT_EQ("1", dr_param);
+
+  // Set create images tool.
+  handler().input_state_model()->setActiveTool(
+      omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
+
+  SubmitQueryAndWaitForNavigation();
+  GURL query_url_imgn =
+      web_contents()->GetController().GetLastCommittedEntry()->GetURL();
+  std::string imgn_param;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(query_url_imgn, "imgn", &imgn_param));
+  EXPECT_EQ("1", imgn_param);
+  // Ensure dr param is not present.
+  EXPECT_FALSE(net::GetValueForKeyInQuery(query_url_imgn, "dr", &dr_param));
+}
+
 class ContextualSearchboxHandlerTestTabsTest
     : public ContextualSearchboxHandlerTest {
  public:
@@ -446,8 +529,9 @@ class ContextualSearchboxHandlerTestTabsTest
 
   void SetUp() override {
     ContextualSearchboxHandlerTest::SetUp();
+    tab_strip_model_ = std::make_unique<TabStripModel>(&delegate_, profile());
     ON_CALL(browser_window_interface_, GetTabStripModel())
-        .WillByDefault(::testing::Return(&tab_strip_model_));
+        .WillByDefault(::testing::Return(tab_strip_model_.get()));
     ON_CALL(browser_window_interface_, GetUnownedUserDataHost)
         .WillByDefault(::testing::ReturnRef(user_data_host_));
     delegate_.SetBrowserWindowInterface(&browser_window_interface_);
@@ -456,7 +540,18 @@ class ContextualSearchboxHandlerTestTabsTest
   }
 
   void TearDown() override {
-    tab_strip_model()->CloseAllTabs();
+    // Clear TabContextualizationController to avoid dangling pointers.
+    if (tab_strip_model_) {
+      for (int i = 0; i < tab_strip_model_->count(); ++i) {
+        tabs::TabInterface* tab = tab_strip_model_->GetTabAtIndex(i);
+        if (tab && tab->GetTabFeatures()) {
+          tab->GetTabFeatures()->SetTabContextualizationControllerForTesting(
+              nullptr);
+        }
+      }
+    }
+    handler_.reset();
+    tab_strip_model_.reset();
     ContextualSearchboxHandlerTest::TearDown();
   }
 
@@ -466,7 +561,7 @@ class ContextualSearchboxHandlerTestTabsTest
   }
 
   TestTabStripModelDelegate* delegate() { return &delegate_; }
-  TabStripModel* tab_strip_model() { return &tab_strip_model_; }
+  TabStripModel* tab_strip_model() { return tab_strip_model_.get(); }
   MockBrowserWindowInterface* browser_window_interface() {
     return &browser_window_interface_;
   }
@@ -510,7 +605,7 @@ class ContextualSearchboxHandlerTestTabsTest
  private:
   base::TimeTicks last_active_time_ticks_;
   TestTabStripModelDelegate delegate_;
-  TabStripModel tab_strip_model_{&delegate_, profile()};
+  std::unique_ptr<TabStripModel> tab_strip_model_;
   ui::UnownedUserDataHost user_data_host_;
   MockBrowserWindowInterface browser_window_interface_;
   base::HistogramTester histogram_tester_;
@@ -736,13 +831,29 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, TabContextAddedMetric) {
               StartFileUploadFlow(testing::_, testing::NotNull(), testing::_))
       .Times(1);
 
-  base::MockCallback<ComposeboxHandler::AddTabContextCallback> callback;
-  EXPECT_CALL(callback, Run).Times(1);
-  handler().AddTabContext(tab_id, false, callback.Get());
+  auto* metrics_recorder_ptr = GetMetricsRecorderPtr();
+  ASSERT_THAT(metrics_recorder_ptr, testing::NotNull());
+  EXPECT_CALL(*metrics_recorder_ptr, NotifySessionStateChanged)
+      .WillRepeatedly(testing::Invoke(
+          metrics_recorder_ptr,
+          &MockContextualSearchMetricsRecorder::NotifySessionStateChangedBase));
+
+  base::test::TestFuture<std::optional<base::UnguessableToken>> future;
+  handler().NotifySessionStarted();
+  handler().AddTabContext(
+      tab_id, false,
+      base::BindLambdaForTesting(
+          [&](const std::optional<base::UnguessableToken>& token) {
+            future.SetValue(token);
+          }));
+  ASSERT_TRUE(future.Wait());
 
   // Check that the histogram was recorded.
+  handler().NotifySessionStateChanged(SessionState::kSessionAbandoned);
   histogram_tester().ExpectUniqueSample(
-      "ContextualSearch.TabContextAdded.NewTabPage", true, 1);
+      "ContextualSearch.TabContextAdded.V2.NewTabPage", 1, 1);
+  histogram_tester().ExpectUniqueSample(
+      "ContextualSearch.TabWithDuplicateTitleClicked.V2.NewTabPage", 0, 1);
 }
 
 TEST_F(ContextualSearchboxHandlerTestTabsTest,
@@ -762,7 +873,11 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest,
           mojo::PendingReceiver<searchbox::mojom::PageHandler>(), profile(),
           web_contents(),
           std::make_unique<OmniboxController>(
-              std::make_unique<TestOmniboxClient>()));
+              std::make_unique<TestOmniboxClient>()),
+          base::BindLambdaForTesting(
+              []() -> contextual_search::ContextualSearchSessionHandle* {
+                return nullptr;
+              }));
 
   // Use a new MockSearchboxPage for the new handler.
   testing::NiceMock<MockSearchboxPage> local_mock_searchbox_page;
@@ -811,23 +926,41 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest,
               StartFileUploadFlow(testing::_, testing::NotNull(), testing::_))
       .Times(2);
 
+  auto* metrics_recorder_ptr = GetMetricsRecorderPtr();
+  ASSERT_THAT(metrics_recorder_ptr, testing::NotNull());
+  EXPECT_CALL(*metrics_recorder_ptr, NotifySessionStateChanged)
+      .WillRepeatedly(testing::Invoke(
+          metrics_recorder_ptr,
+          &MockContextualSearchMetricsRecorder::NotifySessionStateChangedBase));
+
   // Click on a tab with a duplicate title.
-  base::MockCallback<ComposeboxHandler::AddTabContextCallback> callback1;
-  EXPECT_CALL(callback1, Run).Times(1);
-  handler().AddTabContext(tab_a1->GetHandle().raw_value(), false,
-                          callback1.Get());
-  histogram_tester().ExpectUniqueSample(
-      "ContextualSearch.TabWithDuplicateTitleClicked.NewTabPage", true, 1);
+  base::test::TestFuture<std::optional<base::UnguessableToken>> future1;
+  handler().NotifySessionStarted();
+  handler().AddTabContext(
+      tab_a1->GetHandle().raw_value(), false,
+      base::BindLambdaForTesting(
+          [&](const std::optional<base::UnguessableToken>& token) {
+            EXPECT_TRUE(token.has_value());
+            future1.SetValue(token);
+          }));
+  ASSERT_TRUE(future1.Wait());
 
   // Click on a tab with a unique title.
-  base::MockCallback<ComposeboxHandler::AddTabContextCallback> callback2;
-  EXPECT_CALL(callback2, Run).Times(1);
-  handler().AddTabContext(tab_b1->GetHandle().raw_value(), false,
-                          callback2.Get());
-  histogram_tester().ExpectBucketCount(
-      "ContextualSearch.TabWithDuplicateTitleClicked.NewTabPage", false, 1);
-  histogram_tester().ExpectTotalCount(
-      "ContextualSearch.TabWithDuplicateTitleClicked.NewTabPage", 2);
+  base::test::TestFuture<std::optional<base::UnguessableToken>> future2;
+  handler().AddTabContext(
+      tab_b1->GetHandle().raw_value(), false,
+      base::BindLambdaForTesting(
+          [&](const std::optional<base::UnguessableToken>& token) {
+            future2.SetValue(token);
+          }));
+  ASSERT_TRUE(future2.Wait());
+
+  // End the session to log the metrics.
+  handler().NotifySessionStateChanged(SessionState::kSessionAbandoned);
+  histogram_tester().ExpectUniqueSample(
+      "ContextualSearch.TabWithDuplicateTitleClicked.V2.NewTabPage", 1, 1);
+  histogram_tester().ExpectUniqueSample(
+      "ContextualSearch.TabContextAdded.V2.NewTabPage", 2, 1);
 }
 
 TEST_F(ContextualSearchboxHandlerTestTabsTest,
@@ -854,13 +987,36 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest,
               StartFileUploadFlow(testing::_, testing::NotNull(), testing::_))
       .Times(1);
 
+  auto* metrics_recorder_ptr = GetMetricsRecorderPtr();
+  ASSERT_THAT(metrics_recorder_ptr, testing::NotNull());
+  EXPECT_CALL(*metrics_recorder_ptr, NotifySessionStateChanged)
+      .WillRepeatedly(testing::Invoke(
+          metrics_recorder_ptr,
+          &MockContextualSearchMetricsRecorder::NotifySessionStateChangedBase));
+
   // Click on a tab with a unique title.
-  base::MockCallback<ComposeboxHandler::AddTabContextCallback> callback1;
-  EXPECT_CALL(callback1, Run).Times(1);
-  handler().AddTabContext(tab_a1->GetHandle().raw_value(), false,
-                          callback1.Get());
+  base::test::TestFuture<std::optional<base::UnguessableToken>> future;
+  handler().NotifySessionStarted();
+  handler().AddTabContext(
+      tab_a1->GetHandle().raw_value(), false,
+      base::BindLambdaForTesting(
+          [&](const std::optional<base::UnguessableToken>& token) {
+            EXPECT_TRUE(token.has_value());
+            future.SetValue(token);
+          }));
+  ASSERT_TRUE(future.Wait());
+
+  // End the session to log the metrics.
+  EXPECT_CALL(*GetMetricsRecorderPtr(),
+              NotifySessionStateChanged(SessionState::kSessionAbandoned))
+      .WillOnce([this](SessionState session_state) {
+        GetMetricsRecorderPtr()->NotifySessionStateChangedBase(session_state);
+      });
+  handler().NotifySessionStateChanged(SessionState::kSessionAbandoned);
   histogram_tester().ExpectUniqueSample(
-      "ContextualSearch.TabWithDuplicateTitleClicked.NewTabPage", false, 1);
+      "ContextualSearch.TabWithDuplicateTitleClicked.V2.NewTabPage", 0, 1);
+  histogram_tester().ExpectUniqueSample(
+      "ContextualSearch.TabContextAdded.V2.NewTabPage", 1, 1);
 }
 
 TEST_F(ContextualSearchboxHandlerTestTabsTest, TabContextRecencyRankingMetric) {
@@ -887,10 +1043,14 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, TabContextRecencyRankingMetric) {
       .Times(1);
 
   // Click on the first tab.
-  base::MockCallback<ComposeboxHandler::AddTabContextCallback> callback1;
-  EXPECT_CALL(callback1, Run).Times(1);
-  handler().AddTabContext(tab_a1->GetHandle().raw_value(), false,
-                          callback1.Get());
+  base::test::TestFuture<std::optional<base::UnguessableToken>> future;
+  handler().AddTabContext(
+      tab_a1->GetHandle().raw_value(), false,
+      base::BindLambdaForTesting(
+          [&](const std::optional<base::UnguessableToken>& token) {
+            future.SetValue(token);
+          }));
+  ASSERT_TRUE(future.Wait());
   histogram_tester().ExpectUniqueSample(
       "ContextualSearch.AddedTabContextRecencyRanking.NewTabPage", 1, 1);
 }
@@ -949,14 +1109,19 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest,
   // Expect all three tabs to be returned.
   ASSERT_EQ(tabs.size(), 3u);
   EXPECT_EQ(tabs[0]->tab_id, chromium_tab->GetHandle().raw_value());
-  EXPECT_TRUE(tabs[0]->show_in_recent_tab_chip);
+  EXPECT_TRUE(tabs[0]->show_in_current_tab_chip);
+  EXPECT_FALSE(tabs[0]->show_in_previous_tab_chip);
   EXPECT_EQ(tabs[1]->tab_id, search_tab->GetHandle().raw_value());
-  EXPECT_FALSE(tabs[1]->show_in_recent_tab_chip);
+  EXPECT_FALSE(tabs[1]->show_in_previous_tab_chip);
   EXPECT_EQ(tabs[2]->tab_id, example_tab->GetHandle().raw_value());
-  EXPECT_TRUE(tabs[2]->show_in_recent_tab_chip);
+  EXPECT_TRUE(tabs[2]->show_in_previous_tab_chip);
 }
 
 TEST_F(ContextualSearchboxHandlerTestTabsTest, DuplicateTabsShownMetric) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      ContextualSearchboxHandler::kExhaustiveGetRecentTabs);
+
   // Add tabs with duplicate titles.
   AddTab(GURL("https://a1.com"));
   content::WebContentsTester::For(tab_strip_model()->GetWebContentsAt(0))

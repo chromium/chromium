@@ -173,7 +173,7 @@ TEST_F(NavigatorTest, SimpleRendererInitiatedSameSiteNavigation) {
   // The navigation is immediately started as there's no need to wait for
   // beforeUnload to be executed.
   EXPECT_EQ(NavigationRequest::WILL_START_REQUEST, request->state());
-  EXPECT_FALSE(request->common_params().has_user_gesture);
+  EXPECT_FALSE(request->common_params().has_possibly_filtered_user_gesture);
   EXPECT_EQ(kUrl2, request->common_params().url);
   EXPECT_FALSE(request->browser_initiated());
 
@@ -421,6 +421,11 @@ TEST_F(NavigatorTest, BeforeUnloadDenialCancelNavigation) {
   // This test assumes a beforeunload handler is present.
   main_test_rfh()->SuddenTerminationDisablerChanged(
       true, blink::mojom::SuddenTerminationDisablerType::kBeforeUnloadHandler);
+  // Put a user gesture on the main frame to wait for the beforeunload event to
+  // complete.
+  main_test_rfh()->ActivateUserActivation(
+      blink::mojom::UserActivationNotificationType::kTest,
+      /*sticky_only=*/true);
 
   // Start a new navigation.
   FrameTreeNode* node = main_test_rfh()->frame_tree_node();
@@ -457,6 +462,11 @@ TEST_F(NavigatorTest, BeginNavigation) {
   // This test assumes a beforeunload handler is present on the subframe.
   subframe_rfh->SuddenTerminationDisablerChanged(
       true, blink::mojom::SuddenTerminationDisablerType::kBeforeUnloadHandler);
+  // Put a user gesture on the sub-frame to wait for the beforeunload event to
+  // complete.
+  subframe_rfh->ActivateUserActivation(
+      blink::mojom::UserActivationNotificationType::kTest,
+      /*sticky_only=*/true);
 
   // Start a navigation at the subframe.
   FrameTreeNode* subframe_node = subframe_rfh->frame_tree_node();
@@ -506,6 +516,12 @@ TEST_F(NavigatorTest, BeginNavigation) {
   } else {
     EXPECT_FALSE(GetSpeculativeRenderFrameHost(subframe_node));
   }
+
+  // Put a user gesture on the main frame to wait for the beforeunload event to
+  // complete.
+  main_test_rfh()->ActivateUserActivation(
+      blink::mojom::UserActivationNotificationType::kTest,
+      /*sticky_only=*/true);
 
   // Now start a navigation at the root node.
   auto navigation2 =
@@ -821,7 +837,7 @@ TEST_F(NavigatorTest, RendererUserInitiatedNavigationCancel) {
   ASSERT_TRUE(request2);
   EXPECT_EQ(kUrl2, request2->common_params().url);
   EXPECT_FALSE(request2->browser_initiated());
-  EXPECT_TRUE(request2->common_params().has_user_gesture);
+  EXPECT_TRUE(request2->common_params().has_possibly_filtered_user_gesture);
 
   // Confirm that the first loader got destroyed.
   EXPECT_FALSE(loader1);
@@ -868,7 +884,7 @@ TEST_F(NavigatorTest,
   ASSERT_TRUE(request1);
   EXPECT_EQ(kUrl1, request1->common_params().url);
   EXPECT_FALSE(request1->browser_initiated());
-  EXPECT_TRUE(request1->common_params().has_user_gesture);
+  EXPECT_TRUE(request1->common_params().has_possibly_filtered_user_gesture);
   if (expect_site_instance_change) {
     EXPECT_TRUE(GetSpeculativeRenderFrameHost(node));
   } else {
@@ -888,7 +904,7 @@ TEST_F(NavigatorTest,
   EXPECT_NE(request1, request2);
   EXPECT_EQ(kUrl2, request2->common_params().url);
   EXPECT_FALSE(request2->browser_initiated());
-  EXPECT_FALSE(request2->common_params().has_user_gesture);
+  EXPECT_FALSE(request2->common_params().has_possibly_filtered_user_gesture);
   if (expect_site_instance_change) {
     EXPECT_TRUE(GetSpeculativeRenderFrameHost(node));
   } else {
@@ -970,7 +986,7 @@ TEST_F(NavigatorTest,
   ASSERT_TRUE(request1);
   EXPECT_EQ(kUrl1, request1->common_params().url);
   EXPECT_FALSE(request1->browser_initiated());
-  EXPECT_FALSE(request1->common_params().has_user_gesture);
+  EXPECT_FALSE(request1->common_params().has_possibly_filtered_user_gesture);
   if (expect_site_instance_change) {
     EXPECT_TRUE(GetSpeculativeRenderFrameHost(node));
   } else {
@@ -990,7 +1006,7 @@ TEST_F(NavigatorTest,
   NavigationRequest* request2 = node->navigation_request();
   EXPECT_EQ(kUrl2, request2->common_params().url);
   EXPECT_FALSE(request2->browser_initiated());
-  EXPECT_FALSE(request2->common_params().has_user_gesture);
+  EXPECT_FALSE(request2->common_params().has_possibly_filtered_user_gesture);
   if (expect_site_instance_change) {
     EXPECT_TRUE(GetSpeculativeRenderFrameHost(node));
   } else {

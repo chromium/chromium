@@ -43,17 +43,8 @@ version_info::Channel VariationsServiceClient::GetChannelForVariations() {
     DVLOG(1) << "Invalid channel provided: " << forced_channel;
   }
 
-  auto channel = GetChannel();
-#if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/389565104): Remove this if block when ready to move desktop
-  // to stable builds.
-  if (channel == version_info::Channel::STABLE &&
-      base::android::device_info::is_desktop()) {
-    return version_info::Channel::DEV;
-  }
-#endif
   // Return the embedder-provided channel if no forced channel is specified.
-  return channel;
+  return GetChannel();
 }
 
 Study::FormFactor VariationsServiceClient::GetCurrentFormFactor() {

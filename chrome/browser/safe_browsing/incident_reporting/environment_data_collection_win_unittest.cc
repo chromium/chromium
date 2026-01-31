@@ -7,11 +7,11 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <array>
 #include <string>
 
 #include "base/base_paths.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/scoped_native_library.h"
@@ -51,8 +51,9 @@ bool DllEntryContainsLspFeature(
     const std::string& dll_path) {
   for (const auto& dll : process_report.dll()) {
     if (dll.path() == dll_path &&
-        base::Contains(dll.feature(),
-                       ClientIncidentReport_EnvironmentData_Process_Dll::LSP)) {
+        std::ranges::contains(
+            dll.feature(),
+            ClientIncidentReport_EnvironmentData_Process_Dll::LSP)) {
       // LSP feature found.
       return true;
     }

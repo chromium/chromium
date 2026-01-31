@@ -45,7 +45,7 @@ void ContentSettingsService::OnExtensionRegistered(
 void ContentSettingsService::OnExtensionPrefsLoaded(
     const ExtensionId& extension_id,
     const ExtensionPrefs* prefs) {
-  const base::Value::List* content_settings =
+  const base::ListValue* content_settings =
       prefs->ReadPrefAsList(extension_id, pref_names::kPrefContentSettings);
   if (content_settings) {
     content_settings_store_->SetExtensionContentSettingFromList(

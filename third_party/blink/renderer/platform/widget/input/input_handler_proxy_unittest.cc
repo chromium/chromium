@@ -27,6 +27,7 @@
 #include "cc/metrics/events_metrics_manager.h"
 #include "cc/test/mock_input_handler.h"
 #include "components/input/features.h"
+#include "components/viz/common/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -305,7 +306,7 @@ InputHandlerProxy::EventDisposition HandleInputEventAndFlushEventQueue(
 
 class InputHandlerProxyEventQueueTest
     : public testing::Test,
-      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
+      public ::testing::WithParamInterface<bool> {
  public:
   InputHandlerProxyEventQueueTest() = default;
 
@@ -313,20 +314,12 @@ class InputHandlerProxyEventQueueTest
     std::vector<base::test::FeatureRefAndParams> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
 
-    if (std::get<0>(GetParam())) {
+    if (GetParam()) {
       enabled_features.push_back(
           {input::features::kUpdateScrollPredictorInputMapping, {}});
     } else {
       disabled_features.push_back(
           input::features::kUpdateScrollPredictorInputMapping);
-    }
-
-    if (std::get<1>(GetParam())) {
-      enabled_features.push_back(
-          {features::kRefactorCompositorThreadEventQueue, {}});
-    } else {
-      disabled_features.push_back(
-          features::kRefactorCompositorThreadEventQueue);
     }
 
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
@@ -340,13 +333,7 @@ class InputHandlerProxyEventQueueTest
 
   ~InputHandlerProxyEventQueueTest() override = default;
 
-  bool IsUpdateScrollPredictorInputMappingEnabled() const {
-    return std::get<0>(GetParam());
-  }
-
-  bool IsRefactorCompositorThreadEventQueueEnabled() const {
-    return std::get<1>(GetParam());
-  }
+  bool IsUpdateScrollPredictorInputMappingEnabled() const { return GetParam(); }
 
   void HandleGestureEvent(WebInputEvent::Type type,
                           float delta_y_or_scale = 0,
@@ -1405,22 +1392,19 @@ TEST_P(InputHandlerProxyEventQueueTest, EmptyGestureScrollUpdateHistogram) {
       .Times(1);
 
   // If input mapping and queue refactoring are disabled, the first update is
-  // dispatched and the following ones are enqueued and then dispatched. The
-  // mock will return 'did not scroll' for the first two and 'did scroll' for
-  // the third one.
-  if (!IsRefactorCompositorThreadEventQueueEnabled() ||
-      !IsUpdateScrollPredictorInputMappingEnabled()) {
+  // The mock will return 'did not scroll' for the first two and 'did scroll'
+  // for the third one.
+  if (!IsUpdateScrollPredictorInputMappingEnabled()) {
     EXPECT_CALL(mock_input_handler_, ScrollUpdate(_, _))
         .WillOnce(testing::Return(scroll_result_did_not_scroll_))
         .WillOnce(testing::Return(scroll_result_did_not_scroll_))
         .WillOnce(testing::Return(scroll_result_did_scroll_));
   }
 
-  // If input mapping and queue refactoring are enabled, all updates are
-  // enqueued and then dispatched. The mock will return 'did not scroll' for the
-  // first one and 'did scroll' for the second one.
-  if (IsRefactorCompositorThreadEventQueueEnabled() &&
-      IsUpdateScrollPredictorInputMappingEnabled()) {
+  // If input mapping is enabled, all updates are enqueued and then dispatched.
+  // The mock will return 'did not scroll' for the first one and 'did scroll'
+  // for the second one.
+  if (IsUpdateScrollPredictorInputMappingEnabled()) {
     EXPECT_CALL(mock_input_handler_, ScrollUpdate(_, _))
         .WillOnce(testing::Return(scroll_result_did_not_scroll_))
         .WillOnce(testing::Return(scroll_result_did_scroll_));
@@ -1431,8 +1415,7 @@ TEST_P(InputHandlerProxyEventQueueTest, EmptyGestureScrollUpdateHistogram) {
   HandleGestureEvent(WebInputEvent::Type::kGestureScrollBegin);
   DeliverInputForBeginFrame();
 
-  if (!IsRefactorCompositorThreadEventQueueEnabled() ||
-      !IsUpdateScrollPredictorInputMappingEnabled()) {
+  if (!IsUpdateScrollPredictorInputMappingEnabled()) {
     // The first (empty) scroll update will be dispatched immediately.
     HandleGestureEvent(WebInputEvent::Type::kGestureScrollUpdate, 0);
   }
@@ -1563,8 +1546,7 @@ TEST_P(InputHandlerProxyEventQueueTest,
       RecordScrollBegin(_, cc::ScrollBeginThreadState::kScrollingOnCompositor))
       .Times(1);
 
-  if (IsRefactorCompositorThreadEventQueueEnabled() &&
-      IsUpdateScrollPredictorInputMappingEnabled()) {
+  if (IsUpdateScrollPredictorInputMappingEnabled()) {
     EXPECT_CALL(mock_input_handler_, SetNeedsAnimateInput()).Times(1);
   }
   EXPECT_CALL(mock_input_handler_, ScrollUpdate(_, _)).Times(1);
@@ -1577,12 +1559,10 @@ TEST_P(InputHandlerProxyEventQueueTest,
   DeliverInputForBeginFrame();
 
   // The second (non-empty) scroll update will be enqueued if predictor input
-  // mapping and compositor queue refactoring are enabled. Otherwise, the update
-  // will de dispatched.
+  // mapping is enabled. Otherwise, the update will de dispatched.
   HandleGestureEvent(WebInputEvent::Type::kGestureScrollUpdate, -10);
 
-  if (IsRefactorCompositorThreadEventQueueEnabled() &&
-      IsUpdateScrollPredictorInputMappingEnabled()) {
+  if (IsUpdateScrollPredictorInputMappingEnabled()) {
     EXPECT_EQ(1ul, event_queue().size());
   } else {
     EXPECT_EQ(0ul, event_queue().size());
@@ -2544,29 +2524,14 @@ TEST_P(InputHandlerProxyEventQueueTest, VSyncAlignedGestureScroll) {
 
   HandleGestureEvent(WebInputEvent::Type::kGestureScrollUpdate, -40);
 
-  // The event queue size varies based on the RefactorCompositorThreadEventQueue
-  // feature, which affects event coalescing and queueing, thus influencing
-  // UpdateScrollPredictorInputMapping behavior.
-  if (IsRefactorCompositorThreadEventQueueEnabled()) {
-    // Second GestureScrollUpdate will be queued without coalescing yet.
-    EXPECT_EQ(2ul, event_queue().size());
-  } else {
-    EXPECT_EQ(1ul, event_queue().size());
-  }
+  // Second GestureScrollUpdate will be queued without coalescing yet.
+  EXPECT_EQ(2ul, event_queue().size());
   EXPECT_EQ(1ul, event_disposition_recorder_.size());
 
   EXPECT_CALL(mock_input_handler_, RecordScrollEnd(_)).Times(0);
   HandleGestureEvent(WebInputEvent::Type::kGestureScrollEnd);
 
-  // The event queue size varies based on the
-  // RefactorCompositorThreadEventQueue feature, which affects event
-  // coalescing and queueing, thus influencing
-  // UpdateScrollPredictorInputMapping behavior.
-  if (IsRefactorCompositorThreadEventQueueEnabled()) {
-    EXPECT_EQ(3ul, event_queue().size());
-  } else {
-    EXPECT_EQ(2ul, event_queue().size());
-  }
+  EXPECT_EQ(3ul, event_queue().size());
   EXPECT_EQ(1ul, event_disposition_recorder_.size());
   testing::Mock::VerifyAndClearExpectations(&mock_input_handler_);
 
@@ -2685,14 +2650,7 @@ TEST_P(InputHandlerProxyEventQueueTest,
   HandleGestureEvent(WebInputEvent::Type::kGestureScrollUpdate, -5);
   HandleGestureEvent(WebInputEvent::Type::kGestureScrollEnd);
 
-  // The event queue size varies based on the RefactorCompositorThreadEventQueue
-  // feature, which affects event coalescing and queueing, thus influencing
-  // UpdateScrollPredictorInputMapping behavior.
-  if (IsRefactorCompositorThreadEventQueueEnabled()) {
-    EXPECT_EQ(10ul, event_queue().size());
-  } else {
-    EXPECT_EQ(8ul, event_queue().size());
-  }
+  EXPECT_EQ(10ul, event_queue().size());
   EXPECT_EQ(2ul, event_disposition_recorder_.size());
 
   GetInputHandlerProxy()->DispatchQueuedInputEventsHelper();
@@ -2845,15 +2803,8 @@ TEST_P(InputHandlerProxyEventQueueTest, VSyncAlignedCoalesceTouchpadPinch) {
   HandleGestureEventWithSourceDevice(WebInputEvent::Type::kGesturePinchEnd,
                                      WebGestureDevice::kTouchpad);
 
-  // The event queue size varies based on the RefactorCompositorThreadEventQueue
-  // feature, which affects event coalescing and queueing, thus influencing
-  // UpdateScrollPredictorInputMapping behavior.
-  if (IsRefactorCompositorThreadEventQueueEnabled()) {
-    // All the events are simply queued.
-    EXPECT_EQ(4ul, event_queue().size());
-  } else {
-    EXPECT_EQ(3ul, event_queue().size());
-  }
+  // All the events are simply queued.
+  EXPECT_EQ(4ul, event_queue().size());
   EXPECT_EQ(1ul, event_disposition_recorder_.size());
 
   EXPECT_CALL(mock_input_handler_, PinchGestureUpdate(1.21f, _));
@@ -2934,17 +2885,8 @@ TEST_P(InputHandlerProxyEventQueueTest, OriginalEventsTracing) {
       trace_analyzer::Query::EventPhaseIs(TRACE_EVENT_PHASE_NESTABLE_ASYNC_END),
       &end_events);
 
-  // The number of trace events depends on whether the
-  // RefactorCompositorThreadEventQueue feature is enabled, as it changes how
-  // events are processed and traced, impacting the behavior of
-  // UpdateScrollPredictorInputMapping.
-  if (IsRefactorCompositorThreadEventQueueEnabled()) {
-    EXPECT_EQ(12ul, begin_events.size());
-    EXPECT_EQ(12ul, end_events.size());
-  } else {
-    EXPECT_EQ(7ul, begin_events.size());
-    EXPECT_EQ(7ul, end_events.size());
-  }
+  EXPECT_EQ(12ul, begin_events.size());
+  EXPECT_EQ(12ul, end_events.size());
 
   // Filter for only the events that were dispatched.
   trace_analyzer::TraceEventVector dispatched_events;
@@ -3216,6 +3158,69 @@ TEST_P(InputHandlerProxyEventQueueTest, DeliverInputWithHighLatencyMode) {
   EXPECT_EQ(InputHandlerProxy::DID_HANDLE, event_disposition_recorder_.back());
 
   testing::Mock::VerifyAndClearExpectations(&mock_input_handler_);
+}
+
+TEST_P(InputHandlerProxyEventQueueTest, MomentumScrollEventsTracking) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(::features::kFlingSchedulingImprovements);
+
+  base::SimpleTestTickClock tick_clock;
+  tick_clock.SetNowTicks(base::TimeTicks::Now());
+
+  // Re-create the proxy so it picks up the enabled feature.
+  input_handler_proxy_ = std::make_unique<TestInputHandlerProxy>(
+      mock_input_handler_, &mock_client_);
+  constexpr base::TimeDelta kInterval = base::Milliseconds(16);
+
+  SetInputHandlerProxyTickClockForTesting(&tick_clock);
+  SetScrollPredictionEnabled(true);
+
+  // Setup expectations for the scroll sequence.
+  cc::InputHandlerScrollResult did_scroll_result;
+  did_scroll_result.did_scroll = true;
+
+  EXPECT_CALL(mock_input_handler_, ScrollBegin(_, _))
+      .WillRepeatedly(testing::Return(kImplThreadScrollState));
+  EXPECT_CALL(mock_input_handler_, RecordScrollBegin(_, _))
+      .Times(testing::AnyNumber());
+  EXPECT_CALL(mock_input_handler_, ScrollUpdate(_, _))
+      .WillRepeatedly(testing::Return(did_scroll_result));
+  EXPECT_CALL(mock_input_handler_, SetNeedsAnimateInput())
+      .Times(testing::AnyNumber());
+  EXPECT_CALL(mock_input_handler_,
+              GetSnapFlingInfoAndSetAnimatingSnapTarget(_, _, _, _))
+      .Times(testing::AnyNumber())
+      .WillRepeatedly(testing::Return(false));
+
+  HandleGestureEvent(WebInputEvent::Type::kGestureScrollBegin);
+  DeliverInputForBeginFrame(tick_clock.NowTicks());
+  tick_clock.Advance(kInterval);
+
+  // 1. Enqueue a normal GSU. handling_fling_ should be false.
+  HandleGestureEvent(WebInputEvent::Type::kGestureScrollUpdate, -10);
+  EXPECT_FALSE(input_handler_proxy_->HandlingFlingForTesting());
+
+  // 2. Enqueue a Fling GSU. handling_fling_ should be true.
+  auto fling_gsu = CreateGestureScrollPinch(
+      WebInputEvent::Type::kGestureScrollUpdate, WebGestureDevice::kTouchscreen,
+      NowTimestampForEvents(), -10);
+  static_cast<WebGestureEvent*>(fling_gsu.get())
+      ->data.scroll_update.inertial_phase =
+      WebGestureEvent::InertialPhaseState::kMomentum;
+  InjectInputEvent(std::move(fling_gsu));
+
+  EXPECT_TRUE(input_handler_proxy_->HandlingFlingForTesting());
+
+  // 3. Process the events.
+  // The `handling_fling_` latch remains true during dispatch..
+  DeliverInputForBeginFrame(tick_clock.NowTicks());
+
+  // If the queue is now empty, the latch should be reset.
+  if (event_queue().empty()) {
+    EXPECT_FALSE(input_handler_proxy_->HandlingFlingForTesting());
+  }
+  testing::Mock::VerifyAndClearExpectations(&mock_input_handler_);
+  input_handler_proxy_.reset();
 }
 
 TEST_P(InputHandlerProxyEventQueueTest, KeyEventAttribution) {
@@ -3821,14 +3826,6 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 TEST_P(InputHandlerProxyEventQueueTest, FutureEventDispatch) {
   bool update_scroll_predictor = IsUpdateScrollPredictorInputMappingEnabled();
-  bool refactor_queue = IsRefactorCompositorThreadEventQueueEnabled();
-
-  // The kUpdateScrollPredictorInputMapping feature depends on
-  // kRefactorCompositorThreadEventQueue. So, the case where
-  // update_scroll_predictor is true and refactor_queue is false is invalid.
-  if (update_scroll_predictor && !refactor_queue) {
-    return;
-  }
 
   // Setup
   base::SimpleTestTickClock tick_clock;
@@ -3895,20 +3892,12 @@ TEST_P(InputHandlerProxyEventQueueTest, FutureEventDispatch) {
   Mock::VerifyAndClearExpectations(&mock_input_handler_);
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    InputHandlerProxyEventQueueTest,
-    testing::Combine(testing::Bool(), testing::Bool()),
-    [](const testing::TestParamInfo<std::tuple<bool, bool>>& info) {
-      return base::StringPrintf(
-          "%s_%s",
-          std::get<0>(info.param)
-              ? "UpdateScrollPredictorInputMapping_Enabled"
-              : "UpdateScrollPredictorInputMapping_Disabled",
-          std::get<1>(info.param)
-              ? "RefactorCompositorThreadEventQueue_Enabled"
-              : "RefactorCompositorThreadEventQueue_Disabled");
-    });
+INSTANTIATE_TEST_SUITE_P(All,
+                         InputHandlerProxyEventQueueTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "UpdatePredictor" : "Default";
+                         });
 
 INSTANTIATE_TEST_SUITE_P(All,
                          InputHandlerProxyMainThreadScrollingReasonTest,

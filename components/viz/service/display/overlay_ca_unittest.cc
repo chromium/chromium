@@ -143,10 +143,14 @@ TextureDrawQuad* CreateCandidateQuadAt(
       resource_size_in_pixels, is_overlay_candidate);
 
   auto* overlay_quad = render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
-  overlay_quad->SetNew(shared_quad_state, rect, rect, needs_blending,
-                       resource_id, kUVTopLeft, kUVBottomRight,
-                       SkColors::kTransparent, nearest_neighbor,
-                       /*secure_output_only=*/false, protected_video_type);
+  overlay_quad->SetNew(
+      shared_quad_state, rect, rect, needs_blending, resource_id,
+      /*top_left=*/gfx::ScalePoint(kUVTopLeft, rect.width(), rect.height()),
+      /*bottom_right=*/
+      gfx::ScalePoint(kUVBottomRight, rect.width(), rect.height()),
+      SkColors::kTransparent, nearest_neighbor,
+      /*secure_output=*/false, protected_video_type,
+      /*is_tex_coords_normalized=*/false);
 
   return overlay_quad;
 }
@@ -194,14 +198,12 @@ class CALayerOverlayTest : public testing::Test {
     output_surface_ = nullptr;
   }
 
-  OverlayProcessorInterface::PrimaryPlaneParams GetDefaultPrimaryPlane(
-      const gfx::Size& primary_plane_size) {
-    return OverlayProcessorInterface::PrimaryPlaneParams{
-        .viewport_size = primary_plane_size,
-        .resource_size_in_pixels = primary_plane_size,
-        .supports_hdr = false,
-        .is_opaque = true,
-    };
+  std::optional<OverlayCandidate>& GetDefaultPrimaryPlane(
+      const gfx::Size& size) {
+    primary_plane_ = OverlayProcessorInterface::ProcessOutputSurfaceAsOverlay(
+        size, size, SinglePlaneFormat::kRGBA_8888,
+        gfx::ColorSpace::CreateSRGB(), false, 1.0, gpu::Mailbox());
+    return primary_plane_;
   }
 
   std::unique_ptr<SkiaOutputSurface> output_surface_;
@@ -370,11 +372,15 @@ TEST_F(CALayerOverlayTest, TextureDrawQuadVideoOverlay) {
     auto* texture_video_quad = pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
     texture_video_quad->SetNew(
         pass->shared_quad_state_list.back(), gfx::Rect(size), gfx::Rect(size),
-        /*needs_blending=*/false, resource_id, kUVTopLeft, kUVBottomRight,
+        /*needs_blending=*/false, resource_id,
+        /*top_left=*/gfx::ScalePoint(kUVTopLeft, size.width(), size.height()),
+        /*bottom_right=*/
+        gfx::ScalePoint(kUVBottomRight, size.width(), size.height()),
         SkColors::kTransparent,
         /*nearest_neighbor=*/false,
         /*secure_output_only=*/false,
-        /*video_type=*/gfx::ProtectedVideoType::kClear);
+        /*video_type=*/gfx::ProtectedVideoType::kClear,
+        /*is_tex_coords_normalized=*/false);
     texture_video_quad->is_video_frame = true;
 
     OverlayCandidateList ca_layer_list;

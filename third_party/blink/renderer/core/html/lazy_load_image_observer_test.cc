@@ -327,14 +327,14 @@ class LazyLoadImagesTest : public SimTest {
   }
 
   String MakeMainResourceString(const char* image_attributes) {
-    return String::Format(
+    return UNSAFE_TODO(String::Format(
         R"HTML(
         <body onload='console.log("main body onload");'>
         <div style='height: %dpx;'></div>
         <img src='https://example.com/image.png' %s
              onload='console.log("image onload");' />
         </body>)HTML",
-        kViewportHeight + kLoadingDistanceThreshold + 100, image_attributes);
+        kViewportHeight + kLoadingDistanceThreshold + 100, image_attributes));
   }
 
   void LoadMainResourceWithImageFarFromViewport(

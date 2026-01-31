@@ -16,6 +16,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
 import static org.chromium.components.data_sharing.SharedGroupTestHelper.COLLABORATION_ID1;
 import static org.chromium.components.data_sharing.SharedGroupTestHelper.GROUP_MEMBER1;
 import static org.chromium.components.messages.MessageBannerProperties.MESSAGE_IDENTIFIER;
@@ -62,7 +63,6 @@ import org.chromium.components.collaboration.messaging.TabMessageMetadata;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.DataSharingUIDelegate;
 import org.chromium.components.data_sharing.configs.DataSharingAvatarBitmapConfig;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.ManagedMessageDispatcher;
 import org.chromium.components.messages.MessageIdentifier;
@@ -236,7 +236,8 @@ public class InstantMessageDelegateImplUnitTest {
                 .thenReturn(Arrays.asList(mTab1, mTab2));
         assertEquals(DISMISS_IMMEDIATELY, propertyModel.get(ON_PRIMARY_ACTION).get().intValue());
         ArgumentMatcher<LoadUrlParams> matcher =
-                (LoadUrlParams params) -> TextUtils.equals(params.getUrl(), UrlConstants.NTP_URL);
+                (LoadUrlParams params) ->
+                        TextUtils.equals(params.getUrl(), getOriginalNativeNtpUrl());
         verify(mTabCreator)
                 .createNewTab(argThat(matcher), eq(TabLaunchType.FROM_TAB_GROUP_UI), eq(mTab2));
     }

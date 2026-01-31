@@ -11,6 +11,8 @@ import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action
 import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
+import {loadTimeData} from '../i18n_setup.js';
+
 import {getCss} from './module_header.css.js';
 import {getHtml} from './module_header.html.js';
 
@@ -55,6 +57,16 @@ export class ModuleHeaderElement extends CrLitElement {
   accessor menuItems: MenuItem[] = [];
   accessor moreActionsText: string = '';
   accessor hideCustomize: boolean = false;
+
+  private hideDismissAction_: boolean =
+      loadTimeData.getBoolean('hideDismissModules');
+
+  protected get visibleMenuItems_(): MenuItem[] {
+    if (this.hideDismissAction_) {
+      return this.menuItems.filter(item => item.action !== 'dismiss');
+    }
+    return this.menuItems;
+  }
 
   protected onButtonClick_(e: Event) {
     const action = (e.currentTarget as HTMLElement).dataset['action'];

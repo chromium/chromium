@@ -70,7 +70,7 @@ TEST_P(GemDeviceDetailsExtensionTest, WithUserDeviceContext) {
     fake_os_user_manager()->FailFindUserBySID(user_sid.c_str(), 1);
   }
 
-  auto expected_response_value = base::Value::Dict().Set(
+  auto expected_response_value = base::DictValue().Set(
       "deviceResourceId", base::WideToUTF8(device_resource_id));
   std::string expected_response =
       base::WriteJson(expected_response_value).value_or("");
@@ -102,7 +102,7 @@ TEST_P(GemDeviceDetailsExtensionTest, WithUserDeviceContext) {
     ASSERT_EQ(1UL, fake_http_url_fetcher_factory()->requests_created());
     FakeWinHttpUrlFetcherFactory::RequestData request_data =
         fake_http_url_fetcher_factory()->GetRequestData(0);
-    base::Value::Dict body_dict =
+    base::DictValue body_dict =
         base::JSONReader::ReadDict(request_data.body,
                                    base::JSON_PARSE_CHROMIUM_EXTENSIONS)
             .value();

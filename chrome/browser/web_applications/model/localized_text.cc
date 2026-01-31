@@ -38,7 +38,7 @@ bool LocalizedText::empty() const {
 }
 
 base::Value LocalizedText::AsDebugValue() const {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("value", value_);
   if (lang_.has_value()) {
     dict.Set("lang", lang_.value());

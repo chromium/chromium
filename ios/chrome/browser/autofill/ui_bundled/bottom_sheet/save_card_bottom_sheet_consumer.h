@@ -20,7 +20,7 @@ typedef NS_ENUM(NSInteger, AboveTitleImageLogoType) {
   kChromeLogo,
 
   // Used for upload save.
-  kGooglePayLogo
+  kGoogleWalletLogo
 };
 
 // Consumer interface for updating the save card bottomsheet UI.

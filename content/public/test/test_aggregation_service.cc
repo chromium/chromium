@@ -23,7 +23,7 @@ TestAggregationService::AssembleRequest::AssembleRequest(
     url::Origin reporting_origin,
     GURL processing_url,
     bool is_debug_mode_enabled,
-    base::Value::Dict additional_fields,
+    base::DictValue additional_fields,
     std::string api_version,
     std::string api_identifier)
     : operation(operation),

@@ -71,7 +71,7 @@ void SetExtensionInstallForcelistPolicy(
   // Extensions that are force-installed come from an update URL, which defaults
   // to the webstore. Use a mock URL for test with an update manifest that
   // includes the crx file of the test extension.
-  base::Value::List forcelist;
+  base::ListValue forcelist;
   forcelist.Append(base::StringPrintf("%s;%s", extension_id.c_str(),
                                       update_manifest_url.spec().c_str()));
 

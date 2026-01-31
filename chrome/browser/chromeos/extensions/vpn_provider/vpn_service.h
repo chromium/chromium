@@ -10,76 +10,38 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
-#include "chrome/browser/ash/crosapi/vpn_service_ash.h"
 #include "chrome/browser/chromeos/extensions/vpn_provider/vpn_service_interface.h"
-#include "chromeos/crosapi/mojom/vpn_service.mojom.h"
-#include "extensions/browser/event_router.h"
-#include "extensions/browser/extension_event_histogram_value.h"
-#include "extensions/browser/extension_registry.h"
+#include "chromeos/ash/components/network/network_configuration_observer.h"
+#include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/unloaded_extension_reason.h"
-#include "extensions/common/extension.h"
-#include "extensions/common/extension_id.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
+
+namespace ash {
+class NetworkConfigurationHandler;
+class NetworkStateHandler;
+}  // namespace ash
 
 namespace content {
-
 class BrowserContext;
-
 }  // namespace content
 
 namespace extensions {
-
+struct Event;
 class ExtensionRegistry;
-
 }  // namespace extensions
-
-namespace crosapi {
-class VpnServiceAsh;
-}
 
 namespace chromeos {
 
-class VpnServiceForExtension
-    : public crosapi::mojom::EventObserverForExtension {
- public:
-  VpnServiceForExtension(const std::string& extension_id,
-                         content::BrowserContext*);
-  ~VpnServiceForExtension() override;
-
-  VpnServiceForExtension(const VpnServiceForExtension&) = delete;
-  VpnServiceForExtension& operator=(const VpnServiceForExtension&) = delete;
-
-  // crosapi::mojom::EventObserverForExtension:
-  void OnConfigRemoved(const std::string& configuration_name) override;
-  void OnPlatformMessage(const std::string& configuration_name,
-                         int32_t platform_message) override;
-  void OnPacketReceived(const std::vector<uint8_t>& data) override;
-
-  mojo::Remote<crosapi::mojom::VpnServiceForExtension>& Proxy() {
-    return vpn_service_;
-  }
-
- private:
-  void DispatchEvent(std::unique_ptr<extensions::Event>) const;
-
-  const extensions::ExtensionId extension_id_;
-  raw_ptr<content::BrowserContext> browser_context_;
-
-  mojo::Remote<crosapi::mojom::VpnServiceForExtension> vpn_service_;
-  mojo::Receiver<crosapi::mojom::EventObserverForExtension> receiver_{this};
-};
-
 // The class manages the VPN configurations.
 class VpnService : public extensions::api::VpnServiceInterface,
-                   public extensions::ExtensionRegistryObserver,
-                   public extensions::EventRouter::Observer {
+                   public ash::NetworkConfigurationObserver,
+                   public ash::NetworkStateHandlerObserver,
+                   public extensions::ExtensionRegistryObserver {
  public:
   explicit VpnService(content::BrowserContext*);
   ~VpnService() override;
@@ -94,27 +56,32 @@ class VpnService : public extensions::api::VpnServiceInterface,
       const std::string& configuration_name) override;
   void CreateConfiguration(const std::string& extension_id,
                            const std::string& configuration_name,
-                           SuccessCallback,
-                           FailureCallback) override;
+                           SuccessCallback success,
+                           FailureCallback failure) override;
   void DestroyConfiguration(const std::string& extension_id,
                             const std::string& configuration_id,
-                            SuccessCallback,
-                            FailureCallback) override;
+                            SuccessCallback success,
+                            FailureCallback failure) override;
   void SetParameters(const std::string& extension_id,
-                     base::Value::Dict parameters,
-                     SuccessCallback,
-                     FailureCallback) override;
+                     base::DictValue parameters,
+                     SuccessCallback success,
+                     FailureCallback failure) override;
   void SendPacket(const std::string& extension_id,
                   const std::vector<char>& data,
-                  SuccessCallback,
-                  FailureCallback) override;
+                  SuccessCallback success,
+                  FailureCallback failure) override;
   void NotifyConnectionStateChanged(const std::string& extension_id,
                                     bool connection_success,
-                                    SuccessCallback,
-                                    FailureCallback) override;
-  void Shutdown() override;
+                                    SuccessCallback success,
+                                    FailureCallback failure) override;
+  // ash::NetworkConfigurationObserver:
+  void OnConfigurationRemoved(const std::string& service_path,
+                              const std::string& guid) override;
 
-  // ExtensionRegistryObserver:
+  // ash::NetworkStateHandlerObserver:
+  void NetworkListChanged() override;
+
+  // extensions::ExtensionRegistryObserver:
   void OnExtensionUninstalled(content::BrowserContext*,
                               const extensions::Extension*,
                               extensions::UninstallReason) override;
@@ -122,54 +89,109 @@ class VpnService : public extensions::api::VpnServiceInterface,
                            const extensions::Extension*,
                            extensions::UnloadedExtensionReason) override;
 
-  // EventRouter::Observer:
-  void OnListenerAdded(const extensions::EventListenerInfo&) override;
-
   class VpnConfiguration;
 
  private:
   friend class VpnProviderApiTest;
-  friend class VpnServiceForExtension;
   friend class VpnServiceFactory;
-  // We are dismantling the crosapi VpnService (crbug.com/365902693).
-  friend class crosapi::VpnServiceForExtensionAsh;
 
-  static crosapi::VpnServiceAsh* GetVpnService();
+  // Looks up the configuration identified by the given service path.
+  VpnConfiguration* LookupConfiguration(const std::string& service_path);
 
-  mojo::Remote<crosapi::mojom::VpnServiceForExtension>&
-  GetVpnServiceForExtension(const std::string& extension_id);
+  // Looks up the configuration identified by the given name and the extension
+  // it belongs to.
+  VpnConfiguration* LookupConfiguration(const std::string& extension_id,
+                                        const std::string& configuration_name);
+
+  // Sets the active configuration.
+  void SetActiveConfiguration(VpnConfiguration* configuration);
+
+  VpnConfiguration* GetActiveConfigurationForExtension(
+      const std::string& extension_id) const;
 
   // Sends the given event to the given extension.
   void SendToExtension(const std::string& extension_id,
                        std::unique_ptr<extensions::Event> event);
 
-  bool OwnsActiveConfiguration(const std::string& extension_id) const;
-  std::optional<std::string> GetActiveConfigurationObjectPath(
-      const std::string& extension_id) const;
-
+  void SendOnPacketReceivedToExtension(const std::string& extension_id,
+                                       const std::vector<char>& data);
   void SendOnPlatformMessageToExtension(const std::string& extension_id,
                                         const std::string& configuration_name,
                                         uint32_t platform_message);
+  void SendOnConfigRemovedToExtension(const std::string& extension_id,
+                                      const std::string& configuration_name);
 
-  crosapi::VpnServiceForExtensionAsh::VpnConfiguration*
-  CreateConfigurationInternal(const std::string& extension_id,
-                              const std::string& configuration_name);
+  VpnConfiguration* CreateConfigurationInternal(
+      const std::string& extension_id,
+      const std::string& configuration_name);
+
+  void DestroyConfigurationsForExtension(const std::string& extension_id);
+
+  // Callback used to indicate that configuration creation succeeded.
+  void OnCreateConfigurationSuccess(SuccessCallback callback,
+                                    VpnConfiguration* configuration,
+                                    const std::string& service_path,
+                                    const std::string&);
+
+  // Callback used to indicate that configuration creation failed.
+  void OnCreateConfigurationFailure(FailureCallback callback,
+                                    VpnConfiguration* configuration,
+                                    const std::string& error_name);
+
+  // Callback for ash::NetworkConfigurationHandler::GetShillProperties that
+  // parses the |configuration_properties| dictionary and tries to add a new
+  // configuration provided that it belongs to some enabled extension.
+  void OnGetShillProperties(
+      const std::string& service_path,
+      std::optional<base::DictValue> configuration_properties);
+
+  // Sets `configuration`s service path as given and enters it into
+  // `service_path_to_configuration_map_`.
+  void RegisterConfiguration(VpnConfiguration* configuration,
+                             const std::string& service_path);
+
+  // Removes configuration from the internal store and destroys it.
+  void DestroyConfigurationInternal(VpnConfiguration* configuration);
+
+  // Callback used to indicate that removing a configuration succeeded.
+  void OnRemoveConfigurationSuccess(SuccessCallback);
+
+  // Callback used to indicate that removing a configuration failed.
+  void OnRemoveConfigurationFailure(FailureCallback,
+                                    const std::string& error_name);
+
+  // Gets the unique key for the configuration |configuration_name| created by
+  // the extension with id |extension_id|.
+  static std::string GetKeyForTesting(const std::string& extension_id,
+                                      const std::string& configuration_name);
+
+  const raw_ref<content::BrowserContext> browser_context_;
 
   // Owns all configurations. Key is a hash of |extension_id| and
   // |configuration_name|.
-  using StringToOwnedConfigurationMap = std::map<
-      std::string,
-      std::unique_ptr<crosapi::VpnServiceForExtensionAsh::VpnConfiguration>>;
+  using StringToOwnedConfigurationMap =
+      base::flat_map<std::string, std::unique_ptr<VpnConfiguration>>;
   StringToOwnedConfigurationMap key_to_configuration_map_;
 
-  raw_ptr<content::BrowserContext> browser_context_;
+  // Maps shill service path to (unowned) configuration.
+  using StringToConfigurationMap =
+      base::flat_map<std::string, raw_ptr<VpnConfiguration, CtnExperimental>>;
+  StringToConfigurationMap service_path_to_configuration_map_;
+
+  // Configuration that is currently in use.
+  raw_ptr<VpnConfiguration> active_configuration_ = nullptr;
 
   base::ScopedObservation<extensions::ExtensionRegistry,
                           extensions::ExtensionRegistryObserver>
       extension_registry_observer_{this};
 
-  base::flat_map<std::string, std::unique_ptr<VpnServiceForExtension>>
-      extension_id_to_service_;
+  base::ScopedObservation<ash::NetworkConfigurationHandler,
+                          ash::NetworkConfigurationObserver>
+      network_configuration_observer_{this};
+
+  base::ScopedObservation<ash::NetworkStateHandler,
+                          ash::NetworkStateHandlerObserver>
+      network_state_handler_observer_{this};
 
   base::WeakPtrFactory<VpnService> weak_factory_{this};
 };

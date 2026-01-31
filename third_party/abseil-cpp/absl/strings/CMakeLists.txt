@@ -19,16 +19,12 @@ absl_cc_library(
     string_view
   HDRS
     "string_view.h"
-  SRCS
-    "string_view.cc"
   COPTS
     ${ABSL_DEFAULT_COPTS}
   DEPS
-    absl::base
     absl::config
     absl::core_headers
     absl::nullability
-    absl::throw_delegate
   PUBLIC
 )
 
@@ -1257,6 +1253,43 @@ absl_cc_test(
     absl::config
     absl::core_headers
     absl::raw_logging_internal
+    absl::strings
+    GTest::gmock_main
+)
+
+absl_cc_library(
+  NAME
+    generic_printer_internal
+  SRCS
+    "internal/generic_printer.cc"
+    "internal/generic_printer_internal.h"
+  HDRS
+    "internal/generic_printer.h"
+  COPTS
+    ${ABSL_DEFAULT_COPTS}
+  DEPS
+    absl::config
+    absl::strings
+    absl::str_format
+    absl::log_internal_container
+    absl::requires_internal
+)
+
+absl_cc_test(
+  NAME
+    generic_printer_test
+  SRCS
+    "internal/generic_printer_test.cc"
+  COPTS
+    ${ABSL_TEST_COPTS}
+  DEPS
+    absl::base
+    absl::config
+    absl::flat_hash_map
+    absl::generic_printer_internal
+    absl::log
+    absl::status
+    absl::statusor
     absl::strings
     GTest::gmock_main
 )

@@ -48,6 +48,7 @@
 <translation id="2761536921376153655">Skan növü</translation>
 <translation id="28682968802727151">Önizləməni əks etdirin</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> kabeli birləşdirilib.</translation>
+<translation id="3063987824612038785">Bütün Kamera faylları Google Diskdə yadda saxlanılacaq</translation>
 <translation id="3067436040345934772">Sağı görüntüləyin</translation>
 <translation id="3081586908890909590">"Video çəkin" rejiminə keçin</translation>
 <translation id="3091480460059548935">Önizləmədə mətn aşkarlanması</translation>
@@ -67,6 +68,7 @@
 <translation id="3642192109456033823">Video emal edilir...</translation>
 <translation id="3789724198583203151">Saat əqrəbinin əksi istiqamətində 90 dərəcə fırladın</translation>
 <translation id="3810838688059735925">Video</translation>
+<translation id="386366972082231038">Bütün Kamera faylları OneDrive-da yadda saxlanılacaq</translation>
 <translation id="4060608699153044055">Cihaz yaddaşında yer az olduğuna görə qeydə ala bilməzsiniz. Qeydə almağa başlamaq üçün cihazınızda yer boşaltmalısınız.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Səsi yazmağa fasilə verin</translation>
@@ -100,6 +102,7 @@
 <translation id="5634947914995388399">Dialoqu genişləndirin və skanı dayandırın</translation>
 <translation id="5662366948659129155">Səhifə <ph name="COUNT" /> skanlanır</translation>
 <translation id="5671277269877808209">Kvadrat</translation>
+<translation id="5725797473946373607">Növbəti dəfə bu dialoqu göstərməyin</translation>
 <translation id="574392208103952083">Orta</translation>
 <translation id="5746169159649715125">PDF olaraq saxlayın</translation>
 <translation id="5753488212459587150">Ekspert rejimini aktiv edin</translation>
@@ -156,6 +159,7 @@ Rəyiniz şəkil və ya video keyfiyyəti ilə bağlıdırsa, nümunə foto və 
 <translation id="7983668134180549431">Mətn aşkarlanıb.</translation>
 <translation id="8079255378695216066">Qeydə almanı başlatmaq mümkün deyil</translation>
 <translation id="8120146556401698679">Kənarları yığma, əymə, miqyası dəyişmə</translation>
+<translation id="8127459436205030819">Administratorunuz faylları görə bilər</translation>
 <translation id="8131740175452115882">Təsdiq edin</translation>
 <translation id="8145038249676204903">"Foto çəkin" rejiminə keçin</translation>
 <translation id="8167081290930651932">Foto olaraq yadda saxlayın</translation>
@@ -165,6 +169,7 @@ Rəyiniz şəkil və ya video keyfiyyəti ilə bağlıdırsa, nümunə foto və 
 <translation id="8609951387004618906">Açın: <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Mikrofonu səssisə keçirin. Susdurma düyməsi aktivdir</translation>
+<translation id="8712637175834984815">Anladım</translation>
 <translation id="8730621377337864115">Tamamdır</translation>
 <translation id="8732462232047530626">Metadatanı önizləyin</translation>
 <translation id="874854738381978209">Wi-Fi şəbəkəsi aşkarlandı.</translation>

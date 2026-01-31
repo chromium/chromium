@@ -17,7 +17,7 @@ source_set("default_browser_scene_agent") {
     "//ios/chrome/app/profile",
     "//ios/chrome/browser/default_browser/model:features",
     "//ios/chrome/browser/default_browser/model:utils",
-    "//ios/chrome/browser/default_promo/ui_bundled/post_default_abandonment:features",
+    "//ios/chrome/browser/default_browser/promo/post_default_abandonment/public:features",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/promos_manager/model",
     "//ios/chrome/browser/promos_manager/model:constants",
@@ -40,6 +40,7 @@ source_set("incognito_blocker_scene_agent") {
   deps = [
     "//base",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/coordinator/scene/state",
   ]
   frameworks = [ "UIKit.framework" ]
 }
@@ -65,8 +66,8 @@ source_set("scene") {
 
 source_set("ui_bundled") {
   sources = [
-    "browser_view_wrangler.h",
-    "browser_view_wrangler.mm",
+    "browser_lifecycle_manager.h",
+    "browser_lifecycle_manager.mm",
     "bvc_container_view_controller.h",
     "bvc_container_view_controller.mm",
     "wrangled_browser.h",
@@ -92,7 +93,6 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/shared/public/prototypes/diamond",
     "//ios/chrome/browser/snapshots/model",
     "//ios/chrome/browser/tabs/model/inactive_tabs",
     "//ios/chrome/browser/tabs/model/inactive_tabs:features",
@@ -112,7 +112,7 @@ source_set("ui_bundled") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "browser_view_wrangler_unittest.mm",
+    "browser_lifecycle_manager_unittest.mm",
     "default_browser_promo_scene_agent_unittest.mm",
     "incognito_blocker_scene_agent_unittest.mm",
   ]
@@ -132,7 +132,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/default_browser/model:features",
     "//ios/chrome/browser/default_browser/model:test_support",
     "//ios/chrome/browser/default_browser/model:utils",
-    "//ios/chrome/browser/default_promo/ui_bundled/post_default_abandonment:features",
+    "//ios/chrome/browser/default_browser/promo/post_default_abandonment/public:features",
     "//ios/chrome/browser/dom_distiller/model",
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/feature_engagement/model",
@@ -152,6 +152,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/sessions/model:test_support",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/coordinator/scene:scene_util_test_support",
+    "//ios/chrome/browser/shared/coordinator/scene/state",
     "//ios/chrome/browser/shared/coordinator/scene/test",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser/test:test_support",

@@ -177,6 +177,9 @@
         <message name="IDS_SUPPORT_TOOL_CHROMEOS_KIOSK_APP_LEVEL_LOGS" desc="Logs collected from service workers, app windows and browser during a ChromeOS kiosk app session.">
             ChromeOS Kiosk App Logs
         </message>
+        <message name="IDS_SUPPORT_TOOL_CHROME_UPDATER" desc="Diagnostic information regarding Chrome's updater.">
+            Chrome Updater
+        </message>
         <!-- PII type strings -->
         <message name="IDS_SUPPORT_TOOL_ANDROID_APP_INFO" desc="Android App informations on the device. Includes information like app storage paths etc.">
             Android App Information
@@ -219,6 +222,21 @@
         </message>
         <message name="IDS_SUPPORT_TOOL_EAP" desc="Extensible Authentication Protocol (EAP) is an authentication framework frequently used in network and internet connections.">
             EAP Network Authentication Information
+        </message>
+        <message name="IDS_SUPPORT_TOOL_CREDIT_CARD" desc="The label for a category of personally identifiable information containing one or more credit card numbers for a user.">
+            Credit Card Numbers
+        </message>
+        <message name="IDS_SUPPORT_TOOL_IBAN" desc="The label for a category of personally identifiable information containing one or more international bank account numbers (IBAN) for a user.">
+            International Bank Account Numbers
+        </message>
+        <message name="IDS_SUPPORT_TOOL_CRASH_ID" desc="The label for a category of personally identifiable information containing one or more crash report identifiers for a user. A crash report identifier is a stable identifier uniquely assigned to each crash report uploaded by a user to a remote server.">
+            Crash Report Identifiers
+        </message>
+        <message name="IDS_SUPPORT_TOOL_MEMORY" desc="The label for a category of possibly personally identifiable information containing one or more memory dumps for a user. A memory dump contains arbitrary data.">
+            Memory Dumps
+        </message>
+        <message name="IDS_SUPPORT_TOOL_BLUETOOTH_HID_DEVICE" desc="The label for a category of personally identifiable information containing one or more Bluetooth device names for a user. Bluetooth devices may have names assigned by the user, e.g.: 'Edman Paes dos Anjos's Keyboard'">
+            Bluetooth Device Names
         </message>
     </if>
 </grit-part>

@@ -581,30 +581,31 @@ def RustTargetTriple():
 
 
 # Build the LLVM libraries and install them .
-def BuildLLVMLibraries(skip_build, llvm_force_head_revision):
-    if not skip_build:
-        print(f'Building the host LLVM in {RUST_HOST_LLVM_BUILD_DIR}...')
-        build_cmd = [
-            sys.executable,
-            os.path.join(CLANG_SCRIPTS_DIR, 'build.py'),
-            '--disable-asserts',
-            '--no-tools',
-            '--no-runtimes',
-            # PIC needed for Rust build (links LLVM into shared object)
-            '--pic',
-            '--with-ml-inliner-model=',
-            # Not using this in Rust yet, see also crbug.com/1476464.
-            '--without-zstd',
-        ]
-        if llvm_force_head_revision:
-            build_cmd.append('--llvm-force-head-revision')
-        if sys.platform.startswith('linux'):
-            build_cmd.append('--without-android')
-            build_cmd.append('--without-fuchsia')
-        RunCommand(build_cmd + [
-            '--build-dir', RUST_HOST_LLVM_BUILD_DIR, '--install-dir',
-            RUST_HOST_LLVM_INSTALL_DIR
-        ])
+def BuildLLVMLibraries(skip_checkout, llvm_force_head_revision):
+    print(f'Building the host LLVM in {RUST_HOST_LLVM_BUILD_DIR}...')
+    build_cmd = [
+        sys.executable,
+        os.path.join(CLANG_SCRIPTS_DIR, 'build.py'),
+        '--disable-asserts',
+        '--no-tools',
+        '--no-runtimes',
+        # PIC needed for Rust build (links LLVM into shared object)
+        '--pic',
+        '--with-ml-inliner-model=',
+        # Not using this in Rust yet, see also crbug.com/1476464.
+        '--without-zstd',
+    ]
+    if llvm_force_head_revision:
+        build_cmd.append('--llvm-force-head-revision')
+    elif skip_checkout:
+        build_cmd.append('--skip-checkout')
+    if sys.platform.startswith('linux'):
+        build_cmd.append('--without-android')
+        build_cmd.append('--without-fuchsia')
+    RunCommand(build_cmd + [
+        '--build-dir', RUST_HOST_LLVM_BUILD_DIR, '--install-dir',
+        RUST_HOST_LLVM_INSTALL_DIR
+    ])
 
 
 # Move a git submodule to point to a different branch.
@@ -658,10 +659,20 @@ def GitApplyCherryPicks():
     # with `GitMoveSubmoduleBranch()`.
     #############################
 
-    # TODO(crbug.com/446690349): Remove once
-    # https://github.com/rust-lang/rust/pull/146905 lands and we roll past it.
-    GitCherryPick(RUST_SRC_DIR, 'f9c040b7318f86e54fc57119ba5e0664df117600',
+    # TODO(crbug.com/474940921): Remove once
+    # https://github.com/rust-lang/rust/pull/150998 lands and we roll past it.
+    GitCherryPick(RUST_SRC_DIR, '6ca950136de7abd91cc1820b5a7f7109fe568016',
                   'https://github.com/rust-lang/rust.git')
+    # TODO(crbug.com/474940920): Remove once
+    # https://github.com/rust-lang/rust/pull/151072 lands and we roll past it.
+    GitCherryPick(RUST_SRC_DIR, '5435e8188ce1bf0912b3a98a54e316e391d3ca27',
+                  'https://github.com/rust-lang/rust.git')
+
+    # TODO(crbug.com/477565811): Remove once the outline atomics situation is
+    # resolved. This cherry-picks
+    # https://github.com/zmodem/rust/commit/b01caa5309eb7d47bbd2a0b4ae63f7d065be1963
+    GitCherryPick(RUST_SRC_DIR, 'b01caa5309eb7d47bbd2a0b4ae63f7d065be1963',
+                  'https://github.com/zmodem/rust.git', 'zmodem')
 
     print('Finished applying cherry-picks.')
 
@@ -899,7 +910,8 @@ def main():
         # the hash is valid.
         return 0
 
-    BuildLLVMLibraries(args.skip_llvm_build, args.llvm_force_head_revision)
+    if not args.skip_llvm_build:
+        BuildLLVMLibraries(args.skip_checkout, args.llvm_force_head_revision)
 
     AddCMakeToPath()
 
@@ -966,9 +978,8 @@ def main():
                 sys.executable,
                 os.path.join(THIS_DIR, 'build_crubit.py')
             ]
-            # TODO: crbug.com/40226863 - Remove `fail_hard=False` once we can
-            # depend on the OSS Crubit build staying green with latest Rust and
-            # Clang.
+            # TODO(crbug.com/470405754): - Remove `fail_hard=False` once we can
+            # depend on the OSS Crubit build staying green with latest Rust.
             TeeCmd(build_cmd, log, fail_hard=False)
 
         if args.gnrt_stdlib:

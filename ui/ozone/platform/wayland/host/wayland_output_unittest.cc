@@ -114,11 +114,11 @@ TEST_F(WaylandOutputTest, ScaleFactorFallback) {
   auto* wl_output = output_manager->GetPrimaryOutput();
   ASSERT_TRUE(wl_output);
   EXPECT_FALSE(wl_output->xdg_output_);
-  EXPECT_FALSE(connection_->supports_viewporter_surface_scaling());
 
   // We only test trivial stuff here so it is okay to create an output that is
   // not backed with a real object.
   constexpr float kDefaultScaleFactor = 2.f;
+  constexpr float kLogicalScaleFactor = 2.5f;
   wl_output->xdg_output_ = std::make_unique<XDGOutput>(nullptr);
   wl_output->xdg_output_->logical_size_ = gfx::Size(100, 200);
   wl_output->physical_size_ = gfx::Size(250, 500);
@@ -131,11 +131,11 @@ TEST_F(WaylandOutputTest, ScaleFactorFallback) {
   wl_output->UpdateMetrics();
   EXPECT_EQ(kDefaultScaleFactor, wl_output->scale_factor());
 
-  // If xdg_output is ready but supports_viewporter_surface_scaling is
-  // false, scale_factor should fall back to the value sent in wl_output::scale.
+  // If xdg_output is ready, and fractional scale is available, scale_factor
+  // should use the value calculated from logical size.
   wl_output->xdg_output_->is_ready_ = true;
   wl_output->UpdateMetrics();
-  EXPECT_EQ(kDefaultScaleFactor, wl_output->scale_factor());
+  EXPECT_EQ(kLogicalScaleFactor, wl_output->scale_factor());
 }
 
 // Test that if using xdg output and viewporter surface scaling is enabled

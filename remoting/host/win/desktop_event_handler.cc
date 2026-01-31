@@ -232,7 +232,7 @@ void DesktopEventHandler::Core::CheckInputDesktop() {
   // input desktop. If it's not the case, we restart the worker thread, since it
   // is not possible to change the desktop on the worker thread directly.
   auto current_desktop = base::WrapUnique(webrtc::Desktop::GetInputDesktop());
-  if (desktop_->IsSame(*current_desktop)) {
+  if (!current_desktop || desktop_->IsSame(*current_desktop)) {
     return;
   }
   HOST_LOG << "The input desktop has changed. The worker thread will be "
@@ -244,6 +244,12 @@ void DesktopEventHandler::Core::CheckInputDesktop() {
 void DesktopEventHandler::Core::DestroyWorkerThread() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(worker_sequence_checker_);
 
+  {
+    base::AutoLock lock(delegate_lock_);
+    if (delegate_) {
+      delegate_->OnWorkerThreadStopping();
+    }
+  }
   check_input_desktop_timer_.Stop();
   if (win_event_hook_) {
     UnhookWinEvent(win_event_hook_);

@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.tab.flatbuffer.TabGroupIdToken;
 import org.chromium.chrome.browser.tab.flatbuffer.TabLaunchTypeAtCreation;
 import org.chromium.chrome.browser.tab.flatbuffer.TabStateFlatBufferV1;
 import org.chromium.chrome.browser.tab.flatbuffer.UserAgentType;
+import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -31,7 +32,7 @@ import java.nio.ByteBuffer;
 @NullMarked
 public class FlatBufferTabStateSerializer implements TabStateSerializer {
     private static final String TAG = "FBTSS";
-    private static final String NULL_OPENER_APP_ID = " ";
+    private static final String NULL_STR = " ";
     private static final long NO_TAB_GROUP_ID = 0L;
 
     private final boolean mIsEncrypted;
@@ -71,8 +72,8 @@ public class FlatBufferTabStateSerializer implements TabStateSerializer {
                 TabStateFlatBufferV1.createWebContentsStateBytesVector(
                         fbb, ByteBuffer.wrap(contentsStateBytes));
         int openerAppId =
-                fbb.createString(
-                        state.openerAppId == null ? NULL_OPENER_APP_ID : state.openerAppId);
+                fbb.createString(state.openerAppId == null ? NULL_STR : state.openerAppId);
+        int url = fbb.createString(state.url == null ? NULL_STR : state.url.getSpec());
         TabStateFlatBufferV1.startTabStateFlatBufferV1(fbb);
         TabStateFlatBufferV1.addParentId(fbb, state.parentId);
         TabStateFlatBufferV1.addRootId(fbb, state.rootId);
@@ -95,6 +96,8 @@ public class FlatBufferTabStateSerializer implements TabStateSerializer {
                 fbb, TabGroupIdToken.createTabGroupIdToken(fbb, tokenHigh, tokenLow));
         TabStateFlatBufferV1.addTabHasSensitiveContent(fbb, state.tabHasSensitiveContent);
         TabStateFlatBufferV1.addIsPinned(fbb, state.isPinned);
+
+        TabStateFlatBufferV1.addUrl(fbb, url);
         int r = TabStateFlatBufferV1.endTabStateFlatBufferV1(fbb);
         fbb.finish(r);
         return fbb.dataBuffer();
@@ -111,7 +114,7 @@ public class FlatBufferTabStateSerializer implements TabStateSerializer {
             state.parentId = tabStateFlatBuffer.parentId();
             state.rootId = tabStateFlatBuffer.rootId();
             state.openerAppId =
-                    NULL_OPENER_APP_ID.equals(tabStateFlatBuffer.openerAppId())
+                    NULL_STR.equals(tabStateFlatBuffer.openerAppId())
                             ? null
                             : tabStateFlatBuffer.openerAppId();
             state.timestampMillis = tabStateFlatBuffer.timestampMillis();
@@ -130,6 +133,11 @@ public class FlatBufferTabStateSerializer implements TabStateSerializer {
             state.themeColor = tabStateFlatBuffer.themeColor();
             state.tabHasSensitiveContent = tabStateFlatBuffer.tabHasSensitiveContent();
             state.isPinned = tabStateFlatBuffer.isPinned();
+
+            boolean isUrlNull = NULL_STR.equals(tabStateFlatBuffer.url());
+            state.url = isUrlNull ? null : new GURL(tabStateFlatBuffer.url());
+            if (state.url != null && !state.url.isValid()) state.url = null;
+
             ByteBuffer webContentsStateBuffer =
                     tabStateFlatBuffer.webContentsStateBytesAsByteBuffer() == null
                             ? ByteBuffer.allocateDirect(0)

@@ -8,13 +8,12 @@
 
 #include "base/task/thread_pool.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
-#include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_util.h"
 #include "components/optimization_guide/core/model_execution/on_device_features.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
-#include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom-shared.h"
 #include "components/prefs/pref_service.h"
 
 namespace optimization_guide {
@@ -64,10 +63,6 @@ OnDeviceAssetManager::OnDeviceAssetManager(
           this) {
   usage_tracker_->AddObserver(this);
   on_device_component_state_manager_->AddObserver(this);
-
-  if (auto* state = on_device_component_state_manager_->GetState()) {
-    StateChanged(state);
-  }
 }
 
 OnDeviceAssetManager::~OnDeviceAssetManager() {
@@ -125,12 +120,14 @@ void OnDeviceAssetManager::OnModelUpdated(
 }
 
 void OnDeviceAssetManager::StateChanged(
-    const OnDeviceModelComponentState* state) {
-  if (state) {
+    MaybeOnDeviceModelComponentState state) {
+  std::optional<OnDeviceBaseModelSpec> new_spec;
+
+  if (state.has_value()) {
     RegisterTextSafetyAndLanguageModels();
+    new_spec = state.value().get().GetBaseModelSpec();
   }
-  std::optional<OnDeviceBaseModelSpec> new_spec =
-      state ? std::make_optional(state->GetBaseModelSpec()) : std::nullopt;
+
   for (auto feature : OnDeviceFeatureSet::All()) {
     adaptation_loaders_.MaybeRegisterModelDownload(
         feature, new_spec,

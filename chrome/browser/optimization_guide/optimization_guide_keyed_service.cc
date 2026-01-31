@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -66,6 +67,7 @@
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/core/model_quality/model_quality_util.h"
+#include "components/optimization_guide/core/optimization_guide_common.mojom-shared.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
@@ -74,7 +76,7 @@
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
-#include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_prefs/user_prefs.h"
 #include "components/variations/service/variations_service.h"
@@ -91,6 +93,8 @@
 #include "chrome/browser/optimization_guide/android/optimization_guide_bridge.h"
 #include "chrome/browser/optimization_guide/android/optimization_guide_tab_url_provider_android.h"
 #else
+#include "chrome/browser/legion/private_ai_service.h"
+#include "chrome/browser/legion/private_ai_service_factory.h"
 #include "chrome/browser/optimization_guide/legion_model_execution_fetcher.h"
 #include "chrome/browser/optimization_guide/optimization_guide_tab_url_provider.h"
 #include "components/legion/client.h"    // nogncheck
@@ -136,19 +140,34 @@ class FetcherDelegate : public ModelExecutionManager::Delegate {
  public:
   ~FetcherDelegate() override = default;
 
-  explicit FetcherDelegate(std::unique_ptr<legion::Client> client)
-      : client_(std::move(client)) {
-    CHECK(client_);
+  // Takes a BrowserContext instead of a legion::Client directly to avoid a
+  // dangling pointer. The KeyedService dependency (DependsOn) ensures that
+  // the PrivateAiService outlives this service during normal shutdown. However,
+  // in tests, the PrivateAiService can be replaced with a test factory after
+  // this service has been created, immediately destroying the original
+  // PrivateAiService and its Client. Holding a BrowserContext allows for
+  // fetching the correct, current PrivateAiService instance at execution time.
+  explicit FetcherDelegate(content::BrowserContext* browser_context)
+      : browser_context_(browser_context) {
+    CHECK(browser_context_);
   }
 
   std::unique_ptr<optimization_guide::ModelExecutionFetcher>
   CreateLegionFetcher() override {
-    return std::make_unique<optimization_guide::LegionModelExecutionFetcher>(
-        client_.get());
+    legion::PrivateAiService* private_ai_service =
+        legion::PrivateAiServiceFactory::GetForProfile(
+            Profile::FromBrowserContext(browser_context_));
+    if (private_ai_service) {
+      if (legion::Client* client = private_ai_service->GetClient()) {
+        return std::make_unique<
+            optimization_guide::LegionModelExecutionFetcher>(client);
+      }
+    }
+    return nullptr;
   }
 
  private:
-  std::unique_ptr<legion::Client> client_;
+  raw_ptr<content::BrowserContext> browser_context_;
 };
 #endif
 
@@ -358,9 +377,7 @@ void OptimizationGuideKeyedService::InitializeModelExecution(Profile* profile) {
 
 #if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(legion::kLegion)) {
-    auto client = legion::Client::Create(
-        profile->GetDefaultStoragePartition()->GetNetworkContext());
-    delegate = std::make_unique<FetcherDelegate>(std::move(client));
+    delegate = std::make_unique<FetcherDelegate>(browser_context_);
   }
 #endif
 

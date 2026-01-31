@@ -166,28 +166,34 @@ PrefetchOriginProber::PrefetchOriginProber(BrowserContext* browser_context,
 PrefetchOriginProber::~PrefetchOriginProber() = default;
 
 void PrefetchOriginProber::RunCanaryChecksIfNeeded() const {
-  if (!PrefetchProbingEnabled() || !PrefetchCanaryCheckEnabled())
+  if (!PrefetchProbingEnabled() || !PrefetchCanaryCheckEnabled()) {
     return;
+  }
 
-  if (dns_canary_checker_)
+  if (dns_canary_checker_) {
     dns_canary_checker_->RunChecksIfNeeded();
-  if (tls_canary_checker_)
+  }
+  if (tls_canary_checker_) {
     tls_canary_checker_->RunChecksIfNeeded();
+  }
 }
 
 bool PrefetchOriginProber::ShouldProbeOrigins() const {
-  if (!PrefetchProbingEnabled())
+  if (!PrefetchProbingEnabled()) {
     return false;
-  if (!PrefetchCanaryCheckEnabled() || !dns_canary_checker_)
+  }
+  if (!PrefetchCanaryCheckEnabled() || !dns_canary_checker_) {
     return true;
+  }
 
   // We call CanaryCheckSuccessful on all enabled canary checks to make sure
   // their cache gets refreshed if necessary.
   bool dns_success =
       dns_canary_checker_->CanaryCheckSuccessful().value_or(false);
   bool tls_success = true;
-  if (tls_canary_checker_)
+  if (tls_canary_checker_) {
     tls_success = tls_canary_checker_->CanaryCheckSuccessful().value_or(false);
+  }
 
   // If either check has failed or not completed in time, then probe.
   return !dns_success || !tls_success;
@@ -197,7 +203,8 @@ void PrefetchOriginProber::Probe(const GURL& url,
                                  OnProbeResultCallback callback) {
   // If canary checks are disabled, or if the TLS canary check is enabled and
   // failed (or did not complete), do TLS probing.
-  bool also_do_tls_connect = !PrefetchCanaryCheckEnabled() ||
+  bool also_do_tls_connect =
+      !PrefetchCanaryCheckEnabled() ||
       (tls_canary_checker_ &&
        !tls_canary_checker_->CanaryCheckSuccessful().value_or(false));
 

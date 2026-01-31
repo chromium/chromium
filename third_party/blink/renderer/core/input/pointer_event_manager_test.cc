@@ -19,6 +19,8 @@
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/widget/input/widget_input_handler_manager.h"
+#include "third_party/blink/renderer/platform/widget/widget_base.h"
 #include "ui/base/ui_base_features.h"
 
 namespace blink {
@@ -620,7 +622,12 @@ class PanActionTrackingWebFrameWidget
 class PanActionPointerEventTest : public PointerEventManagerTest {
  public:
   PanActionPointerEventTest() = default;
-  static constexpr int kStylusHandwritingRadius = 30;
+
+  // This is the expected value of the handwriting_radius. It will be set on the
+  // ScreenInfo and is used to verify if that radius is correctly applied during
+  // pointer interactions.
+  static constexpr int kExpectedStylusHandwritingRadius =
+      kStylusWritableAdjustmentSizeDip + 2;
 
   frame_test_helpers::TestWebFrameWidget* CreateWebFrameWidget(
       base::PassKey<WebLocalFrame> pass_key,
@@ -647,7 +654,7 @@ class PanActionPointerEventTest : public PointerEventManagerTest {
             is_for_nested_main_frame, is_for_scalable_page);
     display::ScreenInfo screen_info;
     screen_info.device_scale_factor = 1.f;
-    screen_info.handwriting_radius = kStylusHandwritingRadius;
+    screen_info.handwriting_radius = kExpectedStylusHandwritingRadius;
     web_frame_widget->SetInitialScreenInfo(screen_info);
     return web_frame_widget;
   }
@@ -752,7 +759,7 @@ TEST_F(PanActionPointerEventTest, PanActionAdjustedForStylus) {
                 ->GetChromeClient()
                 .GetScreenInfo(*(GetDocument().GetFrame()))
                 .handwriting_radius,
-            kStylusHandwritingRadius);
+            kExpectedStylusHandwritingRadius);
 
   GetEventHandler().HandleMouseMoveEvent(
       CreateTestMouseMoveEvent(WebPointerProperties::PointerType::kPen,
@@ -760,6 +767,34 @@ TEST_F(PanActionPointerEventTest, PanActionAdjustedForStylus) {
       Vector<WebMouseEvent>(), Vector<WebMouseEvent>());
   test::RunPendingTasks();
   ASSERT_EQ(widget->LastPanAction(), PanAction::kStylusWritable);
+}
+
+TEST_F(PanActionPointerEventTest, PanActionPostRadiusToInputThread) {
+  ScopedStylusHandwritingForTest stylus_handwriting(true);
+  GetDocument().SetBaseURLOverride(KURL("http://test.com"));
+  SetBodyInnerHTML(R"HTML(
+    <input type=text style='width: 100px; height: 100px;'>
+  )HTML");
+
+  // Send pointer down to the widget and expect the handwriting value to be
+  // posted to the input thread.
+  PanActionTrackingWebFrameWidget* widget = GetWidget();
+  ASSERT_EQ(widget->widget_base_for_testing()
+                ->widget_input_handler_manager()
+                ->HandwritingRadiusOnInputThread(),
+            kStylusWritableAdjustmentSizeDip);
+
+  display::ScreenInfo screen_info;
+  screen_info.device_scale_factor = 1.f;
+  screen_info.handwriting_radius = kExpectedStylusHandwritingRadius;
+  VisualProperties visual_properties;
+  visual_properties.screen_infos = display::ScreenInfos(screen_info);
+  widget->widget_base_for_testing()->UpdateVisualProperties(visual_properties);
+  test::RunPendingTasks();
+  ASSERT_EQ(widget->widget_base_for_testing()
+                ->widget_input_handler_manager()
+                ->HandwritingRadiusOnInputThread(),
+            kExpectedStylusHandwritingRadius);
 }
 
 TEST_F(PanActionPointerEventTest, PanActionNoneAndScroll) {

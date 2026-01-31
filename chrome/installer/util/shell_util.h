@@ -12,10 +12,12 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -314,8 +316,10 @@ class ShellUtil {
   static const wchar_t* kDefaultFileAssociations[];
 
   // File extensions that Chrome registers itself as being capable of
-  // handling.
-  static const wchar_t* kPotentialFileAssociations[];
+  // handling as a web browser.
+  static constexpr std::array<std::wstring_view, 8> kPotentialFileAssociations =
+      {L".htm", L".html", L".mhtml", L".shtml",
+       L".svg", L".xht",  L".xhtml", L".webp"};
 
   // Protocols that Chrome registers itself as the default handler for
   // when the user makes Chrome the default browser.
@@ -516,8 +520,9 @@ class ShellUtil {
   static bool ShowMakeChromeDefaultSystemUI(const base::FilePath& chrome_exe);
 
   // Opens the Windows settings dialog allowing the user to choose the default
-  // app for the given `file_extension`. It must be one of the extensions in
-  // `kPotentialFileAssociations`. The dialog will be parented to `parent_hwnd`.
+  // app for the given `file_extension`. It must be one of the extensions for
+  // which the browser is registered to handle. The dialog will be parented to
+  // `parent_hwnd`.
   // It reads:
   //   * Windows 10: "How do you want to open `file_extension` files from now
   //     on?"

@@ -15,6 +15,7 @@
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/omnibox.mojom-shared.h"
 #include "components/omnibox/browser/omnibox_navigation_observer.h"
+#include "components/omnibox/browser/prewarm_trigger.h"
 #include "components/omnibox/common/omnibox_focus_state.h"
 #include "components/security_state/core/security_state.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -225,7 +226,7 @@ class OmniboxClient {
   // with the arguments being the index of the result, the URL of the bitmap,
   // and the bitmap itself.
   using BitmapFetchedCallback = base::RepeatingCallback<
-      void(int result_index, const GURL& icon_url, const SkBitmap& bitmap)>;
+      void(int result_index, const GURL& icon_url, const SkBitmap bitmap)>;
   virtual void OnResultChanged(const AutocompleteResult& result,
                                bool default_match_changed,
                                bool should_preload,
@@ -334,14 +335,14 @@ class OmniboxClient {
 
   // Optionally warm-up for the default search engine so that we can navigate to
   // the search result page effectively.
-  virtual void MaybePrewarmForDefaultSearchEngine() {}
+  virtual void MaybePrewarmForDefaultSearchEngine(PrewarmTrigger trigger) {}
 
   // Whether WebUi Omnibox's aim popup is enabled and the user is eligible to
   // use it.
   virtual bool IsAimPopupEnabled() const;
 
   // Returns the current enabled tool mode if any.
-  virtual omnibox::ChromeAimToolsAndModels AimToolMode() const;
+  virtual omnibox::ToolMode AimToolMode() const;
 
   virtual base::WeakPtr<OmniboxClient> AsWeakPtr() = 0;
 };

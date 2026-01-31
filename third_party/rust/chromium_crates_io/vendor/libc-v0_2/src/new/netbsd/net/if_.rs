@@ -29,6 +29,10 @@ s! {
     }
 }
 
+pub const LINK_STATE_UNKNOWN: c_int = 0; // link invalid/unknown
+pub const LINK_STATE_DOWN: c_int = 1; // link is down
+pub const LINK_STATE_UP: c_int = 2; // link is up
+
 pub const IFF_UP: c_int = 0x0001; // interface is up
 pub const IFF_BROADCAST: c_int = 0x0002; // broadcast address valid
 pub const IFF_DEBUG: c_int = 0x0004; // turn on debugging
@@ -46,6 +50,7 @@ pub const IFF_LINK2: c_int = 0x4000; // per link layer defined bit
 pub const IFF_MULTICAST: c_int = 0x8000; // supports multicast
 
 s! {
+    #[repr(C, align(8))]
     pub struct if_msghdr {
         pub ifm_msglen: c_ushort,
         pub ifm_version: c_uchar,

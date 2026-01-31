@@ -52,6 +52,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuView
   ~MultitaskMenuView() override;
 
   SplitButtonView* partial_button() { return partial_button_.get(); }
+  MultitaskButton* full_button() { return full_button_.get(); }
 
   // Forwarded from the size button which is the anchor of `this`'s widget. When
   // an event starts on the size button, it will receive all subsequent events.

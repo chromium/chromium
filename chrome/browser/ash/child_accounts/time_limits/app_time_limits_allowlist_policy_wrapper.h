@@ -17,7 +17,7 @@ class AppId;
 
 class AppTimeLimitsAllowlistPolicyWrapper {
  public:
-  explicit AppTimeLimitsAllowlistPolicyWrapper(const base::Value::Dict* dict);
+  explicit AppTimeLimitsAllowlistPolicyWrapper(const base::DictValue* dict);
   ~AppTimeLimitsAllowlistPolicyWrapper();
 
   // Delete copy constructor and copy assign operator.
@@ -29,7 +29,7 @@ class AppTimeLimitsAllowlistPolicyWrapper {
   std::vector<AppId> GetAllowlistAppList() const;
 
  private:
-  raw_ptr<const base::Value::Dict> dict_;
+  raw_ptr<const base::DictValue> dict_;
 };
 
 }  // namespace ash::app_time

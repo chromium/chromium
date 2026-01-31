@@ -92,21 +92,22 @@ namespace execution_context_priority {
 namespace {
 
 // Converts a non-default priority level to a zero-based index.
-constexpr size_t PriorityToIndex(base::TaskPriority priority) {
-  DCHECK_NE(base::TaskPriority::LOWEST, priority);
-  return static_cast<size_t>(static_cast<int>(priority) -
-                             static_cast<int>(base::TaskPriority::LOWEST)) -
+constexpr size_t PriorityToIndex(base::Process::Priority priority) {
+  DCHECK_NE(base::Process::Priority::kMinValue, priority);
+  return static_cast<size_t>(
+             static_cast<int>(priority) -
+             static_cast<int>(base::Process::Priority::kMinValue)) -
          1;
 }
 
 // Converts a priority level to a bit in an |active_layers| variable.
-constexpr uint32_t PriorityToBit(base::TaskPriority priority) {
+constexpr uint32_t PriorityToBit(base::Process::Priority priority) {
   return 1 << PriorityToIndex(priority);
 }
 
 static constexpr uint32_t kFirstLayerBit = 1;
 static constexpr uint32_t kLastLayerBit =
-    PriorityToBit(base::TaskPriority::HIGHEST);
+    PriorityToBit(base::Process::Priority::kMaxValue);
 static_assert(kFirstLayerBit < kLastLayerBit, "expect more than 1 layer");
 
 static const ExecutionContext* kMaxExecutionContext =
@@ -171,13 +172,15 @@ BoostingVoteAggregator::NodeData::NodeData() = default;
 BoostingVoteAggregator::NodeData::NodeData(NodeData&& rhs) = default;
 BoostingVoteAggregator::NodeData::~NodeData() = default;
 
-base::TaskPriority BoostingVoteAggregator::NodeData::GetEffectivePriorityLevel()
-    const {
-  if (IsActive(PriorityToBit(base::TaskPriority::HIGHEST)))
-    return base::TaskPriority::HIGHEST;
-  if (IsActive(PriorityToBit(base::TaskPriority::USER_VISIBLE)))
-    return base::TaskPriority::USER_VISIBLE;
-  return base::TaskPriority::LOWEST;
+base::Process::Priority
+BoostingVoteAggregator::NodeData::GetEffectivePriorityLevel() const {
+  if (IsActive(PriorityToBit(base::Process::Priority::kMaxValue))) {
+    return base::Process::Priority::kMaxValue;
+  }
+  if (IsActive(PriorityToBit(base::Process::Priority::kUserVisible))) {
+    return base::Process::Priority::kUserVisible;
+  }
+  return base::Process::Priority::kMinValue;
 }
 
 void BoostingVoteAggregator::NodeData::IncrementEdgeCount() {
@@ -397,7 +400,7 @@ void BoostingVoteAggregator::OnVoteSubmitted(
   NodeDataPtrSet changes;
 
   // Update the reachability tree for the new vote if necessary.
-  if (vote.value() != base::TaskPriority::LOWEST) {
+  if (vote.value() != base::Process::Priority::kMinValue) {
     uint32_t layer_bit = PriorityToBit(vote.value());
     OnVoteAdded(layer_bit, &(*node_data_it), &changes);
   }
@@ -413,8 +416,9 @@ void BoostingVoteAggregator::OnVoteChanged(
   auto* node_data = &(*node_data_it);
 
   // Remember the old and new priorities before committing any changes.
-  base::TaskPriority old_priority = node_data->second.incoming_vote().value();
-  base::TaskPriority new_priority = new_vote.value();
+  base::Process::Priority old_priority =
+      node_data->second.incoming_vote().value();
+  base::Process::Priority new_priority = new_vote.value();
 
   // Update the vote in place.
   node_data->second.UpdateIncomingVote(new_vote);
@@ -423,13 +427,13 @@ void BoostingVoteAggregator::OnVoteChanged(
   changes.insert(node_data);  // This node is changing regardless.
 
   // Update the reachability tree for the old vote if necessary.
-  if (old_priority != base::TaskPriority::LOWEST) {
+  if (old_priority != base::Process::Priority::kMinValue) {
     uint32_t layer_bit = PriorityToBit(old_priority);
     OnVoteRemoved(layer_bit, node_data, &changes);
   }
 
   // Update the reachability tree for the new vote if necessary.
-  if (new_priority != base::TaskPriority::LOWEST) {
+  if (new_priority != base::Process::Priority::kMinValue) {
     uint32_t layer_bit = PriorityToBit(new_priority);
     OnVoteAdded(layer_bit, node_data, &changes);
   }
@@ -443,7 +447,7 @@ void BoostingVoteAggregator::OnVoteInvalidated(
   auto node_data_it = FindNodeData(execution_context);
 
   // Remember the old priority before committing any changes.
-  base::TaskPriority old_priority =
+  base::Process::Priority old_priority =
       node_data_it->second.incoming_vote().value();
 
   // Update the vote.
@@ -452,7 +456,7 @@ void BoostingVoteAggregator::OnVoteInvalidated(
   NodeDataPtrSet changes;
 
   // Update the reachability tree for the old vote if necessary.
-  if (old_priority != base::TaskPriority::LOWEST) {
+  if (old_priority != base::Process::Priority::kMinValue) {
     uint32_t layer_bit = PriorityToBit(old_priority);
     OnVoteRemoved(layer_bit, &(*node_data_it), &changes);
   }
@@ -513,8 +517,9 @@ const char* BoostingVoteAggregator::GetVoteReason(
   uint32_t layer_bit = PriorityToBit(priority);
 
   // No reason is needed for the lowest priority.
-  if (priority == base::TaskPriority::LOWEST)
+  if (priority == base::Process::Priority::kMinValue) {
     return nullptr;
+  }
 
   // If a vote has been expressed for this node at the given priority level then
   // preferentially use that reason.
@@ -544,7 +549,7 @@ void BoostingVoteAggregator::UpstreamVoteIfNeeded(
   // We specifically don't upstream lowest priority votes, as that is the
   // default priority level of every execution context in the absence of any
   // specific higher votes.
-  if (priority == base::TaskPriority::LOWEST) {
+  if (priority == base::Process::Priority::kMinValue) {
     if (node_data->HasOutgoingVote()) {
       node_data->CancelOutgoingVote();
       channel_.InvalidateVote(execution_context);

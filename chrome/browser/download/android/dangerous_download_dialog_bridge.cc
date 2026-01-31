@@ -9,7 +9,6 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/android/android_theme_resources.h"
@@ -52,7 +51,7 @@ DangerousDownloadDialogBridge::~DangerousDownloadDialogBridge() {
 void DangerousDownloadDialogBridge::Show(download::DownloadItem* download_item,
                                          ui::WindowAndroid* window_android) {
   // Don't show dangerous download again if it is already showing.
-  if (base::Contains(download_items_, download_item)) {
+  if (std::ranges::contains(download_items_, download_item)) {
     return;
   }
   if (!window_android) {

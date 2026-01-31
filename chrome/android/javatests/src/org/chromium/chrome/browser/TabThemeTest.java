@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser;
 
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
+
 import android.graphics.Color;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -35,7 +37,6 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.components.browser_ui.styles.ChromeColors;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -203,7 +204,7 @@ public class TabThemeTest {
 
         // Load the ntp.
         ThreadUtils.runOnUiThreadBlocking(
-                () -> tab.loadUrl(new LoadUrlParams(UrlConstants.NTP_URL)));
+                () -> tab.loadUrl(new LoadUrlParams(getOriginalNativeNtpUrl())));
 
         NewTabPageTestUtils.waitForNtpLoaded(tab);
 

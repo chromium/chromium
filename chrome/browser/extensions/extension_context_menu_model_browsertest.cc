@@ -324,14 +324,14 @@ const Extension* ExtensionContextMenuModelTest::AddExtensionWithHostPermission(
     const char* action_key,
     ManifestLocation location,
     const std::string& host_permission) {
-  auto manifest = base::Value::Dict()
+  auto manifest = base::DictValue()
                       .Set("name", name)
                       .Set("version", "1")
                       .Set("manifest_version", 2);
   if (action_key)
-    manifest.Set(action_key, base::Value::Dict());
+    manifest.Set(action_key, base::DictValue());
   if (!host_permission.empty())
-    manifest.Set("permissions", base::Value::List().Append(host_permission));
+    manifest.Set("permissions", base::ListValue().Append(host_permission));
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
           .SetManifest(std::move(manifest))
@@ -437,7 +437,7 @@ bool ExtensionContextMenuModelTest::HasCantAccessPageEntry(
 void ExtensionContextMenuModelTest::ForcePinExtension(
     const extensions::ExtensionId& extension_id) {
   std::string policy_item_key = base::StringPrintf("%s", extension_id.c_str());
-  base::Value::Dict policy_item_value;
+  base::DictValue policy_item_value;
   policy_item_value.Set("toolbar_pin", "force_pinned");
 
   policy::PolicyMap policy_map =
@@ -454,7 +454,7 @@ void ExtensionContextMenuModelTest::ForcePinExtension(
                                   std::move(policy_item_value));
   } else {
     // Set the new policy value.
-    base::Value::Dict policy_value;
+    base::DictValue policy_value;
     policy_value.Set(policy_item_key, std::move(policy_item_value));
     policy_map.Set(policy::key::kExtensionSettings,
                    policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
@@ -530,11 +530,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionContextMenuModelTest,
 IN_PROC_BROWSER_TEST_F(ExtensionContextMenuModelTest,
                        ComponentExtensionContextMenu) {
   std::string name("component");
-  base::Value::Dict manifest = base::Value::Dict()
-                                   .Set("name", name)
-                                   .Set("version", "1")
-                                   .Set("manifest_version", 2)
-                                   .Set("browser_action", base::Value::Dict());
+  base::DictValue manifest = base::DictValue()
+                                 .Set("name", name)
+                                 .Set("version", "1")
+                                 .Set("manifest_version", 2)
+                                 .Set("browser_action", base::DictValue());
 
   {
     scoped_refptr<const Extension> extension =

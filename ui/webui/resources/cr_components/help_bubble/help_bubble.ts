@@ -175,6 +175,7 @@ export class HelpBubbleElement extends CrLitElement {
     // contents of an opened bubble.
     this.style.display = 'block';
     this.style.position = this.fixed ? 'fixed' : 'absolute';
+    this.style.visibility = 'visible';
     this.removeAttribute('aria-hidden');
     this.updatePosition_();
 
@@ -220,6 +221,7 @@ export class HelpBubbleElement extends CrLitElement {
       this.resizeObserver_ = null;
     }
     this.style.display = 'none';
+    this.style.visibility = 'hidden';
     this.setAttribute('aria-hidden', 'true');
     this.anchorElement_ = null;
     if (this.timeoutTimerId !== null) {

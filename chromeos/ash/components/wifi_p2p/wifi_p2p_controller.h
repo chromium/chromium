@@ -176,7 +176,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_WIFI_P2P) WifiP2PController
 
   void OnCreateOrConnectP2PGroupSuccess(const OperationType& type,
                                         WifiP2PGroupCallback callback,
-                                        base::Value::Dict result);
+                                        base::DictValue result);
 
   void OnCreateOrConnectP2PGroupFailure(const OperationType& type,
                                         WifiP2PGroupCallback callback,
@@ -186,7 +186,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_WIFI_P2P) WifiP2PController
   void OnDestroyOrDisconnectP2PGroupSuccess(
       const OperationType& type,
       base::OnceCallback<void(OperationResult result)> callback,
-      base::Value::Dict result);
+      base::DictValue result);
 
   void OnDestroyOrDisconnectP2PGroupFailure(
       const OperationType& type,
@@ -200,16 +200,16 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_WIFI_P2P) WifiP2PController
   void GetP2PGroupMetadata(int shill_id,
                            const OperationType& type,
                            WifiP2PGroupCallback callback,
-                           std::optional<base::Value::Dict> properties);
+                           std::optional<base::DictValue> properties);
 
   // Callback when set shill manager property operation failed.
   void OnSetManagerPropertyFailure(const std::string& property_name,
                                    const std::string& error_name,
                                    const std::string& error_message);
 
-  void OnGetManagerProperties(std::optional<base::Value::Dict> properties);
+  void OnGetManagerProperties(std::optional<base::DictValue> properties);
 
-  void UpdateP2PCapabilities(const base::Value::Dict& capabilities);
+  void UpdateP2PCapabilities(const base::DictValue& capabilities);
 
   void CompleteWifiP2PGroupCallback(const OperationType& type,
                                     const OperationResult& result,

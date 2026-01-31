@@ -51,8 +51,7 @@ class NET_EXPORT ReportingService {
   static std::unique_ptr<ReportingService> Create(
       const ReportingPolicy& policy,
       URLRequestContext* request_context,
-      ReportingCache::PersistentReportingStore* store,
-      const base::flat_map<std::string, GURL>& enterprise_reporting_endpoints);
+      ReportingCache::PersistentReportingStore* store);
 
   // Creates a ReportingService for testing purposes using an
   // already-constructed ReportingContext. The ReportingService will take
@@ -82,7 +81,7 @@ class NET_EXPORT ReportingService {
       const std::string& user_agent,
       const std::string& group,
       const std::string& type,
-      base::Value::Dict body,
+      base::DictValue body,
       int depth,
       ReportingTargetType target_type) = 0;
 
@@ -107,12 +106,6 @@ class NET_EXPORT ReportingService {
       const url::Origin& origin,
       const IsolationInfo& isolation_info,
       const base::flat_map<std::string, std::string>& endpoints) = 0;
-
-  // Configures reporting endpoints set by the ReportingEndpoints enterprise
-  // policy.
-  // `endpoints` is a mapping of endpoint names to URLs.
-  virtual void SetEnterpriseReportingEndpoints(
-      const base::flat_map<std::string, GURL>& endpoints) = 0;
 
   // Attempts to send any queued reports and removes all associated
   // configuration for `reporting_source`. This is called when a source is

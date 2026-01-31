@@ -138,7 +138,7 @@ suite('LocalImagesElementTest', function() {
             `${WallpaperGridItemElement.is}:not([placeholder]):not([hidden])`);
         assertEquals(1, gridItems.length);
         assertDeepEquals(
-            {url: 'data:image/png;base64,localimage0data'}, gridItems[0]!.src);
+            'data:image/png;base64,localimage0data', gridItems[0]!.src);
 
         // Set loading failed for second thumbnail.
         personalizationStore.data.wallpaper.loading.local.data = {
@@ -147,9 +147,9 @@ suite('LocalImagesElementTest', function() {
           [kDefaultImageSymbol]: false,
         };
         personalizationStore.data.wallpaper.local.data = {
-          'LocalImage0.png': {url: 'data:image/png;base64,localimage0data'},
-          'LocalImage1.png': {url: ''},
-          [kDefaultImageSymbol]: {url: ''},
+          'LocalImage0.png': 'data:image/png;base64,localimage0data',
+          'LocalImage1.png': '',
+          [kDefaultImageSymbol]: '',
         };
         personalizationStore.notifyObservers();
         await waitAfterNextRender(localImagesElement);
@@ -161,7 +161,7 @@ suite('LocalImagesElementTest', function() {
         assertEquals(
             1, gridItems.length, 'still only first thumbnail displayed');
         assertDeepEquals(
-            {url: 'data:image/png;base64,localimage0data'}, gridItems[0]!.src);
+            'data:image/png;base64,localimage0data', gridItems[0]!.src);
       });
 
   test('sets selected if image name matches currently selected', async () => {
@@ -171,9 +171,9 @@ suite('LocalImagesElementTest', function() {
         {path: '/test/LocalImage1.png'},
       ],
       data: {
-        '/test/LocalImage0.png': {url: 'data:image/png;base64,localimage0data'},
-        '/test/LocalImage1.png': {url: 'data:image/png;base64,localimage1data'},
-        [kDefaultImageSymbol]: {url: ''},
+        '/test/LocalImage0.png': 'data:image/png;base64,localimage0data',
+        '/test/LocalImage1.png': 'data:image/png;base64,localimage1data',
+        [kDefaultImageSymbol]: '',
       },
     };
     // Done loading.
@@ -289,7 +289,7 @@ suite('LocalImagesElementTest', function() {
   test('default image thumbnail hidden when fails to load', async () => {
     personalizationStore.data.wallpaper.local = {
       images: [kDefaultImageSymbol],
-      data: {[kDefaultImageSymbol]: {url: ''}},
+      data: {[kDefaultImageSymbol]: ''},
     };
 
     localImagesElement = initElement(LocalImagesElement);

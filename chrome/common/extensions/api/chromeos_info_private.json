@@ -158,7 +158,7 @@
         "parameters": [],
         "returns_async": {
           "name": "callback",
-          "description": "Returns tablet mode enabled status as a boolean.",
+          "description": "Resolves with tablet mode enabled status as a boolean.",
           "parameters": [
             {
               "name": "tabletModeEnabled",

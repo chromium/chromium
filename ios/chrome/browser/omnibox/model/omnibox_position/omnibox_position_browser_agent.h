@@ -42,6 +42,9 @@ class OmniboxPositionBrowserAgent
   friend class BrowserUserData<OmniboxPositionBrowserAgent>;
   explicit OmniboxPositionBrowserAgent(Browser* browser);
 
+  // Logs the omnibox position.
+  void LogOmniboxPosition();
+
   bool is_current_layout_bottom_omnibox_ = false;
   __weak id<OmniboxStateProvider> omnibox_state_provider_;
 

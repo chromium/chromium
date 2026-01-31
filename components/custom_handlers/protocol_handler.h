@@ -59,6 +59,7 @@ class ProtocolHandler {
                   std::optional<std::string> app_id,
                   std::optional<std::string> extension_id,
                   base::Time last_modified,
+                  bool is_confirmed,
                   blink::ProtocolHandlerSecurityLevel security_level);
 
   ProtocolHandler(const ProtocolHandler& other);
@@ -66,11 +67,11 @@ class ProtocolHandler {
 
   // Creates a ProtocolHandler with fields from the dictionary. Returns an
   // empty ProtocolHandler if the input is invalid.
-  static ProtocolHandler CreateProtocolHandler(const base::Value::Dict& value);
+  static ProtocolHandler CreateProtocolHandler(const base::DictValue& value);
 
   // Returns true if the dictionary value has all the necessary fields to
   // define a ProtocolHandler.
-  static bool IsValidDict(const base::Value::Dict& value);
+  static bool IsValidDict(const base::DictValue& value);
 
   // Return true if the protocol handler meets security constraints.
   // Verify custom handler URLs security and syntax as well as the schemes
@@ -95,8 +96,8 @@ class ProtocolHandler {
   // ignored.
   bool IsEquivalent(const ProtocolHandler& other) const;
 
-  // Encodes this protocol handler as a `base::Value::Dict`.
-  base::Value::Dict Encode() const;
+  // Encodes this protocol handler as a `base::DictValue`.
+  base::DictValue Encode() const;
 
   // Returns a friendly name for |protocol| if one is available, otherwise
   // this function returns |protocol|.
@@ -106,6 +107,9 @@ class ProtocolHandler {
   // this function returns |this.protocol_|.
   std::u16string GetProtocolDisplayName() const;
 
+  // Mark the protocol handler as confirmed by the user.
+  void Confirm() { is_confirmed_ = true; }
+
   const std::string& protocol() const { return protocol_; }
   const GURL& url() const { return url_; }
   const std::optional<std::string>& web_app_id() const { return web_app_id_; }
@@ -113,6 +117,11 @@ class ProtocolHandler {
     return extension_id_;
   }
   const base::Time& last_modified() const { return last_modified_; }
+
+  // Returns true if the user has granted permission explicitly to use this
+  // protocol handler. Unconfirmed protocol handlers can be registered by Web
+  // Extensions, through the 'protocol_handlers' Manifest key.
+  bool is_confirmed() const { return is_confirmed_; }
 
   bool IsEmpty() const { return protocol_.empty(); }
   bool IsExtensionHandler() const { return extension_id_.has_value(); }
@@ -133,6 +142,7 @@ class ProtocolHandler {
   std::optional<std::string> web_app_id_;
   std::optional<std::string> extension_id_;
   base::Time last_modified_;
+  bool is_confirmed_{true};
   blink::ProtocolHandlerSecurityLevel security_level_;
 };
 

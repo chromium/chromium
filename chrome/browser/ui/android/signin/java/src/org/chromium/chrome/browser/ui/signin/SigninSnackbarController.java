@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.ui.signin;
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
-import androidx.activity.ComponentActivity;
+import android.app.Activity;
 
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SignoutReason;
 
 /**
@@ -44,23 +45,26 @@ class SigninSnackbarController implements SnackbarManager.SnackbarController {
          * callback executes after the user has been signed out and history sync has been optionally
          * opted out.
          */
-        void onUndoSignin();
+        void onSigninUndone();
     }
 
-    private final ComponentActivity mActivity;
+    private final Activity mActivity;
     private final Profile mProfile;
+    private final @SignoutReason int mSignoutReason;
     private final HistorySyncHelper mHistorySyncHelper;
     private final SnackbarManager mSnackbarManager;
     private @Nullable Listener mListener;
 
     private SigninSnackbarController(
-            ComponentActivity activity,
+            Activity activity,
             Profile profile,
+            @SignoutReason int signoutReason,
             HistorySyncHelper historySyncHelper,
             SnackbarManager snackbarManager,
             Listener listener) {
         mActivity = activity;
         mProfile = profile;
+        mSignoutReason = signoutReason;
         mHistorySyncHelper = historySyncHelper;
         mSnackbarManager = snackbarManager;
         mListener = listener;
@@ -84,9 +88,9 @@ class SigninSnackbarController implements SnackbarManager.SnackbarController {
                 mActivity.getApplicationContext(),
                 mProfile,
                 mSnackbarManager,
-                SignoutReason.USER_TAPPED_UNDO_RIGHT_AFTER_SIGN_IN,
+                mSignoutReason,
                 () -> {
-                    assertNonNull(mListener).onUndoSignin();
+                    assertNonNull(mListener).onSigninUndone();
                     mListener = null;
                 });
     }
@@ -98,8 +102,9 @@ class SigninSnackbarController implements SnackbarManager.SnackbarController {
 
     /** Shows a snackbar if the sign-in was successful, allowing the user to undo the action. */
     public static void showUndoSnackbarIfNeeded(
-            ComponentActivity activity,
+            Activity activity,
             Profile profile,
+            @SigninAccessPoint int signinAccessPoint,
             @Nullable SnackbarManager snackbarManager,
             Listener listener,
             SigninAndHistorySyncCoordinator.Result result) {
@@ -126,6 +131,7 @@ class SigninSnackbarController implements SnackbarManager.SnackbarController {
                             new SigninSnackbarController(
                                     activity,
                                     profile,
+                                    getSignoutReason(signinAccessPoint),
                                     HistorySyncHelper.getForProfile(profile),
                                     snackbarManager,
                                     assertNonNull(listener)),
@@ -134,5 +140,19 @@ class SigninSnackbarController implements SnackbarManager.SnackbarController {
             snackbar.setAction(activity.getString(R.string.snackbar_undo_signin), result);
             snackbarManager.showSnackbar(snackbar);
         }
+    }
+
+    static @SignoutReason int getSignoutReason(@SigninAccessPoint int signinAccessPoint) {
+        if (signinAccessPoint == SigninAccessPoint.BOOKMARK_MANAGER) {
+            return SignoutReason.USER_TAPPED_UNDO_RIGHT_AFTER_SIGN_IN_FROM_BOOKMARKS;
+
+        } else if (signinAccessPoint == SigninAccessPoint.NTP_FEED_TOP_PROMO) {
+            return SignoutReason.USER_TAPPED_UNDO_RIGHT_AFTER_SIGN_IN_FROM_NTP;
+
+        } else if (signinAccessPoint == SigninAccessPoint.RECENT_TABS) {
+            return SignoutReason.USER_TAPPED_UNDO_RIGHT_AFTER_SIGN_IN_FROM_RECENT_TABS;
+        }
+
+        throw new IllegalStateException("Forbidden access point: " + signinAccessPoint);
     }
 }

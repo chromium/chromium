@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 20 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 23 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=3>foo[]</font><p><font size=5>bar</font>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><font size=\\"3\\">foo</font><font size=\\"5\\">bar</font></p>" but got "<p><font size=\\"3\\">foo</font><span style=\\"font-size:x-large\\">bar</span></p>"
 [FAIL] [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font size=4>foo[]</font><p><font size=5>bar</font>" compare innerHTML
@@ -40,5 +40,11 @@ Found 20 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"display:grid\\"><span>abcdef</span></div>" but got "<div style=\\"display:grid\\"><span>abcdef</span><span style=\\"display:contents\\"><br></span></div>"
 [FAIL] [["forwarddelete",""]] "<div style=display:grid><span style=display:contents>abc[]</span><span>def</span></div>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"display:grid\\"><span style=\\"display:contents\\">abcdef</span></div>" but got "<div style=\\"display:grid\\"><span style=\\"display:contents\\">abc</span>def</div>"
+[FAIL] [["forwarddelete",""]] "abc[]<object>def</object>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "abc<object>ef</object>" but got "abc<object>def</object>"
+[FAIL] [["forwarddelete",""]] "abc[]<meter>def</meter>ghi" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "abcghi" but got "abc<meter></meter>ghi"
+[FAIL] [["forwarddelete",""]] "abc[]<audio>def</audio>ghi" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "abchi" but got "abcghi"
 Harness: the test ran to completion.
 

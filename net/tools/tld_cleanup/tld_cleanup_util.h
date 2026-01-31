@@ -20,6 +20,9 @@ struct Rule {
   bool wildcard;
   bool is_private;
 
+  // Serializes this rule for gperf output.
+  int Serialize() const;
+
   friend bool operator==(const Rule&, const Rule&) = default;
 };
 

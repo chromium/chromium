@@ -249,6 +249,7 @@
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
@@ -263,6 +264,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/init/initialize_dbus_client.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
+#include "chromeos/ui/clipboard_history/clipboard_history_types.h"
 #include "chromeos/ui/clipboard_history/clipboard_history_util.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -342,6 +344,16 @@ class AshVisibilityController : public ::wm::VisibilityController {
 };
 
 }  // namespace
+
+////////////////////////////////////////////////////////////////////////////////
+// TrayIconConfiguration, public:
+
+TrayIconConfiguration::TrayIconConfiguration() = default;
+
+TrayIconConfiguration::~TrayIconConfiguration() = default;
+
+////////////////////////////////////////////////////////////////////////////////
+// Shell, static:
 
 // static
 Shell* Shell::instance_ = nullptr;
@@ -676,6 +688,28 @@ void Shell::AddAccessibilityEventHandler(
 void Shell::RemoveAccessibilityEventHandler(ui::EventHandler* handler) {
   accessibility_event_handler_manager_->RemoveAccessibilityEventHandler(
       handler);
+}
+
+bool Shell::AddStatusTrayIcon(const TrayIconConfiguration& configuration,
+                              int64_t display_id,
+                              base::RepeatingClosure callback) {
+  aura::Window* root_window = GetRootWindowForDisplayId(display_id);
+  auto* status_area = StatusAreaWidget::ForWindow(root_window);
+  return status_area->AddTrayIcon(configuration, std::move(callback));
+}
+
+bool Shell::UpdateStatusTrayIcon(const TrayIconConfiguration& configuration,
+                                 int64_t display_id) {
+  aura::Window* root_window = GetRootWindowForDisplayId(display_id);
+  auto* status_area = StatusAreaWidget::ForWindow(root_window);
+  return status_area->UpdateTrayIcon(configuration);
+}
+
+bool Shell::RemoveStatusTrayIcon(const TrayIconConfiguration& configuration,
+                                 int64_t display_id) {
+  aura::Window* root_window = GetRootWindowForDisplayId(display_id);
+  auto* status_area = StatusAreaWidget::ForWindow(root_window);
+  return status_area->RemoveTrayIcon(configuration);
 }
 
 void Shell::RecreateMultiUserWindowManagerForTesting() {
@@ -1853,7 +1887,7 @@ void Shell::Init(
   // `clipboard_history_controller_` is destroyed.
   chromeos::clipboard_history::SetQueryItemDescriptorsImpl(base::BindRepeating(
       [](ClipboardHistoryControllerImpl* controller) {
-        std::vector<crosapi::mojom::ClipboardHistoryItemDescriptor> descriptors;
+        std::vector<chromeos::clipboard_history::ItemDescriptor> descriptors;
         if (clipboard_history_util::IsEnabledInCurrentMode()) {
           const auto& items = controller->history()->GetItems();
           descriptors.reserve(items.size());
@@ -1866,7 +1900,7 @@ void Shell::Init(
   chromeos::clipboard_history::SetPasteClipboardItemByIdImpl(
       base::BindRepeating(
           [](const base::UnguessableToken& id, int event_flags,
-             crosapi::mojom::ClipboardHistoryControllerShowSource show_source) {
+             chromeos::clipboard_history::ShowSource show_source) {
             ClipboardHistoryController::Get()->PasteClipboardItemById(
                 id.ToString(), event_flags, show_source);
           }));

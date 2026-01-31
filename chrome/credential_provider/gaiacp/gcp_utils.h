@@ -281,10 +281,10 @@ std::wstring GetStringResource(UINT base_message_id,
 // Gets the language selected by the base::win::i18n::LanguageSelector.
 std::wstring GetSelectedLanguage();
 
-// Securely clear a base::Value::Dict that may have a password field.
-void SecurelyClearDictionaryValue(base::optional_ref<base::Value::Dict> dict);
+// Securely clear a base::DictValue that may have a password field.
+void SecurelyClearDictionaryValue(base::optional_ref<base::DictValue> dict);
 void SecurelyClearDictionaryValueWithKey(
-    base::optional_ref<base::Value::Dict> dict,
+    base::optional_ref<base::DictValue> dict,
     const std::string& password_key);
 
 // Securely clear std::wstring and std::string.
@@ -294,9 +294,9 @@ void SecurelyClearString(std::string& str);
 // Securely clear a given |buffer| with size |length|.
 void SecurelyClearBuffer(void* buffer, size_t length);
 
-// Helpers to get strings from base::Value::Dict.
-std::wstring GetDictString(const base::Value::Dict& dict, const char* name);
-std::string GetDictStringUTF8(const base::Value::Dict& dict, const char* name);
+// Helpers to get strings from base::DictValue.
+std::wstring GetDictString(const base::DictValue& dict, const char* name);
+std::string GetDictStringUTF8(const base::DictValue& dict, const char* name);
 
 // Perform a recursive search on a nested dictionary object. Note that the
 // names provided in the input should be in order. Below is an example : Lets
@@ -368,7 +368,7 @@ void InitWindowsStringWithString(const WindowsStringCharT* string,
 // Extracts the provided keys from the given dictionary. Returns true if all
 // keys are found. If any of the key isn't found, returns false.
 bool ExtractKeysFromDict(
-    const base::Value::Dict& dict,
+    const base::DictValue& dict,
     const std::vector<std::pair<std::string, std::string*>>& needed_outputs);
 
 // Gets the bios serial number of the windows device.

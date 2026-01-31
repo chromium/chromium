@@ -115,19 +115,19 @@ std::string StartResultToString(DownloadParams::StartResult result) {
   }
 }
 
-base::Value::Dict DriverEntryToValue(const DriverEntry& entry) {
-  base::Value::Dict serialized_entry;
+base::DictValue DriverEntryToValue(const DriverEntry& entry) {
+  base::DictValue serialized_entry;
   serialized_entry.Set("state", DriverEntryStateToString(entry.state));
   serialized_entry.Set("paused", entry.paused);
   serialized_entry.Set("done", entry.done);
   return serialized_entry;
 }
 
-base::Value::Dict EntryToValue(
+base::DictValue EntryToValue(
     const Entry& entry,
     const std::optional<DriverEntry>& driver,
     const std::optional<CompletionType>& completion_type) {
-  base::Value::Dict serialized_entry;
+  base::DictValue serialized_entry;
   serialized_entry.Set("client",
                        BackgroundDownloadClientToString(entry.client));
   serialized_entry.Set("state", EntryStateToString(entry.state));
@@ -183,8 +183,8 @@ void LoggerImpl::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-base::Value::Dict LoggerImpl::GetServiceStatus() {
-  base::Value::Dict service_status;
+base::DictValue LoggerImpl::GetServiceStatus() {
+  base::DictValue service_status;
 
   if (!log_source_)
     return service_status;
@@ -201,8 +201,8 @@ base::Value::Dict LoggerImpl::GetServiceStatus() {
   return service_status;
 }
 
-base::Value::List LoggerImpl::GetServiceDownloads() {
-  base::Value::List serialized_entries;
+base::ListValue LoggerImpl::GetServiceDownloads() {
+  base::ListValue serialized_entries;
 
   if (!log_source_)
     return serialized_entries;
@@ -220,7 +220,7 @@ void LoggerImpl::OnServiceStatusChanged() {
   if (observers_.empty())
     return;
 
-  base::Value::Dict service_status = GetServiceStatus();
+  base::DictValue service_status = GetServiceStatus();
 
   for (auto& observer : observers_)
     observer.OnServiceStatusChanged(service_status);
@@ -230,7 +230,7 @@ void LoggerImpl::OnServiceDownloadsAvailable() {
   if (observers_.empty())
     return;
 
-  base::Value::List service_downloads = GetServiceDownloads();
+  base::ListValue service_downloads = GetServiceDownloads();
   for (auto& observer : observers_)
     observer.OnServiceDownloadsAvailable(service_downloads);
 }
@@ -269,7 +269,7 @@ void LoggerImpl::OnServiceRequestMade(
   if (observers_.empty())
     return;
 
-  base::Value::Dict serialized_request;
+  base::DictValue serialized_request;
   serialized_request.Set("client", BackgroundDownloadClientToString(client));
   serialized_request.Set("guid", guid);
   serialized_request.Set("result", StartResultToString(start_result));

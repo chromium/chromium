@@ -8,18 +8,9 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_timeline_trigger_options.h"
 #include "third_party/blink/renderer/core/animation/animation_trigger.h"
 #include "third_party/blink/renderer/core/animation/scroll_timeline.h"
+#include "third_party/blink/renderer/core/animation/timeline_trigger_range_list.h"
 
 namespace blink {
-
-// https://drafts.csswg.org/web-animations-2/#trigger-state
-enum class TimelineTriggerState {
-  // The initial state of the trigger. The trigger has not yet taken any action.
-  kIdle,
-  // The last action taken by the trigger was due to entering the trigger range.
-  kPrimary,
-  // The last action taken by the trigger was due to exiting the exit range.
-  kInverse,
-};
 
 struct TimelineTriggerAction {
   // The action to take when entering the trigger range.
@@ -32,68 +23,80 @@ class CORE_EXPORT TimelineTrigger : public AnimationTrigger {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  using RangeBoundary = V8UnionStringOrTimelineRangeOffset;
-  using State = TimelineTriggerState;
+  using State = TimelineTriggerRange::State;
+  using RangeBoundary = TimelineTriggerRange::Boundary;
+  using TriggerBoundaries = TimelineTriggerRange::TriggerBoundaries;
 
-  TimelineTrigger(AnimationTimeline* timeline,
-                  RangeBoundary* range_start,
-                  RangeBoundary* range_end,
-                  RangeBoundary* exit_range_start,
-                  RangeBoundary* exit_range_end,
+  TimelineTrigger(TimelineTriggerRangeList* ranges,
                   Element* owning_element = nullptr);
-  static TimelineTrigger* Create(ExecutionContext* execution_context,
-                                 TimelineTriggerOptions* options,
-                                 ExceptionState& exception_state);
+  static TimelineTrigger* Create(
+      ExecutionContext* execution_context,
+      const HeapVector<Member<TimelineTriggerOptions>>& options,
+      ExceptionState& exception_state);
 
   // IDL interface
-  AnimationTimeline* timeline();
-  const RangeBoundary* rangeStart(ExecutionContext* execution_context);
-  const RangeBoundary* rangeEnd(ExecutionContext* execution_context);
-  const RangeBoundary* exitRangeStart(ExecutionContext* execution_context);
-  const RangeBoundary* exitRangeEnd(ExecutionContext* execution_context);
+  TimelineTriggerRangeList* ranges() { return ranges_; }
 
-  bool CanTrigger() const override;
-  bool IsTimelineTrigger() const override;
-
-  AnimationTimeline* GetTimelineInternal() { return timeline_.Get(); }
-  State GetState() { return state_; }
-  void Update();
-
-  void Trace(Visitor* visitor) const override;
-
-  // Structure representing the scroll offsets (in px) corresponding to the
-  // boundaries of the trigger (default) range and the exit range;
-  struct TriggerBoundaries {
-    // The start offset of the trigger/default range.
-    double start = 0.;
-    // The end offset of the trigger/default range.
-    double end = 0.;
-    // The start offset of the exit range.
-    double exit_start = 0.;
-    // The end offset of the exit range.
-    double exit_end = 0.;
-    double current_offset = 0.;
-  };
-
-  void SetRangeBoundariesForTest(RangeBoundary* start,
-                                 RangeBoundary* exit,
-                                 RangeBoundary* exit_start,
-                                 RangeBoundary* exit_end) {
-    range_start_ = start;
-    range_end_ = exit;
-    exit_range_start_ = exit_start;
-    exit_range_end_ = exit_end;
+  // TODO(crbug.com/473568234): The TimelineTrigger interface supports multiple
+  // timelines, but at the moment we only support a single timeline.
+  // These methods simplify the TimelineTrigger implementation given that we
+  // only support a single timeline. When we support multiple timelines these
+  // methods should be deleted.
+  AnimationTimeline* Timeline() {
+    return GetRange() ? GetRange()->timeline() : nullptr;
   }
-
+  const AnimationTimeline* Timeline() const {
+    return GetRange() ? GetRange()->timeline() : nullptr;
+  }
+  const RangeBoundary* EntryRangeStart() {
+    return GetRange() ? GetRange()->entryRangeStart(nullptr) : nullptr;
+  }
+  const RangeBoundary* EntryRangeEnd() {
+    return GetRange() ? GetRange()->entryRangeEnd(nullptr) : nullptr;
+  }
+  const RangeBoundary* ActiveRangeStart() {
+    return GetRange() ? GetRange()->activeRangeStart(nullptr) : nullptr;
+  }
+  const RangeBoundary* ActiveRangeEnd() {
+    return GetRange() ? GetRange()->activeRangeEnd(nullptr) : nullptr;
+  }
+  AnimationTimeline* GetTimelineInternal() {
+    return GetRange() ? GetRange()->GetTimelineInternal() : nullptr;
+  }
+  void SetRangeBoundariesForTest(RangeBoundary* entry_start,
+                                 RangeBoundary* entry_end,
+                                 RangeBoundary* active_start,
+                                 RangeBoundary* active_end) {
+    // TODO(crbug.com/473568234): Support multiple timelines.
+    if (TimelineTriggerRange* range = GetRange()) {
+      range->SetRangeBoundariesForTest(entry_start, entry_end, active_start,
+                                       active_end);
+    }
+  }
   TriggerBoundaries ComputeTriggerBoundariesForTest(
       double current_offset,
       Element& timeline_source,
       const ScrollTimeline& timeline) {
-    return ComputeTriggerBoundaries(current_offset, timeline_source, timeline);
+    // TODO(crbug.com/473568234): Support multiple timelines.
+    return GetRange() ? GetRange()->ComputeTriggerBoundariesForTest(
+                            current_offset, timeline_source, timeline)
+                      : TriggerBoundaries();
   }
+
+  bool CanTrigger() const override;
+  bool IsTimelineTrigger() const override;
+
+  State GetState() { return state_; }
+  bool Update();
+
+  void Trace(Visitor* visitor) const override;
 
   void CreateCompositorTrigger() override;
   void DestroyCompositorTrigger() override;
+
+  Document* GetDocument() override {
+    return Timeline() ? Timeline()->GetDocument() : nullptr;
+  }
 
   using TimelineState = ScrollSnapshotTimeline::TimelineState;
 
@@ -109,21 +112,14 @@ class CORE_EXPORT TimelineTrigger : public AnimationTrigger {
                          Behavior activate_behavior,
                          Behavior deactivate_behavior,
                          ExceptionState& exception_state);
+  // TODO(crbug.com/473568234): Support multiple timelines/ranges.
+  TimelineTriggerRange* GetRange() const {
+    return ranges_ && ranges_->Ranges().size() ? ranges_->Ranges()[0] : nullptr;
+  }
 
-  std::optional<TimelineTrigger::TriggerBoundaries>
-  CalculateTriggerBoundaries();
-
-  TriggerBoundaries ComputeTriggerBoundaries(double current_offset,
-                                             Element& timeline_source,
-                                             const ScrollTimeline& timeline);
   std::optional<TimelineTrigger::State> ComputeState();
 
-  Member<AnimationTimeline> timeline_;
-  // The range boundaries at which the trigger takes action, in CSS pixels.
-  Member<const RangeBoundary> range_start_;
-  Member<const RangeBoundary> range_end_;
-  Member<const RangeBoundary> exit_range_start_;
-  Member<const RangeBoundary> exit_range_end_;
+  Member<TimelineTriggerRangeList> ranges_;
 
   State state_;
 };

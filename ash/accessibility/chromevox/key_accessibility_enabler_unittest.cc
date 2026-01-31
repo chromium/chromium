@@ -30,6 +30,7 @@ class KeyAccessibilityEnablerTest : public AshTestBase,
   }
 
   void TearDown() override {
+    key_accessibility_enabler_ = nullptr;
     ui::SetEventTickClockForTesting(nullptr);
     Shell::Get()->accessibility_controller()->RemoveObserver(this);
     AshTestBase::TearDown();
@@ -53,8 +54,7 @@ class KeyAccessibilityEnablerTest : public AshTestBase,
   void OnAccessibilityStatusChanged() override { run_loop_->Quit(); }
 
   std::unique_ptr<base::RunLoop> run_loop_;
-  raw_ptr<KeyAccessibilityEnabler, DanglingUntriaged>
-      key_accessibility_enabler_;
+  raw_ptr<KeyAccessibilityEnabler> key_accessibility_enabler_;
   base::SimpleTestTickClock clock_;
 };
 

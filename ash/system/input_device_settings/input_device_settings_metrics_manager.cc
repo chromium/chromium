@@ -4,6 +4,7 @@
 
 #include "ash/system/input_device_settings/input_device_settings_metrics_manager.h"
 
+#include <algorithm>
 #include <array>
 #include <cstdint>
 #include <iterator>
@@ -21,7 +22,6 @@
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "ash/system/input_device_settings/input_device_settings_utils.h"
 #include "ash/system/input_device_settings/settings_updated_metrics_info.h"
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/json/values_util.h"
@@ -290,14 +290,14 @@ bool ShouldRecordFkeyMetrics(const mojom::Keyboard& keyboard) {
          Shell::Get()->keyboard_capability()->IsChromeOSKeyboard(keyboard.id) &&
          (keyboard.settings->f11.has_value() &&
           keyboard.settings->f12.has_value()) &&
-         !base::Contains(keyboard.modifier_keys,
-                         ui::mojom::ModifierKey::kFunction);
+         !std::ranges::contains(keyboard.modifier_keys,
+                                ui::mojom::ModifierKey::kFunction);
 }
 
 bool ShouldRecordSixPackKeyMetrics(const mojom::Keyboard& keyboard) {
   return features::IsAltClickAndSixPackCustomizationEnabled() &&
-         !base::Contains(keyboard.modifier_keys,
-                         ui::mojom::ModifierKey::kFunction);
+         !std::ranges::contains(keyboard.modifier_keys,
+                                ui::mojom::ModifierKey::kFunction);
 }
 
 void RecordButtonMetrics(const mojom::Button& button,
@@ -509,7 +509,7 @@ std::optional<uint32_t> CountNumberOfDevicesUsedInLast28Days(
   }
 
   uint32_t num_devices_used = 0;
-  const base::Value::Dict& devices_dict = pref_service->GetDict(pref_name);
+  const base::DictValue& devices_dict = pref_service->GetDict(pref_name);
   for (const auto device_entry : devices_dict) {
     const auto* device = device_entry.second.GetIfDict();
     if (!device) {
@@ -642,7 +642,7 @@ void InputDeviceSettingsMetricsManager::RecordKeyboardInitialMetrics(
   auto iter = recorded_keyboards_.find(account_id);
 
   if (iter != recorded_keyboards_.end() &&
-      base::Contains(iter->second, keyboard.device_key)) {
+      iter->second.contains(keyboard.device_key)) {
     return;
   }
   recorded_keyboards_[account_id].insert(keyboard.device_key);
@@ -672,8 +672,8 @@ void InputDeviceSettingsMetricsManager::RecordKeyboardInitialMetrics(
   }
 
   // Record remapping metrics when keyboard is initialized.
-  if (base::Contains(keyboard.modifier_keys,
-                     ui::mojom::ModifierKey::kQuickInsert)) {
+  if (std::ranges::contains(keyboard.modifier_keys,
+                            ui::mojom::ModifierKey::kQuickInsert)) {
     RecordSplitModifierRemappingHash(keyboard);
   } else {
     RecordModifierRemappingHash(keyboard);
@@ -803,8 +803,7 @@ void InputDeviceSettingsMetricsManager::RecordMouseInitialMetrics(
       Shell::Get()->session_controller()->GetActiveAccountId();
   auto iter = recorded_mice_.find(account_id);
 
-  if (iter != recorded_mice_.end() &&
-      base::Contains(iter->second, mouse.device_key)) {
+  if (iter != recorded_mice_.end() && iter->second.contains(mouse.device_key)) {
     return;
   }
   recorded_mice_[account_id].insert(mouse.device_key);
@@ -940,7 +939,7 @@ void InputDeviceSettingsMetricsManager::RecordPointingStickInitialMetrics(
   auto iter = recorded_pointing_sticks_.find(account_id);
 
   if (iter != recorded_pointing_sticks_.end() &&
-      base::Contains(iter->second, pointing_stick.device_key)) {
+      iter->second.contains(pointing_stick.device_key)) {
     return;
   }
   recorded_pointing_sticks_[account_id].insert(pointing_stick.device_key);
@@ -1006,7 +1005,7 @@ void InputDeviceSettingsMetricsManager::RecordTouchpadInitialMetrics(
   auto iter = recorded_touchpads_.find(account_id);
 
   if (iter != recorded_touchpads_.end() &&
-      base::Contains(iter->second, touchpad.device_key)) {
+      iter->second.contains(touchpad.device_key)) {
     return;
   }
   recorded_touchpads_[account_id].insert(touchpad.device_key);
@@ -1128,7 +1127,7 @@ void InputDeviceSettingsMetricsManager::RecordGraphicsTabletInitialMetrics(
   auto iter = recorded_graphics_tablets_.find(account_id);
 
   if (iter != recorded_graphics_tablets_.end() &&
-      base::Contains(iter->second, graphics_tablet.device_key)) {
+      iter->second.contains(graphics_tablet.device_key)) {
     return;
   }
   recorded_graphics_tablets_[account_id].insert(graphics_tablet.device_key);
@@ -1321,7 +1320,7 @@ void InputDeviceSettingsMetricsManager::RecordCompanionAppAvailable(
       Shell::Get()->session_controller()->GetActiveAccountId();
   auto iter = recorded_companion_app_available_device_keys_.find(account_id);
   if (iter != recorded_companion_app_available_device_keys_.end() &&
-      base::Contains(iter->second, device_key)) {
+      iter->second.contains(device_key)) {
     return;
   }
 
@@ -1338,7 +1337,7 @@ void InputDeviceSettingsMetricsManager::RecordCompanionAppInstalled(
       Shell::Get()->session_controller()->GetActiveAccountId();
   auto iter = recorded_companion_app_installed_device_keys_.find(account_id);
   if (iter != recorded_companion_app_installed_device_keys_.end() &&
-      base::Contains(iter->second, device_key)) {
+      iter->second.contains(device_key)) {
     return;
   }
 

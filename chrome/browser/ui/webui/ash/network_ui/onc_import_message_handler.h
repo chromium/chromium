@@ -36,7 +36,7 @@ class OncImportMessageHandler : public content::WebUIMessageHandler {
   void Respond(const std::string& callback_id,
                const std::string& result,
                bool is_error);
-  void OnImportONC(const base::Value::List& list);
+  void OnImportONC(const base::ListValue& list);
   void ImportONCToNSSDB(const std::string& callback_id,
                         const std::string& onc_blob,
                         net::NSSCertDatabase* nssdb);

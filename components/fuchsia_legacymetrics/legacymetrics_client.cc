@@ -18,7 +18,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/time/time.h"
-#include "components/fuchsia_legacymetrics/legacymetrics_histogram_flattener.h"
+#include "components/fuchsia_legacymetrics/legacymetrics_deltas.h"
 
 namespace fuchsia_legacymetrics {
 

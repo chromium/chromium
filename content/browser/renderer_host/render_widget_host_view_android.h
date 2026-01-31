@@ -78,7 +78,6 @@ struct DidOverscrollParams;
 
 namespace viz {
 class RasterContextProvider;
-struct CopyOutputBitmapWithMetadata;
 }  // namespace viz
 
 namespace content {
@@ -177,20 +176,20 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   void CopyFromSurface(
       const gfx::Rect& src_rect,
       const gfx::Size& output_size,
-      base::OnceCallback<void(const viz::CopyOutputBitmapWithMetadata&)>
-          callback) override;
+      base::TimeDelta timeout,
+      base::OnceCallback<void(const content::CopyFromSurfaceResult&)> callback)
+      override;
   ui::FilteredGestureProvider* GetFilteredGestureProviderForTesting() override;
   void CopyFromExactSurfaceWithIpcDelay(
       const gfx::Rect& src_rect,
       const gfx::Size& output_size,
-      base::OnceCallback<void(const viz::CopyOutputBitmapWithMetadata&)>
-          callback,
+      base::OnceCallback<void(const content::CopyFromSurfaceResult&)> callback,
       base::TimeDelta ipc_delay) override;
   void CopyFromExactSurface(
       const gfx::Rect& src_rect,
       const gfx::Size& output_size,
-      base::OnceCallback<void(const viz::CopyOutputBitmapWithMetadata&)>
-          callback) override;
+      base::OnceCallback<void(const content::CopyFromSurfaceResult&)> callback)
+      override;
   void CopySharedImageFromExactSurface(
       const gfx::Rect& src_rect,
       const gfx::Size& output_size,
@@ -459,17 +458,17 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
 
   // Returns an int equivalent to an Optional<SKColor>, with a value of 0
   // indicating SKTransparent for not set.
-  jint GetBackgroundColor(JNIEnv* env);
+  int32_t GetBackgroundColor(JNIEnv* env);
 
-  void ShowContextMenuAtTouchHandle(JNIEnv* env, jint x, jint y);
+  void ShowContextMenuAtTouchHandle(JNIEnv* env, int32_t x, int32_t y);
 
   // Notifies that the Visual Viewport's inset bottom has changed.
   void OnViewportInsetBottomChanged(JNIEnv* env);
 
   void WriteContentBitmapToDiskAsync(
       JNIEnv* env,
-      jint width,
-      jint height,
+      int32_t width,
+      int32_t height,
       const jni_zero::JavaRef<jstring>& jpath,
       const jni_zero::JavaRef<jobject>& jcallback);
 
@@ -615,10 +614,9 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   void OnDidUpdateVisualPropertiesComplete(
       const cc::RenderFrameMetadata& metadata);
 
-  void OnFinishGetContentBitmap(
-      const base::android::JavaRef<jobject>& callback,
-      const std::string& path,
-      const viz::CopyOutputBitmapWithMetadata& result);
+  void OnFinishGetContentBitmap(const base::android::JavaRef<jobject>& callback,
+                                const std::string& path,
+                                const content::CopyFromSurfaceResult& result);
 
   void ShowInternal();
   void HideInternal();
@@ -633,8 +631,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   void SynchronousCopyContents(
       const gfx::Rect& src_subrect_dip,
       const gfx::Size& dst_size_in_pixel,
-      base::OnceCallback<void(const viz::CopyOutputBitmapWithMetadata&)>
-          callback);
+      base::OnceCallback<void(const content::CopyFromSurfaceResult&)> callback);
 
   void MaybeCreateSynchronousCompositor();
   void ResetSynchronousCompositor();

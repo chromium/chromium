@@ -36,11 +36,8 @@ RemoteWebApprovalsManager::RemoteWebApprovalsManager() = default;
 
 RemoteWebApprovalsManager::~RemoteWebApprovalsManager() = default;
 void RemoteWebApprovalsManager::RequestApproval(
-    const GURL& url,
-    const UrlFormatter& url_formatter,
+    const GURL& target_url,
     ApprovalRequestInitiatedCallback callback) {
-  GURL target_url = url_formatter.FormatUrl(url);
-
   AddApprovalRequestInternal(
       base::BindRepeating(CreateURLAccessRequest, target_url),
       std::move(callback), 0);

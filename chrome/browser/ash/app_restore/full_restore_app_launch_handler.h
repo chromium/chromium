@@ -20,6 +20,10 @@ class AppUpdate;
 enum class AppTypeName;
 }  // namespace apps
 
+namespace sessions {
+struct SessionWindow;
+}  // namespace sessions
+
 namespace ash::full_restore {
 
 // This is used for logging, so do not remove or reorder existing entries.
@@ -96,7 +100,10 @@ class FullRestoreAppLaunchHandler : public AppLaunchHandler,
   void OnAppTypeInitialized(apps::AppType app_type) override;
 
   // SessionRestoreObserver:
-  void OnGotSession(Profile* profile, bool for_apps, int window_count) override;
+  void OnGotSession(
+      Profile* profile,
+      bool for_apps,
+      const std::vector<const sessions::SessionWindow*>& windows) override;
 
   // Force launch browser for testing.
   void ForceLaunchBrowserForTesting();

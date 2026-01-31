@@ -72,6 +72,8 @@ class TextFieldInputType : public InputType,
   void AdjustStyle(ComputedStyleBuilder&) override;
   LayoutObject* CreateLayoutObject(const ComputedStyle&) const override;
   AppearanceValue AutoAppearance() const override;
+  void HandleFocusInEvent(Element* old_focused_element,
+                          mojom::blink::FocusType) override;
 
   virtual bool NeedsContainer() const { return false; }
   virtual String ConvertFromVisibleValue(const String&) const;

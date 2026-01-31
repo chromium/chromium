@@ -37,8 +37,8 @@ void MultiProfileDownloadNotifier::AddProfile(Profile* profile) {
   }
 
   content::DownloadManager* manager = profile->GetDownloadManager();
-  if (base::Contains(download_notifiers_, manager,
-                     &download::AllDownloadItemNotifier::GetManager)) {
+  if (std::ranges::contains(download_notifiers_, manager,
+                            &download::AllDownloadItemNotifier::GetManager)) {
     return;
   }
 

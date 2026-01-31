@@ -107,7 +107,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotCapabilitiesProvider
   void OnShuttingDown() override;
 
   // Callback to handle the manager properties with hotspot related properties.
-  void OnManagerProperties(std::optional<base::Value::Dict> properties);
+  void OnManagerProperties(std::optional<base::DictValue> properties);
 
   // Update the hotspot allow status with the given |new_allow_status|
   // and then notify observers if it changes.
@@ -120,7 +120,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotCapabilitiesProvider
   // Update the cached hotspot_capabilities_ from the tethering capabilities
   // values from Shill. This function is called whenever the tethering
   // capabilities value is changed in Shill.
-  void UpdateHotspotCapabilities(const base::Value::Dict& capabilities);
+  void UpdateHotspotCapabilities(const base::DictValue& capabilities);
 
   // Callback when the CheckTetheringReadiness operation succeeded.
   void OnCheckReadinessSuccess(CheckTetheringReadinessCallback callback,

@@ -7,6 +7,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/tabs/tab_group_attention_indicator.h"
 #include "chrome/browser/ui/tabs/tab_group_desktop.h"
 
 namespace {
@@ -40,6 +41,7 @@ TabGroupFeatures::~TabGroupFeatures() = default;
 
 void TabGroupFeatures::Init(TabGroupDesktop& group, Profile* profile) {
   CHECK(!initialized_);
+  attention_indicator_ = std::make_unique<TabGroupAttentionIndicator>();
   initialized_ = true;
 }
 

@@ -143,7 +143,7 @@ class CONTENT_EXPORT IndexedDBContextImpl
   void PerformStorageCleanup(PerformStorageCleanupCallback callback) override;
 
   // Exposed for testing.
-  bool BucketContextExists(storage::BucketId bucket_id);
+  bool BucketContextExists(storage::BucketId bucket_id) const;
 
   // Exposed for testing.
   const scoped_refptr<base::SequencedTaskRunner>& idb_task_runner() const {
@@ -194,8 +194,6 @@ class CONTENT_EXPORT IndexedDBContextImpl
       const storage::BucketLocator& bucket_locator) const;
   const base::FilePath GetLegacyDataPath() const;
 
-  int64_t ReadUsageFromDisk(const storage::BucketLocator& bucket_locator,
-                            bool write_in_progress) const;
   void NotifyOfBucketModification(const storage::BucketLocator& bucket_locator);
   base::Time GetBucketLastModified(
       const storage::BucketLocator& bucket_locator);
@@ -232,10 +230,6 @@ class CONTENT_EXPORT IndexedDBContextImpl
       GetAllBucketsDetailsCallback callback,
       std::vector<storage::QuotaErrorOr<storage::BucketInfo>> bucket_infos);
 
-  // Calculates in-memory/incognito usage for usage reporting.
-  void GetInMemorySize(storage::BucketId bucket_id,
-                       base::OnceCallback<void(int64_t)> on_got_size) const;
-
   std::vector<storage::BucketId> GetOpenBucketIdsForTesting() const;
 
   // Finishes filling in `info` with data relevant to idb-internals and passes
@@ -250,8 +244,6 @@ class CONTENT_EXPORT IndexedDBContextImpl
 
   void CompactBackingStoreForTesting(
       const storage::BucketLocator& bucket_locator);
-
-  int64_t GetBucketDiskUsage(const storage::BucketLocator& bucket_locator);
 
   // Returns all paths owned by this database, in arbitrary order.
   std::vector<base::FilePath> GetStoragePaths(
@@ -300,34 +292,19 @@ class CONTENT_EXPORT IndexedDBContextImpl
   // clients.
   std::set<storage::BucketLocator> bucket_set_;
 
-  // This map is a cache of the size used by a given bucket. It's calculated by
-  // summing the system-reported sizes of all blob and database files. This
-  // cache is cleared after transactions that can change the size of the
-  // database (i.e. those that are not readonly), and re-populated lazily. There
-  // are three possible states for each bucket in this map:
+  // This map is a cache of the size used by a given bucket. The cache is
+  // cleared after transactions that can change the size of the database (i.e.
+  // those that are not readonly), and re-populated lazily. There are three
+  // possible states for each bucket in this map:
   //
-  // 1) Not present. This indicates that the `ReadUsageFromDisk()` should be
-  //    called to calculate usage (and be stored in the map).
+  // 1) Not present. This indicates that the usage should be calculated (and
+  //    stored in the map).
   // 2) Present, with a non-negative value. This indicates that the cache is, as
   //    far as we know, valid and up to date for the given bucket. This state
   //    persists until the next writing transaction occurs.
   // 3) Present, with a negative value. This indicates that the usage is not
   //    cached AND the last readwrite transaction did NOT flush changes to disk
   //    (i.e. durability was 'relaxed').
-  //
-  // On POSIX, the first and third states are treated equivalently. However, on
-  // Windows, `base::FileEnumerator` (and therefore
-  // `base::ComputeDirectorySize()`) will not report up-to-date sizes when a
-  // file is currently being written. When transactions are not set to
-  // "flush"/"sync" (terminology varies based on context), LevelDB will keep
-  // open its file handles. Therefore, on Windows, `ReadUsageFromDisk()` may
-  // not take into account recent writes, leading to situations where
-  // `navigator.storage.estimate()` will not report updates when interleaved
-  // with relaxed durability IDB transactions. The workaround for this is to
-  // open and close new file handles for all the files in the LevelDB data
-  // directory before calculating usage, as this updates the file system
-  // directory entry's metadata. See crbug.com/1489517 and
-  // https://devblogs.microsoft.com/oldnewthing/20111226-00/?p=8813
   //
   // TODO(crbug.com/40285925): use an abstract model for quota instead of real
   // world bytes.

@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/cssom/css_numeric_value.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_local_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
@@ -97,8 +98,11 @@ std::optional<TimelineOffset> TimelineOffset::Create(
   CSSParserTokenStream stream(css_text);
   stream.ConsumeWhitespace();
 
+  CSSParserLocalContext local_context =
+      CSSParserLocalContext::CreateWithoutPropertyForAnimations();
   const CSSValue* value = css_parsing_utils::ConsumeAnimationRange(
       stream, *document.ElementSheet().Contents()->ParserContext(),
+      local_context,
       /* default_offset_percent */ default_percent, /*allow_auto=*/false);
 
   if (!value || !stream.AtEnd()) {
@@ -252,9 +256,11 @@ CSSValue* TimelineOffset::ParseOffset(Document* document, String css_text) {
   CSSParserTokenStream stream(css_text);
   stream.ConsumeWhitespace();
 
+  CSSParserLocalContext local_context =
+      CSSParserLocalContext::CreateWithoutPropertyForAnimations();
   CSSValue* value = css_parsing_utils::ConsumeLengthOrPercent(
       stream, *document->ElementSheet().Contents()->ParserContext(),
-      CSSPrimitiveValue::ValueRange::kAll);
+      local_context, CSSPrimitiveValue::ValueRange::kAll);
 
   if (!stream.AtEnd()) {
     return nullptr;

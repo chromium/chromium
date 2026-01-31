@@ -121,18 +121,18 @@ class WebAppUpdateReviewDialog : public DialogBrowserTest {
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
     // Modify the update configuration based on the test name.
-    if (base::Contains(name, "NameChange")) {
+    if (name.contains("NameChange")) {
       update_.new_title =
           u"Definitely a longer title that is really really really really "
           u"long.";
     }
-    if (base::Contains(name, "IconChange")) {
+    if (name.contains("IconChange")) {
       update_.new_icon = gfx::Image::CreateFrom1xBitmap(new_icon_);
     }
-    if (base::Contains(name, "UrlChange")) {
+    if (name.contains("UrlChange")) {
       update_.new_start_url = GURL("http://other.test.com");
     }
-    if (base::Contains(name, "ForcedMigration")) {
+    if (name.contains("ForcedMigration")) {
       update_.new_start_url = GURL("http://other.test.com");
       update_.is_forced_migration = true;
     }
@@ -523,7 +523,8 @@ IN_PROC_BROWSER_TEST_F(WebAppUpdateDialogBrowserTests, CancelUninstall) {
   WebAppProvider* provider = WebAppProvider::GetForTest(profile());
   views::test::AcceptDialog(uninstall_dialog);
   provider->command_manager().AwaitAllCommandsCompleteForTesting();
-  EXPECT_FALSE(provider->registrar_unsafe().IsInRegistrar(app_id));
+  EXPECT_FALSE(
+      provider->registrar_unsafe().GetInstallState(app_id).has_value());
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppUpdateDialogBrowserTests, IgnoreRemovesMenuLabel) {

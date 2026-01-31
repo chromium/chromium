@@ -60,6 +60,7 @@ source_set("sync") {
     "//base",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/sharing",
     "//chrome/browser/tab_group_sync:factories",
     "//chrome/browser/translate",
     "//components/browser_sync",
@@ -87,6 +88,7 @@ source_set("sync") {
     "//chrome/app:generated_resources_grit",
     "//chrome/browser:browser_process",
     "//chrome/browser/consent_auditor",
+    "//chrome/browser/gcm",
     "//chrome/browser/history",
     "//chrome/browser/password_manager/factories",
     "//chrome/browser/plus_addresses",
@@ -130,10 +132,10 @@ source_set("sync") {
     "//components/plus_addresses/core/browser/settings",
     "//components/plus_addresses/core/browser/webdata",
     "//components/privacy_sandbox:privacy_sandbox_prefs",
-    "//components/privacy_sandbox:tracking_protection_prefs",
     "//components/saved_tab_groups/public",
     "//components/send_tab_to_self",
     "//components/sharing_message",
+    "//components/skills/public",
     "//components/spellcheck:buildflags",
     "//components/spellcheck/browser",
     "//components/strings:components_strings_grit",
@@ -176,6 +178,7 @@ source_set("sync") {
       "glue/web_contents_state_synced_tab_delegate.h",
     ]
     deps += [
+      "//chrome/android:chrome_jni_headers",
       "//chrome/browser/sync/android:jni_headers",
       "//chrome/browser/tab",
       "//chrome/browser/ui/android/tab_model",
@@ -191,6 +194,7 @@ source_set("sync") {
     ]
     deps += [
       "//chrome/browser/accessibility/tree_fixing:prefs",
+      "//chrome/browser/skills",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/tabs/saved_tab_groups",
     ]

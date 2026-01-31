@@ -383,9 +383,7 @@ media_session::MediaMetadata MediaSessionNotificationItem::GetSessionMetadata()
 
   bool add_device_name_to_source_title = !!device_name_;
 #if !BUILDFLAG(IS_CHROMEOS)
-  // Never include the device name for updated media UI on non-CrOS.
-  add_device_name_to_source_title &=
-      !base::FeatureList::IsEnabled(media::kGlobalMediaControlsUpdatedUI);
+  add_device_name_to_source_title = false;
 #endif
 
   if (add_device_name_to_source_title) {

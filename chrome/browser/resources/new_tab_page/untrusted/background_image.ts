@@ -20,19 +20,30 @@ function sendLoadTime(time: number) {
       'chrome://new-tab-page');
 }
 
-// The function is used in background_image.html.
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function onImageLoad() {
   document.body.toggleAttribute('shown', true);
   loadTime = Date.now();
   sendLoadTime(loadTime);
 }
 
-// The NTP requests the load time as soon as it has installed the message
-// listener. In case we have already sent the load time we re-send the load time
-// so that the NTP has a chance to actually catch it.
-window.addEventListener('message', ({data}) => {
-  if (data === 'sendLoadTime' && loadTime) {
-    sendLoadTime(loadTime);
+function main() {
+  // The NTP requests the load time as soon as it has installed the message
+  // listener. In case we have already sent the load time we re-send the load
+  // time so that the NTP has a chance to actually catch it.
+  window.addEventListener('message', ({data}) => {
+    if (data === 'sendLoadTime' && loadTime) {
+      sendLoadTime(loadTime);
+    }
+  });
+
+  const img = document.body.querySelector('img')!;
+  if (img.complete) {
+    // Handle case where the image has already loaded.
+    onImageLoad();
+    return;
   }
-});
+
+  img.addEventListener('load', onImageLoad);
+}
+
+document.addEventListener('DOMContentLoaded', main);

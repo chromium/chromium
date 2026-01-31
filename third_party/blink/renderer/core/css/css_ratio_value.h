@@ -29,6 +29,8 @@ class CORE_EXPORT CSSRatioValue : public CSSValue {
   String CustomCSSText() const;
   bool Equals(const CSSRatioValue&) const;
 
+  bool HasRandomFunctions() const;
+
   void TraceAfterDispatch(blink::Visitor* visitor) const {
     visitor->Trace(first_);
     visitor->Trace(second_);

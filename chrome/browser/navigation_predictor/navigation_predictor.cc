@@ -180,7 +180,7 @@ bool MaySendTraffic() {
         blink::features::kPredictorTrafficClientEnabledPercent.Get();
 
     // This isn't user facing, so we'll just re-roll for each session.
-    return base::RandInt(0, 99) < enabled_percent;
+    return base::RandIntInclusive(0, 99) < enabled_percent;
   }();
 
   return may_send_traffic;

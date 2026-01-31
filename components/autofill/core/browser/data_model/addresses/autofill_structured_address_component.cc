@@ -610,7 +610,7 @@ void AddressComponent::ParseValueAndAssignSubcomponentsByFallbackMethod() {
   auto subcomponent_types = GetSubcomponentTypes();
 
   // Assign one space-separated token each to all but the last subcomponent.
-  for (size_t i = 0; (i + 1) < subcomponent_types.size(); i++) {
+  for (size_t i = 0; (i + 1) < subcomponent_types.size(); ++i) {
     // If there are no tokens left, parsing is done.
     if (token_iterator == space_separated_tokens.end()) {
       return;
@@ -1359,7 +1359,7 @@ bool AddressComponent::MergeTokenEquivalentComponent(
   std::vector<int> unmerged_indices;
   unmerged_indices.reserve(subcomponents_.size());
 
-  for (size_t i = 0; i < subcomponents_.size(); i++) {
+  for (size_t i = 0; i < subcomponents_.size(); ++i) {
     CHECK_EQ(subcomponents_[i]->GetStorageType(),
              other_subcomponents.at(i)->GetStorageType());
     // If the components can't be merged directly, store the unmerged index and

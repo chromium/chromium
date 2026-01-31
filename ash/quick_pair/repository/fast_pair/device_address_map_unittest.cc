@@ -77,7 +77,7 @@ TEST_F(DeviceAddressMapTest, PersistRecordsForDeviceValid) {
 
   // Validate that the ID records are persisted to prefs.
   PrefService* local_state = Shell::Get()->local_state();
-  const base::Value::Dict& device_address_map_dict =
+  const base::DictValue& device_address_map_dict =
       local_state->GetDict(DeviceAddressMap::kDeviceAddressMapPref);
   const std::string* model_id =
       device_address_map_dict.FindString(kTestClassicAddress);
@@ -117,7 +117,7 @@ TEST_F(DeviceAddressMapTest, EvictMacAddressRecordValid) {
 
   // Validate that the ID records are evicted from prefs.
   PrefService* local_state = Shell::Get()->local_state();
-  const base::Value::Dict& device_address_map_dict =
+  const base::DictValue& device_address_map_dict =
       local_state->GetDict(DeviceAddressMap::kDeviceAddressMapPref);
   const std::string* model_id =
       device_address_map_dict.FindString(kTestClassicAddress);

@@ -14,7 +14,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -24,9 +24,9 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabCreatorUtil;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabstrip.StripVisibilityState;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.optional_button.BaseButtonDataProvider;
-import org.chromium.chrome.browser.toolbar.top.tab_strip.StripVisibilityState;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
@@ -88,7 +88,8 @@ public class OptionalNewTabButtonController extends BaseButtonDataProvider
 
     private boolean mIsTablet;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
-    private final ObservableSupplier<@StripVisibilityState Integer> mTabStripVisibilitySupplier;
+    private final MonotonicObservableSupplier<@StripVisibilityState Integer>
+            mTabStripVisibilitySupplier;
     private final Callback<Integer> mOnTabStripVisibilityStateChanged =
             this::onTabStripVisibilityStateChanged;
 
@@ -111,7 +112,7 @@ public class OptionalNewTabButtonController extends BaseButtonDataProvider
             Supplier<@Nullable TabCreatorManager> tabCreatorManagerSupplier,
             Supplier<@Nullable Tab> activeTabSupplier,
             Supplier<@Nullable Tracker> trackerSupplier,
-            ObservableSupplier<@StripVisibilityState Integer> tabStripVisibilitySupplier) {
+            MonotonicObservableSupplier<@StripVisibilityState Integer> tabStripVisibilitySupplier) {
         super(
                 activeTabSupplier,
                 /* modalDialogManager= */ null,

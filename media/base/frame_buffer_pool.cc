@@ -7,6 +7,7 @@
 #include <inttypes.h>
 
 #include <algorithm>
+#include <utility>
 #include <vector>
 
 #include "base/check_op.h"
@@ -275,7 +276,8 @@ void FrameBufferPool::OnVideoFrameDestroyed(FrameBuffer* frame_buffer) {
 
   std::erase_if(frame_buffers_, [now](const std::unique_ptr<FrameBuffer>& buf) {
     return !IsUsedLocked(buf.get()) &&
-           now - buf->last_use_time > base::Seconds(kStaleFrameLimitSecs);
+           now - buf->last_use_time >
+               base::Seconds(std::to_underlying(kStaleFrameLimitSecs));
   });
 }
 

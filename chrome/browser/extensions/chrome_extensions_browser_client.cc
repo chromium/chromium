@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -99,11 +100,14 @@
 #include "extensions/browser/pref_names.h"
 #include "extensions/browser/process_manager_delegate.h"
 #include "extensions/browser/safe_browsing_delegate.h"
-#include "extensions/browser/updater/scoped_extension_updater_keep_alive.h"
+#include "extensions/browser/scoped_extension_keep_alive.h"
+#include "extensions/browser/unpacked_installer.h"
 #include "extensions/browser/url_request_util.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/features/feature_channel.h"
+#include "extensions/common/features/feature_developer_mode_only.h"
+#include "extensions/common/manifest_handlers/chrome_url_overrides_handler.h"
 #include "extensions/common/mojom/view_type.mojom-shared.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "url/gurl.h"
@@ -114,6 +118,7 @@
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
+#include "chrome/browser/extensions/extension_assets_manager_chromeos.h"
 #include "chrome/browser/extensions/updater/chromeos_extension_cache_delegate.h"
 #include "chrome/browser/extensions/updater/extension_cache_impl.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
@@ -121,6 +126,10 @@
 #include "components/user_manager/user_manager.h"
 #else
 #include "extensions/browser/updater/null_extension_cache.h"
+#endif
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#include "chrome/common/extensions/manifest_handlers/settings_overrides_handler.h"
 #endif
 
 namespace extensions {
@@ -134,17 +143,34 @@ constexpr std::string_view kJsonUrlPath = "/service/update2/json";
 // new chrome update.
 bool g_did_chrome_update_for_testing = false;
 
-class UpdaterKeepAlive : public ScopedExtensionUpdaterKeepAlive {
+class ChromeScopedBrowserContextKeepAlive
+    : public ScopedBrowserContextKeepAlive {
  public:
-  UpdaterKeepAlive(Profile* profile, ProfileKeepAliveOrigin origin)
-      : profile_keep_alive_(profile, origin) {}
-  UpdaterKeepAlive(const UpdaterKeepAlive&) = delete;
-  UpdaterKeepAlive& operator=(const UpdaterKeepAlive&) = delete;
-  ~UpdaterKeepAlive() override = default;
+  explicit ChromeScopedBrowserContextKeepAlive(
+      std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive)
+      : profile_keep_alive_(std::move(profile_keep_alive)) {}
+  ChromeScopedBrowserContextKeepAlive(
+      const ChromeScopedBrowserContextKeepAlive&) = delete;
+  ChromeScopedBrowserContextKeepAlive& operator=(
+      const ChromeScopedBrowserContextKeepAlive&) = delete;
+  ~ChromeScopedBrowserContextKeepAlive() override = default;
 
  private:
-  ScopedProfileKeepAlive profile_keep_alive_;
+  std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
 };
+
+std::unique_ptr<ScopedBrowserContextKeepAlive> CreateExtensionKeepAlive(
+    content::BrowserContext* context,
+    ProfileKeepAliveOrigin type) {
+  auto profile_keep_alive = ScopedProfileKeepAlive::TryAcquire(
+      Profile::FromBrowserContext(context), type);
+  if (!profile_keep_alive) {
+    return nullptr;
+  }
+
+  return std::make_unique<ChromeScopedBrowserContextKeepAlive>(
+      std::move(profile_keep_alive));
+}
 
 bool ShouldLogExtensionAction(content::BrowserContext* browser_context,
                               const ExtensionId& extension_id) {
@@ -515,7 +541,7 @@ ChromeExtensionsBrowserClient::GetComponentExtensionResourceManager() {
 void ChromeExtensionsBrowserClient::BroadcastEventToRenderers(
     events::HistogramValue histogram_value,
     const std::string& event_name,
-    base::Value::List args,
+    base::ListValue args,
     bool dispatch_to_off_the_record_profiles) {
   event_router_forwarder_->BroadcastEventToRenderers(
       histogram_value, event_name, std::move(args),
@@ -621,12 +647,18 @@ ChromeExtensionsBrowserClient::CreateUpdateClientConfigurator(
   return ChromeUpdateClientConfig::Create(context, override_url);
 }
 
-std::unique_ptr<ScopedExtensionUpdaterKeepAlive>
+std::unique_ptr<ScopedBrowserContextKeepAlive>
 ChromeExtensionsBrowserClient::CreateUpdaterKeepAlive(
     content::BrowserContext* context) {
-  return std::make_unique<UpdaterKeepAlive>(
-      Profile::FromBrowserContext(context),
-      ProfileKeepAliveOrigin::kExtensionUpdater);
+  return CreateExtensionKeepAlive(context,
+                                  ProfileKeepAliveOrigin::kExtensionUpdater);
+}
+
+std::unique_ptr<ScopedBrowserContextKeepAlive>
+ChromeExtensionsBrowserClient::CreateCrxInstallerKeepAlive(
+    content::BrowserContext* context) {
+  return CreateExtensionKeepAlive(context,
+                                  ProfileKeepAliveOrigin::kCrxInstaller);
 }
 
 bool ChromeExtensionsBrowserClient::IsActivityLoggingEnabled(
@@ -817,7 +849,7 @@ void ChromeExtensionsBrowserClient::AddAPIActionToActivityLog(
     content::BrowserContext* browser_context,
     const ExtensionId& extension_id,
     const std::string& call_name,
-    base::Value::List args,
+    base::ListValue args,
     const std::string& extra) {
   AddAPIActionOrEventToActivityLog(browser_context, extension_id,
                                    Action::ACTION_API_CALL, call_name,
@@ -828,7 +860,7 @@ void ChromeExtensionsBrowserClient::AddEventToActivityLog(
     content::BrowserContext* browser_context,
     const ExtensionId& extension_id,
     const std::string& call_name,
-    base::Value::List args,
+    base::ListValue args,
     const std::string& extra) {
   AddAPIActionOrEventToActivityLog(browser_context, extension_id,
                                    Action::ACTION_API_EVENT, call_name,
@@ -839,7 +871,7 @@ void ChromeExtensionsBrowserClient::AddDOMActionToActivityLog(
     content::BrowserContext* browser_context,
     const ExtensionId& extension_id,
     const std::string& call_name,
-    base::Value::List args,
+    base::ListValue args,
     const GURL& url,
     const std::u16string& url_title,
     int call_type) {
@@ -862,7 +894,7 @@ void ChromeExtensionsBrowserClient::AddAPIActionOrEventToActivityLog(
     const ExtensionId& extension_id,
     Action::ActionType action_type,
     const std::string& call_name,
-    base::Value::List args,
+    base::ListValue args,
     const std::string& extra) {
   if (!ShouldLogExtensionAction(browser_context, extension_id)) {
     return;
@@ -1003,10 +1035,89 @@ void ChromeExtensionsBrowserClient::ShowWarningMessageBox(
   chrome::ShowWarningMessageBoxSync(gfx::NativeWindow(), title, message);
 }
 
+void ChromeExtensionsBrowserClient::
+    RecordCommandLineMetricsOnUnpackedInstallation(
+        content::BrowserContext* context,
+        const Extension* extension) const {
+  if (!extension->is_extension() ||
+      extension->location() != mojom::ManifestLocation::kCommandLine) {
+    return;
+  }
+
+  ExtensionRegistry* extension_registry = ExtensionRegistry::Get(context);
+  if (!extension_registry->GetInstalledExtension(extension->id())) {
+    return;
+  }
+
+  // Manifest settings override metrics.
+  base::UmaHistogramCounts100("Extensions.CommandLineInstalled", 1);
+
+  bool new_tab_page_set =
+      URLOverrides::GetChromeURLOverrides(extension).count("newtab");
+  bool default_search_engine_set = false;
+  // SettingsOverrides are only available on Windows and macOS.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  const SettingsOverrides* settings = SettingsOverrides::Get(extension);
+  default_search_engine_set = settings && settings->search_engine &&
+                              settings->search_engine->is_default;
+#endif
+
+  if (new_tab_page_set && default_search_engine_set) {
+    base::UmaHistogramEnumeration(
+        "Extensions.CommandLineManifestSettingsOverride",
+        kSearchEngineAndNewTabPage);
+  } else if (new_tab_page_set) {
+    base::UmaHistogramEnumeration(
+        "Extensions.CommandLineManifestSettingsOverride", kNewTabPage);
+  } else if (default_search_engine_set) {
+    base::UmaHistogramEnumeration(
+        "Extensions.CommandLineManifestSettingsOverride", kSearchEngine);
+  } else {
+    base::UmaHistogramEnumeration(
+        "Extensions.CommandLineManifestSettingsOverride", kNoOverride);
+  }
+
+  // Developer mode metrics.
+  bool dev_mode_enabled =
+      GetCurrentDeveloperMode(util::GetBrowserContextId(context));
+
+  if (extension_registry->enabled_extensions().Contains(extension->id())) {
+    if (dev_mode_enabled) {
+      base::UmaHistogramCounts100(
+          "Extensions.CommandLineWithDeveloperModeOn.Enabled", 1);
+    } else {
+      base::UmaHistogramCounts100(
+          "Extensions.CommandLineWithDeveloperModeOff.Enabled", 1);
+    }
+  }
+
+  if (extension_registry->disabled_extensions().Contains(extension->id())) {
+    if (dev_mode_enabled) {
+      base::UmaHistogramCounts100(
+          "Extensions.CommandLineWithDeveloperModeOn.Disabled", 1);
+    } else {
+      base::UmaHistogramCounts100(
+          "Extensions.CommandLineWithDeveloperModeOff.Disabled", 1);
+    }
+  }
+}
+
 // static
 void ChromeExtensionsBrowserClient::set_did_chrome_update_for_testing(
     bool did_update) {
   g_did_chrome_update_for_testing = did_update;
+}
+
+ExtensionAssetsManager* ChromeExtensionsBrowserClient::GetAssetsManager() {
+#if BUILDFLAG(IS_CHROMEOS)
+  if (!assets_manager_) {
+    assets_manager_ = std::make_unique<ExtensionAssetsManagerChromeOS>();
+  }
+  return assets_manager_.get();
+#else
+  // If not Chrome OS, use trivial implementation that doesn't share anything.
+  return ExtensionsBrowserClient::GetAssetsManager();
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 }  // namespace extensions

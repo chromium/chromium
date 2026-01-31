@@ -4,20 +4,19 @@
 
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {CrExpandButtonElement, SettingsSecurityPageV2Element} from 'chrome://settings/lazy_load.js';
+import type {CrExpandButtonElement, SettingsSecureDnsV2Element, SettingsSecurityPageV2Element} from 'chrome://settings/lazy_load.js';
 import {HttpsFirstModeSetting, SafeBrowsingSetting, SecuritySettingsBundleSetting} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
-import type {ControlledRadioButtonElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PrivacyElementInteractions, Router, routes, SecurityPageV2Interaction} from 'chrome://settings/settings.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import type {ControlledRadioButtonElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PrivacyElementInteractions, Router, routes, resetRouterForTesting, SecurityPageV2Interaction} from 'chrome://settings/settings.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isChildVisible, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestHatsBrowserProxy} from './test_hats_browser_proxy.js';
 
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
-
 
 // clang-format on
 
@@ -30,13 +29,16 @@ suite('Main', function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       enableSecurityKeysSubpage: true,
+      enableBundledSecuritySettingsSecureDnsV2: false,
     });
 
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
   });
 
-  setup(function() {
+  setup(setUpPage);
+
+  function setUpPage() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
@@ -47,8 +49,13 @@ suite('Main', function() {
     page = document.createElement('settings-security-page-v2');
     page.prefs = settingsPrefs.prefs;
     document.body.appendChild(page);
-    flush();
-  });
+    // Set initial pref values for test predictability.
+    page.setPrefValue(
+        'generated.security_settings_bundle',
+        SecuritySettingsBundleSetting.STANDARD);
+    page.setPrefValue('generated.safe_browsing', SafeBrowsingSetting.STANDARD);
+    return microtasksFinished();
+  }
 
   test('StandardBundleIsInitiallySelected', function() {
     assertEquals(
@@ -70,7 +77,7 @@ suite('Main', function() {
         page.prefs.generated.security_settings_bundle.value);
   });
 
-  test('SafeBrowsingRowClickExpandsRowAndShowsSafeBrowsingSettings', async function() {
+  test('SafeBrowsingRowClickExpandsRowAndShowsRadioGroup', async function() {
     assertFalse(isChildVisible(page, '#safeBrowsingRadioGroup'));
 
     const expandButton =
@@ -84,19 +91,151 @@ suite('Main', function() {
     await flushTasks();
     assertTrue(isChildVisible(page, '#safeBrowsingRadioGroup'));
 
+    // Verify that the correct User Action has been recorded.
+    assertEquals(1, testMetricsBrowserProxy.getCallCount('recordAction'));
+    assertEquals(
+        'SafeBrowsing.Settings.SafeBrowsingRowClicked',
+        await testMetricsBrowserProxy.whenCalled('recordAction'));
+    testMetricsBrowserProxy.resetResolver('recordAction');
+
     // Click on the expand button, collapses content and we can't see the radio
     // group.
     expandButton.click();
     await flushTasks();
     assertFalse(isChildVisible(page, '#safeBrowsingRadioGroup', true));
+    assertEquals(0, testMetricsBrowserProxy.getCallCount('recordAction'));
+  });
+
+  test('SafeBrowsingToggledOff', async function() {
+    // Verify no User Action has been recorded yet.
+    assertEquals(0, testMetricsBrowserProxy.getCallCount('recordAction'));
+
+    // Expand the Safe Browsing row.
+    page.$.safeBrowsingRow.$.expandButton.click();
+    await flushTasks();
+
+    // Verify that the correct User Action has been recorded.
+    assertEquals(1, testMetricsBrowserProxy.getCallCount('recordAction'));
+    assertEquals(
+        'SafeBrowsing.Settings.SafeBrowsingRowClicked',
+        await testMetricsBrowserProxy.whenCalled('recordAction'));
+    testMetricsBrowserProxy.resetResolver('recordAction');
+
+    // Toggle Safe Browsing off.
+    const toggleButton =
+        page.$.safeBrowsingRow.shadowRoot!
+            .querySelector<SettingsToggleButtonElement>('#toggleButton');
+    assertTrue(
+        !!toggleButton, 'Safe Browsing toggle button element should exist.');
+    assertTrue(
+        isVisible(toggleButton),
+        'The toggle button should be visible after expanding the row.');
+    toggleButton.click();
+    await flushTasks();
+
+    // Verify that the correct User Action has been recorded.
+    assertEquals(1, testMetricsBrowserProxy.getCallCount('recordAction'));
+    assertEquals(
+        'SafeBrowsing.Settings.DisableSafeBrowsingClicked',
+        await testMetricsBrowserProxy.whenCalled('recordAction'));
+  });
+
+  test('StandardRadioButtonSelected', async function() {
+    // Set initial page state.
+    page.setPrefValue(
+        'generated.security_settings_bundle',
+        SecuritySettingsBundleSetting.ENHANCED);
+    page.setPrefValue('generated.safe_browsing', SafeBrowsingSetting.ENHANCED);
+    await flushTasks();
+
+    // Verify no User Action has been recorded yet.
+    assertEquals(0, testMetricsBrowserProxy.getCallCount('recordAction'));
+
+    // Expand the Safe Browsing row.
+    page.$.safeBrowsingRow.$.expandButton.click();
+    await flushTasks();
+
+    // Verify that the correct User Action has been recorded.
+    assertEquals(1, testMetricsBrowserProxy.getCallCount('recordAction'));
+    assertEquals(
+        'SafeBrowsing.Settings.SafeBrowsingRowClicked',
+        await testMetricsBrowserProxy.whenCalled('recordAction'));
+    testMetricsBrowserProxy.resetResolver('recordAction');
+
+    // Click the Standard radio button.
+    const radioGroup =
+        page.shadowRoot!.querySelector<HTMLElement>('#safeBrowsingRadioGroup');
+    assertTrue(!!radioGroup, 'Radio group element must be in the DOM.');
+    assertTrue(
+        isVisible(radioGroup),
+        'The radio group should be visible after expanding the row.');
+
+    const standardSafeBrowsingRadioButton =
+        radioGroup.querySelector<ControlledRadioButtonElement>(
+            'controlled-radio-button');
+    assertTrue(
+        !!standardSafeBrowsingRadioButton,
+        'Standard Safe Browsing radio button element should exist.');
+    assertTrue(
+        isVisible(standardSafeBrowsingRadioButton),
+        'The radio group should be visible after expanding the row.');
+
+    standardSafeBrowsingRadioButton.click();
+    await eventToPromise('change', radioGroup);
+    await flushTasks();
+
+    // Verify that the correct User Action has been recorded.
+    assertEquals(1, testMetricsBrowserProxy.getCallCount('recordAction'));
+    assertEquals(
+        'SafeBrowsing.Settings.StandardProtectionClicked',
+        await testMetricsBrowserProxy.whenCalled('recordAction'));
+  });
+
+  test('EnhancedRadioButtonSelected', async function() {
+    // Verify no User Action has been recorded yet.
+    assertEquals(0, testMetricsBrowserProxy.getCallCount('recordAction'));
+
+    // Expand the Safe Browsing row.
+    page.$.safeBrowsingRow.$.expandButton.click();
+    await flushTasks();
+
+    // Verify that the correct User Action has been recorded.
+    assertEquals(1, testMetricsBrowserProxy.getCallCount('recordAction'));
+    assertEquals(
+        'SafeBrowsing.Settings.SafeBrowsingRowClicked',
+        await testMetricsBrowserProxy.whenCalled('recordAction'));
+    testMetricsBrowserProxy.resetResolver('recordAction');
+
+    // Click the Enhanced radio button.
+    const radioGroup =
+        page.shadowRoot!.querySelector<HTMLElement>('#safeBrowsingRadioGroup');
+    assertTrue(!!radioGroup, 'Radio group element must be in the DOM.');
+    assertTrue(
+        isVisible(radioGroup),
+        'The radio group should be visible after expanding the row.');
+
+    const enhancedSafeBrowsingRadioButton =
+        radioGroup.querySelector<ControlledRadioButtonElement>(
+            '#enhancedProtectionButton');
+    assertTrue(
+        !!enhancedSafeBrowsingRadioButton,
+        'Enhanced Safe Browsing radio button element should exist.');
+    assertTrue(
+        isVisible(enhancedSafeBrowsingRadioButton),
+        'The radio group should be visible after expanding the row.');
+
+    enhancedSafeBrowsingRadioButton.click();
+    await eventToPromise('change', radioGroup);
+    await flushTasks();
+
+    // Verify that the correct User Action has been recorded.
+    assertEquals(1, testMetricsBrowserProxy.getCallCount('recordAction'));
+    assertEquals(
+        'SafeBrowsing.Settings.EnhancedProtectionClicked',
+        await testMetricsBrowserProxy.whenCalled('recordAction'));
   });
 
   test('ResetStandardBundleToDefaultsButtonVisibility', async function() {
-    page.setPrefValue(
-        'generated.security_settings_bundle',
-        SecuritySettingsBundleSetting.STANDARD);
-    page.setPrefValue('generated.safe_browsing', SafeBrowsingSetting.STANDARD);
-    await flushTasks();
     assertFalse(isChildVisible(page, '#resetStandardBundleToDefaultsButton'));
 
     page.setPrefValue('generated.safe_browsing', SafeBrowsingSetting.ENHANCED);
@@ -118,9 +257,6 @@ suite('Main', function() {
   });
 
   test('ResetStandardToDefaultsClick', async function() {
-    page.setPrefValue(
-        'generated.security_settings_bundle',
-        SecuritySettingsBundleSetting.STANDARD);
     page.setPrefValue('generated.safe_browsing', SafeBrowsingSetting.ENHANCED);
     await flushTasks();
     assertTrue(!!page.$.resetStandardBundleToDefaultsButton);
@@ -138,7 +274,6 @@ suite('Main', function() {
     page.setPrefValue(
         'generated.security_settings_bundle',
         SecuritySettingsBundleSetting.ENHANCED);
-    page.setPrefValue('generated.safe_browsing', SafeBrowsingSetting.STANDARD);
     await flushTasks();
     assertTrue(!!page.$.resetEnhancedBundleToDefaultsButton);
     assertTrue(isVisible(page.$.resetEnhancedBundleToDefaultsButton));
@@ -196,6 +331,40 @@ suite('Main', function() {
         'HTTPS First Mode should default to ENABLED_BALANCED when enabled');
   });
 
+  test('SafeBrowsingWarningIconUpdatesCorrectly', async function() {
+    const row = page.$.safeBrowsingRow;
+
+    page.setPrefValue('generated.safe_browsing', SafeBrowsingSetting.ENHANCED);
+    await flushTasks();
+    assertFalse(
+        row.iconVisible,
+        'Icon should not be shown when enhanced safe browsing is enabled');
+
+    page.setPrefValue('generated.safe_browsing', SafeBrowsingSetting.DISABLED);
+    await flushTasks();
+    assertTrue(
+        row.iconVisible, 'Icon should be shown when safe browsing is disabled');
+    assertEquals('settings20:warning_outline', row.icon);
+
+    page.setPrefValue('generated.safe_browsing', SafeBrowsingSetting.STANDARD);
+    await flushTasks();
+    assertFalse(
+        row.iconVisible,
+        'Icon should not be shown when standard safe browsing is enabled');
+
+    page.set('prefs.generated.safe_browsing', {
+      ...page.get('prefs.generated.safe_browsing'),
+      type: chrome.settingsPrivate.PrefType.NUMBER,
+      value: SafeBrowsingSetting.DISABLED,
+      controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
+      enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+    });
+    await flushTasks();
+    assertFalse(
+        row.iconVisible,
+        'Icon should not be shown when safe browsing is disabled by policy');
+  });
+
   test('PasswordsLeakDetectionClickTogglesSetting', async function() {
     page.setPrefValue('generated.password_leak_detection', true);
 
@@ -211,11 +380,6 @@ suite('Main', function() {
   test('noValueChangePasswordLeakSwitchBundle', async () => {
     // Ensure password leak detection is initially disabled.
     page.setPrefValue('generated.password_leak_detection', false);
-
-    // Ensure bundle is initially set to Standard.
-    page.setPrefValue(
-        'generated.security_settings_bundle',
-        SecuritySettingsBundleSetting.STANDARD);
 
     // Click on Enhanced bundle.
     page.$.securitySettingsBundleEnhanced.click();
@@ -260,6 +424,44 @@ suite('Main', function() {
   test('ManageSecurityKeysSubpageVisible', function() {
     assertTrue(isChildVisible(page, '#securityKeysSubpageTrigger'));
   });
+
+  test('AdvancedProtectionProgramRowClick', async function() {
+    page.shadowRoot!
+        .querySelector<HTMLElement>(
+            '#advancedProtectionProgramLinkRow')!.click();
+
+    const url = await openWindowProxy.whenCalled('openUrl');
+    assertEquals(url, loadTimeData.getString('advancedProtectionURL'));
+  });
+
+  test('AdvancedProtectionProgramTextLinkClick', async function() {
+    page.shadowRoot!
+        .querySelector<HTMLElement>(
+            '#advancedProtectionProgramLinkRow')!.querySelector('a')!.click();
+
+    const url = await openWindowProxy.whenCalled('openUrl');
+    assertEquals(url, loadTimeData.getString('advancedProtectionURL'));
+  });
+
+  test('SecureDnsV2HiddenWhenFlagDisabled', function() {
+    // Secure DNS V2 is hidden.
+    assertFalse(
+        loadTimeData.getBoolean('enableBundledSecuritySettingsSecureDnsV2'));
+    assertFalse(isChildVisible(page, '#secureDnsV2Row'));
+  });
+
+  test('SecureDnsV2VisibleWhenFlagEnabled', async function() {
+    loadTimeData.overrideValues({
+      enableBundledSecuritySettingsSecureDnsV2: true,
+    });
+    resetRouterForTesting();
+
+    await setUpPage();
+    // Secure DNS V2 is visible.
+    assertTrue(
+        loadTimeData.getBoolean('enableBundledSecuritySettingsSecureDnsV2'));
+    assertTrue(isChildVisible(page, '#secureDnsV2Row'));
+  });
 });
 
 suite('SecurityKeysSubpageDisabled', function() {
@@ -296,14 +498,19 @@ suite('SecurityPageV2HappinessTrackingSurveys', function() {
   let page: SettingsSecurityPageV2Element;
 
   suiteSetup(function() {
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
+    loadTimeData.overrideValues({
+      enableBundledSecuritySettingsSecureDnsV2: true,
+    });
   });
 
-  setup(function() {
+  setup(async function() {
     testHatsBrowserProxy = new TestHatsBrowserProxy();
     HatsBrowserProxyImpl.setInstance(testHatsBrowserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    settingsPrefs = document.createElement('settings-prefs');
+    document.body.appendChild(settingsPrefs);
+    await CrSettingsPrefs.initialized;
+
     page = document.createElement('settings-security-page-v2');
     page.prefs = settingsPrefs.prefs;
     document.body.appendChild(page);
@@ -312,6 +519,9 @@ suite('SecurityPageV2HappinessTrackingSurveys', function() {
         'generated.security_settings_bundle',
         SecuritySettingsBundleSetting.STANDARD);
     page.setPrefValue('generated.safe_browsing', SafeBrowsingSetting.ENHANCED);
+    page.setPrefValue(
+        'generated.https_first_mode_enabled',
+        HttpsFirstModeSetting.ENABLED_BALANCED);
 
     // Navigate to the security route to trigger the setup logic in the
     // component, which sets up the event listeners and initial state.
@@ -323,6 +533,17 @@ suite('SecurityPageV2HappinessTrackingSurveys', function() {
     page.remove();
     Router.getInstance().navigateTo(routes.BASIC);
   });
+
+  // Checks that the `interactions` is equal to `expectedInteractions`, ignoring
+  // order.
+  function assertInteractionsEqual(
+      expectedInteractions: SecurityPageV2Interaction[],
+      interactions: SecurityPageV2Interaction[]) {
+    interactions.sort((a, b) => a - b);
+    expectedInteractions.sort((a, b) => a - b);
+
+    assertDeepEquals(expectedInteractions, interactions);
+  }
 
   test('SecurityPageV2_CallsHatsProxy', async function() {
     const t1 = 10000;
@@ -380,17 +601,15 @@ suite('SecurityPageV2HappinessTrackingSurveys', function() {
     expandButton.click();
     await flushTasks();
 
-    const radioGroup =
-        page.shadowRoot!.querySelector<HTMLElement>('#safeBrowsingRadioGroup');
-    assertTrue(!!radioGroup, 'Radio group element must be in the DOM.');
     assertTrue(
-        isVisible(radioGroup),
+        isVisible(page.$.safeBrowsingRadioGroup),
         'The radio group should be visible after expanding the row.');
 
     // Proceed to click the Standard button.
     const standardSafeBrowsingRadioButton =
-        radioGroup.querySelector<ControlledRadioButtonElement>(
-            'controlled-radio-button');
+        page.$.safeBrowsingRadioGroup
+            .querySelector<ControlledRadioButtonElement>(
+                'controlled-radio-button');
     assertTrue(
         !!standardSafeBrowsingRadioButton,
         'Standard Safe Browsing radio button element should exist.');
@@ -406,13 +625,12 @@ suite('SecurityPageV2HappinessTrackingSurveys', function() {
     // Verify the interactions. Order doesn't matter, so check for
     // presence and length.
     const interactions = args[0] as SecurityPageV2Interaction[];
-    assertEquals(3, interactions.length);
-    assertTrue(interactions.includes(
-        SecurityPageV2Interaction.ENHANCED_BUNDLE_RADIO_BUTTON_CLICK));
-    assertTrue(interactions.includes(
-        SecurityPageV2Interaction.SAFE_BROWSING_ROW_EXPANDED));
-    assertTrue(interactions.includes(
-        SecurityPageV2Interaction.STANDARD_SAFE_BROWSING_RADIO_BUTTON_CLICK));
+    const expectedInteractions = [
+      SecurityPageV2Interaction.ENHANCED_BUNDLE_RADIO_BUTTON_CLICK,
+      SecurityPageV2Interaction.SAFE_BROWSING_ROW_EXPANDED,
+      SecurityPageV2Interaction.STANDARD_SAFE_BROWSING_RADIO_BUTTON_CLICK,
+    ];
+    assertInteractionsEqual(expectedInteractions, interactions);
 
     // Verify the safe browsing state on open.
     assertEquals(SafeBrowsingSetting.ENHANCED, args[1]);
@@ -423,5 +641,147 @@ suite('SecurityPageV2HappinessTrackingSurveys', function() {
 
     // Verify the security bundle state on open.
     assertEquals(SecuritySettingsBundleSetting.STANDARD, args[3]);
+  });
+
+  test('SafeBrowsingInteractions', async function() {
+    // Expand the row first.
+    const expandButton =
+        page.$.safeBrowsingRow.shadowRoot!.querySelector<HTMLElement>(
+            '#expandButton');
+    assertTrue(!!expandButton);
+    expandButton.click();
+    await flushTasks();
+
+    // Click radio buttons.
+    const radioButtons = page.$.safeBrowsingRadioGroup
+                             .querySelectorAll<ControlledRadioButtonElement>(
+                                 'controlled-radio-button');
+    // Index 0 is Standard, Index 1 is Enhanced.
+    radioButtons[0]!.click();
+    await flushTasks();
+    radioButtons[1]!.click();
+    await flushTasks();
+
+    // Toggle Safe Browsing.
+    const toggleButton = page.$.safeBrowsingRow.shadowRoot!.querySelector(
+        'settings-toggle-button');
+    assertTrue(!!toggleButton);
+    toggleButton.click();
+    await flushTasks();
+
+    // Fire the beforeunload event to simulate closing the page.
+    window.dispatchEvent(new Event('beforeunload'));
+
+    const args =
+        await testHatsBrowserProxy.whenCalled('securityPageHatsRequest');
+
+    const interactions = args[0] as SecurityPageV2Interaction[];
+    const expectedInteractions = [
+      SecurityPageV2Interaction.SAFE_BROWSING_ROW_EXPANDED,
+      SecurityPageV2Interaction.STANDARD_SAFE_BROWSING_RADIO_BUTTON_CLICK,
+      SecurityPageV2Interaction.ENHANCED_SAFE_BROWSING_RADIO_BUTTON_CLICK,
+      SecurityPageV2Interaction.SAFE_BROWSING_TOGGLE_CLICK,
+    ];
+
+    assertInteractionsEqual(expectedInteractions, interactions);
+  });
+
+  test('SecureDnsV2Interactions', async function() {
+    assertTrue(
+        loadTimeData.getBoolean('enableBundledSecuritySettingsSecureDnsV2'));
+    const secureDnsV2Row =
+        page.shadowRoot!.querySelector<SettingsSecureDnsV2Element>(
+            '#secureDnsV2Row');
+    assertTrue(!!secureDnsV2Row);
+
+    // Expand the row first.
+    const expandButton = secureDnsV2Row.$.featureRow.$.expandButton;
+    expandButton.click();
+    await flushTasks();
+
+    // Click each of the radio buttons.
+    secureDnsV2Row.$.customRadioButton.click();
+    await flushTasks();
+    secureDnsV2Row.$.fallbackRadioButton.click();
+    await flushTasks();
+    secureDnsV2Row.$.automaticRadioButton.click();
+    await flushTasks();
+
+    // Toggle Secure DNS.
+    const toggleButton = secureDnsV2Row.$.featureRow.shadowRoot!.querySelector(
+        'settings-toggle-button');
+    assertTrue(!!toggleButton);
+    toggleButton.click();
+    await flushTasks();
+
+    // Fire the beforeunload event to simulate closing the page.
+    window.dispatchEvent(new Event('beforeunload'));
+
+    const args =
+        await testHatsBrowserProxy.whenCalled('securityPageHatsRequest');
+
+    const interactions = args[0] as SecurityPageV2Interaction[];
+    const expectedInteractions = [
+      SecurityPageV2Interaction.SECURE_DNS_V2_ROW_EXPANDED,
+      SecurityPageV2Interaction.SECURE_DNS_V2_FALLBACK_RADIO_BUTTON_CLICK,
+      SecurityPageV2Interaction.SECURE_DNS_V2_CUSTOM_RADIO_BUTTON_CLICK,
+      SecurityPageV2Interaction.SECURE_DNS_V2_AUTOMATIC_RADIO_BUTTON_CLICK,
+      SecurityPageV2Interaction.SECURE_DNS_V2_TOGGLE_CLICK,
+    ];
+
+    assertInteractionsEqual(expectedInteractions, interactions);
+  });
+
+  test('HttpsFirstModeInteractions', async function() {
+    // Start with HTTPS-First Mode DISABLED.
+    page.setPrefValue(
+        'generated.https_first_mode_enabled', HttpsFirstModeSetting.DISABLED);
+    await flushTasks();
+
+    // Set the HTTPS-First Mode toggle to ON (which also enables the radio
+    // buttons).
+    page.$.httpsFirstModeToggle.click();
+    await flushTasks();
+
+    // Click each of the HTTPS-First Mode radio buttons. Start with Strict since
+    // switching the toggle ON selects Balanced by default.
+    page.$.httpsFirstModeEnabledStrict.click();
+    await flushTasks();
+    page.$.httpsFirstModeEnabledBalanced.click();
+    await flushTasks();
+
+    // Fire the beforeunload event to simulate closing the page.
+    window.dispatchEvent(new Event('beforeunload'));
+
+    const args =
+        await testHatsBrowserProxy.whenCalled('securityPageHatsRequest');
+
+    const interactions = args[0] as SecurityPageV2Interaction[];
+    const expectedInteractions = [
+      SecurityPageV2Interaction.HTTPS_FIRST_MODE_TOGGLE_CLICK,
+      SecurityPageV2Interaction.STRICT_HTTPS_FIRST_MODE_RADIO_BUTTON_CLICK,
+      SecurityPageV2Interaction.BALANCED_HTTPS_FIRST_MODE_RADIO_BUTTON_CLICK,
+    ];
+
+    assertInteractionsEqual(expectedInteractions, interactions);
+  });
+
+  test('PasswordLeakDetectionInteraction', async function() {
+    // Toggle Password Leak Detection.
+    page.$.passwordsLeakToggle.click();
+    await flushTasks();
+
+    // Fire the beforeunload event to simulate closing the page.
+    window.dispatchEvent(new Event('beforeunload'));
+
+    const args =
+        await testHatsBrowserProxy.whenCalled('securityPageHatsRequest');
+
+    const interactions = args[0] as SecurityPageV2Interaction[];
+    const expectedInteractions = [
+      SecurityPageV2Interaction.PASSWORD_LEAK_DETECTION_TOGGLE_CLICK,
+    ];
+
+    assertInteractionsEqual(expectedInteractions, interactions);
   });
 });

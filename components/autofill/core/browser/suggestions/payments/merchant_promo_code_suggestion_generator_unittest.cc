@@ -95,14 +95,14 @@ TEST_F(MerchantPromoCodeSuggestionGeneratorTest,
        GeneratesPromoCodeSuggestions) {
   payments_data_manager().SetAutofillWalletImportEnabled(true);
   payments_data_manager().SetAutofillPaymentMethodsEnabled(true);
-  AutofillOfferData testPromoCodeOfferData =
+  AutofillOfferData test_promo_code_offer_data =
       test::GetPromoCodeOfferData(GURL("https://www.example.com"));
-  testPromoCodeOfferData.SetOfferDetailsUrl(
+  test_promo_code_offer_data.SetOfferDetailsUrl(
       GURL("https://offer-details-url.com/"));
   test_api(payments_data_manager())
       .AddOfferData(
-          std::make_unique<AutofillOfferData>(testPromoCodeOfferData));
-  std::string promo_code = testPromoCodeOfferData.GetPromoCode();
+          std::make_unique<AutofillOfferData>(test_promo_code_offer_data));
+  std::string promo_code = test_promo_code_offer_data.GetPromoCode();
 
   Suggestion promo_code_suggestion = Suggestion(
       base::ASCIIToUTF16(promo_code), SuggestionType::kMerchantPromoCodeEntry);
@@ -123,13 +123,13 @@ TEST_F(MerchantPromoCodeSuggestionGeneratorTest,
   MerchantPromoCodeSuggestionGenerator generator;
   std::pair<SuggestionGenerator::SuggestionDataSource,
             std::vector<SuggestionGenerator::SuggestionData>>
-      savedCallbackArgument;
+      saved_callback_argument;
 
   EXPECT_CALL(suggestion_data_callback,
               Run(testing::Pair(
                   SuggestionGenerator::SuggestionDataSource::kMerchantPromoCode,
-                  testing::ElementsAre(testPromoCodeOfferData))))
-      .WillOnce(testing::SaveArg<0>(&savedCallbackArgument));
+                  testing::ElementsAre(test_promo_code_offer_data))))
+      .WillOnce(testing::SaveArg<0>(&saved_callback_argument));
   generator.FetchSuggestionData(form().ToFormData(), field(), &form(), &field(),
                                 client(), suggestion_data_callback.Get());
 
@@ -142,7 +142,7 @@ TEST_F(MerchantPromoCodeSuggestionGeneratorTest,
               Field(&Suggestion::type, SuggestionType::kSeparator),
               Field(&Suggestion::main_text, footer_suggestion.main_text)))));
   generator.GenerateSuggestions(form().ToFormData(), field(), &form(), &field(),
-                                client(), {savedCallbackArgument},
+                                client(), {saved_callback_argument},
                                 suggestions_generated_callback.Get());
 }
 

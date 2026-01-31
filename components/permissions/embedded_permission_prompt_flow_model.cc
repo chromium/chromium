@@ -4,12 +4,15 @@
 
 #include "components/permissions/embedded_permission_prompt_flow_model.h"
 
+#include <variant>
+
 #include "base/memory/raw_ptr.h"
 #include "components/content_settings/core/browser/permission_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permissions_client.h"
+#include "components/permissions/resolvers/permission_prompt_options.h"
 #include "content/public/browser/web_contents.h"
 #if BUILDFLAG(IS_ANDROID)
 #include "components/permissions/android/android_permission_util.h"
@@ -282,7 +285,8 @@ EmbeddedPermissionPromptFlowModel::GetPromptVariants() const {
 }
 
 void EmbeddedPermissionPromptFlowModel::SetDelegateAction(
-    DelegateAction action) {
+    DelegateAction action,
+    const PromptOptions& prompt_options) {
   if (action_.has_value()) {
     return;
   }
@@ -290,16 +294,16 @@ void EmbeddedPermissionPromptFlowModel::SetDelegateAction(
   action_ = action;
   switch (action) {
     case DelegateAction::kAllow:
-      delegate_->Accept();
+      delegate_->Accept(prompt_options);
       break;
     case DelegateAction::kAllowThisTime:
-      delegate_->AcceptThisTime();
+      delegate_->AcceptThisTime(prompt_options);
       break;
     case DelegateAction::kDeny:
-      delegate_->Deny();
+      delegate_->Deny(prompt_options);
       break;
     case DelegateAction::kDismiss:
-      delegate_->Dismiss();
+      delegate_->Dismiss(prompt_options);
       break;
   }
 }

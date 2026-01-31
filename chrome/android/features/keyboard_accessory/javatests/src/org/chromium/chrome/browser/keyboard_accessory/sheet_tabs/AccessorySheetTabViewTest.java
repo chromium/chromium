@@ -78,7 +78,7 @@ public class AccessorySheetTabViewTest {
                             new KeyboardAccessoryData.Tab[] {
                                 new KeyboardAccessoryData.Tab(
                                         "Passwords",
-                                        null,
+                                        0,
                                         null,
                                         layout,
                                         AccessoryTabType.ALL,

@@ -5,12 +5,12 @@
 #include "services/network/shared_dictionary/shared_dictionary_manager_on_disk.h"
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/token.h"
@@ -269,7 +269,7 @@ class SharedDictionaryManagerOnDisk::MismatchingEntryDeletionTask
       entry->Doom();
       ++invalid_disk_cache_entry_count_;
     } else if (disk_cache_key_tokens_.erase(*token) != 1) {
-      if (!base::Contains(writing_disk_cache_key_tokens_, *token)) {
+      if (!writing_disk_cache_key_tokens_.contains(*token)) {
         // 7) If the disk cache key token is not in the metadata, and is not in
         //    the set of tokens currently being written by the manager, deletes
         //    the entry.

@@ -53,7 +53,7 @@ void OnGotAppsInfo(const JavaRef<jobject>& java_callback,
 static void JNI_WebApkSyncService_OnWebApkUsed(
     JNIEnv* env,
     const JavaRef<jbyteArray>& java_webapk_specifics,
-    jboolean is_install) {
+    bool is_install) {
   if (!base::FeatureList::IsEnabled(syncer::kWebApkBackupAndRestoreBackend)) {
     return;
   }
@@ -74,7 +74,7 @@ static void JNI_WebApkSyncService_OnWebApkUsed(
     return;
   }
   WebApkSyncServiceFactory::GetForProfile(profile)->OnWebApkUsed(
-      std::move(specifics), static_cast<bool>(is_install));
+      std::move(specifics), is_install);
 }
 
 static void JNI_WebApkSyncService_OnWebApkUninstalled(
@@ -95,7 +95,7 @@ static void JNI_WebApkSyncService_OnWebApkUninstalled(
 
 static void JNI_WebApkSyncService_RemoveOldWebAPKsFromSync(
     JNIEnv* env,
-    jlong java_current_time_ms_since_unix_epoch) {
+    int64_t java_current_time_ms_since_unix_epoch) {
   if (!base::FeatureList::IsEnabled(syncer::kWebApkBackupAndRestoreBackend)) {
     return;
   }
@@ -106,7 +106,7 @@ static void JNI_WebApkSyncService_RemoveOldWebAPKsFromSync(
   }
 
   WebApkSyncServiceFactory::GetForProfile(profile)->RemoveOldWebAPKsFromSync(
-      static_cast<int64_t>(java_current_time_ms_since_unix_epoch));
+      java_current_time_ms_since_unix_epoch);
 }
 
 static void JNI_WebApkSyncService_FetchRestorableApps(

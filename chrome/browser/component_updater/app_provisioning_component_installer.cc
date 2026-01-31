@@ -50,7 +50,7 @@ namespace component_updater {
 
 // Called during startup and installation before ComponentReady().
 bool AppProvisioningComponentInstallerPolicy::VerifyInstallation(
-    const base::Value::Dict& manifest,
+    const base::DictValue& manifest,
     const base::FilePath& install_dir) const {
   // No need to actually validate the proto here, since we'll do the checking
   // in `PopulateFromDynamicUpdate()`.
@@ -69,7 +69,7 @@ bool AppProvisioningComponentInstallerPolicy::RequiresNetworkEncryption()
 
 update_client::CrxInstaller::Result
 AppProvisioningComponentInstallerPolicy::OnCustomInstall(
-    const base::Value::Dict& manifest,
+    const base::DictValue& manifest,
     const base::FilePath& install_dir) {
   return update_client::CrxInstaller::Result(0);  // Nothing custom here.
 }
@@ -79,7 +79,7 @@ void AppProvisioningComponentInstallerPolicy::OnCustomUninstall() {}
 void AppProvisioningComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
-    base::Value::Dict manifest) {
+    base::DictValue manifest) {
   VLOG(1) << "Component ready, version " << version.GetString() << " in "
           << install_dir.value();
 }

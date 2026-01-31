@@ -151,7 +151,7 @@ skgpu::graphite::ContextOptions GetDefaultGraphiteContextOptions(
        !features::kSkiaGraphiteEnableMSAAOnNewerIntel.Get())) {
     // For single-sampling, currently Graphite falls back to the CPU-based
     // RasterPathAtlas, which is still a little slow and buggy now.
-    options.fInternalMultisampleCount = 1;
+    options.fInternalMultisampleCount = skgpu::graphite::SampleCount::k1;
   }
 
   // State that Recordings will be played in-order. If Graphite can assume

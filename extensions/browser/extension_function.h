@@ -41,7 +41,7 @@
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom-forward.h"
 
 namespace base {
-class Value;
+class ListValue;
 }
 
 namespace content {
@@ -147,7 +147,7 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
 
   using ResponseCallback = base::OnceCallback<void(
       ResponseType type,
-      base::Value::List results,
+      base::ListValue results,
       const std::string& error,
       extensions::mojom::ExtraResponseDataPtr response_data)>;
 
@@ -299,11 +299,11 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   virtual void OnQuotaExceeded(std::string violation_error);
 
   // Specifies the raw arguments to the function, as a JSON value.
-  void SetArgs(base::Value::List args);
+  void SetArgs(base::ListValue args);
 
-  // Retrieves the results of the function as a base::Value::List for testing
+  // Retrieves the results of the function as a base::ListValue for testing
   // purposes.
-  const base::Value::List* GetResultListForTest() const;
+  const base::ListValue* GetResultListForTest() const;
 
   std::unique_ptr<extensions::ContextData> GetContextData() const;
 
@@ -455,7 +455,7 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   // modifications via GetMutableArgs()). Can only be called when the
   // "AvoidCloneArgsOnExtensionFunctionDispatch" feature is enabled (otherwise
   // the `ExtensionFunction` owner has preserved the original args).
-  const base::Value::List& GetOriginalArgs() const;
+  const base::ListValue& GetOriginalArgs() const;
 
   // Sets did_respond_ to true so that the function won't DCHECK if it never
   // sends a response. Typically, this shouldn't be used, even in testing. It's
@@ -485,7 +485,7 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   // Success, no arguments to pass to caller.
   ResponseValue NoArguments();
   // Success, a list of arguments `results` to pass to caller.
-  ResponseValue ArgumentList(base::Value::List results);
+  ResponseValue ArgumentList(base::ListValue results);
 
   // Success, a variadic list of arguments to pass to the caller.
   template <typename... Args>
@@ -493,7 +493,7 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
     static_assert(sizeof...(Args) > 0,
                   "Use NoArguments(), as there are no arguments in this call.");
 
-    base::Value::List params;
+    base::ListValue params;
     params.reserve(sizeof...(Args));
     (params.Append(std::forward<Args&&>(args)), ...);
     return ArgumentList(std::move(params));
@@ -516,7 +516,7 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   // you likely instead want to be returning a value indicating if the API call
   // was a "success" and/or an enum indicating what may have gone wrong.
   // Some legacy APIs do still rely on this though.
-  ResponseValue ErrorWithArgumentsDoNotUse(base::Value::List args,
+  ResponseValue ErrorWithArgumentsDoNotUse(base::ListValue args,
                                            const std::string& error);
   // Bad message. A ResponseValue equivalent to EXTENSION_FUNCTION_VALIDATE(),
   // so this will actually kill the renderer and not respond at all.
@@ -603,24 +603,24 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
 
   // Returns args. They may have been modified via GetMutableArgs() since they
   // were set with SetArgs().
-  const base::Value::List& args() const {
+  const base::ListValue& args() const {
     DCHECK(args_);
     return *args_;
   }
 
-  base::Value::List& GetMutableArgs();
+  base::ListValue& GetMutableArgs();
 
   // The extension that called this function.
   scoped_refptr<const extensions::Extension> extension_;
 
  private:
-  ResponseValue CreateArgumentListResponse(base::Value::List result);
-  ResponseValue CreateErrorWithArgumentsResponse(base::Value::List result,
+  ResponseValue CreateArgumentListResponse(base::ListValue result);
+  ResponseValue CreateErrorWithArgumentsResponse(base::ListValue result,
                                                  const std::string& error);
   ResponseValue CreateErrorResponseValue(std::string error);
   ResponseValue CreateBadMessageResponse();
 
-  void SetFunctionResults(base::Value::List results);
+  void SetFunctionResults(base::ListValue results);
   void SetFunctionError(std::string error);
 
   friend struct content::BrowserThread::DeleteOnThread<
@@ -638,7 +638,7 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
 
   // The arguments to the API. Populated by SetArgs(). May be modified via
   // GetMutableArgs().
-  std::optional<base::Value::List> args_;
+  std::optional<base::ListValue> args_;
 
   // Original arguments to the API. Populated from `args_` when GetMutableArgs()
   // is first invoked, otherwise nullopt. This exists because an extension
@@ -647,14 +647,14 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   // owner could also copy the args before passing them to the extension
   // function, but that would result in an unnecessary copy when the extension
   // function doesn't modify its args).
-  std::optional<base::Value::List> original_args_;
+  std::optional<base::ListValue> original_args_;
 
   base::ElapsedTimer timer_;
 
   // The results of the API. This should be populated through the Respond()/
   // RespondNow() methods. In legacy implementations, this is set directly, and
   // should be set before calling SendResponse().
-  std::optional<base::Value::List> results_;
+  std::optional<base::ListValue> results_;
 
   // Any detailed error from the API. This should be populated by the derived
   // class before Run() returns.

@@ -44,6 +44,10 @@ class TestFrameSinkManagerImpl : public mojom::FrameSinkManager {
                               const std::string& debug_label) override {}
   void CreateRootCompositorFrameSink(
       mojom::RootCompositorFrameSinkParamsPtr params) override {}
+#if BUILDFLAG(IS_MAC)
+  void CreateCompositorDisplayLink(
+      mojom::CompositorDisplayLinkParamsPtr params) override {}
+#endif
   void CreateFrameSinkBundle(
       const FrameSinkBundleId& bundle_id,
       mojo::PendingReceiver<mojom::FrameSinkBundle> receiver,
@@ -72,7 +76,8 @@ class TestFrameSinkManagerImpl : public mojom::FrameSinkManager {
   void EvictSurfaces(const std::vector<SurfaceId>& surface_ids) override {}
   void RequestCopyOfOutput(const SurfaceId& surface_id,
                            std::unique_ptr<CopyOutputRequest> request,
-                           bool capture_exact_surface_id) override {}
+                           bool capture_exact_surface_id,
+                           base::TimeDelta timeout) override {}
 #if BUILDFLAG(IS_ANDROID)
   void CacheBackBuffer(uint32_t cache_id,
                        const FrameSinkId& root_frame_sink_id) override {}

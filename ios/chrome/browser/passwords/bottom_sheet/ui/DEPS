@@ -1,0 +1,5 @@
+include_rules = [
+  # keep-sorted start
+  "+ios/chrome/browser/settings/ui_bundled/password/create_password_manager_title_view.h",
+  # keep-sorted end
+]

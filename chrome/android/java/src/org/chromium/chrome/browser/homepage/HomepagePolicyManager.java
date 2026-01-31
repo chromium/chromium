@@ -11,7 +11,6 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -278,19 +277,14 @@ public class HomepagePolicyManager implements PrefObserver {
 
         mIsHomepageLocationManaged = !mHomepageUrl.isEmpty();
 
-        if (ChromeFeatureList.sShowHomeButtonPolicyAndroid.isEnabled()) {
-            mHomeButtonPolicyState =
-                    mSharedPreferenceManager.readInt(
-                            ChromePreferenceKeys.SHOW_HOME_BUTTON_POLICY_STATE,
-                            BooleanPolicyState.UNMANAGED);
-        }
-
-        if (ChromeFeatureList.sHomepageIsNewTabPagePolicyAndroid.isEnabled()) {
-            mHomepageSelectionPolicyState =
-                    mSharedPreferenceManager.readInt(
-                            ChromePreferenceKeys.HOMEPAGE_SELECTION_POLICY_STATE,
-                            BooleanPolicyState.UNMANAGED);
-        }
+        mHomeButtonPolicyState =
+                mSharedPreferenceManager.readInt(
+                        ChromePreferenceKeys.SHOW_HOME_BUTTON_POLICY_STATE,
+                        BooleanPolicyState.UNMANAGED);
+        mHomepageSelectionPolicyState =
+                mSharedPreferenceManager.readInt(
+                        ChromePreferenceKeys.HOMEPAGE_SELECTION_POLICY_STATE,
+                        BooleanPolicyState.UNMANAGED);
 
         ChromeBrowserInitializer.getInstance()
                 .runNowOrAfterFullBrowserStarted(this::onFinishNativeInitialization);
@@ -355,74 +349,68 @@ public class HomepagePolicyManager implements PrefObserver {
         }
 
         @BooleanPolicyState int homeButtonPolicyState = BooleanPolicyState.UNMANAGED;
-        if (ChromeFeatureList.sShowHomeButtonPolicyAndroid.isEnabled()) {
-            boolean isManaged = prefService.isManagedPreference(Pref.SHOW_HOME_BUTTON);
-            if (isManaged) {
-                homeButtonPolicyState =
-                        prefService.getBoolean(Pref.SHOW_HOME_BUTTON)
-                                ? BooleanPolicyState.MANAGED_BY_POLICY_ON
-                                : BooleanPolicyState.MANAGED_BY_POLICY_OFF;
-            } else if (prefService.isFollowingRecommendation(Pref.SHOW_HOME_BUTTON)) {
-                homeButtonPolicyState = BooleanPolicyState.RECOMMENDED_IS_FOLLOWED;
-            } else if (prefService.hasRecommendation(Pref.SHOW_HOME_BUTTON)) {
-                homeButtonPolicyState = BooleanPolicyState.RECOMMENDED_IS_NOT_FOLLOWED;
-            }
+        boolean isManaged = prefService.isManagedPreference(Pref.SHOW_HOME_BUTTON);
+        if (isManaged) {
+            homeButtonPolicyState =
+                    prefService.getBoolean(Pref.SHOW_HOME_BUTTON)
+                            ? BooleanPolicyState.MANAGED_BY_POLICY_ON
+                            : BooleanPolicyState.MANAGED_BY_POLICY_OFF;
+        } else if (prefService.isFollowingRecommendation(Pref.SHOW_HOME_BUTTON)) {
+            homeButtonPolicyState = BooleanPolicyState.RECOMMENDED_IS_FOLLOWED;
+        } else if (prefService.hasRecommendation(Pref.SHOW_HOME_BUTTON)) {
+            homeButtonPolicyState = BooleanPolicyState.RECOMMENDED_IS_NOT_FOLLOWED;
         }
 
         @BooleanPolicyState int homepageSelectionPolicyState = BooleanPolicyState.UNMANAGED;
-        if (ChromeFeatureList.sHomepageIsNewTabPagePolicyAndroid.isEnabled()) {
-            boolean isHomepageNtpManaged =
-                    prefService.isManagedPreference(Pref.HOME_PAGE_IS_NEW_TAB_PAGE);
 
-            if (isHomepageNtpManaged) {
+        boolean isHomepageNtpManaged =
+                prefService.isManagedPreference(Pref.HOME_PAGE_IS_NEW_TAB_PAGE);
+
+        if (isHomepageNtpManaged) {
+            homepageSelectionPolicyState =
+                    prefService.getBoolean(Pref.HOME_PAGE_IS_NEW_TAB_PAGE)
+                            ? BooleanPolicyState.MANAGED_BY_POLICY_ON
+                            : BooleanPolicyState.MANAGED_BY_POLICY_OFF;
+        } else if (isHomepageLocationManaged) {
+            // Admin provided NTP is indistinguishable from HomepageIsNTP managed and true.
+            boolean isNtp = UrlUtilities.isNtpUrl(homepage);
+            homepageSelectionPolicyState =
+                    isNtp
+                            ? BooleanPolicyState.MANAGED_BY_POLICY_ON
+                            : BooleanPolicyState.MANAGED_BY_POLICY_OFF;
+        } else {
+            boolean hasNtpRecommendation =
+                    prefService.hasRecommendation(Pref.HOME_PAGE_IS_NEW_TAB_PAGE);
+            boolean hasLocationRecommendation = prefService.hasRecommendation(Pref.HOME_PAGE);
+
+            if (hasNtpRecommendation || hasLocationRecommendation) {
+                boolean isEitherRecommendationOverridden =
+                        (hasNtpRecommendation
+                                        && !prefService.isFollowingRecommendation(
+                                                Pref.HOME_PAGE_IS_NEW_TAB_PAGE))
+                                || (hasLocationRecommendation
+                                        && !prefService.isFollowingRecommendation(Pref.HOME_PAGE));
                 homepageSelectionPolicyState =
-                        prefService.getBoolean(Pref.HOME_PAGE_IS_NEW_TAB_PAGE)
-                                ? BooleanPolicyState.MANAGED_BY_POLICY_ON
-                                : BooleanPolicyState.MANAGED_BY_POLICY_OFF;
-            } else if (isHomepageLocationManaged) {
-                // Admin provided NTP is indistinguishable from HomepageIsNTP managed and true.
-                boolean isNtp = UrlUtilities.isNtpUrl(homepage);
-                homepageSelectionPolicyState =
-                        isNtp
-                                ? BooleanPolicyState.MANAGED_BY_POLICY_ON
-                                : BooleanPolicyState.MANAGED_BY_POLICY_OFF;
-            } else {
-                boolean hasNtpRecommendation =
-                        prefService.hasRecommendation(Pref.HOME_PAGE_IS_NEW_TAB_PAGE);
-                boolean hasLocationRecommendation = prefService.hasRecommendation(Pref.HOME_PAGE);
+                        isEitherRecommendationOverridden
+                                ? BooleanPolicyState.RECOMMENDED_IS_NOT_FOLLOWED
+                                : BooleanPolicyState.RECOMMENDED_IS_FOLLOWED;
 
-                if (hasNtpRecommendation || hasLocationRecommendation) {
-                    boolean isEitherRecommendationOverridden =
-                            (hasNtpRecommendation
-                                            && !prefService.isFollowingRecommendation(
-                                                    Pref.HOME_PAGE_IS_NEW_TAB_PAGE))
-                                    || (hasLocationRecommendation
-                                            && !prefService.isFollowingRecommendation(
-                                                    Pref.HOME_PAGE));
-                    homepageSelectionPolicyState =
-                            isEitherRecommendationOverridden
-                                    ? BooleanPolicyState.RECOMMENDED_IS_NOT_FOLLOWED
-                                    : BooleanPolicyState.RECOMMENDED_IS_FOLLOWED;
-
-                    // If admin changes recommendation that user has not overridden, update prefs.
-                    boolean usesLocationRecommendation =
-                            prefService.isRecommendedPreference(Pref.HOME_PAGE);
-                    boolean usesNtpRecommendation =
-                            prefService.isRecommendedPreference(Pref.HOME_PAGE_IS_NEW_TAB_PAGE);
-                    if (usesNtpRecommendation) {
-                        boolean homepageIsNtp =
-                                prefService.getBoolean(Pref.HOME_PAGE_IS_NEW_TAB_PAGE);
-                        mSharedPreferenceManager.writeBoolean(
-                                ChromePreferenceKeys.HOMEPAGE_USE_CHROME_NTP, homepageIsNtp);
-                    }
-                    if (usesLocationRecommendation) {
-                        GURL homepageGURL = new GURL(prefService.getString(Pref.HOME_PAGE));
-                        mSharedPreferenceManager.writeBoolean(
-                                ChromePreferenceKeys.HOMEPAGE_USE_CHROME_NTP, false);
-                        mSharedPreferenceManager.writeString(
-                                ChromePreferenceKeys.HOMEPAGE_CUSTOM_GURL,
-                                homepageGURL.serialize());
-                    }
+                // If admin changes recommendation that user has not overridden, update prefs.
+                boolean usesLocationRecommendation =
+                        prefService.isRecommendedPreference(Pref.HOME_PAGE);
+                boolean usesNtpRecommendation =
+                        prefService.isRecommendedPreference(Pref.HOME_PAGE_IS_NEW_TAB_PAGE);
+                if (usesNtpRecommendation) {
+                    boolean homepageIsNtp = prefService.getBoolean(Pref.HOME_PAGE_IS_NEW_TAB_PAGE);
+                    mSharedPreferenceManager.writeBoolean(
+                            ChromePreferenceKeys.HOMEPAGE_USE_CHROME_NTP, homepageIsNtp);
+                }
+                if (usesLocationRecommendation) {
+                    GURL homepageGURL = new GURL(prefService.getString(Pref.HOME_PAGE));
+                    mSharedPreferenceManager.writeBoolean(
+                            ChromePreferenceKeys.HOMEPAGE_USE_CHROME_NTP, false);
+                    mSharedPreferenceManager.writeString(
+                            ChromePreferenceKeys.HOMEPAGE_CUSTOM_GURL, homepageGURL.serialize());
                 }
             }
         }
@@ -444,26 +432,17 @@ public class HomepagePolicyManager implements PrefObserver {
         // Update shared preference
         mSharedPreferenceManager.writeString(
                 ChromePreferenceKeys.HOMEPAGE_LOCATION_POLICY_GURL, mHomepageUrl.serialize());
-        if (ChromeFeatureList.sShowHomeButtonPolicyAndroid.isEnabled()) {
-            mSharedPreferenceManager.writeInt(
-                    ChromePreferenceKeys.SHOW_HOME_BUTTON_POLICY_STATE, mHomeButtonPolicyState);
-            // If admin changes recommendation that user has not overridden.
-            if (prefService.isRecommendedPreference(Pref.SHOW_HOME_BUTTON)) {
-                boolean enabled = prefService.getBoolean(Pref.SHOW_HOME_BUTTON);
-                mSharedPreferenceManager.writeBoolean(
-                        ChromePreferenceKeys.HOMEPAGE_ENABLED, enabled);
-            }
-        } else {
-            mSharedPreferenceManager.removeKey(ChromePreferenceKeys.SHOW_HOME_BUTTON_POLICY_STATE);
+        mSharedPreferenceManager.writeInt(
+                ChromePreferenceKeys.SHOW_HOME_BUTTON_POLICY_STATE, mHomeButtonPolicyState);
+        // If admin changes recommendation that user has not overridden.
+        if (prefService.isRecommendedPreference(Pref.SHOW_HOME_BUTTON)) {
+            boolean enabled = prefService.getBoolean(Pref.SHOW_HOME_BUTTON);
+            mSharedPreferenceManager.writeBoolean(ChromePreferenceKeys.HOMEPAGE_ENABLED, enabled);
         }
-        if (ChromeFeatureList.sHomepageIsNewTabPagePolicyAndroid.isEnabled()) {
-            mSharedPreferenceManager.writeInt(
-                    ChromePreferenceKeys.HOMEPAGE_SELECTION_POLICY_STATE,
-                    mHomepageSelectionPolicyState);
-        } else {
-            mSharedPreferenceManager.removeKey(
-                    ChromePreferenceKeys.HOMEPAGE_SELECTION_POLICY_STATE);
-        }
+
+        mSharedPreferenceManager.writeInt(
+                ChromePreferenceKeys.HOMEPAGE_SELECTION_POLICY_STATE,
+                mHomepageSelectionPolicyState);
 
         // Update the listeners about the status
         for (HomepagePolicyStateListener listener : mListeners) {

@@ -51,7 +51,7 @@ void QuickUnlockHandler::OnJavascriptDisallowed() {
 }
 
 void QuickUnlockHandler::HandleRequestPinLoginState(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   quick_unlock::PinBackend::GetInstance()->HasLoginSupport(
       base::BindOnce(&QuickUnlockHandler::OnPinLoginAvailable,
@@ -59,7 +59,7 @@ void QuickUnlockHandler::HandleRequestPinLoginState(
 }
 
 void QuickUnlockHandler::HandleQuickUnlockDisabledByPolicy(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   CHECK_EQ(0U, args.size());
 

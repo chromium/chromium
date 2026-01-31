@@ -336,10 +336,10 @@ class ProxyResolverFactoryForProxyChains : public ProxyResolverFactory {
 };
 
 // Returns NetLog parameters describing a proxy configuration change.
-base::Value::Dict NetLogProxyConfigChangedParams(
+base::DictValue NetLogProxyConfigChangedParams(
     const std::optional<ProxyConfigWithAnnotation>* old_config,
     const ProxyConfigWithAnnotation* new_config) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   // The "old_config" is optional -- the first notification will not have
   // any "previous" configuration.
   if (old_config->has_value())
@@ -348,10 +348,9 @@ base::Value::Dict NetLogProxyConfigChangedParams(
   return dict;
 }
 
-base::Value::Dict NetLogBadProxyListParams(
-    const ProxyRetryInfoMap* retry_info) {
-  base::Value::Dict dict;
-  base::Value::List list;
+base::DictValue NetLogBadProxyListParams(const ProxyRetryInfoMap* retry_info) {
+  base::DictValue dict;
+  base::ListValue list;
 
   for (const auto& retry_info_pair : *retry_info)
     list.Append(retry_info_pair.first.ToDebugString());
@@ -391,9 +390,9 @@ GURL SanitizeUrl(const GURL& url) {
   return url.ReplaceComponents(replacements);
 }
 
-base::Value::Dict CreateDnsConditionNetLogParam(
+base::DictValue CreateDnsConditionNetLogParam(
     const ProxyConfig::ProxyOverrideRule::DnsProbeCondition& dns_condition) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("dns_condition", dns_condition.ToDict());
   return dict;
 }
@@ -1281,7 +1280,7 @@ int ConfiguredProxyResolutionService::DidFinishResolvingProxy(
 
     net_log.AddEvent(
         NetLogEventType::PROXY_RESOLUTION_SERVICE_RESOLVED_PROXY_LIST, [&] {
-          base::Value::Dict dict;
+          base::DictValue dict;
           dict.Set("proxy_info", result->ToDebugString());
           return dict;
         });
@@ -1536,12 +1535,12 @@ bool ConfiguredProxyResolutionService::IsReady() const {
   return current_state_ == STATE_READY;
 }
 
-base::Value::Dict ConfiguredProxyResolutionService::GetProxyNetLogValues() {
-  base::Value::Dict net_info_dict;
+base::DictValue ConfiguredProxyResolutionService::GetProxyNetLogValues() {
+  base::DictValue net_info_dict;
 
   // Log Proxy Settings.
   {
-    base::Value::Dict dict;
+    base::DictValue dict;
     if (fetched_config_)
       dict.Set("original", fetched_config_->value().ToValue());
     if (config_)
@@ -1698,14 +1697,25 @@ ConfiguredProxyResolutionService::RequestHostResolution(
 
   auto sub_net_log = NetLogWithSource::Make(
       net_log.net_log(), NetLogSourceType::PROXY_OVERRIDE_HOST_RESOLUTION);
-  auto request = host_resolver_for_override_rules_->CreateRequest(
-      dns_condition.host, network_anonymization_key, sub_net_log, parameters);
+
+  std::unique_ptr<HostResolver::ResolveHostRequest> request;
+  if (GURL::SchemeIsCryptographic(dns_condition.host.scheme())) {
+    request = host_resolver_for_override_rules_->CreateRequest(
+        dns_condition.host, network_anonymization_key, sub_net_log, parameters);
+  } else {
+    // If HTTPS DNS is not specified by the rule, remove the scheme as it may
+    // fail if HTTPS DNS turns out to be supported for that domain
+    // (crbug.com/469064221).
+    request = host_resolver_for_override_rules_->CreateRequest(
+        HostPortPair::FromSchemeHostPort(dns_condition.host),
+        network_anonymization_key, sub_net_log, parameters);
+  }
 
   // Link the two net log sources together.
   sub_net_log.AddEventReferencingSource(
       NetLogEventType::PROXY_OVERRIDE_HOST_RESOLUTION, net_log.source());
   net_log.AddEvent(NetLogEventType::PROXY_OVERRIDE_BEGIN_HOST_RESOLUTION, [&] {
-    base::Value::Dict dict = CreateDnsConditionNetLogParam(dns_condition);
+    base::DictValue dict = CreateDnsConditionNetLogParam(dns_condition);
     sub_net_log.source().AddToEventParameters(dict);
     return dict;
   });

@@ -85,11 +85,4 @@ size_t ResolverThunk::GetInternalThunkSize() const {
   return sizeof(InternalThunk);
 }
 
-NTSTATUS ResolverThunk::ResolveTarget(const void* module,
-                                      const char* function_name,
-                                      void** address) {
-  const void** casted = const_cast<const void**>(address);
-  return ResolverThunk::ResolveInterceptor(module, function_name, casted);
-}
-
 }  // namespace sandbox

@@ -106,6 +106,13 @@ BASE_DECLARE_FEATURE(kEnableWebHidInWebView);
 BASE_DECLARE_FEATURE(kEnableExtensionsForCorpDesktopAndroid);
 #endif
 
+// If enabled, JS content scripts injected at document start will be compiled
+// in a background thread.
+BASE_DECLARE_FEATURE(kExtensionsBackgroundCompilation);
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kBackgroundCompilationTimeout);
+BASE_DECLARE_FEATURE_PARAM(size_t, kMinScriptSizeForBackgroundCompilation);
+BASE_DECLARE_FEATURE_PARAM(size_t, kMaxScriptSizeForBackgroundCompilation);
+
 // If enabled, disables unpacked extensions if developer mode is off.
 BASE_DECLARE_FEATURE(kExtensionDisableUnsupportedDeveloper);
 
@@ -189,12 +196,6 @@ BASE_DECLARE_FEATURE(kExperimentalOmniboxLabs);
 // out of the allowlist.
 BASE_DECLARE_FEATURE(kSafeBrowsingCrxAllowlistAutoDisable);
 
-// Controls whether we show an install friction dialog when an Enhanced Safe
-// Browsing user tries to install an extension that is not included in the
-// Safe Browsing CRX allowlist. This feature also controls if we show a warning
-// in 'chrome://extensions' for extensions not included in the allowlist.
-BASE_DECLARE_FEATURE(kSafeBrowsingCrxAllowlistShowWarnings);
-
 // When enabled, cause extensions to use structured cloning (instead of JSON
 // serialization) for extension messaging, except when communicating with native
 // messaging hosts.
@@ -274,6 +275,15 @@ BASE_DECLARE_FEATURE(kOptimizeServiceWorkerStartRequests);
 // TODO(crbug.com/424432184): Clean up when experiment is complete.
 BASE_DECLARE_FEATURE(kAvoidCloneArgsOnExtensionFunctionDispatch);
 
+// If enabled, the ContentVerifier cache key will include the extension root
+// path. This prevents collisions when an extension is updated or reloaded
+// to a new directory while keeping the same version ID.
+// This also controls content verifier behavior when starting new
+// ContentVerifyJobs: it will ensure that only jobs matching the currently
+// loaded extension's root directory are allowed to start. This helps avoid
+// memory leaks from stale cache entries and false-positive corruption reports.
+BASE_DECLARE_FEATURE(kExtensionContentVerificationUsesExtensionRoot);
+
 // Addresses content verification race conditions during extension updates. When
 // an extension updates, a content verification job for a previous version can
 // sometimes run *after* the new version has been loaded. This can lead to two
@@ -296,6 +306,16 @@ BASE_DECLARE_FEATURE(kRuntimeOnMessageWebExtensionPolyfillSupport);
 // Enables the shouldShowPromotion API to determine which promotion to show for
 // Chrome Enterprise on CWS.
 BASE_DECLARE_FEATURE(kEnableShouldShowPromotion);
+
+// When enabled, web searches with a newly-installed search engine-changing
+// extension will be blocked behind a new explicit-choice dialog. The dialog
+// must be used to confirm the choice of using the new search engine, or
+// returning to the previous provider.
+BASE_DECLARE_FEATURE(kSearchEngineExplicitChoiceDialog);
+
+// When enabled, all search extensions will unconditionally get the search
+// engine override dialog.
+BASE_DECLARE_FEATURE(kSearchEngineUnconditionalDialog);
 
 // Enables the securityInfo in chrome.webRequest API for extensions.
 // Allowing them to retrieve certificate information from web requests.

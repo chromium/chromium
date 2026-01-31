@@ -4,7 +4,6 @@
 
 #include "chromeos/ash/components/tether/tether_availability_operation_orchestrator.h"
 
-#include "base/containers/contains.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 
 namespace ash::tether {
@@ -25,7 +24,7 @@ void TetherAvailabilityOperationOrchestrator::StartOperation(
     const TetherHost& tether_host) {
   PA_LOG(VERBOSE) << "Starting TetherAvailabilityOperation for "
                   << tether_host.GetTruncatedDeviceIdForLogs() << ".";
-  if (base::Contains(active_operations_, tether_host.GetDeviceId())) {
+  if (active_operations_.contains(tether_host.GetDeviceId())) {
     PA_LOG(ERROR)
         << "Unable to start TetherAvailability operation for "
         << tether_host.GetTruncatedDeviceIdForLogs()
@@ -56,7 +55,7 @@ void TetherAvailabilityOperationOrchestrator::RemoveObserver(
 void TetherAvailabilityOperationOrchestrator::OnScannedDeviceResult(
     const TetherHost& tether_host,
     std::optional<ScannedDeviceInfo> result) {
-  CHECK(base::Contains(active_operations_, tether_host.GetDeviceId()));
+  CHECK(active_operations_.contains(tether_host.GetDeviceId()));
 
   if (result.has_value()) {
     ScannedDeviceInfo scanned_device_info = result.value();

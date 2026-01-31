@@ -112,10 +112,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) Trigger {
 //    "demoMode" : {...},
 //    "session": {...}
 // }
-using Targeting = base::Value::Dict;
+using Targeting = base::DictValue;
 
 // List of `Targeting`.
-using Targetings = base::Value::List;
+using Targetings = base::ListValue;
 
 // Dictionary of supported payloads. For example:
 // {
@@ -126,7 +126,7 @@ using Targetings = base::Value::List;
 //     }
 //   }
 // }
-using Payload = base::Value::Dict;
+using Payload = base::DictValue;
 
 // Dictionary of Campaign. For example:
 // {
@@ -135,10 +135,10 @@ using Payload = base::Value::Dict;
 //    "targetings": {...}
 //    "payload": {...}
 // }
-using Campaign = base::Value::Dict;
+using Campaign = base::DictValue;
 
 // List of campaigns.
-using Campaigns = base::Value::List;
+using Campaigns = base::ListValue;
 
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH)
 const Payload* GetPayloadBySlot(const Campaign* campaign, Slot slot);
@@ -162,7 +162,7 @@ std::optional<bool> ShouldRegisterTrialWithTriggerEventName(
 //   "0": [...]
 //   "1": [...]
 // }
-using CampaignsPerSlot = base::Value::Dict;
+using CampaignsPerSlot = base::DictValue;
 
 Campaigns* GetMutableCampaignsBySlot(CampaignsPerSlot* campaigns_per_slot,
                                      Slot slot);
@@ -187,11 +187,11 @@ class TargetingBase {
   bool IsValid() const;
 
  protected:
-  const base::Value::List* GetListCriteria(const char* path_suffix) const;
+  const base::ListValue* GetListCriteria(const char* path_suffix) const;
   const std::optional<bool> GetBoolCriteria(const char* path_suffix) const;
   const std::optional<int> GetIntCriteria(const char* path_suffix) const;
   const std::string* GetStringCriteria(const char* path_suffix) const;
-  const base::Value::Dict* GetDictCriteria(const char* path_suffix) const;
+  const base::DictValue* GetDictCriteria(const char* path_suffix) const;
 
  private:
   const std::string GetCriteriaPath(const char* path_suffix) const;
@@ -220,9 +220,9 @@ class DemoModeTargeting : public TargetingBase {
   DemoModeTargeting& operator=(const DemoModeTargeting) = delete;
   ~DemoModeTargeting();
 
-  const base::Value::List* GetStoreIds() const;
-  const base::Value::List* GetRetailers() const;
-  const base::Value::List* GetCountries() const;
+  const base::ListValue* GetStoreIds() const;
+  const base::ListValue* GetRetailers() const;
+  const base::ListValue* GetCountries() const;
   const std::optional<base::Version> GetAppMinVersion() const;
   const std::optional<base::Version> GetAppMaxVersion() const;
   const std::optional<bool> TargetCloudGamingDevice() const;
@@ -240,7 +240,7 @@ class DemoModeTargeting : public TargetingBase {
 // Start and end are the number of seconds since epoch in UTC.
 class TimeWindowTargeting {
  public:
-  explicit TimeWindowTargeting(const base::Value::Dict* time_window_dict);
+  explicit TimeWindowTargeting(const base::DictValue* time_window_dict);
   TimeWindowTargeting(const TimeWindowTargeting&) = delete;
   TimeWindowTargeting& operator=(const TimeWindowTargeting) = delete;
   ~TimeWindowTargeting();
@@ -249,7 +249,7 @@ class TimeWindowTargeting {
   const base::Time GetEndTime() const;
 
  private:
-  raw_ptr<const base::Value::Dict> time_window_dict_;
+  raw_ptr<const base::DictValue> time_window_dict_;
 };
 
 // Wrapper around number range targeting dictionary.
@@ -261,7 +261,7 @@ class TimeWindowTargeting {
 // }
 class NumberRangeTargeting {
  public:
-  explicit NumberRangeTargeting(const base::Value::Dict* number_range_dict);
+  explicit NumberRangeTargeting(const base::DictValue* number_range_dict);
   NumberRangeTargeting(const NumberRangeTargeting&) = delete;
   NumberRangeTargeting& operator=(const NumberRangeTargeting) = delete;
   ~NumberRangeTargeting();
@@ -270,7 +270,7 @@ class NumberRangeTargeting {
   const std::optional<int> GetEnd() const;
 
  private:
-  raw_ptr<const base::Value::Dict> number_range_dict_;
+  raw_ptr<const base::DictValue> number_range_dict_;
 };
 
 // Wrapper around a dictionary, which includes and excludes a string list
@@ -283,16 +283,16 @@ class NumberRangeTargeting {
 // }
 class StringListTargeting {
  public:
-  explicit StringListTargeting(const base::Value::Dict* string_list_dict);
+  explicit StringListTargeting(const base::DictValue* string_list_dict);
   StringListTargeting(const StringListTargeting&) = delete;
   StringListTargeting& operator=(const StringListTargeting) = delete;
   ~StringListTargeting();
 
-  const base::Value::List* GetIncludes() const;
-  const base::Value::List* GetExcludes() const;
+  const base::ListValue* GetIncludes() const;
+  const base::ListValue* GetExcludes() const;
 
  private:
-  raw_ptr<const base::Value::Dict> string_list_dict_;
+  raw_ptr<const base::DictValue> string_list_dict_;
 };
 
 // Wrapper around Device targeting dictionary. The structure looks like:
@@ -311,10 +311,10 @@ class DeviceTargeting : public TargetingBase {
   ~DeviceTargeting();
 
   const std::unique_ptr<StringListTargeting> GetBoards() const;
-  const base::Value::List* GetLocales() const;
-  const base::Value::List* GetUserLocales() const;
-  const base::Value::List* GetIncludedCountries() const;
-  const base::Value::List* GetExcludedCountries() const;
+  const base::ListValue* GetLocales() const;
+  const base::ListValue* GetUserLocales() const;
+  const base::ListValue* GetIncludedCountries() const;
+  const base::ListValue* GetExcludedCountries() const;
   const std::optional<int> GetMinMilestone() const;
   const std::optional<int> GetMaxMilestone() const;
   const std::optional<base::Version> GetMinVersion() const;
@@ -341,7 +341,7 @@ class SessionTargeting : public TargetingBase {
   ~SessionTargeting();
 
   std::optional<const base::Feature*> GetFeature() const;
-  const base::Value::List* GetExperimentTags() const;
+  const base::ListValue* GetExperimentTags() const;
 
   std::optional<bool> GetMinorUser() const;
   std::optional<bool> GetIsOwner() const;
@@ -355,7 +355,7 @@ class SessionTargeting : public TargetingBase {
 // }
 class AppTargeting {
  public:
-  explicit AppTargeting(const base::Value::Dict* app);
+  explicit AppTargeting(const base::DictValue* app);
   AppTargeting(const AppTargeting&) = delete;
   AppTargeting& operator=(const AppTargeting) = delete;
   ~AppTargeting();
@@ -363,7 +363,7 @@ class AppTargeting {
   const std::string* GetAppId() const;
 
  private:
-  raw_ptr<const base::Value::Dict> app_dict_;
+  raw_ptr<const base::DictValue> app_dict_;
 };
 
 // Wrapper around events targeting dictionary.
@@ -389,7 +389,7 @@ class AppTargeting {
 // }
 class EventsTargeting {
  public:
-  explicit EventsTargeting(const base::Value::Dict* config);
+  explicit EventsTargeting(const base::DictValue* config);
   EventsTargeting(const EventsTargeting&) = delete;
   EventsTargeting& operator=(const EventsTargeting) = delete;
   ~EventsTargeting();
@@ -398,10 +398,10 @@ class EventsTargeting {
   int GetDismissalCap() const;
   std::optional<int> GetGroupImpressionCap() const;
   std::optional<int> GetGroupDismissalCap() const;
-  const base::Value::List* GetEventsConditions() const;
+  const base::ListValue* GetEventsConditions() const;
 
  private:
-  raw_ptr<const base::Value::Dict> config_dict_;
+  raw_ptr<const base::DictValue> config_dict_;
 };
 
 // Wrapper around trigger targeting dictionary.
@@ -413,16 +413,16 @@ class EventsTargeting {
 // }
 class TriggerTargeting {
  public:
-  explicit TriggerTargeting(const base::Value::Dict* app);
+  explicit TriggerTargeting(const base::DictValue* app);
   TriggerTargeting(const TriggerTargeting&) = delete;
   TriggerTargeting& operator=(const TriggerTargeting) = delete;
   ~TriggerTargeting();
 
   std::optional<int> GetTriggerType() const;
-  const base::Value::List* GetTriggerEvents() const;
+  const base::ListValue* GetTriggerEvents() const;
 
  private:
-  raw_ptr<const base::Value::Dict> trigger_dict_;
+  raw_ptr<const base::DictValue> trigger_dict_;
 };
 
 // Wrapper around runtime targeting dictionary.
@@ -455,7 +455,7 @@ class RuntimeTargeting : public TargetingBase {
   // Returns a list of triggers against the current trigger, e.g. `kAppOpened`.
   const std::vector<std::unique_ptr<TriggerTargeting>> GetTriggers() const;
 
-  const base::Value::List* GetUserPrefTargetings() const;
+  const base::ListValue* GetUserPrefTargetings() const;
 
   std::unique_ptr<AppTargeting> GetHotseatAppIcon() const;
 };
@@ -474,15 +474,15 @@ class RuntimeTargeting : public TargetingBase {
 // }
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) Action {
  public:
-  explicit Action(const base::Value::Dict* action_dict);
+  explicit Action(const base::DictValue* action_dict);
   Action(const Action&) = delete;
   Action& operator=(const Action) = delete;
   ~Action();
 
   std::optional<growth::ActionType> GetActionType() const;
-  const base::Value::Dict* GetParams() const;
+  const base::DictValue* GetParams() const;
 
-  raw_ptr<const base::Value::Dict> action_dict_;
+  raw_ptr<const base::DictValue> action_dict_;
 };
 
 // Wrapper around anchor.
@@ -495,7 +495,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) Action {
 // by other surfaces.
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) Anchor {
  public:
-  explicit Anchor(const base::Value::Dict* anchor_dict);
+  explicit Anchor(const base::DictValue* anchor_dict);
   Anchor(const Anchor&) = delete;
   Anchor& operator=(const Anchor) = delete;
   ~Anchor();
@@ -504,7 +504,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) Anchor {
   const std::string* GetShelfAppButtonId() const;
 
  private:
-  raw_ptr<const base::Value::Dict> anchor_dict_;
+  raw_ptr<const base::DictValue> anchor_dict_;
 };
 
 // Wrapper around image dictionary.
@@ -515,7 +515,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) Anchor {
 // }
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) Image {
  public:
-  explicit Image(const base::Value::Dict* image_dict);
+  explicit Image(const base::DictValue* image_dict);
   Image(const Image&) = delete;
   Image& operator=(const Image) = delete;
   ~Image();
@@ -526,7 +526,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) Image {
   // Get built in icon based on the given image data.
   const gfx::Image* GetBuiltInImage() const;
 
-  raw_ptr<const base::Value::Dict> image_dict_;
+  raw_ptr<const base::DictValue> image_dict_;
 };
 
 // Wrapper around vector icon dictionary.
@@ -537,7 +537,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) Image {
 // }
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) VectorIcon {
  public:
-  explicit VectorIcon(const base::Value::Dict* vector_icon_dict);
+  explicit VectorIcon(const base::DictValue* vector_icon_dict);
   VectorIcon(const VectorIcon&) = delete;
   VectorIcon& operator=(const VectorIcon) = delete;
   ~VectorIcon();
@@ -548,7 +548,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) VectorIcon {
   // Get built in icon based on the given image data.
   const gfx::VectorIcon* GetBuiltInVectorIcon() const;
 
-  raw_ptr<const base::Value::Dict> vector_icon_dict_;
+  raw_ptr<const base::DictValue> vector_icon_dict_;
 };
 
 // Wrapper around image model dictionary.
@@ -561,7 +561,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) VectorIcon {
 // }
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) ImageModel {
  public:
-  explicit ImageModel(const base::Value::Dict* image_model_dict);
+  explicit ImageModel(const base::DictValue* image_model_dict);
   ImageModel(const Image&) = delete;
   ImageModel& operator=(const ImageModel) = delete;
   ~ImageModel();
@@ -576,7 +576,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) ImageModel {
   // `ShowNudgeActionPerformer`.
   const std::optional<ui::ImageModel> GetBuiltInImageModel() const;
 
-  raw_ptr<const base::Value::Dict> image_model_dict_;
+  raw_ptr<const base::DictValue> image_model_dict_;
 };
 
 }  // namespace growth

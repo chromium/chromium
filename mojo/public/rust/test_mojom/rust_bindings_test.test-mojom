@@ -24,5 +24,7 @@ interface SendStuff {
 };
 
 interface SendAndReceive {
-    SendFooBarInt(Foo f, bool b, Bar ba) => (uint16 ret);
+    SendNothing();
+    SendFooBarInt(Foo f, bool b, Bar ba) => (uint16 ret, bool b);
+    SendAnotherThing(bool b) => (uint32 ret, bool b, uint32 other_ret);
 };

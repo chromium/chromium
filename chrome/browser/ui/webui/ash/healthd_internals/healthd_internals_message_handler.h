@@ -30,16 +30,16 @@ class HealthdInternalsMessageHandler : public content::WebUIMessageHandler {
 
  private:
   // Handle the `getHealthdInternalsFeatureFlag` request.
-  void HandleGetHealthdInternalsFeatureFlag(const base::Value::List& args);
+  void HandleGetHealthdInternalsFeatureFlag(const base::ListValue& args);
 
   // Handle the `getHealthdTelemetryInfo` request.
-  void HandleGetHealthdTelemetryInfo(const base::Value::List& args);
+  void HandleGetHealthdTelemetryInfo(const base::ListValue& args);
 
   // Handle the `getHealthdProcessInfo` request.
-  void HandleGetHealthdProcessInfo(const base::Value::List& args);
+  void HandleGetHealthdProcessInfo(const base::ListValue& args);
 
   // Handle the `getCrosSystemInfo` request.
-  void HandleGetCrosSystemInfo(const base::Value::List& args);
+  void HandleGetCrosSystemInfo(const base::ListValue& args);
 
   // Handle the telemetry result from `probe_service_`.
   void HandleTelemetryResult(base::Value callback_id,
@@ -52,7 +52,7 @@ class HealthdInternalsMessageHandler : public content::WebUIMessageHandler {
 
   // Reply the `getHealthdTelemetryInfo` and `getHealthdProcessInfo` requests.
   void ReplyHealthdInternalInfo(base::Value callback_id,
-                                base::Value::Dict result);
+                                base::DictValue result);
 
   // Ensures that `probe_service_` created and connected to the
   // `CrosHealthdProbeService`.

@@ -5,11 +5,12 @@
 #ifndef CC_METRICS_SCROLL_JANK_V4_HISTOGRAM_EMITTER_H_
 #define CC_METRICS_SCROLL_JANK_V4_HISTOGRAM_EMITTER_H_
 
-#include <optional>
+#include <variant>
 
 #include "base/containers/enum_set.h"
 #include "cc/cc_export.h"
 #include "cc/metrics/scroll_jank_v4_result.h"
+#include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 
 namespace cc {
 
@@ -32,22 +33,17 @@ namespace cc {
 // and the following histograms after each scroll:
 //
 //   * Event.ScrollJank.DelayedFramesPercentage4.PerScroll
+//
+// The histogram emitter's behavior with respect to non-damaging frames and
+// scrolls is controlled via `features::kHistogramEmissionPolicy`.
 class CC_EXPORT ScrollJankV4HistogramEmitter {
  public:
   ScrollJankV4HistogramEmitter();
   ~ScrollJankV4HistogramEmitter();
 
-  // Adds data about missed VSyncs in a single frame.
-  //
-  // `counts_towards_histogram_frame_count` controls whether the frame counts
-  // towards `kHistogramEmitFrequency`. This allows us to experiment with the
-  // emitting fixed window histograms after:
-  //
-  //   1. 64 damaging frames or
-  //   2. 64 frames (either damaging or non-damaging).
   void OnFrameWithScrollUpdates(
       const JankReasonArray<int>& missed_vsyncs_per_reason,
-      bool counts_towards_histogram_frame_count = true);
+      bool is_damaging);
   void OnScrollStarted();
   void OnScrollEnded();
 
@@ -99,14 +95,11 @@ class CC_EXPORT ScrollJankV4HistogramEmitter {
     // `missed_vsyncs`.
     int max_consecutive_missed_vsyncs = 0;
 
+    static SingleFrameData From(
+        const JankReasonArray<int>& missed_vsyncs_per_reason);
+    void MergeWith(const SingleFrameData& other);
     bool HasJankReasons() const;
-    void UpdateWith(const JankReasonArray<int>& missed_vsyncs_per_reason);
   };
-
-  void UpdateCountersForFrame(const SingleFrameData& frame_data);
-  void EmitPerWindowHistogramsAndResetCounters();
-  void EmitPerScrollHistogramsAndResetCounters();
-  void ResetAccumulatedDataFromNonDamagingFrames();
 
   struct JankDataFixedWindow {
     // Total number of frames that Chrome presented.
@@ -130,6 +123,9 @@ class CC_EXPORT ScrollJankV4HistogramEmitter {
     // Maximum number of consecutive VSyncs that Chrome missed (for any reason).
     // Must be less than or equal to `missed_vsyncs`.
     int max_consecutive_missed_vsyncs = 0;
+
+    void AddFrame(const SingleFrameData& frame_data);
+    void MergeWith(const JankDataFixedWindow& other);
   };
 
   struct JankDataPerScroll {
@@ -140,12 +136,126 @@ class CC_EXPORT ScrollJankV4HistogramEmitter {
     // one or more VSyncs later than it should have (for any reason).
     // Must be less than or equal to `presented_frames`.
     int delayed_frames = 0;
+
+    void AddFrame(const SingleFrameData& frame_data);
+    void MergeWith(const JankDataPerScroll& other);
   };
 
-  std::optional<SingleFrameData> accumulated_data_from_non_damaging_frames_ =
-      std::nullopt;
-  JankDataFixedWindow fixed_window_;
-  std::optional<JankDataPerScroll> per_scroll_ = std::nullopt;
+  class EmitForDamagingScrolls;
+
+  // Emitter with the policy that all frames in ALL scrolls (regardless of
+  // damage, even if the scroll is completely non-damaging) count towards the
+  // UMA histograms.
+  //
+  // See `features::kEmitForAllScrolls`.
+  class CC_EXPORT EmitForAllScrolls {
+   public:
+    void AddFrame(const SingleFrameData& frame_data, bool is_damaging);
+    void FinishScroll();
+
+   private:
+    friend class ScrollJankV4HistogramEmitter::EmitForDamagingScrolls;
+
+    void MaybeEmitPerWindowHistogramsAndResetCounters();
+    void MaybeEmitPerScrollHistogramsAndResetCounters();
+
+    JankDataFixedWindow fixed_window_;
+    JankDataPerScroll per_scroll_;
+  };
+
+  // Emitter with the policy that all frames in DAMAGING scrolls (containing at
+  // least one damaging frame) count towards the UMA histograms. Jank identified
+  // in frames in a non-damaging scroll (containing only non-damaging frames)
+  // won't be reported in the UMA histograms.
+  //
+  // See `features::kEmitForDamagingScrolls`.
+  class CC_EXPORT EmitForDamagingScrolls {
+   public:
+    EmitForDamagingScrolls();
+    EmitForDamagingScrolls(const EmitForDamagingScrolls&);
+    ~EmitForDamagingScrolls();
+
+    void AddFrame(const SingleFrameData& frame_data, bool is_damaging);
+    void FinishScroll();
+
+   private:
+    // The emitter hasn't encountered any damaging frame since the beginning of
+    // the current scroll. It might have pending data from one or more
+    // non-damaging scrolls, which the emitter will flush if it encounters a
+    // damaging frame later within the current scroll.
+    struct NoDamagingFrameEncounteredYet {
+      // Maximum size of `pending_fixed_windows`. If there are any more
+      // non-damaging frames at the beginning of a scroll, the emitter will
+      // ignore them.
+      static constexpr int kPendingFixedWindowsMaxSize = 20;
+
+      // The pending data for fixed window histograms in chronological order.
+      // It's bucketed by `kHistogramEmitFrequency` so that, if the histogram
+      // emitter encounters a damaging frame, it will merge
+      // `pending_fixed_windows[0]` (if present) into
+      // `ScrollJankV4HistogramEmitter::fixed_window_`. So
+      // `pending_fixed_windows[0].presented_frames <= kHistogramEmitFrequency -
+      // ScrollJankV4HistogramEmitter::fixed_window_.presented_frames` and
+      // `pending_fixed_windows[i].presented_frames <= kHistogramEmitFrequency`
+      // for all other indices `i > 0`.
+      //
+      // For example, if
+      // `ScrollJankV4HistogramEmitter::fixed_window_.presented_frames` is 50
+      // and there have been 100 non-damaging frames since the beginning of the
+      // scroll (and zero damaging frames),this this field would contain the
+      // following numbers of frames:
+      //
+      //   * `pending_fixed_windows[0].presented_frames = 14`
+      //   * `pending_fixed_windows[1].presented_frames = 64`
+      //   * `pending_fixed_windows[2].presented_frames = 22`
+      //
+      // Note that all items in `fixed_windows` except possibly the last one are
+      // saturated in the sense that, if the histogram emitter encountered a
+      // damaging frame next, it would immediately emit two fixed window UMA
+      // histograms:
+      //
+      //   * one for `ScrollJankV4HistogramEmitter::fixed_window_` +
+      //     `pending_fixed_windows[0]` and
+      //   * one for `pending_fixed_windows[1]`.
+      //
+      // We set the estimated capacity to 2 so that, in the worst case scenario
+      // (when `fixed_window_.presented_frames == kHistogramEmitFrequency - 1`),
+      // the emitter could handle a scroll that starts with up to
+      // `kHistogramEmitFrequency + 1` non-damaging frames without allocating
+      // additional memory on the heap.
+      absl::InlinedVector<JankDataFixedWindow, 2> pending_fixed_windows;
+
+      // The pending data for per-scroll histograms. If the histogram emitter
+      // encounters a damaging frame, it will merge `pending_per_scroll` into
+      // `ScrollJankV4HistogramEmitter::per_scroll_`.
+      JankDataPerScroll pending_per_scroll = {};
+
+      NoDamagingFrameEncounteredYet();
+      NoDamagingFrameEncounteredYet(const NoDamagingFrameEncounteredYet&);
+      ~NoDamagingFrameEncounteredYet();
+    };
+
+    // The emitter has encountered at least one damaging frame since the
+    // beginning of the current scroll.
+    struct DamagingFrameAlreadyEncountered {};
+
+    std::variant<NoDamagingFrameEncounteredYet, DamagingFrameAlreadyEncountered>
+        state_ = NoDamagingFrameEncounteredYet();
+
+    void StashPendingFrame(const SingleFrameData& frame_data);
+    void FlushPendingFrames();
+
+    EmitForAllScrolls wrapped_emitter_;
+  };
+
+  using InnerEmitter = std::variant<EmitForAllScrolls, EmitForDamagingScrolls>;
+
+  static InnerEmitter CreateInnerEmitter();
+  void FinishScroll();
+
+  InnerEmitter inner_emitter_;
+
+  friend class ScrollJankV4HistogramEmitterPolicySelectionTest;
 };
 
 }  // namespace cc

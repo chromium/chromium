@@ -163,7 +163,7 @@ TEST_F(SearchEnginesHandlerTest,
        SettingTheDefaultSearchEngineRecordsHistogram) {
   ConfigureTestWithRegularProfile();
 
-  base::Value::List first_call_args;
+  base::ListValue first_call_args;
   // Search engine model id.
   first_call_args.Append(1);
   first_call_args.Append(static_cast<int>(
@@ -175,7 +175,7 @@ TEST_F(SearchEnginesHandlerTest,
       search_engines::kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
       SearchEngineType::SEARCH_ENGINE_BING, 1);
 
-  base::Value::List second_call_args;
+  base::ListValue second_call_args;
   // Search engine model id.
   second_call_args.Append(1);
   second_call_args.Append(
@@ -198,7 +198,7 @@ TEST_F(SearchEnginesHandlerTest,
   EXPECT_FALSE(pref_service->HasPrefPath(
       prefs::kDefaultSearchProviderChoiceScreenCompletionVersion));
 
-  base::Value::List args;
+  base::ListValue args;
   // Search engine model id.
   args.Append(1);
   args.Append(static_cast<int>(
@@ -228,7 +228,7 @@ TEST_F(SearchEnginesHandlerTest,
           template_url_service->search_terms_data());
 
   CHECK_NE(default_search_engine_type, SearchEngineType::SEARCH_ENGINE_BING);
-  base::Value::List args;
+  base::ListValue args;
   // Search engine model id.
   args.Append(1);
   args.Append(static_cast<int>(
@@ -245,7 +245,7 @@ TEST_F(SearchEnginesHandlerTest, GetSaveGuestChoiceRegularProfile) {
   ConfigureTestWithRegularProfile();
 
   EXPECT_EQ(0U, web_ui()->call_data().size());
-  base::Value::List args;
+  base::ListValue args;
   args.Append("callback_id");
   web_ui()->HandleReceivedMessage("getSaveGuestChoice", args);
   EXPECT_EQ(1U, web_ui()->call_data().size());
@@ -270,7 +270,7 @@ TEST_F(SearchEnginesHandlerTest, GetSaveGuestChoiceGuestProfile) {
 
   EXPECT_EQ(0U, web_ui()->call_data().size());
   {
-    base::Value::List args;
+    base::ListValue args;
     args.Append("callback_id_1");
     web_ui()->HandleReceivedMessage("getSaveGuestChoice", args);
     EXPECT_EQ(1U, web_ui()->call_data().size());
@@ -284,7 +284,7 @@ TEST_F(SearchEnginesHandlerTest, GetSaveGuestChoiceGuestProfile) {
 
   choice_service->SetSavedSearchEngineBetweenGuestSessions(2);
   {
-    base::Value::List args;
+    base::ListValue args;
     args.Append("callback_id_2");
     web_ui()->HandleReceivedMessage("getSaveGuestChoice", args);
     EXPECT_EQ(2U, web_ui()->call_data().size());
@@ -313,7 +313,7 @@ TEST_F(SearchEnginesHandlerTest, GetSaveGuestChoiceGuestProfile_NonEEA) {
 
   EXPECT_EQ(0U, web_ui()->call_data().size());
   {
-    base::Value::List args;
+    base::ListValue args;
     args.Append("callback_id_1");
     web_ui()->HandleReceivedMessage("getSaveGuestChoice", args);
     EXPECT_EQ(1U, web_ui()->call_data().size());
@@ -341,7 +341,7 @@ TEST_F(SearchEnginesHandlerTest, UpdateSavedGuestSearch) {
   EXPECT_EQ(std::nullopt,
             choice_service->GetSavedSearchEngineBetweenGuestSessions());
   {
-    base::Value::List args;
+    base::ListValue args;
     // Search engine model id.
     args.Append(1);
     args.Append(static_cast<int>(
@@ -354,7 +354,7 @@ TEST_F(SearchEnginesHandlerTest, UpdateSavedGuestSearch) {
             choice_service->GetSavedSearchEngineBetweenGuestSessions());
 
   {
-    base::Value::List args;
+    base::ListValue args;
     // Search engine model id.
     args.Append(0);
     args.Append(static_cast<int>(
@@ -368,7 +368,7 @@ TEST_F(SearchEnginesHandlerTest, UpdateSavedGuestSearch) {
             choice_service->GetSavedSearchEngineBetweenGuestSessions());
 
   {
-    base::Value::List args;
+    base::ListValue args;
     // Search engine model id.
     args.Append(0);
     args.Append(static_cast<int>(
@@ -399,7 +399,7 @@ TEST_F(SearchEnginesHandlerTest, UpdateSavedGuestSearch_NonEEA) {
   EXPECT_EQ(std::nullopt,
             choice_service->GetSavedSearchEngineBetweenGuestSessions());
   {
-    base::Value::List args;
+    base::ListValue args;
     // Search engine model id.
     args.Append(1);
     args.Append(static_cast<int>(

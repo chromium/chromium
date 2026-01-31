@@ -28,7 +28,7 @@ static_library("fullscreen_control") {
       "//ui/accessibility:ax_base",
       "//ui/base",
       "//ui/compositor",
-      "//ui/gfx:native_widget_types",
+      "//ui/gfx:native_ui_types",
       "//ui/gfx/animation",
       "//ui/gfx/geometry",
       "//ui/views",

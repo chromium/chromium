@@ -19,6 +19,8 @@ import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.ui.signin.MinorModeHelper;
 import org.chromium.chrome.browser.ui.signin.R;
+import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -66,6 +68,12 @@ class HistorySyncMediator implements ProfileDataCache.Observer, SigninManager.Si
         assert mAccountEmail != null;
         DisplayableProfileData profileData =
                 mProfileDataCache.getProfileDataOrDefault(mAccountEmail);
+        // Use a different decline button text for recent tabs when seamless sign-in is enabled.
+        String declineButtonText =
+                SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+                                && mAccessPoint == SigninAccessPoint.RECENT_TABS
+                        ? context.getString(R.string.history_sync_recent_tabs_secondary_action)
+                        : context.getString(R.string.history_sync_secondary_action);
         // When the email address is not displayable, fall back on the other string.
         String footerString =
                 showEmailInFooter && profileData.hasDisplayableEmailAddress()
@@ -78,6 +86,7 @@ class HistorySyncMediator implements ProfileDataCache.Observer, SigninManager.Si
                         this::onDeclineClicked,
                         mConfig.title,
                         mConfig.subtitle,
+                        declineButtonText,
                         footerString,
                         mUseLandscapeLayout);
     }

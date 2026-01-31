@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial.h"
@@ -39,7 +38,7 @@ std::vector<const base::Feature*>& GetTestFeatures() {
   return *features_for_test;
 }
 
-void SetExperimentIds(const base::Value::List& list) {
+void SetExperimentIds(const base::ListValue& list) {
   DCHECK(!g_experiment_ids_initialized);
   std::unordered_set<int32_t> ids;
   for (const auto& it : list) {
@@ -142,11 +141,6 @@ BASE_FEATURE(kTripleBuffer720,
 BASE_FEATURE(kSingleBuffer,
              "enable_single_buffer",
              base::FEATURE_DISABLED_BY_DEFAULT);
-// Disable idle sockets closing on memory pressure. See
-// chromecast/browser/cast_network_contexts.cc for usage.
-BASE_FEATURE(kDisableIdleSocketsCloseOnMemoryPressure,
-             "disable_idle_sockets_close_on_memory_pressure",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableGeneralAudienceBrowsing,
              "enable_general_audience_browsing",
@@ -195,7 +189,6 @@ const base::Feature* kFeatures[] = {
     &kEnableQuic,
     &kTripleBuffer720,
     &kSingleBuffer,
-    &kDisableIdleSocketsCloseOnMemoryPressure,
     &kEnableGeneralAudienceBrowsing,
     &kEnableSideGesturePassThrough,
     &kEnableChromeAudioManagerAndroid,
@@ -222,8 +215,8 @@ const std::vector<const base::Feature*>& GetFeatures() {
   return *features;
 }
 
-void InitializeFeatureList(const base::Value::Dict& dcs_features,
-                           const base::Value::List& dcs_experiment_ids,
+void InitializeFeatureList(const base::DictValue& dcs_features,
+                           const base::ListValue& dcs_experiment_ids,
                            const std::string& cmd_line_enable_features,
                            const std::string& cmd_line_disable_features,
                            const std::string& extra_enable_features,
@@ -317,13 +310,13 @@ void InitializeFeatureList(const base::Value::Dict& dcs_features,
 }
 
 bool IsFeatureEnabled(const base::Feature& feature) {
-  DCHECK(base::Contains(GetFeatures(), &feature)) << feature.name;
+  DCHECK(std::ranges::contains(GetFeatures(), &feature)) << feature.name;
   return base::FeatureList::IsEnabled(feature);
 }
 
-base::Value::Dict GetOverriddenFeaturesForStorage(
-    const base::Value::Dict& features) {
-  base::Value::Dict persistent_dict;
+base::DictValue GetOverriddenFeaturesForStorage(
+    const base::DictValue& features) {
+  base::DictValue persistent_dict;
 
   // |features| maps feature names to either a boolean or a dict of params.
   for (const auto feature : features) {
@@ -334,7 +327,7 @@ base::Value::Dict GetOverriddenFeaturesForStorage(
 
     if (feature.second.is_dict()) {
       const base::Value* params_dict = &feature.second;
-      base::Value::Dict params;
+      base::DictValue params;
 
       for (const auto [param_key, param_val] : params_dict->GetDict()) {
         if (param_val.is_bool()) {

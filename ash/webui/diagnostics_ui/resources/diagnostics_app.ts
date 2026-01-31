@@ -27,7 +27,7 @@ import {getTemplate} from './diagnostics_app.html.js';
 import {DiagnosticsBrowserProxyImpl} from './diagnostics_browser_proxy.js';
 import {getDiagnosticsIcon, getNavigationIcon} from './diagnostics_utils.js';
 import type {KeyboardInfo} from './input.mojom-webui.js';
-import type {InputDataProviderInterface, TouchDeviceInfo} from './input_data_provider.mojom-webui.js';
+import type {ConnectedDevices, InputDataProviderInterface, TouchDeviceInfo} from './input_data_provider.mojom-webui.js';
 import {ConnectedDevicesObserverReceiver} from './input_data_provider.mojom-webui.js';
 import {getInputDataProvider} from './mojo_interface_provider.js';
 
@@ -44,13 +44,6 @@ declare global {
   interface HTMLElementEventMap {
     'show-toast': ShowToastEvent;
   }
-}
-
-// TODO(michaelcheco): Update |InputDataProvider::GetConnectedDevices()| to
-// return a |ConnectedDevices| struct instead of defining one here.
-interface ConnectedDevices {
-  keyboards: KeyboardInfo[];
-  touchDevices: TouchDeviceInfo[];
 }
 
 /**
@@ -178,8 +171,7 @@ export class DiagnosticsAppElement extends DiagnosticsAppElementBase {
     ];
 
     pages.push(this.createInputSelector());
-    const devices: ConnectedDevices =
-        await this.inputDataProvider.getConnectedDevices();
+    const {devices} = await this.inputDataProvider.getConnectedDevices();
     // Check the existing value of |numKeyboards| if |GetConnectedDevices|
     // returns no keyboards as it's possible |onKeyboardConnected| was called
     // prior.

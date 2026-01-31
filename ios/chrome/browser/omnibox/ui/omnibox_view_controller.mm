@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/omnibox/ui/omnibox_view_controller.h"
 
-#import "base/containers/contains.h"
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
@@ -22,7 +21,7 @@
 #import "ios/chrome/browser/omnibox/ui/omnibox_text_input_delegate.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_constants.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/toolbar_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/lens/lens_api.h"
@@ -547,11 +546,11 @@ using base::UserMetricsAction;
     (const std::set<ClipboardContentType>&)types {
   self.hasCopiedContent = !types.empty();
   if ((self.searchByImageEnabled || self.shouldUseLensInMenu) &&
-      base::Contains(types, ClipboardContentType::Image)) {
+      types.contains(ClipboardContentType::Image)) {
     self.copiedContentType = ClipboardContentType::Image;
-  } else if (base::Contains(types, ClipboardContentType::URL)) {
+  } else if (types.contains(ClipboardContentType::URL)) {
     self.copiedContentType = ClipboardContentType::URL;
-  } else if (base::Contains(types, ClipboardContentType::Text)) {
+  } else if (types.contains(ClipboardContentType::Text)) {
     self.copiedContentType = ClipboardContentType::Text;
   }
   self.isUpdatingCachedClipboardState = NO;

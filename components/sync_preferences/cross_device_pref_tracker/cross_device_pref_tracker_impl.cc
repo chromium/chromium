@@ -48,6 +48,8 @@ namespace sync_preferences {
 
 namespace {
 
+using ServiceStatus = ::sync_preferences::CrossDevicePrefTracker::ServiceStatus;
+
 // Keys used for the cross-device syncable storage dictionary pref. For more
 // details on the design, see go/cross-device-pref-tracker.
 
@@ -68,6 +70,9 @@ constexpr char kUpdateTimeKey[] = "update_time";
 constexpr char kLastObservedChangeTimeKey[] = "last_observed_change_time";
 
 // Histogram name for tracking service availability at query time.
+//
+// Note: The UMA histogram is named
+// "Sync.CrossDevicePrefTracker.AvailabilityAtQuery" for legacy reasons.
 constexpr char kTrackerAvailabilityAtQueryHistogram[] =
     "Sync.CrossDevicePrefTracker.AvailabilityAtQuery";
 
@@ -84,28 +89,27 @@ bool IsDeviceExpired(const syncer::DeviceInfo& device_info,
 }
 
 // Helper to determine the current service availability state.
-CrossDevicePrefTrackerAvailabilityAtQuery GetAvailabilityState(
+ServiceStatus ComputeServiceStatus(
     const syncer::DeviceInfoTracker* device_info_tracker,
     bool is_local_device_info_ready,
     bool is_sync_configured_for_writes) {
   if (!device_info_tracker) {
-    return CrossDevicePrefTrackerAvailabilityAtQuery::kDeviceInfoTrackerMissing;
+    return ServiceStatus::kDeviceInfoTrackerMissing;
   }
 
   if (is_local_device_info_ready && is_sync_configured_for_writes) {
-    return CrossDevicePrefTrackerAvailabilityAtQuery::kAvailable;
+    return ServiceStatus::kAvailable;
   }
 
   if (is_local_device_info_ready && !is_sync_configured_for_writes) {
-    return CrossDevicePrefTrackerAvailabilityAtQuery::kSyncNotConfigured;
+    return ServiceStatus::kSyncNotConfigured;
   }
 
   if (!is_local_device_info_ready && is_sync_configured_for_writes) {
-    return CrossDevicePrefTrackerAvailabilityAtQuery::kLocalDeviceInfoMissing;
+    return ServiceStatus::kLocalDeviceInfoMissing;
   }
 
-  return CrossDevicePrefTrackerAvailabilityAtQuery::
-      kSyncNotConfiguredAndLocalDeviceInfoMissing;
+  return ServiceStatus::kSyncNotConfiguredAndLocalDeviceInfoMissing;
 }
 
 // Helper to record the Tracker's service availability metric.
@@ -113,8 +117,8 @@ void LogTrackerServiceAvailability(
     const syncer::DeviceInfoTracker* device_info_tracker,
     bool is_local_device_info_ready,
     bool is_sync_configured_for_writes) {
-  CrossDevicePrefTrackerAvailabilityAtQuery availability =
-      GetAvailabilityState(device_info_tracker, is_local_device_info_ready,
+  ServiceStatus availability =
+      ComputeServiceStatus(device_info_tracker, is_local_device_info_ready,
                            is_sync_configured_for_writes);
 
   base::UmaHistogramEnumeration(kTrackerAvailabilityAtQueryHistogram,
@@ -254,7 +258,7 @@ bool DeviceMatchesFilter(const syncer::DeviceInfo& device_info,
 // Helper to parse a cross-device pref entry into the internal
 // `TimestampedPrefValueInternal` representation.
 std::optional<TimestampedPrefValueInternal> ParseCrossDevicePrefEntry(
-    const base::Value::Dict& cross_device_entry,
+    const base::DictValue& cross_device_entry,
     const syncer::DeviceInfo& device_info) {
   const base::Value* value = cross_device_entry.Find(kValueKey);
 
@@ -306,10 +310,10 @@ void ValidatePrefMapping(const PrefService* tracked_pref_service,
 // Constructs the dictionary entry for the cross-device storage pref.
 // Handles the logic for setting timestamps based on whether the change was
 // observed locally.
-base::Value::Dict BuildCrossDevicePrefEntry(
+base::DictValue BuildCrossDevicePrefEntry(
     const base::Value& value,
     std::optional<base::Time> observed_change_time) {
-  base::Value::Dict entry;
+  base::DictValue entry;
 
   entry.Set(kValueKey, value.Clone());
 
@@ -381,9 +385,9 @@ void ApplyPrefChangeToCrossDevice(
 
   const base::Value& current_value =
       tracked_pref_service->GetValue(tracked_pref_name);
-  const base::Value::Dict& cross_device_dict =
+  const base::DictValue& cross_device_dict =
       profile_pref_service->GetDict(cross_device_pref_name);
-  const base::Value::Dict* existing_cross_device_entry =
+  const base::DictValue* existing_cross_device_entry =
       cross_device_dict.FindDict(cache_guid.value());
 
   // Optimization: Minimize writes to the syncable pref to reduce sync traffic,
@@ -406,7 +410,7 @@ void ApplyPrefChangeToCrossDevice(
   // If the value changed, it's an observed change (even if value is the same),
   // or if no entry exists, the update must proceed.
 
-  base::Value::Dict entry =
+  base::DictValue entry =
       BuildCrossDevicePrefEntry(current_value, observed_change_time);
 
   ScopedDictPrefUpdate update(profile_pref_service, cross_device_pref_name);
@@ -433,7 +437,7 @@ GetCrossDeviceEntriesMatchingDeviceFilter(
     return {};
   }
 
-  const base::Value::Dict& cross_device_dict =
+  const base::DictValue& cross_device_dict =
       profile_pref_service.GetDict(cross_device_pref_name);
 
   std::vector<TimestampedPrefValueInternal> matching_cross_device_entries;
@@ -491,6 +495,14 @@ CrossDevicePrefTrackerImpl::CrossDevicePrefTrackerImpl(
   // `sync_service_` can be null in tests or if Sync is disabled.
   CHECK(pref_provider_);
 
+#if BUILDFLAG(IS_ANDROID)
+  // This needs to come at the start of the constructor; otherwise, methods we
+  // call in the constructor will NPE.
+  JNIEnv* env = base::android::AttachCurrentThread();
+  java_object_.Reset(Java_CrossDevicePrefTracker_Constructor(
+      env, reinterpret_cast<intptr_t>(this)));
+#endif  // BUILDFLAG(IS_ANDROID)
+
   is_local_device_info_ready_ =
       GetLocalCacheGuid(device_info_sync_service_).has_value();
 
@@ -499,6 +511,10 @@ CrossDevicePrefTrackerImpl::CrossDevicePrefTrackerImpl(
   }
 
   is_sync_configured_for_writes_ = IsSyncConfiguredForWrites();
+
+  service_status_ = ComputeServiceStatus(
+      device_info_sync_service_->GetDeviceInfoTracker(),
+      is_local_device_info_ready_, is_sync_configured_for_writes_);
 
   // Initialize `DeviceInfoTracker` observation and cache known GUIDs.
   if (syncer::DeviceInfoTracker* tracker =
@@ -537,12 +553,6 @@ CrossDevicePrefTrackerImpl::CrossDevicePrefTrackerImpl(
   // Clean up any expired device entries from the cross-device storage.
   // This relies on `active_device_guids_`.
   GarbageCollectStaleCacheGuids();
-
-#if BUILDFLAG(IS_ANDROID)
-  JNIEnv* env = base::android::AttachCurrentThread();
-  java_object_.Reset(Java_CrossDevicePrefTracker_Constructor(
-      env, reinterpret_cast<intptr_t>(this)));
-#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 CrossDevicePrefTrackerImpl::~CrossDevicePrefTrackerImpl() {
@@ -560,6 +570,10 @@ void CrossDevicePrefTrackerImpl::AddObserver(
 void CrossDevicePrefTrackerImpl::RemoveObserver(
     CrossDevicePrefTracker::Observer* observer) {
   observers_.RemoveObserver(observer);
+}
+
+ServiceStatus CrossDevicePrefTrackerImpl::GetServiceStatus() const {
+  return service_status_;
 }
 
 std::vector<TimestampedPrefValue> CrossDevicePrefTrackerImpl::GetValues(
@@ -657,10 +671,12 @@ void CrossDevicePrefTrackerImpl::OnDeviceInfoChange() {
   HandleLocalDeviceInfoIfAvailable();
   HandleRemoteDeviceInfoChanges();
   GarbageCollectStaleCacheGuids();
+  UpdateServiceStatus();
 }
 
 void CrossDevicePrefTrackerImpl::OnStateChanged(syncer::SyncService* sync) {
   OnSyncStateChanged();
+  UpdateServiceStatus();
 }
 
 void CrossDevicePrefTrackerImpl::OnSyncShutdown(syncer::SyncService* sync) {
@@ -765,14 +781,14 @@ void CrossDevicePrefTrackerImpl::OnCrossDevicePrefChanged(
   CHECK(profile_pref_service_);
   std::string pref_name(cross_device_pref_name_view);
 
-  const base::Value::Dict& new_dict = profile_pref_service_->GetDict(pref_name);
+  const base::DictValue& new_dict = profile_pref_service_->GetDict(pref_name);
 
   auto cache_it = cross_device_storage_cache_.find(pref_name);
 
   // This should not happen as the cache is initialized with all tracked prefs.
   CHECK(cache_it != cross_device_storage_cache_.end());
 
-  const base::Value::Dict& old_dict = cache_it->second;
+  const base::DictValue& old_dict = cache_it->second;
 
   // Optimization: Check if the dictionaries are identical before proceeding.
   if (old_dict == new_dict) {
@@ -791,8 +807,8 @@ void CrossDevicePrefTrackerImpl::OnCrossDevicePrefChanged(
 
 void CrossDevicePrefTrackerImpl::ProcessRemoteUpdates(
     const std::string& cross_device_pref_name,
-    const base::Value::Dict& old_dict,
-    const base::Value::Dict& new_dict) {
+    const base::DictValue& old_dict,
+    const base::DictValue& new_dict) {
   CHECK(device_info_sync_service_);
   syncer::DeviceInfoTracker* device_info_tracker =
       device_info_sync_service_->GetDeviceInfoTracker();
@@ -812,14 +828,14 @@ void CrossDevicePrefTrackerImpl::ProcessRemoteUpdates(
       continue;
     }
 
-    const base::Value::Dict* new_entry = new_entry_value.GetIfDict();
+    const base::DictValue* new_entry = new_entry_value.GetIfDict();
 
     // Skip malformed entries.
     if (!new_entry) {
       continue;
     }
 
-    const base::Value::Dict* old_entry = old_dict.FindDict(cache_guid);
+    const base::DictValue* old_entry = old_dict.FindDict(cache_guid);
 
     // Check if the entry is new or updated by comparing the dictionaries.
     if (!old_entry || *old_entry != *new_entry) {
@@ -872,7 +888,7 @@ void CrossDevicePrefTrackerImpl::ProcessRemoteUpdates(
 
 void CrossDevicePrefTrackerImpl::NotifyRemotePrefChanged(
     const std::string& cross_device_pref_name,
-    const base::Value::Dict* entry,
+    const base::DictValue* entry,
     const syncer::DeviceInfo& remote_device_info) {
   // Default constructed value signifies deletion (null value and null time).
   TimestampedPrefValue timestamped_value;
@@ -900,7 +916,14 @@ void CrossDevicePrefTrackerImpl::NotifyRemotePrefChanged(
                                  remote_device_info);
   }
 
-  // TODO(crbug.com/442902926): Notify Java side of updates.
+#if BUILDFLAG(IS_ANDROID)
+  TimestampedPrefValueBridge bridge(timestamped_value);
+  Java_CrossDevicePrefTracker_onRemotePrefChanged(
+      base::android::AttachCurrentThread(), java_object_,
+      tracked_pref_name.data(), bridge.GetJavaObject(),
+      static_cast<int>(remote_device_info.os_type()),
+      static_cast<int>(remote_device_info.form_factor()));
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void CrossDevicePrefTrackerImpl::HandleLocalDeviceInfoIfAvailable() {
@@ -1000,7 +1023,7 @@ void CrossDevicePrefTrackerImpl::NotifyObserversOfExistingPrefsForNewDevices(
     const std::vector<const syncer::DeviceInfo*>& new_devices) {
   for (const auto& [pref_name, dict_value] : cross_device_storage_cache_) {
     for (const syncer::DeviceInfo* device_info : new_devices) {
-      const base::Value::Dict* entry = dict_value.FindDict(device_info->guid());
+      const base::DictValue* entry = dict_value.FindDict(device_info->guid());
 
       if (entry) {
         // Found an existing pref value for the newly available device.
@@ -1080,6 +1103,28 @@ CrossDevicePrefTrackerImpl::GetActiveDevices() const {
   return active_devices;
 }
 
+void CrossDevicePrefTrackerImpl::UpdateServiceStatus() {
+  ServiceStatus new_status = ComputeServiceStatus(
+      device_info_sync_service_->GetDeviceInfoTracker(),
+      is_local_device_info_ready_, is_sync_configured_for_writes_);
+
+  if (new_status == service_status_) {
+    return;
+  }
+
+  service_status_ = new_status;
+
+  for (auto& observer : observers_) {
+    observer.OnServiceStatusChanged(service_status_);
+  }
+
+#if BUILDFLAG(IS_ANDROID)
+  Java_CrossDevicePrefTracker_onServiceStatusChanged(
+      base::android::AttachCurrentThread(), java_object_,
+      static_cast<int>(service_status_));
+#endif  // BUILDFLAG(IS_ANDROID)
+}
+
 #if BUILDFLAG(IS_ANDROID)
 namespace {
 
@@ -1087,7 +1132,7 @@ namespace {
 CrossDevicePrefTracker::DeviceFilter ToDeviceFilter(
     std::optional<int> os_type,
     std::optional<int> form_factor,
-    std::optional<jlong> max_sync_recency_microseconds) {
+    std::optional<int64_t> max_sync_recency_microseconds) {
   CrossDevicePrefTracker::DeviceFilter filter;
   if (os_type.has_value()) {
     filter.os_type = static_cast<syncer::DeviceInfo::OsType>(os_type.value());
@@ -1116,7 +1161,7 @@ ScopedJavaLocalRef<jobjectArray> CrossDevicePrefTrackerImpl::GetValues(
     const base::android::JavaRef<jstring>& pref_name,
     std::optional<int> os_type,
     std::optional<int> form_factor,
-    std::optional<jlong> max_sync_recency_microseconds) const {
+    std::optional<int64_t> max_sync_recency_microseconds) const {
   std::vector<ScopedJavaLocalRef<jobject>> result;
   std::vector<TimestampedPrefValue> timestamped_pref_values = GetValues(
       base::android::ConvertJavaStringToUTF8(env, pref_name),
@@ -1133,7 +1178,7 @@ ScopedJavaLocalRef<jobject> CrossDevicePrefTrackerImpl::GetMostRecentValue(
     const base::android::JavaRef<jstring>& pref_name,
     std::optional<int> os_type,
     std::optional<int> form_factor,
-    std::optional<jlong> max_sync_recency_microseconds) const {
+    std::optional<int64_t> max_sync_recency_microseconds) const {
   std::optional<TimestampedPrefValue> timestamped_pref_value =
       GetMostRecentValue(
           base::android::ConvertJavaStringToUTF8(env, pref_name),

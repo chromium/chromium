@@ -4,12 +4,11 @@
 
 #include "chrome/browser/ash/arc/intent_helper/custom_tab_session_impl.h"
 
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/test/test_browser_closed_waiter.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/ash/experiences/arc/intent_helper/custom_tab.h"
@@ -98,5 +97,5 @@ IN_PROC_BROWSER_TEST_F(CustomTabSessionImplTest,
   webcontents_run_loop.Run();
   EXPECT_FALSE(GetWebContents());
   ASSERT_TRUE(closed_waiter.WaitUntilClosed());
-  ASSERT_FALSE(base::Contains(*BrowserList::GetInstance(), browser()));
+  ASSERT_TRUE(GlobalBrowserCollection::GetInstance()->IsEmpty());
 }

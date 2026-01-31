@@ -71,7 +71,7 @@ class TestSecurityKeysCredentialHandler : public SecurityKeysCredentialHandler {
   // callback.
   std::string SimulateStart() {
     constexpr char kCallbackId[] = "securityKeyCredentialManagementStart";
-    base::Value::List args;
+    base::ListValue args;
     args.Append(kCallbackId);
     HandleStart(args);
     base::RunLoop().RunUntilIdle();
@@ -82,7 +82,7 @@ class TestSecurityKeysCredentialHandler : public SecurityKeysCredentialHandler {
   // callback.
   std::string SimulateProvidePIN() {
     constexpr char kCallbackId[] = "securityKeyCredentialManagementPIN";
-    base::Value::List args;
+    base::ListValue args;
     args.Append(kCallbackId);
     args.Append(kTestPIN);
     HandlePIN(args);
@@ -112,7 +112,7 @@ class TestSecurityKeysBioEnrollmentHandler
   // callback.
   std::string SimulateStart() {
     constexpr char kCallbackId[] = "bioEnrollStart";
-    base::Value::List args;
+    base::ListValue args;
     args.Append(kCallbackId);
     HandleStart(args);
     base::RunLoop().RunUntilIdle();
@@ -123,7 +123,7 @@ class TestSecurityKeysBioEnrollmentHandler
   // callback.
   std::string SimulateProvidePIN() {
     constexpr char kCallbackId[] = "bioEnrollProvidePIN";
-    base::Value::List args;
+    base::ListValue args;
     args.Append(kCallbackId);
     args.Append(kTestPIN);
     HandleProvidePIN(args);
@@ -135,7 +135,7 @@ class TestSecurityKeysBioEnrollmentHandler
   // completed callback.
   std::string SimulateStartEnrolling() {
     constexpr char kCallbackId[] = "bioEnrollStartEnrolling";
-    base::Value::List args;
+    base::ListValue args;
     args.Append(kCallbackId);
     HandleStartEnrolling(args);
     base::RunLoop().RunUntilIdle();
@@ -171,8 +171,7 @@ TEST_F(SecurityKeysCredentialHandlerTest,
   std::string start_callback_id = handler_->SimulateStart();
   ASSERT_EQ(web_ui_->call_data()[0]->arg1()->GetString(), start_callback_id);
   ASSERT_TRUE(web_ui_->call_data()[0]->arg3()->is_dict());
-  const base::Value::Dict& response =
-      web_ui_->call_data()[0]->arg3()->GetDict();
+  const base::DictValue& response = web_ui_->call_data()[0]->arg3()->GetDict();
   EXPECT_FALSE(*response.FindBool("supportsUpdateUserInformation"));
 }
 
@@ -207,7 +206,7 @@ TEST_F(SecurityKeysCredentialHandlerTest, TestUpdateUserInformation) {
   std::string new_username = "jsapple@example.com";
   std::string new_displayname = "John S. Apple";
 
-  base::Value::List args;
+  base::ListValue args;
   args.Append("securityKeyCredentialManagementUpdate");
   args.Append(credential_id_hex);
   args.Append(user_id_hex);
@@ -217,8 +216,7 @@ TEST_F(SecurityKeysCredentialHandlerTest, TestUpdateUserInformation) {
   std::string start_callback_id = handler_->SimulateStart();
   ASSERT_EQ(web_ui_->call_data()[0]->arg1()->GetString(), start_callback_id);
   ASSERT_TRUE(web_ui_->call_data()[0]->arg3()->is_dict());
-  const base::Value::Dict& response =
-      web_ui_->call_data()[0]->arg3()->GetDict();
+  const base::DictValue& response = web_ui_->call_data()[0]->arg3()->GetDict();
   EXPECT_TRUE(*response.FindBool("supportsUpdateUserInformation"));
 
   handler_->SimulateProvidePIN();
@@ -247,7 +245,7 @@ TEST_F(SecurityKeysCredentialHandlerTest, TestForcePINChange) {
   handler_->GetDiscoveryFactory()->SetCtap2Config(config);
 
   std::string callback_id("start_callback_id");
-  base::Value::List args;
+  base::ListValue args;
   args.Append(callback_id);
   handler_->HandleStart(args);
   base::RunLoop().RunUntilIdle();
@@ -326,7 +324,7 @@ TEST_F(SecurityKeysBioEnrollmentHandlerTest, TestStorageFullError) {
   EXPECT_EQ(web_ui_->call_data()[2]->arg1()->GetString(), callback_id);
   EXPECT_EQ(web_ui_->call_data()[2]->arg2()->GetBool(), true);
   EXPECT_TRUE(web_ui_->call_data()[2]->arg3()->is_dict());
-  base::Value::Dict expected;
+  base::DictValue expected;
   expected.Set("code",
                static_cast<int>(
                    device::CtapDeviceResponseCode::kCtap2ErrFpDatabaseFull));
@@ -374,7 +372,7 @@ class TestPasskeysHandler : public PasskeysHandler {
   std::string SimulateEdit(std::string credential_id,
                            std::string new_username) {
     constexpr char kCallbackId[] = "passkeysEdit";
-    base::Value::List args;
+    base::ListValue args;
     args.Append(kCallbackId);
     args.Append(credential_id);
     args.Append(new_username);
@@ -385,7 +383,7 @@ class TestPasskeysHandler : public PasskeysHandler {
 
   std::string SimulateDelete(std::string credential_id) {
     constexpr char kCallbackId[] = "passkeysDelete";
-    base::Value::List args;
+    base::ListValue args;
     args.Append(kCallbackId);
     args.Append(credential_id);
     HandleDelete(args);

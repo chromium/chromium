@@ -43,6 +43,14 @@ public interface ModuleProviderBuilder {
      */
     void bind(PropertyModel model, ViewGroup view, PropertyKey propertyKey);
 
+    /**
+     * Returns the manual rank for this module, if applicable. Lower values appear first. Returns
+     * null if not manually ordered.
+     */
+    default @Nullable Integer getManualRank() {
+        return null;
+    }
+
     /** Destroys the builder. This is called when ModuleRegistry is destroyed. */
     default void destroy() {}
 

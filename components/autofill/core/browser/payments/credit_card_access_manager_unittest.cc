@@ -100,7 +100,7 @@ class CreditCardAccessManagerAuthFlowTest
 
   void FetchCreditCardAndCompleteRiskBasedAuthIfAvailable(
       const CreditCard* card,
-      base::Value::Dict fido_request_options = base::Value::Dict()) {
+      base::DictValue fido_request_options = base::DictValue()) {
     CreditCardAccessManagerTestBase::FetchCreditCard(card);
     if (!IsMaskedServerCardRiskBasedAuthEnabled()) {
       return;
@@ -2666,9 +2666,10 @@ TEST_F(CreditCardAccessManagerTest, InvokeVirtualCardEnrollmentPreflightCall) {
   auto virtual_card_enrollment_manager =
       std::make_unique<MockVirtualCardEnrollmentManager>(
           &personal_data().payments_data_manager(),
-          /*payments_network_interface=*/
           static_cast<payments::MultipleRequestPaymentsNetworkInterface*>(
-              nullptr),
+              autofill_client()
+                  .GetPaymentsAutofillClient()
+                  ->GetMultipleRequestPaymentsNetworkInterface()),
           &autofill_client());
   autofill_client()
       .GetPaymentsAutofillClient()
@@ -2693,9 +2694,10 @@ TEST_F(CreditCardAccessManagerTest,
   auto virtual_card_enrollment_manager =
       std::make_unique<MockVirtualCardEnrollmentManager>(
           &personal_data().payments_data_manager(),
-          /*payments_network_interface=*/
           static_cast<payments::MultipleRequestPaymentsNetworkInterface*>(
-              nullptr),
+              autofill_client()
+                  .GetPaymentsAutofillClient()
+                  ->GetMultipleRequestPaymentsNetworkInterface()),
           &autofill_client());
   autofill_client()
       .GetPaymentsAutofillClient()

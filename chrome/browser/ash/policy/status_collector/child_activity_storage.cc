@@ -30,7 +30,7 @@ void ChildActivityStorage::AddActivityPeriod(base::Time start,
   DCHECK(start <= end);
 
   ScopedDictPrefUpdate update(pref_service_, pref_name_);
-  base::Value::Dict& activity_times = update.Get();
+  base::DictValue& activity_times = update.Get();
 
   // Assign the period to day buckets in local time.
   base::Time day_start = GetBeginningOfDay(start);

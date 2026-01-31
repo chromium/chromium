@@ -440,7 +440,7 @@ IN_PROC_BROWSER_TEST_F(ScriptingAPITest, ExecuteScriptBeforeInitialCommit) {
 
     // Now we check the function call returned what we expected in the result.
     ASSERT_TRUE(result);
-    base::Value::List& result_list = result->GetList();
+    base::ListValue& result_list = result->GetList();
     ASSERT_EQ(1u, result_list.size());
     const std::string* result_returned =
         result_list[0].GetDict().FindString("result");

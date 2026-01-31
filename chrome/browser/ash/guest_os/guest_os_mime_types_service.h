@@ -63,7 +63,7 @@ class GuestOsMimeTypesService : public KeyedService {
  private:
   void UpdateOverrideMimeTypes(std::string vm_name,
                                std::string container_name,
-                               base::Value::Dict overrides);
+                               base::DictValue overrides);
 
   // Owned by the Profile.
   const raw_ptr<PrefService> prefs_;

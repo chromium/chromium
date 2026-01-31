@@ -293,9 +293,7 @@ void AddPossibleAutofillAiTypes(base::span<const EntityInstance> entities,
             AutofillProfileComparator::Compare(value_in_field, value_on_file);
         if (full_match) {
           pt.types.insert(field_type);
-          if (IsAffixFormatStringEnabledForType(field_type) &&
-              base::FeatureList::IsEnabled(
-                  features::kAutofillAiVoteForFormatStringsForAffixes)) {
+          if (IsAffixFormatStringEnabledForType(field_type)) {
             pt.formats.emplace(FormatString_Type_AFFIX, u"0");
           }
           if (field_type == FLIGHT_RESERVATION_FLIGHT_NUMBER &&
@@ -311,9 +309,7 @@ void AddPossibleAutofillAiTypes(base::span<const EntityInstance> entities,
             value_in_field.size() >=
                 data_util::kMinAffixLengthForFormatString &&
             value_in_field.size() <=
-                data_util::kMaxAffixLengthForFormatString &&
-            base::FeatureList::IsEnabled(
-                features::kAutofillAiVoteForFormatStringsForAffixes)) {
+                data_util::kMaxAffixLengthForFormatString) {
           if (value_on_file.starts_with(value_in_field)) {
             pt.types.insert(field_type);
             pt.formats.emplace(FormatString_Type_AFFIX,

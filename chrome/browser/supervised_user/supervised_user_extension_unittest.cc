@@ -41,6 +41,11 @@ namespace extensions {
 // Base class for the extension parental controls tests for supervised users.
 class SupervisedUserExtensionTestBase : public ExtensionServiceTestWithInstall {
  public:
+  void TearDown() override {
+    supervised_user_extensions_delegate_.reset();
+    ExtensionServiceTestWithInstall::TearDown();
+  }
+
   void InitServices(bool profile_is_supervised) {
     ExtensionServiceInitParams params;
     params.profile_is_supervised = profile_is_supervised;
@@ -431,7 +436,7 @@ TEST_F(SupervisedUserExtensionTest, UpdateWithoutPermissionIncrease) {
     // well. Prefs are updated via sync.
     PrefService* pref_service = profile()->GetPrefs();
     ASSERT_TRUE(pref_service);
-    const base::Value::Dict& approved_extensions =
+    const base::DictValue& approved_extensions =
         pref_service->GetDict(prefs::kSupervisedUserApprovedExtensions);
     EXPECT_TRUE(approved_extensions.FindString(id));
 }

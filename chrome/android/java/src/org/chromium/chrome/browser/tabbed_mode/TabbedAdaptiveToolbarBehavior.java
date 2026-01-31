@@ -8,7 +8,8 @@ import android.content.Context;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -23,12 +24,12 @@ import org.chromium.chrome.browser.tab_group_suggestion.toolbar.GroupSuggestions
 import org.chromium.chrome.browser.tab_group_suggestion.toolbar.GroupSuggestionsButtonDataProvider;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabstrip.StripVisibilityState;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarBehavior;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonController;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.adaptive.OptionalNewTabButtonController;
-import org.chromium.chrome.browser.toolbar.top.tab_strip.StripVisibilityState;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -43,27 +44,28 @@ public class TabbedAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior {
     private final ActivityTabProvider mActivityTabProvider;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final Supplier<TabBookmarker> mTabBookmarkerSupplier;
-    private final ObservableSupplier<BookmarkModel> mBookmarkModelSupplier;
+    private final NullableObservableSupplier<BookmarkModel> mBookmarkModelSupplier;
     private final Supplier<@Nullable TabCreatorManager> mTabCreatorManagerSupplier;
     private final Runnable mRegisterVoiceSearchRunnable;
     private final Supplier<GroupSuggestionsButtonController>
             mGroupSuggestionsButtonControllerSupplier;
     private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
     private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
-    private final ObservableSupplier<@StripVisibilityState Integer> mTabStripVisibilitySupplier;
+    private final MonotonicObservableSupplier<@StripVisibilityState Integer>
+            mTabStripVisibilitySupplier;
 
     public TabbedAdaptiveToolbarBehavior(
             Context context,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             Supplier<@Nullable TabCreatorManager> tabCreatorManagerSupplier,
             Supplier<TabBookmarker> tabBookmarkerSupplier,
-            ObservableSupplier<BookmarkModel> bookmarkModelSupplier,
+            NullableObservableSupplier<BookmarkModel> bookmarkModelSupplier,
             ActivityTabProvider activityTabProvider,
             Runnable registerVoiceSearchRunnable,
             Supplier<GroupSuggestionsButtonController> groupSuggestionsButtonController,
             Supplier<TabModelSelector> tabModelSelectorSupplier,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
-            ObservableSupplier<@StripVisibilityState Integer> tabStripVisibilitySupplier) {
+            MonotonicObservableSupplier<@StripVisibilityState Integer> tabStripVisibilitySupplier) {
         mContext = context;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mTabCreatorManagerSupplier = tabCreatorManagerSupplier;

@@ -83,6 +83,16 @@ suite('ExtensionDetailViewTest', function() {
     return updateItemData({disableReasons});
   }
 
+  test('BackButton', () => {
+    assertTrue(testIsVisible('#closeButton'));
+    const closeButton = item.shadowRoot.querySelector('#closeButton')!;
+    assertTrue(closeButton.classList.contains('icon-arrow-back'));
+
+    const computedStyle = getComputedStyle(closeButton);
+    const iconImage = computedStyle.getPropertyValue('--cr-icon-image');
+    assertTrue(iconImage.includes('icon_arrow_back.svg'));
+  });
+
   test('Layout', async () => {
     assertTrue(testIsVisible('#closeButton'));
     assertTrue(testIsVisible('#icon'));
@@ -153,7 +163,6 @@ suite('ExtensionDetailViewTest', function() {
           {message: 'Permission 1', submessages: []},
           {message: 'Permission 2', submessages: []},
         ],
-        canAccessSiteData: false,
       },
     });
     assertTrue(testIsVisible('#permissions-list'));
@@ -168,7 +177,7 @@ suite('ExtensionDetailViewTest', function() {
     // Reset state.
     await updateItemData({
       dependentExtensions: [],
-      permissions: {simplePermissions: [], canAccessSiteData: false},
+      permissions: {simplePermissions: []},
     });
 
     const optionsUrl =
@@ -254,7 +263,6 @@ suite('ExtensionDetailViewTest', function() {
         hasAllHosts: true,
         hostAccess: chrome.developerPrivate.HostAccess.ON_CLICK,
       },
-      canAccessSiteData: true,
     };
     await updateItemData({permissions: allSitesPermissions});
     assertFalse(testIsVisible('#no-site-access'));
@@ -271,7 +279,6 @@ suite('ExtensionDetailViewTest', function() {
         hasAllHosts: false,
         hostAccess: chrome.developerPrivate.HostAccess.ON_SPECIFIC_SITES,
       },
-      canAccessSiteData: true,
     };
     await updateItemData({permissions: someSitesPermissions});
     assertFalse(testIsVisible('#no-site-access'));
@@ -650,7 +657,7 @@ suite('ExtensionDetailViewTest', function() {
     // the site access section.
     await updateItemData({
       dependentExtensions: [],
-      permissions: {simplePermissions: [], canAccessSiteData: false},
+      permissions: {simplePermissions: []},
     });
     item.enableEnhancedSiteControls = true;
     await microtasksFinished();
@@ -667,7 +674,6 @@ suite('ExtensionDetailViewTest', function() {
           {message: 'Permission 1', submessages: []},
           {message: 'Permission 2', submessages: []},
         ],
-        canAccessSiteData: false,
       },
     });
 
@@ -739,7 +745,6 @@ suite('ExtensionDetailViewTest', function() {
         hasAllHosts: true,
         hostAccess: chrome.developerPrivate.HostAccess.ON_CLICK,
       },
-      canAccessSiteData: true,
     };
     await updateItemData({
       permissions: allSitesPermissions,

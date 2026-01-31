@@ -17,6 +17,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/safety_checks.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/escape.h"
@@ -27,6 +28,9 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "base/trace_event/histogram_scope.h"
+#include "base/trace_event/trace_event.h"
+#include "base/trace_event/trace_id_helper.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
@@ -59,8 +63,10 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_controller.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/lens/lens_features.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -83,12 +89,15 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/focused_node_details.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/constants.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -361,6 +370,10 @@ void OmniboxViewViews::SaveStateToTab(content::WebContents* tab) {
 }
 
 void OmniboxViewViews::OnTabChanged(const content::WebContents* web_contents) {
+  // Observe the WebContents for title changes and navigations for updating the
+  // placeholder text.
+  Observe(const_cast<content::WebContents*>(web_contents));
+
   const OmniboxState* state = static_cast<OmniboxState*>(
       web_contents->GetUserData(&OmniboxState::kKey));
   controller()->edit_model()->RestoreState(state ? &state->model_state
@@ -401,13 +414,16 @@ void OmniboxViewViews::InstallPlaceholderText() {
     // If the Omnibox is visibly focused w/ AI Mode enabled, display the AI Mode
     // placeholder text to suggest tabbing into AI Mode. Note, even if the AI
     // placeholder text is installed, it will only be visible if
-    // ShouldShowAimPlaceholderText() is also true.
+    // `ShouldShowPlaceholderText()` is also true.
     SetPlaceholderText(
         l10n_util::GetStringUTF16(IDS_OMNIBOX_AIM_PLACEHOLDER_TEXT));
     // Override the AIM accessibility placeholder text, so that the tab icon is
     // not announced.
     GetViewAccessibility().SetPlaceholder(
         l10n_util::GetStringUTF8(IDS_ACC_AI_MODE_PLACEHOLDER_TEXT));
+  } else if (ShouldInstallContextualTasksPlaceholderText()) {
+    // For Contextual Tasks page, use the page title as placeholder text.
+    SetPlaceholderText(location_bar_view_->GetWebContents()->GetTitle());
   } else if (const auto* default_provider = controller()
                                                 ->client()
                                                 ->GetTemplateURLService()
@@ -451,6 +467,7 @@ void OmniboxViewViews::EmphasizeURLComponents() {
 }
 
 void OmniboxViewViews::Update() {
+  TRACE_EVENT("omnibox", "OmniboxViewViews::Update");
   if (controller()->edit_model()->ResetDisplayTexts()) {
     RevertAll();
 
@@ -505,6 +522,7 @@ void OmniboxViewViews::SelectAll(bool reversed) {
 }
 
 void OmniboxViewViews::RevertAll() {
+  TRACE_EVENT("omnibox", "OmniboxViewViews::RevertAll");
   saved_selection_for_focus_change_ = gfx::Range::InvalidRange();
   OmniboxView::RevertAll();
   // This will stop the `AutocompleteController`. This should happen after
@@ -655,6 +673,10 @@ gfx::Size OmniboxViewViews::GetMinimumSize() const {
 }
 
 void OmniboxViewViews::OnPaint(gfx::Canvas* canvas) {
+  // The metric below is a critical user journey to avoid impact we exclude
+  // free-d memory from additional safety checks.
+  // TODO(crbug.com/478634529): Optimize and remove if possible.
+  base::ScopedSafetyChecksExclusion excluded;
   if (latency_histogram_state_ == LatencyHistogramState::kCharTyped) {
     DCHECK(!insert_char_time_.is_null());
     const auto now = base::TimeTicks::Now();
@@ -965,6 +987,7 @@ void OmniboxViewViews::SetWindowTextAndCaretPos(const std::u16string& text,
                                                 size_t caret_pos,
                                                 bool update_popup,
                                                 bool notify_text_changed) {
+  TRACE_EVENT("omnibox", "OmniboxViewViews::SetWindowTextAndCaretPos");
   const gfx::Range range(caret_pos);
   SetTextAndSelectedRange(text, range);
 
@@ -978,6 +1001,7 @@ void OmniboxViewViews::SetWindowTextAndCaretPos(const std::u16string& text,
 }
 
 void OmniboxViewViews::SetCaretPos(size_t caret_pos) {
+  TRACE_EVENT("omnibox", "OmniboxViewViews::SetCaretPos");
   SetSelectedRange(gfx::Range(caret_pos, caret_pos));
 }
 
@@ -1804,6 +1828,10 @@ std::u16string OmniboxViewViews::GetSelectionClipboardText() const {
 }
 
 void OmniboxViewViews::DoInsertChar(char16_t ch) {
+  // `insert_char_time_` is part of a critical user journey, to avoid impact we
+  // exclude free-d memory from additional safety checks.
+  // TODO(crbug.com/478634529): Optimize and remove if possible.
+  base::ScopedSafetyChecksExclusion excluded;
   // When the fakebox is focused, ignore whitespace input because if the
   // fakebox is hidden and there's only whitespace in the omnibox, it's
   // difficult for the user to see that the focus moved to the omnibox.
@@ -1864,14 +1892,42 @@ void OmniboxViewViews::ExecuteTextEditCommand(ui::TextEditCommand command) {
 }
 
 bool OmniboxViewViews::ShouldShowPlaceholderText() const {
-  // The DSE placeholder text is visible only if the omnibox is blurred. The
-  // AIM placeholder text and the keyword placeholder texts are visible even
-  // if the omnibox is focused, because users won't enter keyword mode, blur the
-  // omnibox, read the placeholder text, refocus the omnibox, and begin typing.
-  return Textfield::ShouldShowPlaceholderText() &&
-         (!controller()->edit_model()->is_caret_visible() ||
-          !controller()->edit_model()->keyword_placeholder().empty() ||
-          ShouldShowAimPlaceholderText());
+  // Don't display placeholder text if there is text present or if there is no
+  // placeholder text to show.
+  if (!Textfield::ShouldShowPlaceholderText()) {
+    return false;
+  }
+
+  // If there's keyword placeholder to show, always show it, regardless of
+  // whether the omnibox is focused, because users won't enter keyword mode,
+  // blur the omnibox, read the placeholder text, refocus the omnibox, and begin
+  // typing.
+  if (!controller()->edit_model()->keyword_placeholder().empty()) {
+    return true;
+  }
+
+  // If the omnibox is blurred, only show the DSE placeholder if there is no
+  // keyword selected.
+  if (!controller()->edit_model()->is_caret_visible()) {
+    return !controller()->edit_model()->is_keyword_selected();
+  }
+
+  // If the omnibox is focused, only show the AIM placeholder if its conditions
+  // are met:
+  if (omnibox_feature_configs::AiModeOmniboxEntryPoint::Get()
+          .hide_aim_hint_text ||
+      !AimButtonVisible() || AreAimHintImpressionLimitsReached()) {
+    return false;
+  }
+  // Hide the AIM placeholder if the popup is closed (e.g. on NTP open).
+  if (omnibox_feature_configs::AiModeOmniboxEntryPoint::Get()
+          .hide_aim_hint_text_on_ntp_open &&
+      !controller()->IsPopupOpen() &&
+      !controller()->edit_model()->user_input_in_progress()) {
+    return false;
+  }
+  // Hide the AIM placeholder when the AIM button is focused.
+  return !controller()->edit_model()->GetPopupSelection().IsButtonFocused();
 }
 
 void OmniboxViewViews::UpdateAccessibleValue() {
@@ -1913,6 +1969,10 @@ void OmniboxViewViews::ContentsChanged(views::Textfield* sender,
 
 bool OmniboxViewViews::HandleKeyEvent(views::Textfield* textfield,
                                       const ui::KeyEvent& event) {
+  // Typing in the Omnibox is a critical user journey to avoid impact on this we
+  // exclude free-d memory from additional safety checks.
+  // TODO(crbug.com/478634529): Optimize and remove if possible.
+  base::ScopedSafetyChecksExclusion excluded;
   PermitExternalProtocolHandler();
 
   if (event.type() == ui::EventType::kKeyReleased) {
@@ -2282,13 +2342,7 @@ void OmniboxViewViews::UpdateContextMenu(ui::SimpleMenuModel* menu_contents) {
         IDS_CONTEXT_MENU_SHOW_GOOGLE_LENS_SHORTCUT);
   }
 
-  const auto* aim_eligibility_service =
-      AimEligibilityServiceFactory::GetForProfile(
-          location_bar_view_->profile());
-  const bool is_aim_entrypoint_enabled =
-      OmniboxFieldTrial::IsAimOmniboxEntrypointEnabled(aim_eligibility_service);
-
-  if (is_aim_entrypoint_enabled) {
+  if (omnibox::ShouldShowAimContextMenuOption(location_bar_view_->profile())) {
     menu_contents->AddCheckItemWithStringId(
         IDC_SHOW_AI_MODE_OMNIBOX_BUTTON,
         IDS_CONTEXT_MENU_SHOW_AI_MODE_OMNIBOX_BUTTON);
@@ -2350,10 +2404,21 @@ void OmniboxViewViews::OnDidPresentCompositorFrame(
     const gfx::PresentationFeedback& feedback) {
   if (latency_histogram_state_ == LatencyHistogramState::kCompositingStarted) {
     DCHECK(!insert_char_time_.is_null());
+
+    uint64_t event_id = base::trace_event::GetNextGlobalTraceId();
+    base::trace_event::HistogramScope scoped_event(event_id);
+
+    const base::TimeTicks now = base::TimeTicks::Now();
     UMA_HISTOGRAM_TIMES("Omnibox.CharTypedToRepaintLatency",
-                        base::TimeTicks::Now() - insert_char_time_);
-    insert_char_time_ = base::TimeTicks();
+                        now - insert_char_time_);
+
+    auto track = perfetto::NamedTrack("Omnibox.Latency");
+    TRACE_EVENT_BEGIN("omnibox", "CharTypedToRepaint", track, insert_char_time_,
+                      perfetto::Flow::ProcessScoped(event_id));
+    TRACE_EVENT_END("omnibox", track, now);
+
     latency_histogram_state_ = LatencyHistogramState::kNotActive;
+    insert_char_time_ = base::TimeTicks();
   }
 }
 
@@ -2363,6 +2428,38 @@ void OmniboxViewViews::OnCompositingShuttingDown(ui::Compositor* compositor) {
 
 void OmniboxViewViews::OnTemplateURLServiceChanged() {
   InstallPlaceholderText();
+}
+
+void OmniboxViewViews::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  // Update the placeholder text after primary main frame navigation of the
+  // currently displayed WebContents to ensure it reflects the current page,
+  // including cases like back/forward navigation between the New Tab Page and
+  // Contextual Tasks page.
+  if (!location_bar_view_ ||
+      location_bar_view_->GetWebContents() != web_contents()) {
+    return;
+  }
+
+  if (navigation_handle->IsInPrimaryMainFrame() &&
+      navigation_handle->HasCommitted()) {
+    InstallPlaceholderText();
+  }
+}
+
+void OmniboxViewViews::TitleWasSet(content::NavigationEntry* entry) {
+  // Update the placeholder text after title changes in the primary main frame
+  // of the currently displayed WebContents.
+  // For Contextual Tasks page, updates the placeholder text to the page title.
+  if (!location_bar_view_ ||
+      location_bar_view_->GetWebContents() != web_contents()) {
+    return;
+  }
+
+  if (entry &&
+      entry == web_contents()->GetController().GetLastCommittedEntry()) {
+    InstallPlaceholderText();
+  }
 }
 
 void OmniboxViewViews::PermitExternalProtocolHandler() {
@@ -2381,7 +2478,7 @@ void OmniboxViewViews::PerformDrop(
   const ui::OSExchangeData& data = event.data();
   std::u16string text;
   const std::vector<ui::ClipboardUrlInfo> url_infos =
-      data.GetURLsAndTitles(ui::FilenameToURLPolicy::CONVERT_FILENAMES);
+      data.GetURLs(ui::FilenameToURLPolicy::CONVERT_FILENAMES);
   if (!url_infos.empty()) {
     text = omnibox::StripJavascriptSchemas(
         base::UTF8ToUTF16(url_infos.front().url.spec()));
@@ -2426,17 +2523,18 @@ void OmniboxViewViews::MaybeAddSendTabToSelfItem(
 }
 
 void OmniboxViewViews::UpdatePlaceholderTextColor() {
-  // AIM placeholder text and keyword placeholders are dim to differentiate from
-  // user input. DSE placeholders are not dim to draw attention to the omnibox
-  // and because the omnibox is unfocused so there's less risk of confusion with
-  // user input.
+  // AIM placeholder text, contextual tasks placeholder text, and keyword
+  // placeholders are dim to differentiate from user input. DSE placeholders are
+  // not dim to draw attention to the omnibox and because the omnibox is
+  // unfocused so there's less risk of confusion with user input.
   // Null in tests.
   if (!GetColorProvider()) {
     return;
   }
   bool dse_placeholder_installed =
       controller()->edit_model()->keyword_placeholder().empty() &&
-      !ShouldInstallAimPlaceholderText();
+      !ShouldInstallAimPlaceholderText() &&
+      !ShouldInstallContextualTasksPlaceholderText();
   set_placeholder_text_color(GetColorProvider()->GetColor(
       dse_placeholder_installed ? kColorOmniboxText : kColorOmniboxTextDimmed));
 }
@@ -2487,6 +2585,31 @@ bool OmniboxViewViews::ShouldInstallAimPlaceholderText() const {
          controller()->edit_model()->is_caret_visible();
 }
 
+bool OmniboxViewViews::ShouldInstallContextualTasksPlaceholderText() const {
+  // `location_bar_view_` can be null in tests.
+  if (!location_bar_view_) {
+    return false;
+  }
+
+  content::WebContents* web_contents = location_bar_view_->GetWebContents();
+  if (!web_contents) {
+    return false;
+  }
+
+  content::NavigationEntry* entry =
+      web_contents->GetController().GetLastCommittedEntry();
+  if (!entry) {
+    return false;
+  }
+
+  const auto is_contextual_tasks = [](const GURL& url) {
+    return url.SchemeIs(content::kChromeUIScheme) &&
+           url.GetHost() == chrome::kChromeUIContextualTasksHost &&
+           base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks);
+  };
+  return is_contextual_tasks(entry->GetURL());
+}
+
 void OmniboxViewViews::RecordAimHintImpression() {
   const auto& config = omnibox_feature_configs::AiModeOmniboxEntryPoint::Get();
   if (!config.enable_hint_impression_limits) {
@@ -2511,36 +2634,6 @@ void OmniboxViewViews::RecordAimHintImpression() {
   const int daily_impressions =
       prefs->GetInteger(omnibox::kAimHintDailyImpressionsCount) + 1;
   prefs->SetInteger(omnibox::kAimHintDailyImpressionsCount, daily_impressions);
-}
-
-bool OmniboxViewViews::ShouldShowAimPlaceholderText() const {
-  // If the hint text is hidden or the AIM button is not visible, the
-  // placeholder text is not shown.
-  if (omnibox_feature_configs::AiModeOmniboxEntryPoint::Get()
-          .hide_aim_hint_text ||
-      !AimButtonVisible()) {
-    return false;
-  }
-
-  // If the impression limits have been reached, the hint should not be shown.
-  if (AreAimHintImpressionLimitsReached()) {
-    return false;
-  }
-
-  // The placeholder text should only be shown when the omnibox is visibly
-  // focused and the popup selection state is normal (i.e. no popup buttons are
-  // focused and we are not in keyword mode). The hint text will be shown on NTP
-  // open by default, unless this option is explicitly disabled.
-  bool ntp_open = !controller()->IsPopupOpen() &&
-                  !controller()->edit_model()->user_input_in_progress();
-  bool hide_text_on_ntp_open =
-      omnibox_feature_configs::AiModeOmniboxEntryPoint::Get()
-          .hide_aim_hint_text_on_ntp_open &&
-      ntp_open;
-  return controller()->edit_model()->is_caret_visible() &&
-         !controller()->edit_model()->is_keyword_selected() &&
-         !controller()->edit_model()->GetPopupSelection().IsButtonFocused() &&
-         !hide_text_on_ntp_open;
 }
 
 BEGIN_METADATA(OmniboxViewViews)

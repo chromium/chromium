@@ -106,9 +106,6 @@
   <message name="IDS_SETTINGS_ABOUT_PAGE_END_OF_LIFE_TITLE" desc="Title used for End of Life section on the About Page.">
     Update schedule
   </message>
-  <message name="IDS_SETTINGS_ABOUT_PAGE_DEVICE_NAME" desc="Title of the line item on the about page that allows the user to edit the device hostname.">
-    Device name
-  </message>
   <message name="IDS_SETTINGS_UPGRADE_ROLLBACK_IN_PROGRESS" desc="Status label: Rolling back ChromiumOS or ChromeOS.">
     <ph name="MANAGER">$1<ex>google.com</ex></ph> is putting this device on a previous version (<ph name="PROGRESS_PERCENT">$2<ex>90%</ex></ph>)
   </message>
@@ -201,33 +198,6 @@
   </message>
   <message name="IDS_OS_SETTINGS_ABOUT_PAGE_SHOW_RELEASE_NOTES_DESCRIPTION" desc="Sublabel description shown for See What's New button.">
     Automatic updates provide you with the latest features. Explore highlights from recent updates.
-  </message>
-  <message name="IDS_SETTINGS_ABOUT_PAGE_EDIT_DEVICE_NAME" desc="The title of the dialog that allows the user to edit the device hostname.">
-    Edit device name
-  </message>
-  <message name="IDS_SETTINGS_ABOUT_PAGE_DEVICE_NAME_INFO" desc="Label describing which areas of the ChromeOS system broadcast the device hostname to external networks.">
-    This name is visible to other devices for Bluetooth and network connections
-  </message>
-  <message name="IDS_SETTINGS_ABOUT_PAGE_DEVICE_NAME_CONSTRAINTS" desc="Label describing the requirements for the text of the device hostname.">
-    Name can use letters, numbers, and hyphens (-)
-  </message>
-  <message name="IDS_SETTINGS_ABOUT_PAGE_DEVICE_NAME_CONSTRAINTS_A11Y_DESCRIPTION" desc="Label describing the requirements for the text of the device hostname.">
-    Name can use letters, numbers, and hyphens (-), and must be between 1 and 15 characters inclusive.
-  </message>
-  <message name="IDS_SETTINGS_ABOUT_PAGE_DEVICE_NAME_INPUT_COUNT" desc="Label for the dialog input for the device name, informing the user the number of characters they have inputted compared to the maximum number of characters allowed.">
-    <ph name="CURRENT_CHARACTER_COUNT">$1<ex>10</ex></ph>/<ph name="MAX_CHARACTER_COUNT">$2<ex>15</ex></ph>
-  </message>
-  <message name="IDS_SETTINGS_ABOUT_PAGE_DEVICE_NAME_INPUT_A11Y_LABEL" desc="The a11y label for the edit device name dialog input, informing the user that they are currently naming the device">
-    Name device
-  </message>
-  <message name="IDS_SETTINGS_ABOUT_PAGE_DEVICE_NAME_DONE_BTN_A11Y_LABEL" desc="The a11y label for the done button in the edit device name dialog">
-    Name device to <ph name="DEVICE_NAME">$1<ex>MyChromebook</ex></ph>
-  </message>
-  <message name="IDS_SETTINGS_ABOUT_PAGE_DEVICE_NAME_EDIT_BTN_A11Y_LABEL" desc="The a11y label for the edit button for device name on the detailed build into page">
-    Change device name
-  </message>
-  <message name="IDS_SETTINGS_ABOUT_PAGE_DEVICE_NAME_EDIT_BTN_A11Y_DESCRIPTION" desc="The a11y description for the edit button for device name on the detailed build into page">
-    Current device name is <ph name="DEVICE_NAME">$1<ex>MyChromebook</ex></ph>
   </message>
   <message name="IDS_SETTINGS_UPGRADE_TRY_AGAIN" desc="Status label: Update check error (ChromiumOS/ChromeOS)">
     Couldn't update your Chromebook. Please try again later.
@@ -812,16 +782,16 @@
   <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_PUNCTUATION_STYLE" desc="The label for the dropdown used to set the Punctuation style for Japanese within the Japanese virtual and physical keyboard input settings. This controls what character is inserted when the user presses punctuation keys like comma or period. In Japanese, this string should be '句読点'.">
     Punctuation style
   </message>
-  <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_PUNCTUATION_STYLE_KUTEN_TOUTEN" translateable="false">
+  <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_PUNCTUATION_STYLE_TOUTEN_KUTEN" translateable="false">
     、。
   </message>
   <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_PUNCTUATION_STYLE_COMMA_PERIOD" translateable="false">
     ，．
   </message>
-  <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_PUNCTUATION_STYLE_KUTEN_PERIOD" translateable="false">
+  <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_PUNCTUATION_STYLE_TOUTEN_PERIOD" translateable="false">
     、．
   </message>
-  <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_PUNCTUATION_STYLE_COMMA_TOUTEN" translateable="false">
+  <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_PUNCTUATION_STYLE_COMMA_KUTEN" translateable="false">
     ，。
   </message>
   <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SYMBOL_STYLE"  desc="The label for the dropdown to set the Symbol style for the Japanese keyboard. This controls what character is inserted when the user presses symbol keys like brackets. This can be written as '記号' in Japanese.">
@@ -3119,60 +3089,6 @@ Press an assigned switch or key to remove assignment.
   </message>
   <message name="IDS_SETTINGS_CROSTINI_PORT_FORWARDING_SHOW_MORE_ACTIONS_ARIA_LABEL" desc="The aria label for the button that displays more actions to the user for an individual port i.e. the text that screen readers will read out for the button.">
     Show more actions for this port
-  </message>
-  <message name="IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_LABEL" desc="Label for managing extra Linux containers in ChromeOS.">
-    Manage extra containers
-  </message>
-  <message name="IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_DESCRIPTION" desc="Description for managing extra Linux containers.">
-    Create and delete extra containers.
-  </message>
-  <message name="IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_CREATE" desc="Label for the button the user clicks to create a new container.">
-    Create
-  </message>
-  <message name="IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_TABLE_TITLE" desc="Heading for the table of all containers and their associated virtual machines">
-    All containers
-  </message>
-  <message name="IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_DELETE" desc="Menu item the user selects to delete Linux container.">
-    Delete this container
-  </message>
-  <message name="IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_STOP" desc="Menu item the user selects to stop a running Linux container.">
-    Stop this container
-  </message>
-  <message name="IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_VM_NAME_LABEL" desc="Column heading for virtual machine name.">
-    VM name
-  </message>
-  <message name="IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_CONTAINER_NAME_LABEL" desc="Column heading for container name.">
-    Container name
-  </message>
-  <message name="IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_CONTAINER_IP_LABEL" desc="Column heading for container IP address.">
-    IP address
-  </message>
-  <message name="IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_SHARE_MICROPHONE" desc="Toggle label to share host microhone with this container.">
-    Share microphone
-  </message>
-  <message name="IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_APP_BADGE_COLOR" desc="Label for color picker to choose a badge color for this container's apps.">
-    App badge color
-  </message>
-  <message name="IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_CREATE_DIALOG_TITLE" desc="Title of the dialog for entering details to create a new Linux container.">
-    Create a new container
-  </message>
-  <message name="IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_CREATE_DIALOG_CONTAINER_EXISTS_ERROR" desc="Error for invalid input when creating a new Linux container.">
-    This container already exists.
-  </message>
-  <message name="IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_CREATE_DIALOG_EMPTY_CONTAINER_NAME_ERROR" desc="Error for invalid input when creating a new Linux container.">
-    Container name cannot be empty.
-  </message>
-  <message name="IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_CREATE_DIALOG_IMAGE_SERVER" desc="Heading for the input field for entering the image server URL when creating a new Linux container.">
-    Image Server
-  </message>
-  <message name="IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_CREATE_DIALOG_IMAGE_ALIAS" desc="Heading for the input field for entering the image alias string e.g. debian/buster when creating a new Linux container.">
-    Image Alias
-  </message>
-  <message name="IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_CREATE_DIALOG_ADD_CONTAINER_LABEL" desc="Heading for the input field for uploading an Ansible playbook or Crostini backup file to set up a Linux container.">
-    Create from an Ansible Playbook or a Crostini backup file
-  </message>
-  <message name="IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_CREATE_DIALOG_ADD_CONTAINER_BUTTON_LABEL" desc="Label for button to attach an Ansible Playbook or Crostini backup file to set up a Linux container.">
-    Select file
   </message>
   <message name="IDS_SETTINGS_CROSTINI_FILE_SELECTOR_DIALOG_TITLE" desc="The text used as the title for selecting a file for Crostini container creation">
     Select an Ansible Playbook or Crostini backup file

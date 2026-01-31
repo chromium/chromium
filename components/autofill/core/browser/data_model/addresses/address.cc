@@ -12,7 +12,6 @@
 #include <string_view>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/notreached.h"

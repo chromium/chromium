@@ -342,6 +342,7 @@
 <translation id="2201071101391734388">第 <ph name="INDEX" /> 張近期相片，共 <ph name="TOTAL_COUNT" /> 張。</translation>
 <translation id="2201687081523799384">收合 Google Tasks</translation>
 <translation id="2208323208084708176">整合桌面模式</translation>
+<translation id="2210311543574621570">按住 Ctrl + V 鍵即可查看剪貼簿。你可以在 chrome://flags 中停用 #clipboard-history-longpress 旗標，關閉這個快速鍵。</translation>
 <translation id="2215920961700443347">沒有網際網路連線。請連線到網際網路，然後再試一次。</translation>
 <translation id="2222841058024245321">桌面 7</translation>
 <translation id="2223384056430485343">在分割畫面中</translation>
@@ -937,7 +938,7 @@
 <translation id="4193857202545160520">顯示點擊次數和鍵盤快速鍵</translation>
 <translation id="4193969623755915875">在「探索」應用程式中使用<ph name="NEW_SHORTCUT" />開啟「說明」。</translation>
 <translation id="4195579532193195633">目前版本 <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
-<translation id="4195814663415092787">繼續瀏覽上次開啟的網頁</translation>
+<translation id="4195814663415092787">繼續先前進度</translation>
 <translation id="4195877955194704651">自動點擊按鈕</translation>
 <translation id="4197790712631116042">關閉</translation>
 <translation id="4201033867194214117">「<ph name="FEATURE_NAME" />」無法使用。</translation>
@@ -2110,7 +2111,7 @@
 <translation id="7982789257301363584">網路</translation>
 <translation id="7982878511129296052">關閉中...</translation>
 <translation id="7984197416080286869">指紋辨識失敗的次數過多</translation>
-<translation id="798779949890829624">這項設定是由系統管理員管理</translation>
+<translation id="798779949890829624">這項設定是由管理員管理</translation>
 <translation id="7989206653429884947">經常開啟</translation>
 <translation id="799296642788192631">你可以固定重要檔案。如要固定項目，請將游標懸停在該項目上，或是開啟「檔案」應用程式，並在項目上按一下滑鼠右鍵。</translation>
 <translation id="7994370417837006925">多帳戶登入</translation>
@@ -2163,7 +2164,7 @@
 <translation id="8149413265954228307">顯示藍牙設定。<ph name="STATE_TEXT" />。</translation>
 <translation id="8152092012181020186">按下 Ctrl + W 即可關閉。</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />，自動完成</translation>
-<translation id="8155007568264258537"><ph name="FEATURE_NAME" /> 這項設定是由系統管理員管理。</translation>
+<translation id="8155007568264258537"><ph name="FEATURE_NAME" /> 這項設定是由管理員管理。</translation>
 <translation id="8155628902202578800">開啟 <ph name="USER_EMAIL_ADDRESS" /> 的資訊對話方塊</translation>
 <translation id="8167567890448493835">使用<ph name="LOCALE_NAME" /></translation>
 <translation id="8168435359814927499">內容</translation>

@@ -461,8 +461,8 @@ class CONTENT_EXPORT KeepAliveURLLoader
   // The UKM source ID used by `request_tracker_`.
   std::optional<ukm::SourceId> ukm_source_id_;
 
-  // The tracker to record the browser-side UKM metrics for this request.
-  std::unique_ptr<KeepAliveRequestTracker> request_tracker_;
+  // The trackers to record the browser-side UKM metrics for this request.
+  std::vector<std::unique_ptr<KeepAliveRequestTracker>> request_trackers_;
 
   // The StoragePartition that initiates this loader.
   // It is ensured to outlive this because it owns KeepAliveURLLoaderService

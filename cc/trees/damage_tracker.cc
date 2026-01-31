@@ -8,7 +8,6 @@
 
 #include <algorithm>
 
-#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "cc/base/math_util.h"
 #include "cc/layers/heads_up_display_layer_impl.h"
@@ -177,7 +176,7 @@ void DamageTracker::InitializeUpdateDamageTracking(
         render_surface->OwningEffectNode()->view_transition_element_resource_id;
 
     if (resource_id.IsValid()) {
-      DCHECK(!base::Contains(id_to_render_surface_map, resource_id));
+      DCHECK(!id_to_render_surface_map.contains(resource_id));
       id_to_render_surface_map.emplace(resource_id, render_surface);
     }
   }
@@ -440,6 +439,8 @@ void DamageTracker::AccumulateDamageFromLayer(
     // only affected by the layer's damaged area, which could be empty.
     gfx::Rect damage_rect =
         gfx::UnionRects(layer->update_rect(), layer->GetDamageRect());
+    // Clip the damage to the visible layer.
+    damage_rect.Intersect(layer->visible_layer_rect());
     // if this is a view transition layer, the damage from the corresponding
     // live content surface should propagate to the layer's parent surface.
     // |view_transition_content_surface_damage_rect| is in the layer's space.
@@ -608,8 +609,8 @@ DamageTracker::GetViewTransitionContentSurfaceDamageInSharedElementLayerSpace(
 
     // A live content surface is found. Add this id to the current id list.
     // Don't add this id if no surface is found.
-    DCHECK(!base::Contains(current_view_transition_content_surfaces_by_id_,
-                           vt_resource_id));
+    DCHECK(!std::ranges::contains(
+        current_view_transition_content_surfaces_by_id_, vt_resource_id));
     current_view_transition_content_surfaces_by_id_.push_back(vt_resource_id);
   }
 
@@ -655,10 +656,10 @@ DamageTracker::GetViewTransitionContentSurfaceDamageInSharedElementLayerSpace(
   // (1) If this is a new content surface with vt_resource_id.
   // (2) If the content surface with vt_resource_id was there in the previous
   // frame but missing in the current frame.
-  if (base::Contains(previous_view_transition_content_surfaces_by_id_,
-                     vt_resource_id) !=
-      base::Contains(current_view_transition_content_surfaces_by_id_,
-                     vt_resource_id)) {
+  if (std::ranges::contains(previous_view_transition_content_surfaces_by_id_,
+                            vt_resource_id) !=
+      std::ranges::contains(current_view_transition_content_surfaces_by_id_,
+                            vt_resource_id)) {
     // The whole view transition layer is considered damaged.
     return layer_drawable_bounds;
   }

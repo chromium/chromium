@@ -107,7 +107,7 @@ base::Value TestUtils::GetSomeValue(ContentSettingsType content_type) {
   }
 
   // Other website settings allow arbitrary values.
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("foo", 42);
   return base::Value(std::move(dict));
 }

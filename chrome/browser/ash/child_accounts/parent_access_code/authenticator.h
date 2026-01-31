@@ -22,7 +22,7 @@ class AccessCodeConfig {
   // Returns AccessCodeConfig created from a |dictionary|, if the |dictionary|
   // contains valid config data.
   static std::optional<AccessCodeConfig> FromDictionary(
-      const base::Value::Dict& dictionary);
+      const base::DictValue& dictionary);
 
   // TODO(agawronska): Make constructor private.
   // To create valid AccessCodeConfig:
@@ -54,7 +54,7 @@ class AccessCodeConfig {
   }
 
   // Converts the AccessCodeConfig object to its dictionary equivalent.
-  base::Value::Dict ToDictionary() const;
+  base::DictValue ToDictionary() const;
 
  private:
   std::string shared_secret_;

@@ -14,14 +14,11 @@
 #import "base/task/sequenced_task_runner.h"
 #import "ios/web/public/web_state_id.h"
 
-@class FileUploadPanelMediaItem;
-
 // A class that loads file representations for `PHPickerResult` objects.
 class FileUploadPanelPickerResultLoader {
  public:
   // The callback will be called with the loaded items, or `nil` on failure.
-  using LoadResultCallback =
-      base::OnceCallback<void(NSArray<FileUploadPanelMediaItem*>*)>;
+  using LoadResultCallback = base::OnceCallback<void(NSArray<NSURL*>*)>;
 
   FileUploadPanelPickerResultLoader(NSArray<PHPickerResult*>* results,
                                     web::WebStateID web_state_id);
@@ -44,22 +41,20 @@ class FileUploadPanelPickerResultLoader {
   // next.
   void OnResultLoaded(NSUInteger index,
                       LoadResultCallback callback,
-                      FileUploadPanelMediaItem* loaded_item);
+                      NSURL* loaded_item);
 
   // Loads the file representation for a single `result` from the photo library.
-  void LoadPickerResult(
-      PHPickerResult* result,
-      base::OnceCallback<void(FileUploadPanelMediaItem*)> callback);
+  void LoadPickerResult(PHPickerResult* result,
+                        base::OnceCallback<void(NSURL*)> callback);
 
   // Handles the result of loading a file from the photo library.
-  void HandleMovedFileRepresentation(
-      UTType* file_type,
-      base::OnceCallback<void(FileUploadPanelMediaItem*)> callback,
-      std::optional<base::FilePath> file_path);
+  void HandleMovedFileRepresentation(UTType* file_type,
+                                     base::OnceCallback<void(NSURL*)> callback,
+                                     std::optional<base::FilePath> file_path);
 
   SEQUENCE_CHECKER(sequence_checker_);
   NSArray<PHPickerResult*>* results_;
-  NSMutableArray<FileUploadPanelMediaItem*>* loaded_items_;
+  NSMutableArray<NSURL*>* loaded_items_;
   web::WebStateID web_state_id_;
   base::WeakPtrFactory<FileUploadPanelPickerResultLoader> weak_ptr_factory_{
       this};

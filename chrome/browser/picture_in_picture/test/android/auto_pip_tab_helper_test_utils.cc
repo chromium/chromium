@@ -19,8 +19,7 @@ static void JNI_AutoPictureInPictureTabHelperTestUtils_InitializeForTesting(
   AutoPictureInPictureTabHelper::GetOrCreateForWebContents(web_contents);
 }
 
-static jboolean
-JNI_AutoPictureInPictureTabHelperTestUtils_IsInAutoPictureInPicture(
+static bool JNI_AutoPictureInPictureTabHelperTestUtils_IsInAutoPictureInPicture(
     JNIEnv* env,
     content::WebContents* web_contents) {
   auto* tab_helper =
@@ -29,7 +28,7 @@ JNI_AutoPictureInPictureTabHelperTestUtils_IsInAutoPictureInPicture(
   return tab_helper->IsInAutoPictureInPicture();
 }
 
-static jboolean
+static bool
 JNI_AutoPictureInPictureTabHelperTestUtils_HasAutoPictureInPictureBeenRegistered(
     JNIEnv* env,
     content::WebContents* web_contents) {
@@ -39,8 +38,7 @@ JNI_AutoPictureInPictureTabHelperTestUtils_HasAutoPictureInPictureBeenRegistered
   return tab_helper->HasAutoPictureInPictureBeenRegistered();
 }
 
-static jboolean
-JNI_AutoPictureInPictureTabHelperTestUtils_HasPictureInPictureVideo(
+static bool JNI_AutoPictureInPictureTabHelperTestUtils_HasPictureInPictureVideo(
     JNIEnv* env,
     content::WebContents* web_contents) {
   return web_contents->HasPictureInPictureVideo();
@@ -50,14 +48,14 @@ static void
 JNI_AutoPictureInPictureTabHelperTestUtils_SetHasHighMediaEngagement(
     JNIEnv* env,
     content::WebContents* web_contents,
-    jboolean has_high_engagement) {
+    bool has_high_engagement) {
   auto* tab_helper =
       AutoPictureInPictureTabHelper::FromWebContents(web_contents);
   CHECK(tab_helper);
   tab_helper->set_has_high_engagement_for_testing(has_high_engagement);
 }
 
-static jint
+static int32_t
 JNI_AutoPictureInPictureTabHelperTestUtils_GetDismissCountForTesting(
     JNIEnv* env,
     content::WebContents* web_contents,
@@ -72,12 +70,18 @@ static void
 JNI_AutoPictureInPictureTabHelperTestUtils_SetIsUsingCameraOrMicrophone(
     JNIEnv* env,
     content::WebContents* web_contents,
-    jboolean is_using_camera_or_microphone) {
+    bool is_using_camera_or_microphone) {
   auto* tab_helper =
       AutoPictureInPictureTabHelper::FromWebContents(web_contents);
   CHECK(tab_helper);
   tab_helper->set_is_using_camera_or_microphone_for_testing(
       is_using_camera_or_microphone);
+}
+
+static bool JNI_AutoPictureInPictureTabHelperTestUtils_IsCurrentlyAudible(
+    JNIEnv* env,
+    content::WebContents* web_contents) {
+  return web_contents->IsCurrentlyAudible();
 }
 
 }  // namespace picture_in_picture

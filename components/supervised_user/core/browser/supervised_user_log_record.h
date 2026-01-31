@@ -7,8 +7,8 @@
 
 #include <optional>
 #include <ostream>
+#include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 
 class HostContentSettingsMap;
@@ -19,7 +19,9 @@ class IdentityManager;
 }
 
 namespace supervised_user {
-class SupervisedUserService;
+// TODO(crbug.com/465437113): Resolve dependency cycle.
+class SupervisedUserUrlFilteringService;
+class DeviceParentalControls;
 
 // Stores information required to log UMA record histograms for supervised
 // profiles (Family Link accounts or locally supervised devices).
@@ -61,7 +63,14 @@ class SupervisedUserLogRecord {
       signin::IdentityManager* identity_manager,
       const PrefService& pref_service,
       const HostContentSettingsMap& content_settings_map,
-      SupervisedUserService* supervised_user_service);
+      SupervisedUserUrlFilteringService* url_filtering_service,
+      const DeviceParentalControls& device_parental_controls);
+
+  // Given a list of records that map to the supervision state of primary
+  // accounts on the user's device, emits metrics that reflect the supervision
+  // status of the user. Returns true if one or more histograms were emitted.
+  static bool EmitHistograms(
+      const std::vector<SupervisedUserLogRecord>& records);
 
   // Returns the supervision status of the primary account.
   std::optional<Segment> GetSupervisionStatusForPrimaryAccount() const;

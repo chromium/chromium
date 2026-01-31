@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_SAFETY_HUB_REVOKED_PERMISSIONS_OS_NOTIFICATION_DISPLAY_MANAGER_H_
 #define CHROME_BROWSER_UI_SAFETY_HUB_REVOKED_PERMISSIONS_OS_NOTIFICATION_DISPLAY_MANAGER_H_
 
+#include <set>
+
 #include "base/memory/scoped_refptr.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -17,8 +19,14 @@ class RevokedPermissionsOSNotificationDisplayManager : public KeyedService {
   class SafetyHubNotificationWrapper {
    public:
     virtual ~SafetyHubNotificationWrapper() = default;
-    virtual void DisplayNotification(int count) = 0;
-    virtual void UpdateNotification(int count) = 0;
+    virtual void DisplayNotification(int count,
+                                     std::string& first_affected_domain,
+                                     bool any_suspicious_revocations,
+                                     bool any_disruptive_revocations) = 0;
+    virtual void UpdateNotification(int count,
+                                    std::string& first_affected_domain,
+                                    bool any_suspicious_revocations,
+                                    bool any_disruptive_revocations) = 0;
   };
 
   explicit RevokedPermissionsOSNotificationDisplayManager(
@@ -35,7 +43,11 @@ class RevokedPermissionsOSNotificationDisplayManager : public KeyedService {
   virtual void UpdateNotification();
 
  private:
-  int GetTotalRevocationCount();
+  std::set<GURL> GetRevocationUrls();
+  bool IsAnyRevocationDueToSuspiciousContent(
+      const std::set<GURL>& revoked_urls);
+  bool IsAnyRevocationDueToDisruptiveContent(
+      const std::set<GURL>& revoked_urls);
 
   scoped_refptr<HostContentSettingsMap> hcsm_;
   std::unique_ptr<SafetyHubNotificationWrapper> notification_wrapper_;

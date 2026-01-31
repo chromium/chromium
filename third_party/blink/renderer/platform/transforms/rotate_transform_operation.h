@@ -77,6 +77,8 @@ class PLATFORM_EXPORT RotateTransformOperation : public TransformOperation {
            type == kRotateZ || type == kRotate3D;
   }
 
+  String DebugString() const override;
+
  protected:
   bool IsEqualAssumingSameType(const TransformOperation&) const override;
 

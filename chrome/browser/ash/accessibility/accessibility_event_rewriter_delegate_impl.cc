@@ -122,7 +122,7 @@ void AccessibilityEventRewriterDelegateImpl::DispatchKeyEventToChromeVoxMv3(
   keyboard_event.shift_key = key_event->IsShiftDown();
 
   // Build the extension event.
-  base::Value::List event_args;
+  base::ListValue event_args;
   event_args.Append(keyboard_event.ToValue());
   std::unique_ptr<extensions::Event> extension_event;
   if (key_event->type() == ui::EventType::kKeyPressed) {
@@ -168,7 +168,7 @@ void AccessibilityEventRewriterDelegateImpl::SendSwitchAccessCommand(
   extensions::EventRouter* event_router =
       extensions::EventRouter::Get(AccessibilityManager::Get()->profile());
 
-  base::Value::List event_args;
+  base::ListValue event_args;
   event_args.Append(ToString(command));
 
   auto event = std::make_unique<extensions::Event>(
@@ -185,11 +185,11 @@ void AccessibilityEventRewriterDelegateImpl::SendPointScanPoint(
   extensions::EventRouter* event_router =
       extensions::EventRouter::Get(AccessibilityManager::Get()->profile());
 
-  base::Value::Dict point_dict;
+  base::DictValue point_dict;
   point_dict.Set("x", point.x());
   point_dict.Set("y", point.y());
 
-  base::Value::List event_args;
+  base::ListValue event_args;
   event_args.Append(std::move(point_dict));
 
   auto event = std::make_unique<extensions::Event>(
@@ -206,7 +206,7 @@ void AccessibilityEventRewriterDelegateImpl::SendMagnifierCommand(
   extensions::EventRouter* event_router =
       extensions::EventRouter::Get(AccessibilityManager::Get()->profile());
 
-  base::Value::List event_args;
+  base::ListValue event_args;
   event_args.Append(ToString(command));
 
   auto event = std::make_unique<extensions::Event>(

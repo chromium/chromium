@@ -170,7 +170,7 @@ class SuggestionLayout extends ViewGroup {
         mContentHeightPx = res.getDimensionPixelSize(R.dimen.omnibox_suggestion_content_height);
 
         mContentPaddingPx = res.getDimensionPixelSize(R.dimen.omnibox_suggestion_content_padding);
-        mMinimumContentPadding = res.getDimensionPixelSize(R.dimen.omnibox_simple_card_leadin);
+        mMinimumContentPadding = res.getDimensionPixelSize(R.dimen.omnibox_simple_card_lead_in);
 
         mSuggestionEndPaddingNoActionButtonPx =
                 res.getDimensionPixelSize(R.dimen.omnibox_suggestion_end_padding_no_action_button);

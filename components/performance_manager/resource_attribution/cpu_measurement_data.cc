@@ -55,8 +55,8 @@ SharedCPUTimeResultData::SharedCPUTimeResultData(SharedCPUTimeResultData&&) =
 SharedCPUTimeResultData& SharedCPUTimeResultData::operator=(
     SharedCPUTimeResultData&&) = default;
 
-base::Value::Dict SharedCPUTimeResultData::Describe() const {
-  base::Value::Dict dict;
+base::DictValue SharedCPUTimeResultData::Describe() const {
+  base::DictValue dict;
   if (result_ptr) {
     const CPUTimeResult& result = result_ptr->result();
     const base::TimeDelta measurement_interval =

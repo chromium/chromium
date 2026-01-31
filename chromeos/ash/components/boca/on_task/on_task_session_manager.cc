@@ -174,7 +174,8 @@ void OnTaskSessionManager::OnBundleUpdated(const ::boca::Bundle& bundle) {
 
     // No need to add the tab if the tab is already tracked as opened in the
     // SWA and the restriction levels are the same.
-    if (provider_url_tab_ids_map_.contains(url)) {
+    if (auto it = provider_url_tab_ids_map_.find(url);
+        it != provider_url_tab_ids_map_.end()) {
       if (provider_url_restriction_level_map_[url] == restriction_level) {
         continue;
       }
@@ -187,9 +188,8 @@ void OnTaskSessionManager::OnBundleUpdated(const ::boca::Bundle& bundle) {
       // TODO(crbug.com/373961026): Remove tabs for restriction updates that
       // went to a stricter setting.
       system_web_app_launch_helper_->RemoveTab(
-          provider_url_tab_ids_map_[url],
-          base::BindOnce(&OnTaskSessionManager::OnBundleTabRemoved,
-                         weak_ptr_factory_.GetWeakPtr(), url));
+          it->second, base::BindOnce(&OnTaskSessionManager::OnBundleTabRemoved,
+                                     weak_ptr_factory_.GetWeakPtr(), url));
     }
 
     has_new_content = true;
@@ -291,9 +291,9 @@ void OnTaskSessionManager::OnAppReloaded() {
     ::boca::LockedNavigationOptions::NavigationType restriction_level =
         ::boca::LockedNavigationOptions::DOMAIN_NAVIGATION;  // Default
                                                              // restriction.
-    if (provider_url_restriction_level_map_.contains(provider_sent_url)) {
-      restriction_level =
-          provider_url_restriction_level_map_[provider_sent_url];
+    if (auto it = provider_url_restriction_level_map_.find(provider_sent_url);
+        it != provider_url_restriction_level_map_.end()) {
+      restriction_level = it->second;
     }
     system_web_app_launch_helper_->AddTab(
         provider_sent_url, restriction_level,
@@ -492,8 +492,8 @@ void OnTaskSessionManager::OnTabRemoved(const SessionID tab_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(tab_id.is_valid());
   for (auto& [provider_sent_url, tab_ids] : provider_url_tab_ids_map_) {
-    if (tab_ids.contains(tab_id)) {
-      tab_ids.erase(tab_id);
+    if (auto it = tab_ids.find(tab_id); it != tab_ids.end()) {
+      tab_ids.erase(it);
       return;
     }
   }
@@ -625,9 +625,9 @@ void OnTaskSessionManager::OnBundleTabAdded(
   if (tab_id.is_valid()) {
     // Ensure parent tab association with the right URL in case it is
     // accidentally added by `OnTabAdded` while observing new tab additions.
-    for (const auto& [provider_sent_url, tab_ids] : provider_url_tab_ids_map_) {
-      if (tab_ids.contains(tab_id)) {
-        provider_url_tab_ids_map_[provider_sent_url].erase(tab_id);
+    for (auto& [provider_sent_url, tab_ids] : provider_url_tab_ids_map_) {
+      if (auto it = tab_ids.find(tab_id); it != tab_ids.end()) {
+        tab_ids.erase(it);
         break;
       }
     }
@@ -644,9 +644,10 @@ void OnTaskSessionManager::OnBundleTabAdded(
 
 void OnTaskSessionManager::OnBundleTabRemoved(GURL url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (provider_url_tab_ids_map_.contains(url)) {
+  if (auto it = provider_url_tab_ids_map_.find(url);
+      it != provider_url_tab_ids_map_.end()) {
     // TODO(b/368105857): Remove child tabs.
-    provider_url_tab_ids_map_.erase(url);
+    provider_url_tab_ids_map_.erase(it);
     provider_url_restriction_level_map_.erase(url);
   }
 }

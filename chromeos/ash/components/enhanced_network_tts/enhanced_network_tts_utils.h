@@ -43,7 +43,7 @@ mojom::TtsResponsePtr GetResultOnError(const mojom::TtsRequestError error_code);
 // the text piece that has the |start_index| in the original input utterance.
 // |last_request| indicates if this is the last JSON data we expect.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ENHANCED_NETWORK_TTS)
-mojom::TtsResponsePtr UnpackJsonResponse(const base::Value::List& list_data,
+mojom::TtsResponsePtr UnpackJsonResponse(const base::ListValue& list_data,
                                          const int start_index,
                                          const bool last_request);
 

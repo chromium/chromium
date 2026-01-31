@@ -38,7 +38,7 @@ class ChromeSetting final : public gin::Wrappable<ChromeSetting> {
                 const APITypeReferenceMap* type_refs,
                 const BindingAccessChecker* access_checker,
                 const std::string& pref_name,
-                const base::Value::Dict& argument_spec);
+                const base::DictValue& argument_spec);
 
   ~ChromeSetting() override;
 
@@ -46,7 +46,7 @@ class ChromeSetting final : public gin::Wrappable<ChromeSetting> {
   static v8::Local<v8::Object> Create(
       v8::Isolate* isolate,
       const std::string& property_name,
-      const base::Value::List* property_values,
+      const base::ListValue* property_values,
       APIRequestHandler* request_handler,
       APIEventHandler* event_handler,
       APITypeReferenceMap* type_refs,

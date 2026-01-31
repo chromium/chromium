@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "components/history/core/browser/history_service.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/window_open_disposition.h"
@@ -671,6 +672,55 @@ class ViewBoundsWaiter : public views::ViewObserver {
   bool observed_non_empty_bounds_ = false;
   const raw_ptr<views::View> observed_view_;
   base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
+};
+
+// Used to wait for view to change visibility to expected value.
+class ViewVisibilityWaiter : public views::ViewObserver {
+ public:
+  explicit ViewVisibilityWaiter(views::View* observed_view,
+                                bool expected_visible);
+  ViewVisibilityWaiter(const ViewVisibilityWaiter&) = delete;
+  ViewVisibilityWaiter& operator=(const ViewVisibilityWaiter&) = delete;
+
+  ~ViewVisibilityWaiter() override;
+
+  void Wait();
+
+ private:
+  // views::ViewObserver:
+  void OnViewVisibilityChanged(views::View* observed_view,
+                               views::View* starting_view,
+                               bool visible) override;
+
+  raw_ptr<views::View> view_;
+  const bool expected_visible_;
+  base::RunLoop run_loop_;
+  base::ScopedObservation<views::View, views::ViewObserver> observation_{this};
+};
+
+// Tracks WebContents focus events for testing.
+class WebContentsFocusEventTracker : public content::WebContentsObserver {
+ public:
+  explicit WebContentsFocusEventTracker(content::WebContents* web_contents);
+  WebContentsFocusEventTracker(const WebContentsFocusEventTracker&) = delete;
+  WebContentsFocusEventTracker& operator=(const WebContentsFocusEventTracker&) =
+      delete;
+  ~WebContentsFocusEventTracker() override;
+
+  // content::WebContentsObserver:
+  void OnWebContentsFocused(
+      content::RenderWidgetHost* render_widget_host) override;
+  void OnWebContentsLostFocus(
+      content::RenderWidgetHost* render_widget_host) override;
+
+  int focused_count() const { return focused_count_; }
+  int lost_focus_count() const { return lost_focus_count_; }
+
+  void Reset();
+
+ private:
+  int focused_count_ = 0;
+  int lost_focus_count_ = 0;
 };
 
 }  // namespace ui_test_utils

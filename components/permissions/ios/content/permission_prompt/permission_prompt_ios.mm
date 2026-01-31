@@ -60,15 +60,15 @@ PermissionPromptIOS::GetPromptPosition() const {
 }
 
 void PermissionPromptIOS::Accept() {
-  delegate_->Accept();
+  delegate_->Accept(/*prompt_options=*/std::monostate());
 }
 
 void PermissionPromptIOS::AcceptThisTime() {
-  delegate_->AcceptThisTime();
+  delegate_->AcceptThisTime(/*prompt_options=*/std::monostate());
 }
 
 void PermissionPromptIOS::Deny() {
-  delegate_->Deny();
+  delegate_->Deny(/*prompt_options=*/std::monostate());
 }
 
 NSString* PermissionPromptIOS::GetPositiveButtonText(bool is_one_time) const {

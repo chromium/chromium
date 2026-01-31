@@ -1,0 +1,7 @@
+include_rules = [
+  # keep-sorted start
+  "+ios/chrome/browser/menu/ui_bundled",
+  "+ios/chrome/browser/saved_tab_groups/ui/face_pile_providing.h",
+  "+ios/chrome/browser/share_kit/model/sharing_state.h",
+  # keep-sorted end
+]

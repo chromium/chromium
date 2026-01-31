@@ -124,8 +124,8 @@ bool JavaScriptBrowserTest::BuildJavascriptLibraries(
 std::u16string JavaScriptBrowserTest::BuildRunTestJSCall(
     bool is_async,
     const std::string& function_name,
-    base::Value::List test_func_args) {
-  auto arguments = base::Value::List()
+    base::ListValue test_func_args) {
+  auto arguments = base::ListValue()
                        .Append(is_async)
                        .Append(function_name)
                        .Append(std::move(test_func_args));

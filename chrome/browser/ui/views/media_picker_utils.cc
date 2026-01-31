@@ -30,9 +30,11 @@ views::Widget* CreateMediaPickerDialogWidget(Browser* browser,
   views::Widget* widget = nullptr;
   if (MediaPickerCanShowAsWebModal(web_contents)) {
     // Close the extension popup to prevent spoofing.
-    if (browser && browser->window() &&
-        browser->window()->GetExtensionsContainer()) {
-      browser->window()->GetExtensionsContainer()->HideActivePopup();
+    if (browser) {
+      ExtensionsContainer* container = ExtensionsContainer::From(*browser);
+      if (container) {
+        container->HideActivePopup();
+      }
     }
     widget =
         constrained_window::ShowWebModalDialogViews(delegate, web_contents);

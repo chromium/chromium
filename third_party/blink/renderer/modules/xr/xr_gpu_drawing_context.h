@@ -35,7 +35,7 @@ class XRGPUDrawingContext final : public XRLayerDrawingContext {
 
   // XrLayerClient overrides.
   XRSession* session() const override;
-  scoped_refptr<StaticBitmapImage> TransferToStaticBitmapImage() override;
+  std::unique_ptr<SharedImageHolder> TransferToSharedImageHolder() override;
   XRFrameTransportDelegate* GetTransportDelegate() override;
 
   GPUDevice* device() { return device_; }

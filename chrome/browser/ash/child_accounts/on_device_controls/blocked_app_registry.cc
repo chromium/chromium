@@ -11,7 +11,6 @@
 
 #include "app_controls_metrics_utils.h"
 #include "ash/constants/ash_pref_names.h"
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
@@ -60,7 +59,7 @@ BlockedAppRegistry::~BlockedAppRegistry() = default;
 void BlockedAppRegistry::AddApp(const std::string& app_id) {
   VLOG(1) << "app-controls: adding blocked app " << app_id;
 
-  if (base::Contains(registry_, app_id)) {
+  if (registry_.contains(app_id)) {
     LOG(WARNING) << app_id << " already in blocked app registry";
     base::UmaHistogramEnumeration(
         kOnDeviceControlsBlockAppActionHistogramName,
@@ -84,7 +83,7 @@ void BlockedAppRegistry::AddApp(const std::string& app_id) {
 void BlockedAppRegistry::RemoveApp(const std::string& app_id) {
   VLOG(1) << "app-controls: removing blocked app " << app_id;
 
-  if (!base::Contains(registry_, app_id)) {
+  if (!registry_.contains(app_id)) {
     LOG(WARNING) << app_id << " not in blocked app registry";
     base::UmaHistogramEnumeration(
         kOnDeviceControlsBlockAppActionHistogramName,
@@ -132,7 +131,7 @@ std::set<std::string> BlockedAppRegistry::GetBlockedApps() {
 }
 
 LocalAppState BlockedAppRegistry::GetAppState(const std::string& app_id) const {
-  if (!base::Contains(registry_, app_id)) {
+  if (!registry_.contains(app_id)) {
     return LocalAppState::kAvailable;
   }
 

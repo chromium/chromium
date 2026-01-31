@@ -15,7 +15,7 @@
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/ui/event_dispatcher.h"
-#include "chrome/browser/actor/ui/mocks/mock_actor_ui_state_manager.h"
+#include "chrome/browser/actor/ui/test_support/mock_actor_ui_state_manager.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -47,7 +47,11 @@ class ActorKeyedServiceTest : public testing::Test {
  public:
   ActorKeyedServiceTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {}
+        testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kGlicActor,
+        {{features::kGlicActorPolicyControlExemption.name, "true"}});
+  }
   ~ActorKeyedServiceTest() override = default;
 
   // testing::Test:
@@ -56,7 +60,6 @@ class ActorKeyedServiceTest : public testing::Test {
     profile_ = testing_profile_manager()->CreateTestingProfile("profile");
     auto* actor_service = ActorKeyedService::Get(profile());
     ASSERT_TRUE(actor_service);
-    actor_service->GetPolicyChecker().SetActOnWebForTesting(true);
     actor_service->SetActorUiStateManagerForTesting(BuildUiStateManagerMock());
   }
 
@@ -74,6 +77,7 @@ class ActorKeyedServiceTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager testing_profile_manager_;
   raw_ptr<TestingProfile> profile_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Adds a task to ActorKeyedService

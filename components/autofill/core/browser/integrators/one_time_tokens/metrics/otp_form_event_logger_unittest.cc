@@ -67,7 +67,8 @@ class OtpFormEventLoggerIntegrationTest
     autofill_client().set_sms_otp_backend(std::move(mock_sms_otp_backend));
     autofill_client().set_one_time_token_service(
         std::make_unique<one_time_tokens::OneTimeTokenServiceImpl>(
-            autofill_client().GetSmsOtpBackend()));
+            autofill_client().GetSmsOtpBackend(),
+            /*gmail_otp_backend=*/nullptr));
   }
 
   void ResetCrowdsourcingManager() {
@@ -77,9 +78,7 @@ class OtpFormEventLoggerIntegrationTest
     // Default action: always run the callback with a default/empty response
     ON_CALL(*mock_crowdsourcing_manager, StartQueryRequest)
         .WillByDefault(
-            [](const std::vector<
-                   raw_ptr<const FormStructure, VectorExperimental>>&,
-               std::optional<net::IsolationInfo>,
+            [](const std::vector<FormData>&, std::optional<net::IsolationInfo>,
                base::OnceCallback<void(
                    std::optional<AutofillCrowdsourcingManager::QueryResponse>)>
                    callback) {
@@ -106,9 +105,7 @@ class OtpFormEventLoggerIntegrationTest
         .Times(testing::AtLeast(0))
         .WillRepeatedly(
             [response, form_signature](
-                const std::vector<
-                    raw_ptr<const FormStructure, VectorExperimental>>&,
-                std::optional<net::IsolationInfo>,
+                const std::vector<FormData>&, std::optional<net::IsolationInfo>,
                 base::OnceCallback<void(
                     std::optional<AutofillCrowdsourcingManager::QueryResponse>)>
                     callback) {
@@ -228,8 +225,6 @@ TEST_F(OtpFormEventLoggerIntegrationTest, OtpReady) {
   autofill_manager().OnAskForValuesToFillTest(
       otp_form, otp_form.fields().front().global_id());
 
-  FormInteractionsFlowId flow_id =
-      test_api(autofill_manager()).otp_form_interactions_flow_id();
   // Simulate the WillSubmit event.
   SubmitForm(otp_form);
   DeleteDriverToCommitMetrics();
@@ -252,7 +247,6 @@ TEST_F(OtpFormEventLoggerIntegrationTest, OtpReady) {
               {Ukm::kFillingAssistanceName, 0},
               {Ukm::kAutofillFillsName, 0},
               {Ukm::kFormElementUserModificationsName, 0},
-              {Ukm::kFlowIdName, flow_id.value()},
               {Ukm::kFormTypesName,
                AutofillMetrics::FormTypesToBitVector(
                    {FormTypeNameForLogging::kOneTimePasswordForm})}}}));
@@ -279,8 +273,6 @@ TEST_F(OtpFormEventLoggerIntegrationTest, OtpNotReady) {
   autofill_manager().OnAskForValuesToFillTest(
       otp_form, otp_form.fields().front().global_id());
 
-  FormInteractionsFlowId flow_id =
-      test_api(autofill_manager()).otp_form_interactions_flow_id();
   // Simulate the WillSubmit event.
   SubmitForm(otp_form);
   DeleteDriverToCommitMetrics();
@@ -303,7 +295,6 @@ TEST_F(OtpFormEventLoggerIntegrationTest, OtpNotReady) {
               {Ukm::kFillingAssistanceName, 0},
               {Ukm::kAutofillFillsName, 0},
               {Ukm::kFormElementUserModificationsName, 0},
-              {Ukm::kFlowIdName, flow_id.value()},
               {Ukm::kFormTypesName,
                AutofillMetrics::FormTypesToBitVector(
                    {FormTypeNameForLogging::kOneTimePasswordForm})}}}));
@@ -344,8 +335,6 @@ TEST_F(OtpFormEventLoggerIntegrationTest, OtpAccepted) {
       otp_form.fields().front().global_id(), &fill_data,
       AutofillTriggerSource::kPopup);
 
-  FormInteractionsFlowId flow_id =
-      test_api(autofill_manager()).otp_form_interactions_flow_id();
   SubmitForm(otp_form);
   DeleteDriverToCommitMetrics();
 
@@ -369,7 +358,6 @@ TEST_F(OtpFormEventLoggerIntegrationTest, OtpAccepted) {
               {Ukm::kFillingAssistanceName, 1},
               {Ukm::kAutofillFillsName, 1},
               {Ukm::kFormElementUserModificationsName, 0},
-              {Ukm::kFlowIdName, flow_id.value()},
               {Ukm::kFormTypesName,
                AutofillMetrics::FormTypesToBitVector(
                    {FormTypeNameForLogging::kOneTimePasswordForm})}}}));
@@ -434,8 +422,6 @@ TEST_F(OtpFormEventLoggerIntegrationTest, OtpNotAccepted) {
   // Simulate the user NOT accepting the suggestion.
   // We don't call FillOrPreviewForm.
 
-  FormInteractionsFlowId flow_id =
-      test_api(autofill_manager()).otp_form_interactions_flow_id();
   SubmitForm(otp_form);
   DeleteDriverToCommitMetrics();
 
@@ -461,7 +447,6 @@ TEST_F(OtpFormEventLoggerIntegrationTest, OtpNotAccepted) {
               {Ukm::kFillingAssistanceName, 0},
               {Ukm::kAutofillFillsName, 0},
               {Ukm::kFormElementUserModificationsName, 0},
-              {Ukm::kFlowIdName, flow_id.value()},
               {Ukm::kFormTypesName,
                AutofillMetrics::FormTypesToBitVector(
                    {FormTypeNameForLogging::kOneTimePasswordForm})}}}));
@@ -505,8 +490,6 @@ TEST_F(OtpFormEventLoggerIntegrationTest, OtpAcceptedAndCorrected) {
   SimulateUserChangedFieldTo(otp_form, otp_form.fields().front().global_id(),
                              u"654321");
 
-  FormInteractionsFlowId flow_id =
-      test_api(autofill_manager()).otp_form_interactions_flow_id();
   SubmitForm(otp_form);
   DeleteDriverToCommitMetrics();
 
@@ -530,7 +513,6 @@ TEST_F(OtpFormEventLoggerIntegrationTest, OtpAcceptedAndCorrected) {
               {Ukm::kFillingAssistanceName, 1},
               {Ukm::kAutofillFillsName, 1},
               {Ukm::kFormElementUserModificationsName, 1},
-              {Ukm::kFlowIdName, flow_id.value()},
               {Ukm::kFormTypesName,
                AutofillMetrics::FormTypesToBitVector(
                    {FormTypeNameForLogging::kOneTimePasswordForm})}}}));

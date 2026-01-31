@@ -4,10 +4,10 @@
 
 #include "third_party/blink/renderer/modules/cache_storage/cache.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
@@ -66,7 +66,7 @@ bool VaryHeaderContainsAsterisk(const Response* response) {
     Vector<String> fields;
     varyHeader.Split(',', fields);
     String (String::*strip_whitespace)() const = &String::StripWhiteSpace;
-    return base::Contains(fields, "*", strip_whitespace);
+    return std::ranges::contains(fields, "*", strip_whitespace);
   }
   return false;
 }
@@ -298,10 +298,8 @@ class Cache::ResponseBodyLoader final
         trace_id_(trace_id) {}
 
   void OnResponse(Response* response, ExceptionState& exception_state) {
-    TRACE_EVENT_WITH_FLOW0(
-        "CacheStorage", "Cache::ResponseBodyLoader::OnResponse",
-        TRACE_ID_GLOBAL(trace_id_),
-        TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+    TRACE_EVENT("CacheStorage", "Cache::ResponseBodyLoader::OnResponse",
+                perfetto::Flow::Global(trace_id_));
 
     if (require_ok_response_ && !response->ok()) {
       barrier_callback_->OnError("Request failed");
@@ -388,11 +386,10 @@ class Cache::BarrierCallbackForPutComplete final
   void OnSuccess(wtf_size_t index,
                  mojom::blink::BatchOperationPtr batch_operation) {
     DCHECK_LT(index, batch_operations_.size());
-    TRACE_EVENT_WITH_FLOW1(
-        "CacheStorage", "Cache::BarrierCallbackForPutComplete::OnSuccess",
-        TRACE_ID_GLOBAL(trace_id_),
-        TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "batch_operation",
-        CacheStorageTracedValue(batch_operation));
+    TRACE_EVENT("CacheStorage",
+                "Cache::BarrierCallbackForPutComplete::OnSuccess",
+                perfetto::Flow::Global(trace_id_), "batch_operation",
+                CacheStorageTracedValue(batch_operation));
     if (!StillActive())
       return;
     batch_operations_[index] = std::move(batch_operation);
@@ -412,10 +409,10 @@ class Cache::BarrierCallbackForPutComplete final
                ScriptPromiseResolver<IDLUndefined>* resolver,
                mojom::blink::CacheStorageVerboseErrorPtr error) {
               base::TimeDelta elapsed = base::TimeTicks::Now() - start_time;
-              TRACE_EVENT_WITH_FLOW1(
+              TRACE_EVENT(
                   "CacheStorage",
                   "Cache::BarrierCallbackForPutComplete::OnSuccess::Callback",
-                  TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_IN, "status",
+                  perfetto::TerminatingFlow::Global(trace_id), "status",
                   CacheStorageTracedValue(error->value));
               if (operation_count > 1) {
                 UMA_HISTOGRAM_LONG_TIMES(
@@ -586,11 +583,10 @@ class Cache::CodeCacheHandleCallbackForPut final
   ~CodeCacheHandleCallbackForPut() override = default;
 
   void DidFetchDataLoadedArrayBuffer(DOMArrayBuffer* array_buffer) override {
-    TRACE_EVENT_WITH_FLOW1(
+    TRACE_EVENT(
         "CacheStorage",
         "Cache::CodeCacheHandleCallbackForPut::DidFetchDataLoadedArrayBuffer",
-        TRACE_ID_GLOBAL(trace_id_),
-        TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "url",
+        perfetto::Flow::Global(trace_id_), "url",
         CacheStorageTracedValue(url_.GetString()));
     mojom::blink::BatchOperationPtr batch_operation =
         mojom::blink::BatchOperation::New();
@@ -788,8 +784,7 @@ ScriptPromise<IDLUndefined> Cache::put(ScriptState* script_state,
                                        ExceptionState& exception_state) {
   DCHECK(request_info);
   int64_t trace_id = blink::cache_storage::CreateTraceId();
-  TRACE_EVENT_WITH_FLOW0("CacheStorage", "Cache::put",
-                         TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("CacheStorage", "Cache::put", perfetto::Flow::Global(trace_id));
   Request* request = nullptr;
   switch (request_info->GetContentType()) {
     case V8RequestInfo::ContentType::kRequest:
@@ -887,10 +882,10 @@ ScriptPromise<V8UnionResponseOrUndefined> Cache::MatchImpl(
       mojom::blink::CacheQueryOptions::From(options);
 
   int64_t trace_id = blink::cache_storage::CreateTraceId();
-  TRACE_EVENT_WITH_FLOW2("CacheStorage", "Cache::MatchImpl",
-                         TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_OUT,
-                         "request", CacheStorageTracedValue(mojo_request),
-                         "options", CacheStorageTracedValue(mojo_options));
+  TRACE_EVENT("CacheStorage", "Cache::MatchImpl",
+              perfetto::Flow::Global(trace_id), "request",
+              CacheStorageTracedValue(mojo_request), "options",
+              CacheStorageTracedValue(mojo_options));
 
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<V8UnionResponseOrUndefined>>(
@@ -929,10 +924,9 @@ ScriptPromise<V8UnionResponseOrUndefined> Cache::MatchImpl(
                   elapsed);
             }
             if (!result.has_value()) {
-              TRACE_EVENT_WITH_FLOW1(
-                  "CacheStorage", "Cache::MatchImpl::Callback",
-                  TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_IN, "status",
-                  CacheStorageTracedValue(result.error()));
+              TRACE_EVENT("CacheStorage", "Cache::MatchImpl::Callback",
+                          perfetto::TerminatingFlow::Global(trace_id), "status",
+                          CacheStorageTracedValue(result.error()));
               switch (result.error()) {
                 case mojom::CacheStorageError::kErrorNotFound:
                   UMA_HISTOGRAM_LONG_TIMES(
@@ -949,9 +943,9 @@ ScriptPromise<V8UnionResponseOrUndefined> Cache::MatchImpl(
                   "ServiceWorkerCache.Cache.Renderer.Match.Hit", elapsed);
               ScriptState::Scope scope(resolver->GetScriptState());
               if (match_response->is_eager_response()) {
-                TRACE_EVENT_WITH_FLOW1(
+                TRACE_EVENT(
                     "CacheStorage", "Cache::MatchImpl::Callback",
-                    TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_IN,
+                    perfetto::TerminatingFlow::Global(trace_id),
                     "eager_response",
                     CacheStorageTracedValue(
                         match_response->get_eager_response()->response));
@@ -960,10 +954,9 @@ ScriptPromise<V8UnionResponseOrUndefined> Cache::MatchImpl(
                     std::move(match_response->get_eager_response()),
                     self->blob_client_list_));
               } else {
-                TRACE_EVENT_WITH_FLOW1(
+                TRACE_EVENT(
                     "CacheStorage", "Cache::MatchImpl::Callback",
-                    TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_IN,
-                    "response",
+                    perfetto::TerminatingFlow::Global(trace_id), "response",
                     CacheStorageTracedValue(match_response->get_response()));
                 resolver->Resolve(
                     Response::Create(resolver->GetScriptState(),
@@ -995,10 +988,10 @@ ScriptPromise<IDLSequence<Response>> Cache::MatchAllImpl(
   }
 
   int64_t trace_id = blink::cache_storage::CreateTraceId();
-  TRACE_EVENT_WITH_FLOW2("CacheStorage", "Cache::MatchAllImpl",
-                         TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_OUT,
-                         "request", CacheStorageTracedValue(fetch_api_request),
-                         "options", CacheStorageTracedValue(mojo_options));
+  TRACE_EVENT("CacheStorage", "Cache::MatchAllImpl",
+              perfetto::Flow::Global(trace_id), "request",
+              CacheStorageTracedValue(fetch_api_request), "options",
+              CacheStorageTracedValue(mojo_options));
 
   if (request && request->method() != http_names::kGET &&
       !options->ignoreMethod()) {
@@ -1020,16 +1013,15 @@ ScriptPromise<IDLSequence<Response>> Cache::MatchAllImpl(
                 "ServiceWorkerCache.Cache.Renderer.MatchAll",
                 base::TimeTicks::Now() - start_time);
             if (!result.has_value()) {
-              TRACE_EVENT_WITH_FLOW1(
-                  "CacheStorage", "Cache::MatchAllImpl::Callback",
-                  TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_IN, "status",
-                  CacheStorageTracedValue(result.error()));
+              TRACE_EVENT("CacheStorage", "Cache::MatchAllImpl::Callback",
+                          perfetto::TerminatingFlow::Global(trace_id), "status",
+                          CacheStorageTracedValue(result.error()));
               RejectCacheStorageWithError(resolver, result.error());
             } else {
-              TRACE_EVENT_WITH_FLOW1(
-                  "CacheStorage", "Cache::MatchAllImpl::Callback",
-                  TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_IN,
-                  "response_list", CacheStorageTracedValue(result.value()));
+              TRACE_EVENT("CacheStorage", "Cache::MatchAllImpl::Callback",
+                          perfetto::TerminatingFlow::Global(trace_id),
+                          "response_list",
+                          CacheStorageTracedValue(result.value()));
               ScriptState::Scope scope(resolver->GetScriptState());
               HeapVector<Member<Response>> responses;
               responses.ReserveInitialCapacity(result.value().size());
@@ -1051,8 +1043,8 @@ ScriptPromise<IDLUndefined> Cache::AddAllImpl(
     const HeapVector<Member<Request>>& request_list,
     ExceptionState& exception_state) {
   int64_t trace_id = blink::cache_storage::CreateTraceId();
-  TRACE_EVENT_WITH_FLOW0("CacheStorage", "Cache::AddAllImpl",
-                         TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("CacheStorage", "Cache::AddAllImpl",
+              perfetto::Flow::Global(trace_id));
 
   if (request_list.empty())
     return ToResolvedUndefinedPromise(script_state);
@@ -1115,11 +1107,10 @@ ScriptPromise<IDLBoolean> Cache::DeleteImpl(ScriptState* script_state,
   operation->match_options = mojom::blink::CacheQueryOptions::From(options);
 
   int64_t trace_id = blink::cache_storage::CreateTraceId();
-  TRACE_EVENT_WITH_FLOW2("CacheStorage", "Cache::DeleteImpl",
-                         TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_OUT,
-                         "request", CacheStorageTracedValue(operation->request),
-                         "options",
-                         CacheStorageTracedValue(operation->match_options));
+  TRACE_EVENT("CacheStorage", "Cache::DeleteImpl",
+              perfetto::Flow::Global(trace_id), "request",
+              CacheStorageTracedValue(operation->request), "options",
+              CacheStorageTracedValue(operation->match_options));
 
   if (request->method() != http_names::kGET && !options->ignoreMethod()) {
     resolver->Resolve(false);
@@ -1139,10 +1130,9 @@ ScriptPromise<IDLBoolean> Cache::DeleteImpl(ScriptState* script_state,
             UMA_HISTOGRAM_LONG_TIMES(
                 "ServiceWorkerCache.Cache.Renderer.DeleteOne",
                 base::TimeTicks::Now() - start_time);
-            TRACE_EVENT_WITH_FLOW1(
-                "CacheStorage", "Cache::DeleteImpl::Callback",
-                TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_IN, "status",
-                CacheStorageTracedValue(error->value));
+            TRACE_EVENT("CacheStorage", "Cache::DeleteImpl::Callback",
+                        perfetto::TerminatingFlow::Global(trace_id), "status",
+                        CacheStorageTracedValue(error->value));
             if (error->value != mojom::blink::CacheStorageError::kSuccess) {
               switch (error->value) {
                 case mojom::blink::CacheStorageError::kErrorNotFound:
@@ -1177,9 +1167,8 @@ void Cache::PutImpl(ScriptPromiseResolver<IDLUndefined>* resolver,
   DCHECK_EQ(requests.size(), responses.size());
   DCHECK_EQ(requests.size(), blob_list.size());
 
-  TRACE_EVENT_WITH_FLOW0("CacheStorage", "Cache::PutImpl",
-                         TRACE_ID_GLOBAL(trace_id),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("CacheStorage", "Cache::PutImpl",
+              perfetto::Flow::Global(trace_id));
 
   ScriptState* script_state = resolver->GetScriptState();
   ScriptState::Scope scope(script_state);
@@ -1239,10 +1228,10 @@ ScriptPromise<IDLSequence<Request>> Cache::KeysImpl(
   }
 
   int64_t trace_id = blink::cache_storage::CreateTraceId();
-  TRACE_EVENT_WITH_FLOW2("CacheStorage", "Cache::DeleteImpl",
-                         TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_OUT,
-                         "request", CacheStorageTracedValue(fetch_api_request),
-                         "options", CacheStorageTracedValue(mojo_options));
+  TRACE_EVENT("CacheStorage", "Cache::KeysImpl",
+              perfetto::Flow::Global(trace_id), "request",
+              CacheStorageTracedValue(fetch_api_request), "options",
+              CacheStorageTracedValue(mojo_options));
 
   if (request && request->method() != http_names::kGET &&
       !options->ignoreMethod()) {
@@ -1263,16 +1252,14 @@ ScriptPromise<IDLSequence<Request>> Cache::KeysImpl(
             UMA_HISTOGRAM_LONG_TIMES("ServiceWorkerCache.Cache.Renderer.Keys",
                                      base::TimeTicks::Now() - start_time);
             if (!result.has_value()) {
-              TRACE_EVENT_WITH_FLOW1(
-                  "CacheStorage", "Cache::KeysImpl::Callback",
-                  TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_IN, "status",
-                  CacheStorageTracedValue(result.error()));
+              TRACE_EVENT("CacheStorage", "Cache::KeysImpl::Callback",
+                          perfetto::TerminatingFlow::Global(trace_id), "status",
+                          CacheStorageTracedValue(result.error()));
               RejectCacheStorageWithError(resolver, result.error());
             } else {
-              TRACE_EVENT_WITH_FLOW1(
-                  "CacheStorage", "Cache::KeysImpl::Callback",
-                  TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_IN, "status",
-                  CacheStorageTracedValue(result.value()));
+              TRACE_EVENT("CacheStorage", "Cache::KeysImpl::Callback",
+                          perfetto::TerminatingFlow::Global(trace_id), "status",
+                          CacheStorageTracedValue(result.value()));
               ScriptState::Scope scope(resolver->GetScriptState());
               HeapVector<Member<Request>> requests;
               requests.ReserveInitialCapacity(result.value().size());

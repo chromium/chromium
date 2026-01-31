@@ -12,8 +12,8 @@
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ash/magic_boost/magic_boost_controller_ash.h"
-#include "chrome/browser/ash/magic_boost/magic_boost_state_ash.h"
+#include "chrome/browser/ash/magic_boost/magic_boost_controller.h"
+#include "chrome/browser/ash/magic_boost/magic_boost_state.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_card_context.h"
@@ -76,14 +76,13 @@ class ReadWriteCardsManagerImplTest : public ChromeAshTestBase {
     testing_profile_ =
         profile_manager_.CreateTestingProfile(chrome::kInitialProfile);
 
-    // In production a shared instance of MagicBoostControllerAsh is initialized
+    // In production a shared instance of MagicBoostController is initialized
     // by ChromeBrowserMainPartsAsh in its PreProfileInit().
-    magic_boost_controller_ash_ =
-        std::make_unique<ash::MagicBoostControllerAsh>();
+    magic_boost_controller_ = std::make_unique<ash::MagicBoostControllerImpl>();
 
     // `ReadWriteCardsManagerImpl` will initialize `QuickAnswersState`
     // indirectly. `QuickAnswersState` depends on `MagicBoostState`.
-    magic_boost_state_ = std::make_unique<ash::MagicBoostStateAsh>(
+    magic_boost_state_ = std::make_unique<ash::MagicBoostState>(
         base::BindRepeating([]() { return static_cast<Profile*>(nullptr); }));
     manager_ = std::make_unique<ReadWriteCardsManagerImpl>(
         TestingBrowserProcess::GetGlobal()
@@ -95,7 +94,7 @@ class ReadWriteCardsManagerImplTest : public ChromeAshTestBase {
   void TearDown() override {
     manager_.reset();
     magic_boost_state_.reset();
-    magic_boost_controller_ash_.reset();
+    magic_boost_controller_.reset();
     testing_profile_ = nullptr;
     profile_manager_.DeleteTestingProfile(chrome::kInitialProfile);
     ChromeAshTestBase::TearDown();
@@ -147,7 +146,7 @@ class ReadWriteCardsManagerImplTest : public ChromeAshTestBase {
   }
 
  protected:
-  std::unique_ptr<ash::MagicBoostStateAsh> magic_boost_state_;
+  std::unique_ptr<ash::MagicBoostState> magic_boost_state_;
   std::unique_ptr<ReadWriteCardsManagerImpl> manager_;
   base::test::ScopedFeatureList scoped_feature_list_;
   // Providing a mock MahiMediaAppEvnetsProxy to satisfy MahiMenuController.
@@ -156,7 +155,7 @@ class ReadWriteCardsManagerImplTest : public ChromeAshTestBase {
   chromeos::ScopedMahiMediaAppEventsProxySetter
       scoped_mahi_media_app_events_proxy_{&mock_mahi_media_app_events_proxy_};
 
-  std::unique_ptr<ash::MagicBoostControllerAsh> magic_boost_controller_ash_;
+  std::unique_ptr<ash::MagicBoostControllerImpl> magic_boost_controller_;
   raw_ptr<TestingProfile> testing_profile_;
   TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
 };
@@ -171,7 +170,6 @@ class ReadWriteCardsManagerImplWithAndWithoutMahiTest
       scoped_feature_list_.InitWithFeatures(
           /*enabled_features=*/
           {
-              chromeos::features::kMahi,
               chromeos::features::kOrca,
               chromeos::features::kFeatureManagementMahi,
               chromeos::features::kFeatureManagementOrca,
@@ -181,8 +179,7 @@ class ReadWriteCardsManagerImplWithAndWithoutMahiTest
       scoped_feature_list_.InitWithFeatures(
           /*enabled_features=*/{chromeos::features::kOrca,
                                 chromeos::features::kFeatureManagementOrca},
-          /*disabled_features=*/{chromeos::features::kMahi,
-                                 chromeos::features::kFeatureManagementMahi,
+          /*disabled_features=*/{chromeos::features::kFeatureManagementMahi,
                                  chromeos::features::kMagicBoostRevamp});
     }
     ReadWriteCardsManagerImplTest::SetUp();
@@ -339,11 +336,10 @@ TEST_P(ReadWriteCardsManagerImplWithAndWithoutMahiTest,
         std::vector<ReadWriteCardController*>{magic_boost_card_controller()},
         GetControllers(params));
 
-    EXPECT_EQ(crosapi::mojom::MagicBoostController::OptInFeatures::kHmrOnly,
+    EXPECT_EQ(ash::magic_boost::OptInFeatures::kHmrOnly,
               magic_boost_card_controller()->GetOptInFeatures());
-    EXPECT_EQ(
-        crosapi::mojom::MagicBoostController::TransitionAction::kShowHmrPanel,
-        magic_boost_card_controller()->transition_action_for_test());
+    EXPECT_EQ(ash::magic_boost::TransitionAction::kShowHmrPanel,
+              magic_boost_card_controller()->transition_action_for_test());
 
     // When editor mode is kPromoCard, Magic Boost should opt in both Hmr and
     // Orca.
@@ -353,11 +349,10 @@ TEST_P(ReadWriteCardsManagerImplWithAndWithoutMahiTest,
         GetControllers(params, editor_menu::EditorMode::kConsentNeeded,
                        /*editor_consent_status_settled=*/false));
 
-    EXPECT_EQ(crosapi::mojom::MagicBoostController::OptInFeatures::kOrcaAndHmr,
+    EXPECT_EQ(ash::magic_boost::OptInFeatures::kOrcaAndHmr,
               magic_boost_card_controller()->GetOptInFeatures());
-    EXPECT_EQ(
-        crosapi::mojom::MagicBoostController::TransitionAction::kShowHmrPanel,
-        magic_boost_card_controller()->transition_action_for_test());
+    EXPECT_EQ(ash::magic_boost::TransitionAction::kShowHmrPanel,
+              magic_boost_card_controller()->transition_action_for_test());
     return;
   }
 
@@ -382,11 +377,10 @@ TEST_P(ReadWriteCardsManagerImplWithAndWithoutMahiTest,
         std::vector<ReadWriteCardController*>{magic_boost_card_controller()},
         GetControllers(params));
 
-    EXPECT_EQ(crosapi::mojom::MagicBoostController::OptInFeatures::kHmrOnly,
+    EXPECT_EQ(ash::magic_boost::OptInFeatures::kHmrOnly,
               magic_boost_card_controller()->GetOptInFeatures());
-    EXPECT_EQ(
-        crosapi::mojom::MagicBoostController::TransitionAction::kShowHmrPanel,
-        magic_boost_card_controller()->transition_action_for_test());
+    EXPECT_EQ(ash::magic_boost::TransitionAction::kShowHmrPanel,
+              magic_boost_card_controller()->transition_action_for_test());
 
     // When editor mode is kPromoCard, Magic Boost should opt in both Hmr and
     // Orca.
@@ -399,11 +393,10 @@ TEST_P(ReadWriteCardsManagerImplWithAndWithoutMahiTest,
         std::vector<ReadWriteCardController*>{magic_boost_card_controller()},
         controllers);
 
-    EXPECT_EQ(crosapi::mojom::MagicBoostController::OptInFeatures::kOrcaAndHmr,
+    EXPECT_EQ(ash::magic_boost::OptInFeatures::kOrcaAndHmr,
               magic_boost_card_controller()->GetOptInFeatures());
-    EXPECT_EQ(
-        crosapi::mojom::MagicBoostController::TransitionAction::kShowHmrPanel,
-        magic_boost_card_controller()->transition_action_for_test());
+    EXPECT_EQ(ash::magic_boost::TransitionAction::kShowHmrPanel,
+              magic_boost_card_controller()->transition_action_for_test());
 
     return;
   }
@@ -432,9 +425,8 @@ TEST_P(ReadWriteCardsManagerImplWithAndWithoutMahiTest,
       /*editor_consent_status_settled=*/true);
 
   if (IsMahiEnabled()) {
-    EXPECT_EQ(
-        crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing,
-        magic_boost_card_controller()->transition_action_for_test());
+    EXPECT_EQ(ash::magic_boost::TransitionAction::kDoNothing,
+              magic_boost_card_controller()->transition_action_for_test());
   }
 }
 
@@ -452,9 +444,8 @@ TEST_P(ReadWriteCardsManagerImplWithAndWithoutMahiTest,
       /*editor_consent_status_settled=*/false);
 
   if (IsMahiEnabled()) {
-    EXPECT_EQ(
-        crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing,
-        magic_boost_card_controller()->transition_action_for_test());
+    EXPECT_EQ(ash::magic_boost::TransitionAction::kDoNothing,
+              magic_boost_card_controller()->transition_action_for_test());
   }
 }
 
@@ -474,10 +465,9 @@ TEST_P(ReadWriteCardsManagerImplWithAndWithoutMahiTest,
       /*editor_consent_status_settled=*/false);
 
   if (IsMahiEnabled()) {
-    EXPECT_EQ(crosapi::mojom::MagicBoostController::TransitionAction::
-                  kShowEditorPanel,
+    EXPECT_EQ(ash::magic_boost::TransitionAction::kShowEditorPanel,
               magic_boost_card_controller()->transition_action_for_test());
-    EXPECT_EQ(crosapi::mojom::MagicBoostController::OptInFeatures::kOrcaAndHmr,
+    EXPECT_EQ(ash::magic_boost::OptInFeatures::kOrcaAndHmr,
               magic_boost_card_controller()->GetOptInFeatures());
   }
 }
@@ -501,10 +491,9 @@ TEST_P(ReadWriteCardsManagerImplWithAndWithoutMahiTest,
 
   if (IsMahiEnabled()) {
     // Should show opt-in for both Hmr and Orca.
-    EXPECT_EQ(crosapi::mojom::MagicBoostController::OptInFeatures::kOrcaAndHmr,
+    EXPECT_EQ(ash::magic_boost::OptInFeatures::kOrcaAndHmr,
               magic_boost_card_controller()->GetOptInFeatures());
-    EXPECT_EQ(crosapi::mojom::MagicBoostController::TransitionAction::
-                  kShowEditorPanel,
+    EXPECT_EQ(ash::magic_boost::TransitionAction::kShowEditorPanel,
               magic_boost_card_controller()->transition_action_for_test());
   }
 }
@@ -547,8 +536,7 @@ class ReadWriteCardsManagerImplWithMagicBoostRevampTest
   // ReadWriteCardsManagerImplTest overrides
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{chromeos::features::kMahi,
-                              chromeos::features::kOrca,
+        /*enabled_features=*/{chromeos::features::kOrca,
                               chromeos::features::kFeatureManagementMahi,
                               chromeos::features::kFeatureManagementOrca,
                               chromeos::features::kMagicBoostRevamp},

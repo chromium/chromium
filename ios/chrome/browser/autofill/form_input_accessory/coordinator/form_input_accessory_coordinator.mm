@@ -1,0 +1,935 @@
+// Copyright 2014 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#import "ios/chrome/browser/autofill/form_input_accessory/coordinator/form_input_accessory_coordinator.h"
+
+#import <vector>
+
+#import "base/apple/foundation_util.h"
+#import "base/debug/dump_without_crashing.h"
+#import "base/feature_list.h"
+#import "base/functional/bind.h"
+#import "base/ios/ios_util.h"
+#import "base/metrics/histogram_macros.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
+#import "base/not_fatal_until.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
+#import "base/task/sequenced_task_runner.h"
+#import "base/time/time.h"
+#import "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#import "components/autofill/core/browser/payments/payments_service_url.h"
+#import "components/autofill/core/common/autofill_features.h"
+#import "components/autofill/ios/browser/form_suggestion.h"
+#import "components/autofill/ios/form_util/form_activity_params.h"
+#import "components/feature_engagement/public/feature_constants.h"
+#import "components/keyed_service/core/service_access_type.h"
+#import "components/password_manager/core/browser/manage_passwords_referrer.h"
+#import "components/password_manager/core/browser/password_ui_utils.h"
+#import "components/password_manager/core/browser/ui/credential_ui_entry.h"
+#import "components/password_manager/core/common/password_manager_features.h"
+#import "components/password_manager/ios/password_generation_provider.h"
+#import "components/plus_addresses/core/browser/grit/plus_addresses_strings.h"
+#import "components/plus_addresses/core/common/features.h"
+#import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/autofill/form_input_accessory/coordinator/form_input_accessory_mediator.h"
+#import "ios/chrome/browser/autofill/form_input_accessory/coordinator/form_input_accessory_mediator_handler.h"
+#import "ios/chrome/browser/autofill/form_input_accessory/public/scoped_form_input_accessory_reauth_module_override.h"
+#import "ios/chrome/browser/autofill/form_input_accessory/ui/form_input_accessory_view_controller.h"
+#import "ios/chrome/browser/autofill/form_input_accessory/ui/form_input_accessory_view_controller_delegate.h"
+#import "ios/chrome/browser/autofill/model/autofill_tab_helper.h"
+#import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
+#import "ios/chrome/browser/autofill/model/features.h"
+#import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
+#import "ios/chrome/browser/autofill/ui_bundled/autofill_credit_card_util.h"
+#import "ios/chrome/browser/autofill/ui_bundled/branding/branding_coordinator.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/address_coordinator.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/card_coordinator.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/expanded_manual_fill_coordinator.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/fallback_view_controller.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_all_password_coordinator.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_all_password_coordinator_delegate.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_all_plus_address_coordinator.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_injection_handler.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_password_coordinator.h"
+#import "ios/chrome/browser/bubble/ui_bundled/bubble_constants.h"
+#import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
+#import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
+#import "ios/chrome/browser/passwords/model/password_tab_helper.h"
+#import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
+#import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
+#import "ios/chrome/browser/shared/public/commands/security_alert_commands.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
+#import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/shared/ui/util/util_swift.h"
+#import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ios/web/public/web_state.h"
+#import "ui/base/device_form_factor.h"
+#import "ui/base/l10n/l10n_util_mac.h"
+
+namespace {
+// Delay between the time the view is shown, and the time the suggestion label
+// is highlighted.
+constexpr base::TimeDelta kAutofillSuggestionHighlightDelay = base::Seconds(1);
+
+// Delay between the time the suggestion label is highlighted, and the time the
+// autofill suggestion tip is shown.
+constexpr base::TimeDelta kAutofillSuggestionTipDelay = base::Seconds(0.5);
+
+// Additional vertical offset for the IPH, so that it doesn't appear below the
+// Autofill strip at the top of the keyboard.
+const CGFloat kIPHVerticalOffset = -5;
+
+// Return the feature corresponding to the `feature_for_iph` enum.
+const base::Feature* FetchIPHFeatureFromEnum(
+    SuggestionFeatureForIPH feature_for_iph) {
+  switch (feature_for_iph) {
+    case SuggestionFeatureForIPH::kAutofillExternalAccountProfile:
+      return &feature_engagement::
+          kIPHAutofillExternalAccountProfileSuggestionFeature;
+    case SuggestionFeatureForIPH::kPlusAddressCreation:
+      return &feature_engagement::kIPHPlusAddressCreateSuggestionFeature;
+    case SuggestionFeatureForIPH::kHomeAndWorkAddressSuggestion:
+      return &feature_engagement::kIPHAutofillHomeWorkProfileSuggestionFeature;
+    case SuggestionFeatureForIPH::kAccountNameEmailSuggestion:
+      return &feature_engagement::kIPHAutofillAccountNameEmailSuggestionFeature;
+    case SuggestionFeatureForIPH::kUnknown:
+      NOTREACHED();
+  }
+}
+
+}  // namespace
+
+@interface FormInputAccessoryCoordinator () <
+    AddressCoordinatorDelegate,
+    CardCoordinatorDelegate,
+    FormInputAccessoryMediatorHandler,
+    FormInputAccessoryViewControllerDelegate,
+    ManualFillAllPasswordCoordinatorDelegate,
+    ManualFillAllPlusAddressCoordinatorDelegate,
+    PasswordCoordinatorDelegate,
+    ExpandedManualFillCoordinatorDelegate,
+    SecurityAlertCommands>
+
+// The object in charge of interacting with the web view. Used to fill the data
+// in the forms.
+@property(nonatomic, strong) ManualFillInjectionHandler* injectionHandler;
+
+// Reauthentication Module used for re-authentication.
+@property(nonatomic, strong) ReauthenticationModule* reauthenticationModule;
+
+// Active Form Input View Controller.
+@property(nonatomic, strong) UIViewController* formInputViewController;
+
+// Bubble view controller presenter for autofill suggestion tip.
+@property(nonatomic, strong) BubbleViewControllerPresenter* bubblePresenter;
+
+// UI tap recognizer used to dismiss bubble presenter.
+@property(nonatomic, strong)
+    UITapGestureRecognizer* formInputAccessoryTapRecognizer;
+
+// The layout guide installed in the base view controller on which to anchor the
+// potential IPH bubble.
+@property(nonatomic, strong) UILayoutGuide* layoutGuide;
+
+@end
+
+@implementation FormInputAccessoryCoordinator {
+  // Coordinator in charge of the presenting password autofill options as a
+  // modal.
+  ManualFillAllPasswordCoordinator* _allPasswordCoordinator;
+
+  BrandingCoordinator* _brandingCoordinator;
+
+  // The Mediator for the input accessory view controller.
+  FormInputAccessoryMediator* _formInputAccessoryMediator;
+
+  // The View Controller for the input accessory view.
+  FormInputAccessoryViewController* _formInputAccessoryViewController;
+
+  // Modal alert.
+  AlertCoordinator* _alertCoordinator;
+
+  // Coordinator in charge of presenting the view to show all plus addresses.
+  ManualFillAllPlusAddressCoordinator* _allPlusAddressCoordinator;
+}
+
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser {
+  self = [super initWithBaseViewController:viewController browser:browser];
+  if (self) {
+    CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
+    [dispatcher startDispatchingToTarget:self
+                             forProtocol:@protocol(SecurityAlertCommands)];
+
+    _brandingCoordinator =
+        [[BrandingCoordinator alloc] initWithBaseViewController:viewController
+                                                        browser:browser];
+    _reauthenticationModule = [[ReauthenticationModule alloc] init];
+  }
+  return self;
+}
+
+- (void)start {
+  [_brandingCoordinator start];
+  _formInputAccessoryViewController = [[FormInputAccessoryViewController alloc]
+      initWithFormInputAccessoryViewControllerDelegate:self];
+  _formInputAccessoryViewController.brandingViewController =
+      _brandingCoordinator.viewController;
+
+  LayoutGuideCenter* layoutGuideCenter =
+      LayoutGuideCenterForBrowser(self.browser);
+  _formInputAccessoryViewController.layoutGuideCenter = layoutGuideCenter;
+
+  DCHECK(self.profile);
+  auto profilePasswordStore =
+      IOSChromeProfilePasswordStoreFactory::GetForProfile(
+          self.profile, ServiceAccessType::EXPLICIT_ACCESS);
+  auto accountPasswordStore =
+      IOSChromeAccountPasswordStoreFactory::GetForProfile(
+          self.profile, ServiceAccessType::EXPLICIT_ACCESS);
+
+  // There is no personal data manager in OTR (incognito). Get the original
+  // one for manual fallback.
+  autofill::PersonalDataManager* personalDataManager =
+      autofill::PersonalDataManagerFactory::GetForProfile(
+          self.profile->GetOriginalProfile());
+
+  __weak id<SecurityAlertCommands> securityAlertHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), SecurityAlertCommands);
+  _formInputAccessoryMediator = [[FormInputAccessoryMediator alloc]
+            initWithConsumer:_formInputAccessoryViewController
+                     handler:self
+                webStateList:self.browser->GetWebStateList()
+         personalDataManager:personalDataManager
+        profilePasswordStore:profilePasswordStore
+        accountPasswordStore:accountPasswordStore
+        securityAlertHandler:securityAlertHandler
+      reauthenticationModule:_reauthenticationModule
+           engagementTracker:feature_engagement::TrackerFactory::GetForProfile(
+                                 self.profile)];
+  _formInputAccessoryViewController.formSuggestionClient =
+      _formInputAccessoryMediator;
+
+  self.layoutGuide =
+      [layoutGuideCenter makeLayoutGuideNamed:kAutofillFirstSuggestionGuide];
+  [self.baseViewController.view addLayoutGuide:self.layoutGuide];
+
+  auto autofillProviderGetter = base::BindRepeating(
+      [](web::WebState* webState) -> id<FormSuggestionProvider> {
+        if (auto* tabHelper = AutofillTabHelper::FromWebState(webState);
+            tabHelper) {
+          return AutofillTabHelper::FromWebState(webState)
+              ->GetSuggestionProvider();
+        }
+        return nil;
+      });
+
+  _injectionHandler = [[ManualFillInjectionHandler alloc]
+        initWithWebStateList:self.browser->GetWebStateList()
+        securityAlertHandler:securityAlertHandler
+      reauthenticationModule:self.reauthenticationModule
+        formSuggestionClient:_formInputAccessoryMediator
+      autofillProviderGetter:autofillProviderGetter];
+}
+
+- (void)stop {
+  [self clearPresentedState];
+
+  // Avoid cleaning up the views after the scene has been disconnected. This
+  // seems to cause watchdog kills. See crbug.com/40918951.
+  if (SceneState* sceneState = self.browser->GetSceneState();
+      sceneState.activationLevel > SceneActivationLevelDisconnected) {
+    [self.layoutGuide.owningView removeLayoutGuide:self.layoutGuide];
+    [self.formInputAccessoryTapRecognizer.view
+        removeGestureRecognizer:self.formInputAccessoryTapRecognizer];
+    [_formInputAccessoryMediator reloadFirstResponderInputViews];
+  }
+
+  _formInputAccessoryViewController = nil;
+  _formInputViewController = nil;
+
+  [_formInputAccessoryMediator disconnect];
+  _formInputAccessoryMediator = nil;
+
+  [_brandingCoordinator stop];
+  _brandingCoordinator = nil;
+
+  self.layoutGuide = nil;
+}
+
+- (void)reset {
+  [self stopChildren];
+  [self resetInputViews];
+  [_formInputAccessoryMediator reloadFirstResponderInputViews];
+}
+
+#pragma mark - Presenting Children
+
+- (void)clearPresentedState {
+  [self stopChildren];
+
+  [self stopManualFillAllPasswordCoordinator];
+
+  [self dismissAlertCoordinator];
+}
+
+- (void)stopChildren {
+  _formInputAccessoryMediator.formInputInteractionDelegate = nil;
+  for (ChromeCoordinator* coordinator in self.childCoordinators) {
+    [coordinator stop];
+  }
+  [self.childCoordinators removeAllObjects];
+}
+
+// Starts the expanded manual fill coordinator and displays its view controller.
+- (void)startManualFillFromButton:(UIButton*)button
+                      forDataType:(manual_fill::ManualFillDataType)dataType
+         invokedOnObfuscatedField:(BOOL)invokedOnObfuscatedField {
+  manual_fill::ManualFillDataType focusedFieldDataType = [ManualFillUtil
+      manualFillDataTypeFromFillingProduct:
+          [_formInputAccessoryMediator currentProviderMainFillingProduct]];
+  ExpandedManualFillCoordinator* expandedManualFillCoordinator =
+      [[ExpandedManualFillCoordinator alloc]
+          initWithBaseViewController:self.baseViewController
+                             browser:self.browser
+                         forDataType:dataType
+                focusedFieldDataType:focusedFieldDataType
+              reauthenticationModule:self.reauthenticationModule];
+
+  expandedManualFillCoordinator.injectionHandler = self.injectionHandler;
+  expandedManualFillCoordinator.invokedOnObfuscatedField =
+      invokedOnObfuscatedField;
+  expandedManualFillCoordinator.delegate = self;
+  _formInputAccessoryMediator.formInputInteractionDelegate =
+      expandedManualFillCoordinator;
+  [expandedManualFillCoordinator start];
+
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    [expandedManualFillCoordinator presentFromButton:button];
+  } else {
+    self.formInputViewController = expandedManualFillCoordinator.viewController;
+    [_formInputAccessoryMediator reloadFirstResponderInputViews];
+  }
+
+  [self.childCoordinators addObject:expandedManualFillCoordinator];
+}
+
+#pragma mark - FormInputAccessoryMediatorHandler
+
+- (void)resetFormInputView {
+  [self reset];
+}
+
+- (void)dismissPopover {
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    // Close the popover view.
+    [self stopChildren];
+  }
+}
+
+- (void)notifyAutofillSuggestionWithIPHSelectedFor:
+    (SuggestionFeatureForIPH)featureForIPH {
+  // The engagement tracker can change during testing (in feature engagement app
+  // interface), therefore we retrive it here instead of storing it in the
+  // mediator.
+  feature_engagement::Tracker* tracker = self.featureEngagementTracker;
+  if (tracker) {
+    switch (featureForIPH) {
+      case SuggestionFeatureForIPH::kAutofillExternalAccountProfile:
+        tracker->NotifyEvent(
+            "autofill_external_account_profile_suggestion_accepted");
+        break;
+      case SuggestionFeatureForIPH::kPlusAddressCreation:
+        tracker->NotifyEvent("plus_address_create_suggestion_feature_used");
+        break;
+      case SuggestionFeatureForIPH::kHomeAndWorkAddressSuggestion:
+        tracker->NotifyEvent(
+            "home_work_address_create_suggestion_feature_used");
+        break;
+      case SuggestionFeatureForIPH::kAccountNameEmailSuggestion:
+        tracker->NotifyEvent(
+            "account_name_email_create_suggestion_feature_used");
+        break;
+      case SuggestionFeatureForIPH::kUnknown:
+        NOTREACHED();
+    }
+  }
+}
+
+- (void)showAutofillSuggestionIPHIfNeededFor:
+    (SuggestionFeatureForIPH)featureForIPH {
+  if (self.bubblePresenter) {
+    // Already showing a bubble.
+    return;
+  }
+
+  __weak __typeof(self) weakSelf = self;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, base::BindOnce(^{
+        [weakSelf tryPresentingBubbleFor:featureForIPH];
+      }),
+      kAutofillSuggestionHighlightDelay);
+}
+
+#pragma mark - FormInputAccessoryViewControllerDelegate
+
+- (void)formInputAccessoryViewController:
+            (FormInputAccessoryViewController*)formInputAccessoryViewController
+                didPressManualFillButton:(UIButton*)manualFillButton
+                             forDataType:
+                                 (manual_fill::ManualFillDataType)dataType {
+  BOOL invokedOnObfuscatedField =
+      [_formInputAccessoryMediator lastFocusedFieldWasObfuscated];
+
+  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
+    [self stopChildren];
+  }
+
+  [self startManualFillFromButton:manualFillButton
+                      forDataType:dataType
+         invokedOnObfuscatedField:invokedOnObfuscatedField];
+  [self updateKeyboardAccessoryForManualFilling];
+}
+
+- (void)formInputAccessoryViewController:
+            (FormInputAccessoryViewController*)formInputAccessoryViewController
+            didTapFormInputAccessoryView:(UIView*)formInputAccessoryView {
+  [self dismissBubble];
+}
+
+- (void)formInputAccessoryViewControllerReset:
+    (FormInputAccessoryViewController*)formInputAccessoryViewController {
+  CHECK_EQ(_formInputAccessoryViewController, formInputAccessoryViewController);
+  [self resetInputViews];
+}
+
+#pragma mark - FallbackCoordinatorDelegate
+
+- (void)fallbackCoordinatorDidDismissPopover:
+    (FallbackCoordinator*)fallbackCoordinator {
+  [self reset];
+}
+
+#pragma mark - PasswordCoordinatorDelegate
+
+- (void)openPasswordManager {
+  [self reset];
+  [self.navigator openPasswordManager];
+
+  UMA_HISTOGRAM_ENUMERATION(
+      "PasswordManager.ManagePasswordsReferrer",
+      password_manager::ManagePasswordsReferrer::kPasswordsAccessorySheet);
+  base::RecordAction(
+      base::UserMetricsAction("MobileKeyboardAccessoryOpenPasswordManager"));
+}
+
+- (void)openPasswordSettings {
+  [self reset];
+  [self.navigator openPasswordSettings];
+}
+
+- (void)openAllPasswordsPicker {
+  [self reset];
+  [self showConfirmationDialogToUseOtherPassword];
+}
+
+- (void)openPasswordSuggestion {
+  [self reset];
+  if (![self.injectionHandler canUserInjectInPasswordField:YES
+                                             requiresHTTPS:NO]) {
+    return;
+  }
+
+  web::WebState* activeWebState = [self activeWebState];
+
+  id<PasswordGenerationProvider> generationProvider =
+      PasswordTabHelper::FromWebState(activeWebState)
+          ->GetPasswordGenerationProvider();
+  [generationProvider triggerPasswordGeneration];
+}
+
+- (void)openPasswordDetailsInEditModeForCredential:
+    (password_manager::CredentialUIEntry)credential {
+  [self reset];
+  [self dispatchCommandToEditPassword:credential];
+}
+
+#pragma mark - ManualFillAllPasswordCoordinatorDelegate
+
+- (void)manualFillAllPasswordCoordinatorWantsToBeDismissed:
+    (ManualFillAllPasswordCoordinator*)coordinator {
+  [self stopManualFillAllPasswordCoordinator];
+}
+
+- (void)manualFillAllPasswordCoordinator:
+            (ManualFillAllPasswordCoordinator*)coordinator
+    didTriggerOpenPasswordDetailsInEditMode:
+        (password_manager::CredentialUIEntry)credential {
+  [self stopManualFillAllPasswordCoordinator];
+  [self dispatchCommandToEditPassword:credential];
+}
+
+#pragma mark - ManualFillAllPlusAddressCoordinatorDelegate
+
+- (void)manualFillAllPlusAddressCoordinatorWantsToBeDismissed:
+    (ManualFillAllPlusAddressCoordinator*)coordinator {
+  [self stopManualFillAllPlusAddressCoordinator];
+}
+
+- (void)dismissManualFillAllPlusAddressAndOpenManagePlusAddress {
+  [self stopManualFillAllPlusAddressCoordinator];
+  [self openManagePlusAddress];
+}
+
+#pragma mark - CardCoordinatorDelegate
+
+- (void)cardCoordinatorDidTriggerOpenCardSettings:
+    (CardCoordinator*)cardCoordinator {
+  [self reset];
+  [self.navigator openCreditCardSettings];
+}
+
+- (void)cardCoordinatorDidTriggerOpenAddCreditCard:
+    (CardCoordinator*)cardCoordinator {
+  [self reset];
+  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
+  id<BrowserCoordinatorCommands> handler =
+      HandlerForProtocol(dispatcher, BrowserCoordinatorCommands);
+  [handler showAddCreditCard];
+}
+
+- (void)cardCoordinator:(CardCoordinator*)cardCoordinator
+    didTriggerOpenCardDetails:(autofill::CreditCard)card
+                   inEditMode:(BOOL)editMode {
+  [self reset];
+
+  // Check if the card should be edited from the Payments web page.
+  if (editMode &&
+      [AutofillCreditCardUtil shouldEditCardFromPaymentsWebPage:card]) {
+    GURL paymentsURL =
+        autofill::payments::GetManageInstrumentUrl(card.instrument_id());
+    OpenNewTabCommand* command =
+        [OpenNewTabCommand commandWithURLFromChrome:paymentsURL];
+    id<SceneCommands> sceneHandler =
+        HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
+    [sceneHandler openURLInNewTab:command];
+
+    return;
+  }
+
+  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
+  id<SettingsCommands> settingsHandler =
+      HandlerForProtocol(dispatcher, SettingsCommands);
+  [settingsHandler showCreditCardDetails:card inEditMode:editMode];
+}
+
+#pragma mark - AddressCoordinatorDelegate
+
+- (void)openAddressDetailsInEditMode:(autofill::AutofillProfile)address
+               offerMigrateToAccount:(BOOL)offerMigrateToAccount {
+  [self reset];
+
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableSupportForHomeAndWork)) {
+    autofill::AutofillProfile::RecordType type = address.record_type();
+    id<SceneCommands> sceneHandler =
+        HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
+    if (type == autofill::AutofillProfile::RecordType::kAccountHome) {
+      OpenNewTabCommand* command = [OpenNewTabCommand
+          commandWithURLFromChrome:GURL(kGoogleMyAccountHomeAddressURL)];
+      [sceneHandler openURLInNewTab:command];
+      return;
+    }
+
+    if (type == autofill::AutofillProfile::RecordType::kAccountWork) {
+      OpenNewTabCommand* command = [OpenNewTabCommand
+          commandWithURLFromChrome:GURL(kGoogleMyAccountWorkAddressURL)];
+      [sceneHandler openURLInNewTab:command];
+      return;
+    }
+  }
+
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableSupportForNameAndEmail)) {
+    id<SceneCommands> sceneHandler =
+        HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
+    if (address.record_type() ==
+        autofill::AutofillProfile::RecordType::kAccountNameEmail) {
+      OpenNewTabCommand* command = [OpenNewTabCommand
+          commandWithURLFromChrome:GURL(kGoogleAccountNameEmailAddressEditURL)];
+      [sceneHandler openURLInNewTab:command];
+      return;
+    }
+  }
+
+  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
+  id<SettingsCommands> settingsHandler =
+      HandlerForProtocol(dispatcher, SettingsCommands);
+  [settingsHandler showAddressDetails:std::move(address)
+                           inEditMode:YES
+                offerMigrateToAccount:offerMigrateToAccount];
+}
+
+- (void)openAddressSettings {
+  [self reset];
+  [self.navigator openAddressSettings];
+}
+
+#pragma mark - PlusAddressCoordinatorDelegate
+
+// Opens the create plus address bottom sheet.
+- (void)openCreatePlusAddressSheet {
+  [self reset];
+
+  web::WebState* activeWebState = [self activeWebState];
+
+  __weak __typeof(self) weakSelf = self;
+  auto callback = base::BindOnce(^(const std::string& plusAddress) {
+    [weakSelf.injectionHandler
+        userDidPickContent:base::SysUTF8ToNSString(plusAddress)
+             passwordField:NO
+             requiresHTTPS:NO];
+  });
+
+  AutofillBottomSheetTabHelper* tabHelper =
+      AutofillBottomSheetTabHelper::FromWebState(activeWebState);
+  tabHelper->ShowPlusAddressesBottomSheet(std::move(callback));
+}
+
+- (void)openAllPlusAddressesPicker:(BOOL)isAddressManualFallback {
+  [self reset];
+
+  [self stopManualFillAllPlusAddressCoordinator];
+
+  _allPlusAddressCoordinator = [[ManualFillAllPlusAddressCoordinator alloc]
+      initWithBaseViewController:self.baseViewController
+                         browser:self.browser
+                injectionHandler:self.injectionHandler];
+  _allPlusAddressCoordinator.manualFillAllPlusAddressCoordinatorDelegate = self;
+  _allPlusAddressCoordinator.isAddressManualFallback = isAddressManualFallback;
+  [_allPlusAddressCoordinator start];
+}
+
+- (void)openManagePlusAddress {
+  OpenNewTabCommand* command = [OpenNewTabCommand
+      commandWithURLFromChrome:
+          GURL(plus_addresses::features::kPlusAddressManagementUrl.Get())];
+
+  id<SceneCommands> sceneHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
+  [sceneHandler openURLInNewTab:command];
+}
+
+#pragma mark - ExpandedManualFillCoordinatorDelegate
+
+- (void)stopExpandedManualFillCoordinator:
+    (ExpandedManualFillCoordinator*)coordinator {
+  [self reset];
+}
+
+// Called when the user has taken action to dismiss a popover.
+- (void)expandedManualFillCoordinatorDidDismissPopover:
+    (ExpandedManualFillCoordinator*)coordinator {
+  [self reset];
+}
+
+#pragma mark - SecurityAlertCommands
+
+- (void)presentSecurityWarningAlertWithText:(NSString*)body {
+  NSString* alertTitle =
+      l10n_util::GetNSString(IDS_IOS_MANUAL_FALLBACK_NOT_SECURE_TITLE);
+  NSString* defaultActionTitle =
+      l10n_util::GetNSString(IDS_IOS_MANUAL_FALLBACK_NOT_SECURE_OK_BUTTON);
+
+  UIAlertController* alert =
+      [UIAlertController alertControllerWithTitle:alertTitle
+                                          message:body
+                                   preferredStyle:UIAlertControllerStyleAlert];
+  UIAlertAction* defaultAction =
+      [UIAlertAction actionWithTitle:defaultActionTitle
+                               style:UIAlertActionStyleDefault
+                             handler:nil];
+  [alert addAction:defaultAction];
+  UIViewController* presenter = self.baseViewController;
+  while (presenter.presentedViewController) {
+    presenter = presenter.presentedViewController;
+  }
+  [presenter presentViewController:alert animated:YES completion:nil];
+}
+
+#pragma mark - CRWResponderInputView
+
+- (UIView*)inputView {
+  BOOL isIPad = ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
+  return isIPad ? nil : self.formInputViewController.view;
+}
+
+- (UIView*)inputAccessoryView {
+  if (_formInputAccessoryMediator.inputAccessoryViewActive) {
+    return _formInputAccessoryViewController.view;
+  }
+  return nil;
+}
+
+#pragma mark - Actions
+
+- (void)tapInsideRecognized:(id)sender {
+  [self dismissBubble];
+}
+
+#pragma mark - Private
+
+// Returns the reauthentication module, which can be an override for testing
+// purposes.
+- (ReauthenticationModule*)reauthenticationModule {
+  id<ReauthenticationProtocol> overrideModule =
+      ScopedFormInputAccessoryReauthModuleOverride::Get();
+  return overrideModule ? overrideModule : _reauthenticationModule;
+}
+
+// Returns the active web state.
+- (web::WebState*)activeWebState {
+  web::WebState* webState =
+      self.browser->GetWebStateList()->GetActiveWebState();
+  CHECK(webState);
+  return webState;
+}
+
+- (void)stopManualFillAllPasswordCoordinator {
+  [_allPasswordCoordinator stop];
+  _allPasswordCoordinator.manualFillAllPasswordCoordinatorDelegate = nil;
+  _allPasswordCoordinator = nil;
+}
+
+- (void)stopManualFillAllPlusAddressCoordinator {
+  [_allPlusAddressCoordinator stop];
+  _allPlusAddressCoordinator.manualFillAllPlusAddressCoordinatorDelegate = nil;
+  _allPlusAddressCoordinator = nil;
+}
+
+- (void)dismissAlertCoordinator {
+  [_alertCoordinator stop];
+  _alertCoordinator = nil;
+}
+
+- (feature_engagement::Tracker*)featureEngagementTracker {
+  if (!self.profile) {
+    return nullptr;
+  }
+  feature_engagement::Tracker* tracker =
+      feature_engagement::TrackerFactory::GetForProfile(self.profile);
+  CHECK(tracker);
+  return tracker;
+}
+
+// Shows confirmation dialog before opening Other passwords.
+- (void)showConfirmationDialogToUseOtherPassword {
+  web::WebState* activeWebState = [self activeWebState];
+
+  const GURL& URL = activeWebState->GetLastCommittedURL();
+  std::u16string origin = base::ASCIIToUTF16(
+      password_manager::GetShownOrigin(url::Origin::Create(URL)));
+
+  NSString* title = l10n_util::GetNSString(
+      IDS_IOS_MANUAL_FALLBACK_SELECT_PASSWORD_DIALOG_TITLE);
+  NSString* message = l10n_util::GetNSStringF(
+      IDS_IOS_MANUAL_FALLBACK_SELECT_PASSWORD_DIALOG_MESSAGE, origin);
+
+  _alertCoordinator = [[AlertCoordinator alloc]
+      initWithBaseViewController:self.baseViewController
+                         browser:self.browser
+                           title:title
+                         message:message];
+  [self.childCoordinators addObject:_alertCoordinator];
+
+  __weak __typeof__(self) weakSelf = self;
+
+  [_alertCoordinator addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
+                               action:^{
+                                 [weakSelf dismissAlertCoordinator];
+                               }
+                                style:UIAlertActionStyleCancel];
+
+  NSString* actionTitle =
+      l10n_util::GetNSString(IDS_IOS_CONFIRM_USING_OTHER_PASSWORD_CONTINUE);
+  [_alertCoordinator addItemWithTitle:actionTitle
+                               action:^{
+                                 [weakSelf showAllPasswords];
+                                 [weakSelf dismissAlertCoordinator];
+                               }
+                                style:UIAlertActionStyleDefault];
+
+  [_alertCoordinator start];
+}
+
+// Opens other passwords.
+- (void)showAllPasswords {
+  [self reset];
+  // The old coordinator could still be alive at this point. Stop it and release
+  // it before starting a new one. See crbug.com/40063966.
+  [self stopManualFillAllPasswordCoordinator];
+
+  _allPasswordCoordinator = [[ManualFillAllPasswordCoordinator alloc]
+      initWithBaseViewController:self.baseViewController
+                         browser:self.browser
+                injectionHandler:self.injectionHandler];
+  _allPasswordCoordinator.manualFillAllPasswordCoordinatorDelegate = self;
+  [_allPasswordCoordinator start];
+}
+
+// Returns a new bubble view controller presenter for password suggestion tip.
+- (BubbleViewControllerPresenter*)newBubbleViewControllerPresenterFor:
+    (SuggestionFeatureForIPH)featureForIPH {
+  NSString* text = nil;
+  NSString* voiceOverText = nil;
+  switch (featureForIPH) {
+    case SuggestionFeatureForIPH::kAutofillExternalAccountProfile:
+      text = l10n_util::GetNSString(
+          IDS_AUTOFILL_IPH_EXTERNAL_ACCOUNT_PROFILE_SUGGESTION);
+      voiceOverText = l10n_util::GetNSString(
+          IDS_AUTOFILL_IPH_EXTERNAL_ACCOUNT_PROFILE_SUGGESTION);
+      break;
+    case SuggestionFeatureForIPH::kPlusAddressCreation:
+      text = l10n_util::GetNSString(IDS_PLUS_ADDRESS_CREATE_SUGGESTION_IPH_IOS);
+      voiceOverText = l10n_util::GetNSString(
+          IDS_PLUS_ADDRESS_CREATE_SUGGESTION_IPH_SCREENREADER_IOS);
+      break;
+    case SuggestionFeatureForIPH::kHomeAndWorkAddressSuggestion:
+      text = l10n_util::GetNSString(
+          IDS_AUTOFILL_IPH_HOME_AND_WORK_ACCOUNT_PROFILE_SUGGESTION);
+      voiceOverText = l10n_util::GetNSString(
+          IDS_AUTOFILL_IPH_HOME_AND_WORK_ACCOUNT_PROFILE_SUGGESTION_SCREENREADER);
+      break;
+    case SuggestionFeatureForIPH::kAccountNameEmailSuggestion:
+      text = l10n_util::GetNSString(
+          IDS_AUTOFILL_IPH_ACCOUNT_NAME_EMAIL_SUGGESTION);
+      voiceOverText = l10n_util::GetNSString(
+          IDS_AUTOFILL_IPH_ACCOUNT_NAME_EMAIL_SUGGESTION_SCREENREADER);
+      break;
+    case SuggestionFeatureForIPH::kUnknown:
+      NOTREACHED();
+  }
+
+  CHECK(text != nil);
+  CHECK(voiceOverText != nil);
+
+  // Prepare the main arguments for the BubbleViewControllerPresenter
+  // initializer.
+  // Prepare the dismissal callback.
+  __weak __typeof(self) weakSelf = self;
+  CallbackWithIPHDismissalReasonType dismissalCallback =
+      ^(IPHDismissalReasonType IPHDismissalReasonType) {
+        [weakSelf IPHDidDismissForFeature:featureForIPH];
+      };
+
+  // Create the BubbleViewControllerPresenter.
+  BubbleViewControllerPresenter* bubbleViewControllerPresenter =
+      [[BubbleViewControllerPresenter alloc]
+               initWithText:text
+                      title:nil
+             arrowDirection:BubbleArrowDirectionDown
+                  alignment:BubbleAlignmentTopOrLeading
+                 bubbleType:BubbleViewTypeWithClose
+            pageControlPage:BubblePageControlPageNone
+          dismissalCallback:dismissalCallback];
+  bubbleViewControllerPresenter.voiceOverAnnouncement = voiceOverText;
+  return bubbleViewControllerPresenter;
+}
+
+// Checks if the bubble should be presented and acts on it.
+- (void)tryPresentingBubbleFor:(SuggestionFeatureForIPH)featureForIPH {
+  BubbleViewControllerPresenter* bubblePresenter =
+      [self newBubbleViewControllerPresenterFor:featureForIPH];
+
+  // Get the anchor point for the bubble.
+  CGRect anchorFrame = self.layoutGuide.layoutFrame;
+  CGPoint anchorPoint =
+      CGPointMake(CGRectGetMidX(anchorFrame),
+                  CGRectGetMinY(anchorFrame) + kIPHVerticalOffset);
+
+  // Discard if it doesn't fit in the view as it is currently shown.
+  if (![bubblePresenter canPresentInView:self.baseViewController.view
+                             anchorPoint:anchorPoint]) {
+    return;
+  }
+
+  // Early return if the engagement tracker won't display the IPH.
+  feature_engagement::Tracker* tracker = self.featureEngagementTracker;
+  const base::Feature* feature = FetchIPHFeatureFromEnum(featureForIPH);
+  if (!tracker || !tracker->ShouldTriggerHelpUI(*feature)) {
+    return;
+  }
+
+  // Present the bubble after the delay.
+  self.bubblePresenter = bubblePresenter;
+  __weak __typeof(self) weakSelf = self;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, base::BindOnce(^{
+        [weakSelf presentBubbleAtAnchorPoint:anchorPoint];
+      }),
+      kAutofillSuggestionTipDelay);
+}
+
+- (void)IPHDidDismissForFeature:(SuggestionFeatureForIPH)featureForIPH {
+  feature_engagement::Tracker* tracker = self.featureEngagementTracker;
+  if (tracker) {
+    const base::Feature* feature = FetchIPHFeatureFromEnum(featureForIPH);
+    tracker->Dismissed(*feature);
+  }
+  self.bubblePresenter = nil;
+}
+
+// Actually presents the bubble.
+- (void)presentBubbleAtAnchorPoint:(CGPoint)anchorPoint {
+  [self.bubblePresenter presentInViewController:self.baseViewController
+                                    anchorPoint:anchorPoint];
+}
+
+- (void)dismissBubble {
+  [self.bubblePresenter dismissAnimated:YES];
+  self.bubblePresenter = nil;
+}
+
+// Resets `formInputAccessoryViewController` and `formInputViewController` to
+// their initial state.
+- (void)resetInputViews {
+  _formInputAccessoryMediator.suggestionsEnabled = YES;
+  [_formInputAccessoryViewController reset];
+
+  _formInputViewController = nil;
+}
+
+// Updates the keyboard accessory to the state it should be in when a manual
+// fill view is displayed.
+- (void)updateKeyboardAccessoryForManualFilling {
+  _formInputAccessoryMediator.suggestionsEnabled = NO;
+}
+
+// Creates a SettingsCommend handler and uses it to dispatch a command to show
+// the details of a password in edit mode.
+- (void)dispatchCommandToEditPassword:
+    (password_manager::CredentialUIEntry)credential {
+  id<SettingsCommands> settingsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), SettingsCommands);
+  [settingsHandler showPasswordDetailsForCredential:credential inEditMode:YES];
+}
+
+@end

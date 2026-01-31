@@ -55,7 +55,9 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.InputHintChecker;
 import org.chromium.base.InputHintCheckerJni;
 import org.chromium.base.UserDataHost;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -194,8 +196,8 @@ public class CompositorViewHolderUnitTest {
     private CompositorViewHolder mCompositorViewHolder;
     private BrowserControlsManager mBrowserControlsManager;
     private ApplicationViewportInsetTracker mViewportInsets;
-    private ObservableSupplierImpl<Integer> mKeyboardInsetSupplier;
-    private ObservableSupplierImpl<Integer> mKeyboardAccessoryInsetSupplier;
+    private SettableNonNullObservableSupplier<Integer> mKeyboardInsetSupplier;
+    private SettableNonNullObservableSupplier<Integer> mKeyboardAccessoryInsetSupplier;
     private final UserDataHost mUserDataHost = new UserDataHost();
 
     @Before
@@ -213,9 +215,9 @@ public class CompositorViewHolderUnitTest {
         when(mInsetObserver.isKeyboardInOverlayMode()).thenReturn(false);
         mViewportInsets.setInsetObserver(mInsetObserver);
 
-        mKeyboardInsetSupplier = new ObservableSupplierImpl<>();
+        mKeyboardInsetSupplier = ObservableSuppliers.createNonNull(0);
         mViewportInsets.setKeyboardInsetSupplier(mKeyboardInsetSupplier);
-        mKeyboardAccessoryInsetSupplier = new ObservableSupplierImpl<>();
+        mKeyboardAccessoryInsetSupplier = ObservableSuppliers.createNonNull(0);
         mViewportInsets.setKeyboardAccessoryInsetSupplier(mKeyboardAccessoryInsetSupplier);
 
         when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
@@ -270,7 +272,7 @@ public class CompositorViewHolderUnitTest {
         mCompositorViewHolder.setBrowserControlsManager(mBrowserControlsManager);
         mCompositorViewHolder.setApplicationViewportInsetSupplier(mViewportInsets);
         mCompositorViewHolder.onFinishNativeInitialization(
-                mTabModelSelector, null, new ObservableSupplierImpl<>(0));
+                mTabModelSelector, null, ObservableSuppliers.alwaysZero());
         when(mCompositorViewHolder.getCurrentTab()).thenReturn(mTab);
         when(mCompositorViewHolder.getRootWindowInsets())
                 .thenReturn(VISIBLE_SYSTEM_BARS_WINDOW_INSETS.toWindowInsets());
@@ -862,7 +864,8 @@ public class CompositorViewHolderUnitTest {
 
     @Test
     public void testWebContentResizeByBottomSheetInset() {
-        var bottomSheetInsetSupplier = new ObservableSupplierImpl<Integer>();
+        SettableMonotonicObservableSupplier<Integer> bottomSheetInsetSupplier =
+                ObservableSuppliers.createMonotonic();
         mViewportInsets.setBottomSheetInsetSupplier(bottomSheetInsetSupplier);
         reset(mWebContents);
 
@@ -1034,7 +1037,10 @@ public class CompositorViewHolderUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TOOLBAR_STALE_CAPTURE_BUG_FIX)
+    @DisableFeatures({
+        ChromeFeatureList.TOOLBAR_STALE_CAPTURE_BUG_FIX,
+        ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES_AT_GESTURE_END
+    })
     public void testInMotionOrdering() {
         // With the 'defer in motion' experiment enabled, touch events are routed to android UI
         // after being sent to native/web content.

@@ -33,6 +33,10 @@ bool CSSLayoutFunctionValue::Equals(const CSSLayoutFunctionValue& other) const {
   return GetName() == other.GetName() && IsInline() == other.IsInline();
 }
 
+bool CSSLayoutFunctionValue::HasRandomFunctions() const {
+  return name_ && name_->HasRandomFunctions();
+}
+
 void CSSLayoutFunctionValue::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(name_);
   CSSValue::TraceAfterDispatch(visitor);

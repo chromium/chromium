@@ -68,9 +68,6 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
-#endif
-
-#if BUILDFLAG(ENABLE_GUEST_VIEW)
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #endif
 
@@ -250,14 +247,14 @@ bool ExtensionMayAttachToRenderFrameHost(
   render_frame_host->ForEachRenderFrameHostWithAction(
       [&page_url, &extension, extension_profile, error,
        &result](content::RenderFrameHost* render_frame_host) {
-#if BUILDFLAG(ENABLE_GUEST_VIEW)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
         // If |render_frame_host| is attached to an inner MimeHandlerViewGuest
         // skip it. This is done to fix crbug.com/1293856 because an extension
         // cannot inspect another extension.
         if (MimeHandlerViewGuest::FromRenderFrameHost(render_frame_host)) {
           return content::RenderFrameHost::FrameIterationAction::kSkipChildren;
         }
-#endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(ENABLE_PDF)
         // The PDF extension frame would normally prevent all other frames in
@@ -546,7 +543,7 @@ void ExtensionDevToolsClientHost::SendMessageToBackend(
     const std::string& method,
     SendCommand::Params::CommandParams* command_params,
     std::optional<std::string> session_id) {
-  base::Value::Dict protocol_request;
+  base::DictValue protocol_request;
   int request_id = ++last_request_id_;
   pending_requests_[request_id] = function;
   protocol_request.Set("id", request_id);
@@ -620,7 +617,7 @@ void ExtensionDevToolsClientHost::DispatchProtocolMessage(
     LOG(ERROR) << "Tried to send invalid message to extension: " << message_str;
     return;
   }
-  base::Value::Dict& dictionary = result->GetDict();
+  base::DictValue& dictionary = result->GetDict();
 
   std::optional<int> id = dictionary.FindInt("id");
   if (!id) {
@@ -629,7 +626,7 @@ void ExtensionDevToolsClientHost::DispatchProtocolMessage(
       return;
 
     OnEvent::Params params;
-    if (base::Value::Dict* params_value = dictionary.FindDict("params")) {
+    if (base::DictValue* params_value = dictionary.FindDict("params")) {
       params.additional_properties = std::move(*params_value);
     }
 
@@ -907,7 +904,7 @@ void DebuggerSendCommandFunction::SendResponseBody(base::Value response) {
   }
 
   SendCommand::Results::Result result;
-  if (base::Value::Dict* result_body = response.GetDict().FindDict("result")) {
+  if (base::DictValue* result_body = response.GetDict().FindDict("result")) {
     result.additional_properties = std::move(*result_body);
   }
 
@@ -937,8 +934,8 @@ const char kTargetTypeBackgroundPage[] = "background_page";
 const char kTargetTypeWorker[] = "worker";
 const char kTargetTypeOther[] = "other";
 
-base::Value::Dict SerializeTarget(scoped_refptr<DevToolsAgentHost> host) {
-  base::Value::Dict dictionary;
+base::DictValue SerializeTarget(scoped_refptr<DevToolsAgentHost> host) {
+  base::DictValue dictionary;
   dictionary.Set(kTargetIdField, host->GetId());
   dictionary.Set(kTargetTitleField, host->GetTitle());
   dictionary.Set(kTargetAttachedField, host->IsAttached());
@@ -983,7 +980,7 @@ DebuggerGetTargetsFunction::~DebuggerGetTargetsFunction() = default;
 
 ExtensionFunction::ResponseAction DebuggerGetTargetsFunction::Run() {
   content::DevToolsAgentHost::List list = DevToolsAgentHost::GetOrCreateAll();
-  base::Value::List result;
+  base::ListValue result;
   Profile* profile = Profile::FromBrowserContext(browser_context());
   for (auto& host : list) {
     // TODO(crbug.com/40233332): hide all Tab targets for now to avoid

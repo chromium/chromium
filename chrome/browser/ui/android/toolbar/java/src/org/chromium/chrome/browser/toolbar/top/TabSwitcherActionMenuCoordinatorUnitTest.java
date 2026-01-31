@@ -33,7 +33,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Token;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -43,7 +43,6 @@ import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.R;
@@ -68,9 +67,8 @@ public class TabSwitcherActionMenuCoordinatorUnitTest {
             new ActivityScenarioRule<>(TestActivity.class);
 
     @Mock private Profile mProfile;
-    @Mock private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
-    @Mock private ObservableSupplier<Tab> mCurrentTabSupplier;
-    @Mock private TabGroupModelFilterProvider mTabGroupModelFilterProvider;
+    @Mock private MonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
+    @Mock private MonotonicObservableSupplier<Tab> mCurrentTabSupplier;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TabModel mIncognitoTabModel;
     @Mock private TabModel mNormalTabModel;
@@ -95,10 +93,7 @@ public class TabSwitcherActionMenuCoordinatorUnitTest {
         when(mTabModelSelectorSupplier.get()).thenReturn(mTabModelSelector);
         when(mTabModelSelector.getModel(true)).thenReturn(mIncognitoTabModel);
         when(mTabModelSelector.getModel(false)).thenReturn(mNormalTabModel);
-        when(mTabModelSelector.getTabGroupModelFilterProvider())
-                .thenReturn(mTabGroupModelFilterProvider);
-        when(mTabGroupModelFilterProvider.getCurrentTabGroupModelFilter())
-                .thenReturn(mTabGroupModelFilter);
+        when(mTabModelSelector.getCurrentTabGroupModelFilter()).thenReturn(mTabGroupModelFilter);
         when(mCurrentTabSupplier.get()).thenReturn(mTab);
         when(mTabModelSelector.getCurrentTabSupplier()).thenReturn(mCurrentTabSupplier);
 
@@ -171,6 +166,7 @@ public class TabSwitcherActionMenuCoordinatorUnitTest {
     @DisableFeatures(ChromeFeatureList.TAB_STRIP_INCOGNITO_MIGRATION)
     @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testBuildMenuItems_NormalMode_NoIncognitoTabs_NoGroups_incognitoWindowEnabled() {
+        IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
         when(mTabModelSelector.isIncognitoBrandedModelSelected()).thenReturn(false);
         when(mIncognitoTabModel.getCount()).thenReturn(0);
         when(mTabGroupModelFilter.getTabGroupCount()).thenReturn(0);

@@ -1252,14 +1252,6 @@ void Textfield::OnTextChanged() {
   drop_weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
-void Textfield::WriteTextToClipboard(ui::ClipboardBuffer clipboard_buffer,
-                                     const std::u16string_view& text) {
-  if (!controller_ ||
-      !controller_->HandleWriteTextToClipboard(clipboard_buffer, text)) {
-    ui::ScopedClipboardWriter(clipboard_buffer).WriteText(text);
-  }
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 // Textfield, ContextMenuController overrides:
 
@@ -1329,8 +1321,7 @@ int Textfield::GetDragOperationsForView(View* sender, const gfx::Point& p) {
 bool Textfield::CanStartDragForView(View* sender,
                                     const gfx::Point& press_pt,
                                     const gfx::Point& p) {
-  return initiating_drag_ && GetRenderText()->IsPointInSelection(press_pt) &&
-         (!controller_ || controller_->AllowStartDragEvent(GetSelectedText()));
+  return initiating_drag_ && GetRenderText()->IsPointInSelection(press_pt);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -2702,7 +2693,8 @@ void Textfield::UpdateSelectionClipboard() {
   if (ui::Clipboard::IsSupportedClipboardBuffer(
           ui::ClipboardBuffer::kSelection)) {
     if (text_input_type_ != ui::TEXT_INPUT_TYPE_PASSWORD) {
-      WriteTextToClipboard(ui::ClipboardBuffer::kSelection, GetSelectedText());
+      ui::ScopedClipboardWriter(ui::ClipboardBuffer::kSelection)
+          .WriteText(GetSelectedText());
       if (controller_) {
         controller_->OnAfterCutOrCopy(ui::ClipboardBuffer::kSelection);
       }
@@ -2974,25 +2966,49 @@ void Textfield::OnAfterUserAction() {
 }
 
 bool Textfield::Cut() {
-  if (!GetReadOnly() && text_input_type_ != ui::TEXT_INPUT_TYPE_PASSWORD &&
-      model_->Cut()) {
-    if (controller_) {
-      controller_->OnAfterCutOrCopy(ui::ClipboardBuffer::kCopyPaste);
-    }
-    UpdateAccessibleTextSelection();
-    return true;
+  if (GetReadOnly() || text_input_type_ == ui::TEXT_INPUT_TYPE_PASSWORD) {
+    return false;
   }
-  return false;
+
+  bool cut = false;
+  std::u16string text;
+  if (controller_ && controller_->OnBeforeCutOrCopy(this, &text)) {
+    cut = model_->Cut(std::move(text), controller_->CreateClipboardWriter());
+  } else {
+    cut = model_->Cut();
+  }
+  if (!cut) {
+    return false;
+  }
+
+  if (controller_) {
+    controller_->OnAfterCutOrCopy(ui::ClipboardBuffer::kCopyPaste);
+  }
+  UpdateAccessibleTextSelection();
+  return true;
 }
 
 bool Textfield::Copy() {
-  if (text_input_type_ != ui::TEXT_INPUT_TYPE_PASSWORD && model_->Copy()) {
-    if (controller_) {
-      controller_->OnAfterCutOrCopy(ui::ClipboardBuffer::kCopyPaste);
-    }
-    return true;
+  if (text_input_type_ == ui::TEXT_INPUT_TYPE_PASSWORD) {
+    return false;
   }
-  return false;
+
+  bool copied = false;
+  std::u16string text;
+  if (controller_ && controller_->OnBeforeCutOrCopy(this, &text)) {
+    copied =
+        model_->Copy(std::move(text), controller_->CreateClipboardWriter());
+  } else {
+    copied = model_->Copy();
+  }
+  if (!copied) {
+    return false;
+  }
+
+  if (controller_) {
+    controller_->OnAfterCutOrCopy(ui::ClipboardBuffer::kCopyPaste);
+  }
+  return true;
 }
 
 bool Textfield::Paste() {

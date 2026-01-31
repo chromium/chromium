@@ -1,0 +1,11 @@
+Name: parking_lot_core
+URL: https://crates.io/crates/parking_lot_core
+Version: 0.9.12
+Revision: d7828fff7b5d6327ae608e82db45f888b344449a
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/parking_lot_core-v0_9/LICENSE-APACHE
+Shipped: yes
+Security Critical: yes
+
+Description: An advanced API for creating custom synchronization primitives.

@@ -21,7 +21,7 @@ namespace {
 
 class MockTask {
  public:
-  MOCK_METHOD0(Run, void());
+  MOCK_METHOD(void, Run, ());
 };
 
 Task CreateTask(MockTask* mock_task, TimeTicks now = TimeTicks::Now()) {

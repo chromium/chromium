@@ -19,8 +19,9 @@ InterfacePtrStateBase::InterfacePtrStateBase() = default;
 
 InterfacePtrStateBase::~InterfacePtrStateBase() {
   endpoint_client_.reset();
-  if (router_)
+  if (router_) {
     router_->CloseMessagePipe();
+  }
 }
 
 void InterfacePtrStateBase::QueryVersion(
@@ -33,8 +34,9 @@ void InterfacePtrStateBase::QueryVersion(
 }
 
 void InterfacePtrStateBase::RequireVersion(uint32_t version) {
-  if (version <= version_)
+  if (version <= version_) {
     return;
+  }
 
   version_ = version;
   endpoint_client_->RequireVersion(version);
@@ -93,8 +95,9 @@ bool InterfacePtrStateBase::InitializeEndpointClient(
     MessageToMethodInfoCallback method_info_callback,
     MessageToMethodNameCallback method_name_callback) {
   // The object hasn't been bound.
-  if (!handle_.is_valid())
+  if (!handle_.is_valid()) {
     return false;
+  }
 
   MultiplexRouter::Config config =
       (passes_associated_kinds || has_uninterruptable_methods)

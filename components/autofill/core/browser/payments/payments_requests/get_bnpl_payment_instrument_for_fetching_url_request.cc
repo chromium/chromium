@@ -10,7 +10,7 @@
 namespace autofill::payments {
 
 namespace {
-using Dict = base::Value::Dict;
+using Dict = base::DictValue;
 
 const char kGetBnplPaymentInstrumentForFetchingUrlRequestPath[] =
     "payments/apis-secure/chromepaymentsservice/getpaymentinstrument";

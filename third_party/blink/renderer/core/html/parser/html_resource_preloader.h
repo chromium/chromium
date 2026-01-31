@@ -50,6 +50,16 @@ class CORE_EXPORT HTMLResourcePreloader
 
   void Trace(Visitor*) const;
 
+  // Centralized logic to determine if a preload request should be
+  // initiated. This is used by the parser to avoid queueing and by
+  // the preloader to filter requests, primarily for experiments
+  // like `kLightweightNoStatePrefetch`.
+  static bool ShouldPreload(const Document* document,
+                            ResourceType type,
+                            bool is_preconnect,
+                            FetchParameters::DeferOption defer_option,
+                            mojom::blink::FetchPriorityHint priority_hint);
+
  protected:
   void Preload(std::unique_ptr<PreloadRequest>) override;
 

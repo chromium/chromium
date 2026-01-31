@@ -64,6 +64,7 @@ class VIEWS_EXPORT SubmenuView : public View,
 
   // Returns the MenuItemView at the specified index.
   MenuItemView* GetMenuItemAt(size_t index);
+  const MenuItemView* GetMenuItemAt(size_t index) const;
 
   // The preferred height, in DIPs, of a "standard" (i.e. empty) menu item.
   int GetPreferredItemHeight() const;
@@ -159,6 +160,7 @@ class VIEWS_EXPORT SubmenuView : public View,
 
   // Returns the last MenuItemView in this submenu.
   MenuItemView* GetLastItem();
+  const MenuItemView* GetLastItem() const;
 
   // Invoked if the menu is prematurely destroyed. This can happen if the window
   // closes while the menu is shown. If invoked the SubmenuView must drop all

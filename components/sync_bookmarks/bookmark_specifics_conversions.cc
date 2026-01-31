@@ -4,13 +4,13 @@
 
 #include "components/sync_bookmarks/bookmark_specifics_conversions.h"
 
+#include <algorithm>
 #include <string>
 #include <string_view>
 #include <unordered_set>
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/hash/sha1.h"
@@ -195,7 +195,7 @@ std::string InferGuidForLegacyBookmark(
 }
 
 bool IsForbiddenTitleWithMaybeTrailingSpaces(const std::string& title) {
-  return base::Contains(
+  return std::ranges::contains(
       kForbiddenTitles,
       base::TrimWhitespaceASCII(title, base::TrimPositions::TRIM_TRAILING));
 }

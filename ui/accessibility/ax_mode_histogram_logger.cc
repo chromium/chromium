@@ -94,22 +94,6 @@ void RecordAccessibilityModeHistograms(AXHistogramPrefix prefix,
     }
   }
 
-  // Record forms control flag transitioning from unset to set.
-  int new_filter_mode_flags =
-      mode.filter_flags() & (~previous_mode.filter_flags());
-  if (new_filter_mode_flags & AXMode::kFormsAndLabelsOnly) {
-    switch (prefix) {
-      case AXHistogramPrefix::kNone:
-        base::UmaHistogramBoolean(
-            "Accessibility.ExperimentalModeFlag.FormControls", true);
-        break;
-
-      case AXHistogramPrefix::kBlink:
-        base::UmaHistogramBoolean(
-            "Blink.Accessibility.ExperimentalModeFlag.FormControls", true);
-    }
-  }
-
   // Record exact match to a named bundle.
   AXMode::BundleHistogramValue bundle;
   if (mode == kAXModeBasic) {

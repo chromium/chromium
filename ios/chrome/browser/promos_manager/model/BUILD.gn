@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/apple/swift_source_set.gni")
+
 source_set("model") {
   sources = [
     "promos_manager.h",
@@ -80,12 +82,31 @@ source_set("constants") {
   deps = [ "//base" ]
 }
 
+swift_source_set("app_store_review_swift") {
+  sources = [ "app_store_review_adapter.swift" ]
+  deps = [ "//base" ]
+}
+
 source_set("features") {
   sources = [
     "features.h",
     "features.mm",
   ]
   deps = [ "//base" ]
+}
+
+source_set("scene_agent") {
+  sources = [
+    "promos_manager_scene_agent.h",
+    "promos_manager_scene_agent.mm",
+  ]
+  deps = [
+    "//ios/chrome/app/profile",
+    "//ios/chrome/browser/promos_manager/public:utils",
+    "//ios/chrome/browser/shared/coordinator/scene:observing_scene_agent",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/public/commands",
+  ]
 }
 
 source_set("test_support") {

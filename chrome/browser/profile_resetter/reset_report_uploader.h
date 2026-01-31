@@ -22,6 +22,10 @@ namespace reset_report {
 class ChromeResetReport;
 }
 
+namespace net {
+class HttpResponseHeaders;
+}
+
 // Service whose job is up upload ChromeResetReports.
 class ResetReportUploader : public KeyedService {
  public:
@@ -44,7 +48,7 @@ class ResetReportUploader : public KeyedService {
       std::list<std::unique_ptr<network::SimpleURLLoader>>;
 
   void OnSimpleLoaderComplete(SimpleURLLoaderList::iterator it,
-                              std::optional<std::string> response_body);
+                              scoped_refptr<net::HttpResponseHeaders> headers);
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   SimpleURLLoaderList simple_url_loaders_;

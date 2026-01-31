@@ -40,8 +40,8 @@ double RoundDoubleTowardsZero(const double& x) {
   return x > 0.0 ? std::floor(x) : std::ceil(x);
 }
 
-// Rounds to jlong using Java's type conversion rules.
-jlong RoundDoubleToLong(const double& x) {
+// Rounds to int64_t using Java's type conversion rules.
+int64_t RoundDoubleToLong(const double& x) {
   double intermediate = RoundDoubleTowardsZero(x);
   // The int64_t limits can not be converted exactly to double values, so we
   // compare to custom constants. kint64max is 2^63 - 1, but the spacing
@@ -57,18 +57,18 @@ jlong RoundDoubleToLong(const double& x) {
   if (intermediate < kSmallestDoubleGreaterThanInt64Min) {
     return std::numeric_limits<int64_t>::min();
   }
-  return static_cast<jlong>(intermediate);
+  return static_cast<int64_t>(intermediate);
 }
 
-// Rounds to jint using Java's type conversion rules.
-jint RoundDoubleToInt(const double& x) {
+// Rounds to int32_t using Java's type conversion rules.
+int32_t RoundDoubleToInt(const double& x) {
   double intermediate = RoundDoubleTowardsZero(x);
   // The int32_t limits cast exactly to double values.
   intermediate = std::min(
       intermediate, static_cast<double>(std::numeric_limits<int32_t>::max()));
   intermediate = std::max(
       intermediate, static_cast<double>(std::numeric_limits<int32_t>::min()));
-  return static_cast<jint>(intermediate);
+  return static_cast<int32_t>(intermediate);
 }
 
 jvalue CoerceJavaScriptIntegerToJavaValue(JNIEnv* env,
@@ -85,16 +85,16 @@ jvalue CoerceJavaScriptIntegerToJavaValue(JNIEnv* env,
   jvalue result;
   switch (target_type.type) {
     case JavaType::TypeByte:
-      result.b = static_cast<jbyte>(integer_value);
+      result.b = static_cast<int8_t>(integer_value);
       break;
     case JavaType::TypeChar:
-      result.c = static_cast<jchar>(integer_value);
+      result.c = static_cast<uint16_t>(integer_value);
       break;
     case JavaType::TypeShort:
-      result.s = static_cast<jshort>(integer_value);
+      result.s = static_cast<int16_t>(integer_value);
       break;
     case JavaType::TypeInt:
-      result.i = static_cast<jint>(integer_value);
+      result.i = static_cast<int32_t>(integer_value);
       break;
     case JavaType::TypeLong:
       result.j = integer_value;
@@ -145,7 +145,7 @@ jvalue CoerceJavaScriptDoubleToJavaValue(JNIEnv* env,
   jvalue result;
   switch (target_type.type) {
     case JavaType::TypeByte:
-      result.b = static_cast<jbyte>(RoundDoubleToInt(double_value));
+      result.b = static_cast<int8_t>(RoundDoubleToInt(double_value));
       break;
     case JavaType::TypeChar:
       // LIVECONNECT_COMPLIANCE: Existing behavior is to convert double to 0.
@@ -154,7 +154,7 @@ jvalue CoerceJavaScriptDoubleToJavaValue(JNIEnv* env,
       result.c = 0;
       break;
     case JavaType::TypeShort:
-      result.s = static_cast<jshort>(RoundDoubleToInt(double_value));
+      result.s = static_cast<int16_t>(RoundDoubleToInt(double_value));
       break;
     case JavaType::TypeInt:
       result.i = RoundDoubleToInt(double_value);
@@ -163,7 +163,7 @@ jvalue CoerceJavaScriptDoubleToJavaValue(JNIEnv* env,
       result.j = RoundDoubleToLong(double_value);
       break;
     case JavaType::TypeFloat:
-      result.f = static_cast<jfloat>(double_value);
+      result.f = static_cast<float>(double_value);
       break;
     case JavaType::TypeDouble:
       result.d = double_value;
@@ -467,7 +467,7 @@ jvalue CoerceJavaScriptNullOrUndefinedToJavaValue(
 }
 
 jobject CoerceJavaScriptListToArray(JNIEnv* env,
-                                    const base::Value::List& list,
+                                    const base::ListValue& list,
                                     const JavaType& target_type,
                                     const ObjectRefs& object_refs,
                                     mojom::GinJavaBridgeError* error) {
@@ -515,7 +515,7 @@ jobject CoerceJavaScriptListToArray(JNIEnv* env,
 }
 
 jobject CoerceJavaScriptDictionaryToArray(JNIEnv* env,
-                                          const base::Value::Dict& dict,
+                                          const base::DictValue& dict,
                                           const JavaType& target_type,
                                           const ObjectRefs& object_refs,
                                           mojom::GinJavaBridgeError* error) {

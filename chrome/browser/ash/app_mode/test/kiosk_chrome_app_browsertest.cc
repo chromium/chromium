@@ -27,7 +27,7 @@
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/common/mojom/manifest.mojom-data-view.h"
+#include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "extensions/components/native_app_window/native_app_window_views.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/window/frame_view.h"

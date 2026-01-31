@@ -9,12 +9,12 @@
 
 #include "build/build_config.h"
 #include "chrome/services/speech/buildflags/buildflags.h"
+#include "components/on_device_translation/buildflags/buildflags.h"
 #include "components/paint_preview/buildflags/buildflags.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/services/csv_password/csv_password_parser_impl.h"
 #include "components/password_manager/services/csv_password/public/mojom/csv_password_parser.mojom.h"
 #include "components/safe_browsing/buildflags.h"
-#include "components/services/on_device_translation/buildflags/buildflags.h"
 #include "components/services/patch/file_patcher_impl.h"
 #include "components/services/patch/public/mojom/file_patcher.mojom.h"
 #include "components/services/unzip/public/mojom/unzipper.mojom.h"
@@ -134,7 +134,7 @@ static_assert(BUILDFLAG(ENABLE_PRINTING), "ChromeOS Ash must enable Printing");
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
-#include "components/services/on_device_translation/on_device_translation_service.h"
+#include "components/on_device_translation/service/on_device_translation_service.h"
 #endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
 
 namespace {

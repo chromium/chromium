@@ -99,7 +99,7 @@ void GuestViewMessageHandler::ViewCreated(
 void GuestViewMessageHandler::AttachToEmbedderFrame(
     int element_instance_id,
     int guest_instance_id,
-    base::Value::Dict params,
+    base::DictValue params,
     AttachToEmbedderFrameCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!GetBrowserContext()) {

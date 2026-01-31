@@ -4,7 +4,8 @@
 
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/regular/regular_grid_mediator.h"
 
-#import "base/containers/contains.h"
+#import <algorithm>
+
 #import "base/memory/raw_ptr.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/collaboration/test_support/mock_messaging_backend_service.h"
@@ -15,6 +16,7 @@
 #import "components/sessions/core/tab_restore_service.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/collaboration/model/messaging/messaging_backend_service_bridge.h"
+#import "ios/chrome/browser/flags/about_flags.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_service.h"
@@ -144,9 +146,9 @@ TEST_F(RegularGridMediatorTest, UndoCloseAllItemsCommand) {
   [mediator_ undoCloseAllItems];
   EXPECT_EQ(3, browser_->GetWebStateList()->count());
   EXPECT_EQ(3UL, consumer_.items.size());
-  EXPECT_TRUE(base::Contains(original_identifiers_, consumer_.items[0]));
-  EXPECT_TRUE(base::Contains(original_identifiers_, consumer_.items[1]));
-  EXPECT_TRUE(base::Contains(original_identifiers_, consumer_.items[2]));
+  EXPECT_TRUE(std::ranges::contains(original_identifiers_, consumer_.items[0]));
+  EXPECT_TRUE(std::ranges::contains(original_identifiers_, consumer_.items[1]));
+  EXPECT_TRUE(std::ranges::contains(original_identifiers_, consumer_.items[2]));
 }
 
 // Tests that the WebStateList is restored to 3 items when
@@ -258,8 +260,56 @@ TEST_F(RegularGridMediatorTest, TestToolbarsNormalModeWithoutWebstates) {
   EXPECT_FALSE(fake_toolbars_mediator_.configuration.selectAllButton);
   EXPECT_FALSE(fake_toolbars_mediator_.configuration.addToButton);
   EXPECT_FALSE(fake_toolbars_mediator_.configuration.closeSelectedTabsButton);
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.closeOtherTabsButton);
   EXPECT_FALSE(fake_toolbars_mediator_.configuration.shareButton);
   EXPECT_FALSE(fake_toolbars_mediator_.configuration.cancelSearchButton);
+}
+
+// Tests that the WebStateList is correctly updated when
+// `-closeOtherTabsButtonTapped` is called.
+TEST_F(RegularGridMediatorTest, CloseOtherTabsButtonTapped) {
+  if (!IsPinnedTabsEnabled()) {
+    return;
+  }
+  // Setup: 3 tabs default.
+  // Pin index 0.
+  browser_->GetWebStateList()->SetWebStatePinnedAt(0, true);
+  // Activate index 1.
+  browser_->GetWebStateList()->ActivateWebStateAt(1);
+
+  // Call closeOtherTabsButtonTapped.
+  [mediator_ closeOtherTabsButtonTapped:nil];
+
+  // Expect: Index 0 (pinned) and Index 1 (active) remain. Index 2 (other)
+  // closed.
+  EXPECT_EQ(2, browser_->GetWebStateList()->count());
+  EXPECT_EQ(0, browser_->GetWebStateList()->GetIndexOfWebState(
+                   browser_->GetWebStateList()->GetWebStateAt(0)));
+  EXPECT_TRUE(browser_->GetWebStateList()->IsWebStatePinnedAt(0));
+  EXPECT_EQ(1, browser_->GetWebStateList()->active_index());
+}
+
+// Tests that the WebStateList is correctly updated when
+// `-closeOtherTabsButtonTapped` is called and the active tab is pinned.
+TEST_F(RegularGridMediatorTest, CloseOtherTabsButtonTapped_ActiveTabIsPinned) {
+  if (!IsPinnedTabsEnabled()) {
+    return;
+  }
+  // Setup: 3 tabs default.
+  // Pin index 0.
+  browser_->GetWebStateList()->SetWebStatePinnedAt(0, true);
+  // Activate index 0 (Pinned).
+  browser_->GetWebStateList()->ActivateWebStateAt(0);
+
+  // Call closeOtherTabsButtonTapped.
+  [mediator_ closeOtherTabsButtonTapped:nil];
+
+  // Expect: Index 0 (pinned) remains. Index 1 and 2 (regular) closed.
+  EXPECT_EQ(1, browser_->GetWebStateList()->count());
+  EXPECT_EQ(0, browser_->GetWebStateList()->GetIndexOfWebState(
+                   browser_->GetWebStateList()->GetWebStateAt(0)));
+  EXPECT_TRUE(browser_->GetWebStateList()->IsWebStatePinnedAt(0));
+  EXPECT_EQ(0, browser_->GetWebStateList()->active_index());
 }
 
 // Tests that `facePileProviderForItem` returns an UIView when the group is

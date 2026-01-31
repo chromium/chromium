@@ -11,24 +11,33 @@
 
 chromium::import! {
     "//mojo/public/rust/mojom_parser";
+    "//mojo/public/rust/bindings:mojo_rust_bindings_api";
 }
 
+{#- FOR RELEASE (optional): Look into calling rustfmt as part of the generation process #}
+
 use mojom_parser::*;
+{% if module.interfaces %}
+use mojo_rust_bindings_api as bindings;
+{%- endif %}
+
 #[allow(unused_imports)]
 use std::collections::HashMap;
+#[allow(unused_imports)]
+use ordered_float::OrderedFloat;
 
 {%- for enum in module.enums %}
-{{declare_enum(enum.name, enum)}}
-{% endfor %}
+{{- declare_enum(enum.name, enum)}}
+{%- endfor %}
 
 {%- for union in module.unions %}
-{{declare_union(union.name, union)}}
-{% endfor %}
+{{- declare_union(union.name, union)}}
+{%- endfor %}
 
 {%- for struct in module.structs %}
-{{declare_struct(struct.name, struct, true)}}
-{% endfor %}
+{{- declare_struct(struct.name, struct, true)}}
+{%- endfor %}
 
 {%- for interface in module.interfaces %}
-{{declare_interface(interface)}}
-{% endfor %}
+{{- declare_interface(interface)}}
+{%- endfor %}

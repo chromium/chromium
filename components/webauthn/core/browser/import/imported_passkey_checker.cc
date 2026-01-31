@@ -16,11 +16,13 @@ ImportedPasskeyStatus CheckImportedPasskey(
   // Set in ios/chrome/browser/credential_exchange/model/credential_importer.mm.
   CHECK_EQ(passkey.sync_id().size(), passkey_model_utils::kSyncIdLength);
 
-  if (passkey.credential_id().size() < kCredentialIdMinLength) {
+  if (passkey.credential_id().size() <
+      passkey_model_utils::kCredentialIdMinLength) {
     return ImportedPasskeyStatus::kCredentialIdTooShort;
   }
 
-  if (passkey.credential_id().size() > kCredentialIdMaxLength) {
+  if (passkey.credential_id().size() >
+      passkey_model_utils::kCredentialIdMaxLength) {
     return ImportedPasskeyStatus::kCredentialIdTooLong;
   }
 

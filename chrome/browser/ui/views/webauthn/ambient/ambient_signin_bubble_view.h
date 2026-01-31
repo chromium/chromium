@@ -47,7 +47,7 @@ class AmbientSigninBubbleView : public views::BubbleDialogDelegateView {
     // extending the bubble.
   };
 
-  explicit AmbientSigninBubbleView(views::View* anchor_view,
+  explicit AmbientSigninBubbleView(views::BubbleAnchor anchor,
                                    AmbientSigninController* controller);
   ~AmbientSigninBubbleView() override;
 

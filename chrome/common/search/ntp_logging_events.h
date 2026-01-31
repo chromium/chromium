@@ -171,7 +171,12 @@ enum NTPLoggingEventType {
   // The visibility of enterprise shortcuts was changed.
   NTP_CUSTOMIZE_ENTERPRISE_SHORTCUT_TOGGLE_VISIBILITY = 90,
 
-  NTP_EVENT_TYPE_LAST = NTP_CUSTOMIZE_ENTERPRISE_SHORTCUT_TOGGLE_VISIBILITY
+  // Shortcuts were automatically removed due to inactivity.
+  NTP_SHORTCUTS_AUTO_REMOVE = 91,
+  // Auto-removal of shortcuts was undone.
+  NTP_SHORTCUTS_AUTO_REMOVE_UNDO = 92,
+
+  NTP_EVENT_TYPE_LAST = NTP_SHORTCUTS_AUTO_REMOVE_UNDO
 };
 
 #endif  // CHROME_COMMON_SEARCH_NTP_LOGGING_EVENTS_H_

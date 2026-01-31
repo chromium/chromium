@@ -2,6 +2,7 @@ include_rules = [
   "+chromeos/crosapi/mojom",
   "+components/bookmarks",
   "+components/os_crypt/async/browser",
+  "+components/os_crypt/async/common",
   "+components/pref_registry",
   "+components/prefs",
   "+components/signin/public",
@@ -13,5 +14,6 @@ include_rules = [
   "+services/network/public/cpp",
   "+services/network/test",
   "+third_party/protobuf/src/google/protobuf",
+  "+third_party/zlib/google",
   "+ui/gfx/image",
 ]

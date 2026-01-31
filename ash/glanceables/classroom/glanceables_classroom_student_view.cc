@@ -32,7 +32,6 @@
 #include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "base/time/time.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
@@ -169,7 +168,7 @@ GlanceablesClassroomStudentView::GlanceablesClassroomStudentView()
               TypographyToken::kCrosButton2))
           .SetLineHeight(typography_provider->ResolveLineHeight(
               TypographyToken::kCrosButton2))
-          .SetID(base::to_underlying(
+          .SetID(std::to_underlying(
               GlanceablesViewId::kClassroomBubbleEmptyListLabel))
           .Build());
 
@@ -195,7 +194,7 @@ void GlanceablesClassroomStudentView::RegisterUserProfilePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       kLastSelectedAssignmentsListPref,
-      base::to_underlying(StudentAssignmentsListType::kAssigned));
+      std::to_underlying(StudentAssignmentsListType::kAssigned));
 }
 
 // static
@@ -317,7 +316,7 @@ void GlanceablesClassroomStudentView::SelectedAssignmentListChanged(
 
   Shell::Get()->session_controller()->GetActivePrefService()->SetInteger(
       kLastSelectedAssignmentsListPref,
-      base::to_underlying(selected_list_type_));
+      std::to_underlying(selected_list_type_));
 
   // Cancel any old pending assignment requests.
   CancelUpdates();

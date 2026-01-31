@@ -1,3 +1,5 @@
 include_rules = [
+  # keep-sorted start
   "+ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h",
+  # keep-sorted end
 ];

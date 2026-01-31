@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/memory_pressure_listener.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "content/browser/network/socket_broker_impl.h"
@@ -38,8 +37,7 @@ class NetworkServiceClient
       public net::NetworkChangeNotifier::MaxBandwidthObserver,
       public net::NetworkChangeNotifier::IPAddressObserver,
 #endif
-      public net::CertDatabase::Observer,
-      public base::MemoryPressureListener {
+      public net::CertDatabase::Observer {
  public:
   NetworkServiceClient();
 
@@ -57,9 +55,6 @@ class NetworkServiceClient
   // net::CertDatabase::Observer implementation:
   void OnTrustStoreChanged() override;
   void OnClientCertStoreChanged() override;
-
-  void OnMemoryPressure(
-      base::MemoryPressureLevel memory_presure_level) override;
 
   // Called when there is a change in the count of media connections that
   // require low network latency.
@@ -112,6 +107,7 @@ class NetworkServiceClient
           auth_challenge_responder) override;
   void OnLocalNetworkAccessPermissionRequired(
       network::mojom::TransportType type,
+      network::mojom::IPAddressSpace ip_address_space,
       OnLocalNetworkAccessPermissionRequiredCallback callback) override;
   void OnClearSiteData(
       const GURL& url,
@@ -123,8 +119,8 @@ class NetworkServiceClient
   void OnLoadingStateUpdate(network::mojom::LoadInfoPtr info,
                             OnLoadingStateUpdateCallback callback) override;
   void OnDataUseUpdate(int32_t network_traffic_annotation_id_hash,
-                       int64_t recv_bytes,
-                       int64_t sent_bytes) override;
+                       base::ByteSize recv_bytes,
+                       base::ByteSize sent_bytes) override;
   void OnSharedStorageHeaderReceived(
       const url::Origin& request_origin,
       std::vector<network::mojom::SharedStorageModifierMethodWithOptionsPtr>
@@ -145,9 +141,6 @@ class NetworkServiceClient
       network::mojom::IPAddressSpace response_address_space,
       network::mojom::IPAddressSpace client_address_space,
       network::mojom::IPAddressSpace target_address_space) override;
-
-  std::unique_ptr<base::MemoryPressureListenerRegistration>
-      memory_pressure_listener_registration_;
 
   std::unique_ptr<WebRtcConnectionsObserver> webrtc_connections_observer_;
 

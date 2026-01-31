@@ -4,15 +4,13 @@ desc:
 
   When this policy is set to 1, the <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME">ProxyOverrideRules</ph> policy will be applied at the user scope, even that user is unaffiliated.
 
-  When this policy is set to 2, the <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME">ProxyOverrideRules</ph> policy will never be applied when its source is a user.
-
 example_value: 1
 default: 0
 features:
   dynamic_refresh: true
   per_profile: false
-future_on:
-- chrome.*
+supported_on:
+- chrome.*:145-
 owners:
 - seblalancette@chromium.org
 - domfc@chromium.org
@@ -21,7 +19,6 @@ schema:
   enum:
   - 0
   - 1
-  - 2
   type: integer
 tags:
 - system-security

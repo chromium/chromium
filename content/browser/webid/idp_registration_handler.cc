@@ -28,7 +28,7 @@ void IdpRegistrationHandler::FetchConfig(
 
   config_fetcher_ =
       std::make_unique<ConfigFetcher>(*render_frame_host_, network_manager_);
-  config_fetcher_->Start(fetch_requests, blink::mojom::RpMode::kPassive,
+  config_fetcher_->Start(fetch_requests,
                          /*icon_ideal_size=*/0, /*icon_minimum_size=*/0,
                          std::move(callback));
 }

@@ -4,7 +4,9 @@
 
  /* #css_wrapper_metadata_start
  * #type=style-lit
+ * #import=//read-anything-side-panel.top-chrome/shared/sp_shared_style_lit.css.js
  * #scheme=relative
+ * #include=sp-shared-style-lit
  * #css_wrapper_metadata_end */
 
 .has-icon-false {
@@ -23,6 +25,22 @@
   visibility: hidden;
 }
 
+.has-header-true {
+  display: grid;
+}
+
+.has-header-false {
+  display: none;
+}
+
+.header-style {
+  align-items: center;
+  font-size: 13px;
+  height: 32px;
+  padding-left: 20px;
+  font-weight: 700;
+}
+
 .check-mark {
   margin: 0;
 }
@@ -39,4 +57,18 @@ cr-icon {
   height: var(--icon-size);
   margin: 0px 8px 0px 4px;
   width: var(--icon-size);
+}
+
+cr-action-menu::part(dialog) {
+  z-index: 9999;
+}
+
+cr-action-menu[non-modal]::part(dialog) {
+  border-radius: var(--cornerRadii-medium-small, 12px);
+}
+
+@media (forced-colors: active) {
+  .dropdown-item {
+    color: LinkText;
+  }
 }

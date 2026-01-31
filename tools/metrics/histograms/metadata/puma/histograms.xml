@@ -58,7 +58,7 @@ chromium-metrics-reviews@google.com.
     name="PUMA.RegionalCapabilities.Search.ChoiceScreenDefaultSearchEngineType"
     enum="OmniboxSearchEngineType" expires_after="2026-08-19">
   <owner>dgn@chromium.org</owner>
-  <owner>chrome-waffle-eng@google.com</owner>
+  <owner>chrome-regionalcapabilities@google.com</owner>
   <summary>
     PUMA.RegionalCapabilities.Search.ChoiceScreenDefaultSearchEngineType is a
     version of histogram Search.ChoiceScreenDefaultSearchEngineType that is
@@ -70,7 +70,7 @@ chromium-metrics-reviews@google.com.
     name="PUMA.RegionalCapabilities.Search.ChoiceScreenDefaultSearchEngineType2"
     enum="OmniboxSearchEngineType" expires_after="2026-08-19">
   <owner>dgn@chromium.org</owner>
-  <owner>chrome-waffle-eng@google.com</owner>
+  <owner>chrome-regionalcapabilities@google.com</owner>
   <summary>
     PUMA.RegionalCapabilities.Search.ChoiceScreenDefaultSearchEngineType2 is a
     version of histogram Search.ChoiceScreenDefaultSearchEngineType2 that is
@@ -82,7 +82,7 @@ chromium-metrics-reviews@google.com.
     enum="SearchEngineChoiceScreenEvents" expires_after="2026-08-19">
   <owner>dgn@chromium.org</owner>
   <owner>samarchehade@chromium.org</owner>
-  <owner>chrome-waffle-eng@google.com</owner>
+  <owner>chrome-regionalcapabilities@google.com</owner>
   <summary>
     PUMA.RegionalCapabilities.Search.ChoiceScreenEvents is a version of
     histogram Search.ChoiceScreenEvents that is reported for PUMA.
@@ -94,7 +94,7 @@ chromium-metrics-reviews@google.com.
     enum="SearchEngineChoiceScreenConditions" expires_after="2026-08-19">
   <owner>dgn@chromium.org</owner>
   <owner>ljjlee@chromium.org</owner>
-  <owner>chrome-waffle-eng@google.com</owner>
+  <owner>chrome-regionalcapabilities@google.com</owner>
   <summary>
     PUMA.RegionalCapabilities.Search.ChoiceScreenNavigationConditions is a
     version of histogram Search.ChoiceScreenNavigationConditions that is
@@ -107,7 +107,7 @@ chromium-metrics-reviews@google.com.
     enum="SearchEngineChoiceScreenConditions" expires_after="2026-08-19">
   <owner>dgn@chromium.org</owner>
   <owner>ljjlee@chromium.org</owner>
-  <owner>chrome-waffle-eng@google.com</owner>
+  <owner>chrome-regionalcapabilities@google.com</owner>
   <summary>
     PUMA.RegionalCapabilities.Search.ChoiceScreenProfileInitConditions is a
     version of histogram Search.ChoiceScreenProfileInitConditions that is
@@ -119,7 +119,7 @@ chromium-metrics-reviews@google.com.
     name="PUMA.RegionalCapabilities.Search.ChoiceScreenSelectedEngineIndex"
     units="index" expires_after="2026-08-19">
   <owner>dgn@chromium.org</owner>
-  <owner>chrome-waffle-eng@google.com</owner>
+  <owner>chrome-regionalcapabilities@google.com</owner>
   <summary>
     PUMA.RegionalCapabilities.Search.ChoiceScreenSelectedEngineIndex is a
     version of histogram Search.ChoiceScreenSelectedEngineIndex that is reported

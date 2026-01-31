@@ -327,6 +327,12 @@ class PDFiumPage {
   // Value: Index of the image in the `images_` vector.
   using MarkedContentIdToImageMap = std::map<int, size_t>;
 
+  // Track which text run indices have been associated with a structured node in
+  // order to discover which text runs are unassociated with structured
+  // elements. This information is used to determine how to interleave
+  // structured and unstructured content in the final AXTree.
+  std::set<size_t> associated_text_run_indices_;
+
   struct Link {
     Link();
     Link(const Link& that);

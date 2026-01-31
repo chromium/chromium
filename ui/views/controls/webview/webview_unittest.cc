@@ -534,4 +534,36 @@ TEST_F(WebViewAXTreeEnabledTest, AlreadyEnabledManagerSkipsObservation) {
   EXPECT_FALSE(IsObservingWidgetAXManager());
 }
 
+TEST_F(WebViewAXTreeEnabledTest, ReparentingUpdatesParentAccessible) {
+  const std::unique_ptr<content::WebContents> web_contents =
+      CreateWebContents();
+  auto web_view = std::make_unique<WebView>(web_contents->GetBrowserContext());
+  web_view->SetWebContents(web_contents.get());
+
+  WidgetAutoclosePtr widget_1(CreateTopLevelPlatformWidget());
+  View* contents_view_1 = widget_1->GetContentsView();
+  WebView* added_web_view = contents_view_1->AddChildView(std::move(web_view));
+
+  // After being added to the widget hierarchy the holder's NativeViewAccessible
+  // should match that of the web view.
+  EXPECT_EQ(static_cast<View*>(added_web_view)->GetNativeViewAccessible(),
+            added_web_view->holder()->GetParentAccessible());
+
+  WidgetAutoclosePtr widget_2(CreateTopLevelPlatformWidget());
+  View* contents_view_2 = widget_2->GetContentsView();
+
+  // Reparent the web view. During reparenting, the holder should not return
+  // a reference to the old parent's accessible object.
+  std::unique_ptr<WebView> removed_view =
+      contents_view_1->RemoveChildViewT(added_web_view);
+  EXPECT_EQ(gfx::NativeViewAccessible(),
+            added_web_view->holder()->GetParentAccessible());
+  added_web_view = contents_view_2->AddChildView(std::move(removed_view));
+
+  // After reparenting the holder's NativeViewAccessible should match that of
+  // the web view's.
+  EXPECT_EQ(static_cast<View*>(added_web_view)->GetNativeViewAccessible(),
+            added_web_view->holder()->GetParentAccessible());
+}
+
 }  // namespace views

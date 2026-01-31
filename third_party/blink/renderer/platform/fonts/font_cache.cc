@@ -100,7 +100,6 @@ FontCache::~FontCache() = default;
 void FontCache::Trace(Visitor* visitor) const {
   visitor->Trace(font_cache_clients_);
   visitor->Trace(font_platform_data_cache_);
-  visitor->Trace(fallback_list_shaper_cache_);
   visitor->Trace(font_data_cache_);
   visitor->Trace(font_fallback_map_);
 #if BUILDFLAG(IS_MAC)
@@ -144,14 +143,6 @@ const FontPlatformData* FontCache::GetFontPlatformData(
 
   return font_platform_data_cache_.GetOrCreateFontPlatformData(
       this, font_description, creation_params, alternate_font_name);
-}
-
-ShapeCache* FontCache::GetShapeCache(const FallbackListCompositeKey& key) {
-  auto result = fallback_list_shaper_cache_.insert(key, nullptr);
-  if (result.is_new_entry) {
-    result.stored_value->value = MakeGarbageCollected<ShapeCache>();
-  }
-  return result.stored_value->value.Get();
 }
 
 void FontCache::AcceptLanguagesChanged(const String& accept_languages) {
@@ -240,15 +231,10 @@ void FontCache::AddClient(FontCacheClient* client) {
   font_cache_clients_.insert(client);
 }
 
-uint16_t FontCache::Generation() {
-  return generation_;
-}
-
 void FontCache::Invalidate() {
   TRACE_EVENT0("fonts,ui", "FontCache::Invalidate");
   font_platform_data_cache_.Clear();
   font_data_cache_.Clear();
-  generation_++;
 
   for (const auto& client : font_cache_clients_) {
     client->FontCacheInvalidated();
@@ -265,20 +251,6 @@ void FontCache::CrashWithFontInfo(const FontDescription* font_description) {
   base::debug::Alias(&num_families);
 
   NOTREACHED();
-}
-
-void FontCache::DumpShapeResultCache(
-    base::trace_event::ProcessMemoryDump* memory_dump) {
-  DCHECK(IsMainThread());
-  base::trace_event::MemoryAllocatorDump* dump =
-      memory_dump->CreateAllocatorDump("font_caches/shape_caches");
-  size_t shape_result_cache_size = 0;
-  for (const auto& shape_cache : fallback_list_shaper_cache_.Values()) {
-    shape_result_cache_size += shape_cache->ByteSize();
-  }
-  dump->AddScalar("size", "bytes", shape_result_cache_size);
-  memory_dump->AddSuballocation(dump->guid(),
-                                Partitions::kAllocatedObjectPoolName);
 }
 
 sk_sp<SkTypeface> FontCache::CreateTypefaceFromUniqueName(

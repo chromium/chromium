@@ -71,6 +71,7 @@ class MockDeviceInfoSyncClient : public DeviceInfoSyncClient {
               (),
               (const override));
   MOCK_METHOD(bool, IsUmaEnabledOnCrOSDevice, (), (const override));
+  MOCK_METHOD(bool, GetDesktopToIOSPromoReceivingEnabled, (), (const override));
 };
 
 class LocalDeviceInfoProviderImplTest : public testing::Test {
@@ -225,6 +226,24 @@ TEST_F(LocalDeviceInfoProviderImplTest, SendTabToSelfReceivingType) {
           SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_AND_PUSH_NOTIFICATION);
 }
 
+TEST_F(LocalDeviceInfoProviderImplTest, DesktopToIOSPromoReceivingEnabled) {
+  ON_CALL(device_info_sync_client_, GetDesktopToIOSPromoReceivingEnabled())
+      .WillByDefault(Return(true));
+
+  InitializeProvider();
+
+  ASSERT_THAT(provider_->GetLocalDeviceInfo(), NotNull());
+  EXPECT_TRUE(provider_->GetLocalDeviceInfo()
+                  ->desktop_to_ios_promo_receiving_enabled());
+
+  ON_CALL(device_info_sync_client_, GetDesktopToIOSPromoReceivingEnabled())
+      .WillByDefault(Return(false));
+
+  ASSERT_THAT(provider_->GetLocalDeviceInfo(), NotNull());
+  EXPECT_FALSE(provider_->GetLocalDeviceInfo()
+                   ->desktop_to_ios_promo_receiving_enabled());
+}
+
 TEST_F(LocalDeviceInfoProviderImplTest, SharingInfo) {
   ON_CALL(device_info_sync_client_, GetLocalSharingInfo())
       .WillByDefault(Return(std::nullopt));
@@ -304,7 +323,8 @@ TEST_F(LocalDeviceInfoProviderImplTest, ShouldKeepStoredInvalidationFields) {
           SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_OR_UNSPECIFIED,
       /*sharing_info=*/std::nullopt, paask_info, kFCMRegistrationToken,
       kInterestedDataTypes,
-      /*auto_sign_out_last_signin_timestamp=*/std::nullopt);
+      /*auto_sign_out_last_signin_timestamp=*/std::nullopt,
+      /*desktop_to_ios_promo_receiving_enabled=*/false);
 
   // |kFCMRegistrationToken|, |kInterestedDataTypes|,
   // and |paask_info| should be taken from |device_info_restored_from_store|

@@ -175,7 +175,7 @@ ParseServerPredictionOverrideJson(const base::Value& value) {
         if (!suggestion_value.is_dict()) {
           return base::unexpected("suggestion_value must be a dict");
         }
-        const base::Value::Dict& suggestion_dict = suggestion_value.GetDict();
+        const base::DictValue& suggestion_dict = suggestion_value.GetDict();
         FieldSuggestion& suggestion =
             result[{form_signature.value(), field_signature.value()}]
                 .emplace_back();
@@ -192,7 +192,7 @@ ParseServerPredictionOverrideJson(const base::Value& value) {
         //     ]
         //   }
         // }
-        if (const base::Value::List* predictions =
+        if (const base::ListValue* predictions =
                 suggestion_dict.FindList("predictions")) {
           for (const base::Value& prediction : *predictions) {
             if (std::optional<int> raw_field_type = prediction.GetIfInt()) {

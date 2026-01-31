@@ -48,10 +48,6 @@ bool TransformNode::SetDamageReasonsForDeserialization(
   return true;
 }
 
-#if DCHECK_IS_ON()
-bool TransformNode::operator==(const TransformNode& other) const = default;
-#endif  // DCHECK_IS_ON()
-
 void TransformNode::AsValueInto(base::trace_event::TracedValue* value) const {
   value->SetInteger("id", id);
   value->SetInteger("parent_id", parent_id);

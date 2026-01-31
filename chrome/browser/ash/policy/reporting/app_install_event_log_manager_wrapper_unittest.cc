@@ -151,7 +151,7 @@ class AppInstallEventLogManagerWrapperTest
   TestingProfile profile_;
 
   const base::FilePath log_file_path_;
-  base::Value::List app_list_;
+  base::ListValue app_list_;
 
   std::unique_ptr<AppInstallEventLogManagerWrapperTestable> wrapper_;
 

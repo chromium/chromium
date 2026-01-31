@@ -332,26 +332,6 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
   virtual LayoutUnit MarginLeft() const = 0;
   virtual LayoutUnit MarginRight() const = 0;
 
-  // Returns a WritingDirectionMode-aware logical margin value.
-  LayoutUnit MarginBlockStart(
-      const ComputedStyle* other_style = nullptr) const {
-    NOT_DESTROYED();
-    return PhysicalMarginToLogical(other_style).BlockStart();
-  }
-  LayoutUnit MarginBlockEnd(const ComputedStyle* other_style = nullptr) const {
-    NOT_DESTROYED();
-    return PhysicalMarginToLogical(other_style).BlockEnd();
-  }
-  LayoutUnit MarginInlineStart(
-      const ComputedStyle* other_style = nullptr) const {
-    NOT_DESTROYED();
-    return PhysicalMarginToLogical(other_style).InlineStart();
-  }
-  LayoutUnit MarginInlineEnd(const ComputedStyle* other_style = nullptr) const {
-    NOT_DESTROYED();
-    return PhysicalMarginToLogical(other_style).InlineEnd();
-  }
-
   DISABLE_CFI_PERF LayoutUnit MarginHeight() const {
     NOT_DESTROYED();
     return MarginTop() + MarginBottom();
@@ -359,16 +339,6 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
   DISABLE_CFI_PERF LayoutUnit MarginWidth() const {
     NOT_DESTROYED();
     return MarginLeft() + MarginRight();
-  }
-  DISABLE_CFI_PERF LayoutUnit MarginLogicalHeight() const {
-    NOT_DESTROYED();
-    const auto logical_margin = PhysicalMarginToLogical(nullptr);
-    return logical_margin.BlockStart() + logical_margin.BlockEnd();
-  }
-  DISABLE_CFI_PERF LayoutUnit MarginLogicalWidth() const {
-    NOT_DESTROYED();
-    const auto logical_margin = PhysicalMarginToLogical(nullptr);
-    return logical_margin.InlineStart() + logical_margin.InlineEnd();
   }
 
   PhysicalBoxStrut MarginOutsets() const {
@@ -381,9 +351,6 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
   virtual void ChildBecameNonInline(LayoutObject* /*child*/) {
     NOT_DESTROYED();
   }
-
-  // Overridden by subclasses to determine line-height of the first-line.
-  virtual LayoutUnit FirstLineHeight() const = 0;
 
   // Returns true if the background is painted opaque in the given rect.
   // The query rect is given in local coordinate system.
@@ -498,6 +465,23 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
   virtual LayoutBox* CreateAnonymousBoxToSplit(
       const LayoutBox* box_to_split) const;
 
+  // Attempts to merge the two siblings if:
+  //  - They have previously have been split by a non-anonymous object.
+  //    See: `SplitAnonymousBoxesAroundChild`.
+  //  - They are both anonymous.
+  //  - They are compatible with each other (see `CanMergeWith`).
+  //
+  // Will recurse as there may be multiple layers of anonymous objects.
+  static void AttemptToMerge(LayoutBoxModelObject* prev,
+                             LayoutBoxModelObject* next);
+
+  // Derived classes should return true if `other` is allow to merge with
+  // `this`, (typically the same type, e.g. LayoutTable).
+  virtual bool CanMergeWith(const LayoutBoxModelObject& other) const {
+    NOT_DESTROYED();
+    return false;
+  }
+
  private:
   void CreateLayerAfterStyleChange();
 
@@ -515,16 +499,6 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
         &LayoutBoxModelObject::PaddingTop, &LayoutBoxModelObject::PaddingRight,
         &LayoutBoxModelObject::PaddingBottom,
         &LayoutBoxModelObject::PaddingLeft);
-  }
-
-  PhysicalToLogicalGetter<LayoutUnit, LayoutBoxModelObject>
-  PhysicalMarginToLogical(const ComputedStyle* other_style) const {
-    NOT_DESTROYED();
-    const auto& style = other_style ? *other_style : StyleRef();
-    return PhysicalToLogicalGetter<LayoutUnit, LayoutBoxModelObject>(
-        style.GetWritingDirection(), *this, &LayoutBoxModelObject::MarginTop,
-        &LayoutBoxModelObject::MarginRight, &LayoutBoxModelObject::MarginBottom,
-        &LayoutBoxModelObject::MarginLeft);
   }
 
   PhysicalToLogicalGetter<LayoutUnit, LayoutBoxModelObject>

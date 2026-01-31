@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.R;
+import org.chromium.chrome.browser.ui.signin.SigninSurveyController;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerCoordinator;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerDialogCoordinator;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninCoordinator.Delegate;
@@ -546,6 +547,10 @@ public class FullscreenSigninMediator
             @Override
             public void onSignInComplete() {
                 signinTimestampsLogger.recordTimestamp(Event.SIGNIN_COMPLETED);
+                if (mConfig.signinSurveyType != null) {
+                    SigninSurveyController.registerTrigger(
+                            assertNonNull(getProfile()), mConfig.signinSurveyType);
+                }
                 if (mDestroyed) {
                     // FirstRunActivity was destroyed while we were waiting for sign-in.
                     return;

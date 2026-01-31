@@ -9,7 +9,6 @@
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "build/build_config.h"
 #include "content/public/browser/ax_inspect_factory.h"
@@ -99,7 +98,7 @@ int main(int argc, char** argv) {
       LOG(ERROR) << "Unknown API type: " << api_str;
       return 1;
     }
-    if (!base::Contains(apis, api)) {
+    if (!std::ranges::contains(apis, api)) {
       LOG(ERROR) << "Unsupported API for this platform: "
                  << static_cast<std::string>(api);
       return 1;

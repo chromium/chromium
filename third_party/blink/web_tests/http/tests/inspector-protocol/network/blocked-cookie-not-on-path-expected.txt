@@ -12,7 +12,6 @@ requestWillBeSentExtraInfo blocked cookies: [
             name : name
             path : /inspector-protocol/network/resources/set-cookie.php
             priority : Medium
-            sameParty : false
             secure : false
             session : true
             size : 9

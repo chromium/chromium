@@ -4,6 +4,7 @@
 
 #include "chrome/browser/safe_browsing/safe_browsing_pref_change_handler.h"
 
+#include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
@@ -11,6 +12,7 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "components/sync/test/test_sync_service.h"
@@ -62,8 +64,12 @@ class SafeBrowsingPrefChangeHandlerTest : public BrowserWithTestWindowTest {
         SyncServiceFactory::GetForProfile(profile()));
   }
 
-  void SetSyncEnabled() {
-    sync_service()->SetSignedIn(signin::ConsentLevel::kSync);
+  void SetSignedIn() {
+    signin::ConsentLevel consent_level =
+        base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+            ? signin::ConsentLevel::kSignin
+            : signin::ConsentLevel::kSync;
+    sync_service()->SetSignedIn(consent_level);
   }
 
   std::unique_ptr<SafeBrowsingPrefChangeHandler> handler_;
@@ -117,7 +123,7 @@ TEST_F(SafeBrowsingPrefChangeHandlerTest,
   // device, and then signs into a new device for the first time. In this case,
   // we don't want to show the toast because the user has not yet had a chance
   // to go through the Tailored Security flow on this device.
-  SetSyncEnabled();
+  SetSignedIn();
   profile()->GetTestingPrefService()->SetTime(
       prefs::kAccountTailoredSecurityUpdateTimestamp, base::Time());
 
@@ -142,7 +148,7 @@ TEST_F(SafeBrowsingPrefChangeHandlerTest,
   // This test simulates a scenario where a user enables ESB through the
   // Tailored Security flow. In this case, we don't want to show the toast
   // because the user has already seen the Tailored Security modal.
-  SetSyncEnabled();
+  SetSignedIn();
   profile()->GetTestingPrefService()->SetTime(
       prefs::kAccountTailoredSecurityUpdateTimestamp, base::Time::Now());
 

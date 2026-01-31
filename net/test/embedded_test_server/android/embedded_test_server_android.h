@@ -23,7 +23,7 @@ class EmbeddedTestServerAndroid {
  public:
   EmbeddedTestServerAndroid(JNIEnv* env,
                             const base::android::JavaRef<jobject>& obj,
-                            jboolean jhttps);
+                            bool jhttps);
 
   EmbeddedTestServerAndroid(const EmbeddedTestServerAndroid&) = delete;
   EmbeddedTestServerAndroid& operator=(const EmbeddedTestServerAndroid&) =
@@ -33,12 +33,12 @@ class EmbeddedTestServerAndroid {
 
   void Destroy(JNIEnv* env);
 
-  jboolean Start(JNIEnv* env, jint port);
+  bool Start(JNIEnv* env, int32_t port);
 
   base::android::ScopedJavaLocalRef<jstring> GetRootCertPemPath(
       JNIEnv* jenv) const;
 
-  jboolean ShutdownAndWaitUntilComplete(JNIEnv* env);
+  bool ShutdownAndWaitUntilComplete(JNIEnv* env);
 
   base::android::ScopedJavaLocalRef<jstring> GetURL(
       JNIEnv* jenv,
@@ -60,9 +60,9 @@ class EmbeddedTestServerAndroid {
       JNIEnv* jenv,
       const base::android::JavaRef<jstring>& jdirectory_path);
 
-  void SetSSLConfig(JNIEnv* jenv, jint jserver_certificate);
+  void SetSSLConfig(JNIEnv* jenv, int32_t jserver_certificate);
 
-  void RegisterRequestHandler(JNIEnv* jenv, jlong handler);
+  void RegisterRequestHandler(JNIEnv* jenv, int64_t handler);
 
   void ServeFilesFromDirectory(
       JNIEnv* env,

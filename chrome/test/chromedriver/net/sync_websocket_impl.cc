@@ -164,7 +164,7 @@ void SyncWebSocketImpl::Core::DetermineRecipient(const std::string& message,
                                                  bool* send_to_chromedriver) {
   std::optional<base::Value> message_value =
       base::JSONReader::Read(message, base::JSON_REPLACE_INVALID_CHARACTERS);
-  base::Value::Dict* message_dict =
+  base::DictValue* message_dict =
       message_value ? message_value->GetIfDict() : nullptr;
   if (!message_dict) {
     *send_to_chromedriver = true;

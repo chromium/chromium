@@ -443,9 +443,9 @@ AudioDestination::AudioDestination(
                                 callback_buffer_size_));
   SendLogMessage(__func__, String::Format("=> (device sample rate=%.0f Hz)",
                                           web_audio_device_->SampleRate()));
-  SendLogMessage(__func__,
-                 String::Format("Output buffer bypass: %s",
-                                is_output_buffer_bypassed_ ? "yes" : "no"));
+  SendLogMessage(__func__, UNSAFE_TODO(String::Format(
+                               "Output buffer bypass: %s",
+                               is_output_buffer_bypassed_ ? "yes" : "no")));
 
   TRACE_EVENT1("webaudio", "AudioDestination::AudioDestination",
                "sink information",
@@ -683,10 +683,10 @@ void AudioDestination::TransferElapsedFramesFrom(
 
 void AudioDestination::SendLogMessage(const char* const function_name,
                                       const String& message) const {
-  WebRtcLogMessage(String::Format("[WA]AD::%s %s [state=%s]", function_name,
-                                  message.Utf8().c_str(),
-                                  DeviceStateToString(device_state_))
-                       .Utf8());
+  WebRtcLogMessage(UNSAFE_TODO(
+      String::Format("[WA]AD::%s %s [state=%s]", function_name,
+                     message.Utf8().c_str(), DeviceStateToString(device_state_))
+          .Utf8()));
 }
 
 }  // namespace blink

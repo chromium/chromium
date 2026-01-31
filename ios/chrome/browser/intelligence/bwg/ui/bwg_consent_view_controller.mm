@@ -520,13 +520,13 @@ const CGFloat kSpacingPrimarySecondaryButtonsIOS18 = 0;
 // Did tap the primary button.
 - (void)didTapPrimaryButton:(UIButton*)sender {
   RecordFREConsentAction(IOSGeminiFREAction::kAccept);
-  [self.mutator didConsentBWG];
+  [self.mutator didConsentGemini];
 }
 
 // Did tap the secondary button.
 - (void)didTapSecondaryButton:(UIButton*)sender {
   RecordFREConsentAction(IOSGeminiFREAction::kDismiss);
-  [self.mutator didRefuseBWGConsent];
+  [self.mutator didRefuseGeminiConsent];
 }
 
 #pragma mark - UITextViewDelegate

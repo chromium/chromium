@@ -47,7 +47,7 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
       CreditCard* card);
 
   // Returns true if personal data manager has loaded the initial data.
-  jboolean IsDataLoaded(JNIEnv* env) const;
+  bool IsDataLoaded(JNIEnv* env) const;
 
   // These functions act on "web profiles" aka "LOCAL_PROFILE" profiles.
   // -------------------------
@@ -70,7 +70,7 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
 
   // Determines whether the logged in user (if any) is eligible to store
   // Autofill address profiles to their account.
-  jboolean IsEligibleForAddressAccountStorage(JNIEnv* env);
+  bool IsEligibleForAddressAccountStorage(JNIEnv* env);
 
   // Determines the country for for the newly created address profile.
   std::string GetDefaultCountryCodeForNewAddress(JNIEnv* env) const;
@@ -208,17 +208,17 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
       const base::android::JavaRef<jobject>& jiban);
 
   // Checks if `jiban_value` is a valid IBAN.
-  static jboolean IsValidIban(JNIEnv* env, std::u16string& jiban_value);
+  static bool IsValidIban(JNIEnv* env, std::u16string& jiban_value);
 
   // Returns whether the `Add IBAN` button should be shown on the payment
   // methods settings page.
-  jboolean ShouldShowAddIbanButtonOnSettingsPage(JNIEnv* env);
+  bool ShouldShowAddIbanButtonOnSettingsPage(JNIEnv* env);
 
   // Returns whether the Autofill feature for profiles is managed.
-  jboolean IsAutofillProfileManaged(JNIEnv* env);
+  bool IsAutofillProfileManaged(JNIEnv* env);
 
   // Returns whether the Autofill feature for credit cards is managed.
-  jboolean IsAutofillCreditCardManaged(JNIEnv* env);
+  bool IsAutofillCreditCardManaged(JNIEnv* env);
 
   // Returns an array of BankAccount objects retrieved from the
   // PersonalDataManager.
@@ -235,24 +235,14 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
       const base::android::JavaRef<jobject>& jbank_account);
 
   // Returns an array of Ewallet objects retrieved from the PersonalDataManager.
-  base::android::ScopedJavaLocalRef<jobjectArray> GetEwallets(JNIEnv* env);
-
-  // Create an object of Java Ewallet from native Ewallet.
-  static base::android::ScopedJavaLocalRef<jobject> CreateJavaEwalletFromNative(
-      JNIEnv* env,
-      const Ewallet& ewallet);
-
-  // Create an object of native Ewallet from Java Ewallet.
-  static Ewallet CreateNativeEwalletFromJava(
-      JNIEnv* env,
-      const base::android::JavaRef<jobject>& jewallet);
+  base::span<const Ewallet> GetEwallets();
 
   // Returns whether a card with the specified `guid` is eligible for card
   // benefits.
-  jboolean IsCardEligibleForBenefits(JNIEnv* env, const std::string& guid);
+  bool IsCardEligibleForBenefits(JNIEnv* env, const std::string& guid);
 
   // Returns whether the BNPL preference should be shown on the settings page.
-  jboolean ShouldShowBnplSettings(JNIEnv* env);
+  bool ShouldShowBnplSettings(JNIEnv* env);
 
   // Returns an array of BnplIssuerForSettings objects retrieved from the
   // PersonalDataManager to be shown on the settings page.

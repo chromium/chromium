@@ -17,6 +17,7 @@ pub type stat64 = stat;
 pub type suseconds_t = c_long;
 pub type time_t = c_int;
 pub type wchar_t = c_int;
+pub type pthread_t = c_ulong;
 
 pub type fsblkcnt64_t = u64;
 pub type fsfilcnt64_t = u64;
@@ -38,7 +39,6 @@ s! {
         __unused2: Padding<c_ulong>,
     }
 
-    #[cfg(not(target_os = "l4re"))]
     pub struct pthread_attr_t {
         __detachstate: c_int,
         __schedpolicy: c_int,
@@ -200,7 +200,7 @@ s! {
         pub f_ffree: u64,
         pub f_favail: u64,
         pub f_fsid: c_ulong,
-        __f_unused: c_int,
+        __f_unused: Padding<c_int>,
         pub f_flag: c_ulong,
         pub f_namemax: c_ulong,
         __f_spare: [c_int; 6],
@@ -343,13 +343,4 @@ pub const __SIZEOF_PTHREAD_RWLOCK_T: usize = 56;
 pub const __SIZEOF_PTHREAD_RWLOCKATTR_T: usize = 8;
 pub const __SIZEOF_PTHREAD_BARRIER_T: usize = 32;
 pub const __SIZEOF_PTHREAD_BARRIERATTR_T: usize = 4;
-
-cfg_if! {
-    if #[cfg(target_os = "l4re")] {
-        mod l4re;
-        pub use self::l4re::*;
-    } else {
-        mod other;
-        pub use other::*;
-    }
-}
+pub const PTHREAD_STACK_MIN: usize = 16384;

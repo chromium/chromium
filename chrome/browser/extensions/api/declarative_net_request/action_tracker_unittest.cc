@@ -47,6 +47,11 @@ class ActionTrackerTest : public DNRTestBase {
     action_tracker_->SetCheckTabIdOnRuleMatchForTest(false);
   }
 
+  void TearDown() override {
+    action_tracker_.reset();
+    DNRTestBase::TearDown();
+  }
+
  protected:
   using RequestActionType = RequestAction::Type;
 
@@ -60,7 +65,7 @@ class ActionTrackerTest : public DNRTestBase {
     ASSERT_TRUE(base::CreateDirectory(extension_dir));
     constexpr char kRulesetID[] = "id";
     constexpr char kJSONRulesFilename[] = "rules_file.json";
-    TestRulesetInfo info(kRulesetID, kJSONRulesFilename, base::Value::List());
+    TestRulesetInfo info(kRulesetID, kJSONRulesFilename, base::ListValue());
     WriteManifestAndRuleset(
         extension_dir, info,
         std::vector<std::string>({URLPattern::kAllUrlsPattern}), flags);

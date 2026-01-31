@@ -6,9 +6,11 @@
 
 #include <limits>
 
+#include "base/byte_size.h"
 #include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/types/expected.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 
@@ -47,90 +49,93 @@ void TransportChannelSocketAdapter::SetOnDestroyedCallback(
   destruction_callback_ = std::move(callback);
 }
 
-int TransportChannelSocketAdapter::Recv(
+base::expected<base::ByteSize, net::Error> TransportChannelSocketAdapter::Recv(
     const scoped_refptr<net::IOBuffer>& buf,
-    int buffer_size,
-    const net::CompletionRepeatingCallback& callback) {
+    base::ByteSize buf_len,
+    Callback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(buf);
   DCHECK(!callback.is_null());
   CHECK(read_callback_.is_null());
 
   if (!channel_) {
-    DCHECK(closed_error_code_ != net::OK);
-    return closed_error_code_;
+    DCHECK_NE(closed_error_code_, net::OK);
+    return base::unexpected(closed_error_code_);
   }
 
   read_callback_ = callback;
   read_buffer_ = buf;
-  read_buffer_size_ = buffer_size;
+  read_buffer_size_ = buf_len;
 
-  return net::ERR_IO_PENDING;
+  return base::unexpected(net::ERR_IO_PENDING);
 }
 
-int TransportChannelSocketAdapter::Send(
-    const scoped_refptr<net::IOBuffer>& buffer,
-    int buffer_size,
-    const net::CompletionRepeatingCallback& callback) {
+base::expected<base::ByteSize, net::Error> TransportChannelSocketAdapter::Send(
+    const scoped_refptr<net::IOBuffer>& buf,
+    base::ByteSize buf_len,
+    Callback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(buffer);
+  DCHECK(buf);
   DCHECK(!callback.is_null());
   CHECK(write_callback_.is_null());
 
   if (!channel_) {
-    DCHECK(closed_error_code_ != net::OK);
-    return closed_error_code_;
+    DCHECK_NE(closed_error_code_, net::OK);
+    return base::unexpected(closed_error_code_);
   }
 
-  int result;
+  base::expected<base::ByteSize, net::Error> result;
   webrtc::AsyncSocketPacketOptions options;
   if (channel_->writable()) {
-    result = channel_->SendPacket(buffer->data(), buffer_size, options);
-    if (result < 0) {
-      result = net::MapSystemError(channel_->GetError());
+    int channel_result =
+        channel_->SendPacket(buf->data(), buf_len.InBytes(), options);
+    if (channel_result < 0) {
+      result = base::unexpected(net::MapSystemError(channel_->GetError()));
 
       // If the underlying socket returns IO pending where it shouldn't we
       // pretend the packet is dropped and return as succeeded because no
       // writeable callback will happen.
-      if (result == net::ERR_IO_PENDING) {
-        result = net::OK;
+      if (channel_result == net::ERR_IO_PENDING) {
+        result = base::ByteSize(0);
       }
+    } else {
+      result = base::ByteSize(base::checked_cast<uint64_t>(channel_result));
     }
   } else {
     // Channel is not writable yet.
-    result = net::ERR_IO_PENDING;
+    result = base::unexpected(net::ERR_IO_PENDING);
     write_callback_ = callback;
-    write_buffer_ = buffer;
-    write_buffer_size_ = buffer_size;
+    write_buffer_ = buf;
+    write_buffer_size_ = buf_len;
   }
 
   return result;
 }
 
-void TransportChannelSocketAdapter::Close(int error_code) {
+void TransportChannelSocketAdapter::Close(net::Error error_code) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (!channel_) {  // Already closed.
     return;
   }
 
-  DCHECK(error_code != net::OK);
+  DCHECK_NE(error_code, net::OK);
   closed_error_code_ = error_code;
   channel_->DeregisterReceivedPacketCallback(this);
   channel_ = nullptr;
 
   if (!read_callback_.is_null()) {
-    net::CompletionRepeatingCallback callback = read_callback_;
+    P2PDatagramSocket::Callback callback = read_callback_;
     read_callback_.Reset();
     read_buffer_.reset();
-    callback.Run(error_code);
+    callback.Run(base::unexpected(error_code));
   }
 
   if (!write_callback_.is_null()) {
-    net::CompletionRepeatingCallback callback = write_callback_;
+    P2PDatagramSocket::Callback callback = write_callback_;
     write_callback_.Reset();
     write_buffer_.reset();
-    callback.Run(error_code);
+    callback.Run(base::unexpected(error_code));
   }
 }
 
@@ -143,17 +148,17 @@ void TransportChannelSocketAdapter::OnNewPacket(
     DCHECK(read_buffer_.get());
     CHECK_LT(packet.payload().size(),
              static_cast<size_t>(std::numeric_limits<int>::max()));
-    size_t data_size = packet.payload().size();
-    if (read_buffer_size_ < static_cast<int>(data_size)) {
+    base::ByteSize data_size = base::ByteSize(packet.payload().size());
+    if (read_buffer_size_ < base::ByteSize(data_size)) {
       LOG(WARNING) << "Data buffer is smaller than the received packet. "
                    << "Dropping the data that doesn't fit.";
       data_size = read_buffer_size_;
     }
 
-    UNSAFE_TODO(
-        memcpy(read_buffer_->data(), packet.payload().data(), data_size));
+    UNSAFE_TODO(memcpy(read_buffer_->data(), packet.payload().data(),
+                       data_size.InBytes()));
 
-    net::CompletionRepeatingCallback callback = read_callback_;
+    P2PDatagramSocket::Callback callback = read_callback_;
     read_callback_.Reset();
     read_buffer_.reset();
     callback.Run(data_size);
@@ -168,15 +173,18 @@ void TransportChannelSocketAdapter::OnWritableState(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // Try to send the packet if there is a pending write.
   if (!write_callback_.is_null()) {
+    base::expected<base::ByteSize, net::Error> result;
     webrtc::AsyncSocketPacketOptions options;
-    int result = channel_->SendPacket(write_buffer_->data(), write_buffer_size_,
-                                      options);
-    if (result < 0) {
-      result = net::MapSystemError(channel_->GetError());
+    int channel_result = channel_->SendPacket(
+        write_buffer_->data(), write_buffer_size_.InBytes(), options);
+    if (channel_result < 0) {
+      result = base::unexpected(net::MapSystemError(channel_->GetError()));
+    } else {
+      result = base::ByteSize(base::checked_cast<uint64_t>(channel_result));
     }
 
-    if (result != net::ERR_IO_PENDING) {
-      net::CompletionRepeatingCallback callback = write_callback_;
+    if (result.has_value() || result.error() != net::ERR_IO_PENDING) {
+      P2PDatagramSocket::Callback callback = write_callback_;
       write_callback_.Reset();
       write_buffer_.reset();
       callback.Run(result);

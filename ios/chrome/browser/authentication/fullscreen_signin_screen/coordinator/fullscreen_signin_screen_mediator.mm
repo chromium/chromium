@@ -4,7 +4,8 @@
 
 #import "ios/chrome/browser/authentication/fullscreen_signin_screen/coordinator/fullscreen_signin_screen_mediator.h"
 
-#import "base/containers/contains.h"
+#import <algorithm>
+
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -26,7 +27,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/logging/user_signin_logger.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/first_run/model/first_run_metrics.h"
-#import "ios/chrome/browser/first_run/ui_bundled/first_run_util.h"
+#import "ios/chrome/browser/first_run/public/first_run_util.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -69,6 +70,8 @@ enum class SigninScreenState {
     first_run::SignInAttemptStatus attemptStatus;
 // Whether there was existing accounts when the screen was presented.
 @property(nonatomic, assign) BOOL hadIdentitiesAtStartup;
+// Override this property in readwrite.
+@property(nonatomic, assign, readwrite) BOOL signinInProgress;
 
 @end
 
@@ -84,7 +87,6 @@ enum class SigninScreenState {
   // State of the sign-in screen.
   SigninScreenState _screenState;
   ChangeProfileContinuationProvider _changeProfileContinuationProvider;
-  BOOL _signinInProgress;
 
   // Observer for auth service status changes.
   std::unique_ptr<AuthenticationServiceObserverBridge>
@@ -187,8 +189,8 @@ enum class SigninScreenState {
 
 - (void)startSignInWithAuthenticationFlow:
     (AuthenticationFlow*)authenticationFlow {
-  CHECK(!_signinInProgress, base::NotFatalUntil::M145);
-  _signinInProgress = YES;
+  CHECK(!self.signinInProgress, base::NotFatalUntil::M145);
+  self.signinInProgress = YES;
   [self userAttemptedToSignin];
   RecordMetricsReportingDefaultState();
 
@@ -326,7 +328,7 @@ enum class SigninScreenState {
                                                          identity:
                                                              (id<SystemIdentity>)
                                                                  identity {
-  _signinInProgress = NO;
+  self.signinInProgress = NO;
   [self.consumer setUIEnabled:YES];
   if (cancelationReason != signin_ui::CancelationReason::kNotCanceled) {
     return;
@@ -346,8 +348,9 @@ enum class SigninScreenState {
 - (bool)selectedIdentityIsValid {
   if (self.selectedIdentity) {
     GaiaId gaia(self.selectedIdentity.gaiaId);
-    return base::Contains(_identityManager->GetAccountsOnDevice(), gaia,
-                          [](const AccountInfo& info) { return info.gaia; });
+    return std::ranges::contains(
+        _identityManager->GetAccountsOnDevice(), gaia,
+        [](const AccountInfo& info) { return info.gaia; });
   }
   return false;
 }
@@ -418,7 +421,7 @@ enum class SigninScreenState {
 
 - (void)onPrimaryAccountChanged:
     (const signin::PrimaryAccountChangeEvent&)event {
-  if (_signinInProgress) {
+  if (self.signinInProgress) {
     return;
   }
   CoreAccountInfo primaryAccount =

@@ -156,28 +156,14 @@ export class FreAppController {
             e.preventDefault();
             chrome.metricsPrivate.recordUserAction(
                 'Glic.Fre.DisabledByAdminPanelLinkClicked');
-            this.freHandler.validateAndOpenLinkInNewTab({
-              url: (e.target as HTMLAnchorElement).href,
-            });
+            this.freHandler.validateAndOpenLinkInNewTab(
+                (e.target as HTMLAnchorElement).href);
             e.stopPropagation();
           });
 
       getRequiredElement('fre-reload')?.addEventListener('click', () => {
         this.reload();
       });
-    });
-
-    this.freContainer.addEventListener('keydown', (ev: KeyboardEvent) => {
-      if (ev.code === 'Escape') {
-        ev.stopPropagation();
-        ev.preventDefault();
-        const visiblePanel = this.freContainer.querySelector<HTMLElement>(
-            '.panel:not([hidden])');
-        if (visiblePanel) {
-          chrome.metricsPrivate.recordUserAction('Glic.Fre.CloseWithEsc');
-          this.dismissFre(this.panelIdToEnum(visiblePanel.id));
-        }
-      }
     });
 
     if (navigator.onLine) {
@@ -229,9 +215,7 @@ export class FreAppController {
 
   onNewWindow(e: any) {
     e.preventDefault();
-    this.freHandler.validateAndOpenLinkInNewTab({
-      url: e.targetUrl,
-    });
+    this.freHandler.validateAndOpenLinkInNewTab(e.targetUrl);
     e.stopPropagation();
   }
 

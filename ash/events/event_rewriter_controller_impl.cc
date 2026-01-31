@@ -134,15 +134,15 @@ void EventRewriterControllerImpl::Initialize(
     // should stop all touchpad events from propagating further into the system.
     AddEventRewriter(std::move(disable_touchpad_event_rewriter));
   }
-  if (::features::IsAccessibilityBounceKeysEnabled()) {
-    std::unique_ptr<FilterKeysEventRewriter> filter_keys_event_rewriter =
-        std::make_unique<FilterKeysEventRewriter>();
-    filter_keys_event_rewriter_ = filter_keys_event_rewriter.get();
-    // The FilterKeysEventRewriter needs to be notified before any other
-    // rewriters that modify key events, as it should delay or cancel all key
-    // events from propagating further into the system.
-    AddEventRewriter(std::move(filter_keys_event_rewriter));
-  }
+
+  std::unique_ptr<FilterKeysEventRewriter> filter_keys_event_rewriter =
+      std::make_unique<FilterKeysEventRewriter>();
+  filter_keys_event_rewriter_ = filter_keys_event_rewriter.get();
+  // The FilterKeysEventRewriter needs to be notified before any other
+  // rewriters that modify key events, as it should delay or cancel all key
+  // events from propagating further into the system.
+  AddEventRewriter(std::move(filter_keys_event_rewriter));
+
   AddEventRewriter(std::move(keyboard_device_id_event_rewriter));
   auto keyboard_modifier_event_rewriter =
       std::make_unique<ui::KeyboardModifierEventRewriter>(
@@ -238,8 +238,9 @@ void EventRewriterControllerImpl::SetAltDownRemappingEnabled(bool enabled) {
 
 void EventRewriterControllerImpl::OnHostInitialized(
     aura::WindowTreeHost* host) {
-  for (const auto& rewriter : rewriters_)
+  for (const auto& rewriter : rewriters_) {
     host->GetEventSource()->AddEventRewriter(rewriter.get());
+  }
 }
 
 }  // namespace ash

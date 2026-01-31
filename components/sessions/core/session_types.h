@@ -18,10 +18,10 @@
 #include "components/sessions/core/serialized_user_agent_override.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sessions/core/sessions_export.h"
+#include "components/split_tabs/split_tab_id.h"
+#include "components/split_tabs/split_tab_visual_data.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
-#include "components/tabs/public/split_tab_id.h"
-#include "components/tabs/public/split_tab_visual_data.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
@@ -179,9 +179,6 @@ struct SESSIONS_EXPORT SessionWindow {
     TYPE_APP = 2,
     TYPE_DEVTOOLS = 3,
     TYPE_APP_POPUP = 4,
-#if BUILDFLAG(IS_CHROMEOS)
-    TYPE_CUSTOM_TAB = 5,
-#endif
   };
 
   // Identifier of the window.

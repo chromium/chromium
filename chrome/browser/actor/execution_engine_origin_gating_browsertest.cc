@@ -70,6 +70,11 @@ constexpr char kHandleNavigationConfirmationTempl[] =
   })();
 )js";
 
+constexpr std::string_view kCrossOriginHistogram =
+    "Actor.NavigationGating.CrossOrigin2";
+constexpr std::string_view kCrossSiteHistogram =
+    "Actor.NavigationGating.CrossSite2";
+
 }  // namespace
 
 class ExecutionEngineOriginGatingBrowserTestBase
@@ -80,8 +85,8 @@ class ExecutionEngineOriginGatingBrowserTestBase
         /*enabled_features=*/
         {
             {features::kGlic, {}},
-            {features::kGlicActor, {}},
-            {features::kTabstripComboButton, {}},
+            {features::kGlicActor,
+             {{features::kGlicActorPolicyControlExemption.name, "true"}}},
             {kGlicCrossOriginNavigationGating,
              {{
                  {"confirm_navigation_to_new_origins", "true"},
@@ -95,8 +100,6 @@ class ExecutionEngineOriginGatingBrowserTestBase
     glic::test::InteractiveGlicTest::SetUpOnMainThread();
     ASSERT_TRUE(embedded_https_test_server().Start());
     host_resolver()->AddRule("*", "127.0.0.1");
-
-    actor_keyed_service().GetPolicyChecker().SetActOnWebForTesting(true);
 
     // Optimization guide uses this histogram to signal initialization in tests.
     optimization_guide::RetryForHistogramUntilCountReached(
@@ -136,7 +139,7 @@ class ExecutionEngineOriginGatingBrowserTestBase
   }
 
   InteractiveTestApi::MultiStep VerifyUserConfirmationDialogRequest(
-      const base::Value::Dict& expected_request) {
+      const base::DictValue& expected_request) {
     static constexpr char kGetUserConfirmationDialogRequest[] =
         R"js(
           (() => {
@@ -148,7 +151,7 @@ class ExecutionEngineOriginGatingBrowserTestBase
   }
 
   InteractiveTestApi::MultiStep VerifyNavigationConfirmationRequest(
-      const base::Value::Dict& expected_request) {
+      const base::DictValue& expected_request) {
     static constexpr char kGetNavigationConfirmationRequestData[] =
         R"js(
           (() => {
@@ -189,7 +192,7 @@ class ExecutionEngineOriginGatingBrowserTestBase
 
   InteractiveTestApi::MultiStep VerifyWebClientRequest(
       const std::string_view get_request_js,
-      const base::Value::Dict& expected_request) {
+      const base::DictValue& expected_request) {
     return InAnyContext(WithElement(
         glic::test::kGlicContentsElementId,
         [&, get_request_js](::ui::TrackedElement* el) {
@@ -202,7 +205,7 @@ class ExecutionEngineOriginGatingBrowserTestBase
   }
 
   void OpenGlicAndCreateTask() {
-    RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached));
+    RunTestSequence(OpenGlic());
     TrackGlicInstanceWithTabIndex(
         InProcessBrowserTest::browser()->tab_strip_model()->active_index());
     base::test::TestFuture<
@@ -279,7 +282,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
 
   ClickTarget("#link", mojom::ActionResultCode::kOk);
   auto expected_request =
-      base::Value::Dict()
+      base::DictValue()
           .Set("navigationOrigin",
                url::Origin::Create(second_url).GetDebugString())
           .Set("taskId", actor_task().id().value());
@@ -293,14 +296,10 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
       "Actor.NavigationGating.AppliedGate", true, 1);
   // Should log that there was a cross-origin navigation and a cross-site
   // navigation.
-  histogram_tester_for_init_.ExpectBucketCount(
-      "Actor.NavigationGating.CrossOrigin", false, 1);
-  histogram_tester_for_init_.ExpectBucketCount(
-      "Actor.NavigationGating.CrossOrigin", true, 1);
-  histogram_tester_for_init_.ExpectBucketCount(
-      "Actor.NavigationGating.CrossSite", false, 1);
-  histogram_tester_for_init_.ExpectBucketCount(
-      "Actor.NavigationGating.CrossSite", true, 1);
+  histogram_tester_for_init_.ExpectBucketCount(kCrossOriginHistogram, false, 1);
+  histogram_tester_for_init_.ExpectBucketCount(kCrossOriginHistogram, true, 1);
+  histogram_tester_for_init_.ExpectBucketCount(kCrossSiteHistogram, false, 1);
+  histogram_tester_for_init_.ExpectBucketCount(kCrossSiteHistogram, true, 1);
   // Should log that permission was *granted* once.
   histogram_tester_for_init_.ExpectBucketCount(
       "Actor.NavigationGating.PermissionGranted", true, 1);
@@ -328,7 +327,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
 
   ClickTarget("#link", mojom::ActionResultCode::kTriggeredNavigationBlocked);
   auto expected_request =
-      base::Value::Dict()
+      base::DictValue()
           .Set("navigationOrigin",
                url::Origin::Create(second_url).GetDebugString())
           .Set("taskId", actor_task().id().value());
@@ -361,7 +360,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
 
   ClickTarget("#link", mojom::ActionResultCode::kOk);
   auto expected_request =
-      base::Value::Dict()
+      base::DictValue()
           .Set("navigationOrigin",
                url::Origin::Create(blocked_url).GetDebugString())
           .Set("forBlocklistedOrigin", true);
@@ -375,12 +374,9 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
       "Actor.NavigationGating.AppliedGate", true, 1);
   // Should log that there was a cross-origin navigation and a cross-site
   // navigation.
-  histogram_tester_for_init_.ExpectBucketCount(
-      "Actor.NavigationGating.CrossOrigin", false, 1);
-  histogram_tester_for_init_.ExpectBucketCount(
-      "Actor.NavigationGating.CrossOrigin", true, 1);
-  histogram_tester_for_init_.ExpectBucketCount(
-      "Actor.NavigationGating.CrossSite", false, 2);
+  histogram_tester_for_init_.ExpectBucketCount(kCrossOriginHistogram, false, 1);
+  histogram_tester_for_init_.ExpectBucketCount(kCrossOriginHistogram, true, 1);
+  histogram_tester_for_init_.ExpectBucketCount(kCrossSiteHistogram, false, 2);
   // Should log that permission was *granted* once.
   histogram_tester_for_init_.ExpectBucketCount(
       "Actor.NavigationGating.PermissionGranted", true, 1);
@@ -408,7 +404,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
 
   ClickTarget("#link", mojom::ActionResultCode::kTriggeredNavigationBlocked);
   auto expected_request =
-      base::Value::Dict()
+      base::DictValue()
           .Set("navigationOrigin",
                url::Origin::Create(blocked_url).GetDebugString())
           .Set("forBlocklistedOrigin", true);
@@ -545,7 +541,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
   ExpectOkResult(result);
 
   auto expected_request =
-      base::Value::Dict()
+      base::DictValue()
           .Set("navigationOrigin",
                url::Origin::Create(blocked_origin_url).GetDebugString())
           .Set("forBlocklistedOrigin", true);
@@ -605,7 +601,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
   ExpectOkResult(result);
 
   auto expected_request =
-      base::Value::Dict()
+      base::DictValue()
           .Set("navigationOrigin",
                url::Origin::Create(normal_page_with_link).GetDebugString())
           .Set("forBlocklistedOrigin", true);
@@ -664,8 +660,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
       "Actor.NavigationGating.AppliedGate", false, 1);
   // Should log that there was one same-site navigation and one cross-site
   // navigation.
-  histogram_tester_for_init_.ExpectUniqueSample(
-      "Actor.NavigationGating.CrossSite", true, 1);
+  histogram_tester_for_init_.ExpectUniqueSample(kCrossSiteHistogram, true, 1);
   // Should not log permission granted since the static list was used.
   histogram_tester_for_init_.ExpectTotalCount(
       "Actor.NavigationGating.PermissionGranted", 0);
@@ -870,8 +865,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
       ExecutionEngine::GatingDecision::kAllowByStaticList, 1);
   histogram_tester_for_init_.ExpectBucketCount(
       "Actor.NavigationGating.AppliedGate", false, 1);
-  histogram_tester_for_init_.ExpectBucketCount(
-      "Actor.NavigationGating.CrossSite", true, 1);
+  histogram_tester_for_init_.ExpectBucketCount(kCrossSiteHistogram, true, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
@@ -1118,7 +1112,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingParamBrowserTest,
   ClickTarget("#link", mojom::ActionResultCode::kOk);
 
   auto expected_request =
-      base::Value::Dict()
+      base::DictValue()
           .Set("navigationOrigin",
                url::Origin::Create(second_url).GetDebugString())
           .Set("forBlocklistedOrigin", false);
@@ -1313,7 +1307,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineSiteGatingBrowserTest,
       web_contents(), content::JsReplace("setLink($1);", confirmlist_url)));
   ClickTarget("#link", mojom::ActionResultCode::kTriggeredNavigationBlocked);
   auto expected_request =
-      base::Value::Dict()
+      base::DictValue()
           .Set("navigationOrigin",
                url::Origin::Create(confirmlist_url).GetDebugString())
           .Set("forBlocklistedOrigin", true);

@@ -118,7 +118,7 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
       "c947e7e9-b87d-4592-9fe7-407792544e53";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  base::Value::Dict data;
+  base::DictValue data;
   data.Set("TEST_KEY", "TEST_VALUE");
 
   std::string json_data;
@@ -228,7 +228,7 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
   task_environment_.RunUntilIdle();
 
   ASSERT_THAT(*test_env->url_loader_factory()->pending_requests(), SizeIs(1));
-  base::Value::Dict request_body = test_env->request_body(0);
+  base::DictValue request_body = test_env->request_body(0);
   EXPECT_THAT(request_body, AllOf(IsDataUploadRequestValid(),
                                   DoesRequestContainRecord(base::StringPrintf(
                                       matched_record_template, 0)),

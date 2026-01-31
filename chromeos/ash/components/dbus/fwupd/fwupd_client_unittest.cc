@@ -1081,59 +1081,59 @@ TEST_F(FwupdClientTest, UpdateMetadata) {
 }
 
 TEST(FwupdClientUpdatePath, MissingLocations) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   EXPECT_TRUE(GetUpdatePathFromDict(dict).empty());
 }
 
 TEST(FwupdClientUpdatePath, EmptyLocations) {
-  base::Value::Dict dict;
-  dict.Set(kLocationsKey, base::Value::List());
+  base::DictValue dict;
+  dict.Set(kLocationsKey, base::ListValue());
   EXPECT_TRUE(GetUpdatePathFromDict(dict).empty());
 }
 
 TEST(FwupdClientUpdatePath, WrongType) {
-  base::Value::Dict dict;
-  base::Value::List list;
+  base::DictValue dict;
+  base::ListValue list;
   list.Append(123);
   dict.Set(kLocationsKey, std::move(list));
   EXPECT_TRUE(GetUpdatePathFromDict(dict).empty());
 }
 
 TEST(FwupdClientUpdatePath, InvalidUrl) {
-  base::Value::Dict dict;
-  base::Value::List list;
+  base::DictValue dict;
+  base::ListValue list;
   list.Append("");
   dict.Set(kLocationsKey, std::move(list));
   EXPECT_TRUE(GetUpdatePathFromDict(dict).empty());
 }
 
 TEST(FwupdClientUpdatePath, InvalidScheme) {
-  base::Value::Dict dict;
-  base::Value::List list;
+  base::DictValue dict;
+  base::ListValue list;
   list.Append("invalid:///usr/test.cab");
   dict.Set(kLocationsKey, std::move(list));
   EXPECT_TRUE(GetUpdatePathFromDict(dict).empty());
 }
 
 TEST(FwupdClientUpdatePath, FileUrl) {
-  base::Value::Dict dict;
-  base::Value::List list;
+  base::DictValue dict;
+  base::ListValue list;
   list.Append("file:///usr/test.cab");
   dict.Set(kLocationsKey, std::move(list));
   EXPECT_EQ(GetUpdatePathFromDict(dict).value(), "file:///usr/test.cab");
 }
 
 TEST(FwupdClientUpdatePath, HttpsUrlNotOnMirror) {
-  base::Value::Dict dict;
-  base::Value::List list;
+  base::DictValue dict;
+  base::ListValue list;
   list.Append("https://fwupd.org/downloads/test.cab");
   dict.Set(kLocationsKey, std::move(list));
   EXPECT_TRUE(GetUpdatePathFromDict(dict).empty());
 }
 
 TEST(FwupdClientUpdatePath, ValidHttpsUrl) {
-  base::Value::Dict dict;
-  base::Value::List list;
+  base::DictValue dict;
+  base::ListValue list;
   list.Append(
       "https://storage.googleapis.com/chromeos-localmirror/lvfs/test.cab");
   dict.Set(kLocationsKey, std::move(list));

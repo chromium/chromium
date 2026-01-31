@@ -65,7 +65,7 @@ void EnterOldPasswordScreen::ShowImpl() {
   view_->Show();
 }
 
-void EnterOldPasswordScreen::OnUserAction(const base::Value::List& args) {
+void EnterOldPasswordScreen::OnUserAction(const base::ListValue& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionForgotOldPassword) {
     exit_callback_.Run(Result::kForgotOldPassword);

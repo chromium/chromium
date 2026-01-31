@@ -14,6 +14,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -100,15 +101,16 @@ class VideoEncodeDelegateFactory
       VideoCodecProfile profile) override {
     switch (VideoCodecProfileToVideoCodec(profile)) {
       case VideoCodec::kH264:
-        return std::make_unique<D3D12VideoEncodeH264Delegate>(
-            video_device,
-            gpu_workarounds_.disable_d3d12_h264_encoder_non_reference_frames);
+        return std::make_unique<D3D12VideoEncodeH264Delegate>(video_device,
+                                                              gpu_workarounds_);
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
       case VideoCodec::kHEVC:
-        return std::make_unique<D3D12VideoEncodeH265Delegate>(video_device);
+        return std::make_unique<D3D12VideoEncodeH265Delegate>(video_device,
+                                                              gpu_workarounds_);
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
       case VideoCodec::kAV1:
-        return std::make_unique<D3D12VideoEncodeAV1Delegate>(video_device);
+        return std::make_unique<D3D12VideoEncodeAV1Delegate>(video_device,
+                                                             gpu_workarounds_);
       default:
         return nullptr;
     }
@@ -658,10 +660,10 @@ void D3D12VideoEncodeAccelerator::RequestEncodingParametersChangeTask(
 }
 
 Microsoft::WRL::ComPtr<ID3D12Resource>
-D3D12VideoEncodeAccelerator::CreateResourceForGpuMemoryBufferVideoFrame(
+D3D12VideoEncodeAccelerator::CreateResourceForDXGIHandleBackedVideoFrame(
     const VideoFrame& frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
-  CHECK_EQ(frame.storage_type(), VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE);
+  CHECK(frame.HasMappableSharedImage());
 
   gfx::GpuMemoryBufferHandle handle = frame.GetGpuMemoryBufferHandle();
   Microsoft::WRL::ComPtr<ID3D12Resource> input_texture;
@@ -671,15 +673,14 @@ D3D12VideoEncodeAccelerator::CreateResourceForGpuMemoryBufferVideoFrame(
 
   const gfx::DXGIHandleToken& token = handle.dxgi_handle().token();
   if (caching_enabled) {
-    // The Video Capture Module (VCM) reuses a small, circular pool of
-    // GpuMemoryBuffers. This means the same buffer handle will reappear
-    // periodically, but each time it does, it will have been overwritten with a
-    // new frame's content by the producer. When the encoder sees a handle it
-    // has seen before, it retrieves the cached ID3D12Resource from the map.
-    // This resource object is still a valid view into the same underlying GPU
-    // resource allocation. When the GPU is instructed to use this resource for
-    // encoding, it reads the current content of that memory, which is the new
-    // frame's data.
+    // The Video Capture Module (VCM) reuses a small, circular pool of handles.
+    // This means the same buffer handle will reappear periodically, but each
+    // time it does, it will have been overwritten with a new frame's content
+    // by the producer. When the encoder sees a handle it has seen before, it
+    // retrieves the cached ID3D12Resource from the map. This resource object
+    // is still a valid view into the same underlying GPU resource allocation.
+    // When the GPU is instructed to use this resource for encoding, it reads
+    // the current content of that memory, which is the new frame's data.
     auto cache_it = shared_handle_cache_.Get(token);
     if (cache_it != shared_handle_cache_.end()) {
       return cache_it->second;
@@ -725,9 +726,9 @@ D3D12VideoEncodeAccelerator::CreateResourceForSharedMemoryVideoFrame(
       LOG(ERROR) << "Failed to CreateCommittedResource for input_texture";
       return nullptr;
     }
-    std::wstring debug_name = std::format(L"D3D12VEA input_texture_ {}x{}",
-                                          config_.input_visible_size.width(),
-                                          config_.input_visible_size.height());
+    std::wstring debug_name = base::UTF8ToWide(base::StringPrintf(
+        "D3D12VEA input_texture_ %dx%d", config_.input_visible_size.width(),
+        config_.input_visible_size.height()));
     CHECK_EQ(input_texture_->SetName(debug_name.c_str()), S_OK);
   }
 
@@ -749,9 +750,9 @@ D3D12VideoEncodeAccelerator::CreateResourceForSharedMemoryVideoFrame(
       LOG(ERROR) << "Failed to CreateCommittedResource for upload_buffer";
       return nullptr;
     }
-    std::wstring debug_name = std::format(L"D3D12VEA upload_buffer_ {}x{}",
-                                          config_.input_visible_size.width(),
-                                          config_.input_visible_size.height());
+    std::wstring debug_name = base::UTF8ToWide(base::StringPrintf(
+        "D3D12VEA upload_buffer_ %dx%d", config_.input_visible_size.width(),
+        config_.input_visible_size.height()));
     CHECK_EQ(upload_buffer_->SetName(debug_name.c_str()), S_OK);
   }
 
@@ -855,9 +856,9 @@ void D3D12VideoEncodeAccelerator::DoEncodeTask(
 
   scoped_refptr<VideoFrame> frame = input_frame.frame;
   Microsoft::WRL::ComPtr<ID3D12Resource> input_texture;
-  if (frame->storage_type() == VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE) {
-    if (frame->HasNativeGpuMemoryBuffer()) {
-      input_texture = CreateResourceForGpuMemoryBufferVideoFrame(*frame);
+  if (frame->HasMappableSharedImage()) {
+    if (frame->HasNativeMappableSharedImage()) {
+      input_texture = CreateResourceForDXGIHandleBackedVideoFrame(*frame);
     } else {
       frame = ConvertToMemoryMappedFrame(std::move(frame));
       if (!frame) {

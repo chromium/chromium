@@ -71,8 +71,7 @@ class EventObserverBaseTest : public testing::Test {
                          base::Time last_upload_time) {
     TestingBrowserProcess::GetGlobal()->local_state()->SetDict(
         policy::prefs::kEventBasedLogLastUploadTimes,
-        base::Value::Dict().Set(event_name,
-                                base::TimeToValue(last_upload_time)));
+        base::DictValue().Set(event_name, base::TimeToValue(last_upload_time)));
   }
 
  protected:

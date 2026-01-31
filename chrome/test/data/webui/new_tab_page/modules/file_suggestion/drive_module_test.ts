@@ -6,6 +6,7 @@ import {DriveSuggestionHandlerRemote} from 'chrome://new-tab-page/drive_suggesti
 import type {DisableModuleEvent, DismissModuleInstanceEvent, DriveModuleV2Element} from 'chrome://new-tab-page/lazy_load.js';
 import {driveModuleDescriptor, FileProxy} from 'chrome://new-tab-page/lazy_load.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -16,6 +17,12 @@ import {installMock} from '../../test_support.js';
 suite('DriveModuleV2', () => {
   let handler: TestMock<DriveSuggestionHandlerRemote>;
   const iconUrl = 'https://example.com/application/vnd.google-apps.spreadsheet';
+
+  suiteSetup(() => {
+    loadTimeData.overrideValues({
+      hideDismissModules: false,
+    });
+  });
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -30,47 +37,47 @@ suite('DriveModuleV2', () => {
               justificationText: 'Edited last week',
               title: 'Foo',
               id: '123',
-              iconUrl: {url: iconUrl},
-              itemUrl: {url: 'https://foo.com'},
+              iconUrl: iconUrl,
+              itemUrl: 'https://foo.com',
             },
             {
               justificationText: 'Edited yesterday',
               title: 'Bar',
               id: '132',
-              iconUrl: {url: iconUrl},
-              itemUrl: {url: 'https://bar.com'},
+              iconUrl: iconUrl,
+              itemUrl: 'https://bar.com',
             },
             {
               justificationText: 'Created today',
               title: 'Baz',
               id: '213',
-              iconUrl: {url: iconUrl},
-              itemUrl: {url: 'https://baz.com'},
+              iconUrl: iconUrl,
+              itemUrl: 'https://baz.com',
             },
             {
               justificationText: 'Created yesterday',
               title: 'Qux',
               id: '231',
-              iconUrl: {url: iconUrl},
-              itemUrl: {url: 'https://qux.com'},
+              iconUrl: iconUrl,
+              itemUrl: 'https://qux.com',
             },
             {
               justificationText: 'Edited last week',
               title: 'FooBar',
               id: '312',
-              iconUrl: {url: iconUrl},
-              itemUrl: {url: 'https://foo.com'},
+              iconUrl: iconUrl,
+              itemUrl: 'https://foo.com',
             },
             {
               justificationText: 'Edited yesterday',
               title: 'BazQux',
               id: '321',
-              iconUrl: {url: iconUrl},
-              itemUrl: {url: 'https://bar.com'},
+              iconUrl: iconUrl,
+              itemUrl: 'https://bar.com',
             },
           ],
         };
-        handler.setResultFor('getFiles', Promise.resolve(data));
+        handler.setPromiseResolveFor('getFiles', data);
 
         const module =
             await driveModuleDescriptor.initialize(0) as DriveModuleV2Element;
@@ -86,7 +93,7 @@ suite('DriveModuleV2', () => {
       });
 
   test('module does not render if there are no files', async () => {
-    handler.setResultFor('getFiles', Promise.resolve({files: []}));
+    handler.setPromiseResolveFor('getFiles', {files: []});
 
     const module = await driveModuleDescriptor.initialize(0);
     await handler.whenCalled('getFiles');
@@ -101,12 +108,12 @@ suite('DriveModuleV2', () => {
           justificationText: 'Edited yesterday',
           title: 'Abc',
           id: '012',
-          iconUrl: {url: iconUrl},
-          itemUrl: {url: 'https://abc.com'},
+          iconUrl: iconUrl,
+          itemUrl: 'https://abc.com',
         },
       ],
     };
-    handler.setResultFor('getFiles', Promise.resolve(data));
+    handler.setPromiseResolveFor('getFiles', data);
     const driveModule =
         await driveModuleDescriptor.initialize(0) as DriveModuleV2Element;
     assertTrue(!!driveModule);
@@ -135,12 +142,12 @@ suite('DriveModuleV2', () => {
               justificationText: 'Edited yesterday',
               title: 'Abc',
               id: '012',
-              iconUrl: {url: iconUrl},
-              itemUrl: {url: 'https://abc.com'},
+              iconUrl: iconUrl,
+              itemUrl: 'https://abc.com',
             },
           ],
         };
-        handler.setResultFor('getFiles', Promise.resolve(data));
+        handler.setPromiseResolveFor('getFiles', data);
         const driveModule =
             await driveModuleDescriptor.initialize(0) as DriveModuleV2Element;
         document.body.append(driveModule);
@@ -168,12 +175,12 @@ suite('DriveModuleV2', () => {
           justificationText: '',
           title: '',
           id: '',
-          iconUrl: {url: ''},
-          itemUrl: {url: ''},
+          iconUrl: '',
+          itemUrl: '',
         },
       ],
     };
-    handler.setResultFor('getFiles', Promise.resolve(data));
+    handler.setPromiseResolveFor('getFiles', data);
     const moduleElement =
         await driveModuleDescriptor.initialize(0) as DriveModuleV2Element;
     assertTrue(!!moduleElement);
@@ -210,12 +217,12 @@ suite('DriveModuleV2', () => {
           justificationText: 'Edited yesterday',
           title: 'Abc',
           id: '012',
-          iconUrl: {url: iconUrl},
-          itemUrl: {url: 'https://abc.com'},
+          iconUrl: iconUrl,
+          itemUrl: 'https://abc.com',
         },
       ],
     };
-    handler.setResultFor('getFiles', Promise.resolve(data));
+    handler.setPromiseResolveFor('getFiles', data);
     const driveModule =
         await driveModuleDescriptor.initialize(0) as DriveModuleV2Element;
     assertTrue(!!driveModule);

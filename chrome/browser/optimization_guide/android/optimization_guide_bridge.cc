@@ -222,7 +222,7 @@ void OptimizationGuideBridge::RegisterOptimizationTypes(
 void OptimizationGuideBridge::CanApplyOptimization(
     JNIEnv* env,
     GURL& url,
-    jint optimization_type,
+    int32_t optimization_type,
     const JavaRef<jobject>& java_callback) {
   optimization_guide_keyed_service_->CanApplyOptimization(
       url,
@@ -235,7 +235,7 @@ void OptimizationGuideBridge::CanApplyOptimization(
 base::android::ScopedJavaLocalRef<jobject>
 OptimizationGuideBridge::CanApplyOptimizationSync(JNIEnv* env,
                                                   GURL& url,
-                                                  jint optimization_type) {
+                                                  int32_t optimization_type) {
   optimization_guide::OptimizationMetadata metadata;
 
   auto decision = optimization_guide_keyed_service_->CanApplyOptimization(
@@ -253,7 +253,7 @@ void OptimizationGuideBridge::CanApplyOptimizationOnDemand(
     JNIEnv* env,
     std::vector<GURL>& urls,
     const JavaRef<jintArray>& optimization_types,
-    jint request_context,
+    int32_t request_context,
     const JavaRef<jobject>& java_callback,
     jni_zero::ByteArrayView& request_context_metadata_serialized) {
   proto::RequestContextMetadata request_context_metadata_deserialized;

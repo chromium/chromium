@@ -19,12 +19,28 @@ AutoPictureInPictureTabObserverHelperBase::Create(
       web_contents, std::move(callback));
 }
 
+namespace {
+
+class TabAndroidDelegate
+    : public AutoPictureInPictureTabModelObserverHelper::Delegate {
+ public:
+  bool IsTabDragging(content::WebContents* web_contents) const override {
+    auto* tab = TabAndroid::FromWebContents(web_contents);
+    return tab && tab->IsDragging();
+  }
+};
+
+}  // namespace
+
 AutoPictureInPictureTabModelObserverHelper::
     AutoPictureInPictureTabModelObserverHelper(
         content::WebContents* web_contents,
-        ActivatedChangedCallback callback)
+        ActivatedChangedCallback callback,
+        std::unique_ptr<Delegate> delegate)
     : AutoPictureInPictureTabObserverHelperBase(web_contents,
-                                                std::move(callback)) {}
+                                                std::move(callback)),
+      delegate_(delegate ? std::move(delegate)
+                         : std::make_unique<TabAndroidDelegate>()) {}
 
 AutoPictureInPictureTabModelObserverHelper::
     ~AutoPictureInPictureTabModelObserverHelper() {
@@ -40,6 +56,15 @@ void AutoPictureInPictureTabModelObserverHelper::StartObserving() {
   // Start observing the list of TabModels.
   TabModelList::AddObserver(this);
 
+  // Observe all existing TabModels to catch when the tab is added to any of
+  // them. This is necessary because the tab might be moved between different
+  // TabModels (e.g., when moving a tab to a new window), and we need to ensure
+  // we are always observing the model that currently contains the tab to
+  // receive updates like DidSelectTab.
+  for (TabModel* model : TabModelList::models()) {
+    model->AddObserver(this);
+  }
+
   // Find the correct model to observe and set the initial activation state.
   ReevaluateObservedModelAndState();
 }
@@ -53,11 +78,11 @@ void AutoPictureInPictureTabModelObserverHelper::StopObserving() {
   // Remove the global TabModelList observer.
   TabModelList::RemoveObserver(this);
 
-  // If we are observing a specific TabModel, remove the observer from it.
-  if (observed_tab_model_) {
-    observed_tab_model_->RemoveObserver(this);
-    observed_tab_model_ = nullptr;
+  // Stop observing all TabModels.
+  for (TabModel* model : TabModelList::models()) {
+    model->RemoveObserver(this);
   }
+  observed_tab_model_ = nullptr;
 }
 
 // The following callbacks are for events that might change the active tab
@@ -74,7 +99,16 @@ AutoPictureInPictureTabModelObserverHelper::GetActiveWebContents() const {
 void AutoPictureInPictureTabModelObserverHelper::DidSelectTab(
     TabAndroid* tab,
     TabModel::TabSelectionType type) {
-  ReevaluateObservedModelAndState();
+  // When a tab is dragged out of a window, two consecutive `DidSelectTab`
+  // events are triggered: one for the primary tab being dragged and another
+  // for the secondary tab that replaces it. To prevent the second event from
+  // incorrectly triggering Auto-PiP by marking the primary tab as inactive,
+  // we debounce the active status check if the observed tab is being dragged.
+  bool is_tab_dragging = delegate_->IsTabDragging(GetObservedWebContents());
+
+  // Update the observed tab active status only when it's not being dragged.
+  ReevaluateObservedModelAndState(
+      /* check_tab_activation= */ !is_tab_dragging);
 }
 
 void AutoPictureInPictureTabModelObserverHelper::TabRemoved(TabAndroid* tab) {
@@ -82,51 +116,52 @@ void AutoPictureInPictureTabModelObserverHelper::TabRemoved(TabAndroid* tab) {
 }
 
 void AutoPictureInPictureTabModelObserverHelper::WillCloseTab(TabAndroid* tab) {
-  ReevaluateObservedModelAndState();
+  // If the tab is closing, we shouldn't trigger Auto-PiP. We pass false to
+  // skip checking the activation status, effectively freezing the state until
+  // the tab is destroyed. It's required because when closing a tab via
+  // WillCloseTab, Clank doesn't immediately remove the tab from the TabModel.
+  ReevaluateObservedModelAndState(false);
 }
 
 void AutoPictureInPictureTabModelObserverHelper::OnTabModelAdded(
     TabModel* model) {
-  ReevaluateObservedModelAndState();
+  model->AddObserver(this);
 }
 
 void AutoPictureInPictureTabModelObserverHelper::OnTabModelRemoved(
     TabModel* model) {
+  model->RemoveObserver(this);
   ReevaluateObservedModelAndState();
 }
 
 void AutoPictureInPictureTabModelObserverHelper::
-    ReevaluateObservedModelAndState() {
+    ReevaluateObservedModelAndState(bool check_tab_activation) {
   // Find the TabModel that currently contains our observed WebContents.
   TabModel* current_model =
       TabModelList::GetTabModelForWebContents(GetObservedWebContents());
 
   // If the TabModel has changed (e.g., tab moved between windows), update
-  // observers.
+  // our reference. We don't need to add/remove observers here because we
+  // observe all models.
   if (current_model != observed_tab_model_) {
-    if (observed_tab_model_) {
-      observed_tab_model_->RemoveObserver(this);
-    }
     observed_tab_model_ = current_model;
-    if (observed_tab_model_) {
-      observed_tab_model_->AddObserver(this);
-    }
   }
 
   // Check for activation status.
-  UpdateIsTabActivated();
+  if (check_tab_activation) {
+    UpdateIsTabActivated();
+  }
 }
-
 void AutoPictureInPictureTabModelObserverHelper::UpdateIsTabActivated() {
-  bool was_active = is_tab_activated_;
-  content::WebContents* active_wc = GetActiveWebContents();
+  if (observed_tab_model_) {
+    bool was_active = is_tab_activated_;
 
-  // The observed tab is considered "active" if its model exists and its
-  // WebContents is the currently active one in that model.
-  is_tab_activated_ =
-      (observed_tab_model_ && active_wc == GetObservedWebContents());
+    // The observed tab is considered "active" if its model exists and its
+    // WebContents is the currently active one in that model.
+    is_tab_activated_ = GetActiveWebContents() == GetObservedWebContents();
 
-  if (is_tab_activated_ != was_active) {
-    RunCallback(is_tab_activated_);
+    if (is_tab_activated_ != was_active) {
+      RunCallback(is_tab_activated_);
+    }
   }
 }

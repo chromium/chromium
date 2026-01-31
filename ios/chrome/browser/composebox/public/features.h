@@ -27,11 +27,24 @@ base::TimeDelta GetUploadDelay();
 // Returns whether to force the upload to fail.
 bool ShouldForceUploadFailure();
 
+// Used to align the close button to the top edge of the input plate for top
+// composebox.
+BASE_DECLARE_FEATURE(kComposeboxCloseButtonTopAlign);
+
+// Whether to align the close button to the top edge for top composebox.
+bool AlignComposeboxCloseButtonToInputPlateTop();
+
+// Whether to show the extra controls in the composebox.
+bool ShowComposeboxAdditionalAdvancedTools();
+
 // Whether to enable compact mode.
 bool IsComposeboxCompactModeEnabled();
 
 // Whether to force the composebox on top.
 bool IsComposeboxForceTopEnabled();
+
+// Used to enable the extra advanced controls in the composebox.
+BASE_DECLARE_FEATURE(kComposeboxAdditionalAdvancedTools);
 
 // Used to enable the compact "one line" mode in the composebox.
 BASE_DECLARE_FEATURE(kComposeboxCompactMode);

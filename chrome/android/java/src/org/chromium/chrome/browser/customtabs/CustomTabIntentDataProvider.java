@@ -839,7 +839,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     @BrowserServicesIntentDataProvider.CustomTabsUiType
     private int getCustomTabsUiType(int requestedUiType) {
         if (mNetwork != null) return CustomTabsUiType.NETWORK_BOUND_TAB;
-        if (isTrustedWebActivity() && resolveDisplayMode() == DisplayMode.MINIMAL_UI) {
+        if (isTrustedWebActivity()) {
             return CustomTabsUiType.TRUSTED_WEB_ACTIVITY;
         }
         if (!isTrustedIntent()) {

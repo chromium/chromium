@@ -46,9 +46,14 @@ export class HistoryRouterElement extends CrLitElement {
     };
   }
 
-  accessor lastSelectedTab: number;
-  accessor selectedPage: string;
-  accessor queryState: QueryState;
+  accessor lastSelectedTab: number = -1;
+  accessor selectedPage: string = '';
+  accessor queryState: QueryState = {
+    incremental: false,
+    querying: false,
+    searchTerm: '',
+    after: null,
+  };
   timeRangeStart?: Date;
 
   private eventTracker_: EventTracker = new EventTracker();
@@ -123,7 +128,7 @@ export class HistoryRouterElement extends CrLitElement {
     // TODO(b/338245900): This is kind of nasty. Without cr-tabs to constrain
     //   `selectedPage`, this can be set to an arbitrary value from the URL.
     //   To fix this, we should constrain the selected pages to an actual enum.
-    this.selectedPage = page;
+    this.selectedPage = page!;
   }
 
   private onQueryParamsChanged_(newParams: URLSearchParams) {

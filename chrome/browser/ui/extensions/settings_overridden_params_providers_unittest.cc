@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/extensions/settings_overridden_params_providers.h"
 
-#include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
@@ -46,8 +45,8 @@ class SettingsOverriddenParamsProvidersUnitTest
   // Adds a new extension that overrides the NTP.
   const extensions::Extension* AddExtensionControllingNewTab(
       const std::string& name = "ntp override") {
-    base::Value::Dict chrome_url_overrides =
-        base::Value::Dict().Set("newtab", "newtab.html");
+    base::DictValue chrome_url_overrides =
+        base::DictValue().Set("newtab", "newtab.html");
     scoped_refptr<const extensions::Extension> extension =
         extensions::ExtensionBuilder(name)
             .SetLocation(extensions::mojom::ManifestLocation::kInternal)
@@ -87,7 +86,8 @@ TEST_F(SettingsOverriddenParamsProvidersUnitTest,
 
   // In this case, disabling the extension would go back to the default NTP, so
   // a specific message should show.
-  EXPECT_EQ("Change back to Google?", base::UTF16ToUTF8(params->dialog_title));
+  EXPECT_EQ("Change back to Google?",
+            base::UTF16ToUTF8(params->content.dialog_title));
 }
 
 // Tests that long extension names are truncated in the dialog message.
@@ -113,8 +113,8 @@ TEST_F(SettingsOverriddenParamsProvidersUnitTest,
   ASSERT_EQ(ntp_extension->id(), params->controlling_extension_id);
 
   // The dialog message should contain the truncated name.
-  EXPECT_TRUE(base::Contains(params->dialog_message, truncated_name));
-  EXPECT_FALSE(base::Contains(params->dialog_message, extension_name));
+  EXPECT_TRUE(params->content.message.contains(truncated_name));
+  EXPECT_FALSE(params->content.message.contains(extension_name));
 }
 
 TEST_F(SettingsOverriddenParamsProvidersUnitTest,
@@ -133,5 +133,5 @@ TEST_F(SettingsOverriddenParamsProvidersUnitTest,
   ASSERT_TRUE(params);
   EXPECT_EQ(extension2->id(), params->controlling_extension_id);
   EXPECT_EQ("Did you mean to change this page?",
-            base::UTF16ToUTF8(params->dialog_title));
+            base::UTF16ToUTF8(params->content.dialog_title));
 }

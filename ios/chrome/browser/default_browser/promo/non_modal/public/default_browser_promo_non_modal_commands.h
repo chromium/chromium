@@ -1,0 +1,27 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef IOS_CHROME_BROWSER_DEFAULT_BROWSER_PROMO_NON_MODAL_PUBLIC_DEFAULT_BROWSER_PROMO_NON_MODAL_COMMANDS_H_
+#define IOS_CHROME_BROWSER_DEFAULT_BROWSER_PROMO_NON_MODAL_PUBLIC_DEFAULT_BROWSER_PROMO_NON_MODAL_COMMANDS_H_
+
+#import <UIKit/UIKit.h>
+
+enum class NonModalDefaultBrowserPromoReason;
+
+@protocol DefaultBrowserPromoNonModalCommands
+
+// Shows the non-modal default promo with a reason.
+- (void)showDefaultBrowserNonModalPromoWithReason:
+    (NonModalDefaultBrowserPromoReason)promoReason;
+
+// Dismisses the non-modal default promo.
+- (void)dismissDefaultBrowserNonModalPromoAnimated:(BOOL)animated;
+
+// Alerts the command handler that the non-modal default promo was dismissed
+// from the UI.
+- (void)defaultBrowserNonModalPromoWasDismissed;
+
+@end
+
+#endif  // IOS_CHROME_BROWSER_DEFAULT_BROWSER_PROMO_NON_MODAL_PUBLIC_DEFAULT_BROWSER_PROMO_NON_MODAL_COMMANDS_H_

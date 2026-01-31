@@ -39,7 +39,7 @@ class NearbyInternalsContactHandler
 
  private:
   // Message handler callback that initializes JavaScript.
-  void InitializeContents(const base::Value::List& args);
+  void InitializeContents(const base::ListValue& args);
 
   // NearbyShareContactManager::Observer:
   void OnContactsDownloaded(
@@ -50,7 +50,7 @@ class NearbyInternalsContactHandler
 
   // Message handler callback that requests a contacts download from the contact
   // manager.
-  void HandleDownloadContacts(const base::Value::List& args);
+  void HandleDownloadContacts(const base::ListValue& args);
 
   raw_ptr<content::BrowserContext> context_;
   base::ScopedObservation<NearbyShareContactManager,

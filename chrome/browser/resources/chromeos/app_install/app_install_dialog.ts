@@ -223,12 +223,12 @@ class AppInstallDialogElement extends HTMLElement {
 
       const urlElement = this.$<HTMLAnchorElement>('#url-link');
       assert(urlElement);
-      urlElement.textContent = new URL(appInfo.url.url).hostname;
-      urlElement.setAttribute('href', new URL(appInfo.url.url).origin);
+      urlElement.textContent = new URL(appInfo.url).hostname;
+      urlElement.setAttribute('href', new URL(appInfo.url).origin);
 
       const iconElement = this.$<HTMLImageElement>('#app-icon');
       assert(iconElement);
-      iconElement.setAttribute('auto-src', appInfo.iconUrl.url);
+      iconElement.setAttribute('auto-src', appInfo.iconUrl);
       iconElement.setAttribute(
           'alt',
           loadTimeData.substituteString(
@@ -252,7 +252,7 @@ class AppInstallDialogElement extends HTMLElement {
           this.onScreenshotLoad();
         };
         this.$<HTMLImageElement>('#screenshot')
-            .setAttribute('auto-src', appInfo.screenshots[0].url.url);
+            .setAttribute('auto-src', appInfo.screenshots[0].url);
       }
 
       return appInfo.isAlreadyInstalled ? DialogState.ALREADY_INSTALLED :

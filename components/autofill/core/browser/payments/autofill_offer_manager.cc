@@ -4,10 +4,10 @@
 
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 
+#include <algorithm>
 #include <ranges>
 
 #include "base/check_deref.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
@@ -45,8 +45,8 @@ AutofillOfferManager::GetCardLinkedOffersMap(
   GURL last_committed_primary_main_frame_origin =
       last_committed_primary_main_frame_url.DeprecatedGetOriginAsURL();
 
-  if (!base::Contains(eligible_merchant_domains_,
-                      last_committed_primary_main_frame_origin)) {
+  if (!eligible_merchant_domains_.contains(
+          last_committed_primary_main_frame_origin)) {
     return {};
   }
 
@@ -70,8 +70,8 @@ AutofillOfferManager::GetCardLinkedOffersMap(
     for (const CreditCard* card : cards) {
       // If card has an offer, add the card's guid id to the map. There is
       // currently a one-to-one mapping between cards and offer data.
-      if (base::Contains(offer->GetEligibleInstrumentIds(),
-                         card->instrument_id())) {
+      if (std::ranges::contains(offer->GetEligibleInstrumentIds(),
+                                card->instrument_id())) {
         card_linked_offers_map[card->guid()] = offer;
       }
     }
@@ -82,8 +82,7 @@ AutofillOfferManager::GetCardLinkedOffersMap(
 
 bool AutofillOfferManager::IsUrlEligible(
     const GURL& last_committed_primary_main_frame_url) {
-  return base::Contains(
-      eligible_merchant_domains_,
+  return eligible_merchant_domains_.contains(
       last_committed_primary_main_frame_url.DeprecatedGetOriginAsURL());
 }
 

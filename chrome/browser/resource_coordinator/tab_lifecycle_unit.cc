@@ -23,12 +23,10 @@
 #include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit.h"
-#include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom.h"
 #include "chrome/browser/resource_coordinator/tab_helper.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_source.h"
 #include "chrome/browser/resource_coordinator/tab_load_tracker.h"
-#include "chrome/browser/resource_coordinator/tab_manager_features.h"
 #include "chrome/browser/resource_coordinator/time.h"
 #include "chrome/browser/resource_coordinator/utils.h"
 #include "chrome/browser/tab_contents/form_interaction_tab_helper.h"
@@ -118,6 +116,7 @@ void TabLifecycleUnitSource::TabLifecycleUnit::SetFocused(bool focused) {
 
 bool TabLifecycleUnitSource::TabLifecycleUnit::MaybeLoad() {
   if (is_discarded_) {
+    RecordDiscardReloadMetrics();
     // Transition to the active state.
     is_discarded_ = false;
     RecomputeLifecycleUnitState();
@@ -307,6 +306,10 @@ bool TabLifecycleUnitSource::TabLifecycleUnit::Discard(
     LifecycleUnitDiscardReason reason,
     uint64_t tab_memory_footprint_estimate) {
   const base::TimeTicks discard_start_time = NowTicks();
+
+  last_discard_time_ = discard_start_time;
+  last_discard_memory_estimate_ = base::KiBU(tab_memory_footprint_estimate);
+
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   // LINT.IfChange(DiscardTabOutcome)
@@ -402,19 +405,51 @@ void TabLifecycleUnitSource::TabLifecycleUnit::UpdatePreDiscardResourceUsage(
   if (pre_discard_resource_usage == nullptr) {
     performance_manager::user_tuning::UserPerformanceTuningManager::
         PreDiscardResourceUsage::CreateForWebContents(
-            web_contents, base::KiB(tab_memory_footprint_estimate),
+            web_contents, base::KiBU(tab_memory_footprint_estimate),
             discard_reason);
   } else {
     pre_discard_resource_usage->UpdateDiscardInfo(
-        base::KiB(tab_memory_footprint_estimate), discard_reason);
+        base::KiBU(tab_memory_footprint_estimate), discard_reason);
   }
 }
 
 void TabLifecycleUnitSource::TabLifecycleUnit::DidStartLoading() {
+  // If the tab is still marked as discarded when loading starts,
+  // it means MaybeLoad() wasn't called (background reload).
+  if (is_discarded_) {
+    RecordDiscardReloadMetrics();
+  }
+
   // It's possible for a discarded tab to receive this notification without
   // being focused first (e.g. right-click > Reload).
   is_discarded_ = false;
   RecomputeLifecycleUnitState();
+}
+
+void TabLifecycleUnitSource::TabLifecycleUnit::DidStopLoading() {
+  // Return if this load is not related to a discard restoration.
+  if (!is_reloading_from_discard_) {
+    return;
+  }
+
+  const base::TimeDelta load_time = NowTicks() - reload_start_time_;
+
+  // Record the duration of the reload. This serves as the "latency cost"
+  // incurred by the discard decision.
+  base::UmaHistogramMediumTimes("Tab.Discarding.Reload.LoadTime", load_time);
+
+  // Record the estimated memory savings from the original discard. This serves
+  // as the "resource benefit" metric.
+  // Convert the estimate to MiB for readability in the histogram.
+  if (last_discard_memory_estimate_ != base::ByteSize()) {
+    base::UmaHistogramMemoryMB(
+        "Tab.Discarding.Reload.FreedMemoryMB",
+        static_cast<int>(last_discard_memory_estimate_.InMiB()));
+  }
+  // Reset the flag to ensure metrics are not recorded for subsequent
+  // in-page navigations or loading events that are not related to the
+  // discard restoration.
+  is_reloading_from_discard_ = false;
 }
 
 void TabLifecycleUnitSource::TabLifecycleUnit::OnVisibilityChanged(
@@ -424,6 +459,24 @@ void TabLifecycleUnitSource::TabLifecycleUnit::OnVisibilityChanged(
   } else if (wall_time_when_hidden_.is_max()) {
     wall_time_when_hidden_ = NowTicks();
   }
+}
+
+void TabLifecycleUnitSource::TabLifecycleUnit::RecordDiscardReloadMetrics() {
+  // Measure the time elapsed since the tab was discarded.
+  const base::TimeDelta time_since_discard = NowTicks() - last_discard_time_;
+  base::UmaHistogramLongTimes("Tab.Discarding.Reload.TimeSinceDiscard",
+                              time_since_discard);
+
+  // Record whether the tab was focused at the start of the reload.
+  // Note: `last_focused_time_ticks_` is set to base::TimeTicks::Max() while
+  // the tab is currently focused. Otherwise, it holds the timestamp of the
+  // last blur event.
+  const bool is_focused = (last_focused_time_ticks_ == base::TimeTicks::Max());
+  base::UmaHistogramBoolean("Tab.Discarding.Reload.CausedByFocus", is_focused);
+
+  // Initialize state to track the duration of the reload.
+  is_reloading_from_discard_ = true;
+  reload_start_time_ = NowTicks();
 }
 
 LifecycleUnitDiscardReason

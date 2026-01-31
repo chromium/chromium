@@ -145,13 +145,9 @@ bool AllowAllFeatures(v8::Local<v8::Context> context, const std::string& name) {
   return true;
 }
 
-bool DisallowPromises(v8::Local<v8::Context> context) {
-  return false;
-}
-
 void OnEventListenersChanged(const std::string& event_name,
                              binding::EventListenersChanged change,
-                             const base::Value::Dict* filter,
+                             const base::DictValue* filter,
                              bool was_manual,
                              v8::Local<v8::Context> context) {}
 
@@ -261,12 +257,6 @@ class APIBindingUnittest : public APIBindingTest {
     api_availability_callback_ = callback;
   }
 
-  void SetPromiseAvailabilityFlag(bool* availability_flag) {
-    promise_availability_callback_ = base::BindRepeating(
-        [](bool* flag, v8::Local<v8::Context> context) { return *flag; },
-        availability_flag);
-  }
-
   void SetLastErrorParentCallback(GetParentCallback get_parent) {
     get_last_error_parent_ = std::move(get_parent);
   }
@@ -307,16 +297,14 @@ class APIBindingUnittest : public APIBindingTest {
       on_silent_request_ = base::DoNothing();
     if (!api_availability_callback_)
       api_availability_callback_ = base::BindRepeating(&AllowAllFeatures);
-    if (!promise_availability_callback_)
-      promise_availability_callback_ = base::BindRepeating(&DisallowPromises);
     auto get_context_owner = [](v8::Local<v8::Context>) {
       return std::string("context");
     };
     event_handler_ = std::make_unique<APIEventHandler>(
         base::BindRepeating(&OnEventListenersChanged),
         base::BindRepeating(get_context_owner), nullptr);
-    access_checker_ = std::make_unique<BindingAccessChecker>(
-        api_availability_callback_, promise_availability_callback_);
+    access_checker_ =
+        std::make_unique<BindingAccessChecker>(api_availability_callback_);
     binding_ = std::make_unique<APIBinding>(
         kBindingName, &binding_functions_, &binding_types_, &binding_events_,
         &binding_properties_, create_custom_type_, on_silent_request_,
@@ -392,17 +380,15 @@ class APIBindingUnittest : public APIBindingTest {
   std::unique_ptr<BindingAccessChecker> access_checker_;
   APITypeReferenceMap type_refs_;
 
-  base::Value::List binding_functions_;
-  base::Value::List binding_events_;
-  base::Value::List binding_types_;
-  base::Value::Dict binding_properties_;
+  base::ListValue binding_functions_;
+  base::ListValue binding_events_;
+  base::ListValue binding_types_;
+  base::DictValue binding_properties_;
   std::unique_ptr<APIBindingHooks> binding_hooks_;
   std::unique_ptr<APIBindingHooksDelegate> binding_hooks_delegate_;
   APIBinding::CreateCustomType create_custom_type_;
   APIBinding::OnSilentRequest on_silent_request_;
   BindingAccessChecker::APIAvailabilityCallback api_availability_callback_;
-  BindingAccessChecker::PromiseAvailabilityCallback
-      promise_availability_callback_;
 };
 
 using APIBindingDeathTest = APIBindingUnittest;
@@ -789,7 +775,7 @@ TEST_F(APIBindingUnittest, TestRefProperties) {
   auto create_custom_type = [](v8::Isolate* isolate,
                                const std::string& type_name,
                                const std::string& property_name,
-                               const base::Value::List* property_values) {
+                               const base::ListValue* property_values) {
     v8::Local<v8::Context> context = isolate->GetCurrentContext();
     v8::Local<v8::Object> result = v8::Object::New(isolate);
     if (type_name == "AlphaRef") {
@@ -1079,9 +1065,6 @@ TEST_F(APIBindingUnittest, TestReturningResultFromCustomJSHook) {
 
 // Tests that the setHandleRequest hook can use callbacks and promises.
 TEST_F(APIBindingUnittest, TestReturningPromiseFromHandleRequestHook) {
-  bool context_allows_promises = true;
-  SetPromiseAvailabilityFlag(&context_allows_promises);
-
   // Register a hook for supportsPromises.
   const char kRegisterHook[] = R"(
       (function(hooks) {
@@ -1165,22 +1148,6 @@ TEST_F(APIBindingUnittest, TestReturningPromiseFromHandleRequestHook) {
     EXPECT_EQ(v8::Promise::kFulfilled, promise->State());
     EXPECT_EQ(R"("bar")", V8ToString(promise->Result(), context));
   }
-
-  {
-    // If the context doesn't support promises, there should be an error if a
-    // required callback isn't supplied.
-    context_allows_promises = false;
-    v8::Local<v8::Function> function = FunctionFromString(
-        context, "(function(obj) { return obj.supportsPromises(7); })");
-    v8::Local<v8::Value> args[] = {binding_object};
-    auto expected_error =
-        "Uncaught TypeError: " +
-        api_errors::InvocationError("test.supportsPromises",
-                                    "integer int, function callback",
-                                    api_errors::NoMatchingSignature());
-    RunFunctionAndExpectError(function, context, std::size(args), args,
-                              expected_error);
-  }
 }
 
 // Tests that JS custom hooks can throw exceptions for bad invocations.
@@ -1215,9 +1182,6 @@ TEST_F(APIBindingUnittest, TestThrowingFromCustomJSHook) {
 // Tests that JS setHandleRequestHooks can use the failure callback to return a
 // failure result for an API.
 TEST_F(APIBindingUnittest, TestHandleRequestFailureCallback) {
-  bool context_allows_promises = true;
-  SetPromiseAvailabilityFlag(&context_allows_promises);
-
   // Register a hook for supportsPromises that calls the failure callback when
   // the API is called with the integer 6.
   const char kRegisterHook[] = R"(
@@ -1308,38 +1272,12 @@ TEST_F(APIBindingUnittest, TestHandleRequestFailureCallback) {
     EXPECT_EQ(R"("This is the error")",
               GetStringPropertyFromObject(last_error, context, "message"));
   }
-
-  // Set the context to not support promises for the following test cases.
-  context_allows_promises = false;
-  {
-    // Calling callbackOptional without a callback and triggering the
-    // failureCallback in a context that does not support promises should result
-    // in a console error about an unchecked last error.
-    const char kFunctionCall[] =
-        R"((function(obj) {
-             return obj.callbackOptional(6);
-           }))";
-    v8::Local<v8::Function> function =
-        FunctionFromString(context, kFunctionCall);
-    v8::Local<v8::Value> args[] = {binding_object, last_error_parent};
-
-    RunFunction(function, context, v8::Undefined(isolate()), std::size(args),
-                args);
-    ASSERT_EQ(1u, console_errors().size());
-    EXPECT_THAT(console_errors()[0],
-                "Unchecked runtime.lastError: This is the error");
-    // Clear the console errors in case any other test case uses them.
-    ClearConsoleErrors();
-  }
 }
 
 // Tests that a JS handle request hook that calls the resolver callback more
 // than once will fail gracefully on a release build. Regression test for
 // https://crbug.com/1298409.
 TEST_F(APIBindingUnittest, TestHandleRequestHookCalledTwiceGracefulRegression) {
-  bool context_allows_promises = true;
-  SetPromiseAvailabilityFlag(&context_allows_promises);
-
   // Register a hook for supportsPromises that calls the success callback twice.
   static const char* const kRegisterHook = R"(
       (function(hooks) {
@@ -1795,16 +1733,17 @@ TEST_F(APIBindingUnittest, TestSendingRequestsAndSilentRequestsWithHooks) {
         return RequestResult(RequestResult::HANDLED);
       }));
 
-  auto handle_and_send_request =
-      [](APIRequestHandler* handler, const APISignature*,
-         v8::Local<v8::Context> context, v8::LocalVector<v8::Value>* arguments,
-         const APITypeReferenceMap& map) {
-        handler->StartRequest(
-            context, "test.handleAndSendRequest", base::Value::List(),
-            binding::AsyncResponseType::kNone, v8::Local<v8::Function>(),
-            v8::Local<v8::Function>(), binding::ResultModifierFunction());
-        return RequestResult(RequestResult::HANDLED);
-      };
+  auto handle_and_send_request = [](APIRequestHandler* handler,
+                                    const APISignature*,
+                                    v8::Local<v8::Context> context,
+                                    v8::LocalVector<v8::Value>* arguments,
+                                    const APITypeReferenceMap& map) {
+    handler->StartRequest(context, "test.handleAndSendRequest",
+                          base::ListValue(), binding::AsyncResponseType::kNone,
+                          v8::Local<v8::Function>(), v8::Local<v8::Function>(),
+                          binding::ResultModifierFunction());
+    return RequestResult(RequestResult::HANDLED);
+  };
   hooks->AddHandler(
       "test.handleAndSendRequest",
       base::BindRepeating(handle_and_send_request, request_handler()));
@@ -1950,7 +1889,7 @@ TEST_F(APIBindingUnittest, TestHooksWithCustomCallback) {
   ASSERT_TRUE(last_request());
   EXPECT_TRUE(last_request()->has_async_response_handler);
   request_handler()->CompleteRequest(last_request()->request_id,
-                                     base::Value::List(), std::string());
+                                     base::ListValue(), std::string());
 
   EXPECT_EQ("true", GetStringPropertyFromObject(context->Global(), context,
                                                 "calledCustomCallback"));
@@ -1959,9 +1898,6 @@ TEST_F(APIBindingUnittest, TestHooksWithCustomCallback) {
 // Test native hooks that don't handle the result, but add a result modifier.
 TEST_F(APIBindingUnittest, TestHooksWithResultModifier) {
   SetFunctions(kFunctionsWithPromiseSignatures);
-
-  bool context_allows_promises = true;
-  SetPromiseAvailabilityFlag(&context_allows_promises);
 
   // Register a hook for the test.supportsPromises method with a result modifier
   // that changes the result when the async response type is callback based.
@@ -2068,7 +2004,7 @@ TEST_F(APIBindingUnittest, TestHooksWithResultModifier) {
 
     ASSERT_TRUE(last_request());
     request_handler()->CompleteRequest(last_request()->request_id,
-                                       base::Value::List(), "Error message");
+                                       base::ListValue(), "Error message");
     EXPECT_EQ(v8::Promise::kRejected, promise->State());
     ASSERT_TRUE(promise->Result()->IsObject());
     EXPECT_EQ(R"("Error message")",
@@ -2083,9 +2019,6 @@ TEST_F(APIBindingUnittest, TestHooksWithResultModifier) {
 // Test native hooks that add a result modifier are compatible with JS hooks
 // which handle the request.
 TEST_F(APIBindingUnittest, TestHooksWithResultModifierAndJSHook) {
-  bool context_allows_promises = true;
-  SetPromiseAvailabilityFlag(&context_allows_promises);
-
   // Register a JS hook for supportsPromises.
   const char kRegisterHook[] = R"(
       (function(hooks) {
@@ -2255,11 +2188,6 @@ TEST_F(APIBindingUnittest,
 TEST_F(APIBindingUnittest, PromiseBasedAPIs) {
   SetFunctions(kFunctionsWithPromiseSignatures);
 
-  // Set a local boolean we can change to simulate if the context supports
-  // promises or not.
-  bool context_allows_promises = true;
-  SetPromiseAvailabilityFlag(&context_allows_promises);
-
   InitializeBinding();
 
   v8::HandleScope handle_scope(isolate());
@@ -2323,7 +2251,7 @@ TEST_F(APIBindingUnittest, PromiseBasedAPIs) {
 
     ASSERT_TRUE(last_request());
     request_handler()->CompleteRequest(last_request()->request_id,
-                                       base::Value::List(), "Error message");
+                                       base::ListValue(), "Error message");
 
     EXPECT_EQ(v8::Promise::kRejected, promise->State());
     ASSERT_TRUE(promise->Result()->IsObject());
@@ -2358,63 +2286,9 @@ TEST_F(APIBindingUnittest, PromiseBasedAPIs) {
               GetStringPropertyFromObject(promise->Result().As<v8::Object>(),
                                           context, "message"));
   }
-  // If the context doesn't support promises, there should be an error if a
-  // required callback isn't supplied.
-  context_allows_promises = false;
-  {
-    v8::Local<v8::Function> promise_api_call = FunctionFromString(
-        context, "(function(api) { return api.supportsPromises(3) });");
-    v8::Local<v8::Value> args[] = {binding_object};
-    auto expected_error =
-        "Uncaught TypeError: " +
-        api_errors::InvocationError("test.supportsPromises",
-                                    "integer int, function callback",
-                                    api_errors::NoMatchingSignature());
-    RunFunctionAndExpectError(promise_api_call, context, std::size(args), args,
-                              expected_error);
-  }
-  // Test that required callbacks still work when the context doesn't support
-  // promises.
-  {
-    constexpr char kFunctionCall[] =
-        R"((function(api) {
-             api.supportsPromises(3, (strResult) => {
-               this.callbackResult = strResult
-             });
-           }))";
-    v8::Local<v8::Function> promise_api_call =
-        FunctionFromString(context, kFunctionCall);
-    v8::Local<v8::Value> args[] = {binding_object};
-    RunFunctionOnGlobal(promise_api_call, context, std::size(args), args);
-
-    ASSERT_TRUE(last_request());
-    request_handler()->CompleteRequest(last_request()->request_id,
-                                       ListValueFromString(R"(["foo"])"),
-                                       std::string());
-
-    EXPECT_EQ(R"("foo")", GetStringPropertyFromObject(
-                              context->Global(), context, "callbackResult"));
-  }
-  // If a returns_async field is marked as optional, then a context which
-  // doesn't support promises should be able to leave it off of the call.
-  {
-    v8::Local<v8::Function> promise_api_call = FunctionFromString(
-        context, "(function(api) { return api.callbackOptional(3) });");
-    v8::Local<v8::Value> args[] = {binding_object};
-    v8::Local<v8::Value> api_result =
-        RunFunctionOnGlobal(promise_api_call, context, std::size(args), args);
-
-    ASSERT_TRUE(last_request());
-    ASSERT_TRUE(api_result->IsNullOrUndefined());
-  }
 }
 
 TEST_F(APIBindingUnittest, TestPromisesWithJSCustomCallback) {
-  // Set a local boolean we can change to simulate if the context supports
-  // promises or not.
-  bool context_allows_promises = true;
-  SetPromiseAvailabilityFlag(&context_allows_promises);
-
   // Register a custom callback hook for the supportsPromises method.
   const char kRegisterHook[] = R"(
       (function(hooks) {
@@ -2523,9 +2397,6 @@ TEST_F(APIBindingUnittest, TestPromisesWithJSCustomCallback) {
 }
 
 TEST_F(APIBindingUnittest, TestPromiseWithJSUpdateArgumentsPreValidate) {
-  bool context_allows_promises = true;
-  SetPromiseAvailabilityFlag(&context_allows_promises);
-
   // Register an update arguments pre validate hook for supportsPromises.
   const char kRegisterHook[] = R"(
       (function(hooks) {
@@ -2603,9 +2474,6 @@ TEST_F(APIBindingUnittest, TestPromiseWithJSUpdateArgumentsPreValidate) {
 }
 
 TEST_F(APIBindingUnittest, TestPromiseWithJSUpdateArgumentsPostValidate) {
-  bool context_allows_promises = true;
-  SetPromiseAvailabilityFlag(&context_allows_promises);
-
   // Register an update arguments post validate hook for supportsPromises.
   const char kRegisterHook[] = R"(
       (function(hooks) {

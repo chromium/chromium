@@ -48,6 +48,7 @@ protocol::Response TargetHandlerAndroid::CreateTarget(
     std::optional<bool> background,
     std::optional<bool> for_tab,
     std::optional<bool> hidden,
+    std::optional<bool> focus,
     std::string* out_target_id) {
   const TabModelList::TabModelVector& models = TabModelList::models();
   if (models.empty()) {

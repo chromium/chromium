@@ -24,7 +24,7 @@ using base::android::JavaRef;
 namespace webapk {
 
 // static
-static jlong JNI_PwaRestoreBottomSheetMediator_Initialize(
+static int64_t JNI_PwaRestoreBottomSheetMediator_Initialize(
     JNIEnv* env,
     const JavaRef<jobject>& java_ref) {
   Profile* profile = ProfileManager::GetLastUsedProfile();

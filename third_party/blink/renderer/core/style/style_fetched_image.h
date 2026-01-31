@@ -47,7 +47,6 @@ class CORE_EXPORT StyleFetchedImage final : public StyleImage,
   StyleFetchedImage(ImageResourceContent* image,
                     const CSSUrlData& url_data,
                     const Document& document,
-                    bool is_lazyload_possibly_deferred,
                     const KURL& url,
                     const float override_image_resolution = 0.0f);
   ~StyleFetchedImage() override;
@@ -83,8 +82,6 @@ class CORE_EXPORT StyleFetchedImage final : public StyleImage,
                                 const gfx::SizeF& target_size) const override;
   bool KnownToBeOpaque(const Document&, const ComputedStyle&) const override;
   ImageResourceContent* CachedImage() const override;
-
-  void LoadDeferredImage(const Document& document);
 
   RespectImageOrientationEnum ForceOrientationIfNecessary(
       RespectImageOrientationEnum default_orientation) const override;

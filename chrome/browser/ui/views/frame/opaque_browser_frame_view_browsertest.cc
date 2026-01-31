@@ -317,8 +317,8 @@ class WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest
     web_app_info->user_display_mode =
         web_app::mojom::UserDisplayMode::kStandalone;
     web_app_info->title = u"A Web App";
-    web_app_info->display_override = {
-        blink::mojom::DisplayMode::kWindowControlsOverlay};
+    web_app_info->display_override = {web_app::DisplayOverride::Create(
+        blink::mojom::DisplayMode::kWindowControlsOverlay)};
 
     webapps::AppId app_id = web_app::test::InstallWebApp(
         browser()->profile(), std::move(web_app_info));

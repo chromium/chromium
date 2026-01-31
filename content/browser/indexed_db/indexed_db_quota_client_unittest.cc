@@ -25,6 +25,7 @@
 #include "base/threading/thread.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
+#include "content/browser/indexed_db/file_path_util.h"
 #include "content/browser/indexed_db/indexed_db_context_impl.h"
 #include "net/base/features.h"
 #include "net/base/schemeful_site.h"
@@ -55,7 +56,9 @@ class IndexedDBQuotaClientTest : public testing::Test,
         kStorageKeyFirstPartyB(
             StorageKey::CreateFromStringForTesting("http://host:8000")),
         special_storage_policy_(
-            base::MakeRefCounted<storage::MockSpecialStoragePolicy>()) {
+            base::MakeRefCounted<storage::MockSpecialStoragePolicy>()),
+        sqlite_override_(BucketContext::OverrideShouldUseSqliteForTesting(
+            IsSqliteBackingStoreEnabled())) {
     // This cannot be created above as the kThirdPartyStoragePartitioning must
     // be set.
     kStorageKeyThirdPartyA =
@@ -155,9 +158,9 @@ class IndexedDBQuotaClientTest : public testing::Test,
       LOG(ERROR) << "failed to base::CreateDirectory "
                  << file_path_storage_key.value();
     }
-    file_path_storage_key =
-        file_path_storage_key.Append(FILE_PATH_LITERAL("fake_file"));
-    SetFileSizeTo(file_path_storage_key, size);
+    const base::FilePath& fake_file_path =
+        file_path_storage_key.Append(DatabaseNameToFileName(u"fake_db"));
+    SetFileSizeTo(fake_file_path, size);
 
     {
       base::RunLoop run_loop;
@@ -200,6 +203,7 @@ class IndexedDBQuotaClientTest : public testing::Test,
 
  protected:
   scoped_refptr<storage::MockSpecialStoragePolicy> special_storage_policy_;
+  base::AutoReset<std::optional<bool>> sqlite_override_;
 
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;

@@ -903,7 +903,6 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, MultiDisableExtensionsSyncCheck) {
 #if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(UkmBrowserTest, LogsTabId) {
   ukm::UkmTestHelper ukm_test_helper(GetUkmService());
-  ASSERT_TRUE(embedded_test_server()->Start());
   test::MetricsConsentOverride metrics_consent(true);
   Profile* profile = ProfileManager::GetLastUsedProfileIfLoaded();
   std::unique_ptr<SyncServiceImplHarness> harness =
@@ -937,7 +936,6 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, LogsTabId) {
 #if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(UkmBrowserTest, LogsPreviousSourceId) {
   ukm::UkmTestHelper ukm_test_helper(GetUkmService());
-  ASSERT_TRUE(embedded_test_server()->Start());
   test::MetricsConsentOverride metrics_consent(true);
   Profile* profile = ProfileManager::GetLastUsedProfileIfLoaded();
   std::unique_ptr<SyncServiceImplHarness> harness =
@@ -986,7 +984,6 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, LogsPreviousSourceId) {
 #if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(UkmBrowserTest, LogsOpenerSource) {
   ukm::UkmTestHelper ukm_test_helper(GetUkmService());
-  ASSERT_TRUE(embedded_test_server()->Start());
   test::MetricsConsentOverride metrics_consent(true);
   Profile* profile = ProfileManager::GetLastUsedProfileIfLoaded();
   std::unique_ptr<SyncServiceImplHarness> harness =
@@ -1252,7 +1249,6 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, EvictObsoleteSources) {
   std::unique_ptr<SyncServiceImplHarness> harness =
       EnableSyncForProfile(profile);
   Browser* sync_browser = CreateBrowser(profile);
-  ASSERT_TRUE(embedded_test_server()->Start());
 
   ukm::SourceId source_id1 = ukm::kInvalidSourceId;
   ukm::SourceId source_id2 = ukm::kInvalidSourceId;
@@ -1376,7 +1372,6 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest,
   std::unique_ptr<SyncServiceImplHarness> harness =
       EnableSyncForProfile(profile);
   Browser* sync_browser = CreateBrowser(profile);
-  ASSERT_TRUE(embedded_test_server()->Start());
 
   // First navigation.
   const ukm::SourceId source_id1 =
@@ -1434,7 +1429,6 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, NotMarkSourcesIfNavigationNotCommitted) {
   std::unique_ptr<SyncServiceImplHarness> harness =
       EnableSyncForProfile(profile);
   Browser* sync_browser = CreateBrowser(profile);
-  ASSERT_TRUE(embedded_test_server()->Start());
 
   // An example navigation that commits.
   const GURL test_url_with_commit =
@@ -1624,7 +1618,6 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTestForAppConsent,
   std::unique_ptr<SyncServiceImplHarness> harness =
       EnableSyncForProfile(profile);
   Browser* sync_browser = CreateBrowser(profile);
-  ASSERT_TRUE(embedded_test_server()->Start());
 
   const std::vector<GURL> test_urls = {
       embedded_test_server()->GetURL("/title1.html"),

@@ -16,7 +16,7 @@
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/first_run/model/first_run_metrics.h"
-#import "ios/chrome/browser/first_run/ui_bundled/first_run_screen_delegate.h"
+#import "ios/chrome/browser/first_run/public/first_run_screen_delegate.h"
 #import "ios/chrome/browser/regional_capabilities/model/regional_capabilities_service_factory.h"
 #import "ios/chrome/browser/search_engine_choice/coordinator/search_engine_choice_mediator.h"
 #import "ios/chrome/browser/search_engine_choice/model/search_engine_choice_util.h"
@@ -181,14 +181,8 @@ using search_engines::SearchEngineChoiceScreenEvents;
 
 - (void)didTapPrimaryButton {
   if (_didTapPrimaryButton) {
-    SCOPED_CRASH_KEY_NUMBER("SearchEngineChoice", "isfirstrun", _firstRun);
-    int64_t delay =
-        (base::Time::Now() - _lastCallToDidTapPrimaryButtonTimestamp)
-            .InMilliseconds();
-    SCOPED_CRASH_KEY_NUMBER("SearchEngineChoice", "delay", delay);
-    NOTREACHED(base::NotFatalUntil::M150)
-        << "Double tap on primary button [_firstRun = " << _firstRun
-        << " ; delay : " << delay << " ms]";
+    // The user was able to tap twice on the button, in a very short period.
+    // The second tap can be ignored.
     return;
   }
   _didTapPrimaryButton = YES;

@@ -30,7 +30,6 @@
 #include "chrome/browser/ai/ai_proofreader.h"
 #include "chrome/browser/ai/ai_rewriter.h"
 #include "chrome/browser/ai/ai_summarizer.h"
-#include "chrome/browser/ai/ai_utils.h"
 #include "chrome/browser/ai/ai_writer.h"
 #include "chrome/browser/ai/features.h"
 #include "chrome/browser/component_updater/optimization_guide_on_device_model_installer.h"
@@ -38,13 +37,14 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/language/core/common/locale_util.h"
+#include "components/on_device_ai/ai_utils.h"
 #include "components/optimization_guide/core/delivery/model_util.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
-#include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom-shared.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
@@ -54,6 +54,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/on_device_model/public/cpp/capabilities.h"
+#include "services/on_device_model/public/mojom/download_observer.mojom.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/ai/ai_common.mojom.h"
@@ -62,9 +63,7 @@
 #include "third_party/blink/public/mojom/ai/ai_proofreader.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_rewriter.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_writer.mojom.h"
-#include "third_party/blink/public/mojom/ai/model_download_progress_observer.mojom.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom.h"
-#include "third_party/blink/public/mojom/devtools/console_message.mojom-data-view.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 
 namespace {
@@ -88,8 +87,8 @@ const char kEmptyOutputLanguageWarning[] =
     "should be specified to ensure optimal output quality and properly attest "
     "to output safety. Please specify a supported output language code: [%s]";
 
-// Enables eagerly initializing other AI APIs when any session type is created.
-BASE_FEATURE(kBuiltInAIEagerInit, base::FEATURE_DISABLED_BY_DEFAULT);
+// Eagerly initializes other downloadable APIs when any session type is created.
+BASE_FEATURE(kBuiltInAIEagerInit, base::FEATURE_ENABLED_BY_DEFAULT);
 
 blink::mojom::ModelAvailabilityCheckResult
 ConvertOnDeviceModelEligibilityReasonToModelAvailabilityCheckResult(
@@ -614,29 +613,30 @@ void AIManager::CreateProofreader(
 }
 
 blink::mojom::AILanguageModelParamsPtr AIManager::GetLanguageModelParams() {
-  auto model_info = blink::mojom::AILanguageModelParams::New(
-      blink::mojom::AILanguageModelSamplingParams::New(),
-      blink::mojom::AILanguageModelSamplingParams::New());
-  model_info->max_sampling_params->top_k =
-      optimization_guide::features::GetOnDeviceModelMaxTopK();
-  model_info->max_sampling_params->temperature = kDefaultMaxTemperature;
-
   auto* service = OptimizationGuideKeyedServiceFactory::GetForProfile(
       Profile::FromBrowserContext(browser_context_));
   if (!service) {
-    return model_info;
+    return nullptr;
   }
   auto sampling_params_config = service->GetSamplingParamsConfig(
       optimization_guide::mojom::OnDeviceFeature::kPromptApi);
 
   if (!sampling_params_config.has_value()) {
-    return model_info;
+    return nullptr;
   }
+
+  auto model_info = blink::mojom::AILanguageModelParams::New(
+      blink::mojom::AILanguageModelSamplingParams::New(),
+      blink::mojom::AILanguageModelSamplingParams::New());
 
   model_info->default_sampling_params->top_k =
       sampling_params_config->default_top_k;
   model_info->default_sampling_params->temperature =
       sampling_params_config->default_temperature;
+
+  model_info->max_sampling_params->top_k =
+      optimization_guide::features::GetOnDeviceModelMaxTopK();
+  model_info->max_sampling_params->temperature = kDefaultMaxTemperature;
 
   auto metadata = service->GetFeatureMetadata(
       optimization_guide::mojom::OnDeviceFeature::kPromptApi);
@@ -923,24 +923,38 @@ void AIManager::MaybeTryEagerInit() {
   if (!base::FeatureList::IsEnabled(kBuiltInAIEagerInit)) {
     return;
   }
-  // Experimentally initialize other features when one is used. This presumes a
-  // large foundational model download completed with the first feature usage,
-  // and other features just need lightweight configuration downloads to become
-  // readily available for usage on this device.
+  // Initialize other features when one is used. This presumes a large common
+  // model download completed with the first feature usage, and other features
+  // just need lightweight configuration downloads to become readily available
+  // for usage on this device.
   AIContextBoundObjectSet empty(on_device_model::mojom::Priority::kBackground);
   for (optimization_guide::mojom::OnDeviceFeature feature :
        {optimization_guide::mojom::OnDeviceFeature::kPromptApi,
         optimization_guide::mojom::OnDeviceFeature::kSummarize,
-        optimization_guide::mojom::OnDeviceFeature::kWritingAssistanceApi,
-        optimization_guide::mojom::OnDeviceFeature::kProofreaderApi}) {
-    // TODO(crbug.com/442015822): Gate on availability state.
+        optimization_guide::mojom::OnDeviceFeature::kWritingAssistanceApi}) {
     // TODO(crbug.com/447192715): Gate on runtime determined component size.
     if (tried_init_.insert(feature).second) {
-      // TODO(crbug.com/447174556): Init features without creating sessions.
-      model_broker_client_->CreateSession(
-          feature, ::optimization_guide::SessionConfigParams{},
-          base::DoNothing());
+      OptimizationGuideKeyedService* service =
+          OptimizationGuideKeyedServiceFactory::GetForProfile(
+              Profile::FromBrowserContext(browser_context_));
+      service->GetOnDeviceModelEligibilityAsync(
+          feature, on_device_model::Capabilities{},
+          base::BindOnce(&AIManager::MaybeTryEagerInitWithEligibility,
+                         weak_factory_.GetWeakPtr(), feature));
     }
+  }
+}
+
+void AIManager::MaybeTryEagerInitWithEligibility(
+    optimization_guide::mojom::OnDeviceFeature feature,
+    optimization_guide::OnDeviceModelEligibilityReason eligibility) {
+  if (optimization_guide::AvailabilityFromEligibilityReason(eligibility) ==
+      optimization_guide::mojom::ModelUnavailableReason::kPendingUsage) {
+    // TODO(crbug.com/447174556): Init features without creating sessions.
+    VLOG(1) << "Eagerly initializing " << base::ToString(feature);
+    model_broker_client_->CreateSession(
+        feature, ::optimization_guide::SessionConfigParams{},
+        base::DoNothing());
   }
 }
 
@@ -971,7 +985,7 @@ void AIManager::OnModelPathValidationComplete(const base::FilePath& model_path,
 }
 
 void AIManager::AddModelDownloadProgressObserver(
-    mojo::PendingRemote<blink ::mojom::ModelDownloadProgressObserver>
+    mojo::PendingRemote<on_device_model::mojom::DownloadObserver>
         observer_remote) {
   auto components = on_device_ai::AICrxComponent::FromComponentIds(
       &component_update_service_.get(),

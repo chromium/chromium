@@ -7,7 +7,6 @@
 #include <optional>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
@@ -41,6 +40,7 @@
 #include "content/browser/renderer_host/visible_time_request_trigger.h"
 #include "content/common/content_switches_internal.h"
 #include "content/common/features.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/page_visibility_state.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom.h"
 #include "ui/base/ui_base_types.h"
@@ -175,13 +175,13 @@ void RenderWidgetHostViewBase::CopyMainAndPopupFromSurface(
     const gfx::Rect& src_subrect,
     const gfx::Size& dst_size,
     float scale_factor,
-    base::OnceCallback<void(const viz::CopyOutputBitmapWithMetadata&)>
-        callback) {
+    base::TimeDelta timeout,
+    base::OnceCallback<void(const content::CopyFromSurfaceResult&)> callback) {
   if (!main_host || !main_frame_host) {
     if (base::FeatureList::IsEnabled(
             features::kCopyFromSurfaceAlwaysCallCallback)) {
-      viz::CopyOutputBitmapWithMetadata empty;
-      std::move(callback).Run(empty);
+      std::move(callback).Run(base::unexpected<content::CopyFromSurfaceError>(
+          content::CopyFromSurfaceError::kFrameGone));
     }
     return;
   }
@@ -194,7 +194,7 @@ void RenderWidgetHostViewBase::CopyMainAndPopupFromSurface(
 #else
   if (!popup_host || !popup_frame_host) {
     // No popup - just call CopyFromCompositingSurface once.
-    main_frame_host->CopyFromCompositingSurface(src_subrect, dst_size,
+    main_frame_host->CopyFromCompositingSurface(src_subrect, dst_size, timeout,
                                                 std::move(callback));
     return;
   }
@@ -221,12 +221,13 @@ void RenderWidgetHostViewBase::CopyMainAndPopupFromSurface(
   //         the just-acquired popup image, and then calls the original
   //         (outer) callback with the combined image.
   auto main_image_done_callback = base::BindOnce(
-      [](base::OnceCallback<void(const viz::CopyOutputBitmapWithMetadata&)>
+      [](base::OnceCallback<void(const content::CopyFromSurfaceResult&)>
              final_callback,
          const gfx::Vector2d offset,
          base::WeakPtr<DelegatedFrameHost> popup_frame_host,
          const gfx::Rect src_subrect, const gfx::Size dst_size,
-         const viz::CopyOutputBitmapWithMetadata& main_result) {
+         base::TimeDelta timeout,
+         const content::CopyFromSurfaceResult& main_result) {
         if (!popup_frame_host) {
           if (base::FeatureList::IsEnabled(
                   features::kCopyFromSurfaceAlwaysCallCallback)) {
@@ -239,49 +240,61 @@ void RenderWidgetHostViewBase::CopyMainAndPopupFromSurface(
 
         // Build a new callback that actually combines images.
         auto popup_done_callback = base::BindOnce(
-            [](base::OnceCallback<void(
-                   const viz::CopyOutputBitmapWithMetadata&)> final_callback,
+            [](base::OnceCallback<void(const content::CopyFromSurfaceResult&)>
+                   final_callback,
                const gfx::Vector2d offset,
-               const viz::CopyOutputBitmapWithMetadata& main_result,
-               const viz::CopyOutputBitmapWithMetadata& popup_result) {
-              // Draw popup_image into main_image.
-              SkCanvas canvas(main_result.bitmap, SkSurfaceProps{});
-              canvas.drawImage(popup_result.bitmap.asImage(), offset.x(),
-                               offset.y());
+               const content::CopyFromSurfaceResult& main_result,
+               const content::CopyFromSurfaceResult& popup_result) {
+              // If main_result is not available, there is nothing to combine
+              // into.
+              if (!main_result.has_value()) {
+                std::move(final_callback).Run(main_result);
+                return;
+              }
+
+              if (popup_result.has_value()) {
+                // Draw popup_image into main_image only if popup_image is
+                // valid.
+                SkCanvas canvas(main_result->bitmap, SkSurfaceProps{});
+                canvas.drawImage(popup_result->bitmap.asImage(), offset.x(),
+                                 offset.y());
+              }
+
               std::move(final_callback).Run(main_result);
             },
-            std::move(final_callback), offset, std::move(main_result));
+            std::move(final_callback), offset, main_result);
 
         // Second, request the popup image.
         gfx::Rect popup_subrect(src_subrect - offset);
         popup_frame_host->CopyFromCompositingSurface(
-            popup_subrect, dst_size, std::move(popup_done_callback));
+            popup_subrect, dst_size, timeout, std::move(popup_done_callback));
       },
       std::move(callback), offset_physical, popup_frame_host, src_subrect,
-      dst_size);
+      dst_size, timeout);
 
   // Request the main image (happens first).
   main_frame_host->CopyFromCompositingSurface(
-      src_subrect, dst_size, std::move(main_image_done_callback));
+      src_subrect, dst_size, timeout, std::move(main_image_done_callback));
 #endif
 }
 
 void RenderWidgetHostViewBase::CopyFromSurface(
     const gfx::Rect& src_rect,
     const gfx::Size& output_size,
-    base::OnceCallback<void(const viz::CopyOutputBitmapWithMetadata&)>
-        callback) {
+    base::TimeDelta timeout,
+    base::OnceCallback<void(const content::CopyFromSurfaceResult&)> callback) {
   NOTIMPLEMENTED_LOG_ONCE();
-  std::move(callback).Run(viz::CopyOutputBitmapWithMetadata());
+  std::move(callback).Run(base::unexpected<content::CopyFromSurfaceError>(
+      content::CopyFromSurfaceError::kNotImplemented));
 }
 
 void RenderWidgetHostViewBase::CopyFromExactSurface(
     const gfx::Rect& src_rect,
     const gfx::Size& output_size,
-    base::OnceCallback<void(const viz::CopyOutputBitmapWithMetadata&)>
-        callback) {
+    base::OnceCallback<void(const content::CopyFromSurfaceResult&)> callback) {
   NOTIMPLEMENTED_LOG_ONCE();
-  std::move(callback).Run(viz::CopyOutputBitmapWithMetadata());
+  std::move(callback).Run(base::unexpected<content::CopyFromSurfaceError>(
+      content::CopyFromSurfaceError::kNotImplemented));
 }
 
 ui::FilteredGestureProvider*
@@ -293,10 +306,11 @@ RenderWidgetHostViewBase::GetFilteredGestureProviderForTesting() {
 void RenderWidgetHostViewBase::CopyFromExactSurfaceWithIpcDelay(
     const gfx::Rect& src_rect,
     const gfx::Size& output_size,
-    base::OnceCallback<void(const viz::CopyOutputBitmapWithMetadata&)> callback,
+    base::OnceCallback<void(const content::CopyFromSurfaceResult&)> callback,
     base::TimeDelta ipc_delay) {
   NOTIMPLEMENTED_LOG_ONCE();
-  std::move(callback).Run(viz::CopyOutputBitmapWithMetadata());
+  std::move(callback).Run(base::unexpected<content::CopyFromSurfaceError>(
+      content::CopyFromSurfaceError::kNotImplemented));
 }
 #endif
 

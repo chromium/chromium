@@ -157,11 +157,12 @@ metrics::OmniboxEventProto::PageClassification
 ComposeboxOmniboxClient::GetPageClassification(bool is_prefetch) const {
   BOOL is_in_ai_mode =
       ([delegate_ composeboxMode] == ComposeboxMode::kAIM) ||
-      ([delegate_ composeboxMode] == ComposeboxMode::kImageGeneration);
+      ([delegate_ composeboxMode] == ComposeboxMode::kImageGeneration) ||
+      ([delegate_ composeboxMode] == ComposeboxMode::kCanvas);
 
-  if (is_in_ai_mode && base::FeatureList::IsEnabled(
-                           omnibox::kComposeboxUsesChromeComposeClient)) {
-    return metrics::OmniboxEventProto::NTP_COMPOSEBOX;
+  if (is_in_ai_mode) {
+    return location_bar_->GetLocationBarModel()
+        ->GetOmniboxComposeboxPageClassification();
   }
 
   return location_bar_->GetLocationBarModel()->GetPageClassification(
@@ -354,6 +355,6 @@ base::WeakPtr<OmniboxClient> ComposeboxOmniboxClient::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-omnibox::ChromeAimToolsAndModels ComposeboxOmniboxClient::AimToolMode() const {
+omnibox::ToolMode ComposeboxOmniboxClient::AimToolMode() const {
   return [delegate_ composeboxToolMode];
 }

@@ -4,13 +4,13 @@
 
 #include "services/network/shared_storage/shared_storage_request_helper.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/notreached.h"
@@ -273,7 +273,8 @@ void SharedStorageRequestHelper::UpdateSharedStorageWritableEligible(
   // takes precedence.
   if (GetSecSharedStorageWritableHeader(modified_headers)) {
     shared_storage_writable_eligible_ = true;
-  } else if (base::Contains(removed_headers, kSecSharedStorageWritableHeader)) {
+  } else if (std::ranges::contains(removed_headers,
+                                   kSecSharedStorageWritableHeader)) {
     shared_storage_writable_eligible_ = false;
   }
 }

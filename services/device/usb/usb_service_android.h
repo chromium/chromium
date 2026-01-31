@@ -28,11 +28,10 @@ class UsbServiceAndroid final : public UsbService {
   // Methods called by Java.
   void DeviceAttached(JNIEnv* env,
                       const base::android::JavaRef<jobject>& usb_device);
-  void DeviceDetached(JNIEnv* env,
-                      jint device_id);
+  void DeviceDetached(JNIEnv* env, int32_t device_id);
   void DevicePermissionRequestComplete(JNIEnv* env,
-                                       jint device_id,
-                                       jboolean granted);
+                                       int32_t device_id,
+                                       bool granted);
 
   // Called by UsbDeviceAndroid.
   base::android::ScopedJavaLocalRef<jobject> OpenDevice(
@@ -44,7 +43,7 @@ class UsbServiceAndroid final : public UsbService {
  private:
   void AddDevice(scoped_refptr<UsbDeviceAndroid> device);
 
-  std::unordered_map<jint, scoped_refptr<UsbDeviceAndroid>> devices_by_id_;
+  std::unordered_map<int32_t, scoped_refptr<UsbDeviceAndroid>> devices_by_id_;
 
   // Java object org.chromium.device.usb.ChromeUsbService.
   base::android::ScopedJavaGlobalRef<jobject> j_object_;

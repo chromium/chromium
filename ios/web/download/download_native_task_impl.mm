@@ -40,7 +40,9 @@ DownloadNativeTaskImpl::DownloadNativeTaskImpl(
 
 DownloadNativeTaskImpl::~DownloadNativeTaskImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CancelInternal();
+  if (!IsDone()) {
+    Cancel();
+  }
 }
 
 void DownloadNativeTaskImpl::StartInternal(const base::FilePath& path) {

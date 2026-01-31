@@ -16,6 +16,7 @@
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
+#include "base/numerics/safe_conversions.h"
 
 namespace policy {
 
@@ -173,17 +174,18 @@ bool SingleInstallEventLog<T>::ParseIdFromFile(
     base::File* file,
     ssize_t* size,
     base::HeapArray<char>* package_buffer) {
-  if (!file->IsValid())
+  if (!file->IsValid()) {
     return false;
-  if (UNSAFE_TODO(file->ReadAtCurrentPos(reinterpret_cast<char*>(size),
-                                         sizeof(*size))) != sizeof(*size) ||
+  }
+  if (file->ReadAtCurrentPos(base::byte_span_from_ref(*size)) !=
+          sizeof(*size) ||
       *size < 0 || *size > kMaxBufferSize) {
     return false;
   }
   *package_buffer = base::HeapArray<char>::Uninit(*size);
 
-  if (UNSAFE_TODO(file->ReadAtCurrentPos((*package_buffer).data(), *size)) !=
-      *size) {
+  if (file->ReadAtCurrentPos(base::as_writable_bytes(
+          package_buffer->as_span())) != base::checked_cast<size_t>(*size)) {
     return false;
   }
   return true;
@@ -194,21 +196,20 @@ bool SingleInstallEventLog<T>::LoadEventLogFromFile(
     base::File* file,
     SingleInstallEventLog<T>* log) {
   int64_t incomplete;
-  if (UNSAFE_TODO(file->ReadAtCurrentPos(reinterpret_cast<char*>(&incomplete),
-                                         sizeof(incomplete))) !=
+  if (file->ReadAtCurrentPos(base::byte_span_from_ref(incomplete)) !=
       sizeof(incomplete)) {
     return false;
   }
   log->incomplete_ = incomplete;
   ssize_t entries;
-  if (UNSAFE_TODO(file->ReadAtCurrentPos(reinterpret_cast<char*>(&entries),
-                                         sizeof(entries))) != sizeof(entries)) {
+  if (file->ReadAtCurrentPos(base::byte_span_from_ref(entries)) !=
+      sizeof(entries)) {
     return false;
   }
   for (ssize_t i = 0; i < entries; ++i) {
     ssize_t size;
-    if (UNSAFE_TODO(file->ReadAtCurrentPos(reinterpret_cast<char*>(&size),
-                                           sizeof(size))) != sizeof(size) ||
+    if (file->ReadAtCurrentPos(base::byte_span_from_ref(size)) !=
+            sizeof(size) ||
         size < 0 || size > kMaxBufferSize) {
       log->incomplete_ = true;
       return false;
@@ -222,7 +223,8 @@ bool SingleInstallEventLog<T>::LoadEventLogFromFile(
     }
 
     auto buffer = base::HeapArray<char>::Uninit(size);
-    if (UNSAFE_TODO(file->ReadAtCurrentPos(buffer.data(), size)) != size) {
+    if (file->ReadAtCurrentPos(base::as_writable_bytes(buffer.as_span())) !=
+        base::checked_cast<size_t>(size)) {
       log->incomplete_ = true;
       return false;
     }

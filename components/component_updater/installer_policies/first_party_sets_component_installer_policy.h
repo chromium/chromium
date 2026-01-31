@@ -61,7 +61,7 @@ class FirstPartySetsComponentInstallerPolicy : public ComponentInstallerPolicy {
 
   void ComponentReadyForTesting(const base::Version& version,
                                 const base::FilePath& install_dir,
-                                base::Value::Dict manifest) {
+                                base::DictValue manifest) {
     ComponentReady(version, install_dir, std::move(manifest));
   }
 
@@ -77,10 +77,10 @@ class FirstPartySetsComponentInstallerPolicy : public ComponentInstallerPolicy {
   bool SupportsGroupPolicyEnabledComponentUpdates() const override;
   bool RequiresNetworkEncryption() const override;
   update_client::CrxInstaller::Result OnCustomInstall(
-      const base::Value::Dict& manifest,
+      const base::DictValue& manifest,
       const base::FilePath& install_dir) override;
   void OnCustomUninstall() override;
-  bool VerifyInstallation(const base::Value::Dict& manifest,
+  bool VerifyInstallation(const base::DictValue& manifest,
                           const base::FilePath& install_dir) const override;
   // After the first call, ComponentReady will be no-op for new versions
   // delivered from Component Updater, i.e. new components will be installed
@@ -88,7 +88,7 @@ class FirstPartySetsComponentInstallerPolicy : public ComponentInstallerPolicy {
   // browser startup.
   void ComponentReady(const base::Version& version,
                       const base::FilePath& install_dir,
-                      base::Value::Dict manifest) override;
+                      base::DictValue manifest) override;
   base::FilePath GetRelativeInstallDir() const override;
   void GetHash(std::vector<uint8_t>* hash) const override;
   std::string GetName() const override;

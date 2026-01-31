@@ -194,8 +194,10 @@ D3D12VideoEncodeDelegate::GetSupportedProfiles(
 }
 
 D3D12VideoEncodeDelegate::D3D12VideoEncodeDelegate(
-    Microsoft::WRL::ComPtr<ID3D12VideoDevice3> video_device)
-    : video_device_(std::move(video_device)) {
+    Microsoft::WRL::ComPtr<ID3D12VideoDevice3> video_device,
+    const gpu::GpuDriverBugWorkarounds& gpu_workarounds)
+    : video_device_(std::move(video_device)),
+      gpu_workarounds_(gpu_workarounds) {
   CHECK(video_device_);
 }
 
@@ -273,6 +275,12 @@ D3D12VideoEncodeDelegate::Encode(
     const gfx::ColorSpace& input_frame_color_space,
     const BitstreamBuffer& bitstream_buffer,
     const VideoEncoder::EncodeOptions& options) {
+  if (options.reference_buffers.size() > GetMaxNumOfManualRefBuffers()) {
+    return {EncoderStatus::Codes::kBadReferenceBuffer,
+            "Number of manual reference buffers exceeds that is supported by "
+            "encoder"};
+  }
+
   const gfx::ColorSpace& output_color_space =
       GetEncoderOutputColorSpaceFromInputColorSpace(input_frame_color_space);
   if (D3D12_RESOURCE_DESC input_frame_desc = input_frame->GetDesc();

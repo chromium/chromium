@@ -38,4 +38,16 @@ const void* AutofillAnnotationsProvider::UserDataKey() {
   return &kAutofillAnnotationsProviderKey;
 }
 
+std::ostream& operator<<(std::ostream& o, AutofillFieldRedactionReason reason) {
+  switch (reason) {
+    case AutofillFieldRedactionReason::kNoRedactionNeeded:
+      o << "kNoRedactionNeeded";
+      break;
+    case AutofillFieldRedactionReason::kShouldRedactForPayments:
+      o << "kShouldRedactForPayments";
+      break;
+  }
+  return o;
+}
+
 }  // namespace optimization_guide

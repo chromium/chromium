@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/integrators/autofill_ai/management_utils.h"
 
 #include "base/notreached.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/strings/grit/components_strings.h"
@@ -85,6 +86,17 @@ std::string GetDeleteEntityTypeStringForI18n(EntityType entity_type) {
       return "";
   }
   NOTREACHED();
+}
+
+DenseSet<EntityType> GetWritableEntityTypes(const GeoIpCountryCode& country_code) {
+  DenseSet<EntityType> entity_types;
+  for (EntityType entity_type : autofill::DenseSet<EntityType>::all()) {
+    if (!entity_type.enabled(country_code) || entity_type.read_only()) {
+      continue;
+    }
+    entity_types.insert(entity_type);
+  }
+  return entity_types;
 }
 
 }  // namespace autofill

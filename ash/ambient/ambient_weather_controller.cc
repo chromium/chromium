@@ -189,9 +189,9 @@ bool AmbientWeatherController::IsGeolocationUsageAllowed() {
 bool AmbientWeatherController::IsWeatherDisabledByPolicy() {
   const auto* pref_service = GetPrefService();
   return !pref_service ||
-         !base::Contains(pref_service->GetList(
-                             prefs::kContextualGoogleIntegrationsConfiguration),
-                         prefs::kWeatherIntegrationName);
+         !pref_service
+              ->GetList(prefs::kContextualGoogleIntegrationsConfiguration)
+              .contains(prefs::kWeatherIntegrationName);
 }
 
 void AmbientWeatherController::ClearAmbientWeatherModel() {

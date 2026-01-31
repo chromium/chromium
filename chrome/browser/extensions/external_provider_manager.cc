@@ -7,7 +7,6 @@
 #include <cstddef>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -21,7 +20,7 @@
 #include "chrome/browser/extensions/external_install_manager.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
 #include "chrome/browser/extensions/external_provider_manager_factory.h"
-#include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
+#include "chrome/browser/extensions/forced_extensions/install_stage_tracker_factory.h"
 #include "chrome/browser/extensions/installed_loader.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/profiles/profile.h"
@@ -35,6 +34,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/external_install_info.h"
+#include "extensions/browser/forced_extensions/install_stage_tracker.h"
 #include "extensions/browser/management_policy.h"
 #include "extensions/browser/pending_extension_manager.h"
 #include "extensions/browser/updater/extension_cache.h"
@@ -334,7 +334,7 @@ bool ExternalProviderManager::OnExternalExtensionUpdateUrlFound(
   }
 
   InstallStageTracker* install_stage_tracker =
-      InstallStageTracker::Get(context_);
+      InstallStageTrackerFactory::GetForBrowserContext(context_);
 
   const Extension* extension = registry_->GetExtensionById(
       info.extension_id, ExtensionRegistry::EVERYTHING);

@@ -77,6 +77,9 @@ enum class BlinkAnimationType : int {
   kAnimationTypeEnumMax = 6
 };
 
+// Enum indicating why we're calling StartAnimationOnCompositor.
+enum class StartOnCompositorReason { kGeneric, kAnimationTrigger };
+
 class CORE_EXPORT Animation : public EventTarget,
                               public ActiveScriptWrappable<Animation>,
                               public ExecutionContextLifecycleObserver,
@@ -272,9 +275,13 @@ class CORE_EXPORT Animation : public EventTarget,
 
   // Called during validation of a scroll timeline to determine if a second
   // style and layout pass is required. During this validation step, we have an
-  // up to date snapshot of the timeline and can initialize the start time if
-  // required. If the start time or intrinsic iteration duration changes, we
-  // need a second style+layout pass even if the timeline snapshot is valid.
+  // up to date snapshot of the timeline and can do either of the following:
+  // - initialize the start time if required. If the start time or intrinsic
+  //   iteration duration changes, we need a second style+layout pass even if
+  //   the timeline snapshot is valid.
+  // - trigger the animation based on the state of a TimelineTrigger associated
+  //   with the scroll timeline being validated. If triggered, we require a
+  //   second style+layout pass.
   bool OnValidateSnapshot(bool snapshot_changed);
 
   void OnRangeUpdate();
@@ -333,15 +340,26 @@ class CORE_EXPORT Animation : public EventTarget,
 
   CompositorAnimations::FailureReasons CheckCanStartAnimationOnCompositor(
       const PaintArtifactCompositor* paint_artifact_compositor,
+      StartOnCompositorReason check_reason,
       PropertyHandleSet* unsupported_properties_for_tracing = nullptr) const;
   void StartAnimationOnCompositor(
-      const PaintArtifactCompositor* paint_artifact_compositor);
+      const PaintArtifactCompositor* paint_artifact_compositor,
+      StartOnCompositorReason check_reason);
+  // Returns true if the cc::Animation related to this animation will be under
+  // the influence of the compositor animation trigger attempting to push the
+  // animation to the compositor. Returns false otherwise.
+  bool StartTriggeredAnimationOnCompositor(
+      const PaintArtifactCompositor* paint_artifact_compositor,
+      bool& pause_keyframe_models);
   void CancelAnimationOnCompositor();
   void RestartAnimationOnCompositor(
       CompositorPendingReason reason =
           CompositorPendingReason::kPendingRestart);
   void CancelIncompatibleAnimationsOnCompositor();
   bool HasActiveAnimationsOnCompositor() const;
+  CompositorAnimations::FailureReasons LastCompositorFailureReason() const {
+    return last_compositor_failure_reasons_;
+  }
 
   void NotifyReady(AnimationTimeDelta ready_time);
   void CommitPendingPlay(AnimationTimeDelta ready_time);
@@ -486,7 +504,7 @@ class CORE_EXPORT Animation : public EventTarget,
 
   void AddTrigger(AnimationTrigger* trigger);
   void RemoveTrigger(AnimationTrigger* trigger);
-  const HeapHashSet<WeakMember<AnimationTrigger>>& GetTriggersForTest();
+  const HeapHashSet<WeakMember<AnimationTrigger>>& GetTriggers();
 
   // Playback rate that will take effect once any pending tasks are resolved.
   // If there are no pending tasks, then the effective playback rate equals the
@@ -751,6 +769,8 @@ class CORE_EXPORT Animation : public EventTarget,
   int compositor_group_;
 
   Member<CompositorAnimationHolder> compositor_animation_;
+
+  CompositorAnimations::FailureReasons last_compositor_failure_reasons_;
 
   bool effect_suppressed_;
 

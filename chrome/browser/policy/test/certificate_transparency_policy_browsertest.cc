@@ -70,7 +70,7 @@ IN_PROC_BROWSER_TEST_F(CertificateTransparencyPolicyTest,
   EXPECT_NE(u"OK", chrome_test_utils::GetActiveWebContents(this)->GetTitle());
 
   // Now exempt the URL from being blocked by setting policy.
-  base::Value::List disabled_urls;
+  base::ListValue disabled_urls;
   disabled_urls.Append(kHostname);
 
   PolicyMap policies;
@@ -145,7 +145,7 @@ IN_PROC_BROWSER_TEST_F(CertificateTransparencyPolicyTest,
   net::SHA256HashValue leaf_hash;
   ASSERT_TRUE(net::x509_util::CalculateSha256SpkiHash(
       https_server_ok.GetCertificate()->cert_buffer(), &leaf_hash));
-  base::Value::List disabled_spkis;
+  base::ListValue disabled_spkis;
   disabled_spkis.Append(net::HashValue(leaf_hash).ToString());
 
   PolicyMap policies;

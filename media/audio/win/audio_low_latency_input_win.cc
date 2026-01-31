@@ -71,7 +71,7 @@ constexpr uint32_t KSAUDIO_SPEAKER_UNSUPPORTED = 0;
 
 // Feature flag for enabling usage of the device/engine sample format.
 BASE_FEATURE(kWasapiInputUseDeviceSampleFormat,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Max allowed absolute difference between a QPC-based timestamp and a default
 // base::TimeTicks::Now() timestamp before switching to fake audio timestamps.
@@ -393,7 +393,8 @@ class WASAPIAudioInputStream::EchoCancellationConfig {
     }
     va_list args;
     va_start(args, format);
-    std::string msg(base::StrCat({"AEC::", base::StringPrintV(format, args)}));
+    std::string msg(
+        base::StrCat({"AEC::", UNSAFE_TODO(base::StringPrintV(format, args))}));
     va_end(args);
     log_callback_.Run(std::move(msg));
   }
@@ -686,11 +687,12 @@ WASAPIAudioInputStream::WASAPIAudioInputStream(
   SendLogMessage("%s({device_id=%s}, {params=[%s]})", __func__,
                  device_id.c_str(), params.AsHumanReadableString().c_str());
   if (AudioDeviceDescription::IsLoopbackDevice(device_id_)) {
-    SendLogMessage("%s => (audio loopback device is of type: %s)", __func__,
-                   is_process_loopback_capture_ ? "PROCESS" : "ENDPOINT");
+    UNSAFE_TODO(
+        SendLogMessage("%s => (audio loopback device is of type: %s)", __func__,
+                       is_process_loopback_capture_ ? "PROCESS" : "ENDPOINT"));
   }
-  SendLogMessage("%s => (AEC is requested=[%s])", __func__,
-                 aec_config_ ? "true" : "false");
+  UNSAFE_TODO(SendLogMessage("%s => (AEC is requested=[%s])", __func__,
+                             aec_config_ ? "true" : "false"));
 
   // Load the Avrt DLL if not already loaded. Required to support MMCSS.
   bool avrt_init = avrt::Initialize();
@@ -822,7 +824,8 @@ bool WASAPIAudioInputStream::UpdateFormats() {
 
 AudioInputStream::OpenOutcome WASAPIAudioInputStream::Open() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  SendLogMessage("%s([opened=%s])", __func__, opened_ ? "true" : "false");
+  UNSAFE_TODO(
+      SendLogMessage("%s([opened=%s])", __func__, opened_ ? "true" : "false"));
   if (opened_) {
     return OpenOutcome::kAlreadyOpen;
   }
@@ -927,8 +930,9 @@ AudioInputStream::OpenOutcome WASAPIAudioInputStream::Open() {
 void WASAPIAudioInputStream::Start(AudioInputCallback* callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(callback);
-  SendLogMessage("%s([opened=%s, started=%s])", __func__,
-                 opened_ ? "true" : "false", started_ ? "true" : "false");
+  UNSAFE_TODO(SendLogMessage("%s([opened=%s, started=%s])", __func__,
+                             opened_ ? "true" : "false",
+                             started_ ? "true" : "false"));
   if (!opened_)
     return;
 
@@ -985,7 +989,8 @@ void WASAPIAudioInputStream::Start(AudioInputCallback* callback) {
 
 void WASAPIAudioInputStream::Stop() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  SendLogMessage("%s([started=%s])", __func__, started_ ? "true" : "false");
+  UNSAFE_TODO(SendLogMessage("%s([started=%s])", __func__,
+                             started_ ? "true" : "false"));
   if (!started_)
     return;
 
@@ -1072,8 +1077,8 @@ void WASAPIAudioInputStream::SetVolume(double volume) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_GE(volume, 0.0);
   DCHECK_LE(volume, 1.0);
-  SendLogMessage("%s({volume=%.2f} [opened=%s])", __func__, volume,
-                 opened_ ? "true" : "false");
+  UNSAFE_TODO(SendLogMessage("%s({volume=%.2f} [opened=%s])", __func__, volume,
+                             opened_ ? "true" : "false"));
   if (!opened_ || !simple_audio_volume_) {
     return;
   }
@@ -1152,7 +1157,8 @@ void WASAPIAudioInputStream::SendLogMessage(const char* format, ...) {
     return;
   va_list args;
   va_start(args, format);
-  std::string msg(base::StrCat({"WAIS::", base::StringPrintV(format, args)}));
+  std::string msg(
+      base::StrCat({"WAIS::", UNSAFE_TODO(base::StringPrintV(format, args))}));
   va_end(args);
   log_callback_.Run(std::move(msg));
 }
@@ -1733,9 +1739,9 @@ bool WASAPIAudioInputStream::RawProcessingSupported() {
         __func__);
   } else {
     raw_processing_supported = VariantBoolToBool(raw_processing.get().boolVal);
-    SendLogMessage(
+    UNSAFE_TODO(SendLogMessage(
         "%s => (System.Devices.AudioDevice.RawProcessingSupported=%s)",
-        __func__, raw_processing_supported ? "true" : "false");
+        __func__, raw_processing_supported ? "true" : "false"));
   }
   return raw_processing_supported;
 }

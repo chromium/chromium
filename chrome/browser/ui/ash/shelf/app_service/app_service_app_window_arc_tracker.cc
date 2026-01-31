@@ -11,7 +11,6 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "base/auto_reset.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
@@ -603,7 +602,7 @@ void AppServiceAppWindowArcTracker::AttachControllerToTask(int task_id) {
   }
 
   const arc::ArcAppShelfId& app_shelf_id = app_window_info->app_shelf_id();
-  if (base::Contains(app_shelf_group_to_controller_map_, app_shelf_id)) {
+  if (app_shelf_group_to_controller_map_.contains(app_shelf_id)) {
     app_shelf_group_to_controller_map_[app_shelf_id]->AddTaskId(task_id);
     return;
   }
@@ -636,7 +635,7 @@ void AppServiceAppWindowArcTracker::AttachControllerToSession(
   // `session_id_to_arc_app_window_info_` directly.
   // TODO(b/274950968): Add a test for this case.
   const arc::ArcAppShelfId& app_shelf_id = app_window_info.app_shelf_id();
-  if (base::Contains(app_shelf_group_to_controller_map_, app_shelf_id)) {
+  if (app_shelf_group_to_controller_map_.contains(app_shelf_id)) {
     app_shelf_group_to_controller_map_[app_shelf_id]->AddSessionId(session_id);
     return;
   }
@@ -763,9 +762,9 @@ ArcAppWindowInfo* AppServiceAppWindowArcTracker::GetArcAppWindowInfo(
   // some cases, the task has beend created but window property in aura window
   // haven't been updated and still kept "session_id". In this case, if the
   // session's task created, just return the latest task info.
-  if (base::Contains(session_id_to_task_id_map_, *session_id)) {
+  if (session_id_to_task_id_map_.contains(*session_id)) {
     auto mapped_task_id = session_id_to_task_id_map_[*session_id];
-    if (base::Contains(task_id_to_arc_app_window_info_, mapped_task_id)) {
+    if (task_id_to_arc_app_window_info_.contains(mapped_task_id)) {
       return task_id_to_arc_app_window_info_[mapped_task_id].get();
     }
   }

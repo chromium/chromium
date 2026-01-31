@@ -519,7 +519,7 @@ TEST_P(MetricsServiceObserverExportTest, ExportLogsAsJson) {
   // |logs_observer| should be aware of a single log, which has been staged and
   // is being uploaded.
   ASSERT_TRUE(logs_value->is_dict());
-  base::Value::Dict& logs_dict = logs_value->GetDict();
+  base::DictValue& logs_dict = logs_value->GetDict();
 
   base::Value* log_type = logs_dict.Find("logType");
   ASSERT_TRUE(log_type);
@@ -529,12 +529,12 @@ TEST_P(MetricsServiceObserverExportTest, ExportLogsAsJson) {
   base::Value* logs_list_value = logs_dict.Find("logs");
   ASSERT_TRUE(logs_list_value);
   ASSERT_TRUE(logs_list_value->is_list());
-  base::Value::List& logs_list = logs_list_value->GetList();
+  base::ListValue& logs_list = logs_list_value->GetList();
   ASSERT_EQ(logs_list.size(), 1U);
 
   base::Value& log_value = logs_list.front();
   ASSERT_TRUE(log_value.is_dict());
-  base::Value::Dict& log_dict = log_value.GetDict();
+  base::DictValue& log_dict = log_value.GetDict();
 
   base::Value* uma_log_type = log_dict.Find("type");
   ASSERT_TRUE(uma_log_type);
@@ -576,12 +576,12 @@ TEST_P(MetricsServiceObserverExportTest, ExportLogsAsJson) {
   base::Value* log_events = log_dict.Find("events");
   ASSERT_TRUE(log_events);
   ASSERT_TRUE(log_events->is_list());
-  base::Value::List& log_events_list = log_events->GetList();
+  base::ListValue& log_events_list = log_events->GetList();
   ASSERT_EQ(log_events_list.size(), 3U);
 
   base::Value& first_log_event = log_events_list[0];
   ASSERT_TRUE(first_log_event.is_dict());
-  base::Value::Dict& first_log_event_dict = first_log_event.GetDict();
+  base::DictValue& first_log_event_dict = first_log_event.GetDict();
   base::Value* first_log_event_string = first_log_event_dict.Find("event");
   ASSERT_TRUE(first_log_event_string);
   ASSERT_TRUE(first_log_event_string->is_string());
@@ -593,7 +593,7 @@ TEST_P(MetricsServiceObserverExportTest, ExportLogsAsJson) {
 
   base::Value& second_log_event = log_events_list[1];
   ASSERT_TRUE(second_log_event.is_dict());
-  base::Value::Dict& second_log_event_dict = second_log_event.GetDict();
+  base::DictValue& second_log_event_dict = second_log_event.GetDict();
   base::Value* second_log_event_string = second_log_event_dict.Find("event");
   ASSERT_TRUE(second_log_event_string);
   ASSERT_TRUE(second_log_event_string->is_string());
@@ -605,7 +605,7 @@ TEST_P(MetricsServiceObserverExportTest, ExportLogsAsJson) {
 
   base::Value& third_log_event = log_events_list[2];
   ASSERT_TRUE(third_log_event.is_dict());
-  base::Value::Dict& third_log_event_dict = third_log_event.GetDict();
+  base::DictValue& third_log_event_dict = third_log_event.GetDict();
   base::Value* third_log_event_string = third_log_event_dict.Find("event");
   ASSERT_TRUE(third_log_event_string);
   ASSERT_TRUE(third_log_event_string->is_string());

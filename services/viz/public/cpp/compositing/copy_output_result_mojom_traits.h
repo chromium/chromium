@@ -42,6 +42,16 @@ struct EnumTraits<viz::mojom::CopyOutputResultDestination,
 };
 
 template <>
+struct EnumTraits<viz::mojom::CopyOutputResultError,
+                  viz::CopyOutputResult::Error> {
+  static viz::mojom::CopyOutputResultError ToMojom(
+      viz::CopyOutputResult::Error format);
+
+  static bool FromMojom(viz::mojom::CopyOutputResultError input,
+                        viz::CopyOutputResult::Error* out);
+};
+
+template <>
 struct StructTraits<viz::mojom::CopyOutputResultDataView,
                     std::unique_ptr<viz::CopyOutputResult>> {
   static viz::CopyOutputResult::Format format(
@@ -51,6 +61,9 @@ struct StructTraits<viz::mojom::CopyOutputResultDataView,
       const std::unique_ptr<viz::CopyOutputResult>& result);
 
   static const gfx::Rect& rect(
+      const std::unique_ptr<viz::CopyOutputResult>& result);
+
+  static viz::CopyOutputResult::Error error(
       const std::unique_ptr<viz::CopyOutputResult>& result);
 
   static std::optional<viz::CopyOutputResult::ScopedSkBitmap> bitmap(

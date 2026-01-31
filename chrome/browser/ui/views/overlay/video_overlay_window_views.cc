@@ -64,6 +64,7 @@
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/geometry/resize_utils.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -828,7 +829,9 @@ void VideoOverlayWindowViews::UpdateControlsVisibility(bool is_visible,
 
   // If the controls are becoming visible, and the title and scrim can be
   // hidden, stop the initial hide timer.
-  if (wanted_visibility && can_hide_title_and_scrim) {
+  if ((wanted_visibility && can_hide_title_and_scrim) ||
+      base::FeatureList::IsEnabled(
+          media::kVideoPipForceTrustedForMediaPlaybackForTesting)) {
     initial_title_hide_timer_.Stop();
   }
 
@@ -1105,9 +1108,9 @@ void VideoOverlayWindowViews::SetUpViews() {
   auto favicon_view = std::make_unique<views::ImageView>();
   favicon_view->SetSize(kFaviconSize);
 
-  auto origin = std::make_unique<views::Label>(std::u16string(),
-                                               views::style::CONTEXT_LABEL,
-                                               views::style::STYLE_BODY_4);
+  auto origin = std::make_unique<views::Label>(
+      std::u16string(), views::style::CONTEXT_LABEL, views::style::STYLE_BODY_4,
+      gfx::DirectionalityMode::DIRECTIONALITY_AS_URL);
   origin->SetEnabledColor(ui::kColorSysOnSurface);
   origin->SetBackgroundColor(SK_ColorTRANSPARENT);
   origin->SetHorizontalAlignment(gfx::ALIGN_LEFT);
@@ -2087,6 +2090,11 @@ bool VideoOverlayWindowViews::HasHighMediaEngagement(
 }
 
 bool VideoOverlayWindowViews::IsTrustedForMediaPlayback() const {
+  if (base::FeatureList::IsEnabled(
+          media::kVideoPipForceTrustedForMediaPlaybackForTesting)) {
+    return true;
+  }
+
   content::MediaSession* media_session =
       content::MediaSession::GetIfExists(GetController()->GetWebContents());
   if (!media_session) {

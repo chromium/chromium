@@ -96,7 +96,7 @@ export class FileHandlingItemElement extends FileHandlingItemBase {
 
   protected getLearnMoreLinkUrl_(): string {
     if (this.app.fileHandlingState && this.app.fileHandlingState.learnMoreUrl) {
-      return this.app.fileHandlingState.learnMoreUrl.url;
+      return this.app.fileHandlingState.learnMoreUrl;
     }
     return '';
   }

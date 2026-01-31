@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram.h"
 #include "base/numerics/safe_conversions.h"
@@ -304,7 +303,7 @@ bool ResourceLoadScheduler::IsPendingRequestEffectivelyEmpty(
     // the request is canceled, or Release() is called before firing its Run(),
     // the entry for the request remains in |pending_request_| until it is
     // popped in GetNextPendingRequest().
-    if (base::Contains(pending_request_map_, client.client_id)) {
+    if (pending_request_map_.Contains(client.client_id)) {
       return false;
     }
   }

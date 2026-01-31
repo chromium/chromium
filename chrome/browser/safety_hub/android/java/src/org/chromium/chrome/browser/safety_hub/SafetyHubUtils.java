@@ -136,6 +136,6 @@ class SafetyHubUtils {
 
     static Drawable getManagedIcon(Context context) {
         return SettingsUtils.getTintedIcon(
-                context, R.drawable.ic_business, R.color.default_icon_color_secondary_tint_list);
+                context, R.drawable.ic_domain, R.color.default_icon_color_secondary_tint_list);
     }
 }

@@ -14,9 +14,10 @@ StubSurfaceClient::StubSurfaceClient() = default;
 
 StubSurfaceClient::~StubSurfaceClient() = default;
 
-std::vector<PendingCopyOutputRequest> StubSurfaceClient::TakeCopyOutputRequests(
+std::vector<std::unique_ptr<PendingCopyOutputRequest>>
+StubSurfaceClient::TakeCopyOutputRequests(
     const LocalSurfaceId& latest_surface_id) {
-  return std::vector<PendingCopyOutputRequest>();
+  return {};
 }
 
 bool StubSurfaceClient::IsVideoCaptureStarted() {

@@ -125,10 +125,7 @@ bool LensEphemeralModule::IsEnabled(int impression_count) {
     return forced_result.value().position == EphemeralHomeModuleRank::kTop;
   }
 
-  int max_impression_count =
-      features::GetTipsEphemeralCardModuleMaxImpressionCount();
-
-  return impression_count < max_impression_count;
+  return impression_count < kTipsEphemeralCardModuleMaxImpressionCount;
 }
 
 std::vector<std::string> LensEphemeralModule::OutputLabels() {

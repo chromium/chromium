@@ -167,7 +167,7 @@ class WebStateImpl final : public WebState {
   // a message is received from the web ui JavaScript via `chrome.send` API.
   void HandleWebUIMessage(const GURL& source_url,
                           std::string_view message,
-                          const base::Value::List& args);
+                          const base::ListValue& args);
 
   // Explicitly sets the MIME type, overwriting any MIME type that was set by
   // headers. Note that this should be called after OnNavigationCommitted, as

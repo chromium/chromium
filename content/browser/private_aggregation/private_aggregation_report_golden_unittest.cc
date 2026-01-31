@@ -184,8 +184,8 @@ class PrivateAggregationReportGoldenLatestVersionTest : public testing::Test {
   }
 
   testing::AssertionResult VerifyReport(
-      base::Value::Dict actual_report,
-      base::Value::Dict expected_report,
+      base::DictValue actual_report,
+      base::DictValue expected_report,
       std::string_view base64_encoded_expected_cleartext_payload) {
     std::optional<base::Value> actual_payloads =
         actual_report.Extract(kKeyAggregationServicePayloads);
@@ -234,8 +234,8 @@ class PrivateAggregationReportGoldenLatestVersionTest : public testing::Test {
   }
 
   testing::AssertionResult VerifyAggregationServicePayloads(
-      base::Value::List actual_payloads,
-      base::Value::List expected_payloads,
+      base::ListValue actual_payloads,
+      base::ListValue expected_payloads,
       std::string_view base64_encoded_expected_cleartext_payload,
       std::string_view shared_info) {
     if (actual_payloads.size() != 1u) {
@@ -244,7 +244,7 @@ class PrivateAggregationReportGoldenLatestVersionTest : public testing::Test {
              << " not a list of size 1 in the actual report";
     }
 
-    base::Value::Dict* actual_payload = actual_payloads.front().GetIfDict();
+    base::DictValue* actual_payload = actual_payloads.front().GetIfDict();
     if (!actual_payload) {
       return testing::AssertionFailure()
              << kKeyAggregationServicePayloads
@@ -257,7 +257,7 @@ class PrivateAggregationReportGoldenLatestVersionTest : public testing::Test {
              << " not a list of size 1 in the expected report";
     }
 
-    base::Value::Dict* expected_payload = expected_payloads.front().GetIfDict();
+    base::DictValue* expected_payload = expected_payloads.front().GetIfDict();
     if (!expected_payload) {
       return testing::AssertionFailure()
              << kKeyAggregationServicePayloads
@@ -646,7 +646,7 @@ TEST_P(PrivateAggregationReportGoldenLegacyVersionTest, HasExpectedVersion) {
       continue;
     }
 
-    const base::Value::Dict& dict = value.GetDict();
+    const base::DictValue& dict = value.GetDict();
     if (const std::string* shared_info = dict.FindString("shared_info")) {
       base::Value shared_info_value = base::test::ParseJson(*shared_info);
       EXPECT_TRUE(shared_info_value.is_dict()) << name;

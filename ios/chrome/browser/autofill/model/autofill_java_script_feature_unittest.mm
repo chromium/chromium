@@ -8,9 +8,9 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "base/test/test_future.h"
 #import "base/test/test_timeouts.h"
 #import "components/autofill/core/common/autofill_features.h"
-#import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/web/model/chrome_web_client.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -393,7 +393,7 @@ TEST_F(AutofillJavaScriptFeatureTest, FillActiveFormField) {
   NSString* focus_element_javascript =
       [NSString stringWithFormat:@"%@.focus()", get_element_javascript];
   ExecuteJavaScript(focus_element_javascript);
-  base::Value::Dict data;
+  base::DictValue data;
   data.Set("name", "email");
   data.Set("identifier", "email");
   data.Set("renderer_id", 2);
@@ -422,7 +422,7 @@ TEST_F(AutofillJavaScriptFeatureTest, FillSpecificFormField) {
   RunFormsSearch();
 
   NSString* get_element_javascript = @"document.getElementsByName('email')[0]";
-  base::Value::Dict data;
+  base::DictValue data;
   data.Set("name", "email");
   data.Set("identifier", "email");
   data.Set("renderer_id", 2);
@@ -561,6 +561,61 @@ TEST_F(AutofillJavaScriptFeatureTest, FillFormUsingRendererIDs) {
                      "field.focus();"
                      "field.value = 'to_be_erased';");
 
+  base::DictValue autofillData;
+  autofillData.Set("formName", "testform");
+  autofillData.Set("formRendererID", 1);
+
+  base::DictValue fieldsData;
+  base::DictValue firstFieldData;
+  firstFieldData.Set("name", "firstname");
+  firstFieldData.Set("identifier", "firstname");
+  firstFieldData.Set("value", "Cool User");
+  firstFieldData.Set("isAutofilled", YES);
+  fieldsData.Set("2", std::move(firstFieldData));
+
+  base::DictValue secondFieldData;
+  secondFieldData.Set("name", "email");
+  secondFieldData.Set("identifier", "email");
+  secondFieldData.Set("value", "coolemail@com");
+  secondFieldData.Set("isAutofilled", YES);
+  fieldsData.Set("3", std::move(secondFieldData));
+
+  autofillData.Set("fields", std::move(fieldsData));
+
+  base::test::TestFuture<NSString*> future;
+  feature()->FillForm(main_web_frame(), std::move(autofillData),
+                      FieldRendererId(2), future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+  NSString* filling_result = future.Get();
+  EXPECT_NSEQ(@"{\"2\":\"Cool User\",\"3\":\"coolemail@com\"}", filling_result);
+
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForActionTimeout, ^bool() {
+        id has_attribute =
+            web::test::ExecuteJavaScriptForFeatureAndReturnResult(
+                web_state(),
+                @"document.getElementById('email')."
+                @"hasAttribute('chrome-autofilled');",
+                feature());
+        return [has_attribute isEqual:@YES];
+      }));
+}
+
+// Tests that the undo autofill can clear the value and the chrome-autofilled
+// attribute.
+TEST_F(AutofillJavaScriptFeatureTest, UndoForm) {
+  LoadHtml(@"<html><body><form name='testform' method='post'>"
+            "<input type='text' id='firstname' name='firstname'/>"
+            "</form></body></html>");
+  RunFormsSearch();
+
+  // Simulate interacting with the field that should be force filled.
+  ExecuteJavaScript(@"var field = document.getElementById('firstname');"
+                     "field.focus();"
+                     "field.value = 'to_be_erased';");
+
+  // Autofills the form so that we can test the value and attribute
+  // after the undo fill.
   base::Value::Dict autofillData;
   autofillData.Set("formName", "testform");
   autofillData.Set("formRendererID", 1);
@@ -570,29 +625,62 @@ TEST_F(AutofillJavaScriptFeatureTest, FillFormUsingRendererIDs) {
   firstFieldData.Set("name", "firstname");
   firstFieldData.Set("identifier", "firstname");
   firstFieldData.Set("value", "Cool User");
+  firstFieldData.Set("isAutofilled", YES);
   fieldsData.Set("2", std::move(firstFieldData));
-
-  base::Value::Dict secondFieldData;
-  secondFieldData.Set("name", "email");
-  secondFieldData.Set("identifier", "email");
-  secondFieldData.Set("value", "coolemail@com");
-  fieldsData.Set("3", std::move(secondFieldData));
 
   autofillData.Set("fields", std::move(fieldsData));
 
-  __block NSString* filling_result = nil;
-  __block BOOL block_was_called = NO;
-
+  base::test::TestFuture<NSString*> future;
   feature()->FillForm(main_web_frame(), std::move(autofillData),
-                      FieldRendererId(2), base::BindOnce(^(NSString* result) {
-                        filling_result = [result copy];
-                        block_was_called = YES;
-                      }));
+                      FieldRendererId(2), future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+
+  // Check that the input has the autofilled attribute so that we can
+  // also verify after the undo.
   EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForActionTimeout, ^bool() {
-        return block_was_called;
+        id has_attribute =
+            web::test::ExecuteJavaScriptForFeatureAndReturnResult(
+                web_state(),
+                @"document.getElementById('firstname')."
+                @"hasAttribute('chrome-autofilled');",
+                feature());
+        return [has_attribute isEqual:@YES];
       }));
-  EXPECT_NSEQ(@"{\"2\":\"Cool User\",\"3\":\"coolemail@com\"}", filling_result);
+
+  // Simulates the undo by filling an empty string with isAutofilled = NO.
+  base::Value::Dict undoAutofillData;
+  undoAutofillData.Set("formName", "testform");
+  undoAutofillData.Set("formRendererID", 1);
+
+  base::Value::Dict undoFieldsData;
+  base::Value::Dict undoFirstFieldData;
+  undoFirstFieldData.Set("name", "firstname");
+  undoFirstFieldData.Set("identifier", "firstname");
+  undoFirstFieldData.Set("value", "");
+  undoFirstFieldData.Set("isAutofilled", NO);
+  undoFieldsData.Set("2", std::move(undoFirstFieldData));
+
+  undoAutofillData.Set("fields", std::move(undoFieldsData));
+
+  base::test::TestFuture<NSString*> undo_future;
+  feature()->FillForm(main_web_frame(), std::move(undoAutofillData),
+                      FieldRendererId(2), undo_future.GetCallback());
+  EXPECT_TRUE(undo_future.Wait());
+
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForActionTimeout, ^bool() {
+        id has_attribute =
+            web::test::ExecuteJavaScriptForFeatureAndReturnResult(
+                web_state(),
+                @"document.getElementById('firstname')."
+                @"hasAttribute('chrome-autofilled');",
+                feature());
+        return [has_attribute isEqual:@NO];
+      }));
+
+  EXPECT_NSEQ(@"",
+              ExecuteJavaScript(@"document.getElementById('firstname').value"));
 }
 
 // Tests form clearing (clearAutofilledFieldsForForm:formUniqueID:
@@ -614,7 +702,7 @@ TEST_F(AutofillJavaScriptFeatureTest, ClearForm) {
     NSString* focusScript =
         [NSString stringWithFormat:@"%@.focus()", getFieldScript];
     ExecuteJavaScript(focusScript);
-    base::Value::Dict data;
+    base::DictValue data;
     data.Set("renderer_id", field_data.second);
     data.Set("value", "testvalue");
 

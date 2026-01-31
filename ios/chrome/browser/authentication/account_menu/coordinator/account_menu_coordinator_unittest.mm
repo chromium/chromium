@@ -7,6 +7,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/sync/service/sync_service_utils.h"
+#import "components/sync/test/mock_sync_service.h"
 #import "components/trusted_vault/trusted_vault_server_constants.h"
 #import "ios/chrome/browser/authentication/account_menu/coordinator/account_menu_coordinator_delegate.h"
 #import "ios/chrome/browser/authentication/account_menu/coordinator/account_menu_mediator.h"
@@ -25,12 +26,12 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
@@ -41,6 +42,7 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
@@ -87,8 +89,22 @@ class AccountMenuCoordinatorTest : public PlatformTest,
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetFactoryWithDelegate(
             std::make_unique<FakeAuthenticationServiceDelegate>()));
+    builder.AddTestingFactory(
+        SyncServiceFactory::GetInstance(),
+        base::BindRepeating(
+            [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
+              return std::make_unique<syncer::MockSyncService>();
+            }));
     profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
     browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
+
+    ON_CALL(*GetMockSyncService(), GetTypesWithUnsyncedData)
+        .WillByDefault(
+            [](syncer::DataTypeSet,
+               base::OnceCallback<void(
+                   absl::flat_hash_map<syncer::DataType, size_t>)> callback) {
+              std::move(callback).Run({});
+            });
 
     stub_browser_interface_provider_ =
         [[StubBrowserProviderInterface alloc] init];
@@ -100,8 +116,7 @@ class AccountMenuCoordinatorTest : public PlatformTest,
 
     presentation_delegate_ = OCMStrictProtocolMock(@protocol(
         SyncEncryptionPassphraseTableViewControllerPresentationDelegate));
-    mock_application_commands_handler_ =
-        OCMStrictProtocolMock(@protocol(ApplicationCommands));
+    mock_scene_handler_ = OCMStrictProtocolMock(@protocol(SceneCommands));
     mock_snackbar_commands_handler_ =
         OCMStrictProtocolMock(@protocol(SnackbarCommands));
     mock_help_commands_handler_ =
@@ -113,8 +128,8 @@ class AccountMenuCoordinatorTest : public PlatformTest,
     mock_browser_coordinator_commands_handler_ =
         OCMStrictProtocolMock(@protocol(BrowserCoordinatorCommands));
     CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
-    [dispatcher startDispatchingToTarget:mock_application_commands_handler_
-                             forProtocol:@protocol(ApplicationCommands)];
+    [dispatcher startDispatchingToTarget:mock_scene_handler_
+                             forProtocol:@protocol(SceneCommands)];
     [dispatcher startDispatchingToTarget:mock_snackbar_commands_handler_
                              forProtocol:@protocol(SnackbarCommands)];
     [dispatcher startDispatchingToTarget:mock_help_commands_handler_
@@ -166,7 +181,7 @@ class AccountMenuCoordinatorTest : public PlatformTest,
     EXPECT_OCMOCK_VERIFY((id)mediator_);
     EXPECT_OCMOCK_VERIFY((id)scene_state_mock_);
     EXPECT_OCMOCK_VERIFY((id)view_controller_);
-    EXPECT_OCMOCK_VERIFY((id)mock_application_commands_handler_);
+    EXPECT_OCMOCK_VERIFY((id)mock_scene_handler_);
     EXPECT_OCMOCK_VERIFY((id)mock_browser_commands_handler_);
     EXPECT_OCMOCK_VERIFY((id)mock_browser_coordinator_commands_handler_);
     EXPECT_OCMOCK_VERIFY((id)mock_settings_commands_handler_);
@@ -186,7 +201,7 @@ class AccountMenuCoordinatorTest : public PlatformTest,
 
   AccountMenuCoordinator<UIAdaptivePresentationControllerDelegate>*
       coordinator_;
-  id<ApplicationCommands> mock_application_commands_handler_;
+  id<SceneCommands> mock_scene_handler_;
   id<SnackbarCommands> mock_snackbar_commands_handler_;
   id<HelpCommands> mock_help_commands_handler_;
   id<SettingsCommands> mock_settings_commands_handler_;
@@ -204,6 +219,11 @@ class AccountMenuCoordinatorTest : public PlatformTest,
   raw_ptr<FakeSystemIdentityManager> fake_system_identity_manager_;
   // The view owned by the view controller.
   UIView* view_;
+
+  syncer::MockSyncService* GetMockSyncService() {
+    return static_cast<syncer::MockSyncService*>(
+        SyncServiceFactory::GetForProfile(profile_.get()));
+  }
 
  private:
   // Stops the coordinator.
@@ -333,6 +353,18 @@ TEST_P(AccountMenuCoordinatorTest, testDegradedRecoverability) {
 // mediator and view controller.
 TEST_P(AccountMenuCoordinatorTest, testMDMError) {
   [coordinator_ openMDMErrodDialogWithSystemIdentity:kPrimaryIdentity];
+  AssertOpenAndStop();
+}
+
+// Tests that `openBookmarksLimitExceededHelp` opens the help center article.
+TEST_P(AccountMenuCoordinatorTest, testBookmarksLimitExceededHelp) {
+  EXPECT_CALL(*GetMockSyncService(),
+              AcknowledgeBookmarksLimitExceededError(
+                  syncer::SyncService::BookmarksLimitExceededHelpClickedSource::
+                      kAccountMenu));
+
+  OCMExpect([mock_scene_handler_ closePresentedViewsAndOpenURL:[OCMArg any]]);
+  [coordinator_ openBookmarksLimitExceededHelp];
   AssertOpenAndStop();
 }
 

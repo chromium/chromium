@@ -18,9 +18,9 @@
 #include "net/first_party_sets/global_first_party_sets.h"
 
 namespace base {
-class Version;
+class DictValue;
 class File;
-class Value;
+class Version;
 }  // namespace base
 
 namespace content {
@@ -46,7 +46,7 @@ class ScopedMockFirstPartySetsHandler
       const net::SchemefulSite& site,
       const net::FirstPartySetsContextConfig& config) const override;
   void GetContextConfigForPolicy(
-      base::optional_ref<const base::Value::Dict> policy,
+      base::optional_ref<const base::DictValue> policy,
       base::OnceCallback<void(net::FirstPartySetsContextConfig)> callback)
       override;
   void ClearSiteDataOnChangedSetsForContext(

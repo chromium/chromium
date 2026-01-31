@@ -33,6 +33,8 @@ class CSSRepeatValue : public CSSValue {
 
   const CSSValueList& Values() const;
 
+  bool HasRandomFunctions() const;
+
   void TraceAfterDispatch(blink::Visitor* visitor) const;
 
  private:

@@ -132,6 +132,10 @@ impl DateFieldsResolver for Julian {
         };
         Ok(julian_year)
     }
+
+    fn to_rata_die_inner(year: Self::YearInfo, month: u8, day: u8) -> RataDie {
+        calendrical_calculations::julian::fixed_from_julian(year, month, day)
+    }
 }
 
 impl crate::cal::scaffold::UnstableSealed for Julian {}
@@ -170,7 +174,7 @@ impl Calendar for Julian {
     }
 
     fn to_rata_die(&self, date: &Self::DateInner) -> RataDie {
-        calendrical_calculations::julian::fixed_from_julian(date.0.year, date.0.month, date.0.day)
+        date.0.to_rata_die()
     }
 
     fn has_cheap_iso_conversion(&self) -> bool {

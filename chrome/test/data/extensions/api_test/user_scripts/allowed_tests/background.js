@@ -50,7 +50,7 @@ async function registerUserScripts() {
     chrome.test.sendScriptResult('success');
   } catch (e) {
     chrome.test.sendScriptResult(
-        'chrome.userScripts.register() threw error:' + error);
+        'chrome.userScripts.register() threw error:' + e);
   }
 }
 

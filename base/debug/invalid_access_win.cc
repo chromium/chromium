@@ -56,7 +56,8 @@ void TerminateWithHeapCorruption() {
     CHECK(addr);
     // Corrupt heap header.
     char* addr_mutable = reinterpret_cast<char*>(addr);
-    UNSAFE_TODO(memset(addr_mutable - sizeof(addr), 0xCC, sizeof(addr)));
+    // SAFETY: intentionally not safe.
+    UNSAFE_BUFFERS(memset(addr_mutable - sizeof(addr), 0xCC, sizeof(addr)));
 
     HeapFree(heap, 0, addr);
     HeapDestroy(heap);

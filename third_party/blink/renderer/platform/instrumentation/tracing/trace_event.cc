@@ -18,24 +18,12 @@ void DisableTracing() {
   base::trace_event::TraceLog::GetInstance()->SetDisabled();
 }
 
-void AddAsyncEnabledStateObserver(
-    base::WeakPtr<AsyncEnabledStateObserver> observer) {
-  base::trace_event::TraceLog::GetInstance()->AddAsyncEnabledStateObserver(
-      observer);
+void AddTraceSessionObserver(TraceSessionObserver* observer) {
+  base::trace_event::TraceSessionObserverList::AddObserver(observer);
 }
 
-void RemoveAsyncEnabledStateObserver(AsyncEnabledStateObserver* observer) {
-  base::trace_event::TraceLog::GetInstance()->RemoveAsyncEnabledStateObserver(
-      observer);
-}
-
-void AddEnabledStateObserver(EnabledStateObserver* observer) {
-  base::trace_event::TraceLog::GetInstance()->AddEnabledStateObserver(observer);
-}
-
-void RemoveEnabledStateObserver(EnabledStateObserver* observer) {
-  base::trace_event::TraceLog::GetInstance()->RemoveEnabledStateObserver(
-      observer);
+void RemoveTraceSessionObserver(TraceSessionObserver* observer) {
+  base::trace_event::TraceSessionObserverList::RemoveObserver(observer);
 }
 
 }  // namespace trace_event

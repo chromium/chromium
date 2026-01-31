@@ -25,6 +25,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
+#include "services/network/public/cpp/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -35,6 +36,9 @@ namespace content_settings {
 namespace {
 constexpr char kGeolocationMigrateDefaultValue[] =
     "profile.default_content_setting_values.migrate_geolocation";
+
+constexpr char kLocalNetworkAccessMigrateDefaultValuePref[] =
+    "profile.default_content_setting_values.has_migrated_local_network_access";
 }
 
 class ContentSettingsDefaultProviderTest : public testing::Test {
@@ -345,6 +349,64 @@ TEST_F(ContentSettingsDefaultProviderTest,
       CONTENT_SETTING_BLOCK,
       TestUtils::GetContentSetting(&provider, GURL(), GURL(),
                                    ContentSettingsType::GEOLOCATION, false));
+  EXPECT_FALSE(prefs->GetBoolean(kGeolocationMigrateDefaultValue));
+}
+
+TEST_F(ContentSettingsDefaultProviderTest,
+       MigrateLocalNetworkAccessDisabledToEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{network::features::kLocalNetworkAccessChecks,
+                            network::features::
+                                kLocalNetworkAccessChecksSplitPermissions},
+      /*disabled_features=*/{});
+  auto* prefs = profile_.GetPrefs();
+  prefs->SetBoolean(kLocalNetworkAccessMigrateDefaultValuePref, false);
+  prefs->SetInteger(
+      "profile.default_content_setting_values.local_network_access",
+      CONTENT_SETTING_BLOCK);
+
+  DefaultProvider provider(prefs, false, false);
+
+  // Migrate LOCAL_NETWORK default.
+  EXPECT_EQ(
+      CONTENT_SETTING_BLOCK,
+      TestUtils::GetContentSetting(&provider, GURL(), GURL(),
+                                   ContentSettingsType::LOCAL_NETWORK, false));
+  // Don't migrate LOOPBACK_NETWORK default.
+  EXPECT_EQ(CONTENT_SETTING_ASK,
+            TestUtils::GetContentSetting(&provider, GURL(), GURL(),
+                                         ContentSettingsType::LOOPBACK_NETWORK,
+                                         false));
+  EXPECT_TRUE(prefs->GetBoolean(kLocalNetworkAccessMigrateDefaultValuePref));
+}
+
+TEST_F(ContentSettingsDefaultProviderTest,
+       MigrateLocalNetworkAccessEnabledToDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{network::features::kLocalNetworkAccessChecks,
+                            network::features::
+                                kLocalNetworkAccessChecksSplitPermissions},
+      /*disabled_features=*/{});
+  auto* prefs = profile_.GetPrefs();
+  prefs->SetBoolean(kLocalNetworkAccessMigrateDefaultValuePref, true);
+  prefs->SetInteger(
+      "profile.default_content_setting_values.local_network_access",
+      CONTENT_SETTING_BLOCK);
+  prefs->SetInteger("profile.default_content_setting_values.local_network",
+                    CONTENT_SETTING_ALLOW);
+  prefs->SetInteger("profile.default_content_setting_values.loopback_network",
+                    CONTENT_SETTING_ALLOW);
+
+  DefaultProvider provider(prefs, false, false);
+
+  // Default shouldn't change.
+  EXPECT_EQ(CONTENT_SETTING_BLOCK,
+            TestUtils::GetContentSetting(
+                &provider, GURL(), GURL(),
+                ContentSettingsType::LOCAL_NETWORK_ACCESS, false));
+  // But migration bit should be false.
   EXPECT_FALSE(prefs->GetBoolean(kGeolocationMigrateDefaultValue));
 }
 

@@ -133,7 +133,7 @@ void EmitDuplicateIdForInputDevtoolsIssue(
               return a.GetIdAttribute() == b.GetIdAttribute() &&
                      GetShadowHostDOMNodeId(a) == GetShadowHostDOMNodeId(b);
             })) != elements.end();
-       it++) {
+       ++it) {
     if (previous_violating_node != it->GetDomNodeId()) {
       emit(document, GenericIssueErrorType::kFormDuplicateIdForInputError,
            it->GetDomNodeId(), id_attr);

@@ -191,6 +191,11 @@ public class ViewRectProvider extends RectProvider
         mUpdateStrategy.refreshRectBounds(forceRefresh);
     }
 
+    /** Returns true if the view is shown. */
+    public boolean isViewShown() {
+        return mView.isShown();
+    }
+
     public View getViewForTesting() {
         return mView;
     }

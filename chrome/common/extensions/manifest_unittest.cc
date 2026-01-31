@@ -60,7 +60,7 @@ class ManifestUnitTest : public testing::Test {
   void MutateManifest(std::unique_ptr<Manifest>& manifest,
                       const std::string& key,
                       base::Value value) {
-    base::Value::Dict manifest_value = manifest->value()->Clone();
+    base::DictValue manifest_value = manifest->value()->Clone();
     manifest_value.SetByDottedPath(key, std::move(value));
     ExtensionId extension_id = manifest->extension_id();
     manifest = std::make_unique<Manifest>(
@@ -70,7 +70,7 @@ class ManifestUnitTest : public testing::Test {
   // Helper function to delete the |key| from |manifest|.
   void DeleteManifestKey(std::unique_ptr<Manifest>& manifest,
                          const std::string& key) {
-    base::Value::Dict manifest_value = manifest->value()->Clone();
+    base::DictValue manifest_value = manifest->value()->Clone();
     manifest_value.RemoveByDottedPath(key);
     ExtensionId extension_id = manifest->extension_id();
     manifest = std::make_unique<Manifest>(
@@ -98,7 +98,7 @@ class ManifestUnitTest : public testing::Test {
 
 // Verifies that extensions can access the correct keys.
 TEST_F(ManifestUnitTest, Extension) {
-  auto manifest_value = base::Value::Dict()
+  auto manifest_value = base::DictValue()
                             .Set(keys::kName, "extension")
                             .Set(keys::kVersion, "1")
                             .Set(keys::kManifestVersion, 2)
@@ -137,9 +137,8 @@ TEST_F(ManifestUnitTest, Extension) {
 
 // Verifies that key restriction based on type works.
 TEST_F(ManifestUnitTest, ExtensionTypes) {
-  auto value = base::Value::Dict()
-                   .Set(keys::kName, "extension")
-                   .Set(keys::kVersion, "1");
+  auto value =
+      base::DictValue().Set(keys::kName, "extension").Set(keys::kVersion, "1");
 
   std::unique_ptr<Manifest> manifest(
       new Manifest(ManifestLocation::kInternal, std::move(value),
@@ -157,18 +156,18 @@ TEST_F(ManifestUnitTest, ExtensionTypes) {
   MutateManifestForLoginScreen(manifest, false);
 
   // Theme.
-  MutateManifest(manifest, keys::kTheme, base::Value(base::Value::Dict()));
+  MutateManifest(manifest, keys::kTheme, base::Value(base::DictValue()));
   AssertType(manifest.get(), Manifest::TYPE_THEME);
   DeleteManifestKey(manifest, keys::kTheme);
 
   // Shared module.
   MutateManifest(manifest, api::shared_module::ManifestKeys::kExport,
-                 base::Value(base::Value::Dict()));
+                 base::Value(base::DictValue()));
   AssertType(manifest.get(), Manifest::TYPE_SHARED_MODULE);
   DeleteManifestKey(manifest, api::shared_module::ManifestKeys::kExport);
 
   // Packaged app.
-  MutateManifest(manifest, keys::kApp, base::Value(base::Value::Dict()));
+  MutateManifest(manifest, keys::kApp, base::Value(base::DictValue()));
   AssertType(manifest.get(), Manifest::TYPE_LEGACY_PACKAGED_APP);
 
   // Packaged app for login screen remains a packaged app.
@@ -178,12 +177,12 @@ TEST_F(ManifestUnitTest, ExtensionTypes) {
 
   // Platform app with event page.
   MutateManifest(manifest, keys::kPlatformAppBackground,
-                 base::Value(base::Value::Dict()));
+                 base::Value(base::DictValue()));
   AssertType(manifest.get(), Manifest::TYPE_PLATFORM_APP);
   DeleteManifestKey(manifest, keys::kPlatformAppBackground);
 
   // Hosted app.
-  MutateManifest(manifest, keys::kWebURLs, base::Value(base::Value::List()));
+  MutateManifest(manifest, keys::kWebURLs, base::Value(base::ListValue()));
   AssertType(manifest.get(), Manifest::TYPE_HOSTED_APP);
   DeleteManifestKey(manifest, keys::kWebURLs);
   MutateManifest(manifest, keys::kLaunchWebURL, base::Value("foo"));
@@ -194,10 +193,10 @@ TEST_F(ManifestUnitTest, ExtensionTypes) {
 // Verifies that the getters filter restricted keys taking into account the
 // manifest version.
 TEST_F(ManifestUnitTest, RestrictedKeys_ManifestVersion) {
-  base::Value::Dict value = base::Value::Dict()
-                                .Set(keys::kName, "extension")
-                                .Set(keys::kVersion, "1")
-                                .Set(keys::kManifestVersion, 2);
+  base::DictValue value = base::DictValue()
+                              .Set(keys::kName, "extension")
+                              .Set(keys::kVersion, "1")
+                              .Set(keys::kManifestVersion, 2);
 
   auto manifest =
       std::make_unique<Manifest>(ManifestLocation::kInternal, std::move(value),
@@ -208,7 +207,7 @@ TEST_F(ManifestUnitTest, RestrictedKeys_ManifestVersion) {
 
   // "host_permissions" requires manifest version 3.
   MutateManifest(manifest, keys::kHostPermissions,
-                 base::Value(base::Value::List()));
+                 base::Value(base::ListValue()));
   EXPECT_FALSE(manifest->FindKey(keys::kHostPermissions));
 
   // Update the extension to be manifest_version: 3; the host_permissions
@@ -220,11 +219,11 @@ TEST_F(ManifestUnitTest, RestrictedKeys_ManifestVersion) {
 // Verifies that the getters filter restricted keys taking into account the
 // item type.
 TEST_F(ManifestUnitTest, RestrictedKeys_ItemType) {
-  base::Value::Dict value = base::Value::Dict()
-                                .Set(keys::kName, "item")
-                                .Set(keys::kVersion, "1")
-                                .Set(keys::kManifestVersion, 2)
-                                .Set(keys::kPageAction, base::Value::Dict());
+  base::DictValue value = base::DictValue()
+                              .Set(keys::kName, "item")
+                              .Set(keys::kVersion, "1")
+                              .Set(keys::kManifestVersion, 2)
+                              .Set(keys::kPageAction, base::DictValue());
 
   auto manifest =
       std::make_unique<Manifest>(ManifestLocation::kInternal, std::move(value),
@@ -238,7 +237,7 @@ TEST_F(ManifestUnitTest, RestrictedKeys_ItemType) {
   EXPECT_TRUE(manifest->FindKey(keys::kPageAction));
 
   MutateManifest(manifest, keys::kPlatformAppBackground,
-                 base::Value(base::Value::Dict()));
+                 base::Value(base::DictValue()));
   AssertType(manifest.get(), Manifest::TYPE_PLATFORM_APP);
   // ...But platform apps may not.
   EXPECT_FALSE(manifest->FindKey(keys::kPageAction));

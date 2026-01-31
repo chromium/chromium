@@ -4,7 +4,6 @@
 
 #include "ui/accessibility/ax_enum_util.h"
 
-#include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 
 namespace ui {
@@ -1600,6 +1599,8 @@ const char* ToString(ax::mojom::IntAttribute int_attribute) {
       return "maxLength";
     case ax::mojom::IntAttribute::kPaintOrder:
       return "paintOrder";
+    case ax::mojom::IntAttribute::kCommittedTextLength:
+      return "committedTextLength";
   }
 
   return "";
@@ -1820,6 +1821,10 @@ const char* ToString(ax::mojom::BoolAttribute bool_attribute) {
       return "longClickable";
     case ax::mojom::BoolAttribute::kHasHiddenOffscreenNodes:
       return "hasHiddenOffscreenNodes";
+    case ax::mojom::BoolAttribute::kHasComposition:
+      return "hasComposition";
+    case ax::mojom::BoolAttribute::kTextSuggestionSelectedByIME:
+      return "textSuggestionSelectedByIME";
   }
 
   return "";

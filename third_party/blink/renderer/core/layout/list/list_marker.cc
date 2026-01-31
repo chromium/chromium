@@ -163,14 +163,14 @@ ListMarker::MarkerTextType ListMarker::MarkerText(
   DCHECK_EQ(Get(&marker), this);
   if (!marker.StyleRef().ContentBehavesAsNormal())
     return kNotText;
-  if (IsMarkerImage(marker)) {
+  LayoutObject* list_item = ListItem(marker);
+  const ComputedStyle& style = list_item->StyleRef();
+  if (style.GeneratesMarkerImage()) {
     if (format == kWithPrefixSuffix)
       text->Append(' ');
     return kNotText;
   }
 
-  LayoutObject* list_item = ListItem(marker);
-  const ComputedStyle& style = list_item->StyleRef();
   switch (GetListStyleCategory(marker.GetDocument(), style)) {
     case ListStyleCategory::kNone:
       return kNotText;
@@ -275,7 +275,7 @@ void ListMarker::UpdateMarkerContentIfNeeded(LayoutObject& marker) {
   LayoutObject* child = GetContentChild(marker);
 
   const ComputedStyle& style = ListItem(marker)->StyleRef();
-  if (IsMarkerImage(marker)) {
+  if (style.GeneratesMarkerImage()) {
     StyleImage* list_style_image = style.ListStyleImage();
     if (child) {
       // If the url of `list-style-image` changed, create a new LayoutImage.
@@ -340,12 +340,6 @@ LayoutObject* ListMarker::SymbolMarkerLayoutText(
   if (marker_text_type_ != kSymbolValue)
     return nullptr;
   return GetContentChild(marker);
-}
-
-bool ListMarker::IsMarkerImage(const LayoutObject& marker) const {
-  DCHECK_EQ(Get(&marker), this);
-  return marker.StyleRef().ContentBehavesAsNormal() &&
-         ListItem(marker)->StyleRef().GeneratesMarkerImage();
 }
 
 LayoutUnit ListMarker::WidthOfSymbol(const ComputedStyle& style,

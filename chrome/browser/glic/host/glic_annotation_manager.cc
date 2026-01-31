@@ -16,7 +16,10 @@
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
+#include "chrome/browser/glic/public/glic_instance_metrics_backwards_compatibility.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/service/metrics/glic_instance_metrics.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/chrome_features.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/pdf/common/constants.h"
@@ -143,15 +146,19 @@ GlicAnnotationManager::~GlicAnnotationManager() = default;
 void GlicAnnotationManager::ScrollTo(
     mojom::ScrollToParamsPtr params,
     mojom::WebClientHandler::ScrollToCallback callback,
-    Host* host) {
+    Host* host,
+    GlicWebClientAccess* access) {
   CHECK(base::FeatureList::IsEnabled(features::kGlicScrollTo));
+  CHECK(host);
   if (annotation_task_ && annotation_task_->IsRunning()) {
     annotation_task_->FailTaskOrDropAnnotation(
         mojom::ScrollToErrorReason::kNewerScrollToCall);
   }
   annotation_task_.reset();
 
-  service_->metrics()->OnGlicScrollAttempt();
+  GlicInstanceMetricsBackwardsCompatibility& metrics =
+      host->instance_metrics_backwards_compatibility();
+  metrics.OnGlicScrollAttempt();
 
   mojom::WebClientHandler::ScrollToCallback wrapped_callback =
       base::BindOnce(&RunScrollToCallback, std::move(callback));
@@ -232,9 +239,8 @@ void GlicAnnotationManager::ScrollTo(
       return;
     }
   }
-  // Note: `GlicWindowController::IsShowing()` will be false when
-  // `GlicWindowController` is running the close animation.
-  if (!service_->IsWindowShowing()) {
+
+  if (host->GetPanelState(access).kind == mojom::PanelStateKind::kHidden) {
     std::move(wrapped_callback).Run(mojom::ScrollToErrorReason::kNoFocusedTab);
     return;
   }
@@ -326,7 +332,7 @@ GlicAnnotationManager::AnnotationTask::AnnotationTask(
   CHECK(host_);
   // Using base::Unretained is safe here because `this` owns the subscription.
   tab_change_subscription_ =
-      service->sharing_manager().AddFocusedTabChangedCallback(
+      host_->sharing_manager().AddFocusedTabChangedCallback(
           base::BindRepeating(&AnnotationTask::OnFocusedTabChanged,
                               base::Unretained(this)));
 
@@ -335,11 +341,7 @@ GlicAnnotationManager::AnnotationTask::AnnotationTask(
       &AnnotationTask::RemoteDisconnected, base::Unretained(this)));
 
   // Listens to the panel-closing notification.
-  if (GlicEnabling::IsMultiInstanceEnabled()) {
-    host_->AddPanelStateObserver(this);
-  } else {
-    service->GetSingleInstanceWindowController().AddStateObserver(this);
-  }
+  host_->AddPanelStateObserver(this);
 
   if (base::FeatureList::IsEnabled(features::kGlicDefaultTabContextSetting)) {
     host_->AddObserver(this);
@@ -359,13 +361,8 @@ GlicAnnotationManager::AnnotationTask::~AnnotationTask() {
     std::move(scroll_to_callback_)
         .Run(mojom::ScrollToErrorReason::kNotSupported);
   }
-  if (GlicEnabling::IsMultiInstanceEnabled()) {
-    if (host_) {
-      host_->RemovePanelStateObserver(this);
-    }
-  } else {
-    annotation_manager_->service_->GetSingleInstanceWindowController()
-        .RemoveStateObserver(this);
+  if (host_) {
+    host_->RemovePanelStateObserver(this);
   }
   if (base::FeatureList::IsEnabled(features::kGlicDefaultTabContextSetting)) {
     if (host_) {
@@ -422,10 +419,15 @@ void GlicAnnotationManager::AnnotationTask::SetState(State new_state) {
 
   switch (new_state) {
     case State::kActive:
-    case State::kFailed:
-      annotation_manager_->service_->metrics()->OnGlicScrollComplete(
-          new_state == State::kActive);
+    case State::kFailed: {
+      bool success = new_state == State::kActive;
+      if (host_) {
+        GlicInstanceMetricsBackwardsCompatibility& metrics =
+            host_->instance_metrics_backwards_compatibility();
+        metrics.OnGlicScrollComplete(success);
+      }
       break;
+    }
     case State::kRunning:
     case State::kInactive:
       break;
@@ -456,15 +458,9 @@ void GlicAnnotationManager::AnnotationTask::ResetConnections() {
   annotation_agent_host_receiver_.reset();
   tab_change_subscription_ = base::CallbackListSubscription();
   content::WebContentsObserver::Observe(nullptr);
-  if (GlicEnabling::IsMultiInstanceEnabled()) {
-    if (host_) {
-      host_->RemovePanelStateObserver(this);
-    }
-  } else {
-    annotation_manager_->service_->GetSingleInstanceWindowController()
-        .RemoveStateObserver(this);
+  if (host_) {
+    host_->RemovePanelStateObserver(this);
   }
-
   if (base::FeatureList::IsEnabled(features::kGlicDefaultTabContextSetting)) {
     if (host_) {
       host_->RemoveObserver(this);

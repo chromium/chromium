@@ -3356,7 +3356,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionPrerenderTest,
   content::test::PrerenderHostRegistryObserver registry_observer(*web_contents);
   prerender_helper().AddPrerenderAsync(pdf_url);
   registry_observer.WaitForTrigger(pdf_url);
-  const content::FrameTreeNodeId host_id =
+  const content::PrerenderHostId host_id =
       prerender_helper().GetHostForUrl(pdf_url);
   EXPECT_TRUE(host_id);
 

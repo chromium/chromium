@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
@@ -54,7 +53,7 @@ DisconnectTetheringRequestSenderImpl::~DisconnectTetheringRequestSenderImpl() {
 
 void DisconnectTetheringRequestSenderImpl::SendDisconnectRequestToDevice(
     const std::string& device_id) {
-  if (base::Contains(device_id_to_operation_map_, device_id)) {
+  if (device_id_to_operation_map_.contains(device_id)) {
     return;
   }
 
@@ -108,7 +107,7 @@ void DisconnectTetheringRequestSenderImpl::OnOperationFinished(
 
   bool had_pending_requests = HasPendingRequests();
 
-  if (base::Contains(device_id_to_operation_map_, device_id)) {
+  if (device_id_to_operation_map_.contains(device_id)) {
     // Regardless of success/failure, unregister as a listener and delete the
     // operation.
     device_id_to_operation_map_.at(device_id)->RemoveObserver(this);

@@ -74,10 +74,7 @@ void ChromeSafeBrowsingDelegate::
   auto* telemetry_service =
       safe_browsing::ExtensionTelemetryServiceFactory::GetForProfile(
           Profile::FromBrowserContext(context));
-  if (!telemetry_service || !telemetry_service->enabled() ||
-      !base::FeatureList::IsEnabled(
-          safe_browsing::
-              kExtensionTelemetryDeclarativeNetRequestActionSignal)) {
+  if (!telemetry_service || !telemetry_service->enabled()) {
     return;
   }
 

@@ -10,19 +10,11 @@
 #include "base/memory/raw_ptr.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
-#include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
+#include "chrome/browser/ui/views/extensions/extensions_menu_entry_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
-
-namespace content {
-class WebContents;
-}
-
-namespace ui {
-class ImageModel;
-}  // namespace ui
 
 namespace views {
 class Label;
@@ -31,8 +23,6 @@ class ToggleButton;
 
 class Browser;
 class ExtensionsMenuHandler;
-class ToolbarActionsModel;
-class ExtensionMenuItemView;
 class ExtensionActionViewModel;
 
 // The main view of the extensions menu.
@@ -47,49 +37,51 @@ class ExtensionsMenuMainPageView : public views::View {
   const ExtensionsMenuMainPageView& operator=(
       const ExtensionsMenuMainPageView&) = delete;
 
-  // Creates and adds a menu item for `model` at `index` for a newly-added
-  // extension.
-  void CreateAndInsertMenuItem(std::unique_ptr<ExtensionActionViewModel> model,
-                               extensions::ExtensionId extension_id,
-                               ExtensionsMenuViewModel::MenuItemState menu_item,
-                               int index);
+  // Creates and adds a menu entry for `action_model` with `entry_state` at
+  // `index` for a newly-added extension.
+  void CreateAndInsertMenuEntry(
+      ExtensionActionViewModel* action_model,
+      ExtensionsMenuViewModel::MenuEntryState entry_state,
+      int index);
 
-  // Removes the menu item corresponding to `action_id`.
-  void RemoveMenuItem(const ToolbarActionsModel::ActionId& action_id);
+  // Removes the menu entry at `index`.
+  void RemoveMenuEntry(int index);
 
-  // Returns the menu items.
-  std::vector<ExtensionMenuItemView*> GetMenuItems() const;
+  // Returns the menu entry views.
+  std::vector<ExtensionsMenuEntryView*> GetMenuEntries() const;
 
   // Updates the site settings views with the given parameters.
   void UpdateSiteSettings(
       ExtensionsMenuViewModel::SiteSettingsState site_settings_state);
 
-  // Shows the reload section in the menu. Takes precedence over the requests
-  // section.
-  void ShowReloadSection();
+  // Adds or updates the extension entry in the `requests_access_section_` at
+  // `index` with the given information. Doesn't update the requests section
+  // view visibility.
+  void AddExtensionRequestingAccess(
+      ExtensionsMenuViewModel::HostAccessRequest request,
+      int index);
 
-  // Show the requests section in the menu if there are any items in
-  // `requests_entries_` and reload section is not visible.
-  void MaybeShowRequestsSection();
-
-  // Adds or updates the extension entry in the `requests_access_section_` with
-  // the given information. Doesn't update the requests section view
+  // Updates the extension entry in the `requests_access_section_` at `index`
+  // with the given information. Doesn't update the requests section view
   // visibility.
-  void AddOrUpdateExtensionRequestingAccess(const extensions::ExtensionId& id,
-                                            const std::u16string& name,
-                                            const ui::ImageModel& icon,
-                                            int index);
+  void UpdateExtensionRequestingAccess(
+      ExtensionsMenuViewModel::HostAccessRequest request,
+      int index);
 
-  // Remove the entry in the `requests_access_section_` corresponding to `id`,
-  // if existent. Doesn't update the requests section view visibility.
-  void RemoveExtensionRequestingAccess(const extensions::ExtensionId& id);
+  // Removes the entry in the `requests_access_section_` at `index`. Doesn't
+  // update the requests section view visibility.
+  void RemoveExtensionRequestingAccess(const extensions::ExtensionId& id,
+                                       int index);
 
   // Clears the entries in the `request_access_section_`, if existent. Doesn't
   // update the requests section view visibility.
   void ClearExtensionsRequestingAccess();
 
+  // Shows/hides the optional section.
+  void SetOptionalSectionVisibility(
+      ExtensionsMenuViewModel::OptionalSection optional_section);
+
   // Accessors used by tests:
-  // Returns the currently-showing menu items.
   std::u16string_view GetSiteSettingLabelForTesting() const;
   const views::View* site_settings_tooltip() const;
   views::ToggleButton* GetSiteSettingsToggleForTesting() {
@@ -103,12 +95,6 @@ class ExtensionsMenuMainPageView : public views::View {
       const extensions::ExtensionId& extension_id);
 
  private:
-  content::WebContents* GetActiveWebContents() const;
-
-  // Returns the request entry for `extension_id` if existent.
-  views::View* GetExtensionRequestEntry(
-      const extensions::ExtensionId& extension_id) const;
-
   // Returns the header builder, which contains information about the site.
   [[nodiscard]] views::Builder<views::FlexLayoutView> CreateHeaderBuilder(
       gfx::Insets margins,
@@ -121,12 +107,12 @@ class ExtensionsMenuMainPageView : public views::View {
       views::FlexSpecification);
 
   // Returns the contents builder, which contains the reload section, the access
-  // requests section and the menu items section on a scrollable view.
+  // requests section and the menu entries section on a scrollable view.
   [[nodiscard]] views::Builder<views::ScrollView> CreateContentsBuilder(
       gfx::Insets scroll_margins,
       gfx::Insets contents_margins,
       gfx::Insets reload_button_margins,
-      gfx::Insets menu_items_margins);
+      gfx::Insets menu_entries_margins);
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Returns the webstore button builder.
@@ -151,14 +137,10 @@ class ExtensionsMenuMainPageView : public views::View {
   raw_ptr<views::View> requests_section_;
   // View that holds the requests entries in `requests_section_`.
   raw_ptr<views::View> requests_entries_view_;
-  // A collection of all the requests entries in `requests_section_`. This is
-  // separated for easy insertion and removal of requests entries.
-  std::map<extensions::ExtensionId, raw_ptr<views::View, CtnExperimental>>
-      requests_entries_;
 
-  // Menu items section. The children are guaranteed to only be
-  // ExtensionMenuItemViews.
-  raw_ptr<views::View> menu_items_ = nullptr;
+  // Menu entries section. The children are guaranteed to only be
+  // ExtensionsMenuEntryView.
+  raw_ptr<views::View> menu_entries_ = nullptr;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */, ExtensionsMenuMainPageView, views::View)

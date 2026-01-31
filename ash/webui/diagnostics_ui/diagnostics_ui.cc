@@ -94,8 +94,8 @@ std::u16string GetLinkLabel(int string_id, const char* url) {
   return l10n_util::GetStringFUTF16(string_id, replacements, nullptr);
 }
 
-base::Value::Dict GetDataSourceUpdate() {
-  base::Value::Dict update;
+base::DictValue GetDataSourceUpdate() {
+  base::DictValue update;
   update.Set("settingsLinkText",
              GetLinkLabel(IDS_DIAGNOSTICS_SETTINGS_LINK_TEXT,
                           "chrome://os-settings/"));
@@ -375,7 +375,7 @@ void SetUpWebUIDataSource(content::WebUIDataSource* source,
                           base::span<const webui::ResourcePath> resources,
                           int default_resource) {
   source->AddResourcePaths(resources);
-  source->AddResourcePath("", default_resource);
+  source->SetDefaultResource(default_resource);
   source->AddResourcePath("test_loader.html", IDR_WEBUI_TEST_LOADER_HTML);
   source->AddResourcePath("test_loader.js", IDR_WEBUI_JS_TEST_LOADER_JS);
   source->AddResourcePath("test_loader_util.js",

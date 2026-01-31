@@ -144,19 +144,16 @@ void TtsPlatformImplAndroid::VoicesChanged(JNIEnv* env) {
   TtsController::GetInstance()->VoicesChanged();
 }
 
-void TtsPlatformImplAndroid::OnEndEvent(JNIEnv* env,
-                                        jint utterance_id) {
+void TtsPlatformImplAndroid::OnEndEvent(JNIEnv* env, int32_t utterance_id) {
   SendFinalTtsEvent(utterance_id, TTS_EVENT_END,
                     static_cast<int>(utterance_.size()));
 }
 
-void TtsPlatformImplAndroid::OnErrorEvent(JNIEnv* env,
-                                          jint utterance_id) {
+void TtsPlatformImplAndroid::OnErrorEvent(JNIEnv* env, int32_t utterance_id) {
   SendFinalTtsEvent(utterance_id, TTS_EVENT_ERROR, 0);
 }
 
-void TtsPlatformImplAndroid::OnStartEvent(JNIEnv* env,
-                                          jint utterance_id) {
+void TtsPlatformImplAndroid::OnStartEvent(JNIEnv* env, int32_t utterance_id) {
   if (utterance_id != utterance_id_)
     return;
 

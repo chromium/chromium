@@ -831,7 +831,7 @@ class BookmarkContextMenuNotificationObserver {
 };
 
 // Opens a bookmark folder, right clicks on the first bookmark to get a context
-// menu, and selects the first menu item (open).
+// menu, and selects the first menu item (open in new tab).
 class BookmarkBarViewTest4 : public BookmarkBarViewEventTestBase {
  public:
   BookmarkBarViewTest4()
@@ -861,9 +861,9 @@ class BookmarkBarViewTest4 : public BookmarkBarViewEventTestBase {
     views::MenuItemView* context_menu = bb_view_->GetContextMenu();
     ASSERT_TRUE(MenuIsShowing(context_menu));
 
-    // Select the first menu item (open).
+    // Select the first menu item (open in new tab).
     ui_test_utils::MoveMouseToCenterAndClick(
-        context_menu->GetSubmenu()->GetMenuItemAt(1), ui_controls::LEFT,
+        context_menu->GetSubmenu()->GetMenuItemAt(0), ui_controls::LEFT,
         ui_controls::DOWN | ui_controls::UP,
         CreateEventTask(this, &BookmarkBarViewTest4::Step4));
   }
@@ -2085,9 +2085,9 @@ class BookmarkBarViewTest23 : public BookmarkBarViewEventTestBase {
     views::MenuItemView* context_menu = bb_view_->GetContextMenu();
     ASSERT_TRUE(MenuIsShowing(context_menu));
 
-    // Select the first menu item (open).
+    // Select the first menu item (open in new tab).
     ui_test_utils::MoveMouseToCenterAndClick(
-        context_menu->GetSubmenu()->GetMenuItemAt(1), ui_controls::LEFT,
+        context_menu->GetSubmenu()->GetMenuItemAt(0), ui_controls::LEFT,
         ui_controls::DOWN | ui_controls::UP,
         CreateEventTask(this, &BookmarkBarViewTest23::Step6));
   }

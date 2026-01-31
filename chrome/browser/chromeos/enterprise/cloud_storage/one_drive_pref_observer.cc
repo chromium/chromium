@@ -69,7 +69,7 @@ class OneDrivePrefObserver : public KeyedService,
   void OnMicrosoftOneDriveAccountRestrictionsPrefChanged();
 
   void BroadcastModeChanged(Mount mode);
-  void BroadcastAccountRestrictionsChanged(base::Value::List restrictions);
+  void BroadcastAccountRestrictionsChanged(base::ListValue restrictions);
 
   void MaybeUninstallOdfsExtension(Mount mode);
 
@@ -216,7 +216,7 @@ void OneDrivePrefObserver::BroadcastModeChanged(Mount mode) {
 }
 
 void OneDrivePrefObserver::BroadcastAccountRestrictionsChanged(
-    base::Value::List restrictions) {
+    base::ListValue restrictions) {
   if (!event_router_) {
     CHECK_IS_TEST();
     return;

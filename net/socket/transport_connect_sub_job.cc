@@ -218,7 +218,7 @@ int TransportConnectSubJob::DoEndpointLockComplete() {
           net_log.source());
 
   net_log.AddEvent(NetLogEventType::TRANSPORT_CONNECT_JOB_CONNECT_ATTEMPT, [&] {
-    auto dict = base::Value::Dict().Set("address", CurrentAddress().ToString());
+    auto dict = base::DictValue().Set("address", CurrentAddress().ToString());
     transport_socket_->NetLog().source().AddToEventParameters(dict);
     return dict;
   });

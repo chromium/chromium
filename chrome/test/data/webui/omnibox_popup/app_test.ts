@@ -32,7 +32,7 @@ function createSearchMatch(modifiers: Partial<AutocompleteMatch> = {}):
       createAutocompleteMatch(), {
         isSearchType: true,
         contents: 'hello world',
-        destinationUrl: {url: 'https://www.google.com/search?q=hello+world'},
+        destinationUrl: 'https://www.google.com/search?q=hello+world',
         fillIntoEdit: 'hello world',
         type: 'search-suggest',
       },
@@ -41,6 +41,7 @@ function createSearchMatch(modifiers: Partial<AutocompleteMatch> = {}):
 
 type Constructor<T> = new (...args: any[]) => T;
 type Installer<T> = (instance: T) => void;
+
 export function installMock<T extends object>(
     clazz: Constructor<T>, installer?: Installer<T>): TestMock<T> {
   installer = installer ||
@@ -67,6 +68,12 @@ class TestSearchboxBrowserProxy extends TestBrowserProxy {
 
   getCallbackRouter() {
     return this.callbackRouter;
+  }
+
+  initVisibilityPrefs() {
+    this.page.updateAimEligibility(true);
+    this.page.onShowAiModePrefChanged(true);
+    this.page.updateContentSharingPolicy(true);
   }
 }
 
@@ -142,27 +149,42 @@ suite('AppTest', function() {
       document.body.innerHTML = window.trustedTypes!.emptyHTML;
       loadTimeData.overrideValues({
         searchboxLayoutMode: 'TallTopContext',
-        showContextMenuEntrypoint: true,
       });
 
       localApp = document.createElement('omnibox-popup-app');
       document.body.appendChild(localApp);
+      testProxy.initVisibilityPrefs();
       await microtasksFinished();
     });
 
     test('ContextMenuEntrypointHiddenWhenDisabled', async () => {
-      loadTimeData.overrideValues({
-        searchboxLayoutMode: 'TallTopContext',
-        showContextMenuEntrypoint: false,
-      });
-      localApp.remove();
-      localApp = document.createElement('omnibox-popup-app');
-      document.body.appendChild(localApp);
+      testProxy.page.updateAimEligibility(false);
       await microtasksFinished();
-
       const carousel = localApp.shadowRoot?.querySelector(
           'contextual-entrypoint-and-carousel');
       assertFalse(!!carousel);
+    });
+
+    test('AiModePrefUpdatesCarouselVisibility', async () => {
+      let carousel = localApp.shadowRoot?.querySelector(
+          'contextual-entrypoint-and-carousel');
+      assertTrue(!!carousel);
+      assertTrue(isVisible(carousel));
+
+      // Disable AI Mode Shortcuts.
+      testProxy.page.onShowAiModePrefChanged(false);
+      await microtasksFinished();
+      carousel = localApp.shadowRoot?.querySelector(
+          'contextual-entrypoint-and-carousel');
+      assertFalse(!!carousel);
+
+      // Enable AI Mode Shortcuts.
+      testProxy.page.onShowAiModePrefChanged(true);
+      await microtasksFinished();
+      carousel = localApp.shadowRoot?.querySelector(
+          'contextual-entrypoint-and-carousel');
+      assertTrue(!!carousel);
+      assertTrue(isVisible(carousel));
     });
 
     test('KeywordModeUpdatesCarouselVisibility', async () => {
@@ -208,43 +230,67 @@ suite('AppTest', function() {
     test('RecentTabChipShown', async () => {
       loadTimeData.overrideValues({
         searchboxLayoutMode: 'TallTopContext',
-        showContextMenuEntrypoint: true,
         composeboxShowRecentTabChip: true,
         addTabUploadDelayOnRecentTabChipClick: true,
       });
       const tabInfo = {
         tabId: 1,
         title: 'Tab 1',
-        url: {url: 'https://www.google.com/search?q=foo'},
-        showInRecentTabChip: true,
+        url: 'https://www.google.com/search?q=foo',
+        showInPreviousTabChip: true,
       };
       testProxy.handler.setResultFor(
           'getRecentTabs', Promise.resolve({tabs: [tabInfo]}));
       localApp.remove();
       localApp = document.createElement('omnibox-popup-app');
       document.body.appendChild(localApp);
+      testProxy.page.autocompleteResultChanged(createAutocompleteResult());
+      await microtasksFinished();
+
+      testProxy.initVisibilityPrefs();
       await microtasksFinished();
 
       const carousel = localApp.shadowRoot?.querySelector(
           'contextual-entrypoint-and-carousel');
       assertTrue(!!carousel);
-      let recentTabChip =
+      const recentTabChip =
           carousel.shadowRoot.querySelector<HTMLElement>('#recentTabChip');
-      // Assert chip does not show when no matches are available.
-      assertFalse(!!recentTabChip);
-
-      const matches = [
-        createSearchMatch(),
-      ];
-      testProxy.page.autocompleteResultChanged(createAutocompleteResult({
-        matches: matches,
-      }));
-
-      await microtasksFinished();
-      recentTabChip =
-          carousel.shadowRoot.querySelector<HTMLElement>('#recentTabChip');
-      // Assert chip does show when matches are available.
+      // Assert chip shows.
       assertTrue(!!recentTabChip);
+    });
+  });
+
+  suite('AimEligibility', () => {
+    let localApp: OmniboxPopupAppElement;
+
+    setup(async () => {
+      // Use setup instead of suiteSetup to ensure a clean state for each test.
+      document.body.innerHTML = window.trustedTypes!.emptyHTML;
+      localApp = document.createElement('omnibox-popup-app');
+      document.body.appendChild(localApp);
+
+      testProxy.initVisibilityPrefs();
+      await microtasksFinished();
+    });
+
+    test('AimEligibility', async () => {
+      testProxy.page.updateAimEligibility(false);
+      await microtasksFinished();
+      let carousel = localApp.shadowRoot?.querySelector(
+          'contextual-entrypoint-and-carousel');
+      assertFalse(isVisible(carousel));
+
+      testProxy.page.updateAimEligibility(true);
+      await microtasksFinished();
+      carousel = localApp.shadowRoot?.querySelector(
+          'contextual-entrypoint-and-carousel');
+      assertTrue(isVisible(carousel));
+
+      testProxy.page.updateAimEligibility(false);
+      await microtasksFinished();
+      carousel = localApp.shadowRoot?.querySelector(
+          'contextual-entrypoint-and-carousel');
+      assertFalse(isVisible(carousel));
     });
   });
 });

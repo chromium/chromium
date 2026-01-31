@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <functional>
 
 #include "base/base_export.h"
@@ -50,12 +51,14 @@ bool BASE_EXPORT operator==(const StackFrame& lhs, const StackFrame& rhs);
 
 struct BASE_EXPORT Backtrace {
   Backtrace();
+  Backtrace(const Backtrace&);
+  ~Backtrace();
 
   // If the stack is higher than what can be stored here, the top frames
   // (the ones further from main()) are stored. Depth of 12 is enough for most
   // pseudo traces (see above), but not for native traces, where we need more.
   enum { kMaxFrameCount = 48 };
-  StackFrame frames[kMaxFrameCount];
+  std::array<StackFrame, kMaxFrameCount> frames;
   size_t frame_count = 0;
 };
 

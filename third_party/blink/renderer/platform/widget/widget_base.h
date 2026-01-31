@@ -271,7 +271,8 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
                          const Vector<ui::ImeTextSpan>& ime_text_spans,
                          const gfx::Range& replacement_range,
                          int selection_start,
-                         int selection_end);
+                         int selection_end,
+                         mojom::blink::ImeState ime_state);
   void ImeCommitText(const String& text,
                      const Vector<ui::ImeTextSpan>& ime_text_spans,
                      const gfx::Range& replacement_range,

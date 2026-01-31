@@ -17,7 +17,6 @@
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile_observer.h"
-#include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
 

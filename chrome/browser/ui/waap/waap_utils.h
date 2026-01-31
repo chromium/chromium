@@ -12,6 +12,15 @@ class Profile;
 
 namespace waap {
 
+// Represents the source of a new browser window creation.
+enum class NewWindowCreationSource {
+  kUnknown = 0,
+  kBrowserInitiated = 1,
+  kDragToNewWindow = 2,
+  kSessionRestore = 3,
+  kMaxValue = kSessionRestore,
+};
+
 // Returns true if the given URL is the initial WebUI scheme.
 // This is only relevant on non-Android platforms.
 // TODO(crbug.com/448794588): Some callers of this function assume that
@@ -30,10 +39,6 @@ bool IsForInitialWebUI(const GURL& url);
 // and the WebUI version.
 bool IsInitialWebUIMetricsLoggingEnabled();
 
-// Records the presentation time of the first paint for the browser window.
-// This function ensures the metric is recorded only once per browser process.
-void RecordBrowserWindowFirstPresentation(Profile* profile,
-                                          base::TimeTicks presentation_time);
 }  // namespace waap
 
 #endif  // CHROME_BROWSER_UI_WAAP_WAAP_UTILS_H_

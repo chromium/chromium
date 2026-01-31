@@ -31,6 +31,12 @@ export function getHtml(this: ScalingSettingsElement) {
           ?selected="${this.isSelected_(ScalingType.FIT_TO_PAPER)}">
         $i18n{optionFitToPaper}
       </option>
+      <option value="${ScalingType.ACTUAL_SIZE}"
+          ?hidden="${!this.computeOptionActualSizeEnabled_()}"
+          ?disabled="${!this.computeOptionActualSizeEnabled_()}"
+          ?selected="${this.isSelected_(ScalingType.ACTUAL_SIZE)}">
+        $i18n{optionActualSize}
+      </option>
       <option value="${ScalingType.CUSTOM}"
           ?selected="${this.isSelected_(ScalingType.CUSTOM)}">
         $i18n{optionCustomScaling}

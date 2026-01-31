@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "ash/public/cpp/shell_window_ids.h"
-#include "base/containers/contains.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/views/chrome_web_dialog_view.h"
@@ -94,10 +93,10 @@ SystemWebDialogDelegate* SystemWebDialogDelegate::FindInstance(
 
 // static
 bool SystemWebDialogDelegate::HasInstance(const GURL& url) {
-  return base::Contains(*GetInstances(), url,
-                        [](const SystemWebDialogDelegate* instance) {
-                          return instance->GetDialogContentURL();
-                        });
+  return std::ranges::contains(*GetInstances(), url,
+                               [](const SystemWebDialogDelegate* instance) {
+                                 return instance->GetDialogContentURL();
+                               });
 }
 
 // static
@@ -117,8 +116,8 @@ gfx::Size SystemWebDialogDelegate::ComputeDialogSizeForInternalScreen(
           display::Display::InternalDisplayId(), &internal_display)) {
     // GetDisplayWithDisplayId() returns false if the laptop's lid is closed.
     // Return the preferred size instead.
-    // TODO(crbug.com/40737061): Test this edge case with displays
-    // (lid closed with external monitors).
+    // This edge case with external monitors when the lid is closed is not
+    // covered by tests. See crbug.com/40737061 for context.
     return preferred_size;
   }
 

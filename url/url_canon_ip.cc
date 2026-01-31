@@ -11,6 +11,7 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/strings/span_printf.h"
 #include "url/url_canon_internal.h"
 #include "url/url_features.h"
 
@@ -117,12 +118,9 @@ bool DoCanonicalizeIPv6Address(std::basic_string_view<CHAR> host_view,
 void AppendIPv4Address(base::span<const uint8_t> address, CanonOutput* output) {
   DCHECK_GE(address.size(), 4u);
   for (int i = 0; i < 4; i++) {
-    char str[16];
-    _itoa_s(address[i], str, 10);
-
-    for (int ch = 0; UNSAFE_TODO(str[ch]) != 0; ch++) {
-      output->push_back(UNSAFE_TODO(str[ch]));
-    }
+    std::array<char, 16> str;
+    int str_len = base::SpanPrintf(str, "%d", address[i]);
+    output->Append(std::string_view(str.data(), str_len));
 
     if (i != 3)
       output->push_back('.');
@@ -154,11 +152,9 @@ void AppendIPv6Address(base::span<const uint8_t> address, CanonOutput* output) {
       i += 2;
 
       // Stringify the 16 bit number (at most requires 4 hex digits).
-      char str[5];
-      _itoa_s(x, str, 16);
-      for (int ch = 0; UNSAFE_TODO(str[ch]) != 0; ++ch) {
-        output->push_back(UNSAFE_TODO(str[ch]));
-      }
+      std::array<char, 5> str;
+      int str_len = base::SpanPrintf(str, "%x", x);
+      output->Append(std::string_view(str.data(), str_len));
 
       // Put a colon after each number, except the last.
       if (i < 16)

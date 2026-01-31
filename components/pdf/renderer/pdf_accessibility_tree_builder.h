@@ -59,6 +59,9 @@ class PdfAccessibilityTreeBuilder {
   const std::vector<chrome_pdf::AccessibilityTextRunInfo>& text_runs() const {
     return *text_runs_;
   }
+  const std::vector<chrome_pdf::AccessibilityCharInfo>& chars() const {
+    return *chars_;
+  }
   const std::vector<uint32_t>& text_run_start_indices() const {
     return text_run_start_indices_;
   }
@@ -111,7 +114,6 @@ class PdfAccessibilityTreeBuilder {
 #endif
 
  private:
-  bool IsFullyTaggedPage() const;
   void AddWordStartsAndEnds(ui::AXNodeData* inline_text_box);
   ui::AXNodeData* CreateStaticTextNode();
   ui::AXNodeData* CreateListboxOptionNode(

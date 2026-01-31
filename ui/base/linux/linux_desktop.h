@@ -11,7 +11,7 @@
 namespace ui {
 
 // Returns desktop environment info as list of values.
-COMPONENT_EXPORT(UI_BASE) base::Value::List GetDesktopEnvironmentInfo();
+COMPONENT_EXPORT(UI_BASE) base::ListValue GetDesktopEnvironmentInfo();
 
 }  // namespace ui
 

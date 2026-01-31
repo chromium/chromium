@@ -110,7 +110,7 @@ class ProductSpecificationsButtonBrowserTest : public InProcessBrowserTest {
 
   bool GetRenderTabSearchBeforeTabStrip() {
     return tabs::GetTabSearchPosition(browser()->profile()) ==
-           tabs::TabSearchPosition::kLeadingTabstrip;
+           tabs::TabSearchPosition::kLeadingHorizontalTabstrip;
   }
 
   void SetLockedExpansionModeForTesting(LockedExpansionMode mode) {
@@ -134,15 +134,11 @@ class ProductSpecificationsButtonBrowserTest : public InProcessBrowserTest {
   ui::UserDataFactory::ScopedOverride factory_override_;
 };
 
+// TODO(crbug.com/444520866): The order of buttons will be different in
+// verticals tabs so this test will need to be rewritten when we get to that
+// point.
 IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest,
                        ProductSpecificationsButtonOrder) {
-  if (tabs::IsVerticalTabsFeatureEnabled()) {
-    // TODO(crbug.com/444520866): The order of buttons will be different in
-    // verticals tabs so this test will need to be rewritten when we get to that
-    // point.
-    GTEST_SKIP();
-  }
-
   auto* tab_strip_region_view =
       views::AsViewClass<HorizontalTabStripRegionView>(
           browser_view()->tab_strip_view());
@@ -155,9 +151,9 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest,
     ASSERT_TRUE(action_container->GetIndexOf(product_specifications_button())
                     .has_value());
   } else if (GetRenderTabSearchBeforeTabStrip()) {
-    ASSERT_EQ(tab_search_container(), tab_strip_region_view->children()[0]);
+    ASSERT_EQ(tab_search_container(), tab_strip_region_view->children()[1]);
     ASSERT_EQ(product_specifications_button(),
-              tab_strip_region_view->children()[1]);
+              tab_strip_region_view->children()[2]);
   } else {
     auto tab_search_index =
         tab_strip_region_view->GetIndexOf(tab_search_container());

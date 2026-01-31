@@ -73,7 +73,7 @@ suite('UserPreviewElementTest', function() {
     const avatarImage = userPreviewElement.shadowRoot!.getElementById(
                             'avatar') as HTMLImageElement;
     assertEquals(
-        userProvider.image.defaultImage?.url!.url, avatarImage.src,
+        userProvider.image.defaultImage?.url!, avatarImage.src,
         'correct image url is shown for default image');
   });
 
@@ -86,7 +86,7 @@ suite('UserPreviewElementTest', function() {
     const avatarImage = userPreviewElement.shadowRoot!.getElementById(
                             'avatar') as HTMLImageElement;
     assertEquals(
-        userProvider.profileImage.url, avatarImage.src,
+        userProvider.profileImage, avatarImage.src,
         'correct image url is shown for profile image');
     assertTrue(
         avatarImage.src.startsWith('data:'), 'data url is not sanitized');
@@ -124,9 +124,7 @@ suite('UserPreviewElementTest', function() {
   test('sanitizes gstatic image', async () => {
     personalizationStore.data.user.image = {
       'defaultImage': {
-        url: {
-          url: 'https://www.gstatic.com/',
-        },
+        url: 'https://www.gstatic.com/',
         title: 'the remains of the day',
         index: 1,
         sourceInfo: null,
@@ -177,7 +175,7 @@ suite('UserPreviewElementTest', function() {
     const avatarImage = userPreviewElement.shadowRoot!.getElementById(
                             'avatar2') as HTMLImageElement;
     assertEquals(
-        userProvider.image.defaultImage?.url!.url, avatarImage.src,
+        userProvider.image.defaultImage?.url!, avatarImage.src,
         'default image url is shown on non-clickable image');
   });
 
@@ -208,10 +206,10 @@ suite('UserPreviewElementTest', function() {
     const deprecatedDefaultImage: DefaultUserImage = {
       index: 2,
       title: 'title',
-      url: {url: 'data://test_url'},
+      url: 'data://test_url',
       sourceInfo: {
         author: 'author example',
-        website: {url: 'website example'},
+        website: 'website example',
       },
     };
     personalizationStore.data.user.image = {

@@ -12,8 +12,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "components/keyed_service/core/service_access_type.h"
-#include "components/passage_embeddings/passage_embedder_model_observer.h"
-#include "components/passage_embeddings/passage_embeddings_features.h"
+#include "components/passage_embeddings/core/passage_embedder_model_observer.h"
+#include "components/passage_embeddings/core/passage_embeddings_features.h"
 #include "components/permissions/features.h"
 
 namespace passage_embeddings {

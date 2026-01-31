@@ -7,7 +7,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/check_op.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/graph/process_node.h"
@@ -19,7 +19,7 @@ const int UserPerformanceTuningNotifier::kMemoryPercentThresholdForPromo = 70;
 
 UserPerformanceTuningNotifier::UserPerformanceTuningNotifier(
     std::unique_ptr<Receiver> receiver,
-    base::ByteCount resident_set_threshold,
+    base::ByteSize resident_set_threshold,
     int tab_count_threshold)
     : receiver_(std::move(receiver)),
       resident_set_threshold_(resident_set_threshold),
@@ -68,7 +68,7 @@ void UserPerformanceTuningNotifier::OnTypeChanged(const PageNode* page_node,
 
 void UserPerformanceTuningNotifier::OnProcessMemoryMetricsAvailable(
     const SystemNode* system_node) {
-  base::ByteCount total_rss;
+  base::ByteSize total_rss;
   for (const ProcessNode* process_node :
        GetOwningGraph()->GetAllProcessNodes()) {
     total_rss += process_node->GetResidentSet();

@@ -57,6 +57,7 @@ void CachedNavigationURLLoader::Start() {
   // Respond with a fake response.
   switch (loader_type_) {
     case LoaderType::kRegular:
+    case LoaderType::kNoopForInitialWebUI:
       NOTREACHED();
     case LoaderType::kNoopForBackForwardCache:
       // We use PostTask here to mimic the flow of a normal navigation.

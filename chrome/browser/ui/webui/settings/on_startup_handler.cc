@@ -69,7 +69,7 @@ base::Value OnStartupHandler::GetNtpExtension() {
     return base::Value();
   }
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("id", ntp_extension->id());
   dict.Set("name", ntp_extension->name());
   dict.Set("canBeDisabled", !extensions::ExtensionSystem::Get(profile_)
@@ -78,15 +78,14 @@ base::Value OnStartupHandler::GetNtpExtension() {
   return base::Value(std::move(dict));
 }
 
-void OnStartupHandler::HandleGetNtpExtension(const base::Value::List& args) {
+void OnStartupHandler::HandleGetNtpExtension(const base::ListValue& args) {
   const base::Value& callback_id = args[0];
   AllowJavascript();
 
   ResolveJavascriptCallback(callback_id, GetNtpExtension());
 }
 
-void OnStartupHandler::HandleValidateStartupPage(
-    const base::Value::List& args) {
+void OnStartupHandler::HandleValidateStartupPage(const base::ListValue& args) {
   CHECK_EQ(args.size(), 2U);
   const base::Value& callback_id = args[0];
   const std::string& url_string = args[1].GetString();

@@ -102,9 +102,12 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) ModelEditor {
   std::vector<ScopedOrtValueInfo> inputs_;
   std::vector<ScopedOrtValueInfo> outputs_;
 
-  ScopedOrtGraph graph_;
-
+  // `model_info_` should be prior to `graph_` since `external_weights_manager`
+  // of  `model_info_` will be called by ORT to release the external weights
+  // during `graph_` destruction.
   std::unique_ptr<ModelInfo> model_info_;
+
+  ScopedOrtGraph graph_;
 
   bool has_built_ = false;
 

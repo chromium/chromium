@@ -7,6 +7,7 @@
 #include "base/base64.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "components/metrics/clean_exit_beacon.h"
 #include "components/metrics/metrics_pref_names.h"
@@ -25,139 +26,6 @@
 
 namespace variations {
 namespace {
-
-// kTestSeed is a simple VariationsSeed containing:
-// serial_number: "test"
-// study: {
-//   name: "UMA-Uniformity-Trial-50-Percent"
-//   consistency: PERMANENT
-//   experiment: {
-//     name: "default"
-//     probability_weight: 1
-//   }
-//   experiment: {
-//     name: "group_01"
-//     probability_weight: 1
-//   }
-// }
-
-const char* kTestSeed_StudyNames[] = {"UMA-Uniformity-Trial-50-Percent"};
-
-const char kTestSeed_Base64UncompressedData[] =
-    "CgR0ZXN0Ej4KH1VNQS1Vbmlmb3JtaXR5LVRyaWFsLTUwLVBlcmNlbnQ4AUoLCgdkZWZhdWx0EA"
-    "FKDAoIZ3JvdXBfMDEQAQ==";
-
-const char kTestSeed_Base64CompressedData[] =
-    "H4sIAAAAAAAA/+JiKUktLhGy45IP9XXUDc3LTMsvys0sqdQNKcpMzNE1NdANSC1KTs0rsWD04u"
-    "ZiT0lNSyzNKRFg9OLh4kgvyi8tiDcwFGAEBAAA//90/JgERgAAAA==";
-
-// The compressed data is the result of decoding the base64 encoded compressed
-// data above and showing the data as hex:
-// echo -n base64_compressed_data | base64 -d | hexdump -e '8 1 ", 0x%x"'
-const uint8_t kTestSeed_CompressedData[] = {
-    0x1f, 0x8b, 0x8,  0x0,  0x0,  0x0,  0x0,  0x0,  0x0,  0xff, 0xe2, 0x62,
-    0x29, 0x49, 0x2d, 0x2e, 0x11, 0xb2, 0xe3, 0x92, 0xf,  0xf5, 0x75, 0xd4,
-    0xd,  0xcd, 0xcb, 0x4c, 0xcb, 0x2f, 0xca, 0xcd, 0x2c, 0xa9, 0xd4, 0xd,
-    0x29, 0xca, 0x4c, 0xcc, 0xd1, 0x35, 0x35, 0xd0, 0xd,  0x48, 0x2d, 0x4a,
-    0x4e, 0xcd, 0x2b, 0xb1, 0x60, 0xf4, 0xe2, 0xe6, 0x62, 0x4f, 0x49, 0x4d,
-    0x4b, 0x2c, 0xcd, 0x29, 0x11, 0x60, 0xf4, 0xe2, 0xe1, 0xe2, 0x48, 0x2f,
-    0xca, 0x2f, 0x2d, 0x88, 0x37, 0x30, 0x14, 0x60, 0x4,  0x4,  0x0,  0x0,
-    0xff, 0xff, 0x74, 0xfc, 0x98, 0x4,  0x46, 0x0,  0x0,  0x0};
-
-const char kTestSeed_Base64Signature[] =
-    "MEUCIQD5AEAzk5qEuE3xOZl+xSZR15Ac1RJpsXMiou7i5W0sMAIgRn++ngh03HaMGC+Pjl9NOu"
-    "Doxf83qsSwycF2PSS1nYQ=";
-
-const char* kCrashingSeed_StudyNames[] = {"CrashingStudy"};
-
-// kCrashingSeed is a VariationsSeed that triggers a crash for testing:
-// serial_number:  "35ed2d9e354b414befdf930a734094019c0162f1"
-// study:  {
-//   name:  "CrashingStudy"
-//   consistency:  PERMANENT
-//   experiment:  {
-//     name:  "EnabledLaunch"
-//     probability_weight:  100
-//     feature_association:  {
-//       enable_feature:  "ForceFieldTrialSetupCrashForTesting"
-//     }
-//   }
-//   experiment:  {
-//     name:  "ForcedOn_ForceFieldTrialSetupCrashForTesting"
-//     probability_weight:  0
-//     feature_association:  {
-//       forcing_feature_on:  "ForceFieldTrialSetupCrashForTesting"
-//     }
-//   }
-//   experiment:  {
-//     name:  "ForcedOff_ForceFieldTrialSetupCrashForTesting"
-//     probability_weight:  0
-//     feature_association:  {
-//       forcing_feature_off:  "ForceFieldTrialSetupCrashForTesting"
-//     }
-//   }
-//   filter:  {
-//     min_version:  "91.*"
-//     channel:  CANARY
-//     channel:  DEV
-//     channel:  BETA
-//     channel:  STABLE
-//     platform:  PLATFORM_ANDROID
-//     platform:  PLATFORM_IOS
-//     platform:  PLATFORM_ANDROID_WEBVIEW
-//     platform:  PLATFORM_WINDOWS
-//     platform:  PLATFORM_MAC
-//     platform:  PLATFORM_LINUX
-//     platform:  PLATFORM_CHROMEOS
-//     platform:  PLATFORM_CHROMEOS_LACROS
-//   }
-// }
-// version:  "hash/4aa56a1dc30dfc767615248d6fee29830198b276"
-
-const char kCrashingSeed_Base64UncompressedData[] =
-    "CigzNWVkMmQ5ZTM1NGI0MTRiZWZkZjkzMGE3MzQwOTQwMTljMDE2MmYxEp4CCg1DcmFzaGluZ1"
-    "N0dWR5OAFKOAoNRW5hYmxlZExhdW5jaBBkYiUKI0ZvcmNlRmllbGRUcmlhbFNldHVwQ3Jhc2hG"
-    "b3JUZXN0aW5nSlcKLEZvcmNlZE9uX0ZvcmNlRmllbGRUcmlhbFNldHVwQ3Jhc2hGb3JUZXN0aW"
-    "5nEABiJRojRm9yY2VGaWVsZFRyaWFsU2V0dXBDcmFzaEZvclRlc3RpbmdKWAotRm9yY2VkT2Zm"
-    "X0ZvcmNlRmllbGRUcmlhbFNldHVwQ3Jhc2hGb3JUZXN0aW5nEABiJSIjRm9yY2VGaWVsZFRyaW"
-    "FsU2V0dXBDcmFzaEZvclRlc3RpbmdSHhIEOTEuKiAAIAEgAiADKAQoBSgGKAAoASgCKAMoCSIt"
-    "aGFzaC80YWE1NmExZGMzMGRmYzc2NzYxNTI0OGQ2ZmVlMjk4MzAxOThiMjc2";
-
-const char kCrashingSeed_Base64CompressedData[] =
-    "H4sIAAAAAAAAAI3QwUvDMBTH8babwgKDsaMHKZNBEKdJk6bJWbbDEAQ30JskeS+2UKp07cF/"
-    "Zn+rZfgH9Py+73P4ESpyhAwMilw6yaXDAMEIZgshmZGMG8+4ygJfnhMyf27tqayar0PXw6+"
-    "O95rMt411NcKL7RtfLsCtyd3uu/W4q7CGY1vZ+oBd/"
-    "3P5HA5HPHUDsH8nD5cMXpvPEf0icuubUfAH2fzDIYyVV2Pkt9vl1PDH+zRK4zRJJ3RKr+"
-    "g1jWhMEzqhs9WmHPonaW2uLAcvGARfqELxPJMaVEDMjBbDotplhfoDs9NLbnoBAAA=";
-
-// The compressed data is the result of decoding the base64 encoded compressed
-// data above and showing the data as hex:
-// echo -n base64_compressed_data | base64 -d | hexdump -e '8 1 ", 0x%x"'
-const uint8_t kCrashingSeed_CompressedData[] = {
-    0x1f, 0x8b, 0x8,  0x0,  0x0,  0x0,  0x0,  0x0,  0x0,  0x0,  0x8d, 0xd0,
-    0xc1, 0x4b, 0xc3, 0x30, 0x14, 0xc7, 0xf1, 0xb6, 0x9b, 0xc2, 0x2,  0x83,
-    0xb1, 0xa3, 0x7,  0x29, 0x93, 0x41, 0x10, 0xa7, 0x49, 0x93, 0xa6, 0xc9,
-    0x59, 0xb6, 0xc3, 0x10, 0x4,  0x37, 0xd0, 0x9b, 0x24, 0x79, 0x2f, 0xb6,
-    0x50, 0xaa, 0x74, 0xed, 0xc1, 0x7f, 0x66, 0x7f, 0xab, 0x65, 0xf8, 0x7,
-    0xf4, 0xfc, 0xbe, 0xef, 0x73, 0xf8, 0x11, 0x2a, 0x72, 0x84, 0xc,  0xc,
-    0x8a, 0x5c, 0x3a, 0xc9, 0xa5, 0xc3, 0x0,  0xc1, 0x8,  0x66, 0xb,  0x21,
-    0x99, 0x91, 0x8c, 0x1b, 0xcf, 0xb8, 0xca, 0x2,  0x5f, 0x9e, 0x13, 0x32,
-    0x7f, 0x6e, 0xed, 0xa9, 0xac, 0x9a, 0xaf, 0x43, 0xd7, 0xc3, 0xaf, 0x8e,
-    0xf7, 0x9a, 0xcc, 0xb7, 0x8d, 0x75, 0x35, 0xc2, 0x8b, 0xed, 0x1b, 0x5f,
-    0x2e, 0xc0, 0xad, 0xc9, 0xdd, 0xee, 0xbb, 0xf5, 0xb8, 0xab, 0xb0, 0x86,
-    0x63, 0x5b, 0xd9, 0xfa, 0x80, 0x5d, 0xff, 0x73, 0xf9, 0x1c, 0xe,  0x47,
-    0x3c, 0x75, 0x3,  0xb0, 0x7f, 0x27, 0xf,  0x97, 0xc,  0x5e, 0x9b, 0xcf,
-    0x11, 0xfd, 0x22, 0x72, 0xeb, 0x9b, 0x51, 0xf0, 0x7,  0xd9, 0xfc, 0xc3,
-    0x21, 0x8c, 0x95, 0x57, 0x63, 0xe4, 0xb7, 0xdb, 0xe5, 0xd4, 0xf0, 0xc7,
-    0xfb, 0x34, 0x4a, 0xe3, 0x34, 0x49, 0x27, 0x74, 0x4a, 0xaf, 0xe8, 0x35,
-    0x8d, 0x68, 0x4c, 0x13, 0x3a, 0xa1, 0xb3, 0xd5, 0xa6, 0x1c, 0xfa, 0x27,
-    0x69, 0x6d, 0xae, 0x2c, 0x7,  0x2f, 0x18, 0x4,  0x5f, 0xa8, 0x42, 0xf1,
-    0x3c, 0x93, 0x1a, 0x54, 0x40, 0xcc, 0x8c, 0x16, 0xc3, 0xa2, 0xda, 0x65,
-    0x85, 0xfa, 0x3,  0xb3, 0xd3, 0x4b, 0x6e, 0x7a, 0x1,  0x0,  0x0};
-
-const char kCrashingSeed_Base64Signature[] =
-    "MEQCIEn1+VsBfNA93dxzpk+BLhdO91kMQnofxfTK5Uo8vDi8AiAnTCFCIPgEGWNOKzuKfNWn6"
-    "emB6pnGWjSTbI/pvfxHnw==";
 
 // Create mock testing config equivalent to:
 // {
@@ -221,8 +89,7 @@ const FieldTrialTestingExperiment array_kFieldTrialConfig_experiments_0[] = {
      /*params=*/array_kFieldTrialConfig_params_0,
      /*enable_features=*/enable_features_0,
      /*disable_features=*/{},
-     /*forcing_flag=*/nullptr,
-     /*override_ui_string=*/{}},
+     /*forcing_flag=*/nullptr},
 };
 
 const FieldTrialTestingStudy array_kFieldTrialConfig_studies[] = {
@@ -232,15 +99,104 @@ const FieldTrialTestingStudy array_kFieldTrialConfig_studies[] = {
 
 }  // namespace
 
-const SignedSeedData kTestSeedData{
-    kTestSeed_StudyNames,           kTestSeed_Base64UncompressedData,
-    kTestSeed_Base64CompressedData, kTestSeed_Base64Signature,
-    kTestSeed_CompressedData,       sizeof(kTestSeed_CompressedData)};
+// TestSeedData() is a simple VariationsSeed containing:
+// serial_number: "test"
+// study: {
+//   name: "UMA-Uniformity-Trial-50-Percent"
+//   consistency: PERMANENT
+//   experiment: {
+//     name: "default"
+//     probability_weight: 1
+//   }
+//   experiment: {
+//     name: "group_01"
+//     probability_weight: 1
+//   }
+// }
+const SignedSeedData& TestSeedData() {
+  static const char* kTestSeed_StudyNames[] = {
+      "UMA-Uniformity-Trial-50-Percent"};
+  static const base::NoDestructor<SignedSeedData> kTestSeedData(
+      /*study_names=*/kTestSeed_StudyNames,
+      /*base64_uncompressed_data=*/
+      "CgR0ZXN0Ej4KH1VNQS1Vbmlmb3JtaXR5LVRyaWFsLTUwLVBlcmNlbnQ4AUoLCgdkZWZhdWx0"
+      "EAFKDAoIZ3JvdXBfMDEQAQ==",
+      /*base64_compressed_data=*/
+      "H4sIAAAAAAAA/+JiKUktLhGy45IP9XXUDc3LTMsvys0sqdQNKcpMzNE1NdANSC1KTs0rsWD0"
+      "4uZiT0lNSyzNKRFg9OLh4kgvyi8tiDcwFGAEBAAA//90/JgERgAAAA==",
+      /*base64_signature=*/
+      "MEUCIQD5AEAzk5qEuE3xOZl+xSZR15Ac1RJpsXMiou7i5W0sMAIgRn++ngh03HaMGC+Pjl9N"
+      "OuDoxf83qsSwycF2PSS1nYQ=");
+  return *kTestSeedData;
+}
 
-const SignedSeedData kCrashingSeedData{
-    kCrashingSeed_StudyNames,           kCrashingSeed_Base64UncompressedData,
-    kCrashingSeed_Base64CompressedData, kCrashingSeed_Base64Signature,
-    kCrashingSeed_CompressedData,       sizeof(kCrashingSeed_CompressedData)};
+// CrashingSeedData() is a VariationsSeed that triggers a crash for testing:
+// serial_number:  "35ed2d9e354b414befdf930a734094019c0162f1"
+// study:  {
+//   name:  "CrashingStudy"
+//   consistency:  PERMANENT
+//   experiment:  {
+//     name:  "EnabledLaunch"
+//     probability_weight:  100
+//     feature_association:  {
+//       enable_feature:  "ForceFieldTrialSetupCrashForTesting"
+//     }
+//   }
+//   experiment:  {
+//     name:  "ForcedOn_ForceFieldTrialSetupCrashForTesting"
+//     probability_weight:  0
+//     feature_association:  {
+//       forcing_feature_on:  "ForceFieldTrialSetupCrashForTesting"
+//     }
+//   }
+//   experiment:  {
+//     name:  "ForcedOff_ForceFieldTrialSetupCrashForTesting"
+//     probability_weight:  0
+//     feature_association:  {
+//       forcing_feature_off:  "ForceFieldTrialSetupCrashForTesting"
+//     }
+//   }
+//   filter:  {
+//     min_version:  "91.*"
+//     channel:  CANARY
+//     channel:  DEV
+//     channel:  BETA
+//     channel:  STABLE
+//     platform:  PLATFORM_ANDROID
+//     platform:  PLATFORM_IOS
+//     platform:  PLATFORM_ANDROID_WEBVIEW
+//     platform:  PLATFORM_WINDOWS
+//     platform:  PLATFORM_MAC
+//     platform:  PLATFORM_LINUX
+//     platform:  PLATFORM_CHROMEOS
+//     platform:  PLATFORM_CHROMEOS_LACROS
+//   }
+// }
+// version:  "hash/4aa56a1dc30dfc767615248d6fee29830198b276"
+const SignedSeedData& CrashingSeedData() {
+  static const char* kCrashingSeed_StudyNames[] = {"CrashingStudy"};
+  static const base::NoDestructor<SignedSeedData> kCrashingSeedData(
+      /*study_names=*/kCrashingSeed_StudyNames,
+      /*base64_uncompressed_data=*/
+      "CigzNWVkMmQ5ZTM1NGI0MTRiZWZkZjkzMGE3MzQwOTQwMTljMDE2MmYxEp4CCg1DcmFzaGlu"
+      "Z1N0dWR5OAFKOAoNRW5hYmxlZExhdW5jaBBkYiUKI0ZvcmNlRmllbGRUcmlhbFNldHVwQ3Jh"
+      "c2hGb3JUZXN0aW5nSlcKLEZvcmNlZE9uX0ZvcmNlRmllbGRUcmlhbFNldHVwQ3Jhc2hGb3JU"
+      "ZXN0aW5nEABiJRojRm9yY2VGaWVsZFRyaWFsU2V0dXBDcmFzaEZvclRlc3RpbmdKWAotRm9y"
+      "Y2VkT2ZmX0ZvcmNlRmllbGRUcmlhbFNldHVwQ3Jhc2hGb3JUZXN0aW5nEABiJSIjRm9yY2VG"
+      "aWVsZFRyaWFsU2V0dXBDcmFzaEZvclRlc3RpbmdSHhIEOTEuKiAAIAEgAiADKAQoBSgGKAAo"
+      "ASgCKAMoCSItaGFzaC80YWE1NmExZGMzMGRmYzc2NzYxNTI0OGQ2ZmVlMjk4MzAxOThiMjc"
+      "2",
+      /*base64_compressed_data=*/
+      "H4sIAAAAAAAAAI3QwUvDMBTH8babwgKDsaMHKZNBEKdJk6bJWbbDEAQ30JskeS+2UKp07cF/"
+      "Zn+rZfgH9Py+73P4ESpyhAwMilw6yaXDAMEIZgshmZGMG8+4ygJfnhMyf27tqayar0PXw6+"
+      "O95rMt411NcKL7RtfLsCtyd3uu/W4q7CGY1vZ+oBd/"
+      "3P5HA5HPHUDsH8nD5cMXpvPEf0icuubUfAH2fzDIYyVV2Pkt9vl1PDH+zRK4zRJJ3RKr+"
+      "g1jWhMEzqhs9WmHPonaW2uLAcvGARfqELxPJMaVEDMjBbDotplhfoDs9NLbnoBAAA=",
+      /*base64_signature=*/
+      "MEQCIEn1+VsBfNA93dxzpk+BLhdO91kMQnofxfTK5Uo8vDi8AiAnTCFCIPgEGWNOKzuKfNWn"
+      "6emB6pnGWjSTbI/pvfxHnw==");
+  return *kCrashingSeedData;
+}
 
 const SignedSeedPrefKeys kSafeSeedPrefKeys{prefs::kVariationsSafeCompressedSeed,
                                            prefs::kVariationsSafeSeedSignature};
@@ -248,18 +204,14 @@ const SignedSeedPrefKeys kSafeSeedPrefKeys{prefs::kVariationsSafeCompressedSeed,
 const SignedSeedPrefKeys kRegularSeedPrefKeys{prefs::kVariationsCompressedSeed,
                                               prefs::kVariationsSeedSignature};
 
-SignedSeedData::SignedSeedData(base::span<const char*> in_study_names,
+SignedSeedData::SignedSeedData(base::raw_span<const char*> in_study_names,
                                const char* in_base64_uncompressed_data,
                                const char* in_base64_compressed_data,
-                               const char* in_base64_signature,
-                               const uint8_t* in_compressed_data,
-                               size_t in_compressed_data_size)
+                               const char* in_base64_signature)
     : study_names(std::move(in_study_names)),
       base64_uncompressed_data(in_base64_uncompressed_data),
       base64_compressed_data(in_base64_compressed_data),
-      base64_signature(in_base64_signature),
-      compressed_data(in_compressed_data),
-      compressed_data_size(in_compressed_data_size) {}
+      base64_signature(in_base64_signature) {}
 
 SignedSeedData::~SignedSeedData() = default;
 
@@ -267,11 +219,6 @@ SignedSeedData::SignedSeedData(const SignedSeedData&) = default;
 SignedSeedData::SignedSeedData(SignedSeedData&&) = default;
 SignedSeedData& SignedSeedData::operator=(const SignedSeedData&) = default;
 SignedSeedData& SignedSeedData::operator=(SignedSeedData&&) = default;
-
-std::string_view SignedSeedData::GetCompressedData() const {
-  return std::string_view(reinterpret_cast<const char*>(compressed_data),
-                     compressed_data_size);
-}
 
 void DisableTestingConfig() {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(

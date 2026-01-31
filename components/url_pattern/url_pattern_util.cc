@@ -18,8 +18,7 @@ namespace {
 
 std::string StdStringFromCanonOutput(const url::CanonOutput& output,
                                      const url::Component& component) {
-  return std::string(UNSAFE_TODO(output.data() + component.begin),
-                     component.len);
+  return std::string(component.AsViewOn(output.view()));
 }
 
 }  // namespace

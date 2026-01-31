@@ -6,10 +6,7 @@
 
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_request_coordinator.h"
 
-OverlayRequestUIState::OverlayRequestUIState(OverlayRequest* request)
-    : request_(request) {
-  DCHECK(request_);
-}
+OverlayRequestUIState::OverlayRequestUIState() = default;
 
 OverlayRequestUIState::~OverlayRequestUIState() {
   if (has_callback()) {

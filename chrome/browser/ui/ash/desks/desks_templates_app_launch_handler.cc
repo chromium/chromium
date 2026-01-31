@@ -318,7 +318,7 @@ void DesksTemplatesAppLaunchHandler::MaybeLaunchArcApps() {
       [&app_ids, &app_id_to_launch_list](const apps::AppUpdate& update) {
         if (update.Readiness() == apps::Readiness::kReady &&
             update.AppType() == apps::AppType::kArc &&
-            base::Contains(app_id_to_launch_list, update.AppId())) {
+            app_id_to_launch_list.contains(update.AppId())) {
           app_ids.insert(update.AppId());
         }
       });

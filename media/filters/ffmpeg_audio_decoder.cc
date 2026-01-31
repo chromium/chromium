@@ -252,8 +252,8 @@ bool FFmpegAudioDecoder::OnNewFrame(const DecoderBuffer& buffer,
 
   // Translate unsupported into discrete layouts for discrete configurations;
   // ffmpeg does not have a labeled discrete configuration internally.
-  ChannelLayout channel_layout = ChannelLayoutToChromeChannelLayout(
-      codec_context_->ch_layout.u.mask, codec_context_->ch_layout.nb_channels);
+  ChannelLayout channel_layout =
+      ChannelLayoutToChromeChannelLayout(codec_context_->ch_layout);
   if (channel_layout == CHANNEL_LAYOUT_UNSUPPORTED &&
       config_.channel_layout() == CHANNEL_LAYOUT_DISCRETE) {
     channel_layout = CHANNEL_LAYOUT_DISCRETE;
@@ -461,8 +461,7 @@ int FFmpegAudioDecoder::GetAudioBuffer(struct AVCodecContext* s,
   ChannelLayout channel_layout =
       config_.channel_layout() == CHANNEL_LAYOUT_DISCRETE
           ? CHANNEL_LAYOUT_DISCRETE
-          : ChannelLayoutToChromeChannelLayout(s->ch_layout.u.mask,
-                                               s->ch_layout.nb_channels);
+          : ChannelLayoutToChromeChannelLayout(s->ch_layout);
 
   if (channel_layout == CHANNEL_LAYOUT_UNSUPPORTED) {
     DLOG(ERROR) << "Unsupported channel layout.";

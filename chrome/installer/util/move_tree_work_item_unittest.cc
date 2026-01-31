@@ -12,6 +12,8 @@
 #include "base/base_paths.h"
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
+#include "base/files/scoped_temp_dir.h"
+#include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/installer/util/work_item.h"
@@ -414,11 +416,6 @@ TEST_F(MoveTreeWorkItemTest, MoveDirectoryDestExistsCheckForDuplicatesFull) {
   // Make sure that the backup path is not empty.
   EXPECT_FALSE(base::IsDirectoryEmpty(temp_to_dir_.GetPath()));
 
-  // Check that the work item believes the source to have been moved.
-  EXPECT_TRUE(work_item->source_moved_to_backup_);
-  EXPECT_FALSE(work_item->moved_to_dest_path_);
-  EXPECT_FALSE(work_item->moved_to_backup_);
-
   // test rollback()
   work_item->Rollback();
 
@@ -491,11 +488,6 @@ TEST_F(MoveTreeWorkItemTest, MoveDirectoryDestExistsCheckForDuplicatesPartial) {
   new_to_file2 = new_to_file2.AppendASCII("From_File2");
   EXPECT_TRUE(base::PathExists(new_to_file2));
 
-  // Check that the work item believes that this was a regular move.
-  EXPECT_FALSE(work_item->source_moved_to_backup_);
-  EXPECT_TRUE(work_item->moved_to_dest_path_);
-  EXPECT_TRUE(work_item->moved_to_backup_);
-
   // test rollback()
   work_item->Rollback();
 
@@ -509,4 +501,53 @@ TEST_F(MoveTreeWorkItemTest, MoveDirectoryDestExistsCheckForDuplicatesPartial) {
 
   // Also, after rollback the new "to" file should be gone.
   EXPECT_FALSE(base::PathExists(new_to_file2));
+}
+
+// Tests that rollback after a failed move leaves things as they were.
+TEST_F(MoveTreeWorkItemTest, RollbackRecovers) {
+  base::FilePath source_dir = temp_from_dir_.GetPath();
+  base::FilePath dest_dir =
+      temp_from_dir_.GetPath().Append(FILE_PATH_LITERAL("dest"));
+  ASSERT_PRED1(base::CreateDirectory, dest_dir);
+  base::FilePath temp_dir =
+      temp_from_dir_.GetPath().Append(FILE_PATH_LITERAL("temp"));
+  ASSERT_PRED1(base::CreateDirectory, temp_dir);
+
+  // Put some files into the source and dest.
+  base::FilePath alpha_basename = base::FilePath(FILE_PATH_LITERAL("alpha"));
+  base::FilePath baker_basename = base::FilePath(FILE_PATH_LITERAL("baker"));
+  base::FilePath charlie_basename =
+      base::FilePath(FILE_PATH_LITERAL("charlie"));
+
+  for (const auto& file : {alpha_basename, baker_basename, charlie_basename}) {
+    ASSERT_TRUE(base::WriteFile(source_dir.Append(file),
+                                base::as_byte_span(file.value())));
+    ASSERT_TRUE(base::WriteFile(dest_dir.Append(file),
+                                base::as_byte_span(file.value())));
+  }
+
+  // Map one dest file into memory so that it can't be moved into the backup
+  // dir.
+  base::MemoryMappedFile baker_mapped;
+  ASSERT_TRUE(baker_mapped.Initialize(dest_dir.Append(baker_basename)));
+
+  // Perform a move, expecting it to fail. Under the covers, the initial call to
+  // ::MoveFileEx fails with ERROR_SHARING_VIOLATION. This triggers the
+  // copy-and-delete flow, which will succeed to copy everything and then fail
+  // during the delete phase on account of the in-use file.
+  auto work_item = base::WrapUnique(WorkItem::CreateMoveTreeWorkItem(
+      source_dir, dest_dir, temp_dir, WorkItem::ALWAYS_MOVE));
+  ASSERT_FALSE(work_item->Do());
+
+  // Expect that the mapped file (at least) remains in the dest.
+  ASSERT_PRED1(base::PathExists, dest_dir.Append(baker_basename));
+
+  // Rollback under the expectation that all files/directories deleted above
+  // will be recovered from the backup.
+  work_item->Rollback();
+
+  // Verify that all files are back in the dest.
+  for (const auto& file : {alpha_basename, baker_basename, charlie_basename}) {
+    ASSERT_PRED1(base::PathExists, dest_dir.Append(file));
+  }
 }

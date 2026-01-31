@@ -56,6 +56,14 @@ bool OnlyBindOnConnectionClosedOrFailed() {
              features::RebindReceiverEvent::kOnlyOnConnectionClosedOrFailed;
 }
 
+base::TimeDelta GetPreconnectRetryInterval() {
+  return features::kPreconnectRetryInterval.Get();
+}
+
+base::TimeDelta GetPreconnectBackoffBaseTime() {
+  return features::kPreconnectBackoffBaseTime.Get();
+}
+
 }  // namespace
 
 namespace features {
@@ -81,6 +89,18 @@ BASE_FEATURE_ENUM_PARAM(RebindReceiverEvent,
                         "kRebindReceiverEvent",
                         features::RebindReceiverEvent::kEverytime,
                         &kRebindReceiverEventOptions);
+
+BASE_FEATURE(kAdjustPreconnectRetryInterval, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kPreconnectRetryInterval,
+                   &kAdjustPreconnectRetryInterval,
+                   "kPreconnectRetryInterval",
+                   base::Milliseconds(kPreconnectRetryDelayMs));
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kPreconnectBackoffBaseTime,
+                   &kAdjustPreconnectRetryInterval,
+                   "kPreconnectBackoffBaseTime",
+                   base::Milliseconds(kPreconnectRetryDelayMs));
 }  // namespace features
 
 WebContentVisibilityManager::WebContentVisibilityManager()
@@ -268,8 +288,7 @@ base::TimeDelta SearchEnginePreconnector::GetPreconnectInterval() const {
 
     // Add an extra delay to make sure the preconnect has expired if it wasn't
     // used.
-    return base::Seconds(preconnect_interval) +
-           base::Milliseconds(kPreconnectRetryDelayMs);
+    return base::Seconds(preconnect_interval) + GetPreconnectRetryInterval();
   }
 
   // If the device is in low power mode, we will use a longer preconnect
@@ -283,11 +302,10 @@ base::TimeDelta SearchEnginePreconnector::GetPreconnectInterval() const {
   // If this is the first time failing, we should instantly retry, but we wait
   // a very small amount of time since a closed connection would likely mean
   // that there were something wrong in the connection.
-  // Otherwise, we backoff `kPreconnectRetryDelayMs` (currently 50 ms for normal
-  // mode) * 2^n for the next preconnect attempt.
+  // Otherwise, we backoff `GetPreconnectRetryInterval()` (default 50 ms for
+  // normal mode) * 2^n for the next preconnect attempt.
   return std::min(
-      base::Milliseconds(kPreconnectRetryDelayMs) *
-          CalculateBackoffMultiplier(),
+      GetPreconnectBackoffBaseTime() * CalculateBackoffMultiplier(),
       base::Seconds(net::features::kMaxPreconnectRetryInterval.Get()));
 }
 
@@ -393,7 +411,7 @@ void SearchEnginePreconnector::OnNetworkEvent(net::NetworkChangeEvent event) {
     // not actually close a connection. It is OK to not reset the receiver here
     // since network event will be followed by `OnSessionClosed` or
     // `OnConnectionFailed` anyway when the connection is actually closed.
-    StartPreconnectWithDelay(base::Milliseconds(kPreconnectRetryDelayMs),
+    StartPreconnectWithDelay(GetPreconnectInterval(),
                              PreconnectTriggerEvent::kNetworkEvent);
   }
 }

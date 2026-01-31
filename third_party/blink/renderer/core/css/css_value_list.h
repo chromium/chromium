@@ -46,11 +46,13 @@ class CORE_EXPORT CSSValueList : public CSSValue {
   }
   static CSSValueList* CreateWithSeparatorFrom(const CSSValueList& list) {
     return MakeGarbageCollected<CSSValueList>(
-        static_cast<ValueListSeparator>(list.value_list_separator_));
+        static_cast<ValueListSeparator>(list.value_list_separator_),
+        list.needs_tree_scope_population_);
   }
 
   CSSValueList(ClassType, ValueListSeparator);
   explicit CSSValueList(ValueListSeparator);
+  CSSValueList(ValueListSeparator, bool needs_tree_scope_population);
   CSSValueList(ValueListSeparator, HeapVector<Member<const CSSValue>, 4>);
   CSSValueList(ClassType,
                ValueListSeparator,
@@ -83,6 +85,8 @@ class CORE_EXPORT CSSValueList : public CSSValue {
 
   bool MayContainUrl() const;
   void ReResolveUrl(const Document&) const;
+
+  bool HasRandomFunctions() const;
 
   void TraceAfterDispatch(blink::Visitor*) const;
 

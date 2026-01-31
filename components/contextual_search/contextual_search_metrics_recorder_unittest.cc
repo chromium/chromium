@@ -68,6 +68,14 @@ const char kContextualSearchToolsSubmissionType[] =
     "ContextualSearch.Tools.SubmissionType.Unknown";
 const char kContextualSearchDeepSearchToolState[] =
     "ContextualSearch.Tools.DeepSearch.Unknown";
+const char kContextualSearchTabContextAdded[] =
+    "ContextualSearch.TabContextAdded.V2.Unknown";
+const char kContextualSearchTabContextAddedFromSuggestionChip[] =
+    "ContextualSearch.TabContextAddedFromTabSuggestionChip.Unknown";
+const char kContextualSearchTabContextAddedFromPlusButton[] =
+    "ContextualSearch.TabContextAddedFromPlusButton.Unknown";
+const char kContextualSearchTabWithDuplicateTitleClicked[] =
+    "ContextualSearch.TabWithDuplicateTitleClicked.V2.Unknown";
 
 std::string UploadStatusToString(FileUploadStatus status) {
   switch (status) {
@@ -94,7 +102,9 @@ class ContextualSearchMetricsRecorderTest : public testing::Test {
   ContextualSearchMetricsRecorderTest() = default;
   ~ContextualSearchMetricsRecorderTest() override = default;
 
-  void SetUp() override {
+  void SetUp() override { CreateMetricsRecorder(); }
+
+  void CreateMetricsRecorder() {
     metrics_recorder_ = std::make_unique<ContextualSearchMetricsRecorder>(
         ContextualSearchSource::kUnknown);
   }
@@ -192,8 +202,9 @@ TEST_F(ContextualSearchMetricsRecorderTest, TextOnlyQuerySubmissionSession) {
 
   histogram_tester().ExpectBucketCount(kContextualSearchQueryTextLength,
                                        text_length, 1);
-  histogram_tester().ExpectBucketCount(kContextualSearchQueryModality,
-                                       MultimodalState::kTextOnly, 1);
+  histogram_tester().ExpectBucketCount(
+      kContextualSearchQueryModality,
+      ContextualSearchMultimodalState::kTextOnly, 1);
   histogram_tester().ExpectBucketCount(kContextualSearchQueryFileCount,
                                        file_count, 1);
 }
@@ -207,8 +218,9 @@ TEST_F(ContextualSearchMetricsRecorderTest, FileOnlyQuerySubmissionSession) {
 
   histogram_tester().ExpectBucketCount(kContextualSearchQueryTextLength,
                                        text_length, 1);
-  histogram_tester().ExpectBucketCount(kContextualSearchQueryModality,
-                                       MultimodalState::kFileOnly, 1);
+  histogram_tester().ExpectBucketCount(
+      kContextualSearchQueryModality,
+      ContextualSearchMultimodalState::kFileOnly, 1);
   histogram_tester().ExpectBucketCount(kContextualSearchQueryFileCount,
                                        file_count, 1);
 }
@@ -222,8 +234,9 @@ TEST_F(ContextualSearchMetricsRecorderTest, MultimodalQuerySubmissionSession) {
 
   histogram_tester().ExpectBucketCount(kContextualSearchQueryTextLength,
                                        text_length, 1);
-  histogram_tester().ExpectBucketCount(kContextualSearchQueryModality,
-                                       MultimodalState::kTextAndFile, 1);
+  histogram_tester().ExpectBucketCount(
+      kContextualSearchQueryModality,
+      ContextualSearchMultimodalState::kTextAndFile, 1);
   histogram_tester().ExpectBucketCount(kContextualSearchQueryFileCount,
                                        file_count, 1);
 }
@@ -245,6 +258,34 @@ TEST_F(ContextualSearchMetricsRecorderTest, ToolState) {
 
   histogram_tester().ExpectBucketCount(kContextualSearchDeepSearchToolState,
                                        AimToolState::kEnabled, 1);
+}
+
+TEST_F(ContextualSearchMetricsRecorderTest, TabContextAdded) {
+  metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
+  metrics().RecordTabAddedMetrics(/*has_duplicate_title=*/false, std::nullopt,
+                                  /*is_tab_suggestion_chip=*/false);
+  metrics().RecordTabAddedMetrics(/*has_duplicate_title=*/true, std::nullopt,
+                                  /*is_tab_suggestion_chip=*/false);
+  DestructMetricsRecorder();
+
+  histogram_tester().ExpectUniqueSample(kContextualSearchTabContextAdded, 2, 1);
+  histogram_tester().ExpectUniqueSample(
+      kContextualSearchTabContextAddedFromSuggestionChip, 0, 1);
+  histogram_tester().ExpectUniqueSample(
+      kContextualSearchTabContextAddedFromPlusButton, 2, 1);
+  histogram_tester().ExpectUniqueSample(
+      kContextualSearchTabWithDuplicateTitleClicked, 1, 1);
+
+  histogram_tester().ExpectUniqueSample(
+      kContextualSearchTabWithDuplicateTitleClicked, 1, 1);
+
+  CreateMetricsRecorder();
+  metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
+  metrics().RecordTabAddedMetrics(/*has_duplicate_title=*/false, std::nullopt,
+                                  /*is_tab_suggestion_chip=*/true);
+  DestructMetricsRecorder();
+  histogram_tester().ExpectBucketCount(
+      kContextualSearchTabContextAddedFromSuggestionChip, 1, 1);
 }
 
 TEST_F(ContextualSearchMetricsRecorderTest, FileUploadSuccess) {

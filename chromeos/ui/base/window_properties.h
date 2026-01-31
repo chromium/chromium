@@ -9,8 +9,10 @@
 
 #include "base/component_export.h"
 #include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/class_property.h"
+#include "ui/gfx/geometry/insets.h"
 
 namespace gfx {
 class Rect;
@@ -56,6 +58,16 @@ extern const ui::ClassProperty<bool>* const kNoExitFullscreenOnLock;
 // Borealis apps set this since they do not handle window size changes.
 COMPONENT_EXPORT(CHROMEOS_UI_BASE)
 extern const ui::ClassProperty<bool>* const kUseOverviewToExitFullscreen;
+
+struct COMPONENT_EXPORT(CHROMEOS_UI_BASE) ResizeBorderInsets {
+  gfx::Insets for_mouse = gfx::Insets(chromeos::kResizeInsideBoundsSize);
+  gfx::Insets for_touch = gfx::Insets(chromeos::kResizeInsideBoundsSize);
+};
+
+// A property defining the the boundary inside of the window which can start a
+// drag resize for mouse/touch event.
+COMPONENT_EXPORT(CHROMEOS_UI_BASE)
+extern const ui::ClassProperty<ResizeBorderInsets*>* const kResizeBorderInsets;
 
 // If true, Exo clients may request pointer lock for this window.
 // When the lock activates, users will be notified to use Overview to exit

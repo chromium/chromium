@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-syntax = "proto2";
+edition = "2023";
 
 option optimize_for = LITE_RUNTIME;
 option java_package = "org.chromium.components.metrics";
@@ -22,43 +22,44 @@ import "user_demographics.proto";
 message Report {
   // A unique identifier for a Chrome install. This ID should be used only
   // in UKM reports, and not linked to any other data sources.
-  optional fixed64 client_id = 1;
+  fixed64 client_id = 1;
 
   // The product corresponding to this log. Note: The default value is Chrome,
   // so Chrome products will not transmit this field.
-  optional metrics.ChromeUserMetricsExtension.Product product = 12
-      [default = CHROME];
+  metrics.ChromeUserMetricsExtension.Product product = 12 [default = CHROME];
 
   // The session id for this record. This id is unique within a
   // particular Chrome session. The client keeps track of the session id
   // and sends it with each record. The session id is simply an integer
   // that is incremented each time the user relaunches Chrome.
-  optional int32 session_id = 5;
+  int32 session_id = 5;
 
   // The report id for this record.  Report ids increase sequentially from
   // one within a session.
-  optional int32 report_id = 6;
+  int32 report_id = 6;
 
   // Indicates that recording was continuously enabled for the period of time
   // captured in this report.
-  optional bool is_continuous = 8;
+  bool is_continuous = 8;
 
   enum LogRotationReason {
+    option features.enum_type = CLOSED;
+
     UNKNOWN = 0;
     SCHEDULED_ROTATION = 1;
     BACKGROUNDED = 2;
     SHUTDOWN = 3;
   }
 
-  optional LogRotationReason log_rotation_reason = 9;
+  LogRotationReason log_rotation_reason = 9;
 
   // Information about the user's browser and system configuration.
-  optional metrics.SystemProfileProto system_profile = 2;
+  metrics.SystemProfileProto system_profile = 2;
 
   // The user's demographic information that consists of their noised birth year
   // and gender. This data is made available to Chrome via syncable priority
   // pref, so is only available if the user is signed-in and syncing.
-  optional metrics.UserDemographicsProto user_demographics = 11;
+  metrics.UserDemographicsProto user_demographics = 11;
 
   // A list of the top-level navigations that data was collected for.
   repeated Source sources = 3;
@@ -69,34 +70,34 @@ message Report {
     // Number of unique sources that URLs were observed for. This counts
     // includes sources which were dropped or deferred, but not sources
     // carried over from a previous interval.
-    optional int32 observed = 1;
+    int32 observed = 1;
 
     // Number of navigation sources that URLs were observed for, including
     // sources dropped due to limits.
-    optional int32 navigation_sources = 2;
+    int32 navigation_sources = 2;
 
     // Number of sources discarded due to not matching a navigation URL.
-    optional int32 unmatched_sources = 3;
+    int32 unmatched_sources = 3;
 
     // Number of sources deferred from a previous interval.
-    optional int32 carryover_sources = 4;
+    int32 carryover_sources = 4;
 
     // Number of sources deferred to the next interval. Sources corresponding to
     // opened tabs that could emit more events in the future are kept in memory
     // and deferred to the next interval for inclusion in next reports, up to a
     // max limit on number of sources.
-    optional int32 deferred_sources = 5;
+    int32 deferred_sources = 5;
 
     // Number of sources deferred to the next interval due to lack of events.
-    optional int32 entryless_sources = 6;
+    int32 entryless_sources = 6;
 
     // Time elapsed in seconds from the moment the newest truncated source was
     // created to the moment it was discarded from memory, if pruning happened
     // due to number of sources exceeding the max threshold.
-    optional int32 pruned_sources_age_seconds = 7;
+    int32 pruned_sources_age_seconds = 7;
   }
 
-  optional SourceCounts source_counts = 10;
+  SourceCounts source_counts = 10;
 
   // List of Entries containing the main UKM data.
   repeated Entry entries = 4;
@@ -110,7 +111,7 @@ message Report {
   message DownsamplingRate {
     // Hash of the event name to identify the event type. This field should
     // always be set when any other field in this message is set.
-    optional fixed64 event_hash = 1;
+    fixed64 event_hash = 1;
 
     // Rate computed by standard UKM downsampling.
     // A value of N means that this event type is downsampled at a rate of
@@ -118,14 +119,14 @@ message Report {
     // loads. Unset means that the user didn't receive a parameter to
     // downsample this event when events are collected in this reporting
     // interval, thus no downsampling is applied.
-    optional uint32 standard_rate = 2;
+    uint32 standard_rate = 2;
 
     // Any other further downsampling logic by custom client-side
     // implementation.
     // A value of M means that this event type is downsampled at a rate of
     // 1-in-M, in addition to the standard downsampling rate by the UKM infra at
     // the page load level.
-    optional uint32 custom_rate = 3;
+    uint32 custom_rate = 3;
   }
 
   // TODO(yrsun): populated this field, and add the milestone number when this

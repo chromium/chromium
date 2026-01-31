@@ -7,6 +7,7 @@
 #include <inttypes.h>
 
 #include <algorithm>
+#include <array>
 
 #include "base/compiler_specific.h"
 #include "base/logging.h"
@@ -230,17 +231,18 @@ void CrasUnifiedStream::Start(AudioSourceCallback* callback) {
 
   // Initialize channel layout to all -1 to indicate that none of
   // the channels is set in the layout.
-  int8_t layout[CRAS_CH_MAX] = {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
+  std::array<int8_t, CRAS_CH_MAX> layout;
+  layout.fill(-1);
 
   // Converts to CRAS defined channels. ChannelOrder will return -1
   // for channels that does not present in params_.channel_layout().
   for (size_t i = 0; i < std::size(kChannelMap); ++i) {
-    UNSAFE_TODO(layout[kChannelMap[i]]) =
+    layout.at(kChannelMap[i]) =
         ChannelOrder(params_.channel_layout(), static_cast<Channels>(i));
   }
 
   rc = libcras_stream_params_set_channel_layout(stream_params, CRAS_CH_MAX,
-                                                layout);
+                                                layout.data());
   if (rc) {
     DLOG(WARNING) << "Error setting up the channel layout.";
     ReportStreamStartResult(

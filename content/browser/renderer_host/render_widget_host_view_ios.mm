@@ -158,14 +158,14 @@ bool RenderWidgetHostViewIOS::IsSurfaceAvailableForCopy() {
 void RenderWidgetHostViewIOS::CopyFromSurface(
     const gfx::Rect& src_rect,
     const gfx::Size& dst_size,
-    base::OnceCallback<void(const viz::CopyOutputBitmapWithMetadata&)>
-        callback) {
+    base::TimeDelta timeout,
+    base::OnceCallback<void(const content::CopyFromSurfaceResult&)> callback) {
   base::WeakPtr<RenderWidgetHostImpl> popup_host;
   base::WeakPtr<DelegatedFrameHost> popup_frame_host;
   RenderWidgetHostViewBase::CopyMainAndPopupFromSurface(
       host()->GetWeakPtr(),
       browser_compositor_->GetDelegatedFrameHost()->GetWeakPtr(), popup_host,
-      popup_frame_host, src_rect, dst_size, GetDeviceScaleFactor(),
+      popup_frame_host, src_rect, dst_size, GetDeviceScaleFactor(), timeout,
       std::move(callback));
 }
 
@@ -174,7 +174,12 @@ RenderWidgetHostViewIOS::GetFilteredGestureProviderForTesting() {
   return &gesture_provider_;
 }
 
-void RenderWidgetHostViewIOS::InitAsChild(gfx::NativeView parent_view) {}
+void RenderWidgetHostViewIOS::InitAsChild(gfx::NativeView parent_view) {
+  // Attach to the parent view tree if provided.
+  if (parent_view) {
+    UpdateNativeViewTree(parent_view);
+  }
+}
 void RenderWidgetHostViewIOS::SetSize(const gfx::Size& size) {}
 void RenderWidgetHostViewIOS::SetBounds(const gfx::Rect& rect) {}
 
@@ -986,6 +991,19 @@ void RenderWidgetHostViewIOS::SendKeyEvent(
   ui::LatencyInfo latency_info;
   latency_info.AddLatencyNumber(ui::INPUT_EVENT_LATENCY_UI_COMPONENT);
   host->ForwardKeyboardEventWithLatencyInfo(event, latency_info);
+}
+
+void RenderWidgetHostViewIOS::ForwardKeyboardEventWithCommands(
+    const input::NativeWebKeyboardEvent& key_event,
+    std::vector<blink::mojom::EditCommandPtr> commands) {
+  auto* host = GetFocusedWidget();
+  if (!host) {
+    return;
+  }
+  ui::LatencyInfo latency_info;
+  latency_info.AddLatencyNumber(ui::INPUT_EVENT_LATENCY_UI_COMPONENT);
+  host->ForwardKeyboardEventWithCommands(key_event, latency_info,
+                                         std::move(commands));
 }
 
 blink::mojom::FrameWidgetInputHandler*

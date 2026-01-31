@@ -11,7 +11,8 @@ export function getHtml(this: ComposeboxFileCarouselElement) {
   return html`<!--_html_template_start_-->
 ${this.files.map((item) => {
   return html`
-    <cr-composebox-file-thumbnail .file="${item}">
+    <cr-composebox-file-thumbnail .file="${item}"
+        exportparts="thumbnail">
     </cr-composebox-file-thumbnail>`;
 })}
 <!--_html_template_end_-->`;

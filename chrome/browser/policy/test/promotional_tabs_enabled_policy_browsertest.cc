@@ -132,7 +132,7 @@ class PromotionalTabsEnabledPolicyWhatsNewTest
     base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
 
     std::string json;
-    base::Value::Dict prefs;
+    base::DictValue prefs;
     // Set the session startup pref to NewTab. This enables consistent test
     // expectations across platforms - we should always expect to see the NTP.
     // Without this line, on ChromeOS only, the default type is LAST, which
@@ -156,7 +156,7 @@ class PromotionalTabsEnabledPolicyWhatsNewTest
     }
 
     // Also set the version for What's New in the local state.
-    base::Value::Dict local_state;
+    base::DictValue local_state;
     local_state.SetByDottedPath(prefs::kLastWhatsNewVersion,
                                 WhatsNewVersionForPref());
     std::string local_state_string = base::WriteJson(local_state).value_or("");

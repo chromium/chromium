@@ -62,6 +62,14 @@ void ManagementContextMixin::SetCloudUserPolicies(
     base::flat_map<std::string, std::optional<base::Value>> policy_entries) {
   CHECK(management_context_.is_cloud_user_managed);
   policy::PolicyMap policy_map;
+  if (management_context_.affiliated) {
+    policy_map.SetUserAffiliationIds({kFakeCustomerId});
+  } else {
+    policy_map.SetUserAffiliationIds({kDifferentCustomerId});
+  }
+  if (management_context_.is_cloud_machine_managed) {
+    policy_map.SetDeviceAffiliationIds({kFakeCustomerId});
+  }
 
   for (auto& policy_entry : policy_entries) {
     policy_map.Set(policy_entry.first, policy::POLICY_LEVEL_MANDATORY,

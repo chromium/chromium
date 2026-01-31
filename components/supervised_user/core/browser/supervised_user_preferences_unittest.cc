@@ -175,6 +175,5 @@ TEST(SupervisedUserPreferencesTestWithoutEnvironment,
   EXPECT_FALSE(IsSubjectToParentalControls(pref_service));
   EXPECT_TRUE(IsSafeSitesEnabled(pref_service));
 }
-
 }  // namespace
 }  // namespace supervised_user

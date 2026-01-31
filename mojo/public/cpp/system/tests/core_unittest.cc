@@ -13,7 +13,6 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "mojo/public/cpp/system/buffer.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/functions.h"
@@ -87,16 +86,16 @@ TEST(CoreCppTest, Basic) {
     handle_to_int[h3] = 3;
 
     EXPECT_EQ(4u, handle_to_int.size());
-    EXPECT_TRUE(base::Contains(handle_to_int, h0));
+    EXPECT_TRUE(handle_to_int.contains(h0));
     EXPECT_EQ(0, handle_to_int[h0]);
-    EXPECT_TRUE(base::Contains(handle_to_int, h1));
+    EXPECT_TRUE(handle_to_int.contains(h1));
     EXPECT_EQ(1, handle_to_int[h1]);
-    EXPECT_TRUE(base::Contains(handle_to_int, h2));
+    EXPECT_TRUE(handle_to_int.contains(h2));
     EXPECT_EQ(2, handle_to_int[h2]);
-    EXPECT_TRUE(base::Contains(handle_to_int, h3));
+    EXPECT_TRUE(handle_to_int.contains(h3));
     EXPECT_EQ(3, handle_to_int[h3]);
     EXPECT_FALSE(
-        base::Contains(handle_to_int, Handle(static_cast<MojoHandle>(13579))));
+        handle_to_int.contains(Handle(static_cast<MojoHandle>(13579))));
 
     // TODO(vtl): With C++11, support |std::unordered_map|s, etc. (Or figure out
     // how to support the variations of |hash_map|.)
@@ -283,8 +282,9 @@ TEST(CoreCppTest, TearDownWithMessagesEnqueued) {
     // Send a handle over the previously-establish message pipe.
     ScopedMessagePipeHandle h2;
     ScopedMessagePipeHandle h3;
-    if (CreateMessagePipe(nullptr, &h2, &h3) != MOJO_RESULT_OK)
+    if (CreateMessagePipe(nullptr, &h2, &h3) != MOJO_RESULT_OK) {
       CreateMessagePipe(nullptr, &h2, &h3);  // Must be old EDK.
+    }
 
     // Write a message to |h2|, before we send |h3|.
     const char kWorld[] = "world!";
@@ -323,8 +323,9 @@ TEST(CoreCppTest, TearDownWithMessagesEnqueued) {
     // Send a handle over the previously-establish message pipe.
     ScopedMessagePipeHandle h2;
     ScopedMessagePipeHandle h3;
-    if (CreateMessagePipe(nullptr, &h2, &h3) != MOJO_RESULT_OK)
+    if (CreateMessagePipe(nullptr, &h2, &h3) != MOJO_RESULT_OK) {
       CreateMessagePipe(nullptr, &h2, &h3);  // Must be old EDK.
+    }
 
     // Write a message to |h2|, before we send |h3|.
     const char kWorld[] = "world!";

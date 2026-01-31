@@ -93,6 +93,9 @@ class CORE_EXPORT StyleRecalcContext {
   // display:none.
   const ComputedStyle* old_style = nullptr;
 
+  // The nearest ancestor overscroll container.
+  Element* overscroll_container = nullptr;
+
   // If false, something about the parent's style (e.g., that it has
   // modifications to one or more non-independent inherited properties)
   // forces a full recalculation of this element's style, precluding

@@ -27,21 +27,22 @@ struct ObservedToolTarget {
   blink.mojom.AIPageContentAttributes node_attribute;
 };
 
+// Corresponds to ClickAction.ClickType
+enum ClickType {
+  kLeft = 1,
+  kRight = 2,
+};
+
+// Corresponds to ClickAction.ClickCount
+enum ClickCount {
+  kSingle = 1,
+  kDouble = 2,
+};
+
 // Information specific to a click action.
 struct ClickAction {
-  // Corresponds to ClickAction.ClickType
-  enum Type {
-    kLeft = 1,
-    kRight = 2,
-  };
-
-  // Corresponds to ClickAction.ClickCount
-  enum Count {
-    kSingle = 1,
-    kDouble = 2,
-  };
-  Type type;
-  Count count;
+  ClickType type;
+  ClickCount count;
 };
 
 // Information specific to a mouse move action.
@@ -256,6 +257,12 @@ enum ActionResultCode {
 
   // The PageTool invocation was canceled.
   kInvokeCanceled = 41,
+
+  // The task is in an invalid state for an Act request.
+  kInvalidTaskStateForAct = 42,
+
+  // The remaining actions were cancelled.
+  kActionsCancelled = 43,
 
   // Please see the comment above about adding new values.
 
@@ -477,7 +484,23 @@ enum ActionResultCode {
   // Codes 1200-1299: Errors for script tool.
 
   // The document did not return a response for the script tool.
+  // Generic error for all failures.
   kScriptToolNoResponse = 1200,
+
+  // Tool was not executed due to invalid name.
+  kScriptToolInvalidName = 1201,
+
+  // Tool was not executed due to invalid input arguments.
+  kScriptToolInvalidInputArguments = 1202,
+
+  // Tool was executed but the invocation failed. For example, the script
+  // function threw an error.
+  kScriptToolInvocationFailed = 1203,
+
+  // Tool was executed with default form submission assuming the result will be
+  // provided after a same-origin navigation commit but a cross-origin
+  // navigation was committed.
+  kScriptToolCrossOriginNavigation = 1204,
 
   // Please see the comment above about adding new values.
 
@@ -514,6 +537,16 @@ struct ToolInvocation {
   ObservedToolTarget? observed_target;
 };
 
+struct ScriptToolResponse {
+  // The name and input arguments provided in the script tool action.
+  string name;
+  string input_arguments;
+
+  // The result of executing the action. If not provided, the action resulted in
+  // a navigation and the result will be on the next Document.
+  string? result;
+};
+
 struct ActionResult {
   // A code with the outcome of the tool invocation.
   ActionResultCode code;
@@ -527,7 +560,7 @@ struct ActionResult {
 
   // If the action is a script tool, provides the result of that execution. This
   // is only populated if the execution was successful.
-  string? script_tool_response;
+  ScriptToolResponse? script_tool_response;
 
   // Time at which execution of the action was complete and page
   // stabilization was started. This field may not be available if the action's

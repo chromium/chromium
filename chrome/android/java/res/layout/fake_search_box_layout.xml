@@ -14,7 +14,9 @@ found in the LICENSE file.
     android:layout_marginStart="@dimen/mvt_container_lateral_margin"
     android:layout_marginEnd="@dimen/mvt_container_lateral_margin"
     android:layout_marginTop="0dp"
-    android:layout_marginBottom="@dimen/ntp_search_box_bottom_margin">
+    android:layout_marginBottom="@dimen/ntp_search_box_bottom_margin"
+    android:clipChildren="false"
+    android:clipToPadding="false">
 
     <LinearLayout
         android:id="@+id/search_box_container"

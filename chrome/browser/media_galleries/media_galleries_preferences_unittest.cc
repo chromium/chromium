@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
@@ -188,11 +187,11 @@ class MediaGalleriesPreferencesTest : public testing::Test {
     std::unique_ptr<ScopedListPrefUpdate> update =
         std::make_unique<ScopedListPrefUpdate>(
             prefs, prefs::kMediaGalleriesRememberedGalleries);
-    base::Value::List& list = update->Get();
+    base::ListValue& list = update->Get();
 
     for (auto& entry : list) {
       if (entry.is_dict()) {
-        base::Value::Dict& dict = entry.GetDict();
+        base::DictValue& dict = entry.GetDict();
         // Setting the prefs version to 2 which is the version before
         // default_gallery_type was added.
         dict.Set(kMediaGalleriesPrefsVersionKey, 2);
@@ -210,8 +209,8 @@ class MediaGalleriesPreferencesTest : public testing::Test {
       VerifyGalleryInfo(it->second, it->first);
       if (it->second.type != MediaGalleryPrefInfo::kAutoDetected &&
           it->second.type != MediaGalleryPrefInfo::kBlockListed) {
-        if (!base::Contains(expected_galleries_for_all, it->first) &&
-            !base::Contains(expected_galleries_for_regular, it->first)) {
+        if (!expected_galleries_for_all.contains(it->first) &&
+            !expected_galleries_for_regular.contains(it->first)) {
           EXPECT_FALSE(gallery_prefs_->NonAutoGalleryHasPermission(it->first));
         } else {
           EXPECT_TRUE(gallery_prefs_->NonAutoGalleryHasPermission(it->first));

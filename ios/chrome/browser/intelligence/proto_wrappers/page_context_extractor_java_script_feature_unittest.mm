@@ -13,6 +13,7 @@
 #import "base/test/values_test_util.h"
 #import "base/time/time.h"
 #import "base/values.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/testing/embedded_test_server_handlers.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
@@ -52,15 +53,14 @@ class PageContextExtractorJavaScriptFeatureTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
-    browser_state_ = std::make_unique<web::FakeBrowserState>();
+    browser_state_ = TestProfileIOS::Builder().Build();
 
     web::WebState::CreateParams params(browser_state_.get());
     web_state_ = web::WebState::Create(params);
     web_state_->GetView();
     web_state_->SetKeepRenderProcessAlive(true);
 
-    GetWebClient()->SetJavaScriptFeatures(
-        {feature(), web::java_script_features::GetCommonJavaScriptFeature()});
+    GetWebClient()->SetJavaScriptFeatures({feature()});
 
     test_server_.RegisterRequestHandler(base::BindRepeating(
         &net::test_server::HandlePrefixedRequest, kIframe1Path,
@@ -69,6 +69,11 @@ class PageContextExtractorJavaScriptFeatureTest : public PlatformTest {
         net::test_server::HandlePrefixedRequest, kIframe2Path,
         base::BindRepeating(&testing::HandlePageWithHtml, kIframe2Html)));
     ASSERT_TRUE(test_server_.Start());
+
+    xorigin_test_server_.RegisterRequestHandler(base::BindRepeating(
+        net::test_server::HandlePrefixedRequest, kIframe2Path,
+        base::BindRepeating(&testing::HandlePageWithHtml, kIframe2Html)));
+    ASSERT_TRUE(xorigin_test_server_.Start());
   }
 
   web::FakeWebClient* GetWebClient() {
@@ -81,13 +86,49 @@ class PageContextExtractorJavaScriptFeatureTest : public PlatformTest {
 
   web::ScopedTestingWebClient web_client_;
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<web::FakeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> browser_state_;
   std::unique_ptr<web::WebState> web_state_;
   net::EmbeddedTestServer test_server_;
+  net::EmbeddedTestServer xorigin_test_server_;
 };
 
+TEST_F(PageContextExtractorJavaScriptFeatureTest,
+       ExtractPageContextWithCrossOriginFrames) {
+  const std::string main_html =
+      base::StrCat({"<html><head><title>Main</title></head><body><p>Main frame "
+                    "text</p><iframe "
+                    "src=\"",
+                    xorigin_test_server_.GetURL(kIframe2Path).spec(),
+                    "\"></iframe></body></html>"});
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  base::Value result_value;
+
+  base::RunLoop run_loop;
+  feature()->ExtractPageContext(
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
+      /*include_anchors=*/false, /*include_cross_origin_frame_content=*/true,
+      "nonce", base::Milliseconds(100),
+      base::BindOnce(
+          [](base::RunLoop* r, base::Value* result_value,
+             const base::Value* value) {
+            *result_value = value->Clone();
+            r->Quit();
+          },
+          &run_loop, &result_value));
+  run_loop.Run();
+
+  // We expect the child to have a remoteToken.
+  const base::ListValue* children = result_value.GetDict().FindList("children");
+  ASSERT_TRUE(children);
+  ASSERT_EQ(1u, children->size());
+  const base::Value& child = (*children)[0];
+  EXPECT_TRUE(child.GetDict().FindString("remoteToken"));
+}
+
 // TODO(crbug.com/455761581): Test is flaky.
-TEST_F(PageContextExtractorJavaScriptFeatureTest, FLAKY_ExtractPageContext) {
+TEST_F(PageContextExtractorJavaScriptFeatureTest, DISABLED_ExtractPageContext) {
   const std::string main_html =
       base::StrCat({"<html><head><title>Main</title></head><body><p>Main frame "
                     "text</p><iframe "
@@ -102,7 +143,8 @@ TEST_F(PageContextExtractorJavaScriptFeatureTest, FLAKY_ExtractPageContext) {
   base::RunLoop run_loop;
   feature()->ExtractPageContext(
       web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
-      /*include_anchors=*/false, "nonce", base::Milliseconds(100),
+      /*include_anchors=*/false, /*include_cross_origin_frame_content=*/false,
+      "nonce", base::Milliseconds(100),
       base::BindOnce(
           [](base::RunLoop* r, base::Value* result_value,
              const base::Value* value) {
@@ -113,19 +155,19 @@ TEST_F(PageContextExtractorJavaScriptFeatureTest, FLAKY_ExtractPageContext) {
   run_loop.Run();
 
   base::Value expected_value(
-      base::Value::Dict()
+      base::DictValue()
           .Set("currentNodeInnerText", "Main frame text\n\n")
           .Set("title", "Main")
           .Set("sourceURL", test_server_.GetURL(kMainPagePath).spec())
           .Set(
               "children",
-              base::Value::List()
-                  .Append(base::Value::Dict()
+              base::ListValue()
+                  .Append(base::DictValue()
                               .Set("currentNodeInnerText", "Child frame 1 text")
                               .Set("title", "Child 1")
                               .Set("sourceURL",
                                    test_server_.GetURL(kIframe1Path).spec()))
-                  .Append(base::Value::Dict()
+                  .Append(base::DictValue()
                               .Set("currentNodeInnerText", "Child frame 2 text")
                               .Set("title", "Child 2")
                               .Set("sourceURL",
@@ -134,8 +176,9 @@ TEST_F(PageContextExtractorJavaScriptFeatureTest, FLAKY_ExtractPageContext) {
   EXPECT_THAT(result_value, base::test::IsSupersetOfValue(expected_value));
 }
 
+// TODO(crbug.com/455761581): Test is flaky.
 TEST_F(PageContextExtractorJavaScriptFeatureTest,
-       ExtractPageContextWithAnchors) {
+       DISABLED_ExtractPageContextWithAnchors) {
   const std::string main_html =
       "<html><head><title>Main</title></head><body><a "
       "href=\"http://foo.com\">foo</a></body></html>";
@@ -147,7 +190,8 @@ TEST_F(PageContextExtractorJavaScriptFeatureTest,
   base::RunLoop run_loop;
   feature()->ExtractPageContext(
       web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
-      /*include_anchors=*/true, "nonce", base::Milliseconds(100),
+      /*include_anchors=*/true, /*include_cross_origin_frame_content=*/false,
+      "nonce", base::Milliseconds(100),
       base::BindOnce(
           [](base::RunLoop* r, base::Value* result_value,
              const base::Value* value) {
@@ -158,20 +202,21 @@ TEST_F(PageContextExtractorJavaScriptFeatureTest,
   run_loop.Run();
 
   base::Value expected_value(
-      base::Value::Dict()
+      base::DictValue()
           .Set("currentNodeInnerText", "foo")
           .Set("title", "Main")
           .Set("sourceURL", test_server_.GetURL(kMainPagePath).spec())
           .Set("links",
-               base::Value::List().Append(base::Value::Dict()
-                                              .Set("href", "http://foo.com/")
-                                              .Set("linkText", "foo"))));
+               base::ListValue().Append(base::DictValue()
+                                            .Set("href", "http://foo.com/")
+                                            .Set("linkText", "foo"))));
 
   EXPECT_THAT(result_value, base::test::IsSupersetOfValue(expected_value));
 }
 
+// TODO(crbug.com/455761581): Test is flaky.
 TEST_F(PageContextExtractorJavaScriptFeatureTest,
-       ExtractPageContextWithForceDetach) {
+       DISABLED_ExtractPageContextWithForceDetach) {
   const std::string main_html = "<html><body><p>Hello</p></body></html>";
   web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
                       test_server_.GetURL(kMainPagePath), web_state());
@@ -189,7 +234,8 @@ TEST_F(PageContextExtractorJavaScriptFeatureTest,
   base::RunLoop run_loop;
   feature()->ExtractPageContext(
       web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
-      /*include_anchors=*/false, "nonce", base::Milliseconds(100),
+      /*include_anchors=*/false, /*include_cross_origin_frame_content=*/false,
+      "nonce", base::Milliseconds(100),
       base::BindOnce(
           [](base::RunLoop* r, base::Value* result_value,
              const base::Value* value) {
@@ -200,7 +246,7 @@ TEST_F(PageContextExtractorJavaScriptFeatureTest,
   run_loop.Run();
 
   base::Value expected_value(
-      base::Value::Dict().Set("shouldDetachPageContext", true));
+      base::DictValue().Set("shouldDetachPageContext", true));
 
   EXPECT_THAT(result_value, base::test::IsSupersetOfValue(expected_value));
 }

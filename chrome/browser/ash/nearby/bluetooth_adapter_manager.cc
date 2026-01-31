@@ -4,7 +4,8 @@
 
 #include "chrome/browser/ash/nearby/bluetooth_adapter_manager.h"
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "chromeos/ash/services/nearby/public/cpp/nearby_client_uuids.h"
@@ -33,7 +34,7 @@ void LogBluetoothAdapterAdvertisingSupport(
     scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) {
   bool is_extended_advertisement_supported =
       bluetooth_adapter->IsExtendedAdvertisementsAvailable();
-  bool is_scatternet_dual_role_supported = base::Contains(
+  bool is_scatternet_dual_role_supported = std::ranges::contains(
       bluetooth_adapter->GetSupportedRoles(),
       device::BluetoothAdapter::BluetoothRole::kCentralPeripheral);
 

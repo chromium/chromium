@@ -135,6 +135,12 @@ AutofillProgressDialogViews::AutofillProgressDialogViews(
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kCancel));
   SetButtonLabel(ui::mojom::DialogButton::kCancel,
                  controller_->GetCancelButtonLabel());
+  // There is no "prominent" button on this dialog. User can explicitly exit the
+  // dialog with "Esc" or click the "Cancel" button. This should make the cancel
+  // button always rendered as a non-prominent/non-default button.
+  SetButtonStyle(ui::mojom::DialogButton::kCancel, ui::ButtonStyle::kDefault);
+  SetDefaultButton(static_cast<int>(ui::mojom::DialogButton::kNone));
+
   SetCancelCallback(base::BindOnce(
       &AutofillProgressDialogViews::OnDialogCanceled, base::Unretained(this)));
   SetModalType(ui::mojom::ModalType::kChild);

@@ -9,7 +9,6 @@
 
 namespace blink {
 
-class AnimationTrigger;
 class Element;
 class ScopedCSSName;
 
@@ -20,8 +19,10 @@ using TriggerScopedName = NamingScope;
 
 TriggerScopedName* ToTriggerScopedName(const ScopedCSSName&, const Element&);
 
+// Maps a name declared by a trigger-instantiating property, e.g.
+// timeline-trigger, to the Element whose style declares the property.
 using TriggerScopedNameMap =
-    GCedHeapHashMap<Member<const TriggerScopedName>, Member<AnimationTrigger>>;
+    GCedHeapHashMap<Member<const TriggerScopedName>, Member<const Element>>;
 
 }  // namespace blink
 

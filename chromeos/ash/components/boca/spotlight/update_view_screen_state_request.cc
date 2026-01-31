@@ -92,25 +92,25 @@ bool UpdateViewScreenStateRequest::GetContentData(
     std::string* upload_content_type,
     std::string* upload_content) {
   *upload_content_type = boca::kContentTypeApplicationJson;
-  base::Value::Dict root;
-  base::Value::Dict teacher_info;
-  base::Value::Dict teacher;
+  base::DictValue root;
+  base::DictValue teacher_info;
+  base::DictValue teacher;
   teacher.Set(kGaiaId, update_view_screen_state_param_.teacher_gaia_id);
   teacher_info.Set(kUser, std::move(teacher));
 
-  base::Value::Dict teacher_device;
+  base::DictValue teacher_device;
   teacher_device.Set(kDeviceId,
                      update_view_screen_state_param_.teacher_device_id);
   teacher_info.Set(kDeviceInfo, std::move(teacher_device));
 
   root.Set(kTeacherClientDevice, std::move(teacher_info));
 
-  base::Value::Dict host_device_info;
-  base::Value::Dict host;
+  base::DictValue host_device_info;
+  base::DictValue host;
   host.Set(kGaiaId, update_view_screen_state_param_.student_gaia_id);
   host_device_info.Set(kUser, std::move(host));
 
-  base::Value::Dict host_device;
+  base::DictValue host_device;
   host_device.Set(kDeviceId, update_view_screen_state_param_.student_device_id);
   host_device_info.Set(kDeviceInfo, std::move(host_device));
   root.Set(kHostDevice, std::move(host_device_info));

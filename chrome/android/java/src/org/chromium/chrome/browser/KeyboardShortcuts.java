@@ -28,8 +28,10 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.PinnedTabClosureManagerFactory;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -71,6 +73,7 @@ public class KeyboardShortcuts {
         KeyboardShortcutsSemanticMeaning.OPEN_NEW_TAB,
         KeyboardShortcutsSemanticMeaning.OPEN_NEW_TAB_INCOGNITO,
         KeyboardShortcutsSemanticMeaning.OPEN_NEW_WINDOW,
+        KeyboardShortcutsSemanticMeaning.OPEN_NEW_WINDOW_INCOGNITO,
         KeyboardShortcutsSemanticMeaning.RELOAD_TAB,
         KeyboardShortcutsSemanticMeaning.RELOAD_TAB_BYPASSING_CACHE,
         KeyboardShortcutsSemanticMeaning.MOVE_TO_TAB_LEFT,
@@ -141,97 +144,98 @@ public class KeyboardShortcuts {
         int OPEN_NEW_TAB = 2;
         int OPEN_NEW_TAB_INCOGNITO = 3;
         int OPEN_NEW_WINDOW = 4;
+        int OPEN_NEW_WINDOW_INCOGNITO = 5;
 
         // Tab control.
-        int RELOAD_TAB = 5;
-        int RELOAD_TAB_BYPASSING_CACHE = 6;
-        int MOVE_TO_TAB_LEFT = 7;
-        int MOVE_TO_TAB_RIGHT = 8;
-        int MOVE_TO_SPECIFIC_TAB = 9;
-        int MOVE_TO_LAST_TAB = 10;
-        int NOT_IMPLEMENTED_TAB_SEARCH = 11;
-        int NOT_IMPLEMENTED_TOGGLE_MULTITASK_MENU = 12;
+        int RELOAD_TAB = 6;
+        int RELOAD_TAB_BYPASSING_CACHE = 7;
+        int MOVE_TO_TAB_LEFT = 8;
+        int MOVE_TO_TAB_RIGHT = 9;
+        int MOVE_TO_SPECIFIC_TAB = 10;
+        int MOVE_TO_LAST_TAB = 11;
+        int NOT_IMPLEMENTED_TAB_SEARCH = 12;
+        int NOT_IMPLEMENTED_TOGGLE_MULTITASK_MENU = 13;
 
         // Closing.
-        int CLOSE_TAB = 13;
-        int CLOSE_WINDOW = 14;
-        int NOT_IMPLEMENTED_QUIT_CHROME = 15;
+        int CLOSE_TAB = 14;
+        int CLOSE_WINDOW = 15;
+        int NOT_IMPLEMENTED_QUIT_CHROME = 16;
 
         // Navigation controls.
-        int JUMP_TO_OMNIBOX = 16;
-        int JUMP_TO_SEARCH = 17;
-        int NOT_IMPLEMENTED_FOCUS_WEB_CONTENTS_PANE = 18;
-        int NOT_IMPLEMENTED_SCROLL_DOWN = 19;
-        int NOT_IMPLEMENTED_SCROLL_UP = 20;
+        int JUMP_TO_OMNIBOX = 17;
+        int JUMP_TO_SEARCH = 18;
+        int NOT_IMPLEMENTED_FOCUS_WEB_CONTENTS_PANE = 19;
+        int NOT_IMPLEMENTED_SCROLL_DOWN = 20;
+        int NOT_IMPLEMENTED_SCROLL_UP = 21;
 
         // Top controls.
-        int KEYBOARD_FOCUS_TOOLBAR = 21;
-        int KEYBOARD_FOCUS_BOOKMARKS = 22;
-        int KEYBOARD_FOCUS_SWITCH_ROW_OF_TOP_ELEMENTS = 23;
-        int FOCUSED_TAB_STRIP_ITEM_OPEN_CONTEXT_MENU = 24;
-        int FOCUSED_TAB_STRIP_ITEM_REORDER_LEFT = 25;
-        int FOCUSED_TAB_STRIP_ITEM_REORDER_RIGHT = 26;
-        int NOT_IMPLEMENTED_CURRENT_OPEN_TAB_REORDER_LEFT = 27;
-        int NOT_IMPLEMENTED_CURRENT_OPEN_TAB_REORDER_RIGHT = 28;
+        int KEYBOARD_FOCUS_TOOLBAR = 22;
+        int KEYBOARD_FOCUS_BOOKMARKS = 23;
+        int KEYBOARD_FOCUS_SWITCH_ROW_OF_TOP_ELEMENTS = 24;
+        int FOCUSED_TAB_STRIP_ITEM_OPEN_CONTEXT_MENU = 25;
+        int FOCUSED_TAB_STRIP_ITEM_REORDER_LEFT = 26;
+        int FOCUSED_TAB_STRIP_ITEM_REORDER_RIGHT = 27;
+        int NOT_IMPLEMENTED_CURRENT_OPEN_TAB_REORDER_LEFT = 28;
+        int NOT_IMPLEMENTED_CURRENT_OPEN_TAB_REORDER_RIGHT = 29;
 
         // Accessibility.
-        int TOGGLE_CARET_BROWSING = 29;
-        int NOT_IMPLEMENTED_FOCUS_ON_INACTIVE_DIALOGS = 30;
+        int TOGGLE_CARET_BROWSING = 30;
+        int NOT_IMPLEMENTED_FOCUS_ON_INACTIVE_DIALOGS = 31;
 
         // Bookmarks.
-        int OPEN_BOOKMARKS = 31;
-        int BOOKMARK_PAGE = 32;
-        int NOT_IMPLEMENTED_BOOKMARK_ALL_TABS = 33;
-        int TOGGLE_BOOKMARK_BAR = 34;
+        int OPEN_BOOKMARKS = 32;
+        int BOOKMARK_PAGE = 33;
+        int NOT_IMPLEMENTED_BOOKMARK_ALL_TABS = 34;
+        int TOGGLE_BOOKMARK_BAR = 35;
 
         // Fullscreen.
-        int NOT_IMPLEMENTED_TOGGLE_IMMERSIVE = 35;
-        int NOT_IMPLEMENTED_EXIT_IMMERSIVE = 36;
+        int NOT_IMPLEMENTED_TOGGLE_IMMERSIVE = 36;
+        int NOT_IMPLEMENTED_EXIT_IMMERSIVE = 37;
 
         // Developer tools.
-        int DEV_TOOLS = 37;
-        int NOT_IMPLEMENTED_DEV_TOOLS_CONSOLE = 38;
-        int NOT_IMPLEMENTED_DEV_TOOLS_INSPECT = 39;
-        int NOT_IMPLEMENTED_DEV_TOOLS_TOGGLE = 40;
-        int VIEW_SOURCE = 41;
-        int TASK_MANAGER = 42;
+        int DEV_TOOLS = 38;
+        int NOT_IMPLEMENTED_DEV_TOOLS_CONSOLE = 39;
+        int NOT_IMPLEMENTED_DEV_TOOLS_INSPECT = 40;
+        int NOT_IMPLEMENTED_DEV_TOOLS_TOGGLE = 41;
+        int VIEW_SOURCE = 42;
+        int TASK_MANAGER = 43;
 
         // Downloads.
-        int SAVE_PAGE = 43;
-        int SHOW_DOWNLOADS = 44;
+        int SAVE_PAGE = 44;
+        int SHOW_DOWNLOADS = 45;
 
         // History.
-        int OPEN_HISTORY = 45;
-        int HISTORY_GO_BACK = 46;
-        int HISTORY_GO_FORWARD = 47;
-        int CLEAR_BROWSING_DATA = 48;
+        int OPEN_HISTORY = 46;
+        int HISTORY_GO_BACK = 47;
+        int HISTORY_GO_FORWARD = 48;
+        int CLEAR_BROWSING_DATA = 49;
 
         // Print.
-        int PRINT = 49;
-        int NOT_IMPLEMENTED_BASIC_PRINT = 50;
+        int PRINT = 50;
+        int NOT_IMPLEMENTED_BASIC_PRINT = 51;
 
         // Zoom controls.
-        int ZOOM_IN = 51;
-        int ZOOM_OUT = 52;
-        int ZOOM_RESET = 53;
+        int ZOOM_IN = 52;
+        int ZOOM_OUT = 53;
+        int ZOOM_RESET = 54;
 
         // Misc.
-        int NOT_IMPLEMENTED_AVATAR_MENU = 54;
-        int FEEDBACK_FORM = 55;
-        int FIND_IN_PAGE = 56;
-        int NOT_IMPLEMENTED_HOME = 57;
-        int OPEN_HELP = 58;
-        int OPEN_MENU = 59;
+        int NOT_IMPLEMENTED_AVATAR_MENU = 55;
+        int FEEDBACK_FORM = 56;
+        int FIND_IN_PAGE = 57;
+        int NOT_IMPLEMENTED_HOME = 58;
+        int OPEN_HELP = 59;
+        int OPEN_MENU = 60;
 
         // Custom keyboard shortcut used by extensions.
         // This enum isn't precisely a single semantic meaning, but we want to report metrics.
-        int CUSTOM_EXTENSION_SHORTCUT = 60;
+        int CUSTOM_EXTENSION_SHORTCUT = 61;
 
         // Tab strip shortcuts.
-        int TOGGLE_MULTISELECT = 61;
+        int TOGGLE_MULTISELECT = 62;
 
         // Max value.
-        int MAX_VALUE = 62;
+        int MAX_VALUE = 63;
     }
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/accessibility/enums.xml:KeyboardShortcutsSemanticMeaning, //tools/metrics/histograms/metadata/accessibility/histograms.xml:KeyboardShortcutsSemanticMeaning)
@@ -406,11 +410,21 @@ public class KeyboardShortcuts {
                 new KeyCombo(KeyEvent.KEYCODE_T, (KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON)),
                 R.string.keyboard_shortcut_reopen_new_tab,
                 R.string.keyboard_shortcut_tab_group_header);
-        new KeyboardShortcutDefinition(
-                KeyboardShortcutsSemanticMeaning.OPEN_NEW_TAB_INCOGNITO,
-                new KeyCombo(KeyEvent.KEYCODE_N, (KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON)),
-                R.string.keyboard_shortcut_new_incognito_tab,
-                R.string.keyboard_shortcut_tab_group_header);
+        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+            new KeyboardShortcutDefinition(
+                    KeyboardShortcutsSemanticMeaning.OPEN_NEW_WINDOW_INCOGNITO,
+                    new KeyCombo(
+                            KeyEvent.KEYCODE_N, (KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON)),
+                    R.string.keyboard_shortcut_new_incognito_window,
+                    R.string.keyboard_shortcut_tab_group_header);
+        } else {
+            new KeyboardShortcutDefinition(
+                    KeyboardShortcutsSemanticMeaning.OPEN_NEW_TAB_INCOGNITO,
+                    new KeyCombo(
+                            KeyEvent.KEYCODE_N, (KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON)),
+                    R.string.keyboard_shortcut_new_incognito_tab,
+                    R.string.keyboard_shortcut_tab_group_header);
+        }
 
         // Reload tabs.
         new KeyboardShortcutDefinition(
@@ -1029,9 +1043,13 @@ public class KeyboardShortcuts {
                 menuOrKeyboardActionController.onMenuOrKeyboardAction(
                         R.id.new_incognito_tab_menu_id, false);
                 return true;
-                // Alt+E represents a special character ´ (latin code: &#180) in Android.
-                // If an EditText or ContentView has focus, Alt+E will be swallowed by
-                // the default dispatchKeyEvent and cannot open the menu.
+            case KeyboardShortcutsSemanticMeaning.OPEN_NEW_WINDOW_INCOGNITO:
+                menuOrKeyboardActionController.onMenuOrKeyboardAction(
+                        R.id.new_incognito_window_menu_id, false);
+                return true;
+            // Alt+E represents a special character ´ (latin code: &#180) in Android.
+            // If an EditText or ContentView has focus, Alt+E will be swallowed by
+            // the default dispatchKeyEvent and cannot open the menu.
             case KeyboardShortcutsSemanticMeaning.OPEN_MENU:
                 menuOrKeyboardActionController.onMenuOrKeyboardAction(R.id.show_menu, false);
                 return true;
@@ -1089,17 +1107,31 @@ public class KeyboardShortcuts {
                         if (!currentTabModel.isTabMultiSelected(tab.getId())) continue;
                         selectedTabs.add(tab);
                     }
+                    List<Tab> tabsToClose =
+                            selectedTabs.isEmpty()
+                                    ? List.of(TabModelUtils.getCurrentTab(currentTabModel))
+                                    : selectedTabs;
                     Tab tab = TabModelUtils.getCurrentTab(currentTabModel);
                     if (tab != null) {
-                        currentTabModel
-                                .getTabRemover()
-                                .closeTabs(
-                                        TabClosureParams.closeTabs(selectedTabs)
-                                                .allowUndo(false)
-                                                .tabClosingSource(
-                                                        TabClosingSource.KEYBOARD_SHORTCUT)
-                                                .build(),
-                                        /* allowDialog= */ true);
+                        // Pinned tabs require a second Ctrl+W to confirm closure unless part of a
+                        // bulk selection or already confirmed by the manager.
+                        boolean canClose =
+                                PinnedTabClosureManagerFactory.getInstance()
+                                        .shouldCloseTab(
+                                                tabModelSelector,
+                                                tab,
+                                                /* isBulkClose= */ tabsToClose.size() > 1);
+                        if (canClose) {
+                            currentTabModel
+                                    .getTabRemover()
+                                    .closeTabs(
+                                            TabClosureParams.closeTabs(tabsToClose)
+                                                    .allowUndo(false)
+                                                    .tabClosingSource(
+                                                            TabClosingSource.KEYBOARD_SHORTCUT)
+                                                    .build(),
+                                            /* allowDialog= */ true);
+                        }
                     }
                     return true;
                 case KeyboardShortcutsSemanticMeaning.FIND_IN_PAGE:

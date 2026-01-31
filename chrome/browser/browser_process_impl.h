@@ -25,6 +25,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/buildflags.h"
+#include "components/activity_reporter/activity_reporter.h"
 #include "components/keep_alive_registry/keep_alive_state_observer.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/prefs/persistent_pref_store.h"
@@ -93,6 +94,10 @@ class SodaInstaller;
 namespace screen_ai {
 class ScreenAIInstallState;
 }  // namespace screen_ai
+
+namespace supervised_user {
+class DeviceParentalControls;
+}  // namespace supervised_user
 
 // Real implementation of BrowserProcess that creates and returns the services.
 class BrowserProcessImpl : public BrowserProcess,
@@ -187,6 +192,7 @@ class BrowserProcessImpl : public BrowserProcess,
   printing::PrintPreviewDialogController* print_preview_dialog_controller()
       override;
   printing::BackgroundPrintingManager* background_printing_manager() override;
+  supervised_user::DeviceParentalControls& device_parental_controls() override;
 #if !BUILDFLAG(IS_ANDROID)
   IntranetRedirectDetector* intranet_redirect_detector() override;
 #endif
@@ -212,6 +218,7 @@ class BrowserProcessImpl : public BrowserProcess,
   void StartAutoupdateTimer() override;
 #endif
 
+  activity_reporter::ActivityReporter* activity_reporter() override;
   component_updater::ComponentUpdateService* component_updater() override;
 #if BUILDFLAG(IS_CHROMEOS)
   MediaFileSystemRegistry* media_file_system_registry() override;
@@ -241,7 +248,6 @@ class BrowserProcessImpl : public BrowserProcess,
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
   GlobalFeatures* GetFeatures() override;
-  void CreateGlobalFeaturesForTesting() override;
 
  private:
   using WebRtcEventLogManager = webrtc_event_logging::WebRtcEventLogManager;
@@ -355,6 +361,9 @@ class BrowserProcessImpl : public BrowserProcess,
       background_printing_manager_;
 #endif
 
+  std::unique_ptr<supervised_user::DeviceParentalControls>
+      device_parental_controls_;
+
 #if BUILDFLAG(ENABLE_CHROME_NOTIFICATIONS)
   // Manager for desktop notification UI.
   bool created_notification_ui_manager_ = false;
@@ -423,6 +432,8 @@ class BrowserProcessImpl : public BrowserProcess,
   void OnPendingRestartResult(bool is_update_pending_restart);
   void RestartBackgroundInstance();
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+
+  std::unique_ptr<activity_reporter::ActivityReporter> activity_reporter_;
 
   // component updater is normally not used under ChromeOS due
   // to concerns over integrity of data shared between profiles,

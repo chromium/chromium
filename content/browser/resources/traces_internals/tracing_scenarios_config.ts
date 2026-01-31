@@ -101,7 +101,7 @@ export class TracingScenariosConfigElement extends CrLitElement {
     if (this.tracingServiceSupported_) {
       this.securityShieldIconUrl_ =
           (await this.traceReportProxy_.handler.getSecurityShieldIconUrl())
-              .shieldIconUrl.url;
+              .shieldIconUrl;
     }
     // </if>
 

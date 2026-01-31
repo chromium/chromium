@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/containers/queue.h"
+#include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -85,7 +86,7 @@ class ExpireHistoryBackend {
   void DeleteURL(const GURL& url, base::Time end_time);
 
   // Deletes everything associated with each URL in the list until `end_time`.
-  void DeleteURLs(const std::vector<GURL>& url, base::Time end_time);
+  void DeleteURLs(base::span<const GURL> urls, base::Time end_time);
 
   // Removes all visits to restrict_urls (or all URLs if empty) and
   // restrict_app_id (or all entries if absent) in the given
@@ -99,7 +100,7 @@ class ExpireHistoryBackend {
   // Removes all visits to all URLs with the given times, updating the
   // URLs accordingly.  `times` must be in reverse chronological order
   // and not contain any duplicates.
-  void ExpireHistoryForTimes(const std::vector<base::Time>& times);
+  void ExpireHistoryForTimes(base::span<const base::Time> times);
 
   // Removes the given list of visits, updating the URLs accordingly (similar to
   // ExpireHistoryBetween(), but affecting a specific set of visits).

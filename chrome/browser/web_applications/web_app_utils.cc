@@ -10,15 +10,19 @@
 #include <map>
 #include <optional>
 #include <set>
+#include <string>
+#include <string_view>
 #include <utility>
+#include <vector>
 
 #include "ash/constants/web_app_id_constants.h"
 #include "base/base64.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
+#include "base/check_op.h"
 #include "base/containers/enum_set.h"
 #include "base/containers/extend.h"
 #include "base/containers/map_util.h"
+#include "base/containers/to_value_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -43,6 +47,7 @@
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/browser/content_settings_info.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
@@ -50,6 +55,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/crx_file/id_util.h"
 #include "components/grit/components_resources.h"
+#include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/run_on_os_login_types.h"
 #include "components/site_engagement/content/site_engagement_service.h"
@@ -58,13 +64,16 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/common/alternative_error_page_override_info.mojom-forward.h"
 #include "content/public/common/alternative_error_page_override_info.mojom.h"
 #include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/safe_url_pattern.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-shared.h"
+#include "third_party/liburlpattern/options.h"
+#include "third_party/liburlpattern/part.h"
+#include "third_party/liburlpattern/pattern.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/codec/png_codec.h"
@@ -77,7 +86,6 @@
 #include "chromeos/ash/components/file_manager/app_id.h"
 #include "components/user_manager/user_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
 namespace web_app {
 
 namespace {
@@ -152,8 +160,8 @@ class AppIconFetcherTask : public content::WebContentsObserver {
 
   void OnIconFetched(int fetched_size,
                      std::map<SquareSizePx, SkBitmap> icon_bitmaps) {
-    DCHECK(icon_bitmaps.size() == 1);
-    DCHECK(icon_bitmaps.begin()->first == fetched_size);
+    DCHECK_EQ(icon_bitmaps.size(), 1ul);
+    DCHECK_EQ(icon_bitmaps.begin()->first, fetched_size);
     if (icon_bitmaps.size() == 0) {
       delete this;
       return;
@@ -233,9 +241,32 @@ bool AreWebAppsEnabled(Profile* profile) {
   return !profile->IsOffTheRecord();
 }
 
+bool IsWebAppInstallByUserPolicyEnabled(Profile* profile) {
+  WebAppProvider* web_app_provider = WebAppProvider::GetForWebApps(profile);
+  if (web_app_provider == nullptr) {
+    return false;
+  }
+
+  return web_app_provider->policy_manager().GetEffectiveInstallPolicyValue();
+}
+
 bool AreWebAppsUserInstallable(Profile* profile) {
   return AreWebAppsEnabled(profile) && !profile->IsGuestSession() &&
-         !profile->IsOffTheRecord();
+         !profile->IsOffTheRecord() &&
+         IsWebAppInstallByUserPolicyEnabled(profile);
+}
+
+// Policy installed apps are only allowed on:
+// 1. ChromeOS guest sessions (current only on Ash).
+// 2. All Chrome profiles apart from incognito/guest profiles.
+bool AreWebAppsForceInstallable(Profile* profile) {
+  bool allowed = AreWebAppsEnabled(profile) && !profile->IsGuestSession() &&
+                 !profile->IsOffTheRecord();
+#if BUILDFLAG(IS_CHROMEOS)
+  allowed = allowed || user_manager::UserManager::Get()->IsLoggedInAsGuest() ||
+            user_manager::UserManager::Get()->IsLoggedInAsManagedGuestSession();
+#endif
+  return allowed;
 }
 
 content::BrowserContext* GetBrowserContextForWebApps(
@@ -356,12 +387,12 @@ bool AreNewFileHandlersASubsetOfOld(const apps::FileHandlers& old_handlers,
 
   for (const apps::FileHandler& new_handler : new_handlers) {
     for (const auto& new_handler_accept : new_handler.accept) {
-      if (!base::Contains(mime_types_set, new_handler_accept.mime_type)) {
+      if (!mime_types_set.contains(new_handler_accept.mime_type)) {
         return false;
       }
 
       for (const auto& new_extension : new_handler_accept.file_extensions) {
-        if (!base::Contains(extensions_set, new_extension)) {
+        if (!extensions_set.contains(new_extension)) {
           return false;
         }
       }
@@ -454,6 +485,7 @@ apps::LaunchContainer ConvertDisplayModeToAppLaunchContainer(
     DisplayMode display_mode) {
   switch (display_mode) {
     case DisplayMode::kBrowser:
+    case DisplayMode::kUndefined:
       return apps::LaunchContainer::kLaunchContainerTab;
     case DisplayMode::kMinimalUi:
     case DisplayMode::kStandalone:
@@ -463,8 +495,6 @@ apps::LaunchContainer ConvertDisplayModeToAppLaunchContainer(
     case DisplayMode::kBorderless:
     case DisplayMode::kPictureInPicture:
       return apps::LaunchContainer::kLaunchContainerWindow;
-    case DisplayMode::kUndefined:
-      return apps::LaunchContainer::kLaunchContainerNone;
   }
 }
 
@@ -522,7 +552,7 @@ content::mojom::AlternativeErrorPageOverrideInfoPtr ConstructWebAppErrorPage(
 
   auto alternative_error_page_info =
       content::mojom::AlternativeErrorPageOverrideInfo::New();
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set(error_page::kAppShortName,
            web_app_registrar.GetAppShortName(*app_id));
   dict.Set(error_page::kMessage, message);

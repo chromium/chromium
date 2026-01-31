@@ -46,7 +46,7 @@ class EnterOldPasswordScreen : public BaseOSAuthSetupScreen {
  private:
   // BaseScreen:
   void ShowImpl() override;
-  void OnUserAction(const base::Value::List& args) override;
+  void OnUserAction(const base::ListValue& args) override;
 
   void OnRemovedUserDirectory(std::unique_ptr<UserContext> user_context,
                               std::optional<AuthenticationError> error);

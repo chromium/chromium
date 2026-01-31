@@ -72,8 +72,9 @@ class Section;
 }
 
 - (void)fillData:(const std::vector<autofill::FormFieldData::FillData>&)fields
-         section:(const autofill::Section&)section
-         inFrame:(web::WebFrame*)frame {
+           section:(const autofill::Section&)section
+           inFrame:(web::WebFrame*)frame
+    withActionType:(autofill::mojom::FormActionType)actionType {
 }
 - (void)fillSpecificFormField:(const autofill::FieldRendererId&)field
                     withValue:(const std::u16string)value
@@ -93,8 +94,7 @@ class Section;
 - (void)notifyFormsSeen:(const std::vector<autofill::FormData>&)updatedForms
                 inFrame:(web::WebFrame*)frame {
 }
-- (void)fetchFormsFiltered:(BOOL)filtered
-                  withName:(const std::u16string&)formName
+- (void)fetchFormsFiltered:(std::optional<std::u16string>)formNameFilter
                    inFrame:(web::WebFrame*)frame
          completionHandler:(FormFetchCompletion)completionHandler {
   if (self.async) {

@@ -14,7 +14,7 @@
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/test/fake_service_worker_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/devtools/console_message.mojom-data-view.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 #include "url/gurl.h"
 
 namespace chromeos {

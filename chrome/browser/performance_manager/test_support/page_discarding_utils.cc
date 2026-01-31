@@ -4,6 +4,7 @@
 
 #include "chrome/browser/performance_manager/test_support/page_discarding_utils.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/time/time.h"
@@ -103,12 +104,12 @@ void GraphTestHarnessWithDiscardablePage::RecreateNodes() {
 LenientMockPageDiscarder::LenientMockPageDiscarder() = default;
 LenientMockPageDiscarder::~LenientMockPageDiscarder() = default;
 
-std::optional<base::ByteCount> LenientMockPageDiscarder::DiscardPageNode(
+std::optional<base::ByteSize> LenientMockPageDiscarder::DiscardPageNode(
     const PageNode* page_node,
     ::mojom::LifecycleUnitDiscardReason discard_reason) {
   if (DiscardPageNodeImpl(page_node)) {
     // Discard success: Return a non-nullopt estimated memory freed.
-    return base::ByteCount(0);
+    return base::ByteSize(0);
   }
   // Discard failure: return nullopt;
   return std::nullopt;
@@ -179,7 +180,7 @@ void ExpectCanDiscardProtected(const PageNode* page_node,
         page_node, discard_reason,
         policies::kNonVisiblePagesUrgentProtectionTime, &reasons_vec);
     EXPECT_EQ(CanDiscardResult::kProtected, result);
-    EXPECT_TRUE(base::Contains(reasons_vec, protected_reason));
+    EXPECT_TRUE(std::ranges::contains(reasons_vec, protected_reason));
   }
 }
 
@@ -197,7 +198,7 @@ void ExpectCanDiscardDisallowedAllReasons(
         page_node, discard_reason,
         policies::kNonVisiblePagesUrgentProtectionTime, &reasons_vec);
     EXPECT_EQ(CanDiscardResult::kDisallowed, result);
-    EXPECT_TRUE(base::Contains(reasons_vec, disallowed_reason));
+    EXPECT_TRUE(std::ranges::contains(reasons_vec, disallowed_reason));
   }
 }
 

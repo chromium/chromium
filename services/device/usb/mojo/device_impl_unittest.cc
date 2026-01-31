@@ -16,7 +16,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/containers/queue.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
@@ -263,7 +262,7 @@ class USBDeviceImplTest : public testing::Test {
   }
 
   void AddMockConfig(mojom::UsbConfigurationInfoPtr config) {
-    DCHECK(!base::Contains(mock_configs_, config->configuration_value));
+    DCHECK(!mock_configs_.contains(config->configuration_value));
     mock_configs_.insert(
         std::make_pair(config->configuration_value, config.get()));
     mock_device_->AddMockConfig(std::move(config));
@@ -330,7 +329,7 @@ class USBDeviceImplTest : public testing::Test {
 
   void ReleaseInterface(uint8_t interface_number,
                         UsbDeviceHandle::ResultCallback& callback) {
-    if (base::Contains(claimed_interfaces_, interface_number)) {
+    if (claimed_interfaces_.contains(interface_number)) {
       claimed_interfaces_.erase(interface_number);
       std::move(callback).Run(true);
     } else {

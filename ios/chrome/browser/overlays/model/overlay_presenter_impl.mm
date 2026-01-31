@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/overlays/model/overlay_presenter_impl.h"
 
 #import "base/check_op.h"
-#import "base/containers/contains.h"
 #import "base/memory/ptr_util.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_callback_manager.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presentation_context.h"
@@ -238,8 +237,7 @@ void OverlayPresenterImpl::PresentOverlayForActiveRequest() {
   presented_request_ = request;
 
   // Notify the observers that the overlay UI is about to be shown.
-  bool initial_presentation =
-      !base::Contains(previously_presented_requests_, request);
+  bool initial_presentation = !previously_presented_requests_.contains(request);
   for (auto& observer : observers_) {
     if (observer.GetRequestSupport(this)->IsRequestSupported(request)) {
       observer.WillShowOverlay(this, request, initial_presentation);

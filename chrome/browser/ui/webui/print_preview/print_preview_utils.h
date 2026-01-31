@@ -24,7 +24,7 @@ extern const char kSelectString[];
 extern const char kTypeKey[];
 extern const char kVendorCapabilityKey[];
 
-// Converts `printer_list` to a base::Value::List form, runs `callback` with the
+// Converts `printer_list` to a base::ListValue form, runs `callback` with the
 // converted list as the argument if it is not empty, and runs `done_callback`.
 void ConvertPrinterListForCallback(
     PrinterHandler::AddedPrintersCallback callback,
@@ -37,7 +37,7 @@ void ConvertPrinterListForCallback(
 // Will also check some CDD entries to make sure the input conforms to the
 // requirements for those entries, although not comprehensively.
 // On failure, returns an empty dict.
-base::Value::Dict ValidateCddForPrintPreview(base::Value::Dict cdd);
+base::DictValue ValidateCddForPrintPreview(base::DictValue cdd);
 
 // Returns an updated version of `cdd` and ensures it has a valid value for the
 // DPI capability. Uses the existing validated value if it exists, or fills in a
@@ -45,19 +45,18 @@ base::Value::Dict ValidateCddForPrintPreview(base::Value::Dict cdd);
 // in the CDD, but it is crucial for performing page setup.
 //
 // Assumes `cdd` is the output from ValidateCddForPrintPreview().
-base::Value::Dict UpdateCddWithDpiIfMissing(base::Value::Dict cdd);
+base::DictValue UpdateCddWithDpiIfMissing(base::DictValue cdd);
 
 // Returns the list of media size options from the `cdd`, or nullptr if it does
 // not exist.  Returns a pointer into `cdd`.
-const base::Value::List* GetMediaSizeOptionsFromCdd(
-    const base::Value::Dict& cdd);
+const base::ListValue* GetMediaSizeOptionsFromCdd(const base::DictValue& cdd);
 
 // Updates `cdd` by removing all continuous feed media size options.
-void FilterContinuousFeedMediaSizes(base::Value::Dict& cdd);
+void FilterContinuousFeedMediaSizes(base::DictValue& cdd);
 
 // Starts a local print of `print_data` with print settings dictionary
 // `job_settings`. Runs `callback` on failure or success.
-void StartLocalPrint(base::Value::Dict job_settings,
+void StartLocalPrint(base::DictValue job_settings,
                      scoped_refptr<base::RefCountedMemory> print_data,
                      content::WebContents* preview_web_contents,
                      PrinterHandler::PrintCallback callback);

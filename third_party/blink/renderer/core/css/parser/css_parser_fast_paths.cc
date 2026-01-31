@@ -300,7 +300,7 @@ static unsigned FindLengthOfValidDouble(base::span<const LChar> chars) {
 #if defined(__SSE2__) || defined(__ARM_NEON__)
   if (chars.size() >= 16) {
     uint8_t b __attribute__((vector_size(16)));
-    UNSAFE_TODO(memcpy(&b, chars.data(), sizeof(b)));
+    UNSAFE_BUFFERS(memcpy(&b, chars.data(), sizeof(b)));
     auto is_decimal_mask = (b >= '0' && b <= '9');
     auto is_mark_mask = (b == '.');
 #ifdef __SSE2__
@@ -494,7 +494,7 @@ ALWAYS_INLINE static unsigned ParsePositiveDouble(base::span<const LChar> chars,
         (__m128i)(__v8hi){0, 25000, 2500, 250, 1000, 100, 10, 0},
         (__m128i)(__v8hi){0, 25000, 2500, 250, 1000, 100, 10, 1},
     };
-    __m128i v = _mm_madd_epi16(words, UNSAFE_TODO(kWeights[num_decimals]));
+    __m128i v = _mm_madd_epi16(words, UNSAFE_BUFFERS(kWeights[num_decimals]));
 
     // Now we have, ignoring scale factors:
     //
@@ -539,7 +539,7 @@ ALWAYS_INLINE static unsigned ParsePositiveDouble(base::span<const LChar> chars,
         (uint16x8_t){0, 100, 10, 1, 1000, 100, 10, 1},
     };
     uint32x4_t pairs =
-        vpaddlq_u16(vmulq_u16(words, UNSAFE_TODO(kWeights[num_decimals])));
+        vpaddlq_u16(vmulq_u16(words, UNSAFE_BUFFERS(kWeights[num_decimals])));
 
     // Now we have:
     //
@@ -834,7 +834,7 @@ ALWAYS_INLINE static bool ParseAlphaValue(base::span<const LChar>& chars,
 // Fast for LChar, reasonable for UChar.
 template <int N>
 static inline bool MatchesLiteral(const LChar* a, const char (&b)[N]) {
-  return UNSAFE_TODO(memcmp(a, b, N - 1)) == 0;
+  return UNSAFE_BUFFERS(memcmp(a, b, N - 1)) == 0;
 }
 
 template <int N>
@@ -851,8 +851,8 @@ static inline bool MatchesLiteral(const UChar* a, const char (&b)[N]) {
 static inline bool MatchesCaseInsensitiveLiteral4(const LChar* a,
                                                   const char (&b)[5]) {
   uint32_t av, bv;
-  UNSAFE_TODO(memcpy(&av, a, sizeof(av)));
-  UNSAFE_TODO(memcpy(&bv, b, sizeof(bv)));
+  UNSAFE_BUFFERS(memcpy(&av, a, sizeof(av)));
+  UNSAFE_BUFFERS(memcpy(&bv, b, sizeof(bv)));
 
   uint32_t mask = 0;
   if ((bv & 0xff) >= 'a' && (bv & 0xff) <= 'z') {
@@ -874,8 +874,8 @@ static inline bool MatchesCaseInsensitiveLiteral4(const LChar* a,
 static inline bool MatchesCaseInsensitiveLiteral2(const LChar* a,
                                                   const char (&b)[3]) {
   uint16_t av, bv;
-  UNSAFE_TODO(memcpy(&av, a, sizeof(av)));
-  UNSAFE_TODO(memcpy(&bv, b, sizeof(bv)));
+  UNSAFE_BUFFERS(memcpy(&av, a, sizeof(av)));
+  UNSAFE_BUFFERS(memcpy(&bv, b, sizeof(bv)));
 
   uint16_t mask = 0;
   if ((bv & 0xff) >= 'a' && (bv & 0xff) <= 'z') {
@@ -894,9 +894,9 @@ static inline bool MightBeRGBOrRGBA(base::span<const LChar> chars) {
   }
   const LChar* characters = chars.data();
   return MatchesLiteral(characters, "rgb") &&
-         (UNSAFE_TODO(characters[3]) == '(' ||
-          (UNSAFE_TODO(characters[3]) == 'a' &&
-           UNSAFE_TODO(characters[4]) == '('));
+         (UNSAFE_BUFFERS(characters[3]) == '(' ||
+          (UNSAFE_BUFFERS(characters[3]) == 'a' &&
+           UNSAFE_BUFFERS(characters[4]) == '('));
 }
 
 static inline bool MightBeHSLOrHSLA(base::span<const LChar> chars) {
@@ -905,9 +905,9 @@ static inline bool MightBeHSLOrHSLA(base::span<const LChar> chars) {
   }
   const LChar* characters = chars.data();
   return MatchesLiteral(characters, "hsl") &&
-         (UNSAFE_TODO(characters[3]) == '(' ||
-          (UNSAFE_TODO(characters[3]) == 'a' &&
-           UNSAFE_TODO(characters[4]) == '('));
+         (UNSAFE_BUFFERS(characters[3]) == '(' ||
+          (UNSAFE_BUFFERS(characters[3]) == 'a' &&
+           UNSAFE_BUFFERS(characters[4]) == '('));
 }
 
 static bool FastParseColorInternal(Color& color,
@@ -1216,9 +1216,13 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
              value_id == CSSValueID::kIntersection;
     case CSSPropertyID::kColumnRuleVisibilityItems:
     case CSSPropertyID::kRowRuleVisibilityItems:
-      return value_id == CSSValueID::kNone || value_id == CSSValueID::kAll ||
-             value_id == CSSValueID::kAround ||
+      return value_id == CSSValueID::kAll || value_id == CSSValueID::kAround ||
              value_id == CSSValueID::kBetween;
+    case CSSPropertyID::kColumnSpan:
+      return value_id == CSSValueID::kAll || value_id == CSSValueID::kNone;
+    case CSSPropertyID::kContentVisibility:
+      return value_id == CSSValueID::kVisible ||
+             value_id == CSSValueID::kAuto || value_id == CSSValueID::kHidden;
     case CSSPropertyID::kDirection:
       return value_id == CSSValueID::kLtr || value_id == CSSValueID::kRtl;
     case CSSPropertyID::kDominantBaseline:
@@ -1243,14 +1247,8 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
     case CSSPropertyID::kGapRuleOverlap:
       return value_id == CSSValueID::kRowOverColumn ||
              value_id == CSSValueID::kColumnOverRow;
-    case CSSPropertyID::kGridLanesDirection:
-      return value_id == CSSValueID::kRow ||
-             value_id == CSSValueID::kRowReverse ||
-             value_id == CSSValueID::kColumn ||
-             value_id == CSSValueID::kColumnReverse;
-    case CSSPropertyID::kGridLanesFill:
-      return value_id == CSSValueID::kNormal ||
-             value_id == CSSValueID::kReverse;
+    case CSSPropertyID::kGridLanesPack:
+      return value_id == CSSValueID::kNormal || value_id == CSSValueID::kDense;
     case CSSPropertyID::kImageRendering:
       return value_id == CSSValueID::kAuto ||
              value_id == CSSValueID::kWebkitOptimizeContrast ||
@@ -1309,6 +1307,9 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
       return value_id == CSSValueID::kAuto || value_id == CSSValueID::kAvoid ||
              value_id == CSSValueID::kAvoidPage ||
              value_id == CSSValueID::kAvoidColumn;
+    case CSSPropertyID::kPageMarginSafety:
+      return value_id == CSSValueID::kNone || value_id == CSSValueID::kClamp ||
+             value_id == CSSValueID::kAdd;
     case CSSPropertyID::kPageOrientation:
       return value_id == CSSValueID::kUpright ||
              value_id == CSSValueID::kRotateLeft ||
@@ -1445,6 +1446,8 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
     case CSSPropertyID::kVectorEffect:
       return value_id == CSSValueID::kNone ||
              value_id == CSSValueID::kNonScalingStroke;
+    case CSSPropertyID::kViewTransitionScope:
+      return value_id == CSSValueID::kNone || value_id == CSSValueID::kAuto;
     case CSSPropertyID::kVisibility:
       return value_id == CSSValueID::kVisible ||
              value_id == CSSValueID::kHidden ||
@@ -1710,6 +1713,9 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
     case CSSPropertyID::kBlockEllipsis:
       return value_id == CSSValueID::kAuto ||
              value_id == CSSValueID::kNoEllipsis;
+    case CSSPropertyID::kInternalOverscrollArea:
+    case CSSPropertyID::kInternalOverscrollPosition:
+      return value_id == CSSValueID::kNone || value_id == CSSValueID::kAuto;
     default:
       NOTREACHED();
   }
@@ -1743,6 +1749,8 @@ CSSBitset CSSParserFastPaths::handled_by_keyword_fast_paths_properties_{{
     CSSPropertyID::kColorRendering,
     CSSPropertyID::kColumnRuleBreak,
     CSSPropertyID::kColumnRuleVisibilityItems,
+    CSSPropertyID::kColumnSpan,
+    CSSPropertyID::kContentVisibility,
     CSSPropertyID::kContinue,
     CSSPropertyID::kDirection,
     CSSPropertyID::kDominantBaseline,
@@ -1752,8 +1760,7 @@ CSSBitset CSSParserFastPaths::handled_by_keyword_fast_paths_properties_{{
     CSSPropertyID::kFieldSizing,
     CSSPropertyID::kForcedColorAdjust,
     CSSPropertyID::kGapRuleOverlap,
-    CSSPropertyID::kGridLanesDirection,
-    CSSPropertyID::kGridLanesFill,
+    CSSPropertyID::kGridLanesPack,
     CSSPropertyID::kHyphens,
     CSSPropertyID::kImageRendering,
     CSSPropertyID::kInterpolateSize,
@@ -1772,6 +1779,7 @@ CSSBitset CSSParserFastPaths::handled_by_keyword_fast_paths_properties_{{
     CSSPropertyID::kBreakAfter,
     CSSPropertyID::kBreakBefore,
     CSSPropertyID::kBreakInside,
+    CSSPropertyID::kPageMarginSafety,
     CSSPropertyID::kPageOrientation,
     CSSPropertyID::kPointerEvents,
     CSSPropertyID::kPosition,
@@ -1807,6 +1815,7 @@ CSSBitset CSSParserFastPaths::handled_by_keyword_fast_paths_properties_{{
     CSSPropertyID::kTextTransform,
     CSSPropertyID::kUnicodeBidi,
     CSSPropertyID::kVectorEffect,
+    CSSPropertyID::kViewTransitionScope,
     CSSPropertyID::kVisibility,
     CSSPropertyID::kAppRegion,
     CSSPropertyID::kBackfaceVisibility,
@@ -1855,6 +1864,8 @@ CSSBitset CSSParserFastPaths::handled_by_keyword_fast_paths_properties_{{
     CSSPropertyID::kTextBoxTrim,
     CSSPropertyID::kScrollInitialTarget,
     CSSPropertyID::kInteractivity,
+    CSSPropertyID::kInternalOverscrollArea,
+    CSSPropertyID::kInternalOverscrollPosition,
 }};
 
 bool CSSParserFastPaths::IsValidSystemFont(CSSValueID value_id) {
@@ -1866,24 +1877,24 @@ static inline CSSValue* ParseCSSWideKeywordValue(
   const LChar* ptr = chars.data();
   const unsigned length = static_cast<unsigned>(chars.size());
   if (length == 7 && MatchesCaseInsensitiveLiteral4(ptr, "init") &&
-      MatchesCaseInsensitiveLiteral4(UNSAFE_TODO(ptr + 3), "tial")) {
+      MatchesCaseInsensitiveLiteral4(UNSAFE_BUFFERS(ptr + 3), "tial")) {
     return CSSInitialValue::Create();
   }
   if (length == 7 && MatchesCaseInsensitiveLiteral4(ptr, "inhe") &&
-      MatchesCaseInsensitiveLiteral4(UNSAFE_TODO(ptr + 3), "erit")) {
+      MatchesCaseInsensitiveLiteral4(UNSAFE_BUFFERS(ptr + 3), "erit")) {
     return CSSInheritedValue::Create();
   }
   if (length == 5 && MatchesCaseInsensitiveLiteral4(ptr, "unse") &&
-      IsASCIIAlphaCaselessEqual(UNSAFE_TODO(ptr[4]), 't')) {
+      IsASCIIAlphaCaselessEqual(UNSAFE_BUFFERS(ptr[4]), 't')) {
     return cssvalue::CSSUnsetValue::Create();
   }
   if (length == 6 && MatchesCaseInsensitiveLiteral4(ptr, "reve") &&
-      MatchesCaseInsensitiveLiteral2(UNSAFE_TODO(ptr + 4), "rt")) {
+      MatchesCaseInsensitiveLiteral2(UNSAFE_BUFFERS(ptr + 4), "rt")) {
     return cssvalue::CSSRevertValue::Create();
   }
   if (length == 12 && MatchesCaseInsensitiveLiteral4(ptr, "reve") &&
-      MatchesCaseInsensitiveLiteral4(UNSAFE_TODO(ptr + 4), "rt-l") &&
-      MatchesCaseInsensitiveLiteral4(UNSAFE_TODO(ptr + 8), "ayer")) {
+      MatchesCaseInsensitiveLiteral4(UNSAFE_BUFFERS(ptr + 4), "rt-l") &&
+      MatchesCaseInsensitiveLiteral4(UNSAFE_BUFFERS(ptr + 8), "ayer")) {
     return cssvalue::CSSRevertLayerValue::Create();
   }
   if (length == 11 && MatchesCaseInsensitiveLiteral4(ptr, "reve") &&
@@ -2128,38 +2139,38 @@ static bool TransformCanLikelyUseFastPath(base::span<const LChar> span) {
   const unsigned length = static_cast<unsigned>(span.size());
   unsigned i = 0;
   while (i < length) {
-    if (UNSAFE_TODO(chars[i]) == ' ') {
+    if (UNSAFE_BUFFERS(chars[i]) == ' ') {
       ++i;
       continue;
     }
     if (length - i < kShortestValidTransformStringLength) {
       return false;
     }
-    switch (UNSAFE_TODO(chars[i])) {
+    switch (UNSAFE_BUFFERS(chars[i])) {
       case 't':
         // translate, translateX, translateY, translateZ, translate3d.
-        if (UNSAFE_TODO(chars[i + 8]) != 'e') {
+        if (UNSAFE_BUFFERS(chars[i + 8]) != 'e') {
           return false;
         }
         i += 9;
         break;
       case 'm':
         // matrix3d.
-        if (UNSAFE_TODO(chars[i + 7]) != 'd') {
+        if (UNSAFE_BUFFERS(chars[i + 7]) != 'd') {
           return false;
         }
         i += 8;
         break;
       case 's':
         // scale3d.
-        if (UNSAFE_TODO(chars[i + 6]) != 'd') {
+        if (UNSAFE_BUFFERS(chars[i + 6]) != 'd') {
           return false;
         }
         i += 7;
         break;
       case 'r':
         // rotate.
-        if (UNSAFE_TODO(chars[i + 5]) != 'e') {
+        if (UNSAFE_BUFFERS(chars[i + 5]) != 'e') {
           return false;
         }
         i += 6;

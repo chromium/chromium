@@ -21,6 +21,7 @@ namespace blink {
 // or deprecate permission types.
 // Never delete or reorder an entry; only add new entries
 // immediately before PermissionType::NUM
+// LINT.IfChange(PermissionType)
 enum class PermissionType {
   MIDI_SYSEX = 1,
   // PUSH_MESSAGING = 2,
@@ -28,7 +29,7 @@ enum class PermissionType {
   GEOLOCATION = 4,
   PROTECTED_MEDIA_IDENTIFIER = 5,
   MIDI = 6,
-  DURABLE_STORAGE = 7,
+  PERSISTENT_STORAGE = 7,
   AUDIO_CAPTURE = 8,
   VIDEO_CAPTURE = 9,
   BACKGROUND_SYNC = 10,
@@ -67,11 +68,13 @@ enum class PermissionType {
   LOCAL_NETWORK_ACCESS = 43,
   LOCAL_NETWORK = 44,
   LOOPBACK_NETWORK = 45,
+  GEOLOCATION_APPROXIMATE = 46,
 
   // Always keep this at the end.
   NUM,
   MIN_VALUE = MIDI_SYSEX,
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:PermissionType)
 
 // Converts a permission string ("granted", "denied", "prompt") into a
 // PermissionStatus.

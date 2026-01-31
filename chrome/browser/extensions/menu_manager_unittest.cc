@@ -348,15 +348,15 @@ TEST_F(MenuManagerTest, PopulateFromValue) {
   contexts.Add(MenuItem::SELECTION);
   int contexts_value = contexts.ToValue().GetInt();
 
-  base::Value::List document_url_patterns;
+  base::ListValue document_url_patterns;
   document_url_patterns.Append("http://www.google.com/*");
   document_url_patterns.Append("http://www.reddit.com/*");
 
-  base::Value::List target_url_patterns;
+  base::ListValue target_url_patterns;
   target_url_patterns.Append("http://www.yahoo.com/*");
   target_url_patterns.Append("http://www.facebook.com/*");
 
-  base::Value::Dict value;
+  base::DictValue value;
   value.Set("incognito", incognito);
   value.Set("string_uid", std::string());
   value.Set("type", type);
@@ -595,7 +595,7 @@ class MockEventRouter : public EventRouter {
   MOCK_METHOD6(DispatchEventToExtensionMock,
                void(const std::string& extension_id,
                     const std::string& event_name,
-                    base::Value::List* event_args,
+                    base::ListValue* event_args,
                     content::BrowserContext* source_context,
                     const GURL& event_url,
                     EventRouter::UserGestureState state));
@@ -604,7 +604,7 @@ class MockEventRouter : public EventRouter {
                                 std::unique_ptr<Event> event) override {
     DispatchEventToExtensionMock(
         extension_id, event->event_name,
-        new base::Value::List(std::move(event->event_args)),
+        new base::ListValue(std::move(event->event_args)),
         event->restrict_to_browser_context, event->event_url,
         event->user_gesture);
   }
@@ -701,7 +701,7 @@ TEST_F(MenuManagerTest, ExecuteCommand) {
 
   // Use the magic of googlemock to save a parameter to our mock's
   // DispatchEventToExtension method into event_args.
-  base::Value::List* list = nullptr;
+  base::ListValue* list = nullptr;
   {
     InSequence s;
     EXPECT_CALL(*mock_event_router,
@@ -725,7 +725,7 @@ TEST_F(MenuManagerTest, ExecuteCommand) {
 
   const base::Value& info = (*list)[0];
   ASSERT_TRUE(info.is_dict());
-  const base::Value::Dict& info_dict = info.GetDict();
+  const base::DictValue& info_dict = info.GetDict();
 
   ASSERT_EQ(id.uid, info_dict.FindInt("menuItemId"));
   ASSERT_EQ(parent_id.uid, info_dict.FindInt("parentMenuItemId"));
@@ -994,9 +994,9 @@ class MenuManagerStorageTest : public MenuManagerTest,
  protected:
   scoped_refptr<const Extension> AddEventPageExtension(
       const std::string& name) {
-    base::Value::Dict dictionary;
+    base::DictValue dictionary;
     TestExtensionPrefs::AddDefaultManifestKeys(name, dictionary);
-    base::Value::List value;
+    base::ListValue value;
     value.Append("background.js");
     dictionary.SetByDottedPath(manifest_keys::kBackgroundScripts,
                                std::move(value));
@@ -1007,7 +1007,7 @@ class MenuManagerStorageTest : public MenuManagerTest,
 
   scoped_refptr<const Extension> AddServiceWorkerExtension(
       const std::string& name) {
-    base::Value::Dict dictionary;
+    base::DictValue dictionary;
     TestExtensionPrefs::AddDefaultManifestKeys(name, dictionary);
     dictionary.SetByDottedPath(manifest_keys::kBackgroundServiceWorkerScript,
                                "background.js");

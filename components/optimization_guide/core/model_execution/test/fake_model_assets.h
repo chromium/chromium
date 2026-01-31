@@ -17,7 +17,7 @@
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 #include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
 #include "components/optimization_guide/proto/text_safety_model_metadata.pb.h"
-#include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom-forward.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
 
 namespace optimization_guide {
@@ -51,7 +51,7 @@ class FakeBaseModelAsset {
   const std::string& version() const { return version_; }
 
   // Returns a fake manifest content for this asset.
-  base::Value::Dict Manifest() const;
+  base::DictValue Manifest() const;
 
   // Pass this asset to manager->SetReady.
   void SetReadyIn(OnDeviceModelComponentStateManager& manager) const;
@@ -61,7 +61,7 @@ class FakeBaseModelAsset {
 
  private:
   std::string version_ = "0.0.1";
-  base::Value::List supported_performance_hints_;
+  base::ListValue supported_performance_hints_;
   base::ScopedTempDir temp_dir_;
 };
 

@@ -50,7 +50,7 @@ class BookmarkMessageHandlerTest : public InProcessBrowserTest {
   }
 
   void SendHandleSingleUploadClicked(const std::string& id_string) {
-    base::Value::List args;
+    base::ListValue args;
     args.Append(id_string);
     handler_->HandleSingleUploadClicked(args);
   }

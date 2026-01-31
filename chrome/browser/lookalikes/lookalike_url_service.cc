@@ -4,9 +4,9 @@
 
 #include "chrome/browser/lookalikes/lookalike_url_service.h"
 
+#include <algorithm>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
@@ -202,8 +202,8 @@ LookalikeUrlService::CheckUrlForLookalikes(
   // ignores the scheme which is okay since it's more conservative: If the user
   // is engaged with http://domain.test, not showing the warning on
   // https://domain.test is acceptable.
-  if (base::Contains(engaged_sites, navigated_domain.domain_and_registry,
-                     &DomainInfo::domain_and_registry)) {
+  if (std::ranges::contains(engaged_sites, navigated_domain.domain_and_registry,
+                            &DomainInfo::domain_and_registry)) {
     return result;
   }
 

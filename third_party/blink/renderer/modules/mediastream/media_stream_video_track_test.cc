@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <array>
 #include <utility>
 #include <vector>
@@ -1393,7 +1394,8 @@ class MediaStreamVideoTrackCaptureVersionTest
   // on all other callbacks.
   void ExpectCalls(const std::vector<CaptureVersionCb*>& expected_callbacks) {
     for (CaptureVersionCb& callback : callbacks_) {
-      const int times = base::Contains(expected_callbacks, &callback) ? 1 : 0;
+      const int times =
+          std::ranges::contains(expected_callbacks, &callback) ? 1 : 0;
       EXPECT_CALL(callback, Call()).Times(times);
     }
   }

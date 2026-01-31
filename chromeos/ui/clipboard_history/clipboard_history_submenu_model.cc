@@ -4,8 +4,9 @@
 
 #include "chromeos/ui/clipboard_history/clipboard_history_submenu_model.h"
 
+#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
-#include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
+#include "chromeos/ui/clipboard_history/clipboard_history_types.h"
 #include "chromeos/ui/clipboard_history/clipboard_history_util.h"
 #include "ui/base/command_id_constants.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -27,12 +28,10 @@ constexpr int kMaxDescriptorTextLength = 50;
 // static
 std::unique_ptr<ClipboardHistorySubmenuModel>
 ClipboardHistorySubmenuModel::CreateClipboardHistorySubmenuModel(
-    crosapi::mojom::ClipboardHistoryControllerShowSource submenu_type,
+    ShowSource submenu_type,
     ShowClipboardHistoryMenuCallback show_menu_callback) {
-  CHECK(submenu_type == crosapi::mojom::ClipboardHistoryControllerShowSource::
-                            kRenderViewContextSubmenu ||
-        submenu_type == crosapi::mojom::ClipboardHistoryControllerShowSource::
-                            kTextfieldContextSubmenu);
+  CHECK(submenu_type == ShowSource::kRenderViewContextSubmenu ||
+        submenu_type == ShowSource::kTextfieldContextSubmenu);
   return base::WrapUnique(new ClipboardHistorySubmenuModel(
       submenu_type, QueryItemDescriptors(), show_menu_callback));
 }
@@ -73,9 +72,8 @@ void ClipboardHistorySubmenuModel::OnMenuWillShow(SimpleMenuModel* model) {
 }
 
 ClipboardHistorySubmenuModel::ClipboardHistorySubmenuModel(
-    crosapi::mojom::ClipboardHistoryControllerShowSource submenu_type,
-    const std::vector<crosapi::mojom::ClipboardHistoryItemDescriptor>&
-        item_descriptors,
+    ShowSource submenu_type,
+    const std::vector<ItemDescriptor>& item_descriptors,
     ShowClipboardHistoryMenuCallback show_menu_callback)
     : ui::SimpleMenuModel(this),
       submenu_type_(submenu_type),

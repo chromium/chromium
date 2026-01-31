@@ -103,13 +103,6 @@ class HpackFuzzUtil {
   // processed the input without error.
   static bool RunHeaderBlockThroughFuzzerStages(FuzzerContext* context,
                                                 std::string_view input_block);
-
-  // Flips random bits within |buffer|. The total number of flips is
-  // |flip_per_thousand| bits for every 1,024 bytes of |buffer_length|,
-  // rounding up.
-  static void FlipBits(uint8_t* buffer,
-                       size_t buffer_length,
-                       size_t flip_per_thousand);
 };
 
 }  // namespace spdy

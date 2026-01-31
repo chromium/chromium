@@ -26,7 +26,7 @@ JNI_SslValidityChecker_GetInvalidSslCertificateErrorMessage(
 }
 
 // static
-static jboolean JNI_SslValidityChecker_IsValidPageInPaymentHandlerWindow(
+static bool JNI_SslValidityChecker_IsValidPageInPaymentHandlerWindow(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jweb_contents) {
   // SslValidityChecker checks for null `web_contents` parameter.

@@ -111,6 +111,7 @@
 #include "third_party/blink/renderer/core/events/ui_event_with_key_state.h"
 #include "third_party/blink/renderer/core/events/web_input_event_conversion.h"
 #include "third_party/blink/renderer/core/events/wheel_event.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/exported/web_dev_tools_agent_impl.h"
 #include "third_party/blink/renderer/core/exported/web_plugin_container_impl.h"
 #include "third_party/blink/renderer/core/exported/web_settings_impl.h"
@@ -368,15 +369,16 @@ void ApplyCommandLineToSettings(WebSettings* settings) {
   }
 
   if (command_line.HasSwitch(switches::kBlinkSettings)) {
-    Vector<String> blink_settings;
     String command_line_settings =
         command_line.GetSwitchValueASCII(switches::kBlinkSettings).c_str();
-    command_line_settings.Split(",", blink_settings);
-    for (const String& setting : blink_settings) {
+    Vector<StringView> blink_settings =
+        StringView(command_line_settings).SplitSkippingEmpty(',');
+    for (const StringView& setting : blink_settings) {
       wtf_size_t pos = setting.find('=');
       settings->SetFromStrings(
-          WebString(setting.Substring(0, pos)),
-          WebString(pos == kNotFound ? "" : setting.Substring(pos + 1)));
+          WebString(setting.substr(0, pos).ToString()),
+          WebString(pos == kNotFound ? ""
+                                     : setting.substr(pos + 1).ToString()));
     }
   }
 }
@@ -791,10 +793,42 @@ float WebViewImpl::MaximumLegiblePageScale() const {
   // need to zoom in further when automatically determining zoom level
   // (after double tap, find in page, etc), though the user should still
   // be allowed to manually pinch zoom in further if they desire.
-  if (GetPage()) {
-    return maximum_legible_scale_ *
-           GetPage()->GetSettings().GetAccessibilityFontScaleFactor();
+  if (!GetPage()) {
+    return maximum_legible_scale_;
   }
+
+  const Settings& settings = GetPage()->GetSettings();
+  if (settings.GetAccessibilityFontScaleFactor() == 1.0) {
+    // If the user's OS-level font size preferences are the default, we're done.
+    return maximum_legible_scale_;
+  }
+
+  // For compat, the following code determines the circumstances under which the
+  // user's OS-level font size preferences affects how far they can zoom in.
+  // Chrome currently only sets a non-default AccessibilityFontScaleFactor on
+  // mobile.
+
+  // Allow the user to always zoom more on Chrome Android.. Allow on WebView if
+  // the Java developer has enabled autosizing.
+  const bool is_webview = settings.GetWideViewportQuirkEnabled();
+  if (!is_webview || settings.GetTextAutosizingEnabled()) {
+    return maximum_legible_scale_ * settings.GetAccessibilityFontScaleFactor();
+  }
+
+  // Getting here means we are in Android WebView, which has already enlarged
+  // the text so we don't need to allow further zooming. Unless the page has a
+  // meta text-scale tag, which means WebView has NOT enlarged the text, so we
+  // allow further zooming in that case.
+  if (WebLocalFrameImpl* main_frame = MainFrameImpl()) {
+    if (Document* document = main_frame->GetFrame()->GetDocument()) {
+      if (document->TextScaleMetaTagPresent()) {
+        return maximum_legible_scale_ *
+               settings.GetAccessibilityFontScaleFactor();
+      }
+    }
+  }
+
+  // In WebView, without a meta tag, we use the default.
   return maximum_legible_scale_;
 }
 
@@ -1678,8 +1712,6 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
   settings->SetStrictMixedContentCheckingForPlugin(
       prefs.block_mixed_plugin_content);
 
-  settings->SetStrictPowerfulFeatureRestrictions(
-      prefs.strict_powerful_feature_restrictions);
   settings->SetAllowGeolocationOnInsecureOrigins(
       prefs.allow_geolocation_on_insecure_origins);
   settings->SetPasswordEchoEnabledPhysical(
@@ -1786,6 +1818,8 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
   settings->SetSupportDeprecatedTargetDensityDPI(
       prefs.support_deprecated_target_density_dpi);
   settings->SetWideViewportQuirkEnabled(prefs.wide_viewport_quirk);
+  settings->SetScaleAllFontsIfNoMetaTextScaleTag(
+      prefs.scale_all_fonts_if_no_meta_text_scale_tag);
   settings->SetUseWideViewport(prefs.use_wide_viewport);
   settings->SetForceZeroLayoutHeight(prefs.force_zero_layout_height);
   settings->SetViewportMetaMergeContentQuirk(
@@ -2794,6 +2828,36 @@ void WebViewImpl::DispatchPersistedPageshow(base::TimeTicks navigation_start) {
   }
 }
 
+namespace {
+
+void ValidatePausedStateConsistency() {
+  if (!base::FeatureList::IsEnabled(
+          features::kBackForwardCachePauseMicrotasks)) {
+    return;
+  }
+  for (const auto& page : Page::OrdinaryPages()) {
+    if (page->GetPageScheduler()->IsInBackForwardCache()) {
+      continue;
+    }
+    for (Frame* frame = page->MainFrame(); frame;
+         frame = frame->Tree().TraverseNext()) {
+      auto* local_frame = DynamicTo<LocalFrame>(frame);
+      const LocalDOMWindow* window =
+          local_frame ? local_frame->DomWindow() : nullptr;
+      if (!window) {
+        continue;
+      }
+      const bool microtasks_are_paused = window->GetAgent()
+                                             ->event_loop()
+                                             ->microtask_queue()
+                                             ->GetMicrotasksScopeDepth();
+      CHECK(!microtasks_are_paused, base::NotFatalUntil::M148);
+    }
+  }
+}
+
+}  // namespace
+
 void WebViewImpl::HookBackForwardCacheEviction(bool hook) {
   DCHECK(GetPage());
   for (Frame* frame = GetPage()->MainFrame(); frame;
@@ -2806,6 +2870,7 @@ void WebViewImpl::HookBackForwardCacheEviction(bool hook) {
     else
       local_frame->RemoveBackForwardCacheEviction();
   }
+  ValidatePausedStateConsistency();
 }
 
 void WebViewImpl::EnableAutoResizeMode(const gfx::Size& min_size,
@@ -3147,42 +3212,58 @@ void WebViewImpl::DidAccessInitialMainDocument() {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // TODO(https://crbug.com/40946306): Add timeouts to the callbacks and consider
 // queuing requests instead of rejecting them.
-void WebViewImpl::Minimize(WindowShowStateChangeCallback callback) {
+void WebViewImpl::Minimize(WindowingControlsChangeCallback callback) {
   DCHECK(local_main_frame_host_remote_);
   if (window_show_state_change_callback_.has_value()) {
     std::move(callback).Run(/*succeeded=*/false);
   } else {
     window_show_state_change_callback_.emplace(
-        WindowShowStateChangeType::Minimize, std::move(callback));
+        WindowShowStateChangeType::kMinimize, std::move(callback));
     local_main_frame_host_remote_->Minimize();
   }
 }
 
-void WebViewImpl::Maximize(WindowShowStateChangeCallback callback) {
+void WebViewImpl::Maximize(WindowingControlsChangeCallback callback) {
   DCHECK(local_main_frame_host_remote_);
   if (window_show_state_change_callback_.has_value()) {
     std::move(callback).Run(/*succeeded=*/false);
   } else {
     window_show_state_change_callback_.emplace(
-        WindowShowStateChangeType::Maximize, std::move(callback));
+        WindowShowStateChangeType::kMaximize, std::move(callback));
     local_main_frame_host_remote_->Maximize();
   }
 }
 
-void WebViewImpl::Restore(WindowShowStateChangeCallback callback) {
+void WebViewImpl::Restore(WindowingControlsChangeCallback callback) {
   DCHECK(local_main_frame_host_remote_);
   if (window_show_state_change_callback_.has_value()) {
     std::move(callback).Run(/*succeeded=*/false);
   } else {
     window_show_state_change_callback_.emplace(
-        WindowShowStateChangeType::Restore, std::move(callback));
+        WindowShowStateChangeType::kRestore, std::move(callback));
     local_main_frame_host_remote_->Restore();
   }
 }
 
-void WebViewImpl::SetResizable(bool resizable) {
+void WebViewImpl::SetResizable(bool resizable,
+                               WindowingControlsChangeCallback callback) {
   DCHECK(local_main_frame_host_remote_);
-  local_main_frame_host_remote_->SetResizable(resizable);
+  if (set_resizable_change_callback_.has_value()) {
+    // Reject the current request if there's already a pending request.
+    std::move(callback).Run(/*succeeded=*/false);
+  } else {
+    if (web_widget_->Resizable() == resizable) {
+      // The desired resizable property is already set. We still need to mark
+      // what resizable value has been requested by the page.
+      local_main_frame_host_remote_->SetResizable(resizable);
+      std::move(callback).Run(/*succeeded=*/true);
+    } else {
+      // We need to wait for the window resizable property to be changed by the
+      // operating system.
+      set_resizable_change_callback_.emplace(resizable, std::move(callback));
+      local_main_frame_host_remote_->SetResizable(resizable);
+    }
+  }
 }
 
 void WebViewImpl::OnWindowShowStateChanged(
@@ -3194,50 +3275,80 @@ void WebViewImpl::OnWindowShowStateChanged(
   }
 
   using ui::mojom::blink::WindowShowState;
+  if (old_state == new_state) {
+    return;
+  }
   switch (new_state) {
     case WindowShowState::kDefault:
     case WindowShowState::kNormal:
-      if (window_show_state_change_callback_.has_value() &&
-          window_show_state_change_callback_->first ==
-              WindowShowStateChangeType::Restore) {
-        std::move(window_show_state_change_callback_->second)
-            .Run(/*succeeded=*/true);
-        window_show_state_change_callback_.reset();
-      }
+      WasRestored();
       break;
     case WindowShowState::kMinimized:
-      if (window_show_state_change_callback_.has_value() &&
-          window_show_state_change_callback_->first ==
-              WindowShowStateChangeType::Minimize) {
-        std::move(window_show_state_change_callback_->second)
-            .Run(/*succeeded=*/true);
-        window_show_state_change_callback_.reset();
-      }
+      WasMinimized();
       break;
     case WindowShowState::kMaximized:
-      if (window_show_state_change_callback_.has_value() &&
-          window_show_state_change_callback_->first ==
-              WindowShowStateChangeType::Maximize) {
-        std::move(window_show_state_change_callback_->second)
-            .Run(/*succeeded=*/true);
-        window_show_state_change_callback_.reset();
-        break;
-      }
+      WasMaximized();
       if (old_state == WindowShowState::kMinimized ||
           old_state == WindowShowState::kFullscreen) {
-        if (window_show_state_change_callback_.has_value() &&
-            window_show_state_change_callback_->first ==
-                WindowShowStateChangeType::Restore) {
-          std::move(window_show_state_change_callback_->second)
-              .Run(/*succeeded=*/true);
-          window_show_state_change_callback_.reset();
-        }
+        WasRestored();
       }
       break;
     case WindowShowState::kInactive:
     case WindowShowState::kFullscreen:
     case WindowShowState::kEnd:
       break;
+  }
+}
+
+void WebViewImpl::OnResizableChanged(bool new_resizable) {
+  if (!RuntimeEnabledFeatures::
+          DesktopPWAsAdditionalWindowingControlsEnabled()) {
+    return;
+  }
+
+  if (set_resizable_change_callback_.has_value() &&
+      set_resizable_change_callback_->first == new_resizable) {
+    std::move(set_resizable_change_callback_->second).Run(/*succeeded=*/true);
+    set_resizable_change_callback_.reset();
+  }
+}
+
+void WebViewImpl::WasMaximized() {
+  HandleWindowShowStateChangeCallbackWith(WindowShowStateChangeType::kMaximize);
+}
+
+void WebViewImpl::WasMinimized() {
+  if (MainFrameWidget()) {
+    // Ensure the display-state CSS property is set correctly
+    MainFrameWidget()->UpdateLifecycle(WebLifecycleUpdate::kLayout,
+                                       DocumentUpdateReason::kComputedStyle);
+  }
+  for (Frame* frame = GetPage()->MainFrame(); frame;
+       frame = frame->Tree().TraverseNext()) {
+    if (auto* local_frame = DynamicTo<LocalFrame>(frame)) {
+      if (Document* document = local_frame->GetDocument()) {
+        // If the window is minimized, the MediaQueryList change events will be
+        // throttled. To ensure the listeners for `(display-state: minimized)`
+        // change will get executed, we need to dispatch them instead of
+        // enqueuing.
+        document->DispatchMediaQueryListEvents();
+      }
+    }
+  }
+  HandleWindowShowStateChangeCallbackWith(WindowShowStateChangeType::kMinimize);
+}
+
+void WebViewImpl::WasRestored() {
+  HandleWindowShowStateChangeCallbackWith(WindowShowStateChangeType::kRestore);
+}
+
+void WebViewImpl::HandleWindowShowStateChangeCallbackWith(
+    WindowShowStateChangeType type) {
+  if (window_show_state_change_callback_.has_value() &&
+      window_show_state_change_callback_->first == type) {
+    std::move(window_show_state_change_callback_->second)
+        .Run(/*succeeded=*/true);
+    window_show_state_change_callback_.reset();
   }
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -4174,6 +4285,10 @@ void WebViewImpl::SetSupportsDraggableRegions(bool supports_draggable_regions) {
   if (supports_draggable_regions_) {
     local_frame->View()->UpdateDocumentDraggableRegions();
   } else {
+    if (!local_frame->GetDocument()->HasDraggableRegions()) {
+      return;
+    }
+
     local_frame->GetDocument()->SetDraggableRegions(
         Vector<DraggableRegionValue>());
     chrome_client_->DraggableRegionsChanged();

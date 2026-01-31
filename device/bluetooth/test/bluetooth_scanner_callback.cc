@@ -6,7 +6,7 @@
 
 namespace device {
 
-void BluetoothScannerCallback::OnScanFailed(JNIEnv* env, jint error_code) {
+void BluetoothScannerCallback::OnScanFailed(JNIEnv* env, int32_t error_code) {
   last_error_code_ = error_code;
 }
 

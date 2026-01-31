@@ -56,7 +56,7 @@ export class TabElement extends CrLitElement {
 
   updateData(tab: TabData) {
     if (tab.favicon.dataUrl) {
-        this.faviconUrl = tab.favicon.dataUrl.url;
+      this.faviconUrl = tab.favicon.dataUrl;
     }
     this.tabTitle = tab.title;
     this.requestUpdate();

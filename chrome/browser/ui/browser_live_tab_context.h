@@ -75,6 +75,8 @@ class BrowserLiveTabContext : public sessions::LiveTabContext {
       const tab_groups::TabGroupId& group) const override;
   const std::optional<base::Uuid> GetSavedTabGroupIdForGroup(
       const tab_groups::TabGroupId& group) const override;
+  const std::optional<tab_groups::TabGroupId> GetGroupIdForSavedGroup(
+      const base::Uuid& saved) const override;
   bool IsTabPinned(int index) const override;
   void SetVisualDataForGroup(
       const tab_groups::TabGroupId& group,

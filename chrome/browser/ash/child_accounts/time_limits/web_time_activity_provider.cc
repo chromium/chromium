@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <optional>
 
-#include "base/containers/contains.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/browser_delegate/browser_delegate.h"
@@ -114,7 +113,7 @@ void WebTimeActivityProvider::OnWebActivityChanged(
 
   // The browser window is not active. This may happen when a navigation
   // finishes in the background.
-  if (!browser || !base::Contains(active_browsers_, &browser->GetBrowser())) {
+  if (!browser || !active_browsers_.contains(&browser->GetBrowser())) {
     return;
   }
 
@@ -144,7 +143,7 @@ void WebTimeActivityProvider::OnTabStripModelChanged(
       GetBrowserForTabStripModel(tab_strip_model);
 
   // If the Browser is not the active browser, simply return.
-  if (!base::Contains(active_browsers_, browser_window_interface)) {
+  if (!active_browsers_.contains(browser_window_interface)) {
     return;
   }
 
@@ -170,7 +169,7 @@ void WebTimeActivityProvider::OnBrowserCreated(
 void WebTimeActivityProvider::OnBrowserClosed(
     ash::BrowserDelegate* browser_delegate) {
   Browser* browser = &browser_delegate->GetBrowser();
-  if (!base::Contains(active_browsers_, browser)) {
+  if (!active_browsers_.contains(browser)) {
     return;
   }
   active_browsers_.erase(browser);

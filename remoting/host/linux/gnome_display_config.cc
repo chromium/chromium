@@ -7,12 +7,12 @@
 #include <glib.h>
 
 #include <algorithm>
+#include <utility>
 
 #include "base/check_op.h"
 #include "base/hash/hash.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "remoting/base/logging.h"
 #include "third_party/webrtc/modules/portal/scoped_glib.h"
 #include "ui/gfx/geometry/rect.h"
@@ -216,10 +216,10 @@ ScopedGVariant GnomeDisplayConfig::BuildMonitorsConfigParameters() const {
   GVariantBuilder properties_builder;
   g_variant_builder_init(&properties_builder, G_VARIANT_TYPE("a{sv}"));
   g_variant_builder_add(&properties_builder, "{sv}", "layout-mode",
-                        g_variant_new_uint32(base::to_underlying(layout_mode)));
+                        g_variant_new_uint32(std::to_underlying(layout_mode)));
 
   return TakeGVariant(g_variant_new(
-      "(uua(iiduba(ssa{sv}))a{sv})", serial, base::to_underlying(method),
+      "(uua(iiduba(ssa{sv}))a{sv})", serial, std::to_underlying(method),
       &logical_monitors_builder, &properties_builder));
 }
 

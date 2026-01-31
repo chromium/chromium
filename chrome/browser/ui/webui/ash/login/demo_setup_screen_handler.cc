@@ -70,7 +70,7 @@ void DemoSetupScreenHandler::DeclareLocalizedValues(
 }
 
 void DemoSetupScreenHandler::GetAdditionalParameters(
-    base::Value::Dict* parameters) {
+    base::DictValue* parameters) {
   parameters->Set("demoSetupSteps", DemoSetupController::GetDemoSetupSteps());
 }
 

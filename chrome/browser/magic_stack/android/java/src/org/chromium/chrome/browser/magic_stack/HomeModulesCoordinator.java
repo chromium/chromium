@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
 import android.os.SystemClock;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.VisibleForTesting;
@@ -19,9 +20,10 @@ import androidx.recyclerview.widget.SnapHelper;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleRegistry.OnViewCreatedCallback;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -43,7 +45,7 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
     private final ModuleDelegateHost mModuleDelegateHost;
     private HomeModulesMediator mMediator;
     private final HomeModulesRecyclerView mRecyclerView;
-    private final ObservableSupplier<Profile> mProfileSupplier;
+    private final MonotonicObservableSupplier<Profile> mProfileSupplier;
     private final ModuleRegistry mModuleRegistry;
 
     private ModelList mModel;
@@ -81,7 +83,7 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
             ModuleDelegateHost moduleDelegateHost,
             ViewGroup parentView,
             HomeModulesConfigManager homeModulesConfigManager,
-            ObservableSupplier<Profile> profileSupplier,
+            MonotonicObservableSupplier<Profile> profileSupplier,
             ModuleRegistry moduleRegistry) {
         mModuleDelegateHost = moduleDelegateHost;
         mHomeModulesConfigManager = homeModulesConfigManager;
@@ -94,8 +96,10 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
 
                     @Override
                     public void allCardsConfigChanged(boolean isEnabled) {
-                        // TODO(crbug.com/7142982): If all cards are turned off, reflect that on the
-                        // NTP.
+                        if (ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.HOME_MODULE_PREF_REFACTOR)) {
+                            mRecyclerView.setVisibility(isEnabled ? View.VISIBLE : View.GONE);
+                        }
                     }
                 };
         mHomeModulesConfigManager.addListener(mHomeModulesStateListener);

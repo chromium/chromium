@@ -11,9 +11,9 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/password_sharing/password_sharing_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_sharing/password_sharing_metrics.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "url/gurl.h"
 
@@ -88,8 +88,8 @@
           ? PasswordSharingInteraction::kFamilyPromoCreateFamilyGroupClicked
           : PasswordSharingInteraction::kFamilyPromoInviteFamilyMembersClicked);
 
-  id<ApplicationCommands> handler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  id<SceneCommands> handler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
   OpenNewTabCommand* command =
       [OpenNewTabCommand commandWithURLFromChrome:[self familyManagementURL]];
   [handler closePresentedViewsAndOpenURL:command];

@@ -45,11 +45,11 @@ struct CallbackResult {
 StatusCallback BindResult(CallbackResult& target);
 
 // Builds metadata returned in the response for Metadata request.
-base::Value::Dict BuildMetadata(const std::string& authorization_server_uri,
-                                const std::string& authorization_uri,
-                                const std::string& token_uri,
-                                const std::string& registration_uri = "",
-                                const std::string& revocation_uri = "");
+base::DictValue BuildMetadata(const std::string& authorization_server_uri,
+                              const std::string& authorization_uri,
+                              const std::string& token_uri,
+                              const std::string& registration_uri = "",
+                              const std::string& revocation_uri = "");
 
 // Simulates Authorization Server. It contains base::test::TaskEnvironment that
 // can be accessed via TaskEnvironment() method.
@@ -78,7 +78,7 @@ class FakeAuthorizationServer {
   // returns an empty string <=> there is no errors. Otherwise it returns
   // an error message.
   std::string ReceivePOSTWithJSON(const std::string& url,
-                                  base::Value::Dict& out_params);
+                                  base::DictValue& out_params);
 
   // Processes all pending tasks and get the next request from the fake server.
   // Checks if it is a POST `url` request with a payload containing URL-encoded
@@ -93,7 +93,7 @@ class FakeAuthorizationServer {
   // in `params` and processes all pending tasks. The call to this method must
   // be preceded by a previous call to one of Receive* methods.
   void ResponseWithJSON(net::HttpStatusCode status,
-                        const base::Value::Dict& params);
+                        const base::DictValue& params);
 
  private:
   // Processes all pending tasks and get the next request from the fake server.

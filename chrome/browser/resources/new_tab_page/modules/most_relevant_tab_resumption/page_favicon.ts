@@ -80,7 +80,7 @@ class PageFavicon extends CrLitElement {
         this.style.setProperty(
             'background-image',
             getFaviconForPageURL(
-                this.url.url, this.isKnownToSync, '',
+                this.url, this.isKnownToSync, '',
                 /* --favicon-size */ this.size,
                 /* forceLightMode */ false,
                 /* fallbackToHost */ this.fallbackToHost));

@@ -58,7 +58,7 @@
 <translation id="1196264380943975940">Հնարավոր չէ ամփոփել։ Փորձեք ավելի երկար գրադարձում։</translation>
 <translation id="1196959502276349371">Տարբերակ <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Նվագարկում/դադար</translation>
-<translation id="1201402288615127009">Հաջորդը</translation>
+<translation id="1201402288615127009">Հաջորդ</translation>
 <translation id="1204296502688602597">DNS-ի հապաղում</translation>
 <translation id="1207734034680156868">Առաջարկները հիմնված են նկարագրության վրա</translation>
 <translation id="121090498480012229">նվագարկել/դադարեցնել մեդիաֆայլը</translation>
@@ -442,7 +442,7 @@
 <translation id="286265581261662583">Սեղմեք մկնիկի աջ կոճակը կամ սեղմեք և պահեք՝ սահմանումներ, թարգմանություններ կամ չափման միավորների փոխարկումներ տեսնելու համար</translation>
 <translation id="2872961005593481000">Անջատել</translation>
 <translation id="2873483161362553159">Նավիգացիա դիտարկիչում</translation>
-<translation id="2874939134665556319">Նախորդը</translation>
+<translation id="2874939134665556319">Նախորդ</translation>
 <translation id="2875812231449496375">Պաստառի օպտիմալ աշխատանքի համար միացրեք այս կարգավորումը։ Այն ցանկացած ժամանակ կարող եք անջատել։</translation>
 <translation id="2878126681324394319">Ներբեռնել ամփոփագրերի և անվանումների ստեղծման մոդելը</translation>
 <translation id="2878387241690264070">Լիցքաթափվել է <ph name="RATE" /> <ph name="NUM_SECONDS" /> վայրկյանում։</translation>
@@ -679,7 +679,7 @@
 <translation id="4035877632587724847">Չթույլատրել</translation>
 <translation id="4042658354407913408">Ամփոփագիրն անջատված է</translation>
 <translation id="4044093238444069296">Չհաջողվեց կապ հաստատել անցախուցի հետ</translation>
-<translation id="4046123991198612571">Հաջորդը</translation>
+<translation id="4046123991198612571">Հաջորդ</translation>
 <translation id="404928562651467259">ԶԳՈՒՇԱՑՈՒՄ</translation>
 <translation id="4050208988451295487">Մի քանի տարբերակներ՝</translation>
 <translation id="405181879009056822">ChromeOS-ի կարգավորումներ</translation>

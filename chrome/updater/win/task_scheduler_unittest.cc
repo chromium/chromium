@@ -10,13 +10,13 @@
 #include <shlobj.h>
 #include <taskschd.h>
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
@@ -327,8 +327,8 @@ TEST_F(TaskSchedulerTests, GetTaskNameList) {
 
   std::vector<std::wstring> task_names;
   EXPECT_TRUE(task_scheduler_->GetTaskNameList(task_names));
-  EXPECT_TRUE(base::Contains(task_names, kTaskName1));
-  EXPECT_TRUE(base::Contains(task_names, kTaskName2));
+  EXPECT_TRUE(std::ranges::contains(task_names, kTaskName1));
+  EXPECT_TRUE(std::ranges::contains(task_names, kTaskName2));
 }
 
 TEST_F(TaskSchedulerTests, FindFirstTaskName) {
@@ -380,7 +380,7 @@ TEST_F(TaskSchedulerTests, GetTasksIncludesHidden) {
 
   std::vector<std::wstring> task_names;
   EXPECT_TRUE(task_scheduler_->GetTaskNameList(task_names));
-  EXPECT_TRUE(base::Contains(task_names, kTaskName1));
+  EXPECT_TRUE(std::ranges::contains(task_names, kTaskName1));
 }
 
 TEST_F(TaskSchedulerTests, GetTaskInfoExecActions) {

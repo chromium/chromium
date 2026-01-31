@@ -1,4 +1,5 @@
 include_rules = [
+  # keep-sorted start
   "+ios/chrome/browser/content_settings/model",
   "+ios/chrome/browser/language_detection/model",
   "+ios/chrome/browser/net/model",
@@ -7,6 +8,7 @@ include_rules = [
   "+ios/chrome/browser/profile_metrics/model",
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/supervised_user/model",
+  # keep-sorted end
 ]
 
 specific_include_rules = {
@@ -23,7 +25,7 @@ specific_include_rules = {
     "+ios/chrome/browser/consent_auditor/model",
     "+ios/chrome/browser/content_notification/model",
     "+ios/chrome/browser/content_settings/model",
-    "+ios/chrome/browser/content_suggestions/ui_bundled/impression_limits/model",
+    "+ios/chrome/browser/content_suggestions/impression_limits/model",
     "+ios/chrome/browser/contextual_panel/model",
     "+ios/chrome/browser/contextual_panel/sample/model",
     "+ios/chrome/browser/crash_report/model",
@@ -55,6 +57,7 @@ specific_include_rules = {
     "+ios/chrome/browser/language/model",
     "+ios/chrome/browser/mailto_handler/model",
     "+ios/chrome/browser/metrics/model",
+    "+ios/chrome/browser/ntp/model",
 
     "+ios/chrome/browser/optimization_guide/model",
     "+ios/chrome/browser/page_content_annotations/model",
@@ -74,7 +77,6 @@ specific_include_rules = {
     "+ios/chrome/browser/safe_browsing/model",
     "+ios/chrome/browser/safety_check/model",
     "+ios/chrome/browser/saved_tab_groups/model",
-    "+ios/chrome/browser/screen_time/model",
     "+ios/chrome/browser/search_engine_choice/model",
     "+ios/chrome/browser/search_engines/model",
     "+ios/chrome/browser/segmentation_platform/model",
@@ -98,6 +100,7 @@ specific_include_rules = {
     "+ios/chrome/browser/webauthn/model",
     "+ios/chrome/browser/webdata_services/model",
     "+ios/chrome/browser/image_fetcher/model",
+    "+ios/chrome/browser/intelligence/actuation/model",
     "+ios/chrome/browser/omnibox/model",
     "+ios/chrome/browser/aim/model",
     "+ios/chrome/browser/composebox/model",

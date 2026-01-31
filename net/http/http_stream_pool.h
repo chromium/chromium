@@ -160,8 +160,11 @@ class NET_EXPORT_PRIVATE HttpStreamPool
   class NET_EXPORT_PRIVATE Job;
   class NET_EXPORT_PRIVATE JobController;
   class NET_EXPORT_PRIVATE Group;
+  class NET_EXPORT_PRIVATE Attempt;
   class NET_EXPORT_PRIVATE AttemptManager;
   class NET_EXPORT_PRIVATE IPEndPointStateTracker;
+  // TODO(crbug.com/457478038): Remove `TcpBasedAttempt` and
+  // `TcpBasedAttemptSlot` once we complete implementing `Attempt`.
   class NET_EXPORT_PRIVATE TcpBasedAttempt;
   class NET_EXPORT_PRIVATE TcpBasedAttemptSlot;
   class NET_EXPORT_PRIVATE QuicAttempt;
@@ -306,7 +309,7 @@ class NET_EXPORT_PRIVATE HttpStreamPool
   CompletionOnceCallback GetAltSvcQuicPreconnectCallback();
 
   // Retrieves information on the current state of the pool as a base::Value.
-  base::Value::Dict GetInfoAsValue() const;
+  base::DictValue GetInfoAsValue() const;
 
   void SetDelegateForTesting(std::unique_ptr<TestDelegate> observer);
 
@@ -360,9 +363,7 @@ class NET_EXPORT_PRIVATE HttpStreamPool
   // JobControllers), always return true.
   bool EnsureTotalActiveStreamCountBelowLimit() const;
 
-  Group& GetOrCreateGroup(const HttpStreamKey& stream_key,
-                          const std::optional<QuicSessionAliasKey>&
-                              quic_session_alias_key = std::nullopt);
+  Group& GetOrCreateGroup(const HttpStreamKey& stream_key);
 
   Group* GetGroup(const HttpStreamKey& stream_key);
 

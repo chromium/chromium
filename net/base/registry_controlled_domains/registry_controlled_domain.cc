@@ -61,6 +61,7 @@
 #include "base/synchronization/lock.h"
 #include "net/base/lookup_string_in_fixed_set.h"
 #include "net/base/net_module.h"
+#include "net/base/registry_controlled_domains/effective_tld_names-reversed-inc.cc"
 #include "net/base/url_util.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -70,10 +71,8 @@
 namespace net::registry_controlled_domains {
 
 namespace {
-#include "net/base/registry_controlled_domains/effective_tld_names-reversed-inc.cc"
 
 // See make_dafsa.py for documentation of the generated dafsa byte array.
-
 // This is mutable so that it can be overridden for testing.
 base::span<const uint8_t> g_graph = kDafsa;
 

@@ -465,6 +465,9 @@ class POLICY_EXPORT CloudPolicyValidator final
 using UserCloudPolicyValidator =
     CloudPolicyValidator<enterprise_management::CloudPolicySettings>;
 
+using ExtensionInstallCloudPolicyValidator =
+    CloudPolicyValidator<enterprise_management::ExtensionInstallPolicies>;
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 using ComponentCloudPolicyValidator =
     CloudPolicyValidator<enterprise_management::ExternalPolicyData>;

@@ -67,7 +67,7 @@ class NET_EXPORT AddressList {
 
   // Creates a value representation of the address list, appropriate for
   // inclusion in a NetLog.
-  base::Value::Dict NetLogParams() const;
+  base::DictValue NetLogParams() const;
 
   // Deduplicates the stored addresses while otherwise preserving their order.
   void Deduplicate();

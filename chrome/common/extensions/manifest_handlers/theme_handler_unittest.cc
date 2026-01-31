@@ -26,31 +26,27 @@ namespace errors = manifest_errors;
 class ThemeHandlerTest : public testing::Test {
  protected:
   // Creates a dummy extension for the given theme dictionary.
-  // TODO(crbug.com/41317803): Continue removing std::string error and
-  // replacing with std::u16string. Once this is done, consider changing the
-  // return type to base::expected<scoped_refptr<Extension>, std::u16string>.
-  scoped_refptr<Extension> CreateExtension(base::Value::Dict&& theme_dict,
-                                           std::string& error) {
-    base::Value::Dict manifest;
+  // TODO(crbug.com/41317803): Consider changing the return type to
+  // base::expected<scoped_refptr<Extension>, std::u16string>.
+  scoped_refptr<Extension> CreateExtension(base::DictValue&& theme_dict,
+                                           std::u16string& error) {
+    base::DictValue manifest;
     manifest.Set(keys::kManifestVersion, 3);
     manifest.Set(keys::kName, "My Theme");
     manifest.Set(keys::kVersion, "1.0");
     manifest.Set(keys::kTheme, std::move(theme_dict));
 
-    std::u16string utf16_error;
-    scoped_refptr<Extension> extension =
-        Extension::Create(base::FilePath(), mojom::ManifestLocation::kInternal,
-                          manifest, Extension::NO_FLAGS, &utf16_error);
-    error = base::UTF16ToUTF8(utf16_error);
-    return extension;
+    return Extension::Create(base::FilePath(),
+                             mojom::ManifestLocation::kInternal, manifest,
+                             Extension::NO_FLAGS, &error);
   }
 };
 
 TEST_F(ThemeHandlerTest, EmptyThemeDictionary) {
   // Empty |theme| dictionary should be considered valid and thus create an
   // |extension|.
-  base::Value::Dict theme = base::Value::Dict();
-  std::string error;
+  base::DictValue theme = base::DictValue();
+  std::u16string error;
   scoped_refptr<Extension> extension = CreateExtension(std::move(theme), error);
   EXPECT_TRUE(extension);
 }
@@ -62,13 +58,13 @@ TEST_F(ThemeHandlerTest, ValidInputWithCustomizeTabGroupColorPaletteEnabled) {
 
   // Integer values for keys inside `tab_group_color_palette` should be
   // considered valid and thus create an |extension|.
-  base::Value::Dict theme = base::Value::Dict().Set(
-      "tab_group_color_palette", base::Value::Dict().Set("red_override", 50));
-  std::string error;
+  base::DictValue theme = base::DictValue().Set(
+      "tab_group_color_palette", base::DictValue().Set("red_override", 50));
+  std::u16string error;
   scoped_refptr<Extension> extension = CreateExtension(std::move(theme), error);
   EXPECT_TRUE(extension);
 
-  const base::Value::Dict* tab_group_color_palette_dict =
+  const base::DictValue* tab_group_color_palette_dict =
       ThemeInfo::GetTabGroupColorPalette(extension.get());
   EXPECT_TRUE(tab_group_color_palette_dict);
 
@@ -82,14 +78,13 @@ TEST_F(ThemeHandlerTest, InvalidInputWithCustomizeTabGroupColorPaletteEnabled) {
 
   // Non-integer values inside `tab_group_color_palette` should be considered
   // invalid and thus |extension| will be nullptr.
-  base::Value::Dict theme = base::Value::Dict().Set(
+  base::DictValue theme = base::DictValue().Set(
       "tab_group_color_palette",
-      base::Value::Dict().Set("red_override", "invalid value"));
-  std::string error;
+      base::DictValue().Set("red_override", "invalid value"));
+  std::u16string error;
   scoped_refptr<Extension> extension = CreateExtension(std::move(theme), error);
   EXPECT_FALSE(extension);
-  EXPECT_EQ(error,
-            base::UTF16ToUTF8(errors::kInvalidThemeTabGroupColorPalette));
+  EXPECT_EQ(error, errors::kInvalidThemeTabGroupColorPalette);
 }
 
 TEST_F(ThemeHandlerTest,
@@ -102,10 +97,10 @@ TEST_F(ThemeHandlerTest,
   // will be ignored. So, even though the values inside the
   // `tab_group_color_palette` key are invalid, the overall theme will still be
   // considered valid.
-  base::Value::Dict theme = base::Value::Dict().Set(
+  base::DictValue theme = base::DictValue().Set(
       "tab_group_color_palette",
-      base::Value::Dict().Set("red_override", "invalid value"));
-  std::string error;
+      base::DictValue().Set("red_override", "invalid value"));
+  std::u16string error;
   scoped_refptr<Extension> extension = CreateExtension(std::move(theme), error);
   EXPECT_TRUE(extension);
 }

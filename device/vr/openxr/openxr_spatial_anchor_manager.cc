@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/types/expected.h"
 #include "device/vr/openxr/openxr_api_wrapper.h"
@@ -34,7 +33,7 @@ bool OpenXrSpatialAnchorManager::IsSupported(
   // XR_SPATIAL_COMPONENT_TYPE_ANCHOR_EXT, which is guaranteed to be supported
   // if the XR_SPATIAL_CAPABILITY_ANCHOR_EXT is supported, so that's all we need
   // to check.
-  return base::Contains(capabilities, XR_SPATIAL_CAPABILITY_ANCHOR_EXT);
+  return std::ranges::contains(capabilities, XR_SPATIAL_CAPABILITY_ANCHOR_EXT);
 }
 
 OpenXrSpatialAnchorManager::OpenXrSpatialAnchorManager(
@@ -260,8 +259,8 @@ mojom::XRAnchorsDataPtr OpenXrSpatialAnchorManager::GetCurrentAnchorsData(
       anchors_.size()) {
     DVLOG(1) << __func__ << " Not all tracked anchors were updated!";
     for (const auto& [id, anchor_data] : anchors_) {
-      if (!base::Contains(cached_anchor_poses_, id) &&
-          !base::Contains(permanently_stopped_anchors, id)) {
+      if (!cached_anchor_poses_.contains(id) &&
+          !permanently_stopped_anchors.contains(id)) {
         DVLOG(3) << __func__
                  << " Did not receive an update for: " << id.GetUnsafeValue();
         cached_anchor_poses_.emplace(id, std::nullopt);

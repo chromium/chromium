@@ -1,0 +1,24 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.borealis_motd.mojom;
+
+// Lives in the browser process. A renderer uses this to create a page handler
+// for controlling Borealis MOTD actions.
+interface PageHandlerFactory {
+  // Creates a page handler to enable communication with the browser process.
+  CreatePageHandler(pending_remote<Page> page,
+                    pending_receiver<PageHandler> handler);
+};
+
+// Lives in the browser process. The renderer uses this to handle MOTD actions.
+interface PageHandler {
+  // This is called when the web page is "closed" or user clicks dismiss button.
+  // The dialog (or whatever) hosting it should also be closed.
+  OnDismiss();
+};
+
+// Lives in the renderer process. The browser uses this to send updates
+// to the web page in the renderer.
+interface Page {};

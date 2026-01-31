@@ -197,7 +197,7 @@ EventReportWindows::WindowResult EventReportWindows::FallsWithin(
 }
 
 base::expected<EventReportWindows, SourceRegistrationError>
-EventReportWindows::FromJSON(const base::Value::Dict& registration,
+EventReportWindows::FromJSON(const base::DictValue& registration,
                              base::TimeDelta expiry,
                              SourceType source_type) {
   const base::Value* singular_window = registration.Find(kEventReportWindow);
@@ -221,7 +221,7 @@ EventReportWindows::FromJSON(const base::Value::Dict& registration,
     return EventReportWindows(expiry, source_type);
   }
 
-  const base::Value::Dict* dict = multiple_windows->GetIfDict();
+  const base::DictValue* dict = multiple_windows->GetIfDict();
   if (!dict) {
     return base::unexpected(
         SourceRegistrationError::kEventReportWindowsWrongType);
@@ -246,7 +246,7 @@ EventReportWindows::FromJSON(const base::Value::Dict& registration,
         SourceRegistrationError::kEventReportWindowsEndTimesMissing);
   }
 
-  const base::Value::List* end_times_list = end_times_value->GetIfList();
+  const base::ListValue* end_times_list = end_times_value->GetIfList();
   if (!end_times_list || end_times_list->empty() ||
       end_times_list->size() > kMaxEventLevelReportWindows) {
     return base::unexpected(
@@ -287,12 +287,12 @@ EventReportWindows::FromJSON(const base::Value::Dict& registration,
   return EventReportWindows(start_time, std::move(end_times));
 }
 
-void EventReportWindows::Serialize(base::Value::Dict& dict) const {
-  base::Value::Dict windows_dict;
+void EventReportWindows::Serialize(base::DictValue& dict) const {
+  base::DictValue windows_dict;
 
   windows_dict.Set(kStartTime, static_cast<int>(start_time_.InSeconds()));
 
-  auto list = base::Value::List::with_capacity(end_times_.size());
+  auto list = base::ListValue::with_capacity(end_times_.size());
   for (const auto& end_time : end_times_) {
     list.Append(static_cast<int>(end_time.InSeconds()));
   }

@@ -15,6 +15,7 @@
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notimplemented.h"
 #include "base/rand_util.h"
@@ -254,14 +255,14 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
   }
 
   base::Value StatusAsValue() const override {
-    base::Value::Dict dict;
-    base::Value::List policy_list;
+    base::DictValue dict;
+    base::ListValue policy_list;
     // We wanted sorted (or at least reproducible) output; luckily, policies_ is
     // a std::map, and therefore already sorted.
     for (const auto& key_and_policy : policies_) {
       const NelPolicyKey& key = key_and_policy.first;
       const NelPolicy& policy = key_and_policy.second;
-      base::Value::Dict policy_dict;
+      base::DictValue policy_dict;
       policy_dict.Set("NetworkAnonymizationKey",
                       key.network_anonymization_key.ToDebugString());
       policy_dict.Set("origin", key.origin.Serialize());
@@ -363,6 +364,13 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
 
     if (!initialized_) {
       task_backlog_.push_back(std::move(task));
+      // TODO(crbug.com/450428442): Remove this UMA after we investigate OOM.
+      // Sample with a 0.001 probability to reduce metrics overhead.
+      if (sampler_.ShouldSample(0.001)) {
+        base::UmaHistogramCounts1000(
+            "Net.NetworkErrorLoggingService.TaskBacklogSize",
+            task_backlog_.size());
+      }
       return;
     }
 
@@ -604,7 +612,7 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
     if (!value)
       return false;
 
-    base::Value::Dict* dict = value->GetIfDict();
+    base::DictValue* dict = value->GetIfDict();
     if (!dict)
       return false;
 
@@ -783,11 +791,11 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
     RemovePolicy(stalest_it);
   }
 
-  static base::Value::Dict CreateReportBody(const std::string& phase,
-                                            const std::string& type,
-                                            double sampling_fraction,
-                                            const RequestDetails& details) {
-    base::Value::Dict body;
+  static base::DictValue CreateReportBody(const std::string& phase,
+                                          const std::string& type,
+                                          double sampling_fraction,
+                                          const RequestDetails& details) {
+    base::DictValue body;
 
     body.Set(kReferrerKey, details.referrer.spec());
     body.Set(kSamplingFractionKey, sampling_fraction);
@@ -803,10 +811,10 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
     return body;
   }
 
-  static base::Value::Dict CreateSignedExchangeReportBody(
+  static base::DictValue CreateSignedExchangeReportBody(
       const SignedExchangeReportDetails& details,
       double sampling_fraction) {
-    base::Value::Dict body;
+    base::DictValue body;
     body.Set(kPhaseKey, kSignedExchangePhaseValue);
     body.Set(kTypeKey, details.type);
     body.Set(kSamplingFractionKey, sampling_fraction);
@@ -818,12 +826,12 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
     body.Set(kElapsedTimeKey,
              static_cast<int>(details.elapsed_time.InMilliseconds()));
 
-    base::Value::Dict sxg_body;
+    base::DictValue sxg_body;
     sxg_body.Set(kOuterUrlKey, details.outer_url.spec());
     if (details.inner_url.is_valid())
       sxg_body.Set(kInnerUrlKey, details.inner_url.spec());
 
-    base::Value::List cert_url_list;
+    base::ListValue cert_url_list;
     if (details.cert_url.is_valid())
       cert_url_list.Append(details.cert_url.spec());
     sxg_body.Set(kCertUrlKey, std::move(cert_url_list));

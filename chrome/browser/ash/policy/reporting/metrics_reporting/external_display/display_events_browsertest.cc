@@ -6,7 +6,6 @@
 #include <string>
 
 #include "ash/constants/ash_switches.h"
-#include "base/containers/contains.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/login/test/user_policy_mixin.h"

@@ -8,14 +8,24 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/metrics/payments/save_and_fill_metrics.h"
 #include "components/autofill/core/browser/ui/payments/save_and_fill_dialog_view.h"
 #include "components/autofill/core/common/autofill_clock.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
+
+class TestSaveAndFillDialogView : public SaveAndFillDialogView {
+ public:
+  TestSaveAndFillDialogView() = default;
+  ~TestSaveAndFillDialogView() override = default;
+
+  MOCK_METHOD(void, DismissThrobberAndUpdateMainView, (), (override));
+};
 
 class SaveAndFillDialogControllerImplTest : public testing::Test {
  protected:
@@ -29,10 +39,11 @@ class SaveAndFillDialogControllerImplTest : public testing::Test {
   void SetUp() override {
     controller_ = std::make_unique<SaveAndFillDialogControllerImpl>();
 
-    EXPECT_CALL(create_and_show_view_callback, Run())
-        .WillOnce(testing::Return(std::make_unique<SaveAndFillDialogView>()));
+    EXPECT_CALL(create_and_show_view_callback_, Run())
+        .WillOnce(
+            testing::Return(std::make_unique<TestSaveAndFillDialogView>()));
 
-    controller_->ShowLocalDialog(create_and_show_view_callback.Get(),
+    controller_->ShowLocalDialog(create_and_show_view_callback_.Get(),
                                  card_save_and_fill_dialog_callback_.Get());
   }
 
@@ -44,7 +55,7 @@ class SaveAndFillDialogControllerImplTest : public testing::Test {
   std::unique_ptr<SaveAndFillDialogControllerImpl> controller_;
   base::MockCallback<
       base::OnceCallback<std::unique_ptr<SaveAndFillDialogView>()>>
-      create_and_show_view_callback;
+      create_and_show_view_callback_;
   base::MockCallback<
       payments::PaymentsAutofillClient::CardSaveAndFillDialogCallback>
       card_save_and_fill_dialog_callback_;
@@ -78,6 +89,53 @@ std::u16string GenerateExpirationDateString(
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 TEST_F(SaveAndFillDialogControllerImplTest, CorrectStringsAreReturned) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillEnableWalletBranding);
+
+  EXPECT_EQ(controller()->GetWindowTitle(),
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_TITLE));
+
+  SetDialogState(SaveAndFillDialogState::kLocalDialog);
+  EXPECT_EQ(controller()->GetExplanatoryMessage(),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_EXPLANATION_LOCAL));
+
+  EXPECT_EQ(controller()->GetCardNumberLabel(),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_CARD_NUMBER_LABEL));
+
+  EXPECT_EQ(
+      controller()->GetCvcLabel(),
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_CVC_LABEL));
+
+  EXPECT_EQ(controller()->GetExpirationDateLabel(),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_EXPIRATION_DATE_LABEL));
+
+  EXPECT_EQ(controller()->GetNameOnCardLabel(),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_NAME_ON_CARD_LABEL));
+
+  EXPECT_EQ(
+      controller()->GetAcceptButtonText(),
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_ACCEPT));
+
+  EXPECT_EQ(controller()->GetInvalidCardNumberErrorMessage(),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_INVALID_CARD_NUMBER));
+
+  // Test for upload Save and Fill explanatory message.
+  SetDialogState(SaveAndFillDialogState::kUploadDialog);
+  EXPECT_EQ(
+      controller()->GetExplanatoryMessage(),
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_AND_FILL_TO_WALLET_DIALOG_EXPLANATION_UPLOAD));
+}
+
+TEST_F(SaveAndFillDialogControllerImplTest, CorrectStringsAreReturned_FlagOff) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kAutofillEnableWalletBranding);
+
   EXPECT_EQ(controller()->GetWindowTitle(),
             l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_TITLE));
 
@@ -331,18 +389,12 @@ TEST_F(SaveAndFillDialogControllerImplTest,
 TEST_F(SaveAndFillDialogControllerImplTest, Metrics_DialogShown_Local) {
   base::HistogramTester histogram_tester;
   auto controller = std::make_unique<SaveAndFillDialogControllerImpl>();
-  base::MockCallback<
-      base::OnceCallback<std::unique_ptr<SaveAndFillDialogView>()>>
-      create_and_show_view_callback;
-  base::MockCallback<
-      payments::PaymentsAutofillClient::CardSaveAndFillDialogCallback>
-      card_save_and_fill_dialog_callback;
 
-  EXPECT_CALL(create_and_show_view_callback, Run())
-      .WillOnce(testing::Return(std::make_unique<SaveAndFillDialogView>()));
+  EXPECT_CALL(create_and_show_view_callback_, Run())
+      .WillOnce(testing::Return(std::make_unique<TestSaveAndFillDialogView>()));
 
-  controller->ShowLocalDialog(create_and_show_view_callback.Get(),
-                              card_save_and_fill_dialog_callback.Get());
+  controller->ShowLocalDialog(create_and_show_view_callback_.Get(),
+                              card_save_and_fill_dialog_callback_.Get());
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveAndFill.DialogShown2",
@@ -353,18 +405,12 @@ TEST_F(SaveAndFillDialogControllerImplTest, Metrics_DialogShown_Local) {
 TEST_F(SaveAndFillDialogControllerImplTest, Metrics_DialogShown_Upload) {
   base::HistogramTester histogram_tester;
   auto controller = std::make_unique<SaveAndFillDialogControllerImpl>();
-  base::MockCallback<
-      base::OnceCallback<std::unique_ptr<SaveAndFillDialogView>()>>
-      create_and_show_view_callback;
-  base::MockCallback<
-      payments::PaymentsAutofillClient::CardSaveAndFillDialogCallback>
-      card_save_and_fill_dialog_callback;
 
-  EXPECT_CALL(create_and_show_view_callback, Run())
-      .WillOnce(testing::Return(std::make_unique<SaveAndFillDialogView>()));
+  EXPECT_CALL(create_and_show_view_callback_, Run())
+      .WillOnce(testing::Return(std::make_unique<TestSaveAndFillDialogView>()));
 
-  controller->ShowUploadDialog({}, create_and_show_view_callback.Get(),
-                               card_save_and_fill_dialog_callback.Get());
+  controller->ShowPendingDialog(create_and_show_view_callback_.Get(), {});
+  controller->ShowUploadDialog({}, card_save_and_fill_dialog_callback_.Get());
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveAndFill.DialogShown2",

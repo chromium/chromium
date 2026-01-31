@@ -12,17 +12,29 @@
 namespace blink {
 
 class Document;
+class ScrollTimeline;
 
+// A DeferredTimeline is a ScrollSnapshotTimeline that updates its state
+// (snapshot) from some ScrollTimeline, possibly attached at a later time.
+//
+// Instances of DeferredTimeline are created by the 'timeline-scope' property
+// on some element, and their "attachments" (i.e. the timelines they fetch
+// their state from) are later attached by the animation update of a descendant
+// element (see CSSAnimations::CalculateTimelineAttachmentUpdate()).
+//
+// https://drafts.csswg.org/scroll-animations-1/#timeline-scope
 class CORE_EXPORT DeferredTimeline : public ScrollSnapshotTimeline {
  public:
   explicit DeferredTimeline(Document*);
 
-  AnimationTimeline* ExposedTimeline() override {
-    return SingleAttachedTimeline();
-  }
+  AnimationTimeline* ExposedTimeline() override;
 
-  void AttachTimeline(ScrollSnapshotTimeline*);
-  void DetachTimeline(ScrollSnapshotTimeline*);
+  void AttachTimeline(ScrollTimeline*);
+  void DetachTimeline(ScrollTimeline*);
+
+  const HeapVector<Member<ScrollTimeline>>& AttachedTimelinesForTest() const {
+    return attached_timelines_;
+  }
 
   void Trace(Visitor*) const override;
 
@@ -31,18 +43,20 @@ class CORE_EXPORT DeferredTimeline : public ScrollSnapshotTimeline {
   TimelineState ComputeTimelineState() const override;
 
  private:
-  ScrollSnapshotTimeline* SingleAttachedTimeline() {
-    return (attached_timelines_.size() == 1u) ? attached_timelines_.back().Get()
-                                              : nullptr;
-  }
+  ScrollTimeline* EffectiveScrollTimeline();
 
-  const ScrollSnapshotTimeline* SingleAttachedTimeline() const {
-    return const_cast<DeferredTimeline*>(this)->SingleAttachedTimeline();
+  const ScrollTimeline* EffectiveScrollTimeline() const {
+    return const_cast<DeferredTimeline*>(this)->EffectiveScrollTimeline();
   }
 
   void OnAttachedTimelineChange();
 
-  HeapVector<Member<ScrollSnapshotTimeline>> attached_timelines_;
+  // Note that while multiple timelines can be attached, this DeferredTimeline
+  // is always inactive when there isn't exactly one attached timeline.
+  //
+  // With the CSSTimelineScopeGlobal runtime flag enabled, we instead
+  // use the last attachment timeline in flat tree order.
+  HeapVector<Member<ScrollTimeline>> attached_timelines_;
 };
 
 }  // namespace blink

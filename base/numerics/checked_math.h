@@ -332,13 +332,6 @@ constexpr StrictNumeric<Dst> ValueOrDefaultForType(CheckedNumeric<Src> value,
   return value.template ValueOrDefault<Dst>(default_value);
 }
 
-// Convenience wrapper to return a new CheckedNumeric from the provided
-// arithmetic or CheckedNumericType.
-template <typename T>
-constexpr CheckedNumeric<UnderlyingType<T>> MakeCheckedNum(T value) {
-  return value;
-}
-
 // These implement the variadic wrapper for the math operations.
 template <template <typename, typename> class M, typename L, typename R>
 constexpr CheckedNumeric<typename MathWrapper<M, L, R>::type> CheckMathOp(
@@ -406,7 +399,6 @@ using numerics_internal::CheckRsh;
 using numerics_internal::CheckSub;
 using numerics_internal::CheckXor;
 using numerics_internal::IsValidForType;
-using numerics_internal::MakeCheckedNum;
 using numerics_internal::ValueOrDefaultForType;
 using numerics_internal::ValueOrDieForType;
 

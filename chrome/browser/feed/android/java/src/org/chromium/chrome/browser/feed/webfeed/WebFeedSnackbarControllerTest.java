@@ -35,7 +35,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLog;
 
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -101,7 +100,6 @@ public final class WebFeedSnackbarControllerTest {
     @Before
     public void setUp() {
         // Print logs to stdout.
-        ShadowLog.stream = System.out;
 
         // Set default locale to other country in order not to make
         // FeedFeatures.isFeedFollowUiUpdateEnabled always return true.

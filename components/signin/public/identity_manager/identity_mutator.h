@@ -42,20 +42,20 @@ class JniIdentityMutator {
   //   - setting the primary account is allowed,
   //   - the account username is allowed by policy,
   //   - there is not already a primary account set.
-  jint SetPrimaryAccount(
+  int32_t SetPrimaryAccount(
       JNIEnv* env,
       const CoreAccountId& primary_account_id,
-      jint consent_level,
-      jint access_point,
+      int32_t consent_level,
+      int32_t access_point,
       const base::android::JavaRef<jobject>& j_prefs_committed_callback);
 
-  // Called by java to clear the primary account, and return whether the
-  // operation succeeded or not. Depending on |action|, the other accounts known
-  // to the IdentityManager may be deleted.
-  bool ClearPrimaryAccount(JNIEnv* env, jint source_metric);
+  // Removes the primary account and revokes the sync consent, but keep the
+  // accounts signed in to the web and the tokens. Returns true if the action
+  // was successful and false if there was no primary account set.
+  bool RemovePrimaryAccountButKeepTokens(JNIEnv* env, int32_t source_metric);
 
   // Called by java to revoke sync consent for the primary account.
-  void RevokeSyncConsent(JNIEnv* env, jint source_metric);
+  void RevokeSyncConsent(JNIEnv* env, int32_t source_metric);
 
   // Called by java to seed the accounts in the token service with system
   // accounts.

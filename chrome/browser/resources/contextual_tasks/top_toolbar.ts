@@ -11,11 +11,12 @@ import '//resources/cr_elements/icons.html.js';
 import './favicon_group.js';
 import './sources_menu.js';
 
+import {AnchorAlignment} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrLazyRenderLitElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import type {Tab} from './contextual_tasks.mojom-webui.js';
+import type {Image, Tab, UploadedFile} from './contextual_tasks.mojom-webui.js';
 import type {BrowserProxy} from './contextual_tasks_browser_proxy.js';
 import {BrowserProxyImpl} from './contextual_tasks_browser_proxy.js';
 import type {SourcesMenuElement} from './sources_menu.js';
@@ -35,6 +36,10 @@ export class TopToolbarElement extends CrLitElement {
     return 'top-toolbar';
   }
 
+  override render() {
+    return getHtml.bind(this)();
+  }
+
   static override get styles() {
     return getCss();
   }
@@ -42,6 +47,18 @@ export class TopToolbarElement extends CrLitElement {
   static override get properties() {
     return {
       attachedTabs: {type: Array},
+      attachedFiles: {type: Array},
+      attachedImages: {type: Array},
+      darkMode: {
+        type: Boolean,
+        reflect: true,
+        attribute: 'dark-mode',
+      },
+      isAiPage: {
+        type: Boolean,
+        reflect: true,
+        attribute: 'is-ai-page',
+      },
       logoImageUrl_: {type: String},
       title: {type: String},
     };
@@ -49,10 +66,34 @@ export class TopToolbarElement extends CrLitElement {
 
   override accessor title: string = '';
   accessor attachedTabs: Tab[] = [];
+  accessor attachedFiles: UploadedFile[] = [];
+  accessor attachedImages: Image[] = [];
+  accessor darkMode: boolean = false;
+  accessor isAiPage: boolean = false;
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
+  private listenerIds_: number[] = [];
 
-  override render() {
-    return getHtml.bind(this)();
+  override connectedCallback() {
+    super.connectedCallback();
+    const callbackRouter = this.browserProxy_.callbackRouter;
+    this.listenerIds_ = [callbackRouter.onContextUpdated.addListener(
+        (tabs: Tab[], files: UploadedFile[], images: Image[]) => {
+          this.attachedTabs = tabs;
+          this.attachedFiles = files;
+          this.attachedImages = images;
+        })];
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.listenerIds_.forEach(
+        id => this.browserProxy_.callbackRouter.removeListener(id));
+    this.listenerIds_ = [];
+  }
+
+  protected shouldShowSourcesMenuButton_(): boolean {
+    return this.attachedTabs.length > 0 || this.attachedFiles.length > 0 ||
+        this.attachedImages.length > 0;
   }
 
   protected onCloseButtonClick_() {
@@ -76,7 +117,10 @@ export class TopToolbarElement extends CrLitElement {
   }
 
   protected onMoreClick_(e: Event) {
-    this.$.menu.get().showAt(e.target as HTMLElement);
+    this.$.menu.get().showAt(e.target as HTMLElement, {
+      noOffset: true,
+      anchorAlignmentY: AnchorAlignment.AFTER_END,
+    });
   }
 
   protected onSourcesClick_(e: Event) {

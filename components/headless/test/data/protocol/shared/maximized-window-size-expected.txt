@@ -1,2 +1,4 @@
 Tests maximized browser window size.
-1600x1200
+10,20 810x620 normal
+0,0 1600x1200 maximized
+10,20 810x620 normal

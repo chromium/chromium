@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <iterator>
 
-#include "base/containers/contains.h"
 #include "base/notimplemented.h"
 #include "chrome/browser/ash/arc/input_overlay/util.h"
 #include "ui/events/event_constants.h"
@@ -123,7 +122,7 @@ bool InputElement::IsOverlapped(const InputElement& input_element) const {
   }
   if (input_sources_ == InputSource::IS_KEYBOARD) {
     for (auto key : input_element.keys()) {
-      if (key != ui::DomCode::NONE && base::Contains(keys_, key)) {
+      if (key != ui::DomCode::NONE && std::ranges::contains(keys_, key)) {
         return true;
       }
     }

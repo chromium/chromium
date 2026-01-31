@@ -12,7 +12,6 @@
 #include <set>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "components/favicon_base/favicon_util.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -128,7 +127,7 @@ void GetCandidateIndicesWithBestScores(
     return;
   }
 
-  if (base::Contains(desired_sizes, 0)) {
+  if (std::ranges::contains(desired_sizes, 0)) {
     // Just return the biggest image available.
     SelectionResult result;
     result.index = BiggestCandidate(candidate_sizes);

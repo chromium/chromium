@@ -30,6 +30,8 @@ typedef bool (*AccessibilityMatchPredicate)(
                                     BrowserAccessibility* this_element)
 
 DECLARE_ACCESSIBILITY_PREDICATE(AccessibilityArticlePredicate);
+DECLARE_ACCESSIBILITY_PREDICATE(
+    AccessibilityContainedInAtomicLiveRegionPredicate);
 DECLARE_ACCESSIBILITY_PREDICATE(AccessibilityBlockquotePredicate);
 DECLARE_ACCESSIBILITY_PREDICATE(AccessibilityButtonPredicate);
 DECLARE_ACCESSIBILITY_PREDICATE(AccessibilityCheckboxPredicate);
@@ -83,9 +85,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) OneShotAccessibilityTreeSearch final {
 
   const int UNLIMITED_RESULTS = -1;
 
-  // The node passed in |scope| determines the scope of results returned -
-  // they will all be within the subtree of the *parent* of |scope| - in other
-  // words, siblings of |scope| and their descendants.
+  // The node passed in `scope` determines the scope of results returned -
+  // Results will all be within the subtree of `scope` - in other
+  // words, `scope`, and its descendants.
   explicit OneShotAccessibilityTreeSearch(BrowserAccessibility* scope);
 
   OneShotAccessibilityTreeSearch(const OneShotAccessibilityTreeSearch&) =

@@ -31,6 +31,8 @@ static_library("host") {
   sources = [
     "host/demo_host.cc",
     "host/demo_host.h",
+    "host/demo_host_display_client.cc",
+    "host/demo_host_display_client.h",
   ]
 
   deps = [

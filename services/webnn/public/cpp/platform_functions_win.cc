@@ -65,12 +65,13 @@ class PlatformFunctionsWin {
       base::wcstring_view package_family_name,
       PACKAGE_VERSION min_version,
       PackageDependencyLifetimeKind lifetime_kind,
-      const wchar_t* lifetime_artifact) {
+      const wchar_t* lifetime_artifact,
+      CreatePackageDependencyOptions options) {
     ScopedWcharType package_dependency_id;
     HRESULT hr = try_create_package_dependency_proc_(
         /*user=*/nullptr, package_family_name.c_str(), min_version,
         PackageDependencyProcessorArchitectures_None, lifetime_kind,
-        lifetime_artifact, CreatePackageDependencyOptions_None,
+        lifetime_artifact, options,
         ScopedWcharType::Receiver(package_dependency_id).get());
     if (FAILED(hr)) {
       base::UmaHistogramSparse(
@@ -159,11 +160,12 @@ base::FilePath InitializePackageDependencyForProcess(
 std::wstring TryCreatePackageDependencyForFilePath(
     base::wcstring_view package_family_name,
     PACKAGE_VERSION min_version,
-    const base::FilePath& file_path) {
+    const base::FilePath& file_path,
+    CreatePackageDependencyOptions options) {
   auto* platform_functions = PlatformFunctionsWin::GetInstance();
   return platform_functions->TryCreatePackageDependency(
       package_family_name, min_version, PackageDependencyLifetimeKind_FilePath,
-      file_path.value().c_str());
+      file_path.value().c_str(), options);
 }
 
 std::wstring TryCreatePackageDependencyForProcess(
@@ -172,7 +174,7 @@ std::wstring TryCreatePackageDependencyForProcess(
   auto* platform_functions = PlatformFunctionsWin::GetInstance();
   return platform_functions->TryCreatePackageDependency(
       package_family_name, min_version, PackageDependencyLifetimeKind_Process,
-      /*lifetime_artifact=*/nullptr);
+      /*lifetime_artifact=*/nullptr, CreatePackageDependencyOptions_None);
 }
 
 base::FilePath AddPackageDependency(base::wcstring_view dependency_id) {

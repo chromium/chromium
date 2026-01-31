@@ -70,6 +70,10 @@
 namespace cc {
 namespace {
 
+bool TreesInViz() {
+  return base::FeatureList::IsEnabled(features::kTreesInViz);
+}
+
 class SynchronousLayerTreeFrameSink : public TestLayerTreeFrameSink {
  public:
   SynchronousLayerTreeFrameSink(
@@ -121,8 +125,14 @@ class SynchronousLayerTreeFrameSink : public TestLayerTreeFrameSink {
   }
   void DidReceiveCompositorFrameAck(
       std::vector<viz::ReturnedResource> resources) override {
-    DCHECK(frame_ack_pending_);
-    frame_ack_pending_ = false;
+    if (!TreesInViz()) {
+      DCHECK(frame_ack_pending_);
+      frame_ack_pending_ = false;
+    } else {
+      // In TreesInViz mode, the above SubmitCompositorFrame() is not
+      // triggered in the client side, thus |frame_ack_pending_| is not set.
+      DCHECK(!frame_ack_pending_);
+    }
     TestLayerTreeFrameSink::DidReceiveCompositorFrameAck(std::move(resources));
     InvalidateIfPossible();
   }

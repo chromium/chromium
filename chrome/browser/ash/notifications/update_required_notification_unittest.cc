@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/policy/handlers/minimum_version_policy_test_helpers.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
@@ -63,7 +64,7 @@ class UpdateRequiredNotificationTest
   MOCK_METHOD0(RestartToLoginScreen, void());
   MOCK_METHOD0(HideUpdateRequiredScreenIfShown, void());
   MOCK_CONST_METHOD0(IsLoginSessionState, bool());
-  MOCK_CONST_METHOD0(IsKioskMode, bool());
+  MOCK_CONST_METHOD1(IsKioskMode, bool(const PrefService&));
   MOCK_CONST_METHOD0(IsLoginInProgress, bool());
   MOCK_CONST_METHOD0(IsDeviceEnterpriseManaged, bool());
   MOCK_CONST_METHOD0(IsUserLoggedIn, bool());
@@ -74,7 +75,7 @@ class UpdateRequiredNotificationTest
   const MinimumVersionRequirement* GetState() const;
 
   // Set new value for policy pref.
-  void SetPolicyPref(base::Value::Dict value);
+  void SetPolicyPref(base::DictValue value);
 
   void VerifyUpdateRequiredNotification(const std::u16string& expected_title,
                                         const std::u16string& expected_message);
@@ -141,6 +142,11 @@ void UpdateRequiredNotificationTest::TearDown() {
 void UpdateRequiredNotificationTest::CreateMinimumVersionHandler() {
   minimum_version_policy_handler_ =
       std::make_unique<policy::MinimumVersionPolicyHandler>(
+          TestingBrowserProcess::GetGlobal()->local_state(),
+          TestingBrowserProcess::GetGlobal()->GetBuildState(),
+          TestingBrowserProcess::GetGlobal()
+              ->platform_part()
+              ->browser_policy_connector_ash(),
           this, CrosSettings::Get());
 }
 
@@ -163,7 +169,7 @@ base::Version UpdateRequiredNotificationTest::GetCurrentVersion() const {
   return *current_version_;
 }
 
-void UpdateRequiredNotificationTest::SetPolicyPref(base::Value::Dict value) {
+void UpdateRequiredNotificationTest::SetPolicyPref(base::DictValue value) {
   scoped_testing_cros_settings_.device_settings()->Set(
       kDeviceMinimumVersion, base::Value(std::move(value)));
 }

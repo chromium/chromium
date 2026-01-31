@@ -239,7 +239,7 @@ LaunchContext::BackgroundLaunchResult LaunchContext::LaunchInBackground(
         app_launch_prefetch::GetPrefetchSwitch(
             app_launch_prefetch::SubprocessType::kBrowserBackground));
 #endif
-    base::Value::List args;
+    base::ListValue args;
     for (const auto& arg : reconnect_command_line.argv()) {
 #if BUILDFLAG(IS_WIN)
       args.Append(base::WideToUTF8(arg));

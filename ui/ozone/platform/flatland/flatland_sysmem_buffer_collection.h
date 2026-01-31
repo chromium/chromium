@@ -40,7 +40,7 @@ class FlatlandSysmemBufferCollection
     : public base::RefCountedDeleteOnSequence<FlatlandSysmemBufferCollection>,
       public base::MessagePumpForIO::ZxHandleWatcher {
  public:
-  static bool IsNativePixmapConfigSupported(gfx::BufferFormat format,
+  static bool IsNativePixmapConfigSupported(viz::SharedImageFormat format,
                                             gfx::BufferUsage usage);
   static bool IsNativePixmapConfigSupported(viz::SharedImageFormat format,
                                             NativePixmapUsageSet usage);

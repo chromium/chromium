@@ -10,6 +10,7 @@
 #include "base/containers/queue.h"
 #include "chrome/browser/ui/views/profiles/profile_management_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_sign_in_provider.h"
 #include "components/signin/public/base/signin_metrics.h"
 
 struct CoreAccountInfo;
@@ -26,7 +27,8 @@ class WebContents;
 // Allows sharing the logic for registering and connecting together
 // identity-related profile management steps.
 class ProfileManagementFlowControllerImpl
-    : public ProfileManagementFlowController {
+    : public ProfileManagementFlowController,
+      public ProfilePickerSignInProviderDelegate {
  public:
   ProfileManagementFlowControllerImpl(ProfilePickerWebContentsHost* host,
                                       ClearHostClosure clear_host_callback,
@@ -75,6 +77,14 @@ class ProfileManagementFlowControllerImpl
       base::FilePath profile_path,
       const std::string& initial_email = std::string());
 
+  // ProfilePickerSignInProviderDelegate implementation:
+  void ShowSigninError(Profile* profile,
+                       const SigninUIError& error) override = 0;
+
+  // Stops the current flow and opens a browser to display the signin error in a
+  // dialog.
+  void HandleSigninErrorInBrowser(Profile* profile, const SigninUIError& error);
+
  private:
   // Move to the steps that come after the identity step.
   void SwitchToPostIdentitySteps(
@@ -96,10 +106,6 @@ class ProfileManagementFlowControllerImpl
       const CoreAccountInfo& account_info,
       std::unique_ptr<content::WebContents> contents,
       StepSwitchFinishedCallback step_switch_finished_callback);
-
-  void HandleSigninError(Profile* profile,
-                         content::WebContents* contents,
-                         const SigninUIError& error);
 
   // The list of steps that are added to the flow.
   // It is populated by the return value of `RegisterPostIdentitySteps` that

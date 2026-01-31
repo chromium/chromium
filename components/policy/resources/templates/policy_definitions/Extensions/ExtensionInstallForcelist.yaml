@@ -19,14 +19,15 @@ desc: |-
   On <ph name="MAC_OS_NAME">macOS</ph> instances, apps and extensions from outside the Chrome Web Store can only be force installed if the instance is managed via MDM, joined to a domain via MCX or enrolled in <ph name="CHROME_ENTERPRISE_CORE_NAME">Chrome Enterprise Core</ph>.
 
   Note: This policy doesn't apply to Incognito mode. Read about hosting extensions ( https://developer.chrome.com/extensions/hosting ).
+
+  Note: This policy only applies to platforms that support extensions.
+
 example_value:
 - aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa;https://clients2.google.com/service/update2/crx
 - abcdefghijklmnopabcdefghijklmnop
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-- android
 label: Extension/App IDs and update URLs to be silently installed
 owners:
 - karandeepb@chromium.org
@@ -38,6 +39,7 @@ schema:
 supported_on:
 - chrome.*:9-
 - chrome_os:11-
+- android:146-
 tags:
 - full-admin-access
 type: list

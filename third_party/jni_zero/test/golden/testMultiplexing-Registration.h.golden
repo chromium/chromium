@@ -19,7 +19,7 @@ JNI_ZERO_MUXED_ENTRYPOINT jobject Muxed_org_jni_1zero_SampleForAnnotationProcess
     JNIEnv* env,
     jobject sample);
 JNI_ZERO_MUXED_ENTRYPOINT void Muxed_org_jni_1zero_SampleForAnnotationProcessor_foo(JNIEnv* env);
-JNI_ZERO_MUXED_ENTRYPOINT jboolean Muxed_org_jni_1zero_SampleForAnnotationProcessor_hasPhalange(
+JNI_ZERO_MUXED_ENTRYPOINT bool Muxed_org_jni_1zero_SampleForAnnotationProcessor_hasPhalange(
     JNIEnv* env);
 JNI_ZERO_MUXED_ENTRYPOINT jobject Muxed_org_jni_1zero_SampleForAnnotationProcessor_returnClass(
     JNIEnv* env);
@@ -61,12 +61,12 @@ JNI_ZERO_MUXED_ENTRYPOINT jobject Muxed_org_jni_1zero_SampleForAnnotationProcess
     jobject strs);
 JNI_ZERO_MUXED_ENTRYPOINT jobject Muxed_org_jni_1zero_SampleForAnnotationProcessor_testAllPrimitives(
     JNIEnv* env,
-    jbyte zbyte,
-    jchar zchar,
-    jdouble zdouble,
-    jfloat zfloat,
-    jint zint,
-    jlong zlong,
+    int8_t zbyte,
+    uint16_t zchar,
+    double zdouble,
+    float zfloat,
+    int32_t zint,
+    int64_t zlong,
     jobject ints,
     jobject longs,
     jobject shorts,
@@ -75,8 +75,8 @@ JNI_ZERO_MUXED_ENTRYPOINT jobject Muxed_org_jni_1zero_SampleForAnnotationProcess
     jobject doubles,
     jobject floats,
     jobject bools,
-    jshort zshort,
-    jboolean zbool);
+    int16_t zshort,
+    bool zbool);
 JNI_ZERO_MUXED_ENTRYPOINT void Muxed_org_jni_1zero_SampleForAnnotationProcessor_testSpecialTypes(
     JNIEnv* env,
     jobject clazz,
@@ -102,7 +102,7 @@ JNI_ZERO_MUXED_ENTRYPOINT void Muxed_org_jni_1zero_SampleForAnnotationProcessor_
 JNI_ZERO_BOUNDARY_EXPORT void Java_J_N_V(JNIEnv* env, jclass jcaller) {
   return Muxed_org_jni_1zero_SampleForAnnotationProcessor_foo(env);
 }
-JNI_ZERO_BOUNDARY_EXPORT jobject Java_J_N_O(JNIEnv* env, jclass jcaller, jint switch_num) {
+JNI_ZERO_BOUNDARY_EXPORT jobject Java_J_N_O(JNIEnv* env, jclass jcaller, int32_t switch_num) {
   JNI_ZERO_DCHECK(switch_num >= 0 && switch_num < 13);
   switch (switch_num) {
     case 0:
@@ -135,13 +135,13 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_J_N_O(JNIEnv* env, jclass jcaller, jint sw
       __builtin_unreachable();
   }
 }
-JNI_ZERO_BOUNDARY_EXPORT jboolean Java_J_N_Z(JNIEnv* env, jclass jcaller) {
+JNI_ZERO_BOUNDARY_EXPORT bool Java_J_N_Z(JNIEnv* env, jclass jcaller) {
   return Muxed_org_jni_1zero_SampleForAnnotationProcessor_hasPhalange(env);
 }
 JNI_ZERO_BOUNDARY_EXPORT jobject Java_J_N_OO(
     JNIEnv* env,
     jclass jcaller,
-    jint switch_num,
+    int32_t switch_num,
     jobject p0) {
   JNI_ZERO_DCHECK(switch_num >= 0 && switch_num < 5);
   switch (switch_num) {
@@ -162,12 +162,12 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_J_N_OO(
 JNI_ZERO_BOUNDARY_EXPORT jobject Java_J_N_OBCDFIJOOOOOOOOSZ(
     JNIEnv* env,
     jclass jcaller,
-    jbyte p0,
-    jchar p1,
-    jdouble p2,
-    jfloat p3,
-    jint p4,
-    jlong p5,
+    int8_t p0,
+    uint16_t p1,
+    double p2,
+    float p3,
+    int32_t p4,
+    int64_t p5,
     jobject p6,
     jobject p7,
     jobject p8,
@@ -176,8 +176,8 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_J_N_OBCDFIJOOOOOOOOSZ(
     jobject p11,
     jobject p12,
     jobject p13,
-    jshort p14,
-    jboolean p15) {
+    int16_t p14,
+    bool p15) {
   return Muxed_org_jni_1zero_SampleForAnnotationProcessor_testAllPrimitives(env, p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15);
 }
 JNI_ZERO_BOUNDARY_EXPORT void Java_J_N_VOOOOOOOOOOOOOOOOOO(

@@ -4,6 +4,7 @@
 
 #include "content/browser/bluetooth/advertisement_client.h"
 
+#include <algorithm>
 #include <utility>
 #include <vector>
 
@@ -150,7 +151,8 @@ void WebBluetoothServiceImpl::ScanningClient::SendEvent(
       if (std::ranges::none_of(
               filter->services.value(),
               [&filtered_event](const BluetoothUUID& filter_uuid) {
-                return base::Contains(filtered_event->uuids, filter_uuid);
+                return std::ranges::contains(filtered_event->uuids,
+                                             filter_uuid);
               })) {
         continue;
       }

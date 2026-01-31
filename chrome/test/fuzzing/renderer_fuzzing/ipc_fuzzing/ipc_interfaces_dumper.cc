@@ -49,12 +49,12 @@ namespace {
 
 void RegisterInterfaces(const std::vector<std::string>& interfaces,
                         const std::string& type,
-                        base::Value::List* list) {
+                        base::ListValue* list) {
   // Remove duplicates.
   std::set<std::string> unique_interfaces(interfaces.begin(), interfaces.end());
 
   for (auto& name : unique_interfaces) {
-    base::Value::Dict entry;
+    base::DictValue entry;
     entry.Set("qualified_name", name);
     entry.Set("type", type);
     list->Append(std::move(entry));
@@ -93,14 +93,14 @@ IN_PROC_BROWSER_TEST_F(IPCInterfacesDumper, DumperTest) {
                                                   rfh_interfaces_associated);
   content::GetBoundInterfacesForTesting(rfh->GetProcess(), process_interfaces);
 
-  base::Value::List context_interfaces;
-  base::Value::List process_interface;
+  base::ListValue context_interfaces;
+  base::ListValue process_interface;
   RegisterInterfaces(rfh_interfaces, "Remote", &context_interfaces);
   RegisterInterfaces(rfh_interfaces_associated, "AssociatedRemote",
                      &context_interfaces);
   RegisterInterfaces(process_interfaces, "Remote", &process_interface);
 
-  base::Value::Dict json;
+  base::DictValue json;
   json.Set("context_interfaces", std::move(context_interfaces));
   json.Set("process_interfaces", std::move(process_interface));
 

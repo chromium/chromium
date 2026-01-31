@@ -53,13 +53,13 @@ class KeyboardHandler : public ::settings::SettingsPageUIHandler,
 
  private:
   // Initializes the page with the current keyboard information.
-  void HandleInitialize(const base::Value::List& args);
+  void HandleInitialize(const base::ListValue& args);
 
   // Shows the Ash shortcut customization app.
-  void HandleShowShortcutCustomizationApp(const base::Value::List& args) const;
+  void HandleShowShortcutCustomizationApp(const base::ListValue& args) const;
 
   // Determines what types of keyboards are attached.
-  void HandleKeyboardChange(const base::Value::List& args);
+  void HandleKeyboardChange(const base::ListValue& args);
 
   // Shows or hides the Caps Lock and Diamond key settings based on whether the
   // system status.

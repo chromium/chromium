@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/reading_list/model/url_downloader.h"
 
+#import <algorithm>
 #import <vector>
 
-#import "base/containers/contains.h"
 #import "base/files/file_util.h"
 #import "base/functional/bind.h"
 #import "base/path_service.h"
@@ -152,9 +152,9 @@ class MockURLDownloader : public URLDownloader {
       EXPECT_EQ(distilled_content, kDistilledPdfContent);
     } else {
       // Check that the image with the bad mime-type was dropped
-      EXPECT_TRUE(base::Contains(distilled_content, kDistilledHtmlContent));
-      EXPECT_FALSE(base::Contains(distilled_content, kBadImageUrl));
-      EXPECT_TRUE(base::Contains(distilled_content, kGoodImageUrl));
+      EXPECT_TRUE(distilled_content.contains(kDistilledHtmlContent));
+      EXPECT_FALSE(distilled_content.contains(kBadImageUrl));
+      EXPECT_TRUE(distilled_content.contains(kGoodImageUrl));
     }
   }
 
@@ -275,7 +275,7 @@ TEST_F(URLDownloaderTest, DownloadAndRemove) {
   // Wait for all asynchronous tasks to complete.
   task_environment_.RunUntilIdle();
 
-  ASSERT_TRUE(!base::Contains(downloader_->downloaded_files_, url));
+  ASSERT_TRUE(!std::ranges::contains(downloader_->downloaded_files_, url));
   ASSERT_EQ(1ul, downloader_->downloaded_files_.size());
   ASSERT_EQ(1ul, downloader_->removed_files_.size());
   ASSERT_FALSE(downloader_->CheckExistenceOfOfflineURLPagePath(url));
@@ -294,8 +294,8 @@ TEST_F(URLDownloaderTest, DownloadAndRemoveAndRedownload) {
   // Wait for all asynchronous tasks to complete.
   task_environment_.RunUntilIdle();
 
-  ASSERT_TRUE(base::Contains(downloader_->downloaded_files_, url));
-  ASSERT_TRUE(base::Contains(downloader_->removed_files_, url));
+  ASSERT_TRUE(std::ranges::contains(downloader_->downloaded_files_, url));
+  ASSERT_TRUE(std::ranges::contains(downloader_->removed_files_, url));
   ASSERT_TRUE(downloader_->CheckExistenceOfOfflineURLPagePath(url));
 }
 

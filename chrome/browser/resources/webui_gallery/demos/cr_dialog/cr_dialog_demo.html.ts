@@ -28,6 +28,10 @@ export function getHtml(this: CrDialogDemoElement) {
       ?disabled="${!this.showInputs_}">
     Autofocus input when dialog opens
   </cr-checkbox>
+  <cr-checkbox ?checked="${this.noCancel_}"
+      @checked-changed="${this.onNoCancelChanged_}">
+    Prevent 'Escape' key from closing the dialog
+  </cr-checkbox>
 
   <cr-button @click="${this.openDialog_}">Open dialog</cr-button>
   <div>
@@ -43,7 +47,8 @@ ${this.isDialogOpen_ ? html`
       @cr-dialog-open="${this.onOpenDialog_}"
       @cancel="${this.onCancelDialog_}"
       @close="${this.onCloseDialog_}"
-      show-on-attach>
+      show-on-attach
+      ?no-cancel="${this.noCancel_}">
     <div slot="title">Dialog title</div>
     <div slot="header" ?hidden="${!this.showHeader_}">
       Dialogs can also include a header between the title and the body. It is

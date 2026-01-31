@@ -8,7 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/passage_embeddings/cpu_histogram_logger.h"
-#include "components/passage_embeddings/passage_embeddings_service_controller.h"
+#include "components/passage_embeddings/core/passage_embeddings_service_controller.h"
 
 namespace base {
 class Process;

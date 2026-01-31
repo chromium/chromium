@@ -16,10 +16,6 @@ namespace content {
 class WebContents;
 }  // namespace content
 
-namespace supervised_user {
-class UrlFormatter;
-}  // namespace supervised_user
-
 class ParentAccessView;
 class ParentAccessDialogResultObserver;
 
@@ -39,10 +35,9 @@ class SupervisedUserWebContentHandlerImpl
 
   // ChromeSupervisedUserWebContentHandlerBase implementation:
   void RequestLocalApproval(
-      const GURL& url,
+      const GURL& target_url,
+      supervised_user::WebFilteringResult filtering_result,
       const std::u16string& child_display_name,
-      const supervised_user::UrlFormatter& url_formatter,
-      const supervised_user::FilteringBehaviorReason& filtering_reason,
       ApprovalRequestInitiatedCallback callback) override;
   void MaybeCloseLocalApproval() override;
 

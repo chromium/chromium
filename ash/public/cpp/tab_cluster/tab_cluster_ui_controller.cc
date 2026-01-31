@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "ash/public/cpp/tab_cluster/tab_cluster_ui_item.h"
-#include "base/containers/contains.h"
 
 namespace ash {
 
@@ -25,8 +24,8 @@ TabClusterUIItem* TabClusterUIController::AddTabItem(
 }
 
 void TabClusterUIController::UpdateTabItem(TabClusterUIItem* tab_item) {
-  DCHECK(base::Contains(tab_items_, tab_item,
-                        &std::unique_ptr<TabClusterUIItem>::get));
+  DCHECK(std::ranges::contains(tab_items_, tab_item,
+                               &std::unique_ptr<TabClusterUIItem>::get));
   for (auto& observer : observers_)
     observer.OnTabItemUpdated(tab_item);
 }

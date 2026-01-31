@@ -105,7 +105,7 @@ class LanguageModelPromptBuilder
   explicit LanguageModelPromptBuilder(
       ScriptState* script_state,
       AbortSignal* abort_signal,
-      HashSet<mojom::blink::AILanguageModelPromptType> allowed_types,
+      const blink::mojom::blink::AILanguageModelInstanceInfoPtr& info,
       const V8LanguageModelPrompt* input,
       const String& json_schema,
       ResolveCallback resolve_callback,
@@ -164,7 +164,7 @@ class LanguageModelPromptBuilder
   int processed_remaining_ = 0;
   Member<ScriptState> script_state_;
   Member<AbortSignal> abort_signal_;
-  HashSet<mojom::blink::AILanguageModelPromptType> allowed_types_;
+  blink::mojom::blink::AILanguageModelInstanceInfoPtr info_;
   String json_schema_;
 
   ResolveCallback resolve_callback_;
@@ -174,14 +174,14 @@ class LanguageModelPromptBuilder
 LanguageModelPromptBuilder::LanguageModelPromptBuilder(
     ScriptState* script_state,
     AbortSignal* abort_signal,
-    HashSet<mojom::blink::AILanguageModelPromptType> allowed_types,
+    const blink::mojom::blink::AILanguageModelInstanceInfoPtr& info,
     const V8LanguageModelPrompt* input,
     const String& json_schema,
     ResolveCallback resolve_callback,
     RejectCallback reject_callback)
     : script_state_(script_state),
       abort_signal_(abort_signal),
-      allowed_types_(allowed_types),
+      info_(info.Clone()),
       json_schema_(json_schema),
       resolve_callback_(std::move(resolve_callback)),
       reject_callback_(std::move(reject_callback)) {
@@ -375,7 +375,8 @@ void LanguageModelPromptBuilder::ProcessEntry(PendingEntry* pending_entry) {
       ToMojo(content_value->GetAsString(), pending_entry);
       return;
     case V8LanguageModelMessageType::Enum::kImage: {
-      if (!allowed_types_.Contains(
+      if (!info_->input_types ||
+          !info_->input_types->Contains(
               mojom::blink::AILanguageModelPromptType::kImage)) {
         Reject(DOMException::Create(
             "Image not supported. Session is not initialized with image "
@@ -412,7 +413,8 @@ void LanguageModelPromptBuilder::ProcessEntry(PendingEntry* pending_entry) {
       return;
     }
     case V8LanguageModelMessageType::Enum::kAudio: {
-      if (!allowed_types_.Contains(
+      if (!info_->input_types ||
+          !info_->input_types->Contains(
               mojom::blink::AILanguageModelPromptType::kAudio)) {
         Reject(DOMException::Create(
             "Audio not supported. Session is not initialized with audio "
@@ -481,30 +483,39 @@ void LanguageModelPromptBuilder::ToMojo(String prompt, PendingEntry* entry) {
 
 void LanguageModelPromptBuilder::ToMojo(AudioBuffer* audio_buffer,
                                         PendingEntry* entry) {
-  if (audio_buffer->numberOfChannels() > 2) {
-    // TODO(crbug.com/382180351): Support more than 2 channels.
-    Reject(DOMException::Create(
-        "Audio with more than 2 channels is not supported.",
-        DOMException::GetErrorName(DOMExceptionCode::kNotSupportedError)));
-    return;
-  }
-  auto audio_data = on_device_model::mojom::blink::AudioData::New();
-  audio_data->sample_rate = audio_buffer->sampleRate();
-  audio_data->frame_count = audio_buffer->length();
-  // TODO(crbug.com/382180351): Use other mono mixing utils like
-  // AudioBus::CreateByMixingToMono.
-  audio_data->channel_count = 1;
-  base::span<const float> channel0 = audio_buffer->getChannelData(0)->AsSpan();
-  audio_data->data = Vector<float>(channel0.size());
-  for (size_t i = 0; i < channel0.size(); ++i) {
-    audio_data->data[i] = channel0[i];
-    // If second channel exists, average the two channels to produce mono.
-    if (audio_buffer->numberOfChannels() > 1) {
-      audio_data->data[i] =
-          (audio_data->data[i] + audio_buffer->getChannelData(1)->AsSpan()[i]) /
-          2.0f;
+  VLOG(1) << "AudioBuffer " << audio_buffer->numberOfChannels() << " channels,"
+          << audio_buffer->sampleRate() << "Hz, len:" << audio_buffer->length();
+  scoped_refptr<AudioBus> bus =
+      AudioBus::Create(audio_buffer->numberOfChannels(), audio_buffer->length(),
+                       /*allocate=*/false);
+  bus->SetSampleRate(audio_buffer->sampleRate());
+  for (unsigned i = 0; i < audio_buffer->numberOfChannels(); ++i) {
+    if (audio_buffer->getChannelData(i)->length() != audio_buffer->length()) {
+      Reject(DOMException::Create(
+          "AudioBuffer channel data length mismatch.",
+          DOMException::GetErrorName(DOMExceptionCode::kNotSupportedError)));
+      return;
     }
+    bus->SetChannelMemory(i, audio_buffer->getChannelData(i)->Data(),
+                          audio_buffer->getChannelData(i)->length());
   }
+
+  auto audio_data = on_device_model::mojom::blink::AudioData::New();
+  audio_data->sample_rate = info_->audio_sample_rate_hz.value_or(48000);
+  audio_data->channel_count = info_->audio_channel_count.value_or(1);
+  CHECK_EQ(audio_data->channel_count, 1) << "Multi-channel audio not supported";
+  const bool mix_to_mono = audio_buffer->numberOfChannels() > 1u;
+  if (audio_data->sample_rate != audio_buffer->sampleRate() || mix_to_mono) {
+    bus = AudioBus::CreateBySampleRateConverting(bus.get(), mix_to_mono,
+                                                 audio_data->sample_rate);
+    VLOG(1) << "Converted to " << bus->NumberOfChannels() << " channels, "
+            << bus->SampleRate() << "Hz, len:" << bus->length();
+  }
+  // TODO(crbug.com/382180351): Avoid a copy.
+  audio_data->frame_count = bus->length();
+  audio_data->data = Vector<float>(bus->length());
+  std::copy_n(bus->Channel(0)->Data(), bus->Channel(0)->length(),
+              audio_data->data.begin());
   OnPromptContentProcessed(mojom::blink::AILanguageModelPromptContent::NewAudio(
                                std::move(audio_data)),
                            entry);
@@ -512,10 +523,14 @@ void LanguageModelPromptBuilder::ToMojo(AudioBuffer* audio_buffer,
 
 void LanguageModelPromptBuilder::AudioToMojo(base::span<uint8_t> bytes,
                                              PendingEntry* entry) {
-  // TODO(crbug.com/401010825): Use the file sample rate.
+  auto audio_data = on_device_model::mojom::blink::AudioData::New();
+  audio_data->sample_rate = info_->audio_sample_rate_hz.value_or(48000);
+  audio_data->channel_count = info_->audio_channel_count.value_or(1);
+  CHECK_EQ(audio_data->channel_count, 1) << "Multi-channel audio not supported";
   scoped_refptr<AudioBus> bus = AudioBus::CreateBusFromInMemoryAudioFile(
-      bytes, /*mix_to_mono=*/true, /*sample_rate=*/48000);
-  if (!bus) {
+      bytes, /*mix_to_mono=*/true, audio_data->sample_rate);
+  if (!bus || bus->SampleRate() != audio_data->sample_rate ||
+      static_cast<int>(bus->NumberOfChannels()) != audio_data->channel_count) {
     // TODO(crbug.com/409615288): This should throw a TypeError according to the
     // spec.
     Reject(DOMException::Create(
@@ -523,13 +538,10 @@ void LanguageModelPromptBuilder::AudioToMojo(base::span<uint8_t> bytes,
         DOMException::GetErrorName(DOMExceptionCode::kDataError)));
     return;
   }
-
-  auto audio_data = on_device_model::mojom::blink::AudioData::New();
-  audio_data->sample_rate = bus->SampleRate();
-  audio_data->frame_count = bus->length();
-  audio_data->channel_count = bus->NumberOfChannels();
-  CHECK_EQ(audio_data->channel_count, 1);
+  VLOG(1) << "AudioBus " << bus->NumberOfChannels() << " channels, "
+          << bus->SampleRate() << "Hz, len:" << bus->length();
   // TODO(crbug.com/382180351): Avoid a copy.
+  audio_data->frame_count = bus->length();
   audio_data->data = Vector<float>(bus->length());
   std::copy_n(bus->Channel(0)->Data(), bus->Channel(0)->length(),
               audio_data->data.begin());
@@ -648,12 +660,12 @@ void ConvertPromptInputsToMojo(
     ScriptState* script_state,
     AbortSignal* abort_signal,
     const V8LanguageModelPrompt* input,
-    HashSet<mojom::blink::AILanguageModelPromptType> allowed_types,
+    const blink::mojom::blink::AILanguageModelInstanceInfoPtr& info,
     const String& json_schema,
     ResolveCallback resolve_callback,
     RejectCallback reject_callback) {
   MakeGarbageCollected<LanguageModelPromptBuilder>(
-      script_state, abort_signal, allowed_types, input, json_schema,
+      script_state, abort_signal, info, input, json_schema,
       std::move(resolve_callback), std::move(reject_callback));
 }
 

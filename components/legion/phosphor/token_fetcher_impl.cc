@@ -23,8 +23,10 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "components/legion/features.h"
+#include "components/legion/phosphor/blind_sign_auth_factory.h"
 #include "components/legion/phosphor/config_http.h"
 #include "components/legion/phosphor/data_types.h"
+#include "components/legion/phosphor/oauth_token_provider.h"
 #include "components/legion/phosphor/token_fetcher.h"
 #include "components/legion/phosphor/token_fetcher_helper.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_auth.h"
@@ -33,16 +35,6 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace legion::phosphor {
-
-std::unique_ptr<quiche::BlindSignAuthInterface>
-TokenFetcherImpl::Delegate::CreateBlindSignAuth(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
-  privacy::ppn::BlindSignAuthOptions bsa_options{};
-  bsa_options.set_enable_privacy_pass(true);
-
-  return std::make_unique<quiche::BlindSignAuth>(
-      std::make_unique<ConfigHttp>(url_loader_factory), std::move(bsa_options));
-}
 
 TokenFetcherImpl::SequenceBoundFetch::SequenceBoundFetch(
     std::unique_ptr<quiche::BlindSignAuthInterface> blind_sign_auth)
@@ -63,20 +55,13 @@ void TokenFetcherImpl::SequenceBoundFetch::GetTokensFromBlindSignAuth(
 }
 
 TokenFetcherImpl::TokenFetcherImpl(
-    Delegate* delegate,
-    std::unique_ptr<network::PendingSharedURLLoaderFactory>
-        pending_url_loader_factory)
-    : delegate_(delegate),
+    OAuthTokenProvider* oauth_token_provider,
+    std::unique_ptr<quiche::BlindSignAuthInterface> bsa)
+    : oauth_token_provider_(oauth_token_provider),
       thread_pool_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
-  CHECK(pending_url_loader_factory);
-  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
-      network::SharedURLLoaderFactory::Create(
-          std::move(pending_url_loader_factory));
-
-  helper_.emplace(thread_pool_task_runner_,
-                  delegate->CreateBlindSignAuth(url_loader_factory));
+  helper_.emplace(thread_pool_task_runner_, std::move(bsa));
 }
 
 TokenFetcherImpl::~TokenFetcherImpl() = default;
@@ -103,7 +88,7 @@ void TokenFetcherImpl::GetAuthnTokens(int batch_size,
       &TokenFetcherImpl::OnRequestOAuthTokenCompletedForGetAuthnTokens,
       weak_ptr_factory_.GetWeakPtr(), batch_size, std::move(callback));
 
-  delegate_->RequestOAuthToken(std::move(request_token_callback));
+  oauth_token_provider_->RequestOAuthToken(std::move(request_token_callback));
 }
 
 void TokenFetcherImpl::OnRequestOAuthTokenCompletedForGetAuthnTokens(
@@ -120,15 +105,15 @@ void TokenFetcherImpl::OnRequestOAuthTokenCompletedForGetAuthnTokens(
     return;
   }
 
-  // The `quiche::BlindSignAuth` library requires a `ProxyLayer` parameter,
-  // but for client attestation, this distinction is not currently
-  // meaningful. Therefore, a default value is used.
+  // Use `TerminalLayer` as the `ProxyLayer` parameter because we want tokens
+  // for the PI server. This should be parameterized later when we introduce IP
+  // protection and a proxy to fetch the needed tokens for the proxy layer.
   helper_
       .AsyncCall(
           &TokenFetcherImpl::SequenceBoundFetch::GetTokensFromBlindSignAuth)
-      .WithArgs(quiche::BlindSignAuthServiceType::kPrivateAratea,
+      .WithArgs(quiche::BlindSignAuthServiceType::kChromePrivateAratea,
                 std::move(access_token), batch_size,
-                quiche::ProxyLayer::kProxyA,
+                quiche::ProxyLayer::kTerminalLayer,
                 base::BindPostTaskToCurrentDefault(base::BindOnce(
                     &TokenFetcherImpl::OnFetchBlindSignedTokenCompleted,
                     weak_ptr_factory_.GetWeakPtr(), std::move(callback))));
@@ -182,16 +167,17 @@ void TokenFetcherImpl::GetAuthnTokensComplete(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::optional<base::TimeDelta> backoff = CalculateBackoff(result);
-  std::optional<base::Time> try_again_after;
-  if (backoff) {
-    if (*backoff == base::TimeDelta::Max()) {
-      try_again_after = base::Time::Max();
-    } else {
-      try_again_after = base::Time::Now() + *backoff;
-    }
+  if (bsa_tokens.has_value()) {
+    DCHECK(!backoff.has_value());
+    std::move(callback).Run(base::ok(*std::move(bsa_tokens)));
+    return;
   }
-  DCHECK(bsa_tokens.has_value() || try_again_after.has_value());
-  std::move(callback).Run(std::move(bsa_tokens), try_again_after);
+
+  DCHECK(backoff.has_value());
+  const base::Time try_again_after = (*backoff == base::TimeDelta::Max())
+                                         ? base::Time::Max()
+                                         : base::Time::Now() + *backoff;
+  std::move(callback).Run(base::unexpected(try_again_after));
 }
 
 void TokenFetcherImpl::AccountStatusChanged(bool account_available) {

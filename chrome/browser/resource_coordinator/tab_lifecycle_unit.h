@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_RESOURCE_COORDINATOR_TAB_LIFECYCLE_UNIT_H_
 #define CHROME_BROWSER_RESOURCE_COORDINATOR_TAB_LIFECYCLE_UNIT_H_
 
+#include "base/byte_size.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_base.h"
@@ -86,6 +87,10 @@ class TabLifecycleUnitSource::TabLifecycleUnit
                   uint64_t memory_footprint_estimate) override;
   mojom::LifecycleUnitState GetTabState() const override;
 
+  // content::WebContentsObserver:
+  void DidStartLoading() override;
+  void DidStopLoading() override;
+
   // LifecycleUnit and TabLifecycleUnitExternal:
   base::Time GetLastFocusedTime() const override;
 
@@ -132,8 +137,11 @@ class TabLifecycleUnitSource::TabLifecycleUnit
       base::TimeTicks discard_start_time);
 
   // content::WebContentsObserver:
-  void DidStartLoading() override;
   void OnVisibilityChanged(content::Visibility visibility) override;
+
+  // Helper to record metrics when a tab transitions from Discarded -> Loading.
+  // Called from DidStartLoading (background) or MaybeLoad (foreground).
+  void RecordDiscardReloadMetrics();
 
   // TabStripModel to which this tab belongs.
   raw_ptr<TabStripModel> tab_strip_model_;
@@ -179,6 +187,19 @@ class TabLifecycleUnitSource::TabLifecycleUnit
   performance_manager::mojom::LifecycleState page_lifecycle_state_ =
       performance_manager::mojom::LifecycleState::kRunning;
   bool is_discarded_ = false;
+
+  // The timestamp when the tab was last discarded.
+  base::TimeTicks last_discard_time_;
+
+  // The estimated memory saved during the last discard.
+  base::ByteSize last_discard_memory_estimate_;
+
+  // Timestamps to measure the efficiency of the reload.
+  base::TimeTicks reload_start_time_;
+
+  // Flag to indicate we are currently reloading a previously discarded tab.
+  // This ensures we don't log metrics for normal navigations.
+  bool is_reloading_from_discard_ = false;
 };
 
 }  // namespace resource_coordinator

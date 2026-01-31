@@ -25,18 +25,17 @@ class IFramePolicy final : public DOMFeaturePolicy {
   // a document.
   IFramePolicy(ExecutionContext* parent_context,
                const network::ParsedPermissionsPolicy& container_policy,
-               scoped_refptr<const SecurityOrigin> src_origin)
+               const SecurityOrigin& src_origin)
       : DOMFeaturePolicy(parent_context) {
-    DCHECK(src_origin);
     UpdateContainerPolicy(container_policy, src_origin);
   }
 
   void UpdateContainerPolicy(
       const network::ParsedPermissionsPolicy& container_policy,
-      scoped_refptr<const SecurityOrigin> src_origin) override {
+      const SecurityOrigin& src_origin) override {
     policy_ = network::PermissionsPolicy::CreateFromParentPolicy(
         context_->GetSecurityContext().GetPermissionsPolicy(),
-        /*header_policy=*/{}, container_policy, src_origin->ToUrlOrigin());
+        /*header_policy=*/{}, container_policy, src_origin.ToUrlOrigin());
   }
 
  protected:

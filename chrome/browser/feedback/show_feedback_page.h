@@ -24,8 +24,8 @@ void ShowFeedbackPage(BrowserWindowInterface* bwi,
                       const std::string& description_placeholder_text,
                       const std::string& category_tag,
                       const std::string& extra_diagnostics,
-                      base::Value::Dict autofill_metadata = base::Value::Dict(),
-                      base::Value::Dict ai_metadata = base::Value::Dict());
+                      base::DictValue autofill_metadata = base::DictValue(),
+                      base::DictValue ai_metadata = base::DictValue());
 
 // Displays the Feedback ui.
 void ShowFeedbackPage(const GURL& page_url,
@@ -35,8 +35,8 @@ void ShowFeedbackPage(const GURL& page_url,
                       const std::string& description_placeholder_text,
                       const std::string& category_tag,
                       const std::string& extra_diagnostics,
-                      base::Value::Dict autofill_metadata = base::Value::Dict(),
-                      base::Value::Dict ai_metadata = base::Value::Dict());
+                      base::DictValue autofill_metadata = base::DictValue(),
+                      base::DictValue ai_metadata = base::DictValue());
 
 }  // namespace chrome
 

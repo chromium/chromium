@@ -14,7 +14,7 @@
 #include "url/gurl.h"
 
 namespace base {
-class Value;
+class DictValue;
 }
 
 namespace extensions {
@@ -51,7 +51,7 @@ class OptionsPageInfo : public Extension::ManifestData {
 
   static std::unique_ptr<OptionsPageInfo> Create(
       Extension* extension,
-      const base::Value::Dict* options_ui_dict,
+      const base::DictValue* options_ui_dict,
       const std::string& options_page_string,
       std::vector<InstallWarning>* install_warnings,
       std::u16string* error);

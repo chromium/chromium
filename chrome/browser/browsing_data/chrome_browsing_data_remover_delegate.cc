@@ -34,7 +34,6 @@
 #include "chrome/browser/autocomplete/zero_suggest_cache_service_factory.h"
 #include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
-#include "chrome/browser/autofill/strike_database_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
@@ -80,6 +79,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/spellchecker/spellcheck_factory.h"
 #include "chrome/browser/spellchecker/spellcheck_service.h"
+#include "chrome/browser/strike_database/strike_database_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/tpcd/metadata/manager_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
@@ -336,10 +336,10 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
       FROM_HERE, slow_pending_tasks_closure_.callback(), kSlowTaskTimeout);
 
   // Embedder-defined DOM-accessible storage currently contains only
-  // one datatype, which is the durable storage permission.
+  // one datatype, which is the persistent storage permission.
   if (remove_mask &
       content::BrowsingDataRemover::DATA_TYPE_EMBEDDER_DOM_STORAGE) {
-    remove_mask |= constants::DATA_TYPE_DURABLE_PERMISSION;
+    remove_mask |= constants::DATA_TYPE_PERSISTENT_PERMISSION;
   }
 
   if (origin_type_mask &
@@ -825,11 +825,11 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  // DATA_TYPE_DURABLE_PERMISSION
-  if (remove_mask & constants::DATA_TYPE_DURABLE_PERMISSION) {
+  // DATA_TYPE_PERSISTENT_PERMISSION
+  if (remove_mask & constants::DATA_TYPE_PERSISTENT_PERMISSION) {
     host_content_settings_map_->ClearSettingsForOneTypeWithPredicate(
-        ContentSettingsType::DURABLE_STORAGE, base::Time(), base::Time::Max(),
-        website_settings_filter);
+        ContentSettingsType::PERSISTENT_STORAGE, base::Time(),
+        base::Time::Max(), website_settings_filter);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -928,8 +928,6 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
     if (password_store) {
       // No sync completion callback is needed for profile passwords, since the
       // login token is persisted and can be used after cookie deletion.
-      // TODO:(crbug.com/1167715) - Test that associated compromised credentials
-      // are removed.
       password_store->RemoveLoginsCreatedBetween(
           FROM_HERE, delete_begin_, delete_end_,
           CreateTaskCompletionCallback(
@@ -1058,10 +1056,10 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
       // TODO(crbug.com/40594007): Respect |delete_begin_| and |delete_end_| and
       // only clear out entries whose last strikes were created in that
       // timeframe.
-      strike_database::StrikeDatabase* strike_database =
-          autofill::StrikeDatabaseFactory::GetForProfile(profile_);
-      if (strike_database)
+      if (strike_database::StrikeDatabase* strike_database =
+              StrikeDatabaseFactory::GetForProfile(profile_)) {
         strike_database->ClearAllStrikes();
+      }
 
       autofill::PersonalDataManager* data_manager =
           autofill::PersonalDataManagerFactory::GetForBrowserContext(profile_);
@@ -1736,7 +1734,12 @@ void ChromeBrowsingDataRemoverDelegate::DisablePasswordsAutoSignin(
             TracingDataType::kDisableAutoSigninForProfilePasswords));
   }
   if (account_store &&
-      password_manager::features_util::IsAccountStorageEnabled(sync_service)) {
+      // TODO(crbug.com/470332074): This should check for
+      // "enabled" instead of "active" because this code is just trying to
+      // delete data from all relevant places. The if() statement is just making
+      // sure the storage exists before we make a deletion call on it. This
+      // seems to match the semantics of "enabled".
+      password_manager::features_util::IsAccountStorageActive(sync_service)) {
     account_store->DisableAutoSignInForOrigins(
         url_filter,
         CreateTaskCompletionClosure(

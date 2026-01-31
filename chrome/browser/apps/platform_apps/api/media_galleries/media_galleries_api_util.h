@@ -13,7 +13,7 @@ namespace api {
 
 // Converts a mojo media metadata struct into a dictionary. Internally uses
 // extension's auto generated serializer.
-base::Value::Dict SerializeMediaMetadata(
+base::DictValue SerializeMediaMetadata(
     chrome::mojom::MediaMetadataPtr metadata);
 
 }  // namespace api

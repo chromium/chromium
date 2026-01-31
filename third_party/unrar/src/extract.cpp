@@ -671,11 +671,6 @@ bool CmdExtract::ExtractCurrentFile(Archive &Arc,size_t HeaderSize,bool &Repeat)
       ExtrFile=LinksToDirs(DestFileName,Cmd->ExtrPath,LastCheckedSymlink);
 
     File CurFile;
-#if defined(CHROMIUM_UNRAR)
-    // Since extraction is done in a sandbox, this must extract to the temp file
-    // handle instead of the default.
-    CurFile.SetFileHandle(Arc.GetTempFileHandle());
-#endif
 
     bool LinkEntry=Arc.FileHead.RedirType!=FSREDIR_NONE;
     if (LinkEntry && (Arc.FileHead.RedirType!=FSREDIR_FILECOPY))
@@ -821,7 +816,7 @@ bool CmdExtract::ExtractCurrentFile(Archive &Arc,size_t HeaderSize,bool &Repeat)
 
       uint64 Preallocated=0;
       if (!TestMode && !Arc.BrokenHeader && Arc.FileHead.UnpSize>1000000 &&
-          Arc.FileHead.PackSize*1024>Arc.FileHead.UnpSize && Arc.IsSeekable() &&
+          Arc.FileHead.PackSize>Arc.FileHead.UnpSize/1024 && Arc.IsSeekable() &&
           (Arc.FileHead.UnpSize<100000000 || Arc.FileLength()>Arc.FileHead.PackSize))
       {
         CurFile.Prealloc(Arc.FileHead.UnpSize);

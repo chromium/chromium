@@ -42,7 +42,7 @@ class DevToolsProtocolTestBindings : public WebContentsObserver,
 
   void ParseLog(std::string_view log);
   void HandleMessagesFromLog(std::string_view protocol_message_string);
-  void HandleMessageFromTest(base::Value::Dict message);
+  void HandleMessageFromTest(base::DictValue message);
 
   scoped_refptr<DevToolsAgentHost> agent_host_;
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA)
@@ -51,7 +51,7 @@ class DevToolsProtocolTestBindings : public WebContentsObserver,
   std::unique_ptr<DevToolsFrontendHost> frontend_host_;
 #endif
   // Log of protocol messages, used to script the bindings behavior.
-  std::vector<base::Value::Dict> log_;
+  std::vector<base::DictValue> log_;
   // The index of the next message in the log.
   size_t log_pos_ = 0;
   // If true, the binding is using the log instead of sending real messages.

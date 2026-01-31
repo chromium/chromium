@@ -101,8 +101,9 @@ class ScopedInterfaceEndpointHandle::State
   void SetAssociationEventHandler(AssociationEventCallback handler) {
     internal::MayAutoLock locker(&lock_);
 
-    if (!pending_association_ && !IsValidInterfaceId(id_))
+    if (!pending_association_ && !IsValidInterfaceId(id_)) {
       return;
+    }
 
     association_event_handler_ = std::move(handler);
     if (association_event_handler_.is_null()) {
@@ -189,8 +190,9 @@ class ScopedInterfaceEndpointHandle::State
       // NotifyPeerAssociation() of endpoint A_peer on different sequences.
       // Therefore, it is possible that endpoint A has been closed but it
       // still gets OnAssociated() call from its peer.
-      if (!pending_association_)
+      if (!pending_association_) {
         return;
+      }
 
       pending_association_ = false;
       peer_state_ = nullptr;
@@ -210,8 +212,9 @@ class ScopedInterfaceEndpointHandle::State
       }
     }
 
-    if (!handler.is_null())
+    if (!handler.is_null()) {
       std::move(handler).Run(ASSOCIATED);
+    }
   }
 
   // Called by the peer, maybe from a different sequence.
@@ -226,8 +229,9 @@ class ScopedInterfaceEndpointHandle::State
       // Therefore, it is possible that endpoint A is not in pending association
       // state but still gets OnPeerClosedBeforeAssociation() call from its
       // peer.
-      if (!pending_association_)
+      if (!pending_association_) {
         return;
+      }
 
       disconnect_reason_ = reason;
       // NOTE: This handle itself is still pending.
@@ -247,8 +251,9 @@ class ScopedInterfaceEndpointHandle::State
       }
     }
 
-    if (!handler.is_null())
+    if (!handler.is_null()) {
       std::move(handler).Run(PEER_CLOSED_BEFORE_ASSOCIATION);
+    }
   }
 
   void RunAssociationEventHandler(
@@ -264,8 +269,9 @@ class ScopedInterfaceEndpointHandle::State
       }
     }
 
-    if (!handler.is_null())
+    if (!handler.is_null()) {
       std::move(handler).Run(event);
+    }
   }
 
   // Protects the following members if the handle is initially set to pending

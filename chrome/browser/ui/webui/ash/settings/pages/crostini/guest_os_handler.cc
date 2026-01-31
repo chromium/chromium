@@ -21,14 +21,14 @@ namespace ash::settings {
 
 namespace {
 
-base::Value::List GetSharableUsbDevices(CrosUsbDetector* detector) {
-  base::Value::List usb_devices_list;
+base::ListValue GetSharableUsbDevices(CrosUsbDetector* detector) {
+  base::ListValue usb_devices_list;
   for (const auto& device : detector->GetShareableDevices()) {
-    base::Value::Dict device_info;
+    base::DictValue device_info;
     device_info.Set("guid", device.guid);
     device_info.Set("label", device.label);
     if (device.shared_guest_id.has_value()) {
-      base::Value::Dict guest_id;
+      base::DictValue guest_id;
       guest_id.Set("vm_name", device.shared_guest_id->vm_name);
       guest_id.Set("container_name", device.shared_guest_id->container_name);
       device_info.Set("guestId", std::move(guest_id));
@@ -80,12 +80,12 @@ void GuestOsHandler::OnJavascriptDisallowed() {
 }
 
 void GuestOsHandler::HandleGetGuestOsSharedPathsDisplayText(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   CHECK_EQ(2U, args.size());
   const std::string& callback_id = args[0].GetString();
 
-  base::Value::List texts;
+  base::ListValue texts;
   for (const auto& path : args[1].GetList()) {
     texts.Append(file_manager::util::GetPathDisplayTextForSettings(
         profile_, path.GetString()));
@@ -94,7 +94,7 @@ void GuestOsHandler::HandleGetGuestOsSharedPathsDisplayText(
 }
 
 void GuestOsHandler::HandleRemoveGuestOsSharedPath(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CHECK_EQ(3U, args.size());
   const std::string& callback_id = args[0].GetString();
   const std::string& vm_name = args[1].GetString();
@@ -119,13 +119,13 @@ void GuestOsHandler::OnGuestOsSharedPathRemoved(
 }
 
 void GuestOsHandler::HandleNotifyGuestOsSharedUsbDevicesPageReady(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   OnUsbDevicesChanged();
 }
 
 void GuestOsHandler::HandleSetGuestOsUsbDeviceShared(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CHECK_EQ(4U, args.size());
   CrosUsbDetector* detector = CrosUsbDetector::Get();
   if (!detector) {

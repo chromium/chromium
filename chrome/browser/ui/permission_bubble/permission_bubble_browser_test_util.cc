@@ -8,7 +8,6 @@
 
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
@@ -17,6 +16,7 @@
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/permissions/request_type.h"
 #include "components/permissions/test/mock_permission_request.h"
+#include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 
 PermissionBubbleBrowserTest::PermissionBubbleBrowserTest() = default;

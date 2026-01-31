@@ -83,16 +83,16 @@ class ManagementUIHandler : public content::WebUIMessageHandler,
   }
 
  protected:
-  void AddReportingInfo(base::Value::List* report_sources, bool is_browser);
+  void AddReportingInfo(base::ListValue* report_sources, bool is_browser);
 
-  virtual base::Value::Dict GetContextualManagedData(Profile* profile);
-  base::Value::Dict GetThreatProtectionInfo(Profile* profile);
-  base::Value::List GetManagedWebsitesInfo(Profile* profile) const;
-  base::Value::List GetApplicationsInfo(Profile* profile) const;
+  virtual base::DictValue GetContextualManagedData(Profile* profile);
+  base::DictValue GetThreatProtectionInfo(Profile* profile);
+  base::ListValue GetManagedWebsitesInfo(Profile* profile) const;
+  base::ListValue GetApplicationsInfo(Profile* profile) const;
   virtual policy::PolicyService* GetPolicyService();
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   virtual device_signals::UserPermissionService* GetUserPermissionService();
-  base::Value::Dict GetDeviceSignalGrantedMessage();
+  base::DictValue GetDeviceSignalGrantedMessage();
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
   bool account_managed() const { return account_managed_; }
@@ -113,16 +113,16 @@ class ManagementUIHandler : public content::WebUIMessageHandler,
   void NotifyThreatProtectionInfoUpdated();
 
  private:
-  void HandleGetExtensions(const base::Value::List& args);
-  void HandleGetContextualManagedData(const base::Value::List& args);
-  void HandleGetThreatProtectionInfo(const base::Value::List& args);
-  void HandleGetManagedWebsites(const base::Value::List& args);
-  void HandleGetApplications(const base::Value::List& args);
-  void HandleInitBrowserReportingInfo(const base::Value::List& args);
-  void HandleInitProfileReportingInfo(const base::Value::List& args);
-  void HandleShouldShowPromotion(const base::Value::List& args);
-  void HandleSetBannerDismissed(const base::Value::List& args);
-  void HandleRecordBannerRedirected(const base::Value::List& args);
+  void HandleGetExtensions(const base::ListValue& args);
+  void HandleGetContextualManagedData(const base::ListValue& args);
+  void HandleGetThreatProtectionInfo(const base::ListValue& args);
+  void HandleGetManagedWebsites(const base::ListValue& args);
+  void HandleGetApplications(const base::ListValue& args);
+  void HandleInitBrowserReportingInfo(const base::ListValue& args);
+  void HandleInitProfileReportingInfo(const base::ListValue& args);
+  void HandleShouldShowPromotion(const base::ListValue& args);
+  void HandleSetBannerDismissed(const base::ListValue& args);
+  void HandleRecordBannerRedirected(const base::ListValue& args);
   void OnPromotionEligibilityFetched(
       const std::string& callback_id,
       enterprise_management::GetUserEligiblePromotionsResponse response);

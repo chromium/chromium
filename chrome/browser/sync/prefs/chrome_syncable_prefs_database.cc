@@ -19,7 +19,6 @@
 #include "components/live_caption/pref_names.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
-#include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/spellcheck/browser/pref_names.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync_preferences/syncable_prefs_database.h"
@@ -436,6 +435,7 @@ enum {
   kClassManagementToolsKioskReceiverCodes = 100368,
   kPinContextualTaskButton = 100369,
   kAccessibilityReadAnythingOmniboxChipIgnoredCount = 100370,
+  kAccessibilityReadAnythingLineFocus = 100371,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -546,6 +546,10 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       sync_preferences::MergeBehavior::kNone}},
     {prefs::kAccessibilityReadAnythingOmniboxChipIgnoredCount,
      {syncable_prefs_ids::kAccessibilityReadAnythingOmniboxChipIgnoredCount,
+      syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {prefs::kAccessibilityReadAnythingLineFocus,
+     {syncable_prefs_ids::kAccessibilityReadAnythingLineFocus,
       syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
     {prefs::kLensRegionSearchEnabled,

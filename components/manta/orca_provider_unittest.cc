@@ -75,7 +75,7 @@ TEST_F(OrcaProviderTest, PrepareRequestFailure) {
   orca_provider->Call(
       input, base::BindLambdaForTesting(
                  [quit_closure = task_environment_.QuitClosure()](
-                     base::Value::Dict response, MantaStatus manta_status) {
+                     base::DictValue response, MantaStatus manta_status) {
                    EXPECT_EQ(manta_status.status_code,
                              MantaStatusCode::kInvalidInput);
                    quit_closure.Run();
@@ -96,7 +96,7 @@ TEST_F(OrcaProviderTest, CaptureUnexcpetedStatusCode) {
   orca_provider->Call(
       input, base::BindLambdaForTesting(
                  [quit_closure = task_environment_.QuitClosure()](
-                     base::Value::Dict response, MantaStatus manta_status) {
+                     base::DictValue response, MantaStatus manta_status) {
                    EXPECT_EQ(manta_status.status_code,
                              MantaStatusCode::kBackendFailure);
                    quit_closure.Run();
@@ -115,7 +115,7 @@ TEST_F(OrcaProviderTest, CaptureNetError) {
   orca_provider->Call(
       input, base::BindLambdaForTesting(
                  [quit_closure = task_environment_.QuitClosure()](
-                     base::Value::Dict response, MantaStatus manta_status) {
+                     base::DictValue response, MantaStatus manta_status) {
                    EXPECT_EQ(manta_status.status_code,
                              MantaStatusCode::kNoInternetConnection);
                    quit_closure.Run();
@@ -137,7 +137,7 @@ TEST_F(OrcaProviderTest, ParseMalformedSerializedProto) {
   orca_provider->Call(
       input, base::BindLambdaForTesting(
                  [quit_closure = task_environment_.QuitClosure()](
-                     base::Value::Dict response, MantaStatus manta_status) {
+                     base::DictValue response, MantaStatus manta_status) {
                    EXPECT_EQ(manta_status.status_code,
                              MantaStatusCode::kMalformedResponse);
                    EXPECT_EQ(manta_status.message, "");
@@ -174,7 +174,7 @@ TEST_F(OrcaProviderTest, ParseRpcStatusFromFailedResponse) {
   orca_provider->Call(
       input, base::BindLambdaForTesting(
                  [quit_closure = task_environment_.QuitClosure()](
-                     base::Value::Dict response, MantaStatus manta_status) {
+                     base::DictValue response, MantaStatus manta_status) {
                    EXPECT_EQ(manta_status.status_code,
                              MantaStatusCode::kInvalidInput);
                    EXPECT_EQ(manta_status.message, "bar");
@@ -200,7 +200,7 @@ TEST_F(OrcaProviderTest, ParseRpcStatusFromFailedResponse) {
   orca_provider->Call(
       input, base::BindLambdaForTesting(
                  [quit_closure = task_environment_.QuitClosure()](
-                     base::Value::Dict response, MantaStatus manta_status) {
+                     base::DictValue response, MantaStatus manta_status) {
                    EXPECT_EQ(manta_status.status_code,
                              MantaStatusCode::kRestrictedCountry);
                    EXPECT_EQ(manta_status.message, "bar");
@@ -211,7 +211,7 @@ TEST_F(OrcaProviderTest, ParseRpcStatusFromFailedResponse) {
   task_environment_.RunUntilQuit();
 }
 
-// Test a successful response can be parsed as base::Value::Dict.
+// Test a successful response can be parsed as base::DictValue.
 TEST_F(OrcaProviderTest, ParseSuccessfulResponse) {
   proto::Response response;
   proto::OutputData& output_data = *response.add_output_data();
@@ -231,7 +231,7 @@ TEST_F(OrcaProviderTest, ParseSuccessfulResponse) {
       input,
       base::BindLambdaForTesting(
           [quit_closure = task_environment_.QuitClosure()](
-              base::Value::Dict response, MantaStatus manta_status) {
+              base::DictValue response, MantaStatus manta_status) {
             EXPECT_EQ(manta_status.status_code, MantaStatusCode::kOk);
 
             EXPECT_TRUE(response.contains("outputData"));
@@ -260,7 +260,7 @@ TEST_F(OrcaProviderTest, EmptyResponseAfterIdentityManagerShutdown) {
   orca_provider->Call(
       input, base::BindLambdaForTesting(
                  [quit_closure = task_environment_.QuitClosure()](
-                     base::Value::Dict dict, MantaStatus manta_status) {
+                     base::DictValue dict, MantaStatus manta_status) {
                    ASSERT_TRUE(dict.empty());
                    ASSERT_EQ(MantaStatusCode::kNoIdentityManager,
                              manta_status.status_code);

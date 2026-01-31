@@ -8,6 +8,7 @@
 #include <jni.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/android/scoped_java_ref.h"
@@ -33,7 +34,9 @@ enum class TabModelType {
   kIncognito = 2,
   // Scoped to a profile.
   kArchived = 3,
-  kMaxValue = kArchived,
+  // Scoped to a profile and activity.
+  kCustom = 4,
+  kMaxValue = kCustom,
 };
 
 // This class is the Android implementation of the TabStoragePackager.
@@ -55,19 +58,20 @@ class TabStoragePackagerAndroid : public TabStoragePackager {
   // responsible for managing the lifecycle of the returned object.
   long ConsolidateTabData(
       JNIEnv* env,
-      jlong timestamp_millis,
+      int64_t timestamp_millis,
       const jni_zero::JavaRef<jobject>& web_contents_state_buffer,
       std::optional<std::string> opener_app_id,
-      jint theme_color,
-      jlong last_navigation_committed_timestamp_millis,
-      jboolean tab_has_sensitive_content,
+      int32_t theme_color,
+      int64_t last_navigation_committed_timestamp_millis,
+      bool tab_has_sensitive_content,
       TabAndroid* tab);
+
   // Returns a pointer to an UnmappedTabStripCollectionStorageData (as a long in
   // Java). The caller is responsible for managing the lifecycle of the returned
   // object.
   long ConsolidateTabStripCollectionData(JNIEnv* env,
-                                         jint window_id,
-                                         jint j_tab_model_type,
+                                         std::string window_tag,
+                                         int32_t j_tab_model_type,
                                          TabAndroid* active_tab);
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();

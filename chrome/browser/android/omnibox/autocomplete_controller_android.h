@@ -16,7 +16,7 @@
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "content/public/browser/browser_context.h"
-#include "third_party/omnibox_proto/aim_tools_and_models.pb.h"
+#include "third_party/omnibox_proto/aim_tools.pb.h"
 
 class AutocompleteResult;
 class ChromeAutocompleteProviderClient;
@@ -45,11 +45,11 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
   void Start(
       JNIEnv* env,
       const base::android::JavaRef<jstring>& j_text,
-      jint j_cursor_pos,
+      int32_t j_cursor_pos,
       const base::android::JavaRef<jstring>& j_desired_tld,
       const base::android::JavaRef<jstring>& j_current_url,
       ::metrics::OmniboxEventProto::PageClassification page_classification,
-      omnibox::ChromeAimToolsAndModels tool_mode,
+      omnibox::ToolMode tool_mode,
       bool prevent_inline_autocomplete,
       bool prefer_keyword,
       bool allow_exact_keyword_match,
@@ -67,38 +67,42 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
       const base::android::JavaRef<jstring>& j_omnibox_text,
       const base::android::JavaRef<jstring>& j_current_url,
       ::metrics::OmniboxEventProto::PageClassification page_classification,
-      omnibox::ChromeAimToolsAndModels tool_mode,
+      omnibox::ToolMode tool_mode,
       const base::android::JavaRef<jstring>& j_current_title);
   void Stop(JNIEnv* env, bool clear_result);
   void ResetSession(JNIEnv* env);
+  void StartPrewarm(JNIEnv* env,
+                    const base::android::JavaRef<jobject>& j_web_contents);
 
   void OnSuggestionSelected(
       JNIEnv* env,
       uintptr_t match_ptr,
       int suggestion_line,
-      const jint j_window_open_disposition,
+      const int32_t j_window_open_disposition,
       const base::android::JavaRef<jstring>& j_current_url,
       ::metrics::OmniboxEventProto::PageClassification page_classification,
-      jlong elapsed_time_since_first_modified,
-      jint completed_length,
+      int64_t elapsed_time_since_first_modified,
+      int32_t completed_length,
       const base::android::JavaRef<jobject>& j_web_contents,
-      jlong omnibox_action_ptr);
-  jboolean OnSuggestionTouchDown(
+      int64_t omnibox_action_ptr);
+  bool OnSuggestionTouchDown(
       JNIEnv* env,
       uintptr_t match_ptr,
       int match_index,
       const base::android::JavaRef<jobject>& j_web_contents);
   void DeleteMatch(JNIEnv* env, uintptr_t match_ptr);
-  void DeleteMatchElement(JNIEnv* env, uintptr_t match_ptr, jint element_index);
+  void DeleteMatchElement(JNIEnv* env,
+                          uintptr_t match_ptr,
+                          int32_t element_index);
   base::android::ScopedJavaLocalRef<jobject>
   UpdateMatchDestinationURLWithAdditionalSearchboxStats(
       JNIEnv* env,
       uintptr_t match_ptr,
-      jlong elapsed_time_since_input_change);
+      int64_t elapsed_time_since_input_change);
   base::android::ScopedJavaLocalRef<jobject> GetAnswerActionDestinationURL(
       JNIEnv* env,
       uintptr_t match_ptr,
-      jlong elapsed_time_since_input_change,
+      int64_t elapsed_time_since_input_change,
       uintptr_t answer_action_ptr);
   base::android::ScopedJavaLocalRef<jobject> GetMatchingTabForSuggestion(
       JNIEnv* env,
@@ -124,8 +128,8 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
   // Grouping framework.
   void OnSuggestionDropdownHeightChanged(
       JNIEnv* env,
-      jint dropdown_height_with_keyboard_active_px,
-      jint suggestion_height_px);
+      int32_t dropdown_height_with_keyboard_active_px,
+      int32_t suggestion_height_px);
 
   void CreateNavigationObserver(JNIEnv* env,
                                 uintptr_t navigation_handle_ptr,

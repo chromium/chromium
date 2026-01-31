@@ -124,12 +124,11 @@ TEST_F(WalletablePassBarcodeDetectorImplTest, NoImagesFound) {
       });
 
   base::RunLoop run_loop;
-  detector_.Detect(web_contents(),
-                   base::BindLambdaForTesting(
-                       [&](const std::vector<WalletBarcode>& results) {
-                         EXPECT_TRUE(results.empty());
-                         run_loop.Quit();
-                       }));
+  detector_.Detect(web_contents(), base::BindLambdaForTesting(
+                                       [&](std::vector<WalletBarcode> results) {
+                                         EXPECT_TRUE(results.empty());
+                                         run_loop.Quit();
+                                       }));
   run_loop.Run();
 }
 
@@ -150,12 +149,11 @@ TEST_F(WalletablePassBarcodeDetectorImplTest, NoBarcodesFound) {
                        callback) { std::move(callback).Run({}); });
 
   base::RunLoop run_loop;
-  detector_.Detect(web_contents(),
-                   base::BindLambdaForTesting(
-                       [&](const std::vector<WalletBarcode>& results) {
-                         EXPECT_TRUE(results.empty());
-                         run_loop.Quit();
-                       }));
+  detector_.Detect(web_contents(), base::BindLambdaForTesting(
+                                       [&](std::vector<WalletBarcode> results) {
+                                         EXPECT_TRUE(results.empty());
+                                         run_loop.Quit();
+                                       }));
   run_loop.Run();
 }
 
@@ -186,7 +184,7 @@ TEST_F(WalletablePassBarcodeDetectorImplTest, QRCodeFound) {
   detector_.Detect(
       web_contents(),
       base::BindLambdaForTesting(
-          [&](const std::vector<WalletBarcode>& results) {
+          [&](std::vector<WalletBarcode> results) {
             EXPECT_THAT(results, ElementsAre(WalletBarcode{
                                      .raw_value = "test_value",
                                      .format = WalletBarcodeFormat::QR_CODE}));
@@ -203,12 +201,11 @@ TEST_F(WalletablePassBarcodeDetectorImplTest,
       });
 
   base::RunLoop run_loop;
-  detector_.Detect(web_contents(),
-                   base::BindLambdaForTesting(
-                       [&](const std::vector<WalletBarcode>& results) {
-                         EXPECT_TRUE(results.empty());
-                         run_loop.Quit();
-                       }));
+  detector_.Detect(web_contents(), base::BindLambdaForTesting(
+                                       [&](std::vector<WalletBarcode> results) {
+                                         EXPECT_TRUE(results.empty());
+                                         run_loop.Quit();
+                                       }));
   run_loop.Run();
 }
 
@@ -231,12 +228,11 @@ TEST_F(WalletablePassBarcodeDetectorImplTest,
       });
 
   base::RunLoop run_loop;
-  detector_.Detect(web_contents(),
-                   base::BindLambdaForTesting(
-                       [&](const std::vector<WalletBarcode>& results) {
-                         EXPECT_TRUE(results.empty());
-                         run_loop.Quit();
-                       }));
+  detector_.Detect(web_contents(), base::BindLambdaForTesting(
+                                       [&](std::vector<WalletBarcode> results) {
+                                         EXPECT_TRUE(results.empty());
+                                         run_loop.Quit();
+                                       }));
   run_loop.Run();
 }
 
@@ -275,7 +271,7 @@ TEST_F(WalletablePassBarcodeDetectorImplTest, MultipleBarcodesFound) {
   detector_.Detect(
       web_contents(),
       base::BindLambdaForTesting(
-          [&](const std::vector<WalletBarcode>& results) {
+          [&](std::vector<WalletBarcode> results) {
             EXPECT_THAT(
                 results,
                 ElementsAre(

@@ -104,10 +104,10 @@ class CONTENT_EXPORT HostZoomMapImpl : public HostZoomMap {
   // Notifies all JNI observers about a zoom level change.
   void NotifyJniObservers(const ZoomLevelChange& change);
   // Manages the lifecycle of JNI observers.
-  jlong AddJniZoomLevelObserver(
+  int64_t AddJniZoomLevelObserver(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& j_callback);
-  void RemoveJniZoomLevelObserver(jlong subscription_key);
+  void RemoveJniZoomLevelObserver(int64_t subscription_key);
 #endif
 
   double GetZoomLevelForPreviewAndHost(const std::string& host) override;

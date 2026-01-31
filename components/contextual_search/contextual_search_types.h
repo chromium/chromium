@@ -12,6 +12,7 @@
 #include "components/sessions/core/session_id.h"
 #include "third_party/lens_server_proto/lens_overlay_request_id.pb.h"
 #include "url/gurl.h"
+#include "components/lens/contextual_input.h"
 
 namespace lens {
 enum class MimeType;
@@ -106,6 +107,12 @@ struct FileInfo {
   // The request ID for this request. Updated by the context
   // controller when the file upload is started.
   lens::LensOverlayRequestId request_id;
+
+  // The raw response bodies from the upload requests.
+  std::vector<std::string> response_bodies;
+
+  // The input data associated with this file.
+  std::unique_ptr<lens::ContextualInputData> input_data;
 };
 
 // LINT.IfChange(SubmissionType)
@@ -130,6 +137,17 @@ enum class AimToolState {
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_search/enums.xml:AimToolState)
+
+// LINT.IfChange(ContextualSearchErrorPage)
+
+// Reasons the contextual search error page appeared.
+enum class ContextualSearchErrorPage {
+  kUnknown = 0,
+  kPageContextNotEligible = 1,
+  kMaxValue = kPageContextNotEligible,
+};
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_search/enums.xml:ContextualSearchErrorPage)
 
 }  // namespace contextual_search
 

@@ -505,7 +505,17 @@ const wchar *uiGetMonthName(uint Month)
          MMonthJan,MMonthFeb,MMonthMar,MMonthApr,MMonthMay,MMonthJun,
          MMonthJul,MMonthAug,MMonthSep,MMonthOct,MMonthNov,MMonthDec
   };
-  return St(MonthID[Month]);
+  return Month<ASIZE(MonthID) ? St(MonthID[Month]):L"";
+}
+
+
+const wchar *uiGetWeekDayName(uint Day)
+{
+  static MSGID DayID[7]={
+         MWeekDaySun,MWeekDayMon,MWeekDayTue,MWeekDayWed,MWeekDayThu,
+         MWeekDayFri,MWeekDaySat
+  };
+  return Day<ASIZE(DayID) ? St(DayID[Day]):L"";
 }
 #endif
 

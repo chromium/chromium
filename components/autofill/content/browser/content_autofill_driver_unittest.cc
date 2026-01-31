@@ -207,6 +207,10 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
               DispatchEmailVerifiedEvent,
               (FieldRendererId, const std::string&),
               (override));
+  MOCK_METHOD(void,
+              FindPotentialSiwgButtons,
+              (FindPotentialSiwgButtonsCallback),
+              (override));
 
  private:
   void CallDone() {

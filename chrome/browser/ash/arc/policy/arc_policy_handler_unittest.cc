@@ -34,8 +34,8 @@ constexpr char kKnownVariable1Pattern[] = "known variable: ${%s}";
 constexpr char kKnownVariable2Pattern[] = "known variable: ${%s:%s}";
 constexpr char kUnknownVariable1Pattern[] = "unknown variable: ${%s}";
 
-base::Value BuildArcPolicyFromApplications(base::Value::List applications) {
-  base::Value::Dict arc_policy;
+base::Value BuildArcPolicyFromApplications(base::ListValue applications) {
+  base::DictValue arc_policy;
   arc_policy.Set(policy_util::kArcPolicyKeyApplications,
                  std::move(applications));
 
@@ -46,8 +46,8 @@ base::Value BuildArcPolicyFromApplications(base::Value::List applications) {
 }
 
 base::Value BuildApplication(const std::string& package_name,
-                             base::Value::Dict managed_configuration) {
-  base::Value::Dict application;
+                             base::DictValue managed_configuration) {
+  base::DictValue application;
   application.Set(ArcPolicyBridge::kPackageName, package_name);
   application.Set(ArcPolicyBridge::kManagedConfiguration,
                   std::move(managed_configuration));
@@ -55,17 +55,17 @@ base::Value BuildApplication(const std::string& package_name,
 }
 
 base::Value SampleArcPolicyWithoutIssues() {
-  base::Value::Dict managed_configuration1;
+  base::DictValue managed_configuration1;
 
   managed_configuration1.Set(
       kKey1,
       base::StringPrintf(kKnownVariable2Pattern, kDeviceAssetId, kUserEmail));
 
-  base::Value::Dict managed_configuration2;
+  base::DictValue managed_configuration2;
   managed_configuration2.Set(
       kKey2, base::StringPrintf(kKnownVariable1Pattern, kDeviceDirectoryId));
 
-  base::Value::List applications;
+  base::ListValue applications;
   applications.Append(
       BuildApplication(kPackageName1, std::move(managed_configuration1)));
   applications.Append(
@@ -75,21 +75,21 @@ base::Value SampleArcPolicyWithoutIssues() {
 }
 
 base::Value SampleArcPolicyWithIssues() {
-  base::Value::Dict managed_configuration1;
+  base::DictValue managed_configuration1;
   managed_configuration1.Set(
       kKey1,
       base::StringPrintf(kKnownVariable1Pattern, kDeviceAnnotatedLocation));
 
-  base::Value::Dict managed_configuration2;
+  base::DictValue managed_configuration2;
   managed_configuration2.Set(
       kKey2, base::StringPrintf(kUnknownVariable1Pattern, kInvalidVariable));
 
-  base::Value::Dict managed_configuration3;
+  base::DictValue managed_configuration3;
   managed_configuration3.Set(
       kKey3, base::StringPrintf(kKnownVariable2Pattern, kDeviceSerialNumber,
                                 kUserEmailName));
 
-  base::Value::List applications;
+  base::ListValue applications;
   applications.Append(
       BuildApplication(kPackageName1, std::move(managed_configuration1)));
   applications.Append(

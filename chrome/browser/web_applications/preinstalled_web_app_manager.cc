@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 
+#include <algorithm>
 #include <iterator>
 #include <map>
 #include <memory>
@@ -14,7 +15,6 @@
 #include <vector>
 
 #include "base/auto_reset.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -92,7 +92,7 @@ bool g_skip_startup_for_testing_ = false;
 bool g_bypass_awaiting_dependencies_for_testing_ = false;
 bool g_bypass_offline_manifest_requirement_for_testing_ = false;
 bool g_override_previous_user_uninstall_for_testing_ = false;
-const base::Value::List* g_configs_for_testing = nullptr;
+const base::ListValue* g_configs_for_testing = nullptr;
 FileUtilsWrapper* g_file_utils_for_testing = nullptr;
 
 std::vector<ExternalInstallOptions>& GetParsedConfigsForTesting() {
@@ -255,7 +255,7 @@ SynchronizeDecision GetSynchronizeDecision(
 
   // Remove if not applicable to current user type.
   DCHECK_GT(options.user_type_allowlist.size(), 0u);
-  if (!base::Contains(options.user_type_allowlist, user_type)) {
+  if (!std::ranges::contains(options.user_type_allowlist, user_type)) {
     return {.type = SynchronizeDecision::kUninstall,
             .reason = DisabledReason::kUninstallUserTypeNotAllowed,
             .log = base::StrCat({options.install_url.spec(),
@@ -694,9 +694,9 @@ PreinstalledWebAppManager::OverridePreviousUserUninstallConfigForTesting() {
 }
 
 // static
-base::AutoReset<const base::Value::List*>
+base::AutoReset<const base::ListValue*>
 PreinstalledWebAppManager::SetConfigsForTesting(
-    const base::Value::List* configs) {
+    const base::ListValue* configs) {
   return {&g_configs_for_testing, configs, nullptr};
 }
 

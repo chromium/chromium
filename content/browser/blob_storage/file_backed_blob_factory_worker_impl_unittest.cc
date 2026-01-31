@@ -11,6 +11,7 @@
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/common/child_process_id.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -43,8 +44,9 @@ constexpr char kUrl2[] = "https://2.example.com";
 class FileBackedBlobFactoryWorkerImplTest : public testing::Test {
  public:
   void SetUp() override {
+    // TODO(crbug.com/379869738) Remove GetUnsafeValue.
     factory_impl_ = std::make_unique<FileBackedBlobFactoryWorkerImpl>(
-        &context_, process_id_);
+        &context_, process_id_.GetUnsafeValue());
     factory_impl_->BindReceiver(factory_.BindNewPipeAndPassReceiver(),
                                 GURL(kUrl));
 
@@ -74,7 +76,7 @@ class FileBackedBlobFactoryWorkerImplTest : public testing::Test {
 
  protected:
   BrowserTaskEnvironment browser_task_environment_{};
-  int process_id_ = 3;
+  ChildProcessId process_id_ = ChildProcessId(3);
   TestBrowserContext context_;
   std::unique_ptr<FileBackedBlobFactoryWorkerImpl> factory_impl_;
   mojo::Remote<blink::mojom::FileBackedBlobFactory> factory_;

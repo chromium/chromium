@@ -28,7 +28,6 @@ Se la casella "<ph name="SERVICE_SCRIPT_NAME" />" è già selezionata, deselezio
 <translation id="2329392777730037872">Impossibile aprire <ph name="URL" /> sul dispositivo client.</translation>
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2366718077645204424">Impossibile raggiungere l'host. Il problema potrebbe essere dovuto alla configurazione della rete in uso.</translation>
-<translation id="242591256144136845">Copyright 2025 Google LLC. Tutti i diritti riservati.</translation>
 <translation id="2504109125669302160">Concedi l'autorizzazione "Accessibilità" a <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">Connessione a <ph name="HOSTNAME" /> effettuata</translation>
 <translation id="2540992418118313681">Vuoi condividere questo computer con un altro utente che potrà accedervi e controllarlo?</translation>
@@ -47,6 +46,7 @@ Se la casella "<ph name="SERVICE_SCRIPT_NAME" />" è già selezionata, deselezio
 <translation id="3150823315463303127">L'host non è riuscito a leggere la norma.</translation>
 <translation id="3171922709365450819">Questo dispositivo non è supportato da questo client perché richiede l'autenticazione di terze parti.</translation>
 <translation id="3197730452537982411">Remote Desktop</translation>
+<translation id="3236334139428307578">Copyright 2026 The Chromium Authors. Tutti i diritti riservati.</translation>
 <translation id="324272851072175193">Invia queste istruzioni tramite email</translation>
 <translation id="3305934114213025800"><ph name="PRODUCT_NAME" /> vorrebbe apportare delle modifiche.</translation>
 <translation id="3339299787263251426">Accedi al computer in modo sicuro tramite Internet</translation>
@@ -111,6 +111,7 @@ Se la casella "<ph name="SERVICE_SCRIPT_NAME" />" è già selezionata, deselezio
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> ha chiesto di accedere per vedere il tuo schermo e controllare la tastiera e il mouse. Premi ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' se questa richiesta non era prevista. Altrimenti seleziona ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' quando vuoi consentire la connessione.</translation>
 <translation id="5823658491130719298">Sul computer a cui vuoi accedere da remoto, apri Chrome e visita <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">Opzioni di visualizzazione</translation>
+<translation id="5965133372831030509">Copyright 2026 Google LLC. Tutti i diritti riservati.</translation>
 <translation id="6033507038939587647">Opzioni tastiera</translation>
 <translation id="6040143037577758943">Chiudi</translation>
 <translation id="6062854958530969723">Inizializzazione host non riuscita.</translation>
@@ -138,7 +139,6 @@ Se la casella "<ph name="SERVICE_SCRIPT_NAME" />" è già selezionata, deselezio
 <translation id="7067321367069083429">Lo schermo funge da touch screen</translation>
 <translation id="7116737094673640201">Benvenuto in Chrome Remote Desktop</translation>
 <translation id="7144878232160441200">Riprova</translation>
-<translation id="7298392173540380852">Copyright 2025 The Chromium Authors. Tutti i diritti riservati.</translation>
 <translation id="7312846573060934304">L'host è offline.</translation>
 <translation id="7319983568955948908">Interrompi condivisione</translation>
 <translation id="7359298090707901886">Il browser selezionato non può essere utilizzato per aprire gli URL sulla macchina locale.</translation>

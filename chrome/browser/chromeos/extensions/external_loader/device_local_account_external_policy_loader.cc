@@ -28,7 +28,7 @@ void DeviceLocalAccountExternalPolicyLoader::StartLoading() {
 }
 
 void DeviceLocalAccountExternalPolicyLoader::OnExtensionListsUpdated(
-    const base::Value::Dict& prefs) {
+    const base::DictValue& prefs) {
   if (has_owner()) {
     LoadFinished(prefs.Clone());
     prefs_.reset();

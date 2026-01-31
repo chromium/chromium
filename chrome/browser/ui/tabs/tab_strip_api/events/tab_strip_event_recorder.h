@@ -53,11 +53,10 @@ class TabStripEventRecorder : public TabStripModelObserver,
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
-  void TabChangedAt(content::WebContents* contents,
-                    int index,
-                    TabChangeType change_type) override;
-  void TabBlockedStateChanged(content::WebContents* contents,
-                              int index) override;
+  void OnTabChangedAt(tabs::TabInterface* tab,
+                      int index,
+                      TabChangeType change_type) override;
+  void OnTabBlockedStateChanged(tabs::TabInterface* tab, int index) override;
   void OnTabGroupChanged(const TabGroupChange& change) override;
 
   // tabs::TabCollectionObserver

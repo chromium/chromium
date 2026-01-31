@@ -49,7 +49,7 @@ class TestAggregationServiceImpl : public AggregationServiceStorageContext,
                      base::OnceCallback<void(bool)> callback) override;
   void AssembleReport(
       AssembleRequest request,
-      base::OnceCallback<void(base::Value::Dict)> callback) override;
+      base::OnceCallback<void(base::DictValue)> callback) override;
   void SendReport(const GURL& url,
                   const base::Value& contents,
                   base::OnceCallback<void(bool)> callback) override;

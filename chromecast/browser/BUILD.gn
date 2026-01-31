@@ -331,8 +331,6 @@ cast_source_set("browser") {
     sources += [
       "cast_system_memory_pressure_evaluator.cc",
       "cast_system_memory_pressure_evaluator.h",
-      "memory_pressure_controller_impl.cc",
-      "memory_pressure_controller_impl.h",
     ]
 
     deps += [ "//third_party/fontconfig" ]

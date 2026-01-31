@@ -10,8 +10,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/net_errors.h"
 
-namespace ash {
-namespace nearby {
+namespace ash::nearby {
 
 FakeTcpServerSocket::FakeTcpServerSocket() = default;
 
@@ -82,5 +81,4 @@ void FakeTcpServerSocket::Accept(
   }
 }
 
-}  // namespace nearby
-}  // namespace ash
+}  // namespace ash::nearby

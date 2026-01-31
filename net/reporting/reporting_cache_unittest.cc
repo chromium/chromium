@@ -4,10 +4,10 @@
 
 #include "net/reporting/reporting_cache.h"
 
+#include <algorithm>
 #include <string>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
@@ -114,10 +114,10 @@ class ReportingCacheTest : public ReportingTestBase,
       const std::string& user_agent,
       const std::string& group,
       const std::string& type,
-      base::Value::Dict body,
+      base::DictValue body,
       int depth,
       base::TimeTicks queued) {
-    const base::Value::Dict body_clone(body.Clone());
+    const base::DictValue body_clone(body.Clone());
 
     // The public API will only give us the (unordered) full list of reports in
     // the cache.  So we need to grab the list before we add, and the list after
@@ -134,7 +134,7 @@ class ReportingCacheTest : public ReportingTestBase,
 
     for (const ReportingReport* report : after) {
       // If report isn't in before, we've found the new instance.
-      if (!base::Contains(before, report)) {
+      if (!std::ranges::contains(before, report)) {
         EXPECT_EQ(network_anonymization_key, report->network_anonymization_key);
         EXPECT_EQ(url, report->url);
         EXPECT_EQ(user_agent, report->user_agent);
@@ -273,7 +273,7 @@ TEST_P(ReportingCacheTest, Reports) {
   EXPECT_TRUE(reports.empty());
 
   cache()->AddReport(kReportingSource_, kNak_, kUrl1_, kUserAgent_, kGroup1_,
-                     kType_, base::Value::Dict(), 0, kNowTicks_,
+                     kType_, base::DictValue(), 0, kNowTicks_,
                      ReportingTargetType::kEnterprise);
   EXPECT_EQ(1, observer()->cached_reports_update_count());
 
@@ -313,10 +313,10 @@ TEST_P(ReportingCacheTest, RemoveAllReports) {
   LoadReportingClients();
 
   cache()->AddReport(kReportingSource_, kNak_, kUrl1_, kUserAgent_, kGroup1_,
-                     kType_, base::Value::Dict(), 0, kNowTicks_,
+                     kType_, base::DictValue(), 0, kNowTicks_,
                      ReportingTargetType::kDeveloper);
   cache()->AddReport(kReportingSource_, kNak_, kUrl1_, kUserAgent_, kGroup1_,
-                     kType_, base::Value::Dict(), 0, kNowTicks_,
+                     kType_, base::DictValue(), 0, kNowTicks_,
                      ReportingTargetType::kDeveloper);
   EXPECT_EQ(2, observer()->cached_reports_update_count());
 
@@ -335,7 +335,7 @@ TEST_P(ReportingCacheTest, RemovePendingReports) {
   LoadReportingClients();
 
   cache()->AddReport(kReportingSource_, kNak_, kUrl1_, kUserAgent_, kGroup1_,
-                     kType_, base::Value::Dict(), 0, kNowTicks_,
+                     kType_, base::DictValue(), 0, kNowTicks_,
                      ReportingTargetType::kDeveloper);
   EXPECT_EQ(1, observer()->cached_reports_update_count());
 
@@ -374,7 +374,7 @@ TEST_P(ReportingCacheTest, RemoveAllPendingReports) {
   LoadReportingClients();
 
   cache()->AddReport(kReportingSource_, kNak_, kUrl1_, kUserAgent_, kGroup1_,
-                     kType_, base::Value::Dict(), 0, kNowTicks_,
+                     kType_, base::DictValue(), 0, kNowTicks_,
                      ReportingTargetType::kDeveloper);
   EXPECT_EQ(1, observer()->cached_reports_update_count());
 
@@ -416,10 +416,10 @@ TEST_P(ReportingCacheTest, GetReportsAsValue) {
   const base::TimeTicks now = base::TimeTicks();
   const ReportingReport* report1 =
       AddAndReturnReport(kNak_, kUrl1_, kUserAgent_, kGroup1_, kType_,
-                         base::Value::Dict(), 0, now + base::Seconds(200));
+                         base::DictValue(), 0, now + base::Seconds(200));
   const ReportingReport* report2 =
       AddAndReturnReport(kOtherNak_, kUrl1_, kUserAgent_, kGroup2_, kType_,
-                         base::Value::Dict(), 0, now + base::Seconds(100));
+                         base::DictValue(), 0, now + base::Seconds(100));
   cache()->IncrementReportsAttempts({report2});
   // Mark report1 and report2 as pending.
   EXPECT_THAT(cache()->GetReportsToDeliver(),
@@ -461,10 +461,10 @@ TEST_P(ReportingCacheTest, GetReportsAsValue) {
   // Add two new reports that will show up as "queued".
   const ReportingReport* report3 =
       AddAndReturnReport(kNak_, kUrl2_, kUserAgent_, kGroup1_, kType_,
-                         base::Value::Dict(), 2, now + base::Seconds(200));
+                         base::DictValue(), 2, now + base::Seconds(200));
   const ReportingReport* report4 =
       AddAndReturnReport(kOtherNak_, kUrl1_, kUserAgent_, kGroup1_, kType_,
-                         base::Value::Dict(), 0, now + base::Seconds(300));
+                         base::DictValue(), 0, now + base::Seconds(300));
   actual = cache()->GetReportsAsValue();
   expected = base::test::ParseJson(base::StringPrintf(
       R"json(
@@ -533,13 +533,13 @@ TEST_P(ReportingCacheTest, GetReportsToDeliverForSource) {
   // Queue a V1 report for each of these sources, and a V0 report (with a null
   // source) for the same URL.
   cache()->AddReport(source1, kNak_, kUrl1_, kUserAgent_, kGroup1_, kType_,
-                     base::Value::Dict(), 0, kNowTicks_,
+                     base::DictValue(), 0, kNowTicks_,
                      ReportingTargetType::kDeveloper);
   cache()->AddReport(source2, kNak_, kUrl1_, kUserAgent_, kGroup1_, kType_,
-                     base::Value::Dict(), 0, kNowTicks_,
+                     base::DictValue(), 0, kNowTicks_,
                      ReportingTargetType::kDeveloper);
   cache()->AddReport(std::nullopt, kNak_, kUrl1_, kUserAgent_, kGroup1_, kType_,
-                     base::Value::Dict(), 0, kNowTicks_,
+                     base::DictValue(), 0, kNowTicks_,
                      ReportingTargetType::kDeveloper);
   EXPECT_EQ(3, observer()->cached_reports_update_count());
 
@@ -656,133 +656,6 @@ TEST_P(ReportingCacheTest, Endpoints) {
   EXPECT_TRUE(ClientExistsInCacheForOrigin(kOrigin2_));
   origins_in_cache = cache()->GetAllOrigins();
   EXPECT_EQ(2u, origins_in_cache.size());
-}
-
-TEST_P(ReportingCacheTest, SetEnterpriseReportingEndpointsWithFeatureEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      net::features::kReportingApiEnableEnterpriseCookieIssues);
-  EXPECT_EQ(0u, cache()->GetEnterpriseEndpointsForTesting().size());
-  base::flat_map<std::string, GURL> test_enterprise_endpoints{
-      {"endpoint-1", GURL("https://example.com/reports")},
-      {"endpoint-2", GURL("https://reporting.example/cookie-issues")},
-      {"endpoint-3", GURL("https://report-collector.example")},
-  };
-
-  std::vector<ReportingEndpoint> expected_enterprise_endpoints = {
-      {ReportingEndpointGroupKey(
-           NetworkAnonymizationKey(), /*reporting_source=*/std::nullopt,
-           /*origin=*/std::nullopt, "endpoint-1",
-           ReportingTargetType::kEnterprise),
-       {.url = GURL("https://example.com/reports")}},
-      {ReportingEndpointGroupKey(
-           NetworkAnonymizationKey(), /*reporting_source=*/std::nullopt,
-           /*origin=*/std::nullopt, "endpoint-2",
-           ReportingTargetType::kEnterprise),
-       {.url = GURL("https://reporting.example/cookie-issues")}},
-      {ReportingEndpointGroupKey(
-           NetworkAnonymizationKey(), /*reporting_source=*/std::nullopt,
-           /*origin=*/std::nullopt, "endpoint-3",
-           ReportingTargetType::kEnterprise),
-       {.url = GURL("https://report-collector.example")}}};
-
-  cache()->SetEnterpriseReportingEndpoints(test_enterprise_endpoints);
-  EXPECT_EQ(expected_enterprise_endpoints,
-            cache()->GetEnterpriseEndpointsForTesting());
-}
-
-TEST_P(ReportingCacheTest, SetEnterpriseReportingEndpointsWithFeatureDisabled) {
-  EXPECT_EQ(0u, cache()->GetEnterpriseEndpointsForTesting().size());
-  base::flat_map<std::string, GURL> test_enterprise_endpoints{
-      {"endpoint-1", GURL("https://example.com/reports")},
-      {"endpoint-2", GURL("https://reporting.example/cookie-issues")},
-      {"endpoint-3", GURL("https://report-collector.example")},
-  };
-
-  std::vector<ReportingEndpoint> expected_enterprise_endpoints = {
-      {ReportingEndpointGroupKey(
-           NetworkAnonymizationKey(), /*reporting_source=*/std::nullopt,
-           /*origin=*/std::nullopt, "endpoint-1",
-           ReportingTargetType::kEnterprise),
-       {.url = GURL("https://example.com/reports")}},
-      {ReportingEndpointGroupKey(
-           NetworkAnonymizationKey(), /*reporting_source=*/std::nullopt,
-           /*origin=*/std::nullopt, "endpoint-2",
-           ReportingTargetType::kEnterprise),
-       {.url = GURL("https://reporting.example/cookie-issues")}},
-      {ReportingEndpointGroupKey(
-           NetworkAnonymizationKey(), /*reporting_source=*/std::nullopt,
-           /*origin=*/std::nullopt, "endpoint-3",
-           ReportingTargetType::kEnterprise),
-       {.url = GURL("https://report-collector.example")}}};
-
-  cache()->SetEnterpriseReportingEndpoints(test_enterprise_endpoints);
-  EXPECT_EQ(0u, cache()->GetEnterpriseEndpointsForTesting().size());
-}
-
-TEST_P(ReportingCacheTest, ReportingCacheImplConstructionWithFeatureEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      net::features::kReportingApiEnableEnterpriseCookieIssues);
-  EXPECT_EQ(0u, cache()->GetEnterpriseEndpointsForTesting().size());
-  base::flat_map<std::string, GURL> test_enterprise_endpoints{
-      {"endpoint-1", GURL("https://example.com/reports")},
-      {"endpoint-2", GURL("https://reporting.example/cookie-issues")},
-      {"endpoint-3", GURL("https://report-collector.example")},
-  };
-  std::unique_ptr<ReportingCache> reporting_cache_impl =
-      ReportingCache::Create(context(), test_enterprise_endpoints);
-
-  std::vector<ReportingEndpoint> expected_enterprise_endpoints = {
-      {ReportingEndpointGroupKey(
-           NetworkAnonymizationKey(), /*reporting_source=*/std::nullopt,
-           /*origin=*/std::nullopt, "endpoint-1",
-           ReportingTargetType::kEnterprise),
-       {.url = GURL("https://example.com/reports")}},
-      {ReportingEndpointGroupKey(
-           NetworkAnonymizationKey(), /*reporting_source=*/std::nullopt,
-           /*origin=*/std::nullopt, "endpoint-2",
-           ReportingTargetType::kEnterprise),
-       {.url = GURL("https://reporting.example/cookie-issues")}},
-      {ReportingEndpointGroupKey(
-           NetworkAnonymizationKey(), /*reporting_source=*/std::nullopt,
-           /*origin=*/std::nullopt, "endpoint-3",
-           ReportingTargetType::kEnterprise),
-       {.url = GURL("https://report-collector.example")}}};
-
-  EXPECT_EQ(expected_enterprise_endpoints,
-            reporting_cache_impl->GetEnterpriseEndpointsForTesting());
-}
-
-TEST_P(ReportingCacheTest, ReportingCacheImplConstructionWithFeatureDisabled) {
-  EXPECT_EQ(0u, cache()->GetEnterpriseEndpointsForTesting().size());
-  base::flat_map<std::string, GURL> test_enterprise_endpoints{
-      {"endpoint-1", GURL("https://example.com/reports")},
-      {"endpoint-2", GURL("https://reporting.example/cookie-issues")},
-      {"endpoint-3", GURL("https://report-collector.example")},
-  };
-  std::unique_ptr<ReportingCache> reporting_cache_impl =
-      ReportingCache::Create(context(), test_enterprise_endpoints);
-
-  std::vector<ReportingEndpoint> expected_enterprise_endpoints = {
-      {ReportingEndpointGroupKey(
-           NetworkAnonymizationKey(), /*reporting_source=*/std::nullopt,
-           /*origin=*/std::nullopt, "endpoint-1",
-           ReportingTargetType::kEnterprise),
-       {.url = GURL("https://example.com/reports")}},
-      {ReportingEndpointGroupKey(
-           NetworkAnonymizationKey(), /*reporting_source=*/std::nullopt,
-           /*origin=*/std::nullopt, "endpoint-2",
-           ReportingTargetType::kEnterprise),
-       {.url = GURL("https://reporting.example/cookie-issues")}},
-      {ReportingEndpointGroupKey(
-           NetworkAnonymizationKey(), /*reporting_source=*/std::nullopt,
-           /*origin=*/std::nullopt, "endpoint-3",
-           ReportingTargetType::kEnterprise),
-       {.url = GURL("https://report-collector.example")}}};
-
-  EXPECT_EQ(0u,
-            reporting_cache_impl->GetEnterpriseEndpointsForTesting().size());
 }
 
 TEST_P(ReportingCacheTest, ClientsKeyedByEndpointGroupKey) {
@@ -1231,8 +1104,8 @@ TEST_P(ReportingCacheTest, GetClientsAsValue) {
       kNak_.ToDebugString().c_str(), kOtherNak_.ToDebugString().c_str()));
 
   // Compare disregarding order.
-  base::Value::List& expected_list = expected.GetList();
-  base::Value::List& actual_list = actual.GetList();
+  base::ListValue& expected_list = expected.GetList();
+  base::ListValue& actual_list = actual.GetList();
   std::sort(expected_list.begin(), expected_list.end());
   std::sort(actual_list.begin(), actual_list.end());
   EXPECT_EQ(expected, actual);
@@ -1656,7 +1529,7 @@ TEST_P(ReportingCacheTest, EvictOldestReport) {
   // Enqueue the maximum number of reports, spaced apart in time.
   for (size_t i = 0; i < max_report_count; ++i) {
     cache()->AddReport(kReportingSource_, kNak_, kUrl1_, kUserAgent_, kGroup1_,
-                       kType_, base::Value::Dict(), 0, tick_clock()->NowTicks(),
+                       kType_, base::DictValue(), 0, tick_clock()->NowTicks(),
                        ReportingTargetType::kDeveloper);
     tick_clock()->Advance(base::Minutes(1));
   }
@@ -1664,7 +1537,7 @@ TEST_P(ReportingCacheTest, EvictOldestReport) {
 
   // Add one more report to force the cache to evict one.
   cache()->AddReport(kReportingSource_, kNak_, kUrl1_, kUserAgent_, kGroup1_,
-                     kType_, base::Value::Dict(), 0, tick_clock()->NowTicks(),
+                     kType_, base::DictValue(), 0, tick_clock()->NowTicks(),
                      ReportingTargetType::kDeveloper);
 
   // Make sure the cache evicted a report to make room for the new one, and make
@@ -1688,7 +1561,7 @@ TEST_P(ReportingCacheTest, DontEvictPendingReports) {
   std::vector<raw_ptr<const ReportingReport, VectorExperimental>> reports;
   for (size_t i = 0; i < max_report_count; ++i) {
     reports.push_back(AddAndReturnReport(kNak_, kUrl1_, kUserAgent_, kGroup1_,
-                                         kType_, base::Value::Dict(), 0,
+                                         kType_, base::DictValue(), 0,
                                          tick_clock()->NowTicks()));
     tick_clock()->Advance(base::Minutes(1));
   }
@@ -1701,7 +1574,7 @@ TEST_P(ReportingCacheTest, DontEvictPendingReports) {
   // Add one more report to force the cache to evict one. Since the cache has
   // only pending reports, it will be forced to evict the *new* report!
   cache()->AddReport(kReportingSource_, kNak_, kUrl1_, kUserAgent_, kGroup1_,
-                     kType_, base::Value::Dict(), 0, kNowTicks_,
+                     kType_, base::DictValue(), 0, kNowTicks_,
                      ReportingTargetType::kDeveloper);
 
   // Make sure the cache evicted a report, and make sure the report evicted was

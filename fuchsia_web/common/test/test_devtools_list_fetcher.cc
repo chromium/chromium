@@ -15,7 +15,7 @@
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 
-base::Value::List GetDevToolsListFromPort(uint16_t port) {
+base::ListValue GetDevToolsListFromPort(uint16_t port) {
   GURL url(base::StringPrintf("http://127.0.0.1:%d/json/list", port));
   auto request_context = net::CreateTestURLRequestContextBuilder()->Build();
   net::TestDelegate delegate;
@@ -26,14 +26,14 @@ base::Value::List GetDevToolsListFromPort(uint16_t port) {
   delegate.RunUntilComplete();
 
   if (delegate.request_status() < 0)
-    return base::Value::List();
+    return base::ListValue();
 
   if (request->response_headers()->response_code() != net::HTTP_OK)
-    return base::Value::List();
+    return base::ListValue();
 
   const std::string& result = delegate.data_received();
   if (result.empty())
-    return base::Value::List();
+    return base::ListValue();
 
   return base::JSONReader::Read(result, base::JSON_PARSE_CHROMIUM_EXTENSIONS)
       .value_or(base::Value())

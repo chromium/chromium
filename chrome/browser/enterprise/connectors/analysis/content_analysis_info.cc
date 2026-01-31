@@ -8,7 +8,6 @@
 #include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/enterprise/connectors/referrer_cache_utils.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/download/public/common/download_item.h"

@@ -1,0 +1,126 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ios/build/chrome_build.gni")
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "content_suggestions_egtest.mm",
+    "ntp_home_egtest.mm",
+  ]
+  deps = [
+    ":eg_test_support+eg2",
+    "//base",
+    "//base/test:test_support",
+    "//build:branding_buildflags",
+    "//components/feature_engagement/public:feature_constants",
+    "//components/feed/core/v2/public/ios:feed_ios_public",
+    "//components/ntp_tiles:pref_names",
+    "//components/omnibox/browser:aim_eligibility_service_features",
+    "//components/regional_capabilities",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/safety_check:pref_names",
+    "//components/search_engines",
+    "//components/segmentation_platform/public",
+    "//components/signin/internal/identity_manager:capabilities",
+    "//components/signin/public/base:signin_switches",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
+    "//ios/chrome/browser/authentication/ui_bundled/cells:constants",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
+    "//ios/chrome/browser/content_suggestions/magic_stack/public:constants",
+    "//ios/chrome/browser/content_suggestions/public:constants",
+    "//ios/chrome/browser/content_suggestions/public:ntp_home_constants",
+    "//ios/chrome/browser/content_suggestions/safety_check/public:constants",
+    "//ios/chrome/browser/content_suggestions/set_up_list/public:constants",
+    "//ios/chrome/browser/content_suggestions/test:eg_test_support+eg2",
+    "//ios/chrome/browser/content_suggestions/ui/cells:constants",
+    "//ios/chrome/browser/first_run/public:constants",
+    "//ios/chrome/browser/flags:system_flags",
+    "//ios/chrome/browser/history/ui_bundled:constants",
+    "//ios/chrome/browser/home_customization/ui:constants",
+    "//ios/chrome/browser/home_customization/utils",
+    "//ios/chrome/browser/ntp/ui_bundled:constants",
+    "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
+    "//ios/chrome/browser/omnibox/public:constants",
+    "//ios/chrome/browser/popup_menu/public",
+    "//ios/chrome/browser/reading_list/ui_bundled:reading_list_constants",
+    "//ios/chrome/browser/safety_check/model:constants",
+    "//ios/chrome/browser/search_engine_choice/test:earl_grey_ui_test_util",
+    "//ios/chrome/browser/search_engines/model:eg_test_support+eg2",
+    "//ios/chrome/browser/settings/ui_bundled:constants",
+    "//ios/chrome/browser/settings/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/table_view:constants",
+    "//ios/chrome/browser/signin/model:capabilities_types",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/signin/model:test_constants",
+    "//ios/chrome/browser/start_surface/ui_bundled:feature_flags",
+    "//ios/chrome/browser/toolbar/legacy/ui_bundled/public:constants",
+    "//ios/chrome/browser/whats_new/public:constants",
+    "//ios/chrome/common/ui/promo_style:constants",
+    "//ios/chrome/test:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:switches",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//net",
+    "//net:test_support",
+    "//ui/base",
+    "//ui/strings",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("eg_test_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "new_tab_page_app_interface.h",
+    "new_tab_page_app_interface_stub.mm",
+  ]
+  deps = [ "//ios/testing/earl_grey:eg_test_support+eg2" ]
+}
+
+source_set("eg_app_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "new_tab_page_app_interface.h",
+    "new_tab_page_app_interface.mm",
+    "ntp_home_test_utils.h",
+    "ntp_home_test_utils.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/ntp_tiles:pref_names",
+    "//components/prefs",
+    "//ios/chrome/browser/content_suggestions/public:constants",
+    "//ios/chrome/browser/content_suggestions/public:ntp_home_constants",
+    "//ios/chrome/browser/content_suggestions/set_up_list/public:constants",
+    "//ios/chrome/browser/content_suggestions/set_up_list/ui",
+    "//ios/chrome/browser/content_suggestions/ui:ui_util",
+    "//ios/chrome/browser/ntp/model:set_up_list_item_type",
+    "//ios/chrome/browser/ntp/model:set_up_list_prefs",
+    "//ios/chrome/browser/ntp/ui_bundled:constants",
+    "//ios/chrome/browser/ntp/ui_bundled:theme",
+    "//ios/chrome/browser/search_engines/model:template_url_service_factory",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/test/app:test_support",
+    "//ios/testing:block_swizzler",
+    "//ios/testing/earl_grey:eg_app_support+eg2",
+    "//ios/third_party/earl_grey2:app_framework+link",
+    "//ios/web/common:uikit",
+    "//net",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
+  ]
+}

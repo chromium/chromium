@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_coordinator.h"
 
-#include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
-#include "chrome/browser/ui/views/extensions/extensions_toolbar_container_view_controller.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop_view_controller.h"
 
 ExtensionsToolbarCoordinator::ExtensionsToolbarCoordinator(
     Browser* browser,
-    ExtensionsToolbarContainer* extensions_container) {
+    ExtensionsToolbarDesktop* extensions_container) {
   extensions_container_tracker_.SetView(extensions_container);
   // Safe to use base::Unretained() because `this` owns / outlives
   // `extensions_container_tracker_`.
@@ -19,7 +19,7 @@ ExtensionsToolbarCoordinator::ExtensionsToolbarCoordinator(
   extensions_container_tracker_.SetTrackEntireViewHierarchy(true);
 
   extensions_container_controller_ =
-      std::make_unique<ExtensionsToolbarContainerViewController>(
+      std::make_unique<ExtensionsToolbarDesktopViewController>(
           browser, extensions_container);
 }
 

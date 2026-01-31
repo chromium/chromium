@@ -4,7 +4,7 @@ version = 4
 
 [[package]]
 name = "rustc-demangle"
-version = "0.1.26"
+version = "0.1.27"
 dependencies = [
  "rustc-std-workspace-core",
 ]

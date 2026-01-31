@@ -1132,7 +1132,7 @@ std::u16string kGoogleDrive = u"Google Drive";
 
 // Tests the bulk-pinning notifications.
 TEST_F(SystemNotificationManagerTest, BulkPinningNotification) {
-  using List = base::Value::List;
+  using List = base::ListValue;
   const std::string_view event_name = "unused-event-name";
 
   // Event with no args should be ignored.

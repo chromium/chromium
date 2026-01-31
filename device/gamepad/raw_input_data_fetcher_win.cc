@@ -8,8 +8,6 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -47,10 +45,11 @@ base::HeapArray<RAWINPUTDEVICE> RawInputDataFetcher::GetRawInputDevices(
     DWORD flags) {
   size_t usage_count = std::size(DeviceUsages);
   auto devices = base::HeapArray<RAWINPUTDEVICE>::Uninit(usage_count);
+  const auto device_usages_span = base::span(DeviceUsages);
   for (size_t i = 0; i < usage_count; ++i) {
     devices[i].dwFlags = flags;
     devices[i].usUsagePage = 1;
-    devices[i].usUsage = UNSAFE_TODO(DeviceUsages[i]);
+    devices[i].usUsage = device_usages_span[i];
     devices[i].hwndTarget = (flags & RIDEV_REMOVE) ? 0 : window_->hwnd();
   }
   return devices;
@@ -199,7 +198,7 @@ void RawInputDataFetcher::EnumerateDevices() {
         // path handle it.
         // http://msdn.microsoft.com/en-us/library/windows/desktop/ee417014.aspx
         const std::wstring device_name = new_device->GetDeviceName();
-        if (filter_xinput_ && base::Contains(device_name, L"IG_")) {
+        if (filter_xinput_ && device_name.contains(L"IG_")) {
           new_device->Shutdown();
           continue;
         }

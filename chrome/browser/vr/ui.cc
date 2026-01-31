@@ -17,14 +17,12 @@
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/vr/model/model.h"
-#include "chrome/browser/vr/skia_surface_provider_factory.h"
 #include "chrome/browser/vr/ui_element_renderer.h"
 #include "chrome/browser/vr/ui_renderer.h"
 #include "chrome/browser/vr/ui_scene.h"
 #include "chrome/browser/vr/ui_scene_constants.h"
 #include "chrome/browser/vr/ui_scene_creator.h"
 #include "chrome/browser/vr/ui_test_input.h"
-#include "third_party/skia/include/core/SkBitmap.h"
 
 namespace vr {
 
@@ -87,8 +85,7 @@ void Ui::OnGlInitialized() {
   ui_element_renderer_ = std::make_unique<UiElementRenderer>();
   ui_renderer_ =
       std::make_unique<UiRenderer>(scene_.get(), ui_element_renderer_.get());
-  provider_ = SkiaSurfaceProviderFactory::Create();
-  scene_->OnGlInitialized(provider_.get());
+  scene_->OnGlInitialized();
 }
 
 void Ui::OnWebXrFrameAvailable() {

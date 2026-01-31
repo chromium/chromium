@@ -104,47 +104,7 @@ Suggestion::PasswordSuggestionDetails GetSuggestionDetailsForRecoveryFlow(
       credential.backup_password_value.value());
 }
 
-void MaybeAppendManagePasswordsEntry(std::vector<Suggestion>* suggestions) {
-  bool has_no_fillable_suggestions = std::ranges::none_of(
-      *suggestions,
-      [](SuggestionType id) {
-        return id == SuggestionType::kPasswordEntry ||
-               id == SuggestionType::kAccountStoragePasswordEntry ||
-               id == SuggestionType::kGeneratePasswordEntry ||
-               id == SuggestionType::kWebauthnCredential;
-      },
-      &Suggestion::type);
-  if (has_no_fillable_suggestions) {
-    return;
-  }
 
-  bool has_webauthn_credential = std::ranges::any_of(
-      *suggestions,
-      [](SuggestionType type) {
-        return type == SuggestionType::kWebauthnCredential;
-      },
-      &Suggestion::type);
-
-  // Add a separator before the manage option unless there are no suggestions
-  // yet.
-  if (!suggestions->empty()) {
-    Suggestion separator(SuggestionType::kSeparator);
-    separator.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
-    suggestions->push_back(std::move(separator));
-  }
-
-  Suggestion suggestion(
-      l10n_util::GetStringUTF8(
-          has_webauthn_credential
-              ? IDS_PASSWORD_MANAGER_MANAGE_PASSWORDS_AND_PASSKEYS
-              : IDS_PASSWORD_MANAGER_MANAGE_PASSWORDS),
-      /*label=*/"", Suggestion::Icon::kSettings,
-      SuggestionType::kAllSavedPasswordsEntry);
-  // The UI code will pick up an icon from the resources based on the string.
-  suggestion.trailing_icon = Suggestion::Icon::kGooglePasswordManager;
-  suggestion.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
-  suggestions->emplace_back(std::move(suggestion));
-}
 
 void AppendBackupSuggestion(const autofill::PasswordAndMetadata& credential,
                             std::vector<Suggestion>* suggestions) {
@@ -435,8 +395,60 @@ PasswordSuggestionGenerator::PasswordSuggestionGenerator(
     PasswordManagerClient* password_client,
     autofill::AutofillClient* autofill_client)
     : password_manager_driver_(password_manager_driver),
-      password_client_{password_client},
-      autofill_client_{autofill_client} {}
+      password_client_(password_client),
+      autofill_client_(autofill_client) {}
+
+void PasswordSuggestionGenerator::AppendOptionalFooterSection(
+    std::vector<autofill::Suggestion>* suggestions) const {
+  bool has_webauthn_credential = std::ranges::any_of(
+      *suggestions,
+      [](SuggestionType type) {
+        return type == SuggestionType::kWebauthnCredential;
+      },
+      &Suggestion::type);
+
+  bool has_no_fillable_suggestions = std::ranges::none_of(
+      *suggestions,
+      [](SuggestionType id) {
+        return id == SuggestionType::kPasswordEntry ||
+               id == SuggestionType::kAccountStoragePasswordEntry ||
+               id == SuggestionType::kGeneratePasswordEntry ||
+               id == SuggestionType::kWebauthnCredential;
+      },
+      &Suggestion::type);
+
+  std::optional<autofill::Suggestion> hybrid_suggestion =
+      GetWebauthnSignInWithAnotherDeviceSuggestion();
+
+  if (has_no_fillable_suggestions && !hybrid_suggestion) {
+    return;
+  }
+
+  // Add a separator before the manage option unless there are no suggestions
+  // yet.
+  if (!suggestions->empty()) {
+    Suggestion separator(SuggestionType::kSeparator);
+    separator.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
+    suggestions->push_back(std::move(separator));
+  }
+
+  // Add "Use a passkey" or "Use a different passkey" button.
+  if (hybrid_suggestion) {
+    suggestions->push_back(std::move(hybrid_suggestion.value()));
+  }
+
+  Suggestion suggestion(
+      l10n_util::GetStringUTF8(
+          has_webauthn_credential
+              ? IDS_PASSWORD_MANAGER_MANAGE_PASSWORDS_AND_PASSKEYS
+              : IDS_PASSWORD_MANAGER_MANAGE_PASSWORDS),
+      /*label=*/"", Suggestion::Icon::kSettings,
+      SuggestionType::kAllSavedPasswordsEntry);
+  // The UI code will pick up an icon from the resources based on the string.
+  suggestion.trailing_icon = Suggestion::Icon::kGooglePasswordManager;
+  suggestion.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
+  suggestions->emplace_back(std::move(suggestion));
+}
 
 std::vector<Suggestion> PasswordSuggestionGenerator::GetSuggestionsForDomain(
     const UndoPasswordChangeController& undo_password_change_controller,
@@ -508,13 +520,6 @@ std::vector<Suggestion> PasswordSuggestionGenerator::GetSuggestionsForDomain(
                    page_favicon, &suggestions);
   }
 
-#if !BUILDFLAG(IS_ANDROID)
-  // Add "Use a passkey" or "Use a different passkey" button.
-  if (auto hybrid_suggestion = GetWebauthnSignInWithAnotherDeviceSuggestion()) {
-    suggestions.push_back(std::move(hybrid_suggestion.value()));
-  }
-#endif  // !BUILDFLAG(IS_ANDROID)
-
   // Add password generation entry, if available.
   if (offers_generation) {
     suggestions.emplace_back(CreateGenerationEntry());
@@ -534,7 +539,7 @@ std::vector<Suggestion> PasswordSuggestionGenerator::GetSuggestionsForDomain(
 #endif
 
   // Add "Manage all passwords" link to settings.
-  MaybeAppendManagePasswordsEntry(&suggestions);
+  AppendOptionalFooterSection(&suggestions);
 
   return suggestions;
 }
@@ -657,7 +662,7 @@ PasswordSuggestionGenerator::GetManualFallbackSuggestions(
       [](const Suggestion& suggestion) { return suggestion.main_text.value; });
 
   // Add "Manage all passwords" link to settings.
-  MaybeAppendManagePasswordsEntry(&suggestions);
+  AppendOptionalFooterSection(&suggestions);
 
   return suggestions;
 }

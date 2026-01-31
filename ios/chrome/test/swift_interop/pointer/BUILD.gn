@@ -1,0 +1,48 @@
+# Copyright 2026 The Chromium Authors. All rights resAerved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/apple/swift_source_set.gni")
+
+if (enable_swift_cxx_interop) {
+  source_set("cxx_pointer") {
+    sources = [
+      "pointer_returner.cc",
+      "pointer_returner.h",
+      "shared_ptr.cc",
+      "shared_ptr.h",
+      "unique_ptr.cc",
+      "unique_ptr.h",
+    ]
+    deps = [ "//base" ]
+  }
+
+  swift_modulemap("swift_pointer") {
+    modules = [
+      {
+        name = "Pointer"
+        sources = [
+          "object_passing.h",
+          "pointer_returner.h",
+          "shared_ptr.h",
+          "unique_ptr.h",
+        ]
+      },
+    ]
+  }
+
+  swift_source_set("tests") {
+    sources = [
+      "object_passing_xctest.swift",
+      "pointer_xctest.swift",
+      "shared_ptr_xctest.swift",
+      "unique_ptr_xctest.swift",
+    ]
+    deps = [
+      ":cxx_pointer",
+      ":swift_pointer",
+      "//base",
+      "//build/config/ios:xctest",
+    ]
+  }
+}

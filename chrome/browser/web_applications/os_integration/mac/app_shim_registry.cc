@@ -46,15 +46,15 @@ const char kProtocolHandlers[] = "protocols";
 const char kCdHashHmac[] = "cdhash_hmac";
 const char kNotificationPermissionStatus[] = "notification_permission";
 
-base::Value::List SetToValueList(const std::set<std::string>& values) {
-  base::Value::List result;
+base::ListValue SetToValueList(const std::set<std::string>& values) {
+  base::ListValue result;
   for (const auto& s : values) {
     result.Append(s);
   }
   return result;
 }
 
-std::set<std::string> ValueListToSet(const base::Value::List* list) {
+std::set<std::string> ValueListToSet(const base::ListValue* list) {
   std::set<std::string> result;
   if (list) {
     for (const auto& v : *list) {
@@ -125,11 +125,11 @@ void AppShimRegistry::GetProfilesSetForApp(
     std::set<base::FilePath>* profiles) const {
   PrefService* pref_service = GetPrefService();
   CHECK(pref_service);
-  const base::Value::Dict& cache = pref_service->GetDict(kAppShims);
-  const base::Value::Dict* app_info = cache.FindDict(app_id);
+  const base::DictValue& cache = pref_service->GetDict(kAppShims);
+  const base::DictValue* app_info = cache.FindDict(app_id);
   if (!app_info)
     return;
-  const base::Value::List* profile_values = app_info->FindList(profiles_key);
+  const base::ListValue* profile_values = app_info->FindList(profiles_key);
   if (!profile_values)
     return;
   for (const auto& profile_path_value : *profile_values) {
@@ -181,9 +181,9 @@ void AppShimRegistry::SaveLastActiveProfilesForApp(
 std::set<std::string> AppShimRegistry::GetInstalledAppsForProfile(
     const base::FilePath& profile) const {
   std::set<std::string> result;
-  const base::Value::Dict& app_shims = GetPrefService()->GetDict(kAppShims);
+  const base::DictValue& app_shims = GetPrefService()->GetDict(kAppShims);
   for (const auto iter_app : app_shims) {
-    const base::Value::List* installed_profiles_list =
+    const base::ListValue* installed_profiles_list =
         iter_app.second.GetDict().FindList(kInstalledProfiles);
     if (!installed_profiles_list)
       continue;
@@ -205,9 +205,9 @@ std::set<std::string> AppShimRegistry::GetAppsInstalledInMultipleProfiles()
   if (!GetPrefService()) {
     return result;
   }
-  const base::Value::Dict& app_shims = GetPrefService()->GetDict(kAppShims);
+  const base::DictValue& app_shims = GetPrefService()->GetDict(kAppShims);
   for (const auto iter_app : app_shims) {
-    const base::Value::List* installed_profiles_list =
+    const base::ListValue* installed_profiles_list =
         iter_app.second.GetDict().FindList(kInstalledProfiles);
     if (!installed_profiles_list || installed_profiles_list->size() <= 1) {
       continue;
@@ -251,16 +251,16 @@ void AppShimRegistry::SaveProtocolHandlersForAppAndProfile(
 
 std::map<base::FilePath, AppShimRegistry::HandlerInfo>
 AppShimRegistry::GetHandlersForApp(const std::string& app_id) {
-  const base::Value::Dict& cache = GetPrefService()->GetDict(kAppShims);
-  const base::Value::Dict* app_info = cache.FindDict(app_id);
+  const base::DictValue& cache = GetPrefService()->GetDict(kAppShims);
+  const base::DictValue* app_info = cache.FindDict(app_id);
   if (!app_info)
     return {};
-  const base::Value::Dict* handlers = app_info->FindDict(kHandlers);
+  const base::DictValue* handlers = app_info->FindDict(kHandlers);
   if (!handlers)
     return {};
   std::map<base::FilePath, HandlerInfo> result;
   for (auto profile_handler : *handlers) {
-    const base::Value::Dict* dict = profile_handler.second.GetIfDict();
+    const base::DictValue* dict = profile_handler.second.GetIfDict();
     if (!dict)
       continue;
     HandlerInfo info;
@@ -403,8 +403,8 @@ bool AppShimRegistry::DoVerifyCdHashForApp(
     const std::string& app_id,
     std::vector<uint8_t> cd_hash,
     os_crypt_async::Encryptor encryptor) {
-  const base::Value::Dict& cache = GetPrefService()->GetDict(kAppShims);
-  const base::Value::Dict* app_info = cache.FindDict(app_id);
+  const base::DictValue& cache = GetPrefService()->GetDict(kAppShims);
+  const base::DictValue* app_info = cache.FindDict(app_id);
   if (!app_info) {
     LOG(WARNING) << "No info found for app_id";
     return false;
@@ -445,8 +445,8 @@ mac_notifications::mojom::PermissionStatus
 AppShimRegistry::GetNotificationPermissionStatusForApp(
     const std::string& app_id) {
   using PermissionStatus = mac_notifications::mojom::PermissionStatus;
-  const base::Value::Dict& cache = GetPrefService()->GetDict(kAppShims);
-  const base::Value::Dict* app_info = cache.FindDict(app_id);
+  const base::DictValue& cache = GetPrefService()->GetDict(kAppShims);
+  const base::DictValue* app_info = cache.FindDict(app_id);
   if (!app_info) {
     return PermissionStatus::kNotDetermined;
   }
@@ -477,8 +477,8 @@ void AppShimRegistry::SetPrefServiceAndUserDataDirForTesting(
   override_user_data_dir_ = user_data_dir;
 }
 
-base::Value::Dict AppShimRegistry::AsDebugDict() const {
-  const base::Value::Dict& app_shims = GetPrefService()->GetDict(kAppShims);
+base::DictValue AppShimRegistry::AsDebugDict() const {
+  const base::DictValue& app_shims = GetPrefService()->GetDict(kAppShims);
 
   return app_shims.Clone();
 }
@@ -518,7 +518,7 @@ void AppShimRegistry::SetAppInfo(
   }
 
   // Look up dictionary for the app.
-  base::Value::Dict* app_info = update->FindDict(app_id);
+  base::DictValue* app_info = update->FindDict(app_id);
   if (!app_info) {
     // If the key for the app doesn't exist, don't add it unless we are
     // specifying a new |installed_profiles| (e.g, for when the app exits
@@ -529,21 +529,21 @@ void AppShimRegistry::SetAppInfo(
     app_info = update->EnsureDict(app_id);
   }
   if (installed_profiles) {
-    base::Value::List values;
+    base::ListValue values;
     for (const auto& profile : *installed_profiles)
       values.Append(profile.BaseName().value());
     app_info->Set(kInstalledProfiles, std::move(values));
   }
   if (last_active_profiles) {
-    base::Value::List values;
+    base::ListValue values;
     for (const auto& profile : *last_active_profiles)
       values.Append(profile.BaseName().value());
     app_info->Set(kLastActiveProfiles, std::move(values));
   }
   if (handlers) {
-    base::Value::Dict values;
+    base::DictValue values;
     for (const auto& profile_handlers : *handlers) {
-      base::Value::Dict value;
+      base::DictValue value;
       value.Set(
           kFileHandlerExtensions,
           SetToValueList(profile_handlers.second.file_handler_extensions));

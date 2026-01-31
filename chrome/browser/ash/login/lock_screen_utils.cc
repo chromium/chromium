@@ -4,9 +4,10 @@
 
 #include "chrome/browser/ash/login/lock_screen_utils.h"
 
+#include <algorithm>
+
 #include "ash/constants/ash_constants.h"
 #include "ash/constants/ash_pref_names.h"
-#include "base/containers/contains.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -34,8 +35,8 @@ bool SetUserInputMethodImpl(
                  << " (entry dropped). Use hardware default instead.";
     return false;
   }
-  if (!base::Contains(ime_state->GetEnabledInputMethodIds(),
-                      user_input_method_id)) {
+  if (!std::ranges::contains(ime_state->GetEnabledInputMethodIds(),
+                             user_input_method_id)) {
     if (!ime_state->EnableInputMethod(user_input_method_id)) {
       DLOG(ERROR) << "SetUserInputMethod: user input method '"
                   << user_input_method_id
@@ -98,7 +99,7 @@ std::string GetUserLastInputMethodId(const AccountId& account_id) {
 
 void EnforceDevicePolicyInputMethods(std::string user_input_method_id) {
   auto* cros_settings = CrosSettings::Get();
-  const base::Value::List* login_screen_input_methods = nullptr;
+  const base::ListValue* login_screen_input_methods = nullptr;
   if (!cros_settings->GetList(kDeviceLoginScreenInputMethods,
                               &login_screen_input_methods) ||
       login_screen_input_methods->empty()) {
@@ -174,7 +175,7 @@ void SetKeyboardSettings(const AccountId& account_id) {
       rate);
 }
 
-std::vector<LocaleItem> FromListValueToLocaleItem(base::Value::List locales) {
+std::vector<LocaleItem> FromListValueToLocaleItem(base::ListValue locales) {
   std::vector<LocaleItem> result;
   for (const auto& locale : locales) {
     if (!locale.is_dict())

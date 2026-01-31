@@ -60,7 +60,7 @@ class COMPONENTS_PREFS_EXPORT ScopedUserPrefUpdateBase {
 
 }  // namespace subtle
 
-// Class to support modifications to base::Value::Dicts while guaranteeing
+// Class to support modifications to base::DictValues while guaranteeing
 // that PrefObservers are notified of changed values.
 //
 // This class may only be used on the UI thread as it requires access to the
@@ -81,7 +81,7 @@ class COMPONENTS_PREFS_EXPORT ScopedDictPrefUpdate
   // Triggers an update notification if Get() was called.
   ~ScopedDictPrefUpdate() override = default;
 
-  // Returns a mutable `base::Value::Dict` instance that
+  // Returns a mutable `base::DictValue` instance that
   // - is already in the user pref store, or
   // - is (silently) created and written to the user pref store if none existed
   //   before.
@@ -90,14 +90,14 @@ class COMPONENTS_PREFS_EXPORT ScopedDictPrefUpdate
   // being triggered at destruction time.
   //
   // The ownership of the return value remains with the user pref store.
-  base::Value::Dict& Get();
+  base::DictValue& Get();
 
-  base::Value::Dict& operator*() { return Get(); }
+  base::DictValue& operator*() { return Get(); }
 
-  base::Value::Dict* operator->() { return &Get(); }
+  base::DictValue* operator->() { return &Get(); }
 };
 
-// Class to support modifications to base::Value::Lists while guaranteeing
+// Class to support modifications to base::ListValues while guaranteeing
 // that PrefObservers are notified of changed values.
 //
 // This class may only be used on the UI thread as it requires access to the
@@ -118,7 +118,7 @@ class COMPONENTS_PREFS_EXPORT ScopedListPrefUpdate
   // Triggers an update notification if Get() was called.
   ~ScopedListPrefUpdate() override = default;
 
-  // Returns a mutable `base::Value::List` instance that
+  // Returns a mutable `base::ListValue` instance that
   // - is already in the user pref store, or
   // - is (silently) created and written to the user pref store if none existed
   //   before.
@@ -127,11 +127,11 @@ class COMPONENTS_PREFS_EXPORT ScopedListPrefUpdate
   // being triggered at destruction time.
   //
   // The ownership of the return value remains with the user pref store.
-  base::Value::List& Get();
+  base::ListValue& Get();
 
-  base::Value::List& operator*() { return Get(); }
+  base::ListValue& operator*() { return Get(); }
 
-  base::Value::List* operator->() { return &Get(); }
+  base::ListValue* operator->() { return &Get(); }
 };
 
 #endif  // COMPONENTS_PREFS_SCOPED_USER_PREF_UPDATE_H_

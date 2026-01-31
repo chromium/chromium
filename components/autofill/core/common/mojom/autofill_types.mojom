@@ -585,7 +585,7 @@ enum AutofillSuggestionTriggerSource {
   // Suggestions triggered by either:
   // - Clicking or tapping a text input (TAB key doesn't count).
   // - Focusing a text input using a screen reader.
-  // Suggestion of this type can trigger FastCheckout or TouchToFill.
+  // A suggestion of this type can trigger TouchToFill.
   kFormControlElementClicked = 1,
   // Suggestions triggered by focusing a textarea without click or tab
   // interaction. Currently, this is only triggered on Desktop platforms and
@@ -650,4 +650,26 @@ enum AutofillSuggestionTriggerSource {
   // Suggestion triggered when Password Manager detects a potentially failed
   // login attempt that used a credential with a recovery password.
   kProactivePasswordRecovery = 20,
+  // Suggestions triggered by the GLIC service.
+  kGlic = 21,
+};
+
+// Encapsulates the data for a potential "Sign in with Google" button.
+struct SiwgButtonData {
+  // The DOM node ID of the button element.
+  int64 dom_node_id;
+  // The visible text of the button.
+  mojo_base.mojom.String16 text;
+  // The HTML id attribute of the button.
+  mojo_base.mojom.String16 id_attribute;
+  // The HTML class attribute of the button.
+  mojo_base.mojom.String16 class_attribute;
+  // The ARIA label of the button.
+  mojo_base.mojom.String16 aria_label;
+  // The HTML href attribute of the button.
+  mojo_base.mojom.String16 href_attribute;
+  // The HTML role attribute of the button.
+  mojo_base.mojom.String16 role;
+  // The HTML tag name of the button.
+  mojo_base.mojom.String16 tag_name;
 };

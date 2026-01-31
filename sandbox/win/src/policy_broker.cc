@@ -28,7 +28,7 @@ namespace sandbox {
 
 bool SetupNtdllImports(TargetProcess& child) {
   return (SBOX_ALL_OK ==
-          child.TransferVariable("g_nt", GetNtExports(),
+          child.TransferVariable(GetNtExports(),
                                  const_cast<NtExports*>(GetNtExports()),
                                  sizeof(NtExports)));
 }

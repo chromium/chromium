@@ -21,6 +21,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/features.h"
+#include "components/guest_view/buildflags/buildflags.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_recovery_success_rate_tracker.h"
 #include "components/permissions/permission_uma_util.h"
@@ -32,9 +33,9 @@
 #include "extensions/buildflags/buildflags.h"
 #include "pdf/buildflags.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
 #include "components/guest_view/browser/guest_view_base.h"
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
 
 #if BUILDFLAG(ENABLE_PDF)
 #include "chrome/browser/pdf/pdf_viewer_stream_manager.h"
@@ -52,9 +53,9 @@ using content_settings::PageSpecificContentSettings;
 PageSpecificContentSettingsDelegate::PageSpecificContentSettingsDelegate(
     content::WebContents* web_contents)
     : WebContentsObserver(web_contents) {
-    media_observation_.Observe(MediaCaptureDevicesDispatcher::GetInstance()
-                                   ->GetMediaStreamCaptureIndicator()
-                                   .get());
+  media_observation_.Observe(MediaCaptureDevicesDispatcher::GetInstance()
+                                 ->GetMediaStreamCaptureIndicator()
+                                 .get());
 }
 
 PageSpecificContentSettingsDelegate::~PageSpecificContentSettingsDelegate() =
@@ -166,8 +167,9 @@ void PageSpecificContentSettingsDelegate::UpdateLocationBar() {
 PrefService* PageSpecificContentSettingsDelegate::GetPrefs() {
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-  if (!profile)
+  if (!profile) {
     return nullptr;
+  }
 
   return profile->GetPrefs();
 }
@@ -187,7 +189,7 @@ PageSpecificContentSettingsDelegate::CreateBrowsingDataModelDelegate() {
 namespace {
 // By default, JavaScript, images and auto dark are allowed, and blockable mixed
 // content is blocked in guest content
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
 void GetGuestViewDefaultContentSettingRules(
     bool incognito,
     RendererContentSettingRules* rules) {
@@ -203,7 +205,7 @@ void GetGuestViewDefaultContentSettingRules(
 void PageSpecificContentSettingsDelegate::SetDefaultRendererContentSettingRules(
     content::RenderFrameHost* rfh,
     RendererContentSettingRules* rules) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
   bool is_off_the_record =
       web_contents()->GetBrowserContext()->IsOffTheRecord();
 
@@ -223,10 +225,12 @@ PageSpecificContentSettingsDelegate::GetMicrophoneCameraState() {
   scoped_refptr<MediaStreamCaptureIndicator> media_indicator =
       MediaCaptureDevicesDispatcher::GetInstance()
           ->GetMediaStreamCaptureIndicator();
-  if (media_indicator->IsCapturingAudio(web_contents()))
+  if (media_indicator->IsCapturingAudio(web_contents())) {
     state.Put(PageSpecificContentSettings::kMicrophoneAccessed);
-  if (media_indicator->IsCapturingVideo(web_contents()))
+  }
+  if (media_indicator->IsCapturingVideo(web_contents())) {
     state.Put(PageSpecificContentSettings::kCameraAccessed);
+  }
 
   return state;
 }
@@ -266,8 +270,9 @@ void PageSpecificContentSettingsDelegate::OnContentAllowed(
                                       web_contents()->GetLastCommittedURL(),
                                       type, &setting_info);
   const base::Time grant_time = setting_info.metadata.last_modified();
-  if (grant_time.is_null())
+  if (grant_time.is_null()) {
     return;
+  }
   permissions::PermissionUmaUtil::RecordTimeElapsedBetweenGrantAndUse(
       type, base::Time::Now() - grant_time, setting_info.source);
   permissions::PermissionUmaUtil::RecordPermissionUsage(

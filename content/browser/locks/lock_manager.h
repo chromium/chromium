@@ -15,7 +15,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -50,6 +49,10 @@ class CONTENT_EXPORT LockManager : public blink::mojom::LockManager {
   // Binds |receiver| to this LockManager. |receiver| belongs to a frame or
   // worker at |lock_group_id|.
   void BindReceiver(LockGroupIdType lock_group_id,
+                    mojo::PendingReceiver<blink::mojom::LockManager> receiver);
+
+  void BindReceiver(LockGroupIdType lock_group_id,
+                    const base::UnguessableToken& token,
                     mojo::PendingReceiver<blink::mojom::LockManager> receiver);
 
   // Request a lock. When the lock is acquired, |callback| will be invoked with
@@ -423,10 +426,18 @@ void LockManager<LockGroupIdType>::BindReceiver(
 
   // TODO(jsbell): This should reflect the 'environment id' from HTML,
   // and be the same opaque string seen in Service Worker client ids.
-  const std::string client_id =
-      base::Uuid::GenerateRandomV4().AsLowercaseString();
+  const base::UnguessableToken token = base::UnguessableToken::Create();
 
-  receivers_.Add(this, std::move(receiver), {client_id, lock_group_id});
+  BindReceiver(lock_group_id, std::move(token), std::move(receiver));
+}
+
+template <typename LockGroupIdType>
+void LockManager<LockGroupIdType>::BindReceiver(
+    LockGroupIdType lock_group_id,
+    const base::UnguessableToken& token,
+    mojo::PendingReceiver<blink::mojom::LockManager> receiver) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  receivers_.Add(this, std::move(receiver), {token.ToString(), lock_group_id});
 }
 
 template <typename LockGroupIdType>
@@ -455,7 +466,7 @@ void LockManager<LockGroupIdType>::RequestLock(
     return;
   }
 
-  if (!base::Contains(lock_groups_, context.lock_group_id)) {
+  if (!lock_groups_.contains(context.lock_group_id)) {
     lock_groups_.emplace(context.lock_group_id, this);
   }
 

@@ -13,6 +13,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 import java.lang.ref.WeakReference;
+import java.util.function.Consumer;
 
 /**
  * This class implements AwGeolocationPermissions.Callback, and will be sent to WebView applications
@@ -22,22 +23,22 @@ import java.lang.ref.WeakReference;
 public class AwGeolocationCallback implements AwGeolocationPermissions.Callback {
     private static final String TAG = "Geolocation";
 
-    private @Nullable CleanupRunable mCleanupRunable;
+    private @Nullable CleanupConsumer mCleanupConsumer;
     private @Nullable CleanupReference mCleanupReference;
 
-    private static class CleanupRunable implements Runnable {
+    private static class CleanupConsumer implements Consumer<Boolean> {
         private final WeakReference<AwContents> mAwContents;
         private boolean mAllow;
         private boolean mRetain;
         private String mOrigin;
 
-        public CleanupRunable(AwContents awContents, String origin) {
+        public CleanupConsumer(AwContents awContents, String origin) {
             mAwContents = new WeakReference<AwContents>(awContents);
             mOrigin = origin;
         }
 
         @Override
-        public void run() {
+        public void accept(Boolean isExplicitCleanup) {
             assert ThreadUtils.runningOnUiThread();
             AwContents awContents = mAwContents.get();
             if (awContents == null) return;
@@ -59,22 +60,22 @@ public class AwGeolocationCallback implements AwGeolocationPermissions.Callback 
     }
 
     public AwGeolocationCallback(String origin, AwContents awContents) {
-        mCleanupRunable = new CleanupRunable(awContents, origin);
-        mCleanupReference = new CleanupReference(this, mCleanupRunable);
+        mCleanupConsumer = new CleanupConsumer(awContents, origin);
+        mCleanupReference = new CleanupReference(this, mCleanupConsumer);
     }
 
     @Override
     public void invoke(String origin, boolean allow, boolean retain) {
-        if (mCleanupRunable == null || mCleanupReference == null) {
+        if (mCleanupConsumer == null || mCleanupReference == null) {
             Log.w(
                     TAG,
                     "Response for this geolocation request has been received."
                             + " Ignoring subsequent responses");
             return;
         }
-        mCleanupRunable.setResponse(origin, allow, retain);
+        mCleanupConsumer.setResponse(origin, allow, retain);
         mCleanupReference.cleanupNow();
         mCleanupReference = null;
-        mCleanupRunable = null;
+        mCleanupConsumer = null;
     }
 }

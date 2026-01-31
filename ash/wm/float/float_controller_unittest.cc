@@ -4,6 +4,8 @@
 
 #include "ash/wm/float/float_controller.h"
 
+#include <algorithm>
+
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
 #include "ash/app_list/app_list_controller_impl.h"
@@ -40,7 +42,6 @@
 #include "ash/wm/window_util.h"
 #include "ash/wm/work_area_insets.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -612,14 +613,14 @@ TEST_F(WindowFloatTest, FloatWindowWithMRUWindowList) {
   EXPECT_FALSE(desk_2->is_active());
   auto active_only_list =
       Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
-  EXPECT_TRUE(base::Contains(active_only_list, window_1.get()));
-  EXPECT_FALSE(base::Contains(active_only_list, window_2.get()));
+  EXPECT_TRUE(std::ranges::contains(active_only_list, window_1.get()));
+  EXPECT_FALSE(std::ranges::contains(active_only_list, window_2.get()));
   // Calling MruWindowTracker::BuildMruWindowList(kAllDesks) should return a
   // list that contains all windows
   auto all_desks_mru_list =
       Shell::Get()->mru_window_tracker()->BuildMruWindowList(kAllDesks);
-  EXPECT_TRUE(base::Contains(all_desks_mru_list, window_1.get()));
-  EXPECT_TRUE(base::Contains(all_desks_mru_list, window_2.get()));
+  EXPECT_TRUE(std::ranges::contains(all_desks_mru_list, window_1.get()));
+  EXPECT_TRUE(std::ranges::contains(all_desks_mru_list, window_2.get()));
 }
 
 // Test moving floating window between desks.

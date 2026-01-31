@@ -10,6 +10,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "chrome/updater/constants.h"
 
@@ -33,6 +34,11 @@ bool UpdatesSuppressedTimes::contains(int hour, int minute) const {
     return true;
   }
   return false;
+}
+
+std::string UpdatesSuppressedTimes::ToString() const {
+  return base::StringPrintf("%d, %d, %d", start_hour_, start_minute_,
+                            duration_minute_);
 }
 
 // DefaultValuesPolicyManager returns the default values for policies when no

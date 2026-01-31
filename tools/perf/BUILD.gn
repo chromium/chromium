@@ -78,8 +78,6 @@ group("perf_without_chrome") {
 
     # Field trial dependencies
     "//tools/json_comment_eater/",
-    "//tools/json_to_struct/",
-    "//components/variations/service/generate_ui_string_overrider.py",
 
     # For blink_perf benchmarks.
     "//third_party/blink/perf_tests/",

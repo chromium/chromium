@@ -36,7 +36,6 @@
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
-#include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
@@ -453,7 +452,7 @@ void SavedTabGroupBar::SavedTabGroupReordered() {
   for (size_t i = 0; i < groups.size(); ++i) {
     const base::Uuid& guid = groups[i]->saved_guid();
 
-    if (base::Contains(buttons_by_guid, guid)) {
+    if (buttons_by_guid.contains(guid)) {
       views::View* const button = buttons_by_guid[guid];
       ReorderChildView(button, i);
     }
@@ -615,7 +614,7 @@ void SavedTabGroupBar::MaybePaintDropIndicatorInBar(gfx::Canvas* canvas) {
   const int x =
       indicator_index.value() > 0
           ? children()[indicator_index.value() - 1]->bounds().right() +
-                GetLayoutConstant(BOOKMARK_BAR_BUTTON_PADDING) / 2
+                GetLayoutConstant(LayoutConstant::kBookmarkBarButtonPadding) / 2
           : kDropIndicatorThicknessDips / 2;
 
   const gfx::Rect drop_indicator_bounds =

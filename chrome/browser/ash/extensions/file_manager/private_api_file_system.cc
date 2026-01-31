@@ -36,7 +36,6 @@
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/platform_thread.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "base/values.h"
 #include "chrome/browser/ash/app_list/search/local_image_search/local_image_search_service.h"
 #include "chrome/browser/ash/app_list/search/local_image_search/local_image_search_service_factory.h"
@@ -186,7 +185,7 @@ ash::disks::FormatFileSystemType ApiFormatFileSystemToChromeEnum(
       return ash::disks::FormatFileSystemType::kNtfs;
   }
   NOTREACHED() << "Unknown format filesystem "
-               << base::to_underlying(filesystem);
+               << std::to_underlying(filesystem);
 }
 
 std::optional<file_manager::io_task::OperationType> IoTaskTypeToChromeEnum(
@@ -213,7 +212,7 @@ std::optional<file_manager::io_task::OperationType> IoTaskTypeToChromeEnum(
     case api::file_manager_private::IoTaskType::kNone:
       return {};
   }
-  NOTREACHED() << "Unknown I/O task type " << base::to_underlying(type);
+  NOTREACHED() << "Unknown I/O task type " << std::to_underlying(type);
 }
 
 extensions::api::file_manager_private::DlpLevel DlpRulesManagerLevelToApiEnum(
@@ -267,7 +266,7 @@ policy::FilesDialogType ApiPolicyDialogTypeToChromeEnum(
     case api::file_manager_private::PolicyDialogType::kError:
       return policy::FilesDialogType::kError;
   }
-  NOTREACHED() << "Unknown policy dialog type " << base::to_underlying(type);
+  NOTREACHED() << "Unknown policy dialog type " << std::to_underlying(type);
 }
 
 std::optional<policy::Policy> ApiPolicyErrorTypeToChromeEnum(
@@ -280,9 +279,9 @@ std::optional<policy::Policy> ApiPolicyErrorTypeToChromeEnum(
     case api::file_manager_private::PolicyErrorType::kNone:
       return std::nullopt;
     case api::file_manager_private::PolicyErrorType::kDlpWarningTimeout:
-      NOTREACHED() << "Unexpected policy type " << base::to_underlying(type);
+      NOTREACHED() << "Unexpected policy type " << std::to_underlying(type);
   }
-  NOTREACHED() << "Unknown policy error type " << base::to_underlying(type);
+  NOTREACHED() << "Unknown policy error type " << std::to_underlying(type);
 }
 
 // Handles a callback from the LocalImageSearchService. The job of this function
@@ -682,7 +681,7 @@ void FileManagerPrivateGetSizeStatsFunction::OnGetDriveQuotaUsage(
 void FileManagerPrivateGetSizeStatsFunction::OnGetSizeStats(
     const uint64_t* total_size,
     const uint64_t* remaining_size) {
-  base::Value::Dict sizes;
+  base::DictValue sizes;
   sizes.Set("totalSize", static_cast<double>(*total_size));
   sizes.Set("remainingSize", static_cast<double>(*remaining_size));
   Respond(WithArguments(std::move(sizes)));
@@ -900,14 +899,14 @@ ExtensionFunction::ResponseAction
 FileManagerPrivateInternalGetDisallowedTransfersFunction::Run() {
   if (!base::FeatureList::IsEnabled(
           features::kDataLeakPreventionFilesRestriction)) {
-    return RespondNow(WithArguments(base::Value::List()));
+    return RespondNow(WithArguments(base::ListValue()));
   }
 
   policy::DlpRulesManager* rules_manager =
       policy::DlpRulesManagerFactory::GetForPrimaryProfile();
   if (!rules_manager || !rules_manager->IsFilesPolicyEnabled() ||
       !rules_manager->GetDlpFilesController()) {
-    return RespondNow(WithArguments(base::Value::List()));
+    return RespondNow(WithArguments(base::ListValue()));
   }
 
   using extensions::api::file_manager_private_internal::GetDisallowedTransfers::
@@ -938,7 +937,7 @@ FileManagerPrivateInternalGetDisallowedTransfersFunction::Run() {
   // If the new UX flow is enabled, return an empty list so the copy/move
   // operation can start.
   if (base::FeatureList::IsEnabled(features::kNewFilesPolicyUX)) {
-    return RespondNow(WithArguments(base::Value::List()));
+    return RespondNow(WithArguments(base::ListValue()));
   }
 
   policy::DlpFilesControllerAsh* files_controller =
@@ -996,14 +995,14 @@ ExtensionFunction::ResponseAction
 FileManagerPrivateInternalGetDlpMetadataFunction::Run() {
   if (!base::FeatureList::IsEnabled(
           features::kDataLeakPreventionFilesRestriction)) {
-    return RespondNow(WithArguments(base::Value::List()));
+    return RespondNow(WithArguments(base::ListValue()));
   }
 
   policy::DlpRulesManager* rules_manager =
       policy::DlpRulesManagerFactory::GetForPrimaryProfile();
   if (!rules_manager || !rules_manager->IsFilesPolicyEnabled() ||
       !rules_manager->GetDlpFilesController()) {
-    return RespondNow(WithArguments(base::Value::List()));
+    return RespondNow(WithArguments(base::ListValue()));
   }
 
   using extensions::api::file_manager_private_internal::GetDlpMetadata::Params;
@@ -1078,14 +1077,14 @@ ExtensionFunction::ResponseAction
 FileManagerPrivateGetDlpRestrictionDetailsFunction::Run() {
   if (!base::FeatureList::IsEnabled(
           features::kDataLeakPreventionFilesRestriction)) {
-    return RespondNow(WithArguments(base::Value::List()));
+    return RespondNow(WithArguments(base::ListValue()));
   }
 
   policy::DlpRulesManager* rules_manager =
       policy::DlpRulesManagerFactory::GetForPrimaryProfile();
   if (!rules_manager || !rules_manager->IsFilesPolicyEnabled() ||
       !rules_manager->GetDlpFilesController()) {
-    return RespondNow(WithArguments(base::Value::List()));
+    return RespondNow(WithArguments(base::ListValue()));
   }
 
   using extensions::api::file_manager_private::GetDlpRestrictionDetails::Params;
@@ -1129,7 +1128,7 @@ ExtensionFunction::ResponseAction
 FileManagerPrivateGetDlpBlockedComponentsFunction::Run() {
   if (!base::FeatureList::IsEnabled(
           features::kDataLeakPreventionFilesRestriction)) {
-    return RespondNow(WithArguments(base::Value::List()));
+    return RespondNow(WithArguments(base::ListValue()));
   }
 
   policy::DlpRulesManager* rules_manager =
@@ -1138,7 +1137,7 @@ FileManagerPrivateGetDlpBlockedComponentsFunction::Run() {
   if (!rules_manager || !rules_manager->IsFilesPolicyEnabled() ||
       !(files_controller = static_cast<policy::DlpFilesControllerAsh*>(
             rules_manager->GetDlpFilesController()))) {
-    return RespondNow(WithArguments(base::Value::List()));
+    return RespondNow(WithArguments(base::ListValue()));
   }
 
   using extensions::api::file_manager_private::GetDlpBlockedComponents::Params;
@@ -1165,14 +1164,14 @@ FileManagerPrivateGetDialogCallerFunction::Run() {
   std::optional<policy::DlpFileDestination> caller =
       SelectFileDialogExtensionUserData::GetDialogCallerForWebContents(
           GetSenderWebContents());
-  base::Value::Dict info;
+  base::DictValue info;
   if (caller.has_value()) {
     if (caller->url().has_value()) {
       info.Set("url", caller->url()->spec());
     }
     if (caller->component().has_value()) {
       info.Set("component",
-               base::to_underlying(DlpRulesManagerComponentToApiEnum(
+               std::to_underlying(DlpRulesManagerComponentToApiEnum(
                    caller->component().value())));
     }
   }
@@ -1370,7 +1369,7 @@ void FileManagerPrivateInternalSearchFilesFunction::OnSearchByPatternDone(
   std::set<base::FilePath> found;
   for (const auto& results : all_results) {
     for (const auto& [file_path, is_directory] : results) {
-      if (base::Contains(found, file_path)) {
+      if (found.contains(file_path)) {
         continue;
       }
       found.insert(file_path);
@@ -1378,7 +1377,7 @@ void FileManagerPrivateInternalSearchFilesFunction::OnSearchByPatternDone(
     }
   }
 
-  base::Value::List entries;
+  base::ListValue entries;
   for (const auto& result : unique_results) {
     std::string mount_name;
     std::string file_system_name;
@@ -1392,7 +1391,7 @@ void FileManagerPrivateInternalSearchFilesFunction::OnSearchByPatternDone(
     std::string fs_root =
         storage::GetExternalFileSystemRootURIString(source_url(), mount_name);
 
-    base::Value::Dict entry;
+    base::DictValue entry;
     entry.Set("fileSystemName", file_system_name);
     entry.Set("fileSystemRoot", fs_root);
     entry.Set("fileFullPath", full_path);

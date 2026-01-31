@@ -93,11 +93,9 @@ class IsolatedWebAppValidatorTest : public ::testing::Test {
     return *integrity_block;
   }
 
-  test::MockIwaClient& iwa_client() { return iwa_client_; }
-
   content::BrowserTaskEnvironment task_environment_;
   content::TestBrowserContext browser_context_;
-  testing::NiceMock<test::MockIwaClient> iwa_client_;
+  test::TestIwaClient iwa_client_;
 };
 
 using IsolatedWebAppValidatorIntegrityBlockTest = IsolatedWebAppValidatorTest;
@@ -108,38 +106,9 @@ TEST_F(IsolatedWebAppValidatorIntegrityBlockTest,
 
   EXPECT_THAT(IsolatedWebAppValidator::ValidateIntegrityBlock(
                   &browser_context_, test::GetDefaultEcdsaP256WebBundleId(),
-                  integrity_block,
-                  /*dev_mode=*/false),
+                  integrity_block),
               UnusableSwbnErrorIs(Error::kIntegrityBlockValidationError,
                                   "does not match the expected Web Bundle ID"));
-}
-
-TEST_F(IsolatedWebAppValidatorIntegrityBlockTest, IWAIsTrusted) {
-  auto integrity_block = MakeIntegrityBlock();
-
-  ON_CALL(iwa_client(),
-          ValidateTrust(_, test::GetDefaultEd25519WebBundleId(), _))
-      .WillByDefault(Return(base::ok()));
-
-  EXPECT_THAT(IsolatedWebAppValidator::ValidateIntegrityBlock(
-                  &browser_context_, test::GetDefaultEd25519WebBundleId(),
-                  integrity_block,
-                  /*dev_mode=*/false),
-              HasValue());
-}
-
-TEST_F(IsolatedWebAppValidatorIntegrityBlockTest, IWAIsUntrusted) {
-  auto integrity_block = MakeIntegrityBlock();
-
-  ON_CALL(iwa_client(), ValidateTrust)
-      .WillByDefault(Return(base::unexpected("public key(s) are not trusted")));
-
-  EXPECT_THAT(IsolatedWebAppValidator::ValidateIntegrityBlock(
-                  &browser_context_, test::GetDefaultEd25519WebBundleId(),
-                  integrity_block,
-                  /*dev_mode=*/false),
-              UnusableSwbnErrorIs(Error::kIntegrityBlockValidationError,
-                                  "public key(s) are not trusted"));
 }
 
 struct RelativeURL {

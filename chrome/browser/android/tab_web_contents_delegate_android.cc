@@ -4,6 +4,7 @@
 
 #include "chrome/browser/android/tab_web_contents_delegate_android.h"
 
+#include <android/keycodes.h>
 #include <stddef.h>
 
 #include <memory>
@@ -70,14 +71,19 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/frame/blocked_navigation_types.mojom.h"
+#include "third_party/blink/public/mojom/input/pointer_lock_result.mojom.h"
 #include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "third_party/skia/include/core/SkRegion.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
+#include "ui/gfx/android/rect_jni_conversion.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -104,23 +110,6 @@ using content::WebContents;
 namespace {
 
 static ScopedJavaLocalRef<jobject>
-JNI_TabWebContentsDelegateAndroidImpl_CreateJavaRectF(JNIEnv* env,
-                                                      const gfx::RectF& rect) {
-  return ScopedJavaLocalRef<jobject>(
-      Java_TabWebContentsDelegateAndroidImpl_createRectF(
-          env, rect.x(), rect.y(), rect.right(), rect.bottom()));
-}
-
-static ScopedJavaLocalRef<jobject>
-JNI_TabWebContentsDelegateAndroidImpl_CreateJavaRect(JNIEnv* env,
-                                                     const gfx::Rect& rect) {
-  return ScopedJavaLocalRef<jobject>(
-      Java_TabWebContentsDelegateAndroidImpl_createRect(
-          env, static_cast<int>(rect.x()), static_cast<int>(rect.y()),
-          static_cast<int>(rect.right()), static_cast<int>(rect.bottom())));
-}
-
-static ScopedJavaLocalRef<jobject>
 JNI_TabWebContentsDelegateAndroidImpl_CreateJavaWindowFeatures(
     JNIEnv* env,
     const blink::mojom::WindowFeatures& window_features) {
@@ -130,6 +119,23 @@ JNI_TabWebContentsDelegateAndroidImpl_CreateJavaWindowFeatures(
           window_features.bounds.width(), window_features.bounds.height(),
           window_features.has_x, window_features.has_y,
           window_features.has_width, window_features.has_height));
+}
+
+static ScopedJavaLocalRef<jobject>
+JNI_TabWebContentsDelegateAndroidImpl_CreateJavaPictureInPictureWindowOptions(
+    JNIEnv* env,
+    const blink::mojom::PictureInPictureWindowOptions& options) {
+  const display::Screen* screen = display::Screen::Get();
+  const display::Display display =
+      screen->GetDisplayNearestWindow(gfx::NativeWindow());
+
+  gfx::Rect bounds =
+      PictureInPictureWindowManager::GetInstance()
+          ->CalculateInitialPictureInPictureWindowBounds(options, display);
+
+  return ScopedJavaLocalRef<jobject>(
+      Java_TabWebContentsDelegateAndroidImpl_createPictureInPictureWindowOptions(
+          env, bounds, options.disallow_return_to_opener));
 }
 
 void ShowFramebustBlockMessageInternal(content::WebContents* web_contents,
@@ -152,6 +158,11 @@ void ShowFramebustBlockMessageInternal(content::WebContents* web_contents,
           web_contents->GetBrowserContext()),
       base::BindOnce(intervention_outcome));
 }
+
+// The amount of time to disallow repeated pointer lock calls after the user
+// successfully escapes from one lock request.
+constexpr base::TimeDelta kEffectiveUserEscapeDuration =
+    base::Milliseconds(1250);
 
 }  // anonymous namespace
 
@@ -236,15 +247,12 @@ void TabWebContentsDelegateAndroid::FindMatchRectsReply(
   // Create the details object.
   ScopedJavaLocalRef<jobject> details_object =
       Java_TabWebContentsDelegateAndroidImpl_createFindMatchRectsDetails(
-          env, version, rects.size(),
-          JNI_TabWebContentsDelegateAndroidImpl_CreateJavaRectF(env,
-                                                                active_rect));
+          env, version, rects.size(), active_rect);
 
   // Add the rects
   for (size_t i = 0; i < rects.size(); ++i) {
     Java_TabWebContentsDelegateAndroidImpl_setMatchRectByIndex(
-        env, details_object, i,
-        JNI_TabWebContentsDelegateAndroidImpl_CreateJavaRectF(env, rects[i]));
+        env, details_object, i, rects[i]);
   }
 
   Java_TabWebContentsDelegateAndroidImpl_onFindMatchRectsAvailable(
@@ -402,9 +410,18 @@ WebContents* TabWebContentsDelegateAndroid::AddNewContents(
             env, window_features);
     ScopedJavaLocalRef<jobject> jurl =
         url::GURLAndroid::FromNativeGURL(env, target_url);
+
+    ScopedJavaLocalRef<jobject> jpicture_in_picture_options;
+    if (new_contents->GetPictureInPictureOptions().has_value()) {
+      jpicture_in_picture_options =
+          JNI_TabWebContentsDelegateAndroidImpl_CreateJavaPictureInPictureWindowOptions(
+              env, new_contents->GetPictureInPictureOptions().value());
+    }
+
     handled = Java_TabWebContentsDelegateAndroidImpl_addNewContents(
-        env, obj, jsource, jnew_contents, jurl, static_cast<jint>(disposition),
-        jwindow_features, user_gesture);
+        env, obj, jsource, jnew_contents, jurl,
+        static_cast<int32_t>(disposition), jwindow_features, user_gesture,
+        jpicture_in_picture_options);
   }
 
   if (was_blocked)
@@ -417,24 +434,6 @@ WebContents* TabWebContentsDelegateAndroid::AddNewContents(
   }
 
   return nullptr;
-}
-
-void TabWebContentsDelegateAndroid::SetContentsBounds(
-    content::WebContents* source,
-    const gfx::Rect& bounds) {
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
-  if (!obj.is_null()) {
-    ScopedJavaLocalRef<jobject> jsource;
-    if (source) {
-      jsource = source->GetJavaWebContents();
-    }
-    ScopedJavaLocalRef<jobject> jbounds =
-        JNI_TabWebContentsDelegateAndroidImpl_CreateJavaRect(env, bounds);
-
-    Java_TabWebContentsDelegateAndroidImpl_setContentsBounds(env, obj, jsource,
-                                                             jbounds);
-  }
 }
 
 void TabWebContentsDelegateAndroid::OnDidBlockNavigation(
@@ -524,14 +523,10 @@ void TabWebContentsDelegateAndroid::OnFindResultAvailable(
   const find_in_page::FindNotificationDetails& find_result =
       find_in_page::FindTabHelper::FromWebContents(web_contents)->find_result();
 
-  ScopedJavaLocalRef<jobject> selection_rect =
-      JNI_TabWebContentsDelegateAndroidImpl_CreateJavaRect(
-          env, find_result.selection_rect());
-
   // Create the details object.
   ScopedJavaLocalRef<jobject> details_object =
       Java_TabWebContentsDelegateAndroidImpl_createFindNotificationDetails(
-          env, find_result.number_of_matches(), selection_rect,
+          env, find_result.number_of_matches(), find_result.selection_rect(),
           find_result.active_match_ordinal(), find_result.final_update());
 
   Java_TabWebContentsDelegateAndroidImpl_onFindResultAvailable(env, obj,
@@ -646,6 +641,35 @@ bool TabWebContentsDelegateAndroid::OpenInAppOrChromeFromCct(GURL url) {
       env, obj, jurl);
 }
 
+content::KeyboardEventProcessingResult
+TabWebContentsDelegateAndroid::PreHandleKeyboardEvent(
+    WebContents* source,
+    const input::NativeWebKeyboardEvent& event) {
+  if (event.native_key_code == AKEYCODE_ESCAPE) {
+    JNIEnv* env = AttachCurrentThread();
+    ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
+
+    if (!obj.is_null() &&
+        Java_TabWebContentsDelegateAndroidImpl_preHandleKeyboardEvent(
+            env, obj, reinterpret_cast<intptr_t>(&event))) {
+      return content::KeyboardEventProcessingResult::HANDLED;
+    }
+
+    // ExclusiveAccessManager handles the pointer lock escape.
+    if (!base::FeatureList::IsEnabled(
+            features::kEnableExclusiveAccessManager)) {
+      auto* rwhva = source->GetTopLevelRenderWidgetHostView();
+      if (rwhva && rwhva->IsPointerLocked()) {
+        rwhva->UnlockPointer();
+        pointer_lock_last_user_escape_time_ = base::TimeTicks::Now();
+        return content::KeyboardEventProcessingResult::HANDLED;
+      }
+    }
+  }
+
+  return content::KeyboardEventProcessingResult::NOT_HANDLED;
+}
+
 void TabWebContentsDelegateAndroid::RequestPointerLock(
     WebContents* web_contents,
     bool user_gesture,
@@ -670,8 +694,24 @@ void TabWebContentsDelegateAndroid::RequestPointerLock(
     return;
   }
 
-  WebContentsDelegateAndroid::RequestPointerLock(web_contents, user_gesture,
-                                                 last_unlocked_by_target);
+  // TODO(https://crbug.com/415732870): remove this part once
+  // ExclusiveAccessManager is released.
+  if (!last_unlocked_by_target && !web_contents->IsFullscreen()) {
+    if (!user_gesture) {
+      web_contents->GotResponseToPointerLockRequest(
+          blink::mojom::PointerLockResult::kRequiresUserGesture);
+      return;
+    }
+    if (base::TimeTicks::Now() <
+        pointer_lock_last_user_escape_time_ + kEffectiveUserEscapeDuration) {
+      web_contents->GotResponseToPointerLockRequest(
+          blink::mojom::PointerLockResult::kUserRejected);
+      return;
+    }
+  }
+
+  web_contents->GotResponseToPointerLockRequest(
+      blink::mojom::PointerLockResult::kSuccess);
 }
 
 void TabWebContentsDelegateAndroid::LostPointerLock() {

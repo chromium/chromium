@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "ui/base/interaction/element_tracker.h"

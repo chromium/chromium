@@ -25,7 +25,7 @@ class LayerTreeHost;
 
 class RasterizeAndRecordBenchmark : public MicroBenchmark {
  public:
-  explicit RasterizeAndRecordBenchmark(base::Value::Dict settings,
+  explicit RasterizeAndRecordBenchmark(base::DictValue settings,
                                        MicroBenchmark::DoneCallback callback);
   ~RasterizeAndRecordBenchmark() override;
 
@@ -37,7 +37,7 @@ class RasterizeAndRecordBenchmark : public MicroBenchmark {
       scoped_refptr<base::SingleThreadTaskRunner> origin_task_runner) override;
 
  private:
-  void RecordRasterResults(base::Value::Dict results);
+  void RecordRasterResults(base::DictValue results);
 
   struct RecordResults {
     int pixels_recorded = 0;
@@ -48,7 +48,7 @@ class RasterizeAndRecordBenchmark : public MicroBenchmark {
   RecordResults record_results_;
   int record_repeat_count_;
   int rasterize_repeat_count_;
-  base::Value::Dict results_;
+  base::DictValue results_;
 
   // The following is used in DCHECKs.
   bool main_thread_benchmark_done_ = false;

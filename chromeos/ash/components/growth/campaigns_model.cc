@@ -25,7 +25,6 @@
 #include "chromeos/ash/components/growth/action_performer.h"
 #include "chromeos/ash/components/growth/campaigns_logger.h"
 #include "chromeos/ash/components/growth/growth_metrics.h"
-#include "chromeos/ash/components/scalable_iph/buildflags.h"
 #include "chromeos/ash/grit/ash_resources.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/base/models/image_model.h"
@@ -227,7 +226,6 @@ std::optional<int> GetBuiltInImageResourceId(
       return IDR_GROWTH_FRAMEWORK_G1_NOTIFICATION_PNG;
     case BuiltInImage::kMall:
       return IDR_GROWTH_FRAMEWORK_MALL_PNG;
-#if BUILDFLAG(ENABLE_CROS_SCALABLE_IPH)
     case BuiltInImage::kPrintJobsIcon:
       return IDR_ASH_PRINT_MANAGEMENT_PRINT_MANAGEMENT_192_PNG;
     case BuiltInImage::kGoogleDocsIcon:
@@ -236,15 +234,6 @@ std::optional<int> GetBuiltInImageResourceId(
       return IDR_SCALABLE_IPH_YOUTUBE_ICON_120_PNG;
     case BuiltInImage::kPlayStoreIcon:
       return IDR_SCALABLE_IPH_GOOGLE_PLAY_ICON_120_PNG;
-#else
-    // Sclable Iph images are included only if ash-build and Chrome branded.
-    // Returns a fall-back image for the other case.
-    case BuiltInImage::kPrintJobsIcon:
-    case BuiltInImage::kGoogleDocsIcon:
-    case BuiltInImage::kYouTubeIcon:
-    case BuiltInImage::kPlayStoreIcon:
-      return IDR_PRODUCT_LOGO_128;
-#endif  // BUILDFLAG(ENABLE_CROS_SCALABLE_IPH)
     case BuiltInImage::kRNotification:
       return IDR_GROWTH_FRAMEWORK_R_NOTIFICATION_PNG;
     case growth::BuiltInImage::kMallAppIcon:
@@ -257,7 +246,7 @@ std::optional<int> GetBuiltInImageResourceId(
 }
 
 std::optional<BuiltInImage> GetBuiltInImageType(
-    const base::Value::Dict* image_dict) {
+    const base::DictValue* image_dict) {
   auto built_in_image_value = image_dict->FindInt(kBuiltInImage);
   if (!built_in_image_value) {
     return std::nullopt;
@@ -274,7 +263,7 @@ std::optional<BuiltInImage> GetBuiltInImageType(
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 std::optional<BuiltInVectorIcon> GetBuiltInVectorIconType(
-    const base::Value::Dict* vector_icon_dict) {
+    const base::DictValue* vector_icon_dict) {
   auto built_in_vector_icon_value =
       vector_icon_dict->FindInt(kBuiltInVectorIcon);
   if (!built_in_vector_icon_value) {
@@ -394,7 +383,7 @@ bool TargetingBase::IsValid() const {
   return !!targeting_->FindDict(targeting_path_);
 }
 
-const base::Value::List* TargetingBase::GetListCriteria(
+const base::ListValue* TargetingBase::GetListCriteria(
     const char* path_suffix) const {
   return targeting_->FindListByDottedPath(GetCriteriaPath(path_suffix));
 }
@@ -414,7 +403,7 @@ const std::string* TargetingBase::GetStringCriteria(
   return targeting_->FindStringByDottedPath(GetCriteriaPath(path_suffix));
 }
 
-const base::Value::Dict* TargetingBase::GetDictCriteria(
+const base::DictValue* TargetingBase::GetDictCriteria(
     const char* path_suffix) const {
   return targeting_->FindDictByDottedPath(GetCriteriaPath(path_suffix));
 }
@@ -430,15 +419,15 @@ DemoModeTargeting::DemoModeTargeting(const Targeting* targeting_dict)
 
 DemoModeTargeting::~DemoModeTargeting() = default;
 
-const base::Value::List* DemoModeTargeting::GetStoreIds() const {
+const base::ListValue* DemoModeTargeting::GetStoreIds() const {
   return GetListCriteria(kDemoModeStoreIds);
 }
 
-const base::Value::List* DemoModeTargeting::GetRetailers() const {
+const base::ListValue* DemoModeTargeting::GetRetailers() const {
   return GetListCriteria(kDemoModeRetailers);
 }
 
-const base::Value::List* DemoModeTargeting::GetCountries() const {
+const base::ListValue* DemoModeTargeting::GetCountries() const {
   return GetListCriteria(kDemoModeCountries);
 }
 
@@ -473,19 +462,19 @@ const std::unique_ptr<StringListTargeting> DeviceTargeting::GetBoards() const {
   return std::make_unique<StringListTargeting>(string_list_dict);
 }
 
-const base::Value::List* DeviceTargeting::GetLocales() const {
+const base::ListValue* DeviceTargeting::GetLocales() const {
   return GetListCriteria(kApplicationLocales);
 }
 
-const base::Value::List* DeviceTargeting::GetUserLocales() const {
+const base::ListValue* DeviceTargeting::GetUserLocales() const {
   return GetListCriteria(kUserLocales);
 }
 
-const base::Value::List* DeviceTargeting::GetIncludedCountries() const {
+const base::ListValue* DeviceTargeting::GetIncludedCountries() const {
   return GetListCriteria(kIncludedCountries);
 }
 
-const base::Value::List* DeviceTargeting::GetExcludedCountries() const {
+const base::ListValue* DeviceTargeting::GetExcludedCountries() const {
   return GetListCriteria(kExcludedCountries);
 }
 
@@ -540,7 +529,7 @@ const std::unique_ptr<StringListTargeting> DeviceTargeting::GetChannels()
 }
 
 // Apps Targeting.
-AppTargeting::AppTargeting(const base::Value::Dict* app_dict)
+AppTargeting::AppTargeting(const base::DictValue* app_dict)
     : app_dict_(app_dict) {}
 
 AppTargeting::~AppTargeting() = default;
@@ -550,7 +539,7 @@ const std::string* AppTargeting::GetAppId() const {
 }
 
 // Events Targeting.
-EventsTargeting::EventsTargeting(const base::Value::Dict* config_dict)
+EventsTargeting::EventsTargeting(const base::DictValue* config_dict)
     : config_dict_(config_dict) {}
 
 EventsTargeting::~EventsTargeting() = default;
@@ -573,12 +562,12 @@ std::optional<int> EventsTargeting::GetGroupDismissalCap() const {
   return config_dict_->FindInt(kGroupDismissalCap);
 }
 
-const base::Value::List* EventsTargeting::GetEventsConditions() const {
+const base::ListValue* EventsTargeting::GetEventsConditions() const {
   return config_dict_->FindList(kEventsConditions);
 }
 
 // Trigger Targeting.
-TriggerTargeting::TriggerTargeting(const base::Value::Dict* trigger_dict)
+TriggerTargeting::TriggerTargeting(const base::DictValue* trigger_dict)
     : trigger_dict_(trigger_dict) {}
 
 TriggerTargeting::~TriggerTargeting() = default;
@@ -587,13 +576,13 @@ std::optional<int> TriggerTargeting::GetTriggerType() const {
   return trigger_dict_->FindInt(kTriggerType);
 }
 
-const base::Value::List* TriggerTargeting::GetTriggerEvents() const {
+const base::ListValue* TriggerTargeting::GetTriggerEvents() const {
   return trigger_dict_->FindList(kTriggerEvents);
 }
 
 // Time window Targeting.
 TimeWindowTargeting::TimeWindowTargeting(
-    const base::Value::Dict* time_window_dict)
+    const base::DictValue* time_window_dict)
     : time_window_dict_(time_window_dict) {}
 
 TimeWindowTargeting::~TimeWindowTargeting() = default;
@@ -618,7 +607,7 @@ const base::Time TimeWindowTargeting::GetEndTime() const {
 
 // Number Range Targeting.
 NumberRangeTargeting::NumberRangeTargeting(
-    const base::Value::Dict* number_range_dict)
+    const base::DictValue* number_range_dict)
     : number_range_dict_(number_range_dict) {}
 
 NumberRangeTargeting::~NumberRangeTargeting() = default;
@@ -633,16 +622,16 @@ const std::optional<int> NumberRangeTargeting::GetEnd() const {
 
 // String List Targeting.
 StringListTargeting::StringListTargeting(
-    const base::Value::Dict* string_list_dict)
+    const base::DictValue* string_list_dict)
     : string_list_dict_(string_list_dict) {}
 
 StringListTargeting::~StringListTargeting() = default;
 
-const base::Value::List* StringListTargeting::GetIncludes() const {
+const base::ListValue* StringListTargeting::GetIncludes() const {
   return string_list_dict_->FindList(kStringListIncludes);
 }
 
-const base::Value::List* StringListTargeting::GetExcludes() const {
+const base::ListValue* StringListTargeting::GetExcludes() const {
   return string_list_dict_->FindList(kStringListExcludes);
 }
 
@@ -673,7 +662,7 @@ std::optional<const base::Feature*> SessionTargeting::GetFeature() const {
   return std::nullopt;
 }
 
-const base::Value::List* SessionTargeting::GetExperimentTags() const {
+const base::ListValue* SessionTargeting::GetExperimentTags() const {
   return GetListCriteria(kExperimentTargetings);
 }
 
@@ -781,7 +770,7 @@ RuntimeTargeting::GetTriggers() const {
   return triggers;
 }
 
-const base::Value::List* RuntimeTargeting::GetUserPrefTargetings() const {
+const base::ListValue* RuntimeTargeting::GetUserPrefTargetings() const {
   return GetListCriteria(kUserPrefTargetings);
 }
 
@@ -794,7 +783,7 @@ std::unique_ptr<AppTargeting> RuntimeTargeting::GetHotseatAppIcon() const {
 }
 
 // Action.
-Action::Action(const base::Value::Dict* action_dict)
+Action::Action(const base::DictValue* action_dict)
     : action_dict_(action_dict) {}
 
 Action::~Action() = default;
@@ -818,7 +807,7 @@ std::optional<growth::ActionType> Action::GetActionType() const {
   return static_cast<growth::ActionType>(action_type);
 }
 
-const base::Value::Dict* Action::GetParams() const {
+const base::DictValue* Action::GetParams() const {
   return action_dict_->FindDict(kActionParamsPath);
 }
 
@@ -861,7 +850,7 @@ const std::string* Anchor::GetShelfAppButtonId() const {
 }
 
 // Image.
-Image::Image(const base::Value::Dict* image_dict) : image_dict_(image_dict) {}
+Image::Image(const base::DictValue* image_dict) : image_dict_(image_dict) {}
 Image::~Image() = default;
 
 const gfx::Image* Image::GetImage() const {
@@ -890,7 +879,7 @@ const gfx::Image* Image::GetBuiltInImage() const {
 }
 
 // Vector Icon.
-VectorIcon::VectorIcon(const base::Value::Dict* vector_icon_dict)
+VectorIcon::VectorIcon(const base::DictValue* vector_icon_dict)
     : vector_icon_dict_(vector_icon_dict) {}
 VectorIcon::~VectorIcon() = default;
 
@@ -925,7 +914,7 @@ const gfx::VectorIcon* VectorIcon::GetBuiltInVectorIcon() const {
 }
 
 // Image Model.
-ImageModel::ImageModel(const base::Value::Dict* image_model_dict)
+ImageModel::ImageModel(const base::DictValue* image_model_dict)
     : image_model_dict_(image_model_dict) {}
 ImageModel::~ImageModel() = default;
 

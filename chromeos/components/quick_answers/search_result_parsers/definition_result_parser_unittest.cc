@@ -18,8 +18,6 @@ namespace quick_answers {
 namespace {
 constexpr char kPhoneticsAudioUrlWithoutProtocol[] = "//example.com/audio";
 constexpr char kPhoneticsAudioUrlWithProtocol[] = "https://example.com/audio";
-
-using base::Value;
 }  // namespace
 
 class DefinitionResultParserTest : public testing::Test {
@@ -32,7 +30,7 @@ class DefinitionResultParserTest : public testing::Test {
       delete;
 
  protected:
-  Value::Dict BuildDictionaryResult(
+  base::DictValue BuildDictionaryResult(
       const std::string& query_term,
       const std::string& phonetic_str,
       const std::string& definition,
@@ -40,22 +38,22 @@ class DefinitionResultParserTest : public testing::Test {
       const std::string& sample_sentence = std::string(),
       const std::vector<std::string>& synonyms_list = {},
       const std::vector<std::string>& subsenses_list = {}) {
-    Value::Dict result;
+    base::DictValue result;
 
     if (!query_term.empty()) {
       result.SetByDottedPath("dictionaryResult.queryTerm", query_term);
     }
 
     // Build definition entry.
-    Value::List entries;
-    Value::Dict entry;
+    base::ListValue entries;
+    base::DictValue entry;
 
     entry.Set("locale", "en");
 
     // Build phonetics.
     if (!phonetic_str.empty()) {
-      Value::List phonetics;
-      Value::Dict phonetic;
+      base::ListValue phonetics;
+      base::DictValue phonetic;
       phonetic.Set("text", phonetic_str);
       phonetic.Set("oxfordAudio", kPhoneticsAudioUrlWithoutProtocol);
       phonetics.Append(std::move(phonetic));
@@ -64,16 +62,16 @@ class DefinitionResultParserTest : public testing::Test {
 
     // Build senses.
     if (!definition.empty()) {
-      Value::List sense_families;
-      Value::Dict sense_family;
-      Value::List senses;
-      Value::Dict sense;
+      base::ListValue sense_families;
+      base::DictValue sense_family;
+      base::ListValue senses;
+      base::DictValue sense;
 
       sense.SetByDottedPath("definition.text", definition);
       if (!sample_sentence.empty()) {
-        Value::List example_groups;
-        Value::Dict example_group;
-        Value::List examples;
+        base::ListValue example_groups;
+        base::DictValue example_group;
+        base::ListValue examples;
 
         examples.Append(sample_sentence);
         example_group.Set("examples", std::move(examples));
@@ -81,14 +79,14 @@ class DefinitionResultParserTest : public testing::Test {
         sense.Set("exampleGroups", std::move(example_groups));
       }
       if (!synonyms_list.empty()) {
-        Value::List thesaurus_entries;
-        Value::Dict thesaurus_entry;
-        Value::List synonyms;
-        Value::Dict synonym;
-        Value::List nyms;
+        base::ListValue thesaurus_entries;
+        base::DictValue thesaurus_entry;
+        base::ListValue synonyms;
+        base::DictValue synonym;
+        base::ListValue nyms;
 
         for (std::string synonym_term : synonyms_list) {
-          Value::Dict nym;
+          base::DictValue nym;
           nym.Set("nym", synonym_term);
           nyms.Append(std::move(nym));
         }
@@ -99,10 +97,10 @@ class DefinitionResultParserTest : public testing::Test {
         sense.Set("thesaurusEntries", std::move(thesaurus_entries));
       }
       if (!subsenses_list.empty()) {
-        Value::List subsenses;
+        base::ListValue subsenses;
 
         for (std::string subsense_term : subsenses_list) {
-          Value::Dict subsense;
+          base::DictValue subsense;
           subsense.SetByDottedPath("definition.text", subsense_term);
           subsenses.Append(std::move(subsense));
         }
@@ -112,8 +110,8 @@ class DefinitionResultParserTest : public testing::Test {
       sense_family.Set("senses", std::move(senses));
 
       if (!word_class.empty()) {
-        Value::List parts_of_speech;
-        Value::Dict part_of_speech;
+        base::ListValue parts_of_speech;
+        base::DictValue part_of_speech;
         part_of_speech.Set("value", word_class);
         parts_of_speech.Append(std::move(part_of_speech));
         sense_family.Set("partsOfSpeech", std::move(parts_of_speech));
@@ -128,7 +126,7 @@ class DefinitionResultParserTest : public testing::Test {
     return result;
   }
 
-  void SetHeadWord(Value::Dict& result, const std::string& headword) {
+  void SetHeadWord(base::DictValue& result, const std::string& headword) {
     (*result.FindListByDottedPath("dictionaryResult.entries"))[0].GetDict().Set(
         "headword", headword);
   }
@@ -137,7 +135,7 @@ class DefinitionResultParserTest : public testing::Test {
 };
 
 TEST_F(DefinitionResultParserTest, Success) {
-  Value::Dict result = BuildDictionaryResult(
+  base::DictValue result = BuildDictionaryResult(
       /*query_term=*/"unfathomable", /*phonetic_str=*/"ˌənˈfaT͟Həməb(ə)",
       /*definition=*/"incapable of being fully explored or understood.",
       /*word_class=*/"adjective");
@@ -191,7 +189,7 @@ TEST_F(DefinitionResultParserTest, SuccessWithRichCardInfo) {
       "making use of clever and indirect methods to achieve something.",
       "capable of making fine distinctions.",
       "arranged in an ingenious and elaborate way."};
-  Value::Dict result = BuildDictionaryResult(
+  base::DictValue result = BuildDictionaryResult(
       /*query_term=*/"subtle", /*phonetic_str=*/"ˈsəd(ə)l",
       /*definition=*/
       "(especially of a change or distinction) so delicate or precise as to be "
@@ -253,13 +251,13 @@ TEST_F(DefinitionResultParserTest, SuccessWithRichCardInfo) {
 }
 
 TEST_F(DefinitionResultParserTest, EmptyValue) {
-  Value::Dict result;
+  base::DictValue result;
   QuickAnswer quick_answer;
   EXPECT_FALSE(parser_->Parse(result, &quick_answer));
 }
 
 TEST_F(DefinitionResultParserTest, NoQueryTerm) {
-  Value::Dict result = BuildDictionaryResult(
+  base::DictValue result = BuildDictionaryResult(
       /*query_term=*/"", /*phonetic_str=*/"ˌənˈfaT͟Həməb(ə)",
       /*definition=*/"incapable of being fully explored or understood.",
       /*word_class=*/"adjective");
@@ -268,7 +266,7 @@ TEST_F(DefinitionResultParserTest, NoQueryTerm) {
 }
 
 TEST_F(DefinitionResultParserTest, NoQueryTermShouldFallbackToHeadword) {
-  Value::Dict result = BuildDictionaryResult(
+  base::DictValue result = BuildDictionaryResult(
       /*query_term=*/"", /*phonetic_str=*/"ˌənˈfaT͟Həməb(ə)",
       /*definition=*/"incapable of being fully explored or understood.",
       /*word_class=*/"adjective");
@@ -281,7 +279,7 @@ TEST_F(DefinitionResultParserTest, NoQueryTermShouldFallbackToHeadword) {
 }
 
 TEST_F(DefinitionResultParserTest, ShouldPrioritizeQueryTerm) {
-  Value::Dict result = BuildDictionaryResult(
+  base::DictValue result = BuildDictionaryResult(
       /*query_term=*/"Unfathomable", /*phonetic_str=*/"ˌənˈfaT͟Həməb(ə)",
       /*definition=*/"incapable of being fully explored or understood.",
       /*word_class=*/"adjective");
@@ -294,7 +292,7 @@ TEST_F(DefinitionResultParserTest, ShouldPrioritizeQueryTerm) {
 }
 
 TEST_F(DefinitionResultParserTest, NoPhonetic) {
-  Value::Dict result = BuildDictionaryResult(
+  base::DictValue result = BuildDictionaryResult(
       /*query_term=*/"unfathomable", /*phonetic_str=*/"",
       /*definition=*/"incapable of being fully explored or understood.",
       /*word_class=*/"adjective");
@@ -311,7 +309,7 @@ TEST_F(DefinitionResultParserTest, NoPhonetic) {
 }
 
 TEST_F(DefinitionResultParserTest, NoDefinition) {
-  Value::Dict result = BuildDictionaryResult(
+  base::DictValue result = BuildDictionaryResult(
       /*query_term=*/"unfathomable", /*phonetic_str=*/"ˌənˈfaT͟Həməb(ə)l",
       /*definition=*/"", /*word_class=*/"adjective");
   QuickAnswer quick_answer;
@@ -319,7 +317,7 @@ TEST_F(DefinitionResultParserTest, NoDefinition) {
 }
 
 TEST_F(DefinitionResultParserTest, NoWordClass) {
-  Value::Dict result = BuildDictionaryResult(
+  base::DictValue result = BuildDictionaryResult(
       /*query_term=*/"unfathomable", /*phonetic_str=*/"ˌənˈfaT͟Həməb(ə)l",
       /*definition=*/"incapable of being fully explored or understood.",
       /*word_class=*/"");

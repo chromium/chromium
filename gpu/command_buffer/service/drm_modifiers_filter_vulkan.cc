@@ -5,7 +5,6 @@
 #include "gpu/command_buffer/service/drm_modifiers_filter_vulkan.h"
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
@@ -39,9 +38,7 @@ void PopulateVkDrmFormatsAndModifiers(
     base::flat_map<uint32_t, std::vector<uint64_t>>&
         drm_formats_and_modifiers) {
 #if BUILDFLAG(IS_CHROMEOS)
-  for (int i = 0; i <= static_cast<int>(gfx::BufferFormat::LAST); i++) {
-    viz::SharedImageFormat si_format =
-        viz::GetSharedImageFormat(static_cast<gfx::BufferFormat>(i));
+  for (auto si_format : ui::kDrmSharedImageFormats) {
     VkFormat vulkan_format = ToTextureVkFormat(si_format);
     int fourcc_format = ui::GetFourCCFormatFromSharedImageFormat(si_format);
     if (vulkan_format == VK_FORMAT_UNDEFINED || fourcc_format == 0) {
@@ -89,7 +86,7 @@ std::vector<uint64_t> DrmModifiersFilterVulkan::Filter(
   }
   std::vector<uint64_t> intersection;
   for (const auto& modifier : modifiers) {
-    if (base::Contains(vulkan_modifiers, modifier)) {
+    if (vulkan_modifiers.contains(modifier)) {
       intersection.push_back(modifier);
     }
   }

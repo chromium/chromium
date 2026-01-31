@@ -35,7 +35,7 @@ constexpr char kKbdTopRowLayout1Tag[] = "1";
 
 std::string ConvertVectorToJsonList(const std::vector<std::string>& expected) {
   // Safely convert the selector list in `where` to a JSON/JS list.
-  base::Value::List selector_list;
+  base::ListValue selector_list;
   for (const auto& selector : expected) {
     selector_list.Append(selector);
   }

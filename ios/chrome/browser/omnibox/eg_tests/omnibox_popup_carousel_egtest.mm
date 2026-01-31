@@ -7,6 +7,7 @@
 #import "base/ios/ios_util.h"
 #import "base/strings/string_number_conversions.h"
 #import "components/omnibox/common/omnibox_features.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/omnibox/eg_tests/omnibox_app_interface.h"
 #import "ios/chrome/browser/omnibox/eg_tests/omnibox_test_util.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_popup_accessibility_identifier_constants.h"
@@ -65,7 +66,7 @@ id<GREYMatcher> CarouselMatcher() {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
-
+  config.features_enabled.push_back(kMostVisitedTilesCustomizationIOS);
   // Disable AutocompleteProvider types: TYPE_SEARCH and TYPE_ON_DEVICE_HEAD.
   omnibox::DisableAutocompleteProviders(config, 1056);
 
@@ -304,7 +305,7 @@ id<GREYMatcher> CarouselMatcher() {
   // Tap on remove.
   [[EarlGrey selectElementWithMatcher:
                  chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
-                     IDS_IOS_CONTENT_SUGGESTIONS_REMOVE)]
+                     IDS_IOS_CONTENT_SUGGESTIONS_NEVER_SHOW_SITE)]
       performAction:grey_tap()];
   // Check tile is removed.
   [[EarlGrey selectElementWithMatcher:tile] assertWithMatcher:grey_nil()];

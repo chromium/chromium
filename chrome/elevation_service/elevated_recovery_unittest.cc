@@ -192,8 +192,7 @@ TEST(ElevatedRecoveryCleanupTest, Do_CleanupChromeRecoveryDirectory) {
 
   EXPECT_EQ(S_OK, elevation_service::CleanupChromeRecoveryDirectory());
 
-  EXPECT_TRUE(base::PathExists(recovery_dir));
-  EXPECT_TRUE(base::IsDirectoryEmpty(recovery_dir));
+  EXPECT_FALSE(base::PathExists(recovery_dir));
 }
 
 }  // namespace elevation_service

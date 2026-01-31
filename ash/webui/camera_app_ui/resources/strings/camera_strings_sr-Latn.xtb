@@ -48,6 +48,7 @@
 <translation id="2761536921376153655">Tip skeniranja</translation>
 <translation id="28682968802727151">Pregled preslikavanja</translation>
 <translation id="2879583609344924966">Kamera <ph name="CAMERA" /> je priključena.</translation>
+<translation id="3063987824612038785">Svi fajlovi kamere biće sačuvani na Google disku</translation>
 <translation id="3067436040345934772">Pomeranje udesno</translation>
 <translation id="3081586908890909590">Pređi na režim za snimanje videa</translation>
 <translation id="3091480460059548935">Otkrivanje teksta u pregledu</translation>
@@ -67,6 +68,7 @@
 <translation id="3642192109456033823">Obrađuje se video...</translation>
 <translation id="3789724198583203151">Rotiraj za 90 stepeni ulevo</translation>
 <translation id="3810838688059735925">Video</translation>
+<translation id="386366972082231038">Svi fajlovi kamere biće sačuvani na OneDrive-u</translation>
 <translation id="4060608699153044055">Ne možete da snimate zbog nedovoljno memorijskog prostora na uređaju. Da biste počeli da snimate, treba da oslobodite prostor na uređaju.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Pauziraj snimanje</translation>
@@ -100,6 +102,7 @@
 <translation id="5634947914995388399">Proširi dijalog i zaustavi skeniranje</translation>
 <translation id="5662366948659129155">Skenira se <ph name="COUNT" />. stranica</translation>
 <translation id="5671277269877808209">Kvadrat</translation>
+<translation id="5725797473946373607">Ne prikazuj ovaj dijalog sledeći put</translation>
 <translation id="574392208103952083">Srednja</translation>
 <translation id="5746169159649715125">Sačuvaj kao PDF</translation>
 <translation id="5753488212459587150">Omogući režim za stručnjake</translation>
@@ -156,6 +159,7 @@ Ako su povratne informacije u vezi sa kvalitetom slike ili videa, priložite uzo
 <translation id="7983668134180549431">Tekst je otkriven.</translation>
 <translation id="8079255378695216066">Snimanje ne može da počne</translation>
 <translation id="8120146556401698679">Pomeranje, naginjanje, zumiranje</translation>
+<translation id="8127459436205030819">Administrator može da vidi vaše fajlove</translation>
 <translation id="8131740175452115882">Potvrdi</translation>
 <translation id="8145038249676204903">Pređi na režim za snimanje slika</translation>
 <translation id="8167081290930651932">Sačuvaj kao sliku</translation>
@@ -165,6 +169,7 @@ Ako su povratne informacije u vezi sa kvalitetom slike ili videa, priložite uzo
 <translation id="8609951387004618906">Otvori <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Uključite zvuk mikrofona. Dugme za isključivanje zvuka je uključeno</translation>
+<translation id="8712637175834984815">Važi</translation>
 <translation id="8730621377337864115">Gotovo</translation>
 <translation id="8732462232047530626">Prikaži metapodatke</translation>
 <translation id="874854738381978209">Otkrivena je WiFi mreža.</translation>

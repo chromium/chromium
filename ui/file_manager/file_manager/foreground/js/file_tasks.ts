@@ -4,14 +4,13 @@
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
 
-import type {Crostini} from '../../background/js/crostini.js';
 import type {ProgressCenter} from '../../background/js/progress_center.js';
 import type {VolumeInfo} from '../../background/js/volume_info.js';
 import type {VolumeManager} from '../../background/js/volume_manager.js';
 import {executeTask, getDirectory, getFileTasks} from '../../common/js/api.js';
 import {AsyncQueue} from '../../common/js/async_util.js';
 import {entriesToURLs, isFakeEntry} from '../../common/js/entry_utils.js';
-import {type AnnotatedTask, annotateTasks, getDefaultTask, INSTALL_LINUX_PACKAGE_TASK_DESCRIPTOR, isFilesAppId, parseActionId} from '../../common/js/file_tasks.js';
+import {type AnnotatedTask, annotateTasks, getDefaultTask, isFilesAppId, parseActionId} from '../../common/js/file_tasks.js';
 import {getExtension} from '../../common/js/file_type.js';
 import type {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {recordEnum, recordTime} from '../../common/js/metrics.js';
@@ -26,7 +25,6 @@ import {getStore} from '../../state/store.js';
 import type {XfPasswordDialog} from '../../widgets/xf_password_dialog.js';
 import {USER_CANCELLED} from '../../widgets/xf_password_dialog.js';
 
-import {DEFAULT_CROSTINI_VM} from './constants.js';
 import type {DirectoryModel} from './directory_model.js';
 import {type DirectoryChangeTracker} from './directory_model.js';
 import type {FileTransferController} from './file_transfer_controller.js';
@@ -82,7 +80,7 @@ export class FileTasks {
       directoryModel: DirectoryModel, ui: FileManagerUI,
       fileTransferController: FileTransferController,
       entries: Array<Entry|FilesAppEntry>, taskHistory: TaskHistory,
-      crostini: Crostini, progressCenter: ProgressCenter,
+      progressCenter: ProgressCenter,
       taskController: TaskController): Promise<FileTasks> {
     let resultingTasks: chrome.fileManagerPrivate.ResultingTasks = {
       tasks: [],
@@ -98,20 +96,6 @@ export class FileTasks {
       if (!resultingTasks || !resultingTasks.tasks) {
         throw new Error('Cannot get file tasks.');
       }
-    }
-
-    // Linux package installation is currently only supported for a single
-    // file which is inside the Linux container, or in a shareable volume.
-    // TODO(timloh): Instead of filtering these out, we probably should show a
-    // dialog with an error message, similar to when attempting to run
-    // Crostini tasks with non-Crostini entries.
-    if (entries.length !== 1 ||
-        !(isCrostiniEntry(entries[0]!, volumeManager) ||
-          crostini.canSharePath(
-              DEFAULT_CROSTINI_VM, entries[0]!, false /* persist */))) {
-      resultingTasks.tasks = resultingTasks.tasks.filter(
-          (task: chrome.fileManagerPrivate.FileTask) => !descriptorEqual(
-              task.descriptor, INSTALL_LINUX_PACKAGE_TASK_DESCRIPTOR));
     }
 
     const tasks = annotateTasks(resultingTasks.tasks, entries);
@@ -314,7 +298,6 @@ export class FileTasks {
 
     switch (parsedActionId) {
       case 'mount-archive':
-      case 'install-linux-package':
       case 'import-crostini-image':
         return true;
       default:
@@ -637,10 +620,6 @@ export class FileTasks {
       this.mountArchives_();
       return;
     }
-    if (parsedActionId === 'install-linux-package') {
-      this.installLinuxPackageInternal_();
-      return;
-    }
     if (parsedActionId === 'import-crostini-image') {
       this.importCrostiniImageInternal_();
       return;
@@ -649,13 +628,6 @@ export class FileTasks {
     console.error(
         'The specified task is not a valid internal task: ' +
         makeTaskID(descriptor));
-  }
-
-  /** Install a Linux Package in the Linux container.  */
-  private installLinuxPackageInternal_() {
-    assert(this.entries_.length === 1);
-    this.ui_.installLinuxPackageDialog.showInstallLinuxPackageDialog(
-        this.entries_[0]! as Entry);
   }
 
   /**
@@ -868,12 +840,6 @@ const OFFICE_EXTENSIONS =
 
 function hasOfficeExtension(entry: Entry|FilesAppEntry): boolean {
   return OFFICE_EXTENSIONS.has(getExtension(entry));
-}
-
-function isCrostiniEntry(
-    entry: Entry|FilesAppEntry, volumeManager: VolumeManager): boolean {
-  const location = volumeManager.getLocationInfo(entry);
-  return !!location && location.rootType === RootType.CROSTINI;
 }
 
 function isMyFilesEntry(

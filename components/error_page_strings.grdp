@@ -421,4 +421,31 @@
   <message name="IDS_ERRORPAGE_DINO_SLOW_SPEED_TOGGLE" desc="Label for a toggle which allows a user to select a slower speed for the dino game.">
     Start slower
   </message>
+  <message name="IDS_ERRORPAGES_GAME_INSTRUCTIONS_TOUCH" desc="Instructions on how to start playing the offline game using touch.">
+    Tap the dino to play
+  </message>
+  <message name="IDS_ERRORPAGES_GAME_INSTRUCTIONS_KEYBOARD" desc="Instructions on how to start playing the offline game using a keyboard.">
+    Press space to play
+  </message>
+  <message name="IDS_ERRORPAGES_GAME_INSTRUCTIONS_HYBRID" desc="Instructions on how to start playing the offline game using either touch or a keyboard.">
+    Tap the dino or press space to play
+  </message>
+  <message name="IDS_ERRORPAGE_DINO_ARIA_LABEL_TOUCH" desc="Accessibility label for the dino game button when using touch.">
+    Dino game, tap to play
+  </message>
+  <message name="IDS_ERRORPAGE_DINO_ARIA_LABEL_KEYBOARD" desc="Accessibility label for the dino game button when using a keyboard.">
+    Dino game, press space to play
+  </message>
+  <message name="IDS_ERRORPAGE_DINO_ARIA_LABEL_HYBRID" desc="Accessibility label for the dino game button when using hybrid input.">
+    Dino game, tap the dino or press space to play
+  </message>
+  <message name="IDS_ERRORPAGES_HEADING_BLOCKED_IN_INCOGNITO_BY_ADMINISTRATOR" desc="Heading of the error page when an administrator policy blocks a URL in Incognito mode.">
+    You can’t visit this page in Incognito mode
+  </message>
+  <message name="IDS_ERRORPAGES_SUMMARY_BLOCKED_IN_INCOGNITO_BY_ADMINISTRATOR" desc="Summary in the error page when an administrator policy blocks a URL in Incognito mode.">
+    Your organization has blocked <ph name="HOST_NAME">&lt;span&gt;$1&lt;/span&gt;<ex>www.example.com</ex></ph> in Incognito mode.
+  </message>
+  <message name="IDS_ERRORPAGES_SUMMARY_BLOCKED_IN_INCOGNITO_BY_ADMINISTRATOR_SCHEME" desc="Summary in the error page when an administrator policy blocks a URL scheme in Incognito mode.">
+    Your organization has blocked “<ph name="HOST_NAME">&lt;span&gt;$1&lt;/span&gt;<ex>mailto</ex></ph>” links in Incognito mode.
+  </message>
 </grit-part>

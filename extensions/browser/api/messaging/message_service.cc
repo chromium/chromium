@@ -12,7 +12,6 @@
 #include <utility>
 #include <variant>
 
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -162,7 +161,7 @@ constexpr const char* kDefaultSWExtendedLifetimeList[] = {
 std::vector<url::Origin> GetServiceWorkerExtendedLifetimeOrigins(
     content::BrowserContext* browser_context) {
   std::vector<url::Origin> origins;
-  const base::Value::List& extended_lifetime_urls =
+  const base::ListValue& extended_lifetime_urls =
       ExtensionPrefs::Get(browser_context)
           ->pref_service()
           ->GetList(
@@ -225,7 +224,7 @@ struct MessageService::MessageChannel {
 
 struct MessageService::OpenChannelParams {
   ChannelEndpoint source;
-  std::optional<base::Value::Dict> source_tab;
+  std::optional<base::DictValue> source_tab;
   ExtensionApiFrameIdMap::FrameData source_frame;
   std::unique_ptr<MessagePort> receiver;
   PortId receiver_port_id;
@@ -241,7 +240,7 @@ struct MessageService::OpenChannelParams {
 
   // Takes ownership of receiver.
   OpenChannelParams(const ChannelEndpoint& source,
-                    std::optional<base::Value::Dict> source_tab,
+                    std::optional<base::DictValue> source_tab,
                     const ExtensionApiFrameIdMap::FrameData& source_frame,
                     MessagePort* receiver,
                     const PortId& receiver_port_id,
@@ -268,7 +267,7 @@ struct MessageService::OpenChannelParams {
                           include_guest_process_info,
                           /*open_channel_tracking_ids=*/{}) {}
   OpenChannelParams(const ChannelEndpoint& source,
-                    std::optional<base::Value::Dict> source_tab,
+                    std::optional<base::DictValue> source_tab,
                     const ExtensionApiFrameIdMap::FrameData& source_frame,
                     MessagePort* receiver,
                     const PortId& receiver_port_id,
@@ -570,7 +569,7 @@ void MessageService::OpenChannelToExtension(
   bool include_guest_process_info = false;
 
   // Get information about the opener's tab, if applicable.
-  std::optional<base::Value::Dict> source_tab =
+  std::optional<base::DictValue> source_tab =
       messaging_delegate_->MaybeGetTabInfo(source_contents);
 
   std::optional<url::Origin> source_origin;
@@ -1049,7 +1048,7 @@ void MessageService::AddChannel(std::unique_ptr<MessageChannel> channel,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   ChannelId channel_id = receiver_port_id.GetChannelId();
-  CHECK(!base::Contains(channels_, channel_id));
+  CHECK(!channels_.contains(channel_id));
   channels_[channel_id] = std::move(channel);
   pending_lazy_context_channels_.erase(channel_id);
 }
@@ -1174,7 +1173,7 @@ void MessageService::EnqueuePendingMessage(const PortId& source_port_id,
         PendingMessage(source_port_id, message));
     // A channel should only be holding pending messages because it is in one
     // of these states.
-    DCHECK(!base::Contains(pending_lazy_context_channels_, channel_id));
+    DCHECK(!pending_lazy_context_channels_.contains(channel_id));
     return;
   }
   EnqueuePendingMessageForLazyBackgroundLoad(source_port_id, channel_id,

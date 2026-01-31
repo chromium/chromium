@@ -19,7 +19,7 @@ namespace policy {
 // ValueToProperty() is successfully restored from the property with
 // PropertyToValue().
 TEST(PolicyMacUtilTest, ValueToPropertyRoundTrip) {
-  base::Value::Dict root;
+  base::DictValue root;
 
   // base::Value::Type::NONE
   root.Set("null", base::Value());
@@ -41,8 +41,8 @@ TEST(PolicyMacUtilTest, ValueToPropertyRoundTrip) {
   root.Set("empty", "");
 
   // base::Value::Type::LIST
-  root.Set("emptyl", base::Value::List());
-  base::Value::List list;
+  root.Set("emptyl", base::ListValue());
+  base::ListValue list;
   for (const auto [key, value] : root) {
     list.Append(value.Clone());
   }
@@ -51,7 +51,7 @@ TEST(PolicyMacUtilTest, ValueToPropertyRoundTrip) {
   root.Set("list", list.Clone());
 
   // base::Value::Type::DICT
-  root.Set("emptyd", base::Value::Dict());
+  root.Set("emptyd", base::DictValue());
 
   // Key with dots.
   root.Set("key.with.dots", 789);

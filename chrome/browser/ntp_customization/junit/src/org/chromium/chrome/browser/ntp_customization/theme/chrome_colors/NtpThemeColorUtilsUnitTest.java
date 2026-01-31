@@ -8,6 +8,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import static org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorUtils.INVALID_ID;
+
 import android.content.Context;
 import android.graphics.drawable.LayerDrawable;
 
@@ -49,15 +51,6 @@ public class NtpThemeColorUtilsUnitTest {
     @After
     public void tearDown() {
         NtpCustomizationUtils.resetSharedPreferenceForTesting();
-    }
-
-    @Test
-    public void testCreateThemeColorList() {
-        List<NtpThemeColorInfo> colorList =
-                NtpThemeColorUtils.createThemeColorListForTesting(mContext);
-        assertEquals(2, colorList.size());
-        assertEquals(NtpThemeColorId.NTP_COLORS_AQUA, colorList.get(0).id);
-        assertEquals(NtpThemeColorId.NTP_COLORS_BLUE, colorList.get(1).id);
     }
 
     @Test
@@ -121,16 +114,23 @@ public class NtpThemeColorUtilsUnitTest {
     public void testInitColorsListAndFindPrimaryColorIndex_colorListNotEmpty() {
         List<NtpThemeColorInfo> colorList =
                 NtpThemeColorUtils.createThemeColorListForTesting(mContext);
-        colorList.remove(1);
-        int originalSize = 1;
+        int originalSize = NtpThemeColorId.NUM_ENTRIES - 1;
         assertEquals(originalSize, colorList.size());
         NtpThemeColorInfo primaryColor =
                 NtpThemeColorUtils.createNtpThemeColorInfo(
                         mContext, NtpThemeColorId.NTP_COLORS_AQUA);
 
+        // Verifies the colorList remains unchanged, and the index of the matched info is returned.
         int index =
                 NtpThemeColorUtils.initColorsListAndFindPrimaryColorIndex(
                         mContext, colorList, primaryColor);
+        assertEquals(originalSize, colorList.size());
+        assertEquals(NtpThemeColorId.NTP_COLORS_AQUA - 1, index);
+
+        // Tests the case when the given color info is null.
+        index =
+                NtpThemeColorUtils.initColorsListAndFindPrimaryColorIndex(
+                        mContext, colorList, null);
         assertEquals(originalSize, colorList.size());
         assertEquals(RecyclerView.NO_POSITION, index);
     }
@@ -264,6 +264,39 @@ public class NtpThemeColorUtilsUnitTest {
         assertEquals(
                 ContextCompat.getColor(mContext, R.color.home_surface_background_color),
                 NtpThemeColorUtils.getDefaultBackgroundColor(mContext));
+    }
+
+    @Test
+    public void testGetNtpColorThemeStringResId() {
+        assertEquals(
+                R.string.accessibility_ntp_blue_color_theme,
+                NtpThemeColorUtils.getNtpColorThemeStringResId(NtpThemeColorId.NTP_COLORS_BLUE));
+        assertEquals(
+                R.string.accessibility_ntp_aqua_color_theme,
+                NtpThemeColorUtils.getNtpColorThemeStringResId(NtpThemeColorId.NTP_COLORS_AQUA));
+        assertEquals(
+                R.string.accessibility_ntp_green_color_theme,
+                NtpThemeColorUtils.getNtpColorThemeStringResId(NtpThemeColorId.NTP_COLORS_GREEN));
+        assertEquals(
+                R.string.accessibility_ntp_viridian_color_theme,
+                NtpThemeColorUtils.getNtpColorThemeStringResId(
+                        NtpThemeColorId.NTP_COLORS_VIRIDIAN));
+        assertEquals(
+                R.string.accessibility_ntp_citron_color_theme,
+                NtpThemeColorUtils.getNtpColorThemeStringResId(NtpThemeColorId.NTP_COLORS_CITRON));
+        assertEquals(
+                R.string.accessibility_ntp_orange_color_theme,
+                NtpThemeColorUtils.getNtpColorThemeStringResId(NtpThemeColorId.NTP_COLORS_ORANGE));
+        assertEquals(
+                R.string.accessibility_ntp_rose_color_theme,
+                NtpThemeColorUtils.getNtpColorThemeStringResId(NtpThemeColorId.NTP_COLORS_ROSE));
+        assertEquals(
+                R.string.accessibility_ntp_fuchsia_color_theme,
+                NtpThemeColorUtils.getNtpColorThemeStringResId(NtpThemeColorId.NTP_COLORS_FUCHSIA));
+        assertEquals(
+                R.string.accessibility_ntp_violet_color_theme,
+                NtpThemeColorUtils.getNtpColorThemeStringResId(NtpThemeColorId.NTP_COLORS_VIOLET));
+        assertEquals(INVALID_ID, NtpThemeColorUtils.getNtpColorThemeStringResId(-1));
     }
 
     private void verifyInitColorsListAndFindPrimaryColorIndexReturnCorrectIndex(

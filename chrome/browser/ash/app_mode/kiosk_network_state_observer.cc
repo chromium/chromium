@@ -31,8 +31,8 @@ constexpr char kConfigFailureTemporaryServiceConfiguredButNotUsable[] =
     "Config.CreateConfiguration Temporary service configured but not usable";
 
 void CopyPropertyIfExists(std::string_view key,
-                          const base::Value::Dict& shill_properties,
-                          base::Value::Dict& new_properties) {
+                          const base::DictValue& shill_properties,
+                          base::DictValue& new_properties) {
   const base::Value* property_value = shill_properties.Find(key);
   if (property_value) {
     new_properties.Set(key, (*property_value).Clone());
@@ -130,13 +130,13 @@ void KioskNetworkStateObserver::OnGetWifiPassphraseError(
 void KioskNetworkStateObserver::ReceiveProperties(
     const std::string& passphrase,
     const std::string& service_path,
-    std::optional<base::Value::Dict> optional_shill_properties) {
+    std::optional<base::DictValue> optional_shill_properties) {
   if (!optional_shill_properties) {
     NET_LOG(ERROR) << "Received shill properties are empty.";
     return;
   }
-  const base::Value::Dict& shill_properties = optional_shill_properties.value();
-  base::Value::Dict properties;
+  const base::DictValue& shill_properties = optional_shill_properties.value();
+  base::DictValue properties;
 
   properties.Set(shill::kProfileProperty,
                  NetworkProfileHandler::GetSharedProfilePath());

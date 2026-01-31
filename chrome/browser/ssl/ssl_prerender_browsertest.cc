@@ -268,7 +268,7 @@ IN_PROC_BROWSER_TEST_F(SSLPrerenderTest,
     ASSERT_TRUE(NavigateToURL(browser(), kInitialUrl));
 
     // Trigger the prerender.
-    const content::FrameTreeNodeId kPrerenderHostId =
+    const content::PrerenderHostId kPrerenderHostId =
         prerender_helper_.AddPrerender(kPrerenderUrl);
     ASSERT_TRUE(kPrerenderHostId);
     ASSERT_EQ(prerender_helper_.GetHostForUrl(kPrerenderUrl), kPrerenderHostId);
@@ -336,7 +336,7 @@ IN_PROC_BROWSER_TEST_F(SSLPrerenderTest,
             ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                       ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
     ASSERT_TRUE(prerender_handle);
-    const content::FrameTreeNodeId kPrerenderHostId =
+    const content::PrerenderHostId kPrerenderHostId =
         prerender_helper_.GetHostForUrl(kUrl);
     ASSERT_TRUE(kPrerenderHostId);
     prerender_helper_.WaitForPrerenderLoadCompletion(kPrerenderHostId);
@@ -389,7 +389,7 @@ IN_PROC_BROWSER_TEST_F(SSLPrerenderTest,
     content::TestActivationManager activation_manager(web_contents(),
                                                       kPrerenderUrl);
     SecurityVisibleStateObserver visible_state_observer(*web_contents());
-    const content::FrameTreeNodeId kPrerenderHostId =
+    const content::PrerenderHostId kPrerenderHostId =
         prerender_helper_.AddPrerender(kPrerenderUrl);
     ASSERT_TRUE(kPrerenderHostId);
     ASSERT_EQ(prerender_helper_.GetHostForUrl(kPrerenderUrl), kPrerenderHostId);

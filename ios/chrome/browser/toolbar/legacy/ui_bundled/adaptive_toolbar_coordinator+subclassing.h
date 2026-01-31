@@ -1,0 +1,29 @@
+// Copyright 2018 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef IOS_CHROME_BROWSER_TOOLBAR_LEGACY_UI_BUNDLED_ADAPTIVE_TOOLBAR_COORDINATOR_SUBCLASSING_H_
+#define IOS_CHROME_BROWSER_TOOLBAR_LEGACY_UI_BUNDLED_ADAPTIVE_TOOLBAR_COORDINATOR_SUBCLASSING_H_
+
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/adaptive_toolbar_coordinator.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/toolbar_type.h"
+
+@class LegacyToolbarButtonFactory;
+
+// Protected interface of the AdaptiveToolbarCoordinator.
+@interface AdaptiveToolbarCoordinator (Subclassing)
+
+// Returns a button factory.
+- (LegacyToolbarButtonFactory*)buttonFactoryWithType:(ToolbarType)type;
+
+// Whether the toolbar shows the tab grid button. Base class implementation
+// returns NO. Subclasses can override this value.
+- (BOOL)hasTabGridButton;
+
+// Whether an IPH shown from the tab grid button should point up or down.
+// Base class implementation returns YES. Subclasses can override this value.
+- (BOOL)shouldPointArrowDownForTabGridIPH;
+
+@end
+
+#endif  // IOS_CHROME_BROWSER_TOOLBAR_LEGACY_UI_BUNDLED_ADAPTIVE_TOOLBAR_COORDINATOR_SUBCLASSING_H_

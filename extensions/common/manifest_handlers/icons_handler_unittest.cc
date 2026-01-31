@@ -18,7 +18,7 @@ class ProductIconManifestTest : public ManifestTest {
   ProductIconManifestTest& operator=(const ProductIconManifestTest&) = delete;
 
  protected:
-  base::Value::Dict CreateManifest(const std::string& extra_icons) {
+  base::DictValue CreateManifest(const std::string& extra_icons) {
     constexpr const char kManifest[] = R"({
       "name": "test",
       "version": "0.1",

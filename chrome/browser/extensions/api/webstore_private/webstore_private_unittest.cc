@@ -119,11 +119,11 @@ struct ExtensionRequestData {
 void VerifyPendingList(const std::map<ExtensionId, ExtensionRequestData>&
                            expected_pending_requests,
                        Profile* profile) {
-  const base::Value::Dict& actual_pending_requests =
+  const base::DictValue& actual_pending_requests =
       profile->GetPrefs()->GetDict(prefs::kCloudExtensionRequestIds);
   ASSERT_EQ(expected_pending_requests.size(), actual_pending_requests.size());
   for (const auto& expected_request : expected_pending_requests) {
-    const base::Value::Dict* actual_pending_request =
+    const base::DictValue* actual_pending_request =
         actual_pending_requests.FindDict(expected_request.first);
     ASSERT_NE(nullptr, actual_pending_request);
 
@@ -750,10 +750,7 @@ class WebstorePrivateBeginInstallWithManifest3FrictionDialogTest
     : public WebstorePrivateBeginInstallWithManifest3Test,
       public testing::WithParamInterface<FrictionDialogTestCase> {
  public:
-  WebstorePrivateBeginInstallWithManifest3FrictionDialogTest() {
-    feature_list_.InitAndEnableFeature(
-        extensions_features::kSafeBrowsingCrxAllowlistShowWarnings);
-  }
+  WebstorePrivateBeginInstallWithManifest3FrictionDialogTest() = default;
 
   void SetUp() override {
     WebstorePrivateBeginInstallWithManifest3Test::SetUp();
@@ -763,9 +760,6 @@ class WebstorePrivateBeginInstallWithManifest3FrictionDialogTest
     // without calling `webstorePrivate.completeInstall`.
     WebstorePrivateApi::ClearPendingApprovalsForTesting();
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_P(WebstorePrivateBeginInstallWithManifest3FrictionDialogTest,
@@ -943,6 +937,8 @@ class WebstorePrivateOnEnterprisePromoClickFunctionTest
 
 TEST_F(WebstorePrivateOnEnterprisePromoClickFunctionTest,
        HistogramRecordedClick) {
+  PrefService* prefs = profile()->GetPrefs();
+  prefs->SetBoolean(pref_names::kHasDismissedEnterprisePromotion, false);
   auto function =
       base::MakeRefCounted<WebstorePrivateOnEnterprisePromoClickFunction>();
 
@@ -951,6 +947,7 @@ TEST_F(WebstorePrivateOnEnterprisePromoClickFunctionTest,
   histogram_tester_.ExpectUniqueSample(
       "Enterprise.CwsPromotionBannerEvent",
       static_cast<int>(enterprise::CwsPromotionBannerEvent::kClicked), 1);
+  EXPECT_TRUE(prefs->GetBoolean(pref_names::kHasDismissedEnterprisePromotion));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

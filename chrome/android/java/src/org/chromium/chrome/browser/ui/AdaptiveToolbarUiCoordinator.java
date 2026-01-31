@@ -8,7 +8,8 @@ import android.content.Context;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -74,7 +75,7 @@ public class AdaptiveToolbarUiCoordinator {
     private AdaptiveToolbarButtonController mAdaptiveToolbarButtonController;
     private VoiceToolbarButtonController mVoiceToolbarButtonController;
     private BottomSheetController mBottomSheetController;
-    private ObservableSupplier<Profile> mProfileSupplier;
+    private MonotonicObservableSupplier<Profile> mProfileSupplier;
     private Supplier<ScrimManager> mScrimSupplier;
     private Supplier<TabModelSelector> mTabModelSelectorSupplier;
     private @Nullable CommerceBottomSheetContentCoordinator mCommerceBottomSheetContentCoordinator;
@@ -110,10 +111,10 @@ public class AdaptiveToolbarUiCoordinator {
             BottomSheetController bottomSheetController,
             Supplier<SnackbarManager> snackbarManagerSupplier,
             Supplier<TabBookmarker> tabBookmarkerSupplier,
-            ObservableSupplier<Profile> profileSupplier,
-            ObservableSupplier<BookmarkModel> bookmarkModelSupplier,
+            MonotonicObservableSupplier<Profile> profileSupplier,
+            NullableObservableSupplier<BookmarkModel> bookmarkModelSupplier,
             Supplier<@Nullable ReadAloudController> readAloudControllerSupplier,
-            ObservableSupplier<ShareDelegate> shareDelegateSupplier,
+            MonotonicObservableSupplier<ShareDelegate> shareDelegateSupplier,
             Runnable onShareRunnable,
             WindowAndroid windowAndroid,
             Supplier<@Nullable Tracker> trackerSupplier,

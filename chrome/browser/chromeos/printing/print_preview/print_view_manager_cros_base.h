@@ -32,7 +32,7 @@ class PrintViewManagerCrosBase : public ::printing::PrintManager {
   void GetDefaultPrintSettings(
       GetDefaultPrintSettingsCallback callback) override;
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-  void UpdatePrintSettings(base::Value::Dict job_settings,
+  void UpdatePrintSettings(base::DictValue job_settings,
                            UpdatePrintSettingsCallback callback) override;
   void SetAccessibilityTree(
       int32_t cookie,

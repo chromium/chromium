@@ -20,15 +20,13 @@
 #include "content/public/browser/media_session.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
-#include "media/base/media_switches.h"
 #include "services/media_session/public/cpp/test/test_media_controller.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
 #include "ui/views/test/button_test_api.h"
 
-class MediaDialogViewTest : public ChromeViewsTestBase,
-                            public testing::WithParamInterface<bool> {
+class MediaDialogViewTest : public ChromeViewsTestBase {
  public:
   MediaDialogViewTest() = default;
   MediaDialogViewTest(const MediaDialogViewTest&) = delete;
@@ -37,8 +35,6 @@ class MediaDialogViewTest : public ChromeViewsTestBase,
 
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
-    feature_list_.InitWithFeatureState(media::kGlobalMediaControlsUpdatedUI,
-                                       UseUpdatedUI());
     web_contents_ =
         content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
     media_router::ChromeMediaRouterFactory::GetInstance()->SetTestingFactory(
@@ -67,7 +63,13 @@ class MediaDialogViewTest : public ChromeViewsTestBase,
     ChromeViewsTestBase::TearDown();
   }
 
-  bool UseUpdatedUI() { return GetParam(); }
+  bool UseUpdatedUI() {
+#if BUILDFLAG(IS_CHROMEOS)
+    return false;
+#else
+    return true;
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  }
 
   std::unique_ptr<global_media_controls::MediaSessionNotificationItem>
   SimulateMediaSessionNotificationItem() {
@@ -144,11 +146,7 @@ class MediaDialogViewTest : public ChromeViewsTestBase,
   std::unique_ptr<speech::SodaInstallerImpl> soda_installer_impl_;
 };
 
-INSTANTIATE_TEST_SUITE_P(GlobalMediaControlsUpdatedUI,
-                         MediaDialogViewTest,
-                         testing::Bool());
-
-TEST_P(MediaDialogViewTest, BuildDeviceSelectorView_RemotePlaybackSource) {
+TEST_F(MediaDialogViewTest, BuildDeviceSelectorView_RemotePlaybackSource) {
   auto item = SimulateMediaSessionNotificationItem();
 
   view()->ShowMediaItem(
@@ -177,7 +175,7 @@ TEST_P(MediaDialogViewTest, BuildDeviceSelectorView_RemotePlaybackSource) {
   }
 }
 
-TEST_P(MediaDialogViewTest, BuildDeviceSelectorView_TabMirroringSource) {
+TEST_F(MediaDialogViewTest, BuildDeviceSelectorView_TabMirroringSource) {
   auto item = SimulateMediaSessionNotificationItem();
   SimulateMediaRouteUpdate({CreateTabMirroringRoute()});
 
@@ -194,7 +192,7 @@ TEST_P(MediaDialogViewTest, BuildDeviceSelectorView_TabMirroringSource) {
   }
 }
 
-TEST_P(MediaDialogViewTest, TerminateSession) {
+TEST_F(MediaDialogViewTest, TerminateSession) {
   auto item = SimulateMediaSessionNotificationItem();
   SimulateMediaRouteUpdate({CreateRemotePlaybackRoute()});
 

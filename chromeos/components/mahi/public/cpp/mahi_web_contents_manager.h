@@ -65,7 +65,7 @@ class COMPONENT_EXPORT(MAHI_PUBLIC_CPP) MahiWebContentsManager {
   // content.
   // Virtual so we can override in tests.
   virtual void RequestContent(const base::UnguessableToken& page_id,
-                              mahi::GetContentCallback callback) = 0;
+                              MahiGetContentCallback callback) = 0;
 
   // Sets/gets the current user selected text.
   virtual void SetSelectedText(const std::u16string& selected_text) = 0;

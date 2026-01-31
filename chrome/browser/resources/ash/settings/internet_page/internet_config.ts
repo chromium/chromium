@@ -176,8 +176,6 @@ export class InternetConfigElement extends InternetConfigElementBase {
   private onPropertiesSet_(): void {
     if (this.type === OncMojo.getNetworkTypeString(NetworkType.kWiFi)) {
       recordSettingChange(Setting.kWifiAddNetwork, {stringValue: this.guid});
-    } else {
-      // TODO(b/282233232) Record setting change for other network types.
     }
   }
 }

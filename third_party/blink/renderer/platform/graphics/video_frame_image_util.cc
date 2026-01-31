@@ -18,7 +18,7 @@
 #include "media/renderers/paint_canvas_video_renderer.h"
 #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_snapshot_provider.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_snapshot_provider_external_bitmap.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
@@ -37,11 +37,13 @@ namespace {
 
 bool ShouldCreateAcceleratedImages(
     viz::RasterContextProvider* raster_context_provider) {
-  if (!SharedGpuContext::IsGpuCompositingEnabled())
+  if (!raster_context_provider) {
     return false;
+  }
 
-  if (!raster_context_provider)
+  if (!SharedGpuContext::IsGpuCompositingEnabled()) {
     return false;
+  }
 
   if (raster_context_provider->GetGpuFeatureInfo().IsWorkaroundEnabled(
           DISABLE_IMAGEBITMAP_FROM_VIDEO_USING_GPU)) {
@@ -207,22 +209,35 @@ scoped_refptr<viz::RasterContextProvider> GetRasterContextProvider() {
       wrapper->ContextProvider().RasterContextProvider());
 }
 
-std::unique_ptr<CanvasSnapshotProvider> CreateSnapshotProviderForVideoFrame(
-    gfx::Size size,
-    viz::SharedImageFormat format,
-    SkAlphaType alpha_type,
-    const gfx::ColorSpace& color_space,
+CanvasSnapshotProvider::Info CreateSnapshotProviderInfoForVideoFrame(
+    const media::VideoFrame& frame,
+    std::optional<gfx::Size> scaled_size,
+    bool reinterpret_video_as_srgb) {
+  return {
+      .alpha_type = media::IsOpaque(frame.format()) ? kOpaque_SkAlphaType
+                                                    : kPremul_SkAlphaType,
+      .color_space = reinterpret_video_as_srgb ? gfx::ColorSpace::CreateSRGB()
+                                               : frame.CompatRGBColorSpace(),
+      // TODO(https://crbug.com/40230609): N32 may be incorrect when drawing
+      // high bit depth frames destined for a high bit depth canvas.
+      .format = GetN32FormatForCanvas(),
+      .size = scaled_size.value_or(frame.natural_size()),
+  };
+}
+
+std::unique_ptr<CanvasSnapshotProvider> CreateSnapshotProviderForVideo(
+    const CanvasSnapshotProvider::Info& info,
     viz::RasterContextProvider* raster_context_provider) {
   constexpr auto kShouldInitialize =
       CanvasResourceProvider::ShouldInitialize::kNo;
   if (!ShouldCreateAcceleratedImages(raster_context_provider)) {
-    return CanvasResourceProvider::CreateExternalBitmapProvider(
-        size, format, alpha_type, color_space);
+    return CanvasSnapshotProviderExternalBitmap::Create(info);
   }
-  return CanvasResourceProvider::CreateSharedImageProvider(
-      size, format, alpha_type, color_space, kShouldInitialize,
-      SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
-      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
+
+  return CanvasResourceProvider::CreateSharedImageProviderNon2D(
+      info.size, info.format, info.alpha_type, info.color_space,
+      kShouldInitialize, SharedGpuContext::ContextProviderWrapper(),
+      RasterMode::kGPU, gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
 }
 
 }  // namespace blink

@@ -4,6 +4,9 @@
 
 #include "crypto/unexportable_key_metrics.h"
 
+#include <algorithm>
+#include <cstdint>
+#include <functional>
 #include <memory>
 #include <optional>
 #include <set>
@@ -70,15 +73,35 @@ class MockTrackingUnexportableKeyProvider
       return FromWrappedSigningKeySlowly(key);
     });
   }
-  bool DeleteSigningKeySlowly(base::span<const uint8_t> wrapped_key) override {
+
+  std::optional<size_t> DeleteWrappedKeysSlowly(
+      base::span<const base::span<const uint8_t>> wrapped_keys) override {
     if (StatefulUnexportableKeyProvider* stateful_key_provider =
             key_provider_->AsStatefulUnexportableKeyProvider()) {
-      stateful_key_provider->DeleteSigningKeySlowly(wrapped_key);
+      stateful_key_provider->DeleteWrappedKeysSlowly(wrapped_keys);
     }
-    return keys_.erase(
-        std::vector<uint8_t>(wrapped_key.begin(), wrapped_key.end()));
+    return std::ranges::count_if(wrapped_keys, [&](auto key) {
+      return keys_.erase(base::ToVector(key)) != 0;
+    });
   }
+
+  std::optional<size_t> DeleteSigningKeysSlowly(
+      base::span<const StatefulUnexportableSigningKey* const> signing_keys)
+      override {
+    if (StatefulUnexportableKeyProvider* stateful_key_provider =
+            key_provider_->AsStatefulUnexportableKeyProvider()) {
+      stateful_key_provider->DeleteSigningKeysSlowly(signing_keys);
+    }
+    return std::ranges::count_if(signing_keys, [&](auto* key) {
+      return keys_.erase(key->GetWrappedKey()) != 0;
+    });
+  }
+
   std::optional<size_t> DeleteAllSigningKeysSlowly() override {
+    if (StatefulUnexportableKeyProvider* stateful_key_provider =
+            key_provider_->AsStatefulUnexportableKeyProvider()) {
+      stateful_key_provider->DeleteAllSigningKeysSlowly();
+    }
     return std::exchange(keys_, {}).size();
   }
 

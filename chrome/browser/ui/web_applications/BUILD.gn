@@ -39,7 +39,6 @@ source_set("web_applications") {
       "navigation_capturing_redirection_throttle.h",
       "navigation_handle_user_data_forwarder.h",
       "share_target_utils.h",
-      "sub_apps_install_dialog_controller.h",
       "sub_apps_service_impl.h",
       "tabbed_web_app_navigation_throttle.h",
       "web_app_browser_controller.h",
@@ -113,6 +112,7 @@ source_set("impl") {
     deps += [
       ":web_applications",
       "//base",
+      "//chrome/browser/notifications:system_notification_helper",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/color:mixers",
@@ -148,7 +148,6 @@ source_set("impl") {
       "navigation_capturing_process.cc",
       "navigation_capturing_redirection_throttle.cc",
       "share_target_utils.cc",
-      "sub_apps_install_dialog_controller.cc",
       "sub_apps_service_impl.cc",
       "tabbed_web_app_navigation_throttle.cc",
       "web_app_browser_controller.cc",
@@ -171,7 +170,6 @@ source_set("impl") {
       "//chrome/browser/app_mode",
       "//chrome/browser/apps:icon_standardizer",
       "//chrome/browser/apps/app_service",
-      "//chrome/browser/apps/app_service:constants",
       "//chrome/browser/apps/link_capturing",
       "//chrome/browser/engagement",
       "//chrome/browser/infobars",
@@ -189,6 +187,7 @@ source_set("impl") {
       "//components/keep_alive_registry",
       "//components/omnibox/browser:vector_icons",
       "//components/security_state/content",
+      "//components/services/app_service",
       "//ui/native_window_tracker",
     ]
     if (is_chromeos) {
@@ -201,6 +200,7 @@ source_set("impl") {
         "//chrome/browser/chromeos/app_mode",
         "//chrome/browser/ui/ash/shelf",
         "//chrome/browser/ui/ash/system_web_apps",
+        "//chrome/browser/ui/webui/ash/settings/app_management",
         "//chromeos/ash/components/nonclosable_app_ui",
         "//chromeos/ash/experiences/system_web_apps/types",
         "//chromeos/components/kiosk",
@@ -312,7 +312,6 @@ source_set("browser_tests") {
       "app_browser_controller_browsertest_chromeos.cc",
       "create_shortcut_browsertest.cc",
       "sub_apps_admin_policy_browsertest.cc",
-      "sub_apps_install_dialog_controller_browsertest.cc",
       "web_app_guest_session_browsertest_chromeos.cc",
     ]
 

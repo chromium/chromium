@@ -9,13 +9,13 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import android.view.View;
 
-import org.chromium.base.test.transit.CarryOn;
+import org.chromium.base.test.transit.State;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.components.webapps.R;
 
 /** The initial restore screen inside a bottom sheet. */
-public class PwaRestoreCarryOn extends CarryOn {
+public class PwaRestoreCarryOn extends State {
     static final String RESTORE_YOUR_WEB_APPS = "Restore your web apps";
     public final ViewElement<View> reviewButtonElement;
 
@@ -27,6 +27,6 @@ public class PwaRestoreCarryOn extends CarryOn {
 
     /** Click the Review button to expand the bottom sheet into the Review Apps screen. */
     public PwaReviewCarryOn clickReview() {
-        return reviewButtonElement.clickTo().dropCarryOnAnd().pickUpCarryOn(new PwaReviewCarryOn());
+        return reviewButtonElement.clickTo().exitStateAnd().enterState(new PwaReviewCarryOn());
     }
 }

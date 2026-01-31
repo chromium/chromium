@@ -106,8 +106,9 @@ void PingPongTest::OnPingDone(const std::string& reply) {
   DCHECK_GT(calls_outstanding_, 0);
   calls_outstanding_--;
 
-  if (!calls_outstanding_)
+  if (!calls_outstanding_) {
     DoPing();
+  }
 }
 
 class MojoE2EPerftest : public core::test::MojoTestBase {
@@ -144,8 +145,9 @@ class MojoE2EPerftest : public core::test::MojoTestBase {
     for (int batch_size : kBatchSizes) {
       for (int message_size : kMessageSizes) {
         int num_messages = kMessages;
-        if (message_size == 65536)
+        if (message_size == 65536) {
           num_messages /= 10;
+        }
         std::string sub_test_name = base::StringPrintf(
             "%s/%dx%d/%dbytes", test_name.c_str(), num_messages / batch_size,
             batch_size, message_size);

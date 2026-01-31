@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ref_counted_memory.h"
@@ -46,11 +45,11 @@ namespace {
 using ContextType = extensions::browser_test_util::ContextType;
 
 using GetPrintersRepeatingFuture =
-    base::test::RepeatingTestFuture<base::Value::List, bool>;
+    base::test::RepeatingTestFuture<base::ListValue, bool>;
 
-base::Value::List FetchPrintersFromFuture(
+base::ListValue FetchPrintersFromFuture(
     std::unique_ptr<GetPrintersRepeatingFuture> future) {
-  base::Value::List printers_out;
+  base::ListValue printers_out;
   while (true) {
     auto [printers, done] = future->Take();
     for (auto& printer : printers) {
@@ -70,7 +69,7 @@ std::pair<bool, std::string> ParsePrintResult(const base::Value& status) {
   return {success, status_str};
 }
 
-std::optional<std::string> SerializeDict(const base::Value::Dict& value) {
+std::optional<std::string> SerializeDict(const base::DictValue& value) {
   return base::WriteJson(value);
 }
 
@@ -211,7 +210,7 @@ class PrinterProviderApiTest : public ExtensionApiTest,
     if (extension_id.empty())
       return;
 
-    base::test::TestFuture<base::Value::Dict> capability_future;
+    base::test::TestFuture<base::DictValue> capability_future;
     StartCapabilityRequest(extension_id, capability_future.GetCallback());
 
     ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
@@ -241,11 +240,11 @@ class PrinterProviderApiTest : public ExtensionApiTest,
   // printer objects formatted as a JSON string. It is assumed that the values
   // in |expected_printers| are unique.
   void ValidatePrinterListValue(
-      const base::Value::List& printers,
-      const std::vector<base::Value::Dict>& expected_printers) {
+      const base::ListValue& printers,
+      const std::vector<base::DictValue>& expected_printers) {
     ASSERT_EQ(expected_printers.size(), printers.size());
     for (const auto& printer_value : expected_printers) {
-      EXPECT_TRUE(base::Contains(printers, printer_value))
+      EXPECT_TRUE(printers.contains(printer_value))
           << "Unable to find " << printer_value << " in " << printers;
     }
   }
@@ -343,7 +342,7 @@ IN_PROC_BROWSER_TEST_P(PrinterProviderApiTest, GetCapabilityExtensionUnloaded) {
                                          "IGNORE_CALLBACK", &extension_id);
   ASSERT_FALSE(extension_id.empty());
 
-  base::test::TestFuture<base::Value::Dict> capability_future;
+  base::test::TestFuture<base::DictValue> capability_future;
   StartCapabilityRequest(extension_id, capability_future.GetCallback());
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 
@@ -367,16 +366,16 @@ IN_PROC_BROWSER_TEST_P(PrinterProviderApiTest, GetPrintersSuccess) {
 
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 
-  std::vector<base::Value::Dict> expected_printers;
+  std::vector<base::DictValue> expected_printers;
   expected_printers.push_back(
-      base::Value::Dict()
+      base::DictValue()
           .Set("description", "Test printer")
           .Set("extensionId", extension_id)
           .Set("extensionName", "Test printer provider")
           .Set("id", base::StringPrintf("%s:printer1", extension_id.c_str()))
           .Set("name", "Printer 1"));
   expected_printers.push_back(
-      base::Value::Dict()
+      base::DictValue()
           .Set("extensionId", extension_id)
           .Set("extensionName", "Test printer provider")
           .Set("id",
@@ -402,9 +401,9 @@ IN_PROC_BROWSER_TEST_P(PrinterProviderApiTest, GetPrintersAsyncSuccess) {
 
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 
-  std::vector<base::Value::Dict> expected_printers;
+  std::vector<base::DictValue> expected_printers;
   expected_printers.push_back(
-      base::Value::Dict()
+      base::DictValue()
           .Set("description", "Test printer")
           .Set("extensionId", extension_id)
           .Set("extensionName", "Test printer provider")
@@ -436,30 +435,30 @@ IN_PROC_BROWSER_TEST_P(PrinterProviderApiTest, GetPrintersTwoExtensions) {
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 
-  std::vector<base::Value::Dict> expected_printers;
+  std::vector<base::DictValue> expected_printers;
   expected_printers.push_back(
-      base::Value::Dict()
+      base::DictValue()
           .Set("description", "Test printer")
           .Set("extensionId", extension_id_1)
           .Set("extensionName", "Test printer provider")
           .Set("id", base::StringPrintf("%s:printer1", extension_id_1.c_str()))
           .Set("name", "Printer 1"));
   expected_printers.push_back(
-      base::Value::Dict()
+      base::DictValue()
           .Set("extensionId", extension_id_1)
           .Set("extensionName", "Test printer provider")
           .Set("id",
                base::StringPrintf("%s:printerNoDesc", extension_id_1.c_str()))
           .Set("name", "Printer 2"));
   expected_printers.push_back(
-      base::Value::Dict()
+      base::DictValue()
           .Set("description", "Test printer")
           .Set("extensionId", extension_id_2)
           .Set("extensionName", "Test printer provider")
           .Set("id", base::StringPrintf("%s:printer1", extension_id_2.c_str()))
           .Set("name", "Printer 1"));
   expected_printers.push_back(
-      base::Value::Dict()
+      base::DictValue()
           .Set("extensionId", extension_id_2)
           .Set("extensionName", "Test printer provider")
           .Set("id",
@@ -522,16 +521,16 @@ IN_PROC_BROWSER_TEST_P(PrinterProviderApiTest,
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 
-  std::vector<base::Value::Dict> expected_printers;
+  std::vector<base::DictValue> expected_printers;
   expected_printers.push_back(
-      base::Value::Dict()
+      base::DictValue()
           .Set("description", "Test printer")
           .Set("extensionId", extension_id_2)
           .Set("extensionName", "Test printer provider")
           .Set("id", base::StringPrintf("%s:printer1", extension_id_2.c_str()))
           .Set("name", "Printer 1"));
   expected_printers.push_back(
-      base::Value::Dict()
+      base::DictValue()
           .Set("extensionId", extension_id_2)
           .Set("extensionName", "Test printer provider")
           .Set("id",
@@ -564,16 +563,16 @@ IN_PROC_BROWSER_TEST_P(PrinterProviderApiTest,
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 
-  std::vector<base::Value::Dict> expected_printers;
+  std::vector<base::DictValue> expected_printers;
   expected_printers.push_back(
-      base::Value::Dict()
+      base::DictValue()
           .Set("description", "Test printer")
           .Set("extensionId", extension_id_2)
           .Set("extensionName", "Test printer provider")
           .Set("id", base::StringPrintf("%s:printer1", extension_id_2.c_str()))
           .Set("name", "Printer 1"));
   expected_printers.push_back(
-      base::Value::Dict()
+      base::DictValue()
           .Set("extensionId", extension_id_2)
           .Set("extensionName", "Test printer provider")
           .Set("id",
@@ -696,7 +695,7 @@ class PrinterProviderUsbApiTest : public PrinterProviderApiTest {
                                            test_param, &extension_id);
     ASSERT_FALSE(extension_id.empty());
 
-    base::test::TestFuture<base::Value::Dict> future;
+    base::test::TestFuture<base::DictValue> future;
     StartGetUsbPrinterInfoRequest(extension_id, *device, future.GetCallback());
     ASSERT_TRUE(future.Get().empty());
 
@@ -722,8 +721,8 @@ IN_PROC_BROWSER_TEST_P(PrinterProviderUsbApiTest, GetUsbPrinterInfo) {
   ASSERT_FALSE(extension_id.empty());
 
   UsbDeviceManager* device_manager = UsbDeviceManager::Get(profile());
-  base::Value::Dict expected_printer_info =
-      base::Value::Dict()
+  base::DictValue expected_printer_info =
+      base::DictValue()
           .Set("description", "This printer is a USB device.")
           .Set("extensionId", extension_id)
           .Set("extensionName", "Test USB printer provider")
@@ -731,7 +730,7 @@ IN_PROC_BROWSER_TEST_P(PrinterProviderUsbApiTest, GetUsbPrinterInfo) {
                base::StringPrintf("%s:usbDevice-%u", extension_id.c_str(),
                                   device_manager->GetIdFromGuid(device->guid)))
           .Set("name", "Test Printer");
-  base::test::TestFuture<base::Value::Dict> future;
+  base::test::TestFuture<base::DictValue> future;
   StartGetUsbPrinterInfoRequest(extension_id, *device, future.GetCallback());
   ASSERT_EQ(future.Get(), expected_printer_info);
 

@@ -13,20 +13,20 @@ const char kMahiContextMenuActivated[] =
 const char kMahiContextMenuActivatedFailed[] =
     "ChromeOS.Mahi.ContextMenuView.ActivatedFailed";
 
-ActionType MatchButtonTypeToActionType(const ButtonType button_type) {
+MahiActionType MatchButtonTypeToActionType(const ButtonType button_type) {
   switch (button_type) {
     case ButtonType::kSummary:
-      return ActionType::kSummary;
+      return MahiActionType::kSummary;
     case ButtonType::kOutline:
-      return ActionType::kOutline;
+      return MahiActionType::kOutline;
     case ButtonType::kSettings:
-      return ActionType::kSettings;
+      return MahiActionType::kSettings;
     case ButtonType::kQA:
-      return ActionType::kQA;
+      return MahiActionType::kQA;
     case ButtonType::kElucidation:
-      return ActionType::kElucidation;
+      return MahiActionType::kElucidation;
     case ButtonType::kSummaryOfSelection:
-      return ActionType::kSummaryOfSelection;
+      return MahiActionType::kSummaryOfSelection;
   }
 }
 

@@ -17,9 +17,11 @@ import android.text.style.TypefaceSpan;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 
 import androidx.annotation.IdRes;
+import androidx.annotation.StyleRes;
 import androidx.core.view.AccessibilityDelegateCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
@@ -32,8 +34,11 @@ import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.components.dom_distiller.core.DistilledPagePrefs;
+import org.chromium.components.dom_distiller.core.DomDistillerFeatures;
 import org.chromium.dom_distiller.mojom.FontFamily;
 import org.chromium.dom_distiller.mojom.Theme;
+import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.text.DownloadableFontTextAppearanceSpan;
 
 import java.text.NumberFormat;
 import java.util.HashMap;
@@ -53,13 +58,22 @@ public class ReaderModePrefsView extends LinearLayout
 
     // Constants for font scaling slider.
     private static final float FONT_SCALE_LOWER_BOUND = 1.0f;
-    private static final float FONT_SCALE_UPPER_BOUND = 2.5f;
-    private static final float FONT_SCALE_STEP_SIZE = 0.25f;
+    // Steps size determined by scaling the base text size (16px) by 2px per step.
+    private static final float FONT_SCALE_STEP_SIZE = 0.125f;
+    // Number of zoom steps in the slider.
+    private static final int FONT_SCALE_STEPS_PHONE = 6;
+    // Tablet allows for a higher text size because of the larger screen size.
+    private static final int FONT_SCALE_STEPS_TABLET = 8;
+    private static final float FONT_SCALE_UPPER_BOUND_PHONE =
+            FONT_SCALE_LOWER_BOUND + FONT_SCALE_STEPS_PHONE * FONT_SCALE_STEP_SIZE;
+    private static final float FONT_SCALE_UPPER_BOUND_TABLET =
+            FONT_SCALE_LOWER_BOUND + FONT_SCALE_STEPS_TABLET * FONT_SCALE_STEP_SIZE;
 
     // Constants for setting the font style button typefaces.
     private static final String SANS_SERIF_TYPEFACE_NAME = "sans-serif";
     private static final String SERIF_TYPEFACE_NAME = "serif";
     private static final String MONOSPACE_TYPEFACE_NAME = "monospace";
+    private static final String LEXEND_TYPEFACE_NAME = "lexend";
 
     // Buttons for theme.
     private final Map<Integer/* Theme= */ , MaterialButton> mThemeButtons;
@@ -72,7 +86,9 @@ public class ReaderModePrefsView extends LinearLayout
 
     private final NumberFormat mPercentageFormatter;
 
+    private @FontFamily.EnumType int mCurrentFontFamily;
     private Slider mFontScalingSlider;
+    private HorizontalScrollView mHorizontalScrollView;
 
     private DistilledPagePrefs mDistilledPagePrefs;
 
@@ -119,13 +135,27 @@ public class ReaderModePrefsView extends LinearLayout
         initializeFontButton(R.id.font_serif, FontFamily.SERIF, 1);
         initializeFontButton(R.id.font_monospace, FontFamily.MONOSPACE, 2);
 
+        if (DomDistillerFeatures.shouldShowNewAccessibleFontOptions()) {
+            initializeFontButton(R.id.font_lexend, FontFamily.LEXEND, 3);
+        } else {
+            findViewById(R.id.font_lexend).setVisibility(View.GONE);
+
+            // Remove marginEnd from the monospace button that lies before the Lexend button.
+            View monospaceButton = findViewById(R.id.font_monospace);
+            MarginLayoutParams params = (MarginLayoutParams) monospaceButton.getLayoutParams();
+            params.setMarginEnd(0);
+            monospaceButton.setLayoutParams(params);
+        }
+
         View fontFamilyButtonContainer = findViewById(R.id.font_family_button_container);
         setCollectionInfoAccessibilityDelegate(
                 fontFamilyButtonContainer, mFontFamilyButtons.size());
 
+        mHorizontalScrollView = findViewById(R.id.font_family_container);
+
         mFontScalingSlider = findViewById(R.id.font_size_slider);
         mFontScalingSlider.setValueFrom(FONT_SCALE_LOWER_BOUND);
-        mFontScalingSlider.setValueTo(FONT_SCALE_UPPER_BOUND);
+        mFontScalingSlider.setValueTo(getFontScaleUpperBound());
         mFontScalingSlider.setStepSize(FONT_SCALE_STEP_SIZE);
         mFontScalingSlider.setTickActiveRadius(0);
         mFontScalingSlider.setTickInactiveRadius(0);
@@ -155,7 +185,7 @@ public class ReaderModePrefsView extends LinearLayout
      * @return A SpannableString with the specified styling.
      */
     private SpannableStringBuilder createStyledButtonText(
-            String line1, String line2, String typeface) {
+            String line1, String line2, String typefaceName, @StyleRes int styleId) {
         SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder();
         SpannableString fontStyleSignifierString = new SpannableString(line1);
         SpannableString fontStyleNameString = new SpannableString(line2);
@@ -173,10 +203,31 @@ public class ReaderModePrefsView extends LinearLayout
                 line2.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         // Maintain TypefaceSpan initialization after TextAppearance or it will be overridden.
-        fontStyleSignifierString.setSpan(
-                new TypefaceSpan(typeface), 0, line1.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        fontStyleNameString.setSpan(
-                new TypefaceSpan(typeface), 0, line2.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        // If styleId doesn't equal 0, we are requesting a downloadable font (eg. Lexend),
+        // so we want to utilize DownloadableFontTextAppearanceSpan.
+        if (styleId != 0) {
+            fontStyleSignifierString.setSpan(
+                    new DownloadableFontTextAppearanceSpan(getContext(), styleId),
+                    0,
+                    line1.length(),
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            fontStyleNameString.setSpan(
+                    new DownloadableFontTextAppearanceSpan(getContext(), styleId),
+                    0,
+                    line2.length(),
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        } else {
+            fontStyleSignifierString.setSpan(
+                    new TypefaceSpan(typefaceName),
+                    0,
+                    line1.length(),
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            fontStyleNameString.setSpan(
+                    new TypefaceSpan(typefaceName),
+                    0,
+                    line2.length(),
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
 
         // Get font metrics for first line using mock TextPaint to set suitable line height.
         TextPaint mockTextPaint = new TextPaint();
@@ -213,12 +264,20 @@ public class ReaderModePrefsView extends LinearLayout
         return spannableStringBuilder;
     }
 
+    @Override
+    protected void onLayout(boolean changed, int l, int t, int r, int b) {
+        super.onLayout(changed, l, t, r, b);
+        // Ensure that the selected font button is not hidden in the scroll view.
+        centerSelectedFontButton();
+    }
+
     @Initializer
     private void initDistilledPagePrefs(DistilledPagePrefs distilledPagePrefs) {
         assert distilledPagePrefs != null;
         mDistilledPagePrefs = distilledPagePrefs;
 
-        onChangeFontFamily(mDistilledPagePrefs.getFontFamily());
+        mCurrentFontFamily = mDistilledPagePrefs.getFontFamily();
+        onChangeFontFamily(mCurrentFontFamily);
         onChangeFontScaling(mDistilledPagePrefs.getFontScaling());
         onChangeTheme(mDistilledPagePrefs.getTheme());
     }
@@ -258,6 +317,7 @@ public class ReaderModePrefsView extends LinearLayout
     @Override
     public void onChangeFontFamily(@FontFamily.EnumType int fontFamily) {
         FontFamily.validate(fontFamily);
+        mCurrentFontFamily = fontFamily;
         for (Map.Entry<Integer, MaterialButton> entry : mFontFamilyButtons.entrySet()) {
             boolean isSelected = entry.getKey() == fontFamily;
             entry.getValue().setChecked(isSelected);
@@ -281,15 +341,12 @@ public class ReaderModePrefsView extends LinearLayout
 
     @Override
     public void onChangeFontScaling(float scaling) {
-        // Due to changing font scale step size from 0.05 to 0.25, slider will crash if provided a
-        // non-multiple of step size.
-        // If user has previous preference saved at a non-step size interval, need to adjust to
-        // closest increment.
+        // Align the scaling value to a known step value before proceeding.
         scaling =
                 MathUtils.clamp(
                         (Math.round(scaling / FONT_SCALE_STEP_SIZE) * FONT_SCALE_STEP_SIZE),
                         FONT_SCALE_LOWER_BOUND,
-                        FONT_SCALE_UPPER_BOUND);
+                        getFontScaleUpperBound());
 
         mFontScalingSlider.setValue(scaling);
 
@@ -306,12 +363,26 @@ public class ReaderModePrefsView extends LinearLayout
         }
     }
 
+    private void centerSelectedFontButton() {
+        assert mHorizontalScrollView != null;
+        MaterialButton selectedFontButton = mFontFamilyButtons.get(mCurrentFontFamily);
+        assert selectedFontButton != null;
+
+        int scrollX =
+                (selectedFontButton.getLeft() + selectedFontButton.getRight()) / 2
+                        + mHorizontalScrollView.getPaddingLeft()
+                        - mHorizontalScrollView.getWidth() / 2;
+
+        mHorizontalScrollView.smoothScrollTo(scrollX, 0);
+    }
+
     private void initializeFontButton(@IdRes int id, final int fontFamily, final int index) {
         FontFamily.validate(fontFamily);
         MaterialButton button = findViewById(id);
         String line1 = getContext().getString(R.string.font_style_signifier);
         String line2 = "";
         String typeface = "";
+        @StyleRes int styleId = 0;
         switch (fontFamily) {
             case FontFamily.SANS_SERIF:
                 line2 = getContext().getString(R.string.sans_serif_lowercase);
@@ -325,10 +396,15 @@ public class ReaderModePrefsView extends LinearLayout
                 line2 = getContext().getString(R.string.monospace_shortened);
                 typeface = MONOSPACE_TYPEFACE_NAME;
                 break;
+            case FontFamily.LEXEND:
+                line2 = getContext().getString(R.string.lexend);
+                typeface = LEXEND_TYPEFACE_NAME;
+                styleId = R.style.TextAppearance_ReaderMode_Lexend;
+                break;
             default:
                 assert false : "Invalid font family provided: " + fontFamily;
         }
-        button.setText(createStyledButtonText(line1, line2, typeface));
+        button.setText(createStyledButtonText(line1, line2, typeface, styleId));
         button.setMaxLines(2);
         button.setOnClickListener(this);
         button.setTag(fontFamily);
@@ -342,7 +418,7 @@ public class ReaderModePrefsView extends LinearLayout
         int fontFamily = (int) view.getTag();
         FontFamily.validate(fontFamily);
         // Do not update distilled page prefs if clicking already selected font family.
-        if (mDistilledPagePrefs.getFontFamily() == fontFamily) {
+        if (mCurrentFontFamily == fontFamily) {
             ((MaterialButton) view).setChecked(true);
             return;
         }
@@ -388,5 +464,10 @@ public class ReaderModePrefsView extends LinearLayout
                                         /* selected= */ ((MaterialButton) host).isChecked()));
                     }
                 });
+    }
+
+    private float getFontScaleUpperBound() {
+        boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext());
+        return isTablet ? FONT_SCALE_UPPER_BOUND_TABLET : FONT_SCALE_UPPER_BOUND_PHONE;
     }
 }

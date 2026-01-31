@@ -21,7 +21,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -523,7 +522,8 @@ void IEImporter::ImportHistory() {
 
       GURL url(base::AsStringPiece16(url_string));
       // Skips the URLs that are invalid or have other schemes.
-      if (!url.is_valid() || !base::Contains(kSchemes, url.GetScheme())) {
+      if (!url.is_valid() ||
+          !std::ranges::contains(kSchemes, url.GetScheme())) {
         continue;
       }
 

@@ -111,14 +111,14 @@ class LockedSessionWindowTracker : public KeyedService,
 
  private:
   // TabStripModelObserver Impl
-  void TabChangedAt(content::WebContents* contents,
-                    int index,
-                    TabChangeType change_type) override;
+  void OnTabChangedAt(tabs::TabInterface* tab,
+                      int index,
+                      TabChangeType change_type) override;
   void OnTabStripModelChanged(
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
-  void OnTabWillBeRemoved(content::WebContents* contents, int index) override;
+  void OnTabWillBeRemoved(tabs::TabInterface* tab, int index) override;
   void WillCloseAllTabs(TabStripModel* tab_strip_model) override;
 
   // ash::BrowserController::Observer:

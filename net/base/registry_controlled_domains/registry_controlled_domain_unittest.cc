@@ -9,6 +9,12 @@
 #include "base/containers/span.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "net/base/registry_controlled_domains/effective_tld_names_unittest1-reversed-inc.cc"
+#include "net/base/registry_controlled_domains/effective_tld_names_unittest2-reversed-inc.cc"
+#include "net/base/registry_controlled_domains/effective_tld_names_unittest3-reversed-inc.cc"
+#include "net/base/registry_controlled_domains/effective_tld_names_unittest4-reversed-inc.cc"
+#include "net/base/registry_controlled_domains/effective_tld_names_unittest5-reversed-inc.cc"
+#include "net/base/registry_controlled_domains/effective_tld_names_unittest6-reversed-inc.cc"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/buildflags.h"
 #include "url/gurl.h"
@@ -16,24 +22,6 @@
 
 namespace {
 
-namespace test1 {
-#include "net/base/registry_controlled_domains/effective_tld_names_unittest1-reversed-inc.cc"
-}
-namespace test2 {
-#include "net/base/registry_controlled_domains/effective_tld_names_unittest2-reversed-inc.cc"
-}
-namespace test3 {
-#include "net/base/registry_controlled_domains/effective_tld_names_unittest3-reversed-inc.cc"
-}
-namespace test4 {
-#include "net/base/registry_controlled_domains/effective_tld_names_unittest4-reversed-inc.cc"
-}
-namespace test5 {
-#include "net/base/registry_controlled_domains/effective_tld_names_unittest5-reversed-inc.cc"
-}
-namespace test6 {
-#include "net/base/registry_controlled_domains/effective_tld_names_unittest6-reversed-inc.cc"
-}
 
 }  // namespace
 

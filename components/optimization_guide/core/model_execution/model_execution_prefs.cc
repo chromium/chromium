@@ -13,7 +13,7 @@
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/optimization_guide/core/model_execution/on_device_features.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
-#include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "services/preferences/public/cpp/dictionary_value_update.h"
@@ -22,26 +22,6 @@
 namespace optimization_guide::model_execution::prefs {
 
 namespace {
-
-struct LegacyUsagePref {
-  const char* path;
-  mojom::OnDeviceFeature feature;
-};
-
-constexpr LegacyUsagePref kLegacyUsagePrefs[] = {
-    {"optimization_guide.last_time_on_device_eligible_feature_used",
-     mojom::OnDeviceFeature::kCompose},
-    {"optimization_guide.model_execution.last_time_prompt_api_used",
-     mojom::OnDeviceFeature::kPromptApi},
-    {"optimization_guide.model_execution.last_time_summarize_api_used",
-     mojom::OnDeviceFeature::kSummarize},
-    {"optimization_guide.model_execution.last_time_test_used",
-     mojom::OnDeviceFeature::kTest},
-    {"optimization_guide.model_execution.last_time_history_search_used",
-     mojom::OnDeviceFeature::kHistorySearch},
-    {"optimization_guide.model_execution.last_time_history_query_intent_used",
-     mojom::OnDeviceFeature::kHistoryQueryIntent},
-};
 
 std::string PrefKey(mojom::OnDeviceFeature feature) {
   return base::NumberToString(
@@ -116,6 +96,10 @@ const char kModelQualityLoggingClientId[] =
 const char kGenAILocalFoundationalModelEnterprisePolicySettings[] =
     "optimization_guide.gen_ai_local_foundational_model_settings";
 
+// A boolean pref for the on-device GenAI foundational model user settings.
+const char kOnDeviceAiUserSettingsEnabled[] =
+    "optimization_guide.on_device_foundational_model_user_settings";
+
 }  // namespace localstate
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
@@ -133,23 +117,8 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
                               PrefRegistry::LOSSY_PREF);
   registry->RegisterIntegerPref(
       localstate::kGenAILocalFoundationalModelEnterprisePolicySettings, 0);
-}
-
-void RegisterLegacyUsagePrefsForMigration(PrefRegistrySimple* registry) {
-  for (auto& pref : kLegacyUsagePrefs) {
-    registry->RegisterTimePref(pref.path, base::Time::Min());
-  }
-}
-
-void MigrateLegacyUsagePrefs(PrefService* local_state) {
-  for (auto& pref : kLegacyUsagePrefs) {
-    if (local_state->HasPrefPath(pref.path)) {
-      DCHECK(!local_state->GetDict(localstate::kLastUsageByFeature)
-                  .Find(PrefKey(pref.feature)));
-      SetLastUsage(local_state, pref.feature, local_state->GetTime(pref.path));
-      local_state->ClearPref(pref.path);
-    }
-  }
+  registry->RegisterBooleanPref(localstate::kOnDeviceAiUserSettingsEnabled,
+                                true);
 }
 
 void PruneOldUsagePrefs(PrefService* local_state) {

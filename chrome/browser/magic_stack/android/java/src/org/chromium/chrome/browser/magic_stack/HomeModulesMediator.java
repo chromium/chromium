@@ -11,12 +11,13 @@ import android.os.SystemClock;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.segmentation_platform.client_util.HomeModulesRankingHelper;
+import org.chromium.components.segmentation_platform.InputContext;
 import org.chromium.components.segmentation_platform.PredictionOptions;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -41,7 +42,7 @@ public class HomeModulesMediator {
     // Freshness score was logged older than 24h are considered stale, and rejected.
     static final long FRESHNESS_THRESHOLD_MS = TimeUnit.HOURS.toMillis(24);
 
-    private final ObservableSupplier<Profile> mProfileSupplier;
+    private final MonotonicObservableSupplier<Profile> mProfileSupplier;
     private final ModelList mModel;
     private final ModuleRegistry mModuleRegistry;
     private final ModuleDelegateHost mModuleDelegateHost;
@@ -85,7 +86,7 @@ public class HomeModulesMediator {
      * @param model The instance of {@link ModelList} of the RecyclerView.
      */
     public HomeModulesMediator(
-            ObservableSupplier<Profile> profileSupplier,
+            MonotonicObservableSupplier<Profile> profileSupplier,
             ModelList model,
             ModuleRegistry moduleRegistry,
             ModuleDelegateHost moduleDelegateHost,
@@ -102,9 +103,16 @@ public class HomeModulesMediator {
         long segmentationServiceCallTimeMs = SystemClock.elapsedRealtime();
         Profile profile = mProfileSupplier.get();
         assert profile != null;
+
+        // 1. Get the sorted list of manually ranked modules
+        List<Integer> manuallyRankedModules = getSortedManuallyRankedModules();
+
+        // 2. Create InputContext for segmentation, excluding manually ranked ones
+        InputContext inputContext = createInputContextForSegmentation();
+
         HomeModulesRankingHelper.fetchModulesRank(
                 profile,
-                mModuleRegistry.createInputContext(),
+                inputContext,
                 (orderedLabels) -> {
                     // It is possible that the result is received after the magic stack has been
                     // hidden, exit now.
@@ -112,12 +120,53 @@ public class HomeModulesMediator {
                         return;
                     }
                     long durationMs = SystemClock.elapsedRealtime() - segmentationServiceCallTimeMs;
+                    List<Integer> modulesToShow =
+                            getCombinedRankedModules(orderedLabels, manuallyRankedModules);
                     buildModulesAndShow(
-                            filterEnabledModuleList(orderedLabels, getFilteredEnabledModuleSet()),
+                            modulesToShow,
                             moduleDelegate,
                             onHomeModulesChangedCallback,
                             durationMs);
                 });
+    }
+
+    /**
+     * Returns a sorted list of module types that have manual ranking.
+     *
+     * @return A list of {@link ModuleType}s, sorted by their manual rank.
+     */
+    @VisibleForTesting
+    List<Integer> getSortedManuallyRankedModules() {
+        if (mModuleDelegateHost.getTrackingTab() != null) {
+            return new ArrayList<>(); // No manual ranking when a tab is tracked
+        }
+        Map<Integer, Integer> rankMap = new HashMap<>();
+        for (@ModuleType int moduleType : mModuleRegistry.getAllRegisteredModuleTypes()) {
+            ModuleProviderBuilder builder = mModuleRegistry.getModuleProviderBuilder(moduleType);
+            Integer manualOrder = builder.getManualRank();
+            if (manualOrder != null) {
+                rankMap.put(moduleType, manualOrder);
+            }
+        }
+
+        return HomeModulesUtils.sortModulesByRank(rankMap);
+    }
+
+    /**
+     * Creates an InputContext for the segmentation platform, excluding manually ranked modules.
+     *
+     * @return An {@link InputContext} containing signals from non-manually ranked modules.
+     */
+    @VisibleForTesting
+    InputContext createInputContextForSegmentation() {
+        InputContext inputContext = new InputContext();
+        for (@ModuleType int moduleType : mModuleRegistry.getAllRegisteredModuleTypes()) {
+            ModuleProviderBuilder builder = mModuleRegistry.getModuleProviderBuilder(moduleType);
+            if (builder.getManualRank() == null) {
+                inputContext.mergeFrom(builder.createInputContext());
+            }
+        }
+        return inputContext;
     }
 
     /** Called to notify that a module view is created. */
@@ -612,6 +661,24 @@ public class HomeModulesMediator {
                 }
             }
         }
+    }
+
+    /**
+     * Combines manually ranked modules with segmentation platform ranked modules.
+     *
+     * @param orderedLabels A list of module labels ordered by the segmentation platform.
+     * @param manuallyRankedModules A list of {@link ModuleType}s that have manual ordering.
+     * @return A single list with manually ranked modules first, followed by enabled modules from
+     *     orderedLabels.
+     */
+    @VisibleForTesting
+    List<Integer> getCombinedRankedModules(
+            List<String> orderedLabels, List<Integer> manuallyRankedModules) {
+        List<Integer> combinedList = new ArrayList<>(manuallyRankedModules);
+        List<Integer> filteredEnabledModules =
+                filterEnabledModuleList(orderedLabels, getFilteredEnabledModuleSet());
+        combinedList.addAll(filteredEnabledModules);
+        return combinedList;
     }
 
     /**

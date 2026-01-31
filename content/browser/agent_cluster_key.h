@@ -8,8 +8,8 @@
 #include <optional>
 #include <variant>
 
-#include "content/browser/security/coop/cross_origin_isolation_mode.h"
 #include "content/common/content_export.h"
+#include "third_party/blink/public/mojom/frame/agent_cluster_key.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -29,17 +29,29 @@ namespace content {
 // The AgentClusterKey is computed upon navigation, or when launching a worker.
 // It is then passed to RenderFrameHostManager to determine which SiteInstance
 // is appropriate to host the execution context.
-// TODO(crbug.com/342365078): Currently, AgentClusterKey is only computed when a
-// document has a Document-Isolation-Policy. Compute it on all navigations. Once
-// this is properly done, use the AgentClusterKey to replace the site URL in
-// SiteInfo, as it will only duplicate the information in AgentClusterKey.
+//
+// The AgentClusterKey is passed to the renderer process as a
+// blink::mojom::AgentClusterKey in the CommitNavigationParams. It is then
+// converted to a blink::WebAgentClusterKey and passed to blink, where it is
+// converted again to a blink::AgentClusterKey. The blink versions of the
+// AgentClusterKey are mostly similar to this one, except that they do not track
+// the OAC status of the creator of the AgentClusterKey, since OAC tracking is
+// done entirely in the browser process.
+//
+// LINT.IfChange(AgentClusterKey)
+// IMPORTANT: when adding new members to this class, check if they should also
+// be sent to the renderer process and update the blink versions of the
+// AgentClusterKey:
+//   - third_party/blink/public/mojom/frame/agent_cluster_key.mojom
+//   - third_party/blink/public/web/web_agent_cluster_key.h
+//   - third_party/blink/renderer/core/execution_context/agent_cluster_key.h
 class CONTENT_EXPORT AgentClusterKey {
  public:
   // Cross-origin isolated agent clusters have an additional isolation key.
   struct CONTENT_EXPORT CrossOriginIsolationKey {
     CrossOriginIsolationKey(
         const url::Origin& common_coi_origin,
-        CrossOriginIsolationMode cross_origin_isolation_mode);
+        blink::mojom::CrossOriginIsolationMode cross_origin_isolation_mode);
     CrossOriginIsolationKey(const CrossOriginIsolationKey& other);
     ~CrossOriginIsolationKey();
     bool operator==(const CrossOriginIsolationKey& b) const;
@@ -56,7 +68,7 @@ class CONTENT_EXPORT AgentClusterKey {
     // isolation. In this case, the web-visible isolation restrictions apply,
     // but do not lead to access to extra APIs. This is logical cross-origin
     // isolation.
-    CrossOriginIsolationMode cross_origin_isolation_mode;
+    blink::mojom::CrossOriginIsolationMode cross_origin_isolation_mode;
   };
 
   // Tracks the state of an Origin-Agent-Cluster request for a document.
@@ -169,6 +181,31 @@ class CONTENT_EXPORT AgentClusterKey {
   // Needed for tie comparisons in SiteInfo.
   bool operator<(const AgentClusterKey& b) const;
 
+  // Creates a mojo version of AgentClusterKey to send to the renderer process
+  // in CommitNavigationParams. Ideally, we would base this AgentClusterKey on
+  // the SiteInstance's AgentClusterKey. However, due to the constraints of
+  // process allocation, there are quite a few edge cases where the
+  // SiteInstance's AgentClusterKey differs from what the HTML spec would have
+  // us assign to the navigation. This is why we end up creating a brand new
+  // mojo version of the AgentClusterKey to ensure that we match the HTML spec.
+  //
+  // The returned key's site URL or Origin will be based on |origin_to_commit|.
+  //
+  // If |coi_key| has value, a cross-origin isolated origin-keyed
+  // blink::mojom::AgentClusterKey will be returned.
+  //
+  // If |is_origin_keyed| is true, an origin-keyed blink::mojom::AgentClusterKey
+  // will be returned. Note that even if |is_origin_keyed| is false, an origin
+  // keyed key will still be returned if a |coi_key| was provided.
+  //
+  // In all other cases, a site-keyed blink::mojom::AgentClusterKey will be
+  // returned.
+  static blink::mojom::AgentClusterKeyPtr
+  CreateAgentClusterKeyForNavigationCommit(
+      const url::Origin& origin_to_commit,
+      bool is_origin_keyed,
+      const std::optional<CrossOriginIsolationKey>& coi_key);
+
  private:
   AgentClusterKey(const std::variant<GURL, url::Origin>& key,
                   const std::optional<AgentClusterKey::CrossOriginIsolationKey>&
@@ -216,6 +253,9 @@ class CONTENT_EXPORT AgentClusterKey {
   AgentClusterKey::OACStatus oac_status_ =
       AgentClusterKey::OACStatus::kSiteKeyedByDefault;
 };
+// LINT.ThenChange(third_party/blink/public/mojom/frame/agent_cluster_key.mojom,
+// third_party/blink/public/web/web_agent_cluster_key.h,
+// third_party/blink/renderer/core/execution_context/agent_cluster_key.h)
 
 CONTENT_EXPORT std::ostream& operator<<(
     std::ostream& out,

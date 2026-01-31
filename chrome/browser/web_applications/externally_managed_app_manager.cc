@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/check_is_test.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/stl_util.h"
@@ -183,7 +182,7 @@ void ExternallyManagedAppManager::SynchronizeInstalledApps(
       }));
   // Only one concurrent SynchronizeInstalledApps() expected per
   // ExternalInstallSource.
-  CHECK(!base::Contains(synchronize_requests_, install_source));
+  CHECK(!synchronize_requests_.contains(install_source));
   provider_->scheduler().ScheduleCallback<AllAppsLock>(
       "ExternallyManagedAppManager::SynchronizeInstalledApps",
       AllAppsLockDescription(),
@@ -278,7 +277,7 @@ void ExternallyManagedAppManager::MaybeStartNext() {
 
 void ExternallyManagedAppManager::MaybeStartNextOnLockAcquired(
     AllAppsLock& lock,
-    base::Value::Dict& debug_value) {
+    base::DictValue& debug_value) {
   if (current_install_metadata_ || IsShuttingDown()) {
     return;
   }
@@ -545,7 +544,7 @@ void ExternallyManagedAppManager::SynchronizeInstalledAppsOnLockAcquired(
     ExternalInstallSource install_source,
     SynchronizeCallback callback,
     AllAppsLock& lock,
-    base::Value::Dict& debug_info) {
+    base::DictValue& debug_info) {
   CHECK(callback);
   debug_info.Set("install_source", base::ToString(install_source));
 
@@ -765,7 +764,7 @@ void ExternallyManagedAppManager::ClearSynchronizeRequestsForTesting() {
 std::ostream& operator<<(
     std::ostream& out,
     const ExternallyManagedAppManagerInstallResult& install_result) {
-  base::Value::Dict output;
+  base::DictValue output;
   output.Set("code", base::ToString(install_result.code));
   output.Set("app_id", base::ToString(install_result.app_id));
   output.Set("did_uninstall_and_replace",

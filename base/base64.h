@@ -27,6 +27,13 @@ BASE_EXPORT void Base64EncodeAppend(span<const uint8_t> input,
 // Encodes the input string in base64.
 BASE_EXPORT std::string Base64Encode(std::string_view input);
 
+// Same as Base64Encode(), but does not access any base::Feature. This is only
+// necessary for code that runs at early startup before base::FeatureList
+// registration. As such, there is only a span version.
+// TODO(crbug.com/468035603): Remove this once Base64Encode() stops accessing
+// base::Feature.
+BASE_EXPORT std::string Base64EncodeEarlyStartup(span<const uint8_t> input);
+
 // Decodes the base64 input string.  Returns true if successful and false
 // otherwise. The output string is only modified if successful. The decoding can
 // be done in-place.

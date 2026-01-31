@@ -132,6 +132,7 @@ class PdfAccessibilityTree : public ui::AXTreeSource<const ui::AXNode*,
   bool ShowContextMenu();
 
   ui::AXTree& tree_for_testing() { return tree_; }
+  ui::AXTreeData& tree_data_for_testing() { return tree_data_; }
 
   // Sets the ID of a child tree which this node will be hosting. In this way,
   // multiple trees could be stitched together. Clears any existing descendants
@@ -141,6 +142,11 @@ class PdfAccessibilityTree : public ui::AXTreeSource<const ui::AXNode*,
                     const ui::AXTreeID& child_tree_id);
 
   void ForcePluginAXObjectForTesting(const blink::WebAXObject& obj);
+  void FindNodeOffsetForTesting(bool end_of_selection,
+                                uint32_t page_index,
+                                uint32_t page_char_index,
+                                int32_t* out_node_id,
+                                int32_t* out_node_char_index) const;
 
  private:
   // Update the AXTreeData when the selected range changed.
@@ -160,10 +166,17 @@ class PdfAccessibilityTree : public ui::AXTreeSource<const ui::AXNode*,
   // find the node ID of the associated static text AXNode, and the character
   // index within that text node. Used to find the start and end of the
   // selected text range.
-  void FindNodeOffset(uint32_t page_index,
+  void FindNodeOffset(bool end_of_selection,
+                      uint32_t page_index,
                       uint32_t page_char_index,
                       int32_t* out_node_id,
                       int32_t* out_node_char_index) const;
+
+  bool RecursiveFindNodeOffset(bool end_of_selection,
+                               ui::AXNode* node,
+                               uint32_t page_char_index,
+                               int32_t* out_node_id,
+                               int32_t* out_node_char_index) const;
 
   // Called after the data for some pages in the PDF have been received and
   // sends the data on the added pages to the host tree.
@@ -250,9 +263,11 @@ class PdfAccessibilityTree : public ui::AXTreeSource<const ui::AXNode*,
   std::vector<std::unique_ptr<ui::AXNodeData>> nodes_;
 
   // Map from the id of each static text AXNode and inline text box
-  // AXNode to the page index and index of the character within its
+  // AXNode to the page index and index of the first character within its
   // page. Used to find the node associated with the start or end of
-  // a selection and vice-versa.
+  // a selection and vice-versa. The map is ordered in reverse order of the
+  // AXNodes creation, which is the same as the reverse order of the tree,
+  // and the same order as the list of characters for the PDF page.
   std::map<int32_t, chrome_pdf::PageCharacterIndex> node_id_to_page_char_index_;
 
   // Map between AXNode id to annotation object. Used to find the annotation

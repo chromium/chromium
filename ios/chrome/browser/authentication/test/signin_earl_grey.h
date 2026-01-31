@@ -15,14 +15,9 @@
 
 @class ExpectedSigninHistograms;
 
+@class FakeSystemIdentity;
 class GaiaId;
 @protocol GREYMatcher;
-@class FakeSystemIdentity;
-
-namespace signin_metrics {
-enum class AccessPoint : int;
-}  // namespace signin_metrics
-
 class GURL;
 
 #define SigninEarlGrey \

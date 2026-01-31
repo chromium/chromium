@@ -247,7 +247,7 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.IfChange(KeyboardShortcutsSemanticMeaning) -->
 
-<histogram name="Accessibility.Android.KeyboardShortcut.{ScreenReaderState}3"
+<histogram name="Accessibility.Android.KeyboardShortcut.{ScreenReaderState}4"
     enum="KeyboardShortcutsSemanticMeaning" expires_after="2026-06-01">
   <owner>mschillaci@google.com</owner>
   <owner>katie@chromium.org</owner>
@@ -714,6 +714,27 @@ chromium-metrics-reviews@google.com.
         summary="with the native accessibility code initialized"/>
   </token>
 </histogram>
+
+<!-- LINT.IfChange(AssistiveTechPackage) -->
+
+<histogram name="Accessibility.Android.{AssistiveTechPackage}"
+    enum="BooleanEnabled" expires_after="2026-11-01">
+  <owner>davidsegovia@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Logged if {AssistiveTechPackage} is enabled. Recorded during browser startup
+    or toggled on during user session.
+  </summary>
+  <token key="AssistiveTechPackage">
+    <variant name="AccessibilitySuite" summary="Android Accessibility Suite"/>
+    <variant name="ActionBlocks" summary="Action Blocks Accessibility"/>
+    <variant name="BrailleBack" summary="BrailleBack"/>
+    <variant name="SoundAmplifier" summary="Sound Amplifier"/>
+    <variant name="VoiceAccess" summary="Voice Accces"/>
+  </token>
+</histogram>
+
+<!-- LINT.ThenChange(//content/browser/accessibility/browser_accessibility_state_impl_android.cc:kAssistiveTechMap) -->
 
 <histogram name="Accessibility.AndroidServiceInfo.{RunningApps}"
     enum="AccessibilityAndroidServiceInfoEnum" expires_after="2026-06-01">
@@ -2997,6 +3018,17 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.ReadAnything.DistillationScheme"
+    enum="ReadAnythingDistillationScheme" expires_after="2027-01-01">
+  <owner>davidsegovia@google.com</owner>
+  <owner>ammedina@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the URL scheme present when Reading Mode distillation is triggered
+    while the IsReadAnythingWithReadabilityEnabled flag is active.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.ReadAnything.DistillationStatusAfterOmnibox"
     enum="ReadAnythingDistillationStatus" expires_after="2026-06-01">
   <owner>kristislee@google.com</owner>
@@ -3074,6 +3106,56 @@ even if they fit the naming pattern. -->
   <summary>
     Records the user-chosen letter spacing for the Read Anything panel.
   </summary>
+</histogram>
+
+<histogram name="Accessibility.ReadAnything.LineFocus"
+    enum="ReadAnythingLineFocus" expires_after="2026-12-01">
+  <owner>kristislee@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <summary>
+    Records the user-chosen line focus mode for Read Anything when the panel is
+    closed.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.ReadAnything.LineFocusSessionLength" units="ms"
+    expires_after="2026-12-01">
+  <owner>kristislee@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <summary>
+    Records the length of time the user spends in Reading mode with line focus
+    on. This is measured from when line focus is enabled to when the user
+    disables line focus or hides Reading mode.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.ReadAnything.LineFocusSession{Type}Distance"
+    units="pixels" expires_after="2026-12-01">
+  <owner>kristislee@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <summary>
+    Records the total distance moved with line focus in a session, either via
+    mouse movement or via scroll.
+  </summary>
+  <token key="Type">
+    <variant name="Mouse" summary="total mouse movement"/>
+    <variant name="Scroll" summary="total scroll distance"/>
+  </token>
+</histogram>
+
+<histogram name="Accessibility.ReadAnything.LineFocusSession{Type}Lines"
+    units="lines" expires_after="2026-12-01">
+  <owner>kristislee@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <summary>
+    Records the total number of lines highlighted or underlined with line focus
+    in a session, either via keyboard arrow keys or with Read aloud speech.
+  </summary>
+  <token key="Type">
+    <variant name="Keyboard" summary="total line changes by keyboard"/>
+    <variant name="Speech"
+        summary="total line highlight changes by read aloud"/>
+  </token>
 </histogram>
 
 <histogram name="Accessibility.ReadAnything.LineSpacing"
@@ -4033,6 +4115,16 @@ even if they fit the naming pattern. -->
   </token>
 </histogram>
 
+<histogram name="DomDistiller.Android.FontFamilySelected"
+    enum="ReaderModePrefsFontFamily" expires_after="2026-06-01">
+  <owner>wylieb@google.com</owner>
+  <owner>evanluo@google.com</owner>
+  <owner>chrome-reader-mode-team@google.com</owner>
+  <summary>
+    Records the font family set by the user in the distilled page prefs UI.
+  </summary>
+</histogram>
+
 <histogram name="DomDistiller.Android.FontScalingSelected" units="%"
     expires_after="2026-06-01">
   <owner>wylieb@google.com</owner>
@@ -4041,16 +4133,6 @@ even if they fit the naming pattern. -->
   <summary>
     Records the font scaling set by the user in the distilled page prefs UI.
     Value can range from 100% to 250% in 25% increments.
-  </summary>
-</histogram>
-
-<histogram name="DomDistiller.Android.FontStyleSelected"
-    enum="ReaderModePrefsFontStyle" expires_after="2026-06-01">
-  <owner>wylieb@google.com</owner>
-  <owner>evanluo@google.com</owner>
-  <owner>chrome-reader-mode-team@google.com</owner>
-  <summary>
-    Records the font style set by the user in the distilled page prefs UI.
   </summary>
 </histogram>
 

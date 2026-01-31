@@ -4,9 +4,9 @@
 
 #include "components/performance_manager/graph/frame_node_impl.h"
 
+#include <algorithm>
 #include <optional>
 
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/task_traits.h"
@@ -399,7 +399,7 @@ TEST_F(FrameNodeImplTest, ObserverWorks) {
   EXPECT_CALL(obs, OnFrameVisibilityChanged(raw_frame_node, _))
       .WillOnce(InvokeWithoutArgs([&] {
         frame_node->SetPriorityAndReason(PriorityAndReason(
-            base::TaskPriority::USER_BLOCKING, "test priority"));
+            base::Process::Priority::kUserBlocking, "test priority"));
       }));
   EXPECT_CALL(obs, OnPriorityAndReasonChanged(raw_frame_node, _));
   frame_node->SetVisibility(FrameNode::Visibility::kVisible);
@@ -636,7 +636,7 @@ TEST_F(FrameNodeImplTest, Priority) {
   MockObserver obs(graph());
 
   // By default the priority should be "lowest".
-  EXPECT_EQ(base::TaskPriority::LOWEST,
+  EXPECT_EQ(base::Process::Priority::kMinValue,
             frame_node->GetPriorityAndReason().priority());
 
   // Changed the reason only.
@@ -644,40 +644,40 @@ TEST_F(FrameNodeImplTest, Priority) {
   EXPECT_CALL(obs,
               OnPriorityAndReasonChanged(
                   frame_node.get(),
-                  PriorityAndReason(base::TaskPriority::LOWEST,
+                  PriorityAndReason(base::Process::Priority::kMinValue,
                                     FrameNodeImpl::kDefaultPriorityReason)));
   frame_node->SetPriorityAndReason(
-      PriorityAndReason(base::TaskPriority::LOWEST, kDummyReason));
-  EXPECT_EQ(PriorityAndReason(base::TaskPriority::LOWEST, kDummyReason),
+      PriorityAndReason(base::Process::Priority::kMinValue, kDummyReason));
+  EXPECT_EQ(PriorityAndReason(base::Process::Priority::kMinValue, kDummyReason),
             frame_node->GetPriorityAndReason());
   testing::Mock::VerifyAndClear(&obs);
 
   // Change the priority only.
-  EXPECT_CALL(obs,
-              OnPriorityAndReasonChanged(
-                  frame_node.get(),
-                  PriorityAndReason(base::TaskPriority::LOWEST, kDummyReason)));
+  EXPECT_CALL(obs, OnPriorityAndReasonChanged(
+                       frame_node.get(),
+                       PriorityAndReason(base::Process::Priority::kMinValue,
+                                         kDummyReason)));
   frame_node->SetPriorityAndReason(
-      PriorityAndReason(base::TaskPriority::HIGHEST, kDummyReason));
-  EXPECT_EQ(PriorityAndReason(base::TaskPriority::HIGHEST, kDummyReason),
+      PriorityAndReason(base::Process::Priority::kMaxValue, kDummyReason));
+  EXPECT_EQ(PriorityAndReason(base::Process::Priority::kMaxValue, kDummyReason),
             frame_node->GetPriorityAndReason());
   testing::Mock::VerifyAndClear(&obs);
 
   // Change neither.
   frame_node->SetPriorityAndReason(
-      PriorityAndReason(base::TaskPriority::HIGHEST, kDummyReason));
-  EXPECT_EQ(PriorityAndReason(base::TaskPriority::HIGHEST, kDummyReason),
+      PriorityAndReason(base::Process::Priority::kMaxValue, kDummyReason));
+  EXPECT_EQ(PriorityAndReason(base::Process::Priority::kMaxValue, kDummyReason),
             frame_node->GetPriorityAndReason());
   testing::Mock::VerifyAndClear(&obs);
 
   // Change both the priority and the reason.
-  EXPECT_CALL(
-      obs, OnPriorityAndReasonChanged(
-               frame_node.get(),
-               PriorityAndReason(base::TaskPriority::HIGHEST, kDummyReason)));
+  EXPECT_CALL(obs, OnPriorityAndReasonChanged(
+                       frame_node.get(),
+                       PriorityAndReason(base::Process::Priority::kMaxValue,
+                                         kDummyReason)));
   frame_node->SetPriorityAndReason(
-      PriorityAndReason(base::TaskPriority::LOWEST, nullptr));
-  EXPECT_EQ(PriorityAndReason(base::TaskPriority::LOWEST, nullptr),
+      PriorityAndReason(base::Process::Priority::kMinValue, nullptr));
+  EXPECT_EQ(PriorityAndReason(base::Process::Priority::kMinValue, nullptr),
             frame_node->GetPriorityAndReason());
   testing::Mock::VerifyAndClear(&obs);
 }
@@ -893,7 +893,7 @@ TEST_F(FrameNodeImplTest, PublicInterface) {
 
   auto child_frame_nodes = public_frame_node->GetChildFrameNodes();
   for (FrameNodeImpl* child : frame_node->child_frame_nodes()) {
-    EXPECT_TRUE(base::Contains(child_frame_nodes, child));
+    EXPECT_TRUE(std::ranges::contains(child_frame_nodes, child));
   }
   EXPECT_EQ(child_frame_nodes.size(), frame_node->child_frame_nodes().size());
 }
@@ -942,8 +942,10 @@ TEST_F(FrameNodeImplTest, PageRelationships) {
   EXPECT_EQ(frameA1.get(), ppageB->GetEmbedderFrameNode());
   EXPECT_EQ(1u, frameA1->embedded_page_nodes().size());
   EXPECT_EQ(1u, pframeA1->GetEmbeddedPageNodes().size());
-  EXPECT_TRUE(base::Contains(frameA1->embedded_page_nodes(), pageB.get()));
-  EXPECT_TRUE(base::Contains(pframeA1->GetEmbeddedPageNodes(), pageB.get()));
+  EXPECT_TRUE(
+      std::ranges::contains(frameA1->embedded_page_nodes(), pageB.get()));
+  EXPECT_TRUE(
+      std::ranges::contains(pframeA1->GetEmbeddedPageNodes(), pageB.get()));
   testing::Mock::VerifyAndClear(&obs);
 
   // Set an opener relationship.
@@ -952,7 +954,8 @@ TEST_F(FrameNodeImplTest, PageRelationships) {
   EXPECT_EQ(frameA1.get(), pageC->opener_frame_node());
   EXPECT_EQ(1u, frameA1->embedded_page_nodes().size());
   EXPECT_EQ(1u, frameA1->opened_page_nodes().size());
-  EXPECT_TRUE(base::Contains(frameA1->embedded_page_nodes(), pageB.get()));
+  EXPECT_TRUE(
+      std::ranges::contains(frameA1->embedded_page_nodes(), pageB.get()));
   testing::Mock::VerifyAndClear(&obs);
 
   // Manually clear the embedder relationship (initiated from the page).
@@ -979,7 +982,7 @@ TEST_F(FrameNodeImplTest, PageRelationships) {
   EXPECT_TRUE(frameA1->embedded_page_nodes().empty());
   EXPECT_EQ(1u, frameA2->opened_page_nodes().size());
   EXPECT_TRUE(frameA2->embedded_page_nodes().empty());
-  EXPECT_TRUE(base::Contains(frameA2->opened_page_nodes(), pageB.get()));
+  EXPECT_TRUE(std::ranges::contains(frameA2->opened_page_nodes(), pageB.get()));
   testing::Mock::VerifyAndClear(&obs);
 
   // Clear it with the helper, and expect it to be reparented to node A1.
@@ -987,7 +990,7 @@ TEST_F(FrameNodeImplTest, PageRelationships) {
   frameA2->SeverPageRelationshipsAndMaybeReparentForTesting();
   EXPECT_EQ(frameA1.get(), pageB->opener_frame_node());
   EXPECT_EQ(1u, frameA1->opened_page_nodes().size());
-  EXPECT_TRUE(base::Contains(frameA1->opened_page_nodes(), pageB.get()));
+  EXPECT_TRUE(std::ranges::contains(frameA1->opened_page_nodes(), pageB.get()));
   EXPECT_TRUE(frameA2->opened_page_nodes().empty());
   testing::Mock::VerifyAndClear(&obs);
 
@@ -1007,7 +1010,7 @@ TEST_F(FrameNodeImplTest, PageRelationships) {
   EXPECT_EQ(frameA2.get(), pageB->opener_frame_node());
   EXPECT_TRUE(frameA1->opened_page_nodes().empty());
   EXPECT_EQ(1u, frameA2->opened_page_nodes().size());
-  EXPECT_TRUE(base::Contains(frameA2->opened_page_nodes(), pageB.get()));
+  EXPECT_TRUE(std::ranges::contains(frameA2->opened_page_nodes(), pageB.get()));
   testing::Mock::VerifyAndClear(&obs);
 
   {

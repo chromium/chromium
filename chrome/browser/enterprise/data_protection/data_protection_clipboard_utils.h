@@ -45,6 +45,14 @@ void IsClipboardCopyAllowedByPolicy(
     const content::ClipboardPasteData& data,
     content::ContentBrowserClient::IsClipboardCopyAllowedCallback callback);
 
+// This function checks if data dragged from a browser tab is allowed to be
+// dragged to the OS according to the following policies:
+// - DataControlsRules
+//
+// Returns true if the drag is allowed, false otherwise.
+bool IsDragAllowedByPolicy(const content::ClipboardEndpoint& source,
+                           const content::DropData& drop_data);
+
 #if BUILDFLAG(IS_ANDROID)
 // This function checks if data being shared from a browser tab is allowed to
 // be written to the OS clipboard according to the following policies:
@@ -78,20 +86,6 @@ void IsClipboardGenericCopyActionAllowedByPolicy(
 void ReplaceSameTabClipboardDataIfRequiredByPolicy(
     ui::ClipboardSequenceNumberToken seqno,
     content::ClipboardPasteData& data);
-
-// This function writes the given text to the clipboard. Wrapper over
-// IsClipboardCopyAllowedByPolicy.
-// Returns false if clipboard policy is not enforced, allowing the caller to use
-// default clipboard write. Returns true if the function handles the clipboard
-// write, potentially showing a dialog.
-bool HandleWriteTextToClipboard(content::WebContents* web_contents,
-                                ui::ClipboardBuffer clipboard_buffer,
-                                const std::u16string_view& text);
-
-// This function checks if drag and drop is allowed for the given source
-// according to the DataControlsRules policy. Used to check if event is allowed
-// synchronously without popup window.
-bool DragAndDropForTextIsAllowed(content::WebContents* web_contents);
 
 // Checks if the user is allowed to populate the find bar with
 // the currently selected text in the given WebContents based on

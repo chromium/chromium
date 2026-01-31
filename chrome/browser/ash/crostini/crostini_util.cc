@@ -40,7 +40,6 @@
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_controller.h"
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_item_controller.h"
 #include "chrome/browser/ui/views/crostini/crostini_recovery_view.h"
-#include "chrome/browser/ui/webui/ash/crostini_upgrader/crostini_upgrader_dialog.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ui/base/app_types.h"
@@ -194,12 +193,6 @@ bool ShouldConfigureDefaultContainer(Profile* profile) {
   return !default_container_configured;
 }
 
-bool ShouldAllowContainerUpgrade(Profile* profile) {
-  return CrostiniFeatures::Get()->IsContainerUpgradeUIAllowed(profile) &&
-         crostini::CrostiniManager::GetForProfile(profile)
-             ->IsContainerUpgradeable(DefaultContainerId());
-}
-
 void AddSpinner(crostini::CrostiniManager::RestartId restart_id,
                 const std::string& app_id,
                 Profile* profile) {
@@ -300,15 +293,6 @@ void LaunchCrostiniAppWithIntent(Profile* profile,
         args, std::move(callback));
   }
 
-  if (crostini_manager->GetCrostiniDialogStatus(DialogType::UPGRADER)) {
-    // Reshow the existing dialog.
-    ash::CrostiniUpgraderDialog::Reshow();
-    VLOG(1) << "Reshowing upgrade dialog";
-    std::move(callback).Run(
-        false, "LaunchCrostiniApp called while upgrade dialog showing");
-    return;
-  }
-
   LaunchCrostiniAppImpl(profile, app_id, std::move(*registration), container_id,
                         display_id, args, std::move(callback));
 }
@@ -373,7 +357,7 @@ base::FilePath ContainerChromeOSBaseDirectory() {
 
 void AddNewLxdContainerToPrefs(Profile* profile,
                                const guest_os::GuestId& container_id) {
-  base::Value::Dict properties;
+  base::DictValue properties;
   properties.Set(guest_os::prefs::kContainerOsVersionKey,
                  static_cast<int>(ContainerOsVersion::kUnknown));
   properties.Set(guest_os::prefs::kContainerOsPrettyNameKey, "");

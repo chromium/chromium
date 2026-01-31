@@ -207,6 +207,11 @@ body {
 .monospace {
   font-family: monospace;
 }
+
+.Lexend {
+  font-family: 'Lexend', sans-serif;
+  font-optical-sizing: auto;
+}
 </if>
 
 <if expr="is_ios">
@@ -220,6 +225,13 @@ body {
 
 .monospace {
   font-family: ui-monospace, SFMono-Regular, ui-monospace, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+}
+
+.Lexend {
+  font-family: "Lexend", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 100;
+  font-style: normal;
 }
 </if>
 

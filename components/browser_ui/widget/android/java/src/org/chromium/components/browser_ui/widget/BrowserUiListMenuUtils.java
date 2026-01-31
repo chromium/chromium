@@ -8,6 +8,7 @@ import android.content.Context;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
+import androidx.annotation.DrawableRes;
 import androidx.annotation.StyleRes;
 
 import org.chromium.build.annotations.NullMarked;
@@ -72,6 +73,33 @@ public class BrowserUiListMenuUtils {
                 data,
                 delegate,
                 R.drawable.default_popup_menu_bg,
+                backgroundTintColorRes,
+                bottomHairlineColor);
+    }
+
+    /**
+     * Convenience method for constructing a {@link BasicListMenu} with the preferred content view.
+     *
+     * @param context The Android context.
+     * @param data The data to display in the list.
+     * @param delegate The {@link Delegate} used to handle menu clicks. If not provided, the item's
+     *     CLICK_LISTENER or listMenu's onMenuItemSelected method will be used.
+     * @param backgroundResId The background of the menu.
+     * @param backgroundTintColorRes tint for the menu background.
+     * @param bottomHairlineColor Color for the bottom hairline of the unscrollable header.
+     */
+    public static BasicListMenu getBasicListMenu(
+            Context context,
+            MVCListAdapter.ModelList data,
+            @Nullable Delegate delegate,
+            @DrawableRes int backgroundResId,
+            @ColorRes int backgroundTintColorRes,
+            @Nullable @ColorInt Integer bottomHairlineColor) {
+        return new BasicListMenu(
+                context,
+                data,
+                delegate,
+                backgroundResId,
                 backgroundTintColorRes,
                 bottomHairlineColor);
     }

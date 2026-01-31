@@ -37,7 +37,7 @@ namespace {
 // (|dict_with_client_cert|) and stores it in |cert_config|.
 void GetClientCertTypeAndDescriptor(
     onc::ONCSource onc_source,
-    const base::Value::Dict& dict_with_client_cert,
+    const base::DictValue& dict_with_client_cert,
     ClientCertConfig* cert_config) {
   cert_config->onc_source = onc_source;
 
@@ -52,7 +52,7 @@ void GetClientCertTypeAndDescriptor(
     cert_config->client_cert_type = *client_cert_type;
 
   if (cert_config->client_cert_type == ::onc::client_cert::kPattern) {
-    const base::Value::Dict* pattern_value =
+    const base::DictValue* pattern_value =
         dict_with_client_cert.FindDict(::onc::client_cert::kClientCertPattern);
     if (pattern_value) {
       std::optional<OncCertificatePattern> pattern =
@@ -106,7 +106,7 @@ std::string GetPkcs11AndSlotIdFromEapCertId(const std::string& cert_id,
   return cert_id.substr(delimiter_pos + 1);
 }
 
-void GetClientCertFromShillProperties(const base::Value::Dict& shill_properties,
+void GetClientCertFromShillProperties(const base::DictValue& shill_properties,
                                       ConfigType* cert_config_type,
                                       int* tpm_slot,
                                       std::string* pkcs11_id) {
@@ -118,7 +118,7 @@ void GetClientCertFromShillProperties(const base::Value::Dict& shill_properties,
   //
   // VPN Provider values are read from the "Provider" dictionary, not the
   // "Provider.Type", etc keys (which are used only to set the values).
-  const base::Value::Dict* provider_properties =
+  const base::DictValue* provider_properties =
       shill_properties.FindDict(shill::kProviderProperty);
   if (provider_properties) {
     const std::string* pkcs11_id_str = nullptr;
@@ -195,7 +195,7 @@ void GetClientCertFromShillProperties(const base::Value::Dict& shill_properties,
 void SetShillProperties(const ConfigType cert_config_type,
                         const int tpm_slot,
                         const std::string& pkcs11_id,
-                        base::Value::Dict& properties) {
+                        base::DictValue& properties) {
   switch (cert_config_type) {
     case ConfigType::kNone: {
       return;
@@ -237,7 +237,7 @@ void SetShillProperties(const ConfigType cert_config_type,
 }
 
 void SetEmptyShillProperties(const ConfigType cert_config_type,
-                             base::Value::Dict& properties) {
+                             base::DictValue& properties) {
   switch (cert_config_type) {
     case ConfigType::kNone: {
       return;
@@ -399,11 +399,11 @@ DictType* GetOncClientCertConfigDict(DictType& network_config,
 }
 
 void OncToClientCertConfig(::onc::ONCSource onc_source,
-                           const base::Value::Dict& network_config,
+                           const base::DictValue& network_config,
                            ClientCertConfig* cert_config) {
   *cert_config = ClientCertConfig();
 
-  const base::Value::Dict* dict_with_client_cert =
+  const base::DictValue* dict_with_client_cert =
       GetOncClientCertConfigDict(network_config, &(cert_config->location));
   if (dict_with_client_cert) {
     GetClientCertTypeAndDescriptor(onc_source, *dict_with_client_cert,
@@ -412,11 +412,11 @@ void OncToClientCertConfig(::onc::ONCSource onc_source,
 }
 
 void SetResolvedCertInOnc(const ResolvedCert& resolved_cert,
-                          base::Value::Dict& network_config) {
+                          base::DictValue& network_config) {
   if (resolved_cert.status() == ResolvedCert::Status::kNotKnownYet)
     return;
 
-  base::Value::Dict* dict_with_client_cert =
+  base::DictValue* dict_with_client_cert =
       GetOncClientCertConfigDict(network_config, /*out_config_type=*/nullptr);
   if (!dict_with_client_cert)
     return;

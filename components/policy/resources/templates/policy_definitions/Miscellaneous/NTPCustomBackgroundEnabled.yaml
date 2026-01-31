@@ -11,6 +11,7 @@ features:
   per_profile: true
 future_on:
 - fuchsia
+- android
 items:
 - caption: Users can customize the New Tab page background
   value: true

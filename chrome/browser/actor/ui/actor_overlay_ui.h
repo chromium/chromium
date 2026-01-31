@@ -29,9 +29,11 @@ class ActorOverlayUI : public ::ui::MojoWebUIController,
   void BindInterface(
       mojo::PendingReceiver<mojom::ActorOverlayPageHandlerFactory> receiver);
 
-  void SetOverlayBackground(bool is_visible);
-  void SetBorderGlowVisibility(bool is_visible);
-  void MoveCursorTo(const gfx::Point& point, base::OnceClosure callback);
+  virtual void SetOverlayBackground(bool is_visible);
+  virtual void SetBorderGlowVisibility(bool is_visible);
+  virtual void MoveCursorTo(const gfx::Point& point,
+                            base::OnceClosure callback);
+  virtual void TriggerClickAnimation(base::OnceClosure callback);
 
   // Checks if the passed in WebContents are associated with the ActorOverlayUI
   // WebUIController.
@@ -57,6 +59,7 @@ class ActorOverlayUI : public ::ui::MojoWebUIController,
   // Mojo connection is being established.
   std::vector<base::OnceClosure> handler_initialized_callbacks_;
 
+  base::WeakPtrFactory<ActorOverlayUI> weak_factory_{this};
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 

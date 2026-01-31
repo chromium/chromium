@@ -4,11 +4,11 @@
 
 #include "chrome/browser/chromeos/enterprise/cloud_storage/one_drive_pref_observer.h"
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
 #include "ash/constants/web_app_id_constants.h"
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -69,7 +69,7 @@ class OneDrivePrefObserverBrowserTest : public policy::PolicyTest {
   }
 
   void SetOneDriveAccountRestrictions(std::vector<std::string> restrictions) {
-    base::Value::List restrictions_list;
+    base::ListValue restrictions_list;
     for (auto& restriction : restrictions) {
       restrictions_list.Append(std::move(restriction));
     }
@@ -86,7 +86,7 @@ class OneDrivePrefObserverBrowserTest : public policy::PolicyTest {
                              ->GetDependencyGraphForTesting()
                              .GetConstructionOrder(&nodes);
     EXPECT_TRUE(success);
-    return base::Contains(
+    return std::ranges::contains(
         nodes, "OneDrivePrefObserverFactory",
         [](const DependencyNode* node) -> std::string_view {
           return static_cast<const KeyedServiceBaseFactory*>(node)->name();
@@ -107,7 +107,7 @@ class OneDrivePrefObserverBrowserTest : public policy::PolicyTest {
     EXPECT_EQ(event.event_name,
               extensions::api::odfs_config_private::OnMountChanged::kEventName);
     ASSERT_EQ(1u, event.event_args.size());
-    const base::Value::Dict* event_dict = event.event_args.front().GetIfDict();
+    const base::DictValue* event_dict = event.event_args.front().GetIfDict();
     ASSERT_TRUE(event_dict);
     const std::string* mode = event_dict->FindString("mode");
     ASSERT_TRUE(mode);
@@ -120,10 +120,9 @@ class OneDrivePrefObserverBrowserTest : public policy::PolicyTest {
     EXPECT_EQ(event.event_name, extensions::api::odfs_config_private::
                                     OnAccountRestrictionsChanged::kEventName);
     ASSERT_EQ(1u, event.event_args.size());
-    const base::Value::Dict* event_dict = event.event_args.front().GetIfDict();
+    const base::DictValue* event_dict = event.event_args.front().GetIfDict();
     ASSERT_TRUE(event_dict);
-    const base::Value::List* restrictions =
-        event_dict->FindList("restrictions");
+    const base::ListValue* restrictions = event_dict->FindList("restrictions");
     ASSERT_TRUE(restrictions);
     EXPECT_THAT(*restrictions, ElementsAreArray(expected_restrictions));
   }

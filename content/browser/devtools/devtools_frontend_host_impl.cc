@@ -129,7 +129,7 @@ void DevToolsFrontendHostImpl::BadMessageReceived() {
 }
 
 void DevToolsFrontendHostImpl::DispatchEmbedderMessage(
-    base::Value::Dict message) {
+    base::DictValue message) {
   handle_message_callback_.Run(std::move(message));
 }
 

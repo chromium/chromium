@@ -6,7 +6,6 @@
 
 #include "base/base64.h"
 #include "base/base64url.h"
-#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
@@ -263,7 +262,7 @@ bool MatchHasSideTypeAndRenderType(
     const omnibox::GroupConfigMap& suggestion_groups_map) {
   omnibox::GroupId group_id =
       match.suggestion_group_id.value_or(omnibox::GROUP_INVALID);
-  return base::Contains(suggestion_groups_map, group_id) &&
+  return suggestion_groups_map.contains(group_id) &&
          suggestion_groups_map.at(group_id).side_type() == side_type &&
          suggestion_groups_map.at(group_id).render_type() == render_type;
 }
@@ -331,8 +330,8 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
       {"addTab", IDS_NTP_COMPOSE_MOST_RECENT_TABS},
       {"dismissButton", IDS_NTP_DISMISS},
       // TODO(b/467036804): Update the value of `lensSearchAriaLabel`.
-      {"lensSearchAriaLabel", IDS_LENS_OVERLAY_TAB_ENTRYPOINT_LABEL},
-      {"lensSearchLabel", IDS_LENS_OVERLAY_TAB_ENTRYPOINT_LABEL},
+      {"lensSearchAriaLabel", IDS_CONTENT_CONTEXT_LENS_OVERLAY},
+      {"lensSearchLabel", IDS_CONTENT_CONTEXT_LENS_OVERLAY},
       {"searchboxComposeButtonText", IDS_NTP_COMPOSE_ENTRYPOINT},
       {"searchboxComposeButtonTitle", IDS_NTP_COMPOSE_ENTRYPOINT_A11Y_LABEL},
       {"composeboxCancelButtonTitle", IDS_NTP_COMPOSE_CANCEL_BUTTON_A11Y_LABEL},
@@ -367,13 +366,26 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
       {"createImages", IDS_NTP_COMPOSE_CREATE_IMAGES},
       {"composeDeepSearchPlaceholder", IDS_COMPOSE_DEEP_SEARCH_PLACEHOLDER},
       {"composeCreateImagePlaceholder", IDS_COMPOSE_CREATE_IMAGE_PLACEHOLDER},
-      {"askAboutThisTab", IDS_COMPOSE_ASK_ABOUT_THIS_TAB},
-      {"askAboutThisTabAriaLabel", IDS_COMPOSE_ASK_ABOUT_THIS_TAB_ARIA_LABEL},
+      {"askAboutThisPage", IDS_WEBUI_OMNIBOX_COMPOSE_ASK_ABOUT_THIS_PAGE},
+      {"askAboutThisPageAriaLabel",
+       IDS_WEBUI_OMNIBOX_COMPOSE_ASK_ABOUT_THIS_PAGE_ARIA_LABEL},
+      {"askAboutPreviousTab", IDS_COMPOSE_ASK_ABOUT_THIS_TAB},
+      {"askAboutPreviousTabAriaLabel",
+       IDS_COMPOSE_ASK_ABOUT_THIS_TAB_ARIA_LABEL},
       {"removeToolChipAriaLabel", IDS_COMPOSE_REMOVE_TOOL_CHIP_A11Y_LABEL},
       {"composeFileTypesAllowedError",
        IDS_NTP_COMPOSE_FILE_TYPE_NOT_ALLOWED_ERROR},
-      {"listening", IDS_NEW_TAB_VOICE_LISTENING},
-      {"details", IDS_NEW_TAB_VOICE_DETAILS},
+      {"voiceClose", IDS_NEW_TAB_VOICE_CLOSE_TOOLTIP},
+      {"voiceDetails", IDS_NEW_TAB_VOICE_DETAILS},
+      {"voiceListening", IDS_NEW_TAB_VOICE_LISTENING},
+      {"voicePermissionError", IDS_NEW_TAB_VOICE_PERMISSION_ERROR},
+      {"composeboxContextMenuMostRecentTabs",
+       IDS_CONTEXTUAL_TASKS_CONTEXT_MENU_MOST_RECENT_TABS},
+      {"composeboxContextMenuGeminiModels",
+       IDS_CONTEXTUAL_TASKS_CONTEXT_MENU_GEMINI_MODELS},
+      {"canvas", IDS_NTP_COMPOSE_CANVAS},
+      {"geminiModelAuto", IDS_NTP_COMPOSE_AUTO_MODEL},
+      {"geminiModelThinking", IDS_NTP_COMPOSE_THINKING_3_PRO},
   };
   source->AddLocalizedStrings(kStrings);
   source->AddString("searchboxComposePlaceholder",
@@ -425,6 +437,8 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
       profile->GetPrefs()->GetInteger(
           prefs::kNtpComposeButtonShownCountPrefName) <
           composebox_config.entry_point().num_page_load_animations());
+  source->AddBoolean("contextualMenuShowModelPicker",
+                     ntp_composebox::kShowModelPicker.Get());
 }
 
 std::string SearchboxHandler::AutocompleteIconToResourceName(
@@ -877,8 +891,7 @@ void SearchboxHandler::QueryAutocomplete(const std::u16string& input,
           controller_->client()->GetLensOverlaySuggestInputs()) {
     // Don't set lens params if in "Create Image" mode. This prevents the
     // contextual client from being used in this tool mode.
-    if (GetAimToolMode() !=
-        omnibox::ChromeAimToolsAndModels::TOOL_MODE_IMAGE_GEN_UPLOAD) {
+    if (GetAimToolMode() != omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD) {
       autocomplete_input.set_lens_overlay_suggest_inputs(*suggest_inputs);
     }
   }
@@ -1098,8 +1111,9 @@ void SearchboxHandler::OnResultChanged(AutocompleteController* controller,
   }
 }
 
-const AutocompleteMatch* SearchboxHandler::GetMatchWithUrl(size_t index,
-                                                           const GURL& url) {
+const AutocompleteMatch* SearchboxHandler::GetMatchWithUrl(
+    size_t index,
+    const GURL& url) const {
   const AutocompleteResult& result = autocomplete_controller()->result();
   if (index >= result.size()) {
     // This can happen due to asynchronous updates changing the result while
@@ -1116,15 +1130,15 @@ const AutocompleteMatch* SearchboxHandler::GetMatchWithUrl(size_t index,
   return &match;
 }
 
-omnibox::ChromeAimToolsAndModels SearchboxHandler::GetAimToolMode() {
-  return omnibox::ChromeAimToolsAndModels::TOOL_MODE_UNSPECIFIED;
+omnibox::ToolMode SearchboxHandler::GetAimToolMode() const {
+  return omnibox::ToolMode::TOOL_MODE_UNSPECIFIED;
 }
 
-OmniboxController* SearchboxHandler::omnibox_controller() {
+OmniboxController* SearchboxHandler::omnibox_controller() const {
   return controller_;
 }
 
-AutocompleteController* SearchboxHandler::autocomplete_controller() {
+AutocompleteController* SearchboxHandler::autocomplete_controller() const {
   return omnibox_controller()->autocomplete_controller();
 }
 
@@ -1137,6 +1151,6 @@ void SearchboxHandler::set_page_is_bound_callback_for_testing(
   page_is_bound_callback_for_testing_ = std::move(callback);
 }
 
-OmniboxEditModel* SearchboxHandler::edit_model() {
+OmniboxEditModel* SearchboxHandler::edit_model() const {
   return omnibox_controller()->edit_model();
 }

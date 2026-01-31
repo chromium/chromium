@@ -4,6 +4,7 @@
 
 #include "ash/system/focus_mode/sounds/focus_mode_sounds_controller.h"
 
+#include <algorithm>
 #include <array>
 #include <memory>
 #include <utility>
@@ -236,8 +237,9 @@ bool MayContainsSelectedPlaylist(
     return true;
   }
 
-  return base::Contains(playlists_fetched, selected_playlist.id,
-                        &FocusModeSoundsController::Playlist::playlist_id);
+  return std::ranges::contains(
+      playlists_fetched, selected_playlist.id,
+      &FocusModeSoundsController::Playlist::playlist_id);
 }
 
 bool MatchesFocusModeRequestId(
@@ -544,14 +546,14 @@ void FocusModeSoundsController::DownloadPlaylistsForType(
   }
 
   if (is_soundscape_type) {
-    if (!base::Contains(enabled_sound_sections_,
-                        focus_mode_util::SoundType::kSoundscape)) {
+    if (!enabled_sound_sections_.contains(
+            focus_mode_util::SoundType::kSoundscape)) {
       LOG(WARNING) << "Playlist download for Focus Sounds blocked by policy";
       return;
     }
   } else {
-    if (!base::Contains(enabled_sound_sections_,
-                        focus_mode_util::SoundType::kYouTubeMusic)) {
+    if (!enabled_sound_sections_.contains(
+            focus_mode_util::SoundType::kYouTubeMusic)) {
       LOG(WARNING)
           << "Playlist download for YouTube Music blocked by policy or flag";
       return;
@@ -676,13 +678,13 @@ void FocusModeSoundsController::SetIsMinorUserForTesting(bool is_minor_user) {
 
 bool FocusModeSoundsController::IsPlaylistAllowed(
     const focus_mode_util::SelectedPlaylist& playlist) const {
-  return base::Contains(enabled_sound_sections_, playlist.type);
+  return enabled_sound_sections_.contains(playlist.type);
 }
 
 void FocusModeSoundsController::SaveUserPref() {
   if (PrefService* active_user_prefs =
           Shell::Get()->session_controller()->GetActivePrefService()) {
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set(focus_mode_util::kSoundTypeKey, static_cast<int>(sound_type_));
     dict.Set(focus_mode_util::kPlaylistIdKey, selected_playlist_.id);
     active_user_prefs->SetDict(prefs::kFocusModeSoundSection, std::move(dict));

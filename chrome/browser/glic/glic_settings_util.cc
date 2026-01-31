@@ -4,24 +4,31 @@
 
 #include "chrome/browser/glic/glic_settings_util.h"
 
+#include "base/notimplemented.h"
+#include "build/build_config.h"
+#include "chrome/browser/glic/common/future_browser_features.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
-#include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/window_open_disposition.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/user_education/show_promo_in_page.h"
+#include "chrome/browser/user_education/user_education_service.h"
+#include "components/user_education/common/help_bubble/help_bubble_params.h"
+#endif
+
 namespace {
 
+#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL: implement settings
 void OpenGlicSettingsPageWithPromo(Profile* profile,
                                    const base::Feature& feature,
                                    ShowPromoInPage::Params promo_params) {
@@ -44,20 +51,24 @@ void OpenGlicSettingsPageWithPromo(Profile* profile,
     glic::OpenGlicSettingsPage(profile);
   }
 }
+#endif
 
 }  // namespace
 
 namespace glic {
 
 void OpenGlicSettingsPage(Profile* profile) {
+#if !BUILDFLAG(IS_ANDROID)  /// NEEDS_ANDROID_IMPL: implement settings
   NavigateParams params(profile,
                         chrome::GetSettingsUrl(chrome::kGlicSettingsSubpage),
                         ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
   params.disposition = WindowOpenDisposition::SINGLETON_TAB;
   Navigate(&params);
+#endif
 }
 
 void OpenGlicOsToggleSetting(Profile* profile) {
+#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL: implement settings
   ShowPromoInPage::Params params;
   params.bubble_anchor_id = kGlicOsToggleElementId;
   params.bubble_arrow = user_education::HelpBubbleArrow::kBottomRight;
@@ -65,24 +76,30 @@ void OpenGlicOsToggleSetting(Profile* profile) {
       l10n_util::GetStringUTF16(IDS_GLIC_OS_WIDGET_TOGGLE_HELP_BUBBLE);
 
   OpenGlicSettingsPageWithPromo(profile, features::kGlic, std::move(params));
+#else
+  OpenGlicSettingsPage(profile);
+#endif
 }
 
 void OpenGlicKeyboardShortcutSetting(Profile* profile) {
+#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL: implement settings
   ShowPromoInPage::Params params;
   params.bubble_anchor_id = kGlicOsWidgetKeyboardShortcutElementId;
   params.bubble_arrow = user_education::HelpBubbleArrow::kBottomRight;
   params.bubble_text = l10n_util::GetStringUTF16(
       IDS_GLIC_OS_WIDGET_KEYBOARD_SHORTCUT_HELP_BUBBLE);
-
   OpenGlicSettingsPageWithPromo(
       profile, features::kGlicKeyboardShortcutNewBadge, std::move(params));
+#else
+  OpenGlicSettingsPage(profile);
+#endif
 }
 
 void OpenPasswordManagerSettingsPage(Profile* profile) {
   NavigateParams params(profile, GURL(GetGooglePasswordManagerSubPageURLStr()),
                         ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
   params.disposition = WindowOpenDisposition::SINGLETON_TAB;
-  Navigate(&params);
+  DoNavigate(&params);
 }
 
 }  // namespace glic

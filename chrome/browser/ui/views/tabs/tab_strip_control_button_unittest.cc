@@ -15,8 +15,14 @@ class TabStripController;
 
 constexpr int kBorderThickness = 4;
 
-class FrameCondensedController : public FakeBaseTabStripController {
+class TestTabStripControlButton : public TabStripControlButton {
  public:
+  TestTabStripControlButton(BrowserWindowInterface* browser_window_interface,
+                            PressedCallback callback,
+                            const std::u16string& text)
+      : TabStripControlButton(browser_window_interface,
+                              std::move(callback),
+                              text) {}
   bool IsFrameCondensed() const override { return condensed_; }
 
   void set_condensed(bool condensed) { condensed_ = condensed; }
@@ -30,17 +36,15 @@ class TabStripControlButtonTest : public ChromeViewsTestBase {
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
 
-    tab_strip_controller_ = std::make_unique<FrameCondensedController>();
-    button_ = std::make_unique<TabStripControlButton>(
-        tab_strip_controller_.get(), base::BindLambdaForTesting([]() {}), u"");
+    button_ = std::make_unique<TestTabStripControlButton>(
+        nullptr, base::BindLambdaForTesting([]() {}), u"");
     button_->SetBorder(
         views::CreateEmptyBorder(gfx::Insets::VH(kBorderThickness, 0)));
     button_->SetSize(button_->CalculatePreferredSize({}));
   }
 
  protected:
-  std::unique_ptr<FrameCondensedController> tab_strip_controller_;
-  std::unique_ptr<TabStripControlButton> button_;
+  std::unique_ptr<TestTabStripControlButton> button_;
 };
 
 TEST_F(TabStripControlButtonTest, UncondensedFrameHitTestMask) {
@@ -75,7 +79,7 @@ TEST_F(TabStripControlButtonTest, UncondensedFrameHitTestMask) {
 }
 
 TEST_F(TabStripControlButtonTest, CondensedFrameHitTestMask) {
-  tab_strip_controller_->set_condensed(true);
+  button_->set_condensed(true);
 
   SkPath path;
   button_->GetHitTestMask(&path);

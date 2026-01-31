@@ -17,7 +17,7 @@ namespace web_app {
 // A helper class to abstract the process of matching URLs against a
 // `blink::SafeUrlPattern`, considering regular expression matching as well.
 // Useful for matching certain fields in a web app like the `home_tab_scope`
-// and `borderless_url_patterns`.
+// and display override 'url_patterns'.
 class UrlPatternWithRegexMatcher {
  public:
   explicit UrlPatternWithRegexMatcher(const blink::SafeUrlPattern& pattern);

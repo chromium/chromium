@@ -10,7 +10,6 @@
 
 #include "ash/constants/web_app_id_constants.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/json/values_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -286,8 +285,8 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, InsertAndCloseTabs) {
   // Insert an app tab.
   InsertForegroundTab(browser, "https://a.example.org");
   EXPECT_EQ(1u, webcontents_to_observer_map().size());
-  EXPECT_TRUE(base::Contains(webcontents_to_observer_map(),
-                             window_to_web_contents()[window].get()));
+  EXPECT_TRUE(webcontents_to_observer_map().contains(
+      window_to_web_contents()[window].get()));
   EXPECT_EQ(window_to_web_contents()[window]->GetVisibleURL(),
             GURL("https://a.example.org"));
   EXPECT_TRUE(webcontents_to_ukm_key().empty());
@@ -296,8 +295,8 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, InsertAndCloseTabs) {
   // Open a second tab in foreground with no app.
   auto* tab_app1 = InsertForegroundTab(browser, "https://b.example.org");
   EXPECT_EQ(2u, webcontents_to_observer_map().size());
-  EXPECT_TRUE(base::Contains(webcontents_to_observer_map(),
-                             window_to_web_contents()[window]));
+  EXPECT_TRUE(
+      webcontents_to_observer_map().contains(window_to_web_contents()[window]));
   EXPECT_EQ(window_to_web_contents()[window]->GetVisibleURL(),
             GURL("https://b.example.org"));
   EXPECT_EQ(1u, webcontents_to_ukm_key().size());
@@ -311,8 +310,8 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, InsertAndCloseTabs) {
 
   EXPECT_EQ(4u, webcontents_to_observer_map().size());
   EXPECT_EQ(1u, window_to_web_contents().size());
-  EXPECT_TRUE(base::Contains(webcontents_to_observer_map(),
-                             window_to_web_contents()[window]));
+  EXPECT_TRUE(
+      webcontents_to_observer_map().contains(window_to_web_contents()[window]));
   EXPECT_EQ(window_to_web_contents()[window]->GetVisibleURL(),
             GURL("https://d.example.org"));
   EXPECT_EQ(3u, webcontents_to_ukm_key().size());
@@ -328,7 +327,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, InsertAndCloseTabs) {
   browser->tab_strip_model()->CloseWebContentsAt(
       i, TabCloseTypes::CLOSE_USER_GESTURE);
   EXPECT_EQ(2u, webcontents_to_ukm_key().size());
-  EXPECT_FALSE(base::Contains(webcontents_to_ukm_key(), tab_app4));
+  EXPECT_FALSE(webcontents_to_ukm_key().contains(tab_app4));
   VerifyUrlInfo(GURL("https://c.example.org"),
                 /*is_activated=*/true, /*promotable=*/false);
 
@@ -336,12 +335,12 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, InsertAndCloseTabs) {
   browser->tab_strip_model()->CloseWebContentsAt(
       i, TabCloseTypes::CLOSE_USER_GESTURE);
   EXPECT_EQ(2u, webcontents_to_observer_map().size());
-  EXPECT_TRUE(base::Contains(webcontents_to_observer_map(),
-                             window_to_web_contents()[window]));
+  EXPECT_TRUE(
+      webcontents_to_observer_map().contains(window_to_web_contents()[window]));
   EXPECT_EQ(window_to_web_contents()[window]->GetVisibleURL(),
             GURL("https://b.example.org"));
   EXPECT_EQ(1u, webcontents_to_ukm_key().size());
-  EXPECT_FALSE(base::Contains(webcontents_to_ukm_key(), tab_app3));
+  EXPECT_FALSE(webcontents_to_ukm_key().contains(tab_app3));
   VerifyUrlInfo(GURL("https://b.example.org"),
                 /*is_activated=*/true, /*promotable=*/false);
 
@@ -381,8 +380,8 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, ForegroundTabNavigate) {
   // Open a tab in foreground.
   auto* tab_app = InsertForegroundTab(browser, "https://a.example.org");
   EXPECT_EQ(1u, webcontents_to_observer_map().size());
-  EXPECT_TRUE(base::Contains(webcontents_to_observer_map(),
-                             window_to_web_contents()[window]));
+  EXPECT_TRUE(
+      webcontents_to_observer_map().contains(window_to_web_contents()[window]));
   EXPECT_EQ(window_to_web_contents()[window]->GetVisibleURL(),
             GURL("https://a.example.org"));
   EXPECT_EQ(1u, webcontents_to_ukm_key().size());
@@ -395,8 +394,8 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, ForegroundTabNavigate) {
 
   EXPECT_EQ(1u, webcontents_to_observer_map().size());
   EXPECT_EQ(1u, window_to_web_contents().size());
-  EXPECT_TRUE(base::Contains(webcontents_to_observer_map(),
-                             window_to_web_contents()[window]));
+  EXPECT_TRUE(
+      webcontents_to_observer_map().contains(window_to_web_contents()[window]));
   EXPECT_EQ(window_to_web_contents()[window]->GetVisibleURL(),
             GURL("https://b.example.org"));
   EXPECT_EQ(1u, webcontents_to_ukm_key().size());
@@ -444,8 +443,8 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, NavigateToBackgroundTab) {
       embedded_test_server()->GetURL("/banners/no_manifest_test_page.html");
   auto* tab1 = InsertForegroundTab(browser, url1.spec());
   EXPECT_EQ(1u, webcontents_to_observer_map().size());
-  EXPECT_TRUE(base::Contains(webcontents_to_observer_map(),
-                             window_to_web_contents()[window]));
+  EXPECT_TRUE(
+      webcontents_to_observer_map().contains(window_to_web_contents()[window]));
   EXPECT_EQ(window_to_web_contents()[window]->GetVisibleURL(), url1);
   EXPECT_EQ(1u, webcontents_to_ukm_key().size());
   EXPECT_EQ(webcontents_to_ukm_key()[tab1], url1);
@@ -458,7 +457,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, NavigateToBackgroundTab) {
   auto* tab2 = InsertBackgroundTab(browser, url2.spec());
   metrics->AwaitForInstallableWebAppCheck(url2);
   EXPECT_EQ(2u, webcontents_to_observer_map().size());
-  EXPECT_TRUE(base::Contains(webcontents_to_observer_map(), tab2));
+  EXPECT_TRUE(webcontents_to_observer_map().contains(tab2));
   EXPECT_EQ(1u, window_to_web_contents().size());
   EXPECT_EQ(window_to_web_contents()[window]->GetVisibleURL(), url1);
   EXPECT_EQ(2u, webcontents_to_ukm_key().size());
@@ -504,8 +503,8 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, ActiveBackgroundTab) {
       embedded_test_server()->GetURL("/banners/no_manifest_test_page.html");
   auto* tab1 = InsertForegroundTab(browser, url1.spec());
   EXPECT_EQ(1u, webcontents_to_observer_map().size());
-  EXPECT_TRUE(base::Contains(webcontents_to_observer_map(),
-                             window_to_web_contents()[window]));
+  EXPECT_TRUE(
+      webcontents_to_observer_map().contains(window_to_web_contents()[window]));
   EXPECT_EQ(window_to_web_contents()[window]->GetVisibleURL(), url1);
   EXPECT_EQ(1u, webcontents_to_ukm_key().size());
   EXPECT_EQ(webcontents_to_ukm_key()[tab1], url1);
@@ -518,7 +517,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, ActiveBackgroundTab) {
   auto* tab2 = InsertBackgroundTab(browser, url2.spec());
   metrics->AwaitForInstallableWebAppCheck(url2);
   EXPECT_EQ(2u, webcontents_to_observer_map().size());
-  EXPECT_TRUE(base::Contains(webcontents_to_observer_map(), tab2));
+  EXPECT_TRUE(webcontents_to_observer_map().contains(tab2));
   EXPECT_EQ(1u, window_to_web_contents().size());
   EXPECT_EQ(window_to_web_contents()[window]->GetVisibleURL(), url1);
   EXPECT_EQ(2u, webcontents_to_ukm_key().size());
@@ -579,8 +578,8 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, NavigateToUrlWithManifest) {
       embedded_test_server()->GetURL("/banners/no_manifest_test_page.html");
   auto* tab_app = InsertForegroundTab(browser, url1.spec());
   EXPECT_EQ(1u, webcontents_to_observer_map().size());
-  EXPECT_TRUE(base::Contains(webcontents_to_observer_map(),
-                             window_to_web_contents()[window]));
+  EXPECT_TRUE(
+      webcontents_to_observer_map().contains(window_to_web_contents()[window]));
   EXPECT_EQ(window_to_web_contents()[window]->GetVisibleURL(), url1);
   EXPECT_EQ(1u, webcontents_to_ukm_key().size());
   EXPECT_EQ(webcontents_to_ukm_key()[tab_app], url1);
@@ -594,8 +593,8 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, NavigateToUrlWithManifest) {
   metrics->AwaitForInstallableWebAppCheck(url2);
   EXPECT_EQ(1u, webcontents_to_observer_map().size());
   EXPECT_EQ(1u, window_to_web_contents().size());
-  EXPECT_TRUE(base::Contains(webcontents_to_observer_map(),
-                             window_to_web_contents()[window]));
+  EXPECT_TRUE(
+      webcontents_to_observer_map().contains(window_to_web_contents()[window]));
   EXPECT_EQ(window_to_web_contents()[window]->GetVisibleURL(), url2);
   EXPECT_EQ(1u, webcontents_to_ukm_key().size());
   EXPECT_EQ(webcontents_to_ukm_key()[tab_app], url2);
@@ -636,8 +635,8 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, MultipleBrowser) {
 
   EXPECT_EQ(1u, window_to_web_contents().size());
   EXPECT_EQ(2u, webcontents_to_observer_map().size());
-  EXPECT_TRUE(base::Contains(webcontents_to_observer_map(),
-                             window_to_web_contents()[window1]));
+  EXPECT_TRUE(webcontents_to_observer_map().contains(
+      window_to_web_contents()[window1]));
   EXPECT_EQ(window_to_web_contents()[window1]->GetVisibleURL(),
             GURL("https://b.example.org"));
   EXPECT_EQ(2u, webcontents_to_ukm_key().size());
@@ -656,8 +655,8 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, MultipleBrowser) {
 
   EXPECT_EQ(2u, window_to_web_contents().size());
   EXPECT_EQ(4u, webcontents_to_observer_map().size());
-  EXPECT_TRUE(base::Contains(webcontents_to_observer_map(),
-                             window_to_web_contents()[window2]));
+  EXPECT_TRUE(webcontents_to_observer_map().contains(
+      window_to_web_contents()[window2]));
   EXPECT_EQ(window_to_web_contents()[window2]->GetVisibleURL(),
             GURL("https://d.example.org"));
   EXPECT_EQ(4u, webcontents_to_ukm_key().size());
@@ -679,7 +678,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, MultipleBrowser) {
   EXPECT_EQ(window_to_web_contents()[window1]->GetVisibleURL(),
             GURL("https://b.example.org"));
   EXPECT_EQ(3u, webcontents_to_ukm_key().size());
-  EXPECT_FALSE(base::Contains(webcontents_to_ukm_key(), tab_app1));
+  EXPECT_FALSE(webcontents_to_ukm_key().contains(tab_app1));
   VerifyUrlInfo(GURL("https://d.example.org"),
                 /*is_activated=*/true, /*promotable=*/false);
 
@@ -691,7 +690,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, MultipleBrowser) {
   EXPECT_EQ(window_to_web_contents()[window2]->GetVisibleURL(),
             GURL("https://d.example.org"));
   EXPECT_EQ(2u, webcontents_to_ukm_key().size());
-  EXPECT_FALSE(base::Contains(webcontents_to_ukm_key(), tab_app3));
+  EXPECT_FALSE(webcontents_to_ukm_key().contains(tab_app3));
   VerifyUrlInfo(GURL("https://c.example.org"),
                 /*is_activated=*/false, /*promotable=*/false);
   VerifyUrlInfo(GURL("https://d.example.org"),
@@ -703,10 +702,10 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, MultipleBrowser) {
   wm::GetActivationClient(window1->GetRootWindow())->ActivateWindow(window1);
   EXPECT_EQ(1u, window_to_web_contents().size());
   EXPECT_EQ(1u, webcontents_to_observer_map().size());
-  EXPECT_TRUE(base::Contains(webcontents_to_observer_map(),
-                             window_to_web_contents()[window1]));
+  EXPECT_TRUE(webcontents_to_observer_map().contains(
+      window_to_web_contents()[window1]));
   EXPECT_EQ(1u, webcontents_to_ukm_key().size());
-  EXPECT_FALSE(base::Contains(webcontents_to_ukm_key(), tab_app4));
+  EXPECT_FALSE(webcontents_to_ukm_key().contains(tab_app4));
   VerifyUrlInfo(GURL("https://b.example.org"),
                 /*is_activated=*/true, /*promotable=*/false);
   VerifyUrlInfo(GURL("https://d.example.org"),
@@ -770,8 +769,8 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest,
   auto* tab2 = InsertBackgroundTab(browser1, url2.spec());
 
   EXPECT_EQ(2u, webcontents_to_observer_map().size());
-  EXPECT_TRUE(base::Contains(webcontents_to_observer_map(),
-                             window_to_web_contents()[window1]));
+  EXPECT_TRUE(webcontents_to_observer_map().contains(
+      window_to_web_contents()[window1]));
   EXPECT_EQ(window_to_web_contents()[window1]->GetVisibleURL(), url1);
   EXPECT_EQ(2u, webcontents_to_ukm_key().size());
   EXPECT_EQ(webcontents_to_ukm_key()[tab1], url1);
@@ -801,8 +800,8 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest,
 
   EXPECT_EQ(2u, window_to_web_contents().size());
   EXPECT_EQ(2u, webcontents_to_observer_map().size());
-  EXPECT_TRUE(base::Contains(webcontents_to_observer_map(),
-                             window_to_web_contents()[window2]));
+  EXPECT_TRUE(webcontents_to_observer_map().contains(
+      window_to_web_contents()[window2]));
   EXPECT_EQ(window_to_web_contents()[window2]->GetVisibleURL(), url1);
   EXPECT_EQ(2u, webcontents_to_ukm_key().size());
   EXPECT_EQ(webcontents_to_ukm_key()[tab3], url1);
@@ -820,8 +819,8 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest,
   auto* tab4 = InsertForegroundTab(browser2, "https://a.example.org");
   EXPECT_EQ(2u, window_to_web_contents().size());
   EXPECT_EQ(3u, webcontents_to_observer_map().size());
-  EXPECT_TRUE(base::Contains(webcontents_to_observer_map(),
-                             window_to_web_contents()[window2]));
+  EXPECT_TRUE(webcontents_to_observer_map().contains(
+      window_to_web_contents()[window2]));
   EXPECT_EQ(window_to_web_contents()[window2]->GetVisibleURL(),
             GURL("https://a.example.org"));
   EXPECT_EQ(3u, webcontents_to_ukm_key().size());
@@ -850,10 +849,10 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest,
   wm::GetActivationClient(window1->GetRootWindow())->ActivateWindow(window1);
   EXPECT_EQ(1u, window_to_web_contents().size());
   EXPECT_EQ(1u, webcontents_to_observer_map().size());
-  EXPECT_TRUE(base::Contains(webcontents_to_observer_map(),
-                             window_to_web_contents()[window1]));
+  EXPECT_TRUE(webcontents_to_observer_map().contains(
+      window_to_web_contents()[window1]));
   EXPECT_EQ(1u, webcontents_to_ukm_key().size());
-  EXPECT_TRUE(base::Contains(webcontents_to_ukm_key(), tab2));
+  EXPECT_TRUE(webcontents_to_ukm_key().contains(tab2));
 
   browser1->tab_strip_model()->CloseAllTabs();
   EXPECT_TRUE(window_to_web_contents().empty());
@@ -889,8 +888,8 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest,
 
   EXPECT_EQ(1u, window_to_web_contents().size());
   EXPECT_EQ(2u, webcontents_to_observer_map().size());
-  EXPECT_TRUE(base::Contains(webcontents_to_observer_map(),
-                             window_to_web_contents()[window1]));
+  EXPECT_TRUE(webcontents_to_observer_map().contains(
+      window_to_web_contents()[window1]));
   EXPECT_EQ(window_to_web_contents()[window1]->GetVisibleURL(),
             GURL("https://a.example.org"));
   EXPECT_EQ(2u, webcontents_to_ukm_key().size());
@@ -928,8 +927,8 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest,
 
   EXPECT_EQ(2u, window_to_web_contents().size());
   EXPECT_EQ(2u, webcontents_to_observer_map().size());
-  EXPECT_TRUE(base::Contains(webcontents_to_observer_map(),
-                             window_to_web_contents()[window2]));
+  EXPECT_TRUE(webcontents_to_observer_map().contains(
+      window_to_web_contents()[window2]));
   EXPECT_EQ(window_to_web_contents()[window2]->GetVisibleURL(),
             GURL("https://b.example.org"));
   EXPECT_EQ(2u, webcontents_to_ukm_key().size());
@@ -952,10 +951,10 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest,
   browser1->tab_strip_model()->CloseAllTabs();
   EXPECT_EQ(1u, window_to_web_contents().size());
   EXPECT_EQ(1u, webcontents_to_observer_map().size());
-  EXPECT_TRUE(base::Contains(webcontents_to_observer_map(),
-                             window_to_web_contents()[window2]));
+  EXPECT_TRUE(webcontents_to_observer_map().contains(
+      window_to_web_contents()[window2]));
   EXPECT_EQ(1u, webcontents_to_ukm_key().size());
-  EXPECT_TRUE(base::Contains(webcontents_to_ukm_key(), tab3));
+  EXPECT_TRUE(webcontents_to_ukm_key().contains(tab3));
 
   browser2->tab_strip_model()->CloseAllTabs();
   EXPECT_TRUE(window_to_web_contents().empty());
@@ -1014,10 +1013,10 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, OnHistoryDeletions) {
 
   EXPECT_EQ(2u, window_to_web_contents().size());
   EXPECT_EQ(2u, webcontents_to_observer_map().size());
-  EXPECT_TRUE(base::Contains(webcontents_to_observer_map(),
-                             window_to_web_contents()[window1]));
-  EXPECT_TRUE(base::Contains(webcontents_to_observer_map(),
-                             window_to_web_contents()[window2]));
+  EXPECT_TRUE(webcontents_to_observer_map().contains(
+      window_to_web_contents()[window1]));
+  EXPECT_TRUE(webcontents_to_observer_map().contains(
+      window_to_web_contents()[window2]));
   EXPECT_EQ(window_to_web_contents()[window1]->GetVisibleURL(),
             GURL("https://a.example.org"));
   EXPECT_EQ(window_to_web_contents()[window2]->GetVisibleURL(),
@@ -1038,10 +1037,10 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, OnHistoryDeletions) {
   website_metrics()->OnHistoryDeletions(nullptr, info);
   EXPECT_EQ(2u, window_to_web_contents().size());
   EXPECT_EQ(2u, webcontents_to_observer_map().size());
-  EXPECT_TRUE(base::Contains(webcontents_to_observer_map(),
-                             window_to_web_contents()[window1]));
-  EXPECT_TRUE(base::Contains(webcontents_to_observer_map(),
-                             window_to_web_contents()[window2]));
+  EXPECT_TRUE(webcontents_to_observer_map().contains(
+      window_to_web_contents()[window1]));
+  EXPECT_TRUE(webcontents_to_observer_map().contains(
+      window_to_web_contents()[window2]));
   EXPECT_EQ(window_to_web_contents()[window1]->GetVisibleURL(),
             GURL("https://a.example.org"));
   EXPECT_EQ(window_to_web_contents()[window2]->GetVisibleURL(),

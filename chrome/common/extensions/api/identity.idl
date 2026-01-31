@@ -154,8 +154,8 @@ namespace identity {
     // the callback.
     //
     // |details| : Token options.
-    // |callback| : Called with an OAuth2 access token as specified by the
-    // manifest, or undefined if there was an error. The
+    // |callback| : Returns a Promise which resolves with an OAuth2 access token
+    // as specified by the manifest, or rejects if there was an error. The
     // <code>grantedScopes</code> parameter is populated since Chrome 87. When
     // available, this parameter contains the list of granted scopes
     // corresponding with the returned token.
@@ -174,9 +174,10 @@ namespace identity {
     // only applies to the primary account for the profile.
     //
     // |details|: Profile options.
-    // |callback|: Called with the <code>ProfileUserInfo</code> of the primary
-    // Chrome account, of an empty <code>ProfileUserInfo</code> if the account
-    // with given <code>details</code> doesn't exist.
+    // |callback|: Returns a Promise which resolves with the
+    // <code>ProfileUserInfo</code> of the primary Chrome account, or an empty
+    // <code>ProfileUserInfo</code> if the account with given
+    // <code>details</code> doesn't exist.
     static void getProfileUserInfo(
         optional ProfileDetails details,
         GetProfileUserInfoCallback callback);
@@ -189,7 +190,8 @@ namespace identity {
     // <code>getAuthToken</code>.
     //
     // |details| : Token information.
-    // |callback| : Called when the token has been removed from the cache.
+    // |callback| : Returns a Promise which resolves when the token has been
+    // removed from the cache.
     static void removeCachedAuthToken(
         InvalidTokenDetails details,
         optional InvalidateAuthTokenCallback callback);
@@ -201,7 +203,8 @@ namespace identity {
     //   <li>De-authorizes the user from all auth flows</li>
     // </ul>
     //
-    // |callback| : Called when the state has been cleared.
+    // |callback| : Returns a Promise which resolves when the state has been
+    // cleared.
     static void clearAllCachedAuthTokens(
         ClearAllCachedAuthTokensCallback callback);
 
@@ -222,7 +225,8 @@ namespace identity {
     // when your app is first launched.
     //
     // |details| : WebAuth flow options.
-    // |callback| : Called with the URL redirected back to your application.
+    // |callback| : Returns a Promise which resolves with the URL redirected
+    // back to your application.
     static void launchWebAuthFlow(
         WebAuthFlowDetails details,
         LaunchWebAuthFlowCallback callback);

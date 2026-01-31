@@ -17,7 +17,7 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.Callback;
 import org.chromium.base.FeatureList;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
@@ -47,7 +47,7 @@ public class OptionalButtonCoordinator {
     private final OptionalButtonMediator mMediator;
     private final OptionalButtonView mView;
     private final Supplier<UserEducationHelper> mUserEducationHelper;
-    private final ObservableSupplier<Tracker> mFeatureEngagementTrackerSupplier;
+    private final MonotonicObservableSupplier<Tracker> mFeatureEngagementTrackerSupplier;
     private @Nullable Callback<Integer> mTransitionFinishedCallback;
     private @Nullable IphCommandBuilder mIphCommandBuilder;
     private boolean mAlwaysShowActionChip;
@@ -84,7 +84,7 @@ public class OptionalButtonCoordinator {
             Supplier<UserEducationHelper> userEducationHelper,
             ViewGroup transitionRoot,
             BooleanSupplier isAnimationAllowedPredicate,
-            ObservableSupplier<Tracker> featureEngagementTrackerSupplier) {
+            MonotonicObservableSupplier<Tracker> featureEngagementTrackerSupplier) {
         mUserEducationHelper = userEducationHelper;
         PropertyModel model =
                 new PropertyModel.Builder(OptionalButtonProperties.ALL_KEYS)
@@ -130,14 +130,26 @@ public class OptionalButtonCoordinator {
         mMediator.setCollapsedStateWidth(width);
     }
 
+    /** Sets a runnable that's invoked before the optional button is hidden. */
     public void setOnBeforeHideTransitionCallback(Runnable onBeforeHideTransitionCallback) {
         mMediator.setOnBeforeHideTransitionCallback(onBeforeHideTransitionCallback);
     }
 
+    /** Sets a runnable that's invoked before the optional button is shown. */
+    public void setOnBeforeShowTransitionCallback(Runnable onBeforeShowTransitionCallback) {
+        mMediator.setOnBeforeShowTransitionCallback(onBeforeShowTransitionCallback);
+    }
+
+    /** Sets a runnable that's invoked right before the delayed transition begins. */
+    public void setOnBeforeDelayedTransitionCallback(Runnable onBeforeDelayedTransitionCallback) {
+        mMediator.setOnBeforeDelayedTransitionCallback(onBeforeDelayedTransitionCallback);
+    }
+
     /**
      * Sets a callback that's invoked when any transition starts.
+     *
      * @param transitionStartedCallback A callback with an integer argument, this argument a value
-     *         from {@link TransitionType}.
+     *     from {@link TransitionType}.
      */
     public void setTransitionStartedCallback(Callback<Integer> transitionStartedCallback) {
         mMediator.setTransitionStartedCallback(transitionStartedCallback);
@@ -269,6 +281,14 @@ public class OptionalButtonCoordinator {
      */
     public int getViewWidth() {
         return mView.getWidth();
+    }
+
+    /**
+     * Returns the width of the container view. Called by ToolbarPhone for layout out other views.
+     * Intended to be called when the view is transitioning and not visibly at its final width.
+     */
+    public int getViewWidthDuringTransition() {
+        return mView.getLayoutParams().width;
     }
 
     /**

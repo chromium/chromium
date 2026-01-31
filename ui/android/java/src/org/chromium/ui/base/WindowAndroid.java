@@ -39,6 +39,7 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.CalledByNativeForTesting;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.AconfigFlaggedApiDelegate;
@@ -54,8 +55,9 @@ import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.lifetime.LifetimeAssert;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
@@ -211,8 +213,8 @@ public class WindowAndroid
     private final boolean mTrackOcclusion;
 
     /** True when this window is occluded. */
-    private final ObservableSupplierImpl<Boolean> mOcclusionSupplier =
-            new ObservableSupplierImpl<>(false);
+    private final SettableNonNullObservableSupplier<Boolean> mOcclusionSupplier =
+            ObservableSuppliers.createNonNull(false);
 
     private boolean mIsTopResumedActivity;
     private final boolean mActivityTopResumedSupported;
@@ -246,9 +248,7 @@ public class WindowAndroid
         mIntentRequestTracker = (IntentRequestTrackerImpl) tracker;
         mInsetObserver = insetObserver;
         mApplicationBottomInsetSupplier.setInsetObserver(mInsetObserver);
-        if (mInsetObserver != null
-                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
-                && UiAndroidFeatureList.sAndroidUseCorrectWindowBounds.isEnabled()) {
+        if (mInsetObserver != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             mWindowInsetObserver =
                     new WindowInsetObserver() {
                         @Override
@@ -379,7 +379,7 @@ public class WindowAndroid
     }
 
     /** A supplier that returns whether the window is occluded or not. */
-    public ObservableSupplier<Boolean> getOcclusionSupplier() {
+    public MonotonicObservableSupplier<Boolean> getOcclusionSupplier() {
         return mOcclusionSupplier;
     }
 
@@ -1111,11 +1111,25 @@ public class WindowAndroid
     @Override
     public void onAdaptiveRefreshRateInfoChanged(DisplayAndroid.AdaptiveRefreshRateInfo arrInfo) {
         if (mNativeWindowAndroid == 0) return;
+        int velocityArraySize =
+                arrInfo.velocityMapping == null ? 0 : arrInfo.velocityMapping.size();
+        float[] framePerSecondArray = new float[velocityArraySize];
+        float[] dpPerSecondArray = new float[velocityArraySize];
+        if (arrInfo.velocityMapping != null) {
+            int index = 0;
+            for (AconfigFlaggedApiDelegate.FrameRateVelocityPoint point : arrInfo.velocityMapping) {
+                framePerSecondArray[index] = point.getFramePerSecond();
+                dpPerSecondArray[index] = point.getDpPerSecond();
+                ++index;
+            }
+        }
         WindowAndroidJni.get()
                 .onAdaptiveRefreshRateInfoChanged(
                         mNativeWindowAndroid,
                         arrInfo.supportsAdaptiveRefreshRate,
-                        arrInfo.suggestedFrameRateHigh);
+                        arrInfo.suggestedFrameRateHigh,
+                        framePerSecondArray,
+                        dpPerSecondArray);
     }
 
     @CalledByNative
@@ -1473,7 +1487,9 @@ public class WindowAndroid
         void onAdaptiveRefreshRateInfoChanged(
                 long nativeWindowAndroid,
                 boolean supportsAdaptiveRefreshRate,
-                float suggestedFrameRateHigh);
+                float suggestedFrameRateHigh,
+                @JniType("std::vector<jfloat>") float[] framePerSecondArray,
+                @JniType("std::vector<jfloat>") float[] dpPerSecondArray);
 
         void onOverlayTransformUpdated(long nativeWindowAndroid);
 

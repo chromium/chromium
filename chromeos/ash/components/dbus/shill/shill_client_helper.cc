@@ -167,9 +167,9 @@ void OnValueMethod(ShillClientHelper::RefHolder* ref_holder,
   std::move(callback).Run(std::move(value));
 }
 
-// Handles responses for methods with base::Value::Dict results.
+// Handles responses for methods with base::DictValue results.
 void OnDictValueMethod(ShillClientHelper::RefHolder* ref_holder,
-                       chromeos::DBusMethodCallback<base::Value::Dict> callback,
+                       chromeos::DBusMethodCallback<base::DictValue> callback,
                        dbus::Response* response,
                        dbus::ErrorResponse* error_response) {
   if (!response) {
@@ -209,11 +209,11 @@ void OnVoidMethodWithErrorResponse(
   }
 }
 
-// Handles responses for methods with base::Value::Dict results.
+// Handles responses for methods with base::DictValue results.
 // Used by CallDictValueMethodWithErrorResponse().
 void OnDictValueMethodWithErrorResponse(
     ShillClientHelper::RefHolder* ref_holder,
-    base::OnceCallback<void(base::Value::Dict result)> callback,
+    base::OnceCallback<void(base::DictValue result)> callback,
     ShillClientHelper::ErrorCallback error_callback,
     dbus::Response* response,
     dbus::ErrorResponse* error_response) {
@@ -349,7 +349,7 @@ void ShillClientHelper::CallValueMethod(
 
 void ShillClientHelper::CallDictValueMethod(
     dbus::MethodCall* method_call,
-    chromeos::DBusMethodCallback<base::Value::Dict> callback) {
+    chromeos::DBusMethodCallback<base::DictValue> callback) {
   DCHECK(!callback.is_null());
   proxy_->CallMethodWithErrorResponse(
       method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
@@ -399,7 +399,7 @@ void ShillClientHelper::CallStringMethodWithErrorCallback(
 
 void ShillClientHelper::CallDictValueMethodWithErrorCallback(
     dbus::MethodCall* method_call,
-    base::OnceCallback<void(base::Value::Dict result)> callback,
+    base::OnceCallback<void(base::DictValue result)> callback,
     ErrorCallback error_callback) {
   DCHECK(!callback.is_null());
   DCHECK(!error_callback.is_null());
@@ -429,7 +429,7 @@ enum DictionaryType { DICTIONARY_TYPE_VARIANT, DICTIONARY_TYPE_STRING };
 
 // Appends an a{ss} dictionary to |writer|. |dictionary| must only contain
 // strings.
-void AppendStringDictionary(const base::Value::Dict& dictionary,
+void AppendStringDictionary(const base::DictValue& dictionary,
                             dbus::MessageWriter* writer) {
   dbus::MessageWriter array_writer(nullptr);
   writer->OpenArray("{ss}", &array_writer);
@@ -533,7 +533,7 @@ void ShillClientHelper::AppendValueDataAsVariant(dbus::MessageWriter* writer,
 // static
 void ShillClientHelper::AppendServiceProperties(
     dbus::MessageWriter* writer,
-    const base::Value::Dict& dictionary) {
+    const base::DictValue& dictionary) {
   dbus::MessageWriter array_writer(nullptr);
   writer->OpenArray("{sv}", &array_writer);
   for (auto it : dictionary) {

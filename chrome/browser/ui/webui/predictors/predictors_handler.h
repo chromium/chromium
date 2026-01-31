@@ -31,17 +31,17 @@ class PredictorsHandler : public content::WebUIMessageHandler {
 
  private:
   // Synchronously fetches the database from AutocompleteActionPredictor and
-  // calls into JS with the resulting `base::Value::Dict`.
-  void RequestAutocompleteActionPredictorDb(const base::Value::List& args);
+  // calls into JS with the resulting `base::DictValue`.
+  void RequestAutocompleteActionPredictorDb(const base::ListValue& args);
 
   // Fetches stats for the ResourcePrefetchPredictor and returns it as a
-  // `base::Value::Dict` to the JS.
-  void RequestResourcePrefetchPredictorDb(const base::Value::List& args);
+  // `base::DictValue` to the JS.
+  void RequestResourcePrefetchPredictorDb(const base::ListValue& args);
 
   // Helpers for RequestResourcePrefetchPredictorDb.
   void AddOriginDataMapToListValue(
       const std::map<std::string, predictors::OriginData>& data_map,
-      base::Value::List* db) const;
+      base::ListValue* db) const;
 
   raw_ptr<predictors::AutocompleteActionPredictor>
       autocomplete_action_predictor_;

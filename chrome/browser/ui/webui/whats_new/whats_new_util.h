@@ -68,6 +68,9 @@ bool ShouldShowForState(PrefService* local_state,
 
 // Return the startup URL for the WebUI page.
 GURL GetWebUIStartupURL();
+
+// Returns whether the staging override has been enabled.
+bool UseStagingOverrideEnabled();
 }  // namespace whats_new
 
 #endif  // CHROME_BROWSER_UI_WEBUI_WHATS_NEW_WHATS_NEW_UTIL_H_

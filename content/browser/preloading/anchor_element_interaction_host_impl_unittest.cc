@@ -14,8 +14,7 @@
 #include "content/test/test_web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-data-view.h"
-#include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-forward.h"
+#include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
 
 namespace content {

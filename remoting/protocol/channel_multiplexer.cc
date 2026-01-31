@@ -10,10 +10,12 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
@@ -29,26 +31,29 @@ const int kMaxPacketSize = 1024;
 
 class PendingPacket {
  public:
-  PendingPacket(std::unique_ptr<MultiplexPacket> packet)
-      : packet(std::move(packet)) {}
+  explicit PendingPacket(std::unique_ptr<MultiplexPacket> packet)
+      : packet_(std::move(packet)) {
+    unread_data_ = base::as_byte_span(packet_->data());
+  }
 
   PendingPacket(const PendingPacket&) = delete;
   PendingPacket& operator=(const PendingPacket&) = delete;
 
   ~PendingPacket() = default;
 
-  bool is_empty() { return pos >= packet->data().size(); }
+  bool is_empty() const { return unread_data_.empty(); }
 
-  int Read(char* buffer, size_t size) {
-    size = std::min(size, packet->data().size() - pos);
-    UNSAFE_TODO(memcpy(buffer, packet->data().data() + pos, size));
-    pos += size;
-    return size;
+  size_t Read(base::span<uint8_t> buffer) {
+    size_t copy_size = std::min(buffer.size(), unread_data_.size());
+    auto [to_read, next_unread] = unread_data_.split_at(copy_size);
+    buffer.first(copy_size).copy_from(to_read);
+    unread_data_ = next_unread;
+    return copy_size;
   }
 
  private:
-  std::unique_ptr<MultiplexPacket> packet;
-  size_t pos = 0U;
+  std::unique_ptr<MultiplexPacket> packet_;
+  base::raw_span<const uint8_t> unread_data_;
 };
 
 }  // namespace
@@ -203,19 +208,21 @@ void ChannelMultiplexer::MuxChannel::DoWrite(
 int ChannelMultiplexer::MuxChannel::DoRead(
     const scoped_refptr<net::IOBuffer>& buffer,
     int buffer_len) {
-  int pos = 0;
-  while (buffer_len > 0 && !pending_packets_.empty()) {
+  CHECK_EQ(buffer->span().size(), static_cast<size_t>(buffer_len));
+
+  auto remaining_buffer = buffer->span();
+  while (!remaining_buffer.empty() && !pending_packets_.empty()) {
     DCHECK(!pending_packets_.front()->is_empty());
-    int result = pending_packets_.front()->Read(
-        UNSAFE_TODO(buffer->data() + pos), buffer_len);
-    DCHECK_LE(result, buffer_len);
-    pos += result;
-    buffer_len -= pos;
+
+    size_t bytes_read = pending_packets_.front()->Read(remaining_buffer);
+    remaining_buffer = remaining_buffer.subspan(bytes_read);
+
     if (pending_packets_.front()->is_empty()) {
       pending_packets_.pop_front();
     }
   }
-  return pos;
+
+  return static_cast<int>(buffer->span().size() - remaining_buffer.size());
 }
 
 ChannelMultiplexer::MuxSocket::MuxSocket(MuxChannel* channel)

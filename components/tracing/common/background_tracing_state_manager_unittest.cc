@@ -29,7 +29,7 @@ class BackgroundTracingStateManagerTest : public testing::Test {
   }
 
   std::string GetSessionStateJson() {
-    const base::Value::Dict& state =
+    const base::DictValue& state =
         pref_service_->GetDict(tracing::kBackgroundTracingSessionState);
 
     std::string json;
@@ -37,7 +37,7 @@ class BackgroundTracingStateManagerTest : public testing::Test {
     return json;
   }
 
-  void SetSessionState(base::Value::Dict dict) {
+  void SetSessionState(base::DictValue dict) {
     pref_service_->Set(tracing::kBackgroundTracingSessionState,
                        base::Value(std::move(dict)));
   }
@@ -73,7 +73,7 @@ TEST_F(BackgroundTracingStateManagerTest, EnablePrivacyFilter) {
 }
 
 TEST_F(BackgroundTracingStateManagerTest, PrivacyFilterEnabled) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("privacy_filter", true);
   SetSessionState(std::move(dict));
   ResetStateManager();
@@ -86,8 +86,8 @@ TEST_F(BackgroundTracingStateManagerTest, PrivacyFilterEnabled) {
 }
 
 TEST_F(BackgroundTracingStateManagerTest, LoadEnabledScenarios) {
-  base::Value::Dict dict;
-  dict.Set("enabled_scenarios", base::Value::List().Append("1").Append("3"));
+  base::DictValue dict;
+  dict.Set("enabled_scenarios", base::ListValue().Append("1").Append("3"));
   SetSessionState(std::move(dict));
   ResetStateManager();
 

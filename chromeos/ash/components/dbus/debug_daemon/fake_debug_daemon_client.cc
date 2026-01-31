@@ -14,7 +14,7 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
+#include "base/containers/flat_map.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
@@ -195,6 +195,26 @@ void FakeDebugDaemonClient::TestICMPWithOptions(
       FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
 }
 
+void FakeDebugDaemonClient::TestHostsConnectivity(
+    const std::vector<std::string>& hosts,
+    const base::flat_map<std::string, std::string>& options,
+    TestHostsConnectivityCallback callback) {
+  // Pre-serialized protobuf response containing a PROXY_DNS_RESOLUTION_ERROR
+  // entry with hostname "clients2.google.com" and proxy "http://proxy.com:9211"
+  static constexpr uint8_t kTestConnectivityResponse[] = {
+      0x0A, 0x48, 0x08, 0x08, 0x12, 0x18, 0x50, 0x72, 0x6F, 0x78, 0x79,
+      0x20, 0x72, 0x65, 0x73, 0x6F, 0x6C, 0x75, 0x74, 0x69, 0x6F, 0x6E,
+      0x20, 0x66, 0x61, 0x69, 0x6C, 0x65, 0x64, 0x2E, 0x1A, 0x13, 0x63,
+      0x6C, 0x69, 0x65, 0x6E, 0x74, 0x73, 0x32, 0x2E, 0x67, 0x6F, 0x6F,
+      0x67, 0x6C, 0x65, 0x2E, 0x63, 0x6F, 0x6D, 0x22, 0x15, 0x68, 0x74,
+      0x74, 0x70, 0x3A, 0x2F, 0x2F, 0x70, 0x72, 0x6F, 0x78, 0x79, 0x2E,
+      0x63, 0x6F, 0x6D, 0x3A, 0x39, 0x32, 0x31, 0x31};
+  std::vector<uint8_t> serialized(std::begin(kTestConnectivityResponse),
+                                  std::end(kTestConnectivityResponse));
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(serialized)));
+}
+
 void FakeDebugDaemonClient::UploadCrashes(UploadCrashesCallback callback) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true));
@@ -257,55 +277,6 @@ void FakeDebugDaemonClient::SetServiceIsAvailable(bool is_available) {
   callbacks.swap(pending_wait_for_service_to_be_available_callbacks_);
   for (auto& callback : callbacks)
     std::move(callback).Run(true);
-}
-
-void FakeDebugDaemonClient::CupsAddManuallyConfiguredPrinter(
-    const std::string& name,
-    const std::string& uri,
-    const std::string& language,
-    const std::string& ppd_contents,
-    CupsAddPrinterCallback callback) {
-  printers_.insert_or_assign(name, ppd_contents);
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), 0));
-}
-
-void FakeDebugDaemonClient::CupsAddAutoConfiguredPrinter(
-    const std::string& name,
-    const std::string& uri,
-    const std::string& language,
-    CupsAddPrinterCallback callback) {
-  printers_.insert_or_assign(name, "");
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), 0));
-}
-
-void FakeDebugDaemonClient::CupsRemovePrinter(
-    const std::string& name,
-    CupsRemovePrinterCallback callback,
-    base::OnceClosure error_callback) {
-  const bool has_printer = base::Contains(printers_, name);
-  if (has_printer)
-    printers_.erase(name);
-
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), has_printer));
-}
-
-void FakeDebugDaemonClient::CupsRetrievePrinterPpd(
-    const std::string& name,
-    CupsRetrievePrinterPpdCallback callback,
-    base::OnceClosure error_callback) {
-  auto it = printers_.find(name);
-  if (it == printers_.end()) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, std::move(error_callback));
-    return;
-  }
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback),
-                                std::vector<uint8_t>(it->second.begin(),
-                                                     it->second.end())));
 }
 
 void FakeDebugDaemonClient::StartPluginVmDispatcher(

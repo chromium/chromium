@@ -63,13 +63,13 @@ class PowerStatusTest : public AshTestBase {
   void TearDown() override {
     power_status_->RemoveObserver(test_observer_.get());
     test_observer_.reset();
+    power_status_ = nullptr;
     AshTestBase::TearDown();
     chromeos::PowerManagerClient::Shutdown();
   }
 
  protected:
-  raw_ptr<PowerStatus, DanglingUntriaged> power_status_ =
-      nullptr;  // Not owned.
+  raw_ptr<PowerStatus> power_status_ = nullptr;  // Not owned.
   std::unique_ptr<TestObserver> test_observer_;
 };
 

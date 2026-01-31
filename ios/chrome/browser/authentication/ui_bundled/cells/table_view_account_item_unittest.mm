@@ -7,6 +7,9 @@
 #import <CoreGraphics/CoreGraphics.h>
 #import <UIKit/UIKit.h>
 
+#import "base/apple/foundation_util.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/image_content_configuration.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -19,23 +22,33 @@ using AccountControlTableViewItemTest = PlatformTest;
 TEST_F(AccountControlTableViewItemTest, ImageViewAndTextLabels) {
   TableViewAccountItem* item = [[TableViewAccountItem alloc] initWithType:0];
   UIImage* image = [[UIImage alloc] init];
-  NSString* mainText = @"Main text";
-  NSString* detailText = @"Detail text";
+  NSString* main_text = @"Main text";
+  NSString* detail_text = @"Detail text";
 
   item.image = image;
-  item.text = mainText;
-  item.detailText = detailText;
+  item.text = main_text;
+  item.detailText = detail_text;
 
-  id cell = [[[item cellClass] alloc] init];
-  ASSERT_TRUE([cell isMemberOfClass:[TableViewAccountCell class]]);
-
-  TableViewAccountCell* accountCell = cell;
-  EXPECT_FALSE(accountCell.imageView.image);
-  EXPECT_FALSE(accountCell.textLabel.text);
-  EXPECT_FALSE(accountCell.detailTextLabel.text);
+  LegacyTableViewCell* cell = [[[item cellClass] alloc] init];
+  ASSERT_TRUE([cell isMemberOfClass:[LegacyTableViewCell class]]);
 
   [item configureCell:cell withStyler:[[ChromeTableViewStyler alloc] init]];
-  EXPECT_NSEQ(image, accountCell.imageView.image);
-  EXPECT_NSEQ(mainText, accountCell.textLabel.text);
-  EXPECT_NSEQ(detailText, accountCell.detailTextLabel.text);
+
+  ASSERT_TRUE([cell.contentConfiguration
+      isMemberOfClass:TableViewCellContentConfiguration.class]);
+  TableViewCellContentConfiguration* configuration =
+      base::apple::ObjCCastStrict<TableViewCellContentConfiguration>(
+          cell.contentConfiguration);
+
+  EXPECT_NSEQ(main_text, configuration.title);
+  EXPECT_NSEQ(detail_text, configuration.subtitle);
+
+  NSObject<ChromeContentConfiguration>* leading_config =
+      configuration.leadingConfiguration;
+  ASSERT_TRUE(
+      [leading_config isMemberOfClass:[ImageContentConfiguration class]]);
+
+  ImageContentConfiguration* image_config =
+      base::apple::ObjCCastStrict<ImageContentConfiguration>(leading_config);
+  EXPECT_NSEQ(image, image_config.image);
 }

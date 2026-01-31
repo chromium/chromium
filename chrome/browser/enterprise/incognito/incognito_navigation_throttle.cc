@@ -10,6 +10,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/common/webui_url_utils.h"
 #include "chrome/grit/browser_resources.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
@@ -29,10 +30,10 @@
 namespace enterprise_incognito {
 namespace {
 std::string GetIncognitoNavigationBlockedErrorPage(
-    base::Value::List blocking_extension,
-    base::Value::List missing_extension) {
+    base::ListValue blocking_extension,
+    base::ListValue missing_extension) {
   auto strings =
-      base::Value::Dict()
+      base::DictValue()
           .Set("incognitoBlockedPageTitle",
                l10n_util::GetPluralStringFUTF16(
                    IDS_INCOGNITO_NAVIGATION_BLOCKED_PAGE_TITLE,
@@ -85,7 +86,7 @@ void IncognitoNavigationThrottle::MaybeCreateAndAdd(
   if (!profile->IsIncognitoProfile()) {
     return;
   }
-  const base::Value::List& mandatory_extensions = profile->GetPrefs()->GetList(
+  const base::ListValue& mandatory_extensions = profile->GetPrefs()->GetList(
       prefs::kMandatoryExtensionsForIncognitoNavigation);
   if (mandatory_extensions.empty()) {
     return;
@@ -107,6 +108,15 @@ IncognitoNavigationThrottle::WillStartRequest() {
   if (blocking_extensions_.empty() && missing_extensions_.empty()) {
     return content::NavigationThrottle::PROCEED;
   }
+
+  // Allow-list internal Top Chrome WebUIs.
+  // These are part of the browser's own UI (like the reload button, tab search,
+  // etc.) and do not access the web.
+  const GURL& url = navigation_handle()->GetURL();
+  if (IsTopChromeWebUIURL(url)) {
+    return content::NavigationThrottle::PROCEED;
+  }
+
   return ThrottleCheckResult(
       content::NavigationThrottle::CANCEL, net::ERR_BLOCKED_BY_ADMINISTRATOR,
       GetIncognitoNavigationBlockedErrorPage(std::move(blocking_extensions_),
@@ -128,7 +138,7 @@ void IncognitoNavigationThrottle::ReadMandatoryExtensionsStatus() {
   missing_extensions_.clear();
   extensions::ExtensionRegistry* registry =
       extensions::ExtensionRegistry::Get(profile_);
-  const base::Value::List& mandatory_extensions = profile_->GetPrefs()->GetList(
+  const base::ListValue& mandatory_extensions = profile_->GetPrefs()->GetList(
       prefs::kMandatoryExtensionsForIncognitoNavigation);
   if (mandatory_extensions.empty()) {
     return;

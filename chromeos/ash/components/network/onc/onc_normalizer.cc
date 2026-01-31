@@ -21,21 +21,21 @@ Normalizer::Normalizer(bool remove_recommended_fields)
 
 Normalizer::~Normalizer() = default;
 
-base::Value::Dict Normalizer::NormalizeObject(
+base::DictValue Normalizer::NormalizeObject(
     const chromeos::onc::OncValueSignature* object_signature,
-    const base::Value::Dict& onc_object) {
+    const base::DictValue& onc_object) {
   CHECK(object_signature != nullptr);
   bool error = false;
-  base::Value::Dict result = MapObject(*object_signature, onc_object, &error);
+  base::DictValue result = MapObject(*object_signature, onc_object, &error);
   DCHECK(!error);
   return result;
 }
 
-base::Value::Dict Normalizer::MapObject(
+base::DictValue Normalizer::MapObject(
     const chromeos::onc::OncValueSignature& signature,
-    const base::Value::Dict& onc_object,
+    const base::DictValue& onc_object,
     bool* error) {
-  base::Value::Dict normalized =
+  base::DictValue normalized =
       chromeos::onc::Mapper::MapObject(signature, onc_object, error);
 
   if (*error) {
@@ -69,7 +69,7 @@ base::Value::Dict Normalizer::MapObject(
 
 namespace {
 
-void RemoveEntryUnless(base::Value::Dict* dict,
+void RemoveEntryUnless(base::DictValue* dict,
                        const std::string& path,
                        bool condition) {
   if (!condition && dict->contains(path)) {
@@ -78,21 +78,21 @@ void RemoveEntryUnless(base::Value::Dict* dict,
   }
 }
 
-bool IsIpConfigTypeStatic(base::Value::Dict* network,
+bool IsIpConfigTypeStatic(base::DictValue* network,
                           const std::string& ip_config_type_key) {
   std::string* ip_config_type = network->FindString(ip_config_type_key);
   return ip_config_type &&
          (*ip_config_type) == ::onc::network_config::kIPConfigTypeStatic;
 }
 
-std::string GetString(const base::Value::Dict& dict, const char* key) {
+std::string GetString(const base::DictValue& dict, const char* key) {
   const std::string* value = dict.FindString(key);
   return value ? *value : std::string();
 }
 
 }  // namespace
 
-void Normalizer::NormalizeCertificate(base::Value::Dict* cert) {
+void Normalizer::NormalizeCertificate(base::DictValue* cert) {
   std::string type = GetString(*cert, ::onc::certificate::kType);
   RemoveEntryUnless(cert, ::onc::certificate::kPKCS12,
                     type == ::onc::certificate::kClient);
@@ -104,13 +104,13 @@ void Normalizer::NormalizeCertificate(base::Value::Dict* cert) {
                         type == ::onc::certificate::kAuthority);
 }
 
-void Normalizer::NormalizeEthernet(base::Value::Dict* ethernet) {
+void Normalizer::NormalizeEthernet(base::DictValue* ethernet) {
   std::string auth = GetString(*ethernet, ::onc::ethernet::kAuthentication);
   RemoveEntryUnless(ethernet, ::onc::ethernet::kEAP,
                     auth == ::onc::ethernet::k8021X);
 }
 
-void Normalizer::NormalizeEAP(base::Value::Dict* eap) {
+void Normalizer::NormalizeEAP(base::DictValue* eap) {
   std::string clientcert_type =
       GetString(*eap, ::onc::client_cert::kClientCertType);
   RemoveEntryUnless(eap, ::onc::client_cert::kClientCertPattern,
@@ -131,7 +131,7 @@ void Normalizer::NormalizeEAP(base::Value::Dict* eap) {
                         outer == ::onc::eap::kEAP_FAST);
 }
 
-void Normalizer::NormalizeIPsec(base::Value::Dict* ipsec) {
+void Normalizer::NormalizeIPsec(base::DictValue* ipsec) {
   std::string auth_type = GetString(*ipsec, ::onc::ipsec::kAuthenticationType);
   RemoveEntryUnless(ipsec, ::onc::client_cert::kClientCertType,
                     auth_type == ::onc::ipsec::kCert);
@@ -157,7 +157,7 @@ void Normalizer::NormalizeIPsec(base::Value::Dict* ipsec) {
   RemoveEntryUnless(ipsec, ::onc::ipsec::kXAUTH, ike_version == 1);
 }
 
-void Normalizer::NormalizeNetworkConfiguration(base::Value::Dict* network) {
+void Normalizer::NormalizeNetworkConfiguration(base::DictValue* network) {
   bool remove = network->FindBool(::onc::kRemove).value_or(false);
   if (remove) {
     network->Remove(::onc::network_config::kStaticIPConfig);
@@ -178,7 +178,7 @@ void Normalizer::NormalizeNetworkConfiguration(base::Value::Dict* network) {
   NormalizeStaticIPConfigForNetwork(network);
 }
 
-void Normalizer::NormalizeOpenVPN(base::Value::Dict* openvpn) {
+void Normalizer::NormalizeOpenVPN(base::DictValue* openvpn) {
   std::string clientcert_type =
       GetString(*openvpn, ::onc::client_cert::kClientCertType);
   RemoveEntryUnless(openvpn, ::onc::client_cert::kClientCertPattern,
@@ -212,7 +212,7 @@ void Normalizer::NormalizeOpenVPN(base::Value::Dict* openvpn) {
   }
 }
 
-void Normalizer::NormalizeProxySettings(base::Value::Dict* proxy) {
+void Normalizer::NormalizeProxySettings(base::DictValue* proxy) {
   std::string type = GetString(*proxy, ::onc::proxy::kType);
   RemoveEntryUnless(proxy, ::onc::proxy::kManual,
                     type == ::onc::proxy::kManual);
@@ -221,7 +221,7 @@ void Normalizer::NormalizeProxySettings(base::Value::Dict* proxy) {
   RemoveEntryUnless(proxy, ::onc::proxy::kPAC, type == ::onc::proxy::kPAC);
 }
 
-void Normalizer::NormalizeVPN(base::Value::Dict* vpn) {
+void Normalizer::NormalizeVPN(base::DictValue* vpn) {
   std::string type = GetString(*vpn, ::onc::vpn::kType);
   RemoveEntryUnless(vpn, ::onc::vpn::kOpenVPN, type == ::onc::vpn::kOpenVPN);
   RemoveEntryUnless(vpn, ::onc::vpn::kWireGuard,
@@ -236,7 +236,7 @@ void Normalizer::NormalizeVPN(base::Value::Dict* vpn) {
   RemoveEntryUnless(vpn, ::onc::vpn::kArcVpn, type == ::onc::vpn::kArcVpn);
 }
 
-void Normalizer::NormalizeWiFi(base::Value::Dict* wifi) {
+void Normalizer::NormalizeWiFi(base::DictValue* wifi) {
   std::string security = GetString(*wifi, ::onc::wifi::kSecurity);
   RemoveEntryUnless(
       wifi, ::onc::wifi::kEAP,
@@ -247,13 +247,13 @@ void Normalizer::NormalizeWiFi(base::Value::Dict* wifi) {
   chromeos::onc::FillInHexSSIDField(*wifi);
 }
 
-void Normalizer::NormalizeStaticIPConfigForNetwork(base::Value::Dict* network) {
+void Normalizer::NormalizeStaticIPConfigForNetwork(base::DictValue* network) {
   const bool ip_config_type_is_static = IsIpConfigTypeStatic(
       network, ::onc::network_config::kIPAddressConfigType);
   const bool name_servers_type_is_static = IsIpConfigTypeStatic(
       network, ::onc::network_config::kNameServersConfigType);
 
-  base::Value::Dict* static_ip_config =
+  base::DictValue* static_ip_config =
       network->FindDict(::onc::network_config::kStaticIPConfig);
   bool all_ip_fields_exist = false;
   bool name_servers_exist = false;

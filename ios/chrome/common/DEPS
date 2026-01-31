@@ -1,9 +1,12 @@
 include_rules = [
-  "+components/physical_web/data_source",
-  "+components/version_info",
-  "+net",
   "-ios/chrome",
   "-ios/chrome/browser",
+
+  # keep-sorted start
+  "+components/physical_web/data_source",
+  "+components/version_info",
   "+ios/chrome/common",
+  "+net",
+  # keep-sorted end
 ]
 

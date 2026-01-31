@@ -35,7 +35,7 @@ void NearbyInternalsPrefsHandler::OnJavascriptAllowed() {}
 void NearbyInternalsPrefsHandler::OnJavascriptDisallowed() {}
 
 void NearbyInternalsPrefsHandler::HandleClearNearbyPrefs(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   // Reset onboarding otherwise turning off Nearby also sets Fast Initiation
   // pref.
   pref_service_->SetBoolean(prefs::kNearbySharingOnboardingCompletePrefName,

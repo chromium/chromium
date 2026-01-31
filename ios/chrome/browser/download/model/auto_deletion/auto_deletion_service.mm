@@ -133,7 +133,7 @@ void AutoDeletionService::MarkTaskForDeletion(web::DownloadTask* task,
 
   MaybeRemoveObservation(task);
   task->GetResponseData(
-      base::BindOnce(&AutoDeletionService::MarkTaskForDeletionHelper,
+      base::BindOnce(&AutoDeletionService::UpdateAwaitingTaskOnResponseData,
                      weak_ptr_factory_.GetWeakPtr(), task_id));
 }
 
@@ -159,7 +159,7 @@ void AutoDeletionService::MarkTaskForDeletion(web::DownloadTask* task,
 
   MaybeRemoveObservation(task);
   task->GetResponseData(
-      base::BindOnce(&AutoDeletionService::MarkTaskForDeletionHelper,
+      base::BindOnce(&AutoDeletionService::UpdateAwaitingTaskOnResponseData,
                      weak_ptr_factory_.GetWeakPtr(), task_id));
 }
 
@@ -207,13 +207,24 @@ void AutoDeletionService::Clear() {
   scheduler_.Clear();
 }
 
-void AutoDeletionService::MarkTaskForDeletionHelper(const std::string& task_id,
-                                                    NSData* data) {
-  auto iterator = tasks_awaiting_scheduling_.find(task_id);
-  DCHECK(iterator != tasks_awaiting_scheduling_.end());
-  iterator->second.file_content = data;
-
+void AutoDeletionService::UpdateAwaitingTaskOnResponseData(
+    const std::string& task_id,
+    NSData* data) {
+  MaybeUpdateAwaitingTaskFileContent(task_id, data);
   ScheduleFileForDeletion(task_id);
+}
+
+// Invoked after the download task data is read from data. It finishes
+// scheduling the file for deletion.
+void AutoDeletionService::MaybeUpdateAwaitingTaskFileContent(
+    const std::string& task_id,
+    NSData* data) {
+  auto iterator = tasks_awaiting_scheduling_.find(task_id);
+  if (!data || iterator == tasks_awaiting_scheduling_.end()) {
+    return;
+  }
+
+  iterator->second.file_content = data;
 }
 
 void AutoDeletionService::OnFilesDeletedFromDisk(base::Time instant,
@@ -224,7 +235,9 @@ void AutoDeletionService::OnFilesDeletedFromDisk(base::Time instant,
 
 bool AutoDeletionService::AreAllPreconditionsMet(const std::string& task_id) {
   auto iterator = tasks_awaiting_scheduling_.find(task_id);
-  DCHECK(iterator != tasks_awaiting_scheduling_.end());
+  if (iterator == tasks_awaiting_scheduling_.end()) {
+    return false;
+  }
   DownloadTaskDetails details = iterator->second;
 
   return details.enrollment_status == DeletionEnrollmentStatus::kNotEnrolled ||
@@ -244,8 +257,9 @@ void AutoDeletionService::OnDownloadUpdated(web::DownloadTask* download_task) {
   }
   download_tasks_observation_.RemoveObservation(download_task);
   std::string task_id = base::SysNSStringToUTF8(download_task->GetIdentifier());
+
   download_task->GetResponseData(
-      base::BindOnce(&AutoDeletionService::MarkTaskForDeletionHelper,
+      base::BindOnce(&AutoDeletionService::UpdateAwaitingTaskOnResponseData,
                      weak_ptr_factory_.GetWeakPtr(), task_id));
 }
 

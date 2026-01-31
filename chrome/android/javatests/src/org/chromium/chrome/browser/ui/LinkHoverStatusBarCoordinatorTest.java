@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -31,6 +32,7 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.DeviceInput;
 import org.chromium.url.GURL;
 
 import java.util.concurrent.TimeoutException;
@@ -65,6 +67,7 @@ public class LinkHoverStatusBarCoordinatorTest {
         String hoverUrl = mTestServerRule.getServer().getURL("/links.html");
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    DeviceInput.setSupportsPrecisionPointerForTesting(true);
                     delegate.onUpdateTargetUrl(new GURL(hoverUrl));
                 });
 
@@ -79,5 +82,30 @@ public class LinkHoverStatusBarCoordinatorTest {
                     }
                 },
                 "Link hover status bar did not appear or did not contain '" + hoverUrl + "'");
+    }
+
+    @Test
+    @SmallTest
+    public void testHoverDoesNotShowWithoutMouse() throws TimeoutException {
+        // 1. Start on a Blank PageStation provided by the test rule.
+        WebPageStation blankPage = mCtaTestRule.startOnBlankPage();
+
+        // 2. Load an example URL in the initial tab.
+        String exampleUrl = mTestServerRule.getServer().getURL("/chrome/test/data/click.html");
+        WebPageStation tabPage = blankPage.loadWebPageProgrammatically(exampleUrl);
+
+        final TabWebContentsDelegateAndroid delegate =
+                TabTestUtils.getTabWebContentsDelegate(tabPage.getTab());
+
+        // 3. Simulate a link selection (as if via keyboard/accessibility) without mouse hover.
+        String linkUrl = mTestServerRule.getServer().getURL("/links.html");
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    DeviceInput.setSupportsPrecisionPointerForTesting(false);
+                    delegate.onUpdateTargetUrl(new GURL(linkUrl));
+                });
+
+        // 4. Verify Status Bar is NOT visible.
+        onView(withText(containsString(linkUrl))).check(doesNotExist());
     }
 }

@@ -4,22 +4,39 @@
 
 #include "chrome/browser/glic/glic_zero_state_suggestions_manager.h"
 
+#include <algorithm>
+#include <utility>
+
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/types/id_type.h"
+#include "build/build_config.h"
 #include "chrome/browser/contextual_cueing/caching_zero_state_suggestions_manager.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
-#include "chrome/browser/glic/widget/glic_window_controller.h"
-#include "content/public/browser/page.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "ui/base/page_transition_types.h"
 
 namespace glic {
+namespace {
+
+mojom::ZeroStateSuggestionsV2Ptr MakeEmptySuggestionsPtr() {
+  auto suggestions_ptr = mojom::ZeroStateSuggestionsV2::New();
+  std::vector<mojom::SuggestionContentPtr> empty_suggestions;
+  suggestions_ptr->suggestions = std::move(empty_suggestions);
+  return suggestions_ptr;
+}
+
+}  // namespace
 
 namespace {
 
+BASE_FEATURE(kDisableNewTabZeroStateSuggestions,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kCacheZeroStateSuggestions, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kRefreshZeroStateSuggestionsOnFocusedTabChange,
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -29,12 +46,30 @@ std::vector<std::string> EmptySuggestions() {
 }
 
 mojom::ZeroStateSuggestionsV2Ptr MakePendingSuggestionsPtr() {
-  auto pending_suggestions = mojom::ZeroStateSuggestionsV2::New();
+  auto pending_suggestions = MakeEmptySuggestionsPtr();
   pending_suggestions->is_pending = true;
-
-  std::vector<mojom::SuggestionContentPtr> empty_suggestions;
-  pending_suggestions->suggestions = std::move(empty_suggestions);
   return pending_suggestions;
+}
+
+bool HasUserNavigationBeyondInitial(content::WebContents& web_contents) {
+  content::NavigationController& controller = web_contents.GetController();
+  int index = controller.GetCurrentEntryIndex();
+  // Ignore the initial navigation entry. We're using this function on only
+  // new-tab tabs, which have an initial navigation to the new tab page or the
+  // user selected default page.
+  while (index > 0) {
+    content::NavigationEntry* entry = controller.GetEntryAtIndex(index);
+    auto transition = std::to_underlying(entry->GetTransitionType());
+    bool automatic = 0 != (transition & (ui::PAGE_TRANSITION_FORWARD_BACK |
+                                         ui::PAGE_TRANSITION_HOME_PAGE |
+                                         ui::PAGE_TRANSITION_FROM_API |
+                                         ui::PAGE_TRANSITION_IS_REDIRECT_MASK));
+    if (!automatic) {
+      return true;
+    }
+    --index;
+  }
+  return false;
 }
 
 }  // namespace
@@ -135,9 +170,10 @@ void GlicZeroStateSuggestionsManager::
                                : nullptr;
   std::vector<content::WebContents*> contents_for_request = pinned_tab_data;
   if (active_web_contents &&
-      !Contains(contents_for_request, active_web_contents)) {
+      !std::ranges::contains(contents_for_request, active_web_contents)) {
     contents_for_request.push_back(active_web_contents);
   }
+  FilterTabs(contents_for_request);
 
   if (contextual_cueing_service_) {
     if (!caching_zero_state_manager_) {
@@ -246,12 +282,14 @@ void GlicZeroStateSuggestionsManager::ObserveZeroStateSuggestions(
             GetWeakPtr(), is_first_run, supported_tools));
 
     if (!contextual_cueing_service_) {
-      return;
-    }
-
-    if (auto pinned_tabs = sharing_manager_->GetPinnedTabs();
-        !pinned_tabs.empty()) {
-      if (caching_zero_state_manager_) {
+      // Do nothing
+    } else if (auto pinned_tabs = sharing_manager_->GetPinnedTabs();
+               !pinned_tabs.empty()) {
+      FilterTabs(pinned_tabs);
+      if (pinned_tabs.empty()) {
+        std::move(callback).Run(MakeEmptySuggestionsPtr());
+        return;
+      } else if (caching_zero_state_manager_) {
         caching_zero_state_manager_
             ->GetContextualGlicZeroStateSuggestionsForPinnedTabs(
                 pinned_tabs, is_first_run, supported_tools,
@@ -259,6 +297,7 @@ void GlicZeroStateSuggestionsManager::ObserveZeroStateSuggestions(
                 base::BindOnce(&GlicZeroStateSuggestionsManager::
                                    OnZeroStateSuggestionsFetched,
                                GetWeakPtr(), std::move(callback)));
+        return;
       } else {
         contextual_cueing_service_
             ->GetContextualGlicZeroStateSuggestionsForPinnedTabs(
@@ -269,33 +308,34 @@ void GlicZeroStateSuggestionsManager::ObserveZeroStateSuggestions(
                                        OnZeroStateSuggestionsFetched,
                                    GetWeakPtr(), std::move(callback)),
                     EmptySuggestions()));
+        return;
       }
-      return;
-    }
-
-    auto* active_web_contents =
-        sharing_manager_->GetFocusedTabData().focus()
-            ? sharing_manager_->GetFocusedTabData().focus()->GetContents()
-            : nullptr;
-    if (active_web_contents) {
-      if (caching_zero_state_manager_) {
-        caching_zero_state_manager_
-            ->GetContextualGlicZeroStateSuggestionsForFocusedTab(
-                active_web_contents, is_first_run, supported_tools,
-                base::BindOnce(&GlicZeroStateSuggestionsManager::
-                                   OnZeroStateSuggestionsFetched,
-                               GetWeakPtr(), std::move(callback)));
-      } else {
-        contextual_cueing_service_
-            ->GetContextualGlicZeroStateSuggestionsForFocusedTab(
-                active_web_contents, is_first_run, supported_tools,
-                mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-                    base::BindOnce(&GlicZeroStateSuggestionsManager::
-                                       OnZeroStateSuggestionsFetched,
-                                   GetWeakPtr(), std::move(callback)),
-                    EmptySuggestions()));
+    } else {
+      auto* active_web_contents =
+          sharing_manager_->GetFocusedTabData().focus()
+              ? sharing_manager_->GetFocusedTabData().focus()->GetContents()
+              : nullptr;
+      if (active_web_contents) {
+        if (caching_zero_state_manager_) {
+          caching_zero_state_manager_
+              ->GetContextualGlicZeroStateSuggestionsForFocusedTab(
+                  active_web_contents, is_first_run, supported_tools,
+                  base::BindOnce(&GlicZeroStateSuggestionsManager::
+                                     OnZeroStateSuggestionsFetched,
+                                 GetWeakPtr(), std::move(callback)));
+          return;
+        } else {
+          contextual_cueing_service_
+              ->GetContextualGlicZeroStateSuggestionsForFocusedTab(
+                  active_web_contents, is_first_run, supported_tools,
+                  mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+                      base::BindOnce(&GlicZeroStateSuggestionsManager::
+                                         OnZeroStateSuggestionsFetched,
+                                     GetWeakPtr(), std::move(callback)),
+                      EmptySuggestions()));
+          return;
+        }
       }
-      return;
     }
   } else {
     // If is_notifying is false we need to reset the subscriptions.
@@ -349,4 +389,29 @@ GlicZeroStateSuggestionsManager::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
+void GlicZeroStateSuggestionsManager::FilterTabs(
+    std::vector<content::WebContents*>& tabs) {
+  if (!base::FeatureList::IsEnabled(kDisableNewTabZeroStateSuggestions)) {
+    return;
+  }
+
+  // We should not use new tabs which have not been explicitly navigated by the
+  // user. Remove them here.
+  tabs.erase(
+      std::remove_if(
+          tabs.begin(), tabs.end(),
+          [&](content::WebContents* tab_contents) {
+            tabs::TabInterface* tab =
+                tabs::TabInterface::GetFromContents(tab_contents);
+            auto usage = sharing_manager_->GetPinnedTabUsage(tab->GetHandle());
+            if (!usage) {
+              return false;
+            }
+            if (usage->pin_event.trigger == GlicPinTrigger::kNewTabDaisyChain) {
+              return !HasUserNavigationBeyondInitial(*tab_contents);
+            }
+            return false;
+          }),
+      tabs.end());
+}
 }  // namespace glic

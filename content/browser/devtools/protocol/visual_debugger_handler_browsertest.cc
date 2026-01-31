@@ -32,7 +32,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, VisualDebuggerTest) {
 
   auto filter_param =
       std::string(R"({"filters":[{"selector":{"anno":""},"active":true}]})");
-  base::Value::Dict command_params;
+  base::DictValue command_params;
   command_params.Set("json", filter_param);
   SendCommandSync("VisualDebugger.filterStream", std::move(command_params));
   SendCommandSync("VisualDebugger.stopStream");

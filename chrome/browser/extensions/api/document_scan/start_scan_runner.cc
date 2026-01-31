@@ -4,7 +4,6 @@
 //
 #include "chrome/browser/extensions/api/document_scan/start_scan_runner.h"
 
-#include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/extensions/extensions_dialogs.h"
@@ -30,11 +29,11 @@ std::optional<bool> g_start_scan_confirmation_result = std::nullopt;
 
 bool CanSkipConfirmation(content::BrowserContext* browser_context,
                          const ExtensionId& extension_id) {
-  const base::Value::List& list =
+  const base::ListValue& list =
       Profile::FromBrowserContext(browser_context)
           ->GetPrefs()
           ->GetList(prefs::kDocumentScanAPITrustedExtensions);
-  return base::Contains(list, base::Value(extension_id));
+  return list.contains(extension_id);
 
   // TODO(b/312740272): Add a way for the user to make their consent permanent.
   // Note that this needs to be per device.

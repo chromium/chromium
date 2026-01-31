@@ -5,11 +5,9 @@
 package org.chromium.chrome.browser.feed;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
-import static org.chromium.components.browser_ui.styles.SemanticColorUtils.getDefaultIconColor;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -19,7 +17,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -34,7 +31,6 @@ import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
-import androidx.core.widget.ImageViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
@@ -43,7 +39,8 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -62,6 +59,7 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManag
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinatorFactory;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationMetricsUtils;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpBackgroundImageCoordinator;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
@@ -180,7 +178,7 @@ public class FeedSurfaceCoordinator
     private FeedSwipeRefreshLayout mSwipeRefreshLayout;
 
     private boolean mWebFeedHasContent;
-    private final ObservableSupplier<Integer> mTabStripHeightSupplier;
+    private final NonNullObservableSupplier<Integer> mTabStripHeightSupplier;
     private final Callback<Integer> mTabStripHeightChangeCallback;
 
     // Used to handle padding adjustment when edge to edge is enabled.
@@ -441,8 +439,8 @@ public class FeedSurfaceCoordinator
             boolean overScrollDisabled,
             @Nullable ViewGroup viewportView,
             FeedActionDelegate actionDelegate,
-            ObservableSupplier<Integer> tabStripHeightSupplier,
-            ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier) {
+            NonNullObservableSupplier<Integer> tabStripHeightSupplier,
+            MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier) {
         mActivity = activity;
         mSnackbarManager = snackbarManager;
         mNtpHeader = ntpHeader;
@@ -467,7 +465,7 @@ public class FeedSurfaceCoordinator
         mIsNewTabPageCustomizationEnabled = ChromeFeatureList.sNewTabPageCustomization.isEnabled();
         mIsNewTabPageCustomizationV2Enabled =
                 mIsNewTabPageCustomizationEnabled
-                        && ChromeFeatureList.sNewTabPageCustomizationV2.isEnabled();
+                        && NtpCustomizationUtils.isNtpThemeCustomizationEnabled();
         mDefaultBackgroundColor =
                 ContextCompat.getColor(mActivity, R.color.home_surface_background_color);
 
@@ -487,7 +485,7 @@ public class FeedSurfaceCoordinator
         mRecyclerView = setUpView();
         FeedStreamViewResizer.createAndAttach(mActivity, mRecyclerView, mUiConfig);
 
-        mIsNtpCustomizationV2Enabled = ChromeFeatureList.sNewTabPageCustomizationV2.isEnabled();
+        mIsNtpCustomizationV2Enabled = NtpCustomizationUtils.isNtpThemeCustomizationEnabled();
         if (mIsNewTabPageCustomizationV2Enabled) {
             mNtpBackgroundImageCoordinator =
                     new NtpBackgroundImageCoordinator(
@@ -517,31 +515,12 @@ public class FeedSurfaceCoordinator
         // The NTP customization button needs to be added after the RecyclerView to make it float
         // above the RecyclerView.
         if (mIsNewTabPageCustomizationEnabled && mUseStaggeredLayout) {
-            mNtpCustomizationButton = new ImageButton(mActivity);
-            mNtpCustomizationButton.setImageResource(R.drawable.bookmark_edit_active);
-            mNtpCustomizationButton.setBackgroundResource(R.drawable.edit_icon_circle_background);
-            ImageViewCompat.setImageTintList(
-                    mNtpCustomizationButton,
-                    ColorStateList.valueOf(getDefaultIconColor(mRootView.getContext())));
-            int size =
-                    mActivity
-                            .getResources()
-                            .getDimensionPixelSize(
-                                    R.dimen.ntp_customization_edit_icon_background_size);
-            FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(size, size);
-            layoutParams.gravity = Gravity.BOTTOM | Gravity.END;
-            int margin =
-                    mActivity
-                            .getResources()
-                            .getDimensionPixelSize(R.dimen.ntp_customization_button_margin);
-            layoutParams.setMargins(0, 0, margin, margin);
-            mNtpCustomizationButton.setLayoutParams(layoutParams);
-            mNtpCustomizationButton.setOnClickListener(
-                    v -> {
-                        showNtpCustomizationBottomSheet();
-                    });
-            mNtpCustomizationButton.setContentDescription(
-                    mActivity.getString(R.string.ntp_customization_title));
+            mNtpCustomizationButton =
+                    NtpCustomizationUtils.createNtpCustomizationButton(
+                            mActivity,
+                            v -> {
+                                showNtpCustomizationBottomSheet();
+                            });
             mRootView.addView(mNtpCustomizationButton);
         }
 
@@ -567,6 +546,11 @@ public class FeedSurfaceCoordinator
                                 @NtpBackgroundImageType int oldType,
                                 @NtpBackgroundImageType int newType) {
                             setBackgroundColor(backgroundColor);
+                        }
+
+                        @Override
+                        public void onBackgroundReset(@NtpBackgroundImageType int oldType) {
+                            setBackgroundColor(mDefaultBackgroundColor);
                         }
                     };
 
@@ -757,12 +741,10 @@ public class FeedSurfaceCoordinator
             return;
         }
 
-        // Apply negative margins to the NTP header in order to compensate the containment paddings
-        // applied to the whole NTP for non-wide display. This is to allow all the elements in the
-        // NTP header to keep using their existing margins/paddings settings.
-        int feed_containment_margin =
-                mActivity.getResources().getDimensionPixelSize(R.dimen.feed_containment_margin);
-        int margin = mUiConfig.getCurrentDisplayStyle().isWide() ? 0 : -feed_containment_margin;
+        int margin =
+                FeedStreamViewResizerUtils.getFeedNtpCompensationMargin(
+                        mRootView.getResources(), mUiConfig);
+
         FrameLayout.LayoutParams layoutParams =
                 new FrameLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -787,7 +769,8 @@ public class FeedSurfaceCoordinator
                         mActivity,
                         mBottomSheetController,
                         () -> mProfile,
-                        NtpCustomizationCoordinator.BottomSheetType.MAIN)
+                        NtpCustomizationCoordinator.BottomSheetType.MAIN,
+                        mWindowAndroid)
                 .showBottomSheet();
         NtpCustomizationMetricsUtils.recordOpenBottomSheetEntry(
                 NtpCustomizationCoordinator.EntryPointType.NEW_TAB_PAGE);
@@ -1264,22 +1247,6 @@ public class FeedSurfaceCoordinator
         return mSectionHeaderModel;
     }
 
-    /**
-     * @return The {@link View} for this class.
-     */
-    // TODO(crbug.com/352735671): Remove after uno phase 2 follow-up launch.
-    @Deprecated
-    View getSigninPromoView() {
-        assert !ChromeFeatureList.isEnabled(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP);
-        if (mSigninPromoView == null) {
-            LayoutInflater inflater = LayoutInflater.from(mRootView.getContext());
-            mSigninPromoView =
-                    inflater.inflate(
-                            R.layout.sync_promo_view_content_suggestions, mRootView, false);
-        }
-        return mSigninPromoView;
-    }
-
     /** Update header views in the Feed. */
     void updateHeaderViews(@Nullable View signinPromoView) {
         if (!mMediator.hasStreams()) return;
@@ -1480,7 +1447,7 @@ public class FeedSurfaceCoordinator
     }
 
     @Override
-    public ObservableSupplier<Integer> getRestoringStateSupplier() {
+    public NonNullObservableSupplier<Integer> getRestoringStateSupplier() {
         return mMediator.getRestoringStateSupplier();
     }
 
@@ -1521,5 +1488,13 @@ public class FeedSurfaceCoordinator
     public void setBackgroundImageCoordinatorForTesting(
             NtpBackgroundImageCoordinator backgroundImageCoordinator) {
         mNtpBackgroundImageCoordinator = backgroundImageCoordinator;
+    }
+
+    public @Nullable NtpBackgroundImageCoordinator getNtpBackgroundImageCoordinatorForTesting() {
+        return mNtpBackgroundImageCoordinator;
+    }
+
+    @Nullable ImageButton getNtpCustomizationButtonForTesting() {
+        return mNtpCustomizationButton;
     }
 }

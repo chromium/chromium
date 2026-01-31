@@ -18,7 +18,6 @@
 
 #include "base/base64.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -316,7 +315,7 @@ AggregatableReportRequest CreateExampleRequestWithReportTime(
                  base::Uuid::GenerateRandomV4(),
                  url::Origin::Create(GURL("https://reporting.example")),
                  AggregatableReportSharedInfo::DebugMode::kDisabled,
-                 /*additional_fields=*/base::Value::Dict(),
+                 /*additional_fields=*/base::DictValue(),
                  /*api_version=*/"",
                  /*api_identifier=*/"example-api"),
              delay_type,
@@ -409,7 +408,7 @@ std::vector<uint8_t> DecryptPayloadWithHpke(
       base::as_byte_span(authenticated_info_str);
 
   // No null terminators should have been copied when concatenating the strings.
-  CHECK(!base::Contains(authenticated_info_str, '\0'));
+  CHECK(!authenticated_info_str.contains('\0'));
 
   bssl::ScopedEVP_HPKE_CTX recipient_context;
   if (!EVP_HPKE_CTX_setup_recipient(

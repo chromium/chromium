@@ -30,10 +30,8 @@ public class MultiProfileTestRule extends AwActivityTestRule {
     }
 
     public AwContents createAwContents(AwBrowserContext browserContext) {
-        AwContents awContents =
-                createAwTestContainerViewOnMainSync(mContentsClient).getAwContents();
-        setBrowserContextSync(awContents, browserContext);
-        return awContents;
+        return createAwTestContainerViewOnMainSync(mContentsClient, false, null, browserContext)
+                .getAwContents();
     }
 
     public void setBrowserContextSync(AwContents awContents, AwBrowserContext browserContext) {

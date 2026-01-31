@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// We're re-exporting C functions with a different naming convention
+#![allow(non_snake_case)]
+
 chromium::import! {
   pub "//mojo/public/rust:mojo_c_system_bindings" as raw_ffi;
 }
@@ -52,15 +55,40 @@ pub use raw_ffi::MojoWriteData;
 // SAFETY: The `num_bytes` argument to this function must not be null.
 pub use raw_ffi::MojoReadData;
 
-pub use raw_ffi::MojoAddTrigger;
+// SAFETY: The handle ptr is allowed to be null so long as the number of handles
+// is 0. The option and buffer pointers are always allowed to be null.
 pub use raw_ffi::MojoAppendMessageData;
+
+// FOR_RELEASE: These safe wrappers are good for users, but they prevent
+// rust-analyzer from seeing the comments on the original C function, which are
+// very useful :/
+
+// Safe wrapper around MojoDestroyMessage
+pub fn MojoDestroyMessage(message: raw_ffi::MojoMessageHandle) -> raw_ffi::MojoResult {
+    // SAFETY: This function is safe to call (but bindgen doesn't know that)
+    // If any arguments are invalid, that will be reflected in the result.
+    unsafe { raw_ffi::MojoDestroyMessage(message) }
+}
+
+// Safe wrapper around MojoWriteMessage
+pub fn MojoWriteMessage(
+    message_pipe_handle: types::MojoHandle,
+    message: types::MojoMessageHandle,
+    options: *const raw_ffi::MojoWriteMessageOptions,
+) -> raw_ffi::MojoResult {
+    // SAFETY: This function is safe to call (but bindgen doesn't know that)
+    // If any arguments are invalid, that will be reflected in the result.
+    // In particular, `options` is explicitly allowed to be null.
+    unsafe { raw_ffi::MojoWriteMessage(message_pipe_handle, message, options) }
+}
+
+pub use raw_ffi::MojoAddTrigger;
 pub use raw_ffi::MojoArmTrap;
 pub use raw_ffi::MojoClose;
 pub use raw_ffi::MojoCreateDataPipe;
 pub use raw_ffi::MojoCreateMessage;
 pub use raw_ffi::MojoCreateMessagePipe;
 pub use raw_ffi::MojoCreateTrap;
-pub use raw_ffi::MojoDestroyMessage;
 pub use raw_ffi::MojoGetMessageData;
 pub use raw_ffi::MojoGetTimeTicksNow;
 pub use raw_ffi::MojoHandleSignalsState as SignalsState;
@@ -68,7 +96,6 @@ pub use raw_ffi::MojoQueryHandleSignalsState;
 pub use raw_ffi::MojoReadMessage;
 pub use raw_ffi::MojoRemoveTrigger;
 pub use raw_ffi::MojoTrapEvent;
-pub use raw_ffi::MojoWriteMessage;
 pub use types::MojoResultCode;
 
 // Most FFI functions take an options struct as input which we get from bindgen.

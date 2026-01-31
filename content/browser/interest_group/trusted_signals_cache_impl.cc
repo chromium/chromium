@@ -256,7 +256,7 @@ TrustedSignalsCacheImpl::BiddingCacheKey::BiddingCacheKey(
     const url::Origin& main_frame_origin,
     network::mojom::IPAddressSpace ip_address_space,
     const url::Origin& joining_origin,
-    base::Value::Dict additional_params,
+    base::DictValue additional_params,
     base::optional_ref<const std::string> buyer_tkv_signals)
     : interest_group_name(std::move(interest_group_name)),
       fetch_key(std::move(url_loader_factory),
@@ -392,7 +392,7 @@ TrustedSignalsCacheImpl::ScoringCacheKey::ScoringCacheKey(
     const url::Origin& joining_origin,
     const GURL& render_url,
     const std::vector<GURL>& component_render_urls,
-    base::Value::Dict additional_params,
+    base::DictValue additional_params,
     base::optional_ref<const std::string> seller_tkv_signals)
     : render_url(render_url),
       component_render_urls(component_render_urls.begin(),
@@ -862,7 +862,7 @@ TrustedSignalsCacheImpl::RequestTrustedBiddingSignals(
     const url::Origin& coordinator,
     base::optional_ref<const std::vector<std::string>>
         trusted_bidding_signals_keys,
-    base::Value::Dict additional_params,
+    base::DictValue additional_params,
     base::optional_ref<const std::string> buyer_tkv_signals,
     int& partition_id) {
   bool is_group_by_origin =
@@ -975,7 +975,7 @@ TrustedSignalsCacheImpl::RequestTrustedScoringSignals(
     const url::Origin& joining_origin,
     const GURL& render_url,
     const std::vector<GURL>& component_render_urls,
-    base::Value::Dict additional_params,
+    base::DictValue additional_params,
     base::optional_ref<const std::string> seller_tkv_signals,
     int& partition_id) {
   ScoringCacheKey cache_key(

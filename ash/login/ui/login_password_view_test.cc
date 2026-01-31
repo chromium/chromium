@@ -59,6 +59,12 @@ class LoginPasswordViewTest : public LoginTestBase {
     SetWidget(CreateWidgetWithContent(view_));
   }
 
+  void TearDown() override {
+    arrow_navigation_delegate_.reset();
+    view_ = nullptr;
+    LoginTestBase::TearDown();
+  }
+
   void OnPasswordSubmit(std::u16string_view password) {
     password_ = std::u16string_view(password);
   }
@@ -66,7 +72,7 @@ class LoginPasswordViewTest : public LoginTestBase {
     is_password_field_empty_ = is_empty;
   }
 
-  raw_ptr<LoginPasswordView, DanglingUntriaged> view_ = nullptr;
+  raw_ptr<LoginPasswordView> view_ = nullptr;
   std::optional<std::u16string> password_;
   bool is_password_field_empty_ = true;
   std::unique_ptr<LoginScreenArrowNavigationDelegate>

@@ -420,16 +420,11 @@ void VideoTrackAdapter::VideoFrameResolutionAdapter::DeliverFrame(
     return;
   }
 
-  // If the frame is a texture not backed up by GPU memory we don't apply
+  // If the frame holds a SharedImage that is not CPU-mappable we don't apply
   // cropping/scaling and deliver the frame as-is, leaving it up to the
   // destination to rescale it. Otherwise, cropping and scaling is soft-applied
   // before delivery for efficiency.
-  //
-  // TODO(crbug.com/362521): Allow cropping/scaling of non-GPU memory backed
-  // textures.
-  if (video_frame->HasSharedImage() &&
-      video_frame->storage_type() !=
-          media::VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE) {
+  if (video_frame->HasSharedImage() && !video_frame->HasMappableSharedImage()) {
     DoDeliverFrame(std::move(video_frame), estimated_capture_time);
     return;
   }

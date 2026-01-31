@@ -52,13 +52,12 @@ AtomicString::AtomicString(const UChar* chars)
 AtomicString::AtomicString(const StringView& string_view)
     : string_(AtomicStringTable::Instance().Add(string_view)) {}
 
-scoped_refptr<StringImpl> AtomicString::AddSlowCase(
-    scoped_refptr<StringImpl>&& string) {
-  DCHECK(!string->IsAtomic());
+String AtomicString::AddSlowCase(String&& string) {
+  DCHECK(!string.Impl()->IsAtomic());
   return AtomicStringTable::Instance().Add(std::move(string));
 }
 
-scoped_refptr<StringImpl> AtomicString::AddSlowCase(StringImpl* string) {
+String AtomicString::AddSlowCase(StringImpl* string) {
   DCHECK(!string->IsAtomic());
   return AtomicStringTable::Instance().Add(string);
 }
@@ -93,7 +92,7 @@ AtomicString AtomicString::LowerASCII(AtomicString source) {
   StringImpl* impl = source.Impl();
   // if impl is null, then IsLowerASCII() should have returned true.
   DCHECK(impl);
-  scoped_refptr<StringImpl> new_impl = impl->LowerASCII();
+  String new_impl = impl->LowerASCII();
   return AtomicString(String(std::move(new_impl)));
 }
 

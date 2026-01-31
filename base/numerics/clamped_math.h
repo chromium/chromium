@@ -180,13 +180,6 @@ class ClampedNumeric {
 template <typename T>
 ClampedNumeric(T) -> ClampedNumeric<T>;
 
-// Convenience wrapper to return a new ClampedNumeric from the provided
-// arithmetic or ClampedNumericType.
-template <typename T>
-constexpr ClampedNumeric<UnderlyingType<T>> MakeClampedNum(T value) {
-  return value;
-}
-
 // These implement the variadic wrapper for the math operations.
 template <template <typename, typename> class M, typename L, typename R>
 constexpr ClampedNumeric<typename MathWrapper<M, L, R>::type> ClampMathOp(
@@ -240,7 +233,6 @@ using numerics_internal::ClampOr;
 using numerics_internal::ClampRsh;
 using numerics_internal::ClampSub;
 using numerics_internal::ClampXor;
-using numerics_internal::MakeClampedNum;
 
 }  // namespace base
 

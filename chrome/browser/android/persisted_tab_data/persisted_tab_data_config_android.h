@@ -34,8 +34,12 @@ class PersistedTabDataConfigAndroid {
   GetAllStorage(Profile* profile);
 
  private:
+  friend class PersistedTabDataAndroidBrowserTest;
   raw_ptr<PersistedTabDataStorageAndroid> persisted_tab_data_storage_;
   raw_ptr<const char> data_id_;
+  static void AddConfigForTesting(const void* user_data_key,
+                                  const char* data_id);
+  static std::unordered_map<const void*, const char*>* GetConfigForTesting();
 };
 
 #endif  // CHROME_BROWSER_ANDROID_PERSISTED_TAB_DATA_PERSISTED_TAB_DATA_CONFIG_ANDROID_H_

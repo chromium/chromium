@@ -65,6 +65,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) ClipboardFormatType {
   // in ClipboardFormatType. Reference:
   // https://docs.microsoft.com/en-us/windows/win32/learnwin32/working-with-strings
   static const ClipboardFormatType& UrlAType();
+  static const ClipboardFormatType& BookmarkListType();
   static const ClipboardFormatType& PlainTextAType();
   static const ClipboardFormatType& FilenameAType();
 

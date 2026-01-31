@@ -37,6 +37,8 @@ bool StructTraits<
       data.apply_alignment_to_all_simulcast_layers();
   out->requested_resolution_alignment = data.requested_resolution_alignment();
   out->supports_frame_size_change = data.supports_frame_size_change();
+  out->number_of_manual_reference_buffers =
+      data.number_of_manual_reference_buffers();
 
   if (!data.ReadImplementationName(&out->implementation_name))
     return false;

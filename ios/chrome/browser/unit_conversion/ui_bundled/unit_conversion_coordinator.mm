@@ -5,8 +5,8 @@
 #import "ios/chrome/browser/unit_conversion/ui_bundled/unit_conversion_coordinator.h"
 
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/unit_conversion/model/unit_conversion_service.h"
 #import "ios/chrome/browser/unit_conversion/model/unit_conversion_service_factory.h"
 #import "ios/chrome/browser/unit_conversion/ui_bundled/unit_conversion_mediator.h"
@@ -96,8 +96,8 @@ CGFloat const kHalfSheetCornerRadius = 13;
 - (void)didTapReportIssueUnitConversionController:
     (UnitConversionViewController*)viewController {
   DCHECK(viewController == _viewController);
-  id<ApplicationCommands> handler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  id<SceneCommands> handler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
   [handler
       showReportAnIssueFromViewController:_viewController
                                    sender:UserFeedbackSender::UnitConversion];

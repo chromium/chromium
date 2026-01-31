@@ -43,8 +43,9 @@ public class CronetLibraryLoader {
     private static boolean sInitialized;
 
     private static final String LIBRARY_NAME =
-            (BuildConfig.CRONET_FOR_AOSP_BUILD ? "mainlinecronet." : "cronet.")
-                    + ImplVersion.getCronetVersion();
+            (BuildConfig.CRONET_FOR_AOSP_BUILD
+                    ? "httpengine"
+                    : "cronet." + ImplVersion.getCronetVersion());
     private static final String TESTING_LIBRARY_NAME = LIBRARY_NAME + "_for_testing";
     private static boolean sSwitchToTestLibrary;
     @VisibleForTesting public static final String TAG = CronetLibraryLoader.class.getSimpleName();

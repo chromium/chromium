@@ -46,7 +46,7 @@ class UpdateManifest {
   class ChannelMetadata {
    public:
     static base::expected<ChannelMetadata, std::monostate> ParseFromJson(
-        const base::Value::Dict& channel_metadata_dict);
+        const base::DictValue& channel_metadata_dict);
 
     ChannelMetadata(UpdateChannel update_channel,
                     std::optional<std::string> display_name);
@@ -81,7 +81,7 @@ class UpdateManifest {
   class VersionEntry {
    public:
     static base::expected<VersionEntry, std::monostate> ParseFromJson(
-        const base::Value::Dict& version_entry_dict,
+        const base::DictValue& version_entry_dict,
         const GURL& update_manifest_url);
 
     VersionEntry(GURL src,

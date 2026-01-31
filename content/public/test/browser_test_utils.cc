@@ -14,7 +14,6 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -1670,7 +1669,7 @@ double EvalJsResult::ExtractDouble() const {
   return value()->GetDouble();
 }
 
-const base::Value::List& EvalJsResult::ExtractList() const {
+const base::ListValue& EvalJsResult::ExtractList() const {
   CHECK(is_ok())
       << "Can't ExtractList() because the script encountered a problem: "
       << *error();
@@ -1680,7 +1679,7 @@ const base::Value::List& EvalJsResult::ExtractList() const {
   return value()->GetList();
 }
 
-const base::Value::Dict& EvalJsResult::ExtractDict() const {
+const base::DictValue& EvalJsResult::ExtractDict() const {
   CHECK(is_ok())
       << "Can't ExtractDict() because the script encountered a problem: "
       << *error();
@@ -2215,7 +2214,7 @@ bool SetCookie(
     net::CookieOptions::SameSiteCookieContext context,
     base::optional_ref<const net::CookiePartitionKey> cookie_partition_key) {
   if (cookie_partition_key) {
-    DCHECK(base::Contains(base::ToLowerASCII(value), ";partitioned"));
+    DCHECK(base::ToLowerASCII(value).contains(";partitioned"));
   }
   mojo::Remote<network::mojom::CookieManager> cookie_manager;
   browser_context->GetDefaultStoragePartition()
@@ -2605,7 +2604,7 @@ void TitleWatcher::TitleWasSet(NavigationEntry* entry) {
 
 void TitleWatcher::TestTitle() {
   const std::u16string& current_title = web_contents()->GetTitle();
-  if (base::Contains(expected_titles_, current_title)) {
+  if (std::ranges::contains(expected_titles_, current_title)) {
     observed_title_ = current_title;
     run_loop_.Quit();
   }
@@ -3118,7 +3117,8 @@ void InputMsgWatcher::OnInputEventAck(
 }
 
 void InputMsgWatcher::OnInputEvent(const RenderWidgetHost& widget,
-                                   const blink::WebInputEvent& event) {
+                                   const blink::WebInputEvent& event,
+                                   InputEventSource source) {
   last_sent_event_type_ = event.GetType();
 }
 
@@ -4051,7 +4051,7 @@ void DevToolsInspectorLogWatcher::DispatchProtocolMessage(
 
     if (*notification == "Media.playerEventsAdded") {
       bool last_auto_pip_event_info_set = false;
-      const base::Value::List* events =
+      const base::ListValue* events =
           parsed_message.FindListByDottedPath("params.events");
       if (events) {
         for (const base::Value& event : *events) {
@@ -4307,7 +4307,8 @@ int LoadBasicRequest(network::mojom::NetworkContext* network_context,
   mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory;
   network::mojom::URLLoaderFactoryParamsPtr url_loader_factory_params =
       network::mojom::URLLoaderFactoryParams::New();
-  url_loader_factory_params->process_id = network::mojom::kBrowserProcessId;
+  url_loader_factory_params->process_id =
+      network::OriginatingProcess::browser();
   url_loader_factory_params->is_orb_enabled = false;
   url::Origin origin = url::Origin::Create(url);
   url_loader_factory_params->isolation_info =
@@ -4487,12 +4488,12 @@ bool CompareWebContentsOutputToReference(
   {
     base::RunLoop run_loop;
     rwh->GetView()->CopyFromSurface(
-        gfx::Rect(), gfx::Size(),
-        base::BindLambdaForTesting([&](const viz::CopyOutputBitmapWithMetadata&
+        gfx::Rect(), gfx::Size(), base::TimeDelta(),
+        base::BindLambdaForTesting([&](const content::CopyFromSurfaceResult&
                                            result) {
-          const SkBitmap& bitmap = result.bitmap;
+          ASSERT_TRUE(result.has_value());
+          const SkBitmap& bitmap = result->bitmap;
           base::ScopedAllowBlockingForTesting allow_blocking;
-          ASSERT_FALSE(bitmap.drawsNothing());
 
           SkBitmap clipped_bitmap;
           bitmap.extractSubset(
@@ -4780,7 +4781,7 @@ std::optional<int> GetDOMNodeId(RenderFrameHost& rfh,
   ScopedTestDevToolsProtocolClient devtools_client(rfh);
 
   // Get the document node.
-  const base::Value::Dict* result =
+  const base::DictValue* result =
       devtools_client.SendCommandSync("DOM.getDocument");
   CHECK(result);
 
@@ -4788,7 +4789,7 @@ std::optional<int> GetDOMNodeId(RenderFrameHost& rfh,
   CHECK(document_id.has_value());
 
   // Find a node matching the selector in the document.
-  auto params = base::Value::Dict()
+  auto params = base::DictValue()
                     .Set("nodeId", document_id.value())
                     .Set("selector", query_selector);
   result =
@@ -4803,7 +4804,7 @@ std::optional<int> GetDOMNodeId(RenderFrameHost& rfh,
 
   // Extract the backendNodeId from the matched node. backendNodeId corresponds
   // to the Blink DOMNodeId
-  params = base::Value::Dict().Set("nodeId", node_id.value());
+  params = base::DictValue().Set("nodeId", node_id.value());
   result =
       devtools_client.SendCommandSync("DOM.describeNode", std::move(params));
   CHECK(result);
@@ -4822,14 +4823,14 @@ std::optional<int> GetDOMNodeIdFromSubframe(
   content::ScopedTestDevToolsProtocolClient devtools_client(rfh);
 
   // Get the main document node.
-  const base::Value::Dict* result =
+  const base::DictValue* result =
       devtools_client.SendCommandSync("DOM.getDocument");
   CHECK(result);
   std::optional<int> document_id = result->FindIntByDottedPath("root.nodeId");
   CHECK(document_id.has_value());
 
   // Find the <iframe> element node in the main document.
-  auto params = base::Value::Dict()
+  auto params = base::DictValue()
                     .Set("nodeId", document_id.value())
                     .Set("selector", subframe_query_selector);
   result =
@@ -4841,7 +4842,7 @@ std::optional<int> GetDOMNodeIdFromSubframe(
   }
 
   // Get contentDocument of iframe.
-  params = base::Value::Dict().Set("nodeId", iframe_node_id.value());
+  params = base::DictValue().Set("nodeId", iframe_node_id.value());
   result =
       devtools_client.SendCommandSync("DOM.describeNode", std::move(params));
   CHECK(result);
@@ -4852,8 +4853,8 @@ std::optional<int> GetDOMNodeIdFromSubframe(
   }
 
   // Resolve that backendNodeId to get a Runtime objectId for the document.
-  params = base::Value::Dict().Set("backendNodeId",
-                                   content_doc_backend_node_id.value());
+  params = base::DictValue().Set("backendNodeId",
+                                 content_doc_backend_node_id.value());
   result =
       devtools_client.SendCommandSync("DOM.resolveNode", std::move(params));
   CHECK(result);
@@ -4864,7 +4865,7 @@ std::optional<int> GetDOMNodeIdFromSubframe(
   }
 
   // Request the DOM nodeId for the iframe's document from its objectId.
-  params = base::Value::Dict().Set("objectId", *content_doc_object_id);
+  params = base::DictValue().Set("objectId", *content_doc_object_id);
   result =
       devtools_client.SendCommandSync("DOM.requestNode", std::move(params));
   CHECK(result);
@@ -4874,7 +4875,7 @@ std::optional<int> GetDOMNodeIdFromSubframe(
   }
 
   // Query for the target element within the iframe's document.
-  params = base::Value::Dict()
+  params = base::DictValue()
                .Set("nodeId", content_doc_node_id.value())
                .Set("selector", query_selector);
   result =
@@ -4885,7 +4886,7 @@ std::optional<int> GetDOMNodeIdFromSubframe(
     return std::nullopt;
   }
 
-  params = base::Value::Dict().Set("nodeId", final_node_id.value());
+  params = base::DictValue().Set("nodeId", final_node_id.value());
   result =
       devtools_client.SendCommandSync("DOM.describeNode", std::move(params));
   CHECK(result);

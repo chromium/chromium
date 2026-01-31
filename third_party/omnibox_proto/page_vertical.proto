@@ -1,0 +1,21 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = 'proto2';
+
+option optimize_for = LITE_RUNTIME;
+option java_package = 'org.chromium.components.omnibox';
+option java_outer_classname = 'PageVerticalProto';
+
+package omnibox;
+
+// The vertical information of a page.
+// PageVertical is used to set the pageVertical= CGI parameter, introduced in
+// go/chrome-ntp-action-chips-protocol.
+enum PageVertical {
+  // Default value. This value should not be used in production.
+  PAGE_VERTICAL_UNSPECIFIED = 0;
+  // The page was in the Edu vertical.
+  PAGE_VERTICAL_EDU = 1;
+}

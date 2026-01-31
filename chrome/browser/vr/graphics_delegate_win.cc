@@ -154,8 +154,8 @@ bool GraphicsDelegateWin::EnsureMemoryBuffer() {
 
 void GraphicsDelegateWin::ResetMemoryBuffer() {
   if (client_shared_image_) {
-    sii_->DestroySharedImage(access_done_sync_token_,
-                             std::move(client_shared_image_));
+    client_shared_image_->UpdateDestructionSyncToken(access_done_sync_token_);
+    client_shared_image_.reset();
   }
   access_done_sync_token_.Clear();
 }

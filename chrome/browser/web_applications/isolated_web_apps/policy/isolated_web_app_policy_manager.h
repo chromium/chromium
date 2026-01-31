@@ -67,7 +67,7 @@ class IsolatedWebAppPolicyManager {
   void ConfigureObserversOnSessionStart();
   void CleanupAndProcessPolicyOnSessionStart();
   void ProcessPolicy();
-  void DoProcessPolicy(AllAppsLock& lock, base::Value::Dict& debug_info);
+  void DoProcessPolicy(AllAppsLock& lock, base::DictValue& debug_info);
   void OnPolicyProcessed();
 
   void LogAddPolicyInstallSourceResult(
@@ -102,12 +102,12 @@ class IsolatedWebAppPolicyManager {
     ProcessLogs();
     ~ProcessLogs();
 
-    void AppendCompletedStep(base::Value::Dict log);
+    void AppendCompletedStep(base::DictValue log);
 
     base::Value ToDebugValue() const;
 
    private:
-    base::circular_deque<base::Value::Dict> logs_;
+    base::circular_deque<base::DictValue> logs_;
   };
 
   raw_ptr<Profile> profile_ = nullptr;
@@ -117,7 +117,7 @@ class IsolatedWebAppPolicyManager {
 
   bool reprocess_policy_needed_ = false;
   bool policy_is_being_processed_ = false;
-  base::Value::Dict current_process_log_;
+  base::DictValue current_process_log_;
 
   net::BackoffEntry install_retry_backoff_entry_;
 

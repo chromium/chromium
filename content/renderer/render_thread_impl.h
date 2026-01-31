@@ -30,6 +30,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_log.h"
+#include "base/trace_event/trace_session_observer.h"
 #include "base/trace_event/typed_macros.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
@@ -108,8 +109,6 @@ class VariationsRenderThreadObserver;
 
 #if BUILDFLAG(IS_WIN)
 class DCOMPTextureFactory;
-class OverlayStateServiceProvider;
-class OverlayStateServiceProviderImpl;
 #endif
 
 // The RenderThreadImpl class represents the main thread, where `blink::WebView`
@@ -122,7 +121,6 @@ class CONTENT_EXPORT RenderThreadImpl
       public ChildThreadImpl,
       public mojom::Renderer,
       public viz::mojom::CompositingModeWatcher,
-      public base::trace_event::TraceLog::AsyncEnabledStateObserver,
       public base::MemoryPressureListener {
  public:
   static RenderThreadImpl* current();
@@ -154,10 +152,6 @@ class CONTENT_EXPORT RenderThreadImpl
   IPC::SyncChannel* GetChannel() override;
   std::string GetLocale() override;
 
-  // base::trace_event::TraceLog::AsyncEnabledStateObserver implementation:
-  void OnTraceLogEnabled() override;
-  void OnTraceLogDisabled() override;
-
   bool GenerateFrameRoutingID(int32_t& routing_id,
                               blink::LocalFrameToken& frame_token,
                               base::UnguessableToken& devtools_frame_token,
@@ -181,7 +175,8 @@ class CONTENT_EXPORT RenderThreadImpl
 
   blink::scheduler::WebThreadScheduler* GetWebMainThreadScheduler();
   bool IsLcdTextEnabled();
-  bool IsElasticOverscrollEnabled();
+  bool IsElasticOverscrollEnabledOnRoot();
+  bool IsElasticOverscrollSupported();
   bool IsScrollAnimatorEnabled();
 
   // TODO(crbug.com/40142495): The `enable_scroll_animator` flag is currently
@@ -243,10 +238,6 @@ class CONTENT_EXPORT RenderThreadImpl
 
 #if BUILDFLAG(IS_WIN)
   scoped_refptr<DCOMPTextureFactory> GetDCOMPTextureFactory();
-  // The OverlayStateService is only available where Media Foundation for
-  // clear is supported, otherwise GetOverlayStateServiceProvider will return
-  // nullptr.
-  scoped_refptr<OverlayStateServiceProvider> GetOverlayStateServiceProvider();
 #endif
 
   blink::WebVideoCaptureImplManager* video_capture_impl_manager() const {
@@ -400,7 +391,9 @@ class CONTENT_EXPORT RenderThreadImpl
                                base::TimeDelta http_rtt,
                                base::TimeDelta transport_rtt,
                                double bandwidth_kbps) override;
+#if BUILDFLAG(IS_ANDROID)
   void SetWebKitSharedTimersSuspended(bool suspend) override;
+#endif
   void InitializeRenderer(
       const std::string& user_agent,
       const blink::UserAgentMetadata& user_agent_metadata,
@@ -408,9 +401,11 @@ class CONTENT_EXPORT RenderThreadImpl
       blink::mojom::OriginTrialsSettingsPtr origin_trial_settings,
       blink::mojom::PerformanceTier cpu_performance_tier,
       uint64_t trace_id) override;
+#if BUILDFLAG(IS_MAC)
   void UpdateScrollbarTheme(
       mojom::UpdateScrollbarThemeParamsPtr params) override;
   void OnSystemColorsChanged(int32_t aqua_color_variant) override;
+#endif
   void UpdateSystemColorInfo(
       mojom::UpdateSystemColorInfoParamsPtr params) override;
   void PurgePluginListCache() override;
@@ -422,7 +417,6 @@ class CONTENT_EXPORT RenderThreadImpl
   void WriteClangProfilingProfile(
       WriteClangProfilingProfileCallback callback) override;
 #endif
-  void SetIsCrossOriginIsolated(bool value) override;
   void SetIsWebSecurityDisabled(bool value) override;
   void SetIsIsolatedContext(bool value) override;
   void SetWebUIResourceUrlToCodeCacheMap(
@@ -469,9 +463,7 @@ class CONTENT_EXPORT RenderThreadImpl
   // Updated via an IPC from the browser process. If nullopt, the browser
   // process has yet to send an update and the state is unknown.
   std::optional<base::Process::Priority> process_priority_;
-  perfetto::NamedTrack process_priority_track_{"Renderer priority"};
   std::optional<mojom::RenderProcessVisibleState> visible_state_;
-  perfetto::NamedTrack process_visibility_track_{"Renderer visibility"};
 
   // A read-only mapping of a std::atomic<base::TimeTicks> set to
   // TimeTicks::Now() by RenderProcessHostImpl when this process is foregrounded
@@ -512,8 +504,6 @@ class CONTENT_EXPORT RenderThreadImpl
 
 #if BUILDFLAG(IS_WIN)
   scoped_refptr<DCOMPTextureFactory> dcomp_texture_factory_;
-  scoped_refptr<OverlayStateServiceProviderImpl>
-      overlay_state_service_provider_;
 #endif
 
   scoped_refptr<viz::ContextProviderCommandBuffer> shared_main_thread_contexts_;
@@ -545,7 +535,8 @@ class CONTENT_EXPORT RenderThreadImpl
   // Compositor settings.
   bool is_lcd_text_enabled_;
   bool is_partial_raster_enabled_;
-  bool is_elastic_overscroll_enabled_;
+  bool is_elastic_overscroll_enabled_on_root_;
+  bool is_elastic_overscroll_supported_;
   bool is_threaded_animation_enabled_;
   bool is_scroll_animator_enabled_;
 

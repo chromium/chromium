@@ -219,9 +219,6 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
   // `old_client` is used to guarantee that the callee is a correct owner of
   // this Display instance.
   void ResetDisplayClientForTesting(DisplayClient* old_client);
-  void MaybeLogQuadsProperties(
-      AggregatedRenderPass& last_render_pass,
-      const SurfaceDamageRectList* surface_damage_rect_list);
 
   // Starts overdraw tacking for content rendered on the OutputSurface.
   void StartTrackingOverdraw(int interval_length_in_seconds);
@@ -351,9 +348,6 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
   int pending_swaps_ = 0;
 
   uint64_t frame_sequence_number_ = 0;
-
-  // A subsampler for potential quad information logging.
-  base::MetricsSubSampler metrics_subsampler_;
 };
 
 }  // namespace viz

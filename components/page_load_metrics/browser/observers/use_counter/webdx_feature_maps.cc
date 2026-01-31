@@ -466,6 +466,14 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kTranslator_TranslateStreaming,
            WebDXFeature::kTranslationApi},
           {WebFeature::kLanguageDetector_Detect, WebDXFeature::kTranslationApi},
+          {WebFeature::kPartitionedCookies, WebDXFeature::kPartitionedCookies},
+          {WebFeature::kLanguageModel_Prompt, WebDXFeature::kPrompt},
+          {WebFeature::kLanguageModel_PromptStreaming, WebDXFeature::kPrompt},
+          {WebFeature::kProofreader_Proofread, WebDXFeature::kProofreader},
+          {WebFeature::kRewriter_Rewrite, WebDXFeature::kRewriter},
+          {WebFeature::kRewriter_RewriteStreaming, WebDXFeature::kRewriter},
+          {WebFeature::kWriter_Write, WebDXFeature::kWriter},
+          {WebFeature::kWriter_WriteStreaming, WebDXFeature::kWriter},
           // Add new features above this line.
       }};
 

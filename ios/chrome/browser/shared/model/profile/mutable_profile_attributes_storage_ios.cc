@@ -9,7 +9,6 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/uuid.h"
 #include "base/values.h"
 #include "components/prefs/pref_service.h"
@@ -43,7 +42,7 @@ void MutableProfileAttributesStorageIOS::MarkProfileForDeletion(
   {
     ScopedDictPrefUpdate update(&prefs_.get(), prefs::kProfileForScene);
 
-    base::Value::Dict dict;
+    base::DictValue dict;
     for (auto [key, value] : update.Get()) {
       if (value.GetString() != profile_name) {
         dict.Set(key, std::move(value));
@@ -73,7 +72,7 @@ void MutableProfileAttributesStorageIOS::ProfileDeletionComplete(
   // this method also runs twice, and on the second run the profile will already
   // not be marked for deletion anymore.
   if (!IsProfileMarkedForDeletion(profile_name)) {
-    CHECK(base::Contains(deleted_profiles_, profile_name));
+    CHECK(deleted_profiles_.contains(profile_name));
     return;
   }
   deleted_profiles_.insert(std::string(profile_name));

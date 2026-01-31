@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "device/base/features.h"
 #include "device/fido/authenticator_get_assertion_response.h"
@@ -25,7 +24,7 @@ bool MayFallbackToU2fWithAppIdExtension(
     const CtapGetAssertionRequest& request) {
   bool ctap2_device_supports_u2f =
       device.device_info() &&
-      base::Contains(device.device_info()->versions, ProtocolVersion::kU2f);
+      device.device_info()->versions.contains(ProtocolVersion::kU2f);
   return request.alternative_application_parameter &&
          ctap2_device_supports_u2f && !request.allow_list.empty();
 }
@@ -41,8 +40,8 @@ bool SetResponseCredential(
     const std::vector<PublicKeyCredentialDescriptor>& allow_list) {
   if (response->credential) {
     if (!allow_list.empty() &&
-        !base::Contains(allow_list, response->credential->id,
-                        &PublicKeyCredentialDescriptor::id)) {
+        !std::ranges::contains(allow_list, response->credential->id,
+                               &PublicKeyCredentialDescriptor::id)) {
       return false;
     }
 

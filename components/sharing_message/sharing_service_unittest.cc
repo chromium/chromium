@@ -566,7 +566,7 @@ TEST_F(SharingServiceTest, DeviceRegisterAndUnregister) {
   EXPECT_EQ(SharingService::State::ACTIVE,
             GetSharingService()->GetStateForTesting());
 
-  // Change sync to configuring, which will be ignored.
+  // Change sync transport state to configuring, which will be ignored.
   test_sync_service_.SetMaxTransportState(
       syncer::SyncService::TransportState::CONFIGURING);
   test_sync_service_.FireStateChanged();
@@ -575,7 +575,7 @@ TEST_F(SharingServiceTest, DeviceRegisterAndUnregister) {
   EXPECT_EQ(SharingService::State::ACTIVE,
             GetSharingService()->GetStateForTesting());
 
-  // Disable sync and un-registration should happen.
+  // Sign out and un-registration should happen.
   test_sync_service_.SetSignedOut();
   EXPECT_CALL(*fcm_handler_, StopListening()).Times(1);
   test_sync_service_.FireStateChanged();
@@ -592,10 +592,10 @@ TEST_F(SharingServiceTest, DeviceRegisterAndUnregister) {
   EXPECT_EQ(SharingService::State::DISABLED,
             GetSharingService()->GetStateForTesting());
 
-  // Should be able to register once again when sync is back on.
+  // Should be able to register once again when signed in.
   test_sync_service_.SetMaxTransportState(
       syncer::SyncService::TransportState::ACTIVE);
-  test_sync_service_.SetSignedIn(signin::ConsentLevel::kSync);
+  test_sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
   EXPECT_CALL(*fcm_handler_, StartListening()).Times(1);
   test_sync_service_.FireStateChanged();
   EXPECT_EQ(2, sharing_device_registration_->registration_attempts());

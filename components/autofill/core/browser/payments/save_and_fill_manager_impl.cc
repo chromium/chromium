@@ -48,7 +48,9 @@ void SaveAndFillManagerImpl::OnDidAcceptCreditCardSaveAndFillSuggestion(
       .card_submitted_through_save_and_fill = true;
 
   if (IsCreditCardUploadEnabled()) {
-    payments_autofill_client()->ShowCreditCardSaveAndFillPendingDialog();
+    payments_autofill_client()->ShowCreditCardSaveAndFillPendingDialog(
+        base::BindOnce(&SaveAndFillManagerImpl::OnPendingDialogCanceled,
+                       weak_ptr_factory_.GetWeakPtr()));
 
     PopulateInitialUploadDetails();
 
@@ -236,7 +238,7 @@ void SaveAndFillManagerImpl::OnDidGetDetailsForCreateCard(
     base::TimeTicks request_sent_timestamp,
     PaymentsAutofillClient::PaymentsRpcResult result,
     const std::u16string& context_token,
-    std::unique_ptr<base::Value::Dict> legal_message,
+    std::unique_ptr<base::DictValue> legal_message,
     std::vector<std::pair<int, int>> supported_card_bin_ranges) {
   autofill_metrics::LogSaveAndFillGetDetailsForCreateCardResultAndLatency(
       result == PaymentsRpcResult::kSuccess,
@@ -428,6 +430,14 @@ void SaveAndFillManagerImpl::OnDidCreateCard(
   payments_autofill_client()->CreditCardUploadCompleted(
       result, /*on_confirmation_closed_callback=*/std::nullopt);
 
+  Reset();
+}
+
+void SaveAndFillManagerImpl::OnPendingDialogCanceled(
+    CardSaveAndFillDialogUserDecision user_decision,
+    const UserProvidedCardSaveAndFillDetails&
+        user_provided_card_save_and_fill_details) {
+  CHECK(user_decision == CardSaveAndFillDialogUserDecision::kDeclined);
   Reset();
 }
 

@@ -21,6 +21,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.android.webview.chromium.WebViewChromium.ApiCall;
+import com.android.webview.chromium.WebViewChromium.ApiCallUserAction;
 
 import org.chromium.android_webview.AwBrowserContext;
 import org.chromium.android_webview.AwBrowserProcess;
@@ -41,6 +42,7 @@ import org.chromium.android_webview.WebViewChromiumRunQueue;
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.AwResource;
 import org.chromium.android_webview.common.Lifetime;
+import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.android_webview.common.WebViewCachedFlags;
 import org.chromium.android_webview.gfx.AwDrawFnImpl;
 import org.chromium.android_webview.metrics.TrackExitReasons;
@@ -58,6 +60,7 @@ import org.chromium.base.library_loader.LoaderErrors;
 import org.chromium.base.library_loader.ProcessInitException;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.build.BuildConfig;
 import org.chromium.content_public.browser.BrowserStartupController.StartupCallback;
 import org.chromium.content_public.browser.BrowserStartupController.StartupMetrics;
@@ -367,6 +370,7 @@ public class WebViewChromiumAwInit {
         CallSite.STATIC_SET_RENDERER_LIBRARY_PREFETCH_MODE,
         CallSite.STATIC_GET_RENDERER_LIBRARY_PREFETCH_MODE,
         CallSite.GET_DEFAULT_COOKIE_MANAGER,
+        CallSite.GET_PROFILE_STORE,
         CallSite.COUNT,
     })
     public @interface CallSite {
@@ -478,8 +482,9 @@ public class WebViewChromiumAwInit {
         int STATIC_SET_RENDERER_LIBRARY_PREFETCH_MODE = 105;
         int STATIC_GET_RENDERER_LIBRARY_PREFETCH_MODE = 106;
         int GET_DEFAULT_COOKIE_MANAGER = 107;
+        int GET_PROFILE_STORE = 108;
         // Remember to update WebViewStartupCallSite in enums.xml when adding new values here.
-        int COUNT = 108;
+        int COUNT = 109;
     };
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:WebViewStartupCallSite)
@@ -600,9 +605,18 @@ public class WebViewChromiumAwInit {
         ArrayDeque<Runnable> postBrowserProcessStartTasks = new ArrayDeque<>();
         preBrowserProcessStartTasks.addLast(
                 () -> {
+                    if (WebViewCachedFlags.get()
+                            .isCachedFeatureEnabled(
+                                    AwFeatures.WEBVIEW_MOVE_WORK_TO_PROVIDER_INIT)) {
+                        PostTask.postTask(
+                                TaskTraits.USER_VISIBLE,
+                                () -> {
+                                    PlatformServiceBridge.getInstance();
+                                });
+                    }
                     if (anyStartupTaskExperimentIsEnabled()) {
                         // Disable java-side PostTask scheduling. The native-side task runners
-                        // are also disabled in the native code. The unscheduled prenative tasks
+                        // are also disabled in the native code. The unscheduled prenative 9tasks
                         // are migrated to the native task runner. The native task runner is
                         // enabled when we are done with startup.
                         PostTask.disablePreNativeUiTasks(true);
@@ -1127,6 +1141,11 @@ public class WebViewChromiumAwInit {
         return mChromiumStartedGlobals.mAwProxyController;
     }
 
+    public ProfileStore getProfileStore() {
+        triggerAndWaitForChromiumStarted(CallSite.GET_PROFILE_STORE);
+        return mChromiumStartedGlobals.mProfileStore;
+    }
+
     public CookieManager getDefaultCookieManager() {
         if (!mGetDefaultCookieManagerCalled.get()) {
             mFirstGetDefaultCookieManagerLooper.compareAndSet(null, Looper.myLooper());
@@ -1148,7 +1167,9 @@ public class WebViewChromiumAwInit {
 
     public android.webkit.WebIconDatabase getWebIconDatabase() {
         triggerAndWaitForChromiumStarted(CallSite.GET_WEB_ICON_DATABASE);
-        WebViewChromium.recordWebViewApiCall(ApiCall.WEB_ICON_DATABASE_GET_INSTANCE);
+        WebViewChromium.recordWebViewApiCall(
+                ApiCall.WEB_ICON_DATABASE_GET_INSTANCE,
+                ApiCallUserAction.WEB_ICON_DATABASE_GET_INSTANCE);
         synchronized (mLazyInitLock) {
             if (mWebIconDatabase == null) {
                 mWebIconDatabase = new WebIconDatabaseAdapter();
@@ -1235,9 +1256,8 @@ public class WebViewChromiumAwInit {
                                     : Set.of(AwBrowserContext.getDefaultContextName());
 
                     for (String context : profilesCopy) {
-                        ProfileStore.getInstance()
-                                .getOrCreateProfile(
-                                        context, ProfileStore.CallSite.ASYNC_WEBVIEW_STARTUP);
+                        mChromiumStartedGlobals.mProfileStore.getOrCreateProfile(
+                                context, ProfileStore.CallSite.ASYNC_WEBVIEW_STARTUP);
                     }
                     callback.onSuccess(mWebViewStartUpDiagnostics);
                 });
@@ -1255,10 +1275,12 @@ public class WebViewChromiumAwInit {
     private static final class ChromiumStartedGlobals {
         final AwTracingController mAwTracingController;
         final AwProxyController mAwProxyController;
+        final ProfileStore mProfileStore;
 
         ChromiumStartedGlobals() {
             mAwProxyController = new AwProxyController();
             mAwTracingController = new AwTracingController();
+            mProfileStore = new ProfileStore();
         }
     }
 
@@ -1278,10 +1300,9 @@ public class WebViewChromiumAwInit {
             }
             if (mDefaultProfile != null) return;
             mDefaultProfile =
-                    ProfileStore.getInstance()
-                            .getOrCreateProfile(
-                                    AwBrowserContext.getDefaultContextName(),
-                                    ProfileStore.CallSite.GET_DEFAULT_PROFILE);
+                    mChromiumStartedGlobals.mProfileStore.getOrCreateProfile(
+                            AwBrowserContext.getDefaultContextName(),
+                            ProfileStore.CallSite.GET_DEFAULT_PROFILE);
             mDefaultProfileIsInitialized.countDown();
         }
 

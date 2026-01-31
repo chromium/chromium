@@ -46,7 +46,7 @@ using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
 
-static jlong JNI_FaviconHelper_Init(JNIEnv* env) {
+static int64_t JNI_FaviconHelper_Init(JNIEnv* env) {
   return reinterpret_cast<intptr_t>(new FaviconHelper());
 }
 
@@ -58,11 +58,11 @@ void FaviconHelper::Destroy(JNIEnv* env) {
   delete this;
 }
 
-jboolean FaviconHelper::GetLocalFaviconImageForURL(
+bool FaviconHelper::GetLocalFaviconImageForURL(
     JNIEnv* env,
     Profile* profile,
     GURL& page_url,
-    jint j_desired_size_in_pixel,
+    int32_t j_desired_size_in_pixel,
     const JavaRef<jobject>& j_favicon_image_callback) {
   DCHECK(profile);
   if (!profile) {
@@ -116,11 +116,11 @@ void FaviconHelper::GetLocalFaviconImageForURLInternal(
       cancelable_task_tracker_.get());
 }
 
-jboolean FaviconHelper::GetForeignFaviconImageForURL(
+bool FaviconHelper::GetForeignFaviconImageForURL(
     JNIEnv* env,
     Profile* profile,
     GURL& page_url,
-    jint j_desired_size_in_pixel,
+    int32_t j_desired_size_in_pixel,
     const base::android::JavaRef<jobject>& j_favicon_image_callback) {
   if (!profile) {
     return false;

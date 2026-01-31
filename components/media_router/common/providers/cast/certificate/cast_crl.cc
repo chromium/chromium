@@ -455,10 +455,7 @@ std::unique_ptr<CastCRL> ParseAndVerifyCRLUsingCustomTrustStore(
 std::unique_ptr<CastCRL> ParseAndVerifyFallbackCRLUsingCustomTrustStore(
     const base::Time& time,
     bssl::TrustStore* trust_store) {
-  std::string fallback_serialized_crl(
-      kCastFallbackCRLs,
-      UNSAFE_TODO(kCastFallbackCRLs +
-                  sizeof kCastFallbackCRLs / sizeof kCastFallbackCRLs[0]));
+  std::string fallback_serialized_crl(base::as_string_view(kCastFallbackCRLs));
   return ParseAndVerifyCRLUsingCustomTrustStore(
       fallback_serialized_crl, time, trust_store, true /* is_fallback_crl */);
 }

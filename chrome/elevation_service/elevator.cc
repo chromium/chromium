@@ -41,10 +41,7 @@ namespace {
 
 ProtectionLevel RemoveFlags(ProtectionLevel protection_level,
                             EncryptFlags& flags) {
-  const uint32_t flag_value = internal::ExtractFlags(protection_level);
-  if (flag_value & internal::kFlagUseLatestKey) {
-    flags.use_latest_key = true;
-  }
+  // Flag value extraction goes here. Currently no flags are supported.
   return static_cast<ProtectionLevel>(
       internal::ExtractProtectionLevel(protection_level));
 }
@@ -83,8 +80,7 @@ HRESULT Elevator::EncryptData(ProtectionLevel protection_level,
 
   std::string plaintext_str(reinterpret_cast<char*>(plaintext), length);
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  InternalFlags pre_process_flags{.use_latest_encryption =
-                                      flags.use_latest_key};
+  InternalFlags pre_process_flags;
   auto pre_process_result = PreProcessData(plaintext_str, &pre_process_flags);
   if (!pre_process_result.has_value()) {
     return pre_process_result.error();
@@ -217,7 +213,7 @@ HRESULT Elevator::DecryptData(const BSTR ciphertext,
   }
   bool should_reencrypt = false;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  InternalFlags flags{.use_latest_encryption = true};
+  InternalFlags flags;
   auto post_process_result = PostProcessData(plaintext_str, &flags);
   if (!post_process_result.has_value()) {
     return post_process_result.error();

@@ -19,6 +19,7 @@ source_set("ui") {
     "composebox_input_plate_mutator.h",
     "composebox_input_plate_view_controller.h",
     "composebox_input_plate_view_controller.mm",
+    "composebox_input_plate_view_controller_delegate.h",
     "composebox_metrics_recorder.h",
     "composebox_metrics_recorder.mm",
     "composebox_navigation_consumer.h",
@@ -27,6 +28,8 @@ source_set("ui") {
     "composebox_snackbar_presenter.h",
     "composebox_snackbar_presenter.mm",
     "composebox_tab_picker_consumer.h",
+    "composebox_tab_picker_empty_state_view.h",
+    "composebox_tab_picker_empty_state_view.mm",
     "composebox_tab_picker_mutator.h",
     "composebox_tab_picker_view_controller.h",
     "composebox_tab_picker_view_controller.mm",
@@ -36,13 +39,20 @@ source_set("ui") {
   deps = [
     ":ui_constants",
     "//base",
+    "//base:i18n",
     "//build:branding_buildflags",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/composebox/coordinator:constants",
     "//ios/chrome/browser/composebox/public:animation",
+    "//ios/chrome/browser/composebox/public:constants",
     "//ios/chrome/browser/composebox/public:features",
     "//ios/chrome/browser/composebox/public:input_plate_controls",
+    "//ios/chrome/browser/composebox/public:model_options",
     "//ios/chrome/browser/composebox/public:theme",
+    "//ios/chrome/browser/composebox/ui/resources",
+    "//ios/chrome/browser/drag_and_drop/model",
+    "//ios/chrome/browser/keyboard/ui_bundled",
+    "//ios/chrome/browser/ntp/ui_bundled/incognito",
     "//ios/chrome/browser/omnibox/public:constants",
     "//ios/chrome/browser/omnibox/ui:omnibox_internal",
     "//ios/chrome/browser/omnibox/ui/popup",
@@ -53,10 +63,14 @@ source_set("ui") {
     "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/shared/ui/util:util_swift",
     "//ios/chrome/browser/tab_switcher/tab_grid/base_grid/ui",
+    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid:tab_grid_ui_constants",
+    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:grid_ui",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
     "//ios/public/provider/chrome/browser/glow_effect:glow_effect_api",
+    "//ios/web/public",
     "//ui/base",
   ]
 }
@@ -69,17 +83,50 @@ source_set("ui_constants") {
   deps = [ "//base" ]
 }
 
+source_set("eg_app_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "composebox_app_interface.h",
+    "composebox_app_interface.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/aim/model:aim_availability",
+    "//ios/chrome/browser/aim/model:test_support",
+    "//ios/chrome/browser/composebox/model:test_support",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/test/app:test_support",
+    "//testing/gmock",
+  ]
+}
+
+source_set("eg_test_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "composebox_app_interface.h",
+    "composebox_app_interface_stub.mm",
+  ]
+  deps = [ "//ios/testing/earl_grey:eg_test_support+eg2" ]
+}
+
 source_set("eg2_tests") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "composebox_egtest.mm" ]
   deps = [
+    ":eg_test_support+eg2",
     ":ui_constants",
+    "//components/omnibox/browser:aim_eligibility_service_features",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/omnibox/public:constants",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/tab_switcher/ui_bundled/test:utils",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//net:test_support",
+    "//ui/base",
   ]
 }
 

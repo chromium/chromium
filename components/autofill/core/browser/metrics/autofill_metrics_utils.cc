@@ -72,9 +72,10 @@ bool IsPostalAddressForm(const FormStructure& form) {
 // types in `filter_by`.
 DenseSet<FormTypeNameForLogging> GetFormTypesForLogging(
     const FormStructure& form,
+    AutocompleteUnrecognizedBehavior ac_unrecognized_behavior,
     std::optional<DenseSet<FormType>> filter_by = std::nullopt) {
   DenseSet<FormTypeNameForLogging> form_types;
-  for (FormType form_type : form.GetFormTypes()) {
+  for (FormType form_type : form.GetFormTypes(ac_unrecognized_behavior)) {
     if (filter_by && !(*filter_by).contains(form_type)) {
       continue;
     }
@@ -118,7 +119,7 @@ AutofillProfileRecordTypeCategory GetCategoryOfProfile(
       return AutofillProfileRecordTypeCategory::kLocalOrSyncable;
     case AutofillProfile::RecordType::kAccount:
       return profile.initial_creator_id() ==
-                     AutofillProfile::kInitialCreatorOrModifierChrome
+                     AutofillProfile::kInitialCreatorChrome
                  ? AutofillProfileRecordTypeCategory::kAccountChrome
                  : AutofillProfileRecordTypeCategory::kAccountNonChrome;
     case AutofillProfile::RecordType::kAccountHome:
@@ -212,30 +213,37 @@ SettingsVisibleFieldTypeForMetrics ConvertSettingsVisibleFieldTypeForMetrics(
 }
 
 DenseSet<FormTypeNameForLogging> GetFormTypesForLogging(
-    const FormStructure& form) {
-  return internal::GetFormTypesForLogging(form);
+    const FormStructure& form,
+    AutocompleteUnrecognizedBehavior ac_unrecognized_behavior) {
+  return internal::GetFormTypesForLogging(form, ac_unrecognized_behavior);
 }
 
 DenseSet<FormTypeNameForLogging> GetAddressFormTypesForLogging(
-    const FormStructure& form) {
-  return internal::GetFormTypesForLogging(form, internal::kAddressFormTypes);
+    const FormStructure& form,
+    AutocompleteUnrecognizedBehavior ac_unrecognized_behavior) {
+  return internal::GetFormTypesForLogging(form, ac_unrecognized_behavior,
+                                          internal::kAddressFormTypes);
 }
 
 DenseSet<FormTypeNameForLogging> GetOneTimePasswordTypesForLogging(
-    const FormStructure& form) {
-  return internal::GetFormTypesForLogging(form,
+    const FormStructure& form,
+    AutocompleteUnrecognizedBehavior ac_unrecognized_behavior) {
+  return internal::GetFormTypesForLogging(form, ac_unrecognized_behavior,
                                           internal::kOneTimePasswordFormTypes);
 }
 
 DenseSet<FormTypeNameForLogging> GetLoyaltyFormTypesForLogging(
-    const FormStructure& form) {
-  return internal::GetFormTypesForLogging(form,
+    const FormStructure& form,
+    AutocompleteUnrecognizedBehavior ac_unrecognized_behavior) {
+  return internal::GetFormTypesForLogging(form, ac_unrecognized_behavior,
                                           internal::kLoyaltyCardFormTypes);
 }
 
 DenseSet<FormTypeNameForLogging> GetCreditCardFormTypesForLogging(
-    const FormStructure& form) {
-  return internal::GetFormTypesForLogging(form, internal::kCreditCardFormTypes);
+    const FormStructure& form,
+    AutocompleteUnrecognizedBehavior ac_unrecognized_behavior) {
+  return internal::GetFormTypesForLogging(form, ac_unrecognized_behavior,
+                                          internal::kCreditCardFormTypes);
 }
 
 bool IsPostalAddress(const AutofillProfile& profile) {
@@ -271,6 +279,7 @@ bool ShouldLogAutofillSuggestionShown(
     case AutofillSuggestionTriggerSource::kTextFieldValueChanged:
     case AutofillSuggestionTriggerSource::kComposeDelayedProactiveNudge:
     case AutofillSuggestionTriggerSource::kPlusAddressUpdatedInBrowserProcess:
+    case AutofillSuggestionTriggerSource::kGlic:
       return false;
   }
 }

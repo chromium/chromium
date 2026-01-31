@@ -67,7 +67,7 @@ bool JSONToPoint(const std::string& str, gfx::PointF* point) {
     return false;
   }
 
-  const base::Value::Dict* root = value->GetIfDict();
+  const base::DictValue* root = value->GetIfDict();
   if (!root) {
     return false;
   }

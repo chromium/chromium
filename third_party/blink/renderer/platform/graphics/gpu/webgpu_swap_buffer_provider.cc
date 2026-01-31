@@ -68,6 +68,17 @@ viz::SharedImageFormat WebGPUSwapBufferProvider::Format() const {
   return shared_image_format_;
 }
 
+base::ByteSize WebGPUSwapBufferProvider::EstimatedSizeInBytes() const {
+  base::ByteSize result;
+  if (swap_buffer_pool_) {
+    result += swap_buffer_pool_->EstimatedSizeInBytes();
+  }
+  if (current_swap_buffer_) {
+    result += current_swap_buffer_->GetSharedImage()->EstimatedSizeInBytes();
+  }
+  return result;
+}
+
 gfx::Size WebGPUSwapBufferProvider::Size() const {
   if (current_swap_buffer_)
     return current_swap_buffer_->GetSharedImage()->size();

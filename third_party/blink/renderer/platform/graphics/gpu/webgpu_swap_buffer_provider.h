@@ -64,6 +64,7 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
   ~WebGPUSwapBufferProvider() override;
 
   viz::SharedImageFormat Format() const;
+  base::ByteSize EstimatedSizeInBytes() const;
   wgpu::TextureFormat TextureFormat() const { return format_; }
   wgpu::TextureUsage TextureUsage() const { return usage_; }
   gfx::Size Size() const;

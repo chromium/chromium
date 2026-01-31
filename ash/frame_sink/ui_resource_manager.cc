@@ -60,13 +60,14 @@ const UiResource* UiResourceManager::PeekExportedResource(
 }
 
 void UiResourceManager::ReclaimResources(
-    const std::vector<viz::ReturnedResource>& resources) {
-  for (const auto& entry : resources) {
+    std::vector<viz::ReturnedResource>& resources) {
+  for (auto& entry : resources) {
     auto it = exported_resources_pool_.find(entry.id);
     DCHECK(it != exported_resources_pool_.end());
 
     std::unique_ptr<UiResource> resource = std::move(it->second);
-    resource->sync_token = entry.sync_token;
+    resource->sync_token = resource->client_shared_image()->EndExport(
+        std::move(entry.shared_image_export_result));
 
     // Move the resource from exported pool to available resources pool.
     exported_resources_pool_.erase(it);

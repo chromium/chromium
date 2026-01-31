@@ -1,0 +1,19 @@
+include_rules = [
+  # keep-sorted start
+  "+ios/chrome/browser/authentication/fullscreen_signin_screen/coordinator/fullscreen_signin_screen_coordinator.h",
+  "+ios/chrome/browser/authentication/history_sync/coordinator/history_sync_coordinator.h",
+  "+ios/chrome/browser/authentication/ui_bundled/continuation.h",
+  "+ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h",
+  "+ios/chrome/browser/authentication/ui_bundled/signin/signin_context_style.h",
+  "+ios/chrome/browser/docking_promo/coordinator/docking_promo_coordinator.h",
+  "+ios/chrome/browser/feature_engagement/model/tracker_factory.h",
+  "+ios/chrome/browser/regional_capabilities/model",
+  "+ios/chrome/browser/safari_data_import/model/features.h",
+  "+ios/chrome/browser/screen/ui_bundled",
+  "+ios/chrome/browser/search_engine_choice/coordinator/search_engine_choice_coordinator.h",
+  "+ios/chrome/browser/search_engine_choice/model/search_engine_choice_util.h",
+  "+ios/chrome/browser/search_engine_choice/ui/search_engine_choice_ui_util.h",
+  "+ios/chrome/browser/search_engines/model",
+  "+ios/chrome/browser/signin/model",
+  # keep-sorted end
+]

@@ -320,6 +320,20 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
           Welcome to Chromium
         </message>
       </if>
+      <if expr="is_linux">
+        <message name="IDS_TERMS_DIALOG_ACCEPT" desc="The button label to accept the terms of service">
+          Accept
+        </message>
+        <message name="IDS_TERMS_DIALOG_CANCEL" desc="The button label to decline the terms of service">
+          Cancel
+        </message>
+        <message name="IDS_TERMS_DIALOG_TITLE" desc="Window title for the Terms of Service dialog">
+          Chromium Additional Terms of Service
+        </message>
+        <message name="IDS_TERMS_DIALOG_ACCESSIBILITY_LABEL" desc="Accessibility label for the Terms of Service in the dialog. The actual terms text is just a placeholder for branded builds.">
+          Chromium Additional Terms of Service
+        </message>
+      </if>
       <if expr="is_chromeos">
         <message name="IDS_PRODUCT_OS_NAME" desc="The ChromeOS application name">
           ChromiumOS
@@ -382,6 +396,20 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
       <message name="IDS_SESSION_CRASHED_VIEW_UMA_OPTIN" desc="Text besides the checkbox to let users optin to UMA in the restore from previous crash bubble.">
         Help make Chromium better by sending crash reports and <ph name="UMA_LINK">$1<ex>usage statistics</ex></ph> to Google
       </message>
+      <if expr="not is_android">
+        <message name="IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_TOO_MANY_BOOKMARKS_BODY" desc="Body of the signout confirmation dialog when the user has too many bookmarks.">
+        You reached Chromium’s limit of <ph name="BOOKMARK_LIMIT">$1<ex>100,000</ex></ph> bookmarks, so some of your bookmarks haven’t been saved in your Google Account yet.
+
+New bookmarks can’t be saved in your account until you delete some. If you sign out now, unsaved bookmarks will be deleted.
+        </message>
+      </if>
+      <if expr="is_android">
+        <message name="IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_TOO_MANY_BOOKMARKS_BODY" desc="Body of the signout confirmation dialog when the user has too many bookmarks." formatter_data="android_java">
+        You reached Chromium’s limit of <ph name="BOOKMARK_LIMIT">%1$s<ex>100,000</ex></ph> bookmarks, so some of your bookmarks haven’t been saved in your Google Account yet.
+
+New bookmarks can’t be saved in your account until you delete some. If you sign out now, unsaved bookmarks will be deleted.
+        </message>
+      </if>
       <message name="IDS_RESET_PROFILE_SETTINGS_EXPLANATION_IN_BULLET_POINTS" desc="A label formatted with bullet points describing the consequences of the 'reset profile settings' feature">
         This action will:
         <ph name="LINE_BREAKS">&lt;br&gt;&lt;br&gt;</ph>
@@ -498,7 +526,7 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
       </if>
       <if expr="is_macosx">
         <message name="IDS_MACOS_OBSOLETE" desc="A message displayed on an at-launch infobar and About (Help) page warning the user that the OS version they are using will soon be or is already unsupported.">
-          To get future Chromium updates, you'll need macOS 12 or later. This computer is using macOS 11.
+          To get future Chromium updates, you'll need macOS 13 or later. This computer is using macOS 12.
         </message>
       </if>
       <if expr="is_win">
@@ -565,6 +593,9 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
       </if>
       <message name="IDS_FR_CUSTOMIZE_DEFAULT_BROWSER" desc="Default browser checkbox label">
         Make Chromium the default browser
+      </message>
+      <message name="IDS_DEFAULT_BROWSER_CHANGED_MESSAGE" desc="Body of the notification shown when Chrome is no longer the default browser.">
+        Chromium is no longer your default browser. Make Chromium the default browser?
       </message>
       <if expr="use_titlecase">
         <message name="IDS_STATUS_TRAY_KEEP_CHROME_RUNNING_IN_BACKGROUND" desc="In Title Case: The checkbox in the status tray context menu that controls whether chrome keeps running in the background after the last window is closed">
@@ -1109,13 +1140,6 @@ Chromium is unable to recover your settings.
         </message>
         <message name="IDS_ENTERPRISE_VALUE_PROPOSITION_PROFILE_SUGGESTED_TITLE" desc="Title of the screen in the profile creation flow where the user is asked whether they want to confirm signing in to Chromium with their enterprise account.">
           Sign in to Chromium?
-        </message>
-        <!-- New one-click sign-in dialog contents for SAML support -->
-        <message name="IDS_ONE_CLICK_SIGNIN_DIALOG_TITLE_NEW" desc="The title of the modal dialog window that opens when the user chooses to use one click sign-in.">
-          You're signed in to Chromium!
-        </message>
-        <message name="IDS_ONE_CLICK_SIGNIN_DIALOG_MESSAGE_NEW" desc="The message of the one click sign-in dialog.">
-          You're signed in as <ph name="USER_EMAIL_ADDRESS">$1<ex>foo@gmail.com</ex></ph>. Now you can access your bookmarks, history, and other settings on all your signed in devices.
         </message>
       </if>
 
@@ -2134,6 +2158,10 @@ Chromium is unable to recover your settings.
           desc="Text that is shown in the Lens permission bubble, giving examples of what Lens can do and informing uawea what information will be sent to the server. Includes placeholder for learn more link.">
           When you use Image Search, the page title, URL, and content, including PDFs, are sent to the server. <ph name="LEARN_MORE">$1<ex>Learn more</ex></ph>
         </message>
+        <message name="IDS_LENS_PERMISSION_BUBBLE_DIALOG_NON_BLOCKING_DESCRIPTION"
+          desc="Text that is shown in the Lens non-blocking privacy notice, giving examples of what Lens can do and informing users what information will be sent to Google. Includes placeholder for learn more link.">
+          When you open Image Search, the page title, URL, and content, including PDFs, will automatically be sent to the server. <ph name="LEARN_MORE">$1<ex>Learn more</ex></ph>
+        </message>
         <message name="IDS_LENS_PERMISSION_BUBBLE_DIALOG_DESCRIPTION"
           desc="Text that is shown in the Lens permission bubble, giving examples of what Lens can do and informing users that their screenshot will be sent to the server. Includes placeholder for learn more link.">
           Identify things or places and copy or translate text. When you use Image Search, a screenshot of the page is sent to the server. <ph name="LEARN_MORE">$1<ex>Learn more</ex></ph>
@@ -2153,6 +2181,14 @@ Chromium is unable to recover your settings.
         <message name="IDS_LENS_PERMISSION_BUBBLE_DIALOG_TAB_TO_CONTINUE"
           desc="Instructs the user to press Tab to begin using the feature.">
           Tab to continue
+        </message>
+        <message name="IDS_LENS_PERMISSION_BUBBLE_DIALOG_GOT_IT"
+          desc="Text on button in privacy notice, indicating that user understands that information will be sent to Google.">
+          Got it
+        </message>
+        <message name="IDS_LENS_PERMISSION_BUBBLE_DIALOG_REMIND_ME_LATER"
+          desc="Text on button to dismiss privacy notice, indicating that the privacy notice will be shown again later.">
+          Remind me later
         </message>
 
         <!-- Title Case Dependent -->
@@ -2537,6 +2573,13 @@ Chromium is unable to recover your settings.
         Continue
       </message>
 
+      <!--Launch On Startup-->
+      <if expr="is_win">
+        <message name="IDS_SETTINGS_FOREGROUND_LAUNCH_ON_STARTUP_LABEL" desc="Label for settings toggle button that enables or disables opening Chromium on system startup">
+          Open Chromium when my computer starts
+        </message>
+      </if>
+
       <!-- Advanced security settings -->
       <message name="IDS_SETTINGS_SECURITY_JAVASCRIPT_OPTIMIZATION_LINK_ROW_ENABLED" desc="Description for the link row of the Javascript-optimization page when javascript-optimization is enabled.">
         Speeds up sites with Chromium's V8 engine but makes Chromium slightly less resistant to attacks. This setting is on.
@@ -2817,16 +2860,9 @@ Chromium is unable to recover your settings.
 
       <!-- Memory Saver IPH strings -->
       <if expr="not is_android">
-        <if expr="use_titlecase">
-          <message name="IDS_MEMORY_SAVER_MODE_PROMO_TITLE" desc="In Title Case: The title for the Memory Saver mode in-product promo bubble">
-            Make Chromium Faster
-          </message>
-        </if>
-        <if expr="not use_titlecase">
-          <message name="IDS_MEMORY_SAVER_MODE_PROMO_TITLE" desc="The title for the Memory Saver mode in-product promo bubble">
-            Make Chromium faster
-          </message>
-        </if>
+        <message name="IDS_MEMORY_SAVER_MODE_PROMO_TITLE" desc="The title for the Memory Saver mode in-product promo bubble">
+          Make Chromium faster
+        </message>
       </if>
 
       <!-- Performance Intervention Dialog strings -->
@@ -2953,6 +2989,12 @@ Chromium is unable to recover your settings.
         <message name="IDS_SETTINGS_GLIC_ROW_LABEL" translateable="false" desc="Label of the Glic row button on the AI settings page leading to the Glic subpage.">
           Gemini in Chromium
         </message>
+        <message name="IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE" desc="Title for the Gemini feature introduction screen">
+          Let Chromium browse for you
+        </message>
+        <message name="IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_SUBLABEL" desc="Subheader explaining what the Gemini feature does">
+          Gemini in Chromium uses auto browse to work in your tabs and complete tasks you give it. <ph name="LINK_BEGIN">&lt;a href="#"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+        </message>
 
         <!-- Profile Picker Glic version-->
         <message name="IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_GLIC" desc="Profile picker main view title for Glic version. 'Glic' has a special styling." translateable="false">
@@ -3029,20 +3071,56 @@ Chromium is unable to recover your settings.
 
       <!--Desktop to iOS promo strings-->
       <if expr="not is_android">
-        <message name="IDS_IOS_DESKTOP_ESB_PROMO_BUBBLE_DESCRIPTION_QR" desc="The description for the iOS desktop ESB promo bubble with a QR code.">
-          Download Chromium on your phone to add an extra layer of protection when you're on the go
-        </message>
         <message name="IDS_IOS_DESKTOP_ESB_PROMO_BUBBLE_DESCRIPTION_REMINDER" desc="The description for the iOS desktop ESB promo bubble with a reminder button.">
           Stay safer on the go with Enhanced Safe Browsing on Chromium for iOS
         </message>
+        <message name="IDS_IOS_DESKTOP_ESB_PROMO_BUBBLE_TITLE_QR" desc="The title for the iOS desktop ESB promo bubble with a QR code.">
+          Extend Enhanced Safe Browsing with Chromium on your phone
+        </message>
         <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_FOOTER_DESCRIPTION_REMINDER" desc="The description for the footer of the iOS desktop password promo bubble.">
           Sign in faster to sites using saved passwords for Chromium on iOS
+        </message>
+        <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_FOOTER_TITLE" desc="The title for the footer of the iOS desktop password promo bubble suggesting to users that they can use their passwords on their iOS devices.">
+          Use your passwords with Chromium on your phone
+        </message>
+        <message name="IDS_IOS_DESKTOP_PROMO_BUBBLE_BUTTON_ACCEPT_QR" desc="The text inside the iOS promo bubble button allowing the user to accept by getting the app via QR code.">
+          Get the Chromium app
         </message>
         <message name="IDS_IOS_DESKTOP_PROMO_REMINDER_CONFIRMATION" desc="Body text of the promo bubble that appears after uses choose to be reminded of the feature on their iOS device. The placeholder will be replaced by the name of the feature.">
           You'll see a prompt to try <ph name="FEATURE_NAME">$1<ex>Google Lens</ex></ph> next time you open Chromium iOS.
         </message>
         <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_REMINDER_CONFIRMATION" desc="Body text of the promo bubble that appears after uses choose to be reminded of the Password Manager on their iOS device.">
           Next time you open Chromium on your <ph name="DEVICE_TYPE">$1<ex>iPhone</ex></ph>, you'll see a prompt to use Google Password Manager.
+        </message>
+        <message name="IDS_IOS_DESKTOP_LENS_PROMO_BUBBLE_DESCRIPTION_REMINDER" desc="The description for the iOS desktop Lens promo bubble.">
+          Shop, translate and identify what you see with your camera on the Chromium iOS app
+        </message>
+        <message name="IDS_IOS_DESKTOP_LENS_PROMO_BUBBLE_TITLE_QR" desc="The title for the iOS desktop Lens promo bubble with a QR code.">
+          Try Google Lens with Chromium on your phone
+        </message>
+        <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_FOOTER_DESCRIPTION_QR" desc="The description for the iOS desktop password promo bubble footer which lets the user know how to use their saved passwords on their phone: follow the QR code, download Chrome for iOS and sign in to their account.">
+          To use your saved passwords, follow the QR code, download Chromium for iOS and sign in to your Google Account
+        </message>
+        <message name="IDS_IOS_DESKTOP_LENS_PROMO_NOTIFICATION_TITLE" desc="The title for the iOS desktop Lens promo notification.">
+          Chromium Tip: Search With Lens
+        </message>
+        <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_NOTIFICATION_TITLE" desc="The title for the iOS desktop Password promo notification.">
+          Chromium Tip: Save Passwords
+        </message>
+        <message name="IDS_IOS_DESKTOP_PRICE_TRACKING_DESCRIPTION_QR" desc="The description for the iOS desktop price tracking promo bubble with a QR code.">
+          Download Chromium on your phone to track prices and get alerts when the price drops on any site
+        </message>
+        <message name="IDS_IOS_DESKTOP_PRICE_TRACKING_REMINDER_CONFIRMATION" desc="Body text of the promo bubble that appears after the user chooses to be reminded of price tracking on their iOS device.">
+          Next time you open Chromium on your <ph name="DEVICE_TYPE">$1<ex>iPhone</ex></ph>, you’ll see a prompt to enable price tracking alerts.
+        </message>
+        <message name="IDS_IOS_DESKTOP_SAFE_BROWSING_PROMO_NOTIFICATION_TITLE" desc="The title for the iOS desktop Enhanced Safe Browsing promo notification.">
+          Chromium Tip: Enhanced Safe Browsing
+        </message>
+        <message name="IDS_IOS_DESKTOP_TAB_GROUPS_PROMO_BUBBLE_DESCRIPTION_QR" desc="The description for the iOS desktop Tab Groups promo bubble with a QR code.">
+          Download Chromium on your phone to open or create new tab groups on the go.
+        </message>
+        <message name="IDS_IOS_DESKTOP_TAB_GROUPS_REMINDER_CONFIRMATION" desc="Body text of the promo bubble that appears after the user chooses to be reminded of tab groups on their iOS device.">
+          Next time you open Chromium on your <ph name="DEVICE_TYPE">$1<ex>iPhone</ex></ph>, you’ll see a prompt to use tab groups.
         </message>
       </if>
 

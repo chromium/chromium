@@ -79,13 +79,13 @@
 //third_party/rust/equivalent
 //third_party/rust/foldhash
 //third_party/rust/hashbrown
+//third_party/rust/hmac_sha256
 //third_party/rust/indexmap
 //third_party/rust/itoa
 //third_party/rust/log
 //third_party/rust/memchr
 //third_party/rust/proc_macro2
 //third_party/rust/quote
-//third_party/rust/rustversion
 //third_party/rust/ryu
 //third_party/rust/serde
 //third_party/rust/serde_core

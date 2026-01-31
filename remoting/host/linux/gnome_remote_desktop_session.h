@@ -132,6 +132,7 @@ class GnomeRemoteDesktopSession {
   void OnConnectionCreated(GDBusConnectionRef connection);
   void OnHeadlessDetection(bool is_headless);
   void OnSessionCreated(std::tuple<gvariant::ObjectPath> args);
+  void OnSessionClosed(std::tuple<>);
   void OnGotSessionId(std::string session_id);
   void OnScreenCastSessionCreated(std::tuple<gvariant::ObjectPath> args);
   void OnSessionStarted(std::tuple<>);
@@ -148,6 +149,8 @@ class GnomeRemoteDesktopSession {
   GDBusConnectionRef connection_ GUARDED_BY_CONTEXT(sequence_checker_);
   gvariant::ObjectPath session_path_ GUARDED_BY_CONTEXT(sequence_checker_);
   gvariant::ObjectPath screencast_session_path_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  std::unique_ptr<GDBusConnectionRef::SignalSubscription> session_closed_signal_
       GUARDED_BY_CONTEXT(sequence_checker_);
   std::unique_ptr<EiSenderSession> ei_session_
       GUARDED_BY_CONTEXT(sequence_checker_);

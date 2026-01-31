@@ -240,12 +240,8 @@ void LogoServiceImpl::GetLogo(LogoCallbacks callbacks, bool for_webui_ntp) {
         command_line->GetSwitchValueASCII(switches::kSearchProviderLogoURL));
   } else {
     // Non-Google DSE logos are only enabled on some platforms.
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
     logo_url = template_url->logo_url();
-#elif BUILDFLAG(IS_IOS)
-    if (base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdateV3)) {
-      logo_url = template_url->logo_url();
-    }
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   }
 

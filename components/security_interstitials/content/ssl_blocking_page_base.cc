@@ -72,7 +72,7 @@ bool SSLBlockingPageBase::ShouldShowEnhancedProtectionMessage() {
 }
 
 void SSLBlockingPageBase::PopulateEnhancedProtectionMessage(
-    base::Value::Dict& load_time_data) {
+    base::DictValue& load_time_data) {
   const bool show = ShouldShowEnhancedProtectionMessage();
 
   load_time_data.Set(security_interstitials::kDisplayEnhancedProtectionMessage,

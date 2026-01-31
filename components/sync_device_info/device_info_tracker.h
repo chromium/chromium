@@ -8,8 +8,8 @@
 #include <string>
 #include <vector>
 
-#include "absl/container/flat_hash_map.h"
 #include "components/sync_device_info/device_info.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace sync_pb {
 enum SyncEnums_DeviceType : int;

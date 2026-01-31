@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <memory>
 #include <set>
 #include <string>
@@ -10,7 +11,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -52,6 +52,7 @@
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_link_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
+#include "chrome/browser/renderer_context_menu/render_view_context_menu_browsertest_util.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/browser/serial/serial_chooser_context.h"
@@ -59,7 +60,8 @@
 #include "chrome/browser/task_manager/task_manager_browsertest_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/hid/hid_chooser_controller.h"
 #include "chrome/browser/ui/login/login_handler.h"
 #include "chrome/browser/ui/views/file_system_access/file_system_access_test_utils.h"
@@ -72,6 +74,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/tracing.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/download/public/common/download_task_runner.h"
 #include "components/find_in_page/find_tab_helper.h"
 #include "components/guest_view/browser/guest_view_manager.h"
@@ -130,6 +133,8 @@
 #include "extensions/browser/api/declarative/rules_registry.h"
 #include "extensions/browser/api/declarative/rules_registry_service.h"
 #include "extensions/browser/api/declarative/test_rules_registry.h"
+#include "extensions/browser/api/declarative_net_request/action_tracker.h"
+#include "extensions/browser/api/declarative_net_request/rules_monitor_service.h"
 #include "extensions/browser/api/declarative_webrequest/webrequest_constants.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/app_window/native_app_window.h"
@@ -2428,13 +2433,13 @@ IN_PROC_BROWSER_TEST_P(WebViewSSLErrorTest, MAYBE_InterstitialPageRouteEvents) {
       content::GetInputEventRouterRenderWidgetHostViews(
           GetFirstAppWindowWebContents());
 
-  ASSERT_TRUE(base::Contains(
+  ASSERT_TRUE(std::ranges::contains(
       hosts, GetFirstAppWindowWebContents()->GetPrimaryMainFrame()->GetView()));
 
   auto* guest_main_frame =
       GetGuestViewManager()->GetLastGuestRenderFrameHostCreated();
   ASSERT_TRUE(guest_main_frame);
-  ASSERT_TRUE(base::Contains(hosts, guest_main_frame->GetView()));
+  ASSERT_TRUE(std::ranges::contains(hosts, guest_main_frame->GetView()));
 }
 
 // Test makes sure that the browser does not crash when a `<webview>` navigates
@@ -5764,6 +5769,8 @@ IN_PROC_BROWSER_TEST_P(WebViewGuestScrollTouchTest,
   }
 }
 
+#if BUILDFLAG(IS_WIN)
+
 // This runs the chrome://chrome-signin page which includes an OOPIF-<webview>
 // of accounts.google.com.
 class ChromeSignInWebViewTest : public WebViewTest {
@@ -5799,13 +5806,46 @@ INSTANTIATE_TEST_SUITE_P(/* no prefix */,
                          testing::Bool(),
                          ChromeSignInWebViewTest::DescribeParams);
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+// Check that rules from the DeclarativeNetRequest API are not matched for
+// requests originating from WebViews.
+IN_PROC_BROWSER_TEST_P(ChromeSignInWebViewTest,
+                       DeclarativeNetRequestRulesNotMatched) {
+  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
+
+  // Load an extension that blocks all main frame requests into
+  // accounts.google.com which is loaded inside the WebView in
+  // chrome://chrome-signin.
+  const auto* extension = LoadExtension(test_data_dir_.AppendASCII(
+      "api_test/declarative_net_request/block_chrome_signin"));
+
+  // Navigate to a WebUI page that contains a WebView which loads
+  // accounts.google.com.
+  const GURL signin_url{"chrome://chrome-signin/?reason=6"};
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), signin_url));
+  WaitForWebViewInDom();
+
+  // Check that no rules were matched from the extension. Note that the test
+  // would not complete if the accounts.google.com request from the WebView is
+  // blocked.
+  extensions::declarative_net_request::RulesMonitorService*
+      rules_monitor_service =
+          extensions::declarative_net_request::RulesMonitorService::Get(
+              browser()->profile());
+  ASSERT_TRUE(rules_monitor_service);
+  extensions::declarative_net_request::ActionTracker& action_tracker =
+      rules_monitor_service->action_tracker();
+
+  EXPECT_TRUE(action_tracker
+                  .GetMatchedRules(*extension, std::nullopt, base::Time::Min())
+                  .empty());
+}
+
 // This verifies the fix for http://crbug.com/667708.
 IN_PROC_BROWSER_TEST_P(ChromeSignInWebViewTest,
                        ClosingChromeSignInShouldNotCrash) {
   SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
 
-  GURL signin_url{"chrome://chrome-signin/?reason=5"};
+  GURL signin_url{"chrome://chrome-signin/?reason=6"};
 
   ASSERT_TRUE(AddTabAtIndex(0, signin_url, ui::PAGE_TRANSITION_TYPED));
   ASSERT_TRUE(AddTabAtIndex(1, signin_url, ui::PAGE_TRANSITION_TYPED));
@@ -5813,7 +5853,6 @@ IN_PROC_BROWSER_TEST_P(ChromeSignInWebViewTest,
 
   chrome::CloseTab(browser());
 }
-#endif
 
 // This test verifies that unattached guests are not included as the inner
 // WebContents. The test verifies this by triggering a find-in-page request on a
@@ -5824,7 +5863,7 @@ IN_PROC_BROWSER_TEST_P(ChromeSignInWebViewTest,
                        NoFindInPageForUnattachedGuest) {
   SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
 
-  GURL signin_url{"chrome://chrome-signin/?reason=5"};
+  GURL signin_url{"chrome://chrome-signin/?reason=6"};
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), signin_url));
 
   // Navigate a tab to a page with a <webview>.
@@ -5882,7 +5921,7 @@ IN_PROC_BROWSER_TEST_P(ChromeSignInWebViewTest,
 
   // Load a WebUI with a webview. For testing convenience, we use the existing
   // chrome signin page.
-  const GURL signin_url{"chrome://chrome-signin/?reason=5"};
+  const GURL signin_url{"chrome://chrome-signin/?reason=6"};
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), signin_url));
   WaitForWebViewInDom();
   content::WebContents* tab_contents =
@@ -5908,6 +5947,8 @@ IN_PROC_BROWSER_TEST_P(ChromeSignInWebViewTest,
   // The WebUI should not see the events for the app's webview.
   EXPECT_EQ(false, content::EvalJs(tab_contents, "window.sawRequest;"));
 }
+
+#endif  // BUILDFLAG(IS_WIN)
 
 // This test class makes "isolated.com" an isolated origin, to be used in
 // testing isolated origins inside of a WebView.
@@ -7894,4 +7935,95 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, PerformanceManager) {
   // The outer document of the guest view is available.
   EXPECT_EQ(inner_root_frame_node->GetParentOrOuterDocumentOrEmbedder(),
             main_frame_node.get());
+}
+
+class ContextualTasksWebViewTest : public WebViewTest {
+ public:
+  ContextualTasksWebViewTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {contextual_tasks::kContextualTasks,
+         contextual_tasks::kContextualTasksForceEntryPointEligibility},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(/* no prefix */,
+                         ContextualTasksWebViewTest,
+                         testing::Bool(),
+                         ContextualTasksWebViewTest::DescribeParams);
+
+IN_PROC_BROWSER_TEST_P(ContextualTasksWebViewTest, OpenLinkInNewTab) {
+  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Navigate to chrome://contextual-tasks
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUIContextualTasksURL)));
+
+  // Wait for webview to be created.
+  guest_view::GuestViewBase* guest_view1 =
+      GetGuestViewManager()->WaitForSingleGuestViewCreated();
+  ASSERT_TRUE(guest_view1);
+
+  // Inject a second webview.
+  GURL guest_url = embedded_test_server()->GetURL("/link_with_target.html");
+  std::string inject_webview_script = content::JsReplace(
+      "var wv = document.createElement('webview');"
+      "wv.src = $1;"
+      "wv.style.position = 'absolute';"
+      "wv.style.top = '0px';"
+      "wv.style.left = '0px';"
+      "document.body.appendChild(wv);",
+      guest_url.spec());
+  content::WebContents* embedder_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ExecuteScriptAsync(embedder_web_contents, inject_webview_script);
+
+  // Wait for the second webview to be created.
+  GetGuestViewManager()->WaitForNumGuestsCreated(2u);
+  auto* guest_view2 = GetGuestViewManager()->GetLastGuestViewCreated();
+  ASSERT_NE(guest_view1, guest_view2);
+  EXPECT_TRUE(GetGuestViewManager()->WaitUntilAttachedAndLoaded(guest_view2));
+
+  // Wait for the second webview to be ready to receive events
+  content::MainThreadFrameObserver synchronize_threads(
+      guest_view2->GetGuestMainFrame()->GetRenderWidgetHost());
+  synchronize_threads.Wait();
+
+  // Click on open link in new tab context menu item and verify a new tab is
+  // created.
+  {
+    int tab_count = browser()->tab_strip_model()->count();
+    ContextMenuWaiter waiter(IDC_CONTENT_CONTEXT_OPENLINKNEWTAB);
+    OpenContextMenu(guest_view2->GetGuestMainFrame());
+    waiter.WaitForMenuOpenAndClose();
+    EXPECT_TRUE(waiter.IsCommandExecuted().value());
+    EXPECT_EQ(tab_count + 1, browser()->tab_strip_model()->count());
+  }
+
+  // Click on open link in new window menu item and verify a new window is
+  // created.
+  {
+    int browser_count = chrome::GetBrowserCount(browser()->profile());
+    ContextMenuWaiter waiter(IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW);
+    OpenContextMenu(guest_view2->GetGuestMainFrame());
+    waiter.WaitForMenuOpenAndClose();
+    EXPECT_TRUE(waiter.IsCommandExecuted().value());
+    EXPECT_EQ(browser_count + 1, chrome::GetBrowserCount(browser()->profile()));
+  }
+
+  // Click on open link in incognito windown and verify a new incognito window
+  // is created.
+  {
+    int incognito_browser_count = chrome::GetIncognitoBrowserCount();
+    ContextMenuWaiter waiter(IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD);
+    OpenContextMenu(guest_view2->GetGuestMainFrame());
+    waiter.WaitForMenuOpenAndClose();
+    EXPECT_TRUE(waiter.IsCommandExecuted().value());
+    EXPECT_EQ(incognito_browser_count + 1, chrome::GetIncognitoBrowserCount());
+  }
 }

@@ -123,12 +123,12 @@ class DlpFilesAppBrowserTestBase {
 
   bool HandleDlpCommands(Profile* profile,
                          const std::string& name,
-                         const base::Value::Dict& value,
+                         const base::DictValue& value,
                          std::string* output) {
     if (name == "setGetFilesSourcesMock") {
       base::FilePath result =
           file_manager::util::GetDownloadsFolderForProfile(profile);
-      const base::Value::List* file_names = value.FindList("fileNames");
+      const base::ListValue* file_names = value.FindList("fileNames");
       auto* source_urls = value.FindList("sourceUrls");
       EXPECT_TRUE(file_names);
       EXPECT_TRUE(source_urls);
@@ -244,7 +244,7 @@ class DlpFilesAppBrowserTestBase {
     if (name == "expectFilesAdditionToDaemon") {
       base::FilePath download_path =
           file_manager::util::GetDownloadsFolderForProfile(profile);
-      const base::Value::List* file_names = value.FindList("fileNames");
+      const base::ListValue* file_names = value.FindList("fileNames");
       auto* source_urls = value.FindList("sourceUrls");
       EXPECT_TRUE(file_names);
       EXPECT_TRUE(source_urls);
@@ -270,7 +270,7 @@ class DlpFilesAppBrowserTestBase {
           file_manager::util::GetDownloadsFolderForProfile(profile);
       std::optional<int> task_id = value.FindInt("taskId");
       EXPECT_TRUE(task_id.has_value() && task_id.value() > 0);
-      const base::Value::List* file_names = value.FindList("fileNames");
+      const base::ListValue* file_names = value.FindList("fileNames");
       EXPECT_TRUE(file_names);
       std::vector<base::FilePath> warning_files;
       for (const auto& file_name : *file_names) {
@@ -383,30 +383,29 @@ std::string GetFileTransferConnectorsPolicyForDlp(
     const std::string& destination,
     bool report_only,
     bool require_user_justification) {
-  auto sources = base::Value::List().Append(
-      base::Value::Dict().Set("file_system_type", source));
+  auto sources = base::ListValue().Append(
+      base::DictValue().Set("file_system_type", source));
 
-  auto destinations = base::Value::List().Append(
-      base::Value::Dict().Set("file_system_type", destination));
+  auto destinations = base::ListValue().Append(
+      base::DictValue().Set("file_system_type", destination));
 
-  auto source_destination_list = base::Value::List().Append(
-      base::Value::Dict()
+  auto source_destination_list = base::ListValue().Append(
+      base::DictValue()
           .Set("sources", std::move(sources))
           .Set("destinations", std::move(destinations)));
 
-  auto enable = base::Value::List().Append(
-      base::Value::Dict()
+  auto enable = base::ListValue().Append(
+      base::DictValue()
           .Set("source_destination_list", std::move(source_destination_list))
-          .Set("tags", base::Value::List().Append("dlp")));
+          .Set("tags", base::ListValue().Append("dlp")));
 
-  auto settings = base::Value::Dict();
+  auto settings = base::DictValue();
   settings.Set("service_provider", "google");
   settings.Set("enable", std::move(enable));
   settings.Set("block_until_verdict", report_only ? 0 : 1);
 
   if (require_user_justification) {
-    settings.Set("require_justification_tags",
-                 base::Value::List().Append("dlp"));
+    settings.Set("require_justification_tags", base::ListValue().Append("dlp"));
   }
 
   return settings.DebugString();
@@ -523,7 +522,7 @@ class FileTransferConnectorFilesAppBrowserTestBase {
       Profile* profile,
       const FileManagerBrowserTestBase::Options& options,
       const std::string& name,
-      const base::Value::Dict& value,
+      const base::DictValue& value,
       std::string* output) {
     if (name == "setupFileTransferPolicy") {
       // Set the analysis connector (enterprise_connectors) for FILE_TRANSFER.
@@ -632,7 +631,7 @@ class FileTransferConnectorFilesAppBrowserTestBase {
       const std::string* destination_volume_name =
           value.FindString("destination_volume");
       CHECK(destination_volume_name);
-      const base::Value::List* entry_paths = value.FindList("entry_paths");
+      const base::ListValue* entry_paths = value.FindList("entry_paths");
       CHECK(entry_paths);
       std::optional<bool> expect_proceed_warning_reports_optional =
           value.FindBool("expect_proceed_warning_reports");
@@ -653,8 +652,8 @@ class FileTransferConnectorFilesAppBrowserTestBase {
 
         auto file_name = path.BaseName().AsUTF8Unsafe();
 
-        bool should_block = base::Contains(file_name, "blocked");
-        bool should_warn = base::Contains(file_name, "warned");
+        bool should_block = file_name.contains("blocked");
+        bool should_warn = file_name.contains("warned");
         CHECK(!(should_block && should_warn))
             << "A file shouldn't be both blocked and warned.";
         if (!should_block && !should_warn) {
@@ -729,10 +728,10 @@ class FileTransferConnectorFilesAppBrowserTestBase {
 
           chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule;
           triggered_rule.set_rule_name("rule");
-          if (base::Contains(file_name, "blocked")) {
+          if (file_name.contains("blocked")) {
             triggered_rule.set_action(
                 chrome::cros::reporting::proto::TriggeredRuleInfo::BLOCK);
-          } else if (base::Contains(file_name, "warned")) {
+          } else if (file_name.contains("warned")) {
             triggered_rule.set_action(
                 chrome::cros::reporting::proto::TriggeredRuleInfo::WARN);
           }
@@ -839,12 +838,12 @@ class FileTransferConnectorFilesAppBrowserTestBase {
       const base::FilePath& path) {
     enterprise_connectors::ContentAnalysisResponse response;
     // We return a block verdict if the basename contains "blocked".
-    if (base::Contains(path.BaseName().value(), "blocked")) {
+    if (path.BaseName().value().contains("blocked")) {
       response = enterprise_connectors::test::FakeContentAnalysisDelegate::
           FakeContentAnalysisDelegate::DlpResponse(
               enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS,
               "rule", enterprise_connectors::TriggeredRule::BLOCK);
-    } else if (base::Contains(path.BaseName().value(), "warned")) {
+    } else if (path.BaseName().value().contains("warned")) {
       response = enterprise_connectors::test::FakeContentAnalysisDelegate::
           FakeContentAnalysisDelegate::DlpResponse(
               enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS,
@@ -927,7 +926,7 @@ class DlpFilesAppBrowserTest
   }
 
   bool HandleDlpCommands(const std::string& name,
-                         const base::Value::Dict& value,
+                         const base::DictValue& value,
                          std::string* output) override {
     return DlpFilesAppBrowserTestBase::HandleDlpCommands(profile(), name, value,
                                                          output);
@@ -990,7 +989,7 @@ class FileTransferConnectorFilesAppBrowserTest
   }
 
   bool HandleEnterpriseConnectorCommands(const std::string& name,
-                                         const base::Value::Dict& value,
+                                         const base::DictValue& value,
                                          std::string* output) override {
     if (name == "verifyFileTransferErrorDialogAndDismiss") {
       const std::string* app_id = value.FindString("app_id");
@@ -1187,14 +1186,14 @@ class DlpAndEnterpriseConnectorsFilesAppBrowserTest
   }
 
   bool HandleDlpCommands(const std::string& name,
-                         const base::Value::Dict& value,
+                         const base::DictValue& value,
                          std::string* output) override {
     return DlpFilesAppBrowserTestBase::HandleDlpCommands(profile(), name, value,
                                                          output);
   }
 
   bool HandleEnterpriseConnectorCommands(const std::string& name,
-                                         const base::Value::Dict& value,
+                                         const base::DictValue& value,
                                          std::string* output) override {
     return FileTransferConnectorFilesAppBrowserTestBase::
         HandleEnterpriseConnectorCommands(profile(), GetOptions(), name, value,
@@ -1252,7 +1251,7 @@ class SkyVaultFilesAppBrowserTest
   }
 
   bool HandleSkyVaultCommands(const std::string& name,
-                              const base::Value::Dict& value,
+                              const base::DictValue& value,
                               std::string* output) override {
     if (name == "skyvault:setLocalFilesEnabled") {
       std::optional<bool> enabled = value.FindBool("enabled");

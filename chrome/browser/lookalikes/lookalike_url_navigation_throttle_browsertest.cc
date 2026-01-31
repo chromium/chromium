@@ -4,7 +4,8 @@
 
 #include "chrome/browser/lookalikes/lookalike_url_navigation_throttle.h"
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "base/functional/bind.h"
 #include "base/path_service.h"
 #include "base/strings/pattern.h"
@@ -356,7 +357,7 @@ class LookalikeUrlNavigationThrottleBrowserTest : public InProcessBrowserTest {
     // Clicking the link in the interstitial should also remove the original
     // URL from history.
     ui_test_utils::HistoryEnumerator enumerator(browser->profile());
-    EXPECT_FALSE(base::Contains(enumerator.urls(), navigated_url));
+    EXPECT_FALSE(std::ranges::contains(enumerator.urls(), navigated_url));
 
     bool is_incognito = browser->profile()->IsIncognitoProfile();
     histograms.ExpectUniqueSample(kInterstitialHistogramName, expected_event,
@@ -437,7 +438,7 @@ class LookalikeUrlNavigationThrottleBrowserTest : public InProcessBrowserTest {
 
     // Clicking the link should cause the original URL to appear in history.
     ui_test_utils::HistoryEnumerator enumerator(browser->profile());
-    EXPECT_TRUE(base::Contains(enumerator.urls(), navigated_url));
+    EXPECT_TRUE(std::ranges::contains(enumerator.urls(), navigated_url));
 
     histograms->ExpectTotalCount(kInterstitialHistogramName, 1);
     histograms->ExpectBucketCount(kInterstitialHistogramName, expected_event,

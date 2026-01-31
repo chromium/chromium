@@ -6,14 +6,14 @@
 
 #include <algorithm>
 #include <optional>
+#include <utility>
 
-#include "base/containers/contains.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "device/vr/openxr/exit_xr_present_reason.h"
@@ -26,6 +26,7 @@
 #include "mojo/public/cpp/bindings/message.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/gpu_fence.h"
@@ -80,10 +81,10 @@ OpenXrRenderLoop::~OpenXrRenderLoop() {
 }
 
 void OpenXrRenderLoop::ExitPresent(ExitXrPresentReason reason) {
-  DVLOG(1) << __func__ << " reason=" << base::to_underlying(reason);
+  DVLOG(1) << __func__ << " reason=" << std::to_underlying(reason);
   TRACE_EVENT_INSTANT1("xr", "OpenXrRenderLoop::ExitPresent",
                        TRACE_EVENT_SCOPE_THREAD, "reason",
-                       base::to_underlying(reason));
+                       std::to_underlying(reason));
   if (!is_presenting_) {
     return;
   }
@@ -130,9 +131,8 @@ void OpenXrRenderLoop::GetFrameData(
     mojom::XRFrameDataRequestOptionsPtr options,
     mojom::XRFrameDataProvider::GetFrameDataCallback callback) {
   if (delayed_get_frame_data_id_) {
-    TRACE_EVENT_NESTABLE_ASYNC_END0(
-        "xr", "DelayedGetFrameData",
-        TRACE_ID_LOCAL(*delayed_get_frame_data_id_));
+    TRACE_EVENT_END("xr", /*"DelayedGetFrameData"*/
+                    perfetto::Track(*delayed_get_frame_data_id_));
     delayed_get_frame_data_id_.reset();
   }
   TRACE_EVENT0("xr", "OpenXrRenderLoop::GetFrameData");
@@ -169,8 +169,8 @@ void OpenXrRenderLoop::GetFrameData(
     }
     // next_frame_id_ is only changed once we successfully generate a frame.
     delayed_get_frame_data_id_ = next_frame_id_;
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("xr", "DelayedGetFrameData",
-                                      TRACE_ID_LOCAL(next_frame_id_));
+    TRACE_EVENT_BEGIN("xr", "DelayedGetFrameData",
+                      perfetto::Track(next_frame_id_));
     delayed_get_frame_data_callback_ =
         base::BindOnce(&OpenXrRenderLoop::GetFrameData, base::Unretained(this),
                        std::move(options), std::move(callback));
@@ -363,8 +363,11 @@ void OpenXrRenderLoop::StartRuntimeFinish(
     transport_options->transport_method =
         device::mojom::XRPresentationTransportMethod::SUBMIT_AS_TEXTURE_HANDLE;
   } else {
+    // TODO(crbug.com/476100354): Verify that this path is not taken and remove
+    // it.
+    base::debug::DumpWithoutCrashing();
     transport_options->transport_method =
-        device::mojom::XRPresentationTransportMethod::SUBMIT_AS_MAILBOX_HOLDER;
+        device::mojom::XRPresentationTransportMethod::SUBMIT_AS_TEST;
   }
 
   if (graphics_binding_->IsWebGPUSession() &&
@@ -407,6 +410,9 @@ void OpenXrRenderLoop::StartRuntimeFinish(
   session->device_config->views = openxr_->GetDefaultViews();
   if (auto* depth = openxr_->GetDepthSensor(); depth) {
     session->device_config->depth_configuration = depth->GetDepthConfig();
+  }
+  if (openxr_->IsFeatureEnabled(mojom::XRSessionFeature::LAYERS)) {
+    session->device_config->max_render_layers = openxr_->GetMaxRenderLayers();
   }
 
   session->enviroment_blend_mode =
@@ -887,13 +893,14 @@ bool OpenXrRenderLoop::SubmitCompositedFrame() {
 }
 
 void OpenXrRenderLoop::SubmitFrame(int16_t frame_index,
-                                   const gpu::MailboxHolder& mailbox,
                                    base::TimeDelta time_waited) {
   DVLOG(3) << __func__ << " frame_index=" << frame_index;
   CHECK(!graphics_binding_->IsUsingSharedImages());
   DCHECK(BUILDFLAG(IS_ANDROID));
+  // The sync token passed here is unused by OpenXR backend's implementation of
+  // SubmitFrameMissing.
   // TODO(crbug.com/40917172): Support non-shared buffer mode.
-  SubmitFrameMissing(frame_index, mailbox.sync_token);
+  SubmitFrameMissing(frame_index, gpu::SyncToken());
 }
 
 void OpenXrRenderLoop::SubmitFrameDrawnIntoTexture(
@@ -901,8 +908,8 @@ void OpenXrRenderLoop::SubmitFrameDrawnIntoTexture(
     const std::vector<LayerId>& layer_ids,
     const gpu::SyncToken& sync_token,
     base::TimeDelta time_waited) {
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("xr", "OpenXrRenderLoop::WaitSyncToken",
-                                    TRACE_ID_LOCAL(frame_index));
+  TRACE_EVENT_BEGIN("xr", "OpenXrRenderLoop::WaitSyncToken",
+                    perfetto::Track(frame_index));
   DVLOG(3) << __func__ << " frame_index=" << frame_index;
   gpu::gles2::GLES2Interface* gl = context_provider_->ContextGL();
   gl->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
@@ -918,8 +925,8 @@ void OpenXrRenderLoop::OnWebXrTokenSignaled(
     std::vector<LayerId> updated_layers,
     GLuint id,
     std::unique_ptr<gfx::GpuFence> gpu_fence) {
-  TRACE_EVENT_NESTABLE_ASYNC_END0("xr", "OpenXrRenderLoop::WaitSyncToken",
-                                  TRACE_ID_LOCAL(frame_index));
+  TRACE_EVENT_END("xr", /*"OpenXrRenderLoop::WaitSyncToken"*/
+                  perfetto::Track(frame_index));
   // openxr_ and context_provider can be nullptr if we receive
   // OnWebXrTokenSignaled after the session has ended. Ensure we don't crash in
   // that case.
@@ -1084,11 +1091,19 @@ void OpenXrRenderLoop::DestroyCompositionLayer(const LayerId& layer_id) {
 void OpenXrRenderLoop::SetEnabledCompositionLayers(
     const std::vector<LayerId>& layer_ids) {
   if (!openxr_->IsFeatureEnabled(mojom::XRSessionFeature::LAYERS)) {
+    layer_manager_receiver_.ReportBadMessage("Layers feature is not enabled.");
     return;
   }
   if (!context_provider_) {
+    layer_manager_receiver_.ReportBadMessage("Context was lost.");
     return;
   }
+  if (layer_ids.size() > openxr_->GetMaxRenderLayers()) {
+    layer_manager_receiver_.ReportBadMessage(
+        "Tried to enable too many layers.");
+    return;
+  }
+
   graphics_binding_->SetEnabledCompositionLayers(
       layer_ids, openxr_->session(),
       openxr_->GetRecommendedSwapchainSampleCount(),

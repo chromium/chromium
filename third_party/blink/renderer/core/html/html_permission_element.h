@@ -108,7 +108,7 @@ class CORE_EXPORT HTMLPermissionElement
 
  protected:
   // blink::HTMLElement:
-  void AttributeChanged(const AttributeModificationParams& params) override;
+  void ParseAttribute(const AttributeModificationParams& params) override;
 
   // blink::Node:
   void DefaultEventHandler(Event&) override;

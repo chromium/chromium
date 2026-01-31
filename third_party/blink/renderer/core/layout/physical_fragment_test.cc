@@ -99,7 +99,7 @@ TEST_F(PhysicalFragmentTest, DumpFragmentTreeWithGrid) {
 
 TEST_F(PhysicalFragmentTest, DumpFragmentTreeWithTargetInsideColumn) {
   SetBodyInnerHTML(R"HTML(
-    <div id="multicol" style="columns:3;">
+    <div id="multicol" style="columns:3; gap:10px; width:320px;">
       <div id="child" style="height:150px;"></div>
     </div>
   )HTML");
@@ -116,13 +116,13 @@ TEST_F(PhysicalFragmentTest, DumpFragmentTreeWithTargetInsideColumn) {
   Box (out-of-flow-positioned block-flow)(self paint) offset:unplaced size:800x600 LayoutView #document
     Box (block-flow-root block-flow)(self paint) offset:0,0 size:800x66 LayoutBlockFlow HTML
       Box (block-flow) offset:8,8 size:784x50 LayoutBlockFlow BODY
-        Box (block-flow-root block-flow) offset:0,0 size:784x50 LayoutBlockFlow (multicol) DIV id='multicol'
-          Box (column block-flow) offset:0,0 size:260.65625x50 sequence:0 (seen all children) consumed:50px
-            Box (block-flow) offset:0,0 size:260.65625x50 LayoutBlockFlow DIV id='child' sequence:0 (seen all children) consumed:50px
-          Box (column block-flow)(resumed) offset:261.65625,0 size:260.65625x50 sequence:1 (seen all children) consumed:100px
-*           Box (block-flow)(resumed) offset:0,0 size:260.65625x50 LayoutBlockFlow DIV id='child' sequence:1 (seen all children) consumed:100px
-          Box (column block-flow)(resumed) offset:523.3125,0 size:260.65625x50
-            Box (block-flow)(resumed) offset:0,0 size:260.65625x50 LayoutBlockFlow DIV id='child'
+        Box (block-flow-root block-flow) offset:0,0 size:320x50 LayoutBlockFlow (multicol) DIV id='multicol'
+          Box (column block-flow) offset:0,0 size:100x50 sequence:0 (seen all children) consumed:50px
+            Box (block-flow) offset:0,0 size:100x50 LayoutBlockFlow DIV id='child' sequence:0 (seen all children) consumed:50px
+          Box (column block-flow)(resumed) offset:110,0 size:100x50 sequence:1 (seen all children) consumed:100px
+*           Box (block-flow)(resumed) offset:0,0 size:100x50 LayoutBlockFlow DIV id='child' sequence:1 (seen all children) consumed:100px
+          Box (column block-flow)(resumed) offset:220,0 size:100x50
+            Box (block-flow)(resumed) offset:0,0 size:100x50 LayoutBlockFlow DIV id='child'
 )DUMP";
   EXPECT_EQ(expectation, dump);
 }

@@ -18,18 +18,15 @@ using infobars::InfoBarManager;
 #pragma mark - InfobarOverlayTabHelper
 
 InfobarOverlayTabHelper::InfobarOverlayTabHelper(web::WebState* web_state)
-    : request_inserter_(InfobarOverlayRequestInserter::FromWebState(web_state)),
-      request_scheduler_(web_state, this) {}
+    : request_scheduler_(web_state) {}
 
 InfobarOverlayTabHelper::~InfobarOverlayTabHelper() = default;
 
 #pragma mark - InfobarOverlayTabHelper::OverlayRequestScheduler
 
 InfobarOverlayTabHelper::OverlayRequestScheduler::OverlayRequestScheduler(
-    web::WebState* web_state,
-    InfobarOverlayTabHelper* tab_helper)
-    : tab_helper_(tab_helper), web_state_(web_state) {
-  DCHECK(tab_helper_);
+    web::WebState* web_state)
+    : web_state_(web_state) {
   InfoBarManager* manager = InfoBarManagerImpl::FromWebState(web_state);
   DCHECK(manager);
   scoped_observation_.Observe(manager);
@@ -57,7 +54,11 @@ void InfobarOverlayTabHelper::OverlayRequestScheduler::OnInfoBarAdded(
                                               OverlayModality::kInfobarBanner)
                 ->size();
   params.source = InfobarOverlayInsertionSource::kInfoBarManager;
-  tab_helper_->request_inserter()->InsertOverlayRequest(params);
+
+  InfobarOverlayRequestInserter* request_inserter =
+      InfobarOverlayRequestInserter::FromWebState(web_state_);
+  CHECK(request_inserter);
+  request_inserter->InsertOverlayRequest(params);
 }
 
 void InfobarOverlayTabHelper::OverlayRequestScheduler::OnManagerWillBeDestroyed(

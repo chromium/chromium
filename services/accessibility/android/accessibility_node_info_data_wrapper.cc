@@ -12,7 +12,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "services/accessibility/android/android_accessibility_util.h"
 #include "services/accessibility/android/ax_tree_source_android.h"
-#include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_role_properties.h"

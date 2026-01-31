@@ -45,12 +45,10 @@ blink::mojom::ConfidenceLevel GenerateRandomizedConfidenceLevel(
   // Step 2: If the random number is greater than or equal to the flip
   // probability (heads), use the computed confidence level.
   if (first_coin_flip < randomizedTriggerRate) {
-    // Step 3: If the random number is less than the flip probability
-    // (tails), toss the coin again by generating a random integer with a
-    // value of either 0 or 1. If 0 (heads), return
-    // `ConfidenceLevel::kHigh` else return `ConfidenceLevel::kLow`.
-    int second_coin_flip = base::RandInt(0, 1);
-    maybe_flipped_confidence = second_coin_flip == 0
+    // Step 3: If the random number is less than the flip probability (tails),
+    // toss the coin again by generating a random boolean. If true (heads),
+    // return `ConfidenceLevel::kHigh` else return `ConfidenceLevel::kLow`.
+    maybe_flipped_confidence = base::RandBool()
                                    ? blink::mojom::ConfidenceLevel::kHigh
                                    : blink::mojom::ConfidenceLevel::kLow;
   }

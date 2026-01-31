@@ -45,7 +45,6 @@ ChromeBackgroundTracingMetricsProvider::ChromeBackgroundTracingMetricsProvider(
   // initialized when reporting metrics, in which case it'll just not add any AV
   // metrics to the proto.
   auto av_metrics_provider = std::make_unique<AntiVirusMetricsProvider>();
-  av_metrics_provider_ = av_metrics_provider.get();
   system_profile_providers_.emplace_back(std::move(av_metrics_provider));
 #elif BUILDFLAG(IS_CHROMEOS)
   if (cros_system_profile_provider_) {
@@ -88,15 +87,6 @@ void ChromeBackgroundTracingMetricsProvider::Init() {
         std::make_unique<variations::FieldTrialsProvider>(registry,
                                                           std::string_view()));
   }
-}
-
-void ChromeBackgroundTracingMetricsProvider::AsyncInit(
-    base::OnceClosure done_callback) {
-#if BUILDFLAG(IS_WIN)
-  av_metrics_provider_->AsyncInit(std::move(done_callback));
-#else
-  std::move(done_callback).Run();
-#endif
 }
 
 void ChromeBackgroundTracingMetricsProvider::RecordCoreSystemProfileMetrics(

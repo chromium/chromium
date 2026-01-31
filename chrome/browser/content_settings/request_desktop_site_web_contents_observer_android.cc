@@ -4,10 +4,11 @@
 
 #include "chrome/browser/content_settings/request_desktop_site_web_contents_observer_android.h"
 
+#include <algorithm>
+
 #include "base/android/android_info.h"
 #include "base/android/device_info.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_split.h"
@@ -166,7 +167,7 @@ bool RequestDesktopSiteWebContentsObserverAndroid::ShouldAllowOnExternalDisplay(
       std::string manufacturer = base::android::android_info::manufacturer();
       base::ToLowerASCII(manufacturer);
       s_is_oem_allowlisted_for_external_display_desktop_ua =
-          base::Contains(allowlist, manufacturer);
+          std::ranges::contains(allowlist, manufacturer);
     }
   }
   return s_is_oem_allowlisted_for_external_display_desktop_ua.value();

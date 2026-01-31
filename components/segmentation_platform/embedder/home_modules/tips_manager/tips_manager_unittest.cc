@@ -30,7 +30,7 @@ const std::string kTestSignalName = "test_signal";
 void PopulatePrefsWithUnusedSignalData(PrefService* pref_service) {
   ScopedDictPrefUpdate update(pref_service, kTipsSignalHistory);
 
-  base::Value::Dict* signal_history = update->EnsureDict(kTestSignalName);
+  base::DictValue* signal_history = update->EnsureDict(kTestSignalName);
 
   signal_history->Set(kFirstObservedTime, base::TimeToValue(base::Time::Now()));
 
@@ -50,7 +50,7 @@ bool SignalHasExpectedCount(const std::string& signal,
                             PrefService* pref_service) {
   ScopedDictPrefUpdate update(pref_service, kTipsSignalHistory);
 
-  base::Value::Dict* signal_history = update->FindDict(signal);
+  base::DictValue* signal_history = update->FindDict(signal);
 
   if (!signal_history) {
     return false;
@@ -162,13 +162,13 @@ TEST_F(TipsManagerTest, RemoveUnusedSignalsFromLocalPrefs) {
 
   ScopedDictPrefUpdate update(&local_pref_service_, kTipsSignalHistory);
 
-  base::Value::Dict* signal_history = update->FindDict(kTestSignalName);
+  base::DictValue* signal_history = update->FindDict(kTestSignalName);
 
   EXPECT_FALSE(signal_history->empty());
 
   CreateTipsManager();
 
-  base::Value::Dict* updated_signal_history = update->FindDict(kTestSignalName);
+  base::DictValue* updated_signal_history = update->FindDict(kTestSignalName);
 
   EXPECT_EQ(updated_signal_history, nullptr);
 }
@@ -179,13 +179,13 @@ TEST_F(TipsManagerTest, RemoveUnusedSignalsFromProfilePrefs) {
 
   ScopedDictPrefUpdate update(&profile_pref_service_, kTipsSignalHistory);
 
-  base::Value::Dict* signal_history = update->FindDict(kTestSignalName);
+  base::DictValue* signal_history = update->FindDict(kTestSignalName);
 
   EXPECT_FALSE(signal_history->empty());
 
   CreateTipsManager();
 
-  base::Value::Dict* updated_signal_history = update->FindDict(kTestSignalName);
+  base::DictValue* updated_signal_history = update->FindDict(kTestSignalName);
 
   EXPECT_EQ(updated_signal_history, nullptr);
 }
@@ -228,7 +228,7 @@ TEST_F(TipsManagerTest,
 
   // Simulate the signal being fired a long time ago.
   ScopedDictPrefUpdate update(&profile_pref_service_, kTipsSignalHistory);
-  base::Value::Dict* signal_history =
+  base::DictValue* signal_history =
       update->FindDict(tips_manager::signals::kLensUsed);
   ASSERT_TRUE(signal_history);
   signal_history->Set(kLastObservedTime,

@@ -21,13 +21,13 @@ constexpr char kChildrenKey[] = "children";
 // Finds the value of the attribute named SAMLResponse from `dict` by doing a
 // depth-first search in `dict`.
 // Returns a pointer to the value or nullptr if nothing was found.
-const std::string* GetSamlResponseFromDict(const base::Value::Dict& dict) {
+const std::string* GetSamlResponseFromDict(const base::DictValue& dict) {
   const std::string* attribute_name =
       dict.FindStringByDottedPath("attributes.name");
   if (attribute_name && *attribute_name == "SAMLResponse") {
     return dict.FindStringByDottedPath("attributes.value");
   }
-  const base::Value::List* children = dict.FindList(kChildrenKey);
+  const base::ListValue* children = dict.FindList(kChildrenKey);
   if (!children) {
     return nullptr;
   }
@@ -49,12 +49,12 @@ const std::string* GetSamlResponseFromDict(const base::Value::Dict& dict) {
 // attribute itself has children, and we look for the value the children with a
 // "text" key.
 // Returns a pointer to the value or nullptr if nothing was found.
-const std::string* GetAttributeValue(const base::Value::Dict& dict,
+const std::string* GetAttributeValue(const base::DictValue& dict,
                                      const std::string& attribute) {
   const std::string* attribute_name =
       dict.FindStringByDottedPath("attributes.Name");
   if (attribute_name && *attribute_name == attribute) {
-    const base::Value::List* attribute_children = dict.FindList(kChildrenKey);
+    const base::ListValue* attribute_children = dict.FindList(kChildrenKey);
     if (!attribute_children) {
       return nullptr;
     }
@@ -65,7 +65,7 @@ const std::string* GetAttributeValue(const base::Value::Dict& dict,
         continue;
       }
 
-      const base::Value::List* attribute_value_children =
+      const base::ListValue* attribute_value_children =
           attribute_child_dict.FindList(kChildrenKey);
       if (!attribute_value_children) {
         continue;
@@ -79,7 +79,7 @@ const std::string* GetAttributeValue(const base::Value::Dict& dict,
     }
   }
 
-  const base::Value::List* children = dict.FindList(kChildrenKey);
+  const base::ListValue* children = dict.FindList(kChildrenKey);
   if (!children) {
     return nullptr;
   }

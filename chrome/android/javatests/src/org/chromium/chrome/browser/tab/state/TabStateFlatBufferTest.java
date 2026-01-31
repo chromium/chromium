@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tab.state;
 
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
+
 import androidx.test.filters.LargeTest;
 
 import org.junit.Assert;
@@ -32,6 +34,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.util.ByteBufferTestUtils;
+import org.chromium.url.GURL;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -296,6 +299,7 @@ public class TabStateFlatBufferTest {
         state.timestampMillis = 41L;
         state.tabHasSensitiveContent = true;
         state.isPinned = true;
+        state.url = new GURL(getOriginalNativeNtpUrl());
         state.isIncognito = isIncognito;
         int capacity = 100;
         byte[] bytes = new byte[capacity];
@@ -343,6 +347,7 @@ public class TabStateFlatBufferTest {
         Assert.assertEquals(expected.themeColor, actual.themeColor);
         Assert.assertEquals(expected.tabHasSensitiveContent, actual.tabHasSensitiveContent);
         Assert.assertEquals(expected.isPinned, actual.isPinned);
+        Assert.assertEquals(expected.url, actual.url);
         ByteBufferTestUtils.verifyByteBuffer(
                 expected.contentsState.buffer(), actual.contentsState.buffer());
         // Don't assert on the fields of the WebContentsState as it is random data in this test.

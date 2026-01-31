@@ -11,10 +11,8 @@ namespace net {
 
 // static
 std::unique_ptr<ReportingCache> ReportingCache::Create(
-    ReportingContext* context,
-    const base::flat_map<std::string, GURL>& enterprise_reporting_endpoints) {
-  return std::make_unique<ReportingCacheImpl>(context,
-                                              enterprise_reporting_endpoints);
+    ReportingContext* context) {
+  return std::make_unique<ReportingCacheImpl>(context);
 }
 
 ReportingCache::~ReportingCache() = default;

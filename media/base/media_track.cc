@@ -122,4 +122,26 @@ MediaTrack::MediaTrack(const MediaTrack& track)
       label_(track.label()),
       language_(track.language()) {}
 
+ForwardingTrackManager::~ForwardingTrackManager() = default;
+ForwardingTrackManager::ForwardingTrackManager(
+    base::RepeatingCallback<void(const MediaTrack&)> add,
+    base::RepeatingCallback<void(const MediaTrack&)> remove,
+    base::RepeatingCallback<void(const MediaTrack&, MediaTrack::State)> update)
+    : add_(std::move(add)),
+      remove_(std::move(remove)),
+      update_(std::move(update)) {}
+
+void ForwardingTrackManager::AddTrack(const MediaTrack& track) {
+  add_.Run(track);
+}
+
+void ForwardingTrackManager::RemoveTrack(const MediaTrack& track) {
+  remove_.Run(track);
+}
+
+void ForwardingTrackManager::SetTrackState(const MediaTrack& track,
+                                           MediaTrack::State state) {
+  update_.Run(track, state);
+}
+
 }  // namespace media

@@ -58,9 +58,7 @@ class HttpStreamPool::Group {
   static constexpr base::TimeDelta kUnusedIdleStreamSocketTimeout =
       base::Seconds(60);
 
-  Group(HttpStreamPool* pool,
-        HttpStreamKey stream_key,
-        std::optional<QuicSessionAliasKey> quic_session_alias_key);
+  Group(HttpStreamPool* pool, HttpStreamKey stream_key);
 
   Group(const Group&) = delete;
   Group& operator=(const Group&) = delete;
@@ -189,7 +187,7 @@ class HttpStreamPool::Group {
   void OnAttemptManagerComplete(AttemptManager* attempt_manager);
 
   // Retrieves information on the current state of the group as a base::Value.
-  base::Value::Dict GetInfoAsValue() const;
+  base::DictValue GetInfoAsValue() const;
 
   // Returns true when `this` can be deleted.
   // TODO(crbug.com/346835898): This is public for consistency checks. Make this

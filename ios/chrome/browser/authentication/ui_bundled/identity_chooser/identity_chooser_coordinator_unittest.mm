@@ -7,7 +7,10 @@
 #import <UIKit/UIKit.h>
 
 #import "base/apple/foundation_util.h"
+#import "base/test/ios/wait_util.h"
+#import "base/test/run_until.h"
 #import "base/test/task_environment.h"
+#import "ios/chrome/browser/authentication/ui_bundled/identity_chooser/identity_chooser_coordinator_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/identity_chooser/identity_chooser_view_controller.h"
 #import "ios/chrome/browser/authentication/ui_bundled/identity_chooser/identity_chooser_view_controller_presentation_delegate.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -22,6 +25,35 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
+// Test delegate for IdentityChooserCoordinator.
+@interface IdentityChooserCoordinatorTestDelegate
+    : NSObject <IdentityChooserCoordinatorDelegate>
+
+// Selected identity.
+@property(nonatomic, strong) id<SystemIdentity> selectedIdentity;
+
+// Whether a method of the delegate was called.
+@property(nonatomic, assign) BOOL delegateCalled;
+
+@end
+
+@implementation IdentityChooserCoordinatorTestDelegate
+
+- (void)identityChooserCoordinator:(IdentityChooserCoordinator*)coordinator
+      didCloseWithSelectedIdentity:(id<SystemIdentity>)identity {
+  ASSERT_FALSE(self.delegateCalled);
+  self.selectedIdentity = identity;
+  self.delegateCalled = YES;
+}
+
+- (void)identityChooserCoordinatorDidTapOnAddAccount:
+    (IdentityChooserCoordinator*)coordinator {
+  ASSERT_FALSE(self.delegateCalled);
+  self.delegateCalled = YES;
+}
+
+@end
+
 class IdentityChooserCoordinatorTest : public PlatformTest {
  public:
   IdentityChooserCoordinatorTest() {
@@ -29,6 +61,7 @@ class IdentityChooserCoordinatorTest : public PlatformTest {
     browser_ = std::make_unique<TestBrowser>(profile_.get());
     view_controller_ = [[UIViewController alloc] init];
     [scoped_key_window_.Get() setRootViewController:view_controller_];
+    delegate_ = [[IdentityChooserCoordinatorTestDelegate alloc] init];
   }
 
   void AddIdentity(FakeSystemIdentity* identity) {
@@ -49,7 +82,9 @@ class IdentityChooserCoordinatorTest : public PlatformTest {
 
     coordinator_ = [[IdentityChooserCoordinator alloc]
         initWithBaseViewController:view_controller_
-                           browser:browser_.get()];
+                           browser:browser_.get()
+                   defaultIdentity:nil];
+    coordinator_.delegate = delegate_;
   }
 
  protected:
@@ -60,6 +95,7 @@ class IdentityChooserCoordinatorTest : public PlatformTest {
   ScopedKeyWindow scoped_key_window_;
 
   UIViewController* view_controller_;
+  IdentityChooserCoordinatorTestDelegate* delegate_;
 
   IdentityChooserCoordinator* coordinator_ = nil;
 };
@@ -80,7 +116,11 @@ TEST_F(IdentityChooserCoordinatorTest, testValidIdentity) {
   [GetViewControllerDelegate()
       identityChooserViewController:presented_view_controller
         didSelectIdentityWithGaiaID:identity.gaiaId];
-  EXPECT_NSEQ(identity, coordinator_.selectedIdentity);
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForUIElementTimeout, ^bool() {
+        return delegate_.delegateCalled;
+      }));
+  EXPECT_NSEQ(identity, delegate_.selectedIdentity);
   [coordinator_ stop];
 }
 
@@ -96,6 +136,10 @@ TEST_F(IdentityChooserCoordinatorTest, testIdentityInvalidatedDuringSelection) {
   [GetViewControllerDelegate()
       identityChooserViewController:presented_view_controller
         didSelectIdentityWithGaiaID:GaiaId("1")];
-  EXPECT_NSEQ(nil, coordinator_.selectedIdentity);
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForUIElementTimeout, ^bool() {
+        return delegate_.delegateCalled;
+      }));
+  EXPECT_NSEQ(nil, delegate_.selectedIdentity);
   [coordinator_ stop];
 }

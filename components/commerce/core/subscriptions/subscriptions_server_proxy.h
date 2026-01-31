@@ -94,11 +94,11 @@ class SubscriptionsServerProxy {
       std::unique_ptr<endpoint_fetcher::EndpointResponse> responses);
 
   std::unique_ptr<std::vector<CommerceSubscription>>
-  GetSubscriptionsFromParsedJson(const base::Value::Dict& result);
+  GetSubscriptionsFromParsedJson(const base::DictValue& result);
 
   bool IsPriceTrackingLocaleKeyEnabled();
 
-  base::Value::Dict Serialize(const CommerceSubscription& subscription);
+  base::DictValue Serialize(const CommerceSubscription& subscription);
 
   std::optional<CommerceSubscription> Deserialize(const base::Value& value);
 

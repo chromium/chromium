@@ -14,9 +14,9 @@
 #include "base/time/time.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
 #include "chrome/browser/enterprise/connectors/common.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
 
 namespace enterprise_connectors {
 
@@ -33,7 +33,7 @@ namespace enterprise_connectors {
 class RequestHandlerBase {
  public:
   RequestHandlerBase(ContentAnalysisInfo* content_analysis_info,
-                     safe_browsing::BinaryUploadService* upload_service,
+                     BinaryUploadService* upload_service,
                      Profile* profile,
                      GURL url,
                      DeepScanAccessPoint access_point);
@@ -72,10 +72,10 @@ class RequestHandlerBase {
 
  protected:
   // Returns the BinaryUploadService used to upload content for deep scanning.
-  safe_browsing::BinaryUploadService* GetBinaryUploadService();
+  BinaryUploadService* GetBinaryUploadService();
 
   raw_ptr<ContentAnalysisInfo> content_analysis_info_ = nullptr;
-  base::WeakPtr<safe_browsing::BinaryUploadService> upload_service_ = nullptr;
+  base::WeakPtr<BinaryUploadService> upload_service_ = nullptr;
   raw_ptr<Profile> profile_ = nullptr;
   GURL url_;
   DeepScanAccessPoint access_point_;

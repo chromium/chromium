@@ -33,20 +33,22 @@ class WasmTtsEngineComponentInstallerPolicy : public ComponentInstallerPolicy {
   static void GetWasmTTSEngineDirectory(
       base::OnceCallback<void(const base::FilePath&)> callback);
   static bool IsWasmTTSEngineDirectorySet();
+  static const std::string GetExtensionId();
+  static void UpdateWasmComponentOnDemand();
 
  private:
   // The following methods override ComponentInstallerPolicy.
   bool SupportsGroupPolicyEnabledComponentUpdates() const override;
   bool RequiresNetworkEncryption() const override;
   update_client::CrxInstaller::Result OnCustomInstall(
-      const base::Value::Dict& manifest,
+      const base::DictValue& manifest,
       const base::FilePath& install_dir) override;
   void OnCustomUninstall() override;
-  bool VerifyInstallation(const base::Value::Dict& manifest,
+  bool VerifyInstallation(const base::DictValue& manifest,
                           const base::FilePath& install_dir) const override;
   void ComponentReady(const base::Version& version,
                       const base::FilePath& install_dir,
-                      base::Value::Dict manifest) override;
+                      base::DictValue manifest) override;
   void MaybeReinstallTtsEngine(const base::FilePath& install_dir);
   base::FilePath GetRelativeInstallDir() const override;
   void GetHash(std::vector<uint8_t>* hash) const override;

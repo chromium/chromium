@@ -174,103 +174,114 @@ std::string VersionFromString(std::string_view version_str) {
   return base::StrCat({"\"", version_str, "\""});
 }
 
+void WriteByteArrayConstant(std::string_view name,
+                            std::string_view data,
+                            std::string* string_to_write) {
+  base::StringAppendF(string_to_write, "constexpr uint8_t %s[] = {", name);
+
+  // Convert each character to hex representation, escaped.
+  for (auto c : data) {
+    base::StringAppendF(string_to_write, "0x%02xu,", static_cast<uint8_t>(c));
+  }
+
+  *string_to_write += "};\n";
+}
+
+void MaybeWriteConstraintsConstant(
+    std::string_view name,
+    const ::google::protobuf::RepeatedPtrField<
+        ::chrome_root_store::ConstraintSet>& constraints,
+    std::string* string_to_write) {
+  const std::string kNulloptString = "std::nullopt";
+
+  if (constraints.size() <= 0) {
+    return;
+  }
+
+  int constraint_num = 0;
+  for (const auto& constraint : constraints) {
+    if (constraint.permitted_dns_names_size() > 0) {
+      base::StringAppendF(string_to_write,
+                          "constexpr std::string_view "
+                          "%sNames%d[] = {",
+                          name, constraint_num);
+      for (const auto& dns_name : constraint.permitted_dns_names()) {
+        base::StringAppendF(string_to_write, "\"%s\",", dns_name);
+      }
+      *string_to_write += "};\n";
+    }
+    constraint_num++;
+  }
+
+  base::StringAppendF(string_to_write,
+                      "constexpr StaticChromeRootCertConstraints "
+                      "%s[] = {",
+                      name);
+
+  std::vector<std::string> constraint_strings;
+  constraint_num = 0;
+  for (const auto& constraint : constraints) {
+    std::vector<std::string> constraint_params;
+
+    constraint_params.push_back(
+        constraint.has_sct_not_after_sec()
+            ? SecondsFromEpochToBaseTime(constraint.sct_not_after_sec())
+            : kNulloptString);
+
+    constraint_params.push_back(
+        constraint.has_sct_all_after_sec()
+            ? SecondsFromEpochToBaseTime(constraint.sct_all_after_sec())
+            : kNulloptString);
+
+    constraint_params.push_back(
+        constraint.has_min_version()
+            ? VersionFromString(constraint.min_version())
+            : kNulloptString);
+
+    constraint_params.push_back(
+        constraint.has_max_version_exclusive()
+            ? VersionFromString(constraint.max_version_exclusive())
+            : kNulloptString);
+
+    if (constraint.permitted_dns_names_size() > 0) {
+      constraint_params.push_back(
+          base::StringPrintf("%sNames%d", name, constraint_num));
+    } else {
+      constraint_params.push_back("{}");
+    }
+
+    constraint_strings.push_back(
+        base::StrCat({"{", base::JoinString(constraint_params, ","), "}"}));
+
+    constraint_num++;
+  }
+
+  *string_to_write += base::JoinString(constraint_strings, ",");
+  *string_to_write += "};\n";
+}
+
 void WriteTrustAnchors(
     const google::protobuf::RepeatedPtrField<TrustAnchor>& trust_anchors,
     const std::string& cert_name_prefix,
     std::string* string_to_write) {
-  const std::string kNulloptString = "std::nullopt";
-
   for (int i = 0; i < trust_anchors.size(); i++) {
     const auto& anchor = trust_anchors.Get(i);
     // Every trust anchor at this point should have a DER.
     CHECK(!anchor.der().empty());
     std::string der = anchor.der();
 
-    base::StringAppendF(string_to_write, "constexpr uint8_t k%sCert%d[] = {",
-                        cert_name_prefix, i);
-
-    // Convert each character to hex representation, escaped.
-    for (auto c : der) {
-      base::StringAppendF(string_to_write, "0x%02xu,", static_cast<uint8_t>(c));
-    }
-
-    // End struct
-    *string_to_write += "};\n";
+    WriteByteArrayConstant(base::StringPrintf("k%sCert%d", cert_name_prefix, i),
+                           der, string_to_write);
 
     if (!anchor.trust_anchor_id().empty()) {
-      base::StringAppendF(string_to_write,
-                          "constexpr uint8_t k%sTrustAnchorID%d[] = {",
-                          cert_name_prefix, i);
-      // Convert each character to hex representation, escaped.
-      for (auto c : anchor.trust_anchor_id()) {
-        base::StringAppendF(string_to_write, "0x%02xu,",
-                            static_cast<uint8_t>(c));
-      }
-      *string_to_write += "};\n";
+      WriteByteArrayConstant(
+          base::StringPrintf("k%sTrustAnchorID%d", cert_name_prefix, i),
+          anchor.trust_anchor_id(), string_to_write);
     }
 
-    if (anchor.constraints_size() > 0) {
-      int constraint_num = 0;
-      for (const auto& constraint : anchor.constraints()) {
-        if (constraint.permitted_dns_names_size() > 0) {
-          base::StringAppendF(string_to_write,
-                              "constexpr std::string_view "
-                              "k%sConstraint%dNames%d[] = {",
-                              cert_name_prefix, i, constraint_num);
-          for (const auto& name : constraint.permitted_dns_names()) {
-            base::StringAppendF(string_to_write, "\"%s\",", name);
-          }
-          *string_to_write += "};\n";
-        }
-        constraint_num++;
-      }
-
-      base::StringAppendF(string_to_write,
-                          "constexpr StaticChromeRootCertConstraints "
-                          "k%sConstraints%d[] = {",
-                          cert_name_prefix, i);
-
-      std::vector<std::string> constraint_strings;
-      constraint_num = 0;
-      for (const auto& constraint : anchor.constraints()) {
-        std::vector<std::string> constraint_params;
-
-        constraint_params.push_back(
-            constraint.has_sct_not_after_sec()
-                ? SecondsFromEpochToBaseTime(constraint.sct_not_after_sec())
-                : kNulloptString);
-
-        constraint_params.push_back(
-            constraint.has_sct_all_after_sec()
-                ? SecondsFromEpochToBaseTime(constraint.sct_all_after_sec())
-                : kNulloptString);
-
-        constraint_params.push_back(
-            constraint.has_min_version()
-                ? VersionFromString(constraint.min_version())
-                : kNulloptString);
-
-        constraint_params.push_back(
-            constraint.has_max_version_exclusive()
-                ? VersionFromString(constraint.max_version_exclusive())
-                : kNulloptString);
-
-        if (constraint.permitted_dns_names_size() > 0) {
-          constraint_params.push_back(base::StringPrintf(
-              "k%sConstraint%dNames%d", cert_name_prefix, i, constraint_num));
-        } else {
-          constraint_params.push_back("{}");
-        }
-
-        constraint_strings.push_back(
-            base::StrCat({"{", base::JoinString(constraint_params, ","), "}"}));
-
-        constraint_num++;
-      }
-
-      *string_to_write += base::JoinString(constraint_strings, ",");
-      *string_to_write += "};\n";
-    }
+    MaybeWriteConstraintsConstant(
+        base::StringPrintf("k%sConstraints%d", cert_name_prefix, i),
+        anchor.constraints(), string_to_write);
   }
 }
 
@@ -361,6 +372,37 @@ bool WriteRootCppFile(const RootStore& root_store,
       continue;
     }
     base::StringAppendF(&string_to_write, "    kAdditionalCert%d,\n", i);
+  }
+  string_to_write += "};\n\n";
+
+  // Write constants used by MTC anchors.
+  for (int i = 0; i < root_store.mtc_anchors_size(); i++) {
+    const auto& anchor = root_store.mtc_anchors(i);
+    if (!anchor.tls_trust_anchor()) {
+      continue;
+    }
+    WriteByteArrayConstant(base::StringPrintf("kMtcAnchorLogId%d", i),
+                           anchor.log_id(), &string_to_write);
+    MaybeWriteConstraintsConstant(
+        base::StringPrintf("kMtcAnchorConstraints%d", i), anchor.constraints(),
+        &string_to_write);
+  }
+
+  // Assemble list of trusted MTC anchors.
+  string_to_write +=
+      "constexpr ChromeMtcAnchorInfo kChromeTrustedMtcAnchorList[] = {\n";
+  for (int i = 0; i < root_store.mtc_anchors_size(); i++) {
+    const auto& anchor = root_store.mtc_anchors(i);
+    if (!anchor.tls_trust_anchor()) {
+      continue;
+    }
+    base::StringAppendF(&string_to_write, "  {kMtcAnchorLogId%d", i);
+    if (anchor.constraints().size() > 0) {
+      base::StringAppendF(&string_to_write, ", kMtcAnchorConstraints%d", i);
+    } else {
+      string_to_write += ", {}";
+    }
+    string_to_write += "},\n";
   }
   string_to_write += "};\n\n";
 

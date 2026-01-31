@@ -6,6 +6,7 @@ package org.chromium.components.autofill.payments;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -45,7 +46,7 @@ public class PaymentInstrument {
 
     /** Returns the user-assigned nickname for the payment instrument, if one exists. */
     @CalledByNative
-    public @Nullable String getNickname() {
+    public @Nullable @JniType("std::u16string") String getNickname() {
         return mNickname;
     }
 

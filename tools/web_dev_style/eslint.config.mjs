@@ -145,7 +145,15 @@ export default [
               name: '//resources/polymer/v3_0/polymer/polymer_bundled.min.js',
               importNames: ['Polymer'],
               message: 'Use PolymerElement instead.',
-            }
+            },
+            {
+              name: 'chrome://webui-test/chai.js',
+              message: 'Use chrome://webui-test/chai_assert.js instead.',
+            },
+            {
+              name: '//webui-test/chai.js',
+              message: 'Use chrome://webui-test/chai_assert.js instead.',
+            },
           ],
         }
       ],
@@ -244,6 +252,8 @@ export default [
       // parameter.
       'no-array-constructor': 'off',
       '@typescript-eslint/no-array-constructor': 'error',
+
+      '@stylistic/eol-last': ['error'],
 
       // https://google.github.io/styleguide/tsguide.html#automatic-semicolon-insertion
       semi: 'off',
@@ -496,6 +506,14 @@ export default [
               name: 'chrome://resources/js/load_time_data.js',
               importNames: ['loadTimeData'],
               message: 'Import from chrome://settings/settings.js instead.',
+            },
+            {
+              name: 'chrome://webui-test/chai.js',
+              message: 'Use chrome://webui-test/chai_assert.js instead.',
+            },
+            {
+              name: '//webui-test/chai.js',
+              message: 'Use chrome://webui-test/chai_assert.js instead.',
             },
           ],
         }

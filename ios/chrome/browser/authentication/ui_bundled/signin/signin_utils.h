@@ -12,6 +12,7 @@
 #import "base/functional/callback.h"
 #import "base/ios/block_types.h"
 #import "base/time/time.h"
+#import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/tribool.h"
 #import "components/sync/base/data_type.h"
 #import "ios/chrome/app/change_profile_continuation.h"
@@ -136,8 +137,11 @@ NSArray<id<SystemIdentity>>* GetIdentitiesOnDevice(ProfileIOS* profile);
 id<SystemIdentity> GetDefaultIdentityOnDevice(
     signin::IdentityManager* identityManager,
     ChromeAccountManagerService* accountManagerService);
-// Convenience version that grabs the required services from the `profile`.
-id<SystemIdentity> GetDefaultIdentityOnDevice(ProfileIOS* profile);
+
+// Returns the account info on the device with `email` or nullopt.
+std::optional<AccountInfo> GetAccountInfoOnDeviceWithEmail(
+    signin::IdentityManager* identityManager,
+    std::string email);
 
 // Switch profile if needed in all windows then sign out from the current
 // profile, but switches to personal profile in all. This also skips

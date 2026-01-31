@@ -12,7 +12,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -163,7 +162,7 @@ class DriveApiRequestsTest : public testing::Test {
 
     network::mojom::URLLoaderFactoryParamsPtr params =
         network::mojom::URLLoaderFactoryParams::New();
-    params->process_id = network::mojom::kBrowserProcessId;
+    params->process_id = network::OriginatingProcess::browser();
     params->is_orb_enabled = false;
     network_context_->CreateURLLoaderFactory(
         url_loader_factory_.BindNewPipeAndPassReceiver(), std::move(params));
@@ -280,7 +279,7 @@ class DriveApiRequestsTest : public testing::Test {
   std::unique_ptr<net::test_server::HttpResponse> HandleChildrenDeleteRequest(
       const net::test_server::HttpRequest& request) {
     if (request.method != net::test_server::METHOD_DELETE ||
-        !base::Contains(request.relative_url, "/children/")) {
+        !request.relative_url.contains("/children/")) {
       // The request is not the "Children: delete" request. Delegate the
       // processing to the next handler.
       return nullptr;
@@ -318,7 +317,7 @@ class DriveApiRequestsTest : public testing::Test {
   std::unique_ptr<net::test_server::HttpResponse> HandleDeleteRequest(
       const net::test_server::HttpRequest& request) {
     if (request.method != net::test_server::METHOD_DELETE ||
-        !base::Contains(request.relative_url, "/files/")) {
+        !request.relative_url.contains("/files/")) {
       // The file is not file deletion request. Delegate the processing to the
       // next handler.
       return nullptr;
@@ -2095,11 +2094,11 @@ TEST_F(DriveApiRequestsTest, PermissionsInsertRequest) {
             http_request_.relative_url);
   EXPECT_EQ("application/json", http_request_.headers["Content-Type"]);
 
-  base::Value::Dict expected = base::test::ParseJsonDict(
+  base::DictValue expected = base::test::ParseJsonDict(
       "{\"additionalRoles\":[\"commenter\"], \"role\":\"reader\", "
       "\"type\":\"user\",\"value\":\"user@example.com\"}");
 
-  base::Value::Dict result = base::test::ParseJsonDict(http_request_.content);
+  base::DictValue result = base::test::ParseJsonDict(http_request_.content);
   EXPECT_TRUE(http_request_.has_content);
   EXPECT_EQ(expected, result);
 

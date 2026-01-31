@@ -122,7 +122,10 @@ class CORE_EXPORT CompositeEditCommand : public EditCommand {
       EditingState*,
       bool use_default_paragraph_element = false,
       bool paste_blockqutoe_into_unquoted_area = false);
-  void InsertTextIntoNode(Text*, unsigned offset, const String& text);
+  void InsertTextIntoNode(Text*,
+                          unsigned offset,
+                          const String& text,
+                          PasswordEchoBehavior);
   void MergeIdenticalElements(Element*, Element*, EditingState*);
   void RebalanceWhitespace();
   void RebalanceWhitespaceAt(const Position&);
@@ -165,8 +168,9 @@ class CORE_EXPORT CompositeEditCommand : public EditCommand {
   void ReplaceTextInNode(Text*,
                          unsigned offset,
                          unsigned count,
-                         const String& replacement_text);
-  Position ReplaceSelectedTextInNode(const String&);
+                         const String& replacement_text,
+                         PasswordEchoBehavior);
+  Position ReplaceSelectedTextInNode(const String&, PasswordEchoBehavior);
   Position PositionOutsideTabSpan(const Position&);
   void SetNodeAttribute(Element*,
                         const QualifiedName& attribute,

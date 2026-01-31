@@ -189,7 +189,7 @@ impl Number {
                 }
                 #[cfg(feature = "arbitrary_precision")]
                 {
-                    ryu::Buffer::new().format_finite(f).to_owned()
+                    zmij::Buffer::new().format_finite(f).to_owned()
                 }
             };
             Some(Number { n })
@@ -279,8 +279,11 @@ impl Number {
         Some(Number { n })
     }
 
-    /// Returns the exact original JSON representation that this Number was
-    /// parsed from.
+    /// Returns the JSON representation that this Number was parsed from.
+    ///
+    /// When parsing with serde_json's `arbitrary_precision` feature enabled,
+    /// positive exponents are normalized to include an explicit `+` sign so
+    /// that `1e140` becomes `1e+140`.
     ///
     /// For numbers constructed not via parsing, such as by `From<i32>`, returns
     /// the JSON representation that serde\_json would serialize for this
@@ -326,7 +329,7 @@ impl Number {
                 }
                 #[cfg(feature = "arbitrary_precision")]
                 {
-                    ryu::Buffer::new().format_finite(f).to_owned()
+                    zmij::Buffer::new().format_finite(f).to_owned()
                 }
             };
             Some(Number { n })
@@ -350,7 +353,7 @@ impl Display for Number {
         match self.n {
             N::PosInt(u) => formatter.write_str(itoa::Buffer::new().format(u)),
             N::NegInt(i) => formatter.write_str(itoa::Buffer::new().format(i)),
-            N::Float(f) => formatter.write_str(ryu::Buffer::new().format_finite(f)),
+            N::Float(f) => formatter.write_str(zmij::Buffer::new().format_finite(f)),
         }
     }
 
@@ -556,7 +559,7 @@ macro_rules! deserialize_any {
             } else if let Some(i) = self.as_i128() {
                 return visitor.visit_i128(i);
             } else if let Some(f) = self.as_f64() {
-                if ryu::Buffer::new().format_finite(f) == self.n || f.to_string() == self.n {
+                if zmij::Buffer::new().format_finite(f) == self.n || f.to_string() == self.n {
                     return visitor.visit_f64(f);
                 }
             }
@@ -704,7 +707,7 @@ impl From<ParserNumber> for Number {
                 }
                 #[cfg(feature = "arbitrary_precision")]
                 {
-                    ryu::Buffer::new().format_finite(f).to_owned()
+                    zmij::Buffer::new().format_finite(f).to_owned()
                 }
             }
             ParserNumber::U64(u) => {

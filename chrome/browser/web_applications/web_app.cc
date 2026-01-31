@@ -31,7 +31,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/web_applications/generated_icon_fix_util.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
-#include "chrome/browser/web_applications/mojom/user_display_mode.mojom-data-view.h"
+#include "chrome/browser/web_applications/model/display_override.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/proto/web_app.equal.h"
 #include "chrome/browser/web_applications/proto/web_app.ostream.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
@@ -120,16 +121,16 @@ std::string ApiApprovalStateToString(ApiApprovalState state) {
   }
 }
 
-base::Value::Dict ImageResourceDebugDict(
+base::DictValue ImageResourceDebugDict(
     const blink::Manifest::ImageResource& icon) {
   const auto kPurposeStrings =
       std::to_array<const char*>({"Any", "Monochrome", "Maskable"});
 
-  base::Value::Dict root;
+  base::DictValue root;
   root.Set("src", icon.src.spec());
   root.Set("type", icon.type);
 
-  base::Value::List sizes_json;
+  base::ListValue sizes_json;
   for (const auto& size : icon.sizes) {
     std::string size_formatted = base::NumberToString(size.width()) + "x" +
                                  base::NumberToString(size.height());
@@ -137,7 +138,7 @@ base::Value::Dict ImageResourceDebugDict(
   }
   root.Set("sizes", std::move(sizes_json));
 
-  base::Value::List purpose_json;
+  base::ListValue purpose_json;
   for (const auto& purpose : icon.purpose) {
     purpose_json.Append(kPurposeStrings[static_cast<int>(purpose)]);
   }
@@ -145,14 +146,14 @@ base::Value::Dict ImageResourceDebugDict(
   return root;
 }
 
-base::Value::Dict UrlPatternDebugValue(const blink::SafeUrlPattern& pattern) {
+base::DictValue UrlPatternDebugValue(const blink::SafeUrlPattern& pattern) {
   liburlpattern::Options options = {.delimiter_list = "/",
                                     .prefix_list = "/",
                                     .sensitive = true,
                                     .strict = false};
   liburlpattern::Pattern pathname(pattern.pathname, options, "[^/]+?");
 
-  base::Value::Dict pattern_dict;
+  base::DictValue pattern_dict;
   pattern_dict.Set("pathname", pathname.GeneratePatternString());
   return pattern_dict;
 }
@@ -163,9 +164,9 @@ base::Value OptTabStripToDebugValue(
     return base::Value();
   }
 
-  base::Value::Dict result;
+  base::DictValue result;
 
-  base::Value::Dict new_tab_button_json;
+  base::DictValue new_tab_button_json;
   new_tab_button_json.Set(
       "url", base::ToString(tab_strip->new_tab_button.url.value_or(GURL(""))));
   result.Set("new_tab_button", std::move(new_tab_button_json));
@@ -175,11 +176,11 @@ base::Value OptTabStripToDebugValue(
         "home_tab",
         base::ToString(std::get<TabStrip::Visibility>(tab_strip->home_tab)));
   } else {
-    base::Value::Dict home_tab_json;
+    base::DictValue home_tab_json;
     const blink::Manifest::HomeTabParams& home_tab_params =
         std::get<blink::Manifest::HomeTabParams>(tab_strip->home_tab);
 
-    base::Value::List icons_json;
+    base::ListValue icons_json;
     std::optional<std::vector<blink::Manifest::ImageResource>> icons =
         home_tab_params.icons;
 
@@ -199,9 +200,9 @@ base::Value OptTabStripToDebugValue(
 base::Value RelatedApplicationsToDebugValue(
     const std::vector<blink::Manifest::RelatedApplication>&
         related_applications) {
-  base::Value::List related_applications_json;
+  base::ListValue related_applications_json;
   for (const auto& related_application : related_applications) {
-    base::Value::Dict related_application_json;
+    base::DictValue related_application_json;
     related_application_json.Set("platform",
                                  related_application.platform.value());
     if (related_application.url.is_valid()) {
@@ -249,18 +250,12 @@ WebApp::CachedDerivedData& WebApp::CachedDerivedData::operator=(
   return *this;
 }
 
-WebApp::WebApp(const webapps::AppId& app_id)
-    : app_id_(app_id),
-      chromeos_data_(IsChromeOsDataMandatory()
-                         ? std::make_optional<WebAppChromeOsData>()
-                         : std::nullopt) {}
-
-WebApp::WebApp(const webapps::ManifestId& manifest_id,
+WebApp::WebApp(const webapps::AppId& app_id,
+               const webapps::ManifestId& manifest_id,
                const GURL& start_url,
                const GURL& scope,
-               std::optional<webapps::AppId> parent_app_id,
-               std::optional<webapps::ManifestId> parent_manifest_id)
-    : app_id_(GenerateAppIdFromManifestId(manifest_id, parent_manifest_id)),
+               std::optional<webapps::AppId> parent_app_id)
+    : app_id_(app_id),
       start_url_(start_url),
       scope_(scope),
       chromeos_data_(IsChromeOsDataMandatory()
@@ -280,12 +275,24 @@ WebApp::WebApp(const webapps::ManifestId& manifest_id,
   CHECK(base::StartsWith(start_url_.spec(), scope_.spec(),
                          base::CompareCase::SENSITIVE))
       << "Start URL " << start_url_ << " must be nested in scope " << scope_;
+  // Ensure sync proto is initialized.
+  SetSyncProto(sync_proto_);
+}
+
+WebApp::WebApp(const webapps::ManifestId& manifest_id,
+               const GURL& start_url,
+               const GURL& scope,
+               std::optional<webapps::AppId> parent_app_id,
+               std::optional<webapps::ManifestId> parent_manifest_id)
+    : WebApp(GenerateAppIdFromManifestId(manifest_id, parent_manifest_id),
+             manifest_id,
+             start_url,
+             scope,
+             parent_app_id) {
   if (parent_app_id_.has_value()) {
     CHECK(!parent_app_id_->empty());
   }
   CHECK(!!parent_app_id == !!parent_manifest_id);
-  // Ensure sync proto is initialized.
-  SetSyncProto(sync_proto_);
 }
 
 WebApp::~WebApp() = default;
@@ -337,6 +344,11 @@ const SortedSizesPx& WebApp::stored_trusted_icon_sizes(
 }
 
 void WebApp::AddSource(WebAppManagement::Type source) {
+  if (source == WebAppManagement::kSync) {
+    CHECK_NE(proto::SUGGESTED_FROM_MIGRATION, install_state_)
+        << "Synced apps should not have an install state suggested from "
+           "migration";
+  }
   sources_.Put(source);
 }
 
@@ -507,13 +519,8 @@ void WebApp::SetUserDisplayMode(mojom::UserDisplayMode user_display_mode) {
 }
 
 void WebApp::SetDisplayModeOverride(
-    std::vector<DisplayMode> display_mode_override) {
+    std::vector<DisplayOverride> display_mode_override) {
   display_mode_override_ = std::move(display_mode_override);
-}
-
-void WebApp::SetBorderlessUrlPatterns(
-    std::vector<blink::SafeUrlPattern> borderless_url_patterns) {
-  borderless_url_patterns_ = std::move(borderless_url_patterns);
 }
 
 void WebApp::SetWebAppChromeOsData(
@@ -522,6 +529,11 @@ void WebApp::SetWebAppChromeOsData(
 }
 
 void WebApp::SetInstallState(proto::InstallState install_state) {
+  if (install_state == proto::SUGGESTED_FROM_MIGRATION) {
+    CHECK(!IsSynced())
+        << " Attempted to set an install state of suggested from migration "
+           "from an app that has been sync installed";
+  }
   install_state_ = install_state;
 }
 
@@ -889,6 +901,44 @@ void WebApp::SetStoredTrustedIconSizes(IconPurpose purpose,
   }
 }
 
+namespace {
+void ValidateMigrationSources(
+    const std::vector<proto::WebAppMigrationSource>& sources) {
+  for (const auto& source : sources) {
+    GURL manifest_id(source.manifest_id());
+    CHECK(manifest_id.is_valid());
+    CHECK(!url::Origin::Create(manifest_id).opaque());
+    if (source.has_install_url()) {
+      GURL install_url(source.install_url());
+      CHECK(install_url.is_valid());
+      CHECK(url::IsSameOriginWith(manifest_id, install_url));
+    }
+  }
+}
+}  // namespace
+
+void WebApp::SetUnvalidatedMigrationSources(
+    std::vector<proto::WebAppMigrationSource> sources) {
+  ValidateMigrationSources(sources);
+  unvalidated_migration_sources_ = std::move(sources);
+}
+
+void WebApp::SetValidatedMigrationSources(
+    std::vector<proto::WebAppMigrationSource> sources) {
+  ValidateMigrationSources(sources);
+  validated_migration_sources_ = std::move(sources);
+}
+
+void WebApp::SetPendingMigrationInfo(
+    std::optional<proto::PendingMigrationInfo> info) {
+  if (info.has_value()) {
+    GURL manifest_id(info->manifest_id());
+    CHECK(manifest_id.is_valid());
+    CHECK(!url::Origin::Create(manifest_id).opaque());
+  }
+  pending_migration_info_ = std::move(info);
+}
+
 void WebApp::SetInstalledBy(InstalledByPassKey,
                             std::deque<AppInstalledBy> installed_by) {
   for (const AppInstalledBy& data : installed_by) {
@@ -928,7 +978,7 @@ WebApp::ClientData::~ClientData() = default;
 WebApp::ClientData::ClientData(const ClientData& client_data) = default;
 
 base::Value WebApp::ClientData::AsDebugValue() const {
-  base::Value::Dict root;
+  base::DictValue root;
 #if BUILDFLAG(IS_CHROMEOS)
   root.Set("system_web_app_data", OptionalAsDebugValue(system_web_app_data));
 #endif
@@ -953,13 +1003,13 @@ WebApp::ExternalManagementConfig& WebApp::ExternalManagementConfig::operator=(
 WebApp::ExternalManagementConfig& WebApp::ExternalManagementConfig::operator=(
     ExternalManagementConfig&& external_management_config) = default;
 
-base::Value::Dict WebApp::ExternalManagementConfig::AsDebugValue() const {
-  base::Value::Dict root;
-  base::Value::List urls;
+base::DictValue WebApp::ExternalManagementConfig::AsDebugValue() const {
+  base::DictValue root;
+  base::ListValue urls;
   for (const auto& install_url : install_urls) {
     urls.Append(install_url.spec());
   }
-  base::Value::List policy_ids;
+  base::ListValue policy_ids;
   for (const auto& policy_id : additional_policy_ids) {
     policy_ids.Append(policy_id);
   }
@@ -1011,7 +1061,6 @@ bool WebApp::operator==(const WebApp& other) const {
         app.dark_mode_background_color_,
         app.display_mode_,
         app.display_mode_override_,
-        app.borderless_url_patterns_,
         app.chromeos_data_,
         app.install_state_,
         app.is_from_sync_and_pending_installation_,
@@ -1069,7 +1118,10 @@ bool WebApp::operator==(const WebApp& other) const {
         app.trusted_icons_,
         app.stored_trusted_icon_sizes_any_,
         app.stored_trusted_icon_sizes_maskable_,
-        app.installed_by_
+        app.installed_by_,
+        app.unvalidated_migration_sources_,
+        app.validated_migration_sources_,
+        app.pending_migration_info_
         // clang-format on
     );
   };
@@ -1077,10 +1129,10 @@ bool WebApp::operator==(const WebApp& other) const {
 }
 
 base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
-  base::Value::Dict root;
+  base::DictValue root;
 
   auto ConvertList = [](const auto& list) {
-    base::Value::List list_json;
+    base::ListValue list_json;
     for (const auto& item : list) {
       list_json.Append(item);
     }
@@ -1088,7 +1140,7 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
   };
 
   auto ConvertDebugValueList = [](const auto& list) {
-    base::Value::List list_json;
+    base::ListValue list_json;
     for (const auto& item : list) {
       list_json.Append(item.AsDebugValue());
     }
@@ -1129,13 +1181,11 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
 
   root.Set("display_mode", blink::DisplayModeToString(display_mode_));
 
-  base::Value::List display_override;
-  for (const DisplayMode& mode : display_mode_override_) {
-    display_override.Append(blink::DisplayModeToString(mode));
-  }
-  root.Set("display_override", std::move(display_override));
+  root.Set("display_override",
+           base::ToValueList(display_mode_override_,
+                             &DisplayOverride::ToDebugValue));
 
-  base::Value::Dict downloaded_icon_sizes_json;
+  base::DictValue downloaded_icon_sizes_json;
   for (IconPurpose purpose : kIconPurposes) {
     downloaded_icon_sizes_json.Set(base::ToString(purpose),
                                    ConvertList(downloaded_icon_sizes(purpose)));
@@ -1152,7 +1202,7 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
   root.Set("latest_install_source",
            OptionalToStringValue(latest_install_source_));
 
-  base::Value::Dict external_map;
+  base::DictValue external_map;
   for (const auto& it : management_to_external_config_map_) {
     external_map.Set(base::ToString(it.first), it.second.AsDebugValue());
   }
@@ -1176,7 +1226,7 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
   root.Set("last_launch_time", base::ToString(last_launch_time_));
 
   if (launch_handler_) {
-    base::Value::Dict launch_handler_json;
+    base::DictValue launch_handler_json;
     launch_handler_json.Set(
         "client_mode", base::ToString(launch_handler_->parsed_client_mode()));
     launch_handler_json.Set("client_mode_valid_and_specified",
@@ -1200,17 +1250,17 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
   root.Set("parent_app_id", OptionalToStringValue(parent_app_id_));
 
   if (!permissions_policy_.empty()) {
-    base::Value::List policy_list;
+    base::ListValue policy_list;
     const auto& feature_to_name_map =
         blink::GetPermissionsPolicyFeatureToNameMap();
     for (const auto& decl : permissions_policy_) {
-      base::Value::Dict json_decl;
+      base::DictValue json_decl;
       const auto& feature_name = feature_to_name_map.find(decl.feature);
       if (feature_name == feature_to_name_map.end()) {
         continue;
       }
       json_decl.Set("feature", feature_name->second);
-      base::Value::List allowlist_json;
+      base::ListValue allowlist_json;
       for (const auto& allowlist_item : GetSerializedAllowedOrigins(decl)) {
         allowlist_json.Append(allowlist_item);
       }
@@ -1233,7 +1283,7 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
   root.Set("shortcuts_menu_item_infos",
            ConvertDebugValueList(shortcuts_menu_item_infos_));
 
-  base::Value::List sources;
+  base::ListValue sources;
   for (WebAppManagement::Type source : WebAppManagementTypes::All()) {
     if (sources_.Has(source)) {
       sources.Append(base::ToString(source));
@@ -1242,8 +1292,6 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
   root.Set("sources", std::move(sources));
 
   root.Set("start_url", base::ToString(start_url_));
-
-  root.Set("sync_proto", syncer::WebAppSpecificsToValue(sync_proto_));
 
   root.Set("theme_color", ColorToString(theme_color_));
 
@@ -1291,13 +1339,25 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
 
   root.Set("trusted_icons", ConvertDebugValueList(trusted_icons_));
 
-  base::Value::List installed_by_list;
+  base::ListValue installed_by_list;
   for (const auto& installed_by_data : installed_by_) {
     installed_by_list.Append(installed_by_data.InstalledByToDebugValue());
   }
   root.Set("installed_by", std::move(installed_by_list));
 
-  base::Value::Dict stored_trusted_icon_sizes_json;
+  root.Set("unvalidated_migration_sources",
+           base::ToValueList(unvalidated_migration_sources_,
+                             [](const proto::WebAppMigrationSource& source) {
+                               return proto::ToValue(source);
+                             }));
+  root.Set("validated_migration_sources",
+           base::ToValueList(validated_migration_sources_,
+                             [](const proto::WebAppMigrationSource& source) {
+                               return proto::ToValue(source);
+                             }));
+  proto::MaybeToValue(pending_migration_info_, "pending_migration_info", root);
+
+  base::DictValue stored_trusted_icon_sizes_json;
   for (IconPurpose purpose : kIconPurposes) {
     // There can never be trusted monochrome icons.
     if (purpose == IconPurpose::MONOCHROME) {
@@ -1310,9 +1370,6 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
   root.Set("stored_trusted_icon_sizes",
            std::move(stored_trusted_icon_sizes_json));
 
-  root.Set("borderless_url_patterns",
-           base::ToValueList(borderless_url_patterns_, UrlPatternDebugValue));
-
   return base::Value(std::move(root));
 }
 
@@ -1323,6 +1380,8 @@ base::Value WebApp::AsDebugValue() const {
   root.Set("chromeos_data", OptionalAsDebugValue(chromeos_data_));
 
   root.Set("client_data", client_data_.AsDebugValue());
+
+  root.Set("sync_proto", syncer::WebAppSpecificsToValue(sync_proto_));
 
   // The user_display_mode getter CHECK fails if sync_proto_ isn't initialized.
   if (sync_proto_.has_start_url()) {

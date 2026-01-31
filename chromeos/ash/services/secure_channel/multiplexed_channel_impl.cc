@@ -4,7 +4,6 @@
 
 #include "chromeos/ash/services/secure_channel/multiplexed_channel_impl.h"
 
-#include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -86,7 +85,7 @@ void MultiplexedChannelImpl::PerformAddClientToChannel(
 
   auto proxy = SingleClientProxyImpl::Factory::Create(
       this /* delegate */, std::move(client_connection_parameters));
-  DCHECK(!base::Contains(id_to_proxy_map_, proxy->GetProxyId()));
+  DCHECK(!id_to_proxy_map_.contains(proxy->GetProxyId()));
   id_to_proxy_map_[proxy->GetProxyId()] = std::move(proxy);
 }
 

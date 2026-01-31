@@ -99,7 +99,7 @@ std::string FetchSubresourceScript(const GURL& url) {
 }
 
 // A |ContentBrowserClient| implementation that allows modifying the return
-// value of |ShouldAllowInsecurePrivateNetworkRequests()| at will.
+// value of |ShouldOverrideLocalNetworkAccessRequestPolicy()|.
 class PolicyTestContentBrowserClient
     : public ContentBrowserTestContentBrowserClient {
  public:
@@ -113,24 +113,25 @@ class PolicyTestContentBrowserClient
   ~PolicyTestContentBrowserClient() override = default;
 
   // Adds an origin to the allowlist.
-  void SetAllowInsecurePrivateNetworkRequestsFrom(const url::Origin& origin) {
+  void SetAllowInsecureLocalNetworkAccessRequestsFrom(
+      const url::Origin& origin) {
     allowlisted_origins_.insert(origin);
   }
 
   void SetWarnInsteadOfBlock() { warn_instead_of_block_ = true; }
 
-  ContentBrowserClient::PrivateNetworkRequestPolicyOverride
-  ShouldOverridePrivateNetworkRequestPolicy(
+  ContentBrowserClient::LocalNetworkAccessRequestPolicyOverride
+  ShouldOverrideLocalNetworkAccessRequestPolicy(
       content::BrowserContext* browser_context,
       const url::Origin& origin) override {
     if (warn_instead_of_block_) {
-      return ContentBrowserClient::PrivateNetworkRequestPolicyOverride::
+      return ContentBrowserClient::LocalNetworkAccessRequestPolicyOverride::
           kWarnInsteadOfBlock;
     }
     return allowlisted_origins_.find(origin) != allowlisted_origins_.end()
-               ? ContentBrowserClient::PrivateNetworkRequestPolicyOverride::
+               ? ContentBrowserClient::LocalNetworkAccessRequestPolicyOverride::
                      kForceAllow
-               : ContentBrowserClient::PrivateNetworkRequestPolicyOverride::
+               : ContentBrowserClient::LocalNetworkAccessRequestPolicyOverride::
                      kDefault;
   }
 
@@ -2346,7 +2347,8 @@ IN_PROC_BROWSER_TEST_F(
   GURL url = InsecurePublicURL(kDefaultPath);
 
   PolicyTestContentBrowserClient client;
-  client.SetAllowInsecurePrivateNetworkRequestsFrom(url::Origin::Create(url));
+  client.SetAllowInsecureLocalNetworkAccessRequestsFrom(
+      url::Origin::Create(url));
 
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -2369,7 +2371,8 @@ IN_PROC_BROWSER_TEST_F(
   GURL url = InsecurePublicURL(kDefaultPath);
 
   PolicyTestContentBrowserClient client;
-  client.SetAllowInsecurePrivateNetworkRequestsFrom(url::Origin::Create(url));
+  client.SetAllowInsecureLocalNetworkAccessRequestsFrom(
+      url::Origin::Create(url));
 
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -2392,7 +2395,8 @@ IN_PROC_BROWSER_TEST_F(
   GURL url = InsecurePublicURL(kDefaultPath);
 
   PolicyTestContentBrowserClient client;
-  client.SetAllowInsecurePrivateNetworkRequestsFrom(url::Origin::Create(url));
+  client.SetAllowInsecureLocalNetworkAccessRequestsFrom(
+      url::Origin::Create(url));
 
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -2416,7 +2420,8 @@ IN_PROC_BROWSER_TEST_F(
   GURL url = InsecurePublicURL(kDefaultPath);
 
   PolicyTestContentBrowserClient client;
-  client.SetAllowInsecurePrivateNetworkRequestsFrom(url::Origin::Create(url));
+  client.SetAllowInsecureLocalNetworkAccessRequestsFrom(
+      url::Origin::Create(url));
 
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -2442,7 +2447,8 @@ IN_PROC_BROWSER_TEST_F(
   GURL url = InsecurePublicURL(kDefaultPath);
 
   PolicyTestContentBrowserClient client;
-  client.SetAllowInsecurePrivateNetworkRequestsFrom(url::Origin::Create(url));
+  client.SetAllowInsecureLocalNetworkAccessRequestsFrom(
+      url::Origin::Create(url));
 
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -2486,7 +2492,8 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
   GURL url = InsecurePublicURL(kDefaultPath);
 
   PolicyTestContentBrowserClient client;
-  client.SetAllowInsecurePrivateNetworkRequestsFrom(url::Origin::Create(url));
+  client.SetAllowInsecureLocalNetworkAccessRequestsFrom(
+      url::Origin::Create(url));
 
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -2636,7 +2643,8 @@ IN_PROC_BROWSER_TEST_F(
   GURL url = InsecureLoopbackURL(kTreatAsPublicAddressPath);
 
   PolicyTestContentBrowserClient client;
-  client.SetAllowInsecurePrivateNetworkRequestsFrom(url::Origin::Create(url));
+  client.SetAllowInsecureLocalNetworkAccessRequestsFrom(
+      url::Origin::Create(url));
 
   EXPECT_TRUE(NavigateToURL(shell(), url));
 

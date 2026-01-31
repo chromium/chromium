@@ -46,6 +46,15 @@ class GPUBuffer : public DawnObject<wgpu::Buffer> {
   void Trace(Visitor* visitor) const override;
 
   // gpu_buffer.idl {{{
+  void mapSync(ScriptState* script_state,
+               uint32_t mode,
+               uint64_t offset,
+               ExceptionState& exception_state);
+  void mapSync(ScriptState* script_state,
+               uint32_t mode,
+               uint64_t offset,
+               uint64_t size,
+               ExceptionState& exception_state);
   ScriptPromise<IDLUndefined> mapAsync(ScriptState* script_state,
                                        uint32_t mode,
                                        uint64_t offset,
@@ -76,6 +85,11 @@ class GPUBuffer : public DawnObject<wgpu::Buffer> {
   scoped_refptr<WebGPUMailboxBuffer> GetMailboxBuffer();
 
  private:
+  void MapSyncImpl(ScriptState* script_state,
+                   uint32_t mode,
+                   uint64_t offset,
+                   std::optional<uint64_t> size,
+                   ExceptionState& exception_state);
   ScriptPromise<IDLUndefined> MapAsyncImpl(ScriptState* script_state,
                                            uint32_t mode,
                                            uint64_t offset,
@@ -101,6 +115,7 @@ class GPUBuffer : public DawnObject<wgpu::Buffer> {
   }
 
   uint64_t size_;
+  std::optional<wgpu::Future> map_async_future_;
 
   // Holds onto any ArrayBuffers returned by getMappedRange, mapReadAsync, or
   // mapWriteAsync.

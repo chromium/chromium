@@ -112,13 +112,6 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
       },
       // </if>
 
-      isPasskeyUpgradeSettingsToggleVisible_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('passkeyUpgradeSettingsToggleVisible');
-        },
-      },
-
       isAutomatedPasswordChangeVisible_: {
         type: Boolean,
         value() {
@@ -221,7 +214,6 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
   declare private hasPasskeys_: boolean;
   declare private passwordManagerDisabled_: boolean;
   declare private hasPasswordsToExport_: boolean;
-  declare private isPasskeyUpgradeSettingsToggleVisible_: boolean;
   declare private isAutomatedPasswordChangeVisible_: boolean;
   declare private canAddShortcut_: boolean;
   declare private trustedVaultBannerState_: TrustedVaultBannerState;

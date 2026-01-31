@@ -86,17 +86,17 @@ class TraceEventTestFixture : public testing::Test {
       WaitableEvent* flush_complete_event,
       const scoped_refptr<base::RefCountedString>& events_str,
       bool has_more_events);
-  const Value::Dict* FindMatchingTraceEntry(const JsonKeyValue* key_values);
-  const Value::Dict* FindNamePhase(const char* name, const char* phase);
-  const Value::Dict* FindNamePhaseKeyValue(const char* name,
-                                           const char* phase,
-                                           const char* key,
-                                           const char* value);
+  const DictValue* FindMatchingTraceEntry(const JsonKeyValue* key_values);
+  const DictValue* FindNamePhase(const char* name, const char* phase);
+  const DictValue* FindNamePhaseKeyValue(const char* name,
+                                         const char* phase,
+                                         const char* key,
+                                         const char* value);
   void DropTracedMetadataRecords();
   bool FindMatchingValue(const char* key, const char* value);
   bool FindNonMatchingValue(const char* key, const char* value);
   void Clear() {
-    trace_parsed_ = Value::List();
+    trace_parsed_ = ListValue();
     json_output_.json_output.clear();
   }
 
@@ -160,21 +160,19 @@ class TraceEventTestFixture : public testing::Test {
     TraceLog::ResetForTesting();
     TraceLog* tracelog = TraceLog::GetInstance();
     ASSERT_TRUE(tracelog);
-    ASSERT_FALSE(tracelog->IsEnabled());
+    ASSERT_FALSE(base::TrackEvent::IsEnabled());
     trace_buffer_.SetOutputCallback(json_output_.GetCallback());
     num_flush_callbacks_ = 0;
   }
   void TearDown() override {
-    if (TraceLog::GetInstance()) {
-      EXPECT_FALSE(TraceLog::GetInstance()->IsEnabled());
-    }
+    EXPECT_FALSE(base::TrackEvent::IsEnabled());
     PlatformThread::SetName(old_thread_name_);
     // We want our singleton torn down after each test.
     TraceLog::ResetForTesting();
   }
 
   std::string old_thread_name_;
-  Value::List trace_parsed_;
+  ListValue trace_parsed_;
   TraceResultBuffer trace_buffer_;
   TraceResultBuffer::SimpleOutput json_output_;
   size_t num_flush_callbacks_;
@@ -208,7 +206,7 @@ void TraceEventTestFixture::OnTraceDataCollected(
   }
 
   ASSERT_TRUE(root->is_list());
-  Value::List& root_list = root->GetList();
+  ListValue& root_list = root->GetList();
 
   // Move items into our aggregate collection
   trace_parsed_.reserve(trace_parsed_.size() + root_list.size());
@@ -234,7 +232,7 @@ static bool CompareJsonValues(const std::string& lhs,
 }
 
 static bool IsKeyValueInDict(const JsonKeyValue* key_value,
-                             const Value::Dict* dict) {
+                             const DictValue* dict) {
   const std::string* value_str = dict->FindStringByDottedPath(key_value->key);
   if (value_str &&
       CompareJsonValues(*value_str, key_value->value, key_value->op)) {
@@ -242,7 +240,7 @@ static bool IsKeyValueInDict(const JsonKeyValue* key_value,
   }
 
   // Recurse to test arguments
-  const Value::Dict* args_dict = dict->FindDictByDottedPath("args");
+  const DictValue* args_dict = dict->FindDictByDottedPath("args");
   if (args_dict) {
     return IsKeyValueInDict(key_value, args_dict);
   }
@@ -251,7 +249,7 @@ static bool IsKeyValueInDict(const JsonKeyValue* key_value,
 }
 
 static bool IsAllKeyValueInDict(const JsonKeyValue* key_values,
-                                const Value::Dict* dict) {
+                                const DictValue* dict) {
   // Scan all key_values, they must all be present and equal.
   while (key_values && key_values->key) {
     if (!IsKeyValueInDict(key_values, dict)) {
@@ -262,7 +260,7 @@ static bool IsAllKeyValueInDict(const JsonKeyValue* key_values,
   return true;
 }
 
-const Value::Dict* TraceEventTestFixture::FindMatchingTraceEntry(
+const DictValue* TraceEventTestFixture::FindMatchingTraceEntry(
     const JsonKeyValue* key_values) {
   // Scan all items
   for (const Value& value : trace_parsed_) {
@@ -287,15 +285,15 @@ void TraceEventTestFixture::DropTracedMetadataRecords() {
   });
 }
 
-const Value::Dict* TraceEventTestFixture::FindNamePhase(const char* name,
-                                                        const char* phase) {
+const DictValue* TraceEventTestFixture::FindNamePhase(const char* name,
+                                                      const char* phase) {
   JsonKeyValue key_values[] = {{"name", name, IS_EQUAL},
                                {"ph", phase, IS_EQUAL},
                                {nullptr, nullptr, IS_EQUAL}};
   return FindMatchingTraceEntry(key_values);
 }
 
-const Value::Dict* TraceEventTestFixture::FindNamePhaseKeyValue(
+const DictValue* TraceEventTestFixture::FindNamePhaseKeyValue(
     const char* name,
     const char* phase,
     const char* key,
@@ -321,7 +319,7 @@ bool TraceEventTestFixture::FindNonMatchingValue(const char* key,
   return FindMatchingTraceEntry(key_values);
 }
 
-bool IsStringInDict(const char* string_to_match, const Value::Dict* dict) {
+bool IsStringInDict(const char* string_to_match, const DictValue* dict) {
   for (const auto pair : *dict) {
     if (pair.first.find(string_to_match) != std::string::npos) {
       return true;
@@ -337,7 +335,7 @@ bool IsStringInDict(const char* string_to_match, const Value::Dict* dict) {
   }
 
   // Recurse to test arguments
-  const Value::Dict* args_dict = dict->FindDict("args");
+  const DictValue* args_dict = dict->FindDict("args");
   if (args_dict) {
     return IsStringInDict(string_to_match, args_dict);
   }
@@ -345,13 +343,13 @@ bool IsStringInDict(const char* string_to_match, const Value::Dict* dict) {
   return false;
 }
 
-const Value::Dict* FindTraceEntry(
-    const Value::List& trace_parsed,
+const DictValue* FindTraceEntry(
+    const ListValue& trace_parsed,
     const char* string_to_match,
-    const Value::Dict* match_after_this_item = nullptr) {
+    const DictValue* match_after_this_item = nullptr) {
   // Scan all items.
   for (const Value& value : trace_parsed) {
-    const Value::Dict* dict = value.GetIfDict();
+    const DictValue* dict = value.GetIfDict();
     if (!dict) {
       continue;
     }
@@ -473,8 +471,8 @@ void TraceWithAllMacroVariants(WaitableEvent* task_complete_event) {
   }
 }
 
-void ValidateAllTraceMacrosCreatedData(const Value::List& trace_parsed) {
-  const Value::Dict* item = nullptr;
+void ValidateAllTraceMacrosCreatedData(const ListValue& trace_parsed) {
+  const DictValue* item = nullptr;
 
 #define EXPECT_FIND_(string)                   \
   item = FindTraceEntry(trace_parsed, string); \
@@ -731,13 +729,13 @@ void TraceManyInstantEvents(int thread_id,
   }
 }
 
-void ValidateInstantEventPresentOnEveryThread(const Value::List& trace_parsed,
+void ValidateInstantEventPresentOnEveryThread(const ListValue& trace_parsed,
                                               int num_threads,
                                               int num_events) {
   std::map<int, std::map<int, bool>> results;
 
   for (const Value& value : trace_parsed) {
-    const Value::Dict* dict = value.GetIfDict();
+    const DictValue* dict = value.GetIfDict();
     if (!dict) {
       continue;
     }
@@ -798,118 +796,6 @@ TEST_F(TraceEventTestFixture, DataDiscarded) {
   CancelTrace();
 
   EXPECT_TRUE(trace_parsed_.empty());
-}
-
-class MockEnabledStateChangedObserver : public TraceLog::EnabledStateObserver {
- public:
-  MOCK_METHOD0(OnTraceLogEnabled, void());
-  MOCK_METHOD0(OnTraceLogDisabled, void());
-};
-
-TEST_F(TraceEventTestFixture, EnabledObserverFiresOnEnable) {
-  MockEnabledStateChangedObserver observer;
-  TraceLog::GetInstance()->AddEnabledStateObserver(&observer);
-
-  EXPECT_CALL(observer, OnTraceLogEnabled()).Times(1);
-  TraceLog::GetInstance()->SetEnabled(
-      TraceConfig(kRecordAllCategoryFilter, ""));
-  testing::Mock::VerifyAndClear(&observer);
-  EXPECT_TRUE(TraceLog::GetInstance()->IsEnabled());
-
-  // Cleanup.
-  TraceLog::GetInstance()->RemoveEnabledStateObserver(&observer);
-  TraceLog::GetInstance()->SetDisabled();
-}
-
-TEST_F(TraceEventTestFixture, EnabledObserverFiresOnDisable) {
-  TraceLog::GetInstance()->SetEnabled(
-      TraceConfig(kRecordAllCategoryFilter, ""));
-
-  MockEnabledStateChangedObserver observer;
-  TraceLog::GetInstance()->AddEnabledStateObserver(&observer);
-
-  EXPECT_CALL(observer, OnTraceLogDisabled()).Times(1);
-  TraceLog::GetInstance()->SetDisabled();
-  testing::Mock::VerifyAndClear(&observer);
-
-  // Cleanup.
-  TraceLog::GetInstance()->RemoveEnabledStateObserver(&observer);
-}
-
-TEST_F(TraceEventTestFixture, EnabledObserverOwnedByTraceLog) {
-  auto observer = std::make_unique<MockEnabledStateChangedObserver>();
-  EXPECT_CALL(*observer, OnTraceLogEnabled()).Times(1);
-  EXPECT_CALL(*observer, OnTraceLogDisabled()).Times(1);
-  TraceLog::GetInstance()->AddOwnedEnabledStateObserver(std::move(observer));
-  TraceLog::GetInstance()->SetEnabled(
-      TraceConfig(kRecordAllCategoryFilter, ""));
-  TraceLog::GetInstance()->SetDisabled();
-  TraceLog::ResetForTesting();
-  // These notifications won't be sent.
-  TraceLog::GetInstance()->SetEnabled(
-      TraceConfig(kRecordAllCategoryFilter, ""));
-  TraceLog::GetInstance()->SetDisabled();
-}
-
-// Tests the IsEnabled() state of TraceLog changes before callbacks.
-class AfterStateChangeEnabledStateObserver
-    : public TraceLog::EnabledStateObserver {
- public:
-  AfterStateChangeEnabledStateObserver() = default;
-  ~AfterStateChangeEnabledStateObserver() override = default;
-
-  // TraceLog::EnabledStateObserver overrides:
-  void OnTraceLogEnabled() override {
-    EXPECT_TRUE(TraceLog::GetInstance()->IsEnabled());
-  }
-
-  void OnTraceLogDisabled() override {
-    EXPECT_FALSE(TraceLog::GetInstance()->IsEnabled());
-  }
-};
-
-TEST_F(TraceEventTestFixture, ObserversFireAfterStateChange) {
-  AfterStateChangeEnabledStateObserver observer;
-  TraceLog::GetInstance()->AddEnabledStateObserver(&observer);
-
-  TraceLog::GetInstance()->SetEnabled(
-      TraceConfig(kRecordAllCategoryFilter, ""));
-  EXPECT_TRUE(TraceLog::GetInstance()->IsEnabled());
-
-  TraceLog::GetInstance()->SetDisabled();
-  EXPECT_FALSE(TraceLog::GetInstance()->IsEnabled());
-
-  TraceLog::GetInstance()->RemoveEnabledStateObserver(&observer);
-}
-
-// Tests that a state observer can remove itself during a callback.
-class SelfRemovingEnabledStateObserver : public TraceLog::EnabledStateObserver {
- public:
-  SelfRemovingEnabledStateObserver() = default;
-  ~SelfRemovingEnabledStateObserver() override = default;
-
-  // TraceLog::EnabledStateObserver overrides:
-  void OnTraceLogEnabled() override {}
-
-  void OnTraceLogDisabled() override {
-    TraceLog::GetInstance()->RemoveEnabledStateObserver(this);
-  }
-};
-
-// Self removing observers are not supported at the moment.
-// TODO(alph): We could add support once we have recursive locks.
-TEST_F(TraceEventTestFixture, DISABLED_SelfRemovingObserver) {
-  ASSERT_EQ(0u, TraceLog::GetInstance()->GetObserverCountForTest());
-
-  SelfRemovingEnabledStateObserver observer;
-  TraceLog::GetInstance()->AddEnabledStateObserver(&observer);
-  EXPECT_EQ(1u, TraceLog::GetInstance()->GetObserverCountForTest());
-
-  TraceLog::GetInstance()->SetEnabled(
-      TraceConfig(kRecordAllCategoryFilter, ""));
-  TraceLog::GetInstance()->SetDisabled();
-  // The observer removed itself on disable.
-  EXPECT_EQ(0u, TraceLog::GetInstance()->GetObserverCountForTest());
 }
 
 bool IsNewTrace() {
@@ -1067,9 +953,9 @@ TEST_F(TraceEventTestFixture, AsyncBeginEndPointerNotMangled) {
   TRACE_EVENT_ASYNC_END0("cat", "name1", ptr);
   EndTraceAndFlush();
 
-  const Value::Dict* async_begin = FindNamePhase("name1", "S");
-  const Value::Dict* async_begin2 = FindNamePhase("name2", "S");
-  const Value::Dict* async_end = FindNamePhase("name1", "F");
+  const DictValue* async_begin = FindNamePhase("name1", "S");
+  const DictValue* async_begin2 = FindNamePhase("name2", "S");
+  const DictValue* async_end = FindNamePhase("name1", "F");
   EXPECT_TRUE(async_begin);
   EXPECT_TRUE(async_begin2);
   EXPECT_TRUE(async_end);
@@ -1156,8 +1042,8 @@ TEST_F(TraceEventTestFixture, DisabledCategories) {
   TRACE_EVENT_INSTANT0("test_included", "first", TRACE_EVENT_SCOPE_THREAD);
   EndTraceAndFlush();
   {
-    const Value::Dict* item = nullptr;
-    Value::List& trace_parsed = trace_parsed_;
+    const DictValue* item = nullptr;
+    ListValue& trace_parsed = trace_parsed_;
     EXPECT_NOT_FIND_("disabled-by-default-cc");
     EXPECT_FIND_("test_included");
   }
@@ -1171,8 +1057,8 @@ TEST_F(TraceEventTestFixture, DisabledCategories) {
   EndTraceAndFlush();
 
   {
-    const Value::Dict* item = nullptr;
-    Value::List& trace_parsed = trace_parsed_;
+    const DictValue* item = nullptr;
+    ListValue& trace_parsed = trace_parsed_;
     EXPECT_FIND_("disabled-by-default-cc");
     EXPECT_FIND_("test_other_included");
   }
@@ -1188,8 +1074,8 @@ TEST_F(TraceEventTestFixture, DisabledCategories) {
   EndTraceAndFlush();
 
   {
-    const Value::Dict* item = nullptr;
-    Value::List& trace_parsed = trace_parsed_;
+    const DictValue* item = nullptr;
+    ListValue& trace_parsed = trace_parsed_;
     EXPECT_FIND_("test,disabled-by-default-cc,test_other_included");
     EXPECT_FIND_("test_other_included,disabled-by-default-cc");
   }
@@ -1215,7 +1101,7 @@ TEST_F(TraceEventTestFixture, DeepCopy) {
 
   EXPECT_FALSE(FindTraceEntry(trace_parsed_, name.c_str()));
 
-  const Value::Dict* entry = FindTraceEntry(trace_parsed_, kOriginalName);
+  const DictValue* entry = FindTraceEntry(trace_parsed_, kOriginalName);
   ASSERT_TRUE(entry);
 
   EXPECT_FALSE(entry->FindIntByDottedPath("args.@rg1"));
@@ -1268,14 +1154,14 @@ TEST_F(TraceEventTestFixture, TraceEnableDisable) {
   TraceLog* trace_log = TraceLog::GetInstance();
   TraceConfig tc_inc_all("*", "");
   trace_log->SetEnabled(tc_inc_all);
-  EXPECT_TRUE(trace_log->IsEnabled());
+  EXPECT_TRUE(base::TrackEvent::IsEnabled());
   trace_log->SetDisabled();
-  EXPECT_FALSE(trace_log->IsEnabled());
+  EXPECT_FALSE(base::TrackEvent::IsEnabled());
 
   trace_log->SetEnabled(tc_inc_all);
-  EXPECT_TRUE(trace_log->IsEnabled());
+  EXPECT_TRUE(base::TrackEvent::IsEnabled());
   trace_log->SetDisabled();
-  EXPECT_FALSE(trace_log->IsEnabled());
+  EXPECT_FALSE(base::TrackEvent::IsEnabled());
 }
 
 TEST_F(TraceEventTestFixture, TraceWithDefaultCategoryFilters) {
@@ -1368,13 +1254,13 @@ TEST_F(TraceEventTestFixture, MAYBE_ConvertableTypes) {
   EndTraceAndFlush();
 
   // One arg version.
-  const Value::Dict* dict = FindNamePhase("bar", "X");
+  const DictValue* dict = FindNamePhase("bar", "X");
   ASSERT_TRUE(dict);
 
-  const Value::Dict* args_dict = dict->FindDict("args");
+  const DictValue* args_dict = dict->FindDict("args");
   ASSERT_TRUE(args_dict);
 
-  const Value::Dict* convertable_dict = args_dict->FindDict("data");
+  const DictValue* convertable_dict = args_dict->FindDict("data");
   ASSERT_TRUE(convertable_dict);
 
   EXPECT_EQ(*convertable_dict->FindInt("foo"), 1);
@@ -1468,8 +1354,8 @@ TEST_F(TraceEventTestFixture, MAYBE_PrimitiveArgs) {
   }
   EndTraceAndFlush();
 
-  const Value::Dict* args_dict = nullptr;
-  const Value::Dict* dict = nullptr;
+  const DictValue* args_dict = nullptr;
+  const DictValue* dict = nullptr;
   std::string str_value;
 
   dict = FindNamePhase("event1", "X");
@@ -1715,10 +1601,10 @@ TEST_F(TraceEventTestFixture, ContextLambda) {
   }
   EndTraceAndFlush();
 
-  const Value::Dict* dict = FindNamePhase("Name", "X");
+  const DictValue* dict = FindNamePhase("Name", "X");
   ASSERT_TRUE(dict);
 
-  const Value::Dict* args_dict = dict->FindDict("args");
+  const DictValue* args_dict = dict->FindDict("args");
   ASSERT_TRUE(args_dict);
 
   EXPECT_EQ(*args_dict->FindString("arg"), "foobar");

@@ -48,6 +48,7 @@
 <translation id="2761536921376153655">Tipo de leitura</translation>
 <translation id="28682968802727151">Pré-visualização do espelho</translation>
 <translation id="2879583609344924966">A <ph name="CAMERA" /> está ligada.</translation>
+<translation id="3063987824612038785">Todos os ficheiros da Câmara são guardados no Google Drive</translation>
 <translation id="3067436040345934772">Deslocar para a direita</translation>
 <translation id="3081586908890909590">Mudar para gravar vídeo</translation>
 <translation id="3091480460059548935">Deteção de texto na pré-visualização</translation>
@@ -67,6 +68,7 @@
 <translation id="3642192109456033823">A processar vídeo…</translation>
 <translation id="3789724198583203151">Rodar 90 graus no sentido contrário ao dos ponteiros do relógio</translation>
 <translation id="3810838688059735925">Vídeo</translation>
+<translation id="386366972082231038">Todos os ficheiros da Câmara são guardados no OneDrive</translation>
 <translation id="4060608699153044055">Não é possível gravar devido ao espaço de armazenamento insuficiente do dispositivo. Para começar a gravar, tem de libertar espaço no dispositivo.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Interromper gravação</translation>
@@ -100,6 +102,7 @@
 <translation id="5634947914995388399">Expandir caixa de diálogo e parar digitalização</translation>
 <translation id="5662366948659129155">A digitalizar a página <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Quadrado</translation>
+<translation id="5725797473946373607">Não mostrar esta caixa de diálogo da próxima vez</translation>
 <translation id="574392208103952083">Médio</translation>
 <translation id="5746169159649715125">Guardar como PDF</translation>
 <translation id="5753488212459587150">Ativar modo Especialista</translation>
@@ -156,6 +159,7 @@ Se o seu feedback for acerca da qualidade de imagem ou vídeo, anexe uma foto ou
 <translation id="7983668134180549431">Texto detetado.</translation>
 <translation id="8079255378695216066">Não é possível iniciar a gravação</translation>
 <translation id="8120146556401698679">Deslocar, inclinar, zoom</translation>
+<translation id="8127459436205030819">Os seus ficheiros podem ser visíveis para o seu administrador</translation>
 <translation id="8131740175452115882">Confirmar</translation>
 <translation id="8145038249676204903">Mudar para tirar foto</translation>
 <translation id="8167081290930651932">Guardar como foto</translation>
@@ -165,6 +169,7 @@ Se o seu feedback for acerca da qualidade de imagem ou vídeo, anexe uma foto ou
 <translation id="8609951387004618906">Abrir <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Ative/desative o som do microfone. O botão Desativar som está ativado</translation>
+<translation id="8712637175834984815">OK</translation>
 <translation id="8730621377337864115">Concluído</translation>
 <translation id="8732462232047530626">Pré-visualizar metadados</translation>
 <translation id="874854738381978209">Rede Wi-Fi detetada.</translation>

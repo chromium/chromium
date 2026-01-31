@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "base/barrier_closure.h"
-#include "base/containers/contains.h"
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -602,10 +601,10 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcBrowserTest,
                                                register_url1)));
 
   response1->WaitForRequest();
-  ASSERT_FALSE(base::Contains(response1->http_request()->headers,
-                              "Attribution-Reporting-Eligible"));
-  ASSERT_FALSE(base::Contains(response1->http_request()->headers,
-                              "Attribution-Reporting-Support"));
+  ASSERT_FALSE(response1->http_request()->headers.contains(
+      "Attribution-Reporting-Eligible"));
+  ASSERT_FALSE(response1->http_request()->headers.contains(
+      "Attribution-Reporting-Support"));
 
   GURL register_url2 = http_server->GetURL("d.test", "/register_source2");
   ASSERT_TRUE(ExecJs(web_contents(), JsReplace(R"(
@@ -613,10 +612,10 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcBrowserTest,
                                                register_url2)));
 
   response2->WaitForRequest();
-  ASSERT_FALSE(base::Contains(response2->http_request()->headers,
-                              "Attribution-Reporting-Eligible"));
-  ASSERT_FALSE(base::Contains(response2->http_request()->headers,
-                              "Attribution-Reporting-Support"));
+  ASSERT_FALSE(response2->http_request()->headers.contains(
+      "Attribution-Reporting-Eligible"));
+  ASSERT_FALSE(response2->http_request()->headers.contains(
+      "Attribution-Reporting-Support"));
 }
 
 IN_PROC_BROWSER_TEST_P(AttributionSrcBrowserTest,
@@ -642,7 +641,7 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcBrowserTest,
   register_response->WaitForRequest();
   const net::test_server::HttpRequest* request =
       register_response->http_request();
-  EXPECT_FALSE(base::Contains(request->headers, "Referer"));
+  EXPECT_FALSE(request->headers.contains("Referer"));
 }
 
 IN_PROC_BROWSER_TEST_P(AttributionSrcBrowserTest,
@@ -973,7 +972,7 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcPrerenderBrowserTest,
 
   GURL page_url =
       https_server()->GetURL("b.test", "/page_with_impression_creator.html");
-  FrameTreeNodeId host_id = prerender_helper_.AddPrerender(page_url);
+  PrerenderHostId host_id = prerender_helper_.AddPrerender(page_url);
   content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
 
   prerender_helper_.WaitForPrerenderLoadCompletion(page_url);
@@ -1007,7 +1006,7 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcPrerenderBrowserTest,
 
   GURL page_url =
       https_server()->GetURL("b.test", "/page_with_impression_creator.html");
-  FrameTreeNodeId host_id = prerender_helper_.AddPrerender(page_url);
+  PrerenderHostId host_id = prerender_helper_.AddPrerender(page_url);
   content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
 
   prerender_helper_.WaitForPrerenderLoadCompletion(page_url);
@@ -1037,7 +1036,7 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcPrerenderBrowserTest,
 
   GURL page_url =
       https_server()->GetURL("b.test", "/page_with_conversion_redirect.html");
-  FrameTreeNodeId host_id = prerender_helper_.AddPrerender(page_url);
+  PrerenderHostId host_id = prerender_helper_.AddPrerender(page_url);
   content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
 
   prerender_helper_.WaitForPrerenderLoadCompletion(page_url);
@@ -1074,7 +1073,7 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcPrerenderBrowserTest,
 
   GURL page_url =
       https_server()->GetURL("b.test", "/page_with_conversion_redirect.html");
-  FrameTreeNodeId host_id = prerender_helper_.AddPrerender(page_url);
+  PrerenderHostId host_id = prerender_helper_.AddPrerender(page_url);
   content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
 
   prerender_helper_.WaitForPrerenderLoadCompletion(page_url);
@@ -1124,7 +1123,7 @@ IN_PROC_BROWSER_TEST_P(
 
   GURL page_url =
       https_server()->GetURL("b.test", "/page_with_impression_creator.html");
-  FrameTreeNodeId host_id = prerender_helper_.AddPrerender(page_url);
+  PrerenderHostId host_id = prerender_helper_.AddPrerender(page_url);
   content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
 
   prerender_helper_.WaitForPrerenderLoadCompletion(page_url);

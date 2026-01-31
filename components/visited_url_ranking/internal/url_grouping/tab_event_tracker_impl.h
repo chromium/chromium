@@ -30,7 +30,7 @@ class TabEventTrackerImpl : public TabEventTracker {
   void DidAddTab(int tab_id, int tab_launch_type) override;
   void DidSelectTab(int tab_id,
                     const GURL& url,
-                    TabSelectionType tab_selection_type,
+                    TabSelectionCause tab_selection_cause,
                     int last_tab_id) override;
   void WillCloseTab(int tab_id) override;
   void TabClosureUndone(int tab_id) override;
@@ -46,12 +46,12 @@ class TabEventTrackerImpl : public TabEventTracker {
   struct TabSelection {
     TabSelection();
     TabSelection(int tab_id,
-                 TabSelectionType tab_selection_type,
+                 TabSelectionCause tab_selection_cause,
                  base::Time time);
     ~TabSelection();
 
     int tab_id{-1};
-    TabSelectionType tab_selection_type{TabSelectionType::kUnknown};
+    TabSelectionCause tab_selection_cause{TabSelectionCause::kUnknown};
     base::Time time;
     // Whether this selection has been committed to the the TabEventTracker to
     // store.
