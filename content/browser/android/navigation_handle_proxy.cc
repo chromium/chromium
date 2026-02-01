@@ -112,6 +112,8 @@ void NavigationHandleProxy::DidFinish() {
       cpp_navigation_handle_->IsDownload(), is_valid_search_form_url,
       cpp_navigation_handle_->GetPageTransition(),
       cpp_navigation_handle_->GetNetErrorCode(),
+      base::android::ConvertUTF8ToJavaString(
+          env, net::ErrorToString(cpp_navigation_handle_->GetNetErrorCode())),
       // TODO(shaktisahu): Change default status to -1 after fixing
       // crbug/690041.
       cpp_navigation_handle_->GetResponseHeaders()

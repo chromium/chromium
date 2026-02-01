@@ -16,24 +16,6 @@ import org.chromium.url.GURL;
 /** Provides native with methods to call to audit events during navigations. */
 @NullMarked
 public class PolicyAuditorBridge {
-    private static void recordErrorInPolicyAuditor(
-            String failingUrl, String description, int errorCode, PolicyAuditor policyAuditor) {
-        assert description != null;
-
-        policyAuditor.notifyAuditEvent(
-                ContextUtils.getApplicationContext(),
-                PolicyAuditor.AuditEvent.OPEN_URL_FAILURE,
-                failingUrl,
-                description);
-        if (errorCode == NetError.ERR_BLOCKED_BY_ADMINISTRATOR) {
-            policyAuditor.notifyAuditEvent(
-                    ContextUtils.getApplicationContext(),
-                    PolicyAuditor.AuditEvent.OPEN_URL_BLOCKED,
-                    failingUrl,
-                    "");
-        }
-    }
-
     @CalledByNative
     public static @Nullable PolicyAuditor getPolicyAuditor() {
         return PolicyAuditor.maybeCreate();
@@ -43,11 +25,20 @@ public class PolicyAuditorBridge {
     public static void notifyAuditEventForDidFinishNavigation(
             NavigationHandle navigationHandle, PolicyAuditor policyAuditor) {
         if (navigationHandle.errorCode() != NetError.OK) {
-            recordErrorInPolicyAuditor(
+            policyAuditor.notifyAuditEvent(
+                    ContextUtils.getApplicationContext(),
+                    PolicyAuditor.AuditEvent.OPEN_URL_FAILURE,
                     navigationHandle.getUrl().getSpec(),
-                    navigationHandle.errorDescription(),
-                    navigationHandle.errorCode(),
-                    policyAuditor);
+                    navigationHandle.errorDescription() != null
+                            ? navigationHandle.errorDescription()
+                            : "");
+            if (navigationHandle.errorCode() == NetError.ERR_BLOCKED_BY_ADMINISTRATOR) {
+                policyAuditor.notifyAuditEvent(
+                        ContextUtils.getApplicationContext(),
+                        PolicyAuditor.AuditEvent.OPEN_URL_BLOCKED,
+                        navigationHandle.getUrl().getSpec(),
+                        "");
+            }
         }
     }
 

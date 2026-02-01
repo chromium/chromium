@@ -37,6 +37,7 @@ public class NavigationHandle {
     private boolean mIsPrimaryMainFrameFragmentNavigation;
     private boolean mIsValidSearchFormUrl;
     private @NetError int mErrorCode;
+    private @Nullable String mErrorDescription;
     private int mHttpStatusCode;
     private @Nullable Origin mInitiatorOrigin;
     private boolean mIsPost;
@@ -191,6 +192,7 @@ public class NavigationHandle {
             boolean isValidSearchFormUrl,
             @PageTransition int transition,
             @NetError int errorCode,
+            String errorDescription,
             int httpStatuscode,
             boolean isExternalProtocol,
             boolean isPdf,
@@ -204,6 +206,7 @@ public class NavigationHandle {
         mIsValidSearchFormUrl = isValidSearchFormUrl;
         mPageTransition = transition;
         mErrorCode = errorCode;
+        mErrorDescription = errorDescription;
         mHttpStatusCode = httpStatuscode;
         mIsExternalProtocol = isExternalProtocol;
         mIsPdf = isPdf;
@@ -278,15 +281,14 @@ public class NavigationHandle {
         return mIsSameDocument;
     }
 
-    public String errorDescription() {
-        assert mStarted;
-        // TODO(shaktisahu): Provide appropriate error description (crbug/690784).
-        return "";
-    }
-
     public @NetError int errorCode() {
         assert mStarted;
         return mErrorCode;
+    }
+
+    public @Nullable String errorDescription() {
+        assert mStarted;
+        return mErrorDescription;
     }
 
     /**

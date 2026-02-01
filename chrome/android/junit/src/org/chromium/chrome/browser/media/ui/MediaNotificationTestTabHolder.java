@@ -130,6 +130,7 @@ public class MediaNotificationTestTabHolder {
                 /* isValidSearchFormUrl= */ false,
                 /* transition= */ 0,
                 /* errorCode= */ 0,
+                /* errorDescription= */ "",
                 /* httpStatuscode= */ 200,
                 /* isExternalProtocol= */ false,
                 /* isPdf= */ false,

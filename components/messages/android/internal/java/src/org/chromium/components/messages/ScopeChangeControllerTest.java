@@ -354,6 +354,7 @@ public class ScopeChangeControllerTest {
                 /* isValidSearchFormUrl= */ false,
                 /* transition */ 0,
                 /* errorCode= */ 0,
+                /* errorDescription= */ "",
                 /* httpStatuscode= */ 0,
                 /* isExternalProtocol= */ false,
                 /* isPdf= */ false,
