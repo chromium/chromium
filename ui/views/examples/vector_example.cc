@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
@@ -130,7 +129,9 @@ class VectorIconGallery : public View, public TextfieldController {
   void ContentsChanged(Textfield* sender,
                        const std::u16string& new_contents) override {
     if (sender == size_input_) {
-      if (base::StringToInt(new_contents, &size_) && (size_ > 0)) {
+      int new_size;
+      if (base::StringToInt(new_contents, &new_size) && (new_size > 0)) {
+        size_ = new_size;
         Update();
       } else {
         size_input_->SetText(std::u16string());
@@ -143,9 +144,10 @@ class VectorIconGallery : public View, public TextfieldController {
     if (new_contents.size() != 8u) {
       return;
     }
-    unsigned new_color = UNSAFE_TODO(
-        strtoul(base::UTF16ToASCII(new_contents).c_str(), nullptr, 16));
-    if (new_color <= 0xffffffff) {
+
+    uint32_t new_color = 0;
+    if (base::HexStringToUInt(base::UTF16ToASCII(new_contents), &new_color) &&
+        (new_color <= 0xffffffff)) {
       color_ = new_color;
       Update();
     }
