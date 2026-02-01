@@ -101,27 +101,27 @@ using ProfileBrowsersCloseCallback =
 // in the corresponding display may be returned. Browsers that have closed and
 // are pending deletion are not returned.
 // WARNING: Do not use this method. See comment at top of file.
-Browser* FindTabbedBrowser(Profile* profile,
+Browser* FindTabbedBrowser(const Profile* profile,
                            bool match_original_profiles,
                            int64_t display_id = display::kInvalidDisplayId);
 
 // Returns an existing browser window of any kind.
 // WARNING: Do not use this method. See comment at top of file.
-Browser* FindAnyBrowser(Profile* profile, bool match_original_profiles);
+Browser* FindAnyBrowser(const Profile* profile, bool match_original_profiles);
 
 // Returns an existing browser window with the provided profile. Searches in the
 // order of last activation. Only browsers that have been active can be
 // returned. Returns nullptr if no such browser currently exists.
 // WARNING: Do not use this method. See comment at top of file.
-Browser* FindBrowserWithProfile(Profile* profile);
+Browser* FindBrowserWithProfile(const Profile* profile);
 
 // Returns all tabbed browsers with the provided profile. Returns an empty
 // vector if no such browsers currently exist.
-std::vector<Browser*> FindAllTabbedBrowsersWithProfile(Profile* profile);
+std::vector<Browser*> FindAllTabbedBrowsersWithProfile(const Profile* profile);
 
 // Returns all browsers of any type with the provided profile. Returns an empty
 // vector if no such browsers currently exist.
-std::vector<Browser*> FindAllBrowsersWithProfile(Profile* profile);
+std::vector<Browser*> FindAllBrowsersWithProfile(const Profile* profile);
 
 // Returns an existing browser with the provided ID. Returns nullptr if no such
 // browser currently exists.

@@ -61,7 +61,7 @@ const uint32_t kMatchCurrentWorkspace = 1 << 4;
 const uint32_t kIncludeBrowsersScheduledForDeletion = 1 << 5;
 
 bool DoesBrowserMatchProfile(BrowserWindowInterface& browser,
-                             Profile* profile,
+                             const Profile* profile,
                              uint32_t match_types) {
   if (match_types & kMatchOriginalProfile) {
     if (browser.GetProfile()->GetOriginalProfile() !=
@@ -112,7 +112,7 @@ bool DoesBrowserMatchProfile(BrowserWindowInterface& browser,
 // . Browsers scheduled for deletion are ignored unless match_types contains
 //   kIncludeBrowsersScheduledForDeletion explicitly.
 bool BrowserMatches(BrowserWindowInterface* browser,
-                    Profile* profile,
+                    const Profile* profile,
                     Browser::WindowFeature window_feature,
                     uint32_t match_types,
                     int64_t display_id) {
@@ -161,7 +161,7 @@ bool BrowserMatches(BrowserWindowInterface* browser,
 // |BrowserMatches|, or null if no browsers match the arguments. See
 // |BrowserMatches| for details on the arguments.
 BrowserWindowInterface* FindBrowserOrderedByActivationMatching(
-    Profile* profile,
+    const Profile* profile,
     Browser::WindowFeature window_feature,
     uint32_t match_types,
     int64_t display_id = display::kInvalidDisplayId) {
@@ -179,7 +179,7 @@ BrowserWindowInterface* FindBrowserOrderedByActivationMatching(
 }
 
 BrowserWindowInterface* FindBrowserWithTabbedOrAnyType(
-    Profile* profile,
+    const Profile* profile,
     bool match_tabbed,
     bool match_original_profiles,
     bool match_current_workspace,
@@ -318,7 +318,7 @@ void TryToCloseBrowsersForProfile(
 
 namespace chrome {
 
-Browser* FindTabbedBrowser(Profile* profile,
+Browser* FindTabbedBrowser(const Profile* profile,
                            bool match_original_profiles,
                            int64_t display_id) {
   BrowserWindowInterface* browser = FindBrowserWithTabbedOrAnyType(
@@ -327,21 +327,21 @@ Browser* FindTabbedBrowser(Profile* profile,
   return browser ? browser->GetBrowserForMigrationOnly() : nullptr;
 }
 
-Browser* FindAnyBrowser(Profile* profile, bool match_original_profiles) {
+Browser* FindAnyBrowser(const Profile* profile, bool match_original_profiles) {
   BrowserWindowInterface* browser =
       FindBrowserWithTabbedOrAnyType(profile, false, match_original_profiles,
                                      /*match_current_workspace=*/false);
   return browser ? browser->GetBrowserForMigrationOnly() : nullptr;
 }
 
-Browser* FindBrowserWithProfile(Profile* profile) {
+Browser* FindBrowserWithProfile(const Profile* profile) {
   BrowserWindowInterface* browser =
       FindBrowserWithTabbedOrAnyType(profile, false, false,
                                      /*match_current_workspace=*/false);
   return browser ? browser->GetBrowserForMigrationOnly() : nullptr;
 }
 
-std::vector<Browser*> FindAllTabbedBrowsersWithProfile(Profile* profile) {
+std::vector<Browser*> FindAllTabbedBrowsersWithProfile(const Profile* profile) {
   std::vector<Browser*> browsers;
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
       [&](BrowserWindowInterface* browser) {
@@ -355,7 +355,7 @@ std::vector<Browser*> FindAllTabbedBrowsersWithProfile(Profile* profile) {
   return browsers;
 }
 
-std::vector<Browser*> FindAllBrowsersWithProfile(Profile* profile) {
+std::vector<Browser*> FindAllBrowsersWithProfile(const Profile* profile) {
   std::vector<Browser*> browsers;
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
       [&](BrowserWindowInterface* browser) {
