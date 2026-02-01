@@ -7,7 +7,6 @@
 #include <stddef.h>
 
 #include <memory>
-#include <set>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -23,6 +22,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace policy {
 
@@ -218,7 +218,7 @@ bool UploadJobImpl::SetUpMultipart() {
   if (mime_boundary_ && post_data_)
     return true;
 
-  std::set<std::string> used_names;
+  absl::flat_hash_set<std::string> used_names;
 
   // Check uniqueness of header field names.
   for (const auto& data_segment : data_segments_) {
