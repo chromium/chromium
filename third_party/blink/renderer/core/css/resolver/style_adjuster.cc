@@ -760,7 +760,8 @@ void StyleAdjuster::AdjustStyleForDisplay(
   }
 
   if (layout_parent_style.InlinifiesChildren() &&
-      !builder.HasOutOfFlowPosition() && ShouldBeInlinified(element)) {
+      !builder.HasOutOfFlowPosition() && ShouldBeInlinified(element) &&
+      !force_canvas_child_layout_subtree_styles) {
     if (builder.IsFloating()) {
       builder.SetFloating(EFloat::kNone);
       if (document) {
