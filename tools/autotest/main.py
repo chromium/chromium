@@ -32,7 +32,6 @@ autotest.py -C out/foo StringUtilTest.IsStringUTF8 SpanTest.AsStringView
 
 import argparse
 import json
-import locale
 import os
 import re
 import shlex
@@ -40,232 +39,21 @@ import subprocess
 import sys
 import shutil
 
-from enum import Enum
+import utils.command_util as command
+import utils.constants as const
+import utils.telemetry as telemetry
+
 from pathlib import Path
-from opentelemetry import trace
 
-# Don't write pyc files to the src tree, which show up in version control
-# in some environments.
-sys.dont_write_bytecode = True
-
-DEBUG: bool = False
-
-SRC_DIR: Path = Path(__file__).parent.parent.parent.resolve()
-sys.path.append(str(SRC_DIR / 'build'))
+sys.path.append(str(const.SRC_DIR / 'build'))
 import gn_helpers
 
-sys.path.append(str(SRC_DIR / 'build' / 'android'))
+sys.path.append(str(const.SRC_DIR / 'build' / 'android'))
 from pylib import constants
-
-DEPOT_TOOLS_DIR: Path = SRC_DIR / 'third_party' / 'depot_tools'
-
-sys.path.append(str(DEPOT_TOOLS_DIR / 'infra_lib'))
-import telemetry
-
-tracer = telemetry.get_tracer(__name__)
-
-# Some test suites use suffixes that would also match non-test-suite targets.
-# Those test suites should be manually added here.
-_TEST_TARGET_ALLOWLIST: list[str] = [
-
-    # The tests below this line were output from the ripgrep command just below:
-    '//ash:ash_pixeltests',
-    '//build/rust/tests/test_serde_json_lenient:test_serde_json_lenient',
-    '//chrome/browser/apps/app_service/app_install:app_install_fuzztests',
-    '//chrome/browser/glic/e2e_test:glic_internal_e2e_interactive_ui_tests',
-    '//chrome/browser/mac:install_sh_test',
-    '//chrome/browser/metrics/perf:profile_provider_unittest',
-    '//chrome/browser/privacy_sandbox/notice:fuzz_tests',
-    '//chrome/browser/web_applications:web_application_fuzztests',
-    '//chromecast/media/base:video_plane_controller_test',
-    '//chromecast/metrics:cast_metrics_unittest',
-    '//chrome/enterprise_companion:enterprise_companion_integration_tests',
-    '//chrome/enterprise_companion:enterprise_companion_tests',
-    '//chrome/installer/gcapi:gcapi_test',
-    '//chrome/installer/test:upgrade_test',
-    '//chromeos/ash/components/kiosk/vision:kiosk_vision_unit_tests',
-    '//chrome/test/android:chrome_public_apk_baseline_profile_generator',
-    '//chrome/test:browser_tests',
-    '//chrome/test:interactive_ui_tests',
-    '//chrome/test:unit_tests',
-    '//clank/javatests:chrome_apk_baseline_profile_generator',
-    '//clank/javatests:chrome_smoke_test',
-    '//clank/javatests:trichrome_chrome_google_bundle_smoke_test',
-    '//components/chromeos_camera:jpeg_decode_accelerator_unittest',
-    '//components/exo/wayland:wayland_client_compatibility_tests',
-    '//components/exo/wayland:wayland_client_tests',
-    '//components/facilitated_payments/core/validation:pix_code_validator_fuzzer',
-    '//components/minidump_uploader:minidump_uploader_test',
-    '//components/paint_preview/browser:paint_preview_browser_unit_tests',
-    '//components/paint_preview/common:paint_preview_common_unit_tests',
-    '//components/paint_preview/renderer:paint_preview_renderer_unit_tests',
-    '//components/services/paint_preview_compositor:paint_preview_compositor_unit_tests',
-    '//components/translate/core/language_detection:language_detection_util_fuzztest',
-    '//components/webcrypto:webcrypto_testing_fuzzer',
-    '//components/zucchini:zucchini_integration_test',
-    '//content/test/fuzzer:devtools_protocol_encoding_json_fuzzer',
-    '//fuchsia_web/runners:cast_runner_integration_tests',
-    '//fuchsia_web/webengine:web_engine_integration_tests',
-    '//google_apis/gcm:gcm_unit_tests',
-    '//gpu:gl_tests',
-    '//gpu:gpu_benchmark',
-    '//gpu/vulkan/android:vk_tests',
-    '//ios/web:ios_web_inttests',
-    '//ios/web_view/test:ios_web_view_inttests',
-    '//media/cdm:aes_decryptor_fuzztests',
-    '//media/formats:ac3_util_fuzzer',
-    '//media/gpu/chromeos:image_processor_test',
-    '//media/gpu/v4l2:v4l2_unittest',
-    '//media/gpu/vaapi/test/fake_libva_driver:fake_libva_driver_unittest',
-    '//media/gpu/vaapi:vaapi_unittest',
-    '//native_client/tests:large_tests',
-    '//native_client/tests:medium_tests',
-    '//native_client/tests:small_tests',
-    '//sandbox/mac:sandbox_mac_fuzztests',
-    '//sandbox/win:sbox_integration_tests',
-    '//sandbox/win:sbox_validation_tests',
-    '//testing/libfuzzer/fuzzers:libyuv_scale_fuzztest',
-    '//testing/libfuzzer/fuzzers:paint_vector_icon_fuzztest',
-    '//third_party/blink/renderer/controller:blink_perf_tests',
-    '//third_party/blink/renderer/core:css_parser_fuzzer',
-    '//third_party/blink/renderer/core:inspector_ghost_rules_fuzzer',
-    '//third_party/blink/renderer/platform/loader:unencoded_digest_fuzzer',
-    '//third_party/crc32c:crc32c_benchmark',
-    '//third_party/crc32c:crc32c_tests',
-    '//third_party/dawn/src/dawn/tests/benchmarks:dawn_benchmarks',
-    '//third_party/federated_compute:federated_compute_tests',
-    '//third_party/highway:highway_tests',
-    '//third_party/ipcz/src:ipcz_tests',
-    '//third_party/libaom:av1_encoder_fuzz_test',
-    '//third_party/libaom:test_libaom',
-    '//third_party/libvpx:test_libvpx',
-    '//third_party/libvpx:vp8_encoder_fuzz_test',
-    '//third_party/libvpx:vp9_encoder_fuzz_test',
-    '//third_party/libwebp:libwebp_advanced_api_fuzzer',
-    '//third_party/libwebp:libwebp_animation_api_fuzzer',
-    '//third_party/libwebp:libwebp_animencoder_fuzzer',
-    '//third_party/libwebp:libwebp_enc_dec_api_fuzzer',
-    '//third_party/libwebp:libwebp_huffman_fuzzer',
-    '//third_party/libwebp:libwebp_mux_demux_api_fuzzer',
-    '//third_party/libwebp:libwebp_simple_api_fuzzer',
-    '//third_party/opus:test_opus_api',
-    '//third_party/opus:test_opus_decode',
-    '//third_party/opus:test_opus_encode',
-    '//third_party/opus:test_opus_padding',
-    '//third_party/pdfium:pdfium_embeddertests',
-    '//third_party/pffft:pffft_unittest',
-    '//third_party/rapidhash:rapidhash_fuzztests',
-    '//ui/ozone:ozone_integration_tests',
-]
-r"""
- You can run this command to find test targets that do not match _TEST_TARGET_SUFFIXES,
- and use it to update _TEST_TARGET_ALLOWLIST.
-rg '^(instrumentation_test_runner|test)\("([^"]*)' -o -g'BUILD.gn' -r'$2' -N \
-  | rg -v '(_browsertests|_perftests|_wpr_tests|_unittests)$' \
-  | rg '^(.*)/BUILD.gn(.*)$' -r'\'//$1$2\',' \
-  | sort
-
- And you can use a command like this to find source_set targets that do match
- _TEST_TARGET_SUFFIXES (ideally this is minimal).
-rg '^source_set\("([^"]*)' -o -g'BUILD.gn' -r'$1' -N | \
-  rg '(_browsertests|_perftests|_wpr_tests|_unittests)$'
-"""
-_TEST_TARGET_SUFFIXES: list[str] = ('_browsertests', '_perftests', '_wpr_tests',
-    '_unittests')
-
-_PREF_MAPPING_FILE_PATTERN: str = re.escape(
-    str(Path('components') / 'policy' / 'test' / 'data' / 'pref_mapping') +
-    r'/') + r'.*\.json'
-
-TEST_FILE_NAME_REGEX: re.Pattern[str] = re.compile(
-    r'(.*Test\.java)' +
-    r'|(.*_[a-z]*test(?:_win|_mac|_linux|_chromeos|_android)?\.(cc|mm))' +
-    r'|(' + _PREF_MAPPING_FILE_PATTERN + r')')
-
-# Some tests don't directly include gtest.h and instead include it via gmock.h
-# or a test_utils.h file, so make sure these cases are captured. Also include
-# files that use <...> for #includes instead of quotes.
-GTEST_INCLUDE_REGEX: re.Pattern[str] = re.compile(
-    r'#include.*(gtest|gmock|_test_utils|browser_test)\.h("|>)')
-
-
-def ExitWithMessage(*args: list[str]):
-  print(*args, file=sys.stderr)
-  sys.exit(1)
-
-
-class TestValidity(Enum):
-  NOT_A_TEST = 0  # Does not match test file regex.
-  MAYBE_A_TEST = 1  # Matches test file regex, but doesn't include gtest files.
-  VALID_TEST = 2  # Matches test file regex and includes gtest files.
-
-
-# ------------------------------------------------------------------------------
-# Telemetry tracks attributes declared in main, build, and run phases.
-# Note: Telemetry only applies to Googlers only
-# For details, see: go/autotest-telemetry
-# ------------------------------------------------------------------------------
-
-
-def RecordMainAttributes(targets: list[str], filter: str, used_cache: bool,
-                         out_dir: str):
-  """Records main attributes to the current span.
-
-  Attributes recorded:
-      * main.is_gemini_cli: Indicates if the process is running via the Gemini CLI.
-      * main.targets: The list of targets selected for build/run.
-      * main.filter: The filter string generated from user input.
-      * gn.target_cache_used: Whether the target search utilized the cache.
-      * build.out_dir: The directory path for compiled artifacts.
-  """
-  span = trace.get_current_span()
-  if not span.is_recording():
-    return
-
-  is_gemini_cli = True if os.getenv("GEMINI_CLI") else False
-
-  span.set_attribute('main.is_gemini_cli', is_gemini_cli)
-  span.set_attribute('main.targets', str(targets))
-  span.set_attribute('main.filter', filter)
-  span.set_attribute('gn.target_used_cache', used_cache)
-  span.set_attribute('build.out_dir', out_dir)
-
-
-def RecordBuildAttributes(is_retry: str, is_successful: bool):
-  """Records build execution state attributes to the current span.
-
-  Attributes recorded:
-      * build.is_retry: Indicates if this build is a retry attempt.
-      * build.is_successful: Indicates return code of subprocess run
-  """
-  span = trace.get_current_span()
-  if not span.is_recording():
-    return
-
-  span.set_attribute('build.is_retry', is_retry)
-  span.set_attribute('build.is_successful', is_successful)
-
-
-def RecordRunAttributes(cmd: list[str], is_successful: bool):
-  """Records attributes related to the command execution.
-
-  Attributes recorded:
-      * run.bin: The specific binary name extracted from the full command path.
-      * run.is_successful: Indicates return code of subprocess run
-  """
-  span = trace.get_current_span()
-  if not span.is_recording():
-    return
-
-  run_bin = os.path.basename(cmd[0])
-  span.set_attribute('run.bin', run_bin)
-  span.set_attribute('run.is_successful', is_successful)
-  if not is_successful:
-    span.set_status(trace.StatusCode.ERROR)
 
 
 def CodeSearchFiles(query_args: list[str]) -> list[str]:
-  lines: list[str] = RunCommand([
+  lines: list[str] = command.RunCommand([
       'cs',
       '-l',
       # Give the local path to the file, if the file exists.
@@ -284,72 +72,32 @@ def FindRemoteCandidates(target: str) -> tuple[list[str], list[str]]:
   exact: set[str] = set()
   close: set[str] = set()
   for filename in results:
-    file_validity: TestValidity = IsTestFile(filename)
-    if file_validity is TestValidity.VALID_TEST:
+    file_validity: const.TestValidity = IsTestFile(filename)
+    if file_validity is const.TestValidity.VALID_TEST:
       exact.add(filename)
-    elif file_validity is TestValidity.MAYBE_A_TEST:
+    elif file_validity is const.TestValidity.MAYBE_A_TEST:
       close.add(filename)
   return list(exact), list(close)
 
 
-def IsTestFile(file_path: str) -> TestValidity:
-  if not TEST_FILE_NAME_REGEX.match(file_path):
-    return TestValidity.NOT_A_TEST
+def IsTestFile(file_path: str) -> const.TestValidity:
+  if not const.TEST_FILE_NAME_REGEX.match(file_path):
+    return const.TestValidity.NOT_A_TEST
   if file_path.endswith('.cc') or file_path.endswith('.mm'):
     # Try a bit harder to remove non-test files for c++. Without this,
     # 'autotest.py base/' finds non-test files.
     try:
       with open(file_path, 'r', encoding='utf-8') as f:
-        if GTEST_INCLUDE_REGEX.search(f.read()) is not None:
-          return TestValidity.VALID_TEST
+        if const.GTEST_INCLUDE_REGEX.search(f.read()) is not None:
+          return const.TestValidity.VALID_TEST
     except IOError:
       pass
     # It may still be a test file, even if it doesn't include a gtest file.
-    return TestValidity.MAYBE_A_TEST
-  return TestValidity.VALID_TEST
+    return const.TestValidity.MAYBE_A_TEST
+  return const.TestValidity.VALID_TEST
 
 
-class CommandError(Exception):
-  """Exception thrown when a subcommand fails."""
-
-  def __init__(self,
-               command: list[str],
-               return_code: int,
-               output: str | None = None) -> None:
-    Exception.__init__(self)
-    self.command = command
-    self.return_code = return_code
-    self.output = output
-
-  def __str__(self) -> str:
-    message: str = (f'\n***\nERROR: Error while running command {self.command}'
-                    f'.\nExit status: {self.return_code}\n')
-    if self.output:
-      message += f'Output:\n{self.output}\n'
-    message += '***'
-    return message
-
-
-@tracer.start_as_current_span('chromium.tools.autotest.run_target')
-def StreamCommandOrExit(cmd: list[str], **kwargs: int) -> None:
-  result: subprocess.CompletedProcess[str] = subprocess.run(cmd, check=False, **kwargs)
-  is_successful: bool = result.returncode == 0
-  RecordRunAttributes(cmd, is_successful)
-  if not is_successful:
-    sys.exit(1)
-
-
-def RunCommand(cmd: list[str], **kwargs: int) -> str:
-  try:
-    # Set an encoding to convert the binary output to a string.
-    return subprocess.check_output(cmd,
-                                   **kwargs,
-                                   encoding=locale.getpreferredencoding())
-  except subprocess.CalledProcessError as e:
-    raise CommandError(e.cmd, e.returncode, e.output) from None
-
-
-@tracer.start_as_current_span('chromium.tools.autotest.build')
+@telemetry.tracer.start_as_current_span('chromium.tools.autotest.build')
 def BuildTestTargets(out_dir: str, targets: list[str], dry_run: bool,
                      quiet: bool, is_retry: bool) -> bool:
   """Builds the specified targets with ninja"""
@@ -358,11 +106,10 @@ def BuildTestTargets(out_dir: str, targets: list[str], dry_run: bool,
   if (dry_run):
     return True
 
-  completed_process: subprocess.CompletedProcess[str] = subprocess.run(cmd,
-                                     capture_output=quiet,
-                                     encoding='utf-8')
+  completed_process: subprocess.CompletedProcess[str] = subprocess.run(
+      cmd, capture_output=quiet, encoding='utf-8')
 
-  RecordBuildAttributes(is_retry, completed_process.returncode == 0)
+  telemetry.RecordBuildAttributes(is_retry, completed_process.returncode == 0)
 
   if completed_process.returncode != 0:
     if quiet:
@@ -378,7 +125,7 @@ def BuildTestTargets(out_dir: str, targets: list[str], dry_run: bool,
 
 
 def RecursiveMatchFilename(folder: str,
-                         filename: str) -> tuple[list[str], list[str]]:
+                           filename: str) -> tuple[list[str], list[str]]:
   current_dir: str = os.path.split(folder)[-1]
   if current_dir.startswith('out') or current_dir.startswith('.'):
     return ([], [])
@@ -391,10 +138,10 @@ def RecursiveMatchFilename(folder: str,
           continue
         if (entry.is_file() and filename in entry.path
             and not os.path.basename(entry.path).startswith('.')):
-          file_validity: TestValidity = IsTestFile(entry.path)
-          if file_validity is TestValidity.VALID_TEST:
+          file_validity: const.TestValidity = IsTestFile(entry.path)
+          if file_validity is const.TestValidity.VALID_TEST:
             exact.append(entry.path)
-          elif file_validity is TestValidity.MAYBE_A_TEST:
+          elif file_validity is const.TestValidity.MAYBE_A_TEST:
             close.append(entry.path)
         if entry.is_dir():
           # On Windows, junctions are like a symlink that python interprets as a
@@ -406,7 +153,7 @@ def RecursiveMatchFilename(folder: str,
             exact += matches[0]
             close += matches[1]
           except FileNotFoundError:
-            if DEBUG:
+            if const.DEBUG:
               print(f'Failed to scan directory "{entry}" - junction?')
             pass
   except PermissionError:
@@ -417,17 +164,17 @@ def RecursiveMatchFilename(folder: str,
 
 def FindTestFilesInDirectory(directory: str) -> list[str]:
   test_files: list[str] = []
-  if DEBUG:
+  if const.DEBUG:
     print('Test files:')
   for root, _, files in os.walk(directory):
     for f in files:
       path: str = os.path.join(root, f)
-      file_validity: TestValidity = IsTestFile(path)
-      if file_validity is TestValidity.VALID_TEST:
-        if DEBUG:
+      file_validity: const.TestValidity = IsTestFile(path)
+      if file_validity is const.TestValidity.VALID_TEST:
+        if const.DEBUG:
           print(path)
         test_files.append(path)
-      elif DEBUG and file_validity is TestValidity.MAYBE_A_TEST:
+      elif const.DEBUG and file_validity is const.TestValidity.MAYBE_A_TEST:
         print(path + ' matched but doesn\'t include gtest files, skipping.')
   return test_files
 
@@ -464,7 +211,7 @@ def SearchForTestsByName(terms: list[str], quiet: bool,
   if not remote_search:
     # Use ripgrep.
     files = [
-        f for f in RunCommand([
+        f for f in command.RunCommand([
             'rg',
             '-l',
             '--multiline',
@@ -476,13 +223,13 @@ def SearchForTestsByName(terms: list[str], quiet: bool,
             '-t',
             'objcpp',
             pattern,
-            str(SRC_DIR),
+            str(const.SRC_DIR),
         ]).splitlines()
     ]
   else:
     # Use code search.
     files = CodeSearchFiles(['pcre:true', pattern])
-  files = [f for f in files if IsTestFile(f) != TestValidity.NOT_A_TEST]
+  files = [f for f in files if IsTestFile(f) != const.TestValidity.NOT_A_TEST]
   gtest_filter: str = ':'.join(GetFilterForTerm(t) for t in terms)
 
   if files and not quiet:
@@ -493,43 +240,42 @@ def SearchForTestsByName(terms: list[str], quiet: bool,
 
 def IsProbablyFile(name: str) -> bool:
   '''Returns whether the name is likely a test file name, path, or directory path.'''
-  return bool(TEST_FILE_NAME_REGEX.match(name)) or os.path.exists(name)
+  return bool(const.TEST_FILE_NAME_REGEX.match(name)) or os.path.exists(name)
 
 
-def FindMatchingTestFiles(
-    target: str,
-    remote_search: bool = False,
-    path_index: int | None = None) -> list[str]:
+def FindMatchingTestFiles(target: str,
+                          remote_search: bool = False,
+                          path_index: int | None = None) -> list[str]:
   # Return early if there's an exact file match.
   if os.path.isfile(target):
     if test_file := _FindTestForFile(target):
       return [test_file]
-    ExitWithMessage(f"{target} doesn't look like a test file")
+    command.ExitWithMessage(f"{target} doesn't look like a test file")
   # If this is a directory, return all the test files it contains.
   if os.path.isdir(target):
     files: list[str] = FindTestFilesInDirectory(target)
     if not files:
-      ExitWithMessage('No tests found in directory')
+      command.ExitWithMessage('No tests found in directory')
     return files
 
   if sys.platform.startswith('win32') and os.path.altsep in target:
     # Use backslash as the path separator on Windows to match os.scandir().
-    if DEBUG:
+    if const.DEBUG:
       print('Replacing ' + os.path.altsep + ' with ' + os.path.sep + ' in: ' +
             target)
     target = target.replace(os.path.altsep, os.path.sep)
-  if DEBUG:
+  if const.DEBUG:
     print('Finding files with full path containing: ' + target)
 
   if remote_search:
     exact, close = FindRemoteCandidates(target)
     if not exact and not close:
       print('Failed to find remote candidates; searching recursively')
-      exact, close = RecursiveMatchFilename(str(SRC_DIR), target)
+      exact, close = RecursiveMatchFilename(str(const.SRC_DIR), target)
   else:
-    exact, close = RecursiveMatchFilename(str(SRC_DIR), target)
+    exact, close = RecursiveMatchFilename(str(const.SRC_DIR), target)
 
-  if DEBUG:
+  if const.DEBUG:
     if exact:
       print('Found exact matching file(s):')
       print('\n'.join(exact))
@@ -553,9 +299,9 @@ def FindMatchingTestFiles(
     if path_index is not None and 0 <= path_index < len(test_files):
       test_files = [test_files[path_index]]
     else:
-      test_files = [HaveUserPickFile(test_files)]
+      test_files = [command.HaveUserPickFile(test_files)]
   if not test_files:
-    ExitWithMessage(f'Target "{target}" did not match any files.')
+    command.ExitWithMessage(f'Target "{target}" did not match any files.')
   return test_files
 
 
@@ -577,49 +323,12 @@ def _FindTestForFile(target: os.PathLike[str]) -> str | None:
   for candidate in test_candidates:
     if not os.path.isfile(candidate):
       continue
-    validity: TestValidity = IsTestFile(str(candidate))
-    if validity is TestValidity.VALID_TEST:
+    validity: const.TestValidity = IsTestFile(str(candidate))
+    if validity is const.TestValidity.VALID_TEST:
       return str(candidate)
-    elif validity is TestValidity.MAYBE_A_TEST:
+    elif validity is const.TestValidity.MAYBE_A_TEST:
       maybe_valid.append(str(candidate))
   return maybe_valid[0] if maybe_valid else None
-
-
-def _ChooseByIndex(msg: str, options: list[str]) -> str:
-  while True:
-    user_input: str = input(msg)
-    try:
-      return options[int(user_input)]
-    except (ValueError, IndexError):
-      msg = 'Invalid index. Try again: '
-
-
-def HaveUserPickFile(paths: list[str]) -> str:
-  paths = sorted(paths, key=lambda p: (len(p), p))[:20]
-  path_list: str = '\n'.join(f'{i}. {t}' for i, t in enumerate(paths))
-
-  msg: str = f"""\
-Found multiple paths with that name.
-Hint: Avoid this in subsequent runs using --path-index=$INDEX, or --run-all.
-
-{path_list}
-
-Pick the path that you want by its index: """
-  return _ChooseByIndex(msg, paths)
-
-
-def HaveUserPickTarget(paths: list[str], targets: list[str]) -> str:
-  targets = targets[:20]
-  target_list: str = '\n'.join(f'{i}. {t}' for i, t in enumerate(targets))
-
-  msg: str = f"""\
-Path(s) belong to multiple test targets.
-Hint: Avoid this in subsequent runs using --target-index=$INDEX, or --run-all.
-
-{target_list}
-
-Pick a target by its index: """
-  return _ChooseByIndex(msg, targets)
 
 
 # A persistent cache to avoid running gn on repeated runs of autotest.
@@ -668,8 +377,8 @@ def _TestTargetsFromGnRefs(targets: list[str]) -> list[str]:
   # Find "standard" targets (e.g., GTests).
   standard_targets: list[str] = [t for t in targets if '__' not in t]
   standard_targets = [
-      t for t in standard_targets
-      if t.endswith(_TEST_TARGET_SUFFIXES) or t in _TEST_TARGET_ALLOWLIST
+      t for t in standard_targets if t.endswith(const.TEST_TARGET_SUFFIXES)
+      or t in const.TEST_TARGET_ALLOWLIST
   ]
   all_test_targets.update(standard_targets)
 
@@ -709,7 +418,7 @@ def FindTestTargets(target_cache: TargetCache, out_dir: str, paths: list[str],
     # Use gn refs to recursively find all targets that depend on |path|, filter
     # internal gn targets, and match against well-known test suffixes, falling
     # back to a list of known test targets if that fails.
-    gn_path: str = os.path.join(str(DEPOT_TOOLS_DIR), 'gn.py')
+    gn_path: str = os.path.join(str(const.DEPOT_TOOLS_DIR), 'gn.py')
 
     cmd: list[str] = [
         sys.executable,
@@ -720,16 +429,17 @@ def FindTestTargets(target_cache: TargetCache, out_dir: str, paths: list[str],
         '--relation=source',
         '--relation=input',
     ] + paths
-    targets: list[str] = _ParseRefsOutput(RunCommand(cmd))
+    targets: list[str] = _ParseRefsOutput(command.RunCommand(cmd))
     test_targets = _TestTargetsFromGnRefs(targets)
 
     # If no targets were identified as tests by looking at their names, ask GN
     # if any are executables.
     if not test_targets and targets:
-      test_targets = _ParseRefsOutput(RunCommand(cmd + ['--type=executable']))
+      test_targets = _ParseRefsOutput(
+          command.RunCommand(cmd + ['--type=executable']))
 
   if not test_targets:
-    ExitWithMessage(
+    command.ExitWithMessage(
         f'"{paths}" did not match any test targets. Consider adding'
         f' one of the following targets to _TEST_TARGET_ALLOWLIST within '
         f'{__file__}: \n' + '\n'.join(targets))
@@ -743,12 +453,12 @@ def FindTestTargets(target_cache: TargetCache, out_dir: str, paths: list[str],
       print(f'Warning, found {len(test_targets)} test targets.',
             file=sys.stderr)
       if len(test_targets) > 10:
-        ExitWithMessage('Your query likely involves non-test sources.')
+        command.ExitWithMessage('Your query likely involves non-test sources.')
       print('Trying to run all of them!', file=sys.stderr)
     elif target_index is not None and 0 <= target_index < len(test_targets):
       test_targets = [test_targets[target_index]]
     else:
-      test_targets = [HaveUserPickTarget(paths, test_targets)]
+      test_targets = [command.HaveUserPickTarget(paths, test_targets)]
 
   # Remove the // prefix to turn GN label into ninja target.
   test_targets_gn: list[str] = [t[2:] for t in test_targets]
@@ -781,19 +491,19 @@ def RunTestTargets(out_dir: str, targets: list[str], gtest_filter: str,
 
     print('Running test: ' + shlex.join(cmd))
     if not dry_run:
-      StreamCommandOrExit(cmd)
+      command.StreamCommandOrExit(cmd)
 
 
 def BuildCppTestFilter(filenames: list[str], line: int | None) -> str:
   make_filter_command: list[str | Path] = [
-      sys.executable, SRC_DIR / 'tools' / 'make_gtest_filter.py'
+      sys.executable, const.SRC_DIR / 'tools' / 'make_gtest_filter.py'
   ]
   if line:
     make_filter_command += ['--line', str(line)]
   else:
     make_filter_command += ['--class-only']
   make_filter_command += filenames
-  return RunCommand(make_filter_command).strip()
+  return command.RunCommand(make_filter_command).strip()
 
 
 def BuildJavaTestFilter(filenames: list[str]) -> str:
@@ -804,7 +514,7 @@ def BuildJavaTestFilter(filenames: list[str]) -> str:
 _PREF_MAPPING_GTEST_FILTER: str = '*PolicyPrefsTest.PolicyToPrefsMapping*'
 
 _PREF_MAPPING_FILE_REGEX: re.Pattern[str] = re.compile(
-    _PREF_MAPPING_FILE_PATTERN)
+    const.PREF_MAPPING_FILE_PATTERN)
 
 SPECIAL_TEST_FILTERS: list[tuple[re.Pattern[str], str]] = [
     (_PREF_MAPPING_FILE_REGEX, _PREF_MAPPING_GTEST_FILTER)
@@ -843,20 +553,20 @@ def BuildPrefMappingTestFilter(filenames: list[str]) -> str | None:
 def GetChangedTestFiles() -> list[str]:
   # Find both committed and uncommitted changes.
   merge_base_command: list[str] = ['git', 'merge-base', 'origin/main', 'HEAD']
-  merge_base: str = RunCommand(merge_base_command).strip()
+  merge_base: str = command.RunCommand(merge_base_command).strip()
   git_command: list[str] = [
       'git', 'diff', '--name-only', '--diff-filter=ACMRT', merge_base
   ]
-  changed_files: list[str] = RunCommand(git_command).splitlines()
+  changed_files: list[str] = command.RunCommand(git_command).splitlines()
 
   test_files: list[str] = []
   for f in changed_files:
-    if IsTestFile(f) is TestValidity.VALID_TEST:
+    if IsTestFile(f) is const.TestValidity.VALID_TEST:
       test_files.append(f)
   return test_files
 
 
-@tracer.start_as_current_span('chromium.tools.autotest.main')
+@telemetry.tracer.start_as_current_span('chromium.tools.autotest.main')
 def main():
   parser: argparse.ArgumentParser = argparse.ArgumentParser(
       prog='tools/autotest.py',
@@ -950,8 +660,9 @@ def main():
 
   # Cog is almost unusable with local search, so turn on remote_search.
   use_remote_search: bool = args.remote_search
-  if not use_remote_search and SRC_DIR.parts[:3] == ('/', 'google', 'cog'):
-    if DEBUG:
+  if not use_remote_search and const.SRC_DIR.parts[:3] == ('/', 'google',
+                                                           'cog'):
+    if const.DEBUG:
       print('Detected cog, turning on remote-search.')
     use_remote_search = True
 
@@ -989,7 +700,7 @@ def main():
         FindMatchingTestFiles(file, use_remote_search, args.path_index))
 
   if not filenames:
-    ExitWithMessage('No associated test files found.')
+    command.ExitWithMessage('No associated test files found.')
 
   targets, used_cache = FindTestTargets(target_cache, out_dir, filenames, args)
 
@@ -997,7 +708,7 @@ def main():
     gtest_filter = BuildTestFilter(filenames, args.line)
 
   if not gtest_filter:
-    ExitWithMessage('Failed to derive a gtest filter')
+    command.ExitWithMessage('Failed to derive a gtest filter')
 
   pref_mapping_filter: str | None = args.test_policy_to_pref_mappings_filter
   if not pref_mapping_filter:
@@ -1005,7 +716,8 @@ def main():
 
   assert targets
 
-  build_ok: bool = BuildTestTargets(out_dir, targets, args.dry_run, args.quiet, False)
+  build_ok: bool = BuildTestTargets(out_dir, targets, args.dry_run, args.quiet,
+                                    False)
 
   # If we used the target cache, it's possible we chose the wrong target because
   # a gn file was changed. The build step above will check for gn modifications
@@ -1018,10 +730,10 @@ def main():
       # Note that this can happen, for example, if you rename a test target.
       print('gn config was changed, trying to build again', file=sys.stderr)
       targets = new_targets
-      build_ok: bool = BuildTestTargets(out_dir, targets, args.dry_run, args.quiet,
-                                  True)
+      build_ok: bool = BuildTestTargets(out_dir, targets, args.dry_run,
+                                        args.quiet, True)
 
-  RecordMainAttributes(targets, gtest_filter, used_cache, out_dir)
+  telemetry.RecordMainAttributes(targets, gtest_filter, used_cache, out_dir)
 
   if not build_ok: sys.exit(1)
 
@@ -1031,6 +743,6 @@ def main():
 
 
 if __name__ == '__main__':
-  telemetry.initialize('chromium.tools.autotest')
+  telemetry.telemetry.initialize('chromium.tools.autotest')
 
   sys.exit(main())
