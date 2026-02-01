@@ -30,11 +30,13 @@
 <translation id="1324107359134968521">Chromium memerlukan akses Bluetooth untuk menjelajah 
  perangkat Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Deteksi bahasa</translation>
+<translation id="1330742950061766891">Gunakan setelan browser yang direkomendasikan Chromium</translation>
 <translation id="1342274909142618978">Hapus juga data dari Chromium (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">Disematkan. Anda dapat mengakses Penelusuran Gambar lagi dari tombol baru di toolbar</translation>
 <translation id="1356661055722410047">Baru! Anda dapat menerjemahkan teks dan gambar di layar</translation>
 <translation id="1383876407941801731">Telusuri</translation>
 <translation id="1397530502368084401">&amp;Kelola Profil Chromium</translation>
+<translation id="1404026649028693342">Selalu tampilkan Mode AI</translation>
 <translation id="141901961143729572">Sampaikan pendapat Anda</translation>
 <translation id="1465192221147974788">Untuk membagikan jendela Anda, izinkan perekaman layar untuk Chromium di Setelan Sistem.</translation>
 <translation id="1478370723027452770">Dapatkan bantuan untuk Chrome for Testing</translation>
@@ -91,6 +93,7 @@
 <translation id="2039417478970545937">Setelan.</translation>
 <translation id="2049376729098081731">Pilih apakah akan menyertakan histori Chromium untuk mendapatkan pengalaman yang lebih dipersonalisasi di layanan Google</translation>
 <translation id="2064856577282482477">Klik tombol Sesuaikan Chromium di Halaman Tab Baru untuk memberikan tampilan baru pada Chromium</translation>
+<translation id="2066690553719545730">Selalu Tampilkan Mode AI</translation>
 <translation id="2086476982681781442">Chromium memblokir download ini karena file tersebut tidak jujur dan dapat menyebabkan perubahan tidak terduga di perangkat Anda</translation>
 <translation id="208726765006323911">Anda akan melihat perintah untuk mencoba <ph name="FEATURE_NAME" /> saat berikutnya Anda membuka Chromium iOS.</translation>
 <translation id="2099452623287920103">Sandi dan data Chromium Anda lainnya yang disimpan di Akun Google Anda akan dihapus dari perangkat ini. Untuk menggunakannya lagi di Chromium, login kembali.</translation>
@@ -193,6 +196,7 @@
 <translation id="3095811995836568724">Histori Chromium</translation>
 <translation id="3103660991484857065">Pemasang gagal membatalkan kompresi arsip. Download Chromium lagi.</translation>
 <translation id="310459126943037700">Gagal mengakhiri tugas.</translation>
+<translation id="3126784891977756556">Selalu sinkronkan sandi, bookmark, dan histori lintas perangkat. Update browser default ke Chromium agar dapat mengakses fitur yang Anda kenal dan suka dengan mudah.</translation>
 <translation id="3130323860337406239">Chromium menggunakan mikrofon Anda.</translation>
 <translation id="3130333203120345554">Penelusuran baru</translation>
 <translation id="3137969841538672700">Tarik untuk menelusuri</translation>
@@ -305,6 +309,7 @@
 <translation id="4304713468139749426">Pengelola Sandi</translation>
 <translation id="4334241893986177674">Telusuri screenshot ini</translation>
 <translation id="4334294535648607276">Download selesai.</translation>
+<translation id="4384993550046411228">Dapatkan akses mudah ke fitur yang Anda kenal, suka, dan percaya dengan menyetel Chromium sebagai browser default. Chromium akan disematkan ke taskbar agar dapat diakses dengan cepat.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> mewajibkan Anda membaca dan menyetujui Persyaratan Layanan berikut sebelum menggunakan perangkat ini. Persyaratan ini tidak memperluas, mengubah, atau membatasi Persyaratan ChromiumOS.</translation>
 <translation id="4407044323746248786">Tetap keluar dari Chromium?</translation>
 <translation id="4413205837991854510">Selalu Tampilkan Pintasan Penelusuran Gambar</translation>
