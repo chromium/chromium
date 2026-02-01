@@ -110,11 +110,6 @@ void XRCompositionLayer::OnFrameEnd() {
   XRFrameProvider* frame_provider = session()->xr()->frameProvider();
   frame_provider->SubmitLayer(layer_id(), drawing_context_,
                               drawing_context_->TextureWasQueried());
-
-  // Reset needs redraw state because texture was requested and submitted.
-  if (drawing_context_->TextureWasQueried()) {
-    SetNeedsRedraw(false);
-  }
 }
 
 XrLayerClient* XRCompositionLayer::LayerClient() {

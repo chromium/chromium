@@ -61,6 +61,11 @@ class PLATFORM_EXPORT XRFrameTransport final
                           XRFrameTransportDelegate* delegate,
                           int16_t vr_frame_id);
 
+  using OnSubmitFrameTransferredCallback = base::RepeatingCallback<
+      void(bool /*succeeded*/, const Vector<device::LayerId>& /*layer_ids*/)>;
+
+  void RegisterFrameTransferredCallback(
+      OnSubmitFrameTransferredCallback callback);
   void RegisterFrameRenderedCallback(base::RepeatingClosure callback);
 
   void Trace(Visitor*) const;
@@ -71,7 +76,8 @@ class PLATFORM_EXPORT XRFrameTransport final
   base::TimeDelta WaitForGpuFenceReceived();
 
   // XRPresentationClient
-  void OnSubmitFrameTransferred(bool success) override;
+  void OnSubmitFrameTransferred(bool success,
+                                const Vector<device::LayerId>& layers) override;
   void OnSubmitFrameRendered() override;
   void OnSubmitFrameGpuFence(gfx::GpuFenceHandle) override;
 
@@ -94,6 +100,7 @@ class PLATFORM_EXPORT XRFrameTransport final
 
   device::mojom::blink::XRPresentationTransportOptionsPtr transport_options_;
 
+  OnSubmitFrameTransferredCallback on_submit_frame_transferred_callback_;
   base::RepeatingClosure on_submit_frame_rendered_callback_;
 
   std::unique_ptr<ImageToBufferCopier> frame_copier_;

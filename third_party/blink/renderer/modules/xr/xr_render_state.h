@@ -79,6 +79,8 @@ class XRRenderState : public ScriptWrappable {
   // the layers list if baseLayer is null.
   XRFrameTransportDelegate* GetTransportDelegate();
 
+  void OnTransferComplete(const Vector<device::LayerId>& layer_ids);
+
   void Trace(Visitor*) const override;
 
  private:

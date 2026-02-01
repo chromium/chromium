@@ -1193,7 +1193,10 @@ interface XRPresentationClient {
   // When the frame wasn't successfully transferred, the client should create a
   // new mailbox/GpuMemoryBuffer rather than reusing an existing one to recover
   // for subsequent frames.
-  OnSubmitFrameTransferred(bool success);
+  // layer_ids indicates which composition layers are successfully transferred.
+  // succeeded can still be true when layer_ids is empty, which means the base
+  // layer has been successfully transferred.
+  OnSubmitFrameTransferred(bool succeeded, array<LayerId> layer_ids);
 
   // The XRPresentationProvider calls this after the frame was handed off to the
   // underlying VR API. This allows some pipelining of CPU/GPU work, while

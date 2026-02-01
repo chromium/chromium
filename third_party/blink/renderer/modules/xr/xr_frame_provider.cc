@@ -115,7 +115,10 @@ void XRFrameProvider::OnSessionStarted(
         BindOnce(&XRFrameProvider::OnProviderConnectionError,
                  WrapWeakPersistent(this), WrapWeakPersistent(session)));
 
-    frame_transport_->RegisterFrameRenderedCallback(BindRepeating(
+    frame_transport_->RegisterFrameTransferredCallback(blink::BindRepeating(
+        &XRFrameProvider::OnTransferComplete, WrapWeakPersistent(this)));
+
+    frame_transport_->RegisterFrameRenderedCallback(blink::BindRepeating(
         &XRFrameProvider::OnRenderComplete, WrapWeakPersistent(this)));
 
     if (session_ptr->layer_manager) {
@@ -922,6 +925,14 @@ void XRFrameProvider::SendFrameData() {
   if (xr_->GetWebXrInternalsRendererListener()) {
     xr_->GetWebXrInternalsRendererListener()->OnFrameData(
         std::move(xr_frame_stat));
+  }
+}
+
+void XRFrameProvider::OnTransferComplete(
+    bool succeeded,
+    const Vector<device::LayerId>& layer_ids) {
+  if (succeeded && immersive_session_) {
+    immersive_session_->OnTransferComplete(layer_ids);
   }
 }
 

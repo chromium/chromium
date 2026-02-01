@@ -129,6 +129,8 @@ class XRFrameProvider final : public GarbageCollected<XRFrameProvider> {
   // Sends the frame data to the requesting sessions for calculating
   // diagnostics.
   void SendFrameData();
+  void OnTransferComplete(bool succeeded,
+                          const Vector<device::LayerId>& layer_ids);
   void OnRenderComplete();
 
   void OnProviderConnectionError(XRSession* session);

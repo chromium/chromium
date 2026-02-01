@@ -505,7 +505,7 @@ void OpenXrRenderLoop::MaybeCompositeAndSubmit(
 
   if (pending_frame_->webxr_submitted_ && submit_client_) {
     // Tell WebVR that we are done with the texture (if we got a texture)
-    submit_client_->OnSubmitFrameTransferred(copy_successful);
+    submit_client_->OnSubmitFrameTransferred(copy_successful, updated_layers);
     submit_client_->OnSubmitFrameRendered();
     TRACE_EVENT_INSTANT1("xr", "SubmitClientNotified", TRACE_EVENT_SCOPE_THREAD,
                          "success", copy_successful);
@@ -533,7 +533,7 @@ bool OpenXrRenderLoop::MarkFrameSubmitted(int16_t frame_index) {
     // We weren't expecting a submitted frame.  This can happen if WebXR was
     // hidden by an overlay for some time.
     if (submit_client_) {
-      submit_client_->OnSubmitFrameTransferred(false);
+      submit_client_->OnSubmitFrameTransferred(false, {});
       submit_client_->OnSubmitFrameRendered();
       TRACE_EVENT1("xr", "SubmitFrameTransferred", "success", false);
     }

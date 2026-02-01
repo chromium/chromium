@@ -443,6 +443,8 @@ class XRSession final : public EventTarget,
   // events. Called by |XrSystem| after the session query has resolved.
   void DispatchInitialEvents();
 
+  void OnTransferComplete(const Vector<device::LayerId>& layer_ids);
+
  private:
   class XRSessionResizeObserverDelegate;
 

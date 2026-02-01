@@ -209,6 +209,21 @@ void XRRenderState::MaybeDispatchRedrawEvents() {
   }
 }
 
+void XRRenderState::OnTransferComplete(
+    const Vector<device::LayerId>& layer_ids) {
+  if (base_layer_) {
+    base_layer_->SetNeedsRedraw(false);
+  }
+
+  if (layers_) {
+    for (XRLayer* layer : *layers_) {
+      if (layer_ids.Contains(layer->layer_id())) {
+        layer->SetNeedsRedraw(false);
+      }
+    }
+  }
+}
+
 void XRRenderState::Trace(Visitor* visitor) const {
   visitor->Trace(base_layer_);
   visitor->Trace(layers_);

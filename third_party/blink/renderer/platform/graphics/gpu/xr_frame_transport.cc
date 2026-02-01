@@ -187,10 +187,21 @@ bool XRFrameTransport::FrameSubmit(
   return true;
 }
 
-void XRFrameTransport::OnSubmitFrameTransferred(bool success) {
+void XRFrameTransport::OnSubmitFrameTransferred(
+    bool success,
+    const Vector<device::LayerId>& layer_ids) {
   DVLOG(3) << __func__;
   waiting_for_previous_frame_transfer_ = false;
   last_transfer_succeeded_ = success;
+
+  if (on_submit_frame_transferred_callback_) {
+    on_submit_frame_transferred_callback_.Run(success, layer_ids);
+  }
+}
+
+void XRFrameTransport::RegisterFrameTransferredCallback(
+    OnSubmitFrameTransferredCallback callback) {
+  on_submit_frame_transferred_callback_ = std::move(callback);
 }
 
 void XRFrameTransport::RegisterFrameRenderedCallback(

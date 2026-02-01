@@ -2695,6 +2695,12 @@ device::mojom::blink::XRLayerManager* XRSession::LayerManager() {
   return xr()->frameProvider()->layer_manager();
 }
 
+void XRSession::OnTransferComplete(const Vector<device::LayerId>& layer_ids) {
+  if (render_state_) {
+    render_state_->OnTransferComplete(layer_ids);
+  }
+}
+
 void XRSession::Trace(Visitor* visitor) const {
   visitor->Trace(xr_);
   visitor->Trace(render_state_);
