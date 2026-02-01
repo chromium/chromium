@@ -2673,6 +2673,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "enable-activityless-signin-all-entry-point",
+    "owners": [ "agonch@google.com", "chrome-signin-mobile-team@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "enable-android-document-picture-in-picture",
     "owners": [
       "kkaplon@google.com",

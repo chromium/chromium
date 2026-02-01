@@ -13781,6 +13781,8 @@ from previous Chrome versions.
   <int value="-197862414" label="PrivacyIndicators:enabled"/>
   <int value="-197413324" label="GlicBindPinnedUnboundTab:disabled"/>
   <int value="-196110497" label="force-text-direction"/>
+  <int value="-195307538"
+      label="EnableActivitylessSigninAllEntryPoint:enabled"/>
   <int value="-195242003"
       label="PrivateNetworkAccessRespectPreflightResults:disabled"/>
   <int value="-195161821" label="ScrollUpdateOptimizations:disabled"/>
@@ -15474,6 +15476,8 @@ from previous Chrome versions.
   <int value="378948081"
       label="AutofillEnableInfoBarAccountIndicationFooter:disabled"/>
   <int value="378994579" label="Previews:enabled"/>
+  <int value="379062542"
+      label="EnableActivitylessSigninAllEntryPoint:disabled"/>
   <int value="379190682" label="ReorderBookmarks:enabled"/>
   <int value="379326303" label="enable-add-to-shelf"/>
   <int value="379397486" label="WebViewSupervisedUserSiteBlock:disabled"/>
