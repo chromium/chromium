@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/timing/task_attribution_timing.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -72,7 +73,8 @@ PerformanceLongAnimationFrameTiming::PerformanceLongAnimationFrameTiming(
           info->FirstUIEventTime(),
           /*allow_negative_value=*/false,
           cross_origin_isolated_capability)),
-      blocking_duration_(info->TotalBlockingDuration().InMillisecondsF()) {
+      blocking_duration_(info->TotalBlockingDuration().InMillisecondsF()),
+      style_duration_(info->StyleDuration().InMillisecondsF()) {
   CHECK(source->ToLocalDOMWindow());
   const SecurityOrigin* security_origin =
       source->ToLocalDOMWindow()->GetSecurityOrigin();
@@ -106,6 +108,9 @@ void PerformanceLongAnimationFrameTiming::BuildJSONValue(
   builder.AddNumber("styleAndLayoutStart", style_and_layout_start_);
   builder.AddNumber("firstUIEventTimestamp", first_ui_event_timestamp_);
   builder.AddNumber("blockingDuration", blocking_duration_);
+  if (RuntimeEnabledFeatures::LongAnimationFrameStyleDurationEnabled()) {
+    builder.AddNumber("styleDuration", style_duration_);
+  }
   builder.AddV8Value("scripts",
                      ToV8Traits<IDLArray<PerformanceScriptTiming>>::ToV8(
                          builder.GetScriptState(), scripts_));

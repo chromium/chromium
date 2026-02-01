@@ -3361,6 +3361,12 @@
       status: "test",
     },
     {
+      // Add styleDuration to PerformanceLongAnimationFrameTiming and
+      // forcedStyleDuration to PerformanceScriptTiming
+      name: "LongAnimationFrameStyleDuration",
+      status: "experimental",
+    },
+    {
       // Long press on a link selects the link text instead of bringing up
       // context menu. Enabled only on Android AuthView.
       name: "LongPressLinkSelectText",

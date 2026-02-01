@@ -118,6 +118,9 @@ AnimationFrameTimingMonitor::RecordRenderingUpdateEndTime(
   did_pause_ = false;
 
   current_frame_timing_info_->SetScripts(current_scripts_);
+
+  current_frame_timing_info_->SetStyleDuration(render_style_duration_);
+
   AnimationFrameTimingInfo* long_animation_frame = nullptr;
   if (current_frame_timing_info_->Duration() >= kLongAnimationFrameDuration) {
     long_animation_frame = current_frame_timing_info_;
@@ -153,6 +156,7 @@ AnimationFrameTimingMonitor::RecordRenderingUpdateEndTime(
   current_scripts_.clear();
   longest_task_duration_ = total_blocking_time_excluding_longest_task_ =
       base::TimeDelta();
+  render_style_duration_ = base::TimeDelta();
   state_ = State::kIdle;
   return long_animation_frame;
 }
@@ -276,6 +280,10 @@ void AnimationFrameTimingMonitor::OnTaskCompleted(
   timing_info->SetTotalBlockingDuration(task_duration -
                                         kLongAnimationFrameDuration);
   timing_info->SetBeginFrameId(current_begin_frame_id_);
+
+  // No render-phase style since there was no rendering.
+  timing_info->SetStyleDuration(base::TimeDelta());
+
   if (did_pause) {
     timing_info->SetDidPause();
   }
@@ -845,7 +853,7 @@ void AnimationFrameTimingMonitor::Did(
 
 void AnimationFrameTimingMonitor::Will(
     const probe::RecalculateStyle& probe_data) {
-  if (pending_script_info_) {
+  if (pending_script_info_ || state_ == State::kRenderingFrame) {
     probe_data.CaptureStartTime();
   }
 }
@@ -854,6 +862,9 @@ void AnimationFrameTimingMonitor::Did(
   if (pending_script_info_) {
     probe_data.CaptureEndTime();
     pending_script_info_->style_duration += probe_data.Duration();
+  } else if (state_ == State::kRenderingFrame) {
+    probe_data.CaptureEndTime();
+    render_style_duration_ += probe_data.Duration();
   }
 }
 void AnimationFrameTimingMonitor::Will(const probe::UpdateLayout& probe_data) {

@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -131,6 +132,10 @@ DOMHighResTimeStamp PerformanceScriptTiming::forcedStyleAndLayoutDuration()
   return (info_->StyleDuration() + info_->LayoutDuration()).InMilliseconds();
 }
 
+DOMHighResTimeStamp PerformanceScriptTiming::forcedStyleDuration() const {
+  return info_->StyleDuration().InMilliseconds();
+}
+
 DOMHighResTimeStamp PerformanceScriptTiming::pauseDuration() const {
   return info_->PauseDuration().InMilliseconds();
 }
@@ -193,6 +198,9 @@ void PerformanceScriptTiming::BuildJSONValue(V8ObjectBuilder& builder) const {
   builder.AddNumber("executionStart", executionStart());
   builder.AddNumber("forcedStyleAndLayoutDuration",
                     forcedStyleAndLayoutDuration());
+  if (RuntimeEnabledFeatures::LongAnimationFrameStyleDurationEnabled()) {
+    builder.AddNumber("forcedStyleDuration", forcedStyleDuration());
+  }
   builder.AddNumber("pauseDuration", pauseDuration());
   builder.AddString("sourceURL", sourceURL());
   builder.AddString("sourceFunctionName", sourceFunctionName());

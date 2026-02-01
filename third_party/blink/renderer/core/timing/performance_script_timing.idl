@@ -24,6 +24,7 @@ interface PerformanceScriptTiming : PerformanceEntry {
     readonly attribute ScriptWindowAttribution windowAttribution;
     readonly attribute DOMHighResTimeStamp executionStart;
     readonly attribute DOMHighResTimeStamp forcedStyleAndLayoutDuration;
+    [RuntimeEnabled=LongAnimationFrameStyleDuration] readonly attribute DOMHighResTimeStamp forcedStyleDuration;
     readonly attribute DOMHighResTimeStamp pauseDuration;
     readonly attribute Window? window;
     readonly attribute DOMString sourceURL;

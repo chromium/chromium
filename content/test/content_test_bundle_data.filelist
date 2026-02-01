@@ -8305,6 +8305,7 @@ data/payments/payment_app_window.html
 data/performance_timeline/cross-origin-non-tao-image.html
 data/performance_timeline/event_timing.html
 data/performance_timeline/lcp-start-time-precision.html
+data/performance_timeline/long_animation_frame_style_duration.html
 data/performance_timeline/prefetch.html
 data/performance_timeline/resource-timing-not-for-file-protocol.html
 data/performance_timeline/resources/style.css

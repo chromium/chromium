@@ -7526,6 +7526,7 @@ interface PerformanceLongAnimationFrameTiming : PerformanceEntry
     getter renderStart
     getter scripts
     getter styleAndLayoutStart
+    getter styleDuration
     method constructor
     method toJSON
 interface PerformanceLongTaskTiming : PerformanceEntry
@@ -7626,6 +7627,7 @@ interface PerformanceScriptTiming : PerformanceEntry
     attribute @@toStringTag
     getter executionStart
     getter forcedStyleAndLayoutDuration
+    getter forcedStyleDuration
     getter invoker
     getter invokerType
     getter pauseDuration

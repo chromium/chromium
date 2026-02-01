@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Long Animation Frame Style Duration Test</title>
+  <style>
+    .container {
+      width: 100px;
+      height: 100px;
+      background: blue;
+    }
+    /* Add complex styles to make style recalculation measurable */
+    .complex-style {
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+      border-radius: 10px;
+      transform: rotate(0deg);
+      transition: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="container" class="container"></div>
+  <script>
+    // Helper to busy wait for a given duration in milliseconds
+    function busyWait(ms) {
+      const deadline = performance.now() + ms;
+      while (performance.now() < deadline) {}
+    }
+
+    // Create many elements to make style recalculation take measurable time
+    function createManyElements(count) {
+      const elements = [];
+      for (let i = 0; i < count; i++) {
+        const el = document.createElement('div');
+        el.className = 'container complex-style';
+        el.style.width = '50px';
+        el.textContent = 'Element ' + i;
+        document.body.appendChild(el);
+        elements.push(el);
+      }
+      return elements;
+    }
+
+    // Test 1: ResizeObserver style recalculation
+    // ResizeObserver callbacks run during the render phase. Style changes
+    // made in the callback will be recalculated by the browser after
+    // the callback, and this should show up in styleDuration.
+    //
+    // This test is split into prepare and run phases so that tracing can
+    // be started after element creation but before the actual test.
+
+    // Shared state for the two-phase test
+    let resizeObserverTestState = null;
+
+    // Phase 1: Create elements and do baseline measurement (call before starting trace)
+    window.prepareResizeObserverTest = function() {
+      return new Promise((resolve) => {
+        const container = document.getElementById('container');
+        container.style.width = '100px';
+
+        // Create elements for style work
+        const elements = createManyElements(500);
+
+        // Measure baseline with forced style (this happens before tracing starts)
+        let baselineStyleTime = 0;
+        elements.forEach((el, i) => {
+          el.style.backgroundColor = 'rgb(' + (i % 256) + ', 100, 100)';
+        });
+        const baselineStart = performance.now();
+        elements.forEach(el => {
+          getComputedStyle(el).backgroundColor;
+        });
+        baselineStyleTime = performance.now() - baselineStart;
+
+        // Reset styles
+        elements.forEach(el => {
+          el.style.backgroundColor = '';
+        });
+
+        // Force a style flush to ensure clean state before tracing
+        void document.body.offsetHeight;
+
+        // Store state for the run phase
+        resizeObserverTestState = {
+          container: container,
+          elements: elements,
+          baselineStyleTime: baselineStyleTime
+        };
+
+        // Wait for next frame to ensure styles are flushed
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            resolve({ ready: true, elementCount: elements.length, baselineStyleTime: baselineStyleTime });
+          });
+        });
+      });
+    };
+
+    // Phase 2: Run the actual ResizeObserver test (call after starting trace)
+    window.runResizeObserverTest = function() {
+      return new Promise((resolve, reject) => {
+        if (!resizeObserverTestState) {
+          reject('Must call prepareResizeObserverTest first');
+          return;
+        }
+
+        const { container, elements, baselineStyleTime } = resizeObserverTestState;
+        let loafEntry = null;
+        let resizeObserverFired = false;
+
+        // Helper to process LoAF entries
+        function processEntries(entries) {
+          for (const entry of entries) {
+            if (entry.entryType === 'long-animation-frame' && entry.duration > 50) {
+              // Keep the entry with the highest styleDuration, as that's the one
+              // with the actual style work we're measuring.
+              if (!loafEntry || (entry.styleDuration || 0) > (loafEntry.styleDuration || 0)) {
+                loafEntry = entry;
+              }
+            }
+          }
+        }
+
+        const observer = new PerformanceObserver((list) => {
+          processEntries(list.getEntries());
+        });
+        observer.observe({ type: 'long-animation-frame', buffered: false });
+
+        // Set up and trigger everything in a single requestAnimationFrame to
+        // ensure the ResizeObserver fires in the same frame as the size change.
+        requestAnimationFrame(() => {
+          const resizeObserver = new ResizeObserver((entries) => {
+            resizeObserverFired = true;
+
+            // Invalidate styles on all elements
+            // The browser will recalculate these in the render phase
+            elements.forEach((el, i) => {
+              el.style.backgroundColor = 'rgb(' + ((i + 50) % 256) + ', 100, 100)';
+            });
+
+            // Busy wait to ensure long frame
+            busyWait(100);
+          });
+          resizeObserver.observe(container);
+
+          // Trigger resize - this will cause ResizeObserver to fire
+          container.style.width = '200px';
+
+          // Wait for the frame to complete
+          requestAnimationFrame(() => {
+            resizeObserver.disconnect();
+
+            setTimeout(() => {
+              // Use takeRecords to get any pending entries before disconnecting
+              processEntries(observer.takeRecords());
+              observer.disconnect();
+              elements.forEach(el => el.remove());
+              resizeObserverTestState = null;
+
+              // Sum up forcedStyleDuration from all scripts in the entry
+              let totalForcedStyleDuration = 0;
+              if (loafEntry && loafEntry.scripts) {
+                for (const script of loafEntry.scripts) {
+                  totalForcedStyleDuration += script.forcedStyleDuration || 0;
+                }
+              }
+
+              resolve({
+                styleDuration: loafEntry ? loafEntry.styleDuration : null,
+                totalForcedStyleDuration: totalForcedStyleDuration,
+                duration: loafEntry ? loafEntry.duration : null,
+                baselineStyleTime: baselineStyleTime,
+                hasStyleDuration: loafEntry ? loafEntry.styleDuration !== undefined : false,
+                resizeObserverFired: resizeObserverFired,
+                error: loafEntry ? null : 'No LoAF entry found'
+              });
+            }, 200);
+          });
+        });
+      });
+    };
+
+    // Combined function for backward compatibility (includes baseline in trace)
+    window.testResizeObserverStyleDuration = async function() {
+      await prepareResizeObserverTest();
+      return runResizeObserverTest();
+    };
+
+    // Test 2: Multiple ResizeObserver iterations
+    // This tests the style/layout/style loop scenario where multiple
+    // ResizeObserver callbacks fire in sequence, each potentially
+    // triggering style recalculation.
+    //
+    // Split into prepare and run phases for clean tracing.
+
+    let multipleIterationsTestState = null;
+
+    // Phase 1: Create elements and do baseline measurement
+    window.prepareMultipleIterationsTest = function() {
+      return new Promise((resolve) => {
+        // Create elements for style work
+        const elements = createManyElements(300);
+
+        // Measure baseline with forced style
+        let singleIterationBaseline = 0;
+        elements.forEach((el, i) => {
+          el.style.opacity = (0.5 + (i % 50) / 100).toString();
+        });
+        const baselineStart = performance.now();
+        elements.forEach(el => {
+          getComputedStyle(el).opacity;
+        });
+        singleIterationBaseline = performance.now() - baselineStart;
+
+        // Reset
+        elements.forEach(el => {
+          el.style.opacity = '';
+        });
+
+        // Create observed elements
+        const observedElements = [];
+        for (let i = 0; i < 3; i++) {
+          const el = document.createElement('div');
+          el.className = 'container';
+          el.style.width = '50px';
+          document.body.appendChild(el);
+          observedElements.push(el);
+        }
+
+        // Force style flush
+        void document.body.offsetHeight;
+
+        multipleIterationsTestState = {
+          elements: elements,
+          observedElements: observedElements,
+          singleIterationBaseline: singleIterationBaseline
+        };
+
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            resolve({ ready: true, elementCount: elements.length, singleIterationBaseline });
+          });
+        });
+      });
+    };
+
+    // Phase 2: Run the actual test
+    window.runMultipleIterationsTest = function() {
+      return new Promise((resolve, reject) => {
+        if (!multipleIterationsTestState) {
+          reject('Must call prepareMultipleIterationsTest first');
+          return;
+        }
+
+        const { elements, observedElements, singleIterationBaseline } = multipleIterationsTestState;
+        let loafEntry = null;
+        let iterationCount = 0;
+
+        // Helper to process LoAF entries
+        function processEntries(entries) {
+          for (const entry of entries) {
+            if (entry.entryType === 'long-animation-frame' && entry.duration > 50) {
+              // Keep the entry with the highest styleDuration, as that's the one
+              // with the actual style work we're measuring.
+              if (!loafEntry || (entry.styleDuration || 0) > (loafEntry.styleDuration || 0)) {
+                loafEntry = entry;
+              }
+            }
+          }
+        }
+
+        const observer = new PerformanceObserver((list) => {
+          processEntries(list.getEntries());
+        });
+        observer.observe({ type: 'long-animation-frame', buffered: false });
+
+        // Set up and trigger everything in a single requestAnimationFrame to
+        // ensure the ResizeObservers fire in the same frame as the size changes.
+        requestAnimationFrame(() => {
+          const resizeObservers = [];
+          for (let i = 0; i < observedElements.length; i++) {
+            const ro = new ResizeObserver((entries) => {
+              iterationCount++;
+
+              // Invalidate styles on all elements
+              elements.forEach((elem, j) => {
+                elem.style.opacity = (0.5 + ((j + iterationCount) % 50) / 100).toString();
+              });
+
+              // Busy wait to ensure long frame
+              busyWait(50);
+            });
+            ro.observe(observedElements[i]);
+            resizeObservers.push(ro);
+          }
+
+          // Trigger resizes - this will cause ResizeObservers to fire
+          observedElements.forEach((el, i) => {
+            el.style.width = (100 + i * 20) + 'px';
+          });
+
+          requestAnimationFrame(() => {
+            resizeObservers.forEach(ro => ro.disconnect());
+            observedElements.forEach(el => el.remove());
+
+            setTimeout(() => {
+              // Use takeRecords to get any pending entries before disconnecting
+              processEntries(observer.takeRecords());
+              observer.disconnect();
+              elements.forEach(el => el.remove());
+              multipleIterationsTestState = null;
+
+              // Sum up forcedStyleDuration from all scripts in the entry
+              let totalForcedStyleDuration = 0;
+              if (loafEntry && loafEntry.scripts) {
+                for (const script of loafEntry.scripts) {
+                  totalForcedStyleDuration += script.forcedStyleDuration || 0;
+                }
+              }
+
+              resolve({
+                styleDuration: loafEntry ? loafEntry.styleDuration : null,
+                totalForcedStyleDuration: totalForcedStyleDuration,
+                duration: loafEntry ? loafEntry.duration : null,
+                iterationCount: iterationCount,
+                singleIterationBaseline: singleIterationBaseline,
+                expectedStyleTime: iterationCount > 0 ? singleIterationBaseline : 0,
+                hasStyleDuration: loafEntry ? loafEntry.styleDuration !== undefined : false,
+                error: loafEntry ? null : 'No LoAF entry found'
+              });
+            }, 200);
+          });
+        });
+      });
+    };
+
+    // Combined function for backward compatibility
+    window.testMultipleStyleIterations = async function() {
+      await prepareMultipleIterationsTest();
+      return runMultipleIterationsTest();
+    };
+
+    // Test 3: Verify forced style is tracked separately from render-phase style
+    // Forced style happens during script execution, render-phase style happens
+    // during the "update the rendering" phase
+    //
+    // Split into prepare and run phases for clean tracing.
+
+    let forcedStyleTestState = null;
+
+    // Phase 1: Create elements
+    window.prepareForcedStyleTest = function() {
+      return new Promise((resolve) => {
+        const container = document.getElementById('container');
+        container.style.width = '100px';
+
+        // Create elements for measurable style work
+        const elements = createManyElements(300);
+
+        // Force style flush
+        void document.body.offsetHeight;
+
+        forcedStyleTestState = {
+          container: container,
+          elements: elements
+        };
+
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            resolve({ ready: true, elementCount: elements.length });
+          });
+        });
+      });
+    };
+
+    // Phase 2: Run the actual test
+    window.runForcedStyleTest = function() {
+      return new Promise((resolve, reject) => {
+        if (!forcedStyleTestState) {
+          reject('Must call prepareForcedStyleTest first');
+          return;
+        }
+
+        const { elements } = forcedStyleTestState;
+        let loafEntry = null;
+        let bestScript = null;
+        let measuredForcedStyleTime = 0;
+
+        // Helper to process LoAF entries
+        function processEntries(entries) {
+          for (const entry of entries) {
+            if (entry.entryType === 'long-animation-frame' && entry.scripts) {
+              // Find the script with the highest forcedStyleDuration
+              for (const script of entry.scripts) {
+                const currentForcedStyle = script.forcedStyleDuration || 0;
+                const bestForcedStyle = bestScript ? (bestScript.forcedStyleDuration || 0) : 0;
+                if (currentForcedStyle > bestForcedStyle) {
+                  loafEntry = entry;
+                  bestScript = script;
+                }
+              }
+              // Also keep track of the entry even if no script has forcedStyleDuration
+              if (!loafEntry) {
+                loafEntry = entry;
+              }
+            }
+          }
+        }
+
+        const observer = new PerformanceObserver((list) => {
+          processEntries(list.getEntries());
+        });
+        observer.observe({ type: 'long-animation-frame', buffered: false });
+
+        setTimeout(() => {
+          busyWait(30);
+
+          // Invalidate styles
+          elements.forEach((el, i) => {
+            el.style.color = 'rgb(' + (i % 256) + ', 50, 50)';
+          });
+
+          // Measure time spent forcing style/layout recalculation
+          const forceStart = performance.now();
+          elements.forEach(el => {
+            void el.offsetWidth;
+          });
+          measuredForcedStyleTime = performance.now() - forceStart;
+
+          busyWait(30);
+
+          // Use longer timeout to ensure LoAF entry is reported
+          setTimeout(() => {
+            // Use takeRecords to get any pending entries before disconnecting
+            processEntries(observer.takeRecords());
+            observer.disconnect();
+            elements.forEach(el => el.remove());
+            forcedStyleTestState = null;
+
+            // If we didn't find a script with forcedStyleDuration, fall back
+            // to using any script in the LoAF entry
+            if (!bestScript && loafEntry && loafEntry.scripts) {
+              for (const script of loafEntry.scripts) {
+                if (script.forcedStyleDuration > 0) {
+                  bestScript = script;
+                  break;
+                }
+              }
+            }
+
+            if (loafEntry && bestScript) {
+              resolve({
+                entryStyleDuration: loafEntry.styleDuration,
+                scriptForcedStyleDuration: bestScript.forcedStyleDuration,
+                scriptForcedStyleAndLayoutDuration: bestScript.forcedStyleAndLayoutDuration,
+                measuredForcedStyleTime: measuredForcedStyleTime,
+                hasStyleDuration: loafEntry.styleDuration !== undefined,
+                hasForcedStyleDuration: bestScript.forcedStyleDuration !== undefined
+              });
+            } else {
+              // Return error info instead of rejecting to help debug flaky failures
+              resolve({
+                error: 'No LoAF entry with script found',
+                hasLoafEntry: !!loafEntry,
+                scriptCount: loafEntry ? (loafEntry.scripts ? loafEntry.scripts.length : 0) : 0
+              });
+            }
+          }, 500);
+        }, 0);
+      });
+    };
+
+    // Combined function for backward compatibility
+    window.testForcedStyleSeparation = async function() {
+      await prepareForcedStyleTest();
+      return runForcedStyleTest();
+    };
+  </script>
+</body>
+</html>
