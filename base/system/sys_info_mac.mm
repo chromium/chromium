@@ -105,9 +105,8 @@ ByteSize SysInfo::AmountOfAvailablePhysicalMemoryImpl() {
   if (!GetSystemMemoryInfo(&info)) {
     return ByteSize(0);
   }
-  // We should add inactive file-backed memory also but there is no such
-  // information from Mac OS unfortunately.
-  return info.free + info.speculative;
+
+  return info.GetAvailablePhysicalMemory();
 }
 
 // static

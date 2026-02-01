@@ -1834,22 +1834,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Memory.Experimental.MacAvailableMemoryPercentFreePageCache2"
-    units="%" expires_after="2026-07-26">
-  <owner>anthonyvd@chromium.org</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>
-    The percentage of physical memory on the system considered
-    &quot;available&quot; by base::SysInfo::AmountOfAvailablePhysicalMemory()
-    and base::SysInfo::AmountOfPhysicalMemory(). The amount of
-    &quot;file-backed&quot; memory is subtracted from the amount of available
-    memory to attempt to estimate the available memory, counting the Page Cache
-    as available.
-
-    Recorded every 2 minutes on MacOS.
-  </summary>
-</histogram>
-
 <histogram name="Memory.Experimental.MacFileBackedMemoryMB2" units="MB"
     expires_after="2025-03-09">
   <owner>anthonyvd@chromium.org</owner>

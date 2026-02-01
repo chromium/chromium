@@ -82,10 +82,6 @@ void MetricsProviderCommon::RecordAvailableMemoryMetrics() {
   if (base::GetSystemMemoryInfo(&info)) {
     base::UmaHistogramMemoryLargeMB(
         "Memory.Experimental.MacFileBackedMemoryMB2", info.file_backed.InMiB());
-    base::UmaHistogramPercentage(
-        "Memory.Experimental.MacAvailableMemoryPercentFreePageCache2",
-        (available_bytes + info.file_backed).InBytes() * 100u /
-            total_bytes.InBytes());
   }
 #endif
 }
