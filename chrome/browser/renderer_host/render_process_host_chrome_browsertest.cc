@@ -153,7 +153,7 @@ class ChromeRenderProcessHostTest : public extensions::ExtensionBrowserTest {
   // in a process of that type, even if that means creating a new process.
   void TestProcessOverflow() {
     int tab_count = 1;
-    int host_count = 1;
+    int host_count = RenderProcessHostCount();
     WebContents* tab1 = nullptr;
     WebContents* tab2 = nullptr;
     content::RenderProcessHost* rph1 = nullptr;
@@ -286,7 +286,7 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostTest, ProcessPerTab) {
   parsed_command_line.AppendSwitch(switches::kProcessPerTab);
 
   int tab_count = 1;
-  int host_count = 1;
+  int host_count = RenderProcessHostCount();
 
   content::RenderFrameDeletedObserver before_webui_obs(
       content::ConvertToRenderFrameHost(
@@ -503,7 +503,7 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostTest,
   parsed_command_line.AppendSwitch(switches::kProcessPerTab);
 
   int tab_count = 1;
-  int host_count = 1;
+  int host_count = RenderProcessHostCount();
 
   GURL page1("data:text/html,hello world1");
   ui_test_utils::TabAddedWaiter add_tab(browser());
@@ -544,7 +544,7 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostTest,
 IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostTest,
                        DevToolsOnSelfInOwnProcess) {
   int tab_count = 1;
-  int host_count = 1;
+  int host_count = RenderProcessHostCount();
 
   GURL page1("data:text/html,hello world1");
   ui_test_utils::TabAddedWaiter add_tab1(browser());

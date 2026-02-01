@@ -1713,7 +1713,7 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, ServiceWorkerIntercept) {
       bool non_sw_process = false;
       iter.GetCurrentValue()->ForEachRenderFrameHost(
           [&non_sw_process](content::RenderFrameHost* rfh) {
-            if (IsTopChromeUntrustedWebUIURL(rfh->GetLastCommittedURL())) {
+            if (IsTopChromeWebUIURL(rfh->GetLastCommittedURL())) {
               non_sw_process = true;
             }
           });
