@@ -6,6 +6,14 @@
 
 import("//build/rust/cargo_crate.gni")
 
+config("max_codegen_units") {
+  # Force one CGU per module (it won't actually be 10,000). This is useful for
+  # compiler-builtins, which should have one intrinsic defined per object file.
+  # We put this in a config to override is_official_build's setting of
+  # -Ccodegen-units=1.
+  rustflags = [ "-Ccodegen-units=10000" ]
+}
+
 {{#each rules}}
 {{#with this.detail}}
 cargo_crate("{{../name}}") {
@@ -57,6 +65,9 @@ cargo_crate("{{../name}}") {
     "//build/config/compiler:no_chromium_code",
     {{#if extra_kv.immediate_abort}}
     "//build/rust:panic_immediate_abort",
+    {{/if}}
+    {{#if extra_kv.max_codegen_units}}
+    ":max_codegen_units"
     {{/if}}
   ]
   executable_configs -= [

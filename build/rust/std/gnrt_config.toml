@@ -43,7 +43,10 @@ extra_kv = { include_coverage = true }
 
 [crate.compiler_builtins]
 # Dependencies of profiler_builtins must have instrumentation disabled.
-extra_kv = { include_coverage = false }
+#
+# compiler_builtins should build with one codegen unit per builtin. See
+# https://github.com/rust-lang/rust/blob/1.93.0/library/Cargo.toml#L19-L23
+extra_kv = { include_coverage = false, max_codegen_units = true }
 extra_build_script_src_roots = [
   '../configure.rs',
 ]
