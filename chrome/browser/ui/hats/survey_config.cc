@@ -662,8 +662,7 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       /*product_specific_bits_data_fields=*/std::vector<std::string>{},
       /*product_specific_string_data_fields=*/
       std::vector<std::string>{"Channel"},
-      // TODO(crbug.com/477193830): Add UMA integration.
-      /*log_responses_to_uma=*/false,
+      /*log_responses_to_uma=*/true,
       /*log_responses_to_ukm=*/false,
       hats::SurveyConfig::ProfileAgeRequirement::kAnyAge);
 

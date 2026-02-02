@@ -4190,7 +4190,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Feedback.HappinessTrackingSurvey.{SurveyName}"
-    enum="HappinessTrackingSurvey" expires_after="2026-01-04">
+    enum="HappinessTrackingSurvey" expires_after="2026-07-26">
   <owner>zhouzj@google.com</owner>
   <owner>msramek@google.com</owner>
   <summary>
@@ -4198,6 +4198,7 @@ chromium-metrics-reviews@google.com.
     survey and when a user answers any question on a HaTS survey.
   </summary>
   <token key="SurveyName">
+    <variant name="BeforeFirstRunDesktopRefreshSurvey"/>
     <variant name="PerformanceControlsPPMSurvey"/>
     <variant name="PrivacySandboxSentimentSurvey"/>
   </token>

@@ -4100,6 +4100,7 @@
                     "name": "Enabled",
                     "params": {
                         "en_site_id": "XhHJ3uboj0ugnJ3q1cK0S6RQC7u7",
+                        "hats_histogram_name": "Feedback.HappinessTrackingSurvey.BeforeFirstRunDesktopRefreshSurvey",
                         "probability": "1.0"
                     },
                     "enable_features": [
