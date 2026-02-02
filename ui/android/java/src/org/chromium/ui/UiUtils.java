@@ -77,8 +77,28 @@ public class UiUtils {
     // this long after the prompt is displayed.
     public static long PROMPT_INPUT_PROTECTION_SHORT_DELAY_MS = 600;
 
+    // Font feature setting to disable ligature rendering.
+    private static final String NO_LIGATURES = "\"liga\" 0, \"clig\" 0";
+
     /** Guards this class from being instantiated. */
     private UiUtils() {}
+
+    /**
+     * Recursively walks the view tree and disables ligatures on all TextViews
+     *
+     * @param view The root view{@link View}
+     */
+    public static void disableLigaturesForSecurity(View view) {
+        if (view instanceof TextView) {
+            ((TextView) view).setFontFeatureSettings(NO_LIGATURES);
+        }
+        if (view instanceof ViewGroup) {
+            ViewGroup group = (ViewGroup) view;
+            for (int i = 0; i < group.getChildCount(); i++) {
+                disableLigaturesForSecurity(group.getChildAt(i));
+            }
+        }
+    }
 
     /**
      * Gets the set of locales supported by the current enabled Input Methods.

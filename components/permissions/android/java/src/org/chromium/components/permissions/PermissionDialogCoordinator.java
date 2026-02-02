@@ -23,6 +23,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.util.DimensionCompat;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.ui.LayoutInflaterUtils;
+import org.chromium.ui.UiUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -76,12 +77,16 @@ public class PermissionDialogCoordinator {
                 recordOutOfScreenNegativeButton(lastButton);
                 return;
             }
+            final View rootView = dialogView;
+            UiUtils.disableLigaturesForSecurity(rootView);
+
             lastButton
                     .getViewTreeObserver()
                     .addOnGlobalLayoutListener(
                             new ViewTreeObserver.OnGlobalLayoutListener() {
                                 @Override
                                 public void onGlobalLayout() {
+                                    UiUtils.disableLigaturesForSecurity(rootView);
                                     if (!lastButton.isLaidOut()) {
                                         return;
                                     }
