@@ -319,7 +319,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(mSyncService.isPassphraseRequiredForPreferredDataTypes()).thenReturn(false);
         when(mSyncService.isTrustedVaultKeyRequiredForPreferredDataTypes()).thenReturn(false);
         when(mSyncService.isTrustedVaultRecoverabilityDegraded()).thenReturn(false);
-        when(mSyncService.isSyncFeatureEnabled()).thenReturn(false);
         AppBannerManagerJni.setInstanceForTesting(mAppBannerManagerJniMock);
         Mockito.when(mAppBannerManagerJniMock.getInstallableWebAppManifestId(any()))
                 .thenReturn(null);
