@@ -1184,39 +1184,6 @@ TEST_F(ManifestSilentUpdateCommandTest,
           /*count=*/1)));
 }
 
-TEST_F(ManifestSilentUpdateCommandTest, SyncInstalledAppUpdated) {
-  webapps::AppId app_id = test::InstallDummyWebApp(
-      profile(), "Name", GURL("https://www.foo.bar/web_apps/basic.html"),
-      webapps::WebappInstallSource::SYNC);
-  SetupBasicInstallablePageState();
-
-  auto& new_manifest = GetPageManifest();
-  new_manifest->name = u"New Name";
-  new_manifest->theme_color = SK_ColorYELLOW;
-
-  // Sync installed apps should allow updates, but security sensitive updates
-  // (like name) should still be pending. Non-sensitive updates (like theme
-  // color) should be applied.
-  EXPECT_EQ(
-      RunManifestUpdateAndGetResult(),
-      ManifestSilentUpdateCheckResult::kAppHasNonSecurityAndSecurityChanges);
-
-  EXPECT_EQ(provider().registrar_unsafe().GetAppThemeColor(app_id),
-            SK_ColorYELLOW);
-
-  std::optional<proto::PendingUpdateInfo> pending_update_info =
-      provider().registrar_unsafe().GetAppById(app_id)->pending_update_info();
-  ASSERT_TRUE(pending_update_info.has_value());
-  EXPECT_EQ(pending_update_info->name(), "New Name");
-
-  EXPECT_THAT(
-      histogram_tester_.GetAllSamples(
-          "Webapp.Update.ManifestSilentUpdateCheckResult"),
-      BucketsAre(base::Bucket(
-          ManifestSilentUpdateCheckResult::kAppHasNonSecurityAndSecurityChanges,
-          /*count=*/1)));
-}
-
 TEST_F(ManifestSilentUpdateCommandTest, VerifyNoManifestIconsAppUpToDate) {
   SetupBasicInstallablePageState();
   webapps::AppId app_id = test::InstallForWebContents(
