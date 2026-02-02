@@ -75,9 +75,9 @@ int SafeDMG::Main(base::span<const char*> args) {
   if (args.size() != 2 && args.size() != 3) {
     UNSAFE_TODO(
         fprintf(stderr, "Usage: %s file.dmg [unpack-directory]\n", args[0]));
-    UNSAFE_TODO(fprintf(stderr,
-                        "If no unpack-directory is specified, the tool will\n"
-                        "list the contents of the DMG.\n"));
+    fprintf(stderr,
+            "If no unpack-directory is specified, the tool will\n"
+            "list the contents of the DMG.\n");
     return EXIT_FAILURE;
   }
 
