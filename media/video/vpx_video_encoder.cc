@@ -580,9 +580,9 @@ void VpxVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
   if (frame->format() == PIXEL_FORMAT_NV12 && frame->HasMappableSharedImage()) {
     frame = ConvertToMemoryMappedFrame(frame);
     if (!frame) {
-      std::move(done_cb).Run(
-          EncoderStatus(EncoderStatus::Codes::kSystemAPICallError,
-                        "Convert GMB frame to MemoryMappedFrame failed."));
+      std::move(done_cb).Run(EncoderStatus(
+          EncoderStatus::Codes::kSystemAPICallError,
+          "Convert MappableSI frame to MemoryMappedFrame failed."));
       return;
     }
   }
