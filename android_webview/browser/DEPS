@@ -68,6 +68,7 @@ include_rules = [
   "+components/viz/test",
   "+components/webdata/common",
   "+components/webui/flags",
+  "+components/webui/user_actions",
 
   "+content/public/browser",
   "+content/public/test",

@@ -921,6 +921,7 @@ if (_is_default_toolchain) {
     sources = [
       "$root_gen_dir/components/metrics/metrics_server_urls.pak",
       "$root_gen_dir/components/safe_browsing_resources.pak",
+      "$root_gen_dir/components/user_actions_ui_resources.pak",
       "$root_gen_dir/content/content_resources.pak",
       "$root_gen_dir/content/histograms_resources.pak",
       "$root_gen_dir/net/net_resources.pak",
@@ -936,6 +937,7 @@ if (_is_default_toolchain) {
       ":generate_webui_resources",
       "//components/metrics:server_urls_grd",
       "//components/webui/safe_browsing/resources",
+      "//components/webui/user_actions/resources",
       "//content:content_resources",
       "//content/browser/resources/histograms:resources",
       "//net:net_resources",

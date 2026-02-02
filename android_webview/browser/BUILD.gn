@@ -334,6 +334,7 @@ source_set("browser") {
     "//components/visitedlink/browser",
     "//components/webdata/common",
     "//components/webui/flags",
+    "//components/webui/user_actions",
     "//content/public/browser",
     "//google_apis",
     "//google_apis/common:request_util",
