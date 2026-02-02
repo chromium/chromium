@@ -73,7 +73,7 @@ specific_include_rules = {
   "layer_tree_host_impl_test_base\.cc": [
     "+components/viz/test",
   ],
-  "oop_pixeltest\.cc" : [
+  "gpu_raster_pixeltest\.cc" : [
     "+gpu/command_buffer/client",
     "+gpu/command_buffer/common",
     "+gpu/config",

@@ -23,7 +23,7 @@ specific_include_rules = {
   "transfer_cache_fuzzer.cc": [
     "+components/viz/test",
   ],
-  "oop_pixeltest.cc": [
+  "gpu_raster_pixeltest.cc": [
     "+components/viz/service/gl",
     "+gpu/command_buffer",
   ],

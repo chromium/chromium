@@ -125,10 +125,10 @@ constexpr size_t kCacheLimitBytes = 1024 * 1024;
 constexpr PaintFlags::FilterQuality kDefaultFilterQuality =
     PaintFlags::FilterQuality::kNone;
 
-class OopPixelTest : public testing::Test,
-                     public gpu::raster::GrShaderCache::Client {
+class GpuRasterPixelTest : public testing::Test,
+                           public gpu::raster::GrShaderCache::Client {
  public:
-  OopPixelTest() : gr_shader_cache_(kCacheLimitBytes, this) {}
+  GpuRasterPixelTest() : gr_shader_cache_(kCacheLimitBytes, this) {}
 
   void SetUp() override { InitializeOOPContext(); }
 
@@ -137,8 +137,9 @@ class OopPixelTest : public testing::Test,
   }
 
   void InitializeOOPContext() {
-    if (oop_image_cache_)
+    if (oop_image_cache_) {
       oop_image_cache_.reset();
+    }
 
     raster_context_provider_ =
         base::MakeRefCounted<viz::TestInProcessContextProvider>(
@@ -373,13 +374,13 @@ class OopPixelTest : public testing::Test,
   gpu::GpuProcessShmCount use_shader_cache_shm_count_;
 };
 
-class OopClearPixelTest : public OopPixelTest,
-                          public ::testing::WithParamInterface<bool> {
+class GpuRasterClearPixelTest : public GpuRasterPixelTest,
+                                public ::testing::WithParamInterface<bool> {
  public:
   bool IsPartialRaster() const { return GetParam(); }
 };
 
-TEST_F(OopPixelTest, DrawColor) {
+TEST_F(GpuRasterPixelTest, DrawColor) {
   gfx::Rect rect(10, 10);
   auto display_item_list = base::MakeRefCounted<DisplayItemList>();
   display_item_list->StartPaint();
@@ -393,7 +394,7 @@ TEST_F(OopPixelTest, DrawColor) {
   ExpectEquals(actual, expected);
 }
 
-TEST_F(OopPixelTest, DrawColorWithTargetColorSpace) {
+TEST_F(GpuRasterPixelTest, DrawColorWithTargetColorSpace) {
   gfx::Rect rect(10, 10);
   auto display_item_list = base::MakeRefCounted<DisplayItemList>();
   display_item_list->StartPaint();
@@ -413,7 +414,7 @@ TEST_F(OopPixelTest, DrawColorWithTargetColorSpace) {
   ExpectEquals(actual, expected);
 }
 
-TEST_F(OopPixelTest, DrawRect) {
+TEST_F(GpuRasterPixelTest, DrawRect) {
   gfx::Rect rect(10, 10);
   auto color_paint = [](int r, int g, int b) {
     PaintFlags flags;
@@ -458,7 +459,7 @@ TEST_F(OopPixelTest, DrawRect) {
   ExpectEquals(actual, expected);
 }
 
-TEST_F(OopPixelTest, DrawRecordPaintFilterTranslatedBounds) {
+TEST_F(GpuRasterPixelTest, DrawRecordPaintFilterTranslatedBounds) {
   gfx::Size output_size(10, 10);
 
   // The paint record filter's ops would fill the right half of the image with
@@ -501,7 +502,7 @@ TEST_F(OopPixelTest, DrawRecordPaintFilterTranslatedBounds) {
   ExpectEquals(actual, expected);
 }
 
-TEST_F(OopPixelTest, DrawImage) {
+TEST_F(GpuRasterPixelTest, DrawImage) {
   constexpr gfx::Rect rect(100, 100);
 
   sk_sp<SkImage> image = MakeSkImage(rect.size());
@@ -524,7 +525,7 @@ TEST_F(OopPixelTest, DrawImage) {
   ExpectEquals(actual, FILE_PATH_LITERAL("oop_draw_image.png"));
 }
 
-TEST_F(OopPixelTest, DrawImageAlpha) {
+TEST_F(GpuRasterPixelTest, DrawImageAlpha) {
   constexpr gfx::Rect rect(100, 100);
 
   auto bitmap_black = MakeSolidColorBitmap(rect.size(), SkColors::kBlack);
@@ -586,7 +587,7 @@ TEST_F(OopPixelTest, DrawImageAlpha) {
   ExpectEquals(actual, FILE_PATH_LITERAL("oop_alpha_premul_unpremul.png"));
 }
 
-TEST_F(OopPixelTest, DrawImageScaled) {
+TEST_F(GpuRasterPixelTest, DrawImageScaled) {
   constexpr gfx::Rect rect(100, 100);
 
   sk_sp<SkImage> image = MakeSkImage(rect.size());
@@ -608,7 +609,7 @@ TEST_F(OopPixelTest, DrawImageScaled) {
   ExpectEquals(actual, FILE_PATH_LITERAL("oop_draw_image_scaled.png"));
 }
 
-TEST_F(OopPixelTest, DrawImageShaderScaled) {
+TEST_F(GpuRasterPixelTest, DrawImageShaderScaled) {
   constexpr gfx::Rect rect(100, 100);
 
   sk_sp<SkImage> image = MakeSkImage(rect.size());
@@ -632,7 +633,7 @@ TEST_F(OopPixelTest, DrawImageShaderScaled) {
   ExpectEquals(actual, FILE_PATH_LITERAL("oop_draw_image_shader_scaled.png"));
 }
 
-TEST_F(OopPixelTest, DrawRecordShaderWithImageScaled) {
+TEST_F(GpuRasterPixelTest, DrawRecordShaderWithImageScaled) {
   constexpr gfx::Rect rect(100, 100);
 
   sk_sp<SkImage> image = MakeSkImage(rect.size());
@@ -661,7 +662,7 @@ TEST_F(OopPixelTest, DrawRecordShaderWithImageScaled) {
   ExpectEquals(actual, FILE_PATH_LITERAL("oop_draw_record_shader.png"));
 }
 
-TEST_F(OopPixelTest, DrawRecordShaderTranslatedTileRect) {
+TEST_F(GpuRasterPixelTest, DrawRecordShaderTranslatedTileRect) {
   // Arbitrary offsets.  The DrawRectOp inside the PaintShader draws
   // with this offset, but the tile rect also has this offset, so they
   // should cancel out, and it should be as if the DrawRectOp was at the
@@ -706,7 +707,7 @@ TEST_F(OopPixelTest, DrawRecordShaderTranslatedTileRect) {
   ExpectEquals(actual, FILE_PATH_LITERAL("oop_draw_record_shader_tiled.png"));
 }
 
-TEST_F(OopPixelTest, DrawImageWithTargetColorSpace) {
+TEST_F(GpuRasterPixelTest, DrawImageWithTargetColorSpace) {
   constexpr gfx::Rect rect(100, 100);
 
   sk_sp<SkImage> image = MakeSkImage(rect.size());
@@ -744,7 +745,7 @@ TEST_F(OopPixelTest, DrawImageWithTargetColorSpace) {
   EXPECT_NE(actual.getColor(0, 0), SkColors::kMagenta.toSkColor());
 }
 
-TEST_F(OopPixelTest, DrawGainmapImage) {
+TEST_F(GpuRasterPixelTest, DrawGainmapImage) {
   constexpr gfx::Size kSize(8, 8);
   constexpr gfx::Rect kRect(kSize);
 
@@ -852,7 +853,7 @@ TEST_F(OopPixelTest, DrawGainmapImage) {
   }
 }
 
-TEST_F(OopPixelTest, DrawGainmapImageCubic) {
+TEST_F(GpuRasterPixelTest, DrawGainmapImageCubic) {
   constexpr uint32_t kSrcSize = 2;
   constexpr uint32_t kDstSize = 4;
 
@@ -939,7 +940,7 @@ TEST_F(OopPixelTest, DrawGainmapImageCubic) {
   }
 }
 
-TEST_F(OopPixelTest, DrawGainmapImageFiltering) {
+TEST_F(GpuRasterPixelTest, DrawGainmapImageFiltering) {
   constexpr gfx::Size kSize(4, 4);
   constexpr gfx::Rect kRect(kSize);
   constexpr gfx::Size kGainSize(2, 2);
@@ -1035,7 +1036,7 @@ TEST_F(OopPixelTest, DrawGainmapImageFiltering) {
   }
 }
 
-TEST_F(OopPixelTest, DrawHdrImageWithMetadata) {
+TEST_F(GpuRasterPixelTest, DrawHdrImageWithMetadata) {
   constexpr gfx::Size kSize(8, 8);
   constexpr gfx::Rect kRect(kSize);
   constexpr float kContentAvgNits = 100;
@@ -1069,45 +1070,44 @@ TEST_F(OopPixelTest, DrawHdrImageWithMetadata) {
   sk_sp<SkImage> image_500_nits = make_image(0.6765848107833876f);
   sk_sp<SkImage> image_250_nits = make_image(0.6025591549907524f);
 
-  const auto make_display_item_list = [&](sk_sp<SkImage> image,
-                                          std::optional<float> peak_luminance =
-                                              std::nullopt,
-                                          std::optional<float> white_luminance =
-                                              std::nullopt,
-                                          PaintFlags* paint_flags = nullptr) {
-    auto image_generator =
-        sk_make_sp<FakePaintImageGenerator>(image->imageInfo());
-    {
-      ImageHeaderMetadata image_metadata;
-      if (peak_luminance.has_value()) {
-        image_metadata.hdr_metadata.cta_861_3.emplace(peak_luminance.value(),
-                                                      kContentAvgNits);
-      }
-      if (white_luminance.has_value()) {
-        image_metadata.hdr_metadata.ndwl.emplace(white_luminance.value());
-      }
-      image_generator->SetImageHeaderMetadata(image_metadata);
-      EXPECT_TRUE(image->peekPixels(&image_generator->GetPixmap()));
-    }
+  const auto make_display_item_list =
+      [&](sk_sp<SkImage> image,
+          std::optional<float> peak_luminance = std::nullopt,
+          std::optional<float> white_luminance = std::nullopt,
+          PaintFlags* paint_flags = nullptr) {
+        auto image_generator =
+            sk_make_sp<FakePaintImageGenerator>(image->imageInfo());
+        {
+          ImageHeaderMetadata image_metadata;
+          if (peak_luminance.has_value()) {
+            image_metadata.hdr_metadata.cta_861_3.emplace(
+                peak_luminance.value(), kContentAvgNits);
+          }
+          if (white_luminance.has_value()) {
+            image_metadata.hdr_metadata.ndwl.emplace(white_luminance.value());
+          }
+          image_generator->SetImageHeaderMetadata(image_metadata);
+          EXPECT_TRUE(image->peekPixels(&image_generator->GetPixmap()));
+        }
 
-    static int id_counter = 0;
-    const PaintImage::Id kSomeId = 32 + id_counter++;
-    auto paint_image = PaintImageBuilder::WithDefault()
-                           .set_id(kSomeId)
-                           .set_paint_image_generator(image_generator)
-                           .TakePaintImage();
+        static int id_counter = 0;
+        const PaintImage::Id kSomeId = 32 + id_counter++;
+        auto paint_image = PaintImageBuilder::WithDefault()
+                               .set_id(kSomeId)
+                               .set_paint_image_generator(image_generator)
+                               .TakePaintImage();
 
-    auto display_item_list = base::MakeRefCounted<DisplayItemList>();
-    display_item_list->StartPaint();
-    SkSamplingOptions sampling(
-        PaintFlags::FilterQualityToSkSamplingOptions(kDefaultFilterQuality));
-    display_item_list->push<DrawImageOp>(paint_image, 0.f, 0.f, sampling,
-                                         paint_flags);
-    display_item_list->EndPaintOfUnpaired(kRect);
-    display_item_list->Finalize();
+        auto display_item_list = base::MakeRefCounted<DisplayItemList>();
+        display_item_list->StartPaint();
+        SkSamplingOptions sampling(PaintFlags::FilterQualityToSkSamplingOptions(
+            kDefaultFilterQuality));
+        display_item_list->push<DrawImageOp>(paint_image, 0.f, 0.f, sampling,
+                                             paint_flags);
+        display_item_list->EndPaintOfUnpaired(kRect);
+        display_item_list->Finalize();
 
-    return display_item_list;
-  };
+        return display_item_list;
+      };
 
   // Create a DisplayItemList drawing `image` with 10k nits and 500 nits HDR
   // metadata.
@@ -1182,7 +1182,7 @@ TEST_F(OopPixelTest, DrawHdrImageWithMetadata) {
   }
 }
 
-TEST_F(OopPixelTest, DrawImageWithSourceColorSpace) {
+TEST_F(GpuRasterPixelTest, DrawImageWithSourceColorSpace) {
   constexpr gfx::Rect rect(100, 100);
 
   auto color_space = gfx::ColorSpace::CreateDisplayP3D65().ToSkColorSpace();
@@ -1222,7 +1222,7 @@ TEST_F(OopPixelTest, DrawImageWithSourceColorSpace) {
                comparator);
 }
 
-TEST_F(OopPixelTest, DrawImageWithSourceAndTargetColorSpace) {
+TEST_F(GpuRasterPixelTest, DrawImageWithSourceAndTargetColorSpace) {
   constexpr gfx::Rect rect(100, 100);
 
   auto color_space = gfx::ColorSpace::CreateXYZD50().ToSkColorSpace();
@@ -1267,7 +1267,7 @@ TEST_F(OopPixelTest, DrawImageWithSourceAndTargetColorSpace) {
 #else
 #define MAYBE_DrawImageReinterpretedAsSRGB DrawImageReinterpretedAsSRGB
 #endif
-TEST_F(OopPixelTest, MAYBE_DrawImageReinterpretedAsSRGB) {
+TEST_F(GpuRasterPixelTest, MAYBE_DrawImageReinterpretedAsSRGB) {
   constexpr gfx::Rect rect(100, 100);
 
   auto image_color_space = gfx::ColorSpace::CreateHDR10().ToSkColorSpace();
@@ -1306,7 +1306,7 @@ TEST_F(OopPixelTest, MAYBE_DrawImageReinterpretedAsSRGB) {
                comparator);
 }
 
-TEST_F(OopPixelTest, DrawImageWithSetMatrix) {
+TEST_F(GpuRasterPixelTest, DrawImageWithSetMatrix) {
   constexpr gfx::Rect rect(100, 100);
 
   sk_sp<SkImage> image = MakeSkImage(rect.size());
@@ -1352,7 +1352,7 @@ class TestMailboxBacking : public TextureBacking {
 };
 }  // namespace
 
-TEST_F(OopPixelTest, DrawMailboxBackedImage) {
+TEST_F(GpuRasterPixelTest, DrawMailboxBackedImage) {
   RasterOptions options(gfx::Size(16, 16));
   options.image_provider_raster_mode = PlaybackImageProvider::RasterMode::kGpu;
   SkImageInfo backing_info = SkImageInfo::MakeN32Premul(
@@ -1392,7 +1392,7 @@ TEST_F(OopPixelTest, DrawMailboxBackedImage) {
   ExpectEquals(actual_bitmap, expected_bitmap);
 }
 
-TEST_F(OopPixelTest, Preclear) {
+TEST_F(GpuRasterPixelTest, Preclear) {
   gfx::Rect rect(10, 10);
   auto display_item_list = base::MakeRefCounted<DisplayItemList>();
   display_item_list->Finalize();
@@ -1411,7 +1411,7 @@ TEST_F(OopPixelTest, Preclear) {
   ExpectEquals(actual, expected);
 }
 
-TEST_P(OopClearPixelTest, ClearingOpaqueCorner) {
+TEST_P(GpuRasterClearPixelTest, ClearingOpaqueCorner) {
   // Verify that clears work properly for both the right and bottom sides
   // of an opaque corner tile.
 
@@ -1465,7 +1465,7 @@ TEST_P(OopClearPixelTest, ClearingOpaqueCorner) {
   ExpectEquals(result, bitmap);
 }
 
-TEST_F(OopPixelTest, ClearingOpaqueCornerExactEdge) {
+TEST_F(GpuRasterPixelTest, ClearingOpaqueCornerExactEdge) {
   // Verify that clears work properly for both the right and bottom sides
   // of an opaque corner tile whose content rect exactly lines up with
   // the edge of the resource.
@@ -1506,7 +1506,7 @@ TEST_F(OopPixelTest, ClearingOpaqueCornerExactEdge) {
   ExpectEquals(oop_result, bitmap);
 }
 
-TEST_F(OopPixelTest, ClearingOpaqueCornerPartialRaster) {
+TEST_F(GpuRasterPixelTest, ClearingOpaqueCornerPartialRaster) {
   // Verify that clears do nothing on an opaque corner tile whose
   // partial raster rect doesn't intersect the edge of the content.
 
@@ -1545,7 +1545,7 @@ TEST_F(OopPixelTest, ClearingOpaqueCornerPartialRaster) {
   ExpectEquals(oop_result, bitmap);
 }
 
-TEST_P(OopClearPixelTest, ClearingOpaqueLeftEdge) {
+TEST_P(GpuRasterClearPixelTest, ClearingOpaqueLeftEdge) {
   // Verify that a tile that intersects the left edge of content
   // but not other edges only clears the left pixels.
   RasterOptions options;
@@ -1599,7 +1599,7 @@ TEST_P(OopClearPixelTest, ClearingOpaqueLeftEdge) {
   ExpectEquals(result, bitmap);
 }
 
-TEST_P(OopClearPixelTest, ClearingOpaqueRightEdge) {
+TEST_P(GpuRasterClearPixelTest, ClearingOpaqueRightEdge) {
   // Verify that a tile that intersects the right edge of content
   // but not other edges only clears the right pixels.
   RasterOptions options;
@@ -1654,7 +1654,7 @@ TEST_P(OopClearPixelTest, ClearingOpaqueRightEdge) {
   ExpectEquals(result, bitmap);
 }
 
-TEST_P(OopClearPixelTest, ClearingOpaqueTopEdge) {
+TEST_P(GpuRasterClearPixelTest, ClearingOpaqueTopEdge) {
   // Verify that a tile that intersects only the top edge of content
   // but not other edges only clears the top pixels.
 
@@ -1709,7 +1709,7 @@ TEST_P(OopClearPixelTest, ClearingOpaqueTopEdge) {
   ExpectEquals(result, bitmap);
 }
 
-TEST_P(OopClearPixelTest, ClearingOpaqueBottomEdge) {
+TEST_P(GpuRasterClearPixelTest, ClearingOpaqueBottomEdge) {
   // Verify that a tile that intersects the bottom edge of content
   // but not other edges only clears the bottom pixels.
 
@@ -1765,7 +1765,7 @@ TEST_P(OopClearPixelTest, ClearingOpaqueBottomEdge) {
   ExpectEquals(result, bitmap);
 }
 
-TEST_F(OopPixelTest, ClearingOpaqueInternal) {
+TEST_F(GpuRasterPixelTest, ClearingOpaqueInternal) {
   // Verify that an internal opaque tile does no clearing.
 
   RasterOptions options;
@@ -1802,7 +1802,7 @@ TEST_F(OopPixelTest, ClearingOpaqueInternal) {
   ExpectEquals(oop_result, bitmap);
 }
 
-TEST_F(OopPixelTest, ClearingTransparentCorner) {
+TEST_F(GpuRasterPixelTest, ClearingTransparentCorner) {
   RasterOptions options;
   gfx::Point arbitrary_offset(5, 8);
   options.resource_size = gfx::Size(10, 10);
@@ -1836,7 +1836,7 @@ TEST_F(OopPixelTest, ClearingTransparentCorner) {
   ExpectEquals(oop_result, bitmap);
 }
 
-TEST_F(OopPixelTest, ClearingTransparentInternalTile) {
+TEST_F(GpuRasterPixelTest, ClearingTransparentInternalTile) {
   // Content rect much larger than full raster rect or playback rect.
   // This should still clear the tile.
   RasterOptions options;
@@ -1874,7 +1874,7 @@ TEST_F(OopPixelTest, ClearingTransparentInternalTile) {
   ExpectEquals(oop_result, bitmap);
 }
 
-TEST_F(OopPixelTest, ClearingTransparentCornerPartialRaster) {
+TEST_F(GpuRasterPixelTest, ClearingTransparentCornerPartialRaster) {
   RasterOptions options;
   options.resource_size = gfx::Size(10, 10);
   gfx::Point arbitrary_offset(30, 12);
@@ -1913,7 +1913,7 @@ TEST_F(OopPixelTest, ClearingTransparentCornerPartialRaster) {
 }
 
 // Test bitmap and playback rects in the raster options.
-TEST_F(OopPixelTest, DrawRectPlaybackRect) {
+TEST_F(GpuRasterPixelTest, DrawRectPlaybackRect) {
   PaintFlags flags;
   flags.setColor(SkColorSetARGB(255, 250, 10, 20));
   gfx::Rect draw_rect(3, 1, 8, 9);
@@ -1936,7 +1936,7 @@ TEST_F(OopPixelTest, DrawRectPlaybackRect) {
   ExpectEquals(actual, FILE_PATH_LITERAL("oop_draw_rect_playback_rect.png"));
 }
 
-TEST_F(OopPixelTest, DrawRectScaleTransformOptions) {
+TEST_F(GpuRasterPixelTest, DrawRectScaleTransformOptions) {
   PaintFlags flags;
   // Use powers of two here to make floating point blending consistent.
   flags.setColor(SkColorSetARGB(128, 64, 128, 32));
@@ -1966,7 +1966,7 @@ TEST_F(OopPixelTest, DrawRectScaleTransformOptions) {
   ExpectEquals(actual, FILE_PATH_LITERAL("oop_draw_rect_scale_transform.png"));
 }
 
-TEST_F(OopPixelTest, DrawRectTransformOptionsFullRaster) {
+TEST_F(GpuRasterPixelTest, DrawRectTransformOptionsFullRaster) {
   PaintFlags flags;
   // Use powers of two here to make floating point blending consistent.
   flags.setColor(SkColorSetRGB(64, 128, 32));
@@ -2002,7 +2002,7 @@ TEST_F(OopPixelTest, DrawRectTransformOptionsFullRaster) {
   ExpectEquals(actual, expected);
 }
 
-TEST_F(OopPixelTest, DrawRectQueryMiddleOfDisplayList) {
+TEST_F(GpuRasterPixelTest, DrawRectQueryMiddleOfDisplayList) {
   auto display_item_list = base::MakeRefCounted<DisplayItemList>();
   std::vector<SkColor> colors = {
       SkColorSetARGB(255, 0, 0, 255),    SkColorSetARGB(255, 0, 255, 0),
@@ -2035,7 +2035,7 @@ TEST_F(OopPixelTest, DrawRectQueryMiddleOfDisplayList) {
                FuzzyPixelOffByOneComparator());
 }
 
-TEST_F(OopPixelTest, DrawRectColorSpace) {
+TEST_F(GpuRasterPixelTest, DrawRectColorSpace) {
   RasterOptions options;
   options.resource_size = gfx::Size(100, 100);
   options.content_size = options.resource_size;
@@ -2087,8 +2087,8 @@ sk_sp<SkTextBlob> BuildTextBlob(
 // ensures the text is not just drawn above the top edge of the surface.
 static constexpr SkScalar kTextBlobY = 16.f;
 
-// OopTextBlobPixelTest's test suite runs through the cross product of these
-// strategies.
+// GpuRasterTextBlobPixelTest's test suite runs through the cross product of
+// these strategies.
 enum class TextBlobStrategy {
   kDirect,        // DrawTextBlobOp directly in the display list
   kDrawRecord,    // DrawRecordOp where the paint record includes text
@@ -2111,8 +2111,8 @@ enum class LCDStrategy { kNo, kYes };
 using TextBlobTestConfig = ::testing::
     tuple<TextBlobStrategy, FilterStrategy, MatrixStrategy, LCDStrategy>;
 
-class OopTextBlobPixelTest
-    : public OopPixelTest,
+class GpuRasterTextBlobPixelTest
+    : public GpuRasterPixelTest,
       public ::testing::WithParamInterface<TextBlobTestConfig> {
  public:
   void RunTest() {
@@ -2234,7 +2234,7 @@ class OopTextBlobPixelTest
     // from the GPU thread so wait until that is done here.
     gpu_service->gpu_main_thread_task_runner()->PostTask(
         FROM_HERE,
-        base::BindOnce(&OopTextBlobPixelTest::DrawExpectedOnGpuThread,
+        base::BindOnce(&GpuRasterTextBlobPixelTest::DrawExpectedOnGpuThread,
                        base::Unretained(this), image_size, std::ref(bitmap),
                        std::ref(waitable)));
     waitable.Wait();
@@ -2378,8 +2378,9 @@ class OopTextBlobPixelTest
       }
     }
 
-    if (save_layer)
+    if (save_layer) {
       canvas.restore();
+    }
   }
 
   sk_sp<PaintFilter> MakeFilter() {
@@ -2558,13 +2559,13 @@ class OopTextBlobPixelTest
   }
 };
 
-TEST_P(OopTextBlobPixelTest, Config) {
+TEST_P(GpuRasterTextBlobPixelTest, Config) {
   RunTest();
 }
 
 INSTANTIATE_TEST_SUITE_P(
     P,
-    OopTextBlobPixelTest,
+    GpuRasterTextBlobPixelTest,
     ::testing::Combine(::testing::Values(TextBlobStrategy::kDirect,
                                          TextBlobStrategy::kDrawRecord,
                                          TextBlobStrategy::kRecordShader,
@@ -2577,14 +2578,14 @@ INSTANTIATE_TEST_SUITE_P(
                                          MatrixStrategy::kComplex,
                                          MatrixStrategy::kPerspective),
                        ::testing::Values(LCDStrategy::kNo, LCDStrategy::kYes)),
-    OopTextBlobPixelTest::PrintTestName);
+    GpuRasterTextBlobPixelTest::PrintTestName);
 
 void ClearFontCache(CompletionEvent* event) {
   SkGraphics::PurgeFontCache();
   event->Signal();
 }
 
-TEST_F(OopPixelTest, DrawTextMultipleRasterCHROMIUM) {
+TEST_F(GpuRasterPixelTest, DrawTextMultipleRasterCHROMIUM) {
   RasterOptions options;
   options.resource_size = gfx::Size(100, 100);
   options.content_size = options.resource_size;
@@ -2628,7 +2629,7 @@ TEST_F(OopPixelTest, DrawTextMultipleRasterCHROMIUM) {
   EXPECT_EQ(SkGraphics::GetFontCacheUsed(), 0u);
 }
 
-TEST_F(OopPixelTest, DrawTextBlobPersistentShaderCache) {
+TEST_F(GpuRasterPixelTest, DrawTextBlobPersistentShaderCache) {
   RasterOptions options;
   options.resource_size = gfx::Size(100, 100);
   options.content_size = options.resource_size;
@@ -2673,7 +2674,7 @@ TEST_F(OopPixelTest, DrawTextBlobPersistentShaderCache) {
   ExpectEquals(actual, expected, comparator);
 }
 
-TEST_F(OopPixelTest, WritePixels) {
+TEST_F(GpuRasterPixelTest, WritePixels) {
   gfx::Size dest_size(10, 10);
   RasterOptions options(dest_size);
   auto* ri = raster_context_provider_->RasterInterface();
@@ -2700,7 +2701,7 @@ TEST_F(OopPixelTest, WritePixels) {
   ExpectEquals(actual, expected);
 }
 
-TEST_F(OopPixelTest, CopySharedImage) {
+TEST_F(GpuRasterPixelTest, CopySharedImage) {
   const gfx::Size size(16, 16);
   auto* ri = raster_context_provider_->RasterInterface();
   auto* sii = raster_context_provider_->SharedImageInterface();
@@ -2771,14 +2772,14 @@ TEST_F(OopPixelTest, CopySharedImage) {
 
 // The Android emulator does not support RED_8 or RG_88 texture formats.
 #if !BUILDFLAG(IS_ANDROID_EMULATOR)
-class OopYUVToRGBPixelTest
-    : public OopPixelTest,
+class GpuRasterYUVToRGBPixelTest
+    : public GpuRasterPixelTest,
       public ::testing::WithParamInterface<gfx::ColorSpace> {
  public:
   gfx::ColorSpace DestinationColorSpace() const { return GetParam(); }
 };
 
-TEST_P(OopYUVToRGBPixelTest, CopyI420SharedImage) {
+TEST_P(GpuRasterYUVToRGBPixelTest, CopyI420SharedImage) {
   // The output SharedImage color space.
   const gfx::ColorSpace dest_color_space = DestinationColorSpace();
 
@@ -2863,12 +2864,12 @@ TEST_P(OopYUVToRGBPixelTest, CopyI420SharedImage) {
 
 INSTANTIATE_TEST_SUITE_P(
     P,
-    OopYUVToRGBPixelTest,
+    GpuRasterYUVToRGBPixelTest,
     ::testing::Values(gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT2020,
                                       gfx::ColorSpace::TransferID::SRGB),
                       gfx::ColorSpace()));
 
-TEST_F(OopPixelTest, CopyNV12SharedImage) {
+TEST_F(GpuRasterPixelTest, CopyNV12SharedImage) {
   RasterOptions options(gfx::Size(16, 16));
   RasterOptions uv_options(gfx::Size(options.resource_size.width() / 2,
                                      options.resource_size.height() / 2));
@@ -2944,8 +2945,8 @@ TEST_F(OopPixelTest, CopyNV12SharedImage) {
 }
 #endif  // !BUILDFLAG(IS_ANDROID_EMULATOR)
 
-class OopPathPixelTest : public OopPixelTest,
-                         public ::testing::WithParamInterface<bool> {
+class GpuRasterPathPixelTest : public GpuRasterPixelTest,
+                               public ::testing::WithParamInterface<bool> {
  public:
   bool AllowInlining() const { return GetParam(); }
   void RunTest() {
@@ -2992,11 +2993,11 @@ class OopPathPixelTest : public OopPixelTest,
   }
 };
 
-TEST_P(OopPathPixelTest, Basic) {
+TEST_P(GpuRasterPathPixelTest, Basic) {
   RunTest();
 }
 
-TEST_F(OopPixelTest, RecordShaderExceedsMaxTextureSize) {
+TEST_F(GpuRasterPixelTest, RecordShaderExceedsMaxTextureSize) {
   const int max_texture_size =
       raster_context_provider_->ContextCapabilities().max_texture_size;
   const SkRect rect = SkRect::MakeWH(max_texture_size + 10, 10);
@@ -3031,10 +3032,10 @@ TEST_F(OopPixelTest, RecordShaderExceedsMaxTextureSize) {
                FILE_PATH_LITERAL("oop_record_shader_max_texture_size.png"));
 }
 
-INSTANTIATE_TEST_SUITE_P(P, OopClearPixelTest, ::testing::Bool());
-INSTANTIATE_TEST_SUITE_P(P, OopPathPixelTest, ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(P, GpuRasterClearPixelTest, ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(P, GpuRasterPathPixelTest, ::testing::Bool());
 
-TEST_F(OopPixelTest, SkSLCommandShader) {
+TEST_F(GpuRasterPixelTest, SkSLCommandShader) {
   // Draws a red square.
   const std::string_view kDrawRedRect(R"(
     uniform float u_border_alpha;

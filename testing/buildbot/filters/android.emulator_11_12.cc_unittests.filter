@@ -1,9 +1,9 @@
 # https://crbug.com/1189284
 # Not applicable to emulator due to not supporting VK_KHR_external_memory_fd
--OopPixelTest.*
--P/OopClearPixelTest.*
--P/OopPathPixelTest.*
--P/OopTextBlobPixelTest.*
+-GpuRasterPixelTest.*
+-P/GpuRasterClearPixelTest.*
+-P/GpuRasterPathPixelTest.*
+-P/GpuRasterTextBlobPixelTest.*
 -TransferCacheTest.Basic
 -TransferCacheTest.CountEviction
 -TransferCacheTest.MemoryEviction
