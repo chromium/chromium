@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_baseline.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_shaper.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
+#include "third_party/blink/renderer/platform/text/bidi_paragraph.h"
 
 namespace blink {
 
@@ -63,11 +64,36 @@ void LineTruncator::SetupEllipsis() {
   const Font* font = EllipsisStyle().GetFont();
   ellipsis_font_data_ = font->PrimaryFont();
   DCHECK(ellipsis_font_data_);
-  ellipsis_text_ = ComputeEllipsisText();
-  HarfBuzzShaper shaper(ellipsis_text_);
-  ellipsis_shape_result_ =
-      ShapeResultView::Create(shaper.Shape(font, line_direction_));
-  ellipsis_width_ = ellipsis_shape_result_->SnappedWidth();
+  String ellipsis_text = ComputeEllipsisText();
+  if (BidiParagraph bidi;
+      RuntimeEnabledFeatures::TextOverflowStringEnabled() &&
+      Character::MaybeBidiRtl(ellipsis_text) &&
+      bidi.SetParagraph(ellipsis_text, line_direction_) &&
+      (!bidi.IsUnidirectional() || IsRtl(bidi.BaseDirection()))) {
+    BidiParagraph::Runs bidi_runs;
+    bidi.GetVisualRuns(ellipsis_text, &bidi_runs);
+    for (const BidiParagraph::Run& bidi_run : bidi_runs) {
+      String run_text =
+          ellipsis_text.Substring(bidi_run.start, bidi_run.Length());
+      HarfBuzzShaper shaper(run_text);
+      TextDirection run_direction = DirectionFromLevel(bidi_run.level);
+      const ShapeResultView* run_shape_result =
+          ShapeResultView::Create(shaper.Shape(font, run_direction));
+      ellipsis_shape_results_.push_back(
+          MakeGarbageCollected<const EllipsisShapeResult>(
+              *run_shape_result, run_text, bidi_run.level));
+      ellipsis_width_ += run_shape_result->SnappedWidth();
+    }
+  } else {
+    HarfBuzzShaper shaper(ellipsis_text);
+    const ShapeResultView* shape_result =
+        ShapeResultView::Create(shaper.Shape(font, line_direction_));
+    ellipsis_shape_results_.push_back(
+        MakeGarbageCollected<const EllipsisShapeResult>(*shape_result,
+                                                        ellipsis_text,
+                                                        /*bidi_level=*/0));
+    ellipsis_width_ = shape_result->SnappedWidth();
+  }
 }
 
 LayoutUnit LineTruncator::PlaceEllipsisNextTo(
@@ -95,16 +121,22 @@ LayoutUnit LineTruncator::PlaceEllipsisNextTo(
         line_style_->GetFontBaseline());
   }
 
-  DCHECK(ellipsis_text_);
-  DCHECK(ellipsis_shape_result_);
-  line_box->AddChild(
-      *ellipsized_layout_object,
-      use_first_line_style_ ? StyleVariant::kFirstLineEllipsis
-                            : StyleVariant::kStandardEllipsis,
-      ellipsis_shape_result_, ellipsis_text_,
-      LogicalRect(ellipsis_inline_offset, -ellipsis_metrics.ascent,
-                  ellipsis_width_, ellipsis_metrics.LineHeight()),
-      /* bidi_level */ 0);
+  DCHECK(ellipsis_shape_results_.size());
+  const StyleVariant style_variant = use_first_line_style_
+                                         ? StyleVariant::kFirstLineEllipsis
+                                         : StyleVariant::kStandardEllipsis;
+  LayoutUnit current_offset = ellipsis_inline_offset;
+  for (const auto& ellipsis_shape_result : ellipsis_shape_results_) {
+    LayoutUnit inline_size =
+        ellipsis_shape_result->shape_result->SnappedWidth();
+    line_box->AddChild(*ellipsized_layout_object, style_variant,
+                       ellipsis_shape_result->shape_result,
+                       ellipsis_shape_result->text,
+                       LogicalRect(current_offset, -ellipsis_metrics.ascent,
+                                   inline_size, ellipsis_metrics.LineHeight()),
+                       ellipsis_shape_result->bidi_level);
+    current_offset += inline_size;
+  }
   return ellipsis_inline_offset;
 }
 

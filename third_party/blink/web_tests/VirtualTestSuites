@@ -529,7 +529,7 @@
       "external/wpt/css/css-ui/text-overflow-string-003.html",
       "external/wpt/css/css-ui/text-overflow-string-004.html",
       "external/wpt/css/css-ui/text-overflow-string-005.html",
-      "external/wpt/css/css-ui/text-overflow-string-006.tentative.html",
+      "external/wpt/css/css-ui/text-overflow-string-006.html",
       "fast/deprecated-flexbox/dynamically-change-line-clamp.html",
       "fast/deprecated-flexbox/line-clamp-crash.html",
       "fast/deprecated-flexbox/line-clamp-removed-dynamically.html",
