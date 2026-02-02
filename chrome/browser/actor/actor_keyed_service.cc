@@ -345,7 +345,8 @@ TaskId ActorKeyedService::CreateTaskImpl(
   const TaskId task_id = next_task_id_.GenerateNextId();
   auto actor_task = std::make_unique<ActorTask>(
       base::PassKey<ActorKeyedService>(), profile_.get(), task_id,
-      std::move(ui_event_dispatcher), std::move(options), std::move(delegate));
+      std::move(ui_event_dispatcher), std::move(options), policy_checker_.get(),
+      std::move(delegate));
 
   const ActorTask::State task_state = actor_task->GetState();
   active_tasks_[task_id] = std::move(actor_task);

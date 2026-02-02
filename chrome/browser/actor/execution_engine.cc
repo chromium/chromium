@@ -325,9 +325,7 @@ ExecutionEngine::GatingDecision ExecutionEngine::DetermineGatingDecision(
   // enterprise policy blocklist, as we would already have blocked the
   // navigation before reaching this gating logic.
   const EnterprisePolicyBlockReason enterprise_reason =
-      ActorKeyedService::Get(task_->profile())
-          ->GetPolicyChecker()
-          .Evaluate(destination_url);
+      task_->policy_checker().Evaluate(destination_url);
   if (enterprise_reason == EnterprisePolicyBlockReason::kExplicitlyAllowed) {
     return GatingDecision::kAllowByStaticList;
   }
@@ -720,8 +718,7 @@ void ExecutionEngine::SafetyChecksForNextAction() {
   // ensure the optimization guide sensitive origin check would be skipped as
   // expected.
   MayActOnTab(
-      *tab, *journal_, task_->id(), origin_checker_,
-      ActorKeyedService::Get(task_->profile())->GetPolicyChecker(),
+      *tab, *journal_, task_->id(), origin_checker_, task_->policy_checker(),
       base::BindOnce(
           &ExecutionEngine::OnMayActOnTabDecision, GetWeakPtr(),
           tab->GetContents()->GetPrimaryMainFrame()->GetLastCommittedOrigin()));
@@ -984,9 +981,7 @@ void ExecutionEngine::IsAcceptableNavigationDestination(
     const GURL& url,
     DecisionCallbackWithReason callback) {
   MayActOnUrl(url, /*allow_insecure_http=*/true, task_->profile(), *journal_,
-              task_->id(),
-              ActorKeyedService::Get(task_->profile())->GetPolicyChecker(),
-              std::move(callback));
+              task_->id(), task_->policy_checker(), std::move(callback));
 }
 
 Profile& ExecutionEngine::GetProfile() {

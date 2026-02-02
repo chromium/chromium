@@ -213,6 +213,14 @@ ActorNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
     return content::NavigationThrottle::PROCEED;
   }
 
+  actor::ActorTask* task =
+      ActorKeyedService::Get(GetProfile())->GetTask(task_id_);
+  if (!task) {
+    journal.Log(navigation_url, task_id_, "NavThrottle",
+                JournalDetailsBuilder().AddError("TaskWentAway").Build());
+    return content::NavigationThrottle::CANCEL_AND_IGNORE;
+  }
+
   auto journal_entry = journal.CreatePendingAsyncEntry(
       navigation_url, task_id_, MakeBrowserTrackUUID(task_id_), "NavThrottle",
       JournalDetailsBuilder()
@@ -222,7 +230,7 @@ ActorNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
 
   ::actor::MayActOnUrl(
       navigation_url, /*allow_insecure_http=*/true, GetProfile(), journal,
-      task_id_, ActorKeyedService::Get(GetProfile())->GetPolicyChecker(),
+      task_id_, task->policy_checker(),
       base::BindOnce(&ActorNavigationThrottle::OnMayActOnUrlResult,
                      weak_factory_.GetWeakPtr(), std::move(journal_entry)));
 

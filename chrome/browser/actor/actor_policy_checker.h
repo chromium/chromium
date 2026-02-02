@@ -11,7 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/actor/aggregated_journal.h"
-#include "chrome/browser/actor/site_policy.h"
+#include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/browser/subscription_eligibility/subscription_eligibility_service.h"
 #include "chrome/common/actor/task_id.h"
 #include "chrome/common/buildflags.h"
@@ -26,6 +26,7 @@
 #endif
 
 class GURL;
+class Profile;
 
 namespace signin {
 class PrimaryAccountChangeEvent;
@@ -71,23 +72,9 @@ class ActorPolicyChecker : public EnterprisePolicyChecker,
       base::RepeatingClosure callback);
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
-  enum class CannotActReason {
-    kNone,
-    kManagedOrDataProtected,
-    kAccountCapabilityIneligible,
-    // The account is not subscribed to one of the required AI subscription
-    // tiers.
-    kAccountMissingChromeBenefits,
-  };
-
-  // The reason why `CanActOnWeb()` returns false (or `kNone` otherwise).
-  // The `CanActOnWeb()` method should be used for feature logic; this method
-  // is intended for presenting additional information (to the user,  or for
-  // debugging) where useful.
-  CannotActReason CannotActOnWebReason() const;
-
   // EnterprisePolicyChecker interface
   bool CanActOnWeb() const override;
+  CannotActReason CannotActOnWebReason() const override;
   EnterprisePolicyBlockReason Evaluate(const GURL& url) const override;
 
  private:

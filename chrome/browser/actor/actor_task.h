@@ -14,12 +14,16 @@
 #include "base/cancelable_callback.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
+#include "chrome/browser/actor/actor_policy_checker.h"
 #include "chrome/browser/actor/actor_task_delegate.h"
 #include "chrome/browser/actor/aggregated_journal.h"
+#include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/common/actor/task_id.h"
 #include "chrome/common/actor_webui.mojom-forward.h"
@@ -65,9 +69,10 @@ class ActorTask {
   // method in this class.
   ActorTask(base::PassKey<ActorKeyedService, ActorTask>,
             Profile* profile,
-            TaskId it,
+            TaskId id,
             std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher,
             webui::mojom::TaskOptionsPtr options,
+            const EnterprisePolicyChecker* policy_checker,
             base::WeakPtr<ActorTaskDelegate> delegate = nullptr);
   ~ActorTask();
 
@@ -80,12 +85,17 @@ class ActorTask {
       TaskId id,
       std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher,
       webui::mojom::TaskOptionsPtr options,
+      const EnterprisePolicyChecker* policy_checker,
       base::WeakPtr<ActorTaskDelegate> delegate);
 
   TaskId id() const { return id_; }
 
   const std::string& title() const { return title_; }
   base::WeakPtr<ActorTaskDelegate> delegate() const { return delegate_; }
+
+  const EnterprisePolicyChecker& policy_checker() const {
+    return policy_checker_.get();
+  }
 
   // Once `state_` leaves kCreated it should never go back. Once `state_` enters
   // kFinished, kCancelled, or kFailed it should never change. These states are
@@ -338,6 +348,9 @@ class ActorTask {
 
   // Once a task is stopped what the reason was.
   std::optional<StoppedReason> stopped_reason_;
+
+  // This is owned by actor keyed service which owns this class.
+  const raw_ref<const EnterprisePolicyChecker> policy_checker_;
 
   // Delegate for task-related events.
   base::WeakPtr<ActorTaskDelegate> delegate_;

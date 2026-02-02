@@ -8,6 +8,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/function_ref.h"
 #include "base/types/expected.h"
+#include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/common/actor/task_id.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "url/origin.h"
@@ -44,29 +45,6 @@ enum class MayActOnUrlBlockReason {
 using DecisionCallback = base::OnceCallback<void(/*may_act=*/bool)>;
 using DecisionCallbackWithReason =
     base::OnceCallback<void(MayActOnUrlBlockReason reason)>;
-
-enum class EnterprisePolicyBlockReason {
-  // Enterprise policy did not explicitly block a URL, but it also did not
-  // explicitly allow it, so the regular safety checks should still be done.
-  kNotBlocked,
-  // Enterprise policy explicitly allowed a URL. Some additional safety checks
-  // are not done.
-  kExplicitlyAllowed,
-  // Enterprise policy explicitly blocked a URL.
-  kExplicitlyBlocked,
-};
-
-// TODO(bokan): This should probably move out to its own class that's a part of
-// the actor/ public interface as ActorPolicyChecker is moved out into a glic/
-// impl.
-class EnterprisePolicyChecker {
- public:
-  virtual bool CanActOnWeb() const = 0;
-  virtual EnterprisePolicyBlockReason Evaluate(const GURL& url) const = 0;
-};
-
-using EnterprisePolicyCallback =
-    base::FunctionRef<EnterprisePolicyBlockReason(const GURL&)>;
 
 // Checks whether the actor may perform actions on the given tab based on the
 // last committed document and URL. Invokes the callback with true if it is
