@@ -483,11 +483,6 @@
     "expiry_milestone": 142
   },
   {
-    "name": "apply-clientside-model-predictions-for-otps",
-    "owners": [ "kazinova@google.com", "vasilii@chromium.org", "chrome-password-manager-team@google.com"],
-    "expiry_milestone": 149
-  },
-  {
     "name": "apply-clientside-model-predictions-for-password-types",
     "owners": [ "kazinova@google.com", "vasilii@chromium.org", "chrome-password-manager-team@google.com"],
     "expiry_milestone": 149
