@@ -138,8 +138,9 @@ export class CrWebApi {
   }
 
   addFunction(funcName: string, func: Function): void {
+    const apiName = this.getApiName() + '.' + funcName;
     this.functions[funcName] = function(...args: unknown[]) {
-      return catchAndReportErrors.apply(null, [funcName, func, args]);
+      return catchAndReportErrors.apply(null, [apiName, func, args]);
     };
   }
 

@@ -8,8 +8,8 @@
 #import <optional>
 
 #import "base/functional/callback.h"
+#import "ios/web/js_features/window_error/script_error_details.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
-#import "url/gurl.h"
 
 namespace web {
 
@@ -17,33 +17,8 @@ namespace web {
 // executes the given callback with details about each received error.
 class ScriptErrorMessageHandlerJavaScriptFeature : public JavaScriptFeature {
  public:
-  // Wraps information about an error.
-  struct ErrorDetails {
-   public:
-    ErrorDetails();
-    ~ErrorDetails();
-
-    // The filename in which the error occurred.
-    NSString* filename = nil;
-
-    // The line number at which the error occurred.
-    int line_number = 0;
-
-    // The error message.
-    NSString* message = nil;
-
-    // The error stack.
-    NSString* stack = nil;
-
-    // The url where the error occurred.
-    GURL url;
-
-    // Whether or not this error occurred in the main frame.
-    bool is_main_frame;
-  };
-
   ScriptErrorMessageHandlerJavaScriptFeature(
-      base::RepeatingCallback<void(ErrorDetails)> callback);
+      base::RepeatingCallback<void(ScriptErrorDetails)> callback);
   ~ScriptErrorMessageHandlerJavaScriptFeature() override;
 
   ScriptErrorMessageHandlerJavaScriptFeature(
@@ -57,7 +32,7 @@ class ScriptErrorMessageHandlerJavaScriptFeature : public JavaScriptFeature {
   void ScriptMessageReceived(WebState* web_state,
                              const ScriptMessage& message) override;
 
-  base::RepeatingCallback<void(ErrorDetails)> callback_;
+  base::RepeatingCallback<void(ScriptErrorDetails)> callback_;
 };
 
 }  // namespace web

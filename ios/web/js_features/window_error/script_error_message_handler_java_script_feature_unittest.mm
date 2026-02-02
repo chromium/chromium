@@ -7,11 +7,14 @@
 #import <memory>
 #import <optional>
 
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/web/js_features/window_error/error_event_listener_java_script_feature.h"
+#import "ios/web/js_features/window_error/script_error_details.h"
 #import "ios/web/js_messaging/java_script_feature_manager.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 
 using base::test::ios::kWaitForJSCompletionTimeout;
@@ -24,11 +27,9 @@ class ScriptErrorMessageHandlerJavaScriptFeatureTest
  protected:
   ScriptErrorMessageHandlerJavaScriptFeatureTest()
       : WebTestWithWebState(),
-        feature_(base::BindRepeating(
-            ^(ScriptErrorMessageHandlerJavaScriptFeature::ErrorDetails
-                  error_details) {
-              error_details_ = error_details;
-            })) {}
+        feature_(base::BindRepeating(^(ScriptErrorDetails error_details) {
+          error_details_ = std::move(error_details);
+        })) {}
 
   void SetUp() override {
     WebTestWithWebState::SetUp();
@@ -37,22 +38,16 @@ class ScriptErrorMessageHandlerJavaScriptFeatureTest
          web::java_script_features::GetBaseJavaScriptFeature(), &feature_});
   }
 
-  std::optional<ScriptErrorMessageHandlerJavaScriptFeature::ErrorDetails>
-  error_details() {
-    return error_details_;
-  }
-
- private:
+ protected:
   ScriptErrorMessageHandlerJavaScriptFeature feature_;
-  std::optional<ScriptErrorMessageHandlerJavaScriptFeature::ErrorDetails>
-      error_details_;
+  std::optional<ScriptErrorDetails> error_details_;
 };
 
 // Tests that error details are received for a script error occurring in the
 // head of the main frame.
 TEST_F(ScriptErrorMessageHandlerJavaScriptFeatureTest,
        ReceiveErrorFromMainFramePageHead) {
-  ASSERT_FALSE(error_details());
+  ASSERT_FALSE(error_details_);
 
   NSString* html = @"<html><head>"
                     "<script>nonexistentFunction();</script>"
@@ -60,21 +55,21 @@ TEST_F(ScriptErrorMessageHandlerJavaScriptFeatureTest,
   LoadHtml(html);
 
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
-    return !!error_details();
+    return !!error_details_;
   }));
 
-  EXPECT_EQ(1, error_details()->line_number);
+  EXPECT_EQ(1, error_details_->line_number);
   EXPECT_NSEQ(@"ReferenceError: Can't find variable: nonexistentFunction",
-              error_details()->message);
-  EXPECT_EQ("https://chromium.test/", error_details()->url.spec());
-  EXPECT_TRUE(error_details()->is_main_frame);
+              base::SysUTF8ToNSString(error_details_->message));
+  EXPECT_EQ("https://chromium.test/", error_details_->url.spec());
+  EXPECT_TRUE(error_details_->is_main_frame);
 }
 
 // Tests that error details are received for a script error occurring in the
 // body of the main frame.
 TEST_F(ScriptErrorMessageHandlerJavaScriptFeatureTest,
        ReceiveErrorFromMainFramePageBody) {
-  ASSERT_FALSE(error_details());
+  ASSERT_FALSE(error_details_);
 
   NSString* html = @"<html><body>"
                     "<script>nonexistentFunction();</script>"
@@ -82,21 +77,21 @@ TEST_F(ScriptErrorMessageHandlerJavaScriptFeatureTest,
   LoadHtml(html);
 
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
-    return !!error_details();
+    return !!error_details_;
   }));
 
-  EXPECT_EQ(1, error_details()->line_number);
+  EXPECT_EQ(1, error_details_->line_number);
   EXPECT_NSEQ(@"ReferenceError: Can't find variable: nonexistentFunction",
-              error_details()->message);
-  EXPECT_EQ("https://chromium.test/", error_details()->url.spec());
-  EXPECT_TRUE(error_details()->is_main_frame);
+              base::SysUTF8ToNSString(error_details_->message));
+  EXPECT_EQ("https://chromium.test/", error_details_->url.spec());
+  EXPECT_TRUE(error_details_->is_main_frame);
 }
 
 // Tests that error details are received for a script error occurring in the
 // head of an iframe.
 TEST_F(ScriptErrorMessageHandlerJavaScriptFeatureTest,
        ReceiveErrorFromIframePageHead) {
-  ASSERT_FALSE(error_details());
+  ASSERT_FALSE(error_details_);
 
   NSString* html = @"<html><body>"
                     "<iframe "
@@ -106,20 +101,21 @@ TEST_F(ScriptErrorMessageHandlerJavaScriptFeatureTest,
   LoadHtml(html);
 
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
-    return !!error_details();
+    return !!error_details_;
   }));
 
-  EXPECT_EQ(0, error_details()->line_number);
-  EXPECT_NSEQ(@"Script error.", error_details()->message);
-  EXPECT_EQ("about:srcdoc", error_details()->url.spec());
-  EXPECT_FALSE(error_details()->is_main_frame);
+  EXPECT_EQ(0, error_details_->line_number);
+  EXPECT_NSEQ(@"Script error.",
+              base::SysUTF8ToNSString(error_details_->message));
+  EXPECT_EQ("about:srcdoc", error_details_->url.spec());
+  EXPECT_FALSE(error_details_->is_main_frame);
 }
 
 // Tests that error details are received for a script error occurring in the
 // body of an iframe.
 TEST_F(ScriptErrorMessageHandlerJavaScriptFeatureTest,
        ReceiveErrorFromIframePageBody) {
-  ASSERT_FALSE(error_details());
+  ASSERT_FALSE(error_details_);
   NSString* html = @"<html><body>"
                     "<iframe "
                     "srcdoc='<html><body><script>nonexistentFunction();</"
@@ -128,13 +124,14 @@ TEST_F(ScriptErrorMessageHandlerJavaScriptFeatureTest,
   LoadHtml(html);
 
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
-    return !!error_details();
+    return !!error_details_;
   }));
 
-  EXPECT_EQ(0, error_details()->line_number);
-  EXPECT_NSEQ(@"Script error.", error_details()->message);
-  EXPECT_EQ("about:srcdoc", error_details()->url.spec());
-  EXPECT_FALSE(error_details()->is_main_frame);
+  EXPECT_EQ(0, error_details_->line_number);
+  EXPECT_NSEQ(@"Script error.",
+              base::SysUTF8ToNSString(error_details_->message));
+  EXPECT_EQ("about:srcdoc", error_details_->url.spec());
+  EXPECT_FALSE(error_details_->is_main_frame);
 }
 
 // Ensures that error details are still retreived after a document is recreated.
@@ -142,7 +139,7 @@ TEST_F(ScriptErrorMessageHandlerJavaScriptFeatureTest,
 // calls to document.open/write/close.)
 TEST_F(ScriptErrorMessageHandlerJavaScriptFeatureTest,
        ReceiveErrorAfterDocumentRecreated) {
-  ASSERT_FALSE(error_details());
+  ASSERT_FALSE(error_details_);
   LoadHtml(@"<html></html>");
 
   ASSERT_TRUE(ExecuteJavaScript(
@@ -151,14 +148,14 @@ TEST_F(ScriptErrorMessageHandlerJavaScriptFeatureTest,
   ExecuteJavaScript(@"nonexistentFunction();");
 
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
-    return !!error_details();
+    return !!error_details_;
   }));
 
-  EXPECT_EQ(1, error_details()->line_number);
+  EXPECT_EQ(1, error_details_->line_number);
   EXPECT_NSEQ(@"ReferenceError: Can't find variable: nonexistentFunction",
-              error_details()->message);
-  EXPECT_EQ("https://chromium.test/", error_details()->url.spec());
-  EXPECT_TRUE(error_details()->is_main_frame);
+              base::SysUTF8ToNSString(error_details_->message));
+  EXPECT_EQ("https://chromium.test/", error_details_->url.spec());
+  EXPECT_TRUE(error_details_->is_main_frame);
 }
 
 }  // namespace web

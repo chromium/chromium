@@ -50,22 +50,22 @@ GetScriptErrorMessageHandlerJavaScriptFeature() {
   // Static storage is ok for `window_error_feature` as it holds no state.
   static base::NoDestructor<ScriptErrorMessageHandlerJavaScriptFeature>
       script_error_message_handler_feature(base::BindRepeating(^(
-          ScriptErrorMessageHandlerJavaScriptFeature::ErrorDetails
-              error_details) {
+          ScriptErrorDetails error_details) {
         // Displays the JavaScript error details in the following format:
         //   _________ JavaScript error: _________
         //     {error_message}
-        //     {url} | {filename}:{line_number}
+        //     {api}:{line_number}
+        //     {stack}
+        //     {url}
         //     {kMainFrameDescription|kIframeDescription}
         const char* frame_description = error_details.is_main_frame
                                             ? kMainFrameDescription
                                             : kIframeDescription;
         DLOG(ERROR) << "\n_________ JavaScript error: _________" << "\n  "
-                    << base::SysNSStringToUTF8(error_details.message) << "\n"
-                    << base::SysNSStringToUTF8(error_details.stack) << "\n  "
-                    << error_details.url.spec() << " | "
-                    << base::SysNSStringToUTF8(error_details.filename) << ":"
-                    << error_details.line_number << "\n  " << frame_description;
+                    << error_details.message << "\n"
+                    << error_details.api << ":" << error_details.line_number
+                    << "\n  " << error_details.stack << "\n  "
+                    << error_details.url.spec() << "\n  " << frame_description;
         if (base::FeatureList::IsEnabled(features::kAssertOnJavaScriptErrors)) {
           CHECK(false) << "JavaScript error occurred with "
                           "kAssertOnJavaScriptErrors enabled.";

@@ -11,7 +11,7 @@ import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.j
  * @return The result of running `closure`.
  */
 export function catchAndReportErrors(
-    functionName: string, closure: Function, closureArgs?: unknown[]): unknown {
+    apiName: string, closure: Function, closureArgs?: unknown[]): unknown {
   try {
     return closure.apply(null, closureArgs);
   } catch (error) {
@@ -22,15 +22,11 @@ export function catchAndReportErrors(
       if (error.stack) {
         errorStack = error.stack;
       }
-      if (errorStack.length > 0) {
-        errorStack += '\n';
-      }
-      errorStack += functionName;
     }
     if (errorMessage && errorStack) {
       sendWebKitMessage(
-        'WindowErrorResultHandler',
-        {'message': errorMessage, 'stack': errorStack});
+          'WindowErrorResultHandler',
+          {'message': errorMessage, 'stack': errorStack, 'api': apiName});
     }
   }
   return undefined;

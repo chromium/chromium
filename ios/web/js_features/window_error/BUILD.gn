@@ -8,6 +8,7 @@ import("//ios/web/public/js_messaging/optimize_ts.gni")
 source_set("window_error") {
   deps = [
     ":error_js",
+    ":script_error_details",
     ":script_error_stack_util",
     "//base",
     "//ios/web/common:features",
@@ -21,6 +22,15 @@ source_set("window_error") {
     "error_event_listener_java_script_feature.mm",
     "script_error_message_handler_java_script_feature.h",
     "script_error_message_handler_java_script_feature.mm",
+  ]
+}
+
+source_set("script_error_details") {
+  deps = [ "//url" ]
+
+  sources = [
+    "script_error_details.h",
+    "script_error_details.mm",
   ]
 }
 
@@ -44,6 +54,7 @@ source_set("unittests") {
   testonly = true
 
   deps = [
+    ":script_error_details",
     ":script_error_stack_util",
     ":window_error",
     "//base/test:test_support",
