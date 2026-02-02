@@ -60,4 +60,8 @@ bool PasskeyUnlockManagerFactory::ServiceIsCreatedWithBrowserContext() const {
   return true;
 }
 
+bool PasskeyUnlockManagerFactory::ServiceIsNULLWhileTesting() const {
+  return true;
+}
+
 }  // namespace webauthn
