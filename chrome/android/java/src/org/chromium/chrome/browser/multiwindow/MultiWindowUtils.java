@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.multiwindow;
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION.SDK_INT_FULL;
 
-import static org.chromium.chrome.browser.multiwindow.MultiInstanceManagerApi31.getInstanceCountForManageWindowsMenu;
 import static org.chromium.chrome.browser.tabwindow.TabWindowManager.INVALID_WINDOW_ID;
 
 import android.app.Activity;
@@ -488,12 +487,15 @@ public class MultiWindowUtils implements ActivityStateListener {
     }
 
     /**
-     * Returns the number of restorable Chrome instances of a given type.
+     * Returns the number of restorable Chrome instances of a given type that are not marked for
+     * deletion.
      *
      * @param type The {@link PersistedInstanceType} of instances to count.
-     * @return The number of restorable Chrome instances; an instance is considered restorable if it
-     *     has tabs or is associated with a live task. If Robust Window Management is not enabled,
-     *     the type is ignored and all instances, both active and inactive, are counted.
+     * @return The number of restorable Chrome instances not marked for deletion; an instance is
+     *     considered restorable if it has tabs or is associated with a live task. An instance
+     *     marked for deletion is restorable, but not usable unless restored. If Robust Window
+     *     Management is not enabled, the type is ignored and all instances, both active and
+     *     inactive, are counted.
      */
     // TODO (crbug.com/456833895): Remove restorable instance check post-launch.
     public static int getInstanceCountWithFallback(@PersistedInstanceType int type) {
@@ -506,7 +508,8 @@ public class MultiWindowUtils implements ActivityStateListener {
         Set<Integer> ids = MultiInstanceManagerApi31.getPersistedInstanceIds(type);
         int count = 0;
         for (Integer id : ids) {
-            if (isRestorableInstance(id)) {
+            if (isRestorableInstance(id)
+                    && !MultiInstancePersistentStore.readMarkedForDeletion(id)) {
                 count++;
             }
         }
@@ -549,7 +552,7 @@ public class MultiWindowUtils implements ActivityStateListener {
      * @return Whether the app menu 'Manage windows' should be shown.
      */
     public static boolean shouldShowManageWindowsMenu() {
-        return getInstanceCountForManageWindowsMenu() > 1;
+        return getInstanceCountWithFallback(PersistedInstanceType.ANY) > 1;
     }
 
     static boolean isRestorableInstance(int index) {

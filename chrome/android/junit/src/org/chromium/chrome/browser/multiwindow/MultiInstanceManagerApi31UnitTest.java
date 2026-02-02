@@ -465,7 +465,7 @@ public class MultiInstanceManagerApi31UnitTest {
                 .thenReturn(mActivityManager);
         when(mActivityTask58.getSystemService(Context.ACTIVITY_SERVICE))
                 .thenReturn(mActivityManager);
-        when(mActivityTask58.getSystemService(Context.ACTIVITY_SERVICE))
+        when(mActivityTask59.getSystemService(Context.ACTIVITY_SERVICE))
                 .thenReturn(mActivityManager);
         when(mActivityTask60.getSystemService(Context.ACTIVITY_SERVICE))
                 .thenReturn(mActivityManager);
@@ -920,6 +920,53 @@ public class MultiInstanceManagerApi31UnitTest {
                 mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY);
         assertEquals(3, instanceInfoList.size());
         assertFalse(instanceInfoList.get(1).markedForDeletion);
+    }
+
+    @Test
+    public void testCloseAllWindows_markedForDeletion() {
+        MultiWindowUtils.setMaxInstancesForTesting(5);
+
+        // Setup 3 instances.
+        assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mCurrentActivity));
+        mMultiInstanceManager.initialize(
+                /* instanceId= */ 0, /* taskId= */ TASK_ID_56, SupportedProfileType.MIXED);
+        assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask57));
+        assertEquals(2, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask58));
+
+        // Verify that there are 3 active instances initially.
+        assertEquals(3, mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ACTIVE).size());
+
+        // Simulate closure of all windows from the window manager.
+        mMultiInstanceManager.closeWindows(List.of(0, 1, 2), CloseWindowAppSource.WINDOW_MANAGER);
+        destroyActivity(mCurrentActivity);
+        destroyActivity(mActivityTask57);
+        destroyActivity(mActivityTask58);
+
+        // Verify that the current activity is finished last.
+        InOrder inOrderVerifier = inOrder(mCurrentActivity, mActivityTask57, mActivityTask58);
+        inOrderVerifier.verify(mActivityTask57).finishAndRemoveTask();
+        inOrderVerifier.verify(mActivityTask58).finishAndRemoveTask();
+        inOrderVerifier.verify(mCurrentActivity).finishAndRemoveTask();
+
+        // Verify that we have persisted state for all 3 instances, that are now marked for
+        // deletion.
+        List<InstanceInfo> instances =
+                mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY);
+        assertEquals(3, instances.size());
+        for (InstanceInfo info : instances) {
+            assertTrue("Instance should be marked for deletion.", info.markedForDeletion);
+        }
+
+        // Verify that subsequent id allocation uses a new id, not a persisted one marked for
+        // deletion.
+        var multiInstanceManager = createMultiInstanceManager(mActivityTask59);
+        var allocatedIdInfo =
+                multiInstanceManager.allocInstanceId(
+                        /* windowId= */ -1,
+                        TASK_ID_59,
+                        /* preferNew= */ false,
+                        /* isIncognitoIntent= */ false);
+        assertEquals(3, allocatedIdInfo.instanceId);
     }
 
     @Test

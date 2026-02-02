@@ -528,6 +528,14 @@ public class MultiWindowUtilsUnitTest {
                 3,
                 MultiWindowUtils.getInstanceCountWithFallback(
                         MultiInstanceManagerApi31.PersistedInstanceType.ANY));
+
+        // Mark the inactive instance for deletion.
+        MultiInstancePersistentStore.writeMarkedForDeletion(INSTANCE_ID_2, true);
+        assertEquals(
+                "getInstanceCountWithFallback should exclude instances marked for deletion.",
+                2,
+                MultiWindowUtils.getInstanceCountWithFallback(
+                        MultiInstanceManagerApi31.PersistedInstanceType.ANY));
     }
 
     @Test
