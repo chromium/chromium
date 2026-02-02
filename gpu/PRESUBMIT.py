@@ -30,7 +30,10 @@ def CommonChecks(input_api, output_api):
 
 
 def CheckChangeOnUpload(input_api, output_api):
-  return CommonChecks(input_api, output_api)
+  results = []
+  results.extend(CommonChecks(input_api, output_api))
+  results.extend(input_api.canned_checks.CheckAyeAye(input_api, output_api))
+  return results
 
 
 def CheckChangeOnCommit(input_api, output_api):
