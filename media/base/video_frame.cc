@@ -1746,41 +1746,11 @@ bool VideoFrame::IsValidSharedMemoryFrame() const {
 // static
 std::vector<size_t> VideoFrame::CalculatePlaneSize(
     const VideoFrameLayout& layout) {
-  const auto format = layout.format();
-  const size_t num_planes = NumPlanes(format);
-  const auto& planes = layout.planes();
-  std::vector<size_t> plane_size(num_planes);
-  DCHECK_EQ(planes.size(), num_planes);
-
-  // Calculate minimum required plane sizes using layout info and
-  // extra wisdom accumulated in centuries.
-  for (size_t plane = 0; plane < num_planes; ++plane) {
-    // These values were chosen to mirror ffmpeg's get_video_buffer().
-    // TODO(dalecurtis): This should be configurable; eventually ffmpeg wants
-    // us to use av_cpu_max_align(), but... for now, they just hard-code 32.
-    const size_t height =
-        base::bits::AlignUp(Rows(plane, format, layout.coded_size().height()),
-                            kFrameAddressAlignment);
-    const size_t width = layout.planes()[plane].stride;
-    plane_size[plane] = width * height;
+  std::vector<size_t> plane_size(layout.planes().size());
+  DCHECK_EQ(plane_size.size(), NumPlanes(layout.format()));
+  for (size_t i = 0; i < plane_size.size(); ++i) {
+    plane_size[i] = layout.planes()[i].size;
   }
-
-  if (num_planes > 1) {
-    // The extra line of UV being allocated is because h264 chroma MC
-    // overreads by one line in some cases, see libavcodec/utils.c:
-    // avcodec_align_dimensions2() and libavcodec/x86/h264_chromamc.asm:
-    // put_h264_chroma_mc4_ssse3().
-    DCHECK(IsValidPlane(format, Plane::kU));
-    DCHECK(Plane::kU < num_planes);
-    plane_size.back() += layout.planes()[Plane::kU].stride + kFrameSizePadding;
-  }
-
-  // If a plane size from layout is larger than what was calculated above,
-  // respect the plane size from layout.
-  for (size_t i = 0; i < num_planes; ++i) {
-    plane_size[i] = std::max(planes[i].size, plane_size[i]);
-  }
-
   return plane_size;
 }
 

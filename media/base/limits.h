@@ -89,6 +89,15 @@ inline constexpr int kMaxVideoDecodeThreads =
          // immediate out of memory errors for high resolution content. See
          // https://crbug.com/893984
 
+// Alignment required by FFmpeg for input and output buffers. This needs to
+// be updated to match FFmpeg's STRIDE_ALIGN (which is unfortunately in an
+// internal header so we can't static_assert easily).
+#if defined(ARCH_CPU_X86_FAMILY)
+inline constexpr auto kFFmpegBufferAddressAlignment = 64u;
+#else
+inline constexpr auto kFFmpegBufferAddressAlignment = 32u;
+#endif
+
 }  // namespace media::limits
 
 #endif  // MEDIA_BASE_LIMITS_H_

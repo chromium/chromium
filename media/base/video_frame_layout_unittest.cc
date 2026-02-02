@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "base/strings/string_number_conversions.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -217,12 +218,13 @@ TEST(VideoFrameLayout, ToStringWithPlanes) {
   ostream << *layout;
   const std::string kNoModifier =
       ModifierToHexString(gfx::NativePixmapHandle::kNoModifier);
+  const std::string kAlignment =
+      base::NumberToString(layout->buffer_addr_align());
   EXPECT_EQ(ostream.str(),
             "VideoFrameLayout(format: PIXEL_FORMAT_I420, coded_size: 320x180, "
             "planes (stride, offset, size): [(384, 0, 69120), (192, 0, 17280), "
-            "(192, 0, 17280)], is_multi_planar: 0, buffer_addr_align: 32, "
-            "modifier: " +
-                kNoModifier + ")");
+            "(192, 0, 17280)], is_multi_planar: 0, buffer_addr_align: " +
+                kAlignment + ", modifier: " + kNoModifier + ")");
 }
 
 TEST(VideoFrameLayout, ToStringMultiPlanar) {
@@ -238,12 +240,13 @@ TEST(VideoFrameLayout, ToStringMultiPlanar) {
   ostream << *layout;
   const std::string kNoModifier =
       ModifierToHexString(gfx::NativePixmapHandle::kNoModifier);
+  const std::string kAlignment =
+      base::NumberToString(layout->buffer_addr_align());
   EXPECT_EQ(ostream.str(),
             "VideoFrameLayout(format: PIXEL_FORMAT_NV12, coded_size: 320x180, "
             "planes (stride, offset, size): [(384, 0, 100), (192, 100, 100)], "
-            "is_multi_planar: 1, buffer_addr_align: 32, "
-            "modifier: " +
-                kNoModifier + ")");
+            "is_multi_planar: 1, buffer_addr_align: " +
+                kAlignment + ", modifier: " + kNoModifier + ")");
 }
 
 TEST(VideoFrameLayout, ToString) {
@@ -255,12 +258,13 @@ TEST(VideoFrameLayout, ToString) {
   ostream << *layout;
   const std::string kNoModifier =
       ModifierToHexString(gfx::NativePixmapHandle::kNoModifier);
+  const std::string kAlignment =
+      base::NumberToString(layout->buffer_addr_align());
   EXPECT_EQ(ostream.str(),
             "VideoFrameLayout(format: PIXEL_FORMAT_NV12, coded_size: 320x180, "
             "planes (stride, offset, size): [(0, 0, 0), (0, 0, 0)], "
-            "is_multi_planar: 0, buffer_addr_align: 32, "
-            "modifier: " +
-                kNoModifier + ")");
+            "is_multi_planar: 0, buffer_addr_align: " +
+                kAlignment + ", modifier: " + kNoModifier + ")");
 }
 
 TEST(VideoFrameLayout, EqualOperator) {

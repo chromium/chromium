@@ -149,8 +149,16 @@ int FFmpegVideoDecoder::GetVideoBuffer(struct AVCodecContext* codec_context,
          format == PIXEL_FORMAT_YUV420P12 || format == PIXEL_FORMAT_YUV422P12 ||
          format == PIXEL_FORMAT_YUV444P12);
 
+  // FFmpeg has all sorts of peculiarities around how it wants its frames sized,
+  // so replicate what is done inside the default get_video_buffer() logic.
+  int aligned_width = frame->width;
+  int aligned_height = frame->height;
+  std::array<int, AV_NUM_DATA_POINTERS> linesize_align = {};
+  avcodec_align_dimensions2(codec_context, &aligned_width, &aligned_height,
+                            linesize_align.data());
+
   // Do not trust `codec_context` sizes either.  Use whatever `frame` requests.
-  gfx::Size coded_size(frame->width, frame->height);
+  gfx::Size coded_size(aligned_width, aligned_height);
   const int ret =
       av_image_check_size(coded_size.width(), coded_size.height(), 0, nullptr);
   if (ret < 0)
@@ -182,8 +190,14 @@ int FFmpegVideoDecoder::GetVideoBuffer(struct AVCodecContext* codec_context,
   const size_t num_planes = layout->planes().size();
   size_t allocation_size = layout->buffer_addr_align();
   for (size_t plane = 0; plane < num_planes; plane++) {
+    // This should be guaranteed by how strides are computed during the call to
+    // CreateFullySpecifiedLayoutWithStrides() above.
+    CHECK_EQ(layout->planes()[plane].stride % linesize_align[plane], 0u);
     allocation_size += layout->planes()[plane].size;
   }
+
+  // FFmpeg seems to add some extra padding; see update_frame_pool().
+  allocation_size += 16 + limits::kFFmpegBufferAddressAlignment - 1;
 
   // Round up the allocation, but keep `allocation_size` as the usable
   // allocation after aligning `data`.

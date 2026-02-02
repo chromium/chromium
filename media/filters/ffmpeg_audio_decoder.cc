@@ -59,7 +59,7 @@ FFmpegAudioDecoder::FFmpegAudioDecoder(
       media_log_(media_log),
       mode_(mode),
       pool_(base::MakeRefCounted<AudioBufferMemoryPool>(
-          kFFmpegBufferAddressAlignment)) {
+          limits::kFFmpegBufferAddressAlignment)) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
   CHECK(media_log_);
   if (mode_ == ExecutionMode::kAsynchronous) {

@@ -137,18 +137,6 @@ base::span<const uint32_t> GetSkipSamples(const AVPacket* packet) {
 
 }  // namespace
 
-// Allows faster SIMD YUV convert. Also, FFmpeg overreads/-writes occasionally.
-// See video_get_buffer() in libavcodec/utils.c.
-static const int kFFmpegOutputBufferPaddingSize = 16;
-
-static_assert(VideoFrame::kFrameSizePadding >= kFFmpegOutputBufferPaddingSize,
-              "VideoFrame padding size does not fit ffmpeg requirement");
-
-static_assert(
-    VideoFrame::kFrameAddressAlignment >= kFFmpegBufferAddressAlignment &&
-    VideoFrame::kFrameAddressAlignment % kFFmpegBufferAddressAlignment == 0,
-    "VideoFrame frame address alignment does not fit ffmpeg requirement");
-
 static const AVRational kMicrosBase = { 1, base::Time::kMicrosecondsPerSecond };
 
 base::TimeDelta ConvertFromTimeBase(const AVRational& time_base,

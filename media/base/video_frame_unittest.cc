@@ -180,18 +180,14 @@ void ExpectFrameColor(VideoFrame* yv12_frame, uint32_t expect_rgb_color) {
   ASSERT_EQ(PIXEL_FORMAT_YV12, yv12_frame->format());
   ASSERT_EQ(yv12_frame->stride(VideoFrame::Plane::kU),
             yv12_frame->stride(VideoFrame::Plane::kV));
-  ASSERT_EQ(
-      yv12_frame->coded_size().width() & (VideoFrame::kFrameSizeAlignment - 1),
-      0u);
-  ASSERT_EQ(
-      yv12_frame->coded_size().height() & (VideoFrame::kFrameSizeAlignment - 1),
-      0u);
 
-  size_t bytes_per_row = yv12_frame->coded_size().width() * 4u;
-  uint8_t* rgb_data = reinterpret_cast<uint8_t*>(
-      base::AlignedAlloc(bytes_per_row * yv12_frame->coded_size().height() +
-                             VideoFrame::kFrameSizePadding,
-                         VideoFrame::kFrameAddressAlignment));
+  auto layout = VideoFrame::CreateFullySpecifiedLayoutWithStrides(
+      PIXEL_FORMAT_ARGB, yv12_frame->coded_size());
+  ASSERT_TRUE(layout.has_value());
+
+  size_t rgb_stride = layout->planes()[0].stride;
+  uint8_t* rgb_data = reinterpret_cast<uint8_t*>(base::AlignedAlloc(
+      layout->planes()[0].size, VideoFrame::kFrameAddressAlignment));
 
   libyuv::I420ToARGB(yv12_frame->data(VideoFrame::Plane::kY),
                      yv12_frame->stride(VideoFrame::Plane::kY),
@@ -199,12 +195,12 @@ void ExpectFrameColor(VideoFrame* yv12_frame, uint32_t expect_rgb_color) {
                      yv12_frame->stride(VideoFrame::Plane::kU),
                      yv12_frame->data(VideoFrame::Plane::kV),
                      yv12_frame->stride(VideoFrame::Plane::kV), rgb_data,
-                     bytes_per_row, yv12_frame->coded_size().width(),
+                     rgb_stride, yv12_frame->coded_size().width(),
                      yv12_frame->coded_size().height());
 
   for (int row = 0; row < yv12_frame->coded_size().height(); ++row) {
     uint32_t* rgb_row_data =
-        reinterpret_cast<uint32_t*>(rgb_data + (bytes_per_row * row));
+        reinterpret_cast<uint32_t*>(rgb_data + (rgb_stride * row));
     for (int col = 0; col < yv12_frame->coded_size().width(); ++col) {
       SCOPED_TRACE(base::StringPrintf("Checking (%d, %d)", row, col));
       EXPECT_EQ(expect_rgb_color, rgb_row_data[col]);

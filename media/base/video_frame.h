@@ -61,11 +61,10 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
  public:
   REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
 
-  static constexpr size_t kFrameSizeAlignment = 16;
-  static constexpr size_t kFrameSizePadding = 16;
-
+  // This serves as both the alignment for each plane's address as well as the
+  // alignment for each plane's stride when allocating video frames.
   static constexpr size_t kFrameAddressAlignment =
-      VideoFrameLayout::kBufferAddressAlignment;
+      limits::kFFmpegBufferAddressAlignment;
 
   static constexpr size_t kMaxPlanes = 4;
 
