@@ -281,6 +281,10 @@ Element* TreeScope::ElementForHitTest(Node* node, HitTestPointType type) const {
   Element* element;
   if (node->IsPseudoElement() || node->IsTextNode()) {
     element = node->ParentOrShadowHostElement();
+    // Element could be inside a nested pseudo.
+    if (PseudoElement* pseudo = DynamicTo<PseudoElement>(element)) {
+      element = &pseudo->UltimateOriginatingElement();
+    }
   } else {
     element = To<Element>(node);
   }
