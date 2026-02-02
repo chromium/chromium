@@ -82,6 +82,15 @@ void AddToHomescreenCoordinator::OnDataAvailable(
     const SkBitmap& display_icon,
     AddToHomescreenParams::AppType app_type,
     InstallableStatusCode status_code) {
+  if (app_menu_type_ ==
+      AppBannerSettingsHelper::APP_MENU_OPTION_ADD_TO_HOMESCREEN) {
+    // The user triggered this flow via the Universal Install dialog and
+    // explicitly requested Add a shortcut (not Install). Therefore we must
+    // ask AddToHomescreenInstaller to create a shortcut instead of installing a
+    // webapp (which matches what OnUserTitleAvailable does).
+    app_type = AppType::SHORTCUT;
+  }
+
   auto params = std::make_unique<AddToHomescreenParams>(
       app_type, std::make_unique<ShortcutInfo>(info), display_icon, status_code,
       InstallableMetrics::GetInstallSource(data_fetcher_->web_contents(),
