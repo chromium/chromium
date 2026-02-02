@@ -29,7 +29,7 @@ gfx::ImageSkia LoadIcon(base::File file, int size, float scale) {
     return gfx::ImageSkia();
   }
 
-  HMODULE library = reinterpret_cast<HMODULE>(map.data());
+  HMODULE library = reinterpret_cast<HMODULE>(map.mutable_bytes().data());
   // Find the first icon referenced in the file.  This matches Explorer.
   LPWSTR id = nullptr;
   // Because the lambda below returns FALSE, EnumResourceNames() itself will

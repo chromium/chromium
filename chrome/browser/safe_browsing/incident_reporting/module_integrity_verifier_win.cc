@@ -356,7 +356,7 @@ bool VerifyModule(
   if (!mapped_module.Initialize(base::FilePath(module_path)))
     return false;
   ModuleVerificationState state(
-      reinterpret_cast<HMODULE>(const_cast<uint8_t*>(mapped_module.data())));
+      reinterpret_cast<HMODULE>(mapped_module.mutable_bytes().data()));
 
   base::win::PEImage mem_peimage(module_handle);
   if (!mem_peimage.VerifyMagic() || !state.disk_peimage.VerifyMagic())

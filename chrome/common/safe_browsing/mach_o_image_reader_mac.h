@@ -12,6 +12,8 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/span.h"
+
 namespace safe_browsing {
 
 class ByteSlice;
@@ -64,7 +66,7 @@ class MachOImageReader {
   // remain valid for the lifetime of this object. Returns true if the
   // instance is initialized and valid, false if the file could not be parsed
   // as a Mach-O image.
-  bool Initialize(const uint8_t* image, size_t image_size);
+  bool Initialize(base::span<const uint8_t> image);
 
   // Returns whether this is a fat Mach-O image. If this returns true, it is
   // only valid to call GetFatImages() and none of the other methods.

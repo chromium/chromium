@@ -398,7 +398,7 @@ bool UpdateVersionIfMatch(const base::FilePath& image_file,
   }
 
   base::win::PEImageAsData image(
-      reinterpret_cast<HMODULE>(image_mapping.data()));
+      reinterpret_cast<HMODULE>(image_mapping.mutable_bytes().data()));
   // PEImage class does not support other-architecture images. Skip over such
   // files.
   if (image.GetNTHeaders()->OptionalHeader.Magic !=

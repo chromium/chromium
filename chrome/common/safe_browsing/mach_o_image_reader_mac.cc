@@ -13,6 +13,7 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
 #include "base/numerics/safe_math.h"
 
 namespace safe_browsing {
@@ -21,56 +22,56 @@ namespace safe_browsing {
 class ByteSlice {
  public:
   // Creates an invalid byte slice.
-  ByteSlice() : ByteSlice(nullptr, 0) {}
+  ByteSlice() = default;
 
   // Creates a slice for a given data array.
-  explicit ByteSlice(const uint8_t* data, size_t size)
-      : data_(data), size_(size) {}
+  explicit ByteSlice(base::span<const uint8_t> data) : data_(data) {}
   ~ByteSlice() = default;
 
-  bool IsValid() {
-    return data_ != nullptr;
-  }
+  bool IsValid() { return !data_.empty(); }
 
   // Creates a sub-slice from the current slice.
   ByteSlice Slice(size_t at, size_t size) {
-    if (!RangeCheck(at, size))
+    if (!RangeCheck(at, size)) {
       return ByteSlice();
-    return ByteSlice(UNSAFE_TODO(data_ + at), size);
+    }
+    return ByteSlice(data_.subspan(at, size));
   }
 
   // Casts an offset to a specific type.
   template <typename T>
   const T* GetPointerAt(size_t at) {
-    if (!RangeCheck(at, sizeof(T)))
+    if (!RangeCheck(at, sizeof(T))) {
       return nullptr;
-    return UNSAFE_TODO(reinterpret_cast<const T*>((data_ + at).get()));
+    }
+    return reinterpret_cast<const T*>(data_.subspan(at).data());
   }
 
   // Copies data from an offset to a buffer.
   bool CopyDataAt(size_t at, size_t size, uint8_t* out_data) {
-    if (!RangeCheck(at, size))
+    if (!RangeCheck(at, size)) {
       return false;
-    UNSAFE_TODO(memcpy(out_data, data_ + at, size));
+    }
+    UNSAFE_TODO(memcpy(out_data, data_.subspan(at, size).data(), size));
     return true;
   }
 
   bool RangeCheck(size_t offset, size_t size) {
-    if (offset >= size_)
+    if (offset >= data_.size()) {
       return false;
+    }
     base::CheckedNumeric<size_t> range(offset);
     range += size;
-    if (!range.IsValid())
+    if (!range.IsValid()) {
       return false;
-    return range.ValueOrDie() <= size_;
+    }
+    return range.ValueOrDie() <= data_.size();
   }
 
-  const uint8_t* data() const { return data_; }
-  size_t size() const { return size_; }
+  base::span<const uint8_t> data() const { return data_; }
 
  private:
-  raw_ptr<const uint8_t, AllowPtrArithmetic> data_;
-  size_t size_;
+  base::raw_span<const uint8_t> data_;
 
   // Copy and assign allowed.
 };
@@ -97,11 +98,12 @@ MachOImageReader::MachOImageReader()
 
 MachOImageReader::~MachOImageReader() = default;
 
-bool MachOImageReader::Initialize(const uint8_t* image, size_t image_size) {
-  if (!image)
+bool MachOImageReader::Initialize(base::span<const uint8_t> image) {
+  if (image.empty()) {
     return false;
+  }
 
-  data_ = std::make_unique<ByteSlice>(image, image_size);
+  data_ = std::make_unique<ByteSlice>(image);
 
   const uint32_t* magic = data_->GetPointerAt<uint32_t>(0);
   if (!magic)
@@ -138,8 +140,9 @@ bool MachOImageReader::Initialize(const uint8_t* image, size_t image_size) {
         return false;
 
       fat_images_.push_back(std::make_unique<MachOImageReader>());
-      if (!fat_images_.back()->Initialize(slice.data(), slice.size()))
+      if (!fat_images_.back()->Initialize(slice.data())) {
         return false;
+      }
 
       offset += sizeof(*arch);
     }

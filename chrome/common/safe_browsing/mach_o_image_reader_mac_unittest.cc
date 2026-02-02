@@ -134,7 +134,7 @@ TEST_F(MachOImageReaderTest, Executable32) {
   base::MemoryMappedFile file;
   ASSERT_NO_FATAL_FAILURE(OpenTestFile("executable32", &file));
   MachOImageReader reader;
-  ASSERT_TRUE(reader.Initialize(file.data(), file.length()));
+  ASSERT_TRUE(reader.Initialize(file.bytes()));
 
   EXPECT_FALSE(reader.IsFat());
   EXPECT_FALSE(reader.Is64Bit());
@@ -161,7 +161,7 @@ TEST_F(MachOImageReaderTest, Executable64) {
   base::MemoryMappedFile file;
   ASSERT_NO_FATAL_FAILURE(OpenTestFile("executable64", &file));
   MachOImageReader reader;
-  ASSERT_TRUE(reader.Initialize(file.data(), file.length()));
+  ASSERT_TRUE(reader.Initialize(file.bytes()));
 
   EXPECT_FALSE(reader.IsFat());
   EXPECT_TRUE(reader.Is64Bit());
@@ -179,7 +179,7 @@ TEST_F(MachOImageReaderTest, ExecutableFat) {
   base::MemoryMappedFile file;
   ASSERT_NO_FATAL_FAILURE(OpenTestFile("executablefat", &file));
   MachOImageReader reader;
-  ASSERT_TRUE(reader.Initialize(file.data(), file.length()));
+  ASSERT_TRUE(reader.Initialize(file.bytes()));
 
   EXPECT_TRUE(reader.IsFat());
   auto images = reader.GetFatImages();
@@ -228,7 +228,7 @@ TEST_F(MachOImageReaderTest, ExecutablePPC) {
   base::MemoryMappedFile file;
   ASSERT_NO_FATAL_FAILURE(OpenTestFile("executableppc", &file));
   MachOImageReader reader;
-  ASSERT_TRUE(reader.Initialize(file.data(), file.length()));
+  ASSERT_TRUE(reader.Initialize(file.bytes()));
 
   EXPECT_FALSE(reader.IsFat());
   EXPECT_FALSE(reader.Is64Bit());
@@ -245,7 +245,7 @@ TEST_F(MachOImageReaderTest, Dylib32) {
   base::MemoryMappedFile file;
   ASSERT_NO_FATAL_FAILURE(OpenTestFile("lib32.dylib", &file));
   MachOImageReader reader;
-  ASSERT_TRUE(reader.Initialize(file.data(), file.length()));
+  ASSERT_TRUE(reader.Initialize(file.bytes()));
 
   EXPECT_FALSE(reader.IsFat());
   EXPECT_FALSE(reader.Is64Bit());
@@ -262,7 +262,7 @@ TEST_F(MachOImageReaderTest, Dylib64) {
   base::MemoryMappedFile file;
   ASSERT_NO_FATAL_FAILURE(OpenTestFile("lib64.dylib", &file));
   MachOImageReader reader;
-  ASSERT_TRUE(reader.Initialize(file.data(), file.length()));
+  ASSERT_TRUE(reader.Initialize(file.bytes()));
 
   EXPECT_FALSE(reader.IsFat());
   EXPECT_TRUE(reader.Is64Bit());
@@ -293,7 +293,7 @@ TEST_F(MachOImageReaderTest, DylibFat) {
   base::MemoryMappedFile file;
   ASSERT_NO_FATAL_FAILURE(OpenTestFile("libfat.dylib", &file));
   MachOImageReader reader;
-  ASSERT_TRUE(reader.Initialize(file.data(), file.length()));
+  ASSERT_TRUE(reader.Initialize(file.bytes()));
 
   EXPECT_TRUE(reader.IsFat());
   auto images = reader.GetFatImages();
@@ -328,7 +328,7 @@ TEST_F(MachOImageReaderTest, SignedExecutable32) {
   base::MemoryMappedFile file;
   ASSERT_NO_FATAL_FAILURE(OpenTestFile("signedexecutable32", &file));
   MachOImageReader reader;
-  ASSERT_TRUE(reader.Initialize(file.data(), file.length()));
+  ASSERT_TRUE(reader.Initialize(file.bytes()));
 
   EXPECT_FALSE(reader.IsFat());
   EXPECT_FALSE(reader.Is64Bit());
@@ -352,7 +352,7 @@ TEST_F(MachOImageReaderTest, SignedExecutableFat) {
   base::MemoryMappedFile file;
   ASSERT_NO_FATAL_FAILURE(OpenTestFile("signedexecutablefat", &file));
   MachOImageReader reader;
-  ASSERT_TRUE(reader.Initialize(file.data(), file.length()));
+  ASSERT_TRUE(reader.Initialize(file.bytes()));
 
   EXPECT_TRUE(reader.IsFat());
   auto images = reader.GetFatImages();
@@ -401,7 +401,7 @@ TEST_F(MachOImageReaderTest, SignedDylib64) {
   base::MemoryMappedFile file;
   ASSERT_NO_FATAL_FAILURE(OpenTestFile("libsigned64.dylib", &file));
   MachOImageReader reader;
-  ASSERT_TRUE(reader.Initialize(file.data(), file.length()));
+  ASSERT_TRUE(reader.Initialize(file.bytes()));
 
   EXPECT_FALSE(reader.IsFat());
   EXPECT_TRUE(reader.Is64Bit());
@@ -426,7 +426,7 @@ TEST_F(MachOImageReaderTest, NotMachO) {
   base::MemoryMappedFile file;
   ASSERT_NO_FATAL_FAILURE(OpenTestFile("src.c", &file));
   MachOImageReader reader;
-  EXPECT_FALSE(reader.Initialize(file.data(), file.length()));
+  EXPECT_FALSE(reader.Initialize(file.bytes()));
 }
 
 TEST_F(MachOImageReaderTest, IsMachOMagicValue) {
@@ -470,8 +470,7 @@ TEST_F(MachOImageReaderTest, CmdsizeSmallerThanLoadCommand) {
   UNSAFE_TODO(strcpy(test_image.fake_code.segname, SEG_TEXT));
 
   MachOImageReader reader;
-  EXPECT_TRUE(reader.Initialize(reinterpret_cast<const uint8_t*>(&test_image),
-                                sizeof(test_image)));
+  EXPECT_TRUE(reader.Initialize(base::byte_span_from_ref(test_image)));
 
   EXPECT_FALSE(reader.IsFat());
   EXPECT_TRUE(reader.Is64Bit());
@@ -509,8 +508,7 @@ TEST_F(MachOImageReaderTest, RecurseFatHeader) {
   test_image.macho.magic = MH_MAGIC;
 
   MachOImageReader reader;
-  EXPECT_FALSE(reader.Initialize(reinterpret_cast<const uint8_t*>(&test_image),
-                                 sizeof(test_image)));
+  EXPECT_FALSE(reader.Initialize(base::byte_span_from_ref(test_image)));
 }
 
 }  // namespace

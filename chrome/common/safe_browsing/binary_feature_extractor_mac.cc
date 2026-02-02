@@ -18,8 +18,7 @@ bool BinaryFeatureExtractor::ExtractImageFeaturesFromData(
     ClientDownloadRequest_ImageHeaders* image_headers,
     google::protobuf::RepeatedPtrField<std::string>* signed_data) {
   MachOImageReader image_reader;
-  // TODO(crbug.com/356368033): MachOImageReader should also take a span.
-  if (!image_reader.Initialize(data.data(), data.size())) {
+  if (!image_reader.Initialize(data)) {
     return false;
   }
 

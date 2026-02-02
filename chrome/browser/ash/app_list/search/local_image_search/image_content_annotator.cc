@@ -141,7 +141,7 @@ void ImageContentAnnotator::AnnotateEncodedImage(
                   "image file to generate annotations";
   }
   base::MappedReadOnlyRegion mapped_region =
-      base::ReadOnlySharedMemoryRegion::Create(data.length());
+      base::ReadOnlySharedMemoryRegion::Create(data.bytes().size());
   // It's safe to early return here as we have triggered
   // `ica_disconnected_callback_` and `image_annotation_worker` will continue
   // the process.

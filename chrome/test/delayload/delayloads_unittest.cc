@@ -74,7 +74,7 @@ class DelayloadsTest : public testing::Test {
     CHECK(module_mmap.Initialize(module_path));
 
     base::win::PEImageAsData pe_image_data(
-        reinterpret_cast<HMODULE>(const_cast<uint8_t*>(module_mmap.data())));
+        reinterpret_cast<HMODULE>(module_mmap.mutable_bytes().data()));
     pe_image_data.EnumImportChunks(DelayloadsTest::ImportsCallback, &imports,
                                    nullptr);
     return imports;
@@ -163,7 +163,7 @@ class MinimumWindowsSupportTest : public DelayloadsTest {
 
     CHECK(module_mmap.Initialize(module_path));
     base::win::PEImageAsData pe_image_data(
-        reinterpret_cast<HMODULE>(const_cast<uint8_t*>(module_mmap.data())));
+        reinterpret_cast<HMODULE>(module_mmap.mutable_bytes().data()));
     pe_image_data.EnumAllImports(
         MinimumWindowsSupportTest::DetailedImportsCallback, &imports, nullptr);
     return imports;

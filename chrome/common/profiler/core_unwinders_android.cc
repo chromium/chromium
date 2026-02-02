@@ -95,8 +95,7 @@ class ChromeUnwinderAndroid32Creator {
 
   std::unique_ptr<base::Unwinder> Create() {
     return std::make_unique<base::ChromeUnwinderAndroid32>(
-        base::CreateChromeUnwindInfoAndroid32(
-            UNSAFE_TODO({chrome_cfi_file_.data(), chrome_cfi_file_.length()})),
+        base::CreateChromeUnwindInfoAndroid32(chrome_cfi_file_.bytes()),
         /* chrome_module_base_address= */
         reinterpret_cast<uintptr_t>(&__executable_start),
         /* text_section_start_address= */ base::android::kStartOfText);
