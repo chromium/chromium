@@ -451,8 +451,8 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest, SubresourceCountUKM) {
       entries[0], ukm::builders::ServiceWorker_OnLoad::kImageHandledName, 0);
 }
 
-// TODO(crbug.com/355104619): The test is flaky. Re-enable it.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/480291001): The test is flaky. Re-enable it.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_StaticRoutingAPISubresourceHistogramTest \
   DISABLED_StaticRoutingAPISubresourceHistogramTest
 #else
