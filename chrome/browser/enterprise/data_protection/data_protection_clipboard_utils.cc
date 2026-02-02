@@ -22,6 +22,7 @@
 #include "components/enterprise/connectors/core/features.h"
 #include "components/enterprise/content/clipboard_restriction_service.h"
 #include "components/enterprise/data_controls/content/browser/last_replaced_clipboard_data.h"
+#include "components/enterprise/data_controls/core/browser/features.h"
 #include "components/enterprise/data_controls/core/browser/prefs.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/safe_browsing/buildflags.h"
@@ -51,7 +52,6 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/enterprise/data_controls/android_data_controls_dialog.h"
 #include "chrome/browser/enterprise/data_controls/android_data_controls_dialog_factory.h"
-#include "components/enterprise/data_controls/core/browser/features.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
@@ -800,6 +800,11 @@ bool CanPopulateFindBarFromSelection(content::WebContents* web_contents) {
 
 bool IsDragAllowedByPolicy(const content::ClipboardEndpoint& source,
                            const content::DropData& drop_data) {
+  if (!base::FeatureList::IsEnabled(
+          data_controls::kDataControlsDragEnforcement)) {
+    return true;
+  }
+
   if (SkipDataControlOrContentAnalysisChecks(source)) {
     return true;
   }

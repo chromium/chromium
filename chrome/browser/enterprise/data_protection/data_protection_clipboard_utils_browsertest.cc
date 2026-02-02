@@ -25,6 +25,7 @@
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/enterprise/connectors/core/features.h"
 #include "components/enterprise/connectors/core/reporting_test_utils.h"
+#include "components/enterprise/data_controls/core/browser/features.h"
 #include "components/enterprise/data_controls/core/browser/test_utils.h"
 #include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -81,6 +82,8 @@ class DataControlsClipboardUtilsBrowserTest
                              policy::kUploadRealtimeReportingEventsUsingProto)
                        : disabled_features.push_back(
                              policy::kUploadRealtimeReportingEventsUsingProto);
+
+    enabled_features.push_back(data_controls::kDataControlsDragEnforcement);
 
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
     active_user_test_mixin_ =

@@ -13,4 +13,6 @@ BASE_FEATURE(kEnableClipboardDataControlsAndroid,
 
 BASE_FEATURE(kEnableDownloadDataControls, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kDataControlsDragEnforcement, base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace data_controls
