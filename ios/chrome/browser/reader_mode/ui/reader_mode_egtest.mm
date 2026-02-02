@@ -1339,4 +1339,18 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
                  @"The body should have the 'links-hidden' class");
 }
 
+// Tests that Reader mode UI stays visible when clearing the presented state.
+- (void)testReaderModeUIStaysWhenClearingPresentedState {
+  [self loadURLWithOptimizationGuideHints:self.testServer->GetURL(
+                                              "/article.html")];
+  // Open Reader Mode UI.
+  GREYAssertTrue(
+      [ChromeEarlGrey showReaderModeAndWaitUntilReaderModeWebStateIsReady],
+      @"Reader mode content could not be loaded");
+  [self assertReaderModePageIsVisible];
+
+  [ChromeTestCase removeAnyOpenMenusAndInfoBars];
+  [self assertReaderModePageIsVisible];
+}
+
 @end

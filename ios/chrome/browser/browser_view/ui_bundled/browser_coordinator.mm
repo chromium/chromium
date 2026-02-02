@@ -970,8 +970,6 @@ const char kChromeAppStoreUrl[] =
   self.readingListCoordinator.delegate = nil;
   self.readingListCoordinator = nil;
 
-  [_readerModeCoordinator stopAnimated:YES];
-  _readerModeCoordinator = nil;
   [self hideReaderModeBlurOverlay];
 
   [self.sharingCoordinator stop];
