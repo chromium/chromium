@@ -1394,15 +1394,10 @@ IN_PROC_BROWSER_TEST_F(SmartCardEmulationBrowserTest,
   EXPECT_EQ("\"Success\"", message);
 }
 
-// TODO(crbug.com/480244032): Fails on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_ReleaseContextSuccess DISABLED_ReleaseContextSuccess
-#else
-#define MAYBE_ReleaseContextSuccess ReleaseContextSuccess
-#endif
-IN_PROC_BROWSER_TEST_F(SmartCardEmulationBrowserTest,
-                       MAYBE_ReleaseContextSuccess) {
+IN_PROC_BROWSER_TEST_F(SmartCardEmulationBrowserTest, ReleaseContextOnGC) {
   ASSERT_THAT(SendCommand("SmartCardEmulation.enable"), IsSuccess());
+  ASSERT_THAT(SendCommand("HeapProfiler.enable"), IsSuccess());
+
   content::DOMMessageQueue message_queue(app_frame());
 
   const std::string kScript = R"(
@@ -1418,11 +1413,13 @@ IN_PROC_BROWSER_TEST_F(SmartCardEmulationBrowserTest,
   content::ExecuteScriptAsync(app_frame(), kScript);
 
   HandleEstablishContext();
-  HandleReleaseContext();
 
   std::string message;
   ASSERT_TRUE(message_queue.WaitForMessage(&message));
   EXPECT_EQ("\"Success\"", message);
+
+  ASSERT_THAT(SendCommand("HeapProfiler.collectGarbage"), IsSuccess());
+  HandleReleaseContext();
 }
 
 IN_PROC_BROWSER_TEST_F(SmartCardEmulationBrowserTest,
