@@ -19,6 +19,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -31,6 +32,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -68,7 +70,9 @@ import java.util.List;
 
 /** Unit test for {@link ShareDelegateImpl} that mocked out most native class calls. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+@Config(
+        manifest = Config.NONE,
+        sdk = {29, 34})
 public class ShareDelegateImplUnitTest {
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
@@ -160,11 +164,15 @@ public class ShareDelegateImplUnitTest {
         createShareDelegate(false, new ShareSheetDelegate());
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
+    @After
+    public void tearDown() {
+        ShadowLooper.idleMainLooper();
+    }
+
     @Test
+    @Config(sdk = 29)
     public void shareWithSharingHub() {
-        Assert.assertTrue("ShareHub not enabled.", mShareDelegate.isSharingHubEnabled());
+        // ShareHub is disabled on SDK 34+
 
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -181,11 +189,10 @@ public class ShareDelegateImplUnitTest {
         histogramWatcher.assertExpected();
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
+    @Config(sdk = 29)
     public void shareLastUsedComponent() {
-        Assert.assertTrue("ShareHub not enabled.", mShareDelegate.isSharingHubEnabled());
+        // ShareHub is disabled on SDK 34+
 
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -210,8 +217,25 @@ public class ShareDelegateImplUnitTest {
         // devices.
         AutomotiveUtils.setCarmaPhase2ComplianceForTesting(true);
 
-        Assert.assertFalse("ShareHub enabled.", mShareDelegate.isSharingHubEnabled());
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord("Sharing.DefaultSharesheetAndroid.ShareContentType")
+                        .expectAnyRecord("Sharing.DefaultSharesheetAndroid.Opened")
+                        .build();
 
+        ShareParams shareParams = new ShareParams.Builder(mWindowAndroid, "", "").build();
+        ChromeShareExtras chromeShareExtras = new ChromeShareExtras.Builder().build();
+        mShareDelegate.share(shareParams, chromeShareExtras, ShareOrigin.OVERFLOW_MENU);
+
+        Assert.assertEquals(1, mDelegateShareSheetHubDisabledCallCount);
+        Assert.assertEquals(0, mDelegateShareSheetHubEnabledCallCount);
+        Assert.assertEquals(0, mAndroidShareSheetCallCount);
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @Config(sdk = 36)
+    public void share_withAndroidShareSheetForVPlus() {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectAnyRecord("Sharing.DefaultSharesheetAndroid.ShareContentType")
@@ -457,11 +481,10 @@ public class ShareDelegateImplUnitTest {
                         anyBoolean());
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void androidShareSheetDisableNonU() {
-        Assert.assertTrue("ShareHub should be enabled T-.", mShareDelegate.isSharingHubEnabled());
+        Assert.assertEquals(
+                android.os.Build.VERSION.SDK_INT < 34, mShareDelegate.isSharingHubEnabled());
     }
 
     @Test
@@ -474,8 +497,6 @@ public class ShareDelegateImplUnitTest {
                 mShareDelegate.isSharingHubEnabled());
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void share_autoU_noCarmaCompliance_useCustomShareSheet() {
         mAutomotiveContextWrapperTestRule.setIsAutomotive(true);

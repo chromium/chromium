@@ -20,6 +20,7 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.IntentSender.SendIntentException;
+import android.os.Build;
 
 import androidx.annotation.Nullable;
 import androidx.lifecycle.Lifecycle.State;
@@ -69,14 +70,13 @@ public class ShareHelperMultiInstanceUnitTest {
 
     @After
     public void tearDown() {
+        ShadowLooper.idleMainLooper();
         mWindowBar.closeWindow();
         mWindowFoo.closeWindow();
         ChromeSharedPreferences.getInstance()
                 .removeKey(ChromePreferenceKeys.SHARING_LAST_SHARED_COMPONENT_NAME);
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void shareInTwoWindow_FinishInOrder() throws SendIntentException {
         mWindowFoo.startShare().verifyCallbackNotCalled();
@@ -89,8 +89,6 @@ public class ShareHelperMultiInstanceUnitTest {
         assertLastComponentRecorded(COMPONENT_NAME_2);
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void shareInTwoWindow_FinishInReverseOrder() throws SendIntentException {
         mWindowFoo.startShare();
@@ -106,8 +104,6 @@ public class ShareHelperMultiInstanceUnitTest {
         assertLastComponentRecorded(COMPONENT_NAME_1);
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void shareInTwoWindow_FinishFirstThenCancelSecond() throws SendIntentException {
         mWindowFoo.startShare();
@@ -117,8 +113,6 @@ public class ShareHelperMultiInstanceUnitTest {
         assertLastComponentRecorded(COMPONENT_NAME_1);
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void shareInTwoWindow_FinishSecondThenCancelFirst() throws SendIntentException {
         mWindowFoo.startShare();
@@ -128,8 +122,6 @@ public class ShareHelperMultiInstanceUnitTest {
         assertLastComponentRecorded(COMPONENT_NAME_2);
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void shareInTwoWindow_CancelFirstFinishSecond() throws SendIntentException {
         mWindowFoo.startShare();
@@ -140,8 +132,6 @@ public class ShareHelperMultiInstanceUnitTest {
         assertLastComponentRecorded(COMPONENT_NAME_2);
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void shareInTwoWindow_KillFirstWindowThenCompleteSecond() throws SendIntentException {
         mWindowFoo.startShare();
@@ -155,8 +145,6 @@ public class ShareHelperMultiInstanceUnitTest {
         assertLastComponentRecorded(COMPONENT_NAME_2);
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void shareInTwoWindow_KillSecondWindowThenCompleteFirst() throws SendIntentException {
         mWindowFoo.startShare();
@@ -237,9 +225,11 @@ public class ShareHelperMultiInstanceUnitTest {
             assertThat(mShareIntent).isNotNull();
             Intent sendBackIntent =
                     new Intent().putExtra(Intent.EXTRA_CHOSEN_COMPONENT, componentName);
-            IntentSender sender =
-                    mShareIntent.intent.getParcelableExtra(
-                            Intent.EXTRA_CHOSEN_COMPONENT_INTENT_SENDER);
+            String extraKey =
+                    Build.VERSION.SDK_INT >= 35
+                            ? Intent.EXTRA_CHOOSER_RESULT_INTENT_SENDER
+                            : Intent.EXTRA_CHOSEN_COMPONENT_INTENT_SENDER;
+            IntentSender sender = mShareIntent.intent.getParcelableExtra(extraKey);
             sender.sendIntent(
                     mActivity.getApplicationContext(),
                     Activity.RESULT_OK,

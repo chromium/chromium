@@ -22,7 +22,6 @@ import android.content.res.Resources;
 import android.content.res.Resources.NotFoundException;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Build;
 import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
@@ -248,10 +247,8 @@ public class ShareHelper {
             final Context context = ContextUtils.getApplicationContext();
             Intent intent = new Intent(mReceiverAction);
             intent.setPackage(context.getPackageName());
-            // Adding intent extras since non-exported broadcast listener does not exist pre-T.
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-                IntentUtils.addTrustedIntentExtras(intent);
-            }
+            // Adding intent extras to verify the intent is from Chrome.
+            IntentUtils.addTrustedIntentExtras(intent);
             return intent;
         }
 
@@ -320,8 +317,7 @@ public class ShareHelper {
         }
 
         private boolean isUntrustedIntent(Intent intent) {
-            return Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
-                    && !IntentUtils.isTrustedIntentFromSelf(intent);
+            return !IntentUtils.isTrustedIntentFromSelf(intent);
         }
 
         private void detach() {
