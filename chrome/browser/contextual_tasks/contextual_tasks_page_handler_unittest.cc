@@ -76,6 +76,7 @@ class MockPage : public mojom::Page {
   MOCK_METHOD(void, OnLensOverlayStateChanged, (bool is_showing), (override));
   MOCK_METHOD(void, ShowErrorPage, (), (override));
   MOCK_METHOD(void, HideErrorPage, (), (override));
+  MOCK_METHOD(void, ShowOauthErrorDialog, (), (override));
 
   mojo::Receiver<mojom::Page> receiver_{this};
 };

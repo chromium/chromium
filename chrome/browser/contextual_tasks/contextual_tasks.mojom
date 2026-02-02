@@ -188,6 +188,9 @@ interface Page {
   // Called by the browser process (C++) to notify the UI to hide the error
   // page.
   HideErrorPage();
+
+  // Called by the browser process (C++) to show an OAuth error dialog.
+  ShowOauthErrorDialog();
 };
 
 // Used to bootstrip bi-directional communication between the browser and webui.

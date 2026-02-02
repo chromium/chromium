@@ -202,6 +202,9 @@ class ContextualTasksUI
     composebox_handler_ = std::move(handler);
   }
 
+  // Shows an OAuth error dialog.
+  void ShowOauthErrorDialog();
+
  private:
   // An observer specifically to watch for the creation of the hosted remote
   // page. This is attached to the WebContents for the WebUI and notifies the

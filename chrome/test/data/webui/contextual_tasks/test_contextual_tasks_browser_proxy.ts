@@ -31,6 +31,7 @@ class MockPage extends TestBrowserProxy implements PageInterface {
       'setOAuthToken',
       'setTaskDetails',
       'setThreadTitle',
+      'showOauthErrorDialog',
     ]);
   }
 
@@ -99,6 +100,10 @@ class MockPage extends TestBrowserProxy implements PageInterface {
 
   hideErrorPage() {
     this.methodCalled('hideErrorPage');
+  }
+
+  showOauthErrorDialog() {
+    this.methodCalled('showOauthErrorDialog');
   }
 }
 

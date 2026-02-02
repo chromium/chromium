@@ -592,6 +592,12 @@ void ContextualTasksUI::PostMessageToWebview(
   page_handler_->PostMessageToWebview(message);
 }
 
+void ContextualTasksUI::ShowOauthErrorDialog() {
+  if (page_) {
+    page_->ShowOauthErrorDialog();
+  }
+}
+
 void ContextualTasksUI::OnInnerWebContentsCreated(
     content::WebContents* inner_contents) {
   // This is assumed to only be called once per WebUI lifetime. Can be called

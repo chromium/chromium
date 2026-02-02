@@ -199,9 +199,11 @@ class ContextualTasksProxyingURLLoaderFactory
   ContextualTasksProxyingURLLoaderFactory(
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> loader_receiver,
       mojo::PendingRemote<network::mojom::URLLoaderFactory> target_factory,
-      ContextualTasksUiService* ui_service)
+      ContextualTasksUiService* ui_service,
+      base::WeakPtr<content::WebContents> web_contents)
       : network::SelfDeletingURLLoaderFactory(std::move(loader_receiver)),
-        ui_service_(ui_service ? ui_service->GetWeakPtr() : nullptr) {
+        ui_service_(ui_service ? ui_service->GetWeakPtr() : nullptr),
+        web_contents_(web_contents) {
     target_factory_.Bind(std::move(target_factory));
     target_factory_.set_disconnect_handler(base::BindOnce(
         &ContextualTasksProxyingURLLoaderFactory::OnTargetFactoryDisconnected,
@@ -243,10 +245,12 @@ class ContextualTasksProxyingURLLoaderFactory
       return;
     }
 
-    ui_service_->GetAccessToken(base::BindOnce(
-        &ContextualTasksProxyingURLLoaderFactory::OnAccessTokenReceived,
-        weak_factory_.GetWeakPtr(), std::move(loader), request_id, options,
-        request, std::move(client), traffic_annotation));
+    ui_service_->GetAccessToken(
+        base::BindOnce(
+            &ContextualTasksProxyingURLLoaderFactory::OnAccessTokenReceived,
+            weak_factory_.GetWeakPtr(), std::move(loader), request_id, options,
+            request, std::move(client), traffic_annotation),
+        web_contents_);
   }
 
  private:
@@ -281,6 +285,7 @@ class ContextualTasksProxyingURLLoaderFactory
 
   mojo::Remote<network::mojom::URLLoaderFactory> target_factory_;
   base::WeakPtr<ContextualTasksUiService> ui_service_;
+  base::WeakPtr<content::WebContents> web_contents_;
   base::WeakPtrFactory<ContextualTasksProxyingURLLoaderFactory> weak_factory_{
       this};
 };
@@ -326,8 +331,9 @@ void MaybeInterceptURLLoaderFactory(
   auto [receiver, remote] = factory_builder.Append();
 
   // The proxy factory manages its own lifetime.
-  new ContextualTasksProxyingURLLoaderFactory(std::move(receiver),
-                                              std::move(remote), ui_service);
+  new ContextualTasksProxyingURLLoaderFactory(
+      std::move(receiver), std::move(remote), ui_service,
+      owner_web_contents->GetWeakPtr());
 }
 
 }  // namespace contextual_tasks

@@ -206,7 +206,9 @@ class ContextualTasksUiService : public KeyedService {
 
   // Fetches an access token for the primary account.
   using GetAccessTokenCallback = base::OnceCallback<void(const std::string&)>;
-  virtual void GetAccessToken(GetAccessTokenCallback callback);
+  virtual void GetAccessToken(
+      GetAccessTokenCallback callback,
+      base::WeakPtr<content::WebContents> web_contents);
 
   base::WeakPtr<ContextualTasksUiService> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -235,6 +237,10 @@ class ContextualTasksUiService : public KeyedService {
   void OnOAuthTokenReceived(GoogleServiceAuthError error,
                             signin::AccessTokenInfo access_token_info);
 
+  // Shows the OAuth error dialog for the given `web_contents`.
+  void ShowOauthErrorDialogForWebContents(
+      base::WeakPtr<content::WebContents> web_contents);
+
   // Runs all pending access token callbacks with the provided token.
   void RunPendingAccessTokenCallbacks(const std::string& token);
 
@@ -260,7 +266,9 @@ class ContextualTasksUiService : public KeyedService {
   std::unique_ptr<signin::AccessTokenFetcher> access_token_fetcher_;
 
   // Pending access token callbacks.
-  std::vector<GetAccessTokenCallback> pending_access_token_callbacks_;
+  std::vector<
+      std::pair<GetAccessTokenCallback, base::WeakPtr<content::WebContents>>>
+      pending_access_token_callbacks_;
 
   // Backoff entry used to control the retry logic for the OAuth token request.
   net::BackoffEntry request_access_token_backoff_;

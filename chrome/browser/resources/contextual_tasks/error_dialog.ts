@@ -35,6 +35,11 @@ export class ContextualTasksErrorDialogElement extends CrLitElement {
 
   protected onReloadClick_() {
     window.location.reload();
+    this.$.dialog.close();
+  }
+
+  showDialog() {
+    this.$.dialog.showModal();
   }
 }
 

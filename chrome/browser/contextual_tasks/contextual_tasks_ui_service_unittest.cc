@@ -203,7 +203,7 @@ TEST_P(ContextualTasksUiServiceTestParameterized, GetAccessToken_Success) {
   identity_test_env_->MakePrimaryAccountAvailable(
       "test@example.com", signin::ConsentLevel::kSignin);
   base::test::TestFuture<const std::string&> token_future;
-  real_service_->GetAccessToken(token_future.GetCallback());
+  real_service_->GetAccessToken(token_future.GetCallback(), nullptr);
 
   identity_test_env_->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "access_token", base::Time::Now() + base::Hours(1));
@@ -212,7 +212,7 @@ TEST_P(ContextualTasksUiServiceTestParameterized, GetAccessToken_Success) {
 
 TEST_P(ContextualTasksUiServiceTestParameterized, GetAccessToken_NotSignedIn) {
   base::test::TestFuture<const std::string&> token_future;
-  real_service_->GetAccessToken(token_future.GetCallback());
+  real_service_->GetAccessToken(token_future.GetCallback(), nullptr);
   EXPECT_EQ(token_future.Get(), "");
 }
 
@@ -233,7 +233,7 @@ TEST_P(ContextualTasksUiServiceTestParameterized,
   identity_test_env_->MakePrimaryAccountAvailable(
       "test@example.com", signin::ConsentLevel::kSignin);
   base::test::TestFuture<const std::string&> token_future;
-  real_service_->GetAccessToken(token_future.GetCallback());
+  real_service_->GetAccessToken(token_future.GetCallback(), nullptr);
 
   // First request fails with a transient error.
   identity_test_env_->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
@@ -255,7 +255,7 @@ TEST_P(ContextualTasksUiServiceTestParameterized,
   identity_test_env_->MakePrimaryAccountAvailable(
       "test@example.com", signin::ConsentLevel::kSignin);
   base::test::TestFuture<const std::string&> token_future;
-  real_service_->GetAccessToken(token_future.GetCallback());
+  real_service_->GetAccessToken(token_future.GetCallback(), nullptr);
 
   // First request fails with a persistent error.
   identity_test_env_->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(

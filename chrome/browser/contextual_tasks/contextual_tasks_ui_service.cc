@@ -20,6 +20,7 @@
 #include "chrome/browser/contextual_tasks/contextual_search_session_finder.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_interface.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -49,6 +50,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_ui.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/schemeful_site.h"
 #include "net/base/url_util.h"
@@ -305,12 +307,35 @@ void ContextualTasksUiService::OnOAuthTokenReceived(
   RunPendingAccessTokenCallbacks(access_token_info.token);
 }
 
+
+void ContextualTasksUiService::ShowOauthErrorDialogForWebContents(
+    base::WeakPtr<content::WebContents> web_contents) {
+  content::WebUI* webui = web_contents->GetWebUI();
+  if (webui && webui->GetController()) {
+    auto* ui_controller = webui->GetController()->GetAs<ContextualTasksUI>();
+    if (ui_controller) {
+      ui_controller->ShowOauthErrorDialog();
+    }
+  }
+}
+
 void ContextualTasksUiService::RunPendingAccessTokenCallbacks(
     const std::string& token) {
-  std::vector<GetAccessTokenCallback> callbacks;
+  std::vector<
+      std::pair<GetAccessTokenCallback, base::WeakPtr<content::WebContents>>>
+      callbacks;
   std::swap(callbacks, pending_access_token_callbacks_);
-  for (auto& callback : callbacks) {
-    std::move(callback).Run(token);
+
+  if (token.empty()) {
+    for (const auto& callback_pair : callbacks) {
+      if (callback_pair.second) {
+        ShowOauthErrorDialogForWebContents(callback_pair.second);
+      }
+    }
+  }
+
+  for (auto& callback_pair : callbacks) {
+    std::move(callback_pair.first).Run(token);
   }
 }
 
@@ -462,8 +487,11 @@ bool ContextualTasksUiService::HandleNavigation(
       is_from_embedded_page, is_to_new_tab);
 }
 
-void ContextualTasksUiService::GetAccessToken(GetAccessTokenCallback callback) {
-  pending_access_token_callbacks_.push_back(std::move(callback));
+void ContextualTasksUiService::GetAccessToken(
+    GetAccessTokenCallback callback,
+    base::WeakPtr<content::WebContents> web_contents) {
+  pending_access_token_callbacks_.emplace_back(std::move(callback),
+                                               web_contents);
 
   // If a request is already in progress, or we are waiting to retry, do
   // nothing.
