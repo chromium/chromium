@@ -4373,6 +4373,7 @@
       "external/wpt/html/browsers/browsing-the-web/back-forward-cache/eligibility/shared-worker.html",
       "wpt_internal/shared-worker/back-forward-cache/shared-worker-client-postmessage-transferred-port.window.js",
       "wpt_internal/shared-worker/back-forward-cache/shared-worker-client-postmessage.window.js",
+      "wpt_internal/shared-worker/back-forward-cache/shared-worker-extended-lifetime.window.js",
       "wpt_internal/shared-worker/back-forward-cache/shared-worker-freeze.window.js"
     ],
     "exclusive_tests": "ALL",

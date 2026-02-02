@@ -1017,6 +1017,14 @@ bool SharedWorkerHost::ContainsClient(
       });
 }
 
+bool SharedWorkerHost::HasActiveClients() const {
+  return std::ranges::any_of(clients_, [](const auto& client_info) {
+    RenderFrameHostImpl* rfh =
+        RenderFrameHostImpl::FromID(client_info.render_frame_host_id);
+    return rfh && rfh->IsActive();
+  });
+}
+
 bool SharedWorkerHost::EvictBFCachedClientsIfLastActive(
     RenderFrameHostImpl* render_frame_host) {
   std::vector<RenderFrameHostImpl*> bf_cached_clients;
@@ -1044,22 +1052,39 @@ bool SharedWorkerHost::EvictBFCachedClientsIfLastActive(
 }
 
 void SharedWorkerHost::OnClientStateChanged() {
-  bool has_active_client = false;
-
-  for (const auto& client_info : clients_) {
-    RenderFrameHostImpl* const rfh =
-        RenderFrameHostImpl::FromID(client_info.render_frame_host_id);
-    if (rfh && rfh->IsActive()) {
-      has_active_client = true;
-      break;
-    }
-  }
+  bool has_active_client = HasActiveClients();
 
   // Resume if there is an active client, or freeze if there are none.
   if (is_frozen_ && has_active_client) {
     worker_->Resume();
     is_frozen_ = false;
   } else if (!is_frozen_ && !has_active_client) {
+    if (instance_.extended_lifetime()) {
+      // If the worker has extended lifetime, it will be frozen after a delay
+      // if there are no active clients.
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&SharedWorkerHost::FreezeIfNoActiveClient,
+                         weak_factory_.GetWeakPtr()),
+          kSharedWorkerDestructionDelay);
+      return;
+    }
+    worker_->Freeze();
+    is_frozen_ = true;
+  }
+}
+
+void SharedWorkerHost::FreezeIfNoActiveClient() {
+  if (clients_.empty()) {
+    RecordDestructionSource(SharedWorkerHostDestructionSource::kNoClients);
+    Destruct();
+    return;
+  }
+  if (HasActiveClients()) {
+    // Cancel the freeze if a client became active during the delay.
+    return;
+  }
+  if (!is_frozen_) {
     worker_->Freeze();
     is_frozen_ = true;
   }
