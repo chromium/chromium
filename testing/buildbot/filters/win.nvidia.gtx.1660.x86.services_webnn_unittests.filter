@@ -1,0 +1,2 @@
+# crbug.com/477562219
+-WebNNTensorImplBackendTest.CreateTooLargeTensorTest
