@@ -20,8 +20,11 @@ bool IsLeapYear(int year) {
   return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
 }
 
-// The flight date is the date of the departure.
-std::optional<std::string> GetFlightDate(
+// Returns the flight date based on the Day of Year (referred to as "Julian
+// date") from the barcode. Since the barcode only contains the day (1-366) and
+// not the year, the year is inferred based on the current date, assuming a +/-
+// 1 month window around the turn of the year.
+std::optional<base::Time> GetFlightDate(
     const std::string& date_of_flight_julian) {
   int julian_day;
   if (!base::StringToInt(date_of_flight_julian, &julian_day)) {
@@ -68,9 +71,7 @@ std::optional<std::string> GetFlightDate(
     return std::nullopt;
   }
 
-  base::Time flight_date = start_of_year + base::Days(julian_day - 1);
-  return base::UnlocalizedTimeFormatWithPattern(flight_date, "yyyy-MM-dd",
-                                                icu::TimeZone::getGMT());
+  return start_of_year + base::Days(julian_day - 1);
 }
 
 // Encapsulates a string value and provides safe sequential access to it.
@@ -193,7 +194,7 @@ std::optional<BoardingPass> BoardingPass::FromBarcode(
   pass.destination = value.GetStripped(kDestinationLength);
   pass.airline = value.GetStripped(kAirlineLength);
   pass.flight_code = RemoveLeadingZeros(value.GetStripped(kFlightCodeLength));
-  std::optional<std::string> date =
+  std::optional<base::Time> date =
       GetFlightDate(value.GetStripped(kDateLength));
   // The flight date is a mandatory field. If it's invalid or missing, the
   // boarding pass is malformed and cannot be parsed.

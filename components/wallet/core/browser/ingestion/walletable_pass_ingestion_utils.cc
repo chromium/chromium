@@ -4,11 +4,22 @@
 
 #include "components/wallet/core/browser/ingestion/walletable_pass_ingestion_utils.h"
 
+#include <string>
+
 #include "base/notreached.h"
+#include "base/time/time.h"
 #include "components/optimization_guide/proto/features/walletable_pass_extraction.pb.h"
 
 namespace wallet {
 namespace {
+
+base::Time ParseTime(const std::string& time_string) {
+  base::Time time;
+  if (base::Time::FromUTCString(time_string.c_str(), &time)) {
+    return time;
+  }
+  return base::Time();
+}
 
 LoyaltyCard ExtractLoyaltyCardFromProto(
     const optimization_guide::proto::LoyaltyCard& proto,
@@ -26,9 +37,8 @@ EventPass ExtractEventPassFromProto(
     std::optional<WalletBarcode> barcode) {
   EventPass event;
   event.event_name = proto.event_name();
-  event.event_start_date = proto.event_start_date();
-  event.event_start_time = proto.event_start_time();
-  event.event_end_time = proto.event_end_time();
+  event.event_start_time = ParseTime(proto.event_start_time());
+  event.event_end_time = ParseTime(proto.event_end_time());
   event.seat = proto.seat();
   event.row = proto.row();
   event.section = proto.section();
@@ -47,7 +57,7 @@ TransitTicket ExtractTransitTicketFromProto(
   TransitTicket ticket;
   ticket.issuer_name = proto.issuer_name();
   ticket.card_number = proto.card_number();
-  ticket.date_of_expiry = proto.date_of_expiry();
+  ticket.date_of_expiry = ParseTime(proto.date_of_expiry());
   ticket.card_verification_code = proto.card_verification_code();
   ticket.owner_name = proto.owner_name();
   ticket.agency_name = proto.agency_name();
@@ -59,8 +69,7 @@ TransitTicket ExtractTransitTicketFromProto(
   ticket.validity_period = proto.validity_period();
   ticket.origin = proto.origin();
   ticket.destination = proto.destination();
-  ticket.time_of_travel = proto.time_of_travel();
-  ticket.date_of_travel = proto.date_of_travel();
+  ticket.travel_time = ParseTime(proto.time_of_travel());
   ticket.barcode = std::move(barcode);
   return ticket;
 }

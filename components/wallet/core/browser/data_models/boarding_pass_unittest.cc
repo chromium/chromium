@@ -36,7 +36,7 @@ BoardingPass CreateBoardingPass(std::string_view barcode_raw_value,
   pass.destination = std::string(destination);
   pass.airline = std::string(airline);
   pass.flight_code = std::string(flight_code);
-  pass.date = std::string(date);
+  EXPECT_TRUE(base::Time::FromUTCString(std::string(date).c_str(), &pass.date));
   pass.passenger_name = std::string(passenger_name);
   pass.barcode = WalletBarcode{std::string(barcode_raw_value),
                                WalletBarcodeFormat::PDF417};

@@ -9,6 +9,7 @@
 #include <string>
 #include <variant>
 
+#include "base/time/time.h"
 #include "components/wallet/core/browser/data_models/boarding_pass.h"
 #include "components/wallet/core/browser/data_models/wallet_barcode.h"
 
@@ -64,9 +65,8 @@ struct EventPass {
   friend bool operator==(const EventPass&, const EventPass&) = default;
 
   std::string event_name;
-  std::string event_start_date;
-  std::string event_start_time;
-  std::string event_end_time;
+  base::Time event_start_time;
+  base::Time event_end_time;
   std::string seat;
   std::string row;
   std::string section;
@@ -93,7 +93,7 @@ struct TransitTicket {
 
   std::string issuer_name;
   std::string card_number;
-  std::string date_of_expiry;
+  base::Time date_of_expiry;
   std::string card_verification_code;
   std::string owner_name;
   std::string agency_name;
@@ -105,8 +105,7 @@ struct TransitTicket {
   std::string validity_period;
   std::string origin;
   std::string destination;
-  std::string time_of_travel;
-  std::string date_of_travel;
+  base::Time travel_time;
 
   // The detected barcode.
   std::optional<WalletBarcode> barcode;
@@ -126,8 +125,8 @@ struct Passport {
   std::string owner_name;
   std::string country_code;
   std::string passport_number;
-  std::string issue_date;
-  std::string expiration_date;
+  base::Time issue_date;
+  base::Time expiration_date;
 };
 
 // Represents a driver's license with its relevant details.
@@ -144,8 +143,8 @@ struct DriverLicense {
   std::string owner_name;
   std::string region;
   std::string driver_license_number;
-  std::string issue_date;
-  std::string expiration_date;
+  base::Time issue_date;
+  base::Time expiration_date;
   std::string country_code;
 };
 
@@ -164,8 +163,8 @@ struct NationalIdentityCard {
   std::string owner_name;
   std::string region;
   std::string id_number;
-  std::string issue_date;
-  std::string expiration_date;
+  base::Time issue_date;
+  base::Time expiration_date;
   std::string country_code;
 };
 
@@ -182,7 +181,7 @@ struct KTN {
 
   std::string owner_name;
   std::string known_traveller_number;
-  std::string expiration_date;
+  base::Time expiration_date;
 };
 
 // Represents a redress number with its relevant details.

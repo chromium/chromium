@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 
+#include "base/time/time.h"
 #include "components/wallet/core/browser/data_models/wallet_barcode.h"
 
 namespace wallet {
@@ -34,9 +35,8 @@ struct BoardingPass {
   std::string origin;
   // The 3-letter IATA airport code of the destination airport. e.g. "FRA"
   std::string destination;
-  // The Julian date of the flight. For example, 226 is August 14th in a
-  // non-leap year. e.g. "226"
-  std::string date;
+  // The date of the flight.
+  base::Time date;
   // The passenger's name, usually in the format LASTNAME/FIRSTNAME. e.g.
   // "DESMARAIS/LUC"
   std::string passenger_name;

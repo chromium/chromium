@@ -6,6 +6,7 @@
 
 #include <variant>
 
+#include "base/i18n/time_formatting.h"
 #include "base/notreached.h"
 #include "chrome/browser/ui/views/autofill/autofill_bubble_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -143,11 +144,11 @@ WalletablePassSaveBubbleView::GetEventPassAttributesView(
             IDS_WALLET_WALLETABLE_PASS_EVENT_PASS_VENUE_ATTRIBUTE_NAME),
         base::UTF8ToUTF16(event_pass.venue)));
   }
-  if (!event_pass.event_start_date.empty()) {
+  if (!event_pass.event_start_time.is_null()) {
     container->AddChildView(autofill::CreateAutofillAiBubbleAttributeRow(
         l10n_util::GetStringUTF16(
             IDS_WALLET_WALLETABLE_PASS_EVENT_PASS_DATE_ATTRIBUTE_NAME),
-        base::UTF8ToUTF16(event_pass.event_start_date)));
+        base::TimeFormatShortDate(event_pass.event_start_time)));
   }
   return container;
 }
@@ -173,11 +174,11 @@ WalletablePassSaveBubbleView::GetTransitTicketAttributesView(
             base::UTF8ToUTF16(transit_ticket.destination))));
   }
 
-  if (!transit_ticket.date_of_travel.empty()) {
+  if (!transit_ticket.travel_time.is_null()) {
     container->AddChildView(autofill::CreateAutofillAiBubbleAttributeRow(
         l10n_util::GetStringUTF16(
             IDS_WALLET_WALLETABLE_PASS_TRANSPORT_TICKET_DATE_ATTRIBUTE_NAME),
-        base::UTF8ToUTF16(transit_ticket.date_of_travel)));
+        base::TimeFormatShortDate(transit_ticket.travel_time)));
   }
   return container;
 }
@@ -208,11 +209,11 @@ WalletablePassSaveBubbleView::GetBoardingPassAttributesView(
             base::UTF8ToUTF16(boarding_pass.origin),
             base::UTF8ToUTF16(boarding_pass.destination))));
   }
-  if (!boarding_pass.date.empty()) {
+  if (!boarding_pass.date.is_null()) {
     container->AddChildView(autofill::CreateAutofillAiBubbleAttributeRow(
         l10n_util::GetStringUTF16(
             IDS_WALLET_WALLETABLE_PASS_BOARDING_PASS_DATE_ATTRIBUTE_NAME),
-        base::UTF8ToUTF16(boarding_pass.date)));
+        base::TimeFormatShortDate(boarding_pass.date)));
   }
   return container;
 }
