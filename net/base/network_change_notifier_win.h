@@ -8,6 +8,7 @@
 #include <windows.h>
 
 #include <atomic>
+#include <optional>
 
 #include "base/compiler_specific.h"
 #include "base/functional/callback.h"
@@ -36,6 +37,11 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierWin
     : public NetworkChangeNotifier,
       public base::win::ObjectWatcher::Delegate {
  public:
+  // The number of NetworkList polls, each 1 second apart, to perform on each
+  // network change. The is 21 rather than 20 to be consistent with older
+  // versions of the code.
+  static constexpr int kNumPollsOnAddressChange = 21;
+
   NetworkChangeNotifierWin();
   NetworkChangeNotifierWin(const NetworkChangeNotifierWin&) = delete;
   NetworkChangeNotifierWin& operator=(const NetworkChangeNotifierWin&) = delete;
@@ -49,6 +55,10 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierWin
   //               NetworkChangeNotifier interface, so other subclasses can be
   //               unit tested in similar fashion, as needed.
   void WatchForAddressChange();
+
+  void set_last_announced_offline_for_testing(bool last_announced_offline) {
+    last_announced_offline_ = last_announced_offline;
+  }
 
  protected:
   // For unit tests only.
@@ -90,9 +100,28 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierWin
   // sequence |this| was created on.
   void NotifyObservers(ConnectionType connection_type);
 
-  // Forwards connection type notifications to parent class.
-  void NotifyParentOfConnectionTypeChange();
-  void NotifyParentOfConnectionTypeChangeImpl(ConnectionType connection_type);
+  // Called with a delay whenever the connection type changes. Starts polling
+  // the connection type for 21 seconds, and forwards connection type
+  // notifications to parent class, if needed.
+  //
+  // Polling is needed because the platform API that we listen to connection
+  // change notification (NotifyAddrChange()) can be received well before the
+  // change has affected the results of polling the platform for a list of
+  // network adapters. Historically, this was only an issue for spinning up new
+  // network connections, but more recently, it seems to be an issue when
+  // connections are being shut down as well.
+  //
+  // `last_notified_connection_type_for_event` connection type is the most
+  // recent type ConnectionTypeChanged notification sent as a result of the most
+  // recently observed NotifyObservers() call. It is nullopt if no such
+  // notification has been sent yet.
+  void PollConnectionType(
+      std::optional<ConnectionType> last_notified_connection_type_for_event,
+      int num_polls_completed);
+  void OnConnectionTypePolled(
+      std::optional<ConnectionType> last_notified_connection_type_for_event,
+      int num_polls_completed,
+      ConnectionType connection_type);
 
   // Tries to start listening for a single subsequent address change.  Returns
   // false on failure.  The caller is responsible for updating |is_watching_|.
@@ -123,7 +152,8 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierWin
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
 
   mutable base::Lock last_computed_connection_type_lock_;
-  ConnectionType last_computed_connection_type_;
+  ConnectionType last_computed_connection_type_
+      GUARDED_BY(last_computed_connection_type_lock_);
 
   std::atomic<NetworkChangeNotifier::ConnectionCost>
       last_computed_connection_cost_ =
@@ -136,8 +166,6 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierWin
   // Result of IsOffline() when NotifyObserversOfConnectionTypeChange()
   // was last called.
   bool last_announced_offline_;
-  // Number of times polled to check if still offline.
-  int offline_polls_;
 
   // Used to ensure that all registration actions are properly sequenced on the
   // same thread regardless of which thread was used to call into the

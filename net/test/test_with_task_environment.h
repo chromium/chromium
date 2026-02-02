@@ -81,6 +81,11 @@ class WithTaskEnvironment {
 class TestWithTaskEnvironment : public ::testing::Test,
                                 public WithTaskEnvironment {
  public:
+  explicit TestWithTaskEnvironment(
+      base::test::TaskEnvironment::TimeSource time_source =
+          base::test::TaskEnvironment::TimeSource::DEFAULT)
+      : WithTaskEnvironment(time_source) {}
+
   TestWithTaskEnvironment(const TestWithTaskEnvironment&) = delete;
   TestWithTaskEnvironment& operator=(const TestWithTaskEnvironment&) = delete;
 

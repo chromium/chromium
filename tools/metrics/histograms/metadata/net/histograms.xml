@@ -4036,6 +4036,34 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Net.NetworkChangeNotifier.ConnectionTypePollsWin.{NotificationType}"
+    units="polls" expires_after="2026-08-12">
+  <owner>mmenke@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    The number of times that network state is polled before invoking
+    ConnectionTypeObserver::OnConnectionTypeChanged on Windows. Each
+    IPAddressChange event results repeatedly polling the network, with polls 1
+    second apart, and a subset of those result in sending notifications,
+    depending on network state. This is because the change OS change
+    notification often happens before the modified network connections can
+    actually be observed.
+
+    This records how many times the network state is polled before a particular
+    connection type change notification is sent. Note that the
+    NetworkChangeNotifier may continue to poll after sending a connection type
+    change notification.
+
+    The logic to report changes is fairly complicated. See logging code to
+    better understand the values.
+  </summary>
+  <token key="NotificationType">
+    <variant name="Offline" summary="Offline notification sent"/>
+    <variant name="Online" summary="Online notification sent"/>
+  </token>
+</histogram>
+
 <histogram name="Net.NetworkChangeNotifier.NewConnectionCost"
     enum="NetworkConnectionCost" expires_after="2023-11-12">
   <owner>fbeaufort@chromium.org</owner>
