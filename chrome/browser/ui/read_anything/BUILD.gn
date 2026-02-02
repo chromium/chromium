@@ -15,6 +15,7 @@ source_set("read_anything") {
     "read_anything_controller.h",
     "read_anything_entry_point_controller.cc",
     "read_anything_entry_point_controller.h",
+    "read_anything_immersive_activation_observer.h",
     "read_anything_immersive_overlay_view.cc",
     "read_anything_immersive_overlay_view.h",
     "read_anything_immersive_web_view.cc",

@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ui/read_anything/read_anything_enums.h"
+#include "chrome/browser/ui/read_anything/read_anything_immersive_activation_observer.h"
 #include "chrome/browser/ui/read_anything/read_anything_lifecycle_observer.h"
 #include "chrome/browser/ui/read_anything/read_anything_omnibox_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_side_panel_controller.h"
@@ -28,7 +29,6 @@
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class ReadAnythingController;
-class ReadAnythingImmersiveOverlayView;
 class ReadAnythingService;
 
 // A helper class to observe a specific WebContents, so the ReadAnything
@@ -114,6 +114,13 @@ class ReadAnythingController {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  // Add/removes observer responsible for handling immersive mode showing and
+  // hiding.
+  void AddImmersiveActivationObserver(
+      ReadAnythingImmersiveActivationObserver* observer);
+  void RemoveImmersiveActivationObserver(
+      ReadAnythingImmersiveActivationObserver* observer);
+
   // Called when the WebUI is shown/hidden.
   void OnEntryShown(std::optional<ReadAnythingOpenTrigger> trigger);
   void OnEntryHidden();
@@ -181,10 +188,6 @@ class ReadAnythingController {
   // Called when the tab will detach.
   void TabWillDetach(tabs::TabInterface* tab,
                      tabs::TabInterface::DetachReason reason);
-  // Called when the tab is activated.
-  void OnTabActivated(tabs::TabInterface* tab);
-  // Called when the tab is backgrounded.
-  void OnTabBackgrounded(tabs::TabInterface* tab);
 
   std::unique_ptr<WebContentsObserverInstance> main_page_observer_;
   std::unique_ptr<WebContentsObserverInstance> ra_web_ui_observer_;
@@ -205,9 +208,6 @@ class ReadAnythingController {
   // Otherwise, returns nullptr.
   SidePanelUI* GetSidePanelUI();
 
-  // Returns the immersive overlay view for the current tab.
-  ReadAnythingImmersiveOverlayView* GetImmersiveOverlayView();
-
   raw_ptr<tabs::TabInterface> tab_ = nullptr;
   ui::ScopedUnownedUserData<ReadAnythingController> scoped_unowned_user_data_;
 
@@ -221,6 +221,8 @@ class ReadAnythingController {
   bool should_recreate_web_ui_ = false;
 
   base::ObserverList<Observer> observers_;
+  base::ObserverList<ReadAnythingImmersiveActivationObserver>
+      immersive_activation_observers_;
 
   // Holds subscriptions for TabInterface callbacks.
   std::vector<base::CallbackListSubscription> tab_subscriptions_;
@@ -241,11 +243,6 @@ class ReadAnythingController {
   // the main webpage to be treated as visible for IRM purposes.
   void ReleaseMainContentsCapture();
 
-  // Sets the accessibility status of the view of the main webpage. If IRM is
-  // open and covering the page, we don't want the main webpage to be accessible
-  // to screen readers and keyboard navigation.
-  void SetMainContentsAccessible(bool should_be_accessible);
-
   DistillationState distillation_state_ = DistillationState::kUndefined;
   bool distillation_state_locked_for_testing_ = false;
 
@@ -255,8 +252,6 @@ class ReadAnythingController {
   // ReleaseMainContentsCapture() instead to ensure the handle is correctly
   // managed.
   base::ScopedClosureRunner main_contents_capturer_handle_;
-
-  raw_ptr<ReadAnythingImmersiveOverlayView> active_overlay_view_ = nullptr;
 
   raw_ptr<ReadAnythingService> active_service_ = nullptr;
 
