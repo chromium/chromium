@@ -60,6 +60,7 @@ found in the LICENSE file.
     <dimen name="settings_item_container_vertical_margin">1dp</dimen>
     <dimen name="settings_section_bottom_margin">8dp</dimen>
     <dimen name="settings_item_default_padding">16dp</dimen>
+    <dimen name="settings_empty_view_bottom_padding">56dp</dimen>
     <dimen name="settings_item_vertical_padding_multi_line">12dp</dimen>
     <dimen name="settings_title_margin">32dp</dimen>
     <dimen name="settings_toggle_item_min_height">57.5dp</dimen>
