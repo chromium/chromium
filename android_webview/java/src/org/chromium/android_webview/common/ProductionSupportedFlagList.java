@@ -1202,6 +1202,14 @@ public final class ProductionSupportedFlagList {
                 "CancelPendingCallbacksBeforeFetchRestart",
                 "The flag for ServiceWorkerSubresourceLoader. If enabled, the loader cancels"
                         + " pending callbacks before restarting a fetch."),
+        Flag.baseFeature(
+                BaseFeatures.REBINDING_CHILD_SERVICE_CONNECTION_CONTROLLER,
+                "Use a single connection and rebindService() to manage the binding to a child"
+                        + " process service."),
+        Flag.baseFeature(
+                BaseFeatures.REBIND_SERVICE_BATCH_API,
+                "Use a batch API to rebind service connections."),
+
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
 
