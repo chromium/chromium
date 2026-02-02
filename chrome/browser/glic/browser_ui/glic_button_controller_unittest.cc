@@ -148,12 +148,11 @@ class MockGlicButtonControllerDelegate
 class GlicButtonControllerTest : public testing::Test {
  public:
   void SetUp() override {
-    // Enable kGlic and kTabstripComboButton by default for testing.
+    // Enable kGlic by default for testing.
     scoped_feature_list_.InitWithFeatures(
         {
             features::kGlic,
             features::kGlicRollout,
-            features::kTabstripComboButton,
         },
         {});
 

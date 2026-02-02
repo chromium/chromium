@@ -6,38 +6,12 @@
 
 #include <string>
 
-#include "base/feature_list.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
-#include "chrome/browser/ui/ui_features.h"
-#include "components/variations/service/variations_service.h"
-
-namespace {
-static std::string GetCountryCode() {
-  if (!g_browser_process || !g_browser_process->variations_service()) {
-    return std::string();
-  }
-  std::string country_code =
-      g_browser_process->variations_service()->GetStoredPermanentCountry();
-  if (country_code.empty()) {
-    country_code = g_browser_process->variations_service()->GetLatestCountry();
-  }
-  return country_code;
-}
-}  // namespace
 
 namespace features {
 bool HasTabSearchToolbarButton() {
-  static const bool is_tab_search_moving = [] {
-    if (GetCountryCode() == "us" &&
-        base::FeatureList::IsEnabled(
-            features::kLaunchedTabSearchToolbarButton)) {
-      return true;
-    }
-    return base::FeatureList::IsEnabled(features::kTabstripComboButton) &&
-           features::kTabSearchToolbarButton.Get();
-  }();
-
-  return is_tab_search_moving;
+  // It is important that this value not change at runtime in production. Any
+  // future updates to this function must maintain that property.
+  return glic::GlicEnabling::IsEnabledByFlags();
 }
 }  // namespace features

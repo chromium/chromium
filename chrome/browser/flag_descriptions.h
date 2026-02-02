@@ -3792,20 +3792,6 @@ inline constexpr char kTestThirdPartyCookiePhaseoutDescription[] =
     "Enable to test third-party cookie phaseout. "
     "Learn more: https://goo.gle/3pcd-flags";
 
-inline constexpr char kTabstripComboButtonFlagId[] = "tabstrip-combo-button";
-inline constexpr char kTabstripComboButtonName[] = "Tabstrip Combo Button";
-inline constexpr char kTabstripComboButtonDescription[] =
-    "Combines tab search and the new tab button into a single combo button. "
-    "Might require tab search toolbar flag to be disabled to take effect in "
-    "specific regions.";
-
-inline constexpr char kLaunchedTabSearchToolbarName[] =
-    "Tab Search Toolbar Button";
-inline constexpr char kLaunchedTabSearchToolbarDescription[] =
-    "Enables tab search button to be in toolbar area. "
-    "Might require enabling the tab strip combo button configuration to also "
-    "match to toolbar in specific regions.";
-
 inline constexpr char kVerticalTabsName[] = "Vertical Tabs";
 inline constexpr char kVerticalTabsDescription[] =
     "Enables an option for showing tabs to the side.";
