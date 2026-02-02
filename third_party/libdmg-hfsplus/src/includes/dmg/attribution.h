@@ -3,6 +3,7 @@
 
 #include "abstractfile.h"
 #include "common.h"
+#include "sizedbuf.h"
 #include <stdint.h>
 
 #define ATTR_SIGNATURE 0x61747472 // 'attr'
@@ -112,9 +113,21 @@ extern "C" {
   // than one instance, of the given sentinel is found, attribution will fail.
   AbstractAttribution* createAbstractAttributionPreservingSentinel(const char* sentinel);
 
+  // Return an `AbstractAttribution` structure (instance) that will preserve the
+  // *unique* instance of the given string sentinel.  If no instance, or more
+  // than one instance, of the given sentinel is found, attribution will fail.
+  AbstractAttribution* createAbstractAttributionPreservingSentinelBuf(const SizedBuf* sentinel);
+
   // Copy an "attributable" DMG -- one structured for attribution -- to the
   // given output, write `len` of the given `bytes` over the `sentinel`.
   int updateAttribution(AbstractFile* abstractIn, AbstractFile* abstractOut, const char* sentinel, const char* bytes, size_t len);
+
+  // Copy an "attributable" DMG -- one structured for attribution -- to the
+  // given output, writing the given `dataBuf` over the part of the data where
+  // `sentinelBuf->data` (up to its `len`) is found. If `dataBuf` is shorter
+  // than `sentinelBuf`, the remaining space in the sentinel is overwritten with
+  // zeroes. If `dataBuf` is longer, the program crashes.
+  int updateAttributionFromBufs(AbstractFile* abstractIn, AbstractFile* abstractOut, const SizedBuf* sentinelBuf, const SizedBuf* dataBuf);
 #ifdef __cplusplus
 }
 #endif

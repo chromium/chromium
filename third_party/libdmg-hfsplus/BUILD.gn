@@ -20,8 +20,10 @@ source_set("common") {
     sources = [
         "src/common/abstractfile.c",
         "src/common/base64.c",
+        "src/common/sizedbuf.c",
         "src/includes/abstractfile.h",
         "src/includes/common.h",
+        "src/includes/sizedbuf.h",
     ]
 
     include_dirs = [ "src/includes" ]

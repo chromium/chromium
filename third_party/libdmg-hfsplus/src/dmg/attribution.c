@@ -1,12 +1,14 @@
+#include <stddef.h>
 #include <string.h>
 #include <zlib.h> // For crc32_combine.
 #include "abstractfile.h"
 #include "common.h"
 #include <dmg/attribution.h>
 #include <dmg/dmg.h>
+#include "sizedbuf.h"
 
 typedef struct AttributionPreservingSentinelData {
-  char* sentinel;
+  SizedBuf* sentinelBuf;
 
   ChecksumToken beforeRaw_UncompressedChkToken;
   ChecksumToken raw_UncompressedChkToken;
@@ -25,26 +27,10 @@ typedef struct AttributionPreservingSentinelData {
   int64_t afterRaw_CompressedLength;
 } AttributionPreservingSentinelData;
 
-char const *
-FindStrInBuf(char const * buf, size_t bufLen, char const * str)
-{
-  size_t index = 0;
-  while (index < bufLen) {
-    char const * result = strstr(buf + index, str);
-    if (result) {
-      return result;
-    }
-    while ((buf[index] != '\0') && (index < bufLen)) {
-      index++;
-    }
-    index++;
-  }
-  return NULL;
-}
-
 enum ShouldKeepRaw sentinelShouldKeepRaw(AbstractAttribution* attribution, const void* data, size_t len, const void* nextData, size_t nextLen) {
   AttributionPreservingSentinelData* attributionData = (AttributionPreservingSentinelData*)attribution->data;
-  if (NULL != FindStrInBuf((char const*)data, len, (const char*)attributionData->sentinel)) {
+  const SizedBuf* sentinelBuf = attributionData->sentinelBuf;
+  if (NULL != memmem((const char*)data, len, sentinelBuf->data, sentinelBuf->len)) {
     return KeepCurrentRaw;
   }
 
@@ -53,7 +39,7 @@ enum ShouldKeepRaw sentinelShouldKeepRaw(AbstractAttribution* attribution, const
     char* combinedData = malloc(len + nextLen);
     memcpy(combinedData, data, len);
     memcpy(combinedData + len, nextData, nextLen);
-    if (NULL != FindStrInBuf((char const*)combinedData, len + nextLen, (const char*)attributionData->sentinel)) {
+    if (NULL != memmem((const char*)combinedData, len + nextLen, sentinelBuf->data, sentinelBuf->len)) {
       return KeepCurrentAndNextRaw;
     }
   }
@@ -183,13 +169,17 @@ void sentinelAfterMainBlkx(AbstractAttribution* attribution, AbstractFile* abstr
 }
 
 AbstractAttribution* createAbstractAttributionPreservingSentinel(const char* sentinel) {
-  AbstractAttribution* attribution;
-  attribution = (AbstractAttribution*) malloc(sizeof(AbstractAttribution));
+  SizedBuf* sentinelBuf = AllocBufCopyString(sentinel);
+  AbstractAttribution* ret = createAbstractAttributionPreservingSentinelBuf(sentinelBuf);
+  free(sentinelBuf);
+  return ret;
+}
 
-  AttributionPreservingSentinelData* data = malloc(sizeof(AttributionPreservingSentinelData));
-  memset(data, 0, sizeof(AttributionPreservingSentinelData));
-  data->sentinel = malloc(strlen(sentinel) + 1);
-  strcpy(data->sentinel, sentinel);
+AbstractAttribution* createAbstractAttributionPreservingSentinelBuf(const SizedBuf* sentinelBuf) {
+  AbstractAttribution* attribution = calloc(1, sizeof(AbstractAttribution));
+
+  AttributionPreservingSentinelData* data = calloc(1, sizeof(AttributionPreservingSentinelData));
+  data->sentinelBuf = AllocBufCopy(sentinelBuf);
   data->raw_UncompressedLength = -1;
   data->afterRaw_UncompressedLength = -1;
   data->raw_CompressedLength = -1;
@@ -205,8 +195,16 @@ AbstractAttribution* createAbstractAttributionPreservingSentinel(const char* sen
 
 uint32_t calculateMasterChecksum(ResourceKey* resources);
 
-int updateAttribution(AbstractFile* abstractIn, AbstractFile* abstractOut, const char* anchor, const char* data, size_t dataLen)
-{
+int updateAttribution(AbstractFile* abstractIn, AbstractFile* abstractOut, const char* anchor, const char* data, size_t dataLen) {
+  SizedBuf* sentinelBuf = AllocBufCopyString(anchor);
+  SizedBuf* dataBuf = AllocBufCopyBytes(data, dataLen);
+  int ret = updateAttributionFromBufs(abstractIn, abstractOut, sentinelBuf, dataBuf);
+  free(dataBuf);
+  free(sentinelBuf);
+  return ret;
+}
+
+int updateAttributionFromBufs(AbstractFile* abstractIn, AbstractFile* abstractOut, const SizedBuf* sentinelBuf, const SizedBuf* dataBuf) {
   // In an `attributable` DMG file:
   // - read `attribution` resource
   // - update bytes in BZ_RAW block in place
@@ -218,6 +216,7 @@ int updateAttribution(AbstractFile* abstractIn, AbstractFile* abstractOut, const
   // - update data fork checksum (compressed)
   // - update master checksum (uncompressed)
 
+  ASSERT(sentinelBuf->len >= dataBuf->len, "data too long!");
   off_t fileLength;
   UDIFResourceFile resourceFile;
 
@@ -227,9 +226,7 @@ int updateAttribution(AbstractFile* abstractIn, AbstractFile* abstractOut, const
   abstractIn->seek(abstractIn, fileLength - sizeof(UDIFResourceFile));
   readUDIFResourceFile(abstractIn, &resourceFile);
 
-  char* resourceXML;
-
-  resourceXML = malloc(resourceFile.fUDIFXMLLength + 1);
+  char* resourceXML = calloc(resourceFile.fUDIFXMLLength + 1, 1);
   ASSERT( abstractIn->seek(abstractIn, (off_t)(resourceFile.fUDIFXMLOffset)) == 0, "fseeko" );
   ASSERT( abstractIn->read(abstractIn, resourceXML, (size_t)resourceFile.fUDIFXMLLength) == (size_t)resourceFile.fUDIFXMLLength, "fread" );
   resourceXML[resourceFile.fUDIFXMLLength] = 0;
@@ -237,7 +234,6 @@ int updateAttribution(AbstractFile* abstractIn, AbstractFile* abstractOut, const
   ResourceKey* resources;
   resources = readResources(resourceXML, resourceFile.fUDIFXMLLength, true);
   ResourceKey* resource = getResourceByKey(resources, "plst");
-  unsigned char* mine = (unsigned char*)(resource->data->name);
   AttributionResource* attributionResource = (AttributionResource*)(resource->data->name);
 
   ASSERT(attributionResource->signature == ATTR_SIGNATURE, "bad attr signature!");
@@ -249,7 +245,6 @@ int updateAttribution(AbstractFile* abstractIn, AbstractFile* abstractOut, const
 
   // Step 1.  Replace bytes at anchor.
   ASSERT(abstractIn->seek(abstractIn, 0) == 0, "seek in");
-  size_t inLength = abstractIn->getLength(abstractIn);
   while (1) {
     unsigned char buffer[8192];
     size_t readLength = abstractIn->read(abstractIn, buffer, 8192);
@@ -260,37 +255,30 @@ int updateAttribution(AbstractFile* abstractIn, AbstractFile* abstractOut, const
   }
 
   ASSERT(abstractIn->seek(abstractIn, attributionResource->rawPos) == 0, "seek in");
-  char* rawBuffer = malloc(attributionResource->rawLength);
-  ASSERT(rawBuffer, "malloc rawBuffer");
-  ASSERT(abstractIn->read(abstractIn, rawBuffer, attributionResource->rawLength) == attributionResource->rawLength, "read raw in");
+  SizedBuf* rawBuf = ZAllocBuf(attributionResource->rawLength);
+  ASSERT(abstractIn->read(abstractIn, rawBuf->data, rawBuf->len) == rawBuf->len, "read raw in");
 
-  printf("Looking for anchor: '%s'\n", anchor);
+  printf("Looking for anchor.\n");
 
-  const char* rawAnchor = FindStrInBuf((const char*)rawBuffer, attributionResource->rawLength, anchor);
-  ASSERT(rawAnchor, "anchor position");
+  char* rawAnchor = memmem(rawBuf->data, rawBuf->len, sentinelBuf->data, sentinelBuf->len);
+  ASSERT(rawAnchor, "cannot find sentinel when replacing attribution");
 
-  int64_t anchorOffset = rawAnchor - rawBuffer;
-  printf("anchorOffset: 0x%llx\n", anchorOffset);
-
-  ASSERT(rawAnchor + dataLen <= rawBuffer + attributionResource->rawLength, "data too long!");
-  // Zero out the anchor area, in case the data is shorter than the anchor
-  // Note that we're taking the strlen of `rawAnchor` and not the `anchor`
-  // passed in. This ensures that the entire anchor is zero'ed, even if only
-  // a prefix of it was provided.
-  memset((void *)rawAnchor, 0, strlen(rawAnchor));
-  // Copy the new data into the same spot the anchor was in
-  memcpy((void *)rawAnchor, data, dataLen);
+  // Zero out the anchor area, in case the data is shorter than the anchor.
+  // We found the entire anchor in this buffer, so we know this memset "fits".
+  memset(rawAnchor, 0, sentinelBuf->len);
+  // Copy the new data into the same spot the anchor was in.
+  memcpy(rawAnchor, dataBuf->data, dataBuf->len);
 
   // Write the new block.
   ASSERT(abstractOut->seek(abstractOut, attributionResource->rawPos) == 0, "seek out");
-  ASSERT(abstractOut->write(abstractOut, rawBuffer, attributionResource->rawLength) == attributionResource->rawLength, "write data");
+  ASSERT(abstractOut->write(abstractOut, rawBuf->data, rawBuf->len) == attributionResource->rawLength, "write data");
 
   // New block checksum.
   ChecksumToken newRawToken;
   memset(&newRawToken, 0, sizeof(ChecksumToken));
-  CRCProxy(&newRawToken, (unsigned char*)rawBuffer, attributionResource->rawLength);
+  CRCProxy(&newRawToken, (unsigned char*)rawBuf->data, rawBuf->len);
 
-  free(rawBuffer);
+  free(rawBuf);
 
   // Step 2: update "attribution" resource.
   attributionResource->rawChecksum = newRawToken.crc;

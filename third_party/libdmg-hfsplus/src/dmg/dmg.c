@@ -4,8 +4,9 @@
 #include <string.h>
 #include <getopt.h>
 
-#include <dmg/dmg.h>
-#include <dmg/filevault.h>
+#include "dmg/dmg.h"
+#include "dmg/filevault.h"
+#include "sizedbuf.h"
 
 char endianness;
 
@@ -128,14 +129,15 @@ int main(int argc, char* argv[]) {
 	} else if(strcmp(cmd, "dmg") == 0) {
 		convertToDMG(in, out, &comp, runSectors);
 	} else if(strcmp(cmd, "attribute") == 0) {
-		char *anchor, *data;
 		if(argc < optind + 2) {
 			printf("Not enough arguments: attribute <in> <out> <sentinel> <string>");
 			return 2;
 		}
-		anchor = argv[optind++];
-		data = argv[optind++];
-		updateAttribution(in, out, anchor, data, strlen(data));
+		SizedBuf* anchorBuf = AllocBufCopyString(argv[optind++]);
+		SizedBuf* dataBuf = AllocBufCopyString(argv[optind++]);
+		updateAttributionFromBufs(in, out, anchorBuf, dataBuf);
+		free(dataBuf);
+		free(anchorBuf);
 	}
 
 	return 0;
