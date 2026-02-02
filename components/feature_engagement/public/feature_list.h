@@ -560,6 +560,10 @@ DEFINE_VARIATION_PARAM(kIPHiOSEnhancedBrowsingDesktopFeature,
                        "IPH_iOSEnhancedBrowsingDesktop");
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if !BUILDFLAG(IS_IOS)
+DEFINE_VARIATION_PARAM(kIPHResumptionRailFeature, "IPH_ResumptionRail");
+#endif  // !BUILDFLAG(IS_IOS)
+
 // Defines the array of which features should be listed in the chrome://flags
 // UI to be able to select them alone for demo-mode. The features listed here
 // are possible to enable on their own in demo mode.
@@ -788,6 +792,7 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHReadingListInSidePanelFeature),
         VARIATION_ENTRY(kIPHReadingModeSidePanelFeature),
         VARIATION_ENTRY(kIPHReadingModePageActionLabelFeature),
+        VARIATION_ENTRY(kIPHResumptionRailFeature),
         VARIATION_ENTRY(kIPHShoppingCollectionFeature),
         VARIATION_ENTRY(kIPHSideBySidePinnableFeature),
         VARIATION_ENTRY(kIPHSideBySideTabSwitchFeature),

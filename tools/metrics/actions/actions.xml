@@ -680,6 +680,8 @@ should be able to be added at any place in this file.
       summary="For the RequestDesktopSiteWindowSetting feature."/>
   <variant name="_RestoreTabsOnFRE"
       summary="For the RestoreTabsOnFRE feature."/>
+  <variant name="_ResumptionRail"
+      summary="For Resumption Rail feature entrypoint."/>
   <variant name="_RtlGestureNavigation"
       summary="For the gesture navigation in RTL mode."/>
   <variant name="_SharedHighlightingBuilder"
