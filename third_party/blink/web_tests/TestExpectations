@@ -9752,6 +9752,16 @@ crbug.com/475366073 [ Win11-arm64 ] virtual/xslt-enabled/http/tests/xsl/xslt/xsl
 # linux-blink-leak-rel failure
 crbug.com/476257809 [ Linux ] external/wpt/fedcm/fedcm-storage-access-api-autogrant.tentative.https.sub.html [ Failure Pass Skip ]
 
+# Pointer Lock `unadjustedMovement: true` is unsupported on Linux.
+# The unadjustedmovement=false variant fails on Linux as well, presumably due to
+# an issue with how the events are being sent by the test driver. The behavior
+# works properly when verified manually.
+crbug.com/40833850 [ Linux ] external/wpt/pointerlock/pointerlock-maintains-mousedown.html?unadjustedmovement=false [ Failure ]
+crbug.com/40833850 [ Linux ] external/wpt/pointerlock/pointerlock-maintains-mousedown.html?unadjustedmovement=true [ Failure ]
+# Even though Windows supports unadjusted movement, in the headless shell this
+# test uses the WindowTreeHost which doesn't implement unadjusted movement.
+crbug.com/480074857 [ Win ] external/wpt/pointerlock/pointerlock-maintains-mousedown.html?unadjustedmovement=true [ Failure ]
+
 # Gardener 2026-01-23
 crbug.com/478074263 [ Mac ] virtual/shared-storage-fenced-frame-mparch/external/wpt/shared-storage/select-url-saved-query-same-origin-multi-query.tentative.https.sub.html [ Failure Pass Timeout ]
 crbug.com/478193880 [ Linux ] external/wpt/pointerevents/pointerevent_attributes.optional.html?touch [ Failure Pass Timeout ]

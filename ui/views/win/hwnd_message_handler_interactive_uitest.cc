@@ -8,6 +8,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/ime/mock_input_method.h"
+#include "ui/events/event_constants.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/win/hwnd_message_handler.h"
 #include "ui/views/win/hwnd_message_handler_delegate.h"
@@ -246,6 +247,38 @@ TEST_F(HWNDMessageHandlerTest, AltKeySuppressedWhenMouseLocked) {
   delegate.reset_accelerator_state();
   ::SendMessage(handler->hwnd(), WM_SYSCOMMAND, SC_KEYMENU, 0);
   EXPECT_EQ(1, delegate.accelerator_handled_count());
+
+  handler->CloseNow();
+}
+
+// Tests that enabling/disabling WM_INPUT mode properly resets the tracked
+// button state to avoid stale state when pointer lock is toggled.
+TEST_F(HWNDMessageHandlerTest, RawInputButtonStateResetOnDisable) {
+  TestHWNDMessageHandlerDelegate delegate;
+  std::unique_ptr<HWNDMessageHandler> handler(
+      HWNDMessageHandler::Create(&delegate, "test"));
+  ASSERT_TRUE(handler);
+  handler->Init(nullptr, gfx::Rect(0, 0, 100, 100));
+  ASSERT_TRUE(handler->hwnd());
+
+  // Initially not using WM_INPUT.
+  EXPECT_FALSE(handler->using_wm_input());
+  EXPECT_EQ(ui::EF_NONE, handler->raw_input_button_state_for_testing());
+
+  // Enable WM_INPUT mode (simulating pointer lock).
+  handler->set_using_wm_input(true);
+  EXPECT_TRUE(handler->using_wm_input());
+  EXPECT_EQ(ui::EF_NONE, handler->raw_input_button_state_for_testing());
+
+  // Simulate some button state being tracked (e.g., left button down).
+  handler->set_raw_input_button_state_for_testing(ui::EF_LEFT_MOUSE_BUTTON);
+  EXPECT_EQ(ui::EF_LEFT_MOUSE_BUTTON,
+            handler->raw_input_button_state_for_testing());
+
+  // Disable WM_INPUT mode - this should reset button state to EF_NONE.
+  handler->set_using_wm_input(false);
+  EXPECT_FALSE(handler->using_wm_input());
+  EXPECT_EQ(ui::EF_NONE, handler->raw_input_button_state_for_testing());
 
   handler->CloseNow();
 }

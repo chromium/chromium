@@ -279,27 +279,6 @@ gfx::ResizeEdge GetWindowResizeEdge(UINT param) {
   }
 }
 
-int GetFlagsFromRawInputMessage(RAWINPUT* input) {
-  int flags = ui::EF_NONE;
-  if (input->data.mouse.usButtonFlags & RI_MOUSE_BUTTON_1_DOWN) {
-    flags |= ui::EF_LEFT_MOUSE_BUTTON;
-  }
-  if (input->data.mouse.usButtonFlags & RI_MOUSE_BUTTON_2_DOWN) {
-    flags |= ui::EF_RIGHT_MOUSE_BUTTON;
-  }
-  if (input->data.mouse.usButtonFlags & RI_MOUSE_BUTTON_3_DOWN) {
-    flags |= ui::EF_MIDDLE_MOUSE_BUTTON;
-  }
-  if (input->data.mouse.usButtonFlags & RI_MOUSE_BUTTON_4_DOWN) {
-    flags |= ui::EF_BACK_MOUSE_BUTTON;
-  }
-  if (input->data.mouse.usButtonFlags & RI_MOUSE_BUTTON_5_DOWN) {
-    flags |= ui::EF_FORWARD_MOUSE_BUTTON;
-  }
-
-  return ui::GetModifiersFromKeyState() | flags;
-}
-
 // Maps HWNDs to their owners.
 using WindowOwnerMap = base::flat_map<HWND, std::vector<HWND>>;
 
@@ -1148,6 +1127,9 @@ HWNDMessageHandler::RegisterUnadjustedMouseEvent() {
 
 void HWNDMessageHandler::set_using_wm_input(bool using_wm_input) {
   using_wm_input_ = using_wm_input;
+  if (!using_wm_input) {
+    raw_input_button_state_ = ui::EF_NONE;
+  }
 }
 
 bool HWNDMessageHandler::using_wm_input() const {
@@ -2364,13 +2346,18 @@ LRESULT HWNDMessageHandler::OnInputEvent(UINT message,
 
   if (input->header.dwType == RIM_TYPEMOUSE &&
       input->data.mouse.usButtonFlags != RI_MOUSE_WHEEL) {
+    // Update the tracked button state based on any button transitions in this
+    // event. This must be done before creating the MouseEvent so the event
+    // reflects the correct current button state.
+    UpdateRawInputButtonState(input);
+
     POINT cursor_pos = {0};
     ::GetCursorPos(&cursor_pos);
     ScreenToClient(hwnd(), &cursor_pos);
     ui::MouseEvent event(
         ui::EventType::kMouseMoved, gfx::PointF(cursor_pos.x, cursor_pos.y),
         gfx::PointF(cursor_pos.x, cursor_pos.y), ui::EventTimeForNow(),
-        GetFlagsFromRawInputMessage(input), 0);
+        ui::GetModifiersFromKeyState() | raw_input_button_state_, 0);
     if (!(input->data.mouse.usFlags & MOUSE_MOVE_ABSOLUTE)) {
       ui::MouseEvent::DispatcherApi(&event).set_movement(
           gfx::Vector2dF(input->data.mouse.lLastX, input->data.mouse.lLastY));
@@ -3912,6 +3899,31 @@ void HWNDMessageHandler::UpdateFullscreenMonitorMap() {
     // current window.
     RemoveCurrentWindowFromFullscreenMonitorMap();
   }
+}
+
+void HWNDMessageHandler::UpdateRawInputButtonState(
+    const RAWINPUT* const input) {
+  const USHORT button_flags = input->data.mouse.usButtonFlags;
+  auto update_button_state = [this, button_flags](int button_flag_down,
+                                                  int button_flag_up,
+                                                  ui::EventFlags event_flag) {
+    if (button_flags & button_flag_down) {
+      raw_input_button_state_ |= event_flag;
+    }
+    if (button_flags & button_flag_up) {
+      raw_input_button_state_ &= ~event_flag;
+    }
+  };
+  update_button_state(RI_MOUSE_BUTTON_1_DOWN, RI_MOUSE_BUTTON_1_UP,
+                      ui::EF_LEFT_MOUSE_BUTTON);
+  update_button_state(RI_MOUSE_BUTTON_2_DOWN, RI_MOUSE_BUTTON_2_UP,
+                      ui::EF_RIGHT_MOUSE_BUTTON);
+  update_button_state(RI_MOUSE_BUTTON_3_DOWN, RI_MOUSE_BUTTON_3_UP,
+                      ui::EF_MIDDLE_MOUSE_BUTTON);
+  update_button_state(RI_MOUSE_BUTTON_4_DOWN, RI_MOUSE_BUTTON_4_UP,
+                      ui::EF_BACK_MOUSE_BUTTON);
+  update_button_state(RI_MOUSE_BUTTON_5_DOWN, RI_MOUSE_BUTTON_5_UP,
+                      ui::EF_FORWARD_MOUSE_BUTTON);
 }
 
 // static
