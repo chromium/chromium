@@ -166,9 +166,8 @@
   [self dismissSnackbar:snackbarView animated:YES];
 }
 
-- (void)snackbarViewDidRequestDismissal:(SnackbarView*)snackbarView
-                               animated:(BOOL)animated {
-  [self dismissSnackbar:snackbarView animated:animated];
+- (void)snackbarViewDidRequestDismissal:(SnackbarView*)snackbarView {
+  [self dismissSnackbar:snackbarView animated:YES];
 }
 
 #pragma mark - Private

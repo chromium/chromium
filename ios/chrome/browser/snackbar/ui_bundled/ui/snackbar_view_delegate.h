@@ -14,8 +14,7 @@
 - (void)snackbarViewDidTapActionButton:(SnackbarView*)snackbarView;
 
 // Called when the snackbar view requests to be dismissed.
-- (void)snackbarViewDidRequestDismissal:(SnackbarView*)snackbarView
-                               animated:(BOOL)animated;
+- (void)snackbarViewDidRequestDismissal:(SnackbarView*)snackbarView;
 
 @end
 
