@@ -1688,6 +1688,7 @@ component("net") {
     libs = [ "resolv" ]
     frameworks = [
       "CFNetwork.framework",
+      "Network.framework",
       "MobileCoreServices.framework",
       "Security.framework",
       "SystemConfiguration.framework",
