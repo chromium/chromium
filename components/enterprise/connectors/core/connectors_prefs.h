@@ -16,9 +16,9 @@ namespace enterprise_connectors {
 // Pref that maps to the "CacheEncryptionEnabled" policy.
 extern const char kCacheEncryptionEnabledPref[];
 
-// Pref that for storing the master key used for encrypting the HTTP cache. This
-// key is stored in the user's profile preferences and is itself encrypted.
-extern const char kEncryptedCacheMasterKey[];
+// Pref that for storing the primary key used for encrypting the HTTP cache.
+// This key is stored in the user's profile preferences and is itself encrypted.
+extern const char kEncryptedCachePrimaryKey[];
 #endif
 
 // Pref that maps to the "OnFileAttachedEnterpriseConnector" policy.

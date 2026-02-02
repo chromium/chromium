@@ -24,7 +24,8 @@ namespace enterprise_connectors {
 #if BUILDFLAG(ENTERPRISE_CACHE_ENCRYPTION)
 const char kCacheEncryptionEnabledPref[] =
     "enterprise_connectors.cache_encryption_enabled";
-const char kEncryptedCacheMasterKey[] = "enterprise.encrypted_cache_master_key";
+const char kEncryptedCachePrimaryKey[] =
+    "enterprise.encrypted_cache_primary_key";
 #endif
 
 const char kOnFileAttachedPref[] = "enterprise_connectors.on_file_attached";
@@ -99,7 +100,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 
 #if BUILDFLAG(ENTERPRISE_CACHE_ENCRYPTION)
   registry->RegisterBooleanPref(kCacheEncryptionEnabledPref, false);
-  registry->RegisterStringPref(kEncryptedCacheMasterKey, "");
+  registry->RegisterStringPref(kEncryptedCachePrimaryKey, "");
 #endif
 }
 
