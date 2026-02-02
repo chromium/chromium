@@ -12,8 +12,8 @@ namespace web_app {
 std::ostream& operator<<(std::ostream& os,
                          MigrationTargetInstallJobResult result) {
   switch (result) {
-    case MigrationTargetInstallJobResult::kSuccessUpdated:
-      os << "kSuccessUpdated";
+    case MigrationTargetInstallJobResult::kAlreadyInstalled:
+      os << "kAlreadyInstalled";
       break;
     case MigrationTargetInstallJobResult::kSuccessInstalled:
       os << "kSuccessInstalled";

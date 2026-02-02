@@ -55,6 +55,7 @@
 #include "chrome/browser/web_applications/commands/update_file_handler_command.h"
 #include "chrome/browser/web_applications/commands/update_protocol_handler_approval_command.h"
 #include "chrome/browser/web_applications/commands/web_app_icon_diagnostic_command.h"
+#include "chrome/browser/web_applications/commands/web_app_install_from_migrate_from_field_command.h"
 #include "chrome/browser/web_applications/commands/web_app_uninstall_command.h"
 #include "chrome/browser/web_applications/commands/web_install_from_url_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/check_isolated_web_app_bundle_installability_command.h"
@@ -874,6 +875,17 @@ void WebAppCommandScheduler::ScheduleResolveWebAppPendingMigrationInfo(
   provider_->command_manager().ScheduleCommand(
       std::make_unique<ResolveWebAppPendingMigrationInfoCommand>(
           std::move(callback)),
+      location);
+}
+
+void WebAppCommandScheduler::ScheduleWebAppInstallFromMigrateFromField(
+    base::WeakPtr<content::WebContents> web_contents,
+    blink::mojom::ManifestPtr manifest,
+    WebAppInstallFromMigrateFromFieldCallback callback,
+    const base::Location& location) {
+  provider_->command_manager().ScheduleCommand(
+      std::make_unique<WebAppInstallFromMigrateFromFieldCommand>(
+          web_contents, std::move(manifest), std::move(callback)),
       location);
 }
 

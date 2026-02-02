@@ -285,9 +285,11 @@ void ManifestUpdateJob::OnWebAppInfoCreated(
       app->latest_install_source() == webapps::WebappInstallSource::SYNC &&
       generated_icon_fix_util::IsWithinFixTimeWindow(*app) &&
       web_app_comparison_.ExistingAppWithoutPendingEqualsNewUpdate();
+  bool is_migration_suggestion = lock_->registrar().AppMatches(
+      app_id_, WebAppFilter::IsAppSuggestedForMigration());
   silently_update_app_identity_ =
       (is_trusted_install || can_fix_generated_icons ||
-       options_.force_silent_update_identity);
+       options_.force_silent_update_identity || is_migration_suggestion);
 
   if (can_fix_generated_icons) {
     ScopedRegistryUpdate update = lock_->sync_bridge().BeginUpdate();

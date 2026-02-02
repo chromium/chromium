@@ -12,8 +12,8 @@
 namespace web_app {
 
 enum class MigrationTargetInstallJobResult {
-  // The target app was already installed, and it was successfully updated.
-  kSuccessUpdated,
+  // The target app was already installed.
+  kAlreadyInstalled,
   // The target app was not installed, and it was successfully installed with
   // the SUGGESTED_FROM_MIGRATION state.
   kSuccessInstalled,

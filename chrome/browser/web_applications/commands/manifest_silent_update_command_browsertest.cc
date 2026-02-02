@@ -32,6 +32,8 @@
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_registry_update.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -622,6 +624,39 @@ IN_PROC_BROWSER_TEST_F(ManifestSilentUpdateCommandLineTests,
   const WebApp* web_app = provider().registrar_unsafe().GetAppById(app_id);
   ASSERT_NE(nullptr, web_app);
   ASSERT_FALSE(web_app->pending_update_info().has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(ManifestSilentUpdateCommandBrowserTest,
+                       UpdateSuggestedFromMigrationApp) {
+  clock_->SetNow(base::Time::Now());
+  const GURL app_url = https_server()->GetURL("/web_apps/updating/index.html");
+  const webapps::AppId app_id = InstallWebAppFromPage(browser(), app_url);
+
+  {
+    ScopedRegistryUpdate update = provider().sync_bridge_unsafe().BeginUpdate();
+    WebApp* app = update->UpdateApp(app_id);
+    app->RemoveSource(WebAppManagement::kSync);
+    app->SetInstallState(proto::InstallState::SUGGESTED_FROM_MIGRATION);
+  }
+
+  // Navigate to a page that has a different name in the manifest.
+  const GURL update_url =
+      https_server()->GetURL("/web_apps/updating/new_name_page.html");
+  {
+    UpdateAwaiter awaiter(provider().install_manager());
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), update_url));
+    awaiter.AwaitUpdate();
+    provider().command_manager().AwaitAllCommandsCompleteForTesting();
+  }
+
+  EXPECT_EQ(
+      provider().registrar_unsafe().GetAppById(app_id)->manifest_update_time(),
+      clock_->Now());
+  // The name should be updated because the app is in SUGGESTED_FROM_MIGRATION
+  // state.
+  EXPECT_EQ(
+      "New Name",
+      provider().registrar_unsafe().GetAppById(app_id)->untranslated_name());
 }
 
 }  // namespace web_app

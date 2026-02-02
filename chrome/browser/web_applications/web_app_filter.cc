@@ -175,4 +175,11 @@ WebAppFilter WebAppFilter::IsAppValidMigrationSource() {
   return filter;
 }
 
+// static
+WebAppFilter WebAppFilter::IsAppEligibleForManifestUpdate() {
+  WebAppFilter filter;
+  filter.is_app_eligible_for_manifest_update_ = true;
+  return filter;
+}
+
 }  // namespace web_app
