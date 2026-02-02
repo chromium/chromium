@@ -1113,20 +1113,26 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
 
     private void scrollToPref(PreferenceFragmentCompat fragment, String key) {
         RecyclerView listView = fragment.getListView();
-        // OnScrollListener#onScrolled is always invoked after the recycler view layout pass
-        // is completed. Use this timing to scroll the preference. The listener is only meant
-        // to run once to scroll to the preference, and then be removed.
-        listView.addOnScrollListener(
-                new RecyclerView.OnScrollListener() {
-                    @Override
-                    public void onScrollStateChanged(RecyclerView recyclerView, int newState) {}
+        boolean containmentStyleDisabled = mItemDecorations.isEmpty();
+        if (containmentStyleDisabled) {
+            fragment.scrollToPreference(key);
+        } else {
+            // Calling #scrollToPreference directly doesn't work when if containment styled is
+            // enabled. But OnScrollListener#onScrolled is always invoked after the recycler view
+            // layout pass is completed. Use this timing to actually scroll the fragment to
+            // the chosen preference.
+            listView.addOnScrollListener(
+                    new RecyclerView.OnScrollListener() {
+                        @Override
+                        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {}
 
-                    @Override
-                    public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                        fragment.scrollToPreference(key);
-                        listView.removeOnScrollListener(this);
-                    }
-                });
+                        @Override
+                        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                            fragment.scrollToPreference(key);
+                            listView.removeOnScrollListener(this);
+                        }
+                    });
+        }
         listView.addOnItemTouchListener(
                 new RecyclerView.SimpleOnItemTouchListener() {
                     @Override
