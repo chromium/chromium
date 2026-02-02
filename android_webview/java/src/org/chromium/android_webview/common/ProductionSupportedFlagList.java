@@ -281,6 +281,11 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_FIX_FORM_TRACKING,
                 "Improves form submission tracking and duplicate submission handling"),
         Flag.baseFeature(
+                AutofillFeatures.AUTOFILL_FIX_STATE_COUNTRY_MISCLASSIFICATION,
+                "When enabled, the rationalization engine will fix misclassifications where"
+                        + " a field is detected as a COUNTRY when it should be a STATE or vice"
+                        + " versa."),
+        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_DISALLOW_MORE_HYPHEN_LIKE_LABELS,
                 "Disallows labels that only contain em dashes, minuses, fullwidth hyphens and other"
                         + " special characters."),
