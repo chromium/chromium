@@ -269,7 +269,8 @@ class EventRouterFilterTest : public ExtensionsTest,
     ExtensionsTest::SetUp();
     render_process_host_ =
         std::make_unique<content::MockRenderProcessHost>(browser_context());
-    ASSERT_TRUE(event_router());  // constructs EventRouter
+    EventRouterFactory::GetInstance()->SetTestingFactory(
+        browser_context(), base::BindRepeating(&BuildEventRouter));
   }
 
   void TearDown() override {
@@ -405,7 +406,7 @@ TEST_F(EventRouterTest, EventRouterObserverForURLs) {
 TEST_F(EventRouterTest, EventRouterObserverForServiceWorkers) {
   RunEventRouterObserverTest(base::BindRepeating(
       &CreateEventListenerForExtensionServiceWorker, "extension_id",
-      // Dummy version_id and thread_id.
+      // Placeholder version_id and thread_id.
       99, 199));
 }
 
@@ -478,9 +479,9 @@ TEST_F(EventRouterTest, WebUIEventsDoNotCrossIncognitoBoundaries) {
   // Add event listeners, as if we had created two real WebUIs, one in a regular
   // profile and one in an otr profile. Note that the string chrome://settings
   // is hardcoded into the api permissions of settingsPrivate.
-  GURL dummy_url("chrome://settings/test");
-  router.AddEventListenerForURL(event_name, &regular_rph, dummy_url);
-  router.AddEventListenerForURL(event_name, &otr_rph, dummy_url);
+  GURL placeholder_url("chrome://settings/test");
+  router.AddEventListenerForURL(event_name, &regular_rph, placeholder_url);
+  router.AddEventListenerForURL(event_name, &otr_rph, placeholder_url);
 
   // Hook up some test observers
   EventRouterObserver regular_counter(regular_rph.GetDeprecatedID());
@@ -588,6 +589,38 @@ TEST_F(EventRouterTest, TestReportEvent) {
   ExpectHistogramCounts(8, 3, 2, 2, 2, 1);
 }
 
+TEST_F(EventRouterTest, AddLazyListenerForUnloadedExtension) {
+  EventRouter* router = EventRouter::Get(browser_context());
+  const std::string kEventName1 = "webNavigation.onBeforeNavigate";
+  const std::string kEventName2 = "webNavigation.onBeforeNavigate";
+
+  const std::string kExtensionId = "mbflcebpggnecokmikipoihdbecnjfoj";
+  EXPECT_FALSE(router->IsExtensionEnabled(kExtensionId));
+
+  // === Main Thread ===
+  router->AddLazyListenerForMainThread(kExtensionId, kEventName1);
+  // The listener should not be registered.
+  EXPECT_FALSE(router->ExtensionHasEventListener(kExtensionId, kEventName1));
+  // The listener should be persisted to prefs.
+  auto registered_events = router->GetRegisteredEvents(
+      kExtensionId, EventRouter::RegisteredEventType::kLazy);
+  EXPECT_TRUE(registered_events.contains(kEventName1));
+
+  // === Service Worker ===
+  router->AddLazyListenerForServiceWorker(
+      kExtensionId, Extension::GetBaseURLFromExtensionId(kExtensionId),
+      kEventName2);
+  // The listener should not be registered. We don't want to add listeners to
+  // contexts that are being shut down.
+  EXPECT_FALSE(router->ExtensionHasEventListener(kExtensionId, kEventName2));
+  // The listener should be persisted to prefs, because, even if the context was
+  // shutting down, we still want a record of the events for which to wake up
+  // the extension.
+  auto registered_sw_events = router->GetRegisteredEvents(
+      kExtensionId, EventRouter::RegisteredEventType::kServiceWorker);
+  EXPECT_TRUE(registered_sw_events.count(kEventName2));
+}
+
 // Tests adding and removing events with filters.
 // TODO(crbug.com/40281129): test is flaky across platforms.
 TEST_P(EventRouterFilterTest, DISABLED_Basic) {
@@ -604,8 +637,8 @@ TEST_P(EventRouterFilterTest, DISABLED_Basic) {
   if (is_for_service_worker()) {
     worker_context = std::make_unique<mojom::ServiceWorkerContext>(
         Extension::GetBaseURLFromExtensionId(kExtensionId),
-        99,    // Dummy version_id.
-        199);  // Dummy thread_id.
+        99,    // Placeholder version_id.
+        199);  // Placeholder thread_id.
   }
   std::vector<base::DictValue> filters;
   for (const auto& host_suffix : kHostSuffixes) {
@@ -652,6 +685,33 @@ TEST_P(EventRouterFilterTest, DISABLED_Basic) {
   ASSERT_FALSE(ContainsFilter(kExtensionId, kEventName, filters[0]));
   ASSERT_FALSE(ContainsFilter(kExtensionId, kEventName, filters[1]));
   ASSERT_FALSE(ContainsFilter(kExtensionId, kEventName, filters[2]));
+}
+
+TEST_P(EventRouterFilterTest, AddFilteredLazyListenerForUnloadedExtension) {
+  const std::string kEventName = "webRequest.onBeforeRequest";
+  const base::DictValue filter = CreateHostSuffixFilter("example.com");
+
+  const std::string kExtensionId = "mbflcebpggnecokmikipoihdbecnjfoj";
+  EXPECT_FALSE(event_router()->IsExtensionEnabled(kExtensionId));
+
+  std::unique_ptr<mojom::ServiceWorkerContext> worker_context;
+  if (is_for_service_worker()) {
+    worker_context = std::make_unique<mojom::ServiceWorkerContext>(
+        Extension::GetBaseURLFromExtensionId(kExtensionId),
+        99,    // Placeholder version_id.
+        199);  // Placeholder thread_id.
+  }
+
+  event_router()->AddFilteredEventListener(
+      kEventName, render_process_host(),
+      mojom::EventListenerOwner::NewExtensionId(kExtensionId),
+      worker_context.get(), filter, /*add_lazy_listener=*/true);
+
+  // The listener should not be registered.
+  EXPECT_FALSE(
+      event_router()->ExtensionHasEventListener(kExtensionId, kEventName));
+  // The listener should be persisted to prefs.
+  EXPECT_TRUE(ContainsFilter(kExtensionId, kEventName, filter));
 }
 
 // TODO(crbug.com/40281129): test is flaky across platforms.

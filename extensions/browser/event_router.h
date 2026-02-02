@@ -361,9 +361,13 @@ class EventRouter : public KeyedService,
   friend class UpdateInstallGateTest;
   friend class DownloadExtensionTest;
   friend class SystemInfoAPITest;
+  FRIEND_TEST_ALL_PREFIXES(EventRouterTest,
+                           AddLazyListenerForUnloadedExtension);
   FRIEND_TEST_ALL_PREFIXES(EventRouterTest, MultipleEventRouterObserver);
   FRIEND_TEST_ALL_PREFIXES(EventRouterDispatchTest, TestDispatch);
   FRIEND_TEST_ALL_PREFIXES(EventRouterDispatchTest, TestDispatchCallback);
+  FRIEND_TEST_ALL_PREFIXES(EventRouterFilterTest,
+                           AddFilteredLazyListenerForUnloadedExtension);
   FRIEND_TEST_ALL_PREFIXES(
       DeveloperPrivateApiUnitTest,
       UpdateHostAccess_UnrequestedHostsDispatchUpdateEvents);
@@ -410,7 +414,10 @@ class EventRouter : public KeyedService,
       mojom::EventDispatcher::DispatchEventCallback callback);
 
   void ObserveProcess(content::RenderProcessHost* process);
-  content::RenderProcessHost* GetRenderProcessHostForCurrentReceiver();
+  content::RenderProcessHost* GetRenderProcessHostForCurrentReceiver() const;
+
+  // Returns true if the extension with the given ID is enabled.
+  bool IsExtensionEnabled(const ExtensionId& extension_id) const;
 
   // Adds an extension as an event listener for `event_name`.
   //

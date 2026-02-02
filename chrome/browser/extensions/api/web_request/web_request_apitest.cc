@@ -94,6 +94,7 @@
 #include "extensions/browser/api/web_request/web_request_api.h"
 #include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/blocked_action_type.h"
+#include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
@@ -7137,6 +7138,83 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
 
   // ... and the extension should have seen the request.
   EXPECT_EQ(2, get_request_count());
+}
+
+class ManifestV3WebRequestApiTestWithAlternativeAddListener
+    : public ManifestV3WebRequestApiTest {
+ public:
+  ManifestV3WebRequestApiTestWithAlternativeAddListener() {
+    scoped_feature_list_.InitAndEnableFeature(
+        extensions_features::kWebRequestAlternativeAddListener);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Test that, when the `WebRequestAlternativeAddListener` feature flag is
+// enabled, adding a listener right after an extension has been unloaded, but
+// before its renderer has been shut down, doesn't cause a CHECK failure in
+// WebRequestAPI. Regression test for https://crbug.com/479841044.
+IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTestWithAlternativeAddListener,
+                       DontCrashOnExtensionUnload) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  static constexpr char kManifest[] =
+      R"({
+           "name": "MV3 WebRequest",
+           "version": "0.1",
+           "manifest_version": 3,
+           "permissions": ["webRequest"],
+           "host_permissions": [
+             "http://example.com/*"
+           ],
+           "background": {"service_worker": "background.js"}
+         })";
+
+  // Setup a service worker that will add a listener on command.
+  static constexpr char kBackgroundJs[] =
+      R"(chrome.test.sendMessage('will_receive').then(() => {
+           chrome.webRequest.onBeforeRequest.addListener(
+             async (details) => { },
+             {urls: ['<all_urls>'], types: ['main_frame']});
+         }))";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
+
+  // Load the extension and wait until it's ready to receive our reply.
+  ExtensionTestMessageListener will_receive_listener("will_receive",
+                                                     ReplyBehavior::kWillReply);
+  const Extension* extension = LoadExtension(
+      test_dir.UnpackedPath(),
+      {.wait_for_renderers = false, .wait_for_registration_stored = false});
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(will_receive_listener.WaitUntilSatisfied());
+
+  // Setup a watcher to wait for the service worker process to exit.
+  std::optional<WorkerId> worker_id = GetWorkerIdForExtension(extension->id());
+  ASSERT_TRUE(worker_id);
+  content::RenderProcessHost* process_host =
+      content::RenderProcessHost::FromID(worker_id->render_process_id);
+  ASSERT_TRUE(process_host);
+  content::RenderProcessHostWatcher process_watcher(
+      process_host, content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+
+  // Instruct the service worker to register the listener.
+  will_receive_listener.Reply("go");
+  // Immediately disable the extension.
+  DisableExtension(extension->id());
+  // Wait for the process to terminate. While we wait, the service worker will
+  // receive the message and try to register the listener. However, EventRouter
+  // should ignore the request because the extension is already unloaded.
+  process_watcher.Wait();
+
+  // No listener should've been registered.
+  auto* event_router = EventRouter::Get(profile());
+  const char* event_name = "webRequest.onBeforeRequest/s1";
+  EXPECT_FALSE(event_router->HasLazyEventListenerForTesting(event_name));
+  EXPECT_FALSE(event_router->HasNonLazyEventListenerForTesting(event_name));
 }
 
 // Verifies that a failed dispatch to an inactive, non-blocking listener does
