@@ -49,7 +49,6 @@ import java.util.concurrent.ExecutionException;
 /** Integration tests for {@link IncognitoProfileDestroyer}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
 public class IncognitoProfileDestroyerIntegrationTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -205,6 +204,8 @@ public class IncognitoProfileDestroyerIntegrationTest {
     @MediumTest
     @Feature({"OffTheRecord"})
     @DisableFeatures({ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW})
+    @DisableIf.Device(
+            DeviceFormFactor.DESKTOP) // TODO(crbug.com/479863847): Test failing on Desktop bot
     public void test_ActivateAfterEmpty() throws ExecutionException {
         // Open a single incognito tab.
         setupIncognitoTab();
