@@ -776,9 +776,12 @@ bool ShouldShowWebActuationToggle(Profile* profile) {
 
   const base::flat_set<int32_t>& allowed_tiers =
       actor::ActorPolicyChecker::GetActorEligibleTiers();
-
-  // If tiers are populated, ensure the UI visibility flag is also enabled
-  // before showing the toggle.
+  // If no tiers are allowed, the toggle should never be shown.
+  if (allowed_tiers.empty()) {
+    return false;
+  }
+  // If the toggle feature is on, enforce toggle visibility based on
+  // subscription eligibility.
   if (!allowed_tiers.empty() &&
       base::FeatureList::IsEnabled(features::kGlicWebActuationSettingsToggle)) {
     auto* subscription_service = subscription_eligibility::
@@ -788,17 +791,11 @@ bool ShouldShowWebActuationToggle(Profile* profile) {
         subscription_service->GetAiSubscriptionTier());
   }
 
-  // If no specific tiers are populated, show the toggle only if the user
-  // has explicitly modified the preference before.
+  // Show the toggle if the user has explicitly modified the preference before
+  // (e.g., via accepting the consent card).
   const PrefService::Preference* pref = profile->GetPrefs()->FindPreference(
       glic::prefs::kGlicUserEnabledActuationOnWeb);
   if (pref && !pref->IsDefaultValue()) {
-    return true;
-  }
-  // If tiers are empty and the user hasn't set the pref, still show toggle
-  // if enterprise policy is actively blocking it. This ensures users see the
-  // enterprise enforced state instead of it just being missing.
-  if (IsWebActuationDisabledForEnterprise(profile)) {
     return true;
   }
   return false;
