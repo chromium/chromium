@@ -809,6 +809,27 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
   NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
   __weak __typeof__(self) weakSelf = self;
 
+  if (base::FeatureList::IsEnabled(kShareInOmniboxLongPress)) {
+    UIImage* image =
+        DefaultSymbolWithPointSize(kShareSymbol, kSymbolImagePointSize);
+
+    UIAction* shareThisPageAction =
+        [UIAction actionWithTitle:l10n_util::GetNSString(
+                                      IDS_IOS_TOOLS_MENU_SHARE_THIS_PAGE)
+                            image:image
+                       identifier:nil
+                          handler:^(UIAction* action) {
+                            [weakSelf.dispatcher showShareSheet];
+                          }];
+
+    UIMenu* divider = [UIMenu menuWithTitle:@""
+                                      image:nil
+                                 identifier:nil
+                                    options:UIMenuOptionsDisplayInline
+                                   children:@[ shareThisPageAction ]];
+    [menuElements addObject:divider];
+  }
+
   UIImage* pasteImage = nil;
   if (IsBottomOmniboxAvailable()) {
     pasteImage =
