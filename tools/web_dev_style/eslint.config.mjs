@@ -8,7 +8,7 @@ import typescriptEslint from '../../third_party/node/node_modules/@typescript-es
 import tsParser from '../../third_party/node/node_modules/@typescript-eslint/parser/dist/index.js';
 import webUiEslint from '../../ui/webui/resources/tools/webui_eslint_plugin.js';
 
-const noRestricetdSyntaxCases = [
+const noRestrictedSyntaxCases = [
   {
     selector:
         'CallExpression[callee.object.name=JSON][callee.property.name=parse] > CallExpression[callee.object.name=JSON][callee.property.name=stringify]',
@@ -60,6 +60,28 @@ const noRestricetdSyntaxCases = [
         'ImportDeclaration[source.value=/^.*\\u002F.*(?<!\\.[a-z]{2}|\\.[a-z]{3}|\\.[a-z]{4})$/]',
     message:
         'Disallowed extensionless import. Explicitly specify the extension suffix.',
+  },
+];
+
+const noRestrictedImportsPaths = [
+  {
+    name:
+        'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js',
+    importNames: ['Polymer'],
+    message: 'Use PolymerElement instead.',
+  },
+  {
+    name: '//resources/polymer/v3_0/polymer/polymer_bundled.min.js',
+    importNames: ['Polymer'],
+    message: 'Use PolymerElement instead.',
+  },
+  {
+    name: 'chrome://webui-test/chai.js',
+    message: 'Use chrome://webui-test/chai_assert.js instead.',
+  },
+  {
+    name: '//webui-test/chai.js',
+    message: 'Use chrome://webui-test/chai_assert.js instead.',
   },
 ];
 
@@ -133,29 +155,7 @@ export default [
       'no-new-wrappers': 'error',
 
       'no-restricted-imports': [
-        'error', {
-          paths: [
-            {
-              name:
-                  'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js',
-              importNames: ['Polymer'],
-              message: 'Use PolymerElement instead.',
-            },
-            {
-              name: '//resources/polymer/v3_0/polymer/polymer_bundled.min.js',
-              importNames: ['Polymer'],
-              message: 'Use PolymerElement instead.',
-            },
-            {
-              name: 'chrome://webui-test/chai.js',
-              message: 'Use chrome://webui-test/chai_assert.js instead.',
-            },
-            {
-              name: '//webui-test/chai.js',
-              message: 'Use chrome://webui-test/chai_assert.js instead.',
-            },
-          ],
-        }
+        'error', {paths: [...noRestrictedImportsPaths]},
       ],
 
       'no-restricted-properties': [
@@ -183,7 +183,7 @@ export default [
         },
       ],
 
-      'no-restricted-syntax': ['error', ...noRestricetdSyntaxCases],
+      'no-restricted-syntax': ['error', ...noRestrictedSyntaxCases],
       'no-throw-literal': 'error',
       'no-trailing-spaces': 'error',
       'no-var': 'error',
@@ -448,6 +448,21 @@ export default [
     },
     'rules': {
       'eslint-plugin-lit/quoted-expressions': ['error', 'always'],
+      'no-restricted-imports': [
+        'error', {
+          paths: [
+            ...noRestrictedImportsPaths,
+            {
+              name: 'chrome://resources/js/load_time_data.js',
+              message: 'Use $i18n{} or I18nMixin methods for strings. Use reactive properties for feature flags.',
+            },
+            {
+              name: '//resources/js/load_time_data.js',
+              message: 'Use $i18n{} or I18nMixin methods for strings. Use reactive properties for feature flags.',
+            },
+          ],
+        }
+      ],
     },
   },
   {
@@ -463,7 +478,7 @@ export default [
       'ui/webui/resources/cr_elements/**/*.html.ts',
     ],
     rules: {
-      'no-restricted-syntax': ['error', ...noRestricetdSyntaxCases, {
+      'no-restricted-syntax': ['error', ...noRestrictedSyntaxCases, {
         'selector': 'Literal[value=/\\$i18n{.*}/]',
         'message': 'Can\'t use $i18n{...} placeholders in ui/webui/resources/ HTML templates. Use I18nMixinLit instead.'
       },
