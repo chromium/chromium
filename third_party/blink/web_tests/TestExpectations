@@ -2961,9 +2961,6 @@ crbug.com/475042067 external/wpt/webrtc-encoded-transform/idlharness.https.windo
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/479873900 [ Win ] external/wpt/content-security-policy/generic/only-valid-whitespaces-are-allowed.html [ Pass Timeout ]
-crbug.com/479874917 [ Linux ] external/wpt/navigation-api/scroll-behavior/manual-scroll-fragment-does-not-exist.html [ Crash Pass ]
-crbug.com/479874917 [ Win ] external/wpt/navigation-api/scroll-behavior/manual-scroll-fragment-does-not-exist.html [ Crash Timeout ]
-crbug.com/479874917 [ Mac ] external/wpt/navigation-api/scroll-behavior/manual-scroll-fragment-does-not-exist.html [ Crash Pass ]
 crbug.com/479872440 external/wpt/webdriver/tests/classic/execute_async_script/promise.py [ Failure ]
 crbug.com/479872440 external/wpt/webdriver/tests/classic/execute_script/promise.py [ Failure ]
 crbug.com/479899941 external/wpt/x-frame-options/get-decode-split.html [ Timeout ]
@@ -9772,3 +9769,6 @@ crbug.com/40281140 [ Win11-arm64 ] external/wpt/mediacapture-record/MediaRecorde
 
 # Gardener 2026-01-30
 crbug.com/479025607 [ Linux ] external/wpt/ai/translator/translator-locale.https.window.html [ Failure Pass Timeout ]
+
+# Gardener 2026-02-02
+crbug.com/479874917 external/wpt/navigation-api/scroll-behavior/manual-scroll-fragment-does-not-exist.html [ Crash Timeout Failure Pass ]
