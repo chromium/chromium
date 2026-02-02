@@ -377,7 +377,7 @@ class ExecutionProviderInitializer {
 
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE,
-        {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+        {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
          base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
         base::BindOnce(&ActivateCatalogAndGetAvailableEps),
         base::BindOnce(&ExecutionProviderInitializer::Initialize,
