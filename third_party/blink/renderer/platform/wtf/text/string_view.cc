@@ -225,6 +225,14 @@ wtf_size_t StringView::find(UChar ch, wtf_size_t start) const {
                   : blink::Find(Span16(), ch, start);
 }
 
+wtf_size_t StringView::rfind(UChar ch, wtf_size_t start) const {
+  if (empty()) {
+    return kNotFound;
+  }
+  return Is8Bit() ? blink::ReverseFind(Span8(), ch, start)
+                  : blink::ReverseFind(Span16(), ch, start);
+}
+
 bool StringView::contains(UChar ch) const {
   return find(ch) != kNotFound;
 }

@@ -286,6 +286,10 @@ class WTF_EXPORT StringView {
   wtf_size_t Find(CharacterMatchFunctionPtr match_function,
                   wtf_size_t start = 0) const;
 
+  // Find the last occurrence of a character. Returns the index of the match, or
+  // `kNotFound`.
+  wtf_size_t rfind(UChar ch, wtf_size_t start = kNotFound) const;
+
   // Returns `true` if this StringView contains the specified character.
   bool contains(UChar ch) const;
 
