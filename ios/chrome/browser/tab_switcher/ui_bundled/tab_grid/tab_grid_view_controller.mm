@@ -1448,11 +1448,14 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 // Calculates the proper insets for a Tab Grid panel to accommodate for the safe
 // area and toolbar.
 - (UIEdgeInsets)calculateInsetsForGridView {
-  // The content inset of the tab grids must be modified so that the toolbars
-  // do not obscure the tabs. This may change depending on orientation.
-  CGFloat bottomInset = self.configuration == TabGridConfigurationBottomToolbar
-                            ? self.bottomToolbar.intrinsicContentSize.height
-                            : 0;
+  CGFloat bottomInset = 0;
+  if (!IsChromeNextIaEnabled()) {
+    // The content inset of the tab grids must be modified so that the toolbars
+    // do not obscure the tabs. This may change depending on orientation.
+    bottomInset = self.configuration == TabGridConfigurationBottomToolbar
+                      ? self.bottomToolbar.intrinsicContentSize.height
+                      : 0;
+  }
 
   CGFloat topInset = self.topToolbar.intrinsicContentSize.height;
   UIEdgeInsets inset = UIEdgeInsetsMake(topInset, 0, bottomInset, 0);

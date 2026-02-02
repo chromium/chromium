@@ -78,6 +78,8 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
 - (void)viewDidLoad {
   [super viewDidLoad];
 
+  self.view.backgroundColor = [UIColor.purpleColor colorWithAlphaComponent:0.5];
+
   _assistantButton = [self createAssistantButton];
   _openNewTabButton = [self createOpenNewTabButton];
   _tabGridButton = [self createTabGridButton];

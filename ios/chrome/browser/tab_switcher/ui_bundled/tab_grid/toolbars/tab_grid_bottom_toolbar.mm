@@ -541,6 +541,10 @@ CGFloat CompactButtonHorizontalPadding() {
   }
 
   if (useCompactLayout) {
+    if (IsChromeNextIaEnabled()) {
+      // If ChromeNext is enabled, there is no toolbar in normal mode compact.
+      return;
+    }
     if (self.page == TabGridPageTabGroups) {
       _doneButton.hidden = NO;
 
