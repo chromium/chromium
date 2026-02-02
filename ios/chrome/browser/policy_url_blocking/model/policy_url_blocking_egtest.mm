@@ -101,7 +101,7 @@ void WaitForURLBlockedStatus(const GURL& url, bool blocked) {
 
 // Tests that a page load is blocked when the URLBlocklist policy is set to
 // block all URLs.
-- (void)FormDatatestWildcardBlocklist {
+- (void)testWildcardBlocklist {
   GREYAssertTrue(SetPolicyValue(base::Value(base::ListValue().Append("*")),
                                 /*block_url=*/true),
                  @"policy value couldn't be set");
@@ -115,7 +115,7 @@ void WaitForURLBlockedStatus(const GURL& url, bool blocked) {
 }
 
 // Tests that the NTP is not blocked by the wildcard blocklist.
-- (void)FormDatatestNTPIsNotBlocked {
+- (void)testNTPIsNotBlocked {
   GREYAssertTrue(SetPolicyValue(base::Value(base::ListValue().Append("*")),
                                 /*block_url=*/true),
                  @"policy value couldn't be set");
@@ -127,7 +127,7 @@ void WaitForURLBlockedStatus(const GURL& url, bool blocked) {
 
 // Tests that a page is blocked when the URLBlocklist policy is set to block a
 // specific URL.
-- (void)FormDatatestExplicitBlocklist {
+- (void)testExplicitBlocklist {
   GREYAssertTrue(SetPolicyValue(base::Value(base::ListValue().Append("*/echo")),
                                 /*block_url=*/true),
                  @"policy value couldn't be set");
