@@ -439,6 +439,9 @@ public class Features {
     // Profile.addQuicHints
     public static final String ADD_QUIC_HINTS_V1 = "ADD_QUIC_HINTS_V1";
 
+    // JsReplyProxy.executeJavaScript
+    public static final String JS_INJECTION_IN_FRAME_AND_WORLD = "JS_INJECTION_IN_FRAME_AND_WORLD";
+
     // WebViewBuilder.applyTo
     public static final String WEBVIEW_BUILDER_V2 = "WEBVIEW_BUILDER_V2";
 

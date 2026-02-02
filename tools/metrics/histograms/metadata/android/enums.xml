@@ -710,6 +710,7 @@ chromium-metrics-reviews@google.com.
   <int value="169" label="WebSettingsCompat.removeWebNavigationListener"/>
   <int value="170" label="Profile.addQuicHints"/>
   <int value="171" label="Page.getUrl"/>
+  <int value="172" label="JsReplyProxy.executeJavaScript"/>
 <!-- LINT.ThenChange(/android_webview/support_library/java/src/org/chromium/support_lib_glue/SupportLibWebViewChromiumFactory.java:ApiCall) -->
 
 </enum>
