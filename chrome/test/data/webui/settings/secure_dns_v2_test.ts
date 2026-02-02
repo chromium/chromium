@@ -282,6 +282,39 @@ suite('SettingsSecureDnsV2', function() {
     assertEquals(SecureDnsV2ResolverType.CUSTOM, customRadioButton.name);
   });
 
+  test('SecureDnsToggleOffResetsSelection', async function() {
+    // Start with "Custom" (Secure) mode selected.
+    webUIListenerCallback('secure-dns-setting-changed', {
+      mode: SecureDnsMode.SECURE,
+      config: 'https://custom.dns',
+      managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
+    });
+    await flushTasks();
+
+    const toggleButton =
+        secureDnsToggle.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#toggleButton');
+    assertTrue(!!toggleButton);
+    assertTrue(toggleButton.checked);
+
+    const customRadioButton = testElement.$.customRadioButton;
+    assertTrue(customRadioButton.checked);
+
+    // Turn the toggle OFF.
+    toggleButton.click();
+    await flushTasks();
+    assertFalse(toggleButton.checked);
+
+    // Verify that the selection has reset to "Automatic".
+    assertFalse(customRadioButton.checked);
+    const automaticRadioButton = testElement.$.automaticRadioButton;
+    assertTrue(automaticRadioButton.checked);
+
+    // Verify the underlying pref is OFF.
+    assertEquals(
+        SecureDnsMode.OFF, testElement.getPref('dns_over_https.mode').value);
+  });
+
   test('SecureDnsWarningIcon', async function() {
     webUIListenerCallback('secure-dns-setting-changed', {
       mode: SecureDnsMode.AUTOMATIC,

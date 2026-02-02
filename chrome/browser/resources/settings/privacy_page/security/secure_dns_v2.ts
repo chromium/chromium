@@ -266,10 +266,13 @@ export class SettingsSecureDnsV2Element extends SettingsSecureDnsV2ElementBase {
         this.updateConfigRepresentation_(setting.mode, setting.config);
         break;
       case SecureDnsMode.OFF:
+        this.selectedMode_ = SecureDnsV2ResolverType.AUTOMATIC;
         this.set('secureDnsTogglePref_.value', false);
         break;
       default:
-        assertNotReachedCase(setting.mode);
+        assertNotReachedCase(
+            setting.mode,
+            'Secure DNS pref contains unknown mode: ' + setting.mode);
     }
 
     // Update `lastSelected_` here to help filter out the
@@ -285,7 +288,8 @@ export class SettingsSecureDnsV2Element extends SettingsSecureDnsV2ElementBase {
    * Because of 'no-set-pref', we manually trigger the backend update.
    */
   private onRadioGroupChange_(event: CustomEvent<{value: string}>) {
-    // Ignore events that were triggered by changes to the underlying prefs.
+    // Ignore events that were triggered by changes to the toggle or underlying
+    // prefs.
     if (this.lastSelected_ === event.detail.value) {
       return;
     }
@@ -314,6 +318,8 @@ export class SettingsSecureDnsV2Element extends SettingsSecureDnsV2ElementBase {
    */
   private onToggleButtonChange_() {
     if (!this.secureDnsTogglePref_.value) {
+      this.lastSelected_ = SecureDnsV2ResolverType.AUTOMATIC;
+      this.selectedMode_ = SecureDnsV2ResolverType.AUTOMATIC;
       this.updateDnsPrefs_(SecureDnsMode.OFF);
       return;
     }
@@ -347,7 +353,8 @@ export class SettingsSecureDnsV2Element extends SettingsSecureDnsV2ElementBase {
         this.onResolverSelectChange_();
         break;
       default:
-        assertNotReachedCase(selected);
+        assertNotReachedCase(
+            selected, 'Unknown secure DNS selection made: ' + selected);
     }
   }
 
@@ -533,7 +540,8 @@ export class SettingsSecureDnsV2Element extends SettingsSecureDnsV2ElementBase {
       case SecureDnsMode.OFF:
         break;
       default:
-        assertNotReachedCase(mode);
+        assertNotReachedCase(
+            mode, 'Configuration has unknown secure DNS mode: ' + mode);
     }
 
     this.updatePrivacyPolicyLine_(privacyPolicy);
