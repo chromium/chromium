@@ -158,7 +158,6 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
                         .with(
                                 FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE,
                                 AutocompleteRequestType.SEARCH)
-                        .with(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE, false)
                         // May not be correct, but the view side struggles to deal with a null here.
                         // Init with a default, and it will be corrected by the mediator before it
                         // matters.

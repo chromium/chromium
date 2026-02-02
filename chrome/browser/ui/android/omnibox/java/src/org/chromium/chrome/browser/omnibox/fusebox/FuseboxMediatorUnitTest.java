@@ -18,7 +18,6 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.build.NullUtil.assertNonNull;
@@ -298,17 +297,13 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void onUrlFocusChange_viewsHiddenWhenNotFocused() {
-        // Show it first
+        // Show it first.
         mMediator.setToolbarVisible(true);
-        mMediator.setAutocompleteRequestTypeChangeable(true);
         assertTrue(mModel.get(FuseboxProperties.ATTACHMENTS_TOOLBAR_VISIBLE));
-        assertTrue(mModel.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE));
 
-        // Then hide it
+        // Then hide it.
         mMediator.setToolbarVisible(false);
-        mMediator.setAutocompleteRequestTypeChangeable(false);
         assertFalse(mModel.get(FuseboxProperties.ATTACHMENTS_TOOLBAR_VISIBLE));
-        assertFalse(mModel.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE));
     }
 
     @Test
@@ -516,33 +511,6 @@ public class FuseboxMediatorUnitTest {
         assertEquals(
                 BrandedColorScheme.INCOGNITO,
                 mModel.get(FuseboxProperties.COLOR_SCHEME).intValue());
-    }
-
-    @Test
-    public void setToolbarVisible_stateNotChanged_doesNothing() {
-        // Initial state is false. Calling with false should do nothing.
-        mMediator.setToolbarVisible(false);
-        verifyNoMoreInteractions(mComposeboxQueryControllerBridge);
-
-        // Transition to true. Should NOT start a session.
-        mMediator.setAutocompleteRequestTypeChangeable(true);
-        verifyNoMoreInteractions(mComposeboxQueryControllerBridge);
-
-        // Manually start a session to test the hiding part.
-        mMediator.activateAiMode(AiModeActivationSource.DEDICATED_BUTTON);
-        verifyNoMoreInteractions(mComposeboxQueryControllerBridge);
-
-        // Calling with true again. Should do nothing.
-        mMediator.setAutocompleteRequestTypeChangeable(true);
-        verifyNoMoreInteractions(mComposeboxQueryControllerBridge);
-
-        // Transition to false. Should abandon the session.
-        mMediator.setAutocompleteRequestTypeChangeable(false);
-        verifyNoMoreInteractions(mComposeboxQueryControllerBridge);
-
-        // Calling with false again. Should do nothing.
-        mMediator.setAutocompleteRequestTypeChangeable(false);
-        verifyNoMoreInteractions(mComposeboxQueryControllerBridge);
     }
 
     @Test

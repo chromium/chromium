@@ -38,10 +38,6 @@ class FuseboxProperties {
     public static final WritableObjectPropertyKey<@AutocompleteRequestType Integer>
             AUTOCOMPLETE_REQUEST_TYPE = new WritableObjectPropertyKey<>();
 
-    /** Whether the navigation type toggle is changeable. */
-    public static final WritableBooleanPropertyKey AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE =
-            new WritableBooleanPropertyKey();
-
     /** Action to perform when the user clicks the Autocomplete Request Type button. */
     public static final WritableObjectPropertyKey<Runnable> AUTOCOMPLETE_REQUEST_TYPE_CLICKED =
             new WritableObjectPropertyKey<>();
@@ -150,7 +146,6 @@ class FuseboxProperties {
         ATTACHMENTS_TOOLBAR_VISIBLE,
         ATTACHMENTS_VISIBLE,
         AUTOCOMPLETE_REQUEST_TYPE,
-        AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE,
         AUTOCOMPLETE_REQUEST_TYPE_CLICKED,
         BUTTON_ADD_CLICKED,
         COLOR_SCHEME,

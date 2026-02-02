@@ -163,14 +163,12 @@ public class FuseboxMediator {
      */
     /* package */ void beginInput(AutocompleteInput input) {
         setAutocompleteInput(input);
-        setAutocompleteRequestTypeChangeable(true);
         setToolbarVisible(true);
     }
 
     /** Called when the user stops interacting with the Omnibox. */
     /* package */ void endInput() {
         mModelList.clear();
-        setAutocompleteRequestTypeChangeable(false);
         setToolbarVisible(false);
         setAutocompleteInput(null);
     }
@@ -278,10 +276,6 @@ public class FuseboxMediator {
         setUseCompactUi(
                 OmniboxFeatures.sCompactFusebox.getValue()
                         && mInput.getRequestType() == AutocompleteRequestType.SEARCH);
-    }
-
-    public void setAutocompleteRequestTypeChangeable(boolean isChangeable) {
-        mModel.set(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE, isChangeable);
     }
 
     /**

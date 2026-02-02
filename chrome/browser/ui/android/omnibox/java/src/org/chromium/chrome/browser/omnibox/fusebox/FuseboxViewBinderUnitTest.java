@@ -314,81 +314,12 @@ public class FuseboxViewBinderUnitTest {
     }
 
     @Test
-    public void aiModeButtonVisibility() {
-        mModel.set(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE, false);
-        mModel.set(FuseboxProperties.SHOW_DEDICATED_MODE_BUTTON, true);
-        FuseboxViewBinder.updateButtonsVisibilityAndStyling(mModel, mViewHolder);
-        assertEquals(View.GONE, mPopup.mAiModeButton.getVisibility());
-
-        mModel.set(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE, true);
-        FuseboxViewBinder.updateButtonsVisibilityAndStyling(mModel, mViewHolder);
-        assertEquals(View.VISIBLE, mPopup.mAiModeButton.getVisibility());
-
-        mModel.set(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE, false);
-        mModel.set(FuseboxProperties.SHOW_DEDICATED_MODE_BUTTON, false);
-        FuseboxViewBinder.updateButtonsVisibilityAndStyling(mModel, mViewHolder);
-        assertEquals(View.GONE, mPopup.mAiModeButton.getVisibility());
-
-        mModel.set(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE, true);
-        FuseboxViewBinder.updateButtonsVisibilityAndStyling(mModel, mViewHolder);
-        assertEquals(View.VISIBLE, mPopup.mAiModeButton.getVisibility());
-    }
-
-    @Test
     public void createImageButtonVisibility() {
-        mModel.set(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE, false);
         mModel.set(FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE, false);
-        FuseboxViewBinder.updateButtonsVisibilityAndStyling(mModel, mViewHolder);
         assertEquals(View.GONE, mPopup.mCreateImageButton.getVisibility());
 
-        mModel.set(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE, true);
-        FuseboxViewBinder.updateButtonsVisibilityAndStyling(mModel, mViewHolder);
-        assertEquals(View.GONE, mPopup.mCreateImageButton.getVisibility());
-
-        mModel.set(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE, false);
         mModel.set(FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE, true);
         FuseboxViewBinder.updateButtonsVisibilityAndStyling(mModel, mViewHolder);
-        assertEquals(View.GONE, mPopup.mCreateImageButton.getVisibility());
-
-        mModel.set(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE, true);
-        FuseboxViewBinder.updateButtonsVisibilityAndStyling(mModel, mViewHolder);
-        assertEquals(View.VISIBLE, mPopup.mCreateImageButton.getVisibility());
-    }
-
-    @Test
-    public void requestTypeDividerVisibility() {
-        mModel.set(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE, false);
-        FuseboxViewBinder.updateButtonsVisibilityAndStyling(mModel, mViewHolder);
-        assertEquals(View.GONE, mPopup.mRequestTypeDivider.getVisibility());
-        assertEquals(View.GONE, mPopup.mAiModeButton.getVisibility());
-        assertEquals(View.GONE, mPopup.mCreateImageButton.getVisibility());
-
-        mModel.set(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE, true);
-        mModel.set(FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE, false);
-        mModel.set(FuseboxProperties.SHOW_DEDICATED_MODE_BUTTON, true);
-        FuseboxViewBinder.updateButtonsVisibilityAndStyling(mModel, mViewHolder);
-        assertEquals(View.VISIBLE, mPopup.mRequestTypeDivider.getVisibility());
-        assertEquals(View.VISIBLE, mPopup.mAiModeButton.getVisibility());
-        assertEquals(View.GONE, mPopup.mCreateImageButton.getVisibility());
-
-        mModel.set(FuseboxProperties.SHOW_DEDICATED_MODE_BUTTON, false);
-        FuseboxViewBinder.updateButtonsVisibilityAndStyling(mModel, mViewHolder);
-        assertEquals(View.VISIBLE, mPopup.mRequestTypeDivider.getVisibility());
-        assertEquals(View.VISIBLE, mPopup.mAiModeButton.getVisibility());
-        assertEquals(View.GONE, mPopup.mCreateImageButton.getVisibility());
-
-        mModel.set(FuseboxProperties.SHOW_DEDICATED_MODE_BUTTON, true);
-        mModel.set(FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE, true);
-        FuseboxViewBinder.updateButtonsVisibilityAndStyling(mModel, mViewHolder);
-        assertEquals(View.VISIBLE, mPopup.mRequestTypeDivider.getVisibility());
-        assertEquals(View.VISIBLE, mPopup.mAiModeButton.getVisibility());
-        assertEquals(View.VISIBLE, mPopup.mCreateImageButton.getVisibility());
-
-        mModel.set(FuseboxProperties.SHOW_DEDICATED_MODE_BUTTON, false);
-        mModel.set(FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE, true);
-        FuseboxViewBinder.updateButtonsVisibilityAndStyling(mModel, mViewHolder);
-        assertEquals(View.VISIBLE, mPopup.mRequestTypeDivider.getVisibility());
-        assertEquals(View.VISIBLE, mPopup.mAiModeButton.getVisibility());
         assertEquals(View.VISIBLE, mPopup.mCreateImageButton.getVisibility());
     }
 

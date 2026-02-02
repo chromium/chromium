@@ -58,8 +58,6 @@ class FuseboxViewBinder {
             updateButtonsVisibilityAndStyling(model, view);
             updateButtonsA11yAnnouncements(model, view);
             updateToolDrawables(model.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE), view);
-        } else if (propertyKey == FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE) {
-            updateButtonsVisibilityAndStyling(model, view);
         } else if (propertyKey == FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CLICKED) {
             view.requestType.setOnClickListener(
                     v -> model.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CLICKED).run());
@@ -268,8 +266,6 @@ class FuseboxViewBinder {
     }
 
     static void updateButtonsVisibilityAndStyling(PropertyModel model, FuseboxViewHolder views) {
-        boolean isRequestTypeChangeable =
-                model.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE);
         boolean showFuseboxToolbar = model.get(FuseboxProperties.ATTACHMENTS_TOOLBAR_VISIBLE);
         boolean showDedicatedModeButton = model.get(FuseboxProperties.SHOW_DEDICATED_MODE_BUTTON);
         boolean isAiModeUsed =
@@ -390,13 +386,9 @@ class FuseboxViewBinder {
         }
 
         boolean isCreateImageButtonVisible =
-                isRequestTypeChangeable
-                        && model.get(FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE);
-        views.popup.mAiModeButton.setVisibility(isRequestTypeChangeable ? View.VISIBLE : View.GONE);
+                model.get(FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE);
         views.popup.mCreateImageButton.setVisibility(
                 isCreateImageButtonVisible ? View.VISIBLE : View.GONE);
-        views.popup.mRequestTypeDivider.setVisibility(
-                isRequestTypeChangeable ? View.VISIBLE : View.GONE);
 
         @StyleRes
         int textAppearance = OmniboxResourceProvider.getPopupButtonTextRes(brandedColorScheme);
