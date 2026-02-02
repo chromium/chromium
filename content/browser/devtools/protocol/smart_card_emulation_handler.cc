@@ -351,7 +351,8 @@ std::vector<SmartCardEmulationHandler*> SmartCardEmulationHandler::ForAgentHost(
 }
 
 void SmartCardEmulationHandler::Wire(UberDispatcher* dispatcher) {
-  frontend_ = new SmartCardEmulation::Frontend(dispatcher->channel());
+  frontend_ =
+      std::make_unique<SmartCardEmulation::Frontend>(dispatcher->channel());
   SmartCardEmulation::Dispatcher::wire(dispatcher, this);
 }
 

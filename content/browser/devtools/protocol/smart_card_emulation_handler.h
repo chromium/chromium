@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_DEVTOOLS_PROTOCOL_SMART_CARD_EMULATION_HANDLER_H_
 #define CONTENT_BROWSER_DEVTOOLS_PROTOCOL_SMART_CARD_EMULATION_HANDLER_H_
 
+#include <memory>
+
 #include "base/types/expected.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
@@ -281,7 +283,7 @@ class CONTENT_EXPORT SmartCardEmulationHandler
       device::mojom::SmartCardError error);
 
   // The frontend interface to send events to the DevTools client.
-  raw_ptr<SmartCardEmulation::Frontend> frontend_;
+  std::unique_ptr<SmartCardEmulation::Frontend> frontend_;
 
   // The Factory that handles the actual Mojo emulation logic.
   std::unique_ptr<EmulatedSmartCardContextFactory> factory_;
