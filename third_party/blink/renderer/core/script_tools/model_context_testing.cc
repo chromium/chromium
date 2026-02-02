@@ -23,6 +23,8 @@ String GetToolErrorMessage(WebDocument::ScriptToolError error) {
     case WebDocument::ScriptToolError::kToolInvocationFailed:
       return "Tool was executed but the invocation failed. For example, the "
              "script function threw an error.";
+    case WebDocument::ScriptToolError::kToolCancelled:
+      return "Tool was cancelled.";
   }
   NOTREACHED();
 }

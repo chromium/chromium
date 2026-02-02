@@ -6,7 +6,9 @@
 #define CHROME_RENDERER_ACTOR_SCRIPT_TOOL_H_
 
 #include <cstdint>
+#include <optional>
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/task_id.h"
 #include "chrome/renderer/actor/tool_base.h"
@@ -32,10 +34,13 @@ class ScriptTool : public ToolBase {
   // actor::ToolBase
   mojom::ActionResultPtr Validate() override;
   void Execute(ToolFinishedCallback callback) override;
+  void Cancel() override;
   std::string DebugString() const override;
 
  private:
   mojom::ScriptToolActionPtr action_;
+  std::optional<uint32_t> execution_id_;
+  base::WeakPtrFactory<ScriptTool> weak_ptr_factory_{this};
 };
 
 }  // namespace actor

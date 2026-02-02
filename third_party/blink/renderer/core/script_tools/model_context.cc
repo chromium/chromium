@@ -200,7 +200,7 @@ void ModelContext::clearContext() {
   OnToolsChanged();
 }
 
-void ModelContext::ExecuteTool(
+std::optional<uint32_t> ModelContext::ExecuteTool(
     const String& name,
     const String& input_arguments,
     WebDocument::ScriptToolExecutedCallback tool_executed_cb) {
@@ -212,16 +212,33 @@ void ModelContext::ExecuteTool(
         blink::BindOnce(
             std::move(tool_executed_cb),
             base::unexpected(WebDocument::ScriptToolError::kInvalidToolName)));
-    return;
+    return std::nullopt;
   }
 
   if (it->value->v8_tool_function) {
-    ExecuteV8Tool(it->value->v8_tool_function, name, input_arguments,
-                  std::move(tool_executed_cb));
+    return ExecuteV8Tool(it->value->v8_tool_function, name, input_arguments,
+                         std::move(tool_executed_cb));
   } else {
+    // TODO: crbug.com/479598776 - Add support for tracking execution of
+    // declarative tools, so that they can be cancelled.
     ExecuteDeclarativeTool(it->value->declarative_tool, input_arguments,
                            std::move(tool_executed_cb));
   }
+  return std::nullopt;
+}
+
+void ModelContext::CancelTool(uint32_t execution_id) {
+  auto pending_execution = pending_executions_.find(execution_id);
+  if (pending_execution == pending_executions_.end()) {
+    return;
+  }
+
+  task_runner_->PostTask(
+      FROM_HERE,
+      blink::BindOnce(
+          std::move(pending_execution->value),
+          base::unexpected(WebDocument::ScriptToolError::kToolCancelled)));
+  pending_executions_.erase(pending_execution);
 }
 
 void ModelContext::GetCrossDocumentScriptToolResult(
@@ -275,7 +292,7 @@ void ModelContext::ExecuteDeclarativeTool(
 // argument string to a JSON object, calls the function, receives a Promise,
 // waits for the promise to resolve, JSON-stringifies the result, and passes
 // it to OnToolExecuted().
-void ModelContext::ExecuteV8Tool(
+std::optional<uint32_t> ModelContext::ExecuteV8Tool(
     V8ToolFunction* tool_function,
     const String& name,
     const String& input_arguments,
@@ -285,6 +302,7 @@ void ModelContext::ExecuteV8Tool(
 
   auto script_object = JSONStringToScriptObject(script_state, input_arguments);
   ScriptValue script_value = script_object;
+
   if (script_value.IsEmpty()) {
     task_runner_->PostTask(
         FROM_HERE,
@@ -292,7 +310,7 @@ void ModelContext::ExecuteV8Tool(
             std::move(tool_executed_cb),
             base::unexpected(
                 WebDocument::ScriptToolError::kInvalidInputArguments)));
-    return;
+    return std::nullopt;
   }
 
   v8::Maybe<ScriptPromise<IDLAny>> maybe_result =
@@ -317,6 +335,7 @@ void ModelContext::ExecuteV8Tool(
                   this, execution_id, true),
               MakeGarbageCollected<ToolFunctionFinishedCallback>(
                   this, execution_id, false));
+  return execution_id;
 }
 
 bool ModelContext::RegisterTool(ScriptState* script_state,
@@ -389,7 +408,9 @@ void ModelContext::RegisterDeclarativeTool(String name,
 void ModelContext::OnToolExecuted(uint32_t execution_id,
                                   std::optional<String> result) {
   auto it = pending_executions_.find(execution_id);
-  CHECK(it != pending_executions_.end());
+  if (it == pending_executions_.end()) {
+    return;
+  }
 
   if (result) {
     std::move(it->value).Run(*result);

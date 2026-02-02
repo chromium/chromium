@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/script_tools/model_context.h"
 
+#include <optional>
+
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
@@ -551,6 +553,55 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_SPA_NoAutoSubmit) {
 
   EXPECT_FALSE(EvalJsBoolean(
       "document.querySelector('form').matches(':tool-form-active')"));
+}
+
+TEST_F(ModelContextTest, CancelTool) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+
+  main_resource.Complete(R"(
+<body>
+    <script>
+    async function echo(obj) {
+      return obj.text;
+    }
+
+    navigator.modelContext.registerTool({
+      execute: echo,
+      name: "echo",
+      description: "echo input",
+      inputSchema: {
+          type: "object",
+          properties: {
+              "text": {
+                  description: "Value to echo",
+                  type: "string",
+              }
+          },
+          required: ["text"]
+      },
+    });
+  </script>
+  </body>
+)");
+
+  auto* model_context =
+      ModelContextSupplement::modelContext(*Window().navigator());
+  ASSERT_TRUE(model_context);
+
+  base::RunLoop run_loop;
+
+  std::optional<uint32_t> execution_id = model_context->ExecuteTool(
+      "echo", "{\"text\": \"hello\"}",
+      base::BindLambdaForTesting(
+          [&](base::expected<WebString, WebDocument::ScriptToolError> res) {
+            ASSERT_FALSE(res.has_value());
+            run_loop.Quit();
+          }));
+
+  ASSERT_TRUE(execution_id.has_value());
+  model_context->CancelTool(execution_id.value());
+  run_loop.Run();
 }
 
 }  // namespace blink

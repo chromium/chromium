@@ -506,6 +506,9 @@ enum ActionResultCode {
   // associated with the declarative tool.
   kScriptToolMissingRequiredSubmitButton = 1205,
 
+  // Tool was cancelled.
+  kScriptToolCancelled = 1206,
+
   // Please see the comment above about adding new values.
 
   ///////////////////////////////////////////////////////////////////////
