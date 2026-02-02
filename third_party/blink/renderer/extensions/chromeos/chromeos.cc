@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/extensions/chromeos/kiosk/cros_kiosk.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 
 namespace blink {
 

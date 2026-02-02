@@ -5,12 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_EXTENSIONS_CHROMEOS_KIOSK_CROS_KIOSK_H_
 #define THIRD_PARTY_BLINK_RENDERER_EXTENSIONS_CHROMEOS_KIOSK_CROS_KIOSK_H_
 
-#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/visitor.h"
+#include "third_party/blink/renderer/platform/heap/forward.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
+
+class ExecutionContext;
 
 class CrosKiosk : public ScriptWrappable, public Supplement<ExecutionContext> {
   DEFINE_WRAPPERTYPEINFO();
