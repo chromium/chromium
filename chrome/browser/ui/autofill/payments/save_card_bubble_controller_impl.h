@@ -101,12 +101,14 @@ class SaveCardBubbleControllerImpl
   void ReshowBubble(bool is_user_gesture);
 
   // Shows upload result to users. `card_saved` indicates if the card is
-  // successfully saved. `on_confirmation_closed_callback` will be invoked
-  // once confirmation bubble is closed. Posts a delayed task to auto-close the
-  // confirmation bubble if user doesn't close the bubble before
+  // successfully saved. `is_for_save_and_fill` indicates if Save and Fill was
+  // used. `on_confirmation_closed_callback` will be invoked once confirmation
+  // bubble is closed. Posts a delayed task to auto-close the confirmation
+  // bubble if user doesn't close the bubble before
   // `kAutoCloseConfirmationBubbleWaitSec`.
   virtual void ShowConfirmationBubbleView(
       bool card_saved,
+      bool is_for_save_and_fill,
       std::optional<
           payments::PaymentsAutofillClient::OnConfirmationClosedCallback>
           on_confirmation_closed_callback);

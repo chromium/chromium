@@ -28,11 +28,11 @@ struct SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams {
 
   // Static creator methods for the UI params in its various supported states.
   static SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams
-  CreateForSaveCardSuccess();
+  CreateForSaveCardSuccess(bool is_for_save_and_fill);
   static SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams
   CreateForVirtualCardSuccess();
   static SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams
-  CreateForSaveCardFailure();
+  CreateForSaveCardFailure(bool is_for_save_and_fill);
   static SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams
   CreateForVirtualCardFailure(const std::u16string card_label);
   static SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams
@@ -41,6 +41,7 @@ struct SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams {
   CreateForSaveIbanFailure(bool hit_max_strikes);
 
   bool is_success;
+  bool should_display_wallet_logo;
   std::u16string title_text;
   std::u16string description_text;
   std::u16string failure_ok_button_text;
@@ -49,6 +50,7 @@ struct SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams {
  private:
   SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams(
       bool is_success,
+      bool should_display_wallet_logo,
       std::u16string title_text,
       std::u16string description_text,
       std::u16string failure_ok_button_accessible_name);

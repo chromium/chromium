@@ -41,7 +41,7 @@ TEST(AutofillMessageModelTest, VerifyCallbacks) {
 TEST(AutofillMessageModelTest, VerifySaveCardFailureAttributes) {
   SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams ui_params =
       SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::
-          CreateForSaveCardFailure();
+          CreateForSaveCardFailure(/*is_for_save_and_fill=*/false);
 
   std::unique_ptr<AutofillMessageModel> message_model =
       AutofillMessageModel::CreateForSaveCardFailure();

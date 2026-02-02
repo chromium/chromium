@@ -146,6 +146,7 @@ class MockSaveCardBubbleController : public SaveCardBubbleControllerImpl {
       void,
       ShowConfirmationBubbleView,
       (bool,
+       bool,
        std::optional<
            payments::PaymentsAutofillClient::OnConfirmationClosedCallback>),
       (override));
@@ -833,7 +834,8 @@ TEST_F(ChromePaymentsAutofillClientTest,
 TEST_F(ChromePaymentsAutofillClientTest,
        CreditCardUploadCompletedSuccess_CallsShowConfirmationBubbleView) {
   EXPECT_CALL(save_card_bubble_controller(),
-              ShowConfirmationBubbleView(true, _));
+              ShowConfirmationBubbleView(/*card_saved=*/true,
+                                         /*is_for_save_and_fill=*/true, _));
   chrome_payments_client()->CreditCardUploadCompleted(
       payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
       std::nullopt);
@@ -845,7 +847,8 @@ TEST_F(ChromePaymentsAutofillClientTest,
 TEST_F(ChromePaymentsAutofillClientTest,
        CreditCardUploadCompletedFailure_CallsShowConfirmationBubbleView) {
   EXPECT_CALL(save_card_bubble_controller(),
-              ShowConfirmationBubbleView(false, _));
+              ShowConfirmationBubbleView(/*card_saved=*/false,
+                                         /*is_for_save_and_fill=*/false, _));
   chrome_payments_client()->CreditCardUploadCompleted(
       payments::PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure,
       std::nullopt);
@@ -858,7 +861,8 @@ TEST_F(
     CreditCardUploadCompletedClientSideTimeout_CallsShowConfirmationBubbleView) {
   EXPECT_CALL(save_card_bubble_controller(), HideSaveCardBubble());
   EXPECT_CALL(save_card_bubble_controller(),
-              ShowConfirmationBubbleView(false, _))
+              ShowConfirmationBubbleView(/*card_saved=*/false,
+                                         /*is_for_save_and_fill=*/false, _))
       .Times(0);
   chrome_payments_client()->CreditCardUploadCompleted(
       payments::PaymentsAutofillClient::PaymentsRpcResult::kClientSideTimeout,
@@ -949,7 +953,8 @@ class ChromePaymentsAutofillIOSPromoClientTest
 TEST_F(ChromePaymentsAutofillIOSPromoClientTest,
        IOSPaymentPromoFailedToShow_CallsShowConfirmationBubbleView) {
   EXPECT_CALL(save_card_bubble_controller(),
-              ShowConfirmationBubbleView(true, _));
+              ShowConfirmationBubbleView(/*card_saved=*/true,
+                                         /*is_for_save_and_fill=*/true, _));
   chrome_payments_client()->CreditCardUploadCompleted(
       payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
       std::nullopt);

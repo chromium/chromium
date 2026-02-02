@@ -113,6 +113,7 @@ class MockSaveCardBubbleController : public SaveCardBubbleControllerImpl {
       void,
       ShowConfirmationBubbleView,
       (bool,
+       bool,
        std::optional<
            payments::PaymentsAutofillClient::OnConfirmationClosedCallback>),
       (override));
@@ -597,8 +598,9 @@ TEST_F(ChromeAutofillClientTest,
        CreditCardUploadCompleted_ShowConfirmationBubbleView_CardSaved) {
   EXPECT_CALL(save_card_bubble_controller(),
               ShowConfirmationBubbleView(
-                  true, A<std::optional<payments::PaymentsAutofillClient::
-                                            OnConfirmationClosedCallback>>()));
+                  /*card_saved=*/true, /*is_for_save_and_fill=*/true,
+                  A<std::optional<payments::PaymentsAutofillClient::
+                                      OnConfirmationClosedCallback>>()));
   client()->GetPaymentsAutofillClient()->CreditCardUploadCompleted(
       payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
       /*on_confirmation_closed_callback=*/std::nullopt);
@@ -608,8 +610,9 @@ TEST_F(ChromeAutofillClientTest,
        CreditCardUploadCompleted_ShowConfirmationBubbleView_CardNotSaved) {
   EXPECT_CALL(save_card_bubble_controller(),
               ShowConfirmationBubbleView(
-                  false, A<std::optional<payments::PaymentsAutofillClient::
-                                             OnConfirmationClosedCallback>>()));
+                  /*card_saved=*/false, /*is_for_save_and_fill=*/false,
+                  A<std::optional<payments::PaymentsAutofillClient::
+                                      OnConfirmationClosedCallback>>()));
   client()->GetPaymentsAutofillClient()->CreditCardUploadCompleted(
       payments::PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure,
       /*on_confirmation_closed_callback=*/std::nullopt);
@@ -622,8 +625,9 @@ TEST_F(ChromeAutofillClientTest,
   EXPECT_CALL(save_card_bubble_controller(), HideSaveCardBubble());
   EXPECT_CALL(save_card_bubble_controller(),
               ShowConfirmationBubbleView(
-                  false, A<std::optional<payments::PaymentsAutofillClient::
-                                             OnConfirmationClosedCallback>>()))
+                  /*card_saved=*/false, /*is_for_save_and_fill=*/false,
+                  A<std::optional<payments::PaymentsAutofillClient::
+                                      OnConfirmationClosedCallback>>()))
       .Times(0);
   client()->GetPaymentsAutofillClient()->CreditCardUploadCompleted(
       payments::PaymentsAutofillClient::PaymentsRpcResult::kClientSideTimeout,

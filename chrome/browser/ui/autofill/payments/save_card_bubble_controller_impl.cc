@@ -236,6 +236,7 @@ void SaveCardBubbleControllerImpl::ReshowBubble(
 
 void SaveCardBubbleControllerImpl::ShowConfirmationBubbleView(
     bool card_saved,
+    bool is_for_save_and_fill,
     std::optional<
         payments::PaymentsAutofillClient::OnConfirmationClosedCallback>
         on_confirmation_closed_callback) {
@@ -249,9 +250,9 @@ void SaveCardBubbleControllerImpl::ShowConfirmationBubbleView(
   current_bubble_type_ = PaymentsBubbleType::kUploadComplete;
   confirmation_ui_params_ =
       card_saved ? SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::
-                       CreateForSaveCardSuccess()
+                       CreateForSaveCardSuccess(is_for_save_and_fill)
                  : SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::
-                       CreateForSaveCardFailure();
+                       CreateForSaveCardFailure(is_for_save_and_fill);
   on_confirmation_closed_callback_ = std::move(on_confirmation_closed_callback);
 
   // Show upload confirmation bubble.
@@ -271,7 +272,9 @@ base::OnceClosure SaveCardBubbleControllerImpl::
     GetShowConfirmationForCardSuccessfullySavedCallback() {
   return base::BindOnce(
       &SaveCardBubbleControllerImpl::ShowConfirmationBubbleView,
-      weak_ptr_factory_.GetWeakPtr(), true, std::nullopt);
+      weak_ptr_factory_.GetWeakPtr(), /*card_saved=*/true,
+      /*is_for_save_and_fill=*/true,
+      /*on_confirmation_closed_callback=*/std::nullopt);
 }
 
 base::OnceClosure

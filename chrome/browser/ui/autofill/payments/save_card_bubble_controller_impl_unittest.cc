@@ -303,7 +303,9 @@ class SaveCardBubbleControllerImplTest : public BrowserWithTestWindowTest {
   void ShowConfirmationBubbleView(bool card_saved) {
     controller()->ShowConfirmationBubbleView(
         /*card_saved=*/card_saved,
-        /*on_confirmation_closed_callback=*/base::BindOnce(
+        /*is_for_save_and_fill=*/false,
+        /*on_confirmation_closed_callback=*/
+        base::BindOnce(
             &SaveCardBubbleControllerImplTest::OnConfirmationClosedCallback,
             weak_ptr_factory_.GetWeakPtr()));
   }
@@ -1944,6 +1946,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
   // Simulate that the upload is completed.
   save_card_controller->ShowConfirmationBubbleView(
       /*card_saved=*/true,
+      /*is_for_save_and_fill=*/false,
       /*on_confirmation_closed_callback=*/std::nullopt);
 
   // Expect that the confirmation bubble doesn't show up on the other tab.

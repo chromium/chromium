@@ -411,7 +411,8 @@ void ChromePaymentsAutofillClient::CreditCardUploadCompleted(
     }
 
     controller->ShowConfirmationBubbleView(
-        card_saved, std::move(on_confirmation_closed_callback));
+        card_saved, /*is_for_save_and_fill=*/false,
+        std::move(on_confirmation_closed_callback));
   }
 #endif
 }

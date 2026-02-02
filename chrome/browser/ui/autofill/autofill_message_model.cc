@@ -43,7 +43,7 @@ std::unique_ptr<AutofillMessageModel>
 AutofillMessageModel::CreateForSaveCardFailure() {
   SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams ui_params =
       SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::
-          CreateForSaveCardFailure();
+          CreateForSaveCardFailure(/*is_for_save_and_fill=*/false);
 
   std::unique_ptr<messages::MessageWrapper> message =
       std::make_unique<messages::MessageWrapper>(

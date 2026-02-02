@@ -106,9 +106,9 @@ class SaveCardConfirmationBubbleViewsInteractiveUiTest
     return icon;
   }
 
-  void ShowBubble(bool card_saved) {
+  void ShowBubble(bool card_saved, bool is_for_save_and_fill) {
     GetController()->ShowConfirmationBubbleView(
-        card_saved,
+        card_saved, is_for_save_and_fill,
         /*on_confirmation_closed_callback=*/std::nullopt);
   }
 
@@ -135,7 +135,7 @@ IN_PROC_BROWSER_TEST_P(SaveCardConfirmationBubbleViewsInteractiveUiTest,
   views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kAlert));
 
-  ShowBubble(/*card_saved=*/true);
+  ShowBubble(/*card_saved=*/true, /*is_for_save_and_fill=*/false);
 
   EXPECT_NE(BubbleView(), nullptr);
   // Checks the count of accessibility event registered by AXUpdateNotifier when
@@ -147,9 +147,6 @@ IN_PROC_BROWSER_TEST_P(SaveCardConfirmationBubbleViewsInteractiveUiTest,
                   ->GetBubbleFrameView()
                   ->GetHeaderViewForTesting()
                   ->GetVisible());
-  EXPECT_NE(BubbleView()->GetBubbleFrameView()->title()->GetViewByID(
-                DialogViewId::BUBBLE_TITLE_ICON),
-            nullptr);
   EXPECT_EQ(BubbleView()->GetWindowTitle(),
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_SUCCESS_TITLE_TEXT));
@@ -194,19 +191,21 @@ IN_PROC_BROWSER_TEST_P(SaveCardConfirmationBubbleViewsInteractiveUiTest,
 }
 
 IN_PROC_BROWSER_TEST_P(SaveCardConfirmationBubbleViewsInteractiveUiTest,
-                       ShowFailureBubbleViewThenHideBubbleView) {
-  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
-  EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kAlert));
-  ShowBubble(/*card_saved=*/false);
+                       ShowSuccessBubbleView_TitleIcon) {
+  ShowBubble(/*card_saved=*/true, /*is_for_save_and_fill=*/false);
 
   EXPECT_NE(BubbleView(), nullptr);
-  // Checks the count of accessibility event registered by AXUpdateNotifier when
-  // bubble is shown.
-  EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kAlert));
-
-  EXPECT_FALSE(BubbleView()->ShouldShowCloseButton());
-  EXPECT_EQ(BubbleView()->GetBubbleFrameView()->GetHeaderViewForTesting(),
+  EXPECT_NE(BubbleView()->GetBubbleFrameView()->title()->GetViewByID(
+                DialogViewId::BUBBLE_TITLE_ICON),
             nullptr);
+}
+
+IN_PROC_BROWSER_TEST_P(SaveCardConfirmationBubbleViewsInteractiveUiTest,
+                       ShowSuccessBubbleView_TitleIcon_SaveAndFill) {
+  ShowBubble(/*card_saved=*/true, /*is_for_save_and_fill=*/true);
+
+  EXPECT_NE(BubbleView(), nullptr);
+
   if (IsWalletBrandingEnabled()) {
     EXPECT_EQ(BubbleView()->GetBubbleFrameView()->title()->GetViewByID(
                   DialogViewId::BUBBLE_TITLE_ICON),
@@ -216,6 +215,22 @@ IN_PROC_BROWSER_TEST_P(SaveCardConfirmationBubbleViewsInteractiveUiTest,
                   DialogViewId::BUBBLE_TITLE_ICON),
               nullptr);
   }
+}
+
+IN_PROC_BROWSER_TEST_P(SaveCardConfirmationBubbleViewsInteractiveUiTest,
+                       ShowFailureBubbleViewThenHideBubbleView) {
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
+  EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kAlert));
+  ShowBubble(/*card_saved=*/false, /*is_for_save_and_fill=*/false);
+
+  EXPECT_NE(BubbleView(), nullptr);
+  // Checks the count of accessibility event registered by AXUpdateNotifier when
+  // bubble is shown.
+  EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kAlert));
+
+  EXPECT_FALSE(BubbleView()->ShouldShowCloseButton());
+  EXPECT_EQ(BubbleView()->GetBubbleFrameView()->GetHeaderViewForTesting(),
+            nullptr);
   EXPECT_EQ(BubbleView()->GetWindowTitle(),
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_FAILURE_TITLE_TEXT));
@@ -253,6 +268,44 @@ IN_PROC_BROWSER_TEST_P(SaveCardConfirmationBubbleViewsInteractiveUiTest,
   HideBubble(views::Widget::ClosedReason::kLostFocus);
   EXPECT_EQ(BubbleView(), nullptr);
   EXPECT_FALSE(IconView()->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_P(SaveCardConfirmationBubbleViewsInteractiveUiTest,
+                       ShowFailureBubbleView_TitleIcon) {
+  ShowBubble(/*card_saved=*/false, /*is_for_save_and_fill=*/false);
+
+  EXPECT_NE(BubbleView(), nullptr);
+  EXPECT_EQ(BubbleView()->GetBubbleFrameView()->GetHeaderViewForTesting(),
+            nullptr);
+
+  if (IsWalletBrandingEnabled()) {
+    EXPECT_EQ(BubbleView()->GetBubbleFrameView()->title()->GetViewByID(
+                  DialogViewId::BUBBLE_TITLE_ICON),
+              nullptr);
+  } else {
+    EXPECT_NE(BubbleView()->GetBubbleFrameView()->title()->GetViewByID(
+                  DialogViewId::BUBBLE_TITLE_ICON),
+              nullptr);
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(SaveCardConfirmationBubbleViewsInteractiveUiTest,
+                       ShowFailureBubbleView_TitleIcon_SaveAndFill) {
+  ShowBubble(/*card_saved=*/false, /*is_for_save_and_fill=*/true);
+
+  EXPECT_NE(BubbleView(), nullptr);
+  EXPECT_EQ(BubbleView()->GetBubbleFrameView()->GetHeaderViewForTesting(),
+            nullptr);
+
+  if (IsWalletBrandingEnabled()) {
+    EXPECT_EQ(BubbleView()->GetBubbleFrameView()->title()->GetViewByID(
+                  DialogViewId::BUBBLE_TITLE_ICON),
+              nullptr);
+  } else {
+    EXPECT_NE(BubbleView()->GetBubbleFrameView()->title()->GetViewByID(
+                  DialogViewId::BUBBLE_TITLE_ICON),
+              nullptr);
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(

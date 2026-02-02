@@ -65,18 +65,22 @@ void SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews::
                                      .set_bottom(0)));
     GetBubbleFrameView()->SetHeaderView(std::move(image));
   }
-  if (ui_params_.is_success ||
-      !base::FeatureList::IsEnabled(features::kAutofillEnableWalletBranding)) {
+
+  bool is_wallet_branding_enabled =
+      base::FeatureList::IsEnabled(features::kAutofillEnableWalletBranding);
+  bool should_show_logo = ui_params_.is_success
+                              ? ui_params_.should_display_wallet_logo
+                              : !is_wallet_branding_enabled;
+  if (should_show_logo) {
     GetBubbleFrameView()->SetTitleView(
         std::make_unique<TitleWithIconAfterLabelView>(
             GetWindowTitle(),
-            base::FeatureList::IsEnabled(
-                features::kAutofillEnableWalletBranding)
+            is_wallet_branding_enabled
                 ? TitleWithIconAfterLabelView::Icon::GOOGLE_WALLET
                 : TitleWithIconAfterLabelView::Icon::GOOGLE_PAY));
   } else {
-    // Failed server saves should not show a Google Wallet logo, as the card did
-    // not successfully save there.
+    // The Google Wallet logo should not be shown for failed upload saves or for
+    // successful upload saves specifically made via the Save and Fill feature.
     auto title_view = std::make_unique<views::Label>(
         GetWindowTitle(), views::style::CONTEXT_DIALOG_TITLE);
     title_view->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
