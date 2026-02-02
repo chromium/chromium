@@ -543,9 +543,17 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(capturing_tab.ReadCaptureHandle(), captured_tab.capture_handle);
 }
 
+// TODO(crbug.com/462962569): Flaky on linux msan.
+#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+#define MAYBE_PermittedOriginsChangeThatRemovesCapturerCausesEventAndEmptyConfig \
+  DISABLED_PermittedOriginsChangeThatRemovesCapturerCausesEventAndEmptyConfig
+#else
+#define MAYBE_PermittedOriginsChangeThatRemovesCapturerCausesEventAndEmptyConfig \
+  PermittedOriginsChangeThatRemovesCapturerCausesEventAndEmptyConfig
+#endif
 IN_PROC_BROWSER_TEST_F(
     CaptureHandleBrowserTest,
-    PermittedOriginsChangeThatRemovesCapturerCausesEventAndEmptyConfig) {
+    MAYBE_PermittedOriginsChangeThatRemovesCapturerCausesEventAndEmptyConfig) {
   TabInfo captured_tab =
       SetUpCapturedPage(/*expose_origin=*/true, "handle", {"*"});
 
