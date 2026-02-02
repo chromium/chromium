@@ -303,6 +303,9 @@ PrefetchContainer::PrefetchContainer(
 PrefetchContainer::~PrefetchContainer() {
   DVLOG(1) << *this << "::dtor";
 
+  // `PrefetchContainer` destruction is disallowed during observer notification.
+  DUMP_WILL_BE_CHECK(!during_observer_notification_);
+
   is_in_dtor_ = true;
 
   // Ideally, this method should be called just before dtor.
@@ -629,6 +632,9 @@ void PrefetchContainer::SetLoadState(LoadState new_load_state) {
   if (base::FeatureList::IsEnabled(features::kPrefetchGracefulNotification)) {
     CHECK(!is_in_dtor_);
   }
+
+  // `LoadState` transitions are disallowed during observer notification.
+  DUMP_WILL_BE_CHECK(!during_observer_notification_);
 
   {
     using T = PrefetchContainerLoadState;
@@ -1054,6 +1060,10 @@ void PrefetchContainer::CancelStreamingURLLoaderIfNotServing() {
   if (!streaming_loader_) {
     return;
   }
+
+  // Prefetch cancellation is disallowed during observer notification.
+  DUMP_WILL_BE_CHECK(!during_observer_notification_);
+
   streaming_loader_->CancelIfNotServing();
   streaming_loader_.reset();
 }

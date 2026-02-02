@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/auto_reset.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -595,6 +596,7 @@ class CONTENT_EXPORT PrefetchContainer {
 
   template <typename Method, typename... Args>
   void NotifyObservers(Method method, const Args&... args) {
+    base::AutoReset<bool> auto_reset(&during_observer_notification_, true);
     observers_.Notify(method, *this, args...);
   }
 
@@ -800,6 +802,13 @@ class CONTENT_EXPORT PrefetchContainer {
 
   // True iff the destructor was called.
   bool is_in_dtor_ = false;
+
+  // True during notifying `observers_`.
+  // This is used to `DUMP_WILL_BE_CHECK()` the disallowed operations during
+  // `Observer` callbacks. Theoretically there can still be violating corner
+  // cases, so `DUMP_WILL_BE_CHECK()` is used, to first monitor if there are
+  // actual violations in the wild.
+  bool during_observer_notification_ = false;
 
   base::ObserverList<Observer> observers_{
       base::ObserverListPolicy::EXISTING_ONLY};
