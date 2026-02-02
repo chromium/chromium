@@ -333,9 +333,6 @@ extern const char kEnableFeedHeaderSettingsDescription[];
 extern const char kEnableLensInOmniboxCopiedImageName[];
 extern const char kEnableLensInOmniboxCopiedImageDescription[];
 
-extern const char kEnableLensOverlayName[];
-extern const char kEnableLensOverlayDescription[];
-
 extern const char kEnableNewStartupFlowName[];
 extern const char kEnableNewStartupFlowDescription[];
 

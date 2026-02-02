@@ -7,8 +7,8 @@
 
 class PrefService;
 
-// Returns whether the lens overlay is enabled.
-bool IsLensOverlayAvailable(const PrefService* prefs);
+// Returns whether the lens overlay is allowed by policy.
+bool IsLensOverlayAllowedByPolicy(const PrefService* prefs);
 
 // Whether the landscape orientation is allowed for Lens Overlay.
 bool IsLensOverlayLandscapeOrientationEnabled(const PrefService* prefs);

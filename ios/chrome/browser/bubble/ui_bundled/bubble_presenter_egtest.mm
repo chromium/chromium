@@ -100,7 +100,6 @@ void ReloadFromOmnibox() {
   if ([self
           isRunningTest:@selector
           (testLensOverlayEntrypointTipDismissedWhenOmniboxPositionChanged)]) {
-    config.features_enabled.push_back(kEnableLensOverlay);
     config.features_enabled.push_back(kGeminiKillSwitch);
     config.features_disabled.push_back(kPageActionMenu);
     config.iph_feature_enabled = "IPH_iOSLensOverlayEntrypointTip";

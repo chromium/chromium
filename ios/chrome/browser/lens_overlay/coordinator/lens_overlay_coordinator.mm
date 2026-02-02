@@ -298,7 +298,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   [super start];
 
   Browser* browser = self.browser;
-  CHECK(browser, kLensOverlayNotFatalUntil);
+  CHECK(browser);
 
   [browser->GetCommandDispatcher()
       startDispatchingToTarget:self
@@ -372,7 +372,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 - (void)createAndShowLensUI:(BOOL)animated
                  entrypoint:(LensOverlayEntrypoint)entrypoint
                  completion:(void (^)(BOOL))completion {
-  CHECK(IsLensOverlayAvailable(self.profile->GetPrefs()));
+  CHECK(IsLensOverlayAllowedByPolicy(self.profile->GetPrefs()));
   BOOL success = [self prepareOverlayWithEntrypoint:entrypoint];
   if (!success) {
     if (completion) {
@@ -1431,7 +1431,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   LensOverlayTabHelper* tabHelper =
       LensOverlayTabHelper::FromWebState(activeWebState);
 
-  CHECK(tabHelper, kLensOverlayNotFatalUntil);
+  CHECK(tabHelper);
 
   return tabHelper;
 }

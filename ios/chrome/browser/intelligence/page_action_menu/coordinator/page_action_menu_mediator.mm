@@ -118,7 +118,7 @@ const CGFloat kFeatureRowIconSize = 20;
 }
 
 - (BOOL)isLensAvailableForProfile {
-  return IsLensOverlayAvailable(_profilePrefs);
+  return IsLensOverlayAllowedByPolicy(_profilePrefs);
 }
 
 #pragma mark - PageActionMenuMutator

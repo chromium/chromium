@@ -70,8 +70,6 @@ class LensOverlayCoordinatorTest : public PlatformTest {
       GTEST_SKIP() << "Feature unsupported on iPad";
     }
 
-    feature_list_.InitAndEnableFeature(kEnableLensOverlay);
-
     root_view_controller_ = [[UIViewController alloc] init];
     root_view_controller_.definesPresentationContext = YES;
     scoped_window_.Get().rootViewController = root_view_controller_;

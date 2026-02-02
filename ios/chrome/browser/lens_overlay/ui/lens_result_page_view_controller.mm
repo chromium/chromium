@@ -128,7 +128,7 @@ const CGFloat kGrabberTopPadding = 5;
 
   self.view.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
 
-  CHECK(self.webViewContainer, kLensOverlayNotFatalUntil);
+  CHECK(self.webViewContainer);
   // Webview container.
   self.webViewContainer.translatesAutoresizingMaskIntoConstraints = NO;
   self.webViewContainer.clipsToBounds = YES;
@@ -301,9 +301,9 @@ const CGFloat kGrabberTopPadding = 5;
 }
 
 - (void)setEditView:(UIView<TextFieldViewContaining>*)editView {
-  CHECK(!_editView, kLensOverlayNotFatalUntil);
-  CHECK(editView, kLensOverlayNotFatalUntil);
-  CHECK(_omniboxContainer, kLensOverlayNotFatalUntil);
+  CHECK(!_editView);
+  CHECK(editView);
+  CHECK(_omniboxContainer);
   _editView = editView;
   _editView.translatesAutoresizingMaskIntoConstraints = NO;
   [_omniboxContainer insertSubview:_editView belowSubview:_omniboxTapTarget];

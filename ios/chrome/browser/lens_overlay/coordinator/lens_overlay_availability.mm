@@ -12,19 +12,12 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ui/base/device_form_factor.h"
 
-// Returns whether the lens overlay is allowed by policy.
 bool IsLensOverlayAllowedByPolicy(const PrefService* prefs) {
   CHECK(prefs);
   int policyRawValue = prefs->GetInteger(lens::prefs::kLensOverlaySettings);
   return policyRawValue ==
          static_cast<int>(
              lens::prefs::LensOverlaySettingsPolicyValue::kEnabled);
-}
-
-// Returns whether the lens overlay is enabled.
-bool IsLensOverlayAvailable(const PrefService* prefs) {
-  bool featureEnabled = base::FeatureList::IsEnabled(kEnableLensOverlay);
-  return featureEnabled && IsLensOverlayAllowedByPolicy(prefs);
 }
 
 bool IsLensOverlaySameTabNavigationEnabled(const PrefService* prefs) {

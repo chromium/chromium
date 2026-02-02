@@ -79,7 +79,7 @@ const CGFloat kSelectionViewOpacityAnimationDuration = 0.4f;
   _containerViewController.delegate = self;
   AppState* appState = sceneState.profileState.appState;
   ProfileIOS* profile = sceneState.profileState.profile;
-  CHECK(profile, kLensOverlayNotFatalUntil);
+  CHECK(profile);
   if (appState && profile &&
       !IsLensOverlayLandscapeOrientationEnabled(profile->GetPrefs())) {
     _scopedForceOrientation = ForcePortraitOrientationOnIphone(appState);

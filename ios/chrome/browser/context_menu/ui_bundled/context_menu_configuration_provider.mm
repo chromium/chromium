@@ -312,7 +312,7 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
 #pragma mark - Properties
 
 - (web::WebState*)webState {
-  if (base::FeatureList::IsEnabled(kEnableLensOverlay) && _baseWebState) {
+  if (_baseWebState) {
     return _baseWebState.get();
   }
   web::WebState* activeWebState =

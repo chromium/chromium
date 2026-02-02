@@ -14,13 +14,6 @@
 
 @implementation LensOverlayContainerTestCase
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  config.features_disabled = {};
-  config.features_enabled.push_back(kEnableLensOverlay);
-  return config;
-}
-
 // Tests that when pressing the escape keyboard button, closes the overlay
 // container.
 - (void)testPressEscapeHidesLensOverlayContainer {

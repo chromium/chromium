@@ -133,7 +133,7 @@ void LensOverlayTabHelper::DidFinishNavigation(
 }
 
 void LensOverlayTabHelper::WasShown(web::WebState* web_state) {
-  CHECK_EQ(web_state, web_state_, kLensOverlayNotFatalUntil);
+  CHECK_EQ(web_state, web_state_);
 
   BOOL showAnimated = NO;
   if (IsLensOverlaySameTabNavigationEnabled(GetProfilePrefs())) {
@@ -152,7 +152,7 @@ void LensOverlayTabHelper::WasShown(web::WebState* web_state) {
 }
 
 void LensOverlayTabHelper::WasHidden(web::WebState* web_state) {
-  CHECK_EQ(web_state, web_state_, kLensOverlayNotFatalUntil);
+  CHECK_EQ(web_state, web_state_);
 
   if (snapshot_controller_) {
     snapshot_controller_->CancelOngoingCaptures();
@@ -164,7 +164,7 @@ void LensOverlayTabHelper::WasHidden(web::WebState* web_state) {
 }
 
 void LensOverlayTabHelper::WebStateDestroyed(web::WebState* web_state) {
-  CHECK_EQ(web_state, web_state_, kLensOverlayNotFatalUntil);
+  CHECK_EQ(web_state, web_state_);
 
   if (snapshot_controller_) {
     snapshot_controller_->CancelOngoingCaptures();
@@ -269,7 +269,7 @@ UIEdgeInsets LensOverlayTabHelper::GetSnapshotInsets() {
 }
 
 PrefService* LensOverlayTabHelper::GetProfilePrefs() {
-  CHECK(web_state_, kLensOverlayNotFatalUntil);
+  CHECK(web_state_);
   ProfileIOS* profile =
       ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
   return profile->GetPrefs();

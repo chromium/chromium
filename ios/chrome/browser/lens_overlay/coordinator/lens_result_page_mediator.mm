@@ -213,7 +213,7 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
 
 - (void)setConsumer:(id<LensResultPageConsumer>)consumer {
   _consumer = consumer;
-  CHECK(_webState, kLensOverlayNotFatalUntil);
+  CHECK(_webState);
   _webState->SetWebUsageEnabled(true);
   // Mark hidden until the first page has finished loading, preventing a
   // momentary display of the web view's white background.
@@ -261,7 +261,7 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
 
 - (void)loadResultsURL:(GURL)URL
            httpHeaders:(NSDictionary<NSString*, NSString*>*)httpHeaders {
-  CHECK(_webState, kLensOverlayNotFatalUntil);
+  CHECK(_webState);
 
   // Add light/dark mode query parameter.
   URL = net::AppendOrReplaceQueryParameter(
@@ -579,7 +579,7 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
 
 /// Detaches and returns the current web state.
 - (std::unique_ptr<web::WebState>)detachWebState {
-  CHECK(_webState, kLensOverlayNotFatalUntil);
+  CHECK(_webState);
   _policyDeciderBridge.reset();
   _webState->RemoveObserver(_webStateObserverBridge.get());
   _webState->SetDelegate(nullptr);
@@ -589,8 +589,8 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
 /// Attaches `webState` to the mediator.
 - (void)attachWebState:(std::unique_ptr<web::WebState>)webState {
   /// Detach the current web state before attaching a new one.
-  CHECK(!_webState, kLensOverlayNotFatalUntil);
-  CHECK(!_policyDeciderBridge, kLensOverlayNotFatalUntil);
+  CHECK(!_webState);
+  CHECK(!_policyDeciderBridge);
   _webState = std::move(webState);
   _webState->SetDelegate(_webStateDelegateBridge.get());
   _webState->AddObserver(_webStateObserverBridge.get());

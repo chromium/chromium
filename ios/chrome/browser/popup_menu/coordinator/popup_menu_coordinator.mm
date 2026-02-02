@@ -249,7 +249,7 @@ using base::UserMetricsAction;
   mediator.settingsHandler = HandlerForProtocol(dispatcher, SettingsCommands);
   mediator.tabGroupsHandler = HandlerForProtocol(dispatcher, TabGroupsCommands);
   mediator.bookmarksHandler = HandlerForProtocol(dispatcher, BookmarksCommands);
-  if (IsLensOverlayAvailable(profile->GetPrefs())) {
+  if (IsLensOverlayAllowedByPolicy(profile->GetPrefs())) {
     mediator.lensOverlayHandler =
         HandlerForProtocol(dispatcher, LensOverlayCommands);
   }

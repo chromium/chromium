@@ -39,8 +39,6 @@ class LensOverlayTabHelperTest : public PlatformTest {
     profile_ =
         profile_manager_.AddProfileWithBuilder(TestProfileIOS::Builder());
 
-    feature_list_.InitAndEnableFeature(kEnableLensOverlay);
-
     profile_->GetPrefs()->SetInteger(
         lens::prefs::kLensOverlaySettings,
         static_cast<int>(

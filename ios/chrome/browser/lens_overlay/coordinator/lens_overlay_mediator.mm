@@ -374,7 +374,7 @@ typedef NS_ENUM(NSUInteger, LensOverlayFilterState) {
     }
     // Multimodal query on a text selection are not handled. Thumbnail is not
     // updated.
-    CHECK(!isMultimodal, kLensOverlayNotFatalUntil);
+    CHECK(!isMultimodal);
   } else {
     // On image selection, hide the thumbnail and user selection when loading an
     // unimodal query.

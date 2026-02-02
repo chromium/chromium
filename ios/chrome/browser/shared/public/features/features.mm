@@ -63,12 +63,6 @@ BASE_FEATURE(kIOSDockingPromoPreventDeregistrationKillswitch,
 BASE_FEATURE(kEnableLensInOmniboxCopiedImage,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableLensOverlay, base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Update to the correct milestone after launch.
-// Also update in components/omnibox/browser/autocomplete_result.cc.
-const base::NotFatalUntil kLensOverlayNotFatalUntil = base::NotFatalUntil::M200;
-
 BASE_FEATURE(kLensLoadAIMInLensResultPage, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensOverlayEnableLandscapeCompatibility,

@@ -623,8 +623,7 @@ void AutocompleteResult::SortAndCull(
                 suggestion_groups_map_));
             break;
           default:
-            // kLensOverlayNotFatalUntil update after launch.
-            NOTREACHED(base::NotFatalUntil::M200);
+            NOTREACHED();
         }
       } else if (omnibox::IsNTPPage(page_classification)) {
         sections.push_back(std::make_unique<IOSNTPZpsSection>(

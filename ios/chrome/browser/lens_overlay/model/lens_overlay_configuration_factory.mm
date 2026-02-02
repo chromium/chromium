@@ -50,7 +50,7 @@ LensEntrypoint LensEntrypointFromOverlayEntrypoint(
 
 - (LensConfiguration*)configurationForLensEntrypoint:(LensEntrypoint)entrypoint
                                              profile:(ProfileIOS*)profile {
-  CHECK(profile, kLensOverlayNotFatalUntil);
+  CHECK(profile);
   // Lens needs to have visibility into the user's identity and whether the
   // search should be incognito or not.
   LensConfiguration* configuration = [[LensConfiguration alloc] init];
