@@ -3240,6 +3240,55 @@ class BannedTypeCheckTest(unittest.TestCase):
             all('some/excluded/path/bad_extension_id.mojom' not in r.message
                 for r in results))
 
+    def testJniTypesWarning(self):
+        input_api = MockInputApi()
+        input_api.files = [
+            MockFile("base/positives.cc", [
+                "jboolean b;",
+                "jint i;",
+                "jlong l;",
+                "jfloat f;",
+                "jdouble d;",
+                "jbyte b;",
+                "jchar c;",
+                "jshort s;",
+            ]),
+            MockFile("base/negatives.cc", [
+                "jint JNI_OnLoad(JavaVM* vm, void* reserved);",
+                "int ajint = 1;"
+                "int jinta = 2;"
+            ]),
+        ]
+
+        results = PRESUBMIT.CheckNoBannedPatterns(input_api, MockOutputApi())
+
+        self.assertEqual(8, len(results))
+        self.assertIn("base/positives.cc", results[0].message)
+        self.assertNotIn("base/negatives.cc", results[0].message)
+        self.assertIn("Use bool instead of jboolean", results[0].message)
+        self.assertIn("base/positives.cc", results[1].message)
+        self.assertNotIn("base/negatives.cc", results[1].message)
+        self.assertIn("Use int32_t instead of jint", results[1].message)
+        self.assertIn("base/positives.cc", results[2].message)
+        self.assertNotIn("base/negatives.cc", results[2].message)
+        self.assertIn("Use int64_t instead of jlong", results[2].message)
+        self.assertIn("base/positives.cc", results[3].message)
+        self.assertNotIn("base/negatives.cc", results[3].message)
+        self.assertIn("Use float instead of jfloat", results[3].message)
+        self.assertIn("base/positives.cc", results[4].message)
+        self.assertNotIn("base/negatives.cc", results[4].message)
+        self.assertIn("Use double instead of jdouble", results[4].message)
+        self.assertIn("base/positives.cc", results[5].message)
+        self.assertNotIn("base/negatives.cc", results[5].message)
+        self.assertIn("Use int8_t instead of jbyte", results[5].message)
+        self.assertIn("base/positives.cc", results[6].message)
+        self.assertNotIn("base/negatives.cc", results[6].message)
+        self.assertIn("Use uint16_t instead of jchar", results[6].message)
+        self.assertIn("base/positives.cc", results[7].message)
+        self.assertNotIn("base/negatives.cc", results[7].message)
+        self.assertIn("Use int16_t instead of jshort", results[7].message)
+
+
 
 class NoProductionCodeUsingTestOnlyFunctionsTest(unittest.TestCase):
 
