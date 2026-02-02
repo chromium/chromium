@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_WORKER_COMPOSITOR_THREAD_SCHEDULER_IMPL_H_
 
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/scoped_thread_priority.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/common/single_thread_idle_task_runner.h"
 #include "third_party/blink/renderer/platform/scheduler/public/compositor_thread_scheduler.h"
@@ -68,10 +67,6 @@ class PLATFORM_EXPORT CompositorThreadSchedulerImpl
   base::TimeTicks WillProcessIdleTask() override;
   void DidProcessIdleTask() override;
   base::TimeTicks NowTicks() override;
-
- private:
-  std::optional<base::TaskMonitoringScopedBoostPriority>
-      scenario_priority_boost_;
 };
 
 }  // namespace scheduler

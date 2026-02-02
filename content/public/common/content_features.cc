@@ -1380,10 +1380,6 @@ BASE_FEATURE(kKeyboardLockApiOnAndroid, base::FEATURE_ENABLED_BY_DEFAULT);
 // Sets IO threads to kInteractive all the time.
 BASE_FEATURE(kIOThreadInteractiveThreadType, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Boosts IO threads and Browser main to kInteractive during input scenarios.
-BASE_FEATURE(kBoostThreadsPriorityDuringInputScenario,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Default amount of days after which the global navigation capturing IPH
 // guardrails are cleared from storage.
 const base::FeatureParam<int> kNavigationCapturingIPHGuardrailStorageDuration{

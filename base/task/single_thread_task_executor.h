@@ -53,10 +53,6 @@ class BASE_EXPORT SingleThreadTaskExecutor {
   // high overhead and yielding to native isn't critical.
   void SetWorkBatchSize(int work_batch_size);
 
-  sequence_manager::SequenceManager* sequence_manager() {
-    return sequence_manager_.get();
-  }
-
  private:
   SingleThreadTaskExecutor(MessagePumpType type,
                            std::unique_ptr<MessagePump> pump,

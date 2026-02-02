@@ -260,7 +260,6 @@ void BrowserTaskExecutor::RunAllPendingTasksOnThreadForTesting(
 void BrowserTaskExecutor::OnStartupComplete() {
   Get()->browser_ui_thread_handle_->OnStartupComplete();
   Get()->browser_io_thread_handle_->OnStartupComplete();
-  Get()->browser_ui_thread_scheduler_->OnStartupComplete();
 }
 
 // static
@@ -293,11 +292,6 @@ std::unique_ptr<BrowserProcessIOThread> BrowserTaskExecutor::CreateIOThread() {
 
   base::Thread::Options options;
   options.message_pump_type = base::MessagePumpType::IO;
-  if (base::FeatureList::IsEnabled(
-          features::kBoostThreadsPriorityDuringInputScenario)) {
-    options.task_observer =
-        Get()->browser_io_thread_delegate_->GetTaskObserver();
-  }
   options.delegate = std::move(Get()->browser_io_thread_delegate_);
   // Up the priority of the |io_thread_| as some of its IPCs relate to
   // display tasks, or use |kInteractive| for experiments.

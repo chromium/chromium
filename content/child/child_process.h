@@ -138,8 +138,6 @@ class CONTENT_EXPORT ChildProcess {
   bool initialized_thread_pool_ = false;
 
   bool is_renderer_ = false;
-  std::unique_ptr<base::TaskMonitoringScopedBoostPriority>
-      scenario_priority_boost_ = nullptr;
 };
 
 }  // namespace content

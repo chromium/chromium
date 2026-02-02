@@ -54,15 +54,4 @@ CreateBrowserTaskPrioritySettings() {
   return settings;
 }
 
-bool ShouldBoostThreadsPriority() {
-  DCHECK(base::FeatureList::IsEnabled(
-      features::kBoostThreadsPriorityDuringInputScenario));
-  performance_scenarios::ScenarioPattern no_input{
-      .input = {performance_scenarios::InputScenario::kNoInput},
-  };
-
-  return !performance_scenarios::CurrentScenariosMatch(
-      performance_scenarios::ScenarioScope::kGlobal, no_input);
-}
-
 }  // namespace content::internal

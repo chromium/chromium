@@ -18,7 +18,6 @@
 #include "base/threading/thread_id_name_manager.h"
 #include "build/build_config.h"
 #include "build/config/compiler/compiler_buildflags.h"
-#include "components/performance_manager/scenario_api/performance_scenarios.h"
 #include "content/child/child_thread_impl.h"
 #include "content/common/process_priority_tracker.h"
 #include "content/public/common/content_features.h"
@@ -150,16 +149,6 @@ ChildProcess::ChildProcess(base::ThreadType io_thread_type,
     network::ConfigureSequenceManager(thread_options);
   }
 
-  scenario_priority_boost_ =
-      std::make_unique<base::TaskMonitoringScopedBoostPriority>(
-          base::ThreadType::kAudioProcessing,
-          base::BindRepeating(&ChildProcess::ShouldBoostIOThreadPriority,
-                              base::Unretained(this)));
-  if (base::FeatureList::IsEnabled(
-          features::kBoostThreadsPriorityDuringInputScenario)) {
-    thread_options.task_observer = scenario_priority_boost_.get();
-  }
-
   CHECK(io_thread_->StartWithOptions(std::move(thread_options)));
   io_thread_runner_ = io_thread_->task_runner();
 }
@@ -255,18 +244,6 @@ ChildProcess* ChildProcess::current() {
 
 base::WaitableEvent* ChildProcess::GetShutDownEvent() {
   return &shutdown_event_;
-}
-
-bool ChildProcess::ShouldBoostIOThreadPriority() {
-  DCHECK(base::FeatureList::IsEnabled(
-      features::kBoostThreadsPriorityDuringInputScenario));
-  performance_scenarios::ScenarioPattern no_input{
-      .input = {performance_scenarios::InputScenario::kNoInput},
-  };
-  performance_scenarios::ScenarioScope scope =
-      is_renderer_ ? performance_scenarios::ScenarioScope::kCurrentProcess
-                   : performance_scenarios::ScenarioScope::kGlobal;
-  return !performance_scenarios::CurrentScenariosMatch(scope, no_input);
 }
 
 }  // namespace content

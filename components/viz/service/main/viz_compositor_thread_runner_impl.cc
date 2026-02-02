@@ -8,7 +8,6 @@
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
-#include "base/features.h"
 #include "base/functional/bind.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/synchronization/waitable_event.h"
@@ -20,7 +19,6 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "components/performance_manager/scenario_api/performance_scenarios.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/switches.h"
 #include "components/viz/service/display_embedder/output_surface_provider_impl.h"
@@ -72,8 +70,7 @@ class VizCompositorThread : public base::Thread {
   base::ScopedClosureRunner unregister_thread_closure_;
 };
 
-std::unique_ptr<VizCompositorThreadType> CreateAndStartCompositorThread(
-    base::TaskObserver* task_observer) {
+std::unique_ptr<VizCompositorThreadType> CreateAndStartCompositorThread() {
   const base::ThreadType thread_type = base::ThreadType::kPresentation;
 #if BUILDFLAG(IS_ANDROID)
   auto thread = std::make_unique<VizCompositorThread>(thread_type);
@@ -120,7 +117,6 @@ std::unique_ptr<VizCompositorThreadType> CreateAndStartCompositorThread(
 #endif
 
   thread_options.thread_type = thread_type;
-  thread_options.task_observer = task_observer;
 
   CHECK(thread->StartWithOptions(std::move(thread_options)));
 
@@ -135,20 +131,9 @@ std::unique_ptr<VizCompositorThreadType> CreateAndStartCompositorThread(
 }
 }  // namespace
 
-VizCompositorThreadRunnerImpl::VizCompositorThreadRunnerImpl() {
-  if (base::FeatureList::IsEnabled(
-          base::features::kBoostCompositorThreadsPriorityWhenIdle)) {
-    scenario_priority_boost_.emplace(
-        base::ThreadType::kAudioProcessing, base::BindRepeating([]() {
-          return performance_scenarios::CurrentScenariosMatch(
-              performance_scenarios::ScenarioScope::kGlobal,
-              performance_scenarios::kDefaultIdleScenarios);
-        }));
-  }
-  thread_ = CreateAndStartCompositorThread(
-      scenario_priority_boost_.has_value() ? &scenario_priority_boost_.value()
-                                           : nullptr);
-  task_runner_ = thread_->task_runner();
+VizCompositorThreadRunnerImpl::VizCompositorThreadRunnerImpl()
+    : thread_(CreateAndStartCompositorThread()),
+      task_runner_(thread_->task_runner()) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
 }
 
