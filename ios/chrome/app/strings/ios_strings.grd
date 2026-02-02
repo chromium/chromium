@@ -1778,6 +1778,9 @@
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE" desc="The name of the 'Pin Site' command in the Content Suggestions articles context menu">
         Pin site
       </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_ACCESSIBILITY_LABEL" desc="Content description for the most visited item that indicates that it is a pinned site.">
+          <ph name="WEBSITE_TITLE"><ex>Google</ex>$1</ph>, pinned site
+      </message>
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_ADD_PINNED_SITE_APPLY_BUTTON" desc="The top-right button of form for the user to add a pinned site. Tapping this button will close the form and add the filled information as a pinned site to the most visited tiles [Length: 7em]">
         Add
       </message>

@@ -6,6 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/favicon_base/fallback_icon_style.h"
 #import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_module_content_view_delegate.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_item.h"
@@ -114,10 +115,13 @@
 
   if (item.isPinned) {
     self.titleLabel.attributedText = [self pinnedTitle:item.title];
+    self.accessibilityLabel = l10n_util::GetNSStringF(
+        IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_ACCESSIBILITY_LABEL,
+        base::SysNSStringToUTF16(item.title));
   } else {
     self.titleLabel.text = item.title;
+    self.accessibilityLabel = item.title;
   }
-  self.accessibilityLabel = item.title;
   _incognitoAvailable = item.incognitoAvailable;
   _commandHandler = item.commandHandler;
   self.menuElementsProvider = item.menuElementsProvider;
@@ -190,32 +194,58 @@
 
 // Custom action for a cell configured with this item.
 - (NSArray<UIAccessibilityCustomAction*>*)customActions {
+  // Initialize possible custom actions.
   UIAccessibilityCustomAction* openInNewTab =
       [[UIAccessibilityCustomAction alloc]
           initWithName:l10n_util::GetNSString(
                            IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWTAB)
                 target:self
               selector:@selector(openInNewTab)];
-  UIAccessibilityCustomAction* removeMostVisited =
-      [[UIAccessibilityCustomAction alloc]
-          initWithName:l10n_util::GetNSString(
-                           IsContentSuggestionsCustomizable()
-                               ? IDS_IOS_CONTENT_SUGGESTIONS_NEVER_SHOW_SITE
-                               : IDS_IOS_CONTENT_SUGGESTIONS_REMOVE)
-                target:self
-              selector:@selector(removeMostVisited)];
-
-  NSMutableArray* actions =
-      [NSMutableArray arrayWithObjects:openInNewTab, removeMostVisited, nil];
-  if (self.incognitoAvailable) {
     UIAccessibilityCustomAction* openInNewIncognitoTab =
         [[UIAccessibilityCustomAction alloc]
             initWithName:l10n_util::GetNSString(
                              IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWINCOGNITOTAB)
                   target:self
                 selector:@selector(openInNewIncognitoTab)];
-    [actions addObject:openInNewIncognitoTab];
-  }
+    UIAccessibilityCustomAction* editMostVisited =
+        [[UIAccessibilityCustomAction alloc]
+            initWithName:
+                l10n_util::GetNSString(
+                    IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_EDIT_PINNED_SITE_TITLE)
+                  target:self
+                selector:@selector(editMostVisited)];
+    UIAccessibilityCustomAction* pinOrUnpinMostVisited =
+        [[UIAccessibilityCustomAction alloc]
+            initWithName:l10n_util::GetNSString(
+                             [self mostVisitedItem].isPinned
+                                 ? IDS_IOS_CONTENT_SUGGESTIONS_UNPIN_SITE
+                                 : IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE)
+                  target:self
+                selector:@selector(pinOrUnpinMostVisited)];
+    UIAccessibilityCustomAction* removeMostVisited =
+        [[UIAccessibilityCustomAction alloc]
+            initWithName:l10n_util::GetNSString(
+                             IsContentSuggestionsCustomizable()
+                                 ? IDS_IOS_CONTENT_SUGGESTIONS_NEVER_SHOW_SITE
+                                 : IDS_IOS_CONTENT_SUGGESTIONS_REMOVE)
+                  target:self
+                selector:@selector(removeMostVisited)];
+    // Add actions accordingly.
+    NSMutableArray* actions = [NSMutableArray arrayWithObject:openInNewTab];
+    if (self.incognitoAvailable) {
+      [actions addObject:openInNewIncognitoTab];
+    }
+    if (IsContentSuggestionsCustomizable()) {
+      if ([self mostVisitedItem].isPinned) {
+        [actions addObject:editMostVisited];
+        [actions addObject:pinOrUnpinMostVisited];
+      } else {
+        [actions addObject:pinOrUnpinMostVisited];
+        [actions addObject:removeMostVisited];
+      }
+    } else {
+      [actions addObject:removeMostVisited];
+    }
   return actions;
 }
 
@@ -232,6 +262,20 @@
   DCHECK(self.commandHandler);
   [self.commandHandler openNewTabWithMostVisitedItem:[self mostVisitedItem]
                                            incognito:YES];
+  return YES;
+}
+
+// Target for custom action.
+- (BOOL)pinOrUnpinMostVisited {
+  DCHECK(self.commandHandler);
+  [self.commandHandler pinOrUnpinMostVisited:[self mostVisitedItem]];
+  return YES;
+}
+
+// Target for custom action.
+- (BOOL)editMostVisited {
+  DCHECK(self.commandHandler);
+  [self.commandHandler openModalToEditPinnedSite:[self mostVisitedItem]];
   return YES;
 }
 

@@ -300,6 +300,38 @@ BOOL ShouldTriggerIPHForURLVisits(history::QueryURLAndVisitsResult result) {
                               atIndex:item.index];
 }
 
+- (void)pinOrUnpinMostVisited:(MostVisitedItem*)item {
+  GURL url = item.URL;
+  __weak MostVisitedTilesMediator* weakSelf = self;
+  if (_mostVisitedSites->HasCustomLink(url)) {
+    // Remove the custom link.
+    if (_mostVisitedSites->DeleteCustomLink(url)) {
+      [self showSnackbarWithMessage:
+                l10n_util::GetNSString(
+                    IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_SNACKBAR_UNPINNED)
+                         undoAction:^{
+                           [weakSelf undoLastPinAction];
+                           RecordSnackbarUndoUserAction(/*undo_pin=*/NO);
+                         }];
+    }
+    return;
+  }
+  if (!_mostVisitedSites->AddCustomLink(url,
+                                        base::SysNSStringToUTF16(item.title))) {
+    return;
+  }
+  _engagementTracker->NotifyEvent(
+      feature_engagement::events::kIOSPinMVTSiteUsed);
+  // Show snackbar message.
+  [self showSnackbarWithMessage:
+            l10n_util::GetNSString(
+                IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_SNACKBAR_PINNED)
+                     undoAction:^{
+                       [weakSelf undoLastPinAction];
+                       RecordSnackbarUndoUserAction(/*undo_pin=*/YES);
+                     }];
+}
+
 - (void)removeMostVisited:(MostVisitedItem*)item {
   [self.contentSuggestionsMetricsRecorder recordMostVisitedTileRemoved];
   [self blockMostVisitedURL:item.URL];
@@ -319,6 +351,10 @@ BOOL ShouldTriggerIPHForURLVisits(history::QueryURLAndVisitsResult result) {
 - (void)openModalToAddPinnedSite {
   [self.contentSuggestionsHandler showPinnedSiteCreator];
   RecordAddSiteUserAction();
+}
+
+- (void)openModalToEditPinnedSite:(MostVisitedItem*)item {
+  [self.contentSuggestionsHandler showPinnedSiteEditorForItem:item];
 }
 
 #pragma mark - ContentSuggestionsMenuProvider
@@ -377,8 +413,7 @@ BOOL ShouldTriggerIPHForURLVisits(history::QueryURLAndVisitsResult result) {
     [menuElements
         addObject:[self.actionFactory
                       actionToEditPinnedSiteOnMostVisitedTileWithBlock:^{
-                        [weakSelf.contentSuggestionsHandler
-                            showPinnedSiteEditorForItem:item];
+                        [weakSelf openModalToEditPinnedSite:item];
                       }]];
     [menuElements addObject:[self.actionFactory
                                 actionToUnpinSiteFromMostVisitedTileWithBlock:^{
@@ -547,40 +582,6 @@ BOOL ShouldTriggerIPHForURLVisits(history::QueryURLAndVisitsResult result) {
       return;
     }
   }
-}
-
-// Pins or unpins the item to/from the most visited tile, depending on whether
-// the item is already pinned or not.
-- (void)pinOrUnpinMostVisited:(MostVisitedItem*)item {
-  GURL url = item.URL;
-  __weak MostVisitedTilesMediator* weakSelf = self;
-  if (_mostVisitedSites->HasCustomLink(url)) {
-    // Remove the custom link.
-    if (_mostVisitedSites->DeleteCustomLink(url)) {
-      [self showSnackbarWithMessage:
-                l10n_util::GetNSString(
-                    IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_SNACKBAR_UNPINNED)
-                         undoAction:^{
-                           [weakSelf undoLastPinAction];
-                           RecordSnackbarUndoUserAction(/*undo_pin=*/NO);
-                         }];
-    }
-    return;
-  }
-  if (!_mostVisitedSites->AddCustomLink(url,
-                                        base::SysNSStringToUTF16(item.title))) {
-    return;
-  }
-  _engagementTracker->NotifyEvent(
-      feature_engagement::events::kIOSPinMVTSiteUsed);
-  // Show snackbar message.
-  [self showSnackbarWithMessage:
-            l10n_util::GetNSString(
-                IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_SNACKBAR_PINNED)
-                     undoAction:^{
-                       [weakSelf undoLastPinAction];
-                       RecordSnackbarUndoUserAction(/*undo_pin=*/YES);
-                     }];
 }
 
 // Undo the last action that adds/removes/edits a pinned site.
