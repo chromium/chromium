@@ -13,11 +13,10 @@
 // Stops the existing SharingCoordinator and creates a new one. This is used
 // when a sharing coordinator is already started, but the user taps again on the
 // share button.
-- (void)stopAndStartSharingCoordinatorFromView:(UIView*)shareButton;
+- (void)stopAndStartSharingCoordinator;
 
-// Shows the share sheet for the current page, passing the `shareButton` that
-// was used to trigger it.
-- (void)showShareSheetFromShareButton:(UIView*)shareButton;
+// Shows the share sheet for the current page.
+- (void)showShareSheet;
 
 // Shows the share sheet for a link to the Chrome App in the App Store.
 - (void)showShareSheetForChromeApp;

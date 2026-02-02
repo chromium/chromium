@@ -1945,7 +1945,7 @@ web::WebState* WebStateWithSnapshotID(WebStateList& web_state_list,
   NOTREACHED() << "Should be implemented in a subclass.";
 }
 
-- (void)closeSelectedTabs:(UIView*)sender {
+- (void)closeSelectedTabs:(id)sender {
   [self.delegate dismissPopovers];
 
   std::set<web::WebStateID> selectedTabIDs;
@@ -1983,7 +1983,7 @@ web::WebState* WebStateWithSnapshotID(WebStateList& web_state_list,
                                anchor:sender];
 }
 
-- (void)shareSelectedTabs:(UIView*)sender {
+- (void)shareSelectedTabs:(id)sender {
   [self.delegate dismissPopovers];
 
   base::RecordAction(

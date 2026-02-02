@@ -336,8 +336,8 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
   return self.secondaryToolbarCoordinator.viewController;
 }
 
-- (UIView*)shareButton {
-  return self.primaryToolbarCoordinator.shareButton;
+- (id<SharingPositioner>)sharingPositioner {
+  return self.primaryToolbarCoordinator.SharingPositioner;
 }
 
 // Public and in `ToolbarMediatorDelegate`.

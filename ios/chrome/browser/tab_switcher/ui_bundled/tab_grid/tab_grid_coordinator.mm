@@ -1226,7 +1226,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                            groupIDs:
                                (const std::set<tab_groups::TabGroupId>&)groupIDs
                            tabCount:(int)tabCount
-                             anchor:(UIView*)buttonAnchor {
+                             anchor:(UIBarButtonItem*)buttonAnchor {
   if (baseGridMediator == self.regularTabsMediator) {
     base::RecordAction(base::UserMetricsAction(
         "MobileTabGridSelectionCloseRegularTabsConfirmationPresented"));
@@ -1290,7 +1290,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
 - (void)baseGridMediator:(BaseGridMediator*)baseGridMediator
                shareURLs:(NSArray<URLWithTitle*>*)URLs
-                  anchor:(UIView*)buttonAnchor {
+                  anchor:(UIBarButtonItem*)buttonAnchor {
   SharingParams* params = [[SharingParams alloc]
       initWithURLs:URLs
           scenario:SharingScenario::TabGridSelectionMode];
@@ -1299,7 +1299,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       initWithBaseViewController:self.baseViewController
                          browser:self.regularBrowser
                           params:params
-                      sourceItem:buttonAnchor];
+                          anchor:buttonAnchor];
   [self.sharingCoordinator start];
 }
 
@@ -1469,7 +1469,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       initWithBaseViewController:self.baseViewController
                          browser:self.regularBrowser
                           params:params
-                      sourceItem:view];
+                      originView:view];
   [self.sharingCoordinator start];
 }
 

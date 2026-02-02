@@ -17,6 +17,7 @@
 
 @protocol OmniboxPopupPresenterDelegate;
 @protocol OmniboxFocusDelegate;
+@protocol SharingPositioner;
 
 /// Coordinator above primary and secondary toolbars. It does not have a
 /// view controller. This object is also an interface between multiple toolbars
@@ -59,8 +60,8 @@
 /// Returns `secondaryToolbarViewController`.
 - (UIViewController*)secondaryToolbarViewController;
 
-/// Returns the share button for the toolbars.
-- (UIView*)shareButton;
+/// Returns the sharing positioner for the current toolbar configuration.
+- (id<SharingPositioner>)sharingPositioner;
 
 /// Updates the toolbar's appearance.
 /// TODO(crbug.com/40842406): Remove this once toolbar coordinator owns focus

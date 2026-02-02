@@ -225,7 +225,7 @@
       initWithBaseViewController:self.popupViewController
                          browser:self.browser
                           params:params
-                      sourceItem:originView];
+                      originView:originView];
   [self.sharingCoordinator start];
 }
 

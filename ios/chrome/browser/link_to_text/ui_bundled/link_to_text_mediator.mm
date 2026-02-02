@@ -115,8 +115,7 @@ typedef void (^ProceduralBlockWithBlockWithItemArray)(
                  action:^{
                    base::RecordAction(base::UserMetricsAction(
                        "SharedHighlights.LinkGenerated.Error.SharePage"));
-                   [weakSelf.activityServiceHandler
-                       showShareSheetFromShareButton:nil];
+                   [weakSelf.activityServiceHandler showShareSheet];
                  }
                   style:UIAlertActionStyleDefault
               preferred:NO];

@@ -193,7 +193,7 @@ const CGFloat kCloseButtonAlpha = 0.6f;
                                   kLegacyToolbarShareButtonIdentifier);
   shareButton.titleLabel.text = @"Share";
   [shareButton addTarget:self.actionHandler
-                  action:@selector(shareAction:)
+                  action:@selector(shareAction)
         forControlEvents:UIControlEventTouchUpInside];
   shareButton.visibilityMask =
       self.visibilityConfiguration.shareButtonVisibility;

@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/adaptive_toolbar_coordinator.h"
 
 @protocol PrimaryToolbarViewControllerDelegate;
+@protocol SharingPositioner;
 @protocol ToolbarAnimatee;
 
 // Coordinator for the primary part, the one at the top of the screen, of the
@@ -20,8 +21,9 @@
 // Delegate for `primaryToolbarViewController`. Should be non-nil before start.
 @property(nonatomic, weak) id<PrimaryToolbarViewControllerDelegate>
     viewControllerDelegate;
-// The share button of this toolbar.
-@property(nonatomic, strong, readonly) UIView* shareButton;
+
+// Positioner for activity services attached to the toolbar
+- (id<SharingPositioner>)SharingPositioner;
 
 @end
 

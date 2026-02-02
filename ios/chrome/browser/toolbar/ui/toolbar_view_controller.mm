@@ -262,7 +262,7 @@ constexpr CGFloat kLocationBarHeight = 40;
         forControlEvents:UIControlEventTouchUpInside];
   _shareButton = [self.buttonFactory makeShareButton];
   [_shareButton addTarget:self
-                   action:@selector(shareButtonTapped:)
+                   action:@selector(shareButtonTapped)
          forControlEvents:UIControlEventTouchUpInside];
   _tabGridButton = [self.buttonFactory makeTabGridButton];
   [_tabGridButton addTarget:self
@@ -328,8 +328,8 @@ constexpr CGFloat kLocationBarHeight = 40;
 }
 
 // Handles share button tap.
-- (void)shareButtonTapped:(UIView*)sender {
-  [self.activityServiceHandler showShareSheetFromShareButton:sender];
+- (void)shareButtonTapped {
+  [self.activityServiceHandler showShareSheet];
 }
 
 // Handles tools menu button tap.

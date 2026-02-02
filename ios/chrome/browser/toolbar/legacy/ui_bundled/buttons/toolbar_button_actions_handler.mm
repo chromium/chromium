@@ -58,8 +58,8 @@
   [self.menuHandler showToolsMenuPopup];
 }
 
-- (void)shareAction:(UIView*)sender {
-  [self.activityHandler showShareSheetFromShareButton:sender];
+- (void)shareAction {
+  [self.activityHandler showShareSheet];
 }
 
 - (void)reloadAction {

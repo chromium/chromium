@@ -7,6 +7,7 @@
 
 #import "ios/chrome/browser/keyboard/ui_bundled/key_command_actions.h"
 #import "ios/chrome/browser/orchestrator/ui_bundled/toolbar_animatee.h"
+#import "ios/chrome/browser/sharing/ui_bundled/sharing_positioner.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/adaptive_toolbar_view_controller.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/primary_toolbar_consumer.h"
 
@@ -19,7 +20,8 @@
 // ViewController for the primary toobar part of the adaptive toolbar. The one
 // at the top of the screen.
 @interface PrimaryToolbarViewController
-    : AdaptiveToolbarViewController <KeyCommandActions,
+    : AdaptiveToolbarViewController <SharingPositioner,
+                                     KeyCommandActions,
                                      PrimaryToolbarConsumer,
                                      ToolbarAnimatee>
 
@@ -39,9 +41,6 @@
 
 // Whether the toolbar's location bar is currently expanded.
 @property(nonatomic, readonly) BOOL locationBarIsExpanded;
-
-// The share button.
-@property(nonatomic, readonly) UIView* shareButton;
 
 // Sets the tabgroupIndicatorView.
 - (void)setTabGroupIndicatorView:(TabGroupIndicatorView*)view;

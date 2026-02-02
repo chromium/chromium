@@ -25,12 +25,12 @@ class WebStateID;
                            groupIDs:
                                (const std::set<tab_groups::TabGroupId>&)groupIDs
                            tabCount:(int)tabCount
-                             anchor:(UIView*)buttonAnchor;
+                             anchor:(UIBarButtonItem*)buttonAnchor;
 
 // Displays a share menu for `items` at `anchor`.
 - (void)baseGridMediator:(BaseGridMediator*)baseGridMediator
                shareURLs:(NSArray<URLWithTitle*>*)items
-                  anchor:(UIView*)buttonAnchor;
+                  anchor:(UIBarButtonItem*)buttonAnchor;
 
 // Dismisses presented popovers, if any.
 - (void)dismissPopovers;
