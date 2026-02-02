@@ -332,7 +332,7 @@ source_set("common") {
     deps += [ "//media" ]
   }
 
-  if (is_android || is_win) {
+  if (is_android) {
     sources += [
       "font_unique_name_lookup/font_table_matcher.cc",
       "font_unique_name_lookup/font_table_persistence.cc",
@@ -489,7 +489,7 @@ source_set("common_unittests_sources") {
     ]
   }
 
-  if (is_android || is_win) {
+  if (is_android) {
     sources += [
       "font_unique_name_lookup/font_table_matcher_unittest.cc",
       "font_unique_name_lookup/icu_fold_case_util_unittest.cc",

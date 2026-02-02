@@ -22,7 +22,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/service_manager/public/cpp/bind_source_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/font_unique_name_lookup/font_table_matcher.h"
 #include "third_party/icu/source/common/unicode/umachine.h"
 
 namespace content {
