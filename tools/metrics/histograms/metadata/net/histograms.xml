@@ -1851,21 +1851,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.CertVerifier.QueuedRequestsWhenReady" units="requests"
-    expires_after="2026-02-01">
-  <owner>hchao@chromium.org</owner>
-  <owner>mattm@chromium.org</owner>
-  <summary>
-    Number of queued requests present when the Cert Verifier is finally marked
-    as ready when user-added certificates are enabled.
-
-    This only applies for platforms where the Chrome Cert Verifier is used (not
-    iOS).
-
-    This will be emitted at most once for every CertVerifierService created.
-  </summary>
-</histogram>
-
 <histogram name="Net.CertVerifier.Qwac.1Qwac" enum="NetCertVerifier1QwacResult"
     expires_after="2026-03-18">
   <owner>mattm@chromium.org</owner>
@@ -1908,21 +1893,6 @@ chromium-metrics-reviews@google.com.
     VerifyQWACs feature flag is enabled and Chrome Root Store is being used.
     (Notably, it is not recorded for same-page navigations, nor are Link headers
     on main-frame redirects processed or histogrammed.)
-  </summary>
-</histogram>
-
-<histogram name="Net.CertVerifier.TimeUntilReady" units="ms"
-    expires_after="2026-02-01">
-  <owner>hchao@chromium.org</owner>
-  <owner>mattm@chromium.org</owner>
-  <summary>
-    Time needed to provide the first update to the Cert Verifier when user-added
-    certificates are enabled.
-
-    This only applies for platforms where the Chrome Cert Verifier is used (not
-    iOS).
-
-    This will be emitted at most once for every CertVerifierService created.
   </summary>
 </histogram>
 

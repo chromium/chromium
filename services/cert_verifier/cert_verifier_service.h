@@ -9,7 +9,6 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -125,7 +124,6 @@ class CertVerifierServiceImpl : public mojom::CertVerifierService,
       service_factory_impl_;
   // Will queue requests for processing until this is false.
   bool waiting_for_update_;
-  base::TimeTicks wait_start_time_;
   std::vector<QueuedCertVerifyRequest> queued_requests_;
   WaitUntilNextUpdateForTestingCallback update_complete_callback_;
 };

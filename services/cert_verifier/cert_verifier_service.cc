@@ -7,8 +7,6 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/time/time.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/completion_once_callback.h"
@@ -111,9 +109,6 @@ CertVerifierServiceImpl::CertVerifierServiceImpl(
       base::BindRepeating(&CertVerifierServiceImpl::OnDisconnectFromService,
                           base::Unretained(this)));
   verifier_->AddObserver(this);
-  if (waiting_for_update_) {
-    wait_start_time_ = base::TimeTicks::Now();
-  }
 }
 
 // Note: this object owns the underlying CertVerifier, which owns all of the
@@ -154,12 +149,6 @@ void CertVerifierServiceImpl::UpdateAdditionalCertificates(
   verifier_->UpdateVerifyProcData(cert_net_fetcher_,
                                   service_factory_impl_->get_impl_params(),
                                   instance_params_);
-  if (waiting_for_update_) {
-    base::UmaHistogramTimes("Net.CertVerifier.TimeUntilReady",
-                            base::TimeTicks::Now() - wait_start_time_);
-    base::UmaHistogramCounts100("Net.CertVerifier.QueuedRequestsWhenReady",
-                                queued_requests_.size());
-  }
   waiting_for_update_ = false;
 
   // Empty queue if necessary
