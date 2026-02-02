@@ -51,7 +51,6 @@ class AutofillTabHelper : public web::WebStateObserver,
   explicit AutofillTabHelper(web::WebState* web_state);
 
   // web::WebStateObserver implementation.
-  void WebStateRealized(web::WebState* web_state) override;
   void WebStateDestroyed(web::WebState* web_state) override;
 
   // autofill::ChildFrameRegistrarObserver implementation.
