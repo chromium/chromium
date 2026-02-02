@@ -520,6 +520,9 @@ std::string SavePasswordProgressLogger::GetStringFromID(
       return "Automated password change: state changed";
     case STRING_AUTOMATED_PASSWORD_CHANGE_SUBMISSION_VERIFIED:
       return "Automated password change: submission verified";
+    case STRING_AUTOMATED_PASSWORD_CHANGE_USER_INTERVENTION_AFTER_SUBMISSION:
+      return "Automated password change: user intervention needed after "
+             "submission";
     case STRING_AUTOMATED_PASSWORD_CHANGE_CROSS_ORIGIN_NAVIGATION:
       return "Automated password change: cross-origin navigation detected";
     case STRING_AUTOMATED_PASSWORD_CHANGE_PAGE_CONTENT_RECEIVED:
