@@ -668,8 +668,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.CwsPromotionBannerEvent"
-    enum="CwsPromotionBannerEvent" expires_after="2026-02-09">
-  <owner>szpotekagata@google.com</owner>
+    enum="CwsPromotionBannerEvent" expires_after="2027-01-29">
+  <owner>przybytniowska@google.com</owner>
   <owner>austinzzr@chromium.org</owner>
   <summary>
     It will be recorded when promotion banner is displayed or clicked on Chrome
