@@ -44,7 +44,10 @@ suite('IdentityDocsPage', function() {
    {identityDocsOptIn: false},
   ].forEach(({identityDocsOptIn}) => {
     test(`Toggle should show current opt-in status`, async function() {
-      loadTimeData.overrideValues({userEligibleForAutofillAi: true});
+      loadTimeData.overrideValues({
+        userEligibleForAutofillAi: true,
+        autofillAiAvailableByDefault: false,
+      });
 
       entityDataManager.setGetOptInStatusResponse(true);
 

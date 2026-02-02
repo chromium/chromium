@@ -44,7 +44,10 @@ suite('TravelPage', function() {
    {travelOptIn: false},
   ].forEach(({travelOptIn}) => {
     test(`Toggle should show current opt-in status`, async function() {
-      loadTimeData.overrideValues({userEligibleForAutofillAi: true});
+      loadTimeData.overrideValues({
+        userEligibleForAutofillAi: true,
+        autofillAiAvailableByDefault: false,
+      });
 
       entityDataManager.setGetOptInStatusResponse(true);
 
