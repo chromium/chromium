@@ -27,7 +27,7 @@ import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SearchContext, SelectedFileInfo, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {InputState} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
-import {ToolMode, ModelMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
+import {ModelMode, ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
@@ -1093,15 +1093,6 @@ export class ComposeboxElement extends I18nMixinLit
     // the verbatim match will exist.
     if (this.lastQueriedInput_) {
       this.selectFirstMatch();
-    }
-    if (this.ntpRealboxNextEnabled) {
-      this.fire('composebox-input-focus-changed', {value: true});
-    }
-  }
-
-  protected handleInputFocusOut_() {
-    if (this.ntpRealboxNextEnabled) {
-      this.fire('composebox-input-focus-changed', {value: false});
     }
   }
 
