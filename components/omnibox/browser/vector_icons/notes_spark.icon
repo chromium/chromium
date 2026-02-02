@@ -1,0 +1,45 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Source: notes_spark.svg --> SVGOMG --> Skiafy
+// Appearance Description: A notes icon with a sparkle.
+
+CANVAS_DIMENSIONS, 960,
+FILL_RULE_NONZERO,
+MOVE_TO, 744, -48,
+R_QUADRATIC_TO, -1, 0, -8, -6,
+R_QUADRATIC_TO, -14, -57, -55.5f, -98.5f,
+R_QUADRATIC_TO, -41.5f, -41.5f, -98.63f, -55.62f,
+QUADRATIC_TO, 580, -209, 576, -216,
+R_QUADRATIC_TO, 0, -2, 6, -8,
+R_QUADRATIC_TO, 57, -14, 98.5f, -55.5f,
+R_QUADRATIC_TO, 41.5f, -41.5f, 55.62f, -98.63f,
+QUADRATIC_TO, 737, -380, 744, -384,
+R_QUADRATIC_TO, 2, 0, 8, 6,
+R_QUADRATIC_TO, 15, 57, 56.09f, 98.11f,
+R_QUADRATIC_TO, 41.08f, 41.11f, 98.04f, 55.89f,
+R_QUADRATIC_TO, 1.87f, 0, 5.87f, 8,
+R_QUADRATIC_TO, 0, 1, -6, 8,
+R_QUADRATIC_TO, -57, 14, -98.5f, 55.5f,
+QUADRATIC_TO_SHORTHAND, 752, -53.87f,
+R_QUADRATIC_TO, 0, 1.87f, -8, 5.87f,
+CLOSE,
+MOVE_TO, 144, -288,
+R_V_LINE_TO, -72,
+R_H_LINE_TO, 360,
+R_V_LINE_TO, 72,
+H_LINE_TO, 144,
+CLOSE,
+R_MOVE_TO, 0, -180,
+R_V_LINE_TO, -72,
+R_H_LINE_TO, 672,
+R_V_LINE_TO, 72,
+H_LINE_TO, 144,
+CLOSE,
+R_MOVE_TO, 0, -180,
+R_V_LINE_TO, -72,
+R_H_LINE_TO, 672,
+R_V_LINE_TO, 72,
+H_LINE_TO, 144,
+CLOSE

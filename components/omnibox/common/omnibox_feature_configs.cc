@@ -798,15 +798,15 @@ BASE_FEATURE(ComposeboxSuggestionLimit::kComposeboxSuggestionLimit,
 ComposeboxSuggestionLimit::ComposeboxSuggestionLimit() {
   enabled = base::FeatureList::IsEnabled(kComposeboxSuggestionLimit);
   max_suggestions = base::FeatureParam<size_t>(&kComposeboxSuggestionLimit,
-                                               "ComposeboxMaxSuggestions", 5)
+                                               "ComposeboxMaxSuggestions", 8)
                         .Get();
   max_aim_suggestions =
       base::FeatureParam<size_t>(&kComposeboxSuggestionLimit,
-                                 "ComposeboxMaxAimSuggestions", 5)
+                                 "ComposeboxMaxAimSuggestions", 8)
           .Get();
   max_contextual_suggestions =
       base::FeatureParam<size_t>(&kComposeboxSuggestionLimit,
-                                 "ComposeboxMaxContextualSuggestions", 5)
+                                 "ComposeboxMaxContextualSuggestions", 8)
           .Get();
 }
 

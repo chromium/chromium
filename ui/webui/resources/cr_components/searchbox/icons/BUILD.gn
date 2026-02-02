@@ -44,6 +44,7 @@ generate_grd("build_grdp") {
     "mac_share_cr23.svg",
     "mac_share.svg",
     "note.svg",
+    "notes_spark.svg",
     "page_cr23.svg",
     "page.svg",
     "page_spark.svg",

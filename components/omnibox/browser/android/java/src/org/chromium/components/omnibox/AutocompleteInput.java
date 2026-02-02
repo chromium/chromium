@@ -82,7 +82,7 @@ public class AutocompleteInput implements UserData {
         return switch (mPageClassification) {
             // LINT.IfChange(FuseboxSupportedPageClassifications)
             case PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE ->
-                    PageClassification.NTP_COMPOSEBOX_VALUE;
+                    PageClassification.NTP_OMNIBOX_COMPOSEBOX_VALUE;
             case PageClassification.SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT_VALUE ->
                     PageClassification.SRP_OMNIBOX_COMPOSEBOX_VALUE;
             case PageClassification.OTHER_VALUE ->

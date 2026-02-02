@@ -165,7 +165,6 @@ suite('AimAppTest', function() {
     testProxy.page.setPreserveContextOnClose(true);
 
     const {input} = await testProxy.page.onPopupHidden();
-
     assertEquals('', input);
     assertEquals('', app.$.composebox.getInputText());
     assertFalse(app.$.composebox.isVoiceInput);

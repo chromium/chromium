@@ -443,26 +443,21 @@ export class ComposeboxElement extends I18nMixinLit
         changedProperties as Map<PropertyKey, unknown>;
     if (changedPrivateProperties.has('selectedMatchIndex_')) {
       if (this.selectedMatch_) {
-        // If the selected match is the default match (typing) the input will
-        // already have been set by handleInput.
-        if (!(this.selectedMatchIndex_ === 0 &&
-              this.selectedMatch_.allowedToBeDefaultMatch)) {
-          // Update the input.
-          const text = this.selectedMatch_.fillIntoEdit;
-          assert(text);
-          this.input_ = text;
-          this.submitEnabled_ = true;
-        }
+        // Update the input.
+        const text = this.selectedMatch_.fillIntoEdit;
+        this.input_ = text;
       } else if (!this.lastQueriedInput_) {
         // This is for cases when focus leaves the matches/input.
         // If there was already text in the input do not clear it.
         this.clearInput();
-        this.submitEnabled_ = this.contextFilesSize_ > 0;
       } else {
         // For typed queries reset the input back to typed value when
         // focus leaves the match.
         this.input_ = this.lastQueriedInput_;
       }
+      this.submitEnabled_ = this.computeSubmitEnabled_();
+      this.canSubmitFilesAndInput_ =
+          this.submitEnabled_ && this.fileUploadsComplete;
     }
     if (changedPrivateProperties.has('smartComposeInlineHint_')) {
       if (this.smartComposeInlineHint_) {
@@ -614,7 +609,8 @@ export class ComposeboxElement extends I18nMixinLit
 
   private computeSubmitEnabled_() {
     return this.input_.trim().length > 0 ||
-        (this.contextFilesSize_ > 0 && this.$.context.hasDeletableFiles());
+        (this.contextFilesSize_ > 0 && this.$.context.hasDeletableFiles()) ||
+        !!this.selectedMatch_;
   }
 
   protected shouldShowSuggestionActivityLink_() {
@@ -1208,8 +1204,6 @@ export class ComposeboxElement extends I18nMixinLit
     }
 
     if (this.isCollapsible) {
-      this.submitEnabled_ = this.computeSubmitEnabled_();
-      assert(!this.submitEnabled_);
       this.$.input.blur();
     }
     this.fire('composebox-submit');
@@ -1426,14 +1420,14 @@ export class ComposeboxElement extends I18nMixinLit
       // uploaded file state when the query submission is handled.
       this.searchboxHandler_.clearFiles();
     }
-    this.submitEnabled_ = this.computeSubmitEnabled_();
-    assert(!this.submitEnabled_);
     this.fileUploadsComplete = this.pendingUploads_.size === 0;
   }
 
   clearInput() {
     this.input_ = '';
+    this.lastQueriedInput_ = '';
     this.isVoiceInput_ = false;
+    this.$.matches.unselect();
   }
 
   getInputText(): string {
