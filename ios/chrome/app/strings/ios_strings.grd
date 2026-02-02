@@ -5495,6 +5495,24 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_PRICE_NOTIFICATIONS_SETTINGS_ALERT_TITLE" desc="Title for Price Notifications UI Alert Prompt displayed from the settings menu that redirects the user to the iOS push notifications permission page.">
           Turn on price alerts?
       </message>
+      <message name="IDS_IOS_PRICE_TRACKING_PROMO_KEEP_BROWSING_BUTTON" desc="The text of the Keep browsing button on the Price Tracking promo.">
+          Keep browsing
+      </message>
+      <message name="IDS_IOS_PRICE_TRACKING_PROMO_MOCK_NOTIFICATION_SUBTITLE" desc="The subtitle of the mock price tracking notification on the Price Tracking animation.">
+          Your item is now 15% off
+      </message>
+      <message name="IDS_IOS_PRICE_TRACKING_PROMO_MOCK_NOTIFICATION_TITLE" desc="The title of the mock price tracking notification on the Price Tracking animation.">
+          Price drop on your tracked product
+      </message>
+      <message name="IDS_IOS_PRICE_TRACKING_PROMO_SUBTITLE" desc="Subtitle of the full screen Price Tracking promo that encourages users to turn on price tracking alerts.">
+          Track prices and get alerts when the price drops on any site
+      </message>
+      <message name="IDS_IOS_PRICE_TRACKING_PROMO_TITLE" desc="Title of the full screen Price Tracking promo that encourages users to turn on price tracking alerts.">
+          Don't miss a price drop
+      </message>
+      <message name="IDS_IOS_PRICE_TRACKING_PROMO_TURN_ON_NOTIFICATIONS_BUTTON" desc="The text of the Turn on notifications button on the Price Tracking promo.">
+          Turn on notifications
+      </message>
       <message name="IDS_IOS_PRINT_PDF_ERROR_SUBTITLE" desc="Message of a popup window indicating that the printing operation did not succeed. [Length: 100em] [iOS only]">
         Make sure you have a network connection, and try again.
       </message>
