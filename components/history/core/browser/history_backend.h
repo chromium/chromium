@@ -357,6 +357,8 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // top-level domain (eTLD) + 1, e.g. "foo.com", "bar.co.uk") visited within
   // the 1-day, 7-day or 28-day span that ends at a midnight in local timezone.
   //
+  // Includes only visits from this device; foreign/synced visits are ignored.
+  //
   // For each of the most recent `number_of_days_to_report` midnights before
   // `report_time`(inclusive), this function computes a subset of
   // {1-day, 7-day, 28-day} metrics whose spanning periods all end on that
@@ -380,12 +382,7 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // metrics measuring domain visit counts spanning the following date ranges
   // (all dates are inclusive):
   // {{10/30, 10/3–10/30}, {10/29, 10/2–10/29}, {10/28, 10/1–10/28}}
-  //
-  // The return value is a pair of results, where the first member counts only
-  // local visits, and the second counts both local and foreign (synced) visits.
-  // TODO(crbug.com/40896778): Once the "V2" domain diversity metrics are
-  // deprecated, return only a single result, the "local" one.
-  std::pair<DomainDiversityResults, DomainDiversityResults> GetDomainDiversity(
+  DomainDiversityResults GetDomainDiversity(
       base::Time report_time,
       int number_of_days_to_report,
       DomainMetricBitmaskType metric_type_bitmask,

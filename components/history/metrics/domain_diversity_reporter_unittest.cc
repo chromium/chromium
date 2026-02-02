@@ -147,9 +147,6 @@ TEST_F(DomainDiversityReporterTest, HistoryNotLoaded) {
   task_environment_.RunUntilIdle();
 
   // Since History is not yet loaded, there should be no histograms.
-  histograms().ExpectTotalCount("History.DomainCount1Day_V2", 0);
-  histograms().ExpectTotalCount("History.DomainCount7Day_V2", 0);
-  histograms().ExpectTotalCount("History.DomainCount28Day_V2", 0);
   histograms().ExpectTotalCount("History.DomainCount1Day_V3", 0);
   histograms().ExpectTotalCount("History.DomainCount7Day_V3", 0);
   histograms().ExpectTotalCount("History.DomainCount28Day_V3", 0);
@@ -163,9 +160,6 @@ TEST_F(DomainDiversityReporterTest, HistoryNotLoaded) {
 
   // No domains were visited, but there should be 7 samples. The last
   // reporting date, since it has never been set, was defaulted to epoch.
-  histograms().ExpectUniqueSample("History.DomainCount1Day_V2", 0, 7);
-  histograms().ExpectUniqueSample("History.DomainCount7Day_V2", 0, 7);
-  histograms().ExpectUniqueSample("History.DomainCount28Day_V2", 0, 7);
   histograms().ExpectUniqueSample("History.DomainCount1Day_V3", 0, 7);
   histograms().ExpectUniqueSample("History.DomainCount7Day_V3", 0, 7);
   histograms().ExpectUniqueSample("History.DomainCount28Day_V3", 0, 7);
@@ -188,9 +182,6 @@ TEST_F(DomainDiversityReporterTest, HistoryLoaded) {
   task_environment_.RunUntilIdle();
 
   // Since History is already loaded, there should be a sample reported.
-  histograms().ExpectUniqueSample("History.DomainCount1Day_V2", 0, 1);
-  histograms().ExpectUniqueSample("History.DomainCount7Day_V2", 0, 1);
-  histograms().ExpectUniqueSample("History.DomainCount28Day_V2", 0, 1);
   histograms().ExpectUniqueSample("History.DomainCount1Day_V3", 0, 1);
   histograms().ExpectUniqueSample("History.DomainCount7Day_V3", 0, 1);
   histograms().ExpectUniqueSample("History.DomainCount28Day_V3", 0, 1);
@@ -220,22 +211,16 @@ TEST_F(DomainDiversityReporterTest, HostAddedSimple) {
   // There are 3 samples for each histogram. One sample of DomainCount1Day,
   // two samples of DomainCount7Day and two samples of DomainCount28Day
   // should have a visit count of 1.
-  histograms().ExpectBucketCount("History.DomainCount1Day_V2", 1, 1);
-  histograms().ExpectBucketCount("History.DomainCount1Day_V2", 0, 2);
   histograms().ExpectBucketCount("History.DomainCount1Day_V3", 1, 1);
   histograms().ExpectBucketCount("History.DomainCount1Day_V3", 0, 2);
   histograms().ExpectBucketCount("History.DomainCount1Day_V4", 1, 1);
   histograms().ExpectBucketCount("History.DomainCount1Day_V4", 0, 2);
 
-  histograms().ExpectBucketCount("History.DomainCount7Day_V2", 1, 2);
-  histograms().ExpectBucketCount("History.DomainCount7Day_V2", 0, 1);
   histograms().ExpectBucketCount("History.DomainCount7Day_V3", 1, 2);
   histograms().ExpectBucketCount("History.DomainCount7Day_V3", 0, 1);
   histograms().ExpectBucketCount("History.DomainCount7Day_V4", 1, 2);
   histograms().ExpectBucketCount("History.DomainCount7Day_V4", 0, 1);
 
-  histograms().ExpectBucketCount("History.DomainCount28Day_V2", 1, 2);
-  histograms().ExpectBucketCount("History.DomainCount28Day_V2", 0, 1);
   histograms().ExpectBucketCount("History.DomainCount28Day_V3", 1, 2);
   histograms().ExpectBucketCount("History.DomainCount28Day_V3", 0, 1);
   histograms().ExpectBucketCount("History.DomainCount28Day_V4", 1, 2);
@@ -277,8 +262,6 @@ TEST_F(DomainDiversityReporterTest, HostAddedLongAgo) {
   CreateDomainDiversityReporter();
   task_environment_.RunUntilIdle();
 
-  histograms().ExpectUniqueSample("History.DomainCount1Day_V2", 0, 3);
-  histograms().ExpectUniqueSample("History.DomainCount7Day_V2", 0, 3);
   histograms().ExpectUniqueSample("History.DomainCount1Day_V3", 0, 3);
   histograms().ExpectUniqueSample("History.DomainCount7Day_V3", 0, 3);
   histograms().ExpectUniqueSample("History.DomainCount1Day_V4", 0, 3);
@@ -286,8 +269,6 @@ TEST_F(DomainDiversityReporterTest, HostAddedLongAgo) {
 
   // Two of the three DomainCount28Day samples should reflect the
   // 4 domain visits 29 days ago.
-  histograms().ExpectBucketCount("History.DomainCount28Day_V2", 4, 2);
-  histograms().ExpectBucketCount("History.DomainCount28Day_V2", 0, 1);
   histograms().ExpectBucketCount("History.DomainCount28Day_V3", 4, 2);
   histograms().ExpectBucketCount("History.DomainCount28Day_V3", 0, 1);
   histograms().ExpectBucketCount("History.DomainCount28Day_V4", 4, 2);
@@ -338,12 +319,6 @@ TEST_F(DomainDiversityReporterTest, ScheduleNextDay) {
   task_environment_.RunUntilIdle();
 
   // Two domains visited two days ago.
-  histograms().ExpectBucketCount("History.DomainCount1Day_V2", 2, 1);
-  histograms().ExpectBucketCount("History.DomainCount1Day_V2", 0, 3);
-  histograms().ExpectBucketCount("History.DomainCount7Day_V2", 1, 2);
-  histograms().ExpectBucketCount("History.DomainCount7Day_V2", 3, 2);
-  histograms().ExpectBucketCount("History.DomainCount28Day_V2", 2, 2);
-  histograms().ExpectBucketCount("History.DomainCount28Day_V2", 4, 2);
   histograms().ExpectBucketCount("History.DomainCount1Day_V3", 2, 1);
   histograms().ExpectBucketCount("History.DomainCount1Day_V3", 0, 3);
   histograms().ExpectBucketCount("History.DomainCount7Day_V3", 1, 2);
@@ -363,9 +338,6 @@ TEST_F(DomainDiversityReporterTest, ScheduleNextDay) {
 
   // The new report will include the four domain visits on the last
   // repoting date.
-  histograms().ExpectBucketCount("History.DomainCount1Day_V2", 4, 1);
-  histograms().ExpectBucketCount("History.DomainCount1Day_V2", 2, 1);
-  histograms().ExpectBucketCount("History.DomainCount1Day_V2", 0, 3);
   histograms().ExpectBucketCount("History.DomainCount1Day_V3", 4, 1);
   histograms().ExpectBucketCount("History.DomainCount1Day_V3", 2, 1);
   histograms().ExpectBucketCount("History.DomainCount1Day_V3", 0, 3);
@@ -373,9 +345,6 @@ TEST_F(DomainDiversityReporterTest, ScheduleNextDay) {
   histograms().ExpectBucketCount("History.DomainCount1Day_V4", 2, 1);
   histograms().ExpectBucketCount("History.DomainCount1Day_V4", 0, 3);
 
-  histograms().ExpectBucketCount("History.DomainCount7Day_V2", 5, 1);
-  histograms().ExpectBucketCount("History.DomainCount7Day_V2", 1, 2);
-  histograms().ExpectBucketCount("History.DomainCount7Day_V2", 3, 2);
   histograms().ExpectBucketCount("History.DomainCount7Day_V3", 5, 1);
   histograms().ExpectBucketCount("History.DomainCount7Day_V3", 1, 2);
   histograms().ExpectBucketCount("History.DomainCount7Day_V3", 3, 2);
@@ -383,9 +352,6 @@ TEST_F(DomainDiversityReporterTest, ScheduleNextDay) {
   histograms().ExpectBucketCount("History.DomainCount7Day_V4", 1, 2);
   histograms().ExpectBucketCount("History.DomainCount7Day_V4", 3, 2);
 
-  histograms().ExpectBucketCount("History.DomainCount28Day_V2", 6, 1);
-  histograms().ExpectBucketCount("History.DomainCount28Day_V2", 2, 2);
-  histograms().ExpectBucketCount("History.DomainCount28Day_V2", 4, 2);
   histograms().ExpectBucketCount("History.DomainCount28Day_V3", 6, 1);
   histograms().ExpectBucketCount("History.DomainCount28Day_V3", 2, 2);
   histograms().ExpectBucketCount("History.DomainCount28Day_V3", 4, 2);
@@ -439,12 +405,6 @@ TEST_F(DomainDiversityReporterTest, ScheduleNextDaySuspended) {
   task_environment_.RunUntilIdle();
 
   // Two domains visited two days ago.
-  histograms().ExpectBucketCount("History.DomainCount1Day_V2", 2, 1);
-  histograms().ExpectBucketCount("History.DomainCount1Day_V2", 0, 3);
-  histograms().ExpectBucketCount("History.DomainCount7Day_V2", 1, 2);
-  histograms().ExpectBucketCount("History.DomainCount7Day_V2", 3, 2);
-  histograms().ExpectBucketCount("History.DomainCount28Day_V2", 2, 2);
-  histograms().ExpectBucketCount("History.DomainCount28Day_V2", 4, 2);
   histograms().ExpectBucketCount("History.DomainCount1Day_V3", 2, 1);
   histograms().ExpectBucketCount("History.DomainCount1Day_V3", 0, 3);
   histograms().ExpectBucketCount("History.DomainCount7Day_V3", 1, 2);
@@ -462,14 +422,8 @@ TEST_F(DomainDiversityReporterTest, ScheduleNextDaySuspended) {
                        base::Hours(10));
   FastForwardPowerSuspendedAndWait(kScheduleInterval);  // fast-forward 24 hours
 
-  // No change to V2 and V3 histograms because their 24h timer didn't advance
-  // during suspend.
-  histograms().ExpectBucketCount("History.DomainCount1Day_V2", 2, 1);
-  histograms().ExpectBucketCount("History.DomainCount1Day_V2", 0, 3);
-  histograms().ExpectBucketCount("History.DomainCount7Day_V2", 1, 2);
-  histograms().ExpectBucketCount("History.DomainCount7Day_V2", 3, 2);
-  histograms().ExpectBucketCount("History.DomainCount28Day_V2", 2, 2);
-  histograms().ExpectBucketCount("History.DomainCount28Day_V2", 4, 2);
+  // No change to V3 histograms because their 24h timer didn't advance during
+  // suspend.
   histograms().ExpectBucketCount("History.DomainCount1Day_V3", 2, 1);
   histograms().ExpectBucketCount("History.DomainCount1Day_V3", 0, 3);
   histograms().ExpectBucketCount("History.DomainCount7Day_V3", 1, 2);
@@ -521,9 +475,6 @@ TEST_F(DomainDiversityReporterTest, OnlyOneReportPerDay) {
   CreateDomainDiversityReporter();
   task_environment_.RunUntilIdle();
 
-  histograms().ExpectUniqueSample("History.DomainCount1Day_V2", 0, 1);
-  histograms().ExpectUniqueSample("History.DomainCount7Day_V2", 0, 1);
-  histograms().ExpectUniqueSample("History.DomainCount28Day_V2", 0, 1);
   histograms().ExpectUniqueSample("History.DomainCount1Day_V3", 0, 1);
   histograms().ExpectUniqueSample("History.DomainCount7Day_V3", 0, 1);
   histograms().ExpectUniqueSample("History.DomainCount28Day_V3", 0, 1);
@@ -546,9 +497,6 @@ TEST_F(DomainDiversityReporterTest, OnlyOneReportPerDay) {
   // This could happen when the last report occurred very early
   // on a day longer than 24 hours (e.g. the day on which daylight saving
   // time ends).
-  histograms().ExpectUniqueSample("History.DomainCount1Day_V2", 0, 1);
-  histograms().ExpectUniqueSample("History.DomainCount7Day_V2", 0, 1);
-  histograms().ExpectUniqueSample("History.DomainCount28Day_V2", 0, 1);
   histograms().ExpectUniqueSample("History.DomainCount1Day_V3", 0, 1);
   histograms().ExpectUniqueSample("History.DomainCount7Day_V3", 0, 1);
   histograms().ExpectUniqueSample("History.DomainCount28Day_V3", 0, 1);

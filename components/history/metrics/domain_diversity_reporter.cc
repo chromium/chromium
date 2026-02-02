@@ -21,7 +21,7 @@ constexpr char kDomainDiversityReportingTimestamp[] =
     "domain_diversity.last_reporting_timestamp";
 
 // The V4 metrics have their own timestamp as they may run at different
-// times from V2+V3.
+// times from V3.
 constexpr char kDomainDiversityReportingTimestampV4[] =
     "domain_diversity.last_reporting_timestamp_v4";
 }  // namespace
@@ -135,7 +135,7 @@ void DomainDiversityReporter::ComputeDomainMetrics(bool v4_metrics) {
     }
   }
 
-  // V2+V3 metrics used a PostDelayedTask which doesn't account for time passing
+  // V3 metrics used a PostDelayedTask which doesn't account for time passing
   // while the machine is suspended. The V4 metric uses a WallClocKTimer which
   // does.
   if (v4_metrics) {
@@ -156,21 +156,16 @@ void DomainDiversityReporter::ComputeDomainMetrics(bool v4_metrics) {
 
 void DomainDiversityReporter::ReportDomainMetrics(
     base::Time time_current_report_triggered,
-    std::pair<history::DomainDiversityResults, history::DomainDiversityResults>
-        result) {
+    history::DomainDiversityResults result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // An empty DomainDiversityResults indicates that `db_` is null in
   // HistoryBackend.
-  if (result.first.empty() && result.second.empty()) {
+  if (result.empty()) {
     return;
   }
 
-  // `result.first` is the "local" result (excluding synced visits), while
-  // `result.second` is the "all" result, including both local and synced
-  // visits.
-
-  for (auto& result_one_day : result.first) {
+  for (auto& result_one_day : result) {
     base::UmaHistogramCounts1000("History.DomainCount1Day_V3",
                                  result_one_day.one_day_metric.value().count);
     base::UmaHistogramCounts1000("History.DomainCount7Day_V3",
@@ -180,38 +175,22 @@ void DomainDiversityReporter::ReportDomainMetrics(
         result_one_day.twenty_eight_day_metric.value().count);
   }
 
-  for (auto& result_one_day : result.second) {
-    base::UmaHistogramCounts1000("History.DomainCount1Day_V2",
-                                 result_one_day.one_day_metric.value().count);
-    base::UmaHistogramCounts1000("History.DomainCount7Day_V2",
-                                 result_one_day.seven_day_metric.value().count);
-    base::UmaHistogramCounts1000(
-        "History.DomainCount28Day_V2",
-        result_one_day.twenty_eight_day_metric.value().count);
-  }
-
   prefs_->SetTime(kDomainDiversityReportingTimestamp,
                   time_current_report_triggered);
 }
 
 void DomainDiversityReporter::ReportDomainMetricsV4(
     base::Time time_current_report_triggered,
-    std::pair<history::DomainDiversityResults, history::DomainDiversityResults>
-        result) {
+    history::DomainDiversityResults result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // An empty DomainDiversityResults indicates that `db_` is null in
   // HistoryBackend.
-  if (result.first.empty()) {
+  if (result.empty()) {
     return;
   }
 
-  // `result.first` is the "local" result (excluding synced visits), while
-  // `result.second` is the "all" result, including both local and synced
-  // visits. Only V2 needs the second, V3+V4 use local. The reason we accept
-  // the pair in this function is to keep the same signature as
-  // ReportDomainMetrics.
-  for (auto& result_one_day : result.first) {
+  for (auto& result_one_day : result) {
     base::UmaHistogramCounts1000("History.DomainCount1Day_V4",
                                  result_one_day.one_day_metric.value().count);
     base::UmaHistogramCounts1000("History.DomainCount7Day_V4",

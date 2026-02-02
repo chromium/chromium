@@ -387,14 +387,13 @@ DomainsVisitedResult HistoryDatabase::GetUniqueDomainsVisited(
   return result;
 }
 
-std::pair<int, int> HistoryDatabase::CountUniqueDomainsVisited(
+int HistoryDatabase::CountUniqueDomainsVisited(
     base::Time begin_time,
     base::Time end_time,
     VisitQuery404sPolicy policy_for_404_visits) {
   DomainsVisitedResult result =
       GetUniqueDomainsVisited(begin_time, end_time, policy_for_404_visits);
-  return {result.locally_visited_domains.size(),
-          result.all_visited_domains.size()};
+  return result.locally_visited_domains.size();
 }
 
 void HistoryDatabase::BeginExclusiveMode() {

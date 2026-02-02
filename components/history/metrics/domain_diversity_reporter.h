@@ -44,21 +44,17 @@ class DomainDiversityReporter : public KeyedService,
   // Computes the domain diversity metric and emits histogram through callback,
   // and schedules another domain metric computation task for 24 hours later.
   // If `v4_metrics` is true, then this instantiation will output the v4
-  // metrics, else the older v2 & v3 metrics.
+  // metrics, else the older v3 metrics.
   void ComputeDomainMetrics(bool v4_metrics);
 
   // Callback to emit histograms for domain metrics.
-  // `result` is a pair of ("local-only", "local-and-synced") data - see
-  // HistoryBackend::GetDomainDiversity().
   void ReportDomainMetrics(base::Time time_current_report_triggered,
-                           std::pair<history::DomainDiversityResults,
-                                     history::DomainDiversityResults> result);
+                           history::DomainDiversityResults result);
 
-  // Like ReportDomainMetrics, but for the V4 version which runs
-  // on a separate timer from V2+V3.
+  // Like ReportDomainMetrics, but for the V4 version which runs on a separate
+  // timer from V3.
   void ReportDomainMetricsV4(base::Time time_current_report_triggered,
-                             std::pair<history::DomainDiversityResults,
-                                       history::DomainDiversityResults> result);
+                             history::DomainDiversityResults result);
 
   // HistoryServiceObserver:
   void OnHistoryServiceLoaded(
