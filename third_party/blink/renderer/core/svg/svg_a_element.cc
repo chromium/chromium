@@ -124,11 +124,11 @@ void SVGAElement::DefaultEventHandler(Event& event) {
     }
 
     if (IsLinkClick(event)) {
-      String url = StripLeadingAndTrailingHTMLSpaces(HrefString());
+      StringView url = StripLeadingAndTrailingHtmlSpaces(HrefString());
 
       if (url[0] == '#') {
         Element* target_element =
-            GetTreeScope().getElementById(AtomicString(url.Substring(1)));
+            GetTreeScope().getElementById(AtomicString(url.substr(1)));
         if (auto* svg_smil_element =
                 DynamicTo<SVGSMILElement>(target_element)) {
           svg_smil_element->BeginByLinkActivation();

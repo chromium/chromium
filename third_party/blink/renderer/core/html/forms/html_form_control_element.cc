@@ -82,7 +82,7 @@ String HTMLFormControlElement::formAction() const {
   if (action.empty()) {
     return GetDocument().Url();
   }
-  return GetDocument().CompleteURL(StripLeadingAndTrailingHTMLSpaces(action));
+  return GetDocument().CompleteURL(StripLeadingAndTrailingHtmlSpaces(action));
 }
 
 void HTMLFormControlElement::setFormAction(const AtomicString& value) {

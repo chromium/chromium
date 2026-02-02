@@ -103,16 +103,16 @@ void HTMLFrameElementBase::ParseAttribute(
     } else {
       const AtomicString& src_value = FastGetAttribute(html_names::kSrcAttr);
       if (!src_value.IsNull()) {
-        SetLocation(StripLeadingAndTrailingHTMLSpaces(src_value));
+        SetLocation(StripLeadingAndTrailingHtmlSpaces(src_value));
       } else if (!params.old_value.IsNull()) {
         // We're resetting kSrcdocAttr, but kSrcAttr has no value, so load
         // about:blank. https://crbug.com/1233143
-        SetLocation(BlankURL());
+        SetLocation(BlankURL().GetString());
       }
     }
   } else if (name == html_names::kSrcAttr &&
              !FastHasAttribute(html_names::kSrcdocAttr)) {
-    SetLocation(StripLeadingAndTrailingHTMLSpaces(value));
+    SetLocation(StripLeadingAndTrailingHtmlSpaces(value));
   } else if (name == html_names::kIdAttr) {
     // Important to call through to base for the id attribute so the hasID bit
     // gets set.
@@ -204,7 +204,7 @@ void HTMLFrameElementBase::AttachLayoutTree(AttachContext& context) {
     SetEmbeddedContentView(ContentFrame()->View());
 }
 
-void HTMLFrameElementBase::SetLocation(const String& str) {
+void HTMLFrameElementBase::SetLocation(const StringView& str) {
   url_ = AtomicString(str);
 
   if (isConnected())

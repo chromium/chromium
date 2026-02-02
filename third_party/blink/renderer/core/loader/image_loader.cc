@@ -734,8 +734,8 @@ KURL ImageLoader::ImageSourceToKURL(AtomicString image_source_url) const {
   // Do not load any image if the 'src' attribute is missing or if it is
   // an empty string.
   if (!image_source_url.IsNull()) {
-    String stripped_image_source_url =
-        StripLeadingAndTrailingHTMLSpaces(image_source_url);
+    StringView stripped_image_source_url =
+        StripLeadingAndTrailingHtmlSpaces(image_source_url);
     if (!stripped_image_source_url.empty())
       url = document.CompleteURL(stripped_image_source_url);
   }

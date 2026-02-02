@@ -854,7 +854,7 @@ bool HTMLImageElement::IsServerMap() const {
     return false;
 
   return GetDocument()
-      .CompleteURL(StripLeadingAndTrailingHTMLSpaces(usemap))
+      .CompleteURL(StripLeadingAndTrailingHtmlSpaces(usemap))
       .IsEmpty();
 }
 

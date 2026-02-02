@@ -772,8 +772,8 @@ PendingScript* ScriptLoader::PrepareScript(
     }
 
     // <spec step="31.2">Let src be the value of el's src attribute.</spec>
-    String src =
-        StripLeadingAndTrailingHTMLSpaces(element_->SourceAttributeValue());
+    StringView src =
+        StripLeadingAndTrailingHtmlSpaces(element_->SourceAttributeValue());
 
     // <spec step="31.3">If src is the empty string, then queue a task to fire
     // an event named error at el, and return.</spec>

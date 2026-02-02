@@ -5169,7 +5169,7 @@ void Document::ProcessBaseElement() {
   // encodings correctly.
   KURL base_element_url;
   if (href) {
-    String stripped_href = StripLeadingAndTrailingHTMLSpaces(*href);
+    StringView stripped_href = StripLeadingAndTrailingHtmlSpaces(*href);
     if (!stripped_href.empty())
       base_element_url = KURL(FallbackBaseURL(), stripped_href);
   }
@@ -7638,9 +7638,9 @@ void Document::SetEncodingData(const DocumentEncodingData& new_data) {
 }
 
 KURL Document::CompleteURL(
-    const String& url,
+    const StringView& url,
     const CompleteURLPreloadStatus preload_status) const {
-  return CompleteURLWithOverride(url, base_url_, preload_status);
+  return CompleteURLWithOverride(url.ToString(), base_url_, preload_status);
 }
 
 KURL Document::CompleteURLWithOverride(

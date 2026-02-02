@@ -1015,7 +1015,7 @@ class CORE_EXPORT Document : public ContainerNode,
   // Depending on base URL value it is possible that parent document
   // base URL will be used instead. Uses CompleteURLWithOverride internally.
   KURL CompleteURL(
-      const String&,
+      const StringView&,
       const CompleteURLPreloadStatus preload_status = kIsNotPreload) const;
   // Creates URL based on passed relative url and passed base URL override.
   KURL CompleteURLWithOverride(

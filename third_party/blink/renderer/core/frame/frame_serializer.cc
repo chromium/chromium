@@ -1033,7 +1033,8 @@ function main(metadata) {
         ImageResourceContent* cached_image = svg_image->CachedImage();
         if (cached_image) {
           resource_serializer_->AddImageToResources(
-              cached_image, document.CompleteURL(svg_image->SourceURL()));
+              cached_image,
+              document.CompleteURL(svg_image->SourceURL().GetString()));
         }
       }
     } else if (const auto* input = DynamicTo<HTMLInputElement>(element)) {

@@ -87,7 +87,7 @@ const AtomicString& SVGURIReference::LegacyHrefString(
 }
 
 KURL SVGURIReference::LegacyHrefURL(const Document& document) const {
-  return document.CompleteURL(StripLeadingAndTrailingHTMLSpaces(HrefString()));
+  return document.CompleteURL(StripLeadingAndTrailingHtmlSpaces(HrefString()));
 }
 
 SVGURLReferenceResolver::SVGURLReferenceResolver(const String& url_string,

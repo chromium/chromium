@@ -260,8 +260,9 @@ bool HTMLVideoElement::IsURLAttribute(const Attribute& attribute) const {
 
 const AtomicString HTMLVideoElement::ImageSourceURL() const {
   const AtomicString& url = FastGetAttribute(html_names::kPosterAttr);
-  if (!StripLeadingAndTrailingHTMLSpaces(url).empty())
+  if (!StripLeadingAndTrailingHtmlSpaces(url).empty()) {
     return url;
+  }
   return default_poster_url_;
 }
 
@@ -545,7 +546,7 @@ unsigned HTMLVideoElement::webkitDroppedFrameCount() const {
 }
 
 KURL HTMLVideoElement::PosterImageURL() const {
-  String url = StripLeadingAndTrailingHTMLSpaces(ImageSourceURL());
+  StringView url = StripLeadingAndTrailingHtmlSpaces(ImageSourceURL());
   if (url.empty())
     return KURL();
   return GetDocument().CompleteURL(url);

@@ -70,6 +70,13 @@ String StripLeadingAndTrailingHTMLSpaces(const String& string) {
   });
 }
 
+StringView StripLeadingAndTrailingHtmlSpaces(const StringView& string) {
+  if (string.empty()) {
+    return string.IsNull() ? string : g_empty_atom;
+  }
+  return string.StripWhiteSpace(IsHTMLSpace);
+}
+
 // TODO(iclelland): Consider refactoring this into a general
 // String::Split(predicate) method
 Vector<String> SplitOnASCIIWhitespace(const String& input) {
@@ -411,7 +418,7 @@ TextEncoding EncodingFromMetaAttributes(const HTMLAttributeList& attributes) {
 
   if (mode == MetaAttribute::kCharset ||
       (mode == MetaAttribute::kPragma && got_pragma))
-    return TextEncoding(StripLeadingAndTrailingHTMLSpaces(charset));
+    return TextEncoding(StripLeadingAndTrailingHtmlSpaces(charset));
 
   return TextEncoding();
 }

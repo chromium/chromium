@@ -195,7 +195,7 @@ String EmailInputType::FindInvalidAddress(const String& value) const {
   }
   Vector<String> addresses = ParseMultipleValues(value);
   for (const auto& address : addresses) {
-    String stripped = StripLeadingAndTrailingHTMLSpaces(address);
+    String stripped = StripLeadingAndTrailingHtmlSpaces(address).ToString();
     if (!IsValidEmailAddress(GetElement().GetDocument().EnsureEmailRegexp(),
                              stripped))
       return stripped;
@@ -276,7 +276,7 @@ String EmailInputType::SanitizeValue(const String& proposed_value) const {
   Vector<String> addresses = ParseMultipleValues(no_line_break_value);
   StringBuilder stripped_value;
   stripped_value.AppendRange(addresses, ",", [](const auto& address) {
-    return StripLeadingAndTrailingHTMLSpaces(address);
+    return StripLeadingAndTrailingHtmlSpaces(address);
   });
   return stripped_value.ReleaseString();
 }

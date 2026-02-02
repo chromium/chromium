@@ -639,10 +639,10 @@ class TokenPreloadScanner::StartTagScanner {
     // http://www.whatwg.org/specs/web-apps/current-work/multipage/tokenization.html#attribute-name-state
     if (replacement == kDisallowURLReplacement && !url_to_load_.empty())
       return;
-    String url = StripLeadingAndTrailingHTMLSpaces(value);
+    StringView url = StripLeadingAndTrailingHtmlSpaces(value);
     if (url.empty())
       return;
-    url_to_load_ = url;
+    url_to_load_ = url.ToString();
   }
 
   const String& Charset() const {
@@ -1133,7 +1133,7 @@ void TokenPreloadScanner::UpdatePredictedBaseURL(const HTMLToken& token) {
   if (const HTMLToken::Attribute* href_attribute =
           token.GetAttributeItem(html_names::kHrefAttr)) {
     KURL url(document_url_,
-             StripLeadingAndTrailingHTMLSpaces(href_attribute->Value()));
+             StripLeadingAndTrailingHtmlSpaces(href_attribute->Value()));
     bool is_valid_base_url =
         url.IsValid() && !url.ProtocolIsData() && !url.ProtocolIsJavaScript();
     predicted_base_element_url_ = is_valid_base_url ? url : KURL();

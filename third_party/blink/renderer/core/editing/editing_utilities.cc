@@ -1907,7 +1907,7 @@ void WriteImageNodeToClipboard(SystemClipboard& system_clipboard,
   if (!image.get())
     return;
   const KURL url_string = node.GetDocument().CompleteURL(
-      StripLeadingAndTrailingHTMLSpaces(GetUrlStringFromNode(node)));
+      StripLeadingAndTrailingHtmlSpaces(GetUrlStringFromNode(node)));
   WriteImageToClipboard(system_clipboard, image, url_string, title);
 }
 

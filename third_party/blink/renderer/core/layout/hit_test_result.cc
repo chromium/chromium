@@ -450,7 +450,7 @@ KURL HitTestResult::AbsoluteImageURL(const Node* node) {
     return KURL();
   }
   return node->GetDocument().CompleteURL(
-      StripLeadingAndTrailingHTMLSpaces(url_string));
+      StripLeadingAndTrailingHtmlSpaces(url_string));
 }
 
 KURL HitTestResult::AbsoluteImageURL() const {

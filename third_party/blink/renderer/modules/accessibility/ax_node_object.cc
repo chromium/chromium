@@ -4672,9 +4672,8 @@ KURL AXNodeObject::Url() const {
   auto* html_image_element = DynamicTo<HTMLImageElement>(GetNode());
   if (IsImage() && html_image_element) {
     // Using ImageSourceURL handles both src and srcset.
-    String source_url = html_image_element->ImageSourceURL();
-    String stripped_image_source_url =
-        StripLeadingAndTrailingHTMLSpaces(source_url);
+    StringView stripped_image_source_url =
+        StripLeadingAndTrailingHtmlSpaces(html_image_element->ImageSourceURL());
     if (!stripped_image_source_url.empty())
       return GetDocument()->CompleteURL(stripped_image_source_url);
   }

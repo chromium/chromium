@@ -360,7 +360,7 @@ bool HTMLAnchorElementBase::draggable() const {
 }
 
 KURL HTMLAnchorElementBase::Href() const {
-  return GetDocument().CompleteURL(StripLeadingAndTrailingHTMLSpaces(
+  return GetDocument().CompleteURL(StripLeadingAndTrailingHtmlSpaces(
       FastGetAttribute(html_names::kHrefAttr)));
 }
 
@@ -561,7 +561,7 @@ void HTMLAnchorElementBase::HandleClick(MouseEvent& event) {
   }
 
   StringBuilder url;
-  url.Append(StripLeadingAndTrailingHTMLSpaces(
+  url.Append(StripLeadingAndTrailingHtmlSpaces(
       FastGetAttribute(html_names::kHrefAttr)));
   AppendServerMapMousePosition(url, &event);
   KURL completed_url = GetDocument().CompleteURL(url.ToString());

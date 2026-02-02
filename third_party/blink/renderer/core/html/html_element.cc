@@ -3336,13 +3336,13 @@ void HTMLElement::AddHTMLBackgroundImageToStyle(
     HeapVector<CSSPropertyValue, 8>& style,
     const String& url_value,
     const AtomicString& initiator_name) {
-  String url = StripLeadingAndTrailingHTMLSpaces(url_value);
+  StringView url = StripLeadingAndTrailingHtmlSpaces(url_value);
   if (url.empty()) {
     return;
   }
   auto* image_value =
       MakeGarbageCollected<CSSImageValue>(*MakeGarbageCollected<CSSUrlData>(
-          AtomicString(url), GetDocument().CompleteURL(url),
+          url.ToAtomicString(), GetDocument().CompleteURL(url),
           Referrer(GetExecutionContext()->OutgoingReferrer(),
                    GetExecutionContext()->GetReferrerPolicy()),
           /*origin_clean=*/true, /*is_ad_related=*/false));

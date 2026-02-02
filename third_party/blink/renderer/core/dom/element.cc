@@ -4083,7 +4083,7 @@ static inline bool IsEventHandlerAttribute(const Attribute& attribute) {
 
 bool Element::AttributeValueIsJavaScriptURL(const Attribute& attribute) {
   return ProtocolIsJavaScript(
-      StripLeadingAndTrailingHTMLSpaces(attribute.Value()));
+      StripLeadingAndTrailingHtmlSpaces(attribute.Value()));
 }
 
 bool Element::IsJavaScriptURLAttribute(const Attribute& attribute) const {
@@ -10906,15 +10906,15 @@ String Element::GetURLAttribute(const QualifiedName& name) const {
     }
   }
 #endif
-  KURL url = GetDocument().CompleteURL(
-      StripLeadingAndTrailingHTMLSpaces(getAttribute(name)));
-  return url.IsValid() ? url
-                       : StripLeadingAndTrailingHTMLSpaces(getAttribute(name));
+  StringView stripped_value =
+      StripLeadingAndTrailingHtmlSpaces(getAttribute(name));
+  KURL url = GetDocument().CompleteURL(stripped_value);
+  return url.IsValid() ? url.GetString() : stripped_value.ToString();
 }
 
 KURL Element::GetURLAttributeAsKURL(const QualifiedName& name) const {
   return GetDocument().CompleteURL(
-      StripLeadingAndTrailingHTMLSpaces(getAttribute(name)));
+      StripLeadingAndTrailingHtmlSpaces(getAttribute(name)));
 }
 
 KURL Element::GetNonEmptyURLAttribute(const QualifiedName& name) const {
@@ -10925,7 +10925,7 @@ KURL Element::GetNonEmptyURLAttribute(const QualifiedName& name) const {
     }
   }
 #endif
-  String value = StripLeadingAndTrailingHTMLSpaces(getAttribute(name));
+  StringView value = StripLeadingAndTrailingHtmlSpaces(getAttribute(name));
   if (value.empty()) {
     return KURL();
   }

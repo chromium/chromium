@@ -73,7 +73,7 @@ String HTMLBaseElement::href() const {
     return GetDocument().Url();
 
   auto stripped_attribute_value =
-      StripLeadingAndTrailingHTMLSpaces(attribute_value);
+      StripLeadingAndTrailingHtmlSpaces(attribute_value);
 
   KURL url =
       GetDocument().Encoding().IsValid()
@@ -82,7 +82,7 @@ String HTMLBaseElement::href() const {
                  GetDocument().Encoding());
 
   if (!url.IsValid()) {
-    return stripped_attribute_value;
+    return stripped_attribute_value.ToString();
   }
 
   return url;
