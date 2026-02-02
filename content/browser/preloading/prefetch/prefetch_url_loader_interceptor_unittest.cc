@@ -814,7 +814,8 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
       "PrefetchProxy.AfterClick.Mainframe.CookieWaitTime", 0);
 
   EXPECT_EQ(GetPrefetchService()->num_probes(), 0);
-  ExpectCorrectUkmLogs({.outcome = PreloadingTriggeringOutcome::kUnspecified});
+  ExpectCorrectUkmLogs({.holdback = PreloadingHoldbackStatus::kUnspecified,
+                        .outcome = PreloadingTriggeringOutcome::kUnspecified});
 }
 
 TEST_F(PrefetchURLLoaderInterceptorTest,

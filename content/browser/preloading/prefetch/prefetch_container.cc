@@ -1431,15 +1431,14 @@ void PrefetchContainer::UpdateServingPageMetrics() {
 }
 
 void PrefetchContainer::SimulatePrefetchEligibleForTest() {
-  if (request().attempt()) {
-    request().attempt()->SetEligibility(PreloadingEligibility::kEligible);
-    request().attempt()->SetHoldbackStatus(PreloadingHoldbackStatus::kAllowed);
-  }
-  SetLoadState(LoadState::kEligible);
-  SetPrefetchStatus(PrefetchStatus::kPrefetchNotStarted);
+  CHECK_EQ(redirect_chain_.size(), 1u);
+  OnEligibilityCheckComplete(PreloadingEligibility::kEligible);
 }
 
 void PrefetchContainer::SimulatePrefetchStartedForTest() {
+  if (request().attempt()) {
+    request().attempt()->SetHoldbackStatus(PreloadingHoldbackStatus::kAllowed);
+  }
   SetLoadState(LoadState::kStarted);
   SetPrefetchStatus(PrefetchStatus::kPrefetchNotFinishedInTime);
 }
@@ -1451,11 +1450,8 @@ void PrefetchContainer::SimulatePrefetchCompletedForTest() {
 void PrefetchContainer::SimulatePrefetchFailedIneligibleForTest(
     PreloadingEligibility eligibility) {
   CHECK_NE(PreloadingEligibility::kEligible, eligibility);
-
-  if (request().attempt()) {
-    request().attempt()->SetEligibility(eligibility);
-  }
-  SetLoadState(LoadState::kFailedIneligible);
+  CHECK_EQ(redirect_chain_.size(), 1u);
+  OnEligibilityCheckComplete(eligibility);
 }
 
 void PrefetchContainer::OnDetectedCookiesChange(
