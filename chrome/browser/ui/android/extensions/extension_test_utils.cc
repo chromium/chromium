@@ -9,6 +9,9 @@
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
+#include "extensions/browser/disable_reason.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/common/extension.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -32,6 +35,21 @@ static void JNI_ExtensionTestUtils_LoadUnpackedExtensionAsync(
             base::android::RunStringCallbackAndroid(callback, extension->id());
           },
           base::android::ScopedJavaGlobalRef<jobject>(callback)));
+}
+
+static void JNI_ExtensionTestUtils_DisableExtension(JNIEnv* env,
+                                                    Profile* profile,
+                                                    std::string& extension_id) {
+  extensions::ExtensionRegistrar::Get(profile)->DisableExtension(
+      extension_id, {extensions::disable_reason::DISABLE_USER_ACTION});
+}
+
+static void JNI_ExtensionTestUtils_SetExtensionActionVisible(
+    JNIEnv* env,
+    Profile* profile,
+    std::string& extension_id,
+    jboolean visible) {
+  ToolbarActionsModel::Get(profile)->SetActionVisibility(extension_id, visible);
 }
 
 }  // namespace extensions

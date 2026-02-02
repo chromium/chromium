@@ -549,6 +549,7 @@ if (enable_extensions_core) {
       "//third_party/androidx:androidx_test_espresso_espresso_core_java",
       "//third_party/androidx:androidx_test_runner_java",
       "//third_party/hamcrest:hamcrest_core_java",
+      "//third_party/hamcrest:hamcrest_library_java",
       "//third_party/junit",
       "//ui/android:ui_java_test_support",
     ]

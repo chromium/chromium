@@ -4,11 +4,18 @@
 
 package org.chromium.chrome.browser.toolbar.extensions;
 
+import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
+import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
+import static org.chromium.ui.test.util.ViewUtils.VIEW_GONE;
+import static org.chromium.ui.test.util.ViewUtils.VIEW_NULL;
+import static org.chromium.ui.test.util.ViewUtils.withEventualExpectedViewState;
 
 import androidx.test.filters.LargeTest;
 
@@ -56,31 +63,21 @@ public class ExtensionToolbarTest {
     private WebPageStation mPage;
 
     @Before
-    public void setUp() throws IOException {
+    public void setUp() {
         NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
         mProfile = ThreadUtils.runOnUiThreadBlocking(ProfileManager::getLastUsedRegularProfile);
 
         mPage = mActivityTestRule.startOnBlankPage();
 
-        // Install a test extension.
-        writeFile(
-                mTempDir.newFile("manifest.json"),
-                """
-                    {
-                      "name": "Test Extension",
-                      "manifest_version": 3,
-                      "version": "0.1",
-                      "action": {
-                        "default_title": "Test Action"
-                      }
-                    }
-                """);
-        ExtensionTestUtils.loadUnpackedExtension(mProfile, mTempDir.getRoot());
+        // Wait until the extensions toolbar is loaded.
+        ViewUtils.onViewWaiting(withId(R.id.extensions_menu_button)).check(matches(isDisplayed()));
     }
 
     @Test
     @LargeTest
-    public void testExtensionsMenu() {
+    public void testExtensionsMenu() throws IOException {
+        loadBasicExtension("extension1", "Test Extension", "Test Action");
+
         // Open the extensions menu.
         ViewUtils.onViewWaiting(withId(R.id.extensions_menu_button))
                 .check(matches(isDisplayed()))
@@ -89,6 +86,54 @@ public class ExtensionToolbarTest {
         // Verify that the test extension is in the menu.
         // TODO(crbug.com/435305159): The label should be the extension name, not the action name.
         ViewUtils.onViewWaiting(withText("Test Action")).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @LargeTest
+    public void testPinnedActions() throws IOException {
+        String extension1Id = loadBasicExtension("extension1", "Test Extension 1", "Test Action 1");
+        String extension2Id = loadBasicExtension("extension2", "Test Extension 2", "Test Action 2");
+
+        // Pin both extensions to the toolbar.
+        ExtensionTestUtils.setExtensionActionVisible(mProfile, extension1Id, true);
+        ExtensionTestUtils.setExtensionActionVisible(mProfile, extension2Id, true);
+
+        // Ensure visibility of the toolbar actions.
+        // TODO(crbug.com/435305159): The content description should be the action name, not the
+        // extension name.
+        ViewUtils.onViewWaiting(withContentDescription("Test Extension 1"))
+                .check(matches(isDisplayed()));
+        ViewUtils.onViewWaiting(withContentDescription("Test Extension 2"))
+                .check(matches(isDisplayed()));
+
+        // Disable the extension 2.
+        ExtensionTestUtils.disableExtension(mProfile, extension2Id);
+
+        // The extension 2 should disappear.
+        // TODO(crbug.com/435305159): The content description should be the action name, not the
+        // extension name.
+        onView(isRoot())
+                .check(
+                        withEventualExpectedViewState(
+                                withContentDescription("Test Extension 2"), VIEW_GONE | VIEW_NULL));
+    }
+
+    private String loadBasicExtension(String dirName, String name, String actionTitle)
+            throws IOException {
+        File dir = mTempDir.newFolder(dirName);
+        writeFile(
+                new File(dir, "manifest.json"),
+                String.format(
+                        """
+                        {
+                          "name": "%s",
+                          "manifest_version": 3,
+                          "version": "0.1",
+                          "action": { "default_title": "%s" }
+                        }
+                        """,
+                        name, actionTitle));
+        return ExtensionTestUtils.loadUnpackedExtension(mProfile, dir);
     }
 
     private void writeFile(File file, String contents) throws IOException {

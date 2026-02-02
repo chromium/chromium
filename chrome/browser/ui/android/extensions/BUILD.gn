@@ -131,6 +131,8 @@ static_library("test_support") {
       "//chrome/browser/extensions:test_support",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui/android/extensions:test_support_jni_headers",
+      "//chrome/browser/ui/toolbar",
+      "//extensions/browser",
       "//extensions/common",
     ]
   }
