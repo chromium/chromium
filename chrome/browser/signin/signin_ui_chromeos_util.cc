@@ -36,6 +36,9 @@ GetAddAccountSourceFromAccessPoint(signin_metrics::AccessPoint access_point) {
     case signin_metrics::AccessPoint::kAutofillDropdown:
       return account_manager::AccountManagerFacade::AccountAdditionSource::
           kChromeSigninPromoAddAccount;
+    case signin_metrics::AccessPoint::kGlicLaunchButton:
+      return account_manager::AccountManagerFacade::AccountAdditionSource::
+          kGeminiInChromeReauth;
     default:
       NOTREACHED() << "Add account is requested from an unknown access point "
                    << static_cast<int>(access_point);
@@ -70,6 +73,9 @@ GetAccountReauthSourceFromAccessPoint(
     case signin_metrics::AccessPoint::kMenu:
       return account_manager::AccountManagerFacade::AccountAdditionSource::
           kChromeMenuTurnOnSync;
+    case signin_metrics::AccessPoint::kGlicLaunchButton:
+      return account_manager::AccountManagerFacade::AccountAdditionSource::
+          kGeminiInChromeReauth;
     default:
       NOTREACHED() << "Reauth is requested from an unknown access point "
                    << static_cast<int>(access_point);

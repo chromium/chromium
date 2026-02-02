@@ -100,8 +100,10 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacade {
     kChromeMenuTurnOnSync = 18,
     // Sign-in promo with a new account.
     kChromeSigninPromoAddAccount = 19,
+    // Gemini in Chrome re-authentication.
+    kGeminiInChromeReauth = 20,
 
-    kMaxValue = kChromeSigninPromoAddAccount
+    kMaxValue = kGeminiInChromeReauth
   };
 
   AccountManagerFacade();
