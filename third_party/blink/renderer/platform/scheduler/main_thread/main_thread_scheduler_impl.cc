@@ -32,6 +32,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "build/build_config.h"
+#include "cc/base/features.h"
 #include "components/performance_manager/scenario_api/performance_scenario_observer.h"
 #include "components/performance_manager/scenario_api/performance_scenarios.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
@@ -199,7 +200,12 @@ perfetto::StaticString RenderingPrioritizationStateToString(
 
 BASE_FEATURE(kBusyLoopOnRendererMain,
              "BusyLoopOnMainThread",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else   // BUILDFLAG(IS_ANDROID)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif  // BUILDFLAG(IS_ANDROID)
+);
 BASE_FEATURE_PARAM(base::TimeDelta,
                    kBusyLoopTime,
                    &kBusyLoopOnRendererMain,
@@ -216,7 +222,11 @@ BASE_FEATURE(kLoadingModeFromPerformanceScenario,
 
 void MaybeSetBusyLoop(raw_ptr<base::MessagePump> message_pump,
                       double scale_factor) {
-  if (!message_pump || !base::FeatureList::IsEnabled(kBusyLoopOnRendererMain)) {
+  // Offset the additional power consumption of busy-looping by only enabling
+  // this on devices with 120Hz displays.
+  if (!message_pump ||
+      !(::features::IsEligibleForThrottleMainFrameTo60Hz() &&
+        base::FeatureList::IsEnabled(kBusyLoopOnRendererMain))) {
     return;
   }
 

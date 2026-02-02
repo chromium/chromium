@@ -18,7 +18,8 @@ specific_include_rules = {
     "+base/task/sequence_manager/enqueue_order.h"
   ],
   "main_thread_scheduler_impl.cc": [
-    "+base/android/self_compaction_manager.h"
+    "+base/android/self_compaction_manager.h",
+    "+cc/base/features.h"
   ],
   "memory_purge_manager.cc": [
     "+base/android/self_compaction_manager.h"
