@@ -88,12 +88,9 @@ class AppBannerManager : public content::WebContentsObserver,
 
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.banners
   // GENERATED_JAVA_CLASS_NAME_OVERRIDE: AppBannerManagerState
-  enum class State {
+  enum State {
     // The pipeline has not yet been triggered for this page load.
     INACTIVE,
-
-    // The pipeline is running for this page load.
-    ACTIVE,
 
     // The pipeline is waiting for the web app manifest to be fetched.
     FETCHING_MANIFEST,
@@ -105,6 +102,10 @@ class AppBannerManager : public content::WebContentsObserver,
     // In this state, the pipeline could be paused while waiting for a service
     // worker to be registered..
     PENDING_INSTALLABLE_CHECK,
+
+    // The pipeline is waiting for the result of
+    // WebAppsClient::DoesNewWebAppConflictWithExistingInstallation
+    PENDING_CONFLICTING_INSTALLATION_CHECK,
 
     // The beforeinstallprompt event has been sent and the pipeline is waiting
     // for the response.
