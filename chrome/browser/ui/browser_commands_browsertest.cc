@@ -9,7 +9,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -35,13 +34,11 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/commerce/core/mojom/product_specifications.mojom.h"
 #include "components/commerce/core/pref_names.h"
-#include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/split_tabs/split_tab_id.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/tab_group.h"
-#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -85,40 +82,6 @@ class BrowserCommandsTest : public InProcessBrowserTest {
   }
 
   void AddTabs(int num_tabs) { AddTabs(browser(), num_tabs); }
-
-  void AddAndReloadTabs(int tab_count) {
-    AddTabs(tab_count);
-
-    // Add tabs to the selection (the last one created remains selected) and
-    // trigger a reload command on all of them.
-    for (int i = 0; i < tab_count - 1; ++i) {
-      browser()->tab_strip_model()->SelectTabAt(i + 1);
-    }
-    EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_RELOAD));
-    browser()->tab_strip_model()->CloseSelectedTabs();
-  }
-
-  void SetThirdPartyCookieBlocking(bool enabled) {
-    browser()->profile()->GetPrefs()->SetInteger(
-        prefs::kCookieControlsMode,
-        static_cast<int>(
-            enabled ? content_settings::CookieControlsMode::kBlockThirdParty
-                    : content_settings::CookieControlsMode::kOff));
-  }
-
-  void CheckReloadBreakageMetrics(ukm::TestAutoSetUkmRecorder& ukm_recorder,
-                                  size_t size,
-                                  size_t index,
-                                  bool blocked,
-                                  bool settings_blocked) {
-    auto entries = ukm_recorder.GetEntries(
-        "ThirdPartyCookies.BreakageIndicator.UserReload",
-        {"TPCBlocked", "TPCBlockedInSettings"});
-    EXPECT_EQ(entries.size(), size);
-    EXPECT_EQ(entries.at(index).metrics.at("TPCBlocked"), blocked);
-    EXPECT_EQ(entries.at(index).metrics.at("TPCBlockedInSettings"),
-              settings_blocked);
-  }
 
   void CheckBrowserContainsTabGroupWithSize(
       const BrowserWindowInterface* browser,
@@ -332,64 +295,6 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, CloseAllTabsInSelectionModel) {
   // Only one, non-split tab should remain.
   EXPECT_FALSE(browser()->tab_strip_model()->IsActiveTabSplit());
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
-}
-
-// Check that the ThirdPartyCookieBreakageIndicator UKM is sent on Reload.
-// Disabled because of crbug.com/1468528
-IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, DISABLED_ReloadBreakageUKM) {
-  ukm::TestAutoSetUkmRecorder ukm_recorder;
-  content_settings::CookieSettings* settings =
-      CookieSettingsFactory::GetForProfile(browser()->profile()).get();
-
-  // Test simple reload measurements without 3PCB.
-  SetThirdPartyCookieBlocking(false);
-  EXPECT_FALSE(settings->ShouldBlockThirdPartyCookies());
-
-  AddAndReloadTabs(1);
-  CheckReloadBreakageMetrics(ukm_recorder, 1, 0, false, false);
-
-  AddAndReloadTabs(1);
-  CheckReloadBreakageMetrics(ukm_recorder, 2, 1, false, false);
-
-  // Test that enabled 3PCB is correctly reflected in the metrics.
-  SetThirdPartyCookieBlocking(true);
-  EXPECT_TRUE(settings->ShouldBlockThirdPartyCookies());
-
-  AddAndReloadTabs(1);
-  CheckReloadBreakageMetrics(ukm_recorder, 3, 2, false, true);
-
-  // Test that allow-listing is correctly reflected in the metrics.
-  GURL origin(kUrl);
-  settings->SetThirdPartyCookieSetting(origin,
-                                       ContentSetting::CONTENT_SETTING_ALLOW);
-  EXPECT_TRUE(settings->IsThirdPartyAccessAllowed(origin, nullptr));
-
-  AddAndReloadTabs(1);
-  CheckReloadBreakageMetrics(ukm_recorder, 4, 3, false, false);
-
-  // Reload multiple tabs, all reloads are counted.
-  AddAndReloadTabs(3);
-  CheckReloadBreakageMetrics(ukm_recorder, 7, 4, false, false);
-  CheckReloadBreakageMetrics(ukm_recorder, 7, 5, false, false);
-  CheckReloadBreakageMetrics(ukm_recorder, 7, 6, false, false);
-
-  // Load a page with an iframe and try to set a cross-site cookie inside of
-  // that iframe.
-  constexpr char host_a[] = "a.test";
-  constexpr char host_b[] = "b.test";
-  GURL main_url(https_server_.GetURL(host_a, "/iframe.html"));
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
-  GURL page = https_server_.GetURL(
-      host_b, "/set-cookie?thirdparty=1;SameSite=None;Secure");
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_TRUE(NavigateIframeToURL(web_contents, "test", page));
-
-  // Reload the page with the cross-site iframe.
-  EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_RELOAD));
-
-  // We should now observe a 3P cookie *actually* blocked.
-  CheckReloadBreakageMetrics(ukm_recorder, 8, 7, true, true);
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, MoveTabsToNewWindow) {

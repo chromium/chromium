@@ -2595,7 +2595,6 @@ if (!is_android) {
       "//chrome/browser/task_manager/common",
       "//chrome/browser/themes",
       "//chrome/browser/top_level_storage_access_api:permissions",
-      "//chrome/browser/tpcd/http_error_observer:browser_tests",
       "//chrome/browser/translate",
       "//chrome/browser/ui:browser_element_identifiers",
       "//chrome/browser/ui:browser_navigator_params_headers",

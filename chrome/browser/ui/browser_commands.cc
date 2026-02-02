@@ -31,7 +31,6 @@
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
 #include "chrome/browser/chained_back_navigation_tracker.h"
 #include "chrome/browser/commerce/browser_utils.h"
-#include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/download/download_prefs.h"
@@ -136,10 +135,6 @@
 #include "components/commerce/core/commerce_utils.h"
 #include "components/commerce/core/mojom/product_specifications.mojom.h"
 #include "components/commerce/core/pref_names.h"
-#include "components/content_settings/browser/page_specific_content_settings.h"
-#include "components/content_settings/core/browser/cookie_settings.h"
-#include "components/content_settings/core/common/content_settings.h"
-#include "components/content_settings/core/common/cookie_settings_base.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -186,7 +181,6 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/common/url_utils.h"
@@ -194,9 +188,6 @@
 #include "pdf/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "rlz/buildflags/buildflags.h"
-#include "services/metrics/public/cpp/ukm_builders.h"
-#include "services/metrics/public/cpp/ukm_recorder.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/models/list_selection_model.h"
@@ -541,36 +532,6 @@ WebContents* GetTabAndRevertIfNecessary(Browser* browser,
   return GetTabAndRevertIfNecessaryHelper(browser, disposition, activate_tab);
 }
 
-void RecordReloadWithCookieBlocking(BrowserWindowInterface* browser,
-                                    WebContents* web_contents) {
-  // Figure out if 3P cookies are blocked for this page.
-  scoped_refptr<const content_settings::CookieSettings> cookie_settings =
-      CookieSettingsFactory::GetForProfile(browser->GetProfile());
-
-  // For this metric, we define "cookies blocked in settings" based on the
-  // global opt-in to third-party cookie blocking as well as no overriding
-  // content setting on the top-level site.
-  bool cookies_blocked_in_settings =
-      cookie_settings->ShouldBlockThirdPartyCookies() &&
-      !cookie_settings->IsThirdPartyAccessAllowed(
-          web_contents->GetLastCommittedURL(), nullptr);
-
-  // Also measure if 3P cookies were actually blocked on the site.
-  content_settings::PageSpecificContentSettings* pscs =
-      content_settings::PageSpecificContentSettings::GetForFrame(
-          web_contents->GetPrimaryMainFrame());
-  bool cookies_blocked =
-      pscs && pscs->blocked_browsing_data_model()->size() > 0U;
-
-  ukm::SourceId source_id =
-      web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
-
-  ukm::builders::ThirdPartyCookies_BreakageIndicator_UserReload(source_id)
-      .SetTPCBlocked(cookies_blocked)
-      .SetTPCBlockedInSettings(cookies_blocked_in_settings)
-      .Record(ukm::UkmRecorder::Get());
-}
-
 void ReloadInternal(BrowserWindowInterface* browser,
                     WindowOpenDisposition disposition,
                     bool bypass_cache) {
@@ -623,9 +584,6 @@ void ReloadInternal(BrowserWindowInterface* browser,
     if (tab == active_contents && !new_tab->FocusLocationBarByDefault()) {
       new_tab->Focus();
     }
-
-    // User reloads is a possible breakage indicator from blocking 3P cookies.
-    RecordReloadWithCookieBlocking(browser, tab);
 
     DevToolsWindow* const devtools =
         DevToolsWindow::GetInstanceForInspectedWebContents(new_tab);

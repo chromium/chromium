@@ -255,9 +255,6 @@ void V8Initializer::MessageHandlerInMainThread(v8::Local<v8::Message> message,
 
   UseCounter::Count(context, WebFeature::kUnhandledExceptionCountInMainThread);
   base::UmaHistogramBoolean("V8.UnhandledExceptionCountInMainThread", true);
-  // TODO(b/338241225): Reenable the
-  // ThirdPartyCookies.BreakageIndicator.UncaughtJSError event with logic that
-  // caps the number of times the event can be sent per client.
 
   SourceLocation* location = CaptureSourceLocation(isolate, message, context);
 
