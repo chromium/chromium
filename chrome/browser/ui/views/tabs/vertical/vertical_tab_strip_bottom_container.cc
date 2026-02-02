@@ -71,6 +71,8 @@ void VerticalTabStripBottomContainer::UpdateButtonStyles(
 
   // Setting button's layout based on collapsed state
   SetOrientation(orientation);
+  SetCrossAxisAlignment(is_collapsed ? views::LayoutAlignment::kStretch
+                                     : views::LayoutAlignment::kStart);
 
   new_tab_button_->SetProperty(
       views::kFlexBehaviorKey,

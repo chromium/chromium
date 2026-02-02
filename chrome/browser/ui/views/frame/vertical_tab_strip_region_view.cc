@@ -89,6 +89,10 @@ VerticalTabStripRegionView::VerticalTabStripRegionView(
   bottom_button_container_ =
       AddChildView(std::make_unique<VerticalTabStripBottomContainer>(
           state_controller_, root_action_item));
+  bottom_button_container_->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
+                               views::MaximumFlexSizeRule::kUnbounded));
 
   gemini_button_ = AddChildView(std::make_unique<views::View>());
 
@@ -462,7 +466,7 @@ views::View* VerticalTabStripRegionView::SetTabStripView(
   tab_strip_view_->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
-                               views::MaximumFlexSizeRule::kUnbounded));
+                               views::MaximumFlexSizeRule::kPreferred));
   tab_strip_view_->SetProperty(
       views::kMarginsKey,
       gfx::Insets::VH(
