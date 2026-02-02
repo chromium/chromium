@@ -48,12 +48,17 @@ class Touch {
 
 suite('Pincher', function() {
   let chaiAssert = null;
+  let pincher = null;
 
   suiteSetup(async function() {
     // Use a dynamic import since this file is not executed as a module from
     // distilled_page_js_browsertest.cc
     const {assert} = await import('./index.js');
     chaiAssert = assert;
+    // The UI components are normally lazily initialized. We need to initialize
+    // them here for tests.
+    initializeDomDistillerViewer();
+    pincher = Pincher.getInstance();
   });
 
   test('Zoom Out', function() {

@@ -363,6 +363,10 @@ const std::string GetJavaScript() {
                                          GetMinPinchZoomScale());
   base::ReplaceFirstSubstringAfterOffset(&js, 0, "$MAX_SCALE",
                                          GetMaxPinchZoomScale());
+  // The viewer's UI components are lazily instantiated. This call initializes
+  // them after the script loads. This relies on the script being loaded after
+  // the relevant DOM elements are available.
+  js += "initializeDomDistillerViewer();";
   return js;
 }
 

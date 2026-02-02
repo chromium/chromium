@@ -721,11 +721,11 @@ function getAppearanceSetting(settingClasses) {
 }
 
 function useTheme(theme) {
-  settingsDialog.useTheme(theme);
+  SettingsDialog.getInstance().useTheme(theme);
 }
 
 function useFontFamily(fontFamily) {
-  settingsDialog.useFontFamily(fontFamily);
+  SettingsDialog.getInstance().useFontFamily(fontFamily);
 }
 
 function setLinksEnabled(enabled) {
@@ -745,7 +745,15 @@ function updateToolbarColor(theme) {
 }
 
 // TODO(crbug.com/40108835): Consider making this a custom HTML element.
+// The font size slider is visible on desktop platforms.
 class FontSizeSlider {
+  static #instance = null;
+
+  static getInstance() {
+    return FontSizeSlider.#instance ??
+        (FontSizeSlider.#instance = new FontSizeSlider());
+  }
+
   constructor() {
     this.element = $('font-size-selection');
     this.baseSize = 16;
@@ -771,6 +779,7 @@ class FontSizeSlider {
     this.element.value = 2;
     this.update(this.element.value);
   }
+
   // TODO(meredithl): validate |scale| and snap to nearest supported font size.
   useFontScaling(scale, restoreCenter = true) {
     this.element.value = this.fontSizeScale.indexOf(scale);
@@ -803,6 +812,7 @@ const FONT_SCALE_MULTIPLIER = 0.5;
 
 const MIN_SPAN_LENGTH = 20;
 
+// Only defined on Android.
 class Pincher {
   // When users pinch in Reader Mode, the page would zoom in or out as if it
   // is a normal web page allowing user-zoom. At the end of pinch gesture, the
@@ -819,6 +829,12 @@ class Pincher {
   // "rem" are adjusted.
   //
   // TODO(wychen): Improve scroll position when elementFromPoint is body.
+
+  static #instance = null;
+
+  static getInstance() {
+    return Pincher.#instance ?? (Pincher.#instance = new Pincher());
+  }
 
   constructor() {
     // This has to be in sync with largest 'font-size' in distilledpage_{}.css.
@@ -1069,32 +1085,33 @@ class Pincher {
   }
 }
 
-// The pincher is only defined on Android, and the font size slider only on
-// desktop.
-// eslint-disable-next-line no-var
-var pincher, fontSizeSlider;
-if (navigator.userAgent.toLowerCase().indexOf('android') > -1) {
-  pincher = new Pincher();
-} else {
-  fontSizeSlider = new FontSizeSlider();
-}
-
-/**
- * Called to set the baseFontSize for the pinch/slider (whichever is active).
- */
 function useBaseFontSize(size) {
   if (navigator.userAgent.toLowerCase().indexOf('android') > -1) {
-    pincher.useBaseFontSize(size);
+    Pincher.getInstance().useBaseFontSize(size);
   } else {
-    fontSizeSlider.useBaseFontSize(size);
+    FontSizeSlider.getInstance().useBaseFontSize(size);
   }
 }
 
 function useFontScaling(scale, restoreCenter = true) {
   if (navigator.userAgent.toLowerCase().indexOf('android') > -1) {
-    pincher.useFontScaling(scale, restoreCenter);
+    Pincher.getInstance().useFontScaling(scale, restoreCenter);
   } else {
-    fontSizeSlider.useFontScaling(scale, restoreCenter);
+    FontSizeSlider.getInstance().useFontScaling(scale, restoreCenter);
+  }
+}
+
+/**
+ * Initializes the Dom Distiller viewer UI components based on the platform.
+ * This function should be called after the DOM is loaded.
+ */
+function initializeDomDistillerViewer() {
+  // The settings dialog is always present.
+  SettingsDialog.getInstance();
+  if (navigator.userAgent.toLowerCase().indexOf('android') > -1) {
+    Pincher.getInstance();
+  } else {
+    FontSizeSlider.getInstance();
   }
 }
 
@@ -1131,6 +1148,15 @@ function scrollToParagraphByHash(hash, charCount, progress) {
 }
 
 class SettingsDialog {
+  static #instance = null;
+
+  static getInstance() {
+    return SettingsDialog.#instance ??
+        (SettingsDialog.#instance = new SettingsDialog(
+             $('settings-toggle'), $('settings-dialog'), $('dialog-backdrop'),
+             $('theme-selection'), $('font-family-selection')));
+  }
+
   constructor(
       toggleElement, dialogElement, backdropElement, themeFieldset,
       fontFamilySelect) {
@@ -1212,7 +1238,3 @@ class SettingsDialog {
         fontFamilyClasses.indexOf(fontFamily);
   }
 }
-
-const settingsDialog = new SettingsDialog(
-    $('settings-toggle'), $('settings-dialog'), $('dialog-backdrop'),
-    $('theme-selection'), $('font-family-selection'));
