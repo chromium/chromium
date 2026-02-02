@@ -259,6 +259,9 @@ const base::FeatureParam<std::string> kHistogramEmissionPolicy(
     "histogram_emission_policy",
     kEmitForDamagingScrolls);
 
+BASE_FEATURE(kOrderScrollJankV4EventMetricsByArrivedInRendererCompositor,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kManualBeginFrame, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUnlockDuringGpuImageOperations,

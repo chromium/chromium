@@ -50,6 +50,17 @@ TEST_F(EventMetricsTestCreatorEventTest, TimestampParam) {
       MillisecondsTicks(12));
 }
 
+TEST_F(EventMetricsTestCreatorEventTest,
+       ArrivedInRendererCompositorTimestampParam) {
+  std::unique_ptr<EventMetrics> event = metrics_creator_.CreateEventMetrics(
+      {.type = ui::EventType::kTouchMoved,
+       .arrived_in_renderer_compositor_timestamp = MillisecondsTicks(4321)});
+  EXPECT_EQ(event->type(), EventMetrics::EventType::kTouchMoved);
+  EXPECT_EQ(event->GetDispatchStageTimestamp(
+                EventMetrics::DispatchStage::kArrivedInRendererCompositor),
+            MillisecondsTicks(4321));
+}
+
 TEST_F(EventMetricsTestCreatorEventTest, CausedFrameUpdateParam) {
   std::unique_ptr<EventMetrics> event1 = metrics_creator_.CreateEventMetrics(
       {.type = ui::EventType::kTouchMoved, .caused_frame_update = false});
@@ -62,14 +73,18 @@ TEST_F(EventMetricsTestCreatorEventTest, CausedFrameUpdateParam) {
 }
 
 TEST_F(EventMetricsTestCreatorEventTest, AllParams) {
-  std::unique_ptr<EventMetrics> event =
-      metrics_creator_.CreateEventMetrics({.type = ui::EventType::kTouchMoved,
-                                           .timestamp = MillisecondsTicks(12),
-                                           .caused_frame_update = true});
+  std::unique_ptr<EventMetrics> event = metrics_creator_.CreateEventMetrics(
+      {.type = ui::EventType::kTouchMoved,
+       .timestamp = MillisecondsTicks(12),
+       .arrived_in_renderer_compositor_timestamp = MillisecondsTicks(15),
+       .caused_frame_update = true});
   EXPECT_EQ(event->type(), EventMetrics::EventType::kTouchMoved);
   EXPECT_EQ(
       event->GetDispatchStageTimestamp(EventMetrics::DispatchStage::kGenerated),
       MillisecondsTicks(12));
+  EXPECT_EQ(event->GetDispatchStageTimestamp(
+                EventMetrics::DispatchStage::kArrivedInRendererCompositor),
+            MillisecondsTicks(15));
   EXPECT_TRUE(event->caused_frame_update());
 }
 
@@ -138,6 +153,16 @@ TEST_P(EventMetricsTestCreatorScrollEventTest, TimestampParam) {
       MillisecondsTicks(12));
 }
 
+TEST_P(EventMetricsTestCreatorScrollEventTest,
+       ArrivedInRendererCompositorTimestampParam) {
+  std::unique_ptr<ScrollEventMetrics> event = CreateEvent(
+      {.arrived_in_renderer_compositor_timestamp = MillisecondsTicks(5432)});
+  EXPECT_EQ(event->type(), GetParam().expected_type);
+  EXPECT_EQ(event->GetDispatchStageTimestamp(
+                EventMetrics::DispatchStage::kArrivedInRendererCompositor),
+            MillisecondsTicks(5432));
+}
+
 TEST_P(EventMetricsTestCreatorScrollEventTest, CausedFrameUpdateParam) {
   std::unique_ptr<ScrollEventMetrics> event1 =
       CreateEvent({.caused_frame_update = false});
@@ -167,14 +192,18 @@ TEST_P(EventMetricsTestCreatorScrollEventTest, AllParams) {
       .interval = base::Milliseconds(16),
       .frame_id = viz::BeginFrameId(123, 456),
   };
-  std::unique_ptr<ScrollEventMetrics> event =
-      CreateEvent({.timestamp = MillisecondsTicks(99),
-                   .caused_frame_update = false,
-                   .dispatch_args = args});
+  std::unique_ptr<ScrollEventMetrics> event = CreateEvent(
+      {.timestamp = MillisecondsTicks(99),
+       .arrived_in_renderer_compositor_timestamp = MillisecondsTicks(101),
+       .caused_frame_update = false,
+       .dispatch_args = args});
   EXPECT_EQ(event->type(), GetParam().expected_type);
   EXPECT_EQ(
       event->GetDispatchStageTimestamp(EventMetrics::DispatchStage::kGenerated),
       MillisecondsTicks(99));
+  EXPECT_EQ(event->GetDispatchStageTimestamp(
+                EventMetrics::DispatchStage::kArrivedInRendererCompositor),
+            MillisecondsTicks(101));
   EXPECT_FALSE(event->caused_frame_update());
   EXPECT_EQ(event->dispatch_args(), args);
 }
@@ -225,6 +254,16 @@ TEST_P(EventMetricsTestCreatorScrollUpdateEventTest, TimestampParam) {
   EXPECT_EQ(
       event->GetDispatchStageTimestamp(EventMetrics::DispatchStage::kGenerated),
       MillisecondsTicks(12));
+}
+
+TEST_P(EventMetricsTestCreatorScrollUpdateEventTest,
+       ArrivedInRendererCompositorTimestampParam) {
+  std::unique_ptr<ScrollUpdateEventMetrics> event = CreateEvent(
+      {.arrived_in_renderer_compositor_timestamp = MillisecondsTicks(6543)});
+  EXPECT_EQ(event->type(), GetParam().expected_type);
+  EXPECT_EQ(event->GetDispatchStageTimestamp(
+                EventMetrics::DispatchStage::kArrivedInRendererCompositor),
+            MillisecondsTicks(6543));
 }
 
 TEST_P(EventMetricsTestCreatorScrollUpdateEventTest, DeltaParam) {
@@ -299,19 +338,23 @@ TEST_P(EventMetricsTestCreatorScrollUpdateEventTest, AllParams) {
       .interval = base::Milliseconds(16),
       .frame_id = viz::BeginFrameId(123, 456),
   };
-  std::unique_ptr<ScrollUpdateEventMetrics> event =
-      CreateEvent({.timestamp = MillisecondsTicks(99),
-                   .delta = 7.0f,
-                   .predicted_delta = -7.0f,
-                   .caused_frame_update = true,
-                   .did_scroll = false,
-                   .is_synthetic = true,
-                   .trace_id = EventMetrics::TraceId(456),
-                   .dispatch_args = args});
+  std::unique_ptr<ScrollUpdateEventMetrics> event = CreateEvent(
+      {.timestamp = MillisecondsTicks(99),
+       .arrived_in_renderer_compositor_timestamp = MillisecondsTicks(102),
+       .delta = 7.0f,
+       .predicted_delta = -7.0f,
+       .caused_frame_update = true,
+       .did_scroll = false,
+       .is_synthetic = true,
+       .trace_id = EventMetrics::TraceId(456),
+       .dispatch_args = args});
   EXPECT_EQ(event->type(), GetParam().expected_type);
   EXPECT_EQ(
       event->GetDispatchStageTimestamp(EventMetrics::DispatchStage::kGenerated),
       MillisecondsTicks(99));
+  EXPECT_EQ(event->GetDispatchStageTimestamp(
+                EventMetrics::DispatchStage::kArrivedInRendererCompositor),
+            MillisecondsTicks(102));
   EXPECT_EQ(event->delta(), 7.0f);
   EXPECT_EQ(event->predicted_delta(), -7.0f);
   EXPECT_TRUE(event->caused_frame_update());
