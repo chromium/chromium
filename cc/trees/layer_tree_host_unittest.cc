@@ -3221,6 +3221,21 @@ class LayerTreeHostTestDamageWithScale : public LayerTreeHostTest {
         host_impl->active_tree()->LayerById(child_layer_->id()));
     if (!TreesInViz() || host_impl->active_tree()->source_frame_number() == 0) {
       child_layer_impl->AddTilingUntilNextDraw(1.3f);
+      // In TreesInViz mode, we only synchronize tilings that contain tiles.
+      // Ensuring the 1.3f tiling has at least one tile here guarantees that it
+      // is pushed to Viz, allowing Viz's root damage calculation to use the
+      // correct maximum tiling scale (1.3f) and match the client's expectation.
+      //
+      // NOTE: We temporarily set the resolution to HIGH_RESOLUTION because
+      // PictureLayerTiling::SetLiveTilesRect (called by CreateAllTiles) early
+      // outs without creating tiles if the resolution is NON_IDEAL_RESOLUTION
+      // (the default for new tilings).
+      PictureLayerTiling* tiling =
+          child_layer_impl->picture_layer_tiling_set()->FindTilingWithScaleKey(
+              1.3f);
+      tiling->set_resolution(HIGH_RESOLUTION);
+      child_layer_impl->CreateAllTiles();
+      tiling->set_resolution(NON_IDEAL_RESOLUTION);
     }
   }
 
