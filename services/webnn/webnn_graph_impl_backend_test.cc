@@ -328,7 +328,7 @@ void WebNNGraphImplBackendTest::SetUp() {
 #endif  // BUILDFLAG(IS_MAC)
 
 // TODO(crbug.com/325612086): Parameterize these tests for different backends.
-#if BUILDFLAG(WEBNN_USE_TFLITE) && !BUILDFLAG(IS_MAC)
+#if BUILDFLAG(WEBNN_USE_TFLITE) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
 class WebNNGraphImplBackendTest : public testing::Test,
                                   public testing::WithParamInterface<bool> {
  public:
@@ -406,7 +406,8 @@ void WebNNGraphImplBackendTest::SetUp() {
 
   SetUpBase();
 }
-#endif  // BUILDFLAG(WEBNN_USE_TFLITE) && !BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(WEBNN_USE_TFLITE) && !BUILDFLAG(IS_MAC) &&
+        // !BUILDFLAG(IS_WIN)
 
 void WebNNGraphImplBackendTest::SetUpBase() {
   webnn_test_environment_.BindWebNNContextProvider(
