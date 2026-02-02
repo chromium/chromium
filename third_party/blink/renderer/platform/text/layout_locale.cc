@@ -71,42 +71,68 @@ PerThreadData& GetPerThreadData() {
   return *data;
 }
 
+// Expect returned buffer size is 1 to match QuotesData type
+constexpr int kUcharDelimMaxLength = 1;
+
 struct DelimiterConfig {
   ULocaleDataDelimiterType type;
-  raw_ptr<UChar> result;
+  std::array<UChar, kUcharDelimMaxLength> data;
 };
-// Use  ICU ulocdata to find quote delimiters for an ICU locale
-// https://unicode-org.github.io/icu-docs/apidoc/dev/icu4c/ulocdata_8h.html#a0bf1fdd1a86918871ae2c84b5ce8421f
-scoped_refptr<QuotesData> GetQuotesDataForLanguage(const char* locale) {
-  UErrorCode status = U_ZERO_ERROR;
-  // Expect returned buffer size is 1 to match QuotesData type
-  constexpr int ucharDelimMaxLength = 1;
 
-  ULocaleData* uld = ulocdata_open(locale, &status);
+// Use ICU ulocdata to find quote delimiters for an ICU locale
+// https://unicode-org.github.io/icu-docs/apidoc/dev/icu4c/ulocdata_8h.html#a0bf1fdd1a86918871ae2c84b5ce8421f
+scoped_refptr<QuotesData> GetQuotesDataForIcuLocale(const char* locale) {
+  UErrorCode status = U_ZERO_ERROR;
+
+  auto ulocdata_cleanup = [](ULocaleData* uld) { ulocdata_close(uld); };
+  std::unique_ptr<ULocaleData, decltype(ulocdata_cleanup)> uld(
+      ulocdata_open(locale, &status), ulocdata_cleanup);
   if (U_FAILURE(status)) {
-    ulocdata_close(uld);
     return nullptr;
   }
-  std::array<UChar, ucharDelimMaxLength> open1, close1, open2, close2;
 
-  int32_t delimResultLength;
   struct DelimiterConfig delimiters[] = {
-      {ULOCDATA_QUOTATION_START, open1.data()},
-      {ULOCDATA_QUOTATION_END, close1.data()},
-      {ULOCDATA_ALT_QUOTATION_START, open2.data()},
-      {ULOCDATA_ALT_QUOTATION_END, close2.data()},
+      {ULOCDATA_QUOTATION_START},
+      {ULOCDATA_QUOTATION_END},
+      {ULOCDATA_ALT_QUOTATION_START},
+      {ULOCDATA_ALT_QUOTATION_END},
   };
-  for (DelimiterConfig delim : delimiters) {
-    delimResultLength = ulocdata_getDelimiter(uld, delim.type, delim.result,
-                                              ucharDelimMaxLength, &status);
-    if (U_FAILURE(status) || delimResultLength != 1) {
-      ulocdata_close(uld);
+  for (DelimiterConfig& delim : delimiters) {
+    const int32_t delim_result_length = ulocdata_getDelimiter(
+        uld.get(), delim.type, delim.data.data(), delim.data.size(), &status);
+    if (U_FAILURE(status) || delim_result_length != 1) {
       return nullptr;
     }
   }
-  ulocdata_close(uld);
-
+  const auto& open1 = delimiters[0].data;
+  const auto& close1 = delimiters[1].data;
+  const auto& open2 = delimiters[2].data;
+  const auto& close2 = delimiters[3].data;
   return QuotesData::Create(open1[0], close1[0], open2[0], close2[0]);
+}
+
+scoped_refptr<QuotesData> GetQuotesDataForLanguage(const StringView& lang) {
+  UErrorCode status = U_ZERO_ERROR;
+  // Use uloc_openAvailableByType() to find all CLDR recognized locales
+  // https://unicode-org.github.io/icu-docs/apidoc/dev/icu4c/uloc_8h.html#aa0332857185774f3e0520a0823c14d16
+  auto uenum_cleanup = [](UEnumeration* enumerator) {
+    uenum_close(enumerator);
+  };
+  std::unique_ptr<UEnumeration, decltype(uenum_cleanup)> ulocales(
+      uloc_openAvailableByType(ULOC_AVAILABLE_DEFAULT, &status), uenum_cleanup);
+  if (U_FAILURE(status)) {
+    return nullptr;
+  }
+
+  while (const char* loc = uenum_next(ulocales.get(), nullptr, &status)) {
+    if (U_FAILURE(status)) {
+      return nullptr;
+    }
+    if (EqualIgnoringASCIICase(loc, lang)) {
+      return GetQuotesDataForIcuLocale(loc);
+    }
+  }
+  return nullptr;
 }
 
 // Returns the Unicode Line Break Style Identifier (key "lb") value.
@@ -322,53 +348,19 @@ scoped_refptr<QuotesData> LayoutLocale::GetQuotesData() const {
   String normalized_lang = LocaleString();
   normalized_lang.Replace('-', '_');
 
-  UErrorCode status = U_ZERO_ERROR;
-  // Use uloc_openAvailableByType() to find all CLDR recognized locales
-  // https://unicode-org.github.io/icu-docs/apidoc/dev/icu4c/uloc_8h.html#aa0332857185774f3e0520a0823c14d16
-  UEnumeration* ulocales =
-      uloc_openAvailableByType(ULOC_AVAILABLE_DEFAULT, &status);
-  if (U_FAILURE(status)) {
-    uenum_close(ulocales);
-    return nullptr;
-  }
-
   // Try to find exact match
-  while (const char* loc = uenum_next(ulocales, nullptr, &status)) {
-    if (U_FAILURE(status)) {
-      uenum_close(ulocales);
-      return nullptr;
-    }
-    if (EqualIgnoringASCIICase(loc, normalized_lang)) {
-      quotes_data_ = GetQuotesDataForLanguage(loc);
-      uenum_close(ulocales);
-      return quotes_data_;
-    }
-  }
-  uenum_close(ulocales);
+  quotes_data_ = GetQuotesDataForLanguage(normalized_lang);
 
-  // No exact match, try to find without subtags.
-  wtf_size_t hyphen_offset = normalized_lang.ReverseFind('_');
-  if (hyphen_offset == kNotFound)
-    return nullptr;
-  normalized_lang = normalized_lang.Substring(0, hyphen_offset);
-  ulocales = uloc_openAvailableByType(ULOC_AVAILABLE_DEFAULT, &status);
-  if (U_FAILURE(status)) {
-    uenum_close(ulocales);
-    return nullptr;
-  }
-  while (const char* loc = uenum_next(ulocales, nullptr, &status)) {
-    if (U_FAILURE(status)) {
-      uenum_close(ulocales);
+  if (!quotes_data_) {
+    // No exact match, try to find without subtags.
+    wtf_size_t hyphen_offset = normalized_lang.ReverseFind('_');
+    if (hyphen_offset == kNotFound) {
       return nullptr;
     }
-    if (EqualIgnoringASCIICase(loc, normalized_lang)) {
-      quotes_data_ = GetQuotesDataForLanguage(loc);
-      uenum_close(ulocales);
-      return quotes_data_;
-    }
+    quotes_data_ =
+        GetQuotesDataForLanguage(StringView(normalized_lang, 0, hyphen_offset));
   }
-  uenum_close(ulocales);
-  return nullptr;
+  return quotes_data_;
 }
 
 AtomicString LayoutLocale::LocaleWithBreakKeyword(
