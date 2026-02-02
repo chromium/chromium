@@ -156,18 +156,18 @@ int SqlEntryImpl::ReadDataInternal(int64_t offset,
     }
   }
 
-  if (!write_buffers_.empty()) {
+  if (!write_buffer_.buffers.empty()) {
     const int64_t write_buffer_end =
-        write_buffer_offset_ + static_cast<int64_t>(write_buffer_size_);
+        write_buffer_.offset + static_cast<int64_t>(write_buffer_.size);
     // If the request is fully within the buffer, copy from the buffer.
-    if (offset >= write_buffer_offset_ &&
+    if (offset >= write_buffer_.offset &&
         offset + buf_len <= write_buffer_end) {
-      int64_t relative_offset = offset - write_buffer_offset_;
+      int64_t relative_offset = offset - write_buffer_.offset;
       CHECK_GE(relative_offset, 0);
       CHECK_LE(relative_offset + buf_len,
-               static_cast<int64_t>(write_buffer_size_));
+               static_cast<int64_t>(write_buffer_.size));
       size_t bytes_copied = 0;
-      for (const auto& chunk : write_buffers_) {
+      for (const auto& chunk : write_buffer_.buffers) {
         if (relative_offset < static_cast<int64_t>(chunk->size())) {
           const size_t copy_size =
               std::min(static_cast<size_t>(buf_len - bytes_copied),
@@ -189,7 +189,7 @@ int SqlEntryImpl::ReadDataInternal(int64_t offset,
       return buf_len;
     }
     // If the request overlaps with the buffer, flush the buffer first.
-    if (std::max(offset, write_buffer_offset_) <
+    if (std::max(offset, write_buffer_.offset) <
         std::min(offset + buf_len, write_buffer_end)) {
       FlushBuffer();
     }
@@ -310,18 +310,18 @@ int SqlEntryImpl::WriteDataInternal(int64_t offset,
         net::features::kSqlDiskCacheMaxWriteBufferSizePerEntry.Get();
 
     if (backend_->GetWriteBufferTotalSize() + buf_len <= total_limit &&
-        write_buffer_size_ + buf_len <= entry_limit) {
-      if (write_buffers_.empty()) {
-        write_buffer_offset_ = offset;
+        write_buffer_.size + buf_len <= entry_limit) {
+      if (write_buffer_.buffers.empty()) {
+        write_buffer_.offset = offset;
       } else {
         // Ensure continuity.
         CHECK_EQ(
-            write_buffer_offset_ + static_cast<int64_t>(write_buffer_size_),
+            write_buffer_.offset + static_cast<int64_t>(write_buffer_.size),
             offset);
       }
-      write_buffers_.push_back(base::MakeRefCounted<net::VectorIOBuffer>(
+      write_buffer_.buffers.push_back(base::MakeRefCounted<net::VectorIOBuffer>(
           buf->first(static_cast<size_t>(buf_len))));
-      write_buffer_size_ += buf_len;
+      write_buffer_.size += buf_len;
 
       backend_->ReportWriteBufferChange(buf_len);
       body_end_ += buf_len;
@@ -348,52 +348,33 @@ int SqlEntryImpl::WriteDataInternal(int64_t offset,
   const auto old_body_end = body_end_;
   body_end_ = new_body_end;
 
-  return backend_->WriteEntryData(key_, res_id_or_error_, old_body_end,
-                                  body_end_, offset, buf, buf_len, truncate,
-                                  /*copy_buffer_for_optimistic_write=*/true,
-                                  std::move(callback));
+  return backend_->WriteEntryData(
+      key_, res_id_or_error_, old_body_end, body_end_,
+      EntryWriteBuffer(buf, buf_len, offset), truncate,
+      /*copy_buffer_for_optimistic_write=*/true, std::move(callback));
 }
 
 void SqlEntryImpl::FlushBuffer() {
   CHECK(backend_);
-  if (write_buffers_.empty()) {
+  if (write_buffer_.buffers.empty()) {
     return;
   }
 
-  const int buf_len = write_buffer_size_;
-  scoped_refptr<net::IOBuffer> buffer;
-
-  if (write_buffers_.size() == 1) {
-    buffer = std::move(write_buffers_[0]);
-  } else {
-    // TODO(crbug.com/479348720): It might be better to move `write_buffers_` to
-    // the DB thread and perform the copy there.
-    auto combined_buffer = base::MakeRefCounted<net::IOBufferWithSize>(buf_len);
-    size_t current_offset = 0;
-    for (const auto& chunk : write_buffers_) {
-      base::as_writable_bytes(combined_buffer->span())
-          .subspan(current_offset)
-          .copy_prefix_from(base::as_bytes(chunk->span()));
-      current_offset += chunk->size();
-    }
-    buffer = std::move(combined_buffer);
-  }
+  const int buf_len = write_buffer_.size;
+  const int64_t offset = write_buffer_.offset;
 
   backend_->ReportWriteBufferChange(-buf_len);
 
-  const int64_t offset = write_buffer_offset_;
-  write_buffers_.clear();
-  write_buffer_size_ = 0;
-  write_buffer_offset_ = -1;
+  EntryWriteBuffer buffer_to_flush = std::move(write_buffer_);
+  write_buffer_ = EntryWriteBuffer();
 
   // We use base::DoNothing() as the callback because we don't need to wait for
   // completion. The backend will serialize this operation.
-  // We pass copy_buffer_for_optimistic_write=false because we created a new
-  // IOBuffer that we are passing ownership of to the backend.
+  // We pass copy_buffer_for_optimistic_write=false because we are passing
+  // ownership of the write buffer to the backend.
   backend_->WriteEntryData(
       key_, res_id_or_error_, /*old_body_end=*/offset,
-      /*body_end=*/body_end_, offset, std::move(buffer), buf_len,
-      /*truncate=*/false,
+      /*body_end=*/body_end_, std::move(buffer_to_flush), /*truncate=*/false,
       /*copy_buffer_for_optimistic_write=*/false, base::DoNothing());
 }
 

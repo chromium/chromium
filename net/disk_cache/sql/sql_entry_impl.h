@@ -13,6 +13,7 @@
 #include "net/disk_cache/buildflags.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/disk_cache/sql/cache_entry_key.h"
+#include "net/disk_cache/sql/entry_write_buffer.h"
 #include "net/disk_cache/sql/sql_persistent_store.h"
 #include "net/log/net_log_with_source.h"
 
@@ -168,12 +169,7 @@ class NET_EXPORT_PRIVATE SqlEntryImpl final
   bool doomed_ = false;
 
   // Buffers data for stream 1 writes.
-  std::vector<scoped_refptr<net::IOBuffer>> write_buffers_;
-  // The total size of data in `write_buffers_`.
-  int write_buffer_size_ = 0;
-  // The start offset of the data in `write_buffers_`. -1 indicates that the
-  // buffer is empty/invalid.
-  int64_t write_buffer_offset_ = -1;
+  EntryWriteBuffer write_buffer_;
 
   // A buffer containing data read beyond the requested range.
   scoped_refptr<net::IOBuffer> read_cache_buffer_;

@@ -25,6 +25,7 @@
 #include "net/disk_cache/buildflags.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/disk_cache/sql/cache_entry_key.h"
+#include "net/disk_cache/sql/entry_write_buffer.h"
 #include "net/disk_cache/sql/exclusive_operation_coordinator.h"
 #include "net/disk_cache/sql/sql_persistent_store.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
@@ -159,9 +160,7 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
                      const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
                      int64_t old_body_end,
                      int64_t body_end,
-                     int64_t offset,
-                     scoped_refptr<net::IOBuffer> buffer,
-                     int buf_len,
+                     EntryWriteBuffer buffer,
                      bool truncate,
                      bool copy_buffer_for_optimistic_write,
                      CompletionOnceCallback callback);
@@ -404,9 +403,7 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
       const CacheEntryKey& key,
       const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
       int64_t old_body_end,
-      int64_t offset,
-      scoped_refptr<net::IOBuffer> buffer,
-      int buf_len,
+      EntryWriteBuffer buffer,
       bool truncate,
       SqlPersistentStore::ErrorCallback callback,
       PopInFlightEntryModificationRunner pop_in_flight_entry_modification,
@@ -419,9 +416,7 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
       const CacheEntryKey& key,
       const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
       int64_t old_body_end,
-      int64_t offset,
-      scoped_refptr<net::IOBuffer> buffer,
-      int buf_len,
+      EntryWriteBuffer buffer,
       bool truncate,
       SqlPersistentStore::ErrorCallback maybe_update_res_id_or_error_callback,
       PopInFlightEntryModificationRunner pop_in_flight_entry_modification,

@@ -35,6 +35,7 @@
 #include "net/base/io_buffer.h"
 #include "net/disk_cache/simple/simple_util.h"
 #include "net/disk_cache/sql/cache_entry_key.h"
+#include "net/disk_cache/sql/entry_write_buffer.h"
 #include "net/disk_cache/sql/sql_backend_constants.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
@@ -330,13 +331,11 @@ class SqlPersistentStoreTest : public testing::Test {
   SqlPersistentStore::Error WriteEntryData(const CacheEntryKey& key,
                                            SqlPersistentStore::ResId res_id,
                                            int64_t old_body_end,
-                                           int64_t offset,
-                                           scoped_refptr<net::IOBuffer> buffer,
-                                           int buf_len,
+                                           EntryWriteBuffer buffer,
                                            bool truncate) {
     base::test::TestFuture<SqlPersistentStore::Error> future;
-    store_->WriteEntryData(key, res_id, old_body_end, offset, std::move(buffer),
-                           buf_len, truncate, future.GetCallback());
+    store_->WriteEntryData(key, res_id, old_body_end, std::move(buffer),
+                           truncate, future.GetCallback());
     return future.Get();
   }
 
@@ -363,9 +362,11 @@ class SqlPersistentStoreTest : public testing::Test {
                                  std::string_view data,
                                  bool truncate) {
     auto buffer = base::MakeRefCounted<net::StringIOBuffer>(std::string(data));
-    ASSERT_EQ(WriteEntryData(key, res_id, old_body_end, offset,
-                             std::move(buffer), data.size(), truncate),
-              SqlPersistentStore::Error::kOk);
+    ASSERT_EQ(
+        WriteEntryData(key, res_id, old_body_end,
+                       EntryWriteBuffer(std::move(buffer), data.size(), offset),
+                       truncate),
+        SqlPersistentStore::Error::kOk);
   }
 
   // Helper to fill a range with a repeated character and write it to the store.
@@ -2476,8 +2477,9 @@ TEST_F(SqlPersistentStoreTest, TrimOverlappingBlobsInvalidDataSizeMismatch) {
   auto overwrite_buffer =
       base::MakeRefCounted<net::StringIOBuffer>(kOverwriteData);
   EXPECT_EQ(WriteEntryData(kKey, res_id, /*old_body_end=*/kInitialData.size(),
-                           /*offset=*/2, overwrite_buffer,
-                           kOverwriteData.size(), /*truncate=*/false),
+                           EntryWriteBuffer(std::move(overwrite_buffer),
+                                            kOverwriteData.size(), 2),
+                           /*truncate=*/false),
             SqlPersistentStore::Error::kInvalidData);
 }
 
@@ -2503,8 +2505,9 @@ TEST_F(SqlPersistentStoreTest, TrimOverlappingBlobsCheckSumError) {
   auto overwrite_buffer =
       base::MakeRefCounted<net::StringIOBuffer>(kOverwriteData);
   EXPECT_EQ(WriteEntryData(kKey, res_id, /*old_body_end=*/kInitialData.size(),
-                           /*offset=*/2, overwrite_buffer,
-                           kOverwriteData.size(), /*truncate=*/false),
+                           EntryWriteBuffer(std::move(overwrite_buffer),
+                                            kOverwriteData.size(), 2),
+                           /*truncate=*/false),
             SqlPersistentStore::Error::kCheckSumError);
 }
 
@@ -2527,8 +2530,9 @@ TEST_F(SqlPersistentStoreTest, TrimOverlappingBlobsInvalidDataRangeOverflow) {
   auto overwrite_buffer =
       base::MakeRefCounted<net::StringIOBuffer>(kOverwriteData);
   EXPECT_EQ(WriteEntryData(kKey, res_id, /*old_body_end=*/kInitialData.size(),
-                           /*offset=*/5, overwrite_buffer,
-                           kOverwriteData.size(), /*truncate=*/false),
+                           EntryWriteBuffer(std::move(overwrite_buffer),
+                                            kOverwriteData.size(), 5),
+                           /*truncate=*/false),
             SqlPersistentStore::Error::kInvalidData);
 }
 
@@ -2552,7 +2556,7 @@ TEST_F(SqlPersistentStoreTest, TruncateExistingBlobsInvalidDataSizeMismatch) {
   // This write will truncate the entry, triggering TruncateExistingBlobs,
   // which should detect the inconsistency.
   EXPECT_EQ(WriteEntryData(kKey, res_id, /*old_body_end=*/kInitialData.size(),
-                           /*offset=*/5, /*buffer=*/nullptr, /*buf_len=*/0,
+                           EntryWriteBuffer(nullptr, 0, 5),
                            /*truncate=*/true),
             SqlPersistentStore::Error::kInvalidData);
 }
@@ -2573,7 +2577,7 @@ TEST_F(SqlPersistentStoreTest, TruncateExistingBlobsInvalidDataRangeOverflow) {
   // This write will truncate the entry, triggering TruncateExistingBlobs,
   // which should detect the overflow.
   EXPECT_EQ(WriteEntryData(kKey, res_id, /*old_body_end=*/kInitialData.size(),
-                           /*offset=*/1, /*buffer=*/nullptr, /*buf_len=*/0,
+                           EntryWriteBuffer(nullptr, 0, 1),
                            /*truncate=*/true),
             SqlPersistentStore::Error::kInvalidData);
 }
@@ -2586,35 +2590,41 @@ TEST_F(SqlPersistentStoreTest, WriteEntryDataInvalidArgument) {
   const int buf_len = buffer->size();
 
   // Test with negative old_body_end.
-  EXPECT_EQ(WriteEntryData(kKey, res_id, /*old_body_end=*/-1, /*offset=*/0,
-                           buffer, buf_len, /*truncate=*/false),
+  EXPECT_EQ(WriteEntryData(kKey, res_id, /*old_body_end=*/-1,
+                           EntryWriteBuffer(buffer, buf_len, 0),
+                           /*truncate=*/false),
             SqlPersistentStore::Error::kInvalidArgument);
 
   // Test with negative offset.
-  EXPECT_EQ(WriteEntryData(kKey, res_id, /*old_body_end=*/0, /*offset=*/-1,
-                           buffer, buf_len, /*truncate=*/false),
+  EXPECT_EQ(WriteEntryData(kKey, res_id, /*old_body_end=*/0,
+                           EntryWriteBuffer(buffer, buf_len, -1),
+                           /*truncate=*/false),
             SqlPersistentStore::Error::kInvalidArgument);
 
   // Test with offset + buf_len overflow.
-  EXPECT_EQ(WriteEntryData(kKey, res_id, /*old_body_end=*/0,
-                           /*offset=*/std::numeric_limits<int64_t>::max(),
-                           buffer, buf_len, /*truncate=*/false),
-            SqlPersistentStore::Error::kInvalidArgument);
+  EXPECT_EQ(
+      WriteEntryData(kKey, res_id, /*old_body_end=*/0,
+                     EntryWriteBuffer(buffer, buf_len,
+                                      std::numeric_limits<int64_t>::max()),
+                     /*truncate=*/false),
+      SqlPersistentStore::Error::kInvalidArgument);
 
   // Test with negative buf_len.
-  EXPECT_EQ(WriteEntryData(kKey, res_id, /*old_body_end=*/0, /*offset=*/0,
-                           buffer, /*buf_len=*/-1, /*truncate=*/false),
+  EXPECT_EQ(WriteEntryData(kKey, res_id, /*old_body_end=*/0,
+                           EntryWriteBuffer(buffer, -1, 0),
+                           /*truncate=*/false),
             SqlPersistentStore::Error::kInvalidArgument);
 
   // Test with null buffer but positive buf_len.
-  EXPECT_EQ(
-      WriteEntryData(kKey, res_id, /*old_body_end=*/0, /*offset=*/0,
-                     /*buffer=*/nullptr, /*buf_len=*/1, /*truncate=*/false),
-      SqlPersistentStore::Error::kInvalidArgument);
+  EXPECT_EQ(WriteEntryData(kKey, res_id, /*old_body_end=*/0,
+                           EntryWriteBuffer(nullptr, 1, 0),
+                           /*truncate=*/false),
+            SqlPersistentStore::Error::kInvalidArgument);
 
   // Test with buf_len > buffer->size().
-  EXPECT_EQ(WriteEntryData(kKey, res_id, /*old_body_end=*/0, /*offset=*/0,
-                           buffer, buf_len + 1, /*truncate=*/false),
+  EXPECT_EQ(WriteEntryData(kKey, res_id, /*old_body_end=*/0,
+                           EntryWriteBuffer(buffer, buf_len + 1, 0),
+                           /*truncate=*/false),
             SqlPersistentStore::Error::kInvalidArgument);
 }
 
@@ -2636,8 +2646,9 @@ TEST_F(SqlPersistentStoreTest, WriteEntryDataInvalidDataBodyEndMismatch) {
   const std::string kOverwriteData = "abc";
   auto overwrite_buffer =
       base::MakeRefCounted<net::StringIOBuffer>(kOverwriteData);
-  EXPECT_EQ(WriteEntryData(kKey, res_id, /*old_body_end=*/5, /*offset=*/8,
-                           overwrite_buffer, kOverwriteData.size(),
+  EXPECT_EQ(WriteEntryData(kKey, res_id, /*old_body_end=*/5,
+                           EntryWriteBuffer(std::move(overwrite_buffer),
+                                            kOverwriteData.size(), 8),
                            /*truncate=*/false),
             SqlPersistentStore::Error::kBodyEndMismatch);
 }
@@ -2757,8 +2768,10 @@ TEST_F(SqlPersistentStoreTest, TruncateWithNullBuffer) {
   // Now, truncate the entry to a smaller size using a null buffer.
   const int64_t kTruncateOffset = 5;
   ASSERT_EQ(WriteEntryData(kKey, res_id, /*old_body_end=*/kInitialData.size(),
-                           /*offset=*/kTruncateOffset, /*buffer=*/nullptr,
-                           /*buf_len=*/0, /*truncate=*/true),
+                           EntryWriteBuffer(
+                               /*buffer=*/nullptr, /*size=*/0,
+                               /*offset=*/kTruncateOffset),
+                           /*truncate=*/true),
             SqlPersistentStore::Error::kOk);
 
   // Read back and verify.
@@ -2805,10 +2818,12 @@ TEST_F(SqlPersistentStoreTest, TruncateMultipleBlobsWithZeroLengthWrite) {
   WriteAndVerifySingleByteBlobs(kKey, res_id, "01234");
 
   // Truncate at offset 2 with a zero-length write.
-  ASSERT_EQ(
-      WriteEntryData(kKey, res_id, /*old_body_end=*/5, /*offset=*/2,
-                     /*buffer=*/nullptr, /*buf_len=*/0, /*truncate=*/true),
-      SqlPersistentStore::Error::kOk);
+  ASSERT_EQ(WriteEntryData(kKey, res_id, /*old_body_end=*/5,
+                           EntryWriteBuffer(
+                               /*buffer=*/nullptr, /*size=*/0,
+                               /*offset=*/2),
+                           /*truncate=*/true),
+            SqlPersistentStore::Error::kOk);
 
   // The new body end should be the offset = 2.
   const int64_t new_body_end = 2;
@@ -2868,10 +2883,12 @@ TEST_F(SqlPersistentStoreTest, WriteEntryDataNotFound) {
   CreateAndInitStore();
   const CacheEntryKey kKey("non-existent-key");
   auto write_buffer = base::MakeRefCounted<net::StringIOBuffer>("data");
-  ASSERT_EQ(WriteEntryData(kKey, SqlPersistentStore::ResId(100),
-                           /*old_body_end=*/0, /*offset=*/0, write_buffer,
-                           write_buffer->size(), /*truncate=*/false),
-            SqlPersistentStore::Error::kNotFound);
+  ASSERT_EQ(
+      WriteEntryData(kKey, SqlPersistentStore::ResId(100),
+                     /*old_body_end=*/0,
+                     EntryWriteBuffer(write_buffer, write_buffer->size(), 0),
+                     /*truncate=*/false),
+      SqlPersistentStore::Error::kNotFound);
 }
 
 TEST_F(SqlPersistentStoreTest, WriteEntryDataNullBufferNoTruncate) {
@@ -2889,7 +2906,8 @@ TEST_F(SqlPersistentStoreTest, WriteEntryDataNullBufferNoTruncate) {
 
   // Writing a null buffer with truncate=false should be a no-op.
   ASSERT_EQ(WriteEntryData(kKey, res_id, /*old_body_end=*/initial_body_end,
-                           /*offset=*/5, /*buffer=*/nullptr, /*buf_len=*/0,
+                           EntryWriteBuffer(
+                               /*buffer=*/nullptr, /*size=*/0, /*offset=*/5),
                            /*truncate=*/false),
             SqlPersistentStore::Error::kOk);
 
@@ -2920,10 +2938,11 @@ TEST_F(SqlPersistentStoreTest, WriteEntryDataZeroLengthBufferNoTruncate) {
 
   // Writing a zero-length buffer with truncate=false should be a no-op.
   auto zero_buffer = base::MakeRefCounted<net::IOBufferWithSize>(0);
-  ASSERT_EQ(WriteEntryData(kKey, res_id, /*old_body_end=*/initial_body_end,
-                           /*offset=*/5, zero_buffer, /*buf_len=*/0,
-                           /*truncate=*/false),
-            SqlPersistentStore::Error::kOk);
+  ASSERT_EQ(
+      WriteEntryData(kKey, res_id, /*old_body_end=*/initial_body_end,
+                     EntryWriteBuffer(zero_buffer, /*size=*/0, /*offset=*/5),
+                     /*truncate=*/false),
+      SqlPersistentStore::Error::kOk);
 
   // Verify size and content are unchanged.
   auto details = GetResourceEntryDetails(kKey);
@@ -2950,8 +2969,10 @@ TEST_F(SqlPersistentStoreTest, TruncateWithNullBufferExtendingBody) {
   // Now, truncate the entry to a larger size using a null buffer.
   const int64_t kTruncateOffset = 20;
   ASSERT_EQ(WriteEntryData(kKey, res_id, /*old_body_end=*/kInitialData.size(),
-                           /*offset=*/kTruncateOffset, /*buffer=*/nullptr,
-                           /*buf_len=*/0, /*truncate=*/true),
+                           EntryWriteBuffer(
+                               /*buffer=*/nullptr, /*size=*/0,
+                               /*offset=*/kTruncateOffset),
+                           /*truncate=*/true),
             SqlPersistentStore::Error::kOk);
 
   // Read back and verify. The new space should be zero-filled.
@@ -2980,8 +3001,10 @@ TEST_F(SqlPersistentStoreTest, ExtendWithNullBufferNoTruncate) {
   // truncate.
   const int64_t kExtendOffset = 20;
   ASSERT_EQ(WriteEntryData(kKey, res_id, /*old_body_end=*/kInitialData.size(),
-                           /*offset=*/kExtendOffset, /*buffer=*/nullptr,
-                           /*buf_len=*/0, /*truncate=*/false),
+                           EntryWriteBuffer(
+                               /*buffer=*/nullptr, /*size=*/0,
+                               /*offset=*/kExtendOffset),
+                           /*truncate=*/false),
             SqlPersistentStore::Error::kOk);
 
   // Read back and verify. The new space should be zero-filled.
@@ -3061,10 +3084,12 @@ TEST_F(SqlPersistentStoreTest, WriteEntryDataComplexOverlap) {
   VerifyBodyEndAndBytesUsage(kKey, 7, kKey.string().size() + 7);
 
   // 9. Null buffer truncate.
-  ASSERT_EQ(
-      WriteEntryData(kKey, res_id, /*old_body_end=*/7, /*offset=*/5,
-                     /*buffer=*/nullptr, /*buf_len=*/0, /*truncate=*/true),
-      SqlPersistentStore::Error::kOk);
+  ASSERT_EQ(WriteEntryData(kKey, res_id, /*old_body_end=*/7,
+                           EntryWriteBuffer(/*buffer=*/nullptr,
+                                            /*size=*/0,
+                                            /*offset=*/5),
+                           /*truncate=*/true),
+            SqlPersistentStore::Error::kOk);
   ReadAndVerifyData(kKey, res_id, 0, 5, 5, false, "DDDDD");
   CheckBlobData(res_id, {{0, "DDDDD"}});
   VerifyBodyEndAndBytesUsage(kKey, 5, kKey.string().size() + 5);
@@ -3076,6 +3101,39 @@ TEST_F(SqlPersistentStoreTest, WriteEntryDataComplexOverlap) {
                     base::MakeStringViewWithNulChars("DDDDD\0\0\0\0\0SPARSE"));
   CheckBlobData(res_id, {{0, "DDDDD"}, {10, "SPARSE"}});
   VerifyBodyEndAndBytesUsage(kKey, 16, kKey.string().size() + 11);
+}
+
+TEST_F(SqlPersistentStoreTest, WriteEntryDataWithMultipleBuffers) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey("my-key");
+  const auto res_id = CreateEntryAndGetResId(kKey);
+
+  const std::string kData1 = "part1 ";
+  const std::string kData2 = "part2 ";
+  const std::string kData3 = "part3";
+  const std::string kCombinedData = kData1 + kData2 + kData3;
+
+  EntryWriteBuffer write_buffer;
+  write_buffer.buffers.push_back(
+      base::MakeRefCounted<net::StringIOBuffer>(kData1));
+  write_buffer.buffers.push_back(
+      base::MakeRefCounted<net::StringIOBuffer>(kData2));
+  write_buffer.buffers.push_back(
+      base::MakeRefCounted<net::StringIOBuffer>(kData3));
+  write_buffer.size = kCombinedData.size();
+  write_buffer.offset = 0;
+
+  ASSERT_EQ(WriteEntryData(kKey, res_id, /*old_body_end=*/0,
+                           std::move(write_buffer), /*truncate=*/false),
+            SqlPersistentStore::Error::kOk);
+
+  // Read back and verify.
+  ReadAndVerifyData(kKey, res_id, /*offset=*/0,
+                    /*buffer_len=*/kCombinedData.size(),
+                    /*body_end=*/kCombinedData.size(),
+                    /*sparse_reading=*/false, kCombinedData);
+  // Verify blob data in the database.
+  CheckBlobData(res_id, {{0, kCombinedData}});
 }
 
 TEST_F(SqlPersistentStoreTest, SparseRead) {
@@ -3576,8 +3634,8 @@ TEST_F(SqlPersistentStoreTest, WriteDataCallbackNotRunOnStoreDestruction) {
   auto write_buffer = base::MakeRefCounted<net::StringIOBuffer>(kData);
   bool callback_run = false;
   store_->WriteEntryData(
-      kKey, res_id, /*old_body_end=*/0, /*offset=*/0, write_buffer,
-      kData.size(),
+      kKey, res_id, /*old_body_end=*/0,
+      EntryWriteBuffer(std::move(write_buffer), kData.size(), 0),
       /*truncate=*/false,
       base::BindLambdaForTesting(
           [&](SqlPersistentStore::Error) { callback_run = true; }));
@@ -4348,8 +4406,8 @@ TEST_F(SqlPersistentStoreTest, SimulateDbFailure) {
                                    base::Time::Now(), buffer, buffer->size()),
       SqlPersistentStore::Error::kFailedForTesting);
 
-  EXPECT_EQ(WriteEntryData(kKey, SqlPersistentStore::ResId(1), 0, 0, buffer, 0,
-                           false),
+  EXPECT_EQ(WriteEntryData(kKey, SqlPersistentStore::ResId(1), 0,
+                           EntryWriteBuffer(buffer, 0, 0), false),
             SqlPersistentStore::Error::kFailedForTesting);
 
   auto read_data_result =
@@ -4432,8 +4490,9 @@ TEST_F(SqlPersistentStoreTest, AfterRazeAndPoisoned) {
                                    base::Time::Now(), buffer, buffer->size()),
       SqlPersistentStore::Error::kDatabaseClosed);
 
-  EXPECT_EQ(WriteEntryData(kKey, SqlPersistentStore::ResId(1), 0, 0, buffer, 0,
-                           false),
+  EXPECT_EQ(WriteEntryData(kKey, SqlPersistentStore::ResId(1), 0,
+                           EntryWriteBuffer(buffer, 0, 0),
+                           /*truncate=*/false),
             SqlPersistentStore::Error::kDatabaseClosed);
 
   auto read_data_result =

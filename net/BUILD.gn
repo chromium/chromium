@@ -1848,6 +1848,8 @@ component("net") {
     sources += [
       "disk_cache/sql/cache_entry_key.cc",
       "disk_cache/sql/cache_entry_key.h",
+      "disk_cache/sql/entry_write_buffer.cc",
+      "disk_cache/sql/entry_write_buffer.h",
       "disk_cache/sql/eviction_candidate_aggregator.cc",
       "disk_cache/sql/eviction_candidate_aggregator.h",
       "disk_cache/sql/exclusive_operation_coordinator.cc",
@@ -3573,6 +3575,7 @@ target(_test_target_type, "net_unittests") {
   if (enable_disk_cache_sql_backend) {
     sources += [
       "disk_cache/sql/cache_entry_key_unittest.cc",
+      "disk_cache/sql/entry_write_buffer_unittest.cc",
       "disk_cache/sql/eviction_candidate_aggregator_unittest.cc",
       "disk_cache/sql/exclusive_operation_coordinator_unittest.cc",
       "disk_cache/sql/indexed_pair_set_unittest.cc",

@@ -19,6 +19,7 @@
 #include "net/disk_cache/buildflags.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/disk_cache/sql/cache_entry_key.h"
+#include "net/disk_cache/sql/entry_write_buffer.h"
 #include "net/disk_cache/sql/sql_backend_aliases.h"
 #include "net/disk_cache/sql/sql_persistent_store_in_memory_index.h"
 
@@ -354,9 +355,7 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
   // `old_body_end` is the expected current size of the body. It is used to
   // determine whether to trim or truncate existing data, and for consistency
   // checks.
-  // `offset` is the position within the entry's body to start writing.
-  // `buffer` contains the data to be written. This can be null for truncation.
-  // `buf_len` is the size of `buffer`.
+  // `buffer` contains the data and offset to be written.
   // If `truncate` is true, the entry's body will be truncated to the end of
   // this write. Otherwise, the body size will grow if the write extends past
   // the current end.
@@ -364,9 +363,7 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
   void WriteEntryData(const CacheEntryKey& key,
                       ResId res_id,
                       int64_t old_body_end,
-                      int64_t offset,
-                      scoped_refptr<net::IOBuffer> buffer,
-                      int buf_len,
+                      EntryWriteBuffer buffer,
                       bool truncate,
                       ErrorCallback callback);
 

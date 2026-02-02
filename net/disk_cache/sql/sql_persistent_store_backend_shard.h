@@ -81,9 +81,7 @@ class SqlPersistentStore::BackendShard {
   void WriteEntryData(const CacheEntryKey& key,
                       ResId res_id,
                       int64_t old_body_end,
-                      int64_t offset,
-                      scoped_refptr<net::IOBuffer> buffer,
-                      int buf_len,
+                      EntryWriteBuffer buffer,
                       bool truncate,
                       ErrorCallback callback);
   void ReadEntryData(const CacheEntryKey& key,

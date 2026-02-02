@@ -1302,9 +1302,7 @@ ErrorAndStoreStatus SqlPersistentStore::Backend::WriteEntryData(
     const CacheEntryKey& key,
     ResId res_id,
     int64_t old_body_end,
-    int64_t offset,
-    scoped_refptr<net::IOBuffer> buffer,
-    int buf_len,
+    EntryWriteBuffer buffer,
     bool truncate,
     base::TimeTicks start_time) {
   const base::TimeDelta posting_delay = base::TimeTicks::Now() - start_time;
@@ -1314,16 +1312,16 @@ ErrorAndStoreStatus SqlPersistentStore::Backend::WriteEntryData(
                        dict.Add("key", key.string());
                        dict.Add("res_id", res_id.value());
                        dict.Add("old_body_end", old_body_end);
-                       dict.Add("offset", offset);
-                       dict.Add("buf_len", buf_len);
+                       dict.Add("offset", buffer.offset);
+                       dict.Add("buf_len", buffer.size);
                        dict.Add("truncate", truncate);
                        PopulateTraceDetails(store_status_, dict);
                      });
   base::ElapsedTimer timer;
   bool corruption_detected = false;
-  auto result = WriteEntryDataInternal(key, res_id, old_body_end, offset,
-                                       std::move(buffer), buf_len, truncate,
-                                       corruption_detected);
+  auto result =
+      WriteEntryDataInternal(key, res_id, old_body_end, std::move(buffer),
+                             truncate, corruption_detected);
   RecordTimeAndErrorResultHistogram("WriteEntryData", posting_delay,
                                     timer.Elapsed(), result,
                                     corruption_detected);
@@ -1340,14 +1338,31 @@ Error SqlPersistentStore::Backend::WriteEntryDataInternal(
     const CacheEntryKey& key,
     ResId res_id,
     int64_t old_body_end,
-    int64_t offset,
-    scoped_refptr<net::IOBuffer> buffer,
-    int buf_len,
+    EntryWriteBuffer buffer,
     bool truncate,
     bool& corruption_detected) {
   if (auto db_error = CheckDatabaseStatus(); db_error != Error::kOk) {
     return db_error;
   }
+
+  const int64_t offset = buffer.offset;
+  const int buf_len = buffer.size;
+
+  scoped_refptr<net::IOBuffer> combined_buffer;
+  if (buffer.buffers.size() == 1) {
+    combined_buffer = std::move(buffer.buffers[0]);
+  } else if (!buffer.buffers.empty()) {
+    auto io_buffer = base::MakeRefCounted<net::IOBufferWithSize>(buf_len);
+    size_t current_offset = 0;
+    for (const auto& chunk : buffer.buffers) {
+      base::as_writable_bytes(io_buffer->span())
+          .subspan(current_offset)
+          .copy_prefix_from(base::as_bytes(chunk->span()));
+      current_offset += chunk->size();
+    }
+    combined_buffer = std::move(io_buffer);
+  }
+
   sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
     return Error::kFailedToStartTransaction;
@@ -1355,7 +1370,8 @@ Error SqlPersistentStore::Backend::WriteEntryDataInternal(
 
   int64_t write_end;
   if (old_body_end < 0 || offset < 0 || buf_len < 0 ||
-      (!buffer && buf_len > 0) || (buffer && buf_len > buffer->size()) ||
+      (!combined_buffer && buf_len > 0) ||
+      (combined_buffer && buf_len > combined_buffer->size()) ||
       !base::CheckAdd<int64_t>(offset, buf_len).AssignIfValid(&write_end)) {
     return Error::kInvalidArgument;
   }
@@ -1392,8 +1408,8 @@ Error SqlPersistentStore::Backend::WriteEntryDataInternal(
 
   // Insert the new data blob if there is data to write.
   if (buf_len) {
-    if (Error result = InsertNewBlob(key, res_id, offset, buffer, buf_len,
-                                     checked_total_size_delta);
+    if (Error result = InsertNewBlob(key, res_id, offset, combined_buffer,
+                                     buf_len, checked_total_size_delta);
         result != Error::kOk) {
       return result;
     }

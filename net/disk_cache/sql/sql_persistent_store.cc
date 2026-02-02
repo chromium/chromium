@@ -194,14 +194,11 @@ void SqlPersistentStore::UpdateEntryHeaderAndLastUsed(
 void SqlPersistentStore::WriteEntryData(const CacheEntryKey& key,
                                         ResId res_id,
                                         int64_t old_body_end,
-                                        int64_t offset,
-                                        scoped_refptr<net::IOBuffer> buffer,
-                                        int buf_len,
+                                        EntryWriteBuffer buffer,
                                         bool truncate,
                                         ErrorCallback callback) {
-  GetShard(key).WriteEntryData(key, res_id, old_body_end, offset,
-                               std::move(buffer), buf_len, truncate,
-                               std::move(callback));
+  GetShard(key).WriteEntryData(key, res_id, old_body_end, std::move(buffer),
+                               truncate, std::move(callback));
 }
 
 void SqlPersistentStore::ReadEntryData(const CacheEntryKey& key,

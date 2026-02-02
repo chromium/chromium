@@ -1092,9 +1092,7 @@ int SqlBackendImpl::WriteEntryData(
     const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
     int64_t old_body_end,
     int64_t body_end,
-    int64_t offset,
-    scoped_refptr<net::IOBuffer> buffer,
-    int buf_len,
+    EntryWriteBuffer buffer,
     bool truncate,
     bool copy_buffer_for_optimistic_write,
     CompletionOnceCallback callback) {
@@ -1106,6 +1104,8 @@ int SqlBackendImpl::WriteEntryData(
     return net::ERR_FAILED;
   }
 
+  const int buf_len = buffer.size;
+
   // Perform optimistic writes as long as `optimistic_write_buffer_total_size_`
   // does not exceed `kSqlDiskCacheOptimisticWriteBufferSize`.
   const bool can_execute_optimistic_write =
@@ -1115,10 +1115,13 @@ int SqlBackendImpl::WriteEntryData(
                             can_execute_optimistic_write);
   if (can_execute_optimistic_write) {
     optimistic_write_buffer_total_size_ += buf_len;
-    if (buffer && copy_buffer_for_optimistic_write) {
-      // Note: `buffer` can be nullptr.
-      buffer = base::MakeRefCounted<net::VectorIOBuffer>(
-          buffer->first(static_cast<size_t>(buf_len)));
+    if (copy_buffer_for_optimistic_write) {
+      CHECK_LE(buffer.buffers.size(), 1u);
+      if (buffer.buffers.size() == 1) {
+        CHECK(buffer.buffers[0]);
+        buffer.buffers[0] = base::MakeRefCounted<net::VectorIOBuffer>(
+            buffer.buffers[0]->first(static_cast<size_t>(buf_len)));
+      }
     }
     // Callback to set an error on `res_id_or_error` when an error occurs or
     // the backend is deleted.
@@ -1140,7 +1143,7 @@ int SqlBackendImpl::WriteEntryData(
         base::BindOnce(
             &SqlBackendImpl::HandleOptimisticWriteEntryDataOperation,
             weak_factory_.GetWeakPtr(), key, res_id_or_error, old_body_end,
-            offset, std::move(buffer), buf_len, truncate,
+            std::move(buffer), truncate,
             std::move(maybe_update_res_id_or_error_callback),
             PushInFlightEntryModification(
                 key, InFlightEntryModification(res_id_or_error, body_end))));
@@ -1153,7 +1156,7 @@ int SqlBackendImpl::WriteEntryData(
       base::BindOnce(
           &SqlBackendImpl::HandleWriteEntryDataOperation,
           weak_factory_.GetWeakPtr(), key, res_id_or_error, old_body_end,
-          offset, std::move(buffer), buf_len, truncate,
+          std::move(buffer), truncate,
           base::BindOnce(
               [](CompletionOnceCallback callback, int buf_len,
                  SqlPersistentStore::Error result) {
@@ -1174,9 +1177,7 @@ void SqlBackendImpl::HandleWriteEntryDataOperation(
     const CacheEntryKey& key,
     const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
     int64_t old_body_end,
-    int64_t offset,
-    scoped_refptr<net::IOBuffer> buffer,
-    int buf_len,
+    EntryWriteBuffer buffer,
     bool truncate,
     SqlPersistentStore::ErrorCallback callback,
     PopInFlightEntryModificationRunner pop_in_flight_entry_modification,
@@ -1191,8 +1192,7 @@ void SqlBackendImpl::HandleWriteEntryDataOperation(
     return;
   }
   store_->WriteEntryData(
-      key, *optional_res_id, old_body_end, offset, std::move(buffer), buf_len,
-      truncate,
+      key, *optional_res_id, old_body_end, std::move(buffer), truncate,
       std::move(callback)
           .Then(OnceClosureWithBoundArgs(
               std::move(pop_in_flight_entry_modification)))
@@ -1203,14 +1203,13 @@ void SqlBackendImpl::HandleOptimisticWriteEntryDataOperation(
     const CacheEntryKey& key,
     const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
     int64_t old_body_end,
-    int64_t offset,
-    scoped_refptr<net::IOBuffer> buffer,
-    int buf_len,
+    EntryWriteBuffer buffer,
     bool truncate,
     SqlPersistentStore::ErrorCallback maybe_update_res_id_or_error_callback,
     PopInFlightEntryModificationRunner pop_in_flight_entry_modification,
     std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle) {
   const auto optional_res_id = GetResId(res_id_or_error);
+  const int buf_len = buffer.size;
   if (!optional_res_id) {
     // Decrement the total size.
     optimistic_write_buffer_total_size_ -= buf_len;
@@ -1225,8 +1224,7 @@ void SqlBackendImpl::HandleOptimisticWriteEntryDataOperation(
     return;
   }
   store_->WriteEntryData(
-      key, *optional_res_id, old_body_end, offset, std::move(buffer), buf_len,
-      truncate,
+      key, *optional_res_id, old_body_end, std::move(buffer), truncate,
       base::BindOnce(&SqlBackendImpl::OnOptimisticWriteFinished,
                      weak_factory_.GetWeakPtr(), key, *optional_res_id, buf_len,
                      std::move(maybe_update_res_id_or_error_callback),

@@ -220,18 +220,15 @@ void SqlPersistentStore::BackendShard::UpdateEntryHeaderAndLastUsed(
       .Then(WrapCallbackWithStoreStatus(std::move(callback)));
 }
 
-void SqlPersistentStore::BackendShard::WriteEntryData(
-    const CacheEntryKey& key,
-    ResId res_id,
-    int64_t old_body_end,
-    int64_t offset,
-    scoped_refptr<net::IOBuffer> buffer,
-    int buf_len,
-    bool truncate,
-    ErrorCallback callback) {
+void SqlPersistentStore::BackendShard::WriteEntryData(const CacheEntryKey& key,
+                                                      ResId res_id,
+                                                      int64_t old_body_end,
+                                                      EntryWriteBuffer buffer,
+                                                      bool truncate,
+                                                      ErrorCallback callback) {
   backend_.AsyncCall(&SqlPersistentStore::Backend::WriteEntryData)
-      .WithArgs(key, res_id, old_body_end, offset, std::move(buffer), buf_len,
-                truncate, base::TimeTicks::Now())
+      .WithArgs(key, res_id, old_body_end, std::move(buffer), truncate,
+                base::TimeTicks::Now())
       .Then(WrapCallbackWithStoreStatus(std::move(callback)));
 }
 

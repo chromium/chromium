@@ -6,6 +6,7 @@
 #define NET_DISK_CACHE_SQL_SQL_PERSISTENT_STORE_BACKEND_H_
 
 #include "base/memory/weak_ptr.h"
+#include "net/disk_cache/sql/entry_write_buffer.h"
 #include "net/disk_cache/sql/eviction_candidate_aggregator.h"
 #include "net/disk_cache/sql/sql_persistent_store.h"
 #include "sql/database.h"
@@ -84,9 +85,7 @@ class SqlPersistentStore::Backend {
   ErrorAndStoreStatus WriteEntryData(const CacheEntryKey& key,
                                      ResId res_id,
                                      int64_t old_body_end,
-                                     int64_t offset,
-                                     scoped_refptr<net::IOBuffer> buffer,
-                                     int buf_len,
+                                     EntryWriteBuffer buffer,
                                      bool truncate,
                                      base::TimeTicks start_time);
   ReadResultOrError ReadEntryData(const CacheEntryKey& key,
@@ -183,9 +182,7 @@ class SqlPersistentStore::Backend {
   Error WriteEntryDataInternal(const CacheEntryKey& key,
                                ResId res_id,
                                int64_t old_body_end,
-                               int64_t offset,
-                               scoped_refptr<net::IOBuffer> buffer,
-                               int buf_len,
+                               EntryWriteBuffer buffer,
                                bool truncate,
                                bool& corruption_detected);
   ReadResultOrError ReadEntryDataInternal(const CacheEntryKey& key,
