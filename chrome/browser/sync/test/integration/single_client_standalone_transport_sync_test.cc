@@ -355,41 +355,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
   EXPECT_THAT(GetSyncService(0)->GetActiveDataTypes(),
               ContainerEq(expected_types));
 }
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
-                       DataTypesEnabledForImplicitSignIn) {
-  ASSERT_TRUE(SetupClients());
-
-  // Signing in (without granting sync consent or explicitly setting up Sync)
-  // should trigger starting the Sync machinery in standalone transport mode.
-  secondary_account_helper::ImplicitSignInUnconsentedAccount(
-      GetProfile(0), &test_url_loader_factory_, "user@email.com");
-
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
-  ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
-            GetSyncService(0)->GetTransportState());
-
-  // There are no immediate plans to launch additional types to implicitly
-  // signed in users, so the list is hardcoded here.
-  syncer::DataTypeSet expected_types{syncer::AUTOFILL_WALLET_CREDENTIAL,
-                                     syncer::AUTOFILL_WALLET_DATA,
-                                     syncer::AUTOFILL_WALLET_USAGE,
-                                     syncer::DEVICE_INFO,
-                                     syncer::NIGORI,
-                                     syncer::PRIORITY_PREFERENCES,
-                                     syncer::USER_CONSENTS,
-                                     syncer::SEND_TAB_TO_SELF,
-                                     syncer::SECURITY_EVENTS,
-                                     syncer::SHARING_MESSAGE};
-
-  if (base::FeatureList::IsEnabled(syncer::kSyncAccountSettings)) {
-    expected_types.Put(syncer::ACCOUNT_SETTING);
-  }
-
-  EXPECT_THAT(GetSyncService(0)->GetActiveDataTypes(),
-              ContainerEq(expected_types));
-}
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(
     SingleClientStandaloneTransportSyncTest,

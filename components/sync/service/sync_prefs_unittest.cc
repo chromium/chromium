@@ -60,11 +60,6 @@ class SyncPrefsTest : public testing::Test {
 
     sync_prefs_ = std::make_unique<SyncPrefs>(&pref_service_);
     gaia_id_ = GaiaId("account_gaia");
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_CHROMEOS)
-    pref_service_.SetBoolean(::prefs::kExplicitBrowserSignin, true);
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) &&
-        // !BUILDFLAG(IS_CHROMEOS)
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
@@ -502,45 +497,6 @@ TEST_F(SyncPrefsTest,
               ContainerEq(expected_types));
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_CHROMEOS)
-TEST_F(SyncPrefsTest, DefaultWithImplicitBrowserSignin_SyncToSigninDisabled) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      /*enabled_features=*/{switches::kSyncEnableBookmarksInTransportMode,
-                            kReadingListEnableSyncTransportModeUponSignIn,
-                            switches::kEnablePreferencesAccountStorage},
-      /*disabled_features=*/{kReplaceSyncPromosWithSignInPromos});
-
-  pref_service_.ClearPref(::prefs::kExplicitBrowserSignin);
-  ASSERT_FALSE(sync_prefs_->IsExplicitBrowserSignin());
-
-  UserSelectableTypeSet expected_types{UserSelectableType::kPayments};
-  EXPECT_THAT(
-      sync_prefs_->GetSelectedTypesForAccount(gaia_id_),
-      ContainerEq(UserSelectableTypeSet{UserSelectableType::kPayments}));
-}
-
-TEST_F(SyncPrefsTest, DefaultWithImplicitBrowserSignin_SyncToSigninEnabled) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      /*enabled_features=*/{switches::kSyncEnableBookmarksInTransportMode,
-                            kReplaceSyncPromosWithSignInPromos,
-                            kReadingListEnableSyncTransportModeUponSignIn,
-                            kSeparateLocalAndAccountSearchEngines,
-                            syncer::kSeparateLocalAndAccountThemes,
-                            switches::kEnablePreferencesAccountStorage},
-      /*disabled_features=*/{});
-
-  pref_service_.ClearPref(::prefs::kExplicitBrowserSignin);
-  ASSERT_FALSE(sync_prefs_->IsExplicitBrowserSignin());
-
-  EXPECT_THAT(
-      sync_prefs_->GetSelectedTypesForAccount(gaia_id_),
-      ContainerEq(UserSelectableTypeSet{UserSelectableType::kPayments}));
-}
-
-#endif
-
 TEST_F(SyncPrefsTest, SetSelectedTypesForAccountInTransportMode) {
   const UserSelectableTypeSet default_selected_types =
       sync_prefs_->GetSelectedTypesForAccount(gaia_id_);
@@ -789,7 +745,6 @@ class SyncPrefsMigrationTest : public testing::Test {
     gaia_id_ = GaiaId("account_gaia");
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
     signin::IdentityManager::RegisterProfilePrefs(pref_service_.registry());
-    pref_service_.SetBoolean(::prefs::kExplicitBrowserSignin, true);
     pref_service_.SetBoolean(
         ::prefs::kPrefsThemesSearchEnginesAccountStorageEnabled, true);
 #endif

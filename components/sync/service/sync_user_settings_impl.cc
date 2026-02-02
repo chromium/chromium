@@ -29,19 +29,10 @@ namespace {
 
 // Converts `selected_types` to the corresponding DataTypeSet (e.g.
 // {kExtensions} becomes {EXTENSIONS, EXTENSION_SETTINGS}).
-DataTypeSet UserSelectableTypesToDataTypes(UserSelectableTypeSet selected_types,
-                                           bool is_explicit_browser_sign_in) {
+DataTypeSet UserSelectableTypesToDataTypes(
+    UserSelectableTypeSet selected_types) {
   DataTypeSet preferred_types;
   for (UserSelectableType type : selected_types) {
-    if (type == UserSelectableType::kPayments && !is_explicit_browser_sign_in) {
-      // If sign-in is implicit (legacy desktop Dice state), types such as
-      // AUTOFILL_WALLET_METADATA must be excluded.
-      preferred_types.PutAll(Intersection(
-          UserSelectableTypeToAllDataTypes(type),
-          DataTypeSet{AUTOFILL_WALLET_DATA, AUTOFILL_WALLET_CREDENTIAL,
-                      AUTOFILL_WALLET_USAGE}));
-      continue;
-    }
     preferred_types.PutAll(UserSelectableTypeToAllDataTypes(type));
   }
   return preferred_types;
@@ -61,27 +52,6 @@ DataTypeSet UserSelectableOsTypesToDataTypes(
 int GetCurrentMajorProductVersion() {
   DCHECK(version_info::GetVersion().IsValid());
   return version_info::GetVersion().components()[0];
-}
-
-// Checks if the AUTOFILL_WALLET_CREDENTIAL should be ignored if it is the only
-// encrypted datatype.
-bool ShouldAutofillWalletCredentialBeIgnoredIfOnlyEncryptedType(
-    const SyncPrefs& prefs) {
-  // Explicit sign-in to the browser via native UI, making this scenario an edge
-  // case as more features will usually be enabled, including PASSWORDS. Thus,
-  // AUTOFILL_WALLET_CREDENTIAL is not the only active encrypted type.
-  if (prefs.IsExplicitBrowserSignin()) {
-    return false;
-  }
-  // Similar to above: more features will usually be enabled, including
-  // PASSWORDS, making this an edge case.
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
-    return false;
-  }
-  // AUTOFILL_WALLET_CREDENTIAL is the only active encrypted type for the
-  // previously signed-in-non-syncing users.
-  return true;
 }
 
 }  // namespace
@@ -372,10 +342,7 @@ bool SyncUserSettingsImpl::SetDecryptionPassphrase(
 }
 
 DataTypeSet SyncUserSettingsImpl::GetPreferredDataTypes() const {
-  DataTypeSet types = UserSelectableTypesToDataTypes(
-      GetSelectedTypes(), prefs_->IsExplicitBrowserSignin() ||
-                              delegate_->GetSyncAccountStateForPrefs() ==
-                                  SyncPrefs::SyncAccountState::kSyncing);
+  DataTypeSet types = UserSelectableTypesToDataTypes(GetSelectedTypes());
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (IsSyncFeatureDisabledViaDashboard()) {
@@ -445,15 +412,6 @@ bool SyncUserSettingsImpl::IsEncryptedDatatypePreferred() const {
   DataTypeSet preferred_types = GetPreferredDataTypes();
   const DataTypeSet encrypted_types = GetAllEncryptedDataTypes();
   DCHECK(encrypted_types.HasAll(AlwaysEncryptedUserTypes()));
-  if (ShouldAutofillWalletCredentialBeIgnoredIfOnlyEncryptedType(*prefs_)) {
-    // Remove AUTOFILL_WALLET_CREDENTIAL from the set to avoid that the
-    // function returns true for the case where the set ONLY includes
-    // AUTOFILL_WALLET_CREDENTIAL. This feature alone is not sufficient to
-    // trigger error UI, which may be confusing to some users given that strings
-    // may allude to passwords. This is a side effect of
-    // AUTOFILL_WALLET_CREDENTIAL being listed as AlwaysEncryptedUserTypes().
-    preferred_types.Remove(syncer::AUTOFILL_WALLET_CREDENTIAL);
-  }
   return !Intersection(preferred_types, encrypted_types).empty();
 }
 

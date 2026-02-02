@@ -527,36 +527,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
   EXPECT_EQ(passwords_helper::GetAllLogins(account_store).size(), 1u);
 }
 
-// Regression test for crbug.com/1076378.
-// TODO(b/327118794): Delete this test once implicit signin no longer exists.
-IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
-                       EnablesPasswordSyncOnOptingInToSync) {
-  AddTestPasswordToFakeServer();
-
-  ASSERT_TRUE(SetupClients());
-
-  // Sign in implicitly (legacy state).
-  AccountInfo account_info =
-      secondary_account_helper::ImplicitSignInUnconsentedAccount(
-          GetProfile(0), &test_url_loader_factory_, "user@email.com");
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
-  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
-
-  // If signin is implicit, the user is not opted in to the account-scoped
-  // password storage, so the passwords data type should *not* be active.
-  ASSERT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PASSWORDS));
-
-  // Turn on Sync-the-feature.
-  secondary_account_helper::GrantSyncConsent(GetProfile(0), "user@email.com");
-  GetSyncService(0)->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
-      kSetSourceFromTest);
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
-  ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureEnabled());
-
-  // Now password sync should be active.
-  EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PASSWORDS));
-}
-
 // In pending state, account storage is deleted and re-downloaded on reauth.
 IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
                        PendingState) {

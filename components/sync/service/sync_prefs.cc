@@ -241,17 +241,6 @@ bool SyncPrefs::IsInitialSyncFeatureSetupComplete() const {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-bool SyncPrefs::IsExplicitBrowserSignin() const {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_CHROMEOS)
-  // On mobile and ChromeOS all sign-ins are considered explicit.
-  return true;
-#else
-  // On desktop `prefs::kExplicitBrowserSignin` determines whether the sign-in
-  // is explicit or implicit.
-  return pref_service_->GetBoolean(::prefs::kExplicitBrowserSignin);
-#endif
-}
-
 #if !BUILDFLAG(IS_CHROMEOS)
 void SyncPrefs::SetInitialSyncFeatureSetupComplete() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1106,12 +1095,6 @@ void SyncPrefs::MarkPartialSyncToSigninMigrationFullyDone() {
 bool SyncPrefs::IsTypeSelectedByDefaultInTransportMode(
     UserSelectableType type,
     const GaiaId& gaia_id) const {
-  // If sign-in is implicit (legacy desktop Dice state), only payments is on by
-  // default.
-  if (!IsExplicitBrowserSignin()) {
-    return type == UserSelectableType::kPayments;
-  }
-
   switch (type) {
     case UserSelectableType::kPayments:
     case UserSelectableType::kPasswords:
