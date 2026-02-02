@@ -4,22 +4,23 @@
 
 #include "components/password_manager/core/browser/ui/reuse_check_utility.h"
 
-#include <unordered_map>
 #include <utility>
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace password_manager {
 
 namespace {
 
 // Extracts affiliation information from password grouping.
-std::map<std::string, int> MapSignonRelamsToAffiliationGroups(
+absl::flat_hash_map<std::string, int> MapSignonRelamsToAffiliationGroups(
     const std::vector<AffiliatedGroup>& groups) {
-  std::map<std::string, int> signon_realm_to_group;
+  absl::flat_hash_map<std::string, int> signon_realm_to_group;
   for (size_t i = 0; i < groups.size(); i++) {
     for (const auto& credential : groups[i].GetCredentials()) {
       for (const auto& facet : credential.facets) {
@@ -32,8 +33,8 @@ std::map<std::string, int> MapSignonRelamsToAffiliationGroups(
 
 bool AllCredentialsBelongToSameGroup(
     const std::vector<const CredentialUIEntry*>& credentials,
-    const std::map<std::string, int>& signon_realm_to_group) {
-  std::set<int> group_ids;
+    const absl::flat_hash_map<std::string, int>& signon_realm_to_group) {
+  absl::flat_hash_set<int> group_ids;
   for (auto* const credential : credentials) {
     auto it = signon_realm_to_group.find(credential->GetFirstSignonRealm());
     if (it != signon_realm_to_group.end()) {
@@ -47,7 +48,7 @@ bool AllCredentialsBelongToSameGroup(
 // Empty usernames are skipped.
 bool AllUsernameAreEquivalent(
     const std::vector<const CredentialUIEntry*>& credentials) {
-  std::set<std::u16string> normalized_usernames;
+  absl::flat_hash_set<std::u16string> normalized_usernames;
   for (auto* const credential : credentials) {
     // Empty usernames should be skipped from comparison, because:
     // - If we consider them equal to everything, it breaks our equivalence
@@ -69,8 +70,8 @@ bool HasOnlyAndroidApps(const CredentialUIEntry* credential) {
   });
 }
 
-bool IsMainDomainEqual(const std::set<std::string>& signon_realms) {
-  std::set<std::string> domain_parts;
+bool IsMainDomainEqual(const absl::flat_hash_set<std::string>& signon_realms) {
+  absl::flat_hash_set<std::string> domain_parts;
   for (const auto& signon_realm : signon_realms) {
     domain_parts.insert(net::registry_controlled_domains::GetDomainAndRegistry(
         GURL(signon_realm),
@@ -82,7 +83,7 @@ bool IsMainDomainEqual(const std::set<std::string>& signon_realms) {
 
 bool AllDomainsAreEquivalent(
     const std::vector<const CredentialUIEntry*>& credentials) {
-  std::set<std::string> signon_realms;
+  absl::flat_hash_set<std::string> signon_realms;
   for (auto* const credential : credentials) {
     // We don't have any good heuristics for grouping Android apps except for
     // Affiliations. This means that:
@@ -111,7 +112,7 @@ bool AllDomainsAreEquivalent(
 base::flat_set<std::u16string> BulkReuseCheck(
     const std::vector<CredentialUIEntry>& credentials,
     const std::vector<AffiliatedGroup>& groups) {
-  std::unordered_map<std::u16string, std::vector<const CredentialUIEntry*>>
+  absl::flat_hash_map<std::u16string, std::vector<const CredentialUIEntry*>>
       password_to_credentials;
 
   for (const auto& credential : credentials) {
