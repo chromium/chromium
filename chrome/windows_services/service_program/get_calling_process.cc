@@ -10,10 +10,10 @@
 
 #include "base/process/process_handle.h"
 
-base::Process GetCallingProcess() {
+base::Process GetCallingProcess(DWORD desired_access) {
   HANDLE calling_process_handle;
   RPC_STATUS status = ::I_RpcOpenClientProcess(
-      nullptr, PROCESS_QUERY_LIMITED_INFORMATION, &calling_process_handle);
+      /*Binding=*/nullptr, desired_access, &calling_process_handle);
   if (status == RPC_S_NO_CALL_ACTIVE) {
     return base::Process::Current();  // The caller is in the local process.
   }
