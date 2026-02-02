@@ -547,6 +547,7 @@ Graphics, Inc.
 -----------------------------------------------------------------------------------------
 == Google Toolbox For Mac
 == Program Image Remapper
+== apple_support
 == flatbuffers
 == gemmlowp
 == ml_dtypes
@@ -10819,8 +10820,8 @@ COPYRIGHT NOTICE, DISCLAIMER, and LICENSE
 PNG Reference Library License version 2
 ---------------------------------------
 
- * Copyright (c) 1995-2025 The PNG Reference Library Authors.
- * Copyright (c) 2018-2025 Cosmin Truta.
+ * Copyright (c) 1995-2026 The PNG Reference Library Authors.
+ * Copyright (c) 2018-2026 Cosmin Truta.
  * Copyright (c) 2000-2002, 2004, 2006-2018 Glenn Randers-Pehrson.
  * Copyright (c) 1996-1997 Andreas Dilger.
  * Copyright (c) 1995-1996 Guy Eric Schalnat, Group 42, Inc.
