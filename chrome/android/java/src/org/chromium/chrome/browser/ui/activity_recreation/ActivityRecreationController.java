@@ -11,12 +11,14 @@ import android.os.Handler;
 import android.os.PersistableBundle;
 import android.view.View;
 
+import org.chromium.base.Log;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -31,6 +33,7 @@ import org.chromium.ui.KeyboardVisibilityDelegate;
  */
 @NullMarked
 public class ActivityRecreationController {
+    public static final String TAG_PERSIST_ACROSS_REBOOTS = "PersistAcrossReboots";
     public static final String URL_BAR_EDIT_TEXT = "URL_BAR_EDIT_TEXT";
     public static final String IS_TAB_SWITCHER_SHOWN = "IS_TAB_SWITCHER_SHOWN";
 
@@ -146,14 +149,21 @@ public class ActivityRecreationController {
         LayoutManager layoutManager = mLayoutManagerSupplier.get();
         if (outPersistentState == null || layoutManager == null) return;
 
-        restoreTabSwitcherState(
-                outPersistentState.getBoolean(IS_TAB_SWITCHER_SHOWN, false),
-                mLayoutManagerSupplier.get());
+        boolean isTabSwitcherShown = outPersistentState.getBoolean(IS_TAB_SWITCHER_SHOWN, false);
+        if (isTabSwitcherShown) {
+            restoreTabSwitcherState(true, mLayoutManagerSupplier.get());
+            if (ChromeFeatureList.sPersistAcrossRebootsDebugLogs.isEnabled()) {
+                Log.i(TAG_PERSIST_ACROSS_REBOOTS, "Restored persistent tab switcher state");
+            }
+        }
 
         String urlBarEditText = outPersistentState.getString(URL_BAR_EDIT_TEXT, "");
         ToolbarManager toolbarManager = assertNonNull(mToolbarManagerSupplier.get());
         if (!urlBarEditText.isEmpty() && toolbarManager != null) {
             restoreOmniboxState(toolbarManager, layoutManager, mLayoutStateHandler, urlBarEditText);
+            if (ChromeFeatureList.sPersistAcrossRebootsDebugLogs.isEnabled()) {
+                Log.i(TAG_PERSIST_ACROSS_REBOOTS, "Restored persistent url text.");
+            }
         }
     }
 

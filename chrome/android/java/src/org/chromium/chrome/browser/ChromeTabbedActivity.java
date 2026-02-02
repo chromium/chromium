@@ -2206,12 +2206,18 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                     hadCipherData =
                             CipherLazyHolder.sCipherInstance.restoreFromPersistableBundle(
                                     persistentState);
+                    if (ChromeFeatureList.sPersistAcrossRebootsDebugLogs.isEnabled()) {
+                        Log.i(TAG_PERSIST_ACROSS_REBOOTS, "Restored persistent incognito cipher.");
+                    }
                 } else {
                     // TODO(crbug.com/474346053): Refactor where the keys are declared and which
                     //  classes handle cleaning up incognito state.
                     CipherLazyHolder.sCipherInstance.clearPersistentIncognitoState(persistentState);
                     persistentState.remove(KEY_IS_INCOGNITO_REAUTH_PENDING);
                     persistentState.remove(IS_INCOGNITO_SELECTED);
+                    if (ChromeFeatureList.sPersistAcrossRebootsDebugLogs.isEnabled()) {
+                        Log.i(TAG_PERSIST_ACROSS_REBOOTS, "Cleared persistent incognito cipher.");
+                    }
                 }
             }
             if (!hadCipherData) {
@@ -3647,6 +3653,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         int windowId = getExtraWindowIdFromIntent(intent);
         if (persistentState != null && persistentState.containsKey(WINDOW_INDEX)) {
             mWindowId = persistentState.getInt(WINDOW_INDEX, INVALID_WINDOW_ID);
+            Log.i(TAG_MULTI_INSTANCE, "Retrieved windowId from persistent state.");
             assert mWindowId != INVALID_WINDOW_ID;
             if (mWindowId == INVALID_WINDOW_ID) mWindowId = 0;
             mSupportedProfileType = MultiWindowUtils.readProfileType(mWindowId);
@@ -4418,6 +4425,9 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
     @Override
     public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        if (ChromeFeatureList.sPersistAcrossRebootsDebugLogs.isEnabled()) {
+            Log.i(TAG_PERSIST_ACROSS_REBOOTS, "onSaveInstanceState()");
+        }
         super.onSaveInstanceState(outState, outPersistentState);
         if (shouldPersistAcrossReboots()) {
             saveToBaseBundle(outPersistentState);

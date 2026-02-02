@@ -519,6 +519,7 @@ public abstract class ChromeFeatureList {
     public static final String PERMISSION_SITE_SETTING_RADIO_BUTTON =
             "PermissionSiteSettingsRadioButton";
     public static final String PERSIST_ACROSS_REBOOTS = "PersistAcrossReboots";
+    public static final String PERSIST_ACROSS_REBOOTS_DEBUG_LOGS = "PersistAcrossRebootsDebugLogs";
     public static final String PLUS_ADDRESSES_ENABLED = "PlusAddressesEnabled";
     public static final String PLUS_ADDRESS_ANDROID_OPEN_GMS_CORE_MANAGEMENT_PAGE =
             "PlusAddressAndroidOpenGmsCoreManagementPage";
@@ -989,6 +990,8 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sPaintPreviewDemo = newCachedFlag(PAINT_PREVIEW_DEMO, false);
     public static final CachedFlag sPersistAcrossReboots =
             newCachedFlag(PERSIST_ACROSS_REBOOTS, false);
+    public static final CachedFlag sPersistAcrossRebootsDebugLogs =
+            newCachedFlag(PERSIST_ACROSS_REBOOTS_DEBUG_LOGS, false);
     public static final CachedFlag sPostGetMyMemoryStateToBackground =
             newCachedFlag(POST_GET_MEMORY_PRESSURE_TO_BACKGROUND, true);
     public static final CachedFlag sPowerSavingModeBroadcastReceiverInBackground =
@@ -1216,6 +1219,7 @@ public abstract class ChromeFeatureList {
                     sPCctMinimumHeight,
                     sPaintPreviewDemo,
                     sPersistAcrossReboots,
+                    sPersistAcrossRebootsDebugLogs,
                     sPostGetMyMemoryStateToBackground,
                     sPowerSavingModeBroadcastReceiverInBackground,
                     sPriceChangeModule,

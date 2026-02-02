@@ -5457,6 +5457,11 @@ inline constexpr char kOmniboxAutofocusOnIncognitoNtpDescription[] =
     "Enables the Omnibox to automatically gain focus when the New "
     "Tab Page in Incognito mode is opened, allowing immediate typing.";
 
+inline constexpr char kPersistAcrossRebootsDebugLogsName[] =
+    "persist-across-reboots-debug-logs";
+inline constexpr char kPersistAcrossRebootsDebugLogsDescription[] =
+    "Enables logs related to the persist across reboots feature.";
+
 inline constexpr char kPersistAcrossRebootsName[] = "persist-across-reboots";
 inline constexpr char kPersistAcrossRebootsDescription[] =
     "When this is enabled, state will be persisted across reboots on devices.";

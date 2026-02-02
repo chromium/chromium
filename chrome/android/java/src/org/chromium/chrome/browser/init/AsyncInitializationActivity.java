@@ -69,6 +69,7 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
     @VisibleForTesting
     public static final String FIRST_DRAW_COMPLETED_TIME_MS_UMA = "FirstDrawCompletedTime";
 
+    public static final String TAG_PERSIST_ACROSS_REBOOTS = "PersistAcrossReboots";
     public static final String TAG_MULTI_INSTANCE = "MultiInstance";
 
     protected final Handler mHandler;
@@ -358,8 +359,16 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
     @Override
     public void onCreate(
             @Nullable Bundle savedInstanceState, @Nullable PersistableBundle outPersistentState) {
+        if (ChromeFeatureList.sPersistAcrossRebootsDebugLogs.isEnabled()) {
+            Log.i(TAG_PERSIST_ACROSS_REBOOTS, "onCreate()");
+        }
         if (shouldPersistAcrossReboots()) {
             mReceivedPersistentState = outPersistentState != null;
+            if (ChromeFeatureList.sPersistAcrossRebootsDebugLogs.isEnabled()) {
+                Log.i(
+                        TAG_PERSIST_ACROSS_REBOOTS,
+                        mReceivedPersistentState ? "Has persistent state" : "No persistent state");
+            }
             mPersistentInstanceState = outPersistentState;
         }
         super.onCreate(savedInstanceState, outPersistentState);

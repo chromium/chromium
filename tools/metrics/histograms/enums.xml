@@ -15988,6 +15988,7 @@ from previous Chrome versions.
   <int value="564355877" label="OopRasterizationDDL:disabled"/>
   <int value="564452531" label="SystemEmojiPickerExtension:enabled"/>
   <int value="564522013" label="Av1Decoder:disabled"/>
+  <int value="564811711" label="PersistAcrossRebootsDebugLogs:disabled"/>
   <int value="565002365" label="QuickOfficeForceFileDownload:disabled"/>
   <int value="565254510" label="LensRegionSearchStaticPage:disabled"/>
   <int value="565406673" label="EnableVirtualKeyboardMdUi:enabled"/>
@@ -18223,6 +18224,7 @@ from previous Chrome versions.
   <int value="1319537010"
       label="PolicyProvidedTrustAnchorsAllowedAtLockScreen:disabled"/>
   <int value="1319638975" label="UseWallpaperStagingUrl:disabled"/>
+  <int value="1319697431" label="PersistAcrossRebootsDebugLogs:enabled"/>
   <int value="1319725131" label="enable-distance-field-text"/>
   <int value="1319804064" label="YourSavedInfoSettingsPage:disabled"/>
   <int value="1320201920" label="enable-touchpad-three-finger-click"/>

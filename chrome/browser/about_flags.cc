@@ -8198,7 +8198,7 @@ const FeatureEntry kFeatureEntries[] = {
                                     "CCTResetTimeoutVariations")},
 
     {"cct-reset-timeout-allowed",
-    flag_descriptions::kCCTResetTimeoutAllowedName,
+     flag_descriptions::kCCTResetTimeoutAllowedName,
      flag_descriptions::kCCTResetTimeoutAllowedDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kCCTResetTimeoutAllowed,
                                     kCCTResetTimeoutVariations,
@@ -13372,6 +13372,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(extensions_features::kSearchEngineUnconditionalDialog)},
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
+#if BUILDFLAG(IS_ANDROID)
+    {"persist-across-reboots-debug-logs",
+     flag_descriptions::kPersistAcrossRebootsDebugLogsName,
+     flag_descriptions::kPersistAcrossRebootsDebugLogsDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kPersistAcrossRebootsDebugLogs)},
+#endif
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
