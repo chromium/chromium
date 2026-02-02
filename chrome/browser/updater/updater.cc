@@ -11,6 +11,8 @@
 #include "base/functional/callback.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
 #include "chrome/browser/updater/browser_updater_client.h"
 #include "chrome/browser/updater/browser_updater_client_util.h"
 #include "chrome/updater/mojom/updater_service.mojom.h"
@@ -51,6 +53,7 @@ std::optional<mojom::AppState> GetLastKnownUpdaterRegistration() {
   return GetLastKnownUpdaterRegistrationStorage();
 }
 
+#if !BUILDFLAG(IS_LINUX)
 void CheckForUpdate(
     base::RepeatingCallback<void(const UpdateService::UpdateState&)> callback) {
   base::ThreadPool::PostTaskAndReplyWithResult(
@@ -63,17 +66,11 @@ void CheckForUpdate(
           },
           callback));
 }
+#endif  // BUILDFLAG(IS_LINUX)
 
 void GetSystemUpdaterState(
     base::OnceCallback<void(const mojom::UpdaterState&)> callback) {
-#if BUILDFLAG(IS_LINUX)
-  // There is no mechanism to support communication across the user/root
-  // boundary for Chromium Updater on Linux.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), mojom::UpdaterState{}));
-#else
   GetUpdaterState(UpdaterScope::kSystem, std::move(callback));
-#endif
 }
 
 void GetUserUpdaterState(
@@ -83,14 +80,7 @@ void GetUserUpdaterState(
 
 void GetSystemPoliciesJson(
     base::OnceCallback<void(const std::string&)> callback) {
-#if BUILDFLAG(IS_LINUX)
-  // There is no mechanism to support communication across the user/root
-  // boundary for Chromium Updater on Linux.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), std::string{}));
-#else
   GetPoliciesJson(UpdaterScope::kSystem, std::move(callback));
-#endif
 }
 
 void GetUserPoliciesJson(
@@ -100,15 +90,7 @@ void GetUserPoliciesJson(
 
 void GetSystemUpdaterAppStates(
     base::OnceCallback<void(const std::vector<mojom::AppState>&)> callback) {
-#if BUILDFLAG(IS_LINUX)
-  // There is no mechanism to support communication across the user/root
-  // boundary for Chromium Updater on Linux.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), std::vector<mojom::AppState>{}));
-#else
   GetAppStates(UpdaterScope::kSystem, std::move(callback));
-#endif
 }
 
 void GetUserUpdaterAppStates(
