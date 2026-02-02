@@ -852,8 +852,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
                 base::Unretained(this)));
         // CallbackListSubscription prevents these callbacks from being invoked
         // when this object is destructed.
-        // TODO(crbug.com/445224605): Right now this code assumes that
-        //   ActorKeyedService only owns a single Execution engine instance.
         act_on_web_capability_changed_subscription_ =
             actor_service->AddActOnWebCapabilityChangedCallback(
                 base::BindRepeating(
