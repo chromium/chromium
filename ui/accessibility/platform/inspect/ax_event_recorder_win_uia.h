@@ -142,6 +142,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXEventRecorderWinUia
   Thread thread_;
   base::RunLoop shutdown_loop_;
   base::PlatformThreadHandle thread_handle_;
+  bool thread_joined_ = false;
+  bool wait_for_done_recording_called_ = false;
 };
 
 }  // namespace ui

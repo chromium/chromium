@@ -32,8 +32,10 @@ bool ShouldSerializeEvent(Event event_type) {
   // Events that are serialized and forwarded to BrowserAccessibilityManager.
   switch (event_type) {
     // TODO(crbug.com/40672441): Add events that must be serialized directly.
-    case Event::kFocus:  // TODO(crbug.com/40672441): kFocus is only needed here
-                         // for tests while are migrating to ViewsAX.
+    case Event::kEndOfTest:
+    // TODO(crbug.com/40672441): kFocus is only needed here for tests while
+    // are migrating to ViewsAX.
+    case Event::kFocus:
       return true;
     default:
       break;
@@ -209,6 +211,14 @@ gfx::NativeViewAccessible WidgetAXManager::GetNativeViewAccessibleForId(
     return gfx::NativeViewAccessible();
   }
   return browser_node->GetNativeViewAccessible();
+}
+
+base::WeakPtr<ui::AXPlatformTreeManager>
+WidgetAXManager::GetAXTreeManagerWeakPtrForTesting() {
+  if (!ax_tree_manager_) {
+    return nullptr;
+  }
+  return ax_tree_manager_->GetWeakPtr();
 }
 
 ui::AXPlatformNodeId WidgetAXManager::GetOrCreateAXNodeUniqueId(

@@ -1,0 +1,1 @@
+EVENT_OBJECT_FOCUS on class=LabelButton role=ROLE_SYSTEM_PUSHBUTTON name="Test Button" FOCUSED,FOCUSABLE
