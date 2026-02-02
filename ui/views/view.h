@@ -1314,7 +1314,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // will be given a chance.
   virtual bool OnMouseWheel(const ui::MouseWheelEvent& event);
 
-  // See field for description.
+  // See `notify_enter_exit_on_child_` field for description.
   void SetNotifyEnterExitOnChild(bool notify);
   bool GetNotifyEnterExitOnChild() const;
 
@@ -2474,19 +2474,19 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Whether this view is enabled in views subtree.
   bool enabled_in_views_subtree_ = true;
 
-  // When this flag is on, a View receives a mouse-enter and mouse-leave event
-  // even if a descendant View is the event-recipient for the real mouse
-  // events. When this flag is turned on, and mouse moves from outside of the
-  // view into a child view, both the child view and this view receives
-  // mouse-enter event. Similarly, if the mouse moves from inside a child view
-  // and out of this view, then both views receive a mouse-leave event.
-  // When this flag is turned off, if the mouse moves from inside this view into
-  // a child view, then this view receives a mouse-leave event. When this flag
-  // is turned on, it does not receive the mouse-leave event in this case.
-  // When the mouse moves from inside the child view out of the child view but
-  // still into this view, this view receives a mouse-enter event if this flag
-  // is turned off, but doesn't if this flag is turned on.
-  // This flag is initialized to false.
+  // Whether the parent should be notified when the mouse enters/exits a child.
+  //
+  // If true, this View is considered "entered" if the mouse is over it or ANY
+  // descendant.
+  //   - Mouse moves Parent -> Child: No OnMouseExited on Parent.
+  //   - Mouse moves Child -> Parent: No OnMouseEntered on Parent.
+  //   - Mouse moves Outside -> Child: OnMouseEntered on Parent AND Child.
+  //   - Mouse moves Child -> Outside: OnMouseExited on Parent AND Child.
+  //
+  // If false (default), this View is considered "entered" only if the mouse is
+  // over it and NOT over a descendant.
+  //   - Mouse moves Parent -> Child: OnMouseExited on Parent.
+  //   - Mouse moves Child -> Parent: OnMouseEntered on Parent.
   bool notify_enter_exit_on_child_ = false;
 
   // Whether or not RegisterViewForVisibleBoundsNotification on the RootView
