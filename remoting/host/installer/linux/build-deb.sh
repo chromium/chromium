@@ -126,6 +126,12 @@ mkdir -p "${tmpdir}/linux"
 cp -a "${SCRIPTDIR}"/* "${tmpdir}/linux"
 cd "${tmpdir}/linux"
 
+# The 'cp -a' command preserves the source file timestamps, which reflect the
+# checkout time and vary between builders. This results in non-reproducible
+# builds. Explicitly set the timestamp of all files to the build timestamp
+# to ensure consistent, deterministic package output.
+find . -exec touch -d "@$BUILD_TIMESTAMP" {} +
+
 if [[ ! "$OUTPUT_PATH" ]]; then
   OUTPUT_PATH="${SCRIPTDIR}/../../../../out/Release"
 fi
