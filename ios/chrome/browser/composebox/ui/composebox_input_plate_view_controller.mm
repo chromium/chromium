@@ -73,7 +73,7 @@ const NSDirectionalEdgeInsets kImageGenerationButtonInsets = {5, 8, 5, 28};
 const CGFloat kButtonsCompactSpacing = 4.0f;
 const CGFloat kButtonsStackViewSpacing = 6.0f;
 /// The spacing between the Lens and Voice buttons.
-const CGFloat kShortcutsSpacing = 16.0f;
+const CGFloat kShortcutsSpacing = 10.0f;
 /// The spacing for the main vertical input plate stack view.
 const CGFloat kInputPlateStackViewSpacing = 6.0f;
 /// The default vertical padding for the input plate. When the text view is the
@@ -91,7 +91,8 @@ const NSDirectionalEdgeInsets kInputPlateStackViewPadding = {.leading = 0.0f,
 /// toolbar).
 const NSDirectionalEdgeInsets kInputPlatePadding = {.leading = 8.0,
                                                     .trailing = 5.0};
-
+/// The spacing added after the Lens and Voice buttons in compact mode.
+const CGFloat kShortcutsTrailingPaddingCompact = 3.0f;
 /// The padding of the toolbar and carousel elements.
 ///
 /// Note: While padding is offset to visually align the clear button's visual
@@ -490,6 +491,8 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   [self animateButton:_imageGenerationButton hidden:!(controls & kCreateImage)];
   [self animateButton:_canvasButton hidden:!(controls & kCanvas)];
   [self animateLeadingImageHidden:!(controls & kLeadingImage)];
+
+  [self updateInputPlateStackViewPadding];
 }
 
 - (void)animateReveal:(void (^)(void))animations {
@@ -1676,13 +1679,6 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
     [_inputPlateStackView setCustomSpacing:kShortcutsSpacing
                                  afterView:_micButton];
     _bottomPaddingConstraint.constant = -kInputPlateStackViewVerticalPadding;
-    _inputPlateStackView.layoutMarginsRelativeArrangement = YES;
-    // Ensure we do not lose the margins on the sides when in compact mode.
-    _inputPlateStackView.layoutMargins = UIEdgeInsetsMake(
-        0, kInputPlatePadding.leading, 0, kInputPlatePadding.trailing);
-    // Margins are applied on the input plate, remove the margins on the
-    // omnibox.
-    _omniboxContainer.directionalLayoutMargins = NSDirectionalEdgeInsetsZero;
   } else {
     _toolbarView = [self createToolbarView];
     [_inputPlateStackView insertArrangedSubview:_carouselContainer atIndex:0];
@@ -1694,10 +1690,36 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
     _inputPlateContainerView.layer.cornerRadius = kInputPlateCornerRadius;
     _inputPlateInternalContainerView.layer.cornerRadius =
         kInputPlateCornerRadius;
+  }
+
+  [self updateInputPlateStackViewPadding];
+  [self updateInputPlateStackViewTopConstraint];
+}
+
+// Updates the side paddings of the input plate stack view.
+- (void)updateInputPlateStackViewPadding {
+  if (self.compact) {
+    CGFloat trailingPadding = kInputPlatePadding.trailing;
+    ComposeboxInputPlateControls shortcuts =
+        ComposeboxInputPlateControls::kLens |
+        ComposeboxInputPlateControls::kVoice;
+    BOOL shortcutsVisible =
+        (_visibleControls & shortcuts) != ComposeboxInputPlateControls::kNone;
+    if (shortcutsVisible) {
+      trailingPadding += kShortcutsTrailingPaddingCompact;
+    }
+
+    _inputPlateStackView.layoutMarginsRelativeArrangement = YES;
+    // Ensure we do not lose the margins on the sides when in compact mode.
+    _inputPlateStackView.layoutMargins =
+        UIEdgeInsetsMake(0, kInputPlatePadding.leading, 0, trailingPadding);
+    // Margins are applied on the input plate, remove the margins on the
+    // omnibox.
+    _omniboxContainer.directionalLayoutMargins = NSDirectionalEdgeInsetsZero;
+  } else {
     _inputPlateStackView.layoutMarginsRelativeArrangement = NO;
     _omniboxContainer.directionalLayoutMargins = kInputPlatePadding;
   }
-  [self updateInputPlateStackViewTopConstraint];
 }
 
 /// Animates the transition of the input plate stack view between compact and
