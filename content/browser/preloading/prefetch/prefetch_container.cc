@@ -1050,7 +1050,7 @@ const PrefetchResponseReader* PrefetchContainer::GetNonRedirectResponseReader()
 const network::mojom::URLResponseHead* PrefetchContainer::GetNonRedirectHead()
     const {
   return GetNonRedirectResponseReader()
-             ? GetNonRedirectResponseReader()->GetHead()
+             ? GetNonRedirectResponseReader()->GetHead().get()
              : nullptr;
 }
 
@@ -1134,7 +1134,8 @@ void PrefetchContainer::OnPrefetchCompleteInternal(
                            redirect_chain_.size());
 
   if (GetNonRedirectResponseReader()) {
-    UpdatePrefetchRequestMetrics(GetNonRedirectResponseReader()->GetHead());
+    UpdatePrefetchRequestMetrics(
+        GetNonRedirectResponseReader()->GetHead().get());
     UpdateServingPageMetrics();
   } else {
     DVLOG(1) << *this << "::OnPrefetchComplete:"

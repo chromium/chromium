@@ -102,7 +102,7 @@ class CONTENT_EXPORT PrefetchResponseReader final
 
   bool Servable(base::TimeDelta cacheable_duration) const;
   bool IsWaitingForResponse() const;
-  const network::mojom::URLResponseHead* GetHead() const { return head_.get(); }
+  const network::mojom::URLResponseHeadPtr& GetHead() const { return head_; }
 
   // True if this response had Vary: Cookie (or Vary: *), and a Cookie-Indices
   // header also applies.
