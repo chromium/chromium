@@ -90,11 +90,6 @@ class WebAppFilter {
   // installed by policy.
   static WebAppFilter IsAppValidMigrationSource();
 
-  // Only consider web apps that are eligible for manifest updates. This
-  // includes apps in all states (including suggested from migration and
-  // suggested from sync) as long as they are not marked for uninstallation.
-  static WebAppFilter IsAppEligibleForManifestUpdate();
-
   WebAppFilter(const WebAppFilter&);
   WebAppFilter& operator=(const WebAppFilter&) = default;
   ~WebAppFilter() = default;
@@ -139,7 +134,6 @@ class WebAppFilter {
   bool is_app_suggested_from_migration_ = false;
   bool is_app_surfaceable_to_user_ = false;
   bool is_valid_migration_source_ = false;
-  bool is_app_eligible_for_manifest_update_ = false;
 };
 
 }  // namespace web_app

@@ -241,13 +241,6 @@ void ManifestUpdateManager::OnManifestSeenOnPrimaryPage(
           WebAppFilter::IsIsolatedApp())) {
     return;
   }
-  if (base::FeatureList::IsEnabled(blink::features::kWebAppMigrationApi) &&
-      !manifest->migrate_from.empty()) {
-    // If the manifest contains a `migrate_from` field, we might need to install
-    // the app if one of the source apps is installed.
-    provider_->scheduler().ScheduleWebAppInstallFromMigrateFromField(
-        web_contents.GetWeakPtr(), manifest.Clone(), base::DoNothing());
-  }
 
   webapps::AppId app_id = GenerateAppIdFromManifest(*manifest);
 
