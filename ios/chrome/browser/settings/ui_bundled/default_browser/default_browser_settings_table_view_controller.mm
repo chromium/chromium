@@ -11,7 +11,10 @@
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/default_browser/promo/ui/default_browser_instructions_view_controller.h"
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
+#import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
+#import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -126,6 +129,14 @@ enum class DefaultBrowserSettingsPageUsage {
                                 self.source);
 
   _defaultBrowserSettingsVisited = YES;
+
+  PrefService* localState = GetApplicationContext()->GetLocalState();
+  if (localState) {
+    // Mark the Set Up List Item as complete. This is a no-op if the item is
+    // already complete.
+    set_up_list_prefs::MarkItemComplete(localState,
+                                        SetUpListItemType::kDefaultBrowser);
+  }
 
   OpenIOSDefaultBrowserSettingsPage(_useDefaultAppsDestination);
 }

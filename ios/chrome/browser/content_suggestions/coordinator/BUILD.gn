@@ -82,6 +82,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/content_suggestions/ui:ui_util",
     "//ios/chrome/browser/default_browser/model",
     "//ios/chrome/browser/default_browser/model:utils",
+    "//ios/chrome/browser/default_browser/promo/public:features",
     "//ios/chrome/browser/discover_feed/model",
     "//ios/chrome/browser/discover_feed/model:discover_feed_factory",
     "//ios/chrome/browser/favicon/model",
