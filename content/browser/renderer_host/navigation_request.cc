@@ -3395,10 +3395,13 @@ void NavigationRequest::ResetStateForSiteInstanceChange() {
   // Reset bindings (e.g., since error pages for WebUI URLs don't get them).
   bindings_.reset();
 
-  // Reset any existing PageState with a non-empty, clean PageState, so that old
-  // attacker-controlled state is not pulled into the new process.
-  blink::PageState page_state =
-      blink::PageState::CreateFromEncodedData(commit_params_->page_state);
+  // Reset any existing *and* non-empty PageState with a clean PageState, so
+  // that old attacker-controlled state is not pulled into the new process.
+  // Note that `PageState::IsValid()` is really just "is the encoded page state
+  // non-empty", so the net effect of this is "replace a non-empty encoded page
+  // state with a fresh encoded page state".
+  blink::PageState page_state = blink::PageState::CreateFromEncodedData(
+      std::move(commit_params_->page_state));
   if (page_state.IsValid())
     commit_params_->page_state =
         blink::PageState::CreateFromURL(GetURL()).ToEncodedData();

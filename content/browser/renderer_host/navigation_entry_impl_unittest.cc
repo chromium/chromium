@@ -33,7 +33,7 @@ blink::PageState CreateTestPageState() {
   blink::ExplodedPageState exploded_state;
   std::string encoded_data;
   blink::EncodePageState(exploded_state, &encoded_data);
-  return blink::PageState::CreateFromEncodedData(encoded_data);
+  return blink::PageState::CreateFromEncodedData(std::move(encoded_data));
 }
 
 }  // namespace

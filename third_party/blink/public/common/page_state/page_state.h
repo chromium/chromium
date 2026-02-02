@@ -29,7 +29,7 @@ namespace blink {
 // The format of the encoded data is not exposed by the content API.
 class BLINK_COMMON_EXPORT PageState {
  public:
-  static PageState CreateFromEncodedData(const std::string& data);
+  static PageState CreateFromEncodedData(std::string data);
   static PageState CreateFromURL(const GURL& url);
 
   static PageState CreateForTesting(
@@ -66,7 +66,7 @@ class BLINK_COMMON_EXPORT PageState {
   void WriteIntoTrace(perfetto::TracedValue context) const;
 
  private:
-  PageState(const std::string& data);
+  explicit PageState(std::string data);
 
   std::string data_;
 };

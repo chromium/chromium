@@ -24,7 +24,7 @@ bool ParamTraits<blink::PageState>::Read(const base::Pickle* m,
   std::string data;
   if (!ReadParam(m, iter, &data))
     return false;
-  *r = blink::PageState::CreateFromEncodedData(data);
+  *r = blink::PageState::CreateFromEncodedData(std::move(data));
   return true;
 }
 

@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -420,7 +421,8 @@ bool RestoreNavigationEntryFromPickle(
       // Note that PageState covers and will clobber some of the values covered
       // by data within |iterator| (e.g. URL and referrer).
       entry->SetPageState(
-          blink::PageState::CreateFromEncodedData(content_state), context);
+          blink::PageState::CreateFromEncodedData(std::move(content_state)),
+          context);
 
       // |deserialized_url| and |deserialized_referrer| are redundant wrt
       // PageState, but they should be consistent / in-sync.

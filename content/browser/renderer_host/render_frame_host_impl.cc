@@ -13784,7 +13784,7 @@ void RenderFrameHostImpl::UpdatePermissionsForNavigation(
   // state are validated earlier, when they are received from the renderer (in
   // RenderFrameHostImpl::CanAccessFilesOfPageState).
   blink::PageState page_state = blink::PageState::CreateFromEncodedData(
-      request->commit_params().page_state);
+      std::move(request->commit_params().page_state));
   if (page_state.IsValid()) {
     GrantFileAccessFromPageState(page_state);
   }

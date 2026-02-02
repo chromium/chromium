@@ -64,7 +64,7 @@ PageSwapEvent::PageSwapEvent(
         // rare race conditions.
         Member<HistoryItem> destination_item =
             HistoryItem::Create(PageState::CreateFromEncodedData(
-                page_swap_event_params->page_state));
+                std::move(page_swap_event_params->page_state)));
         entry = navigation->GetExistingEntryFor(
             destination_item->GetNavigationApiKey(),
             destination_item->GetNavigationApiId());

@@ -3149,8 +3149,8 @@ void RenderFrameImpl::CommitFailedNavigation(
   // Make sure we never show errors in view source mode.
   frame_->EnableViewSourceMode(false);
 
-  auto page_state =
-      blink::PageState::CreateFromEncodedData(commit_params->page_state);
+  auto page_state = blink::PageState::CreateFromEncodedData(
+      std::move(commit_params->page_state));
   if (page_state.IsValid())
     navigation_params->history_item = WebHistoryItem(page_state);
   if (!navigation_params->history_item.IsNull()) {

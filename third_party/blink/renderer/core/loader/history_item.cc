@@ -337,7 +337,7 @@ PageState HistoryItem::ToPageState() const {
 
   std::string encoded_data;
   EncodePageState(state, &encoded_data);
-  return PageState::CreateFromEncodedData(encoded_data);
+  return PageState::CreateFromEncodedData(std::move(encoded_data));
 }
 
 std::vector<std::optional<std::u16string>>
