@@ -621,35 +621,21 @@ void PrefetchContainer::SetLoadState(LoadState new_load_state) {
     CHECK(!is_in_dtor_);
   }
 
-  switch (new_load_state) {
-    case LoadState::kNotStarted:
-      NOTREACHED();
-
-    case LoadState::kEligible:
-    case LoadState::kFailedIneligible:
-      CHECK_EQ(load_state_, LoadState::kNotStarted);
-      break;
-
-    case LoadState::kStarted:
-    case LoadState::kFailedHeldback:
-      CHECK_EQ(load_state_, LoadState::kEligible);
-      break;
-
-    case LoadState::kDeterminedHead:
-    case LoadState::kFailedDeterminedHead:
-      CHECK_EQ(load_state_, LoadState::kStarted);
-      break;
-
-    case LoadState::kCompleted:
-      // `kFailedDeterminedHead` never transitions to successful `kCompleted`.
-      CHECK_EQ(load_state_, LoadState::kDeterminedHead);
-      break;
-
-    case LoadState::kFailed:
-      // Failures can happen after successful `kDeterminedHead`.
-      CHECK(load_state_ == LoadState::kDeterminedHead ||
-            load_state_ == LoadState::kFailedDeterminedHead);
-      break;
+  {
+    using T = PrefetchContainerLoadState;
+    static const base::NoDestructor<base::StateTransitions<T>> transitions(
+        base::StateTransitions<T>({
+            {T::kNotStarted, {T::kEligible, T::kFailedIneligible}},
+            {T::kEligible, {T::kStarted, T::kFailedHeldback}},
+            {T::kFailedIneligible, {}},
+            {T::kFailedHeldback, {}},
+            {T::kStarted, {T::kDeterminedHead, T::kFailedDeterminedHead}},
+            {T::kDeterminedHead, {T::kCompleted, T::kFailed}},
+            {T::kFailedDeterminedHead, {T::kFailed}},
+            {T::kCompleted, {}},
+            {T::kFailed, {}},
+        }));
+    CHECK_STATE_TRANSITION(transitions, load_state_, new_load_state);
   }
 
   // Tracing and debugging

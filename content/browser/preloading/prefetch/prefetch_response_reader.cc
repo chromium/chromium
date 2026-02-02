@@ -7,6 +7,7 @@
 #include "base/debug/alias.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/state_transitions.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "content/browser/preloading/prefetch/prefetch_data_pipe_tee.h"
@@ -641,25 +642,21 @@ void PrefetchResponseReader::SetLoadStateAndAddEventToQueue(
 
   // First, set the `LoadState`.
   auto old_load_state = load_state();
-  switch (old_load_state) {
-    case LoadState::kStarted:
-      CHECK_NE(new_load_state, LoadState::kCompleted);
-      break;
-    case LoadState::kResponseReceived:
-      CHECK(new_load_state == LoadState::kCompleted ||
-            new_load_state == LoadState::kFailed);
-      break;
-    case LoadState::kFailedResponseReceived:
-      CHECK_EQ(new_load_state, LoadState::kFailed);
-      break;
-    case LoadState::kRedirectHandled:
-      NOTREACHED();
-    case LoadState::kCompleted:
-      NOTREACHED();
-    case LoadState::kFailed:
-      NOTREACHED();
-    case LoadState::kFailedRedirect:
-      NOTREACHED();
+  {
+    using T = LoadState;
+    static const base::NoDestructor<base::StateTransitions<T>> transitions(
+        base::StateTransitions<T>({
+            {T::kStarted,
+             {T::kRedirectHandled, T::kResponseReceived,
+              T::kFailedResponseReceived, T::kFailed, T::kFailedRedirect}},
+            {T::kRedirectHandled, {}},
+            {T::kResponseReceived, {T::kCompleted, T::kFailed}},
+            {T::kFailedResponseReceived, {T::kFailed}},
+            {T::kCompleted, {}},
+            {T::kFailed, {}},
+            {T::kFailedRedirect, {}},
+        }));
+    CHECK_STATE_TRANSITION(transitions, old_load_state, new_load_state);
   }
   load_state_ = new_load_state;
 
@@ -724,6 +721,26 @@ void PrefetchResponseReader::SetLoadStateAndAddEventToQueue(
           .Run(/*is_success=*/load_state() == LoadState::kCompleted,
                *completion_status_);
       break;
+  }
+}
+
+std::ostream& operator<<(std::ostream& ostream,
+                         PrefetchResponseReader::LoadState load_state) {
+  switch (load_state) {
+    case PrefetchResponseReader::LoadState::kStarted:
+      return ostream << "kStarted";
+    case PrefetchResponseReader::LoadState::kRedirectHandled:
+      return ostream << "kRedirectHandled";
+    case PrefetchResponseReader::LoadState::kResponseReceived:
+      return ostream << "kResponseReceived";
+    case PrefetchResponseReader::LoadState::kFailedResponseReceived:
+      return ostream << "kFailedResponseReceived";
+    case PrefetchResponseReader::LoadState::kCompleted:
+      return ostream << "kCompleted";
+    case PrefetchResponseReader::LoadState::kFailed:
+      return ostream << "kFailed";
+    case PrefetchResponseReader::LoadState::kFailedRedirect:
+      return ostream << "kFailedRedirect";
   }
 }
 

@@ -317,6 +317,9 @@ class CONTENT_EXPORT PrefetchResponseReader final
   base::WeakPtrFactory<PrefetchResponseReader> weak_ptr_factory_{this};
 };
 
+std::ostream& operator<<(std::ostream& ostream,
+                         PrefetchResponseReader::LoadState load_state);
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_RESPONSE_READER_H_
