@@ -8,16 +8,18 @@
 #include <set>
 
 #include "base/scoped_multi_source_observation.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile_observer.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 
-class Browser;
+class BrowserWindowInterface;
 class Profile;
+class GlobalBrowserCollection;
 
 // Keeps track on which profiles have been launched. This should not be
 // instantiated outside of profile_launch_observer.cc - only use static methods.
 class ProfileLaunchObserver : public ProfileObserver,
-                              public BrowserListObserver {
+                              public BrowserCollectionObserver {
  public:
   ProfileLaunchObserver();
   ProfileLaunchObserver(const ProfileLaunchObserver&) = delete;
@@ -26,8 +28,8 @@ class ProfileLaunchObserver : public ProfileObserver,
 
   static void AddLaunched(Profile* profile);
 
-  // BrowserListObserver:
-  void OnBrowserAdded(Browser* browser) override;
+  // BrowserCollectionObserver:
+  void OnBrowserCreated(BrowserWindowInterface* browser) override;
 
   // ProfileObserver:
   void OnProfileWillBeDestroyed(Profile* profile) override;
@@ -74,6 +76,8 @@ class ProfileLaunchObserver : public ProfileObserver,
   bool activated_profile_ = false;
   base::ScopedMultiSourceObservation<Profile, ProfileObserver>
       observed_profiles_{this};
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_STARTUP_PROFILE_LAUNCH_OBSERVER_H_

@@ -11,15 +11,16 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "content/public/browser/browser_thread.h"
 
 ProfileLaunchObserver::ProfileLaunchObserver() {
-  BrowserList::AddObserver(this);
+  browser_collection_observation_.Observe(
+      GlobalBrowserCollection::GetInstance());
 }
 
-ProfileLaunchObserver::~ProfileLaunchObserver() {
-  BrowserList::RemoveObserver(this);
-}
+ProfileLaunchObserver::~ProfileLaunchObserver() = default;
 
 // static
 ProfileLaunchObserver* ProfileLaunchObserver::GetInstance() {
@@ -52,8 +53,8 @@ bool ProfileLaunchObserver::activated_profile() {
   return GetInstance()->activated_profile_internal();
 }
 
-void ProfileLaunchObserver::OnBrowserAdded(Browser* browser) {
-  opened_profiles_.insert(browser->profile());
+void ProfileLaunchObserver::OnBrowserCreated(BrowserWindowInterface* browser) {
+  opened_profiles_.insert(browser->GetProfile());
   MaybeActivateProfile();
 }
 
@@ -124,7 +125,7 @@ void ProfileLaunchObserver::MaybeActivateProfile() {
                                 base::Unretained(this)));
   // Avoid posting more than once before ActivateProfile gets called.
   observed_profiles_.RemoveAllObservations();
-  BrowserList::RemoveObserver(this);
+  browser_collection_observation_.Reset();
 }
 
 void ProfileLaunchObserver::ActivateProfile() {
