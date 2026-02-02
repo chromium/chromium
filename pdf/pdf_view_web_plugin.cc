@@ -2693,7 +2693,9 @@ void PdfViewWebPlugin::OnViewportChanged(
                                                1.0f / new_device_scale)
                          .size();
 
-  paint_manager_.SetSize(plugin_rect_.size(), device_scale_);
+  SkAlphaType alpha_type =
+      UseSkiaPremultipliedAlpha() ? kPremul_SkAlphaType : kUnpremul_SkAlphaType;
+  paint_manager_.SetSize(plugin_rect_.size(), device_scale_, alpha_type);
   // In the PdfBufferedPaintManager experiment, all these calculations and
   // allocations are done in the PaintManager.
   if (!base::FeatureList::IsEnabled(features::kPdfBufferedPaintManager)) {
@@ -2705,10 +2707,8 @@ void PdfViewWebPlugin::OnViewportChanged(
     if (new_image_size != old_image_size) {
       // Ignore the result. If the allocation fails, the image data buffer
       // will be empty and the code below will handle that.
-      (void)image_data_.tryAllocPixels(
-          SkImageInfo::MakeN32(new_image_size.width(), new_image_size.height(),
-                               kUnpremul_SkAlphaType));
-
+      (void)image_data_.tryAllocPixels(SkImageInfo::MakeN32(
+          new_image_size.width(), new_image_size.height(), alpha_type));
       first_paint_ = true;
     }
   }

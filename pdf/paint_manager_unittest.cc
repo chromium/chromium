@@ -91,7 +91,7 @@ class PaintManagerTest : public testing::TestWithParam<bool> {
             return &client_bitmap_;
           });
     }
-    paint_manager_.SetSize(new_size, device_scale);
+    paint_manager_.SetSize(new_size, device_scale, kPremul_SkAlphaType);
   }
 
   sk_sp<SkImage> WaitForFlush(

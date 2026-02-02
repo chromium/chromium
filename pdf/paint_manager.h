@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "pdf/paint_aggregator.h"
+#include "third_party/skia/include/core/SkAlphaType.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -112,7 +113,9 @@ class PaintManager {
   // changes, you can always call this function without worrying about whether
   // the size changed or ViewChanged is called for another reason (like the
   // position changed).
-  void SetSize(const gfx::Size& new_size, float new_device_scale);
+  void SetSize(const gfx::Size& new_size,
+               float new_device_scale,
+               SkAlphaType alpha_type);
 
   // Invalidate the entire plugin.
   void Invalidate();

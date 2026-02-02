@@ -25,6 +25,7 @@
 #include "base/time/time.h"
 #include "pdf/paint_ready_rect.h"
 #include "pdf/pdf_features.h"
+#include "third_party/skia/include/core/SkAlphaType.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
@@ -126,16 +127,19 @@ void PaintManager::BufferFinishedOnMainThread(
   }
 }
 
-void PaintManager::SetSize(const gfx::Size& new_size, float device_scale) {
+void PaintManager::SetSize(const gfx::Size& new_size,
+                           float device_scale,
+                           SkAlphaType alpha_type) {
   if (GetEffectiveSize() == new_size &&
-      GetEffectiveDeviceScale() == device_scale) {
+      GetEffectiveDeviceScale() == device_scale &&
+      image_info_.alphaType() == alpha_type) {
     return;
   }
 
   if (base::FeatureList::IsEnabled(features::kPdfBufferedPaintManager)) {
     gfx::Size new_new_size = GetNewContextSize(plugin_size_, new_size);
-    image_info_ =
-        SkImageInfo::MakeN32Premul(new_new_size.width(), new_new_size.height());
+    image_info_ = SkImageInfo::MakeN32(new_new_size.width(),
+                                       new_new_size.height(), alpha_type);
     plugin_size_ = new_size;
     device_scale_ = device_scale;
     weak_factory_.InvalidateWeakPtrs();
