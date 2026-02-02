@@ -6847,9 +6847,15 @@ targets.bundle(
         ),
         "content_browsertests": targets.mixin(
             args = ["--disable-features=TreesInViz"],
+            swarming = targets.swarming(
+                shards = 8,
+            ),
         ),
         "browser_tests": targets.mixin(
             args = ["--disable-features=TreesInViz"],
+            swarming = targets.swarming(
+                shards = 20,
+            ),
         ),
     },
 )
@@ -6875,9 +6881,15 @@ targets.bundle(
         ),
         "content_browsertests": targets.mixin(
             args = ["--enable-features=TreesInViz"],
+            swarming = targets.swarming(
+                shards = 8,
+            ),
         ),
         "browser_tests": targets.mixin(
             args = ["--enable-features=TreesInViz"],
+            swarming = targets.swarming(
+                shards = 20,
+            ),
         ),
     },
 )
@@ -6895,6 +6907,18 @@ targets.bundle(
             args = ["--enable-features=TreesInViz"],
         ),
     ],
+    per_test_modifications = {
+        "android_browsertests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 20,
+            ),
+        ),
+        "content_browsertests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 8,
+            ),
+        ),
+    },
 )
 
 targets.bundle(
