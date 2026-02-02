@@ -15,6 +15,7 @@
 #include "base/check_op.h"
 #include "base/i18n/char_iterator.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -142,6 +143,28 @@ std::set<std::u16string> GetNamePartVariants(std::u16string_view name_part) {
   return variants;
 }
 
+bool MatchesCjkVariant(std::u16string_view full_name,
+                       const std::set<std::u16string>& given_name_variants,
+                       const std::set<std::u16string>& family_name_variants) {
+  // CJK names are formatted like this: Family Name + Given Name
+  // Note: CJK names typically do not have middle names in this structure.
+  for (const std::u16string& family : family_name_variants) {
+    for (const std::u16string& given : given_name_variants) {
+      if (base::CollapseWhitespace(base::StrCat({family, given}), true) ==
+          full_name) {
+        return true;
+      }
+      // Typically CJK names do not have separators, but this case should be
+      // supported as well.
+      if (base::CollapseWhitespace(base::JoinString({family, given}, kSpace),
+                                   true) == full_name) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 // Returns true if `full_name_2` is a variant of `full_name_1`.
 //
 // This function generates all variations of `full_name_1` and returns true if
@@ -154,6 +177,12 @@ std::set<std::u16string> GetNamePartVariants(std::u16string_view name_part) {
 // Note: Expects that `full_name` is already normalized for comparison.
 bool IsNormalizedNameVariantOf(std::u16string_view full_name_1,
                                std::u16string_view full_name_2) {
+  // This early return is just an optimization, the rest of the logic should
+  // handle this case as well.
+  if (full_name_1 == full_name_2) {
+    return true;
+  }
+
   data_util::NameParts name_1_parts = data_util::SplitName(full_name_1);
 
   // Build the variants of full_name_1`s given, middle and family names.
@@ -164,6 +193,11 @@ bool IsNormalizedNameVariantOf(std::u16string_view full_name_1,
   const std::set<std::u16string> family_name_variants = {name_1_parts.family,
                                                          u""};
 
+  if (HasCjkNameCharacteristics(base::UTF16ToUTF8(full_name_1)) &&
+      MatchesCjkVariant(full_name_2, given_name_variants,
+                        family_name_variants)) {
+    return true;
+  }
   // Iterate over all full name variants of profile 1 and see if any of them
   // match the full name from profile 2.
   for (const std::u16string& given_name : given_name_variants) {
