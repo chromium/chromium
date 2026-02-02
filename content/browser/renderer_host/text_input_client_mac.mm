@@ -4,6 +4,8 @@
 
 #import "content/browser/renderer_host/text_input_client_mac.h"
 
+#include <utility>
+
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
@@ -21,6 +23,31 @@ namespace content {
 
 namespace {
 
+class DefaultAsyncRequestDelegate final
+    : public TextInputClientMac::AsyncRequestDelegate {
+ public:
+  DefaultAsyncRequestDelegate() = default;
+  ~DefaultAsyncRequestDelegate() final = default;
+
+  DefaultAsyncRequestDelegate(const DefaultAsyncRequestDelegate&) = delete;
+  DefaultAsyncRequestDelegate& operator=(const DefaultAsyncRequestDelegate&) =
+      delete;
+
+  void GetCharacterIndexAtPoint(RenderFrameHost* rfh,
+                                const gfx::Point& point) final {
+    RenderFrameHostImpl::From(rfh)
+        ->GetAssociatedLocalFrame()
+        ->GetCharacterIndexAtPoint(point);
+  }
+
+  void GetFirstRectForRange(RenderFrameHost* rfh,
+                            const gfx::Range& range) final {
+    RenderFrameHostImpl::From(rfh)
+        ->GetAssociatedLocalFrame()
+        ->GetFirstRectForRange(range);
+  }
+};
+
 RenderFrameHostImpl* GetFocusedRenderFrameHostImpl(RenderWidgetHost* widget) {
   RenderWidgetHostImpl* rwhi = RenderWidgetHostImpl::From(widget);
   FrameTree* tree = rwhi->frame_tree();
@@ -32,7 +59,9 @@ RenderFrameHostImpl* GetFocusedRenderFrameHostImpl(RenderWidgetHost* widget) {
 
 TextInputClientMac::TextInputClientMac()
     : condition_(&lock_),
-      wait_timeout_(features::kTextInputClientIPCTimeout.Get()) {}
+      wait_timeout_(features::kTextInputClientIPCTimeout.Get()),
+      async_request_delegate_(std::make_unique<DefaultAsyncRequestDelegate>()) {
+}
 
 TextInputClientMac::~TextInputClientMac() = default;
 
@@ -77,7 +106,7 @@ uint32_t TextInputClientMac::GetCharacterIndexAtPoint(RenderWidgetHost* rwh,
     return 0;
   }
 
-  rfhi->GetAssociatedLocalFrame()->GetCharacterIndexAtPoint(point);
+  async_request_delegate_->GetCharacterIndexAtPoint(rfhi, point);
 
   base::TimeTicks start = base::TimeTicks::Now();
   base::TimeDelta remaining_timeout = wait_timeout_;
@@ -106,7 +135,7 @@ gfx::Rect TextInputClientMac::GetFirstRectForRange(RenderWidgetHost* rwh,
     return gfx::Rect();
   }
 
-  rfhi->GetAssociatedLocalFrame()->GetFirstRectForRange(range);
+  async_request_delegate_->GetFirstRectForRange(rfhi, range);
 
   base::TimeTicks start = base::TimeTicks::Now();
   base::TimeDelta remaining_timeout = wait_timeout_;
@@ -145,6 +174,13 @@ void TextInputClientMac::SetFirstRectAndSignal(const gfx::Rect& first_rect) {
   first_rect_ = first_rect;
   lock_.Release();
   condition_.Signal();
+}
+
+void TextInputClientMac::SetAsyncRequestDelegateForTesting(
+    std::unique_ptr<AsyncRequestDelegate> delegate) {
+  async_request_delegate_ =
+      delegate ? std::move(delegate)
+               : std::make_unique<DefaultAsyncRequestDelegate>();
 }
 
 void TextInputClientMac::BeforeRequest() {

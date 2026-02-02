@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_TEXT_INPUT_CLIENT_MAC_H_
 #define CONTENT_BROWSER_RENDERER_HOST_TEXT_INPUT_CLIENT_MAC_H_
 
+#include <memory>
 #include <optional>
 
 #include "base/functional/callback.h"
@@ -17,12 +18,14 @@
 #include "ui/base/mojom/attributed_string.mojom-forward.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/range/range.h"
 
 namespace gfx {
 class Range;
 }
 
 namespace content {
+class RenderFrameHost;
 class RenderWidgetHost;
 
 // This class does synchronous IPC calls to the renderer process in order to
@@ -43,6 +46,18 @@ class RenderWidgetHost;
 // thus it is convenient to have them on this class.
 class CONTENT_EXPORT TextInputClientMac {
  public:
+  // Used by the blocking Get*() methods below to start async requests. Can be
+  // overridden for testing.
+  class AsyncRequestDelegate {
+   public:
+    virtual ~AsyncRequestDelegate() = default;
+
+    virtual void GetCharacterIndexAtPoint(RenderFrameHost* rfh,
+                                          const gfx::Point& point) = 0;
+    virtual void GetFirstRectForRange(RenderFrameHost* rfh,
+                                      const gfx::Range& range) = 0;
+  };
+
   static TextInputClientMac* GetInstance();
 
   TextInputClientMac(const TextInputClientMac&) = delete;
@@ -105,9 +120,14 @@ class CONTENT_EXPORT TextInputClientMac {
                           const gfx::Range& range,
                           GetStringCallback callback);
 
+  // Overrides the default AsyncRequestDelegate with a test fake. If `delegate`
+  // is nullptr, restores the default.
+  void SetAsyncRequestDelegateForTesting(
+      std::unique_ptr<AsyncRequestDelegate> delegate);
+
  private:
   friend base::NoDestructor<TextInputClientMac>;
-  FRIEND_TEST_ALL_PREFIXES(TextInputClientMacTest, TimeoutRectForRange);
+
   TextInputClientMac();
   ~TextInputClientMac();
 
@@ -130,6 +150,8 @@ class CONTENT_EXPORT TextInputClientMac {
   // The amount of time that the browser process will wait for a response from
   // the renderer.
   base::TimeDelta wait_timeout_;
+
+  std::unique_ptr<AsyncRequestDelegate> async_request_delegate_;
 };
 
 }  // namespace content

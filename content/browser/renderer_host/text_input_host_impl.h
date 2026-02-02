@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_RENDERER_HOST_TEXT_INPUT_HOST_IMPL_H_
 
 #include "base/sequence_checker.h"
+#include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/input/text_input_host.mojom.h"
 
@@ -13,7 +14,7 @@ namespace content {
 
 // A class to implement the incoming response messages from the renderer process
 // for IME IPCs. See the class comment on TextInputClientMac.
-class TextInputHostImpl : public blink::mojom::TextInputHost {
+class CONTENT_EXPORT TextInputHostImpl : public blink::mojom::TextInputHost {
  public:
   TextInputHostImpl();
 

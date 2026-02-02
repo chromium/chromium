@@ -7,63 +7,138 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <memory>
+#include <utility>
+
+#include "base/containers/queue.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ref.h"
-#include "base/run_loop.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/threading/thread.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
-#include "content/browser/renderer_host/render_process_host_impl.h"
-#include "content/browser/renderer_host/render_view_host_impl.h"
+#include "content/browser/renderer_host/text_input_host_impl.h"
 #include "content/common/features.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/web_contents_observer.h"
+#include "content/public/browser/render_view_host.h"
+#include "content/public/browser/render_widget_host.h"
 #include "content/public/test/browser_task_environment.h"
-#include "content/public/test/fake_local_frame.h"
-#include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/range/range.h"
 
 namespace content {
 
 namespace {
-const int64_t kTaskDelayMs = 200;
 
-// Stub out local frame mojo binding. Intercepts calls for text input
-// and marks the message as received. This class attaches to the first
-// RenderFrameHostImpl created.
-class TextInputClientLocalFrame : public content::FakeLocalFrame,
-                                  public WebContentsObserver {
+constexpr base::TimeDelta kTaskDelay = base::Milliseconds(200);
+
+// Fake that replaces mojo messages sent through LocalFrame by posting tasks
+// directly to TextInputHostImpl on the IO thread.
+//
+// The standard way to implement the receiver of LocalFrame messages in unit
+// tests is FakeLocalFrame, but its recievers are bound to the main test thread,
+// not the IO thread. Blocking TextInputClientMac methods are also called on the
+// main thread, and wait for the responses to those messages, so receivers bound
+// to FakeLocalFrame won't get called until after the blocking method times out.
+class FakeAsyncRequestDelegate final
+    : public TextInputClientMac::AsyncRequestDelegate {
  public:
-  explicit TextInputClientLocalFrame(WebContents* web_contents)
-      : WebContentsObserver(web_contents) {}
+  FakeAsyncRequestDelegate(RenderWidgetHost* widget) : widget_(widget) {
+    // Wait until `host_impl_` is created on the IO thread.
+    base::test::TestFuture<std::unique_ptr<TextInputHostImpl>> host_future;
+    GetIOThreadTaskRunner()->PostTaskAndReplyWithResult(
+        FROM_HERE, base::BindOnce(&std::make_unique<TextInputHostImpl>),
+        host_future.GetCallback());
+    host_impl_ = host_future.Take();
+  }
 
-  void RenderFrameCreated(RenderFrameHost* render_frame_host) override {
-    if (!initialized_) {
-      initialized_ = true;
-      Init(render_frame_host->GetRemoteAssociatedInterfaces());
+  ~FakeAsyncRequestDelegate() final {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    // Detach `host_impl_` and free it on the IO thread.
+    GetIOThreadTaskRunner()->PostTask(
+        FROM_HERE,
+        base::DoNothingWithBoundArgs(std::exchange(host_impl_, nullptr)));
+  }
+
+  FakeAsyncRequestDelegate(const FakeAsyncRequestDelegate&) = delete;
+  FakeAsyncRequestDelegate& operator=(const FakeAsyncRequestDelegate&) = delete;
+
+  void AddCharacterIndexResponse(uint32_t index, base::TimeDelta delay) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    index_responses_.emplace(index, delay);
+  }
+
+  void AddFirstRectResponse(gfx::Rect rect, base::TimeDelta delay) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    rect_responses_.emplace(std::move(rect), delay);
+  }
+
+  // AsyncRequestDelegate:
+
+  void GetCharacterIndexAtPoint(RenderFrameHost* rfh,
+                                const gfx::Point& point) final {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    ASSERT_TRUE(rfh);
+    ASSERT_EQ(rfh->GetRenderWidgetHost(), widget_);
+    if (index_responses_.empty()) {
+      return;
     }
+    auto [index, delay] = index_responses_.front();
+    index_responses_.pop();
+
+    // Unretained is safe since `host_impl_` is deleted on the IO thread.
+    GetIOThreadTaskRunner()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&TextInputHostImpl::GotCharacterIndexAtPoint,
+                       base::Unretained(host_impl_.get()), index),
+        delay);
   }
 
-  void GetCharacterIndexAtPoint(const gfx::Point& point) override {
-    if (completion_callback_)
-      std::move(completion_callback_).Run();
-  }
+  void GetFirstRectForRange(RenderFrameHost* rfh,
+                            const gfx::Range& range) final {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    ASSERT_TRUE(rfh);
+    ASSERT_EQ(rfh->GetRenderWidgetHost(), widget_);
+    if (rect_responses_.empty()) {
+      return;
+    }
+    auto [rect, delay] = rect_responses_.front();
+    rect_responses_.pop();
 
-  void GetFirstRectForRange(const gfx::Range& range) override {
-    if (completion_callback_)
-      std::move(completion_callback_).Run();
-  }
-
-  void SetCallback(base::OnceClosure callback) {
-    completion_callback_ = std::move(callback);
+    // Unretained is safe since `host_impl_` is deleted on the IO thread.
+    GetIOThreadTaskRunner()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&TextInputHostImpl::GotFirstRectForRange,
+                       base::Unretained(host_impl_.get()), std::move(rect)),
+        delay);
   }
 
  private:
-  bool initialized_ = false;
-  base::OnceClosure completion_callback_;
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  raw_ptr<RenderWidgetHost> widget_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Responses to the next GetCharacterIndexAtPoint calls, with delay.
+  base::queue<std::pair<uint32_t, base::TimeDelta>> index_responses_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Responses to the next GetFirstRectForRange calls, with delay.
+  base::queue<std::pair<gfx::Rect, base::TimeDelta>> rect_responses_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // The TextInputHostImpl object must be accessed on the IO thread, but the
+  // pointer to it must be accessed on this sequence. It's not using
+  // SequenceBound because that doesn't easily support delayed tasks.
+  std::unique_ptr<TextInputHostImpl> host_impl_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 // This test does not test the WebKit side of the dictionary system (which
@@ -71,65 +146,40 @@ class TextInputClientLocalFrame : public content::FakeLocalFrame,
 // service's signaling system works.
 class TextInputClientMacTest : public content::RenderViewHostTestHarness {
  public:
-  TextInputClientMacTest() : thread_("TextInputClientMacTestThread") {}
+  TextInputClientMacTest()
+      : RenderViewHostTestHarness(BrowserTaskEnvironment::REAL_IO_THREAD) {}
 
   void SetUp() override {
-    content::RenderViewHostTestHarness::SetUp();
-    local_frame_ = std::make_unique<TextInputClientLocalFrame>(web_contents());
+    RenderViewHostTestHarness::SetUp();
     RenderViewHostTester::For(rvh())->CreateTestRenderView();
-    widget_ = rvh()->GetWidget();
+
+    auto delegate = std::make_unique<FakeAsyncRequestDelegate>(widget());
+    request_delegate_ = delegate.get();
+    TextInputClientMac::GetInstance()->SetAsyncRequestDelegateForTesting(
+        std::move(delegate));
+
     FocusWebContentsOnMainFrame();
   }
 
   void TearDown() override {
-    base::RunLoop().RunUntilIdle();
+    // Flush any tasks posted to the IO thread and reply tasks before exiting.
+    GetIOThreadTaskRunner()->PostTaskAndReply(
+        FROM_HERE, base::DoNothing(), task_environment()->QuitClosure());
+    task_environment()->RunUntilQuit();
+
+    request_delegate_ = nullptr;
+    TextInputClientMac::GetInstance()->SetAsyncRequestDelegateForTesting(
+        nullptr);
+
     RenderViewHostTestHarness::TearDown();
   }
 
-  // Accessor for the TextInputClientMac instance.
-  TextInputClientMac* service() {
-    return TextInputClientMac::GetInstance();
-  }
+  RenderWidgetHost* widget() { return rvh()->GetWidget(); }
 
-  // Helper method to post a task on the testing thread's MessageLoop after
-  // a short delay.
-  void PostTask(base::Location from_here, base::OnceClosure task) {
-    PostTask(std::move(from_here), std::move(task),
-             base::Milliseconds(kTaskDelayMs));
-  }
-
-  void PostTask(base::Location from_here,
-                base::OnceClosure task,
-                const base::TimeDelta delay) {
-    thread_.task_runner()->PostDelayedTask(std::move(from_here),
-                                           std::move(task), delay);
-  }
-
-  RenderWidgetHost* widget() { return widget_; }
-  TextInputClientLocalFrame* local_frame() { return local_frame_.get(); }
+  FakeAsyncRequestDelegate& request_delegate() { return *request_delegate_; }
 
  private:
-  friend class ScopedTestingThread;
-
-  raw_ptr<RenderWidgetHost, DanglingUntriaged> widget_;
-  std::unique_ptr<TextInputClientLocalFrame> local_frame_;
-
-  base::Thread thread_;
-};
-
-////////////////////////////////////////////////////////////////////////////////
-
-// Helper class that Start()s and Stop()s a thread according to the scope of the
-// object.
-class ScopedTestingThread {
- public:
-  ScopedTestingThread(TextInputClientMacTest* test) : thread_(test->thread_) {
-    thread_->Start();
-  }
-  ~ScopedTestingThread() { thread_->Stop(); }
-
- private:
-  const raw_ref<base::Thread> thread_;
+  raw_ptr<FakeAsyncRequestDelegate> request_delegate_;
 };
 
 }  // namespace
@@ -137,72 +187,53 @@ class ScopedTestingThread {
 // Test Cases //////////////////////////////////////////////////////////////////
 
 TEST_F(TextInputClientMacTest, GetCharacterIndex) {
-  ScopedTestingThread thread(this);
   const NSUInteger kSuccessValue = 42;
 
-  PostTask(FROM_HERE,
-           base::BindOnce(&TextInputClientMac::SetCharacterIndexAndSignal,
-                          base::Unretained(service()), kSuccessValue));
-  base::RunLoop run_loop;
-  local_frame()->SetCallback(run_loop.QuitClosure());
-  NSUInteger index = service()->GetCharacterIndexAtPoint(
-      widget(), gfx::Point(2, 2));
+  request_delegate().AddCharacterIndexResponse(kSuccessValue, kTaskDelay);
+
+  NSUInteger index =
+      TextInputClientMac::GetInstance()->GetCharacterIndexAtPoint(
+          widget(), gfx::Point(2, 2));
 
   EXPECT_EQ(kSuccessValue, index);
-  run_loop.Run();
 }
 
 TEST_F(TextInputClientMacTest, TimeoutCharacterIndex) {
-  base::RunLoop run_loop;
-  local_frame()->SetCallback(run_loop.QuitClosure());
-  uint32_t index =
-      service()->GetCharacterIndexAtPoint(widget(), gfx::Point(2, 2));
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(features::kTextInputClient,
+                                                  {{"ipc_timeout", "300ms"}});
+
+  uint32_t index = TextInputClientMac::GetInstance()->GetCharacterIndexAtPoint(
+      widget(), gfx::Point(2, 2));
 
   EXPECT_EQ(UINT32_MAX, index);
-  run_loop.Run();
 }
 
 TEST_F(TextInputClientMacTest, NotFoundCharacterIndex) {
-  ScopedTestingThread thread(this);
   const NSUInteger kPreviousValue = 42;
 
   // Set an arbitrary value to ensure the index is not |NSNotFound|.
-  PostTask(FROM_HERE,
-           base::BindOnce(&TextInputClientMac::SetCharacterIndexAndSignal,
-                          base::Unretained(service()), kPreviousValue));
+  request_delegate().AddCharacterIndexResponse(kPreviousValue, kTaskDelay);
 
-  // Set UINT32_MAX to the index |kTaskDelayMs| after the previous setting.
-  PostTask(FROM_HERE,
-           base::BindOnce(&TextInputClientMac::SetCharacterIndexAndSignal,
-                          base::Unretained(service()), UINT32_MAX),
-           base::Milliseconds(kTaskDelayMs) * 2);
+  // Set UINT32_MAX to the index |kTaskDelay| msec after the previous setting.
+  request_delegate().AddCharacterIndexResponse(UINT32_MAX, kTaskDelay);
 
-  base::RunLoop run_loop1;
-  local_frame()->SetCallback(run_loop1.QuitClosure());
-  uint32_t index =
-      service()->GetCharacterIndexAtPoint(widget(), gfx::Point(2, 2));
-  run_loop1.Run();
+  uint32_t index = TextInputClientMac::GetInstance()->GetCharacterIndexAtPoint(
+      widget(), gfx::Point(2, 2));
   EXPECT_EQ(kPreviousValue, index);
 
-  base::RunLoop run_loop2;
-  local_frame()->SetCallback(run_loop2.QuitClosure());
-  index = service()->GetCharacterIndexAtPoint(widget(), gfx::Point(2, 2));
-  run_loop2.Run();
+  index = TextInputClientMac::GetInstance()->GetCharacterIndexAtPoint(
+      widget(), gfx::Point(2, 2));
   EXPECT_EQ(UINT32_MAX, index);
 }
 
 TEST_F(TextInputClientMacTest, GetRectForRange) {
-  ScopedTestingThread thread(this);
   const gfx::Rect kSuccessValue(42, 43, 44, 45);
 
-  PostTask(FROM_HERE,
-           base::BindOnce(&TextInputClientMac::SetFirstRectAndSignal,
-                          base::Unretained(service()), kSuccessValue));
-  base::RunLoop run_loop;
-  local_frame()->SetCallback(run_loop.QuitClosure());
-  gfx::Rect rect =
-      service()->GetFirstRectForRange(widget(), gfx::Range(NSMakeRange(0, 32)));
-  run_loop.Run();
+  request_delegate().AddFirstRectResponse(kSuccessValue, kTaskDelay);
+
+  gfx::Rect rect = TextInputClientMac::GetInstance()->GetFirstRectForRange(
+      widget(), gfx::Range(NSMakeRange(0, 32)));
   EXPECT_EQ(kSuccessValue, rect);
 }
 
@@ -211,13 +242,8 @@ TEST_F(TextInputClientMacTest, TimeoutRectForRange) {
   feature_list.InitAndEnableFeatureWithParameters(features::kTextInputClient,
                                                   {{"ipc_timeout", "300ms"}});
 
-  base::RunLoop run_loop;
-  local_frame()->SetCallback(run_loop.QuitClosure());
-
-  gfx::Rect rect =
-      service()->GetFirstRectForRange(widget(), gfx::Range(NSMakeRange(0, 32)));
-  run_loop.Run();
-
+  gfx::Rect rect = TextInputClientMac::GetInstance()->GetFirstRectForRange(
+      widget(), gfx::Range(NSMakeRange(0, 32)));
   EXPECT_EQ(gfx::Rect(), rect);
 }
 
