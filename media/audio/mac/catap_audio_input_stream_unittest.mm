@@ -483,6 +483,20 @@ class CatapAudioInputStreamTest : public testing::Test {
       EXPECT_GE(fake_callback_.on_data_call_count(), 1);
   }
 
+  bool VerifyAudioObjectIDsMatch(const std::set<AudioObjectID>& expectedIDs,
+                                 NSArray<NSNumber*>* actualArray) {
+    if (actualArray.count != expectedIDs.size()) {
+      return false;
+    }
+
+    for (NSNumber* obj_element in actualArray) {
+      if (expectedIDs.count([obj_element unsignedIntValue]) == 0) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   void TearDown() override {
     if (@available(macOS 14.2, *)) {
       if (!stream_) {
@@ -698,17 +712,15 @@ TEST_F(CatapAudioInputStreamTest, ApplicationLoopback) {
     // The device with the current process ID should be included.
     std::set<AudioObjectID> device_ids_to_include = {kProcessFirstDeviceId,
                                                      kProcessSecondDeviceId};
-    EXPECT_EQ([fake_catap_api()->last_tap_description processes].count,
-              device_ids_to_include.size());
+
+    EXPECT_TRUE(VerifyAudioObjectIDsMatch(
+        device_ids_to_include,
+        [fake_catap_api()->last_tap_description processes]));
+
     // For application loopback, the `processes` list contains the specific
     // `AudioObjects` we want to capture (include). Therefore, the `exclusive`
     // flag must be false.
     EXPECT_FALSE([fake_catap_api()->last_tap_description isExclusive]);
-    for (NSNumber* device_id_number in
-         [fake_catap_api()->last_tap_description processes]) {
-      EXPECT_TRUE(device_ids_to_include.count(
-          static_cast<AudioObjectID>([device_id_number intValue])));
-    }
 
     // In application loopback we capture all output devices. In that case
     // Device UID and stream should not have been set.
@@ -749,6 +761,88 @@ TEST_F(CatapAudioInputStreamTest,
     // Device UID and stream should not have been set.
     EXPECT_EQ([fake_catap_api()->last_tap_description deviceUID], nullptr);
     EXPECT_EQ([fake_catap_api()->last_tap_description stream], nullptr);
+  }
+}
+
+TEST_F(CatapAudioInputStreamTest, UpdateStreamOnNewAudioID) {
+  if (@available(macOS 14.2, *)) {
+    base::ProcessId process_id = getpid();
+    int expected_set_tap_description_count = 1;
+    CreateStream(
+        /*with_permissions=*/true,
+        /*device_id=*/media::CreateApplicationLoopbackDeviceId(process_id));
+    // Arbitrary number of CoreAudio process audio device IDs to be returned by
+    // GetProcessAudioDeviceIds.
+    constexpr AudioDeviceID kProcessFirstDeviceId = 1;
+    constexpr AudioDeviceID kProcessSecondDeviceId = 2;
+    constexpr AudioDeviceID kOtherProcessDeviceId = 3;
+    fake_catap_api()->process_pids[kProcessFirstDeviceId] = process_id;
+    fake_catap_api()->process_pids[kProcessSecondDeviceId] = process_id;
+    fake_catap_api()->process_pids[kOtherProcessDeviceId] = process_id + 1;
+
+    // Initialize the stream.
+    fake_catap_api()->process_audio_devices = {kOtherProcessDeviceId};
+    EXPECT_EQ(stream_->Open(), AudioInputStream::OpenOutcome::kSuccess);
+    EXPECT_EQ([fake_catap_api()->last_tap_description processes].count, 0U);
+    EXPECT_EQ(fake_catap_api()->set_tap_description_count,
+              expected_set_tap_description_count);
+
+    stream_->Start(&fake_callback_);
+
+    // No change when audio devices for other processes are removed.
+    fake_catap_api()->process_audio_devices = {};
+    fake_catap_api()->property_listener_block(1, &kProcessObjectListAddress);
+    EXPECT_EQ([fake_catap_api()->last_tap_description processes].count, 0U);
+    EXPECT_EQ(fake_catap_api()->set_tap_description_count,
+              expected_set_tap_description_count);
+
+    // Check if new AudioDeviceID are added to the tap list.
+    fake_catap_api()->process_audio_devices = {kProcessFirstDeviceId};
+    fake_catap_api()->property_listener_block(1, &kProcessObjectListAddress);
+    std::set<AudioObjectID> device_ids_to_include = {kProcessFirstDeviceId};
+    EXPECT_TRUE(VerifyAudioObjectIDsMatch(
+        device_ids_to_include,
+        [fake_catap_api()->last_tap_description processes]));
+    ++expected_set_tap_description_count;
+    EXPECT_EQ(fake_catap_api()->set_tap_description_count,
+              expected_set_tap_description_count);
+
+    // No change when added audio devices belong to another process.
+    fake_catap_api()->process_audio_devices = {kProcessFirstDeviceId,
+                                               kOtherProcessDeviceId};
+    fake_catap_api()->property_listener_block(1, &kProcessObjectListAddress);
+    EXPECT_TRUE(VerifyAudioObjectIDsMatch(
+        device_ids_to_include,
+        [fake_catap_api()->last_tap_description processes]));
+    EXPECT_EQ(fake_catap_api()->set_tap_description_count,
+              expected_set_tap_description_count);
+
+    // Check if a second AudioDeviceID is also added to the tap list
+    fake_catap_api()->process_audio_devices = {
+        kProcessFirstDeviceId, kProcessSecondDeviceId, kOtherProcessDeviceId};
+    fake_catap_api()->property_listener_block(1, &kProcessObjectListAddress);
+    device_ids_to_include = {kProcessFirstDeviceId, kProcessSecondDeviceId};
+    EXPECT_TRUE(VerifyAudioObjectIDsMatch(
+        device_ids_to_include,
+        [fake_catap_api()->last_tap_description processes]));
+    ++expected_set_tap_description_count;
+    EXPECT_EQ(fake_catap_api()->set_tap_description_count,
+              expected_set_tap_description_count);
+
+    // Check if removing an AudioDeviceID updates the tap list
+    fake_catap_api()->process_audio_devices = {kProcessFirstDeviceId,
+                                               kOtherProcessDeviceId};
+    fake_catap_api()->property_listener_block(1, &kProcessObjectListAddress);
+    device_ids_to_include = {kProcessFirstDeviceId};
+    EXPECT_TRUE(VerifyAudioObjectIDsMatch(
+        device_ids_to_include,
+        [fake_catap_api()->last_tap_description processes]));
+    ++expected_set_tap_description_count;
+    EXPECT_EQ(fake_catap_api()->set_tap_description_count,
+              expected_set_tap_description_count);
+
+    // Check if the catap stream still calls the OnData() callback.
+    EnsureStreamIsActive();
   }
 }
 

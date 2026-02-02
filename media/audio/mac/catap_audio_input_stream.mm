@@ -54,6 +54,18 @@ const AudioObjectPropertyAddress kSampleRateAddress = {
     kAudioDevicePropertyNominalSampleRate, kAudioObjectPropertyScopeGlobal,
     kAudioObjectPropertyElementMain};
 
+const AudioObjectPropertyAddress kAudioProcessListAddress = {
+    kAudioHardwarePropertyProcessObjectList, kAudioObjectPropertyScopeGlobal,
+    kAudioObjectPropertyElementMain};
+
+const AudioObjectPropertyAddress kAudioProcessPidAddress = {
+    kAudioProcessPropertyPID, kAudioObjectPropertyScopeGlobal,
+    kAudioObjectPropertyElementMain};
+
+const AudioObjectPropertyAddress kAudioTapPropertyDescriptionAddress = {
+    kAudioTapPropertyDescription, kAudioObjectPropertyScopeGlobal,
+    kAudioObjectPropertyElementMain};
+
 const char kHistogramPartsSeparator[] = ".";
 const char kHistogramStatusPrefix[] = "Status";
 const char kHistogramOperationDurationPrefix[] = "OperationDuration";
@@ -277,6 +289,21 @@ CatapAudioInputStream::AudioDeviceIds GetDefaultOutputDeviceIds() {
   return device_ids;
 }
 
+// Set `description` to `tap` with kAudioTapPropertyDescription.
+// Returns the result of the AudioObjectSetPropertyData() call.
+API_AVAILABLE(macos(14.2))
+OSStatus SetTapDescription(CatapApi* catap_api,
+                           AudioObjectID tap,
+                           CATapDescription* description) {
+  // `AudioObjectSetPropertyData()` does not take ownership of the object. We
+  // use a non-owning `__bridge` cast to pass the pointer.
+  void* set_description_ptr = (__bridge void*)description;
+  UInt32 propertySize = sizeof(CATapDescription*);
+  return catap_api->AudioObjectSetPropertyData(
+      tap, &kAudioTapPropertyDescriptionAddress, /*in_qualifier_data_size=*/0,
+      /*in_qualifier_data=*/nullptr, propertySize, &set_description_ptr);
+}
+
 bool operator==(const AudioObjectPropertyAddress& x,
                 const AudioObjectPropertyAddress& y) {
   return x.mSelector == y.mSelector && x.mScope == y.mScope &&
@@ -303,10 +330,12 @@ class PropertyListenerHelper {
       base::span<const AudioObjectPropertyAddress>)>;
   PropertyListenerHelper(
       bool capture_default_device,
+      bool monitor_process_object_list,
       AudioObjectID aggregate_device_id,
       ProcessPropertyChangeCallback process_property_change_callback,
       const raw_ptr<CatapApi> catap_api)
       : capture_default_device_(capture_default_device),
+        monitor_process_object_list_(monitor_process_object_list),
         aggregate_device_id_(aggregate_device_id),
         catap_api_(catap_api) {
     AddPropertyListener(process_property_change_callback);
@@ -341,6 +370,12 @@ class PropertyListenerHelper {
     catap_api_->AudioObjectAddPropertyListenerBlock(
         aggregate_device_id_, &kSampleRateAddress, dispatch_get_main_queue(),
         property_listener_block_);
+
+    if (monitor_process_object_list_) {
+      catap_api_->AudioObjectAddPropertyListenerBlock(
+          kAudioObjectSystemObject, &kAudioProcessListAddress,
+          dispatch_get_main_queue(), property_listener_block_);
+    }
   }
 
   void RemovePropertyListener() {
@@ -348,6 +383,12 @@ class PropertyListenerHelper {
     TRACE_EVENT0("audio", "PropertyListenerHelper::RemovePropertyListener");
 
     // Use the stored block reference to remove the listener.
+    if (monitor_process_object_list_) {
+      catap_api_->AudioObjectRemovePropertyListenerBlock(
+          kAudioObjectSystemObject, &kAudioProcessListAddress,
+          dispatch_get_main_queue(), property_listener_block_);
+    }
+
     catap_api_->AudioObjectRemovePropertyListenerBlock(
         aggregate_device_id_, &kSampleRateAddress, dispatch_get_main_queue(),
         property_listener_block_);
@@ -366,6 +407,7 @@ class PropertyListenerHelper {
   }
 
   const bool capture_default_device_;
+  const bool monitor_process_object_list_;
 
   const AudioObjectID aggregate_device_id_;
 
@@ -622,7 +664,8 @@ AudioInputStream::OpenOutcome CatapAudioInputStreamSource::Open(
   }
 
   property_listener_ = std::make_unique<PropertyListenerHelper>(
-      config_.capture_default_device, aggregate_device_id_,
+      config_.capture_default_device,
+      config_.capture_application_process_id.has_value(), aggregate_device_id_,
       base::BindRepeating(&CatapAudioInputStreamSource::ProcessPropertyChange,
                           weak_ptr_factory_.GetWeakPtr()),
       catap_api_);
@@ -842,15 +885,12 @@ NSArray<NSNumber*>* CatapAudioInputStreamSource::GetProcessAudioDeviceIds(
   // Returns all CoreAudio process audio device IDs that belong to the specified
   // process ID.
   base::ElapsedTimer timer;
-
-  AudioObjectPropertyAddress property_address = {
-      kAudioHardwarePropertyProcessObjectList, kAudioObjectPropertyScopeGlobal,
-      kAudioObjectPropertyElementMain};
   UInt32 property_size;
 
   // Get all CoreAudio process audio device IDs (which are UInt32).
   OSStatus result = catap_api_->AudioObjectGetPropertyDataSize(
-      kAudioObjectSystemObject, &property_address, /*in_qualifier_data_size=*/0,
+      kAudioObjectSystemObject, &kAudioProcessListAddress,
+      /*in_qualifier_data_size=*/0,
       /*in_qualifier_data=*/nullptr, &property_size);
   if (result != noErr) {
     ReportGetProcessAudioDeviceIdsDuration(false, timer.Elapsed());
@@ -863,7 +903,8 @@ NSArray<NSNumber*>* CatapAudioInputStreamSource::GetProcessAudioDeviceIds(
   UInt32 num_devices = property_size / sizeof(AudioDeviceID);
   auto device_ids = std::vector<AudioDeviceID>(num_devices);
   result = catap_api_->AudioObjectGetPropertyData(
-      kAudioObjectSystemObject, &property_address, /*in_qualifier_data_size=*/0,
+      kAudioObjectSystemObject, &kAudioProcessListAddress,
+      /*in_qualifier_data_size=*/0,
       /*in_qualifier_data=*/nullptr, &property_size, device_ids.data());
   if (result != noErr) {
     ReportGetProcessAudioDeviceIdsDuration(false, timer.Elapsed());
@@ -877,11 +918,10 @@ NSArray<NSNumber*>* CatapAudioInputStreamSource::GetProcessAudioDeviceIds(
 
   for (AudioDeviceID device_id : device_ids) {
     // Get the process ID and add the device to the list if there's a match.
-    property_address.mSelector = kAudioProcessPropertyPID;
     int32_t process_id;
     property_size = sizeof(int32_t);
     result = catap_api_->AudioObjectGetPropertyData(
-        device_id, &property_address, /*in_qualifier_data_size=*/0,
+        device_id, &kAudioProcessPidAddress, /*in_qualifier_data_size=*/0,
         /*in_qualifier_data=*/nullptr, &property_size, &process_id);
     if (result != noErr) {
       SendLogMessage("%s => Could not determine process ID of process audio "
@@ -959,13 +999,10 @@ bool CatapAudioInputStreamSource::ProbeAudioTapPermissions() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   UInt32 propertySize = sizeof(CATapDescription*);
-  AudioObjectPropertyAddress propertyAddress = {
-      kAudioTapPropertyDescription, kAudioObjectPropertyScopeGlobal,
-      kAudioObjectPropertyElementMain};
 
   void* get_description_ptr = nullptr;
   OSStatus status = catap_api_->AudioObjectGetPropertyData(
-      tap_, &propertyAddress, /*in_qualifier_data_size=*/0,
+      tap_, &kAudioTapPropertyDescriptionAddress, /*in_qualifier_data_size=*/0,
       /*in_qualifier_data=*/nullptr, &propertySize, &get_description_ptr);
   if (status != noErr) {
     return false;
@@ -977,14 +1014,7 @@ bool CatapAudioInputStreamSource::ProbeAudioTapPermissions() {
   // automatically when it goes out of scope.
   CATapDescription* description = CFBridgingRelease(get_description_ptr);
 
-  // `AudioObjectSetPropertyData()` does not take ownership of the object. We
-  // use a non-owning `__bridge` cast to pass the pointer. ARC retains
-  // ownership, and `description` will be released when it goes out of scope.
-  void* set_description_ptr = (__bridge void*)description;
-  status = catap_api_->AudioObjectSetPropertyData(
-      tap_, &propertyAddress, /*in_qualifier_data_size=*/0,
-      /*in_qualifier_data=*/nullptr, propertySize, &set_description_ptr);
-
+  status = SetTapDescription(catap_api_.get(), tap_, description);
   if (status != noErr) {
     return false;
   }
@@ -1040,6 +1070,32 @@ void CatapAudioInputStreamSource::ProcessPropertyChange(
         // Nothing should be done after the callback is called, because 'this'
         // might be deleted within the callback implementation.
         audio_property_change_callback_->OnSampleRateChange();
+      }
+    } else if (property_address == kAudioProcessListAddress) {
+      // We only listen on `kAudioProcessListAddress` changes if we capture
+      // application audio, i.e., we have a
+      // `config_.capture_application_process_id`.
+      CHECK(config_.capture_application_process_id);
+      NSArray<NSNumber*>* process_audio_device_ids_to_include =
+          GetProcessAudioDeviceIds(*config_.capture_application_process_id);
+      NSSet* new_tap_objects =
+          [NSSet setWithArray:process_audio_device_ids_to_include];
+      NSSet* current_tap_objects =
+          [NSSet setWithArray:[tap_description_ processes]];
+
+      // If the set of Audio Process Objects for the target application has
+      // changed, the tap needs to be updated.
+      if (![new_tap_objects isEqualToSet:current_tap_objects]) {
+        SendLogMessage("%s => Update tap objects for application capture",
+                       __func__);
+        tap_description_.processes = process_audio_device_ids_to_include;
+        OSStatus status =
+            SetTapDescription(catap_api_.get(), tap_, tap_description_);
+        if (status != noErr) {
+          SendLogMessage("%s => Could not update tap description on the active "
+                         "tap. Status: %d",
+                         __func__, status);
+        }
       }
     }
   }
