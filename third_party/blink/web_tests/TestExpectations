@@ -1396,23 +1396,7 @@ crbug.com/1353560 [ Mac12-arm64 ] external/wpt/css/css-content/quotes-020.html [
 crbug.com/1353560 [ Mac13-arm64 ] external/wpt/css/css-content/quotes-020.html [ Failure ]
 crbug.com/1353560 [ Win ] external/wpt/css/css-content/quotes-030.html [ Failure ]
 crbug.com/1067277 external/wpt/css/css-content/element-replacement-on-replaced-element.tentative.html [ Failure ]
-
-crbug.com/1335893 external/wpt/css/css-content/content-none-root-columns.html [ Failure ]
-crbug.com/1335893 external/wpt/css/css-content/content-none-root-ruby.html [ Failure ]
-crbug.com/1335893 external/wpt/css/css-content/content-none-root-grid.html [ Failure ]
-crbug.com/1335893 external/wpt/css/css-content/content-none-math.html [ Failure ]
-crbug.com/1335893 external/wpt/css/css-content/content-none-root-flex.html [ Failure ]
-crbug.com/1335893 external/wpt/css/css-content/content-none-root-table.html [ Failure ]
-crbug.com/1335893 external/wpt/css/css-content/content-none-span-dynamic.html [ Failure ]
-crbug.com/1335893 external/wpt/css/css-content/content-none-root-block.html [ Failure ]
-crbug.com/1335893 external/wpt/css/css-content/content-none-details.html [ Failure ]
-crbug.com/1335893 external/wpt/css/css-content/content-none-fieldset.html [ Failure ]
-crbug.com/1335893 external/wpt/css/css-content/content-none-option.html [ Failure ]
 crbug.com/1335893 external/wpt/css/css-content/content-none-select-1.html [ Failure Pass ]
-crbug.com/1335893 external/wpt/css/css-content/content-none-table.html [ Failure ]
-crbug.com/1335893 external/wpt/css/css-content/content-none-select-2.html [ Failure ]
-crbug.com/1335893 external/wpt/css/css-content/content-none-span.html [ Failure ]
-
 crbug.com/995106 external/wpt/css/css-lists/inline-list.html [ Failure ]
 crbug.com/995106 external/wpt/css/css-lists/inline-list-marker.html [ Failure ]
 
