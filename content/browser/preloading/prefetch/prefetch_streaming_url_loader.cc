@@ -184,6 +184,13 @@ void PrefetchStreamingURLLoader::DisconnectPrefetchURLLoaderMojo() {
   prefetch_url_loader_client_receiver_.reset();
   timeout_timer_.Stop();
 
+  // Avoid notifications to `response_reader_` after scheduled for deletion.
+  // This can happen e.g.
+  // - An async task that is not tied to `prefetch_url_loader_client_receiver_`
+  //   and causes state changes (e.g. timeout), after this point before the
+  //   async self deletion is completed (actual cases not confirmed though).
+  response_reader_.reset();
+
   if (!self_pointer_) {
     return;
   }
