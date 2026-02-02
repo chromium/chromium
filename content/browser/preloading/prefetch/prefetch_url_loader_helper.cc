@@ -188,7 +188,7 @@ void ContinueOnGotPrefetchToServe(
     return;
   }
 
-  switch (state->serving_handle.GetServableState(PrefetchCacheableDuration())) {
+  switch (state->serving_handle.GetServableState()) {
     case PrefetchServableState::kNotServable:
     case PrefetchServableState::kShouldBlockUntilEligibilityGot:
     case PrefetchServableState::kShouldBlockUntilHeadReceived:
@@ -324,7 +324,7 @@ void OnGotPrefetchToServe(
     return;
   }
 
-  switch (serving_handle.GetServableState(PrefetchCacheableDuration())) {
+  switch (serving_handle.GetServableState()) {
     case PrefetchServableState::kNotServable:
     case PrefetchServableState::kShouldBlockUntilEligibilityGot:
     case PrefetchServableState::kShouldBlockUntilHeadReceived:

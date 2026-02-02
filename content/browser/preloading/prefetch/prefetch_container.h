@@ -377,9 +377,10 @@ class CONTENT_EXPORT PrefetchContainer {
   // Note: Even if this returns `kServable`, `CreateRequestHandler()` can still
   // fail (returning null handler) due to final checks. See also the comment for
   // `PrefetchResponseReader::CreateRequestHandler()`.
-  PrefetchServableState GetServableState(
-      base::TimeDelta cacheable_duration) const;
-  PrefetchMatchResolverAction GetMatchResolverAction(
+  PrefetchServableState GetServableState() const;
+  PrefetchMatchResolverAction GetMatchResolverAction() const;
+  // Allows to pass `cacheable_duration` for testing.
+  PrefetchServableState GetServableStateForTesting(
       base::TimeDelta cacheable_duration) const;
 
   // Starts blocking `PrefetchMatchResolver` until non-redirect response header
@@ -670,6 +671,10 @@ class CONTENT_EXPORT PrefetchContainer {
       const network::URLLoaderCompletionStatus& completion_status);
 
   PrefetchServableState GetServableStateInternal(
+      base::TimeDelta cacheable_duration) const;
+  PrefetchServableState GetServableStateInternal2(
+      base::TimeDelta cacheable_duration) const;
+  PrefetchMatchResolverAction GetMatchResolverActionInternal(
       base::TimeDelta cacheable_duration) const;
 
   // The prefetch request parameters of the very first initiator/requester of

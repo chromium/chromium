@@ -417,8 +417,7 @@ base::WeakPtr<PrefetchContainer> PrefetchService::AddPrefetchRequestInternal(
       return Action::kReplaceOldWithNew;
     }
 
-    switch (
-        prefetch_container_old.GetServableState(PrefetchCacheableDuration())) {
+    switch (prefetch_container_old.GetServableState()) {
       case PrefetchServableState::kNotServable:
         return Action::kReplaceOldWithNew;
       case PrefetchServableState::kShouldBlockUntilEligibilityGot:
@@ -606,8 +605,7 @@ bool PrefetchService::IsPrefetchStale(
   }
 
   // `PrefetchServableState` check.
-  PrefetchServableState servable_state =
-      prefetch_container->GetServableState(PrefetchCacheableDuration());
+  PrefetchServableState servable_state = prefetch_container->GetServableState();
   if (servable_state == PrefetchServableState::kNotServable) {
     return true;
   }

@@ -365,7 +365,7 @@ concept MatchCandidate =
       t.key();
       t.request();
       t.GetURL();
-      t.GetServableState(cacheable_duration);
+      t.GetServableState();
       t.GetNoVarySearchHint();
       t.IsNoVarySearchHeaderMatch(url);
       t.ShouldWaitForNoVarySearchHeader(url);
@@ -528,8 +528,7 @@ CollectMatchCandidatesGeneric(
     PrefetchPotentialCandidateCollectResult collect_result =
         PrefetchPotentialCandidateCollectResult::kUninitialized;
 
-    PrefetchServableState servable_state =
-        candidate->GetServableState(PrefetchCacheableDuration());
+    PrefetchServableState servable_state = candidate->GetServableState();
     const bool is_available = IsCandidateAvailable(
         *candidate, servable_state, is_nav_prerender, &collect_result);
     DVLOG(1) << "Serving " << *candidate

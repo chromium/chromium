@@ -59,7 +59,9 @@ class CONTENT_EXPORT PrefetchServingHandle final {
   explicit operator bool() const { return GetPrefetchContainer(); }
 
   // Methods redirecting to `GetPrefetchContainer()`.
-  PrefetchServableState GetServableState(
+  PrefetchServableState GetServableState() const;
+  // Allows to pass `cacheable_duration` for testing.
+  PrefetchServableState GetServableStateForTesting(
       base::TimeDelta cacheable_duration) const;
   bool HasPrefetchStatus() const;
   PrefetchStatus GetPrefetchStatus() const;

@@ -51,10 +51,7 @@ class MockContainer {
 
   const GURL& GetURL() const { return key_.url(); }
 
-  PrefetchServableState GetServableState(
-      base::TimeDelta cacheable_duration) const {
-    return servable_state_;
-  }
+  PrefetchServableState GetServableState() const { return servable_state_; }
 
   bool HasPrefetchStatus() const { return prefetch_status_.has_value(); }
   PrefetchStatus GetPrefetchStatus() const {

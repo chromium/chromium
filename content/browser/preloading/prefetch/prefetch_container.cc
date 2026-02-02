@@ -1258,9 +1258,18 @@ void PrefetchContainer::UpdatePrefetchRequestMetrics(
   }
 }
 
-PrefetchServableState PrefetchContainer::GetServableState(
+PrefetchServableState PrefetchContainer::GetServableState() const {
+  return GetServableStateInternal(PrefetchCacheableDuration());
+}
+
+PrefetchServableState PrefetchContainer::GetServableStateForTesting(  // IN-TEST
     base::TimeDelta cacheable_duration) const {
-  // We allow the differences between `GetServableStateInternal()` and
+  return GetServableStateInternal(cacheable_duration);
+}
+
+PrefetchServableState PrefetchContainer::GetServableStateInternal(
+    base::TimeDelta cacheable_duration) const {
+  // We allow the differences between `GetServableStateInternal2()` and
   // `match_resolver_action.ToServableState()` because we know the latter should
   // be the correct behavior.
   auto is_known_allowed_exception =
@@ -1273,7 +1282,7 @@ PrefetchServableState PrefetchContainer::GetServableState(
         // `OnDeterminedHead()` is called when redirect is judged as ineligible,
         // with `GetNonRedirectResponseReader()` null. Ideally, we should treat
         // this case as `PrefetchServableState::kNotServable`, but the current
-        // `GetServableStateInternal()` returns
+        // `GetServableStateInternal2()` returns
         // `PrefetchServableState::kShouldBlockUntilHeadReceived`. We will keep
         // the current behavior and fix it by replacing the implementation with
         // `GetMatchResolverAction()`.
@@ -1292,14 +1301,14 @@ PrefetchServableState PrefetchContainer::GetServableState(
       };
 
   PrefetchServableState servable_state =
-      GetServableStateInternal(cacheable_duration);
+      GetServableStateInternal2(cacheable_duration);
   PrefetchMatchResolverAction match_resolver_action =
-      GetMatchResolverAction(cacheable_duration);
+      GetMatchResolverActionInternal(cacheable_duration);
 
   if (servable_state != match_resolver_action.ToServableState() &&
       !is_known_allowed_exception(servable_state, match_resolver_action)) {
     // We are going to switch from the old implementation
-    // (`GetServableStateInternal()`) to the new one
+    // (`GetServableStateInternal2()`) to the new one
     // (`match_resolver_action.ToServableState()`), and check the behavior
     // difference, if any.
     SCOPED_CRASH_KEY_NUMBER(
@@ -1312,7 +1321,7 @@ PrefetchServableState PrefetchContainer::GetServableState(
   return servable_state;
 }
 
-PrefetchServableState PrefetchContainer::GetServableStateInternal(
+PrefetchServableState PrefetchContainer::GetServableStateInternal2(
     base::TimeDelta cacheable_duration) const {
   // Servable if the non-redirect response (either fully or partially
   // received body) is servable.
@@ -1351,7 +1360,11 @@ PrefetchServableState PrefetchContainer::GetServableStateInternal(
   return PrefetchServableState::kNotServable;
 }
 
-PrefetchMatchResolverAction PrefetchContainer::GetMatchResolverAction(
+PrefetchMatchResolverAction PrefetchContainer::GetMatchResolverAction() const {
+  return GetMatchResolverActionInternal(PrefetchCacheableDuration());
+}
+
+PrefetchMatchResolverAction PrefetchContainer::GetMatchResolverActionInternal(
     base::TimeDelta cacheable_duration) const {
   switch (load_state_) {
     case LoadState::kNotStarted:
@@ -1393,7 +1406,7 @@ PrefetchMatchResolverAction PrefetchContainer::GetMatchResolverAction(
       CHECK_EQ(redirect_chain_.back()->response_reader_->load_state(),
                PrefetchResponseReader::LoadState::kCompleted);
       // This branch corresponds to the first `if` in
-      // `GetServableStateInternal()`.
+      // `GetServableStateInternal2()`.
       CHECK(GetNonRedirectResponseReader());
       const bool is_expired =
           !GetNonRedirectResponseReader()->Servable(cacheable_duration);

@@ -270,9 +270,15 @@ PrefetchServingHandle::GetCurrentResponseReaderToServeForTesting() {
   return GetCurrentSingleRedirectHopToServe().response_reader_->GetWeakPtr();
 }
 
-PrefetchServableState PrefetchServingHandle::GetServableState(
+PrefetchServableState PrefetchServingHandle::GetServableState() const {
+  return GetPrefetchContainer()->GetServableState();
+}
+
+PrefetchServableState
+PrefetchServingHandle::GetServableStateForTesting(  // IN-TEST
     base::TimeDelta cacheable_duration) const {
-  return GetPrefetchContainer()->GetServableState(cacheable_duration);
+  return GetPrefetchContainer()->GetServableStateForTesting(  // IN-TEST
+      cacheable_duration);
 }
 
 bool PrefetchServingHandle::HasPrefetchStatus() const {
