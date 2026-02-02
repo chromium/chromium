@@ -84,7 +84,9 @@ class TestAppBannerManager : public AppBannerManagerAndroid {
       : AppBannerManagerAndroid(
             web_contents,
             std::make_unique<ChromeAppBannerManagerAndroid>(*web_contents)),
-        mock_segmentation_(segmentation_platform_service) {}
+        mock_segmentation_(segmentation_platform_service) {
+    SetTriggeringDisabledForTesting(false);
+  }
 
   TestAppBannerManager(const TestAppBannerManager&) = delete;
   TestAppBannerManager& operator=(const TestAppBannerManager&) = delete;
@@ -96,8 +98,6 @@ class TestAppBannerManager : public AppBannerManagerAndroid {
     target_badge_state_ = target;
     on_badge_done_ = std::move(on_done);
   }
-
-  bool TriggeringDisabledForTesting() const override { return false; }
 
   TestAmbientBadgeManager* GetBadgeManagerForTest() {
     return ambient_badge_test_.get();

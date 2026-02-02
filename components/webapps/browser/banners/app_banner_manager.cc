@@ -272,7 +272,11 @@ base::WeakPtr<AppBannerManager> AppBannerManager::GetWeakPtr() {
 }
 
 bool AppBannerManager::TriggeringDisabledForTesting() const {
-  return test::g_disable_banner_triggering_for_testing;
+  return triggering_disabled_for_testing_;
+}
+
+void AppBannerManager::SetTriggeringDisabledForTesting(bool disable) {
+  triggering_disabled_for_testing_ = disable;
 }
 
 bool AppBannerManager::IsPromptAvailableForTesting() const {
@@ -282,7 +286,9 @@ bool AppBannerManager::IsPromptAvailableForTesting() const {
 AppBannerManager::AppBannerManager(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
       manager_(InstallableManager::FromWebContents(web_contents)),
-      status_reporter_(std::make_unique<NullStatusReporter>()) {
+      status_reporter_(std::make_unique<NullStatusReporter>()),
+      triggering_disabled_for_testing_(
+          test::g_disable_banner_triggering_for_testing) {
   DCHECK(manager_);
 }
 
@@ -295,6 +301,10 @@ AppBannerManager::UrlType AppBannerManager::GetUrlType(
   // loading. |render_frame_host| can be null during retry attempts.
   if (render_frame_host && !render_frame_host->IsInPrimaryMainFrame())
     return UrlType::kNotPrimaryFrame;
+
+  if (url.IsAboutBlank()) {
+    return UrlType::kInvalidPrimaryFrameUrl;
+  }
 
   // There is never a need to trigger a banner for a WebUI page, except
   // for PasswordManager WebUI.

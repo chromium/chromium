@@ -211,10 +211,12 @@ class AppBannerManager : public content::WebContentsObserver,
 
   // This is used to determine if the `AppBannerManager` pipeline should be
   // disabled. A test may disable the original `AppBannerManager` (by using
-  // `test::g_disable_banner_triggering_for_testing`) but instead use a
-  // `TestAppBannerManager` that override this method to `true`, allowing that
-  // class to function correctly.
-  virtual bool TriggeringDisabledForTesting() const;
+  // `test::g_disable_banner_triggering_for_testing`) and instead create its
+  // own `AppBannerManager` and call `SetTriggeringDisabledForTesting` on it
+  // to override the value set based on
+  // `test::g_disable_banner_triggering_for_testing`.
+  bool TriggeringDisabledForTesting() const;
+  void SetTriggeringDisabledForTesting(bool disable);
 
   // Returns whether the site can call "event.prompt()" to prompt the user to
   // install the site.
@@ -338,9 +340,7 @@ class AppBannerManager : public content::WebContentsObserver,
   void ReportStatus(InstallableStatusCode code);
 
  private:
-  // Requests an app banner. Virtual for testing.
-  // TODO(http://crbug.com/322342499): Remove virtual.
-  virtual void RequestAppBanner();
+  void RequestAppBanner();
 
   void UpdateState(State state);
 
@@ -390,10 +390,8 @@ class AppBannerManager : public content::WebContentsObserver,
   void Terminate(InstallableStatusCode code);
 
   // Stops the banner pipeline, preventing any outstanding callbacks from
-  // running and resetting the manager state. This method is virtual to allow
-  // tests to intercept it and verify correct behaviour. Virtual for testing.
-  // TODO(http://crbug.com/322342499): Remove virtual.
-  virtual void Stop(InstallableStatusCode code);
+  // running and resetting the manager state.
+  void Stop(InstallableStatusCode code);
 
   // Sends a message to the renderer that the page has met the requirements to
   // show a banner. The page can respond to cancel the banner (and possibly
@@ -471,6 +469,8 @@ class AppBannerManager : public content::WebContentsObserver,
   bool install_animation_pending_ = false;
   InstallableWebAppCheckResult installable_web_app_check_result_ =
       InstallableWebAppCheckResult::kUnknown;
+
+  bool triggering_disabled_for_testing_;
 
   // This stores the last result calculated by this AppBannerManager pipeline,
   // which allows some classes (like WebAppMetrics) continue to use the result

@@ -77,24 +77,13 @@ class AppBannerManagerTest : public AppBannerManager,
   explicit AppBannerManagerTest(content::WebContents* web_contents)
       : AppBannerManager(web_contents) {
     AddObserver(this);
+    SetTriggeringDisabledForTesting(false);
   }
 
   AppBannerManagerTest(const AppBannerManagerTest&) = delete;
   AppBannerManagerTest& operator=(const AppBannerManagerTest&) = delete;
 
   ~AppBannerManagerTest() override { RemoveObserver(this); }
-
-  bool TriggeringDisabledForTesting() const override { return false; }
-
-  void RequestAppBanner() override {
-    // Filter out about:blank navigations - we use these in testing to force
-    // Stop() to be called.
-    if (validated_url_ == GURL("about:blank")) {
-      return;
-    }
-
-    AppBannerManager::RequestAppBanner();
-  }
 
   bool banner_shown() { return banner_shown_.get() && *banner_shown_; }
 
@@ -150,25 +139,7 @@ class AppBannerManagerTest : public AppBannerManager,
 
   void ResetCurrentPageData() override {}
 
-  // The overridden RequestAppBanner() can filter out about:blank calls
-  // to force Stop() to be called, however, the newly introduced
-  // AppBannerManagerBrowserTestWithChromeBFCache starts a server and navigates
-  // to a dynamic/installable banner link and then retriggers the pipeline by
-  // terminating an existing banner. As a result, there can exist banners in an
-  // intermediary state (on_done_ not initialized, banner still shown) that
-  // needs to be cleaned in these overridden functions for Stop() and
-  // UpdateState(State::PENDING).
-  //
-  // As a result, calls to RequestAppBanner should always terminate in
-  // ShowBannerUi(), but not necessarily in Stop() (not showing banner).
-  // Override these methods to capture test status.
-  void Stop(InstallableStatusCode code) override {
-    AppBannerManager::Stop(code);
-    if (banner_shown_)
-      clear_will_show();
-    ASSERT_FALSE(banner_shown_.get());
-    banner_shown_ = std::make_unique<bool>(false);
-    install_source_ = std::nullopt;
+  void OnComplete() override {
     if (on_done_)
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, std::move(on_done_));
