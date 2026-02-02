@@ -141,10 +141,10 @@ void GraphImplOrt::CreateAndBuild(
     WebNNContextImpl::CreateGraphImplCallback callback) {
   ScopedTrace scoped_trace("GraphImplOrt::CreateAndBuild");
 
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::TaskPriority::BEST_EFFORT,
-       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN, base::MayBlock()},
+  // If the context has been destroyed, the posted task and its reply will be
+  // canceled to avoid doing unnecessary work.
+  context->cancelable_task_tracker().PostTaskAndReplyWithResult(
+      context->env()->graph_compilation_task_runner().get(), FROM_HERE,
       base::BindOnce(&GraphImplOrt::CreateAndBuildOnBackgroundThread,
                      std::move(graph_info), context->session_options(),
                      context->env(), context->properties(),

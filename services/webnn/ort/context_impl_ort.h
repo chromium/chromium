@@ -6,6 +6,7 @@
 #define SERVICES_WEBNN_ORT_CONTEXT_IMPL_ORT_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "base/task/cancelable_task_tracker.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "services/webnn/ort/device_allocator.h"
 #include "services/webnn/ort/environment.h"
@@ -69,6 +70,10 @@ class ContextImplOrt final : public WebNNContextImpl {
     return session_options_;
   }
 
+  base::CancelableTaskTracker& cancelable_task_tracker() {
+    return cancelable_task_tracker_;
+  }
+
   void HandleContextLostOrCrash(const std::string& error_message,
                                 OrtErrorCode error_code);
 
@@ -103,6 +108,9 @@ class ContextImplOrt final : public WebNNContextImpl {
   // The device allocator used for device tensor creation. May be nullptr if
   // device tensor is not supported.
   scoped_refptr<DeviceAllocator> device_allocator_;
+
+  // Cancels pending graph compilation tasks when destructing.
+  base::CancelableTaskTracker cancelable_task_tracker_;
 
   base::WeakPtrFactory<ContextImplOrt> weak_factory_{this};
 };

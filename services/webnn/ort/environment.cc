@@ -16,6 +16,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split_win.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "gpu/config/gpu_driver_bug_workaround_type.h"
 #include "services/webnn/ort/logging.h"
 #include "services/webnn/ort/ort_status.h"
@@ -617,7 +619,12 @@ Environment::Environment(base::PassKey<Environment> /*pass_key*/,
                          ScopedOrtEnv env)
     : base::subtle::RefCountedThreadSafeBase(
           base::subtle::GetRefCountPreference<Environment>()),
-      env_(std::move(env)) {
+      env_(std::move(env)),
+      graph_compilation_task_runner_(
+          base::ThreadPool::CreateSequencedTaskRunner(
+              {base::TaskPriority::USER_VISIBLE,
+               base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN,
+               base::MayBlock()})) {
   CHECK_EQ(instance_, nullptr);
   instance_ = this;
 }
