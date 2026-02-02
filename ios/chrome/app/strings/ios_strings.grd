@@ -1282,7 +1282,7 @@
           Gemini
       </message>
       <message name="IDS_IOS_BWG_PROMO_MAIN_TITLE" desc="Main title text for the Gemini Promo page.">
-          Get answers faster with Gemini in Chrome
+          Do more with Gemini in Chrome
       </message>
       <message name="IDS_IOS_BWG_PROMO_PRIMARY_BUTTON" desc="Primary button text for the Gemini Promo page.">
           Get started
@@ -1291,7 +1291,7 @@
           Cancel
       </message>
       <message name="IDS_IOS_BWG_PROMO_SECOND_BOX_BODY" desc="Second box body text for the Gemini Promo page.">
-          Get key takeaways and insights that help you understand any topic
+          Get an overview and key insights for any page or topic
       </message>
       <message name="IDS_IOS_BWG_PROMO_SECOND_BOX_TITLE" desc="Second box title text for the Gemini Promo page.">
           Summarize
