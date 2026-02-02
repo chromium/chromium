@@ -25,22 +25,42 @@
   namespace {                                                                                      \
                                                                                                    \
   JNI_ZERO_BOUNDARY_EXPORT bool Java_J_module_1N_MejItBT4(JNIEnv* env, jclass jcaller, bool a) {   \
-    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
-    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
-    decltype(JNI_SampleModule_Bar(std::forward<decltype(args)>(args)...)) {                        \
-      return JNI_SampleModule_Bar(std::forward<decltype(args)>(args)...);                          \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(JNI_SampleModule_Bar(std::forward<decltype(args)>(args)...)) {                      \
+        return JNI_SampleModule_Bar(std::forward<decltype(args)>(args)...);                        \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(env, a); }) {                                          \
+        return func_wrapper(env, a);                                                               \
+      } else if constexpr (requires { func_wrapper(a); }) {                                        \
+        return func_wrapper(a);                                                                    \
+      } else {                                                                                     \
+        static_assert(false, "JNI_SampleModule_Bar() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: (bool)"); \
+      }                                                                                            \
     };                                                                                             \
-    auto _ret = jni_zero::internal::DispatchJniFunc(_jni_func_wrapper, env, a);                    \
-    return _ret;                                                                                   \
+    auto return_value = dependent_context(0);                                                      \
+    return return_value;                                                                           \
   }                                                                                                \
                                                                                                    \
   JNI_ZERO_BOUNDARY_EXPORT void Java_J_module_1N_MqDgXQiH(JNIEnv* env, jclass jcaller) {           \
-    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
-    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
-    decltype(JNI_SampleModule_Foo(std::forward<decltype(args)>(args)...)) {                        \
-      return JNI_SampleModule_Foo(std::forward<decltype(args)>(args)...);                          \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(JNI_SampleModule_Foo(std::forward<decltype(args)>(args)...)) {                      \
+        return JNI_SampleModule_Foo(std::forward<decltype(args)>(args)...);                        \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(env); }) {                                             \
+        return func_wrapper(env);                                                                  \
+      } else if constexpr (requires { func_wrapper(); }) {                                         \
+        return func_wrapper();                                                                     \
+      } else {                                                                                     \
+        static_assert(false, "JNI_SampleModule_Foo() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: ()"); \
+      }                                                                                            \
     };                                                                                             \
-    jni_zero::internal::DispatchJniFunc(_jni_func_wrapper, env);                                   \
+    dependent_context(0);                                                                          \
   }                                                                                                \
                                                                                                    \
                                                                                                    \

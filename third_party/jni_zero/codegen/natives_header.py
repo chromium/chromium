@@ -77,10 +77,25 @@ def _prep_param(sb, is_proxy, param):
   if java_type.is_primitive():
     return orig_name
 
-  if is_proxy and java_type.to_cpp() != java_type.to_proxy().to_cpp():
-    # E.g. jobject -> jstring
-    orig_name = f'static_cast<{java_type.to_cpp()}>({orig_name})'
-  return f'jni_zero::JavaRef<{java_type.to_cpp()}>::CreateLeaky(env, {orig_name})'
+  ret = f'{param.name}_ref'
+  with sb.statement():
+    cpp_type = java_type.to_cpp()
+    sb(f'jni_zero::JavaRef<{cpp_type}> {ret} = ')
+    if is_proxy and cpp_type != java_type.to_proxy().to_cpp():
+      # E.g. jobject -> jstring
+      orig_name = f'static_cast<{cpp_type}>({orig_name})'
+    sb(f'jni_zero::JavaRef<{cpp_type}>::CreateLeaky(env, {orig_name})')
+  return ret
+
+
+def _param_type_for_assert_message(param):
+  param_type = param.java_type
+  if param_type.converted_type:
+    return param_type.converted_type
+  if param_type.is_primitive():
+    return param_type.to_cpp()
+  jtype = param_type.to_cpp()
+  return f'const jni_zero::JavaRef<{jtype}>&'
 
 
 def entry_point_declaration(sb, jni_mode, jni_obj, native, gen_jni_class):
@@ -129,54 +144,87 @@ def entry_point_method(sb,
 
   entry_point_return_type = native.entry_point_return_type
   return_type = native.return_type
+
+  if cpp_class:
+    func_name = f'{native.capitalized_name}'
+    func_name_full = f'{cpp_class}::{func_name}'
+  else:
+    func_name = f'JNI_{native.java_class.name}_{native.capitalized_name}'
+    func_name_full = func_name
+
   with sb.block(after='\n'):
     param_rvalues = [
         _prep_param(sb, native.is_proxy, param) for param in params
     ]
+    if not native.static:
+      param_rvalues.insert(
+          0, 'jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller)')
 
     if cpp_class:
       with sb.statement():
         sb(f'{cpp_class}* _ptr = reinterpret_cast<{cpp_class}*>'
            f'({native.params[0].cpp_name()})')
 
-    sb('/* Use a wrapper function to allow compiler to pick an overloaded ')
-    sb('version of JNI function */\n')
-    with sb.statement():
-      sb('auto _jni_func_wrapper = [&](auto&&... args) ->\n')
+    sb('/* Lambda required to make "if constexpr" work properly. */\n')
+    sb('auto dependent_context = [&](auto)')
+    with sb.block(after=';'):
+      sb('/* Lambda required to disambiguate overloads. */\n')
+      sb('auto func_wrapper = [&](auto&&... args) ->\n')
       if cpp_class:
-        sb(f'decltype(_ptr->{native.capitalized_name}')
+        sb(f'decltype(_ptr->{func_name}')
       else:
-        sb(f'decltype(JNI_{native.java_class.name}_{native.capitalized_name}')
+        sb(f'decltype({func_name}')
       sb(f'(std::forward<decltype(args)>(args)...))')
-      with sb.block(no_trailing_newline=True):
+      with sb.block(after=';'):
         with sb.statement():
           if cpp_class:
-            sb(f'return _ptr->{native.capitalized_name}')
+            sb(f'return _ptr->{func_name}')
           else:
-            sb(f'return JNI_{native.java_class.name}_{native.capitalized_name}')
+            sb(f'return {func_name}')
           sb(f'(std::forward<decltype(args)>(args)...)')
+
+      sb('if constexpr (requires { func_wrapper')
+      sb.param_list(['env'] + param_rvalues)
+      sb('; })')
+      with sb.block(no_trailing_newline=True):
+        with sb.statement():
+          sb('return func_wrapper')
+          with sb.param_list() as plist:
+            plist.append('env')
+            plist.extend(param_rvalues)
+      sb(' else if constexpr (requires { func_wrapper')
+      sb.param_list(param_rvalues)
+      sb('; })')
+      with sb.block(no_trailing_newline=True):
+        with sb.statement():
+          sb('return func_wrapper')
+          sb.param_list(param_rvalues)
+      sb(' else')
+      # Show a custom error message when the signature doesn't match. Without
+      # this, the lambda to make overloads work results in a confusing message.
+      with sb.block():
+        with sb.statement():
+          arg_types = [_param_type_for_assert_message(p) for p in params]
+          msg = (f'{func_name_full}() has incorrect signature. '
+                 f'It should accept an optional JNIEnv* parameter, plus: '
+                 f'({", ".join(arg_types)})')
+          sb(f'static_assert(false, "{msg}")')
 
     with sb.statement():
       if not return_type.is_void():
-        sb('auto _ret = ')
-      sb('jni_zero::internal::DispatchJniFunc')
-      with sb.param_list() as plist:
-        plist.append('_jni_func_wrapper')
-        plist.append('env')
-        if not native.static:
-          plist.append('jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller)')
-        plist.extend(param_rvalues)
+        sb('auto return_value = ')
+      sb('dependent_context(0)')
 
     if return_type.is_void():
       return
 
     if not return_type.converted_type:
       if return_type.is_primitive():
-        sb('return _ret;\n')
+        sb('return return_value;\n')
       else:
         # Use ReleaseLocal() to ensure we are not calling .Release() on a
         # global ref. https://crbug.com/40944912
-        sb('return _ret.ReleaseLocal();\n')
+        sb('return return_value.ReleaseLocal();\n')
       return
 
     with sb.statement():
@@ -186,7 +234,7 @@ def entry_point_method(sb,
       else:
         clazz_snippet = None
       convert_type.to_jni_expression(sb,
-                                     '_ret',
+                                     'return_value',
                                      return_type,
                                      clazz_snippet=clazz_snippet)
       if not return_type.is_primitive():

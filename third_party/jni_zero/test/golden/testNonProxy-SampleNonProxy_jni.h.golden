@@ -109,21 +109,51 @@
       jstring title,                                                                               \
       bool isFolder,                                                                               \
       int64_t parentId) {                                                                          \
-    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
-    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
-    decltype(JNI_SampleNonProxy_AddBookmark(std::forward<decltype(args)>(args)...)) {              \
-      return JNI_SampleNonProxy_AddBookmark(std::forward<decltype(args)>(args)...);                \
+    jni_zero::JavaRef<jstring> url_ref = jni_zero::JavaRef<jstring>::CreateLeaky(env, url);        \
+    jni_zero::JavaRef<jstring> title_ref = jni_zero::JavaRef<jstring>::CreateLeaky(env, title);    \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(JNI_SampleNonProxy_AddBookmark(std::forward<decltype(args)>(args)...)) {            \
+        return JNI_SampleNonProxy_AddBookmark(std::forward<decltype(args)>(args)...);              \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(                                                       \
+          env,                                                                                     \
+          jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller),                                   \
+          nativeChromeBrowserProvider,                                                             \
+          url_ref,                                                                                 \
+          title_ref,                                                                               \
+          isFolder,                                                                                \
+          parentId); }) {                                                                          \
+        return func_wrapper(                                                                       \
+            env,                                                                                   \
+            jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller),                                 \
+            nativeChromeBrowserProvider,                                                           \
+            url_ref,                                                                               \
+            title_ref,                                                                             \
+            isFolder,                                                                              \
+            parentId);                                                                             \
+      } else if constexpr (requires { func_wrapper(                                                \
+          jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller),                                   \
+          nativeChromeBrowserProvider,                                                             \
+          url_ref,                                                                                 \
+          title_ref,                                                                               \
+          isFolder,                                                                                \
+          parentId); }) {                                                                          \
+        return func_wrapper(                                                                       \
+            jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller),                                 \
+            nativeChromeBrowserProvider,                                                           \
+            url_ref,                                                                               \
+            title_ref,                                                                             \
+            isFolder,                                                                              \
+            parentId);                                                                             \
+      } else {                                                                                     \
+        static_assert(false, "JNI_SampleNonProxy_AddBookmark() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: (int32_t, const jni_zero::JavaRef<jstring>&, const jni_zero::JavaRef<jstring>&, bool, int64_t)"); \
+      }                                                                                            \
     };                                                                                             \
-    auto _ret = jni_zero::internal::DispatchJniFunc(                                               \
-        _jni_func_wrapper,                                                                         \
-        env,                                                                                       \
-        jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller),                                     \
-        nativeChromeBrowserProvider,                                                               \
-        jni_zero::JavaRef<jstring>::CreateLeaky(env, url),                                         \
-        jni_zero::JavaRef<jstring>::CreateLeaky(env, title),                                       \
-        isFolder,                                                                                  \
-        parentId);                                                                                 \
-    return _ret;                                                                                   \
+    auto return_value = dependent_context(0);                                                      \
+    return return_value;                                                                           \
   }                                                                                                \
                                                                                                    \
   JNI_ZERO_BOUNDARY_EXPORT int64_t Java_org_jni_1zero_SampleNonProxy_nativeAddBookmarkFromAPI(     \
@@ -137,24 +167,68 @@
       jbyteArray favicon,                                                                          \
       jstring title,                                                                               \
       jobject visits) {                                                                            \
-    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
-    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
-    decltype(JNI_SampleNonProxy_AddBookmarkFromAPI(std::forward<decltype(args)>(args)...)) {       \
-      return JNI_SampleNonProxy_AddBookmarkFromAPI(std::forward<decltype(args)>(args)...);         \
+    jni_zero::JavaRef<jstring> url_ref = jni_zero::JavaRef<jstring>::CreateLeaky(env, url);        \
+    jni_zero::JavaRef<jobject> created_ref = jni_zero::JavaRef<jobject>::CreateLeaky(env, created); \
+    jni_zero::JavaRef<jobject> isBookmark_ref = jni_zero::JavaRef<jobject>::CreateLeaky(env, isBookmark); \
+    jni_zero::JavaRef<jobject> date_ref = jni_zero::JavaRef<jobject>::CreateLeaky(env, date);      \
+    jni_zero::JavaRef<jbyteArray> favicon_ref = jni_zero::JavaRef<jbyteArray>::CreateLeaky(env, favicon); \
+    jni_zero::JavaRef<jstring> title_ref = jni_zero::JavaRef<jstring>::CreateLeaky(env, title);    \
+    jni_zero::JavaRef<jobject> visits_ref = jni_zero::JavaRef<jobject>::CreateLeaky(env, visits);  \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(JNI_SampleNonProxy_AddBookmarkFromAPI(std::forward<decltype(args)>(args)...)) {     \
+        return JNI_SampleNonProxy_AddBookmarkFromAPI(std::forward<decltype(args)>(args)...);       \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(                                                       \
+          env,                                                                                     \
+          jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller),                                   \
+          nativeChromeBrowserProvider,                                                             \
+          url_ref,                                                                                 \
+          created_ref,                                                                             \
+          isBookmark_ref,                                                                          \
+          date_ref,                                                                                \
+          favicon_ref,                                                                             \
+          title_ref,                                                                               \
+          visits_ref); }) {                                                                        \
+        return func_wrapper(                                                                       \
+            env,                                                                                   \
+            jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller),                                 \
+            nativeChromeBrowserProvider,                                                           \
+            url_ref,                                                                               \
+            created_ref,                                                                           \
+            isBookmark_ref,                                                                        \
+            date_ref,                                                                              \
+            favicon_ref,                                                                           \
+            title_ref,                                                                             \
+            visits_ref);                                                                           \
+      } else if constexpr (requires { func_wrapper(                                                \
+          jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller),                                   \
+          nativeChromeBrowserProvider,                                                             \
+          url_ref,                                                                                 \
+          created_ref,                                                                             \
+          isBookmark_ref,                                                                          \
+          date_ref,                                                                                \
+          favicon_ref,                                                                             \
+          title_ref,                                                                               \
+          visits_ref); }) {                                                                        \
+        return func_wrapper(                                                                       \
+            jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller),                                 \
+            nativeChromeBrowserProvider,                                                           \
+            url_ref,                                                                               \
+            created_ref,                                                                           \
+            isBookmark_ref,                                                                        \
+            date_ref,                                                                              \
+            favicon_ref,                                                                           \
+            title_ref,                                                                             \
+            visits_ref);                                                                           \
+      } else {                                                                                     \
+        static_assert(false, "JNI_SampleNonProxy_AddBookmarkFromAPI() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: (int32_t, const jni_zero::JavaRef<jstring>&, const jni_zero::JavaRef<jobject>&, const jni_zero::JavaRef<jobject>&, const jni_zero::JavaRef<jobject>&, const jni_zero::JavaRef<jbyteArray>&, const jni_zero::JavaRef<jstring>&, const jni_zero::JavaRef<jobject>&)"); \
+      }                                                                                            \
     };                                                                                             \
-    auto _ret = jni_zero::internal::DispatchJniFunc(                                               \
-        _jni_func_wrapper,                                                                         \
-        env,                                                                                       \
-        jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller),                                     \
-        nativeChromeBrowserProvider,                                                               \
-        jni_zero::JavaRef<jstring>::CreateLeaky(env, url),                                         \
-        jni_zero::JavaRef<jobject>::CreateLeaky(env, created),                                     \
-        jni_zero::JavaRef<jobject>::CreateLeaky(env, isBookmark),                                  \
-        jni_zero::JavaRef<jobject>::CreateLeaky(env, date),                                        \
-        jni_zero::JavaRef<jbyteArray>::CreateLeaky(env, favicon),                                  \
-        jni_zero::JavaRef<jstring>::CreateLeaky(env, title),                                       \
-        jni_zero::JavaRef<jobject>::CreateLeaky(env, visits));                                     \
-    return _ret;                                                                                   \
+    auto return_value = dependent_context(0);                                                      \
+    return return_value;                                                                           \
   }                                                                                                \
                                                                                                    \
   JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleNonProxy_nativeCreateHistoricalTabFromState( \
@@ -162,106 +236,181 @@
       jclass jcaller,                                                                              \
       jbyteArray state,                                                                            \
       int32_t tabIndex) {                                                                          \
-    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
-    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
-    decltype(JNI_SampleNonProxy_CreateHistoricalTabFromState(std::forward<decltype(args)>(args)...)) { \
-      return JNI_SampleNonProxy_CreateHistoricalTabFromState(std::forward<decltype(args)>(args)...); \
+    jni_zero::JavaRef<jbyteArray> state_ref = jni_zero::JavaRef<jbyteArray>::CreateLeaky(env, state); \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(JNI_SampleNonProxy_CreateHistoricalTabFromState(std::forward<decltype(args)>(args)...)) { \
+        return JNI_SampleNonProxy_CreateHistoricalTabFromState(std::forward<decltype(args)>(args)...); \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(env, state_ref, tabIndex); }) {                        \
+        return func_wrapper(env, state_ref, tabIndex);                                             \
+      } else if constexpr (requires { func_wrapper(state_ref, tabIndex); }) {                      \
+        return func_wrapper(state_ref, tabIndex);                                                  \
+      } else {                                                                                     \
+        static_assert(false, "JNI_SampleNonProxy_CreateHistoricalTabFromState() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: (const jni_zero::JavaRef<jbyteArray>&, int32_t)"); \
+      }                                                                                            \
     };                                                                                             \
-    jni_zero::internal::DispatchJniFunc(                                                           \
-        _jni_func_wrapper,                                                                         \
-        env,                                                                                       \
-        jni_zero::JavaRef<jbyteArray>::CreateLeaky(env, state),                                    \
-        tabIndex);                                                                                 \
+    dependent_context(0);                                                                          \
   }                                                                                                \
                                                                                                    \
   JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleNonProxy_nativeDestroy(                   \
       JNIEnv* env,                                                                                 \
       jobject jcaller,                                                                             \
       int32_t nativeChromeBrowserProvider) {                                                       \
-    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
-    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
-    decltype(JNI_SampleNonProxy_Destroy(std::forward<decltype(args)>(args)...)) {                  \
-      return JNI_SampleNonProxy_Destroy(std::forward<decltype(args)>(args)...);                    \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(JNI_SampleNonProxy_Destroy(std::forward<decltype(args)>(args)...)) {                \
+        return JNI_SampleNonProxy_Destroy(std::forward<decltype(args)>(args)...);                  \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(                                                       \
+          env,                                                                                     \
+          jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller),                                   \
+          nativeChromeBrowserProvider); }) {                                                       \
+        return func_wrapper(                                                                       \
+            env,                                                                                   \
+            jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller),                                 \
+            nativeChromeBrowserProvider);                                                          \
+      } else if constexpr (requires { func_wrapper(                                                \
+          jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller),                                   \
+          nativeChromeBrowserProvider); }) {                                                       \
+        return func_wrapper(                                                                       \
+            jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller),                                 \
+            nativeChromeBrowserProvider);                                                          \
+      } else {                                                                                     \
+        static_assert(false, "JNI_SampleNonProxy_Destroy() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: (int32_t)"); \
+      }                                                                                            \
     };                                                                                             \
-    jni_zero::internal::DispatchJniFunc(                                                           \
-        _jni_func_wrapper,                                                                         \
-        env,                                                                                       \
-        jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller),                                     \
-        nativeChromeBrowserProvider);                                                              \
+    dependent_context(0);                                                                          \
   }                                                                                                \
                                                                                                    \
   JNI_ZERO_BOUNDARY_EXPORT int32_t Java_org_jni_1zero_SampleNonProxy_nativeFindAll(                \
       JNIEnv* env,                                                                                 \
       jobject jcaller,                                                                             \
       jstring find) {                                                                              \
-    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
-    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
-    decltype(JNI_SampleNonProxy_FindAll(std::forward<decltype(args)>(args)...)) {                  \
-      return JNI_SampleNonProxy_FindAll(std::forward<decltype(args)>(args)...);                    \
+    jni_zero::JavaRef<jstring> find_ref = jni_zero::JavaRef<jstring>::CreateLeaky(env, find);      \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(JNI_SampleNonProxy_FindAll(std::forward<decltype(args)>(args)...)) {                \
+        return JNI_SampleNonProxy_FindAll(std::forward<decltype(args)>(args)...);                  \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(                                                       \
+          env,                                                                                     \
+          jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller),                                   \
+          find_ref); }) {                                                                          \
+        return func_wrapper(env, jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller), find_ref); \
+      } else if constexpr (requires { func_wrapper(                                                \
+          jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller),                                   \
+          find_ref); }) {                                                                          \
+        return func_wrapper(jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller), find_ref);      \
+      } else {                                                                                     \
+        static_assert(false, "JNI_SampleNonProxy_FindAll() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: (const jni_zero::JavaRef<jstring>&)"); \
+      }                                                                                            \
     };                                                                                             \
-    auto _ret = jni_zero::internal::DispatchJniFunc(                                               \
-        _jni_func_wrapper,                                                                         \
-        env,                                                                                       \
-        jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller),                                     \
-        jni_zero::JavaRef<jstring>::CreateLeaky(env, find));                                       \
-    return _ret;                                                                                   \
+    auto return_value = dependent_context(0);                                                      \
+    return return_value;                                                                           \
   }                                                                                                \
                                                                                                    \
   JNI_ZERO_BOUNDARY_EXPORT jobjectArray Java_org_jni_1zero_SampleNonProxy_nativeGetAutofillProfileGUIDs( \
       JNIEnv* env,                                                                                 \
       jclass jcaller) {                                                                            \
-    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
-    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
-    decltype(JNI_SampleNonProxy_GetAutofillProfileGUIDs(std::forward<decltype(args)>(args)...)) {  \
-      return JNI_SampleNonProxy_GetAutofillProfileGUIDs(std::forward<decltype(args)>(args)...);    \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(JNI_SampleNonProxy_GetAutofillProfileGUIDs(std::forward<decltype(args)>(args)...)) { \
+        return JNI_SampleNonProxy_GetAutofillProfileGUIDs(std::forward<decltype(args)>(args)...);  \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(env); }) {                                             \
+        return func_wrapper(env);                                                                  \
+      } else if constexpr (requires { func_wrapper(); }) {                                         \
+        return func_wrapper();                                                                     \
+      } else {                                                                                     \
+        static_assert(false, "JNI_SampleNonProxy_GetAutofillProfileGUIDs() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: ()"); \
+      }                                                                                            \
     };                                                                                             \
-    auto _ret = jni_zero::internal::DispatchJniFunc(_jni_func_wrapper, env);                       \
-    return _ret.ReleaseLocal();                                                                    \
+    auto return_value = dependent_context(0);                                                      \
+    return return_value.ReleaseLocal();                                                            \
   }                                                                                                \
                                                                                                    \
   JNI_ZERO_BOUNDARY_EXPORT jstring Java_org_jni_1zero_SampleNonProxy_nativeGetDomainAndRegistry(   \
       JNIEnv* env,                                                                                 \
       jclass jcaller,                                                                              \
       jstring url) {                                                                               \
-    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
-    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
-    decltype(JNI_SampleNonProxy_GetDomainAndRegistry(std::forward<decltype(args)>(args)...)) {     \
-      return JNI_SampleNonProxy_GetDomainAndRegistry(std::forward<decltype(args)>(args)...);       \
+    jni_zero::JavaRef<jstring> url_ref = jni_zero::JavaRef<jstring>::CreateLeaky(env, url);        \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(JNI_SampleNonProxy_GetDomainAndRegistry(std::forward<decltype(args)>(args)...)) {   \
+        return JNI_SampleNonProxy_GetDomainAndRegistry(std::forward<decltype(args)>(args)...);     \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(env, url_ref); }) {                                    \
+        return func_wrapper(env, url_ref);                                                         \
+      } else if constexpr (requires { func_wrapper(url_ref); }) {                                  \
+        return func_wrapper(url_ref);                                                              \
+      } else {                                                                                     \
+        static_assert(false, "JNI_SampleNonProxy_GetDomainAndRegistry() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: (const jni_zero::JavaRef<jstring>&)"); \
+      }                                                                                            \
     };                                                                                             \
-    auto _ret = jni_zero::internal::DispatchJniFunc(                                               \
-        _jni_func_wrapper,                                                                         \
-        env,                                                                                       \
-        jni_zero::JavaRef<jstring>::CreateLeaky(env, url));                                        \
-    return _ret.ReleaseLocal();                                                                    \
+    auto return_value = dependent_context(0);                                                      \
+    return return_value.ReleaseLocal();                                                            \
   }                                                                                                \
                                                                                                    \
   JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleNonProxy_nativeGetInnerClass(          \
       JNIEnv* env,                                                                                 \
       jclass jcaller) {                                                                            \
-    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
-    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
-    decltype(JNI_SampleNonProxy_GetInnerClass(std::forward<decltype(args)>(args)...)) {            \
-      return JNI_SampleNonProxy_GetInnerClass(std::forward<decltype(args)>(args)...);              \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(JNI_SampleNonProxy_GetInnerClass(std::forward<decltype(args)>(args)...)) {          \
+        return JNI_SampleNonProxy_GetInnerClass(std::forward<decltype(args)>(args)...);            \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(env); }) {                                             \
+        return func_wrapper(env);                                                                  \
+      } else if constexpr (requires { func_wrapper(); }) {                                         \
+        return func_wrapper();                                                                     \
+      } else {                                                                                     \
+        static_assert(false, "JNI_SampleNonProxy_GetInnerClass() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: ()"); \
+      }                                                                                            \
     };                                                                                             \
-    auto _ret = jni_zero::internal::DispatchJniFunc(_jni_func_wrapper, env);                       \
-    return _ret.ReleaseLocal();                                                                    \
+    auto return_value = dependent_context(0);                                                      \
+    return return_value.ReleaseLocal();                                                            \
   }                                                                                                \
                                                                                                    \
   JNI_ZERO_BOUNDARY_EXPORT jbyteArray Java_org_jni_1zero_SampleNonProxy_nativeGetStateAsByteArray( \
       JNIEnv* env,                                                                                 \
       jobject jcaller,                                                                             \
       jobject view) {                                                                              \
-    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
-    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
-    decltype(JNI_SampleNonProxy_GetStateAsByteArray(std::forward<decltype(args)>(args)...)) {      \
-      return JNI_SampleNonProxy_GetStateAsByteArray(std::forward<decltype(args)>(args)...);        \
+    jni_zero::JavaRef<jobject> view_ref = jni_zero::JavaRef<jobject>::CreateLeaky(env, view);      \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(JNI_SampleNonProxy_GetStateAsByteArray(std::forward<decltype(args)>(args)...)) {    \
+        return JNI_SampleNonProxy_GetStateAsByteArray(std::forward<decltype(args)>(args)...);      \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(                                                       \
+          env,                                                                                     \
+          jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller),                                   \
+          view_ref); }) {                                                                          \
+        return func_wrapper(env, jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller), view_ref); \
+      } else if constexpr (requires { func_wrapper(                                                \
+          jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller),                                   \
+          view_ref); }) {                                                                          \
+        return func_wrapper(jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller), view_ref);      \
+      } else {                                                                                     \
+        static_assert(false, "JNI_SampleNonProxy_GetStateAsByteArray() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: (const jni_zero::JavaRef<jobject>&)"); \
+      }                                                                                            \
     };                                                                                             \
-    auto _ret = jni_zero::internal::DispatchJniFunc(                                               \
-        _jni_func_wrapper,                                                                         \
-        env,                                                                                       \
-        jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller),                                     \
-        jni_zero::JavaRef<jobject>::CreateLeaky(env, view));                                       \
-    return _ret.ReleaseLocal();                                                                    \
+    auto return_value = dependent_context(0);                                                      \
+    return return_value.ReleaseLocal();                                                            \
   }                                                                                                \
                                                                                                    \
   JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleNonProxy_nativeGotOrientation(            \
@@ -271,65 +420,118 @@
       double alpha,                                                                                \
       double beta,                                                                                 \
       double gamma) {                                                                              \
-    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
-    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
-    decltype(JNI_SampleNonProxy_GotOrientation(std::forward<decltype(args)>(args)...)) {           \
-      return JNI_SampleNonProxy_GotOrientation(std::forward<decltype(args)>(args)...);             \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(JNI_SampleNonProxy_GotOrientation(std::forward<decltype(args)>(args)...)) {         \
+        return JNI_SampleNonProxy_GotOrientation(std::forward<decltype(args)>(args)...);           \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(                                                       \
+          env,                                                                                     \
+          jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller),                                   \
+          nativeDataFetcherImplAndroid,                                                            \
+          alpha,                                                                                   \
+          beta,                                                                                    \
+          gamma); }) {                                                                             \
+        return func_wrapper(                                                                       \
+            env,                                                                                   \
+            jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller),                                 \
+            nativeDataFetcherImplAndroid,                                                          \
+            alpha,                                                                                 \
+            beta,                                                                                  \
+            gamma);                                                                                \
+      } else if constexpr (requires { func_wrapper(                                                \
+          jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller),                                   \
+          nativeDataFetcherImplAndroid,                                                            \
+          alpha,                                                                                   \
+          beta,                                                                                    \
+          gamma); }) {                                                                             \
+        return func_wrapper(                                                                       \
+            jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller),                                 \
+            nativeDataFetcherImplAndroid,                                                          \
+            alpha,                                                                                 \
+            beta,                                                                                  \
+            gamma);                                                                                \
+      } else {                                                                                     \
+        static_assert(false, "JNI_SampleNonProxy_GotOrientation() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: (int32_t, double, double, double)"); \
+      }                                                                                            \
     };                                                                                             \
-    jni_zero::internal::DispatchJniFunc(                                                           \
-        _jni_func_wrapper,                                                                         \
-        env,                                                                                       \
-        jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller),                                     \
-        nativeDataFetcherImplAndroid,                                                              \
-        alpha,                                                                                     \
-        beta,                                                                                      \
-        gamma);                                                                                    \
+    dependent_context(0);                                                                          \
   }                                                                                                \
                                                                                                    \
   JNI_ZERO_BOUNDARY_EXPORT int32_t Java_org_jni_1zero_SampleNonProxy_nativeInit(                   \
       JNIEnv* env,                                                                                 \
       jobject jcaller) {                                                                           \
-    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
-    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
-    decltype(JNI_SampleNonProxy_Init(std::forward<decltype(args)>(args)...)) {                     \
-      return JNI_SampleNonProxy_Init(std::forward<decltype(args)>(args)...);                       \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(JNI_SampleNonProxy_Init(std::forward<decltype(args)>(args)...)) {                   \
+        return JNI_SampleNonProxy_Init(std::forward<decltype(args)>(args)...);                     \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(                                                       \
+          env,                                                                                     \
+          jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller)); }) {                             \
+        return func_wrapper(env, jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller));           \
+      } else if constexpr (requires { func_wrapper(                                                \
+          jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller)); }) {                             \
+        return func_wrapper(jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller));                \
+      } else {                                                                                     \
+        static_assert(false, "JNI_SampleNonProxy_Init() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: ()"); \
+      }                                                                                            \
     };                                                                                             \
-    auto _ret = jni_zero::internal::DispatchJniFunc(                                               \
-        _jni_func_wrapper,                                                                         \
-        env,                                                                                       \
-        jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller));                                    \
-    return _ret;                                                                                   \
+    auto return_value = dependent_context(0);                                                      \
+    return return_value;                                                                           \
   }                                                                                                \
                                                                                                    \
   JNI_ZERO_BOUNDARY_EXPORT int32_t Java_org_jni_1zero_SampleNonProxy_nativeInit(                   \
       JNIEnv* env,                                                                                 \
       jobject jcaller) {                                                                           \
-    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
-    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
-    decltype(JNI_SampleNonProxy_Init(std::forward<decltype(args)>(args)...)) {                     \
-      return JNI_SampleNonProxy_Init(std::forward<decltype(args)>(args)...);                       \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(JNI_SampleNonProxy_Init(std::forward<decltype(args)>(args)...)) {                   \
+        return JNI_SampleNonProxy_Init(std::forward<decltype(args)>(args)...);                     \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(                                                       \
+          env,                                                                                     \
+          jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller)); }) {                             \
+        return func_wrapper(env, jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller));           \
+      } else if constexpr (requires { func_wrapper(                                                \
+          jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller)); }) {                             \
+        return func_wrapper(jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller));                \
+      } else {                                                                                     \
+        static_assert(false, "JNI_SampleNonProxy_Init() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: ()"); \
+      }                                                                                            \
     };                                                                                             \
-    auto _ret = jni_zero::internal::DispatchJniFunc(                                               \
-        _jni_func_wrapper,                                                                         \
-        env,                                                                                       \
-        jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller));                                    \
-    return _ret;                                                                                   \
+    auto return_value = dependent_context(0);                                                      \
+    return return_value;                                                                           \
   }                                                                                                \
                                                                                                    \
   JNI_ZERO_BOUNDARY_EXPORT jthrowable Java_org_jni_1zero_SampleNonProxy_nativeMessWithJavaException( \
       JNIEnv* env,                                                                                 \
       jclass jcaller,                                                                              \
       jthrowable e) {                                                                              \
-    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
-    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
-    decltype(JNI_SampleNonProxy_MessWithJavaException(std::forward<decltype(args)>(args)...)) {    \
-      return JNI_SampleNonProxy_MessWithJavaException(std::forward<decltype(args)>(args)...);      \
+    jni_zero::JavaRef<jthrowable> e_ref = jni_zero::JavaRef<jthrowable>::CreateLeaky(env, e);      \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(JNI_SampleNonProxy_MessWithJavaException(std::forward<decltype(args)>(args)...)) {  \
+        return JNI_SampleNonProxy_MessWithJavaException(std::forward<decltype(args)>(args)...);    \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(env, e_ref); }) {                                      \
+        return func_wrapper(env, e_ref);                                                           \
+      } else if constexpr (requires { func_wrapper(e_ref); }) {                                    \
+        return func_wrapper(e_ref);                                                                \
+      } else {                                                                                     \
+        static_assert(false, "JNI_SampleNonProxy_MessWithJavaException() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: (const jni_zero::JavaRef<jthrowable>&)"); \
+      }                                                                                            \
     };                                                                                             \
-    auto _ret = jni_zero::internal::DispatchJniFunc(                                               \
-        _jni_func_wrapper,                                                                         \
-        env,                                                                                       \
-        jni_zero::JavaRef<jthrowable>::CreateLeaky(env, e));                                       \
-    return _ret.ReleaseLocal();                                                                    \
+    auto return_value = dependent_context(0);                                                      \
+    return return_value.ReleaseLocal();                                                            \
   }                                                                                                \
                                                                                                    \
   JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleNonProxy_nativeQueryBitmap(            \
@@ -340,21 +542,53 @@
       jstring selection,                                                                           \
       jobjectArray selectionArgs,                                                                  \
       jstring sortOrder) {                                                                         \
-    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
-    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
-    decltype(JNI_SampleNonProxy_QueryBitmap(std::forward<decltype(args)>(args)...)) {              \
-      return JNI_SampleNonProxy_QueryBitmap(std::forward<decltype(args)>(args)...);                \
+    jni_zero::JavaRef<jobjectArray> projection_ref = jni_zero::JavaRef<jobjectArray>::CreateLeaky(env, projection); \
+    jni_zero::JavaRef<jstring> selection_ref = jni_zero::JavaRef<jstring>::CreateLeaky(env, selection); \
+    jni_zero::JavaRef<jobjectArray> selectionArgs_ref = jni_zero::JavaRef<jobjectArray>::CreateLeaky(env, selectionArgs); \
+    jni_zero::JavaRef<jstring> sortOrder_ref = jni_zero::JavaRef<jstring>::CreateLeaky(env, sortOrder); \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(JNI_SampleNonProxy_QueryBitmap(std::forward<decltype(args)>(args)...)) {            \
+        return JNI_SampleNonProxy_QueryBitmap(std::forward<decltype(args)>(args)...);              \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(                                                       \
+          env,                                                                                     \
+          jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller),                                   \
+          nativeChromeBrowserProvider,                                                             \
+          projection_ref,                                                                          \
+          selection_ref,                                                                           \
+          selectionArgs_ref,                                                                       \
+          sortOrder_ref); }) {                                                                     \
+        return func_wrapper(                                                                       \
+            env,                                                                                   \
+            jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller),                                 \
+            nativeChromeBrowserProvider,                                                           \
+            projection_ref,                                                                        \
+            selection_ref,                                                                         \
+            selectionArgs_ref,                                                                     \
+            sortOrder_ref);                                                                        \
+      } else if constexpr (requires { func_wrapper(                                                \
+          jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller),                                   \
+          nativeChromeBrowserProvider,                                                             \
+          projection_ref,                                                                          \
+          selection_ref,                                                                           \
+          selectionArgs_ref,                                                                       \
+          sortOrder_ref); }) {                                                                     \
+        return func_wrapper(                                                                       \
+            jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller),                                 \
+            nativeChromeBrowserProvider,                                                           \
+            projection_ref,                                                                        \
+            selection_ref,                                                                         \
+            selectionArgs_ref,                                                                     \
+            sortOrder_ref);                                                                        \
+      } else {                                                                                     \
+        static_assert(false, "JNI_SampleNonProxy_QueryBitmap() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: (int32_t, const jni_zero::JavaRef<jobjectArray>&, const jni_zero::JavaRef<jstring>&, const jni_zero::JavaRef<jobjectArray>&, const jni_zero::JavaRef<jstring>&)"); \
+      }                                                                                            \
     };                                                                                             \
-    auto _ret = jni_zero::internal::DispatchJniFunc(                                               \
-        _jni_func_wrapper,                                                                         \
-        env,                                                                                       \
-        jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller),                                     \
-        nativeChromeBrowserProvider,                                                               \
-        jni_zero::JavaRef<jobjectArray>::CreateLeaky(env, projection),                             \
-        jni_zero::JavaRef<jstring>::CreateLeaky(env, selection),                                   \
-        jni_zero::JavaRef<jobjectArray>::CreateLeaky(env, selectionArgs),                          \
-        jni_zero::JavaRef<jstring>::CreateLeaky(env, sortOrder));                                  \
-    return _ret.ReleaseLocal();                                                                    \
+    auto return_value = dependent_context(0);                                                      \
+    return return_value.ReleaseLocal();                                                            \
   }                                                                                                \
                                                                                                    \
   JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleNonProxy_nativeSetRecognitionResults(     \
@@ -362,17 +596,37 @@
       jobject jcaller,                                                                             \
       int32_t sessionId,                                                                           \
       jobjectArray results) {                                                                      \
-    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
-    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
-    decltype(JNI_SampleNonProxy_SetRecognitionResults(std::forward<decltype(args)>(args)...)) {    \
-      return JNI_SampleNonProxy_SetRecognitionResults(std::forward<decltype(args)>(args)...);      \
+    jni_zero::JavaRef<jobjectArray> results_ref = jni_zero::JavaRef<jobjectArray>::CreateLeaky(env, results); \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(JNI_SampleNonProxy_SetRecognitionResults(std::forward<decltype(args)>(args)...)) {  \
+        return JNI_SampleNonProxy_SetRecognitionResults(std::forward<decltype(args)>(args)...);    \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(                                                       \
+          env,                                                                                     \
+          jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller),                                   \
+          sessionId,                                                                               \
+          results_ref); }) {                                                                       \
+        return func_wrapper(                                                                       \
+            env,                                                                                   \
+            jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller),                                 \
+            sessionId,                                                                             \
+            results_ref);                                                                          \
+      } else if constexpr (requires { func_wrapper(                                                \
+          jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller),                                   \
+          sessionId,                                                                               \
+          results_ref); }) {                                                                       \
+        return func_wrapper(                                                                       \
+            jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller),                                 \
+            sessionId,                                                                             \
+            results_ref);                                                                          \
+      } else {                                                                                     \
+        static_assert(false, "JNI_SampleNonProxy_SetRecognitionResults() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: (int32_t, const jni_zero::JavaRef<jobjectArray>&)"); \
+      }                                                                                            \
     };                                                                                             \
-    jni_zero::internal::DispatchJniFunc(                                                           \
-        _jni_func_wrapper,                                                                         \
-        env,                                                                                       \
-        jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller),                                     \
-        sessionId,                                                                                 \
-        jni_zero::JavaRef<jobjectArray>::CreateLeaky(env, results));                               \
+    dependent_context(0);                                                                          \
   }                                                                                                \
                                                                                                    \
                                                                                                    \

@@ -67,17 +67,25 @@
       jclass jcaller,                                                                              \
       jobject caller,                                                                              \
       jobject b) {                                                                                 \
-    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
-    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
-    decltype(JNI_SampleProxyEdgeCases_AddStructB(std::forward<decltype(args)>(args)...)) {         \
-      return JNI_SampleProxyEdgeCases_AddStructB(std::forward<decltype(args)>(args)...);           \
+    jni_zero::JavaRef<jobject> caller_ref = jni_zero::JavaRef<jobject>::CreateLeaky(env, caller);  \
+    jni_zero::JavaRef<jobject> b_ref = jni_zero::JavaRef<jobject>::CreateLeaky(env, b);            \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(JNI_SampleProxyEdgeCases_AddStructB(std::forward<decltype(args)>(args)...)) {       \
+        return JNI_SampleProxyEdgeCases_AddStructB(std::forward<decltype(args)>(args)...);         \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(env, caller_ref, b_ref); }) {                          \
+        return func_wrapper(env, caller_ref, b_ref);                                               \
+      } else if constexpr (requires { func_wrapper(caller_ref, b_ref); }) {                        \
+        return func_wrapper(caller_ref, b_ref);                                                    \
+      } else {                                                                                     \
+        static_assert(false, "JNI_SampleProxyEdgeCases_AddStructB() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: (const jni_zero::JavaRef<jobject>&, const jni_zero::JavaRef<jobject>&)"); \
+      }                                                                                            \
     };                                                                                             \
-    auto _ret = jni_zero::internal::DispatchJniFunc(                                               \
-        _jni_func_wrapper,                                                                         \
-        env,                                                                                       \
-        jni_zero::JavaRef<jobject>::CreateLeaky(env, caller),                                      \
-        jni_zero::JavaRef<jobject>::CreateLeaky(env, b));                                          \
-    return _ret;                                                                                   \
+    auto return_value = dependent_context(0);                                                      \
+    return return_value;                                                                           \
   }                                                                                                \
                                                                                                    \
   JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleProxyEdgeCases_1arrayTypes1( \
@@ -85,17 +93,25 @@
       jclass jcaller,                                                                              \
       jobject a,                                                                                   \
       jobject b) {                                                                                 \
-    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
-    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
-    decltype(JNI_SampleProxyEdgeCases_ArrayTypes1(std::forward<decltype(args)>(args)...)) {        \
-      return JNI_SampleProxyEdgeCases_ArrayTypes1(std::forward<decltype(args)>(args)...);          \
+    jni_zero::JavaRef<jintArray> a_ref = jni_zero::JavaRef<jintArray>::CreateLeaky(env, static_cast<jintArray>(a)); \
+    jni_zero::JavaRef<jobjectArray> b_ref = jni_zero::JavaRef<jobjectArray>::CreateLeaky(env, static_cast<jobjectArray>(b)); \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(JNI_SampleProxyEdgeCases_ArrayTypes1(std::forward<decltype(args)>(args)...)) {      \
+        return JNI_SampleProxyEdgeCases_ArrayTypes1(std::forward<decltype(args)>(args)...);        \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(env, a_ref, b_ref); }) {                               \
+        return func_wrapper(env, a_ref, b_ref);                                                    \
+      } else if constexpr (requires { func_wrapper(a_ref, b_ref); }) {                             \
+        return func_wrapper(a_ref, b_ref);                                                         \
+      } else {                                                                                     \
+        static_assert(false, "JNI_SampleProxyEdgeCases_ArrayTypes1() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: (const jni_zero::JavaRef<jintArray>&, const jni_zero::JavaRef<jobjectArray>&)"); \
+      }                                                                                            \
     };                                                                                             \
-    auto _ret = jni_zero::internal::DispatchJniFunc(                                               \
-        _jni_func_wrapper,                                                                         \
-        env,                                                                                       \
-        jni_zero::JavaRef<jintArray>::CreateLeaky(env, static_cast<jintArray>(a)),                 \
-        jni_zero::JavaRef<jobjectArray>::CreateLeaky(env, static_cast<jobjectArray>(b)));          \
-    return _ret.ReleaseLocal();                                                                    \
+    auto return_value = dependent_context(0);                                                      \
+    return return_value.ReleaseLocal();                                                            \
   }                                                                                                \
                                                                                                    \
   JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleProxyEdgeCases_1arrayTypes2( \
@@ -103,44 +119,70 @@
       jclass jcaller,                                                                              \
       jobject a,                                                                                   \
       jobject b) {                                                                                 \
-    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
-    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
-    decltype(JNI_SampleProxyEdgeCases_ArrayTypes2(std::forward<decltype(args)>(args)...)) {        \
-      return JNI_SampleProxyEdgeCases_ArrayTypes2(std::forward<decltype(args)>(args)...);          \
+    jni_zero::JavaRef<jintArray> a_ref = jni_zero::JavaRef<jintArray>::CreateLeaky(env, static_cast<jintArray>(a)); \
+    jni_zero::JavaRef<jobjectArray> b_ref = jni_zero::JavaRef<jobjectArray>::CreateLeaky(env, static_cast<jobjectArray>(b)); \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(JNI_SampleProxyEdgeCases_ArrayTypes2(std::forward<decltype(args)>(args)...)) {      \
+        return JNI_SampleProxyEdgeCases_ArrayTypes2(std::forward<decltype(args)>(args)...);        \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(env, a_ref, b_ref); }) {                               \
+        return func_wrapper(env, a_ref, b_ref);                                                    \
+      } else if constexpr (requires { func_wrapper(a_ref, b_ref); }) {                             \
+        return func_wrapper(a_ref, b_ref);                                                         \
+      } else {                                                                                     \
+        static_assert(false, "JNI_SampleProxyEdgeCases_ArrayTypes2() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: (const jni_zero::JavaRef<jintArray>&, const jni_zero::JavaRef<jobjectArray>&)"); \
+      }                                                                                            \
     };                                                                                             \
-    auto _ret = jni_zero::internal::DispatchJniFunc(                                               \
-        _jni_func_wrapper,                                                                         \
-        env,                                                                                       \
-        jni_zero::JavaRef<jintArray>::CreateLeaky(env, static_cast<jintArray>(a)),                 \
-        jni_zero::JavaRef<jobjectArray>::CreateLeaky(env, static_cast<jobjectArray>(b)));          \
-    return _ret.ReleaseLocal();                                                                    \
+    auto return_value = dependent_context(0);                                                      \
+    return return_value.ReleaseLocal();                                                            \
   }                                                                                                \
                                                                                                    \
   JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleProxyEdgeCases_1foo_1_1weirdly_1_1escaped_1name1( \
       JNIEnv* env,                                                                                 \
       jclass jcaller) {                                                                            \
-    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
-    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
-    decltype(JNI_SampleProxyEdgeCases_Foo__weirdly__escaped_name1(std::forward<decltype(args)>(args)...)) { \
-      return JNI_SampleProxyEdgeCases_Foo__weirdly__escaped_name1(std::forward<decltype(args)>(args)...); \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(JNI_SampleProxyEdgeCases_Foo__weirdly__escaped_name1(std::forward<decltype(args)>(args)...)) { \
+        return JNI_SampleProxyEdgeCases_Foo__weirdly__escaped_name1(std::forward<decltype(args)>(args)...); \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(env); }) {                                             \
+        return func_wrapper(env);                                                                  \
+      } else if constexpr (requires { func_wrapper(); }) {                                         \
+        return func_wrapper();                                                                     \
+      } else {                                                                                     \
+        static_assert(false, "JNI_SampleProxyEdgeCases_Foo__weirdly__escaped_name1() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: ()"); \
+      }                                                                                            \
     };                                                                                             \
-    jni_zero::internal::DispatchJniFunc(_jni_func_wrapper, env);                                   \
+    dependent_context(0);                                                                          \
   }                                                                                                \
                                                                                                    \
   JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleProxyEdgeCases_1genericsWithNestedClassArray( \
       JNIEnv* env,                                                                                 \
       jclass jcaller,                                                                              \
       jobject arg) {                                                                               \
-    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
-    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
-    decltype(JNI_SampleProxyEdgeCases_GenericsWithNestedClassArray(std::forward<decltype(args)>(args)...)) { \
-      return JNI_SampleProxyEdgeCases_GenericsWithNestedClassArray(std::forward<decltype(args)>(args)...); \
+    jni_zero::JavaRef<jobjectArray> arg_ref = jni_zero::JavaRef<jobjectArray>::CreateLeaky(env, static_cast<jobjectArray>(arg)); \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(JNI_SampleProxyEdgeCases_GenericsWithNestedClassArray(std::forward<decltype(args)>(args)...)) { \
+        return JNI_SampleProxyEdgeCases_GenericsWithNestedClassArray(std::forward<decltype(args)>(args)...); \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(env, arg_ref); }) {                                    \
+        return func_wrapper(env, arg_ref);                                                         \
+      } else if constexpr (requires { func_wrapper(arg_ref); }) {                                  \
+        return func_wrapper(arg_ref);                                                              \
+      } else {                                                                                     \
+        static_assert(false, "JNI_SampleProxyEdgeCases_GenericsWithNestedClassArray() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: (const jni_zero::JavaRef<jobjectArray>&)"); \
+      }                                                                                            \
     };                                                                                             \
-    auto _ret = jni_zero::internal::DispatchJniFunc(                                               \
-        _jni_func_wrapper,                                                                         \
-        env,                                                                                       \
-        jni_zero::JavaRef<jobjectArray>::CreateLeaky(env, static_cast<jobjectArray>(arg)));        \
-    return _ret.ReleaseLocal();                                                                    \
+    auto return_value = dependent_context(0);                                                      \
+    return return_value.ReleaseLocal();                                                            \
   }                                                                                                \
                                                                                                    \
   JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleProxyEdgeCases_1setBool( \
@@ -148,78 +190,134 @@
       jclass jcaller,                                                                              \
       jobject b,                                                                                   \
       jobject i) {                                                                                 \
-    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
-    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
-    decltype(JNI_SampleProxyEdgeCases_SetBool(std::forward<decltype(args)>(args)...)) {            \
-      return JNI_SampleProxyEdgeCases_SetBool(std::forward<decltype(args)>(args)...);              \
+    jni_zero::JavaRef<jobject> b_ref = jni_zero::JavaRef<jobject>::CreateLeaky(env, b);            \
+    jni_zero::JavaRef<jobject> i_ref = jni_zero::JavaRef<jobject>::CreateLeaky(env, i);            \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(JNI_SampleProxyEdgeCases_SetBool(std::forward<decltype(args)>(args)...)) {          \
+        return JNI_SampleProxyEdgeCases_SetBool(std::forward<decltype(args)>(args)...);            \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(env, b_ref, i_ref); }) {                               \
+        return func_wrapper(env, b_ref, i_ref);                                                    \
+      } else if constexpr (requires { func_wrapper(b_ref, i_ref); }) {                             \
+        return func_wrapper(b_ref, i_ref);                                                         \
+      } else {                                                                                     \
+        static_assert(false, "JNI_SampleProxyEdgeCases_SetBool() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: (const jni_zero::JavaRef<jobject>&, const jni_zero::JavaRef<jobject>&)"); \
+      }                                                                                            \
     };                                                                                             \
-    jni_zero::internal::DispatchJniFunc(                                                           \
-        _jni_func_wrapper,                                                                         \
-        env,                                                                                       \
-        jni_zero::JavaRef<jobject>::CreateLeaky(env, b),                                           \
-        jni_zero::JavaRef<jobject>::CreateLeaky(env, i));                                          \
+    dependent_context(0);                                                                          \
   }                                                                                                \
                                                                                                    \
   JNI_ZERO_BOUNDARY_EXPORT bool Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleProxyEdgeCases_1setStringBuilder( \
       JNIEnv* env,                                                                                 \
       jclass jcaller,                                                                              \
       jobject sb) {                                                                                \
-    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
-    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
-    decltype(JNI_SampleProxyEdgeCases_SetStringBuilder(std::forward<decltype(args)>(args)...)) {   \
-      return JNI_SampleProxyEdgeCases_SetStringBuilder(std::forward<decltype(args)>(args)...);     \
+    jni_zero::JavaRef<jobject> sb_ref = jni_zero::JavaRef<jobject>::CreateLeaky(env, sb);          \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(JNI_SampleProxyEdgeCases_SetStringBuilder(std::forward<decltype(args)>(args)...)) { \
+        return JNI_SampleProxyEdgeCases_SetStringBuilder(std::forward<decltype(args)>(args)...);   \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(env, sb_ref); }) {                                     \
+        return func_wrapper(env, sb_ref);                                                          \
+      } else if constexpr (requires { func_wrapper(sb_ref); }) {                                   \
+        return func_wrapper(sb_ref);                                                               \
+      } else {                                                                                     \
+        static_assert(false, "JNI_SampleProxyEdgeCases_SetStringBuilder() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: (const jni_zero::JavaRef<jobject>&)"); \
+      }                                                                                            \
     };                                                                                             \
-    auto _ret = jni_zero::internal::DispatchJniFunc(                                               \
-        _jni_func_wrapper,                                                                         \
-        env,                                                                                       \
-        jni_zero::JavaRef<jobject>::CreateLeaky(env, sb));                                         \
-    return _ret;                                                                                   \
+    auto return_value = dependent_context(0);                                                      \
+    return return_value;                                                                           \
   }                                                                                                \
                                                                                                    \
   JNI_ZERO_BOUNDARY_EXPORT int32_t Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleProxyEdgeCases_1setStringBuilder( \
       JNIEnv* env,                                                                                 \
       jclass jcaller,                                                                              \
       int32_t sb) {                                                                                \
-    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
-    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
-    decltype(JNI_SampleProxyEdgeCases_SetStringBuilder(std::forward<decltype(args)>(args)...)) {   \
-      return JNI_SampleProxyEdgeCases_SetStringBuilder(std::forward<decltype(args)>(args)...);     \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(JNI_SampleProxyEdgeCases_SetStringBuilder(std::forward<decltype(args)>(args)...)) { \
+        return JNI_SampleProxyEdgeCases_SetStringBuilder(std::forward<decltype(args)>(args)...);   \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(env, sb); }) {                                         \
+        return func_wrapper(env, sb);                                                              \
+      } else if constexpr (requires { func_wrapper(sb); }) {                                       \
+        return func_wrapper(sb);                                                                   \
+      } else {                                                                                     \
+        static_assert(false, "JNI_SampleProxyEdgeCases_SetStringBuilder() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: (int32_t)"); \
+      }                                                                                            \
     };                                                                                             \
-    auto _ret = jni_zero::internal::DispatchJniFunc(_jni_func_wrapper, env, sb);                   \
-    return _ret;                                                                                   \
+    auto return_value = dependent_context(0);                                                      \
+    return return_value;                                                                           \
   }                                                                                                \
                                                                                                    \
   JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleProxyEdgeCases_1fooForTest( \
       JNIEnv* env,                                                                                 \
       jclass jcaller) {                                                                            \
-    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
-    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
-    decltype(JNI_SampleProxyEdgeCases_FooForTest(std::forward<decltype(args)>(args)...)) {         \
-      return JNI_SampleProxyEdgeCases_FooForTest(std::forward<decltype(args)>(args)...);           \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(JNI_SampleProxyEdgeCases_FooForTest(std::forward<decltype(args)>(args)...)) {       \
+        return JNI_SampleProxyEdgeCases_FooForTest(std::forward<decltype(args)>(args)...);         \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(env); }) {                                             \
+        return func_wrapper(env);                                                                  \
+      } else if constexpr (requires { func_wrapper(); }) {                                         \
+        return func_wrapper();                                                                     \
+      } else {                                                                                     \
+        static_assert(false, "JNI_SampleProxyEdgeCases_FooForTest() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: ()"); \
+      }                                                                                            \
     };                                                                                             \
-    jni_zero::internal::DispatchJniFunc(_jni_func_wrapper, env);                                   \
+    dependent_context(0);                                                                          \
   }                                                                                                \
                                                                                                    \
   JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleProxyEdgeCases_1fooForTesting( \
       JNIEnv* env,                                                                                 \
       jclass jcaller) {                                                                            \
-    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
-    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
-    decltype(JNI_SampleProxyEdgeCases_FooForTesting(std::forward<decltype(args)>(args)...)) {      \
-      return JNI_SampleProxyEdgeCases_FooForTesting(std::forward<decltype(args)>(args)...);        \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(JNI_SampleProxyEdgeCases_FooForTesting(std::forward<decltype(args)>(args)...)) {    \
+        return JNI_SampleProxyEdgeCases_FooForTesting(std::forward<decltype(args)>(args)...);      \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(env); }) {                                             \
+        return func_wrapper(env);                                                                  \
+      } else if constexpr (requires { func_wrapper(); }) {                                         \
+        return func_wrapper();                                                                     \
+      } else {                                                                                     \
+        static_assert(false, "JNI_SampleProxyEdgeCases_FooForTesting() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: ()"); \
+      }                                                                                            \
     };                                                                                             \
-    jni_zero::internal::DispatchJniFunc(_jni_func_wrapper, env);                                   \
+    dependent_context(0);                                                                          \
   }                                                                                                \
                                                                                                    \
   JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleProxyEdgeCases_1fooForTests( \
       JNIEnv* env,                                                                                 \
       jclass jcaller) {                                                                            \
-    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
-    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
-    decltype(JNI_SampleProxyEdgeCases_FooForTests(std::forward<decltype(args)>(args)...)) {        \
-      return JNI_SampleProxyEdgeCases_FooForTests(std::forward<decltype(args)>(args)...);          \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(JNI_SampleProxyEdgeCases_FooForTests(std::forward<decltype(args)>(args)...)) {      \
+        return JNI_SampleProxyEdgeCases_FooForTests(std::forward<decltype(args)>(args)...);        \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(env); }) {                                             \
+        return func_wrapper(env);                                                                  \
+      } else if constexpr (requires { func_wrapper(); }) {                                         \
+        return func_wrapper();                                                                     \
+      } else {                                                                                     \
+        static_assert(false, "JNI_SampleProxyEdgeCases_FooForTests() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: ()"); \
+      }                                                                                            \
     };                                                                                             \
-    jni_zero::internal::DispatchJniFunc(_jni_func_wrapper, env);                                   \
+    dependent_context(0);                                                                          \
   }                                                                                                \
                                                                                                    \
   JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleProxyEdgeCases_nativeInstanceMethod(      \
@@ -227,26 +325,46 @@
       jobject jcaller,                                                                             \
       int64_t nativeInstance) {                                                                    \
     Instance* _ptr = reinterpret_cast<Instance*>(nativeInstance);                                  \
-    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
-    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
-    decltype(_ptr->InstanceMethod(std::forward<decltype(args)>(args)...)) {                        \
-      return _ptr->InstanceMethod(std::forward<decltype(args)>(args)...);                          \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(_ptr->InstanceMethod(std::forward<decltype(args)>(args)...)) {                      \
+        return _ptr->InstanceMethod(std::forward<decltype(args)>(args)...);                        \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(                                                       \
+          env,                                                                                     \
+          jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller)); }) {                             \
+        return func_wrapper(env, jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller));           \
+      } else if constexpr (requires { func_wrapper(                                                \
+          jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller)); }) {                             \
+        return func_wrapper(jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller));                \
+      } else {                                                                                     \
+        static_assert(false, "Instance::InstanceMethod() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: ()"); \
+      }                                                                                            \
     };                                                                                             \
-    jni_zero::internal::DispatchJniFunc(                                                           \
-        _jni_func_wrapper,                                                                         \
-        env,                                                                                       \
-        jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller));                                    \
+    dependent_context(0);                                                                          \
   }                                                                                                \
                                                                                                    \
   JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleProxyEdgeCases_nativeStaticMethod(        \
       JNIEnv* env,                                                                                 \
       jclass jcaller) {                                                                            \
-    /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
-    auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
-    decltype(JNI_SampleProxyEdgeCases_StaticMethod(std::forward<decltype(args)>(args)...)) {       \
-      return JNI_SampleProxyEdgeCases_StaticMethod(std::forward<decltype(args)>(args)...);         \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(JNI_SampleProxyEdgeCases_StaticMethod(std::forward<decltype(args)>(args)...)) {     \
+        return JNI_SampleProxyEdgeCases_StaticMethod(std::forward<decltype(args)>(args)...);       \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(env); }) {                                             \
+        return func_wrapper(env);                                                                  \
+      } else if constexpr (requires { func_wrapper(); }) {                                         \
+        return func_wrapper();                                                                     \
+      } else {                                                                                     \
+        static_assert(false, "JNI_SampleProxyEdgeCases_StaticMethod() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: ()"); \
+      }                                                                                            \
     };                                                                                             \
-    jni_zero::internal::DispatchJniFunc(_jni_func_wrapper, env);                                   \
+    dependent_context(0);                                                                          \
   }                                                                                                \
                                                                                                    \
                                                                                                    \
