@@ -11,5 +11,6 @@ source_set("content_annotator") {
   deps = [
     "//base",
     "//components/keyed_service/core",
+    "//components/page_content_annotations/core",
   ]
 }

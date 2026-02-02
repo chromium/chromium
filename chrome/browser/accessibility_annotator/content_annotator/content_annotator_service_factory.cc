@@ -5,6 +5,7 @@
 #include "chrome/browser/accessibility_annotator/content_annotator/content_annotator_service_factory.h"
 
 #include "base/feature_list.h"
+#include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/accessibility_annotator/content/content_annotator/content_annotator_service.h"
 #include "components/accessibility_annotator/core/public/accessibility_annotator_features.h"
@@ -29,7 +30,9 @@ ContentAnnotatorServiceFactory::ContentAnnotatorServiceFactory()
           "ContentAnnotatorService",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
-              .Build()) {}
+              .Build()) {
+  DependsOn(PageContentAnnotationsServiceFactory::GetInstance());
+}
 
 ContentAnnotatorServiceFactory::~ContentAnnotatorServiceFactory() = default;
 
@@ -39,7 +42,15 @@ ContentAnnotatorServiceFactory::BuildServiceInstanceForBrowserContext(
   if (!base::FeatureList::IsEnabled(kContentAnnotator)) {
     return nullptr;
   }
-  return std::make_unique<ContentAnnotatorService>();
+  Profile* profile = Profile::FromBrowserContext(context);
+  page_content_annotations::PageContentAnnotationsService*
+      page_content_annotations_service =
+          PageContentAnnotationsServiceFactory::GetForProfile(profile);
+  if (!page_content_annotations_service) {
+    return nullptr;
+  }
+  return std::make_unique<ContentAnnotatorService>(
+      *page_content_annotations_service);
 }
 
 bool ContentAnnotatorServiceFactory::ServiceIsCreatedWithBrowserContext()

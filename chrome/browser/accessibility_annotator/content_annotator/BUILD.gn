@@ -10,6 +10,7 @@ source_set("content_annotator") {
 
   deps = [
     "//base",
+    "//chrome/browser/page_content_annotations",
     "//chrome/browser/profiles:profile",
     "//components/accessibility_annotator/content/content_annotator",
     "//components/accessibility_annotator/core/public:features",
@@ -23,8 +24,10 @@ source_set("unit_tests") {
   deps = [
     ":content_annotator",
     "//base/test:test_support",
+    "//chrome/browser/page_content_annotations",
     "//chrome/test:test_support",
     "//components/accessibility_annotator/core/public:features",
+    "//components/page_content_annotations/core:test_support",
     "//content/test:test_support",
     "//testing/gtest",
   ]
