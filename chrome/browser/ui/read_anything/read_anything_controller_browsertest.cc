@@ -75,7 +75,13 @@ class ReadAnythingControllerBrowserTest : public InProcessBrowserTest {
 #endif
         },
         {});
+    ReadAnythingController::SetFreezeDistillationOnCreationForTesting(true);
     InProcessBrowserTest::SetUp();
+  }
+
+  void TearDown() override {
+    ReadAnythingController::SetFreezeDistillationOnCreationForTesting(false);
+    InProcessBrowserTest::TearDown();
   }
 
   content::WebContents* GetSidePanelWebContents() {
@@ -788,7 +794,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   ASSERT_TRUE(tab);
   auto* controller = ReadAnythingController::From(tab);
   ASSERT_TRUE(controller);
-  controller->LockDistillationStateForTesting();
 
   // Show Immersive UI
   controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
@@ -893,7 +898,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   ASSERT_TRUE(tab);
   auto* controller = ReadAnythingController::From(tab);
   ASSERT_TRUE(controller);
-  controller->LockDistillationStateForTesting();
   controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
   WaitForOverlayVisibility(true);
   AssertOverlayVisibility(true);
@@ -995,7 +999,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   ASSERT_TRUE(tab);
   auto* controller = ReadAnythingController::From(tab);
   ASSERT_TRUE(controller);
-  controller->LockDistillationStateForTesting();
   auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
 
   // Open Side Panel
@@ -1182,7 +1185,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   ASSERT_TRUE(tab);
   auto* controller = ReadAnythingController::From(tab);
   ASSERT_TRUE(controller);
-  controller->LockDistillationStateForTesting();
   auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
 
   // Open Side Panel
@@ -1239,7 +1241,6 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(tab);
   auto* controller = ReadAnythingController::From(tab);
   ASSERT_TRUE(controller);
-  controller->LockDistillationStateForTesting();
   auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
 
   // Open Side Panel
@@ -1389,6 +1390,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(tab);
   auto* controller = ReadAnythingController::From(tab);
   ASSERT_TRUE(controller);
+  controller->UnlockDistillationStateForTesting();
   auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
 
   // Show Immersive UI.
@@ -1415,6 +1417,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(tab);
   auto* controller = ReadAnythingController::From(tab);
   ASSERT_TRUE(controller);
+  controller->UnlockDistillationStateForTesting();
   auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
 
   // Show Immersive UI.
@@ -1439,6 +1442,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(tab);
   auto* controller = ReadAnythingController::From(tab);
   ASSERT_TRUE(controller);
+  controller->UnlockDistillationStateForTesting();
   auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
 
   // Show Side Panel UI.
@@ -1466,6 +1470,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(tab);
   auto* controller = ReadAnythingController::From(tab);
   ASSERT_TRUE(controller);
+  controller->UnlockDistillationStateForTesting();
   auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
 
   // Start with reading mode closed.
@@ -1548,7 +1553,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   ReadAnythingController* ra_controller_tab_b =
       ReadAnythingController::From(tab_b);
   ASSERT_TRUE(ra_controller_tab_b);
-  ra_controller_tab_b->LockDistillationStateForTesting();
 
   // Open IRM on Tab B.
   ra_controller_tab_b->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
@@ -1581,7 +1585,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   ReadAnythingController* ra_controller_tab_a =
       ReadAnythingController::From(tab_a);
   ASSERT_TRUE(ra_controller_tab_a);
-  ra_controller_tab_a->LockDistillationStateForTesting();
   ASSERT_EQ(1, tab_strip_model->count());
   ASSERT_EQ(0, tab_strip_model->active_index());
 
@@ -1606,7 +1609,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   ReadAnythingController* ra_controller_tab_b =
       ReadAnythingController::From(tab_b);
   ASSERT_TRUE(ra_controller_tab_b);
-  ra_controller_tab_b->LockDistillationStateForTesting();
 
   // Open IRM on Tab B.
   ra_controller_tab_b->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
@@ -1654,7 +1656,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   // Open IRM on active tab (Tab B)
   tabs::TabInterface* tab_b = tab_strip_model->GetActiveTab();
   auto* controller_b = ReadAnythingController::From(tab_b);
-  controller_b->LockDistillationStateForTesting();
   controller_b->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
   EmitWebUIShowEvent(GetImmersiveOverlayForTab(1));
   ASSERT_TRUE(
@@ -1676,7 +1677,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   // Open IRM on active tab (Tab A)
   tabs::TabInterface* tab_a = tab_strip_model->GetActiveTab();
   auto* controller_a = ReadAnythingController::From(tab_a);
-  controller_a->LockDistillationStateForTesting();
   controller_a->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
   EmitWebUIShowEvent(GetImmersiveOverlayForTab(0));
   ASSERT_TRUE(
@@ -1700,7 +1700,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   tabs::TabInterface* tab_a = tab_strip_model->GetActiveTab();
   auto* controller_a = ReadAnythingController::From(tab_a);
-  controller_a->LockDistillationStateForTesting();
   controller_a->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
   EmitWebUIShowEvent();
   AssertOverlayVisibility(/*visible=*/true);
@@ -1711,7 +1710,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   content::WaitForLoadStop(tab_strip_model->GetWebContentsAt(1));
   tabs::TabInterface* tab_b = tab_strip_model->GetActiveTab();
   auto* controller_b = ReadAnythingController::From(tab_b);
-  controller_b->LockDistillationStateForTesting();
   controller_b->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
   EmitWebUIShowEvent();
   AssertOverlayVisibility(/*visible=*/true);

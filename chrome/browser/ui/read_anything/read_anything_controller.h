@@ -151,7 +151,14 @@ class ReadAnythingController {
   void SetPresentationState(PresentationState new_state);
 
   void OnDistillationStateChanged(DistillationState new_state);
-  void LockDistillationStateForTesting();
+
+  // For testing only. Allows the distillation-related reactions to occur.
+  void UnlockDistillationStateForTesting();
+
+  // For testing only. Pauses distillation-related reactions from occurring.
+  // Only affects new ReadAnythingController instances created after this flag
+  // is set.
+  static void SetFreezeDistillationOnCreationForTesting(bool locked);
 
   // Lazily creates and returns the WebUIContentsWrapper for the
   // Reading Mode WebUI. Transfers ownership of the WebUIContentsWrapper to the
@@ -254,6 +261,8 @@ class ReadAnythingController {
   base::ScopedClosureRunner main_contents_capturer_handle_;
 
   raw_ptr<ReadAnythingService> active_service_ = nullptr;
+
+  static bool freeze_distillation_for_testing_;
 
   base::WeakPtrFactory<ReadAnythingController> weak_factory_{this};
 };

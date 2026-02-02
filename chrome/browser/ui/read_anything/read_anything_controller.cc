@@ -77,6 +77,16 @@ ReadAnythingControllerGlue::ReadAnythingControllerGlue(
     : content::WebContentsUserData<ReadAnythingControllerGlue>(*contents),
       controller_(controller) {}
 
+// static
+bool ReadAnythingController::freeze_distillation_for_testing_ = false;
+
+// static
+void ReadAnythingController::
+    SetFreezeDistillationOnCreationForTesting(  // IN-TEST
+        bool locked) {
+  freeze_distillation_for_testing_ = locked;
+}
+
 ReadAnythingController* ReadAnythingController::From(tabs::TabInterface* tab) {
   return Get(tab->GetUnownedUserDataHost());
 }
@@ -89,7 +99,8 @@ ReadAnythingController::ReadAnythingController(
       read_anything_side_panel_controller_(
           std::make_unique<ReadAnythingSidePanelController>(
               tab,
-              side_panel_registry)) {
+              side_panel_registry)),
+      distillation_state_locked_for_testing_(freeze_distillation_for_testing_) {
   // This controller should only be instantiated if
   // IsImmersiveReadAnythingEnabled is enabled
   CHECK(features::IsImmersiveReadAnythingEnabled());
@@ -456,8 +467,8 @@ void ReadAnythingController::OnDistillationStateChanged(
   distillation_state_ = new_state;
 }
 
-void ReadAnythingController::LockDistillationStateForTesting() {
-  distillation_state_locked_for_testing_ = true;
+void ReadAnythingController::UnlockDistillationStateForTesting() {
+  distillation_state_locked_for_testing_ = false;
 }
 
 void ReadAnythingController::SetDwellTimeForTesting(base::TimeTicks test_time) {
