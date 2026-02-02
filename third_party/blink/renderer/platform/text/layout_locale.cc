@@ -207,11 +207,11 @@ const LayoutLocale* LayoutLocale::LocaleForHan(
   PerThreadData& data = GetPerThreadData();
   if (!data.default_locale_for_han_computed) [[unlikely]] {
     // Use the first acceptLanguages that can disambiguate.
-    Vector<String> languages;
-    data.current_accept_languages.Split(',', languages);
-    for (String token : languages) {
-      token = token.StripWhiteSpace();
-      const LayoutLocale* locale = LayoutLocale::Get(AtomicString(token));
+    Vector<StringView> languages =
+        StringView(data.current_accept_languages).SplitSkippingEmpty(',');
+    for (const StringView& token : languages) {
+      const LayoutLocale* locale =
+          LayoutLocale::Get(token.StripWhiteSpace().ToAtomicString());
       if (locale->HasScriptForHan()) {
         data.default_locale_for_han = locale;
         break;
