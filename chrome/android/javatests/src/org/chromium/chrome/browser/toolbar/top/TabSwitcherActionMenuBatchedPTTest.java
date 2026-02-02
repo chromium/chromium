@@ -19,7 +19,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.ImportantFormFactors;
 import org.chromium.base.test.util.Restriction;
@@ -34,7 +33,6 @@ import org.chromium.chrome.test.transit.hub.IncognitoTabSwitcherStation;
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
-import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.page.TabSwitcherActionMenuFacility;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -139,28 +137,6 @@ public class TabSwitcherActionMenuBatchedPTTest {
         regularTabSwitcher =
                 incognitoTabSwitcher.closeTabAtIndex(0, RegularTabSwitcherStation.class);
         blankPage = regularTabSwitcher.openNewTab().loadAboutBlank();
-        assertFinalDestination(blankPage);
-    }
-
-    @Test
-    @LargeTest
-    @DisabledTest(message = "Invalid test case based on the current incognito window launch plan")
-    public void testSwitchIntoAndOutOfIncognito() {
-        // Open 1 regular and 1 incognito tab.
-        WebPageStation blankPage = mCtaTestRule.start();
-        CtaPageStation incognitoNtp = blankPage.openNewIncognitoTabFast();
-
-        // Open action menu and switch out of incognito.
-        TabSwitcherActionMenuFacility actionMenu = incognitoNtp.openTabSwitcherActionMenu();
-        blankPage = actionMenu.selectSwitchOutOfIncognito(WebPageStation.newBuilder());
-
-        // Open action menu and switch into incognito.
-        actionMenu = blankPage.openTabSwitcherActionMenu();
-        incognitoNtp = actionMenu.selectSwitchToIncognito(IncognitoNewTabPageStation.newBuilder());
-
-        // Return to regular blank tab
-        actionMenu = incognitoNtp.openTabSwitcherActionMenu();
-        blankPage = actionMenu.selectCloseTabAndDisplayRegularTab(WebPageStation.newBuilder());
         assertFinalDestination(blankPage);
     }
 

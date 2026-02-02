@@ -17,7 +17,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -31,7 +30,6 @@ import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
-import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.page.TabSwitcherActionMenuFacility;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 
@@ -145,23 +143,6 @@ public class TabSwitcherActionMenuPTTest {
         // Only the incognito tab should still remain.
         assertEquals(0, getTabCountOnUiThread(regularTabModel));
         assertEquals(1, getTabCountOnUiThread(incognitoTabModel));
-    }
-
-    @Test
-    @LargeTest
-    @DisabledTest(message = "Invalid test case based on the current incognito window launch plan")
-    public void testSwitchIntoAndOutOfIncognito() {
-        // Open 1 regular and 1 incognito tab.
-        CtaPageStation blankPage = mCtaTestRule.startOnBlankPage();
-        CtaPageStation incognitoNtp = blankPage.openNewIncognitoTabFast();
-
-        // Open action menu and switch out of incognito.
-        TabSwitcherActionMenuFacility actionMenu = incognitoNtp.openTabSwitcherActionMenu();
-        blankPage = actionMenu.selectSwitchOutOfIncognito(WebPageStation.newBuilder());
-
-        // Open action menu and switch to incognito.
-        actionMenu = blankPage.openTabSwitcherActionMenu();
-        incognitoNtp = actionMenu.selectSwitchToIncognito(IncognitoNewTabPageStation.newBuilder());
     }
 
     private TabModelSelector getTabModelSelector() {

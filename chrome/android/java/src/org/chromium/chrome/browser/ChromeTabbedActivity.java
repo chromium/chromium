@@ -3995,12 +3995,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             }
 
             getQuickDeleteController().showDialog();
-        } else if (id == R.id.switch_to_incognito_menu_id) {
-            mTabModelSelector.selectModel(true);
-            RecordUserAction.record("MobileMenuSwitchToIncognito");
-        } else if (id == R.id.switch_out_of_incognito_menu_id) {
-            mTabModelSelector.selectModel(false);
-            RecordUserAction.record("MobileMenuSwitchOutOfIncognito");
         } else if (id == R.id.ntp_customization_id) {
             Supplier<@Nullable Profile> profileSupplier =
                     () -> {

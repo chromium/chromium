@@ -870,7 +870,6 @@ public class TabStripTest {
     // launched.
     @DisableFeatures({
         ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW,
-        ChromeFeatureList.TAB_STRIP_INCOGNITO_MIGRATION
     })
     @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/480150165
     public void testTabSelectionViewDoesNotBreakModelSwitch() {

@@ -197,7 +197,6 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   // same flag.
   // TODO(crbug.com/445475304): Remove when tablet rollout is complete.
   feature_overrides.EnableFeature(feed::kAndroidOpenIncognitoAsWindow);
-  feature_overrides.EnableFeature(chrome::android::kTabStripIncognitoMigration);
   // TODO(crbug.com/427242080): Remove when tablet rollout is complete.
   feature_overrides.EnableFeature(
       chrome::android::kAndroidPinnedTabsTabletTabStrip);

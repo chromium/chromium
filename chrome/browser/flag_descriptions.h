@@ -5703,12 +5703,6 @@ inline constexpr char kTabStripEmptySpaceContextMenuAndroidName[] =
 inline constexpr char kTabStripEmptySpaceContextMenuAndroidDescription[] =
     "Enables the context menu on the empty space of the tab strip.";
 
-inline constexpr char kTabStripIncognitoMigrationName[] =
-    "Tab Strip Incognito switcher migration to toolbar";
-inline constexpr char kTabStripIncognitoMigrationDescription[] =
-    "Migrates tab strip incognito switcher to toolbar and adds options to tab "
-    "switcher context menu.";
-
 inline constexpr char kToolbarSnapshotRefactorName[] =
     "Toolbar Snapshot Refactor";
 inline constexpr char kToolbarSnapshotRefactorDescription[] =

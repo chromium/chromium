@@ -10104,11 +10104,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          chrome::android::kTabStripEmptySpaceContextMenuAndroid)},
 
-    {"tab-strip-incognito-migration",
-     flag_descriptions::kTabStripIncognitoMigrationName,
-     flag_descriptions::kTabStripIncognitoMigrationDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kTabStripIncognitoMigration)},
-
     {"tab-switcher-group-suggestions-android",
      flag_descriptions::kTabSwitcherGroupSuggestionsAndroidName,
      flag_descriptions::kTabSwitcherGroupSuggestionsAndroidDescription,

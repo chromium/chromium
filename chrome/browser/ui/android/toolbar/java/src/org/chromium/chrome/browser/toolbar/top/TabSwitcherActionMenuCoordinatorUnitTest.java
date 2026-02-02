@@ -345,31 +345,6 @@ public class TabSwitcherActionMenuCoordinatorUnitTest {
     }
 
     @Test
-    public void testBuildListItemByMenuItemType_SwitchToIncognito() {
-        ListItem item =
-                mCoordinator.buildListItemByMenuItemType(
-                        TabSwitcherActionMenuCoordinator.MenuItemType.SWITCH_TO_INCOGNITO);
-        assertEquals(
-                R.string.menu_switch_to_incognito, item.model.get(ListMenuItemProperties.TITLE_ID));
-        assertEquals(
-                R.id.switch_to_incognito_menu_id,
-                item.model.get(ListMenuItemProperties.MENU_ITEM_ID));
-    }
-
-    @Test
-    public void testBuildListItemByMenuItemType_SwitchOutOfIncognito() {
-        ListItem item =
-                mCoordinator.buildListItemByMenuItemType(
-                        TabSwitcherActionMenuCoordinator.MenuItemType.SWITCH_OUT_OF_INCOGNITO);
-        assertEquals(
-                R.string.menu_switch_out_of_incognito,
-                item.model.get(ListMenuItemProperties.TITLE_ID));
-        assertEquals(
-                R.id.switch_out_of_incognito_menu_id,
-                item.model.get(ListMenuItemProperties.MENU_ITEM_ID));
-    }
-
-    @Test
     public void testBuildListItemByMenuItemType_AddToGroup() {
         when(mTab.getTabGroupId()).thenReturn(null);
 
