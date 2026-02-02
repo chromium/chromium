@@ -385,7 +385,7 @@ class ClipboardOzone::AsyncClipboardOzone {
     platform_clipboard_->RequestClipboardData(
         buffer, mime_type,
         base::BindOnce(&ReadRequest::Finish, request.GetWeakPtr()));
-    return request.TakeResultSync();
+    return request.TakeResultSync().release();
   }
 
   void Offer(ClipboardBuffer buffer, PlatformClipboard::DataMap data_map) {
