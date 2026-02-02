@@ -177,9 +177,7 @@ public class SafetyCheckMediatorTest {
     private void configureMockSyncService() {
         // SyncService is injected in the mediator, but dependencies still access the factory.
         SyncServiceFactory.setInstanceForTesting(mSyncService);
-        when(mSyncService.isSyncFeatureEnabled()).thenReturn(true);
         when(mSyncService.isEngineInitialized()).thenReturn(true);
-        when(mSyncService.hasSyncConsent()).thenReturn(true);
         when(mSyncService.getAccountInfo())
                 .thenReturn(
                         CoreAccountInfo.createFromEmailAndGaiaId(

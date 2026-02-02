@@ -167,7 +167,6 @@ public class SafetyCheckSettingsFragmentTest {
     }
 
     private void configureMockSyncService(boolean isPasswordSyncEnabled) {
-        when(mSyncService.isSyncFeatureEnabled()).thenReturn(true);
         Set<Integer> selectedTypes;
         selectedTypes =
                 isPasswordSyncEnabled

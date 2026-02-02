@@ -98,9 +98,7 @@ public class PasswordCheckupLauncherTest {
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
 
         SyncServiceFactory.setInstanceForTesting(mMockSyncService);
-        when(mMockSyncService.isSyncFeatureEnabled()).thenReturn(true);
         when(mMockSyncService.isEngineInitialized()).thenReturn(true);
-        when(mMockSyncService.hasSyncConsent()).thenReturn(true);
 
         AccountManagerFacadeProvider.setInstanceForTests(mFakeAccountManagerFacade);
         mFakeAccountManagerFacade.addAccount(TEST_ACCOUNT);

@@ -617,7 +617,6 @@ public class PasswordManagerHelperTest {
                                 PasswordMetricsUtil
                                         .LOCAL_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM)
                         .build();
-        when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(false);
 
         ApiException returnedException =
                 new ApiException(
@@ -788,7 +787,6 @@ public class PasswordManagerHelperTest {
     }
 
     private void chooseToSyncPasswords() {
-        when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(true);
         when(mSyncServiceMock.getSelectedTypes()).thenReturn(Set.of(UserSelectableType.PASSWORDS));
         when(mSyncServiceMock.getAccountInfo())
                 .thenReturn(

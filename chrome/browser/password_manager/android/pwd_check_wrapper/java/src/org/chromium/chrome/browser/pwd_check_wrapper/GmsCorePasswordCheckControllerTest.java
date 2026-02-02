@@ -86,7 +86,6 @@ public class GmsCorePasswordCheckControllerTest {
 
     private void configureMockSyncServiceToSyncPasswords() {
         SyncServiceFactory.setInstanceForTesting(mSyncService);
-        when(mSyncService.isSyncFeatureEnabled()).thenReturn(true);
         when(mSyncService.getSelectedTypes()).thenReturn(Set.of(UserSelectableType.PASSWORDS));
         when(mSyncService.getAccountInfo())
                 .thenReturn(
