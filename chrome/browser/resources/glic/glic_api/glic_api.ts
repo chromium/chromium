@@ -4,17 +4,20 @@
 
 // API between the Chrome browser and the Glic web client.
 //
-// Overall notes:
+// Follow some notes providing more context about the Glic API and guidelines on
+// how the web client code should be constructed around it. Check the internal
+// documentation at http://shortn/_xFTHEnFhDV for more details.
+//
 // - There may be multiple instances of the web client running at a time, all
-//   sharing the same web storage space. Whenever one is started or restarted,
-//   the initialization steps will be repeated.
-// - As in TypeScript all `number`s are 64 bit floating points, we decided to
-//   make all identifier values be of the `string` type (e.g. for a window or a
-//   tab).
+//   sharing the same local web storage space. Whenever one is started or
+//   restarted, the initialization steps will be repeated.
 // - The defined functions and interfaces can be "evolved" to provide more
 //   functionality and data, as needed, but must be kept backwards compatible.
 // - Functions are documented with their known behavior. Exceptions and promise
 //   failures should be documented only if they are expected.
+// - As in TypeScript all `number`s are 64 bit floating points, we decided to
+//   make all identifier values be of the `string` type (e.g. for a window or a
+//   tab).
 // - The browser provided tab and window IDs are based on the browser's
 //   SessionID values, which are not stable between Chrome restarts, and should
 //   not be saved to persisted storage for later reuse. See:
@@ -23,6 +26,8 @@
 //   will be silently made empty if exceeding the 2 MiB length limit imposed by
 //   Mojo's URL implementation. See:
 //   https://crsrc.org/c/url/mojom/url.mojom
+// - Avoid doing exhaustive checks against enums defined by the API, as their
+//   values may evolve over time.
 
 /** Allows the Glic web client to register with the host WebUI. */
 export declare interface GlicHostRegistry {
