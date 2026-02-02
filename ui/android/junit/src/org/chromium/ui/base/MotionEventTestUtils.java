@@ -50,10 +50,34 @@ public final class MotionEventTestUtils {
     }
 
     public static MotionEvent getCapturedTrackpadMoveEvent(float x, float y) {
-        MotionEvent event = MotionEventTestUtils.getTrackpadEvent(MotionEvent.ACTION_MOVE, 0);
-        event.setLocation(x, y);
-        event.setSource(InputDevice.SOURCE_TOUCHPAD);
+        MotionEvent event =
+                MotionEvent.obtain(
+                        0,
+                        0,
+                        MotionEvent.ACTION_MOVE,
+                        1,
+                        getToolTypeFingerProperties(1),
+                        getPointerCoords(1, x, y),
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        InputDevice.SOURCE_TOUCHPAD,
+                        0);
         return event;
+    }
+
+    public static MotionEvent.PointerCoords[] getPointerCoords(int pointersCnt, float x, float y) {
+        MotionEvent.PointerCoords[] pointerCoordsArray = new MotionEvent.PointerCoords[pointersCnt];
+        for (int i = 0; i < pointersCnt; i++) {
+            MotionEvent.PointerCoords coords = new MotionEvent.PointerCoords();
+            coords.x = x + i;
+            coords.y = y + i;
+            pointerCoordsArray[i] = coords;
+        }
+        return pointerCoordsArray;
     }
 
     public static MotionEvent.PointerProperties[] getToolTypeFingerProperties(int pointersCnt) {

@@ -290,8 +290,6 @@ public class EventForwarderTest {
                         anyLong(), any(MotionEvent.class), anyLong(), anyInt(), anyInt(), anyInt());
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void testCapturedPointerTrackpadMoveEventAfterDown() {
         EventForwarder eventForwarder =

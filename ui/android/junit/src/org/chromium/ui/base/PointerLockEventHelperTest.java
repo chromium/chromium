@@ -13,7 +13,6 @@ import android.view.Surface;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
@@ -38,8 +37,6 @@ public class PointerLockEventHelperTest {
         assertTrue(updatedEvent.getAxisValue(MotionEvent.AXIS_VSCROLL) < 0);
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void testCapturedTrackpadMoveEvent() {
         float startX = 4;
@@ -66,8 +63,6 @@ public class PointerLockEventHelperTest {
         assertEquals(offsetY, updatedEvent2.getY(), 0.01);
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void testCapturedTrackpadMoveEventWith90DegRotation() {
         float startX = 4;
@@ -94,8 +89,6 @@ public class PointerLockEventHelperTest {
         assertEquals(-offsetX, updatedEvent2.getY(), 0.01);
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void testCapturedTrackpadMoveEventWith180DegRotation() {
         float startX = 4;
@@ -122,8 +115,6 @@ public class PointerLockEventHelperTest {
         assertEquals(-offsetY, updatedEvent2.getY(), 0.01);
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void testCapturedTrackpadMoveEventWith270DegRotation() {
         float startX = 4;
