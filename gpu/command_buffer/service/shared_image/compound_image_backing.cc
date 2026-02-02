@@ -655,7 +655,7 @@ class WrappedVulkanCompoundImageRepresentation
 #endif
 
 // static
-bool CompoundImageBacking::IsValidSharedMemoryBufferFormat(
+bool CompoundImageBacking::IsValidSharedMemoryFormat(
     const gfx::Size& size,
     viz::SharedImageFormat format) {
   if (format.PrefersExternalSampler() ||
@@ -712,7 +712,7 @@ std::unique_ptr<SharedImageBacking> CompoundImageBacking::Create(
     SkAlphaType alpha_type,
     SharedImageUsageSet usage,
     std::string debug_label) {
-  if (!IsValidSharedMemoryBufferFormat(size, format)) {
+  if (!IsValidSharedMemoryFormat(size, format)) {
     return nullptr;
   }
 
@@ -752,7 +752,7 @@ std::unique_ptr<SharedImageBacking> CompoundImageBacking::Create(
     SharedImageUsageSet usage,
     std::string debug_label,
     gfx::BufferUsage buffer_usage) {
-  if (!IsValidSharedMemoryBufferFormat(size, format)) {
+  if (!IsValidSharedMemoryFormat(size, format)) {
     return nullptr;
   }
 
@@ -815,7 +815,7 @@ CompoundImageBacking::CreateSharedMemoryForTesting(
     SkAlphaType alpha_type,
     SharedImageUsageSet usage,
     std::string debug_label) {
-  DCHECK(IsValidSharedMemoryBufferFormat(size, format));
+  DCHECK(IsValidSharedMemoryFormat(size, format));
 
   auto shm_backing = SharedMemoryImageBackingFactory().CreateSharedImage(
       mailbox, format, size, color_space, surface_origin, alpha_type,
@@ -847,7 +847,7 @@ CompoundImageBacking::CreateSharedMemoryForTesting(
     SharedImageUsageSet usage,
     std::string debug_label,
     gfx::BufferUsage buffer_usage) {
-  DCHECK(IsValidSharedMemoryBufferFormat(size, format));
+  DCHECK(IsValidSharedMemoryFormat(size, format));
 
   auto shm_backing = SharedMemoryImageBackingFactory().CreateSharedImage(
       mailbox, format, kNullSurfaceHandle, size, color_space, surface_origin,

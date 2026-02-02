@@ -3807,7 +3807,7 @@ void LayerTreeHostImpl::UpdateRasterCapabilities() {
   raster_caps_.tile_format =
       settings_.use_rgba_4444
           ? viz::SinglePlaneFormat::kRGBA_4444
-          : viz::PlatformColor::BestSupportedRenderBufferFormat(context_caps);
+          : viz::PlatformColor::BestSupportedRenderbufferFormat(context_caps);
 }
 
 ImageDecodeCache* LayerTreeHostImpl::GetImageDecodeCache() const {

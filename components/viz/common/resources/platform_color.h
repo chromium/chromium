@@ -36,7 +36,7 @@ class PlatformColor {
 
   // Returns the most efficient supported format for textures that will be
   // rastered in the gpu (bound as a framebuffer and drawn to).
-  static SharedImageFormat BestSupportedRenderBufferFormat(
+  static SharedImageFormat BestSupportedRenderbufferFormat(
       const gpu::Capabilities& caps) {
     return BestSupportedFormat(caps.render_buffer_format_bgra8888);
   }

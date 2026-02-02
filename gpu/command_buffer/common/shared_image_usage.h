@@ -89,7 +89,8 @@ enum SharedImageUsage : uint32_t {
   // Note that this flag is a special case and will be used in cases where
   // clients wants a MappableSharedImage which needs to be mapped in the
   // CPU for read/write but is not importable/texturable in the GPU. Once such
-  // use case is CrOs where client CameraBufferFactory uses BufferFormat::R_8
+  // use case is CrOs where client CameraBufferFactory uses
+  // SharedImageFormat::kR_8
   // to create a MappableSI but that format is non-texturable.
   SHARED_IMAGE_USAGE_CPU_ONLY_READ_WRITE = 1 << 22,
 

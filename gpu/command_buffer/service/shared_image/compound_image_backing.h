@@ -113,8 +113,8 @@ class GPU_GLES2_EXPORT CompoundImageBacking
   using CreateBackingCallback =
       base::OnceCallback<void(std::unique_ptr<SharedImageBacking>&)>;
 
-  static bool IsValidSharedMemoryBufferFormat(const gfx::Size& size,
-                                              viz::SharedImageFormat format);
+  static bool IsValidSharedMemoryFormat(const gfx::Size& size,
+                                        viz::SharedImageFormat format);
 
   // Remove the SCANOUT flag if |kAllowShmOverlays|.
   static SharedImageUsageSet GetGpuSharedImageUsage(SharedImageUsageSet usage);
