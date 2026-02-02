@@ -28,11 +28,11 @@ found in the LICENSE file.
     <!-- Button row. -->
     <LinearLayout
         android:layout_height="wrap_content"
-        android:layout_width="fill_parent"
+        android:layout_width="wrap_content"
+        android:layout_gravity="end"
         android:orientation="horizontal"
         android:layout_marginTop="6dp"
-        android:layout_marginEnd="12dp"
-        android:gravity="end">
+        android:layout_marginEnd="12dp">
 
         <org.chromium.ui.widget.ButtonCompat
             android:id="@+id/negative"
