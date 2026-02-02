@@ -147,8 +147,10 @@ void VerticalDraggedTabsContainer::OnViewBoundsChanged(
   // The transformation coordinates are relative to the host view's coordinates,
   // so they must be updated as the bounds change to ensure the dragged tabs
   // remain at the same point in the screen.
-  UpdateDraggingViewTransforms(views::View::ConvertPointFromScreen(
-      base::to_address(host_view_), last_drag_point_in_screen_));
+  if (!dragging_views_.empty()) {
+    UpdateDraggingViewTransforms(views::View::ConvertPointFromScreen(
+        base::to_address(host_view_), last_drag_point_in_screen_));
+  }
 }
 
 // TODO(crbug.com/476084253): Animate selected tabs into a contiguous layout.

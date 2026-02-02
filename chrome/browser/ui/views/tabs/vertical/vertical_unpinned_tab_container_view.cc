@@ -191,13 +191,19 @@ void VerticalUnpinnedTabContainerView::HandleTabDragInContainer(
     node = tab_view->collection_node();
   } else if (auto* group_view =
                  views::AsViewClass<VerticalTabGroupView>(view_at_point)) {
-    // Don't set the node if dragging a group header over another group view to
-    // avoid bouncing the group view around.
-    // TODO(crbug.com/476509652): This shouldn't be necessary once hit-testing
-    // is improved.
-    if (!GetDragHandler().GetDraggingGroupHeaderId().has_value() ||
-        group_view->IsCollapsed()) {
+    // Groups themselves are a drag target except when they are collapsed or
+    // if we are in header drag which are the only cases we handle here.
+    if (group_view->IsCollapsed()) {
       node = group_view->collection_node();
+    } else if (GetDragHandler().GetDraggingGroupHeaderId().has_value()) {
+      // For header drag check if the point overlaps with the group's header.
+      auto* group_layout = target_layout.GetLayoutFor(group_view);
+      CHECK(group_layout);
+      if (gfx::Point point_in_group =
+              point_in_container - group_layout->bounds.OffsetFromOrigin();
+          group_view->group_header()->bounds().Contains(point_in_group)) {
+        node = group_view->collection_node();
+      }
     }
   } else if (auto* split_tab_view =
                  views::AsViewClass<VerticalSplitTabView>(view_at_point)) {
@@ -222,12 +228,14 @@ VerticalUnpinnedTabContainerView::GetTabDragTarget(
   // from the sides of the tabstrip.
   point_in_container.set_x(bounds().x() + bounds().width() / 2);
 
-  for (views::View* child : children()) {
-    if (!child->GetVisible() || !child->bounds().Contains(point_in_container) ||
-        IsViewDragging(*child)) {
+  const views::ProposedLayout& target_layout = layout_manager_->target_layout();
+  for (const views::ChildLayout& layout : target_layout.child_layouts) {
+    if (!layout.visible || !layout.bounds.Contains(point_in_container) ||
+        IsViewDragging(*layout.child_view)) {
       continue;
     }
-    if (auto* group_view = views::AsViewClass<VerticalTabGroupView>(child)) {
+    if (auto* group_view =
+            views::AsViewClass<VerticalTabGroupView>(layout.child_view)) {
       if (!group_view->IsCollapsed()) {
         return *group_view;
       }

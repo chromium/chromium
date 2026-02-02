@@ -581,31 +581,36 @@ TabCollectionNode* VerticalTabDragHandlerImpl::GetNodeForTabGroup(
 
 TabSlotView& VerticalTabDragHandlerImpl::GetOrCreateSlotViewForNode(
     TabCollectionNode& node) {
+  auto update_tab_slot_view = [&node](TabSlotView& slot_view) -> void {
+    switch (node.type()) {
+      case TabCollectionNode::Type::TAB: {
+        const tabs::TabInterface* tab =
+            std::get<const tabs::TabInterface*>(node.GetNodeData());
+        CHECK(tab);
+        slot_view.SetGroup(tab->GetGroup());
+        slot_view.SetSplit(tab->GetSplit());
+      } break;
+      case TabCollectionNode::Type::GROUP:
+        slot_view.SetGroup(TabGroupDataFromNode(node).id());
+        break;
+      default:
+        NOTREACHED();
+    }
+  };
+
   CHECK(node.view());
   auto it = slot_views_.find(&node);
   if (it != slot_views_.end()) {
+    update_tab_slot_view(*it->second);
     return *it->second;
   }
 
   auto tab_slot_view = std::make_unique<VerticalTabSlotView>(node);
   tab_slot_view->SetBoundsRect(node.view()->GetLocalBounds());
 
-  switch (node.type()) {
-    case TabCollectionNode::Type::TAB: {
-      const tabs::TabInterface* tab =
-          std::get<const tabs::TabInterface*>(node.GetNodeData());
-      CHECK(tab);
-      tab_slot_view->SetGroup(tab->GetGroup());
-      tab_slot_view->SetSplit(tab->GetSplit());
-    } break;
-    case TabCollectionNode::Type::GROUP:
-      tab_slot_view->SetGroup(TabGroupDataFromNode(node).id());
-      break;
-    default:
-      NOTREACHED();
-  }
-
   auto& tab_slot_view_ref = *tab_slot_view.get();
+  update_tab_slot_view(tab_slot_view_ref);
+
   slot_views_.insert(
       {&node, node.view()->AddChildView(std::move(tab_slot_view))});
   node_destroyed_callbacks_.push_back(node.RegisterWillDestroyCallback(
