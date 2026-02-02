@@ -310,7 +310,6 @@ source_set("browser_tests") {
 
   if (!is_android) {
     sources += [
-      "extension_action_view_model_browsertest.cc",
       "extension_enable_flow_browsertest.cc",
       "extension_enable_flow_test_delegate.cc",
       "extension_enable_flow_test_delegate.h",

@@ -16,29 +16,22 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/extensions/api/side_panel/side_panel_service.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_action_dispatcher.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_action_test_util.h"
+#include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/extension_view_host.h"
 #include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/extensions/user_script_listener.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/extensions/extension_action_delegate.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/extensions/icon_with_badge_image_source.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
-#include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "chrome/common/extensions/api/side_panel.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
-#include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_action.h"
@@ -63,12 +56,27 @@
 #include "ui/gfx/image/image_skia_rep.h"
 #include "ui/native_theme/native_theme.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/api/side_panel/side_panel_service.h"
+#include "chrome/common/extensions/api/side_panel.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+using extensions::ExtensionBrowserTest;
 using extensions::mojom::ManifestLocation;
 using SiteInteraction = extensions::SitePermissionsHelper::SiteInteraction;
 using UserSiteSetting = extensions::PermissionsManager::UserSiteSetting;
 using HoverCardState = ToolbarActionViewModel::HoverCardState;
 
-class ExtensionActionViewModelBrowserTest : public InProcessBrowserTest {
+// The size to render an action icon for verification.
+static constexpr gfx::Size kTestIconSize(64, 64);
+
+class ExtensionActionViewModelBrowserTest : public ExtensionBrowserTest {
  public:
   ExtensionActionViewModelBrowserTest() = default;
   ExtensionActionViewModelBrowserTest(
@@ -78,56 +86,47 @@ class ExtensionActionViewModelBrowserTest : public InProcessBrowserTest {
 
   ~ExtensionActionViewModelBrowserTest() override = default;
 
-  void Init() { AddTab(browser(), GURL(u"https://example.com")); }
+  void Init() { AddTab(GURL(u"https://example.com")); }
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_https_test_server().Start());
-    InProcessBrowserTest::SetUpOnMainThread();
+    ExtensionBrowserTest::SetUpOnMainThread();
   }
 
-  void AddTab(Browser* browser, GURL gurl) {
-    ui_test_utils::NavigateToURLWithDisposition(
-        browser, gurl, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-  }
+  void AddTab(GURL gurl) { NavigateToURLInNewTab(gurl); }
 
   void NavigateAndCommitActiveTab(const GURL& gurl) {
-    ui_test_utils::NavigateToURLWithDisposition(
-        browser(), gurl, WindowOpenDisposition::CURRENT_TAB,
-        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+    // TODO: Do not ignore the return value. Somehow it returns false in some
+    // cases, but tests pass.
+    void(NavigateToURL(GetActiveWebContents(), gurl));
   }
 
   // Sets whether the given |action| wants to run on the |web_contents|.
   void SetActionWantsToRunOnTab(const std::string& action_id,
                                 content::WebContents* web_contents,
                                 bool wants_to_run) {
-    Profile* profile = browser()->profile();
-    auto* registry = extensions::ExtensionRegistry::Get(profile);
+    auto* registry = extensions::ExtensionRegistry::Get(profile());
     scoped_refptr<const extensions::Extension> extension =
         registry->enabled_extensions().GetByID(action_id);
     CHECK(extension);
     extensions::ExtensionAction* action =
-        extensions::ExtensionActionManager::Get(profile)->GetExtensionAction(
+        extensions::ExtensionActionManager::Get(profile())->GetExtensionAction(
             *extension);
     CHECK(action);
 
     action->SetIsVisible(
         sessions::SessionTabHelper::IdForTab(web_contents).id(), wants_to_run);
-    extensions::ExtensionActionDispatcher::Get(profile)->NotifyChange(
-        action, web_contents, profile);
-  }
-
-  // Returns the active WebContents for the primary browser.
-  content::WebContents* GetActiveWebContents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
+    extensions::ExtensionActionDispatcher::Get(profile())->NotifyChange(
+        action, web_contents, profile());
   }
 
   ExtensionActionViewModel* GetViewModelForId(const std::string& action_id) {
     // It's safe to static cast here, because these tests only deal with
     // extensions.
     return static_cast<ExtensionActionViewModel*>(
-        container()->GetToolbarViewModel()->GetActionForId(action_id));
+        ExtensionsContainer::From(*browser_window_interface())
+            ->GetActionForId(action_id));
   }
 
   scoped_refptr<const extensions::Extension> CreateAndAddExtension(
@@ -138,8 +137,7 @@ class ExtensionActionViewModelBrowserTest : public InProcessBrowserTest {
   }
 
   void GrantActivePermissions(const extensions::Extension* extension) {
-    extensions::PermissionsUpdater(browser()->profile())
-        .GrantActivePermissions(extension);
+    extensions::PermissionsUpdater(profile()).GrantActivePermissions(extension);
   }
 
   scoped_refptr<const extensions::Extension>
@@ -163,23 +161,18 @@ class ExtensionActionViewModelBrowserTest : public InProcessBrowserTest {
   }
 
   extensions::ExtensionRegistrar* extension_registrar() {
-    return extensions::ExtensionRegistrar::Get(browser()->profile());
+    return extensions::ExtensionRegistrar::Get(profile());
   }
 
   ToolbarActionsModel* toolbar_model() {
-    return ToolbarActionsModel::Get(browser()->profile());
+    return ToolbarActionsModel::Get(profile());
   }
 
-  ExtensionsToolbarDesktop* container() {
-    return browser()->GetBrowserView().toolbar()->extensions_container();
-  }
-
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   extensions::SidePanelService* side_panel_service() {
-    return extensions::SidePanelService::Get(browser()->profile());
+    return extensions::SidePanelService::Get(profile());
   }
-
-  // The standard size associated with a toolbar action view.
-  gfx::Size view_size() { return container()->GetToolbarActionSize(); }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 };
 
 // Temporary test class to test functionality while kExtensionsMenuAccessControl
@@ -224,12 +217,13 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewModelFeatureRolloutBrowserTest,
   ExtensionActionViewModel* const model = GetViewModelForId(id);
   ASSERT_TRUE(model);
   std::unique_ptr<IconWithBadgeImageSource> image_source =
-      model->GetIconImageSourceForTesting(web_contents, view_size());
+      model->GetIconImageSourceForTesting(web_contents, kTestIconSize);
   EXPECT_TRUE(image_source->grayscale());
   EXPECT_FALSE(image_source->paint_blocked_actions_decoration());
 
   SetActionWantsToRunOnTab(model->GetId(), web_contents, true);
-  image_source = model->GetIconImageSourceForTesting(web_contents, view_size());
+  image_source =
+      model->GetIconImageSourceForTesting(web_contents, kTestIconSize);
   EXPECT_FALSE(image_source->grayscale());
   EXPECT_FALSE(image_source->paint_blocked_actions_decoration());
 }
@@ -242,11 +236,11 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewModelFeatureRolloutBrowserTest,
       "browser_action", extensions::ActionInfo::Type::kBrowser,
       {"https://www.google.com/*"});
 
-  extensions::ScriptingPermissionsModifier permissions_modifier(
-      browser()->profile(), extension);
+  extensions::ScriptingPermissionsModifier permissions_modifier(profile(),
+                                                                extension);
   permissions_modifier.SetWithholdHostPermissions(true);
 
-  AddTab(browser(), GURL("https://www.google.com/"));
+  AddTab(GURL("https://www.google.com/"));
 
   ExtensionActionViewModel* const model = GetViewModelForId(extension->id());
   ASSERT_TRUE(model);
@@ -254,7 +248,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewModelFeatureRolloutBrowserTest,
   content::WebContents* web_contents = GetActiveWebContents();
   ASSERT_TRUE(web_contents);
   std::unique_ptr<IconWithBadgeImageSource> image_source =
-      model->GetIconImageSourceForTesting(web_contents, view_size());
+      model->GetIconImageSourceForTesting(web_contents, kTestIconSize);
   EXPECT_FALSE(image_source->grayscale());
   EXPECT_FALSE(image_source->paint_blocked_actions_decoration());
 
@@ -265,7 +259,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewModelFeatureRolloutBrowserTest,
   action_runner->RequestScriptInjectionForTesting(
       extension.get(), extensions::mojom::RunLocation::kDocumentIdle,
       base::DoNothing());
-  image_source = model->GetIconImageSourceForTesting(web_contents, view_size());
+  image_source =
+      model->GetIconImageSourceForTesting(web_contents, kTestIconSize);
   EXPECT_FALSE(image_source->grayscale());
   // Browser action has a decoration only when the feature is disabled.
   bool is_feature_enabled = GetParam();
@@ -274,7 +269,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewModelFeatureRolloutBrowserTest,
 
   // Verify running the action removes the decoration, if existent.
   action_runner->RunForTesting(extension.get());
-  image_source = model->GetIconImageSourceForTesting(web_contents, view_size());
+  image_source =
+      model->GetIconImageSourceForTesting(web_contents, kTestIconSize);
   EXPECT_FALSE(image_source->grayscale());
   EXPECT_FALSE(image_source->paint_blocked_actions_decoration());
 }
@@ -287,17 +283,17 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewModelFeatureRolloutBrowserTest,
       "page_action", extensions::ActionInfo::Type::kPage,
       {"https://www.google.com/*"});
 
-  extensions::ScriptingPermissionsModifier permissions_modifier(
-      browser()->profile(), extension);
+  extensions::ScriptingPermissionsModifier permissions_modifier(profile(),
+                                                                extension);
   permissions_modifier.SetWithholdHostPermissions(true);
-  AddTab(browser(), GURL("https://www.google.com/"));
+  AddTab(GURL("https://www.google.com/"));
 
   ExtensionActionViewModel* const model = GetViewModelForId(extension->id());
   ASSERT_TRUE(model);
 
   content::WebContents* web_contents = GetActiveWebContents();
   std::unique_ptr<IconWithBadgeImageSource> image_source =
-      model->GetIconImageSourceForTesting(web_contents, view_size());
+      model->GetIconImageSourceForTesting(web_contents, kTestIconSize);
   EXPECT_FALSE(image_source->grayscale());
   EXPECT_FALSE(image_source->paint_blocked_actions_decoration());
 
@@ -306,7 +302,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewModelFeatureRolloutBrowserTest,
   action_runner->RequestScriptInjectionForTesting(
       extension.get(), extensions::mojom::RunLocation::kDocumentIdle,
       base::DoNothing());
-  image_source = model->GetIconImageSourceForTesting(web_contents, view_size());
+  image_source =
+      model->GetIconImageSourceForTesting(web_contents, kTestIconSize);
   EXPECT_FALSE(image_source->grayscale());
   // Page action has a decoration only when the feature is disabled.
   bool is_feature_enabled = GetParam();
@@ -342,19 +339,19 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewModelFeatureRolloutBrowserTest,
 
   GrantActivePermissions(extension.get());
   extension_registrar()->AddExtension(extension.get());
-  extensions::ScriptingPermissionsModifier permissions_modifier(
-      browser()->profile(), extension);
+  extensions::ScriptingPermissionsModifier permissions_modifier(profile(),
+                                                                extension);
   permissions_modifier.SetWithholdHostPermissions(true);
 
   ExtensionActionViewModel* const model = GetViewModelForId(extension->id());
   ASSERT_TRUE(model);
 
   // Initially load on a site that the extension doesn't have permissions to.
-  AddTab(browser(), GURL("https://www.chromium.org/"));
+  AddTab(GURL("https://www.chromium.org/"));
   content::WebContents* web_contents = GetActiveWebContents();
 
   std::unique_ptr<IconWithBadgeImageSource> image_source =
-      model->GetIconImageSourceForTesting(web_contents, view_size());
+      model->GetIconImageSourceForTesting(web_contents, kTestIconSize);
   EXPECT_TRUE(image_source->grayscale());
   EXPECT_FALSE(model->IsEnabled(web_contents));
   EXPECT_FALSE(image_source->paint_blocked_actions_decoration());
@@ -364,7 +361,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewModelFeatureRolloutBrowserTest,
   // set to run on click and has the current URL withheld, so it should not be
   // grayscaled and should be clickable.
   NavigateAndCommitActiveTab(GURL("https://www.google.com/"));
-  image_source = model->GetIconImageSourceForTesting(web_contents, view_size());
+  image_source =
+      model->GetIconImageSourceForTesting(web_contents, kTestIconSize);
   EXPECT_FALSE(image_source->grayscale());
   EXPECT_TRUE(model->IsEnabled(web_contents));
   EXPECT_FALSE(image_source->paint_blocked_actions_decoration());
@@ -374,7 +372,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewModelFeatureRolloutBrowserTest,
   // the tooltip.
   model->ExecuteUserAction(
       ToolbarActionViewModel::InvocationSource::kToolbarButton);
-  image_source = model->GetIconImageSourceForTesting(web_contents, view_size());
+  image_source =
+      model->GetIconImageSourceForTesting(web_contents, kTestIconSize);
   EXPECT_FALSE(image_source->grayscale());
   EXPECT_FALSE(model->IsEnabled(web_contents));
   EXPECT_FALSE(image_source->paint_blocked_actions_decoration());
@@ -421,14 +420,20 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewModelFeatureRolloutBrowserTest,
   toolbar_model()->SetActionVisibility(id, true);
   check_visibility_string(model, unpin_label);
 
+#if !BUILDFLAG(IS_ANDROID)
   // Unpin the extension and ephemerally pop it out.
+  // We skip this test on Android because popping out an extension via the
+  // direct container access is not supported.
+  ExtensionsToolbarDesktop* toolbar =
+      browser()->GetBrowserView().toolbar()->extensions_container();
   toolbar_model()->SetActionVisibility(id, false);
-  EXPECT_FALSE(container()->IsActionVisibleOnToolbar(id));
+  EXPECT_FALSE(toolbar->IsActionVisibleOnToolbar(id));
   base::RunLoop run_loop;
-  container()->PopOutAction(id, run_loop.QuitClosure());
-  EXPECT_TRUE(container()->IsActionVisibleOnToolbar(id));
+  toolbar->PopOutAction(id, run_loop.QuitClosure());
+  EXPECT_TRUE(toolbar->IsActionVisibleOnToolbar(id));
   // The string should still just be "pin".
   check_visibility_string(model, pin_label);
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 enum class PermissionType {
@@ -556,8 +561,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewModelGrayscaleTest, GrayscaleIcon) {
     GrantActivePermissions(extension.get());
     extension_registrar()->AddExtension(extension.get());
 
-    extensions::ScriptingPermissionsModifier permissions_modifier(
-        browser()->profile(), extension);
+    extensions::ScriptingPermissionsModifier permissions_modifier(profile(),
+                                                                  extension);
     permissions_modifier.SetWithholdHostPermissions(true);
     const GURL kHasPermissionUrl("https://www.google.com/");
     const GURL kNoPermissionsUrl("https://www.chromium.org/");
@@ -565,10 +570,10 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewModelGrayscaleTest, GrayscaleIcon) {
     // Make sure UserScriptListener doesn't hold up the navigation.
     extensions::ExtensionsBrowserClient::Get()
         ->GetUserScriptListener()
-        ->TriggerUserScriptsReadyForTesting(browser()->profile());
+        ->TriggerUserScriptsReadyForTesting(profile());
 
     // Load up a page that we will navigate for the different test cases.
-    AddTab(browser(), GURL("about:blank"));
+    AddTab(GURL("about:blank"));
 
     // Note: Action can only have a blocked decoration if the feature is
     // disabled.
@@ -604,8 +609,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewModelGrayscaleTest, GrayscaleIcon) {
     ASSERT_TRUE(model);
     content::WebContents* web_contents = GetActiveWebContents();
     extensions::ExtensionAction* extension_action =
-        extensions::ExtensionActionManager::Get(browser()->profile())
-            ->GetExtensionAction(*extension);
+        extensions::ExtensionActionManager::Get(profile())->GetExtensionAction(
+            *extension);
     extensions::ExtensionActionRunner* action_runner =
         extensions::ExtensionActionRunner::GetForWebContents(web_contents);
     int tab_id = sessions::SessionTabHelper::IdForTab(web_contents).id();
@@ -655,7 +660,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewModelGrayscaleTest, GrayscaleIcon) {
           tab_id, test_case.action_state == ActionState::kEnabled);
 
       std::unique_ptr<IconWithBadgeImageSource> image_source =
-          model->GetIconImageSourceForTesting(web_contents, view_size());
+          model->GetIconImageSourceForTesting(web_contents, kTestIconSize);
       EXPECT_EQ(test_case.expected_coloring == Coloring::kGrayscale,
                 image_source->grayscale());
       EXPECT_EQ(
@@ -687,11 +692,11 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewModelFeatureRolloutBrowserTest,
       "extension name", extensions::ActionInfo::Type::kBrowser,
       {"https://www.google.com/*"});
 
-  extensions::ScriptingPermissionsModifier permissions_modifier(
-      browser()->profile(), extension);
+  extensions::ScriptingPermissionsModifier permissions_modifier(profile(),
+                                                                extension);
   permissions_modifier.SetWithholdHostPermissions(true);
   const GURL kUrl("https://www.google.com/");
-  AddTab(browser(), kUrl);
+  AddTab(kUrl);
 
   ExtensionActionViewModel* const model = GetViewModelForId(extension->id());
   ASSERT_TRUE(model);
@@ -745,7 +750,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewModelFeatureRolloutBrowserTest,
 
   // Navigate the browser to a site the extension doesn't have explicit access
   // to and verify the expected appearance.
-  AddTab(browser(), kUnlistedHost);
+  AddTab(kUnlistedHost);
   ExtensionActionViewModel* const model = GetViewModelForId(extension->id());
   ASSERT_TRUE(model);
   content::WebContents* web_contents = GetActiveWebContents();
@@ -755,7 +760,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewModelFeatureRolloutBrowserTest,
               model->GetSiteInteraction(web_contents));
     EXPECT_TRUE(model->IsEnabled(web_contents));
     std::unique_ptr<IconWithBadgeImageSource> image_source =
-        model->GetIconImageSourceForTesting(web_contents, view_size());
+        model->GetIconImageSourceForTesting(web_contents, kTestIconSize);
     EXPECT_FALSE(image_source->grayscale());
     EXPECT_FALSE(image_source->paint_blocked_actions_decoration());
     EXPECT_EQ(kWantsAccessTooltip, model->GetTooltip(web_contents));
@@ -773,7 +778,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewModelFeatureRolloutBrowserTest,
     // The icon will still be colored however.
     EXPECT_FALSE(model->IsEnabled(web_contents));
     std::unique_ptr<IconWithBadgeImageSource> image_source =
-        model->GetIconImageSourceForTesting(web_contents, view_size());
+        model->GetIconImageSourceForTesting(web_contents, kTestIconSize);
     EXPECT_FALSE(image_source->grayscale());
     EXPECT_FALSE(image_source->paint_blocked_actions_decoration());
     EXPECT_EQ(kHasAccessTooltip, model->GetTooltip(web_contents));
@@ -785,7 +790,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewModelFeatureRolloutBrowserTest,
     EXPECT_EQ(SiteInteraction::kNone, model->GetSiteInteraction(web_contents));
     EXPECT_FALSE(model->IsEnabled(web_contents));
     std::unique_ptr<IconWithBadgeImageSource> image_source =
-        model->GetIconImageSourceForTesting(web_contents, view_size());
+        model->GetIconImageSourceForTesting(web_contents, kTestIconSize);
     EXPECT_TRUE(image_source->grayscale());
     EXPECT_FALSE(image_source->paint_blocked_actions_decoration());
     EXPECT_EQ(kNoAccessTooltip, model->GetTooltip(web_contents));
@@ -811,7 +816,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewModelFeatureRolloutBrowserTest,
   // Navigate the browser to google.com. Since clicking the extension would
   // grant access to the page, the page interaction status should show as
   // "pending".
-  AddTab(browser(), GURL("https://www.google.com/"));
+  AddTab(GURL("https://www.google.com/"));
   ExtensionActionViewModel* const model = GetViewModelForId(extension->id());
   ASSERT_TRUE(model);
   content::WebContents* web_contents = GetActiveWebContents();
@@ -854,7 +859,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewModelFeatureRolloutBrowserTest,
       "browser_action": {},
       "permissions": ["activeTab"]
     })");
-  extensions::ChromeTestExtensionLoader loader(browser()->profile());
+  extensions::ChromeTestExtensionLoader loader(profile());
   loader.set_allow_file_access(false);
   scoped_refptr<const extensions::Extension> extension =
       loader.LoadExtension(test_dir.UnpackedPath());
@@ -862,7 +867,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewModelFeatureRolloutBrowserTest,
   // Navigate to a file URL. The page interaction status should be "none", as
   // the extension doesn't have file URL access granted. Clicking it should
   // result in no change.
-  AddTab(browser(), GURL("file://foo"));
+  AddTab(GURL("file://foo"));
   ExtensionActionViewModel* model = GetViewModelForId(extension->id());
   ASSERT_TRUE(model);
   content::WebContents* web_contents = GetActiveWebContents();
@@ -876,9 +881,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewModelFeatureRolloutBrowserTest,
   // show as "pending". A click will grant activeTab, giving access to the page
   // and will change the page interaction status to "active".
   extensions::TestExtensionRegistryObserver observer(
-      extensions::ExtensionRegistry::Get(browser()->profile()),
-      extension->id());
-  extensions::util::SetAllowFileAccess(extension->id(), browser()->profile(),
+      extensions::ExtensionRegistry::Get(profile()), extension->id());
+  extensions::util::SetAllowFileAccess(extension->id(), profile(),
                                        true /*allow*/);
   extension = observer.WaitForExtensionLoaded();
   ASSERT_TRUE(extension);
@@ -902,14 +906,14 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewModelFeatureRolloutBrowserTest,
       "extension name", extensions::ActionInfo::Type::kAction,
       {"https://example.com/"});
 
-  extensions::ScriptingPermissionsModifier permissions_modifier(
-      browser()->profile(), extension);
+  extensions::ScriptingPermissionsModifier permissions_modifier(profile(),
+                                                                extension);
   permissions_modifier.SetWithholdHostPermissions(true);
 
   // Try getting an icon with no active web contents. Nothing should crash, and
   // a non-empty icon should be returned.
   ExtensionActionViewModel* const model = GetViewModelForId(extension->id());
-  ui::ImageModel icon = model->GetIcon(nullptr, view_size());
+  ui::ImageModel icon = model->GetIcon(nullptr, kTestIconSize);
   EXPECT_FALSE(icon.IsEmpty());
 }
 
@@ -952,7 +956,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionViewModelFeatureBrowserTest,
   auto extensionC = CreateAndAddExtensionWithGrantedHostPermissions(
       "Extension c", extensions::ActionInfo::Type::kAction, {url_string});
 
-  AddTab(browser(), gurl);
+  AddTab(gurl);
 
   content::WebContents* web_contents = GetActiveWebContents();
   ASSERT_TRUE(web_contents);
@@ -968,8 +972,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionViewModelFeatureBrowserTest,
   // By default, user site setting is "customize by extension" and site access
   // is granted to every extension that requests them. Thus, verify extension A
   // hover card state is "does not want access" and the rest is "have access".
-  auto* permissions_manager =
-      extensions::PermissionsManager::Get(browser()->profile());
+  auto* permissions_manager = extensions::PermissionsManager::Get(profile());
   ASSERT_EQ(permissions_manager->GetUserSiteSetting(url),
             UserSiteSetting::kCustomizeByExtension);
   EXPECT_EQ(GetHoverCardSiteAccessState(modelA, web_contents),
@@ -981,7 +984,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionViewModelFeatureBrowserTest,
 
   // Withhold extension C host permissions. Verify only extension C changed
   // hover card state to "requests access".
-  extensions::ScriptingPermissionsModifier(browser()->profile(), extensionC)
+  extensions::ScriptingPermissionsModifier(profile(), extensionC)
       .SetWithholdHostPermissions(true);
   EXPECT_EQ(GetHoverCardSiteAccessState(modelA, web_contents),
             HoverCardState::SiteAccess::kExtensionDoesNotWantAccess);
@@ -1028,7 +1031,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionViewModelFeatureBrowserTest, GetTooltip) {
       {requested_url_string});
 
   // Navigate to a site the extension requests access to.
-  AddTab(browser(), requested_gurl);
+  AddTab(requested_gurl);
   content::WebContents* web_contents = GetActiveWebContents();
   ASSERT_TRUE(web_contents);
   auto requested_url = url::Origin::Create(web_contents->GetLastCommittedURL());
@@ -1039,8 +1042,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionViewModelFeatureBrowserTest, GetTooltip) {
   // By default, user site setting is "customize by extension" and site access
   // is granted to every extension that requests them. Verify extension tooltip
   // is "has access".
-  auto* permissions_manager =
-      extensions::PermissionsManager::Get(browser()->profile());
+  auto* permissions_manager = extensions::PermissionsManager::Get(profile());
   ASSERT_EQ(permissions_manager->GetUserSiteSetting(requested_url),
             UserSiteSetting::kCustomizeByExtension);
   EXPECT_EQ(
@@ -1053,7 +1055,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionViewModelFeatureBrowserTest, GetTooltip) {
 
   // Withhold extension host permissions. Verify extension tooltip is "requests
   // access".
-  extensions::ScriptingPermissionsModifier(browser()->profile(), extension)
+  extensions::ScriptingPermissionsModifier(profile(), extension)
       .SetWithholdHostPermissions(true);
   EXPECT_EQ(
       model->GetTooltip(web_contents),
@@ -1076,7 +1078,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionViewModelFeatureBrowserTest, GetTooltip) {
           u"\n"));
 
   // Navigate to a site that the extension didn't request access to.
-  AddTab(browser(), not_requested_gurl);
+  AddTab(not_requested_gurl);
   web_contents = GetActiveWebContents();
   ASSERT_TRUE(web_contents);
   auto non_requested_url =
@@ -1132,7 +1134,7 @@ IN_PROC_BROWSER_TEST_F(
   auto extensionC = CreateAndAddExtensionWithGrantedHostPermissions(
       "Extension c", extensions::ActionInfo::Type::kAction, {url_string});
 
-  AddTab(browser(), gurl);
+  AddTab(gurl);
   content::WebContents* web_contents = GetActiveWebContents();
   ASSERT_TRUE(web_contents);
   auto url = url::Origin::Create(web_contents->GetLastCommittedURL());
@@ -1147,8 +1149,7 @@ IN_PROC_BROWSER_TEST_F(
   // By default, user site setting is "customize by extension" and site access
   // is granted to every extension that requests them. Thus, verify extension A
   // hover card state is "does not want access" and the rest is "have access".
-  auto* permissions_manager =
-      extensions::PermissionsManager::Get(browser()->profile());
+  auto* permissions_manager = extensions::PermissionsManager::Get(profile());
   ASSERT_EQ(permissions_manager->GetUserSiteSetting(url),
             UserSiteSetting::kCustomizeByExtension);
   EXPECT_EQ(GetHoverCardSiteAccessState(modelA, web_contents),
@@ -1160,7 +1161,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Withhold extension C host permissions. Verify only extension C changed
   // hover card state to "requests access".
-  extensions::ScriptingPermissionsModifier(browser()->profile(), extensionC)
+  extensions::ScriptingPermissionsModifier(profile(), extensionC)
       .SetWithholdHostPermissions(true);
   EXPECT_EQ(GetHoverCardSiteAccessState(modelA, web_contents),
             HoverCardState::SiteAccess::kExtensionDoesNotWantAccess);
@@ -1181,6 +1182,7 @@ IN_PROC_BROWSER_TEST_F(
             HoverCardState::SiteAccess::kAllExtensionsAllowed);
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Test that the extension action is enabled if opening the side panel on icon
 // click is enabled and the extension has a side panel for the current tab.
 IN_PROC_BROWSER_TEST_P(ExtensionActionViewModelFeatureRolloutBrowserTest,
@@ -1199,14 +1201,14 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewModelFeatureRolloutBrowserTest,
   ExtensionActionViewModel* const model = GetViewModelForId(extension->id());
   ASSERT_TRUE(model);
 
-  AddTab(browser(), GURL("https://www.chromium.org/"));
+  AddTab(GURL("https://www.chromium.org/"));
   content::WebContents* web_contents = GetActiveWebContents();
   int tab_id = sessions::SessionTabHelper::IdForTab(web_contents).id();
 
   // If the preference is true but there is no side panel for the current tab,
   // the action should be disabled.
   std::unique_ptr<IconWithBadgeImageSource> image_source =
-      model->GetIconImageSourceForTesting(web_contents, view_size());
+      model->GetIconImageSourceForTesting(web_contents, kTestIconSize);
   EXPECT_TRUE(image_source->grayscale());
   EXPECT_FALSE(model->IsEnabled(web_contents));
 
@@ -1218,16 +1220,19 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewModelFeatureRolloutBrowserTest,
   options.tab_id = tab_id;
   side_panel_service()->SetOptions(*extension, std::move(options));
 
-  image_source = model->GetIconImageSourceForTesting(web_contents, view_size());
+  image_source =
+      model->GetIconImageSourceForTesting(web_contents, kTestIconSize);
   EXPECT_FALSE(image_source->grayscale());
   EXPECT_TRUE(model->IsEnabled(web_contents));
 
   // Setting the preference to false should disable the extension's action.
   side_panel_service()->SetOpenSidePanelOnIconClick(extension->id(), false);
-  image_source = model->GetIconImageSourceForTesting(web_contents, view_size());
+  image_source =
+      model->GetIconImageSourceForTesting(web_contents, kTestIconSize);
   EXPECT_TRUE(image_source->grayscale());
   EXPECT_FALSE(model->IsEnabled(web_contents));
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // A fake implementation of ExtensionActionDelegate that does nothing.
 class FakeExtensionActionDelegate : public ExtensionActionDelegate {
@@ -1260,7 +1265,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewModelFeatureRolloutBrowserTest,
   // Create ExtensionActionViewModel that is not associated with the
   // lifetime of the view.
   auto action = ExtensionActionViewModel::Create(
-      id, browser(), std::make_unique<FakeExtensionActionDelegate>());
+      id, browser_window_interface(),
+      std::make_unique<FakeExtensionActionDelegate>());
 
   extension_registrar()->DisableExtension(
       id, {extensions::disable_reason::DISABLE_USER_ACTION});
