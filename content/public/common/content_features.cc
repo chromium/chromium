@@ -946,7 +946,7 @@ BASE_FEATURE(kUserMediaCaptureOnFocus, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // A feature to enabled updating installed PWAs more predictably by considering
 // changes in icon urls.
-BASE_FEATURE(kWebAppPredictableAppUpdating, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kWebAppPredictableAppUpdating, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // This is intended as a kill switch for the WebOTP Service feature. To enable
 // this feature, the experimental web platform features flag should be set.
