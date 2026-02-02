@@ -4,9 +4,8 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/bwg/ui/gemini_camera_view_controller.h"
 
-#import "base/metrics/user_metrics.h"
-#import "base/metrics/user_metrics_action.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/coordinator/gemini_settings_mutator.h"
+#import "ios/chrome/browser/settings/ui_bundled/bwg/utils/gemini_settings_metrics.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -86,18 +85,18 @@ NSString* const kCameraCellId = @"CameraCellId";
 // Called from the Camera setting's UIControlEventValueChanged. Updates
 // underlying camera permission pref.
 - (void)cameraSwitchToggled:(UISwitch*)switchView {
+  RecordGeminiCameraSettingsToggled(switchView.isOn);
   [self.mutator setCameraPermissionPref:switchView.isOn];
 }
 
 #pragma mark - SettingsControllerProtocol
 
 - (void)reportDismissalUserAction {
-  base::RecordAction(
-      base::UserMetricsAction("MobileGeminiCameraSettingsClose"));
+  RecordGeminiCameraSettingsClose();
 }
 
 - (void)reportBackUserAction {
-  base::RecordAction(base::UserMetricsAction("MobileGeminiCameraSettingsBack"));
+  RecordGeminiCameraSettingsBack();
 }
 
 @end

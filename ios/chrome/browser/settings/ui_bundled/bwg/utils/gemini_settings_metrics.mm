@@ -42,3 +42,24 @@ void RecordGeminiSettingsItemShown(IOSGeminiSettingsItem item) {
 void RecordGeminiSettingsItemUsed(IOSGeminiSettingsItem item) {
   base::UmaHistogramEnumeration("IOS.Gemini.DynamicSettings.ItemUsed", item);
 }
+
+void RecordGeminiCameraSettingsClose() {
+  base::RecordAction(
+      base::UserMetricsAction("MobileGeminiCameraSettingsClose"));
+}
+
+void RecordGeminiCameraSettingsBack() {
+  base::RecordAction(base::UserMetricsAction("MobileGeminiCameraSettingsBack"));
+}
+
+void RecordGeminiCameraSettingsToggled(bool enabled) {
+  base::UmaHistogramBoolean(
+      "IOS.Gemini.Camera.Settings.GeminiCameraPermissionToggled", enabled);
+  if (enabled) {
+    base::RecordAction(base::UserMetricsAction(
+        "MobileGeminiCameraSettingsGeminiCameraPermissionToggledOn"));
+  } else {
+    base::RecordAction(base::UserMetricsAction(
+        "MobileGeminiCameraSettingsGeminiCameraPermissionToggledOff"));
+  }
+}

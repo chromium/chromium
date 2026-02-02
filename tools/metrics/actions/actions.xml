@@ -26870,6 +26870,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileGeminiCameraSettingsGeminiCameraPermissionToggledOff">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <description>
+    Reported when the user toggles the Gemini camera permission setting off from
+    the Gemini Camera Settings UI.
+  </description>
+</action>
+
+<action name="MobileGeminiCameraSettingsGeminiCameraPermissionToggledOn">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <description>
+    Reported when the user toggles the Gemini camera permission setting on from
+    the Gemini Camera Settings UI.
+  </description>
+</action>
+
 <action name="MobileGeminiEntryPointAutomatic">
   <owner>kanouche@google.com</owner>
   <owner>bling-alchemy@google.com</owner>

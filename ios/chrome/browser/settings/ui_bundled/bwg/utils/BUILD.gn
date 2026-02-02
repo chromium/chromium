@@ -9,3 +9,12 @@ source_set("utils") {
   ]
   deps = [ "//ui/base" ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "gemini_settings_metrics_unittest.mm" ]
+  deps = [
+    ":utils",
+    "//base/test:test_support",
+  ]
+}
