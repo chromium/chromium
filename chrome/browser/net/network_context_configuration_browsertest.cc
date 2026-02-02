@@ -5,7 +5,6 @@
 #include <atomic>
 #include <optional>
 #include <string>
-#include <unordered_set>
 #include <vector>
 
 #include "base/command_line.h"
@@ -99,6 +98,7 @@
 #include "services/network/test/test_dns_util.h"
 #include "services/network/test/test_url_loader_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -1880,8 +1880,7 @@ class NetworkContextConfigurationProxySettingsBrowserTest
       return nullptr;
 
     // Record the number of connections we're seeing.
-    CHECK(observed_request_urls_.find(request.GetURL().spec()) ==
-          observed_request_urls_.end());
+    CHECK(!observed_request_urls_.contains(request.GetURL().spec()));
     observed_request_urls_.emplace(request.GetURL().spec());
     CHECK_GE(GetExpectedMaxConnectionsPerProxy(),
              observed_request_urls_.size());
@@ -1950,7 +1949,7 @@ class NetworkContextConfigurationProxySettingsBrowserTest
   // test. This member, which is only accessed from the server's IO thread,
   // records each observed request to ensure we see only as many connections as
   // we expect.
-  std::unordered_set<std::string> observed_request_urls_;
+  absl::flat_hash_set<std::string> observed_request_urls_;
 };
 
 // Test failure on macOS: crbug.com/1287934
