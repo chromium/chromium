@@ -8334,21 +8334,6 @@
             ]
         }
     ],
-    "DBSCMacUKSInBrowserProcess": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20251217",
-                    "enable_features": [
-                        "UseUnexportableKeyServiceInBrowserProcess"
-                    ]
-                }
-            ]
-        }
-    ],
     "DSEPrewarmAndroid": [
         {
             "platforms": [
@@ -9226,6 +9211,32 @@
                         "DeviceBoundSessions",
                         "DeviceBoundSessionsFederatedRegistration",
                         "PersistDeviceBoundSessions"
+                    ]
+                }
+            ]
+        }
+    ],
+    "DeviceBoundSessionCredentialsMac": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "Value": "l1_enabled"
+                    },
+                    "enable_features": [
+                        "DeviceBoundSessions",
+                        "DeviceBoundSessionsFederatedRegistration",
+                        "DeviceBoundSessionsForRestrictedSites",
+                        "DeviceBoundSessionsForRestrictedSitesExperimentId",
+                        "EnableChromeRefreshTokenBinding",
+                        "EnableOAuthMultiloginStandardCookiesBinding",
+                        "PersistDeviceBoundSessions",
+                        "UnexportableKeyDeletion",
+                        "UseUnexportableKeyServiceInBrowserProcess"
                     ]
                 }
             ]
