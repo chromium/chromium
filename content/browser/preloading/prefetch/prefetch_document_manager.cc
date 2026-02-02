@@ -70,17 +70,7 @@ PrefetchDocumentManager::PrefetchDocumentManager(RenderFrameHost* rfh)
           static_cast<RenderFrameHostImpl*>(rfh)->GetDocumentToken()),
       prefetch_destruction_callback_(base::DoNothing()) {}
 
-PrefetchDocumentManager::~PrefetchDocumentManager() {
-  PrefetchService* prefetch_service = GetPrefetchService();
-  if (!prefetch_service) {
-    return;
-  }
-
-  // Invalidate weak pointers to `this` a little earlier to avoid callbacks to
-  // `this` (especially `PrefetchWillBeDestroyed()`) during
-  // `MayReleasePrefetch()` below.
-  weak_method_factory_.InvalidateWeakPtrs();
-}
+PrefetchDocumentManager::~PrefetchDocumentManager() = default;
 
 // static
 PrefetchDocumentManager* PrefetchDocumentManager::FromDocumentToken(
