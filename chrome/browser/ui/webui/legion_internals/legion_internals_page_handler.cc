@@ -33,9 +33,13 @@ LegionInternalsPageHandler::~LegionInternalsPageHandler() = default;
 void LegionInternalsPageHandler::Connect(const std::string& url,
                                          const std::string& api_key,
                                          ConnectCallback callback) {
-  GURL api_url = legion::Client::FormatUrl(url, api_key);
-  client_ =
-      legion::Client::CreateWithUrl(token_manager_, api_url, network_context_);
+  if (!api_key.empty()) {
+    client_ = legion::Client::CreateWithApiKey(
+        legion::Client::FormatUrl(url, api_key), network_context_);
+  } else {
+    client_ = legion::Client::CreateWithToken(legion::Client::FormatUrl(url),
+                                              network_context_, token_manager_);
+  }
   std::move(callback).Run();
 }
 

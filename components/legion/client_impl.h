@@ -17,10 +17,10 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/legion/client.h"
+#include "components/legion/connection.h"
+#include "components/legion/connection_factory.h"
 #include "components/legion/legion_common.h"
-#include "components/legion/phosphor/token_manager.h"
 #include "components/legion/proto/legion.pb.h"
-#include "components/legion/secure_channel.h"
 
 namespace network::mojom {
 class NetworkContext;
@@ -28,26 +28,13 @@ class NetworkContext;
 
 namespace legion {
 
+class Connection;
+class ConnectionFactory;
+
 // Client for starting the session and sending requests.
 class ClientImpl : public Client {
  public:
-  using SecureChannelFactory =
-      base::RepeatingCallback<std::unique_ptr<SecureChannel>()>;
-
-  using BinaryEncodedProtoRequest = Request;
-  using BinaryEncodedProtoResponse = Response;
-
-  // Callback for when a `SendRequest` operation completes.
-  // If the operation is successful, the result will contain the server's
-  // response. Otherwise, it will contain an `ErrorCode` error.
-  using OnRequestCompletedCallback = base::OnceCallback<void(
-      base::expected<BinaryEncodedProtoResponse, ErrorCode> result)>;
-
-  using OnLegionRequestCompletedCallback = base::OnceCallback<void(
-      base::expected<proto::LegionResponse, ErrorCode> result)>;
-
-  ClientImpl(SecureChannelFactory channel_factory,
-             phosphor::TokenManager* token_manager);
+  explicit ClientImpl(std::unique_ptr<ConnectionFactory> connection_factory);
   ~ClientImpl() override;
 
   ClientImpl(const ClientImpl&) = delete;
@@ -70,67 +57,26 @@ class ClientImpl : public Client {
                        const RequestOptions& options) override;
 
  private:
-  friend class ClientImplTest;
+  // Callback for when a `SendRequest` operation completes.
+  // If the operation is successful, the result will contain the server's
+  // response. Otherwise, it will contain an `ErrorCode` error.
+  using OnRequestCompletedCallback = base::OnceCallback<void(
+      base::expected<proto::LegionResponse, ErrorCode> result)>;
 
-  // Returns the existing secure channel or creates a new one if it doesn't
+  // Returns the existing connection or creates a new one if it doesn't
   // exist.
-  SecureChannel* GetOrCreateSecureChannel();
+  Connection* GetOrCreateConnection();
 
-  int32_t CreateRequestId();
-
-  void SendLegionRequest(proto::FeatureName feature_name,
-                         proto::LegionRequest legion_request,
-                         OnLegionRequestCompletedCallback callback,
-                         const RequestOptions& options);
-
-  // Sends a request over the secure channel.
-  void SendRequest(int32_t request_id,
-                   BinaryEncodedProtoRequest request,
+  void SendRequest(proto::FeatureName feature_name,
+                   proto::LegionRequest legion_request,
                    OnRequestCompletedCallback callback,
-                   base::TimeDelta timeout);
+                   const RequestOptions& options);
 
-  // Sends client attestation request using blind signed token.
-  void TrySendClientAttestationRequest();
+  void OnConnectionDisconnected();
 
-  // The callback for when a token is available for client attestation.
-  void OnGetAuthTokenForAttestation(
-      std::optional<phosphor::BlindSignedAuthToken> auth_token);
+  std::unique_ptr<Connection> connection_;
 
-  void OnClientAttestationRequest(
-      base::expected<BinaryEncodedProtoResponse, ErrorCode> result);
-
-  // Handles responses from the secure channel.
-  void OnResponseReceived(
-      base::expected<BinaryEncodedProtoResponse, ErrorCode> result);
-
-  // Wraps a request callback to record latency metrics upon completion.
-  void OnRequestCompleted(
-      OnRequestCompletedCallback callback,
-      base::TimeTicks start_time,
-      base::expected<BinaryEncodedProtoResponse, ErrorCode> result);
-
-  // Handles a request timeout.
-  void OnRequestTimeout(int32_t request_id);
-
-  // Fails all pending requests with the given error code.
-  void FailAllPendingRequests(ErrorCode error_code);
-
-  // Handles the result of a session establishment request.
-  void OnSessionEstablished(OnEstablishSessionCompletedCallback callback,
-                            base::expected<void, ErrorCode> result);
-
-  SecureChannelFactory secure_channel_factory_;
-  raw_ptr<phosphor::TokenManager> token_manager_;
-
-  std::unique_ptr<SecureChannel> secure_channel_;
-  int32_t next_request_id_{1};
-
-  // Callbacks for requests that have been sent to the secure channel but have
-  // not yet received a response.
-  base::flat_map<int32_t, OnRequestCompletedCallback> pending_requests_;
-
-  // The request_ids of requests that have timed out.
-  base::flat_set<int32_t> timed_out_requests_;
+  std::unique_ptr<ConnectionFactory> connection_factory_;
 
   base::WeakPtrFactory<ClientImpl> weak_factory_{this};
 };

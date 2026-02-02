@@ -23,7 +23,7 @@ namespace {
 class ConnectionMetricsTest : public testing::Test {
  public:
   ConnectionMetricsTest() {
-    auto fake_connection = std::make_unique<FakeConnection>();
+    auto fake_connection = std::make_unique<FakeConnection>(base::DoNothing());
     fake_connection_ = fake_connection.get();
     connection_metrics_ =
         std::make_unique<ConnectionMetrics>(std::move(fake_connection));

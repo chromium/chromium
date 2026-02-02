@@ -50,9 +50,17 @@ PrivateAiService::PrivateAiService(
   token_fetcher_ = token_fetcher.get();
   token_manager_ =
       std::make_unique<phosphor::TokenManagerImpl>(std::move(token_fetcher));
-  client_ = legion::Client::Create(
-      token_manager_.get(),
-      profile_->GetDefaultStoragePartition()->GetNetworkContext());
+
+  if (!kLegionApiKey.Get().empty()) {
+    client_ = legion::Client::CreateWithApiKey(
+        legion::Client::FormatUrl(kLegionUrl.Get(), kLegionApiKey.Get()),
+        profile_->GetDefaultStoragePartition()->GetNetworkContext());
+  } else {
+    client_ = legion::Client::CreateWithToken(
+        legion::Client::FormatUrl(kLegionUrl.Get()),
+        profile_->GetDefaultStoragePartition()->GetNetworkContext(),
+        token_manager_.get());
+  }
 }
 
 PrivateAiService::~PrivateAiService() {

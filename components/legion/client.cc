@@ -12,49 +12,45 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/strcat.h"
-#include "components/legion/attestation/handler_impl.h"
 #include "components/legion/client_impl.h"
+#include "components/legion/connection_factory_impl.h"
 #include "components/legion/features.h"
 #include "components/legion/phosphor/token_manager.h"
-#include "components/legion/secure_channel_impl.h"
-#include "components/legion/secure_session_async_impl.h"
-#include "components/legion/websocket_client.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "url/gurl.h"
 
 namespace legion {
 
 // static
-std::unique_ptr<Client> Client::Create(
-    phosphor::TokenManager* token_manager,
-    network::mojom::NetworkContext* network_context) {
-  return CreateWithUrl(token_manager,
-                       FormatUrl(kLegionUrl.Get(), kLegionApiKey.Get()),
-                       network_context);
-}
-
-// static
-std::unique_ptr<Client> Client::CreateWithUrl(
-    phosphor::TokenManager* token_manager,
+std::unique_ptr<Client> Client::CreateWithApiKey(
     const GURL& url,
     network::mojom::NetworkContext* network_context) {
   CHECK(base::FeatureList::IsEnabled(kLegion));
 
-  auto factory = base::BindRepeating(
-      [](const GURL& url, network::mojom::NetworkContext* context)
-          -> std::unique_ptr<SecureChannel> {
-        auto transport = std::make_unique<WebSocketClient>(url, context);
-        auto secure_session = std::make_unique<SecureSessionAsyncImpl>();
-        auto attestation_handler = std::make_unique<AttestationHandlerImpl>();
-
-        return std::make_unique<SecureChannelImpl>(
-            std::move(transport), std::move(secure_session),
-            std::move(attestation_handler));
-      },
-      url, base::Unretained(network_context));
+  auto connection_factory_impl =
+      std::make_unique<ApiKeyConnectionFactoryImpl>(url, network_context);
 
   // Raw `new` is used here because the constructor is private.
-  return base::WrapUnique(new ClientImpl(std::move(factory), token_manager));
+  return base::WrapUnique(new ClientImpl(std::move(connection_factory_impl)));
+}
+
+// static
+std::unique_ptr<Client> Client::CreateWithToken(
+    const GURL& url,
+    network::mojom::NetworkContext* network_context,
+    phosphor::TokenManager* token_manager) {
+  CHECK(base::FeatureList::IsEnabled(kLegion));
+
+  auto connection_factory_impl = std::make_unique<TokenConnectionFactoryImpl>(
+      url, network_context, token_manager);
+
+  // Raw `new` is used here because the constructor is private.
+  return base::WrapUnique(new ClientImpl(std::move(connection_factory_impl)));
+}
+
+// static
+GURL Client::FormatUrl(const std::string& url) {
+  return GURL(base::StrCat({"wss://", url}));
 }
 
 // static

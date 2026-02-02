@@ -22,7 +22,8 @@ FakeConnection::PendingRequest& FakeConnection::PendingRequest::operator=(
 
 FakeConnection::PendingRequest::~PendingRequest() = default;
 
-FakeConnection::FakeConnection() = default;
+FakeConnection::FakeConnection(base::OnceClosure on_disconnect)
+    : on_disconnect_(std::move(on_disconnect)) {}
 
 FakeConnection::~FakeConnection() = default;
 
@@ -35,6 +36,15 @@ void FakeConnection::Send(proto::LegionRequest request,
   pending_request.callback = std::move(callback);
 
   pending_requests_.push_back(std::move(pending_request));
+}
+
+void FakeConnection::SimulateDisconnect() {
+  auto callbacks = std::move(pending_requests_);
+  for (auto& pending_request : callbacks) {
+    std::move(pending_request.callback)
+        .Run(base::unexpected(ErrorCode::kNetworkError));
+  }
+  std::move(on_disconnect_).Run();
 }
 
 }  // namespace legion

@@ -48,16 +48,19 @@ class Client {
 
   static constexpr base::TimeDelta kDefaultTimeout = base::Seconds(120);
 
-  static std::unique_ptr<Client> Create(
-      phosphor::TokenManager* token_manager,
-      network::mojom::NetworkContext* network_context);
-
-  static std::unique_ptr<Client> CreateWithUrl(
-      phosphor::TokenManager* token_manager,
+  static std::unique_ptr<Client> CreateWithApiKey(
       const GURL& url,
       network::mojom::NetworkContext* network_context);
 
+  static std::unique_ptr<Client> CreateWithToken(
+      const GURL& url,
+      network::mojom::NetworkContext* network_context,
+      phosphor::TokenManager* token_manager);
+
   virtual ~Client() = default;
+
+  // Takes a URL without scheme and returns a URL.
+  static GURL FormatUrl(const std::string& url);
 
   // Takes a URL without scheme and an api_key and returns a URL.
   static GURL FormatUrl(const std::string& url, const std::string& api_key);

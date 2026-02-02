@@ -23,7 +23,7 @@ namespace {
 class ConnectionTimeoutTest : public testing::Test {
  public:
   ConnectionTimeoutTest() {
-    auto fake_connection = std::make_unique<FakeConnection>();
+    auto fake_connection = std::make_unique<FakeConnection>(base::DoNothing());
     fake_connection_ = fake_connection.get();
     connection_timeout_ =
         std::make_unique<ConnectionTimeout>(std::move(fake_connection));
