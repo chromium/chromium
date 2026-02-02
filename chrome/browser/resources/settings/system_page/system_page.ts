@@ -18,6 +18,7 @@ import '../settings_page/settings_section.js';
 import '../settings_shared.css.js';
 
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
@@ -174,6 +175,11 @@ export class SettingsSystemPageElement extends SettingsSystemPageElementBase
   }
 
   // <if expr="_google_chrome">
+  private onOnDeviceAiLearnMoreClicked_() {
+    OpenWindowProxyImpl.getInstance().openUrl(
+        loadTimeData.getString('onDeviceAiLearnMoreUrl'));
+  }
+
   private onOnDeviceAiToggleChange_(e: Event) {
     const enabled = (e.target as SettingsToggleButtonElement).checked;
     this.onDeviceAiBrowserProxy_.setOnDeviceAiEnabled(enabled);

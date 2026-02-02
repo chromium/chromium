@@ -31,11 +31,11 @@
     <!-- On device AI settings -->
     <template is="dom-if" if="[[showOnDeviceAiSettings_]]" restamp>
       <div class="hr"></div>
-      <!-- TODO(crbug.com/466442880): Link article with "learn-more-url" -->
       <settings-toggle-button id="onDeviceAiToggle"
           pref="{{onDeviceAiPref_}}"
           label="$i18n{onDeviceAiEnabledLabel}"
-          sub-label="$i18n{onDeviceAiEnabledSubLabel}"
+          sub-label-with-link="$i18n{onDeviceAiEnabledSubLabel}"
+          on-sub-label-link-clicked="onOnDeviceAiLearnMoreClicked_"
           on-settings-boolean-control-change="onOnDeviceAiToggleChange_">
       </settings-toggle-button>
     </template>

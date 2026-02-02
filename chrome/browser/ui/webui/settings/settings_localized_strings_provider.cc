@@ -3998,8 +3998,6 @@ void AddSystemStrings(content::WebUIDataSource* html_source) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       {"onDeviceAiEnabledLabel",
        IDS_SETTINGS_SYSTEM_FEATURE_ON_DEVICE_AI_ENABLED_LABEL},
-      {"onDeviceAiEnabledSubLabel",
-       IDS_SETTINGS_SYSTEM_FEATURE_ON_DEVICE_AI_ENABLED_SUB_LABEL},
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
@@ -4026,6 +4024,17 @@ void AddSystemStrings(content::WebUIDataSource* html_source) {
       "proxySettingsYourDevice",
       l10n_util::GetStringUTF16(
           IDS_SETTINGS_SYSTEM_PROXY_SETTINGS_YOUR_DEVICE_LABEL));
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  html_source->AddString("onDeviceAiLearnMoreUrl",
+                         chrome::kOnDeviceAiLearnMoreUrl);
+  html_source->AddString(
+      "onDeviceAiEnabledSubLabel",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_SYSTEM_FEATURE_ON_DEVICE_AI_ENABLED_SUB_LABEL,
+          chrome::kOnDeviceAiLearnMoreUrl,
+          l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB)));
+#endif
 
   // TODO(dbeam): we should probably rename anything involving "localized
   // strings" to "load time data" as all primitive types are used now.
