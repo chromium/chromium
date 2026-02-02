@@ -56,12 +56,12 @@ void OneShotAccessibilityTreeSearch::SetDirection(Direction direction) {
   direction_ = direction;
 }
 
-void OneShotAccessibilityTreeSearch::SetResultLimit(int result_limit) {
+void OneShotAccessibilityTreeSearch::SetResultLimit(size_t result_limit) {
   DCHECK(!did_search_);
   result_limit_ = result_limit;
 }
 
-void OneShotAccessibilityTreeSearch::SetSearchLimit(int search_limit) {
+void OneShotAccessibilityTreeSearch::SetSearchLimit(size_t search_limit) {
   DCHECK(!did_search_);
   search_limit_ = search_limit;
 }
@@ -143,12 +143,9 @@ void OneShotAccessibilityTreeSearch::SearchByIteratingOverChildren() {
       index--;
   }
 
-  int nodes_checked_count = 0;
-  while (index < count &&
-         (result_limit_ == kUnlimitedResults ||
-          static_cast<int>(matches_.size()) < result_limit_) &&
-         (search_limit_ == kUnlimitedSearchLimit ||
-          nodes_checked_count < search_limit_)) {
+  size_t nodes_checked_count = 0;
+  while (index < count && (!result_limit_ || matches_.size() < result_limit_) &&
+         (!search_limit_ || nodes_checked_count < search_limit_)) {
     BrowserAccessibility* node = scope_node_->PlatformGetChild(index);
 
     if (Matches(node)) {
@@ -189,12 +186,10 @@ void OneShotAccessibilityTreeSearch::SearchByWalkingTree() {
     stop_node = tree_->PreviousInTreeOrder(scope_node_, /* wrap */ false);
   }
 
-  int nodes_checked_count = 0;
+  size_t nodes_checked_count = 0;
   while (node && node != stop_node &&
-         (result_limit_ == kUnlimitedResults ||
-          static_cast<int>(matches_.size()) < result_limit_) &&
-         (search_limit_ == kUnlimitedSearchLimit ||
-          nodes_checked_count < search_limit_)) {
+         (!result_limit_ || matches_.size() < result_limit_) &&
+         (!search_limit_ || nodes_checked_count < search_limit_)) {
     if (Matches(node)) {
       matches_.push_back(node);
     }
