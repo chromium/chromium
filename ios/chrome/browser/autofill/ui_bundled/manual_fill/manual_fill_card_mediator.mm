@@ -357,6 +357,12 @@ std::vector<CreditCard> FetchCards(
   paymentsClient->CloseAutofillProgressDialog(
       /*show_confirmation_before_closing=*/false,
       /*no_interactive_authentication_callback=*/base::DoNothing());
+
+  // Re-trigger the manual fallback menu now that the progress dialog is closed.
+  // This prevents the menu from disappearing if the dialog dismissal caused it
+  // to hide.
+  [self.navigationDelegate cardSelectionFinished];
+
   // Don't replace the locked card with the unlocked one, so the user will
   // have to unlock it again, if needed.
   [self.contentInjector userDidPickContent:fillValue

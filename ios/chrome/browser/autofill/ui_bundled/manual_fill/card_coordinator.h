@@ -31,6 +31,9 @@ class CreditCard;
     didTriggerOpenCardDetails:(autofill::CreditCard)card
                    inEditMode:(BOOL)editMode;
 
+// Notifies the delegate that the manual filling of a card has completed.
+- (void)cardCoordinatorDidCompleteManualFill:(CardCoordinator*)cardCoordinator;
+
 @end
 
 // Creates and manages a view controller to present cards to the user.

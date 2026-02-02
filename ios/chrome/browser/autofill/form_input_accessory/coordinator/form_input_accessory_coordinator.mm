@@ -932,4 +932,31 @@ const base::Feature* FetchIPHFeatureFromEnum(
   [settingsHandler showPasswordDetailsForCredential:credential inEditMode:YES];
 }
 
+// Notifies the delegate that the manual filling process for a card has
+// completed. This is called after the card is selected and any necessary
+// unmasking or authentication has finished. The delegate can use this
+// notification to re-present the manual fallback UI if it was temporarily
+// dismissed.
+- (void)cardCoordinatorDidCompleteManualFill:(CardCoordinator*)cardCoordinator {
+  // On iPad, the manual fill view is a popover anchored to a button.
+  // We only re-trigger this automatically on iPhone (where it is an input
+  // view).
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    return;
+  }
+
+  // Determine if the field was obfuscated (e.g. password field).
+  BOOL invokedOnObfuscatedField =
+      [_formInputAccessoryMediator lastFocusedFieldWasObfuscated];
+
+  // Re-start the manual fill for Payment Methods.
+  [self
+      startManualFillFromButton:nil
+                    forDataType:manual_fill::ManualFillDataType::kPaymentMethod
+       invokedOnObfuscatedField:invokedOnObfuscatedField];
+
+  // Ensure the keyboard accessory knows we are now in manual filling mode.
+  [self updateKeyboardAccessoryForManualFilling];
+}
+
 @end

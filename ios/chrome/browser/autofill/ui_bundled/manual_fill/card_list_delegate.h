@@ -11,7 +11,7 @@
 @class CrURL;
 
 // Delegate for actions in manual fallback's cards list.
-@protocol CardListDelegate
+@protocol CardListDelegate <NSObject>
 
 // Opens feature to add a credit card.
 - (void)openAddCreditCard;
@@ -29,6 +29,10 @@
 
 // Opens URL in a bottom sheet view with the given title.
 - (void)openURL:(CrURL*)url withTitle:(NSString*)title;
+
+// Notifies the delegate that the card selection and potential unmasking flow
+// has finished.
+- (void)cardSelectionFinished;
 
 @end
 

@@ -231,4 +231,8 @@
                                                std::move(callback))];
 }
 
+- (void)cardSelectionFinished {
+  [self.delegate cardCoordinatorDidCompleteManualFill:self];
+}
+
 @end

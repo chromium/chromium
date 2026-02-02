@@ -12,6 +12,7 @@
 #import "components/autofill/ios/browser/test_autofill_client_ios.h"
 #import "ios/chrome/browser/autofill/ui_bundled/chrome_autofill_client_ios.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/card_consumer.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/card_list_delegate.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_card_cell+Testing.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_virtual_card_cache.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
@@ -149,7 +150,7 @@ TEST_F(ManualFillCardMediatorTest, CreateManualFillCardItemsWithVirtualCard) {
 // in the WebState's virtual card cache.
 TEST_F(ManualFillCardMediatorTest,
        OnFullCardRequestSucceeded_CachesVirtualCard) {
-  // Setup ScopedTestingWebClient with FakeWebClient.
+  // Set up ScopedTestingWebClient with FakeWebClient.
   web::ScopedTestingWebClient web_client(
       std::make_unique<web::FakeWebClient>());
 
@@ -158,7 +159,7 @@ TEST_F(ManualFillCardMediatorTest,
   web::WebState::CreateParams params(profile.get());
   auto web_state = web::WebState::Create(params);
 
-  // Setup InfoBarManager.
+  // Set up InfoBarManager.
   InfoBarManagerImpl::CreateForWebState(web_state.get());
   infobars::InfoBarManager* infobar_manager =
       InfoBarManagerImpl::FromWebState(web_state.get());
@@ -219,4 +220,48 @@ TEST_F(ManualFillCardMediatorTest,
   if (cache) {
     EXPECT_EQ(nullptr, cache->GetUnmaskedCard(card.guid()));
   }
+}
+
+// Tests that the mediator notifies the delegate when a full card request
+// succeeds. This signal is used to re-show the manual fallback UI if it was
+// dismissed during the unmasking process.
+TEST_F(ManualFillCardMediatorTest,
+       OnFullCardRequestSucceeded_NotifiesDelegate) {
+  // Set up ScopedTestingWebClient with FakeWebClient.
+  web::ScopedTestingWebClient web_client(
+      std::make_unique<web::FakeWebClient>());
+
+  // Create a REAL WebState via Profile.
+  std::unique_ptr<TestProfileIOS> profile = TestProfileIOS::Builder().Build();
+  web::WebState::CreateParams params(profile.get());
+  auto web_state = web::WebState::Create(params);
+
+  // Set up InfoBarManager.
+  InfoBarManagerImpl::CreateForWebState(web_state.get());
+  infobars::InfoBarManager* infobar_manager =
+      InfoBarManagerImpl::FromWebState(web_state.get());
+
+  // Attach the Client.
+  auto client = std::make_unique<
+      autofill::WithFakedFromWebState<TestChromeAutofillClient>>(
+      profile.get(), web_state.get(), infobar_manager, /*bridge=*/nil);
+
+  // Set up Mock Delegate.
+  id mock_delegate = OCMProtocolMock(@protocol(CardListDelegate));
+  mediator().navigationDelegate = mock_delegate;
+
+  // Create Test Data.
+  CreditCard card = CreateAndSaveCreditCard(kCardGuid1);
+
+  // Expect the call.
+  OCMExpect([mock_delegate cardSelectionFinished]);
+
+  // Invoke.
+  [mediator()
+      onFullCardRequestSucceeded:card
+                       fieldType:manual_fill::PaymentFieldType::kCardNumber
+                     forWebState:web_state.get()];
+
+  // Verify.
+  EXPECT_OCMOCK_VERIFY(mock_delegate);
 }
