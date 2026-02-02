@@ -5030,6 +5030,13 @@
       status: "stable",
     },
     {
+      // When enabled, cursor movement (arrow keys) will skip over non-editable
+      // atomic or empty inline elements within editable content, instead of
+      // getting stuck or moving into the non-editable content.
+      name: "SkipNonEditableInAtomicMove",
+      status: "stable",
+    },
+    {
       name: "SkipOofItemForBreakCandidate",
       status: "stable",
     },

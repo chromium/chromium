@@ -419,25 +419,50 @@ PositionInFlatTree NextCandidate(const PositionInFlatTree& position) {
 // |downstream()|.
 template <typename Strategy>
 static PositionTemplate<Strategy> NextVisuallyDistinctCandidateAlgorithm(
-    const PositionTemplate<Strategy>& position) {
+    const PositionTemplate<Strategy>& position,
+    EditingBoundaryCrossingRule rule) {
   TRACE_EVENT0("input",
                "EditingUtility::nextVisuallyDistinctCandidateAlgorithm");
   if (position.IsNull())
     return PositionTemplate<Strategy>();
 
   PositionIteratorAlgorithm<Strategy> p(position);
+  // Only skip non-editable content when explicitly requested via
+  // kCanSkipOverEditingBoundary (used for caret navigation).
+  const bool skip_non_editable =
+      rule == kCanSkipOverEditingBoundary &&
+      RuntimeEnabledFeatures::SkipNonEditableInAtomicMoveEnabled() &&
+      IsEditablePosition(position);
+  const EditingBoundaryCrossingRule boundary_rule =
+      skip_non_editable ? kCanCrossEditingBoundary : rule;
   const PositionTemplate<Strategy> downstream_start =
-      MostForwardCaretPosition(position);
+      MostForwardCaretPosition(position, boundary_rule);
   const PositionTemplate<Strategy> upstream_start =
-      MostBackwardCaretPosition(position);
+      MostBackwardCaretPosition(position, boundary_rule);
 
   p.Increment();
   while (!p.AtEnd()) {
     PositionTemplate<Strategy> candidate = p.ComputePosition();
+
+    // Skip candidates inside non-editable content when starting from
+    // an editable position, but only if the candidate is within the same
+    // editable root.
+    if (skip_non_editable && !IsEditablePosition(candidate)) {
+      Element* start_root = RootEditableElementOf(position);
+      Node* candidate_node = candidate.AnchorNode();
+      if (start_root && candidate_node &&
+          candidate_node->IsDescendantOf(start_root)) {
+        p.Increment();
+        continue;
+      }
+    }
+
     if (IsVisuallyEquivalentCandidate(candidate) &&
-        MostForwardCaretPosition(candidate) != downstream_start &&
-        MostBackwardCaretPosition(candidate) != upstream_start)
+        MostForwardCaretPosition(candidate, boundary_rule) !=
+            downstream_start &&
+        MostBackwardCaretPosition(candidate, boundary_rule) != upstream_start) {
       return candidate;
+    }
 
     p.Increment();
   }
@@ -445,14 +470,17 @@ static PositionTemplate<Strategy> NextVisuallyDistinctCandidateAlgorithm(
   return PositionTemplate<Strategy>();
 }
 
-Position NextVisuallyDistinctCandidate(const Position& position) {
-  return NextVisuallyDistinctCandidateAlgorithm<EditingStrategy>(position);
+Position NextVisuallyDistinctCandidate(const Position& position,
+                                       EditingBoundaryCrossingRule rule) {
+  return NextVisuallyDistinctCandidateAlgorithm<EditingStrategy>(position,
+                                                                 rule);
 }
 
 PositionInFlatTree NextVisuallyDistinctCandidate(
-    const PositionInFlatTree& position) {
+    const PositionInFlatTree& position,
+    EditingBoundaryCrossingRule rule) {
   return NextVisuallyDistinctCandidateAlgorithm<EditingInFlatTreeStrategy>(
-      position);
+      position, rule);
 }
 
 template <typename Strategy>
@@ -486,25 +514,50 @@ PositionInFlatTree PreviousCandidate(const PositionInFlatTree& position) {
 // |downstream()|.
 template <typename Strategy>
 PositionTemplate<Strategy> PreviousVisuallyDistinctCandidateAlgorithm(
-    const PositionTemplate<Strategy>& position) {
+    const PositionTemplate<Strategy>& position,
+    EditingBoundaryCrossingRule rule) {
   TRACE_EVENT0("input",
                "EditingUtility::previousVisuallyDistinctCandidateAlgorithm");
   if (position.IsNull())
     return PositionTemplate<Strategy>();
 
   PositionIteratorAlgorithm<Strategy> p(position);
-  PositionTemplate<Strategy> downstream_start =
-      MostForwardCaretPosition(position);
+  // Only skip non-editable content when explicitly requested via
+  // kCanSkipOverEditingBoundary (used for caret navigation).
+  const bool skip_non_editable =
+      rule == kCanSkipOverEditingBoundary &&
+      RuntimeEnabledFeatures::SkipNonEditableInAtomicMoveEnabled() &&
+      IsEditablePosition(position);
+  const EditingBoundaryCrossingRule boundary_rule =
+      skip_non_editable ? kCanCrossEditingBoundary : rule;
+  const PositionTemplate<Strategy> downstream_start =
+      MostForwardCaretPosition(position, boundary_rule);
   const PositionTemplate<Strategy> upstream_start =
-      MostBackwardCaretPosition(position);
+      MostBackwardCaretPosition(position, boundary_rule);
 
   p.Decrement();
   while (!p.AtStart()) {
     PositionTemplate<Strategy> candidate = p.ComputePosition();
+
+    // Skip candidates inside non-editable content when starting from
+    // an editable position, but only if the candidate is within the same
+    // editable root.
+    if (skip_non_editable && !IsEditablePosition(candidate)) {
+      Element* start_root = RootEditableElementOf(position);
+      Node* candidate_node = candidate.AnchorNode();
+      if (start_root && candidate_node &&
+          candidate_node->IsDescendantOf(start_root)) {
+        p.Decrement();
+        continue;
+      }
+    }
+
     if (IsVisuallyEquivalentCandidate(candidate) &&
-        MostForwardCaretPosition(candidate) != downstream_start &&
-        MostBackwardCaretPosition(candidate) != upstream_start)
+        MostForwardCaretPosition(candidate, boundary_rule) !=
+            downstream_start &&
+        MostBackwardCaretPosition(candidate, boundary_rule) != upstream_start) {
       return candidate;
+    }
 
     p.Decrement();
   }
@@ -512,14 +565,17 @@ PositionTemplate<Strategy> PreviousVisuallyDistinctCandidateAlgorithm(
   return PositionTemplate<Strategy>();
 }
 
-Position PreviousVisuallyDistinctCandidate(const Position& position) {
-  return PreviousVisuallyDistinctCandidateAlgorithm<EditingStrategy>(position);
+Position PreviousVisuallyDistinctCandidate(const Position& position,
+                                           EditingBoundaryCrossingRule rule) {
+  return PreviousVisuallyDistinctCandidateAlgorithm<EditingStrategy>(position,
+                                                                     rule);
 }
 
 PositionInFlatTree PreviousVisuallyDistinctCandidate(
-    const PositionInFlatTree& position) {
+    const PositionInFlatTree& position,
+    EditingBoundaryCrossingRule rule) {
   return PreviousVisuallyDistinctCandidateAlgorithm<EditingInFlatTreeStrategy>(
-      position);
+      position, rule);
 }
 
 template <typename Strategy>

@@ -1262,7 +1262,7 @@ static VisiblePositionTemplate<Strategy> NextPositionOfAlgorithm(
     const PositionWithAffinityTemplate<Strategy>& position,
     EditingBoundaryCrossingRule rule) {
   const VisiblePositionTemplate<Strategy> next = CreateVisiblePosition(
-      NextVisuallyDistinctCandidate(position.GetPosition()),
+      NextVisuallyDistinctCandidate(position.GetPosition(), rule),
       position.Affinity());
 
   switch (rule) {
@@ -1335,7 +1335,7 @@ static VisiblePositionTemplate<Strategy> PreviousPositionOfAlgorithm(
     const PositionTemplate<Strategy>& position,
     EditingBoundaryCrossingRule rule) {
   const PositionTemplate<Strategy> prev_position =
-      PreviousVisuallyDistinctCandidate(position);
+      PreviousVisuallyDistinctCandidate(position, rule);
 
   // return null visible position if there is no previous visible position
   if (prev_position.AtStartOfTree())

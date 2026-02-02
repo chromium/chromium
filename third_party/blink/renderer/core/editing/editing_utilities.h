@@ -197,11 +197,18 @@ PositionInFlatTree NextCandidate(const PositionInFlatTree&);
 Position PreviousCandidate(const Position&);
 PositionInFlatTree PreviousCandidate(const PositionInFlatTree&);
 
-CORE_EXPORT Position NextVisuallyDistinctCandidate(const Position&);
-CORE_EXPORT PositionInFlatTree
-NextVisuallyDistinctCandidate(const PositionInFlatTree&);
-Position PreviousVisuallyDistinctCandidate(const Position&);
-PositionInFlatTree PreviousVisuallyDistinctCandidate(const PositionInFlatTree&);
+CORE_EXPORT Position NextVisuallyDistinctCandidate(
+    const Position&,
+    EditingBoundaryCrossingRule = kCannotCrossEditingBoundary);
+CORE_EXPORT PositionInFlatTree NextVisuallyDistinctCandidate(
+    const PositionInFlatTree&,
+    EditingBoundaryCrossingRule = kCannotCrossEditingBoundary);
+Position PreviousVisuallyDistinctCandidate(
+    const Position&,
+    EditingBoundaryCrossingRule = kCannotCrossEditingBoundary);
+PositionInFlatTree PreviousVisuallyDistinctCandidate(
+    const PositionInFlatTree&,
+    EditingBoundaryCrossingRule = kCannotCrossEditingBoundary);
 
 // This is a |const Node&| versions of two deprecated functions above.
 inline Position FirstPositionInOrBeforeNode(const Node& node) {

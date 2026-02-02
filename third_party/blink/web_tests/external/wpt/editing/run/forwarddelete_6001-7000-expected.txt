@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 25 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 24 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["forwarddelete",""]] "<ol><li>foo[<li>]bar</ol>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foobar</li></ol>" but got "<ol><li>foo</li><li>bar</li></ol>"
 [FAIL] [["forwarddelete",""]] "<ol><li>foo</ol><p>{}<br></p><ol><li>bar</ol>" compare innerHTML
@@ -36,8 +36,6 @@ Found 25 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo</li></ul><p>bar</p>" but got "<ul><li>foo</li></ul><ol><li>bar</li></ol>"
 [FAIL] [["forwarddelete",""]] "<div><b>[foo]</b></div>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div><br></div>" but got "<br>"
-[FAIL] [["forwarddelete",""]] "foo[]<img contenteditable=false src=/img/lion.svg>bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foobar" but got "foo<img contenteditable=\\"false\\" src=\\"/img/lion.svg\\">bar"
 [FAIL] [["forwarddelete",""]] "<div><div>{}<br></div></div>" compare innerHTML
   assert_in_array: Unexpected innerHTML (after normalizing inline style) value "<div><div><br></div></div>" not in array ["", "<br>"]
 [FAIL] [["forwarddelete",""]] "<div><div contenteditable=false><div contenteditable><div>{}<br></div></div></div></div>" compare innerHTML

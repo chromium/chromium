@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../assert_selection.js"></script>
+<script>
+// Tests for cursor movement over atomic or empty non-editable elements within
+// editable content. These tests verify that arrow key navigation correctly
+// skips over non-editable atomic elements (like images) and empty non-editable
+// elements, rather than getting stuck or moving into them.
+
+const kImage = '<img contenteditable="false">';
+
+// Move right over non-editable image
+selection_test(
+    [
+        '<div contenteditable>',
+            '|<img contenteditable="false">',
+        '</div>',
+    ].join(''),
+    selection => selection.modify('move', 'right', 'character'),
+    [
+        '<div contenteditable>',
+            '<img contenteditable="false">|',
+        '</div>',
+    ].join(''),
+    'Move right over non-editable image');
+
+// Move left over non-editable image
+selection_test(
+    [
+        '<div contenteditable>',
+            '<img contenteditable="false">|',
+        '</div>',
+    ].join(''),
+    selection => selection.modify('move', 'left', 'character'),
+    [
+        '<div contenteditable>',
+            '|<img contenteditable="false">',
+        '</div>',
+    ].join(''),
+    'Move left over non-editable image');
+
+// Move right over non-editable image with surrounding text
+selection_test(
+    [
+        '<div contenteditable>',
+            'abc|<img contenteditable="false">def',
+        '</div>',
+    ].join(''),
+    selection => selection.modify('move', 'right', 'character'),
+    [
+        '<div contenteditable>',
+            'abc<img contenteditable="false">|def',
+        '</div>',
+    ].join(''),
+    'Move right over non-editable image with surrounding text');
+
+// Move left over non-editable image with surrounding text
+selection_test(
+    [
+        '<div contenteditable>',
+            'abc<img contenteditable="false">|def',
+        '</div>',
+    ].join(''),
+    selection => selection.modify('move', 'left', 'character'),
+    [
+        '<div contenteditable>',
+            'abc|<img contenteditable="false">def',
+        '</div>',
+    ].join(''),
+    'Move left over non-editable image with surrounding text');
+
+// Move right over empty non-editable span
+selection_test(
+    [
+        '<div contenteditable>',
+            '|<span contenteditable="false"></span>',
+        '</div>',
+    ].join(''),
+    selection => selection.modify('move', 'right', 'character'),
+    [
+        '<div contenteditable>',
+            '<span contenteditable="false"></span>|',
+        '</div>',
+    ].join(''),
+    'Move right over empty non-editable span');
+
+// Move left over empty non-editable span
+selection_test(
+    [
+        '<div contenteditable>',
+            '<span contenteditable="false"></span>|',
+        '</div>',
+    ].join(''),
+    selection => selection.modify('move', 'left', 'character'),
+    [
+        '<div contenteditable>',
+            '|<span contenteditable="false"></span>',
+        '</div>',
+    ].join(''),
+    'Move left over empty non-editable span');
+
+// Move right over empty non-editable span with surrounding text
+selection_test(
+    [
+        '<div contenteditable>',
+            'abc|<span contenteditable="false"></span>def',
+        '</div>',
+    ].join(''),
+    selection => selection.modify('move', 'right', 'character'),
+    [
+        '<div contenteditable>',
+            'abc<span contenteditable="false"></span>|def',
+        '</div>',
+    ].join(''),
+    'Move right over empty non-editable span with surrounding text');
+
+// Move left over empty non-editable span with surrounding text
+selection_test(
+    [
+        '<div contenteditable>',
+            'abc<span contenteditable="false"></span>|def',
+        '</div>',
+    ].join(''),
+    selection => selection.modify('move', 'left', 'character'),
+    [
+        '<div contenteditable>',
+            'abc|<span contenteditable="false"></span>def',
+        '</div>',
+    ].join(''),
+    'Move left over empty non-editable span with surrounding text');
+
+// Move right: first of two consecutive non-editable images
+selection_test(
+    [
+        '<div contenteditable>',
+            '|<img contenteditable="false">',
+            '<img contenteditable="false">',
+        '</div>',
+    ].join(''),
+    selection => selection.modify('move', 'right', 'character'),
+    [
+        '<div contenteditable>',
+            '<img contenteditable="false">|',
+            '<img contenteditable="false">',
+        '</div>',
+    ].join(''),
+    'Move right: first of two consecutive non-editable images');
+
+// Move right: between two consecutive non-editable images
+selection_test(
+    [
+        '<div contenteditable>',
+            '<img contenteditable="false">|',
+            '<img contenteditable="false">',
+        '</div>',
+    ].join(''),
+    selection => selection.modify('move', 'right', 'character'),
+    [
+        '<div contenteditable>',
+            '<img contenteditable="false">',
+            '<img contenteditable="false">|',
+        '</div>',
+    ].join(''),
+    'Move right: between two consecutive non-editable images');
+
+// Move left: after two consecutive non-editable images
+selection_test(
+    [
+        '<div contenteditable>',
+            '<img contenteditable="false">',
+            '<img contenteditable="false">|',
+        '</div>',
+    ].join(''),
+    selection => selection.modify('move', 'left', 'character'),
+    [
+        '<div contenteditable>',
+            '<img contenteditable="false">|',
+            '<img contenteditable="false">',
+        '</div>',
+    ].join(''),
+    'Move left: after two consecutive non-editable images');
+
+// Move right twice from inside editable text, then over non-editable image
+selection_test(
+    [
+        '<div contenteditable>',
+            'ab|c<img contenteditable="false">def',
+        '</div>',
+    ].join(''),
+    selection => {
+        selection.modify('move', 'right', 'character');
+        selection.modify('move', 'right', 'character');
+    },
+    [
+        '<div contenteditable>',
+            'abc<img contenteditable="false">|def',
+        '</div>',
+    ].join(''),
+    'Move right twice: from inside text over non-editable image');
+
+// Move left twice from inside editable text, then over non-editable image
+selection_test(
+    [
+        '<div contenteditable>',
+            'abc<img contenteditable="false">d|ef',
+        '</div>',
+    ].join(''),
+    selection => {
+        selection.modify('move', 'left', 'character');
+        selection.modify('move', 'left', 'character');
+    },
+    [
+        '<div contenteditable>',
+            'abc|<img contenteditable="false">def',
+        '</div>',
+    ].join(''),
+    'Move left twice: from inside text over non-editable image');
+</script>
