@@ -355,9 +355,7 @@ PrefetchContainer::~PrefetchContainer() {
 }
 
 void PrefetchContainer::OnWillBeDestroyed() {
-  for (auto& observer : observers_) {
-    observer.OnWillBeDestroyed(*this);
-  }
+  NotifyObservers(&Observer::OnWillBeDestroyed);
 }
 
 PrefetchServingHandle PrefetchContainer::CreateServingHandle() {
@@ -760,9 +758,7 @@ void PrefetchContainer::OnEligibilityCheckComplete(
       }
     }
 
-    for (auto& observer : observers_) {
-      observer.OnGotInitialEligibility(*this, eligibility);
-    }
+    NotifyObservers(&Observer::OnGotInitialEligibility, eligibility);
   } else {
     // This case is for any URLs from redirects.
     if (!is_eligible) {
@@ -1087,9 +1083,7 @@ void PrefetchContainer::OnDeterminedHead(bool is_successful_determined_head) {
   // header is got.
   MaybeSetNoVarySearchData();
 
-  for (auto& observer : observers_) {
-    observer.OnDeterminedHead(*this);
-  }
+  NotifyObservers(&Observer::OnDeterminedHead);
 }
 
 void PrefetchContainer::MaybeSetNoVarySearchData() {
@@ -1236,10 +1230,9 @@ void PrefetchContainer::OnPrefetchComplete(
       GetNonRedirectHead()->headers) {
     response_code = GetNonRedirectHead()->headers->response_code();
   }
-  for (auto& observer : observers_) {
-    observer.OnPrefetchCompletedOrFailed(*this, completion_status,
-                                         response_code);
-  }
+
+  NotifyObservers(&Observer::OnPrefetchCompletedOrFailed, completion_status,
+                  response_code);
 
   if (GetPrefetchResponseCompletedCallbackForTesting()) {
     GetPrefetchResponseCompletedCallbackForTesting().Run(  // IN-TEST

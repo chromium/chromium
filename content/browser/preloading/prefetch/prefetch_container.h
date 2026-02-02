@@ -593,6 +593,11 @@ class CONTENT_EXPORT PrefetchContainer {
   void SetTriggeringOutcomeAndFailureReasonFromStatus(
       PrefetchStatus new_prefetch_status);
 
+  template <typename Method, typename... Args>
+  void NotifyObservers(Method method, const Args&... args) {
+    observers_.Notify(method, *this, args...);
+  }
+
   // Returns if WebContents-level UA overrides should be applied for a prefetch
   // request for `request_url`. Note that not only the User-Agent header but
   // also Client-Hints headers are affected by the UA overrides.
