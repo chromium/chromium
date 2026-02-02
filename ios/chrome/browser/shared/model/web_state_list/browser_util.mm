@@ -90,11 +90,6 @@ void MoveTabToBrowser(web::WebStateID tab_id,
   std::set<Browser*> browsers = browser_list->BrowsersOfType(browser_types);
 
   BrowserAndIndex tab_info = FindBrowserAndIndex(tab_id, browsers);
-
-  if (!tab_info.browser) {
-    base::debug::DumpWithoutCrashing();
-    return;
-  }
   MoveTabFromBrowserToBrowser(tab_info.browser, tab_info.tab_index,
                               destination_browser, params);
 }

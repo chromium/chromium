@@ -936,9 +936,15 @@ typedef NS_ENUM(NSInteger, DragEntrySide) {
         static_cast<TabGroupInfo*>(dragItem.localObject);
     isSharedGroup = [self.dragDropHandler isGroupShared:tabGroupInfo];
   }
+  // This is how the explicit forbidden icon or (+) copy icon is shown. Move
+  // has no explicit icon.
+  UIDropOperation dropOperation = [self.dragDropHandler
+      dropOperationForDropSession:session
+                          toIndex:destinationIndexPath.item];
   if (IsTabGridDragAndDropEnabled() && !isSharedGroup &&
       destinationItemIndexPath &&
-      draggedItemIndexPath != destinationItemIndexPath) {
+      draggedItemIndexPath != destinationItemIndexPath &&
+      dropOperation != UIDropOperationForbidden) {
     // If the drag goes into a different cell's frame, either highlight or allow
     // for reorder depending on location.
     DragEntrySide entryDirection = DragEntrySideNone;
@@ -971,11 +977,6 @@ typedef NS_ENUM(NSInteger, DragEntrySide) {
       [self clearCurrentlyHighlightedCell];
     }
 
-    // This is how the explicit forbidden icon or (+) copy icon is shown. Move
-    // has no explicit icon.
-    UIDropOperation dropOperation = [self.dragDropHandler
-        dropOperationForDropSession:session
-                            toIndex:destinationIndexPath.item];
     return [[UICollectionViewDropProposal alloc]
         initWithDropOperation:dropOperation
                        intent:
@@ -992,11 +993,6 @@ typedef NS_ENUM(NSInteger, DragEntrySide) {
     id<UICollectionViewDropItem> dropItem = coordinator.items.firstObject;
     NSIndexPath* sourceIndexPath = dropItem.sourceIndexPath;
     NSIndexPath* destinationIndexPath = coordinator.destinationIndexPath;
-
-    if (!dropItem.dragItem) {
-      base::debug::DumpWithoutCrashing();
-      return;
-    }
 
     self.dragEndAtNewIndex = YES;
     _dropAnimationInProgress = YES;
@@ -1024,10 +1020,6 @@ typedef NS_ENUM(NSInteger, DragEntrySide) {
                           toGroup:destinationItem.tabGroupItem.tabGroup];
     } else {
       TabInfo* tabInfo = static_cast<TabInfo*>(dropItem.dragItem.localObject);
-      if (!tabInfo) {
-        base::debug::DumpWithoutCrashing();
-        return;
-      }
       // If the index path of `sourceItem` < `destinationItem`, then the logic
       // will ensure that there is no animation for the replacement of
       // `destinationItem` into the new group. There is also logic ensure that
