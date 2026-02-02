@@ -535,10 +535,13 @@ const CGFloat kVerticalOffset = 1;
 }
 
 - (CGRect)caretRectForPosition:(UITextPosition*)position {
-  // Hide the caret when the text field is showing added text (autocomplete
+  // Hide the caret in pre-edit state or when showing added text (autocomplete
   // and/or additional text).
-  return ([self hasAddedText]) ? CGRectZero
-                               : [super caretRectForPosition:position];
+  if (self.isPreEditing || [self hasAddedText]) {
+    return CGRectZero;
+  }
+
+  return [super caretRectForPosition:position];
 }
 
 - (NSArray<UITextSelectionRect*>*)selectionRectsForRange:(UITextRange*)range {
