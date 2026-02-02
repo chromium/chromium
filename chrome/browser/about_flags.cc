@@ -10724,13 +10724,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillEnableCardBenefitsSyncDescription, kOsAll,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableCardBenefitsSync)},
 
-#if BUILDFLAG(IS_MAC)
-    {"reduce-ip-address-change-notification",
-     flag_descriptions::kReduceIPAddressChangeNotificationName,
-     flag_descriptions::kReduceIPAddressChangeNotificationDescription, kOsMac,
-     FEATURE_VALUE_TYPE(net::features::kReduceIPAddressChangeNotification)},
-#endif  // BUILDFLAG(IS_MAC)
-
     {"enable-standard-device-bound-session-credentials",
      flag_descriptions::kEnableStandardBoundSessionCredentialsName,
      flag_descriptions::kEnableStandardBoundSessionCredentialsDescription,

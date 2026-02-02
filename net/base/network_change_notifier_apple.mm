@@ -135,7 +135,6 @@ base::DictValue NetLogOsConfigChangedParams(
     bool net_ipv4_key_found,
     bool net_ipv6_key_found,
     bool net_interface_key_found,
-    bool reduce_ip_address_change_notification,
     const std::string& old_ipv4_primary_interface_name,
     const std::string& old_ipv6_primary_interface_name,
     const std::string& new_ipv4_primary_interface_name,
@@ -147,7 +146,6 @@ base::DictValue NetLogOsConfigChangedParams(
   dict.Set("net_ipv4_key", net_ipv4_key_found);
   dict.Set("net_ipv6_key", net_ipv6_key_found);
   dict.Set("net_interface_key", net_interface_key_found);
-  dict.Set("reduce_notification", reduce_ip_address_change_notification);
   dict.Set("old_ipv4_interface", old_ipv4_primary_interface_name);
   dict.Set("old_ipv6_interface", old_ipv6_primary_interface_name);
   dict.Set("new_ipv4_interface", new_ipv4_primary_interface_name);
@@ -176,8 +174,6 @@ NetworkChangeNotifierApple::NetworkChangeNotifierApple()
       initial_connection_type_cv_(&connection_type_lock_),
       forwarder_(this),
 #if BUILDFLAG(IS_MAC)
-      reduce_ip_address_change_notification_(base::FeatureList::IsEnabled(
-          features::kReduceIPAddressChangeNotification)),
       get_network_list_callback_(base::BindRepeating(&GetNetworkList)),
       get_ipv4_primary_interface_name_callback_(
           base::BindRepeating(&GetIPv4PrimaryInterfaceName)),
@@ -460,16 +456,14 @@ void NetworkChangeNotifierApple::SetDynamicStoreNotificationKeys(
   // TODO(willchan): Figure out a proper way to handle this rather than crash.
   CHECK(ret);
 
-  if (reduce_ip_address_change_notification_) {
-    store_ = std::move(store);
-    ipv4_primary_interface_name_ =
-        get_ipv4_primary_interface_name_callback_.Run(store_.get());
-    ipv6_primary_interface_name_ =
-        get_ipv6_primary_interface_name_callback_.Run(store_.get());
-    interfaces_for_network_change_check_ =
-        GetNetworkInterfaceListForNetworkChangeCheck(
-            get_network_list_callback_, ipv6_primary_interface_name_);
-  }
+  store_ = std::move(store);
+  ipv4_primary_interface_name_ =
+      get_ipv4_primary_interface_name_callback_.Run(store_.get());
+  ipv6_primary_interface_name_ =
+      get_ipv6_primary_interface_name_callback_.Run(store_.get());
+  interfaces_for_network_change_check_ =
+      GetNetworkInterfaceListForNetworkChangeCheck(
+          get_network_list_callback_, ipv6_primary_interface_name_);
   if (initialized_callback_for_test_) {
     std::move(initialized_callback_for_test_).Run();
   }
@@ -511,25 +505,12 @@ void NetworkChangeNotifierApple::OnNetworkConfigChange(CFArrayRef changed_keys) 
       return NetLogOsConfigChangedParams(
           "DoNotNotify_NoIPAddressChange", net_ipv4_key_found,
           net_ipv6_key_found, net_interface_key_found,
-          reduce_ip_address_change_notification_, ipv4_primary_interface_name_,
-          ipv6_primary_interface_name_, "", "",
-          interfaces_for_network_change_check_, std::nullopt);
-    });
-    return;
-  }
-  if (!reduce_ip_address_change_notification_) {
-    net_log_.AddEvent(net::NetLogEventType::NETWORK_MAC_OS_CONFIG_CHANGED, [&] {
-      return NetLogOsConfigChangedParams(
-          "Notify_NoReduce", net_ipv4_key_found, net_ipv6_key_found,
-          net_interface_key_found, reduce_ip_address_change_notification_,
           ipv4_primary_interface_name_, ipv6_primary_interface_name_, "", "",
           interfaces_for_network_change_check_, std::nullopt);
     });
-    NotifyObserversOfIPAddressChange();
     return;
   }
-  // When the ReduceIPAddressChangeNotification feature is enabled, we notifies
-  // the IP address change only when:
+  // We notify the IP address change only when:
   //  - The list of network interfaces has changed, excluding local IPv6
   //    addresses of non-primary interfaces.
   //  - or the primary interface name (for IPv4 and IPv6) has changed.
@@ -547,20 +528,20 @@ void NetworkChangeNotifierApple::OnNetworkConfigChange(CFArrayRef changed_keys) 
     net_log_.AddEvent(net::NetLogEventType::NETWORK_MAC_OS_CONFIG_CHANGED, [&] {
       return NetLogOsConfigChangedParams(
           "DoNotNotify_NoChange", net_ipv4_key_found, net_ipv6_key_found,
-          net_interface_key_found, reduce_ip_address_change_notification_,
-          ipv4_primary_interface_name_, ipv6_primary_interface_name_,
-          ipv4_primary_interface_name, ipv6_primary_interface_name,
-          interfaces_for_network_change_check_, interfaces);
+          net_interface_key_found, ipv4_primary_interface_name_,
+          ipv6_primary_interface_name_, ipv4_primary_interface_name,
+          ipv6_primary_interface_name, interfaces_for_network_change_check_,
+          interfaces);
     });
     return;
   }
   net_log_.AddEvent(net::NetLogEventType::NETWORK_MAC_OS_CONFIG_CHANGED, [&] {
     return NetLogOsConfigChangedParams(
         "Notify_Changed", net_ipv4_key_found, net_ipv6_key_found,
-        net_interface_key_found, reduce_ip_address_change_notification_,
-        ipv4_primary_interface_name_, ipv6_primary_interface_name_,
-        ipv4_primary_interface_name, ipv6_primary_interface_name,
-        interfaces_for_network_change_check_, interfaces);
+        net_interface_key_found, ipv4_primary_interface_name_,
+        ipv6_primary_interface_name_, ipv4_primary_interface_name,
+        ipv6_primary_interface_name, interfaces_for_network_change_check_,
+        interfaces);
   });
   ipv4_primary_interface_name_ = std::move(ipv4_primary_interface_name);
   ipv6_primary_interface_name_ = std::move(ipv6_primary_interface_name);

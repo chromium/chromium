@@ -417,10 +417,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kUseNewAlpsCodepointQUIC);
 NET_EXPORT BASE_DECLARE_FEATURE(kTruncateBodyToContentLength);
 
 #if BUILDFLAG(IS_MAC)
-// Reduces the frequency of IP address change notifications that result in
-// TCP and QUIC connection resets.
-NET_EXPORT BASE_DECLARE_FEATURE(kReduceIPAddressChangeNotification);
-
 // Uses the Network framework path monitor instead of SCNetworkReachability for
 // connection type change detection on macOS.
 NET_EXPORT BASE_DECLARE_FEATURE(kUseNetworkPathMonitorForNetworkChangeNotifier);

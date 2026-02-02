@@ -3552,9 +3552,6 @@ EVENT_TYPE(NETWORK_CHANGED)
 //                             been changed>,
 //     "net_interface_key":   <Boolean indicating whether SCEntNetInterface
 //                             entry has been changed>,
-//     "reduce_notification": <Boolean indicating whether
-//                             ReduceIPAddressChangeNotification feature is
-//                             enabled>,
 //     "old_ipv4_interface":  <The IPv4 primary interface name obtained before
 //                             the dynamic store entry change event>,
 //     "old_ipv6_interface":  <The IPv6 primary interface name obtained before

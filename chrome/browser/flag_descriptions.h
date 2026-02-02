@@ -3694,12 +3694,6 @@ inline constexpr char kRecordWebAppDebugInfoDescription[] =
     "Enables recording additional web app related debugging data to be "
     "displayed in: chrome://web-app-internals";
 
-inline constexpr char kReduceIPAddressChangeNotificationName[] =
-    "Reduce IP address change notification";
-inline constexpr char kReduceIPAddressChangeNotificationDescription[] =
-    "Reduce the frequency of IP address change notifications that result in "
-    "TCP and QUIC connection resets.";
-
 inline constexpr char kReduceTransferSizeUpdatedIPCName[] =
     "Reduce TransferSizeUpdated IPC";
 inline constexpr char kReduceTransferSizeUpdatedIPCDescription[] =

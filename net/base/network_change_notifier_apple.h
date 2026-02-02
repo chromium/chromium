@@ -114,7 +114,6 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierApple
   std::unique_ptr<NetworkConfigWatcherApple> config_watcher_;
 
 #if BUILDFLAG(IS_MAC)
-  const bool reduce_ip_address_change_notification_;
   std::unique_ptr<NetworkPathMonitorStorage> network_path_monitor_;
   base::apple::ScopedCFTypeRef<SCDynamicStoreRef> store_;
   std::optional<NetworkInterfaceList> interfaces_for_network_change_check_;

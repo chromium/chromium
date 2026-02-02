@@ -8097,11 +8097,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "reduce-ip-address-change-notification",
-    "owners": [ "horo@chromium.org", "net-dev@chromium.org"],
-    "expiry_milestone": 135
-  },
-  {
     "name": "reduce-transfer-size-updated-ipc",
     "owners": [ "horo@chromium.org", "net-dev@chromium.org"],
     "expiry_milestone": 130
