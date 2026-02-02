@@ -252,8 +252,6 @@ const base::FeatureParam<bool> kShowModelPicker(&kNtpComposebox,
                                                 "NtpComposeboxShowModelPicker",
                                                 false);
 
-const base::FeatureParam<bool> kShowSubmit(&kNtpComposebox, "ShowSubmit", true);
-
 const base::FeatureParam<bool> kShowVoiceSearchInSteadyComposebox(
     &kNtpComposebox,
     "ShowVoiceSearchInSteadyComposebox",
