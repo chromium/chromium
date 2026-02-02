@@ -90,7 +90,10 @@ if (enable_swift_cxx_interop) {
   #       sources:
   #           Array of strings, list of C++ header files to be imported.
   #       apinotes:
-  #           (optional) Array of strings, paths of apinotes files.
+  #           (optional) Nested hierarchy of scopes and arrays that will be
+  #           dumped as YAML to produce an apinotes file for this module.
+  #           The structure must conform to the LLVM apinotes format with the
+  #           exception that the top level scope must not have a "Name" key.
   template("swift_modulemap") {
     assert(defined(invoker.modules),
            "'modules' must be defined in swift_modulemap")
@@ -136,13 +139,50 @@ if (enable_swift_cxx_interop) {
         "}",
         "",
       ]
+      _modulemap_target = target_name
+
       if (defined(module.apinotes)) {
-        _inputs += module.apinotes
-        _apinotes_target = "${target_name}_${module.name}_apinotes"
-        _apinotes_deps += [ ":${_apinotes_target}" ]
-        copy(_apinotes_target) {
-          sources = module.apinotes
-          outputs = [ "${target_gen_dir}/{{source_file_part}}" ]
+        _apinotes_target = "${target_name}__${module.name}_apinotes"
+        _apinotes_metadata_target =
+            "${target_name}__${module.name}_apinotes_metadata"
+        _apinotes_metadata_json_target =
+            "${target_name}__${module.name}_apinotes_metadata_json"
+        _apinotes_deps += [ ":$_apinotes_target" ]
+        _apinotes_json = "${target_gen_dir}/${_apinotes_metadata_target}.json"
+        group(_apinotes_metadata_target) {
+          # Note: We use metadata rather than data so that parent
+          # swift_modulemap_group targets will be able to generate their own
+          # apinotes.
+          metadata = {
+            modulemap_apinotes = [
+              {
+                module_name = module.name
+                apinotes = module.apinotes
+              },
+            ]
+          }
+          visibility = [ ":$_apinotes_metadata_json_target" ]
+        }
+        generated_file(_apinotes_metadata_json_target) {
+          outputs = [ _apinotes_json ]
+          data_keys = [ "modulemap_apinotes" ]
+          deps = [ ":$_apinotes_metadata_target" ]
+          visibility = [ ":$_apinotes_target" ]
+          output_conversion = "json"
+        }
+        action(_apinotes_target) {
+          inputs = [ _apinotes_json ]
+          _output_file = "${target_gen_dir}/${module.name}.apinotes"
+          outputs = [ _output_file ]
+          script = "//build/config/apple/generate_apinotes.py"
+          deps = [ ":${_apinotes_metadata_json_target}" ]
+          args = [
+            "--input",
+            rebase_path(_apinotes_json, root_build_dir),
+            "--output",
+            rebase_path(_output_file, root_build_dir),
+          ]
+          visibility = [ ":$_modulemap_target" ]
         }
       }
     }
@@ -155,14 +195,10 @@ if (enable_swift_cxx_interop) {
       # explicitly propagated as "inputs" to swift targets that depend on the
       # modulemap so that ninja will know to rebuild the dependent swift modules
       # when an imported header is modified.
-      # We also need to do this for apinotes because the dirty propagation from
-      # `_apinotes_deps` could get pruned in incremental builds if the generated
-      # modulemap file (the output of the swift_modulemap) remains identical but
-      # an apinotes file has changed.
       inputs = _inputs
     }
 
-    generated_file(target_name) {
+    generated_file(_modulemap_target) {
       forward_variables_from(invoker, "*", [ "apinotes" ])
       outputs = [ _modulemap_path ]
       contents = _modulemap_contents

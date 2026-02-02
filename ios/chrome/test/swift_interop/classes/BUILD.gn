@@ -13,7 +13,7 @@ if (enable_swift_cxx_interop) {
     ]
   }
 
-  swift_modulemap("classes") {
+  swift_modulemap("all_classes") {
     testonly = true
     modules = [
       {
@@ -22,7 +22,14 @@ if (enable_swift_cxx_interop) {
           "inlined_classes.h",
           "outlined.h",
         ]
-        apinotes = [ "classes.apinotes" ]
+        apinotes = {
+          Tags = [
+            {
+              Name = "RenamedClassOriginal"
+              SwiftName = "RenamedClass"
+            },
+          ]
+        }
       },
 
       # This target deliberately tests the possibility of defining multiple
@@ -42,7 +49,7 @@ if (enable_swift_cxx_interop) {
       "polymorphism_xctest.swift",
     ]
     deps = [
-      ":classes",
+      ":all_classes",
       ":outlined",
       "//build/config/ios:xctest",
     ]
