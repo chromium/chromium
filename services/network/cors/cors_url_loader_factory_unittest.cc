@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -109,6 +110,15 @@ class CorsURLLoaderFactoryTest : public testing::Test {
   }
 
   void CreateLoaderAndStart(const ResourceRequest& request, uint32_t options) {
+    CreateLoaderAndStart(
+        request, options,
+        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+  }
+
+  void CreateLoaderAndStart(
+      const ResourceRequest& request,
+      uint32_t options,
+      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
     url_loaders_.emplace_back();
     test_cors_loader_clients_.emplace_back(
         std::make_unique<TestURLLoaderClient>());
@@ -116,7 +126,7 @@ class CorsURLLoaderFactoryTest : public testing::Test {
     cors_url_loader_factory_->CreateLoaderAndStart(
         url_loaders_.back().BindNewPipeAndPassReceiver(), kRequestId, options,
         request_copy, test_cors_loader_clients_.back()->CreateRemote(),
-        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+        traffic_annotation);
   }
 
   void ResetFactory() {
@@ -388,6 +398,28 @@ TEST_F(CorsURLLoaderFactoryTest,
   EXPECT_EQ(
       "CorsURLLoaderFactory: attempt to use forbidden destination from "
       "renderer",
+      bad_message_observer.WaitForBadMessage());
+}
+
+TEST_F(CorsURLLoaderFactoryTest, DataURLTrafficAnnotationBadMessageTest) {
+  ResourceRequest request;
+  request.mode = mojom::RequestMode::kNoCors;
+  request.credentials_mode = mojom::CredentialsMode::kOmit;
+  request.method = net::HttpRequestHeaders::kGetMethod;
+  request.url = GURL("data:text/plain,foo");
+
+  constexpr char kTestId[] = "test_id";
+  net::NetworkTrafficAnnotationTag tag =
+      net::DefineNetworkTrafficAnnotation(kTestId, "nothing");
+  net::MutableNetworkTrafficAnnotationTag mutable_tag(tag);
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  CreateLoaderAndStart(request, mojom::kURLLoadOptionNone, mutable_tag);
+
+  EXPECT_EQ(
+      "CorsURLLoaderFactory: data: URL is not supported. "
+      "net-traffic_annotation_hash=" +
+          base::NumberToString(tag.unique_id_hash_code),
       bad_message_observer.WaitForBadMessage());
 }
 

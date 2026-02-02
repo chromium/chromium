@@ -11,6 +11,8 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
@@ -383,7 +385,7 @@ void CorsURLLoaderFactory::CreateLoaderAndStart(
                           traffic_annotation.unique_id_hash_code);
   SCOPED_CRASH_KEY_STRING64("network", "factory_debug_tag", debug_tag_);
 
-  if (!IsValidRequest(resource_request, options)) {
+  if (!IsValidRequest(resource_request, options, traffic_annotation)) {
     mojo::Remote<mojom::URLLoaderClient>(std::move(client))
         ->OnComplete(URLLoaderCompletionStatus(net::ERR_INVALID_ARGUMENT));
     return;
@@ -579,11 +581,24 @@ bool CorsURLLoaderFactory::IsCorsPreflighLoadOptionAllowed() const {
   return allow_external_preflights_for_testing_ || IsMultiNetworkCCTWorkFlow();
 }
 
-bool CorsURLLoaderFactory::IsValidRequest(const ResourceRequest& request,
-                                          uint32_t options) {
+bool CorsURLLoaderFactory::IsValidRequest(
+    const ResourceRequest& request,
+    uint32_t options,
+    const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
   if (request.url.SchemeIs(url::kDataScheme)) {
-    LOG(WARNING) << "CorsURLLoaderFactory doesn't support `data` scheme.";
-    mojo::ReportBadMessage("CorsURLLoaderFactory: data: URL is not supported.");
+    const std::string annotation_hash =
+        base::NumberToString(traffic_annotation.unique_id_hash_code);
+    LOG(WARNING) << "CorsURLLoaderFactory doesn't support `data` scheme.\n"
+                    "You can find the caller traffic annnotation id by:\n"
+                    "$ vpython3 "
+                    "tools/traffic_annotation/scripts/auditor/hashes.py | grep "
+                 << annotation_hash << "\n"
+                 << "It is defined as net::DefineNetworkTrafficAnnotation("
+                 << "\"<annotation_id>\", ..",
+        mojo::ReportBadMessage(
+            base::StrCat({"CorsURLLoaderFactory: data: URL is not supported. "
+                          "net-traffic_annotation_hash=",
+                          annotation_hash}));
     return false;
   }
 
