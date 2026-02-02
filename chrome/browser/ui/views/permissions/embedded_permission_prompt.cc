@@ -366,6 +366,12 @@ void EmbeddedPermissionPrompt::OnRequestSystemPermissionResponse(
   bool permission_determined =
       !system_permission_settings::CanPrompt(request_type);
 
+  // Note, system permission determination is not guaranteed. We just exit and
+  // take no action
+  if (!permission_determined) {
+    return;
+  }
+
   // `other_permission_determined` is left with true in non-grouped scenario,
   // which would make the final logic fully rely on `permission_determined`.
   auto other_permission_determined = true;
@@ -374,18 +380,13 @@ void EmbeddedPermissionPrompt::OnRequestSystemPermissionResponse(
         !system_permission_settings::CanPrompt(other_request_type);
   }
 
-  if (permission_determined) {
 #if BUILDFLAG(IS_MAC)
-    system_permission_settings::SystemPermission permission;
-
-    if (request_type == ContentSettingsType::MEDIASTREAM_MIC) {
-      permission =
-          system_permission_settings::CheckSystemAudioCapturePermission();
-    }
-    if (request_type == ContentSettingsType::MEDIASTREAM_CAMERA) {
-      permission =
-          system_permission_settings::CheckSystemVideoCapturePermission();
-    }
+  if (request_type == ContentSettingsType::MEDIASTREAM_MIC ||
+      request_type == ContentSettingsType::MEDIASTREAM_CAMERA) {
+    system_permission_settings::SystemPermission permission =
+        request_type == ContentSettingsType::MEDIASTREAM_MIC
+            ? system_permission_settings::CheckSystemAudioCapturePermission()
+            : system_permission_settings::CheckSystemVideoCapturePermission();
 
     switch (permission) {
       case system_permission_settings::SystemPermission::kRestricted:
@@ -401,6 +402,7 @@ void EmbeddedPermissionPrompt::OnRequestSystemPermissionResponse(
       case system_permission_settings::SystemPermission::kNotDetermined:
         NOTREACHED();
     }
+  }
 #endif  // BUILDFLAG(IS_MAC)
 
     // Do not finalize request until all the necessary system permissions are
@@ -408,9 +410,6 @@ void EmbeddedPermissionPrompt::OnRequestSystemPermissionResponse(
     if (other_permission_determined) {
       FinalizePrompt();
     }
-  } else {
-    NOTREACHED();
-  }
 }
 
 void EmbeddedPermissionPrompt::CloseView() {
