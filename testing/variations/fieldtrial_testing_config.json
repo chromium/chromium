@@ -26,6 +26,11 @@
                         "ComposeboxCompactMode",
                         "ComposeboxForceTop",
                         "ComposeboxIOS"
+                    ],
+                    "disable_features": [
+                        "ComposeboxAIMDisabled",
+                        "ComposeboxAIMNudge",
+                        "ComposeboxMenuTitle"
                     ]
                 }
             ]
@@ -13780,21 +13785,6 @@
                     },
                     "enable_features": [
                         "BestOfAppFRE"
-                    ]
-                }
-            ]
-        }
-    ],
-    "IOSBottomMultilineOmnibox": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledMultilineTop",
-                    "enable_features": [
-                        "MultilineBrowserOmnibox"
                     ]
                 }
             ]
