@@ -15,6 +15,7 @@
 #include "extensions/browser/api/storage/settings_namespace.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -54,12 +55,12 @@ std::optional<syncer::ModelError> SettingsSyncProcessor::SendChanges(
   CHECK(initialized_) << "Init not called";
 
   syncer::SyncChangeList sync_changes;
-  std::set<std::string> added_keys;
-  std::set<std::string> deleted_keys;
+  absl::flat_hash_set<std::string> added_keys;
+  absl::flat_hash_set<std::string> deleted_keys;
 
   for (const auto& i : changes) {
     if (i.new_value) {
-      if (synced_keys_.count(i.key)) {
+      if (synced_keys_.contains(i.key)) {
         // New value, key is synced; send ACTION_UPDATE.
         sync_changes.push_back(settings_sync_util::CreateUpdate(
             extension_id_, i.key, *i.new_value, type_));
@@ -70,7 +71,7 @@ std::optional<syncer::ModelError> SettingsSyncProcessor::SendChanges(
         added_keys.insert(i.key);
       }
     } else {
-      if (synced_keys_.count(i.key)) {
+      if (synced_keys_.contains(i.key)) {
         // Clearing value, key is synced; send ACTION_DELETE.
         sync_changes.push_back(
             settings_sync_util::CreateDelete(extension_id_, i.key, type_));
