@@ -121,25 +121,22 @@ void ComputeProfileMenuAvatarButtonPromoInfo(
     Profile& profile,
     base::OnceCallback<void(ProfileMenuAvatarButtonPromoInfo)> result_callback);
 
-class SyncPromoIdentityPillManager : public signin::IdentityManager::Observer {
+class AvatarButtonPromoManager : public signin::IdentityManager::Observer {
  public:
-  explicit SyncPromoIdentityPillManager(
-      signin::IdentityManager* identity_manager,
-      PrefService* pref_service);
+  explicit AvatarButtonPromoManager(signin::IdentityManager* identity_manager,
+                                    PrefService* pref_service);
   // Used only for testing.
-  SyncPromoIdentityPillManager(signin::IdentityManager* identity_manager,
-                               PrefService* pref_service,
-                               int max_shown_count,
-                               int max_used_count);
-  ~SyncPromoIdentityPillManager() override;
+  AvatarButtonPromoManager(signin::IdentityManager* identity_manager,
+                           PrefService* pref_service,
+                           int max_shown_count,
+                           int max_used_count);
+  ~AvatarButtonPromoManager() override;
 
-  SyncPromoIdentityPillManager(const SyncPromoIdentityPillManager&) = delete;
-  SyncPromoIdentityPillManager& operator=(const SyncPromoIdentityPillManager&) =
-      delete;
+  AvatarButtonPromoManager(const AvatarButtonPromoManager&) = delete;
+  AvatarButtonPromoManager& operator=(const AvatarButtonPromoManager&) = delete;
 
-  SyncPromoIdentityPillManager(SyncPromoIdentityPillManager&&) = delete;
-  SyncPromoIdentityPillManager& operator=(SyncPromoIdentityPillManager&&) =
-      delete;
+  AvatarButtonPromoManager(AvatarButtonPromoManager&&) = delete;
+  AvatarButtonPromoManager& operator=(AvatarButtonPromoManager&&) = delete;
 
   bool ShouldShowPromo(ProfileMenuAvatarButtonPromoInfo::Type promo_type);
   void RecordPromoShown(ProfileMenuAvatarButtonPromoInfo::Type promo_type);

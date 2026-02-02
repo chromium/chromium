@@ -235,7 +235,7 @@ class AvatarToolbarButtonBaseBrowserTest {
     SetInfiniteAvatarDelay(AvatarDelayType::kOnSignin);
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
     SetInfiniteAvatarDelay(AvatarDelayType::kSigninPendingText);
-    SetInfiniteAvatarDelay(AvatarDelayType::kHistorySyncOptin);
+    SetInfiniteAvatarDelay(AvatarDelayType::kPromo);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
   }
 

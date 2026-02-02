@@ -95,8 +95,8 @@ std::optional<base::TimeDelta> g_show_name_duration_for_testing;
 constexpr base::TimeDelta kShowSigninPendingTextDelay = base::Minutes(50);
 std::optional<base::TimeDelta> g_show_signin_pending_text_delay_for_testing;
 
-constexpr base::TimeDelta kHistorySyncOptinDuration = base::Seconds(20);
-std::optional<base::TimeDelta> g_history_sync_optin_duration_for_testing;
+constexpr base::TimeDelta kPromoDuration = base::Seconds(20);
+std::optional<base::TimeDelta> g_promo_duration_for_testing;
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 constexpr base::TimeDelta kOnSigninDuration = base::Seconds(20);
@@ -819,19 +819,20 @@ class ShowIdentityNameStateProvider : public StateProvider,
 };
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-class HistorySyncOptinCoordinator
+class PromoStateProviderCoordinator
     : public base::SupportsUserData::Data,
       public AvatarToolbarButtonStateManager::Observer,
       public signin::IdentityManager::Observer,
       public syncer::SyncServiceObserver {
  public:
-  static HistorySyncOptinCoordinator& GetOrCreateForProfile(Profile& profile) {
-    HistorySyncOptinCoordinator* coordinator =
-        static_cast<HistorySyncOptinCoordinator*>(
-            profile.GetUserData(kHistorySyncOptinCoordinatorKey));
+  static PromoStateProviderCoordinator& GetOrCreateForProfile(
+      Profile& profile) {
+    PromoStateProviderCoordinator* coordinator =
+        static_cast<PromoStateProviderCoordinator*>(
+            profile.GetUserData(kPromoStateProviderCoordinatorKey));
     if (!coordinator) {
-      coordinator = new HistorySyncOptinCoordinator(profile);
-      profile.SetUserData(kHistorySyncOptinCoordinatorKey,
+      coordinator = new PromoStateProviderCoordinator(profile);
+      profile.SetUserData(kPromoStateProviderCoordinatorKey,
                           base::WrapUnique(coordinator));
     }
     return *coordinator;
@@ -842,9 +843,9 @@ class HistorySyncOptinCoordinator
     return promo_type_;
   }
 
-  base::CallbackListSubscription AddStateChangedCallback(
+  base::CallbackListSubscription AddPromoTypeChangedCallback(
       base::RepeatingClosure callback) {
-    return state_changed_callbacks.Add(std::move(callback));
+    return promo_type_changed_callbacks_.Add(std::move(callback));
   }
 
   void PromoUsed() {
@@ -853,7 +854,7 @@ class HistorySyncOptinCoordinator
                                   before_promo_used_elapsed_timer_->Elapsed());
 
     CHECK(promo_type_.has_value());
-    sync_promo_identity_pill_manager_.RecordPromoUsed(promo_type_.value());
+    promo_manager_.RecordPromoUsed(promo_type_.value());
     Collapse();
   }
 
@@ -865,7 +866,7 @@ class HistorySyncOptinCoordinator
   void OnButtonStateChanged(std::optional<ButtonState> old_state,
                             ButtonState new_state) override {
     switch (new_state) {
-      case ButtonState::kHistorySyncOptin:
+      case ButtonState::kPromo:
         PromoShown();
         return;
       case ButtonState::kUpgradeClientError:
@@ -893,8 +894,7 @@ class HistorySyncOptinCoordinator
     }
     switch (*old_state) {
       case ButtonState::kShowIdentityName:
-        // `ShowIdentityName` state should be followed by `HistorySyncOptin`
-        // state.
+        // `kShowIdentityName` state should be followed by the `kPromo` state.
         Trigger();
         break;
       case ButtonState::kPasskeysLockedError:
@@ -903,7 +903,7 @@ class HistorySyncOptinCoordinator
       case ButtonState::kGuestSession:
       case ButtonState::kNormal:
       case ButtonState::kExplicitTextShowing:
-      case ButtonState::kHistorySyncOptin:
+      case ButtonState::kPromo:
       case ButtonState::kSyncError:
       case ButtonState::kManagement:
       case ButtonState::kSigninPending:
@@ -946,14 +946,13 @@ class HistorySyncOptinCoordinator
   }
 
  private:
-  constexpr static const void* const kHistorySyncOptinCoordinatorKey =
-      &kHistorySyncOptinCoordinatorKey;
+  constexpr static const void* const kPromoStateProviderCoordinatorKey =
+      &kPromoStateProviderCoordinatorKey;
 
-  explicit HistorySyncOptinCoordinator(Profile& profile)
+  explicit PromoStateProviderCoordinator(Profile& profile)
       : profile_(profile),
-        sync_promo_identity_pill_manager_(
-            IdentityManagerFactory::GetForProfile(&profile),
-            profile.GetPrefs()) {
+        promo_manager_(IdentityManagerFactory::GetForProfile(&profile),
+                       profile.GetPrefs()) {
     identity_manager_observation_.Observe(
         IdentityManagerFactory::GetForProfile(&profile));
   }
@@ -991,7 +990,7 @@ class HistorySyncOptinCoordinator
 
     signin::ComputeProfileMenuAvatarButtonPromoInfo(
         profile_.get(),
-        base::BindOnce(&HistorySyncOptinCoordinator::OnPromoTypeResult,
+        base::BindOnce(&PromoStateProviderCoordinator::OnPromoTypeResult,
                        base::Unretained(this)));
   }
 
@@ -1000,12 +999,11 @@ class HistorySyncOptinCoordinator
     if (!promo_info.type.has_value()) {
       return;
     }
-    if (!sync_promo_identity_pill_manager_.ShouldShowPromo(
-            promo_info.type.value())) {
+    if (!promo_manager_.ShouldShowPromo(promo_info.type.value())) {
       return;
     }
     promo_type_ = promo_info.type;
-    state_changed_callbacks.Notify();
+    promo_type_changed_callbacks_.Notify();
   }
 
   void Collapse() {
@@ -1015,33 +1013,31 @@ class HistorySyncOptinCoordinator
     if (collapse_timer_.IsRunning()) {
       collapse_timer_.Stop();
     }
-    promo_type_.reset();
     before_promo_used_elapsed_timer_.reset();
-    state_changed_callbacks.Notify();
+    promo_type_.reset();
+    promo_type_changed_callbacks_.Notify();
   }
 
   void PromoShown() {
     if (collapse_timer_.IsRunning()) {
       // This prevents starting a new timer when the button state changes to
-      // `HistorySyncOptin` in the next browser window(s).
+      // `kPromo` in the next browser window(s).
       return;
     }
     before_promo_used_elapsed_timer_.emplace();
     has_been_shown_since_startup_ = true;
 
     CHECK(promo_type_.has_value());
-    sync_promo_identity_pill_manager_.RecordPromoShown(promo_type_.value());
+    promo_manager_.RecordPromoShown(promo_type_.value());
     base::UmaHistogramEnumeration("Signin.AvatarPillPromo.Shown",
                                   promo_type_.value());
 
-    collapse_timer_.Start(FROM_HERE,
-                          g_history_sync_optin_duration_for_testing.value_or(
-                              kHistorySyncOptinDuration),
-                          base::BindOnce(&HistorySyncOptinCoordinator::Collapse,
-                                         // This is safe because
-                                         // `HistorySyncOptinStateProvider`
-                                         // owns `clear_timer_`.
-                                         base::Unretained(this)));
+    collapse_timer_.Start(
+        FROM_HERE, g_promo_duration_for_testing.value_or(kPromoDuration),
+        base::BindOnce(&PromoStateProviderCoordinator::Collapse,
+                       // This is safe because `PromoStateProviderCoordinator`
+                       // owns `collapse_timer_`.
+                       base::Unretained(this)));
   }
 
   // Type of the promo currently showing - std::nullopt if no promo.
@@ -1054,11 +1050,10 @@ class HistorySyncOptinCoordinator
 
   const raw_ref<Profile> profile_;
 
-  signin::SyncPromoIdentityPillManager sync_promo_identity_pill_manager_;
+  signin::AvatarButtonPromoManager promo_manager_;
 
-  // Callbacks to be triggered when the history sync opt-in state (`triggered_`)
-  // changes.
-  base::RepeatingCallbackList<void()> state_changed_callbacks;
+  // Callbacks to be triggered when `promo_type_` changes.
+  base::RepeatingCallbackList<void()> promo_type_changed_callbacks_;
 
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
@@ -1069,18 +1064,16 @@ class HistorySyncOptinCoordinator
 
 // Check `signin::ComputeProfileMenuAvatarButtonPromoType()` for promo priority
 // computation.
-// TODO(crbug.com/448609234): Rename this class (and all related classes). This
-// now takes care of all promo types in
-// `signin::ProfileMenuAvatarButtonPromoInfo::Type`, and not only HistorySync.
-class HistorySyncOptinStateProvider : public StateProvider {
+// This takes care of all promo types in
+// `signin::ProfileMenuAvatarButtonPromoInfo::Type`.
+class PromoStateProvider : public StateProvider {
  public:
-  explicit HistorySyncOptinStateProvider(Browser* browser,
-                                         StateObserver* state_observer)
+  explicit PromoStateProvider(Browser* browser, StateObserver* state_observer)
       : StateProvider(browser->profile(), state_observer),
-        coordinator_(HistorySyncOptinCoordinator::GetOrCreateForProfile(
+        coordinator_(PromoStateProviderCoordinator::GetOrCreateForProfile(
             *browser->profile())),
         browser_(*browser) {}
-  ~HistorySyncOptinStateProvider() override = default;
+  ~PromoStateProvider() override = default;
 
   // StateProvider:
   bool IsActive() const override {
@@ -1110,10 +1103,9 @@ class HistorySyncOptinStateProvider : public StateProvider {
   }
 
   void Init() override {
-    state_changed_callback_subscription_ =
-        coordinator_->AddStateChangedCallback(
-            base::BindRepeating(&HistorySyncOptinStateProvider::RequestUpdate,
-                                base::Unretained(this)));
+    promo_type_changed_callback_subscription_ =
+        coordinator_->AddPromoTypeChangedCallback(base::BindRepeating(
+            &PromoStateProvider::RequestUpdate, base::Unretained(this)));
     if (IsActive()) {
       RequestUpdate();
     }
@@ -1122,7 +1114,7 @@ class HistorySyncOptinStateProvider : public StateProvider {
   std::optional<base::RepeatingCallback<void(bool)>> GetButtonActionOverride()
       override {
     return base::BindRepeating(
-        &HistorySyncOptinStateProvider::OnButtonClick,
+        &PromoStateProvider::OnButtonClick,
         // This is safe because `AvatarToolbarButtonStateManager`
         // owning all the providers owns the callback.
         base::Unretained(this));
@@ -1141,12 +1133,11 @@ class HistorySyncOptinStateProvider : public StateProvider {
     coordinator_->PromoUsed();
   }
 
-  // History sync opt-in coordinator state change callback subscription.
-  // The callbacks are used to notify the state provider(s) when the history
-  // sync opt-in state changes.
-  base::CallbackListSubscription state_changed_callback_subscription_;
+  // The callbacks are used to notify the state provider(s) when the promo type
+  // that is showing has changed.
+  base::CallbackListSubscription promo_type_changed_callback_subscription_;
 
-  raw_ref<HistorySyncOptinCoordinator> coordinator_;
+  raw_ref<PromoStateProviderCoordinator> coordinator_;
 
   // This is needed to delay the creation of `ProfileMenuCoordinator`.
   const raw_ref<Browser> browser_;
@@ -1998,14 +1989,12 @@ void AvatarToolbarButtonStateManager::CreateStatesAndListeners(
     if (base::FeatureList::IsEnabled(
             syncer::kReplaceSyncPromosWithSignInPromos) ||
         switches::IsAvatarSyncPromoFeatureEnabled()) {
-      auto history_sync_optin_state_provider =
-          std::make_unique<HistorySyncOptinStateProvider>(
-              browser,
-              /*state_observer=*/this);
+      auto promo_state_provider =
+          std::make_unique<PromoStateProvider>(browser,
+                                               /*state_observer=*/this);
       state_manager_observers_.emplace_back(
-          HistorySyncOptinCoordinator::GetOrCreateForProfile(*profile));
-      states_[ButtonState::kHistorySyncOptin] =
-          std::move(history_sync_optin_state_provider);
+          PromoStateProviderCoordinator::GetOrCreateForProfile(*profile));
+      states_[ButtonState::kPromo] = std::move(promo_state_provider);
     }
 
     // Contains both Work and School.
@@ -2179,9 +2168,9 @@ AvatarToolbarButtonStateManager::CreateScopedInfiniteDelayOverrideForTesting(
       return base::AutoReset<std::optional<base::TimeDelta>>(
           &g_show_signin_pending_text_delay_for_testing,
           kInfiniteTimeForTesting);
-    case AvatarDelayType::kHistorySyncOptin:
+    case AvatarDelayType::kPromo:
       return base::AutoReset<std::optional<base::TimeDelta>>(
-          &g_history_sync_optin_duration_for_testing, kInfiniteTimeForTesting);
+          &g_promo_duration_for_testing, kInfiniteTimeForTesting);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
   }
 }
@@ -2195,10 +2184,9 @@ AvatarToolbarButtonStateManager::
 }
 
 void AvatarToolbarButtonStateManager::ForceShowingPromoForTesting() {
-  HistorySyncOptinStateProvider* history_sync_optin_state_provider =
-      static_cast<HistorySyncOptinStateProvider*>(
-          states_[ButtonState::kHistorySyncOptin].get());
-  history_sync_optin_state_provider->ForceShowingPromoForTesting();
+  PromoStateProvider* promo_state_provider =
+      static_cast<PromoStateProvider*>(states_[ButtonState::kPromo].get());
+  promo_state_provider->ForceShowingPromoForTesting();
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 

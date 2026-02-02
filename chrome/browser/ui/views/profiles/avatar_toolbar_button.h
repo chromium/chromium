@@ -37,8 +37,8 @@ enum class AvatarDelayType {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Delay for the SigninPending mode to show the "Verify it's you" text.
   kSigninPendingText,
-  // Delay for the History Sync Opt-in entry point.
-  kHistorySyncOptin,
+  // Delay for the promo that are shown by expanding the button.
+  kPromo,
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 };
 

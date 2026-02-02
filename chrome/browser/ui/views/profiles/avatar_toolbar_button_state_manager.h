@@ -161,7 +161,9 @@ class AvatarToolbarButtonStateManager
     kSyncError,
     kPasskeysLockedError,
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-    kHistorySyncOptin,
+    // Any promo presented through expanding the button. This includes any promo
+    // listed in `signin::ProfileMenuAvatarButtonPromoInfo::Type`.
+    kPromo,
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
     // Includes Work and School.
     kManagement,

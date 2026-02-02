@@ -530,11 +530,11 @@ IN_PROC_BROWSER_TEST_F(HistorySyncOptinHelperBrowserTest,
       /*sync_everything=*/false, syncer::UserSelectableTypeSet());
 
   // Simulate the promo being shown twice.
-  signin::SyncPromoIdentityPillManager pill_manager(
+  signin::AvatarButtonPromoManager avatar_promo_manager(
       identity_manager(), browser()->profile()->GetPrefs());
-  pill_manager.RecordPromoShown(
+  avatar_promo_manager.RecordPromoShown(
       signin::ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo);
-  pill_manager.RecordPromoShown(
+  avatar_promo_manager.RecordPromoShown(
       signin::ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo);
 
   MockHistorySyncOptinHelperDelegate delegate;

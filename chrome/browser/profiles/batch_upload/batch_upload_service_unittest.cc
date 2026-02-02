@@ -523,11 +523,11 @@ TEST_P(BatchUploadServiceWithAvatarPromoEntryPointTest,
   SigninWithFullInfo();
 
   // Simulate the promo being shown twice.
-  signin::SyncPromoIdentityPillManager pill_manager(&identity_manager(),
-                                                    &pref_service());
+  signin::AvatarButtonPromoManager avatar_promo_manager(&identity_manager(),
+                                                        &pref_service());
   const int avatar_promo_shown_count = 2;
   for (int i = 0; i < avatar_promo_shown_count; ++i) {
-    pill_manager.RecordPromoShown(GetParam().promo_type);
+    avatar_promo_manager.RecordPromoShown(GetParam().promo_type);
   }
 
   BatchUploadService& service = CreateService();
