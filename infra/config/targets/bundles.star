@@ -3490,6 +3490,27 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "gpu_common_gtests_passthrough_swiftshader",
+    targets = [
+        "gl_tests_passthrough",
+        "gl_unittests",
+    ],
+    per_test_modifications = {
+        "gl_tests_passthrough": targets.mixin(
+            args = [
+                "--use-gl=angle",
+            ],
+            swarming = targets.swarming(
+                shards = 2,
+            ),
+        ),
+        "gl_unittests": [
+            "skia_gold_test",
+        ],
+    },
+)
+
+targets.bundle(
     name = "gpu_common_gtests_validating",
     targets = [
         "gl_tests_validating",
