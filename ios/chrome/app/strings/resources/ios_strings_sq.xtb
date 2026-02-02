@@ -370,6 +370,7 @@
 <translation id="2306265833370324042">Shfaq detajet për <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="2309265394777270359">Mbylle skedën</translation>
 <translation id="2311077293164383652">Mbyll skedën e gozhduar</translation>
+<translation id="2313392466694008052">Modifiko imazhin me Gemini</translation>
 <translation id="2316129865977710310">Jo, faleminderit</translation>
 <translation id="2320166752086256636">Fshih tastierën</translation>
 <translation id="2321086116217818302">Po përgatit fjalëkalimet…</translation>
@@ -521,6 +522,7 @@
 <translation id="288655811176831528">Mbylle skedën</translation>
 <translation id="2888631381369839306">Njoftimet për monitorimin e çmimeve janë aktivizuar</translation>
 <translation id="2893168226686371498">Shfletuesi i parazgjedhur</translation>
+<translation id="2893791155497534382">Fjalëkalimet dhe aktiviteti tjetër mund të fshihen te cilësimet e tyre të menaxhimit</translation>
 <translation id="2894757982205307093">Skedë e re në grup</translation>
 <translation id="2902312830803030883">Më shumë veprime</translation>
 <translation id="2904788871580817212">Ulje çmimi në skedën tënde të hapur, nga <ph name="PREVIOUS_PRICE" /> në <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
@@ -1298,6 +1300,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="5768870767339201169">Vazhdo aty ku e ke lënë</translation>
 <translation id="5779117921996157216">{count,plural, =1{Ke {count} fjalëkalim të komprometuar që mund ta rrezikojë sigurinë tënde. Rregulloje tani për të qëndruar i sigurt.}other{Ke {count} fjalëkalime të komprometuara që mund ta rrezikojnë sigurinë tënde. Rregulloji tani për të qëndruar i sigurt.}}</translation>
 <translation id="5791632441210678828">Butoni i renditjes për furnizimin "Ndjekje".</translation>
+<translation id="5799263916847593256">Hape për të parë historikun e çmimeve</translation>
 <translation id="5803566855766646066">Je i sigurt që dëshiron ta heqësh këtë kartë të re?</translation>
 <translation id="5804241973901381774">Lejet</translation>
 <translation id="58081802114142635">Aktiviteti yt përmirëson IA-në e Google</translation>
@@ -1641,6 +1644,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6964300328304469089">Aktualisht është zgjedhur <ph name="NAME" />, <ph name="EMAIL" />. Zgjidh një llogari.</translation>
 <translation id="6964760285928603117">Largo nga grupi</translation>
 <translation id="6965382102122355670">Në rregull</translation>
+<translation id="6967355534157677591">Krijo imazh Pro</translation>
 <translation id="6973630695168034713">Dosjet</translation>
 <translation id="6979158407327259162">Disku i Google</translation>
 <translation id="6979737339423435258">Gjatë të gjithë kohës</translation>

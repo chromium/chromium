@@ -994,6 +994,7 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="1652326691684645429">Dayakan Kongsi Berdekatan</translation>
 <translation id="1652862280638399816">Untuk menggunakan Password Manager dengan macOS Keychain, lancarkan semula Chromium dan benarkan akses Keychain. Tab anda akan dibuka semula selepas pelancaran semula.</translation>
 <translation id="1653958716132599769">Tab berkaitan kumpulan</translation>
+<translation id="165448107578581061">Gemini sedang mengusahakan tugasan anda...</translation>
 <translation id="1654580009054503925">Tidak dibenarkan untuk menunjukkan permintaan</translation>
 <translation id="1654713139320245449">Tiada destinasi penghantaran ditemukan. Perlukan bantuan?</translation>
 <translation id="1656528038316521561">Kelegapan latar</translation>
@@ -3889,6 +3890,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3619294456800709762">Laman dapat memasukkan gambar dalam gambar secara automatik</translation>
 <translation id="3620136223548713675">Geolokasi</translation>
 <translation id="3621202678540785336">Input</translation>
+<translation id="3621841019087952625">Tetapkan kemudian</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{satu apl}other{# apl}}</translation>
 <translation id="3622820753353315928">Warna denyaran skrin</translation>
 <translation id="3623318122257816196">Laman yang anda lawati boleh membenamkan kandungan daripada laman lain, contohnya imej, iklan dan teks. Laman lain boleh meminta kebenaran anda untuk menggunakan maklumat yang disimpan tentang anda ketika anda menyemak imbas laman tersebut.</translation>
@@ -4290,6 +4292,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3856096718352044181">Sila sahkan bahawa penyedia ini sah atau cuba lagi nanti</translation>
 <translation id="3856470183388031602">Gunakan Google Account anda pada <ph name="DEVICE_TYPE" /> anda</translation>
 <translation id="3856800405688283469">Pilih zon waktu</translation>
+<translation id="3856902135796972992">Laman ini memerlukan tindakan tambahan. Lengkapkan langkah tersebut pada halaman supaya perubahan kata laluan dapat diselesaikan.</translation>
 <translation id="3857807444929313943">Angkat jari, kemudian sentuh lagi</translation>
 <translation id="3858860766373142691">Nama</translation>
 <translation id="385939467708172187">Gunakan Kata Laluan Kukuh</translation>
@@ -6262,6 +6265,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5228704301508740018">{GROUP_COUNT,plural, =1{Nyahkumpulkan kumpulan tab?}other{Nyahkumpulkan kumpulan tab?}}</translation>
 <translation id="5230190638672215545">Taip "uow" untuk mendapatkan "ươ"</translation>
 <translation id="5230516054153933099">Tingkap</translation>
+<translation id="5231255476752743708">Chrome memerlukan bantuan untuk menukar kata laluan anda</translation>
 <translation id="5232714764496316200">Dapatkan bantuan kerja rumah dengan Google Lens</translation>
 <translation id="5233231016133573565">ID Proses</translation>
 <translation id="5233638681132016545">Tab baharu</translation>
@@ -8325,6 +8329,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="6677527809400770913">Gerak isyarat <ph name="GESTURE" /> ditentukan kepada <ph name="ACTION" /></translation>
 <translation id="6678604587151240716">Ombak besar bergulung di laut, berlatarkan daratan di kejauhan. Cahaya jingga di sebalik ufuk, pada langit yang gelap.</translation>
 <translation id="6678717876183468697">URL Pertanyaan</translation>
+<translation id="6678974601734442817">Chromium memerlukan bantuan untuk menukar kata laluan anda</translation>
 <translation id="6679947539429331601">Sembunyikan untuk 12 jam</translation>
 <translation id="6680442031740878064">Tersedia: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Kadar</translation>
@@ -10288,7 +10293,6 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8010312870936510509">Data disulitkan dengan ungkapan laluan penyegerakan anda pada <ph name="TIME" />. Penyulitan ini tidak termasuk kaedah pembayaran dan alamat daripada Google Pay.</translation>
 <translation id="8011372169388649948">'<ph name="BOOKMARK_TITLE" />' dialihkan.</translation>
 <translation id="8012188750847319132">caps lock</translation>
-<translation id="8012463809859447963">Butiran tempat liputan segera</translation>
 <translation id="8013181884974864006">Tugasan Kontekstual</translation>
 <translation id="8013534738634318212">Laman ini berada dalam kumpulan yang ditakrifkan oleh <ph name="RWS_OWNER" />. Laman dalam sesebuah kumpulan boleh melihat aktiviti anda dalam kumpulan itu.</translation>
 <translation id="8013993649590906847">Jika imej tiada perihalan yang berguna, Chrome akan cuba memberikan perihalan untuk anda. Untuk membuat perihalan, imej dihantar kepada Google.</translation>
@@ -11504,7 +11508,6 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="8820817407110198400">Penanda buku</translation>
 <translation id="8821045908425223359">Konfigurasikan alamat IP secara automatik</translation>
 <translation id="8821268776955756404"><ph name="APP_NAME" /> sedia untuk digunakan.</translation>
-<translation id="8821647731831124007">Tiada tempat liputan tersedia</translation>
 <translation id="882204272221080310">Kemas kini perisian tegar untuk keselamatan tambahan.</translation>
 <translation id="8822690627597552656">Memperlahankan sesetengah laman yang tidak dikenali untuk menyekat serangan biasa</translation>
 <translation id="8823514049557262177">Salin te&amp;ks pautan</translation>

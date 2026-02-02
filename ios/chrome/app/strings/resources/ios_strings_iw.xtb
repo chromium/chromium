@@ -370,6 +370,7 @@
 <translation id="2306265833370324042">הצגת הפרטים של <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="2309265394777270359">סגירת הכרטיסייה</translation>
 <translation id="2311077293164383652">סגירת הכרטיסייה המוצמדת</translation>
+<translation id="2313392466694008052">‏עריכת תמונה עם Gemini</translation>
 <translation id="2316129865977710310">לא, תודה</translation>
 <translation id="2320166752086256636">הסתרת מקלדת</translation>
 <translation id="2321086116217818302">המערכת מכינה את הסיסמאות…</translation>
@@ -521,6 +522,7 @@
 <translation id="288655811176831528">סגירת הכרטיסייה</translation>
 <translation id="2888631381369839306">ההתראות על מעקב מחירים הופעלו</translation>
 <translation id="2893168226686371498">דפדפן ברירת מחדל</translation>
+<translation id="2893791155497534382">אפשר למחוק את הסיסמאות ופעילות אחרת בהגדרות הניהול שלהן</translation>
 <translation id="2894757982205307093">כרטיסייה חדשה בקבוצה</translation>
 <translation id="2902312830803030883">פעולות נוספות</translation>
 <translation id="2904788871580817212">זוהתה ירידה במחיר בכרטיסייה הפתוחה שלך, מ-<ph name="PREVIOUS_PRICE" /> ל-<ph name="PRICE" />,‏ <ph name="PRODUCT_NAME" />,‏ <ph name="DOMAIN" /></translation>
@@ -1298,6 +1300,7 @@
 <translation id="5768870767339201169">להמשיך מהנקודה שבה הפסקת</translation>
 <translation id="5779117921996157216">{count,plural, =1{יש לך סיסמה אחת ({count}) שנחשפה ועלולה לסכן את האבטחה שלך. עליך לשפר אותה עכשיו כדי לשמור על הבטיחות.}one{יש לך {count} סיסמאות שנחשפו ועלולות לסכן את האבטחה שלך. עליך לשפר אותן עכשיו כדי לשמור על הבטיחות.}two{יש לך {count} סיסמאות שנחשפו ועלולות לסכן את האבטחה שלך. עליך לשפר אותן עכשיו כדי לשמור על הבטיחות.}other{יש לך {count} סיסמאות שנחשפו ועלולות לסכן את האבטחה שלך. עליך לשפר אותן עכשיו כדי לשמור על הבטיחות.}}</translation>
 <translation id="5791632441210678828">כפתור למיון של הפיד 'במעקב'.</translation>
+<translation id="5799263916847593256">כדי לראות את היסטוריית המחירים צריך לפתוח את כרטיסיית המעקב</translation>
 <translation id="5803566855766646066">הכרטיס החדש יימחק. להמשיך?</translation>
 <translation id="5804241973901381774">הרשאות</translation>
 <translation id="58081802114142635">‏הדברים שעושים עם Gemini עוזרים ל-Google לשפר את ה-AI</translation>
@@ -1641,6 +1644,7 @@
 <translation id="6964300328304469089">החשבון הנוכחי: <ph name="NAME" />, <ph name="EMAIL" />. עליך לבחור חשבון.</translation>
 <translation id="6964760285928603117">הסרה מהקבוצה</translation>
 <translation id="6965382102122355670">אישור</translation>
+<translation id="6967355534157677591">‏יצירת תמונות במצב Pro</translation>
 <translation id="6973630695168034713">תיקיות</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979737339423435258">משחר ההיסטוריה</translation>
@@ -1978,6 +1982,7 @@
 <translation id="8205564605687841303">ביטול</translation>
 <translation id="8206354486702514201">הגדרה זו נאכפת על ידי מנהל המערכת שלך.</translation>
 <translation id="8209050860603202033">פתיחת התמונה</translation>
+<translation id="8209237163365258530">‏מודלים של <ph name="VERSION_NUMBER" /> Gemini</translation>
 <translation id="8211030355252954494">קיבלת סיסמאות עבור <ph name="WEBSITE" /></translation>
 <translation id="8211406090763984747">החיבור מאובטח</translation>
 <translation id="8214293972734702249">כרטיסייה שהוצמדה, <ph name="TAB_TITLE" /></translation>

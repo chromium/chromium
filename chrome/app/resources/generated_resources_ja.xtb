@@ -10254,7 +10254,6 @@
 <translation id="8010312870936510509">データは <ph name="TIME" /> に同期パスフレーズで暗号化されています。暗号化の対象に Google Pay のお支払い方法と住所は含まれません。</translation>
 <translation id="8011372169388649948">「<ph name="BOOKMARK_TITLE" />」を移動しました。</translation>
 <translation id="8012188750847319132">CapsLock</translation>
-<translation id="8012463809859447963">インスタント アクセス ポイントの詳細</translation>
 <translation id="8013181884974864006">コンテキスト タスク</translation>
 <translation id="8013534738634318212">これらのサイトは、<ph name="RWS_OWNER" /> により定義されたグループに属しています。グループ内のサイトは、グループでのあなたのアクティビティを確認できます。</translation>
 <translation id="8013993649590906847">画像に有効な説明が設定されていない場合に、Chrome で説明を自動的に生成できるよう Google に画像が送信されます。</translation>
@@ -11469,7 +11468,6 @@
 <translation id="8820817407110198400">ブックマーク</translation>
 <translation id="8821045908425223359">IP アドレスを自動的に設定</translation>
 <translation id="8821268776955756404"><ph name="APP_NAME" /> を使用できるようになりました。</translation>
-<translation id="8821647731831124007">利用可能なアクセス ポイントはありません</translation>
 <translation id="882204272221080310">セキュリティ強化のためにファームウェアをアップデートする。</translation>
 <translation id="8822690627597552656">一般的な攻撃をブロックするため、一部の未知のサイトの動作を遅くします</translation>
 <translation id="8823514049557262177">リンクテキストをコピー(&amp;X)</translation>

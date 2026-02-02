@@ -370,6 +370,7 @@
 <translation id="2306265833370324042"><ph name="SEARCH_ENGINE_NAME" />-н дэлгэрэнгүйг харуулах</translation>
 <translation id="2309265394777270359">Табыг хаах</translation>
 <translation id="2311077293164383652">Бэхэлсэн табыг хаах</translation>
+<translation id="2313392466694008052">Gemini-р зураг засах</translation>
 <translation id="2316129865977710310">Үгүй ээ, баярлалаа</translation>
 <translation id="2320166752086256636">Компьютерийн гарыг нуух</translation>
 <translation id="2321086116217818302">Нууц үгийг бэлтгэж байна…</translation>
@@ -521,6 +522,7 @@
 <translation id="288655811176831528">Табыг хаах</translation>
 <translation id="2888631381369839306">Үнэ мөшгөх мэдэгдлийг асаасан</translation>
 <translation id="2893168226686371498">Стандарт веб хөтөч</translation>
+<translation id="2893791155497534382">Нууц үг болон бусад үйл ажиллагааг удирдлагын тохиргооноос нь устгах боломжтой</translation>
 <translation id="2894757982205307093">Бүлэг доторх шинэ таб</translation>
 <translation id="2902312830803030883">Бусад үйлдэл</translation>
 <translation id="2904788871580817212">Таны нээлттэй таб дээрх үнийн бууралт, <ph name="PREVIOUS_PRICE" />-с <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
@@ -1298,6 +1300,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="5768870767339201169">Орхисон газраасаа үргэлжлүүлээрэй</translation>
 <translation id="5779117921996157216">{count,plural, =1{Танд аюулгүй байдлыг тань эрсдэлд оруулж болох {count} алдагдсан нууц үг байна. Аюулгүй байхын тулд алдагдсан нууц үгийг одоо засна уу.}other{Танд аюулгүй байдлыг тань эрсдэлд оруулж болох {count} алдагдсан нууц үг байна. Аюулгүй байхын тулд алдагдсан нууц үгнүүдийг одоо засна уу.}}</translation>
 <translation id="5791632441210678828">'Дагаж буй' хангамжийг эрэмбэлэх товчлуур.</translation>
+<translation id="5799263916847593256">Үнийн түүхийг харахын тулд нээх</translation>
 <translation id="5803566855766646066">Та энэ шинэ картыг устгахдаа итгэлтэй байна уу?</translation>
 <translation id="5804241973901381774">Зөвшөөрлүүд</translation>
 <translation id="58081802114142635">Таны үйл ажиллагаа Google-н ХОУ-ыг сайжруулна</translation>
@@ -1641,6 +1644,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6964300328304469089">Одоогоор <ph name="NAME" />, <ph name="EMAIL" />-г сонгосон. Бүртгэл сонгоно уу.</translation>
 <translation id="6964760285928603117">Бүлгээс хасах</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6967355534157677591">Create image Pro</translation>
 <translation id="6973630695168034713">Хавтас</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979737339423435258">Бүх цаг</translation>

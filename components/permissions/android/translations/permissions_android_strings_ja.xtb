@@ -24,6 +24,7 @@
 <translation id="6656545060687952787">デバイスをスキャンするには、Chrome で位置情報にアクセスする必要があります。<ph name="BEGIN_LINK" />権限を更新<ph name="END_LINK" /></translation>
 <translation id="7146360184282545445">周囲の 3D マップを作成するには、<ph name="APP_NAME" /> にカメラの使用を許可する必要があります。</translation>
 <translation id="7624880197989616768"><ph name="BEGIN_LINK1" />ヘルプ<ph name="END_LINK1" />または<ph name="BEGIN_LINK2" />再スキャン<ph name="END_LINK2" /></translation>
+<translation id="7658239707568436148">キャンセル</translation>
 <translation id="781351614677332494">このサイトで現在地を共有するには、<ph name="APP_NAME" /> で位置情報の使用を許可する必要があります。</translation>
 <translation id="7884346424584885269">付近のデバイスをスキャンするには Chrome に権限を許可する必要があります。<ph name="BEGIN_LINK" />権限を変更<ph name="END_LINK" />してください。</translation>
 <translation id="8368027906805972958">不明またはサポートされていないデバイス（<ph name="DEVICE_ID" />）</translation>

@@ -24,6 +24,7 @@
 <translation id="6656545060687952787">Chrome memerlukan akses lokasi untuk memindai perangkat. <ph name="BEGIN_LINK" />Perbarui izin<ph name="END_LINK" /></translation>
 <translation id="7146360184282545445"><ph name="APP_NAME" /> memerlukan izin untuk mengakses kamera guna membuat peta 3D untuk area di sekeliling Anda.</translation>
 <translation id="7624880197989616768"><ph name="BEGIN_LINK1" />Dapatkan bantuan<ph name="END_LINK1" /> atau <ph name="BEGIN_LINK2" />pindai ulang<ph name="END_LINK2" /></translation>
+<translation id="7658239707568436148">Batal</translation>
 <translation id="781351614677332494"><ph name="APP_NAME" /> memerlukan akses ke lokasi Anda untuk berbagi lokasi dengan situs ini.</translation>
 <translation id="7884346424584885269">Chrome memerlukan izin untuk memindai perangkat di sekitar. <ph name="BEGIN_LINK" />Perbarui izin<ph name="END_LINK" />.</translation>
 <translation id="8368027906805972958">Perangkat tidak dikenal atau tidak didukung (<ph name="DEVICE_ID" />)</translation>

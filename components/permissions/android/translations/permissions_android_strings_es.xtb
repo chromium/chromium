@@ -24,6 +24,7 @@
 <translation id="6656545060687952787">Chrome necesita acceder a la ubicación para buscar dispositivos. <ph name="BEGIN_LINK" />Actualizar los permisos<ph name="END_LINK" /></translation>
 <translation id="7146360184282545445"><ph name="APP_NAME" /> necesita permiso para acceder a tu cámara para crear un mapa 3D de tu entorno.</translation>
 <translation id="7624880197989616768"><ph name="BEGIN_LINK1" />Obtener ayuda<ph name="END_LINK1" /> o <ph name="BEGIN_LINK2" />volver a buscar<ph name="END_LINK2" /></translation>
+<translation id="7658239707568436148">Cancelar</translation>
 <translation id="781351614677332494"><ph name="APP_NAME" /> necesita acceder a tu ubicación para compartirla con este sitio.</translation>
 <translation id="7884346424584885269">Chrome necesita permiso para buscar dispositivos cercanos. <ph name="BEGIN_LINK" />Actualizar permisos<ph name="END_LINK" />.</translation>
 <translation id="8368027906805972958">Dispositivo desconocido o no compatible (<ph name="DEVICE_ID" />)</translation>

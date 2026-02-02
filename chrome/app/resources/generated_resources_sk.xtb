@@ -10275,7 +10275,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8010312870936510509">Údaje boli o <ph name="TIME" /> šifrované pomocou vašej prístupovej frázy synchronizácie. Nezahŕňa to spôsoby platby ani adresy zo služby Google Pay.</translation>
 <translation id="8011372169388649948">Záložka <ph name="BOOKMARK_TITLE" /> bola presunutá.</translation>
 <translation id="8012188750847319132">caps lock</translation>
-<translation id="8012463809859447963">Podrobnosti o okamžitom hotspote</translation>
 <translation id="8013181884974864006">Kontextové úlohy</translation>
 <translation id="8013534738634318212">Tieto weby sú v skupine definovanej vlastníkom <ph name="RWS_OWNER" />. Webom v skupine sa zobrazuje vaša aktivita v nej.</translation>
 <translation id="8013993649590906847">Ak obrázok nemá užitočný popis, Chrome sa vám ho pokúsi poskytnúť. Obrázky sa odosielajú Googlu, aby bolo možné vytvoriť popisy.</translation>
@@ -11492,7 +11491,6 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="8820817407110198400">Záložky</translation>
 <translation id="8821045908425223359">Automaticky konfigurovať adresu IP</translation>
 <translation id="8821268776955756404">Aplikáciu <ph name="APP_NAME" /> môžete začať používať.</translation>
-<translation id="8821647731831124007">Žiadne dostupné hotspoty</translation>
 <translation id="882204272221080310">Aktualizovať firmvér v rámci zvýšenia zabezpečenia</translation>
 <translation id="8822690627597552656">Spomalí niektoré neznáme weby, aby zablokoval bežné útoky</translation>
 <translation id="8823514049557262177">Kopírovať te&amp;xt odkazu</translation>

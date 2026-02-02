@@ -10273,7 +10273,6 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8010312870936510509">Podaci su šifrirani vašom šifrom za sinkronzaciju <ph name="TIME" />. To ne uključuje načine plaćanja i adrese s Google Paya.</translation>
 <translation id="8011372169388649948">Oznaka <ph name="BOOKMARK_TITLE" /> je premještena.</translation>
 <translation id="8012188750847319132">caps lock</translation>
-<translation id="8012463809859447963">Pojedinosti o instant žarišnoj točki</translation>
 <translation id="8013181884974864006">Kontekstualni zadaci</translation>
 <translation id="8013534738634318212">Ove su web-lokacije u grupi koju definira domena <ph name="RWS_OWNER" />. Web-lokacije u grupi mogu vidjeti vašu aktivnost u grupi.</translation>
 <translation id="8013993649590906847">Ako slika nema koristan opis, Chrome će ga pokušati pružiti. Da bi se izradili opisi, slike se šalju Googleu.</translation>
@@ -11490,7 +11489,6 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="8820817407110198400">Oznake</translation>
 <translation id="8821045908425223359">Konfiguriraj IP adresu automatski</translation>
 <translation id="8821268776955756404">Aplikacija <ph name="APP_NAME" /> spremna je za upotrebu.</translation>
-<translation id="8821647731831124007">Nema dostupnih žarišnih točaka</translation>
 <translation id="882204272221080310">Ažuriraj firmware radi dodatne zaštite.</translation>
 <translation id="8822690627597552656">Usporava neke nepoznate web-lokacije kako bi se blokirali uobičajeni napadi</translation>
 <translation id="8823514049557262177">Kopiraj te&amp;kst veze</translation>

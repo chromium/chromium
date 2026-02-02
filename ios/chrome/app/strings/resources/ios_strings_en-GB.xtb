@@ -370,6 +370,7 @@
 <translation id="2306265833370324042">Show <ph name="SEARCH_ENGINE_NAME" /> details</translation>
 <translation id="2309265394777270359">Close tab</translation>
 <translation id="2311077293164383652">Close pinned tab</translation>
+<translation id="2313392466694008052">Edit image with Gemini</translation>
 <translation id="2316129865977710310">No, thanks</translation>
 <translation id="2320166752086256636">Hide keyboard</translation>
 <translation id="2321086116217818302">Preparing passwords…</translation>
@@ -521,6 +522,7 @@
 <translation id="288655811176831528">Close Tab</translation>
 <translation id="2888631381369839306">Price tracking notifications turned on</translation>
 <translation id="2893168226686371498">Default browser</translation>
+<translation id="2893791155497534382">Passwords and other activity can be deleted in their management settings</translation>
 <translation id="2894757982205307093">New tab in group</translation>
 <translation id="2902312830803030883">More actions</translation>
 <translation id="2904788871580817212">Price drop on your open tab, from <ph name="PREVIOUS_PRICE" /> to <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
@@ -1298,6 +1300,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5768870767339201169">Pick up from where you left off</translation>
 <translation id="5779117921996157216">{count,plural, =1{You have {count} compromised password that could put your security at risk. Fix it now to stay safe.}other{You have {count} compromised passwords that could put your security at risk. Fix them now to stay safe.}}</translation>
 <translation id="5791632441210678828">Sort button for Following feed.</translation>
+<translation id="5799263916847593256">Open to see price history</translation>
 <translation id="5803566855766646066">Are you sure that you want to discard this new card?</translation>
 <translation id="5804241973901381774">Permissions</translation>
 <translation id="58081802114142635">Your activity improves Google AI</translation>
@@ -1641,6 +1644,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6964300328304469089"><ph name="NAME" />, <ph name="EMAIL" /> currently selected. Choose an account.</translation>
 <translation id="6964760285928603117">Remove from group</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6967355534157677591">Create image Pro</translation>
 <translation id="6973630695168034713">Folders</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979737339423435258">All time</translation>

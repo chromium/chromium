@@ -24,6 +24,7 @@
 <translation id="6656545060687952787">Chrome 需要拥有位置信息权限才能扫描设备。<ph name="BEGIN_LINK" />更新权限<ph name="END_LINK" /></translation>
 <translation id="7146360184282545445">“<ph name="APP_NAME" />”需要获得相应权限，才能使用您的摄像头创建周边环境的 3D 地图。</translation>
 <translation id="7624880197989616768"><ph name="BEGIN_LINK1" />获取帮助<ph name="END_LINK1" />或<ph name="BEGIN_LINK2" />重新扫描<ph name="END_LINK2" /></translation>
+<translation id="7658239707568436148">取消</translation>
 <translation id="781351614677332494">“<ph name="APP_NAME" />”需要获得位置信息使用权限，才能将您的位置信息共享给此网站。</translation>
 <translation id="7884346424584885269">Chrome 需要获得相应权限，才能搜寻附近的设备。<ph name="BEGIN_LINK" />更新权限<ph name="END_LINK" />。</translation>
 <translation id="8368027906805972958">未知或不支持的设备 (<ph name="DEVICE_ID" />)</translation>

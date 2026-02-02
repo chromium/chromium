@@ -24,6 +24,7 @@
 <translation id="6656545060687952787">Chrome necesită accesul la locație pentru a căuta dispozitive. <ph name="BEGIN_LINK" />Actualizează permisiunile<ph name="END_LINK" /></translation>
 <translation id="7146360184282545445"><ph name="APP_NAME" /> are nevoie de permisiunea de a accesa camera foto pentru a crea o hartă 3D a lucrurilor din jurul tău.</translation>
 <translation id="7624880197989616768"><ph name="BEGIN_LINK1" />Obține ajutor<ph name="END_LINK1" /> sau <ph name="BEGIN_LINK2" />scanează din nou<ph name="END_LINK2" /></translation>
+<translation id="7658239707568436148">Anulează</translation>
 <translation id="781351614677332494"><ph name="APP_NAME" /> are nevoie de acces la locația ta ca să permită accesul la locație pentru acest site.</translation>
 <translation id="7884346424584885269">Chrome necesită permisiunea de a căuta dispozitive în apropiere. <ph name="BEGIN_LINK" />Actualizează permisiunile<ph name="END_LINK" />.</translation>
 <translation id="8368027906805972958">Dispozitiv necunoscut sau neacceptat (<ph name="DEVICE_ID" />)</translation>

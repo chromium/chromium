@@ -847,6 +847,7 @@
 <translation id="4181841719683918333">Bahasa</translation>
 <translation id="4183350924949589798">Lagi keselamatan?</translation>
 <translation id="4184063163998877398">{count,plural, =1{{count} kata laluan lemah}other{{count} kata laluan lemah}}</translation>
+<translation id="4196758674971560031">Kumpulan tab yang telah anda buat disimpan dalam bahagian kumpulan tab dan dikemaskinikan merentas peranti anda.</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} item disimpan pada peranti ini sahaja. Untuk menggunakan item ini pada peranti anda yang lain, simpan item dalam Google Account anda, {email}.}other{{count} item disimpan pada peranti ini sahaja. Untuk menggunakan item ini pada peranti anda yang lain, simpan item dalam Google Account anda, {email}.}}</translation>
 <translation id="4207873326995387292">Maklumat Penyemak Imbas</translation>
 <translation id="421070604241073551">Apabila dihidupkan, data disimpan pada Google Account anda. Apabila dimatikan, data disimpan pada peranti ini sahaja.</translation>
@@ -1508,6 +1509,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="6494931198667773526">Tamat</translation>
 <translation id="6503077044568424649">Paling kerap dilawati</translation>
 <translation id="6503763061813913607">Pemberitahuan Semakan Keselamatan</translation>
+<translation id="6504541289630702018">Akses kumpulan tab desktop anda dengan mudah</translation>
 <translation id="6505334220040167806">Kuncupkan kumpulan tab.</translation>
 <translation id="6506996418997555004">Kongsi Kumpulan Tab "<ph name="GROUP_NAME" />"</translation>
 <translation id="6507973708545996744">Log masuk untuk mendapatkan senarai bacaan pada semua peranti anda.</translation>
@@ -2139,6 +2141,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="8730621377337864115">Selesai</translation>
 <translation id="8731268612289859741">Kod keselamatan</translation>
 <translation id="87371078663613140">Teroka pilihan dalam bar menu</translation>
+<translation id="8739546376441802490">Laman yang disematkan sudah wujud</translation>
 <translation id="8741627442233023406">{count,plural, =1{Semak tab…}other{Semak semua tab…}}</translation>
 <translation id="8741995161408053644">Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain di <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="874599634440689554">Buat pautan</translation>

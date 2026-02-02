@@ -10281,7 +10281,6 @@
 <translation id="8010312870936510509">Данные зашифрованы <ph name="TIME" /> с помощью кодовой фразы. К способам оплаты и адресам из Google Pay шифрование не применяется.</translation>
 <translation id="8011372169388649948">Закладка "<ph name="BOOKMARK_TITLE" />" перемещена.</translation>
 <translation id="8012188750847319132">Caps Lock</translation>
-<translation id="8012463809859447963">Сведения о мгновенной точке доступа</translation>
 <translation id="8013181884974864006">Контекстные задачи</translation>
 <translation id="8013534738634318212">Эти сайты входят в группу <ph name="RWS_OWNER" /> и могут обмениваться данными о ваших действиях.</translation>
 <translation id="8013993649590906847">Если у изображения нет понятного описания, Chrome попытается его найти. Для создания описаний изображения отправляются в Google.</translation>
@@ -11499,7 +11498,6 @@
 <translation id="8820817407110198400">Закладки</translation>
 <translation id="8821045908425223359">Настраивать IP-адрес автоматически</translation>
 <translation id="8821268776955756404">Плагин <ph name="APP_NAME" /> готов к использованию.</translation>
-<translation id="8821647731831124007">Нет точек доступа.</translation>
 <translation id="882204272221080310">Для дополнительной защиты обновите встроенное ПО.</translation>
 <translation id="8822690627597552656">Работа некоторых незнакомых сайтов замедляется, чтобы блокировать распространенные атаки</translation>
 <translation id="8823514049557262177">Скопировать &amp;текст ссылки</translation>

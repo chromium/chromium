@@ -10289,7 +10289,6 @@
 <translation id="8010312870936510509">আপনার সিঙ্ক পাসফ্রেজ দিয়ে <ph name="TIME" />-এ ডেটা এনক্রিপ্ট করা হয়েছে। এর মধ্যে Google Pay-এর পেমেন্ট পদ্ধতি ও ঠিকানা অন্তর্ভুক্ত থাকে না।</translation>
 <translation id="8011372169388649948">'<ph name="BOOKMARK_TITLE" />' সরানো হয়েছে।</translation>
 <translation id="8012188750847319132">Caps Lock</translation>
-<translation id="8012463809859447963">ইনস্ট্যান্ট হটস্পটের বিবরণ</translation>
 <translation id="8013181884974864006">প্রাসঙ্গিক টাস্ক</translation>
 <translation id="8013534738634318212">এইসব সাইট <ph name="RWS_OWNER" /> দ্বারা সংজ্ঞায়িত গ্রুপে রয়েছে। গ্রুপে থাকা সাইটগুলি গ্রুপে আপনার অ্যাক্টিভিটি দেখতে পাবে।</translation>
 <translation id="8013993649590906847">যদি ছবিতে প্রয়োজনীয় বিবরণ দেওয়া না থাকে, তাহলে Chrome আপনাকে একটি বিবরণ দেওয়ার চেষ্টা করবে। বিবরণ তৈরির জন্য, Google-এ ছবি পাঠানো হয়।</translation>
@@ -11505,7 +11504,6 @@
 <translation id="8820817407110198400">Bookmarks</translation>
 <translation id="8821045908425223359">আইপি অ্যাড্রেস অটোমেটিক কনফিগার করুন</translation>
 <translation id="8821268776955756404">এবার <ph name="APP_NAME" /> ব্যবহার করতে পারবেন।</translation>
-<translation id="8821647731831124007">কোনও হটস্পট উপলভ্য নেই</translation>
 <translation id="882204272221080310">নিরাপত্তা আরও সুরক্ষার জন্য ফার্মওয়্যার আপডেট করুন।</translation>
 <translation id="8822690627597552656">সাধারণ অ্যাটাক ব্লক করতে, কিছু অপরিচিত সাইট স্লো করে দেয়</translation>
 <translation id="8823514049557262177">লিঙ্ক টেক্সট কপি করুন</translation>

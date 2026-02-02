@@ -10256,7 +10256,6 @@
 <translation id="8010312870936510509">已于 <ph name="TIME" />使用您的同步口令加密数据，Google Pay 中的支付方式和地址不在加密范围内。</translation>
 <translation id="8011372169388649948">已移动书签“<ph name="BOOKMARK_TITLE" />”。</translation>
 <translation id="8012188750847319132">CapsLock 键</translation>
-<translation id="8012463809859447963">智能热点详情</translation>
 <translation id="8013181884974864006">情境任务</translation>
 <translation id="8013534738634318212">这些网站属于由 <ph name="RWS_OWNER" /> 定义的群组。群组中的网站可查看您在该群组中的活动记录。</translation>
 <translation id="8013993649590906847">如果图片缺少有用的说明，则 Chrome 会尝试为您提供一条说明。为便于创建说明，系统会将图片发送给 Google。</translation>
@@ -11471,7 +11470,6 @@
 <translation id="8820817407110198400">书签</translation>
 <translation id="8821045908425223359">自动配置 IP 地址</translation>
 <translation id="8821268776955756404">现在可以使用 <ph name="APP_NAME" /> 了。</translation>
-<translation id="8821647731831124007">没有可用的热点</translation>
 <translation id="882204272221080310">更新固件以提高安全性。</translation>
 <translation id="8822690627597552656">让陌生网站的加载速度变慢，以便抵御常见攻击</translation>
 <translation id="8823514049557262177">复制链接文字(&amp;X)</translation>

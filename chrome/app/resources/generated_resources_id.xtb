@@ -1732,6 +1732,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2148212683005708350"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="KEY" /></translation>
 <translation id="2148219725039824548">Error saat memasang URL berbagi. URL berbagi yang ditentukan tidak ditemukan di jaringan.</translation>
 <translation id="2148248734299717598">Tutup Tampilan Kiri</translation>
+<translation id="2148401732477136168">Gagal membuat kueri pada aplikasi terinstal.</translation>
 <translation id="2148756636027685713">Pemformatan selesai</translation>
 <translation id="2148892889047469596">Transmisikan tab</translation>
 <translation id="2149973817440762519">Edit Bookmark</translation>
@@ -8114,6 +8115,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6532663472409656417">Terdaftar sebagai Perusahaan</translation>
 <translation id="6533315466883598769">Gunakan Google Terjemahan</translation>
 <translation id="65334502113648172">Tekan tombol panah untuk menciutkan atau meluaskan area layar. Untuk memindahkan area layar, tekan shift dan +, lalu gunakan tombol panah.</translation>
+<translation id="6534018044332449019">Tidak ada aplikasi yang diinstal.</translation>
 <translation id="6535331821390304775">Selalu izinkan <ph name="ORIGIN" /> untuk membuka link jenis ini di aplikasi terkait</translation>
 <translation id="653659894138286600">Pindai dokumen dan gambar</translation>
 <translation id="6538036594527795020">Ubah bahasa <ph name="APP" />. Bahasa saat ini adalah <ph name="LANGUAGE" />.</translation>
@@ -10173,6 +10175,7 @@ Tekan tombol akses atau tombol keyboard yang telah ditetapkan untuk menghapus pe
 <translation id="7941179291434537290">Kesiapan Tethering:</translation>
 <translation id="7942349550061667556">Merah</translation>
 <translation id="7942846369224063421">Perender UI yang Dipramuat</translation>
+<translation id="7943271960579497371">Aplikasi Terinstal</translation>
 <translation id="7943368935008348579">Download PDF</translation>
 <translation id="7943837619101191061">Tambahkan Lokasi...</translation>
 <translation id="7944173382284143968">Situs memerlukan konfirmasi OTP sebelum menyimpan sandi baru. Ambil alih proses secara manual untuk menyelesaikan perubahan.</translation>
@@ -10289,7 +10292,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8010312870936510509">Data dienkripsi dengan frasa sandi sinkronisasi Anda pada <ph name="TIME" />. Data ini tidak mencakup metode pembayaran dan alamat dari Google Pay.</translation>
 <translation id="8011372169388649948">'<ph name="BOOKMARK_TITLE" />' dipindahkan.</translation>
 <translation id="8012188750847319132">caps lock</translation>
-<translation id="8012463809859447963">Detail hotspot instan</translation>
 <translation id="8013181884974864006">Tugas Kontekstual</translation>
 <translation id="8013534738634318212">Situs ini berada dalam grup yang ditentukan oleh <ph name="RWS_OWNER" />. Situs dalam grup dapat melihat aktivitas Anda dalam grup tersebut.</translation>
 <translation id="8013993649590906847">Jika gambar tidak memiliki deskripsi yang berguna, Chrome akan mencoba memberikan deskripsi untuk Anda. Untuk membuat deskripsi, gambar akan dikirim ke Google.</translation>
@@ -11504,7 +11506,6 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="8820817407110198400">Bookmark</translation>
 <translation id="8821045908425223359">Konfigurasi alamat IP secara otomatis</translation>
 <translation id="8821268776955756404"><ph name="APP_NAME" /> siap digunakan.</translation>
-<translation id="8821647731831124007">Tidak ada hotspot yang tersedia</translation>
 <translation id="882204272221080310">Update firmware untuk tambahan keamanan.</translation>
 <translation id="8822690627597552656">Memperlambat beberapa situs yang tidak dikenal untuk memblokir serangan umum</translation>
 <translation id="8823514049557262177">Salin te&amp;ks link</translation>

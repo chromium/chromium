@@ -10276,7 +10276,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8010312870936510509">Andmed krüpteeriti teie sünkroonimise parooliga kuupäeval <ph name="TIME" />. See ei hõlma Google Pay makseviise ega aadresse.</translation>
 <translation id="8011372169388649948">„<ph name="BOOKMARK_TITLE" />“ teisaldati.</translation>
 <translation id="8012188750847319132">suurtähelukk</translation>
-<translation id="8012463809859447963">Vahetu kuumkoha üksikasjad</translation>
 <translation id="8013181884974864006">Kontekstipõhised toimingud</translation>
 <translation id="8013534738634318212">Need saidid on domeeni <ph name="RWS_OWNER" /> määratud grupis. Grupis olevad saidid saavad teie tegevusi grupis vaadata.</translation>
 <translation id="8013993649590906847">Kui pildil puudub kasulik kirjeldus, üritab Chrome selle ise luua. Kirjelduste loomiseks saadetakse pildid Google'ile.</translation>
@@ -11491,7 +11490,6 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri, seadme o
 <translation id="8820817407110198400">Järjehoidjad</translation>
 <translation id="8821045908425223359">Seadista IP-aadress automaatselt</translation>
 <translation id="8821268776955756404">Rakendus <ph name="APP_NAME" /> on kasutamiseks valmis.</translation>
-<translation id="8821647731831124007">Ühtegi kuumkohta pole saadaval</translation>
 <translation id="882204272221080310">Värskenda turvalisuse suurendamiseks püsivara.</translation>
 <translation id="8822690627597552656">Aeglustab mõnda tundmatut saiti, et blokeerida levinud rünnakuid.</translation>
 <translation id="8823514049557262177">Kopeeri lingi te&amp;kst</translation>

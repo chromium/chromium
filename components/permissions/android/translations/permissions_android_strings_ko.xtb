@@ -24,6 +24,7 @@
 <translation id="6656545060687952787">기기를 스캔하려면 Chrome에서 위치 정보에 액세스해야 합니다. <ph name="BEGIN_LINK" />권한 업데이트<ph name="END_LINK" /></translation>
 <translation id="7146360184282545445"><ph name="APP_NAME" />이 주변의 3D 지도를 만들려면 카메라에 액세스할 권한이 필요합니다.</translation>
 <translation id="7624880197989616768"><ph name="BEGIN_LINK1" />도움말 보기<ph name="END_LINK1" /> 또는 <ph name="BEGIN_LINK2" />다시 검색하기<ph name="END_LINK2" /></translation>
+<translation id="7658239707568436148">취소</translation>
 <translation id="781351614677332494"><ph name="APP_NAME" />이 사이트와 위치 정보를 공유하려면 위치 정보에 액세스할 권한이 필요합니다.</translation>
 <translation id="7884346424584885269">Chrome에 근처 기기를 스캔할 권한이 필요합니다. <ph name="BEGIN_LINK" />권한 업데이트<ph name="END_LINK" /></translation>
 <translation id="8368027906805972958">알 수 없거나 지원되지 않는 기기(<ph name="DEVICE_ID" />)</translation>

@@ -10276,7 +10276,6 @@
 <translation id="8010312870936510509">Подаци су шифровани помоћу приступне фразе за синхронизацију <ph name="TIME" />. То не обухвата начине плаћања и адресе из Google Pay-а.</translation>
 <translation id="8011372169388649948">Обележивач <ph name="BOOKMARK_TITLE" /> је премештен.</translation>
 <translation id="8012188750847319132">caps lock</translation>
-<translation id="8012463809859447963">Детаљи о инстант хотспоту</translation>
 <translation id="8013181884974864006">Контекстуални задаци</translation>
 <translation id="8013534738634318212">Ови сајтови су у групи коју дефинише <ph name="RWS_OWNER" />. Сајтови у групи могу да виде ваше активности у групи.</translation>
 <translation id="8013993649590906847">Ако слика нема користан опис, Chrome ће пробати да вам га пружи. Слике се шаљу Google-у ради прављења описа.</translation>
@@ -11493,7 +11492,6 @@
 <translation id="8820817407110198400">Обележивачи</translation>
 <translation id="8821045908425223359">Аутоматски конфигуриши IP адресу</translation>
 <translation id="8821268776955756404">Апликација <ph name="APP_NAME" /> је спремна за коришћење.</translation>
-<translation id="8821647731831124007">Нема доступних хотспотова</translation>
 <translation id="882204272221080310">Ажурирајте фирмвер ради веће безбедности.</translation>
 <translation id="8822690627597552656">Успорава неке непознате сајтове да би блокирао уобичајене нападе</translation>
 <translation id="8823514049557262177">Копирај тек&amp;ст линка</translation>

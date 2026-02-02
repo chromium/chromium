@@ -1721,6 +1721,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2148212683005708350"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="KEY" /></translation>
 <translation id="2148219725039824548">Erro ao montar a partilha. A partilha especificada não foi encontrada na rede.</translation>
 <translation id="2148248734299717598">Fechar vista esquerda</translation>
+<translation id="2148401732477136168">Falha ao consultar as aplicações instaladas.</translation>
 <translation id="2148756636027685713">Formatação concluída</translation>
 <translation id="2148892889047469596">Transmitir separador</translation>
 <translation id="2149973817440762519">Editar marcador</translation>
@@ -8099,6 +8100,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6532663472409656417">Inscrito pela empresa</translation>
 <translation id="6533315466883598769">Usar o Google Tradutor</translation>
 <translation id="65334502113648172">Prima as teclas de seta para diminuir ou expandir a área de visualização. Para mover a área de visualização, prima Shift e + e, em seguida, utilize as teclas de seta.</translation>
+<translation id="6534018044332449019">Nenhuma aplicação instalada.</translation>
 <translation id="6535331821390304775">Permitir sempre que <ph name="ORIGIN" /> abra links deste tipo na app associada</translation>
 <translation id="653659894138286600">Digitalize documentos e imagens.</translation>
 <translation id="6538036594527795020">Altere o idioma da app <ph name="APP" />. O idioma atual é o <ph name="LANGUAGE" />.</translation>
@@ -10158,6 +10160,7 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7941179291434537290">Prontidão da ligação (à Internet) via telemóvel:</translation>
 <translation id="7942349550061667556">Vermelho</translation>
 <translation id="7942846369224063421">Renderizador da IU pré-carregado</translation>
+<translation id="7943271960579497371">Aplicações instaladas</translation>
 <translation id="7943368935008348579">Transferir PDFs</translation>
 <translation id="7943837619101191061">Adicionar Localização...</translation>
 <translation id="7944173382284143968">O Website requer a confirmação da PUU antes de guardar a nova palavra-passe. Assuma o controlo do processo manualmente para concluir a alteração.</translation>
@@ -10274,7 +10277,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8010312870936510509">Os dados foram encriptados com a sua frase de acesso de sincronização a <ph name="TIME" />. Não estão incluídos métodos de pagamento nem moradas do Google Pay.</translation>
 <translation id="8011372169388649948">"<ph name="BOOKMARK_TITLE" />" movido.</translation>
 <translation id="8012188750847319132">caps lock</translation>
-<translation id="8012463809859447963">Detalhes da zona Wi-Fi instantânea</translation>
 <translation id="8013181884974864006">Tarefas contextuais</translation>
 <translation id="8013534738634318212">Estes sites estão num grupo definido por <ph name="RWS_OWNER" />. Os sites num grupo podem ver a sua atividade no grupo.</translation>
 <translation id="8013993649590906847">Se uma imagem não tiver uma descrição útil, o Chrome tenta fornecer uma. Para criar as descrições, são enviadas imagens para a Google.</translation>
@@ -11489,7 +11491,6 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="8820817407110198400">Marcadores</translation>
 <translation id="8821045908425223359">Configurar endereço IP automaticamente</translation>
 <translation id="8821268776955756404">A app <ph name="APP_NAME" /> está pronta para ser utilizada.</translation>
-<translation id="8821647731831124007">Nenhuma zona Wi-Fi disponível</translation>
 <translation id="882204272221080310">Atualize o firmware para maior segurança.</translation>
 <translation id="8822690627597552656">Abranda alguns sites desconhecidos para bloquear ataques comuns</translation>
 <translation id="8823514049557262177">Copiar te&amp;xto do link</translation>

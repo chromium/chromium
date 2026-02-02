@@ -157,6 +157,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="164269334534774161"><ph name="CREATION_TIME" />에 작성된 이 페이지의 오프라인 사본을 보는 중입니다.</translation>
 <translation id="1644574205037202324">방문 기록</translation>
 <translation id="1645262572857218659"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />로 로그인</translation>
+<translation id="1650979352027263879">모양 환경설정이 삭제되었습니다.</translation>
 <translation id="1671236975893690980">다운로드 대기 중...</translation>
 <translation id="1672586136351118594">다시 표시하지 않음</translation>
 <translation id="1680919990519905526">Google 렌즈로 이미지의 상품 구입 <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
@@ -425,6 +426,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2854916915045135148">시크릿 모드로 전환하려면 길게 터치하세요.</translation>
 <translation id="2860954141821109167">이 기기에서 전화 앱이 사용 설정되어 있는지 확인하세요.</translation>
 <translation id="2861923151411510142">일부 Chrome 기능을 더 이상 사용할 수 없게 됩니다.</translation>
+<translation id="286473047976978798">모양 환경설정을 적용하시겠습니까?</translation>
 <translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> 외 탭 1개}other{<ph name="URL" /> 외 탭 <ph name="TAB_COUNT_MANY" />개}}</translation>
 <translation id="2869430948265924908">자동차에서 민감한 콘텐츠를 보호하려면 자동차 프로필 잠금을 만들어야 합니다.  PIN, 코드 또는 비밀번호를 사용하면 됩니다.</translation>
 <translation id="2870560284913253234">사이트</translation>
@@ -1372,6 +1374,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6811034713472274749">페이지를 볼 수 있음</translation>
 <translation id="6813359536773993594">{FILE_COUNT,plural, =1{이미지, 목록에 있는 이미지 1개}other{이미지, 목록에 있는 이미지 #개}}</translation>
 <translation id="6813446258015311409">Chrome에 로그인, 계정 선택 도구가 열렸습니다.</translation>
+<translation id="6815692190508268848">모양 환경설정이 적용되었습니다.</translation>
 <translation id="6817747507826986771">이 페이지를 빠르게 공유합니다. 바로가기를 수정하려면 길게 터치하세요.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6820942662346226299">Google 비밀번호 관리자 업데이트 종료됨</translation>

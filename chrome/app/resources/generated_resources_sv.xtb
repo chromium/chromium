@@ -10285,7 +10285,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8010312870936510509">Data krypterades med din lösenfras för synkronisering den <ph name="TIME" />. Betalningsmetoder och adresser från Google Pay omfattas inte.</translation>
 <translation id="8011372169388649948"><ph name="BOOKMARK_TITLE" /> har flyttats.</translation>
 <translation id="8012188750847319132">caps lock</translation>
-<translation id="8012463809859447963">Information om snabb surfzon</translation>
 <translation id="8013181884974864006">Sammanhangsbaserade uppgifter</translation>
 <translation id="8013534738634318212">Dessa webbplatser ingår i en grupp som definieras av <ph name="RWS_OWNER" />. Webbplatser i en grupp kan se din aktivitet i gruppen.</translation>
 <translation id="8013993649590906847">Om en bild inte har någon användbar beskrivning görs ett försök att beskriva den åt dig i Chrome. Bilderna skickas till Google så att beskrivningen kan genereras.</translation>
@@ -11500,7 +11499,6 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren, enhe
 <translation id="8820817407110198400">Bokmärken</translation>
 <translation id="8821045908425223359">Konfigurera IP-adress automatiskt</translation>
 <translation id="8821268776955756404"><ph name="APP_NAME" /> kan nu användas.</translation>
-<translation id="8821647731831124007">Inga tillgängliga surfzoner</translation>
 <translation id="882204272221080310">Uppdatera firmware för ökad säkerhet.</translation>
 <translation id="8822690627597552656">Gör vissa okända webbplatser långsammare för att blockera vanliga attacker</translation>
 <translation id="8823514049557262177">Kopiera länktext</translation>

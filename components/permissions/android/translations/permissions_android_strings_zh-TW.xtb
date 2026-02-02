@@ -24,6 +24,7 @@
 <translation id="6656545060687952787">Chrome 需要位置資訊存取權才能掃描裝置。<ph name="BEGIN_LINK" />更新權限<ph name="END_LINK" /></translation>
 <translation id="7146360184282545445"><ph name="APP_NAME" /> 需要取得相機存取權，才能根據你的周遭環境建立 3D 地圖。</translation>
 <translation id="7624880197989616768"><ph name="BEGIN_LINK1" />查看說明<ph name="END_LINK1" />或<ph name="BEGIN_LINK2" />重新掃描<ph name="END_LINK2" /></translation>
+<translation id="7658239707568436148">取消</translation>
 <translation id="781351614677332494"><ph name="APP_NAME" /> 需要位置資訊存取權，才能與這個網站分享你的位置資訊。</translation>
 <translation id="7884346424584885269">Chrome 需要權限才能掃描附近裝置。<ph name="BEGIN_LINK" />更新權限<ph name="END_LINK" />。</translation>
 <translation id="8368027906805972958">不明或不支援的裝置 (<ph name="DEVICE_ID" />)</translation>

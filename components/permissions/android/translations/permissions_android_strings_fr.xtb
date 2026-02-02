@@ -24,6 +24,7 @@
 <translation id="6656545060687952787">Chrome doit accéder aux données de localisation pour rechercher des appareils. <ph name="BEGIN_LINK" />Mettre à jour les autorisations<ph name="END_LINK" /></translation>
 <translation id="7146360184282545445"><ph name="APP_NAME" /> a besoin de votre autorisation pour accéder à votre appareil photo et pouvoir créer un plan 3D de votre environnement.</translation>
 <translation id="7624880197989616768"><ph name="BEGIN_LINK1" />Obtenir de l'aide<ph name="END_LINK1" /> ou <ph name="BEGIN_LINK2" />effectuer une nouvelle recherche<ph name="END_LINK2" /></translation>
+<translation id="7658239707568436148">Annuler</translation>
 <translation id="781351614677332494"><ph name="APP_NAME" /> a besoin d'accéder à votre position pour la partager avec ce site.</translation>
 <translation id="7884346424584885269">Chrome doit être autorisé à rechercher les appareils à proximité. <ph name="BEGIN_LINK" />Modifiez les autorisations.<ph name="END_LINK" /></translation>
 <translation id="8368027906805972958">Appareil inconnu ou non compatible (<ph name="DEVICE_ID" />)</translation>

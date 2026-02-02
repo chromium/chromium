@@ -24,6 +24,7 @@
 <translation id="6656545060687952787">Chrome-у је потребан приступ локацији за скенирање уређаја. <ph name="BEGIN_LINK" />Ажурирајте дозволе<ph name="END_LINK" /></translation>
 <translation id="7146360184282545445"><ph name="APP_NAME" /> тражи дозволу да приступи камери да би направио 3D мапу окружења.</translation>
 <translation id="7624880197989616768"><ph name="BEGIN_LINK1" />Потражите помоћ<ph name="END_LINK1" /> или <ph name="BEGIN_LINK2" />поново скенирајте<ph name="END_LINK2" /></translation>
+<translation id="7658239707568436148">Откажи</translation>
 <translation id="781351614677332494"><ph name="APP_NAME" /> тражи приступ вашој локацији да бисте је делили са овим сајтом.</translation>
 <translation id="7884346424584885269">Chrome-у треба дозвола да би тражио уређаје у близини. <ph name="BEGIN_LINK" />Ажурирајте дозволе<ph name="END_LINK" />.</translation>
 <translation id="8368027906805972958">Непознат или неподржан уређај (<ph name="DEVICE_ID" />)</translation>

@@ -10276,7 +10276,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8010312870936510509">Podaci su šifrovani pomoću pristupne fraze za sinhronizaciju <ph name="TIME" />. To ne obuhvata načine plaćanja i adrese iz Google Pay-a.</translation>
 <translation id="8011372169388649948">Obeleživač <ph name="BOOKMARK_TITLE" /> je premešten.</translation>
 <translation id="8012188750847319132">caps lock</translation>
-<translation id="8012463809859447963">Detalji o instant hotspotu</translation>
 <translation id="8013181884974864006">Kontekstualni zadaci</translation>
 <translation id="8013534738634318212">Ovi sajtovi su u grupi koju definiše <ph name="RWS_OWNER" />. Sajtovi u grupi mogu da vide vaše aktivnosti u grupi.</translation>
 <translation id="8013993649590906847">Ako slika nema koristan opis, Chrome će probati da vam ga pruži. Slike se šalju Google-u radi pravljenja opisa.</translation>
@@ -11493,7 +11492,6 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="8820817407110198400">Obeleživači</translation>
 <translation id="8821045908425223359">Automatski konfiguriši IP adresu</translation>
 <translation id="8821268776955756404">Aplikacija <ph name="APP_NAME" /> je spremna za korišćenje.</translation>
-<translation id="8821647731831124007">Nema dostupnih hotspotova</translation>
 <translation id="882204272221080310">Ažurirajte firmver radi veće bezbednosti.</translation>
 <translation id="8822690627597552656">Usporava neke nepoznate sajtove da bi blokirao uobičajene napade</translation>
 <translation id="8823514049557262177">Kopiraj tek&amp;st linka</translation>

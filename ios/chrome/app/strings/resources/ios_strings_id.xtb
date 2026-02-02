@@ -370,6 +370,7 @@
 <translation id="2306265833370324042">Tampilkan detail <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="2309265394777270359">Tutup Tab</translation>
 <translation id="2311077293164383652">Tutup Tab Tersemat</translation>
+<translation id="2313392466694008052">Edit gambar dengan Gemini</translation>
 <translation id="2316129865977710310">Lain kali</translation>
 <translation id="2320166752086256636">Sembunyikan keyboard</translation>
 <translation id="2321086116217818302">Mempersiapkan sandi…</translation>
@@ -521,6 +522,7 @@
 <translation id="288655811176831528">Tutup Tab</translation>
 <translation id="2888631381369839306">Notifikasi pemantauan harga diaktifkan</translation>
 <translation id="2893168226686371498">Browser default</translation>
+<translation id="2893791155497534382">Sandi dan aktivitas lain dapat dihapus di setelan pengelolaannya</translation>
 <translation id="2894757982205307093">Tab baru di grup</translation>
 <translation id="2902312830803030883">Tindakan lainnya</translation>
 <translation id="2904788871580817212">Penurunan harga di tab yang terbuka, dari <ph name="PREVIOUS_PRICE" /> menjadi <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
@@ -1299,6 +1301,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="5768870767339201169">Lanjutkan Aktivitas Anda</translation>
 <translation id="5779117921996157216">{count,plural, =1{Anda memiliki {count} sandi yang telah dibobol yang dapat membahayakan keamanan Anda. Perbaiki sekarang agar tetap terlindungi.}other{Anda memiliki {count} sandi yang telah dibobol yang dapat membahayakan keamanan Anda. Perbaiki sekarang agar tetap terlindungi.}}</translation>
 <translation id="5791632441210678828">Tombol urutkan untuk feed Mengikuti.</translation>
+<translation id="5799263916847593256">Buka untuk melihat histori harga</translation>
 <translation id="5803566855766646066">Yakin ingin menghapus kartu baru ini?</translation>
 <translation id="5804241973901381774">Izin</translation>
 <translation id="58081802114142635">Aktivitas Anda akan meningkatkan kualitas AI Google</translation>
@@ -1643,6 +1646,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6964300328304469089">Saat ini <ph name="NAME" />, <ph name="EMAIL" />, dipilih. Pilih akun.</translation>
 <translation id="6964760285928603117">Hapus dari Grup</translation>
 <translation id="6965382102122355670">Oke</translation>
+<translation id="6967355534157677591">Buat gambar Pro</translation>
 <translation id="6973630695168034713">Folder</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979737339423435258">Semua</translation>

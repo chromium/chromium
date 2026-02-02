@@ -10270,7 +10270,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8010312870936510509">Los datos se cifraron con tu frase de contraseña de sincronización el <ph name="TIME" />. El cifrado no incluye los métodos de pago ni las direcciones de Google Pay.</translation>
 <translation id="8011372169388649948">Se ha movido "<ph name="BOOKMARK_TITLE" />".</translation>
 <translation id="8012188750847319132">bloq mayús</translation>
-<translation id="8012463809859447963">Detalles de la conexión compartida instantánea</translation>
 <translation id="8013181884974864006">Tareas contextuales</translation>
 <translation id="8013534738634318212">Estos sitios están en un grupo definido por <ph name="RWS_OWNER" />. Los sitios que forman parte de un grupo pueden ver tu actividad en el grupo.</translation>
 <translation id="8013993649590906847">Si una imagen no tiene ninguna descripción útil, Chrome intentará proporcionártela. Para crear las descripciones, las imágenes se envían a Google.</translation>
@@ -11485,7 +11484,6 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="8820817407110198400">Marcadores</translation>
 <translation id="8821045908425223359">Configurar la dirección IP automáticamente</translation>
 <translation id="8821268776955756404">Ya puedes usar <ph name="APP_NAME" />.</translation>
-<translation id="8821647731831124007">No hay puntos de acceso disponibles</translation>
 <translation id="882204272221080310">Actualizar firmware para mayor seguridad</translation>
 <translation id="8822690627597552656">Ralentiza algunos sitios desconocidos para bloquear ataques habituales</translation>
 <translation id="8823514049557262177">Copiar te&amp;xto de enlace</translation>

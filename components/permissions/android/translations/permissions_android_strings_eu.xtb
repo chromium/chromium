@@ -24,6 +24,7 @@
 <translation id="6656545060687952787">Kokapenerako sarbidea izan behar du Chrome-k gailuak bilatzeko. <ph name="BEGIN_LINK" />Aldatu baimenak<ph name="END_LINK" /></translation>
 <translation id="7146360184282545445">Kamera erabiltzeko baimena behar du <ph name="APP_NAME" />-k ingurunearen hiru dimentsioko mapa bat sortzeko</translation>
 <translation id="7624880197989616768"><ph name="BEGIN_LINK1" />Lortu laguntza<ph name="END_LINK1" /> edo <ph name="BEGIN_LINK2" />bilatu berriro<ph name="END_LINK2" /></translation>
+<translation id="7658239707568436148">Utzi</translation>
 <translation id="781351614677332494">Kokapena webgune honekin partekatzeko baimena behar du <ph name="APP_NAME" />-k.</translation>
 <translation id="7884346424584885269">Chrome-k inguruko gailuak bilatzeko baimena behar du. <ph name="BEGIN_LINK" />Eguneratu baimenak<ph name="END_LINK" />.</translation>
 <translation id="8368027906805972958">Gailu ezezaguna edo bateraezina (<ph name="DEVICE_ID" />)</translation>

@@ -10289,7 +10289,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8010312870936510509">Dataene blev krypteret med din adgangssætning til synkronisering <ph name="TIME" />. Dette omfatter ikke betalingsmetoder og adresser fra Google Pay.</translation>
 <translation id="8011372169388649948">"<ph name="BOOKMARK_TITLE" />" blev flyttet.</translation>
 <translation id="8012188750847319132">caps lock</translation>
-<translation id="8012463809859447963">Oplysninger om øjeblikkeligt hotspot</translation>
 <translation id="8013181884974864006">Kontekstbaserede opgaver</translation>
 <translation id="8013534738634318212">Disse websites er i en gruppe, der er defineret af <ph name="RWS_OWNER" />. Websites i en gruppe kan se din aktivitet i gruppen.</translation>
 <translation id="8013993649590906847">Hvis et billede ikke har en brugbar beskrivelse, forsøger Chrome at angive en for dig. Billederne sendes til Google, så der kan oprettes beskrivelser.</translation>
@@ -11506,7 +11505,6 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser, enhed
 <translation id="8820817407110198400">Bogmærker</translation>
 <translation id="8821045908425223359">Konfigurer automatisk IP-adressen</translation>
 <translation id="8821268776955756404"><ph name="APP_NAME" /> er klar til brug.</translation>
-<translation id="8821647731831124007">Ingen tilgængelige hotspots</translation>
 <translation id="882204272221080310">Opdater firmwaren for ekstra beskyttelse.</translation>
 <translation id="8822690627597552656">Sænker hastigheden på nogle ukendte websites for at blokere almindelige angreb</translation>
 <translation id="8823514049557262177">Kopiér linkte&amp;kst</translation>

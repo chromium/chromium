@@ -10258,7 +10258,6 @@
 <translation id="8010312870936510509">資料已使用你在 <ph name="TIME" />設定的同步通關密語加密 (不包括 Google Pay 中的付款方式和地址)。</translation>
 <translation id="8011372169388649948">已移動「<ph name="BOOKMARK_TITLE" />」。</translation>
 <translation id="8012188750847319132">Caps Lock 鍵</translation>
-<translation id="8012463809859447963">即時無線基地台詳細資料</translation>
 <translation id="8013181884974864006">關聯工作</translation>
 <translation id="8013534738634318212">這些網站屬於由 <ph name="RWS_OWNER" /> 定義的群組，群組中的網站可以查看你在該群組的活動。</translation>
 <translation id="8013993649590906847">如果圖片缺少有用的說明，Chrome 會嘗試為你提供說明。系統會將圖片傳送給 Google，以便產生說明。</translation>
@@ -11473,7 +11472,6 @@
 <translation id="8820817407110198400">書籤</translation>
 <translation id="8821045908425223359">自動設定 IP 位址</translation>
 <translation id="8821268776955756404"><ph name="APP_NAME" /> 已可使用。</translation>
-<translation id="8821647731831124007">沒有可用的無線基地台</translation>
 <translation id="882204272221080310">更新韌體以提升安全性。</translation>
 <translation id="8822690627597552656">降低部分陌生網站的速度，以封鎖常見攻擊</translation>
 <translation id="8823514049557262177">複製連結文字(&amp;X)</translation>

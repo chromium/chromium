@@ -30,11 +30,13 @@
 <translation id="1324107359134968521">‏يجب منح Chromium الإذن بالوصول إلى البلوتوث لاستكشاف 
 الأجهزة التي تتضمّن بلوتوث. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">رصد اللغة</translation>
+<translation id="1330742950061766891">‏استخدام إعدادات المتصفِّح المقترَحة من Chromium</translation>
 <translation id="1342274909142618978">‏حذف البيانات من Chromium أيضًا (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">تمّ تثبيت اللوحة. يمكنك الوصول إلى ميزة "البحث بالصور" مرة أخرى من خلال الزر الجديد في شريط الأدوات</translation>
 <translation id="1356661055722410047">ميزة جديدة: يمكنك ترجمة كل من النص والصور على شاشتك</translation>
 <translation id="1383876407941801731">البحث</translation>
 <translation id="1397530502368084401">‏&amp;إدارة الملفات الشخصية على Chromium</translation>
+<translation id="1404026649028693342">‏عرض "وضع AI" دائمًا</translation>
 <translation id="141901961143729572">شارِك أفكارك</translation>
 <translation id="1465192221147974788">‏لمشاركة النافذة، يجب السماح بتسجيل الشاشة في Chromium ضِمن "إعدادات النظام" (System Settings).</translation>
 <translation id="1478370723027452770">‏الحصول على مساعدة بشأن Chrome for Testing</translation>
@@ -91,6 +93,7 @@
 <translation id="2039417478970545937">الإعدادات</translation>
 <translation id="2049376729098081731">‏اختَر ما إذا كنت تريد تضمين سجلّ Chromium للحصول على تجارب أكثر تخصيصًا في خدمات Google.</translation>
 <translation id="2064856577282482477">‏يمكنك النقر على زر "تخصيص Chromium" في صفحة "علامة تبويب جديدة" لإضفاء مظهر جديد عليه</translation>
+<translation id="2066690553719545730">‏عرض "وضع AI" دائمًا</translation>
 <translation id="2086476982681781442">‏حَظَر Chromium عملية التنزيل هذه لأنّ الملف مخادع وقد يُجري تغييرات غير متوقعة على جهازك.</translation>
 <translation id="208726765006323911">‏ستظهر لك رسالة تطلب منك تجربة "<ph name="FEATURE_NAME" />" عند فتح Chromium على iOS في المرة القادمة.</translation>
 <translation id="2099452623287920103">‏ستتم إزالة كلمات المرور وبيانات Chromium الأخرى التي تم حفظها في حسابك على Google من هذا الجهاز. ولاستخدامها مرة أخرى في Chromium، عليك تسجيل الدخول مجددًا.</translation>
@@ -193,6 +196,7 @@
 <translation id="3095811995836568724">‏سجلّ Chromium</translation>
 <translation id="3103660991484857065">‏تعذّرت أداة التثبيت في فك ضغط الأرشيف. يُرجى إعادة تنزيل Chromium.</translation>
 <translation id="310459126943037700">تعذَّر إنهاء المهام.</translation>
+<translation id="3126784891977756556">‏يمكنك الحفاظ على مزامنة كلمات المرور والإشارات المرجعية والسجلّ بشكل مثالي على جميع الأجهزة، وكذلك الوصول بسهولة إلى الميزات المألوفة والمفضَّلة لديك من خلال ضبط Chromium كمتصفِّحك التلقائي.</translation>
 <translation id="3130323860337406239">‏يستخدم Chromium الميكروفون.</translation>
 <translation id="3130333203120345554">بحث جديد</translation>
 <translation id="3137969841538672700">اسحب للبحث</translation>
@@ -305,6 +309,7 @@
 <translation id="4304713468139749426">مدير كلمات المرور</translation>
 <translation id="4334241893986177674">البحث في لقطة الشاشة هذه</translation>
 <translation id="4334294535648607276">اكتمل التنزيل.</translation>
+<translation id="4384993550046411228">‏يمكنك الوصول بسهولة إلى الميزات المفضَّلة والموثوقة لديك من خلال ضبط Chromium كمتصفِّحك التلقائي وتثبيته في شريط المهام للوصول إليه بسرعة.</translation>
 <translation id="439358628917130594">‏يشترط <ph name="MANAGER" /> قراءة بنود الخدمة التالية وقبولها قبل استخدام هذا الجهاز، مع العلم بأنّ هذه البنود لا توسِّع نطاق بنود نظام التشغيل Chromium ولا تعدِّلها ولا تفرض قيودًا عليها.</translation>
 <translation id="4407044323746248786">‏هل تريد الخروج من Chromium على أي حال؟</translation>
 <translation id="4413205837991854510">عرض اختصار ميزة "البحث بالصور" دائمًا</translation>

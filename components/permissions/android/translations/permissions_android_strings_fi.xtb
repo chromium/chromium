@@ -24,6 +24,7 @@
 <translation id="6656545060687952787">Chrome tarvitsee sijaintitietojen käyttöoikeuden hakeakseen laitteita. <ph name="BEGIN_LINK" />Päivitä käyttöoikeudet<ph name="END_LINK" />.</translation>
 <translation id="7146360184282545445"><ph name="APP_NAME" /> tarvitsee pääsyn kameraasi ympäristön 3D-kartoittamista varten.</translation>
 <translation id="7624880197989616768"><ph name="BEGIN_LINK1" />Lue ohjeita<ph name="END_LINK1" /> tai <ph name="BEGIN_LINK2" />hae uudelleen<ph name="END_LINK2" />.</translation>
+<translation id="7658239707568436148">Peru</translation>
 <translation id="781351614677332494"><ph name="APP_NAME" /> tarvitsee pääsyn sijaintiisi, jotta se voidaan jakaa tälle sivustolle.</translation>
 <translation id="7884346424584885269">Chrome tarvitsee luvan lähellä olevien laitteiden hakemiseen. <ph name="BEGIN_LINK" />Päivitä luvat<ph name="END_LINK" />.</translation>
 <translation id="8368027906805972958">Tuntematon tai ei-tuettu laite (<ph name="DEVICE_ID" />)</translation>
