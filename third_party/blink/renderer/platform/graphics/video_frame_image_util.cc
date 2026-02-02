@@ -234,7 +234,7 @@ std::unique_ptr<CanvasSnapshotProvider> CreateSnapshotProviderForVideo(
     return CanvasSnapshotProviderExternalBitmap::Create(info);
   }
 
-  return CanvasResourceProvider::CreateSharedImageProviderNon2D(
+  return CanvasNon2DResourceProviderSharedImage::Create(
       info.size, info.format, info.alpha_type, info.color_space,
       kShouldInitialize, SharedGpuContext::ContextProviderWrapper(),
       RasterMode::kGPU, gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);

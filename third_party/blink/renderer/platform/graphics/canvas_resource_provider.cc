@@ -1106,7 +1106,7 @@ CanvasResourceProvider::CreateSharedImageProvider(
 }
 
 std::unique_ptr<CanvasNon2DResourceProviderSharedImage>
-CanvasResourceProvider::CreateSharedImageProviderNon2D(
+CanvasNon2DResourceProviderSharedImage::Create(
     gfx::Size size,
     viz::SharedImageFormat format,
     SkAlphaType alpha_type,
@@ -1266,7 +1266,7 @@ CanvasResourceProvider::CreateWebGPUImageProvider(
   //   GpuCanvasContext::{PaintRenderingResultsToSnapshot, GetImage}() (the
   //   export happens via the WebGPU interface)
   // Hence, both WEBGPU_READ and WEBGPU_WRITE usage are needed here.
-  return CreateSharedImageProviderNon2D(
+  return CanvasNon2DResourceProviderSharedImage::Create(
       size, format, alpha_type, color_space,
       CanvasResourceProvider::ShouldInitialize::kNo,
       std::move(context_provider_wrapper), RasterMode::kGPU,
