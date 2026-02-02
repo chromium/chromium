@@ -59,14 +59,6 @@ mojom::blink::ResourceTimingInfoPtr CreateResourceTimingInfo(
     info->server_timing = ParseServerTimingFromHeaderValueToMojo(
         response->HttpHeaderField(http_names::kServerTiming));
     info->cache_state = response->CacheState();
-    info->alpn_negotiated_protocol = response->AlpnNegotiatedProtocol().IsNull()
-                                         ? g_empty_string
-                                         : response->AlpnNegotiatedProtocol();
-    info->connection_info = response->ConnectionInfoString().IsNull()
-                                ? g_empty_string
-                                : response->ConnectionInfoString();
-
-    info->did_reuse_connection = response->ConnectionReused();
     // Use SecurityOrigin::Create to handle cases like blob:https://.
     info->is_secure_transport = std::ranges::contains(
         url::GetSecureSchemes(),
@@ -74,6 +66,31 @@ mojom::blink::ResourceTimingInfoPtr CreateResourceTimingInfo(
     info->timing = response->GetResourceLoadTiming()
                        ? response->GetResourceLoadTiming()->ToMojo()
                        : nullptr;
+
+    if (response->WasFetchedViaServiceWorker()) {
+      // We don't forward connection info to the service worker's client.
+      // This information is available in the service worker's own performance
+      // timeline.
+      // Per-spec, the fetch-timing-info
+      // (https://fetch.spec.whatwg.org/#fetch-timing-info) is associated with
+      // the *fetch* and not attached to a response.
+      if (info->timing) {
+        info->timing->connect_timing =
+            network::mojom::blink::LoadTimingInfoConnectTiming::New();
+      }
+      info->alpn_negotiated_protocol = g_empty_string;
+      info->connection_info = g_empty_string;
+    } else {
+      info->alpn_negotiated_protocol =
+          response->AlpnNegotiatedProtocol().IsNull()
+              ? g_empty_string
+              : response->AlpnNegotiatedProtocol();
+      info->connection_info = response->ConnectionInfoString().IsNull()
+                                  ? g_empty_string
+                                  : response->ConnectionInfoString();
+
+      info->did_reuse_connection = response->ConnectionReused();
+    }
   } else {
     // [spec] https://fetch.spec.whatwg.org/#create-an-opaque-timing-info
 
