@@ -99,11 +99,11 @@ interface UnexportableKeyService {
        BackgroundTaskPriority priority) => result<array<uint8>, ServiceError>;
 
   // Returns all signing keys currently stored by the OS that are being
-  // managed by this service. In success an array of UnexportableKeyId will
-  // be returned. If there was a failure a ServiceError will be returned
+  // managed by this service. In success an array of NewKeyData will be
+  // returned. If there was a failure a ServiceError will be returned
   // instead.
   GetAllSigningKeysForGarbageCollection(BackgroundTaskPriority priority)
-      => result<array<UnexportableKeyId>, ServiceError>;
+      => result<array<NewKeyData>, ServiceError>;
 
   // Deletes the keys identified by key_ids.
   // On success the number of keys deleted is returned. On error a ServiceError

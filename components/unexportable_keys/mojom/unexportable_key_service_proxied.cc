@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "base/types/optional_util.h"
 #include "base/unguessable_token.h"
 #include "components/unexportable_keys/background_task_priority.h"
@@ -217,7 +218,30 @@ void UnexportableKeyServiceProxied::
   // remote_ will not call any pending callbacks after it is destroyed.
   // Since we own remote_, it is guaranteed that this will be alive when a
   // callback is called.
-  remote_->GetAllSigningKeysForGarbageCollection(priority, std::move(callback));
+  remote_->GetAllSigningKeysForGarbageCollection(
+      priority, base::BindOnce(&UnexportableKeyServiceProxied::
+                                   OnGetAllSigningKeysForGarbageCollection,
+                               base::Unretained(this), std::move(callback)));
+}
+
+void UnexportableKeyServiceProxied::OnGetAllSigningKeysForGarbageCollection(
+    base::OnceCallback<void(ServiceErrorOr<std::vector<UnexportableKeyId>>)>
+        original_callback,
+    ServiceErrorOr<std::vector<mojom::NewKeyDataPtr>> result) {
+  ASSIGN_OR_RETURN(std::vector<mojom::NewKeyDataPtr> key_data,
+                   std::move(result), [&](ServiceError error) {
+                     std::move(original_callback).Run(base::unexpected(error));
+                   });
+
+  std::vector<UnexportableKeyId> key_ids;
+  key_ids.reserve(key_data.size());
+  for (mojom::NewKeyDataPtr& new_key_data : key_data) {
+    UnexportableKeyId key_id = new_key_data->key_id;
+    key_cache_.try_emplace(key_id, std::move(new_key_data));
+    key_ids.push_back(key_id);
+  }
+
+  std::move(original_callback).Run(std::move(key_ids));
 }
 
 }  // namespace unexportable_keys

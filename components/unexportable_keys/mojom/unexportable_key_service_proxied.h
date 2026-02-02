@@ -104,6 +104,11 @@ class UnexportableKeyServiceProxied : public UnexportableKeyService {
                        original_callback,
                    ServiceErrorOr<mojom::NewKeyDataPtr> result);
 
+  void OnGetAllSigningKeysForGarbageCollection(
+      base::OnceCallback<void(ServiceErrorOr<std::vector<UnexportableKeyId>>)>
+          original_callback,
+      ServiceErrorOr<std::vector<mojom::NewKeyDataPtr>> result);
+
   absl::flat_hash_map<UnexportableKeyId, CachedKeyData> key_cache_;
 };
 }  // namespace unexportable_keys

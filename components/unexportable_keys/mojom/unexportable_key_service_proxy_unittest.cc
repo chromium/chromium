@@ -45,6 +45,7 @@ using ::testing::Eq;
 using ::testing::IsTrue;
 using ::testing::Optional;
 using ::testing::Return;
+using ::testing::SizeIs;
 using ::testing::UnorderedElementsAre;
 
 constexpr BackgroundTaskPriority kTestPriority =
@@ -480,13 +481,29 @@ TEST(UnexportableKeyServiceProxyTest,
                             kTestPriority, _))
       .WillOnce(RunOnceCallback<1>(base::ok(mock_result)));
 
-  TestFuture<base::expected<std::vector<UnexportableKeyId>, ServiceError>>
+  // Proxy implementation calls accessors for each key.
+  // We use ON_CALL to provide default success responses for these accessors.
+  // Since PopulateNewKeyData calls them in order, we should ensure they return
+  // valid data.
+  ON_CALL(mock_uks, GetAlgorithm)
+      .WillByDefault(
+          Return(crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256));
+  ON_CALL(mock_uks, GetWrappedKey)
+      .WillByDefault(Return(std::vector<uint8_t>{1, 2, 3}));
+  ON_CALL(mock_uks, GetSubjectPublicKeyInfo)
+      .WillByDefault(Return(std::vector<uint8_t>{4, 5, 6}));
+  ON_CALL(mock_uks, GetKeyTag).WillByDefault(Return("tag"));
+  ON_CALL(mock_uks, GetCreationTime).WillByDefault(Return(base::Time::Now()));
+
+  TestFuture<base::expected<std::vector<mojom::NewKeyDataPtr>, ServiceError>>
       future;
   uks_remote->GetAllSigningKeysForGarbageCollection(kTestPriority,
                                                     future.GetCallback());
 
-  const auto& result = future.Get();
-  EXPECT_THAT(result, ValueIs(UnorderedElementsAre(key_id1, key_id2)));
+  ASSERT_OK_AND_ASSIGN(std::vector<mojom::NewKeyDataPtr> keys, future.Take());
+  ASSERT_THAT(keys, SizeIs(2));
+  EXPECT_EQ(keys[0]->key_id, key_id1);
+  EXPECT_EQ(keys[1]->key_id, key_id2);
 }
 
 TEST(UnexportableKeyServiceProxyTest,
@@ -505,7 +522,7 @@ TEST(UnexportableKeyServiceProxyTest,
                             kTestPriority, _))
       .WillOnce(RunOnceCallback<1>(base::unexpected(expected_error)));
 
-  TestFuture<base::expected<std::vector<UnexportableKeyId>, ServiceError>>
+  TestFuture<base::expected<std::vector<mojom::NewKeyDataPtr>, ServiceError>>
       future;
   uks_remote->GetAllSigningKeysForGarbageCollection(kTestPriority,
                                                     future.GetCallback());

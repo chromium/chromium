@@ -67,6 +67,20 @@ ServiceErrorOr<uint64_t> AdaptSizeType(ServiceErrorOr<size_t> result) {
   return result.transform(
       [](size_t r) { return base::strict_cast<uint64_t>(r); });
 }
+
+ServiceErrorOr<std::vector<mojom::NewKeyDataPtr>> PopulateAllNewKeyData(
+    unexportable_keys::UnexportableKeyService& unexportable_key_service,
+    ServiceErrorOr<std::vector<UnexportableKeyId>> error_or_key_ids) {
+  ASSIGN_OR_RETURN(std::vector<UnexportableKeyId> key_ids, error_or_key_ids);
+  std::vector<mojom::NewKeyDataPtr> new_key_data;
+  new_key_data.reserve(key_ids.size());
+  for (UnexportableKeyId key_id : key_ids) {
+    ASSIGN_OR_RETURN(mojom::NewKeyDataPtr data,
+                     PopulateNewKeyData(unexportable_key_service, key_id));
+    new_key_data.push_back(std::move(data));
+  }
+  return new_key_data;
+}
 }  // namespace
 
 UnexportableKeyServiceProxyImpl::UnexportableKeyServiceProxyImpl(
@@ -116,7 +130,9 @@ void unexportable_keys::UnexportableKeyServiceProxyImpl::
         BackgroundTaskPriority priority,
         GetAllSigningKeysForGarbageCollectionCallback callback) {
   unexportable_key_service_->GetAllSigningKeysForGarbageCollectionSlowlyAsync(
-      priority, std::move(callback));
+      priority, base::BindOnce(PopulateAllNewKeyData,
+                               std::ref(*unexportable_key_service_))
+                    .Then(std::move(callback)));
 }
 
 void unexportable_keys::UnexportableKeyServiceProxyImpl::DeleteKeys(
