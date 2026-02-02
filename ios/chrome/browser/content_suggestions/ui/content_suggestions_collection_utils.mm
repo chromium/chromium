@@ -386,7 +386,6 @@ void ConfigureMIAButton(UIButton* mia_button, BOOL use_color_icon) {
   magnifier_icon = use_color_icon ? MakeSymbolMulticolor(magnifier_icon)
                                   : MakeSymbolMonochrome(magnifier_icon);
   [mia_button setImage:magnifier_icon forState:UIControlStateNormal];
-  // TODO(crbug.com/425339867): Handle button accessibility
 
   mia_button.pointerInteractionEnabled = YES;
   // Make the pointer shape fit the location bar's semi-circle end shape.
