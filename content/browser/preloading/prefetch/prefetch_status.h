@@ -238,8 +238,7 @@ enum class PrefetchStatus {
   kPrefetchIneligibleRedirectToServiceWorker = 53,
 
   // The url was not eligible to be prefetched because there was a registered
-  // service worker with no fetch handler (when
-  // `kPrefetchServiceWorkerNoFetchHandlerFix` is enabled).
+  // service worker with no fetch handler.
   // This case was previously counted as
   // `kPrefetchIneligibleUserHasServiceWorker`.
   // Even after the initial ServiceWorker support (https://crbug.com/40947546),

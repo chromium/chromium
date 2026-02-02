@@ -981,13 +981,13 @@ void PrefetchService::OnGotServiceWorkerResult(
     case ServiceWorkerCapability::NO_SERVICE_WORKER:
       break;
     case ServiceWorkerCapability::SERVICE_WORKER_NO_FETCH_HANDLER:
-      if (base::FeatureList::IsEnabled(
-              features::kPrefetchServiceWorkerNoFetchHandlerFix)) {
-        std::move(params).Finish(
-            PreloadingEligibility::kUserHasServiceWorkerNoFetchHandler);
-        return;
-      }
-      break;
+      // We still don't use ServiceWorker-ineligible prefetch results if there
+      // is a controlling service worker at the time of navigation even if it
+      // doesn't have fetch handlers. So we prevent prefetching here as well, to
+      // avoid useless prefetches.
+      std::move(params).Finish(
+          PreloadingEligibility::kUserHasServiceWorkerNoFetchHandler);
+      return;
     case ServiceWorkerCapability::SERVICE_WORKER_WITH_FETCH_HANDLER: {
       std::move(params).Finish(
           params.is_redirect ? PreloadingEligibility::kRedirectToServiceWorker

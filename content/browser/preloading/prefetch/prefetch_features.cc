@@ -41,9 +41,6 @@ const base::FeatureParam<bool>
     kPrefetchStateContaminationSwapsBrowsingContextGroup{
         &kPrefetchStateContaminationMitigation, "swaps_bcg", true};
 
-BASE_FEATURE(kPrefetchServiceWorkerNoFetchHandlerFix,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPrefetchNetworkPriorityForEmbedders,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
