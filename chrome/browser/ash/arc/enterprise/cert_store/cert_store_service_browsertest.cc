@@ -310,7 +310,7 @@ void DeleteCertAndKey(CERTCertificate* cert,
 // Called once a key has been registered as corporate usage.
 void OnKeyRegisteredForCorporateUsage(base::OnceClosure done_callback,
                                       bool is_error,
-                                      crosapi::mojom::KeystoreError error) {
+                                      chromeos::KeystoreError error) {
   ASSERT_FALSE(is_error) << static_cast<int>(error);
   std::move(done_callback).Run();
 }

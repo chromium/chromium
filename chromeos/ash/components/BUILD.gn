@@ -55,6 +55,7 @@ group("unit_tests") {
     "//chromeos/ash/components/pcie_peripheral:unit_tests",
     "//chromeos/ash/components/peripheral_notification:unit_tests",
     "//chromeos/ash/components/phonehub:unit_tests",
+    "//chromeos/ash/components/platform_keys:unit_tests",
     "//chromeos/ash/components/policy:unit_tests",
     "//chromeos/ash/components/power:unit_tests",
     "//chromeos/ash/components/process_snapshot:unit_tests",

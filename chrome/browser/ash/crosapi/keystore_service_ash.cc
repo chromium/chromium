@@ -26,10 +26,9 @@
 #include "chrome/browser/chromeos/platform_keys/extension_platform_keys_service_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/components/dbus/attestation/attestation_ca.pb.h"
+#include "chromeos/ash/components/platform_keys/keystore_service_util.h"
+#include "chromeos/ash/components/platform_keys/keystore_types.h"
 #include "chromeos/ash/components/platform_keys/platform_keys.h"
-#include "chromeos/crosapi/cpp/keystore_service_util.h"
-#include "chromeos/crosapi/mojom/keystore_error.mojom.h"
-#include "chromeos/crosapi/mojom/keystore_service.mojom-shared.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/cert/x509_certificate.h"
@@ -39,12 +38,18 @@ namespace crosapi {
 
 namespace {
 
+using chromeos::KeystoreAlgorithm;
 using chromeos::KeystoreAlgorithmName;
+using chromeos::KeystoreError;
 using chromeos::KeystoreKeyAttributeType;
+using chromeos::KeystoreType;
 using SigningScheme = chromeos::KeystoreSigningScheme;
 using ::ash::platform_keys::KeyPermissionsService;
 using ::ash::platform_keys::PlatformKeysService;
 using ::chromeos::ExtensionPlatformKeysService;
+using ::chromeos::KeystoreEcdsaParams;
+using ::chromeos::RsaOaepParams;
+using ::chromeos::RsassaPkcs115Params;
 using ::chromeos::platform_keys::TokenId;
 
 // Converts a binary blob to a certificate.
@@ -57,11 +62,11 @@ scoped_refptr<net::X509Certificate> ParseCertificate(
   return net::X509Certificate::CreateFromBytesUnsafeOptions(input, options);
 }
 
-TokenId KeystoreToToken(mojom::KeystoreType type) {
+TokenId KeystoreToToken(KeystoreType type) {
   switch (type) {
-    case mojom::KeystoreType::kUser:
+    case KeystoreType::kUser:
       return TokenId::kUser;
-    case mojom::KeystoreType::kDevice:
+    case KeystoreType::kDevice:
       return TokenId::kSystem;
   }
   NOTREACHED();
@@ -87,9 +92,9 @@ std::string StringFromKeystoreAlgorithmName(
     KeystoreAlgorithmName algorithm_name) {
   switch (algorithm_name) {
     case KeystoreAlgorithmName::kRsassaPkcs115:
-      return crosapi::keystore_service_util::kWebCryptoRsassaPkcs1v15;
+      return chromeos::keystore_service_util::kWebCryptoRsassaPkcs1v15;
     case KeystoreAlgorithmName::kEcdsa:
-      return crosapi::keystore_service_util::kWebCryptoEcdsa;
+      return chromeos::keystore_service_util::kWebCryptoEcdsa;
     case KeystoreAlgorithmName::kRsaOaep:
     case KeystoreAlgorithmName::kUnknown:
       NOTREACHED();
@@ -211,7 +216,7 @@ KeyPermissionsService* KeystoreServiceAsh::GetKeyPermissions() {
 //------------------------------------------------------------------------------
 
 void KeystoreServiceAsh::ChallengeAttestationOnlyKeystore(
-    mojom::KeystoreType type,
+    KeystoreType type,
     const std::vector<uint8_t>& challenge,
     bool migrate,
     KeystoreAlgorithmName algorithm,
@@ -231,16 +236,16 @@ void KeystoreServiceAsh::ChallengeAttestationOnlyKeystore(
     case KeystoreAlgorithmName::kRsaOaep:
       std::move(callback).Run(
           base::unexpected(chromeos::platform_keys::KeystoreErrorToString(
-              mojom::KeystoreError::kUnsupportedKeyType)));
+              KeystoreError::kUnsupportedKeyType)));
       return;
   }
 
   attestation::VerifiedAccessFlow flow_type;
   switch (type) {
-    case mojom::KeystoreType::kUser:
+    case KeystoreType::kUser:
       flow_type = attestation::ENTERPRISE_USER;
       break;
-    case mojom::KeystoreType::kDevice:
+    case KeystoreType::kDevice:
       flow_type = attestation::ENTERPRISE_MACHINE;
       break;
   }
@@ -310,27 +315,27 @@ void KeystoreServiceAsh::DidGetKeyStores(
     chromeos::platform_keys::Status status) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  mojom::GetKeyStoresResultPtr result_ptr;
+  chromeos::GetKeyStoresResult result;
 
   if (status == chromeos::platform_keys::Status::kSuccess) {
-    std::vector<mojom::KeystoreType> key_stores;
+    std::vector<KeystoreType> key_stores;
     for (const TokenId token_id : platform_keys_token_ids) {
       switch (token_id) {
         case TokenId::kUser:
-          key_stores.push_back(mojom::KeystoreType::kUser);
+          key_stores.push_back(KeystoreType::kUser);
           break;
         case TokenId::kSystem:
-          key_stores.push_back(mojom::KeystoreType::kDevice);
+          key_stores.push_back(KeystoreType::kDevice);
           break;
       }
     }
-    result_ptr = mojom::GetKeyStoresResult::NewKeyStores(std::move(key_stores));
+    result = std::move(key_stores);
   } else {
-    result_ptr = mojom::GetKeyStoresResult::NewError(
+    result = base::unexpected(
         chromeos::platform_keys::StatusToKeystoreError(status));
   }
 
-  std::move(callback).Run(std::move(result_ptr));
+  std::move(callback).Run(std::move(result));
 }
 
 //------------------------------------------------------------------------------
@@ -359,7 +364,7 @@ void KeystoreServiceAsh::DidSelectClientCertificates(
     chromeos::platform_keys::Status status) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  mojom::KeystoreSelectClientCertificatesResultPtr result_ptr;
+  chromeos::KeystoreSelectClientCertificatesResult result;
 
   if (status == chromeos::platform_keys::Status::kSuccess) {
     std::vector<std::vector<uint8_t>> output;
@@ -370,19 +375,18 @@ void KeystoreServiceAsh::DidSelectClientCertificates(
           data, UNSAFE_TODO(data + CRYPTO_BUFFER_len(der_buffer)));
       output.push_back(std::move(der_x509_certificate));
     }
-    result_ptr = mojom::KeystoreSelectClientCertificatesResult::NewCertificates(
-        std::move(output));
+    result = std::move(output);
   } else {
-    result_ptr = mojom::KeystoreSelectClientCertificatesResult::NewError(
+    result = base::unexpected(
         chromeos::platform_keys::StatusToKeystoreError(status));
   }
 
-  std::move(callback).Run(std::move(result_ptr));
+  std::move(callback).Run(std::move(result));
 }
 
 //------------------------------------------------------------------------------
 
-void KeystoreServiceAsh::GetCertificates(mojom::KeystoreType keystore,
+void KeystoreServiceAsh::GetCertificates(KeystoreType keystore,
                                          GetCertificatesCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   PlatformKeysService* platform_keys_service = GetPlatformKeys();
@@ -399,7 +403,7 @@ void KeystoreServiceAsh::DidGetCertificates(
     chromeos::platform_keys::Status status) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  mojom::GetCertificatesResultPtr result_ptr;
+  chromeos::GetCertificatesResult result;
 
   if (status == chromeos::platform_keys::Status::kSuccess) {
     std::vector<std::vector<uint8_t>> output;
@@ -410,26 +414,25 @@ void KeystoreServiceAsh::DidGetCertificates(
           data, UNSAFE_TODO(data + CRYPTO_BUFFER_len(der_buffer)));
       output.push_back(std::move(der_x509_certificate));
     }
-    result_ptr =
-        mojom::GetCertificatesResult::NewCertificates(std::move(output));
+    result = std::move(output);
   } else {
-    result_ptr = mojom::GetCertificatesResult::NewError(
+    result = base::unexpected(
         chromeos::platform_keys::StatusToKeystoreError(status));
   }
 
-  std::move(callback).Run(std::move(result_ptr));
+  std::move(callback).Run(std::move(result));
 }
 
 //------------------------------------------------------------------------------
 
-void KeystoreServiceAsh::AddCertificate(mojom::KeystoreType keystore,
+void KeystoreServiceAsh::AddCertificate(KeystoreType keystore,
                                         const std::vector<uint8_t>& certificate,
                                         AddCertificateCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   scoped_refptr<net::X509Certificate> cert_x509 = ParseCertificate(certificate);
   if (!cert_x509.get()) {
     std::move(callback).Run(/*is_error=*/true,
-                            mojom::KeystoreError::kCertificateInvalid);
+                            KeystoreError::kCertificateInvalid);
     return;
   }
 
@@ -445,7 +448,7 @@ void KeystoreServiceAsh::DidImportCertificate(
     chromeos::platform_keys::Status status) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (status == chromeos::platform_keys::Status::kSuccess) {
-    std::move(callback).Run(/*is_error=*/false, mojom::KeystoreError::kUnknown);
+    std::move(callback).Run(/*is_error=*/false, KeystoreError::kUnknown);
   } else {
     std::move(callback).Run(
         /*is_error=*/true,
@@ -456,14 +459,14 @@ void KeystoreServiceAsh::DidImportCertificate(
 //------------------------------------------------------------------------------
 
 void KeystoreServiceAsh::RemoveCertificate(
-    mojom::KeystoreType keystore,
+    KeystoreType keystore,
     const std::vector<uint8_t>& certificate,
     RemoveCertificateCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   scoped_refptr<net::X509Certificate> cert_x509 = ParseCertificate(certificate);
   if (!cert_x509.get()) {
     std::move(callback).Run(/*is_error=*/true,
-                            mojom::KeystoreError::kCertificateInvalid);
+                            KeystoreError::kCertificateInvalid);
     return;
   }
 
@@ -479,7 +482,7 @@ void KeystoreServiceAsh::DidRemoveCertificate(
     chromeos::platform_keys::Status status) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (status == chromeos::platform_keys::Status::kSuccess) {
-    std::move(callback).Run(/*is_error=*/false, mojom::KeystoreError::kUnknown);
+    std::move(callback).Run(/*is_error=*/false, KeystoreError::kUnknown);
   } else {
     std::move(callback).Run(
         /*is_error=*/true,
@@ -495,8 +498,8 @@ void KeystoreServiceAsh::GetPublicKey(const std::vector<uint8_t>& certificate,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (!IsSigningAlgorithm(algorithm_name)) {
-    std::move(callback).Run(mojom::GetPublicKeyResult::NewError(
-        mojom::KeystoreError::kAlgorithmNotPermittedByCertificate));
+    std::move(callback).Run(
+        base::unexpected(KeystoreError::kAlgorithmNotPermittedByCertificate));
     return;
   }
 
@@ -504,65 +507,58 @@ void KeystoreServiceAsh::GetPublicKey(const std::vector<uint8_t>& certificate,
   chromeos::platform_keys::GetPublicKeyAndAlgorithmOutput output =
       chromeos::platform_keys::GetPublicKeyAndAlgorithm(certificate, name);
 
-  mojom::GetPublicKeyResultPtr result_ptr;
+  chromeos::GetPublicKeyResult result;
   if (output.status == chromeos::platform_keys::Status::kSuccess) {
-    std::optional<crosapi::mojom::KeystoreAlgorithmPtr> signing_algorithm =
-        crosapi::keystore_service_util::MakeKeystoreAlgorithmFromDictionary(
+    std::optional<KeystoreAlgorithm> signing_algorithm =
+        chromeos::keystore_service_util::MakeKeystoreAlgorithmFromDictionary(
             output.algorithm);
     if (signing_algorithm) {
-      mojom::GetPublicKeySuccessResultPtr success_result_ptr =
-          mojom::GetPublicKeySuccessResult::New();
-      success_result_ptr->public_key = std::move(output.public_key);
-      success_result_ptr->algorithm_properties =
+      chromeos::GetPublicKeySuccessResult success_result;
+      success_result.public_key = std::move(output.public_key);
+      success_result.algorithm_properties =
           std::move(signing_algorithm.value());
-      result_ptr = mojom::GetPublicKeyResult::NewSuccessResult(
-          std::move(success_result_ptr));
+      result = std::move(success_result);
     } else {
-      result_ptr = mojom::GetPublicKeyResult::NewError(
-          crosapi::mojom::KeystoreError::kUnsupportedAlgorithmType);
+      result = base::unexpected(KeystoreError::kUnsupportedAlgorithmType);
     }
   } else {
-    result_ptr = mojom::GetPublicKeyResult::NewError(
+    result = base::unexpected(
         chromeos::platform_keys::StatusToKeystoreError(output.status));
   }
-  std::move(callback).Run(std::move(result_ptr));
+  std::move(callback).Run(std::move(result));
 }
 
 //------------------------------------------------------------------------------
 
-void KeystoreServiceAsh::GenerateKey(mojom::KeystoreType keystore,
-                                     mojom::KeystoreAlgorithmPtr algorithm,
+void KeystoreServiceAsh::GenerateKey(KeystoreType keystore,
+                                     KeystoreAlgorithm algorithm,
                                      GenerateKeyCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
   PlatformKeysService* platform_keys_service = GetPlatformKeys();
   TokenId token_id = KeystoreToToken(keystore);
 
-  using Tag = mojom::KeystoreAlgorithm::Tag;
-  switch (algorithm->which()) {
-    case Tag::kRsassaPkcs115: {
-      platform_keys_service->GenerateRSAKey(
-          token_id, algorithm->get_rsassa_pkcs115()->modulus_length,
-          algorithm->get_rsassa_pkcs115()->sw_backed,
-          base::BindOnce(&KeystoreServiceAsh::DidGenerateKey,
-                         std::move(callback)));
-      return;
-    }
-    case Tag::kEcdsa: {
-      platform_keys_service->GenerateECKey(
-          token_id, algorithm->get_ecdsa()->named_curve,
-          base::BindOnce(&KeystoreServiceAsh::DidGenerateKey,
-                         std::move(callback)));
-      return;
-    }
-    case Tag::kRsaOaep: {
-      platform_keys_service->GenerateRSAKey(
-          token_id, algorithm->get_rsa_oaep()->modulus_length,
-          algorithm->get_rsa_oaep()->sw_backed,
-          base::BindOnce(&KeystoreServiceAsh::DidGenerateKey,
-                         std::move(callback)));
-      return;
-    }
+  if (auto* params = std::get_if<RsassaPkcs115Params>(&algorithm)) {
+    platform_keys_service->GenerateRSAKey(
+        token_id, params->rsa_params.modulus_length,
+        params->rsa_params.sw_backed,
+        base::BindOnce(&KeystoreServiceAsh::DidGenerateKey,
+                       std::move(callback)));
+    return;
+  }
+  if (auto* params = std::get_if<KeystoreEcdsaParams>(&algorithm)) {
+    platform_keys_service->GenerateECKey(
+        token_id, params->named_curve,
+        base::BindOnce(&KeystoreServiceAsh::DidGenerateKey,
+                       std::move(callback)));
+    return;
+  }
+  if (auto* params = std::get_if<RsaOaepParams>(&algorithm)) {
+    platform_keys_service->GenerateRSAKey(
+        token_id, params->rsa_params.modulus_length,
+        params->rsa_params.sw_backed,
+        base::BindOnce(&KeystoreServiceAsh::DidGenerateKey,
+                       std::move(callback)));
+    return;
   }
   NOTREACHED();
 }
@@ -573,14 +569,14 @@ void KeystoreServiceAsh::DidGenerateKey(
     std::vector<uint8_t> public_key,
     chromeos::platform_keys::Status status) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  crosapi::mojom::KeystoreBinaryResultPtr result_ptr;
+  chromeos::KeystoreBinaryResult result;
   if (status == chromeos::platform_keys::Status::kSuccess) {
-    result_ptr = mojom::KeystoreBinaryResult::NewBlob(std::move(public_key));
+    result = std::move(public_key);
   } else {
-    result_ptr = mojom::KeystoreBinaryResult::NewError(
+    result = base::unexpected(
         chromeos::platform_keys::StatusToKeystoreError(status));
   }
-  std::move(callback).Run(std::move(result_ptr));
+  std::move(callback).Run(std::move(result));
 }
 
 //------------------------------------------------------------------------------
@@ -589,7 +585,6 @@ void KeystoreServiceAsh::RemoveKey(KeystoreType keystore,
                                    const std::vector<uint8_t>& public_key,
                                    RemoveKeyCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
   GetPlatformKeys()->RemoveKey(
       KeystoreToToken(keystore), public_key,
       base::BindOnce(&KeystoreServiceAsh::DidRemoveKey, std::move(callback)));
@@ -600,7 +595,7 @@ void KeystoreServiceAsh::DidRemoveKey(RemoveKeyCallback callback,
                                       chromeos::platform_keys::Status status) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (status == chromeos::platform_keys::Status::kSuccess) {
-    std::move(callback).Run(/*is_error=*/false, mojom::KeystoreError::kUnknown);
+    std::move(callback).Run(/*is_error=*/false, KeystoreError::kUnknown);
   } else {
     std::move(callback).Run(
         /*is_error=*/true,
@@ -625,8 +620,8 @@ void KeystoreServiceAsh::Sign(std::optional<KeystoreType> keystore,
   chromeos::platform_keys::KeyType key_type;
   chromeos::platform_keys::HashAlgorithm hash_algorithm;
   if (!UnpackSigningScheme(scheme, &key_type, &hash_algorithm)) {
-    std::move(callback).Run(mojom::KeystoreBinaryResult::NewError(
-        mojom::KeystoreError::kUnsupportedAlgorithmType));
+    std::move(callback).Run(
+        base::unexpected(KeystoreError::kUnsupportedAlgorithmType));
     return;
   }
 
@@ -659,10 +654,9 @@ void KeystoreServiceAsh::DidSign(SignCallback callback,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (status == chromeos::platform_keys::Status::kSuccess) {
-    std::move(callback).Run(
-        mojom::KeystoreBinaryResult::NewBlob(std::move(signature)));
+    std::move(callback).Run(std::move(signature));
   } else {
-    std::move(callback).Run(mojom::KeystoreBinaryResult::NewError(
+    std::move(callback).Run(base::unexpected(
         chromeos::platform_keys::StatusToKeystoreError(status)));
   }
 }
@@ -683,9 +677,9 @@ void KeystoreServiceAsh::DidGetKeyTags(GetKeyTagsCallback callback,
                                        std::optional<bool> corporate,
                                        chromeos::platform_keys::Status status) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  using KeyTag = crosapi::mojom::KeyTag;
+  using KeyTag = chromeos::KeyTag;
 
-  crosapi::mojom::GetKeyTagsResultPtr result_ptr;
+  chromeos::GetKeyTagsResult result;
 
   if (status == chromeos::platform_keys::Status::kSuccess) {
     DCHECK(corporate.has_value());
@@ -696,13 +690,13 @@ void KeystoreServiceAsh::DidGetKeyTags(GetKeyTagsCallback callback,
     if (corporate.value()) {
       tags |= static_cast<uint64_t>(KeyTag::kCorporate);
     }
-    result_ptr = crosapi::mojom::GetKeyTagsResult::NewTags(tags);
+    result = tags;
   } else {
-    result_ptr = crosapi::mojom::GetKeyTagsResult::NewError(
+    result = base::unexpected(
         chromeos::platform_keys::StatusToKeystoreError(status));
   }
 
-  std::move(callback).Run(std::move(result_ptr));
+  std::move(callback).Run(std::move(result));
 }
 
 //------------------------------------------------------------------------------
@@ -712,21 +706,19 @@ void KeystoreServiceAsh::AddKeyTags(const std::vector<uint8_t>& public_key,
                                     AddKeyTagsCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (tags == static_cast<uint64_t>(mojom::KeyTag::kNoTags)) {
-    std::move(callback).Run(/*is_error=*/false,
-                            crosapi::mojom::KeystoreError::kUnknown);
+  if (tags == static_cast<uint64_t>(chromeos::KeyTag::kNoTags)) {
+    std::move(callback).Run(/*is_error=*/false, KeystoreError::kUnknown);
     return;
   }
 
-  if (tags == static_cast<uint64_t>(mojom::KeyTag::kCorporate)) {
+  if (tags == static_cast<uint64_t>(chromeos::KeyTag::kCorporate)) {
     GetKeyPermissions()->SetCorporateKey(
         public_key, base::BindOnce(&KeystoreServiceAsh::DidAddKeyTags,
                                    std::move(callback)));
     return;
   }
 
-  std::move(callback).Run(/*is_error=*/true,
-                          crosapi::mojom::KeystoreError::kUnsupportedKeyTag);
+  std::move(callback).Run(/*is_error=*/true, KeystoreError::kUnsupportedKeyTag);
 }
 
 // static
@@ -734,7 +726,7 @@ void KeystoreServiceAsh::DidAddKeyTags(AddKeyTagsCallback callback,
                                        chromeos::platform_keys::Status status) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (status == chromeos::platform_keys::Status::kSuccess) {
-    std::move(callback).Run(/*is_error=*/false, mojom::KeystoreError::kUnknown);
+    std::move(callback).Run(/*is_error=*/false, KeystoreError::kUnknown);
   } else {
     std::move(callback).Run(
         /*is_error=*/true,
@@ -769,7 +761,7 @@ void KeystoreServiceAsh::SetAttributeForKey(
   auto attribute_type = UnpackKeystoreKeyAttributeType(keystore_attribute_type);
   if (!attribute_type.has_value()) {
     std::move(callback).Run(/*is_error=*/true,
-                            mojom::KeystoreError::kKeyAttributeSettingFailed);
+                            KeystoreError::kKeyAttributeSettingFailed);
     return;
   }
 
@@ -788,7 +780,7 @@ void KeystoreServiceAsh::DidSetAttributeForKey(
     chromeos::platform_keys::Status status) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (status == chromeos::platform_keys::Status::kSuccess) {
-    std::move(callback).Run(/*is_error=*/false, mojom::KeystoreError::kUnknown);
+    std::move(callback).Run(/*is_error=*/false, KeystoreError::kUnknown);
   } else {
     std::move(callback).Run(
         /*is_error=*/true,

@@ -25,12 +25,10 @@
 #include "chrome/browser/chromeos/platform_keys/extension_key_permissions_service.h"
 #include "chrome/browser/chromeos/platform_keys/extension_key_permissions_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/platform_keys/keystore_service_util.h"
 #include "chromeos/ash/components/platform_keys/keystore_types.h"
 #include "chromeos/ash/components/platform_keys/platform_keys.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "chromeos/crosapi/cpp/keystore_service_util.h"
-#include "chromeos/crosapi/mojom/keystore_error.mojom.h"
-#include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extension_registry.h"
@@ -43,19 +41,18 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/cert/x509_certificate.h"
 
+using chromeos::GetPublicKeySuccessResult;
+using chromeos::KeystoreAlgorithm;
+using chromeos::KeystoreBinaryResult;
+using chromeos::KeystoreError;
 using chromeos::KeystoreKeyAttributeType;
+using chromeos::KeystoreSelectClientCertificatesResult;
 using chromeos::KeystoreSigningScheme;
+using chromeos::KeystoreType;
+using chromeos::keystore_service_util::MakeEcdsaKeystoreAlgorithm;
+using chromeos::keystore_service_util::MakeRsaOaepKeystoreAlgorithm;
+using chromeos::keystore_service_util::MakeRsassaPkcs1v15KeystoreAlgorithm;
 using content::BrowserThread;
-using crosapi::keystore_service_util::MakeEcdsaKeystoreAlgorithm;
-using crosapi::keystore_service_util::MakeRsaOaepKeystoreAlgorithm;
-using crosapi::keystore_service_util::MakeRsassaPkcs1v15KeystoreAlgorithm;
-using crosapi::mojom::KeystoreAlgorithmPtr;
-using crosapi::mojom::KeystoreBinaryResult;
-using crosapi::mojom::KeystoreBinaryResultPtr;
-using crosapi::mojom::KeystoreError;
-using crosapi::mojom::KeystoreSelectClientCertificatesResult;
-using crosapi::mojom::KeystoreSelectClientCertificatesResultPtr;
-using crosapi::mojom::KeystoreType;
 
 namespace chromeos {
 
@@ -230,17 +227,13 @@ class ExtensionPlatformKeysService::GenerateKeyTask : public Task {
 
   // Stores the generated key or in case of an error calls |callback_| with the
   // error status.
-  void OnKeyGenerated(KeystoreBinaryResultPtr result) {
-    using Tag = KeystoreBinaryResult::Tag;
-    switch (result->which()) {
-      case Tag::kError:
-        next_step_ = Step::DONE;
-        std::move(callback_).Run(/*public_key_spki_der=*/std::vector<uint8_t>(),
-                                 result->get_error());
-        break;
-      case Tag::kBlob:
-        public_key_spki_der_ = std::move(result->get_blob());
-        break;
+  void OnKeyGenerated(KeystoreBinaryResult result) {
+    if (result.has_value()) {
+      public_key_spki_der_ = std::move(*result);
+    } else {
+      next_step_ = Step::DONE;
+      std::move(callback_).Run(/*public_key_spki_der=*/std::vector<uint8_t>(),
+                               result.error());
     }
     DoStep();
   }
@@ -276,7 +269,7 @@ class ExtensionPlatformKeysService::GenerateKeyTask : public Task {
   }
 
   void OnKeyRegisteredForCorporateUsage(bool is_error,
-                                        crosapi::mojom::KeystoreError error) {
+                                        chromeos::KeystoreError error) {
     if (!is_error) {
       std::move(callback_).Run(std::move(public_key_spki_der_),
                                /*error=*/std::nullopt);
@@ -295,7 +288,7 @@ class ExtensionPlatformKeysService::GenerateKeyTask : public Task {
   }
 
   void RemoveKeyCallback(
-      crosapi::mojom::KeystoreError corporate_key_registration_error,
+      chromeos::KeystoreError corporate_key_registration_error,
       bool is_remove_error,
       KeystoreError remove_error) {
     if (is_remove_error) {
@@ -348,12 +341,12 @@ class ExtensionPlatformKeysService::GenerateRSAKeyTask
     CHECK(key_type_ == platform_keys::KeyType::kRsassaPkcs1V15 ||
           key_type_ == platform_keys::KeyType::kRsaOaep);
 
-    KeystoreAlgorithmPtr algorithm_ptr =
+    KeystoreAlgorithm algorithm =
         key_type_ == platform_keys::KeyType::kRsassaPkcs1V15
             ? MakeRsassaPkcs1v15KeystoreAlgorithm(modulus_length_, sw_backed_)
             : MakeRsaOaepKeystoreAlgorithm(modulus_length_, sw_backed_);
     service_->keystore_service_->GenerateKey(KeystoreTypeFromTokenId(token_id_),
-                                             std::move(algorithm_ptr),
+                                             std::move(algorithm),
                                              std::move(callback));
   }
 
@@ -521,7 +514,7 @@ class ExtensionPlatformKeysService::SignTask : public Task {
   }
 
   void OnSetKeyUsedForSigningDone(bool is_error,
-                                  crosapi::mojom::KeystoreError error) {
+                                  chromeos::KeystoreError error) {
     if (is_error) {
       LOG(ERROR) << "Marking a key used for signing failed: "
                  << platform_keys::KeystoreErrorToString(error);
@@ -539,7 +532,7 @@ class ExtensionPlatformKeysService::SignTask : public Task {
   void Sign() {
     std::optional<KeystoreType> keystore;
     if (token_id_.has_value()) {
-      keystore = KeystoreTypeFromTokenId(token_id_.value());
+      keystore = KeystoreTypeFromTokenId(*token_id_);
     }
 
     service_->keystore_service_->Sign(
@@ -547,17 +540,14 @@ class ExtensionPlatformKeysService::SignTask : public Task {
         base::BindOnce(&SignTask::DidSign, weak_factory_.GetWeakPtr()));
   }
 
-  void DidSign(KeystoreBinaryResultPtr result) {
-    switch (result->which()) {
-      case KeystoreBinaryResult::Tag::kError:
-        std::move(callback_).Run(/*signature=*/std::vector<uint8_t>(),
-                                 result->get_error());
-        break;
-      case KeystoreBinaryResult::Tag::kBlob:
-        std::move(callback_).Run(
-            /*signature=*/std::move(result->get_blob()),
-            /*error=*/std::nullopt);
-        break;
+  void DidSign(KeystoreBinaryResult result) {
+    if (result.has_value()) {
+      std::move(callback_).Run(
+          /*signature=*/std::move(*result),
+          /*error=*/std::nullopt);
+    } else {
+      std::move(callback_).Run(/*signature=*/std::vector<uint8_t>(),
+                               result.error());
     }
     DoStep();
   }
@@ -675,7 +665,7 @@ class ExtensionPlatformKeysService::SetKeyTagTask : public Task {
                        weak_factory_.GetWeakPtr()));
   }
 
-  void DidSetKeyTag(bool is_error, KeystoreError error) {
+  void DidSetKeyTag(bool is_error, chromeos::KeystoreError error) {
     if (is_error) {
       LOG(ERROR) << "Failed to set the tag to the key with an error: "
                  << platform_keys::KeystoreErrorToString(error);
@@ -822,17 +812,15 @@ class ExtensionPlatformKeysService::SelectTask : public Task {
   // occurred, |matches| will be null. Note that the order of |matches|, based
   // on the expiration/issuance date, is relevant and must be preserved in any
   // processing of the list.
-  void GotMatchingCerts(KeystoreSelectClientCertificatesResultPtr result) {
-    if (result->which() ==
-        KeystoreSelectClientCertificatesResult::Tag::kError) {
+  void GotMatchingCerts(KeystoreSelectClientCertificatesResult result) {
+    if (!result.has_value()) {
       next_step_ = Step::DONE;
-      std::move(callback_).Run(nullptr /* no certificates */,
-                               result->get_error());
+      std::move(callback_).Run(nullptr /* no certificates */, result.error());
       DoStep();
       return;
     }
 
-    for (const std::vector<uint8_t>& binary_cert : result->get_certificates()) {
+    for (const std::vector<uint8_t>& binary_cert : *result) {
       scoped_refptr<net::X509Certificate> certificate =
           net::X509Certificate::CreateFromBytes(binary_cert);
 
@@ -966,8 +954,7 @@ class ExtensionPlatformKeysService::SelectTask : public Task {
                        weak_factory_.GetWeakPtr()));
   }
 
-  void OnPermissionsUpdated(bool is_error,
-                            crosapi::mojom::KeystoreError error) {
+  void OnPermissionsUpdated(bool is_error, chromeos::KeystoreError error) {
     if (is_error) {
       LOG(WARNING) << "Error while updating permissions: "
                    << platform_keys::KeystoreErrorToString(error);
@@ -1038,7 +1025,7 @@ void ExtensionPlatformKeysService::GenerateRSAKey(
 
   if (!keystore_service_) [[unlikely]] {
     std::move(callback).Run(/*public_key_spki_der=*/std::vector<uint8_t>(),
-                            crosapi::mojom::KeystoreError::kMojoUnavailable);
+                            chromeos::KeystoreError::kMojoUnavailable);
     return;
   }
 
@@ -1046,7 +1033,7 @@ void ExtensionPlatformKeysService::GenerateRSAKey(
       !chromeos::features::IsPlatformKeysChangesWave1Enabled()) {
     std::move(callback).Run(
         /*public_key_spki_der=*/std::vector<uint8_t>(),
-        crosapi::mojom::KeystoreError::kAlgorithmNotSupported);
+        chromeos::KeystoreError::kAlgorithmNotSupported);
     return;
   }
 
@@ -1065,7 +1052,7 @@ void ExtensionPlatformKeysService::GenerateECKey(
 
   if (!keystore_service_) [[unlikely]] {
     std::move(callback).Run(/*public_key_spki_der=*/std::vector<uint8_t>(),
-                            crosapi::mojom::KeystoreError::kMojoUnavailable);
+                            chromeos::KeystoreError::kMojoUnavailable);
     return;
   }
 
@@ -1091,7 +1078,7 @@ void ExtensionPlatformKeysService::SignDigest(
 
   if (!keystore_service_) [[unlikely]] {
     std::move(callback).Run(/*signature=*/std::vector<uint8_t>(),
-                            crosapi::mojom::KeystoreError::kMojoUnavailable);
+                            chromeos::KeystoreError::kMojoUnavailable);
     return;
   }
 
@@ -1110,7 +1097,7 @@ void ExtensionPlatformKeysService::SignRSAPKCS1Raw(
 
   if (!keystore_service_) [[unlikely]] {
     std::move(callback).Run(/*signature=*/std::vector<uint8_t>(),
-                            crosapi::mojom::KeystoreError::kMojoUnavailable);
+                            chromeos::KeystoreError::kMojoUnavailable);
     return;
   }
 
@@ -1132,7 +1119,7 @@ void ExtensionPlatformKeysService::SelectClientCertificates(
 
   if (!keystore_service_) [[unlikely]] {
     std::move(callback).Run(/*matches=*/nullptr,
-                            crosapi::mojom::KeystoreError::kMojoUnavailable);
+                            chromeos::KeystoreError::kMojoUnavailable);
     return;
   }
 
@@ -1150,7 +1137,7 @@ void ExtensionPlatformKeysService::SetKeyTag(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (!keystore_service_) [[unlikely]] {
-    std::move(callback).Run(crosapi::mojom::KeystoreError::kMojoUnavailable);
+    std::move(callback).Run(chromeos::KeystoreError::kMojoUnavailable);
     return;
   }
 

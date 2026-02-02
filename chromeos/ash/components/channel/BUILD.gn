@@ -17,8 +17,6 @@ component("channel") {
   deps = [
     "//base",
     "//build:branding_buildflags",
-    "//chromeos/crosapi/cpp",
-    "//chromeos/crosapi/cpp:crosapi_constants",
     "//components/version_info",
   ]
 }

@@ -7,16 +7,30 @@ assert(is_chromeos, "Non-Chrome-OS builds must not depend on //chromeos/ash")
 component("platform_keys") {
   defines = [ "IS_CHROMEOS_ASH_COMPONENTS_PLATFORM_KEYS_IMPL" ]
   sources = [
+    "keystore_service_util.cc",
+    "keystore_service_util.h",
+    "keystore_types.cc",
     "keystore_types.h",
     "platform_keys.cc",
     "platform_keys.h",
   ]
   deps = [
     "//base",
-    "//chromeos/crosapi/cpp",
     "//chromeos/crosapi/mojom",
     "//crypto",
     "//net",
     "//third_party/boringssl",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "keystore_service_util_unittest.cc" ]
+
+  deps = [
+    ":platform_keys",
+    "//base",
+    "//testing/gtest",
   ]
 }

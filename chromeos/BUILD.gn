@@ -62,7 +62,6 @@ test("chromeos_unittests") {
     "//chromeos/ash/services:unit_tests",
     "//chromeos/components/firewall_hole:unit_tests",
     "//chromeos/constants:unit_tests",
-    "//chromeos/crosapi/cpp:unit_tests",
     "//chromeos/dbus:unit_tests",
     "//chromeos/printing:unit_tests",
     "//chromeos/process_proxy:unit_tests",

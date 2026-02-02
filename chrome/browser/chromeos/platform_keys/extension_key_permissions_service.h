@@ -15,9 +15,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
+#include "chromeos/ash/components/platform_keys/keystore_types.h"
 #include "chromeos/ash/components/platform_keys/platform_keys.h"
-#include "chromeos/crosapi/mojom/keystore_error.mojom.h"
-#include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "extensions/common/extension_id.h"
 
 namespace extensions {
@@ -57,8 +56,7 @@ using ExtensionKeyPermissionQueryCallback =
     base::OnceCallback<void(bool allowed)>;
 
 using ExtensionKeyPermissionOperationCallback =
-    base::OnceCallback<void(bool is_error,
-                            crosapi::mojom::KeystoreError error)>;
+    base::OnceCallback<void(bool is_error, chromeos::KeystoreError error)>;
 
 // ** ExtensionKeyPermissionsService Responsibility **
 // - Managing usage permissions for a (Profile, Extension) pair.
@@ -208,7 +206,7 @@ class ExtensionKeyPermissionsService {
   void CanUseKeyWithFlags(ExtensionKeyPermissionQueryCallback callback,
                           bool is_sign_operation,
                           bool sign_unlimited_allowed,
-                          crosapi::mojom::GetKeyTagsResultPtr key_tags);
+                          chromeos::GetKeyTagsResult key_tags);
 
   void SetUserGrantedSigningPermissionWithFlag(
       const std::vector<uint8_t>& public_key_spki_der,

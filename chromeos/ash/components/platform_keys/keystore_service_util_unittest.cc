@@ -2,16 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/crosapi/cpp/keystore_service_util.h"
+#include "chromeos/ash/components/platform_keys/keystore_service_util.h"
 
 #include <optional>
+#include <variant>
 
 #include "base/numerics/safe_math.h"
 #include "base/values.h"
-#include "chromeos/crosapi/mojom/keystore_service.mojom.h"
+#include "chromeos/ash/components/platform_keys/keystore_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace crosapi {
+namespace chromeos {
 namespace keystore_service_util {
 
 static constexpr unsigned int kModulusLength = 1024;
@@ -25,7 +26,7 @@ TEST(KeystoreServiceUtil, EcdsaDictionary) {
   value.Set("name", kWebCryptoEcdsa);
   value.Set("namedCurve", kWebCryptoNamedCurveP256);
 
-  std::optional<crosapi::mojom::KeystoreAlgorithmPtr> ptr =
+  std::optional<chromeos::KeystoreAlgorithm> ptr =
       MakeKeystoreAlgorithmFromDictionary(value);
   ASSERT_TRUE(ptr);
 
@@ -41,11 +42,11 @@ TEST(KeystoreServiceUtil, RsassaPkcs1v15Dictionary) {
   value.Set("name", kWebCryptoRsassaPkcs1v15);
   value.Set("modulusLength", base::checked_cast<int>(kModulusLength));
 
-  value.Set("publicExponent",
-            base::Value::BlobStorage(std::begin(kDefaultPublicExponent),
-                                     std::end(kDefaultPublicExponent)));
+  value.Set("publicExponent", base::Value(base::Value::BlobStorage(
+                                  std::begin(kDefaultPublicExponent),
+                                  std::end(kDefaultPublicExponent))));
 
-  std::optional<crosapi::mojom::KeystoreAlgorithmPtr> ptr =
+  std::optional<chromeos::KeystoreAlgorithm> ptr =
       MakeKeystoreAlgorithmFromDictionary(value);
   ASSERT_TRUE(ptr);
 
@@ -61,11 +62,11 @@ TEST(KeystoreServiceUtil, RsaOaepDictionary) {
   value.Set("name", kWebCryptoRsaOaep);
   value.Set("modulusLength", base::checked_cast<int>(kModulusLength));
 
-  value.Set("publicExponent",
-            base::Value::BlobStorage(std::begin(kDefaultPublicExponent),
-                                     std::end(kDefaultPublicExponent)));
+  value.Set("publicExponent", base::Value(base::Value::BlobStorage(
+                                  std::begin(kDefaultPublicExponent),
+                                  std::end(kDefaultPublicExponent))));
 
-  std::optional<crosapi::mojom::KeystoreAlgorithmPtr> ptr =
+  std::optional<chromeos::KeystoreAlgorithm> ptr =
       MakeKeystoreAlgorithmFromDictionary(value);
   ASSERT_TRUE(ptr);
 
@@ -77,34 +78,33 @@ TEST(KeystoreServiceUtil, RsaOaepDictionary) {
 }
 
 TEST(KeystoreServiceUtil, MakeRsassaPkcs1v15KeystoreAlgorithm) {
-  crosapi::mojom::KeystoreAlgorithmPtr algorithm_ptr =
+  chromeos::KeystoreAlgorithm algorithm =
       MakeRsassaPkcs1v15KeystoreAlgorithm(kModulusLength, kSoftwareBacked);
 
-  EXPECT_EQ(algorithm_ptr->which(),
-            crosapi::mojom::KeystoreAlgorithm::Tag::kRsassaPkcs115);
-  EXPECT_EQ(algorithm_ptr->get_rsassa_pkcs115()->modulus_length,
-            kModulusLength);
-  EXPECT_TRUE(algorithm_ptr->get_rsassa_pkcs115()->sw_backed);
+  ASSERT_TRUE(std::holds_alternative<chromeos::RsassaPkcs115Params>(algorithm));
+  const auto& params = std::get<chromeos::RsassaPkcs115Params>(algorithm);
+  EXPECT_EQ(params.rsa_params.modulus_length, kModulusLength);
+  EXPECT_TRUE(params.rsa_params.sw_backed);
 }
 
 TEST(KeystoreServiceUtil, MakeRsaOaepKeystoreAlgorithm) {
-  crosapi::mojom::KeystoreAlgorithmPtr algorithm_ptr =
+  chromeos::KeystoreAlgorithm algorithm =
       MakeRsaOaepKeystoreAlgorithm(kModulusLength, kSoftwareBacked);
 
-  EXPECT_EQ(algorithm_ptr->which(),
-            crosapi::mojom::KeystoreAlgorithm::Tag::kRsaOaep);
-  EXPECT_EQ(algorithm_ptr->get_rsa_oaep()->modulus_length, kModulusLength);
-  EXPECT_TRUE(algorithm_ptr->get_rsa_oaep()->sw_backed);
+  ASSERT_TRUE(std::holds_alternative<chromeos::RsaOaepParams>(algorithm));
+  const auto& params = std::get<chromeos::RsaOaepParams>(algorithm);
+  EXPECT_EQ(params.rsa_params.modulus_length, kModulusLength);
+  EXPECT_TRUE(params.rsa_params.sw_backed);
 }
 
 TEST(KeystoreServiceUtil, MakeEcdsaKeystoreAlgorithm) {
-  crosapi::mojom::KeystoreAlgorithmPtr algorithm_ptr =
+  chromeos::KeystoreAlgorithm algorithm =
       MakeEcdsaKeystoreAlgorithm(kWebCryptoNamedCurveP256);
 
-  EXPECT_EQ(algorithm_ptr->which(),
-            crosapi::mojom::KeystoreAlgorithm::Tag::kEcdsa);
-  EXPECT_EQ(algorithm_ptr->get_ecdsa()->named_curve, kWebCryptoNamedCurveP256);
+  ASSERT_TRUE(std::holds_alternative<chromeos::KeystoreEcdsaParams>(algorithm));
+  const auto& params = std::get<chromeos::KeystoreEcdsaParams>(algorithm);
+  EXPECT_EQ(params.named_curve, kWebCryptoNamedCurveP256);
 }
 
 }  // namespace keystore_service_util
-}  // namespace crosapi
+}  // namespace chromeos

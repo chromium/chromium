@@ -19,11 +19,9 @@
 #include "chrome/browser/extensions/api/platform_keys/verify_trust_api_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/platform_keys_internal.h"
+#include "chromeos/ash/components/platform_keys/keystore_service_util.h"
 #include "chromeos/ash/components/platform_keys/keystore_types.h"
 #include "chromeos/ash/components/platform_keys/platform_keys.h"
-#include "chromeos/crosapi/cpp/keystore_service_util.h"
-#include "chromeos/crosapi/mojom/keystore_error.mojom-shared.h"
-#include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "net/base/net_errors.h"
 #include "net/cert/asn1_util.h"
@@ -39,8 +37,9 @@ namespace {
 namespace api_pk = api::platform_keys;
 namespace api_pki = api::platform_keys_internal;
 using chromeos::KeystoreAlgorithmName;
-using crosapi::keystore_service_util::kWebCryptoEcdsa;
-using crosapi::keystore_service_util::kWebCryptoRsassaPkcs1v15;
+using chromeos::KeystoreError;
+using chromeos::keystore_service_util::kWebCryptoEcdsa;
+using chromeos::keystore_service_util::kWebCryptoRsassaPkcs1v15;
 
 const char kErrorInvalidSigningAlgorithm[] = "Invalid signing algorithm.";
 const char kErrorInteractiveCallFromBackground[] =
@@ -171,7 +170,7 @@ PlatformKeysInternalSelectClientCertificatesFunction::Run() {
 
 void PlatformKeysInternalSelectClientCertificatesFunction::
     OnSelectedCertificates(std::unique_ptr<net::CertificateList> matches,
-                           std::optional<crosapi::mojom::KeystoreError> error) {
+                           std::optional<chromeos::KeystoreError> error) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (error) {
@@ -228,7 +227,7 @@ PlatformKeysInternalGetPublicKeyFunction::Run() {
       KeystoreAlgorithmNameFromString(params->algorithm_name);
   if (!algorithm_name) {
     return RespondNow(Error(chromeos::platform_keys::KeystoreErrorToString(
-        crosapi::mojom::KeystoreError::kAlgorithmNotSupported)));
+        KeystoreError::kAlgorithmNotSupported)));
   }
 
   auto cb = base::BindOnce(
@@ -240,24 +239,24 @@ PlatformKeysInternalGetPublicKeyFunction::Run() {
 }
 
 void PlatformKeysInternalGetPublicKeyFunction::OnGetPublicKey(
-    crosapi::mojom::GetPublicKeyResultPtr result) {
-  if (result->is_error()) {
-    Respond(Error(
-        chromeos::platform_keys::KeystoreErrorToString(result->get_error())));
+    chromeos::GetPublicKeyResult result) {
+  if (!result.has_value()) {
+    Respond(
+        Error(chromeos::platform_keys::KeystoreErrorToString(result.error())));
     return;
   }
 
   api_pki::GetPublicKey::Results::Algorithm algorithm;
   std::optional<base::DictValue> dict =
-      crosapi::keystore_service_util::MakeDictionaryFromKeystoreAlgorithm(
-          result->get_success_result()->algorithm_properties);
+      chromeos::keystore_service_util::MakeDictionaryFromKeystoreAlgorithm(
+          result->algorithm_properties);
   if (!dict) {
     Respond(Error(kErrorInvalidSigningAlgorithm));
     return;
   }
   algorithm.additional_properties = std::move(*dict);
   Respond(ArgumentList(api_pki::GetPublicKey::Results::Create(
-      result->get_success_result()->public_key, std::move(algorithm))));
+      result->public_key, std::move(algorithm))));
 }
 //------------------------------------------------------------------------------
 
@@ -374,7 +373,7 @@ ExtensionFunction::ResponseAction PlatformKeysInternalSignFunction::Run() {
 
 void PlatformKeysInternalSignFunction::OnSigned(
     std::vector<uint8_t> signature,
-    std::optional<crosapi::mojom::KeystoreError> error) {
+    std::optional<chromeos::KeystoreError> error) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (!error) {

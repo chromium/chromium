@@ -18,8 +18,8 @@
 #include "base/notreached.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "chromeos/crosapi/cpp/keystore_service_util.h"
-#include "chromeos/crosapi/mojom/keystore_error.mojom.h"
+#include "chromeos/ash/components/platform_keys/keystore_service_util.h"
+#include "chromeos/ash/components/platform_keys/keystore_types.h"
 #include "crypto/evp.h"
 #include "crypto/openssl_util.h"
 #include "net/base/hash_value.h"
@@ -34,9 +34,9 @@
 
 namespace {
 
-using crosapi::keystore_service_util::kWebCryptoEcdsa;
-using crosapi::keystore_service_util::kWebCryptoNamedCurveP256;
-using crosapi::keystore_service_util::kWebCryptoRsassaPkcs1v15;
+using chromeos::keystore_service_util::kWebCryptoEcdsa;
+using chromeos::keystore_service_util::kWebCryptoNamedCurveP256;
+using chromeos::keystore_service_util::kWebCryptoRsassaPkcs1v15;
 
 void IntersectOnWorkerThread(const net::CertificateList& certs1,
                              const net::CertificateList& certs2,
@@ -106,10 +106,8 @@ std::string StatusToString(Status status) {
   }
 }
 
-crosapi::mojom::KeystoreError StatusToKeystoreError(Status status) {
+KeystoreError StatusToKeystoreError(Status status) {
   DCHECK(status != Status::kSuccess);
-  using crosapi::mojom::KeystoreError;
-
   switch (status) {
     case Status::kSuccess:
       return KeystoreError::kUnknown;
@@ -147,9 +145,7 @@ crosapi::mojom::KeystoreError StatusToKeystoreError(Status status) {
   NOTREACHED();
 }
 
-Status StatusFromKeystoreError(crosapi::mojom::KeystoreError error) {
-  using crosapi::mojom::KeystoreError;
-
+Status StatusFromKeystoreError(KeystoreError error) {
   switch (error) {
     case KeystoreError::kUnknown:
     case KeystoreError::kUnsupportedAlgorithmType:
@@ -194,9 +190,7 @@ Status StatusFromKeystoreError(crosapi::mojom::KeystoreError error) {
   NOTREACHED();
 }
 
-std::string KeystoreErrorToString(crosapi::mojom::KeystoreError error) {
-  using crosapi::mojom::KeystoreError;
-
+std::string KeystoreErrorToString(KeystoreError error) {
   // Handle Keystore specific errors.
   switch (error) {
     case KeystoreError::kUnknown:

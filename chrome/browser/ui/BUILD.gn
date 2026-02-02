@@ -2488,7 +2488,6 @@ static_library("ui") {
       "//chromeos/components/security_token_pin",
       "//chromeos/components/sharesheet:constants",
       "//chromeos/constants",
-      "//chromeos/crosapi/cpp",
       "//chromeos/crosapi/cpp:crosapi_constants",
       "//chromeos/crosapi/mojom:structured_metrics_service",
       "//chromeos/dbus/dlp",
@@ -5306,7 +5305,6 @@ static_library("ui") {
         "webui/print_preview/print_preview_handler_chromeos.h",
       ]
       deps += [
-        "//chromeos/crosapi/cpp",
         "//chromeos/crosapi/mojom",
         "//chromeos/printing",
       ]

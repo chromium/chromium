@@ -23,8 +23,6 @@ static_library("platform_keys") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/platform_keys",
-    "//chromeos/crosapi/cpp",
-    "//chromeos/crosapi/mojom",
     "//components/keyed_service/core",
     "//components/policy:generated",
     "//components/policy/core/common",

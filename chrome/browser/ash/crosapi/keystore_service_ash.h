@@ -8,16 +8,13 @@
 #include <stdint.h>
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/platform_keys/keystore_types.h"
 #include "chromeos/ash/components/platform_keys/platform_keys.h"
-#include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace content {
 class BrowserContext;
@@ -42,37 +39,36 @@ namespace crosapi {
 // system keystores. This class is affine to the UI thread.
 class KeystoreServiceAsh : public KeyedService {
  public:
-  using KeystoreType = mojom::KeystoreType;
+  using KeystoreType = chromeos::KeystoreType;
   using SigningScheme = chromeos::KeystoreSigningScheme;
   using KeystoreKeyAttributeType = chromeos::KeystoreKeyAttributeType;
 
   using ChallengeAttestationOnlyKeystoreCallback = base::OnceCallback<void(
       chromeos::ChallengeAttestationOnlyKeystoreResult)>;
   using GetKeyStoresCallback =
-      base::OnceCallback<void(crosapi::mojom::GetKeyStoresResultPtr)>;
+      base::OnceCallback<void(chromeos::GetKeyStoresResult)>;
   using SelectClientCertificatesCallback = base::OnceCallback<void(
-      crosapi::mojom::KeystoreSelectClientCertificatesResultPtr)>;
+      chromeos::KeystoreSelectClientCertificatesResult)>;
   using GetCertificatesCallback =
-      base::OnceCallback<void(crosapi::mojom::GetCertificatesResultPtr)>;
+      base::OnceCallback<void(chromeos::GetCertificatesResult)>;
   using AddCertificateCallback =
-      base::OnceCallback<void(bool, crosapi::mojom::KeystoreError)>;
+      base::OnceCallback<void(bool, chromeos::KeystoreError)>;
   using RemoveCertificateCallback =
-      base::OnceCallback<void(bool, crosapi::mojom::KeystoreError)>;
+      base::OnceCallback<void(bool, chromeos::KeystoreError)>;
   using GetPublicKeyCallback =
-      base::OnceCallback<void(crosapi::mojom::GetPublicKeyResultPtr)>;
+      base::OnceCallback<void(chromeos::GetPublicKeyResult)>;
   using GenerateKeyCallback =
-      base::OnceCallback<void(crosapi::mojom::KeystoreBinaryResultPtr)>;
+      base::OnceCallback<void(chromeos::KeystoreBinaryResult)>;
   using RemoveKeyCallback =
-      base::OnceCallback<void(bool, crosapi::mojom::KeystoreError)>;
-  using SignCallback =
-      base::OnceCallback<void(crosapi::mojom::KeystoreBinaryResultPtr)>;
+      base::OnceCallback<void(bool, chromeos::KeystoreError)>;
+  using SignCallback = base::OnceCallback<void(chromeos::KeystoreBinaryResult)>;
   using GetKeyTagsCallback =
-      base::OnceCallback<void(crosapi::mojom::GetKeyTagsResultPtr)>;
+      base::OnceCallback<void(chromeos::GetKeyTagsResult)>;
   using AddKeyTagsCallback =
-      base::OnceCallback<void(bool, crosapi::mojom::KeystoreError)>;
+      base::OnceCallback<void(bool, chromeos::KeystoreError)>;
   using CanUserGrantPermissionForKeyCallback = base::OnceCallback<void(bool)>;
   using SetAttributeForKeyCallback =
-      base::OnceCallback<void(bool, crosapi::mojom::KeystoreError)>;
+      base::OnceCallback<void(bool, chromeos::KeystoreError)>;
 
   explicit KeystoreServiceAsh(content::BrowserContext* fixed_context);
   // Allows to create the service early. It will use the current primary profile
@@ -87,7 +83,7 @@ class KeystoreServiceAsh : public KeyedService {
   ~KeystoreServiceAsh() override;
 
   void ChallengeAttestationOnlyKeystore(
-      mojom::KeystoreType type,
+      chromeos::KeystoreType type,
       const std::vector<uint8_t>& challenge,
       bool migrate,
       chromeos::KeystoreAlgorithmName algorithm,
@@ -96,26 +92,26 @@ class KeystoreServiceAsh : public KeyedService {
   void SelectClientCertificates(
       const std::vector<std::vector<uint8_t>>& certificate_authorities,
       SelectClientCertificatesCallback callback);
-  void GetCertificates(mojom::KeystoreType keystore,
+  void GetCertificates(chromeos::KeystoreType keystore,
                        GetCertificatesCallback callback);
-  void AddCertificate(mojom::KeystoreType keystore,
+  void AddCertificate(chromeos::KeystoreType keystore,
                       const std::vector<uint8_t>& certificate,
                       AddCertificateCallback callback);
-  void RemoveCertificate(mojom::KeystoreType keystore,
+  void RemoveCertificate(chromeos::KeystoreType keystore,
                          const std::vector<uint8_t>& certificate,
                          RemoveCertificateCallback callback);
   void GetPublicKey(const std::vector<uint8_t>& certificate,
                     chromeos::KeystoreAlgorithmName algorithm_name,
                     GetPublicKeyCallback callback);
-  void GenerateKey(mojom::KeystoreType keystore,
-                   mojom::KeystoreAlgorithmPtr algorithm,
+  void GenerateKey(chromeos::KeystoreType keystore,
+                   chromeos::KeystoreAlgorithm algorithm,
                    GenerateKeyCallback callback);
-  void RemoveKey(KeystoreType keystore,
+  void RemoveKey(chromeos::KeystoreType keystore,
                  const std::vector<uint8_t>& public_key,
                  RemoveKeyCallback callback);
-  void Sign(std::optional<KeystoreType> keystore,
+  void Sign(std::optional<chromeos::KeystoreType> keystore,
             const std::vector<uint8_t>& public_key,
-            SigningScheme scheme,
+            chromeos::KeystoreSigningScheme scheme,
             const std::vector<uint8_t>& data,
             SignCallback callback);
   void GetKeyTags(const std::vector<uint8_t>& public_key,
@@ -126,9 +122,9 @@ class KeystoreServiceAsh : public KeyedService {
   void CanUserGrantPermissionForKey(
       const std::vector<uint8_t>& public_key,
       CanUserGrantPermissionForKeyCallback callback);
-  void SetAttributeForKey(KeystoreType keystore,
+  void SetAttributeForKey(chromeos::KeystoreType keystore,
                           const std::vector<uint8_t>& public_key,
-                          KeystoreKeyAttributeType attribute_type,
+                          chromeos::KeystoreKeyAttributeType attribute_type,
                           const std::vector<uint8_t>& attribute_value,
                           SetAttributeForKeyCallback callback);
 

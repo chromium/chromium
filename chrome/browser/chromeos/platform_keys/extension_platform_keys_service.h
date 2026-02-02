@@ -16,9 +16,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_service.h"
+#include "chromeos/ash/components/platform_keys/keystore_types.h"
 #include "chromeos/ash/components/platform_keys/platform_keys.h"
-#include "chromeos/crosapi/mojom/keystore_error.mojom.h"
-#include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {
@@ -84,9 +83,9 @@ class ExtensionPlatformKeysService : public KeyedService {
   // If the generation was successful, |public_key_spki_der| will contain the
   // DER encoding of the SubjectPublicKeyInfo of the generated key. If it
   // failed, |public_key_spki_der| will be empty.
-  using GenerateKeyCallback = base::OnceCallback<void(
-      std::vector<uint8_t> public_key_spki_der,
-      std::optional<crosapi::mojom::KeystoreError> error)>;
+  using GenerateKeyCallback =
+      base::OnceCallback<void(std::vector<uint8_t> public_key_spki_der,
+                              std::optional<chromeos::KeystoreError> error)>;
 
   // Generates a RSA key pair with `modulus_length_bits` and marks the key as
   // corporate. `key_type` should be either `kRsassaPkcs1V15` or `kRsaOaep` (the
@@ -124,9 +123,9 @@ class ExtensionPlatformKeysService : public KeyedService {
 
   // If signing was successful, |signature| will contain the signature. If it
   // failed, |signature| will be empty.
-  using SignCallback = base::OnceCallback<void(
-      std::vector<uint8_t> signature,
-      std::optional<crosapi::mojom::KeystoreError> error)>;
+  using SignCallback =
+      base::OnceCallback<void(std::vector<uint8_t> signature,
+                              std::optional<chromeos::KeystoreError> error)>;
 
   // Digests |data|, applies PKCS1 padding if specified by |hash_algorithm| and
   // chooses the signature algorithm according to |key_type| and signs the data
@@ -169,9 +168,9 @@ class ExtensionPlatformKeysService : public KeyedService {
   // If the certificate request could be processed successfully, |matches| will
   // contain the list of matching certificates (maybe empty). If an error
   // occurred, |matches| will be null.
-  using SelectCertificatesCallback = base::OnceCallback<void(
-      std::unique_ptr<net::CertificateList> matches,
-      std::optional<crosapi::mojom::KeystoreError> error)>;
+  using SelectCertificatesCallback =
+      base::OnceCallback<void(std::unique_ptr<net::CertificateList> matches,
+                              std::optional<chromeos::KeystoreError> error)>;
 
   // Returns a list of certificates matching |request|.
   // 1) all certificates that match the request (like being rooted in one of the
@@ -195,8 +194,8 @@ class ExtensionPlatformKeysService : public KeyedService {
       SelectCertificatesCallback callback,
       content::WebContents* web_contents);
 
-  using SetKeyTagCallback = base::OnceCallback<void(
-      std::optional<crosapi::mojom::KeystoreError> error)>;
+  using SetKeyTagCallback =
+      base::OnceCallback<void(std::optional<chromeos::KeystoreError> error)>;
 
   // Sets a custom |tag| to a key that matches |public_key_spki_der|. This tag
   // can later be used to find the key based on some external logic.

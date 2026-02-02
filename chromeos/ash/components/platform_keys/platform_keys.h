@@ -15,7 +15,7 @@
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/values.h"
-#include "chromeos/crosapi/mojom/keystore_error.mojom.h"
+#include "chromeos/ash/components/platform_keys/keystore_types.h"
 #include "net/cert/x509_certificate.h"
 
 namespace chromeos::platform_keys {
@@ -83,18 +83,18 @@ std::string StatusToString(Status status);
 // Convert platform_keys::Status into a KeystoreError. Status::kSuccess should
 // not be passed in the function.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_PLATFORM_KEYS)
-crosapi::mojom::KeystoreError StatusToKeystoreError(Status status);
+KeystoreError StatusToKeystoreError(Status status);
 
 // Creates platform_keys::Status into a KeystoreError. Keystore specific errors
 // are not supported and should be processed separately.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_PLATFORM_KEYS)
-Status StatusFromKeystoreError(crosapi::mojom::KeystoreError error);
+Status StatusFromKeystoreError(KeystoreError error);
 
 // Converts KeystoreError code into an error message.
 // Note: Do not change already existing error-to-string translations, since
 // extensions may hardcode specific messages.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_PLATFORM_KEYS)
-std::string KeystoreErrorToString(crosapi::mojom::KeystoreError error);
+std::string KeystoreErrorToString(KeystoreError error);
 
 // Returns the DER encoding of the X.509 Subject Public Key Info of the public
 // key in |certificate|.
