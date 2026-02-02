@@ -198,17 +198,20 @@ class CONTENT_EXPORT PrefetchContainer {
     //
     // TODO(crbug.com/356314759): Update the description to "Called just
     // before dtor is called."
-    virtual void OnWillBeDestroyed(PrefetchContainer& prefetch_container) = 0;
+    virtual void OnWillBeDestroyed(
+        const PrefetchContainer& prefetch_container) = 0;
     // Called when initial eligibility is got.
-    virtual void OnGotInitialEligibility(PrefetchContainer& prefetch_container,
-                                         PreloadingEligibility eligibility) = 0;
+    virtual void OnGotInitialEligibility(
+        const PrefetchContainer& prefetch_container,
+        PreloadingEligibility eligibility) = 0;
     // Called if non-redirect header of prefetch response is determined, i.e.
     // successfully received or fetch requests including redirects failed.
     // Callers can check success/failure by `GetNonRedirectHead()`.
-    virtual void OnDeterminedHead(PrefetchContainer& prefetch_container) = 0;
+    virtual void OnDeterminedHead(
+        const PrefetchContainer& prefetch_container) = 0;
     // Called when load of prefetch completed or failed.
     virtual void OnPrefetchCompletedOrFailed(
-        PrefetchContainer& prefetch_container,
+        const PrefetchContainer& prefetch_container,
         const network::URLLoaderCompletionStatus& completion_status,
         const std::optional<int>& response_code) = 0;
   };
@@ -250,6 +253,9 @@ class CONTENT_EXPORT PrefetchContainer {
   const std::optional<net::HttpNoVarySearchData>& GetNoVarySearchHint() const;
 
   base::WeakPtr<PrefetchContainer> GetWeakPtr() {
+    return weak_method_factory_.GetWeakPtr();
+  }
+  base::WeakPtr<const PrefetchContainer> GetWeakPtr() const {
     return weak_method_factory_.GetWeakPtr();
   }
 
@@ -466,6 +472,10 @@ class CONTENT_EXPORT PrefetchContainer {
   void OnPrefetchStarted();
 
   PrefetchServingHandle CreateServingHandle();
+
+  // Only for temporary const queries to `PrefetchServingHandle`, namely
+  // `HaveDefaultContextCookiesChanged()`.
+  std::unique_ptr<const PrefetchServingHandle> CreateConstServingHandle() const;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);

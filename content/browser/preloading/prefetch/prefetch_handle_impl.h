@@ -41,12 +41,12 @@ class PrefetchContainerObserver final : public PrefetchContainer::Observer {
           on_prefetch_completed_or_failed);
 
   // Implements `PrefetchContainer::Observer`.
-  void OnWillBeDestroyed(PrefetchContainer& prefetch_container) override;
-  void OnGotInitialEligibility(PrefetchContainer& prefetch_container,
+  void OnWillBeDestroyed(const PrefetchContainer& prefetch_container) override;
+  void OnGotInitialEligibility(const PrefetchContainer& prefetch_container,
                                PreloadingEligibility eligibility) override;
-  void OnDeterminedHead(PrefetchContainer& prefetch_container) override;
+  void OnDeterminedHead(const PrefetchContainer& prefetch_container) override;
   void OnPrefetchCompletedOrFailed(
-      PrefetchContainer& prefetch_container,
+      const PrefetchContainer& prefetch_container,
       const network::URLLoaderCompletionStatus& completion_status,
       const std::optional<int>& response_code) override;
 

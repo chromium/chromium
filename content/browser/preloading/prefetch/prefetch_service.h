@@ -378,12 +378,12 @@ class CONTENT_EXPORT PrefetchService : public PrefetchContainer::Observer {
       network::mojom::URLResponseHead* head);
 
   // PrefetchContainer::Observer overrides:
-  void OnWillBeDestroyed(PrefetchContainer& prefetch_container) override;
-  void OnGotInitialEligibility(PrefetchContainer& prefetch_container,
+  void OnWillBeDestroyed(const PrefetchContainer& prefetch_container) override;
+  void OnGotInitialEligibility(const PrefetchContainer& prefetch_container,
                                PreloadingEligibility eligibility) override;
-  void OnDeterminedHead(PrefetchContainer& prefetch_container) override;
+  void OnDeterminedHead(const PrefetchContainer& prefetch_container) override;
   void OnPrefetchCompletedOrFailed(
-      PrefetchContainer& prefetch_container,
+      const PrefetchContainer& prefetch_container,
       const network::URLLoaderCompletionStatus& completion_status,
       const std::optional<int>& response_code) override;
 
@@ -461,7 +461,7 @@ class CONTENT_EXPORT PrefetchService : public PrefetchContainer::Observer {
   // CAUTION: This doesn't call `ResetPrefetchContainer()` to preserve current
   // behavior.
   void RemoveFromSchedulerAndProgressAsync(
-      PrefetchContainer& prefetch_container);
+      const PrefetchContainer& prefetch_container);
 
   // If we have a recent unmatch stored in
   // `recent_unmatched_navigated_keys_for_metrics_` that this given prefetch

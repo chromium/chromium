@@ -29,14 +29,14 @@ void PrefetchContainerObserver::SetOnPrefetchCompletedOrFailedCallback(
 }
 
 void PrefetchContainerObserver::OnWillBeDestroyed(
-    PrefetchContainer& prefetch_container) {}
+    const PrefetchContainer& prefetch_container) {}
 
 void PrefetchContainerObserver::OnGotInitialEligibility(
-    PrefetchContainer& prefetch_container,
+    const PrefetchContainer& prefetch_container,
     PreloadingEligibility eligibility) {}
 
 void PrefetchContainerObserver::OnDeterminedHead(
-    PrefetchContainer& prefetch_container) {
+    const PrefetchContainer& prefetch_container) {
   if (on_prefetch_head_received_) {
     // This condition will be used in a callback provided in the future.
     // See
@@ -52,7 +52,7 @@ void PrefetchContainerObserver::OnDeterminedHead(
 }
 
 void PrefetchContainerObserver::OnPrefetchCompletedOrFailed(
-    PrefetchContainer& prefetch_container,
+    const PrefetchContainer& prefetch_container,
     const network::URLLoaderCompletionStatus& completion_status,
     const std::optional<int>& response_code) {
   // `IsDecoy()` check is added to preserve the existing behavior.

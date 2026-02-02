@@ -186,7 +186,7 @@ class TestPrefetchServiceForInterceptor final : public PrefetchService {
   }
 
   void OnPrefetchCompletedOrFailed(
-      PrefetchContainer& prefetch_container,
+      const PrefetchContainer& prefetch_container,
       const network::URLLoaderCompletionStatus& completion_status,
       const std::optional<int>& response_code) override {
     // Skip `active_prefetch_` check and related prefetch queue processing in

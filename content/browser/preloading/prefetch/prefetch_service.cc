@@ -1519,7 +1519,7 @@ void PrefetchService::ResetPrefetchContainersAndProgressAsync(
 }
 
 void PrefetchService::RemoveFromSchedulerAndProgressAsync(
-    PrefetchContainer& prefetch_container) {
+    const PrefetchContainer& prefetch_container) {
   CHECK(UsePrefetchScheduler());
 
   scheduler_->RemoveAndProgressAsync(prefetch_container);
@@ -1943,17 +1943,18 @@ PrefetchService::OnPrefetchResponseStarted(
   return std::nullopt;
 }
 
-void PrefetchService::OnWillBeDestroyed(PrefetchContainer& prefetch_container) {
-}
+void PrefetchService::OnWillBeDestroyed(
+    const PrefetchContainer& prefetch_container) {}
 
 void PrefetchService::OnGotInitialEligibility(
-    PrefetchContainer& prefetch_container,
+    const PrefetchContainer& prefetch_container,
     PreloadingEligibility eligibility) {}
 
-void PrefetchService::OnDeterminedHead(PrefetchContainer& prefetch_container) {}
+void PrefetchService::OnDeterminedHead(
+    const PrefetchContainer& prefetch_container) {}
 
 void PrefetchService::OnPrefetchCompletedOrFailed(
-    PrefetchContainer& prefetch_container,
+    const PrefetchContainer& prefetch_container,
     const network::URLLoaderCompletionStatus& completion_status,
     const std::optional<int>& response_code) {
   TRACE_EVENT("loading", "PrefetchService::OnPrefetchCompletedOrFailed",

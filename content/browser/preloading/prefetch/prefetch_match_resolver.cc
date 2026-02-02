@@ -522,14 +522,14 @@ void PrefetchMatchResolver::UnregisterCandidate(
 }
 
 void PrefetchMatchResolver::OnWillBeDestroyed(
-    PrefetchContainer& prefetch_container) {
+    const PrefetchContainer& prefetch_container) {
   MaybeUnblockForUnmatch(prefetch_container,
                          PrefetchPotentialCandidateServingResult::
                              kNotServedPrefetchWillBeDestroyed);
 }
 
 void PrefetchMatchResolver::OnGotInitialEligibility(
-    PrefetchContainer& prefetch_container,
+    const PrefetchContainer& prefetch_container,
     PreloadingEligibility eligibility) {
   CHECK(features::UsePrefetchPrerenderIntegration());
 
@@ -541,7 +541,7 @@ void PrefetchMatchResolver::OnGotInitialEligibility(
 }
 
 void PrefetchMatchResolver::OnDeterminedHead(
-    PrefetchContainer& prefetch_container) {
+    const PrefetchContainer& prefetch_container) {
   CHECK(candidates_.contains(prefetch_container.key()));
   CHECK(!prefetch_container.is_in_dtor());
 
@@ -656,8 +656,8 @@ void PrefetchMatchResolver::OnDeterminedHead(
       return;
   }
 
-  if (prefetch_container.CreateServingHandle()
-          .HaveDefaultContextCookiesChanged()) {
+  if (prefetch_container.CreateConstServingHandle()
+          ->HaveDefaultContextCookiesChanged()) {
     UnblockForCookiesChanged(prefetch_container.key());
     return;
   }
@@ -679,7 +679,7 @@ void PrefetchMatchResolver::OnDeterminedHead(
 }
 
 void PrefetchMatchResolver::OnPrefetchCompletedOrFailed(
-    PrefetchContainer& prefetch_container,
+    const PrefetchContainer& prefetch_container,
     const network::URLLoaderCompletionStatus& completion_status,
     const std::optional<int>& response_code) {}
 

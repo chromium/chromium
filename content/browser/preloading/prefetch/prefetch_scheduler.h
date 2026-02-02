@@ -119,7 +119,7 @@ class PrefetchQueue {
   // Removes `PrefechContainer`.
   //
   // Returns true iff `PrefetchContainer` exists and is removed.
-  bool Remove(base::WeakPtr<PrefetchContainer> prefetch_container);
+  bool Remove(base::WeakPtr<const PrefetchContainer> prefetch_container);
   // Updates priority.
   //
   // Returns true iff priority is updated.
@@ -181,7 +181,7 @@ class CONTENT_EXPORT PrefetchScheduler {
   void PushAndProgress(PrefetchContainer& prefetch_container);
   void PushAndProgressAsync(PrefetchContainer& prefetch_container);
   // Note that this doesn't call `PrefetchService::ResetPrefetchContainer()`.
-  void RemoveAndProgressAsync(PrefetchContainer& prefetch_container,
+  void RemoveAndProgressAsync(const PrefetchContainer& prefetch_container,
                               bool should_progress = true);
   void NotifyAttributeMightChangedAndProgressAsync(
       PrefetchContainer& prefetch_container,

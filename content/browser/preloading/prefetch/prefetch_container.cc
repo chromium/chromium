@@ -364,6 +364,17 @@ PrefetchServingHandle PrefetchContainer::CreateServingHandle() {
   return PrefetchServingHandle(GetWeakPtr(), 0);
 }
 
+std::unique_ptr<const PrefetchServingHandle>
+PrefetchContainer::CreateConstServingHandle() const {
+  // `GetMutableWeakPtr()` (which is a kind of a const-to-non-const cast) is
+  // used here but the effect of the const cast is minimized by returning
+  // `std::unique_ptr<const PrefetchServingHandle>`, as
+  // `const PrefetchServingHandle` doesn't use its
+  // non-const `PrefetchContainer` reference.
+  return std::make_unique<const PrefetchServingHandle>(
+      weak_method_factory_.GetMutableWeakPtr(), 0);
+}
+
 const std::vector<std::unique_ptr<PrefetchSingleRedirectHop>>&
 PrefetchContainer::redirect_chain(base::PassKey<PrefetchServingHandle>) const {
   return redirect_chain_;

@@ -168,7 +168,7 @@ void PrefetchQueue::Push(base::WeakPtr<PrefetchContainer> prefetch_container,
 }
 
 bool PrefetchQueue::Remove(
-    base::WeakPtr<PrefetchContainer> prefetch_container) {
+    base::WeakPtr<const PrefetchContainer> prefetch_container) {
   for (auto it = queue_.cbegin(); it != queue_.cend(); ++it) {
     if (it->prefetch_container.get() == prefetch_container.get()) {
       queue_.erase(it);
@@ -271,7 +271,7 @@ void PrefetchScheduler::PushAndProgressAsync(
 }
 
 void PrefetchScheduler::RemoveAndProgressAsync(
-    PrefetchContainer& prefetch_container,
+    const PrefetchContainer& prefetch_container,
     bool should_progress) {
   TRACE_EVENT("loading", "PrefetchScheduler::RemoveAndProgressAsync",
               prefetch_container.request().preload_pipeline_info().GetFlow(),
