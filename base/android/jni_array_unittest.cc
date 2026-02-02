@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <array>
+#include <cstdint>
 #include <limits>
 
 #include "base/android/jni_android.h"
@@ -119,7 +120,7 @@ void CheckIntConversion(JNIEnv* env,
   jsize java_array_len = env->GetArrayLength(ints.obj());
   ASSERT_EQ(checked_cast<jsize>(in.size()), java_array_len);
 
-  jint value;
+  int32_t value;
   for (size_t i = 0; i < in.size(); ++i) {
     env->GetIntArrayRegion(ints.obj(), i, 1, &value);
     ASSERT_EQ(in[i], value);
@@ -142,7 +143,7 @@ void CheckLongConversion(JNIEnv* env,
   jsize java_array_len = env->GetArrayLength(longs.obj());
   ASSERT_EQ(checked_cast<jsize>(in.size()), java_array_len);
 
-  jlong value;
+  int64_t value;
   for (size_t i = 0; i < in.size(); ++i) {
     env->GetLongArrayRegion(longs.obj(), i, 1, &value);
     ASSERT_EQ(in[i], value);
@@ -165,7 +166,7 @@ void CheckFloatConversion(JNIEnv* env,
   jsize java_array_len = env->GetArrayLength(floats.obj());
   ASSERT_EQ(checked_cast<jsize>(in.size()), java_array_len);
 
-  jfloat value;
+  float value;
   for (size_t i = 0; i < in.size(); ++i) {
     env->GetFloatArrayRegion(floats.obj(), i, 1, &value);
     ASSERT_EQ(in[i], value);
@@ -187,7 +188,7 @@ void CheckDoubleConversion(JNIEnv* env,
   jsize java_array_len = env->GetArrayLength(doubles.obj());
   ASSERT_EQ(checked_cast<jsize>(in.size()), java_array_len);
 
-  jdouble value;
+  double value;
   for (size_t i = 0; i < in.size(); ++i) {
     env->GetDoubleArrayRegion(doubles.obj(), i, 1, &value);
     ASSERT_EQ(in[i], value);
@@ -244,7 +245,7 @@ TEST(JniArray, JavaBooleanArrayToBoolVector) {
   ASSERT_TRUE(jbooleans);
 
   for (size_t i = 0; i < kBools.size(); ++i) {
-    jboolean j = static_cast<jboolean>(kBools[i]);
+    jboolean j = kBools[i];
     env->SetBooleanArrayRegion(jbooleans.obj(), i, 1, &j);
     ASSERT_FALSE(HasException(env));
   }
@@ -262,7 +263,7 @@ TEST(JniArray, JavaBooleanArrayToBoolVector) {
 void CheckIntArrayConversion(JNIEnv* env,
                              ScopedJavaLocalRef<jintArray> jints,
                              std::vector<int> int_vector) {
-  jint value;
+  int32_t value;
   for (size_t i = 0; i < int_vector.size(); ++i) {
     env->GetIntArrayRegion(jints.obj(), i, 1, &value);
     ASSERT_EQ(int_vector[i], value);
@@ -278,8 +279,7 @@ TEST(JniArray, JavaIntArrayToIntVector) {
   ASSERT_TRUE(jints);
 
   for (size_t i = 0; i < kInts.size(); ++i) {
-    jint j = static_cast<jint>(kInts[i]);
-    env->SetIntArrayRegion(jints.obj(), i, 1, &j);
+    env->SetIntArrayRegion(jints.obj(), i, 1, &kInts[i]);
     ASSERT_FALSE(HasException(env));
   }
 
@@ -301,8 +301,7 @@ TEST(JniArray, JavaLongArrayToInt64Vector) {
   ASSERT_TRUE(jlongs);
 
   for (size_t i = 0; i < kInt64s.size(); ++i) {
-    jlong j = static_cast<jlong>(kInt64s[i]);
-    env->SetLongArrayRegion(jlongs.obj(), i, 1, &j);
+    env->SetLongArrayRegion(jlongs.obj(), i, 1, &kInt64s[i]);
     ASSERT_FALSE(HasException(env));
   }
 
@@ -313,7 +312,7 @@ TEST(JniArray, JavaLongArrayToInt64Vector) {
             env->GetArrayLength(jlongs.obj()));
   ASSERT_EQ(int64s.size(), kInt64s.size());
 
-  jlong value;
+  int64_t value;
   for (size_t i = 0; i < kInt64s.size(); ++i) {
     env->GetLongArrayRegion(jlongs.obj(), i, 1, &value);
     ASSERT_EQ(int64s[i], value);
@@ -330,19 +329,18 @@ TEST(JniArray, JavaLongArrayToLongVector) {
   ASSERT_TRUE(jlongs);
 
   for (size_t i = 0; i < kInt64s.size(); ++i) {
-    jlong j = static_cast<jlong>(kInt64s[i]);
-    env->SetLongArrayRegion(jlongs.obj(), i, 1, &j);
+    env->SetLongArrayRegion(jlongs.obj(), i, 1, &kInt64s[i]);
     ASSERT_FALSE(HasException(env));
   }
 
-  std::vector<jlong> jlongs_vector;
+  std::vector<int64_t> jlongs_vector;
   JavaLongArrayToLongVector(env, jlongs, &jlongs_vector);
 
   ASSERT_EQ(checked_cast<jsize>(jlongs_vector.size()),
             env->GetArrayLength(jlongs.obj()));
   ASSERT_EQ(jlongs_vector.size(), kInt64s.size());
 
-  jlong value;
+  int64_t value;
   for (size_t i = 0; i < kInt64s.size(); ++i) {
     env->GetLongArrayRegion(jlongs.obj(), i, 1, &value);
     ASSERT_EQ(jlongs_vector[i], value);
@@ -358,8 +356,7 @@ TEST(JniArray, JavaFloatArrayToFloatVector) {
   ASSERT_TRUE(jfloats);
 
   for (size_t i = 0; i < kFloats.size(); ++i) {
-    jfloat j = static_cast<jfloat>(kFloats[i]);
-    env->SetFloatArrayRegion(jfloats.obj(), i, 1, &j);
+    env->SetFloatArrayRegion(jfloats.obj(), i, 1, &kFloats[i]);
     ASSERT_FALSE(HasException(env));
   }
 
@@ -370,7 +367,7 @@ TEST(JniArray, JavaFloatArrayToFloatVector) {
             env->GetArrayLength(jfloats.obj()));
   ASSERT_EQ(floats.size(), kFloats.size());
 
-  jfloat value;
+  float value;
   for (size_t i = 0; i < kFloats.size(); ++i) {
     env->GetFloatArrayRegion(jfloats.obj(), i, 1, &value);
     ASSERT_EQ(floats[i], value);
@@ -386,7 +383,7 @@ TEST(JniArray, JavaDoubleArrayToDoubleVector) {
   ASSERT_TRUE(jdoubles);
 
   env->SetDoubleArrayRegion(jdoubles.obj(), 0, kDoubles.size(),
-                            reinterpret_cast<const jdouble*>(kDoubles.data()));
+                            reinterpret_cast<const double*>(kDoubles.data()));
   ASSERT_FALSE(HasException(env));
 
   std::vector<double> doubles;

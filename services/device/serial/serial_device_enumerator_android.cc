@@ -6,6 +6,8 @@
 
 #include <fcntl.h>
 
+#include <cstdint>
+
 #include "base/android/jni_string.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
@@ -28,7 +30,7 @@ void SerialDeviceEnumeratorAndroid::Initialize() {
   }
   JNIEnv* env = AttachCurrentThread();
   j_serial_manager_.Reset(
-      Java_ChromeSerialManager_create(env, reinterpret_cast<jlong>(this)));
+      Java_ChromeSerialManager_create(env, reinterpret_cast<int64_t>(this)));
   if (j_serial_manager_.is_null()) {
     SERIAL_LOG(ERROR) << "Could not find Android Serial Service";
     return;
@@ -84,7 +86,7 @@ void SerialDeviceEnumeratorAndroid::OpenPath(const base::FilePath& path,
 void SerialDeviceEnumeratorAndroid::OpenPathCallbackViaJni(
     JNIEnv* env,
     const std::string& port_name,
-    jint fd) {
+    int32_t fd) {
   auto node = callbacks_.extract(port_name);
   if (node.empty()) {
     return;
@@ -104,12 +106,11 @@ void SerialDeviceEnumeratorAndroid::ErrorCallbackViaJni(
   std::move(node.mapped())->Error(error_name, message);
 }
 
-void SerialDeviceEnumeratorAndroid::AddPortViaJni(
-    JNIEnv* env,
-    const std::string& name,
-    jint vendor_id,
-    jint product_id,
-    jboolean initial_enumeration) {
+void SerialDeviceEnumeratorAndroid::AddPortViaJni(JNIEnv* env,
+                                                  const std::string& name,
+                                                  int32_t vendor_id,
+                                                  int32_t product_id,
+                                                  bool initial_enumeration) {
   if (initial_enumeration) {
     // The class constructor invokes create() via JNI, which invokes this method
     // from Java, in this case we are already on the valid sequence.

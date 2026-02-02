@@ -48,7 +48,7 @@ static void JNI_ExtensionTestUtils_SetExtensionActionVisible(
     JNIEnv* env,
     Profile* profile,
     std::string& extension_id,
-    jboolean visible) {
+    bool visible) {
   ToolbarActionsModel::Get(profile)->SetActionVisibility(extension_id, visible);
 }
 

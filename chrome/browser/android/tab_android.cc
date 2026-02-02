@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <cstdint>
 #include <string>
 #include <utility>
 #include <vector>
@@ -457,7 +458,7 @@ void TabAndroid::SendDidInsertUpdate(JNIEnv* env) {
   did_insert_callback_list_.Notify(this);
 }
 
-void TabAndroid::SendWillDetachUpdate(JNIEnv* env, jint detach_reason) {
+void TabAndroid::SendWillDetachUpdate(JNIEnv* env, int32_t detach_reason) {
   will_detach_callback_list_.Notify(
       this, static_cast<tabs::TabInterface::DetachReason>(detach_reason));
 }

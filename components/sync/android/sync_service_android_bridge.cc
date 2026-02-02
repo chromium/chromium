@@ -4,6 +4,7 @@
 
 #include "components/sync/android/sync_service_android_bridge.h"
 
+#include <cstdint>
 #include <map>
 #include <string>
 #include <vector>
@@ -180,14 +181,14 @@ void SyncServiceAndroidBridge::OnSyncShutdown(SyncService* sync) {
 
 void SyncServiceAndroidBridge::AcknowledgeBookmarksLimitExceededError(
     JNIEnv* env,
-    jint source) {
+    int32_t source) {
   native_sync_service_->AcknowledgeBookmarksLimitExceededError(
       static_cast<SyncService::BookmarksLimitExceededHelpClickedSource>(
           source));
 }
 
-jint SyncServiceAndroidBridge::GetBookmarksLimit(JNIEnv* env) {
-  return static_cast<jint>(kSyncBookmarksLimitValue.Get());
+int32_t SyncServiceAndroidBridge::GetBookmarksLimit(JNIEnv* env) {
+  return kSyncBookmarksLimitValue.Get();
 }
 
 bool SyncServiceAndroidBridge::IsSyncFeatureEnabled(JNIEnv* env) {

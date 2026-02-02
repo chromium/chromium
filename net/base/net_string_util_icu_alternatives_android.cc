@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <cstdint>
 #include <string>
 #include <string_view>
 
@@ -127,8 +128,8 @@ bool ToUpperUsingLocale(std::u16string_view str, std::u16string* output) {
   output->clear();
   JNIEnv* env = base::android::AttachCurrentThread();
   auto java_new_str = ScopedJavaLocalRef<jstring>::Adopt(
-      env,
-      env->NewString(reinterpret_cast<const jchar*>(str.data()), str.length()));
+      env, env->NewString(reinterpret_cast<const uint16_t*>(str.data()),
+                          str.length()));
   if (java_new_str.is_null())
     return false;
   ScopedJavaLocalRef<jstring> java_result =

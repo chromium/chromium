@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/android/extensions/extensions_toolbar_android.h"
 
+#include <cstdint>
+
 #include "base/android/jni_string.h"
 #include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
@@ -47,7 +49,7 @@ void ExtensionsToolbarAndroid::TriggerPopup(
     std::unique_ptr<ExtensionViewHost> host) {
   Java_ExtensionsToolbarBridge_triggerPopup(
       AttachCurrentThread(), java_object_, action_id,
-      reinterpret_cast<jlong>(host.release()));
+      reinterpret_cast<int64_t>(host.release()));
 }
 
 std::unique_ptr<ExtensionActionViewModel>

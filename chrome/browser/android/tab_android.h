@@ -7,6 +7,7 @@
 
 #include <jni.h>
 
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
@@ -192,7 +193,7 @@ class TabAndroid : public tabs::TabInterface,
       const base::android::JavaRef<jobject>& jcontext_menu_populator_factory);
   void SendDidActivateUpdate(JNIEnv* env);
   void SendWillDeactivateUpdate(JNIEnv* env);
-  void SendWillDetachUpdate(JNIEnv* env, jint detach_reason);
+  void SendWillDetachUpdate(JNIEnv* env, int32_t detach_reason);
   void SendDidInsertUpdate(JNIEnv* env);
   void DestroyWebContents();
   void ReleaseWebContents();

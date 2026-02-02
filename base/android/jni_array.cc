@@ -4,6 +4,8 @@
 
 #include "base/android/jni_array.h"
 
+#include <cstdint>
+
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/check_op.h"
@@ -30,11 +32,9 @@ ScopedJavaLocalRef<jbyteArray> ToJavaByteArray(
   CheckException(env);
   DCHECK(byte_array);
 
-  static_assert(sizeof(jbyte) == sizeof(uint8_t));
-  static_assert(alignof(jbyte) <= alignof(uint8_t));
   env->SetByteArrayRegion(byte_array, jsize{0},
                           checked_cast<jsize>(bytes.size()),
-                          reinterpret_cast<const jbyte*>(bytes.data()));
+                          reinterpret_cast<const int8_t*>(bytes.data()));
   CheckException(env);
 
   return ScopedJavaLocalRef<jbyteArray>::Adopt(env, byte_array);
@@ -61,8 +61,6 @@ ScopedJavaLocalRef<jbooleanArray> ToJavaBooleanArray(JNIEnv* env,
   CheckException(env);
   DCHECK(boolean_array);
 
-  static_assert(sizeof(jboolean) == sizeof(bool));
-  static_assert(alignof(jboolean) <= alignof(bool));
   env->SetBooleanArrayRegion(boolean_array, jsize{0},
                              checked_cast<jsize>(bools.size()),
                              reinterpret_cast<const jboolean*>(bools.data()));
@@ -77,10 +75,8 @@ ScopedJavaLocalRef<jintArray> ToJavaIntArray(JNIEnv* env,
   CheckException(env);
   DCHECK(int_array);
 
-  static_assert(sizeof(jint) == sizeof(int32_t));
-  static_assert(alignof(jint) <= alignof(int32_t));
   env->SetIntArrayRegion(int_array, jsize{0}, checked_cast<jsize>(ints.size()),
-                         reinterpret_cast<const jint*>(ints.data()));
+                         reinterpret_cast<const int32_t*>(ints.data()));
   CheckException(env);
 
   return ScopedJavaLocalRef<jintArray>::Adopt(env, int_array);
@@ -94,11 +90,9 @@ BASE_EXPORT ScopedJavaLocalRef<jlongArray> ToJavaLongArray(
   CheckException(env);
   DCHECK(long_array);
 
-  static_assert(sizeof(jlong) == sizeof(int64_t));
-  static_assert(alignof(jlong) <= alignof(int64_t));
   env->SetLongArrayRegion(long_array, jsize{0},
                           checked_cast<jsize>(longs.size()),
-                          reinterpret_cast<const jlong*>(longs.data()));
+                          reinterpret_cast<const int64_t*>(longs.data()));
   CheckException(env);
 
   return ScopedJavaLocalRef<jlongArray>::Adopt(env, long_array);
@@ -112,11 +106,9 @@ BASE_EXPORT ScopedJavaLocalRef<jfloatArray> ToJavaFloatArray(
   CheckException(env);
   DCHECK(float_array);
 
-  static_assert(sizeof(jfloat) == sizeof(float));
-  static_assert(alignof(jfloat) <= alignof(float));
   env->SetFloatArrayRegion(float_array, jsize{0},
                            checked_cast<jsize>(floats.size()),
-                           reinterpret_cast<const jfloat*>(floats.data()));
+                           reinterpret_cast<const float*>(floats.data()));
   CheckException(env);
 
   return ScopedJavaLocalRef<jfloatArray>::Adopt(env, float_array);
@@ -130,11 +122,9 @@ BASE_EXPORT ScopedJavaLocalRef<jdoubleArray> ToJavaDoubleArray(
   CheckException(env);
   DCHECK(double_array);
 
-  static_assert(sizeof(jdouble) == sizeof(double));
-  static_assert(alignof(jdouble) <= alignof(double));
   env->SetDoubleArrayRegion(double_array, jsize{0},
                             checked_cast<jsize>(doubles.size()),
-                            reinterpret_cast<const jdouble*>(doubles.data()));
+                            reinterpret_cast<const double*>(doubles.data()));
   CheckException(env);
 
   return ScopedJavaLocalRef<jdoubleArray>::Adopt(env, double_array);
@@ -353,11 +343,9 @@ void AppendJavaByteArrayToByteVector(JNIEnv* env,
   out->resize(out->size() + len);
   span<uint8_t> back = span(*out).last(len);
 
-  static_assert(sizeof(jbyte) == sizeof(uint8_t));
-  static_assert(alignof(jbyte) <= alignof(uint8_t));
   env->GetByteArrayRegion(byte_array.obj(), jsize{0},
                           checked_cast<jsize>(back.size()),
-                          reinterpret_cast<jbyte*>(back.data()));
+                          reinterpret_cast<int8_t*>(back.data()));
 }
 
 void JavaByteArrayToByteVector(JNIEnv* env,
@@ -376,11 +364,9 @@ size_t JavaByteArrayToByteSpan(JNIEnv* env,
   size_t len = SafeGetArrayLength(env, byte_array);
   span<uint8_t> copy_dest = dest.first(len);
 
-  static_assert(sizeof(jbyte) == sizeof(uint8_t));
-  static_assert(alignof(jbyte) <= alignof(uint8_t));
   env->GetByteArrayRegion(byte_array.obj(), jsize{0},
                           checked_cast<jsize>(copy_dest.size()),
-                          reinterpret_cast<jbyte*>(copy_dest.data()));
+                          reinterpret_cast<int8_t*>(copy_dest.data()));
   return len;
 }
 
@@ -438,7 +424,7 @@ void JavaLongArrayToInt64Vector(JNIEnv* env,
                                 const JavaRef<jlongArray>& long_array,
                                 std::vector<int64_t>* out) {
   DCHECK(out);
-  std::vector<jlong> temp;
+  std::vector<int64_t> temp;
   JavaLongArrayToLongVector(env, long_array, &temp);
   out->resize(0);
   Extend(*out, temp);
@@ -446,7 +432,7 @@ void JavaLongArrayToInt64Vector(JNIEnv* env,
 
 void JavaLongArrayToLongVector(JNIEnv* env,
                                const JavaRef<jlongArray>& long_array,
-                               std::vector<jlong>* out) {
+                               std::vector<int64_t>* out) {
   DCHECK(out);
   size_t len = SafeGetArrayLength(env, long_array);
   out->resize(len);
@@ -503,7 +489,7 @@ void JavaArrayOfByteArrayToStringVector(JNIEnv* env,
       (*out)[i].clear();
       continue;
     }
-    span<jbyte> bytes = UNSAFE_BUFFERS(
+    span<int8_t> bytes = UNSAFE_BUFFERS(
         span(env->GetByteArrayElements(bytes_array.obj(), nullptr), bytes_len));
     (*out)[i] = base::as_string_view(base::as_bytes(bytes));
     env->ReleaseByteArrayElements(bytes_array.obj(), bytes.data(), JNI_ABORT);

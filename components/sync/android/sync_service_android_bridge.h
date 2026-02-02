@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SYNC_ANDROID_SYNC_SERVICE_ANDROID_BRIDGE_H_
 #define COMPONENTS_SYNC_ANDROID_SYNC_SERVICE_ANDROID_BRIDGE_H_
 
+#include <cstdint>
 #include <memory>
 
 #include "base/android/scoped_java_ref.h"
@@ -44,8 +45,8 @@ class SyncServiceAndroidBridge : public SyncServiceObserver {
 
   // Please keep all methods below in the same order as the @NativeMethods in
   // SyncServiceImpl.java.
-  void AcknowledgeBookmarksLimitExceededError(JNIEnv* env, jint source);
-  jint GetBookmarksLimit(JNIEnv* env);
+  void AcknowledgeBookmarksLimitExceededError(JNIEnv* env, int32_t source);
+  int32_t GetBookmarksLimit(JNIEnv* env);
   bool IsSyncFeatureEnabled(JNIEnv* env);
   bool IsSyncFeatureActive(JNIEnv* env);
   bool IsSyncDisabledByEnterprisePolicy(JNIEnv* env);

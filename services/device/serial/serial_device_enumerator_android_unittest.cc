@@ -6,6 +6,8 @@
 
 #include <fcntl.h>
 
+#include <cstdint>
+
 #include "base/android/jni_string.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -26,7 +28,7 @@ class SerialDeviceEnumeratorAndroidTest : public testing::Test {
     JNIEnv* env = jni_zero::AttachCurrentThread();
     enumerator->SetSerialManagerForTesting(
         Java_CppTestHelper_createFakeSerialManager(
-            env, reinterpret_cast<jlong>(enumerator.get())));
+            env, reinterpret_cast<int64_t>(enumerator.get())));
     return enumerator;
   }
 

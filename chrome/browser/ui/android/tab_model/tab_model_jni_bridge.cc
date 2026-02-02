@@ -7,6 +7,7 @@
 #include <jni.h>
 #include <stdint.h>
 
+#include <cstdint>
 #include <set>
 #include <utility>
 
@@ -698,7 +699,7 @@ void TabModelJniBridge::SetTabGroupVisualData(
   // Java.
   Java_TabModelJniBridge_setTabGroupVisualData(
       env, jobj, group_id.token(), visual_data.title(),
-      static_cast<jint>(visual_data.color()), visual_data.is_collapsed(),
+      std::to_underlying(visual_data.color()), visual_data.is_collapsed(),
       /*animate=*/false);
 }
 
@@ -834,7 +835,7 @@ static int64_t JNI_TabModelJniBridge_Init(JNIEnv* env,
                                           const JavaRef<jobject>& obj,
                                           Profile* profile,
                                           int32_t j_activity_type,
-                                          jint j_tab_model_type) {
+                                          int32_t j_tab_model_type) {
   TabModel* tab_model = new TabModelJniBridge(
       env, obj, profile, static_cast<ActivityType>(j_activity_type),
       static_cast<TabModel::TabModelType>(j_tab_model_type));

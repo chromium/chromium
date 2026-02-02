@@ -38,7 +38,7 @@ static int64_t JNI_CompositorViewImpl_Init(
   return reinterpret_cast<intptr_t>(compositor_view.release());
 }
 
-static jboolean JNI_CompositorViewImpl_ShouldUseSurfaceView(JNIEnv* env) {
+static bool JNI_CompositorViewImpl_ShouldUseSurfaceView(JNIEnv* env) {
   return base::FeatureList::IsEnabled(
       thin_webview::android::kUseSurfaceViewForThinWebView);
 }
