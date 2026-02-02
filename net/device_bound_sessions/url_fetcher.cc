@@ -99,7 +99,9 @@ void URLFetcher::OnResponseStarted(URLRequest* request, int net_error) {
 }
 
 void URLFetcher::OnReadCompleted(URLRequest* request, int bytes_read_or_error) {
-  data_received_.append(buf_->data(), bytes_read_or_error);
+  if (bytes_read_or_error > 0) {
+    data_received_.append(buf_->data(), bytes_read_or_error);
+  }
 
   while (bytes_read_or_error > 0) {
     bytes_read_or_error = request->Read(buf_.get(), kBufferSize);

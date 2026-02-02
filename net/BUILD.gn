@@ -3565,6 +3565,7 @@ target(_test_target_type, "net_unittests") {
       "device_bound_sessions/session_store_unittest.cc",
       "device_bound_sessions/session_unittest.cc",
       "device_bound_sessions/unexportable_key_service_factory_unittest.cc",
+      "device_bound_sessions/url_fetcher_unittest.cc",
     ]
     deps += [
       ":device_bound_sessions_storage_proto",

@@ -5,6 +5,7 @@
 #ifndef NET_DEVICE_BOUND_SESSIONS_URL_FETCHER_H_
 #define NET_DEVICE_BOUND_SESSIONS_URL_FETCHER_H_
 
+#include "net/base/net_export.h"
 #include "net/url_request/url_request.h"
 
 namespace net {
@@ -13,7 +14,7 @@ class URLRequestContext;
 
 namespace net::device_bound_sessions {
 
-class URLFetcher : public URLRequest::Delegate {
+class NET_EXPORT URLFetcher : public URLRequest::Delegate {
  public:
   URLFetcher(const URLRequestContext* context,
              GURL url,
