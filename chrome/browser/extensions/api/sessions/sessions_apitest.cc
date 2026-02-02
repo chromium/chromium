@@ -30,9 +30,12 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
+#include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -55,6 +58,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_builder.h"
 #include "google_apis/gaia/gaia_id.h"
+#include "ui/base/base_window.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
@@ -75,6 +79,47 @@ constexpr std::array kSessionTags = {"tag0", "tag1", "tag2", "tag3", "tag4"};
 constexpr auto kTabIDs = std::to_array<SessionID::id_type>({5, 10, 13, 17});
 constexpr int kActiveTabIndex = 2;
 constexpr int kActiveTabId = kTabIDs[kActiveTabIndex];
+
+// Observes the global list of BrowserWindowInterfaces and waits for a specified
+// browser to close.
+class BrowserCloseWaiter : public BrowserCollectionObserver {
+ public:
+  explicit BrowserCloseWaiter(BrowserWindowInterface* browser)
+      : browser_(browser) {
+    observation_.Observe(GlobalBrowserCollection::GetInstance());
+  }
+
+  BrowserCloseWaiter(const BrowserCloseWaiter&) = delete;
+  BrowserCloseWaiter& operator=(const BrowserCloseWaiter&) = delete;
+
+  ~BrowserCloseWaiter() override = default;
+
+  void Wait() {
+    if (closed_) {
+      return;
+    }
+    run_loop_.Run();
+  }
+
+ protected:
+  // BrowserCollectionObserver:
+  void OnBrowserClosed(BrowserWindowInterface* browser) override {
+    if (browser == browser_) {
+      browser_ = nullptr;
+      closed_ = true;
+      if (run_loop_.running()) {
+        run_loop_.Quit();
+      }
+    }
+  }
+
+ private:
+  raw_ptr<BrowserWindowInterface> browser_;
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      observation_{this};
+  bool closed_ = false;
+  base::RunLoop run_loop_;
+};
 
 void BuildSessionSpecifics(const std::string& tag,
                            sync_pb::SessionSpecifics* meta) {
@@ -364,6 +409,72 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, RestoreNonEditableTabstrip) {
       base::MatchPattern(error, ExtensionTabUtil::kTabStripNotEditableError))
       << error;
 }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// Tests chrome.sessions.getRecentlyClosed() for windows. Opens a second browser
+// window with two tabs, closes it, then calls the extension API function and
+// verifies one window with two tabs was recently closed.
+// TODO(crbug.com/405219627): Port to desktop Android once window restore is
+// supported.
+IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, GetRecentlyClosedWindow) {
+  // Open a second window.
+  BrowserWindowInterface* browser2 =
+      CreateBrowserWindowWithType(BrowserWindowInterface::TYPE_NORMAL);
+
+  // Ensure 2 tabs are created.
+  auto* tab_list2 = TabListInterface::From(browser2);
+  ASSERT_TRUE(tab_list2);
+  // Platforms like Win/Mac/Linux create browsers with no tabs, whereas Android
+  // creates browsers with a single tab.
+  if (tab_list2->GetTabCount() == 0) {
+    tab_list2->OpenTab(GURL("about:blank"), /*index=*/-1);
+  }
+  tab_list2->OpenTab(GURL("about:blank"), /*index=*/-1);
+  ASSERT_EQ(2, tab_list2->GetTabCount());
+
+  // Navigate each tab, otherwise window close does not persist them in the tab
+  // restore service.
+  for (int i = 0; i < tab_list2->GetTabCount(); ++i) {
+    content::WebContents* tab = tab_list2->GetTab(i)->GetContents();
+    ASSERT_TRUE(NavigateToURL(tab, GURL("chrome://version/")));
+  }
+
+  // Close the second window and wait for it to close.
+  BrowserCloseWaiter waiter(browser2);
+  browser2->GetWindow()->Close();
+  waiter.Wait();
+
+  // chrome.sessions.getRecentlyClosed() should return 1 entry.
+  std::optional<base::Value> result = utils::RunFunctionAndReturnSingleResult(
+      CreateFunction<SessionsGetRecentlyClosedFunction>(true).get(), "[]",
+      GetProfile());
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(result->is_list());
+  EXPECT_EQ(1u, result->GetList().size());
+
+  // The entry should be a session dict.
+  const base::DictValue* session_dict = result->GetList()[0].GetIfDict();
+  ASSERT_TRUE(session_dict);
+
+  // The session contains a window dict.
+  const base::DictValue* window_dict = session_dict->FindDict("window");
+  ASSERT_TRUE(window_dict) << "Window information is missing from the session.";
+
+  // The window has a list of 2 tabs.
+  const base::ListValue* tabs = window_dict->FindList("tabs");
+  ASSERT_TRUE(tabs) << "Tabs information missing from the window dict.";
+  EXPECT_EQ(2u, tabs->size());
+
+  // The URLs are chrome://version/.
+  for (size_t i = 0; i < tabs->size(); ++i) {
+    const base::DictValue* tab = (*tabs)[i].GetIfDict();
+    ASSERT_TRUE(tab) << i;
+    const std::string* url = tab->FindString("url");
+    ASSERT_TRUE(url) << i;
+    EXPECT_EQ("chrome://version/", *url) << i;
+  }
+}
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, GetRecentlyClosedIncognito) {
   base::ListValue sessions(
