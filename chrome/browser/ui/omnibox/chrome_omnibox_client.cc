@@ -935,8 +935,6 @@ void ChromeOmniboxClient::DoPrerender(const AutocompleteMatch& match) {
     return;
   }
 
-  // TODO(crbug.com/40208255): Refactor relevant code to reuse common
-  // code, and ensure metrics are correctly recorded.
   DCHECK(!AutocompleteMatch::IsSearchType(match.type));
 
   predictors::AutocompleteActionPredictorFactory::GetForProfile(profile_)
