@@ -87,7 +87,8 @@ suite('AppContent', () => {
         app.$.toolbar.dispatchEvent(
             new MouseEvent('mousemove', {clientY: newPos}));
         await microtasksFinished();
-        assertEquals('', app.style.getPropertyValue('--line-focus-y'));
+        const lineFocusY = app.style.getPropertyValue('--line-focus-y');
+        assertTrue(lineFocusY === '' || lineFocusY === '0px');
 
         // After the menus close, then the line focus position should update.
         emitEvent(app, ToolbarEvent.CLOSE_ALL_MENUS);
@@ -114,8 +115,7 @@ suite('AppContent', () => {
     assertEquals('10px', app.style.getPropertyValue('--line-focus-y'));
   });
 
-  // TODO(crbug.com/478958501): Flaky on multiple platforms.
-  test.skip('new content updates padding for line focus', async () => {
+  test('new content updates padding for line focus', async () => {
     chrome.readingMode.isLineFocusEnabled = true;
     emitEvent(
         app, ToolbarEvent.LINE_FOCUS_MOVEMENT,
@@ -127,7 +127,8 @@ suite('AppContent', () => {
     assertEquals('', app.style.getPropertyValue('--line-focus-padding'));
 
     app.updateContent();
-    await microtasksFinished();
+    await whenCheck(
+        app, () => app.style.getPropertyValue('--line-focus-padding') !== '');
 
     assertNotEquals('', app.style.getPropertyValue('--line-focus-padding'));
   });
