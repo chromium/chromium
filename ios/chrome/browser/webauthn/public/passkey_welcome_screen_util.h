@@ -9,10 +9,7 @@
 
 #import <string>
 
-#import "base/ios/block_types.h"
-namespace webauthn {
-enum class PasskeyWelcomeScreenPurpose;
-}  // namespace webauthn
+#import "components/webauthn/ios/passkey_types.h"
 
 @protocol PasskeyWelcomeScreenViewControllerDelegate;
 
@@ -23,7 +20,7 @@ void CreateAndPresentPasskeyWelcomeScreen(
     webauthn::PasskeyWelcomeScreenPurpose purpose,
     UINavigationController* navigationController,
     id<PasskeyWelcomeScreenViewControllerDelegate> delegate,
-    ProceduralBlock primaryButtonAction,
+    webauthn::PasskeyWelcomeScreenAction primaryButtonAction,
     std::string userEmail);
 
 #endif  // IOS_CHROME_BROWSER_WEBAUTHN_PUBLIC_PASSKEY_WELCOME_SCREEN_UTIL_H_

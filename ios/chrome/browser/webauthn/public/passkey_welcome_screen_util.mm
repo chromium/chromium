@@ -6,7 +6,6 @@
 
 #import "base/check.h"
 #import "base/strings/utf_string_conversions.h"
-#import "components/webauthn/ios/passkey_types.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/create_password_manager_title_view.h"
 #import "ios/chrome/common/credential_provider/ui/passkey_welcome_screen_strings.h"
 #import "ios/chrome/common/credential_provider/ui/passkey_welcome_screen_view_controller.h"
@@ -98,7 +97,7 @@ void CreateAndPresentPasskeyWelcomeScreen(
     PasskeyWelcomeScreenPurpose purpose,
     UINavigationController* navigationController,
     id<PasskeyWelcomeScreenViewControllerDelegate> delegate,
-    ProceduralBlock primaryButtonAction,
+    webauthn::PasskeyWelcomeScreenAction primaryButtonAction,
     std::string userEmail) {
   CHECK(navigationController);
   CHECK(delegate);

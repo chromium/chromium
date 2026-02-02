@@ -16,6 +16,7 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/webauthn/core/browser/passkey_model.h"
+#import "components/webauthn/ios/passkey_types.h"
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/credential_exchange/coordinator/credential_import_mediator.h"
 #import "ios/chrome/browser/credential_exchange/public/credential_import_stage.h"
@@ -196,7 +197,6 @@
               metrics::prefs::kMetricsReportingEnabled);
       _passkeyKeychainProviderBridge = [[PasskeyKeychainProviderBridge alloc]
             initWithEnableLogging:metricsReportingEnabled
-             navigationController:_navigationController
           navigationItemTitleView:
               password_manager::CreatePasswordManagerTitleView(
                   l10n_util::GetNSString(IDS_IOS_PASSWORD_MANAGER))];
@@ -285,7 +285,8 @@
 
 - (void)showWelcomeScreenWithPurpose:
             (webauthn::PasskeyWelcomeScreenPurpose)purpose
-                          completion:(ProceduralBlock)completion {
+                          completion:
+                              (webauthn::PasskeyWelcomeScreenAction)completion {
   CreateAndPresentPasskeyWelcomeScreen(purpose, _navigationController,
                                        /*delegate=*/self, completion,
                                        _userEmail);

@@ -5,7 +5,6 @@
 #import "ios/chrome/common/credential_provider/ui/passkey_welcome_screen_view_controller.h"
 
 #import "base/notreached.h"
-#import "components/webauthn/ios/passkey_types.h"
 #import "ios/chrome/common/credential_provider/ui/passkey_welcome_screen_strings.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -59,7 +58,7 @@ NSString* GetBannerName(PasskeyWelcomeScreenPurpose purpose) {
       _passkeyWelcomeScreenViewControllerDelegate;
 
   // The block that should be executed when the primary button is tapped.
-  ProceduralBlock _primaryButtonAction;
+  webauthn::PasskeyWelcomeScreenAction _primaryButtonAction;
 
   // Contains all the strings that need to be displayed in the view.
   PasskeyWelcomeScreenStrings* _strings;
@@ -69,7 +68,8 @@ NSString* GetBannerName(PasskeyWelcomeScreenPurpose purpose) {
        navigationItemTitleView:(UIView*)navigationItemTitleView
                       delegate:(id<PasskeyWelcomeScreenViewControllerDelegate>)
                                    delegate
-           primaryButtonAction:(ProceduralBlock)primaryButtonAction
+           primaryButtonAction:
+               (webauthn::PasskeyWelcomeScreenAction)primaryButtonAction
                        strings:(PasskeyWelcomeScreenStrings*)strings {
   self = [super initWithTaskRunner:nullptr];
   if (self) {
@@ -166,7 +166,7 @@ NSString* GetBannerName(PasskeyWelcomeScreenPurpose purpose) {
   }
 
   CHECK(_primaryButtonAction);
-  _primaryButtonAction();
+  _primaryButtonAction(self.navigationController);
 }
 
 - (void)didTapSecondaryActionButton {

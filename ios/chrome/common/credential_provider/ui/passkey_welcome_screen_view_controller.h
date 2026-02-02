@@ -8,11 +8,8 @@
 #import <UIKit/UIKit.h>
 
 #import "base/ios/block_types.h"
+#import "components/webauthn/ios/passkey_types.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
-
-namespace webauthn {
-enum class PasskeyWelcomeScreenPurpose;
-}  // namespace webauthn
 
 @class PasskeyWelcomeScreenStrings;
 @class PasskeyWelcomeScreenViewController;
@@ -40,7 +37,8 @@ enum class PasskeyWelcomeScreenPurpose;
        navigationItemTitleView:(UIView*)navigationItemTitleView
                       delegate:(id<PasskeyWelcomeScreenViewControllerDelegate>)
                                    delegate
-           primaryButtonAction:(ProceduralBlock)primaryButtonAction
+           primaryButtonAction:
+               (webauthn::PasskeyWelcomeScreenAction)primaryButtonAction
                        strings:(PasskeyWelcomeScreenStrings*)strings
     NS_DESIGNATED_INITIALIZER;
 

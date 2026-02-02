@@ -5,12 +5,20 @@
 #ifndef COMPONENTS_WEBAUTHN_IOS_PASSKEY_TYPES_H_
 #define COMPONENTS_WEBAUTHN_IOS_PASSKEY_TYPES_H_
 
+#import <UIKit/UIKit.h>
+
 #import <vector>
 
 #import "base/functional/callback_forward.h"
 
 // Type definitions generally useful for passkey requests.
 namespace webauthn {
+
+// Block type used for the completion of the primary action button tap in
+// passkey welcome screen, passing the navigation controller that displayed the
+// screen.
+typedef void (^PasskeyWelcomeScreenAction)(
+    UINavigationController* navigationController);
 
 // The client-defined purpose of the reauthentication flow.
 enum class ReauthenticatePurpose {

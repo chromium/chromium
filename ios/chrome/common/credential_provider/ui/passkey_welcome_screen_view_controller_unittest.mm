@@ -5,7 +5,6 @@
 #import "ios/chrome/common/credential_provider/ui/passkey_welcome_screen_view_controller.h"
 
 #import "base/test/task_environment.h"
-#import "components/webauthn/ios/passkey_types.h"
 #import "ios/chrome/common/credential_provider/ui/passkey_welcome_screen_strings.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"

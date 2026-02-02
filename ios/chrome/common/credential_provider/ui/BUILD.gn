@@ -31,7 +31,6 @@ source_set("unit_tests") {
     ":ui",
     "//base",
     "//base/test:test_support",
-    "//components/webauthn/ios:passkey_types",
     "//ios/chrome/common/ui/button_stack",
     "//ios/chrome/common/ui/colors",
     "//testing/gtest",
