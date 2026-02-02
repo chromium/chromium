@@ -62,6 +62,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -834,6 +835,18 @@ void HTMLTextAreaElement::SetFocused(bool is_focused,
     SetUserHasEditedTheFieldAndBlurred();
   }
   TextControlElement::SetFocused(is_focused, focus_type);
+}
+
+std::unique_ptr<JSONObject> HTMLTextAreaElement::GetWebMCPParameterSchema()
+    const {
+  auto schema = std::make_unique<JSONObject>();
+  schema->SetString("type", "string");
+  return schema;
+}
+
+void HTMLTextAreaElement::FillWebMCPData(JSONValue& data) {
+  String selected_value = GetMCPJSONValue(data);
+  SetValue(selected_value);
 }
 
 }  // namespace blink

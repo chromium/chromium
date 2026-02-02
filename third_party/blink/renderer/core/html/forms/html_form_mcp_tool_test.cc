@@ -6,6 +6,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/json/json_parser.h"
@@ -23,6 +24,11 @@ class HTMLFormMcpToolTest : public PageTestBase {
 
   HTMLFormElement* GetFormElement(const char* id) {
     return DynamicTo<HTMLFormElement>(
+        GetDocument().getElementById(AtomicString(id)));
+  }
+
+  HTMLTextAreaElement* GetTextAreaElement(const char* id) {
+    return DynamicTo<HTMLTextAreaElement>(
         GetDocument().getElementById(AtomicString(id)));
   }
 
@@ -1047,6 +1053,59 @@ TEST_F(HTMLFormMcpToolTest, FillFormControls_DateInput) {
   HTMLInputElement* date1 = GetInputElement("date1");
   ASSERT_TRUE(date1);
   EXPECT_EQ("2026-01-27", date1->Value());
+}
+
+TEST_F(HTMLFormMcpToolTest, ParameterSchema_TextArea) {
+  SetBodyInnerHTML(
+      R"HTML(
+    <form id="form" toolname="mytool" tooldescription="perform task">
+      <textarea name="area1">
+    </form>
+  )HTML");
+
+  HTMLFormElement* form_element = GetFormElement("form");
+  ASSERT_TRUE(form_element);
+  ASSERT_TRUE(IsValidWebMCPForm(*form_element));
+  String actual = ComputeInputSchema(*form_element);
+  std::unique_ptr<JSONValue> expected_json = ParseJSON(R"JSON(
+    {
+      "type": "object",
+      "properties": {
+         "area1": {
+           "type": "string"
+         }
+      },
+      "required": []
+    }
+  )JSON");
+  ASSERT_TRUE(expected_json);
+  EXPECT_EQ(expected_json->ToJSONString(), actual);
+}
+
+TEST_F(HTMLFormMcpToolTest, FillFormControls_TextArea) {
+  SetBodyInnerHTML(
+      R"HTML(
+    <form id=form toolname="mytool" tooldescription="perform task">
+      <textarea id=area1 name=area1>
+    </form>
+  )HTML");
+
+  HTMLFormElement* form_element = GetFormElement("form");
+  ASSERT_TRUE(form_element);
+  ASSERT_TRUE(IsValidWebMCPForm(*form_element));
+
+  String json_string =
+      R"JSON(
+        {
+          "area1": "This is textarea content"
+        }
+      )JSON";
+
+  EXPECT_TRUE(FillFormControls(*form_element, json_string));
+
+  HTMLTextAreaElement* area1 = GetTextAreaElement("area1");
+  ASSERT_TRUE(area1);
+  EXPECT_EQ("This is textarea content", area1->Value());
 }
 
 }  // namespace blink
