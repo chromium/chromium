@@ -193,7 +193,6 @@ class PLATFORM_EXPORT FontDescription {
   FamilyDescription GetFamilyDescription() const {
     return FamilyDescription(GenericFamily(), Family());
   }
-  const FontFamily& FirstFamily() const { return family_list_; }
   Size GetSize() const {
     return Size(KeywordSize(), SpecifiedSize(), IsAbsoluteSize());
   }

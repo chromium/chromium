@@ -5336,9 +5336,8 @@ TEST_F(AIPageContentAgentTest, IframeInlineTextClippedWhenViewportScrolled) {
   EXPECT_NEAR(iframe_style.ComputedFontSize(), 10.0f, 0.01f);
   EXPECT_NEAR(iframe_style.GetFont()->GetFontDescription().ComputedSize(),
               10.0f, 0.01f);
-  EXPECT_EQ(
-      AtomicString("Ahem"),
-      iframe_style.GetFont()->GetFontDescription().FirstFamily().FamilyName());
+  EXPECT_EQ(AtomicString("Ahem"),
+            iframe_style.GetFont()->GetFontDescription().Family().FamilyName());
 
   EXPECT_EQ(gfx::Rect(0, -15, 70, 40), geometry.outer_bounding_box);
   EXPECT_EQ(gfx::Rect(0, 0, 70, 25), geometry.visible_bounding_box);
