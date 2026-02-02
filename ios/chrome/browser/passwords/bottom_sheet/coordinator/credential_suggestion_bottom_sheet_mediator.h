@@ -8,10 +8,8 @@
 #import <optional>
 #import <vector>
 
-#import "base/ios/block_types.h"
 #import "base/memory/scoped_refptr.h"
-#import "ios/chrome/browser/passwords/bottom_sheet/coordinator/password_suggestion_bottom_sheet_exit_reason.h"
-#import "ios/chrome/browser/passwords/bottom_sheet/ui/credential_suggestion_bottom_sheet_delegate.h"
+#import "ios/chrome/browser/passwords/bottom_sheet/coordinator/credential_suggestion_bottom_sheet_mediator_base.h"
 
 namespace autofill {
 struct FormActivityParams;
@@ -37,7 +35,6 @@ class GURL;
 
 @class FormSuggestion;
 
-@protocol CredentialSuggestionBottomSheetConsumer;
 @protocol CredentialSuggestionBottomSheetPresenter;
 @protocol ReauthenticationProtocol;
 
@@ -45,7 +42,7 @@ class GURL;
 // It also manages filling the form when a suggestion is selected, as well
 // as showing the keyboard if requested when the bottom sheet is dismissed.
 @interface CredentialSuggestionBottomSheetMediator
-    : NSObject <CredentialSuggestionBottomSheetDelegate>
+    : CredentialSuggestionBottomSheetMediatorBase
 
 - (instancetype)
       initWithWebStateList:(WebStateList*)webStateList
@@ -66,33 +63,10 @@ class GURL;
                  presenter:
                      (id<CredentialSuggestionBottomSheetPresenter>)presenter;
 
-// Disconnects the mediator.
-- (void)disconnect;
-
-// Whether the mediator has any suggestions for the user.
-- (BOOL)hasSuggestions;
-
-// Return the credential associated with the form suggestion. It is an optional,
-// in case the credential can't be find.
+// Returns the credential associated with the form suggestion. It is an
+// optional, in case the credential can't be found.
 - (std::optional<password_manager::CredentialUIEntry>)
     getCredentialForFormSuggestion:(FormSuggestion*)formSuggestion;
-
-// The bottom sheet suggestions consumer.
-@property(nonatomic, strong) id<CredentialSuggestionBottomSheetConsumer>
-    consumer;
-
-// Logs bottom sheet exit reasons, like dismissal or using a credential.
-- (void)logExitReason:(PasswordSuggestionBottomSheetExitReason)exitReason;
-
-// Sends the information about which suggestion from the bottom sheet was
-// selected by the user, which is expected to fill the relevant fields.
-- (void)didSelectSuggestion:(FormSuggestion*)formSuggestion
-                    atIndex:(NSInteger)index
-                 completion:(ProceduralBlock)completion;
-
-// Handler called to perform operations (e.g. increment the dismiss count) when
-// the sheet was dismissed without using any credential action.
-- (void)onDismissWithoutAnyCredentialAction;
 
 // Refocuses the login field that was blurred to show this bottom sheet, if
 // deemded needed.

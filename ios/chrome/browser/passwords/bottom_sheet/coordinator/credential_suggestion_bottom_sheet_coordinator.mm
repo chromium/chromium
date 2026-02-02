@@ -6,6 +6,7 @@
 
 #import <optional>
 
+#import "base/apple/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/not_fatal_until.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
@@ -17,6 +18,8 @@
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/first_run/public/best_features_item.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/coordinator/credential_suggestion_bottom_sheet_mediator.h"
+#import "ios/chrome/browser/passwords/bottom_sheet/coordinator/passkey_suggestion_bottom_sheet_mediator.h"
+#import "ios/chrome/browser/passwords/bottom_sheet/coordinator/password_suggestion_bottom_sheet_exit_reason.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/public/scoped_credential_suggestion_bottom_sheet_reauth_module_override.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/ui/credential_suggestion_bottom_sheet_view_controller.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
@@ -51,7 +54,7 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
   id<ReauthenticationProtocol> _reauthModule;
 
   // This mediator is used to fetch data related to the bottom sheet.
-  CredentialSuggestionBottomSheetMediator* _mediator;
+  CredentialSuggestionBottomSheetMediatorBase* _mediator;
 
   // This view controller is used to display the bottom sheet.
   CredentialSuggestionBottomSheetViewController* _viewController;
@@ -145,9 +148,9 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
              engagementTracker:engagementTracker
                      presenter:self];
   } else {
-    // TODO(crbug.com/460485496): Implement the request ID based mediator for
-    // passkey requests.
-    _mediator = nil;
+    CHECK(_requestID.has_value());
+    _mediator = [[PasskeySuggestionBottomSheetMediator alloc]
+        initWithRequestID:std::move(*_requestID)];
   }
 
   _viewController = [[CredentialSuggestionBottomSheetViewController alloc]
@@ -228,9 +231,16 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
 - (void)displayPasswordDetailsForFormSuggestion:
     (FormSuggestion*)formSuggestion {
   _dismissing = YES;
-  [_mediator logExitReason:kShowPasswordDetails];
+
+  CredentialSuggestionBottomSheetMediator*
+      credentialSuggestionBottomSheetMediator =
+          base::apple::ObjCCastStrict<CredentialSuggestionBottomSheetMediator>(
+              _mediator);
+
+  [credentialSuggestionBottomSheetMediator logExitReason:kShowPasswordDetails];
   std::optional<password_manager::CredentialUIEntry> credential =
-      [_mediator getCredentialForFormSuggestion:formSuggestion];
+      [credentialSuggestionBottomSheetMediator
+          getCredentialForFormSuggestion:formSuggestion];
 
   __weak __typeof(self) weakSelf = self;
   [_navigationController.presentingViewController
@@ -307,13 +317,19 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
     return;
   }
 
-  // Terminate dismissal if the entrypoint that dismissed the bottom sheet
-  // wasn't handled yet (e.g. when swipped away).
-  // Explicitly refocus the field if the sheet is dismissed without using any
-  // of its features. The listeners are detached as soon as the sheet is
-  // presented which requires another means to refocus the blurred field once
-  // the sheet is dismissed.
-  [_mediator refocus];
+  CredentialSuggestionBottomSheetMediator*
+      credentialSuggestionBottomSheetMediator =
+          base::apple::ObjCCast<CredentialSuggestionBottomSheetMediator>(
+              _mediator);
+  if (credentialSuggestionBottomSheetMediator) {
+    // Terminate dismissal if the entrypoint that dismissed the bottom sheet
+    // wasn't handled yet (e.g. when swipped away).
+    // Explicitly refocus the field if the sheet is dismissed without using any
+    // of its features. The listeners are detached as soon as the sheet is
+    // presented which requires another means to refocus the blurred field once
+    // the sheet is dismissed.
+    [credentialSuggestionBottomSheetMediator refocus];
+  }
 
   [_mediator logExitReason:kDismissal];
   [_mediator onDismissWithoutAnyCredentialAction];

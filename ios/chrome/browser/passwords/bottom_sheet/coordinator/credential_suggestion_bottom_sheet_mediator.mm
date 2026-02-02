@@ -28,6 +28,8 @@
 #import "ios/chrome/browser/autofill/model/form_suggestion_tab_helper.h"
 #import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
+#import "ios/chrome/browser/passwords/bottom_sheet/coordinator/credential_suggestion_bottom_sheet_mediator_base+Subclassing.h"
+#import "ios/chrome/browser/passwords/bottom_sheet/coordinator/password_suggestion_bottom_sheet_exit_reason.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/ui/credential_suggestion_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/ui/credential_suggestion_bottom_sheet_presenter.h"
 #import "ios/chrome/browser/passwords/model/password_tab_helper.h"
@@ -187,8 +189,6 @@ NSArray<FormSuggestion*>* SetParamsAndProviderInSuggestions(
 
 @interface CredentialSuggestionBottomSheetMediator () <WebStateListObserving,
                                                        CRWWebStateObserver>
-// List of suggestions in the bottom sheet.
-@property(nonatomic, strong) NSArray<FormSuggestion*>* suggestions;
 
 // Default globe favicon when no favicon is available.
 @property(nonatomic, readonly) FaviconAttributes* defaultGlobeIconAttributes;
@@ -259,6 +259,7 @@ NSArray<FormSuggestion*>* SetParamsAndProviderInSuggestions(
   BottomSheetFormSuggestionProviderWrapper* _suggestionsProviderWrapper;
 }
 
+@synthesize consumer = _consumer;
 @synthesize defaultGlobeIconAttributes = _defaultGlobeIconAttributes;
 
 - (instancetype)
@@ -339,26 +340,6 @@ NSArray<FormSuggestion*>* SetParamsAndProviderInSuggestions(
   return self;
 }
 
-- (void)dealloc {
-}
-
-- (void)disconnect {
-  _prefService = nullptr;
-  _faviconLoader = nullptr;
-
-  _webStateListObservation.reset();
-  _webStateListObserver.reset();
-  _forwarder.reset();
-  _webStateObserver.reset();
-  _webStateList = nullptr;
-
-  _suggestionsProviderWrapper = nil;
-}
-
-- (BOOL)hasSuggestions {
-  return [self.suggestions count] > 0;
-}
-
 - (std::optional<password_manager::CredentialUIEntry>)
     getCredentialForFormSuggestion:(FormSuggestion*)formSuggestion {
   NSString* username = formSuggestion.value;
@@ -377,11 +358,6 @@ NSArray<FormSuggestion*>* SetParamsAndProviderInSuggestions(
   return it != _credentials.end()
              ? std::optional<password_manager::CredentialUIEntry>(*it)
              : std::nullopt;
-}
-
-- (void)logExitReason:(PasswordSuggestionBottomSheetExitReason)exitReason {
-  base::UmaHistogramEnumeration("IOS.PasswordBottomSheet.ExitReason",
-                                exitReason);
 }
 
 - (void)setCredentialsForTesting:
@@ -418,7 +394,20 @@ NSArray<FormSuggestion*>* SetParamsAndProviderInSuggestions(
   }
 }
 
-#pragma mark - CredentialSuggestionBottomSheetDelegate
+#pragma mark - CredentialSuggestionBottomSheetMediatorBase
+
+- (void)disconnect {
+  _prefService = nullptr;
+  _faviconLoader = nullptr;
+
+  _webStateListObservation.reset();
+  _webStateListObserver.reset();
+  _forwarder.reset();
+  _webStateObserver.reset();
+  _webStateList = nullptr;
+
+  _suggestionsProviderWrapper = nil;
+}
 
 - (void)didSelectSuggestion:(FormSuggestion*)suggestion
                     atIndex:(NSInteger)index
@@ -453,10 +442,17 @@ NSArray<FormSuggestion*>* SetParamsAndProviderInSuggestions(
   }
 }
 
+- (void)logExitReason:(PasswordSuggestionBottomSheetExitReason)exitReason {
+  base::UmaHistogramEnumeration("IOS.PasswordBottomSheet.ExitReason",
+                                exitReason);
+}
+
 - (void)onDismissWithoutAnyCredentialAction {
   [self incrementDismissCount];
   [self markSharedPasswordNotificationsDisplayed];
 }
+
+#pragma mark - CredentialSuggestionBottomSheetDelegate
 
 - (void)disableBottomSheet {
   if (_webStateList) {
