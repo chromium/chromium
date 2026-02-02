@@ -682,8 +682,9 @@ void BwgBrowserAgent::PresentFloatyWithState(
 
   // Set the location permission state.
   // TODO(crbug.com/426207968): Populate with actual value.
-  config.BWGLocationPermissionState =
-      ios::provider::BWGLocationPermissionState::kUnknown;
+  // TODO(crbug.com/467339718): Remove the chain assignment after the migration.
+  config.geminiLocationPermissionState = config.BWGLocationPermissionState =
+      ios::provider::GeminiLocationPermissionState::kUnknown;
 
   // Set the page context itself and page context computation/attachment state
   // for the current web state.
