@@ -118,6 +118,12 @@ export class CrDialogDemoElement extends CrLitElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'cr-dialog-demo': CrDialogDemoElement;
+  }
+}
+
 export const tagName = CrDialogDemoElement.is;
 
 customElements.define(CrDialogDemoElement.is, CrDialogDemoElement);

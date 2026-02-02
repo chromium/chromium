@@ -25,6 +25,12 @@ export class ProgressIndicatorDemoElement extends CrLitElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'progress-indicator-demo': ProgressIndicatorDemoElement;
+  }
+}
+
 export const tagName = ProgressIndicatorDemoElement.is;
 
 customElements.define(

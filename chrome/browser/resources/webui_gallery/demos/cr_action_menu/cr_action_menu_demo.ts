@@ -99,6 +99,12 @@ export class CrActionMenuDemoElement extends CrLitElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'cr-action-menu-demo': CrActionMenuDemoElement;
+  }
+}
+
 export const tagName = CrActionMenuDemoElement.is;
 
 customElements.define(CrActionMenuDemoElement.is, CrActionMenuDemoElement);

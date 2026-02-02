@@ -80,6 +80,12 @@ export class CrToastDemoElement extends CrLitElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'cr-toast-demo': CrToastDemoElement;
+  }
+}
+
 export const tagName = CrToastDemoElement.is;
 
 customElements.define(CrToastDemoElement.is, CrToastDemoElement);

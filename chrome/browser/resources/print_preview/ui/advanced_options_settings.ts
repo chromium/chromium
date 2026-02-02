@@ -55,6 +55,13 @@ class PrintPreviewAdvancedOptionsSettingsElement extends CrLitElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'print-preview-advanced-options-settings':
+        PrintPreviewAdvancedOptionsSettingsElement;
+  }
+}
+
 export type AdvancedOptionsSettingsElement =
     PrintPreviewAdvancedOptionsSettingsElement;
 

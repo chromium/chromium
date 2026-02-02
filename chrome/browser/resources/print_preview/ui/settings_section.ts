@@ -21,6 +21,12 @@ export class PrintPreviewSettingsSectionElement extends CrLitElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'print-preview-settings-section': PrintPreviewSettingsSectionElement;
+  }
+}
+
 export type SettingsSectionElement = PrintPreviewSettingsSectionElement;
 
 customElements.define(

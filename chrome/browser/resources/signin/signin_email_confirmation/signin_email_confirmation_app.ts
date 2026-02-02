@@ -56,5 +56,11 @@ export class SigninEmailConfirmationAppElement extends CrLitElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'signin-email-confirmation-app': SigninEmailConfirmationAppElement;
+  }
+}
+
 customElements.define(
     SigninEmailConfirmationAppElement.is, SigninEmailConfirmationAppElement);

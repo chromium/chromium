@@ -19,12 +19,6 @@ import {getHtml} from './cluster_menu.html.js';
  * visit, or the whole cluster, or the top visit of unlabelled cluster.
  */
 
-declare global {
-  interface HTMLElementTagNameMap {
-    'cluster-menu': ClusterMenuElement;
-  }
-}
-
 const ClusterMenuElementBase = I18nMixinLit(CrLitElement);
 
 export interface ClusterMenuElement {
@@ -123,6 +117,12 @@ export class ClusterMenuElement extends ClusterMenuElementBase {
     const menu = this.shadowRoot.querySelector('cr-action-menu');
     assert(menu);
     menu.close();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'cluster-menu': ClusterMenuElement;
   }
 }
 

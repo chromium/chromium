@@ -28,12 +28,6 @@ import {insertHighlightedTextWithMatchesIntoElement} from './utils.js';
  * @fileoverview This file provides a custom element displaying a cluster.
  */
 
-declare global {
-  interface HTMLElementTagNameMap {
-    'history-cluster': ClusterElement;
-  }
-}
-
 const ClusterElementBase = I18nMixinLit(CrLitElement);
 
 export interface ClusterElement {
@@ -349,6 +343,12 @@ export class ClusterElement extends ClusterElementBase {
 
   protected visits_(): URLVisit[] {
     return this.cluster ? this.cluster.visits : [];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'history-cluster': ClusterElement;
   }
 }
 

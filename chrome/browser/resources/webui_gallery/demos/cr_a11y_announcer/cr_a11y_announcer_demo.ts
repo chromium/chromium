@@ -62,6 +62,12 @@ export class CrA11yAnnouncerDemoElement extends CrLitElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'cr-a11y-announcer-demo': CrA11yAnnouncerDemoElement;
+  }
+}
+
 export const tagName = CrA11yAnnouncerDemoElement.is;
 
 customElements.define(

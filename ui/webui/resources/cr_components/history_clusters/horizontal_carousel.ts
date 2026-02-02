@@ -16,12 +16,6 @@ import {getHtml} from './horizontal_carousel.html.js';
  * carousel for the carousel elements.
  */
 
-declare global {
-  interface HTMLElementTagNameMap {
-    'horizontal-carousel': HorizontalCarouselElement;
-  }
-}
-
 export interface HorizontalCarouselElement {
   $: {
     backButton: HTMLElement,
@@ -145,6 +139,12 @@ export class HorizontalCarouselElement extends CrLitElement {
             targetPosition,
             this.$.carouselContainer.scrollWidth -
                 this.$.carouselContainer.clientWidth));
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'horizontal-carousel': HorizontalCarouselElement;
   }
 }
 

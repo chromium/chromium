@@ -79,4 +79,10 @@ export class NavMenuElement extends CrLitElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'nav-menu': NavMenuElement;
+  }
+}
+
 customElements.define(NavMenuElement.is, NavMenuElement);

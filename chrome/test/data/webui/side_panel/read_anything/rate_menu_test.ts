@@ -28,7 +28,7 @@ suite('RateMenuElement', () => {
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
     metrics = mockMetrics();
 
-    rateMenu = document.createElement('rate-menu') as RateMenuElement;
+    rateMenu = document.createElement('rate-menu');
     document.body.appendChild(rateMenu);
   });
 

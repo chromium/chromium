@@ -156,10 +156,9 @@ export class ColorPipelineInternalsAppElement extends CrLitElement {
   }
 }
 
-
 declare global {
   interface HTMLElementTagNameMap {
-    'color-internals-app': ColorPipelineInternalsAppElement;
+    'color-pipeline-internals-app': ColorPipelineInternalsAppElement;
   }
 }
 

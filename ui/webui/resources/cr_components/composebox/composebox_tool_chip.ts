@@ -10,12 +10,6 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {getCss} from './composebox_tool_chip.css.js';
 import {getHtml} from './composebox_tool_chip.html.js';
 
-declare global {
-  interface HTMLElementTagNameMap {
-    'cr-composebox-tool-chip': ComposeboxToolChipElement;
-  }
-}
-
 export class ComposeboxToolChipElement extends CrLitElement {
   static get is() {
     return 'cr-composebox-tool-chip';
@@ -43,6 +37,12 @@ export class ComposeboxToolChipElement extends CrLitElement {
       return;
     }
     return getHtml.call(this);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'cr-composebox-tool-chip': ComposeboxToolChipElement;
   }
 }
 

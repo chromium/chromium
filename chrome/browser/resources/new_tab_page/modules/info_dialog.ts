@@ -49,4 +49,10 @@ export class InfoDialogElement extends CrLitElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'ntp-info-dialog': InfoDialogElement;
+  }
+}
+
 customElements.define(InfoDialogElement.is, InfoDialogElement);

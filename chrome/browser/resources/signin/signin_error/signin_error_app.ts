@@ -73,4 +73,10 @@ export class SigninErrorAppElement extends SigninErrorAppElementBase {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'signin-error-app': SigninErrorAppElement;
+  }
+}
+
 customElements.define(SigninErrorAppElement.is, SigninErrorAppElement);

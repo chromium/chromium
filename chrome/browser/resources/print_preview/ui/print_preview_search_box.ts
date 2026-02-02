@@ -90,5 +90,11 @@ export class PrintPreviewSearchBoxElement extends
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'print-preview-search-box': PrintPreviewSearchBoxElement;
+  }
+}
+
 customElements.define(
     PrintPreviewSearchBoxElement.is, PrintPreviewSearchBoxElement);

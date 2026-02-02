@@ -77,5 +77,11 @@ export class ProfileInternalsAppElement extends ProfileInternalsAppElementBase {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'profile-internals-app': ProfileInternalsAppElement;
+  }
+}
+
 customElements.define(
     ProfileInternalsAppElement.is, ProfileInternalsAppElement);

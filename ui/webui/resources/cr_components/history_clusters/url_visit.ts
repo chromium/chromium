@@ -32,12 +32,6 @@ const annotationToStringId: Map<number, string> = new Map([
   [Annotation.kBookmarked, 'bookmarked'],
 ]);
 
-declare global {
-  interface HTMLElementTagNameMap {
-    'url-visit': UrlVisitElement;
-  }
-}
-
 const ClusterMenuElementBase = I18nMixinLit(CrLitElement);
 
 export interface UrlVisitElement {
@@ -241,6 +235,12 @@ export class UrlVisitElement extends ClusterMenuElementBase {
           metaKey: event.metaKey,
           shiftKey: event.shiftKey,
         });
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'url-visit': UrlVisitElement;
   }
 }
 

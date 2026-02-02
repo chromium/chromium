@@ -132,5 +132,11 @@ export class AppServiceInternalsElement extends CrLitElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'app-service-internals': AppServiceInternalsElement;
+  }
+}
+
 customElements.define(
     AppServiceInternalsElement.is, AppServiceInternalsElement);

@@ -209,5 +209,11 @@ export class PrintPreviewDocumentInfoElement extends
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'print-preview-document-info': PrintPreviewDocumentInfoElement;
+  }
+}
+
 customElements.define(
     PrintPreviewDocumentInfoElement.is, PrintPreviewDocumentInfoElement);

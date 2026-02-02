@@ -42,12 +42,6 @@ function jsDateToMojoDate(date: Date): Time {
  * infinite scrolling as well as deletion of visits within the clusters.
  */
 
-declare global {
-  interface HTMLElementTagNameMap {
-    'history-clusters': HistoryClustersElement;
-  }
-}
-
 const HistoryClustersElementBase = I18nMixinLit(CrLitElement);
 
 export interface HistoryClustersElement {
@@ -556,6 +550,12 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
       // Allow remove requests again.
       this.visitsToBeRemoved_ = [];
     });
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'history-clusters': HistoryClustersElement;
   }
 }
 

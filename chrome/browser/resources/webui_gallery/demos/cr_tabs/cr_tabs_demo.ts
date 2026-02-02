@@ -60,6 +60,12 @@ export class CrTabsDemoElement extends CrLitElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'cr-tabs-demo': CrTabsDemoElement;
+  }
+}
+
 export const tagName = CrTabsDemoElement.is;
 
 customElements.define(CrTabsDemoElement.is, CrTabsDemoElement);

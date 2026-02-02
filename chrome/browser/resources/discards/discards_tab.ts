@@ -532,4 +532,10 @@ export class DiscardsTabElement extends DiscardsTabElementBase {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'discards-tab': DiscardsTabElement;
+  }
+}
+
 customElements.define(DiscardsTabElement.is, DiscardsTabElement);

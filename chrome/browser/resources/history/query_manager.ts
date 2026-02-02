@@ -25,12 +25,6 @@ export function convertDateToQueryValue(date: Date) {
   return `${fullYear}-${twoDigits(month)}-${twoDigits(day)}`;
 }
 
-declare global {
-  interface HTMLElementTagNameMap {
-    'history-query-manager': HistoryQueryManagerElement;
-  }
-}
-
 export class HistoryQueryManagerElement extends CrLitElement {
   static get is() {
     return 'history-query-manager';
@@ -187,6 +181,12 @@ export class HistoryQueryManagerElement extends CrLitElement {
     // Clear this regardless if it was recorded or not, because we don't want
     // to "try again" to record the same query.
     this.resultPendingMetricsTimestamp_ = null;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'history-query-manager': HistoryQueryManagerElement;
   }
 }
 

@@ -98,7 +98,7 @@ suite('KeyEventTest', function() {
     const button =
         page.shadowRoot.querySelector('print-preview-sidebar')!.shadowRoot
             .querySelector('print-preview-advanced-options-settings')!
-            .shadowRoot!.querySelector('cr-button')!;
+            .shadowRoot.querySelector('cr-button')!;
     const whenKeyEventFired = eventToPromise('keydown', button);
     keyEventOn(button, 'keydown', 0, [], 'Enter');
     await whenKeyEventFired;

@@ -45,6 +45,12 @@ export class CardDemoElement extends CrLitElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'card-demo': CardDemoElement;
+  }
+}
+
 export const tagName = CardDemoElement.is;
 
 customElements.define(CardDemoElement.is, CardDemoElement);

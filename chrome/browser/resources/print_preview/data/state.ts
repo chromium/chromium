@@ -116,4 +116,10 @@ export class PrintPreviewStateElement extends CrLitElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'print-preview-state': PrintPreviewStateElement;
+  }
+}
+
 customElements.define(PrintPreviewStateElement.is, PrintPreviewStateElement);

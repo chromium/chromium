@@ -246,4 +246,10 @@ export class WhatsNewAppElement extends CrLitElement {
     }
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'whats-new-app': WhatsNewAppElement;
+  }
+}
 customElements.define(WhatsNewAppElement.is, WhatsNewAppElement);

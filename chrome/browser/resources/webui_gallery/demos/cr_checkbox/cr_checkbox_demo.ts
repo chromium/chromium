@@ -36,6 +36,12 @@ export class CrCheckboxDemoElement extends CrLitElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'cr-checkbox-demo': CrCheckboxDemoElement;
+  }
+}
+
 export const tagName = CrCheckboxDemoElement.is;
 
 customElements.define(CrCheckboxDemoElement.is, CrCheckboxDemoElement);

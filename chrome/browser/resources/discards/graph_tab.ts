@@ -79,4 +79,10 @@ export class GraphTabElement extends CrLitElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'graph-tab': GraphTabElement;
+  }
+}
+
 customElements.define(GraphTabElement.is, GraphTabElement);

@@ -37,6 +37,12 @@ export class CrRadioDemoElement extends CrLitElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'cr-radio-demo': CrRadioDemoElement;
+  }
+}
+
 export const tagName = CrRadioDemoElement.is;
 
 customElements.define(CrRadioDemoElement.is, CrRadioDemoElement);

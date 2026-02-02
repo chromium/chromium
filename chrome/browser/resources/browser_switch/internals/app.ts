@@ -295,6 +295,12 @@ export class AppElement extends AppElementBase {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'browser-switch-internals-app': AppElement;
+  }
+}
+
 customElements.define(AppElement.is, AppElement);
 
 /**

@@ -76,7 +76,7 @@ export class RateMenuElement extends RateMenuElementBase {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'Rate-menu': RateMenuElement;
+    'rate-menu': RateMenuElement;
   }
 }
 

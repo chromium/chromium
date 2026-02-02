@@ -453,4 +453,10 @@ export class DatabaseTabElement extends DatabaseTabElementBase {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'database-tab': DatabaseTabElement;
+  }
+}
+
 customElements.define(DatabaseTabElement.is, DatabaseTabElement);

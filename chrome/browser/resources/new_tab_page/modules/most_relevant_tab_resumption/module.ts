@@ -236,6 +236,12 @@ export class ModuleElement extends I18nMixinLit
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'ntp-most-relevant-tab-resumption': ModuleElement;
+  }
+}
+
 customElements.define(ModuleElement.is, ModuleElement);
 
 async function createElement(): Promise<ModuleElement|null> {

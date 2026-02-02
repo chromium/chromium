@@ -193,6 +193,12 @@ export class ModuleElement extends ModuleElementBase {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'ntp-tab-groups': ModuleElement;
+  }
+}
+
 customElements.define(ModuleElement.is, ModuleElement);
 
 async function createElement(): Promise<ModuleElement|null> {

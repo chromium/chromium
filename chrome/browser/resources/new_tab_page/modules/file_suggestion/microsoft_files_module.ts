@@ -154,6 +154,12 @@ export class MicrosoftFilesModuleElement extends
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'ntp-microsoft-files-module': MicrosoftFilesModuleElement;
+  }
+}
+
 customElements.define(
     MicrosoftFilesModuleElement.is, MicrosoftFilesModuleElement);
 

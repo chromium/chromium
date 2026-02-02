@@ -109,6 +109,12 @@ export class SpComponentsDemoElement extends CrLitElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'sp-components-demo': SpComponentsDemoElement;
+  }
+}
+
 export const tagName = SpComponentsDemoElement.is;
 
 customElements.define(SpComponentsDemoElement.is, SpComponentsDemoElement);

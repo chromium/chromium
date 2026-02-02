@@ -125,6 +125,12 @@ export class OutlookCalendarModuleElement extends
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'ntp-outlook-calendar-module': OutlookCalendarModuleElement;
+  }
+}
+
 
 customElements.define(
     OutlookCalendarModuleElement.is, OutlookCalendarModuleElement);

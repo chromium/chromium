@@ -108,6 +108,12 @@ export class MicrosoftAuthModuleElement extends MicrosoftAuthModuleElementBase {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'ntp-microsoft-authentication-module': MicrosoftAuthModuleElement;
+  }
+}
+
 customElements.define(
     MicrosoftAuthModuleElement.is, MicrosoftAuthModuleElement);
 

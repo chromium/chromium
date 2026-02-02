@@ -40,6 +40,12 @@ export class ButtonsDemoElement extends CrLitElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'buttons-demo': ButtonsDemoElement;
+  }
+}
+
 export const tagName = ButtonsDemoElement.is;
 
 customElements.define(ButtonsDemoElement.is, ButtonsDemoElement);

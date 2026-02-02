@@ -74,4 +74,10 @@ export class DiscardsMainElement extends CrLitElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'discards-main': DiscardsMainElement;
+  }
+}
+
 customElements.define(DiscardsMainElement.is, DiscardsMainElement);

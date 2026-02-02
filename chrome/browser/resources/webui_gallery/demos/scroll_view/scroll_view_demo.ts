@@ -47,6 +47,12 @@ export class ScrollViewDemoElement extends CrLitElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'scroll-view-demo': ScrollViewDemoElement;
+  }
+}
+
 export const tagName = ScrollViewDemoElement.is;
 
 customElements.define(ScrollViewDemoElement.is, ScrollViewDemoElement);

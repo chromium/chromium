@@ -107,6 +107,12 @@ export class DriveModuleElement extends DriveModuleElementBase {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'ntp-drive-module-redesigned': DriveModuleElement;
+  }
+}
+
 customElements.define(DriveModuleElement.is, DriveModuleElement);
 
 async function createDriveElement(): Promise<DriveModuleElement|null> {

@@ -77,6 +77,12 @@ export class CrTooltipDemoElement extends CrLitElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'cr-tooltip-demo': CrTooltipDemoElement;
+  }
+}
+
 export const tagName = CrTooltipDemoElement.is;
 
 customElements.define(

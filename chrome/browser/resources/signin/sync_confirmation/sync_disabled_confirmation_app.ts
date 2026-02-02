@@ -100,5 +100,11 @@ export class SyncDisabledConfirmationAppElement extends CrLitElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'sync-disabled-confirmation-app': SyncDisabledConfirmationAppElement;
+  }
+}
+
 customElements.define(
     SyncDisabledConfirmationAppElement.is, SyncDisabledConfirmationAppElement);

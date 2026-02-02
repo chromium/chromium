@@ -526,4 +526,10 @@ export class ManagementUiElement extends ManagementUiElementBase {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'management-ui': ManagementUiElement;
+  }
+}
+
 customElements.define(ManagementUiElement.is, ManagementUiElement);

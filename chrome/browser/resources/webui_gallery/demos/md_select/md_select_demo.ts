@@ -40,6 +40,12 @@ export class MdSelectDemoElement extends CrLitElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'md-select-demo': MdSelectDemoElement;
+  }
+}
+
 export const tagName = MdSelectDemoElement.is;
 
 customElements.define(MdSelectDemoElement.is, MdSelectDemoElement);

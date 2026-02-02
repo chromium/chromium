@@ -73,6 +73,12 @@ export class ModuleElement extends ModuleElementBase {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'ntp-dummy-module': ModuleElement;
+  }
+}
+
 customElements.define(ModuleElement.is, ModuleElement);
 
 async function createDummyElements(): Promise<HTMLElement[]> {

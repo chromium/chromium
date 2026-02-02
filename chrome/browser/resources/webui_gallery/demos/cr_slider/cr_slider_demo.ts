@@ -83,6 +83,12 @@ export class CrSliderDemoElement extends CrLitElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'cr-slider-demo': CrSliderDemoElement;
+  }
+}
+
 export const tagName = CrSliderDemoElement.is;
 
 customElements.define(CrSliderDemoElement.is, CrSliderDemoElement);

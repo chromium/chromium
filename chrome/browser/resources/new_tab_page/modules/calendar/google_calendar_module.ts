@@ -113,6 +113,12 @@ export class GoogleCalendarModuleElement extends
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'ntp-google-calendar-module': GoogleCalendarModuleElement;
+  }
+}
+
 customElements.define(
     GoogleCalendarModuleElement.is, GoogleCalendarModuleElement);
 

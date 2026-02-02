@@ -19,12 +19,6 @@ import {getHtml} from './page_favicon.html.js';
  * @fileoverview This file provides a custom element displaying a page favicon.
  */
 
-declare global {
-  interface HTMLElementTagNameMap {
-    'page-favicon': PageFaviconElement;
-  }
-}
-
 /**
  * TODO(tommycli): This element should be renamed to reflect the reality that
  * it's used to both render the visit's "important image" if it exists, and
@@ -142,6 +136,12 @@ export class PageFaviconElement extends CrLitElement {
       // reuse the same element for the infinite scrolling list.
       this.imageUrl_ = null;
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'page-favicon': PageFaviconElement;
   }
 }
 

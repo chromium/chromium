@@ -83,6 +83,12 @@ export class CrInputDemoElement extends CrLitElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'cr-input-demo': CrInputDemoElement;
+  }
+}
+
 export const tagName = CrInputDemoElement.is;
 
 customElements.define(CrInputDemoElement.is, CrInputDemoElement);

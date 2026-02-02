@@ -186,4 +186,10 @@ export class CalendarElement extends CrLitElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'ntp-calendar': CalendarElement;
+  }
+}
+
 customElements.define(CalendarElement.is, CalendarElement);

@@ -14,12 +14,6 @@ import {getCss} from './composebox_tab_favicon.css.js';
  * @fileoverview This file provides a custom element displaying a tab favicon.
  */
 
-declare global {
-  interface HTMLElementTagNameMap {
-    'cr-composebox-tab-favicon': TabFaviconElement;
-  }
-}
-
 export class TabFaviconElement extends CrLitElement {
   static get is() {
     return 'cr-composebox-tab-favicon';
@@ -54,6 +48,12 @@ export class TabFaviconElement extends CrLitElement {
                 this.size, false, true));
       }
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'cr-composebox-tab-favicon': TabFaviconElement;
   }
 }
 

@@ -36,6 +36,12 @@ export class CrToggleDemoElement extends CrLitElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'cr-toggle-demo': CrToggleDemoElement;
+  }
+}
+
 export const tagName = CrToggleDemoElement.is;
 
 customElements.define(CrToggleDemoElement.is, CrToggleDemoElement);

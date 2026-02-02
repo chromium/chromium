@@ -28,6 +28,12 @@ export class CrUrlListItemDemoElement extends CrLitElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'cr-url-list-item-demo': CrUrlListItemDemoElement;
+  }
+}
+
 export const tagName = CrUrlListItemDemoElement.is;
 
 customElements.define(CrUrlListItemDemoElement.is, CrUrlListItemDemoElement);

@@ -101,4 +101,10 @@ export class ViewerZoomButtonElement extends CrLitElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'viewer-zoom-button': ViewerZoomButtonElement;
+  }
+}
+
 customElements.define(ViewerZoomButtonElement.is, ViewerZoomButtonElement);

@@ -26,6 +26,12 @@ export class CrChipDemoElement extends CrLitElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'cr-chip-demo': CrChipDemoElement;
+  }
+}
+
 export const tagName = CrChipDemoElement.is;
 
 customElements.define(CrChipDemoElement.is, CrChipDemoElement);

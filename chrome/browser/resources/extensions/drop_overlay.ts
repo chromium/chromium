@@ -66,5 +66,11 @@ export class ExtensionsDropOverlayElement extends CrLitElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'extensions-drop-overlay': ExtensionsDropOverlayElement;
+  }
+}
+
 customElements.define(
     ExtensionsDropOverlayElement.is, ExtensionsDropOverlayElement);

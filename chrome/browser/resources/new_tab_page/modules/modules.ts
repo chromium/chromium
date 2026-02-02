@@ -604,4 +604,10 @@ export class ModulesElement extends CrLitElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'ntp-modules': ModulesElement;
+  }
+}
+
 customElements.define(ModulesElement.is, ModulesElement);

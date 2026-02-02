@@ -50,7 +50,7 @@ suite('WhatsNewAppTest', function() {
     await microtasksFinished();
 
     const iframe =
-        whatsNewApp.shadowRoot!.querySelector<HTMLIFrameElement>('#content');
+        whatsNewApp.shadowRoot.querySelector<HTMLIFrameElement>('#content');
     assertTrue(!!iframe);
     assertEquals(whatsNewURL + '?updated=true', iframe.src);
   });
@@ -65,7 +65,7 @@ suite('WhatsNewAppTest', function() {
     await microtasksFinished();
 
     const iframe =
-        whatsNewApp.shadowRoot!.querySelector<HTMLIFrameElement>('#content');
+        whatsNewApp.shadowRoot.querySelector<HTMLIFrameElement>('#content');
     assertTrue(!!iframe);
     assertEquals(whatsNewURL + '?version=98&updated=true', iframe.src);
     assertEquals(window.chromeWhatsNew.debugInfo().requestedVersion, 98);
@@ -82,7 +82,7 @@ suite('WhatsNewAppTest', function() {
     await microtasksFinished();
 
     const iframe =
-        whatsNewApp.shadowRoot!.querySelector<HTMLIFrameElement>('#content');
+        whatsNewApp.shadowRoot.querySelector<HTMLIFrameElement>('#content');
     assertTrue(!!iframe);
     assertDeepEquals(
         window.chromeWhatsNew.debugInfo().requestedEnabledFeatures,
@@ -101,7 +101,7 @@ suite('WhatsNewAppTest', function() {
     await microtasksFinished();
 
     const iframe =
-        whatsNewApp.shadowRoot!.querySelector<HTMLIFrameElement>('#content');
+        whatsNewApp.shadowRoot.querySelector<HTMLIFrameElement>('#content');
     assertTrue(!!iframe);
     assertEquals(whatsNewURL + '?updated=false', iframe.src);
   });
@@ -410,7 +410,7 @@ suite('WhatsNewAppTest', function() {
           await microtasksFinished();
 
           const stagingIndicator =
-              whatsNewApp.shadowRoot!.querySelector<HTMLIFrameElement>(
+              whatsNewApp.shadowRoot.querySelector<HTMLIFrameElement>(
                   '#staging-indicator');
           assertEquals(Boolean(stagingIndicator), isStagingEnabled);
           assertEquals(

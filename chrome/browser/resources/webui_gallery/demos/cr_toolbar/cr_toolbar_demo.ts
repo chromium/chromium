@@ -104,6 +104,12 @@ export class CrToolbarDemoElement extends CrLitElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'cr-toolbar-demo': CrToolbarDemoElement;
+  }
+}
+
 export const tagName = CrToolbarDemoElement.is;
 
 customElements.define(CrToolbarDemoElement.is, CrToolbarDemoElement);

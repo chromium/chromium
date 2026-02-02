@@ -83,6 +83,12 @@ export class CrIconsDemoElement extends CrLitElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'cr-icons-demo': CrIconsDemoElement;
+  }
+}
+
 export const tagName = CrIconsDemoElement.is;
 
 customElements.define(CrIconsDemoElement.is, CrIconsDemoElement);

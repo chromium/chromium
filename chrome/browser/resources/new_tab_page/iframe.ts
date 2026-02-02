@@ -58,4 +58,10 @@ export class IframeElement extends CrLitElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'ntp-iframe': IframeElement;
+  }
+}
+
 customElements.define(IframeElement.is, IframeElement);

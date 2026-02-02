@@ -69,6 +69,12 @@ export class NavMenuDemoElement extends CrLitElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'nav-menu-demo': NavMenuDemoElement;
+  }
+}
+
 export const tagName = NavMenuDemoElement.is;
 
 customElements.define(NavMenuDemoElement.is, NavMenuDemoElement);

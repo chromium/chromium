@@ -130,6 +130,12 @@ export class BrowserSwitchAppElement extends BrowserSwitchAppElementBase {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'browser-switch-app': BrowserSwitchAppElement;
+  }
+}
+
 customElements.define(BrowserSwitchAppElement.is, BrowserSwitchAppElement);
 
 function getAltBrowserName(): string {
