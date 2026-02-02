@@ -388,6 +388,16 @@ UIColor* DimColorIncognito() {
   return _match.has_tab_match.value_or(false);
 }
 
+- (BOOL)isShareable {
+  if (!base::FeatureList::IsEnabled(kShareInVerbatimMatch)) {
+    return NO;
+  }
+
+  return _match.IsVerbatimUrlSuggestion() &&
+         (_match.suggestion_group_id ==
+          omnibox::GROUP_MOBILE_SEARCH_READY_OMNIBOX);
+}
+
 - (id<OmniboxPedal>)pedal {
   return nil;
 }

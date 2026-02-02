@@ -117,6 +117,10 @@ const CGFloat kOmniboxPopupCellMinimumHeight = 58;
     self.trailingIconType = TrailingIconType::kRefineQuery;
     trailingButtonActionName =
         l10n_util::GetNSString(IDS_IOS_OMNIBOX_POPUP_APPEND);
+  } else if (_suggestion.isShareable) {
+    self.trailingIconType = TrailingIconType::kShare;
+    trailingButtonActionName =
+        l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_SHARE_THIS_PAGE);
   }
 
   // Accessibility actions.

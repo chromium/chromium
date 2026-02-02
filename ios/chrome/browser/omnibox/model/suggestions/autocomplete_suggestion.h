@@ -34,6 +34,9 @@ typedef NS_ENUM(NSUInteger, SuggestTileType) {
 @property(nonatomic, readonly) BOOL isAppendable;
 /// Some suggestions are opened in an other tab.
 @property(nonatomic, readonly) BOOL isTabMatch;
+/// Temporary experiment-only path. See crbug.com/479521675.
+/// Some suggestions have a share button.
+@property(nonatomic, readonly) BOOL isShareable;
 /// Text of the suggestion.
 @property(nonatomic, readonly) NSAttributedString* text;
 /// Second line of text.

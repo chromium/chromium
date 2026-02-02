@@ -67,6 +67,11 @@ enum class TrustedVaultUserActionTriggerForUMA;
 // Hides the composebox on the next run loop.
 - (void)hideComposebox;
 
+// Hides the composebox and, upon completion, opens the share sheet.
+// This is a temporary command that is only introduced for an experiment, see
+// crbug.com/479521675 for context.
+- (void)hideComposeboxAndShowShareSheet;
+
 // Hides the compose box on the next run loop. The completion block is called
 // once hidden.
 - (void)hideComposeboxWithCompletion:(ProceduralBlock)completion;

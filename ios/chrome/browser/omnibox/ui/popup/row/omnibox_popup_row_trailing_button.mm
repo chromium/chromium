@@ -76,6 +76,13 @@ const CGFloat kTrailingButtonIconPointSizeMedium = 15.0f;
     UIImage* icon;
     self.hidden = NO;
     switch (self.trailingIconType) {
+      case TrailingIconType::kShare:
+        // The arrow should point in the direction of the omnibox.
+        icon = DefaultSymbolWithPointSize(
+            kShareSymbol, kTrailingButtonIconPointSizeMedium * multiplier);
+        self.accessibilityIdentifier =
+            kOmniboxPopupRowShareAccessibilityIdentifier;
+        break;
       case TrailingIconType::kNone:
         self.accessibilityIdentifier = nil;
         self.hidden = YES;

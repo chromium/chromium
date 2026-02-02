@@ -15,7 +15,9 @@ enum class TrailingIconType {
   /// Append arrow icon type.
   kRefineQuery,
   /// Open existing tab icon type.
-  kOpenExistingTab
+  kOpenExistingTab,
+  /// Share icon
+  kShare,
 };
 
 // Trailing button view used in the omnibox popup row.

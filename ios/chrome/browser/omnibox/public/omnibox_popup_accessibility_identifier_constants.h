@@ -42,6 +42,8 @@ extern NSString* const kReviewsActionHighlightedIdentifier;
 extern NSString* const kReviewsActionIdentifier;
 /// A11y identifier for search with aim action button.
 extern NSString* const kOmniboxPopupRowSearchWithAimAccessibilityIdentifier;
+/// Accessibility identifier for the Share button.
+extern NSString* const kOmniboxPopupRowShareAccessibilityIdentifier;
 
 /// Helper to generate omnibox popup accessibility identifiers.
 @interface OmniboxPopupAccessibilityIdentifierHelper : NSObject
