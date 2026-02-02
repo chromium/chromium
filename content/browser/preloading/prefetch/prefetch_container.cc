@@ -1219,6 +1219,13 @@ void PrefetchContainer::OnPrefetchCompleteInternal(
 void PrefetchContainer::OnPrefetchComplete(
     bool is_success,
     const network::URLLoaderCompletionStatus& completion_status) {
+  if (is_in_dtor_) {
+    // This can be called due to the loader cancellation during the
+    // `PrefetchContainer` destruction. No state changes should be made and
+    // observers shouldn't be notified during destruction.
+    return;
+  }
+
   TRACE_EVENT("loading", "PrefetchContainer::OnPrefetchComplete",
               request_->preload_pipeline_info().GetFlow());
 
