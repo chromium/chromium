@@ -36,6 +36,7 @@
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
+#include "third_party/blink/renderer/platform/fonts/font_selection_types.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/font_format_check.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/font_settings.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/variable_axes_names.h"
@@ -145,7 +146,8 @@ const FontPlatformData* FontCustomPlatformData::GetFontPlatformData(
         weight_coordinate = {
             kWghtTag,
             SkFloatToScalar(wght_range.clampToRange(selection_request.weight))};
-        synthetic_bold = bold && wght_range.maximum < kBoldThreshold &&
+        bool has_bold_variations = wght_range.maximum > kNormalWeightValue;
+        synthetic_bold = bold && !has_bold_variations &&
                          selection_request.weight >= kBoldThreshold;
       }
     }
@@ -183,7 +185,9 @@ const FontPlatformData* FontCustomPlatformData::GetFontPlatformData(
         slant_coordinate = {
             kSlntTag,
             SkFloatToScalar(slnt_range.clampToRange(-selection_request.slope))};
-        synthetic_italic = italic && slnt_range.maximum < kItalicSlopeValue &&
+        bool has_right_slanted_variations =
+            slnt_range.minimum < kNormalSlopeValue;
+        synthetic_italic = italic && !has_right_slanted_variations &&
                            selection_request.slope >= kItalicSlopeValue;
       }
     }
