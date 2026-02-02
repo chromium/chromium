@@ -35,18 +35,23 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/hats/hats_service.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/profiles/profile_view_utils.h"
 #include "chrome/browser/ui/url_identity.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/common/buildflags.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/favicon/core/fallback_url_util.h"
 #include "components/favicon/core/large_icon_service.h"
 #include "components/favicon_base/favicon_url_parser.h"
+#include "components/history/core/browser/features.h"
 #include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/features.h"
 #include "components/history_clusters/core/history_clusters_prefs.h"
@@ -369,6 +374,33 @@ void BrowsingHistoryHandler::SetPage(
     std::move(deferred_callback).Run();
   }
   deferred_callbacks_.clear();
+
+  HatsService* hats_service =
+      HatsServiceFactory::GetForProfile(profile_,
+                                        /* create_if_necessary = */ true);
+  if (!hats_service) {
+    return;
+  }
+
+  if (history::IsBrowsingHistoryActorIntegrationM3Enabled() &&
+      base::FeatureList::IsEnabled(
+          features::kHappinessTrackingSurveysForDesktopHistoryPageExperiment)) {
+    hats_service->LaunchDelayedSurveyForWebContents(
+        kHatsSurveyTriggerHistoryPageExperiment, web_contents_,
+        features::kHappinessTrackingSurveysForDesktopHistoryPageExperimentTime
+            .Get()
+            .InMilliseconds());
+  }
+
+  if (!history::IsBrowsingHistoryActorIntegrationM3Enabled() &&
+      base::FeatureList::IsEnabled(
+          features::kHappinessTrackingSurveysForDesktopHistoryPageControl)) {
+    hats_service->LaunchDelayedSurveyForWebContents(
+        kHatsSurveyTriggerHistoryPageControl, web_contents_,
+        features::kHappinessTrackingSurveysForDesktopHistoryPageControlTime
+            .Get()
+            .InMilliseconds());
+  }
 }
 
 void BrowsingHistoryHandler::ShowSidePanelUI() {

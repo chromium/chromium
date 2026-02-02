@@ -40,6 +40,8 @@ extern const char kHatsSurveyTriggerDownloadWarningPageBypass[];
 extern const char kHatsSurveyTriggerDownloadWarningPageHeed[];
 extern const char kHatsSurveyTriggerDownloadWarningPageIgnore[];
 extern const char kHatsSurveyTriggerHistoryEmbeddings[];
+extern const char kHatsSurveyTriggerHistoryPageExperiment[];
+extern const char kHatsSurveyTriggerHistoryPageControl[];
 extern const char kHatsSurveyTriggerIdentityAddressBubbleSignin[];
 extern const char kHatsSurveyTriggerIdentityDiceWebSigninAccepted[];
 extern const char kHatsSurveyTriggerIdentityDiceWebSigninDeclined[];
