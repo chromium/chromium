@@ -16412,21 +16412,6 @@
             ]
         }
     ],
-    "LogJavaScriptErrors": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "LogJavaScriptErrors"
-                    ]
-                }
-            ]
-        }
-    ],
     "LogOnDeviceMetricsOnStartup": [
         {
             "platforms": [
