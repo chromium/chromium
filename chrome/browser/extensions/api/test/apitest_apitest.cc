@@ -591,4 +591,41 @@ IN_PROC_BROWSER_TEST_P(TestAPITestWithContextType,
   EXPECT_TRUE(result_catcher.GetNextResult());
 }
 
+IN_PROC_BROWSER_TEST_P(TestAPITestWithContextType, ListenOnce) {
+  ResultCatcher result_catcher;
+  static constexpr char kBackgroundJs[] =
+      R"(let createdTab;
+         chrome.test.runTests([
+           async function performListenOnceWithoutPromise() {
+             // Set up a `listenOnce` listener. The test should not complete
+             // until this listener is resolved (exactly once), and it should
+             // run the callback within.
+             chrome.test.listenOnce(chrome.tabs.onCreated,
+                                    function(tab) {
+               createdTab = tab;
+               // The test should end after this.
+             });
+             // There should be an onCreated listener from the call above.
+             chrome.test.assertTrue(chrome.tabs.onCreated.hasListeners());
+             // Trigger the event, which will trigger the listenOnce handler,
+             // which should end the test.
+             chrome.tabs.create({});
+           },
+           async function verifyState() {
+             // Now, we verify the expected end state.
+             // The callback passed to listenOnce should have been invoked,
+             // which we verify by checking the value of `createdTab`:
+             chrome.test.assertTrue(!!createdTab);
+             // And verify it smells like a tab.
+             chrome.test.assertTrue(createdTab.id >= 0);
+             // The listener for tabs.onCreated also should have been removed.
+             chrome.test.assertFalse(chrome.tabs.onCreated.hasListeners());
+
+             chrome.test.succeed();
+           },
+         ]);)";
+  ASSERT_TRUE(LoadExtensionScriptWithContext(kBackgroundJs, GetParam()));
+  EXPECT_TRUE(result_catcher.GetNextResult());
+}
+
 }  // namespace extensions
