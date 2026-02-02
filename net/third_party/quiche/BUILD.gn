@@ -256,6 +256,11 @@ if (build_epoll_based_tools) {
       "//third_party/boringssl",
       "//third_party/protobuf:protobuf_lite",
     ]
+    public_deps = [
+      "//third_party/anonymous_tokens:crypto_utils",
+      "//third_party/anonymous_tokens:rsa_blinder",
+      "//third_party/anonymous_tokens:tokens_encodings",
+    ]
   }
 
   static_library("epoll_test_support") {
