@@ -71,6 +71,9 @@ ReloadButton::ReloadButton(
       double_click_timer_delay_(views::GetDoubleClickInterval()),
       mode_switch_timer_delay_(base::Milliseconds(1350)),
       window_metrics_manager_(window_metrics_manager) {
+  if (window_metrics_manager_) {
+    window_metrics_manager_->OnReloadButtonCreated();
+  }
   SetVisibleMode(Mode::kReload);
   SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON |
                            ui::EF_MIDDLE_MOUSE_BUTTON);

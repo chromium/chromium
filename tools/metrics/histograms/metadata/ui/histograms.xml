@@ -654,6 +654,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="InitialWebUI.View.Creation" enum="InitialWebUIView"
+    expires_after="2026-07-05">
+  <owner>mych@chromium.org</owner>
+  <owner>chrome-waap-eng@google.com</owner>
+  <summary>
+    Records the counts of key Initial WebUI views when they are created in the
+    constructor. Use this to normalize other metrics.
+
+    This is only recorded for desktop platforms when the InitialWebUIMetrics is
+    enabled.
+  </summary>
+</histogram>
+
 <histogram name="ListMenuUtils.SetupCallbacksRecursively.Duration"
     units="microseconds" expires_after="2026-10-01">
   <owner>jhimawan@google.com</owner>

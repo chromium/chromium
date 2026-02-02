@@ -52,6 +52,12 @@ class InitialWebUIWindowMetricsManager {
   // This handles both startup window and new window metrics.
   void OnBrowserWindowFirstPresentation(base::TimeTicks timestamp);
 
+  // Called when the browser window is created.
+  void OnBrowserWindowCreated();
+
+  // Called when the ReloadButton is created.
+  void OnReloadButtonCreated();
+
   // Called when the ReloadButton paints its first frame.
   // This handles reload button metrics in both startup window and new window.
   void OnReloadButtonFirstPaint(base::TimeTicks timestamp);

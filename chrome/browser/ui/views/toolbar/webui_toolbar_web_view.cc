@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/waap/initial_web_ui_manager.h"
+#include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_ui.h"
 #include "chrome/common/chrome_features.h"
@@ -88,6 +89,10 @@ WebUIToolbarWebView::WebUIToolbarWebView(
     BrowserWindowInterface* browser,
     chrome::BrowserCommandController* controller)
     : browser_(browser), controller_(controller), reload_control_(this) {
+  if (auto* manager = InitialWebUIWindowMetricsManager::From(browser_)) {
+    manager->OnReloadButtonCreated();
+  }
+
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   auto web_view =

@@ -263,3 +263,17 @@ TEST_F(WaapUIMetricsServiceTest, OnNewWindowReloadButtonFirstPaint) {
       "FromConstructor",
       kTestLatency, 1);
 }
+
+TEST_F(WaapUIMetricsServiceTest, OnCreatedCounts) {
+  WaapUIMetricsService* service =
+      WaapUIMetricsServiceFactory::GetForProfile(profile());
+  ASSERT_TRUE(service);
+
+  base::HistogramTester histogram_tester;
+
+  service->OnBrowserWindowCreated();
+  histogram_tester.ExpectBucketCount("InitialWebUI.View.Creation", 0, 1);
+
+  service->OnReloadButtonCreated();
+  histogram_tester.ExpectBucketCount("InitialWebUI.View.Creation", 1, 1);
+}

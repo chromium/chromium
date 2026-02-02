@@ -857,6 +857,10 @@ BrowserView::BrowserView(Browser* browser)
       browser_(browser),
       accessibility_mode_observer_(
           std::make_unique<AccessibilityModeObserver>(this)) {
+  if (auto* manager = InitialWebUIWindowMetricsManager::From(browser_.get())) {
+    manager->OnBrowserWindowCreated();
+  }
+
   SetShowIcon(::ShouldShowWindowIcon(
       browser_.get(), AppUsesWindowControlsOverlay(), AppUsesTabbed()));
 
