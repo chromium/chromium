@@ -145,8 +145,7 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
                 onCoreAccountInfosChanged();
             }
         } else if (accountsPromise.isFulfilled()
-                && (mAccountManagerFacade.didAccountFetchSucceed()
-                        || !accountsPromise.getResult().isEmpty())) {
+                && (didAccountFetchSucceed() || !accountsPromise.getResult().isEmpty())) {
             seedThenReloadAllAccountsFromSystem(
                     mAccountManagerFacade.getAccounts().getResult(),
                     CoreAccountInfo.getIdFrom(
@@ -174,7 +173,7 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
         var accountsPromise = mAccountManagerFacade.getAccounts();
         assert accountsPromise.isFulfilled();
         List<AccountInfo> accounts = accountsPromise.getResult();
-        if (!mAccountManagerFacade.didAccountFetchSucceed() && accounts.isEmpty()) {
+        if (!didAccountFetchSucceed() && accounts.isEmpty()) {
             // If the account fetch did not succeed, the AccountManagerFacade falls back to an empty
             // list. Do nothing when this is the case.
             return;
@@ -693,6 +692,11 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
     public boolean getUserAcceptedAccountManagement() {
         return SigninManagerImplJni.get()
                 .getUserAcceptedAccountManagement(mNativeSigninManagerAndroid);
+    }
+
+    @Override
+    public boolean didAccountFetchSucceed() {
+        return mAccountManagerFacade.didAccountFetchSucceed();
     }
 
     private void fetchAndApplyCloudPolicy(CoreAccountInfo account, final Runnable callback) {

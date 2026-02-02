@@ -350,6 +350,15 @@ public class SigninManagerImplTest {
         assertTrue(mSigninManager.isSigninSupported(/* requireUpdatedPlayServices= */ false));
     }
 
+    @Test
+    @MediumTest
+    public void testDidAccountFetchSucceed() {
+        assertTrue(mSigninManager.didAccountFetchSucceed());
+
+        mSigninTestRule.setAccountFetchFailed();
+        assertFalse(mSigninManager.didAccountFetchSucceed());
+    }
+
     private void verifyDataNotWipedOnSignout() {
         GURL url = new GURL(UrlConstants.ABOUT_URL);
         BookmarkId bookmarkId = addBookmark("test", url);
