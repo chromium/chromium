@@ -54,16 +54,17 @@ void UnpackSource(const String& source,
   *storage_area_id = result[1];
 }
 
-// Makes a callback which ignores the |success| result of some async operation
-// but which also holds onto a paused WebScopedVirtualTimePauser until invoked.
-base::OnceCallback<void(bool)> MakeSuccessCallback(
+// Makes a callback which holds onto a paused WebScopedVirtualTimePauser until
+// invoked, ensuring virtual time remains paused for the duration of the async
+// operation.
+base::OnceClosure MakeVirtualTimePauserCallback(
     CachedStorageArea::Source* source) {
   WebScopedVirtualTimePauser virtual_time_pauser =
       source->CreateWebScopedVirtualTimePauser(
           "CachedStorageArea",
           WebScopedVirtualTimePauser::VirtualTaskDuration::kNonInstant);
   virtual_time_pauser.PauseVirtualTime();
-  return BindOnce([](WebScopedVirtualTimePauser, bool) {},
+  return BindOnce([](WebScopedVirtualTimePauser) {},
                   std::move(virtual_time_pauser));
 }
 
@@ -110,10 +111,11 @@ bool CachedStorageArea::SetItem(const String& key,
   String source_string = PackSource(page_url, source_id);
 
   if (!is_session_storage_for_prerendering_) {
-    remote_area_->Put(StringToUint8Vector(key, GetKeyFormat()),
-                      StringToUint8Vector(value, value_format),
-                      optional_old_value, source_string,
-                      MakeSuccessCallback(source));
+    remote_area_->Put(
+        StringToUint8Vector(key, GetKeyFormat()),
+        StringToUint8Vector(value, value_format), optional_old_value,
+        source_string,
+        base::IgnoreArgs<bool>(MakeVirtualTimePauserCallback(source)));
   }
   if (!IsSessionStorage())
     EnqueuePendingMutation(key, value, old_value, source_string);
@@ -139,7 +141,7 @@ void CachedStorageArea::RemoveItem(const String& key, Source* source) {
   if (!is_session_storage_for_prerendering_) {
     remote_area_->Delete(StringToUint8Vector(key, GetKeyFormat()),
                          optional_old_value, source_string,
-                         MakeSuccessCallback(source));
+                         MakeVirtualTimePauserCallback(source));
   }
   if (!IsSessionStorage())
     EnqueuePendingMutation(key, String(), old_value, source_string);
@@ -177,7 +179,7 @@ void CachedStorageArea::Clear(Source* source) {
   String source_string = PackSource(page_url, source_id);
   if (!is_session_storage_for_prerendering_) {
     remote_area_->DeleteAll(source_string, std::move(new_observer),
-                            MakeSuccessCallback(source));
+                            MakeVirtualTimePauserCallback(source));
   }
   if (!IsSessionStorage())
     EnqueuePendingMutation(String(), String(), String(), source_string);

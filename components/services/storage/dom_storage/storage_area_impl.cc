@@ -356,7 +356,7 @@ void StorageAreaImpl::Delete(
       // caching behavior.
       for (const auto& observer : observers_)
         observer->KeyDeleted(key, std::nullopt, source);
-      std::move(callback).Run(true);
+      std::move(callback).Run();
       return;
     }
     if (client_old_value && client_old_value.value().size() == found->second) {
@@ -392,7 +392,7 @@ void StorageAreaImpl::Delete(
       // caching behavior.
       for (const auto& observer : observers_)
         observer->KeyDeleted(key, std::nullopt, source);
-      std::move(callback).Run(true);
+      std::move(callback).Run();
       return;
     }
     old_value.swap(found->second);
@@ -405,7 +405,7 @@ void StorageAreaImpl::Delete(
 
   for (auto& observer : observers_)
     observer->KeyDeleted(key, old_value, source);
-  std::move(callback).Run(true);
+  std::move(callback).Run();
 }
 
 void StorageAreaImpl::DeleteAll(
@@ -435,7 +435,7 @@ void StorageAreaImpl::DeleteAll(
   if (already_empty) {
     for (const auto& observer : observers_)
       observer->AllDeleted(/*was_nonempty=*/false, source);
-    std::move(callback).Run(true);
+    std::move(callback).Run();
     return;
   }
 
@@ -453,7 +453,7 @@ void StorageAreaImpl::DeleteAll(
   memory_used_ = 0;
   for (const auto& observer : observers_)
     observer->AllDeleted(/*was_nonempty=*/true, source);
-  std::move(callback).Run(/*success=*/true);
+  std::move(callback).Run();
 }
 
 void StorageAreaImpl::Get(const std::vector<uint8_t>& key,

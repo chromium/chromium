@@ -108,7 +108,7 @@ void SessionStorageAreaImpl::DeleteAll(
     CreateNewMap(NewMapType::EMPTY_FROM_DELETE_ALL, source);
     if (new_observer)
       AddObserver(std::move(new_observer));
-    std::move(callback).Run(true);
+    std::move(callback).Run();
     return;
   }
   shared_data_map_->storage_area()->DeleteAll(
@@ -158,9 +158,8 @@ void SessionStorageAreaImpl::OnGetAllResult(
 
 void SessionStorageAreaImpl::OnDeleteAllResult(
     mojo::PendingRemote<blink::mojom::StorageAreaObserver> new_observer,
-    DeleteAllCallback callback,
-    bool was_nonempty) {
-  std::move(callback).Run(true);
+    DeleteAllCallback callback) {
+  std::move(callback).Run();
   if (new_observer)
     AddObserver(std::move(new_observer));
 }

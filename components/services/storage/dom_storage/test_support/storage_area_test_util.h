@@ -42,15 +42,15 @@ bool GetAllSync(blink::mojom::StorageArea* area,
                 std::vector<blink::mojom::KeyValuePtr>* data_out);
 
 // Does a |Delete| call on the area and waits until the response is
-// received. Returns if the call was successful.
-bool DeleteSync(blink::mojom::StorageArea* area,
+// received.
+void DeleteSync(blink::mojom::StorageArea* area,
                 const std::vector<uint8_t>& key,
                 const std::optional<std::vector<uint8_t>>& client_old_value,
                 const std::string& source);
 
 // Does a |DeleteAll| call on the area and waits until the response is
-// received. Returns if the call was successful.
-bool DeleteAllSync(blink::mojom::StorageArea* area, const std::string& source);
+// received.
+void DeleteAllSync(blink::mojom::StorageArea* area, const std::string& source);
 
 // Creates a callback that simply sets the  |*_out| variables to the arguments.
 blink::mojom::StorageArea::GetAllCallback MakeGetAllCallback(

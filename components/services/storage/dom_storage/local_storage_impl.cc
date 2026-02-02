@@ -61,10 +61,6 @@ const unsigned kMaxLocalStorageAreaCount = 50;
 const size_t kMaxLocalStorageCacheSize = 20 * 1024 * 1024;
 #endif
 
-void SuccessResponse(base::OnceClosure callback, bool success) {
-  std::move(callback).Run();
-}
-
 void IgnoreStatus(base::OnceClosure callback, DbStatus status) {
   std::move(callback).Run();
 }
@@ -246,8 +242,7 @@ void LocalStorageImpl::DeleteStorage(const blink::StorageKey& storage_key,
     // event and we only care about observing its completion, for which the
     // reply alone is sufficient.
     found->second->storage_area()->DeleteAll(
-        "\n", /*new_observer=*/mojo::NullRemote(),
-        base::BindOnce(&SuccessResponse, std::move(callback)));
+        "\n", /*new_observer=*/mojo::NullRemote(), std::move(callback));
     found->second->storage_area()->ScheduleImmediateCommit();
   } else if (database_) {
     std::vector<DomStorageDatabase::MapLocator> maps_to_delete;

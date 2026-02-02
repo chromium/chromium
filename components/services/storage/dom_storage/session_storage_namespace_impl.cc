@@ -13,14 +13,6 @@
 
 namespace storage {
 
-namespace {
-
-void SessionStorageResponse(base::OnceClosure callback, bool success) {
-  std::move(callback).Run();
-}
-
-}  // namespace
-
 SessionStorageNamespaceImpl::SessionStorageNamespaceImpl(
     std::string namespace_id,
     SessionStorageDataMap::Listener* data_map_listener,
@@ -164,9 +156,8 @@ void SessionStorageNamespaceImpl::RemoveStorageKeyData(
   }
   // Renderer process expects |source| to always be two newline separated
   // strings.
-  it->second->DeleteAll(
-      "\n", /*new_observer=*/mojo::NullRemote(),
-      base::BindOnce(&SessionStorageResponse, std::move(callback)));
+  it->second->DeleteAll("\n", /*new_observer=*/mojo::NullRemote(),
+                        std::move(callback));
   it->second->NotifyObserversAllDeleted();
   it->second->data_map()->storage_area()->ScheduleImmediateCommit();
 }

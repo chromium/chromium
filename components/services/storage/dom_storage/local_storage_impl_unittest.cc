@@ -696,9 +696,9 @@ TEST_F(LocalStorageImplTest, MetaDataClearedOnDelete) {
   area->Put(key, value, std::nullopt, "source", base::DoNothing());
   area.reset();
   context()->BindStorageArea(storage_key1, area.BindNewPipeAndPassReceiver());
-  base::test::TestFuture<bool> success_future;
-  area->Delete(key, value, "source", success_future.GetCallback());
-  EXPECT_TRUE(success_future.Take());
+  base::test::TestFuture<void> delete_future;
+  area->Delete(key, value, "source", delete_future.GetCallback());
+  EXPECT_TRUE(delete_future.Wait());
   area.reset();
 
   // Data from `storage_key2` should exist, including meta-data, but nothing
@@ -730,9 +730,10 @@ TEST_F(LocalStorageImplTest, MetaDataClearedOnDeleteAll) {
   area.reset();
 
   context()->BindStorageArea(storage_key1, area.BindNewPipeAndPassReceiver());
-  base::test::TestFuture<bool> success_future;
-  area->DeleteAll("source", mojo::NullRemote(), success_future.GetCallback());
-  EXPECT_TRUE(success_future.Take());
+  base::test::TestFuture<void> delete_all_future;
+  area->DeleteAll("source", mojo::NullRemote(),
+                  delete_all_future.GetCallback());
+  EXPECT_TRUE(delete_all_future.Wait());
   area.reset();
 
   // Data from `storage_key2` should exist, including meta-data, but nothing
@@ -1254,14 +1255,9 @@ TEST_F(LocalStorageImplTest, RecreateOnCommitFailure) {
       blink::StorageKey::CreateFromStringForTesting("http://foobar.com"),
       area1.BindNewPipeAndPassReceiver());
   base::RunLoop delete_loop;
-  bool success = true;
   TestStorageAreaObserver observer3;
   area1->AddObserver(observer3.Bind());
-  area1->Delete(key, std::nullopt, "source",
-                base::BindLambdaForTesting([&](bool success_in) {
-                  success = success_in;
-                  delete_loop.Quit();
-                }));
+  area1->Delete(key, std::nullopt, "source", delete_loop.QuitClosure());
 
   // The new database should be ready to go.
   open_loop->Run();

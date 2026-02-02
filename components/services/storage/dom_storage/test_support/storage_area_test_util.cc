@@ -74,31 +74,20 @@ bool GetAllSync(blink::mojom::StorageArea* area,
   return true;
 }
 
-bool DeleteSync(blink::mojom::StorageArea* area,
+void DeleteSync(blink::mojom::StorageArea* area,
                 const std::vector<uint8_t>& key,
                 const std::optional<std::vector<uint8_t>>& client_old_value,
                 const std::string& source) {
-  bool success = false;
   base::RunLoop loop;
-  area->Delete(key, client_old_value, source,
-               base::BindLambdaForTesting([&](bool success_in) {
-                 success = success_in;
-                 loop.Quit();
-               }));
+  area->Delete(key, client_old_value, source, loop.QuitClosure());
   loop.Run();
-  return success;
 }
 
-bool DeleteAllSync(blink::mojom::StorageArea* area, const std::string& source) {
-  bool success = false;
+void DeleteAllSync(blink::mojom::StorageArea* area, const std::string& source) {
   base::RunLoop loop;
   area->DeleteAll(source, /*new_observer=*/mojo::NullRemote(),
-                  base::BindLambdaForTesting([&](bool success_in) {
-                    success = success_in;
-                    loop.Quit();
-                  }));
+                  loop.QuitClosure());
   loop.Run();
-  return success;
 }
 
 blink::mojom::StorageArea::GetAllCallback MakeGetAllCallback(

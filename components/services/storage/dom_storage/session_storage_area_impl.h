@@ -105,8 +105,7 @@ class SessionStorageAreaImpl : public blink::mojom::StorageArea {
       std::vector<blink::mojom::KeyValuePtr> entries);
   void OnDeleteAllResult(
       mojo::PendingRemote<blink::mojom::StorageAreaObserver> new_observer,
-      DeleteAllCallback callback,
-      bool success);
+      DeleteAllCallback callback);
 
   enum class NewMapType { FORKED, EMPTY_FROM_DELETE_ALL };
 

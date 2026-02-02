@@ -330,7 +330,7 @@ TEST_F(SessionStorageAreaImplTest, DeleteAllOnShared) {
   // There should be no commits, as we don't actually have to change any data.
   // |session_storage_area1| should just switch to a new, empty map.
   EXPECT_CALL(listener_, OnCommitResult(OKStatus())).Times(0);
-  EXPECT_TRUE(test::DeleteAllSync(storage_area1.get(), "source"));
+  test::DeleteAllSync(storage_area1.get(), "source");
 
   // The maps were forked on the above call.
   EXPECT_NE(session_storage_area1->data_map(),
@@ -358,7 +358,7 @@ TEST_F(SessionStorageAreaImplTest, DeleteAllWithoutBinding) {
   base::RunLoop loop;
   EXPECT_CALL(listener_, OnCommitResult(OKStatus()))
       .WillOnce(base::test::RunClosure(loop.QuitClosure()));
-  EXPECT_TRUE(test::DeleteAllSync(session_storage_area1.get(), "source"));
+  test::DeleteAllSync(session_storage_area1.get(), "source");
   session_storage_area1->data_map()->storage_area()->ScheduleImmediateCommit();
   loop.Run();
 
@@ -400,7 +400,7 @@ TEST_F(SessionStorageAreaImplTest, DeleteAllWithoutBindingOnShared) {
   // There should be no commits, as we don't actually have to change any data.
   // |session_storage_area1| should just switch to a new, empty map.
   EXPECT_CALL(listener_, OnCommitResult(OKStatus())).Times(0);
-  EXPECT_TRUE(test::DeleteAllSync(session_storage_area1.get(), "source"));
+  test::DeleteAllSync(session_storage_area1.get(), "source");
 
   // The maps were forked on the above call.
   EXPECT_NE(session_storage_area1->data_map(),

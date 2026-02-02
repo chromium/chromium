@@ -287,14 +287,14 @@ class StorageAreaImplTest : public testing::Test,
     return success;
   }
 
-  bool DeleteSync(blink::mojom::StorageArea* area,
+  void DeleteSync(blink::mojom::StorageArea* area,
                   const std::vector<uint8_t>& key,
                   const std::optional<std::vector<uint8_t>>& client_old_value) {
-    return test::DeleteSync(area, key, client_old_value, test_source_);
+    test::DeleteSync(area, key, client_old_value, test_source_);
   }
 
-  bool DeleteAllSync(blink::mojom::StorageArea* area) {
-    return test::DeleteAllSync(area, test_source_);
+  void DeleteAllSync(blink::mojom::StorageArea* area) {
+    test::DeleteAllSync(area, test_source_);
   }
 
   bool GetSync(const std::vector<uint8_t>& key, std::vector<uint8_t>* result) {
@@ -308,12 +308,12 @@ class StorageAreaImplTest : public testing::Test,
     return test::PutSync(storage_area(), key, value, client_old_value, source);
   }
 
-  bool DeleteSync(const std::vector<uint8_t>& key,
+  void DeleteSync(const std::vector<uint8_t>& key,
                   const std::optional<std::vector<uint8_t>>& client_old_value) {
-    return DeleteSync(storage_area(), key, client_old_value);
+    DeleteSync(storage_area(), key, client_old_value);
   }
 
-  bool DeleteAllSync() { return DeleteAllSync(storage_area()); }
+  void DeleteAllSync() { DeleteAllSync(storage_area()); }
 
   std::string GetSyncStrUsingGetAll(StorageAreaImpl* area_impl,
                                     const std::string& key) {
@@ -639,7 +639,7 @@ TEST_P(StorageAreaImplCacheModeTest, PutObservations) {
 
 TEST_P(StorageAreaImplCacheModeTest, DeleteNonExistingKey) {
   storage_area_impl()->SetCacheModeForTesting(GetParam());
-  EXPECT_TRUE(DeleteSync(ToBytes("doesn't exist"), std::vector<uint8_t>()));
+  DeleteSync(ToBytes("doesn't exist"), std::vector<uint8_t>());
   EXPECT_EQ(1u, observations().size());
 }
 
@@ -649,7 +649,7 @@ TEST_P(StorageAreaImplCacheModeTest, DeleteExistingKey) {
   std::string value = "foo";
   SetDatabaseEntry(*test_map_locator_, key, value);
 
-  EXPECT_TRUE(DeleteSync(ToBytes(key), ToBytes(value)));
+  DeleteSync(ToBytes(key), ToBytes(value));
   ASSERT_EQ(1u, observations().size());
   EXPECT_EQ(Observation::kDelete, observations()[0].type);
   EXPECT_EQ(key, observations()[0].key);
@@ -670,7 +670,7 @@ TEST_P(StorageAreaImplCacheModeTest, DeleteAllWithoutLoadedMap) {
   SetDatabaseEntry(*test_other_map_locator_, dummy_key, value);
   SetDatabaseEntry(*test_map_locator_, key, value);
 
-  EXPECT_TRUE(DeleteAllSync());
+  DeleteAllSync();
   ASSERT_EQ(1u, observations().size());
   EXPECT_EQ(Observation::kDeleteAll, observations()[0].type);
   EXPECT_EQ(test_source_, observations()[0].source);
@@ -683,7 +683,7 @@ TEST_P(StorageAreaImplCacheModeTest, DeleteAllWithoutLoadedMap) {
   EXPECT_TRUE(HasDatabaseEntry(*test_other_map_locator_, dummy_key));
 
   // Deleting all again should still work, and still cause an observation.
-  EXPECT_TRUE(DeleteAllSync());
+  DeleteAllSync();
   ASSERT_EQ(2u, observations().size());
   EXPECT_EQ(Observation::kDeleteAll, observations()[1].type);
   EXPECT_EQ(test_source_, observations()[1].source);
@@ -702,7 +702,7 @@ TEST_P(StorageAreaImplCacheModeTest, DeleteAllWithLoadedMap) {
 
   EXPECT_TRUE(PutSync(ToBytes(key), ToBytes(value), std::nullopt));
 
-  EXPECT_TRUE(DeleteAllSync());
+  DeleteAllSync();
   ASSERT_EQ(2u, observations().size());
   EXPECT_EQ(Observation::kDeleteAll, observations()[1].type);
   EXPECT_EQ(test_source_, observations()[1].source);
@@ -724,7 +724,7 @@ TEST_P(StorageAreaImplCacheModeTest, DeleteAllWithPendingMapLoad) {
   storage_area()->Put(ToBytes(key), ToBytes(value), std::nullopt, kTestSource,
                       base::DoNothing());
 
-  EXPECT_TRUE(DeleteAllSync());
+  DeleteAllSync();
   ASSERT_EQ(2u, observations().size());
   EXPECT_EQ(Observation::kDeleteAll, observations()[1].type);
   EXPECT_EQ(test_source_, observations()[1].source);
@@ -740,7 +740,7 @@ TEST_P(StorageAreaImplCacheModeTest, DeleteAllWithoutLoadedEmptyMap) {
   storage_area_impl()->SetCacheModeForTesting(GetParam());
   ASSERT_NO_FATAL_FAILURE(ClearDatabase());
 
-  EXPECT_TRUE(DeleteAllSync());
+  DeleteAllSync();
   ASSERT_EQ(1u, observations().size());
   EXPECT_EQ(Observation::kDeleteAll, observations()[0].type);
   EXPECT_EQ(test_source_, observations()[0].source);
@@ -1047,7 +1047,6 @@ TEST_F(StorageAreaImplTest, GetAllAfterSetCacheMode) {
 
   bool put_success = false;
   std::vector<blink::mojom::KeyValuePtr> data;
-  bool delete_success = false;
   {
     BarrierBuilder barrier(loop.QuitClosure());
 
@@ -1063,14 +1062,11 @@ TEST_F(StorageAreaImplTest, GetAllAfterSetCacheMode) {
 
     mojo::PendingRemote<blink::mojom::StorageAreaObserver> unused_observer;
     std::ignore = unused_observer.InitWithNewPipeAndPassReceiver();
-    storage_area()->GetAll(
-        std::move(unused_observer),
-        MakeGetAllCallback(upgrade_loop.QuitClosure(), &data));
+    storage_area()->GetAll(std::move(unused_observer),
+                           MakeGetAllCallback(barrier.AddClosure(), &data));
 
     // This Delete() should not affect the value returned by GetAll().
-    storage_area()->Delete(
-        key, value, test_source_,
-        MakeSuccessCallback(barrier.AddClosure(), &delete_success));
+    storage_area()->Delete(key, value, test_source_, barrier.AddClosure());
   }
   loop.Run();
 
@@ -1082,7 +1078,6 @@ TEST_F(StorageAreaImplTest, GetAllAfterSetCacheMode) {
       << ToString(data[0]->value) << " vs expected " << ToString(value2);
 
   EXPECT_TRUE(put_success);
-  EXPECT_TRUE(delete_success);
 
   // GetAll shouldn't trigger a commit before it runs now because the value
   // map should be loading.
@@ -1157,11 +1152,11 @@ TEST_F(StorageAreaImplTest, SendOldValueObservations) {
   should_record_send_old_value_observations(true);
   storage_area_impl()->SetCacheModeForTesting(CacheMode::KEYS_AND_VALUES);
   // Flush tasks on mojo thread to observe callback.
-  EXPECT_TRUE(DeleteSync(ToBytes("doesn't exist"), std::nullopt));
+  DeleteSync(ToBytes("doesn't exist"), std::nullopt);
   storage_area_impl()->SetCacheModeForTesting(
       CacheMode::KEYS_ONLY_WHEN_POSSIBLE);
   // Flush tasks on mojo thread to observe callback.
-  EXPECT_TRUE(DeleteSync(ToBytes("doesn't exist"), std::nullopt));
+  DeleteSync(ToBytes("doesn't exist"), std::nullopt);
 
   ASSERT_EQ(4u, observations().size());
   EXPECT_EQ(Observation::kSendOldValue, observations()[0].type);
@@ -1326,10 +1321,8 @@ TEST_F(StorageAreaImplTest, MapForkingPseudoFuzzer) {
       if (i % 13 == 0) {
         FuzzState old_state = state;
         state.val1 = std::nullopt;
-        successes.push_back(false);
-        areas[i]->Delete(
-            kKey1Vec, old_state.val1, test_source_,
-            MakeSuccessCallback(barrier.AddClosure(), &successes.back()));
+        areas[i]->Delete(kKey1Vec, old_state.val1, test_source_,
+                         barrier.AddClosure());
       }
       if (i % 4 == 0) {
         FuzzState old_state = state;
@@ -1352,10 +1345,8 @@ TEST_F(StorageAreaImplTest, MapForkingPseudoFuzzer) {
       if (i % 11 == 0) {
         state.val1 = std::nullopt;
         state.val2 = std::nullopt;
-        successes.push_back(false);
-        areas[i]->DeleteAll(
-            test_source_, mojo::NullRemote(),
-            MakeSuccessCallback(barrier.AddClosure(), &successes.back()));
+        areas[i]->DeleteAll(test_source_, mojo::NullRemote(),
+                            barrier.AddClosure());
       }
       if (i % 2 == 0 && forks + 1 < kTotalAreas) {
         CacheMode mode = i % 3 == 0 ? CacheMode::KEYS_AND_VALUES

@@ -98,27 +98,19 @@ interface StorageArea {
   //    nullopt if `key` was not present in database. This value is used to send
   //    notifications to StorageAreaObserver(s).
   //
-  // TODO(https://crbug.com/1000959): Remove the `success` reply argument. This
-  // call always succeeds.
-  //
-  // Note that a successful reply should not be treated as an indication that
-  // the value for `key` is still empty: it is possible for the reply to be
-  // received after some other client has already added the key again. Clients
+  // Note that a reply should not be treated as an indication that the value
+  // for `key` is still empty: it is possible for the reply to be received
+  // after some other client has already added the key again. Clients
   // interested in maintaining a consistent local cache of the stored contents
   // should rely only on sequential StorageAreaObserver events from an observer
   // bound via `GetAll()` or `DeleteAll()`.
-  Delete(array<uint8> key, array<uint8>? client_old_value, string source)
-      => (bool success);
+  Delete(array<uint8> key, array<uint8>? client_old_value, string source) => ();
 
   // Removes all entries. If `new_observer` is non-null, it will be added to
   // the StorageArea's set of observers immediately BEFORE broadcasting the
   // corresponding `AllDeleted()` event, such that `new_observer`'s receiver
   // will always receive that `AllDeleted()` as its first observed event.
-  //
-  // TODO(https://crbug.com/1000959): Remove the `success` reply argument. This
-  // call always succeeds.
-  DeleteAll(string source, pending_remote<StorageAreaObserver>? new_observer)
-      => (bool success);
+  DeleteAll(string source, pending_remote<StorageAreaObserver>? new_observer) => ();
 
   // [DEPRECATED] Returns the value of the `key` only if values are
   // stored in the internal in-memory cache. Fails if the `key` does not exist
