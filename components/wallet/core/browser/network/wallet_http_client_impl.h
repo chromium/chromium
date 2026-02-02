@@ -39,7 +39,9 @@ class WalletHttpClientImpl : public WalletHttpClient {
   WalletHttpClientImpl& operator=(const WalletHttpClientImpl&) = delete;
 
   // WalletHttpClient:
-  void SavePass(const WalletPass& pass, SavePassCallback callback) override;
+  void UpsertPass(const WalletPass& pass, UpsertPassCallback callback) override;
+  void GetUnmaskedPass(std::string_view pass_id,
+                       GetUnmaskedPassCallback callback) override;
 
  private:
   using UrlLoaderList = std::list<std::unique_ptr<network::SimpleURLLoader>>;
@@ -75,8 +77,12 @@ class WalletHttpClientImpl : public WalletHttpClient {
       std::optional<std::string> response_body);
 
   // Parses `http_response` and runs `callback` with the result.
-  void OnSavePassResponse(SavePassCallback callback,
-                          HttpResponse http_response);
+  void OnUpsertPassResponse(UpsertPassCallback callback,
+                            HttpResponse http_response);
+
+  // Parses `http_response` and runs `callback` with the result.
+  void OnGetUnmaskedPassResponse(GetUnmaskedPassCallback callback,
+                                 HttpResponse http_response);
 
   // The IdentityManager instance for the current profile.
   const raw_ref<signin::IdentityManager> identity_manager_;

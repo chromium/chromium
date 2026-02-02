@@ -449,7 +449,7 @@ void WalletablePassIngestionController::OnGetSaveBubbleResult(
   switch (result) {
     case kAccepted:
       if (base::FeatureList::IsEnabled(kWalletablePassSave)) {
-        client_->GetWalletHttpClient()->SavePass(
+        client_->GetWalletHttpClient()->UpsertPass(
             walletable_pass,
             base::BindOnce(&WalletablePassIngestionController::OnPassSaved,
                            weak_ptr_factory_.GetWeakPtr(), url));
@@ -497,8 +497,8 @@ void WalletablePassIngestionController::OnGetSaveBubbleResult(
 
 void WalletablePassIngestionController::OnPassSaved(
     const GURL& url,
-    base::expected<WalletHttpClient::SavePassResult,
-                   WalletHttpClient::WalletRequestError> result) {
+    const base::expected<WalletPass, WalletHttpClient::WalletRequestError>&
+        result) {
   // TODO(crbug.com/470178423): Log save success / failure to UMA and cache url.
 }
 

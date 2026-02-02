@@ -10,6 +10,7 @@
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
+#include "base/notimplemented.h"
 #include "base/uuid.h"
 #include "base/values.h"
 #include "components/signin/public/base/consent_level.h"
@@ -148,13 +149,19 @@ WalletHttpClientImpl::WalletHttpClientImpl(
 
 WalletHttpClientImpl::~WalletHttpClientImpl() = default;
 
-void WalletHttpClientImpl::SavePass(const WalletPass& pass,
-                                    SavePassCallback callback) {
+void WalletHttpClientImpl::UpsertPass(const WalletPass& pass,
+                                      UpsertPassCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   SendRequest(
       kSavePassRequestPath, BuildSavePassRequest(pass),
-      base::BindOnce(&WalletHttpClientImpl::OnSavePassResponse,
+      base::BindOnce(&WalletHttpClientImpl::OnUpsertPassResponse,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void WalletHttpClientImpl::GetUnmaskedPass(std::string_view pass_id,
+                                           GetUnmaskedPassCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  NOTIMPLEMENTED();
 }
 
 void WalletHttpClientImpl::SendRequest(
@@ -297,17 +304,23 @@ void WalletHttpClientImpl::OnSimpleLoaderComplete(
   std::move(response_callback).Run(std::move(*response_body));
 }
 
-void WalletHttpClientImpl::OnSavePassResponse(SavePassCallback callback,
-                                              HttpResponse http_response) {
+void WalletHttpClientImpl::OnUpsertPassResponse(UpsertPassCallback callback,
+                                                HttpResponse http_response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!http_response.has_value()) {
     std::move(callback).Run(base::unexpected(http_response.error()));
     return;
   }
 
-  // TODO(crbug.com/468916773): Parse the response body to extract pass_id.
-  std::move(callback).Run(
-      WalletHttpClient::SavePassResult{.pass_id = "dummy_pass_id"});
+  // TODO(crbug.com/468916773): Parse the response body to extract the pass.
+  std::move(callback).Run(WalletPass{});
+}
+
+void WalletHttpClientImpl::OnGetUnmaskedPassResponse(
+    GetUnmaskedPassCallback callback,
+    HttpResponse http_response) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  NOTIMPLEMENTED();
 }
 
 }  // namespace wallet

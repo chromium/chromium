@@ -7,6 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "base/types/expected.h"
+#include "components/wallet/core/browser/data_models/wallet_pass.h"
 
 namespace wallet {
 
@@ -20,16 +21,28 @@ class WalletHttpClient {
     kAccessTokenFetchFailed = 2,
     // TODO(crbug.com/468915960): Add more error codes.
   };
-  struct SavePassResult {
-    std::string pass_id;
-  };
-  using SavePassCallback = base::OnceCallback<void(
-      base::expected<SavePassResult, WalletRequestError>)>;
+
+  // Callback for UpsertPass requests. On success, it returns the `WalletPass`
+  // as it is stored in the Wallet backend (including its `id`).
+  using UpsertPassCallback = base::OnceCallback<void(
+      const base::expected<WalletPass, WalletRequestError>&)>;
+
+  // Callback for GetUnmaskedPass requests. On success, it returns the
+  // `WalletPass` corresponding to the requested `pass_id`.
+  using GetUnmaskedPassCallback = base::OnceCallback<void(
+      const base::expected<WalletPass, WalletRequestError>&)>;
 
   virtual ~WalletHttpClient() = default;
 
-  // Save a pass to the Wallet backend.
-  virtual void SavePass(const WalletPass& pass, SavePassCallback callback) = 0;
+  // Upserts a pass to the Wallet backend. If the `pass.id` is missing, it
+  // will save a new pass. If the `pass.id` is present, it will attempt to
+  // update the existing pass.
+  virtual void UpsertPass(const WalletPass& pass,
+                          UpsertPassCallback callback) = 0;
+
+  // Retrieves the unmasked version of the pass for the given `pass_id`.
+  virtual void GetUnmaskedPass(std::string_view pass_id,
+                               GetUnmaskedPassCallback callback) = 0;
 };
 
 }  // namespace wallet

@@ -214,6 +214,10 @@ struct WalletPass {
   // Returns the pass category of the Google Wallet pass.
   PassCategory GetPassCategory() const;
 
+  // Contains the id of the Wallet pass. It should only be `std::nullopt` for
+  // save pass requests.
+  std::optional<std::string> id;
+
   std::variant<LoyaltyCard,
                EventPass,
                BoardingPass,

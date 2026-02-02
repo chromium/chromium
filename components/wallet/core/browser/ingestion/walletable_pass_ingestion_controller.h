@@ -155,9 +155,10 @@ class WalletablePassIngestionController {
       WalletablePassClient::WalletablePassBubbleResult result);
 
   // Callback invoked when the pass is saved successfully or fails.
-  void OnPassSaved(const GURL& url,
-                   base::expected<WalletHttpClient::SavePassResult,
-                                  WalletHttpClient::WalletRequestError> result);
+  void OnPassSaved(
+      const GURL& url,
+      const base::expected<WalletPass, WalletHttpClient::WalletRequestError>&
+          result);
 
   // A raw reference to the client, which owns `this` and therefore outlives
   // it.
