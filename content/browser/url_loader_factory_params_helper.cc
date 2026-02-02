@@ -361,7 +361,7 @@ URLLoaderFactoryParamsHelper::CreateForEarlyHintsPreload(
           early_hints.headers->cross_origin_embedder_policy,
           network::IsOriginPotentiallyTrustworthy(tentative_origin),
           early_hints.ip_address_space,
-          network::mojom::PrivateNetworkRequestPolicy::kBlock,
+          network::mojom::LocalNetworkAccessRequestPolicy::kBlock,
           network::DocumentIsolationPolicy());
 
   return CreateParams(

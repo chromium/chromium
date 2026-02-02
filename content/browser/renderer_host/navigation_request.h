@@ -1027,9 +1027,9 @@ class CONTENT_EXPORT NavigationRequest
     return isolation_info_for_subresources_;
   }
 
-  network::mojom::PrivateNetworkRequestPolicy private_network_request_policy()
-      const {
-    return private_network_request_policy_;
+  network::mojom::LocalNetworkAccessRequestPolicy
+  local_network_access_request_policy() const {
+    return local_network_access_request_policy_;
   }
 
   // Whether this navigation request waits for the result of beforeunload before
@@ -2190,11 +2190,12 @@ class CONTENT_EXPORT NavigationRequest
   // redirect.
   void UpdateStateFollowingRedirect(const GURL& new_referrer_url);
 
-  // Updates |private_network_request_policy_| for ReadyToCommitNavigation().
+  // Updates |local_network_access_request_policy_| for
+  // ReadyToCommitNavigation().
   //
   // Must not be called for same-document navigation requests nor for requests
   // served from the back-forward cache or from prerendered pages.
-  void UpdatePrivateNetworkRequestPolicy();
+  void UpdateLocalNetworkAccessRequestPolicy();
 
   // Called when the navigation is ready to be committed. This will update the
   // |state_| and inform the delegate.
@@ -3125,8 +3126,9 @@ class CONTENT_EXPORT NavigationRequest
   // The policy to apply to private network requests for subresources of the
   // document we are navigating to. Influenced by the document's policy
   // container, origin, and `ContentBrowserClient`.
-  network::mojom::PrivateNetworkRequestPolicy private_network_request_policy_ =
-      network::mojom::PrivateNetworkRequestPolicy::kWarn;
+  network::mojom::LocalNetworkAccessRequestPolicy
+      local_network_access_request_policy_ =
+          network::mojom::LocalNetworkAccessRequestPolicy::kWarn;
 
   // The list of web features that were used by the new document during
   // navigation. These can only be logged once the document commits, so they are

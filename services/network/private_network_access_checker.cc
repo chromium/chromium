@@ -22,7 +22,7 @@ namespace network {
 namespace {
 
 using Result = PrivateNetworkAccessCheckResult;
-using Policy = mojom::PrivateNetworkRequestPolicy;
+using Policy = mojom::LocalNetworkAccessRequestPolicy;
 
 }  // namespace
 
@@ -122,10 +122,9 @@ Result PrivateNetworkAccessChecker::CheckAddressSpace(
     return Result::kAllowedMissingClientSecurityState;
   }
 
-  mojom::PrivateNetworkRequestPolicy policy =
-      client_security_state_->private_network_request_policy;
+  Policy policy = client_security_state_->local_network_access_request_policy;
 
-  if (policy == mojom::PrivateNetworkRequestPolicy::kAllow) {
+  if (policy == Policy::kAllow) {
     return Result::kAllowedByPolicyAllow;
   }
 
@@ -136,7 +135,7 @@ Result PrivateNetworkAccessChecker::CheckAddressSpace(
   if (response_address_space_.has_value() &&
       resource_address_space != *response_address_space_) {
     // See also https://crbug.com/1334689.
-    if (policy == mojom::PrivateNetworkRequestPolicy::kWarn) {
+    if (policy == Policy::kWarn) {
       return Result::kAllowedByPolicyWarn;
     }
 
@@ -171,7 +170,7 @@ Result PrivateNetworkAccessChecker::CheckAddressSpace(
   }
 
   // We use a switch statement to force this code to be amended when values are
-  // added to the `PrivateNetworkRequestPolicy` enum.
+  // added to the `LocalNetworkAccessRequestPolicy` enum.
   switch (policy) {
     case Policy::kAllow:
       NOTREACHED();  // Should have been handled by the if statement above.

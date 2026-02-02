@@ -80,8 +80,8 @@ CreateClientSecurityStateForProtectedAudience(
   auto client_security_state = network::mojom::ClientSecurityState::New();
   client_security_state->ip_address_space = ip_address_space;
   client_security_state->is_web_secure_context = true;
-  client_security_state->private_network_request_policy =
-      network::mojom::PrivateNetworkRequestPolicy::kBlock;
+  client_security_state->local_network_access_request_policy =
+      network::mojom::LocalNetworkAccessRequestPolicy::kBlock;
   return client_security_state;
 }
 
