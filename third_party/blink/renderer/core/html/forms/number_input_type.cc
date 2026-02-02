@@ -289,12 +289,18 @@ void NumberInputType::HandleBeforeTextInsertedEvent(
     // - Reject if the editing value already contains two signs
     // - Reject if the editing value contains 'e' and the caret is placed
     // neither at the beginning of the value nor just after 'e'
+    // - Reject if there is already a sign immediately following the caret.
+    // - Reject leading '+' insertion when 'e' is already present.
     else if (locale.IsSignPrefix(c)) {
       String both_halves = StrCat({left_half, right_half});
       if (locale.HasTwoSignChars(both_halves) ||
           (both_halves.Find(IsE) != kNotFound &&
-           !(left_half == "" || IsE(left_half[left_half.length() - 1]))))
+           !(left_half == "" || IsE(left_half[left_half.length() - 1]))) ||
+          (!right_half.empty() && locale.IsSignPrefix(right_half[0])) ||
+          (c == '+' && both_halves.Find(IsE) != kNotFound &&
+           left_half.empty())) {
         continue;
+      }
     }
     // For a digit input:
     // - Reject if the first letter of the editing value is a sign and the
