@@ -103,7 +103,7 @@ public class FuseboxAttachmentModelList implements FileUploadObserver, Iterable<
 
     @Override
     public Iterator<FuseboxAttachment> iterator() {
-        return new Iterator<FuseboxAttachment>() {
+        return new Iterator<>() {
             private int mIndex;
 
             @Override

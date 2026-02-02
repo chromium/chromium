@@ -29,7 +29,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerViewAdapter.FuseboxAttachmentType;
@@ -52,22 +51,18 @@ public class FuseboxAttachmentModelListUnitTest {
 
     private Resources mResources;
     private FuseboxAttachmentModelList mFuseboxAttachmentModelList;
-    private FuseboxAttachment mTestAttachment;
-    private MonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
 
     private FuseboxAttachment createTestAttachment(String title) {
         return FuseboxAttachment.forFile(
-                null, // thumbnail
-                title + ".txt",
-                "mime/" + title,
-                title.getBytes());
+                /* thumbnail= */ null, title + ".txt", "mime/" + title, title.getBytes());
     }
 
     @Before
     public void setUp() {
         OmniboxFeatures.sMultiattachmentFusebox.setForTesting(true);
-        mTabModelSelectorSupplier = ObservableSuppliers.createNonNull(mTabModelSelector);
-        mFuseboxAttachmentModelList = new FuseboxAttachmentModelList(mTabModelSelectorSupplier);
+        mFuseboxAttachmentModelList =
+                new FuseboxAttachmentModelList(
+                        ObservableSuppliers.createNonNull(mTabModelSelector));
         mFuseboxAttachmentModelList.setComposeboxQueryControllerBridge(
                 mComposeboxQueryControllerBridge);
         verify(mComposeboxQueryControllerBridge).setFileUploadObserver(mFuseboxAttachmentModelList);
