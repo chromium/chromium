@@ -225,8 +225,6 @@ class NET_EXPORT CookiePartitionKey {
       CookiePartitionKey::AncestorChainBit has_cross_site_ancestor,
       CookiePartitionKey::ParsingMode parsing_mode);
 
-  AncestorChainBit GetAncestorChainBit() const { return ancestor_chain_bit_; }
-
 #if BUILDFLAG(IS_ANDROID)
   static bool g_partitioning_disabled_in_webview_;
   // Used to assert that no constructors are called before partitioning is
