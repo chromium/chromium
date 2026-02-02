@@ -934,7 +934,6 @@ export class ComposeboxElement extends I18nMixinLit
     }
     this.searchboxHandler_.setActiveToolMode(
         this.inDeepSearchMode_ ? ToolMode.kDeepSearch : ToolMode.kUnspecified);
-    this.pageHandler_.setDeepSearchMode(e.detail.inDeepSearchMode);
     this.queryAutocomplete_(/* clearMatches= */ true);
     this.updateInputPlaceholder_();
 
@@ -951,8 +950,6 @@ export class ComposeboxElement extends I18nMixinLit
     }
     this.searchboxHandler_.setActiveToolMode(
         this.inCreateImageMode_ ? ToolMode.kImageGen : ToolMode.kUnspecified);
-    this.pageHandler_.setCreateImageMode(
-        e.detail.inCreateImageMode, e.detail.imagePresent);
     this.queryAutocomplete_(/* clearMatches= */ true);
     this.updateInputPlaceholder_();
 

@@ -45,8 +45,6 @@ class LensComposeboxHandler : public composebox::mojom::PageHandler,
                    bool meta_key,
                    bool shift_key) override;
   void FocusChanged(bool focused) override;
-  void SetDeepSearchMode(bool enabled) override;
-  void SetCreateImageMode(bool enabled, bool image_present) override;
   void HandleLensButtonClick() override;
   void HandleFileUpload(bool is_image) override;
   void NavigateUrl(const GURL& url) override;

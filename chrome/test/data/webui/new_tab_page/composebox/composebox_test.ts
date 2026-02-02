@@ -1374,7 +1374,10 @@ suite('NewTabPageComposeboxTest', () => {
           detail: {inCreateImageMode: true},
         }));
     await microtasksFinished();
-    assertEquals(handler.getCallCount('setCreateImageMode'), 1);
+    assertEquals(searchboxHandler.getCallCount('setActiveToolMode'), 1);
+    assertEquals(
+        ComposeboxToolMode.kImageGen,
+        searchboxHandler.getArgs('setActiveToolMode')[0]);
 
     // Upload an image file. `inputsDisabled` should be false.
     const id = generateZeroId();
@@ -1384,9 +1387,10 @@ suite('NewTabPageComposeboxTest', () => {
         id, FileUploadStatus.kProcessingSuggestSignalsReady, null);
     await microtasksFinished();
 
-    // TODO(crbug.com/452957831): Create test browser proxy for the composebox
-    // handler so we can assert the parameters this function was called with.
-    assertEquals(handler.getCallCount('setCreateImageMode'), 2);
+    assertEquals(searchboxHandler.getCallCount('setActiveToolMode'), 2);
+    assertEquals(
+        ComposeboxToolMode.kImageGen,
+        searchboxHandler.getArgs('setActiveToolMode')[0]);
 
     // Deleting the image should call setCreateImageMode again but with
     // imagePresent false.
@@ -1401,7 +1405,10 @@ suite('NewTabPageComposeboxTest', () => {
         }));
 
     await microtasksFinished();
-    assertEquals(handler.getCallCount('setCreateImageMode'), 3);
+    assertEquals(searchboxHandler.getCallCount('setActiveToolMode'), 3);
+    assertEquals(
+        ComposeboxToolMode.kImageGen,
+        searchboxHandler.getArgs('setActiveToolMode')[0]);
   });
 
   test('arrow up/down moves selection / focus', async () => {

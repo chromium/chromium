@@ -1039,13 +1039,7 @@ class ContextualTasksComposeboxHandlerToolModeTest
 TEST_P(ContextualTasksComposeboxHandlerToolModeTest, SetsToolModeFlags) {
   const auto& param = GetParam();
 
-  if (param.tool_mode == omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH) {
-    handler_->SetDeepSearchMode(true);
-  } else if (param.tool_mode == omnibox::ToolMode::TOOL_MODE_IMAGE_GEN) {
-    handler_->SetCreateImageMode(true, false);
-  } else if (param.tool_mode == omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD) {
-    handler_->SetCreateImageMode(true, true);
-  }
+  handler_->SetActiveToolMode(param.tool_mode);
 
   EXPECT_CALL(*mock_controller_, CreateClientToAimRequest(testing::_))
       .WillOnce([&](std::unique_ptr<

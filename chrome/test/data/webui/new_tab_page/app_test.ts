@@ -15,6 +15,7 @@ import type {AppElement, CustomizeButtonsElement} from 'chrome://new-tab-page/ne
 import type {PageRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {NtpBackgroundImageSource, PageCallbackRouter, PageHandlerRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {PageCallbackRouter as ComposeboxPageCallbackRouter, PageHandlerRemote as ComposeboxPageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
+import {ToolMode as ComposeboxToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {Command, CommandHandlerRemote} from 'chrome://resources/js/browser_command.mojom-webui.js';
@@ -45,7 +46,6 @@ suite('NewTabPageAppTest', () => {
   let backgroundManager: TestMock<BackgroundManager>;
   let moduleResolver: PromiseResolver<Module[]>;
   let searchboxHandler: TestMock<SearchboxPageHandlerRemote>;
-  let composeboxHandler: TestMock<ComposeboxPageHandlerRemote>;
 
   const url: URL = new URL(location.href);
   const backgroundImageLoadTime: number = 123;
@@ -91,7 +91,7 @@ suite('NewTabPageAppTest', () => {
     moduleRegistry.setResultFor('initializeModules', moduleResolver.promise);
     metrics = fakeMetricsPrivate();
 
-    composeboxHandler = installMock(
+    installMock(
         ComposeboxPageHandlerRemote,
         mock => ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
             mock, new ComposeboxPageCallbackRouter(),
@@ -2320,7 +2320,10 @@ suite('NewTabPageAppTest', () => {
           // Assert.
           const composebox = app.shadowRoot.getElementById('composebox');
           assertTrue(!!composebox);
-          assertEquals(1, composeboxHandler.getCallCount('setCreateImageMode'));
+          assertEquals(1, searchboxHandler.getCallCount('setActiveToolMode'));
+          assertEquals(
+              ComposeboxToolMode.kImageGen,
+              searchboxHandler.getArgs('setActiveToolMode')[0]);
         });
     test(
         'Deep search chip click opens composebox deep search mode',
@@ -2339,7 +2342,10 @@ suite('NewTabPageAppTest', () => {
           // Assert.
           const composebox = app.shadowRoot.getElementById('composebox');
           assertTrue(!!composebox);
-          assertEquals(1, composeboxHandler.getCallCount('setDeepSearchMode'));
+          assertEquals(1, searchboxHandler.getCallCount('setActiveToolMode'));
+          assertEquals(
+              ComposeboxToolMode.kDeepSearch,
+              searchboxHandler.getArgs('setActiveToolMode')[0]);
         });
     test('Recent tab chip click opens composebox with context', async () => {
       const actionChipsElement =
