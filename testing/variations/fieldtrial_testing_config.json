@@ -17283,7 +17283,7 @@
                 {
                     "name": "Experiment",
                     "params": {
-                        "defer_until_next_step": "false"
+                        "defer_until_next_step": "true"
                     },
                     "enable_features": [
                         "NetworkQualityEstimatorAsyncNotifyStartTransaction"
