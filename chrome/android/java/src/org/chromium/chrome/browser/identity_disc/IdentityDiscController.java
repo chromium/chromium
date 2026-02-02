@@ -429,7 +429,8 @@ public class IdentityDiscController
                                     HistorySyncConfig.OptInMode.OPTIONAL,
                                     mContext.getString(R.string.history_sync_title),
                                     mContext.getString(R.string.history_sync_subtitle))
-                            .signinSurveyType(SigninSurveyController.SigninSurveyType.NTP_AVATAR)
+                            .signinSurveyType(
+                                    SigninSurveyController.SigninSurveyType.NTP_SIGNIN_BUTTON)
                             .build();
             @Nullable Intent intent =
                     SigninAndHistorySyncActivityLauncherImpl.get()
@@ -445,6 +446,9 @@ public class IdentityDiscController
             SettingsNavigation settingsNavigation =
                     SettingsNavigationFactory.createSettingsNavigation();
             settingsNavigation.startSettings(mContext);
+            SigninSurveyController.registerTrigger(
+                    originalProfile,
+                    SigninSurveyController.SigninSurveyType.NTP_ACCOUNT_AVATAR_TAP);
         }
     }
 

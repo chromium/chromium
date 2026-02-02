@@ -104,7 +104,9 @@ BASE_FEATURE(kChromeAndroidIdentitySurveyFirstRun,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kChromeAndroidIdentitySurveyWeb,
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kChromeAndroidIdentitySurveyNtpAvatar,
+BASE_FEATURE(kChromeAndroidIdentitySurveyNtpSigninButton,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kChromeAndroidIdentitySurveyNtpAccountAvatarTap,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kChromeAndroidIdentitySurveyNtpPromo,
              base::FEATURE_DISABLED_BY_DEFAULT);

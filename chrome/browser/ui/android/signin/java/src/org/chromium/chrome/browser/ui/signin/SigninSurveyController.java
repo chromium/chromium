@@ -51,7 +51,8 @@ public class SigninSurveyController implements Destroyable {
     @IntDef({
         SigninSurveyType.FRE,
         SigninSurveyType.WEB,
-        SigninSurveyType.NTP_AVATAR,
+        SigninSurveyType.NTP_SIGNIN_BUTTON,
+        SigninSurveyType.NTP_ACCOUNT_AVATAR_TAP,
         SigninSurveyType.NTP_PROMO,
         SigninSurveyType.BOOKMARK_PROMO
     })
@@ -59,9 +60,10 @@ public class SigninSurveyController implements Destroyable {
     public @interface SigninSurveyType {
         int FRE = 0;
         int WEB = 1;
-        int NTP_AVATAR = 2;
-        int NTP_PROMO = 3;
-        int BOOKMARK_PROMO = 4;
+        int NTP_SIGNIN_BUTTON = 2;
+        int NTP_ACCOUNT_AVATAR_TAP = 3;
+        int NTP_PROMO = 4;
+        int BOOKMARK_PROMO = 5;
         int MAX_VALUE = BOOKMARK_PROMO;
     }
 
@@ -238,7 +240,8 @@ public class SigninSurveyController implements Destroyable {
         return switch (type) {
             case SigninSurveyType.FRE -> "signin-first-run";
             case SigninSurveyType.WEB -> "signin-web";
-            case SigninSurveyType.NTP_AVATAR -> "signin-ntp-avatar";
+            case SigninSurveyType.NTP_SIGNIN_BUTTON -> "signin-ntp-signin-button";
+            case SigninSurveyType.NTP_ACCOUNT_AVATAR_TAP -> "signin-ntp-account-avatar-tap";
             case SigninSurveyType.NTP_PROMO -> "signin-ntp-promo";
             case SigninSurveyType.BOOKMARK_PROMO -> "signin-bookmark-promo";
             default -> throw new IllegalStateException("Invalid signin survey type");

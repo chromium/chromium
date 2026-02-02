@@ -96,7 +96,8 @@ extern const char kHatsSurveyTriggerWhatsNew[];
 extern const char kHatsSurveyTriggerAndroidStartupSurvey[];
 extern const char kHatsSurveyTriggerSigninFirstRun[];
 extern const char kHatsSurveyTriggerSigninWeb[];
-extern const char kHatsSurveyTriggerSigninNtpAvatar[];
+extern const char kHatsSurveyTriggerSigninNtpSigninButton[];
+extern const char kHatsSurveyTriggerSigninNtpAccountAvatarTap[];
 extern const char kHatsSurveyTriggerSigninNtpPromo[];
 extern const char kHatsSurveyTriggerSigninBookmarkPromo[];
 #endif  // #if !BUILDFLAG(IS_ANDROID)

@@ -79,9 +79,18 @@ public class SigninSurveyControllerTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures(SigninFeatures.CHROME_ANDROID_IDENTITY_SURVEY_NTP_AVATAR + TRIGGER)
-    public void acceptNtpAvatarSigninSurvey() {
-        acceptSigninSurvey(SigninSurveyController.SigninSurveyType.NTP_AVATAR);
+    @Features.EnableFeatures(
+            SigninFeatures.CHROME_ANDROID_IDENTITY_SURVEY_NTP_SIGNIN_BUTTON + TRIGGER)
+    public void acceptNtpSigninButton() {
+        acceptSigninSurvey(SigninSurveyController.SigninSurveyType.NTP_SIGNIN_BUTTON);
+    }
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures(
+            SigninFeatures.CHROME_ANDROID_IDENTITY_SURVEY_NTP_ACCOUNT_AVATAR_TAP + TRIGGER)
+    public void acceptNtpAccountAvatarTap() {
+        acceptSigninSurvey(SigninSurveyController.SigninSurveyType.NTP_ACCOUNT_AVATAR_TAP);
     }
 
     @Test
@@ -103,7 +112,7 @@ public class SigninSurveyControllerTest {
     @Features.EnableFeatures(SigninFeatures.CHROME_ANDROID_IDENTITY_SURVEY_BOOKMARK_PROMO + TRIGGER)
     public void dismissSigninSurvey() {
         showSigninSurvey(SigninSurveyController.SigninSurveyType.BOOKMARK_PROMO);
-        waitForSurveyMessageToShow(SigninSurveyController.SigninSurveyType.BOOKMARK_PROMO);
+        waitForSurveyMessageToShow();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> mMessageDispatcher.dismissMessage(mSurveyMessage, DismissReason.GESTURE));
@@ -127,13 +136,12 @@ public class SigninSurveyControllerTest {
                                 profile, SigninSurveyController.SigninSurveyType.WEB));
         mActivityTestRule.startOnNtp();
         Assert.assertThrows(
-                CriteriaHelper.TimeoutException.class,
-                () -> waitForSurveyMessageToShow(SigninSurveyController.SigninSurveyType.WEB));
+                CriteriaHelper.TimeoutException.class, this::waitForSurveyMessageToShow);
     }
 
     private void acceptSigninSurvey(@SigninSurveyController.SigninSurveyType int type) {
         showSigninSurvey(type);
-        waitForSurveyMessageToShow(type);
+        waitForSurveyMessageToShow();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -161,7 +169,7 @@ public class SigninSurveyControllerTest {
         watcher.assertExpected();
     }
 
-    private void waitForSurveyMessageToShow(@SigninSurveyController.SigninSurveyType int type) {
+    private void waitForSurveyMessageToShow() {
         Tab tab = mActivityTestRule.getActivityTab();
         CriteriaHelper.pollUiThread(() -> !tab.isLoading() && tab.isUserInteractable());
         ThreadUtils.runOnUiThreadBlocking(
