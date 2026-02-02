@@ -74,6 +74,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
+#include "chrome/browser/ui/dialogs/outdated_upgrade_bubble.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
@@ -2403,10 +2404,11 @@ void ShowAvatarMenu(Browser* browser) {
 // full rollout of the code, this name will be misleading. We will clean up the
 // code and its related source enums.
 void OpenUpdateChromeDialog(Browser* browser) {
-  if (UpgradeDetector::GetInstance()->is_outdated_install()) {
-    UpgradeDetector::GetInstance()->NotifyOutdatedInstall();
-  } else if (UpgradeDetector::GetInstance()->is_outdated_install_no_au()) {
-    UpgradeDetector::GetInstance()->NotifyOutdatedInstallNoAutoUpdate();
+  UpgradeDetector* detector = UpgradeDetector::GetInstance();
+  if (detector->is_outdated_install()) {
+    ShowOutdatedUpgradeBubble(browser, browser, /*auto_update_enabled=*/true);
+  } else if (detector->is_outdated_install_no_au()) {
+    ShowOutdatedUpgradeBubble(browser, browser, /*auto_update_enabled=*/false);
   } else {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     if (base::FeatureList::IsEnabled(features::kFewerUpdateConfirmations)) {
