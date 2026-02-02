@@ -142,18 +142,18 @@ MEDIA_EXPORT gfx::Size GetRectSizeFromOrigin(const gfx::Rect& rect);
 MEDIA_EXPORT gfx::Size PadToMatchAspectRatio(const gfx::Size& size,
                                              const gfx::Size& target);
 
-// A helper function to map GpuMemoryBuffer-based VideoFrame. This function
-// maps the given GpuMemoryBuffer of |frame| as-is without converting pixel
-// format, unless the video frame is backed by DXGI GMB.
+// A helper function to map MappableSharedImage-based VideoFrames. This function
+// maps the given MappableSharedImage of the |frame| as-is without converting
+// pixel format, unless the SI is backed by a DXGI buffer.
 // The returned VideoFrame owns the |frame|.
-// If the underlying buffer is DXGI, then it will be copied to shared memory
-// in GPU process.
+// If the underlying buffer is DXGI, then it will be copied to shared memory in
+// GPU process.
 MEDIA_EXPORT scoped_refptr<VideoFrame> ConvertToMemoryMappedFrame(
     scoped_refptr<VideoFrame> frame);
 
-// A helper function to map GpuMemoryBuffer-based VideoFrame. This function
-// maps the given GpuMemoryBuffer of |frame| as-is without converting pixel
-// format, unless the video frame is backed by DXGI GMB.
+// A helper function to map MappableSharedImage-based VideoFrames. This function
+// maps the given MappableSharedImage of |frame| as-is without converting pixel
+// format, unless the SI is backed by a DXGI buffer.
 // The returned VideoFrame owns the |frame|.
 // If the underlying buffer is DXGI, then it will be copied to shared memory
 // in GPU process.
