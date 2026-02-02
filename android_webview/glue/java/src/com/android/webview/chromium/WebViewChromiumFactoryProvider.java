@@ -467,7 +467,9 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                 CommandLineUtil.initCommandLine();
             }
 
-            if (shouldEnableContextExperiment(ctx)) {
+            ManifestMetadataUtil.ensureMetadataCacheInitialized(ctx);
+
+            if (shouldEnableContextExperiment()) {
                 try (DualTraceEvent ignored =
                         DualTraceEvent.scoped(
                                 "WebViewChromiumFactoryProvider.enableContextExperiment")) {
@@ -1001,24 +1003,15 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
         return mInitInfo;
     }
 
-    private boolean shouldEnableContextExperiment(Context ctx) {
+    private boolean shouldEnableContextExperiment() {
         // Command line switch overrides all other conditions.
         if (CommandLine.getInstance().hasSwitch(AwSwitches.WEBVIEW_USE_SEPARATE_RESOURCE_CONTEXT)) {
             return true;
         }
-
         // Don't enable on V+.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
             return !isRegisterResourcePathsAvailable();
         }
-
-        // Allow the developer to opt in or opt out of the experiment.
-        ManifestMetadataUtil.ensureMetadataCacheInitialized(ctx);
-        Boolean valueFromManifest = ManifestMetadataUtil.shouldEnableContextExperiment();
-        if (valueFromManifest != null) {
-            return valueFromManifest;
-        }
-
         return true;
     }
 
