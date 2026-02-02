@@ -19,12 +19,22 @@ import org.chromium.build.annotations.Nullable;
 public class AutocorrectManager {
     private static final String TAG = "AutocorrectManager";
     private static final boolean DEBUG_LOGS = false;
+    public static final int USER_ACTION_CLEAR_UNDERLINE_THRESHOLD = 5;
 
     private final Delegate mDelegate;
     private @Nullable CorrectionInfo mCorrectionInfo;
 
+    // TODO: crbug.com/480717682 - Moving the cursor back into autocorrected text can trigger an
+    // 'Undo' that clears the underline in UI. This can cause the state to temporarily desync.
+    // This desync has no user visible impact as when the threshold is reached or another
+    // autocorrect event is triggered it will call clearAllAutocorrectUnderlineSpans(), which acts
+    // as a visual no-op and re-syncs the state.
+    private int mRemainingUserActionsBeforeClear;
+
     public interface Delegate {
         void appendAutocorrectUnderlineSpan(int start, int end);
+
+        void clearAllAutocorrectUnderlineSpans();
     }
 
     public AutocorrectManager(Delegate delegate) {
@@ -44,6 +54,12 @@ public class AutocorrectManager {
                     "handlePendingCorrection [%s]",
                     ImeUtils.getCorrectionInfoDebugString(correctionInfo));
         }
+
+        if (mRemainingUserActionsBeforeClear > 0) {
+            mRemainingUserActionsBeforeClear = 0;
+            mDelegate.clearAllAutocorrectUnderlineSpans();
+        }
+
         // Only the latest correction is stored; if multiple are sent, the last one wins.
         // This is sufficient because IMEs like GBoard trigger autocorrect by sending
         // a commitCorrection followed immediately by commitText.
@@ -57,14 +73,14 @@ public class AutocorrectManager {
         // from the IME (observed in Gboard, SwiftKey and Yandex). We wait for that
         // commitText to trigger this method so we can apply the underline span to
         // the text that was just committed.
-        if (mCorrectionInfo == null) {
-            return;
-        }
+        if (mCorrectionInfo == null) return;
+
         int start = mCorrectionInfo.getOffset();
         int end = start + findLengthOfTextToUnderline();
 
-        mDelegate.appendAutocorrectUnderlineSpan(start, end);
         mCorrectionInfo = null;
+        mRemainingUserActionsBeforeClear = USER_ACTION_CLEAR_UNDERLINE_THRESHOLD;
+        mDelegate.appendAutocorrectUnderlineSpan(start, end);
     }
 
     /**
@@ -87,11 +103,20 @@ public class AutocorrectManager {
         BreakIterator boundary = BreakIterator.getWordInstance();
         boundary.setText(text);
 
-        boundary.last();
+        int last = boundary.last();
         int start = boundary.previous();
         if (boundary.getRuleStatus() != BreakIterator.WORD_NONE) {
             return start;
         }
-        return text.length();
+        return last;
+    }
+
+    public void onCommitText() {
+        if (DEBUG_LOGS) Log.i(TAG, "onCommitText");
+        if (mRemainingUserActionsBeforeClear == 0) return;
+        mRemainingUserActionsBeforeClear--;
+        if (mRemainingUserActionsBeforeClear == 0) {
+            mDelegate.clearAllAutocorrectUnderlineSpans();
+        }
     }
 }

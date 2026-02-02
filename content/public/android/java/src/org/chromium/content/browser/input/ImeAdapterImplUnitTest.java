@@ -288,4 +288,15 @@ public class ImeAdapterImplUnitTest {
 
         verify(mImeAdapterImplJni).appendAutocorrectUnderlineSpan(anyLong(), eq(0), eq(8));
     }
+
+    @Test
+    @EnableFeatures(ContentFeatures.ANDROID_PK_AUTOCORRECT_UNDERLINE)
+    public void testClearAutocorrectUnderlineSpan() {
+        ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
+        adapter.onConnectedToRenderProcess();
+
+        adapter.clearAllAutocorrectUnderlineSpans();
+
+        verify(mImeAdapterImplJni).clearAllAutocorrectUnderlineSpans(anyLong());
+    }
 }

@@ -680,6 +680,20 @@ void ImeAdapterAndroid::AppendAutocorrectUnderlineSpan(JNIEnv* env,
   input_handler->AddImeTextSpansToExistingText(start, end, {ime_text_span});
 }
 
+void ImeAdapterAndroid::ClearAllAutocorrectUnderlineSpans(JNIEnv* env) {
+  if (!base::FeatureList::IsEnabled(features::kAndroidPkAutocorrectUnderline)) {
+    return;
+  }
+  blink::mojom::FrameWidgetInputHandler* input_handler =
+      GetFocusedFrameWidgetInputHandler();
+  if (!input_handler) {
+    return;
+  }
+  input_handler->ClearImeTextSpansByType(0,
+                                         std::numeric_limits<uint32_t>::max(),
+                                         ui::ImeTextSpan::Type::kAutocorrect);
+}
+
 }  // namespace content
 
 DEFINE_JNI(ImeAdapterImpl)

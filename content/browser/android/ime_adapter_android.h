@@ -136,6 +136,8 @@ class CONTENT_EXPORT ImeAdapterAndroid : public RenderWidgetHostConnector {
 
   void AppendAutocorrectUnderlineSpan(JNIEnv* env, int32_t start, int32_t end);
 
+  void ClearAllAutocorrectUnderlineSpans(JNIEnv* env);
+
  private:
   RenderWidgetHostImpl* GetFocusedWidget();
   RenderFrameHost* GetFocusedFrame();

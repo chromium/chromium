@@ -1220,6 +1220,10 @@ public class ImeAdapterImpl
                                 lastKeyDownEvent.getScanCode(),
                                 false,
                                 lastKeyDownEvent.getUnicodeChar());
+
+                if (mAutocorrectManager != null) {
+                    mAutocorrectManager.onCommitText();
+                }
                 return true;
             }
         }
@@ -1249,6 +1253,7 @@ public class ImeAdapterImpl
             // must be committed before the span can be applied to it.
             if (mAutocorrectManager != null) {
                 mAutocorrectManager.maybeAppendAutocorrectUnderlineSpan();
+                mAutocorrectManager.onCommitText();
             }
 
         } else {
@@ -1936,6 +1941,14 @@ public class ImeAdapterImpl
                 .appendAutocorrectUnderlineSpan(mNativeImeAdapterAndroid, start, end);
     }
 
+    @Override
+    public void clearAllAutocorrectUnderlineSpans() {
+        if (!isValid()) return;
+        if (mAutocorrectManager == null) return;
+        if (DEBUG_LOGS) Log.i(TAG, "clearAllAutocorrectUnderlineSpans");
+        ImeAdapterImplJni.get().clearAllAutocorrectUnderlineSpans(mNativeImeAdapterAndroid);
+    }
+
     @NativeMethods
     interface Natives {
         long init(ImeAdapterImpl caller, WebContents webContents);
@@ -2019,5 +2032,7 @@ public class ImeAdapterImpl
         void performSpellCheck(long nativeImeAdapterAndroid);
 
         void appendAutocorrectUnderlineSpan(long nativeImeAdapterAndroid, int start, int end);
+
+        void clearAllAutocorrectUnderlineSpans(long nativeImeAdapterAndroid);
     }
 }

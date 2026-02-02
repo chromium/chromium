@@ -4,6 +4,8 @@
 
 package org.chromium.content.browser.input;
 
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import android.view.inputmethod.CorrectionInfo;
@@ -22,13 +24,32 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 @RunWith(BaseRobolectricTestRunner.class)
 public class AutocorrectManagerUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-
     private AutocorrectManager mAutocorrectManager;
     @Mock private ImeAdapterImpl mImeAdapterImpl;
+    @Mock private CorrectionInfo mCorrectionInfo;
 
     @Before
     public void setUp() {
         mAutocorrectManager = new AutocorrectManager(mImeAdapterImpl);
+    }
+
+    @Test
+    public void testHandlePendingCorrectionWhileHasUnderline() {
+        // Ensuring that AutocorrectManager has Underline
+        CorrectionInfo correctionInfo = new CorrectionInfo(0, "", "testing");
+        mAutocorrectManager.handlePendingCorrection(correctionInfo);
+        mAutocorrectManager.maybeAppendAutocorrectUnderlineSpan();
+
+        mAutocorrectManager.handlePendingCorrection(mCorrectionInfo);
+
+        verify(mImeAdapterImpl).clearAllAutocorrectUnderlineSpans();
+    }
+
+    @Test
+    public void testHandlePendingCorrectionWhileHasNoUnderline() {
+        mAutocorrectManager.handlePendingCorrection(mCorrectionInfo);
+
+        verify(mImeAdapterImpl, never()).clearAllAutocorrectUnderlineSpans();
     }
 
     @Test
@@ -62,5 +83,49 @@ public class AutocorrectManagerUnitTest {
         mAutocorrectManager.maybeAppendAutocorrectUnderlineSpan();
 
         verify(mImeAdapterImpl).appendAutocorrectUnderlineSpan(0, text.length() - 1);
+    }
+
+    @Test
+    public void testMaybeAppendAutocorrectUnderlineSpanWhileHasUnderline() {
+        mAutocorrectManager.maybeAppendAutocorrectUnderlineSpan();
+
+        verify(mImeAdapterImpl, never()).appendAutocorrectUnderlineSpan(anyInt(), anyInt());
+    }
+
+    @Test
+    public void testOnCommitTextWhenCounterNotZero() {
+        // Ensuring that AutocorrectManager has Underline
+        CorrectionInfo correctionInfo = new CorrectionInfo(0, "", "testing");
+        mAutocorrectManager.handlePendingCorrection(correctionInfo);
+        mAutocorrectManager.maybeAppendAutocorrectUnderlineSpan();
+
+        for (int i = 0; i < AutocorrectManager.USER_ACTION_CLEAR_UNDERLINE_THRESHOLD - 1; i++) {
+            mAutocorrectManager.onCommitText();
+        }
+
+        verify(mImeAdapterImpl, never()).clearAllAutocorrectUnderlineSpans();
+    }
+
+    @Test
+    public void testOnCommitTextWhenCounterZero() {
+        // Ensuring that AutocorrectManager has Underline
+        CorrectionInfo correctionInfo = new CorrectionInfo(0, "", "testing");
+        mAutocorrectManager.handlePendingCorrection(correctionInfo);
+        mAutocorrectManager.maybeAppendAutocorrectUnderlineSpan();
+
+        for (int i = 0; i < AutocorrectManager.USER_ACTION_CLEAR_UNDERLINE_THRESHOLD; i++) {
+            mAutocorrectManager.onCommitText();
+        }
+
+        verify(mImeAdapterImpl).clearAllAutocorrectUnderlineSpans();
+    }
+
+    @Test
+    public void testOnCommitTextWhileHasNoUnderline() {
+        for (int i = 0; i < AutocorrectManager.USER_ACTION_CLEAR_UNDERLINE_THRESHOLD; i++) {
+            mAutocorrectManager.onCommitText();
+        }
+
+        verify(mImeAdapterImpl, never()).clearAllAutocorrectUnderlineSpans();
     }
 }
