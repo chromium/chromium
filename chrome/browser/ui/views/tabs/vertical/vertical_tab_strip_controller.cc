@@ -6,6 +6,7 @@
 
 #include <variant>
 
+#include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
@@ -222,6 +223,19 @@ bool VerticalTabStripController::IsCollapsed() const {
   const tabs::VerticalTabStripStateController* state_controller =
       tabs::VerticalTabStripStateController::From(browser_view_->browser());
   return state_controller && state_controller->IsCollapsed();
+}
+
+void VerticalTabStripController::OnTabStripMouseEntered() {
+  mouse_entered_tabstrip_time_ = base::TimeTicks::Now();
+}
+
+void VerticalTabStripController::OnTabMousePressed() {
+  if (mouse_entered_tabstrip_time_.has_value()) {
+    DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
+        "TabStrip.Vertical.TimeToSwitch",
+        base::TimeTicks::Now() - mouse_entered_tabstrip_time_.value());
+    mouse_entered_tabstrip_time_.reset();
+  }
 }
 
 tab_groups::TabGroupSyncService*

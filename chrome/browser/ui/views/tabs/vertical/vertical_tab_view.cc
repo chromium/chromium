@@ -274,6 +274,8 @@ bool VerticalTabView::OnMousePressed(const ui::MouseEvent& event) {
   auto* controller = collection_node_->GetController();
   shift_pressed_on_mouse_down_ = event.IsShiftDown();
 
+  controller->OnTabMousePressed();
+
   if (event.IsOnlyLeftMouseButton() ||
       (event.IsOnlyRightMouseButton() && event.flags() & ui::EF_FROM_TOUCH)) {
     if (event.IsShiftDown() && IsSelectionModifierDown(event)) {

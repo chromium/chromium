@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_view.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_interactive_test_mixin.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -18,6 +21,11 @@ class VerticalTabStripRegionViewInteractiveUiTest
     : public VerticalTabsInteractiveTestMixin<InteractiveBrowserTest> {
  public:
   VerticalTabStripRegionViewInteractiveUiTest() = default;
+
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
+
+ private:
+  base::HistogramTester histogram_tester_;
 };
 
 // Deactivate() function is flaky on Mac. Test is flaky on Linux Wayland because
@@ -48,6 +56,29 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewInteractiveUiTest,
 
   // Background should not be recreated, pointers should be the same.
   EXPECT_EQ(background_while_active, background_while_inactive);
+}
+
+IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewInteractiveUiTest,
+                       LogTimeToSwitchMetric) {
+  RunTestSequence(
+      PressButton(kToolbarAppMenuButtonElementId),
+      WithView(kTabStripElementId,
+               [](VerticalTabStripView* view) {
+                 // Simulate the OnMouseEntered event which doesn't
+                 // happen consistently in Kombucha.
+                 ui::MouseEvent event(ui::EventType::kMouseEntered,
+                                      gfx::Point(), gfx::Point(),
+                                      base::TimeTicks(), 0, 0);
+                 view->OnMouseEntered(event);
+               }),
+      SelectTab(kTabStripElementId, 0),
+      CheckResult(
+          [this]() {
+            return histogram_tester()
+                .GetTotalCountsForPrefix("TabStrip.Vertical.TimeToSwitch")
+                .size();
+          },
+          1));
 }
 
 }  // namespace base::test

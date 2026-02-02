@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_pinned_tab_container_view.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_scroll_bar.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_utils.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_unpinned_tab_container_view.h"
@@ -67,6 +68,8 @@ VerticalTabStripView::VerticalTabStripView(TabCollectionNode* collection_node)
   node_destroyed_subscription_ =
       collection_node_->RegisterWillDestroyCallback(base::BindOnce(
           &VerticalTabStripView::ResetCollectionNode, base::Unretained(this)));
+
+  SetNotifyEnterExitOnChild(true);
 }
 
 VerticalTabStripView::~VerticalTabStripView() = default;
@@ -190,6 +193,10 @@ gfx::Size VerticalTabStripView::GetMinimumSize() const {
               base::ClampCeil(
                   1.5 * GetLayoutConstant(LayoutConstant::kVerticalTabHeight)),
           CalculateProposedLayout(views::SizeBounds()).host_size.height()));
+}
+
+void VerticalTabStripView::OnMouseEntered(const ui::MouseEvent& event) {
+  collection_node_->GetController()->OnTabStripMouseEntered();
 }
 
 void VerticalTabStripView::OnTabStripModelChanged(
