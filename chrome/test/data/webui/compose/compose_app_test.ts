@@ -725,6 +725,7 @@ suite('ComposeApp', () => {
     await mockInput('Input to retry.');
     app.$.submitButton.click();
     await mockResponse();
+    await microtasksFinished();
 
     testProxy.resetResolver('rewrite');
     assertTrue(
@@ -735,11 +736,13 @@ suite('ComposeApp', () => {
     app.$.modifierMenu.value = `${StyleModifier.kRetry}`;
     await microtasksFinished();
     app.$.modifierMenu.dispatchEvent(new CustomEvent('change'));
+    await microtasksFinished();
     assertTrue(
         isVisible(app.$.loading), 'Loading indicator should be visible.');
 
     const args = await testProxy.whenCalled('rewrite');
     await mockResponse('Refreshed output.');
+    await microtasksFinished();
 
     assertEquals(StyleModifier.kRetry, args);
 

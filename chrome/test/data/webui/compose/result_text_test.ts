@@ -6,7 +6,7 @@ import 'chrome-untrusted://compose/result_text.js';
 
 import type {ComposeResultTextElement} from 'chrome-untrusted://compose/result_text.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome-untrusted://webui-test/polymer_test_util.js';
+import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 suite('ResultText', () => {
   let resultText: ComposeResultTextElement;
@@ -25,7 +25,7 @@ suite('ResultText', () => {
     // Text is streamed one word at a time. Wait long enough for all text to be
     // output.
     for (let i = 0; i < 10; i++) {
-      await flushTasks();
+      await microtasksFinished();
     }
   }
 
@@ -33,12 +33,13 @@ suite('ResultText', () => {
     assertEquals('', resultText.$.root.innerText);
   });
 
-  test('FinalTextShown', () => {
+  test('FinalTextShown', async () => {
     resultText.textInput = {
       text: 'Hi Mom, Happy Birthday!',
       isPartial: false,
       streamingEnabled: false,
     };
+    await microtasksFinished();
     assertEquals('Hi Mom, Happy Birthday!', resultText.$.root.innerText);
     assertEquals('', resultText.$.partialResultText.innerText);
     assertTrue(resultText.isOutputComplete);
@@ -51,7 +52,7 @@ suite('ResultText', () => {
       isPartial: false,
       streamingEnabled: true,
     };
-
+    await microtasksFinished();
     assertEquals('', resultText.$.root.innerText);
     assertFalse(resultText.hasOutput);
 
@@ -71,6 +72,7 @@ suite('ResultText', () => {
       streamingEnabled: true,
     };
 
+    await microtasksFinished();
     assertEquals('', resultText.$.root.innerText);
 
     await waitForStreaming();
@@ -86,6 +88,7 @@ suite('ResultText', () => {
       streamingEnabled: true,
     };
 
+    await microtasksFinished();
     assertEquals('', resultText.$.root.innerText);
     assertFalse(resultText.hasOutput);
 
