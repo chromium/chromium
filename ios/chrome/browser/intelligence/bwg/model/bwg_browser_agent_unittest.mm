@@ -359,7 +359,8 @@ TEST_F(BwgBrowserAgentTest, TestOnGeminiViewStateExpanded) {
 // Tests hiding the floaty.
 TEST_F(BwgBrowserAgentTest, TestHideFloatyIfInvoked) {
   SetIsFloatyInvoked(true);
-  gemini_browser_agent_->HideFloatyIfInvoked(/*animated=*/true);
+  gemini_browser_agent_->HideFloatyIfInvoked(
+      /*animated=*/true, /*source=*/gemini::FloatyUpdateSource::ViewTransition);
   // This test is not connected to the provider APIs, so we mock setting the
   // `last_shown_view_state_`.
   gemini_browser_agent_->SetLastShownViewState(
@@ -374,7 +375,8 @@ TEST_F(BwgBrowserAgentTest, TestHideFloatyIfInvoked) {
 // controller.
 TEST_F(BwgBrowserAgentTest, TestShowFloatyIfInvoked) {
   SetIsFloatyInvoked(true);
-  gemini_browser_agent_->HideFloatyIfInvoked(/*animated=*/true);
+  gemini_browser_agent_->HideFloatyIfInvoked(
+      /*animated=*/true, /*source=*/gemini::FloatyUpdateSource::ViewTransition);
   gemini_browser_agent_->SetLastShownViewState(
       ios::provider::GeminiViewState::kExpanded);
 
@@ -382,7 +384,28 @@ TEST_F(BwgBrowserAgentTest, TestShowFloatyIfInvoked) {
   // staying on a view controller for more than the transition time.
   SetFloatyHiddenTimestamp(base::TimeTicks::Now() - base::Seconds(5));
 
-  gemini_browser_agent_->ShowFloatyIfInvoked(/*animated=*/true);
+  gemini_browser_agent_->ShowFloatyIfInvoked(
+      /*animated=*/true, /*source=*/gemini::FloatyUpdateSource::ViewTransition);
+
+  EXPECT_FALSE(IsFloatyTemporarilyHidden());
+  EXPECT_EQ(ios::provider::GeminiViewState::kExpanded, GetLastShownViewState());
+}
+
+// Tests if a floaty is shown regardless of transition time when the source is
+// from a web navigation
+TEST_F(BwgBrowserAgentTest, TestShowFloatyIfInvokedWithWebNavigation) {
+  SetIsFloatyInvoked(true);
+  gemini_browser_agent_->HideFloatyIfInvoked(
+      /*animated=*/true, /*source=*/gemini::FloatyUpdateSource::ViewTransition);
+  gemini_browser_agent_->SetLastShownViewState(
+      ios::provider::GeminiViewState::kExpanded);
+
+  // Set the hidden timestamp to represent a quick timestamp update such as when
+  // an old WebState is hidden followed quickly by a new WebState being shown.
+  SetFloatyHiddenTimestamp(base::TimeTicks::Now());
+
+  gemini_browser_agent_->ShowFloatyIfInvoked(
+      /*animated=*/true, /*source=*/gemini::FloatyUpdateSource::WebNavigation);
 
   EXPECT_FALSE(IsFloatyTemporarilyHidden());
   EXPECT_EQ(ios::provider::GeminiViewState::kExpanded, GetLastShownViewState());
@@ -394,14 +417,16 @@ TEST_F(BwgBrowserAgentTest,
   SetIsFloatyInvoked(true);
 
   // Emulates a new view controller being presented.
-  gemini_browser_agent_->HideFloatyIfInvoked(/*animated=*/true);
+  gemini_browser_agent_->HideFloatyIfInvoked(
+      /*animated=*/true, /*source=*/gemini::FloatyUpdateSource::ViewTransition);
   // This test is not connected to the provider APIs, so we mock setting the
   // `last_shown_view_state_`.
   gemini_browser_agent_->SetLastShownViewState(
       ios::provider::GeminiViewState::kExpanded);
 
   // Emulates the old view controller being dismissed.
-  gemini_browser_agent_->ShowFloatyIfInvoked(/*animated=*/true);
+  gemini_browser_agent_->ShowFloatyIfInvoked(
+      /*animated=*/true, /*source=*/gemini::FloatyUpdateSource::ViewTransition);
 
   // The floaty should still be considered temporarily hidden.
   EXPECT_TRUE(IsFloatyTemporarilyHidden());

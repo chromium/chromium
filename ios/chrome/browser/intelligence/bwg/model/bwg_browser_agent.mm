@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_suggestion_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_suggestion_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_view_state_change_handler.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
@@ -487,24 +488,37 @@ void BwgBrowserAgent::DismissFloaty() {
   ios::provider::ResetGemini();
 }
 
-void BwgBrowserAgent::HideFloatyIfInvoked(bool animated) {
+void BwgBrowserAgent::HideFloatyIfInvoked(bool animated,
+                                          gemini::FloatyUpdateSource source) {
   if (!is_floaty_invoked_) {
     return;
   }
 
-  is_floaty_temporarily_hidden_ = true;
   floaty_hidden_timestamp_ = base::TimeTicks::Now();
+  if (source == gemini::FloatyUpdateSource::Overlay) {
+    is_external_overlay_presented_ = true;
+  }
+
+  if (is_floaty_temporarily_hidden_) {
+    return;
+  }
+
+  is_floaty_temporarily_hidden_ = true;
   ios::provider::GeminiViewState current_view_state =
       ios::provider::GetCurrentGeminiViewState();
   SetLastShownViewState(current_view_state);
-
   ios::provider::UpdateGeminiViewState(ios::provider::GeminiViewState::kHidden,
                                        animated);
 }
 
-void BwgBrowserAgent::ShowFloatyIfInvoked(bool animated) {
+void BwgBrowserAgent::ShowFloatyIfInvoked(bool animated,
+                                          gemini::FloatyUpdateSource source) {
   if (!is_floaty_invoked_ || !is_floaty_temporarily_hidden_) {
     return;
+  }
+
+  if (source == gemini::FloatyUpdateSource::Overlay) {
+    is_external_overlay_presented_ = false;
   }
 
   // `HideFloatyIfInvoked()` may be called when a view controller
@@ -512,7 +526,15 @@ void BwgBrowserAgent::ShowFloatyIfInvoked(bool animated) {
   // view controller, the floaty should not show.
   base::TimeDelta time_since_last_hidden =
       base::TimeTicks::Now() - floaty_hidden_timestamp_;
-  if (time_since_last_hidden <= base::Seconds(kViewTransitionTime)) {
+  bool triggered_during_transition =
+      time_since_last_hidden <= base::Seconds(kViewTransitionTime);
+
+  // Web navigations should not be seen as a transition as an old WebState can
+  // be hidden quickly followed by a new WebState being shown where
+  // hiding/showing the floaty are valid invocations.
+  bool is_web_navigation = source == gemini::FloatyUpdateSource::WebNavigation;
+  if ((!is_web_navigation && triggered_during_transition) ||
+      is_external_overlay_presented_) {
     return;
   }
 
@@ -588,7 +610,10 @@ void BwgBrowserAgent::FullscreenProgressUpdated(
   if (is_floaty_temporarily_hidden_) {
     id<BWGCommands> gemini_handler =
         HandlerForProtocol(browser_->GetCommandDispatcher(), BWGCommands);
-    [gemini_handler updateFloatyVisibilityIfEligibleAnimated:NO];
+    [gemini_handler
+        updateFloatyVisibilityIfEligibleAnimated:NO
+                                      fromSource:gemini::FloatyUpdateSource::
+                                                     ForcedFromFullscreen];
   }
 
   CGFloat offset = GetFloatyOffsetFromFullscreenController(controller);

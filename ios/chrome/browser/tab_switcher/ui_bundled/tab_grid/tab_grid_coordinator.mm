@@ -46,6 +46,7 @@
 #import "ios/chrome/browser/history/ui_bundled/public/history_presentation_delegate.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/features.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/coordinator/page_action_menu_coordinator.h"
 #import "ios/chrome/browser/main/ui/browser_layout_view_controller.h"
@@ -518,7 +519,9 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
     if (IsGeminiCopresenceEnabled()) {
       id<BWGCommands> geminiHandler = HandlerForProtocol(
           self.regularBrowser->GetCommandDispatcher(), BWGCommands);
-      [geminiHandler hideFloatyIfInvokedAnimated:NO];
+      [geminiHandler
+          hideFloatyIfInvokedAnimated:NO
+                           fromSource:gemini::FloatyUpdateSource::TabGrid];
     }
     if (IsNewTabGridTransitionsEnabled()) {
       BOOL isIncognito = page == TabGridPageIncognitoTabs;

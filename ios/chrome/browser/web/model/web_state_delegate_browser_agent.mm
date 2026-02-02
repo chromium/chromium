@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider.h"
 #import "ios/chrome/browser/dialogs/ui_bundled/nsurl_protection_space_util.h"
 #import "ios/chrome/browser/enterprise/data_controls/model/data_controls_tab_helper.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_callback_manager.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_modality.h"
@@ -327,7 +328,9 @@ void WebStateDelegateBrowserAgent::ContextMenuConfiguration(
   if (IsGeminiCopresenceEnabled()) {
     id<BWGCommands> geminiHandler =
         HandlerForProtocol(browser_->GetCommandDispatcher(), BWGCommands);
-    [geminiHandler hideFloatyIfInvokedAnimated:YES];
+    [geminiHandler
+        hideFloatyIfInvokedAnimated:YES
+                         fromSource:gemini::FloatyUpdateSource::WebContextMenu];
   }
 
   UIContextMenuConfiguration* configuration =

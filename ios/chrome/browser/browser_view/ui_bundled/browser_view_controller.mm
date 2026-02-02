@@ -39,6 +39,7 @@
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_constants.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_view.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
 #import "ios/chrome/browser/main_content/ui_bundled/main_content_ui.h"
@@ -1135,13 +1136,8 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
   __weak BrowserViewController* weakSelf = self;
   [super dismissViewControllerAnimated:flag
                             completion:^{
-                              BrowserViewController* strongSelf = weakSelf;
-                              strongSelf.dismissingModal = NO;
-                              if (completion) {
-                                completion();
-                              }
-                              [strongSelf.geminiHandler
-                                  updateFloatyVisibilityIfEligibleAnimated:NO];
+                              [weakSelf viewControllerDismissedWithCompletion:
+                                            completion];
                             }];
 }
 
@@ -1211,7 +1207,9 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
   // would be changed back to `kVisible` afterwards. Fix the bug and update the
   // visibility state.
 
-  [self.geminiHandler hideFloatyIfInvokedAnimated:YES];
+  [self.geminiHandler
+      hideFloatyIfInvokedAnimated:YES
+                       fromSource:gemini::FloatyUpdateSource::ViewTransition];
   void (^superCall)() = ^{
     [super presentViewController:viewControllerToPresent
                         animated:flag
@@ -1905,6 +1903,19 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
       ]];
     }
   }
+}
+
+// Helper method for dismissing view controller with `completion` block.
+- (void)viewControllerDismissedWithCompletion:(void (^)())completion {
+  self.dismissingModal = NO;
+  if (completion) {
+    completion();
+  }
+
+  [self.geminiHandler
+      updateFloatyVisibilityIfEligibleAnimated:NO
+                                    fromSource:gemini::FloatyUpdateSource::
+                                                   ViewTransition];
 }
 
 #pragma mark - Private Methods: Tap handling
@@ -2941,7 +2952,9 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
     return;
   }
 
-  [self.geminiHandler hideFloatyIfInvokedAnimated:NO];
+  [self.geminiHandler
+      hideFloatyIfInvokedAnimated:NO
+                       fromSource:gemini::FloatyUpdateSource::Overlay];
 }
 
 - (void)lensOverlayWillAppear {
@@ -2961,7 +2974,10 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
     return;
   }
 
-  [self.geminiHandler updateFloatyVisibilityIfEligibleAnimated:NO];
+  [self.geminiHandler
+      updateFloatyVisibilityIfEligibleAnimated:NO
+                                    fromSource:gemini::FloatyUpdateSource::
+                                                   Overlay];
 }
 
 - (void)lensOverlayDidReadjustPresentation {

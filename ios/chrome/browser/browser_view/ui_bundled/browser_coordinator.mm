@@ -3345,17 +3345,20 @@ const char kChromeAppStoreUrl[] =
   [_geminiFirstRunCoordinator start];
 }
 
-- (void)hideFloatyIfInvokedAnimated:(BOOL)animated {
+- (void)hideFloatyIfInvokedAnimated:(BOOL)animated
+                         fromSource:(gemini::FloatyUpdateSource)source {
   BwgBrowserAgent* geminiBrowserAgent =
       BwgBrowserAgent::FromBrowser(self.browser);
   if (!IsGeminiCopresenceEnabled() || !geminiBrowserAgent) {
     return;
   }
 
-  geminiBrowserAgent->HideFloatyIfInvoked(animated);
+  geminiBrowserAgent->HideFloatyIfInvoked(animated, source);
 }
 
-- (void)updateFloatyVisibilityIfEligibleAnimated:(BOOL)animated {
+- (void)updateFloatyVisibilityIfEligibleAnimated:(BOOL)animated
+                                      fromSource:
+                                          (gemini::FloatyUpdateSource)source {
   BwgBrowserAgent* geminiBrowserAgent =
       BwgBrowserAgent::FromBrowser(self.browser);
   BwgService* geminiService = BwgServiceFactory::GetForProfile(self.profile);
@@ -3365,11 +3368,12 @@ const char kChromeAppStoreUrl[] =
 
   // Don't show the floaty if the page is ineligible.
   if (!geminiService->IsBwgAvailableForWebState(self.activeWebState)) {
-    geminiBrowserAgent->HideFloatyIfInvoked(animated);
+    geminiBrowserAgent->HideFloatyIfInvoked(
+        animated, gemini::FloatyUpdateSource::IneligibleSite);
     return;
   }
 
-  geminiBrowserAgent->ShowFloatyIfInvoked(animated);
+  geminiBrowserAgent->ShowFloatyIfInvoked(animated, source);
 }
 
 #pragma mark - PromosManagerCommands

@@ -1007,7 +1007,9 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
     return;
   }
 
-  [self.geminiHandler hideFloatyIfInvokedAnimated:YES];
+  [self.geminiHandler
+      hideFloatyIfInvokedAnimated:YES
+                       fromSource:gemini::FloatyUpdateSource::ContextMenu];
 }
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender {

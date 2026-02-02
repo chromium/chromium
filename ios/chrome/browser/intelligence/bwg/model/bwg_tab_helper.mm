@@ -405,7 +405,10 @@ void BwgTabHelper::WasShown(web::WebState* web_state) {
   }
 
   if (IsGeminiCopresenceEnabled()) {
-    [bwg_commands_handler_ updateFloatyVisibilityIfEligibleAnimated:NO];
+    [bwg_commands_handler_
+        updateFloatyVisibilityIfEligibleAnimated:NO
+                                      fromSource:gemini::FloatyUpdateSource::
+                                                     WebNavigation];
   }
 }
 
@@ -426,7 +429,9 @@ void BwgTabHelper::WasHidden(web::WebState* web_state) {
     return;
   }
 
-  [bwg_commands_handler_ hideFloatyIfInvokedAnimated:NO];
+  [bwg_commands_handler_
+      hideFloatyIfInvokedAnimated:NO
+                       fromSource:gemini::FloatyUpdateSource::WebNavigation];
 }
 
 void BwgTabHelper::DidStartNavigation(
@@ -483,7 +488,10 @@ void BwgTabHelper::DidFinishNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
   if (IsGeminiCopresenceEnabled()) {
-    [bwg_commands_handler_ updateFloatyVisibilityIfEligibleAnimated:NO];
+    [bwg_commands_handler_
+        updateFloatyVisibilityIfEligibleAnimated:NO
+                                      fromSource:gemini::FloatyUpdateSource::
+                                                     WebNavigation];
   }
 
   const GURL& current_url = navigation_context->GetUrl().GetWithoutRef();

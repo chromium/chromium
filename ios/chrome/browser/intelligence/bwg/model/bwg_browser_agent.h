@@ -25,6 +25,10 @@ class Browser;
 
 enum class PageContextWrapperError;
 
+namespace gemini {
+enum class FloatyUpdateSource;
+}  // namespace gemini
+
 namespace optimization_guide::proto {
 class PageContext;
 }  // namespace optimization_guide::proto
@@ -104,12 +108,13 @@ class BwgBrowserAgent : public BrowserUserData<BwgBrowserAgent>,
   // Hide Gemini floaty with `animated` flag. When in a hidden state, the floaty
   // view is dismissed but still persists in memory and needs to be properly
   // cleaned up. Properly cleaning up the floaty can be done by resetting the
-  // Gemini instance.
-  void HideFloatyIfInvoked(bool animated);
+  // Gemini instance. Passes what `source` triggered the floaty to be hidden.
+  void HideFloatyIfInvoked(bool animated, gemini::FloatyUpdateSource source);
 
   // Show Gemini floaty with `animated` flag. Used to re-show an invoked Gemini
-  // floaty with the `last_view_state_`.
-  void ShowFloatyIfInvoked(bool animated);
+  // floaty with the `last_view_state_`. Passes what `source` triggered the
+  // floaty to be shown.
+  void ShowFloatyIfInvoked(bool animated, gemini::FloatyUpdateSource source);
 
   // Collapses floaty if invoked.
   void CollapseFloatyIfInvoked();
@@ -255,6 +260,11 @@ class BwgBrowserAgent : public BrowserUserData<BwgBrowserAgent>,
   // Tracks the elapsed time a floaty is minimized until it's expanded. If the
   // floaty is expanded, the time is reset to null.
   base::TimeTicks elapsed_minimized_floaty_time_;
+
+  // Whether an external overlay is currently presented e.g. Lens Overlay. Used
+  // to avoid showing the floaty when view controllers are presented/dismissed
+  // while an overlay is presented.
+  bool is_external_overlay_presented_ = false;
 
   // Registrar for pref changes.
   PrefChangeRegistrar pref_change_registrar_;
