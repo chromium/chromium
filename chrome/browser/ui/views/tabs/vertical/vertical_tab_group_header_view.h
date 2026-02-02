@@ -82,6 +82,7 @@ class VerticalTabGroupHeaderView : public views::FlexLayoutView,
   void ShowEditorBubble();
   void UpdateAccessibleName(
       const tab_groups::TabGroupVisualData* tab_group_visual_data);
+  void UpdateTooltipText();
   void UpdateIsCollapsed(
       const tab_groups::TabGroupVisualData* tab_group_visual_data);
 

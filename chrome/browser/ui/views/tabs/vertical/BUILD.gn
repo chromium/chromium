@@ -130,6 +130,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "tab_collection_animating_layout_manager_unittest.cc",
+    "vertical_tab_group_header_view_unittest.cc",
     "vertical_tab_strip_top_container_unittest.cc",
   ]
   deps = [

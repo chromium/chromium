@@ -330,6 +330,20 @@ void VerticalTabGroupHeaderView::OnDataChanged(
 
   UpdateIsCollapsed(tab_group_visual_data);
   UpdateAccessibleName(tab_group_visual_data);
+  UpdateTooltipText();
+}
+
+void VerticalTabGroupHeaderView::UpdateTooltipText() {
+  if (group_header_label_->GetText().empty()) {
+    SetTooltipText(
+        l10n_util::GetStringFUTF16(IDS_TAB_GROUPS_UNNAMED_GROUP_TOOLTIP,
+                                   delegate_->GetGroupContentString()));
+  } else {
+    SetTooltipText(l10n_util::GetStringFUTF16(
+        IDS_TAB_GROUPS_NAMED_GROUP_TOOLTIP,
+        std::u16string(group_header_label_->GetText()),
+        delegate_->GetGroupContentString()));
+  }
 }
 
 void VerticalTabGroupHeaderView::UpdateIsCollapsed(
