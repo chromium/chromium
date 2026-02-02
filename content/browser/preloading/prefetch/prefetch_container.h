@@ -801,7 +801,8 @@ class CONTENT_EXPORT PrefetchContainer {
   // True iff the destructor was called.
   bool is_in_dtor_ = false;
 
-  base::ObserverList<Observer> observers_;
+  base::ObserverList<Observer> observers_{
+      base::ObserverListPolicy::EXISTING_ONLY};
 
   bool is_likely_ahead_of_prerender_ = false;
 

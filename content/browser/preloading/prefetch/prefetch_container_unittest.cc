@@ -1886,7 +1886,6 @@ class TestPrefetchContainerObserver final : public PrefetchContainer::Observer {
 //   event, if not already notified.
 // - Observers added during notification do not get notified of the current
 //   event.
-//   TODO(crbug.com/400761083): Actually implement this behavior.
 TEST_P(PrefetchContainerTest, ObserverAddedDuringNotification) {
   auto prefetch_container =
       CreateSpeculationRulesPrefetchContainer(GURL("https://test.com"));
@@ -1905,11 +1904,9 @@ TEST_P(PrefetchContainerTest, ObserverAddedDuringNotification) {
   // Trigger the observer call.
   prefetch_container->SimulatePrefetchEligibleForTest();
 
-  // Check if the observers are notified.
+  // Check that the observers are not notified.
   ASSERT_TRUE(observer.IsNotified());
-  // TODO(crbug.com/400761083): Stop notifying
-  // `observer_added_during_notification`.
-  EXPECT_TRUE(observer_added_during_notification.IsNotified());
+  EXPECT_FALSE(observer_added_during_notification.IsNotified());
   EXPECT_FALSE(observer_removed_during_notification.IsNotified());
 
   // Cleanup.
