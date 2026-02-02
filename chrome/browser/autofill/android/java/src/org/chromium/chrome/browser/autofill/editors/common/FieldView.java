@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.autofill.editors;
+package org.chromium.chrome.browser.autofill.editors.common;
 
 import org.chromium.build.annotations.NullMarked;
 
 /** The interface for editor fields that handle validation, display errors, and can be updated. */
 @NullMarked
-interface FieldView {
+public interface FieldView {
     /** The indicator for input fields that are required. */
     String REQUIRED_FIELD_INDICATOR = "*";
 
@@ -19,7 +19,9 @@ interface FieldView {
      */
     boolean validate();
 
-    /** @return True if this field is required. */
+    /**
+     * @return True if this field is required.
+     */
     boolean isRequired();
 
     /** Scrolls to and focuses the field to bring user's attention to it. */

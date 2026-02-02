@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.autofill.editors;
+package org.chromium.chrome.browser.autofill.editors.address;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.VISIBLE;
+import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.VISIBLE;
 
 import android.app.Activity;
 
@@ -162,8 +162,7 @@ public class AddressEditorCoordinator {
     /**
      * @return editor dialog model for testing purposes.
      */
-    @Nullable
-    PropertyModel getEditorModelForTesting() {
+    @Nullable PropertyModel getEditorModelForTesting() {
         return mEditorModel;
     }
 

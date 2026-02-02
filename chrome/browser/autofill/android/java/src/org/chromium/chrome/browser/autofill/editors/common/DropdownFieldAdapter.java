@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.autofill.editors;
+package org.chromium.chrome.browser.autofill.editors.common;
 
 import android.content.Context;
 import android.graphics.Rect;

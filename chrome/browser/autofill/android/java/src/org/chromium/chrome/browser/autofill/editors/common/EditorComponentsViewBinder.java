@@ -2,26 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.autofill.editors;
+package org.chromium.chrome.browser.autofill.editors.common;
 
 import static org.chromium.chrome.browser.autofill.AutofillUiUtils.getInputTypeForField;
-import static org.chromium.chrome.browser.autofill.editors.EditorComponentsProperties.DropdownFieldProperties.DROPDOWN_CALLBACK;
-import static org.chromium.chrome.browser.autofill.editors.EditorComponentsProperties.DropdownFieldProperties.DROPDOWN_HINT;
-import static org.chromium.chrome.browser.autofill.editors.EditorComponentsProperties.DropdownFieldProperties.DROPDOWN_KEY_VALUE_LIST;
-import static org.chromium.chrome.browser.autofill.editors.EditorComponentsProperties.FieldProperties.ERROR_MESSAGE;
-import static org.chromium.chrome.browser.autofill.editors.EditorComponentsProperties.FieldProperties.FOCUSED;
-import static org.chromium.chrome.browser.autofill.editors.EditorComponentsProperties.FieldProperties.IS_REQUIRED;
-import static org.chromium.chrome.browser.autofill.editors.EditorComponentsProperties.FieldProperties.LABEL;
-import static org.chromium.chrome.browser.autofill.editors.EditorComponentsProperties.FieldProperties.VALIDATOR;
-import static org.chromium.chrome.browser.autofill.editors.EditorComponentsProperties.FieldProperties.VALUE;
-import static org.chromium.chrome.browser.autofill.editors.EditorComponentsProperties.NonEditableTextProperties.CLICK_RUNNABLE;
-import static org.chromium.chrome.browser.autofill.editors.EditorComponentsProperties.NonEditableTextProperties.CONTENT_DESCRIPTION;
-import static org.chromium.chrome.browser.autofill.editors.EditorComponentsProperties.NonEditableTextProperties.ICON;
-import static org.chromium.chrome.browser.autofill.editors.EditorComponentsProperties.NoticeProperties.IMPORTANT_FOR_ACCESSIBILITY;
-import static org.chromium.chrome.browser.autofill.editors.EditorComponentsProperties.NoticeProperties.NOTICE_TEXT;
-import static org.chromium.chrome.browser.autofill.editors.EditorComponentsProperties.TextFieldProperties.TEXT_FIELD_TYPE;
-import static org.chromium.chrome.browser.autofill.editors.EditorComponentsProperties.TextFieldProperties.TEXT_FORMATTER;
-import static org.chromium.chrome.browser.autofill.editors.EditorComponentsProperties.TextFieldProperties.TEXT_SUGGESTIONS;
+import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.DropdownFieldProperties.DROPDOWN_CALLBACK;
+import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.DropdownFieldProperties.DROPDOWN_HINT;
+import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.DropdownFieldProperties.DROPDOWN_KEY_VALUE_LIST;
+import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.FieldProperties.ERROR_MESSAGE;
+import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.FieldProperties.FOCUSED;
+import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.FieldProperties.IS_REQUIRED;
+import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.FieldProperties.LABEL;
+import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.FieldProperties.VALIDATOR;
+import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.FieldProperties.VALUE;
+import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NonEditableTextProperties.CLICK_RUNNABLE;
+import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NonEditableTextProperties.CONTENT_DESCRIPTION;
+import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NonEditableTextProperties.ICON;
+import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.IMPORTANT_FOR_ACCESSIBILITY;
+import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.NOTICE_TEXT;
+import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.TextFieldProperties.TEXT_FIELD_TYPE;
+import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.TextFieldProperties.TEXT_FORMATTER;
+import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.TextFieldProperties.TEXT_SUGGESTIONS;
 
 import android.view.View;
 import android.widget.ImageView;
@@ -42,7 +42,7 @@ import java.util.List;
  */
 @NullMarked
 public class EditorComponentsViewBinder {
-    static void bindTextFieldView(PropertyModel model, TextFieldView view, PropertyKey key) {
+    public static void bindTextFieldView(PropertyModel model, TextFieldView view, PropertyKey key) {
         if (key == LABEL || key == IS_REQUIRED) {
             view.setLabel(model.get(LABEL), model.get(IS_REQUIRED));
         } else if (key == VALIDATOR) {
@@ -70,7 +70,7 @@ public class EditorComponentsViewBinder {
         }
     }
 
-    static void bindDropdownFieldView(
+    public static void bindDropdownFieldView(
             PropertyModel model, DropdownFieldView view, PropertyKey key) {
         if (key == LABEL || key == IS_REQUIRED) {
             view.setLabel(model.get(LABEL), model.get(IS_REQUIRED));
@@ -99,7 +99,7 @@ public class EditorComponentsViewBinder {
         }
     }
 
-    static void bindNonEditableTextView(PropertyModel model, View view, PropertyKey key) {
+    public static void bindNonEditableTextView(PropertyModel model, View view, PropertyKey key) {
         if (key == EditorComponentsProperties.NonEditableTextProperties.PRIMARY_TEXT) {
             TextView textView = view.findViewById(R.id.primary_text);
             textView.setText(
@@ -127,7 +127,7 @@ public class EditorComponentsViewBinder {
         }
     }
 
-    static void bindNoticeTextView(PropertyModel model, TextView view, PropertyKey key) {
+    public static void bindNoticeTextView(PropertyModel model, TextView view, PropertyKey key) {
         if (key == NOTICE_TEXT) {
             view.setText(model.get(NOTICE_TEXT));
         } else if (key == IMPORTANT_FOR_ACCESSIBILITY) {

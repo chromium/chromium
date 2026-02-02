@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.autofill.editors;
+package org.chromium.chrome.browser.autofill.editors.common;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
-import static org.chromium.chrome.browser.autofill.editors.EditorComponentsProperties.FieldProperties.ERROR_MESSAGE;
-import static org.chromium.chrome.browser.autofill.editors.EditorComponentsProperties.FieldProperties.FOCUSED;
-import static org.chromium.chrome.browser.autofill.editors.EditorComponentsProperties.FieldProperties.IS_REQUIRED;
-import static org.chromium.chrome.browser.autofill.editors.EditorComponentsProperties.getDropdownKeyByValue;
-import static org.chromium.chrome.browser.autofill.editors.EditorComponentsProperties.getDropdownValueByKey;
-import static org.chromium.chrome.browser.autofill.editors.EditorComponentsProperties.setDropdownKey;
+import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.FieldProperties.ERROR_MESSAGE;
+import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.FieldProperties.FOCUSED;
+import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.FieldProperties.IS_REQUIRED;
+import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.getDropdownKeyByValue;
+import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.getDropdownValueByKey;
+import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.setDropdownKey;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -39,7 +39,7 @@ import java.util.List;
 
 /** Helper class for creating a dropdown view with a label. */
 @NullMarked
-class DropdownFieldView implements FieldView {
+public class DropdownFieldView implements FieldView {
     private @Nullable static EditorObserverForTest sObserverForTest;
 
     private final Context mContext;
@@ -122,11 +122,11 @@ class DropdownFieldView implements FieldView {
                 });
     }
 
-    void setLabel(String label, boolean isRequired) {
+    public void setLabel(String label, boolean isRequired) {
         mLabel.setText(isRequired ? label + FieldView.REQUIRED_FIELD_INDICATOR : label);
     }
 
-    void setDropdownValues(List<String> values, @Nullable String hint) {
+    public void setDropdownValues(List<String> values, @Nullable String hint) {
         mHint = hint;
         if (mHint != null) {
             mAdapter =
@@ -150,7 +150,7 @@ class DropdownFieldView implements FieldView {
         mDropdown.setAdapter(mAdapter);
     }
 
-    void setValue(@Nullable String value) {
+    public void setValue(@Nullable String value) {
         if (mAdapter == null || mAdapter.isEmpty()) {
             // Can't set value when adapter hasn't been initialized or is empty.
             mSelectedIndex = 0;
@@ -176,7 +176,7 @@ class DropdownFieldView implements FieldView {
                         + assumeNonNull(mAdapter.getItem(mSelectedIndex)).toString());
     }
 
-    void setErrorMessage(@Nullable String errorMessage) {
+    public void setErrorMessage(@Nullable String errorMessage) {
         View view = mDropdown.getSelectedView();
         if (errorMessage == null) {
             // {@link Spinner#getSelectedView()} is null in JUnit tests.
@@ -206,7 +206,7 @@ class DropdownFieldView implements FieldView {
         }
     }
 
-    void setValidator(@Nullable EditorFieldValidator validator) {
+    public void setValidator(@Nullable EditorFieldValidator validator) {
         mValidator = validator;
     }
 
@@ -217,17 +217,23 @@ class DropdownFieldView implements FieldView {
         return mLayout;
     }
 
-    /** @return The PropertyModel that the DropdownFieldView represents. */
+    /**
+     * @return The PropertyModel that the DropdownFieldView represents.
+     */
     public PropertyModel getFieldModel() {
         return mFieldModel;
     }
 
-    /** @return The label view for the spinner. */
+    /**
+     * @return The label view for the spinner.
+     */
     public View getLabel() {
         return mLabel;
     }
 
-    /** @return The dropdown view itself. */
+    /**
+     * @return The dropdown view itself.
+     */
     public Spinner getDropdown() {
         return mDropdown;
     }

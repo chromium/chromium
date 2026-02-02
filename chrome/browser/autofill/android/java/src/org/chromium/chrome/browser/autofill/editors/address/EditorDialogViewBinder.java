@@ -2,21 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.autofill.editors;
+package org.chromium.chrome.browser.autofill.editors.address;
 
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ALLOW_DELETE;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.CANCEL_RUNNABLE;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.CUSTOM_DONE_BUTTON_TEXT;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DELETE_CONFIRMATION_PRIMARY_BUTTON_TEXT_ID;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DELETE_CONFIRMATION_TEXT;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DELETE_CONFIRMATION_TITLE;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DELETE_RUNNABLE;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DONE_RUNNABLE;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.EDITOR_FIELDS;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.EDITOR_TITLE;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.SHOW_BUTTONS;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.VALIDATE_ON_SHOW;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.VISIBLE;
+import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.ALLOW_DELETE;
+import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.CANCEL_RUNNABLE;
+import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.CUSTOM_DONE_BUTTON_TEXT;
+import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.DELETE_CONFIRMATION_PRIMARY_BUTTON_TEXT_ID;
+import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.DELETE_CONFIRMATION_TEXT;
+import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.DELETE_CONFIRMATION_TITLE;
+import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.DELETE_RUNNABLE;
+import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.DONE_RUNNABLE;
+import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.EDITOR_FIELDS;
+import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.EDITOR_TITLE;
+import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.SHOW_BUTTONS;
+import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.VALIDATE_ON_SHOW;
+import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.VISIBLE;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -30,6 +30,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class EditorDialogViewBinder {
     /**
      * Called whenever a property in the given model changes. It updates the given view accordingly.
+     *
      * @param model The observed {@link PropertyModel}. Its data need to be reflected in the view.
      * @param view The {@link EditorDialogView} to update.
      * @param propertyKey The {@link PropertyKey} which changed.

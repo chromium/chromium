@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.autofill.editors;
+package org.chromium.chrome.browser.autofill.editors.common;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -16,7 +16,7 @@ import org.chromium.chrome.browser.autofill.R;
 
 /** Simple class for displaying a toolbar in the editor dialog. */
 @NullMarked
-class EditorDialogToolbar extends Toolbar {
+public class EditorDialogToolbar extends Toolbar {
     private boolean mShowDeleteMenuItem = true;
 
     /** Constructor for when the toolbar is inflated from XML. */

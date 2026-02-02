@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.autofill.editors;
+package org.chromium.chrome.browser.autofill.editors.address;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.DROPDOWN;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.NON_EDITABLE_TEXT;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.NOTICE;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.TEXT_INPUT;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.isDropdownField;
+import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.ItemType.DROPDOWN;
+import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.ItemType.NON_EDITABLE_TEXT;
+import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.ItemType.NOTICE;
+import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.ItemType.TEXT_INPUT;
+import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.isDropdownField;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -46,7 +46,13 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.R;
-import org.chromium.chrome.browser.autofill.editors.EditorComponentsProperties.EditorItem;
+import org.chromium.chrome.browser.autofill.editors.common.DropdownFieldView;
+import org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.EditorItem;
+import org.chromium.chrome.browser.autofill.editors.common.EditorComponentsViewBinder;
+import org.chromium.chrome.browser.autofill.editors.common.EditorDialogToolbar;
+import org.chromium.chrome.browser.autofill.editors.common.EditorObserverForTest;
+import org.chromium.chrome.browser.autofill.editors.common.FieldView;
+import org.chromium.chrome.browser.autofill.editors.common.TextFieldView;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -281,8 +287,8 @@ public class EditorDialogView extends AlwaysDismissedDialog
     /**
      * Prepares the toolbar for use.
      *
-     * Many of the things that would ideally be set as attributes don't work and need to be set
-     * programmatically.  This is likely due to how we compile the support libraries.
+     * <p>Many of the things that would ideally be set as attributes don't work and need to be set
+     * programmatically. This is likely due to how we compile the support libraries.
      */
     private void prepareToolbar() {
         EditorDialogToolbar toolbar =
@@ -472,10 +478,10 @@ public class EditorDialogView extends AlwaysDismissedDialog
     }
 
     /**
-     * When this layout has a wide display style, it will be width constrained to
-     * {@link UiConfig#WIDE_DISPLAY_STYLE_MIN_WIDTH_DP}. If the current screen width is greater than
-     * UiConfig#WIDE_DISPLAY_STYLE_MIN_WIDTH_DP, the settings layout will be visually centered
-     * by adding padding to both sides.
+     * When this layout has a wide display style, it will be width constrained to {@link
+     * UiConfig#WIDE_DISPLAY_STYLE_MIN_WIDTH_DP}. If the current screen width is greater than
+     * UiConfig#WIDE_DISPLAY_STYLE_MIN_WIDTH_DP, the settings layout will be visually centered by
+     * adding padding to both sides.
      */
     public void onConfigurationChanged() {
         if (mUiConfig == null) {
@@ -702,17 +708,23 @@ public class EditorDialogView extends AlwaysDismissedDialog
         }
     }
 
-    /** @return The View with all fields of this editor. */
+    /**
+     * @return The View with all fields of this editor.
+     */
     public View getContentViewForTest() {
         return mContentView;
     }
 
-    /** @return All editable text fields in the editor. Used only for tests. */
+    /**
+     * @return All editable text fields in the editor. Used only for tests.
+     */
     public List<EditText> getEditableTextFieldsForTest() {
         return mEditableTextFields;
     }
 
-    /** @return All dropdown fields in the editor. Used only for tests. */
+    /**
+     * @return All dropdown fields in the editor. Used only for tests.
+     */
     public List<Spinner> getDropdownFieldsForTest() {
         return mDropdownFields;
     }

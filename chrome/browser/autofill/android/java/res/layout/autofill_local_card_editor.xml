@@ -47,7 +47,7 @@ found in the LICENSE file.
         android:hint="@string/autofill_credit_card_editor_number">
 
         <!-- TODO(crbug.com/40600572): Fix and remove lint ignore -->
-        <org.chromium.chrome.browser.autofill.editors.EditTextNoAutofillView
+        <org.chromium.chrome.browser.autofill.editors.common.EditTextNoAutofillView
             tools:ignore="Autofill"
             android:id="@+id/credit_card_number_edit"
             android:layout_width="match_parent"
@@ -141,7 +141,7 @@ found in the LICENSE file.
                 android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
                 android:text="@string/autofill_credit_card_editor_expiration_date" />
 
-            <org.chromium.chrome.browser.autofill.editors.EditTextNoAutofillView
+            <org.chromium.chrome.browser.autofill.editors.common.EditTextNoAutofillView
                 android:id="@+id/expiration_month_and_year"
                 android:width="@dimen/local_card_expiration_date_editor_width"
                 android:layout_width="wrap_content"
@@ -195,7 +195,7 @@ found in the LICENSE file.
                     android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
                     android:text="@string/autofill_credit_card_editor_security_code" />
 
-                <org.chromium.chrome.browser.autofill.editors.EditTextNoAutofillView
+                <org.chromium.chrome.browser.autofill.editors.common.EditTextNoAutofillView
                     android:id="@+id/cvc"
                     android:width="@dimen/local_card_cvc_editor_width"
                     android:layout_width="wrap_content"
@@ -219,7 +219,7 @@ found in the LICENSE file.
             android:hint="@string/autofill_optional_tag"
             android:visibility="gone">
 
-            <org.chromium.chrome.browser.autofill.editors.EditTextNoAutofillView
+            <org.chromium.chrome.browser.autofill.editors.common.EditTextNoAutofillView
                 android:id="@+id/cvc_material"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -250,7 +250,7 @@ found in the LICENSE file.
         android:hint="@string/autofill_credit_card_editor_name">
 
         <!-- TODO(crbug.com/40600572): Fix and remove lint ignore -->
-        <org.chromium.chrome.browser.autofill.editors.EditTextNoAutofillView
+        <org.chromium.chrome.browser.autofill.editors.common.EditTextNoAutofillView
             tools:ignore="Autofill"
             android:id="@+id/credit_card_name_edit"
             android:layout_width="match_parent"
@@ -274,7 +274,7 @@ found in the LICENSE file.
         android:layout_marginBottom="@dimen/pref_autofill_field_bottom_margin"
         android:hint="@string/autofill_credit_card_editor_nickname">
 
-        <org.chromium.chrome.browser.autofill.editors.EditTextNoAutofillView
+        <org.chromium.chrome.browser.autofill.editors.common.EditTextNoAutofillView
             tools:ignore="Autofill"
             android:id="@+id/credit_card_nickname_edit"
             android:maxLength="25"

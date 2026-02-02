@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.autofill.editors;
+package org.chromium.chrome.browser.autofill.editors.common;
 
 import android.content.Context;
 import android.view.View;
@@ -42,12 +42,12 @@ class HintedDropDownAdapter<T> extends DropdownFieldAdapter<T> {
     /**
      * Creates an array adapter for which the first element is a hint.
      *
-     * @param context            The current context.
-     * @param resource           The resource ID for a layout file containing a layout to use when
-     *                           instantiating views.
+     * @param context The current context.
+     * @param resource The resource ID for a layout file containing a layout to use when
+     *     instantiating views.
      * @param textViewResourceId The id of the TextView within the layout resource to be populated.
-     * @param objects            The objects to represent in the ListView.
-     * @param hint               The element to be used as a hint when no element is selected.
+     * @param objects The objects to represent in the ListView.
+     * @param hint The element to be used as a hint when no element is selected.
      */
     public HintedDropDownAdapter(
             Context context, int resource, int textViewResourceId, List<T> objects, T hint) {

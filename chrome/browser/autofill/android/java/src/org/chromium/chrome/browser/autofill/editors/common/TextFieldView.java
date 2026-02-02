@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.autofill.editors;
+package org.chromium.chrome.browser.autofill.editors.common;
 
-import static org.chromium.chrome.browser.autofill.editors.EditorComponentsProperties.FieldProperties.ERROR_MESSAGE;
-import static org.chromium.chrome.browser.autofill.editors.EditorComponentsProperties.FieldProperties.FOCUSED;
-import static org.chromium.chrome.browser.autofill.editors.EditorComponentsProperties.FieldProperties.IS_REQUIRED;
-import static org.chromium.chrome.browser.autofill.editors.EditorComponentsProperties.FieldProperties.VALUE;
+import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.FieldProperties.ERROR_MESSAGE;
+import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.FieldProperties.FOCUSED;
+import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.FieldProperties.IS_REQUIRED;
+import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.FieldProperties.VALUE;
 
 import android.content.Context;
 import android.text.Editable;
@@ -42,7 +42,7 @@ import java.util.List;
 // TODO(b/173103628): Re-enable this
 // @VisibleForTesting
 @NullMarked
-class TextFieldView extends FrameLayout implements FieldView {
+public class TextFieldView extends FrameLayout implements FieldView {
     private @Nullable static EditorObserverForTest sObserverForTest;
 
     private @Nullable Runnable mDoneRunnable;
@@ -164,7 +164,7 @@ class TextFieldView extends FrameLayout implements FieldView {
                 });
     }
 
-    void setLabel(String label, boolean isRequired) {
+    public void setLabel(String label, boolean isRequired) {
         // Build up the label. Required fields are indicated by appending a '*'.
         if (isRequired) {
             // TODO(crbug.com/417413188): Fix a bug where label is announced too many times.
@@ -188,18 +188,18 @@ class TextFieldView extends FrameLayout implements FieldView {
         mInputLayout.setHint(label);
     }
 
-    void setValidator(@Nullable EditorFieldValidator validator) {
+    public void setValidator(@Nullable EditorFieldValidator validator) {
         mValidator = validator;
     }
 
-    void setErrorMessage(@Nullable String errorMessage) {
+    public void setErrorMessage(@Nullable String errorMessage) {
         mInputLayout.setError(errorMessage);
         if (sObserverForTest != null && errorMessage != null) {
             sObserverForTest.onEditorValidationError();
         }
     }
 
-    void setValue(@Nullable String value) {
+    public void setValue(@Nullable String value) {
         value = value == null ? "" : value;
         if (mInput.getText().toString().equals(value)) {
             return;
@@ -215,11 +215,11 @@ class TextFieldView extends FrameLayout implements FieldView {
         mInValueChange = inNestedValueChange;
     }
 
-    void setTextInputType(int textInputType) {
+    public void setTextInputType(int textInputType) {
         mInput.setInputType(textInputType);
     }
 
-    void setTextSuggestions(@Nullable List<String> suggestions) {
+    public void setTextSuggestions(@Nullable List<String> suggestions) {
         // Display any autofill suggestions.
         if (suggestions != null && !suggestions.isEmpty()) {
             mInput.setAdapter(
@@ -231,7 +231,7 @@ class TextFieldView extends FrameLayout implements FieldView {
         }
     }
 
-    void setTextFormatter(@Nullable TextWatcher formatter) {
+    public void setTextFormatter(@Nullable TextWatcher formatter) {
         mTextFormatter = formatter;
         if (mTextFormatter != null) {
             mInput.addTextChangedListener(mTextFormatter);
@@ -239,7 +239,7 @@ class TextFieldView extends FrameLayout implements FieldView {
         }
     }
 
-    void setDoneRunnable(@Nullable Runnable doneRunnable) {
+    public void setDoneRunnable(@Nullable Runnable doneRunnable) {
         mDoneRunnable = doneRunnable;
     }
 
