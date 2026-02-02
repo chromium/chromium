@@ -232,8 +232,13 @@ final class SigninBridge {
                     SigninAccessPoint.WEB_SIGNIN);
             return;
         }
-        if (SigninPreferencesManager.getInstance().getWebSigninAccountPickerActiveDismissalCount()
-                >= ACCOUNT_PICKER_BOTTOM_SHEET_DISMISS_LIMIT) {
+
+        // If the web requests a sign-in with a specific account that is present on the device the
+        // impression limit is ignored.
+        if (selectedAccountId == null
+                && SigninPreferencesManager.getInstance()
+                                .getWebSigninAccountPickerActiveDismissalCount()
+                        >= ACCOUNT_PICKER_BOTTOM_SHEET_DISMISS_LIMIT) {
             SigninMetricsUtils.logAccountConsistencyPromoAction(
                     AccountConsistencyPromoAction.SUPPRESSED_CONSECUTIVE_DISMISSALS,
                     SigninAccessPoint.WEB_SIGNIN);

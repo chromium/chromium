@@ -103,7 +103,9 @@ public class SigninBridgeTest {
     @Before
     public void setUp() {
         ShadowBottomSheetControllerProvider.setBottomSheetController(mBottomSheetControllerMock);
+        Context context = ApplicationProvider.getApplicationContext();
 
+        lenient().when(mWindowAndroidMock.getContext()).thenReturn(new WeakReference<>(context));
         lenient().when(mTabMock.getProfile()).thenReturn(mProfileMock);
         lenient().when(mTabMock.getWindowAndroid()).thenReturn(mWindowAndroidMock);
         lenient().when(mTabMock.isUserInteractable()).thenReturn(true);
@@ -237,25 +239,47 @@ public class SigninBridgeTest {
                         SigninBridge.ACCOUNT_PICKER_BOTTOM_SHEET_DISMISS_LIMIT);
 
         SigninBridge.openAccountPickerBottomSheet(
-                mTabMock,
-                CONTINUE_URL,
-                mAccountPickerBottomSheetCoordinatorFactoryMock,
-                TestAccounts.ACCOUNT1.getId());
+                mTabMock, CONTINUE_URL, mAccountPickerBottomSheetCoordinatorFactoryMock, null);
+
         verify(mSigninMetricsUtilsJniMock)
                 .logAccountConsistencyPromoAction(
                         AccountConsistencyPromoAction.SUPPRESSED_CONSECUTIVE_DISMISSALS,
                         SigninAccessPoint.WEB_SIGNIN);
         verify(mAccountPickerBottomSheetCoordinatorFactoryMock, never())
+                .create(any(), any(), any(), any(), any(), any(), any(), anyInt(), eq(null));
+    }
+
+    @Test
+    @SmallTest
+    public void testAccountPickerHasNoLimitIfAccountIsSpecified() {
+        when(mSigninManagerMock.isSigninAllowed()).thenReturn(true);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        ChromeSharedPreferences.getInstance()
+                .writeInt(
+                        ChromePreferenceKeys.WEB_SIGNIN_ACCOUNT_PICKER_ACTIVE_DISMISSAL_COUNT,
+                        SigninBridge.ACCOUNT_PICKER_BOTTOM_SHEET_DISMISS_LIMIT);
+
+        SigninBridge.openAccountPickerBottomSheet(
+                mTabMock,
+                CONTINUE_URL,
+                mAccountPickerBottomSheetCoordinatorFactoryMock,
+                TestAccounts.ACCOUNT2.getId());
+
+        verify(mSigninMetricsUtilsJniMock, never())
+                .logAccountConsistencyPromoAction(
+                        eq(AccountConsistencyPromoAction.SUPPRESSED_CONSECUTIVE_DISMISSALS),
+                        anyInt());
+        verify(mAccountPickerBottomSheetCoordinatorFactoryMock)
                 .create(
+                        eq(mWindowAndroidMock),
                         any(),
                         any(),
-                        any(),
-                        any(),
+                        eq(mBottomSheetControllerMock),
                         any(),
                         any(),
                         any(),
                         anyInt(),
-                        eq(TestAccounts.ACCOUNT1.getId()));
+                        eq(TestAccounts.ACCOUNT2.getId()));
     }
 
     @Test
@@ -263,8 +287,6 @@ public class SigninBridgeTest {
     public void testAccountPickerShown() {
         when(mSigninManagerMock.isSigninAllowed()).thenReturn(true);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
-        Context context = ApplicationProvider.getApplicationContext();
-        when(mWindowAndroidMock.getContext()).thenReturn(new WeakReference<>(context));
 
         SigninBridge.openAccountPickerBottomSheet(
                 mTabMock,
@@ -289,8 +311,6 @@ public class SigninBridgeTest {
     public void testAccountPickerShownWithNoSelectedAccountId() {
         when(mSigninManagerMock.isSigninAllowed()).thenReturn(true);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
-        Context context = ApplicationProvider.getApplicationContext();
-        when(mWindowAndroidMock.getContext()).thenReturn(new WeakReference<>(context));
 
         SigninBridge.openAccountPickerBottomSheet(
                 mTabMock, CONTINUE_URL, mAccountPickerBottomSheetCoordinatorFactoryMock, null);
