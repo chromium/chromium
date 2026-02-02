@@ -1,6 +1,7 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+#include <cstddef>
 #include <cstdint>
 
 namespace component_updater {
@@ -11,3 +12,9 @@ extern const uint8_t kTranslateKitPublicKeySHA256[32] = {
     0x8f, 0x49, 0xa7, 0x96, 0x36, 0x55, 0xf3, 0xbc, 0x0d, 0xa5, 0x67,
     0x48, 0x09, 0xcd, 0x7b, 0xa9, 0x5f, 0xd8, 0x7f, 0x53, 0xb4};
 }  // namespace component_updater
+
+namespace on_device_translation {
+
+extern const size_t kMaxPendingTaskCount = 1024;
+
+}  // namespace on_device_translation

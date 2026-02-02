@@ -19,4 +19,13 @@ static_assert(std::size(component_updater::kTranslateKitPublicKeySHA256) ==
                   crypto::kSHA256Length,
               "Wrong hash length");
 
+namespace on_device_translation {
+
+// The maximum number of pending tasks in the task queue in
+// OnDeviceTranslationServiceController. When the number of pending tasks will
+// exceed this limit, the request will fail.
+extern const size_t kMaxPendingTaskCount;
+
+}  // namespace on_device_translation
+
 #endif  // COMPONENTS_ON_DEVICE_TRANSLATION_CONSTANTS_H_

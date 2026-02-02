@@ -23,10 +23,7 @@ source_set("on_device_translation") {
     "translation_manager_impl.cc",
     "translation_manager_impl.h",
   ]
-  public_deps = [
-    "//chrome/browser/on_device_translation:constants",
-    "//components/on_device_translation:public",
-  ]
+  public_deps = [ "//components/on_device_translation:public" ]
   deps = [
     "//base",
     "//chrome/browser:browser_process",
@@ -50,15 +47,6 @@ source_set("on_device_translation") {
     deps += [ "//chromeos/ash/components/dbus/image_loader" ]
   }
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
-}
-
-source_set("constants") {
-  sources = [
-    "constants.cc",
-    "constants.h",
-  ]
-
-  deps = [ "//base" ]
 }
 
 source_set("unit_tests") {
