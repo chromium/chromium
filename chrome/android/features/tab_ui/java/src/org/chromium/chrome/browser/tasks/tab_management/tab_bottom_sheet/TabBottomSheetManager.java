@@ -129,8 +129,8 @@ public class TabBottomSheetManager implements Destroyable {
                 && mSheetState != SheetState.HIDDEN;
     }
 
-    boolean setWebContents(int requestId, WebContents webContents) {
-        if (mWebUi != null && mRequestId == requestId) {
+    boolean setWebContents(@Nullable WebContents webContents) {
+        if (mWebUi != null) {
             mWebUi.setWebContents(webContents);
             return true;
         }

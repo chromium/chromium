@@ -9,6 +9,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.content.Context;
 import android.view.View;
 
+import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.embedder_support.view.ContentView;
@@ -16,6 +17,7 @@ import org.chromium.components.thinwebview.ThinWebView;
 import org.chromium.components.thinwebview.ThinWebViewConstraints;
 import org.chromium.components.thinwebview.ThinWebViewFactory;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 
 /** Abstract class for Tab Bottom Sheet toolbars. */
@@ -23,23 +25,30 @@ import org.chromium.ui.base.WindowAndroid;
 public class TabBottomSheetWebUi {
     private final Context mContext;
     private final WindowAndroid mWindowAndroid;
-    private final ThinWebView mThinWebView;
+    private ThinWebView mThinWebView;
     private @Nullable WebContents mWebContents;
 
     TabBottomSheetWebUi(Context context, WindowAndroid windowAndroid) {
         mContext = context;
         mWindowAndroid = windowAndroid;
-        mThinWebView =
-                ThinWebViewFactory.create(
-                        mContext,
-                        new ThinWebViewConstraints(),
-                        assumeNonNull(mWindowAndroid.getIntentRequestTracker()));
+        resetThinWebView();
     }
 
-    void setWebContents(WebContents webContents) {
+    void setWebContents(@Nullable WebContents webContents) {
         mWebContents = webContents;
-        ContentView contentView = ContentView.createContentView(mContext, mWebContents);
-        assumeNonNull(mThinWebView).attachWebContents(mWebContents, contentView, null);
+        if (mWebContents != null) {
+            ContentView contentView = ContentView.createContentView(mContext, null);
+            mWebContents.setDelegates(
+                    VersionInfo.getProductVersion(),
+                    ViewAndroidDelegate.createBasicDelegate(contentView),
+                    contentView,
+                    mWindowAndroid,
+                    WebContents.createDefaultInternalsHolder());
+            contentView.setWebContents(mWebContents);
+            mThinWebView.attachWebContents(mWebContents, contentView, null);
+        } else {
+            resetThinWebView();
+        }
     }
 
     @Nullable WebContents getWebContents() {
@@ -54,5 +63,14 @@ public class TabBottomSheetWebUi {
 
     View getWebUiView() {
         return mThinWebView.getView();
+    }
+
+    private void resetThinWebView() {
+        if (mThinWebView != null) mThinWebView.destroy();
+        mThinWebView =
+                ThinWebViewFactory.create(
+                        mContext,
+                        new ThinWebViewConstraints(),
+                        assumeNonNull(mWindowAndroid.getIntentRequestTracker()));
     }
 }
