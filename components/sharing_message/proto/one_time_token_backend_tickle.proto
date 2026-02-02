@@ -1,0 +1,31 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sharing_message.proto";
+
+package components_sharing_message;
+
+// Required in Chrome.
+option optimize_for = LITE_RUNTIME;
+
+// Message indicating that there's a one time token available for the client to
+// retrieve.
+// Note, that this message is designed not to carry the actual one time token,
+// but only a reference to it.
+message OneTimeTokenBackendTickle {
+  oneof one_time_token_reference {
+    // Reference to a gmail message that contains the One Time Password.
+    GmailMessageReference gmail_one_time_password = 1;
+  }
+}
+
+// Reference to an email that contains a one time token.
+message GmailMessageReference {
+  // Encrypted reference to the email that contains the OTP.
+  // Clients should treat this as an opaque blob and pass it to the backend.
+  bytes encrypted_message_reference = 1;
+}
