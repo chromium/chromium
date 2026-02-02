@@ -90,21 +90,18 @@ BrowserDelegate* SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(
   }
 
   // Send launch files.
-  if (provider->os_integration_manager().IsFileHandlingAPIAvailable(
-          params.app_id)) {
-    base::FilePath launch_dir = GetLaunchDirectory(params);
+  base::FilePath launch_dir = GetLaunchDirectory(params);
 
-    if (!launch_dir.empty() || !params.launch_files.empty()) {
-      webapps::LaunchParams launch_params;
-      launch_params.started_new_navigation = started_new_navigation;
-      launch_params.app_id = params.app_id;
-      launch_params.target_url = web_contents->GetURL();
-      launch_params.dir = std::move(launch_dir);
-      launch_params.paths = params.launch_files;
-      web_app::WebAppTabHelper::FromWebContents(web_contents)
-          ->EnsureLaunchQueue()
-          .Enqueue(std::move(launch_params));
-    }
+  if (!launch_dir.empty() || !params.launch_files.empty()) {
+    webapps::LaunchParams launch_params;
+    launch_params.started_new_navigation = started_new_navigation;
+    launch_params.app_id = params.app_id;
+    launch_params.target_url = web_contents->GetURL();
+    launch_params.dir = std::move(launch_dir);
+    launch_params.paths = params.launch_files;
+    web_app::WebAppTabHelper::FromWebContents(web_contents)
+        ->EnsureLaunchQueue()
+        .Enqueue(std::move(launch_params));
   }
 
   return browser;

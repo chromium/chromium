@@ -99,11 +99,6 @@ BASE_FEATURE(kDiyAppIconsMaskedOnMacUpdate, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // static
-WebAppProvider* WebAppProvider::GetDeprecated(Profile* profile) {
-  return WebAppProviderFactory::GetForProfile(profile);
-}
-
-// static
 WebAppProvider* WebAppProvider::GetForWebApps(Profile* profile) {
   return WebAppProviderFactory::GetForProfile(profile);
 }

@@ -92,9 +92,6 @@ class IwaBundleCacheManager;
 // - Similarly, in destruction, subsystems should not refer to each other.
 class WebAppProvider : public KeyedService {
  public:
-  // Deprecated: Use GetForWebApps instead.
-  static WebAppProvider* GetDeprecated(Profile* profile);
-
   // This returns a WebAppProvider for the given `profile`, or `nullptr` if
   // installed web apps are not supported on the given `profile`. Use
   // `web_app::AreWebAppsEnabled` to determine if web apps are supported on a

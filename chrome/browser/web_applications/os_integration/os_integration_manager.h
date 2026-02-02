@@ -120,8 +120,6 @@ class OsIntegrationManager {
       const webapps::AppId& app_id,
       GetShortcutInfoCallback callback);
 
-  // Proxy calls for WebAppFileHandlerManager.
-  bool IsFileHandlingAPIAvailable(const webapps::AppId& app_id);
   const apps::FileHandlers* GetEnabledFileHandlers(
       const webapps::AppId& app_id) const;
 

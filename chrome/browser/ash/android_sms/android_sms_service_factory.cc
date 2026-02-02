@@ -59,7 +59,7 @@ AndroidSmsServiceFactory::BuildServiceInstanceForBrowserContext(
   return std::make_unique<AndroidSmsService>(
       profile, HostContentSettingsMapFactory::GetForProfile(profile),
       multidevice_setup::MultiDeviceSetupClientFactory::GetForProfile(profile),
-      web_app::WebAppProvider::GetDeprecated(profile),
+      web_app::WebAppProvider::GetForWebApps(profile),
       app_list::AppListSyncableServiceFactory::GetForProfile(profile));
 }
 

@@ -366,11 +366,6 @@ void OsIntegrationManager::GetShortcutInfoForAppFromRegistrar(
                      std::move(callback)));
 }
 
-bool OsIntegrationManager::IsFileHandlingAPIAvailable(
-    const webapps::AppId& app_id) {
-  return true;
-}
-
 const apps::FileHandlers* OsIntegrationManager::GetEnabledFileHandlers(
     const webapps::AppId& app_id) const {
   CHECK(file_handler_manager_);
