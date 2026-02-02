@@ -13,7 +13,8 @@ export function getHtml(this: SettingsMenuElement) {
 <cr-lazy-render-lit id="lazyMenu" .template='${() => html`
   <cr-action-menu id="settings-menu-dialog" @close="${this.close}" non-modal>
     ${this.options_.map((item, index) => html`
-      <button class="menu-row dropdown-item ${item.className || ''}"
+      ${item.showSeparator ? html`<hr class="separator" aria-hidden="true">` : ``}
+      <button class="menu-row dropdown-item"
           id="${item.id}"
           role="menuitem"
           data-index="${index}"
@@ -23,12 +24,13 @@ export function getHtml(this: SettingsMenuElement) {
           @pointerleave="${this.onMenuItemLeave_}"
           @click="${this.onMenuItemClick_}">
 
+        <div class="start-container">
+          ${item.icon ? html`
+            <cr-icon class="start-icon" icon="${item.icon}"></cr-icon>
+          ` : ''}
 
-        ${item.icon ? html`
-          <cr-icon class="start-icon" icon="${item.icon}"></cr-icon>
-        ` : ''}
-
-        <div class="label">${item.title}</div>
+          <div class="label">${item.title}</div>
+        </div>
 
         ${item.itemType === SettingsItemType.TOGGLE ? html`
             <cr-toggle

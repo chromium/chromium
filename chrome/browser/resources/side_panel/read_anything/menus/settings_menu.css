@@ -10,6 +10,8 @@
  * #css_wrapper_metadata_end */
 
 .menu-row {
+  --iron-icon-height: 16px;
+  --iron-icon-width: 16px;
   align-items: center;
   background: none;
   border: none;
@@ -17,12 +19,11 @@
   color: inherit;
   cursor: pointer;
   display: flex;
-  min-height: var(--cr-section-min-height, 48px);
-  padding: 0 var(--cr-section-padding, 20px);
+  height: 20px;
+  justify-content: space-between;
+  padding: 4px var(--cr-section-padding, 20px);
   text-align: start;
   width: 100%;
-  --iron-icon-width: 16px;
-  --iron-icon-height: 16px;
 }
 
 .menu-row:hover,
@@ -40,8 +41,14 @@
   background-color: var(--cr-hover-background-color);
 }
 
+.menu-row .start-container {
+  align-items: center;
+  display: flex;
+  gap: 16px;
+  padding-inline-end: 16px;
+}
+
 .menu-row .start-icon {
-  margin-inline-end: 20px;
   --cr-icon-color: var(--cr-secondary-text-color);
 }
 
@@ -51,7 +58,6 @@
 }
 
 .menu-row .end-icon {
-  margin-inline-start: 20px;
   --cr-icon-color: var(--cr-secondary-text-color);
 }
 
@@ -59,18 +65,26 @@
   transform: scaleX(-1);
 }
 
-.menu-row cr-toggle {
-  margin-inline-start: 16px;
-}
-
 #settings-menu-dialog::part(dialog) {
   border-radius: var(--cornerRadii-medium-small, 12px);
+  padding-bottom: 12px;
+  padding-top: 12px;
   width: clamp(92px, 100%, 340px);
   z-index: 9999;
 }
 
-.hr {
-  border-top: var(--cr-separator-line);
+.separator {
+  background-color: var(--color-side-panel-divider);
+  border: 1px var(--color-side-panel-divider);
+  height: 1px;
+  width: 100%;
+}
+
+cr-toggle {
+  --cr-toggle-width: 26px;
+  --cr-toggle-bar-height: 16px;
+  --cr-toggle-knob-diameter: 12px;
+  --cr-toggle-ripple-diameter: 12px;
 }
 
 @media (forced-colors: active) {

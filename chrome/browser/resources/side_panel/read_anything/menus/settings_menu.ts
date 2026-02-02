@@ -44,7 +44,7 @@ interface SettingsItem {
   enabled?: boolean;
   // Needed when the aria label should be different from the title
   ariaLabel?: string;
-  className?: string;
+  showSeparator?: boolean;
 }
 
 const MENU_ITEM_DATA: Record<SettingsOption, SettingsItem> = {
@@ -77,7 +77,7 @@ const MENU_ITEM_DATA: Record<SettingsOption, SettingsItem> = {
     icon: 'read-anything:links-enabled',
     title: 'linksLabel',
     itemType: SettingsItemType.TOGGLE,
-    className: 'hr',
+    showSeparator: true,
   },
   [SettingsOption.LINE_SPACING]: {
     id: SettingsOption.LINE_SPACING,

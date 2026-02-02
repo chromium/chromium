@@ -15,6 +15,10 @@
   flex-direction: column;
   height: 100%;
   background-color: var(--background-color);
+  --immersive-menu-font: 'Google Sans Text', 'Google Sans', system-ui, sans-serif;
+  --immersive-menu-font-size: 13px;
+  --immersive-menu-line-height: 20px;
+  --immersive-menu-font-weight: 400;
 }
 
 :host #appFlexParent {
