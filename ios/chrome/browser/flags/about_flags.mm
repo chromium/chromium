@@ -2752,6 +2752,10 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
     {"enable-new-startup-flow", flag_descriptions::kEnableNewStartupFlowName,
      flag_descriptions::kEnableNewStartupFlowDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kEnableNewStartupFlow)},
+    {"gemini-updated-eligibility",
+     flag_descriptions::kGeminiUpdatedEligibilityName,
+     flag_descriptions::kGeminiUpdatedEligibilityDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kGeminiUpdatedEligibility)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

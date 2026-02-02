@@ -672,6 +672,10 @@ const char kGeminiRefactoredFREName[] = "Gemini Refactored FRE";
 const char kGeminiRefactoredFREDescription[] =
     "Enables the refactored Gemini First Run Experience (FRE).";
 
+const char kGeminiUpdatedEligibilityName[] = "Gemini Updated Eligibility";
+const char kGeminiUpdatedEligibilityDescription[] =
+    "Enables the updated eligibility checks for Gemini users.";
+
 const char kHandleMdmErrorsForDasherAccountsName[] =
     "Mdm error handling for dasher accounts";
 const char kHandleMdmErrorsForDasherAccountsDescription[] =

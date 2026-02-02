@@ -369,6 +369,12 @@ bool IsGeminiRefactoredFREEnabled() {
   return base::FeatureList::IsEnabled(kGeminiRefactoredFRE);
 }
 
+BASE_FEATURE(kGeminiUpdatedEligibility, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsGeminiUpdatedEligibilityEnabled() {
+  return base::FeatureList::IsEnabled(kGeminiUpdatedEligibility);
+}
+
 BASE_FEATURE(kWebPageReportedImagesSheet, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsWebPageReportedImagesSheetEnabled() {

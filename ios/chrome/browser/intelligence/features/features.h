@@ -271,6 +271,12 @@ BASE_DECLARE_FEATURE(kGeminiRefactoredFRE);
 // Returns true if the Gemini refactored FRE is enabled.
 bool IsGeminiRefactoredFREEnabled();
 
+// Feature flag to enable the updated eligibility checks for Gemini.
+BASE_DECLARE_FEATURE(kGeminiUpdatedEligibility);
+
+// Returns true if the updated eligibiliy checks for Gemini are enabled.
+bool IsGeminiUpdatedEligibilityEnabled();
+
 // Feature flag for displaying a sheet which shows the web page's self-reported
 // important images. Experimental.
 BASE_DECLARE_FEATURE(kWebPageReportedImagesSheet);

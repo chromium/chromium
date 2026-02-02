@@ -414,6 +414,9 @@ extern const char kGeminiPersonalizationDescription[];
 extern const char kGeminiRefactoredFREName[];
 extern const char kGeminiRefactoredFREDescription[];
 
+extern const char kGeminiUpdatedEligibilityName[];
+extern const char kGeminiUpdatedEligibilityDescription[];
+
 extern const char kHandleMdmErrorsForDasherAccountsName[];
 extern const char kHandleMdmErrorsForDasherAccountsDescription[];
 
