@@ -6,15 +6,22 @@
 
 #import "base/apple/foundation_util.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "components/signin/public/base/signin_pref_names.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_configuration.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_confirmation/account_picker_confirmation_screen_coordinator.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_confirmation/account_picker_confirmation_screen_coordinator_delegate.h"
+#import "ios/chrome/browser/account_picker/ui_bundled/account_picker_coordinator_delegate.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_layout_delegate.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_screen/account_picker_screen_navigation_controller.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_screen/account_picker_screen_view_controller.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/test/fakes/fake_ui_view_controller.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -26,22 +33,34 @@ class AccountPickerCoordinatorTest : public PlatformTest {
  protected:
   void SetUp() final {
     TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(
+        AuthenticationServiceFactory::GetInstance(),
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
     profile_ = std::move(builder).Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
     base_view_controller_ = [[FakeUIViewController alloc] init];
+    delegate_ =
+        OCMStrictProtocolMock(@protocol(AccountPickerCoordinatorDelegate));
   }
 
-  void TearDown() final {}
+  void TearDown() final { EXPECT_OCMOCK_VERIFY((id)delegate_); }
+
+  PrefService* local_state() {
+    return GetApplicationContext()->GetLocalState();
+  }
 
   // Create a AccountPickerCoordinator to test.
   AccountPickerCoordinator* CreateAccountPickerCoordinator(
       AccountPickerConfiguration* configuration) {
-    return [[AccountPickerCoordinator alloc]
+    AccountPickerCoordinator* coordinator = [[AccountPickerCoordinator alloc]
         initWithBaseViewController:base_view_controller_
                            browser:browser_.get()
                      configuration:configuration
                        accessPoint:signin_metrics::AccessPoint::
                                        kSaveToPhotosIos];
+    coordinator.delegate = delegate_;
+    return coordinator;
   }
 
   AccountPickerConfiguration* CreateAccountPickerConfiguration() {
@@ -55,6 +74,9 @@ class AccountPickerCoordinatorTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
+  // ScopedTestingLocalState needed for the authentication service.
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  id<AccountPickerCoordinatorDelegate> delegate_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   UIViewController* base_view_controller_;
@@ -137,6 +159,7 @@ TEST_F(AccountPickerCoordinatorTest, PushesAndPopsConfirmationScreen) {
   // account picker is stopped.
   OCMExpect([base::apple::ObjCCast<AccountPickerConfirmationScreenCoordinator>(
       mock_confirmation_screen_coordinator) stop]);
+  OCMStub([delegate_ accountPickerCoordinatorDidStop:coordinator]);
   [coordinator stop];
 
   // Check that the account picker navigation controller is dismissed and verify
@@ -144,4 +167,16 @@ TEST_F(AccountPickerCoordinatorTest, PushesAndPopsConfirmationScreen) {
   EXPECT_EQ(base_view_controller_.presentedViewController, nil);
   EXPECT_OCMOCK_VERIFY(mock_confirmation_screen_coordinator);
   EXPECT_OCMOCK_VERIFY(mock_navigation_controller);
+}
+
+TEST_F(AccountPickerCoordinatorTest, SigninDisabled) {
+  AccountPickerConfiguration* configuration =
+      CreateAccountPickerConfiguration();
+  AccountPickerCoordinator* coordinator =
+      CreateAccountPickerCoordinator(configuration);
+  OCMExpect([delegate_ accountPickerCoordinatorWantsToBeStopped:coordinator])
+      .andDo(^(NSInvocation* invocation) {
+        [coordinator stop];
+      });
+  local_state()->SetBoolean(prefs::kSigninAllowedOnDevice, false);
 }

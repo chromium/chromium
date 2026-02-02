@@ -141,7 +141,7 @@
   [_mediator saveWithSelectedIdentity:identity];
 }
 
-- (void)accountPickerCoordinatorCancel:
+- (void)accountPickerCoordinatorWantsToBeStopped:
     (AccountPickerCoordinator*)accountPickerCoordinator {
   [_mediator cancelSaveToDrive];
 }
