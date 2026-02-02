@@ -2601,6 +2601,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Gemini.Response.Latency.WithGeneratedImage" units="ms"
+    expires_after="2027-01-30">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    Records the latency from prompt submission to response received for Gemini
+    on iOS when a generated image was included in the response.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Gemini.Response.Latency.WithoutContext" units="ms"
     expires_after="2026-06-21">
   <owner>kanouche@google.com</owner>
@@ -2608,6 +2618,16 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the latency from prompt submission to response received for Gemini
     on iOS when no page context was included with the prompt.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Gemini.Response.Latency.WithoutGeneratedImage" units="ms"
+    expires_after="2027-01-30">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    Records the latency from prompt submission to response received for Gemini
+    on iOS when a generated image was not included in the response.
   </summary>
 </histogram>
 

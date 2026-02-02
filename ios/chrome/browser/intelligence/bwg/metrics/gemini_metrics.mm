@@ -106,6 +106,12 @@ const char kResponseLatencyWithContextHistogram[] =
 const char kResponseLatencyWithoutContextHistogram[] =
     "IOS.Gemini.Response.Latency.WithoutContext";
 
+const char kResponseLatencyWithGeneratedImageHistogram[] =
+    "IOS.Gemini.Response.Latency.WithGeneratedImage";
+
+const char kResponseLatencyWithoutGeneratedImageHistogram[] =
+    "IOS.Gemini.Response.Latency.WithoutGeneratedImage";
+
 const char kSessionPromptCountHistogram[] = "IOS.Gemini.Session.PromptCount";
 
 const char kSessionFirstPromptHistogram[] = "IOS.Gemini.Session.FirstPrompt";
@@ -260,13 +266,23 @@ void RecordFREConsentLinkClick() {
       base::UserMetricsAction("MobileGeminiFREConsentLinkClick"));
 }
 
-void RecordResponseLatency(base::TimeDelta latency, bool had_page_context) {
+void RecordResponseLatency(base::TimeDelta latency,
+                           bool had_page_context,
+                           bool had_generated_image) {
   if (had_page_context) {
     base::UmaHistogramMediumTimes(kResponseLatencyWithContextHistogram,
                                   latency);
   } else {
     base::UmaHistogramMediumTimes(kResponseLatencyWithoutContextHistogram,
                                   latency);
+  }
+
+  if (had_generated_image) {
+    base::UmaHistogramMediumTimes(kResponseLatencyWithGeneratedImageHistogram,
+                                  latency);
+  } else {
+    base::UmaHistogramMediumTimes(
+        kResponseLatencyWithoutGeneratedImageHistogram, latency);
   }
 }
 

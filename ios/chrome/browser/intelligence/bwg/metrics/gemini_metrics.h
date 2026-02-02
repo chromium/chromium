@@ -173,6 +173,12 @@ extern const char kResponseLatencyWithContextHistogram[];
 // UMA histogram key for IOS.Gemini.Response.Latency.WithoutContext.
 extern const char kResponseLatencyWithoutContextHistogram[];
 
+// UMA histogram key for IOS.Gemini.Response.Latency.WithGeneratedImage.
+extern const char kResponseLatencyWithGeneratedImageHistogram[];
+
+// UMA histogram key for IOS.Gemini.Response.Latency.WithoutGeneratedImage.
+extern const char kResponseLatencyWithoutGeneratedImageHistogram[];
+
 // Represents the completed Gemini session types.
 enum class IOSGeminiSessionType {
   kUnknown = 0,
@@ -313,8 +319,11 @@ void RecordFREConsentLinkClick();
 // Records prompt context attachment metrics.
 void RecordPromptContextAttachment(bool has_page_context);
 
-// Records the latency from prompt submission to response received.
-void RecordResponseLatency(base::TimeDelta latency, bool had_page_context);
+// Records the latency from prompt submission to response received, including
+// metadata about the prompt & response.
+void RecordResponseLatency(base::TimeDelta latency,
+                           bool had_page_context,
+                           bool had_generated_image);
 
 // Records the total number of prompts sent in a Gemini session.
 void RecordSessionPromptCount(int prompt_count);

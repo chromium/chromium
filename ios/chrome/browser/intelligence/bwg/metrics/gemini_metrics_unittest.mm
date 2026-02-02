@@ -151,3 +151,53 @@ TEST_F(GeminiMetricsTest, RecordGeminiCameraFlowGoToOSSettingsAlertResult) {
   EXPECT_EQ(1, user_action_tester_.GetActionCount(
                    kCameraFlowGoToOSSettingsAlertNoThanks));
 }
+
+// Tests that response latency is recorded to the correct histograms based on
+// page context and generated image presence.
+TEST_F(GeminiMetricsTest, TestResponseLatencyMetrics) {
+  base::TimeDelta latency = base::Milliseconds(100);
+
+  // Case 1: Page context present & generated image present.
+  RecordResponseLatency(latency, true, true);
+  histogram_tester_.ExpectTimeBucketCount(kResponseLatencyWithContextHistogram,
+                                          latency, 1);
+  histogram_tester_.ExpectTimeBucketCount(
+      kResponseLatencyWithGeneratedImageHistogram, latency, 1);
+  histogram_tester_.ExpectTotalCount(kResponseLatencyWithoutContextHistogram,
+                                     0);
+  histogram_tester_.ExpectTotalCount(
+      kResponseLatencyWithoutGeneratedImageHistogram, 0);
+
+  // Case 2: Page context present & generated image absent.
+  RecordResponseLatency(latency, true, false);
+  histogram_tester_.ExpectTimeBucketCount(kResponseLatencyWithContextHistogram,
+                                          latency, 2);
+  histogram_tester_.ExpectTimeBucketCount(
+      kResponseLatencyWithoutGeneratedImageHistogram, latency, 1);
+  histogram_tester_.ExpectTotalCount(kResponseLatencyWithoutContextHistogram,
+                                     0);
+  histogram_tester_.ExpectTimeBucketCount(
+      kResponseLatencyWithGeneratedImageHistogram, latency, 1);
+
+  // Case 3: Page context absent, generated image present.
+  RecordResponseLatency(latency, false, true);
+  histogram_tester_.ExpectTimeBucketCount(kResponseLatencyWithContextHistogram,
+                                          latency, 2);
+  histogram_tester_.ExpectTimeBucketCount(
+      kResponseLatencyWithoutContextHistogram, latency, 1);
+  histogram_tester_.ExpectTimeBucketCount(
+      kResponseLatencyWithGeneratedImageHistogram, latency, 2);
+  histogram_tester_.ExpectTimeBucketCount(
+      kResponseLatencyWithoutGeneratedImageHistogram, latency, 1);
+
+  // Case 4: Page context absent, generated image absent.
+  RecordResponseLatency(latency, false, false);
+  histogram_tester_.ExpectTimeBucketCount(kResponseLatencyWithContextHistogram,
+                                          latency, 2);
+  histogram_tester_.ExpectTimeBucketCount(
+      kResponseLatencyWithoutContextHistogram, latency, 2);
+  histogram_tester_.ExpectTimeBucketCount(
+      kResponseLatencyWithGeneratedImageHistogram, latency, 2);
+  histogram_tester_.ExpectTimeBucketCount(
+      kResponseLatencyWithoutGeneratedImageHistogram, latency, 2);
+}

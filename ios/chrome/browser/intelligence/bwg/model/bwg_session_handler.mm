@@ -215,7 +215,7 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
   // Calculate and record response latency.
   if (_waitingForResponse && !_lastPromptSentTime.is_null()) {
     base::TimeDelta latency = base::TimeTicks::Now() - _lastPromptSentTime;
-    RecordResponseLatency(latency, _lastPromptHadPageContext);
+    RecordResponseLatency(latency, _lastPromptHadPageContext, isImageGenerated);
 
     // Reset latency tracking.
     _waitingForResponse = NO;
