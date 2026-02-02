@@ -43,41 +43,39 @@ struct Provider: TimelineProvider {
   }
 }
 
-#if IOS_ENABLE_WIDGETS_FOR_MIM
-  struct ConfigurableProvider: AppIntentTimelineProvider {
-    typealias Entry = ConfigureWidgetEntry
+struct ConfigurableProvider: AppIntentTimelineProvider {
+  typealias Entry = ConfigureWidgetEntry
 
-    func placeholder(in: Self.Context) -> Entry {
-      Entry(date: Date(), isPreview: true, avatar: nil, gaiaID: nil, email: nil, deleted: false)
-    }
-    func snapshot(for configuration: SelectAccountIntent, in context: Context) async -> Entry {
-      let avatar: Image? = configuration.avatar()
-      let gaiaID: String? = configuration.gaia()
-      let email: String? = configuration.email()
-      let deleted: Bool = configuration.deleted()
-
-      return Entry(
-        date: Date(), isPreview: context.isPreview, avatar: avatar, gaiaID: gaiaID, email: email,
-        deleted: deleted
-      )
-    }
-    func timeline(for configuration: SelectAccountIntent, in context: Context) async -> Timeline<
-      Entry
-    > {
-      let avatar: Image? = configuration.avatar()
-      let gaiaID: String? = configuration.gaia()
-      let email: String? = configuration.email()
-      let deleted: Bool = configuration.deleted()
-
-      return Timeline(
-        entries: [
-          Entry(
-            date: Date(), isPreview: context.isPreview, avatar: avatar, gaiaID: gaiaID,
-            email: email,
-            deleted: deleted)
-        ], policy: .never
-      )
-    }
-
+  func placeholder(in: Self.Context) -> Entry {
+    Entry(date: Date(), isPreview: true, avatar: nil, gaiaID: nil, email: nil, deleted: false)
   }
-#endif
+  func snapshot(for configuration: SelectAccountIntent, in context: Context) async -> Entry {
+    let avatar: Image? = configuration.avatar()
+    let gaiaID: String? = configuration.gaia()
+    let email: String? = configuration.email()
+    let deleted: Bool = configuration.deleted()
+
+    return Entry(
+      date: Date(), isPreview: context.isPreview, avatar: avatar, gaiaID: gaiaID, email: email,
+      deleted: deleted
+    )
+  }
+  func timeline(for configuration: SelectAccountIntent, in context: Context) async -> Timeline<
+    Entry
+  > {
+    let avatar: Image? = configuration.avatar()
+    let gaiaID: String? = configuration.gaia()
+    let email: String? = configuration.email()
+    let deleted: Bool = configuration.deleted()
+
+    return Timeline(
+      entries: [
+        Entry(
+          date: Date(), isPreview: context.isPreview, avatar: avatar, gaiaID: gaiaID,
+          email: email,
+          deleted: deleted)
+      ], policy: .never
+    )
+  }
+
+}

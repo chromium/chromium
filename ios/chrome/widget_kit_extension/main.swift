@@ -26,7 +26,6 @@ struct ChromeWidgetsForMIM: WidgetBundle {
       SearchPasswordsWidgetConfigurable()
       DinoGameWidgetConfigurable()
     #else
-      SearchWidget()
       ShortcutsWidget()
       SearchPasswordsWidget()
       DinoGameWidget()
