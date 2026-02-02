@@ -1399,18 +1399,22 @@ TEST_F(BookmarkDataTypeProcessorTest,
   SimulateOnSyncStarting();
   SimulateConnectSync();
 
-  const std::string kNodeId = "node_id1";
   const std::string kTitle = "title1";
   const std::string kUrl = "http://www.url1.com";
-  const std::string kIconUrl = "http://www.url1.com/favicon";
 
   ASSERT_TRUE(processor()->IsConnectedForTest());
   // Add a new bookmark to exceed the limit.
   const bookmarks::BookmarkNode* bookmark_bar_node =
       bookmark_model()->bookmark_bar_node();
+  base::HistogramTester histogram_tester;
   bookmark_model()->AddURL(
       /*parent=*/bookmark_bar_node, /*index=*/0, base::UTF8ToUTF16(kTitle),
       GURL(kUrl));
+  // The limit is 3, and we added 1 more, so total is 4.
+  // 3 permanent nodes + 1 new node = 4.
+  histogram_tester.ExpectUniqueSample(
+      "Sync.BookmarksCountAtLimitExceeded.Local", /*sample=*/4,
+      /*expected_bucket_count=*/1);
 
   EXPECT_FALSE(processor()->IsConnectedForTest());
   // Expect tracking to still be enabled.
@@ -1798,8 +1802,12 @@ TEST_F(BookmarkDataTypeProcessorTest,
   ASSERT_TRUE(processor()->IsConnectedForTest());
 
   ASSERT_FALSE(error_reported);
+  base::HistogramTester histogram_tester;
   processor()->OnUpdateReceived(CreateDataTypeState(), std::move(updates),
                                 /*gc_directive=*/std::nullopt);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.BookmarksCountAtLimitExceeded.Remote", /*sample=*/7,
+      /*expected_bucket_count=*/1);
   EXPECT_TRUE(error_reported);
   EXPECT_FALSE(processor()->IsConnectedForTest());
   // Metadata tracking should remain disabled.

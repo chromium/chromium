@@ -723,6 +723,8 @@ bool BookmarkDataTypeProcessor::
                            ? bookmark_tracker_->TrackedBookmarksCount()
                            : CountSyncableBookmarksFromModel(bookmark_model_);
   if (DoesCountExceedLocalBookmarksSyncLimit(count)) {
+    base::UmaHistogramCounts1M("Sync.BookmarksCountAtLimitExceeded.Local",
+                               count);
     // For the case where a tracker already
     // exists, local changes will continue
     // to be tracked in order order to allow users to delete bookmarks and
@@ -783,6 +785,8 @@ void BookmarkDataTypeProcessor::OnInitialUpdateReceived(
   // Note that we are not having this check for incremental updates as it is
   // very unlikely that there will be many updates downloaded.
   if (ExceedsRemoteUpdatesLimit(updates.size())) {
+    base::UmaHistogramCounts1M("Sync.BookmarksCountAtLimitExceeded.Remote",
+                               updates.size());
     DisconnectSync();
     initial_merge_remote_updates_exceeded_limit_timestamp_ = base::Time::Now();
     activation_request_.error_handler.Run(syncer::ModelError(
