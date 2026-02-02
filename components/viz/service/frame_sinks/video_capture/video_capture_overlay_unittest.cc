@@ -28,7 +28,6 @@
 #include "media/base/video_util.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "skia/ext/rgba_to_yuva.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -38,6 +37,7 @@
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkPixmap.h"
 #include "ui/gfx/color_space.h"
+#include "ui/gfx/color_transform.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
@@ -501,37 +501,53 @@ class VideoCaptureOverlayRenderTest
       }
 
       case media::PIXEL_FORMAT_I420: {
-        // Merge the YUV values into a single plane.
+        // Map from I420 planar [0,255] (of which only [16,235] is used) values
+        // to interleaved [0.0,1.0] values.
         const gfx::Size& size = frame.visible_rect().size();
-        auto colors = base::HeapArray<SkColor>::WithSize(size.GetArea());
+        auto colors = base::HeapArray<gfx::ColorTransform::TriStim>::WithSize(
+            size.GetArea());
         int pos = 0;
         for (int row = 0; row < size.height(); ++row) {
-          auto y = frame.GetVisiblePlaneData(VideoFrame::Plane::kY)
-                       .subspan(row * frame.stride(VideoFrame::Plane::kY));
-          auto u =
-              frame.GetVisiblePlaneData(VideoFrame::Plane::kU)
-                  .subspan((row / 2) * frame.stride(VideoFrame::Plane::kU));
-          auto v =
-              frame.GetVisiblePlaneData(VideoFrame::Plane::kV)
-                  .subspan((row / 2) * frame.stride(VideoFrame::Plane::kV));
+          const uint8_t* y =
+              UNSAFE_TODO(frame.visible_data(VideoFrame::Plane::kY) +
+                          (row * frame.stride(VideoFrame::Plane::kY)));
+          const uint8_t* u =
+              UNSAFE_TODO(frame.visible_data(VideoFrame::Plane::kU) +
+                          ((row / 2) * frame.stride(VideoFrame::Plane::kU)));
+          const uint8_t* v =
+              UNSAFE_TODO(frame.visible_data(VideoFrame::Plane::kV) +
+                          ((row / 2) * frame.stride(VideoFrame::Plane::kV)));
           for (int col = 0; col < size.width(); ++col) {
-            colors[pos] = SkColorSetRGB(y[col], u[col / 2], v[col / 2]);
+            colors[pos].SetPoint(UNSAFE_TODO(y[col]) / 255.0f,
+                                 UNSAFE_TODO(u[col / 2]) / 255.0f,
+                                 UNSAFE_TODO(v[col / 2]) / 255.0f);
             ++pos;
           }
         }
 
-        // Perform YUV to RGB and color space conversion.
-        const auto frame_image_info = SkImageInfo::Make(
-            frame.visible_rect().width(), frame.visible_rect().height(),
-            kBGRA_8888_SkColorType, kOpaque_SkAlphaType,
-            frame.ColorSpace().GetAsFullRangeRGB().ToSkColorSpace());
-        SkYUVColorSpace frame_yuv_cs;
-        frame.ColorSpace().ToSkYUVColorSpace(frame.BitDepth(), &frame_yuv_cs);
-        SkPixmap frame_yuv_pm(frame_image_info, colors.data(),
-                              frame_image_info.minRowBytes());
-        skia::ConvertRGBAToOrFromYUVA(frame_yuv_pm, frame_yuv_cs,
-                                      canonical_bitmap.pixmap(),
-                                      kIdentity_SkYUVColorSpace);
+        // Execute the YUV→RGB conversion.
+        gfx::ColorTransform::NewColorTransform(frame.ColorSpace(),
+                                               png_color_space)
+            ->Transform(colors.data(), size.GetArea());
+
+        // Map back from interleaved [0.0,1.0] values to intervealed ARGB,
+        // setting alpha=100%.
+        const auto ToClamped255 = [](float value) -> uint32_t {
+          value = (value * 255.0f) + 0.5f /* rounding */;
+          return base::saturated_cast<uint8_t>(value);
+        };
+        pos = 0;
+        for (int row = 0; row < size.height(); ++row) {
+          base::span<uint32_t> out =
+              UNSAFE_SKBITMAP_GETADDR32(canonical_bitmap, 0, row);
+          for (int col = 0; col < size.width(); ++col) {
+            out[col] = ((UINT32_C(255) << SK_A32_SHIFT) |
+                        (ToClamped255(colors[pos].x()) << SK_R32_SHIFT) |
+                        (ToClamped255(colors[pos].y()) << SK_G32_SHIFT) |
+                        (ToClamped255(colors[pos].z()) << SK_B32_SHIFT));
+            ++pos;
+          }
+        }
 
         break;
       }

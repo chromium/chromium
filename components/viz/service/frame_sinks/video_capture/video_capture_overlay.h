@@ -12,7 +12,6 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/heap_array.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/ref_counted.h"
@@ -210,7 +209,7 @@ class VIZ_SERVICE_EXPORT VideoCaptureOverlay
     // not interlaved: Instead, there are 5 planes of data (one minus alpha, Y,
     // subsampled one minus alpha, U, V). For both formats, the color components
     // are premultiplied for more-efficient Blit()'s.
-    base::HeapArray<float> transformed_image_;
+    std::unique_ptr<float[]> transformed_image_;
   };
 
   // Computes the region of the source that, if changed, would require
