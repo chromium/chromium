@@ -10,7 +10,6 @@ accessibility/aria-labelledby-on-input.html
 accessibility/insert-adjacent-html-causes-crash.xhtml
 animations/animation-shorthand-overriding.html
 animations/stability/empty-keyframes.html
-animations/interpolation/border-image-slice-interpolation-stability.html
 animations/responsive/interpolation/offset-rotate-responsive.html
 compositing/animation/animated-composited-inside-hidden.html
 compositing/animation/animation-compositing.html
