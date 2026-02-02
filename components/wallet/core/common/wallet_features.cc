@@ -6,6 +6,16 @@
 
 namespace wallet {
 
+// Controls whether the Wallet API is enabled.
+BASE_FEATURE(kWalletApiPrivatePassesEnabled, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// The backend URL to save the walletable pass.
+BASE_FEATURE_PARAM(std::string,
+                   kWalletSaveUrl,
+                   &kWalletApiPrivatePassesEnabled,
+                   "wallet_pass_save_url",
+                   "");
+
 // Controls whether to enable walletable pass detection on web pages.
 BASE_FEATURE(kWalletablePassDetection, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -15,13 +25,6 @@ BASE_FEATURE_PARAM(std::string,
                    kWalletablePassDetectionCountryAllowlist,
                    &kWalletablePassDetection,
                    "walletable_supported_country_allowlist",
-                   "");
-
-// The backend URL to save the walletable pass.
-BASE_FEATURE_PARAM(std::string,
-                   kWalletablePassSaveUrl,
-                   &kWalletablePassDetection,
-                   "walletable_pass_save_url",
                    "");
 
 // Controls whether to enable saving walletable passes.

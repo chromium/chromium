@@ -41,9 +41,11 @@ class WalletHttpClientImplTest : public testing::Test {
   ~WalletHttpClientImplTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        kWalletablePassDetection,
-        {{"walletable_pass_save_url", "https://test-wallet.com/"}});
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{kWalletApiPrivatePassesEnabled,
+          {{"wallet_pass_save_url", "https://test-wallet.com/"}}},
+         {kWalletablePassDetection, {}}},
+        {});
     identity_test_env_.MakePrimaryAccountAvailable(
         "test@example.com", signin::ConsentLevel::kSignin);
     client_ = std::make_unique<WalletHttpClientImpl>(
@@ -55,7 +57,7 @@ class WalletHttpClientImplTest : public testing::Test {
   void TearDown() override { client_.reset(); }
 
   GURL GetUpsertPassUrl() {
-    return GURL(kWalletablePassSaveUrl.Get()).Resolve("v1/passes:upsert");
+    return GURL(kWalletSaveUrl.Get()).Resolve("v1/passes:upsert");
   }
 
   WalletHttpClientImpl* client() { return client_.get(); }

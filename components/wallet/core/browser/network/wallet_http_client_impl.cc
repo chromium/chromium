@@ -230,7 +230,7 @@ void WalletHttpClientImpl::SendRequestInternal(
 
   std::unique_ptr<network::ResourceRequest> resource_request =
       std::make_unique<network::ResourceRequest>();
-  GURL base_url(kWalletablePassSaveUrl.Get());
+  GURL base_url(kWalletSaveUrl.Get());
   resource_request->url = base_url.Resolve(request_path);
   resource_request->method = "POST";
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
