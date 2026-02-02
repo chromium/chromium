@@ -39,7 +39,7 @@ enum class LocalNetworkAccessRequestContext {
 // `private_network_request_context` specifies what this
 // request is about. For example, requests made from workers can have different
 // policies from normal subresource requests.
-network::mojom::PrivateNetworkRequestPolicy CONTENT_EXPORT
+network::mojom::LocalNetworkAccessRequestPolicy CONTENT_EXPORT
 DeriveLocalNetworkAccessRequestPolicy(
     network::mojom::IPAddressSpace ip_address_space,
     bool is_web_secure_context,
@@ -47,7 +47,7 @@ DeriveLocalNetworkAccessRequestPolicy(
     LocalNetworkAccessRequestContext private_network_request_context);
 
 // Convenience overload to directly compute this from the client's `policies`.
-network::mojom::PrivateNetworkRequestPolicy CONTENT_EXPORT
+network::mojom::LocalNetworkAccessRequestPolicy CONTENT_EXPORT
 DeriveLocalNetworkAccessRequestPolicy(
     const PolicyContainerPolicies& policies,
     LocalNetworkAccessRequestContext private_network_request_context);
@@ -72,18 +72,19 @@ network::mojom::IPAddressSpace CalculateIPAddressSpace(
     network::mojom::URLResponseHead* response_head,
     ContentBrowserClient* client);
 
-network::mojom::PrivateNetworkRequestPolicy OverrideToBlockInsteadOfWarn(
-    network::mojom::PrivateNetworkRequestPolicy);
+network::mojom::LocalNetworkAccessRequestPolicy OverrideToBlockInsteadOfWarn(
+    network::mojom::LocalNetworkAccessRequestPolicy);
 
-network::mojom::PrivateNetworkRequestPolicy OverrideToWarnInsteadOfBlock(
-    network::mojom::PrivateNetworkRequestPolicy);
+network::mojom::LocalNetworkAccessRequestPolicy OverrideToWarnInsteadOfBlock(
+    network::mojom::LocalNetworkAccessRequestPolicy);
 
 // TODO(crbug.com/452389539): make this logic part of
 // DeriveClientSecurityState/DeriveLocalNetworkAccessRequestPolicy to reduce
 // errors where the policy is computed but ContentBrowserClient overrides are
 // not taken into account.
-network::mojom::PrivateNetworkRequestPolicy OverrideLocalNetworkAccessPolicy(
-    network::mojom::PrivateNetworkRequestPolicy policy,
+network::mojom::LocalNetworkAccessRequestPolicy
+OverrideLocalNetworkAccessPolicy(
+    network::mojom::LocalNetworkAccessRequestPolicy policy,
     ContentBrowserClient::LocalNetworkAccessRequestPolicyOverride
         policy_override);
 

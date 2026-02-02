@@ -379,8 +379,8 @@ class NetworkHandler : public DevToolsDomainHandler,
       bool disable_third_party_cookie_heuristics) override;
 
   // Protocol builders.
-  static String BuildPrivateNetworkRequestPolicy(
-      network::mojom::PrivateNetworkRequestPolicy policy);
+  static String BuildLocalNetworkAccessRequestPolicy(
+      network::mojom::LocalNetworkAccessRequestPolicy policy);
   static protocol::Network::IPAddressSpace BuildIpAddressSpace(
       network::mojom::IPAddressSpace space);
   static std::unique_ptr<protocol::Network::ClientSecurityState>

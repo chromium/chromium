@@ -2174,11 +2174,12 @@ ServiceWorkerVersion::BuildClientSecurityState() const {
 
   const PolicyContainerPolicies& policies = policy_container_host_->policies();
 
-  network::mojom::PrivateNetworkRequestPolicy private_network_request_policy =
-      DeriveLocalNetworkAccessRequestPolicy(
-          policies.ip_address_space, policies.is_web_secure_context,
-          policies.allow_non_secure_local_network_access,
-          LocalNetworkAccessRequestContext::kWorker);
+  network::mojom::LocalNetworkAccessRequestPolicy
+      local_network_access_request_policy =
+          DeriveLocalNetworkAccessRequestPolicy(
+              policies.ip_address_space, policies.is_web_secure_context,
+              policies.allow_non_secure_local_network_access,
+              LocalNetworkAccessRequestContext::kWorker);
 
   // Check for policy overrides on LNA. For service workers, we apply
   // policy overrides based on the storage key's origin (which should be the
@@ -2197,8 +2198,8 @@ ServiceWorkerVersion::BuildClientSecurityState() const {
           policy_override =
               client->ShouldOverrideLocalNetworkAccessRequestPolicy(
                   browser_context, origin);
-      private_network_request_policy = OverrideLocalNetworkAccessPolicy(
-          private_network_request_policy, policy_override);
+      local_network_access_request_policy = OverrideLocalNetworkAccessPolicy(
+          local_network_access_request_policy, policy_override);
     }
   }
 
@@ -2206,7 +2207,7 @@ ServiceWorkerVersion::BuildClientSecurityState() const {
   // DeriveClientSecurityState
   return network::mojom::ClientSecurityState::New(
       policies.cross_origin_embedder_policy, policies.is_web_secure_context,
-      policies.ip_address_space, private_network_request_policy,
+      policies.ip_address_space, local_network_access_request_policy,
       policies.document_isolation_policy);
 }
 
@@ -2493,7 +2494,7 @@ void ServiceWorkerVersion::StartWorkerInternal() {
         policy_container_host_->ip_address_space();
     client_security_state_->is_web_secure_context =
         policy_container_host_->policies().is_web_secure_context;
-    client_security_state_->private_network_request_policy =
+    client_security_state_->local_network_access_request_policy =
         DeriveLocalNetworkAccessRequestPolicy(
             policy_container_host_->policies(),
             LocalNetworkAccessRequestContext::kWorker);

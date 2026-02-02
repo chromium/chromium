@@ -1769,7 +1769,7 @@ domain Network
       DirectUDPMessage message
       MonotonicTime timestamp
 
-  experimental type PrivateNetworkRequestPolicy extends string
+  experimental type LocalNetworkAccessRequestPolicy extends string
     enum
       Allow
       BlockFromInsecureToMorePrivate
@@ -1795,7 +1795,7 @@ domain Network
     properties
       boolean initiatorIsSecureContext
       IPAddressSpace initiatorIPAddressSpace
-      PrivateNetworkRequestPolicy privateNetworkRequestPolicy
+      LocalNetworkAccessRequestPolicy localNetworkAccessRequestPolicy
 
   # Fired when additional information about a requestWillBeSent event is available from the
   # network stack. Not every requestWillBeSent event will have an additional

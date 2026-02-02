@@ -839,14 +839,14 @@ TEST_P(AuctionUrlLoaderFactoryProxyTest, ClientSecurityState) {
     TryMakeRequest(kTrustedSignalsUrl, kAcceptJson, ExpectedResponse::kAllow);
   }
 
-  for (auto private_network_request_policy :
-       {network::mojom::PrivateNetworkRequestPolicy::kAllow,
-        network::mojom::PrivateNetworkRequestPolicy::kWarn,
-        network::mojom::PrivateNetworkRequestPolicy::kBlock,
-        network::mojom::PrivateNetworkRequestPolicy::kPermissionWarn,
-        network::mojom::PrivateNetworkRequestPolicy::kPermissionBlock}) {
-    client_security_state_->private_network_request_policy =
-        private_network_request_policy;
+  for (auto local_network_access_request_policy :
+       {network::mojom::LocalNetworkAccessRequestPolicy::kAllow,
+        network::mojom::LocalNetworkAccessRequestPolicy::kWarn,
+        network::mojom::LocalNetworkAccessRequestPolicy::kBlock,
+        network::mojom::LocalNetworkAccessRequestPolicy::kPermissionWarn,
+        network::mojom::LocalNetworkAccessRequestPolicy::kPermissionBlock}) {
+    client_security_state_->local_network_access_request_policy =
+        local_network_access_request_policy;
     // Force creation of a new proxy, with correct `ip_address_space` value.
     remote_url_loader_factory_.reset();
     CreateUrlLoaderFactoryProxy();
