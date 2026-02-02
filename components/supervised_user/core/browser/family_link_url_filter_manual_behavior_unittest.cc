@@ -15,6 +15,7 @@
 #include "components/supervised_user/core/browser/supervised_user_test_environment.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
 #include "components/supervised_user/core/common/features.h"
+#include "components/supervised_user/test_support/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -46,29 +47,6 @@ class FamilyLinkUrlFilterManualBehaviorTestBase : public ::testing::Test {
   base::test::TaskEnvironment task_environment_;
   SupervisedUserTestEnvironment supervised_user_test_environment_;
   base::HistogramTester histogram_tester_;
-};
-
-// Helper class to override the feature for the duration of the test suite
-// *before* SupervisedUserTestEnvironment is created. Simply use this class in
-// the class hierarchy before FamilyLinkUrlFilterManualBehaviorTestBase.
-template <typename TestCase>
-class WithFeatureOverrideAndParamInterface
-    : public testing::WithParamInterface<std::tuple<bool, TestCase>> {
- public:
-  using ::testing::WithParamInterface<std::tuple<bool, TestCase>>::GetParam;
-
-  explicit WithFeatureOverrideAndParamInterface(const base::Feature& feature) {
-    if (IsFeatureEnabled()) {
-      scoped_feature_list_.InitAndEnableFeature(feature);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(feature);
-    }
-  }
-  static bool IsFeatureEnabled() { return std::get<0>(GetParam()); }
-  static TestCase GetTestCase() { return std::get<1>(GetParam()); }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Test cases only parametrized by kSupervisedUserUseUrlFilteringService
