@@ -1209,6 +1209,10 @@ NSString* GetIdForWebState(web::WebState* web_state) {
   return IsAskGeminiChipEnabled();
 }
 
++ (BOOL)isProactiveSuggestionsFrameworkEnabled {
+  return IsProactiveSuggestionsFrameworkEnabled();
+}
+
 + (BOOL)appHasLaunchSwitch:(NSString*)launchSwitch {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       base::SysNSStringToUTF8(launchSwitch));

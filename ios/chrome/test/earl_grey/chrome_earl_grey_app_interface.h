@@ -538,6 +538,9 @@ enum class TipsNotificationType;
 // Returns YES if AskGeminiChip is enabled.
 + (BOOL)isAskGeminiChipEnabled [[nodiscard]];
 
+// Returns YES if ProactiveSuggestionsFramework is enabled.
++ (BOOL)isProactiveSuggestionsFrameworkEnabled [[nodiscard]];
+
 // Returns YES if the `launchSwitch` is found in host app launch switches.
 + (BOOL)appHasLaunchSwitch:(NSString*)launchSwitch;
 

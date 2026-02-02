@@ -194,6 +194,10 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   return [ChromeEarlGreyAppInterface isComposeboxIOSEnabled];
 }
 
+- (BOOL)isProactiveSuggestionsFrameworkEnabled {
+  return [ChromeEarlGreyAppInterface isProactiveSuggestionsFrameworkEnabled];
+}
+
 - (UIInterfaceOrientation)interfaceOrientation {
   return [ChromeEarlGreyAppInterface interfaceOrientation];
 }
