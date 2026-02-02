@@ -257,6 +257,8 @@ GlicButton::GlicButton(TabStripController* tab_strip_controller,
                           gfx::VectorIcon::EmptyIcon(),
                           /*show_close_button=*/true),
       menu_model_(CreateMenuModel()),
+      browser_window_interface_(
+          tab_strip_controller->GetBrowserWindowInterface()),
       profile_(
           tab_strip_controller->GetBrowserWindowInterface()
               ? tab_strip_controller->GetBrowserWindowInterface()->GetProfile()
@@ -533,6 +535,19 @@ void GlicButton::AddedToWidget() {
   normal_width_ = PreferredSize().width();
   start_width_ = normal_width_;
   end_width_ = normal_width_;
+
+  if (browser_window_interface_ != nullptr) {
+    window_did_become_active_subscription_ =
+        browser_window_interface_->RegisterDidBecomeActive(
+            base::BindRepeating(&GlicButton::OnBrowserWindowDidBecomeActive,
+                                base::Unretained(this)));
+    window_did_become_inactive_subscription_ =
+        browser_window_interface_->RegisterDidBecomeInactive(
+            base::BindRepeating(&GlicButton::OnBrowserWindowDidBecomeInactive,
+                                base::Unretained(this)));
+
+    UpdateInkdropHoverColor(browser_window_interface_->IsActive());
+  }
 }
 
 void GlicButton::SetDropToAttachIndicator(bool indicate) {
@@ -947,6 +962,29 @@ void GlicButton::SetSplitButtonCornerStyling() {
 void GlicButton::ResetSplitButtonCornerStyling() {
   SetLeftRightCornerRadii(TabStripNudgeButton::GetCornerRadius(),
                           TabStripNudgeButton::GetCornerRadius());
+}
+
+void GlicButton::RemovedFromWidget() {
+  window_did_become_active_subscription_ = {};
+  window_did_become_inactive_subscription_ = {};
+  TabStripNudgeButton::RemovedFromWidget();
+}
+
+void GlicButton::OnBrowserWindowDidBecomeActive(BrowserWindowInterface* bwi) {
+  UpdateInkdropHoverColor(true);
+}
+
+void GlicButton::OnBrowserWindowDidBecomeInactive(BrowserWindowInterface* bwi) {
+  UpdateInkdropHoverColor(false);
+}
+
+void GlicButton::UpdateInkdropHoverColor(bool is_frame_active) {
+  if (base::FeatureList::IsEnabled(features::kGlicActorUiGlobalTaskIndicator)) {
+    SetInkdropHoverColorId(is_frame_active
+                               ? kColorTabBackgroundInactiveHoverFrameActive
+                               : kColorTabBackgroundInactiveHoverFrameInactive);
+    UpdateColors();
+  }
 }
 
 BEGIN_METADATA(GlicButton)
