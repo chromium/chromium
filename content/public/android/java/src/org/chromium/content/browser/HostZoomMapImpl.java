@@ -20,11 +20,10 @@ import org.chromium.base.MathUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.BrowserContextHandle;
-import org.chromium.content_public.browser.ContentFeatureMap;
+import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.HostZoomMap;
 import org.chromium.content_public.browser.SiteZoomInfo;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.common.ContentFeatures;
 
 import java.util.HashMap;
 
@@ -154,7 +153,7 @@ public class HostZoomMapImpl {
 
         // When the Desktop zoom scaling flag is not enabled, set the effective adjustment to 1.
         float effectivePlatformAdjustment = platformAdjustment;
-        if (!ContentFeatureMap.isEnabled(ContentFeatures.ANDROID_DESKTOP_ZOOM_SCALING)) {
+        if (!ContentFeatureList.sAndroidDesktopZoomScaling.isEnabled()) {
             effectivePlatformAdjustment = 1.0f;
         }
 
@@ -173,8 +172,7 @@ public class HostZoomMapImpl {
         double adjustedLevel = scaleAdjustment * Math.pow(TEXT_SIZE_MULTIPLIER_RATIO, zoomLevel);
 
         // We do not pass levels to the backend, but factors. So convert back and round.
-        double adjustedFactor = Math.log10(adjustedLevel) / Math.log10(TEXT_SIZE_MULTIPLIER_RATIO);
-        return MathUtils.roundTwoDecimalPlaces(adjustedFactor);
+        return Math.log10(adjustedLevel) / Math.log10(TEXT_SIZE_MULTIPLIER_RATIO);
     }
 
     /**

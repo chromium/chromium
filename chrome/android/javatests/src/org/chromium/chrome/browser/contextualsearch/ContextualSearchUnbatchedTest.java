@@ -17,11 +17,13 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.base.DeviceFormFactor;
 
 /** Tests the Contextual Search Manager using instrumentation tests. */
@@ -29,6 +31,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @EnableFeatures(ChromeFeatureList.CONTEXTUAL_SEARCH_DISABLE_ONLINE_DETECTION)
+@Features.DisableFeatures({ContentFeatures.ANDROID_DESKTOP_ZOOM_SCALING})
 @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
 @DoNotBatch(reason = "testTapWithLanguage is flaky if it is batched https://crbug.com/1105488")
 public class ContextualSearchUnbatchedTest extends ContextualSearchInstrumentationBase {

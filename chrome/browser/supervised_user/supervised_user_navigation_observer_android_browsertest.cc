@@ -30,6 +30,7 @@
 #include "components/supervised_user/core/browser/family_link_settings_service.h"
 #include "components/supervised_user/core/browser/supervised_user_interstitial.h"
 #include "components/supervised_user/core/common/features.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -69,9 +70,19 @@ class SupervisedUserNavigationObserverAndroidBrowserTest
       public ::testing::WithParamInterface<TestCase> {
  protected:
   SupervisedUserNavigationObserverAndroidBrowserTest() {
+#if BUILDFLAG(IS_ANDROID)
+    // On Android, we disable the feature that automatically scales web content
+    // because it is not meaningful and would change expected values.
+    scoped_feature_list_.InitWithFeatureStates(
+        {{kSupervisedUserMergeDeviceParentalControlsAndFamilyLinkPrefs,
+          GetParam().merge_device_parental_controls_and_family_link_prefs},
+         { features::kAndroidDesktopZoomScaling,
+           false }});
+#else
     scoped_feature_list_.InitWithFeatureState(
         kSupervisedUserMergeDeviceParentalControlsAndFamilyLinkPrefs,
         GetParam().merge_device_parental_controls_and_family_link_prefs);
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 
   content::WebContents* web_contents() {
@@ -256,6 +267,19 @@ class SupervisedUserNavigationObserverNoApprovalsInterstitialAndroidBrowserTest
     content::SimulateMouseClickOrTapElementWithId(web_contents(), link_id);
     navigation_observer.Wait();
   }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+#if BUILDFLAG(IS_ANDROID)
+    // On Android, we disable the feature that automatically scales web content
+    // because it is not meaningful and would change expected values.
+    scoped_feature_list_.InitWithFeatureStates(
+        {{ features::kAndroidDesktopZoomScaling,
+           false }});
+#endif  // BUILDFLAG(IS_ANDROID)
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Shows the interstitial page when the search content filter is enabled.

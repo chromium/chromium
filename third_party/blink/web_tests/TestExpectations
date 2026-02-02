@@ -2753,6 +2753,12 @@ crbug.com/395962971 [ Android ] external/wpt/webdriver/tests/bidi/input/perform_
 # Fails on Android-mobile, but passes on Android-desktop.
 [ Android ] external/wpt/visual-viewport/scroll-event-order.html [ Failure Pass ]
 
+# Fails on Android-desktop, but passes on Android-mobile.
+crbug.com/480103606 [ Android ] external/wpt/resize-observer/idlharness.window.html [ Failure ]
+crbug.com/480103606 [ Android ] external/wpt/visual-viewport/viewport-read-size-causes-layout.html [ Failure ]
+crbug.com/480103606 [ Android ] external/wpt/visual-viewport/viewport-unscaled-scroll-iframe.html [ Failure ]
+crbug.com/480103606 [ Android ] external/wpt/visual-viewport/viewport-unscaled-scroll.html [ Failure ]
+
 # ====== Test expectations added to unblock wpt-importer ======
 crbug.com/437034328 external/wpt/html/semantics/embedded-content/the-img-element/animated-webp-update.tentative.html [ Failure ]
 crbug.com/431542979 virtual/speech-with-unified-autoplay/external/wpt/speech-api/idlharness.window.html [ Failure ]

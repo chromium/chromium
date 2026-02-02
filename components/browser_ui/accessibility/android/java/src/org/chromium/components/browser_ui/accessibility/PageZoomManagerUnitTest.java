@@ -4,10 +4,13 @@
 
 package org.chromium.components.browser_ui.accessibility;
 
+import static org.hamcrest.Matchers.closeTo;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.hamcrest.MockitoHamcrest.doubleThat;
 
 import androidx.test.filters.SmallTest;
 
@@ -70,7 +73,10 @@ public class PageZoomManagerUnitTest {
         when(mHostZoomMapMock.getZoomLevel(any())).thenReturn(2.22);
         mManager.decrementZoomLevel();
         verify(mHostZoomMapMock, times(1).description(DECREASE_ZOOM_FAILURE_NO_JNI))
-                .setZoomLevel(mWebContentsMock, 1.56, 1.56);
+                .setZoomLevel(
+                        eq(mWebContentsMock),
+                        doubleThat(closeTo(1.56, 0.01)),
+                        doubleThat(closeTo(1.56, 0.01)));
     }
 
     @Test
@@ -81,7 +87,10 @@ public class PageZoomManagerUnitTest {
         when(mHostZoomMapMock.getZoomLevel(any())).thenReturn(2.22);
         mManager.decrementZoomLevel();
         verify(mHostZoomMapMock, times(1).description(DECREASE_ZOOM_FAILURE_NO_JNI))
-                .setZoomLevel(mWebContentsMock, 3.07, 2.18);
+                .setZoomLevel(
+                        eq(mWebContentsMock),
+                        doubleThat(closeTo(3.07, 0.01)),
+                        doubleThat(closeTo(2.18, 0.01)));
     }
 
     @Test
@@ -90,7 +99,10 @@ public class PageZoomManagerUnitTest {
         when(mHostZoomMapMock.getZoomLevel(any())).thenReturn(2.22);
         mManager.incrementZoomLevel();
         verify(mHostZoomMapMock, times(1).description(INCREASE_ZOOM_FAILURE_NO_JNI))
-                .setZoomLevel(mWebContentsMock, 3.07, 3.07);
+                .setZoomLevel(
+                        eq(mWebContentsMock),
+                        doubleThat(closeTo(3.07, 0.01)),
+                        doubleThat(closeTo(3.07, 0.01)));
     }
 
     @Test
@@ -101,7 +113,10 @@ public class PageZoomManagerUnitTest {
         when(mHostZoomMapMock.getZoomLevel(any())).thenReturn(2.22);
         mManager.incrementZoomLevel();
         verify(mHostZoomMapMock, times(1).description(INCREASE_ZOOM_FAILURE_NO_JNI))
-                .setZoomLevel(mWebContentsMock, 1.22, 2.66);
+                .setZoomLevel(
+                        eq(mWebContentsMock),
+                        doubleThat(closeTo(1.22, 0.01)),
+                        doubleThat(closeTo(2.66, 0.01)));
     }
 
     @Test
@@ -122,6 +137,9 @@ public class PageZoomManagerUnitTest {
         // ~ 330% (zoom factor ~ 6.54).
         mManager.incrementZoomLevel();
         verify(mHostZoomMapMock, times(1).description(INCREASE_ZOOM_FAILURE_NO_JNI))
-                .setZoomLevel(mWebContentsMock, 2.22, 6.54);
+                .setZoomLevel(
+                        eq(mWebContentsMock),
+                        doubleThat(closeTo(2.22, 0.01)),
+                        doubleThat(closeTo(6.54, 0.01)));
     }
 }

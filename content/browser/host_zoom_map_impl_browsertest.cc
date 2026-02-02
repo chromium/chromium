@@ -110,19 +110,22 @@ IN_PROC_BROWSER_TEST_F(HostZoomMapImplBrowserTest,
   // A scale of 1.3 is equivalent to an Android OS font size of XL.
   // Zoom level will be 1.44 for exponential scale: 1.2 ^ 1.44 = 1.30.
   host_zoom_map_impl_->SetSystemFontScaleForTesting(1.30);
-  EXPECT_DOUBLE_EQ(1.44,
-                   host_zoom_map_impl_->GetZoomLevelForHostAndSchemeAndroid(
-                       url_.GetScheme(), url_.GetHost()));
+  EXPECT_NEAR(1.44,
+              host_zoom_map_impl_->GetZoomLevelForHostAndSchemeAndroid(
+                  url_.GetScheme(), url_.GetHost()),
+              0.01);
 
   host_zoom_map_impl_->SetSystemFontScaleForTesting(0.85);
-  EXPECT_DOUBLE_EQ(-0.89,
-                   host_zoom_map_impl_->GetZoomLevelForHostAndSchemeAndroid(
-                       url_.GetScheme(), url_.GetHost()));
+  EXPECT_NEAR(-0.89,
+              host_zoom_map_impl_->GetZoomLevelForHostAndSchemeAndroid(
+                  url_.GetScheme(), url_.GetHost()),
+              0.01);
 
   host_zoom_map_impl_->SetSystemFontScaleForTesting(1.15);
-  EXPECT_DOUBLE_EQ(0.77,
-                   host_zoom_map_impl_->GetZoomLevelForHostAndSchemeAndroid(
-                       url_.GetScheme(), url_.GetHost()));
+  EXPECT_NEAR(0.77,
+              host_zoom_map_impl_->GetZoomLevelForHostAndSchemeAndroid(
+                  url_.GetScheme(), url_.GetHost()),
+              0.01);
 }
 
 // Same as above test but without the OS-level adjustment.

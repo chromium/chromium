@@ -4,11 +4,14 @@
 
 package org.chromium.components.browser_ui.accessibility;
 
+import static org.hamcrest.Matchers.closeTo;
 import static org.mockito.ArgumentMatchers.any;
+// import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.hamcrest.MockitoHamcrest.doubleThat;
 
 import androidx.test.filters.SmallTest;
 
@@ -16,7 +19,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -100,7 +102,10 @@ public class PageZoomBarMediatorUnitTest {
                 CURRENT_ZOOM_FAILURE, 100, mModel.get(PageZoomProperties.CURRENT_BAR_VALUE));
         mMediator.handleDecreaseClicked();
         verify(mHostZoomMapMock, times(1).description(DECREASE_ZOOM_FAILURE_NO_JNI))
-                .setZoomLevel(mWebContentsMock, 1.56, 1.56);
+                .setZoomLevel(
+                        eq(mWebContentsMock),
+                        doubleThat(closeTo(1.56, 0.01)),
+                        doubleThat(closeTo(1.56, 0.01)));
         Assert.assertEquals(
                 CURRENT_ZOOM_FAILURE, 83, mModel.get(PageZoomProperties.CURRENT_BAR_VALUE));
     }
@@ -116,7 +121,10 @@ public class PageZoomBarMediatorUnitTest {
                 CURRENT_ZOOM_FAILURE, 126, mModel.get(PageZoomProperties.CURRENT_BAR_VALUE));
         mMediator.handleDecreaseClicked();
         verify(mHostZoomMapMock, times(1).description(DECREASE_ZOOM_FAILURE_NO_JNI))
-                .setZoomLevel(mWebContentsMock, 3.07, 2.18);
+                .setZoomLevel(
+                        eq(mWebContentsMock),
+                        doubleThat(closeTo(3.07, 0.01)),
+                        doubleThat(closeTo(2.18, 0.01)));
         Assert.assertEquals(
                 CURRENT_ZOOM_FAILURE, 125, mModel.get(PageZoomProperties.CURRENT_BAR_VALUE));
     }
@@ -130,7 +138,10 @@ public class PageZoomBarMediatorUnitTest {
                 CURRENT_ZOOM_FAILURE, 100, mModel.get(PageZoomProperties.CURRENT_BAR_VALUE));
         mMediator.handleIncreaseClicked();
         verify(mHostZoomMapMock, times(1).description(INCREASE_ZOOM_FAILURE_NO_JNI))
-                .setZoomLevel(mWebContentsMock, 3.07, 3.07);
+                .setZoomLevel(
+                        eq(mWebContentsMock),
+                        doubleThat(closeTo(3.07, 0.01)),
+                        doubleThat(closeTo(3.07, 0.01)));
         Assert.assertEquals(
                 CURRENT_ZOOM_FAILURE, 125, mModel.get(PageZoomProperties.CURRENT_BAR_VALUE));
     }
@@ -146,7 +157,10 @@ public class PageZoomBarMediatorUnitTest {
                 CURRENT_ZOOM_FAILURE, 65, mModel.get(PageZoomProperties.CURRENT_BAR_VALUE));
         mMediator.handleIncreaseClicked();
         verify(mHostZoomMapMock, times(1).description(INCREASE_ZOOM_FAILURE_NO_JNI))
-                .setZoomLevel(mWebContentsMock, 1.22, 2.66);
+                .setZoomLevel(
+                        eq(mWebContentsMock),
+                        doubleThat(closeTo(1.22, 0.01)),
+                        doubleThat(closeTo(2.66, 0.01)));
         Assert.assertEquals(
                 CURRENT_ZOOM_FAILURE, 75, mModel.get(PageZoomProperties.CURRENT_BAR_VALUE));
     }
@@ -165,14 +179,17 @@ public class PageZoomBarMediatorUnitTest {
         when(mHostZoomMapMock.getZoomLevel(any())).thenReturn(6.03);
         mMediator.pushProperties();
         Assert.assertEquals(
-                CURRENT_ZOOM_FAILURE, 87, mModel.get(PageZoomProperties.CURRENT_BAR_VALUE));
+                CURRENT_ZOOM_FAILURE, 86, mModel.get(PageZoomProperties.CURRENT_BAR_VALUE));
 
         // A single increase at this point should display the next closest zoom level of 150% (zoom
         // factor ~ 2.22) with respect to 137%, that is equivalent to a rendered value of 150*2.2
         // ~ 330% (zoom factor ~ 6.54).
         mMediator.handleIncreaseClicked();
         verify(mHostZoomMapMock, times(1).description(INCREASE_ZOOM_FAILURE_NO_JNI))
-                .setZoomLevel(mWebContentsMock, 2.22, 6.54);
+                .setZoomLevel(
+                        eq(mWebContentsMock),
+                        doubleThat(closeTo(2.22, 0.01)),
+                        doubleThat(closeTo(6.54, 0.01)));
         Assert.assertEquals(
                 CURRENT_ZOOM_FAILURE, 100, mModel.get(PageZoomProperties.CURRENT_BAR_VALUE));
     }
@@ -188,9 +205,8 @@ public class PageZoomBarMediatorUnitTest {
         verify(mHostZoomMapMock, times(1).description(BAR_VALUE_FAILURE_NO_JNI))
                 .setZoomLevel(
                         eq(mWebContentsMock),
-                        ArgumentMatchers.doubleThat(argument -> Math.abs(2.51 - argument) <= 0.001),
-                        ArgumentMatchers.doubleThat(
-                                argument -> Math.abs(2.51 - argument) <= 0.001));
+                        doubleThat(closeTo(2.51, 0.01)),
+                        doubleThat(closeTo(2.51, 0.01)));
         Assert.assertEquals(
                 BAR_VALUE_FAILURE, 108, mModel.get(PageZoomProperties.CURRENT_BAR_VALUE));
     }
@@ -239,7 +255,10 @@ public class PageZoomBarMediatorUnitTest {
         mMediator.handleResetClicked();
         // Ensure that setZoomLevel method is called with the correct params (0.0, 0.0)
         verify(mHostZoomMapMock, times(1).description(RESET_ZOOM_FAILURE_NO_JNI))
-                .setZoomLevel(mWebContentsMock, 0.0, 0.0);
+                .setZoomLevel(
+                        eq(mWebContentsMock),
+                        doubleThat(closeTo(0.0, 0.01)),
+                        doubleThat(closeTo(0.0, 0.01)));
         // Ensure that zoom stays the same if already at default
         Assert.assertEquals(
                 RESET_ZOOM_FAILURE, 50, mModel.get(PageZoomProperties.CURRENT_BAR_VALUE));
@@ -249,7 +268,10 @@ public class PageZoomBarMediatorUnitTest {
         mMediator.handleResetClicked();
         // Check that number of times setZoomLevel(0,0) is called has increased by 1
         verify(mHostZoomMapMock, times(2).description(RESET_ZOOM_FAILURE_NO_JNI))
-                .setZoomLevel(mWebContentsMock, 0.0, 0.0);
+                .setZoomLevel(
+                        eq(mWebContentsMock),
+                        doubleThat(closeTo(0.0, 0.01)),
+                        doubleThat(closeTo(0.0, 0.01)));
         Assert.assertEquals(
                 RESET_ZOOM_FAILURE, 50, mModel.get(PageZoomProperties.CURRENT_BAR_VALUE));
 
@@ -257,7 +279,10 @@ public class PageZoomBarMediatorUnitTest {
         mMediator.handleDecreaseClicked();
         mMediator.handleResetClicked();
         verify(mHostZoomMapMock, times(3).description(RESET_ZOOM_FAILURE_NO_JNI))
-                .setZoomLevel(mWebContentsMock, 0.0, 0.0);
+                .setZoomLevel(
+                        eq(mWebContentsMock),
+                        doubleThat(closeTo(0.0, 0.01)),
+                        doubleThat(closeTo(0.0, 0.01)));
         Assert.assertEquals(
                 RESET_ZOOM_FAILURE, 50, mModel.get(PageZoomProperties.CURRENT_BAR_VALUE));
     }

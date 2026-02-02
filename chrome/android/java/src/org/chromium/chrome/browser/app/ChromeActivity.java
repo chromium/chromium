@@ -2067,10 +2067,12 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             if (!DisplayUtil.isContextInDefaultDisplay(this)
                     && DeviceFormFactor.isNonMultiDisplayContextOnTablet(this)) {
                 HostZoomMap.setTransparentZoomAdjustment(
-                        ContentFeatureList.sAndroidMonitorZoomScalingFactor.getValue() / 100.0f);
+                        (float) ContentFeatureList.sAndroidMonitorZoomScalingFactor.getValue()
+                                / 100.0f);
             } else if (DeviceInfo.isDesktop()) {
                 HostZoomMap.setTransparentZoomAdjustment(
-                        ContentFeatureList.sAndroidDesktopZoomScalingFactor.getValue() / 100.0f);
+                        (float) ContentFeatureList.sAndroidDesktopZoomScalingFactor.getValue()
+                                / 100.0f);
             }
         }
     }
