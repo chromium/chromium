@@ -438,6 +438,8 @@ bool IsLiquidGlassEffectEnabled() {
   return false;
 }
 
+BASE_FEATURE(kIOSEnhancedAutofill, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kIOSKeyboardAccessoryDefaultView,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
