@@ -3251,12 +3251,9 @@ CSSValue* ConsumeAxis(CSSParserTokenStream& stream,
 CSSValue* ConsumeIntrinsicSizeLonghand(CSSParserTokenStream& stream,
                                        const CSSParserContext& context,
                                        CSSParserLocalContext& local_context) {
-  // `[ auto | from-element ]? [ none | <length [0,∞]> ]`
+  // `auto? [ none | <length [0,∞]> ]`
   CSSIdentifierValue* option =
-      RuntimeEnabledFeatures::ResponsiveIframesEnabled()
-          ? css_parsing_utils::ConsumeIdent<CSSValueID::kAuto,
-                                            CSSValueID::kFromElement>(stream)
-          : css_parsing_utils::ConsumeIdent<CSSValueID::kAuto>(stream);
+      css_parsing_utils::ConsumeIdent<CSSValueID::kAuto>(stream);
   CSSValue* length_or_none = css_parsing_utils::ConsumeLength(
       stream, context, local_context,
       CSSPrimitiveValue::ValueRange::kNonNegative);

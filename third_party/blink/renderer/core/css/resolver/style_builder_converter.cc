@@ -3776,13 +3776,6 @@ StyleIntrinsicLength StyleBuilderConverter::ConvertIntrinsicDimension(
   if (const CSSValueList* list = DynamicTo<CSSValueList>(value)) {
     DCHECK_EQ(list->length(), 2u);
     DCHECK(IsA<CSSIdentifierValue>(list->Item(0)));
-    if (RuntimeEnabledFeatures::ResponsiveIframesEnabled()) {
-      const auto& identifier = To<CSSIdentifierValue>(list->Item(0));
-      if (identifier.GetValueID() == CSSValueID::kFromElement) {
-        return StyleIntrinsicLength::CreateFromElement(
-            ConvertLengthOrNone(state, list->Item(1)));
-      }
-    }
     DCHECK(To<CSSIdentifierValue>(list->Item(0)).GetValueID() ==
            CSSValueID::kAuto);
     return StyleIntrinsicLength(ConvertLengthOrNone(state, list->Item(1)),

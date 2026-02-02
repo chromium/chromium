@@ -787,9 +787,6 @@
     "max-content",
     "fit-content",
 
-    // contain-intrinsic-size
-    "from-element",
-
     // frame-sizing
     // "auto",
     "content-width",
