@@ -63,7 +63,8 @@ class WTF_EXPORT PartitionAllocator {
   template <typename T, typename HashTable>
   static T* AllocateZeroedHashTableBacking(size_t size) {
     void* result = AllocateBacking(size, WTF_HEAP_PROFILER_TYPE_NAME(T));
-    UNSAFE_TODO(memset(result, 0, size));
+    // SAFETY: AllocateBacking should ensure the size of `result` is `size`.
+    UNSAFE_BUFFERS(memset(result, 0, size));
     return reinterpret_cast<T*>(result);
   }
 

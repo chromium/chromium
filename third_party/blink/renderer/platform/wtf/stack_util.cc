@@ -122,7 +122,8 @@ void* GetStackStartImpl() {
     error = pthread_attr_getstack(&attr, &base, &size);
     CHECK(!error);
     pthread_attr_destroy(&attr);
-    return UNSAFE_TODO(reinterpret_cast<uint8_t*>(base) + size);
+    // SAFETY: Computation on the results of pthread_attr_getstack().
+    return UNSAFE_BUFFERS(reinterpret_cast<uint8_t*>(base) + size);
   }
 #if BUILDFLAG(IS_FREEBSD)
   pthread_attr_destroy(&attr);
