@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/history/ui_bundled/base_history_coordinator+subclassing.h"
 #import "ios/chrome/browser/history/ui_bundled/history_coordinator.h"
 #import "ios/chrome/browser/history/ui_bundled/history_coordinator_delegate.h"
+#import "ios/chrome/browser/history/ui_bundled/history_coordinator_impl.h"
 #import "ios/chrome/browser/page_info/last_visited/page_info_last_visited_view_controller.h"
 #import "ios/chrome/browser/page_info/last_visited/page_info_last_visited_view_controller_delegate.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
@@ -86,7 +87,7 @@
       base::UserMetricsAction("PageInfo.History.ShowFullHistoryClicked"));
   base::UmaHistogramEnumeration(page_info::kWebsiteSettingsActionHistogram,
                                 page_info::PAGE_INFO_SHOW_FULL_HISTORY_CLICKED);
-  self.historyCoordinator = [[HistoryCoordinator alloc]
+  self.historyCoordinator = [[HistoryCoordinatorImpl alloc]
       initWithBaseViewController:_baseNavigationController
                          browser:self.browser];
   self.historyCoordinator.loadStrategy = UrlLoadStrategy::NORMAL;

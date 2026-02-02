@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/browser_view/model/browser_view_visibility_notifier_browser_agent.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_browser_agent.h"
 #import "ios/chrome/browser/history/ui_bundled/history_coordinator.h"
+#import "ios/chrome/browser/history/ui_bundled/history_coordinator_impl.h"
 #import "ios/chrome/browser/history/ui_bundled/stub_history_coordinator_delegate.h"
 #import "ios/chrome/browser/main/model/browser_impl.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
@@ -270,7 +271,7 @@
 }
 
 + (void)startHistoryCoordinator {
-  HistoryCoordinator* coordinator = [[HistoryCoordinator alloc]
+  HistoryCoordinator* coordinator = [[HistoryCoordinatorImpl alloc]
       initWithBaseViewController:[self rootViewController]
                          browser:self.helper.browser];
   self.helper.mockObject = [[StubHistoryCoordinatorDelegate alloc] init];

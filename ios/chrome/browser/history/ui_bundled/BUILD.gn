@@ -10,6 +10,8 @@ source_set("coordinator") {
     "history_coordinator.h",
     "history_coordinator.mm",
     "history_coordinator_delegate.h",
+    "history_coordinator_impl.h",
+    "history_coordinator_impl.mm",
     "history_mediator.h",
     "history_mediator.mm",
   ]

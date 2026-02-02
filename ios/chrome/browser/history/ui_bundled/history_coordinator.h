@@ -15,6 +15,7 @@ enum class UrlLoadStrategy;
 @protocol HistoryCoordinatorDelegate;
 
 // Coordinator that presents History.
+NS_SWIFT_UI_ACTOR
 @interface HistoryCoordinator : BaseHistoryCoordinator
 
 // Optional: If provided, search terms to filter the displayed history items.
