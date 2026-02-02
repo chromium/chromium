@@ -31,7 +31,8 @@ namespace glic {
 // Manages actor-related tasks for GlicKeyedService.
 class GlicActorTaskManager {
  public:
-  explicit GlicActorTaskManager(Profile* profile);
+  explicit GlicActorTaskManager(Profile* profile,
+                                actor::ActorKeyedService* actor_keyed_service);
   GlicActorTaskManager(const GlicActorTaskManager&) = delete;
   GlicActorTaskManager& operator=(const GlicActorTaskManager&) = delete;
   ~GlicActorTaskManager();
@@ -68,7 +69,6 @@ class GlicActorTaskManager {
   base::WeakPtr<GlicActorTaskManager> GetWeakPtr();
 
  private:
-#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
   void PerformActionsFinished(
       mojom::WebClientHandler::PerformActionsCallback callback,
       actor::TaskId task_id,
@@ -112,7 +112,6 @@ class GlicActorTaskManager {
   bool attempted_reload_after_crash_ = false;
   bool attempted_observation_retry_ = false;
   std::unique_ptr<actor::ObservationDelayController> reload_observer_;
-#endif
 
   std::optional<base::CallbackListSubscription>
       actor_task_state_changed_subscription_;

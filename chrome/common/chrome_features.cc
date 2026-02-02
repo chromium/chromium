@@ -268,7 +268,11 @@ BASE_FEATURE(kForcedAppRelaunchOnPlaceholderUpdate,
 BASE_FEATURE(kGeoLanguage, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether the actor component of Glic is enabled.
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kGlicActor, base::FEATURE_DISABLED_BY_DEFAULT);
+#else
 BASE_FEATURE(kGlicActor, base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
 
 const base::FeatureParam<base::TimeDelta> kGlicActorPageToolTimeout{
     &kGlicActor, "glic-actor-page-tool-timeout", base::Seconds(30)};

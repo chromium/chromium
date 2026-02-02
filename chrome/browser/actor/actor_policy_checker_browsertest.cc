@@ -71,9 +71,6 @@ class ActorPolicyCheckerBrowserTestBase : public ActorToolsTest {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /* enabled_features = */
         {
-#if BUILDFLAG(IS_ANDROID)
-            {kActorEnableAndroid, {}},
-#endif
             {features::kGlicActor,
              {{features::kGlicActorPolicyControlExemption.name, "false"}}},
             {features::kGlicUserStatusCheck, {}}},
@@ -191,9 +188,6 @@ class ActorPolicyCheckerBrowserTestNonManagedBrowser
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /* enabled_features = */
         {
-#if BUILDFLAG(IS_ANDROID)
-            {kActorEnableAndroid, {}},
-#endif
             {features::kGlicActor,
              {{features::kGlicActorEligibleTiers.name,
                base::ToString(kAllowedTier)}}}},
@@ -304,9 +298,6 @@ class ActorPolicyCheckerBrowserTestManagedBrowser
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /* enabled_features = */
         {
-#if BUILDFLAG(IS_ANDROID)
-            {kActorEnableAndroid, {}},
-#endif
             {features::kGlicActor,
              {{features::kGlicActorEnterprisePrefDefault.name,
                features::kGlicActorEnterprisePrefDefault.GetName(
@@ -695,9 +686,6 @@ class ActorPolicyCheckerBrowserTestManagedWithForcedDisabledDefaultPref
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /* enabled_features = */
         {
-#if BUILDFLAG(IS_ANDROID)
-            {kActorEnableAndroid, {}},
-#endif
             {features::kGlicActor,
              {{features::kGlicActorEnterprisePrefDefault.name,
                features::kGlicActorEnterprisePrefDefault.GetName(
@@ -736,9 +724,6 @@ class ActorPolicyCheckerBrowserTestManagedPolicyNotSet
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /* enabled_features = */
         {
-#if BUILDFLAG(IS_ANDROID)
-            {kActorEnableAndroid, {}},
-#endif
             {features::kGlicActor,
              {{features::kGlicActorEnterprisePrefDefault.name,
                features::kGlicActorEnterprisePrefDefault.GetName(
@@ -782,9 +767,6 @@ class ActorPolicyCheckerBrowserTestManagedPolicyChangesCapability
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /* enabled_features = */
         {
-#if BUILDFLAG(IS_ANDROID)
-            {kActorEnableAndroid, {}},
-#endif
             {features::kGlicActor,
              {{features::kGlicActorEnterprisePrefDefault.name,
                features::kGlicActorEnterprisePrefDefault.GetName(
@@ -828,9 +810,6 @@ class ActorPolicyCheckerBrowserTestWithManagedAccount
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /* enabled_features = */
         {
-#if BUILDFLAG(IS_ANDROID)
-            {kActorEnableAndroid, {}},
-#endif
             {features::kGlicActor,
              {{features::kGlicActorEnterprisePrefDefault.name,
                features::kGlicActorEnterprisePrefDefault.GetName(

@@ -15,6 +15,7 @@
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "chrome/common/buildflags.h"
+#include "chrome/common/chrome_features.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/tabs/public/tab_interface.h"
 #include "net/base/features.h"
@@ -40,7 +41,7 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
       std::make_unique<NewTabPagePreloadPipelineManager>(web_contents);
 
   TabInterface* const tab = TabInterface::GetFromContents(web_contents);
-  if (base::FeatureList::IsEnabled(actor::kActorEnableAndroid)) {
+  if (base::FeatureList::IsEnabled(features::kGlicActor)) {
     actor_tab_data_ =
         GetUserDataFactory().CreateInstance<actor::ActorTabData>(*tab, tab);
   }

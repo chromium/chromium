@@ -47,9 +47,6 @@ class ActorKeyedServiceBrowserTest : public PlatformBrowserTest {
     // kGlicTabScreenshotPaintPreviewBackend.
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/{{features::kGlic, {}},
-#if BUILDFLAG(IS_ANDROID)
-                              {kActorEnableAndroid, {}},
-#endif
                               {features::kGlicActor,
                                {{features::kGlicActorPolicyControlExemption
                                      .name,

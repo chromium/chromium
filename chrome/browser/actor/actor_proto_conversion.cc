@@ -378,6 +378,7 @@ std::unique_ptr<ToolRequest> CreateNavigateRequest(
   return std::make_unique<NavigateToolRequest>(tab_handle, GURL(action.url()));
 }
 
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
 std::unique_ptr<ToolRequest> CreateCreateTabRequest(
     const CreateTabAction& action) {
   if (!action.has_window_id()) {
@@ -451,6 +452,7 @@ std::unique_ptr<ToolRequest> CreateLoadAndExtractContentRequest(
 
   return std::make_unique<LoadAndExtractContentToolRequest>(std::move(urls));
 }
+#endif  // !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
 
 std::unique_ptr<ToolRequest> CreateBackRequest(
     const HistoryBackAction& action) {
@@ -482,6 +484,7 @@ std::unique_ptr<ToolRequest> CreateWaitRequest(const WaitAction& action) {
   return std::make_unique<WaitToolRequest>(wait_time, observe_tab_handle);
 }
 
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
 std::unique_ptr<ToolRequest> CreateAttemptLoginRequest(
     const AttemptLoginAction& action) {
   const tabs::TabHandle tab_handle = GetTabHandle(action);
@@ -491,6 +494,7 @@ std::unique_ptr<ToolRequest> CreateAttemptLoginRequest(
 
   return std::make_unique<AttemptLoginToolRequest>(tab_handle);
 }
+#endif  // !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
 
 std::unique_ptr<ToolRequest> CreateAttemptFormFillingRequest(
     const AttemptFormFillingAction& action) {
@@ -711,6 +715,7 @@ std::unique_ptr<ToolRequest> CreateToolRequest(
       const WaitAction& wait_action = action.wait();
       return CreateWaitRequest(wait_action);
     }
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
     case optimization_guide::proto::Action::kCreateTab: {
       const CreateTabAction& create_tab_action = action.create_tab();
       return CreateCreateTabRequest(create_tab_action);
@@ -727,6 +732,7 @@ std::unique_ptr<ToolRequest> CreateToolRequest(
       const AttemptLoginAction& attempt_login_action = action.attempt_login();
       return CreateAttemptLoginRequest(attempt_login_action);
     }
+#endif  // !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
     case optimization_guide::proto::Action::kAttemptFormFilling: {
       const AttemptFormFillingAction& attempt_form_fill_action =
           action.attempt_form_filling();
@@ -744,6 +750,7 @@ std::unique_ptr<ToolRequest> CreateToolRequest(
       const MediaControlAction& media_control_action = action.media_control();
       return CreateMediaControlRequest(media_control_action);
     }
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
     case optimization_guide::proto::Action::kCreateWindow: {
       const CreateWindowAction& create_window_action = action.create_window();
       return CreateCreateWindowRequest(create_window_action);
@@ -763,6 +770,7 @@ std::unique_ptr<ToolRequest> CreateToolRequest(
       return CreateLoadAndExtractContentRequest(
           load_and_extract_content_action);
     }
+#endif  // !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
     case optimization_guide::proto::Action::kYieldToUser:
       NOTIMPLEMENTED();
       break;

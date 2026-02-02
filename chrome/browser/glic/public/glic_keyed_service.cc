@@ -203,7 +203,8 @@ GlicKeyedService::GlicKeyedService(
                               ? std::make_unique<GlicOcclusionNotifier>(
                                     GetSingleInstanceWindowController())
                               : nullptr),
-      actor_task_manager_(std::make_unique<GlicActorTaskManager>(profile)),
+      actor_task_manager_(
+          std::make_unique<GlicActorTaskManager>(profile, actor_keyed_service)),
 #endif
       tab_data_observer_(std::make_unique<GlicTabDataObserver>()),
       web_contents_warming_pool_(

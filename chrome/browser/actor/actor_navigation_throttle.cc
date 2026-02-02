@@ -17,6 +17,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/actor/journal_details_builder.h"
 #include "chrome/common/actor_webui.mojom.h"
+#include "chrome/common/chrome_features.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
@@ -41,7 +42,7 @@ constexpr auto kBlockedMimeTypes = base::MakeFixedFlatSet<std::string_view>({
 void ActorNavigationThrottle::MaybeCreateAndAdd(
     content::NavigationThrottleRegistry& registry) {
 #if BUILDFLAG(IS_ANDROID)
-  if (!base::FeatureList::IsEnabled(kActorEnableAndroid)) {
+  if (!base::FeatureList::IsEnabled(features::kGlicActor)) {
     return;
   }
 #endif
