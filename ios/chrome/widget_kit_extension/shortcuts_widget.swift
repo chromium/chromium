@@ -70,15 +70,16 @@ struct ConfigureShortcutsWidgetEntryProvider: TimelineProvider {
 }
 
 // Provides the configuration and content of a widget to display on the Home screen.
-struct ShortcutsWidget: Widget {
+struct ShortcutsWidgetConfigurable: Widget {
   // Changing 'kind' or deleting this widget will cause all installed instances of this widget to
   // stop updating and show the placeholder state.
   let kind: String = "ShortcutsWidget"
   let deviceModel = UIDevice.current.model
   var body: some WidgetConfiguration {
-    StaticConfiguration(
+    AppIntentConfiguration(
       kind: kind,
-      provider: ConfigureShortcutsWidgetEntryProvider()
+      intent: SelectAccountIntent.self,
+      provider: ConfigurableShortcutsWidgetEntryProvider()
     ) { entry in
       ShortcutsWidgetEntryView(entry: entry)
     }
@@ -97,80 +98,49 @@ struct ShortcutsWidget: Widget {
   }
 }
 
-#if IOS_ENABLE_WIDGETS_FOR_MIM
-  // Provides the configuration and content of a widget to display on the Home screen.
-  struct ShortcutsWidgetConfigurable: Widget {
-    // Changing 'kind' or deleting this widget will cause all installed instances of this widget to
-    // stop updating and show the placeholder state.
-    let kind: String = "ShortcutsWidget"
-    let deviceModel = UIDevice.current.model
-    var body: some WidgetConfiguration {
-      AppIntentConfiguration(
-        kind: kind,
-        intent: SelectAccountIntent.self,
-        provider: ConfigurableShortcutsWidgetEntryProvider()
-      ) { entry in
-        ShortcutsWidgetEntryView(entry: entry)
-      }
-      .configurationDisplayName(
-        Text("IDS_IOS_WIDGET_KIT_EXTENSION_SHORTCUTS_DISPLAY_NAME")
-      )
-      .description(
-        deviceModel == "iPhone"
-          ? Text("IDS_IOS_WIDGET_KIT_EXTENSION_SHORTCUTS_DESCRIPTION_IPHONE")
-          : Text("IDS_IOS_WIDGET_KIT_EXTENSION_SHORTCUTS_DESCRIPTION_IPAD")
-      )
-      .supportedFamilies([.systemMedium])
-      .crDisfavoredLocations()
-      .contentMarginsDisabled()
-      .containerBackgroundRemovable(false)
-    }
+// Advises WidgetKit when to update a widget’s display.
+struct ConfigurableShortcutsWidgetEntryProvider: AppIntentTimelineProvider {
+
+  // A type that specifies the entry of the configured timeline entry of the widget.
+  typealias Entry = ConfigureShortcutsWidgetEntry
+
+  // Provides a timeline entry representing a placeholder version of the widget.
+  func placeholder(in context: TimelineProviderContext) -> Entry {
+    return Entry(
+      date: Date(), mostVisitedSites: [:], isPreview: true, isExpired: false, expirationDate: nil,
+      avatar: nil, gaiaID: nil, email: nil, deleted: false)
   }
 
-  // Advises WidgetKit when to update a widget’s display.
-  struct ConfigurableShortcutsWidgetEntryProvider: AppIntentTimelineProvider {
+  // Provides a timeline entry that represents the current time and state of a widget.
+  func snapshot(for configuration: SelectAccountIntent, in context: Context) async -> Entry {
 
-    // A type that specifies the entry of the configured timeline entry of the widget.
-    typealias Entry = ConfigureShortcutsWidgetEntry
+    let avatar: Image? = configuration.avatar()
+    let gaiaID: String? = configuration.gaia()
+    let email: String? = configuration.email()
+    let deleted: Bool = configuration.deleted()
 
-    // Provides a timeline entry representing a placeholder version of the widget.
-    func placeholder(in context: TimelineProviderContext) -> Entry {
-      return Entry(
-        date: Date(), mostVisitedSites: [:], isPreview: true, isExpired: false, expirationDate: nil,
-        avatar: nil, gaiaID: nil, email: nil, deleted: false)
-    }
-
-    // Provides a timeline entry that represents the current time and state of a widget.
-    func snapshot(for configuration: SelectAccountIntent, in context: Context) async -> Entry {
-
-      let avatar: Image? = configuration.avatar()
-      let gaiaID: String? = configuration.gaia()
-      let email: String? = configuration.email()
-      let deleted: Bool = configuration.deleted()
-
-      let entry = loadMostVisitedSitesEntry(
-        isPreview: context.isPreview, avatar: avatar, gaia: gaiaID, email: email, deleted: deleted)
-      return entry
-    }
-
-    // Provides an array of timeline entries for the current time.
-    func timeline(for configuration: SelectAccountIntent, in context: Context) async -> Timeline<
-      Entry
-    > {
-      let avatar: Image? = configuration.avatar()
-      let gaiaID: String? = configuration.gaia()
-      let email: String? = configuration.email()
-      let deleted: Bool = configuration.deleted()
-
-      let entry = loadMostVisitedSitesEntry(
-        isPreview: context.isPreview, avatar: avatar, gaia: gaiaID, email: email, deleted: deleted)
-      let entries = [entry]
-      let timeline = Timeline(
-        entries: entries, policy: entry.expirationDate.map { .after($0) } ?? .never)
-      return timeline
-    }
+    let entry = loadMostVisitedSitesEntry(
+      isPreview: context.isPreview, avatar: avatar, gaia: gaiaID, email: email, deleted: deleted)
+    return entry
   }
-#endif
+
+  // Provides an array of timeline entries for the current time.
+  func timeline(for configuration: SelectAccountIntent, in context: Context) async -> Timeline<
+    Entry
+  > {
+    let avatar: Image? = configuration.avatar()
+    let gaiaID: String? = configuration.gaia()
+    let email: String? = configuration.email()
+    let deleted: Bool = configuration.deleted()
+
+    let entry = loadMostVisitedSitesEntry(
+      isPreview: context.isPreview, avatar: avatar, gaia: gaiaID, email: email, deleted: deleted)
+    let entries = [entry]
+    let timeline = Timeline(
+      entries: entries, policy: entry.expirationDate.map { .after($0) } ?? .never)
+    return timeline
+  }
+}
 
 // Return ConfigureShortcutsWidgetEntry with the most visited sites
 func loadMostVisitedSitesEntry(
@@ -211,26 +181,19 @@ func loadMostVisitedSitesEntry(
     return emptyEntry
   }
 
-  #if IOS_ENABLE_WIDGETS_FOR_MIM
-    guard let sharedDefaults: UserDefaults = AppGroupHelper.groupUserDefaults(),
-      let lastModificationDates = sharedDefaults.object(
-        forKey: "SuggestedItemsLastModificationDateForMIM")
-        as? [String: Date]
-    else { return emptyEntry }
-    var date: Date?
-    for (key, value) in lastModificationDates {
-      if gaia == key {
-        date = value
-      }
+  guard let sharedDefaults: UserDefaults = AppGroupHelper.groupUserDefaults(),
+    let lastModificationDates = sharedDefaults.object(
+      forKey: "SuggestedItemsLastModificationDateForMIM")
+      as? [String: Date]
+  else { return emptyEntry }
+  var date: Date?
+  for (key, value) in lastModificationDates {
+    if gaia == key {
+      date = value
     }
-    guard let lastModificationDate = date
-    else { return emptyEntry }
-  #else
-    guard let sharedDefaults: UserDefaults = AppGroupHelper.groupUserDefaults(),
-      let lastModificationDate = sharedDefaults.object(forKey: "SuggestedItemsLastModificationDate")
-        as? Date
-    else { return emptyEntry }
-  #endif
+  }
+  guard let lastModificationDate = date
+  else { return emptyEntry }
 
   let extensionsFlags =
     sharedDefaults.object(forKey: "Extension.FieldTrial") as? [String: Any] ?? [:]
@@ -255,22 +218,16 @@ func loadMostVisitedSitesEntry(
     return expiredEntry
   }
 
-  #if IOS_ENABLE_WIDGETS_FOR_MIM
-    guard let data = sharedDefaults.object(forKey: "SuggestedItemsForMIM") as? [String: Data]
-    else { return emptyEntry }
-    var unarchiverForAccount: NSKeyedUnarchiver?
-    for (key, value) in data {
-      if gaia == key {
-        unarchiverForAccount = try? NSKeyedUnarchiver(forReadingFrom: value)
-      }
+  guard let data = sharedDefaults.object(forKey: "SuggestedItemsForMIM") as? [String: Data]
+  else { return emptyEntry }
+  var unarchiverForAccount: NSKeyedUnarchiver?
+  for (key, value) in data {
+    if gaia == key {
+      unarchiverForAccount = try? NSKeyedUnarchiver(forReadingFrom: value)
     }
-    guard let unarchiver = unarchiverForAccount
-    else { return emptyEntry }
-  #else
-    guard let data = sharedDefaults.object(forKey: "SuggestedItems") as? Data,
-      let unarchiver = try? NSKeyedUnarchiver(forReadingFrom: data)
-    else { return emptyEntry }
-  #endif
+  }
+  guard let unarchiver = unarchiverForAccount
+  else { return emptyEntry }
 
   unarchiver.requiresSecureCoding = false
 
@@ -372,9 +329,7 @@ struct ShortcutsWidgetEntryView: View {
           .foregroundColor(Colors.widgetTextColor)
           .accessibilityHidden(true)
         Spacer()
-        #if IOS_ENABLE_WIDGETS_FOR_MIM
-          AvatarForShortcuts(entry: entry)
-        #endif
+        AvatarForShortcuts(entry: entry)
       }
     }
     .frame(minWidth: 0, maxWidth: .infinity)
@@ -451,8 +406,7 @@ struct ShortcutsWidgetEntryView: View {
   }
 
   var body: some View {
-    // The account to display was deleted (entry.deleted can only be true if
-    // IOS_ENABLE_WIDGETS_FOR_MIM is true).
+    // The account to display was deleted.
     if entry.deleted && !entry.isPreview {
       MediumWidgetDeletedAccountView()
     } else {
