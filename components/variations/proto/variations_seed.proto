@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// This file was exported from google3, do not edit manually.
+// See README.chromium for details.
+
 edition = "2023";
 
 option optimize_for = LITE_RUNTIME;
@@ -9,15 +12,16 @@ option java_package = "org.chromium.components.variations";
 
 package variations;
 
-import "study.proto";
 import "layer.proto";
+import "study.proto";
 
 option features.utf8_validation = NONE;
 
 // The VariationsSeed is a protobuf response from the server that contains the
-// list of studies and a serial number to uniquely identify its contents. The
-// serial number allows the client to easily determine if the list of
-// experiments has changed from the previous VariationsSeed seen by the client.
+// list of studies, layer definitions and a serial number to uniquely identify
+// its contents. The serial number allows the client to easily determine if the
+// list of experiments has changed from the previous VariationsSeed seen by the
+// client.
 //
 // Next tag: 7
 message VariationsSeed {
@@ -29,7 +33,8 @@ message VariationsSeed {
   string country_code = 3 [deprecated = true];
 
   // A version string which identifies the version of the configuration files
-  // that this seed was generated from.
+  // that this seed was generated from. Typically an YYYYMMDD-HHMMSS.micros
+  // format timestamp of the seed build time (see go/finch/config-history.md)
   string version = 4;
 
   // Previous implementation of layers. Do not re-use.
@@ -37,5 +42,6 @@ message VariationsSeed {
 
   // A list of layers where each study can optionally be part of one, with
   // clients ensuring that only one study per layer is enabled.
+  // Supported from Chrome M109.
   repeated Layer layers = 6;
 }

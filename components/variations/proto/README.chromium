@@ -1,5 +1,5 @@
-Name: Metrics Protos
-Short Name: metrics_proto
+Name: Variations Protos
+Short Name: client_variations_proto
 URL: This is the canonical public repository
 Update Mechanism: Manual
 Version: 864257935
@@ -10,7 +10,8 @@ Shipped: yes
 Security Critical: Yes
 
 Description:
-This package contains the protos that are used to upload metrics data to Google.
+This package contains the protos that are used to receive server-side variation
+configurations from Google.
 
 Updates to this code should be made by changing the internal copies, and then
 running the export script.

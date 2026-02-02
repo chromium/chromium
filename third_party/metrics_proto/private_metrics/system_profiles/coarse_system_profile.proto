@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// This file was exported from google3, do not edit manually.
+// See README.chromium for details.
+
 edition = "2023";
 
 option optimize_for = LITE_RUNTIME;
