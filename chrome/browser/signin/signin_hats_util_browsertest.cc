@@ -81,11 +81,12 @@ class SigninHatsUtilBrowserTest : public SigninHatsUtilBaseBrowserTest {
   SigninHatsUtilBrowserTest()
       : SigninHatsUtilBaseBrowserTest(
             /*enabled_features=*/{
-                switches::kChromeIdentitySurveyFirstRunSignin}) {}
+                switches::
+                    kChromeIdentitySurveySwitchProfileFromProfilePicker}) {}
 
  protected:
   std::string trigger() const {
-    return kHatsSurveyTriggerIdentityFirstRunSignin;
+    return kHatsSurveyTriggerIdentitySwitchProfileFromProfilePicker;
   }
 };
 

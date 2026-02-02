@@ -111,6 +111,13 @@ IN_PROC_BROWSER_TEST_F(
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 class ChromeSigninClientHatsSurveyBrowserTest : public InProcessBrowserTest {
  public:
+  ChromeSigninClientHatsSurveyBrowserTest() {
+    // Disable the (temporary) FRE refresh survey to avoid conflicts with the
+    // permanent identity surveys.
+    feature_list_.InitAndDisableFeature(
+        switches::kBeforeFirstRunDesktopRefreshSurvey);
+  }
+
   void SetUpOnMainThread() override {
     mock_hats_service_ = static_cast<MockHatsService*>(
         HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
@@ -123,6 +130,8 @@ class ChromeSigninClientHatsSurveyBrowserTest : public InProcessBrowserTest {
 
  private:
   raw_ptr<MockHatsService> mock_hats_service_ = nullptr;
+
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests that a HaTS survey is launched when a user signs in through an eligible
