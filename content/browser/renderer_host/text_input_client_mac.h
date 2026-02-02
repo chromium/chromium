@@ -13,6 +13,7 @@
 #include "base/no_destructor.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
+#include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "ui/base/mojom/attributed_string.mojom-forward.h"
@@ -125,6 +126,11 @@ class CONTENT_EXPORT TextInputClientMac {
   void SetAsyncRequestDelegateForTesting(
       std::unique_ptr<AsyncRequestDelegate> delegate);
 
+  // Allows tests to call setters while already holding the lock, to prevent
+  // deadlocks when calling them from the main test thread.
+  void SetCharacterIndexWhileLockedForTesting(uint32_t index);
+  void SetFirstRectWhileLockedForTesting(const gfx::Rect& first_rect);
+
  private:
   friend base::NoDestructor<TextInputClientMac>;
 
@@ -135,11 +141,15 @@ class CONTENT_EXPORT TextInputClientMac {
   // These methods lock the internal condition for use before the asynchronous
   // message is sent to the renderer to lookup the required information. These
   // are only used on the UI thread.
-  void BeforeRequest() EXCLUSIVE_LOCK_FUNCTION(lock_);
+  void BeforeRequest() VALID_CONTEXT_REQUIRED(thread_checker_)
+      EXCLUSIVE_LOCK_FUNCTION(lock_);
 
   // Called at the end of a critical section. This will release the lock and
   // condition.
-  void AfterRequest() UNLOCK_FUNCTION(lock_);
+  void AfterRequest() VALID_CONTEXT_REQUIRED(thread_checker_)
+      UNLOCK_FUNCTION(lock_);
+
+  THREAD_CHECKER(thread_checker_);
 
   std::optional<uint32_t> character_index_ GUARDED_BY(lock_);
   std::optional<gfx::Rect> first_rect_ GUARDED_BY(lock_);
@@ -151,7 +161,8 @@ class CONTENT_EXPORT TextInputClientMac {
   // the renderer.
   base::TimeDelta wait_timeout_;
 
-  std::unique_ptr<AsyncRequestDelegate> async_request_delegate_;
+  std::unique_ptr<AsyncRequestDelegate> async_request_delegate_
+      GUARDED_BY_CONTEXT(thread_checker_);
 };
 
 }  // namespace content

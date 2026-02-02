@@ -57,6 +57,10 @@ struct TestTraits {
   static void TextInputHostGotResponse(TextInputHostImpl* host,
                                        ResponseType response);
 
+  // Synchronously calls a test-only setter method on TextInputClientMac, to
+  // simulate a response being received before returning from the delegate.
+  static void TextInputClientSetSync(ResponseType response);
+
   // Initializes a ResponseType value from an arbitrary integer.
   static constexpr ResponseType CreateResponse(int value);
 
@@ -76,6 +80,11 @@ struct TestTraits<uint32_t> {
     host->GotCharacterIndexAtPoint(response);
   }
 
+  static void TextInputClientSetSync(uint32_t response) {
+    TextInputClientMac::GetInstance()->SetCharacterIndexWhileLockedForTesting(
+        response);
+  }
+
   static constexpr uint32_t CreateResponse(int value) { return value; }
 
   static constexpr uint32_t kTimeoutResponse = UINT32_MAX;
@@ -91,6 +100,11 @@ struct TestTraits<gfx::Rect> {
   static void TextInputHostGotResponse(TextInputHostImpl* host,
                                        gfx::Rect response) {
     host->GotFirstRectForRange(response);
+  }
+
+  static void TextInputClientSetSync(gfx::Rect response) {
+    TextInputClientMac::GetInstance()->SetFirstRectWhileLockedForTesting(
+        response);
   }
 
   static constexpr gfx::Rect CreateResponse(int value) {
@@ -170,12 +184,21 @@ class FakeAsyncRequestDelegate final
     auto [response, delay] = responses_.front();
     responses_.pop();
 
-    // Unretained is safe since `host_impl_` is deleted on the IO thread.
-    GetIOThreadTaskRunner()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&Traits::TextInputHostGotResponse,
-                       base::Unretained(host_impl_.get()), std::move(response)),
-        delay);
+    if (delay.is_zero()) {
+      // Poke the response into TextInputClient, bypassing TextInputHostImpl
+      // which must be accessed on the IO thread. This simulates a response that
+      // arrives while the calling thread is descheduled, before TextInputClient
+      // blocks it.
+      Traits::TextInputClientSetSync(response);
+    } else {
+      // Unretained is safe since `host_impl_` is deleted on the IO thread.
+      GetIOThreadTaskRunner()->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&Traits::TextInputHostGotResponse,
+                         base::Unretained(host_impl_.get()),
+                         std::move(response)),
+          delay);
+    }
   }
 
   SEQUENCE_CHECKER(sequence_checker_);
@@ -216,8 +239,6 @@ class TextInputClientMacTest : public content::RenderViewHostTestHarness {
     request_delegate_ = delegate.get();
     TextInputClientMac::GetInstance()->SetAsyncRequestDelegateForTesting(
         std::move(delegate));
-
-    FocusWebContentsOnMainFrame();
   }
 
   void TearDown() override {
@@ -247,13 +268,22 @@ TYPED_TEST_SUITE_P(TextInputClientMacTest);
 
 // Test Cases //////////////////////////////////////////////////////////////////
 
+TYPED_TEST_P(TextInputClientMacTest, SyncGetter_NoFocus) {
+  using Traits = TestTraits<TypeParam>;
+
+  // Return this value if the client (incorrectly) sends a request to an
+  // unfocused frame.
+  this->request_delegate().AddResponse(Traits::CreateResponse(42), kTaskDelay);
+  EXPECT_EQ(Traits::TextInputClientGetSync(this->widget()), TypeParam{});
+}
+
 TYPED_TEST_P(TextInputClientMacTest, SyncGetter_Basic) {
   using Traits = TestTraits<TypeParam>;
 
   constexpr TypeParam kSuccessValue = Traits::CreateResponse(42);
-
   this->request_delegate().AddResponse(kSuccessValue, kTaskDelay);
 
+  this->FocusWebContentsOnMainFrame();
   EXPECT_EQ(Traits::TextInputClientGetSync(this->widget()), kSuccessValue);
 }
 
@@ -264,6 +294,7 @@ TYPED_TEST_P(TextInputClientMacTest, SyncGetter_Timeout) {
   feature_list.InitAndEnableFeatureWithParameters(features::kTextInputClient,
                                                   {{"ipc_timeout", "300ms"}});
 
+  this->FocusWebContentsOnMainFrame();
   EXPECT_EQ(Traits::TextInputClientGetSync(this->widget()),
             Traits::kTimeoutResponse);
 }
@@ -274,27 +305,43 @@ TYPED_TEST_P(TextInputClientMacTest, SyncGetter_Timeout) {
 TYPED_TEST_P(TextInputClientMacTest, SyncGetter_NotFound) {
   using Traits = TestTraits<TypeParam>;
 
-  const TypeParam kPreviousValue = Traits::CreateResponse(42);
-
   // Set an arbitrary value to ensure the response doesn't just default to the
   // timeout value.
+  const TypeParam kPreviousValue = Traits::CreateResponse(42);
   this->request_delegate().AddResponse(kPreviousValue, kTaskDelay);
 
   // Set the response to the timeout value after the previous setting.
   this->request_delegate().AddResponse(Traits::kTimeoutResponse, kTaskDelay);
 
+  this->FocusWebContentsOnMainFrame();
   EXPECT_EQ(Traits::TextInputClientGetSync(this->widget()), kPreviousValue);
   EXPECT_EQ(Traits::TextInputClientGetSync(this->widget()),
             Traits::kTimeoutResponse);
 }
 
+// Tests that TextInputClient doesn't get confused if TextInputHost sends a
+// response before the calling thread blocks.
+TYPED_TEST_P(TextInputClientMacTest, SyncGetter_Immediate) {
+  using Traits = TestTraits<TypeParam>;
+
+  // A response with 0 delay is sent immediately, not posted.
+  const TypeParam kSuccessValue = Traits::CreateResponse(42);
+  this->request_delegate().AddResponse(kSuccessValue, base::TimeDelta());
+
+  this->FocusWebContentsOnMainFrame();
+  EXPECT_EQ(Traits::TextInputClientGetSync(this->widget()), kSuccessValue);
+}
+
 REGISTER_TYPED_TEST_SUITE_P(TextInputClientMacTest,
+                            SyncGetter_NoFocus,
                             SyncGetter_Basic,
                             SyncGetter_Timeout,
-                            SyncGetter_NotFound);
+                            SyncGetter_NotFound,
+                            SyncGetter_Immediate);
 
 using ResponseTypes = ::testing::Types<uint32_t, gfx::Rect>;
 INSTANTIATE_TYPED_TEST_SUITE_P(ResponseType,
                                TextInputClientMacTest,
                                ResponseTypes);
+
 }  // namespace content
