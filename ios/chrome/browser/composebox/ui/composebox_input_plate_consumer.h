@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import <unordered_set>
+
 #import "ios/chrome/browser/composebox/ui/composebox_input_item.h"
 
 enum class ComposeboxInputPlateControls : unsigned int;
@@ -61,6 +63,9 @@ enum class ComposeboxModelOption;
 // Sets whether the create image actions are hidden.
 - (void)hideCreateImageActions:(BOOL)hidden;
 
+// Sets whether the canvas actions are disabled.
+- (void)disableCanvasActions:(BOOL)disabled;
+
 // Sets whether the canvas actions are hidden.
 - (void)hideCanvasActions:(BOOL)hidden;
 
@@ -78,6 +83,10 @@ enum class ComposeboxModelOption;
 
 // Sets whether the gallery actions are disabled.
 - (void)disableGalleryActions:(BOOL)disabled;
+
+// Sets the list of allowed models.
+- (void)setAllowedModels:
+    (std::unordered_set<ComposeboxModelOption>)allowedModels;
 
 // Sets the remaining capacity for attachments.
 - (void)setRemainingAttachmentCapacity:(NSUInteger)capacity;

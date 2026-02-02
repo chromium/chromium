@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/composebox/coordinator/composebox_input_plate_mediator.h"
 
+#import <unordered_set>
+
 #import "base/no_destructor.h"
 #import "base/run_loop.h"
 #import "base/test/scoped_feature_list.h"
@@ -83,6 +85,8 @@
 }
 - (void)hideCreateImageActions:(BOOL)hidden {
 }
+- (void)disableCanvasActions:(BOOL)disabled {
+}
 - (void)disableCreateImageActions:(BOOL)disabled {
 }
 - (void)hideCameraActions:(BOOL)hidden {
@@ -92,6 +96,9 @@
 - (void)hideGalleryActions:(BOOL)hidden {
 }
 - (void)disableGalleryActions:(BOOL)disabled {
+}
+- (void)setAllowedModels:
+    (std::unordered_set<ComposeboxModelOption>)allowedModels {
 }
 - (void)hideCanvasActions:(BOOL)hidden {
 }

@@ -225,6 +225,7 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   BOOL _createImageActionsHidden;
   BOOL _createImageActionsDisabled;
   /// Canvas action state.
+  BOOL _canvasActionsDisabled;
   BOOL _canvasActionsHidden;
   /// Camera action state.
   BOOL _cameraActionsDisabled;
@@ -232,6 +233,8 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   /// Gallery action state.
   BOOL _galleryActionsDisabled;
   BOOL _galleryActionsHidden;
+  /// The allowed models.
+  std::unordered_set<ComposeboxModelOption> _allowedModels;
   /// Container for the omnibox.
   UIView* _omniboxContainer;
 
@@ -681,6 +684,14 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   [self updatePlusButtonItems];
 }
 
+- (void)disableCanvasActions:(BOOL)disabled {
+  if (_canvasActionsDisabled == disabled) {
+    return;
+  }
+  _canvasActionsDisabled = disabled;
+  [self updatePlusButtonItems];
+}
+
 - (void)disableCameraActions:(BOOL)disabled {
   if (_cameraActionsDisabled == disabled) {
     return;
@@ -702,6 +713,15 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
     return;
   }
   _galleryActionsDisabled = disabled;
+  [self updatePlusButtonItems];
+}
+
+- (void)setAllowedModels:
+    (std::unordered_set<ComposeboxModelOption>)allowedModels {
+  if (_allowedModels == allowedModels) {
+    return;
+  }
+  _allowedModels = allowedModels;
   [self updatePlusButtonItems];
 }
 
@@ -1475,27 +1495,34 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
                      galleryAction, fileAction
                    ]];
 
-  NSMutableArray<UIMenuElement*>* availableModes =
-      [[NSMutableArray alloc] initWithArray:@[ aimAction, createImageAction ]];
-  if (!_canvasActionsHidden) {
-    CHECK(ShowComposeboxAdditionalAdvancedTools());
-    // TODO(crbug.com/477243979): Replace icon once defined.
-    UIAction* canvasAction = [UIAction
-        actionWithTitle:l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_CANVAS_ACTION)
-                  image:DefaultSymbolWithPointSize(kEditActionSymbol,
-                                                   kSymbolActionPointSize)
-             identifier:nil
-                handler:^(UIAction* action) {
-                  [weakSelf handleCanvasTappedFromToolMenu];
-                }];
-    [availableModes addObject:canvasAction];
+  // TODO(crbug.com/477243979): Replace icon once defined.
+  UIAction* canvasAction = [UIAction
+      actionWithTitle:l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_CANVAS_ACTION)
+                image:DefaultSymbolWithPointSize(kEditActionSymbol,
+                                                 kSymbolActionPointSize)
+           identifier:nil
+              handler:^(UIAction* action) {
+                [weakSelf handleCanvasTappedFromToolMenu];
+              }];
+  UIMenuElementAttributes canvasAttributes = 0;
+  if (_canvasActionsHidden) {
+    canvasAttributes |= UIMenuElementAttributesHidden;
+  }
+  if (_canvasActionsDisabled) {
+    canvasAttributes |= UIMenuElementAttributesDisabled;
+  }
+  canvasAction.attributes = canvasAttributes;
+
+  if (_canvasEnabled) {
+    [canvasAction setState:UIMenuElementStateOn];
   }
 
-  UIMenu* modeMenu = [UIMenu menuWithTitle:@""
-                                     image:nil
-                                identifier:nil
-                                   options:UIMenuOptionsDisplayInline
-                                  children:availableModes];
+  UIMenu* modeMenu =
+      [UIMenu menuWithTitle:@""
+                      image:nil
+                 identifier:nil
+                    options:UIMenuOptionsDisplayInline
+                   children:@[ aimAction, createImageAction, canvasAction ]];
 
   NSMutableArray<UIMenuElement*>* sections =
       [[NSMutableArray alloc] initWithArray:@[ attachmentMenu, modeMenu ]];
@@ -1511,8 +1538,13 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
                   [weakSelf handleModelChangeFromToolsMenuWithOption:
                                 ComposeboxModelOption::kAuto];
                 }];
-    if (_modelOption == ComposeboxModelOption::kAuto) {
-      [autoModelOption setState:UIMenuElementStateOn];
+
+    if (_allowedModels.contains(ComposeboxModelOption::kAuto)) {
+      if (_modelOption == ComposeboxModelOption::kAuto) {
+        [autoModelOption setState:UIMenuElementStateOn];
+      }
+    } else {
+      autoModelOption.attributes |= UIMenuElementAttributesDisabled;
     }
 
     UIAction* thinkingModelOption = [UIAction
@@ -1526,8 +1558,12 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
                                 ComposeboxModelOption::kThinking];
                 }];
 
-    if (_modelOption == ComposeboxModelOption::kThinking) {
-      [thinkingModelOption setState:UIMenuElementStateOn];
+    if (_allowedModels.contains(ComposeboxModelOption::kThinking)) {
+      if (_modelOption == ComposeboxModelOption::kThinking) {
+        [thinkingModelOption setState:UIMenuElementStateOn];
+      }
+    } else {
+      thinkingModelOption.attributes |= UIMenuElementAttributesDisabled;
     }
 
     UIMenu* modelPickerMenu =
