@@ -352,8 +352,45 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
       }
     })");
     case ModelBasedCapabilityKey::kSkills:
-      // TODO(crbug.com/476214530): Add network traffic annotation.
-      return MISSING_TRAFFIC_ANNOTATION;
+      // TODO(xinyuqian): Update the email address to the team email once the
+      // feature is launched or ready for launch.
+      return net::DefineNetworkTrafficAnnotation("skills_model_execution", R"(
+      semantics {
+        sender: "Skills in Chrome"
+        description:
+          "Skills are page-aware, reusable AI workflows built on top of Gemini "
+          "in Chrome. They enable users to save, create, reuse, and discover "
+          "high-value AI workflows directly in the browser."
+        trigger:
+          "The user interacts with a feature that refines a skill. "
+        destination: GOOGLE_OWNED_SERVICE
+        data:
+          "The current page content or user-provided text relevant to skills."
+        internal {
+          contacts {
+            email: "xinyuqian@google.com"
+          }
+        }
+        user_data {
+          type: SENSITIVE_URL
+          type: WEB_CONTENT
+          type: USER_CONTENT
+        }
+        last_reviewed: "2026-01-29"
+      }
+      policy {
+        cookies_allowed: YES
+        cookies_store: "user"
+        setting:
+          "This feature can be disabled by turning off the relevant AI "
+          "feature in Chrome settings."
+        chrome_policy {
+          GeminiSettings {
+            GeminiSettings: 1
+          }
+        }
+      }
+    )");
     case ModelBasedCapabilityKey::kGeminiAntiscamProtection:
       return net::DefineNetworkTrafficAnnotation(
           "gemini_antiscam_protection_model_execution",
