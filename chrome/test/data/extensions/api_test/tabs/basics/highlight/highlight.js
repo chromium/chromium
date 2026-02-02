@@ -58,7 +58,9 @@ chrome.test.runTests([
                              function(highlightInfo) {
         var tabIds = tabs.map(function(tab) { return tab.id; });
         assertEq(highlightInfo.windowId, testWindowId1);
-        assertTrue(checkEqualSets(tabIds, highlightInfo.tabIds));
+        assertTrue(checkEqualSets(tabIds, highlightInfo.tabIds),
+                   `Expected ${JSON.stringify(tabIds)}; ` +
+                   `found ${JSON.stringify(highlightInfo.tabIds)}`);
       });
       var tabIndices = tabs.map(function(tab) { return tab.index; });
       chrome.tabs.highlight({

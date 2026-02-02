@@ -59,10 +59,6 @@ namespace tabs {
 class TabInterface;
 }
 
-namespace ui {
-class ListSelectionModel;
-}
-
 namespace user_prefs {
 class PrefRegistrySyncable;
 }
@@ -346,11 +342,6 @@ class TabsDuplicateFunction : public ExtensionFunction {
 class TabsHighlightFunction : public ExtensionFunction {
   ~TabsHighlightFunction() override = default;
   ResponseAction Run() override;
-  bool HighlightTab(TabStripModel* tabstrip,
-                    ui::ListSelectionModel* selection,
-                    std::optional<size_t>* active_index,
-                    int index,
-                    std::string* error);
   DECLARE_EXTENSION_FUNCTION("tabs.highlight", TABS_HIGHLIGHT)
 };
 class TabsUpdateFunction : public ExtensionFunction {

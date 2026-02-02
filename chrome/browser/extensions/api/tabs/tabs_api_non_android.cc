@@ -182,77 +182,75 @@ ExtensionFunction::ResponseAction TabsHighlightFunction::Run() {
   }
 
   // Don't let the extension update the tab if the user is dragging tabs.
-  TabStripModel* tab_strip_model = ExtensionTabUtil::GetEditableTabStripModel(
-      window_controller->GetBrowser());
-  if (!tab_strip_model) {
+  TabListInterface* tab_list = ExtensionTabUtil::GetEditableTabList(
+      *window_controller->GetBrowserWindowInterface());
+  if (!tab_list) {
     return RespondNow(Error(ExtensionTabUtil::kTabStripNotEditableError));
   }
-  ui::ListSelectionModel selection;
-  std::optional<size_t> active_index;
 
+  std::set<int> tab_indices;
+  int active_tab_index = -1;
   if (params->highlight_info.tabs.as_integers) {
-    std::vector<int>& tab_indices = *params->highlight_info.tabs.as_integers;
-    // Create a new selection model as we read the list of tab indices.
-    for (int tab_index : tab_indices) {
-      if (!HighlightTab(tab_strip_model, &selection, &active_index, tab_index,
-                        &error)) {
-        return RespondNow(Error(std::move(error)));
-      }
+    std::vector<int>& source = *params->highlight_info.tabs.as_integers;
+    // Make sure they actually specified tabs to select.
+    if (source.empty()) {
+      return RespondNow(Error(kNoHighlightedTabError));
     }
+
+    // By default, we make the first tab in the list active.
+    active_tab_index = source[0];
+
+    tab_indices.insert(std::make_move_iterator(source.begin()),
+                       std::make_move_iterator(source.end()));
   } else {
     EXTENSION_FUNCTION_VALIDATE(params->highlight_info.tabs.as_integer);
-    if (!HighlightTab(tab_strip_model, &selection, &active_index,
-                      *params->highlight_info.tabs.as_integer, &error)) {
-      return RespondNow(Error(std::move(error)));
+    int tab_index = *params->highlight_info.tabs.as_integer;
+    tab_indices.insert(tab_index);
+    active_tab_index = tab_index;
+  }
+
+  std::set<::tabs::TabHandle> tabs;
+  TabStripModel* tab_strip = window_controller->GetBrowser()->tab_strip_model();
+  for (int index : tab_indices) {
+    // Make sure the index is in range.
+    if (index < 0 || index >= tab_list->GetTabCount()) {
+      return RespondNow(Error(ErrorUtils::FormatErrorMessage(
+          kTabIndexNotFoundError, base::NumberToString(index))));
     }
-  }
 
-  // Make sure they actually specified tabs to select.
-  if (selection.empty()) {
-    return RespondNow(Error(kNoHighlightedTabError));
-  }
+    ::tabs::TabInterface* tab = tab_list->GetTab(index);
+    CHECK(tab);
+    tabs.insert(tab->GetHandle());
 
-  // Extend selection for any split tabs.
-  for (const auto& index : selection.selected_indices()) {
+    // Extend selection for any split tabs.
     std::optional<split_tabs::SplitTabId> split_id =
-        tab_strip_model->GetSplitForTab(index);
+        tab_strip->GetSplitForTab(index);
     if (!split_id.has_value()) {
       continue;
     }
+
     // All the tabs in a split should be contiguous.
     std::vector<::tabs::TabInterface*> split_tabs =
-        tab_strip_model->GetSplitData(split_id.value())->ListTabs();
-    size_t start = tab_strip_model->GetIndexOfTab(split_tabs[0]);
-    selection.AddIndexRangeToSelection(start, start + split_tabs.size() - 1);
+        tab_strip->GetSplitData(split_id.value())->ListTabs();
+    size_t start = tab_strip->GetIndexOfTab(split_tabs[0]);
+    for (size_t i = start; i < start + split_tabs.size(); ++i) {
+      ::tabs::TabInterface* split_tab = tab_list->GetTab(i);
+      CHECK(split_tab);
+      tabs.insert(split_tab->GetHandle());
+    }
   }
 
-  selection.set_active(active_index);
-  tab_strip_model->SetSelectionFromModel(std::move(selection));
+  // We just checked all the indices above (of which active_tab_index is a
+  // member), so it must be valid.
+  CHECK(active_tab_index >= 0 && active_tab_index <= tab_list->GetTabCount());
+  ::tabs::TabInterface* active_tab = tab_list->GetTab(active_tab_index);
+
+  tab_list->HighlightTabs(active_tab->GetHandle(), tabs);
+
   return RespondNow(
       WithArguments(window_controller->CreateWindowValueForExtension(
           extension(), WindowController::kPopulateTabs,
           source_context_type())));
-}
-
-bool TabsHighlightFunction::HighlightTab(TabStripModel* tabstrip,
-                                         ui::ListSelectionModel* selection,
-                                         std::optional<size_t>* active_index,
-                                         int index,
-                                         std::string* error) {
-  // Make sure the index is in range.
-  if (!tabstrip->ContainsIndex(index)) {
-    *error = ErrorUtils::FormatErrorMessage(kTabIndexNotFoundError,
-                                            base::NumberToString(index));
-    return false;
-  }
-
-  // By default, we make the first tab in the list active.
-  if (!active_index->has_value()) {
-    *active_index = static_cast<size_t>(index);
-  }
-
-  selection->AddIndexToSelection(index);
-  return true;
 }
 
 ExtensionFunction::ResponseAction TabsUngroupFunction::Run() {
