@@ -43,8 +43,8 @@ targets.variant(
 )
 
 targets.variant(
-    name = "CROS_RELEASE_LKGM",
-    identifier = "RELEASE_LKGM",
+    name = "CROS_LKGM",
+    identifier = "LKGM",
     skylab = targets.skylab(
         use_lkgm = True,
     ),

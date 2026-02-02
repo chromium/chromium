@@ -28,7 +28,7 @@ targets.legacy_matrix_compound_suite(
                 "skylab-rdb-tast",
             ],
             variants = [
-                "CROS_RELEASE_LKGM",
+                "CROS_LKGM",
             ],
         ),
         "chromeos_chrome_criticalstaging_tast_tests": targets.legacy_matrix_config(
@@ -37,7 +37,7 @@ targets.legacy_matrix_compound_suite(
                 "skylab-rdb-tast",
             ],
             variants = [
-                "CROS_RELEASE_LKGM",
+                "CROS_LKGM",
             ],
         ),
         "chromeos_chrome_disabled_tast_tests": targets.legacy_matrix_config(
@@ -47,7 +47,7 @@ targets.legacy_matrix_compound_suite(
                 "skylab-rdb-tast",
             ],
             variants = [
-                "CROS_RELEASE_LKGM",
+                "CROS_LKGM",
             ],
         ),
         "chromeos_integration_tests_suite": targets.legacy_matrix_config(
@@ -55,7 +55,7 @@ targets.legacy_matrix_compound_suite(
                 "skylab-rdb-gtest",
             ],
             variants = [
-                "CROS_RELEASE_LKGM",
+                "CROS_LKGM",
             ],
         ),
         "chromeos_system_friendly_gtests_vmlab": targets.legacy_matrix_config(
@@ -63,7 +63,7 @@ targets.legacy_matrix_compound_suite(
                 "skylab-rdb-gtest",
             ],
             variants = [
-                "CROS_RELEASE_LKGM",
+                "CROS_LKGM",
             ],
         ),
         "chromeos_system_friendly_gtests_fails_vmlab": targets.legacy_matrix_config(
@@ -73,7 +73,7 @@ targets.legacy_matrix_compound_suite(
                 "skylab-rdb-gtest",
             ],
             variants = [
-                "CROS_RELEASE_LKGM",
+                "CROS_LKGM",
             ],
         ),
         "chromeos_vaapi_gtests": targets.legacy_matrix_config(
@@ -83,7 +83,7 @@ targets.legacy_matrix_compound_suite(
                 "skylab-rdb-gtest",
             ],
             variants = [
-                "CROS_RELEASE_LKGM",
+                "CROS_LKGM",
             ],
         ),
     },
@@ -98,7 +98,7 @@ targets.legacy_matrix_compound_suite(
                 "skylab-rdb-tast",
             ],
             variants = [
-                "CROS_RELEASE_LKGM",
+                "CROS_LKGM",
             ],
         ),
         "chromeos_chrome_criticalstaging_tast_tests": targets.legacy_matrix_config(
@@ -107,7 +107,7 @@ targets.legacy_matrix_compound_suite(
                 "skylab-rdb-tast",
             ],
             variants = [
-                "CROS_RELEASE_LKGM",
+                "CROS_LKGM",
             ],
         ),
         "chromeos_chrome_disabled_tast_tests": targets.legacy_matrix_config(
@@ -117,7 +117,7 @@ targets.legacy_matrix_compound_suite(
                 "skylab-rdb-tast",
             ],
             variants = [
-                "CROS_RELEASE_LKGM",
+                "CROS_LKGM",
             ],
         ),
         "chromeos_integration_tests_suite": targets.legacy_matrix_config(
@@ -125,7 +125,7 @@ targets.legacy_matrix_compound_suite(
                 "skylab-rdb-gtest",
             ],
             variants = [
-                "CROS_RELEASE_LKGM",
+                "CROS_LKGM",
             ],
         ),
     },
@@ -140,7 +140,7 @@ targets.legacy_matrix_compound_suite(
                 "skylab-rdb-tast",
             ],
             variants = [
-                "CROS_RELEASE_LKGM",
+                "CROS_LKGM",
             ],
         ),
         "chromeos_chrome_criticalstaging_tast_tests": targets.legacy_matrix_config(
@@ -149,7 +149,7 @@ targets.legacy_matrix_compound_suite(
                 "skylab-rdb-tast",
             ],
             variants = [
-                "CROS_RELEASE_LKGM",
+                "CROS_LKGM",
             ],
         ),
         "chromeos_chrome_disabled_tast_tests": targets.legacy_matrix_config(
@@ -159,7 +159,7 @@ targets.legacy_matrix_compound_suite(
                 "skylab-rdb-tast",
             ],
             variants = [
-                "CROS_RELEASE_LKGM",
+                "CROS_LKGM",
             ],
         ),
         "chromeos_integration_tests_suite": targets.legacy_matrix_config(
@@ -169,7 +169,7 @@ targets.legacy_matrix_compound_suite(
                 "skylab-rdb-gtest",
             ],
             variants = [
-                "CROS_RELEASE_LKGM",
+                "CROS_LKGM",
             ],
         ),
     },
@@ -184,7 +184,7 @@ targets.legacy_matrix_compound_suite(
                 "skylab-rdb-tast",
             ],
             variants = [
-                "CROS_RELEASE_LKGM",
+                "CROS_LKGM",
             ],
         ),
         "chromeos_chrome_criticalstaging_tast_tests": targets.legacy_matrix_config(
@@ -193,7 +193,7 @@ targets.legacy_matrix_compound_suite(
                 "skylab-rdb-tast",
             ],
             variants = [
-                "CROS_RELEASE_LKGM",
+                "CROS_LKGM",
             ],
         ),
         "chromeos_chrome_disabled_tast_tests": targets.legacy_matrix_config(
@@ -203,7 +203,7 @@ targets.legacy_matrix_compound_suite(
                 "skylab-rdb-tast",
             ],
             variants = [
-                "CROS_RELEASE_LKGM",
+                "CROS_LKGM",
             ],
         ),
         "chromeos_integration_tests_suite": targets.legacy_matrix_config(
@@ -211,7 +211,7 @@ targets.legacy_matrix_compound_suite(
                 "skylab-rdb-gtest",
             ],
             variants = [
-                "CROS_RELEASE_LKGM",
+                "CROS_LKGM",
             ],
         ),
         "chromeos_system_friendly_gtests": targets.legacy_matrix_config(
@@ -219,7 +219,7 @@ targets.legacy_matrix_compound_suite(
                 "skylab-rdb-gtest",
             ],
             variants = [
-                "CROS_RELEASE_LKGM",
+                "CROS_LKGM",
             ],
         ),
         "chromeos_vaapi_gtests": targets.legacy_matrix_config(
@@ -227,7 +227,7 @@ targets.legacy_matrix_compound_suite(
                 "skylab-rdb-gtest",
             ],
             variants = [
-                "CROS_RELEASE_LKGM",
+                "CROS_LKGM",
             ],
         ),
     },
@@ -242,7 +242,7 @@ targets.legacy_matrix_compound_suite(
                 "skylab-rdb-tast",
             ],
             variants = [
-                "CROS_RELEASE_LKGM",
+                "CROS_LKGM",
             ],
         ),
         "chromeos_chrome_criticalstaging_tast_tests": targets.legacy_matrix_config(
@@ -251,7 +251,7 @@ targets.legacy_matrix_compound_suite(
                 "skylab-rdb-tast",
             ],
             variants = [
-                "CROS_RELEASE_LKGM",
+                "CROS_LKGM",
             ],
         ),
         "chromeos_chrome_disabled_tast_tests": targets.legacy_matrix_config(
@@ -260,7 +260,7 @@ targets.legacy_matrix_compound_suite(
                 "skylab-rdb-tast",
             ],
             variants = [
-                "CROS_RELEASE_LKGM",
+                "CROS_LKGM",
             ],
         ),
         "chromeos_device_only_gtests": targets.legacy_matrix_config(
@@ -268,7 +268,7 @@ targets.legacy_matrix_compound_suite(
                 "skylab-rdb-gtest",
             ],
             variants = [
-                "CROS_RELEASE_LKGM",
+                "CROS_LKGM",
             ],
         ),
         "chromeos_integration_tests_suite": targets.legacy_matrix_config(
@@ -276,7 +276,7 @@ targets.legacy_matrix_compound_suite(
                 "skylab-rdb-gtest",
             ],
             variants = [
-                "CROS_RELEASE_LKGM",
+                "CROS_LKGM",
             ],
         ),
     },
@@ -291,7 +291,7 @@ targets.legacy_matrix_compound_suite(
                 "skylab-rdb-tast",
             ],
             variants = [
-                "CROS_RELEASE_LKGM",
+                "CROS_LKGM",
             ],
         ),
         "chromeos_device_only_gtests": targets.legacy_matrix_config(
@@ -299,7 +299,7 @@ targets.legacy_matrix_compound_suite(
                 "skylab-rdb-gtest",
             ],
             variants = [
-                "CROS_RELEASE_LKGM",
+                "CROS_LKGM",
             ],
         ),
     },
@@ -314,7 +314,7 @@ targets.legacy_matrix_compound_suite(
                 "skylab-rdb-tast",
             ],
             variants = [
-                "CROS_RELEASE_LKGM",
+                "CROS_LKGM",
             ],
         ),
         "chromeos_chrome_criticalstaging_tast_tests": targets.legacy_matrix_config(
@@ -323,7 +323,7 @@ targets.legacy_matrix_compound_suite(
                 "skylab-rdb-tast",
             ],
             variants = [
-                "CROS_RELEASE_LKGM",
+                "CROS_LKGM",
             ],
         ),
         "chromeos_chrome_disabled_tast_tests": targets.legacy_matrix_config(
@@ -333,7 +333,7 @@ targets.legacy_matrix_compound_suite(
                 "skylab-rdb-tast",
             ],
             variants = [
-                "CROS_RELEASE_LKGM",
+                "CROS_LKGM",
             ],
         ),
         "chromeos_device_only_gtests": targets.legacy_matrix_config(
@@ -341,7 +341,7 @@ targets.legacy_matrix_compound_suite(
                 "skylab-rdb-gtest",
             ],
             variants = [
-                "CROS_RELEASE_LKGM",
+                "CROS_LKGM",
             ],
         ),
         "chromeos_integration_tests_suite": targets.legacy_matrix_config(
@@ -349,7 +349,7 @@ targets.legacy_matrix_compound_suite(
                 "skylab-rdb-gtest",
             ],
             variants = [
-                "CROS_RELEASE_LKGM",
+                "CROS_LKGM",
             ],
         ),
     },
@@ -364,7 +364,7 @@ targets.legacy_matrix_compound_suite(
                 "skylab-rdb-tast",
             ],
             variants = [
-                "CROS_RELEASE_LKGM",
+                "CROS_LKGM",
             ],
         ),
         "chromeos_chrome_criticalstaging_tast_tests": targets.legacy_matrix_config(
@@ -373,7 +373,7 @@ targets.legacy_matrix_compound_suite(
                 "skylab-rdb-tast",
             ],
             variants = [
-                "CROS_RELEASE_LKGM",
+                "CROS_LKGM",
             ],
         ),
         "chromeos_chrome_disabled_tast_tests": targets.legacy_matrix_config(
@@ -383,7 +383,7 @@ targets.legacy_matrix_compound_suite(
                 "skylab-rdb-tast",
             ],
             variants = [
-                "CROS_RELEASE_LKGM",
+                "CROS_LKGM",
             ],
         ),
         "chromeos_device_only_gtests": targets.legacy_matrix_config(
@@ -391,7 +391,7 @@ targets.legacy_matrix_compound_suite(
                 "skylab-rdb-gtest",
             ],
             variants = [
-                "CROS_RELEASE_LKGM",
+                "CROS_LKGM",
             ],
         ),
         "chromeos_integration_tests_suite": targets.legacy_matrix_config(
@@ -399,7 +399,7 @@ targets.legacy_matrix_compound_suite(
                 "skylab-rdb-gtest",
             ],
             variants = [
-                "CROS_RELEASE_LKGM",
+                "CROS_LKGM",
             ],
         ),
     },
@@ -416,7 +416,7 @@ targets.legacy_matrix_compound_suite(
                 "skylab-rdb-tast",
             ],
             variants = [
-                "CROS_RELEASE_LKGM",
+                "CROS_LKGM",
             ],
         ),
         "chromeos_integration_tests_suite": targets.legacy_matrix_config(
@@ -424,7 +424,7 @@ targets.legacy_matrix_compound_suite(
                 "skylab-rdb-gtest",
             ],
             variants = [
-                "CROS_RELEASE_LKGM",
+                "CROS_LKGM",
             ],
         ),
         "chromeos_device_only_gtests": targets.legacy_matrix_config(
@@ -432,7 +432,7 @@ targets.legacy_matrix_compound_suite(
                 "skylab-rdb-gtest",
             ],
             variants = [
-                "CROS_RELEASE_LKGM",
+                "CROS_LKGM",
             ],
         ),
     },
@@ -448,7 +448,7 @@ targets.legacy_matrix_compound_suite(
                 "skylab-rdb-tast",
             ],
             variants = [
-                "CROS_RELEASE_LKGM",
+                "CROS_LKGM",
             ],
         ),
         "chromeos_integration_tests_suite": targets.legacy_matrix_config(
@@ -456,7 +456,7 @@ targets.legacy_matrix_compound_suite(
                 "skylab-rdb-gtest",
             ],
             variants = [
-                "CROS_RELEASE_LKGM",
+                "CROS_LKGM",
             ],
         ),
         "chromeos_device_only_gtests": targets.legacy_matrix_config(
@@ -464,7 +464,7 @@ targets.legacy_matrix_compound_suite(
                 "skylab-rdb-gtest",
             ],
             variants = [
-                "CROS_RELEASE_LKGM",
+                "CROS_LKGM",
             ],
         ),
     },
@@ -481,7 +481,7 @@ targets.legacy_matrix_compound_suite(
                 "skylab-rdb-tast",
             ],
             variants = [
-                "CROS_RELEASE_LKGM",
+                "CROS_LKGM",
             ],
         ),
         "chromeos_integration_tests_suite": targets.legacy_matrix_config(
@@ -491,7 +491,7 @@ targets.legacy_matrix_compound_suite(
                 "skylab-rdb-gtest",
             ],
             variants = [
-                "CROS_RELEASE_LKGM",
+                "CROS_LKGM",
             ],
         ),
         "chromeos_device_only_gtests": targets.legacy_matrix_config(
@@ -499,7 +499,7 @@ targets.legacy_matrix_compound_suite(
                 "skylab-rdb-gtest",
             ],
             variants = [
-                "CROS_RELEASE_LKGM",
+                "CROS_LKGM",
             ],
         ),
     },

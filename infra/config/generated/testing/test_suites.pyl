@@ -2517,7 +2517,7 @@
           'skylab-rdb-tast',
         ],
         'variants': [
-          'CROS_RELEASE_LKGM',
+          'CROS_LKGM',
         ],
       },
       'chromeos_chrome_criticalstaging_tast_tests': {
@@ -2526,7 +2526,7 @@
           'skylab-rdb-tast',
         ],
         'variants': [
-          'CROS_RELEASE_LKGM',
+          'CROS_LKGM',
         ],
       },
       'chromeos_chrome_disabled_tast_tests': {
@@ -2535,7 +2535,7 @@
           'skylab-rdb-tast',
         ],
         'variants': [
-          'CROS_RELEASE_LKGM',
+          'CROS_LKGM',
         ],
       },
       'chromeos_integration_tests_suite': {
@@ -2543,7 +2543,7 @@
           'skylab-rdb-gtest',
         ],
         'variants': [
-          'CROS_RELEASE_LKGM',
+          'CROS_LKGM',
         ],
       },
       'chromeos_system_friendly_gtests': {
@@ -2551,7 +2551,7 @@
           'skylab-rdb-gtest',
         ],
         'variants': [
-          'CROS_RELEASE_LKGM',
+          'CROS_LKGM',
         ],
       },
       'chromeos_vaapi_gtests': {
@@ -2559,7 +2559,7 @@
           'skylab-rdb-gtest',
         ],
         'variants': [
-          'CROS_RELEASE_LKGM',
+          'CROS_LKGM',
         ],
       },
     },
@@ -2571,7 +2571,7 @@
           'skylab-rdb-tast',
         ],
         'variants': [
-          'CROS_RELEASE_LKGM',
+          'CROS_LKGM',
         ],
       },
       'chromeos_device_only_gtests': {
@@ -2579,7 +2579,7 @@
           'skylab-rdb-gtest',
         ],
         'variants': [
-          'CROS_RELEASE_LKGM',
+          'CROS_LKGM',
         ],
       },
       'chromeos_integration_tests_suite': {
@@ -2587,7 +2587,7 @@
           'skylab-rdb-gtest',
         ],
         'variants': [
-          'CROS_RELEASE_LKGM',
+          'CROS_LKGM',
         ],
       },
     },
@@ -2599,7 +2599,7 @@
           'skylab-rdb-tast',
         ],
         'variants': [
-          'CROS_RELEASE_LKGM',
+          'CROS_LKGM',
         ],
       },
       'chromeos_device_only_gtests': {
@@ -2607,7 +2607,7 @@
           'skylab-rdb-gtest',
         ],
         'variants': [
-          'CROS_RELEASE_LKGM',
+          'CROS_LKGM',
         ],
       },
       'chromeos_integration_tests_suite': {
@@ -2616,7 +2616,7 @@
           'skylab-rdb-gtest',
         ],
         'variants': [
-          'CROS_RELEASE_LKGM',
+          'CROS_LKGM',
         ],
       },
     },
@@ -2628,7 +2628,7 @@
           'skylab-rdb-tast',
         ],
         'variants': [
-          'CROS_RELEASE_LKGM',
+          'CROS_LKGM',
         ],
       },
       'chromeos_device_only_gtests': {
@@ -2636,7 +2636,7 @@
           'skylab-rdb-gtest',
         ],
         'variants': [
-          'CROS_RELEASE_LKGM',
+          'CROS_LKGM',
         ],
       },
       'chromeos_integration_tests_suite': {
@@ -2644,7 +2644,7 @@
           'skylab-rdb-gtest',
         ],
         'variants': [
-          'CROS_RELEASE_LKGM',
+          'CROS_LKGM',
         ],
       },
     },
@@ -2656,7 +2656,7 @@
           'skylab-rdb-tast',
         ],
         'variants': [
-          'CROS_RELEASE_LKGM',
+          'CROS_LKGM',
         ],
       },
       'chromeos_chrome_criticalstaging_tast_tests': {
@@ -2665,7 +2665,7 @@
           'skylab-rdb-tast',
         ],
         'variants': [
-          'CROS_RELEASE_LKGM',
+          'CROS_LKGM',
         ],
       },
       'chromeos_chrome_disabled_tast_tests': {
@@ -2674,7 +2674,7 @@
           'skylab-rdb-tast',
         ],
         'variants': [
-          'CROS_RELEASE_LKGM',
+          'CROS_LKGM',
         ],
       },
       'chromeos_device_only_gtests': {
@@ -2682,7 +2682,7 @@
           'skylab-rdb-gtest',
         ],
         'variants': [
-          'CROS_RELEASE_LKGM',
+          'CROS_LKGM',
         ],
       },
       'chromeos_integration_tests_suite': {
@@ -2690,7 +2690,7 @@
           'skylab-rdb-gtest',
         ],
         'variants': [
-          'CROS_RELEASE_LKGM',
+          'CROS_LKGM',
         ],
       },
     },
@@ -2702,7 +2702,7 @@
           'skylab-rdb-tast',
         ],
         'variants': [
-          'CROS_RELEASE_LKGM',
+          'CROS_LKGM',
         ],
       },
       'chromeos_device_only_gtests': {
@@ -2710,7 +2710,7 @@
           'skylab-rdb-gtest',
         ],
         'variants': [
-          'CROS_RELEASE_LKGM',
+          'CROS_LKGM',
         ],
       },
     },
@@ -2722,7 +2722,7 @@
           'skylab-rdb-tast',
         ],
         'variants': [
-          'CROS_RELEASE_LKGM',
+          'CROS_LKGM',
         ],
       },
       'chromeos_chrome_criticalstaging_tast_tests': {
@@ -2731,7 +2731,7 @@
           'skylab-rdb-tast',
         ],
         'variants': [
-          'CROS_RELEASE_LKGM',
+          'CROS_LKGM',
         ],
       },
       'chromeos_chrome_disabled_tast_tests': {
@@ -2740,7 +2740,7 @@
           'skylab-rdb-tast',
         ],
         'variants': [
-          'CROS_RELEASE_LKGM',
+          'CROS_LKGM',
         ],
       },
       'chromeos_device_only_gtests': {
@@ -2748,7 +2748,7 @@
           'skylab-rdb-gtest',
         ],
         'variants': [
-          'CROS_RELEASE_LKGM',
+          'CROS_LKGM',
         ],
       },
       'chromeos_integration_tests_suite': {
@@ -2756,7 +2756,7 @@
           'skylab-rdb-gtest',
         ],
         'variants': [
-          'CROS_RELEASE_LKGM',
+          'CROS_LKGM',
         ],
       },
     },
@@ -2768,7 +2768,7 @@
           'skylab-rdb-tast',
         ],
         'variants': [
-          'CROS_RELEASE_LKGM',
+          'CROS_LKGM',
         ],
       },
       'chromeos_chrome_criticalstaging_tast_tests': {
@@ -2777,7 +2777,7 @@
           'skylab-rdb-tast',
         ],
         'variants': [
-          'CROS_RELEASE_LKGM',
+          'CROS_LKGM',
         ],
       },
       'chromeos_chrome_disabled_tast_tests': {
@@ -2786,7 +2786,7 @@
           'skylab-rdb-tast',
         ],
         'variants': [
-          'CROS_RELEASE_LKGM',
+          'CROS_LKGM',
         ],
       },
       'chromeos_integration_tests_suite': {
@@ -2794,7 +2794,7 @@
           'skylab-rdb-gtest',
         ],
         'variants': [
-          'CROS_RELEASE_LKGM',
+          'CROS_LKGM',
         ],
       },
       'chromeos_system_friendly_gtests_fails_vmlab': {
@@ -2803,7 +2803,7 @@
           'skylab-rdb-gtest',
         ],
         'variants': [
-          'CROS_RELEASE_LKGM',
+          'CROS_LKGM',
         ],
       },
       'chromeos_system_friendly_gtests_vmlab': {
@@ -2811,7 +2811,7 @@
           'skylab-rdb-gtest',
         ],
         'variants': [
-          'CROS_RELEASE_LKGM',
+          'CROS_LKGM',
         ],
       },
       'chromeos_vaapi_gtests': {
@@ -2820,7 +2820,7 @@
           'skylab-rdb-gtest',
         ],
         'variants': [
-          'CROS_RELEASE_LKGM',
+          'CROS_LKGM',
         ],
       },
     },
@@ -2832,7 +2832,7 @@
           'skylab-rdb-tast',
         ],
         'variants': [
-          'CROS_RELEASE_LKGM',
+          'CROS_LKGM',
         ],
       },
       'chromeos_chrome_criticalstaging_tast_tests': {
@@ -2841,7 +2841,7 @@
           'skylab-rdb-tast',
         ],
         'variants': [
-          'CROS_RELEASE_LKGM',
+          'CROS_LKGM',
         ],
       },
       'chromeos_chrome_disabled_tast_tests': {
@@ -2850,7 +2850,7 @@
           'skylab-rdb-tast',
         ],
         'variants': [
-          'CROS_RELEASE_LKGM',
+          'CROS_LKGM',
         ],
       },
       'chromeos_integration_tests_suite': {
@@ -2858,7 +2858,7 @@
           'skylab-rdb-gtest',
         ],
         'variants': [
-          'CROS_RELEASE_LKGM',
+          'CROS_LKGM',
         ],
       },
     },
@@ -2870,7 +2870,7 @@
           'skylab-rdb-tast',
         ],
         'variants': [
-          'CROS_RELEASE_LKGM',
+          'CROS_LKGM',
         ],
       },
       'chromeos_chrome_criticalstaging_tast_tests': {
@@ -2879,7 +2879,7 @@
           'skylab-rdb-tast',
         ],
         'variants': [
-          'CROS_RELEASE_LKGM',
+          'CROS_LKGM',
         ],
       },
       'chromeos_chrome_disabled_tast_tests': {
@@ -2888,7 +2888,7 @@
           'skylab-rdb-tast',
         ],
         'variants': [
-          'CROS_RELEASE_LKGM',
+          'CROS_LKGM',
         ],
       },
       'chromeos_integration_tests_suite': {
@@ -2897,7 +2897,7 @@
           'skylab-rdb-gtest',
         ],
         'variants': [
-          'CROS_RELEASE_LKGM',
+          'CROS_LKGM',
         ],
       },
     },
@@ -2909,7 +2909,7 @@
           'skylab-rdb-tast',
         ],
         'variants': [
-          'CROS_RELEASE_LKGM',
+          'CROS_LKGM',
         ],
       },
       'chromeos_chrome_criticalstaging_tast_tests': {
@@ -2918,7 +2918,7 @@
           'skylab-rdb-tast',
         ],
         'variants': [
-          'CROS_RELEASE_LKGM',
+          'CROS_LKGM',
         ],
       },
       'chromeos_chrome_disabled_tast_tests': {
@@ -2927,7 +2927,7 @@
           'skylab-rdb-tast',
         ],
         'variants': [
-          'CROS_RELEASE_LKGM',
+          'CROS_LKGM',
         ],
       },
       'chromeos_device_only_gtests': {
@@ -2935,7 +2935,7 @@
           'skylab-rdb-gtest',
         ],
         'variants': [
-          'CROS_RELEASE_LKGM',
+          'CROS_LKGM',
         ],
       },
       'chromeos_integration_tests_suite': {
@@ -2943,7 +2943,7 @@
           'skylab-rdb-gtest',
         ],
         'variants': [
-          'CROS_RELEASE_LKGM',
+          'CROS_LKGM',
         ],
       },
     },
