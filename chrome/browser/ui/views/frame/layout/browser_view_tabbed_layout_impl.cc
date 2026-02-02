@@ -190,6 +190,10 @@ BrowserViewTabbedLayoutImpl::CalculateHorizontalLayout(
         VerticalTabStripCollapsedState::kCollapsed) {
       // Collapsed tab strip always gets its preferred size.
       min_vertical_tab_strip_width = preferred_vertical_tab_strip_width;
+
+      // Account for grab handle.
+      IncreasePaddingToMinimum(params, GetMinimumGrabHandlePadding());
+
     } else {
       // Minimum size is bounded from below by size of leading exclusion area.
       if (layout.vertical_tab_strip_collapsed_state ==
@@ -199,6 +203,10 @@ BrowserViewTabbedLayoutImpl::CalculateHorizontalLayout(
             base::ClampCeil(
                 params.leading_exclusion.ContentWithPadding().width()));
       }
+
+      // Account for grab handle. This has to be done after the minimum size
+      // calculation.
+      IncreasePaddingToMinimum(params, GetMinimumGrabHandlePadding());
 
       // Figure out the maximum size of the vertical tabstrip that can still
       // accommodate the toolbar.
@@ -213,9 +221,6 @@ BrowserViewTabbedLayoutImpl::CalculateHorizontalLayout(
           std::max(min_vertical_tab_strip_width,
                    std::min(remainder, preferred_vertical_tab_strip_width));
     }
-
-    // Account for grab handle.
-    IncreasePaddingToMinimum(params, GetMinimumGrabHandlePadding());
   }
 
   // Get information about the toolbar-height side panel, if present.
