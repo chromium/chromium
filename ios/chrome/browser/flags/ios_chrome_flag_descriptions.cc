@@ -907,12 +907,6 @@ const char kLensOverlayCustomBottomSheetDescription[] =
     "When enabled the system bottom sheet for the Lens result page is "
     "replaced by a custom bottom sheet presentation";
 
-const char kLensOverlayDisableIPHPanGestureName[] =
-    "Disable Lens Overlay IPH Pan Dismissal";
-const char kLensOverlayDisableIPHPanGestureDescription[] =
-    "Disable the pan gesture that dismisses Lens Overlay IPH. The IPH can "
-    "still be dismissed with a tap.";
-
 const char kLensOverlayEnableLandscapeCompatibilityName[] =
     "Allow Lens overlay to also run in landscape if the feature is enabled";
 const char kLensOverlayEnableLandscapeCompatibilityDescription[] =

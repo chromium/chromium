@@ -612,9 +612,6 @@ bool IsRefactorToolbarsSize() {
 
 BASE_FEATURE(kIPHAblation, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kLensOverlayDisableIPHPanGesture,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 bool IsIPHAblationEnabled() {
   return base::FeatureList::IsEnabled(kIPHAblation);
 }

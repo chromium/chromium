@@ -555,9 +555,6 @@ extern const char kLensOmnientShaderV2EnabledDescription[];
 extern const char kLensOverlayCustomBottomSheetName[];
 extern const char kLensOverlayCustomBottomSheetDescription[];
 
-extern const char kLensOverlayDisableIPHPanGestureName[];
-extern const char kLensOverlayDisableIPHPanGestureDescription[];
-
 extern const char kLensOverlayEnableLandscapeCompatibilityName[];
 extern const char kLensOverlayEnableLandscapeCompatibilityDescription[];
 

@@ -1208,8 +1208,6 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   bubbleViewControllerPresenter.ignoreWebContentAreaInteractions =
       [self shouldIgnoreWebContentAreaInteractionsForFeature:feature];
 
-  BOOL shouldDisablePanRecognizer =
-      base::FeatureList::IsEnabled(kLensOverlayDisableIPHPanGesture);
   BOOL isLensOverlayIPH =
       (feature.name ==
            feature_engagement::kIPHiOSLensOverlayEscapeHatchTipFeature.name ||
@@ -1220,8 +1218,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   BOOL isGeminiImageRemixIPH =
       feature.name == feature_engagement::kIPHiOSGeminiImageRemixFeature.name;
   bubbleViewControllerPresenter.forceDisablePanGestureRecognizer =
-      (shouldDisablePanRecognizer && isLensOverlayIPH) || isPageActionMenuIPH ||
-      isGeminiImageRemixIPH;
+      isLensOverlayIPH || isPageActionMenuIPH || isGeminiImageRemixIPH;
 
   return bubbleViewControllerPresenter;
 }
