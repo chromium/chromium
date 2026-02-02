@@ -358,16 +358,16 @@ robolectric_library("payments_autofill_junit_tests") {
   resources_package = "org.chromium.components.autofill"
 
   sources = [
-    "javatests/src/org/chromium/components/autofill/payments/AutofillSaveCardUiInfoTest.java",
-    "javatests/src/org/chromium/components/autofill/payments/AutofillSaveIbanUiInfoTest.java",
-    "javatests/src/org/chromium/components/autofill/payments/BankAccountTest.java",
-    "javatests/src/org/chromium/components/autofill/payments/BnplIssuerContextTest.java",
-    "javatests/src/org/chromium/components/autofill/payments/BnplIssuerForSettingsTest.java",
-    "javatests/src/org/chromium/components/autofill/payments/BnplIssuerTosDetailTest.java",
-    "javatests/src/org/chromium/components/autofill/payments/CardDetailTest.java",
-    "javatests/src/org/chromium/components/autofill/payments/EwalletTest.java",
-    "javatests/src/org/chromium/components/autofill/payments/LegalMessageLineTest.java",
-    "javatests/src/org/chromium/components/autofill/payments/PaymentInstrumentTest.java",
+    "junit/src/org/chromium/components/autofill/payments/AutofillSaveCardUiInfoTest.java",
+    "junit/src/org/chromium/components/autofill/payments/AutofillSaveIbanUiInfoTest.java",
+    "junit/src/org/chromium/components/autofill/payments/BankAccountTest.java",
+    "junit/src/org/chromium/components/autofill/payments/BnplIssuerContextTest.java",
+    "junit/src/org/chromium/components/autofill/payments/BnplIssuerForSettingsTest.java",
+    "junit/src/org/chromium/components/autofill/payments/BnplIssuerTosDetailTest.java",
+    "junit/src/org/chromium/components/autofill/payments/CardDetailTest.java",
+    "junit/src/org/chromium/components/autofill/payments/EwalletTest.java",
+    "junit/src/org/chromium/components/autofill/payments/LegalMessageLineTest.java",
+    "junit/src/org/chromium/components/autofill/payments/PaymentInstrumentTest.java",
   ]
   deps = [
     ":autofill_payments_java_resources",
@@ -388,7 +388,7 @@ robolectric_library("main_autofill_junit_tests") {
   resources_package = "org.chromium.components.autofill"
 
   sources =
-      [ "javatests/src/org/chromium/components/autofill/LoyaltyCardTest.java" ]
+      [ "junit/src/org/chromium/components/autofill/LoyaltyCardTest.java" ]
   deps = [
     ":main_autofill_java",
     "//base:base_java_test_support",
