@@ -113,6 +113,7 @@ source_set("unit_tests") {
   deps = [
     "//base/test:test_support",
     "//components/bookmarks/browser",
+    "//ios/chrome/browser/bookmarks/folder_chooser/coordinator",
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/bookmarks/model:test_support",
     "//ios/chrome/browser/bookmarks/ui_bundled/home",
