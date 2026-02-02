@@ -46,13 +46,15 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.R;
-import org.chromium.chrome.browser.autofill.editors.common.DropdownFieldView;
 import org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.EditorItem;
 import org.chromium.chrome.browser.autofill.editors.common.EditorComponentsViewBinder;
 import org.chromium.chrome.browser.autofill.editors.common.EditorDialogToolbar;
 import org.chromium.chrome.browser.autofill.editors.common.EditorObserverForTest;
-import org.chromium.chrome.browser.autofill.editors.common.FieldView;
-import org.chromium.chrome.browser.autofill.editors.common.TextFieldView;
+import org.chromium.chrome.browser.autofill.editors.common.dropdown_field.DropdownFieldView;
+import org.chromium.chrome.browser.autofill.editors.common.dropdown_field.DropdownFieldViewBinder;
+import org.chromium.chrome.browser.autofill.editors.common.field.FieldView;
+import org.chromium.chrome.browser.autofill.editors.common.text_field.TextFieldView;
+import org.chromium.chrome.browser.autofill.editors.common.text_field.TextFieldViewBinder;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -516,7 +518,7 @@ public class EditorDialogView extends AlwaysDismissedDialog
                             PropertyModelChangeProcessor.create(
                                     editorItem.model,
                                     dropdownView,
-                                    EditorComponentsViewBinder::bindDropdownFieldView));
+                                    DropdownFieldViewBinder::bindDropdownFieldView));
                     mFieldViews.add(dropdownView);
                     mDropdownFields.add(dropdownView.getDropdown());
                     childView = dropdownView.getLayout();
@@ -529,7 +531,7 @@ public class EditorDialogView extends AlwaysDismissedDialog
                             PropertyModelChangeProcessor.create(
                                     editorItem.model,
                                     inputLayout,
-                                    EditorComponentsViewBinder::bindTextFieldView));
+                                    TextFieldViewBinder::bindTextFieldView));
                     mFieldViews.add(inputLayout);
                     mEditableTextFields.add(inputLayout.getEditText());
                     childView = inputLayout;

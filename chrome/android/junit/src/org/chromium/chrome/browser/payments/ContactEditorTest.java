@@ -22,13 +22,13 @@ import static org.chromium.chrome.browser.autofill.editors.address.EditorPropert
 import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.ItemType.NOTICE;
 import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.ItemType.TEXT_INPUT;
 import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.isEditable;
-import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.FieldProperties.ERROR_MESSAGE;
-import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.FieldProperties.IS_REQUIRED;
-import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.FieldProperties.LABEL;
-import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.FieldProperties.VALUE;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.IMPORTANT_FOR_ACCESSIBILITY;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.NOTICE_TEXT;
-import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.TextFieldProperties.TEXT_FIELD_TYPE;
+import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.ERROR_MESSAGE;
+import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.IS_REQUIRED;
+import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.LABEL;
+import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.VALUE;
+import static org.chromium.chrome.browser.autofill.editors.common.text_field.TextFieldProperties.TEXT_FIELD_TYPE;
 
 import android.app.Activity;
 

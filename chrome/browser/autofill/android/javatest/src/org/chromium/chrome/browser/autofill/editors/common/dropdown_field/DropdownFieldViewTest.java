@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.autofill.editors.common;
+package org.chromium.chrome.browser.autofill.editors.common.dropdown_field;
 
 import static org.junit.Assert.assertFalse;
 
-import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.DropdownFieldProperties.DROPDOWN_ALL_KEYS;
-import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.DropdownFieldProperties.DROPDOWN_KEY_VALUE_LIST;
-import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.FieldProperties.FOCUSED;
-import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.FieldProperties.LABEL;
+import static org.chromium.chrome.browser.autofill.editors.common.dropdown_field.DropdownFieldProperties.DROPDOWN_ALL_KEYS;
+import static org.chromium.chrome.browser.autofill.editors.common.dropdown_field.DropdownFieldProperties.DROPDOWN_KEY_VALUE_LIST;
+import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.FOCUSED;
+import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.LABEL;
 
 import android.view.View;
 import android.view.ViewGroup;
@@ -79,7 +79,7 @@ public class DropdownFieldViewTest {
         DropdownFieldView dropdown =
                 new DropdownFieldView(mActivityTestRule.getActivity(), mContentView, model);
         PropertyModelChangeProcessor.create(
-                model, dropdown, EditorComponentsViewBinder::bindDropdownFieldView);
+                model, dropdown, DropdownFieldViewBinder::bindDropdownFieldView);
         model.set(FOCUSED, true);
 
         mOtherFocusableField.requestFocus();

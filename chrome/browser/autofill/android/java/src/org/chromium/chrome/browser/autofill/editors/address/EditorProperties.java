@@ -4,9 +4,9 @@
 
 package org.chromium.chrome.browser.autofill.editors.address;
 
-import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.FieldProperties.ERROR_MESSAGE;
-import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.FieldProperties.FOCUSED;
-import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.FieldProperties.VALIDATOR;
+import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.ERROR_MESSAGE;
+import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.FOCUSED;
+import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.VALIDATOR;
 
 import androidx.annotation.IntDef;
 

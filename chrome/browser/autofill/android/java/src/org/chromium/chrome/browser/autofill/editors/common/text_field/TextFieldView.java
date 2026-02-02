@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.autofill.editors.common;
+package org.chromium.chrome.browser.autofill.editors.common.text_field;
 
-import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.FieldProperties.ERROR_MESSAGE;
-import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.FieldProperties.FOCUSED;
-import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.FieldProperties.IS_REQUIRED;
-import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.FieldProperties.VALUE;
+import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.ERROR_MESSAGE;
+import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.FOCUSED;
+import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.IS_REQUIRED;
+import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.VALUE;
 
 import android.content.Context;
 import android.text.Editable;
@@ -33,6 +33,9 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.R;
+import org.chromium.chrome.browser.autofill.editors.common.EditorObserverForTest;
+import org.chromium.chrome.browser.autofill.editors.common.field.EditorFieldValidator;
+import org.chromium.chrome.browser.autofill.editors.common.field.FieldView;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.text.EmptyTextWatcher;
 

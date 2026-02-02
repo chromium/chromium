@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.autofill.editors.common;
+package org.chromium.chrome.browser.autofill.editors.common.text_field;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -11,11 +11,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.FieldProperties.IS_REQUIRED;
-import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.FieldProperties.LABEL;
-import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.FieldProperties.VALIDATOR;
-import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.FieldProperties.VALUE;
-import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.TextFieldProperties.TEXT_ALL_KEYS;
+import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.IS_REQUIRED;
+import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.LABEL;
+import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.VALIDATOR;
+import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.VALUE;
+import static org.chromium.chrome.browser.autofill.editors.common.text_field.TextFieldProperties.TEXT_ALL_KEYS;
 
 import android.app.Activity;
 import android.text.Editable;
@@ -36,6 +36,8 @@ import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.autofill.R;
+import org.chromium.chrome.browser.autofill.editors.common.field.EditorFieldValidator;
+import org.chromium.chrome.browser.autofill.editors.common.field.FieldView;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.text.EmptyTextWatcher;
@@ -67,8 +69,7 @@ public final class TextFieldViewUnitTest {
     private TextFieldView attachTextFieldView(PropertyModel model) {
         TextFieldView field = new TextFieldView(mActivity, model);
         mContentView.addView(field);
-        PropertyModelChangeProcessor.create(
-                model, field, EditorComponentsViewBinder::bindTextFieldView);
+        PropertyModelChangeProcessor.create(model, field, TextFieldViewBinder::bindTextFieldView);
         return field;
     }
 
