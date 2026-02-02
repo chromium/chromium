@@ -82,7 +82,8 @@ enum ActuationEligibility {
   kEligible,
   kMissingAccountCapability,
   kMissingChromeBenefits,
-  kManagedOrDataProtected,
+  kDisabledByPolicy,
+  kEnterpriseWithoutManagement,
   kPlatformUnsupported,
 };
 

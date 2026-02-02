@@ -25,12 +25,20 @@ enum class EnterprisePolicyBlockReason {
 class EnterprisePolicyChecker {
  public:
   enum class CannotActReason {
+    // Browser can actuate.
     kNone,
-    kManagedOrDataProtected,
+    // The enterprise policy disables the actuation feature. Only applicable to
+    // managed clients (Profile level, browser level or machine level).
+    kDisabledByPolicy,
+    // The account is not eligible for the actuation.
     kAccountCapabilityIneligible,
     // The account is not subscribed to one of the required AI subscription
     // tiers.
     kAccountMissingChromeBenefits,
+    // An enterprise account is logged in but there is no management to deliver
+    // the policy. Actuation is disabled because the policy pref default value
+    // is disabled.
+    kEnterpriseWithoutManagement,
   };
 
   // Whether or not the client has policy permissions to use Actor. This can

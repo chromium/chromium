@@ -646,9 +646,13 @@ mojom::ProfileEnablementPtr BuildProfileEnablement(
         result->actuation_eligibility =
             mojom::ActuationEligibility::kMissingChromeBenefits;
         break;
-      case CannotActReason::kManagedOrDataProtected:
+      case CannotActReason::kDisabledByPolicy:
         result->actuation_eligibility =
-            mojom::ActuationEligibility::kManagedOrDataProtected;
+            mojom::ActuationEligibility::kDisabledByPolicy;
+        break;
+      case CannotActReason::kEnterpriseWithoutManagement:
+        result->actuation_eligibility =
+            mojom::ActuationEligibility::kEnterpriseWithoutManagement;
         break;
       case CannotActReason::kNone:
         NOTREACHED();

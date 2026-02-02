@@ -88,8 +88,10 @@ std::ostream& operator<<(std::ostream& os,
       return os << "kAccountCapabilityIneligible";
     case ActorPolicyChecker::CannotActReason::kAccountMissingChromeBenefits:
       return os << "kAccountMissingChromeBenefits";
-    case ActorPolicyChecker::CannotActReason::kManagedOrDataProtected:
-      return os << "kManagedOrDataProtected";
+    case ActorPolicyChecker::CannotActReason::kDisabledByPolicy:
+      return os << "kDisabledByPolicy";
+    case ActorPolicyChecker::CannotActReason::kEnterpriseWithoutManagement:
+      return os << "kEnterpriseWithoutManagement";
   }
 }
 
@@ -158,10 +160,7 @@ bool HasUrlAllowlist(Profile& profile) {
   return !allowlist.empty();
 }
 
-// Returns true if !is_enterprise_account_data_protected &&
-// !AccountInfo::IsManaged().
-bool IsAccountEligibleForActuation(Profile& profile,
-                                   AggregatedJournal& journal) {
+bool IsEnterpriseAccount(Profile& profile, AggregatedJournal& journal) {
   // Note: both `is_enterprise_account_data_protected` and
   // `AccountInfo::IsManaged()` check for Workspace accounts. They are backed
   // by two different Google API endpoints. Both are checked for completeness.
@@ -196,15 +195,15 @@ bool IsAccountEligibleForActuation(Profile& profile,
           account_info.account_id);
   auto is_managed = extended_account_info.IsManaged();
 
-  journal.Log(GURL(), TaskId(), "IsAccountEligibleForActuation",
+  journal.Log(GURL(), TaskId(), "IsEnterpriseAccount",
               JournalDetailsBuilder()
                   .Add("is_enterprise_account_data_protected",
                        base::ToString(is_enterprise_account_data_protected))
                   .Add("is_managed", signin::TriboolToString(is_managed))
                   .Build());
 
-  return !is_enterprise_account_data_protected &&
-         (is_managed == signin::Tribool::kFalse);
+  return is_enterprise_account_data_protected ||
+         (is_managed == signin::Tribool::kTrue);
 }
 
 // TODO(crbug.com/471065012): This is a consumer check so it should be moved to
@@ -409,14 +408,11 @@ ActorPolicyChecker::ComputeActOnWebCapability() {
     return log_and_return(CanActOutcome::kYes, "is likely dogfood client");
   }
 
-  bool account_eligible_for_actuation =
-      IsAccountEligibleForActuation(*profile_, *journal_);
-  if (!account_eligible_for_actuation) {
-    return log_and_return(CanActOutcome::kNo,
-                          CannotActReason::kManagedOrDataProtected);
-  }
+  // Consumer checks.
 
-  if (!IsBrowserManaged(*profile_)) {
+  bool enterprise_account = IsEnterpriseAccount(*profile_, *journal_);
+  bool has_management = IsBrowserManaged(*profile_);
+  if (!enterprise_account && !has_management) {
     if (AccountHasChromeBenefits(*profile_, *journal_)) {
       // Only respect the consumer check if the browser is not managed.
       return log_and_return(CanActOutcome::kYes,
@@ -425,6 +421,30 @@ ActorPolicyChecker::ComputeActOnWebCapability() {
     return log_and_return(CanActOutcome::kNo,
                           CannotActReason::kAccountMissingChromeBenefits);
   }
+
+  // Chrome Enterprise policy checks.
+
+  if (enterprise_account && !has_management) {
+    // Edge (error) case: an enterprise account without management. This means
+    // that policy delivery is not trustworthy (because the policy delivery over
+    // a domain requires management). Fallback to the default policy pref value.
+    // This should be extremely rare.
+    bool default_pref_enabled =
+        features::kGlicActorEnterprisePrefDefault.Get() ==
+        features::GlicActorEnterprisePrefDefault::kEnabledByDefault;
+    if (default_pref_enabled) {
+      return log_and_return(
+          CanActOutcome::kYes,
+          "Enterprise account without management: default pref enabled");
+    } else {
+      return log_and_return(CanActOutcome::kNo,
+                            CannotActReason::kEnterpriseWithoutManagement);
+    }
+  }
+
+  // From this point on, the browser must have some level of management. Both
+  // regular accounts and enterprise accounts therefore are subject to policy
+  // control.
 
   if (ActuationEnabledForManagedUser(*profile_, *journal_)) {
     return log_and_return(CanActOutcome::kYes,
@@ -437,15 +457,14 @@ ActorPolicyChecker::ComputeActOnWebCapability() {
     // inclusion in the allow list. If it's not explicitly allowed by the
     // list, then we perform the blocking there.
     return log_and_return(CanActOutcome::kByAllowlistOnly,
-                          CannotActReason::kManagedOrDataProtected);
+                          CannotActReason::kDisabledByPolicy);
   }
   // We reach this point only if:
   // - Account is eligible for actuation
   // - Browser has management
   //   - Actuation is disabled by policy
   //   - No URL allowlist is present
-  return log_and_return(CanActOutcome::kNo,
-                        CannotActReason::kManagedOrDataProtected);
+  return log_and_return(CanActOutcome::kNo, CannotActReason::kDisabledByPolicy);
 #endif  // !BUILDFLAG(ENABLE_GLIC)
 }
 

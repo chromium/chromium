@@ -47,15 +47,17 @@ export class GlicInternalsAppElement extends CrLitElement {
       string {
     switch (eligibility) {
       case ActuationEligibility.kEligible:
-        return 'eligible';
+        return 'Eligible';
       case ActuationEligibility.kMissingAccountCapability:
-        return 'missing account capability';
+        return 'Missing account capability';
       case ActuationEligibility.kMissingChromeBenefits:
-        return 'missing Chrome benefits';
-      case ActuationEligibility.kManagedOrDataProtected:
-        return 'managed or data protected';
+        return 'Missing Chrome benefits';
+      case ActuationEligibility.kDisabledByPolicy:
+        return 'Disabled by policy';
       case ActuationEligibility.kPlatformUnsupported:
-        return 'platform unsupported';
+        return 'Platform unsupported';
+      case ActuationEligibility.kEnterpriseWithoutManagement:
+        return 'Enterprise account without management. Default pref disabled.';
       default:
         return 'unknown';
     }

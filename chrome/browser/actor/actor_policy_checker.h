@@ -89,7 +89,7 @@ class ActorPolicyChecker : public EnterprisePolicyChecker,
 
   std::pair<CanActOutcome, CannotActReason> ComputeActOnWebCapability();
 
-  // This class must be transitively owned by Proile ancannot outlive it.
+  // This class must be transitively owned by a Profile and cannot outlive it.
   raw_ptr<Profile> profile_;
 
   // Client callback to run whenever the can_act_on_web_ value changes.
