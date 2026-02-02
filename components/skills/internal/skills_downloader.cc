@@ -56,7 +56,7 @@ constexpr net::NetworkTrafficAnnotationTag kSkillsDownloaderNetworkTag =
       })");
 
 inline constexpr char kSkillsDownloaderGstaticUrl[] =
-    "https://www.gstatic.com/chrome/webstore/skills/first_party_skills.pb";
+    "https://www.gstatic.com/chrome/skills/first_party_skills_binary";
 
 std::unique_ptr<network::SimpleURLLoader> CreateSimpleURLLoader(
     const GURL& url,

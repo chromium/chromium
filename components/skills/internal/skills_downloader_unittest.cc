@@ -22,7 +22,7 @@ namespace {
 
 // This must match kSkillsDownloaderGstaticUrl in skills_downloader.cc
 inline constexpr char kSkillsDownloaderGstaticUrl[] =
-    "https://www.gstatic.com/chrome/webstore/skills/first_party_skills.pb";
+    "https://www.gstatic.com/chrome/skills/first_party_skills_binary";
 
 std::string CreateValidSkillsListString() {
   skills::proto::SkillsList skills_list;
