@@ -154,7 +154,7 @@ views::ProposedLayout VerticalTabGroupView::CalculateProposedLayout(
   // Layout children in order. Children will have their preferred height and
   // fill available width.
   for (auto* child : children) {
-    gfx::Rect bounds = gfx::Rect(child->GetPreferredSize());
+    gfx::Rect bounds = gfx::Rect(child->GetPreferredSize(size_bounds));
 
     auto drag_data = GetVisualDataForDraggedView(*child);
     CHECK(!drag_data || !drag_data->should_hide);
