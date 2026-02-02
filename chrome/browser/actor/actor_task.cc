@@ -137,6 +137,7 @@ ActorTask::ActorTask(base::PassKey<ActorKeyedService, ActorTask>,
       ui_weak_ptr_factory_(ui_event_dispatcher_.get()) {
   CHECK(policy_checker);
   CHECK(profile_);
+  CHECK(!id_.is_null());
   execution_engine_ = ExecutionEngine::Create(*this);
 }
 
