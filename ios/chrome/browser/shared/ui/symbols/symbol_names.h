@@ -82,6 +82,7 @@ extern NSString* const kTextSparkSymbol;
 extern NSString* const kIncognitoCircleFillSymbol;
 extern NSString* const kPlusCircleFillSymbol;
 extern NSString* const kPDFFillSymbol;
+extern NSString* const kLineThreeSparkSymbol;
 
 // Use custom symbol for camera because the default video icon in iOS should
 // always represent “Apple Facetime”.
