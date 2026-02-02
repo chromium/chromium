@@ -34,7 +34,7 @@ std::unique_ptr<KeyedService> BuildAuthenticationService(
     DelegateFactory delegate_factory,
     ProfileIOS* profile) {
   auto service = std::make_unique<AuthenticationService>(
-      profile->GetPrefs(),
+      profile, profile->GetPrefs(),
       ChromeAccountManagerServiceFactory::GetForProfile(profile),
       IdentityManagerFactory::GetForProfile(profile),
       SyncServiceFactory::GetForProfile(profile));
