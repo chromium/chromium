@@ -181,22 +181,16 @@ class BookmarksDataTypeErrorChecker : public SingleClientStatusChangeChecker {
   }
 };
 
-class SingleClientBookmarksSyncTest
+class SingleClientParameterizedBookmarksSyncTestBase
     : public SyncTest,
       public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
-  SingleClientBookmarksSyncTest() : SyncTest(SINGLE_CLIENT) {
+  SingleClientParameterizedBookmarksSyncTestBase() : SyncTest(SINGLE_CLIENT) {
     if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
       feature_overrides_.InitAndEnableFeature(
           syncer::kReplaceSyncPromosWithSignInPromos);
     }
   }
-
-  SingleClientBookmarksSyncTest(const SingleClientBookmarksSyncTest&) = delete;
-  SingleClientBookmarksSyncTest& operator=(
-      const SingleClientBookmarksSyncTest&) = delete;
-
-  ~SingleClientBookmarksSyncTest() override = default;
 
   SyncTest::SetupSyncMode GetSetupSyncMode() const override {
     return GetParam();
@@ -209,6 +203,22 @@ class SingleClientBookmarksSyncTest
                : StoreType::kLocalOrSyncableStore;
   }
 
+ private:
+  base::test::ScopedFeatureList feature_overrides_;
+};
+
+class SingleClientBookmarksSyncTest
+    : public SingleClientParameterizedBookmarksSyncTestBase {
+ public:
+  SingleClientBookmarksSyncTest() = default;
+
+  SingleClientBookmarksSyncTest(const SingleClientBookmarksSyncTest&) = delete;
+  SingleClientBookmarksSyncTest& operator=(
+      const SingleClientBookmarksSyncTest&) = delete;
+
+  ~SingleClientBookmarksSyncTest() override = default;
+
+ protected:
   sync_bookmarks::BookmarkSyncService* GetBookmarkSyncService() const {
     return GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly
                ? AccountBookmarkSyncServiceFactory::GetForProfile(
@@ -216,9 +226,6 @@ class SingleClientBookmarksSyncTest
                : LocalOrSyncableBookmarkSyncServiceFactory::GetForProfile(
                      GetProfile(kSingleProfileIndex));
   }
-
- private:
-  base::test::ScopedFeatureList feature_overrides_;
 };
 
 INSTANTIATE_TEST_SUITE_P(,
@@ -2391,10 +2398,9 @@ IN_PROC_BROWSER_TEST_F(
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 class SingleClientBookmarksSyncTestWithEnabledClientTagHashMigration
-    : public SyncTest {
+    : public SingleClientParameterizedBookmarksSyncTestBase {
  public:
-  SingleClientBookmarksSyncTestWithEnabledClientTagHashMigration()
-      : SyncTest(SINGLE_CLIENT) {
+  SingleClientBookmarksSyncTestWithEnabledClientTagHashMigration() {
     features_override_.InitAndEnableFeature(
         switches::kSyncMigrateBookmarksWithoutClientTagHash);
   }
@@ -2403,7 +2409,13 @@ class SingleClientBookmarksSyncTestWithEnabledClientTagHashMigration
   base::test::ScopedFeatureList features_override_;
 };
 
-IN_PROC_BROWSER_TEST_F(
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    SingleClientBookmarksSyncTestWithEnabledClientTagHashMigration,
+    GetSyncTestModes(),
+    testing::PrintToStringParamName());
+
+IN_PROC_BROWSER_TEST_P(
     SingleClientBookmarksSyncTestWithEnabledClientTagHashMigration,
     MigratePreExistingBookmarks) {
   const base::Uuid kOriginalFolder1Uuid = base::Uuid::GenerateRandomV4();
@@ -2463,7 +2475,7 @@ IN_PROC_BROWSER_TEST_F(
 
   ASSERT_TRUE(SetupSync());
   ASSERT_THAT(
-      GetBookmarkBarNode(kSingleProfileIndex)->children(),
+      GetBookmarkBarNode(kSingleProfileIndex, GetStoreType())->children(),
       ElementsAre(
           IsFolder(
               u"Folder1",
