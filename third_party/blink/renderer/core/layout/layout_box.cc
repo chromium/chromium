@@ -2287,6 +2287,12 @@ void LayoutBox::LocationChanged() {
   // this object for paint invalidation.
   if (!NeedsLayout())
     SetShouldCheckForPaintInvalidation();
+
+  if (RuntimeEnabledFeatures::OffsetPathTransformUpdateFixEnabled()) {
+    if (HasLayer() && StyleRef().HasOffset()) {
+      Layer()->UpdateTransform();
+    }
+  }
 }
 
 void LayoutBox::SizeChanged() {

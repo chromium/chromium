@@ -3742,6 +3742,12 @@
       status: "stable",
     },
     {
+      // Kill switch for a fix to offset-path transform invalidation for
+      // https://crbug.com/463409688.
+      name: "OffsetPathTransformUpdateFix",
+      status: "stable",
+    },
+    {
       name: "OmitBlurEventOnElementRemoval",
       status: "test"
     },
