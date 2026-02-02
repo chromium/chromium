@@ -62,6 +62,8 @@ export class ProfileTypeChoiceElement extends ProfileTypeChoiceElementBase {
        * The disclaimer for managed devices.
        */
       managedDeviceDisclaimer_: {type: Boolean},
+
+      usePrimaryAndTonalButtons_: {type: Boolean},
     };
   }
 
@@ -70,6 +72,8 @@ export class ProfileTypeChoiceElement extends ProfileTypeChoiceElementBase {
   accessor profileCreationInProgress: boolean = false;
   protected accessor managedDeviceDisclaimer_: boolean =
       loadTimeData.getString('managedDeviceDisclaimer').length > 0;
+  private accessor usePrimaryAndTonalButtons_: boolean =
+      loadTimeData.getBoolean('usePrimaryAndTonalButtonsForPromos');
   private manageProfilesBrowserProxy_: ManageProfilesBrowserProxy =
       ManageProfilesBrowserProxyImpl.getInstance();
 
@@ -115,6 +119,10 @@ export class ProfileTypeChoiceElement extends ProfileTypeChoiceElementBase {
   protected getBackButtonAriaLabel_(): string {
     return this.i18n(
         'backButtonAriaLabel', this.i18n('profileTypeChoiceTitle'));
+  }
+
+  protected getNotNowButtonClass_(): string {
+    return this.usePrimaryAndTonalButtons_ ? 'tonal-button' : '';
   }
 }
 

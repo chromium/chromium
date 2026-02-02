@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import type {SignInPromoElement} from './sign_in_promo.js';
 
@@ -42,9 +41,7 @@ export function getHtml(this: SignInPromoElement) {
 <div id="buttonRow" class="fade-in tangible-sync-style">
   <div id="buttonContainer">
     <cr-button id="declineSignInButton"
-        class="${loadTimeData.getBoolean('usePrimaryAndTonalButtonsForPromos')
-            ? 'tonal-button'
-            : ''}"
+        class="${this.getDeclineButtonClass_()}"
         ?disabled="${this.areButtonsDisabled_()}"
         @click="${this.onContinueWithoutAccountClick_}">
       $i18n{declineSignInButtonTitle}

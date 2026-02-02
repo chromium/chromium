@@ -8,6 +8,7 @@ import 'chrome://resources/cr_elements/icons.html.js';
 
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {assert} from 'chrome://resources/js/assert.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {ManageProfilesBrowserProxy, ProfileState} from './manage_profiles_browser_proxy.js';
@@ -43,11 +44,14 @@ export class ProfileSwitchElement extends CrLitElement {
     return {
       profileState_: {type: Object},
       isProfileStateInitialized_: {type: Boolean},
+      usePrimaryAndTonalButtons_: {type: Boolean},
     };
   }
 
   protected accessor profileState_: ProfileState = createDummyProfileState();
   protected accessor isProfileStateInitialized_: boolean = false;
+  private accessor usePrimaryAndTonalButtons_: boolean =
+      loadTimeData.getBoolean('usePrimaryAndTonalButtonsForPromos');
   private manageProfilesBrowserProxy_: ManageProfilesBrowserProxy =
       ManageProfilesBrowserProxyImpl.getInstance();
 
@@ -69,6 +73,10 @@ export class ProfileSwitchElement extends CrLitElement {
   protected onSwitchClick_() {
     this.manageProfilesBrowserProxy_.confirmProfileSwitch(
         this.profileState_.profilePath);
+  }
+
+  protected getCancelButtonClass_(): string {
+    return this.usePrimaryAndTonalButtons_ ? 'tonal-button' : '';
   }
 }
 

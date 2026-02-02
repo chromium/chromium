@@ -106,6 +106,7 @@ export class ManagedUserProfileNoticeAppElement extends
       separateDataChoiceDetails_: {type: String},
       mergeDataChoiceTitle_: {type: String},
       mergeDataChoiceDetails_: {type: String},
+      usePrimaryAndTonalButtons_: {type: Boolean},
     };
   }
 
@@ -134,6 +135,8 @@ export class ManagedUserProfileNoticeAppElement extends
       loadTimeData.getString('processingSubtitle');
   protected accessor showUserDataHandling_: boolean = false;
   protected accessor selectedDataHandling_: BrowsingDataHandling|null = null;
+  private accessor usePrimaryAndTonalButtons_: boolean =
+      loadTimeData.getBoolean('usePrimaryAndTonalButtonsForPromos');
 
   protected accessor valuePropTitle_: string = '';
   protected accessor valuePropSubtitle_: string = '';
@@ -306,6 +309,10 @@ export class ManagedUserProfileNoticeAppElement extends
   protected onDataHandlingChanged_(
       e: CustomEvent<{value: BrowsingDataHandling}>) {
     this.selectedDataHandling_ = e.detail.value;
+  }
+
+  protected getCancelButtonClass_(): string {
+    return this.usePrimaryAndTonalButtons_ ? 'tonal-button' : '';
   }
 }
 

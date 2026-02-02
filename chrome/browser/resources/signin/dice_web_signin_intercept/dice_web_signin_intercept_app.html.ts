@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import type {DiceWebSigninInterceptAppElement} from './dice_web_signin_intercept_app.js';
 
@@ -83,9 +82,7 @@ export function getHtml(this: DiceWebSigninInterceptAppElement) {
         ${this.interceptionParameters_.confirmButtonLabel}
       </cr-button>
       <cr-button id="cancelButton"
-          class="${loadTimeData.getBoolean('usePrimaryAndTonalButtonsForPromos')
-            ? 'tonal-button'
-            : ''}"
+          class="${this.getCancelButtonClass_()}"
           @click="${this.onCancel_}"
           ?disabled="${this.acceptButtonClicked_}">
         ${this.interceptionParameters_.cancelButtonLabel}

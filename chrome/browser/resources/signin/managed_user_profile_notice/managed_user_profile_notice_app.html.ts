@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {ManagedUserProfileNoticeAppElement} from './managed_user_profile_notice_app.js';
 
@@ -78,9 +77,7 @@ ${html`
       ${this.proceedLabel_}
     </cr-button>
     <cr-button id="cancel-button"
-        class="${loadTimeData.getBoolean('usePrimaryAndTonalButtonsForPromos')
-            ? 'tonal-button'
-            : ''}"
+        class="${this.getCancelButtonClass_()}"
         @click="${this.onCancel_}" ?hidden="${!this.allowCancel_()}">
       ${this.cancelLabel_}
     </cr-button>
