@@ -760,8 +760,8 @@ AdAuctionServiceImpl::GetClientSecurityState() {
       GetFrame()->BuildClientSecurityState();
   // Ensure all Local Network Access requests are blocked as this could lead to
   // information leakage.
-  frame_state->local_network_access_request_policy =
-      network::mojom::LocalNetworkAccessRequestPolicy::kBlock;
+  frame_state->private_network_request_policy =
+      network::mojom::PrivateNetworkRequestPolicy::kBlock;
   return frame_state;
 }
 

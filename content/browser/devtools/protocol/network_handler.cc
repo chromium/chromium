@@ -4593,25 +4593,24 @@ void NetworkHandler::OnPolicyContainerHostUpdated() {
   frontend()->PolicyUpdated();
 }
 
-String NetworkHandler::BuildLocalNetworkAccessRequestPolicy(
-    network::mojom::LocalNetworkAccessRequestPolicy policy) {
+String NetworkHandler::BuildPrivateNetworkRequestPolicy(
+    network::mojom::PrivateNetworkRequestPolicy policy) {
   switch (policy) {
-    case network::mojom::LocalNetworkAccessRequestPolicy::kAllow:
-      return protocol::Network::LocalNetworkAccessRequestPolicyEnum::Allow;
-    case network::mojom::LocalNetworkAccessRequestPolicy::kBlock:
+    case network::mojom::PrivateNetworkRequestPolicy::kAllow:
+      return protocol::Network::PrivateNetworkRequestPolicyEnum::Allow;
+    case network::mojom::PrivateNetworkRequestPolicy::kBlock:
       // TODO(crbug.com/40154414): Fix this.
-      return protocol::Network::LocalNetworkAccessRequestPolicyEnum::
+      return protocol::Network::PrivateNetworkRequestPolicyEnum::
           BlockFromInsecureToMorePrivate;
-    case network::mojom::LocalNetworkAccessRequestPolicy::kWarn:
+    case network::mojom::PrivateNetworkRequestPolicy::kWarn:
       // TODO(crbug.com/40154414): Fix this.
-      return protocol::Network::LocalNetworkAccessRequestPolicyEnum::
+      return protocol::Network::PrivateNetworkRequestPolicyEnum::
           WarnFromInsecureToMorePrivate;
-    case network::mojom::LocalNetworkAccessRequestPolicy::kPermissionBlock:
-      return protocol::Network::LocalNetworkAccessRequestPolicyEnum::
+    case network::mojom::PrivateNetworkRequestPolicy::kPermissionBlock:
+      return protocol::Network::PrivateNetworkRequestPolicyEnum::
           PermissionBlock;
-    case network::mojom::LocalNetworkAccessRequestPolicy::kPermissionWarn:
-      return protocol::Network::LocalNetworkAccessRequestPolicyEnum::
-          PermissionWarn;
+    case network::mojom::PrivateNetworkRequestPolicy::kPermissionWarn:
+      return protocol::Network::PrivateNetworkRequestPolicyEnum::PermissionWarn;
   }
 }
 
@@ -4633,9 +4632,9 @@ std::unique_ptr<protocol::Network::ClientSecurityState>
 NetworkHandler::MaybeBuildClientSecurityState(
     const network::mojom::ClientSecurityStatePtr& state) {
   return state ? protocol::Network::ClientSecurityState::Create()
-                     .SetLocalNetworkAccessRequestPolicy(
-                         BuildLocalNetworkAccessRequestPolicy(
-                             state->local_network_access_request_policy))
+                     .SetPrivateNetworkRequestPolicy(
+                         BuildPrivateNetworkRequestPolicy(
+                             state->private_network_request_policy))
                      .SetInitiatorIPAddressSpace(
                          BuildIpAddressSpace(state->ip_address_space))
                      .SetInitiatorIsSecureContext(state->is_web_secure_context)

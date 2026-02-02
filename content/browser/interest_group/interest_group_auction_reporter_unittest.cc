@@ -743,7 +743,7 @@ class InterestGroupAuctionReporterTest
           /*is_web_secure_context=*/true,
           /*ip_address_space=*/network::mojom::IPAddressSpace::kPublic,
           /*is_web_secure_context=*/
-          network::mojom::LocalNetworkAccessRequestPolicy::kBlock,
+          network::mojom::PrivateNetworkRequestPolicy::kBlock,
           network::DocumentIsolationPolicy())};
 
   const GURL kSellerReportUrl =

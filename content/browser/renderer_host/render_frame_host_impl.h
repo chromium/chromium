@@ -4257,8 +4257,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void SetPolicyContainerHost(
       scoped_refptr<PolicyContainerHost> policy_container_host);
 
-  // Initializes |local_network_access_request_policy_|. Constructor helper.
-  void InitializeLocalNetworkAccessRequestPolicy();
+  // Initializes |private_network_request_policy_|. Constructor helper.
+  void InitializePrivateNetworkRequestPolicy();
 
   // Returns true if this frame requires a proxy to talk to its parent.
   // Note: Using a proxy to talk to a parent does not imply that the parent
@@ -4624,7 +4624,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // The policy to apply to private network requests for subresources issued by
   // the last committed document. Set to a default value until a document
   // commits for the first time. The default value depends on whether certain
-  // feature flags are enabled, see |DeriveLocalNetworkAccessRequestPolicy()|.
+  // feature flags are enabled, see |DerivePrivateNetworkRequestPolicy()|.
   //
   // This property normally depends on the last committed origin and the state
   // of |ContentBrowserClient| at the time the navigation committed. Due to the
@@ -4634,9 +4634,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   //
   // TODO(crbug.com/40092527): Simplify the above comment when the
   // behavior it explains is fixed.
-  network::mojom::LocalNetworkAccessRequestPolicy
-      local_network_access_request_policy_ =
-          network::mojom::LocalNetworkAccessRequestPolicy::kBlock;
+  network::mojom::PrivateNetworkRequestPolicy private_network_request_policy_ =
+      network::mojom::PrivateNetworkRequestPolicy::kBlock;
 
   // Track the SiteInfo of the last site we committed successfully, as obtained
   // from SiteInfo::CreateInternal() called on the last committed UrlInfo.

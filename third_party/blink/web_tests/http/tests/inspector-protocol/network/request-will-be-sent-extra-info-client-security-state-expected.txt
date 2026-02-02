@@ -3,6 +3,6 @@ Network Enabled
 {
     initiatorIPAddressSpace : Loopback
     initiatorIsSecureContext : true
-    localNetworkAccessRequestPolicy : PermissionBlock
+    privateNetworkRequestPolicy : PermissionBlock
 }
 

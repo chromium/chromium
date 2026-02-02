@@ -22,7 +22,7 @@
 namespace content {
 namespace {
 
-using Policy = network::mojom::LocalNetworkAccessRequestPolicy;
+using Policy = network::mojom::PrivateNetworkRequestPolicy;
 using AddressSpace = network::mojom::IPAddressSpace;
 using RequestContext = LocalNetworkAccessRequestContext;
 

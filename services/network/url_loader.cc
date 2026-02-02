@@ -468,8 +468,8 @@ URLLoader::URLLoader(
   const mojom::ClientSecurityState* client_security_state =
       GetClientSecurityState();
   if (client_security_state &&
-      client_security_state->local_network_access_request_policy ==
-          mojom::LocalNetworkAccessRequestPolicy::kPermissionBlock &&
+      client_security_state->private_network_request_policy ==
+          mojom::PrivateNetworkRequestPolicy::kPermissionBlock &&
       url_loader_network_observer_) {
     std::optional<mojom::IPAddressSpace> url_address_space =
         GetAddressSpaceFromUrl(request.url);

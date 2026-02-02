@@ -10,7 +10,7 @@
 namespace network {
 
 namespace mojom {
-enum class LocalNetworkAccessRequestPolicy;
+enum class PrivateNetworkRequestPolicy;
 enum class IPAddressSpace;
 }  // namespace mojom
 
@@ -21,8 +21,8 @@ class ClientSecurityStateBuilder {
   ClientSecurityStateBuilder() = default;
   ~ClientSecurityStateBuilder() = default;
 
-  ClientSecurityStateBuilder& WithLocalNetworkAccessRequestPolicy(
-      network::mojom::LocalNetworkAccessRequestPolicy policy);
+  ClientSecurityStateBuilder& WithPrivateNetworkRequestPolicy(
+      network::mojom::PrivateNetworkRequestPolicy policy);
 
   ClientSecurityStateBuilder& WithIPAddressSpace(
       network::mojom::IPAddressSpace space);

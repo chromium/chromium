@@ -573,8 +573,8 @@ TEST_F(WebTransportTest, ConnectLNAPermissionDenied) {
       url_loader_network_observer.Bind(),
       ClientSecurityStateBuilder()
           .WithIsSecureContext(true)
-          .WithLocalNetworkAccessRequestPolicy(
-              mojom::LocalNetworkAccessRequestPolicy::kPermissionBlock)
+          .WithPrivateNetworkRequestPolicy(
+              mojom::PrivateNetworkRequestPolicy::kPermissionBlock)
           .WithIPAddressSpace(mojom::IPAddressSpace::kPublic)
           .Build());
 
@@ -619,8 +619,8 @@ TEST_F(WebTransportTest, ConnectLNAPermissionGranted) {
       url_loader_network_observer.Bind(),
       ClientSecurityStateBuilder()
           .WithIsSecureContext(true)
-          .WithLocalNetworkAccessRequestPolicy(
-              mojom::LocalNetworkAccessRequestPolicy::kPermissionBlock)
+          .WithPrivateNetworkRequestPolicy(
+              mojom::PrivateNetworkRequestPolicy::kPermissionBlock)
           .WithIPAddressSpace(mojom::IPAddressSpace::kPublic)
           .Build());
 

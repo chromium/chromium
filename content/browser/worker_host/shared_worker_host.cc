@@ -271,7 +271,7 @@ void SharedWorkerHost::Start(
               network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp),
           /*is_web_secure_context=*/false,
           network::mojom::IPAddressSpace::kUnknown,
-          network::mojom::LocalNetworkAccessRequestPolicy::kBlock,
+          network::mojom::PrivateNetworkRequestPolicy::kBlock,
           network::DocumentIsolationPolicy(
               network::mojom::DocumentIsolationPolicyValue::
                   kIsolateAndRequireCorp));
@@ -312,9 +312,9 @@ void SharedWorkerHost::Start(
     ContentBrowserClient::LocalNetworkAccessRequestPolicyOverride
         policy_override = client->ShouldOverrideLocalNetworkAccessRequestPolicy(
             context, origin);
-    worker_client_security_state_->local_network_access_request_policy =
+    worker_client_security_state_->private_network_request_policy =
         OverrideLocalNetworkAccessPolicy(
-            worker_client_security_state_->local_network_access_request_policy,
+            worker_client_security_state_->private_network_request_policy,
             policy_override);
 
     policy_container_host =

@@ -49,8 +49,8 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessDeprecationBrowserTest,
       root_frame_host()->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
 
-  EXPECT_EQ(security_state->local_network_access_request_policy,
-            network::mojom::LocalNetworkAccessRequestPolicy::kPermissionBlock);
+  EXPECT_EQ(security_state->private_network_request_policy,
+            network::mojom::PrivateNetworkRequestPolicy::kPermissionBlock);
 }
 
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessDeprecationBrowserTest,
@@ -63,8 +63,8 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessDeprecationBrowserTest,
       root_frame_host()->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
 
-  EXPECT_EQ(security_state->local_network_access_request_policy,
-            network::mojom::LocalNetworkAccessRequestPolicy::kPermissionBlock);
+  EXPECT_EQ(security_state->private_network_request_policy,
+            network::mojom::PrivateNetworkRequestPolicy::kPermissionBlock);
 }
 
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessDeprecationBrowserTest,
@@ -78,8 +78,8 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessDeprecationBrowserTest,
   ASSERT_FALSE(security_state.is_null());
 
   // kBlock instead of kPermissionBlock because the URL is http.
-  EXPECT_EQ(security_state->local_network_access_request_policy,
-            network::mojom::LocalNetworkAccessRequestPolicy::kBlock);
+  EXPECT_EQ(security_state->private_network_request_policy,
+            network::mojom::PrivateNetworkRequestPolicy::kBlock);
 }
 
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessDeprecationBrowserTest,
@@ -92,7 +92,7 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessDeprecationBrowserTest,
       root_frame_host()->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
 
-  EXPECT_EQ(security_state->local_network_access_request_policy,
-            network::mojom::LocalNetworkAccessRequestPolicy::kPermissionBlock);
+  EXPECT_EQ(security_state->private_network_request_policy,
+            network::mojom::PrivateNetworkRequestPolicy::kPermissionBlock);
 }
 }  // namespace content

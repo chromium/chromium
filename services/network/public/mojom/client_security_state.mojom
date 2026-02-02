@@ -8,10 +8,10 @@ import "services/network/public/mojom/cross_origin_embedder_policy.mojom";
 import "services/network/public/mojom/document_isolation_policy.mojom";
 import "services/network/public/mojom/ip_address_space.mojom";
 
-// How to treat local network access requests.
+// How to treat local network requests.
 //
-// Local network access requests are requests from a less-private IP address
-// space to a more-private IP address space. Concretely:
+// Local network requests are requests from a less-private IP address space
+// to a more-private IP address space. Concretely:
 //
 //  - unknown to private
 //  - unknown to local
@@ -22,7 +22,12 @@ import "services/network/public/mojom/ip_address_space.mojom";
 // See the Local Network Access (LNA) Spec at
 // https://wicg.github.io/local-network-access/
 // for more information.
-enum LocalNetworkAccessRequestPolicy {
+//
+// The naming of this is a vestige of the old Private Network Access (PNA) spec
+// which predated LNA but is no longer relevant.
+//
+// TODO(crbug.com/394636065): rename enum to LocalNetworkRequestPolicy
+enum PrivateNetworkRequestPolicy {
   // Allow the requests.
   kAllow,
 
@@ -53,7 +58,7 @@ struct ClientSecurityState {
   IPAddressSpace ip_address_space = kUnknown;
 
   // The policy to apply to private network requests.
-  LocalNetworkAccessRequestPolicy local_network_access_request_policy = kAllow;
+  PrivateNetworkRequestPolicy private_network_request_policy = kAllow;
 
   // See: https://github.com/explainers-by-googlers/document-isolation-policy
   DocumentIsolationPolicy document_isolation_policy;

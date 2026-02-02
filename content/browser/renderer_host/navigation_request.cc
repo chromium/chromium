@@ -8731,7 +8731,7 @@ bool NavigationRequest::NeedsUrlLoader() {
          !is_mhtml_subframe_loaded_from_achive;
 }
 
-void NavigationRequest::UpdateLocalNetworkAccessRequestPolicy() {
+void NavigationRequest::UpdatePrivateNetworkRequestPolicy() {
   // It is useless to update this state for same-document navigations as well
   // as pages served from the back-forward cache or prerendered pages.
   DCHECK(!IsSameDocument());
@@ -8755,8 +8755,8 @@ void NavigationRequest::UpdateLocalNetworkAccessRequestPolicy() {
   if (policy_override ==
       ContentBrowserClient::LocalNetworkAccessRequestPolicyOverride::
           kForceAllow) {
-    local_network_access_request_policy_ =
-        network::mojom::LocalNetworkAccessRequestPolicy::kAllow;
+    private_network_request_policy_ =
+        network::mojom::PrivateNetworkRequestPolicy::kAllow;
     return;
   }
 
@@ -8781,21 +8781,21 @@ void NavigationRequest::UpdateLocalNetworkAccessRequestPolicy() {
   // TODO(crbug.com/433300380): The lna_secure_context_overide check needs to be
   // done in all other policy derivation points. This boolean should probably be
   // put into PolicyContainerPolicies.
-  local_network_access_request_policy_ = DeriveLocalNetworkAccessRequestPolicy(
+  private_network_request_policy_ = DeriveLocalNetworkAccessRequestPolicy(
       policies, LocalNetworkAccessRequestContext::kSubresource);
 
   if (policy_override ==
       ContentBrowserClient::LocalNetworkAccessRequestPolicyOverride::
           kBlockInsteadOfWarn) {
-    local_network_access_request_policy_ =
-        OverrideToBlockInsteadOfWarn(local_network_access_request_policy_);
+    private_network_request_policy_ =
+        OverrideToBlockInsteadOfWarn(private_network_request_policy_);
   }
 
   if (policy_override ==
       ContentBrowserClient::LocalNetworkAccessRequestPolicyOverride::
           kWarnInsteadOfBlock) {
-    local_network_access_request_policy_ =
-        OverrideToWarnInsteadOfBlock(local_network_access_request_policy_);
+    private_network_request_policy_ =
+        OverrideToWarnInsteadOfBlock(private_network_request_policy_);
   }
 }
 
@@ -8901,7 +8901,7 @@ void NavigationRequest::ReadyToCommitNavigation(bool is_error) {
   RestartCommitTimeout();
 
   if (!IsSameDocument() && !IsPageActivation())
-    UpdateLocalNetworkAccessRequestPolicy();
+    UpdatePrivateNetworkRequestPolicy();
 
   RenderFrameHostImpl* previous_render_frame_host =
       frame_tree_node_->current_frame_host();
@@ -10285,9 +10285,9 @@ NavigationRequest::BuildClientSecurityStateForNavigationFetch() {
             policy_override =
                 client->ShouldOverrideLocalNetworkAccessRequestPolicy(context,
                                                                       origin);
-        state->local_network_access_request_policy =
+        state->private_network_request_policy =
             OverrideLocalNetworkAccessPolicy(
-                state->local_network_access_request_policy, policy_override);
+                state->private_network_request_policy, policy_override);
       }
 
       // Remove the initiator's COEP, it is unused. For iframes, the parent's
@@ -10324,7 +10324,7 @@ NavigationRequest::BuildClientSecurityStateForNavigationFetch() {
 
       // TODO(crbug.com/40258851): Remove COEP from
       // `client_security_state`, see the reasoning for subframes above.
-      client_security_state->local_network_access_request_policy =
+      client_security_state->private_network_request_policy =
           DeriveLocalNetworkAccessRequestPolicy(
               client_security_state->ip_address_space,
               client_security_state->is_web_secure_context, false,
@@ -10347,7 +10347,7 @@ NavigationRequest::BuildClientSecurityStateForCommittedDocument() {
 
   return network::mojom::ClientSecurityState::New(
       policies.cross_origin_embedder_policy, policies.is_web_secure_context,
-      policies.ip_address_space, local_network_access_request_policy_,
+      policies.ip_address_space, private_network_request_policy_,
       policies.document_isolation_policy);
 }
 

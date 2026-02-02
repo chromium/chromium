@@ -445,7 +445,7 @@ void DedicatedWorkerHost::DidStartScriptLoad(
             ->policies()
             .allow_non_secure_local_network_access;
 
-    worker_client_security_state_->local_network_access_request_policy =
+    worker_client_security_state_->private_network_request_policy =
         DeriveLocalNetworkAccessRequestPolicy(
             worker_client_security_state_->ip_address_space,
             worker_client_security_state_->is_web_secure_context,
@@ -461,9 +461,9 @@ void DedicatedWorkerHost::DidStartScriptLoad(
     ContentBrowserClient::LocalNetworkAccessRequestPolicyOverride
         policy_override = client->ShouldOverrideLocalNetworkAccessRequestPolicy(
             context, origin);
-    worker_client_security_state_->local_network_access_request_policy =
+    worker_client_security_state_->private_network_request_policy =
         OverrideLocalNetworkAccessPolicy(
-            worker_client_security_state_->local_network_access_request_policy,
+            worker_client_security_state_->private_network_request_policy,
             policy_override);
 
     // > 14.6 Otherwise, set worker global scope's embedder policy to the result

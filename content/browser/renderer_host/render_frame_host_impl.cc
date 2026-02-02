@@ -2657,7 +2657,7 @@ RenderFrameHostImpl::RenderFrameHostImpl(
 
   InitializePolicyContainerHost(renderer_initiated_creation_of_main_frame);
 
-  InitializeLocalNetworkAccessRequestPolicy();
+  InitializePrivateNetworkRequestPolicy();
 
   auto task_runner = GetUIThreadTaskRunner({BrowserTaskType::kUserInput});
   // TODO(crbug.com/41483375): Stop using BrowserTaskType::kUserInput task
@@ -4303,14 +4303,14 @@ void RenderFrameHostImpl::SetPolicyContainerHost(
   CHECK(parent_ || !IsCredentialless());
 }
 
-void RenderFrameHostImpl::InitializeLocalNetworkAccessRequestPolicy() {
+void RenderFrameHostImpl::InitializePrivateNetworkRequestPolicy() {
   if (!policy_container_host_) {
     // Only speculative RFHs may lack a policy container.
     DCHECK_EQ(lifecycle_state_, LifecycleStateImpl::kSpeculative);
     return;
   }
 
-  local_network_access_request_policy_ = DeriveLocalNetworkAccessRequestPolicy(
+  private_network_request_policy_ = DeriveLocalNetworkAccessRequestPolicy(
       policy_container_host_->policies(),
       LocalNetworkAccessRequestContext::kSubresource);
 }
@@ -5645,19 +5645,19 @@ void RenderFrameHostImpl::SetOriginDependentStateOfNewFrame(
                   GetBrowserContext(), new_frame_origin)) {
     case ContentBrowserClient::LocalNetworkAccessRequestPolicyOverride::
         kForceAllow:
-      local_network_access_request_policy_ =
-          network::mojom::LocalNetworkAccessRequestPolicy::kAllow;
+      private_network_request_policy_ =
+          network::mojom::PrivateNetworkRequestPolicy::kAllow;
       break;
     case ContentBrowserClient::LocalNetworkAccessRequestPolicyOverride::
         kBlockInsteadOfWarn:
-      local_network_access_request_policy_ =
+      private_network_request_policy_ =
           OverrideToBlockInsteadOfWarn(DeriveLocalNetworkAccessRequestPolicy(
               policy_container_host_->policies(),
               LocalNetworkAccessRequestContext::kSubresource));
       break;
     case ContentBrowserClient::LocalNetworkAccessRequestPolicyOverride::
         kWarnInsteadOfBlock:
-      local_network_access_request_policy_ =
+      private_network_request_policy_ =
           OverrideToWarnInsteadOfBlock(DeriveLocalNetworkAccessRequestPolicy(
               policy_container_host_->policies(),
               LocalNetworkAccessRequestContext::kSubresource));
@@ -15163,14 +15163,13 @@ RenderFrameHostImpl::BuildClientSecurityState() const {
         std::move(coep),
         /*is_web_secure_context=*/false,
         network::mojom::IPAddressSpace::kUnknown,
-        network::mojom::LocalNetworkAccessRequestPolicy::kBlock,
-        std::move(dip));
+        network::mojom::PrivateNetworkRequestPolicy::kBlock, std::move(dip));
   }
 
   const PolicyContainerPolicies& policies = policy_container_host_->policies();
   return network::mojom::ClientSecurityState::New(
       policies.cross_origin_embedder_policy, policies.is_web_secure_context,
-      policies.ip_address_space, local_network_access_request_policy_,
+      policies.ip_address_space, private_network_request_policy_,
       policies.document_isolation_policy);
 }
 
@@ -15182,7 +15181,7 @@ RenderFrameHostImpl::BuildClientSecurityStateForWorkers() const {
       policy_container_host_ &&
       policy_container_host_->policies().allow_non_secure_local_network_access;
 
-  client_security_state->local_network_access_request_policy =
+  client_security_state->private_network_request_policy =
       DeriveLocalNetworkAccessRequestPolicy(
           client_security_state->ip_address_space,
           client_security_state->is_web_secure_context,
@@ -16382,8 +16381,8 @@ void RenderFrameHostImpl::TakeNewDocumentPropertiesFromNavigation(
     return;
   }
 
-  local_network_access_request_policy_ =
-      navigation_request->local_network_access_request_policy();
+  private_network_request_policy_ =
+      navigation_request->private_network_request_policy();
 
   reporting_endpoints_.clear();
   DCHECK(navigation_request);

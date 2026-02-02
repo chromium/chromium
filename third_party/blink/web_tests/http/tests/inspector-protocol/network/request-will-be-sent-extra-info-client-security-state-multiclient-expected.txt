@@ -3,11 +3,11 @@ Two sessions established and Network enabled on both
 {
     initiatorIPAddressSpace : Loopback
     initiatorIsSecureContext : true
-    localNetworkAccessRequestPolicy : PermissionBlock
+    privateNetworkRequestPolicy : PermissionBlock
 }
 {
     initiatorIPAddressSpace : Loopback
     initiatorIsSecureContext : true
-    localNetworkAccessRequestPolicy : PermissionBlock
+    privateNetworkRequestPolicy : PermissionBlock
 }
 

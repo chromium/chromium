@@ -27,7 +27,7 @@ namespace {
 
 using AddressSpace = network::mojom::IPAddressSpace;
 using RequestContext = LocalNetworkAccessRequestContext;
-using Policy = network::mojom::LocalNetworkAccessRequestPolicy;
+using Policy = network::mojom::PrivateNetworkRequestPolicy;
 
 using ::testing::ElementsAreArray;
 
