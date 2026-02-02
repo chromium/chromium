@@ -39,6 +39,7 @@ source_set("contextual_tasks") {
     "//components/keyed_service/core",
     "//content/public/browser",
   ]
+
   if (!is_android) {
     public_deps += [
       "//chrome/browser/passage_embeddings",
@@ -58,6 +59,7 @@ source_set("impl") {
     "ai_mode_context_library_converter.cc",
     "contextual_tasks_service_factory.cc",
   ]
+
   if (!is_android) {
     sources += [
       "active_task_context_provider_impl.cc",
@@ -97,6 +99,7 @@ source_set("impl") {
     "//content/public/browser",
     "//third_party/lens_server_proto:lens_overlay_proto",
   ]
+
   if (!is_android) {
     deps += [
       ":ui",
@@ -119,24 +122,31 @@ source_set("impl") {
   }
 }
 
-if (!is_android) {
-  source_set("ui") {
-    sources = [
+source_set("ui") {
+  sources = [ "contextual_tasks_page_handler.h" ]
+
+  if (!is_android) {
+    sources += [
       "contextual_tasks_composebox_handler.h",
       "contextual_tasks_internals_page_handler.h",
       "contextual_tasks_navigation_throttle.h",
-      "contextual_tasks_page_handler.h",
       "contextual_tasks_side_panel_coordinator.h",
       "contextual_tasks_ui.h",
       "contextual_tasks_ui_service.h",
       "contextual_tasks_ui_service_factory.h",
       "entry_point_eligibility_manager.h",
     ]
+  }
 
-    public_deps = [
-      ":contextual_tasks",
-      ":mojo_bindings",
-      "//base",
+  public_deps = [
+    ":contextual_tasks",
+    ":mojo_bindings",
+    "//base",
+    "//third_party/lens_server_proto:lens_overlay_proto",
+  ]
+
+  if (!is_android) {
+    public_deps += [
       "//chrome/browser/autocomplete:aim_eligibility_service",
       "//chrome/browser/contextual_search",
       "//chrome/browser/ui/browser_window",
@@ -149,15 +159,18 @@ if (!is_android) {
       "//components/contextual_tasks/public:feature_list",
       "//content/public/browser",
       "//content/public/common",
-      "//third_party/lens_server_proto:lens_overlay_proto",
       "//ui/webui",
       "//ui/webui/resources/cr_components/composebox:mojo_bindings",
       "//url",
     ]
   }
+}
 
-  source_set("ui_impl") {
-    sources = [
+source_set("ui_impl") {
+  sources = []
+
+  if (!is_android) {
+    sources += [
       "contextual_search_session_finder.cc",
       "contextual_search_session_finder.h",
       "contextual_tasks_composebox_handler.cc",
@@ -172,8 +185,12 @@ if (!is_android) {
       "contextual_tasks_url_loader_factory_interceptor.h",
       "entry_point_eligibility_manager.cc",
     ]
+  }
 
-    deps = [
+  deps = []
+
+  if (!is_android) {
+    deps += [
       ":ui",
       "//base",
       "//chrome/browser:global_features",
