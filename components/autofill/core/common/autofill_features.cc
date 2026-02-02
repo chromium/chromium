@@ -929,6 +929,11 @@ BASE_FEATURE(kAutofillUseNegativePatternForAllAttributes,
 BASE_FEATURE(kAutofillUseStructuralSignatureInsteadOfSecondary,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Kill switch for a race-condition fix to make it a safer merge.
+// TODO(crbug.com/474706752): Clean up after M146 branchpoint (Feb 10 2026).
+BASE_FEATURE(kAutofillWebDataBackendImplRaceConditionFix,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // When enabled, the field classification model uses runtime caching to not run
 // models on the same inputs multiple times.
 // TODO(crbug.com/371933424). Clean up when launched, if not used for Autofill

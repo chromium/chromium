@@ -166,6 +166,12 @@ AutofillWebDataBackendImpl::AutofillWebDataBackendImpl(
 
 AutofillWebDataBackendImpl::~AutofillWebDataBackendImpl() {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillWebDataBackendImplRaceConditionFix)) {
+    // Explicitly destroy user-data ownees (i.e., the sync bridges) first as
+    // their destructors may call into this AutofillWebDataBackendImpl.
+    user_data_.ClearAllUserData();
+  }
 }
 
 void AutofillWebDataBackendImpl::ShutdownOnUISequence() {
@@ -198,12 +204,15 @@ void AutofillWebDataBackendImpl::ShutdownOnUISequence() {
   // If this hack is removed, the ~AutofillWebDataService() must explicitly call
   // `user_data_.ClearAllUserData()` because the sync bridges may call into
   // `this` during their destruction.
-  owning_task_runner()->PostTask(
-      FROM_HERE, BindOnce(
-                     [](scoped_refptr<AutofillWebDataBackendImpl> self) {
-                       self->user_data_.ClearAllUserData();
-                     },
-                     scoped_refptr(this)));
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillWebDataBackendImplRaceConditionFix)) {
+    owning_task_runner()->PostTask(
+        FROM_HERE, BindOnce(
+                       [](scoped_refptr<AutofillWebDataBackendImpl> self) {
+                         self->user_data_.ClearAllUserData();
+                       },
+                       scoped_refptr(this)));
+  }
 }
 
 void AutofillWebDataBackendImpl::AddObserver(
