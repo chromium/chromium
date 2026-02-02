@@ -108,7 +108,7 @@ class CONTENT_EXPORT PrefetchService : public PrefetchContainer::Observer {
 
   // Copies any cookies in the isolated network context associated with
   // |prefetch_container| to the default network context.
-  virtual void CopyIsolatedCookies(const PrefetchServingHandle& serving_handle);
+  virtual void CopyIsolatedCookies(PrefetchServingHandle& serving_handle);
 
   // Adds a `PrefetchContainer` created from the `PrefetchRequest` under control
   // of `PrefetchService` and returns `PrefetchHandle` so that the caller can

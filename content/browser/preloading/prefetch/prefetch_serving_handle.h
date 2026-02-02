@@ -46,10 +46,13 @@ class CONTENT_EXPORT PrefetchServingHandle final {
 
   ~PrefetchServingHandle();
 
-  PrefetchContainer* GetPrefetchContainer() const {
+  const PrefetchContainer* GetPrefetchContainer() const {
     return prefetch_container_.get();
   }
-  PrefetchServingHandle Clone() const;
+  PrefetchContainer* GetPrefetchContainer() {
+    return prefetch_container_.get();
+  }
+  PrefetchServingHandle Clone();
 
   // Returns true if `this` is valid.
   // Do not call methods below if false.
@@ -78,16 +81,16 @@ class CONTENT_EXPORT PrefetchServingHandle final {
   // well as record metrics about how long this process takes.
   bool HasIsolatedCookieCopyStarted() const;
   bool IsIsolatedCookieCopyInProgress() const;
-  void OnIsolatedCookieCopyStart() const;
-  void OnIsolatedCookiesReadCompleteAndWriteStart() const;
-  void OnIsolatedCookieCopyComplete() const;
-  void OnInterceptorCheckCookieCopy() const;
-  void SetOnCookieCopyCompleteCallback(base::OnceClosure callback) const;
+  void OnIsolatedCookieCopyStart();
+  void OnIsolatedCookiesReadCompleteAndWriteStart();
+  void OnIsolatedCookieCopyComplete();
+  void OnInterceptorCheckCookieCopy();
+  void SetOnCookieCopyCompleteCallback(base::OnceClosure callback);
 
   // Called with the result of the probe. If the probing feature is enabled,
   // then a probe must complete successfully before the prefetch can be
   // served.
-  void OnPrefetchProbeResult(PrefetchProbeResult probe_result) const;
+  void OnPrefetchProbeResult(PrefetchProbeResult probe_result);
 
   // Checks if the given URL matches the the URL that can be served next.
   bool DoesCurrentURLToServeMatch(const GURL& url) const;

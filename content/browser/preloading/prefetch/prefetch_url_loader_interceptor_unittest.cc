@@ -170,8 +170,7 @@ class TestPrefetchServiceForInterceptor final : public PrefetchService {
     return test_origin_prober_.get();
   }
 
-  void CopyIsolatedCookies(
-      const PrefetchServingHandle& serving_handle) override {
+  void CopyIsolatedCookies(PrefetchServingHandle& serving_handle) override {
     if (!serving_handle.IsIsolatedNetworkContextRequiredToServe()) {
       return;
     }

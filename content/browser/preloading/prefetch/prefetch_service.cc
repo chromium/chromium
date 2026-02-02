@@ -1971,7 +1971,7 @@ void PrefetchService::OnPrefetchCompletedOrFailed(
 }
 
 void PrefetchService::CopyIsolatedCookies(
-    const PrefetchServingHandle& serving_handle) {
+    PrefetchServingHandle& serving_handle) {
   DCHECK(serving_handle);
 
   if (!serving_handle.GetCurrentNetworkContextToServe()) {
