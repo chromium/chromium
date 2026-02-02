@@ -579,17 +579,6 @@ const FeatureEntry::FeatureVariation kCCTAdaptiveButtonTestSwitchVariations[] =
         {"+Both", kCCTAdaptiveButtonTestSwitchBoth,
          std::size(kCCTAdaptiveButtonTestSwitchBoth), nullptr},
 };
-const FeatureEntry::FeatureParam
-    kAdaptiveButtonInTopToolbarPageSummaryDisableFallback[] = {
-        {"intent_fallback", "false"},
-};
-const FeatureEntry::FeatureVariation
-    kAdaptiveButtonInTopToolbarPageSummaryVariations[] = {
-        {"(Disable intent fallback)",
-         kAdaptiveButtonInTopToolbarPageSummaryDisableFallback,
-         std::size(kAdaptiveButtonInTopToolbarPageSummaryDisableFallback),
-         nullptr},
-};
 
 const FeatureEntry::FeatureParam kCCTAuthTabHttpsVerificationTimeout10000Ms[] =
     {{"verification_timeout_ms", "10000"}};
@@ -5808,14 +5797,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kOngoingProcesses)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_ANDROID)
-    {"adaptive-button-in-top-toolbar-page-summary",
-     flag_descriptions::kAdaptiveButtonInTopToolbarPageSummaryName,
-     flag_descriptions::kAdaptiveButtonInTopToolbarPageSummaryDescription,
-     kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         chrome::android::kAdaptiveButtonInTopToolbarPageSummary,
-         kAdaptiveButtonInTopToolbarPageSummaryVariations,
-         "AdaptiveButtonInTopToolbarPageSummary")},
     {"reader-mode-distill-in-app",
      flag_descriptions::kReaderModeDistillInAppName,
      flag_descriptions::kReaderModeDistillInAppDescription, kOsAndroid,

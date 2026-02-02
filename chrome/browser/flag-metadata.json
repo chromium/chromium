@@ -49,11 +49,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "adaptive-button-in-top-toolbar-page-summary",
-    "owners": [ "salg@google.com", "chrome-segmentation-platform@google.com" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "ai-hub-new-badge",
     "owners": [
       "joemerramos@google.com",
