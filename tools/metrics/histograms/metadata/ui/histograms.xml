@@ -335,7 +335,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="DefaultBrowser.{DefaultBrowserEntrypointType}.Interaction"
+<histogram
+    name="DefaultBrowser.{DefaultBrowserEntrypointType}.{DefaultBrowserSetterType}.Interaction"
     enum="DefaultBrowserUserInteraction" expires_after="2026-07-01">
   <owner>alsan@chromium.org</owner>
   <owner>atharvmaan@chromium.org</owner>
@@ -343,19 +344,21 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-desktop-ui-waterloo@google.com</owner>
   <summary>
     Records the action taken by user when presented with an option to set Chrome
-    as the default browser from {DefaultBrowserEntrypointType}.
+    as the default browser from {DefaultBrowserEntrypointType} with
+    {DefaultBrowserSetterType} as the setter.
   </summary>
 </histogram>
 
-<histogram name="DefaultBrowser.{DefaultBrowserEntrypointType}.Shown"
+<histogram
+    name="DefaultBrowser.{DefaultBrowserEntrypointType}.{DefaultBrowserSetterType}.Shown"
     units="count" expires_after="2026-07-01">
   <owner>alsan@chromium.org</owner>
   <owner>atharvmaan@chromium.org</owner>
   <owner>koretadaniel@chromium.org</owner>
   <owner>chrome-desktop-ui-waterloo@google.com</owner>
   <summary>
-    Records how many times {DefaultBrowserEntrypointType} entrypoint was shown
-    to the user.
+    Records how many times {DefaultBrowserEntrypointType} entrypoint with
+    {DefaultBrowserSetterType} as the setter was shown to the user.
   </summary>
 </histogram>
 

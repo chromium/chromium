@@ -272,7 +272,7 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserManagerWinBrowserTest,
             l10n_util::GetStringUTF16(IDS_DEFAULT_BROWSER_CHANGED_MESSAGE));
 
   histogram_tester_.ExpectUniqueSample(
-      "DefaultBrowser.ChangeDetectedNotification.Shown", 1, 1);
+      "DefaultBrowser.ChangeDetectedNotification.ShellIntegration.Shown", 1, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(DefaultBrowserManagerWinBrowserTest,
@@ -310,11 +310,11 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserManagerWinBrowserTest,
       /*reply=*/std::nullopt);
 
   histogram_tester_.ExpectUniqueSample(
-      "DefaultBrowser.ChangeDetectedNotification.Interaction",
+      "DefaultBrowser.ChangeDetectedNotification.ShellIntegration.Interaction",
       DefaultBrowserInteractionType::kAccepted, 1);
 
   histogram_tester_.ExpectBucketCount(
-      "DefaultBrowser.ChangeDetectedNotification.Interaction",
+      "DefaultBrowser.ChangeDetectedNotification.ShellIntegration.Interaction",
       DefaultBrowserInteractionType::kDismissed, 0);
 
   EXPECT_FALSE(display_service_tester_->GetNotification(
@@ -335,11 +335,11 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserManagerWinBrowserTest,
       /*reply=*/std::nullopt);
 
   histogram_tester_.ExpectUniqueSample(
-      "DefaultBrowser.ChangeDetectedNotification.Interaction",
+      "DefaultBrowser.ChangeDetectedNotification.ShellIntegration.Interaction",
       DefaultBrowserInteractionType::kDismissed, 1);
 
   histogram_tester_.ExpectBucketCount(
-      "DefaultBrowser.ChangeDetectedNotification.Interaction",
+      "DefaultBrowser.ChangeDetectedNotification.ShellIntegration.Interaction",
       DefaultBrowserInteractionType::kAccepted, 0);
 
   EXPECT_FALSE(display_service_tester_->GetNotification(
@@ -359,11 +359,11 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserManagerWinBrowserTest,
       /*by_user=*/true);
 
   histogram_tester_.ExpectUniqueSample(
-      "DefaultBrowser.ChangeDetectedNotification.Interaction",
+      "DefaultBrowser.ChangeDetectedNotification.ShellIntegration.Interaction",
       DefaultBrowserInteractionType::kDismissed, 1);
 
   histogram_tester_.ExpectBucketCount(
-      "DefaultBrowser.ChangeDetectedNotification.Interaction",
+      "DefaultBrowser.ChangeDetectedNotification.ShellIntegration.Interaction",
       DefaultBrowserInteractionType::kAccepted, 0);
 }
 

@@ -44,6 +44,10 @@ class DefaultBrowserControllerTest : public testing::Test {
 
     controller_ = std::make_unique<DefaultBrowserController>(
         std::move(setter), DefaultBrowserEntrypointType::kSettingsPage);
+
+    EXPECT_CALL(*setter_, GetType)
+        .WillRepeatedly(
+            testing::Return(DefaultBrowserSetterType::kShellIntegration));
   }
 
   void TearDown() override { setter_ = nullptr; }
@@ -56,25 +60,26 @@ TEST_F(DefaultBrowserControllerTest, OnShown) {
   base::HistogramTester histogram_tester;
   controller_->OnShown();
 
-  histogram_tester.ExpectTotalCount("DefaultBrowser.SettingsPage.Shown", 1);
+  histogram_tester.ExpectTotalCount(
+      "DefaultBrowser.SettingsPage.ShellIntegration.Shown", 1);
 }
 
 TEST_F(DefaultBrowserControllerTest, OnIgnored) {
   base::HistogramTester histogram_tester;
   controller_->OnIgnored();
 
-  histogram_tester.ExpectUniqueSample("DefaultBrowser.SettingsPage.Interaction",
-                                      DefaultBrowserInteractionType::kIgnored,
-                                      1);
+  histogram_tester.ExpectUniqueSample(
+      "DefaultBrowser.SettingsPage.ShellIntegration.Interaction",
+      DefaultBrowserInteractionType::kIgnored, 1);
 }
 
 TEST_F(DefaultBrowserControllerTest, OnDismissed) {
   base::HistogramTester histogram_tester;
   controller_->OnDismissed();
 
-  histogram_tester.ExpectUniqueSample("DefaultBrowser.SettingsPage.Interaction",
-                                      DefaultBrowserInteractionType::kDismissed,
-                                      1);
+  histogram_tester.ExpectUniqueSample(
+      "DefaultBrowser.SettingsPage.ShellIntegration.Interaction",
+      DefaultBrowserInteractionType::kDismissed, 1);
 }
 
 TEST_F(DefaultBrowserControllerTest, OnAcceptedSuccess) {
@@ -82,8 +87,6 @@ TEST_F(DefaultBrowserControllerTest, OnAcceptedSuccess) {
   base::test::TestFuture<DefaultBrowserState> future;
   DefaultBrowserState state = DefaultBrowserState::IS_DEFAULT;
 
-  EXPECT_CALL(*setter_, GetType)
-      .WillOnce(testing::Return(DefaultBrowserSetterType::kShellIntegration));
   EXPECT_CALL(*setter_, Execute(testing::_))
       .WillOnce([state](DefaultBrowserSetterCompletionCallback callback) {
         std::move(callback).Run(state);
@@ -92,9 +95,9 @@ TEST_F(DefaultBrowserControllerTest, OnAcceptedSuccess) {
   controller_->OnAccepted(future.GetCallback());
 
   ASSERT_EQ(future.Get(), state);
-  histogram_tester.ExpectUniqueSample("DefaultBrowser.SettingsPage.Interaction",
-                                      DefaultBrowserInteractionType::kAccepted,
-                                      1);
+  histogram_tester.ExpectUniqueSample(
+      "DefaultBrowser.SettingsPage.ShellIntegration.Interaction",
+      DefaultBrowserInteractionType::kAccepted, 1);
 
   histogram_tester.ExpectUniqueSample("DefaultBrowser.ShellIntegration.Result",
                                       true, 1);
@@ -105,8 +108,6 @@ TEST_F(DefaultBrowserControllerTest, OnAcceptedFailure) {
   base::test::TestFuture<DefaultBrowserState> future;
   DefaultBrowserState state = DefaultBrowserState::NOT_DEFAULT;
 
-  EXPECT_CALL(*setter_, GetType)
-      .WillOnce(testing::Return(DefaultBrowserSetterType::kShellIntegration));
   EXPECT_CALL(*setter_, Execute(testing::_))
       .WillOnce([state](DefaultBrowserSetterCompletionCallback callback) {
         std::move(callback).Run(state);
@@ -115,9 +116,9 @@ TEST_F(DefaultBrowserControllerTest, OnAcceptedFailure) {
   controller_->OnAccepted(future.GetCallback());
 
   ASSERT_EQ(future.Get(), state);
-  histogram_tester.ExpectUniqueSample("DefaultBrowser.SettingsPage.Interaction",
-                                      DefaultBrowserInteractionType::kAccepted,
-                                      1);
+  histogram_tester.ExpectUniqueSample(
+      "DefaultBrowser.SettingsPage.ShellIntegration.Interaction",
+      DefaultBrowserInteractionType::kAccepted, 1);
 
   histogram_tester.ExpectUniqueSample("DefaultBrowser.ShellIntegration.Result",
                                       false, 1);

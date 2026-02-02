@@ -242,7 +242,7 @@ TEST_F(DefaultBrowserHandlerTest, SetDefaultBrowser) {
                             /*expected_is_disabled_by_policy=*/false);
 
   histogram_tester.ExpectUniqueSample(
-      "DefaultBrowser.SettingsPage.Interaction",
+      "DefaultBrowser.SettingsPage.ShellIntegration.Interaction",
       default_browser::DefaultBrowserInteractionType::kAccepted, 1);
 }
 
