@@ -1,8 +1,8 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_browser_agent.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
 
 #import "base/run_loop.h"
 #import "base/test/ios/wait_util.h"
@@ -45,10 +45,11 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
-// Test fixture for BwgBrowserAgent.
-class BwgBrowserAgentTest : public PlatformTest {
+// Test fixture for GeminiBrowserAgent.
+class GeminiBrowserAgentTest : public PlatformTest {
  protected:
-  BwgBrowserAgentTest() : web_client_(std::make_unique<web::FakeWebClient>()) {
+  GeminiBrowserAgentTest()
+      : web_client_(std::make_unique<web::FakeWebClient>()) {
     feature_list_.InitWithFeatures({kPageContextExtractorRefactored,
                                     kGeminiRefactoredFRE, kGeminiCopresence},
                                    {});
@@ -66,8 +67,8 @@ class BwgBrowserAgentTest : public PlatformTest {
             {web::FindInPageJavaScriptFeature::GetInstance(),
              PageContextExtractorJavaScriptFeature::GetInstance()});
     browser_ = std::make_unique<TestBrowser>(profile_.get());
-    BwgBrowserAgent::CreateForBrowser(browser_.get());
-    gemini_browser_agent_ = BwgBrowserAgent::FromBrowser(browser_.get());
+    GeminiBrowserAgent::CreateForBrowser(browser_.get());
+    gemini_browser_agent_ = GeminiBrowserAgent::FromBrowser(browser_.get());
 
     optimization_guide_service_ =
         OptimizationGuideServiceFactory::GetForProfile(profile_.get());
@@ -163,7 +164,7 @@ class BwgBrowserAgentTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
-  raw_ptr<BwgBrowserAgent> gemini_browser_agent_;
+  raw_ptr<GeminiBrowserAgent> gemini_browser_agent_;
   raw_ptr<BwgTabHelper> bwg_tab_helper_;
   raw_ptr<OptimizationGuideService> optimization_guide_service_;
   raw_ptr<web::FakeWebState> web_state_;
@@ -173,14 +174,14 @@ class BwgBrowserAgentTest : public PlatformTest {
   FakeSnapshotGeneratorDelegate* fake_snapshot_delegate_;
 };
 
-// Tests that the BwgBrowserAgent can be instantiated.
-TEST_F(BwgBrowserAgentTest, TestBwgBrowserAgentInstantiation) {
+// Tests that the GeminiBrowserAgent can be instantiated.
+TEST_F(GeminiBrowserAgentTest, TestGeminiBrowserAgentInstantiation) {
   EXPECT_NE(nullptr, gemini_browser_agent_);
 }
 
 // Tests the presentation of the BWG overlay and state of tab helper side
 // effects.
-TEST_F(BwgBrowserAgentTest, TestBwgBrowserAgentStartGeminiFlow) {
+TEST_F(GeminiBrowserAgentTest, TestGeminiBrowserAgentStartGeminiFlow) {
   UIViewController* base_view_controller = [[UIViewController alloc] init];
 
   // Set a valid URL.
@@ -236,7 +237,8 @@ TEST_F(BwgBrowserAgentTest, TestBwgBrowserAgentStartGeminiFlow) {
 
 // Tests the presentation of the floaty and state of tab helper side
 // effects.
-TEST_F(BwgBrowserAgentTest, TestBwgBrowserAgentPresentFloatyWithPageContext) {
+TEST_F(GeminiBrowserAgentTest,
+       TestGeminiBrowserAgentPresentFloatyWithPageContext) {
   UIViewController* base_view_controller = [[UIViewController alloc] init];
   std::unique_ptr<optimization_guide::proto::PageContext> page_context =
       std::make_unique<optimization_guide::proto::PageContext>();
@@ -254,8 +256,8 @@ TEST_F(BwgBrowserAgentTest, TestBwgBrowserAgentPresentFloatyWithPageContext) {
   ASSERT_FALSE(bwg_tab_helper_->GetIsBwgSessionActiveInBackground());
 }
 
-TEST_F(BwgBrowserAgentTest,
-       TestBwgBrowserAgentPresentFloatyWithPendingContext) {
+TEST_F(GeminiBrowserAgentTest,
+       TestGeminiBrowserAgentPresentFloatyWithPendingContext) {
   UIViewController* base_view_controller = [[UIViewController alloc] init];
   std::unique_ptr<optimization_guide::proto::PageContext> page_context =
       std::make_unique<optimization_guide::proto::PageContext>();
@@ -272,17 +274,18 @@ TEST_F(BwgBrowserAgentTest,
 }
 
 // Tests that switching active web states handles observations correctly.
-TEST_F(BwgBrowserAgentTest, TestActiveWebStateChanged) {
+TEST_F(GeminiBrowserAgentTest, TestActiveWebStateChanged) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(kGeminiCopresence);
 
-  // Create a new browser to ensure the BwgBrowserAgent is initialized with the
-  // feature flag enabled.
+  // Create a new browser to ensure the GeminiBrowserAgent is initialized with
+  // the feature flag enabled.
 
   std::unique_ptr<TestBrowser> scoped_browser =
       std::make_unique<TestBrowser>(profile_.get());
-  BwgBrowserAgent::CreateForBrowser(scoped_browser.get());
-  BwgBrowserAgent* agent = BwgBrowserAgent::FromBrowser(scoped_browser.get());
+  GeminiBrowserAgent::CreateForBrowser(scoped_browser.get());
+  GeminiBrowserAgent* agent =
+      GeminiBrowserAgent::FromBrowser(scoped_browser.get());
 
   std::unique_ptr<web::FakeWebState> web_state1 =
       std::make_unique<web::FakeWebState>();
@@ -317,7 +320,7 @@ TEST_F(BwgBrowserAgentTest, TestActiveWebStateChanged) {
 }
 
 // Tests that OnGeminiViewStateExpanded triggers page context generation.
-TEST_F(BwgBrowserAgentTest, TestOnGeminiViewStateExpanded) {
+TEST_F(GeminiBrowserAgentTest, TestOnGeminiViewStateExpanded) {
   // Set a valid URL.
   web_state_->SetCurrentURL(GURL("https://example.com"));
 
@@ -357,7 +360,7 @@ TEST_F(BwgBrowserAgentTest, TestOnGeminiViewStateExpanded) {
 }
 
 // Tests hiding the floaty.
-TEST_F(BwgBrowserAgentTest, TestHideFloatyIfInvoked) {
+TEST_F(GeminiBrowserAgentTest, TestHideFloatyIfInvoked) {
   SetIsFloatyInvoked(true);
   gemini_browser_agent_->HideFloatyIfInvoked(
       /*animated=*/true, /*source=*/gemini::FloatyUpdateSource::ViewTransition);
@@ -373,7 +376,7 @@ TEST_F(BwgBrowserAgentTest, TestHideFloatyIfInvoked) {
 // Tests if a floaty is shown if a user dismisses a view controller and the
 // dismissed view controller is not due to a transition to a new view
 // controller.
-TEST_F(BwgBrowserAgentTest, TestShowFloatyIfInvoked) {
+TEST_F(GeminiBrowserAgentTest, TestShowFloatyIfInvoked) {
   SetIsFloatyInvoked(true);
   gemini_browser_agent_->HideFloatyIfInvoked(
       /*animated=*/true, /*source=*/gemini::FloatyUpdateSource::ViewTransition);
@@ -393,7 +396,7 @@ TEST_F(BwgBrowserAgentTest, TestShowFloatyIfInvoked) {
 
 // Tests if a floaty is shown regardless of transition time when the source is
 // from a web navigation
-TEST_F(BwgBrowserAgentTest, TestShowFloatyIfInvokedWithWebNavigation) {
+TEST_F(GeminiBrowserAgentTest, TestShowFloatyIfInvokedWithWebNavigation) {
   SetIsFloatyInvoked(true);
   gemini_browser_agent_->HideFloatyIfInvoked(
       /*animated=*/true, /*source=*/gemini::FloatyUpdateSource::ViewTransition);
@@ -412,7 +415,7 @@ TEST_F(BwgBrowserAgentTest, TestShowFloatyIfInvokedWithWebNavigation) {
 }
 
 // Tests if a floaty is shown during a simulated view controller transition.
-TEST_F(BwgBrowserAgentTest,
+TEST_F(GeminiBrowserAgentTest,
        TestShowFloatyIfInvokedDuringViewControllerTransition) {
   SetIsFloatyInvoked(true);
 
@@ -439,7 +442,7 @@ TEST_F(BwgBrowserAgentTest,
 // Tests that the floaty is not dismissed when `DismissFloaty` is called to
 // clean up properties but a user has not interacted with floaty UI to properly
 // dismiss it.
-TEST_F(BwgBrowserAgentTest, TestDismissFloatyWhenTemporarilyHidden) {
+TEST_F(GeminiBrowserAgentTest, TestDismissFloatyWhenTemporarilyHidden) {
   SetIsFloatyInvoked(true);
   SetIsFloatyTemporarilyHidden(true);
 
@@ -452,7 +455,7 @@ TEST_F(BwgBrowserAgentTest, TestDismissFloatyWhenTemporarilyHidden) {
 // Tests that the floaty is properly dismissed when the floaty is shown. With
 // Copresence, a user can only dismiss the floaty while interacting with the
 // floaty i.e. when the floaty is shown.
-TEST_F(BwgBrowserAgentTest, TestDismissFloatyWhenFloatyIsShown) {
+TEST_F(GeminiBrowserAgentTest, TestDismissFloatyWhenFloatyIsShown) {
   SetIsFloatyInvoked(true);
   SetIsFloatyTemporarilyHidden(false);
   gemini_browser_agent_->DismissFloaty();
@@ -462,7 +465,7 @@ TEST_F(BwgBrowserAgentTest, TestDismissFloatyWhenFloatyIsShown) {
 
 // Without mocking the provider, we cannot assert the UI state. This test
 // ensures the method doesn't crash.
-TEST_F(BwgBrowserAgentTest, TestCollapseFloatyIfInvoked) {
+TEST_F(GeminiBrowserAgentTest, TestCollapseFloatyIfInvoked) {
   SetIsFloatyInvoked(true);
   gemini_browser_agent_->CollapseFloatyIfInvoked();
 }

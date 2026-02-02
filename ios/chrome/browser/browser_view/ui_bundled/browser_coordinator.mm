@@ -132,10 +132,10 @@
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/bwg_coordinator.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_first_run_coordinator.h"
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_browser_agent.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
 #import "ios/chrome/browser/intelligence/enhanced_calendar/coordinator/enhanced_calendar_coordinator.h"
 #import "ios/chrome/browser/intelligence/enhanced_calendar/model/enhanced_calendar_configuration.h"
@@ -3255,13 +3255,13 @@ const char kChromeAppStoreUrl[] =
 - (void)startGeminiFlowWithImageAttachment:(UIImage*)image
                                 entryPoint:(gemini::EntryPoint)entryPoint {
   if (IsGeminiRefactoredFREEnabled()) {
-    BwgBrowserAgent::FromBrowser(self.browser)
+    GeminiBrowserAgent::FromBrowser(self.browser)
         ->StartGeminiFlow(self.viewController, image, entryPoint);
     return;
   }
 
   if (entryPoint == gemini::EntryPoint::ImageContextMenu) {
-    BwgBrowserAgent::FromBrowser(self.browser)
+    GeminiBrowserAgent::FromBrowser(self.browser)
         ->StartGeminiFlow(self.viewController, image, entryPoint);
     return;
   }
@@ -3282,7 +3282,7 @@ const char kChromeAppStoreUrl[] =
       return;
     }
 
-    BwgBrowserAgent::FromBrowser(self.browser)->DismissFloaty();
+    GeminiBrowserAgent::FromBrowser(self.browser)->DismissFloaty();
     if (completion) {
       completion();
     }
@@ -3299,8 +3299,8 @@ const char kChromeAppStoreUrl[] =
 }
 
 - (void)updateFloatyWithTraitCollection:(UITraitCollection*)traitCollection {
-  BwgBrowserAgent* geminiBrowserAgent =
-      BwgBrowserAgent::FromBrowser(self.browser);
+  GeminiBrowserAgent* geminiBrowserAgent =
+      GeminiBrowserAgent::FromBrowser(self.browser);
   if (!IsGeminiCopresenceEnabled() || !geminiBrowserAgent) {
     return;
   }
@@ -3347,8 +3347,8 @@ const char kChromeAppStoreUrl[] =
 
 - (void)hideFloatyIfInvokedAnimated:(BOOL)animated
                          fromSource:(gemini::FloatyUpdateSource)source {
-  BwgBrowserAgent* geminiBrowserAgent =
-      BwgBrowserAgent::FromBrowser(self.browser);
+  GeminiBrowserAgent* geminiBrowserAgent =
+      GeminiBrowserAgent::FromBrowser(self.browser);
   if (!IsGeminiCopresenceEnabled() || !geminiBrowserAgent) {
     return;
   }
@@ -3359,8 +3359,8 @@ const char kChromeAppStoreUrl[] =
 - (void)updateFloatyVisibilityIfEligibleAnimated:(BOOL)animated
                                       fromSource:
                                           (gemini::FloatyUpdateSource)source {
-  BwgBrowserAgent* geminiBrowserAgent =
-      BwgBrowserAgent::FromBrowser(self.browser);
+  GeminiBrowserAgent* geminiBrowserAgent =
+      GeminiBrowserAgent::FromBrowser(self.browser);
   BwgService* geminiService = BwgServiceFactory::GetForProfile(self.profile);
   if (!IsGeminiCopresenceEnabled() || !geminiBrowserAgent || !geminiService) {
     return;

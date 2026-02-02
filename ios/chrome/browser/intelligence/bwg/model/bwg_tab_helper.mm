@@ -186,7 +186,7 @@ void BwgTabHelper::GeneratePageContext(
       web_state_->IsLoading();
   if (should_update_context_after_page_load) {
     // TODO(crbug.com/466107255): Move waiting for page loading responsibility
-    // to BwgBrowserAgent.
+    // to GeminiBrowserAgent.
     base::OnceCallback<void()> pageContextPopulateCallback =
         base::BindOnce(&BwgTabHelper::PopulatePageContextFields,
                        weak_ptr_factory_.GetWeakPtr());

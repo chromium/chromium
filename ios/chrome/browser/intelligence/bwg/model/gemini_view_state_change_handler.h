@@ -8,12 +8,12 @@
 #import "base/memory/weak_ptr.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_view_state_delegate.h"
 
-class BwgBrowserAgent;
+class GeminiBrowserAgent;
 
 // Handler for the Gemini view state changes.
 @interface GeminiViewStateChangeHandler : NSObject <GeminiViewStateDelegate>
 
-- (instancetype)initWithBrowserAgent:(base::WeakPtr<BwgBrowserAgent>)agent
+- (instancetype)initWithBrowserAgent:(base::WeakPtr<GeminiBrowserAgent>)agent
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

@@ -16,9 +16,9 @@
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_first_run_mediator_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_browser_agent.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -56,7 +56,7 @@ const CGFloat kPromoMaxImpressionCount = 3;
   raw_ptr<BwgService> _geminiService;
 
   // The browser-scoped Gemini browser agent.
-  raw_ptr<BwgBrowserAgent> _geminiBrowserAgent;
+  raw_ptr<GeminiBrowserAgent> _geminiBrowserAgent;
 
   // Start time for the preparation of the presentation of BWG overlay.
   base::TimeTicks _geminiOverlayPreparationStartTime;
@@ -75,7 +75,7 @@ const CGFloat kPromoMaxImpressionCount = 3;
                        webStateList:(WebStateList*)webStateList
                  baseViewController:(UIViewController*)baseViewController
                          BWGService:(BwgService*)geminiService
-                    BwgBrowserAgent:(BwgBrowserAgent*)geminiBrowserAgent
+                 geminiBrowserAgent:(GeminiBrowserAgent*)geminiBrowserAgent
                             tracker:(feature_engagement::Tracker*)tracker
                          entryPoint:(gemini::EntryPoint)entryPoint
                   completionHandler:(void (^)(BOOL success))completion {

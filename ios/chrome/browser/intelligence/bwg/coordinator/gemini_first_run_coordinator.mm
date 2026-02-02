@@ -12,9 +12,9 @@
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_first_run_mediator.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_first_run_mediator_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_browser_agent.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/bwg_fre_wrapper_view_controller.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -77,7 +77,7 @@
 
 - (void)start {
   __weak GeminiFirstRunCoordinator* weakSelf = self;
-  BwgBrowserAgent::FromBrowser(self.browser)
+  GeminiBrowserAgent::FromBrowser(self.browser)
       ->DismissGeminiFromOtherWindows(base::BindOnce(^{
         [weakSelf startCoordinator];
       }));
@@ -151,7 +151,7 @@
              webStateList:self.browser->GetWebStateList()
        baseViewController:self.baseViewController
                BWGService:BwgServiceFactory::GetForProfile(self.profile)
-          BwgBrowserAgent:BwgBrowserAgent::FromBrowser(self.browser)
+       geminiBrowserAgent:GeminiBrowserAgent::FromBrowser(self.browser)
                   tracker:_tracker
                entryPoint:_entryPoint
         completionHandler:_completion];

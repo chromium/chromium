@@ -13,7 +13,7 @@
 
 @protocol SceneCommands;
 class BwgService;
-class BwgBrowserAgent;
+class GeminiBrowserAgent;
 class PrefService;
 class WebStateList;
 
@@ -26,7 +26,7 @@ class WebStateList;
                        webStateList:(WebStateList*)webStateList
                  baseViewController:(UIViewController*)baseViewController
                          BWGService:(BwgService*)geminiService
-                    BwgBrowserAgent:(BwgBrowserAgent*)geminiBrowserAgent
+                 geminiBrowserAgent:(GeminiBrowserAgent*)geminiBrowserAgent
                             tracker:(feature_engagement::Tracker*)tracker
                          entryPoint:(gemini::EntryPoint)entryPoint
                   completionHandler:(void (^)(BOOL success))completion;

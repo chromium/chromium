@@ -10,7 +10,7 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_consent_mutator.h"
 
-class BwgBrowserAgent;
+class GeminiBrowserAgent;
 class BwgService;
 class PrefService;
 @protocol SceneCommands;
@@ -30,7 +30,7 @@ enum class EntryPoint;
                  baseViewController:(UIViewController*)baseViewController
                          entryPoint:(gemini::EntryPoint)entryPoint
                          BWGService:(BwgService*)BWGService
-                    BWGBrowserAgent:(BwgBrowserAgent*)BWGBrowserAgent
+                 geminiBrowserAgent:(GeminiBrowserAgent*)geminiBrowserAgent
                             tracker:(feature_engagement::Tracker*)tracker;
 
 // The delegate for this mediator.

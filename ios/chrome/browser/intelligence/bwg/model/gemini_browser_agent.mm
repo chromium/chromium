@@ -1,8 +1,8 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_browser_agent.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
 
 #import "base/barrier_closure.h"
 #import "base/functional/bind.h"
@@ -84,14 +84,15 @@ double kViewTransitionTime = 0.8;
 
 }  // namespace
 
-BwgBrowserAgent::BwgBrowserAgent(Browser* browser) : BrowserUserData(browser) {
+GeminiBrowserAgent::GeminiBrowserAgent(Browser* browser)
+    : BrowserUserData(browser) {
   if (IsGeminiCopresenceEnabled()) {
     StartObserving(browser_);
 
     pref_change_registrar_.Init(browser_->GetProfile()->GetPrefs());
     pref_change_registrar_.Add(
         prefs::kIOSBWGPageContentSetting,
-        base::BindRepeating(&BwgBrowserAgent::OnPageContentPrefChanged,
+        base::BindRepeating(&GeminiBrowserAgent::OnPageContentPrefChanged,
                             base::Unretained(this)));
   }
 
@@ -133,7 +134,7 @@ BwgBrowserAgent::BwgBrowserAgent(Browser* browser) : BrowserUserData(browser) {
     fullscreen_controller_ = FullscreenController::FromBrowser(browser_);
     fullscreen_controller_->AddObserver(this);
 
-    base::WeakPtr<BwgBrowserAgent> weak_ptr = weak_factory_.GetWeakPtr();
+    base::WeakPtr<GeminiBrowserAgent> weak_ptr = weak_factory_.GetWeakPtr();
     keyboard_show_observer_ = [[NSNotificationCenter defaultCenter]
         addObserverForName:UIKeyboardWillShowNotification
                     object:nil
@@ -155,7 +156,7 @@ BwgBrowserAgent::BwgBrowserAgent(Browser* browser) : BrowserUserData(browser) {
   }
 }
 
-BwgBrowserAgent::~BwgBrowserAgent() {
+GeminiBrowserAgent::~GeminiBrowserAgent() {
   if (keyboard_show_observer_) {
     [[NSNotificationCenter defaultCenter]
         removeObserver:keyboard_show_observer_];
@@ -175,7 +176,7 @@ BwgBrowserAgent::~BwgBrowserAgent() {
   StopObserving();
 }
 
-void BwgBrowserAgent::OnKeyboardStateChanged(bool is_visible) {
+void GeminiBrowserAgent::OnKeyboardStateChanged(bool is_visible) {
   CHECK(IsGeminiCopresenceEnabled());
   is_keyboard_visible_ = is_visible;
   if (!fullscreen_controller_ || !is_floaty_invoked_) {
@@ -190,9 +191,9 @@ void BwgBrowserAgent::OnKeyboardStateChanged(bool is_visible) {
       offset, fullscreen_controller_->GetProgress());
 }
 
-void BwgBrowserAgent::StartGeminiFlow(UIViewController* base_view_controller,
-                                      UIImage* image_attachment,
-                                      gemini::EntryPoint entry_point) {
+void GeminiBrowserAgent::StartGeminiFlow(UIViewController* base_view_controller,
+                                         UIImage* image_attachment,
+                                         gemini::EntryPoint entry_point) {
   bool will_show_first_run = !HasCompletedFirstRun();
   RecordGeminiEntryPointClick(entry_point, will_show_first_run);
 
@@ -209,7 +210,7 @@ void BwgBrowserAgent::StartGeminiFlow(UIViewController* base_view_controller,
 
   id<BWGCommands> gemini_commands_handler =
       HandlerForProtocol(browser_->GetCommandDispatcher(), BWGCommands);
-  base::WeakPtr<BwgBrowserAgent> weak_ptr = weak_factory_.GetWeakPtr();
+  base::WeakPtr<GeminiBrowserAgent> weak_ptr = weak_factory_.GetWeakPtr();
   [gemini_commands_handler
       startGeminiFREWithCompletion:^(BOOL success) {
         if (success) {
@@ -223,7 +224,7 @@ void BwgBrowserAgent::StartGeminiFlow(UIViewController* base_view_controller,
                     fromEntryPoint:entry_point];
 }
 
-bool BwgBrowserAgent::HasCompletedFirstRun() {
+bool GeminiBrowserAgent::HasCompletedFirstRun() {
   PrefService* pref_service = browser_->GetProfile()->GetPrefs();
 
   // If we are forcing the FRE, reset the consent pref and return false.
@@ -236,7 +237,7 @@ bool BwgBrowserAgent::HasCompletedFirstRun() {
   return pref_service->GetBoolean(prefs::kIOSBwgConsent);
 }
 
-CGFloat BwgBrowserAgent::GetFloatyOffsetFromFullscreenController(
+CGFloat GeminiBrowserAgent::GetFloatyOffsetFromFullscreenController(
     FullscreenController* controller) {
   CGFloat fully_expanded_bottom_toolbar_height =
       controller->GetMaxViewportInsets().bottom;
@@ -246,7 +247,7 @@ CGFloat BwgBrowserAgent::GetFloatyOffsetFromFullscreenController(
   return offset;
 }
 
-void BwgBrowserAgent::UpdateForTraitCollection(
+void GeminiBrowserAgent::UpdateForTraitCollection(
     UITraitCollection* traitCollection) {
   // Update the offset for a device orientation update to landscape or portrait.
   CGFloat offset =
@@ -254,10 +255,10 @@ void BwgBrowserAgent::UpdateForTraitCollection(
   ios::provider::UpdateOverlayOffsetWithOpacity(offset, 1.0);
 }
 
-void BwgBrowserAgent::PresentFloaty(UIViewController* base_view_controller,
-                                    UIImage* image_attachment,
-                                    gemini::EntryPoint entry_point,
-                                    bool first_run_shown) {
+void GeminiBrowserAgent::PresentFloaty(UIViewController* base_view_controller,
+                                       UIImage* image_attachment,
+                                       gemini::EntryPoint entry_point,
+                                       bool first_run_shown) {
   base::TimeTicks start_time = base::TimeTicks::Now();
 
   // Trigger zero state suggestions.
@@ -275,7 +276,7 @@ void BwgBrowserAgent::PresentFloaty(UIViewController* base_view_controller,
   }
 
   // Configure the callback to be executed once the page context is ready.
-  base::WeakPtr<BwgBrowserAgent> weak_ptr = weak_factory_.GetWeakPtr();
+  base::WeakPtr<GeminiBrowserAgent> weak_ptr = weak_factory_.GetWeakPtr();
   base::OnceCallback<void(PageContextWrapperCallbackResponse)>
       page_context_completion_callback;
 
@@ -285,7 +286,7 @@ void BwgBrowserAgent::PresentFloaty(UIViewController* base_view_controller,
                                     image_attachment);
 
     page_context_completion_callback = base::BindOnce(
-        [](base::WeakPtr<BwgBrowserAgent> weak_ptr,
+        [](base::WeakPtr<GeminiBrowserAgent> weak_ptr,
            PageContextWrapperCallbackResponse response) {
           if (weak_ptr) {
             weak_ptr->UpdateFloatyPageContext(std::move(response));
@@ -298,7 +299,7 @@ void BwgBrowserAgent::PresentFloaty(UIViewController* base_view_controller,
                                 base::TimeTicks::Now() - start_time);
   } else {
     page_context_completion_callback = base::BindOnce(
-        &BwgBrowserAgent::OnPageContextReady, weak_factory_.GetWeakPtr(),
+        &GeminiBrowserAgent::OnPageContextReady, weak_factory_.GetWeakPtr(),
         base_view_controller, image_attachment, start_time, first_run_shown,
         entry_point);
   }
@@ -308,7 +309,7 @@ void BwgBrowserAgent::PresentFloaty(UIViewController* base_view_controller,
       /*full_page_context=*/true);
 }
 
-void BwgBrowserAgent::PresentFloatyWithPageContext(
+void GeminiBrowserAgent::PresentFloatyWithPageContext(
     UIViewController* base_view_controller,
     base::expected<std::unique_ptr<optimization_guide::proto::PageContext>,
                    PageContextWrapperError> expected_page_context,
@@ -327,7 +328,7 @@ void BwgBrowserAgent::PresentFloatyWithPageContext(
   }
 }
 
-void BwgBrowserAgent::PresentFloatyWithPendingContext(
+void GeminiBrowserAgent::PresentFloatyWithPendingContext(
     UIViewController* base_view_controller,
     std::unique_ptr<optimization_guide::proto::PageContext> page_context,
     gemini::EntryPoint entry_point) {
@@ -336,7 +337,7 @@ void BwgBrowserAgent::PresentFloatyWithPendingContext(
       ios::provider::BWGPageContextComputationState::kPending, entry_point);
 }
 
-void BwgBrowserAgent::PresentFloatyWithPendingContext(
+void GeminiBrowserAgent::PresentFloatyWithPendingContext(
     UIViewController* base_view_controller,
     gemini::EntryPoint entry_point,
     UIImage* image_attachment) {
@@ -358,7 +359,7 @@ void BwgBrowserAgent::PresentFloatyWithPendingContext(
       image_attachment);
 }
 
-void BwgBrowserAgent::UpdateFloatyPageContext(
+void GeminiBrowserAgent::UpdateFloatyPageContext(
     base::expected<std::unique_ptr<optimization_guide::proto::PageContext>,
                    PageContextWrapperError> expected_page_context) {
   GeminiPageContext* gemini_page_context = [[GeminiPageContext alloc] init];
@@ -380,7 +381,7 @@ void BwgBrowserAgent::UpdateFloatyPageContext(
   ios::provider::UpdatePageContext(gemini_page_context);
 }
 
-void BwgBrowserAgent::OnGeminiViewStateExpanded() {
+void GeminiBrowserAgent::OnGeminiViewStateExpanded() {
   web::WebState* active_web_state =
       browser_->GetWebStateList()->GetActiveWebState();
   BwgTabHelper* tab_helper = GetActiveTabHelper(active_web_state);
@@ -388,7 +389,7 @@ void BwgBrowserAgent::OnGeminiViewStateExpanded() {
   if (tab_helper) {
     tab_helper->SetBwgUiShowing(true);
     tab_helper->GeneratePageContext(
-        base::BindOnce(&BwgBrowserAgent::UpdateFloatyPageContext,
+        base::BindOnce(&GeminiBrowserAgent::UpdateFloatyPageContext,
                        weak_factory_.GetWeakPtr()),
         /*full_page_context=*/true);
   }
@@ -397,7 +398,7 @@ void BwgBrowserAgent::OnGeminiViewStateExpanded() {
       ios::provider::GeminiUIElementType::kContextAttachment);
 }
 
-void BwgBrowserAgent::CollapseFloatyIfInvoked() {
+void GeminiBrowserAgent::CollapseFloatyIfInvoked() {
   if (!is_floaty_invoked_) {
     return;
   }
@@ -406,7 +407,7 @@ void BwgBrowserAgent::CollapseFloatyIfInvoked() {
       ios::provider::GeminiViewState::kCollapsed, /*animated=*/true);
 }
 
-void BwgBrowserAgent::SetLastShownViewState(
+void GeminiBrowserAgent::SetLastShownViewState(
     ios::provider::GeminiViewState view_state) {
   if (view_state == ios::provider::GeminiViewState::kHidden ||
       view_state == last_shown_view_state_) {
@@ -424,7 +425,7 @@ void BwgBrowserAgent::SetLastShownViewState(
   last_shown_view_state_ = view_state;
 }
 
-void BwgBrowserAgent::DismissGeminiFromOtherWindows(
+void GeminiBrowserAgent::DismissGeminiFromOtherWindows(
     base::OnceClosure completion) {
   // Collect all browsers (excluding the current one) for all profiles.
   std::vector<base::WeakPtr<Browser>> other_browsers;
@@ -464,7 +465,7 @@ void BwgBrowserAgent::DismissGeminiFromOtherWindows(
   }
 }
 
-void BwgBrowserAgent::DismissFloaty() {
+void GeminiBrowserAgent::DismissFloaty() {
   web::WebState* active_web_state =
       browser_->GetWebStateList()->GetActiveWebState();
   BwgTabHelper* gemini_tab_helper = GetActiveTabHelper(active_web_state);
@@ -488,8 +489,9 @@ void BwgBrowserAgent::DismissFloaty() {
   ios::provider::ResetGemini();
 }
 
-void BwgBrowserAgent::HideFloatyIfInvoked(bool animated,
-                                          gemini::FloatyUpdateSource source) {
+void GeminiBrowserAgent::HideFloatyIfInvoked(
+    bool animated,
+    gemini::FloatyUpdateSource source) {
   if (!is_floaty_invoked_) {
     return;
   }
@@ -512,8 +514,9 @@ void BwgBrowserAgent::HideFloatyIfInvoked(bool animated,
                                        animated);
 }
 
-void BwgBrowserAgent::ShowFloatyIfInvoked(bool animated,
-                                          gemini::FloatyUpdateSource source) {
+void GeminiBrowserAgent::ShowFloatyIfInvoked(
+    bool animated,
+    gemini::FloatyUpdateSource source) {
   if (!is_floaty_invoked_ || !is_floaty_temporarily_hidden_) {
     return;
   }
@@ -547,22 +550,22 @@ void BwgBrowserAgent::ShowFloatyIfInvoked(bool animated,
 
 #pragma mark - TabsDependencyInstaller
 
-void BwgBrowserAgent::OnWebStateInserted(web::WebState* web_state) {
+void GeminiBrowserAgent::OnWebStateInserted(web::WebState* web_state) {
   // No-op. We only observe the active WebState, handled in
   // OnActiveWebStateChanged.
 }
 
-void BwgBrowserAgent::OnWebStateRemoved(web::WebState* web_state) {
+void GeminiBrowserAgent::OnWebStateRemoved(web::WebState* web_state) {
   // No-op. If the active WebState is removed, OnActiveWebStateChanged will
   // handle the detachment.
 }
 
-void BwgBrowserAgent::OnWebStateDeleted(web::WebState* web_state) {
+void GeminiBrowserAgent::OnWebStateDeleted(web::WebState* web_state) {
   // No-op, handled by OnWebStateRemoved or OnBwgTabHelperDestroyed.
 }
 
-void BwgBrowserAgent::OnActiveWebStateChanged(web::WebState* old_active,
-                                              web::WebState* new_active) {
+void GeminiBrowserAgent::OnActiveWebStateChanged(web::WebState* old_active,
+                                                 web::WebState* new_active) {
   if (old_active) {
     BwgTabHelper* old_tab_helper = BwgTabHelper::FromWebState(old_active);
     if (old_tab_helper) {
@@ -582,7 +585,7 @@ void BwgBrowserAgent::OnActiveWebStateChanged(web::WebState* old_active,
 
 #pragma mark - GeminiTabHelperObserver
 
-void BwgBrowserAgent::OnPageContextUpdated(web::WebState* web_state) {
+void GeminiBrowserAgent::OnPageContextUpdated(web::WebState* web_state) {
   BwgTabHelper* tab_helper = GetActiveTabHelper(web_state);
   if (!tab_helper) {
     return;
@@ -595,13 +598,13 @@ void BwgBrowserAgent::OnPageContextUpdated(web::WebState* web_state) {
   ios::provider::UpdatePageContext(gemini_page_context);
 }
 
-void BwgBrowserAgent::OnGeminiTabHelperDestroyed(BwgTabHelper* tab_helper) {
+void GeminiBrowserAgent::OnGeminiTabHelperDestroyed(BwgTabHelper* tab_helper) {
   tab_helper->RemoveObserver(this);
 }
 
 #pragma mark - FullscreenControllerObserver
 
-void BwgBrowserAgent::FullscreenProgressUpdated(
+void GeminiBrowserAgent::FullscreenProgressUpdated(
     FullscreenController* controller,
     CGFloat progress) {
   // Catch-all in case the floaty is still in a temporarily hidden state. A
@@ -633,9 +636,9 @@ void BwgBrowserAgent::FullscreenProgressUpdated(
   }
 }
 
-void BwgBrowserAgent::FullscreenWillAnimate(FullscreenController* controller,
-                                            FullscreenAnimator* animator) {
-  base::WeakPtr<BwgBrowserAgent> weak_ptr = weak_factory_.GetWeakPtr();
+void GeminiBrowserAgent::FullscreenWillAnimate(FullscreenController* controller,
+                                               FullscreenAnimator* animator) {
+  base::WeakPtr<GeminiBrowserAgent> weak_ptr = weak_factory_.GetWeakPtr();
   [animator addAnimations:^{
     if (weak_ptr) {
       weak_ptr->FullscreenProgressUpdated(
@@ -645,8 +648,8 @@ void BwgBrowserAgent::FullscreenWillAnimate(FullscreenController* controller,
   }];
 }
 
-void BwgBrowserAgent::FullscreenDidAnimate(FullscreenController* controller,
-                                           FullscreenAnimatorStyle style) {
+void GeminiBrowserAgent::FullscreenDidAnimate(FullscreenController* controller,
+                                              FullscreenAnimatorStyle style) {
   if (style == FullscreenAnimatorStyle::ENTER_FULLSCREEN) {
     FullscreenProgressUpdated(controller, kFullscreenEnabled);
   } else {
@@ -654,13 +657,13 @@ void BwgBrowserAgent::FullscreenDidAnimate(FullscreenController* controller,
   }
 }
 
-void BwgBrowserAgent::FullscreenControllerWillShutDown(
+void GeminiBrowserAgent::FullscreenControllerWillShutDown(
     FullscreenController* controller) {
   controller->RemoveObserver(this);
   fullscreen_controller_ = nullptr;
 }
 
-void BwgBrowserAgent::FullscreenViewportInsetRangeChanged(
+void GeminiBrowserAgent::FullscreenViewportInsetRangeChanged(
     FullscreenController* controller,
     UIEdgeInsets min_viewport_insets,
     UIEdgeInsets max_viewport_insets) {
@@ -669,7 +672,7 @@ void BwgBrowserAgent::FullscreenViewportInsetRangeChanged(
 
 #pragma mark - Private
 
-void BwgBrowserAgent::PresentFloatyWithState(
+void GeminiBrowserAgent::PresentFloatyWithState(
     UIViewController* base_view_controller,
     std::unique_ptr<optimization_guide::proto::PageContext> page_context_proto,
     ios::provider::BWGPageContextComputationState computation_state,
@@ -734,7 +737,7 @@ void BwgBrowserAgent::PresentFloatyWithState(
   }
 }
 
-UIImage* BwgBrowserAgent::FetchPageFavicon() {
+UIImage* GeminiBrowserAgent::FetchPageFavicon() {
   // Use the cached favicon of the web state. If it's not available, use a
   // default favicon instead.
   web::WebState* web_state = browser_->GetWebStateList()->GetActiveWebState();
@@ -750,7 +753,7 @@ UIImage* BwgBrowserAgent::FetchPageFavicon() {
   return DefaultSymbolWithConfiguration(kGlobeAmericasSymbol, configuration);
 }
 
-void BwgBrowserAgent::ApplyUserPrefsToPageContext(
+void GeminiBrowserAgent::ApplyUserPrefsToPageContext(
     GeminiPageContext* gemini_page_context) {
   // Disable the page context attachment state based on user prefs.
   PrefService* pref_service = browser_->GetProfile()->GetPrefs();
@@ -767,7 +770,7 @@ void BwgBrowserAgent::ApplyUserPrefsToPageContext(
   }
 }
 
-void BwgBrowserAgent::OnPageContextReady(
+void GeminiBrowserAgent::OnPageContextReady(
     UIViewController* base_view_controller,
     UIImage* image_attachment,
     base::TimeTicks start_time,
@@ -792,7 +795,7 @@ void BwgBrowserAgent::OnPageContextReady(
                               base::TimeTicks::Now() - start_time);
 }
 
-void BwgBrowserAgent::SetSessionCommandHandlers() {
+void GeminiBrowserAgent::SetSessionCommandHandlers() {
   id<SettingsCommands> settings_handler =
       HandlerForProtocol(browser_->GetCommandDispatcher(), SettingsCommands);
   id<BWGCommands> bwg_handler =
@@ -802,7 +805,7 @@ void BwgBrowserAgent::SetSessionCommandHandlers() {
   bwg_session_handler_.BWGHandler = bwg_handler;
 }
 
-void BwgBrowserAgent::OnPageContentPrefChanged() {
+void GeminiBrowserAgent::OnPageContentPrefChanged() {
   web::WebState* active_web_state =
       browser_->GetWebStateList()->GetActiveWebState();
   BwgTabHelper* tab_helper = GetActiveTabHelper(active_web_state);
@@ -820,7 +823,7 @@ void BwgBrowserAgent::OnPageContentPrefChanged() {
       ios::provider::GeminiUIElementType::kContextAttachment);
 }
 
-BwgTabHelper* BwgBrowserAgent::GetActiveTabHelper(web::WebState* web_state) {
+BwgTabHelper* GeminiBrowserAgent::GetActiveTabHelper(web::WebState* web_state) {
   web::WebState* active_web_state =
       browser_->GetWebStateList()->GetActiveWebState();
   if (active_web_state && active_web_state == web_state) {

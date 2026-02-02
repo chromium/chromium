@@ -1,9 +1,9 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_BWG_BROWSER_AGENT_H_
-#define IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_BWG_BROWSER_AGENT_H_
+#ifndef IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_GEMINI_BROWSER_AGENT_H_
+#define IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_GEMINI_BROWSER_AGENT_H_
 
 #import <UIKit/UIKit.h>
 
@@ -45,15 +45,15 @@ class PageContext;
 
 // A browser agent responsible for presenting the floaty and managing
 // its protocol handlers.
-class BwgBrowserAgent : public BrowserUserData<BwgBrowserAgent>,
-                        public GeminiTabHelperObserver,
-                        public FullscreenControllerObserver,
-                        public TabsDependencyInstaller {
+class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
+                           public GeminiTabHelperObserver,
+                           public FullscreenControllerObserver,
+                           public TabsDependencyInstaller {
  public:
-  BwgBrowserAgent(const BwgBrowserAgent&) = delete;
-  BwgBrowserAgent& operator=(const BwgBrowserAgent&) = delete;
+  GeminiBrowserAgent(const GeminiBrowserAgent&) = delete;
+  GeminiBrowserAgent& operator=(const GeminiBrowserAgent&) = delete;
 
-  ~BwgBrowserAgent() override;
+  ~GeminiBrowserAgent() override;
 
   // TabsDependencyInstaller:
   void OnWebStateInserted(web::WebState* web_state) override;
@@ -129,9 +129,9 @@ class BwgBrowserAgent : public BrowserUserData<BwgBrowserAgent>,
   void DismissGeminiFromOtherWindows(base::OnceClosure completion);
 
  private:
-  explicit BwgBrowserAgent(Browser* browser);
-  friend class BrowserUserData<BwgBrowserAgent>;
-  friend class BwgBrowserAgentTest;
+  explicit GeminiBrowserAgent(Browser* browser);
+  friend class BrowserUserData<GeminiBrowserAgent>;
+  friend class GeminiBrowserAgentTest;
 
   // Starts the Gemini session (prepares context and shows overlay).
   void PresentFloaty(UIViewController* base_view_controller,
@@ -273,7 +273,7 @@ class BwgBrowserAgent : public BrowserUserData<BwgBrowserAgent>,
   void OnPageContentPrefChanged();
 
   // Weak pointer factory.
-  base::WeakPtrFactory<BwgBrowserAgent> weak_factory_{this};
+  base::WeakPtrFactory<GeminiBrowserAgent> weak_factory_{this};
 };
 
-#endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_BWG_BROWSER_AGENT_H_
+#endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_GEMINI_BROWSER_AGENT_H_
