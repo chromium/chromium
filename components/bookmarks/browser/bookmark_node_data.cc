@@ -15,6 +15,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
+#include "components/bookmarks/common/bookmark_features.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 
 namespace bookmarks {
@@ -28,8 +29,7 @@ const char BookmarkNodeData::kClipboardFormatString[] =
     "chromium/x-bookmark-entries";
 #endif
 
-BookmarkNodeData::Element::Element() : is_url(false), id_(0) {
-}
+BookmarkNodeData::Element::Element() : is_url(false), id_(0) {}
 
 BookmarkNodeData::Element::Element(const BookmarkNode* node)
     : is_url(node->is_url()),
@@ -38,42 +38,43 @@ BookmarkNodeData::Element::Element(const BookmarkNode* node)
       date_added(node->date_added()),
       date_folder_modified(node->date_folder_modified()),
       id_(node->id()) {
-  if (node->GetMetaInfoMap())
+  if (node->GetMetaInfoMap()) {
     meta_info_map = *node->GetMetaInfoMap();
-  for (const auto& child : node->children())
-    children.push_back(Element(child.get()));
+  }
+  for (const auto& child : node->children()) {
+    children.emplace_back(child.get());
+  }
 }
 
 BookmarkNodeData::Element::Element(const Element& other) = default;
 
-BookmarkNodeData::Element::~Element() {
-}
+BookmarkNodeData::Element::~Element() {}
 
 #if !BUILDFLAG(IS_APPLE)
-void BookmarkNodeData::Element::WriteToPickle(base::Pickle* pickle) const {
+void BookmarkNodeData::Element::WriteToLegacyPickle(
+    base::Pickle* pickle) const {
   pickle->WriteBool(is_url);
   pickle->WriteString(url.spec());
   pickle->WriteString16(title);
   pickle->WriteInt64(id_);
   pickle->WriteUInt32(static_cast<uint32_t>(meta_info_map.size()));
-  for (auto it = meta_info_map.begin(); it != meta_info_map.end(); ++it) {
-    pickle->WriteString(it->first);
-    pickle->WriteString(it->second);
+  for (const auto& [key, value] : meta_info_map) {
+    pickle->WriteString(key);
+    pickle->WriteString(value);
   }
   if (!is_url) {
     pickle->WriteUInt32(static_cast<uint32_t>(children.size()));
-    for (auto i = children.begin(); i != children.end(); ++i) {
-      i->WriteToPickle(pickle);
+    for (const auto& child : children) {
+      child.WriteToLegacyPickle(pickle);
     }
   }
 }
 
-bool BookmarkNodeData::Element::ReadFromPickle(base::PickleIterator* iterator) {
+bool BookmarkNodeData::Element::ReadFromLegacyPickle(
+    base::PickleIterator* iterator) {
   std::string url_spec;
-  if (!iterator->ReadBool(&is_url) ||
-      !iterator->ReadString(&url_spec) ||
-      !iterator->ReadString16(&title) ||
-      !iterator->ReadInt64(&id_)) {
+  if (!iterator->ReadBool(&is_url) || !iterator->ReadString(&url_spec) ||
+      !iterator->ReadString16(&title) || !iterator->ReadInt64(&id_)) {
     return false;
   }
   url = GURL(url_spec);
@@ -81,13 +82,13 @@ bool BookmarkNodeData::Element::ReadFromPickle(base::PickleIterator* iterator) {
   date_folder_modified = base::Time();
   meta_info_map.clear();
   uint32_t meta_field_count;
-  if (!iterator->ReadUInt32(&meta_field_count))
+  if (!iterator->ReadUInt32(&meta_field_count)) {
     return false;
+  }
   for (size_t i = 0; i < meta_field_count; ++i) {
     std::string key;
     std::string value;
-    if (!iterator->ReadString(&key) ||
-        !iterator->ReadString(&value)) {
+    if (!iterator->ReadString(&key) || !iterator->ReadString(&value)) {
       return false;
     }
     meta_info_map[key] = value;
@@ -95,8 +96,9 @@ bool BookmarkNodeData::Element::ReadFromPickle(base::PickleIterator* iterator) {
   children.clear();
   if (!is_url) {
     uint32_t children_count_tmp;
-    if (!iterator->ReadUInt32(&children_count_tmp))
+    if (!iterator->ReadUInt32(&children_count_tmp)) {
       return false;
+    }
     if (!base::IsValueInRangeForNumericType<size_t>(children_count_tmp)) {
       LOG(WARNING) << "children_count failed bounds check";
       return false;
@@ -111,8 +113,92 @@ bool BookmarkNodeData::Element::ReadFromPickle(base::PickleIterator* iterator) {
         base::checked_cast<size_t>(children_count_tmp);
     for (size_t i = 0; i < children_count; ++i) {
       children.emplace_back();
-      if (!children.back().ReadFromPickle(iterator))
+      if (!children.back().ReadFromLegacyPickle(iterator)) {
         return false;
+      }
+    }
+  }
+  return true;
+}
+
+base::Pickle BookmarkNodeData::Element::ToPickle() const {
+  base::Pickle pickle;
+  pickle.WriteBool(is_url);
+  pickle.WriteString(url.spec());
+  pickle.WriteString16(title);
+  pickle.WriteInt64(id_);
+  pickle.WriteUInt32(static_cast<uint32_t>(meta_info_map.size()));
+
+  for (const auto& [key, value] : meta_info_map) {
+    pickle.WriteString(key);
+    pickle.WriteString(value);
+  }
+
+  if (!is_url) {
+    pickle.WriteUInt32(static_cast<uint32_t>(children.size()));
+    for (const auto& child : children) {
+      pickle.WriteData(child.ToPickle());
+    }
+  }
+  return pickle;
+}
+
+bool BookmarkNodeData::Element::FromPickle(const base::Pickle& pickle) {
+  base::PickleIterator iterator(pickle);
+  std::string url_spec;
+  if (!iterator.ReadBool(&is_url) || !iterator.ReadString(&url_spec) ||
+      !iterator.ReadString16(&title) || !iterator.ReadInt64(&id_)) {
+    return false;
+  }
+
+  url = GURL(url_spec);
+  date_added = base::Time();
+  date_folder_modified = base::Time();
+  meta_info_map.clear();
+
+  uint32_t meta_field_count = 0;
+  if (!iterator.ReadUInt32(&meta_field_count)) {
+    return false;
+  }
+
+  for (size_t i = 0; i < meta_field_count; ++i) {
+    std::string key;
+    std::string value;
+    if (!iterator.ReadString(&key) || !iterator.ReadString(&value)) {
+      return false;
+    }
+    meta_info_map[key] = value;
+  }
+
+  children.clear();
+  if (!is_url) {
+    uint32_t children_count_tmp = 0;
+    if (!iterator.ReadUInt32(&children_count_tmp)) {
+      return false;
+    }
+
+    if (!base::IsValueInRangeForNumericType<size_t>(children_count_tmp)) {
+      LOG(WARNING) << "children_count failed bounds check";
+      return false;
+    }
+    // Note: do not preallocate the children vector. A pickle could be
+    // constructed to contain N nested Elements. By continually recursing on
+    // this ReadFromPickle function, the fast-fail logic is subverted. Each
+    // child would claim it contains M more children. The first (and only) child
+    // provided would claim M more children. We would allocate N * M Elements
+    // along the way, while only receiving N Elements.
+    const size_t children_count =
+        base::checked_cast<size_t>(children_count_tmp);
+    for (size_t i = 0; i < children_count; ++i) {
+      children.emplace_back();
+      std::optional<base::span<const uint8_t>> span = iterator.ReadData();
+      if (!span.has_value()) {
+        return false;
+      }
+      if (!children.back().FromPickle(
+              base::Pickle::WithUnownedBuffer(span.value()))) {
+        return false;
+      }
     }
   }
   return true;
@@ -121,13 +207,12 @@ bool BookmarkNodeData::Element::ReadFromPickle(base::PickleIterator* iterator) {
 
 // BookmarkNodeData -----------------------------------------------------------
 
-BookmarkNodeData::BookmarkNodeData() {
-}
+BookmarkNodeData::BookmarkNodeData() = default;
 
 BookmarkNodeData::BookmarkNodeData(const BookmarkNodeData& other) = default;
 
 BookmarkNodeData::BookmarkNodeData(const BookmarkNode* node) {
-  elements.push_back(Element(node));
+  elements.emplace_back(node);
 }
 
 BookmarkNodeData::BookmarkNodeData(
@@ -135,8 +220,7 @@ BookmarkNodeData::BookmarkNodeData(
   ReadFromVector(nodes);
 }
 
-BookmarkNodeData::~BookmarkNodeData() {
-}
+BookmarkNodeData::~BookmarkNodeData() {}
 
 #if !BUILDFLAG(IS_APPLE)
 // static
@@ -269,10 +353,20 @@ bool BookmarkNodeData::ReadFromClipboard(ui::ClipboardBuffer buffer) {
 void BookmarkNodeData::WriteToPickle(const base::FilePath& profile_path,
                                      base::Pickle* pickle) const {
   profile_path.WriteToPickle(pickle);
-  pickle->WriteUInt32(static_cast<uint32_t>(size()));
-
-  for (size_t i = 0; i < size(); ++i)
-    elements[i].WriteToPickle(pickle);
+  if (base::FeatureList::IsEnabled(kEnableBookmarkNodeDataNewPickleFormat)) {
+    // Backward-compatibility safeguard (as old versions cannot read the new
+    // format).
+    pickle->WriteUInt32(0);
+    pickle->WriteUInt32(static_cast<uint32_t>(size()));
+    for (const auto& element : elements) {
+      pickle->WriteData(element.ToPickle());
+    }
+  } else {
+    pickle->WriteUInt32(static_cast<uint32_t>(size()));
+    for (const auto& element : elements) {
+      element.WriteToLegacyPickle(pickle);
+    }
+  }
 }
 
 bool BookmarkNodeData::ReadFromPickle(base::Pickle* pickle) {
@@ -281,6 +375,15 @@ bool BookmarkNodeData::ReadFromPickle(base::Pickle* pickle) {
   if (!profile_path_.ReadFromPickle(&data_iterator) ||
       !data_iterator.ReadUInt32(&element_count_tmp)) {
     return false;
+  }
+
+  // legacy format: profile_path, element_count, elements
+  // newer format: profile_path, 0, element_count, elements
+  bool legacy_format = (element_count_tmp != 0);
+  if (!legacy_format) {
+    if (!data_iterator.ReadUInt32(&element_count_tmp)) {
+      return false;
+    }
   }
 
   if (!base::IsValueInRangeForNumericType<size_t>(element_count_tmp)) {
@@ -295,17 +398,34 @@ bool BookmarkNodeData::ReadFromPickle(base::Pickle* pickle) {
   }
   std::vector<Element> tmp_elements;
   tmp_elements.reserve(std::min(element_count, kMaxVectorPreallocateSize));
-  for (size_t i = 0; i < element_count; ++i) {
-    tmp_elements.emplace_back();
-    if (!tmp_elements.back().ReadFromPickle(&data_iterator)) {
-      return false;
+  if (legacy_format) {
+    for (size_t i = 0; i < element_count; ++i) {
+      tmp_elements.emplace_back();
+      if (!tmp_elements.back().ReadFromLegacyPickle(&data_iterator)) {
+        return false;
+      }
+    }
+  } else {
+    for (size_t i = 0; i < element_count; ++i) {
+      std::optional<base::span<const uint8_t>> span = data_iterator.ReadData();
+      if (!span.has_value()) {
+        return false;
+      }
+      tmp_elements.emplace_back();
+      if (!tmp_elements.back().FromPickle(
+              base::Pickle::WithUnownedBuffer(span.value()))) {
+        return false;
+      }
     }
   }
   elements.swap(tmp_elements);
 
+  // Treat the data loading from pickle as a failure if elements is empty, which
+  // forces the `ReadFromClipboard` fallback to continue reading data via
+  // `ReadBookmark`. Otherwise, returning true while elements is empty will
+  // trigger a CHECK. See http://crbug.com/472245783 for details.
   return is_valid();
 }
-
 #endif  // BUILDFLAG(IS_APPLE)
 
 std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>
@@ -313,8 +433,9 @@ BookmarkNodeData::GetNodes(BookmarkModel* model,
                            const base::FilePath& profile_path) const {
   std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes;
 
-  if (!IsFromProfilePath(profile_path))
+  if (!IsFromProfilePath(profile_path)) {
     return nodes;
+  }
 
   for (size_t i = 0; i < size(); ++i) {
     const BookmarkNode* node = GetBookmarkNodeByID(model, elements[i].id_);
