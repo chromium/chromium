@@ -11,6 +11,7 @@
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/browser/site_protection/site_familiarity_fetcher.h"
 #include "chrome/browser/site_protection/site_familiarity_utils.h"
+#include "chrome/browser/ui/tab_contents/tab_contents_iterator.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/policy_constants.h"
@@ -653,11 +654,15 @@ IN_PROC_BROWSER_TEST_F(
   GURL url = embedded_https_test_server().GetURL("a.com", "/simple.html");
   NavigateChangeV8OptPriorToWindowOpen(web_contents(), url, url);
 
-  std::vector<content::WebContents*> all_web_contents =
-      content::GetAllWebContents();
-  ASSERT_EQ(2u, all_web_contents.size());
-  content::RenderFrameHost* frame0 = all_web_contents[0]->GetPrimaryMainFrame();
-  content::RenderFrameHost* frame1 = all_web_contents[1]->GetPrimaryMainFrame();
+  std::vector<content::WebContents*> matched_tabs;
+  for (content::WebContents* wc : content::GetAllWebContents()) {
+    if (wc->GetLastCommittedURL() == url) {
+      matched_tabs.push_back(wc);
+    }
+  }
+  ASSERT_EQ(2u, matched_tabs.size());
+  content::RenderFrameHost* frame0 = matched_tabs[0]->GetPrimaryMainFrame();
+  content::RenderFrameHost* frame1 = matched_tabs[1]->GetPrimaryMainFrame();
   EXPECT_EQ(frame0->GetProcess(), frame1->GetProcess());
   EXPECT_EQ(frame0->GetSiteInstance(), frame1->GetSiteInstance());
 }
@@ -673,11 +678,16 @@ IN_PROC_BROWSER_TEST_F(
       embedded_https_test_server().GetURL("foo.a.com", "/simple.html");
   NavigateChangeV8OptPriorToWindowOpen(web_contents(), url, same_site_url);
 
-  std::vector<content::WebContents*> all_web_contents =
-      content::GetAllWebContents();
-  ASSERT_EQ(2u, all_web_contents.size());
-  content::RenderFrameHost* frame0 = all_web_contents[0]->GetPrimaryMainFrame();
-  content::RenderFrameHost* frame1 = all_web_contents[1]->GetPrimaryMainFrame();
+  std::vector<content::WebContents*> matched_tabs;
+  for (content::WebContents* wc : content::GetAllWebContents()) {
+    if (wc->GetLastCommittedURL() == url ||
+        wc->GetLastCommittedURL() == same_site_url) {
+      matched_tabs.push_back(wc);
+    }
+  }
+  ASSERT_EQ(2u, matched_tabs.size());
+  content::RenderFrameHost* frame0 = matched_tabs[0]->GetPrimaryMainFrame();
+  content::RenderFrameHost* frame1 = matched_tabs[1]->GetPrimaryMainFrame();
   EXPECT_EQ(frame0->GetProcess(), frame1->GetProcess());
   EXPECT_EQ(frame0->GetSiteInstance(), frame1->GetSiteInstance());
 }
