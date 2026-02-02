@@ -34,8 +34,11 @@ GuestContentsHandle* GuestContentsHandle::CreateForWebContents(
 
 // static
 GuestContentsHandle* GuestContentsHandle::FromID(GuestId id) {
-  return GetGuestContentsMap().contains(id) ? GetGuestContentsMap()[id]
-                                            : nullptr;
+  if (auto it = GetGuestContentsMap().find(id);
+      it != GetGuestContentsMap().end()) {
+    return it->second;
+  }
+  return nullptr;
 }
 
 GuestContentsHandle::GuestContentsHandle(content::WebContents* web_contents)
