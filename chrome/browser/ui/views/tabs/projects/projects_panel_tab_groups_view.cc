@@ -17,32 +17,21 @@
 #include "ui/gfx/text_constants.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
-constexpr gfx::Insets kTitleInteriorMargins = gfx::Insets::VH(12, 8);
 constexpr gfx::Insets kNoTabsInteriorMargins = gfx::Insets::TLBR(0, 8, 0, 0);
+constexpr int kSpacingBetweenChildren = 2;
 }  // namespace
 
 ProjectsPanelTabGroupsView::ProjectsPanelTabGroupsView(
     actions::ActionItem* root_action_item,
     views::ActionViewController* action_view_controller) {
-  SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetOrientation(views::LayoutOrientation::kVertical)
-      .SetCollapseMargins(true)
-      .SetDefault(
-          views::kFlexBehaviorKey,
-          views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
-                                   views::MaximumFlexSizeRule::kPreferred));
-  SetBackground(views::CreateSolidBackground(ui::kColorFrameActive));
-
-  title_ = AddChildView(std::make_unique<views::Label>(
-      l10n_util::GetStringUTF16(IDS_TAB_GROUPS_TITLE)));
-  title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  title_->SetTextStyle(views::style::STYLE_HEADLINE_5);
-  title_->SetProperty(views::kMarginsKey, kTitleInteriorMargins);
+  auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>());
+  layout->SetOrientation(views::LayoutOrientation::kVertical);
+  layout->set_between_child_spacing(kSpacingBetweenChildren);
 
   SetProperty(views::kElementIdentifierKey,
               kProjectsPanelTabGroupsViewElementId);
@@ -52,18 +41,13 @@ ProjectsPanelTabGroupsView::~ProjectsPanelTabGroupsView() = default;
 
 void ProjectsPanelTabGroupsView::SetTabGroups(
     const std::vector<tab_groups::SavedTabGroup>& tab_groups) {
-  for (auto& item_view : item_views_) {
-    RemoveChildViewT(std::exchange(item_view, nullptr));
-  }
-  item_views_.clear();
+  no_tab_groups_view_ = nullptr;
+  RemoveAllChildViews();
 
   for (const auto& group : tab_groups) {
-    item_views_.emplace_back(
-        AddChildView(std::make_unique<ProjectsPanelTabGroupsItemView>(group)));
+    AddChildView(std::make_unique<ProjectsPanelTabGroupsItemView>(group));
   }
-  if (no_tab_groups_view_) {
-    RemoveChildViewT(std::exchange(no_tab_groups_view_, nullptr));
-  }
+
   if (tab_groups.empty()) {
     no_tab_groups_view_ =
         AddChildView(std::make_unique<ProjectsPanelNoTabGroupsView>());

@@ -39,6 +39,14 @@ constexpr int kProjectPanelWidth = 240;
 constexpr gfx::Insets kRegionInteriorMargins = gfx::Insets::VH(12, 12);
 // The padding around a list header.
 constexpr gfx::Insets kListHeaderPadding = gfx::Insets::VH(10, 20);
+
+// Assigns shared list title properties.
+void SetListTitleProperties(views::Label& label) {
+  label.SetTextStyle(views::style::TextStyle::STYLE_HEADLINE_5);
+  label.SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_TO_HEAD);
+  label.SetProperty(views::kMarginsKey, kListHeaderPadding);
+}
+
 static bool disable_animations_for_testing_ = false;
 }  // namespace
 
@@ -71,6 +79,11 @@ ProjectsPanelView::ProjectsPanelView(actions::ActionItem* root_action_item,
       std::make_unique<ProjectsPanelControlsView>(
           root_action_item_.get(), action_view_controller_.get()));
 
+  auto* groups_list_title =
+      content_container_->AddChildView(std::make_unique<views::Label>());
+  groups_list_title->SetText(l10n_util::GetStringUTF16(IDS_TAB_GROUPS_TITLE));
+  SetListTitleProperties(*groups_list_title);
+
   tab_groups_view_ = content_container_->AddChildView(
       std::make_unique<ProjectsPanelTabGroupsView>(
           root_action_item_.get(), action_view_controller_.get()));
@@ -80,11 +93,7 @@ ProjectsPanelView::ProjectsPanelView(actions::ActionItem* root_action_item,
         content_container_->AddChildView(std::make_unique<views::Label>());
     threads_list_title->SetText(
         l10n_util::GetStringUTF16(IDS_RECENT_CHATS_TITLE));
-    threads_list_title->SetTextStyle(
-        views::style::TextStyle::STYLE_BODY_3_BOLD);
-    threads_list_title->SetHorizontalAlignment(
-        gfx::HorizontalAlignment::ALIGN_TO_HEAD);
-    threads_list_title->SetProperty(views::kMarginsKey, kListHeaderPadding);
+    SetListTitleProperties(*threads_list_title);
 
     threads_scroll_view_ =
         content_container_->AddChildView(std::make_unique<views::ScrollView>(

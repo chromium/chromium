@@ -58,14 +58,10 @@ class ProjectsPanelTabGroupsViewTest : public views::ViewsTestBase {
   std::unique_ptr<ProjectsPanelTabGroupsView> tab_groups_view_;
 
   void VerifyNoTabGroupsView() {
-    // Should contain the title and no item views.
-    EXPECT_EQ(2u, tab_groups_view_->children().size());
-    ProjectsPanelNoTabGroupsView* no_tab_groups_view =
-        static_cast<ProjectsPanelNoTabGroupsView*>(
-            tab_groups_view_->children()[1]);
-    EXPECT_EQ(1u, no_tab_groups_view->children().size());
-    views::Label* no_tabs_label =
-        static_cast<views::Label*>(no_tab_groups_view->children()[0]);
+    // Should contain only the no tab groups message.
+    EXPECT_EQ(1u, tab_groups_view_->children().size());
+    views::Label* no_tabs_label = static_cast<views::Label*>(
+        tab_groups_view_->no_tab_groups_view_for_testing()->children()[0]);
     EXPECT_EQ(
         u"Organize your tabs by grouping them together and label them with a "
         u"custom name and color",
@@ -94,10 +90,9 @@ TEST_F(ProjectsPanelTabGroupsViewTest, PopulatesTabGroups) {
 
   tab_groups_view_->SetTabGroups(groups);
 
-  // Should contain the title and two child views.
-  ASSERT_EQ(3u, tab_groups_view_->children().size());
+  ASSERT_EQ(2u, tab_groups_view_->children().size());
 
   for (size_t i = 0; i < groups.size(); ++i) {
-    EXPECT_THAT(tab_groups_view_->children()[i + 1], IsForTabGroup(groups[i]));
+    EXPECT_THAT(tab_groups_view_->children()[i], IsForTabGroup(groups[i]));
   }
 }
