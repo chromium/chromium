@@ -10,6 +10,7 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/prefs/testing_pref_service.h"
+#import "components/supervised_user/core/browser/family_link_settings_service.h"
 #import "components/supervised_user/core/browser/supervised_user_utils.h"
 #import "components/supervised_user/core/common/features.h"
 #import "components/supervised_user/core/common/supervised_user_constants.h"

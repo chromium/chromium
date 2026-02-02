@@ -13,6 +13,7 @@
 #include "base/no_destructor.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/with_feature_override.h"
 #include "build/build_config.h"
 #include "chrome/browser/supervised_user/family_link_settings_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
@@ -28,7 +29,9 @@
 #include "components/supervised_user/core/browser/supervised_user_test_environment.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
+#include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
+#include "components/supervised_user/test_support/features.h"
 #include "components/supervised_user/test_support/kids_management_api_server_mock.h"
 #include "components/supervised_user/test_support/supervised_user_url_filter_test_utils.h"
 #include "content/public/browser/navigation_throttle.h"
@@ -56,21 +59,16 @@ void ExpectNoLatencyRecorded(base::HistogramTester* tester) {
                            /*expected_count=*/0);
 }
 
-class ClassifyUrlNavigationThrottleTest
+class ClassifyUrlNavigationThrottleTestBase
     : public ChromeRenderViewHostTestHarness {
  protected:
-  void SetUp() override {
-    ChromeRenderViewHostTestHarness::SetUp();
-    EnableParentalControls(*profile()->GetPrefs());
-  }
-
   std::unique_ptr<TestingProfile> CreateTestingProfile() override {
     TestingProfile::Builder builder;
     builder.AddTestingFactory(
         SupervisedUserServiceFactory::GetInstance(),
-        base::BindRepeating(
-            &ClassifyUrlNavigationThrottleTest::BuildTestSupervisedUserService,
-            base::Unretained(this)));
+        base::BindRepeating(&ClassifyUrlNavigationThrottleTestBase::
+                                BuildTestSupervisedUserService,
+                            base::Unretained(this)));
     return builder.Build();
   }
 
@@ -168,17 +166,37 @@ class ClassifyUrlNavigationThrottleTest
 // This test is used to test the behavior of the throttle when the user is not
 // supervised - all navigations are allowed, but no metrics recorded.
 class ClassifyUrlNavigationThrottleUnsupervisedUserTest
-    : public ClassifyUrlNavigationThrottleTest {
+    : public base::test::WithFeatureOverride,
+      public ClassifyUrlNavigationThrottleTestBase {
  protected:
-  void SetUp() override { ChromeRenderViewHostTestHarness::SetUp(); }
+  ClassifyUrlNavigationThrottleUnsupervisedUserTest()
+      : base::test::WithFeatureOverride(kSupervisedUserUseUrlFilteringService) {
+  }
+  void SetUp() override { ClassifyUrlNavigationThrottleTestBase::SetUp(); }
 };
 
-TEST_F(ClassifyUrlNavigationThrottleUnsupervisedUserTest,
+TEST_P(ClassifyUrlNavigationThrottleUnsupervisedUserTest,
        WillNotRegisterThrottle) {
   EXPECT_TRUE(CreateNavigationThrottle(GURL(kExampleURL))->throttles().empty());
 }
 
-TEST_F(ClassifyUrlNavigationThrottleTest, AllowedUrlsRecordedInAllowBucket) {
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    ClassifyUrlNavigationThrottleUnsupervisedUserTest);
+
+class ClassifyUrlNavigationThrottleTest
+    : public base::test::WithFeatureOverride,
+      public ClassifyUrlNavigationThrottleTestBase {
+ protected:
+  ClassifyUrlNavigationThrottleTest()
+      : base::test::WithFeatureOverride(kSupervisedUserUseUrlFilteringService) {
+  }
+  void SetUp() override {
+    ClassifyUrlNavigationThrottleTestBase::SetUp();
+    EnableParentalControls(*profile()->GetPrefs());
+  }
+};
+
+TEST_P(ClassifyUrlNavigationThrottleTest, AllowedUrlsRecordedInAllowBucket) {
   GURL allowed_url(kExampleURL);
   supervised_user_test_util::SetManualFilterForHost(
       profile(), allowed_url.GetHost(), /*allowlist=*/true);
@@ -198,7 +216,7 @@ TEST_F(ClassifyUrlNavigationThrottleTest, AllowedUrlsRecordedInAllowBucket) {
       /*expected_count(grew by)*/ 1);
 }
 
-TEST_F(ClassifyUrlNavigationThrottleTest,
+TEST_P(ClassifyUrlNavigationThrottleTest,
        BlocklistedUrlsRecordedInBlockManualBucket) {
   GURL blocked_url(kExampleURL);
   supervised_user_test_util::SetManualFilterForHost(
@@ -220,7 +238,7 @@ TEST_F(ClassifyUrlNavigationThrottleTest,
   ExpectNoLatencyRecorded(histogram_tester());
 }
 
-TEST_F(ClassifyUrlNavigationThrottleTest,
+TEST_P(ClassifyUrlNavigationThrottleTest,
        AllSitesBlockedRecordedInBlockNotInAllowlistBucket) {
   supervised_user_test_util::SetWebFilterType(profile(),
                                               WebFilterType::kCertainSites);
@@ -240,6 +258,8 @@ TEST_F(ClassifyUrlNavigationThrottleTest,
   EXPECT_FALSE(resume_called());
 }
 
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(ClassifyUrlNavigationThrottleTest);
+
 enum class SupervisionMode {
   kSupervisedByFamilyLink,
 #if BUILDFLAG(IS_ANDROID)
@@ -253,19 +273,28 @@ struct AsyncCheckerTestCase {
 };
 
 class ClassifyUrlNavigationThrottleAsyncCheckerTest
-    : public ClassifyUrlNavigationThrottleTest,
-      public ::testing::WithParamInterface<AsyncCheckerTestCase> {
+    : public WithFeatureOverrideAndParamInterface<AsyncCheckerTestCase>,
+      public ClassifyUrlNavigationThrottleTestBase {
  protected:
+  ClassifyUrlNavigationThrottleAsyncCheckerTest()
+      : WithFeatureOverrideAndParamInterface(
+            kSupervisedUserUseUrlFilteringService) {}
+
   void SetUp() override {
-    // Consciously bypasses direct superclass SetUp to avoid enabling Family
-    // Link parental controls for all requested supervision modes.
-    ChromeRenderViewHostTestHarness::SetUp();
-    switch (GetParam().mode) {
+    ClassifyUrlNavigationThrottleTestBase::SetUp();
+    switch (GetTestCase().mode) {
       case SupervisionMode::kSupervisedByFamilyLink:
         EnableParentalControls(*profile()->GetPrefs());
         break;
 #if BUILDFLAG(IS_ANDROID)
       case SupervisionMode::kLocalSupervision:
+        if (IsFeatureEnabled()) {
+          GTEST_SKIP() << "Not implemented. Local parental controls are no "
+                          "longer handled by the pref store (exclusively with "
+                          "Family Link), and new url filtering service "
+                          "implementation does not support this mode yet.";
+        }
+
         TestingBrowserProcess::GetGlobal()
             ->android_parental_controls()
             .SetBrowserContentFiltersEnabledForTesting(true);
@@ -432,25 +461,38 @@ const AsyncCheckerTestCase kAsyncCheckerTestCases[] = {
 INSTANTIATE_TEST_SUITE_P(
     ,
     ClassifyUrlNavigationThrottleAsyncCheckerTest,
-    testing::ValuesIn(kAsyncCheckerTestCases),
-    [](const testing::TestParamInfo<AsyncCheckerTestCase>& info) {
-      return info.param.name;
+    testing::Combine(testing::Bool(),
+                     testing::ValuesIn(kAsyncCheckerTestCases)),
+    [](const auto& info) {
+      bool is_feature_enabled = std::get<0>(info.param);
+      return std::get<1>(info.param).name + "_With" +
+             kSupervisedUserUseUrlFilteringService.name +
+             (is_feature_enabled ? "Enabled" : "Disabled");
     });
 
-struct TestCase {
+struct ParallelizationTestCase {
   std::string name;
   std::vector<std::string> redirect_chain;
 };
 
 class ClassifyUrlNavigationThrottleParallelizationTest
-    : public ClassifyUrlNavigationThrottleTest,
-      public testing::WithParamInterface<TestCase> {
+    : public WithFeatureOverrideAndParamInterface<ParallelizationTestCase>,
+      public ClassifyUrlNavigationThrottleTestBase {
  protected:
+  ClassifyUrlNavigationThrottleParallelizationTest()
+      : WithFeatureOverrideAndParamInterface(
+            kSupervisedUserUseUrlFilteringService) {}
+
+  void SetUp() override {
+    ClassifyUrlNavigationThrottleTestBase::SetUp();
+    EnableParentalControls(*profile()->GetPrefs());
+  }
+
   static const std::vector<GURL> GetRedirectChain() {
-    CHECK_EQ(GetParam().redirect_chain.size(), 3U)
+    CHECK_EQ(GetTestCase().redirect_chain.size(), 3U)
         << "Tests assume one request and two redirects";
     std::vector<GURL> urls;
-    for (const std::string& redirect : GetParam().redirect_chain) {
+    for (const std::string& redirect : GetTestCase().redirect_chain) {
       urls.emplace_back(redirect);
     }
     return urls;
@@ -461,8 +503,8 @@ TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
        ClassificationIsFasterThanHttp) {
   // safe_search_api::URLChecker has cache that deduplicates urls, so ultimately
   // the checker client is only for unique URLs.
-  std::set<std::string> unique_urls(GetParam().redirect_chain.begin(),
-                                    GetParam().redirect_chain.end());
+  std::set<std::string> unique_urls(GetTestCase().redirect_chain.begin(),
+                                    GetTestCase().redirect_chain.end());
   EXPECT_CALL(mock_url_checker_client(), CheckURL(testing::_, testing::_))
       .Times(unique_urls.size());
 
@@ -516,8 +558,8 @@ TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
        OutOfOrderClassification) {
   // safe_search_api::URLChecker has cache that deduplicates urls, so ultimately
   // the checker client is only for unique URLs.
-  std::set<std::string> unique_urls(GetParam().redirect_chain.begin(),
-                                    GetParam().redirect_chain.end());
+  std::set<std::string> unique_urls(GetTestCase().redirect_chain.begin(),
+                                    GetTestCase().redirect_chain.end());
   EXPECT_CALL(mock_url_checker_client(), CheckURL(testing::_, testing::_))
       .Times(unique_urls.size());
 
@@ -575,8 +617,8 @@ TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
        ClassificationIsSlowerThanHttp) {
   // safe_search_api::URLChecker has cache that deduplicates urls, so ultimately
   // the checker client is only for unique URLs.
-  std::set<std::string> unique_urls(GetParam().redirect_chain.begin(),
-                                    GetParam().redirect_chain.end());
+  std::set<std::string> unique_urls(GetTestCase().redirect_chain.begin(),
+                                    GetTestCase().redirect_chain.end());
   EXPECT_CALL(mock_url_checker_client(), CheckURL(testing::_, testing::_))
       .Times(unique_urls.size());
 
@@ -647,12 +689,9 @@ TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
 TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
        ShortCircuitsSynchronousBlock) {
   EXPECT_CALL(mock_url_checker_client(), CheckURL(testing::_, testing::_))
-      .WillOnce(
-          [](const GURL& url,
-             safe_search_api::URLCheckerClient::ClientCheckCallback callback) {
-            std::move(callback).Run(
-                url, safe_search_api::ClientClassification::kRestricted);
-          });
+      .Times(1);
+  mock_url_checker_client().ScheduleResolution(
+      safe_search_api::ClientClassification::kRestricted);
 
   // This navigation is a 3-piece redirect chain:
   std::unique_ptr<content::MockNavigationThrottleRegistry> registry =
@@ -677,13 +716,14 @@ TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
        HandlesLateAsynchronousBlock) {
   // safe_search_api::URLChecker has cache that deduplicates urls, so ultimately
   // the checker client is only for unique URLs.
-  std::set<std::string> unique_urls(GetParam().redirect_chain.begin(),
-                                    GetParam().redirect_chain.end());
+  std::set<std::string> unique_urls(GetTestCase().redirect_chain.begin(),
+                                    GetTestCase().redirect_chain.end());
   if (unique_urls.size() == 1) {
     GTEST_SKIP()
         << "This test requires at least two unique URLs to test the "
            "caching behavior of the throttle against the URLCheckerClient.";
   }
+
   EXPECT_CALL(mock_url_checker_client(), CheckURL(testing::_, testing::_))
       .Times(unique_urls.size());
 
@@ -707,8 +747,7 @@ TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
             registry->throttles().back()->WillRedirectRequest());
 
   // There will be two pending checks (first was synchronous)
-  EXPECT_THAT(std::size_t(2),
-              mock_url_checker_client().GetPendingChecksCount());
+  EXPECT_EQ(std::size_t(2), mock_url_checker_client().GetPendingChecksCount());
   histogram_tester()->ExpectBucketCount(
       kSupervisedUserTopLevelURLFilteringResultHistogramName,
       SupervisedUserFilterTopLevelResult::kAllow, 1);
@@ -722,8 +761,7 @@ TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
       safe_search_api::ClientClassification::kRestricted);
 
   // Now two out of three checks are complete
-  EXPECT_THAT(std::size_t(1),
-              mock_url_checker_client().GetPendingChecksCount());
+  EXPECT_EQ(std::size_t(1), mock_url_checker_client().GetPendingChecksCount());
   histogram_tester()->ExpectBucketCount(
       kSupervisedUserTopLevelURLFilteringResultHistogramName,
       SupervisedUserFilterTopLevelResult::kBlockSafeSites, 1);
@@ -734,7 +772,7 @@ TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
   ExpectNoLatencyRecorded(histogram_tester());
 }
 
-const TestCase kTestCases[] = {
+const ParallelizationTestCase kTestCases[] = {
     {.name = "TwoRedirects",
      .redirect_chain = {kExampleURL, kExample1URL, kExample2URL}},
     {.name = "TwoIdenticalRedirects",
@@ -742,9 +780,13 @@ const TestCase kTestCases[] = {
 
 INSTANTIATE_TEST_SUITE_P(,
                          ClassifyUrlNavigationThrottleParallelizationTest,
-                         testing::ValuesIn(kTestCases),
-                         [](const testing::TestParamInfo<TestCase>& info) {
-                           return info.param.name;
+                         testing::Combine(testing::Bool(),
+                                          testing::ValuesIn(kTestCases)),
+                         [](const auto& info) {
+                           bool is_feature_enabled = std::get<0>(info.param);
+                           return std::get<1>(info.param).name + "_With" +
+                                  kSupervisedUserUseUrlFilteringService.name +
+                                  (is_feature_enabled ? "Enabled" : "Disabled");
                          });
 
 }  // namespace

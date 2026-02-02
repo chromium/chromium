@@ -45,6 +45,7 @@ class SupervisedUserNavigationObserver
     : public content::WebContentsUserData<SupervisedUserNavigationObserver>,
       public content::WebContentsObserver,
       public SupervisedUserServiceObserver,
+      public supervised_user::SupervisedUserUrlFilteringService::Observer,
       public supervised_user::mojom::SupervisedUserCommands {
  public:
   SupervisedUserNavigationObserver(const SupervisedUserNavigationObserver&) =
@@ -80,6 +81,8 @@ class SupervisedUserNavigationObserver
 
   // SupervisedUserServiceObserver:
   void OnURLFilterChanged() override;
+  // SupervisedUserUrlFilteringService::Observer:
+  void OnUrlFilteringServiceChanged() override;
 
   // Called when interstitial error page is no longer being shown in the main
   // frame.
@@ -157,6 +160,10 @@ class SupervisedUserNavigationObserver
   base::ScopedObservation<supervised_user::SupervisedUserService,
                           SupervisedUserServiceObserver>
       supervised_user_service_observation_{this};
+  base::ScopedObservation<
+      supervised_user::SupervisedUserUrlFilteringService,
+      supervised_user::SupervisedUserUrlFilteringService::Observer>
+      url_filtering_service_observation_{this};
 
   // Keeps track of the blocked frames. It maps the frame's globally unique
   // id to its corresponding |SupervisedUserInterstitial| instance.

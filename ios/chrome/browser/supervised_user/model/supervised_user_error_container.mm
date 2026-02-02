@@ -6,10 +6,12 @@
 
 #import <string>
 
+#import "base/feature_list.h"
 #import "base/functional/callback_helpers.h"
 #import "base/memory/ptr_util.h"
 #import "base/notreached.h"
 #import "components/supervised_user/core/browser/supervised_user_service.h"
+#import "components/supervised_user/core/common/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/parent_access_commands.h"
 #import "ios/chrome/browser/supervised_user/model/ios_web_content_handler_impl.h"
@@ -57,13 +59,20 @@ SupervisedUserErrorContainer::SupervisedUserErrorContainer(
               GetForProfile(
                   ProfileIOS::FromBrowserState(web_state->GetBrowserState()))),
       web_state_(web_state) {
-  CHECK(SupervisedUserServiceFactory::GetForProfile(
-      ProfileIOS::FromBrowserState(web_state->GetBrowserState())));
-  supervised_user_service_->AddObserver(this);
+  if (base::FeatureList::IsEnabled(
+          supervised_user::kSupervisedUserUseUrlFilteringService)) {
+    url_filtering_service_observation_.Observe(
+        &supervised_user_url_filtering_service_.get());
+  } else {
+    supervised_user_service_->AddObserver(this);
+  }
 }
 
 SupervisedUserErrorContainer::~SupervisedUserErrorContainer() {
-  supervised_user_service_->RemoveObserver(this);
+  if (!base::FeatureList::IsEnabled(
+          supervised_user::kSupervisedUserUseUrlFilteringService)) {
+    supervised_user_service_->RemoveObserver(this);
+  }
 }
 
 SupervisedUserErrorContainer::SupervisedUserErrorInfo::SupervisedUserErrorInfo(
@@ -163,6 +172,10 @@ void SupervisedUserErrorContainer::URLFilterCheckCallback(
 }
 
 void SupervisedUserErrorContainer::OnURLFilterChanged() {
+  OnUrlFilteringServiceChanged();
+}
+
+void SupervisedUserErrorContainer::OnUrlFilteringServiceChanged() {
   supervised_user_url_filtering_service_->GetFilteringBehavior(
       web_state_->GetLastCommittedURL(),
       /*skip_manual_parent_filter=*/false,

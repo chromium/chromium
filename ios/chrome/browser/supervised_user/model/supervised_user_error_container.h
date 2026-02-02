@@ -13,6 +13,7 @@
 #import "components/security_interstitials/core/controller_client.h"
 #import "components/supervised_user/core/browser/supervised_user_interstitial.h"
 #import "components/supervised_user/core/browser/supervised_user_service_observer.h"
+#import "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
 #import "components/supervised_user/core/browser/supervised_user_utils.h"
 #import "ios/components/security_interstitials/ios_blocking_page_controller_client.h"
 #import "ios/components/security_interstitials/ios_security_interstitial_page.h"
@@ -24,7 +25,6 @@
 
 namespace supervised_user {
 class SupervisedUserService;
-class SupervisedUserUrlFilteringService;
 }  // namespace supervised_user
 
 namespace web {
@@ -41,7 +41,8 @@ using RequestUrlAccessRemoteCallback = base::OnceCallback<void(bool)>;
 // interstitial functionality and error page.
 class SupervisedUserErrorContainer
     : public web::WebStateUserData<SupervisedUserErrorContainer>,
-      public SupervisedUserServiceObserver {
+      public SupervisedUserServiceObserver,
+      public supervised_user::SupervisedUserUrlFilteringService::Observer {
  public:
   SupervisedUserErrorContainer(SupervisedUserErrorContainer& other);
   SupervisedUserErrorContainer& operator=(SupervisedUserErrorContainer& other);
@@ -95,6 +96,7 @@ class SupervisedUserErrorContainer
 
   // SupervisedUserServiceObserver override:
   void OnURLFilterChanged() override;
+  void OnUrlFilteringServiceChanged() override;
 
   // Sets the parent access bottom sheet CommandDispatcher.
   void SetParentAccessBottomSheetHandler(
@@ -117,6 +119,10 @@ class SupervisedUserErrorContainer
   raw_ref<supervised_user::SupervisedUserService> supervised_user_service_;
   raw_ref<supervised_user::SupervisedUserUrlFilteringService>
       supervised_user_url_filtering_service_;
+  base::ScopedObservation<
+      supervised_user::SupervisedUserUrlFilteringService,
+      supervised_user::SupervisedUserUrlFilteringService::Observer>
+      url_filtering_service_observation_{this};
   raw_ptr<web::WebState> web_state_;
   std::set<std::string> requested_hosts_;
   base::WeakPtrFactory<SupervisedUserErrorContainer> weak_ptr_factory_{this};

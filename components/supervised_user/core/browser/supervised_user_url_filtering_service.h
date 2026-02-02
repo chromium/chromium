@@ -7,6 +7,9 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/safe_search_api/url_checker.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
@@ -15,8 +18,10 @@
 
 namespace supervised_user {
 
-// Forward declared until all delegates are no longer owned by it.
 class SupervisedUserService;
+// Forward declarations for delegates.
+class UrlFilteringDelegate;
+class SupervisedUserUrlFilteringService;
 
 // Represents the result of url filtering request.
 struct WebFilteringResult {
@@ -60,11 +65,31 @@ struct WebFilteringResult {
   }
 };
 
+// Internal observer interface for communication between delegates and the
+// service. Should not be used by consumers of the
+// SupervisedUserUrlFilteringService.
+class UrlFilteringDelegateObserver : public base::CheckedObserver {
+ public:
+  ~UrlFilteringDelegateObserver() override;
+
+  // Tells that given `delegate` completed an async check for `url`. Declared as
+  // pure virtual so that service must implement it.
+  virtual void OnUrlChecked(const UrlFilteringDelegate& delegate,
+                            WebFilteringResult result) const = 0;
+
+  // Tells that given `delegate`'s configuration has changed and it might be
+  // necessary to re-evaluate urls. Declared as pure virtual so that service
+  // must implement it.
+  virtual void OnUrlFilteringDelegateChanged(
+      const UrlFilteringDelegate& delegate) const = 0;
+};
+
 // Interface for actual implementations of URL filtering logic. The outer
 // service subscribes to individual delegates and forwards notifications to
 // its own subscribers.
 class UrlFilteringDelegate {
  public:
+  UrlFilteringDelegate();
   virtual ~UrlFilteringDelegate();
 
   virtual WebFilterType GetWebFilterType() const = 0;
@@ -83,14 +108,40 @@ class UrlFilteringDelegate {
       const GURL& main_frame_url,
       WebFilteringResult::Callback callback,
       const WebFilterMetricsOptions& options) = 0;
+
+  void AddObserver(UrlFilteringDelegateObserver* observer);
+  void RemoveObserver(UrlFilteringDelegateObserver* observer);
+
+ protected:
+  // Informs the owning service that the delegate's configuration has changed.
+  void NotifyUrlFilteringDelegateChanged() const;
+  void NotifyUrlChecked(WebFilteringResult result) const;
+
+ private:
+  base::ObserverList<UrlFilteringDelegateObserver> observers_;
 };
 
-// Performs URL filtering workflows for supervised users, combining effects of
-// subservices that define the status of these users.
-class SupervisedUserUrlFilteringService : public KeyedService {
+// Performs URL filtering workflows for supervised users, aggregating results
+// from filtering delegates. Users access the service via its methods and
+// subscription mechanism.
+class SupervisedUserUrlFilteringService : public KeyedService,
+                                          public UrlFilteringDelegateObserver {
  public:
+  // External observer interface for the SupervisedUserUrlFilteringService,
+  // indented for public users of the service.
+  class Observer : public base::CheckedObserver {
+   public:
+    ~Observer() override;
+    // Called when any of the delegates' configuration has changed.
+    virtual void OnUrlFilteringServiceChanged() {}
+
+    // Called when any of the delegates' url filtering result is ready.
+    virtual void OnUrlChecked(WebFilteringResult result) {}
+  };
+
   explicit SupervisedUserUrlFilteringService(
       const SupervisedUserService& supervised_user_service);
+
   ~SupervisedUserUrlFilteringService() override;
   SupervisedUserUrlFilteringService(const SupervisedUserUrlFilteringService&) =
       delete;
@@ -120,9 +171,32 @@ class SupervisedUserUrlFilteringService : public KeyedService {
       WebFilteringResult::Callback callback,
       const WebFilterMetricsOptions& options = WebFilterMetricsOptions()) const;
 
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
  private:
-  // Provides access to legacy way of resolving URL filtering.
+  // Notifies observers that the url filtering result is ready.
+  void NotifyUrlChecked(WebFilteringResult result) const;
+
+  // UrlFilteringDelegateObserver implementation:
+  void OnUrlFilteringDelegateChanged(
+      const UrlFilteringDelegate& delegate) const override;
+  void OnUrlChecked(const UrlFilteringDelegate& delegate,
+                    WebFilteringResult result) const override;
+
+  // Provides access to legacy way of resolving URL filtering. Temporarily, also
+  // owns one of the delegates (Family Link url filter delegate).
   raw_ref<const SupervisedUserService> supervised_user_service_;
+
+  // External observers.
+  base::ObserverList<Observer> observer_list_;
+
+  // Own observees.
+  base::ScopedObservation<UrlFilteringDelegate, UrlFilteringDelegateObserver>
+      family_link_url_filter_observation_{this};
+
+  base::WeakPtrFactory<SupervisedUserUrlFilteringService> weak_ptr_factory_{
+      this};
 };
 }  // namespace supervised_user
 

@@ -77,6 +77,7 @@ static_library("ntp_tiles") {
     "//components/search_engines",
     "//components/strings",
     "//components/supervised_user/core/common:buildflags",
+    "//components/supervised_user/core/common:features",
     "//components/url_formatter",
     "//components/variations",
     "//components/variations/service",

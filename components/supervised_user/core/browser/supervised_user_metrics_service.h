@@ -32,8 +32,10 @@ class FamilyLinkUrlFilter;
 
 // Service to initialize and control metric recorders of supervised users.
 // Records metrics daily, or when the SupervisedUserService changes.
-class SupervisedUserMetricsService : public KeyedService,
-                                     public SupervisedUserServiceObserver {
+class SupervisedUserMetricsService
+    : public KeyedService,
+      public SupervisedUserServiceObserver,
+      public SupervisedUserUrlFilteringService::Observer {
  public:
   // Delegate for recording metrics relating to extensions for supervised users
   // such as metrics that should be recorded daily.
@@ -52,7 +54,7 @@ class SupervisedUserMetricsService : public KeyedService,
   SupervisedUserMetricsService(
       PrefService* pref_service,
       SupervisedUserService& supervised_user_service,
-      const SupervisedUserUrlFilteringService& url_filtering_service,
+      SupervisedUserUrlFilteringService& url_filtering_service,
       DeviceParentalControls& device_parental_controls,
       std::unique_ptr<SupervisedUserMetricsServiceExtensionDelegate>
           extensions_metrics_delegate,
@@ -69,6 +71,9 @@ class SupervisedUserMetricsService : public KeyedService,
  private:
   // SupervisedUserServiceObserver:
   void OnURLFilterChanged() override;
+
+  // SupervisedUserUrlFilteringService::Observer:
+  void OnUrlFilteringServiceChanged() override;
 
   void OnDeviceParentalControlsChanged(
       const DeviceParentalControls& device_parental_controls);
@@ -107,6 +112,10 @@ class SupervisedUserMetricsService : public KeyedService,
 
   base::ScopedObservation<SupervisedUserService, SupervisedUserServiceObserver>
       supervised_user_service_observation_{this};
+  base::ScopedObservation<SupervisedUserUrlFilteringService,
+                          SupervisedUserUrlFilteringService::Observer>
+      url_filtering_service_observation_{this};
+
   base::CallbackListSubscription device_parental_controls_subscription_;
 };
 

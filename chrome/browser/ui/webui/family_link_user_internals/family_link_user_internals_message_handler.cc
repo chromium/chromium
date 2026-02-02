@@ -8,8 +8,9 @@
 #include <string_view>
 #include <utility>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
-#include "base/memory/ref_counted.h"
+#include "base/notreached.h"
 #include "base/values.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
@@ -17,24 +18,21 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/family_link_settings_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
-#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_url_filtering_service_factory.h"
-#include "chrome/common/channel_info.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/primary_account_change_event.h"
 #include "components/signin/public/identity_manager/tribool.h"
-#include "components/supervised_user/core/browser/child_account_service.h"
 #include "components/supervised_user/core/browser/family_link_settings_service.h"
-#include "components/supervised_user/core/browser/supervised_user_error_page.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
-#include "components/supervised_user/core/common/features.h"
 #include "components/url_formatter/url_fixer.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
-#include "google_apis/gaia/gaia_id.h"
+#include "google_apis/gaia/google_service_auth_error.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -179,12 +177,12 @@ void FamilyLinkUserInternalsMessageHandler::RegisterMessages() {
 }
 
 void FamilyLinkUserInternalsMessageHandler::OnJavascriptDisallowed() {
-  url_filter_observation_.Reset();
+  url_filtering_service_observation_.Reset();
   identity_manager_observation_.Reset();
   weak_factory_.InvalidateWeakPtrs();
 }
 
-void FamilyLinkUserInternalsMessageHandler::OnURLFilterChanged() {
+void FamilyLinkUserInternalsMessageHandler::OnUrlFilteringServiceChanged() {
   SendBasicInfo();
 }
 
@@ -217,14 +215,7 @@ void FamilyLinkUserInternalsMessageHandler::OnAccountChanged() {
   SendBasicInfo();
 }
 
-supervised_user::SupervisedUserService*
-FamilyLinkUserInternalsMessageHandler::GetSupervisedUserService() {
-  Profile* profile = Profile::FromWebUI(web_ui());
-  return SupervisedUserServiceFactory::GetForProfile(
-      profile->GetOriginalProfile());
-}
-
-const supervised_user::SupervisedUserUrlFilteringService*
+supervised_user::SupervisedUserUrlFilteringService*
 FamilyLinkUserInternalsMessageHandler::GetSupervisedUserUrlFilteringService() {
   Profile* profile = Profile::FromWebUI(web_ui());
   return supervised_user::SupervisedUserUrlFilteringServiceFactory::
@@ -236,8 +227,10 @@ void FamilyLinkUserInternalsMessageHandler::HandleRegisterForEvents(
   CHECK(args.empty()) << "Expected call is (void)";
 
   AllowJavascript();
-  if (!url_filter_observation_.IsObserving()) {
-    url_filter_observation_.Observe(GetSupervisedUserService()->GetURLFilter());
+
+  if (!url_filtering_service_observation_.IsObserving()) {
+    url_filtering_service_observation_.Observe(
+        GetSupervisedUserUrlFilteringService());
   }
 
   Profile* profile = Profile::FromWebUI(web_ui());
@@ -369,7 +362,7 @@ void FamilyLinkUserInternalsMessageHandler::OnTryURLResult(
   ResolveJavascriptCallback(base::Value(callback_id), result);
 }
 
-void FamilyLinkUserInternalsMessageHandler::OnURLChecked(
+void FamilyLinkUserInternalsMessageHandler::OnUrlChecked(
     supervised_user::WebFilteringResult filtering_result) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   base::DictValue result;

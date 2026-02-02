@@ -40,6 +40,7 @@
 #include "components/supervised_user/core/browser/family_link_user_capabilities.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
+#include "components/supervised_user/core/common/features.h"
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -179,7 +180,7 @@ MostVisitedSites::MostVisitedSites(
     PrefService* prefs,
     signin::IdentityManager* identity_manager,
     supervised_user::SupervisedUserService* supervised_user_service,
-    const supervised_user::SupervisedUserUrlFilteringService*
+    supervised_user::SupervisedUserUrlFilteringService*
         supervised_user_url_filtering_service,
     scoped_refptr<history::TopSites> top_sites,
     std::unique_ptr<PopularSites> popular_sites,
@@ -201,9 +202,18 @@ MostVisitedSites::MostVisitedSites(
       is_observing_(false) {
   DCHECK(prefs_);
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  if (supervised_user_service_) {
-    supervised_user_service_observation_.Observe(supervised_user_service_);
+  if (base::FeatureList::IsEnabled(
+          supervised_user::kSupervisedUserUseUrlFilteringService)) {
+    if (supervised_user_url_filtering_service_) {
+      url_filtering_service_observation_.Observe(
+          supervised_user_url_filtering_service);
+    }
+  } else {
+    if (supervised_user_service_) {
+      supervised_user_service_observation_.Observe(supervised_user_service_);
+    }
   }
+
 #endif
 }
 
@@ -520,6 +530,9 @@ void MostVisitedSites::ClearBlockedUrls() {
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 void MostVisitedSites::OnURLFilterChanged() {
+  OnUrlFilteringServiceChanged();
+}
+void MostVisitedSites::OnUrlFilteringServiceChanged() {
   BuildCurrentTiles(/* is_user_triggered= */ false);
 }
 #endif

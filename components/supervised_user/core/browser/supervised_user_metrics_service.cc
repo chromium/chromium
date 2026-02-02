@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
@@ -18,6 +19,7 @@
 #include "components/supervised_user/core/browser/device_parental_controls.h"
 #include "components/supervised_user/core/browser/family_link_url_filter.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
+#include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 
 namespace supervised_user {
@@ -83,7 +85,7 @@ int SupervisedUserMetricsService::GetDayIdForTesting(base::Time time) {
 SupervisedUserMetricsService::SupervisedUserMetricsService(
     PrefService* pref_service,
     SupervisedUserService& supervised_user_service,
-    const SupervisedUserUrlFilteringService& url_filtering_service,
+    SupervisedUserUrlFilteringService& url_filtering_service,
     DeviceParentalControls& device_parental_controls,
     std::unique_ptr<SupervisedUserMetricsServiceExtensionDelegate>
         extensions_metrics_delegate,
@@ -96,7 +98,12 @@ SupervisedUserMetricsService::SupervisedUserMetricsService(
       synthetic_field_trial_delegate_(
           std::move(synthetic_field_trial_delegate)) {
   DCHECK(pref_service_);
-  supervised_user_service_observation_.Observe(&supervised_user_service);
+  if (base::FeatureList::IsEnabled(kSupervisedUserUseUrlFilteringService)) {
+    url_filtering_service_observation_.Observe(&url_filtering_service);
+  } else {
+    supervised_user_service_observation_.Observe(&supervised_user_service);
+  }
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   CHECK(extensions_metrics_delegate_)
       << "Extensions metrics delegate must exist on Win/Linux/Mac";
@@ -166,6 +173,10 @@ void SupervisedUserMetricsService::OnDeviceParentalControlsChanged(
 }
 
 void SupervisedUserMetricsService::OnURLFilterChanged() {
+  OnUrlFilteringServiceChanged();
+}
+
+void SupervisedUserMetricsService::OnUrlFilteringServiceChanged() {
   // See comments in OnAndroidParentalControlsChanged about idempotency.
   TryEmittingMetricsAndRecordCurrentDay();
 }

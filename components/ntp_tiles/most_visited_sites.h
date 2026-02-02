@@ -39,6 +39,7 @@
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 #include "components/supervised_user/core/browser/supervised_user_service_observer.h"
+#include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
 #endif
 
 namespace signin {
@@ -48,7 +49,7 @@ class IdentityManager;
 namespace supervised_user {
 class SupervisedUserService;
 class SupervisedUserUrlFilteringService;
-}
+}  // namespace supervised_user
 
 namespace user_prefs {
 class PrefRegistrySyncable;
@@ -90,6 +91,7 @@ class CustomLinksCache {
 class MostVisitedSites :
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
     public SupervisedUserServiceObserver,
+    public supervised_user::SupervisedUserUrlFilteringService::Observer,
 #endif
     public history::TopSitesObserver {
  public:
@@ -135,7 +137,7 @@ class MostVisitedSites :
       PrefService* prefs,
       signin::IdentityManager* identity_manager,
       supervised_user::SupervisedUserService* supervised_user_service,
-      const supervised_user::SupervisedUserUrlFilteringService*
+      supervised_user::SupervisedUserUrlFilteringService*
           supervised_user_url_filtering_service,
       scoped_refptr<history::TopSites> top_sites,
       std::unique_ptr<PopularSites> popular_sites,
@@ -331,8 +333,10 @@ class MostVisitedSites :
   void ClearBlockedUrls();
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  //  SupervisedUserServiceObserver implementation.
+  //  SupervisedUserServiceObserver:
   void OnURLFilterChanged() override;
+  // SupervisedUserUrlFilteringService::Observer:
+  void OnUrlFilteringServiceChanged() override;
 #endif
 
   // Returns the score of a tile in |current_tiles_| identified by |url|, or
@@ -498,6 +502,10 @@ class MostVisitedSites :
   base::ScopedObservation<supervised_user::SupervisedUserService,
                           SupervisedUserServiceObserver>
       supervised_user_service_observation_{this};
+  base::ScopedObservation<
+      supervised_user::SupervisedUserUrlFilteringService,
+      supervised_user::SupervisedUserUrlFilteringService::Observer>
+      url_filtering_service_observation_{this};
 #endif
 
   scoped_refptr<history::TopSites> top_sites_;

@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
@@ -35,6 +36,7 @@
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
 #include "components/supervised_user/core/browser/web_content_handler.h"
+#include "components/supervised_user/core/common/features.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -102,8 +104,15 @@ SupervisedUserNavigationObserver::SupervisedUserNavigationObserver(
       receivers_(web_contents, this) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  supervised_user_service_observation_.Observe(
-      SupervisedUserServiceFactory::GetForProfile(profile));
+
+  if (base::FeatureList::IsEnabled(
+          supervised_user::kSupervisedUserUseUrlFilteringService)) {
+    url_filtering_service_observation_.Observe(
+        supervised_user_url_filtering_service());
+  } else {
+    supervised_user_service_observation_.Observe(
+        SupervisedUserServiceFactory::GetForProfile(profile));
+  }
 
 #if BUILDFLAG(IS_ANDROID)
   pref_change_registrar_.Init(profile->GetPrefs());
@@ -254,6 +263,10 @@ void SupervisedUserNavigationObserver::RecordPageLoadUKM(
 }
 
 void SupervisedUserNavigationObserver::OnURLFilterChanged() {
+  OnUrlFilteringServiceChanged();
+}
+
+void SupervisedUserNavigationObserver::OnUrlFilteringServiceChanged() {
   auto* main_frame = web_contents()->GetPrimaryMainFrame();
   int main_frame_process_id = main_frame->GetProcess()->GetDeprecatedID();
   int routing_id = main_frame->GetRoutingID();
