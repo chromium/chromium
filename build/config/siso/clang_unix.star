@@ -86,7 +86,11 @@ def __rules(ctx):
     canonicalize_dir = not input_root_absolute_path
     canonicalize_dir_for_objc = not input_root_absolute_path_for_objc
 
+    # Remote linking with ThinLTO takes much longer.
+    # Linking browser_tests takes 50m locally. On remote with gVisor,
+    # it takes even more.
     use_thin_lto = gn_logs_data.get("use_thin_lto") == "true"
+    remote_link_timeout = "80m" if use_thin_lto else "10m"
 
     rules = []
     if win_sdk.enabled(ctx):
@@ -145,7 +149,7 @@ def __rules(ctx):
                 "platform_ref": "large",
                 "input_root_absolute_path": input_root_absolute_path,
                 "canonicalize_dir": canonicalize_dir,
-                "timeout": "2m",
+                "timeout": remote_link_timeout,
             },
             {
                 "name": "lld-link/solink_module",
@@ -167,7 +171,7 @@ def __rules(ctx):
                 "platform_ref": "large",
                 "input_root_absolute_path": input_root_absolute_path,
                 "canonicalize_dir": canonicalize_dir,
-                "timeout": "2m",
+                "timeout": remote_link_timeout,
             },
             {
                 "name": "lld-link/link",
@@ -189,7 +193,7 @@ def __rules(ctx):
                 "platform_ref": "large",
                 "input_root_absolute_path": input_root_absolute_path,
                 "canonicalize_dir": canonicalize_dir,
-                "timeout": "4m",
+                "timeout": remote_link_timeout,
             },
         ])
 
@@ -365,7 +369,7 @@ def __rules(ctx):
             "restat_content": True,
             "canonicalize_dir": True,
             "platform_ref": "large",
-            "timeout": "4m",
+            "timeout": remote_link_timeout,
         },
         {
             "name": "clang/solink_module",
@@ -382,7 +386,7 @@ def __rules(ctx):
             "remote": config.get(ctx, "remote-link"),
             "canonicalize_dir": True,
             "platform_ref": "large",
-            "timeout": "4m",
+            "timeout": remote_link_timeout,
         },
         {
             "name": "clang/link",
@@ -400,10 +404,7 @@ def __rules(ctx):
             "remote": config.get(ctx, "remote-link"),
             "canonicalize_dir": True,
             "platform_ref": "large",
-            # Remote linking with ThinLTO takes much longer.
-            # Linking browser_tests takes 50m locally. On remote with gVisor,
-            # it takes even more.
-            "timeout": "80m" if use_thin_lto else "10m",
+            "timeout": remote_link_timeout,
         },
     ])
     return rules
