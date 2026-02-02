@@ -115,6 +115,12 @@ const char kFloatyTimeMinimizedHistogram[] = "IOS.Gemini.Floaty.TimeMinimized";
 const char kFloatyViewStateTransitionHistogram[] =
     "IOS.Gemini.Floaty.ViewStateTransition";
 
+const char kFloatyShownFromSourceHistogram[] =
+    "IOS.Gemini.Floaty.ShownFromSource";
+
+const char kFloatyHiddenFromSourceHistogram[] =
+    "IOS.Gemini.Floaty.HiddenFromSource";
+
 const char kImageRemixContextMenuEntryPointAspectRatioTappedHistogram[] =
     "IOS.Gemini.ImageRemix.ContextMenuEntryPoint.AspectRatio.Tapped";
 
@@ -321,6 +327,14 @@ void RecordGeminiViewStateHiddenToShown(
     default:
       break;
   }
+}
+
+void RecordFloatyShownFromSource(gemini::FloatyUpdateSource source) {
+  base::UmaHistogramEnumeration(kFloatyShownFromSourceHistogram, source);
+}
+
+void RecordFloatyHiddenFromSource(gemini::FloatyUpdateSource source) {
+  base::UmaHistogramEnumeration(kFloatyHiddenFromSourceHistogram, source);
 }
 
 void RecordURLOpened() {

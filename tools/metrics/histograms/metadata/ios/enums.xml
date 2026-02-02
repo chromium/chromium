@@ -804,6 +804,22 @@ chromium-metrics-reviews@google.com.
     /ios/chrome/browser/intelligence/bwg/model/gemini_session_delegate.h:BWGInputType
 ) -->
 
+<!-- LINT.IfChange(IOSGeminiFloatyUpdateSource) -->
+
+<enum name="IOSGeminiFloatyUpdateSource">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="View Transition"/>
+  <int value="2" label="Web Navigation"/>
+  <int value="3" label="Tab Grid"/>
+  <int value="4" label="ContextMenu"/>
+  <int value="5" label="Web Context Menu"/>
+  <int value="6" label="Forced From Fullscreen"/>
+  <int value="7" label="Overlay"/>
+  <int value="8" label="IneligibleSite"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h:FloatyUpdateSource) -->
+
 <!-- LINT.IfChange(IOSGeminiFREAction) -->
 
 <enum name="IOSGeminiFREAction">

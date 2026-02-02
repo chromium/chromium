@@ -507,6 +507,7 @@ void BwgBrowserAgent::HideFloatyIfInvoked(bool animated,
   ios::provider::GeminiViewState current_view_state =
       ios::provider::GetCurrentGeminiViewState();
   SetLastShownViewState(current_view_state);
+  RecordFloatyHiddenFromSource(source);
   ios::provider::UpdateGeminiViewState(ios::provider::GeminiViewState::kHidden,
                                        animated);
 }
@@ -539,6 +540,7 @@ void BwgBrowserAgent::ShowFloatyIfInvoked(bool animated,
   }
 
   RecordGeminiViewStateHiddenToShown(last_shown_view_state_);
+  RecordFloatyShownFromSource(source);
   is_floaty_temporarily_hidden_ = false;
   ios::provider::UpdateGeminiViewState(last_shown_view_state_, animated);
 }

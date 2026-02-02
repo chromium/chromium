@@ -2460,6 +2460,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Gemini.Floaty.HiddenFromSource"
+    enum="IOSGeminiFloatyUpdateSource" expires_after="2027-01-25">
+  <owner>joemerramos@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    Records the floaty being hidden from a specific trigger source.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Gemini.Floaty.ShownFromSource"
+    enum="IOSGeminiFloatyUpdateSource" expires_after="2027-01-25">
+  <owner>joemerramos@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    Records the floaty being shown from a specific trigger source.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Gemini.Floaty.TimeMinimized" units="ms"
     expires_after="2027-01-25">
   <owner>joemerramos@google.com</owner>
