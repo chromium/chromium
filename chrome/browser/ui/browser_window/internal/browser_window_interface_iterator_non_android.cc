@@ -10,8 +10,9 @@
 
 std::vector<BrowserWindowInterface*> GetAllBrowserWindowInterfaces() {
   std::vector<BrowserWindowInterface*> results;
-  for (BrowserWindowInterface* browser : *BrowserList::GetInstance()) {
-    results.push_back(browser);
+  for (auto it = BrowserList::GetInstance()->deprecated_begin();
+       it != BrowserList::GetInstance()->deprecated_end(); ++it) {
+    results.push_back(*it);
   }
   return results;
 }

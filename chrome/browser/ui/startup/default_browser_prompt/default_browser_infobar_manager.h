@@ -11,9 +11,9 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker_delegate.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_manager.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
@@ -41,7 +41,7 @@ class TabStripModel;
 // Default Browser infobars across all tabs and browser windows. It also acts as
 // an observer for InfoBar delegates to record and act on user interaction with
 // the infobars.
-class DefaultBrowserInfoBarManager : public BrowserListObserver,
+class DefaultBrowserInfoBarManager : public BrowserCollectionObserver,
                                      public BrowserTabStripTrackerDelegate,
                                      public TabStripModelObserver,
                                      public infobars::InfoBarManager::Observer,
@@ -83,8 +83,8 @@ class DefaultBrowserInfoBarManager : public BrowserListObserver,
   void CreateInfoBarForWebContents(content::WebContents* contents,
                                    Profile* profile);
 
-  // BrowserListObserver:
-  void OnBrowserRemoved(Browser* browser) override;
+  // BrowserCollectionObserver:
+  void OnBrowserClosed(BrowserWindowInterface* browser) override;
 
   // BrowserTabStripTrackerDelegate
   bool ShouldTrackBrowser(BrowserWindowInterface* browser) override;
@@ -120,8 +120,8 @@ class DefaultBrowserInfoBarManager : public BrowserListObserver,
   std::unique_ptr<default_browser::DefaultBrowserController>
       default_browser_controller_;
 
-  base::ScopedObservation<BrowserList, BrowserListObserver>
-      browser_list_observation_{this};
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_STARTUP_DEFAULT_BROWSER_PROMPT_DEFAULT_BROWSER_INFOBAR_MANAGER_H_

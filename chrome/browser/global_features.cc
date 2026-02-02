@@ -43,6 +43,7 @@
 // This causes a gn error on Android builds, because gn does not understand
 // buildflags, so we include it only on platforms where it is used.
 #include "chrome/browser/default_browser/default_browser_manager.h"
+#include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_manager.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_registrar.h"
 #include "components/user_education/common/user_education_features.h"  // nogncheck
 #endif
@@ -217,6 +218,11 @@ void GlobalFeatures::PostMainMessageLoopRun() {
   optimization_guide_global_feature_.reset();
 
   application_advanced_protection_status_detector_.reset();
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  DefaultBrowserPromptManager::GetInstance()->CloseAllPrompts(
+      DefaultBrowserPromptManager::CloseReason::kDismiss);
+#endif
 }
 
 void GlobalFeatures::PostDestroyThreads() {
