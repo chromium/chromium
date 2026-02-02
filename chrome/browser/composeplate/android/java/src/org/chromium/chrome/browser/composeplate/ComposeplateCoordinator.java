@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import androidx.annotation.StyleRes;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -32,23 +31,14 @@ public class ComposeplateCoordinator {
      *
      * @param parentView The parent {@link ViewGroup} for the composeplate.
      * @param profile The current user profile.
-     * @param colorStateList The colorStateList to apply on the icons.
-     * @param textStyleResId The resource id of the text appearance style.
      */
-    public ComposeplateCoordinator(
-            ViewGroup parentView,
-            Profile profile,
-            @Nullable ColorStateList colorStateList,
-            @StyleRes int textStyleResId) {
+    public ComposeplateCoordinator(ViewGroup parentView, Profile profile) {
         mModel = new PropertyModel(ComposeplateProperties.ALL_KEYS);
         mView = parentView.findViewById(R.id.composeplate_view);
         PropertyModelChangeProcessor.create(mModel, mView, ComposeplateViewBinder::bind);
         mHideIncognitoButton =
                 ChromeFeatureList.sAndroidComposeplateHideIncognitoButton.getValue()
                         || !IncognitoUtils.isIncognitoModeEnabled(profile);
-
-        mModel.set(ComposeplateProperties.COLOR_STATE_LIST, colorStateList);
-        mModel.set(ComposeplateProperties.TEXT_STYLE_RES_ID, textStyleResId);
 
         mComposeplateViewMaxiumWidth =
                 parentView
@@ -180,6 +170,12 @@ public class ComposeplateCoordinator {
 
     public void applyWhiteBackgroundWithShadow(boolean apply) {
         mModel.set(ComposeplateProperties.APPLY_WHITE_BACKGROUND_WITH_SHADOW, apply);
+
+        ColorStateList colorStateList =
+                ComposeplateUtils.getSearchBoxIconColorTint(mView.getContext(), apply);
+        @StyleRes int textStyleResId = ComposeplateUtils.getSearchBoxTextStyleResId(apply);
+        mModel.set(ComposeplateProperties.COLOR_STATE_LIST, colorStateList);
+        mModel.set(ComposeplateProperties.TEXT_STYLE_RES_ID, textStyleResId);
     }
 
     public PropertyModel getModelForTesting() {

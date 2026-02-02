@@ -21,7 +21,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import androidx.annotation.StyleRes;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
@@ -56,12 +55,10 @@ public class ComposeplateCoordinatorUnitTest {
     @Mock private View mComposeplateButton;
     @Mock private View.OnClickListener mOriginalOnClickListener;
     @Mock private Profile mProfile;
-    @Mock private ColorStateList mColorStateList;
 
     private Context mContext;
     private ComposeplateCoordinator mCoordinator;
     private PropertyModel mPropertyModel;
-    private @StyleRes int mTextStyleResId;
 
     @Before
     public void setUp() {
@@ -74,6 +71,7 @@ public class ComposeplateCoordinatorUnitTest {
 
         when(mParentView.findViewById(R.id.composeplate_view)).thenReturn(mComposeplateView);
         when(mParentView.getResources()).thenReturn(mContext.getResources());
+        when(mComposeplateView.getContext()).thenReturn(mContext);
         when(mComposeplateView.findViewById(R.id.voice_search_button))
                 .thenReturn(mVoiceSearchButton);
         when(mComposeplateView.findViewById(R.id.lens_camera_button)).thenReturn(mLensButton);
@@ -81,10 +79,7 @@ public class ComposeplateCoordinatorUnitTest {
         when(mComposeplateView.findViewById(R.id.composeplate_button))
                 .thenReturn(mComposeplateButton);
 
-        mTextStyleResId = R.style.TextAppearance_ComposeplateTextMedium;
-        mCoordinator =
-                new ComposeplateCoordinator(
-                        mParentView, mProfile, mColorStateList, mTextStyleResId);
+        mCoordinator = new ComposeplateCoordinator(mParentView, mProfile);
         mPropertyModel = mCoordinator.getModelForTesting();
     }
 
@@ -103,12 +98,6 @@ public class ComposeplateCoordinatorUnitTest {
         mCoordinator.setVisibilityV1(/* visible= */ false, /* isCurrentPage= */ true);
         verify(mComposeplateView).setVisibility(View.GONE);
         histogramWatcher.assertExpected();
-    }
-
-    @Test
-    public void testCreate() {
-        assertEquals(mColorStateList, mPropertyModel.get(ComposeplateProperties.COLOR_STATE_LIST));
-        assertEquals(mTextStyleResId, mPropertyModel.get(ComposeplateProperties.TEXT_STYLE_RES_ID));
     }
 
     @Test
@@ -143,9 +132,7 @@ public class ComposeplateCoordinatorUnitTest {
     @Test
     public void testSetIncognitoButtonVisibilityV1_HideIncognitoButton() {
         ChromeFeatureList.sAndroidComposeplateHideIncognitoButton.setForTesting(true);
-        mCoordinator =
-                new ComposeplateCoordinator(
-                        mParentView, mProfile, mColorStateList, mTextStyleResId);
+        mCoordinator = new ComposeplateCoordinator(mParentView, mProfile);
 
         mCoordinator.setVisibilityV1(/* visible= */ true, /* isCurrentPage= */ true);
         verify(mComposeplateView).setVisibility(View.VISIBLE);
@@ -161,9 +148,7 @@ public class ComposeplateCoordinatorUnitTest {
         IncognitoUtils.setEnabledForTesting(false);
         assertFalse(IncognitoUtils.isIncognitoModeEnabled(mProfile));
         assertFalse(ChromeFeatureList.sAndroidComposeplateHideIncognitoButton.getValue());
-        mCoordinator =
-                new ComposeplateCoordinator(
-                        mParentView, mProfile, mColorStateList, mTextStyleResId);
+        mCoordinator = new ComposeplateCoordinator(mParentView, mProfile);
 
         mCoordinator.setVisibilityV1(/* visible= */ true, /* isCurrentPage= */ true);
         verify(mComposeplateView).setVisibility(View.VISIBLE);
@@ -264,13 +249,24 @@ public class ComposeplateCoordinatorUnitTest {
     @Test
     public void testApplyWhiteBackgroundWithShadow() {
         // Tests the case to apply a white background with shadow.
+        boolean apply = true;
+        int textStyleResId = ComposeplateUtils.getSearchBoxTextStyleResId(apply);
+        ColorStateList colorStateList =
+                ComposeplateUtils.getSearchBoxIconColorTint(mContext, apply);
         mCoordinator.applyWhiteBackgroundWithShadow(true);
         assertTrue(mPropertyModel.get(ComposeplateProperties.APPLY_WHITE_BACKGROUND_WITH_SHADOW));
+        assertEquals(colorStateList, mPropertyModel.get(ComposeplateProperties.COLOR_STATE_LIST));
+        assertEquals(textStyleResId, mPropertyModel.get(ComposeplateProperties.TEXT_STYLE_RES_ID));
         verify(mComposeplateView).applyWhiteBackgroundWithShadow(eq(true));
 
         // Tests the case to remove the white background with shadow.
+        apply = false;
+        textStyleResId = ComposeplateUtils.getSearchBoxTextStyleResId(apply);
+        colorStateList = ComposeplateUtils.getSearchBoxIconColorTint(mContext, apply);
         mCoordinator.applyWhiteBackgroundWithShadow(false);
         assertFalse(mPropertyModel.get(ComposeplateProperties.APPLY_WHITE_BACKGROUND_WITH_SHADOW));
+        assertEquals(colorStateList, mPropertyModel.get(ComposeplateProperties.COLOR_STATE_LIST));
+        assertEquals(textStyleResId, mPropertyModel.get(ComposeplateProperties.TEXT_STYLE_RES_ID));
         verify(mComposeplateView).applyWhiteBackgroundWithShadow(eq(false));
     }
 

@@ -57,9 +57,7 @@ import android.widget.ImageButton;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
-import androidx.annotation.StyleRes;
 import androidx.annotation.VisibleForTesting;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.ViewCompat;
@@ -94,8 +92,6 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.theme.ThemeUtils;
-import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
 import org.chromium.components.browser_ui.widget.displaystyle.HorizontalDisplayStyle;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
@@ -870,44 +866,6 @@ public class NtpCustomizationUtils {
     public static long getDailyRefreshTimestampToSharedPreference() {
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
         return prefsManager.readLong(NTP_CUSTOMIZATION_LAST_DAILY_REFRESH_TIMESTAMP, 0);
-    }
-
-    /**
-     * Returns an instance of ColorStateList which is used to tint icon buttons.
-     *
-     * @param context Used to get the ColorStateList.
-     */
-    public static @Nullable ColorStateList getSearchBoxIconColorTint(Context context) {
-        return getSearchBoxIconColorTint(context, shouldApplyWhiteBackgroundOnSearchBox());
-    }
-
-    /**
-     * Returns an instance of ColorStateList which is used to tint icon buttons based on the flag of
-     * whether a white background will be applied.
-     *
-     * @param context Used to get the ColorStateList.
-     * @param shouldApplyWhiteBackgroundOnSearchBox Whether a white background will be applied.
-     */
-    public static @Nullable ColorStateList getSearchBoxIconColorTint(
-            Context context, boolean shouldApplyWhiteBackgroundOnSearchBox) {
-        if (shouldApplyWhiteBackgroundOnSearchBox) {
-            return AppCompatResources.getColorStateList(context, R.color.default_icon_color_dark);
-        }
-
-        return ThemeUtils.getThemedToolbarIconTint(context, BrandedColorScheme.APP_DEFAULT);
-    }
-
-    /**
-     * Returns the text appearance resource id based on a flag of whether a white background will be
-     * applied.
-     */
-    public static @StyleRes int getSearchBoxTextStyleResId(
-            boolean shouldApplyWhiteBackgroundOnSearchBox) {
-        if (shouldApplyWhiteBackgroundOnSearchBox) {
-            return R.style.TextAppearance_ComposeplateTextMediumDark;
-        }
-
-        return R.style.TextAppearance_ComposeplateTextMedium;
     }
 
     /** Removes the NTP's background color key and primary color key from the SharedPreference. */

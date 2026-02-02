@@ -6,25 +6,22 @@ package org.chromium.chrome.browser.ntp.search;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
-import android.graphics.drawable.Drawable;
 import android.view.View.OnClickListener;
 import android.view.View.OnDragListener;
 import android.view.ViewGroup;
 
 import androidx.annotation.StyleRes;
-import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.composeplate.ComposeplateUtils;
 import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lens.LensIntentParams;
 import org.chromium.chrome.browser.lens.LensQueryParams;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
-import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
-import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -34,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @NullMarked
-class SearchBoxMediator implements DestroyObserver, NativeInitObserver {
+class SearchBoxMediator implements DestroyObserver {
     private final Context mContext;
     private final PropertyModel mModel;
     private final ViewGroup mView;
@@ -61,9 +58,6 @@ class SearchBoxMediator implements DestroyObserver, NativeInitObserver {
         assert mActivityLifecycleDispatcher == null;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mActivityLifecycleDispatcher.register(this);
-        if (mActivityLifecycleDispatcher.isNativeInitializationFinished()) {
-            onFinishNativeInitialization();
-        }
     }
 
     @Override
@@ -83,15 +77,6 @@ class SearchBoxMediator implements DestroyObserver, NativeInitObserver {
 
         mLensClickListeners.clear();
         mVoiceSearchClickListeners.clear();
-    }
-
-    @Override
-    public void onFinishNativeInitialization() {
-        Drawable drawable = AppCompatResources.getDrawable(mContext, R.drawable.ic_mic_white_24dp);
-        mModel.set(SearchBoxProperties.VOICE_SEARCH_DRAWABLE, drawable);
-
-        ColorStateList colorStateList = NtpCustomizationUtils.getSearchBoxIconColorTint(mContext);
-        mModel.set(SearchBoxProperties.VOICE_SEARCH_COLOR_STATE_LIST, colorStateList);
     }
 
     /** Called to set a click listener for the search box. */
@@ -206,6 +191,17 @@ class SearchBoxMediator implements DestroyObserver, NativeInitObserver {
     }
 
     void applyWhiteBackgroundWithShadow(boolean apply) {
+        ColorStateList colorStateList =
+                ComposeplateUtils.getSearchBoxIconColorTint(mContext, apply);
+        mModel.set(SearchBoxProperties.VOICE_SEARCH_COLOR_STATE_LIST, colorStateList);
+
         mModel.set(SearchBoxProperties.APPLY_WHITE_BACKGROUND_WITH_SHADOW, apply);
+
+        @StyleRes
+        int resId =
+                apply
+                        ? R.style.TextAppearance_FakeSearchBoxTextMediumDark
+                        : R.style.TextAppearance_FakeSearchBoxTextMedium;
+        mModel.set(SearchBoxProperties.SEARCH_BOX_TEXT_STYLE_RES_ID, resId);
     }
 }

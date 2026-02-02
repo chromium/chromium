@@ -50,7 +50,6 @@ import android.view.View;
 import android.widget.ImageButton;
 
 import androidx.annotation.ColorInt;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.ViewCompat;
 import androidx.test.core.app.ApplicationProvider;
@@ -87,9 +86,7 @@ import org.chromium.chrome.browser.ntp_customization.theme.upload_image.Backgrou
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
-import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.image_fetcher.ImageFetcher.Params;
 import org.chromium.ui.util.ColorUtils;
@@ -857,36 +854,6 @@ public class NtpCustomizationUtilsUnitTest {
         assertTrue(
                 NtpCustomizationUtils.shouldApplyWhiteBackgroundOnSearchBox(
                         NtpBackgroundImageType.THEME_COLLECTION));
-    }
-
-    @Test
-    public void testGetSearchBoxIconColorTint() {
-        // Verifies the color tint for customized background images.
-        assertEquals(
-                AppCompatResources.getColorStateList(mContext, R.color.default_icon_color_dark),
-                NtpCustomizationUtils.getSearchBoxIconColorTint(
-                        mContext, /* shouldApplyWhiteBackgroundOnSearchBox= */ true));
-
-        // Verifies the color tint for the default theme.
-        assertEquals(
-                ThemeUtils.getThemedToolbarIconTint(mContext, BrandedColorScheme.APP_DEFAULT),
-                NtpCustomizationUtils.getSearchBoxIconColorTint(
-                        mContext, /* shouldApplyWhiteBackgroundOnSearchBox= */ false));
-    }
-
-    @Test
-    public void testGetSearchBoxTextStyleResId() {
-        // Verifies the text style for customized background images.
-        assertEquals(
-                R.style.TextAppearance_ComposeplateTextMediumDark,
-                NtpCustomizationUtils.getSearchBoxTextStyleResId(
-                        /* shouldApplyWhiteBackgroundOnSearchBox= */ true));
-
-        // Verifies the text style for the default theme.
-        assertEquals(
-                R.style.TextAppearance_ComposeplateTextMedium,
-                NtpCustomizationUtils.getSearchBoxTextStyleResId(
-                        /* shouldApplyWhiteBackgroundOnSearchBox= */ false));
     }
 
     @Test

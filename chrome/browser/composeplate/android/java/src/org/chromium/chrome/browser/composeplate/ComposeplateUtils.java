@@ -5,20 +5,26 @@
 package org.chromium.chrome.browser.composeplate;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.view.View;
 
+import androidx.annotation.StyleRes;
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.content.res.AppCompatResources;
 
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.theme.ThemeUtils;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 
 /** Utility class for the composeplate view. */
 @NullMarked
@@ -84,6 +90,35 @@ public class ComposeplateUtils {
         boolean oldValue = sIsEnabledForTesting;
         sIsEnabledForTesting = isEnabledForTesting;
         ResettersForTesting.register(() -> sIsEnabledForTesting = oldValue);
+    }
+
+    /**
+     * Returns an instance of ColorStateList which is used to tint icon buttons based on the flag of
+     * whether a white background will be applied.
+     *
+     * @param context Used to get the ColorStateList.
+     * @param shouldApplyWhiteBackgroundOnSearchBox Whether a white background will be applied.
+     */
+    public static @Nullable ColorStateList getSearchBoxIconColorTint(
+            Context context, boolean shouldApplyWhiteBackgroundOnSearchBox) {
+        if (shouldApplyWhiteBackgroundOnSearchBox) {
+            return AppCompatResources.getColorStateList(context, R.color.default_icon_color_dark);
+        }
+
+        return ThemeUtils.getThemedToolbarIconTint(context, BrandedColorScheme.APP_DEFAULT);
+    }
+
+    /**
+     * Returns the text appearance resource id based on a flag of whether a white background will be
+     * applied.
+     */
+    public static @StyleRes int getSearchBoxTextStyleResId(
+            boolean shouldApplyWhiteBackgroundOnSearchBox) {
+        if (shouldApplyWhiteBackgroundOnSearchBox) {
+            return R.style.TextAppearance_ComposeplateTextMediumDark;
+        }
+
+        return R.style.TextAppearance_ComposeplateTextMedium;
     }
 
     @NativeMethods

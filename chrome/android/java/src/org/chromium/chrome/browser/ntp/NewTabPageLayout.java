@@ -8,7 +8,6 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Point;
 import android.graphics.Rect;
@@ -22,7 +21,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import androidx.annotation.RawRes;
-import androidx.annotation.StyleRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.widget.ImageViewCompat;
 
@@ -514,13 +512,6 @@ public class NewTabPageLayout extends LinearLayout
 
         boolean shouldApplyWhiteBackgroundOnSearchBox =
                 NtpCustomizationUtils.shouldApplyWhiteBackgroundOnSearchBox();
-        ColorStateList colorStateList =
-                NtpCustomizationUtils.getSearchBoxIconColorTint(
-                        mContext, shouldApplyWhiteBackgroundOnSearchBox);
-        @StyleRes
-        int textStyleResId =
-                NtpCustomizationUtils.getSearchBoxTextStyleResId(
-                        shouldApplyWhiteBackgroundOnSearchBox);
 
         // TODO(https://crbug.com/421944848) Remove this if block after composeplate experiment code
         //  is cleaned up.
@@ -541,9 +532,7 @@ public class NewTabPageLayout extends LinearLayout
 
             ViewStub composeplateViewStub = findViewById(R.id.composeplate_view_stub);
             ViewGroup composeplateView = (ViewGroup) composeplateViewStub.inflate();
-            mComposeplateCoordinator =
-                    new ComposeplateCoordinator(
-                            composeplateView, mProfile, colorStateList, textStyleResId);
+            mComposeplateCoordinator = new ComposeplateCoordinator(composeplateView, mProfile);
             assert mVoiceSearchButtonClickListener != null && mLensButtonClickListener != null;
             mComposeplateCoordinator.setVoiceSearchClickListener(mVoiceSearchButtonClickListener);
             mComposeplateCoordinator.setLensClickListener(mLensButtonClickListener);
@@ -559,9 +548,7 @@ public class NewTabPageLayout extends LinearLayout
             //  launched.
             NewTabPageUtils.applyUpdatedLayoutParamsForComposeplateView(composeplateView);
         }
-        mComposeplateCoordinator =
-                new ComposeplateCoordinator(
-                        composeplateView, mProfile, colorStateList, textStyleResId);
+        mComposeplateCoordinator = new ComposeplateCoordinator(composeplateView, mProfile);
         mComposeplateCoordinator.setIncognitoClickListener(this::onIncognitoButtonClicked);
         // Don't log click metrics in this listener, since the mComposeplateCoordinator will
         // log.

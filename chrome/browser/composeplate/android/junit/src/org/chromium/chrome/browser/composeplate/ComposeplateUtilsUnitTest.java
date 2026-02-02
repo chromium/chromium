@@ -20,6 +20,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.view.ContextThemeWrapper;
 import android.view.View;
 
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
@@ -37,6 +38,8 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.theme.ThemeUtils;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 
 /** Unit tests for {@link ComposeplateUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -61,6 +64,7 @@ public class ComposeplateUtilsUnitTest {
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
         ComposeplateUtilsJni.setInstanceForTesting(mMockComposeplateUtilsJni);
+        when(mView.getContext()).thenReturn(mContext);
         when(mMockComposeplateUtilsJni.isAimEntrypointEligible(eq(mProfile))).thenReturn(true);
         when(mMockComposeplateUtilsJni.isAimEntrypointLFFEligible(eq(mProfile))).thenReturn(true);
     }
@@ -124,5 +128,35 @@ public class ComposeplateUtilsUnitTest {
         verify(mView).setClipToOutline(eq(false));
         verify(mView).setBackground(any(Drawable.class));
         verify(mView).setElevation(eq(0f));
+    }
+
+    @Test
+    public void testGetSearchBoxTextStyleResId() {
+        // Verifies the text style for customized background images.
+        assertEquals(
+                R.style.TextAppearance_ComposeplateTextMediumDark,
+                ComposeplateUtils.getSearchBoxTextStyleResId(
+                        /* shouldApplyWhiteBackgroundOnSearchBox= */ true));
+
+        // Verifies the text style for the default theme.
+        assertEquals(
+                R.style.TextAppearance_ComposeplateTextMedium,
+                ComposeplateUtils.getSearchBoxTextStyleResId(
+                        /* shouldApplyWhiteBackgroundOnSearchBox= */ false));
+    }
+
+    @Test
+    public void testGetSearchBoxIconColorTint() {
+        // Verifies the color tint for customized background images.
+        assertEquals(
+                AppCompatResources.getColorStateList(mContext, R.color.default_icon_color_dark),
+                ComposeplateUtils.getSearchBoxIconColorTint(
+                        mContext, /* shouldApplyWhiteBackgroundOnSearchBox= */ true));
+
+        // Verifies the color tint for the default theme.
+        assertEquals(
+                ThemeUtils.getThemedToolbarIconTint(mContext, BrandedColorScheme.APP_DEFAULT),
+                ComposeplateUtils.getSearchBoxIconColorTint(
+                        mContext, /* shouldApplyWhiteBackgroundOnSearchBox= */ false));
     }
 }
