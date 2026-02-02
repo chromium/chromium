@@ -8,9 +8,12 @@ source_set("common") {
   sources = [
     "constants.cc",
     "constants.h",
+    "manifest_id.cc",
+    "manifest_id.h",
     "manifest_id_constants.h",
     "web_app_id.h",
   ]
+  deps = [ "//url" ]
 }
 
 mojom("mojo_bindings") {
@@ -26,5 +29,15 @@ mojom("mojo_bindings") {
   public_deps = [
     "//mojo/public/mojom/base",
     "//url/mojom:url_mojom_gurl",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "manifest_id_unittest.cc" ]
+  deps = [
+    ":common",
+    "//testing/gtest",
+    "//url",
   ]
 }

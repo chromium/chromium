@@ -567,6 +567,7 @@ test("components_unittests") {
       "//components/web_package:unit_tests",
       "//components/web_package/test_support:unit_tests",
       "//components/webapps/browser:unit_tests",
+      "//components/webapps/common:unit_tests",
       "//components/webapps/services/web_app_origin_association:unit_tests",
       "//components/webauthn/content/browser:unit_tests",
       "//components/webauthn/json:unit_tests",
