@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_SNAPSHOT_PROVIDER_EXTERNAL_BITMAP_H_
-#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_SNAPSHOT_PROVIDER_EXTERNAL_BITMAP_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_NON2D_SNAPSHOT_PROVIDER_BITMAP_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_NON2D_SNAPSHOT_PROVIDER_BITMAP_H_
 
 #include <memory>
 
@@ -17,14 +17,14 @@
 namespace blink {
 
 // Renders to a RAM-backed bitmap via an external (client-supplied) draw.
-class PLATFORM_EXPORT CanvasSnapshotProviderExternalBitmap
+class PLATFORM_EXPORT CanvasNon2DSnapshotProviderBitmap
     : public CanvasSnapshotProvider,
       public cc::ImageProvider {
  public:
-  static std::unique_ptr<CanvasSnapshotProviderExternalBitmap> Create(
+  static std::unique_ptr<CanvasNon2DSnapshotProviderBitmap> Create(
       const CanvasSnapshotProvider::Info& info);
 
-  ~CanvasSnapshotProviderExternalBitmap() override;
+  ~CanvasNon2DSnapshotProviderBitmap() override;
 
   // CanvasSnapshotProvider:
   bool IsGpuContextLost() const override;
@@ -46,7 +46,7 @@ class PLATFORM_EXPORT CanvasSnapshotProviderExternalBitmap
       const cc::DrawImage& draw_image) override;
 
  private:
-  explicit CanvasSnapshotProviderExternalBitmap(
+  explicit CanvasNon2DSnapshotProviderBitmap(
       const CanvasSnapshotProvider::Info& info);
 
   std::optional<cc::PlaybackImageProvider> playback_image_provider_n32_;
@@ -69,4 +69,4 @@ class PLATFORM_EXPORT CanvasSnapshotProviderExternalBitmap
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_SNAPSHOT_PROVIDER_EXTERNAL_BITMAP_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_NON2D_SNAPSHOT_PROVIDER_BITMAP_H_

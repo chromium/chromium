@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/platform/graphics/canvas_snapshot_provider_external_bitmap.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_non2d_snapshot_provider_bitmap.h"
 
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_deferred_paint_record.h"
@@ -11,7 +11,7 @@
 namespace blink {
 
 cc::ImageProvider::ScopedResult
-CanvasSnapshotProviderExternalBitmap::GetRasterContent(
+CanvasNon2DSnapshotProviderBitmap::GetRasterContent(
     const cc::DrawImage& draw_image) {
   cc::PaintImage paint_image = draw_image.paint_image();
   if (paint_image.IsDeferredPaintRecord()) {
@@ -40,18 +40,18 @@ CanvasSnapshotProviderExternalBitmap::GetRasterContent(
   return scoped_decoded_image;
 }
 
-std::unique_ptr<CanvasSnapshotProviderExternalBitmap>
-CanvasSnapshotProviderExternalBitmap::Create(
+std::unique_ptr<CanvasNon2DSnapshotProviderBitmap>
+CanvasNon2DSnapshotProviderBitmap::Create(
     const CanvasSnapshotProvider::Info& info) {
-  auto provider = base::WrapUnique<CanvasSnapshotProviderExternalBitmap>(
-      new CanvasSnapshotProviderExternalBitmap(info));
+  auto provider = base::WrapUnique<CanvasNon2DSnapshotProviderBitmap>(
+      new CanvasNon2DSnapshotProviderBitmap(info));
   if (provider->IsValid()) {
     return provider;
   }
   return nullptr;
 }
 
-CanvasSnapshotProviderExternalBitmap::CanvasSnapshotProviderExternalBitmap(
+CanvasNon2DSnapshotProviderBitmap::CanvasNon2DSnapshotProviderBitmap(
     const CanvasSnapshotProvider::Info& info)
     : info_(info),
       snapshot_paint_image_id_(cc::PaintImage::GetNextId()),
@@ -69,19 +69,19 @@ CanvasSnapshotProviderExternalBitmap::CanvasSnapshotProviderExternalBitmap(
       &props);
 }
 
-CanvasSnapshotProviderExternalBitmap::~CanvasSnapshotProviderExternalBitmap() =
+CanvasNon2DSnapshotProviderBitmap::~CanvasNon2DSnapshotProviderBitmap() =
     default;
 
-bool CanvasSnapshotProviderExternalBitmap::IsGpuContextLost() const {
+bool CanvasNon2DSnapshotProviderBitmap::IsGpuContextLost() const {
   return true;
 }
 
-bool CanvasSnapshotProviderExternalBitmap::IsValid() const {
+bool CanvasNon2DSnapshotProviderBitmap::IsValid() const {
   return surface_.get();
 }
 
 scoped_refptr<StaticBitmapImage>
-CanvasSnapshotProviderExternalBitmap::DoExternalDrawAndSnapshot(
+CanvasNon2DSnapshotProviderBitmap::DoExternalDrawAndSnapshot(
     base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback,
     ImageOrientation orientation /*= ImageOrientationEnum::kDefault*/) {
   // The static creation method returns nullptr if `IsValid()` is false on the
