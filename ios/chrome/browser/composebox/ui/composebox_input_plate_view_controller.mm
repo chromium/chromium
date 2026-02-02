@@ -1896,6 +1896,7 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   };
 }
 
+/// Called when a drop session ends.
 - (void)dropSessionDidEnd:(id<UIDropSession>)session {
   CHECK(self.delegate);
 
@@ -2043,6 +2044,7 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   CHECK(self.mutator);
   CHECK(tabInfo);
   CHECK_EQ(tabInfo.incognito, _theme.incognito);
+
   web::WebState* webState =
       [self.delegate webStateForTabOnCurrentProfile:tabInfo];
 
@@ -2059,11 +2061,6 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   CHECK(
       [itemProvider hasItemConformingToTypeIdentifier:UTTypeImage.identifier]);
 
-  // TODO(crbug.com/475203545): Prevent duplicate items being added. The file
-  // picker and the drag-and-drop interfaces have different schemes for
-  // generating asset IDs. They should be common, in order to prevent the same
-  // file being added several times. This should be updated so that asset IDs
-  // generated during drag-and-drop match for the same image being dropped.
   [self.mutator processImageItemProvider:itemProvider
                                  assetID:[NSUUID UUID].UUIDString];
 }
@@ -2084,11 +2081,7 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 - (void)handleTextDrop:(NSString*)text error:(NSError*)error {
   CHECK(self.mutator);
 
-  if (!text) {
-    return;
-  }
-
-  if (error) {
+  if (error || !text) {
     return;
   }
 
@@ -2102,11 +2095,7 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 - (void)handlePDFDrop:(NSURL*)url error:(NSError*)error {
   CHECK(self.mutator);
 
-  if (!url) {
-    return;
-  }
-
-  if (error) {
+  if (error || !url) {
     return;
   }
 

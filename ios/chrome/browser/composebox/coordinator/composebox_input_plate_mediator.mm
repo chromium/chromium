@@ -459,10 +459,6 @@ CreateInputDataFromAnnotatedPageContent(
   BOOL unableToLoadUIImage =
       ![itemProvider canLoadObjectOfClass:[UIImage class]];
 
-  // TODO(crbug.com/475203545): Prevent duplicate items being added. The file
-  // picker and the drag-and-drop interfaces have different schemes for
-  // generating asset IDs. They should be common, in order to prevent the same
-  // file being added several times.
   BOOL assetAlreadyLoaded = [_items assetAlreadyLoaded:assetID];
   if (unableToLoadUIImage || assetAlreadyLoaded) {
     return;
