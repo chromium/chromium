@@ -1260,7 +1260,7 @@ public final class ProductionSupportedFlagList {
                         + " AwWebPerformanceMetricsObserver"),
         Flag.baseFeature(
                 ContentFeatures.NO_SELECTION_MENU_CACHING,
-                "Enables Web Performance Metrics to be reported using"
-                        + " AwWebPerformanceMetricsObserver"),
+                "When this flag is enabled, the menu which is shown when selecting text will not be"
+                        + " cached. Instead, it is recomputed each time it is shown."),
     };
 }
