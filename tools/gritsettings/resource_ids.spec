@@ -1636,6 +1636,11 @@
     "messages": [10120],
   },
 
+  "<(SHARED_INTERMEDIATE_DIR)/THIS_IS_A_PLACEHOLDER.grd": {
+    "META": {"sizes": {"includes": [800]}},
+    "includes": [12000],
+  },
+
   # END "everything else" section.
   # Everything but chrome/, components/, content/, and ios/
 
