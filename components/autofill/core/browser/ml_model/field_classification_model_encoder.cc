@@ -66,7 +66,25 @@ FieldClassificationModelEncoder::FieldClassificationModelEncoder(
 FieldClassificationModelEncoder::FieldClassificationModelEncoder() = default;
 FieldClassificationModelEncoder::FieldClassificationModelEncoder(
     const FieldClassificationModelEncoder&) = default;
+FieldClassificationModelEncoder::FieldClassificationModelEncoder(
+    FieldClassificationModelEncoder&&) = default;
+FieldClassificationModelEncoder& FieldClassificationModelEncoder::operator=(
+    const FieldClassificationModelEncoder&) = default;
+FieldClassificationModelEncoder& FieldClassificationModelEncoder::operator=(
+    FieldClassificationModelEncoder&&) = default;
 FieldClassificationModelEncoder::~FieldClassificationModelEncoder() = default;
+
+std::string FieldClassificationModelEncoder::FindTokenById(TokenId id) const {
+  // This is inefficient, but it is only used for populating
+  // chrome://autofill-ml-internals, which is a debugging page. A faster
+  // implementation would require using some memory.
+  for (const auto& [token, token_id] : token_to_id_) {
+    if (token_id == id) {
+      return base::UTF16ToUTF8(token);
+    }
+  }
+  return "";
+}
 
 FieldClassificationModelEncoder::TokenId
 FieldClassificationModelEncoder::TokenToId(std::u16string_view token) const {
@@ -130,7 +148,7 @@ FieldClassificationModelEncoder::EncodeField(const FormFieldData& field) const {
   };
   std::vector<TokenId> output;
   output.reserve(GetFieldEncodingSize(encoding_parameters_));
-  output.emplace_back(cls_token());
+  output.emplace_back(GetClsToken());
 
   for (int feature : encoding_parameters_.features()) {
     std::ranges::move(encode(feature), std::back_inserter(output));

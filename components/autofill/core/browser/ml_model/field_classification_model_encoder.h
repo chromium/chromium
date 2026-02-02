@@ -59,6 +59,10 @@ class FieldClassificationModelEncoder {
 
   FieldClassificationModelEncoder();
   FieldClassificationModelEncoder(const FieldClassificationModelEncoder&);
+  FieldClassificationModelEncoder(FieldClassificationModelEncoder&&);
+  FieldClassificationModelEncoder& operator=(
+      const FieldClassificationModelEncoder&);
+  FieldClassificationModelEncoder& operator=(FieldClassificationModelEncoder&&);
   ~FieldClassificationModelEncoder();
 
   TokenId TokenToId(std::u16string_view token) const;
@@ -85,16 +89,19 @@ class FieldClassificationModelEncoder {
   // strings) are appended to generate a vector of the desired size.
   std::vector<TokenId> EncodeAttribute(std::u16string_view input) const;
 
+  // Returns the TokenId for the special CLS ("classification") token, which
+  // is always included at the beginning of the model input.
+  TokenId GetClsToken() const { return TokenId(token_to_id_.size() + 1); }
+
+  // Performs the reverse mapping TokenID -> string, which is only used for
+  // populating chrome://autofill-ml-internals.
+  std::string FindTokenById(TokenId id) const;
+
  private:
   friend class FieldClassificationModelEncoderTestApi;
 
   // Returns if the model's encoding parameters specify any form level features.
   bool ShouldEncodeFormLevelFeatures() const;
-
-  // Returns a special CLS ("classification") token indicating the beginning of
-  // a field. This is the token where the encoder generates the field
-  // classification in the output.
-  TokenId cls_token() const { return TokenId(token_to_id_.size() + 1); }
 
   // Returns a special CLS ("classification") token indicating the beginning of
   // a placeholder field containing information about the form-level features.
