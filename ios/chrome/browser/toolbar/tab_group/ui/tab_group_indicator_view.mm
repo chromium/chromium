@@ -10,6 +10,8 @@
 #import "ios/chrome/browser/menu/ui_bundled/action_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/ui/face_pile_providing.h"
 #import "ios/chrome/browser/share_kit/model/sharing_state.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/color_palette/tab_group_color_palette.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/toolbar_constants.h"
 #import "ios/chrome/browser/toolbar/tab_group/ui/tab_group_indicator_constants.h"
 #import "ios/chrome/browser/toolbar/tab_group/ui/tab_group_indicator_mutator.h"
@@ -353,7 +355,13 @@ NSString* const kDestructiveActionsMenuIdentifier =
 
 - (void)setGroupColor:(UIColor*)color {
   _groupColor = color;
-  _coloredDotView.backgroundColor = color;
+  if (!IsTabGroupColorOnSurfaceEnabled() || !color) {
+    _coloredDotView.backgroundColor = color;
+    return;
+  }
+  TabGroupColorPalette* tabGroupColorPalette =
+      [[TabGroupColorPalette alloc] initWithSeedColor:color];
+  _coloredDotView.backgroundColor = tabGroupColorPalette.commonColor;
 }
 
 @end
