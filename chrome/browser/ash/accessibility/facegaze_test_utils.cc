@@ -34,12 +34,12 @@ using MediapipeGesture = FaceGazeTestUtils::MediapipeGesture;
 namespace {
 
 const char* kDefaultDisplaySize = "1200x800";
-constexpr char kMediapipeMV3TestFilePath[] =
-    "resources/chromeos/accessibility/accessibility_common/mv3/third_party/"
+constexpr char kMediapipeTestFilePath[] =
+    "resources/chromeos/accessibility/accessibility_common/third_party/"
     "mediapipe_task_vision";
 const int kMouseDeviceId = 1;
-constexpr char kTestSupportMV3Path[] =
-    "chrome/browser/resources/chromeos/accessibility/accessibility_common/mv3/"
+constexpr char kTestSupportPath[] =
+    "chrome/browser/resources/chromeos/accessibility/accessibility_common/"
     "facegaze/facegaze_test_support.js";
 
 PrefService* GetPrefs() {
@@ -280,7 +280,7 @@ void FaceGazeTestUtils::EnableFaceGaze(const Config& config) {
       prefs::kAccessibilityFaceGazeAcceleratorDialogHasBeenAccepted,
       config.dialog_accepted());
 
-  FaceGazeTestUtils::SetUpMediapipeDir(kMediapipeMV3TestFilePath);
+  FaceGazeTestUtils::SetUpMediapipeDir(kMediapipeTestFilePath);
   ASSERT_FALSE(AccessibilityManager::Get()->IsFaceGazeEnabled());
   // Watch events from an MV3 extension which runs in a service worker.
   extensions::ExtensionRegistryTestHelper observer(
@@ -290,7 +290,7 @@ void FaceGazeTestUtils::EnableFaceGaze(const Config& config) {
   observer.WaitForServiceWorkerStart();
 
   WaitForJSReady();
-  SetUpJSTestSupport(kTestSupportMV3Path);
+  SetUpJSTestSupport(kTestSupportPath);
   if (config.dialog_accepted()) {
     // The FaceLandmarker will be automatically initialized after the dialog has
     // been accepted.

@@ -59,11 +59,11 @@ constexpr char kTextAreaUrl[] = R"(
     data:text/html;charset=utf-8,<textarea id='input'
         class='editableForDictation' autofocus></textarea>
 )";
-constexpr char kPumpkinMV3TestFilePath[] =
-    "resources/chromeos/accessibility/accessibility_common/mv3/third_party/"
+constexpr char kPumpkinTestFilePath[] =
+    "resources/chromeos/accessibility/accessibility_common/third_party/"
     "pumpkin";
-constexpr char kTestSupportMV3Path[] =
-    "chrome/browser/resources/chromeos/accessibility/accessibility_common/mv3/"
+constexpr char kTestSupportPath[] =
+    "chrome/browser/resources/chromeos/accessibility/accessibility_common/"
     "dictation/dictation_test_support.js";
 
 // Listens for changes to the clipboard. This class only allows `Wait()` to be
@@ -147,7 +147,7 @@ void DictationTestUtils::EnableDictation(
 
   // Set up the Pumpkin dir before turning on Dictation because the
   // extension will immediately request a Pumpkin installation once activated.
-  DictationTestUtils::SetUpPumpkinDir(kPumpkinMV3TestFilePath);
+  DictationTestUtils::SetUpPumpkinDir(kPumpkinTestFilePath);
   test_helper_->SetUp(profile_);
   ASSERT_FALSE(AccessibilityManager::Get()->IsDictationEnabled());
   profile_->GetPrefs()->SetBoolean(
@@ -178,8 +178,8 @@ void DictationTestUtils::EnableDictation(
 
   // Create an instance of the DictationTestSupport JS class, which can be
   // used from these tests to interact with Dictation JS. For more
-  // information, see kTestSupportMV3Path.
-  SetUpTestSupport(kTestSupportMV3Path);
+  // information, see kTestSupportPath.
+  SetUpTestSupport(kTestSupportPath);
 
   // Wait for focus to propagate.
   WaitForEditableFocus();

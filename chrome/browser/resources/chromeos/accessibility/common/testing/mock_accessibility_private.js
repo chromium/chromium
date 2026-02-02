@@ -751,10 +751,7 @@ class MockAccessibilityPrivate {
     };
 
     const data = {};
-    const manifestPath =
-        chrome.runtime.getManifest().manifest_version == 2 ? 'mv2' : 'mv3';
-    const pumpkinDir =
-        `../../accessibility_common/${manifestPath}/third_party/pumpkin`;
+    const pumpkinDir = `../../accessibility_common/third_party/pumpkin`;
     data.js_pumpkin_tagger_bin_js =
         await getFileBytes(`${pumpkinDir}/js_pumpkin_tagger_bin.js`);
     data.tagger_wasm_main_js =
@@ -808,10 +805,8 @@ class MockAccessibilityPrivate {
     };
 
     const assets = {};
-    const manifestPath =
-        chrome.runtime.getManifest().manifest_version == 2 ? 'mv2' : 'mv3';
-    const mediapipeDir = `../../accessibility_common/${
-        manifestPath}/third_party/mediapipe_task_vision`;
+    const mediapipeDir =
+        `../../accessibility_common/third_party/mediapipe_task_vision`;
     assets.model = await getFileBytes(`${mediapipeDir}/face_landmarker.task`);
     assets.wasm =
         await getFileBytes(`${mediapipeDir}/vision_wasm_internal.wasm`);

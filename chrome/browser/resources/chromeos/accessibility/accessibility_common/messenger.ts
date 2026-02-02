@@ -11,7 +11,7 @@ import {OffscreenCommandType} from './offscreen_command_type.js';
  */
 export class Messenger {
   static readonly OFFSCREEN_DOCUMENT_PATH =
-      'accessibility_common/mv3/offscreen.html';
+      'accessibility_common/offscreen.html';
 
   static instance?: Messenger;
 

@@ -5,7 +5,7 @@
   "manifest_version": 3,
   "minimum_chrome_version": "93",
   "background": {
-    "service_worker": "accessibility_common/mv3/accessibility_common_loader.js",
+    "service_worker": "accessibility_common/accessibility_common_loader.js",
     "type": "module"
   },
   "content_security_policy": {
@@ -13,7 +13,7 @@
     "sandbox": "sandbox allow-scripts; script-src 'self' 'unsafe-eval'; child-src 'self';"
   },
   "sandbox": {
-     "pages": ["accessibility_common/mv3/sandboxed_pumpkin_tagger.html"]
+     "pages": ["accessibility_common/sandboxed_pumpkin_tagger.html"]
   },
   "name": "Accessibility Common",
   "version": "{{set_version}}",

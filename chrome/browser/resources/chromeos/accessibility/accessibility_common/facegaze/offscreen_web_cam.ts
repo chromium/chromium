@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {FaceLandmarkerOptions, FaceLandmarkerResult} from '/third_party/mediapipe/vision.js';
-import {FaceLandmarker} from 'chrome-extension://egfdjlfmgnehecnclamagfafdccgfndp/accessibility_common/mv3/third_party/mediapipe_task_vision/vision_bundle.mjs';
+import {FaceLandmarker} from 'chrome-extension://egfdjlfmgnehecnclamagfafdccgfndp/accessibility_common/third_party/mediapipe_task_vision/vision_bundle.mjs';
 
 import {Messenger} from '../messenger.js';
 import {OffscreenCommandType} from '../offscreen_command_type.js';
@@ -28,7 +28,7 @@ const VIDEO_FRAME_DIMENSIONS = 192;
 
 /** The wasm loader JS is checked in under this path. */
 const WASM_LOADER_PATH =
-    'accessibility_common/mv3/third_party/mediapipe_task_vision/' +
+    'accessibility_common/third_party/mediapipe_task_vision/' +
     'vision_wasm_internal.js';
 
 /** A helper class to support test. */
