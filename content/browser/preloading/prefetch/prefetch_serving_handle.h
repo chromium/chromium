@@ -119,6 +119,12 @@ class CONTENT_EXPORT PrefetchServingHandle final {
   bool MatchesCookieIndices(
       base::span<const std::pair<std::string, std::string>> cookies) const;
 
+  using OnIsolatedCookieCopyStartCallbackForTesting =
+      base::RepeatingCallback<void(const PrefetchServingHandle&)>;
+  static void SetOnIsolatedCookieCopyStartCallbackForTesting(
+      PrefetchServingHandle::OnIsolatedCookieCopyStartCallbackForTesting
+          on_isolated_cookie_copy_start_callback_for_testing);
+
  private:
   const std::vector<std::unique_ptr<PrefetchSingleRedirectHop>>&
   redirect_chain() const;

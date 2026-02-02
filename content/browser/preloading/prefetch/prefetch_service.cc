@@ -1973,11 +1973,6 @@ void PrefetchService::CopyIsolatedCookies(
     PrefetchServingHandle& serving_handle) {
   DCHECK(serving_handle);
 
-  if (!serving_handle.GetCurrentNetworkContextToServe()) {
-    // Not set in unit tests.
-    return;
-  }
-
   // We only need to copy cookies if the prefetch used an isolated network
   // context.
   if (!serving_handle.IsIsolatedNetworkContextRequiredToServe()) {
@@ -1985,6 +1980,13 @@ void PrefetchService::CopyIsolatedCookies(
   }
 
   serving_handle.OnIsolatedCookieCopyStart();
+
+  if (!serving_handle.GetCurrentNetworkContextToServe()) {
+    // Not set in unit tests.
+    CHECK_IS_TEST();
+    return;
+  }
+
   net::CookieOptions options = net::CookieOptions::MakeAllInclusive();
   serving_handle.GetCurrentNetworkContextToServe()
       ->GetCookieManager()

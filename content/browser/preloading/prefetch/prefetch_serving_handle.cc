@@ -19,6 +19,14 @@
 namespace content {
 namespace {
 
+PrefetchServingHandle::OnIsolatedCookieCopyStartCallbackForTesting&
+GetOnIsolatedCookieCopyStartCallbackForTesting() {
+  static base::NoDestructor<
+      PrefetchServingHandle::OnIsolatedCookieCopyStartCallbackForTesting>
+      on_isolated_cookie_copy_start_callback_for_testing;
+  return *on_isolated_cookie_copy_start_callback_for_testing;
+}
+
 void RecordCookieCopyTimes(
     const base::TimeTicks& cookie_copy_start_time,
     const base::TimeTicks& cookie_read_end_and_write_start_time,
@@ -102,6 +110,14 @@ bool PrefetchServingHandle::IsIsolatedCookieCopyInProgress() const {
   }
 }
 
+void PrefetchServingHandle::
+    SetOnIsolatedCookieCopyStartCallbackForTesting(  // IN-TEST
+        PrefetchServingHandle::OnIsolatedCookieCopyStartCallbackForTesting
+            on_isolated_cookie_copy_start_callback_for_testing) {
+  GetOnIsolatedCookieCopyStartCallbackForTesting() =  // IN-TEST
+      std::move(on_isolated_cookie_copy_start_callback_for_testing);
+}
+
 void PrefetchServingHandle::OnIsolatedCookieCopyStart() {
   DCHECK(!IsIsolatedCookieCopyInProgress());
 
@@ -122,6 +138,10 @@ void PrefetchServingHandle::OnIsolatedCookieCopyStart() {
 
   GetCurrentSingleRedirectHopToServe().cookie_copy_start_time_ =
       base::TimeTicks::Now();
+
+  if (GetOnIsolatedCookieCopyStartCallbackForTesting()) {
+    GetOnIsolatedCookieCopyStartCallbackForTesting().Run(*this);  // IN-TEST
+  }
 }
 
 void PrefetchServingHandle::OnIsolatedCookiesReadCompleteAndWriteStart() {
