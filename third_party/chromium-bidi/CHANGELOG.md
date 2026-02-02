@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [13.1.1](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v13.1.0...chromium-bidi-v13.1.1) (2026-02-02)
+
+
+### Bug Fixes
+
+* remove pptr from prod deps ([#4044](https://github.com/GoogleChromeLabs/chromium-bidi/issues/4044)) ([b32d15b](https://github.com/GoogleChromeLabs/chromium-bidi/commit/b32d15b8f56add8d80657c7fa9a843f12fb3dbe2))
+
 ## [13.1.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v13.0.1...chromium-bidi-v13.1.0) (2026-01-29)
 
 
