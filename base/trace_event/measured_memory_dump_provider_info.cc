@@ -17,16 +17,16 @@
 namespace base::trace_event {
 
 MeasuredMemoryDumpProviderInfo::MeasuredMemoryDumpProviderInfo()
-    : MeasuredMemoryDumpProviderInfo(nullptr, 0u) {}
+    : MeasuredMemoryDumpProviderInfo(nullptr) {}
 
 MeasuredMemoryDumpProviderInfo::MeasuredMemoryDumpProviderInfo(
-    scoped_refptr<MemoryDumpProviderInfo> provider_info,
-    size_t num_following_providers)
-    : provider_info_(std::move(provider_info)),
-      num_following_providers_(num_following_providers) {}
+    scoped_refptr<MemoryDumpProviderInfo> provider_info)
+    : provider_info_(std::move(provider_info)) {}
 
 MeasuredMemoryDumpProviderInfo::~MeasuredMemoryDumpProviderInfo() {
   if (provider_info_) {
+    CHECK(num_following_providers_.has_value());
+
     const base::TimeDelta total_time = elapsed_timer_.Elapsed();
     const std::optional<base::TimeDelta> post_task_time =
         post_task_timer_ ? std::make_optional(post_task_timer_->Elapsed())
@@ -35,7 +35,7 @@ MeasuredMemoryDumpProviderInfo::~MeasuredMemoryDumpProviderInfo() {
     base::UmaHistogramCounts100000(
         base::StrCat({"Memory.DumpProvider.FollowingProviders3.",
                       provider_info_->name.histogram_name()}),
-        static_cast<int>(num_following_providers_));
+        static_cast<int>(num_following_providers_.value()));
     base::UmaHistogramEnumeration(
         base::StrCat({"Memory.DumpProvider.FinalStatus.",
                       provider_info_->name.histogram_name()}),
@@ -52,8 +52,9 @@ MeasuredMemoryDumpProviderInfo::~MeasuredMemoryDumpProviderInfo() {
     }
 
     // Aggregate all providers together without a suffix.
-    base::UmaHistogramCounts100000("Memory.DumpProvider.FollowingProviders3",
-                                   static_cast<int>(num_following_providers_));
+    base::UmaHistogramCounts100000(
+        "Memory.DumpProvider.FollowingProviders3",
+        static_cast<int>(num_following_providers_.value()));
     base::UmaHistogramEnumeration("Memory.DumpProvider.FinalStatus", status_);
     base::UmaHistogramMediumTimes("Memory.DumpProvider.TotalTime2", total_time);
     if (post_task_time) {

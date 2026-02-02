@@ -16,6 +16,7 @@
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
 #include "base/debug/alias.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
@@ -57,6 +58,15 @@ namespace base::trace_event {
 namespace {
 
 MemoryDumpManager* g_memory_dump_manager_for_testing = nullptr;
+
+// When enabled, MemoryDumpManager::ContinueAsyncProcessDump() runs all
+// MemoryDumpProvider bound to a TaskRunner which RunsTasksInCurrentSequence(),
+// no matter their position in the list of providers. This minimizes the number
+// of PostTasks involved in a Memory Dump by grouping providers that run on the
+// same sequence, even if they are bound to different TaskRunner instances
+// (which previously resulted in a task post).
+BASE_FEATURE(kMemoryDumpProviderGroupBySequence,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Temporary (until scheduler is moved outside of here)
 // trampoline function to match the |request_dump_function| passed to Initialize
@@ -359,11 +369,39 @@ void MemoryDumpManager::ContinueAsyncProcessDump(
   // allows us to retain a reference until we know the PostTask succeeded. If
   // not we can skip the hop and move on.
 
-  while (!pmd_async_state->pending_dump_providers.empty()) {
+  auto get_effective_task_runner = [&](const MeasuredMemoryDumpProviderInfo&
+                                           mdpinfo) {
+    if (mdpinfo.provider_info()->task_runner) {
+      return mdpinfo.provider_info()->task_runner;
+    }
+    DCHECK(mdpinfo.provider_info()->options.dumps_on_single_thread_task_runner);
+    // If no TaskRunner affinity is specified, dump on `dump_thread_`.
+    return pmd_async_state->dump_thread_task_runner;
+  };
+
+  auto& pending_providers = pmd_async_state->pending_dump_providers;
+
+  if (base::FeatureList::IsEnabled(kMemoryDumpProviderGroupBySequence)) {
+    // Move providers which can run on this sequence to the back of the list.
+    std::stable_partition(pending_providers.begin(), pending_providers.end(),
+                          [&](const MeasuredMemoryDumpProviderInfo& mdpinfo) {
+                            // Return true for providers which can't run on this
+                            // sequence, to keep them at the front.
+                            return !get_effective_task_runner(mdpinfo)
+                                        ->RunsTasksInCurrentSequence();
+                          });
+  }
+
+  // Refresh the number of following providers, following the above sort.
+  for (size_t i = 0; i < pending_providers.size(); ++i) {
+    pending_providers[i].set_num_following_providers(pending_providers.size() -
+                                                     i - 1);
+  }
+
+  while (!pending_providers.empty()) {
     // Read MemoryDumpProviderInfo thread safety considerations in
     // memory_dump_manager.h when accessing `mdpinfo.provider_info()` fields.
-    MeasuredMemoryDumpProviderInfo& mdpinfo =
-        pmd_async_state->pending_dump_providers.back();
+    MeasuredMemoryDumpProviderInfo& mdpinfo = pending_providers.back();
 
     // If we are in background mode, we should invoke only the allowed
     // providers. Ignore other providers and continue.
@@ -373,20 +411,12 @@ void MemoryDumpManager::ContinueAsyncProcessDump(
       mdpinfo.SetStatus(
           MeasuredMemoryDumpProviderInfo::Status::kIgnoredInBackground);
       // This deletes `mdpinfo` and logs final histograms.
-      pmd_async_state->pending_dump_providers.pop_back();
+      pending_providers.pop_back();
       continue;
     }
 
-    // If the dump provider did not specify a task runner affinity, dump on
-    // |dump_thread_|.
-    scoped_refptr<SequencedTaskRunner> task_runner =
-        mdpinfo.provider_info()->task_runner;
-    if (!task_runner) {
-      DCHECK(
-          mdpinfo.provider_info()->options.dumps_on_single_thread_task_runner);
-      task_runner = pmd_async_state->dump_thread_task_runner;
-      DCHECK(task_runner);
-    }
+    const scoped_refptr<SequencedTaskRunner> task_runner =
+        get_effective_task_runner(mdpinfo);
 
     // If |RunsTasksInCurrentSequence()| is true then no PostTask is
     // required since we are on the right SequencedTaskRunner.
@@ -394,7 +424,7 @@ void MemoryDumpManager::ContinueAsyncProcessDump(
       // Transfers ownership of `mdpinfo`.
       InvokeOnMemoryDump(std::move(mdpinfo),
                          pmd_async_state->process_memory_dump.get());
-      pmd_async_state->pending_dump_providers.pop_back();
+      pending_providers.pop_back();
       continue;
     }
 
@@ -422,7 +452,7 @@ void MemoryDumpManager::ContinueAsyncProcessDump(
     // PostTask failed. Ignore the dump provider and continue.
     // This deletes `mdpinfo` and logs final timing histograms.
     mdpinfo.SetStatus(MeasuredMemoryDumpProviderInfo::Status::kFailedToPost);
-    pmd_async_state->pending_dump_providers.pop_back();
+    pending_providers.pop_back();
   }
 
   FinishAsyncProcessDump(std::move(pmd_async_state));
@@ -577,17 +607,13 @@ MemoryDumpManager::ProcessMemoryDumpAsyncState::ProcessMemoryDumpAsyncState(
       callback_task_runner(SingleThreadTaskRunner::GetCurrentDefault()),
       dump_thread_task_runner(std::move(dump_thread_task_runner)) {
   // `pending_dump_providers_` is a LIFO list, and `dump_providers` is sorted by
-  // priority, so add the highest-priority providers last. That means that
-  // `num_following_providers` is the number of providers already in the list,
-  // which will be executed after the provider being added.
+  // priority, so add the highest-priority providers last.
   pending_dump_providers.reserve(dump_providers.size());
-  size_t num_following_providers = 0;
   absl::flat_hash_map<std::string, size_t> provider_counts;
   for (scoped_refptr<MemoryDumpProviderInfo> provider :
        base::Reversed(dump_providers)) {
     ++provider_counts[provider->name.histogram_name()];
-    pending_dump_providers.emplace_back(std::move(provider),
-                                        num_following_providers++);
+    pending_dump_providers.emplace_back(std::move(provider));
   }
   MemoryDumpArgs args = {req_args.level_of_detail, req_args.determinism,
                          req_args.dump_guid};

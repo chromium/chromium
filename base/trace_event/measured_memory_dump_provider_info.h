@@ -67,9 +67,8 @@ class BASE_EXPORT MeasuredMemoryDumpProviderInfo {
   // Default constructor for containers.
   MeasuredMemoryDumpProviderInfo();
 
-  MeasuredMemoryDumpProviderInfo(
-      scoped_refptr<MemoryDumpProviderInfo> provider_info,
-      size_t num_following_providers);
+  explicit MeasuredMemoryDumpProviderInfo(
+      scoped_refptr<MemoryDumpProviderInfo> provider_info);
 
   // Logs all metrics for the wrapped MemoryDumpProvider.
   ~MeasuredMemoryDumpProviderInfo();
@@ -89,8 +88,11 @@ class BASE_EXPORT MeasuredMemoryDumpProviderInfo {
     return provider_info_.get();
   }
 
-  // Returns the number of providers that are queued to run after this one.
-  size_t num_following_providers() const { return num_following_providers_; }
+  // Sets the number of providers that are queued to run after this one. This
+  // must be called before deletion.
+  void set_num_following_providers(size_t num_following_providers) {
+    num_following_providers_ = num_following_providers;
+  }
 
   // Updates the current status of the provider. The status begins as kQueued,
   // and MemoryDumpManager should update it whenever it moves the
@@ -99,7 +101,7 @@ class BASE_EXPORT MeasuredMemoryDumpProviderInfo {
 
  private:
   scoped_refptr<MemoryDumpProviderInfo> provider_info_;
-  size_t num_following_providers_;
+  std::optional<size_t> num_following_providers_;
   Status status_ = Status::kQueued;
 
   // Measures the time between the MemoryDumpProvider being placed into the
