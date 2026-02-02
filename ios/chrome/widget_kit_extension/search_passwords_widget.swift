@@ -6,12 +6,14 @@ import Foundation
 import SwiftUI
 import WidgetKit
 
-struct SearchPasswordsWidget: Widget {
+struct SearchPasswordsWidgetConfigurable: Widget {
   // Changing `kind` or deleting this widget will cause all installed instances of this widget to
   // stop updating and show the placeholder state.
   let kind: String = "SearchPasswordsWidget"
   var body: some WidgetConfiguration {
-    StaticConfiguration(kind: kind, provider: Provider()) { entry in
+    AppIntentConfiguration(
+      kind: kind, intent: SelectAccountIntent.self, provider: ConfigurableProvider()
+    ) { entry in
       SearchPasswordsWidgetEntryView(entry: entry)
     }
     .configurationDisplayName(
@@ -25,35 +27,11 @@ struct SearchPasswordsWidget: Widget {
   }
 }
 
-#if IOS_ENABLE_WIDGETS_FOR_MIM
-  struct SearchPasswordsWidgetConfigurable: Widget {
-    // Changing `kind` or deleting this widget will cause all installed instances of this widget to
-    // stop updating and show the placeholder state.
-    let kind: String = "SearchPasswordsWidget"
-    var body: some WidgetConfiguration {
-      AppIntentConfiguration(
-        kind: kind, intent: SelectAccountIntent.self, provider: ConfigurableProvider()
-      ) { entry in
-        SearchPasswordsWidgetEntryView(entry: entry)
-      }
-      .configurationDisplayName(
-        Text("IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_PASSWORDS_DISPLAY_NAME")
-      )
-      .description(Text("IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_PASSWORDS_DESCRIPTION"))
-      .supportedFamilies([.systemSmall])
-      .crDisfavoredLocations()
-      .contentMarginsDisabled()
-      .containerBackgroundRemovable(false)
-    }
-  }
-#endif
-
 struct SearchPasswordsWidgetEntryView: View {
   var entry: ConfigureWidgetEntry
 
   var body: some View {
-    // The account to display was deleted (entry.deleted can only be true if
-    // IOS_ENABLE_WIDGETS_FOR_MIM is true).
+    // The account to display was deleted.
     if entry.deleted && !entry.isPreview {
       SmallWidgetDeletedAccountView()
     } else {
