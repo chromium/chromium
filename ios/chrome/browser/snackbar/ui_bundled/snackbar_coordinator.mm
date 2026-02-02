@@ -24,9 +24,6 @@
   __weak id<SnackbarCoordinatorDelegate> _delegate;
   SnackbarView* _snackbarView;
   ChromeOverlayWindow* _overlay_window;
-  // Flag to prevent dismissal logic from running multiple times from concurrent
-  // events (e.g., user tap and timer firing simultaneously).
-  BOOL _isDismissing;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
@@ -142,31 +139,25 @@
     return;
   }
 
-  // A dismissal can be triggered by the timer and by a user tap concurrently.
-  // This flag prevents the dismissal logic from running more than once.
-  if (_isDismissing) {
-    return;
-  }
-  _isDismissing = YES;
-
   if (_snackbarView.message.completionHandler) {
     _snackbarView.message.completionHandler(NO);
   }
 
-  __weak __typeof(self) weakSelf = self;
-  [_snackbarView dismissAnimated:animated
-                      completion:^{
-                        [weakSelf removeSnackbarView];
-                      }];
+  [_snackbarView dismissAnimated:animated completion:nil];
+  [_overlay_window deactivateOverlay:_snackbarView];
+  _snackbarView.delegate = nil;
+  _snackbarView = nil;
 }
 
 #pragma mark - SnackbarViewDelegate
 
 - (void)snackbarViewDidTapActionButton:(SnackbarView*)snackbarView {
+  CHECK_EQ(snackbarView, _snackbarView, base::NotFatalUntil::M152);
   [self dismissSnackbar:snackbarView animated:YES];
 }
 
 - (void)snackbarViewDidRequestDismissal:(SnackbarView*)snackbarView {
+  CHECK_EQ(snackbarView, _snackbarView, base::NotFatalUntil::M152);
   [self dismissSnackbar:snackbarView animated:YES];
 }
 
@@ -181,7 +172,6 @@
   if (_snackbarView) {
     [self dismissAllSnackbars];
   }
-  _isDismissing = NO;
 
   // Create and configure the new snackbar view.
   _snackbarView = [[SnackbarView alloc] initWithMessage:message];
@@ -196,16 +186,6 @@
                // The view will now schedule its own dismissal and call
                // the delegate when it's time.
            }];
-}
-
-// Removes the snackbar view from the hierarchy and nils out the ivar.
-- (void)removeSnackbarView {
-  if (!_snackbarView) {
-    return;
-  }
-  [_overlay_window deactivateOverlay:_snackbarView];
-  _snackbarView = nil;
-  _isDismissing = NO;
 }
 
 @end
