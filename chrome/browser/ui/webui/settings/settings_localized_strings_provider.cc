@@ -786,12 +786,15 @@ bool ShouldShowWebActuationToggle(Profile* profile) {
   // toggle remains visible only if the user has previously accepted the
   // consent card.
 
-  // If tiers are configured and the toggle feature is on,
-  // enforce toggle visibility based on subscription eligibility.
   const base::flat_set<int32_t>& allowed_tiers =
       actor::ActorPolicyChecker::GetActorEligibleTiers();
-  if (!allowed_tiers.empty() &&
-      base::FeatureList::IsEnabled(features::kGlicWebActuationSettingsToggle)) {
+  // If no tiers are allowed, the toggle should never be shown.
+  if (allowed_tiers.empty()) {
+    return false;
+  }
+  // If the toggle feature is on, enforce toggle visibility based on
+  // subscription eligibility.
+  if (base::FeatureList::IsEnabled(features::kGlicWebActuationSettingsToggle)) {
     auto* subscription_service = subscription_eligibility::
         SubscriptionEligibilityServiceFactory::GetForProfile(profile);
     CHECK(subscription_service);
