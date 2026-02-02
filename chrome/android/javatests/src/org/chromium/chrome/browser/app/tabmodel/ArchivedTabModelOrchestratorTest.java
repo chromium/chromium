@@ -43,7 +43,6 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -67,7 +66,6 @@ import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.VersioningMessageController;
-import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -481,7 +479,6 @@ public class ArchivedTabModelOrchestratorTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
     public void testOpenArchivedTabFromHubSearch_Incognito() {
         finishLoading();
         String declutterUrl = mActivityTestRule.getTestServer().getURL(TEST_PATH);

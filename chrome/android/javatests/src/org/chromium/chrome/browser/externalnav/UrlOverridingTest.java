@@ -1122,7 +1122,6 @@ public class UrlOverridingTest {
 
     @Test
     @LargeTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
     public void testCctRedirectFromIntentUriStaysInChrome_InIncognito() throws Exception {
         var initialCtaPage = mTabbedActivityTestRule.startOnBlankPage();
         // This will cause getActivityTab() in loadUrlAndWaitForIntentUrl to return an incognito tab
@@ -2025,14 +2024,12 @@ public class UrlOverridingTest {
 
     @Test
     @LargeTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
     public void testIncognitoSubframeExternalNavigation_Rejected() throws Exception {
         doTestIncognitoSubframeExternalNavigation(false);
     }
 
     @Test
     @LargeTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
     public void testIncognitoSubframeExternalNavigation_Accepted() throws Exception {
         doTestIncognitoSubframeExternalNavigation(true);
     }
