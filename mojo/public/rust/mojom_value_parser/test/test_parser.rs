@@ -73,7 +73,7 @@ where
     Ok(())
 }
 
-#[gtest(MojomParser, TestPrimitiveParsing)]
+#[gtest(RustTestMojomParsing, TestPrimitiveParsing)]
 fn test_primitives() -> anyhow::Result<()> {
     validate_parsing(7u8, "[u1]7")?;
     validate_parsing(0u8, "[u1]0")?;
@@ -123,7 +123,7 @@ fn test_primitives() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[gtest(MojomParser, TestStructParsing)]
+#[gtest(RustTestMojomParsing, TestStructParsing)]
 fn test_structs() -> anyhow::Result<()> {
     validate_parsing(Empty {}, "[u4]8 [u4]0")?;
 
@@ -298,7 +298,7 @@ fn test_structs() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[gtest(MojomParser, TestBoolParsing)]
+#[gtest(RustTestMojomParsing, TestBoolParsing)]
 fn test_bools() -> anyhow::Result<()> {
     validate_parsing(
         TenBoolsAndAByte {
@@ -339,7 +339,7 @@ fn test_bools() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[gtest(MojomParser, TestEnumParsing)]
+#[gtest(RustTestMojomParsing, TestEnumParsing)]
 fn test_enums() -> anyhow::Result<()> {
     validate_parsing(
         SomeEnums { e1: TestEnum::Seven, n1: 98765, e2: TestEnum2::FourtyTwo },
@@ -352,7 +352,7 @@ fn test_enums() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[gtest(MojomParser, TestUnionParsing)]
+#[gtest(RustTestMojomParsing, TestUnionParsing)]
 fn test_unions() -> anyhow::Result<()> {
     // BaseUnion
     validate_parsing(BaseUnion::n1(10), "[u4]16 [u4]0 [u8]10")?;
@@ -516,7 +516,7 @@ fn test_unions() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[gtest(MojomParser, TestArrayParsing)]
+#[gtest(RustTestMojomParsing, TestArrayParsing)]
 fn test_array_parsing() -> anyhow::Result<()> {
     // array<int16>
     validate_parsing::<Vec<i16>>(
@@ -646,7 +646,7 @@ fn test_array_parsing() -> anyhow::Result<()> {
 // comparisons it matters when we specify the wire data here.
 // Our implementation uses a BTreeMap to guarantee that we always serialize in
 // a sorted order.
-#[gtest(MojomParser, TestMapParsing)]
+#[gtest(RustTestMojomParsing, TestMapParsing)]
 fn test_map_parsing() -> anyhow::Result<()> {
     use std::collections::HashMap;
 
@@ -839,7 +839,7 @@ fn str_wire_format(str: &str) -> String {
     format!("[u4]{size} [u4]{num_chars} {body} {padding}")
 }
 
-#[gtest(MojomParser, TestStringParsing)]
+#[gtest(RustTestMojomParsing, TestStringParsing)]
 fn test_string_parsing() -> anyhow::Result<()> {
     use std::collections::HashMap;
 
@@ -901,7 +901,7 @@ fn test_string_parsing() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[gtest(MojomParser, TestComplexUnionParsing)]
+#[gtest(RustTestMojomParsing, TestComplexUnionParsing)]
 fn test_complex_union_parsing() -> anyhow::Result<()> {
     // HoldsComplexTypes: string
     validate_parsing::<HoldsComplexTypes>(
@@ -942,7 +942,7 @@ fn test_complex_union_parsing() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[gtest(MojomParser, TestNullableParsing)]
+#[gtest(RustTestMojomParsing, TestNullableParsing)]
 fn test_nullable_parsing() -> anyhow::Result<()> {
     validate_parsing::<NullableBasics>(
         NullableBasics {

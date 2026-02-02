@@ -16,7 +16,7 @@ fn get_test_ref_ptr(b: *mut bool) -> ScopedRefPtr<test_cxx::ffi::TestRefCounted>
     unsafe { ScopedRefPtr::wrap_ref_counted(test_cxx::ffi::CreateTestRefCounted(&mut *b)) }.unwrap()
 }
 
-#[gtest(Sequences, TestScopedRefPtr)]
+#[gtest(RustSequences, TestScopedRefPtr)]
 fn test_scoped_refptr() {
     // Put the flag in an UnsafeCell so Rust won't move it around while C++
     // has it, and the borrow checker won't stop us from examining it.
@@ -46,7 +46,7 @@ fn test_scoped_refptr() {
     expect_true!(unsafe { *destroyed_flag.get() });
 }
 
-#[gtest(Sequences, TestSequencedTaskrunner)]
+#[gtest(RustSequences, TestSequencedTaskrunner)]
 fn test_sequenced_task_runner() {
     // Set up the environment so we can get a task runner and execute the tasks
     let _task_env = test_cxx::ffi::CreateTaskEnvironment();

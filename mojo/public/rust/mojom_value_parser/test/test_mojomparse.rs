@@ -535,7 +535,7 @@ fn ten_bools_and_two_bytes_mojom(
     ])
 }
 
-#[gtest(MojomParser, TestMojomParseDerive)]
+#[gtest(RustTestMojomParsingAttr, TestMojomParseDerive)]
 /// Tests that the MojomParse trait is correctly
 /// derived for each of the types in the mojom file.
 fn test_mojomparse() {
@@ -623,7 +623,7 @@ fn test_mojomparse() {
     );
 }
 
-#[gtest(MojomParser, TestBadConversion)]
+#[gtest(RustTestMojomParsingAttr, TestBadConversion)]
 /// Test that we can't convert between incompatible types
 fn test_bad_conversion() {
     let empty = empty_mojom();
@@ -707,7 +707,7 @@ fn some_enums_mojom(e1: u32, n1: u64, e2: u32) -> MojomValue {
     ])
 }
 
-#[gtest(MojomParser, TestEnums)]
+#[gtest(RustTestMojomParsingAttr, TestEnums)]
 fn test_enums() {
     SOME_ENUMS_TY.validate_mojomparse(
         SomeEnums { e1: TestEnum::Four, n1: 42, e2: TestEnum2::Eleven },
@@ -968,7 +968,7 @@ fn with_many_unions_mojom(
     ])
 }
 
-#[gtest(MojomParser, TestUnions)]
+#[gtest(RustTestMojomParsingAttr, TestUnions)]
 fn test_unions() {
     BASE_UNION_TY.validate_mojomparse(BaseUnion::n1(10), base_union_mojom_n1(10));
     BASE_UNION_TY.validate_mojomparse(BaseUnion::u1(987654321), base_union_mojom_u1(987654321));
@@ -1309,7 +1309,7 @@ fn arrays_mojom(
     ])
 }
 
-#[gtest(MojomParser, TestArrays)]
+#[gtest(RustTestMojomParsingAttr, TestArrays)]
 fn test_arrays() {
     ARRAY_INT16_TY
         .validate_mojomparse::<Vec<i16>>(vec![1, -2, 3, -4], array_int16_mojom(vec![1, -2, 3, -4]));
@@ -1583,7 +1583,7 @@ fn maps_mojom(
     ])
 }
 
-#[gtest(MojomParser, TestMaps)]
+#[gtest(RustTestMojomParsingAttr, TestMaps)]
 fn test_maps() {
     let eights_data = [(1, 2), (3, 4)];
     MAP_U8_U8_TY.validate_mojomparse::<HashMap<u8, u8>>(
@@ -1748,7 +1748,7 @@ fn strings_mojom(
     ])
 }
 
-#[gtest(MojomParser, TestStrings)]
+#[gtest(RustTestMojomParsingAttr, TestStrings)]
 fn test_strings() {
     STRINGS_TY.validate_mojomparse(
         Strings {
@@ -1835,7 +1835,7 @@ static COMPLEX_UNION_HOLDER_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
     ),
 });
 
-#[gtest(MojomParser, TestComplexUnion)]
+#[gtest(RustTestMojomParsingAttr, TestComplexUnion)]
 fn test_complex_union() {
     // Test both the union and the union inside a struct
     HOLDS_COMPLEX_TYPES_TY.validate_mojomparse(
@@ -2191,7 +2191,7 @@ fn nullable_others_mojom(
     ])
 }
 
-#[gtest(MojomParser, TestNullables)]
+#[gtest(RustTestMojomParsingAttr, TestNullables)]
 fn test_nullables() {
     NULLABLE_BASICS_TY.validate_mojomparse(
         NullableBasics {
