@@ -1217,8 +1217,9 @@ IN_PROC_BROWSER_TEST_P(WebInstallOriginTrialBrowserTest, WithOriginTrialToken) {
 
 // Test that spam-calling navigator.install() while dynamically adding/removing
 // the manifest link tag doesn't cause crashes or unexpected behavior.
+// TODO(crbug.com/479729304): disabled due to flakiness.
 IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
-                       SpamInstallWithDynamicManifest) {
+                       DISABLED_SpamInstallWithDynamicManifest) {
   // Start on a page without a manifest.
   GURL test_url = https_server()->GetURL("/simple.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
