@@ -720,7 +720,7 @@ HistogramBase* Histogram::FactoryGetInternal(std::string_view name,
     // Produce a crash dump with the histogram name, so that we can detect cases
     // where there is a coding error where a histogram is logged from multiple
     // places with different params.
-    SCOPED_CRASH_KEY_STRING32("BadHistogramArgs", "name", std::string(name));
+    SCOPED_CRASH_KEY_STRING256("BadHistogramArgs", "name", std::string(name));
     base::debug::DumpWithoutCrashing();
     DLOG(ERROR) << "Histogram " << name << " dropped for invalid parameters.";
     return DummyHistogram::GetInstance();
@@ -898,7 +898,7 @@ HistogramBase* LinearHistogram::FactoryGetWithRangeDescription(
     // Produce a crash dump with the histogram name, so that we can detect cases
     // where there is a coding error where a histogram is logged from multiple
     // places with different params.
-    SCOPED_CRASH_KEY_STRING32("BadHistogramArgs", "name", std::string(name));
+    SCOPED_CRASH_KEY_STRING256("BadHistogramArgs", "name", std::string(name));
     base::debug::DumpWithoutCrashing();
     DLOG(ERROR) << "Histogram " << name << " dropped for invalid parameters.";
     return DummyHistogram::GetInstance();
