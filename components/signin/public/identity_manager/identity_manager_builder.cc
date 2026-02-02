@@ -10,7 +10,7 @@
 #include "build/build_config.h"
 #include "components/image_fetcher/core/image_decoder.h"
 #include "components/prefs/pref_service.h"
-#include "components/signin/internal/identity_manager/account_capabilities_fetcher_factory.h"
+#include "components/signin/internal/identity_manager/account_fetcher_factory.h"
 #include "components/signin/internal/identity_manager/account_fetcher_service.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/internal/identity_manager/accounts_cookie_mutator_impl.h"
@@ -26,9 +26,9 @@
 #include "components/signin/public/identity_manager/device_accounts_synchronizer.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "components/signin/internal/identity_manager/account_capabilities_fetcher_factory_android.h"
+#include "components/signin/internal/identity_manager/account_fetcher_factory_android.h"
 #else
-#include "components/signin/internal/identity_manager/account_capabilities_fetcher_factory_gaia.h"
+#include "components/signin/internal/identity_manager/account_fetcher_factory_gaia.h"
 #include "components/signin/public/webdata/token_web_data.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -82,13 +82,11 @@ std::unique_ptr<AccountFetcherService> BuildAccountFetcherService(
     ProfileOAuth2TokenService* token_service,
     AccountTrackerService* account_tracker_service,
     std::unique_ptr<image_fetcher::ImageDecoder> image_decoder,
-    std::unique_ptr<AccountCapabilitiesFetcherFactory>
-        account_capabilities_fetcher_factory) {
+    std::unique_ptr<AccountFetcherFactory> account_fetcher_factory) {
   auto account_fetcher_service = std::make_unique<AccountFetcherService>();
   account_fetcher_service->Initialize(
       signin_client, token_service, account_tracker_service,
-      std::move(image_decoder),
-      std::move(account_capabilities_fetcher_factory));
+      std::move(image_decoder), std::move(account_fetcher_factory));
   return account_fetcher_service;
 }
 
@@ -157,28 +155,23 @@ IdentityManager::InitParameters BuildIdentityManagerInitParameters(
   init_params.diagnostics_provider = std::make_unique<DiagnosticsProviderImpl>(
       token_service.get(), gaia_cookie_manager_service.get());
 
-  std::unique_ptr<AccountCapabilitiesFetcherFactory>
-      account_capabilities_fetcher_factory;
+  std::unique_ptr<AccountFetcherFactory> account_fetcher_factory;
 #if BUILDFLAG(IS_ANDROID)
-  account_capabilities_fetcher_factory =
-      std::make_unique<AccountCapabilitiesFetcherFactoryAndroid>();
+  account_fetcher_factory = std::make_unique<AccountFetcherFactoryAndroid>();
 #else
   // Default to server-based lookups if platform-specific capabilities fetcher
   // is not defined.
-  if (params->account_capabilities_fetcher_factory) {
-    account_capabilities_fetcher_factory =
-        std::move(params->account_capabilities_fetcher_factory);
+  if (params->account_fetcher_factory) {
+    account_fetcher_factory = std::move(params->account_fetcher_factory);
   } else {
-    account_capabilities_fetcher_factory =
-        std::make_unique<AccountCapabilitiesFetcherFactoryGaia>(
-            token_service.get(), params->signin_client);
+    account_fetcher_factory = std::make_unique<AccountFetcherFactoryGaia>(
+        token_service.get(), params->signin_client);
   }
 #endif  // BULIDFLAG(IS_ANDROID)
 
   init_params.account_fetcher_service = BuildAccountFetcherService(
       params->signin_client, token_service.get(), account_tracker_service.get(),
-      std::move(params->image_decoder),
-      std::move(account_capabilities_fetcher_factory));
+      std::move(params->image_decoder), std::move(account_fetcher_factory));
 
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
   init_params.device_accounts_synchronizer =

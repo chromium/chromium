@@ -2,20 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web_view/internal/signin/account_capabilities_fetcher_factory_ios_web_view.h"
+#import "ios/web_view/internal/signin/account_fetcher_factory_ios_web_view.h"
 
 #import "ios/web_view/internal/signin/account_capabilities_fetcher_ios_web_view.h"
 
 namespace ios_web_view {
 
-AccountCapabilitiesFetcherFactoryIOSWebView::
-    AccountCapabilitiesFetcherFactoryIOSWebView() {}
+AccountFetcherFactoryIOSWebView::AccountFetcherFactoryIOSWebView() {}
 
-AccountCapabilitiesFetcherFactoryIOSWebView::
-    ~AccountCapabilitiesFetcherFactoryIOSWebView() = default;
+AccountFetcherFactoryIOSWebView::~AccountFetcherFactoryIOSWebView() = default;
 
 std::unique_ptr<AccountCapabilitiesFetcher>
-AccountCapabilitiesFetcherFactoryIOSWebView::CreateAccountCapabilitiesFetcher(
+AccountFetcherFactoryIOSWebView::CreateAccountCapabilitiesFetcher(
     const CoreAccountInfo& account_info,
     AccountCapabilitiesFetcher::FetchPriority fetch_priority,
     AccountCapabilitiesFetcher::OnCompleteCallback on_complete_callback) {

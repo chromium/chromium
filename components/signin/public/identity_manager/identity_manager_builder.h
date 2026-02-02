@@ -21,7 +21,7 @@
 #include "base/functional/callback.h"
 #endif
 
-class AccountCapabilitiesFetcherFactory;
+class AccountFetcherFactory;
 class PrefService;
 class SigninClient;
 
@@ -65,8 +65,7 @@ struct IdentityManagerBuildParams {
   raw_ptr<PrefService> pref_service = nullptr;
   base::FilePath profile_path;
   raw_ptr<SigninClient> signin_client = nullptr;
-  std::unique_ptr<AccountCapabilitiesFetcherFactory>
-      account_capabilities_fetcher_factory;
+  std::unique_ptr<AccountFetcherFactory> account_fetcher_factory;
   std::unique_ptr<ProfileOAuth2TokenService> token_service;
   std::unique_ptr<AccountTrackerService> account_tracker_service;
 

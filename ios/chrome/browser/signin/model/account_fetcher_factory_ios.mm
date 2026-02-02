@@ -2,22 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/signin/model/account_capabilities_fetcher_factory_ios.h"
+#import "ios/chrome/browser/signin/model/account_fetcher_factory_ios.h"
 
 #import "ios/chrome/browser/signin/model/account_capabilities_fetcher_ios.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 
 namespace ios {
 
-AccountCapabilitiesFetcherFactoryIOS::AccountCapabilitiesFetcherFactoryIOS(
+AccountFetcherFactoryIOS::AccountFetcherFactoryIOS(
     ChromeAccountManagerService* account_manager_service)
     : account_manager_service_(account_manager_service) {}
 
-AccountCapabilitiesFetcherFactoryIOS::~AccountCapabilitiesFetcherFactoryIOS() =
-    default;
+AccountFetcherFactoryIOS::~AccountFetcherFactoryIOS() = default;
 
 std::unique_ptr<AccountCapabilitiesFetcher>
-AccountCapabilitiesFetcherFactoryIOS::CreateAccountCapabilitiesFetcher(
+AccountFetcherFactoryIOS::CreateAccountCapabilitiesFetcher(
     const CoreAccountInfo& account_info,
     AccountCapabilitiesFetcher::FetchPriority fetch_priority,
     AccountCapabilitiesFetcher::OnCompleteCallback on_complete_callback) {

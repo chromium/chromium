@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/signin/internal/identity_manager/account_capabilities_fetcher_factory_gaia.h"
+#include "components/signin/internal/identity_manager/account_fetcher_factory_gaia.h"
 
 #include <memory>
 #include <optional>
@@ -34,16 +34,15 @@ const GURL& GetAccountCapabilitiesUrl() {
 
 }  // namespace
 
-AccountCapabilitiesFetcherFactoryGaia::AccountCapabilitiesFetcherFactoryGaia(
+AccountFetcherFactoryGaia::AccountFetcherFactoryGaia(
     ProfileOAuth2TokenService* token_service,
     SigninClient* signin_client)
     : token_service_(token_service), signin_client_(signin_client) {}
 
-AccountCapabilitiesFetcherFactoryGaia::
-    ~AccountCapabilitiesFetcherFactoryGaia() = default;
+AccountFetcherFactoryGaia::~AccountFetcherFactoryGaia() = default;
 
 std::unique_ptr<AccountCapabilitiesFetcher>
-AccountCapabilitiesFetcherFactoryGaia::CreateAccountCapabilitiesFetcher(
+AccountFetcherFactoryGaia::CreateAccountCapabilitiesFetcher(
     const CoreAccountInfo& account_info,
     AccountCapabilitiesFetcher::FetchPriority fetch_priority,
     AccountCapabilitiesFetcher::OnCompleteCallback on_complete_callback) {
@@ -52,8 +51,7 @@ AccountCapabilitiesFetcherFactoryGaia::CreateAccountCapabilitiesFetcher(
       fetch_priority, std::move(on_complete_callback));
 }
 
-void AccountCapabilitiesFetcherFactoryGaia::
-    PrepareForFetchingAccountCapabilities() {
+void AccountFetcherFactoryGaia::PrepareForFetchingAccountCapabilities() {
   // Pre-connect the HTTPS socket to the Account Capabilities server URL.
   // This means that a fetch in the near future will be able to re-use this
   // connection, which saves on the HTTPS connection establishment round-trips.

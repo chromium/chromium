@@ -26,7 +26,7 @@
 
 class AccountCapabilities;
 class AccountCapabilitiesFetcher;
-class AccountCapabilitiesFetcherFactory;
+class AccountFetcherFactory;
 class AccountInfoFetcher;
 class AccountInfoFetcherGaia;
 class AccountTrackerService;
@@ -65,12 +65,12 @@ class AccountFetcherService : public ProfileOAuth2TokenServiceObserver {
   // Registers the preferences used by AccountFetcherService.
   static void RegisterPrefs(PrefRegistrySimple* user_prefs);
 
-  void Initialize(SigninClient* signin_client,
-                  ProfileOAuth2TokenService* token_service,
-                  AccountTrackerService* account_tracker_service,
-                  std::unique_ptr<image_fetcher::ImageDecoder> image_decoder,
-                  std::unique_ptr<AccountCapabilitiesFetcherFactory>
-                      account_capabilities_fetcher_factory);
+  void Initialize(
+      SigninClient* signin_client,
+      ProfileOAuth2TokenService* token_service,
+      AccountTrackerService* account_tracker_service,
+      std::unique_ptr<image_fetcher::ImageDecoder> image_decoder,
+      std::unique_ptr<AccountFetcherFactory> account_fetcher_factory);
 
   // Indicates if all user information has been fetched. If the result is false,
   // there are still unfininshed fetchers.
@@ -96,9 +96,8 @@ class AccountFetcherService : public ProfileOAuth2TokenServiceObserver {
   // network requests.
   void EnableAccountRemovalForTest();
 
-  // Returns the AccountCapabilitiesFetcherFactory, for use in tests only.
-  AccountCapabilitiesFetcherFactory*
-  GetAccountCapabilitiesFetcherFactoryForTest();
+  // Returns the AccountFetcherFactory, for use in tests only.
+  AccountFetcherFactory* GetAccountFetcherFactoryForTest();
 
   // Calling this method provides a hint that Account Capabilities may be
   // fetched in the near future, and front-loads some processing to speed
@@ -185,8 +184,7 @@ class AccountFetcherService : public ProfileOAuth2TokenServiceObserver {
   std::unordered_map<CoreAccountId, std::unique_ptr<AccountInfoFetcher>>
       user_info_requests_;
 
-  std::unique_ptr<AccountCapabilitiesFetcherFactory>
-      account_capabilities_fetcher_factory_;
+  std::unique_ptr<AccountFetcherFactory> account_fetcher_factory_;
   std::map<CoreAccountId, std::unique_ptr<AccountCapabilitiesFetcher>>
       account_capabilities_requests_;
 

@@ -24,7 +24,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/internal/identity_manager/account_fetcher_service.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
-#include "components/signin/internal/identity_manager/fake_account_capabilities_fetcher_factory.h"
+#include "components/signin/internal/identity_manager/fake_account_fetcher_factory.h"
 #include "components/signin/internal/identity_manager/fake_profile_oauth2_token_service_delegate.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #include "components/signin/public/base/gaia_id_hash.h"
@@ -85,7 +85,7 @@ class PrimaryAccountManagerTest : public testing::Test,
     account_fetcher_->Initialize(
         &test_signin_client_, token_service_.get(), account_tracker_.get(),
         std::make_unique<image_fetcher::FakeImageDecoder>(),
-        std::make_unique<FakeAccountCapabilitiesFetcherFactory>());
+        std::make_unique<FakeAccountFetcherFactory>());
   }
 
   ~PrimaryAccountManagerTest() override {

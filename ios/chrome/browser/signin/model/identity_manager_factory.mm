@@ -18,7 +18,7 @@
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/signin/model/account_capabilities_fetcher_factory_ios.h"
+#import "ios/chrome/browser/signin/model/account_fetcher_factory_ios.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/device_accounts_provider_impl.h"
 #import "ios/chrome/browser/signin/model/signin_client_factory.h"
@@ -56,8 +56,8 @@ std::unique_ptr<KeyedService> IdentityManagerFactory::BuildServiceInstanceFor(
   params.device_accounts_provider =
       std::make_unique<DeviceAccountsProviderImpl>(
           ChromeAccountManagerServiceFactory::GetForProfile(profile));
-  params.account_capabilities_fetcher_factory =
-      std::make_unique<ios::AccountCapabilitiesFetcherFactoryIOS>(
+  params.account_fetcher_factory =
+      std::make_unique<ios::AccountFetcherFactoryIOS>(
           ChromeAccountManagerServiceFactory::GetForProfile(profile));
   params.image_decoder = image_fetcher::CreateIOSImageDecoder();
   params.local_state = GetApplicationContext()->GetLocalState();

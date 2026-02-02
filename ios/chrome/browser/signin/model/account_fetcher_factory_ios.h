@@ -2,35 +2,32 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SIGNIN_MODEL_ACCOUNT_CAPABILITIES_FETCHER_FACTORY_IOS_H_
-#define IOS_CHROME_BROWSER_SIGNIN_MODEL_ACCOUNT_CAPABILITIES_FETCHER_FACTORY_IOS_H_
+#ifndef IOS_CHROME_BROWSER_SIGNIN_MODEL_ACCOUNT_FETCHER_FACTORY_IOS_H_
+#define IOS_CHROME_BROWSER_SIGNIN_MODEL_ACCOUNT_FETCHER_FACTORY_IOS_H_
 
 #import "components/signin/internal/identity_manager/account_capabilities_fetcher.h"
-#import "components/signin/internal/identity_manager/account_capabilities_fetcher_factory.h"
+#import "components/signin/internal/identity_manager/account_fetcher_factory.h"
 #import "components/signin/public/identity_manager/account_info.h"
 
 class ChromeAccountManagerService;
 
 namespace ios {
 
-// iOS implementation of `AccountCapabilitiesFetcherFactory`.
+// iOS implementation of `AccountFetcherFactory`.
 // This factory creates the link between capabilities cached at the system
 // identity manager scope and those available in C++ account information.
-class AccountCapabilitiesFetcherFactoryIOS
-    : public AccountCapabilitiesFetcherFactory {
+class AccountFetcherFactoryIOS : public AccountFetcherFactory {
  public:
   using OnCompleteCallback = AccountCapabilitiesFetcher::OnCompleteCallback;
 
-  explicit AccountCapabilitiesFetcherFactoryIOS(
+  explicit AccountFetcherFactoryIOS(
       ChromeAccountManagerService* account_management_service);
-  ~AccountCapabilitiesFetcherFactoryIOS() override;
+  ~AccountFetcherFactoryIOS() override;
 
-  AccountCapabilitiesFetcherFactoryIOS(
-      const AccountCapabilitiesFetcherFactoryIOS&) = delete;
-  AccountCapabilitiesFetcherFactoryIOS& operator=(
-      const AccountCapabilitiesFetcherFactoryIOS&) = delete;
+  AccountFetcherFactoryIOS(const AccountFetcherFactoryIOS&) = delete;
+  AccountFetcherFactoryIOS& operator=(const AccountFetcherFactoryIOS&) = delete;
 
-  // AccountCapabilitiesFetcherFactory:
+  // AccountFetcherFactory:
   std::unique_ptr<AccountCapabilitiesFetcher> CreateAccountCapabilitiesFetcher(
       const CoreAccountInfo& account_info,
       AccountCapabilitiesFetcher::FetchPriority fetch_priority,
@@ -42,4 +39,4 @@ class AccountCapabilitiesFetcherFactoryIOS
 
 }  // namespace ios
 
-#endif  // IOS_CHROME_BROWSER_SIGNIN_MODEL_ACCOUNT_CAPABILITIES_FETCHER_FACTORY_IOS_H_
+#endif  // IOS_CHROME_BROWSER_SIGNIN_MODEL_ACCOUNT_FETCHER_FACTORY_IOS_H_

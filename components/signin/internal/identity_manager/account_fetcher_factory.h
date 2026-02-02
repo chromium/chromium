@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_ACCOUNT_CAPABILITIES_FETCHER_FACTORY_H_
-#define COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_ACCOUNT_CAPABILITIES_FETCHER_FACTORY_H_
+#ifndef COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_ACCOUNT_FETCHER_FACTORY_H_
+#define COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_ACCOUNT_FETCHER_FACTORY_H_
 
 #include <memory>
 
@@ -13,9 +13,9 @@ class AccountCapabilitiesFetcher;
 struct CoreAccountInfo;
 
 // Abstract factory class for creating `AccountCapabilitiesFetcher` objects.
-class AccountCapabilitiesFetcherFactory {
+class AccountFetcherFactory {
  public:
-  virtual ~AccountCapabilitiesFetcherFactory() = default;
+  virtual ~AccountFetcherFactory() = default;
 
   virtual std::unique_ptr<AccountCapabilitiesFetcher>
   CreateAccountCapabilitiesFetcher(
@@ -36,4 +36,4 @@ class AccountCapabilitiesFetcherFactory {
   virtual void PrepareForFetchingAccountCapabilities() {}
 };
 
-#endif  // COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_ACCOUNT_CAPABILITIES_FETCHER_FACTORY_H_
+#endif  // COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_ACCOUNT_FETCHER_FACTORY_H_

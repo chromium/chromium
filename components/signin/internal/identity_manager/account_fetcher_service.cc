@@ -21,7 +21,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/internal/identity_manager/account_capabilities_fetcher.h"
-#include "components/signin/internal/identity_manager/account_capabilities_fetcher_factory.h"
+#include "components/signin/internal/identity_manager/account_fetcher_factory.h"
 #include "components/signin/internal/identity_manager/account_info_fetcher_gaia.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
@@ -65,8 +65,7 @@ void AccountFetcherService::Initialize(
     ProfileOAuth2TokenService* token_service,
     AccountTrackerService* account_tracker_service,
     std::unique_ptr<image_fetcher::ImageDecoder> image_decoder,
-    std::unique_ptr<AccountCapabilitiesFetcherFactory>
-        account_capabilities_fetcher_factory) {
+    std::unique_ptr<AccountFetcherFactory> account_fetcher_factory) {
   DCHECK(signin_client);
   DCHECK(!signin_client_);
   signin_client_ = signin_client;
@@ -81,10 +80,9 @@ void AccountFetcherService::Initialize(
   DCHECK(image_decoder);
   DCHECK(!image_decoder_);
   image_decoder_ = std::move(image_decoder);
-  DCHECK(!account_capabilities_fetcher_factory_);
-  DCHECK(account_capabilities_fetcher_factory);
-  account_capabilities_fetcher_factory_ =
-      std::move(account_capabilities_fetcher_factory);
+  DCHECK(!account_fetcher_factory_);
+  DCHECK(account_fetcher_factory);
+  account_fetcher_factory_ = std::move(account_fetcher_factory);
 
   repeating_timer_ = std::make_unique<signin::PersistentRepeatingTimer>(
       signin_client_->GetPrefs(), AccountFetcherService::kLastUpdatePref,
@@ -130,9 +128,9 @@ void AccountFetcherService::EnableAccountRemovalForTest() {
   enable_account_removal_for_test_ = true;
 }
 
-AccountCapabilitiesFetcherFactory*
-AccountFetcherService::GetAccountCapabilitiesFetcherFactoryForTest() {
-  return account_capabilities_fetcher_factory_.get();
+AccountFetcherFactory*
+AccountFetcherService::GetAccountFetcherFactoryForTest() {
+  return account_fetcher_factory_.get();
 }
 
 void AccountFetcherService::RefreshAllAccountInfo(bool only_fetch_if_invalid) {
@@ -188,8 +186,7 @@ void AccountFetcherService::DestroyFetchers(const CoreAccountId& account_id) {
 }
 
 void AccountFetcherService::PrepareForFetchingAccountCapabilities() {
-  account_capabilities_fetcher_factory_
-      ->PrepareForFetchingAccountCapabilities();
+  account_fetcher_factory_->PrepareForFetchingAccountCapabilities();
 }
 
 void AccountFetcherService::StartFetchingAccountCapabilities(
@@ -203,15 +200,14 @@ void AccountFetcherService::StartFetchingAccountCapabilities(
     AccountInfo account_info =
         account_tracker_service_->GetAccountInfo(core_account_info.account_id);
 
-    request =
-        account_capabilities_fetcher_factory_->CreateAccountCapabilitiesFetcher(
-            core_account_info,
-            account_info.capabilities.AreAnyCapabilitiesKnown()
-                ? AccountCapabilitiesFetcher::FetchPriority::kBackground
-                : AccountCapabilitiesFetcher::FetchPriority::kForeground,
-            base::BindOnce(
-                &AccountFetcherService::OnAccountCapabilitiesFetchComplete,
-                base::Unretained(this)));
+    request = account_fetcher_factory_->CreateAccountCapabilitiesFetcher(
+        core_account_info,
+        account_info.capabilities.AreAnyCapabilitiesKnown()
+            ? AccountCapabilitiesFetcher::FetchPriority::kBackground
+            : AccountCapabilitiesFetcher::FetchPriority::kForeground,
+        base::BindOnce(
+            &AccountFetcherService::OnAccountCapabilitiesFetchComplete,
+            base::Unretained(this)));
     request->Start();
   }
 }

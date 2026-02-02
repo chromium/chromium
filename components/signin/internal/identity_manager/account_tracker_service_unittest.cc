@@ -26,7 +26,7 @@
 #include "components/signin/internal/identity_manager/account_capabilities_fetcher.h"
 #include "components/signin/internal/identity_manager/account_capabilities_fetcher_gaia.h"
 #include "components/signin/internal/identity_manager/account_fetcher_service.h"
-#include "components/signin/internal/identity_manager/fake_account_capabilities_fetcher_factory.h"
+#include "components/signin/internal/identity_manager/fake_account_fetcher_factory.h"
 #include "components/signin/internal/identity_manager/fake_profile_oauth2_token_service.h"
 #include "components/signin/public/base/avatar_icon_util.h"
 #include "components/signin/public/base/signin_metrics.h"
@@ -400,21 +400,20 @@ class AccountTrackerServiceTest : public testing::Test {
         &AccountTrackerServiceTest::OnAccountRemoved, base::Unretained(this)));
 
     account_tracker_->Initialize(&pref_service_, std::move(path));
-    auto account_capabilities_fetcher_factory =
-        std::make_unique<FakeAccountCapabilitiesFetcherFactory>();
-    fake_account_capabilities_fetcher_factory_ =
-        account_capabilities_fetcher_factory.get();
+    auto account_fetcher_factory =
+        std::make_unique<FakeAccountFetcherFactory>();
+    fake_account_fetcher_factory_ = account_fetcher_factory.get();
     account_fetcher_->Initialize(
         signin_client(), token_service(), account_tracker_.get(),
         std::make_unique<image_fetcher::FakeImageDecoder>(),
-        std::move(account_capabilities_fetcher_factory));
+        std::move(account_fetcher_factory));
     if (network_enabled) {
       account_fetcher_->EnableNetworkFetchesForTest();
     }
   }
 
   void DeleteAccountTracker() {
-    fake_account_capabilities_fetcher_factory_ = nullptr;
+    fake_account_fetcher_factory_ = nullptr;
     account_fetcher_.reset();
     account_tracker_.reset();
     // Allow residual |account_tracker_| posted tasks to run.
@@ -426,8 +425,7 @@ class AccountTrackerServiceTest : public testing::Test {
   FakeProfileOAuth2TokenService fake_oauth2_token_service_;
   std::unique_ptr<AccountFetcherService> account_fetcher_;
   std::unique_ptr<AccountTrackerService> account_tracker_;
-  raw_ptr<FakeAccountCapabilitiesFetcherFactory>
-      fake_account_capabilities_fetcher_factory_;
+  raw_ptr<FakeAccountFetcherFactory> fake_account_fetcher_factory_;
   std::vector<TrackingEvent> account_tracker_events_;
 };
 
@@ -487,7 +485,7 @@ void AccountTrackerServiceTest::ReturnAccountCapabilitiesFetchSuccess(
   AccountCapabilitiesTestMutator mutator(&capabilities);
   mutator.SetAllSupportedCapabilities(
       AccountKeyToAccountCapability(account_key));
-  fake_account_capabilities_fetcher_factory_->CompleteAccountCapabilitiesFetch(
+  fake_account_fetcher_factory_->CompleteAccountCapabilitiesFetch(
       AccountKeyToAccountId(account_key), capabilities);
 }
 
@@ -504,7 +502,7 @@ void AccountTrackerServiceTest::SimulateParentalSupervisionCheckComplete(
   AccountCapabilities capabilities;
   AccountCapabilitiesTestMutator mutator(&capabilities);
   mutator.set_is_subject_to_parental_controls(is_subject_to_parental_controls);
-  fake_account_capabilities_fetcher_factory_->CompleteAccountCapabilitiesFetch(
+  fake_account_fetcher_factory_->CompleteAccountCapabilitiesFetch(
       AccountKeyToAccountId(account_key), capabilities);
 #endif
 }
@@ -537,7 +535,7 @@ void AccountTrackerServiceTest::
 void AccountTrackerServiceTest::ReturnAccountCapabilitiesFetchFailure(
     AccountKey account_key) {
   IssueAccessToken(account_key);
-  fake_account_capabilities_fetcher_factory_->CompleteAccountCapabilitiesFetch(
+  fake_account_fetcher_factory_->CompleteAccountCapabilitiesFetch(
       AccountKeyToAccountId(account_key), std::nullopt);
 }
 

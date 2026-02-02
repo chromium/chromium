@@ -23,7 +23,7 @@
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/internal/identity_manager/accounts_cookie_mutator_impl.h"
 #include "components/signin/internal/identity_manager/diagnostics_provider_impl.h"
-#include "components/signin/internal/identity_manager/fake_account_capabilities_fetcher_factory.h"
+#include "components/signin/internal/identity_manager/fake_account_fetcher_factory.h"
 #include "components/signin/internal/identity_manager/fake_profile_oauth2_token_service.h"
 #include "components/signin/internal/identity_manager/gaia_cookie_manager_service.h"
 #include "components/signin/internal/identity_manager/primary_account_manager.h"
@@ -318,7 +318,7 @@ IdentityTestEnvironment::FinishBuildIdentityManagerForTests(
   account_fetcher_service->Initialize(
       signin_client, token_service.get(), account_tracker_service.get(),
       std::make_unique<image_fetcher::FakeImageDecoder>(),
-      std::make_unique<FakeAccountCapabilitiesFetcherFactory>());
+      std::make_unique<FakeAccountFetcherFactory>());
 
   std::unique_ptr<PrimaryAccountManager> primary_account_manager =
       std::make_unique<PrimaryAccountManager>(
@@ -771,10 +771,10 @@ void IdentityTestEnvironment::SetTestURLLoaderFactory(
 
 int IdentityTestEnvironment::
     GetNumCallsToPrepareForFetchingAccountCapabilities() {
-  return static_cast<FakeAccountCapabilitiesFetcherFactory*>(
+  return static_cast<FakeAccountFetcherFactory*>(
              identity_manager()
                  ->GetAccountFetcherService()
-                 ->GetAccountCapabilitiesFetcherFactoryForTest())
+                 ->GetAccountFetcherFactoryForTest())
       ->GetNumCallsToPrepareForFetchingAccountCapabilities();
 }
 

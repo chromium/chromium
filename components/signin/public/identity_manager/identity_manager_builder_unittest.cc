@@ -11,7 +11,7 @@
 #include "build/build_config.h"
 #include "components/image_fetcher/core/fake_image_decoder.h"
 #include "components/signin/internal/identity_manager/account_capabilities_fetcher.h"
-#include "components/signin/internal/identity_manager/account_capabilities_fetcher_factory.h"
+#include "components/signin/internal/identity_manager/account_fetcher_factory.h"
 #include "components/signin/internal/identity_manager/account_fetcher_service.h"
 #include "components/signin/public/base/test_signin_client.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -35,11 +35,10 @@
 
 namespace signin {
 
-class MockAccountCapabilitiesFetcherFactory
-    : public AccountCapabilitiesFetcherFactory {
+class MockAccountFetcherFactory : public AccountFetcherFactory {
  public:
-  MockAccountCapabilitiesFetcherFactory() = default;
-  ~MockAccountCapabilitiesFetcherFactory() override = default;
+  MockAccountFetcherFactory() = default;
+  ~MockAccountFetcherFactory() override = default;
 
   MOCK_METHOD3(
       CreateAccountCapabilitiesFetcher,
@@ -100,8 +99,8 @@ TEST_F(IdentityManagerBuilderTest, BuildIdentityManagerInitParameters) {
 #if BUILDFLAG(IS_IOS)
   params.device_accounts_provider =
       std::make_unique<FakeDeviceAccountsProvider>();
-  params.account_capabilities_fetcher_factory =
-      std::make_unique<MockAccountCapabilitiesFetcherFactory>();
+  params.account_fetcher_factory =
+      std::make_unique<MockAccountFetcherFactory>();
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
