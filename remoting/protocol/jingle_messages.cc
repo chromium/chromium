@@ -292,6 +292,15 @@ SessionInfo& SessionInfo::operator=(const SessionInfo&) = default;
 SessionInfo& SessionInfo::operator=(SessionInfo&&) = default;
 SessionInfo::~SessionInfo() = default;
 
+JingleTransportInfo::JingleTransportInfo() = default;
+JingleTransportInfo::JingleTransportInfo(const JingleTransportInfo&) = default;
+JingleTransportInfo::JingleTransportInfo(JingleTransportInfo&&) = default;
+JingleTransportInfo& JingleTransportInfo::operator=(
+    const JingleTransportInfo&) = default;
+JingleTransportInfo& JingleTransportInfo::operator=(JingleTransportInfo&&) =
+    default;
+JingleTransportInfo::~JingleTransportInfo() = default;
+
 SessionTerminate::SessionTerminate() = default;
 SessionTerminate::SessionTerminate(const SessionTerminate&) = default;
 SessionTerminate::SessionTerminate(SessionTerminate&&) = default;
