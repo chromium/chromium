@@ -1,1 +1,0 @@
-focus-event:object:state-changed:focused(1) role=push-button name="Test Button"

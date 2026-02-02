@@ -8096,8 +8096,6 @@ std::optional<EVENTID> AXPlatformNodeWin::MojoEventToUIAEvent(
   switch (event) {
     case ax::mojom::Event::kAlert:
       return UIA_SystemAlertEventId;
-    case ax::mojom::Event::kEndOfTest:
-      return UiaRegistrarWin::GetInstance().GetTestCompleteEventId();
     case ax::mojom::Event::kFocus:
     case ax::mojom::Event::kFocusContext:
     case ax::mojom::Event::kFocusAfterMenuClose:

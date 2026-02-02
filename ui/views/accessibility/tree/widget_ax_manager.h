@@ -94,11 +94,6 @@ class VIEWS_EXPORT WidgetAXManager : public ui::AXModeObserver,
     updates_and_events_callback_for_testing_ = std::move(callback);
   }
 
-  // Returns a weak pointer to the underlying BrowserAccessibilityManager for
-  // testing purposes. Used by accessibility event tests to access the tree
-  // manager for firing sentinel events.
-  base::WeakPtr<ui::AXPlatformTreeManager> GetAXTreeManagerWeakPtrForTesting();
-
   // ui::AXModeObserver:
   void OnAXModeAdded(ui::AXMode mode) override;
 
