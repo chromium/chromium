@@ -23,6 +23,7 @@ import android.widget.FrameLayout;
 
 import androidx.test.filters.MediumTest;
 
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -134,6 +135,13 @@ public class MostVisitedTilesLayoutTest {
     @AfterClass
     public static void tearDownAfterActivityDestroyed() {
         ChromeNightModeTestUtils.tearDownNightModeAfterChromeActivityDestroyed();
+    }
+
+    @After
+    public void tearDown() {
+        // Since renderTiles() calls setContentView() on the Activity, the clean up causes an
+        // exception.
+        mActivityTestRule.skipWindowAndTabStateCleanup();
     }
 
     @Test
