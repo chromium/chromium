@@ -23,7 +23,6 @@ import org.chromium.base.test.ActivityFinisher;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
@@ -219,7 +218,6 @@ public class TabSwitcherSearchRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
     public void testZeroPrefixSuggestions_HiddenInIncognito() throws IOException {
         List<String> urlsToOpen = Arrays.asList("/chrome/test/data/android/test.html");
         TabSwitcherSearchStation searchStation =
@@ -255,7 +253,6 @@ public class TabSwitcherSearchRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
     public void testRenderTypedSuggestions_Incognito() throws IOException {
         List<String> urlsToOpen = Arrays.asList("/chrome/test/data/android/navigate/one.html");
         TabSwitcherSearchStation searchStation =

@@ -48,7 +48,6 @@ import org.chromium.ui.base.DeviceFormFactor;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 @ImportantFormFactors(DeviceFormFactor.ONLY_TABLET)
-@DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
 public class TabSwitcherPanePublicTransitTest {
     @Rule
     public AutoResetCtaTransitTestRule mCtaTestRule =
@@ -56,6 +55,8 @@ public class TabSwitcherPanePublicTransitTest {
 
     @Test
     @MediumTest
+    @DisableIf.Device(
+            DeviceFormFactor.DESKTOP) // TODO(crbug.com/479863847): Test failing on Desktop bot
     // TODO(crbug.com/457847264): Test disabled for Incognito windowing.
     @Features.DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testSwitchTabModel_ScrollToSelectedTab() {

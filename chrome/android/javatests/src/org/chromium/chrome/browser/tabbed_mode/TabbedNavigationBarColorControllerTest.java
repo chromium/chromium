@@ -156,7 +156,6 @@ public class TabbedNavigationBarColorControllerTest {
     @DisableIf.Build(
             sdk_is_greater_than = Build.VERSION_CODES.VANILLA_ICE_CREAM,
             message = "crbug.com/428056054")
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
     public void testToggleIncognito() {
         assertEquals(
                 "Navigation bar should match the tab background on normal tabs.",
