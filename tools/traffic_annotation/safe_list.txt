@@ -13,6 +13,7 @@ test_annotation,components/safe_search_api/stub_url_checker.cc
 test_annotation,net/quic/quic_chromium_client_session_peer.cc
 all,ash/ambient/backdrop/ambient_backend_controller_impl.cc
 all,chromeos/ash/services/libassistant/chromium_http_connection.cc
+all,services/network/cors/cors_url_loader_factory.cc
 
 # ChromeOS-specific annotations.
 all,chromeos/ash/components/geolocation/simple_geolocation_request.cc
