@@ -6,8 +6,32 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/ios/block_types.h"
+#import "ios/chrome/app/task_request+testing.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+
+@interface TaskRequestForTesting : TaskRequest
+@end
+
+@implementation TaskRequestForTesting {
+  ProceduralBlock _executeBlock;
+}
+
+- (instancetype)initWithSceneID:(std::string_view)sceneID
+                   executeBlock:(ProceduralBlock)executeBlock {
+  if ((self = [super initWithSceneID:sceneID])) {
+    CHECK(executeBlock);
+    _executeBlock = executeBlock;
+  }
+  return self;
+}
+
+- (void)execute {
+  _executeBlock();
+}
+
+@end
 
 @interface TaskRequest () {
   std::string _sceneSessionID;
@@ -75,6 +99,21 @@
     _sceneSessionID = sceneState.sceneSessionID;
   }
   return self;
+}
+
+// Initializer used for tests.
+- (instancetype)initWithSceneID:(std::string_view)sceneID {
+  if ((self = [super init])) {
+    _sceneSessionID = sceneID;
+  }
+  return self;
+}
+
+// Factory used for tests.
++ (instancetype)taskForTestingWithSceneID:(std::string_view)sceneID
+                             executeBlock:(ProceduralBlock)block {
+  return [[TaskRequestForTesting alloc] initWithSceneID:sceneID
+                                           executeBlock:block];
 }
 
 - (void)execute {
