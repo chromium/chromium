@@ -14,4 +14,22 @@ found in the LICENSE file.
 
 <!--    TODO(crbug.com/479597724): Implement bottom sheet layout.-->
 
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@null"/>
+
+    <TextView
+        android:id="@+id/setup_list_bottom_sheet_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/setup_list_bottom_sheet_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipBottomSheetListContainerView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
 </LinearLayout>
