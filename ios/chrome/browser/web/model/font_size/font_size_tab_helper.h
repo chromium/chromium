@@ -114,10 +114,6 @@ class FontSizeTabHelper : public web::WebFramesManager::Observer,
   void WebStateDestroyed(web::WebState* web_state) override;
   void DidFinishNavigation(web::WebState* web_state,
                            web::NavigationContext* context) override;
-  void WebStateRealized(web::WebState* web_state) override;
-
-  // Helper used to create notification observer.
-  void CreateNotificationObserver();
 
   // web::WebFramesManager::Observer
   void WebFrameBecameAvailable(web::WebFramesManager* web_frames_manager,
