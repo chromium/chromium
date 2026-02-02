@@ -1720,7 +1720,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
         }
 
         if (mIntentDataProvider.getActivityType() == ActivityType.WEBAPP) {
-            return BrowserWindowType.APP_POPUP;
+            return BrowserWindowType.APP;
         }
 
         return null;
