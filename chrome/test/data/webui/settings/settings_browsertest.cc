@@ -705,6 +705,109 @@ IN_PROC_BROWSER_TEST_F(SettingsGlicSubPageWebActuationAllowedTierToggleTest,
           "runMochaSuite('GlicSubpage WebActuationToggleHidden')");
 }
 
+class SettingsGlicSubPageWebActuationDefaultStateToggleTest
+    : public SettingsGlicSubPageWebActuationToggleTestBase {
+ public:
+  SettingsGlicSubPageWebActuationDefaultStateToggleTest() {
+    // Set the allowed tiers to "100" and "200"
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kGlicWebActuationSetting, {}},
+         {features::kGlicActor,
+          {
+              {features::kGlicActorEligibleTiers.name, "100,200"},
+          }}},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// This is a smoke test for the enterprise visibility leak bug.
+// It verifies that a user in the default state (eligible capability,
+// no modified prefs, and no tier feature flag) does NOT see the toggle.
+// This ensures that enterprise policy checks do not act as a "blanket"
+// visibility trigger that forces the toggle to show for ineligible users.
+IN_PROC_BROWSER_TEST_F(SettingsGlicSubPageWebActuationDefaultStateToggleTest,
+                       ToggleNotVisibleWithNoSettings) {
+  SigninAndEnableAccountCapability();
+  RunTest("settings/glic_subpage_test.js",
+          "runMochaSuite('GlicSubpage WebActuationToggleHidden')");
+}
+
+class SettingsGlicSubPageWebActuationAllowedTierNoPolicyControlToggleTest
+    : public SettingsGlicSubPageWebActuationToggleTestBase {
+ public:
+  SettingsGlicSubPageWebActuationAllowedTierNoPolicyControlToggleTest() {
+    // Set the allowed tiers to "100" and "200"
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kGlicWebActuationSetting, {}},
+         {features::kGlicWebActuationSettingsToggle, {}},
+         {features::kGlicActor,
+          {
+              {features::kGlicActorEligibleTiers.name, "100,200"},
+              {features::kGlicActorPolicyControlExemption.name, "true"},
+          }}},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    SettingsGlicSubPageWebActuationAllowedTierNoPolicyControlToggleTest,
+    ToggleVisibleForAllowedTier) {
+  SigninAndEnableAccountCapability();
+  SetUserTier(100);
+  RunTest("settings/glic_subpage_test.js",
+          "runMochaSuite('GlicSubpage WebActuationToggleVisible')");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SettingsGlicSubPageWebActuationAllowedTierNoPolicyControlToggleTest,
+    ToggleHiddenForDisallowedTier) {
+  SigninAndEnableAccountCapability();
+  SetUserTier(999);
+  GetProfile()->GetPrefs()->SetBoolean(
+      glic::prefs::kGlicUserEnabledActuationOnWeb, true);
+
+  RunTest("settings/glic_subpage_test.js",
+          "runMochaSuite('GlicSubpage WebActuationToggleHidden')");
+}
+
+class SettingsGlicSubPageWebActuationPrefToggleVisibilityTest
+    : public SettingsGlicSubPageWebActuationToggleTestBase {
+ public:
+  SettingsGlicSubPageWebActuationPrefToggleVisibilityTest() {
+    // Set the allowed tiers to "100" and "200"
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {
+            {features::kGlicWebActuationSetting, {}},
+            {features::kGlicActor,
+             {
+                 {features::kGlicActorEligibleTiers.name, "100,200"},
+                 {features::kGlicActorPolicyControlExemption.name, "true"},
+             }},
+        },
+        /*disabled_features=*/{});
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SettingsGlicSubPageWebActuationPrefToggleVisibilityTest,
+                       ToggleVisibleForPreviouslySetPref) {
+  SigninAndEnableAccountCapability();
+  GetProfile()->GetPrefs()->SetBoolean(
+      glic::prefs::kGlicUserEnabledActuationOnWeb, true);
+
+  RunTest("settings/glic_subpage_test.js",
+          "runMochaSuite('GlicSubpage WebActuationToggleVisible')");
+}
+
 class SettingsGlicSubageDataProtectionTest : public SettingsBrowserTest {
  public:
   SettingsGlicSubageDataProtectionTest() {
