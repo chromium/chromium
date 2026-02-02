@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/main/ui_bundled/bvc_container_view_controller.h"
+#import "ios/chrome/browser/main/ui/browser_layout_view_controller.h"
 
 #import <ostream>
 
@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
-@interface BVCContainerViewController ()
+@interface BrowserLayoutViewController ()
 
 // Background behind toolbar and webview during animation to avoid seeing
 // partial color streaks from background with different color between the
@@ -19,7 +19,7 @@
 
 @end
 
-@implementation BVCContainerViewController
+@implementation BrowserLayoutViewController
 
 #pragma mark - Public
 

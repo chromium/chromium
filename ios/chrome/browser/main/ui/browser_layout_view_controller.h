@@ -2,17 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_MAIN_UI_BUNDLED_BVC_CONTAINER_VIEW_CONTROLLER_H_
-#define IOS_CHROME_BROWSER_MAIN_UI_BUNDLED_BVC_CONTAINER_VIEW_CONTROLLER_H_
+#ifndef IOS_CHROME_BROWSER_MAIN_UI_BROWSER_LAYOUT_VIEW_CONTROLLER_H_
+#define IOS_CHROME_BROWSER_MAIN_UI_BROWSER_LAYOUT_VIEW_CONTROLLER_H_
 
 #import <UIKit/UIKit.h>
 
-// A UIViewController instance designed to contain an instance of
-// BrowserViewController ("BVC") as a child. Since the BVC itself often
-// implements a great deal of custom logic around handling view controller
-// presentation and other features, this containing view controller handles
-// forwarding calls to the BVC instance where needed.
-@interface BVCContainerViewController : UIViewController
+// A container view controller that manages the layout of the browser.
+// It is designed to contain an instance of BrowserViewController ("BVC") as a
+// child. Since the BVC itself often implements a great deal of custom logic
+// around handling view controller presentation and other features, this
+// containing view controller handles forwarding calls to the BVC instance where
+// needed.
+@interface BrowserLayoutViewController : UIViewController
 
 // The BVC instance being contained. If this is set, the current BVC (if any)
 // will be removed as a child view controller, and the new `currentBVC` will
@@ -31,4 +32,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_MAIN_UI_BUNDLED_BVC_CONTAINER_VIEW_CONTROLLER_H_
+#endif  // IOS_CHROME_BROWSER_MAIN_UI_BROWSER_LAYOUT_VIEW_CONTROLLER_H_

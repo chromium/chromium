@@ -1,0 +1,18 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ios/build/chrome_build.gni")
+
+source_set("ui") {
+  sources = [
+    "browser_layout_view_controller.h",
+    "browser_layout_view_controller.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/common/ui/colors",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

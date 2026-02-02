@@ -81,7 +81,7 @@ source_set("test_support") {
     "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/main/model",
-    "//ios/chrome/browser/main/ui_bundled",
+    "//ios/chrome/browser/main/ui",
     "//ios/chrome/browser/metrics/model:metrics_internal",
     "//ios/chrome/browser/metrics/model:tab_usage_recorder_browser_agent",
     "//ios/chrome/browser/passwords/bottom_sheet/public",

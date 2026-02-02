@@ -31,15 +31,14 @@ enum class TabGridTransitionType {
 
 // Creates the transition object based on the provided `transitionType`,
 // `direction`, `tabGridTransitionLayoutProvider`, `tabGridViewController`,
-// `bvcContainerViewController`, `layoutGuideCenter`, `isRegularBrowserNTP`,
+// `layoutViewController`, `layoutGuideCenter`, `isRegularBrowserNTP`,
 // and `isIncognito`.
 - (instancetype)initWithTransitionType:(TabGridTransitionType)transitionType
                              direction:(TabGridTransitionDirection)direction
        tabGridTransitionLayoutProvider:
            (id<TabGridTransitionLayoutProviding>)tabGridTransitionLayoutProvider
                  tabGridViewController:(UIViewController*)tabGridViewController
-            bvcContainerViewController:
-                (UIViewController*)bvcContainerViewController
+                  layoutViewController:(UIViewController*)layoutViewController
                      layoutGuideCenter:(LayoutGuideCenter*)layoutGuideCenter
                    isRegularBrowserNTP:(BOOL)isRegularBrowserNTP
                              incognito:(BOOL)incognito

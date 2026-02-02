@@ -23,7 +23,7 @@
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/browser_view_controller.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
-#import "ios/chrome/browser/main/ui_bundled/bvc_container_view_controller.h"
+#import "ios/chrome/browser/main/ui/browser_layout_view_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller_testing.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -140,15 +140,15 @@ UIViewController* GetActiveViewController() {
 
   // The active view controller is either the TabGridViewController or its
   // presented BVC. The BVC is itself contained inside of a
-  // BVCContainerViewController.
+  // BrowserLayoutViewController.
   UIViewController* active_view_controller =
       main_view_controller.presentedViewController
           ? main_view_controller.presentedViewController
           : main_view_controller;
   if ([active_view_controller
-          isKindOfClass:[BVCContainerViewController class]]) {
+          isKindOfClass:[BrowserLayoutViewController class]]) {
     active_view_controller =
-        base::apple::ObjCCastStrict<BVCContainerViewController>(
+        base::apple::ObjCCastStrict<BrowserLayoutViewController>(
             active_view_controller)
             .currentBVC;
   }

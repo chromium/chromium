@@ -68,8 +68,6 @@ source_set("ui_bundled") {
   sources = [
     "browser_lifecycle_manager.h",
     "browser_lifecycle_manager.mm",
-    "bvc_container_view_controller.h",
-    "bvc_container_view_controller.mm",
     "wrangled_browser.h",
     "wrangled_browser.mm",
   ]
@@ -105,7 +103,6 @@ source_set("ui_bundled") {
     "//ios/chrome/app/resources:launchscreen",
     "//ios/chrome/browser/tabs/model:tabs_internal",
   ]
-
   frameworks = [ "UIKit.framework" ]
 }
 
