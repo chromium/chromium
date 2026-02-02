@@ -61,20 +61,20 @@ class MEDIA_EXPORT GpuVideoAcceleratorFactories {
   enum class OutputFormat {
     UNDEFINED = 0,  // Unset state
     // DEPRECATED: I420 is no longer used and deprecated. Use YV12 instead.
-    // I420 = 1,             // 3 x R8 GMBs
-    NV12 = 2,  // One NV12 GMB
+    // I420 = 1,
+    NV12 = 2,
     // DEPRECATED: NV12_DUAL_GMB is no longer used and deprecated. Use
     // NV12 instead.
-    // NV12_DUAL_GMB = 3,  // One R8, one RG88 GMB
-    XR30 = 4,  // 10:10:10:2 BGRX in one GMB (Usually Mac)
-    XB30 = 5,  // 10:10:10:2 RGBX in one GMB
+    // NV12_DUAL_GMB = 3,
+    XR30 = 4,  // 10:10:10:2 BGRX (Usually Mac)
+    XB30 = 5,  // 10:10:10:2 RGBX
     // DEPRECATED: These are only used for I420A, but converting to RGBA at this
     // stage compromises color accuracy and complicates WebGL.
     // See https://crbug.com/355923583 and https://crbug.com/367746309
     // RGBA = 6,  // One 8:8:8:8 RGBA
     // BGRA = 7,  // One 8:8:8:8 BGRA (Usually Mac)
-    P010 = 8,  // One P010 GMB.
-    YV12 = 9,  // One YV12 GMB.
+    P010 = 8,
+    YV12 = 9,
     kMaxValue = YV12
   };
 
