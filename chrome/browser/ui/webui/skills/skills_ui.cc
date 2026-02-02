@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/skills/skills_ui.h"
 
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/skills/skills_dialog_handler.h"
 #include "chrome/browser/ui/webui/skills/skills_page_handler.h"
@@ -57,7 +59,10 @@ void SkillsUI::CreatePageHandler(
 void SkillsUI::CreateDialogHandler(
     mojo::PendingReceiver<skills::mojom::DialogHandler> receiver) {
   dialog_handler_ = std::make_unique<SkillsDialogHandler>(
-      std::move(receiver), web_ui()->GetWebContents(), delegate_);
+      std::move(receiver), web_ui()->GetWebContents(),
+      OptimizationGuideKeyedServiceFactory::GetForProfile(
+          Profile::FromWebUI(web_ui())),
+      delegate_);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(SkillsUI)

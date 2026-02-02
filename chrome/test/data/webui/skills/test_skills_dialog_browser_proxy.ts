@@ -11,6 +11,7 @@ export class TestDialogHandler extends TestBrowserProxy implements
   constructor() {
     super([
       'submitSkill',
+      'refineSkill',
       'closeDialog',
       'showEmojiPicker',
     ]);
@@ -18,6 +19,12 @@ export class TestDialogHandler extends TestBrowserProxy implements
 
   submitSkill(skill: Skill) {
     this.methodCalled('submitSkill', skill);
+  }
+
+  refineSkill(skill: Skill) {
+    this.methodCalled('refineSkill', skill);
+    // Return a default successful promise to satisfy the interface
+    return Promise.resolve({refinedSkill: skill});
   }
 
   closeDialog() {

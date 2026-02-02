@@ -8576,6 +8576,7 @@ test("unit_tests") {
       "//chrome/browser/ui/webui/searchbox:searchbox_test_utils",
       "//chrome/browser/ui/webui/settings",
       "//chrome/browser/ui/webui/signin:unit_tests",
+      "//chrome/browser/ui/webui/skills:unit_tests",
       "//chrome/browser/ui/webui/webui_toolbar",
       "//chrome/browser/ui/webui/webui_toolbar:unit_tests",
       "//chrome/browser/usb:unit_tests",

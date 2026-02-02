@@ -22,13 +22,13 @@ source_set("skills") {
   public = [
     "skills_dialog.h",
     "skills_dialog_delegate.h",
+    "skills_dialog_handler.h",
     "skills_ui.h",
   ]
 
   sources = [
     "skills_dialog.cc",
     "skills_dialog_handler.cc",
-    "skills_dialog_handler.h",
     "skills_page_handler.cc",
     "skills_page_handler.h",
     "skills_ui.cc",
@@ -38,6 +38,7 @@ source_set("skills") {
     ":mojo_bindings",
     "//base",
     "//chrome/app:generated_resources",
+    "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles/keep_alive",
     "//chrome/browser/resources/skills:resources",
@@ -46,6 +47,7 @@ source_set("skills") {
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/webui",
     "//chrome/common",
+    "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/skills:features",
     "//components/skills/public",
     "//components/skills/public:mojo_bindings",
@@ -55,5 +57,20 @@ source_set("skills") {
     "//ui/base",
     "//ui/web_dialogs",
     "//ui/webui",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "skills_dialog_handler_unittest.cc" ]
+  deps = [
+    ":skills",
+    "//chrome/browser/optimization_guide:test_support",
+    "//chrome/test:test_support",
+    "//components/optimization_guide/core:test_support",
+    "//components/skills/public:mojo_bindings",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
   ]
 }

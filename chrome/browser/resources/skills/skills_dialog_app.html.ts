@@ -40,6 +40,9 @@ export function getHtml(this: SkillsDialogAppElement) {
       ?disabled="${this.isSaveButtonDisabled}" @click="${this.submitSkill_}">
       $i18n{save}
   </cr-button>
+  <cr-button class="action-button" @click="${this.refineSkill_}">
+      Refine
+  </cr-button>
 </div>
 <!--_html_template_end_-->`;
   // clang-format on

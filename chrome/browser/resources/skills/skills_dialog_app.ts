@@ -111,6 +111,24 @@ export class SkillsDialogAppElement extends CrLitElement {
     e.preventDefault();
     SkillsDialogBrowserProxy.getInstance().handler.closeDialog();
   }
+
+  protected refineSkill_(): Promise<void> {
+    return SkillsDialogBrowserProxy.getInstance()
+        .handler.refineSkill(this.skill_)
+        .then(({refinedSkill}) => {
+          // If the server returned null, do not overwrite the current state.
+          if (refinedSkill) {
+            // Only update if we have a valid result.
+            this.skill_ = {
+              ...this.skill_,
+              // If the refined prompt is missing or empty, keep the original
+              // prompt
+              prompt: refinedSkill.prompt || this.skill_.prompt,
+              name: refinedSkill.name || this.skill_.name,
+            };
+          }
+        });
+  }
 }
 
 declare global {
