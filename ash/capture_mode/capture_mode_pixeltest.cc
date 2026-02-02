@@ -173,7 +173,7 @@ TEST_P(DisplayParameterizedCaptureModePixelTest, VideoCaptureNotification) {
       GetScreenshotName(base::StrCat({"video_capture_notification_popup_",
                                       GetDisplayTypeName(GetDisplayType())}),
                         IsNotificationWidthIncreaseEnabled()),
-      /*revision_number=*/6, notification_popup_view));
+      /*revision_number=*/7, notification_popup_view));
 
   test_api()->ToggleBubble();
   auto* notification_view =
@@ -182,7 +182,7 @@ TEST_P(DisplayParameterizedCaptureModePixelTest, VideoCaptureNotification) {
       GetScreenshotName(base::StrCat({"video_capture_notification_view_",
                                       GetDisplayTypeName(GetDisplayType())}),
                         IsNotificationWidthIncreaseEnabled()),
-      /*revision_number=*/6, notification_view));
+      /*revision_number=*/7, notification_view));
 }
 
 }  // namespace ash
