@@ -143,6 +143,19 @@ TEST_F(HTMLTextAreaElementTest, DefaultToolTip) {
   EXPECT_EQ(String(), textarea.DefaultToolTip());
 }
 
+TEST_F(HTMLTextAreaElementTest, DefaultToolTipWithFormNoValidate) {
+  LoadAhem();
+
+  SetBodyContent(R"HTML(
+    <form novalidate>
+      <textarea id=test required></textarea>
+    </form>
+  )HTML");
+  HTMLTextAreaElement& textarea = TestElement();
+
+  EXPECT_EQ(String(), textarea.DefaultToolTip());
+}
+
 TEST_F(HTMLTextAreaElementTest, PlaceholderBreakAfterUndo) {
   Document& doc = GetDocument();
   SetBodyContent("<textarea id=test>foo\n</textarea>");
