@@ -7,7 +7,9 @@ function main()
   } else {
     testRunner.waitUntilDone();
     testRunner.dumpAsText();
-    window.requestAnimationFrame(initTest);
+    window.requestAnimationFrame(()=> {
+      window.requestAnimationFrame(initTest);
+    });
   }
 }
 

@@ -8240,8 +8240,6 @@ crbug.com/374090995 [ Mac14-arm64 ] fast/webgl/offscreenCanvas-transferToImageBi
 [ Mac14-arm64 ] virtual/threaded/compositing/webgl/webgl-copy-image.html [ Failure ]
 [ Mac14-arm64 ] virtual/threaded/fast/idleToBlob/OffscreenCanvas-convertToBlob-webgl-main.html [ Timeout ]
 [ Mac14-arm64 ] virtual/threaded/fast/idleToBlob/OffscreenCanvas-convertToBlob-webgl-worker.html [ Timeout ]
-[ Mac14-arm64 ] virtual/threaded/printing/webgl-repeated-printing-preservedrawingbuffer.html [ Failure ]
-[ Mac14-arm64 ] virtual/threaded/printing/webgl-repeated-printing.html [ Failure ]
 [ Mac14-arm64 ] wpt_internal/webxr/ar/iframe-oopif.sub.https.html [ Timeout ]
 [ Debug Mac14 ] accessibility/aria-activedescendant-events.html [ Failure Pass ]
 [ Debug Mac14 ] accessibility/notification-listeners.html [ Failure ]
