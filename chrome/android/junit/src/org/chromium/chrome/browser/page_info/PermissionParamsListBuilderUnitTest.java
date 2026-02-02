@@ -43,6 +43,7 @@ public class PermissionParamsListBuilderUnitTest {
     public void setUp() {
         FakePermissionDelegate.clearBlockedPermissions();
         AndroidPermissionDelegate permissionDelegate = new FakePermissionDelegate();
+        RuntimeEnvironment.application.setTheme(R.style.Theme_BrowserUI_DayNight);
         mPermissionParamsListBuilder =
                 new PermissionParamsListBuilder(RuntimeEnvironment.application, permissionDelegate);
     }
@@ -53,8 +54,6 @@ public class PermissionParamsListBuilderUnitTest {
         assertEquals(0, permissions.size());
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void addSingleEntryAndBuild() {
         mPermissionParamsListBuilder.addPermissionEntry(
@@ -66,8 +65,6 @@ public class PermissionParamsListBuilderUnitTest {
         assertTrue(perm.allowed);
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void addLocationEntryAndBuildWhenSystemLocationDisabled() {
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(false);
@@ -81,8 +78,6 @@ public class PermissionParamsListBuilderUnitTest {
         assertEquals(R.string.page_info_android_location_blocked, perm.warningTextResource);
     }
 
-    // TODO(crbug.com/450954710): This test fails on SDK 36.
-    @Config(sdk = 29)
     @Test
     public void arNotificationWhenCameraBlocked() {
         FakePermissionDelegate.blockPermission(android.Manifest.permission.CAMERA);
