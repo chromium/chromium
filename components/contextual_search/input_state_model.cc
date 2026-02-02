@@ -348,9 +348,22 @@ void InputStateModel::UpdateDisabledInputTypes() {
     });
   }
 
+  const auto current_inputs = GetCurrentInputTypes(session_handle_.get());
+
+  // Check max inputs reached.
+  bool input_limit_reached =
+      rule_set_.has_max_total_inputs() && rule_set_.max_total_inputs() > 0 &&
+      current_inputs.size() >=
+          static_cast<size_t>(rule_set_.max_total_inputs());
+
+  if (input_limit_reached) {
+    state_.disabled_input_types = state_.allowed_input_types;
+    return;
+  }
+
   std::map<omnibox::InputType, int> limits = GetInputTypeLimits();
   std::map<omnibox::InputType, int> current_input_counts;
-  for (const auto& input_type : GetCurrentInputTypes(session_handle_.get())) {
+  for (const auto& input_type : current_inputs) {
     current_input_counts[input_type]++;
   }
 
@@ -360,7 +373,6 @@ void InputStateModel::UpdateDisabledInputTypes() {
       GetToolRule(rule_set_, state_.active_tool);
 
   for (const auto& input_type : state_.allowed_input_types) {
-    bool input_limit_reached = false;
     if (limits.count(input_type)) {
       int limit = limits.at(input_type);
       if (limit > 0 && current_input_counts.count(input_type) &&
