@@ -126,6 +126,8 @@ constexpr SqliteResultCodeMappingEntry kResultCodeMapping[] = {
      static_cast<int>(SqliteLoggedResultCode::kUnusedSqlite)},
     {SQLITE_WARNING_AUTOINDEX,
      static_cast<int>(SqliteLoggedResultCode::kUnusedSqlite)},
+    {SQLITE_OK_SYMLINK,
+     static_cast<int>(SqliteLoggedResultCode::kUnusedSqlite)},
     {SQLITE_ERROR_RETRY,
      static_cast<int>(SqliteLoggedResultCode::kUnusedSqlite)},
     {SQLITE_ABORT_ROLLBACK,
@@ -182,6 +184,8 @@ file lock requests"
 
     {SQLITE_CONSTRAINT_FOREIGNKEY,
      static_cast<int>(SqliteLoggedResultCode::kConstraintForeignKey)},
+    {SQLITE_NOTICE_RBU,
+     static_cast<int>(SqliteLoggedResultCode::kUnusedSqlite)},
     {SQLITE_READONLY_DBMOVED,
      static_cast<int>(SqliteLoggedResultCode::kReadOnlyDbMoved)},
     {SQLITE_IOERR_FSYNC, static_cast<int>(SqliteLoggedResultCode::kIoFsync)},
@@ -306,6 +310,8 @@ file lock requests"
 
     {SQLITE_IOERR_CORRUPTFS,
      static_cast<int>(SqliteLoggedResultCode::kIoCorruptFileSystem)},
+
+    {SQLITE_IOERR_IN_PAGE, static_cast<int>(SqliteLoggedResultCode::kIoInPage)},
 };
 
 // Number of #defines in https://www.sqlite.org/c3ref/c_abort.html
@@ -314,11 +320,11 @@ file lock requests"
 // https://www.sqlite.org/rescode.html#primary_result_code_list
 static constexpr int kPrimaryResultCodes = 31;
 
-// Number of #defines in https://www.sqlite.org/c3ref/c_abort_rollback.html
+// Number of extended codes defined in //third_party/sqlite/src/src/sqlite.h.in.
 //
-// This number is also stated at
-// https://www.sqlite.org/rescode.html#extended_result_code_list
-static constexpr int kExtendedResultCodes = 74;
+// Note that https://www.sqlite.org/rescode.html#extended_result_code_list shows
+// an outdated list as of this writing.
+static constexpr int kExtendedResultCodes = 77;
 
 static_assert(std::size(kResultCodeMapping) ==
                   size_t{kPrimaryResultCodes + kExtendedResultCodes},

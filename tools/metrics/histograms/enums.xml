@@ -25622,10 +25622,8 @@ Called by update_net_error_codes.py.-->
 <enum name="SqliteErrorCode">
   <summary>Error codes returned by SQLite - see sqlite3.h</summary>
   <int value="0" label="SQLITE_OK">Successful result</int>
-  <int value="1" label="SQLITE_ERROR">SQL error or missing database</int>
-  <int value="2" label="SQLITE_INTERNAL">
-    NOT USED. Internal logic error in SQLite
-  </int>
+  <int value="1" label="SQLITE_ERROR">Generic error</int>
+  <int value="2" label="SQLITE_INTERNAL">Internal logic error in SQLite</int>
   <int value="3" label="SQLITE_PERM">Access permission denied</int>
   <int value="4" label="SQLITE_ABORT">Callback routine requested an abort</int>
   <int value="5" label="SQLITE_BUSY">The database file is locked</int>
@@ -25644,20 +25642,18 @@ Called by update_net_error_codes.py.-->
     The database disk image is malformed
   </int>
   <int value="12" label="SQLITE_NOTFOUND">
-    NOT USED. Table or record not found
+    Unknown opcode in sqlite3_file_control()
   </int>
   <int value="13" label="SQLITE_FULL">
     Insertion failed because database is full
   </int>
   <int value="14" label="SQLITE_CANTOPEN">Unable to open the database file</int>
-  <int value="15" label="SQLITE_PROTOCOL">
-    NOT USED. Database lock protocol error
-  </int>
-  <int value="16" label="SQLITE_EMPTY">Database is empty</int>
+  <int value="15" label="SQLITE_PROTOCOL">Database lock protocol error</int>
+  <int value="16" label="SQLITE_EMPTY">Internal use only</int>
   <int value="17" label="SQLITE_SCHEMA">The database schema changed</int>
   <int value="18" label="SQLITE_TOOBIG">String or BLOB exceeds size limit</int>
   <int value="19" label="SQLITE_CONSTRAINT">
-    Abort due to contraint violation
+    Abort due to constraint violation
   </int>
   <int value="20" label="SQLITE_MISMATCH">Data type mismatch</int>
   <int value="21" label="SQLITE_MISUSE">Library used incorrectly</int>
@@ -25665,9 +25661,9 @@ Called by update_net_error_codes.py.-->
     Uses OS features not supported on host
   </int>
   <int value="23" label="SQLITE_AUTH">Authorization denied</int>
-  <int value="24" label="SQLITE_FORMAT">Auxiliary database format error</int>
+  <int value="24" label="SQLITE_FORMAT">Not used</int>
   <int value="25" label="SQLITE_RANGE">
-    2nd parameter to sqlite3_bind() out of range
+    2nd parameter to sqlite3_bind out of range
   </int>
   <int value="26" label="SQLITE_NOTADB">
     File opened that is not a database file
@@ -25678,6 +25674,8 @@ Called by update_net_error_codes.py.-->
   <int value="101" label="SQLITE_DONE">
     sqlite3_step() has finished executing
   </int>
+  <int value="256" label="SQLITE_OK_LOAD_PERMANENTLY">TBD</int>
+  <int value="257" label="SQLITE_ERROR_MISSING_COLLSEQ">TBD</int>
   <int value="261" label="SQLITE_BUSY_RECOVERY">TBD</int>
   <int value="262" label="SQLITE_LOCKED_SHAREDCACHE">TBD</int>
   <int value="264" label="SQLITE_READONLY_RECOVERY">TBD</int>
@@ -25688,8 +25686,11 @@ Called by update_net_error_codes.py.-->
   <int value="279" label="SQLITE_AUTH_USER">TBD</int>
   <int value="283" label="SQLITE_NOTICE_RECOVER_WAL">TBD</int>
   <int value="284" label="SQLITE_WARNING_AUTOINDEX">TBD</int>
+  <int value="512" label="SQLITE_OK_SYMLINK">TBD</int>
+  <int value="513" label="SQLITE_ERROR_RETRY">TBD</int>
   <int value="516" label="SQLITE_ABORT_ROLLBACK">TBD</int>
   <int value="517" label="SQLITE_BUSY_SNAPSHOT">TBD</int>
+  <int value="518" label="SQLITE_LOCKED_VTAB">TBD</int>
   <int value="520" label="SQLITE_READONLY_CANTLOCK">TBD</int>
   <int value="522" label="SQLITE_IOERR_SHORT_READ">Short read from file</int>
   <int value="526" label="SQLITE_CANTOPEN_ISDIR">
@@ -25697,29 +25698,37 @@ Called by update_net_error_codes.py.-->
   </int>
   <int value="531" label="SQLITE_CONSTRAINT_COMMITHOOK">TBD</int>
   <int value="539" label="SQLITE_NOTICE_RECOVER_ROLLBACK">TBD</int>
+  <int value="769" label="SQLITE_ERROR_SNAPSHOT">TBD</int>
+  <int value="773" label="SQLITE_BUSY_TIMEOUT">TBD</int>
   <int value="776" label="SQLITE_READONLY_ROLLBACK">
     Cannot rollback due to readonly file
   </int>
   <int value="778" label="SQLITE_IOERR_WRITE">
     Error writing to file (other than SQLITE_FULL)
   </int>
+  <int value="779" label="SQLITE_CORRUPT_INDEX">TBD</int>
   <int value="782" label="SQLITE_CANTOPEN_FULLPATH">TBD</int>
   <int value="787" label="SQLITE_CONSTRAINT_FOREIGNKEY">
     Constraint failure due to foreign key violation
   </int>
+  <int value="795" label="SQLITE_NOTICE_RBU">TBD</int>
   <int value="1032" label="SQLITE_READONLY_DBMOVED">
     Readonly because database file was moved or unlinked while open
   </int>
   <int value="1034" label="SQLITE_IOERR_FSYNC">Error syncing to disk</int>
   <int value="1038" label="SQLITE_CANTOPEN_CONVPATH">TBD</int>
   <int value="1043" label="SQLITE_CONSTRAINT_FUNCTION">TBD</int>
+  <int value="1288" label="SQLITE_READONLY_CANTINIT">TBD</int>
   <int value="1290" label="SQLITE_IOERR_DIR_FSYNC">
     Error syncing directory changes to disk
   </int>
+  <int value="1294" label="SQLITE_CANTOPEN_DIRTYWAL">TBD</int>
   <int value="1299" label="SQLITE_CONSTRAINT_NOTNULL">
     NOTNULL constraint violated
   </int>
+  <int value="1544" label="SQLITE_READONLY_DIRECTORY">TBD</int>
   <int value="1546" label="SQLITE_IOERR_TRUNCATE">Error truncating file</int>
+  <int value="1550" label="SQLITE_CANTOPEN_SYMLINK">TBD</int>
   <int value="1555" label="SQLITE_CONSTRAINT_PRIMARYKEY">
     Primary key not unique
   </int>
@@ -25740,7 +25749,9 @@ Called by update_net_error_codes.py.-->
   <int value="2826" label="SQLITE_IOERR_BLOCKED">
     Deadlock due to other process access to SQLite files
   </int>
+  <int value="2835" label="SQLITE_CONSTRAINT_PINNED">TBD</int>
   <int value="3082" label="SQLITE_IOERR_NOMEM">Error mapping shared memory</int>
+  <int value="3091" label="SQLITE_CONSTRAINT_DATATYPE">TBD</int>
   <int value="3338" label="SQLITE_IOERR_ACCESS">
     Error getting file attributes (other than not found)
   </int>
@@ -25761,6 +25772,14 @@ Called by update_net_error_codes.py.-->
   <int value="6154" label="SQLITE_IOERR_MMAP">TBD</int>
   <int value="6410" label="SQLITE_IOERR_GETTEMPPATH">TBD</int>
   <int value="6666" label="SQLITE_IOERR_CONVPATH">TBD</int>
+  <int value="6922" label="SQLITE_IOERR_VNODE">TBD</int>
+  <int value="7178" label="SQLITE_IOERR_AUTH">TBD</int>
+  <int value="7434" label="SQLITE_IOERR_BEGIN_ATOMIC">TBD</int>
+  <int value="7690" label="SQLITE_IOERR_COMMIT_ATOMIC">TBD</int>
+  <int value="7946" label="SQLITE_IOERR_ROLLBACK_ATOMIC">TBD</int>
+  <int value="8202" label="SQLITE_IOERR_DATA">TBD</int>
+  <int value="8458" label="SQLITE_IOERR_CORRUPTFS">TBD</int>
+  <int value="8714" label="SQLITE_IOERR_IN_PAGE">TBD</int>
 </enum>
 
 <enum name="SqliteLoggedResultCode">
@@ -25834,6 +25853,7 @@ Called by update_net_error_codes.py.-->
   <int value="56" label="kIoCommitAtomic">SQLITE_IOERR_COMMIT_ATOMIC</int>
   <int value="57" label="kIoRollbackAtomic">SQLITE_IOERR_ROLLBACK_ATOMIC</int>
   <int value="58" label="kIoCorruptFileSystem">SQLITE_IOERR_CORRUPTFS</int>
+  <int value="59" label="kIoInPage">SQLITE_IOERR_IN_PAGE</int>
 </enum>
 
 <enum name="SSLCipherSuite">

@@ -75,6 +75,8 @@ static_assert(static_cast<int>(SqliteResultCode::kLoggingNoticeRecoverWal) ==
               SQLITE_NOTICE_RECOVER_WAL);
 static_assert(static_cast<int>(SqliteResultCode::kLoggingWarningAutoIndex) ==
               SQLITE_WARNING_AUTOINDEX);
+static_assert(static_cast<int>(SqliteResultCode::kOkSymlink) ==
+              SQLITE_OK_SYMLINK);
 static_assert(static_cast<int>(SqliteResultCode::kRetryPreparedStatement) ==
               SQLITE_ERROR_RETRY);
 static_assert(static_cast<int>(SqliteResultCode::kAbortRollback) ==
@@ -110,6 +112,9 @@ static_assert(static_cast<int>(SqliteResultCode::kCantOpenFullPath) ==
               SQLITE_CANTOPEN_FULLPATH);
 static_assert(static_cast<int>(SqliteResultCode::kConstraintForeignKey) ==
               SQLITE_CONSTRAINT_FOREIGNKEY);
+static_assert(
+    static_cast<int>(SqliteResultCode::kLoggingNoticeResumableBulkUpdate) ==
+    SQLITE_NOTICE_RBU);
 static_assert(static_cast<int>(SqliteResultCode::kReadOnlyDbMoved) ==
               SQLITE_READONLY_DBMOVED);
 static_assert(static_cast<int>(SqliteResultCode::kIoFsync) ==
@@ -197,5 +202,7 @@ static_assert(static_cast<int>(SqliteResultCode::kIoRollbackAtomic) ==
 static_assert(static_cast<int>(SqliteResultCode::kIoData) == SQLITE_IOERR_DATA);
 static_assert(static_cast<int>(SqliteResultCode::kIoCorruptFileSystem) ==
               SQLITE_IOERR_CORRUPTFS);
+static_assert(static_cast<int>(SqliteResultCode::kIoInPage) ==
+              SQLITE_IOERR_IN_PAGE);
 
 }  // namespace sql
