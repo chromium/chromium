@@ -518,12 +518,23 @@ class WebNavigationApiPrerenderTestWithServiceWorker
   WebNavigationApiPrerenderTestWithServiceWorker()
       // This test uses chrome.tabs.executeScript, which is not available in
       // MV3 or later. See crbug.com/332328868.
-      : WebNavigationApiTest(ContextType::kServiceWorkerMV2) {}
+      : WebNavigationApiTest(ContextType::kServiceWorkerMV2) {
+    // Disable generic main frame process reuse.
+    // When kTrackEmptyRendererProcessesForReuse is enabled, this test reuses an
+    // empty process for the prerender. This reuse causes the WebNavigation API
+    // to report an invalid processId (0) in the 'onCommitted' event. Disabling
+    // this forces a fresh process with a valid ID.
+    feature_list_.InitAndDisableFeature(
+        features::kProcessPerSiteUpToMainFrameThreshold);
+  }
   ~WebNavigationApiPrerenderTestWithServiceWorker() override = default;
   WebNavigationApiPrerenderTestWithServiceWorker(
       const WebNavigationApiPrerenderTestWithServiceWorker&) = delete;
   WebNavigationApiPrerenderTestWithServiceWorker& operator=(
       const WebNavigationApiPrerenderTestWithServiceWorker&) = delete;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests that prerender events emit the correct events in the expected order.
