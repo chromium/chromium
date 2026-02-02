@@ -2495,7 +2495,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 - (void)shareThisPage {
   RecordAction(UserMetricsAction("MobileMenuShareThisPage"));
   [self dismissMenu];
-  [self.activityServiceHandler showShareSheet];
+  [self.activityServiceHandler showShareSheetFromShareButton:nil];
 }
 
 // Dismisses the menu and requests the mobile version of the current page

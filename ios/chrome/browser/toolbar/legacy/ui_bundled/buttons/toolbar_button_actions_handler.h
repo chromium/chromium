@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_TOOLBAR_LEGACY_UI_BUNDLED_BUTTONS_TOOLBAR_BUTTON_ACTIONS_HANDLER_H_
 #define IOS_CHROME_BROWSER_TOOLBAR_LEGACY_UI_BUNDLED_BUTTONS_TOOLBAR_BUTTON_ACTIONS_HANDLER_H_
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 @protocol ActivityServiceCommands;
 @protocol BrowserCoordinatorCommands;
@@ -47,7 +47,7 @@ class WebNavigationBrowserAgent;
 - (void)toolsMenuAction;
 
 // Action when the share button is tapped.
-- (void)shareAction;
+- (void)shareAction:(UIView*)sender;
 
 // Action when the reload button is tapped.
 - (void)reloadAction;

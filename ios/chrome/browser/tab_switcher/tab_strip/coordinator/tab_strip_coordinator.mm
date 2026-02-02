@@ -235,7 +235,7 @@ constexpr CGFloat kFacePileAvatarSize = 16;
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
                           params:params
-                      originView:originView];
+                      sourceItem:originView];
   [_sharingCoordinator start];
 }
 

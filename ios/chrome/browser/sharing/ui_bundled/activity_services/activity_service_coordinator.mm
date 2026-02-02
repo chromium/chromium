@@ -32,7 +32,6 @@
 #import "ios/chrome/browser/sharing/ui_bundled/activity_services/data/share_to_data.h"
 #import "ios/chrome/browser/sharing/ui_bundled/activity_services/data/share_to_data_builder.h"
 #import "ios/chrome/browser/sharing/ui_bundled/sharing_params.h"
-#import "ios/chrome/browser/sharing/ui_bundled/sharing_positioner.h"
 #import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
 #import "ios/web/public/web_state.h"
 #import "net/base/apple/url_conversions.h"
@@ -65,15 +64,41 @@ constexpr CGFloat kAppIconPointSize = 80;
 
 @end
 
-@implementation ActivityServiceCoordinator
+@implementation ActivityServiceCoordinator {
+  // The source item for the presentation.
+  id<UIPopoverPresentationControllerSourceItem> _sourceItem;
+  // The source view for the presentation.
+  UIView* _sourceView;
+  // The source rect in the _sourceView for the presentation.
+  CGRect _sourceRect;
+}
 
-- (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
-                                   browser:(Browser*)browser
-                                    params:(SharingParams*)params {
+- (instancetype)
+    initWithBaseViewController:(UIViewController*)baseViewController
+                       browser:(Browser*)browser
+                        params:(SharingParams*)params
+                    sourceItem:(id<UIPopoverPresentationControllerSourceItem>)
+                                   sourceItem {
   DCHECK(params);
   if ((self = [super initWithBaseViewController:baseViewController
                                         browser:browser])) {
     _params = params;
+    _sourceItem = sourceItem;
+  }
+  return self;
+}
+
+- (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
+                                   browser:(Browser*)browser
+                                    params:(SharingParams*)params
+                                sourceView:(UIView*)sourceView
+                                sourceRect:(CGRect)sourceRect {
+  DCHECK(params);
+  if ((self = [super initWithBaseViewController:baseViewController
+                                        browser:browser])) {
+    _params = params;
+    _sourceView = sourceView;
+    _sourceRect = sourceRect;
   }
   return self;
 }
@@ -179,17 +204,11 @@ constexpr CGFloat kAppIconPointSize = 80;
   [self.viewController
       setExcludedActivityTypes:[excludedActivityTypes allObjects]];
 
-  // Set-up popover positioning (for iPad).
-  DCHECK(self.positionProvider);
-  if ([self.positionProvider respondsToSelector:@selector(barButtonItem)] &&
-      self.positionProvider.barButtonItem) {
-    self.viewController.popoverPresentationController.barButtonItem =
-        self.positionProvider.barButtonItem;
+  if (_sourceItem) {
+    self.viewController.popoverPresentationController.sourceItem = _sourceItem;
   } else {
-    self.viewController.popoverPresentationController.sourceView =
-        self.positionProvider.sourceView;
-    self.viewController.popoverPresentationController.sourceRect =
-        self.positionProvider.sourceRect;
+    self.viewController.popoverPresentationController.sourceView = _sourceView;
+    self.viewController.popoverPresentationController.sourceRect = _sourceRect;
   }
 
   // Set completion callback.

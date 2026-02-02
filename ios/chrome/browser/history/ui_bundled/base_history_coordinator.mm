@@ -254,7 +254,7 @@ history::WebHistoryService* WebHistoryServiceGetter(
       [[SharingCoordinator alloc] initWithBaseViewController:self.viewController
                                                      browser:self.browser
                                                       params:params
-                                                  originView:view];
+                                                  sourceItem:view];
   [_sharingCoordinator start];
 }
 

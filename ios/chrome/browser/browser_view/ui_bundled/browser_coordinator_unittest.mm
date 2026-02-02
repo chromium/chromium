@@ -311,6 +311,8 @@ TEST_F(BrowserCoordinatorTest, ShowShareSheet) {
   controller->EnterFullscreen();
   ASSERT_EQ(0.0, controller->GetProgress());
 
+  UIView* source = [[UIView alloc] init];
+
   id classMock = OCMClassMock([SharingCoordinator class]);
   SharingCoordinator* mockSharingCoordinator = classMock;
   OCMExpect([classMock alloc]).andReturn(classMock);
@@ -318,15 +320,13 @@ TEST_F(BrowserCoordinatorTest, ShowShareSheet) {
                 initWithBaseViewController:[OCMArg any]
                                    browser:browser_.get()
                                     params:[OCMArg any]
-                                originView:[OCMArg any]
-                                originRect:CGRectZero
-                                    anchor:[OCMArg any]])
+                                sourceItem:source])
       .andReturn(mockSharingCoordinator);
   OCMExpect([mockSharingCoordinator start]);
 
   BrowserCoordinator* browser_coordinator = GetBrowserCoordinator();
   [browser_coordinator start];
-  [browser_coordinator showShareSheet];
+  [browser_coordinator showShareSheetFromShareButton:source];
 
   // Check that fullscreen is exited.
   EXPECT_EQ(1.0, controller->GetProgress());
@@ -359,7 +359,7 @@ TEST_F(BrowserCoordinatorTest, ShowShareSheetForChromeApp) {
                 initWithBaseViewController:[OCMArg any]
                                    browser:browser_.get()
                                     params:expectShareChromeScenarioArg
-                                originView:[OCMArg any]])
+                                sourceItem:[OCMArg any]])
       .andReturn(mockSharingCoordinator);
   OCMExpect([mockSharingCoordinator start]);
 

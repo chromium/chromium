@@ -24,8 +24,9 @@
                                    browser:(Browser*)browser
                                      title:(NSString*)title
                                    message:(NSString*)message
-                             barButtonItem:(UIBarButtonItem*)barButtonItem
-    NS_DESIGNATED_INITIALIZER;
+                             barButtonItem:
+                                 (id<UIPopoverPresentationControllerSourceItem>)
+                                     barButtonItem NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser

@@ -122,8 +122,8 @@
 
 #pragma mark - Public
 
-- (id<SharingPositioner>)SharingPositioner {
-  return self.viewController;
+- (UIView*)shareButton {
+  return self.viewController.shareButton;
 }
 
 - (id<ToolbarAnimatee>)toolbarAnimatee {

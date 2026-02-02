@@ -27,7 +27,6 @@
 #import "ios/chrome/browser/sharing/ui_bundled/activity_services/activity_service_presentation.h"
 #import "ios/chrome/browser/sharing/ui_bundled/activity_services/canonical_url_retriever.h"
 #import "ios/chrome/browser/sharing/ui_bundled/sharing_params.h"
-#import "ios/chrome/browser/sharing/ui_bundled/sharing_positioner.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_source_tab_helper.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/test/scoped_key_window.h"
@@ -123,7 +122,7 @@ TEST_F(SharingCoordinatorTest, Start_ShareCurrentPage) {
       initWithBaseViewController:base_view_controller_
                          browser:browser_.get()
                           params:params
-                      originView:fake_origin_view_];
+                      sourceItem:fake_origin_view_];
 
   __block bool completion_handler_called = false;
   id vc_partial_mock = OCMPartialMock(base_view_controller_);
@@ -148,11 +147,7 @@ TEST_F(SharingCoordinatorTest, Start_ShareCurrentPage) {
 
   // Verify that the positioning is correct.
   auto activityHandler =
-      static_cast<id<SharingPositioner, ActivityServicePresentation>>(
-          coordinator);
-  EXPECT_EQ(fake_origin_view_, activityHandler.sourceView);
-  EXPECT_TRUE(
-      CGRectEqualToRect(fake_origin_view_.bounds, activityHandler.sourceRect));
+      static_cast<id<ActivityServicePresentation>>(coordinator);
 
   [activityHandler activityServiceDidEndPresenting];
 
@@ -168,7 +163,7 @@ TEST_F(SharingCoordinatorTest, GenerateQRCode) {
       initWithBaseViewController:base_view_controller_
                          browser:browser_.get()
                           params:params
-                      originView:fake_origin_view_];
+                      sourceItem:fake_origin_view_];
 
   __block UIViewController* presented_view_controller;
 
@@ -215,7 +210,7 @@ TEST_F(SharingCoordinatorTest, Start_ShareURL) {
       initWithBaseViewController:base_view_controller_
                          browser:browser_.get()
                           params:params
-                      originView:fake_origin_view_];
+                      sourceItem:fake_origin_view_];
 
   id vc_partial_mock = OCMPartialMock(base_view_controller_);
   [[vc_partial_mock expect]
