@@ -2993,7 +2993,6 @@ static_library("ui") {
       "//chrome/app:generated_resources",
       "//chrome/browser/browser_switcher",
       "//chrome/browser/default_browser",
-      "//chrome/browser/on_device_translation",
       "//chrome/browser/profiles",
       "//chrome/browser/shortcuts",
       "//chrome/browser/ui/download",
@@ -3012,6 +3011,7 @@ static_library("ui") {
       "//chrome/updater:browser_sources",
       "//components/capture_mode",
       "//components/country_codes",
+      "//components/on_device_translation",
       "//services/audio/public/mojom",
       "//services/video_capture/public/mojom",
     ]

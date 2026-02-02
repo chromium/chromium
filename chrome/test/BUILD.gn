@@ -4286,10 +4286,7 @@ if (!is_android) {
     }
 
     if (enable_on_device_translation) {
-      sources += [
-        "//chrome/browser/on_device_translation/component_manager_browsertest.cc",
-        "//chrome/browser/on_device_translation/on_device_translation_browsertest.cc",
-      ]
+      sources += [ "//chrome/browser/on_device_translation/on_device_translation_browsertest.cc" ]
       deps += [
         "//chrome/browser/ai:test_support",
         "//chrome/browser/on_device_translation",

@@ -2,16 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/on_device_translation/component_manager.h"
+#include "components/on_device_translation/component_manager.h"
 
 #include <string_view>
 
 #include "base/command_line.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/test/base/in_process_browser_test.h"
+#include "base/test/scoped_command_line.h"
+#include "base/test/scoped_path_override.h"
+#include "base/test/task_environment.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/on_device_translation/installer.h"
 #include "components/on_device_translation/public/language_pack.h"
@@ -19,27 +21,24 @@
 #include "components/on_device_translation/public/pref_names.h"
 #include "components/on_device_translation/test/fake_installer.h"
 #include "components/prefs/pref_service.h"
-#include "content/public/test/browser_test.h"
-#include "content/public/test/browser_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace on_device_translation {
 
 // Tests for ComponentManager.
-class ComponentManagerUpdateCheckBrowserTest : public InProcessBrowserTest {
+class ComponentManagerTest : public ::testing::Test {
  public:
-  ComponentManagerUpdateCheckBrowserTest() = default;
-  ~ComponentManagerUpdateCheckBrowserTest() override = default;
+  ComponentManagerTest() = default;
+  ~ComponentManagerTest() override = default;
 
   // Disallow copy and assign.
-  ComponentManagerUpdateCheckBrowserTest(
-      const ComponentManagerUpdateCheckBrowserTest&) = delete;
-  ComponentManagerUpdateCheckBrowserTest& operator=(
-      const ComponentManagerUpdateCheckBrowserTest&) = delete;
+  ComponentManagerTest(const ComponentManagerTest&) = delete;
+  ComponentManagerTest& operator=(const ComponentManagerTest&) = delete;
   void SetUp() override {
     CHECK(fake_dir_.CreateUniqueTempDir());
-    InProcessBrowserTest::SetUp();
+    scoped_path_override_ = std::make_unique<base::ScopedPathOverride>(
+        component_updater::DIR_COMPONENT_USER, fake_dir_.GetPath());
   }
 
   void InitFakeInstaller() {
@@ -47,14 +46,14 @@ class ComponentManagerUpdateCheckBrowserTest : public InProcessBrowserTest {
         std::make_unique<FakeOnDeviceTranslationInstaller>(fake_dir_.GetPath());
   }
 
- private:
+  std::unique_ptr<base::ScopedPathOverride> scoped_path_override_;
   base::ScopedTempDir fake_dir_;
   std::unique_ptr<FakeOnDeviceTranslationInstaller> installer_;
+  base::test::TaskEnvironment task_environment_;
 };
 
 // Tests that the translate kit component can be registered only once.
-IN_PROC_BROWSER_TEST_F(ComponentManagerUpdateCheckBrowserTest,
-                       RegisterTranslateKitComponent) {
+TEST_F(ComponentManagerTest, RegisterTranslateKitComponent) {
   InitFakeInstaller();
   EXPECT_TRUE(ComponentManager::GetInstance().RegisterTranslateKitComponent());
   // Wait for the update check is requested.
@@ -79,8 +78,7 @@ class TestObserver : public OnDeviceTranslationInstaller::Observer {
 
 // Tests that the translate kit language pack component can be registered and
 // unregistered.
-IN_PROC_BROWSER_TEST_F(ComponentManagerUpdateCheckBrowserTest,
-                       RegisterAndUnregisterTranslateKitLanguagePackComponent) {
+TEST_F(ComponentManagerTest, RegisterAndUnregisterTranslateKit) {
   InitFakeInstaller();
   ComponentManager::GetInstance().RegisterTranslateKitComponent();
   base::RunLoop lpack_run_loop;
@@ -99,11 +97,8 @@ IN_PROC_BROWSER_TEST_F(ComponentManagerUpdateCheckBrowserTest,
               ::testing::IsEmpty());
 }
 
-using ComponentManagerBrowserTest = InProcessBrowserTest;
-
 // Tests that the translate kit component path is returned correctly.
-IN_PROC_BROWSER_TEST_F(ComponentManagerBrowserTest,
-                       GetTranslateKitComponentPath) {
+TEST_F(ComponentManagerTest, GetTranslateKitComponentPath) {
   base::FilePath components_dir;
   base::PathService::Get(component_updater::DIR_COMPONENT_USER,
                          &components_dir);
@@ -111,39 +106,15 @@ IN_PROC_BROWSER_TEST_F(ComponentManagerBrowserTest,
             components_dir.Append(GetBinaryRelativeInstallDir()));
 }
 
-class ComponentManagerCustomComponentPathBrowserTest
-    : public InProcessBrowserTest {
- public:
-  ComponentManagerCustomComponentPathBrowserTest() {
-    CHECK(tmp_dir_.CreateUniqueTempDir());
-  }
-  ~ComponentManagerCustomComponentPathBrowserTest() override = default;
-
-  // Disallow copy and assign.
-  ComponentManagerCustomComponentPathBrowserTest(
-      const ComponentManagerCustomComponentPathBrowserTest&) = delete;
-  ComponentManagerCustomComponentPathBrowserTest& operator=(
-      const ComponentManagerCustomComponentPathBrowserTest&) = delete;
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    InProcessBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchPath("translate-kit-binary-path",
-                                   GetTempDir().AppendASCII("fake.so"));
-  }
-
- protected:
-  const base::FilePath& GetTempDir() { return tmp_dir_.GetPath(); }
-
- private:
-  base::ScopedTempDir tmp_dir_;
-};
-
 // Tests that the translate kit component path is returned correctly when the
 // path is set by the command line flag.
-IN_PROC_BROWSER_TEST_F(ComponentManagerCustomComponentPathBrowserTest,
-                       GetTranslateKitComponentPath) {
+TEST_F(ComponentManagerTest, GetTranslateKitComponentPathFakeCommandLine) {
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchPath(
+      "translate-kit-binary-path", fake_dir_.GetPath().AppendASCII("fake.so"));
+
   EXPECT_EQ(ComponentManager::GetInstance().GetTranslateKitComponentPath(),
-            GetTempDir().AppendASCII("fake.so"));
+            fake_dir_.GetPath().AppendASCII("fake.so"));
 }
 
 }  // namespace on_device_translation

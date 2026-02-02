@@ -22,6 +22,8 @@ source_set("features") {
 
 source_set("on_device_translation") {
   sources = [
+    "component_manager.cc",
+    "component_manager.h",
     "file_operation_proxy_impl.cc",
     "file_operation_proxy_impl.h",
     "installer.cc",
@@ -35,12 +37,13 @@ source_set("on_device_translation") {
   ]
   public_deps = [
     ":features",
+    ":public",
     "//components/prefs",
     "//content/public/browser",
-     ]
+  ]
   deps = [
-    ":public",
     "//base",
+    "//components/component_updater",
     "//components/language/core/browser",
     "//components/on_device_translation/public/mojom",
     "//components/user_prefs",
@@ -69,6 +72,7 @@ source_set("public") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "component_manager_unittest.cc",
     "features_unittest.cc",
     "file_operation_proxy_impl_unittest.cc",
     "metrics_unittest.cc",
@@ -78,8 +82,10 @@ source_set("unit_tests") {
   deps = [
     ":on_device_translation",
     ":public",
+    ":test_support",
     "//base",
     "//base/test:test_support",
+    "//components/component_updater",
     "//components/on_device_translation/public/mojom",
     "//components/on_device_translation/service:test_support",
     "//mojo/public/cpp/bindings",
