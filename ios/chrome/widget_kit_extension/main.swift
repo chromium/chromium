@@ -28,7 +28,6 @@ struct ChromeWidgetsForMIM: WidgetBundle {
     #else
       ShortcutsWidget()
       SearchPasswordsWidget()
-      DinoGameWidget()
     #endif
     #if IOS_ENABLE_LOCKSCREEN_WIDGET
       #if IOS_AVAILABLE_LOCKSCREEN_WIDGET
