@@ -63,12 +63,18 @@ ResizeObservation::ResizeObservation(Element* target,
 }
 
 bool ResizeObservation::ObservationSizeOutOfSync() {
-  if (observation_size_ == ComputeTargetSize())
+  if (observation_size_ == ComputeTargetSize()) {
     return false;
+  }
+
+  const Element* target = target_.Get();
+  if (!target) {
+    return false;
+  }
 
   // Skip resize observations on locked elements.
-  if (target_ && DisplayLockUtilities::IsInLockedSubtreeCrossingFrames(
-                     *target_)) [[unlikely]] {
+  if (DisplayLockUtilities::IsInLockedSubtreeCrossingFrames(*target))
+      [[unlikely]] {
     return false;
   }
 
@@ -76,7 +82,7 @@ bool ResizeObservation::ObservationSizeOutOfSync() {
   // This is used by contain-intrinsic-size delegate to implement the following
   // resolution:
   // https://github.com/w3c/csswg-drafts/issues/7606#issuecomment-1240015961
-  const LayoutObject* layout_object = target_->GetLayoutObject();
+  const LayoutObject* layout_object = target->GetLayoutObject();
   if (observer_->SkipNonAtomicInlineObservations() && layout_object &&
       layout_object->IsNonAtomicInline()) {
     return false;
@@ -103,11 +109,16 @@ size_t ResizeObservation::TargetDepth() {
 }
 
 LogicalSize ResizeObservation::ComputeTargetSize() const {
-  if (!target_ || !target_->GetLayoutObject())
+  const Element* target = target_.Get();
+  if (!target) {
     return LogicalSize();
-  const LayoutObject& layout_object = *target_->GetLayoutObject();
-  if (layout_object.IsSVGChild()) {
-    gfx::SizeF size = ComputeZoomAdjustedSVGBox(observed_box_, layout_object);
+  }
+  const LayoutObject* layout_object = target_->GetLayoutObject();
+  if (!layout_object) {
+    return LogicalSize();
+  }
+  if (layout_object->IsSVGChild()) {
+    gfx::SizeF size = ComputeZoomAdjustedSVGBox(observed_box_, *layout_object);
     return LogicalSize(LayoutUnit(size.width()), LayoutUnit(size.height()));
   }
   if (const auto* layout_box = DynamicTo<LayoutBox>(layout_object)) {
@@ -123,15 +134,16 @@ bool ResizeObservation::NeedsObservationForRepaint() const {
     return false;
   }
   CHECK(RuntimeEnabledFeatures::CanvasDrawElementEnabled());
-  if (!target_ || !target_->GetLayoutObject()) {
+  const Element* target = target_.Get();
+  if (!target) {
     return false;
   }
-  const LayoutObject& layout_object = *target_->GetLayoutObject();
-  if (!layout_object.HasLayer()) {
+  const LayoutObject* layout_object = target->GetLayoutObject();
+  if (!layout_object || !layout_object->HasLayer()) {
     return false;
   }
   return To<LayoutBoxModelObject>(layout_object)
-      .Layer()
+      ->Layer()
       ->SelfOrDescendantNeedsRepaint();
 }
 
