@@ -822,6 +822,9 @@ chromium-metrics-reviews@google.com.
   <int value="100370" label="AccessibilityReadAnythingOmniboxChipIgnoredCount"/>
   <int value="100371" label="AccessibilityReadAnythingLineFocus"/>
   <int value="100372" label="ProjectsPanelEntrypointEnabled"/>
+  <int value="100373" label="iOSTabGroupsPromoLastImpressionTimestamp"/>
+  <int value="100374" label="iOSTabGroupsPromoImpressionsCounter"/>
+  <int value="100375" label="iOSTabGroupsPromoOptOut"/>
 <!-- LINT.ThenChange(/chrome/browser/sync/prefs/chrome_syncable_prefs_database.cc:ChromeSyncablePref)-->
 
 <!-- LINT.IfChange(IosSyncablePref) -->
