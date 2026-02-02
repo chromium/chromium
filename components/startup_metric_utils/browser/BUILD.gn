@@ -17,6 +17,10 @@ source_set("browser") {
     "//components/version_info",
   ]
 
+  if (is_win) {
+    libs = [ "ntdll.lib" ]
+  }
+
   # Do not add to this list. Depend on //components/startup_metric_utils rather
   # than this.
   visibility = [ "//components/startup_metric_utils/*" ]

@@ -14,30 +14,9 @@
 
 namespace extensions {
 
-namespace {
-
-const wchar_t kNtdll[] = L"ntdll.dll";
-const char kNtQuerySystemInformationName[] = "NtQuerySystemInformation";
-
-// See MSDN about NtQuerySystemInformation definition.
-typedef DWORD(WINAPI* NtQuerySystemInformationPF)(DWORD system_info_class,
-                                                  PVOID system_info,
-                                                  ULONG system_info_length,
-                                                  PULONG return_length);
-
-}  // namespace
-
 bool CpuInfoProvider::QueryCpuTimePerProcessor(
     std::vector<api::system_cpu::ProcessorInfo>* infos) {
   DCHECK(infos);
-
-  HMODULE ntdll = GetModuleHandle(kNtdll);
-  CHECK(ntdll != NULL);
-  NtQuerySystemInformationPF NtQuerySystemInformation =
-      reinterpret_cast<NtQuerySystemInformationPF>(
-          ::GetProcAddress(ntdll, kNtQuerySystemInformationName));
-
-  CHECK(NtQuerySystemInformation != NULL);
 
   int num_of_processors = base::SysInfo::NumberOfProcessors();
   auto processor_info =
@@ -47,7 +26,7 @@ bool CpuInfoProvider::QueryCpuTimePerProcessor(
   ULONG returned_bytes = 0,
         bytes = sizeof(SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION) *
                 num_of_processors;
-  if (!NT_SUCCESS(NtQuerySystemInformation(
+  if (!NT_SUCCESS(::NtQuerySystemInformation(
           SystemProcessorPerformanceInformation, processor_info.data(), bytes,
           &returned_bytes))) {
     return false;

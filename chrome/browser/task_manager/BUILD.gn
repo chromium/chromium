@@ -199,11 +199,13 @@ source_set("impl") {
     "//url",
   ]
 
+  libs = []
   if (is_mac || is_win || is_linux || is_chromeos) {
     deps += [ "//components/webapps/isolated_web_apps:scheme" ]
   }
   if (is_win) {
     sources += [ "sampling/shared_sampler_win.cc" ]
+    libs += [ "ntdll.lib" ]
   } else {
     sources += [ "sampling/shared_sampler_stub.cc" ]
   }

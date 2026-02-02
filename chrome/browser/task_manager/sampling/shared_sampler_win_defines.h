@@ -13,8 +13,6 @@
 
 namespace task_manager {
 
-// From <wdm.h>
-typedef LONG KPRIORITY;
 typedef LONG KWAIT_REASON;  // Full definition is in wdm.h
 
 // From ntddk.h
@@ -32,19 +30,6 @@ typedef struct _VM_COUNTERS {
   SIZE_T PagefileUsage;
   SIZE_T PeakPagefileUsage;
 } VM_COUNTERS;
-
-// Two possibilities available from here:
-// http://stackoverflow.com/questions/28858849/where-is-system-information-class-defined
-
-typedef enum _SYSTEM_INFORMATION_CLASS {
-  SystemProcessInformation = 5,  // This is the number that we need.
-} SYSTEM_INFORMATION_CLASS;
-
-// https://msdn.microsoft.com/en-us/library/gg750647.aspx?f=255&MSPPError=-2147217396
-typedef struct {
-  HANDLE UniqueProcess;  // Actually process ID
-  HANDLE UniqueThread;   // Actually thread ID
-} CLIENT_ID;
 
 // From http://alax.info/blog/1182, with corrections and modifications
 // Originally from
@@ -105,12 +90,6 @@ static_assert(sizeof(SYSTEM_PROCESS_INFORMATION) == 248,
               "Structure size mismatch");
 #endif
 
-typedef NTSTATUS(WINAPI* NTQUERYSYSTEMINFORMATION)(
-    SYSTEM_INFORMATION_CLASS SystemInformationClass,
-    PVOID SystemInformation,
-    ULONG SystemInformationLength,
-    PULONG ReturnLength);
-
 }  // namespace task_manager
 
-#endif  //  CHROME_BROWSER_TASK_MANAGER_SAMPLING_SHARED_SAMPLER_WIN_DEFINES_H_
+#endif  // CHROME_BROWSER_TASK_MANAGER_SAMPLING_SHARED_SAMPLER_WIN_DEFINES_H_

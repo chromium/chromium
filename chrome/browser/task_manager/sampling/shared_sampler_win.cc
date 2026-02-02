@@ -33,7 +33,7 @@ static SharedSampler::QuerySystemInformationForTest
     g_query_system_information_for_test = nullptr;
 
 // static
-void SharedSampler::SetQuerySystemInformationForTest(
+void SharedSampler::SetQuerySystemInformationForTesting(
     QuerySystemInformationForTest query_system_information) {
   g_query_system_information_for_test = query_system_information;
 }
@@ -78,18 +78,6 @@ class ByteBuffer {
 
 // Wrapper for NtQuerySystemProcessInformation with buffer reallocation logic.
 bool QuerySystemProcessInformation(ByteBuffer* buffer) {
-  HMODULE ntdll = ::GetModuleHandle(L"ntdll.dll");
-  if (!ntdll) {
-    NOTREACHED();
-  }
-
-  NTQUERYSYSTEMINFORMATION nt_query_system_information_ptr =
-      reinterpret_cast<NTQUERYSYSTEMINFORMATION>(
-          ::GetProcAddress(ntdll, "NtQuerySystemInformation"));
-  if (!nt_query_system_information_ptr) {
-    NOTREACHED();
-  }
-
   NTSTATUS result;
 
   // There is a potential race condition between growing the buffer and new
@@ -104,8 +92,8 @@ bool QuerySystemProcessInformation(ByteBuffer* buffer) {
       result =
           (data_size > buffer_size) ? STATUS_BUFFER_TOO_SMALL : STATUS_SUCCESS;
     } else {
-      result = nt_query_system_information_ptr(
-          SystemProcessInformation, span.data(), buffer_size, &data_size);
+      result = ::NtQuerySystemInformation(SystemProcessInformation, span.data(),
+                                          buffer_size, &data_size);
     }
 
     if (result == STATUS_SUCCESS) {

@@ -203,7 +203,7 @@ static int ReturnZeroThreadProcessInformation(base::span<uint8_t> buffer) {
 
 // Verifies that the SharedSampler copes with zero-thread processes.
 TEST_F(SharedSamplerTest, ZeroThreadProcess) {
-  SharedSampler::SetQuerySystemInformationForTest(
+  SharedSampler::SetQuerySystemInformationForTesting(
       ReturnZeroThreadProcessInformation);
 
   StartRefresh(REFRESH_TYPE_IDLE_WAKEUPS | REFRESH_TYPE_START_TIME |
@@ -213,7 +213,7 @@ TEST_F(SharedSamplerTest, ZeroThreadProcess) {
                 REFRESH_TYPE_CPU_TIME,
             finished_refresh_type());
 
-  SharedSampler::SetQuerySystemInformationForTest(nullptr);
+  SharedSampler::SetQuerySystemInformationForTesting(nullptr);
 }
 
 }  // namespace task_manager

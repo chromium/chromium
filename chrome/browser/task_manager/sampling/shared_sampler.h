@@ -66,7 +66,7 @@ class SharedSampler : public base::RefCountedThreadSafe<SharedSampler> {
 #if BUILDFLAG(IS_WIN)
   // Specifies a function to use in place of NtQuerySystemInformation.
   typedef int (*QuerySystemInformationForTest)(base::span<uint8_t> buffer);
-  static void SetQuerySystemInformationForTest(
+  static void SetQuerySystemInformationForTesting(
       QuerySystemInformationForTest query_system_information);
 #endif  // BUILDFLAG(IS_WIN)
 
