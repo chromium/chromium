@@ -4,16 +4,14 @@
 
 #include "chrome/browser/ui/startup/profile_launch_observer.h"
 
-#include "base/lazy_instance.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "content/public/browser/browser_thread.h"
-
-base::LazyInstance<ProfileLaunchObserver>::DestructorAtExit
-    profile_launch_observer = LAZY_INSTANCE_INITIALIZER;
 
 ProfileLaunchObserver::ProfileLaunchObserver() {
   BrowserList::AddObserver(this);
@@ -25,7 +23,7 @@ ProfileLaunchObserver::~ProfileLaunchObserver() {
 
 // static
 ProfileLaunchObserver* ProfileLaunchObserver::GetInstance() {
-  return &profile_launch_observer.Get();
+  return g_browser_process->GetFeatures()->profile_launch_observer();
 }
 
 // static

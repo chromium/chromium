@@ -55,6 +55,7 @@ class ApplicationAdvancedProtectionStatusDetector;
 }  // namespace safe_browsing
 
 #if !BUILDFLAG(IS_ANDROID)
+class ProfileLaunchObserver;
 class StartupLaunchManager;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -186,6 +187,14 @@ class GlobalFeatures {
   static ui::UserDataFactoryWithOwner<BrowserProcess>&
   GetUserDataFactoryForTesting();
 
+#if !BUILDFLAG(IS_ANDROID)
+  // Prefer using ProfileLaunchObserver::GetInstance() over calling this method
+  // directly.
+  ProfileLaunchObserver* profile_launch_observer() {
+    return profile_launch_observer_.get();
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+
  protected:
   GlobalFeatures();
 
@@ -263,6 +272,8 @@ class GlobalFeatures {
 #if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<on_device_translation::OnDeviceTranslationInstaller>
       on_device_translation_installer_;
+
+  std::unique_ptr<ProfileLaunchObserver> profile_launch_observer_;
 #endif  // !BUILDFLAG(IS_ANDROID)
 };
 

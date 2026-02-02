@@ -57,6 +57,7 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/startup/startup_launch_manager.h"
+#include "chrome/browser/ui/startup/profile_launch_observer.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
@@ -145,6 +146,10 @@ void GlobalFeatures::PostBrowserProcessInit() {
   on_device_translation_installer_ = std::make_unique<
       on_device_translation::OnDeviceTranslationInstallerImpl>();
 #endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
+
+#if !BUILDFLAG(IS_ANDROID)
+  profile_launch_observer_ = std::make_unique<ProfileLaunchObserver>();
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void GlobalFeatures::PreBrowserProcessInitCore() {
@@ -201,6 +206,10 @@ void GlobalFeatures::PostBrowserProcessInitCore() {
 }
 
 void GlobalFeatures::PostMainMessageLoopRun() {
+#if !BUILDFLAG(IS_ANDROID)
+  profile_launch_observer_.reset();
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(ENABLE_GLIC) && !BUILDFLAG(IS_ANDROID)
   if (glic_background_mode_manager_) {
     glic_background_mode_manager_->Shutdown();
