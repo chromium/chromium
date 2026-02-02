@@ -31,10 +31,6 @@
 // both the controller and the view working together.
 namespace autofill {
 
-using ::testing::Mock;
-using ::testing::NiceMock;
-using ::testing::Return;
-
 namespace {
 
 using ::testing::Mock;
