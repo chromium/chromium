@@ -7,13 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-// Possible purposes for showing the passkey welcome screen.
-enum class PasskeyWelcomeScreenPurpose {
-  kEnroll,
-  kFixDegradedRecoverability,
-  kReauthenticate,
-};
-
 // Contains all the strings that need to be displayed in passkey welcome screen
 // for a specific `PasskeyWelcomeScreenPurpose`. Those strings cannot be
 // directly initialized in the view controller, because it needs to be displayed

@@ -106,6 +106,7 @@ source_set("unit_tests") {
     "//components/cbor",
     "//components/sync/protocol",
     "//components/webauthn/core/browser:passkey_model",
+    "//components/webauthn/ios:passkey_types",
     "//device/fido",
     "//ios/chrome/common/app_group",
     "//ios/chrome/common/credential_provider",
@@ -215,6 +216,7 @@ source_set("passkey_welcome_screen_util") {
   deps = [
     ":generated_strings",
     "//base",
+    "//components/webauthn/ios:passkey_types",
     "//ios/chrome/common/credential_provider/ui",
   ]
   frameworks = [ "Foundation.framework" ]

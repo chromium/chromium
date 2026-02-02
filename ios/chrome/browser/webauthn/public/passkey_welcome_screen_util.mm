@@ -6,6 +6,7 @@
 
 #import "base/check.h"
 #import "base/strings/utf_string_conversions.h"
+#import "components/webauthn/ios/passkey_types.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/create_password_manager_title_view.h"
 #import "ios/chrome/common/credential_provider/ui/passkey_welcome_screen_strings.h"
 #import "ios/chrome/common/credential_provider/ui/passkey_welcome_screen_view_controller.h"
@@ -15,6 +16,8 @@
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
+
+using ::webauthn::PasskeyWelcomeScreenPurpose;
 
 // Returns the title to use depending on the provided `purpose`.
 NSString* GetTitleString(PasskeyWelcomeScreenPurpose purpose) {

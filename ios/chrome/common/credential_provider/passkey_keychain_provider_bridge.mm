@@ -164,9 +164,13 @@ bool ContainsValidKey(const webauthn::SharedKeyList keys,
                       completion:fetchTrustedVaultKeysCompletion
                            error:enroll_error];
     };
-    [self.delegate showEnrollmentWelcomeScreen:^{
-      [weakSelf enrollForGaia:gaia completion:enrollCompletion];
-    }];
+    [self.delegate showWelcomeScreenWithPurpose:
+                       webauthn::PasskeyWelcomeScreenPurpose::kEnroll
+                                     completion:^{
+                                       [weakSelf
+                                           enrollForGaia:gaia
+                                              completion:enrollCompletion];
+                                     }];
   }
 }
 
@@ -273,13 +277,16 @@ bool ContainsValidKey(const webauthn::SharedKeyList keys,
     if (_navigationController && canReauthenticate) {
       // A valid navigation controller is needed to show the reauthentication
       // UI. Otherwise, it won't be possible to perform reauthentication.
-      [self.delegate showReauthenticationWelcomeScreen:^{
-        [weakSelf reauthenticateForGaia:gaia
-                             credential:credential
-                     canMarkKeysAsStale:canMarkKeysAsStale
-                                purpose:purpose
-                             completion:completion];
-      }];
+      [self.delegate
+          showWelcomeScreenWithPurpose:webauthn::PasskeyWelcomeScreenPurpose::
+                                           kReauthenticate
+                            completion:^{
+                              [weakSelf reauthenticateForGaia:gaia
+                                                   credential:credential
+                                           canMarkKeysAsStale:canMarkKeysAsStale
+                                                      purpose:purpose
+                                                   completion:completion];
+                            }];
     } else {
       completion(nil);
     }
@@ -325,10 +332,16 @@ bool ContainsValidKey(const webauthn::SharedKeyList keys,
           // recoverability state" UI. Otherwise, it won't be possible to
           // perform the GPM pin creation required to fix the degraded
           // recoverability state.
-          [weakSelf.delegate showFixDegradedRecoverabilityWelcomeScreen:^{
-            [weakSelf fixDegradedRecoverabilityForGaia:gaia
-                                            completion:completion];
-          }];
+          [weakSelf.delegate
+              showWelcomeScreenWithPurpose:webauthn::
+                                               PasskeyWelcomeScreenPurpose::
+                                                   kFixDegradedRecoverability
+                                completion:^{
+                                  [weakSelf
+                                      fixDegradedRecoverabilityForGaia:gaia
+                                                            completion:
+                                                                completion];
+                                }];
         } else {
           completion(error);
         }

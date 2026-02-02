@@ -5,6 +5,7 @@
 #import "ios/chrome/common/credential_provider/ui/passkey_welcome_screen_view_controller.h"
 
 #import "base/notreached.h"
+#import "components/webauthn/ios/passkey_types.h"
 #import "ios/chrome/common/credential_provider/ui/passkey_welcome_screen_strings.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -12,6 +13,8 @@
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 namespace {
+
+using ::webauthn::PasskeyWelcomeScreenPurpose;
 
 // Vertical spacing between the UI elements contained in the
 // `specificContentView`.

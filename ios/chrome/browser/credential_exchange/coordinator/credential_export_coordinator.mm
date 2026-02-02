@@ -116,24 +116,12 @@
   completion();
 }
 
-- (void)showEnrollmentWelcomeScreen:(ProceduralBlock)enrollBlock {
-  CreateAndPresentPasskeyWelcomeScreen(
-      PasskeyWelcomeScreenPurpose::kEnroll, _baseNavigationController,
-      /*delegate=*/self, enrollBlock, _userEmail);
-}
-
-- (void)showFixDegradedRecoverabilityWelcomeScreen:
-    (ProceduralBlock)fixDegradedRecoverabilityBlock {
-  CreateAndPresentPasskeyWelcomeScreen(
-      PasskeyWelcomeScreenPurpose::kFixDegradedRecoverability,
-      _baseNavigationController, /*delegate=*/self,
-      fixDegradedRecoverabilityBlock, _userEmail);
-}
-
-- (void)showReauthenticationWelcomeScreen:(ProceduralBlock)reauthenticateBlock {
-  CreateAndPresentPasskeyWelcomeScreen(
-      PasskeyWelcomeScreenPurpose::kReauthenticate, _baseNavigationController,
-      /*delegate=*/self, reauthenticateBlock, _userEmail);
+- (void)showWelcomeScreenWithPurpose:
+            (webauthn::PasskeyWelcomeScreenPurpose)purpose
+                          completion:(ProceduralBlock)completion {
+  CreateAndPresentPasskeyWelcomeScreen(purpose, _baseNavigationController,
+                                       /*delegate=*/self, completion,
+                                       _userEmail);
 }
 
 - (void)providerDidCompleteReauthentication {

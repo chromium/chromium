@@ -14,6 +14,7 @@ source_set("ui") {
   ]
   deps = [
     "//base",
+    "//components/webauthn/ios:passkey_types",
     "//ios/chrome/common/credential_provider/ui/resources",
     "//ios/chrome/common/ui/button_stack",
     "//ios/chrome/common/ui/colors",
@@ -30,6 +31,7 @@ source_set("unit_tests") {
     ":ui",
     "//base",
     "//base/test:test_support",
+    "//components/webauthn/ios:passkey_types",
     "//ios/chrome/common/ui/button_stack",
     "//ios/chrome/common/ui/colors",
     "//testing/gtest",

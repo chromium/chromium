@@ -5,10 +5,13 @@
 #import "ios/chrome/credential_provider_extension/passkey_welcome_screen_util.h"
 
 #import "base/check.h"
+#import "components/webauthn/ios/passkey_types.h"
 #import "ios/chrome/common/credential_provider/ui/passkey_welcome_screen_strings.h"
 #import "ios/chrome/credential_provider_extension/generated_localized_strings.h"
 
 namespace {
+
+using ::webauthn::PasskeyWelcomeScreenPurpose;
 
 // Returns the title to use depending on the provided `purpose`.
 NSString* GetTitleString(PasskeyWelcomeScreenPurpose purpose) {

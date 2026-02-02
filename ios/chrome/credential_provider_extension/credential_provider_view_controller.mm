@@ -670,24 +670,11 @@ enum class PasskeyUserVerificationStatus {
                        }];
 }
 
-- (void)showEnrollmentWelcomeScreen:(ProceduralBlock)enrollBlock {
-  [self createAndPresentPasskeyWelcomeScreenForPurpose:
-            PasskeyWelcomeScreenPurpose::kEnroll
-                                   primaryButtonAction:enrollBlock];
-}
-
-- (void)showFixDegradedRecoverabilityWelcomeScreen:
-    (ProceduralBlock)fixDegradedRecoverabilityBlock {
-  [self createAndPresentPasskeyWelcomeScreenForPurpose:
-            PasskeyWelcomeScreenPurpose::kFixDegradedRecoverability
-                                   primaryButtonAction:
-                                       fixDegradedRecoverabilityBlock];
-}
-
-- (void)showReauthenticationWelcomeScreen:(ProceduralBlock)reauthenticateBlock {
-  [self createAndPresentPasskeyWelcomeScreenForPurpose:
-            PasskeyWelcomeScreenPurpose::kReauthenticate
-                                   primaryButtonAction:reauthenticateBlock];
+- (void)showWelcomeScreenWithPurpose:
+            (webauthn::PasskeyWelcomeScreenPurpose)purpose
+                          completion:(ProceduralBlock)completion {
+  [self createAndPresentPasskeyWelcomeScreenForPurpose:purpose
+                                   primaryButtonAction:completion];
 }
 
 - (void)providerDidCompleteReauthentication {
@@ -1321,7 +1308,7 @@ enum class PasskeyUserVerificationStatus {
 
 // Creates and presents a PasskeyWelcomeScreenViewController.
 - (void)createAndPresentPasskeyWelcomeScreenForPurpose:
-            (PasskeyWelcomeScreenPurpose)purpose
+            (webauthn::PasskeyWelcomeScreenPurpose)purpose
                                    primaryButtonAction:
                                        (ProceduralBlock)primaryButtonAction {
   // Early return if the `passkeyNavigationController` is already visible. This
@@ -1345,7 +1332,7 @@ enum class PasskeyUserVerificationStatus {
   // With the `kReauthenticate` purpose, the user will be asked to enter their
   // Google Password Manager PIN, so no need to also do a device
   // reauthentication before showing the UI.
-  if (purpose != PasskeyWelcomeScreenPurpose::kReauthenticate &&
+  if (purpose != webauthn::PasskeyWelcomeScreenPurpose::kReauthenticate &&
       _userVerificationStatus == PasskeyUserVerificationStatus::kRequired) {
     __weak __typeof(self) weakSelf = self;
     action = ^{
@@ -1366,7 +1353,7 @@ enum class PasskeyUserVerificationStatus {
   }
 
   NSString* userEmail;
-  if (purpose == PasskeyWelcomeScreenPurpose::kEnroll) {
+  if (purpose == webauthn::PasskeyWelcomeScreenPurpose::kEnroll) {
     userEmail = [self userEmail];
     if (!userEmail.length) {
       [self showGenericErrorAlert];

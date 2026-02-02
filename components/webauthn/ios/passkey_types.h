@@ -22,6 +22,13 @@ enum class ReauthenticatePurpose {
   kDecrypt,
 };
 
+// Possible purposes for showing the passkey welcome screen.
+enum class PasskeyWelcomeScreenPurpose {
+  kEnroll,
+  kFixDegradedRecoverability,
+  kReauthenticate,
+};
+
 // Helper types representing a key and a list of key respectively.
 using SharedKey = std::vector<uint8_t>;
 using SharedKeyList = std::vector<SharedKey>;

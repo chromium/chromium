@@ -4,6 +4,7 @@
 
 #import "ios/chrome/credential_provider_extension/passkey_welcome_screen_util.h"
 
+#import "components/webauthn/ios/passkey_types.h"
 #import "ios/chrome/common/credential_provider/ui/passkey_welcome_screen_strings.h"
 #import "ios/chrome/credential_provider_extension/generated_localized_strings.h"
 #import "testing/gtest_mac.h"
@@ -16,7 +17,7 @@ class PasskeyWelcomeScreenUtilTest : public PlatformTest {};
 TEST_F(PasskeyWelcomeScreenUtilTest, TestStringsForEnrollmentPurpose) {
   NSString* email = @"user@example.com";
   PasskeyWelcomeScreenStrings* strings = GetPasskeyWelcomeScreenStrings(
-      PasskeyWelcomeScreenPurpose::kEnroll, email);
+      webauthn::PasskeyWelcomeScreenPurpose::kEnroll, email);
 
   EXPECT_NSEQ(strings.title, CredentialProviderPasskeyEnrollmentTitleString());
   EXPECT_FALSE(strings.subtitle);
@@ -38,7 +39,7 @@ TEST_F(PasskeyWelcomeScreenUtilTest, TestStringsForEnrollmentPurpose) {
 TEST_F(PasskeyWelcomeScreenUtilTest,
        TestStringsForFixDegradedRecoverabilityPurpose) {
   PasskeyWelcomeScreenStrings* strings = GetPasskeyWelcomeScreenStrings(
-      PasskeyWelcomeScreenPurpose::kFixDegradedRecoverability,
+      webauthn::PasskeyWelcomeScreenPurpose::kFixDegradedRecoverability,
       /*userEmail=*/nil);
 
   EXPECT_NSEQ(strings.title,
@@ -54,7 +55,8 @@ TEST_F(PasskeyWelcomeScreenUtilTest,
 
 TEST_F(PasskeyWelcomeScreenUtilTest, TestStringsForReauthenticationPurpose) {
   PasskeyWelcomeScreenStrings* strings = GetPasskeyWelcomeScreenStrings(
-      PasskeyWelcomeScreenPurpose::kReauthenticate, /*userEmail=*/nil);
+      webauthn::PasskeyWelcomeScreenPurpose::kReauthenticate,
+      /*userEmail=*/nil);
 
   EXPECT_NSEQ(strings.title,
               CredentialProviderPasskeyBootsrappingTitleString());

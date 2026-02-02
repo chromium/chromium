@@ -5,6 +5,7 @@ include_rules = [
   "+components/password_manager/core/common/password_manager_constants.h",
   "+components/sync/protocol",
   "+components/webauthn/core/browser",
+  "+components/webauthn/ios/passkey_types.h",
   "+device/fido",
   "+ios/components/credential_provider_extension",
   # keep-sorted end

@@ -10,15 +10,17 @@
 #import <string>
 
 #import "base/ios/block_types.h"
+namespace webauthn {
+enum class PasskeyWelcomeScreenPurpose;
+}  // namespace webauthn
 
 @protocol PasskeyWelcomeScreenViewControllerDelegate;
-enum class PasskeyWelcomeScreenPurpose;
 
 // Creates a passkey welcome screen for `purpose` and pushes it on the provided
 // `navigationController`. `primaryButtonAction` is invoked on the primary
 // button press. `navigationController` and `delegate` should not be nil.
 void CreateAndPresentPasskeyWelcomeScreen(
-    PasskeyWelcomeScreenPurpose purpose,
+    webauthn::PasskeyWelcomeScreenPurpose purpose,
     UINavigationController* navigationController,
     id<PasskeyWelcomeScreenViewControllerDelegate> delegate,
     ProceduralBlock primaryButtonAction,

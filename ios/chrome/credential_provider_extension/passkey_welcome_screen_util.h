@@ -7,13 +7,16 @@
 
 #import <Foundation/Foundation.h>
 
-@class PasskeyWelcomeScreenStrings;
+namespace webauthn {
 enum class PasskeyWelcomeScreenPurpose;
+}  // namespace webauthn
+
+@class PasskeyWelcomeScreenStrings;
 
 // Returns strings needed in the welcome string for `purpose`. `userEmail` is
 // needed for `PasskeyWelcomeScreenPurpose::kEnroll`, otherwise can be nil.
 PasskeyWelcomeScreenStrings* GetPasskeyWelcomeScreenStrings(
-    PasskeyWelcomeScreenPurpose purpose,
+    webauthn::PasskeyWelcomeScreenPurpose purpose,
     NSString* userEmail);
 
 #endif  // IOS_CHROME_CREDENTIAL_PROVIDER_EXTENSION_PASSKEY_WELCOME_SCREEN_UTIL_H_

@@ -9,6 +9,7 @@ source_set("public") {
   ]
   deps = [
     "//base",
+    "//components/webauthn/ios:passkey_types",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/settings/ui_bundled/password:title_view",
     "//ios/chrome/common/credential_provider/ui",

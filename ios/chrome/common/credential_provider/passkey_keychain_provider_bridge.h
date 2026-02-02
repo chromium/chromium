@@ -10,6 +10,11 @@
 
 @protocol Credential;
 
+namespace webauthn {
+enum class PasskeyWelcomeScreenPurpose;
+enum class ReauthenticatePurpose;
+}  // namespace webauthn
+
 typedef void (^FetchTrustedVaultKeysCompletionBlock)(
     NSArray<NSData*>* trustedVaultKeys);
 
@@ -19,15 +24,10 @@ typedef void (^FetchTrustedVaultKeysCompletionBlock)(
 // Asks the user to reauthenticate if needed and calls the the completion block.
 - (void)performUserVerificationIfNeeded:(ProceduralBlock)completion;
 
-// Presents the passkey enrollment welcome screen.
-- (void)showEnrollmentWelcomeScreen:(ProceduralBlock)enrollBlock;
-
-// Presents the passkey "fix degraded recoverability state" welcome screen.
-- (void)showFixDegradedRecoverabilityWelcomeScreen:
-    (ProceduralBlock)fixDegradedRecoverabilityBlock;
-
-// Presents the passkey reauthentication welcome screen.
-- (void)showReauthenticationWelcomeScreen:(ProceduralBlock)reauthenticateBlock;
+// Presents the passkey welcome screen for `purpose`.
+- (void)showWelcomeScreenWithPurpose:
+            (webauthn::PasskeyWelcomeScreenPurpose)purpose
+                          completion:(ProceduralBlock)completion;
 
 // Informs the delegate that the user completed a reauthentication facilitated
 // by the provider.
