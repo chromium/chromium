@@ -264,16 +264,11 @@ void ClassroomPageHandlerImpl::OnListAssignmentsFetched(
     ListAssignmentsHelper(course_id, result.value()->next_page_token(),
                           std::move(fetched_assignments), std::move(callback));
   } else {
-    // This is the logical exit point: either the request failed OR all pages
-    // for /courseWork are finished. Now we check the flag to see what to do
-    // next.
-    if (features::IsBocaCourseWorkMaterialApiEnabled()) {
-      ListCourseWorkMaterialsHelper(course_id, /*page_token=*/"",
-                                    std::move(fetched_assignments),
-                                    std::move(callback));
-    } else {
-      std::move(callback).Run(std::move(*fetched_assignments));
-    }
+    // Request failed OR all pages for /courseWork are finished.
+    // Move on to fetching CourseWorkMaterials.
+    ListCourseWorkMaterialsHelper(course_id, /*page_token=*/"",
+                                  std::move(fetched_assignments),
+                                  std::move(callback));
   }
 }
 
