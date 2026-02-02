@@ -261,7 +261,7 @@ void RecordIfNeededSigninFullscreenPromoEvent(
   [self stopSigninCoordinatorWithCompletionAnimated:NO];
   _signinCoordinator =
       [SigninCoordinator signinCoordinatorWithCommand:command
-                                              browser:self.currentBrowser
+                                              browser:_regularBrowser.get()
                                    baseViewController:baseViewController];
   [self startSigninCoordinatorWithCompletion:command.completion];
 }
@@ -275,7 +275,8 @@ void RecordIfNeededSigninFullscreenPromoEvent(
   _signinCoordinator = [SigninCoordinator
       fullscreenSigninPromoCoordinatorWithBaseViewController:
           self.activeViewController
-                                                     browser:self.currentBrowser
+                                                     browser:_regularBrowser
+                                                                 .get()
                                                 contextStyle:
                                                     SigninContextStyle::kDefault
                            changeProfileContinuationProvider:
@@ -296,10 +297,11 @@ void RecordIfNeededSigninFullscreenPromoEvent(
   ChangeProfileContinuationProvider provider =
       base::BindRepeating(&CreateChangeProfileOpensURLContinuation, URL);
   [self stopSigninCoordinatorWithCompletionAnimated:NO];
+  base::WeakPtr<Browser> regularBrowser = _regularBrowser;
   _signinCoordinator = [SigninCoordinator
       consistencyPromoSigninCoordinatorWithBaseViewController:viewController
-                                                      browser:
-                                                          self.currentBrowser
+                                                      browser:regularBrowser
+                                                                  .get()
                                                  contextStyle:
                                                      SigninContextStyle::
                                                          kDefault
@@ -312,7 +314,6 @@ void RecordIfNeededSigninFullscreenPromoEvent(
   if (!_signinCoordinator) {
     return;
   }
-  base::WeakPtr<Browser> regularBrowser = _regularBrowser;
   // Copy the URL so it can be safely captured in the block.
   GURL copiedURL = URL;
   [self startSigninCoordinatorWithCompletion:^(SigninCoordinator* coordinator,
