@@ -127,12 +127,20 @@ class CONTENT_EXPORT PrefetchDocumentManager
   // Helper function to get the |PrefetchService| associated with |this|.
   PrefetchService* GetPrefetchService() const;
 
+  const std::map<std::pair<GURL, PreloadingType>,
+                 std::unique_ptr<PrefetchHandle>>&
+  all_prefetches() {
+    return all_prefetches_;
+  }
+
   bool IsPrefetchAttemptFailedOrDiscardedInternal(
       const GURL& url,
       PreloadingType planned_max_preloading_type);
 
   blink::DocumentToken document_token_;
 
+  // Use `all_prefetches()` where applicable to clarify modifications.
+  //
   // This map holds references to all |PrefetchContainer| associated with
   // |this|.
   //
