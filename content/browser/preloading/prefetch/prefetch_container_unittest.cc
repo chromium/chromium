@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/strings/strcat.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -1850,6 +1851,70 @@ TEST_P(PrefetchContainerTest, SpeculationRulesNoTagAddedToRequestHeader) {
                 ->headers.GetHeader(blink::kSecSpeculationTagsHeaderName)
                 .value(),
             "null");
+}
+
+class TestPrefetchContainerObserver final : public PrefetchContainer::Observer {
+ public:
+  explicit TestPrefetchContainerObserver(base::OnceClosure callback)
+      : callback_(std::move(callback)) {
+    CHECK(callback_);
+  }
+  ~TestPrefetchContainerObserver() override = default;
+
+  bool IsNotified() const { return !callback_; }
+
+ private:
+  void OnWillBeDestroyed(const PrefetchContainer& prefetch_container) override {
+  }
+  // This uses `OnGotInitialEligibility()` as an example of the `Observer` calls
+  // in general.
+  void OnGotInitialEligibility(const PrefetchContainer& prefetch_container,
+                               PreloadingEligibility eligibility) override {
+    std::move(callback_).Run();
+  }
+  void OnDeterminedHead(const PrefetchContainer& prefetch_container) override {}
+  void OnPrefetchCompletedOrFailed(
+      const PrefetchContainer& prefetch_container,
+      const network::URLLoaderCompletionStatus& completion_status,
+      const std::optional<int>& response_code) override {}
+
+  base::OnceClosure callback_;
+};
+
+// Tests that:
+// - Observers removed during notification do not get notified of the current
+//   event, if not already notified.
+// - Observers added during notification do not get notified of the current
+//   event.
+//   TODO(crbug.com/400761083): Actually implement this behavior.
+TEST_P(PrefetchContainerTest, ObserverAddedDuringNotification) {
+  auto prefetch_container =
+      CreateSpeculationRulesPrefetchContainer(GURL("https://test.com"));
+
+  TestPrefetchContainerObserver observer_added_during_notification(
+      base::DoNothing());
+  TestPrefetchContainerObserver observer_removed_during_notification(
+      base::DoNothing());
+  TestPrefetchContainerObserver observer(base::BindLambdaForTesting([&]() {
+    prefetch_container->AddObserver(&observer_added_during_notification);
+    prefetch_container->RemoveObserver(&observer_removed_during_notification);
+  }));
+  prefetch_container->AddObserver(&observer);
+  prefetch_container->AddObserver(&observer_removed_during_notification);
+
+  // Trigger the observer call.
+  prefetch_container->SimulatePrefetchEligibleForTest();
+
+  // Check if the observers are notified.
+  ASSERT_TRUE(observer.IsNotified());
+  // TODO(crbug.com/400761083): Stop notifying
+  // `observer_added_during_notification`.
+  EXPECT_TRUE(observer_added_during_notification.IsNotified());
+  EXPECT_FALSE(observer_removed_during_notification.IsNotified());
+
+  // Cleanup.
+  prefetch_container->RemoveObserver(&observer);
+  prefetch_container->RemoveObserver(&observer_added_during_notification);
 }
 
 INSTANTIATE_TEST_SUITE_P(,
