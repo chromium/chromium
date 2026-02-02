@@ -61,7 +61,7 @@ class CanvasResource;
 class CanvasResourceSharedImage;
 class Canvas2DResourceProviderBitmap;
 class CanvasResourceProviderSharedImage;
-class CanvasResourceProviderSharedImageNon2D;
+class CanvasNon2DResourceProviderSharedImage;
 class MemoryManagedPaintCanvas;
 class OffscreenCanvasRenderingContext2D;
 class StaticBitmapImage;
@@ -154,7 +154,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
                             gpu::SharedImageUsageSet shared_image_usage_flags,
                             Delegate* delegate = nullptr);
 
-  static std::unique_ptr<CanvasResourceProviderSharedImageNon2D>
+  static std::unique_ptr<CanvasNon2DResourceProviderSharedImage>
   CreateSharedImageProviderNon2D(
       gfx::Size size,
       viz::SharedImageFormat format,
@@ -168,7 +168,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   // Used for WebGPU-specific CanvasResourceProviders. Not for usage with
   // Canvas2D.
-  static std::unique_ptr<CanvasResourceProviderSharedImageNon2D>
+  static std::unique_ptr<CanvasNon2DResourceProviderSharedImage>
   CreateWebGPUImageProvider(
       gfx::Size size,
       viz::SharedImageFormat format,
@@ -224,7 +224,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
     return base::ByteSize(format_.EstimatedSizeInBytes(size_));
   }
 
-  // This is supported only by CanvasResourceProviderSharedImageNon2D.
+  // This is supported only by CanvasNon2DResourceProviderSharedImage.
   scoped_refptr<StaticBitmapImage> DoExternalDrawAndSnapshot(
       base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback,
       ImageOrientation orientation) override {
@@ -632,10 +632,10 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
 
 // * Subclass of CanvasResourceProviderSharedImage that is specialized for usage
 // * by non-Canvas2D clients.
-class PLATFORM_EXPORT CanvasResourceProviderSharedImageNon2D
+class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
     : public CanvasResourceProviderSharedImage {
  public:
-  CanvasResourceProviderSharedImageNon2D(
+  CanvasNon2DResourceProviderSharedImage(
       gfx::Size,
       viz::SharedImageFormat,
       SkAlphaType,
@@ -644,7 +644,7 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImageNon2D
       bool is_accelerated,
       gpu::SharedImageUsageSet shared_image_usage_flags,
       Delegate*);
-  ~CanvasResourceProviderSharedImageNon2D() override = default;
+  ~CanvasNon2DResourceProviderSharedImage() override = default;
 
   // Drops the cached snapshot (if any) and invokes `draw_callback` on this
   // instance's canvas.

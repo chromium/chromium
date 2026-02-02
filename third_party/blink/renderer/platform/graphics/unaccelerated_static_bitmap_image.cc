@@ -107,7 +107,7 @@ void UnacceleratedStaticBitmapImage::Transfer() {
 }
 
 bool UnacceleratedStaticBitmapImage::CopyToResourceProvider(
-    CanvasResourceProviderSharedImageNon2D* resource_provider,
+    CanvasNon2DResourceProviderSharedImage* resource_provider,
     const gfx::Rect& copy_rect) {
   DCHECK(resource_provider);
 
