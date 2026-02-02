@@ -342,35 +342,44 @@ void PermissionServiceImpl::RequestPermissionsInternal(
     PermissionRequestDescription request_description,
     RequestPermissionsCallback callback) {
   const auto& permissions = request_description.permissions;
-  std::unique_ptr<PendingRequest> pending_request =
-      std::make_unique<PendingRequest>(request_description.permissions,
-                                       std::move(callback));
-
-  int pending_request_id = pending_requests_.Add(std::move(pending_request));
-
   if (!permissions.empty() &&
       PermissionUtil::IsDomainOverride(permissions[0])) {
     if (!PermissionUtil::ValidateDomainOverride(request_description.permissions,
                                                 context_->render_frame_host(),
                                                 permissions[0])) {
-      ReceivedBadMessage();
+      // To prevent crash in the top-level storage access permission request
+      // used by rSAFor. See https://crbug.com/332235257 for more details.
+      std::move(callback).Run(std::vector<PermissionStatus>(
+          permissions.size(), PermissionStatus::DENIED));
       return;
     }
     const url::Origin& requesting_origin =
         PermissionUtil::ExtractDomainOverride(permissions[0]);
     request_description.requesting_origin = requesting_origin.GetURL();
+    int pending_request_id =
+        CreatePendingRequest(permissions, std::move(callback));
     PermissionControllerImpl::FromBrowserContext(browser_context)
         ->RequestPermissions(
-            context_->render_frame_host(), request_description,
+            context_->render_frame_host(), std::move(request_description),
             base::BindOnce(&PermissionServiceImpl::OnRequestPermissionsResponse,
                            weak_factory_.GetWeakPtr(), pending_request_id));
   } else {
+    int pending_request_id =
+        CreatePendingRequest(permissions, std::move(callback));
     PermissionControllerImpl::FromBrowserContext(browser_context)
         ->RequestPermissionsFromCurrentDocument(
             context_->render_frame_host(), std::move(request_description),
             base::BindOnce(&PermissionServiceImpl::OnRequestPermissionsResponse,
                            weak_factory_.GetWeakPtr(), pending_request_id));
   }
+}
+
+int PermissionServiceImpl::CreatePendingRequest(
+    const std::vector<blink::mojom::PermissionDescriptorPtr>& permissions,
+    RequestPermissionsCallback callback) {
+  std::unique_ptr<PendingRequest> pending_request =
+      std::make_unique<PendingRequest>(permissions, std::move(callback));
+  return pending_requests_.Add(std::move(pending_request));
 }
 
 void PermissionServiceImpl::OnRequestPermissionsResponse(

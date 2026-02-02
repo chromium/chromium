@@ -87,6 +87,10 @@ class PermissionServiceImpl : public blink::mojom::PermissionService {
       PermissionRequestDescription request_description,
       RequestPermissionsCallback callback);
 
+  int CreatePendingRequest(
+      const std::vector<blink::mojom::PermissionDescriptorPtr>& permissions,
+      RequestPermissionsCallback callback);
+
   void OnRequestPermissionsResponse(
       int pending_request_id,
       const std::vector<PermissionResult>& result);
