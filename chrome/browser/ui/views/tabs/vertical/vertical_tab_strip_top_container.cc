@@ -39,9 +39,10 @@ VerticalTabStripTopContainer::VerticalTabStripTopContainer(
           &VerticalTabStripTopContainer::OnCollapsedStateChanged,
           base::Unretained(this)));
 
-  tab_search_button_ = AddFlatEdgeChildButtonFor(kActionTabSearch);
-  tab_search_button_->SetProperty(views::kElementIdentifierKey,
-                                  kTabSearchButtonElementId);
+  collapse_button_ =
+      AddTopContainerChildButtonFor(kActionToggleCollapseVertical);
+  collapse_button_->SetProperty(views::kElementIdentifierKey,
+                                kVerticalTabStripCollapseButtonElementId);
 
   if (tabs::IsProjectsPanelFeatureEnabled()) {
     tab_group_button_ = AddFlatEdgeChildButtonFor(kActionToggleProjectsPanel);
@@ -64,10 +65,9 @@ VerticalTabStripTopContainer::VerticalTabStripTopContainer(
                                    kSavedTabGroupButtonElementId);
   }
 
-  collapse_button_ =
-      AddTopContainerChildButtonFor(kActionToggleCollapseVertical);
-  collapse_button_->SetProperty(views::kElementIdentifierKey,
-                                kVerticalTabStripCollapseButtonElementId);
+  tab_search_button_ = AddFlatEdgeChildButtonFor(kActionTabSearch);
+  tab_search_button_->SetProperty(views::kElementIdentifierKey,
+                                  kTabSearchButtonElementId);
 
   UpdateButtonStyles(state_controller);
 }
