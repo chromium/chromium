@@ -29,8 +29,9 @@ CurrentDialogsStorage() {
 // Returns null if no dialog is currently shown on `web_contents` for `type`.
 DataControlsDialog* GetCurrentDialog(content::WebContents* web_contents,
                                      DataControlsDialog::Type type) {
-  if (CurrentDialogsStorage().count({web_contents, type})) {
-    return CurrentDialogsStorage().at({web_contents, type});
+  if (auto it = CurrentDialogsStorage().find({web_contents, type});
+      it != CurrentDialogsStorage().end()) {
+    return it->second;
   }
   return nullptr;
 }
