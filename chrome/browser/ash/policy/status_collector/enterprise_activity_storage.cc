@@ -8,8 +8,8 @@
 
 #include <algorithm>
 #include <map>
-#include <set>
 
+#include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/values.h"
 #include "components/prefs/pref_service.h"
@@ -45,8 +45,7 @@ void EnterpriseActivityStorage::FilterActivityPeriodsByUsers(
 const std::map<std::string, ActivityStorage::Activities>
 EnterpriseActivityStorage::GetRedactedActivityPeriods(
     const std::vector<std::string>& reporting_users) const {
-  std::set<std::string> reporting_users_set(reporting_users.begin(),
-                                            reporting_users.end());
+  base::flat_set<std::string> reporting_users_set(reporting_users);
 
   std::map<std::string, ActivityStorage::Activities> filtered_activity_periods;
   std::map<int64_t, enterprise_management::TimePeriod> unreported_activities;
@@ -55,7 +54,7 @@ EnterpriseActivityStorage::GetRedactedActivityPeriods(
     const std::string& user_email = activity_pair.first;
     const Activities& activity_periods = activity_pair.second;
 
-    if (user_email.empty() || reporting_users_set.count(user_email) == 0) {
+    if (user_email.empty() || !reporting_users_set.contains(user_email)) {
       for (const auto& activity : activity_periods) {
         const auto& day_key = activity.start_timestamp();
         if (unreported_activities.count(day_key) == 0) {
