@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
+#include "build/build_config.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/x/x11_drag_drop_client.h"
 #include "ui/base/x/x11_util.h"
@@ -13,6 +14,12 @@
 #include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/xproto.h"
+
+#if BUILDFLAG(IS_LINUX)
+#include "ui/base/clipboard/clipboard_constants.h"
+#include "ui/base/clipboard/clipboard_util_linux.h"
+#include "ui/base/x/selection_utils.h"
+#endif
 
 namespace ui {
 
@@ -143,6 +150,21 @@ void XDragContext::OnSelectionNotify(const x11::SelectionNotifyEvent& event) {
     scoped_refptr<base::RefCountedMemory> data;
     x11::Atom type = x11::Atom::None;
     if (GetRawBytesOfProperty(local_window_, property, &data, &type)) {
+#if BUILDFLAG(IS_LINUX)
+      // If the source provided a portal key, retrieve the files now.
+      if (target == x11::GetAtom(kMimeTypePortalFileTransfer) ||
+          target == x11::GetAtom(kMimeTypePortalFiles)) {
+        std::vector<std::string> paths =
+            ui::clipboard_util::ExtractPathsFromPortalKey(
+                base::as_byte_span(*data));
+        if (!paths.empty()) {
+          data = base::MakeRefCounted<base::RefCountedString>(
+              ui::clipboard_util::GetUriListFromPaths(paths));
+          // Store as text/uri-list so the rest of Chrome understands it.
+          target = x11::GetAtom(kMimeTypeUriList);
+        }
+      }
+#endif  // BUILDFLAG(IS_LINUX)
       fetched_targets_.Insert(target, data);
     }
   } else {

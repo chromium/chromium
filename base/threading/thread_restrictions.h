@@ -268,6 +268,9 @@ class ScopedAllowBlockingForNSS;
 namespace dbus {
 class Bus;
 }
+namespace dbus_xdg {
+class FileTransferPortal;
+}
 namespace drive {
 class FakeDriveService;
 }
@@ -889,6 +892,7 @@ class BASE_EXPORT
       BrowserGpuChannelHostFactory;          // http://crbug.com/125248
   friend class content::TextInputClientMac;  // http://crbug.com/121917
   friend class dbus::Bus;                    // http://crbug.com/125222
+  friend class dbus_xdg::FileTransferPortal;  // https://crbug.com/40398800
   friend class discardable_memory::
       ClientDiscardableSharedMemoryManager;  // http://crbug.com/1396355
   friend class disk_cache::BackendImpl;      // http://crbug.com/74623

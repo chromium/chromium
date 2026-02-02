@@ -20,6 +20,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "build/build_config.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
@@ -48,6 +49,10 @@
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/platform/wayland/host/wayland_window_manager.h"
 
+#if BUILDFLAG(IS_LINUX)
+#include "ui/base/clipboard/clipboard_util_linux.h"
+#endif
+
 namespace ui {
 namespace {
 
@@ -63,6 +68,15 @@ using mojom::DragOperation;
 // https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API and
 // https://wayland.app/protocols/wayland#wl_data_offer:request:accept.
 constexpr char kMimeTypeEmptyDragData[] = "chromium/x-empty-drag-data";
+
+bool IsPortalMimeType(const std::string& mime_type) {
+#if BUILDFLAG(IS_LINUX)
+  return mime_type == kMimeTypePortalFileTransfer ||
+         mime_type == kMimeTypePortalFiles;
+#else
+  return false;
+#endif
+}
 
 DragOperation DndActionToDragOperation(uint32_t action) {
   // Prevent the usage of this function for an operation mask.
@@ -174,6 +188,29 @@ bool WaylandDataDragController::StartSession(const OSExchangeData& data,
   // Create new data source and offers |data|.
   offered_exchange_data_provider_ = data.provider().Clone();
   auto mime_types = GetOfferedExchangeDataProvider()->BuildMimeTypesList();
+
+#if BUILDFLAG(IS_LINUX)
+  // If we are dragging files, register them with the portal.
+  if (data.HasFile()) {
+    std::optional<std::vector<FileInfo>> filenames = data.GetFilenames();
+    if (filenames.has_value() && !filenames->empty()) {
+      // Synchronously register files to get the key. This blocks the UI thread
+      // briefly but ensures the key is ready for the data offer.
+      std::string key = ui::clipboard_util::RegisterFilesWithPortal(*filenames);
+      if (!key.empty()) {
+        auto data_bytes = base::MakeRefCounted<base::RefCountedBytes>(
+            base::as_byte_span(key));
+        GetOfferedExchangeDataProvider()->AddData(data_bytes,
+                                                  kMimeTypePortalFileTransfer);
+        GetOfferedExchangeDataProvider()->AddData(data_bytes,
+                                                  kMimeTypePortalFiles);
+        mime_types.push_back(kMimeTypePortalFileTransfer);
+        mime_types.push_back(kMimeTypePortalFiles);
+      }
+    }
+  }
+#endif
+
   if (mime_types.empty()) {
     // Add placeholder mime type to ensure the drag-and-drop session can end
     // successfully, even if no drag data was set by the application. See
@@ -629,7 +666,7 @@ void WaylandDataDragController::PostDataFetchingTask(
 
   FetchingInfo offered_data;
   for (const auto& mime_type : data_offer_->mime_types()) {
-    if (!IsMimeTypeSupported(mime_type)) {
+    if (!IsMimeTypeSupported(mime_type) && !IsPortalMimeType(mime_type)) {
       LOG(WARNING) << "Skipping unsupported mime type " << mime_type;
       continue;
     }
@@ -655,12 +692,40 @@ void WaylandDataDragController::PostDataFetchingTask(
             << " mime types.";
 
     for (const auto& [mime_type, fd_handle] : offered_data) {
-      DCHECK(IsMimeTypeSupported(mime_type));
+      DCHECK(IsMimeTypeSupported(mime_type) || IsPortalMimeType(mime_type));
 
       if (cancel_flag->data.IsSet()) {
         VLOG(1) << "cancelled data fetching.";
         return {};
       }
+
+#if BUILDFLAG(IS_LINUX)
+      // Handle file transfer via portal
+      if (IsPortalMimeType(mime_type)) {
+        std::vector<uint8_t> key_vec;
+        wl::ReadDataFromFD(base::ScopedFD(fd_handle), &key_vec);
+        std::vector<std::string> paths =
+            ui::clipboard_util::ExtractPathsFromPortalKey(key_vec);
+
+        if (paths.empty()) {
+          // If paths is empty, fallback to other mime types (e.g.,
+          // text/uri-list).
+          continue;
+        }
+
+        // Create a new exchange provider with the retrieved files
+        auto provider = std::make_unique<WaylandExchangeDataProvider>();
+        std::vector<FileInfo> file_infos;
+        file_infos.reserve(paths.size());
+        for (const auto& path : paths) {
+          file_infos.emplace_back(base::FilePath(path), base::FilePath());
+        }
+        provider->SetFilenames(file_infos);
+        // Merge with any existing data or just return this.
+        // Prioritize portal files over direct text/uri-list.
+        return std::make_unique<OSExchangeData>(std::move(provider));
+      }
+#endif
 
       VLOG(1) << "will fetch data for " << mime_type;
       std::vector<uint8_t> contents;
@@ -812,10 +877,10 @@ WaylandDataDragController::GetAndValidateSerialForDrag(DragEventSource source) {
                      : std::nullopt;
 }
 
-const WaylandExchangeDataProvider*
-WaylandDataDragController::GetOfferedExchangeDataProvider() const {
+WaylandExchangeDataProvider*
+WaylandDataDragController::GetOfferedExchangeDataProvider() {
   DCHECK(offered_exchange_data_provider_);
-  return static_cast<const WaylandExchangeDataProvider*>(
+  return static_cast<WaylandExchangeDataProvider*>(
       offered_exchange_data_provider_.get());
 }
 

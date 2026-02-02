@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "build/build_config.h"
 #include "ui/base/dragdrop/os_exchange_data_provider_non_backed.h"
 #include "ui/ozone/public/platform_clipboard.h"
 
@@ -24,6 +25,7 @@ class WaylandExchangeDataProvider final
 
   // OSExchangeDataProvider:
   std::unique_ptr<OSExchangeDataProvider> Clone() const override;
+  void SetFilenames(const std::vector<FileInfo>& filenames) override;
 
   // Builds up the mime types list corresponding to the data formats available
   // for this instance.
@@ -37,6 +39,11 @@ class WaylandExchangeDataProvider final
   // Add clipboard |data| content with |mime_type| format to |this|. |mime_type|
   // is assumed to be supported (See IsMimeTypeSupported for more).
   void AddData(PlatformClipboard::Data data, const std::string& mime_type);
+
+ private:
+#if BUILDFLAG(IS_LINUX)
+  std::map<std::string, std::string> additional_data_;
+#endif
 };
 
 // Tells if |mime_type| is supported for Drag and Drop operations.

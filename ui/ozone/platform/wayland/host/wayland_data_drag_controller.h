@@ -220,7 +220,7 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   std::optional<wl::Serial> GetAndValidateSerialForDrag(
       mojom::DragEventSource source);
 
-  const WaylandExchangeDataProvider* GetOfferedExchangeDataProvider() const;
+  WaylandExchangeDataProvider* GetOfferedExchangeDataProvider();
 
   // Checks whether |data| holds information about a window dragging session.
   bool IsWindowDraggingSession(const ui::OSExchangeData& data) const;

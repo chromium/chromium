@@ -5,6 +5,8 @@
 source_set("xdg") {
   visibility = [ "//components/dbus/*" ]
   sources = [
+    "file_transfer_portal.cc",
+    "file_transfer_portal.h",
     "portal.cc",
     "portal.h",
     "portal_constants.h",
@@ -20,8 +22,11 @@ source_set("xdg") {
     "//base/version_info",
     "//build:branding_buildflags",
     "//components/dbus/properties",
+    "//components/dbus/thread_linux",
     "//components/dbus/utils",
     "//dbus",
+    "//net",
+    "//url",
   ]
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
@@ -33,6 +38,7 @@ source_set("unit_tests") {
   testonly = true
   visibility = [ "//components/dbus:unit_tests" ]
   sources = [
+    "file_transfer_portal_unittest.cc",
     "portal_unittest.cc",
     "systemd_unittest.cc",
   ]
@@ -40,6 +46,7 @@ source_set("unit_tests") {
     ":xdg",
     "//base",
     "//base/test:test_support",
+    "//components/dbus",
     "//dbus",
     "//dbus:test_support",
     "//testing/gmock",

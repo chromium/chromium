@@ -10,6 +10,7 @@
 
 #include "base/containers/span.h"
 #include "base/pickle.h"
+#include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard_constants.h"
@@ -28,8 +29,13 @@ PlatformClipboard::Data ToClipboardData(const StringType& data_string) {
 }
 }  // namespace
 
+class WaylandExchangeDataProviderTest : public ::testing::Test {
+ protected:
+  base::test::TaskEnvironment task_environment_;
+};
+
 // Regression test for https://crbug.com/1284996.
-TEST(WaylandExchangeDataProviderTest, ExtractPickledData) {
+TEST_F(WaylandExchangeDataProviderTest, ExtractPickledData) {
   WaylandExchangeDataProvider provider;
   std::string extracted;
 
@@ -61,7 +67,7 @@ TEST(WaylandExchangeDataProviderTest, ExtractPickledData) {
   EXPECT_EQ("pickled-str", read_pickled_str);
 }
 
-TEST(WaylandExchangeDataProviderTest, FileNameAsUriList) {
+TEST_F(WaylandExchangeDataProviderTest, FileNameAsUriList) {
   WaylandExchangeDataProvider provider;
   std::string extracted;
   EXPECT_FALSE(provider.ExtractData(kMimeTypeUriList, &extracted));
@@ -72,7 +78,7 @@ TEST(WaylandExchangeDataProviderTest, FileNameAsUriList) {
   EXPECT_EQ("file:///dev/null", extracted);
 }
 
-TEST(WaylandExchangeDataProviderTest, FileContents) {
+TEST_F(WaylandExchangeDataProviderTest, FileContents) {
   constexpr std::string kName("filename");
   constexpr std::string kContents("contents");
   const std::string kMimeType("application/octet-stream;name=\"filename\"");

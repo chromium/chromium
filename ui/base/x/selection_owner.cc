@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/compiler_specific.h"
+#include "base/containers/flat_set.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/time/time.h"
@@ -99,8 +100,23 @@ SelectionOwner::~SelectionOwner() {
 }
 
 void SelectionOwner::RetrieveTargets(std::vector<x11::Atom>* targets) {
+  base::flat_set<x11::Atom> seen(targets->begin(), targets->end());
+  auto add_if_present = [&](const std::vector<x11::Atom>& preferred) {
+    for (x11::Atom p : preferred) {
+      if (format_map_.contains(p) && seen.insert(p).second) {
+        targets->push_back(p);
+      }
+    }
+  };
+
+  add_if_present(GetURIListAtomsFrom());
+  add_if_present(GetURLAtomsFrom());
+  add_if_present(GetTextAtomsFrom());
+
   for (const auto& format_target : format_map_) {
-    targets->push_back(format_target.first);
+    if (seen.insert(format_target.first).second) {
+      targets->push_back(format_target.first);
+    }
   }
 }
 

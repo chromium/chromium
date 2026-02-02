@@ -99,7 +99,11 @@ source_set("x11") {
       "linux_ui_delegate_x11.cc",
       "linux_ui_delegate_x11.h",
     ]
-    deps += [ "//ui/linux:linux_ui" ]
+    deps += [
+      "//components/dbus",
+      "//ui/base/clipboard:clipboard_util_linux",
+      "//ui/linux:linux_ui",
+    ]
   }
 
   if (is_chromeos) {

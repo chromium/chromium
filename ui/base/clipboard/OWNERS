@@ -5,3 +5,4 @@ per-file clipboard_*mac*=avi@chromium.org
 per-file clipboard_*ozone*=msisov@igalia.com
 per-file clipboard_*ozone*=adunaev@igalia.com
 per-file clipboard_*ozone*=thomasanderson@chromium.org
+per-file clipboard_util_linux*=thomasanderson@chromium.org

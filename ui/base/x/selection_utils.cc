@@ -21,8 +21,13 @@
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/gfx/x/atom_cache.h"
+
+#if BUILDFLAG(IS_LINUX)
+#include "components/dbus/xdg/file_transfer_portal.h"
+#endif
 
 namespace ui {
 
@@ -38,6 +43,12 @@ std::vector<x11::Atom> GetURLAtomsFrom() {
 }
 
 std::vector<x11::Atom> GetURIListAtomsFrom() {
+#if BUILDFLAG(IS_LINUX)
+  if (dbus_xdg::FileTransferPortal::IsAvailableSync()) {
+    return {x11::GetAtom(kMimeTypePortalFileTransfer),
+            x11::GetAtom(kMimeTypePortalFiles), x11::GetAtom(kMimeTypeUriList)};
+  }
+#endif
   return {x11::GetAtom(kMimeTypeUriList)};
 }
 

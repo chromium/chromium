@@ -1,6 +1,8 @@
 include_rules = [
+  "+components/dbus",
   "+components/viz/common/resources/shared_image_format.h",
   "+components/viz/common/resources/shared_image_format_utils.h",
+  "+dbus/bus.h",
   "+net/base/network_interfaces.h",
   "+ui/base/x",
   "+ui/base",

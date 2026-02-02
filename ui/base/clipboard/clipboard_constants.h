@@ -48,6 +48,11 @@ inline constexpr char kMimeTypeWindowDrag[] = "chromium/x-window-drag";
 inline constexpr char kMimeTypeLinuxUtf8String[] = "UTF8_STRING";
 inline constexpr char kMimeTypeLinuxString[] = "STRING";
 inline constexpr char kMimeTypeLinuxText[] = "TEXT";
+
+// Used for file transfer using the XDG file transfer portal.
+inline constexpr char kMimeTypePortalFileTransfer[] =
+    "application/vnd.portal.filetransfer";
+inline constexpr char kMimeTypePortalFiles[] = "application/vnd.portal.files";
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_FUCHSIA)
 

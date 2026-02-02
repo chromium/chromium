@@ -10,8 +10,14 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "build/build_config.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/x/x11_clipboard_helper.h"
+
+#if BUILDFLAG(IS_LINUX)
+#include "base/strings/string_view_util.h"
+#include "ui/base/clipboard/clipboard_util_linux.h"
+#endif
 
 namespace ui {
 
@@ -32,6 +38,24 @@ void X11ClipboardOzone::OfferClipboardData(
   helper_->CreateNewClipboardData();
   for (const auto& item : data_map)
     helper_->InsertMapping(item.first, item.second);
+
+#if BUILDFLAG(IS_LINUX)
+  auto it = data_map.find(kMimeTypeUriList);
+  if (it != data_map.end()) {
+    std::string unparsed(base::as_string_view(*it->second));
+    std::vector<std::string> paths =
+        ui::clipboard_util::GetPathsFromUriList(unparsed);
+
+    std::string key = ui::clipboard_util::RegisterPathsWithPortal(paths);
+    if (!key.empty()) {
+      auto data_bytes =
+          base::MakeRefCounted<base::RefCountedBytes>(base::as_byte_span(key));
+      helper_->InsertMapping(kMimeTypePortalFileTransfer, data_bytes);
+      helper_->InsertMapping(kMimeTypePortalFiles, data_bytes);
+    }
+  }
+#endif
+
   helper_->TakeOwnershipOfSelection(buffer);
   std::move(callback).Run();
 }
