@@ -466,13 +466,6 @@ bool ConvertUTF16ToUTF8(std::u16string_view input, CanonOutput* output);
 COMPONENT_EXPORT(URL)
 bool ConvertUTF8ToUTF16(std::string_view input, CanonOutputT<char16_t>* output);
 
-// Converts from UTF-16 to 8-bit using the character set converter. If the
-// converter is NULL, this will use UTF-8.
-void ConvertUTF16ToQueryEncoding(const char16_t* input,
-                                 const Component& query,
-                                 CharsetConverter* converter,
-                                 CanonOutput* output);
-
 // Applies the replacements `repl` to the given component source `overridden`.
 // The component source should be pre-initialized to the "old" base. That is,
 // all strings will point to the spec of the old URL, and all of the Parsed

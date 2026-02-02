@@ -41,7 +41,6 @@ component("url") {
     "url_canon_host.cc",
     "url_canon_internal.cc",
     "url_canon_internal.h",
-    "url_canon_internal_file.h",
     "url_canon_ip.cc",
     "url_canon_ip.h",
     "url_canon_mailtourl.cc",
