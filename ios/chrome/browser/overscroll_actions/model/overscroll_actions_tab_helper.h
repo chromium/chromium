@@ -5,12 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_OVERSCROLL_ACTIONS_MODEL_OVERSCROLL_ACTIONS_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_OVERSCROLL_ACTIONS_MODEL_OVERSCROLL_ACTIONS_TAB_HELPER_H_
 
-#import "base/memory/raw_ptr.h"
-#include "base/scoped_observation.h"
-#import "ios/chrome/browser/overscroll_actions/ui_bundled/overscroll_actions_controller.h"
+#include "base/memory/raw_ref.h"
+#include "ios/chrome/browser/overscroll_actions/ui_bundled/overscroll_actions_controller.h"
 #include "ios/web/public/web_state.h"
-#include "ios/web/public/web_state_observer.h"
-#import "ios/web/public/web_state_user_data.h"
+#include "ios/web/public/web_state_user_data.h"
 
 @protocol OverscrollActionsControllerDelegate;
 
@@ -18,11 +16,10 @@ namespace web {
 class WebState;
 }
 
-// OverscrollActionsTabHelper is a Web state observer that owns the
+// OverscrollActionsTabHelper is a TabHelper that owns the
 // OverscrollActionsController.
 class OverscrollActionsTabHelper
-    : public web::WebStateObserver,
-      public web::WebStateUserData<OverscrollActionsTabHelper> {
+    : public web::WebStateUserData<OverscrollActionsTabHelper> {
  public:
   OverscrollActionsTabHelper(const OverscrollActionsTabHelper&) = delete;
   OverscrollActionsTabHelper& operator=(const OverscrollActionsTabHelper&) =
@@ -44,10 +41,6 @@ class OverscrollActionsTabHelper
 
   OverscrollActionsTabHelper(web::WebState* web_state);
 
-  // web::WebStateObserver override.
-  void WebStateRealized(web::WebState* web_state) override;
-  void WebStateDestroyed(web::WebState* web_state) override;
-
   // The Overscroll controller responsible for displaying the
   // overscrollActionsView above the toolbar.
   OverscrollActionsController* overscroll_actions_controller_ = nil;
@@ -56,10 +49,7 @@ class OverscrollActionsTabHelper
   __weak id<OverscrollActionsControllerDelegate> delegate_ = nil;
 
   // The WebState that is observer by the tab helper.
-  raw_ptr<web::WebState> web_state_ = nullptr;
-
-  base::ScopedObservation<web::WebState, web::WebStateObserver>
-      web_state_observation_{this};
+  const raw_ref<web::WebState> web_state_;
 };
 
 #endif  // IOS_CHROME_BROWSER_OVERSCROLL_ACTIONS_MODEL_OVERSCROLL_ACTIONS_TAB_HELPER_H_
