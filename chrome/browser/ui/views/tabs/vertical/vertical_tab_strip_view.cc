@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_pinned_tab_container_view.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_scroll_bar.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_utils.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_unpinned_tab_container_view.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -37,6 +38,8 @@ void SetScrollViewProperties(views::ScrollView* scroll_view) {
       views::ScrollView::ScrollBarMode::kDisabled);
   scroll_view->SetOverflowGradientMask(
       views::ScrollView::GradientDirection::kVertical);
+  scroll_view->SetVerticalScrollBar(
+      std::make_unique<VerticalTabStripScrollBar>());
 }
 }  // namespace
 
