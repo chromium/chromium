@@ -243,7 +243,7 @@ std::optional<SecurityDescriptor> SecurityDescriptor::FromFile(
 }
 
 std::optional<SecurityDescriptor> SecurityDescriptor::FromName(
-    const std::wstring& name,
+    wcstring_view name,
     SecurityObjectType object_type,
     SECURITY_INFORMATION security_info) {
   return GetSecurityDescriptor(name.c_str(), object_type, security_info,
@@ -259,7 +259,7 @@ std::optional<SecurityDescriptor> SecurityDescriptor::FromHandle(
 }
 
 std::optional<SecurityDescriptor> SecurityDescriptor::FromSddl(
-    const std::wstring& sddl) {
+    wcstring_view sddl) {
   PSECURITY_DESCRIPTOR sd;
   if (!::ConvertStringSecurityDescriptorToSecurityDescriptor(
           sddl.c_str(), SDDL_REVISION_1, &sd, nullptr)) {
@@ -280,7 +280,7 @@ bool SecurityDescriptor::WriteToFile(const base::FilePath& path,
   return WriteToName(path.value(), SecurityObjectType::kFile, security_info);
 }
 
-bool SecurityDescriptor::WriteToName(const std::wstring& name,
+bool SecurityDescriptor::WriteToName(wcstring_view name,
                                      SecurityObjectType object_type,
                                      SECURITY_INFORMATION security_info) const {
   return SetSecurityDescriptor<wchar_t*>(
@@ -382,7 +382,7 @@ bool SecurityDescriptor::SetMandatoryLabel(DWORD integrity_level,
 }
 
 bool SecurityDescriptor::SetDaclEntries(
-    const std::vector<ExplicitAccessEntry>& entries) {
+    base::span<const ExplicitAccessEntry> entries) {
   if (!dacl_) {
     dacl_ = AccessControlList{};
   }

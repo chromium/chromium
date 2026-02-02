@@ -10,11 +10,11 @@
 #include <memory>
 #include <optional>
 #include <string_view>
-#include <vector>
 
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/win/sid.h"
 #include "base/win/windows_types.h"
 
@@ -29,11 +29,24 @@ class BASE_EXPORT ExplicitAccessEntry {
   ExplicitAccessEntry(const Sid& sid,
                       SecurityAccessMode mode,
                       DWORD access_mask,
-                      DWORD inheritance);
+                      DWORD inheritance = 0);
   ExplicitAccessEntry(WellKnownSid known_sid,
                       SecurityAccessMode mode,
                       DWORD access_mask,
-                      DWORD inheritance);
+                      DWORD inheritance = 0)
+      : ExplicitAccessEntry(Sid(known_sid), mode, access_mask, inheritance) {}
+  ExplicitAccessEntry(const Sid& sid, DWORD access_mask, DWORD inheritance = 0)
+      : ExplicitAccessEntry(sid,
+                            SecurityAccessMode::kGrant,
+                            access_mask,
+                            inheritance) {}
+  ExplicitAccessEntry(WellKnownSid known_sid,
+                      DWORD access_mask,
+                      DWORD inheritance = 0)
+      : ExplicitAccessEntry(known_sid,
+                            SecurityAccessMode::kGrant,
+                            access_mask,
+                            inheritance) {}
   ExplicitAccessEntry(const ExplicitAccessEntry&) = delete;
   ExplicitAccessEntry& operator=(const ExplicitAccessEntry&) = delete;
   ExplicitAccessEntry(ExplicitAccessEntry&&);
@@ -83,7 +96,7 @@ class BASE_EXPORT AccessControlList {
   // Set one or more entry in the ACL.
   // |entries| the list of entries to set in the ACL.
   // Returns true if successful, false on error, with the Win32 last error set.
-  bool SetEntries(const std::vector<ExplicitAccessEntry>& entries);
+  bool SetEntries(base::span<const ExplicitAccessEntry> entries);
 
   // Set one entry in the ACL.
   // |sid| the SID for the entry.
@@ -94,7 +107,7 @@ class BASE_EXPORT AccessControlList {
   bool SetEntry(const Sid& sid,
                 SecurityAccessMode mode,
                 DWORD access_mask,
-                DWORD inheritance);
+                DWORD inheritance = 0);
 
   // Add an access allowed conditional ACE to the ACL.
   // |sid| the SID for the ACE.

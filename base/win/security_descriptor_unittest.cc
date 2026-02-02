@@ -57,10 +57,10 @@ constexpr SECURITY_INFORMATION kAllSecurityInfo =
 constexpr SECURITY_INFORMATION kDaclLabelSecurityInfo =
     DACL_SECURITY_INFORMATION | LABEL_SECURITY_INFORMATION;
 
-base::win::ScopedLocalAllocTyped<void> ConvertSddlToSd(const wchar_t* sddl) {
+base::win::ScopedLocalAllocTyped<void> ConvertSddlToSd(wcstring_view sddl) {
   PSECURITY_DESCRIPTOR sd = nullptr;
   CHECK(ConvertStringSecurityDescriptorToSecurityDescriptor(
-      sddl, SDDL_REVISION_1, &sd, nullptr));
+      sddl.c_str(), SDDL_REVISION_1, &sd, nullptr));
   return TakeLocalAlloc(sd);
 }
 
@@ -78,7 +78,7 @@ bool CreateFileWithSd(const FilePath& path, void* sd, bool directory) {
 }
 
 bool CreateFileWithDacl(const FilePath& path,
-                        const wchar_t* sddl,
+                        wcstring_view sddl,
                         bool directory) {
   auto sd_ptr = ConvertSddlToSd(sddl);
   CHECK(sd_ptr);
@@ -86,7 +86,7 @@ bool CreateFileWithDacl(const FilePath& path,
 }
 
 base::win::ScopedHandle CreateEventWithDacl(const wchar_t* name,
-                                            const wchar_t* sddl) {
+                                            wcstring_view sddl) {
   auto sd_ptr = ConvertSddlToSd(sddl);
   CHECK(sd_ptr);
   SECURITY_ATTRIBUTES security_attr = {};
@@ -462,12 +462,12 @@ TEST(SecurityDescriptorTest, WriteToFile) {
 TEST(SecurityDescriptorTest, FromName) {
   std::wstring name =
       base::ASCIIToWide(base::UnguessableToken::Create().ToString());
-  EXPECT_FALSE(SecurityDescriptor::FromName(
-      name.c_str(), SecurityObjectType::kKernel, kAllSecurityInfo));
+  EXPECT_FALSE(SecurityDescriptor::FromName(name, SecurityObjectType::kKernel,
+                                            kAllSecurityInfo));
   base::win::ScopedHandle handle = CreateEventWithDacl(name.c_str(), kEvent);
   ASSERT_TRUE(handle.is_valid());
-  auto curr_sd = SecurityDescriptor::FromName(
-      name.c_str(), SecurityObjectType::kKernel, kAllSecurityInfo);
+  auto curr_sd = SecurityDescriptor::FromName(name, SecurityObjectType::kKernel,
+                                              kAllSecurityInfo);
   ASSERT_TRUE(curr_sd);
   EXPECT_EQ(curr_sd->ToSddl(DACL_SECURITY_INFORMATION), kEvent);
   EXPECT_TRUE(SecurityDescriptor::FromName(
@@ -484,21 +484,21 @@ TEST(SecurityDescriptorTest, WriteToName) {
   std::wstring name =
       base::ASCIIToWide(base::UnguessableToken::Create().ToString());
   EXPECT_FALSE(SecurityDescriptor().WriteToName(
-      name.c_str(), SecurityObjectType::kKernel, kAllSecurityInfo));
+      name, SecurityObjectType::kKernel, kAllSecurityInfo));
   base::win::ScopedHandle handle = CreateEventWithDacl(name.c_str(), kEvent);
   ASSERT_TRUE(handle.is_valid());
-  auto curr_sd = SecurityDescriptor::FromName(
-      name.c_str(), SecurityObjectType::kKernel, kAllSecurityInfo);
+  auto curr_sd = SecurityDescriptor::FromName(name, SecurityObjectType::kKernel,
+                                              kAllSecurityInfo);
   ASSERT_TRUE(curr_sd);
   curr_sd->set_dacl_protected(true);
   curr_sd->SetMandatoryLabel(SECURITY_MANDATORY_MEDIUM_RID, 0,
                              SYSTEM_MANDATORY_LABEL_NO_WRITE_UP);
 
-  EXPECT_TRUE(curr_sd->WriteToName(name.c_str(), SecurityObjectType::kKernel,
+  EXPECT_TRUE(curr_sd->WriteToName(name, SecurityObjectType::kKernel,
                                    kDaclLabelSecurityInfo));
 
-  curr_sd = SecurityDescriptor::FromName(
-      name.c_str(), SecurityObjectType::kKernel, kAllSecurityInfo);
+  curr_sd = SecurityDescriptor::FromName(name, SecurityObjectType::kKernel,
+                                         kAllSecurityInfo);
   ASSERT_TRUE(curr_sd);
   EXPECT_EQ(curr_sd->ToSddl(kDaclLabelSecurityInfo), kEventProtectedWithLabel);
 }

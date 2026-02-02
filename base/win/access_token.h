@@ -332,9 +332,9 @@ class BASE_EXPORT AccessToken {
   // The token needs to be opened with TOKEN_DUPLICATE access.
   std::optional<AccessToken> CreateRestricted(
       DWORD flags,
-      const std::vector<Sid>& sids_to_disable,
-      const std::vector<std::wstring>& privileges_to_delete,
-      const std::vector<Sid>& sids_to_restrict,
+      base::span<const Sid> sids_to_disable,
+      base::span<const std::wstring> privileges_to_delete,
+      base::span<const Sid> sids_to_restrict,
       ACCESS_MASK desired_access = 0) const;
 
   // Create a new AppContainer primary token from this token.
@@ -344,7 +344,7 @@ class BASE_EXPORT AccessToken {
   // The token needs to be opened with TOKEN_DUPLICATE access.
   std::optional<AccessToken> CreateAppContainer(
       const Sid& appcontainer_sid,
-      const std::vector<Sid>& capabilities,
+      base::span<const Sid> capabilities,
       ACCESS_MASK desired_access = 0) const;
 
   // Enable or disable a privilege.

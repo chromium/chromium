@@ -220,7 +220,7 @@ HANDLE DuplicateToken(HANDLE token,
   return new_token;
 }
 
-std::vector<SID_AND_ATTRIBUTES> ConvertSids(const std::vector<Sid>& sids,
+std::vector<SID_AND_ATTRIBUTES> ConvertSids(base::span<const Sid> sids,
                                             DWORD attributes) {
   std::vector<SID_AND_ATTRIBUTES> ret;
   ret.reserve(sids.size());
@@ -242,7 +242,7 @@ std::optional<LUID> LookupPrivilege(const std::wstring& name) {
 }
 
 std::vector<LUID_AND_ATTRIBUTES> ConvertPrivileges(
-    const std::vector<std::wstring>& privs,
+    base::span<const std::wstring> privs,
     DWORD attributes) {
   std::vector<LUID_AND_ATTRIBUTES> ret;
   ret.reserve(privs.size());
@@ -721,9 +721,9 @@ std::optional<AccessToken> AccessToken::DuplicateImpersonation(
 
 std::optional<AccessToken> AccessToken::CreateRestricted(
     DWORD flags,
-    const std::vector<Sid>& sids_to_disable,
-    const std::vector<std::wstring>& privileges_to_delete,
-    const std::vector<Sid>& sids_to_restrict,
+    base::span<const Sid> sids_to_disable,
+    base::span<const std::wstring> privileges_to_delete,
+    base::span<const Sid> sids_to_restrict,
     ACCESS_MASK desired_access) const {
   std::vector<SID_AND_ATTRIBUTES> sids_to_disable_buf =
       ConvertSids(sids_to_disable, 0);
@@ -752,7 +752,7 @@ std::optional<AccessToken> AccessToken::CreateRestricted(
 
 std::optional<AccessToken> AccessToken::CreateAppContainer(
     const Sid& appcontainer_sid,
-    const std::vector<Sid>& capabilities,
+    base::span<const Sid> capabilities,
     ACCESS_MASK desired_access) const {
   static const CreateAppContainerTokenFunction CreateAppContainerToken =
       reinterpret_cast<CreateAppContainerTokenFunction>(::GetProcAddress(
@@ -831,6 +831,8 @@ bool AccessToken::AddSecurityAttribute(std::wstring_view name,
     return false;
   }
 
+  // We don't support attribute values with double quotes.
+  CHECK(!value.contains('"'));
   UNICODE_STRING ustr_value = {};
   if (!ViewToUnicodeString(value, ustr_value)) {
     return false;

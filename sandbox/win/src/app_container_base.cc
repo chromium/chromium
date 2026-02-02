@@ -282,7 +282,7 @@ bool AppContainerBase::AccessCheck(const wchar_t* object_name,
 
   std::optional<base::win::SecurityDescriptor> sd =
       base::win::SecurityDescriptor::FromName(
-          object_name, object_type,
+          std::wstring(object_name), object_type,
           OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION |
               DACL_SECURITY_INFORMATION | LABEL_SECURITY_INFORMATION);
   if (!sd) {

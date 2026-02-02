@@ -13,7 +13,9 @@
 
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
+#include "base/strings/cstring_view.h"
 #include "base/win/access_control_list.h"
 #include "base/win/access_token.h"
 #include "base/win/sid.h"
@@ -79,7 +81,7 @@ class BASE_EXPORT SecurityDescriptor {
   // |object_type| specifies the type of object the name represents.
   // |security_info| indicates what parts to read.
   static std::optional<SecurityDescriptor> FromName(
-      const std::wstring& name,
+      wcstring_view name,
       SecurityObjectType object_type,
       SECURITY_INFORMATION security_info);
 
@@ -94,7 +96,7 @@ class BASE_EXPORT SecurityDescriptor {
 
   // Create from a string representation of a security descriptor.
   // |sddl| the security descriptor in SDDL format.
-  static std::optional<SecurityDescriptor> FromSddl(const std::wstring& sddl);
+  static std::optional<SecurityDescriptor> FromSddl(wcstring_view sddl);
 
   SecurityDescriptor();
   SecurityDescriptor(const SecurityDescriptor&) = delete;
@@ -114,7 +116,7 @@ class BASE_EXPORT SecurityDescriptor {
   // SetNamedSecurityInfo API.
   // |object_type| specifies the type of object name represents.
   // |security_info| indicates what parts to write.
-  bool WriteToName(const std::wstring& name,
+  bool WriteToName(wcstring_view name,
                    SecurityObjectType object_type,
                    SECURITY_INFORMATION security_info) const;
 
@@ -154,7 +156,7 @@ class BASE_EXPORT SecurityDescriptor {
   // |entries| the list of entries to set in the ACL.
   // Returns true if successful, false on error, with the Win32 last error set.
   // If DACL is not present a NULL ACL will be added first.
-  bool SetDaclEntries(const std::vector<ExplicitAccessEntry>& entries);
+  bool SetDaclEntries(base::span<const ExplicitAccessEntry> entries);
 
   // Set one entry in the DACL.
   // |sid| the SID for the entry.
