@@ -148,7 +148,8 @@ BOOL ShouldTriggerIPHForURLVisits(history::QueryURLAndVisitsResult result) {
 
     _mostVisitedSites = std::move(mostVisitedSites);
     _mostVisitedBridge =
-        std::make_unique<ntp_tiles::MostVisitedSitesObserverBridge>(self);
+        std::make_unique<ntp_tiles::MostVisitedSitesObserverBridge>(
+            self, _mostVisitedSites.get());
     if (IsContentSuggestionsCustomizable()) {
       _mostVisitedSites->EnableTileTypes(
           ntp_tiles::MostVisitedSites::EnableTileTypesOptions()
@@ -193,16 +194,16 @@ BOOL ShouldTriggerIPHForURLVisits(history::QueryURLAndVisitsResult result) {
 
 #pragma mark - MostVisitedSitesObserving
 
-- (void)onMostVisitedURLsAvailable:
-    (const ntp_tiles::NTPTilesVector&)mostVisited {
+- (void)mostVisitedSites:(ntp_tiles::MostVisitedSites*)mostVisitedSites
+          didUpdateTiles:(const ntp_tiles::NTPTilesVector&)tiles {
   // This is used by the shortcuts widget.
   content_suggestions_tile_saver::SaveMostVisitedToDisk(
-      mostVisited, _mostVisitedAttributesProvider,
+      tiles, _mostVisitedAttributesProvider,
       app_group::ShortcutsWidgetFaviconsFolder(), _accountManagerService);
 
   _freshMostVisitedItems = [NSMutableArray array];
   int index = 0;
-  for (const ntp_tiles::NTPTile& tile : mostVisited) {
+  for (const ntp_tiles::NTPTile& tile : tiles) {
     MostVisitedItem* item = [self convertNTPTile:tile];
     item.commandHandler = self;
     item.incognitoAvailable = _incognitoAvailable;
@@ -214,14 +215,15 @@ BOOL ShouldTriggerIPHForURLVisits(history::QueryURLAndVisitsResult result) {
 
   [self useFreshMostVisited];
 
-  if (mostVisited.size() && !_recordedPageImpression) {
+  if (tiles.size() && !_recordedPageImpression) {
     _recordedPageImpression = YES;
     [self recordMostVisitedTilesDisplayed];
-    ntp_tiles::metrics::RecordPageImpression(mostVisited.size());
+    ntp_tiles::metrics::RecordPageImpression(tiles.size());
   }
 }
 
-- (void)onIconMadeAvailable:(const GURL&)siteURL {
+- (void)mostVisitedSites:(ntp_tiles::MostVisitedSites*)mostVisitedSites
+    didUpdateFaviconForURL:(const GURL&)siteURL {
   // This is used by the shortcuts widget.
   content_suggestions_tile_saver::UpdateSingleFavicon(
       siteURL, _mostVisitedAttributesProvider,
