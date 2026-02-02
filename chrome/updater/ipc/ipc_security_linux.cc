@@ -20,8 +20,12 @@ bool IsConnectionTrusted(
 
 named_mojo_ipc_server::EndpointOptions CreateServerEndpointOptions(
     const mojo::NamedPlatformChannel::ServerName& server_name) {
-  return {server_name,
-          named_mojo_ipc_server::EndpointOptions::kUseIsolatedConnection};
+  named_mojo_ipc_server::EndpointOptions options;
+  options.server_name = server_name;
+  options.message_pipe_id =
+      named_mojo_ipc_server::EndpointOptions::kUseIsolatedConnection;
+  options.require_same_peer_user = false;
+  return options;
 }
 
 }  // namespace updater
