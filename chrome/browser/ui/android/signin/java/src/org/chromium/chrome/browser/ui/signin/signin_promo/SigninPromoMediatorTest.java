@@ -187,7 +187,7 @@ public class SigninPromoMediatorTest {
                 mContext.getString(R.string.custom_tabs_signed_out_message_subtitle),
                 mMediator.getModel().get(SigninPromoProperties.DESCRIPTION_TEXT));
         assertEquals(
-                mContext.getString(R.string.sign_in_to_chrome),
+                mContext.getString(R.string.signin_promo_sign_in),
                 mMediator.getModel().get(SigninPromoProperties.PRIMARY_BUTTON_TEXT));
         assertTrue(mMediator.getModel().get(SigninPromoProperties.SHOULD_HIDE_SECONDARY_BUTTON));
     }
