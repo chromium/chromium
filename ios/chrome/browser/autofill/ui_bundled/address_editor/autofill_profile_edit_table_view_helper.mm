@@ -31,7 +31,6 @@
 namespace {
 // A constant to separate the error and the footer text.
 const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
-
 }  // namespace
 
 @interface AutofillProfileEditTableViewHelper () <
@@ -102,6 +101,39 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   return self;
 }
 
+#pragma mark - Configuration Helpers
+
+// Returns the list of section identifiers that should be
+// visible based on the current profile type and context.
+- (NSArray<NSNumber*>*)enabledSectionIdentifiers {
+  NSMutableArray<NSNumber*>* sections = [NSMutableArray array];
+
+  // Hidden for Home/Work profiles when editing saved addresses.
+  BOOL shouldShowNameAndPhoneEmailSections =
+      ![self isHomeOrWorkProfile] ||
+      _addressContext != SaveAddressContext::kEditingSavedAddress;
+
+  if (shouldShowNameAndPhoneEmailSections) {
+    [sections addObject:@(AutofillProfileDetailsSectionIdentifierName)];
+  }
+
+  if ([self isNameAndEmailProfile] &&
+      _addressContext == SaveAddressContext::kEditingSavedAddress) {
+    // For nameEmail profiles, only the name section (containing name and email
+    // fields) is shown.
+    CHECK(sections.count > 0);
+    return sections;
+  }
+
+  [sections addObject:@(AutofillProfileDetailsSectionIdentifierAddress)];
+
+  if (shouldShowNameAndPhoneEmailSections) {
+    [sections addObject:@(AutofillProfileDetailsSectionIdentifierPhoneEmail)];
+  }
+
+  return sections;
+}
+
 #pragma mark - AutofillProfileEditHandler
 
 - (void)viewDidDisappear {
@@ -110,63 +142,80 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 
 // Updates the profile via the delegate.
 - (void)updateProfileData {
-  const std::array<AutofillProfileDetailsSectionIdentifier, 3> allSections = {
-      AutofillProfileDetailsSectionIdentifierName,
-      AutofillProfileDetailsSectionIdentifierAddress,
-      AutofillProfileDetailsSectionIdentifierPhoneEmail};
-
-  for (const AutofillProfileDetailsSectionIdentifier section : allSections) {
-    [self updateProfileDataForSection:section];
+  for (NSNumber* sectionID in [self enabledSectionIdentifiers]) {
+    [self updateProfileDataForSection:(AutofillProfileDetailsSectionIdentifier)
+                                          [sectionID integerValue]];
   }
 }
 
 - (void)reconfigureCells {
-  const std::array<AutofillProfileDetailsSectionIdentifier, 3> allSections = {
-      AutofillProfileDetailsSectionIdentifierName,
-      AutofillProfileDetailsSectionIdentifierAddress,
-      AutofillProfileDetailsSectionIdentifierPhoneEmail};
-
-  for (const AutofillProfileDetailsSectionIdentifier section : allSections) {
-    [_controller
-        reconfigureCellsForItems:[_controller.tableViewModel
-                                     itemsInSectionWithIdentifier:section]];
+  for (NSNumber* sectionID in [self enabledSectionIdentifiers]) {
+    NSInteger section = [sectionID integerValue];
+    if ([_controller.tableViewModel hasSectionForSectionIdentifier:section]) {
+      [_controller
+          reconfigureCellsForItems:[_controller.tableViewModel
+                                       itemsInSectionWithIdentifier:section]];
+    }
   }
 }
 
 - (void)loadModel {
   TableViewModel* model = _controller.tableViewModel;
 
-  if (![self isHomeOrWorkProfile] ||
-      _addressContext != SaveAddressContext::kEditingSavedAddress) {
-    if (![model hasSectionForSectionIdentifier:
-                    AutofillProfileDetailsSectionIdentifierName]) {
-      [model
-          addSectionWithIdentifier:AutofillProfileDetailsSectionIdentifierName];
-    }
-    for (AutofillEditProfileField* nonAddressField in
-         [_delegate inputNonAddressFields]) {
-      if ([self isNameAndEmailProfile] &&
-          ![[_delegate fieldTypeToTypeName:autofill::FieldType::NAME_FULL]
-              isEqualToString:nonAddressField.fieldType]) {
-        continue;
-      }
-      [model addItem:[self profileEditItem:nonAddressField.fieldLabel
-                                 fieldType:nonAddressField.fieldType]
-          toSectionWithIdentifier:AutofillProfileDetailsSectionIdentifierName];
+  for (NSNumber* sectionIdNumber in [self enabledSectionIdentifiers]) {
+    NSInteger sectionID = [sectionIdNumber integerValue];
+
+    // Ensure we do not attempt to add a section that already exists.
+    if (![model hasSectionForSectionIdentifier:sectionID]) {
+      [model addSectionWithIdentifier:sectionID];
     }
 
-    if ([self isNameAndEmailProfile]) {
-      [model addItem:[self emailItem]
-          toSectionWithIdentifier:AutofillProfileDetailsSectionIdentifierName];
-      return;
+    switch ((AutofillProfileDetailsSectionIdentifier)sectionID) {
+      case AutofillProfileDetailsSectionIdentifierName:
+        [self loadNameSectionItems];
+        break;
+      case AutofillProfileDetailsSectionIdentifierAddress:
+        [self loadAddressSectionItems];
+        break;
+      case AutofillProfileDetailsSectionIdentifierPhoneEmail:
+        [self loadPhoneEmailSectionItems];
+        break;
+      case AutofillProfileDetailsSectionIdentifierButton:
+      case AutofillProfileDetailsSectionIdentifierMigrationButton:
+      case AutofillProfileDetailsSectionIdentifierErrorFooter:
+      case AutofillProfileDetailsSectionIdentifierFooter:
+      case AutofillProfileDetailsSectionIdentifierEdit:
+        NOTREACHED();
     }
   }
+}
 
-  if (![model hasSectionForSectionIdentifier:
-                  AutofillProfileDetailsSectionIdentifierAddress]) {
-    [model addSectionWithIdentifier:
-               AutofillProfileDetailsSectionIdentifierAddress];
+#pragma mark - Section Loading Helpers
+
+// Loads the items in the name section.
+- (void)loadNameSectionItems {
+  TableViewModel* model = _controller.tableViewModel;
+
+  for (AutofillEditProfileField* field in [_delegate inputNonAddressFields]) {
+    if ([self isNameAndEmailProfile] &&
+        ![[_delegate fieldTypeToTypeName:autofill::FieldType::NAME_FULL]
+            isEqualToString:field.fieldType]) {
+      continue;
+    }
+    [model addItem:[self profileEditItem:field.fieldLabel
+                               fieldType:field.fieldType]
+        toSectionWithIdentifier:AutofillProfileDetailsSectionIdentifierName];
   }
+
+  if ([self isNameAndEmailProfile]) {
+    [model addItem:[self emailItem]
+        toSectionWithIdentifier:AutofillProfileDetailsSectionIdentifierName];
+  }
+}
+
+// Loads the address items.
+- (void)loadAddressSectionItems {
+  TableViewModel* model = _controller.tableViewModel;
   for (AutofillEditProfileField* addressField in
        [_delegate inputAddressFields]) {
     [model addItem:[self profileEditItem:addressField.fieldLabel
@@ -175,22 +224,20 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   }
   [model addItem:[self countryItem]
       toSectionWithIdentifier:AutofillProfileDetailsSectionIdentifierAddress];
-
-  if (![self isHomeOrWorkProfile] ||
-      _addressContext != SaveAddressContext::kEditingSavedAddress) {
-    if (![model hasSectionForSectionIdentifier:
-                    AutofillProfileDetailsSectionIdentifierPhoneEmail]) {
-      [model addSectionWithIdentifier:
-                 AutofillProfileDetailsSectionIdentifierPhoneEmail];
-    }
-    [model addItem:[self phoneItem]
-        toSectionWithIdentifier:
-            AutofillProfileDetailsSectionIdentifierPhoneEmail];
-    [model addItem:[self emailItem]
-        toSectionWithIdentifier:
-            AutofillProfileDetailsSectionIdentifierPhoneEmail];
-  }
 }
+
+// Loads the phone and email items.
+- (void)loadPhoneEmailSectionItems {
+  TableViewModel* model = _controller.tableViewModel;
+  [model addItem:[self phoneItem]
+      toSectionWithIdentifier:
+          AutofillProfileDetailsSectionIdentifierPhoneEmail];
+  [model addItem:[self emailItem]
+      toSectionWithIdentifier:
+          AutofillProfileDetailsSectionIdentifierPhoneEmail];
+}
+
+#pragma mark - Table View Delegate
 
 - (UITableViewCell*)cell:(UITableViewCell*)cell
        forRowAtIndexPath:(NSIndexPath*)indexPath {
@@ -262,6 +309,8 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   }
   return sectionIdentifier == AutofillProfileDetailsSectionIdentifierPhoneEmail;
 }
+
+#pragma mark - Footer Loading
 
 - (void)loadFooterForSettings {
   CHECK(_addressContext == SaveAddressContext::kEditingSavedAddress);
@@ -361,14 +410,12 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 #pragma mark - AutofillProfileEditConsumer
 
 - (void)didSelectCountry:(NSString*)country {
-  // Remove the previously inserted fields.
   TableViewModel* model = _controller.tableViewModel;
-  [model deleteAllItemsFromSectionWithIdentifier:
-             AutofillProfileDetailsSectionIdentifierName];
-  [model deleteAllItemsFromSectionWithIdentifier:
-             AutofillProfileDetailsSectionIdentifierAddress];
-  [model deleteAllItemsFromSectionWithIdentifier:
-             AutofillProfileDetailsSectionIdentifierPhoneEmail];
+  for (NSNumber* sectionID in [self enabledSectionIdentifiers]) {
+    if ([model hasSectionForSectionIdentifier:[sectionID integerValue]]) {
+      [model deleteAllItemsFromSectionWithIdentifier:[sectionID integerValue]];
+    }
+  }
 
   // Re-insert the fields based on the new country.
   [self loadModel];
@@ -627,16 +674,24 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
         [strongSelf removeSectionWithIdentifier:removeSection
                                withRowAnimation:UITableViewRowAnimationTop];
 
-        AutofillProfileDetailsSectionIdentifier lastFieldSection =
-            AutofillProfileDetailsSectionIdentifierPhoneEmail;
-        NSUInteger fieldsSectionIndex =
-            [model sectionForSectionIdentifier:lastFieldSection];
-        [model insertSectionWithIdentifier:addSection
-                                   atIndex:fieldsSectionIndex + 1];
+        // Dynamically determine the last content section anchor.
+        NSNumber* lastSectionId =
+            [[strongSelf enabledSectionIdentifiers] lastObject];
+        if (!lastSectionId) {
+          return;
+        }
+
+        NSInteger lastContentSectionIndex =
+            [model sectionForSectionIdentifier:[lastSectionId integerValue]];
+
+        // Insert footer immediately after the last content section.
+        NSUInteger insertIndex = lastContentSectionIndex + 1;
+
+        [model insertSectionWithIdentifier:addSection atIndex:insertIndex];
         [strongSelf->_controller.tableView
-              insertSections:[NSIndexSet
-                                 indexSetWithIndex:fieldsSectionIndex + 1]
+              insertSections:[NSIndexSet indexSetWithIndex:insertIndex]
             withRowAnimation:UITableViewRowAnimationTop];
+
         [strongSelf->_controller.tableViewModel
                            setFooter:
                                (([strongSelf->_delegate
@@ -672,6 +727,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 // Returns the footer message.
 - (NSString*)footerMessage {
   CHECK([_userEmail length] > 0);
+
   if (([self isHomeOrWorkProfile] || [self isNameAndEmailProfile]) &&
       _addressContext == SaveAddressContext::kEditingSavedAddress) {
     return l10n_util::GetNSStringF(IDS_IOS_AUTOFILL_HOME_WORK_PROFILE_FOOTER,
@@ -777,6 +833,11 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 - (void)updateProfileDataForSection:
     (AutofillProfileDetailsSectionIdentifier)sectionIdentifier {
   TableViewModel* model = _controller.tableViewModel;
+  // Don't update if section doesn't exist.
+  if (![model hasSectionForSectionIdentifier:sectionIdentifier]) {
+    return;
+  }
+
   NSInteger itemCount =
       [model numberOfItemsInSection:
                  [model sectionForSectionIdentifier:sectionIdentifier]];
