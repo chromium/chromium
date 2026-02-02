@@ -69,7 +69,9 @@ GlicWindowResizeAnimation::~GlicWindowResizeAnimation() {
 }
 
 void GlicWindowResizeAnimation::AnimateToState(double state) {
-  if (!widget_) {
+  if (!widget_ || widget_->IsDragging()) {
+    // Cancel the animation if the widget is being dragged.
+    End();
     return;
   }
   gfx::Rect bounds_to_animate = gfx::Tween::RectValueBetween(

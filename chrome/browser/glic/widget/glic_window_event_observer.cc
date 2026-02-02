@@ -166,23 +166,26 @@ void GlicWindowEventObserver::SetDraggingAreasAndWatchForMouseEvents() {
 
 void GlicWindowEventObserver::HandleWindowDragWithOffset(
     const gfx::Vector2d& mouse_offset) {
-  if (!in_move_loop_) {
-    in_move_loop_ = true;
-    delegate_->window_animator()->CancelAnimation();
-#if BUILDFLAG(IS_MAC)
-    widget_->SetCapture(nullptr);
-#endif
-    const views::Widget::MoveLoopSource move_loop_source =
-        views::Widget::MoveLoopSource::kMouse;
-    widget_->RunMoveLoop(mouse_offset, move_loop_source,
-                         views::Widget::MoveLoopEscapeBehavior::kDontHide);
-    in_move_loop_ = false;
-
-    delegate_->window_animator()->MaybeAnimateToTargetSize();
-
-    AdjustPositionIfNeeded();
-    delegate_->OnDragComplete();
+  if (in_move_loop_) {
+    return;
   }
+  in_move_loop_ = true;
+  widget_->SetIsDragging(true);
+  delegate_->window_animator()->CancelAnimation();
+#if BUILDFLAG(IS_MAC)
+  widget_->SetCapture(nullptr);
+#endif
+  const views::Widget::MoveLoopSource move_loop_source =
+      views::Widget::MoveLoopSource::kMouse;
+  widget_->RunMoveLoop(mouse_offset, move_loop_source,
+                       views::Widget::MoveLoopEscapeBehavior::kDontHide);
+  in_move_loop_ = false;
+
+  delegate_->window_animator()->MaybeAnimateToTargetSize();
+
+  AdjustPositionIfNeeded();
+  widget_->SetIsDragging(false);
+  delegate_->OnDragComplete();
 }
 
 void GlicWindowEventObserver::AdjustPositionIfNeeded() {

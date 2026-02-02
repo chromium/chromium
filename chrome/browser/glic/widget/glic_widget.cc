@@ -465,6 +465,10 @@ gfx::Rect GlicWidget::WidgetToVisibleBounds(gfx::Rect widget_bounds) {
   return widget_bounds;
 }
 
+void GlicWidget::SetIsDragging(bool is_dragging) {
+  is_dragging_ = is_dragging;
+}
+
 base::WeakPtr<GlicWidget> GlicWidget::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
