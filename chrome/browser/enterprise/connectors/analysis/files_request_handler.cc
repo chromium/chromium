@@ -28,9 +28,6 @@ namespace enterprise_connectors {
 
 namespace {
 
-constexpr char kFileAttachCount[] = "Enterprise.OnFileAttach.FileCount";
-constexpr char kFileTransferCount[] = "Enterprise.OnFileTransfer.FileCount";
-
 // Global pointer of factory function (RepeatingCallback) used to create
 // instances of ContentAnalysisDelegate in tests.  !is_null() only in tests.
 FilesRequestHandler::Factory* GetFactoryStorage() {
@@ -51,26 +48,32 @@ AnalysisConnector AccessPointToEnterpriseConnector(
       return enterprise_connectors::FILE_ATTACHED;
     case DeepScanAccessPoint::DOWNLOAD:
     case DeepScanAccessPoint::PRINT:
-      NOTREACHED();
   }
-  return enterprise_connectors::FILE_ATTACHED;
+  NOTREACHED();
 }
 
-std::string AccessPointToTriggerString(DeepScanAccessPoint access_point) {
-  switch (access_point) {
-    case DeepScanAccessPoint::FILE_TRANSFER:
-      return kFileTransferDataTransferEventTrigger;
-    case DeepScanAccessPoint::UPLOAD:
-    case DeepScanAccessPoint::DRAG_AND_DROP:
-    case DeepScanAccessPoint::PASTE:
-      // A file can be uploaded to a website by either a normal file picker, a
-      // dragNdrop event or using copy+paste.
-      return kFileUploadDataTransferEventTrigger;
-    case DeepScanAccessPoint::DOWNLOAD:
-    case DeepScanAccessPoint::PRINT:
-      NOTREACHED();
+// LINT.IfChange(AccessPointToUmaHistogramPrefix)
+std::string AccessPointToUmaHistogramPrefix(DeepScanAccessPoint access_point) {
+  switch (AccessPointToEnterpriseConnector(access_point)) {
+    case enterprise_connectors::FILE_TRANSFER:
+      return "Enterprise.OnFileTransfer";
+    case enterprise_connectors::FILE_ATTACHED:
+      return "Enterprise.OnFileAttach";
+    default:
   }
-  return "";
+  NOTREACHED();
+}
+// LINT.ThenChange(//tools/metrics/histograms/metadata/enterprise/histograms.xml:FileUploadEvent)
+
+std::string AccessPointToTriggerString(DeepScanAccessPoint access_point) {
+  switch (AccessPointToEnterpriseConnector(access_point)) {
+    case enterprise_connectors::FILE_TRANSFER:
+      return kFileTransferDataTransferEventTrigger;
+    case enterprise_connectors::FILE_ATTACHED:
+      return kFileUploadDataTransferEventTrigger;
+    default:
+  }
+  NOTREACHED();
 }
 
 }  // namespace
@@ -188,17 +191,10 @@ bool FilesRequestHandler::UploadDataImpl() {
         base::BindOnce(&FilesRequestHandler::CreateFileOpeningJob,
                        weak_ptr_factory_.GetWeakPtr(), std::move(tasks)));
 
-    switch (AccessPointToEnterpriseConnector(access_point_)) {
-      case enterprise_connectors::FILE_ATTACHED:
-        base::UmaHistogramCustomCounts(kFileAttachCount, paths_.size(), 1, 1000,
-                                       100);
-        break;
-      case enterprise_connectors::FILE_TRANSFER:
-        base::UmaHistogramCustomCounts(kFileTransferCount, paths_.size(), 1,
-                                       1000, 100);
-        break;
-      default:
-        break;
+    if (auto prefix = AccessPointToUmaHistogramPrefix(access_point_);
+        !prefix.empty()) {
+      base::UmaHistogramCustomCounts(prefix + ".FileCount", paths_.size(), 1,
+                                     1000, 100);
     }
 
     return true;
@@ -329,6 +325,12 @@ void FilesRequestHandler::FileRequestCallback(
 
   DCHECK_EQ(results_.size(), paths_.size());
   if (upload_result == ScanRequestUploadResult::kTooManyRequests) {
+    if (!throttled_) {
+      if (auto prefix = AccessPointToUmaHistogramPrefix(access_point_);
+          !prefix.empty()) {
+        base::UmaHistogramBoolean(prefix + ".Throttled", true);
+      }
+    }
     throttled_ = true;
   }
 

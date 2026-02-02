@@ -667,7 +667,9 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, Empty) {
   EXPECT_TRUE(called);
 }
 
-TEST_F(ContentAnalysisDelegateAuditOnlyTest, StringData) {
+TEST_F(ContentAnalysisDelegateAuditOnlyTest, StringDataAndReportSuccess) {
+  base::HistogramTester histogram_tester_;
+
   GURL url(kTestUrl);
   ContentAnalysisDelegate::Data data;
   ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(profile(), url, &data,
@@ -691,6 +693,11 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, StringData) {
   RunUntilDone();
   EXPECT_EQ(1,
             test::FakeContentAnalysisDelegate::GetTotalAnalysisRequestsCount());
+
+  // FakeContentAnalysisDelegate is always constructed with UPLOAD; just
+  // verify a success histogram is recorded.
+  histogram_tester_.ExpectTotalCount(
+      "Enterprise.ContentAnalysis.Upload.Success.Duration", 1);
   EXPECT_TRUE(called);
 }
 

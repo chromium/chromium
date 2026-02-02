@@ -375,6 +375,7 @@ void ContentAnalysisDelegate::CreateForWebContents(
                       : testing_factory->Run(web_contents, std::move(data),
                                              std::move(callback));
 
+  delegate->creation_time_ = base::TimeTicks::Now();
   UploadDataStatus upload_data_status = delegate->UploadData();
 
   // Only show UI if one of the two conditions is met:
@@ -828,6 +829,17 @@ void ContentAnalysisDelegate::MaybeCompleteScanRequest() {
     DVLOG(1) << __func__ << ": scan request is incomplete.";
     return;
   }
+
+  base::UmaHistogramCustomTimes(
+      base::ReplaceStringPlaceholders(
+          "Enterprise.$1ContentAnalysis.$2.$3.Duration",
+          {data_.settings.cloud_or_local_settings.is_cloud_analysis() ? ""
+                                                                      : "Local",
+           DeepScanAccessPointToString(access_point_),
+           FinalContentAnalysisResultToString(final_result_)},
+          nullptr),
+      base::TimeTicks::Now() - creation_time_, base::Milliseconds(1),
+      base::Minutes(30), 50);
 
   // If showing the warning message, wait before running the callback. The
   // callback will be called either in BypassWarnings or Cancel.

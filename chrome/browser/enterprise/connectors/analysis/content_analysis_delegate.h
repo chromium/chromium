@@ -509,6 +509,7 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase,
   std::string page_content_type_;
 
   base::TimeTicks upload_start_time_;
+  base::TimeTicks creation_time_;
 
   // Custom message for rule.
   ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage

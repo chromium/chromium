@@ -463,4 +463,25 @@ std::string DeepScanAccessPointToString(DeepScanAccessPoint access_point) {
   NOTREACHED();
 }
 
+std::string FinalContentAnalysisResultToString(
+    FinalContentAnalysisResult result) {
+  switch (result) {
+    case FinalContentAnalysisResult::FAILURE:
+      return "Failure";
+    case FinalContentAnalysisResult::FAIL_CLOSED:
+      return "FailClosed";
+    case FinalContentAnalysisResult::LARGE_FILES:
+      return "LargeFiles";
+    case FinalContentAnalysisResult::ENCRYPTED_FILES:
+      return "EncryptedFiles";
+    case FinalContentAnalysisResult::WARNING:
+      return "Warning";
+    case FinalContentAnalysisResult::SUCCESS:
+      return "Success";
+    case FinalContentAnalysisResult::FORCE_SAVE_TO_CLOUD:
+      return "ForceSaveToCloud";
+  }
+  NOTREACHED();
+}
+
 }  // namespace enterprise_connectors

@@ -200,6 +200,7 @@ struct ScanResult : public base::SupportsUserData::Data {
 
 // Enum to identify which message to show once scanning is complete. Ordered
 // by precedence for when multiple files have conflicting results.
+// LINT.IfChange(FinalContentAnalysisResult)
 enum class FinalContentAnalysisResult {
   // Show that an issue was found and that the upload is blocked.
   FAILURE = 0,
@@ -222,6 +223,7 @@ enum class FinalContentAnalysisResult {
   // Show that the download is blocked and may proceed to cloud storage.
   FORCE_SAVE_TO_CLOUD = 6,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/enterprise/histograms.xml)
 
 // Result for a single request of the RequestHandler classes.
 struct RequestHandlerResult {
@@ -340,6 +342,7 @@ std::string GetFailedUploadDurationUmaMetricName(
 //   "SafeBrowsing.DeepScan.<access-point>.BytesPerSeconds"
 //   "SafeBrowsing.DeepScan.<access-point>.Duration"
 //   "SafeBrowsing.DeepScan.<access-point>.<result>.Duration"
+//   "Enterprise.[Local]ContentAnalysis.<access-point>.<final-result>.Duration"
 // for the new access point and every possible result.
 // LINT.IfChange(DeepScanAccessPoint)
 enum class DeepScanAccessPoint {
@@ -363,8 +366,11 @@ enum class DeepScanAccessPoint {
 
   kMaxValue = FILE_TRANSFER,
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:DeepScanAccessPoint)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/safe_browsing/histograms.xml:DeepScanAccessPoint)
+
 std::string DeepScanAccessPointToString(DeepScanAccessPoint access_point);
+std::string FinalContentAnalysisResultToString(
+    FinalContentAnalysisResult result);
 }  // namespace enterprise_connectors
 
 #endif  // COMPONENTS_ENTERPRISE_CONNECTORS_CORE_COMMON_H_

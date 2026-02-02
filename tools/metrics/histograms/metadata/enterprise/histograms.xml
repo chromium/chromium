@@ -205,6 +205,11 @@ chromium-metrics-reviews@google.com.
   <variant name="SystemSettings" summary="system settings"/>
 </variants>
 
+<variants name="FileUploadEvent">
+  <variant name="OnFileAttach" summary="File upload event"/>
+  <variant name="OnFileTransfer" summary="File transfer event"/>
+</variants>
+
 <variants name="IdentityType">
   <variant name="Dasher-based" summary="google-backed 3P identity"/>
   <variant name="Dasherless" summary="non-google-backed 3P identity"/>
@@ -4043,6 +4048,32 @@ chromium-metrics-reviews@google.com.
       variants="ContentAnalysisRequestType"/>
 </histogram>
 
+<histogram
+    name="Enterprise.{LocalOrCloud}ContentAnalysis.{DeepScanAccessPoint}.{FinalResult}.Duration"
+    units="ms" expires_after="2026-07-31">
+  <owner>alxchn@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
+  <summary>
+    The duration of a {LocalOrCloud} {DeepScanAccessPoint} content analysis
+    which had the {FinalResult} result, measured from the time it was created to
+    when all scans the data requires return verdicts.
+  </summary>
+  <token key="LocalOrCloud">
+    <variant name="" summary="Cloud"/>
+    <variant name="Local" summary="Local"/>
+  </token>
+  <token key="FinalResult">
+    <variant name="EncryptedFiles"/>
+    <variant name="FailClosed"/>
+    <variant name="Failure"/>
+    <variant name="ForceSaveToCloud"/>
+    <variant name="LargeFiles"/>
+    <variant name="Success"/>
+    <variant name="Warning"/>
+  </token>
+  <token key="DeepScanAccessPoint" variants="DeepScanAccessPoint"/>
+</histogram>
+
 <histogram name="Enterprise.{Page}PromotionBannerAction"
     enum="PromotionBannerAction" expires_after="2026-06-28">
   <owner>austinzzr@chromium.org</owner>
@@ -4076,10 +4107,19 @@ chromium-metrics-reviews@google.com.
     recorded once per user action. The user action may be a drag and drop event,
     or a file system dialog to upload multiple files.
   </summary>
-  <token key="UploadEvent">
-    <variant name="OnFileAttach"/>
-    <variant name="OnFileTransfer"/>
-  </token>
+  <token key="UploadEvent" variants="FileUploadEvent"/>
+</histogram>
+
+<histogram name="Enterprise.{UploadEvent}.Throttled" enum="BooleanHit"
+    expires_after="2026-07-31">
+  <owner>alxchn@chromium.org</owner>
+  <owner>cbe-cep-eng@google.com</owner>
+  <summary>
+    Counts how many {UploadEvent} upload user actions received a 429 (too many
+    requests) response. Only recorded once per file upload user action, even
+    though each action may contain multiple uploads.
+  </summary>
+  <token key="UploadEvent" variants="FileUploadEvent"/>
 </histogram>
 
 <histogram name="EnterpriseCheck.AzureADJoinStatusCheckTime" units="ms"
