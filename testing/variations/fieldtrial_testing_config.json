@@ -11596,6 +11596,29 @@
             ]
         }
     ],
+    "GlicButtonUpdateIconMarginsOnLabelSuppression": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GlicButtonUpdateIconMarginsOnLabelSuppression"
+                    ]
+                },
+                {
+                    "name": "Control",
+                    "disable_features": [
+                        "GlicButtonUpdateIconMarginsOnLabelSuppression"
+                    ]
+                }
+            ]
+        }
+    ],
     "GlicClientResponsivenessCheckExtension": [
         {
             "platforms": [
