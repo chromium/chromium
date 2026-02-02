@@ -369,6 +369,11 @@ BASE_FEATURE(kAutofillAndroidKeyboardAccessoryDynamicPositioning,
 BASE_FEATURE(kAutofillBetterLocalHeuristicPlaceholderSupport,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, our `FormEventLogger` will start emitting events for fields
+// annotated with an unrecognized HTML "autocomplete" attribute.
+BASE_FEATURE(kAutofillConsiderAutocompleteUnrecognizedFieldsInMetrics,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Same as `kAutofillAddressUserPerceptionSurvey` but for credit card forms.
 BASE_FEATURE(kAutofillCreditCardUserPerceptionSurvey,
              base::FEATURE_DISABLED_BY_DEFAULT);

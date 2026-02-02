@@ -3886,6 +3886,9 @@ TEST_F(BrowserAutofillManagerTest, GetProfileSuggestions_FieldSwapping) {
 // Tests that fields with unrecognized autocomplete attribute don't contribute
 // to key metrics.
 TEST_F(BrowserAutofillManagerTest, AutocompleteUnrecognizedFields_KeyMetrics) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillConsiderAutocompleteUnrecognizedFieldsInMetrics);
   // Create an address form where field 1 has an unrecognized autocomplete
   // attribute.
   FormData form = CreateTestAddressFormData();
