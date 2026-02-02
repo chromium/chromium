@@ -212,6 +212,10 @@ void AppBannerManager::RequestAppBanner() {
     return;
   }
 
+  for (Observer& observer : observer_list_) {
+    observer.WillFetchManifest();
+  }
+
   status_reporter_ = std::make_unique<TrackingStatusReporter>();
 
   UpdateState(State::FETCHING_MANIFEST);

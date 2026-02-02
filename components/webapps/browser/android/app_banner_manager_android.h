@@ -163,7 +163,7 @@ class AppBannerManagerAndroid
                                    const blink::mojom::Manifest& manifest,
                                    NativeCheckCallback callback) override;
   void OnWebAppInstallableCheckedNoErrors(
-      const ManifestId& manifest_id) const override;
+      const ManifestId& manifest_id) override;
   base::expected<void, InstallableStatusCode> CanRunWebAppInstallableChecks(
       const blink::mojom::Manifest& manifest) override;
   bool IsSupportedNonWebAppPlatform(

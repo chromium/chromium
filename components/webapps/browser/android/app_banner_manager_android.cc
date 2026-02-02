@@ -296,7 +296,7 @@ void AppBannerManagerAndroid::DoNativeAppInstallableCheck(
 }
 
 void AppBannerManagerAndroid::OnWebAppInstallableCheckedNoErrors(
-    const ManifestId& manifest_id) const {
+    const ManifestId& manifest_id) {
   delegate_->OnInstallableCheckedNoErrors(manifest_id);
 }
 

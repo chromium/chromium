@@ -72,6 +72,8 @@ class AppBannerManager : public content::WebContentsObserver,
         InstallableWebAppCheckResult result,
         const std::optional<WebAppBannerData>& data) = 0;
 
+    virtual void WillFetchManifest() {}
+
     // Callback when an app is installed.
     virtual void OnInstall() {}
 
@@ -257,7 +259,7 @@ class AppBannerManager : public content::WebContentsObserver,
       NativeCheckCallback callback) = 0;
 
   virtual void OnWebAppInstallableCheckedNoErrors(
-      const ManifestId& manifest_id) const = 0;
+      const ManifestId& manifest_id) = 0;
 
   virtual base::expected<void, InstallableStatusCode>
   CanRunWebAppInstallableChecks(const blink::mojom::Manifest& manifest) = 0;
@@ -298,19 +300,7 @@ class AppBannerManager : public content::WebContentsObserver,
   // changed.
   virtual void InstallableWebAppStatusUpdate() = 0;
 
-  // Virtual so the TestAppBannerManagerDesktop can reset its installability
-  // state when called.
-  virtual void RecheckInstallabilityForLoadedPage();
-
-  // Callback invoked by the InstallableManager once it has fetched the page's
-  // manifest. Virtual for testing.
-  // TODO(http://crbug.com/322342499): Remove virtual & make private.
-  virtual void OnDidGetManifest(const InstallableData& data);
-
-  // Callback invoked by the InstallableManager once it has finished checking
-  // all other installable properties. Virtual for testing.
-  // TODO(http://crbug.com/322342499): Remove virtual and make private.
-  virtual void OnDidPerformInstallableWebAppCheck(const InstallableData& data);
+  void RecheckInstallabilityForLoadedPage();
 
   void PostInstallableWebAppCheckValidation(const bool does_conflict);
 
@@ -324,12 +314,6 @@ class AppBannerManager : public content::WebContentsObserver,
     // The primary url that was loaded can never be elibible for installability.
     kInvalidPrimaryFrameUrl,
   };
-
-  // Returns the URL type, allowing the banner logic to ignore urls that aren't
-  // the primary frame or aren't a valid URL.
-  // TODO(http://crbug.com/322342499): Make this private.
-  UrlType GetUrlType(content::RenderFrameHost* render_frame_host,
-                     const GURL& url);
 
   // content::WebContentsObserver override:
   // TODO(http://crbug.com/322342499): Make this private with the rest of the
@@ -374,6 +358,19 @@ class AppBannerManager : public content::WebContentsObserver,
   // Return a string describing what type of banner is being created. Used when
   // alerting websites that a banner is about to be created.
   std::string GetBannerType() const;
+
+  // Returns the URL type, allowing the banner logic to ignore urls that aren't
+  // the primary frame or aren't a valid URL.
+  UrlType GetUrlType(content::RenderFrameHost* render_frame_host,
+                     const GURL& url);
+
+  // Callback invoked by the InstallableManager once it has fetched the page's
+  // manifest.
+  void OnDidGetManifest(const InstallableData& data);
+
+  // Callback invoked by the InstallableManager once it has finished checking
+  // all other installable properties.
+  void OnDidPerformInstallableWebAppCheck(const InstallableData& data);
 
   // Run at the conclusion of OnDidGetManifest. For web app banners, this calls
   // back to the InstallableManager to continue checking criteria. For native

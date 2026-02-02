@@ -55,13 +55,10 @@ class TestAppBannerManagerDesktop : public AppBannerManagerDesktop,
   // Block until the current app has been installed.
   void AwaitAppInstall();
 
-  // AppBannerManager:
-  void OnDidGetManifest(const InstallableData& result) override;
-  void OnDidPerformInstallableWebAppCheck(
-      const InstallableData& result) override;
-  void ResetCurrentPageData() override;
-
   // AppBannerManagerDesktop:
+  void OnWebAppInstallableCheckedNoErrors(
+      const ManifestId& manifest_id) override;
+  void ResetCurrentPageData() override;
   TestAppBannerManagerDesktop* AsTestAppBannerManagerDesktopForTesting()
       override;
 
@@ -69,23 +66,24 @@ class TestAppBannerManagerDesktop : public AppBannerManagerDesktop,
 
  protected:
   // AppBannerManager:
+  // TODO(http://crbug.com/322342499): When AppBannerManager is devirtualized,
+  // listen to WebContentsObserver::DidFinishLoad directly instead.
   void DidFinishLoad(content::RenderFrameHost* render_frame_host,
                      const GURL& validated_url) override;
-  void RecheckInstallabilityForLoadedPage() override;
 
  private:
-  void SetInstallable(bool installable);
-  void SetPromotable(bool promotable);
+  void RunInstallableQuitClosureIfNeeded();
 
   // AppBannerManager::Observer:
   void OnInstallableWebAppStatusUpdated(
       InstallableWebAppCheckResult,
       const std::optional<WebAppBannerData>&) override {}
+  void WillFetchManifest() override;
   void OnInstall() override;
   void OnBannerPromptReply() override;
   void OnComplete() override;
 
-  std::optional<bool> installable_;
+  bool installable_check_in_progress_ = true;
   base::ListValue debug_log_;
   base::OnceClosure tear_down_quit_closure_;
   base::OnceClosure installable_quit_closure_;

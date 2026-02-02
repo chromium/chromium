@@ -81,6 +81,7 @@ source_set("test_support") {
     deps += [
       "//base/test:test_support",
       "//chrome/browser",
+      "//components/password_manager/content/common",
       "//components/webapps/browser",
       "//components/webapps/browser:webapps_client",
       "//content/public/browser",

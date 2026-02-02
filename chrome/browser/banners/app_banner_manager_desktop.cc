@@ -125,7 +125,7 @@ void AppBannerManagerDesktop::DoNativeAppInstallableCheck(
 }
 
 void AppBannerManagerDesktop::OnWebAppInstallableCheckedNoErrors(
-    const ManifestId& manifest_id) const {}
+    const ManifestId& manifest_id) {}
 
 base::expected<void, InstallableStatusCode>
 AppBannerManagerDesktop::CanRunWebAppInstallableChecks(
