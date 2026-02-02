@@ -124,27 +124,12 @@ using LensWebParamsCallback =
     base::OnceCallback<void(web::NavigationManager::WebLoadParams)>;
 
 // Returns a controller for the given configuration that can facilitate
-// communication with the downstream Lens controller.
-id<ChromeLensController> NewChromeLensController(LensConfiguration* config);
-
-// Returns a controller for the given configuration that can facilitate
 // communication with the downstream Lens View Finder controller.
 UIViewController<ChromeLensViewFinderController>*
 NewChromeLensViewFinderController(LensConfiguration* config);
 
 // Returns whether Lens is supported for the current build.
 bool IsLensSupported();
-
-// Returns whether or not `url` represents a Lens Web results page.
-bool IsLensWebResultsURL(const GURL& url);
-
-// Returns the Lens entry point for `url` if it is a Lens Web results page.
-std::optional<LensEntrypoint> GetLensEntryPointFromURL(const GURL& url);
-
-// Generates web load params for a Lens image search for the given
-// `query`. `completion` will be run on the main thread.
-void GenerateLensLoadParamsAsync(LensQuery* query,
-                                 LensWebParamsCallback completion);
 
 }  // namespace provider
 }  // namespace ios

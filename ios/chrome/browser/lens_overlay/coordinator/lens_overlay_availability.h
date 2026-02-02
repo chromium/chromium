@@ -17,9 +17,6 @@ bool IsLensOverlayLandscapeOrientationEnabled(const PrefService* prefs);
 // instead of new tab.
 bool IsLensOverlaySameTabNavigationEnabled(const PrefService* prefs);
 
-// Returns whether LVF unified experience is enabled.
-bool IsLVFUnifiedExperienceEnabled(const PrefService* prefs);
-
 // Returns whether the escape hatch to LVF is enabled.
 bool IsLVFEscapeHatchEnabled(const PrefService* prefs);
 

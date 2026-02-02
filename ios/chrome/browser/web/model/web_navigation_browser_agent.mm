@@ -7,7 +7,6 @@
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
-#import "ios/chrome/browser/lens/model/lens_browser_agent.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -38,13 +37,7 @@ bool WebNavigationBrowserAgent::CanGoBack(const web::WebState* web_state) {
     return true;
   }
 
-  const LensBrowserAgent* lens_browser_agent =
-      LensBrowserAgent::FromBrowser(browser_);
-  if (!lens_browser_agent) {
     return false;
-  }
-
-  return lens_browser_agent->CanGoBackToLensViewFinder();
 }
 
 bool WebNavigationBrowserAgent::CanGoBack() {
@@ -86,13 +79,6 @@ void WebNavigationBrowserAgent::GoBack() {
   }
 
   web_navigation_util::GoBack(active_web_state);
-
-  // If the previous page was an eligible Lens Web Page, then display the LVF.
-  const LensBrowserAgent* lens_browser_agent =
-      LensBrowserAgent::FromBrowser(browser_);
-  if (lens_browser_agent && lens_browser_agent->CanGoBackToLensViewFinder()) {
-    lens_browser_agent->GoBackToLensViewFinder();
-  }
 }
 
 void WebNavigationBrowserAgent::GoForward() {

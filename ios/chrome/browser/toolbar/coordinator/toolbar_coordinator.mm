@@ -973,17 +973,6 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
 
 #pragma mark - ToolbarCommands
 
-- (void)triggerToolbarSlideInAnimation {
-  if (IsChromeNextIaEnabled()) {
-    [_topToolbarViewController triggerToolbarSlideInAnimation];
-    [_bottomToolbarViewController triggerToolbarSlideInAnimation];
-    return;
-  }
-  for (id<ToolbarCommands> coordinator in self.coordinators) {
-    [coordinator triggerToolbarSlideInAnimation];
-  }
-}
-
 - (void)indicateLensOverlayVisible:(BOOL)lensOverlayVisible {
   if (IsChromeNextIaEnabled()) {
     // TODO(crbug.com/472279443): Implement this.

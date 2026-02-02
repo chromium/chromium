@@ -195,10 +195,6 @@ using tab_groups::VersioningMessageController;
 
 #pragma mark - ToolbarCommands
 
-- (void)triggerToolbarSlideInAnimation {
-  // Implemented in primary and secondary toolbars directly.
-}
-
 - (void)indicateLensOverlayVisible:(BOOL)lensOverlayVisible {
   // NO-OP
 }

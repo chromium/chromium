@@ -55,9 +55,6 @@
 // The location bar in this toolbar.
 @property(nonatomic, strong) UIViewController* locationBarViewController;
 
-// Triggers the animation for the slide in of the toolbar.
-- (void)triggerToolbarSlideInAnimation;
-
 // Shows/Hides the location bar.
 - (void)setLocationBarHidden:(BOOL)hidden;
 

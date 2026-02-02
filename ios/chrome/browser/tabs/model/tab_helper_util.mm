@@ -302,9 +302,7 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
   // created before AppLauncherTabHelper, which will filter out
   // unhandled schemes.
   attacher.CreateWhen<LensTabHelper>(attacher.IsNotInTabHelperFilter());
-  attacher.CreateWhen<LensOverlayTabHelper>(
-      attacher.IsNotInTabHelperFilter() &&
-      IsLensOverlayAvailable(profile->GetPrefs()));
+  attacher.CreateWhen<LensOverlayTabHelper>(attacher.IsNotInTabHelperFilter());
   attacher
       .CreateDeferredWhen<AppLauncherTabHelper>(!attacher.IsForLensOverlay() &&
                                                 !attacher.IsForPrerender())

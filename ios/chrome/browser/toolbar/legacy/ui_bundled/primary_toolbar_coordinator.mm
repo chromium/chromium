@@ -176,10 +176,6 @@
 
 #pragma mark - ToolbarCommands
 
-- (void)triggerToolbarSlideInAnimation {
-  [self.viewController triggerToolbarSlideInAnimationFromBelow:NO];
-}
-
 - (void)indicateLensOverlayVisible:(BOOL)lensOverlayVisible {
   // NO-OP
 }

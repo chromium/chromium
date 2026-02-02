@@ -170,11 +170,6 @@ constexpr CGFloat kLocationBarHeight = 40;
                                         curve:curve];
 }
 
-- (void)triggerToolbarSlideInAnimation {
-  // TODO(crbug.com/472279443): Implement this.
-  NOTREACHED();
-}
-
 - (void)setLocationBarHidden:(BOOL)hidden {
   _locationBarContainer.hidden = hidden;
 }

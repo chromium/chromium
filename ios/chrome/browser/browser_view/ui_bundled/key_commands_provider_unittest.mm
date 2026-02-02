@@ -18,7 +18,6 @@
 #import "ios/chrome/browser/dom_distiller/model/distiller_service_factory.h"
 #import "ios/chrome/browser/find_in_page/model/find_tab_helper.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
-#import "ios/chrome/browser/lens/model/lens_browser_agent.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper_delegate.h"
@@ -76,7 +75,6 @@ class KeyCommandsProviderTest : public PlatformTest {
     profile_ = std::move(builder).Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
     web_state_list_ = browser_->GetWebStateList();
-    LensBrowserAgent::CreateForBrowser(browser_.get());
     WebNavigationBrowserAgent::CreateForBrowser(browser_.get());
 
     bookmark_model_ = ios::BookmarkModelFactory::GetForProfile(profile_.get());
@@ -902,8 +900,7 @@ TEST_F(KeyCommandsProviderTest, BackForward) {
       web_state->GetNavigationManager();
   int initial_index = navigation_manager->GetLastCommittedItemIndex();
 
-  if (IsLensOverlayAvailable(profile_->GetPrefs()) &&
-      IsLensOverlaySameTabNavigationEnabled(profile_->GetPrefs())) {
+  if (IsLensOverlaySameTabNavigationEnabled(profile_->GetPrefs())) {
     OCMExpect([mock_page_side_swipe_commands_handler_
         navigateBackWithSideSwipeAnimationIfNeeded]);
   }
@@ -911,8 +908,7 @@ TEST_F(KeyCommandsProviderTest, BackForward) {
   [provider_ keyCommand_back];
   EXPECT_EQ(navigation_manager->GetLastCommittedItemIndex(), initial_index - 1);
 
-  if (IsLensOverlayAvailable(profile_->GetPrefs()) &&
-      IsLensOverlaySameTabNavigationEnabled(profile_->GetPrefs())) {
+  if (IsLensOverlaySameTabNavigationEnabled(profile_->GetPrefs())) {
     OCMExpect([mock_page_side_swipe_commands_handler_
         navigateBackWithSideSwipeAnimationIfNeeded]);
   }
@@ -926,8 +922,7 @@ TEST_F(KeyCommandsProviderTest, BackForward) {
   [provider_ keyCommand_forward];
   EXPECT_EQ(navigation_manager->GetLastCommittedItemIndex(), initial_index);
 
-  if (IsLensOverlayAvailable(profile_->GetPrefs()) &&
-      IsLensOverlaySameTabNavigationEnabled(profile_->GetPrefs())) {
+  if (IsLensOverlaySameTabNavigationEnabled(profile_->GetPrefs())) {
     EXPECT_OCMOCK_VERIFY(mock_page_side_swipe_commands_handler_);
   }
 }

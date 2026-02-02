@@ -8,7 +8,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/test/ios/test_utils.h"
-#import "ios/chrome/browser/lens/model/lens_browser_agent.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/features.h"
@@ -71,7 +70,6 @@ class AccountConsistencyBrowserAgentTestBase : public PlatformTest {
                      forProtocol:@protocol(BrowserCoordinatorCommands)];
 
     base_view_controller_mock_ = OCMStrictClassMock([UIViewController class]);
-    LensBrowserAgent::CreateForBrowser(browser_.get());
     WebNavigationBrowserAgent::CreateForBrowser(browser_.get());
     AccountConsistencyBrowserAgent::CreateForBrowser(
         browser_.get(), base_view_controller_mock_);

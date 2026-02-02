@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/sharing/ui_bundled/activity_services/activities/request_desktop_or_mobile_site_activity.h"
 
 #import "base/memory/raw_ptr.h"
-#import "ios/chrome/browser/lens/model/lens_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -28,7 +27,6 @@ class RequestDesktopOrMobileSiteActivityTest : public PlatformTest {
   RequestDesktopOrMobileSiteActivityTest() {
     profile_ = TestProfileIOS::Builder().Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
-    LensBrowserAgent::CreateForBrowser(browser_.get());
     WebNavigationBrowserAgent::CreateForBrowser(browser_.get());
     agent_ = WebNavigationBrowserAgent::FromBrowser(browser_.get());
     auto web_state = std::make_unique<web::FakeWebState>();

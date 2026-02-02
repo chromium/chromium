@@ -25,7 +25,6 @@ const char kMimeTypePDF[] = "application/pdf";
 
 LensOverlayTabHelper::LensOverlayTabHelper(web::WebState* web_state)
     : web_state_(web_state) {
-  CHECK(IsLensOverlayAvailable(GetProfilePrefs()));
   web_state->AddObserver(this);
 }
 

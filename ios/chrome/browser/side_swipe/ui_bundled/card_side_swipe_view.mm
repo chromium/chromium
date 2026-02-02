@@ -229,26 +229,23 @@ const CGFloat kResizeFactor = 4;
   PrefService* prefs =
       ProfileIOS::FromBrowserState(webState->GetBrowserState())->GetPrefs();
   // Lens overlay displays content fullscreen and hides the vertical toolbars.
-  if (IsLensOverlayAvailable(prefs)) {
-    if (LensOverlayTabHelper* lensOverlayTabHelper =
-            LensOverlayTabHelper::FromWebState(webState)) {
-      BOOL lensOverlayShown;
+  if (LensOverlayTabHelper* lensOverlayTabHelper =
+          LensOverlayTabHelper::FromWebState(webState)) {
+    BOOL lensOverlayShown;
 
-      if (IsLensOverlaySameTabNavigationEnabled(prefs)) {
-        lensOverlayShown =
-            lensOverlayTabHelper->IsLensOverlayInvokedOnCurrentNavigationItem();
-      } else {
-        lensOverlayShown =
-            lensOverlayTabHelper->IsLensOverlayUIAttachedAndAlive();
-      }
+    if (IsLensOverlaySameTabNavigationEnabled(prefs)) {
+      lensOverlayShown =
+          lensOverlayTabHelper->IsLensOverlayInvokedOnCurrentNavigationItem();
+    } else {
+      lensOverlayShown =
+          lensOverlayTabHelper->IsLensOverlayUIAttachedAndAlive();
+    }
 
-      UIImage* lensOverlaySnapshot =
-          lensOverlayTabHelper->GetViewportSnapshot();
-      if (lensOverlayShown && lensOverlaySnapshot) {
-        [self enableFullscreenCard:card];
-        [card setImage:lensOverlaySnapshot];
-        return;
-      }
+    UIImage* lensOverlaySnapshot = lensOverlayTabHelper->GetViewportSnapshot();
+    if (lensOverlayShown && lensOverlaySnapshot) {
+      [self enableFullscreenCard:card];
+      [card setImage:lensOverlaySnapshot];
+      return;
     }
   }
 

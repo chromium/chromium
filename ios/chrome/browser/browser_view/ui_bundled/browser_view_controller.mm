@@ -2926,22 +2926,6 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
   return nil;
 }
 
-#pragma mark - LensPresentationDelegate
-
-- (CGRect)webContentAreaForLensCoordinator:(LensCoordinator*)lensCoordinator {
-  DCHECK(lensCoordinator);
-
-  // The LensCoordinator needs the content area of the webView with the
-  // header and footer toolbars visible.
-  UIEdgeInsets viewportInsets = self.rootSafeAreaInsets;
-  if (!CanShowTabStrip(self)) {
-    viewportInsets.bottom = [self secondaryToolbarHeightWithInset];
-  }
-
-  viewportInsets.top = [self expandedTopToolbarHeight];
-  return UIEdgeInsetsInsetRect(self.contentArea.bounds, viewportInsets);
-}
-
 #pragma mark - ContextualSheetPresenter
 
 - (void)insertContextualSheet:(UIView*)contextualSheet {

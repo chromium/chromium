@@ -14,7 +14,6 @@
 #import "ios/chrome/browser/browser_view/ui_bundled/tab_consumer.h"
 #import "ios/chrome/browser/contextual_panel/coordinator/contextual_sheet_presenter.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_consumer.h"
-#import "ios/chrome/browser/lens/ui_bundled/lens_coordinator.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_presentation_environment.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_focus_delegate.h"
 #import "ios/chrome/browser/omnibox/ui/popup/omnibox_popup_presenter.h"
@@ -83,7 +82,6 @@ typedef struct {
     : UIViewController <BrowserCommands,
                         ContextualSheetPresenter,
                         IncognitoReauthConsumer,
-                        LensPresentationDelegate,
                         LensOverlayPresentationEnvironment,
                         TabConsumer,
                         OmniboxFocusDelegate,

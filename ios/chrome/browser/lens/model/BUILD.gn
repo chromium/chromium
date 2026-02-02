@@ -4,8 +4,6 @@
 
 source_set("model") {
   sources = [
-    "lens_browser_agent.h",
-    "lens_browser_agent.mm",
     "lens_tab_helper.h",
     "lens_tab_helper.mm",
   ]

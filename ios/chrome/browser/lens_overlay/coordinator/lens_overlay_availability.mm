@@ -14,7 +14,7 @@
 
 // Returns whether the lens overlay is allowed by policy.
 bool IsLensOverlayAllowedByPolicy(const PrefService* prefs) {
-  CHECK(prefs, kLensOverlayNotFatalUntil);
+  CHECK(prefs);
   int policyRawValue = prefs->GetInteger(lens::prefs::kLensOverlaySettings);
   return policyRawValue ==
          static_cast<int>(
@@ -29,24 +29,16 @@ bool IsLensOverlayAvailable(const PrefService* prefs) {
 
 bool IsLensOverlaySameTabNavigationEnabled(const PrefService* prefs) {
   bool isIPhone = ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE;
-  return isIPhone && IsLensOverlayAvailable(prefs);
-}
-
-bool IsLVFUnifiedExperienceEnabled(const PrefService* prefs) {
-  return IsLensOverlayAvailable(prefs);
+  return isIPhone;
 }
 
 bool IsLensOverlayLandscapeOrientationEnabled(const PrefService* prefs) {
-  return IsLensOverlayAvailable(prefs) &&
-         base::FeatureList::IsEnabled(kLensOverlayEnableLandscapeCompatibility);
+  return base::FeatureList::IsEnabled(kLensOverlayEnableLandscapeCompatibility);
 }
 
 bool IsLVFEscapeHatchEnabled(const PrefService* prefs) {
   BOOL isTablet = ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
-  if (isTablet) {
-    return NO;
-  }
-  return IsLensOverlayAvailable(prefs);
+  return !isTablet;
 }
 
 bool UseCustomLensOverlayBottomSheet() {
