@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/crash_report/model/breadcrumbs/breadcrumb_manager_tab_helper.h"
 
+#import "base/check.h"
+#import "base/functional/callback_helpers.h"
 #import "base/ios/ns_error_util.h"
 #import "base/strings/stringprintf.h"
 #import "components/breadcrumbs/core/breadcrumb_manager_keyed_service.h"
@@ -66,10 +68,15 @@ BreadcrumbManagerTabHelper::BreadcrumbManagerTabHelper(web::WebState* web_state)
       std::is_same<decltype(web_state->GetUniqueIdentifier().identifier()),
                    decltype(this->GetUniqueId())>::value);
 
+  CHECK(web_state_->IsRealized());
   web_state_->AddObserver(this);
-  if (web_state_->IsRealized()) {
-    CreateBreadcrumbScrollingObserver();
-  }
+  base::RepeatingCallback callback =
+      base::BindRepeating(&BreadcrumbManagerTabHelper::OnScrollEvent,
+                          weak_ptr_factory_.GetWeakPtr());
+
+  scroll_observer_ = [[BreadcrumbScrollingObserver alloc]
+      initWithLoggingBlock:base::CallbackToBlock(callback)];
+  [web_state_->GetWebViewProxy().scrollViewProxy addObserver:scroll_observer_];
 }
 
 BreadcrumbManagerTabHelper::~BreadcrumbManagerTabHelper() = default;
@@ -153,28 +160,10 @@ void BreadcrumbManagerTabHelper::RenderProcessGone(web::WebState* web_state) {
 void BreadcrumbManagerTabHelper::WebStateDestroyed(web::WebState* web_state) {
   web_state->RemoveObserver(this);
 
-  if (scroll_observer_) {
-    [[web_state->GetWebViewProxy() scrollViewProxy]
-        removeObserver:scroll_observer_];
-    scroll_observer_ = nil;
-  }
+  [[web_state->GetWebViewProxy() scrollViewProxy]
+      removeObserver:scroll_observer_];
+  scroll_observer_ = nil;
   web_state_ = nil;
-}
-
-void BreadcrumbManagerTabHelper::WebStateRealized(web::WebState* web_state) {
-  CreateBreadcrumbScrollingObserver();
-}
-
-void BreadcrumbManagerTabHelper::CreateBreadcrumbScrollingObserver() {
-  base::RepeatingCallback callback =
-      base::BindRepeating(&BreadcrumbManagerTabHelper::OnScrollEvent,
-                          weak_ptr_factory_.GetWeakPtr());
-  DCHECK(!scroll_observer_);
-  scroll_observer_ = [[BreadcrumbScrollingObserver alloc]
-      initWithLoggingBlock:^(const std::string& event) {
-        callback.Run(event);
-      }];
-  [web_state_->GetWebViewProxy().scrollViewProxy addObserver:scroll_observer_];
 }
 
 void BreadcrumbManagerTabHelper::OnScrollEvent(const std::string& event) {

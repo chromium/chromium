@@ -48,10 +48,8 @@ class BreadcrumbManagerTabHelper
   void DidChangeVisibleSecurityState(web::WebState* web_state) override;
   void RenderProcessGone(web::WebState* web_state) override;
   void WebStateDestroyed(web::WebState* web_state) override;
-  void WebStateRealized(web::WebState* web_state) override;
 
-  // Helpers used to create and respond to the webState scrollViewProxy.
-  void CreateBreadcrumbScrollingObserver();
+  // Helper used to respond to the webState scrollViewProxy.
   void OnScrollEvent(const std::string& event);
 
   // The webstate associated with this tab helper.
