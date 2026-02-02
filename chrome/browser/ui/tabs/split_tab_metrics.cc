@@ -4,8 +4,14 @@
 
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 
+#include <string>
+#include <string_view>
+
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/rand_util.h"
+#include "base/strings/strcat.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/split_tabs/split_tab_id.h"
 #include "components/tabs/public/split_tab_data.h"
@@ -17,8 +23,41 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace split_tabs {
+namespace {
+std::string_view GetMetricsSuffixForSource(SplitTabCreatedSource source) {
+  // These strings are persisted to logs. Entries should not be changed.
+  switch (source) {
+    case SplitTabCreatedSource::kToolbarButton:
+      return "ToolbarButton";
+    case SplitTabCreatedSource::kDragAndDropLink:
+      return "DragAndDropLink";
+    case SplitTabCreatedSource::kDragAndDropTab:
+      return "DragAndDropTab";
+    case SplitTabCreatedSource::kBookmarkContextMenu:
+      return "BookmarkContextMenu";
+    case SplitTabCreatedSource::kLinkContextMenu:
+      return "LinkContextMenu";
+    case SplitTabCreatedSource::kTabContextMenu:
+      return "TabContextMenu";
+    case SplitTabCreatedSource::kDuplicateSplit:
+      return "DuplicateSplit";
+    case SplitTabCreatedSource::kExtensionsApi:
+      return "ExtensionsApi";
+    case SplitTabCreatedSource::kWhatsNew:
+      return "WhatsNew";
+    case SplitTabCreatedSource::kKeyboardShortcut:
+      return "KeyboardShortcut";
+    case SplitTabCreatedSource::kNewTabButton:
+      return "NewTabButton";
+  }
+}
+}  // namespace
+
 void RecordSplitTabCreated(SplitTabCreatedSource source) {
   base::UmaHistogramEnumeration("TabStrip.SplitView.Created", source);
+  base::RecordAction(base::UserMetricsAction(
+      base::StrCat({"SplitViewCreated_", GetMetricsSuffixForSource(source)})
+          .c_str()));
 }
 
 void LogSplitViewCreatedUKM(const TabStripModel* tab_strip_model,

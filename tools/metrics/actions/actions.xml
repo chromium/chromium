@@ -46508,6 +46508,158 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="SplitViewCreated_BookmarkContextMenu">
+  <owner>agale@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when a Split View was created within the browser by clicking the
+    bookmark context menu item.
+  </description>
+</action>
+
+<action name="SplitViewCreated_DragAndDropLink">
+  <owner>agale@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when a Split View was created within the browser by dragging and
+    dropping a link.
+  </description>
+</action>
+
+<action name="SplitViewCreated_DragAndDropTab">
+  <owner>agale@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when a Split View was created within the browser by dragging and
+    dropping a tab.
+  </description>
+</action>
+
+<action name="SplitViewCreated_DuplicateSplit">
+  <owner>agale@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when a Split View was created within the browser by duplicating an
+    existing Split View.
+  </description>
+</action>
+
+<action name="SplitViewCreated_ExtensionsApi">
+  <owner>agale@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when a Split View was created within the browser via the extensions
+    API which is used to create Split Views from the bookmarks side panel.
+  </description>
+</action>
+
+<action name="SplitViewCreated_KeyboardShortcut">
+  <owner>agale@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when a Split View was created within the browser by triggering the
+    keyboard shortcut.
+  </description>
+</action>
+
+<action name="SplitViewCreated_LinkContextMenu">
+  <owner>agale@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when a Split View was created within the browser by clicking the
+    link context menu item.
+  </description>
+</action>
+
+<action name="SplitViewCreated_NewTabButton">
+  <owner>agale@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when a Split View was created within the browser by clicking the
+    new tab button context menu item.
+  </description>
+</action>
+
+<action name="SplitViewCreated_TabContextMenu">
+  <owner>agale@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when a Split View was created within the browser by clicking the
+    tab context menu item.
+  </description>
+</action>
+
+<action name="SplitViewCreated_ToolbarButton">
+  <owner>agale@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when a Split View was created within the browser by clicking the
+    toolbar button.
+  </description>
+</action>
+
+<action name="SplitViewCreated_WhatsNew">
+  <owner>agale@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when a Split View was created within the browser by clicking the
+    What's New page button.
+  </description>
+</action>
+
+<action name="SplitViewMenuClicked_CloseEndTab">
+  <owner>agale@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when the &quot;Close right view&quot; Split View menu item was
+    clicked.
+  </description>
+</action>
+
+<action name="SplitViewMenuClicked_CloseSpecifiedTab">
+  <owner>agale@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when the &quot;Close this view&quot; Split View menu item was
+    clicked.
+  </description>
+</action>
+
+<action name="SplitViewMenuClicked_CloseStartTab">
+  <owner>agale@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when the &quot;Close left view&quot; Split View menu item was
+    clicked.
+  </description>
+</action>
+
+<action name="SplitViewMenuClicked_ExitSplit">
+  <owner>agale@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when the &quot;Separate views&quot; Split View menu item was
+    clicked.
+  </description>
+</action>
+
+<action name="SplitViewMenuClicked_ReversePosition">
+  <owner>agale@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when the &quot;Reverse&quot; Split View menu item was clicked.
+  </description>
+</action>
+
+<action name="SplitViewMenuClicked_SendFeedback">
+  <owner>agale@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when the &quot;Send feedback&quot; Split View menu item was
+    clicked.
+  </description>
+</action>
+
 <action name="SSL.DisplayedInsecureContent" not_user_triggered="true">
   <obsolete>Deprecated 02/2017</obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
