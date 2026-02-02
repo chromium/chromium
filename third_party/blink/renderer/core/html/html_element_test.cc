@@ -7,6 +7,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/text.h"
+#include "third_party/blink/renderer/core/events/gesture_event.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/html_dialog_element.h"
@@ -15,6 +17,7 @@
 #include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -501,6 +504,28 @@ TEST_F(HTMLElementTest, TitleAttributeDirectionality) {
   container->setAttribute(html_names::kDirAttr,
                           kAuto);  // LTR for contents, RTL for attribute
   EXPECT_EQ(get_title_direction(), TextDirection::kRtl);
+}
+
+TEST_F(HTMLElementTest, InterestForLongPressCrash) {
+  ScopedHTMLInterestForAttributeForTest interest_for(true);
+  ScopedLightDismissFromClickForTest light_dismiss(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <button id="btn" interestfor="pop">Button</button>
+    <div id="pop" popover>Popover</div>
+  )HTML");
+
+  Element* btn = GetDocument().getElementById(AtomicString("btn"));
+
+  WebGestureEvent gesture_event(
+      WebInputEvent::Type::kGestureLongPress, WebInputEvent::kNoModifiers,
+      base::TimeTicks::Now(), WebGestureDevice::kTouchscreen);
+  gesture_event.SetPositionInWidget(gfx::PointF(10, 10));
+  gesture_event.SetPositionInScreen(gfx::PointF(10, 10));
+
+  GestureEvent* blink_gesture_event =
+      GestureEvent::Create(GetDocument().domWindow(), gesture_event);
+  btn->DispatchEvent(*blink_gesture_event);
 }
 
 }  // namespace blink

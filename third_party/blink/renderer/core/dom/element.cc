@@ -2032,7 +2032,9 @@ void Element::DefaultEventHandler(Event& event) {
       // `null` target for that pointerup event.
       if (auto* target_popover = DynamicTo<HTMLElement>(InterestForElement());
           target_popover && target_popover->IsPopover()) {
-        GetDocument().SetPopoverPointerdownTarget(target_popover);
+        if (!RuntimeEnabledFeatures::LightDismissFromClickEnabled()) {
+          GetDocument().SetPopoverPointerdownTarget(target_popover);
+        }
       }
       // Delays don't apply to long-press, since the "long press" has a
       // built-in delay. Just show interest immediately in this case. This
