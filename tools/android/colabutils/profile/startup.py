@@ -89,14 +89,14 @@ async def _measure_startup(app, url, trace_file, trace_config, query,
 
 
 _STARTUP_TIME_QUERY = r"""
-INCLUDE PERFETTO MODULE viz.slices;
+INCLUDE PERFETTO MODULE slices.with_context;
 
 SELECT
 -- Select the display_value from the second join to the args table.
 -- This will be the value for 'chrome_histogram_sample.sample'.
 args_sample.display_value AS sample_value
 FROM
-_viz_slices_for_ui_table AS slice
+thread_or_process_slice AS slice
 -- First join to args table to FIND the event by its name.
 LEFT JOIN
 args AS args_name ON slice.arg_set_id = args_name.arg_set_id
