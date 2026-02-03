@@ -332,18 +332,43 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
                                 showUiInSingleColumn(searchBox, /* show= */ true);
                             }
                         });
+        var fm = getSettingsFragmentManager();
 
         // Help menu/icon layout may change from Fragment to Fragment. Monitor the Fragment resume
         // event to update the search bar width in response.
-        getSettingsFragmentManager()
-                .registerFragmentLifecycleCallbacks(
-                        new FragmentManager.FragmentLifecycleCallbacks() {
-                            @Override
-                            public void onFragmentResumed(FragmentManager fm, Fragment f) {
-                                updateSearchUiWidth();
-                            }
-                        },
-                        false);
+        fm.registerFragmentLifecycleCallbacks(
+                new FragmentManager.FragmentLifecycleCallbacks() {
+                    @Override
+                    public void onFragmentResumed(FragmentManager fm, Fragment f) {
+                        updateSearchUiWidth();
+                    }
+                },
+                false);
+
+        // Prevent TalkBack from navigating to background fragments.
+        fm.addOnBackStackChangedListener(
+                () -> {
+                    List<Fragment> fragments = fm.getFragments();
+                    if (fragments.isEmpty()) return;
+
+                    // The last fragment in the list is usually the one on top.
+                    // Top fragment: make it accessible;
+                    // Background fragments: hide them and their children.
+                    for (int i = 0; i < fragments.size(); i++) {
+                        Fragment f = fragments.get(i);
+                        if (f != null && f.getView() != null) {
+                            enableTalkbackNavigation(f.getView(), i == fragments.size() - 1);
+                        }
+                    }
+                });
+    }
+
+    private static void enableTalkbackNavigation(View view, boolean enable) {
+        if (enable) {
+            view.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
+        } else {
+            view.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
+        }
     }
 
     private void observeFragmentForVisibilityChange() {
