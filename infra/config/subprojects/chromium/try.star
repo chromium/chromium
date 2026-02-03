@@ -162,6 +162,11 @@ luci.cq_group(
             run = cq.run_limits(max_active = None),
         ),
         cq.user_limit(
+            name = "chromium-src-increased-quota",
+            groups = ["chromium-src-increased-quota"],
+            run = cq.run_limits(max_active = 20),
+        ),
+        cq.user_limit(
             name = "bots",
             users = [
                 "chromium-autoroll@skia-public.iam.gserviceaccount.com",
