@@ -56,6 +56,9 @@ BASE_FEATURE(kContextualTasksForceCountryCodeUS,
 BASE_FEATURE(kContextualTasksRemoveTasksWithoutThreadsOrTabAssociations,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnableNotifyZeroStateRenderedCapability,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<bool> kOnlyUseTitlesForSimilarity(
     &kContextualTasksContext,
     "ContextualTasksContextOnlyUseTitles",

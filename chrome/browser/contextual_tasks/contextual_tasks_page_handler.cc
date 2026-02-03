@@ -245,6 +245,12 @@ void ContextualTasksPageHandler::OnWebviewMessage(
   } else if (aim_to_client_message.has_update_thread_context_library()) {
     OnReceivedUpdatedThreadContextLibrary(
         aim_to_client_message.update_thread_context_library());
+  } else if (aim_to_client_message.has_notify_zero_state_rendered() &&
+             base::FeatureList::IsEnabled(
+                 contextual_tasks::kEnableNotifyZeroStateRenderedCapability)) {
+    web_ui_controller_->OnZeroStateChange(
+        aim_to_client_message.notify_zero_state_rendered()
+            .is_zero_state_rendered());
   }
 }
 

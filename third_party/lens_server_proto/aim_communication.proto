@@ -26,6 +26,9 @@ enum FeatureCapability {
 
   // AiModeUpdateThreadContextLibrary() method
   THREAD_CONTEXT_LIBRARY = 18;
+
+  // notifyZeroStateRendered() method
+  NOTIFY_ZERO_STATE_RENDERED = 20;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -100,6 +103,7 @@ message AimToClientMessage {
     EnterBasicMode enter_basic_mode = 4;
     ExitBasicMode exit_basic_mode = 5;
     UpdateThreadContextLibrary update_thread_context_library = 7;
+    NotifyZeroStateRendered notify_zero_state_rendered = 8;
   }
 }
 
@@ -118,6 +122,12 @@ message ExitBasicMode {}
 // Message AIM sends to clients to update the thread context library.
 message UpdateThreadContextLibrary {
   repeated Context contexts = 1;
+}
+
+// Message AIM sends to clients to notify them that the zero state has been
+// rendered.
+message NotifyZeroStateRendered {
+  bool is_zero_state_rendered = 1;
 }
 
 // Context input for AIM threads.
