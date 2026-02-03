@@ -100,7 +100,7 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
     DialogBrowserTest::SetUpOnMainThread();
     signin::MakePrimaryAccountAvailable(
         IdentityManagerFactory::GetForProfile(browser()->profile()),
-        "user@example.com", signin::ConsentLevel::kSync);
+        "user@example.com", signin::ConsentLevel::kSignin);
   }
 
   void TearDownOnMainThread() override {
@@ -596,7 +596,7 @@ class GPMPasskeysAuthenticatorDialogTest : public DialogBrowserTest {
   void SetUpOnMainThread() override {
     signin::MakePrimaryAccountAvailable(
         IdentityManagerFactory::GetForProfile(browser()->profile()),
-        "user@example.com", signin::ConsentLevel::kSync);
+        "user@example.com", signin::ConsentLevel::kSignin);
   }
 
   void TearDownOnMainThread() override {
