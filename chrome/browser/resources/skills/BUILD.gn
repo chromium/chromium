@@ -13,6 +13,9 @@ build_webui("build") {
   static_files = [
     "images/skills_empty.svg",
     "images/skills_empty_dark.svg",
+    "images/skills_undo.svg",
+    "images/skills_redo.svg",
+    "images/skills_pen_spark.svg",
     "skills.html",
     "skills_dialog.html",
   ]

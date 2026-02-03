@@ -5,14 +5,14 @@
 import 'chrome://skills/skills_dialog_app.js';
 
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import type {CrTextareaElement} from 'chrome://resources/cr_elements/cr_textarea/cr_textarea.js';
 import type {Skill} from 'chrome://skills/skill.mojom-webui.js';
 import {SkillSource} from 'chrome://skills/skill.mojom-webui.js';
 import {DialogHandlerRemote} from 'chrome://skills/skills.mojom-webui.js';
 import type {SkillsDialogAppElement} from 'chrome://skills/skills_dialog_app.js';
 import {SkillsDialogBrowserProxy} from 'chrome://skills/skills_dialog_browser_proxy.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertTrue,assertFalse} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 
 suite('SkillsDialogAppPage', function() {
@@ -63,14 +63,14 @@ suite('SkillsDialogAppPage', function() {
         (skillsDialogApp.$['nameText'] as CrInputElement).value);
     assertEquals(
         testSkill.prompt,
-        (skillsDialogApp.$['instructionsText'] as CrTextareaElement).value);
+        (skillsDialogApp.$['instructionsText'] as HTMLTextAreaElement).value);
   });
 
   test('SaveButtonDisabledStates', async function() {
     const saveButton = skillsDialogApp.$['saveButton'] as CrButtonElement;
     const nameInput = skillsDialogApp.$['nameText'] as CrInputElement;
     const instructionsInput =
-        skillsDialogApp.$['instructionsText'] as CrTextareaElement;
+        skillsDialogApp.$['instructionsText'] as HTMLTextAreaElement;
 
     // 1. Initial state: disabled.
     assertEquals(true, saveButton.disabled);
@@ -84,8 +84,7 @@ suite('SkillsDialogAppPage', function() {
 
     // 3. Name and instructions filled: enabled.
     instructionsInput.value = 'test prompt';
-    instructionsInput.dispatchEvent(new CustomEvent(
-        'value-changed', {detail: {value: instructionsInput.value}}));
+    instructionsInput.dispatchEvent(new Event('input'));
     await skillsDialogApp.updateComplete;
     assertEquals(false, saveButton.disabled);
 
@@ -101,7 +100,7 @@ suite('SkillsDialogAppPage', function() {
     const saveButton = skillsDialogApp.$['saveButton'] as CrButtonElement;
     const nameInput = skillsDialogApp.$['nameText'] as CrInputElement;
     const instructionsInput =
-        skillsDialogApp.$['instructionsText'] as CrTextareaElement;
+        skillsDialogApp.$['instructionsText'] as HTMLTextAreaElement;
 
     // Populate the fields to enable the save button.
     const testName = 'test skill';
@@ -110,8 +109,7 @@ suite('SkillsDialogAppPage', function() {
     nameInput.dispatchEvent(
         new CustomEvent('value-changed', {detail: {value: nameInput.value}}));
     instructionsInput.value = testPrompt;
-    instructionsInput.dispatchEvent(new CustomEvent(
-        'value-changed', {detail: {value: instructionsInput.value}}));
+    instructionsInput.dispatchEvent(new Event('input'));
     await skillsDialogApp.updateComplete;
     assertEquals(false, saveButton.disabled);
 
@@ -148,14 +146,13 @@ suite('SkillsDialogAppPage', function() {
 
     const nameInput = skillsDialogApp.$['nameText'] as CrInputElement;
     const instructionsInput =
-        skillsDialogApp.$['instructionsText'] as CrTextareaElement;
+        skillsDialogApp.$['instructionsText'] as HTMLTextAreaElement;
 
     nameInput.value = 'name';
     nameInput.dispatchEvent(
         new CustomEvent('value-changed', {detail: {value: 'name'}}));
     instructionsInput.value = 'prompt';
-    instructionsInput.dispatchEvent(
-        new CustomEvent('value-changed', {detail: {value: 'prompt'}}));
+    instructionsInput.dispatchEvent(new Event('input'));
 
     await skillsDialogApp.updateComplete;
 
@@ -190,5 +187,86 @@ suite('SkillsDialogAppPage', function() {
     });
     emojiTrigger.dispatchEvent(letterEvent);
     assertTrue(letterEvent.defaultPrevented, 'Should prevent regular keys');
+  });
+
+  test('RefineUndoRedoFlow', async function() {
+    const instructionsInput =
+        skillsDialogApp.$['instructionsText'] as HTMLTextAreaElement;
+    const refineBtn =
+        skillsDialogApp.shadowRoot.querySelector<CrIconButtonElement>(
+            '.icon-refine')!;
+    const undoBtn =
+        skillsDialogApp.shadowRoot.querySelector<CrIconButtonElement>(
+            '.icon-undo')!;
+    const redoBtn =
+        skillsDialogApp.shadowRoot.querySelector<CrIconButtonElement>(
+            '.icon-redo')!;
+
+    // 1. Initial State: Empty
+    assertTrue(refineBtn.disabled, 'Refine should be disabled when empty');
+    assertTrue(undoBtn.disabled, 'Undo should be disabled initially');
+    assertTrue(redoBtn.disabled, 'Redo should be disabled initially');
+
+    // 2. Type something
+    const originalText = 'Original Prompt';
+    instructionsInput.value = originalText;
+    instructionsInput.dispatchEvent(new Event('input'));
+    await skillsDialogApp.updateComplete;
+
+    assertFalse(refineBtn.disabled, 'Refine should be enabled after typing');
+    assertTrue(undoBtn.disabled);
+
+    // 3. Mock the refine call and Click Refine
+    const refinedMockText = 'AI Refined Prompt';
+
+    dialogHandler.refineSkill = (skill: any) => {
+      dialogHandler.methodCalled('refineSkill', skill);
+      return Promise.resolve({
+        refinedSkill: {prompt: refinedMockText} as any,
+      });
+    };
+
+    refineBtn.click();
+
+    await dialogHandler.whenCalled('refineSkill');
+
+    await new Promise(resolve => setTimeout(resolve, 0));
+    await skillsDialogApp.updateComplete;
+
+    assertEquals(
+        refinedMockText, instructionsInput.value,
+        'Text should be updated to the mocked AI response');
+
+    // Check buttons
+    assertFalse(undoBtn.disabled, 'Undo should be enabled after refining');
+    assertTrue(redoBtn.disabled, 'Redo should remain disabled');
+
+    // 4. Click Undo
+    undoBtn.click();
+    await skillsDialogApp.updateComplete;
+
+    assertEquals(
+        originalText, instructionsInput.value,
+        'Undo should revert to original text');
+    assertTrue(undoBtn.disabled, 'Undo should be disabled after undoing');
+    assertFalse(redoBtn.disabled, 'Redo should be enabled after undoing');
+
+    // 5. Click Redo
+    redoBtn.click();
+    await skillsDialogApp.updateComplete;
+
+    assertEquals(
+        refinedMockText, instructionsInput.value,
+        'Redo should restore refined text');
+    assertFalse(undoBtn.disabled, 'Undo should be enabled after redoing');
+    assertTrue(redoBtn.disabled, 'Redo should be disabled after redoing');
+
+    // 6. Manual edit clears history
+    instructionsInput.value = 'New manual edit';
+    instructionsInput.dispatchEvent(new Event('input'));
+    await skillsDialogApp.updateComplete;
+
+    assertTrue(undoBtn.disabled, 'Manual edit should clear undo state');
+    assertTrue(redoBtn.disabled, 'Manual edit should clear redo state');
   });
 });

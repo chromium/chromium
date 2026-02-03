@@ -6,6 +6,7 @@ import '/strings.m.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_textarea/cr_textarea.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -16,6 +17,7 @@ import {getHtml} from './skills_dialog_app.html.js';
 import {SkillsDialogBrowserProxy} from './skills_dialog_browser_proxy.js';
 
 const DEFAULT_EMOJI: string = '⚡';
+const MAX_PROMPT_CHAR_COUNT = 20000;
 
 export class SkillsDialogAppElement extends CrLitElement {
   static get is() {
@@ -33,6 +35,8 @@ export class SkillsDialogAppElement extends CrLitElement {
   static override get properties() {
     return {
       skill_: {type: Object},
+      canUndoRefine_: {type: Boolean},
+      canRedoRefine_: {type: Boolean},
     };
   }
 
@@ -47,6 +51,12 @@ export class SkillsDialogAppElement extends CrLitElement {
     creationTime: {internalValue: 0n},
     lastUpdateTime: {internalValue: 0n},
   };
+
+  protected accessor canUndoRefine_: boolean = false;
+  protected accessor canRedoRefine_: boolean = false;
+
+  private originalPrompt_: string = '';
+  private refinedPrompt_: string = '';
 
   protected get isSaveButtonDisabled() {
     return !this.skill_.name || !this.skill_.prompt ||
@@ -103,26 +113,47 @@ export class SkillsDialogAppElement extends CrLitElement {
     input.blur();
   }
 
+  protected get isRefineDisabled_() {
+    return !this.skill_.prompt || this.skill_.prompt.length === 0;
+  }
+
   protected onNameChanged_(e: CustomEvent<{value: string}>) {
     this.skill_ = {...this.skill_, name: e.detail.value};
   }
 
-  protected onInstructionsChanged_(e: CustomEvent<{value: string}>) {
-    this.skill_ = {...this.skill_, prompt: e.detail.value};
+  protected onInstructionsChanged_(e: Event) {
+    const target = e.target as HTMLTextAreaElement;
+    const newValue = target.value;
+
+    this.canUndoRefine_ = false;
+    this.canRedoRefine_ = false;
+    this.originalPrompt_ = '';
+    this.refinedPrompt_ = '';
+
+    this.skill_ = {...this.skill_, prompt: newValue};
   }
 
-  /** Submits skill and closes the dialog. */
-  protected submitSkill_(): void {
-    SkillsDialogBrowserProxy.getInstance().handler.submitSkill(this.skill_);
+  protected onUndoClick_() {
+    this.skill_ = {...this.skill_, prompt: this.originalPrompt_};
+
+    this.canUndoRefine_ = false;
+    this.canRedoRefine_ = true;
+
+    this.shadowRoot?.querySelector<HTMLElement>('#instructionsText')?.focus();
   }
 
-  /** Click listener for the cancel button. */
-  protected cancel_(e: Event) {
-    e.preventDefault();
-    SkillsDialogBrowserProxy.getInstance().handler.closeDialog();
+  protected onRedoClick_() {
+    this.skill_ = {...this.skill_, prompt: this.refinedPrompt_};
+
+    this.canUndoRefine_ = true;
+    this.canRedoRefine_ = false;
+
+    this.shadowRoot?.querySelector<HTMLElement>('#instructionsText')?.focus();
   }
 
-  protected refineSkill_(): Promise<void> {
+  protected onRefineClick_() {
+    this.originalPrompt_ = this.skill_.prompt;
+
     return SkillsDialogBrowserProxy.getInstance()
         .handler.refineSkill(this.skill_)
         .then(({refinedSkill}) => {
@@ -134,10 +165,25 @@ export class SkillsDialogAppElement extends CrLitElement {
               // If the refined prompt is missing or empty, keep the original
               // prompt
               prompt: refinedSkill.prompt || this.skill_.prompt,
-              name: refinedSkill.name || this.skill_.name,
             };
+            this.refinedPrompt_ = refinedSkill.prompt;
+            this.canUndoRefine_ = true;
+            this.canRedoRefine_ = false;
+            this.shadowRoot?.querySelector<HTMLElement>('#instructionsText')
+                ?.focus();
           }
         });
+  }
+
+  protected submitSkill_(): void {
+    this.skill_.prompt = this.skill_.prompt.slice(0, MAX_PROMPT_CHAR_COUNT);
+    SkillsDialogBrowserProxy.getInstance().handler.submitSkill(this.skill_);
+  }
+
+  /** Click listener for the cancel button. */
+  protected cancel_(e: Event) {
+    e.preventDefault();
+    SkillsDialogBrowserProxy.getInstance().handler.closeDialog();
   }
 }
 

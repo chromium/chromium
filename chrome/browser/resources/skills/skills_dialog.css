@@ -27,10 +27,66 @@ p.description {
   margin-bottom: 24px;
 }
 
-cr-textarea {
-  --cr-input-border-radius: 8px;
-  --cr-input-border-bottom: none;
-  /* TODO(b/477970994): Follow up with UX on component customization. */
+.textarea-wrapper {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+
+  border: 1px solid var(--cr-fallback-color-neutral-outline);
+  border-radius: 8px;
+  background-color: white;
+
+  transition: background-color 200ms ease-in-out;
+  overflow: hidden;
+}
+
+.textarea-wrapper:focus-within {
+  border-color: var(--cr-focus-outline-color);
+  box-shadow: 0 0 0 1px var(--cr-focus-outline-color);
+  background-color: var(--google-grey-100);
+}
+
+.textarea-wrapper:hover {
+  background-color: var(--google-grey-100);
+}
+
+textarea {
+  display: block;
+  width: 100%;
+  height: 120px;
+  box-sizing: border-box;
+  resize: none;
+  font-family: inherit;
+  font-size: inherit;
+  color: var(--cr-primary-text-color);
+  border: none;
+  outline: none;
+  background-color: transparent;
+  padding: 10px 10px 0 10px;
+  flex-grow: 1;
+}
+
+.textarea-actions {
+  display: flex;
+  gap: 0;
+  padding: 4px 8px 8px 8px;
+  background-color: transparent;
+}
+
+cr-icon-button {
+  margin: 0;
+}
+
+.icon-undo {
+  --cr-icon-image: url('images/skills_undo.svg');
+}
+
+.icon-redo {
+  --cr-icon-image: url('images/skills_redo.svg');
+}
+
+.icon-refine {
+  --cr-icon-image: url('images/skills_pen_spark.svg');
 }
 
 .buttons-group {
