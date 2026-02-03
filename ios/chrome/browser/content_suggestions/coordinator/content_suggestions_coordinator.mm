@@ -103,6 +103,7 @@
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_delegate.h"
+#import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
 #import "ios/chrome/browser/menu/ui_bundled/menu_histograms.h"
@@ -181,6 +182,9 @@
 #import "url/gurl.h"
 
 namespace {
+
+// The identifier for the pin site form height detent.
+NSString* const kPinSiteFormDetentIdentifier = @"kPinSiteFormDetentIdentifier";
 
 // Logs the user's decision to opt-in or opt-out of Safety Check notifications
 // from the Magic Stack. Determines the source based on the `viaContextMenu`
@@ -689,9 +693,18 @@ using segmentation_platform::TipIdentifier;
   viewController.mutator = _mostVisitedTilesMediator;
   UINavigationController* navController = [[UINavigationController alloc]
       initWithRootViewController:viewController];
-  // TODO(crbug.com/473728173): The modal presentation style is set as a
-  // placeholder only. Configure detent height.
   navController.modalPresentationStyle = UIModalPresentationFormSheet;
+  UISheetPresentationController* sheetPresentationController =
+      navController.sheetPresentationController;
+  auto detentResolver = ^CGFloat(
+      id<UISheetPresentationControllerDetentResolutionContext> context) {
+    /// Use the same detent height as othe form sheets for home customization.
+    return kBottomSheetDetentHeight;
+  };
+  sheetPresentationController.detents = @[ [UISheetPresentationControllerDetent
+      customDetentWithIdentifier:kPinSiteFormDetentIdentifier
+                        resolver:detentResolver] ];
+  sheetPresentationController.prefersEdgeAttachedInCompactHeight = YES;
   navController.presentationController.delegate = viewController;
   [self.contentSuggestionsViewController presentViewController:navController
                                                       animated:YES

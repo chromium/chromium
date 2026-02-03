@@ -28,6 +28,10 @@ extern CustomizationSection* const kCustomizationSectionMagicStackToggles;
 // The identifier for the bottom sheet's initial detent.
 extern NSString* const kBottomSheetDetentIdentifier;
 
+// The height of the menu's initial detent, which roughly represents a header
+// and 3 cells.
+extern CGFloat const kBottomSheetDetentHeight;
+
 // The identifier for the bottom sheet's expanded height detent (if one exists
 // for the current page).
 extern NSString* const kBottomSheetExpandedDetentIdentifier;

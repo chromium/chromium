@@ -47,14 +47,8 @@
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace {
-
-// The height of the menu's initial detent, which roughly represents a header
-// and 3 cells.
-const CGFloat kInitialDetentHeight = 350;
-
 // The corner radius of the customization menu sheet.
 CGFloat const kSheetCornerRadius = 30;
-
 }  // namespace
 
 @interface HomeCustomizationCoordinator () <
@@ -307,7 +301,7 @@ CGFloat const kSheetCornerRadius = 30;
 - (UIViewController*)createMenuPage:(CustomizationMenuPage)page {
   auto detentResolver = ^CGFloat(
       id<UISheetPresentationControllerDetentResolutionContext> context) {
-    return kInitialDetentHeight;
+    return kBottomSheetDetentHeight;
   };
   UISheetPresentationControllerDetent* initialDetent =
       [UISheetPresentationControllerDetent
@@ -448,7 +442,7 @@ CGFloat const kSheetCornerRadius = 30;
 
 - (CGFloat)detentHeightForMainViewControllerExpanded {
   CGFloat height = self.mainViewController.viewContentHeight;
-  return (height < kInitialDetentHeight)
+  return (height < kBottomSheetDetentHeight)
              ? UISheetPresentationControllerDetentInactive
              : height;
 }

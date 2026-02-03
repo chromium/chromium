@@ -21,6 +21,8 @@ CustomizationSection* const kCustomizationSectionMagicStackToggles =
 
 NSString* const kBottomSheetDetentIdentifier = @"kBottomSheetDetentIdentifier";
 
+CGFloat const kBottomSheetDetentHeight = 350;
+
 NSString* const kBottomSheetExpandedDetentIdentifier =
     @"kBottomSheetExpandedDetentIdentifier";
 
