@@ -366,8 +366,23 @@ Try waiting a few minutes before switching accounts. If you switch accounts now,
       <message name="IDS_IOS_DOCKING_PROMO_FIRST_INSTRUCTION" desc="Title of the first step instruction shown in the Docking Promo, which tells users to hold down on the Chrome icon to put their iOS device into Edit Mode.">
         Press and hold the Chrome icon and click "Edit home screen"
       </message>
+      <message name="IDS_IOS_DOCKING_PROMO_SUBTITLE" desc="Subtitle of the fullscreen, instructional Docking Promo which shows users how to add the Chrome app to their iOS dock.">
+        Open Chrome instantly when you're on your iPhone
+      </message>
+      <message name="IDS_IOS_DOCKING_PROMO_SUBTITLE_IPAD" desc="Subtitle of the fullscreen, instructional Docking Promo which shows users how to add the Chrome app to their iOS dock. iPad experimental version.">
+        Open Chrome instantly when you're on your iPad
+      </message>
       <message name="IDS_IOS_DOCKING_PROMO_TITLE" desc="Title of the fullscreen, instructional Docking Promo which shows users how to add the Chrome app to their iOS dock.">
         Access Chrome faster from your home screen dock
+      </message>
+      <message name="IDS_IOS_DOCKING_PROMO_TITLE_0" desc="Title of the fullscreen, instructional Docking Promo which shows users how to add the Chrome app to their iOS dock.">
+        Access Chrome faster from your dock
+      </message>
+      <message name="IDS_IOS_DOCKING_PROMO_TITLE_1" desc="Title of the fullscreen, instructional Docking Promo which shows users how to add the Chrome app to their iOS dock.">
+        Move Chrome to your dock
+      </message>
+      <message name="IDS_IOS_DOCKING_PROMO_TITLE_2" desc="Title of the fullscreen, instructional Docking Promo which shows users how to add the Chrome app to their iOS dock.">
+        Place Chrome in the bottom area to access it anytime
       </message>
       <message name="IDS_IOS_ENHANCED_SAFE_BROWSING_PROMO_INSTRUCTIONS_STEP1" desc="Step 1 of instructions telling the user how to enable Enhanced Safe Browsing.">
         Open Chrome Settings
