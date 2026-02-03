@@ -1513,25 +1513,28 @@ const LayoutResult* TableLayoutAlgorithm::GenerateFragment(
     const LayoutResult* result = grouped_children.footer.LayoutRepeatableRoot(
         child_space, entry.GetBreakToken());
 
-    BreakStatus break_status = BreakStatus::kContinue;
+    LayoutUnit fragmentainer_block_offset =
+        FragmentainerOffsetForChildren() + offset.block_offset;
+    bool needs_break_before = false;
     if (!entry.GetBreakToken() || entry.GetBreakToken()->IsBreakBefore()) {
       // Although there are rules that make sure that a footer normally fits (it
       // should only be a quarter of the fragmentainer's block-size), if the
       // table box starts near the end of the fragmentainer, we may still run
       // out of space before a repeatable footer. So insert a break if
       // necessary.
-      LayoutUnit fragmentainer_block_offset =
-          FragmentainerOffsetForChildren() + offset.block_offset;
-      break_status = ::blink::BreakBeforeChildIfNeeded(
+      needs_break_before = !::blink::MovePastBreakpoint(
           GetConstraintSpace(), grouped_children.footer, *result,
           fragmentainer_block_offset, FragmentainerCapacityForChildren(),
-          has_container_separation,
-          /*container_builder=*/nullptr);
+          kBreakAppealLastResort, /*builder=*/nullptr);
     }
-    if (break_status == BreakStatus::kContinue) {
-      container_builder_.AddResult(*result, offset);
+    if (needs_break_before) {
+      BreakBeforeChild(GetConstraintSpace(), grouped_children.footer, result,
+                       fragmentainer_block_offset,
+                       FragmentainerCapacityForChildren(),
+                       kBreakAppealLastResort, /*is_forced_break=*/false,
+                       &container_builder_);
     } else {
-      DCHECK_EQ(break_status, BreakStatus::kBrokeBefore);
+      container_builder_.AddResult(*result, offset);
     }
   }
 
