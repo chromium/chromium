@@ -1107,6 +1107,60 @@ TEST_F(HTMLFormMcpToolTest, FillFormControls_DateInput) {
   EXPECT_EQ("2026-01-27", date1->Value());
 }
 
+TEST_F(HTMLFormMcpToolTest, ParameterSchema_TimeInput) {
+  SetBodyInnerHTML(
+      R"HTML(
+    <form id="form" toolname="mytool" tooldescription="perform task">
+      <input name="time1" type="time">
+    </form>
+  )HTML");
+
+  HTMLFormElement* form_element = GetFormElement("form");
+  ASSERT_TRUE(form_element);
+  ASSERT_TRUE(IsValidWebMCPForm(*form_element));
+  String actual = ComputeInputSchema(*form_element);
+  std::unique_ptr<JSONValue> expected_json = ParseJSON(R"JSON(
+    {
+      "type": "object",
+      "properties": {
+         "time1": {
+           "type": "string",
+           "format": "^([01][0-9]|2[0-3]):[0-5][0-9](:[0-5][0-9](\\.[0-9]{1,3})?)?$"
+         }
+      },
+      "required": []
+    }
+  )JSON");
+  ASSERT_TRUE(expected_json);
+  EXPECT_EQ(expected_json->ToJSONString(), actual);
+}
+
+TEST_F(HTMLFormMcpToolTest, FillFormControls_TimeInput) {
+  SetBodyInnerHTML(
+      R"HTML(
+    <form id=form toolname="mytool" tooldescription="perform task">
+      <input id=time1 name=time1 type=time>
+    </form>
+  )HTML");
+
+  HTMLFormElement* form_element = GetFormElement("form");
+  ASSERT_TRUE(form_element);
+  ASSERT_TRUE(IsValidWebMCPForm(*form_element));
+
+  String json_string =
+      R"JSON(
+        {
+          "time1": "20:20:39"
+        }
+      )JSON";
+
+  EXPECT_TRUE(FillFormControls(*form_element, json_string));
+
+  HTMLInputElement* time1 = GetInputElement("time1");
+  ASSERT_TRUE(time1);
+  EXPECT_EQ("20:20:39", time1->Value());
+}
+
 TEST_F(HTMLFormMcpToolTest, ParameterSchema_TextArea) {
   SetBodyInnerHTML(
       R"HTML(
@@ -1309,6 +1363,7 @@ TEST_F(HTMLFormMcpToolTest, FillFormControls_InvalidValue) {
     <form id=form toolname="mytool" tooldescription="perform task">
       <input id=date name=date type=date>
       <input id=number name=number type=number>
+      <input id=time name=time type=time>
     </form>
   )HTML");
 
@@ -1319,6 +1374,8 @@ TEST_F(HTMLFormMcpToolTest, FillFormControls_InvalidValue) {
   String inputs[] = {
       R"JSON({ "date": "error" })JSON",
       R"JSON({ "number": "error" })JSON",
+      R"JSON({ "time": "25:00:00" })JSON",
+      R"JSON({ "time": "20:20:39+00:00" })JSON",
   };
   for (auto json : inputs) {
     EXPECT_FALSE(FillFormControls(*form_element, json)) << json;

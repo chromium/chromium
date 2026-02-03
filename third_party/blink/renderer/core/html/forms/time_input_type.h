@@ -49,6 +49,9 @@ class TimeInputType final : public BaseTemporalInputType {
   void WarnIfValueIsInvalid(const String&) const override;
   String LocalizeValue(const String&) const override;
 
+  bool SupportsWebMCP() const override { return true; }
+  std::unique_ptr<JSONObject> GetWebMCPParameterSchema() const override;
+
   // BaseTemporalInputType functions
   String FormatDateTimeFieldsState(const DateTimeFieldsState&) const override;
   void SetupLayoutParameters(DateTimeEditElement::LayoutParameters&,
