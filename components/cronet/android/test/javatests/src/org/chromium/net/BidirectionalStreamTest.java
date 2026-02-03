@@ -12,6 +12,9 @@ import static org.junit.Assert.assertThrows;
 import static org.chromium.net.truth.UrlResponseInfoSubject.assertThat;
 
 import android.net.Network;
+import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelHandler;
 import android.os.Build;
 import android.os.ConditionVariable;
 import android.os.Process;
@@ -81,9 +84,24 @@ public class BidirectionalStreamTest {
 
     private TestLogger mTestLogger;
 
+    private boolean mDropConnectionPackets;
+
+    @ChannelHandler.Sharable
+    private final class DroppingPacketHandler extends ChannelInboundHandlerAdapter {
+        @Override
+        public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+            if (mDropConnectionPackets) {
+                Log.i(TAG, "Dropping packet" + msg);
+                return;
+            }
+            ctx.fireChannelRead(msg);
+        }
+    };
+
     @Before
     public void setUp() throws Exception {
         mTestLogger = mLoggerTestRule.mTestLogger;
+        mDropConnectionPackets = false;
         // TODO(crbug.com/40284777): Fallback to MockCertVerifier when custom CAs are not supported.
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
             mTestRule
@@ -94,7 +112,8 @@ public class BidirectionalStreamTest {
                                             builder, QuicTestServer.createMockCertVerifier()));
         }
         mCronetEngine = mTestRule.getTestFramework().startEngine();
-        assertThat(Http2TestServer.startHttp2TestServer(mTestRule.getTestFramework().getContext()))
+        assertThat(Http2TestServer.startHttp2TestServer(new Http2TestServer.ServerStartOptions(mTestRule.getTestFramework().getContext())
+                        .setPreTlsPacketHandler(new DroppingPacketHandler())))
                 .isTrue();
     }
 
@@ -479,6 +498,29 @@ public class BidirectionalStreamTest {
         assertThat(callback.getResponseInfoWithChecks())
                 .hasHeadersThat()
                 .containsEntry("echo-content-type", Arrays.asList("zebra"));
+    }
+
+    @Test
+    @SmallTest
+    public void tlsConnectionFails_throwsConnectionTimeoutError() throws Exception {
+        // Drop all packets before TLS handshake, so that the connection times out.
+        mDropConnectionPackets = true;
+        String url = Http2TestServer.getEchoStreamUrl();
+        TestBidirectionalStreamCallback callback = new TestBidirectionalStreamCallback();
+        // Create stream.
+        BidirectionalStream stream =
+                mCronetEngine
+                        .newBidirectionalStreamBuilder(url, callback, callback.getExecutor())
+                        .build();
+        stream.start();
+        callback.blockForDone();
+
+        // We caught an error.
+        assertThat(stream.isDone()).isTrue();
+        assertThat(callback.mOnErrorCalled).isTrue();
+        assertThat(callback.mError).isInstanceOf(NetworkException.class);
+        NetworkException networkException = (NetworkException) callback.mError;
+        assertThat(networkException.getErrorCode()).isEqualTo(NetworkException.ERROR_TIMED_OUT);
     }
 
     @Test

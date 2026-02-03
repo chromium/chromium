@@ -1508,6 +1508,7 @@ android_library("cronet_javatests") {
     ":cronet_api_helpers_java",
     ":cronet_stats_log_java",
     ":cronet_urlconnection_impl_java",
+    "//third_party/netty4:netty_all_java",
     "//components/cronet:request_context_config_java_proto",
     "//third_party/android_deps:guava_android_java",
     "//third_party/android_deps:protobuf_lite_runtime_java",
