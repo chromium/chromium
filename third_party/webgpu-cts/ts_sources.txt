@@ -761,6 +761,7 @@ src/webgpu/shader/execution/statement/compound.spec.ts
 src/webgpu/shader/execution/statement/discard.spec.ts
 src/webgpu/shader/execution/statement/increment_decrement.spec.ts
 src/webgpu/shader/execution/statement/phony.spec.ts
+src/webgpu/shader/execution/statement/swizzle_assignment.spec.ts
 src/webgpu/shader/validation/shader_validation_test.ts
 src/webgpu/shader/validation/const_assert/const_assert.spec.ts
 src/webgpu/shader/validation/decl/assignment_statement.spec.ts
