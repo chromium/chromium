@@ -501,7 +501,25 @@ public class StripLayoutHelperManager
         mDefaultTitle = context.getString(R.string.tab_loading_default_title);
         mToolbarControlContainer = toolbarContainerView;
         mEventFilter =
-                new AreaMotionEventFilter(context, mTabStripEventHandler, null, false, false);
+                new AreaMotionEventFilter(context, mTabStripEventHandler, null, false, false) {
+                    @Override
+                    protected boolean isMotionEventInArea(MotionEvent e) {
+                        if (super.isMotionEventInArea(e)) return true;
+
+                        // Allow right-clicks in empty spaces of the tab strip (e.g., top/side
+                        // paddings) to be intercepted by the tab strip to show the context menu.
+                        // Regular touch events in these regions should still fall through to the
+                        // OS for window dragging.
+                        if (e.getButtonState() == MotionEvent.BUTTON_SECONDARY) {
+                            float x = e.getX() / mDensity;
+                            float y = e.getY() / mDensity;
+                            if (x >= 0 && x <= mWidth && y >= 0 && y <= mStripFilterArea.bottom) {
+                                return true;
+                            }
+                        }
+                        return false;
+                    }
+                };
 
         mIsHeaderCustomizationSupported =
                 ToolbarFeatures.isAppHeaderCustomizationSupported(

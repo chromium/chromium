@@ -183,7 +183,7 @@ public class AreaMotionEventFilter extends MotionEventFilter {
     }
 
     @VisibleForTesting
-    boolean isMotionEventInArea(MotionEvent e) {
+    protected boolean isMotionEventInArea(MotionEvent e) {
         return mTriggerRect.contains(e.getX() * mPxToDp, e.getY() * mPxToDp);
     }
 

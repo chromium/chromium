@@ -1092,27 +1092,27 @@ public class StripLayoutHelperManagerTest {
                 SCREEN_WIDTH, SCREEN_HEIGHT, VISIBLE_VIEWPORT_Y, ORIENTATION);
 
         float yCenterOfStrip = newHeight / 2f;
-        assertFalse("Event on paddings should be ignored.", motionEventHandled(0, yCenterOfStrip));
-        assertFalse("Event on paddings should be ignored.", motionEventHandled(1, yCenterOfStrip));
-        assertFalse(
-                "Event on margins should be ignored.",
-                motionEventHandled(leftPadding - 1, yCenterOfStrip));
         assertTrue(
-                "Event not on margins should be handled.",
+                "Event on margins should be handled.",
                 motionEventHandled(leftPadding, yCenterOfStrip));
 
+        // Verify side padding events.
+        // Standard (Left-Click) -> Ignored (falls through to window resize)
         assertFalse(
-                "Event on margins should be ignored.",
-                motionEventHandled(SCREEN_WIDTH, yCenterOfStrip));
+                "Event on left padding (standard) should not be handled.",
+                motionEventHandled(leftPadding - 1, yCenterOfStrip));
         assertFalse(
-                "Event on margins should be ignored.",
-                motionEventHandled(SCREEN_WIDTH - 1, yCenterOfStrip));
-        assertFalse(
-                "Event on margins should be ignored.",
-                motionEventHandled(SCREEN_WIDTH - rightPadding, yCenterOfStrip));
+                "Event on right padding (standard) should not be handled.",
+                motionEventHandled(SCREEN_WIDTH - rightPadding + 1, yCenterOfStrip));
+
+        // Secondary (Right-Click) -> Handled (Context Menu)
         assertTrue(
-                "Event not on margins should be handled.",
-                motionEventHandled(SCREEN_WIDTH - rightPadding - 1, yCenterOfStrip));
+                "Event on left padding (secondary) should be handled.",
+                motionEventHandledWithSecondaryButton(leftPadding - 1, yCenterOfStrip));
+        assertTrue(
+                "Event on right padding (secondary) should be handled.",
+                motionEventHandledWithSecondaryButton(
+                        SCREEN_WIDTH - rightPadding + 1, yCenterOfStrip));
     }
 
     @Test
@@ -1131,6 +1131,9 @@ public class StripLayoutHelperManagerTest {
         assertFalse(
                 "Event on top padding should not be handled.",
                 motionEventHandled(SCREEN_WIDTH / 2, topPadding - 1));
+        assertTrue(
+                "Secondary button event on top padding should be handled.",
+                motionEventHandledWithSecondaryButton(SCREEN_WIDTH / 2, 0));
         assertTrue(
                 "Event should be handled below top padding.",
                 motionEventHandled(SCREEN_WIDTH / 2, topPadding));
@@ -1602,6 +1605,12 @@ public class StripLayoutHelperManagerTest {
 
     private boolean motionEventHandled(float x, float y) {
         MotionEvent event = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, x, y, 0);
+        return mStripLayoutHelperManager.getEventFilter().onInterceptTouchEvent(event, false);
+    }
+
+    private boolean motionEventHandledWithSecondaryButton(float x, float y) {
+        MotionEvent event = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, x, y, 0);
+        event.setButtonState(MotionEvent.BUTTON_SECONDARY);
         return mStripLayoutHelperManager.getEventFilter().onInterceptTouchEvent(event, false);
     }
 
