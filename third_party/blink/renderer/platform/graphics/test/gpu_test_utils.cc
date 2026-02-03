@@ -63,9 +63,6 @@ void InitializeSharedGpuContextRaster(
   test_context_provider->BindToCurrentSequence();
   viz::TestRasterInterface* raster =
       test_context_provider->GetTestRasterInterface();
-  test_context_provider->GetWritableGpuFeatureInfo()
-      .status_values[gpu::GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] =
-      gpu::kGpuFeatureStatusEnabled;
   SharedGpuContext::SetContextProviderFactoryForTesting(blink::BindRepeating(
       factory, blink::Unretained(raster), blink::Unretained(cache),
       blink::Unretained(test_context_provider), set_context_lost));
