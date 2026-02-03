@@ -1369,12 +1369,16 @@ class CORE_EXPORT Document : public ContainerNode,
 
   // The following implements the rule from HTML 4 for what valid names are.
   // To get this right for all the XML cases, we probably have to improve this
-  // or move it and make it sensitive to the type of document.
+  // or move it and make it sensitive to the type of document. This was removed
+  // from the spec in https://github.com/whatwg/dom/pull/1079 but is still
+  // used in a few places.
+  // TODO(crbug.com/481177613): Remove this method.
   static bool IsValidName(const StringView&);
 
-  // https://github.com/whatwg/dom/pull/1079
-  static bool IsValidAttributeLocalNameNewSpec(const StringView&);
-  static bool IsValidElementLocalNameNewSpec(const StringView&);
+  // https://dom.spec.whatwg.org/#valid-attribute-local-name
+  static bool IsValidAttributeLocalName(const StringView&);
+  // https://dom.spec.whatwg.org/#valid-element-local-name
+  static bool IsValidElementLocalName(const StringView&);
 
   // The following breaks a qualified name into a prefix and a local name.
   // It also does a validity check, and returns false if the qualified name

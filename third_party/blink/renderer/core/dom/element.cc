@@ -3561,10 +3561,7 @@ bool Element::toggleAttribute(const AtomicString& qualified_name,
   // https://dom.spec.whatwg.org/#dom-element-toggleattribute
   // 1. If qualifiedName does not match the Name production in XML, then throw
   // an "InvalidCharacterError" DOMException.
-  bool is_valid =
-      RuntimeEnabledFeatures::RelaxDOMValidNamesEnabled()
-          ? Document::IsValidAttributeLocalNameNewSpec(qualified_name)
-          : Document::IsValidName(qualified_name);
+  bool is_valid = Document::IsValidAttributeLocalName(qualified_name);
   if (!is_valid) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidCharacterError,
@@ -3604,10 +3601,7 @@ bool Element::toggleAttribute(const AtomicString& qualified_name,
   // https://dom.spec.whatwg.org/#dom-element-toggleattribute
   // 1. If qualifiedName does not match the Name production in XML, then throw
   // an "InvalidCharacterError" DOMException.
-  bool is_valid =
-      RuntimeEnabledFeatures::RelaxDOMValidNamesEnabled()
-          ? Document::IsValidAttributeLocalNameNewSpec(qualified_name)
-          : Document::IsValidName(qualified_name);
+  bool is_valid = Document::IsValidAttributeLocalName(qualified_name);
   if (!is_valid) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidCharacterError,
@@ -12951,9 +12945,7 @@ void Element::SetAttributeHinted(AtomicString local_name,
                                  AtomicStringTable::WeakResult hint,
                                  String value,
                                  ExceptionState& exception_state) {
-  bool is_valid = RuntimeEnabledFeatures::RelaxDOMValidNamesEnabled()
-                      ? Document::IsValidAttributeLocalNameNewSpec(local_name)
-                      : Document::IsValidName(local_name);
+  bool is_valid = Document::IsValidAttributeLocalName(local_name);
   if (!is_valid) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidCharacterError,

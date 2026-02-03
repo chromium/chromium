@@ -102,10 +102,6 @@ bool Character::IsCJKIdeographOrSymbolSlow(UChar32 c) {
   return GetProperty(c).is_cjk_ideograph_or_symbol;
 }
 
-bool Character::IsPotentialCustomElementNameChar(UChar32 character) {
-  return GetProperty(character).is_potential_custom_element_name_char;
-}
-
 bool Character::IsBidiControl(UChar32 character) {
   return GetProperty(character).is_bidi_control;
 }

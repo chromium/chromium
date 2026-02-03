@@ -53,40 +53,21 @@ class CORE_EXPORT CustomElement {
     if (!IsASCIILower(name[0]))
       return false;
 
-    if (RuntimeEnabledFeatures::RelaxDOMValidNamesEnabled()) {
-      // https://github.com/whatwg/html/pull/7991
-      // name is a valid element local name
-      if (!Document::IsValidElementLocalNameNewSpec(name)) {
-        return false;
-      }
-      // name does not contain any ASCII upper alphas
-      if (!VisitCharacters(name.GetString(), [](auto characters) {
-            for (size_t i = 0; i < characters.size(); i++) {
-              if (IsASCIIUpper(characters[i])) {
-                return false;
-              }
+    // https://github.com/whatwg/html/pull/7991
+    // name is a valid element local name
+    if (!Document::IsValidElementLocalName(name)) {
+      return false;
+    }
+    // name does not contain any ASCII upper alphas
+    if (!VisitCharacters(name.GetString(), [](auto characters) {
+          for (size_t i = 0; i < characters.size(); i++) {
+            if (IsASCIIUpper(characters[i])) {
+              return false;
             }
-            return true;
-          })) {
-        return false;
-      }
-    } else {
-      if (name.Is8Bit()) {
-        auto characters = name.Span8();
-        for (size_t i = 1; i < characters.size(); ++i) {
-          if (!Character::IsPotentialCustomElementName8BitChar(characters[i])) {
-            return false;
           }
-        }
-      } else {
-        auto characters = name.Span16();
-        for (size_t i = 1; i < characters.size();) {
-          UChar32 ch = CodePointAtAndNext(characters, i);
-          if (!Character::IsPotentialCustomElementNameChar(ch)) {
-            return false;
-          }
-        }
-      }
+          return true;
+        })) {
+      return false;
     }
 
     return !IsHyphenatedSpecElementName(name);

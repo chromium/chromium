@@ -37,21 +37,6 @@ static void TestIsPotentialCustomElementName(const AtomicString& str,
   }
 }
 
-static void TestIsPotentialCustomElementNameChar(UChar32 c, bool expected) {
-  std::array<LChar, 3> str8 = {'a', '-', 'X'};
-  std::array<UChar, 5> str16 = {'a', '-', 'X', '\0', '\0'};
-  AtomicString str;
-  if (c <= 0xFF) {
-    str8[2] = c;
-    str = AtomicString(str8);
-  } else {
-    size_t i = 2;
-    U16_APPEND_UNSAFE(str16, i, c);
-    str = AtomicString(base::span(str16).first(i));
-  }
-  TestIsPotentialCustomElementName(str, expected);
-}
-
 TEST(CustomElementTest, TestIsValidNamePotentialCustomElementName) {
   test::TaskEnvironment task_environment;
   struct {
@@ -79,66 +64,6 @@ TEST(CustomElementTest, TestIsValidNamePotentialCustomElementName) {
   };
   for (auto test : tests)
     TestIsPotentialCustomElementName(test.str, test.expected);
-}
-
-TEST(CustomElementTest, TestIsValidNamePotentialCustomElementNameChar) {
-  test::TaskEnvironment task_environment;
-  // ranges is a list of ranges of valid characters. The comments show the
-  // invalid values which are in between the specified ranges.
-  struct {
-    UChar32 from, to;
-  } ranges[] = {
-      // 0x00 null
-      {0x01, 0x08},
-      // 0x09 tab, 0x0A LF
-      {0x0B, 0x0B},
-      // 0x0C FF, 0x0D CR
-      {0x0E, 0x1F},
-      // 0x20 space
-      {0x21, 0x2E},
-      // 0x2F /
-      {0x30, 0x3D},
-      // 0x3E >
-      {0x3F, 0x40},
-      // 0x41 to 0x5A uppercase alphas
-      {0x5B, 0x10FFFF},
-  };
-  for (auto range : ranges) {
-    TestIsPotentialCustomElementNameChar(range.from - 1, false);
-    for (UChar32 c = range.from; c <= range.to; ++c) {
-      TestIsPotentialCustomElementNameChar(c, true);
-    }
-    if (range.to < 0x10FFFF) {
-      TestIsPotentialCustomElementNameChar(range.to + 1, false);
-    }
-  }
-}
-
-TEST(CustomElementTest, TestIsValidNamePotentialCustomElementName8BitChar) {
-  test::TaskEnvironment task_environment;
-  // isPotentialCustomElementName8BitChar must match
-  // isPotentialCustomElementNameChar, so we just test it returns
-  // the same result throughout its range.
-  for (UChar ch = 0x0; ch <= 0xff; ++ch) {
-    EXPECT_EQ(Character::IsPotentialCustomElementName8BitChar(ch),
-              Character::IsPotentialCustomElementNameChar(ch))
-        << "isPotentialCustomElementName8BitChar must agree with "
-        << "isPotentialCustomElementNameChar: 0x" << std::hex
-        << static_cast<uint16_t>(ch);
-  }
-}
-
-TEST(CustomElementTest, TestIsValidNamePotentialCustomElementNameCharFalse) {
-  test::TaskEnvironment task_environment;
-  struct {
-    UChar32 from, to;
-  } ranges[] = {
-      {'A', 'Z'},
-  };
-  for (auto range : ranges) {
-    for (UChar32 c = range.from; c <= range.to; ++c)
-      TestIsPotentialCustomElementNameChar(c, false);
-  }
 }
 
 TEST(CustomElementTest, TestIsValidNameHyphenContainingElementNames) {

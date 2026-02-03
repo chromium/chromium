@@ -2278,8 +2278,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="1965" label="GamepadButtons"/>
   <int value="1966" label="VibrateWithoutUserGesture"/>
   <int value="1967" label="OBSOLETE_DispatchMouseEventOnDisabledFormControl"/>
-  <int value="1968" label="ElementNameDOMInvalidHTMLParserValid"/>
-  <int value="1969" label="ElementNameDOMValidHTMLParserInvalid"/>
+  <int value="1968" label="OBSOLETE_ElementNameDOMInvalidHTMLParserValid"/>
+  <int value="1969" label="OBSOLETE_ElementNameDOMValidHTMLParserInvalid"/>
   <int value="1970" label="GATTServerDisconnectedEvent"/>
   <int value="1971" label="AnchorClickDispatchForNonConnectedNode"/>
   <int value="1972" label="HTMLParseErrorNestedForm"/>

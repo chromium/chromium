@@ -2772,37 +2772,6 @@
     "expires": "never"
   },
   {
-    "prefix": "relax-dom-valid-names-disabled",
-    "owners": [
-      "jarhar@chromium.org"
-    ],
-    "platforms": [
-      "Linux"
-    ],
-    "bases": [
-      "external/wpt/acid/acid3/numbered-tests.html",
-      "external/wpt/dom/nodes/DOMImplementation-createDocument.html",
-      "external/wpt/dom/nodes/DOMImplementation-createDocumentType.html",
-      "external/wpt/dom/nodes/Document-createElement.html",
-      "external/wpt/dom/nodes/Document-createElementNS.html",
-      "external/wpt/dom/nodes/attributes.html",
-      "external/wpt/html/dom/elements/global-attributes/dataset-set.html",
-      "fast/dom/dataset-xhtml.xhtml",
-      "fast/dom/dataset.html",
-      "fast/dom/name-validity-usecounter.html",
-      "fast/dom/DOMImplementation/createDocument-namespace-err.html",
-      "fast/dom/DOMImplementation/createDocumentType-err.html",
-      "fast/dom/Document/createAttributeNS-namespace-err.html",
-      "fast/dom/Document/createElement-invalid-names.html",
-      "fast/dom/Document/createElementNS-namespace-err.html",
-      "fast/dom/Element/setAttributeNS-namespace-err.html"
-    ],
-    "args": [
-      "--disable-features=RelaxDOMValidNames"
-    ],
-    "expires": "Feb 1, 2026"
-  },
-  {
     "prefix": "renderer-side-content-decoding",
     "owners": [
       "horo@chromium.org"

@@ -72,22 +72,14 @@ DocumentType* DOMImplementation::createDocumentType(
     const String& public_id,
     const String& system_id,
     ExceptionState& exception_state) {
-  AtomicString prefix, local_name;
-  if (RuntimeEnabledFeatures::RelaxDOMValidNamesEnabled()) {
-    if (!VisitCharacters(qualified_name, [](auto chars) {
-          return IsValidDoctypeName(chars);
-        })) {
-      StringBuilder message;
-      message.Append("The provided doctype name ('");
-      message.Append(qualified_name);
-      message.Append("') contains an invalid character.");
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kInvalidCharacterError, message.ReleaseString());
-      return nullptr;
-    }
-  } else if (!Document::ParseQualifiedName(
-                 qualified_name, prefix, local_name, exception_state,
-                 Document::QualifiedNameParsingMode::kParsingAttribute)) {
+  if (!VisitCharacters(qualified_name,
+                       [](auto chars) { return IsValidDoctypeName(chars); })) {
+    StringBuilder message;
+    message.Append("The provided doctype name ('");
+    message.Append(qualified_name);
+    message.Append("') contains an invalid character.");
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidCharacterError,
+                                      message.ReleaseString());
     return nullptr;
   }
   if (!document_->GetExecutionContext())

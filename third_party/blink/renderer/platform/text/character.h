@@ -127,13 +127,6 @@ class PLATFORM_EXPORT Character {
 
   static bool IsUprightInMixedVertical(UChar32 character);
 
-  // https://html.spec.whatwg.org/C/#prod-potentialcustomelementname
-  static bool IsPotentialCustomElementName8BitChar(LChar ch) {
-    return IsASCIILower(ch) || IsASCIIDigit(ch) || ch == '-' || ch == '.' ||
-           ch == '_' || ch == 0xb7 || (0xc0 <= ch && ch != 0xd7 && ch != 0xf7);
-  }
-  static bool IsPotentialCustomElementNameChar(UChar32 character);
-
   // http://unicode.org/reports/tr9/#Directional_Formatting_Characters
   static bool IsBidiControl(UChar32 character);
   static bool MaybeBidiRtlUtf16(base::StrictNumeric<UChar> ch);
