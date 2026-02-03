@@ -896,6 +896,11 @@ _ANDROID_AL_BRYA_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('jetstream2'),
     _GetBenchmarkConfig('speedometer2'),
 ])
+_ANDROID_AL_BRYA_EXECUTABLE_CONFIGS = frozenset([
+    ExecutableConfig('web_tests_cuj',
+                     path='../../tools/perf/web_tests_cuj.py',
+                     estimated_runtime=10),
+])
 _ANDROID_AL_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('rendering.mobile'),
 ])
@@ -1082,7 +1087,7 @@ ANDROID_BRYA = PerfPlatform(
     num_shards=7,
     benchmark_configs=_ANDROID_AL_BRYA_BENCHMARK_CONFIGS,
     platform_os='android',
-    executables=None,
+    executables=_ANDROID_AL_BRYA_EXECUTABLE_CONFIGS,
     crossbench=_CROSSBENCH_ANDROID_AL)
 ANDROID_CORSOLA = PerfPlatform(name='android-corsola-steelix-8gb-perf',
                                description='Corsola SKU steelix_MT8186_8GB',

@@ -1585,6 +1585,10 @@ GTEST_BENCHMARKS = {
     BenchmarkMetadata(
         'jrprice@google.com, dsinclair@chromium.org', 'Dawn>Tint',
         'https://dawn.googlesource.com/dawn/+/HEAD/docs/tint/benchmark.md'),
+    'web_tests_cuj':
+    # TODO(b/435031130): Update info after finishing implementation.
+    BenchmarkMetadata('zhanliang@google.com',
+                      documentation_url='TODO(b/435031130)'),
 }
 
 RESOURCE_SIZES_METADATA = BenchmarkMetadata(

@@ -89,4 +89,5 @@ v8.browsing_mobile-future,"cbruni@chromium.org, leszeks@chromium.org",Blink>Java
 v8.runtime_stats.top_25,"cbruni@chromium.org, leszeks@chromium.org, vahl@chromium.org",Blink>JavaScript,,"cold,hot,warm"
 views_perftests,tapted@chromium.org,Internals>Views,,
 wasmpspdfkit,"ahaas@chromium.org, vahl@chromium.org",Blink>JavaScript>WebAssembly,,all
+web_tests_cuj,zhanliang@google.com,,TODO(b/435031130),
 webrtc,"video-cmi-apis@google.com, herre@google.com",Blink>WebRTC,http://bit.ly/webrtc-benchmark,"all,datachannel,getusermedia,insertableStreams,pauseplay,sdp,smoothness,stress,videoConstraints"
