@@ -17,7 +17,6 @@ include_rules = [
   "+chrome/browser/ash/crostini",
   "+chrome/browser/ash/guest_os",
   "+chrome/browser/ash/profiles",
-  "+chrome/browser/browser_process.h",
   "+chrome/browser/content_settings",
   "+chrome/browser/enterprise/util",
   "+chrome/browser/extensions/api/terminal",
@@ -28,3 +27,9 @@ include_rules = [
   "+chrome/grit",
   "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  "bruschetta_download_browsertest\\.cc": [
+    "+chrome/browser/browser_process.h",
+  ],
+}

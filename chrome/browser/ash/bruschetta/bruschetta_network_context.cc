@@ -14,7 +14,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/extensions/cws_info_service.h"
 #include "chrome/browser/net/profile_network_context_service.h"
@@ -124,7 +123,7 @@ void BruschettaNetworkContext::EnsureNetworkContextExists() {
 
 void BruschettaNetworkContext::CreateNetworkContext() {
   network::mojom::NetworkContextParamsPtr network_context_params =
-      g_browser_process->system_network_context_manager()
+      SystemNetworkContextManager::GetInstance()
           ->CreateDefaultNetworkContextParams();
   network_context_params->http_cache_enabled = false;
 
