@@ -2101,10 +2101,9 @@ IN_PROC_BROWSER_TEST_P(
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 class SingleClientBookmarksSyncTestWithEnabledReuploadBookmarks
-    : public SyncTest {
+    : public SingleClientParameterizedBookmarksSyncTestBase {
  public:
-  SingleClientBookmarksSyncTestWithEnabledReuploadBookmarks()
-      : SyncTest(SINGLE_CLIENT) {
+  SingleClientBookmarksSyncTestWithEnabledReuploadBookmarks() {
     features_override_.InitAndEnableFeature(switches::kSyncReuploadBookmarks);
   }
 
@@ -2112,7 +2111,13 @@ class SingleClientBookmarksSyncTestWithEnabledReuploadBookmarks
   base::test::ScopedFeatureList features_override_;
 };
 
-IN_PROC_BROWSER_TEST_F(
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    SingleClientBookmarksSyncTestWithEnabledReuploadBookmarks,
+    GetSyncTestModes(),
+    testing::PrintToStringParamName());
+
+IN_PROC_BROWSER_TEST_P(
     SingleClientBookmarksSyncTestWithEnabledReuploadBookmarks,
     ShouldReuploadBookmarkAfterInitialMerge) {
   ASSERT_TRUE(SetupClients());
@@ -2136,7 +2141,7 @@ IN_PROC_BROWSER_TEST_F(
                   .Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SingleClientBookmarksSyncTestWithEnabledReuploadBookmarks,
     ShouldReuploadBookmarkWithFaviconOnInitialMerge) {
   const GURL kIconUrl("http://www.google.com/favicon.ico");
@@ -2172,7 +2177,8 @@ IN_PROC_BROWSER_TEST_F(
   // been reuploaded.
   ASSERT_TRUE(BookmarkModelMatchesFakeServerChecker(
                   GetBookmarkModel(kSingleProfileIndex),
-                  GetSyncService(kSingleProfileIndex), GetFakeServer())
+                  GetSyncService(kSingleProfileIndex), GetFakeServer(),
+                  GetStoreType())
                   .Wait());
   const std::vector<sync_pb::SyncEntity> server_bookmarks =
       GetFakeServer()->GetSyncEntitiesByDataType(syncer::BOOKMARKS);
@@ -2186,7 +2192,7 @@ IN_PROC_BROWSER_TEST_F(
                    "Sync.BookmarkEntityReuploadNeeded.OnInitialMerge", true));
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SingleClientBookmarksSyncTestWithEnabledReuploadBookmarks,
     ShouldReuploadUniquePositionOnIncrementalChange) {
   ASSERT_TRUE(SetupSync());
@@ -2223,10 +2229,11 @@ IN_PROC_BROWSER_TEST_F(
               Contains(Not(HasUniquePosition())).Times(2));
 
   // Add another folder to initiate commit to the server.
-  AddFolder(kSingleProfileIndex, u"Folder 2");
+  AddFolder(kSingleProfileIndex, u"Folder 2", GetStoreType());
   ASSERT_TRUE(BookmarkModelMatchesFakeServerChecker(
                   GetBookmarkModel(kSingleProfileIndex),
-                  GetSyncService(kSingleProfileIndex), GetFakeServer())
+                  GetSyncService(kSingleProfileIndex), GetFakeServer(),
+                  GetStoreType())
                   .Wait());
 
   // All elements must have unique_position now.
@@ -2234,11 +2241,13 @@ IN_PROC_BROWSER_TEST_F(
               Contains(HasUniquePosition()).Times(3));
 }
 
+// Android doesn't currently support PRE_ tests, see crbug.com/40200835 or
+// crbug.com/40145099.
+#if !BUILDFLAG(IS_ANDROID)
 class SingleClientBookmarksSyncTestWithDisabledReuploadBookmarks
-    : public SyncTest {
+    : public SingleClientParameterizedBookmarksSyncTestBase {
  public:
-  SingleClientBookmarksSyncTestWithDisabledReuploadBookmarks()
-      : SyncTest(SINGLE_CLIENT) {
+  SingleClientBookmarksSyncTestWithDisabledReuploadBookmarks() {
     features_override_.InitAndDisableFeature(switches::kSyncReuploadBookmarks);
   }
 
@@ -2246,10 +2255,13 @@ class SingleClientBookmarksSyncTestWithDisabledReuploadBookmarks
   base::test::ScopedFeatureList features_override_;
 };
 
-// Android doesn't currently support PRE_ tests, see crbug.com/40200835 or
-// crbug.com/40145099.
-#if !BUILDFLAG(IS_ANDROID)
-IN_PROC_BROWSER_TEST_F(
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    SingleClientBookmarksSyncTestWithDisabledReuploadBookmarks,
+    GetSyncTestModes(),
+    testing::PrintToStringParamName());
+
+IN_PROC_BROWSER_TEST_P(
     SingleClientBookmarksSyncTestWithDisabledReuploadBookmarks,
     PRE_ShouldNotReploadUponFaviconLoad) {
   fake_server::EntityBuilderFactory entity_builder_factory;
@@ -2272,7 +2284,7 @@ IN_PROC_BROWSER_TEST_F(
           .Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SingleClientBookmarksSyncTestWithDisabledReuploadBookmarks,
     ShouldNotReploadUponFaviconLoad) {
   const GURL url = GURL("http://www.foo.com");
@@ -2301,13 +2313,11 @@ IN_PROC_BROWSER_TEST_F(
                    "Sync.DataTypeEntityChange.BOOKMARK",
                    syncer::DataTypeEntityChange::kLocalUpdate));
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 class SingleClientBookmarksSyncTestWithEnabledReuploadPreexistingBookmarks
-    : public SyncTest {
+    : public SingleClientParameterizedBookmarksSyncTestBase {
  public:
-  SingleClientBookmarksSyncTestWithEnabledReuploadPreexistingBookmarks()
-      : SyncTest(SINGLE_CLIENT) {
+  SingleClientBookmarksSyncTestWithEnabledReuploadPreexistingBookmarks() {
     features_override_.InitWithFeatureState(switches::kSyncReuploadBookmarks,
                                             !content::IsPreTest());
   }
@@ -2316,11 +2326,15 @@ class SingleClientBookmarksSyncTestWithEnabledReuploadPreexistingBookmarks
   base::test::ScopedFeatureList features_override_;
 };
 
-// Android doesn't currently support PRE_ tests, see crbug.com/1117345.
-#if !BUILDFLAG(IS_ANDROID)
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    SingleClientBookmarksSyncTestWithEnabledReuploadPreexistingBookmarks,
+    GetSyncTestModes(),
+    testing::PrintToStringParamName());
+
 // Initiate reupload after restart when the feature toggle has been just enabled
 // (before restart the entity is in synced state).
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SingleClientBookmarksSyncTestWithEnabledReuploadPreexistingBookmarks,
     PRE_ShouldReuploadForOldClients) {
   ASSERT_TRUE(SetupSync());
@@ -2340,7 +2354,7 @@ IN_PROC_BROWSER_TEST_F(
                   .Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SingleClientBookmarksSyncTestWithEnabledReuploadPreexistingBookmarks,
     ShouldReuploadForOldClients) {
   // This test checks that the legacy bookmark which was stored locally will
@@ -2380,7 +2394,8 @@ IN_PROC_BROWSER_TEST_F(
           .Wait());
   EXPECT_TRUE(BookmarkModelMatchesFakeServerChecker(
                   GetBookmarkModel(kSingleProfileIndex),
-                  GetSyncService(kSingleProfileIndex), GetFakeServer())
+                  GetSyncService(kSingleProfileIndex), GetFakeServer(),
+                  GetStoreType())
                   .Wait());
   EXPECT_TRUE(GetFakeServer()
                   ->GetSyncEntitiesByDataType(syncer::BOOKMARKS)
