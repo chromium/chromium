@@ -10,6 +10,7 @@
 #include "reference_drivers/single_process_reference_driver_base.h"
 #include "reference_drivers/sync_reference_driver.h"
 #include "test/test.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "util/unsafe_buffers.h"
@@ -21,24 +22,94 @@ const IpczDriver& kDefaultDriver = reference_drivers::kSyncReferenceDriver;
 
 using APITest = test::Test;
 
+// A scoped object to hold mock functions for boxed application objects. Since
+// GMock can't mock free functions or static methods, the test must create a
+// single MockApplicationObject instance. Calls to
+// MockApplicationObject::Serializer and MockApplicationObject::Destructor will
+// call the MockSerializer and MockDestructor methods of that object.
+class MockApplicationObject {
+ public:
+  MockApplicationObject() { SetCurrentPtr(this, nullptr); }
+
+  ~MockApplicationObject() { SetCurrentPtr(nullptr, this); }
+
+  MockApplicationObject(const MockApplicationObject&) = delete;
+  MockApplicationObject& operator=(const MockApplicationObject&) = delete;
+
+  // IpczApplicationObjectSerializer
+  MOCK_METHOD(IpczResult,
+              MockSerializer,
+              (uintptr_t object,
+               uint32_t flags,
+               const void* options,
+               volatile void* data,
+               size_t* num_bytes,
+               IpczHandle* handles,
+               size_t* num_handles));
+
+  static IpczResult Serializer(uintptr_t object,
+                               uint32_t flags,
+                               const void* options,
+                               volatile void* data,
+                               size_t* num_bytes,
+                               IpczHandle* handles,
+                               size_t* num_handles);
+
+  // IpczApplicationObjectDestructor
+  MOCK_METHOD(void,
+              MockDestructor,
+              (uintptr_t object, uint32_t flags, const void* options));
+
+  static void Destructor(uintptr_t object, uint32_t flags, const void* options);
+
+ private:
+  // Asserts that `current_` matches `expected_ptr`, and updates it to `new_ptr`
+  // if so. This is a helper function because the constructor can't use
+  // ASSERT_EQ directly.
+  static void SetCurrentPtr(MockApplicationObject* new_ptr,
+                            MockApplicationObject* expected_ptr) {
+    ASSERT_EQ(current_, expected_ptr);
+    current_ = new_ptr;
+  }
+
+  static MockApplicationObject* current_;
+};
+
+MockApplicationObject* MockApplicationObject::current_ = nullptr;
+
+// static
+IpczResult MockApplicationObject::Serializer(uintptr_t object,
+                                             uint32_t flags,
+                                             const void* options,
+                                             volatile void* data,
+                                             size_t* num_bytes,
+                                             IpczHandle* handles,
+                                             size_t* num_handles) {
+  if (!current_) {
+    ADD_FAILURE() << "MockApplicationObject::Serializer called with no "
+                     "MockApplicationObject in scope";
+    return IPCZ_RESULT_FAILED_PRECONDITION;
+  }
+  return current_->MockSerializer(object, flags, options, data, num_bytes,
+                                  handles, num_handles);
+}
+
+// static
+void MockApplicationObject::Destructor(uintptr_t object,
+                                       uint32_t flags,
+                                       const void* options) {
+  if (!current_) {
+    ADD_FAILURE() << "MockApplicationObject::Destructor called with no "
+                     "MockApplicationObject in scope";
+    return;
+  }
+  current_->MockDestructor(object, flags, options);
+}
+
 std::string_view StringFromData(const volatile void* data, size_t size) {
   return std::string_view{
       static_cast<const char*>(const_cast<const void*>(data)), size};
 }
-
-IpczResult DummyApplicationObjectSerializer(uintptr_t object,
-                                            uint32_t flags,
-                                            const void* options,
-                                            volatile void* data,
-                                            size_t* num_bytes,
-                                            IpczHandle* handles,
-                                            size_t* num_handles) {
-  return IPCZ_RESULT_FAILED_PRECONDITION;
-}
-
-void DummyApplicationObjectDestructor(uintptr_t object,
-                                      uint32_t flags,
-                                      const void* options) {}
 
 TEST_F(APITest, CloseInvalid) {
   EXPECT_EQ(IPCZ_RESULT_INVALID_ARGUMENT,
@@ -970,12 +1041,13 @@ TEST_F(APITest, BoxAndUnbox) {
 
   {
     // Application object.
+    MockApplicationObject mock_object;
     IpczBoxContents contents = {
         .size = sizeof(contents),
         .type = IPCZ_BOX_TYPE_APPLICATION_OBJECT,
         .object = {.application_object = 1u},
-        .serializer = &DummyApplicationObjectSerializer,
-        .destructor = &DummyApplicationObjectDestructor,
+        .serializer = &MockApplicationObject::Serializer,
+        .destructor = &MockApplicationObject::Destructor,
     };
     ASSERT_EQ(IPCZ_RESULT_OK,
               ipcz().Box(node, &contents, IPCZ_NO_FLAGS, nullptr, &app_box));
@@ -994,6 +1066,39 @@ TEST_F(APITest, BoxAndUnbox) {
     EXPECT_EQ(out_contents.serializer, contents.serializer);
     EXPECT_EQ(out_contents.destructor, contents.destructor);
   }
+}
+
+TEST_F(APITest, BoxDestructor) {
+  ::testing::StrictMock<MockApplicationObject> mock_object;
+
+  IpczHandle node = CreateNode(kDefaultDriver);
+  absl::Cleanup cleanup = [&] { Close(node); };
+
+  constexpr uintptr_t kObjectId = 123;
+  IpczBoxContents contents = {
+      .size = sizeof(contents),
+      .type = IPCZ_BOX_TYPE_APPLICATION_OBJECT,
+      .object = {.application_object = kObjectId},
+      .serializer = &MockApplicationObject::Serializer,
+      .destructor = &MockApplicationObject::Destructor,
+  };
+
+  IpczHandle box;
+  ASSERT_EQ(IPCZ_RESULT_OK,
+            ipcz().Box(node, &contents, IPCZ_NO_FLAGS, nullptr, &box));
+  ASSERT_NE(box, IPCZ_INVALID_HANDLE);
+
+  // Closing the box should invoke the destructor.
+  EXPECT_CALL(mock_object, MockDestructor(kObjectId, IPCZ_NO_FLAGS, nullptr));
+  EXPECT_EQ(IPCZ_RESULT_OK, ipcz().Close(box, IPCZ_NO_FLAGS, nullptr));
+  ::testing::Mock::VerifyAndClear(&mock_object);
+
+  // A box with no destructor is valid. Closing it safely calls nothing.
+  contents.destructor = nullptr;
+  ASSERT_EQ(IPCZ_RESULT_OK,
+            ipcz().Box(node, &contents, IPCZ_NO_FLAGS, nullptr, &box));
+  ASSERT_NE(box, IPCZ_INVALID_HANDLE);
+  EXPECT_EQ(IPCZ_RESULT_OK, ipcz().Close(box, IPCZ_NO_FLAGS, nullptr));
 }
 
 TEST_F(APITest, IpczGetAPIInvalid) {
