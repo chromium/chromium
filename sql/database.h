@@ -877,7 +877,6 @@ class COMPONENT_EXPORT(SQL) Database {
   // Internal state accessed by other classes in //sql.
   base::WeakPtr<Database> GetWeakPtr(InternalApiToken);
   sqlite3* db(InternalApiToken) const { return db_; }
-  bool poisoned(InternalApiToken) const { return poisoned_; }
   base::FilePath DbPath(InternalApiToken) const { return DbPath(); }
 
   // Interface with sql::test::ScopedErrorExpecter.
