@@ -136,21 +136,12 @@ export class ComposeboxElement extends I18nMixinLit
         reflect: true,
         type: Boolean,
       },
-      inDeepSearchMode_: {
-        reflect: true,
-        type: Boolean,
-      },
       isDraggingFile: {
         reflect: true,
         type: Boolean,
       },
-      inCreateImageMode_: {
-        reflect: true,
-        type: Boolean,
-      },
-      inCanvasMode_: {
-        reflect: true,
-        type: Boolean,
+      activeToolMode_: {
+        type: Number,
       },
       /**
        * Feature flag for New Tab Page Realbox Next.
@@ -258,9 +249,7 @@ export class ComposeboxElement extends I18nMixinLit
   protected accessor inputPlaceholder_: string =
       loadTimeData.getString('searchboxComposePlaceholder');
   protected accessor showFileCarousel_: boolean = false;
-  protected accessor inCreateImageMode_: boolean = false;
-  protected accessor inDeepSearchMode_: boolean = false;
-  protected accessor inCanvasMode_: boolean = false;
+  protected accessor activeToolMode_: ToolMode = ToolMode.kUnspecified;
   protected accessor errorMessage_: string = '';
   protected accessor contextFilesSize_: number = 0;
   protected accessor transcript_: string = '';
@@ -652,13 +641,8 @@ export class ComposeboxElement extends I18nMixinLit
       e: CustomEvent<
           {uuid: UnguessableToken, fromAutoSuggestedChip?: boolean}>) {
     // If we're in create image mode, notify that image is gone.
-    if (this.inCreateImageMode_) {
-      await this.setCreateImageMode_({
-        detail: {
-          inCreateImageMode: true,
-          imagePresent: this.$.context.hasImageFiles(),
-        },
-      } as CustomEvent<{inCreateImageMode: boolean, imagePresent: boolean}>);
+    if (this.activeToolMode_ === ToolMode.kImageGen) {
+      await this.handleToolMode_(ToolMode.kImageGen, true);
     }
     this.pendingUploads_.delete(e.detail.uuid);
     this.fileUploadsComplete = this.pendingUploads_.size === 0;
@@ -878,7 +862,7 @@ export class ComposeboxElement extends I18nMixinLit
   }
 
   private hasContent_(): boolean {
-    return this.inDeepSearchMode_ || this.inCreateImageMode_ ||
+    return this.activeToolMode_ !== ToolMode.kUnspecified ||
         this.input_.trim().length > 0 || this.contextFilesSize_ > 0;
   }
 
@@ -903,10 +887,10 @@ export class ComposeboxElement extends I18nMixinLit
   }
 
   private updateInputPlaceholder_() {
-    if (this.inDeepSearchMode_) {
+    if (this.activeToolMode_ === ToolMode.kDeepSearch) {
       this.inputPlaceholder_ =
           loadTimeData.getString('composeDeepSearchPlaceholder');
-    } else if (this.inCreateImageMode_) {
+    } else if (this.activeToolMode_ === ToolMode.kImageGen) {
       this.inputPlaceholder_ =
           loadTimeData.getString('composeCreateImagePlaceholder');
     } else {
@@ -915,45 +899,23 @@ export class ComposeboxElement extends I18nMixinLit
     }
   }
 
-  protected async setDeepSearchMode_(
-      e: CustomEvent<{inDeepSearchMode: boolean}>) {
-    this.inDeepSearchMode_ = e.detail.inDeepSearchMode;
-    if (this.showModelPicker_) {
-      this.inCreateImageMode_ = false;
-      this.inCanvasMode_ = false;
-    }
-    this.searchboxHandler_.setActiveToolMode(
-        this.inDeepSearchMode_ ? ToolMode.kDeepSearch : ToolMode.kUnspecified);
-    this.queryAutocomplete_(/* clearMatches= */ true);
-    this.updateInputPlaceholder_();
-
-    await this.updateComplete;
-    this.focusInput();
+  protected async onSetToolMode_(
+      e: CustomEvent<{tool: ToolMode, enabled: boolean}>) {
+    await this.handleToolMode_(e.detail.tool, e.detail.enabled);
   }
 
-  protected async setCreateImageMode_(
-      e: CustomEvent<{inCreateImageMode: boolean, imagePresent: boolean}>) {
-    this.inCreateImageMode_ = e.detail.inCreateImageMode;
-    if (this.showModelPicker_) {
-      this.inDeepSearchMode_ = false;
-      this.inCanvasMode_ = false;
+  private async handleToolMode_(tool: ToolMode, enabled: boolean) {
+    if (enabled) {
+      this.activeToolMode_ = tool;
+    } else if (this.activeToolMode_ === tool) {
+      this.activeToolMode_ = ToolMode.kUnspecified;
     }
-    this.searchboxHandler_.setActiveToolMode(
-        this.inCreateImageMode_ ? ToolMode.kImageGen : ToolMode.kUnspecified);
+
+    this.searchboxHandler_.setActiveToolMode(this.activeToolMode_);
     this.queryAutocomplete_(/* clearMatches= */ true);
-    this.updateInputPlaceholder_();
-
-    await this.updateComplete;
-    this.focusInput();
-  }
-
-  protected async setCanvasMode_(e: CustomEvent<{inCanvasMode: boolean}>) {
-    this.inCanvasMode_ = e.detail.inCanvasMode;
-    this.inDeepSearchMode_ = false;
-    this.inCreateImageMode_ = false;
-    this.searchboxHandler_.setActiveToolMode(
-        this.inCanvasMode_ ? ToolMode.kCanvas : ToolMode.kUnspecified);
-    this.queryAutocomplete(/* clearMatches= */ true);
+    if (tool !== ToolMode.kCanvas) {
+      this.updateInputPlaceholder_();
+    }
 
     await this.updateComplete;
     this.focusInput();
@@ -1335,15 +1297,8 @@ export class ComposeboxElement extends I18nMixinLit
       if (status === FileUploadStatus.kProcessingSuggestSignalsReady &&
           file.type.includes('image')) {
         // If we're in create image mode, update the aim tool mode.
-        if (this.inCreateImageMode_) {
-          await this.setCreateImageMode_(
-              {
-                detail: {
-                  inCreateImageMode: true,
-                  imagePresent: true,
-                },
-              } as
-              CustomEvent<{inCreateImageMode: boolean, imagePresent: boolean}>);
+        if (this.activeToolMode_ === ToolMode.kImageGen) {
+          await this.handleToolMode_(ToolMode.kImageGen, true);
         } else if (this.enableImageContextualSuggestions_) {
           // Query autocomplete to get contextual suggestions for files.
           this.queryAutocomplete_(/* clearMatches= */ true);

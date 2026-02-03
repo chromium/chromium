@@ -143,8 +143,20 @@ suite('NewTabPageRealboxTest', () => {
     MetricsReporterImpl.setInstanceForTest(new MetricsReporterImpl());
     metrics = fakeMetricsPrivate();
 
-    realbox = await createAndAppendRealbox();
     testProxy.handler.setResultFor('getRecentTabs', {tabs: []});
+    testProxy.handler.setResultFor('getInputState', {
+      state: {
+        allowedModels: [],
+        allowedTools: [],
+        allowedInputTypes: [],
+        activeModel: 0,
+        activeTool: 0,
+        disabledModels: [],
+        disabledTools: [],
+        disabledInputTypes: [],
+      },
+    });
+    realbox = await createAndAppendRealbox();
   });
 
   // TODO(crbug.com/328270499): Uncomment once flakiness is fixed.

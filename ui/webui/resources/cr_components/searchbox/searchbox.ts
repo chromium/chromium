@@ -1244,16 +1244,9 @@ export class SearchboxElement extends SearchboxElementBase implements
         !this.isInputEmpty());
   }
 
-  protected setDeepSearchMode_() {
-    this.openComposebox_([], ToolMode.kDeepSearch);
-  }
-
-  protected setCreateImageMode_() {
-    this.openComposebox_([], ToolMode.kImageGen);
-  }
-
-  protected setCanvasMode_() {
-    this.openComposebox_([], ToolMode.kCanvas);
+  protected onSetToolMode_(
+      e: CustomEvent<{tool: ToolMode, enabled: boolean}>) {
+    this.openComposebox_([], e.detail.tool);
   }
 
   protected onModelClick_(e: CustomEvent<{model: ModelMode}>) {

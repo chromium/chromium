@@ -465,21 +465,11 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       this.showContextMenuDescription_ = this.contextMenuDescriptionEnabled_;
     }
 
-    switch (previousTool) {
-      case ComposeboxToolMode.kDeepSearch:
-        this.fire('set-deep-search-mode', {inDeepSearchMode: false});
-        break;
-      case ComposeboxToolMode.kImageGen:
-        this.fire('set-create-image-mode', {
-          inCreateImageMode: false,
-          imagePresent: this.hasImageFiles(),
-        });
-        break;
-      case ComposeboxToolMode.kCanvas:
-        this.fire('set-canvas-mode', {inCanvasMode: false});
-        break;
-      default:
-        break;
+    if (previousTool !== ComposeboxToolMode.kUnspecified) {
+      this.fire('set-tool-mode', {
+        tool: previousTool,
+        enabled: false,
+      });
     }
   }
 
@@ -832,24 +822,10 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     }
 
     const isActive = this.activeTool_ === tool;
-    switch (tool) {
-      case ComposeboxToolMode.kDeepSearch:
-        this.fire('set-deep-search-mode', {inDeepSearchMode: isActive});
-        break;
-      case ComposeboxToolMode.kImageGen:
-        this.fire('set-create-image-mode', {
-          inCreateImageMode: isActive,
-          imagePresent: this.hasImageFiles(),
-        });
-        break;
-      case ComposeboxToolMode.kCanvas:
-        this.fire('set-canvas-mode', {
-          inCanvasMode: isActive,
-        });
-        break;
-      default:
-        break;
-    }
+    this.fire('set-tool-mode', {
+      tool: tool,
+      enabled: isActive,
+    });
   }
 
   protected onVoiceSearchClick_() {

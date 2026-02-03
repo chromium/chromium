@@ -5,6 +5,7 @@
 import '//resources/cr_elements/cr_icons.css.js';
 
 import {html, nothing} from '//resources/lit/v3_0/lit.rollup.js';
+import {ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 
 import type {ComposeboxElement} from './composebox.js';
 
@@ -106,9 +107,7 @@ export function getHtml(this: ComposeboxElement) {
           @add-file-context="${this.addFileContext_}"
           @delete-context="${this.deleteContext_}"
           @on-file-validation-error="${this.onFileValidationError_}"
-          @set-deep-search-mode="${this.setDeepSearchMode_}"
-          @set-create-image-mode="${this.setCreateImageMode_}"
-          @set-canvas-mode="${this.setCanvasMode_}"
+          @set-tool-mode="${this.onSetToolMode_}"
           @model-click="${this.onModelClick_}"
           @get-tab-preview="${this.getTabPreview_}"
           @open-file-dialog="${this.onOpenFileDialog_}"
@@ -129,7 +128,7 @@ export function getHtml(this: ComposeboxElement) {
             .result="${this.result_}"
             .selectedMatchIndex="${this.selectedMatchIndex_}"
             .maxSuggestions="${this.maxSuggestions}"
-            .inDeepSearchMode="${this.inDeepSearchMode_}"
+            .inDeepSearchMode="${this.activeToolMode_ === ToolMode.kDeepSearch}"
             @selected-match-index-changed="${this.onSelectedMatchIndexChanged_}"
             @match-focusin="${this.onMatchFocusin_}"
             @match-click="${this.onMatchClick_}"
