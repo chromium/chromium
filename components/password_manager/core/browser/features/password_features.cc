@@ -11,6 +11,8 @@
 namespace password_manager::features {
 #if !BUILDFLAG(IS_IOS)  // Desktop
 BASE_FEATURE(kActorLogin, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kActorLoginFederatedLoginSupport,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kActorLoginFieldVisibilityCheck, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kActorLoginGetCredentialsNoLoginForm,
              base::FEATURE_ENABLED_BY_DEFAULT);

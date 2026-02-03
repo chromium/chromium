@@ -18,6 +18,8 @@ namespace password_manager::features {
 
 #if !BUILDFLAG(IS_IOS)
 BASE_DECLARE_FEATURE(kActorLogin);
+// Enables FedCM support for Actor Login.
+BASE_DECLARE_FEATURE(kActorLoginFederatedLoginSupport);
 // Enables Actor Login form finding with async check
 BASE_DECLARE_FEATURE(kActorLoginFieldVisibilityCheck);
 // Ensures that `GetCredentials` differentiates between no saved credentials
