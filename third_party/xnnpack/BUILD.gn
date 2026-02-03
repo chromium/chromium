@@ -29,7 +29,7 @@ config("xnnpack_public_config") {
     "src",
   ]
 
-  if ((is_android || is_linux) && current_cpu == "arm64") {
+  if (is_android && current_cpu == "arm64") {
     asmflags = [ "-mmark-bti-property" ]
   }
 
