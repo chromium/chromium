@@ -262,6 +262,8 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   BOOL _isBeingDismissed;
   // The Signin coordinator displayed, if any.
   SigninCoordinator* _signinCoordinator;
+  // Whether the UI is disabled.
+  BOOL _UIDisabled;
 }
 
 @synthesize editingFolderCell = _editingFolderCell;
@@ -876,6 +878,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   base::RecordAction(base::UserMetricsAction(userAction));
   const BookmarkNode* editedNode = *(nodes.begin());
   const BookmarkNode* selectedFolder = editedNode->parent();
+  _UIDisabled = YES;
   _folderChooserCoordinator = [[BookmarksFolderChooserCoordinator alloc]
       initWithBaseViewController:self.navigationController
                          browser:_browser.get()
@@ -929,6 +932,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
                             node:bookmarkNode
          snackbarCommandsHandler:self.snackbarCommandsHandler];
   self.bookmarkEditorCoordinator.delegate = self;
+  _UIDisabled = YES;
   [self.bookmarkEditorCoordinator start];
 }
 
@@ -951,6 +955,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
                       folderNode:bookmarkNode];
   self.folderEditorCoordinator.delegate = self;
   [self.folderEditorCoordinator start];
+  _UIDisabled = YES;
 }
 
 - (void)openAllURLs:(std::vector<GURL>)urls
@@ -982,6 +987,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   if (self.actionSheetCoordinator) {
     return;
   }
+  _UIDisabled = YES;
   __weak BookmarksHomeViewController* weakSelf = self;
   [self.mediator queryLocalBookmarks:^(int local_bookmarks_count,
                                        std::string user_email) {
@@ -1046,6 +1052,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
       "IOS.Bookmarks.BulkSaveBookmarksInAccountCount", localBookmarksCount);
 
   [self refreshContents];
+  _UIDisabled = NO;
 
   NSString* snackbarMessage = base::SysUTF16ToNSString(
       base::i18n::MessageFormatter::FormatWithNamedArgs(
@@ -1606,6 +1613,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
 }
 
 - (void)dismissActionSheetCoordinator {
+  _UIDisabled = NO;
   [self.actionSheetCoordinator stop];
   self.actionSheetCoordinator = nil;
 }
@@ -1613,12 +1621,14 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
 // Stops the folder chooser coordinator.
 - (void)stopFolderChooserCoordinator {
   [_folderChooserCoordinator stop];
+  _UIDisabled = NO;
   _folderChooserCoordinator.delegate = nil;
   _folderChooserCoordinator = nil;
 }
 
 // Stops the bookmark editor coordinator.
 - (void)stopBookmarksEditorCoordinator {
+  _UIDisabled = NO;
   [self.bookmarkEditorCoordinator stop];
   self.bookmarkEditorCoordinator.delegate = nil;
   self.bookmarkEditorCoordinator = nil;
@@ -1626,6 +1636,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
 
 // Stops the folder editor coordinator.
 - (void)stopBookmarksFolderEditorCoordinator {
+  _UIDisabled = NO;
   [self.folderEditorCoordinator stop];
   self.folderEditorCoordinator.delegate = nil;
   self.folderEditorCoordinator = nil;
@@ -2689,7 +2700,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
 }
 
 - (void)handleLongPress:(UILongPressGestureRecognizer*)gestureRecognizer {
-  if (self.mediator.currentlyInEditMode ||
+  if (_UIDisabled || self.mediator.currentlyInEditMode ||
       gestureRecognizer.state != UIGestureRecognizerStateBegan) {
     return;
   }
@@ -2975,6 +2986,11 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
 
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
+  if (_UIDisabled) {
+    // Deselect row.
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    return;
+  }
   BookmarksHomeSectionIdentifier sectionIdentifier =
       (BookmarksHomeSectionIdentifier)([self.tableViewModel
           sectionIdentifierForSectionIndex:indexPath.section]);
