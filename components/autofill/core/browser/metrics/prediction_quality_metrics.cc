@@ -511,8 +511,6 @@ const char* GetQualityMetricPredictionSource(
       return "Server";
     case PREDICTION_SOURCE_OVERALL:
       return "Overall";
-    case PREDICTION_SOURCE_ML_PREDICTIONS:
-      return "ML";
   }
 }
 
@@ -795,20 +793,6 @@ void LogHeuristicPredictionQualityPerLabelSourceMetric(
              LabelSourceToString(field.label_source())}),
         predicted_type == actual_type);
   }
-}
-
-void LogMlPredictionQualityMetrics(
-    FormInteractionsUkmLogger& form_interactions_ukm_logger,
-    ukm::SourceId source_id,
-    const FormStructure& form,
-    const AutofillField& field,
-    QualityMetricType metric_type,
-    base::TimeTicks now) {
-  LogPredictionQualityMetrics(
-      PREDICTION_SOURCE_ML_PREDICTIONS,
-      field.heuristic_type(HeuristicSource::kAutofillMachineLearning),
-      form_interactions_ukm_logger, source_id, form, field, metric_type,
-      /*log_rationalization_metrics=*/false, now);
 }
 
 void LogServerPredictionQualityMetrics(

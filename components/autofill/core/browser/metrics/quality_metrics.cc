@@ -189,17 +189,6 @@ void LogPredictionMetrics(
                                        form, *field, metric_type, now);
     LogEmailFieldPredictionMetrics(*field);
     LogFieldPredictionOverlapMetrics(*field);
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-    // If ML predictions are the active heuristic source, don't record samples
-    // as these would be redundant to the ".Heuristic" sub-metric of
-    // `LogHeuristicPredictionQualityMetrics()`.
-    if (base::FeatureList::IsEnabled(features::kAutofillModelPredictions) &&
-        GetActiveHeuristicSource() !=
-            HeuristicSource::kAutofillMachineLearning) {
-      LogMlPredictionQualityMetrics(form_interactions_ukm_logger, source_id,
-                                    form, *field, metric_type, now);
-    }
-#endif
   }
 }
 
