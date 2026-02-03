@@ -30,10 +30,11 @@ rust_static_library("ffi_new") {
   crate_root = "ffi/lib.rs"
   sources = [
     "ffi/data_pipe.rs",
+    "ffi/handles.rs",
     "ffi/internal_options.rs",
     "ffi/lib.rs",
-    "ffi/mojo_handles.rs",
-    "ffi/mojo_result.rs",
+    "ffi/result.rs",
+    "ffi/trap.rs",
   ]
   deps = [
     ":mojo_c_system_bindings",

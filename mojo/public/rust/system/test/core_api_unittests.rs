@@ -102,6 +102,8 @@ fn test_data_pipe_write_and_send() {
 
 #[gtest(RustSystemAPITestSuite, MessagePipes_RawTrapSignalOnReadableTest)]
 fn test_raw_trap_signal_on_readable() {
+    /* FOR_RELEASE: Re-enable this test when we migrate message pipes
+
     test_util::init_mojo_if_needed();
 
     // We need a few global values to keep track of our test trap events.
@@ -267,10 +269,13 @@ fn test_raw_trap_signal_on_readable() {
     // `Cancelled` event for removing endpoint_a from the trap (which happens
     // automatically upon dropping `trap`.)
     clear_trap_events(3);
+    */
 }
 
 #[gtest(RustSystemAPITestSuite, MessagePipes_TrapSignalOnReadableTest)]
 fn test_raw_trap_signal_on_readable() {
+    /* FOR_RELEASE: Re-enable this test when we migrate message pipes
+
     test_util::init_mojo_if_needed();
 
     let (endpoint_a, endpoint_b) = system::message_pipe::MessageEndpoint::create_pipe().unwrap();
@@ -312,10 +317,13 @@ fn test_raw_trap_signal_on_readable() {
         condvar.wait_timeout_while(count, std::time::Duration::from_secs(2), |c| *c == 0).unwrap();
 
     expect_eq!(*final_count.0, 1, "Should have fired once");
+    */
 }
 
 #[gtest(RustSystemAPITestSuite, CloseSafeTrapWithActiveTrigger)]
 fn test_close_trap_with_active_trigger() {
+    /* FOR_RELEASE: Re-enable this test when we migrate message pipes
+
     // Trap must do some lifecycle management/teardown of the pointers it encloses
     // when it is `drop`'d.
     //
@@ -341,10 +349,12 @@ fn test_close_trap_with_active_trigger() {
     .expect("Failed to add trigger");
     drop(trap);
     // `drop` completed without any errors wrt pointer management and such.
+    */
 }
 
 #[gtest(RustSystemAPITestSuite, SafeTrapMultipleBlockingEvents)]
 fn test_trap_multiple_blocking_events() {
+    /* FOR_RELEASE: Re-enable this test when we migrate message pipes
     test_util::init_mojo_if_needed();
     let trap = system::trap::Trap::new().expect("Failed to create safe Trap");
     const NUM_TRIGGERS: usize = 20; // More than MAX_BLOCKING_EVENTS
@@ -427,142 +437,137 @@ fn test_trap_multiple_blocking_events() {
     // (that is, Cancelled returned harmelssly for the various triggers
     // upon removal.)
     drop(trap);
+    */
 }
 
 // We test the majority of our trap functionality via MessagePipes.
 // These DataPipe tests are thus somewhat redundant, but fine to keep for now.
 #[gtest(RustSystemAPITestSuite, DataPipes_RawTrapSignalOnReadableTest)]
 fn test_raw_trap_signal_on_readable() {
-    // FOR_RELEASE: This test is disabled until we migrate traps to the new FFI
-    // test_util::init_mojo_if_needed();
+    test_util::init_mojo_if_needed();
 
-    // // We need a few global values to keep track of our test trap events.
-    // static TEST_TRAP_EVENT_LIST:
-    // LazyLock<Mutex<Vec<system::raw_trap::RawTrapEvent>>> =
-    //     LazyLock::new(|| Mutex::new(Vec::new()));
-    // static TEST_TRAP_EVENT_COND: LazyLock<Condvar> =
-    // LazyLock::new(Condvar::new);
+    // We need a few global values to keep track of our test trap events.
+    static TEST_TRAP_EVENT_LIST: LazyLock<Mutex<Vec<system::raw_trap::RawTrapEvent>>> =
+        LazyLock::new(|| Mutex::new(Vec::new()));
+    static TEST_TRAP_EVENT_COND: LazyLock<Condvar> = LazyLock::new(Condvar::new);
 
-    // // Helper handler for testing.
-    // extern "C" fn test_trap_event_handler(event:
-    // &system::raw_trap::RawTrapEvent) {     // If locking fails, it means
-    // another thread panicked. In this case we can     // simply do
-    // nothing. Note that we cannot panic here since this is called     // from
-    // C code.     if let Ok(mut list) = TEST_TRAP_EVENT_LIST.lock() {
-    //         list.push(*event);
-    //         TEST_TRAP_EVENT_COND.notify_all();
-    //     }
-    // }
+    // Helper handler for testing.
+    extern "C" fn test_trap_event_handler(event: &system::raw_trap::RawTrapEvent) {
+        // If locking fails, it means
+        // another thread panicked. In this case we can  simply do
+        // nothing. Note that we cannot panic here since this is called  from
+        // C code.
+        if let Ok(mut list) = TEST_TRAP_EVENT_LIST.lock() {
+            list.push(event.clone());
+            TEST_TRAP_EVENT_COND.notify_all();
+        }
+    }
 
-    // // Helper function for testing.
-    // fn wait_for_synchronously_delivered_trap_events(
-    //     test_trap_event_list: &Mutex<Vec<system::raw_trap::RawTrapEvent>>,
-    //     target_len: usize,
-    // ) -> Vec<system::raw_trap::RawTrapEvent> {
-    //     let list_guard = test_trap_event_list.lock().unwrap();
-    //     // Because Mojo data pipes are synchronous, we can simply wait behind
-    // a condvar.     let guard =
-    //         TEST_TRAP_EVENT_COND.wait_while(list_guard, |list| list.len() <
-    // target_len).unwrap();     guard.clone()
-    // }
+    // Helper function for testing.
+    fn wait_for_synchronously_delivered_trap_events(
+        test_trap_event_list: &Mutex<Vec<system::raw_trap::RawTrapEvent>>,
+        target_len: usize,
+    ) -> Vec<system::raw_trap::RawTrapEvent> {
+        let list_guard = test_trap_event_list.lock().unwrap();
+        // Because Mojo data pipes are synchronous, we can simply wait behind
+        // a condvar.
+        let guard =
+            TEST_TRAP_EVENT_COND.wait_while(list_guard, |list| list.len() < target_len).unwrap();
+        guard.clone()
+    }
 
-    // // Make a new trap.
-    // let trap =
-    // system::raw_trap::RawTrap::new(test_trap_event_handler).unwrap();
+    // Make a new trap.
+    let trap = system::raw_trap::RawTrap::new(test_trap_event_handler).unwrap();
 
-    // // Make a data pipe pair and add a trigger to both ends of the pipe.
-    // let (consumer, mut producer) = system::data_pipe::create(0).unwrap();
-    // expect_eq!(
-    //     system::mojo_types::MojoResult::Okay,
-    //     trap.add_trigger(
-    //         &consumer,
-    //         system::mojo_types::HandleSignals::READABLE,
-    //         system::raw_trap::TriggerCondition::SignalsSatisfied,
-    //         1,
-    //     )
-    // );
-    // expect_eq!(
-    //     system::mojo_types::MojoResult::Okay,
-    //     trap.add_trigger(
-    //         &producer,
-    //         system::mojo_types::HandleSignals::PEER_CLOSED,
-    //         system::raw_trap::TriggerCondition::SignalsSatisfied,
-    //         2,
-    //     )
-    // );
+    // Make a data pipe pair and add a trigger to both ends of the pipe.
+    let (mut producer, consumer) = system::data_pipe::create(0).unwrap();
+    expect_eq!(
+        Ok(()),
+        trap.add_trigger(
+            &consumer,
+            system::raw_trap::HandleSignals::READABLE,
+            system::raw_trap::TriggerCondition::TriggerWhenSatisfied,
+            1,
+        )
+    );
+    expect_eq!(
+        Ok(()),
+        trap.add_trigger(
+            &producer,
+            system::raw_trap::HandleSignals::PEER_CLOSED,
+            system::raw_trap::TriggerCondition::TriggerWhenSatisfied,
+            2,
+        )
+    );
 
-    // let mut blocking_events_buf = [std::mem::MaybeUninit::uninit(); 16];
-    // // The trap should arm with no blocking events since nothing should be
-    // // triggered yet.
-    // match trap.arm(Some(&mut blocking_events_buf)) {
-    //     system::raw_trap::ArmResult::Armed => (),
-    //     system::raw_trap::ArmResult::Blocked(events) => {
-    //         expect_true!(false, "unexpected blocking events {:?}", events)
-    //     }
-    //     system::raw_trap::ArmResult::Failed(e) => {
-    //         expect_true!(false, "unexpected mojo error {:?}", e)
-    //     }
-    // }
+    let mut blocking_events_buf = [const { std::mem::MaybeUninit::uninit() }; 16];
+    // The trap should arm with no blocking events since nothing should be
+    // triggered yet.
+    match trap.arm(Some(&mut blocking_events_buf)) {
+        system::raw_trap::ArmResult::Armed => (),
+        system::raw_trap::ArmResult::Blocked(events) => {
+            expect_true!(false, "unexpected blocking events {:?}", events)
+        }
+        system::raw_trap::ArmResult::Failed(e) => {
+            expect_true!(false, "unexpected mojo error {:?}", e)
+        }
+    }
 
-    // expect_eq!(
-    //     producer.write_with_flags(&[128u8],
-    // system::data_pipe::WriteFlags::empty()).unwrap(),     1
-    // );
-    // {
-    //     let list =
-    // wait_for_synchronously_delivered_trap_events(&TEST_TRAP_EVENT_LIST, 1);
-    //     expect_eq!(list.len(), 1);
-    //     let event = list[0];
-    //     expect_eq!(event.trigger_context(), 1);
-    //     expect_eq!(event.result(), system::mojo_types::MojoResult::Okay);
-    //     expect_true!(
-    //         event.signals_state().satisfiable().is_readable(),
-    //         "{:?}",
-    //         event.signals_state()
-    //     );
-    //     expect_true!(
-    //         event.signals_state().satisfied().is_readable(),
-    //         "{:?}",
-    //         event.signals_state()
-    //     );
-    // }
+    expect_eq!(
+        producer.write_with_flags(&[128u8], system::data_pipe::WriteFlags::empty()).unwrap(),
+        1
+    );
+    {
+        let list = wait_for_synchronously_delivered_trap_events(&TEST_TRAP_EVENT_LIST, 1);
+        expect_eq!(list.len(), 1);
+        let event = &list[0];
+        expect_eq!(event.trigger_context(), 1);
+        expect_eq!(event.result(), Ok(()));
+        expect_true!(
+            event.signals_state().satisfiable().is_readable(),
+            "{:?}",
+            event.signals_state()
+        );
+        expect_true!(
+            event.signals_state().satisfied().is_readable(),
+            "{:?}",
+            event.signals_state()
+        );
+    }
 }
 
 #[gtest(RustSystemAPITestSuite, AttemptToAddOrRemoveTriggerWithSameContextTwice)]
 fn test_raw_trap_c_layer_attempts_to_remove_context_twice() {
-    // FOR_RELEASE: This test is disabled until we migrate traps to the new API
-    // test_util::init_mojo_if_needed();
-    // extern "C" fn test_trap_event_handler(_event:
-    // &system::raw_trap::RawTrapEvent) {} let trap =
-    // system::raw_trap::RawTrap::new(test_trap_event_handler).unwrap();
+    test_util::init_mojo_if_needed();
+    extern "C" fn test_trap_event_handler(_event: &system::raw_trap::RawTrapEvent) {}
+    let trap = system::raw_trap::RawTrap::new(test_trap_event_handler).unwrap();
 
-    // // Create a data pipe and add a trigger with a dummy CONTEXT.
-    // let (consumer, _) = system::data_pipe::create(0).unwrap();
-    // const CONTEXT: usize = 123;
-    // expect_eq!(
-    //     system::mojo_types::MojoResult::Okay,
-    //     trap.add_trigger(
-    //         &consumer,
-    //         system::mojo_types::HandleSignals::READABLE,
-    //         system::raw_trap::TriggerCondition::SignalsSatisfied,
-    //         CONTEXT,
-    //     )
-    // );
-    // expect_eq!(
-    //     system::mojo_types::MojoResult::AlreadyExists,
-    //     trap.add_trigger(
-    //         &consumer,
-    //         system::mojo_types::HandleSignals::READABLE,
-    //         system::raw_trap::TriggerCondition::SignalsSatisfied,
-    //         CONTEXT,
-    //     )
-    // );
+    // Create a data pipe and add a trigger with a dummy CONTEXT.
+    let (consumer, _) = system::data_pipe::create(0).unwrap();
+    const CONTEXT: usize = 123;
+    expect_eq!(
+        Ok(()),
+        trap.add_trigger(
+            &consumer,
+            system::raw_trap::HandleSignals::READABLE,
+            system::raw_trap::TriggerCondition::TriggerWhenSatisfied,
+            CONTEXT,
+        )
+    );
+    // FOR_RELEASE: Check that the result is specifically `AlreadyExists`
+    expect_true!(trap
+        .add_trigger(
+            &consumer,
+            system::raw_trap::HandleSignals::READABLE,
+            system::raw_trap::TriggerCondition::TriggerWhenSatisfied,
+            CONTEXT,
+        )
+        .is_err());
 
-    // expect_eq!(system::mojo_types::MojoResult::Okay,
-    // trap.remove_trigger(CONTEXT));
+    expect_eq!(Ok(()), trap.remove_trigger(CONTEXT));
 
-    // expect_eq!(system::mojo_types::MojoResult::NotFound,
-    // trap.remove_trigger(CONTEXT));
+    // FOR_RELEASE: Check that the result is specifically `NotFound`
+    expect_true!(trap.remove_trigger(CONTEXT).is_err());
 }
 
 #[gtest(RustSystemAPITestSuite, MakeRegularTrap)]

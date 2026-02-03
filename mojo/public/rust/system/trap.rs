@@ -88,7 +88,6 @@
 
 #![allow(unused)] /* FOR_RELEASE: Remove this once we've filled out the API. */
 
-use crate::mojo_types::*;
 pub use crate::raw_trap::TriggerCondition;
 use crate::raw_trap::*;
 
@@ -97,10 +96,10 @@ use std::mem;
 use std::sync::{Arc, Mutex, Weak};
 
 chromium::import! {
-  "//mojo/public/rust/system:mojo_ffi";
+  "//mojo/public/rust/system:ffi_new" as mojo_ffi;
 }
 
-use mojo_ffi::types;
+use mojo_ffi::{MojoError, MojoResult, UntypedHandle};
 
 /// Unique ID for a trigger added to a `Trap`.
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -123,7 +122,7 @@ pub enum ArmingPolicyForBlockingEvents {
 #[derive(Clone, Copy, Debug)]
 pub struct TrapEvent {
     signals_state: SignalsState,
-    result: MojoResult,
+    result: MojoResult<()>,
 }
 
 impl TrapEvent {
@@ -131,11 +130,13 @@ impl TrapEvent {
     /// * Okay: a specified signal occurred.
     /// * FailedPrecondition: a signal can no longer happen on the handle.
     /// * Cancelled: the trigger was removed (explicitly or by closure).
+    // FOR_RELEASE: Can we just store the Result<(), TrapError> in the TrapEvent to
+    // start with?
     pub fn result(&self) -> Result<(), TrapError> {
         match self.result {
-            MojoResult::Okay => Ok(()),
-            MojoResult::Cancelled => Err(TrapError::Cancelled),
-            MojoResult::FailedPrecondition => Err(TrapError::FailedPrecondition),
+            Ok(()) => Ok(()),
+            Err(MojoError::Cancelled) => Err(TrapError::Cancelled),
+            Err(MojoError::FailedPrecondition) => Err(TrapError::FailedPrecondition),
             unhandled_result => {
                 panic!("TrapEvent received an unhandled MojoResult: {:?}", unhandled_result)
             }
@@ -166,7 +167,7 @@ pub struct Trap {
 }
 
 impl Trap {
-    pub fn new() -> Result<Self, MojoResult> {
+    pub fn new() -> MojoResult<Self> {
         Ok(Trap {
             raw_trap: RawTrap::new(Self::handle_event_from_callback)?,
             trigger_registry: Arc::new(Mutex::new(TriggerRegistry {
@@ -231,7 +232,7 @@ impl Trap {
         signals: HandleSignals,
         condition: TriggerCondition,
         callback: impl FnMut(&TrapEvent) + Send + 'static,
-    ) -> Result<TriggerId, MojoResult> {
+    ) -> MojoResult<TriggerId> {
         let (trigger_data_ptr, id): (*const Trigger, _) = {
             let mut trigger_registry = self.trigger_registry.lock().unwrap();
             let id = TriggerId(trigger_registry.next_trigger_id);
@@ -240,7 +241,6 @@ impl Trap {
             let trigger_data = Arc::new(Trigger {
                 callback: Mutex::new(Box::new(callback)),
                 owner: Arc::downgrade(&self.trigger_registry),
-                handle: handle_to_trap.get_native_handle(),
                 trigger_id: id,
             });
             if trigger_registry.trigger_map.insert(id, trigger_data.clone()).is_some() {
@@ -257,8 +257,8 @@ impl Trap {
             condition,
             trigger_data_ptr as usize,
         ) {
-            MojoResult::Okay => Ok(id),
-            e => {
+            Ok(()) => Ok(id),
+            Err(e) => {
                 // If add_trigger fails, we must clean up the associated data.
                 let mut trigger_registry = self.trigger_registry.lock().unwrap();
                 // Take the Weak pointer from the raw pointer and drop it.
@@ -269,12 +269,12 @@ impl Trap {
         }
     }
 
-    pub fn remove_trigger(&mut self, trigger_id: TriggerId) -> Result<(), MojoResult> {
+    pub fn remove_trigger(&mut self, trigger_id: TriggerId) -> MojoResult<()> {
         todo!()
     }
 
     // Removes *all* triggers from this Trap.
-    pub fn clear_triggers(&mut self) -> Result<(), MojoResult> {
+    pub fn clear_triggers(&mut self) -> MojoResult<()> {
         todo!()
     }
 
@@ -300,11 +300,11 @@ impl Trap {
     // The handler must at least try to make progress on clearing blocking
     // events when this function is called. (Otherwise there is a risk of looping
     // forever on attempts to clear the blocking events.)
-    pub fn arm(&self, arming_policy: ArmingPolicyForBlockingEvents) -> Result<(), MojoResult> {
+    pub fn arm(&self, arming_policy: ArmingPolicyForBlockingEvents) -> MojoResult<()> {
         match arming_policy {
             ArmingPolicyForBlockingEvents::RearmUntilNoBlockingEvents => {
                 const MAX_BLOCKING_EVENTS: usize = 16;
-                let mut buf = [mem::MaybeUninit::uninit(); MAX_BLOCKING_EVENTS];
+                let mut buf = [const { mem::MaybeUninit::uninit() }; MAX_BLOCKING_EVENTS];
 
                 loop {
                     let blocking_events: &[RawTrapEvent] = match self.raw_trap.arm(Some(&mut buf)) {
@@ -345,7 +345,7 @@ impl Trap {
         // We want to grab an actual `Weak<Trigger>`. But
         // we must take care to maintain the weak count correctly. The C side
         // still holds a reference unless the event type is Cancelled.
-        let trigger_data: Weak<Trigger> = if raw_event.result() == MojoResult::Cancelled {
+        let trigger_data: Weak<Trigger> = if raw_event.result() == Err(MojoError::Cancelled) {
             // The C side effectively drops its reference and never calls
             // this again with `trigger_data_ptr`. So we take its reference,
             // later dropping it.
@@ -383,7 +383,7 @@ impl Trap {
         }
 
         // If the trigger was cancelled, remove it from our internal map.
-        if raw_event.result() == MojoResult::Cancelled {
+        if raw_event.result() == Err(MojoError::Cancelled) {
             let trigger_id = trigger_data.trigger_id;
             // Drop our `trigger_data` Arc *before* calling, so the assertions
             // in `remove_cancelled_trigger` are correct.
@@ -497,6 +497,5 @@ struct Trigger {
     callback: Mutex<Box<dyn FnMut(&TrapEvent) + Send + 'static>>,
     // Trigger points back to the TriggerRegistry that "owns" it.
     owner: Weak<Mutex<TriggerRegistry>>,
-    handle: types::MojoHandle,
     trigger_id: TriggerId,
 }

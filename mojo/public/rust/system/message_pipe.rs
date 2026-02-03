@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-use crate::mojo_types::{Handle, MojoResult, Trappable, UntypedHandle};
+use crate::mojo_types::{Handle, MojoResult, UntypedHandle};
 use mojo_ffi::types::{MojoHandle, MojoMessageHandle};
 use std::ffi::c_void;
 use std::ptr;
@@ -350,7 +350,8 @@ impl Handle for MessageEndpoint {
     }
 }
 
-impl Trappable for MessageEndpoint {}
+// FOR_RELEASE: Implement this once MessageEndpoint is migrated to the new FFI
+// impl Trappable for MessageEndpoint {}
 
 bitflags::bitflags! {
     #[derive(Clone, Copy, Default)]

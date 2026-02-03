@@ -31,10 +31,15 @@
 //! codes from the underlying API; consult the documentation of each function
 //! for information about what codes are possible.
 
-pub mod data_pipe;
+mod handles;
 mod internal_options;
-mod mojo_handles;
-mod mojo_result;
+mod result;
 
-pub use mojo_handles::*;
-pub use mojo_result::*;
+pub mod data_pipe;
+pub mod trap;
+
+// These types are so fundamental that everyone using this module will need
+// to use them in order to do anything at all, so we re-export them at the top
+// level.
+pub use handles::*;
+pub use result::*;

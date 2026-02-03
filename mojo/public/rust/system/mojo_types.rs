@@ -263,7 +263,7 @@ pub trait Handle: Sized {
 // This trait is only defined on Handles that are trappable.
 // FOR_RELEASE: We may want to refactor this as a "sealed" trait to better
 // control visibility. See https://predr.ag/blog/definitive-guide-to-sealed-traits-in-rust/
-pub trait Trappable: Handle {}
+// pub trait Trappable: Handle {}
 
 /// UntypedHandle is the basic handle that wraps a native MojoHandle. It is
 /// untyped in that there are no guarantees about what type of Mojo object it
@@ -374,3 +374,29 @@ pub use types::MojoTimeTicks;
 pub fn get_time_ticks_now() -> MojoTimeTicks {
     unsafe { mojo_ffi::MojoGetTimeTicksNow() }
 }
+
+// TODO(crbug.com/479878778): If the C API ever exposes the ability to check
+// a handle's type, we could do the check here and change this to `TryFrom`.
+/// Helper macro to declare strongly-typed wrappers around an UntypedHandle
+/// which are inter-convertible with it.
+macro_rules! declare_typed_handle {
+    ($name:ident) => {
+        pub struct $name {
+            handle: UntypedHandle,
+        }
+
+        impl From<UntypedHandle> for $name {
+            fn from(handle: UntypedHandle) -> Self {
+                Self { handle }
+            }
+        }
+
+        impl From<$name> for UntypedHandle {
+            fn from(typed_handle: $name) -> UntypedHandle {
+                typed_handle.handle
+            }
+        }
+    };
+}
+
+pub(crate) use declare_typed_handle;

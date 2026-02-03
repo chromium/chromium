@@ -160,7 +160,7 @@ impl MessagePipeWatcher {
 
         // Define when we trigger the trap (whenever we get a new message)
         let trigger_signals: HandleSignals = HandleSignals::NEW_DATA_READABLE;
-        let trigger_condition: TriggerCondition = TriggerCondition::SignalsSatisfied;
+        let trigger_condition: TriggerCondition = TriggerCondition::TriggerWhenSatisfied;
 
         let trap = Trap::new()?;
 

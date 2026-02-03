@@ -16,9 +16,9 @@ chromium::import! {
   "//mojo/public/rust/system:mojo_c_system_bindings" as raw_ffi;
 }
 
+use crate::handles::*;
 use crate::internal_options::declare_mojo_options;
-use crate::mojo_handles::*;
-use crate::mojo_result::*;
+use crate::result::*;
 
 // FOR_RELEASE: These functions take mutable references to enforce thread-safety
 // but I can't find the docs that said that was necessary, so either justify it

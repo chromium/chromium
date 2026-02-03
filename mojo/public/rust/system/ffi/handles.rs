@@ -37,7 +37,7 @@ chromium::import! {
   "//mojo/public/rust/system:mojo_c_system_bindings" as raw_ffi;
 }
 
-use crate::mojo_result::*;
+use crate::result::*;
 
 // It's unlikely, but if the underlying type for these handles ever changes
 // we'll need to change our representation to match.
