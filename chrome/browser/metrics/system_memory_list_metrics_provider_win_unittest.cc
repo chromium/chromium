@@ -8,8 +8,12 @@
 
 #include <ntstatus.h>
 
+#include "base/metrics/metrics_hashes.h"
+#include "base/profiler/metadata_recorder.h"
+#include "base/profiler/sample_metadata.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -192,4 +196,40 @@ TEST_F(WinSystemMemoryListMetricsProviderTest, SystemListCounterReset) {
   histogram_tester_.ExpectUniqueSample(kFreeListCountHistogramName, 0, 2);
   histogram_tester_.ExpectUniqueSample(kZeroListCountHistogramName, 0, 2);
   histogram_tester_.ExpectUniqueSample(kModifiedListCountHistogramName, 0, 2);
+}
+
+TEST_F(WinSystemMemoryListMetricsProviderTest, SampleMetadataSetDuringRuns) {
+  base::MetadataRecorder::ItemArray items;
+  size_t initial_item_count =
+      base::MetadataRecorder::MetadataProvider(
+          base::GetSampleMetadataRecorder(), base::PlatformThread::CurrentId())
+          .GetItems(&items);
+
+  auto success_closure =
+      [](SYSTEM_MEMORY_LIST_INFORMATION& memory_list_info) -> NTSTATUS {
+    memory_list_info = SYSTEM_MEMORY_LIST_INFORMATION{0};
+    return STATUS_SUCCESS;
+  };
+  EXPECT_CALL(getter_, Get(testing::_))
+      .WillOnce(success_closure)
+      .WillOnce(
+          [&](SYSTEM_MEMORY_LIST_INFORMATION& memory_list_info) -> NTSTATUS {
+            EXPECT_EQ(initial_item_count + 1,
+                      base::MetadataRecorder::MetadataProvider(
+                          base::GetSampleMetadataRecorder(),
+                          base::PlatformThread::CurrentId())
+                          .GetItems(&items));
+            EXPECT_EQ(base::HashMetricName("WindowsZeroPageCount"),
+                      items[initial_item_count].name_hash);
+            EXPECT_FALSE(items[initial_item_count].key.has_value());
+            EXPECT_EQ(0, items[initial_item_count].value);
+            run_loop_.Quit();
+            return STATUS_ACCESS_DENIED;
+          });
+
+  TestSystemMemoryListMetricsProvider sampler(base::Milliseconds(100),
+                                              base::Milliseconds(50), getter_);
+
+  sampler.OnRecordingEnabled();
+  run_loop_.Run();
 }
