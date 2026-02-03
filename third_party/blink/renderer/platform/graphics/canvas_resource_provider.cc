@@ -1267,7 +1267,7 @@ std::unique_ptr<T> CanvasResourceProvider::CreateSharedImageProviderBase(
 }
 
 std::unique_ptr<CanvasNon2DResourceProviderSharedImage>
-CanvasResourceProvider::CreateWebGPUImageProvider(
+CanvasNon2DResourceProviderSharedImage::CreateForWebGPU(
     gfx::Size size,
     viz::SharedImageFormat format,
     SkAlphaType alpha_type,

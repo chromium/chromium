@@ -217,10 +217,11 @@ GPUCanvasContext::GetOrCreateCanvasResourceProvider() {
       if (SharedGpuContext::IsGpuCompositingEnabled()) {
         // This code path could be used for compositing so add the necessary
         // shared image usage flags.
-        resource_provider_ = CanvasResourceProvider::CreateWebGPUImageProvider(
-            Host()->Size(), GetSharedImageFormat(), GetAlphaType(),
-            GetColorSpace(), swap_buffers_->GetSharedImageUsagesForDisplay(),
-            Host());
+        resource_provider_ =
+            CanvasNon2DResourceProviderSharedImage::CreateForWebGPU(
+                Host()->Size(), GetSharedImageFormat(), GetAlphaType(),
+                GetColorSpace(),
+                swap_buffers_->GetSharedImageUsagesForDisplay(), Host());
       }
       Host()->UpdateMemoryUsage();
       provider = resource_provider_.get();
@@ -1027,9 +1028,10 @@ scoped_refptr<StaticBitmapImage> GPUCanvasContext::SnapshotInternal(
   // These paths are usually related to either printing or either video and
   // usually related to OffscreenCanvas; in cases where the image created from
   // this Snapshot will be sent eventually to the Display Compositor.
-  auto resource_provider = CanvasResourceProvider::CreateWebGPUImageProvider(
-      size, GetSharedImageFormat(), GetAlphaType(), GetColorSpace(),
-      swap_buffers_->GetSharedImageUsagesForDisplay());
+  auto resource_provider =
+      CanvasNon2DResourceProviderSharedImage::CreateForWebGPU(
+          size, GetSharedImageFormat(), GetAlphaType(), GetColorSpace(),
+          swap_buffers_->GetSharedImageUsagesForDisplay());
   if (!resource_provider)
     return nullptr;
 
