@@ -162,6 +162,17 @@ class ChromeWebStoreInIsolatedOriginTest : public ChromeWebStoreProcessTest {
   }
 };
 
+size_t CurrentRendererProcessCount() {
+  size_t count = 0;
+  for (auto iter = content::RenderProcessHost::AllHostsIterator();
+       !iter.IsAtEnd(); iter.Advance()) {
+    if (iter.GetCurrentValue()->IsInitializedAndNotDead()) {
+      count++;
+    }
+  }
+  return count;
+}
+
 }  // namespace
 
 // Ensure that hosted apps, extensions, normal web sites, and WebUI never share
@@ -292,9 +303,13 @@ IN_PROC_BROWSER_TEST_F(ProcessManagementTest, ProcessOverflow) {
 // Test that pushing both extensions and web processes past the limit creates
 // the expected number of processes.
 //
-// Sets the process limit to 3, with 1 expected extension process when sharing
-// is allowed between extensions. The test then creates 3 separate extensions,
-// 3 same-site web pages, and 1 cross-site web page.
+// Sets the process limit to 3 + any renderer processes besides the initial tab
+// (i.e. WebUI pages on startup). Any baseline processes will not count in
+// extension and web process overflow.
+//
+// There is 1 expected extension process when sharing is allowed between
+// extensions. The test then creates 3 separate extensions, 3 same-site web
+// pages, and 1 cross-site web page.
 //
 // With extension process sharing, there should be 1 process for all extensions,
 // 2 processes for the same-site pages, and an extra process for the cross-site
@@ -305,9 +320,13 @@ IN_PROC_BROWSER_TEST_F(ProcessManagementTest, ProcessOverflow) {
 // the extensions, so there are 2 web processes for the same-site pages, and an
 // extra process for the cross-site page due to Site Isolation.
 IN_PROC_BROWSER_TEST_F(ProcessManagementTest, ExtensionAndWebProcessOverflow) {
-  // Set max renderers to 3, to expect a single extension process when sharing
-  // is allowed.
-  content::RenderProcessHost::SetMaxRendererProcessCount(3);
+  // Set baseline process for any renderers that might spawn in addition to the
+  // initial tab. We subtract 1 for the initial tab, which is reused by the
+  // test.
+  size_t baseline = CurrentRendererProcessCount() - 1;
+  // Set max renderers to 3 + overhead, to expect a single extension process
+  // when sharing is allowed.
+  content::RenderProcessHost::SetMaxRendererProcessCount(3 + baseline);
 
   ASSERT_TRUE(embedded_test_server()->Start());
 
