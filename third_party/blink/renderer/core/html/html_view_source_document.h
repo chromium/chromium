@@ -68,7 +68,7 @@ class CORE_EXPORT HTMLViewSourceDocument final : public HTMLDocument {
   Element* AddSpanWithClassName(const AtomicString&);
   void AddLine();
   void FinishLine();
-  void AddText(const String& text,
+  void AddText(const StringView& text,
                const AtomicString& class_name,
                const Link* link = nullptr);
   int AddRange(const String& source,

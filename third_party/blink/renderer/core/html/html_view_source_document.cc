@@ -332,7 +332,7 @@ void HTMLViewSourceDocument::FinishLine() {
   current_ = tbody_;
 }
 
-void HTMLViewSourceDocument::AddText(const String& text,
+void HTMLViewSourceDocument::AddText(const StringView& text,
                                      const AtomicString& class_name,
                                      const Link* link) {
   if (text.empty())
@@ -340,32 +340,32 @@ void HTMLViewSourceDocument::AddText(const String& text,
 
   // Add in the content, splitting on linebreaks.
   // \r and \n both count as linebreaks, but \r\n only counts as one linebreak.
-  Vector<String> lines;
+  Vector<StringView> lines;
   {
     unsigned start_pos = 0;
     unsigned pos = 0;
     while (pos < text.length()) {
       if (text[pos] == '\r') {
-        lines.push_back(text.Substring(start_pos, pos - start_pos));
+        lines.push_back(text.substr(start_pos, pos - start_pos));
         pos++;
         if (pos < text.length() && text[pos] == '\n') {
           pos++;  // \r\n counts as a single line break.
         }
         start_pos = pos;
       } else if (text[pos] == '\n') {
-        lines.push_back(text.Substring(start_pos, pos - start_pos));
+        lines.push_back(text.substr(start_pos, pos - start_pos));
         pos++;
         start_pos = pos;
       } else {
         pos++;
       }
     }
-    lines.push_back(text.Substring(start_pos, text.length() - start_pos));
+    lines.push_back(text.substr(start_pos, text.length() - start_pos));
   }
 
   unsigned size = lines.size();
   for (unsigned i = 0; i < size; i++) {
-    String substring = lines[i];
+    const StringView& substring = lines[i];
     if (current_ == tbody_) {
       AddLine();
     }
@@ -375,7 +375,7 @@ void HTMLViewSourceDocument::AddText(const String& text,
       } else if (!class_name.empty()) {
         current_ = AddSpanWithClassName(class_name);
       }
-      current_->ParserAppendChild(Text::Create(*this, substring));
+      current_->ParserAppendChild(Text::Create(*this, substring.ToString()));
     }
     if (i < size - 1)
       FinishLine();
@@ -433,17 +433,14 @@ Element* HTMLViewSourceDocument::AddLink(const Link& link) {
 int HTMLViewSourceDocument::AddSrcset(const String& source,
                                       int start,
                                       int end) {
-  String srcset = source.Substring(start, end - start);
-  Vector<String> srclist;
-  srcset.Split(',', true, srclist);
+  StringView srcset = StringView(source).substr(start, end - start);
+  Vector<StringView> srclist = srcset.Split(',');
   unsigned size = srclist.size();
   Element* container = current_;
-  for (unsigned i = 0; i < size; i++) {
-    Vector<String> tmp;
-    srclist[i].Split(' ', tmp);
+  for (unsigned i = 0; i < size; ++i) {
+    Vector<StringView> tmp = srclist[i].SplitSkippingEmpty(' ');
     if (tmp.size() > 0) {
-      AtomicString url(tmp[0]);
-      Link link{false, url};
+      Link link{false, tmp[0].ToAtomicString()};
       AddText(srclist[i], class_attribute_value_, &link);
       current_ = container;
       if (i + 1 < size) {
