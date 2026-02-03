@@ -29,6 +29,7 @@
 // https://docs.google.com/document/d/1xaoF9iSOojrlPrHZaKIJMK4iRZKA3AD6pQvbSy4ueUQ/edit?tab=t.0#bookmark=id.j15h26m9sd4
 static const size_t kMaxMatches = 2;
 static const int64_t kMatchWindowSeconds = 1 * base::Time::kSecondsPerHour;
+static constexpr base::TimeDelta kUserGestureTimeout = base::Minutes(10);
 
 namespace network {
 
@@ -55,7 +56,7 @@ class SharedResourceChecker::PatternEntry {
     if (!url_pattern_ || !url_pattern_->Match(url)) {
       return false;
     }
-    base::Time now = base::Time::Now();
+    base::TimeTicks now = base::TimeTicks::Now();
 
     // See if it matches an existing URL
     for (auto& entry : url_matches_) {
@@ -82,7 +83,7 @@ class SharedResourceChecker::PatternEntry {
  private:
   struct UrlMatch {
     GURL url;
-    base::Time last_used;
+    base::TimeTicks last_used;
   };
   std::list<UrlMatch> url_matches_;
   std::unique_ptr<url_pattern::SimpleUrlPatternMatcher> url_pattern_;
@@ -106,12 +107,13 @@ void SharedResourceChecker::LoadPervasivePatterns(
   loaded_ = true;
   patterns_.clear();
 
-  if (!base::Time::FromUTCExploded(expiration, &patterns_expiration_)) {
+  base::Time patterns_expiration;
+  if (!base::Time::FromUTCExploded(expiration, &patterns_expiration)) {
     return;
   }
 
   base::Time now = base::Time::Now();
-  if (now > patterns_expiration_) {
+  if (now > patterns_expiration) {
     return;
   }
 
@@ -169,6 +171,11 @@ bool SharedResourceChecker::IsSharedResource(
     return false;
   }
 
+  // Keep track of the last time each document origin had a request with a
+  // user gesture or a top-level navigation.
+  bool had_gesture_or_navigation =
+      UpdateGestureAndNavigationTracking(request, top_frame_origin);
+
   // Make sure there are no cache-impacting load flags set.
   if (request.load_flags &
       (net::LOAD_VALIDATE_CACHE | net::LOAD_BYPASS_CACHE |
@@ -186,6 +193,13 @@ bool SharedResourceChecker::IsSharedResource(
 
   // Do not support URLs with query parameters.
   if (request.url.has_query()) {
+    return false;
+  }
+
+  // Do not allow requests where the top-level document origin hasn't had
+  // a recent request from a user gesture or a main document navigation.
+  if (!had_gesture_or_navigation &&
+      !HadRecentGestureOrNavigation(top_frame_origin)) {
     return false;
   }
 
@@ -216,6 +230,45 @@ bool SharedResourceChecker::IsSharedResource(
     }
   }
 
+  return false;
+}
+
+bool SharedResourceChecker::UpdateGestureAndNavigationTracking(
+    const ResourceRequest& request,
+    const std::optional<url::Origin>& top_frame_origin) {
+  // Clear the tracking map any time it has been more than the user gesture
+  // timeout. This is more efficient than pruning individual expired values.
+  base::TimeTicks now = base::TimeTicks::Now();
+  if (!last_gesture_or_navigation_.is_null() &&
+      now - last_gesture_or_navigation_ > kUserGestureTimeout) {
+    last_document_gesture_or_navigation_.clear();
+  }
+
+  if (top_frame_origin &&
+      (request.has_user_gesture ||
+       (request.is_outermost_main_frame &&
+        request.destination == mojom::RequestDestination::kDocument))) {
+    last_gesture_or_navigation_ = now;
+    last_document_gesture_or_navigation_[*top_frame_origin] = now;
+    return true;
+  }
+
+  return false;
+}
+
+bool SharedResourceChecker::HadRecentGestureOrNavigation(
+    const std::optional<url::Origin>& top_frame_origin) const {
+  if (!top_frame_origin) {
+    return false;
+  }
+  auto it = last_document_gesture_or_navigation_.find(*top_frame_origin);
+  if (it == last_document_gesture_or_navigation_.end()) {
+    return false;
+  }
+  base::TimeTicks now = base::TimeTicks::Now();
+  if (now - it->second <= kUserGestureTimeout) {
+    return true;
+  }
   return false;
 }
 

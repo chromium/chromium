@@ -3520,7 +3520,7 @@ int HttpCache::Transaction::WriteResponseInfoToEntry(
     if (ComputeUnusablePerCachingHeaders()) {
       in_memory_data |= HINT_UNUSABLE_PER_CACHING_HEADERS;
     }
-    if (request_->is_main_frame_navigation) {
+    if (request_->is_main_frame_navigation || request_->is_shared_resource) {
       in_memory_data |= HINT_HIGH_PRIORITY;
     }
     entry_->GetEntry()->SetEntryInMemoryData(in_memory_data);
@@ -4103,6 +4103,11 @@ bool HttpCache::Transaction::UpdateAndReportCacheability(
     if (base::FeatureList::IsEnabled(features::kAvoidEntryCreationForNoStore)) {
       cache_->MarkKeyNoStore(cache_key_);
     }
+    return true;
+  }
+  // Do not cache pervasive responses that are not public.
+  if (request_->is_shared_resource &&
+      !headers.HasHeaderValue("cache-control", "public")) {
     return true;
   }
 

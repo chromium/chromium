@@ -106,6 +106,7 @@ struct MockTransaction {
   // Value returned by MockNetworkTransaction::Read (potentially
   // asynchronously if |!(test_mode & TEST_MODE_SYNC_NET_START)|.)
   Error read_return_code;
+  bool is_shared_resource = false;
 };
 
 extern const MockTransaction kSimpleGET_Transaction;

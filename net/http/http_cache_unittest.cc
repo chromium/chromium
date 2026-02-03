@@ -15124,4 +15124,82 @@ TEST_F(HttpCacheTest, EncryptionDelegateInitFailure) {
   base::RunLoop().RunUntilIdle();
 }
 
+TEST_F(HttpCacheTest, SharedResourceCacheControlPublic) {
+  MockHttpCache cache;
+
+  ScopedMockTransaction transaction(kSimpleGET_Transaction);
+  transaction.is_shared_resource = true;
+  transaction.response_headers = "cache-control: public, max-age=31536000\n";
+
+  // initial load
+  RunTransactionTest(cache.http_cache(), transaction);
+
+  EXPECT_EQ(1, cache.network_layer()->transaction_count());
+  EXPECT_EQ(0, cache.disk_cache()->open_count());
+  EXPECT_EQ(1, cache.disk_cache()->create_count());
+
+  // try loading again; it should not result in a network fetch
+  RunTransactionTest(cache.http_cache(), transaction);
+
+  EXPECT_EQ(1, cache.network_layer()->transaction_count());
+  EXPECT_EQ(1, cache.disk_cache()->open_count());
+  EXPECT_EQ(1, cache.disk_cache()->create_count());
+
+  disk_cache::Entry* entry;
+  MockHttpRequest request(transaction);
+  EXPECT_TRUE(cache.OpenBackendEntry(request.CacheKey(), &entry));
+  disk_cache::ScopedEntryPtr closer(entry);
+}
+
+TEST_F(HttpCacheTest, SharedResourceNotCacheControlPublic) {
+  MockHttpCache cache;
+
+  ScopedMockTransaction transaction(kSimpleGET_Transaction);
+  transaction.is_shared_resource = true;
+  transaction.response_headers = "cache-control: private, max-age=31536000\n";
+
+  // initial load
+  RunTransactionTest(cache.http_cache(), transaction);
+
+  EXPECT_EQ(1, cache.network_layer()->transaction_count());
+  EXPECT_EQ(0, cache.disk_cache()->open_count());
+  EXPECT_EQ(1, cache.disk_cache()->create_count());
+
+  // try loading again; it should result in a network fetch
+  RunTransactionTest(cache.http_cache(), transaction);
+
+  EXPECT_EQ(2, cache.network_layer()->transaction_count());
+  EXPECT_EQ(0, cache.disk_cache()->open_count());
+  EXPECT_EQ(2, cache.disk_cache()->create_count());
+
+  disk_cache::Entry* entry;
+  MockHttpRequest request(transaction);
+  EXPECT_FALSE(cache.OpenBackendEntry(request.CacheKey(), &entry));
+}
+
+TEST_F(HttpCacheTest, SharedResourceNoCacheControl) {
+  MockHttpCache cache;
+
+  ScopedMockTransaction transaction(kSimpleGET_Transaction);
+  transaction.is_shared_resource = true;
+
+  // initial load
+  RunTransactionTest(cache.http_cache(), transaction);
+
+  EXPECT_EQ(1, cache.network_layer()->transaction_count());
+  EXPECT_EQ(0, cache.disk_cache()->open_count());
+  EXPECT_EQ(1, cache.disk_cache()->create_count());
+
+  // try loading again; it should result in a network fetch
+  RunTransactionTest(cache.http_cache(), transaction);
+
+  EXPECT_EQ(2, cache.network_layer()->transaction_count());
+  EXPECT_EQ(0, cache.disk_cache()->open_count());
+  EXPECT_EQ(2, cache.disk_cache()->create_count());
+
+  disk_cache::Entry* entry;
+  MockHttpRequest request(transaction);
+  EXPECT_FALSE(cache.OpenBackendEntry(request.CacheKey(), &entry));
+}
+
 }  // namespace net

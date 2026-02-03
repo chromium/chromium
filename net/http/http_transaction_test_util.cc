@@ -246,6 +246,7 @@ MockHttpRequest::MockHttpRequest(const MockTransaction& t) {
   frame_origin = url::Origin::Create(url);
   fps_cache_filter = t.fps_cache_filter;
   browser_run_id = t.browser_run_id;
+  is_shared_resource = t.is_shared_resource;
 }
 
 std::string MockHttpRequest::CacheKey() {

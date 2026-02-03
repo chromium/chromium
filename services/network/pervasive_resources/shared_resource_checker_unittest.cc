@@ -57,11 +57,13 @@ class MockCookieSettings : public content_settings::CookieSettingsBase {
   bool block_all_ = false;
 };
 
-static ResourceRequest CreateResourceRequest(const char* url) {
+static ResourceRequest CreateResourceRequest(const char* url,
+                                             bool has_user_gesture = true) {
   ResourceRequest request;
   request.url = GURL(url);
   request.destination = mojom::RequestDestination::kScript;
   request.site_for_cookies = net::SiteForCookies::FromUrl(request.url);
+  request.has_user_gesture = has_user_gesture;
   return request;
 }
 
@@ -313,6 +315,35 @@ TEST_P(SharedResourceCheckerTest, ListExpired) {
   base::Time::Exploded invalid;
   LoadPervasivePatterns(invalid);
   EXPECT_FALSE(shared_resource_checker()->IsSharedResource(request, origin,
+                                                           std::nullopt));
+}
+
+TEST_P(SharedResourceCheckerTest, NoUserGesture) {
+  ResourceRequest request = CreateResourceRequest(kPatternMatches[0], false);
+  std::optional<url::Origin> origin = url::Origin::Create(request.url);
+  EXPECT_FALSE(shared_resource_checker()->IsSharedResource(request, origin,
+                                                           std::nullopt));
+}
+
+TEST_P(SharedResourceCheckerTest, UserGestureExpired) {
+  if (!enabled()) {
+    return;
+  }
+  base::test::TaskEnvironment task_environment(
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+  ResourceRequest request = CreateResourceRequest(kPatternMatches[0]);
+  std::optional<url::Origin> origin = url::Origin::Create(request.url);
+  EXPECT_TRUE(shared_resource_checker()->IsSharedResource(request, origin,
+                                                          std::nullopt));
+  ResourceRequest request2 = CreateResourceRequest(kPatternMatches[1], false);
+  EXPECT_TRUE(shared_resource_checker()->IsSharedResource(request2, origin,
+                                                          std::nullopt));
+  task_environment.AdvanceClock(base::Minutes(9));
+  EXPECT_TRUE(shared_resource_checker()->IsSharedResource(request2, origin,
+                                                          std::nullopt));
+  // User interaction times out at 10 minutes
+  task_environment.AdvanceClock(base::Minutes(2));
+  EXPECT_FALSE(shared_resource_checker()->IsSharedResource(request2, origin,
                                                            std::nullopt));
 }
 

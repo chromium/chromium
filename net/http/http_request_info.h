@@ -140,7 +140,7 @@ struct NET_EXPORT HttpRequestInfo {
   // connection was closed, or when the connection could not be established).
   std::optional<ConnectionManagementConfig> connection_management_config;
 
-  // True if the page is allowed to access cookies for the request.
+  // True if the request is for a pervasive, shared third-party resource.
   bool is_shared_resource = false;
 };
 

@@ -6,7 +6,6 @@
 #define SERVICES_NETWORK_PERVASIVE_RESOURCES_SHARED_RESOURCE_CHECKER_H_
 
 #include <list>
-#include <map>
 #include <string>
 
 #include "base/component_export.h"
@@ -14,6 +13,7 @@
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
 #include "net/cookies/cookie_partition_key.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "url/origin.h"
 
 namespace content_settings {
@@ -62,6 +62,20 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedResourceChecker {
                              size_t compressed_patterns_size,
                              const base::Time::Exploded& expiration);
 
+  // Keep track of the last time each top-level document origin had a request
+  // that had an associated user gesture or a main document navigation
+  // (and prune stale entries from the tracking map). Returns true if the
+  // origin updated the timestamp so the origin won't need to be checked
+  // again for this request.
+  bool UpdateGestureAndNavigationTracking(
+      const ResourceRequest& request,
+      const std::optional<url::Origin>& top_frame_origin);
+
+  // Check if the provided origin has had a request with an associated user
+  // gesture or a main document navigation within the timeout window.
+  bool HadRecentGestureOrNavigation(
+      const std::optional<url::Origin>& top_frame_origin) const;
+
   const raw_ref<const content_settings::CookieSettingsBase> cookie_settings_;
   bool enabled_ = false;
   bool loaded_ = false;
@@ -69,14 +83,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedResourceChecker {
   // Processed URLPatterns for matching URLs for shared static resource.
   // The patterns are stored in lists, indexed by origin.
   typedef std::list<std::unique_ptr<PatternEntry>> UrlPatternList;
-  std::map<url::Origin, std::unique_ptr<UrlPatternList>> patterns_;
-  base::Time patterns_expiration_;
+  absl::flat_hash_map<url::Origin, std::unique_ptr<UrlPatternList>> patterns_;
 
-  // Static list of unprocessed URL patterns
-  static const char raw_patterns_[];
-
-  // Expiration date for the pervasive pattern list
-  static const base::Time::Exploded raw_patterns_expiration_;
+  // Keep track of the last time each top-level site had a request triggered
+  // by user gesture or document navigation (to prevent background attacks at
+  // sniffing the single-keyed cache).
+  base::TimeTicks last_gesture_or_navigation_;
+  absl::flat_hash_map<url::Origin, base::TimeTicks>
+      last_document_gesture_or_navigation_;
 };
 
 }  // namespace network
