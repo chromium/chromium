@@ -8,8 +8,11 @@ import static org.chromium.chrome.browser.autofill.editors.common.field.FieldPro
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.FOCUSED;
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.VALIDATOR;
 
+import android.app.Activity;
+
 import androidx.annotation.IntDef;
 
+import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.EditorItem;
 import org.chromium.ui.modelutil.ListModel;
@@ -42,6 +45,9 @@ public class EditorProperties {
     public static final WritableObjectPropertyKey<ListModel<EditorItem>> EDITOR_FIELDS =
             new WritableObjectPropertyKey<>("editor_fields");
 
+    public static final ReadableObjectPropertyKey<Callback<Activity>> OPEN_HELP_CALLBACK =
+            new ReadableObjectPropertyKey<>("open_help_callback");
+
     public static final ReadableObjectPropertyKey<Runnable> DONE_RUNNABLE =
             new ReadableObjectPropertyKey<>("done_callback");
     public static final ReadableObjectPropertyKey<Runnable> CANCEL_RUNNABLE =
@@ -68,6 +74,7 @@ public class EditorProperties {
         DELETE_CONFIRMATION_TEXT,
         DELETE_CONFIRMATION_PRIMARY_BUTTON_TEXT_ID,
         EDITOR_FIELDS,
+        OPEN_HELP_CALLBACK,
         DONE_RUNNABLE,
         CANCEL_RUNNABLE,
         ALLOW_DELETE,

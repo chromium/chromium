@@ -40,6 +40,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.editors.address.EditorDialogView;
 import org.chromium.chrome.browser.autofill.editors.common.EditorObserverForTest;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.payments.ShippingStrings;
 import org.chromium.chrome.browser.payments.ui.PaymentRequestSection.LineItemBreakdownSection;
@@ -423,7 +424,15 @@ public class PaymentRequestUi
                 (ViewGroup) LayoutInflater.from(mContext).inflate(R.layout.payment_request, null);
         prepareRequestView(mContext, title, origin, securityLevel, profile);
 
-        mEditorDialog = new EditorDialogView(activity, profile);
+        mEditorDialog = new EditorDialogView(activity);
+        mEditorDialog.setOpenHelpCallback(
+                (editorActivity) -> {
+                    HelpAndFeedbackLauncherFactory.getForProfile(mProfile)
+                            .show(
+                                    editorActivity,
+                                    editorActivity.getString(R.string.help_context_autofill),
+                                    null);
+                });
         DimmingDialog.setVisibleStatusBarIconColor(assumeNonNull(mEditorDialog.getWindow()));
 
         mDialog = new DimmingDialog(activity, this);

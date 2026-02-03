@@ -20,6 +20,7 @@ import static org.chromium.chrome.browser.autofill.editors.address.EditorPropert
 import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.ItemType.NON_EDITABLE_TEXT;
 import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.ItemType.NOTICE;
 import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.ItemType.TEXT_INPUT;
+import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.OPEN_HELP_CALLBACK;
 import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.SHOW_BUTTONS;
 import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.VALIDATE_ON_SHOW;
 import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.VISIBLE;
@@ -44,6 +45,7 @@ import static org.chromium.chrome.browser.autofill.editors.common.text_field.Tex
 import static org.chromium.chrome.browser.autofill.editors.common.text_field.TextFieldProperties.TEXT_FIELD_TYPE;
 import static org.chromium.chrome.browser.autofill.editors.common.text_field.TextFieldProperties.TEXT_FORMATTER;
 
+import android.app.Activity;
 import android.content.Context;
 import android.text.TextUtils;
 import android.text.style.ClickableSpan;
@@ -65,6 +67,8 @@ import org.chromium.chrome.browser.autofill.editors.address.AddressEditorCoordin
 import org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties;
 import org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.EditorItem;
 import org.chromium.chrome.browser.autofill.editors.common.field.EditorFieldValidator;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.AutofillAddressEditorUiInfo;
 import org.chromium.components.autofill.AutofillAddressUiComponent;
 import org.chromium.components.autofill.AutofillProfile;
@@ -95,6 +99,7 @@ class AddressEditorMediator {
             new PhoneNumberUtil.CountryAwareFormatTextWatcher();
     private final AutofillProfileBridge mAutofillProfileBridge = new AutofillProfileBridge();
     private final Context mContext;
+    private final Profile mProfile;
     private final Delegate mDelegate;
     private final IdentityManager mIdentityManager;
     private final @Nullable SyncService mSyncService;
@@ -129,6 +134,7 @@ class AddressEditorMediator {
 
     AddressEditorMediator(
             Context context,
+            Profile profile,
             Delegate delegate,
             IdentityManager identityManager,
             @Nullable SyncService syncService,
@@ -137,6 +143,7 @@ class AddressEditorMediator {
             @SaveUpdateAddressProfilePromptMode int promptMode,
             boolean saveToDisk) {
         mContext = context;
+        mProfile = profile;
         mDelegate = delegate;
         mIdentityManager = identityManager;
         mSyncService = syncService;
@@ -221,6 +228,7 @@ class AddressEditorMediator {
                                 DELETE_CONFIRMATION_PRIMARY_BUTTON_TEXT_ID,
                                 getDeleteConfirmationPrimaryButtonText())
                         .with(EDITOR_FIELDS, setEditorFields())
+                        .with(OPEN_HELP_CALLBACK, this::onOpenHelpAndFeedback)
                         .with(DONE_RUNNABLE, this::onCommitChanges)
                         // If the user clicks [Cancel], send `toEdit` address back to the caller,
                         // which was the original state (could be null, a complete address, a
@@ -423,6 +431,11 @@ class AddressEditorMediator {
                                     .build(),
                             /* isFullLine= */ true));
         }
+    }
+
+    private void onOpenHelpAndFeedback(Activity activity) {
+        HelpAndFeedbackLauncherFactory.getForProfile(mProfile)
+                .show(activity, activity.getString(R.string.help_context_autofill), null);
     }
 
     private void onCommitChanges() {

@@ -14,6 +14,7 @@ import static org.chromium.chrome.browser.autofill.editors.address.EditorPropert
 import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.DONE_RUNNABLE;
 import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.EDITOR_FIELDS;
 import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.EDITOR_TITLE;
+import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.OPEN_HELP_CALLBACK;
 import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.SHOW_BUTTONS;
 import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.VALIDATE_ON_SHOW;
 import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.VISIBLE;
@@ -48,6 +49,8 @@ public class EditorDialogViewBinder {
         } else if (propertyKey == DELETE_CONFIRMATION_PRIMARY_BUTTON_TEXT_ID) {
             view.setDeleteConfirmationPrimaryButtonText(
                     model.get(DELETE_CONFIRMATION_PRIMARY_BUTTON_TEXT_ID));
+        } else if (propertyKey == OPEN_HELP_CALLBACK) {
+            view.setOpenHelpCallback(model.get(OPEN_HELP_CALLBACK));
         } else if (propertyKey == EDITOR_FIELDS) {
             view.setEditorFields(model.get(EDITOR_FIELDS));
         } else if (propertyKey == DONE_RUNNABLE) {

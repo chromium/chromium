@@ -41,6 +41,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.view.MarginLayoutParamsCompat;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
@@ -55,9 +56,7 @@ import org.chromium.chrome.browser.autofill.editors.common.dropdown_field.Dropdo
 import org.chromium.chrome.browser.autofill.editors.common.field.FieldView;
 import org.chromium.chrome.browser.autofill.editors.common.text_field.TextFieldView;
 import org.chromium.chrome.browser.autofill.editors.common.text_field.TextFieldViewBinder;
-import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
@@ -99,7 +98,6 @@ public class EditorDialogView extends AlwaysDismissedDialog
 
     private final Activity mActivity;
     private final Context mContext;
-    private final Profile mProfile;
     private final Handler mHandler;
     private final int mHalfRowMargin;
     private final List<FieldView> mFieldViews;
@@ -125,6 +123,8 @@ public class EditorDialogView extends AlwaysDismissedDialog
     private @Nullable CharSequence mDeleteConfirmationText;
     private @StringRes int mDeleteConfirmationPrimaryButtonText;
 
+    private @Nullable Callback<Activity> mOpenHelpCallback;
+
     private @Nullable Runnable mDeleteRunnable;
     private @Nullable Runnable mDoneRunnable;
     private @Nullable Runnable mCancelRunnable;
@@ -144,9 +144,8 @@ public class EditorDialogView extends AlwaysDismissedDialog
      * Builds the editor dialog.
      *
      * @param activity The activity on top of which the UI should be displayed.
-     * @param profile The Profile being edited.
      */
-    public EditorDialogView(Activity activity, Profile profile) {
+    public EditorDialogView(Activity activity) {
         super(
                 activity,
                 R.style.ThemeOverlay_BrowserUI_Fullscreen,
@@ -162,7 +161,6 @@ public class EditorDialogView extends AlwaysDismissedDialog
         } else {
             mContext = activity;
         }
-        mProfile = profile;
         mHandler = new Handler();
         mIsDismissed = false;
 
@@ -223,6 +221,10 @@ public class EditorDialogView extends AlwaysDismissedDialog
     public void setAllowDelete(boolean allowDelete) {
         EditorDialogToolbar toolbar = mContainerView.findViewById(R.id.action_bar);
         toolbar.setShowDeleteMenuItem(allowDelete);
+    }
+
+    public void setOpenHelpCallback(@Nullable Callback<Activity> openHelpCallback) {
+        mOpenHelpCallback = openHelpCallback;
     }
 
     public void setDeleteRunnable(Runnable deleteRunnable) {
@@ -315,11 +317,7 @@ public class EditorDialogView extends AlwaysDismissedDialog
                             handleDelete();
                         }
                     } else if (item.getItemId() == R.id.help_menu_id) {
-                        HelpAndFeedbackLauncherFactory.getForProfile(mProfile)
-                                .show(
-                                        mActivity,
-                                        mActivity.getString(R.string.help_context_autofill),
-                                        null);
+                        assumeNonNull(mOpenHelpCallback).onResult(mActivity);
                     }
                     return true;
                 });

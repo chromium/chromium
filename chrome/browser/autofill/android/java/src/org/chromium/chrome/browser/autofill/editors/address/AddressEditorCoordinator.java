@@ -96,6 +96,7 @@ public class AddressEditorCoordinator {
         mMediator =
                 new AddressEditorMediator(
                         activity,
+                        profile,
                         delegate,
                         assumeNonNull(IdentityServicesProvider.get().getIdentityManager(profile)),
                         SyncServiceFactory.getForProfile(profile),
@@ -103,7 +104,7 @@ public class AddressEditorCoordinator {
                         addressToEdit,
                         promptMode,
                         saveToDisk);
-        mEditorDialog = new EditorDialogView(activity, profile);
+        mEditorDialog = new EditorDialogView(activity);
         mEditorDialog.setProfileRecordTypeSuffix(mMediator.getProfileRecordTypeSuffix());
     }
 
