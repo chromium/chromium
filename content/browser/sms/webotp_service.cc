@@ -29,12 +29,12 @@
 #include "third_party/blink/public/common/sms/webotp_constants.h"
 #include "third_party/blink/public/mojom/sms/webotp_service.mojom-shared.h"
 
-using blink::mojom::SmsStatus;
-using Outcome = blink::WebOTPServiceOutcome;
-
 namespace content {
 
 namespace {
+
+using blink::mojom::SmsStatus;
+using Outcome = blink::WebOTPServiceOutcome;
 
 // Only |kMaxUniqueOriginInAncestorChainForWebOTP| unique origins in the chain
 // is considered valid. In addition, the unique origins must be consecutive.
@@ -48,15 +48,13 @@ namespace {
 // A.com -> B.com -> C.com (calls WebOTP API)
 bool ValidateAndCollectUniqueOrigins(RenderFrameHost& rfh,
                                      WebOTPService::OriginList& origin_list) {
-  url::Origin current_origin = rfh.GetLastCommittedOrigin();
-  origin_list.push_back(current_origin);
+  origin_list.emplace_back(rfh.GetLastCommittedOrigin());
 
   RenderFrameHost* parent = rfh.GetParent();
   while (parent) {
-    url::Origin parent_origin = parent->GetLastCommittedOrigin();
-    if (!parent_origin.IsSameOriginWith(current_origin)) {
-      origin_list.push_back(parent_origin);
-      current_origin = parent_origin;
+    const url::Origin& parent_origin = parent->GetLastCommittedOrigin();
+    if (!parent_origin.IsSameOriginWith(origin_list.back())) {
+      origin_list.emplace_back(parent_origin);
     }
     if (origin_list.size() > blink::kMaxUniqueOriginInAncestorChainForWebOTP)
       return false;
@@ -68,10 +66,10 @@ bool ValidateAndCollectUniqueOrigins(RenderFrameHost& rfh,
 bool IsCrossOriginFrame(RenderFrameHost& rfh) {
   if (!rfh.GetParent())
     return false;
-  url::Origin current_origin = rfh.GetLastCommittedOrigin();
+  const url::Origin& current_origin = rfh.GetLastCommittedOrigin();
   RenderFrameHost* parent = rfh.GetParent();
   while (parent) {
-    url::Origin parent_origin = parent->GetLastCommittedOrigin();
+    const url::Origin& parent_origin = parent->GetLastCommittedOrigin();
     if (!parent_origin.IsSameOriginWith(current_origin))
       return true;
     parent = parent->GetParent();
@@ -129,12 +127,12 @@ ukm::SourceId GetPageUkmSourceId(RenderFrameHost& render_frame_host) {
 
 WebOTPService::WebOTPService(
     SmsFetcher* fetcher,
-    const OriginList& origin_list,
+    OriginList origin_list,
     RenderFrameHost& host,
     mojo::PendingReceiver<blink::mojom::WebOTPService> receiver)
     : DocumentService(host, std::move(receiver)),
       fetcher_(fetcher),
-      origin_list_(origin_list),
+      origin_list_(std::move(origin_list)),
       timeout_timer_(FROM_HERE,
                      blink::kWebOTPRequestTimeout,
                      this,
@@ -160,7 +158,8 @@ bool WebOTPService::Create(
   // WebOTPService owns itself. It will self-destruct when a mojo interface
   // error occurs, the RenderFrameHost is deleted, or the RenderFrameHost
   // navigates to a new document.
-  new WebOTPService(fetcher, origin_list, *host, std::move(receiver));
+  new WebOTPService(fetcher, std::move(origin_list), *host,
+                    std::move(receiver));
   static_cast<RenderFrameHostImpl*>(host)
       ->OnBackForwardCacheDisablingStickyFeatureUsed(
           blink::scheduler::WebSchedulerTrackedFeature::kWebOTPService);
@@ -170,10 +169,11 @@ bool WebOTPService::Create(
 // static
 WebOTPService& WebOTPService::CreateForTesting(
     SmsFetcher* fetcher,
-    const OriginList& origins,
+    OriginList origins,
     RenderFrameHost& frame_host,
     mojo::PendingReceiver<blink::mojom::WebOTPService> receiver) {
-  return *new WebOTPService(fetcher, origins, frame_host, std::move(receiver));
+  return *new WebOTPService(fetcher, std::move(origins), frame_host,
+                            std::move(receiver));
 }
 
 void WebOTPService::WillBeDestroyed(DocumentServiceDestructionReason) {

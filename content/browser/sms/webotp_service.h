@@ -49,7 +49,7 @@ class CONTENT_EXPORT WebOTPService
                      mojo::PendingReceiver<blink::mojom::WebOTPService>);
   static WebOTPService& CreateForTesting(
       SmsFetcher*,
-      const OriginList&,
+      OriginList,
       RenderFrameHost&,
       mojo::PendingReceiver<blink::mojom::WebOTPService>);
 
@@ -84,7 +84,7 @@ class CONTENT_EXPORT WebOTPService
 
  private:
   WebOTPService(SmsFetcher*,
-                const OriginList&,
+                OriginList,
                 RenderFrameHost&,
                 mojo::PendingReceiver<blink::mojom::WebOTPService>);
 
