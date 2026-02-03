@@ -449,14 +449,9 @@ HighlightPainter::HighlightPainter(
         DCHECK(fragment_dom_offsets_);
         markers_ = controller.ComputeMarkersToPaint(*text_node);
         if (!paint_info.IsPrivacyPreserving()) {
-          // When preserving privacy, only paint custom highlights. This check
-          // only protects markers painted with the highlight overlay system.
-          if (RuntimeEnabledFeatures::SearchTextHighlightPseudoEnabled() &&
-              !fragment_item_.IsSvgText()) {
-            search_ = controller.MarkersFor(
-                *text_node, DocumentMarker::kTextMatch,
-                fragment_dom_offsets_->start, fragment_dom_offsets_->end);
-          }
+          // When preserving privacy, only paint custom highlights and
+          // find-in-page. This check only protects markers painted with the
+          // highlight overlay system.
           target_ = controller.MarkersFor(
               *text_node, DocumentMarker::kTextFragment,
               fragment_dom_offsets_->start, fragment_dom_offsets_->end);
@@ -466,6 +461,12 @@ HighlightPainter::HighlightPainter(
           grammar_ = controller.MarkersFor(*text_node, DocumentMarker::kGrammar,
                                            fragment_dom_offsets_->start,
                                            fragment_dom_offsets_->end);
+        }
+        if (RuntimeEnabledFeatures::SearchTextHighlightPseudoEnabled() &&
+            !fragment_item_.IsSvgText()) {
+          search_ = controller.MarkersFor(
+              *text_node, DocumentMarker::kTextMatch,
+              fragment_dom_offsets_->start, fragment_dom_offsets_->end);
         }
         custom_ = controller.MarkersFor(
             *text_node, DocumentMarker::kCustomHighlight,
@@ -533,13 +534,6 @@ void HighlightPainter::PaintNonCssMarkers(Phase phase) {
   if (markers_.empty())
     return;
 
-  // Find-in-page markers are PII because they reveal what a user is
-  // interested in (though we may change this). Editing markers are transient
-  // and reflect uncommitted content, so do not draw them.
-  if (paint_info_.IsPrivacyPreserving()) {
-    return;
-  }
-
   CHECK(node_);
   const StringView text = cursor_.CurrentText();
 
@@ -598,6 +592,12 @@ void HighlightPainter::PaintNonCssMarkers(Phase phase) {
       case DocumentMarker::kComposition:
       case DocumentMarker::kActiveSuggestion:
       case DocumentMarker::kSuggestion: {
+        // Editing markers are transient and reflect uncommitted content, so do
+        // not draw them.
+        if (paint_info_.IsPrivacyPreserving()) {
+          break;
+        }
+
         const auto& styleable_marker = To<StyleableMarker>(*marker);
         if (phase == kBackground) {
           PaintRect(
@@ -626,7 +626,9 @@ void HighlightPainter::PaintNonCssMarkers(Phase phase) {
         break;
       }
       case DocumentMarker::kGlic: {
-        if (phase == kBackground) {
+        // GLIC markers may be related to agentic AI or other features that the
+        // document origin would not normally have access to.
+        if (phase == kBackground && !paint_info_.IsPrivacyPreserving()) {
           PaintBackgroundForGlicMarker(marker, text, paint_start_offset,
                                        paint_end_offset);
         }
