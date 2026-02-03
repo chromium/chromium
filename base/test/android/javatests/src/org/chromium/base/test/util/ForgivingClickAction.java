@@ -52,6 +52,15 @@ public class ForgivingClickAction implements ViewAction {
                 MotionEvent.BUTTON_PRIMARY);
     }
 
+    public static ForgivingClickAction forgivingLongClick() {
+        return new ForgivingClickAction(
+                Tap.LONG,
+                GeneralLocation.VISIBLE_CENTER,
+                Press.FINGER,
+                InputDevice.SOURCE_UNKNOWN,
+                MotionEvent.BUTTON_PRIMARY);
+    }
+
     public ForgivingClickAction(
             Tapper tapper,
             CoordinatesProvider coordinatesProvider,
@@ -67,7 +76,13 @@ public class ForgivingClickAction implements ViewAction {
 
     @Override
     public String getDescription() {
-        return mTapper.toString().toLowerCase() + " click";
+        if (mTapper == Tap.SINGLE) {
+            return "click";
+        } else if (mTapper == Tap.LONG) {
+            return "long click";
+        } else {
+            return mTapper.toString().toLowerCase() + " click";
+        }
     }
 
     @Override

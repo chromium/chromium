@@ -161,16 +161,20 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> implements V
 
     @Override
     public TripBuilder clickTo() {
-        if (mOptions.mDisplayedPercentageRequired > 90) {
-            return performViewActionTo(ViewActions.click());
-        } else {
+        if (mOptions.mDisplayedPercentageRequired <= 90) {
             return performViewActionTo(ForgivingClickAction.forgivingClick());
+        } else {
+            return performViewActionTo(ViewActions.click());
         }
     }
 
     @Override
     public TripBuilder longPressTo() {
-        return performViewActionTo(ViewActions.longClick());
+        if (mOptions.mDisplayedPercentageRequired <= 90) {
+            return performViewActionTo(ForgivingClickAction.forgivingLongClick());
+        } else {
+            return performViewActionTo(ViewActions.longClick());
+        }
     }
 
     @Override
