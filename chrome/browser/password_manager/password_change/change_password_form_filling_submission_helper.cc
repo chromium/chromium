@@ -375,6 +375,14 @@ void ChangePasswordFormFillingSubmissionHelper::OnExecutionResponseCallback(
     return;
   }
 
+  if (response->submit_form_data().is_user_intervention_needed() &&
+      base::FeatureList::IsEnabled(
+          password_manager::features::kUserInterventionForPasswordChange)) {
+    std::move(callback_).Run(
+        SubmissionResult::kUserInterventionNeededPasswordNotSumbitted);
+    return;
+  }
+
   int dom_node_id = response.value().submit_form_data().dom_node_id_to_click();
 
   if (!dom_node_id) {

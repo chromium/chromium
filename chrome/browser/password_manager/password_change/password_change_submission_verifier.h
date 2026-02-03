@@ -57,6 +57,7 @@ class PasswordChangeSubmissionVerifier {
     kSuccess,
     kFailure,
     kUserInterventionNeeded,
+    kUserInterventionNeededPasswordNotSumbitted,
   };
 
   using FormSubmissionResultCallback =

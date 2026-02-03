@@ -181,6 +181,21 @@ void CheckSubmitFormStatus(
             expected_status);
 }
 
+void PostResponseForUserIntervention(
+    optimization_guide::OptimizationGuideModelExecutionResultCallback
+        callback) {
+  optimization_guide::proto::PasswordChangeResponse response;
+  auto* data = response.mutable_submit_form_data();
+  data->set_is_user_intervention_needed(true);
+
+  auto result = optimization_guide::OptimizationGuideModelExecutionResult(
+      optimization_guide::AnyWrapProto(response),
+      /*execution_info=*/nullptr);
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(result),
+                                /*log_entry=*/nullptr));
+}
+
 }  // namespace
 
 class ChangePasswordFormFillingSubmissionHelperTest
@@ -973,6 +988,44 @@ TEST_P(ChangePasswordFormFillingSubmissionHelperTest,
         CreateFilledTestPasswordFormData());
   }
   task_environment()->RunUntilIdle();
+}
+
+TEST_P(ChangePasswordFormFillingSubmissionHelperTest,
+       ReturnsUserInterventionNeeded_UserInterventionEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      password_manager::features::kUserInterventionForPasswordChange);
+
+  auto* form_manager = CreateFormManager(/*credentials_to_seed=*/{});
+
+  base::test::TestFuture<SubmissionResult> completion_future;
+  auto verifier = CreateVerifier(form_manager, completion_future.GetCallback());
+  EXPECT_CALL(*optimization_service(), ExecuteModel)
+      .WillOnce(WithArg<3>(&PostResponseForUserIntervention));
+  CompleteFormFilling(form_manager, verifier.get(),
+                      CreateFilledTestPasswordFormData());
+
+  EXPECT_EQ(completion_future.Get(),
+            SubmissionResult::kUserInterventionNeededPasswordNotSumbitted);
+  EXPECT_FALSE(verifier->click_helper());
+}
+
+TEST_P(ChangePasswordFormFillingSubmissionHelperTest,
+       IgnoresUserIntervention_UserInterventionDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      password_manager::features::kUserInterventionForPasswordChange);
+  auto* form_manager = CreateFormManager(/*credentials_to_seed=*/{});
+
+  base::test::TestFuture<SubmissionResult> completion_future;
+  auto verifier = CreateVerifier(form_manager, completion_future.GetCallback());
+  EXPECT_CALL(*optimization_service(), ExecuteModel)
+      .WillOnce(WithArg<3>(&PostResponseForUserIntervention));
+
+  CompleteFormFilling(form_manager, verifier.get(),
+                      CreateFilledTestPasswordFormData());
+  EXPECT_EQ(completion_future.Get(), SubmissionResult::kFailure);
+  EXPECT_FALSE(verifier->click_helper());
 }
 
 TEST_P(ChangePasswordFormFillingSubmissionHelperTest,

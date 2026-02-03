@@ -495,12 +495,12 @@ void PasswordChangeDelegateImpl::OpenPasswordChangeTab() {
     FocusPasswordChangeTab(web_contents);
   }
 
-  // If the feature is enabled and the user manually takes over the task
-  // the new password is saved to avoid data losses.
-  if (current_state_ == State::kOtpDetected &&
-      base::FeatureList::IsEnabled(
-          password_manager::features::kUserInterventionForPasswordChange)) {
-    CHECK(submission_verifier_);
+  if (current_state_ == State::kOtpDetected && submission_verifier_) {
+    CHECK(base::FeatureList::IsEnabled(
+        password_manager::features::kUserInterventionForPasswordChange));
+    // If user decided to take over control when interruption is detected we
+    // assume they will complete the password change process, thus the new
+    // password must be saved.
     submission_verifier_->SavePassword(username_);
     submission_verifier_.reset();
   }
@@ -641,24 +641,20 @@ void PasswordChangeDelegateImpl::UpdateState(State new_state) {
 void PasswordChangeDelegateImpl::OnChangeFormSubmissionVerified(
     SubmissionResult result) {
   switch (result) {
-    case SubmissionResult::kUserInterventionNeeded:
-      // If the feature is enabled, handle the User Intervention state.
-      // We set the state to UI to prompt the user to complete the flow.
-      // The new password is saved only if the user takes over, this is done in
-      // `OpenPasswordChangeTab`.
-      if (base::FeatureList::IsEnabled(
-              password_manager::features::kUserInterventionForPasswordChange)) {
-        if (auto logger = GetLoggerIfAvailable(executor())) {
-          logger->LogBoolean(
-              BrowserSavePasswordProgressLogger::
-                  STRING_AUTOMATED_PASSWORD_CHANGE_USER_INTERVENTION_AFTER_SUBMISSION,
-              /*truth_value=*/true);
-        }
-        UpdateState(State::kOtpDetected);
-        return;
-      }
-      // If the feature is not enabled, fallthrough to the failure case.
+    case SubmissionResult::kUserInterventionNeededPasswordNotSumbitted:
+      submission_verifier_.reset();
+      // Fallthrough to the kUserInterventionNeeded case to show dedicated UI.
       [[fallthrough]];
+    case SubmissionResult::kUserInterventionNeeded:
+      // The feature must be enabled to receive the User Intervention state.
+      if (auto logger = GetLoggerIfAvailable(executor())) {
+        logger->LogBoolean(
+            BrowserSavePasswordProgressLogger::
+                STRING_AUTOMATED_PASSWORD_CHANGE_USER_INTERVENTION_AFTER_SUBMISSION,
+            /*truth_value=*/true);
+      }
+      UpdateState(State::kOtpDetected);
+      break;
     case SubmissionResult::kFailure:
       if (auto logger = GetLoggerIfAvailable(executor())) {
         logger->LogBoolean(
