@@ -607,8 +607,6 @@ external/wpt/html/semantics/forms/the-input-element/range-intrinsic-size.html
 external/wpt/html/semantics/forms/the-option-element/dynamic-content-change-rendering.html
 external/wpt/html/semantics/links/links-created-by-a-and-area-elements/target_blank_useractivation*
 external/wpt/html/semantics/interactive-elements/the-dialog-element/dialog-canceling.html
-external/wpt/html/semantics/interactive-elements/the-dialog-element/dialog-closedby.tentative.html
-external/wpt/html/semantics/interactive-elements/the-dialog-element/dialog-popover-closedby-simple.tentative.html
 external/wpt/html/semantics/interactive-elements/the-dialog-element/top-layer-stacking.tentative.html
 external/wpt/html/semantics/interactive-elements/the-summary-element/interactive-content.html
 external/wpt/html/semantics/popovers/popover-anchor-nested-display.tentative.html
@@ -622,7 +620,6 @@ external/wpt/html/semantics/text-level-semantics/the-bdi-element/*
 external/wpt/html/syntax/charset/without-inheritance.html
 external/wpt/html/the-xhtml-syntax/parsing-xhtml-documents/data-xhtml-with-dtd.html
 external/wpt/html/webappapis/microtask-queuing/queue-microtask-exceptions.any.*
-external/wpt/html/webappapis/scripting/event-loops/fully_active_document.window.html
 external/wpt/html/webappapis/scripting/events/event-handler-all-global-events.html
 external/wpt/html/webappapis/scripting/events/event-handler-onmove-02.tentative.html
 external/wpt/html/webappapis/scripting/processing-model-2/runtime-error-in-setInterval.html
@@ -880,9 +877,7 @@ virtual/html-anchor-attribute-disabled/external/wpt/html/semantics/popovers/popo
 
 # These are flaky on Mac. Judging by the other focus-related test in this list, I'm assuming
 # there is some kind of headless focus problem.
-external/wpt/html/semantics/interestfor/interestfor-popover-focus.tentative.html
 external/wpt/html/semantics/interestfor/interestfor-invoker-descendants.tentative.html
-external/wpt/html/semantics/interestfor/interestfor-partial-interest.tentative.html
 
 virtual/backface-visibility-interop/external/wpt/css/css-transforms/backface-visibility-001.html
 virtual/backface-visibility-interop/external/wpt/css/css-transforms/backface-visibility-hidden-animated-002.html
