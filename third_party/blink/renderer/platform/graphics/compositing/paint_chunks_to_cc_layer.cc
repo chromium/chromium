@@ -277,8 +277,13 @@ class ConversionContext {
   void ApplyTransform(const TransformPaintPropertyNode& target_transform) {
     if (&target_transform == current_transform_)
       return;
-    gfx::Transform projection = TargetToCurrentProjection(target_transform);
-    if (projection.IsIdentityOr2dTranslation()) {
+    gfx::Transform projection;
+    bool valid_projection =
+        TargetToCurrentProjection(target_transform, projection);
+    if (!valid_projection) [[unlikely]] {
+      push<cc::ClipRectOp>(SkRect::MakeEmpty(), SkClipOp::kIntersect,
+                           /*antialias=*/false);
+    } else if (projection.IsIdentityOr2dTranslation()) {
       gfx::Vector2dF translation = projection.To2dTranslation();
       if (!translation.IsZero())
         push<cc::TranslateOp>(translation.x(), translation.y());
@@ -287,10 +292,11 @@ class ConversionContext {
     }
   }
 
-  gfx::Transform TargetToCurrentProjection(
-      const TransformPaintPropertyNode& target_transform) const {
-    return GeometryMapper::SourceToDestinationProjection(target_transform,
-                                                         *current_transform_);
+  bool TargetToCurrentProjection(
+      const TransformPaintPropertyNode& target_transform,
+      gfx::Transform& projection) const {
+    return GeometryMapper::SourceToDestinationProjection(
+        target_transform, *current_transform_, projection);
   }
 
   void AppendRestore() {
@@ -857,14 +863,19 @@ ScrollTranslationAction ConversionContext<Result>::SwitchToTransform(
     return action;
   }
 
-  gfx::Transform projection = TargetToCurrentProjection(target_transform);
-  if (projection.IsIdentity()) {
+  gfx::Transform projection;
+  bool valid_projection =
+      TargetToCurrentProjection(target_transform, projection);
+  if (valid_projection && projection.IsIdentity()) {
     return {};
   }
 
   result_.StartPaint();
   push<cc::SaveOp>();
-  if (projection.IsIdentityOr2dTranslation()) {
+  if (!valid_projection) [[unlikely]] {
+    push<cc::ClipRectOp>(SkRect::MakeEmpty(), SkClipOp::kIntersect,
+                         /*antialias=*/false);
+  } else if (projection.IsIdentityOr2dTranslation()) {
     gfx::Vector2dF translation = projection.To2dTranslation();
     push<cc::TranslateOp>(translation.x(), translation.y());
   } else {

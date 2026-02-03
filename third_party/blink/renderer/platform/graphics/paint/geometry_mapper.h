@@ -50,6 +50,21 @@ class PLATFORM_EXPORT GeometryMapper {
       const TransformPaintPropertyNode& source,
       const TransformPaintPropertyNode& destination);
 
+  // The function is the same as gfx::Transform SourceToDestinationProjection
+  // but uses an out-param for the transform, and returns a bool indicating
+  // success
+  static bool SourceToDestinationProjection(
+      const TransformPaintPropertyNodeOrAlias& source,
+      const TransformPaintPropertyNodeOrAlias& destination,
+      gfx::Transform& projection) {
+    return SourceToDestinationProjection(source.Unalias(),
+                                         destination.Unalias(), projection);
+  }
+  static bool SourceToDestinationProjection(
+      const TransformPaintPropertyNode& source,
+      const TransformPaintPropertyNode& destination,
+      gfx::Transform& projection);
+
   // Same as SourceToDestinationProjection() except that it maps the rect
   // rather than returning the matrix.
   // |mapping_rect| is both input and output. Its type can be gfx::RectF,

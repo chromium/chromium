@@ -2839,6 +2839,13 @@
       public: true,
     },
     {
+      // A feature flag that controls whether the geometry mapper singular
+      // transform fix is enabled.
+      // https://issues.chromium.org/issues/441128445
+      name: "GeometryMapperSingularTransformFix",
+      status: "stable",
+    },
+    {
       name: "GetAllScreensMedia",
       depends_on: ["GetDisplayMedia"],
       public: true,

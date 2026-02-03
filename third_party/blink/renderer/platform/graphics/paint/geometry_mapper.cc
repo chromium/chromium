@@ -55,6 +55,18 @@ gfx::Transform GeometryMapper::SourceToDestinationProjection(
                                                extra_result, success);
 }
 
+bool GeometryMapper::SourceToDestinationProjection(
+    const TransformPaintPropertyNode& source,
+    const TransformPaintPropertyNode& destination,
+    gfx::Transform& projection) {
+  ExtraProjectionResult extra_result;
+  bool success = false;
+  projection = SourceToDestinationProjectionInternal(source, destination,
+                                                     extra_result, success);
+  return !RuntimeEnabledFeatures::GeometryMapperSingularTransformFixEnabled() ||
+         success;
+}
+
 // Returns flatten(destination_to_screen)^-1 * flatten(source_to_screen)
 //
 // In case that source and destination are coplanar in tree hierarchy [1],

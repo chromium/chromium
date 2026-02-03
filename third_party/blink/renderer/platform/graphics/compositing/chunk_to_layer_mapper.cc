@@ -41,9 +41,14 @@ void ChunkToLayerMapper::SwitchToChunkWithState(
   }
 
   if (&new_chunk_state.Transform() != &chunk_state_.Transform()) {
-    transform_ = GeometryMapper::SourceToDestinationProjection(
-        new_chunk_state.Transform(), layer_state_.Transform());
-    transform_.PostTranslate(-layer_offset_);
+    bool success = GeometryMapper::SourceToDestinationProjection(
+        new_chunk_state.Transform(), layer_state_.Transform(), transform_);
+    if (success) {
+      transform_.PostTranslate(-layer_offset_);
+    } else {
+      transform_.MakeIdentity();
+      transform_.Scale(0);
+    }
   }
 
   has_filter_that_moves_pixels_ =
