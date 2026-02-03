@@ -11,6 +11,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/skills/public/skill.mojom.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -27,6 +28,9 @@ using ::testing::Optional;
 class SkillsDialogHandlerTest : public testing::Test {
  public:
   void SetUp() override {
+    web_contents_ = content::WebContents::Create(
+        content::WebContents::CreateParams(&profile_));
+    web_ui_.set_web_contents(web_contents_.get());
     handler_ = std::make_unique<SkillsDialogHandler>(
         receiver_.BindNewPipeAndPassReceiver(), web_ui_.GetWebContents(),
         &mock_opt_guide_service_, mock_delegate_);
@@ -34,6 +38,8 @@ class SkillsDialogHandlerTest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
+  TestingProfile profile_;
+  std::unique_ptr<content::WebContents> web_contents_;
   content::TestWebUI web_ui_;
   MockOptimizationGuideKeyedService mock_opt_guide_service_;
   base::WeakPtr<SkillsDialogDelegate> mock_delegate_;

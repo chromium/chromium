@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/check_deref.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -38,15 +39,17 @@ SkillsDialogHandler::SkillsDialogHandler(
     OptimizationGuideKeyedService* optimization_guide_keyed_service,
     base::WeakPtr<SkillsDialogDelegate> delegate)
     : receiver_(this, std::move(receiver)),
-      web_contents_(web_contents),
+      web_contents_(CHECK_DEREF(web_contents)),
       optimization_guide_keyed_service_(optimization_guide_keyed_service),
-      delegate_(delegate) {}
+      delegate_(delegate),
+      profile_(CHECK_DEREF(
+          Profile::FromBrowserContext(web_contents->GetBrowserContext()))) {}
 
 SkillsDialogHandler::~SkillsDialogHandler() = default;
 
 void SkillsDialogHandler::SubmitSkill(const skills::Skill& skill) {
-  if (auto* skills_service = SkillsServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(web_contents_->GetBrowserContext()))) {
+  if (auto* skills_service =
+          SkillsServiceFactory::GetForProfile(base::to_address(profile_))) {
     const Skill* skill_added =
         skills_service->AddSkill(skill.name, skill.icon, skill.prompt);
     // TODO(marissashen): Add support for UpdateSkill

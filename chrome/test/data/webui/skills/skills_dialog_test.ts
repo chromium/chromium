@@ -9,22 +9,23 @@ import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_in
 import type {CrTextareaElement} from 'chrome://resources/cr_elements/cr_textarea/cr_textarea.js';
 import type {Skill} from 'chrome://skills/skill.mojom-webui.js';
 import {SkillSource} from 'chrome://skills/skill.mojom-webui.js';
+import {DialogHandlerRemote} from 'chrome://skills/skills.mojom-webui.js';
 import type {SkillsDialogAppElement} from 'chrome://skills/skills_dialog_app.js';
 import {SkillsDialogBrowserProxy} from 'chrome://skills/skills_dialog_browser_proxy.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-
-import type {TestDialogHandler} from './test_skills_dialog_browser_proxy.js';
-import {TestSkillsDialogBrowserProxy} from './test_skills_dialog_browser_proxy.js';
+import {TestMock} from 'chrome://webui-test/test_mock.js';
 
 suite('SkillsDialogAppPage', function() {
   let skillsDialogApp: SkillsDialogAppElement;
-  let browserProxy: TestSkillsDialogBrowserProxy;
-  let dialogHandler: TestDialogHandler;
+  let dialogHandler: TestMock<DialogHandlerRemote>&DialogHandlerRemote;
 
   setup(async function() {
-    browserProxy = new TestSkillsDialogBrowserProxy();
-    SkillsDialogBrowserProxy.setInstance(browserProxy);
-    dialogHandler = browserProxy.handler;
+    dialogHandler = TestMock.fromClass(DialogHandlerRemote);
+    SkillsDialogBrowserProxy.setInstance(
+        {handler: dialogHandler} as SkillsDialogBrowserProxy);
+    dialogHandler.setResultFor(
+        'refineSkill', Promise.resolve({refinedSkill: {}}));
+    dialogHandler.setResultFor('getInitialSkill', Promise.resolve({skill: {}}));
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     skillsDialogApp = document.createElement('skills-dialog-app');
     document.body.appendChild(skillsDialogApp);
@@ -45,8 +46,8 @@ suite('SkillsDialogAppPage', function() {
       creationTime: {internalValue: 0n},
       lastUpdateTime: {internalValue: 0n},
     };
-    dialogHandler.setInitialSkill(testSkill);
-
+    dialogHandler.setResultFor(
+        'getInitialSkill', Promise.resolve({skill: testSkill}));
     // Re-create the element to pick up the new dialog arguments.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     skillsDialogApp = document.createElement('skills-dialog-app');

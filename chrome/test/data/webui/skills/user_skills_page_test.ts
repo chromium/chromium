@@ -64,12 +64,68 @@ suite('UserSkillsPage', function() {
       lastUpdateTime: {internalValue: 0n},
     };
 
-    browserProxy.remote.updateSkill(testSkill);
+    browserProxy.callbackRouterRemote.updateSkill(testSkill);
     await microtasksFinished();
 
     const skillItems = page.shadowRoot.querySelectorAll('li');
     assertEquals(1, skillItems.length);
     assertTrue(!!skillItems[0]);
     assertEquals('Test Skill', skillItems[0].textContent.trim());
+  });
+
+  test('RemoveSkillUpdatesPage', async function() {
+    const testSkill = {
+      id: '123',
+      name: 'Test Skill',
+      icon: 'icon',
+      prompt: 'prompt',
+      source: SkillSource.kUserCreated,
+      creationTime: {internalValue: 0n},
+      lastUpdateTime: {internalValue: 0n},
+    };
+    browserProxy.callbackRouterRemote.updateSkill(testSkill);
+    await microtasksFinished();
+
+    let skillItems = page.shadowRoot.querySelectorAll('li');
+    assertTrue(!!skillItems[0]);
+    assertEquals('Test Skill', skillItems[0].textContent.trim());
+
+    browserProxy.callbackRouterRemote.removeSkill(testSkill.id);
+    await microtasksFinished();
+
+    skillItems = page.shadowRoot.querySelectorAll('li');
+    assertEquals(0, skillItems.length);
+  });
+
+  test('UpdatesAndRemovalsShowCorrectly', async function() {
+    const skillA = {
+      id: '123',
+      name: 'A',
+      icon: '',
+      prompt: '',
+      source: SkillSource.kUserCreated,
+      creationTime: {internalValue: 0n},
+      lastUpdateTime: {internalValue: 0n},
+    };
+    const skillB = {
+      id: '234',
+      name: 'B',
+      icon: '',
+      prompt: '',
+      source: SkillSource.kUserCreated,
+      creationTime: {internalValue: 0n},
+      lastUpdateTime: {internalValue: 0n},
+    };
+
+    browserProxy.callbackRouterRemote.updateSkill(skillA);
+    browserProxy.callbackRouterRemote.updateSkill(skillB);
+    browserProxy.callbackRouterRemote.removeSkill(skillA.id);
+
+    await microtasksFinished();
+
+    const skillItems = page.shadowRoot.querySelectorAll('li');
+    assertEquals(1, skillItems.length);
+    assertTrue(!!skillItems[0]);
+    assertEquals('B', skillItems[0].textContent.trim());
   });
 });

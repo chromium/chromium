@@ -17,6 +17,8 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+class Profile;
+
 namespace skills {
 
 class SkillsDialogDelegate;
@@ -52,10 +54,12 @@ class SkillsDialogHandler : public skills::mojom::DialogHandler {
 
  private:
   mojo::Receiver<skills::mojom::DialogHandler> receiver_;
-  raw_ptr<content::WebContents> web_contents_ = nullptr;
+  const raw_ref<content::WebContents> web_contents_;
   raw_ptr<OptimizationGuideKeyedService> optimization_guide_keyed_service_ =
       nullptr;
   base::WeakPtr<SkillsDialogDelegate> delegate_;
+  // Initialized with the browser_context passed in the constructor.
+  const raw_ref<Profile> profile_;
   base::WeakPtrFactory<SkillsDialogHandler> weak_ptr_factory_{this};
 };
 

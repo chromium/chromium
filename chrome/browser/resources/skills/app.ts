@@ -75,6 +75,9 @@ export class SkillsAppElement extends CrLitElement {
     // Event-driven navigation changes.
     this.eventTracker_.add(document, 'route-click', (e: Event) => {
       const detail = (e as CustomEvent<{path: string}>).detail;
+      // CRRouter sets the path, but doesn't trigger a popstate event, so we
+      // need to manually update the page.
+      CrRouter.getInstance().setPath(detail.path);
       this.onPathChanged_(detail.path);
     });
   }

@@ -5,7 +5,6 @@
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 
-import {CrRouter} from '//resources/js/cr_router.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './sidebar.css.js';
@@ -61,9 +60,6 @@ export class SkillsSidebarElement extends CrLitElement {
   protected onMenuItemActivate_(e: CustomEvent<{item: HTMLAnchorElement}>):
       void {
     const newUrl = new URL(e.detail.item.href);
-    CrRouter.getInstance().setPath(newUrl.pathname);
-    // setPath() doesn't trigger a popstate event, so we need to dispatch a
-    // route-click event to update the page.
     this.fire('route-click', {path: newUrl.pathname});
   }
 

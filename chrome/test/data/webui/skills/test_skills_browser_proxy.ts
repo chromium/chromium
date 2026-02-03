@@ -2,32 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {Skill} from 'chrome://skills/skill.mojom-webui.js';
-import type {PageHandlerInterface, SkillsDialogType} from 'chrome://skills/skills.mojom-webui.js';
-import {SkillsPageCallbackRouter} from 'chrome://skills/skills.mojom-webui.js';
+import {PageHandlerRemote, SkillsPageCallbackRouter} from 'chrome://skills/skills.mojom-webui.js';
 import type {SkillsPageRemote} from 'chrome://skills/skills.mojom-webui.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
-
-export class TestPageHandler extends TestBrowserProxy implements
-    PageHandlerInterface {
-  constructor() {
-    super([
-      'openSkillsDialog',
-    ]);
-  }
-
-  openSkillsDialog(dialogType: SkillsDialogType, skill: Skill|null) {
-    this.methodCalled('openSkillsDialog', dialogType, skill);
-  }
-}
+import {TestMock} from 'chrome://webui-test/test_mock.js';
 
 export class TestSkillsBrowserProxy {
-  handler: TestPageHandler;
-  callbackRouter: SkillsPageCallbackRouter = new SkillsPageCallbackRouter();
-  remote: SkillsPageRemote;
+  handler: TestMock<PageHandlerRemote>&PageHandlerRemote;
+  callbackRouter: SkillsPageCallbackRouter;
+  callbackRouterRemote: SkillsPageRemote;
 
   constructor() {
-    this.handler = new TestPageHandler();
-    this.remote = this.callbackRouter.$.bindNewPipeAndPassRemote();
+    this.handler = TestMock.fromClass(PageHandlerRemote);
+    this.callbackRouter = new SkillsPageCallbackRouter();
+    this.callbackRouterRemote =
+        this.callbackRouter.$.bindNewPipeAndPassRemote();
+    this.handler.setResultFor(
+        'getInitialUserSkills', Promise.resolve({skills: []}));
   }
 }

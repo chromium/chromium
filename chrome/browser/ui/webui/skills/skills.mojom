@@ -41,6 +41,9 @@ interface PageHandler {
   //   skill information.
   //   In edit mode, the `skill` should always be passed in.
   OpenSkillsDialog(SkillsDialogType dialog_type, skills.mojom.Skill? skill);
+
+  // Gets the initial list of user skills.
+  GetInitialUserSkills() => (array<skills.mojom.Skill> skills);
 };
 
 // Called from C++ side of chrome://skills (Browser -> Renderer)
@@ -48,6 +51,10 @@ interface SkillsPage {
   // Notifies the UI that a skill has been updated or added.
   // This may be extended to support multiple skill updates in the future.
   UpdateSkill(skills.mojom.Skill skill);
+
+  // Notifies the UI that a skill has been deleted.
+  // This may be extended to support multiple skill deletions in the future.
+  RemoveSkill(string skill_id);
 };
 
 // Called from TS side of chrome://skills/dialog (Renderer -> Browser)

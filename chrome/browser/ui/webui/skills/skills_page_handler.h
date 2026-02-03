@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SKILLS_SKILLS_PAGE_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SKILLS_SKILLS_PAGE_HANDLER_H_
 
-#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/skills/skills_ui_tab_controller_interface.h"
 #include "chrome/browser/ui/webui/skills/skills.mojom.h"
@@ -20,6 +19,8 @@ class WebContents;
 namespace content {
 class WebContents;
 }  // namespace content
+
+class Profile;
 
 namespace skills {
 
@@ -38,6 +39,7 @@ class SkillsPageHandler : public skills::mojom::PageHandler,
   // skills::mojom::PageHandler:
   void OpenSkillsDialog(mojom::SkillsDialogType dialog_type,
                         const std::optional<skills::Skill>& skill) override;
+  void GetInitialUserSkills(GetInitialUserSkillsCallback callback) override;
 
   // skills::SkillsService::Observer:
   void OnSkillUpdated(std::string_view skill_id,
@@ -47,7 +49,9 @@ class SkillsPageHandler : public skills::mojom::PageHandler,
  private:
   mojo::Receiver<skills::mojom::PageHandler> receiver_;
   mojo::Remote<skills::mojom::SkillsPage> page_;
-  raw_ptr<content::WebContents> web_contents_ = nullptr;
+  const raw_ref<content::WebContents> web_contents_;
+  // Initialized with the browser_context passed in the constructor.
+  const raw_ref<Profile> profile_;
 
   base::ScopedObservation<skills::SkillsService,
                           skills::SkillsService::Observer>

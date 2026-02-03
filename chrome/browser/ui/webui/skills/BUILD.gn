@@ -74,6 +74,7 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//components/optimization_guide/core:test_support",
     "//components/skills/public:mojo_bindings",
+    "//content/public/browser",
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",

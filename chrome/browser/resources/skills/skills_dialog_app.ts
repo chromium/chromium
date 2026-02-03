@@ -49,7 +49,8 @@ export class SkillsDialogAppElement extends CrLitElement {
   };
 
   protected get isSaveButtonDisabled() {
-    return this.skill_.name.length === 0 || this.skill_.prompt.length === 0;
+    return !this.skill_.name || !this.skill_.prompt ||
+        this.skill_.name.length === 0 || this.skill_.prompt.length === 0;
   }
 
   /** Initializes dialog. */
