@@ -2887,7 +2887,7 @@ targets.bundle(
         "browser_tests_no_field_trial": targets.mixin(
             ci_only = True,
             swarming = targets.swarming(
-                shards = 10,
+                shards = 20,
             ),
         ),
         "components_browsertests_no_field_trial": targets.mixin(
