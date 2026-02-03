@@ -158,9 +158,8 @@ ImageBitmapRenderingContext::GetOrCreateResourceProviderForOffscreenCanvas() {
     return nullptr;
   }
 
-  if (CanvasResourceProviderSharedImage* provider =
-          resource_provider_for_offscreen_canvas_.get()) {
-    if (!provider->IsValid()) {
+  if (resource_provider_for_offscreen_canvas_) {
+    if (!resource_provider_for_offscreen_canvas_->IsValid()) {
       // The canvas context is not lost but the provider is invalid. This
       // happens if the GPU process dies in the middle of a render task. The
       // canvas is notified of GPU context losses via the `NotifyGpuContextLost`
@@ -173,7 +172,7 @@ ImageBitmapRenderingContext::GetOrCreateResourceProviderForOffscreenCanvas() {
       // `TryRestoreContextEvent` wait for the GPU process to up again.
       return nullptr;
     }
-    return provider;
+    return resource_provider_for_offscreen_canvas_.get();
   }
 
   if (!Host()->IsValidImageSize() && !Host()->Size().IsEmpty()) {
@@ -181,28 +180,27 @@ ImageBitmapRenderingContext::GetOrCreateResourceProviderForOffscreenCanvas() {
     return nullptr;
   }
 
-  std::unique_ptr<CanvasResourceProviderSharedImage> provider;
   gfx::Size surface_size(Host()->width(), Host()->height());
   const SkAlphaType alpha_type = GetAlphaType();
   const viz::SharedImageFormat format = GetSharedImageFormat();
   const gfx::ColorSpace color_space = GetColorSpace();
   if (SharedGpuContext::IsGpuCompositingEnabled()) {
-    provider = CanvasResourceProvider::CreateSharedImageProvider(
-        Host()->Size(), format, alpha_type, color_space,
-        CanvasResourceProvider::ShouldInitialize::kCallClear,
-        SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
-        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, Host());
+    resource_provider_for_offscreen_canvas_ =
+        CanvasResourceProvider::CreateSharedImageProvider(
+            Host()->Size(), format, alpha_type, color_space,
+            CanvasResourceProvider::ShouldInitialize::kCallClear,
+            SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
+            gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, Host());
   } else if (static_cast<OffscreenCanvas*>(Host())->HasPlaceholderCanvas()) {
     base::WeakPtr<CanvasResourceDispatcher> dispatcher_weakptr =
         Host()->GetOrCreateResourceDispatcher()->GetWeakPtr();
-    provider =
+    resource_provider_for_offscreen_canvas_ =
         CanvasResourceProvider::CreateSharedImageProviderForSoftwareCompositor(
             Host()->Size(), format, alpha_type, color_space,
             CanvasResourceProvider::ShouldInitialize::kCallClear,
             SharedGpuContext::SharedImageInterfaceProvider(), Host());
   }
 
-  resource_provider_for_offscreen_canvas_ = std::move(provider);
   Host()->UpdateMemoryUsage();
 
   if (resource_provider_for_offscreen_canvas_.get() &&
