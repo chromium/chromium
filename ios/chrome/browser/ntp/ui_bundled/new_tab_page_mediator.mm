@@ -79,7 +79,7 @@
 #import "ios/chrome/browser/shared/ui/util/custom_ui_trait_accessor.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
-#import "ios/chrome/browser/signin/model/avatar_provider.h"
+#import "ios/chrome/browser/signin/model/avatar/avatar_provider.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"

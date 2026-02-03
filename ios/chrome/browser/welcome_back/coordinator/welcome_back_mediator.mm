@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/first_run/public/features.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
-#import "ios/chrome/browser/signin/model/avatar_provider.h"
+#import "ios/chrome/browser/signin/model/avatar/avatar_provider.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/constants.h"
 #import "ios/chrome/browser/welcome_back/model/features.h"

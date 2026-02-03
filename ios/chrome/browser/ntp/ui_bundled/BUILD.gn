@@ -320,6 +320,7 @@ source_set("ntp_internal") {
     "//ios/chrome/browser/shared/ui/util:util_swift",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model/avatar",
     "//ios/chrome/browser/start_surface/ui_bundled:feature_flags",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/toolbar/legacy/ui_bundled/buttons",

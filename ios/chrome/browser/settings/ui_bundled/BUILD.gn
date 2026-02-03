@@ -224,6 +224,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/signin/model:constants",
     "//ios/chrome/browser/signin/model:signin_util",
     "//ios/chrome/browser/signin/model:system_identity",
+    "//ios/chrome/browser/signin/model/avatar",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/tabs/model/inactive_tabs:features",
     "//ios/chrome/browser/translate/model",

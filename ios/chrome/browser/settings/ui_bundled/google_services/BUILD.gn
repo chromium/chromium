@@ -108,6 +108,7 @@ source_set("google_services") {
     "//ios/chrome/browser/signin/model:constants",
     "//ios/chrome/browser/signin/model:system_identity",
     "//ios/chrome/browser/signin/model:system_identity_manager",
+    "//ios/chrome/browser/signin/model/avatar",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/common/ui/colors",

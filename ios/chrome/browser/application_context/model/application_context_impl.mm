@@ -76,7 +76,7 @@
 #import "ios/chrome/browser/shared/model/profile/incognito_session_tracker.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/account_profile_mapper.h"
-#import "ios/chrome/browser/signin/model/avatar_provider.h"
+#import "ios/chrome/browser/signin/model/avatar/avatar_provider.h"
 #import "ios/chrome/browser/update_client/model/ios_chrome_update_query_params_delegate.h"
 #import "ios/chrome/common/channel_info.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_service_impl.h"

@@ -73,6 +73,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/signin/model:constants",
     "//ios/chrome/browser/signin/model:system_identity",
     "//ios/chrome/browser/signin/model:system_identity_manager",
+    "//ios/chrome/browser/signin/model/avatar",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/unified_consent/model",
     "//ios/chrome/common",

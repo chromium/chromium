@@ -1,9 +1,9 @@
-// Copyright 2016 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SIGNIN_MODEL_RESIZED_AVATAR_CACHE_H_
-#define IOS_CHROME_BROWSER_SIGNIN_MODEL_RESIZED_AVATAR_CACHE_H_
+#ifndef IOS_CHROME_BROWSER_SIGNIN_MODEL_AVATAR_RESIZED_AVATAR_CACHE_H_
+#define IOS_CHROME_BROWSER_SIGNIN_MODEL_AVATAR_RESIZED_AVATAR_CACHE_H_
 
 #import <UIKit/UIKit.h>
 
@@ -28,4 +28,4 @@
 - (UIImage*)resizedAvatarForIdentity:(id<SystemIdentity>)identity;
 @end
 
-#endif  // IOS_CHROME_BROWSER_SIGNIN_MODEL_RESIZED_AVATAR_CACHE_H_
+#endif  // IOS_CHROME_BROWSER_SIGNIN_MODEL_AVATAR_RESIZED_AVATAR_CACHE_H_

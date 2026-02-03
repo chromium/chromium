@@ -1,0 +1,38 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("avatar") {
+  sources = [
+    "avatar_provider.h",
+    "avatar_provider.mm",
+    "resized_avatar_cache.h",
+    "resized_avatar_cache.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/signin/model:constants",
+    "//ios/chrome/browser/signin/model:signin_util",
+    "//ios/chrome/browser/signin/model:system_identity",
+    "//ios/chrome/browser/signin/model:system_identity_manager",
+    "//ios/chrome/common/ui/util:image_util",
+    "//ios/public/provider/chrome/browser/signin:signin_resources_api",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "resized_avatar_cache_unittest.mm" ]
+  deps = [
+    ":avatar",
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/signin/model:fake_system_identity_manager",
+    "//ios/chrome/browser/signin/model:signin_util",
+    "//testing/gtest",
+    "//ui/base:test_support",
+  ]
+}

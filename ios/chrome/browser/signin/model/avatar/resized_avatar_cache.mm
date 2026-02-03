@@ -1,8 +1,8 @@
-// Copyright 2016 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/signin/model/resized_avatar_cache.h"
+#import "ios/chrome/browser/signin/model/avatar/resized_avatar_cache.h"
 
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
