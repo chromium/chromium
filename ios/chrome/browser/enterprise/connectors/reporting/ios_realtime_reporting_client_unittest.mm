@@ -78,6 +78,10 @@ class IOSRealtimeReportingClientTest
 
 // Tests that uploading events succeed using the dictionary mapping the events.
 TEST_P(IOSRealtimeReportingClientTest, TestDeprecatedUmaEventUploadSucceeds) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      policy::kUploadRealtimeReportingEventsUsingProto);
+
   SetCloudPolicyClient(is_profile_reporting());
 
   ReportingSettings settings;
@@ -145,6 +149,10 @@ TEST_P(IOSRealtimeReportingClientTest, TestUmaEventUploadSucceeds) {
 
 // Tests that uploading events fails using the dictionary mapping the events.
 TEST_P(IOSRealtimeReportingClientTest, TestDeprecatedUmaEventUploadFails) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      policy::kUploadRealtimeReportingEventsUsingProto);
+
   SetCloudPolicyClient(is_profile_reporting());
 
   ReportingSettings settings;
