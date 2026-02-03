@@ -69,8 +69,14 @@ class ProjectorUiControllerTest : public AshTestBase {
     controller_ = projector_controller->ui_controller();
   }
 
+  // AshTestBase:
+  void TearDown() override {
+    controller_ = nullptr;
+    AshTestBase::TearDown();
+  }
+
  protected:
-  raw_ptr<ProjectorUiController, DanglingUntriaged> controller_;
+  raw_ptr<ProjectorUiController> controller_;
   MockProjectorClient projector_client_;
 };
 
