@@ -84,39 +84,55 @@ FilePathReparsePoint::FilePathReparsePoint(const FilePath& source,
   created_ = dir_.is_valid() && SetReparsePoint(dir_.get(), target);
 }
 
-// Sets a reparse point. |source| will now point to |target|. Returns true if
+// Sets a reparse point. `source` will now point to `target`. Returns true if
 // the call succeeds, false otherwise.
 bool FilePathReparsePoint::SetReparsePoint(HANDLE source,
                                            const FilePath& target_path) {
   std::wstring kPathPrefix = FILE_PATH_LITERAL("\\??\\");
   std::wstring target_str;
-  // The juction will not work if the target path does not start with \??\ .
+  // The junction will not work if the target path does not start with \??\ .
   if (kPathPrefix != target_path.value().substr(0, kPathPrefix.size())) {
     target_str += kPathPrefix;
   }
   target_str += target_path.value();
-  const wchar_t* target = target_str.c_str();
-  USHORT size_target = static_cast<USHORT>(wcslen(target)) * sizeof(target[0]);
-  char buffer[2000] = {};
+  alignas(REPARSE_DATA_BUFFER) char buffer[2000] = {};
   DWORD returned;
 
   REPARSE_DATA_BUFFER* data = reinterpret_cast<REPARSE_DATA_BUFFER*>(buffer);
+  data->ReparseTag = IO_REPARSE_TAG_MOUNT_POINT;
+  // The PathBuffer is the start of the variable data. Calculate how much space
+  // is left in `buffer` array after the struct headers.
+  size_t max_path_bytes =
+      sizeof(buffer) -
+      offsetof(REPARSE_DATA_BUFFER, MountPointReparseBuffer.PathBuffer);
+  auto target_str_span = base::as_byte_span(target_str);
+  // SAFETY: Trust max_path_bytes calculation above.
+  auto dest_span = UNSAFE_BUFFERS(base::span(
+      reinterpret_cast<uint8_t*>(data->MountPointReparseBuffer.PathBuffer),
+      max_path_bytes));
+  dest_span.first(target_str_span.size()).copy_from(target_str_span);
+  std::ranges::fill(dest_span.subspan(target_str_span.size(), 2u), 0);
 
-  data->ReparseTag = 0xa0000003;
-  UNSAFE_TODO(memcpy(data->MountPointReparseBuffer.PathBuffer, target,
-                     size_target + 2));
+  // Note: Lengths are in bytes and should NOT include the null terminator
+  // for the SubstituteNameLength, but the buffer itself must contain it.
+  data->MountPointReparseBuffer.SubstituteNameOffset = 0;
+  data->MountPointReparseBuffer.SubstituteNameLength = target_str_span.size();
+  data->MountPointReparseBuffer.PrintNameOffset =
+      target_str_span.size() + sizeof(wchar_t);
+  data->MountPointReparseBuffer.PrintNameLength = 0;
 
-  data->MountPointReparseBuffer.SubstituteNameLength = size_target;
-  data->MountPointReparseBuffer.PrintNameOffset = size_target + 2;
-  data->ReparseDataLength = size_target + 4 + 8;
+  // ReparseDataLength is the size of the MountPointReparseBuffer data
+  // (starting from SubstituteNameOffset) plus the PathBuffer data used,
+  // including the null terminator.
+  data->ReparseDataLength =
+      static_cast<USHORT>(target_str_span.size() + sizeof(wchar_t) + 10);
 
-  int data_size = data->ReparseDataLength + 8;
+  // Total buffer size is the header (8 bytes) + ReparseDataLength.
+  int total_data_size = data->ReparseDataLength + 8;
 
-  if (!DeviceIoControl(source, FSCTL_SET_REPARSE_POINT, &buffer, data_size,
-                       NULL, 0, &returned, NULL)) {
-    return false;
-  }
-  return true;
+  return ::DeviceIoControl(source, FSCTL_SET_REPARSE_POINT, buffer,
+                           total_data_size, nullptr, 0, &returned,
+                           nullptr) != 0;
 }
 
 // Delete the reparse point referenced by |source|. Returns true if the call
@@ -124,12 +140,9 @@ bool FilePathReparsePoint::SetReparsePoint(HANDLE source,
 bool FilePathReparsePoint::DeleteReparsePoint(HANDLE source) {
   DWORD returned;
   REPARSE_DATA_BUFFER data = {0};
-  data.ReparseTag = 0xa0000003;
-  if (!DeviceIoControl(source, FSCTL_DELETE_REPARSE_POINT, &data, 8, NULL, 0,
-                       &returned, NULL)) {
-    return false;
-  }
-  return true;
+  data.ReparseTag = IO_REPARSE_TAG_MOUNT_POINT;
+  return ::DeviceIoControl(source, FSCTL_DELETE_REPARSE_POINT, &data, 8, NULL,
+                           0, &returned, NULL) != 0;
 }
 
 }  // namespace base::test

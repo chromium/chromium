@@ -37,43 +37,37 @@ bool DenyFilePermission(const FilePath& path, mode_t permission) {
   return rv == 0;
 }
 
-// Gets a blob indicating the permission information for |path|.
-// |length| is the length of the blob.  Zero on failure.
-// Returns the blob pointer, or NULL on failure.
-void* GetPermissionInfo(const FilePath& path, size_t* length) {
-  DCHECK(length);
-  *length = 0;
-
+// Gets a heap array containing the permission information for `path`.
+// Returns the heap array, or an empty heap array on failure.
+std::vector<uint8_t> GetPermissionInfo(const FilePath& path) {
   stat_wrapper_t stat_buf;
   if (File::Stat(path, &stat_buf) != 0) {
-    return nullptr;
+    return {};
   }
 
-  *length = sizeof(mode_t);
-  mode_t* mode = new mode_t;
-  *mode = stat_buf.st_mode & ~S_IFMT;  // Filter out file/path kind.
+  auto buffer = std::vector<uint8_t>(sizeof(mode_t));
+  // Filter out file/path kind.
+  // SAFETY: buffer has room for one mode_t.
+  UNSAFE_BUFFERS(*(reinterpret_cast<mode_t*>(buffer.data())) =
+                     stat_buf.st_mode & ~S_IFMT);
 
-  return mode;
+  return buffer;
 }
 
-// Restores the permission information for |path|, given the blob retrieved
-// using |GetPermissionInfo()|.
-// |info| is the pointer to the blob.
-// |length| is the length of the blob.
-// Either |info| or |length| may be NULL/0, in which case nothing happens.
-bool RestorePermissionInfo(const FilePath& path, void* info, size_t length) {
-  if (!info || (length == 0)) {
+// Restores the permission information for `path`, given the heap_array
+// retrieved using `GetPermissionInfo()`.
+// `info` is the pointer to the heap_array.
+// If `info` is empty, nothing happens.
+bool RestorePermissionInfo(const FilePath& path, std::vector<uint8_t>& info) {
+  if (info.empty()) {
     return false;
   }
 
-  DCHECK_EQ(sizeof(mode_t), length);
-  mode_t* mode = reinterpret_cast<mode_t*>(info);
+  DCHECK_EQ(sizeof(mode_t), info.size());
+  // SAFETY: info has room for one mode_t.
+  UNSAFE_BUFFERS(mode_t* mode = reinterpret_cast<mode_t*>(info.data()));
 
-  int rv = HANDLE_EINTR(chmod(path.value().c_str(), *mode));
-
-  delete mode;
-
-  return rv == 0;
+  return HANDLE_EINTR(chmod(path.value().c_str(), *mode)) == 0;
 }
 
 }  // namespace
@@ -110,14 +104,14 @@ bool MakeFileUnwritable(const FilePath& path) {
 }
 
 FilePermissionRestorer::FilePermissionRestorer(const FilePath& path)
-    : path_(path), info_(nullptr), length_(0) {
-  info_ = GetPermissionInfo(path_, &length_);
-  DCHECK(info_ != nullptr);
-  DCHECK_NE(0u, length_);
+    : path_(path) {
+  info_ = GetPermissionInfo(path_);
+  DCHECK(info_.data() != nullptr);
+  DCHECK_NE(0u, info_.size());
 }
 
 FilePermissionRestorer::~FilePermissionRestorer() {
-  const bool success = RestorePermissionInfo(path_, info_, length_);
+  const bool success = RestorePermissionInfo(path_, info_);
   CHECK(success);
 }
 

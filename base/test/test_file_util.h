@@ -9,8 +9,9 @@
 
 #include <stddef.h>
 
+#include <vector>
+
 #include "base/files/file_path.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/cstring_view.h"
 #include "build/build_config.h"
 
@@ -103,9 +104,7 @@ class FilePermissionRestorer {
 
  private:
   const FilePath path_;
-  raw_ptr<void, DanglingUntriaged>
-      info_;       // The opaque stored permission information.
-  size_t length_;  // The length of the stored permission information.
+  std::vector<uint8_t> info_;  // The opaque stored permission information.
 };
 
 #if BUILDFLAG(IS_ANDROID)

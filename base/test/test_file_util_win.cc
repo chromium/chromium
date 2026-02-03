@@ -40,47 +40,52 @@ struct PermissionInfo {
 
 // Gets a blob indicating the permission information for |path|.
 // |length| is the length of the blob.  Zero on failure.
-// Returns the blob pointer, or NULL on failure.
-void* GetPermissionInfo(const FilePath& path, size_t* length) {
-  DCHECK(length);
-  *length = 0;
+// Returns the heap pointer, or empty heap on failure.
+std::vector<uint8_t> GetPermissionInfo(const FilePath& path) {
   PACL dacl = nullptr;
-  PSECURITY_DESCRIPTOR security_descriptor;
-  if (GetNamedSecurityInfo(path.value().c_str(), SE_FILE_OBJECT,
-                           DACL_SECURITY_INFORMATION, nullptr, nullptr, &dacl,
-                           nullptr, &security_descriptor) != ERROR_SUCCESS) {
-    return nullptr;
+  PSECURITY_DESCRIPTOR security_descriptor = nullptr;
+
+  if (::GetNamedSecurityInfo(path.value().c_str(), SE_FILE_OBJECT,
+                             DACL_SECURITY_INFORMATION, nullptr, nullptr, &dacl,
+                             nullptr, &security_descriptor) != ERROR_SUCCESS) {
+    return {};
   }
-  DCHECK(dacl);
 
-  *length = sizeof(PSECURITY_DESCRIPTOR) + dacl->AclSize;
-  PermissionInfo* info = reinterpret_cast<PermissionInfo*>(new char[*length]);
+  // Calculate required size: Pointer + the actual ACL (header + ACEs).
+  size_t acl_size = dacl->AclSize;
+  size_t total_size = offsetof(PermissionInfo, dacl) + acl_size;
+  auto buffer = std::vector<uint8_t>(total_size);
+  auto* info = UNSAFE_BUFFERS(reinterpret_cast<PermissionInfo*>(buffer.data()));
+
   info->security_descriptor = security_descriptor;
-  UNSAFE_TODO(memcpy(&info->dacl, dacl, dacl->AclSize));
 
-  return info;
+  // SAFETY: Trust that dacl->AclSize is correct. If so, vector has space
+  // for it.
+  auto dest_span = UNSAFE_BUFFERS(
+      base::span(reinterpret_cast<uint8_t*>(&info->dacl), acl_size));
+  // SAFETY: Trust dacl->AclSize is set correctly by ::GetNamedSecurityInfo.
+  auto source_span = UNSAFE_BUFFERS(
+      base::span(reinterpret_cast<const uint8_t*>(dacl), acl_size));
+  dest_span.copy_from(source_span);
+  return buffer;
 }
 
-// Restores the permission information for |path|, given the blob retrieved
-// using |GetPermissionInfo()|.
-// |info| is the pointer to the blob.
-// |length| is the length of the blob.
-// Either |info| or |length| may be NULL/0, in which case nothing happens.
-bool RestorePermissionInfo(const FilePath& path, void* info, size_t length) {
-  if (!info || !length) {
+// Restores the permission information for `path`, given the blob retrieved
+// using `GetPermissionInfo()`.
+// `info` is the pointer to the heap_array.
+// `info` may be empty, in which case nothing happens.
+bool RestorePermissionInfo(const FilePath& path, std::vector<uint8_t>& info) {
+  if (!info.data()) {
     return false;
   }
 
-  PermissionInfo* perm = reinterpret_cast<PermissionInfo*>(info);
+  PermissionInfo* perm =
+      UNSAFE_BUFFERS(reinterpret_cast<PermissionInfo*>(info.data()));
 
-  DWORD rc = SetNamedSecurityInfo(const_cast<wchar_t*>(path.value().c_str()),
-                                  SE_FILE_OBJECT, DACL_SECURITY_INFORMATION,
-                                  nullptr, nullptr, &perm->dacl, nullptr);
+  DWORD rc = ::SetNamedSecurityInfo(const_cast<wchar_t*>(path.value().c_str()),
+                                    SE_FILE_OBJECT, DACL_SECURITY_INFORMATION,
+                                    nullptr, nullptr, &perm->dacl, nullptr);
   LocalFree(perm->security_descriptor);
-
-  char* char_array = reinterpret_cast<char*>(info);
-  delete[] char_array;
-
   return rc == ERROR_SUCCESS;
 }
 
@@ -130,8 +135,8 @@ bool EvictFileFromSystemCache(const FilePath& file) {
     file_value.insert(0, L"\\\\?\\");
   }
   win::ScopedHandle file_handle(
-      CreateFile(file_value.c_str(), GENERIC_READ | GENERIC_WRITE, 0, nullptr,
-                 OPEN_EXISTING, FILE_FLAG_NO_BUFFERING, nullptr));
+      ::CreateFile(file_value.c_str(), GENERIC_READ | GENERIC_WRITE, 0, nullptr,
+                   OPEN_EXISTING, FILE_FLAG_NO_BUFFERING, nullptr));
   if (!file_handle.is_valid()) {
     return false;
   }
@@ -154,7 +159,7 @@ bool DenyFilePermission(const FilePath& path, DWORD permission) {
   PSECURITY_DESCRIPTOR security_descriptor;
 
   base::HeapArray<TCHAR> path_ptr = ToCStr(path.value());
-  if (GetNamedSecurityInfo(
+  if (::GetNamedSecurityInfo(
           path_ptr.data(), SE_FILE_OBJECT, DACL_SECURITY_INFORMATION, nullptr,
           nullptr, &old_dacl, nullptr, &security_descriptor) != ERROR_SUCCESS) {
     return false;
@@ -168,14 +173,14 @@ bool DenyFilePermission(const FilePath& path, DWORD permission) {
                                  TRUSTEE_IS_USER, current_user.data()}};
 
   PACL new_dacl;
-  if (SetEntriesInAcl(1, &new_access, old_dacl, &new_dacl) != ERROR_SUCCESS) {
+  if (::SetEntriesInAcl(1, &new_access, old_dacl, &new_dacl) != ERROR_SUCCESS) {
     LocalFree(security_descriptor);
     return false;
   }
 
-  DWORD rc = SetNamedSecurityInfo(path_ptr.data(), SE_FILE_OBJECT,
-                                  DACL_SECURITY_INFORMATION, nullptr, nullptr,
-                                  new_dacl, nullptr);
+  DWORD rc = ::SetNamedSecurityInfo(path_ptr.data(), SE_FILE_OBJECT,
+                                    DACL_SECURITY_INFORMATION, nullptr, nullptr,
+                                    new_dacl, nullptr);
   LocalFree(security_descriptor);
   LocalFree(new_dacl);
 
@@ -191,14 +196,13 @@ bool MakeFileUnwritable(const FilePath& path) {
 }
 
 FilePermissionRestorer::FilePermissionRestorer(const FilePath& path)
-    : path_(path), info_(nullptr), length_(0) {
-  info_ = GetPermissionInfo(path_, &length_);
-  DCHECK(info_);
-  DCHECK_NE(0u, length_);
+    : path_(path) {
+  info_ = GetPermissionInfo(path_);
+  DCHECK(info_.data());
 }
 
 FilePermissionRestorer::~FilePermissionRestorer() {
-  const bool success = RestorePermissionInfo(path_, info_, length_);
+  const bool success = RestorePermissionInfo(path_, info_);
   CHECK(success);
 }
 
