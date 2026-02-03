@@ -535,6 +535,31 @@ void ExtensionInstallPrompt::OnInstallFailure(
   install_ui_->OnInstallFailure(error);
 }
 
+void ExtensionInstallPrompt::SetUseAppInstalledBubble(bool use_bubble) {
+  install_ui_->SetUseAppInstalledBubble(use_bubble);
+}
+
+void ExtensionInstallPrompt::SetSkipPostInstallUI(bool skip_ui) {
+  install_ui_->SetSkipPostInstallUI(skip_ui);
+}
+
+void ExtensionInstallPrompt::ConfirmInstall(
+    DoneCallback install_callback,
+    const extensions::Extension* extension) {
+  ShowDialog(std::move(install_callback), extension, nullptr,
+             GetDefaultShowDialogCallback());
+}
+
+void ExtensionInstallPrompt::ConfirmReEnable(
+    DoneCallback install_callback,
+    const extensions::Extension* extension,
+    content::BrowserContext* browser_context) {
+  PromptType type =
+      GetReEnablePromptTypeForExtension(browser_context, extension);
+  ShowDialog(std::move(install_callback), extension, nullptr,
+             std::make_unique<Prompt>(type), GetDefaultShowDialogCallback());
+}
+
 std::unique_ptr<ExtensionInstallPrompt::Prompt>
 ExtensionInstallPrompt::GetPromptForTesting() {
   return std::move(prompt_);

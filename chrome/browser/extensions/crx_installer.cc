@@ -24,11 +24,11 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/blocklist_factory.h"
+#include "chrome/browser/extensions/extension_install_prompt.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker_factory.h"
 #include "chrome/browser/extensions/install_tracker_factory.h"
-#include "chrome/browser/ui/extensions/extension_install_ui.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -161,7 +161,7 @@ scoped_refptr<CrxInstaller> CrxInstaller::Create(
 }
 
 CrxInstaller::CrxInstaller(content::BrowserContext* context,
-                           std::unique_ptr<ExtensionInstallPrompt> client,
+                           std::unique_ptr<ExtensionInstallPromptClient> client,
                            const InstallApproval* approval)
     : browser_context_(context),
       registrar_(ExtensionRegistrar::Get(browser_context_)),
@@ -200,9 +200,8 @@ CrxInstaller::CrxInstaller(content::BrowserContext* context,
   CHECK(ExtensionsBrowserClient::Get()->IsSameContext(
       browser_context(), approval->browser_context));
   if (client_) {
-    client_->install_ui()->SetUseAppInstalledBubble(
-        approval->use_app_installed_bubble);
-    client_->install_ui()->SetSkipPostInstallUI(approval->skip_post_install_ui);
+    client_->SetUseAppInstalledBubble(approval->use_app_installed_bubble);
+    client_->SetSkipPostInstallUI(approval->skip_post_install_ui);
   }
 
   if (approval->skip_install_dialog) {
@@ -782,7 +781,7 @@ void CrxInstaller::OnInstallChecksComplete(const PreloadCheck::Errors& errors) {
     // because the WebStore already shows an error dialog itself.
     // Note: |client_| can be NULL in unit_tests!
     if (extension()->from_webstore() && client_)
-      client_->install_ui()->SetSkipPostInstallUI(true);
+      client_->SetSkipPostInstallUI(true);
 
     ReportFailureFromUIThread(
         CrxInstallError(CrxInstallErrorType::DECLINED,
@@ -844,9 +843,8 @@ void CrxInstaller::ConfirmInstall() {
       (!allow_silent_install_ || !approved_) &&
       !update_from_settings_page_) {
     AddRef();  // Balanced in OnInstallPromptDone().
-    client_->ShowDialog(
-        base::BindOnce(&CrxInstaller::OnInstallPromptDone, this), extension(),
-        nullptr, ExtensionInstallPrompt::GetDefaultShowDialogCallback());
+    client_->ConfirmInstall(
+        base::BindOnce(&CrxInstaller::OnInstallPromptDone, this), extension());
   } else {
     UpdateCreationFlagsAndCompleteInstall(kDontWithholdPermissions);
   }
@@ -1257,13 +1255,9 @@ void CrxInstaller::ConfirmReEnable() {
 
   if (client_) {
     AddRef();  // Balanced in OnInstallPromptDone().
-    ExtensionInstallPrompt::PromptType type =
-        ExtensionInstallPrompt::GetReEnablePromptTypeForExtension(
-            browser_context_, extension());
-    client_->ShowDialog(
+    client_->ConfirmReEnable(
         base::BindOnce(&CrxInstaller::OnInstallPromptDone, this), extension(),
-        nullptr, std::make_unique<ExtensionInstallPrompt::Prompt>(type),
-        ExtensionInstallPrompt::GetDefaultShowDialogCallback());
+        browser_context_);
   }
 }
 

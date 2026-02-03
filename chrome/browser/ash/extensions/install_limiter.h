@@ -17,6 +17,8 @@
 #include "chrome/browser/extensions/crx_installer.h"
 #include "components/keyed_service/core/keyed_service.h"
 
+class Profile;
+
 namespace extensions {
 
 // InstallLimiter defers big app installs after all small app installs and then

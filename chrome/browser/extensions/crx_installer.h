@@ -18,9 +18,9 @@
 #include "base/scoped_observation.h"
 #include "base/values.h"
 #include "base/version.h"
-#include "chrome/browser/extensions/extension_install_prompt.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "components/sync/model/string_ordinal.h"
+#include "extensions/browser/extension_install_prompt_client.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/install_flag.h"
 #include "extensions/browser/manifest_check_level.h"
@@ -33,6 +33,7 @@
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
+class ExtensionInstallPrompt;
 class SkBitmap;
 
 namespace base {
@@ -150,7 +151,8 @@ class CrxInstaller : public SandboxedUnpackerClient {
                                       const std::string& public_key,
                                       const base::FilePath& unpacked_dir);
 
-  void OnInstallPromptDone(ExtensionInstallPrompt::DoneCallbackPayload payload);
+  void OnInstallPromptDone(
+      ExtensionInstallPromptClient::DoneCallbackPayload payload);
 
   void InitializeCreationFlagsForUpdate(const Extension* extension,
                                         const int initial_flags);
@@ -283,7 +285,7 @@ class CrxInstaller : public SandboxedUnpackerClient {
   friend class MockCrxInstaller;
 
   CrxInstaller(content::BrowserContext* context,
-               std::unique_ptr<ExtensionInstallPrompt> client,
+               std::unique_ptr<ExtensionInstallPromptClient> client,
                const InstallApproval* approval);
   ~CrxInstaller() override;
 
@@ -495,7 +497,7 @@ class CrxInstaller : public SandboxedUnpackerClient {
 
   // The client we will work with to do the installation. This can be NULL, in
   // which case the install is silent.
-  std::unique_ptr<ExtensionInstallPrompt> client_;
+  std::unique_ptr<ExtensionInstallPromptClient> client_;
 
   // The root of the unpacked extension directory. This is a subdirectory of
   // temp_dir_, so we don't have to delete it explicitly.

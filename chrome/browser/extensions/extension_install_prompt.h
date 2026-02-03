@@ -22,6 +22,7 @@
 #include "base/values.h"
 #include "chrome/browser/ui/extensions/extension_install_ui.h"
 #include "chrome/common/buildflags.h"
+#include "extensions/browser/extension_install_prompt_client.h"
 #include "extensions/browser/install_prompt_permissions.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/permissions/permission_message.h"
@@ -50,7 +51,7 @@ class ImageSkia;
 }
 
 // Displays all the UI around extension installation.
-class ExtensionInstallPrompt {
+class ExtensionInstallPrompt : public extensions::ExtensionInstallPromptClient {
  public:
   // This enum is associated with Extensions.InstallPrompt_Type UMA histogram.
   // Do not modify existing values and add new values only to the end.
@@ -224,23 +225,9 @@ class ExtensionInstallPrompt {
   static const int kMinExtensionRating = 0;
   static const int kMaxExtensionRating = 5;
 
-  enum class Result {
-    ACCEPTED,
-    ACCEPTED_WITH_WITHHELD_PERMISSIONS,
-    USER_CANCELED,
-    ABORTED,
-  };
-
-  struct DoneCallbackPayload {
-    explicit DoneCallbackPayload(Result result);
-    DoneCallbackPayload(Result result, std::string justification);
-    ~DoneCallbackPayload() = default;
-
-    const Result result;
-    const std::string justification;
-  };
-
-  using DoneCallback = base::OnceCallback<void(DoneCallbackPayload payload)>;
+  using DoneCallback = extensions::ExtensionInstallPromptClient::DoneCallback;
+  using DoneCallbackPayload =
+      extensions::ExtensionInstallPromptClient::DoneCallbackPayload;
 
   using ShowDialogCallback = base::RepeatingCallback<void(
       std::unique_ptr<ExtensionInstallPromptShowParams>,
@@ -279,7 +266,7 @@ class ExtensionInstallPrompt {
   ExtensionInstallPrompt(const ExtensionInstallPrompt&) = delete;
   ExtensionInstallPrompt& operator=(const ExtensionInstallPrompt&) = delete;
 
-  virtual ~ExtensionInstallPrompt();
+  ~ExtensionInstallPrompt() override;
 
   ExtensionInstallUI* install_ui() const { return install_ui_.get(); }
 
@@ -312,13 +299,17 @@ class ExtensionInstallPrompt {
       std::unique_ptr<const extensions::PermissionSet> custom_permissions,
       const ShowDialogCallback& show_dialog_callback);
 
-  // Installation was successful. This is declared virtual for testing.
-  virtual void OnInstallSuccess(
-      scoped_refptr<const extensions::Extension> extension,
-      SkBitmap* icon);
-
-  // Installation failed. This is declared virtual for testing.
-  virtual void OnInstallFailure(const extensions::CrxInstallError& error);
+  // extensions::ExtensionInstallPromptClient:
+  void OnInstallSuccess(scoped_refptr<const extensions::Extension> extension,
+                        SkBitmap* icon) override;
+  void OnInstallFailure(const extensions::CrxInstallError& error) override;
+  void SetUseAppInstalledBubble(bool use_bubble) override;
+  void SetSkipPostInstallUI(bool skip_ui) override;
+  void ConfirmInstall(DoneCallback install_callback,
+                      const extensions::Extension* extension) override;
+  void ConfirmReEnable(DoneCallback install_callback,
+                       const extensions::Extension* extension,
+                       content::BrowserContext* browser_context) override;
 
   bool did_call_show_dialog() const { return did_call_show_dialog_; }
 
