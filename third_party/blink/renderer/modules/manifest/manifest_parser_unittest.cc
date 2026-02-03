@@ -717,6 +717,51 @@ TEST_F(ManifestParserTest, StartURLParseRules) {
     EXPECT_THAT(errors(), testing::IsEmpty());
     EXPECT_TRUE(manifest->has_valid_specified_start_url);
   }
+
+  // When manifest is a data URL, relative start_url should resolve against
+  // document URL.
+  {
+    auto& manifest = ParseManifestWithURLs(R"({ "start_url": "/" })",
+                                           KURL("data:application/json,{}"),
+                                           KURL("http://foo.com/index.html"));
+    EXPECT_EQ(manifest->start_url.GetString(), "http://foo.com/");
+    EXPECT_THAT(errors(), testing::IsEmpty());
+    EXPECT_TRUE(manifest->has_valid_specified_start_url);
+  }
+
+  // When manifest is a data URL, relative path should resolve against document
+  // URL.
+  {
+    auto& manifest = ParseManifestWithURLs(
+        R"({ "start_url": "app/start.html" })",
+        KURL("data:application/json,{}"), KURL("http://foo.com/index.html"));
+    EXPECT_EQ(manifest->start_url.GetString(), "http://foo.com/app/start.html");
+    EXPECT_THAT(errors(), testing::IsEmpty());
+    EXPECT_TRUE(manifest->has_valid_specified_start_url);
+  }
+
+  // When manifest is a data URL, absolute same-origin URL should still work.
+  {
+    auto& manifest = ParseManifestWithURLs(
+        R"({ "start_url": "http://foo.com/start.html" })",
+        KURL("data:application/json,{}"), KURL("http://foo.com/index.html"));
+    EXPECT_EQ(manifest->start_url.GetString(), "http://foo.com/start.html");
+    EXPECT_THAT(errors(), testing::IsEmpty());
+    EXPECT_TRUE(manifest->has_valid_specified_start_url);
+  }
+
+  // When manifest is a data URL, cross-origin start_url should still be
+  // rejected.
+  {
+    auto& manifest = ParseManifestWithURLs(
+        R"({ "start_url": "http://bar.com/start.html" })",
+        KURL("data:application/json,{}"), KURL("http://foo.com/index.html"));
+    EXPECT_EQ(manifest->start_url.GetString(), "http://foo.com/index.html");
+    EXPECT_THAT(errors(),
+                testing::ElementsAre("property 'start_url' ignored, should "
+                                     "be same origin as document."));
+    EXPECT_FALSE(manifest->has_valid_specified_start_url);
+  }
 }
 
 TEST_F(ManifestParserTest, ScopeParseRules) {
@@ -906,6 +951,27 @@ TEST_F(ManifestParserTest, ScopeParseRules) {
   {
     auto& manifest = ParseManifest("{}");
     ASSERT_EQ(manifest->scope, KURL(DefaultDocumentUrl(), "."));
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // When manifest is a data URL, relative scope should resolve against document
+  // URL.
+  {
+    auto& manifest = ParseManifestWithURLs(
+        R"({ "start_url": "app/index.html", "scope": "app/" })",
+        KURL("data:application/json,{}"), KURL("http://foo.com/index.html"));
+    ASSERT_EQ(manifest->scope.GetString(), "http://foo.com/app/");
+    ASSERT_EQ(manifest->start_url.GetString(), "http://foo.com/app/index.html");
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // When manifest is a data URL, root scope should work.
+  {
+    auto& manifest = ParseManifestWithURLs(
+        R"({ "start_url": "/", "scope": "/" })",
+        KURL("data:application/json,{}"), KURL("http://foo.com/index.html"));
+    ASSERT_EQ(manifest->scope.GetString(), "http://foo.com/");
+    ASSERT_EQ(manifest->start_url.GetString(), "http://foo.com/");
     EXPECT_EQ(0u, GetErrorCount());
   }
 }
@@ -1662,6 +1728,24 @@ TEST_F(ManifestParserTest, IconsParseRules) {
     EXPECT_EQ(manifest->icons[1]->sizes.size(), 1u);
     EXPECT_EQ(manifest->icons[1]->sizes[0].width(), 144);
     EXPECT_EQ(manifest->icons[1]->sizes[0].height(), 144);
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // When manifest is a data URL, icon src should resolve against document URL.
+  {
+    auto& manifest = ParseManifestWithURLs(
+        R"({
+          "icons": [
+            { "src": "/icon.png", "sizes": "192x192" },
+            { "src": "images/icon.svg", "type": "image/svg+xml" }
+          ]
+        })",
+        KURL("data:application/json,{}"),
+        KURL("http://foo.com/app/index.html"));
+    ASSERT_EQ(manifest->icons.size(), 2u);
+    EXPECT_EQ(manifest->icons[0]->src.GetString(), "http://foo.com/icon.png");
+    EXPECT_EQ(manifest->icons[1]->src.GetString(),
+              "http://foo.com/app/images/icon.svg");
     EXPECT_EQ(0u, GetErrorCount());
   }
 }

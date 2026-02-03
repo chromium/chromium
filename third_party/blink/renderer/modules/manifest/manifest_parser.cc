@@ -743,7 +743,14 @@ KURL ManifestParser::ParseURL(const JSONObject* object,
     return KURL();
   }
 
-  KURL resolved = KURL(base_url, *url_str);
+  // When the manifest is embedded via a data: URL, relative URLs cannot be
+  // resolved against it (data URLs have opaque origins). In this case, fall
+  // back to using the document URL as the base for resolution. This matches
+  // the intent that relative URLs in an embedded manifest should work relative
+  // to the document that embeds it.
+  const KURL& effective_base_url =
+      base_url.ProtocolIsData() ? document_url_ : base_url;
+  KURL resolved = KURL(effective_base_url, *url_str);
   if (!resolved.IsValid()) {
     AddErrorInfo(StrCat({"property '", key, "' ignored, URL is invalid."}));
     return KURL();
