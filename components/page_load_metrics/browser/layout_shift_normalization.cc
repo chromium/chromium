@@ -12,7 +12,7 @@ LayoutShiftNormalization::LayoutShiftNormalization() = default;
 LayoutShiftNormalization::~LayoutShiftNormalization() = default;
 
 void LayoutShiftNormalization::AddNewLayoutShifts(
-    const std::vector<page_load_metrics::mojom::LayoutShiftPtr>& new_shifts,
+    base::span<const mojom::LayoutShiftPtr> new_shifts,
     base::TimeTicks current_time,
     float cumulative_layout_shift_score) {
   if (new_shifts.empty() || normalized_cls_data_.data_tainted)

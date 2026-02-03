@@ -5,8 +5,10 @@
 #ifndef COMPONENTS_PAGE_LOAD_METRICS_BROWSER_RESPONSIVENESS_METRICS_NORMALIZATION_H_
 #define COMPONENTS_PAGE_LOAD_METRICS_BROWSER_RESPONSIVENESS_METRICS_NORMALIZATION_H_
 
+#include <optional>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/time/time.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 #include "third_party/blink/public/common/features.h"
@@ -28,7 +30,7 @@ class ResponsivenessMetricsNormalization {
   ~ResponsivenessMetricsNormalization();
 
   void AddNewUserInteractionLatencies(
-      const std::vector<mojom::UserInteractionLatencyPtr>& max_event_durations);
+      base::span<const mojom::UserInteractionLatencyPtr> max_event_durations);
 
   void ClearAllUserInteractionLatencies();
 
@@ -46,7 +48,7 @@ class ResponsivenessMetricsNormalization {
 
  private:
   void NormalizeUserInteractionLatencies(
-      const std::vector<mojom::UserInteractionLatencyPtr>&
+      base::span<const mojom::UserInteractionLatencyPtr>
           user_interaction_latencies);
 
   // A sorted list of the worst ten latencies, used to approximate a high
