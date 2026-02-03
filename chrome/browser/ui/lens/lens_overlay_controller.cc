@@ -2461,6 +2461,17 @@ void LensOverlayController::IssueSearchBoxRequestPart2(
     GetLensSessionMetricsLogger()->OnContextualSearchboxQueryIssued(
         is_zero_prefix_suggestion,
         /*is_initial_query=*/state_ == State::kOverlay);
+    if (lens_search_controller_->should_route_to_contextual_tasks()) {
+      // Post a task to close the overlay to avoid destroying the searchbox handler
+      // while it is still on the stack.
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              &LensSearchController::CloseLensSync,
+              lens_search_controller_->GetWeakPtr(),
+              lens::LensOverlayDismissalSource::kContextualTasksQuerySubmitted));
+      return;
+    }
   } else if (initialization_data_->selected_region_.is_null()) {
     GetLensQueryFlowRouter()->SendTextOnlyQuery(
         query_start_time, search_box_text, lens_selection_type_,
