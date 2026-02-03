@@ -14,6 +14,7 @@
 class WebStateList;
 @protocol PasskeyCreationBottomSheetConsumer;
 @protocol PasskeyCreationBottomSheetMediatorDelegate;
+@protocol ReauthenticationProtocol;
 
 // Mediator for the passkey creation bottom sheet.
 @interface PasskeyCreationBottomSheetMediator : NSObject
@@ -21,6 +22,7 @@ class WebStateList;
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
                            requestID:(std::string)requestID
                     accountForSaving:(NSString*)accountForSaving
+                        reauthModule:(id<ReauthenticationProtocol>)reauthModule
                             delegate:
                                 (id<PasskeyCreationBottomSheetMediatorDelegate>)
                                     mediatorDelegate;

@@ -13,6 +13,9 @@
 // Ends the presentation of the bottom sheet.
 - (void)endPresentation;
 
+// Dismisses the passkey creation process.
+- (void)dismissPasskeyCreation;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_PASSWORDS_BOTTOM_SHEET_COORDINATOR_PASSKEY_CREATION_BOTTOM_SHEET_MEDIATOR_DELEGATE_H_

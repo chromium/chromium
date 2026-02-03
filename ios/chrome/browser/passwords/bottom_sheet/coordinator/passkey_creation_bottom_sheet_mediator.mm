@@ -12,7 +12,11 @@
 #import "ios/chrome/browser/passwords/bottom_sheet/ui/passkey_creation_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
+#import "ios/chrome/common/ui/reauthentication/reauthentication_event.h"
+#import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 @interface PasskeyCreationBottomSheetMediator () <WebStateListObserving>
 @end
@@ -36,6 +40,9 @@
   // Email associated with the account the passkey will get saved in.
   NSString* _accountForSaving;
 
+  // Module containing the reauthentication mechanism.
+  __weak id<ReauthenticationProtocol> _reauthModule;
+
   // URL of the current page the bottom sheet is being displayed on.
   GURL _URL;
 }
@@ -43,6 +50,7 @@
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
                            requestID:(std::string)requestID
                     accountForSaving:(NSString*)accountForSaving
+                        reauthModule:(id<ReauthenticationProtocol>)reauthModule
                             delegate:
                                 (id<PasskeyCreationBottomSheetMediatorDelegate>)
                                     mediatorDelegate {
@@ -58,6 +66,7 @@
 
     _requestID = requestID;
     _accountForSaving = accountForSaving;
+    _reauthModule = reauthModule;
     _URL = webStateList->GetActiveWebState()->GetLastCommittedURL();
     _mediatorDelegate = mediatorDelegate;
   }
@@ -76,7 +85,71 @@
     return;
   }
 
+  std::optional<bool> shouldPerformUserVerification =
+      passkeyTabHelper->ShouldPerformUserVerification(
+          _requestID, [_reauthModule canAttemptReauthWithBiometrics]);
+
+  if (!shouldPerformUserVerification.has_value()) {
+    // TODO(crbug.com/479249845): This should not happen. The correct behavior
+    // is to report an error to the user, and dismiss the passkey creation.
+    // For now, we defer to the renderer.
+    [self deferPasskeyCreationToRenderer];
+    [_mediatorDelegate dismissPasskeyCreation];
+    return;
+  }
+
+  if (!*shouldPerformUserVerification) {
+    [self performPasskeyCreation];
+    return;
+  }
+
+  if ([_reauthModule canAttemptReauth]) {
+    __weak __typeof(self) weakSelf = self;
+    [_reauthModule
+        attemptReauthWithLocalizedReason:
+            l10n_util::GetNSString(IDS_IOS_PASSKEY_CREATION_START_REAUTH_REASON)
+                    canReusePreviousAuth:YES
+                                 handler:^(ReauthenticationResult result) {
+                                   [weakSelf handleReauthResult:result];
+                                 }];
+    return;
+  }
+
+  // TODO(crbug.com/479249845): The code below is the correct behavior.
+  // We need to review it with broader teams to confirm that this is the best
+  // approach. When reauthentication cannot be attempted, we
+  // could fail the request or show an appropriate error to the user. However,
+  // there might be other means for the device to authenticate the user (other
+  // credential providers in the system). So, deferring to the renderer is a
+  // reasonable fallback.
+  [self deferPasskeyCreationToRenderer];
+  [_mediatorDelegate dismissPasskeyCreation];
+}
+
+- (void)handleReauthResult:(ReauthenticationResult)result {
+  if (result == ReauthenticationResult::kSuccess) {
+    [self performPasskeyCreation];
+  } else {
+    // TODO(crbug.com/479249845): The correct behavior when reauthentication
+    // fails (e.g., was canceled) should be to fail the request.
+    // We could allow a certain number of retries. However, given that a user
+    // can trigger passkey creation from the web later, dismissing passkey
+    // creation isn't an irreversible action. We need to add code on the
+    // JavaScript side to cancel the passkey creation process, and then invoke
+    // it to cancel the process instead of deferring to the renderer.
+    [self deferPasskeyCreationToRenderer];
+    [_mediatorDelegate dismissPasskeyCreation];
+  }
+}
+
+- (void)performPasskeyCreation {
+  webauthn::PasskeyTabHelper* passkeyTabHelper = [self passkeyTabHelper];
+  if (!passkeyTabHelper) {
+    [_mediatorDelegate dismissPasskeyCreation];
+    return;
+  }
   passkeyTabHelper->StartPasskeyCreation(_requestID);
+  [_mediatorDelegate dismissPasskeyCreation];
 }
 
 - (void)deferPasskeyCreationToRenderer {

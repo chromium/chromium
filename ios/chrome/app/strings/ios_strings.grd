@@ -4880,6 +4880,9 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_PASSKEY_CREATION_DATE" desc="Passkey creation date. [iOS only]">
         Created on <ph name="Date"><ex>2023/12/31</ex>$1</ph>
       </message>
+      <message name="IDS_IOS_PASSKEY_CREATION_START_REAUTH_REASON" desc="Message explaining that the reason why we are requiring the user to re-authenticate is to be able to create a passkey. This is shown by iOS in the Touch ID reauthentication system dialogue, right under the OS string 'Touch ID for $BROWSER_NAME'.">
+        Verify it's you to create a passkey
+      </message>
       <message name="IDS_IOS_PASSKEY_DOES_NOT_WORK" desc="Label indicating that the passkey was marked for deletion and does not work anymore. [iOS only]">
         Doesn't work
       </message>

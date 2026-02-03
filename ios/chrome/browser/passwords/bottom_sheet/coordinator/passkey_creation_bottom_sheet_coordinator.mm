@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
+#import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/web/public/web_state.h"
 
 @interface PasskeyCreationBottomSheetCoordinator () <
@@ -30,6 +31,9 @@
 
   // The passkey request's ID, originating from PasskeyTabHelper.
   std::optional<std::string> _pendingRequestID;
+
+  // Module for biometric authentication.
+  ReauthenticationModule* _reauthModule;
 }
 
 @end
@@ -48,10 +52,12 @@
 
 - (void)start {
   WebStateList* webStateList = self.browser->GetWebStateList();
+  _reauthModule = [[ReauthenticationModule alloc] init];
   _mediator = [[PasskeyCreationBottomSheetMediator alloc]
       initWithWebStateList:webStateList
                  requestID:std::move(*_pendingRequestID)
           accountForSaving:[self accountForSaving]
+              reauthModule:_reauthModule
                   delegate:self];
 
   FaviconLoader* faviconLoader =
@@ -77,6 +83,7 @@
 
   [_mediator disconnect];
   _mediator = nil;
+  _reauthModule = nil;
 }
 
 #pragma mark - PasskeyCreationBottomSheetMediatorDelegate
@@ -87,17 +94,19 @@
   [_viewController dismissViewControllerAnimated:NO completion:nil];
 }
 
+- (void)dismissPasskeyCreation {
+  [self.browserCoordinatorCommandsHandler dismissPasskeyCreation];
+}
+
 #pragma mark - ConfirmationAlertActionHandler
 
 - (void)confirmationAlertPrimaryAction {
-  // TODO(crbug.com/460485496): Perform user authentication if required.
   [_mediator createPasskey];
-  [self.browserCoordinatorCommandsHandler dismissPasskeyCreation];
 }
 
 - (void)confirmationAlertSecondaryAction {
   [_mediator deferPasskeyCreationToRenderer];
-  [self.browserCoordinatorCommandsHandler dismissPasskeyCreation];
+  [self dismissPasskeyCreation];
 }
 
 #pragma mark - Private
