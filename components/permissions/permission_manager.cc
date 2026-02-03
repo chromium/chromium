@@ -44,16 +44,10 @@ GURL GetEmbeddingOrigin(content::RenderFrameHost* const render_frame_host,
                         const GURL& requesting_origin) {
   content::WebContents* const web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host);
-  DCHECK(web_contents);
-
-  if (PermissionsClient::Get()->DoURLsMatchNewTabPage(
-          requesting_origin,
-          web_contents->GetLastCommittedURL().DeprecatedGetOriginAsURL())) {
-    return web_contents->GetLastCommittedURL().DeprecatedGetOriginAsURL();
-  } else {
-    return PermissionUtil::GetLastCommittedOriginAsURL(
-        render_frame_host->GetMainFrame());
-  }
+  return PermissionsClient::Get()
+      ->GetEmbeddingOriginOverride(requesting_origin, web_contents)
+      .value_or(PermissionUtil::GetLastCommittedOriginAsURL(
+          render_frame_host->GetMainFrame()));
 }
 }  // anonymous namespace
 

@@ -216,14 +216,16 @@ class PermissionsClient {
   // Allows embedder to override the canonical origin for a permission request.
   // This is the origin that will be used for requesting/storing/displaying
   // permissions.
-  virtual std::optional<GURL> OverrideCanonicalOrigin(
+  virtual std::optional<GURL> GetCanonicalOriginOverride(
       const GURL& requesting_origin,
       const GURL& embedding_origin);
 
-  // Checks if `requesting_origin` and `embedding_origin` are the new tab page
-  // origins.
-  virtual bool DoURLsMatchNewTabPage(const GURL& requesting_origin,
-                                     const GURL& embedding_origin);
+  // Returns the WebContents' GetLastCommittedURL() to use as the embedding
+  // origin when special handling is needed, or std::nullopt to use the default
+  // main frame origin.
+  virtual std::optional<GURL> GetEmbeddingOriginOverride(
+      const GURL& requesting_origin,
+      content::WebContents* web_contents);
 
   // Determines the reason why a prompt was ignored.
   virtual permissions::PermissionIgnoredReason DetermineIgnoreReason(
