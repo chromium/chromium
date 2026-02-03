@@ -1,0 +1,117 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  clippy:
+    name: "Lint with clippy (${{ matrix.os }}, ${{ matrix.flags }})"
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ["windows-latest", "ubuntu-latest"]
+        flags: ["--all-features", "--no-default-features"]
+    env:
+      RUSTFLAGS: -Dwarnings
+    steps:
+      - name: Ensure windows git checkout keeps \n line ending
+        run: |
+          git config --system core.autocrlf false
+          git config --system core.eol lf
+        if: matrix.os == 'windows-latest'
+      - uses: actions/checkout@v2
+      - name: Install Rust (clippy)
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+          components: clippy
+      - run: cargo clippy --all-targets ${{ matrix.flags }}
+  rustfmt:
+    name: "Verify code formatting (${{ matrix.os }})"
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: windows-latest }
+          - { os: ubuntu-latest }
+    steps:
+      - name: Ensure windows git checkout keeps \n line ending
+        run: |
+          git config --system core.autocrlf false
+          git config --system core.eol lf
+        if: matrix.os == 'windows-latest'
+      - uses: actions/checkout@v2
+      - name: Install Rust (rustfmt)
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+          components: rustfmt
+      - run: cargo fmt --all -- --check
+  tests:
+    name: "Test Rust ${{ matrix.rust }} (${{ matrix.os }}, ${{ matrix.target }} ${{ matrix.flags }})"
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { rust: stable, os: windows-latest, target: x86_64-pc-windows-msvc, flags: "--all-features" }
+          - { rust: stable, os: windows-latest, target: x86_64-pc-windows-msvc, flags: "--no-default-features" }
+          - { rust: stable, os: macos-latest, flags: "--all-features" }
+          - { rust: stable, os: macos-latest, flags: "--no-default-features" }
+          - { rust: stable, os: ubuntu-latest, flags: "--all-features" }
+          - { rust: stable, os: ubuntu-latest, flags: "--no-default-features" }
+          - { rust: stable, os: ubuntu-latest, target: wasm32-unknown-unknown, flags: "--all-features" }
+          - { rust: stable, os: ubuntu-latest, target: wasm32-unknown-unknown, flags: "--no-default-features" }
+          - { rust: 1.65.0, os: ubuntu-latest, flags: "--all-features" }
+          - { rust: 1.65.0, os: ubuntu-latest, flags: "--no-default-features" }
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Rust ${{ matrix.rust }} ${{ matrix.target }}
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: ${{ matrix.rust }}
+          targets: ${{ matrix.target }}
+      - run: cargo test ${{ matrix.flags }} --target ${{ matrix.target }}
+        if: matrix.target != 0 && matrix.target != 'wasm32-unknown-unknown'
+      - run: cargo build ${{ matrix.flags }} --target ${{ matrix.target }}
+        if: matrix.target != 0 && matrix.target == 'wasm32-unknown-unknown'
+      - run: cargo test ${{ matrix.flags }}
+        if: matrix.target == 0
+  examples:
+    name: "Run examples using Rust ${{ matrix.rust }} (${{ matrix.os }})"
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { rust: stable, os: ubuntu-latest }
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Rust ${{ matrix.rust }} ${{ matrix.target }}
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: ${{ matrix.rust }}
+          targets: ${{ matrix.target }}
+      - name: Unix Example
+        run: cargo run --example unix
+      - name: Unix UTF8 Example
+        run: cargo run --example unix_utf8
+      - name: Windows Example
+        run: cargo run --example windows
+      - name: Windows UTF8 Example
+        run: cargo run --example windows_utf8
+      - name: typed Example
+        run: cargo run --example typed
+      - name: typed UTF8 Example
+        run: cargo run --example typed_utf8
+      - name: platform Example
+        run: cargo run --example platform
+      - name: platform UTF8 Example
+        run: cargo run --example platform_utf8

@@ -3,6 +3,7 @@
 use crate::read::magic_finder::{Backwards, Forward, MagicFinder, OptimisticMagicFinder};
 use crate::read::ArchiveOffset;
 use crate::result::{invalid, ZipError, ZipResult};
+use core::any::type_name;
 use core::mem;
 use core::slice;
 use std::io::{self, Read, Seek, Write};
@@ -182,9 +183,14 @@ pub(crate) trait FixedSizeBlock: Pod {
     #[allow(clippy::wrong_self_convention)]
     fn from_le(self) -> Self;
 
-    fn parse<R: Read>(reader: &mut R) -> ZipResult<Self> {
+    fn parse<R: Read + ?Sized>(reader: &mut R) -> ZipResult<Self> {
         let mut block = Self::zeroed();
-        reader.read_exact(block.as_bytes_mut())?;
+        if let Err(e) = reader.read_exact(block.as_bytes_mut()) {
+            if e.kind() == io::ErrorKind::UnexpectedEof {
+                return Err(invalid!("Unexpected end of {}", type_name::<Self>()));
+            }
+            return Err(e.into());
+        }
         let block = Self::from_le(block);
 
         if block.magic() != Self::MAGIC {
@@ -321,7 +327,7 @@ impl Zip32CentralDirectoryEnd {
         (block, zip_file_comment)
     }
 
-    pub fn parse<T: Read>(reader: &mut T) -> ZipResult<Zip32CentralDirectoryEnd> {
+    pub fn parse<T: Read + ?Sized>(reader: &mut T) -> ZipResult<Zip32CentralDirectoryEnd> {
         let Zip32CDEBlock {
             // magic,
             disk_number,
@@ -407,7 +413,7 @@ pub(crate) struct Zip64CentralDirectoryEndLocator {
 }
 
 impl Zip64CentralDirectoryEndLocator {
-    pub fn parse<T: Read>(reader: &mut T) -> ZipResult<Zip64CentralDirectoryEndLocator> {
+    pub fn parse<T: Read + ?Sized>(reader: &mut T) -> ZipResult<Zip64CentralDirectoryEndLocator> {
         let Zip64CDELocatorBlock {
             // magic,
             disk_with_central_directory,
@@ -496,7 +502,10 @@ pub(crate) struct Zip64CentralDirectoryEnd {
 }
 
 impl Zip64CentralDirectoryEnd {
-    pub fn parse<T: Read>(reader: &mut T, max_size: u64) -> ZipResult<Zip64CentralDirectoryEnd> {
+    pub fn parse<T: Read + ?Sized>(
+        reader: &mut T,
+        max_size: u64,
+    ) -> ZipResult<Zip64CentralDirectoryEnd> {
         let Zip64CDEBlock {
             record_size,
             version_made_by,
@@ -517,7 +526,14 @@ impl Zip64CentralDirectoryEnd {
         }
 
         let mut zip_file_comment = vec![0u8; record_size as usize - 44].into_boxed_slice();
-        reader.read_exact(&mut zip_file_comment)?;
+        if let Err(e) = reader.read_exact(&mut zip_file_comment) {
+            if e.kind() == io::ErrorKind::UnexpectedEof {
+                return Err(invalid!(
+                    "EOCD64 extensible data sector exceeds file boundary"
+                ));
+            }
+            return Err(e.into());
+        }
 
         Ok(Self {
             record_size,
@@ -598,7 +614,7 @@ pub(crate) struct CentralDirectoryEndInfo {
 ///
 /// In the best case scenario (no prepended junk), this function will not backtrack
 /// in the reader.
-pub(crate) fn find_central_directory<R: Read + Seek>(
+pub(crate) fn find_central_directory<R: Read + Seek + ?Sized>(
     reader: &mut R,
     archive_offset: ArchiveOffset,
     end_exclusive: u64,
@@ -641,7 +657,7 @@ pub(crate) fn find_central_directory<R: Read + Seek>(
 
         let zip64_metadata = if eocd.may_be_zip64() {
             fn try_read_eocd64_locator(
-                reader: &mut (impl Read + Seek),
+                reader: &mut (impl Read + Seek + ?Sized),
                 eocd_offset: u64,
             ) -> ZipResult<(u64, Zip64CentralDirectoryEndLocator)> {
                 if eocd_offset < mem::size_of::<Zip64CDELocatorBlock>() as u64 {
@@ -651,10 +667,8 @@ pub(crate) fn find_central_directory<R: Read + Seek>(
                 let locator64_offset = eocd_offset - mem::size_of::<Zip64CDELocatorBlock>() as u64;
 
                 reader.seek(io::SeekFrom::Start(locator64_offset))?;
-                Ok((
-                    locator64_offset,
-                    Zip64CentralDirectoryEndLocator::parse(reader)?,
-                ))
+                let locator64 = Zip64CentralDirectoryEndLocator::parse(reader);
+                Ok((locator64_offset, locator64?))
             }
 
             try_read_eocd64_locator(reader, eocd_offset).ok()
@@ -726,7 +740,7 @@ pub(crate) fn find_central_directory<R: Read + Seek>(
 
         // This was hidden inside a function to collect errors in a single place.
         // Once try blocks are stabilized, this can go away.
-        fn try_read_eocd64<R: Read + Seek>(
+        fn try_read_eocd64<R: Read + Seek + ?Sized>(
             reader: &mut R,
             locator64: &Zip64CentralDirectoryEndLocator,
             expected_length: u64,

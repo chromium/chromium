@@ -1,12 +1,14 @@
 //! Types that specify what is contained in a ZIP.
+use crate::cfg_if_expr;
 use crate::cp437::FromCp437;
 use crate::write::FileOptionExtension;
 use crate::zipcrypto::EncryptWith;
 use core::fmt::{self, Debug, Formatter};
 use core::mem;
 use std::ffi::OsStr;
-use std::path::{Component, Path, PathBuf, MAIN_SEPARATOR};
+use std::path::{Path, PathBuf};
 use std::sync::{Arc, OnceLock};
+use typed_path::{Utf8WindowsComponent, Utf8WindowsPath};
 
 #[cfg(feature = "chrono")]
 use chrono::{Datelike, NaiveDate, NaiveDateTime, NaiveTime, Timelike};
@@ -540,7 +542,7 @@ pub struct ZipFileData {
 
 impl ZipFileData {
     /// Get the starting offset of the data of the compressed file
-    pub fn data_start(&self, reader: &mut (impl Read + Seek + Sized)) -> ZipResult<u64> {
+    pub fn data_start(&self, reader: &mut (impl Read + Seek + ?Sized)) -> ZipResult<u64> {
         match self.data_start.get() {
             Some(data_start) => Ok(*data_start),
             None => Ok(find_data_start(self, reader)?),
@@ -556,25 +558,15 @@ impl ZipFileData {
         let no_null_filename = match self.file_name.find('\0') {
             Some(index) => &self.file_name[0..index],
             None => &self.file_name,
-        }
-        .to_string();
-
-        // zip files can contain both / and \ as separators regardless of the OS
-        // and as we want to return a sanitized PathBuf that only supports the
-        // OS separator let's convert incompatible separators to compatible ones
-        let separator = MAIN_SEPARATOR;
-        let opposite_separator = match separator {
-            '/' => '\\',
-            _ => '/',
         };
-        let filename =
-            no_null_filename.replace(&opposite_separator.to_string(), &separator.to_string());
 
-        Path::new(&filename)
+        Utf8WindowsPath::new(no_null_filename)
             .components()
-            .filter(|component| matches!(*component, Component::Normal(..)))
-            .fold(PathBuf::new(), |mut path, ref cur| {
-                path.push(cur.as_os_str());
+            .filter(|component| matches!(*component, Utf8WindowsComponent::Normal(..)))
+            .fold(PathBuf::new(), |mut path, cur| {
+                if let Utf8WindowsComponent::Normal(s) = cur {
+                    path.push(s);
+                }
                 path
             })
     }
@@ -592,17 +584,27 @@ impl ZipFileData {
         if self.file_name.contains('\0') {
             return None;
         }
-        let path = PathBuf::from(self.file_name.to_string());
         let mut depth = 0usize;
-        for component in path.components() {
+        let mut out_path = PathBuf::new();
+        for component in Utf8WindowsPath::new(&self.file_name).components() {
             match component {
-                Component::Prefix(_) | Component::RootDir => return None,
-                Component::ParentDir => depth = depth.checked_sub(1)?,
-                Component::Normal(_) => depth += 1,
-                Component::CurDir => (),
+                Utf8WindowsComponent::Prefix(_) | Utf8WindowsComponent::RootDir => {
+                    if depth > 0 {
+                        return None;
+                    }
+                }
+                Utf8WindowsComponent::ParentDir => {
+                    depth = depth.checked_sub(1)?;
+                    out_path.pop();
+                }
+                Utf8WindowsComponent::Normal(s) => {
+                    depth += 1;
+                    out_path.push(s);
+                }
+                Utf8WindowsComponent::CurDir => (),
             }
         }
-        Some(path)
+        Some(out_path)
     }
 
     /// Get unix mode for the file
@@ -610,9 +612,15 @@ impl ZipFileData {
         if self.external_attributes == 0 {
             return None;
         }
-
+        let unix_mode = self.external_attributes >> 16;
+        if unix_mode != 0 {
+            // If the high 16 bits are non-zero, they probably contain Unix permissions.
+            // This happens for archives created on Windows by this crate or other tools,
+            // and is the only way to identify symlinks in such archives.
+            return Some(unix_mode);
+        }
         match self.system {
-            System::Unix => Some(self.external_attributes >> 16),
+            System::Unix => Some(unix_mode),
             System::Dos => {
                 // Interpret MS-DOS directory bit
                 let mut mode = if 0x10 == (self.external_attributes & 0x10) {
@@ -622,7 +630,7 @@ impl ZipFileData {
                 };
                 if 0x01 == (self.external_attributes & 0x01) {
                     // Read-only bit; strip write permissions
-                    mode &= 0o0555;
+                    mode &= !0o222;
                 }
                 Some(mode)
             }
@@ -636,7 +644,7 @@ impl ZipFileData {
             CompressionMethod::Stored => MIN_VERSION.into(),
             #[cfg(feature = "_deflate-any")]
             CompressionMethod::Deflated => 20,
-            #[cfg(feature = "bzip2")]
+            #[cfg(feature = "_bzip2_any")]
             CompressionMethod::Bzip2 => 46,
             #[cfg(feature = "deflate64")]
             CompressionMethod::Deflate64 => 21,
@@ -702,20 +710,34 @@ impl ZipFileData {
         let permissions = options.permissions.unwrap_or(0o100644);
         let file_name: Box<str> = name.to_string().into_boxed_str();
         let file_name_raw: Box<[u8]> = file_name.bytes().collect();
+        let mut external_attributes = permissions << 16;
+        let system = if (permissions & ffi::S_IFLNK) == ffi::S_IFLNK {
+            System::Unix
+        } else if cfg!(windows) {
+            if is_dir(&file_name) {
+                // DOS directory bit
+                external_attributes |= 0x10;
+            }
+            if options
+                .permissions
+                .is_some_and(|permissions| permissions & 0o444 == 0)
+            {
+                // DOS read-only bit
+                external_attributes |= 0x01;
+            }
+            System::Dos
+        } else {
+            System::Unix
+        };
         let mut local_block = ZipFileData {
-            system: System::Unix,
+            system,
             version_made_by: DEFAULT_VERSION,
             flags: 0,
-            encrypted: options.encrypt_with.is_some() || {
-                #[cfg(feature = "aes-crypto")]
-                {
-                    options.aes_mode.is_some()
-                }
-                #[cfg(not(feature = "aes-crypto"))]
-                {
-                    false
-                }
-            },
+            encrypted: options.encrypt_with.is_some()
+                || cfg_if_expr! {
+                    #[cfg(feature = "aes-crypto")] => options.aes_mode.is_some(),
+                    _ => false
+                },
             using_data_descriptor: false,
             is_utf8: !file_name.is_ascii(),
             compression_method,
@@ -732,7 +754,7 @@ impl ZipFileData {
             header_start,
             data_start: OnceLock::new(),
             central_header_start: 0,
-            external_attributes: permissions << 16,
+            external_attributes,
             large_file: options.large_file,
             aes_mode,
             extra_fields: Vec::new(),
@@ -743,7 +765,7 @@ impl ZipFileData {
         local_block
     }
 
-    pub(crate) fn from_local_block<R: std::io::Read>(
+    pub(crate) fn from_local_block<R: std::io::Read + ?Sized>(
         block: ZipLocalEntryBlock,
         reader: &mut R,
     ) -> ZipResult<Self> {
@@ -785,9 +807,19 @@ impl ZipFileData {
         let extra_field_length: usize = extra_field_length.into();
 
         let mut file_name_raw = vec![0u8; file_name_length];
-        reader.read_exact(&mut file_name_raw)?;
+        if let Err(e) = reader.read_exact(&mut file_name_raw) {
+            if e.kind() == std::io::ErrorKind::UnexpectedEof {
+                return Err(invalid!("File name extends beyond file boundary"));
+            }
+            return Err(e.into());
+        }
         let mut extra_field = vec![0u8; extra_field_length];
-        reader.read_exact(&mut extra_field)?;
+        if let Err(e) = reader.read_exact(&mut extra_field) {
+            if e.kind() == std::io::ErrorKind::UnexpectedEof {
+                return Err(invalid!("Extra field extends beyond file boundary"));
+            }
+            return Err(e.into());
+        }
 
         let file_name: Box<str> = match is_utf8 {
             true => String::from_utf8_lossy(&file_name_raw).into(),
@@ -1286,6 +1318,28 @@ mod test {
         assert_eq!(System::from(3), System::Unix);
         assert_eq!(u8::from(System::Unknown), 4u8);
         assert_eq!(System::Unknown as u8, 4u8);
+    }
+
+    #[test]
+    fn unix_mode_robustness() {
+        use super::{System, ZipFileData};
+        use crate::types::ffi::S_IFLNK;
+        let mut data = ZipFileData {
+            system: System::Dos,
+            external_attributes: (S_IFLNK | 0o777) << 16,
+            ..ZipFileData::default()
+        };
+        assert_eq!(data.unix_mode(), Some(S_IFLNK | 0o777));
+
+        data.system = System::Unknown;
+        assert_eq!(data.unix_mode(), Some(S_IFLNK | 0o777));
+
+        data.external_attributes = 0x10; // DOS directory bit
+        data.system = System::Dos;
+        assert_eq!(
+            data.unix_mode().unwrap() & 0o170000,
+            crate::types::ffi::S_IFDIR
+        );
     }
 
     #[test]

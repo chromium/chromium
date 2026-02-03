@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.83.0"
 name = "zip"
-version = "7.1.0"
+version = "7.2.0"
 authors = [
     "Mathijs van de Nes <git@mathijs.vd-nes.nl>",
     "Marli Frost <marli@frost.red>",
@@ -60,6 +60,7 @@ rustdoc-args = [
 [features]
 _all-features = []
 _arbitrary = ["dep:arbitrary"]
+_bzip2_any = []
 _deflate-any = []
 aes-crypto = [
     "dep:aes",
@@ -70,6 +71,16 @@ aes-crypto = [
     "dep:pbkdf2",
     "dep:sha1",
     "dep:zeroize",
+]
+bzip2 = [
+    "dep:bzip2",
+    "bzip2/default",
+    "_bzip2_any",
+]
+bzip2-rs = [
+    "dep:bzip2",
+    "bzip2/bzip2-sys",
+    "_bzip2_any",
 ]
 chrono = ["dep:chrono"]
 default = [
@@ -154,6 +165,7 @@ optional = true
 [dependencies.bzip2]
 version = "0.6"
 optional = true
+default-features = false
 
 [dependencies.chrono]
 version = "^0.4.27"
@@ -230,6 +242,9 @@ features = ["std"]
 optional = true
 default-features = false
 
+[dependencies.typed-path]
+version = "0.12"
+
 [dependencies.zeroize]
 version = "1.8"
 features = ["zeroize_derive"]
@@ -240,12 +255,9 @@ version = "0.8"
 optional = true
 
 [dependencies.zstd]
-version = "0.13"
+version = "^0.13.3"
 optional = true
 default-features = false
-
-[dev-dependencies.anyhow]
-version = "1.0.100"
 
 [dev-dependencies.bencher]
 version = "0.1"
@@ -280,9 +292,14 @@ version = "0.3"
 optional = true
 default-features = false
 
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies.time]
+version = "0.3"
+features = ["wasm-bindgen"]
+optional = true
+default-features = false
+
 [target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies.getrandom]
 version = "0.3"
-features = ["std"]
 default-features = false
 
 [target.'cfg(target_arch = "wasm32")'.dependencies.getrandom]
@@ -291,10 +308,19 @@ features = ["wasm_js"]
 optional = true
 default-features = false
 
-[target.'cfg(target_arch = "wasm32")'.dev-dependencies.getrandom]
+[target.'cfg(target_arch = "wasm32")'.dependencies.time]
 version = "0.3"
 features = [
     "std",
-    "wasm_js",
+    "wasm-bindgen",
 ]
+optional = true
 default-features = false
+
+[target.'cfg(target_arch = "wasm32")'.dev-dependencies.getrandom]
+version = "0.3"
+features = ["wasm_js"]
+default-features = false
+
+[target.'cfg(target_arch = "wasm32")'.dev-dependencies.wasm-bindgen-test]
+version = "^0.3.56"

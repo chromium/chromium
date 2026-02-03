@@ -71,3 +71,6 @@ zip = \"="]
 #[doc = "\"\n\
 ```"]
 pub mod unstable;
+
+#[doc(hidden)]
+pub mod macros;

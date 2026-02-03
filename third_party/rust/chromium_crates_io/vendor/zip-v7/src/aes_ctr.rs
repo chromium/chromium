@@ -5,7 +5,6 @@
 //! See [AesCtrZipKeyStream] for more information.
 
 use crate::result::{ZipError, ZipResult};
-use crate::unstable::LittleEndianWriteExt;
 use aes::cipher::{BlockEncrypt, KeyInit};
 use core::{any, fmt};
 
@@ -15,7 +14,7 @@ const AES_BLOCK_SIZE: usize = 16;
 /// AES-128.
 #[derive(Debug)]
 pub struct Aes128;
-/// AES-192
+/// AES-192.
 #[derive(Debug)]
 pub struct Aes192;
 /// AES-256.
@@ -107,11 +106,7 @@ where
     fn crypt_in_place(&mut self, mut target: &mut [u8]) {
         while !target.is_empty() {
             if self.pos == AES_BLOCK_SIZE {
-                // Note: AES block size is always 16 bytes, same as u128.
-                self.buffer
-                    .as_mut()
-                    .write_u128_le(self.counter)
-                    .expect("did not expect u128 le conversion to fail");
+                self.buffer = self.counter.to_le_bytes();
                 self.cipher.encrypt_block(self.buffer.as_mut().into());
                 self.counter += 1;
                 self.pos = 0;
@@ -137,7 +132,11 @@ pub trait AesCipher {
 /// XORs a slice in place with another slice.
 #[inline]
 fn xor(dest: &mut [u8], src: &[u8]) {
-    assert_eq!(dest.len(), src.len());
+    debug_assert_eq!(
+        dest.len(),
+        src.len(),
+        "XOR operation requires destination and source slices to have equal length"
+    );
 
     for (lhs, rhs) in dest.iter_mut().zip(src.iter()) {
         *lhs ^= *rhs;

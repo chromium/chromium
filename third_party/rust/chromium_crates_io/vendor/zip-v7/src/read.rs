@@ -2,6 +2,7 @@
 
 #[cfg(feature = "aes-crypto")]
 use crate::aes::{AesReader, AesReaderValid};
+use crate::cfg_if;
 use crate::compression::{CompressionMethod, Decompressor};
 use crate::cp437::FromCp437;
 use crate::crc32::Crc32Reader;
@@ -120,7 +121,7 @@ use crate::unstable::{path_to_string, LittleEndianReadExt};
 pub use zip_archive::ZipArchive;
 
 #[allow(clippy::large_enum_variant)]
-pub(crate) enum CryptoReader<'a, R: Read> {
+pub(crate) enum CryptoReader<'a, R: Read + ?Sized> {
     Plaintext(io::Take<&'a mut R>),
     ZipCrypto(ZipCryptoReaderValid<io::Take<&'a mut R>>),
     #[cfg(feature = "aes-crypto")]
@@ -130,7 +131,7 @@ pub(crate) enum CryptoReader<'a, R: Read> {
     },
 }
 
-impl<R: Read> Read for CryptoReader<'_, R> {
+impl<R: Read + ?Sized> Read for CryptoReader<'_, R> {
     fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
         match self {
             CryptoReader::Plaintext(r) => r.read(buf),
@@ -159,7 +160,7 @@ impl<R: Read> Read for CryptoReader<'_, R> {
     }
 }
 
-impl<'a, R: Read> CryptoReader<'a, R> {
+impl<'a, R: Read + ?Sized> CryptoReader<'a, R> {
     /// Consumes this decoder, returning the underlying reader.
     pub fn into_inner(self) -> io::Take<&'a mut R> {
         match self {
@@ -171,17 +172,21 @@ impl<'a, R: Read> CryptoReader<'a, R> {
     }
 
     /// Returns `true` if the data is encrypted using AE2.
+    #[allow(clippy::needless_return)] // can't use cfg_if_expr! because const
     pub const fn is_ae2_encrypted(&self) -> bool {
-        #[cfg(feature = "aes-crypto")]
-        return matches!(
-            self,
-            CryptoReader::Aes {
-                vendor_version: AesVendorVersion::Ae2,
-                ..
+        cfg_if! {
+            if #[cfg(feature = "aes-crypto")] {
+                return matches!(
+                    self,
+                    CryptoReader::Aes {
+                        vendor_version: AesVendorVersion::Ae2,
+                        ..
+                    }
+                );
+            } else {
+                return false;
             }
-        );
-        #[cfg(not(feature = "aes-crypto"))]
-        false
+        }
     }
 }
 
@@ -190,13 +195,13 @@ fn invalid_state<T>() -> io::Result<T> {
     Err(io::Error::other("ZipFileReader was in an invalid state"))
 }
 
-pub(crate) enum ZipFileReader<'a, R: Read> {
+pub(crate) enum ZipFileReader<'a, R: Read + ?Sized> {
     NoReader,
     Raw(io::Take<&'a mut R>),
     Compressed(Box<Crc32Reader<Decompressor<io::BufReader<CryptoReader<'a, R>>>>>),
 }
 
-impl<R: Read> Read for ZipFileReader<'_, R> {
+impl<R: Read + ?Sized> Read for ZipFileReader<'_, R> {
     fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
         match self {
             ZipFileReader::NoReader => invalid_state(),
@@ -230,7 +235,7 @@ impl<R: Read> Read for ZipFileReader<'_, R> {
     }
 }
 
-impl<'a, R: Read> ZipFileReader<'a, R> {
+impl<'a, R: Read + ?Sized> ZipFileReader<'a, R> {
     fn into_inner(self) -> io::Result<io::Take<&'a mut R>> {
         match self {
             ZipFileReader::NoReader => invalid_state(),
@@ -243,7 +248,7 @@ impl<'a, R: Read> ZipFileReader<'a, R> {
 }
 
 /// A struct for reading a zip file
-pub struct ZipFile<'a, R: Read> {
+pub struct ZipFile<'a, R: Read + ?Sized> {
     pub(crate) data: Cow<'a, ZipFileData>,
     pub(crate) reader: ZipFileReader<'a, R>,
 }
@@ -254,18 +259,18 @@ pub struct ZipFileSeek<'a, R> {
     reader: ZipFileSeekReader<'a, R>,
 }
 
-enum ZipFileSeekReader<'a, R> {
+enum ZipFileSeekReader<'a, R: ?Sized> {
     Raw(SeekableTake<'a, R>),
 }
 
-struct SeekableTake<'a, R> {
+struct SeekableTake<'a, R: ?Sized> {
     inner: &'a mut R,
     inner_starting_offset: u64,
     length: u64,
     current_offset: u64,
 }
 
-impl<'a, R: Seek> SeekableTake<'a, R> {
+impl<'a, R: Seek + ?Sized> SeekableTake<'a, R> {
     pub fn new(inner: &'a mut R, length: u64) -> io::Result<Self> {
         let inner_starting_offset = inner.stream_position()?;
         Ok(Self {
@@ -277,7 +282,7 @@ impl<'a, R: Seek> SeekableTake<'a, R> {
     }
 }
 
-impl<R: Seek> Seek for SeekableTake<'_, R> {
+impl<R: Seek + ?Sized> Seek for SeekableTake<'_, R> {
     fn seek(&mut self, pos: SeekFrom) -> io::Result<u64> {
         let offset = match pos {
             SeekFrom::Start(offset) => Some(offset),
@@ -301,7 +306,7 @@ impl<R: Seek> Seek for SeekableTake<'_, R> {
     }
 }
 
-impl<R: Read> Read for SeekableTake<'_, R> {
+impl<R: Read + ?Sized> Read for SeekableTake<'_, R> {
     fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
         let written = self
             .inner
@@ -329,7 +334,7 @@ pub(crate) fn make_writable_dir_all<T: AsRef<Path>>(outpath: T) -> Result<(), Zi
     Ok(())
 }
 
-pub(crate) fn find_content<'a, R: Read + Seek>(
+pub(crate) fn find_content<'a, R: Read + Seek + ?Sized>(
     data: &ZipFileData,
     reader: &'a mut R,
 ) -> ZipResult<io::Take<&'a mut R>> {
@@ -340,7 +345,7 @@ pub(crate) fn find_content<'a, R: Read + Seek>(
     Ok(reader.take(data.compressed_size))
 }
 
-fn find_content_seek<'a, R: Read + Seek>(
+fn find_content_seek<'a, R: Read + Seek + ?Sized>(
     data: &ZipFileData,
     reader: &'a mut R,
 ) -> ZipResult<SeekableTake<'a, R>> {
@@ -354,7 +359,7 @@ fn find_content_seek<'a, R: Read + Seek>(
 
 pub(crate) fn find_data_start(
     data: &ZipFileData,
-    reader: &mut (impl Read + Seek + Sized),
+    reader: &mut (impl Read + Seek + ?Sized),
 ) -> Result<u64, ZipError> {
     // Go to start of data.
     reader.seek(SeekFrom::Start(data.header_start))?;
@@ -384,7 +389,7 @@ pub(crate) fn find_data_start(
 }
 
 #[allow(clippy::too_many_arguments)]
-pub(crate) fn make_crypto_reader<'a, R: Read>(
+pub(crate) fn make_crypto_reader<'a, R: Read + ?Sized>(
     data: &ZipFileData,
     reader: io::Take<&'a mut R>,
     password: Option<&[u8]>,
@@ -425,15 +430,16 @@ pub(crate) fn make_crypto_reader<'a, R: Read>(
     Ok(reader)
 }
 
-pub(crate) fn make_reader<R: Read>(
+pub(crate) fn make_reader<'a, R: Read + ?Sized>(
     compression_method: CompressionMethod,
     uncompressed_size: u64,
     crc32: u32,
-    reader: CryptoReader<R>,
-    flags: u16,
-) -> ZipResult<ZipFileReader<R>> {
+    reader: CryptoReader<'a, R>,
+    #[cfg(feature = "legacy-zip")] flags: u16,
+) -> ZipResult<ZipFileReader<'a, R>> {
     let ae2_encrypted = reader.is_ae2_encrypted();
-
+    #[cfg(not(feature = "legacy-zip"))]
+    let flags = 0;
     Ok(ZipFileReader::Compressed(Box::new(Crc32Reader::new(
         Decompressor::new(
             io::BufReader::new(reader),
@@ -449,40 +455,39 @@ pub(crate) fn make_reader<R: Read>(
 pub(crate) fn make_symlink<T>(
     outpath: &Path,
     target: &[u8],
-    #[allow(unused)] existing_files: &IndexMap<Box<str>, T>,
+    #[cfg_attr(not(windows), allow(unused))] existing_files: &IndexMap<Box<str>, T>,
 ) -> ZipResult<()> {
+    #[cfg_attr(not(any(unix, windows)), allow(unused))]
     let Ok(target_str) = std::str::from_utf8(target) else {
         return Err(invalid!("Invalid UTF-8 as symlink target"));
     };
 
-    #[cfg(not(any(unix, windows)))]
-    {
-        use std::fs::File;
-        let output = File::create(outpath);
-        output?.write_all(target)?;
-    }
-    #[cfg(unix)]
-    {
-        std::os::unix::fs::symlink(Path::new(&target_str), outpath)?;
-    }
-    #[cfg(windows)]
-    {
-        let target = Path::new(OsStr::new(&target_str));
-        let target_is_dir_from_archive =
-            existing_files.contains_key(target_str) && is_dir(target_str);
-        let target_is_dir = if target_is_dir_from_archive {
-            true
-        } else if let Ok(meta) = std::fs::metadata(target) {
-            meta.is_dir()
+    cfg_if! {
+        if #[cfg(unix)] {
+            std::os::unix::fs::symlink(Path::new(&target_str), outpath)?;
+        } else if #[cfg(windows)] {
+            let target = Path::new(OsStr::new(&target_str));
+            let target_is_dir_from_archive =
+                existing_files.contains_key(target_str) && is_dir(target_str);
+            let target_is_dir = if target_is_dir_from_archive {
+                true
+            } else if let Ok(meta) = std::fs::metadata(target) {
+                meta.is_dir()
+            } else {
+                false
+            };
+            if target_is_dir {
+                std::os::windows::fs::symlink_dir(target, outpath)?;
+            } else {
+                std::os::windows::fs::symlink_file(target, outpath)?;
+            }
         } else {
-            false
-        };
-        if target_is_dir {
-            std::os::windows::fs::symlink_dir(target, outpath)?;
-        } else {
-            std::os::windows::fs::symlink_file(target, outpath)?;
+            use std::fs::File;
+            let output = File::create(outpath);
+            output?.write_all(target)?;
         }
     }
+
     Ok(())
 }
 
@@ -531,6 +536,35 @@ impl<'a> TryFrom<&'a CentralDirectoryEndInfo> for CentralDirectoryInfo {
             disk_number,
             disk_with_central_directory,
         })
+    }
+}
+
+/// Store all entries which specify a numeric "mode" which is familiar to POSIX operating systems.
+#[cfg(unix)]
+#[derive(Default, Debug)]
+struct UnixFileModes {
+    map: std::collections::BTreeMap<PathBuf, u32>,
+}
+
+#[cfg(unix)]
+impl UnixFileModes {
+    #[cfg_attr(not(debug_assertions), allow(unused))]
+    pub fn add_mode(&mut self, path: PathBuf, mode: u32) {
+        // We don't print a warning or consider it remotely out of the ordinary to receive two
+        // separate modes for the same path: just take the later one.
+        let old_entry = self.map.insert(path, mode);
+        debug_assert_eq!(old_entry, None);
+    }
+
+    // Child nodes will be sorted later lexicographically, so reversing the order puts them first.
+    pub fn all_perms_with_children_first(
+        self,
+    ) -> impl IntoIterator<Item = (PathBuf, std::fs::Permissions)> {
+        use std::os::unix::fs::PermissionsExt;
+        self.map
+            .into_iter()
+            .rev()
+            .map(|(p, m)| (p, std::fs::Permissions::from_mode(m)))
     }
 }
 
@@ -945,66 +979,53 @@ impl<R: Read + Seek> ZipArchive<R> {
             .transpose()?;
 
         #[cfg(unix)]
-        let mut files_by_unix_mode = Vec::new();
+        let mut files_by_unix_mode = UnixFileModes::default();
 
         for i in 0..self.len() {
             let mut file = self.by_index(i)?;
 
             let mut outpath = directory.clone();
+            /* TODO: the control flow of this method call and subsequent expectations about the
+             *       values in this loop is extremely difficult to follow. It also appears to
+             *       perform a nested loop upon extracting every single file entry? Why does it
+             *       accept two arguments that point to the same directory path, one mutable? */
             file.safe_prepare_path(directory.as_ref(), &mut outpath, root_dir.as_ref())?;
 
-            let symlink_target = if file.is_symlink() && (cfg!(unix) || cfg!(windows)) {
+            #[cfg(any(unix, windows))]
+            if file.is_symlink() {
                 let mut target = Vec::with_capacity(file.size() as usize);
                 file.read_to_end(&mut target)?;
-                Some(target)
-            } else {
-                if file.is_dir() {
-                    crate::read::make_writable_dir_all(&outpath)?;
-                    continue;
-                }
-                None
-            };
-
-            drop(file);
-
-            if let Some(target) = symlink_target {
+                drop(file);
                 make_symlink(&outpath, &target, &self.shared.files)?;
                 continue;
+            } else if file.is_dir() {
+                crate::read::make_writable_dir_all(&outpath)?;
+                continue;
             }
-            let mut file = self.by_index(i)?;
             let mut outfile = fs::File::create(&outpath)?;
-
             io::copy(&mut file, &mut outfile)?;
-            #[cfg(unix)]
-            {
-                // Check for real permissions, which we'll set in a second pass
-                if let Some(mode) = file.unix_mode() {
-                    files_by_unix_mode.push((outpath.clone(), mode));
-                }
-            }
-            #[cfg(feature = "chrono")]
-            {
-                // Set original timestamp.
-                if let Some(last_modified) = file.last_modified() {
-                    if let Some(t) = datetime_to_systemtime(&last_modified) {
-                        outfile.set_modified(t)?;
-                    }
-                }
-            }
-        }
-        #[cfg(unix)]
-        {
-            use std::cmp::Reverse;
-            use std::os::unix::fs::PermissionsExt;
 
-            if files_by_unix_mode.len() > 1 {
-                // Ensure we update children's permissions before making a parent unwritable
-                files_by_unix_mode.sort_by_key(|(path, _)| Reverse(path.clone()));
+            // Check for real permissions, which we'll set in a second pass.
+            #[cfg(unix)]
+            if let Some(mode) = file.unix_mode() {
+                files_by_unix_mode.add_mode(outpath, mode);
             }
-            for (path, mode) in files_by_unix_mode.into_iter() {
-                fs::set_permissions(&path, fs::Permissions::from_mode(mode))?;
+
+            // Set original timestamp.
+            #[cfg(feature = "chrono")]
+            if let Some(last_modified) = file.last_modified() {
+                if let Some(t) = datetime_to_systemtime(&last_modified) {
+                    outfile.set_modified(t)?;
+                }
             }
         }
+
+        // Ensure we update children's permissions before making a parent unwritable.
+        #[cfg(unix)]
+        for (path, perms) in files_by_unix_mode.all_perms_with_children_first() {
+            std::fs::set_permissions(path, perms)?;
+        }
+
         Ok(())
     }
 
@@ -1262,6 +1283,7 @@ impl<R: Read + Seek> ZipArchive<R> {
                 data.uncompressed_size,
                 data.crc32,
                 crypto_reader,
+                #[cfg(feature = "legacy-zip")]
                 data.flags,
             )?,
         })
@@ -1389,9 +1411,16 @@ pub(crate) fn central_header_to_zip_file<R: Read + Seek>(
 }
 
 #[inline]
-fn read_variable_length_byte_field<R: Read>(reader: &mut R, len: usize) -> io::Result<Box<[u8]>> {
+fn read_variable_length_byte_field<R: Read>(reader: &mut R, len: usize) -> ZipResult<Box<[u8]>> {
     let mut data = vec![0; len].into_boxed_slice();
-    reader.read_exact(&mut data)?;
+    if let Err(e) = reader.read_exact(&mut data) {
+        if e.kind() == io::ErrorKind::UnexpectedEof {
+            return Err(invalid!(
+                "Variable-length field extends beyond file boundary"
+            ));
+        }
+        return Err(e.into());
+    }
     Ok(data)
 }
 
@@ -1469,13 +1498,7 @@ fn central_header_to_zip_file_inner<R: Read>(
         aes_extra_data_start: 0,
         extra_fields: Vec::new(),
     };
-    match parse_extra_field(&mut result) {
-        Ok(stripped_extra_field) => {
-            result.extra_field = stripped_extra_field;
-        }
-        Err(ZipError::Io(..)) => {}
-        Err(e) => return Err(e),
-    }
+    parse_extra_field(&mut result)?;
 
     let aes_enabled = result.compression_method == CompressionMethod::AES;
     if aes_enabled && result.aes_mode.is_none() {
@@ -1491,33 +1514,47 @@ fn central_header_to_zip_file_inner<R: Read>(
     Ok(result)
 }
 
-pub(crate) fn parse_extra_field(file: &mut ZipFileData) -> ZipResult<Option<Arc<Vec<u8>>>> {
-    let Some(ref extra_field) = file.extra_field else {
-        return Ok(None);
-    };
-    let extra_field = extra_field.clone();
-    let mut processed_extra_field = extra_field.clone();
-    let len = extra_field.len();
-    let mut reader = io::Cursor::new(&**extra_field);
+pub(crate) fn parse_extra_field(file: &mut ZipFileData) -> ZipResult<()> {
+    let mut extra_field = file.extra_field.clone();
+    let mut central_extra_field = file.central_extra_field.clone();
+    for field_group in [&mut extra_field, &mut central_extra_field] {
+        let Some(extra_field) = field_group else {
+            continue;
+        };
+        let mut modified = false;
+        let mut processed_extra_field = vec![];
+        let len = extra_field.len();
+        let mut reader = io::Cursor::new(&**extra_field);
 
-    /* TODO: codify this structure into Zip64ExtraFieldBlock fields! */
-    let mut position = reader.position() as usize;
-    while (position) < len {
-        let old_position = position;
-        let remove = parse_single_extra_field(file, &mut reader, position as u64, false)?;
-        position = reader.position() as usize;
-        if remove {
-            let remaining = len - (position - old_position);
-            if remaining == 0 {
-                return Ok(None);
+        let mut position = reader.position();
+        while position < len as u64 {
+            let old_position = position;
+            let remove = parse_single_extra_field(file, &mut reader, position, false)?;
+            position = reader.position();
+            if remove {
+                modified = true;
+            } else {
+                let field_len = (position - old_position) as usize;
+                let write_start = processed_extra_field.len();
+                reader.seek(SeekFrom::Start(old_position))?;
+                processed_extra_field.extend_from_slice(&vec![0u8; field_len]);
+                if let Err(e) = reader
+                    .read_exact(&mut processed_extra_field[write_start..(write_start + field_len)])
+                {
+                    if e.kind() == io::ErrorKind::UnexpectedEof {
+                        return Err(invalid!("Extra field content exceeds declared length"));
+                    }
+                    return Err(e.into());
+                }
             }
-            let mut new_extra_field = Vec::with_capacity(remaining);
-            new_extra_field.extend_from_slice(&extra_field[0..old_position]);
-            new_extra_field.extend_from_slice(&extra_field[position..]);
-            processed_extra_field = Arc::new(new_extra_field);
+        }
+        if modified {
+            *field_group = Some(Arc::new(processed_extra_field));
         }
     }
-    Ok(Some(processed_extra_field))
+    file.extra_field = extra_field;
+    file.central_extra_field = central_extra_field;
+    Ok(())
 }
 
 pub(crate) fn parse_single_extra_field<R: Read>(
@@ -1526,8 +1563,18 @@ pub(crate) fn parse_single_extra_field<R: Read>(
     bytes_already_read: u64,
     disallow_zip64: bool,
 ) -> ZipResult<bool> {
-    let kind = reader.read_u16_le()?;
-    let len = reader.read_u16_le()?;
+    let kind = match reader.read_u16_le() {
+        Ok(kind) => kind,
+        Err(e) if e.kind() == io::ErrorKind::UnexpectedEof => return Ok(false),
+        Err(e) => return Err(e.into()),
+    };
+    let len = match reader.read_u16_le() {
+        Ok(len) => len,
+        Err(e) if e.kind() == io::ErrorKind::UnexpectedEof => {
+            return Err(invalid!("Extra field header truncated"))
+        }
+        Err(e) => return Err(e.into()),
+    };
     match kind {
         // Zip64 extended information extra field
         0x0001 => {
@@ -1537,21 +1584,44 @@ pub(crate) fn parse_single_extra_field<R: Read>(
             file.large_file = true;
             let mut consumed_len = 0;
             if len >= 24 || file.uncompressed_size == spec::ZIP64_BYTES_THR {
-                file.uncompressed_size = reader.read_u64_le()?;
+                file.uncompressed_size = match reader.read_u64_le() {
+                    Ok(v) => v,
+                    Err(e) if e.kind() == io::ErrorKind::UnexpectedEof => {
+                        return Err(invalid!("ZIP64 extra field truncated"))
+                    }
+                    Err(e) => return Err(e.into()),
+                };
                 consumed_len += size_of::<u64>();
             }
             if len >= 24 || file.compressed_size == spec::ZIP64_BYTES_THR {
-                file.compressed_size = reader.read_u64_le()?;
+                file.compressed_size = match reader.read_u64_le() {
+                    Ok(v) => v,
+                    Err(e) if e.kind() == io::ErrorKind::UnexpectedEof => {
+                        return Err(invalid!("ZIP64 extra field truncated"))
+                    }
+                    Err(e) => return Err(e.into()),
+                };
                 consumed_len += size_of::<u64>();
             }
             if len >= 24 || file.header_start == spec::ZIP64_BYTES_THR {
-                file.header_start = reader.read_u64_le()?;
+                file.header_start = match reader.read_u64_le() {
+                    Ok(v) => v,
+                    Err(e) if e.kind() == io::ErrorKind::UnexpectedEof => {
+                        return Err(invalid!("ZIP64 extra field truncated"))
+                    }
+                    Err(e) => return Err(e.into()),
+                };
                 consumed_len += size_of::<u64>();
             }
             let Some(leftover_len) = (len as usize).checked_sub(consumed_len) else {
                 return Err(invalid!("ZIP64 extra-data field is the wrong length"));
             };
-            reader.read_exact(&mut vec![0u8; leftover_len])?;
+            if let Err(e) = reader.read_exact(&mut vec![0u8; leftover_len]) {
+                if e.kind() == io::ErrorKind::UnexpectedEof {
+                    return Err(invalid!("ZIP64 extra field truncated"));
+                }
+                return Err(e.into());
+            }
             return Ok(true);
         }
         0x000a => {
@@ -1569,7 +1639,12 @@ pub(crate) fn parse_single_extra_field<R: Read>(
             let vendor_version = reader.read_u16_le()?;
             let vendor_id = reader.read_u16_le()?;
             let mut out = [0u8];
-            reader.read_exact(&mut out)?;
+            if let Err(e) = reader.read_exact(&mut out) {
+                if e.kind() == io::ErrorKind::UnexpectedEof {
+                    return Err(invalid!("AES extra field truncated"));
+                }
+                return Err(e.into());
+            }
             let aes_mode = out[0];
             let compression_method = CompressionMethod::parse_from_u16(reader.read_u16_le()?);
 
@@ -1618,7 +1693,12 @@ pub(crate) fn parse_single_extra_field<R: Read>(
             file.is_utf8 = true;
         }
         _ => {
-            reader.read_exact(&mut vec![0u8; len as usize])?;
+            if let Err(e) = reader.read_exact(&mut vec![0u8; len as usize]) {
+                if e.kind() == io::ErrorKind::UnexpectedEof {
+                    return Err(invalid!("Extra field content truncated"));
+                }
+                return Err(e.into());
+            }
             // Other fields are ignored
         }
     }
@@ -1664,7 +1744,7 @@ impl<'a> ZipReadOptions<'a> {
 }
 
 /// Methods for retrieving information on zip files
-impl<'a, R: Read> ZipFile<'a, R> {
+impl<'a, R: Read + ?Sized> ZipFile<'a, R> {
     pub(crate) fn take_raw_reader(&mut self) -> io::Result<io::Take<&'a mut R>> {
         replace(&mut self.reader, ZipFileReader::NoReader).into_inner()
     }
@@ -1967,13 +2047,13 @@ impl<R: Read> ZipFile<'_, R> {
     }
 }
 
-impl<R: Read> HasZipMetadata for ZipFile<'_, R> {
+impl<R: Read + ?Sized> HasZipMetadata for ZipFile<'_, R> {
     fn get_metadata(&self) -> &ZipFileData {
         self.data.as_ref()
     }
 }
 
-impl<R: Read> Read for ZipFile<'_, R> {
+impl<R: Read + ?Sized> Read for ZipFile<'_, R> {
     fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
         self.reader.read(buf)
     }
@@ -2013,7 +2093,7 @@ impl<R> HasZipMetadata for ZipFileSeek<'_, R> {
     }
 }
 
-impl<R: Read> Drop for ZipFile<'_, R> {
+impl<R: Read + ?Sized> Drop for ZipFile<'_, R> {
     fn drop(&mut self) {
         // self.data is Owned, this reader is constructed by a streaming reader.
         // In this case, we want to exhaust the reader so that the next file is accessible.
@@ -2067,13 +2147,13 @@ pub fn read_zipfile_from_stream<R: Read>(reader: &mut R) -> ZipResult<Option<Zip
     }
 
     let limit_reader = reader.take(result.compressed_size);
-
-    let result_flags = result.flags;
     let crypto_reader = make_crypto_reader(&result, limit_reader, None, None)?;
     let ZipFileData {
         crc32,
         uncompressed_size,
         compression_method,
+        #[cfg(feature = "legacy-zip")]
+        flags,
         ..
     } = result;
 
@@ -2084,7 +2164,8 @@ pub fn read_zipfile_from_stream<R: Read>(reader: &mut R) -> ZipResult<Option<Zip
             uncompressed_size,
             crc32,
             crypto_reader,
-            result_flags,
+            #[cfg(feature = "legacy-zip")]
+            flags,
         )?,
     }))
 }
@@ -2169,6 +2250,54 @@ fn generate_chrono_datetime(datetime: &DateTime) -> Option<chrono::NaiveDateTime
         }
     }
     None
+}
+
+/// Read ZipFile from a non-seekable reader like [read_zipfile_from_stream] does, but assume the
+/// given compressed size and don't read any further ahead than that.
+pub fn read_zipfile_from_stream_with_compressed_size<R: io::Read>(
+    reader: &mut R,
+    compressed_size: u64,
+) -> ZipResult<Option<ZipFile<'_, R>>> {
+    let mut block = ZipLocalEntryBlock::zeroed();
+    reader.read_exact(block.as_bytes_mut())?;
+
+    match block.magic().from_le() {
+        spec::Magic::LOCAL_FILE_HEADER_SIGNATURE => (),
+        spec::Magic::CENTRAL_DIRECTORY_HEADER_SIGNATURE => return Ok(None),
+        _ => return Err(ZipLocalEntryBlock::WRONG_MAGIC_ERROR),
+    }
+
+    let block = block.from_le();
+
+    let mut result = ZipFileData::from_local_block(block, reader)?;
+    result.compressed_size = compressed_size;
+
+    if result.encrypted {
+        return unsupported_zip_error("Encrypted files are not supported");
+    }
+
+    let limit_reader = reader.take(result.compressed_size);
+    let crypto_reader = make_crypto_reader(&result, limit_reader, None, None)?;
+    let ZipFileData {
+        crc32,
+        compression_method,
+        uncompressed_size,
+        #[cfg(feature = "legacy-zip")]
+        flags,
+        ..
+    } = result;
+
+    Ok(Some(ZipFile {
+        data: Cow::Owned(result),
+        reader: make_reader(
+            compression_method,
+            uncompressed_size,
+            crc32,
+            crypto_reader,
+            #[cfg(feature = "legacy-zip")]
+            flags,
+        )?,
+    }))
 }
 
 #[cfg(test)]

@@ -1,4 +1,4 @@
-*zip
+zip
 ===
 
 [![Build Status](https://github.com/zip-rs/zip2/actions/workflows/ci.yaml/badge.svg)](https://github.com/zip-rs/zip2/actions?query=branch%3Amaster+workflow%3ACI)
@@ -36,7 +36,8 @@ The features available are:
 * `deflate-flate2`: Combine this with any `flate2` feature flag that enables a back-end, to support deflate compression
   at quality 1..=9.
 * `deflate-zopfli`: Enables deflating files with the `zopfli` library (used when compression quality is 10..=264). This
-  is the most effective `deflate` implementation available, but also among the slowest.
+  is the most effective `deflate` implementation available, but also among the slowest. If `flate2` isn't also enabled,
+  only compression will be supported and not decompression.
 * `deflate64`: Enables the deflate64 compression algorithm. Only decompression is supported.
 * `lzma`: Enables the LZMA compression algorithm. Only decompression is supported.
 * `bzip2`: Enables the BZip2 compression algorithm.

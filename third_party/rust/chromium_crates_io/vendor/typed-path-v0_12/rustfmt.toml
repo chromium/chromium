@@ -1,0 +1,11 @@
+max_width = 100
+newline_style = "unix"
+indent_style = "Block"
+use_field_init_shorthand = true
+
+# Unstable features
+unstable_features = true
+imports_granularity = "Module"
+group_imports = "StdExternalCrate"
+reorder_impl_items = true
+normalize_doc_attributes = true

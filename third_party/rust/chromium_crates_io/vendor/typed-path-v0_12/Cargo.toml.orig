@@ -1,0 +1,43 @@
+[package]
+name = "typed-path"
+description = "Provides typed variants of Path and PathBuf for Unix and Windows"
+version = "0.12.2"
+edition = "2021"
+rust-version = "1.65.0"
+authors = ["Chip Senkbeil <chip@senkbeil.org>"]
+categories = ["development-tools", "filesystem", "os"]
+keywords = ["unicode", "utf8", "paths", "filesystem"]
+homepage = "https://github.com/chipsenkbeil/typed-path"
+repository = "https://github.com/chipsenkbeil/typed-path"
+readme = "README.md"
+license = "MIT OR Apache-2.0"
+
+[dependencies]
+
+[features]
+default = ["std"]
+std = []
+
+[[example]]
+name = "typed"
+required-features = ["std"]
+
+[[example]]
+name = "typed_utf8"
+required-features = ["std"]
+
+[[example]]
+name = "unix"
+required-features = ["std"]
+
+[[example]]
+name = "unix_utf8"
+required-features = ["std"]
+
+[[example]]
+name = "windows"
+required-features = ["std"]
+
+[[example]]
+name = "windows_utf8"
+required-features = ["std"]
