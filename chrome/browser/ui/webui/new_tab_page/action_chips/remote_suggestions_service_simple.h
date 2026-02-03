@@ -15,8 +15,8 @@
 #include "base/types/optional_ref.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
-#include "third_party/omnibox_proto/aim_tools.pb.h"
 #include "third_party/omnibox_proto/page_vertical.pb.h"
+#include "third_party/omnibox_proto/tool_mode.pb.h"
 
 namespace action_chips {
 

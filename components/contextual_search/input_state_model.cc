@@ -15,8 +15,8 @@
 #include "components/contextual_search/pref_names.h"
 #include "components/lens/contextual_input.h"
 #include "components/prefs/pref_service.h"
-#include "third_party/omnibox_proto/aim_input_types.pb.h"
-#include "third_party/omnibox_proto/searchbox_config_constraints.pb.h"
+#include "third_party/omnibox_proto/input_type.pb.h"
+#include "third_party/omnibox_proto/rule_set.pb.h"
 
 namespace contextual_search {
 

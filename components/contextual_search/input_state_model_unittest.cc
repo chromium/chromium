@@ -15,8 +15,8 @@
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/omnibox_proto/rule_set.pb.h"
 #include "third_party/omnibox_proto/searchbox_config.pb.h"
-#include "third_party/omnibox_proto/searchbox_config_constraints.pb.h"
 #include "url/gurl.h"
 
 namespace contextual_search {

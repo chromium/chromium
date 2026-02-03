@@ -1,0 +1,18 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = 'proto3';
+
+option optimize_for = LITE_RUNTIME;
+option java_package = 'org.chromium.components.omnibox';
+option java_outer_classname = 'SectionConfigProto';
+
+package omnibox;
+
+// Configuration for a section in the menu.
+// Next ID: 2
+message SectionConfig {
+  // The header text for the section.
+  string header = 1;
+}

@@ -9,7 +9,7 @@
 #include "components/contextual_search/contextual_search_types.h"
 #include "components/lens/lens_overlay_mime_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/omnibox_proto/aim_tools.pb.h"
+#include "third_party/omnibox_proto/tool_mode.pb.h"
 
 TEST(OmniboxContextMenuControllerTest, IsCommandIdEnabledHelper_InitialState) {
   std::vector<contextual_search::FileInfo> file_infos;

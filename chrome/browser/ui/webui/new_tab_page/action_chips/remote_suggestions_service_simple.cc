@@ -26,8 +26,8 @@
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "net/base/net_errors.h"
-#include "third_party/omnibox_proto/aim_tools.pb.h"
 #include "third_party/omnibox_proto/page_vertical.pb.h"
+#include "third_party/omnibox_proto/tool_mode.pb.h"
 #include "url/origin.h"
 #include "url/url_util.h"
 

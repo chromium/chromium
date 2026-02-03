@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_COMPOSEBOX_COORDINATOR_COMPOSEBOX_OMNIBOX_CLIENT_DELEGATE_H_
 
 #import "ios/chrome/browser/composebox/coordinator/composebox_constants.h"
-#import "third_party/omnibox_proto/aim_tools.pb.h"
+#import "third_party/omnibox_proto/tool_mode.pb.h"
 
 struct UrlLoadParams;
 enum class WindowOpenDisposition;

@@ -1,0 +1,30 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = 'proto3';
+
+option optimize_for = LITE_RUNTIME;
+option java_package = 'org.chromium.components.omnibox';
+option java_outer_classname = 'ToolConfigProto';
+
+package omnibox;
+
+import "tool_mode.proto";
+
+// Configuration for a tool mode.
+// Next ID: 6
+message ToolConfig {
+  // The tool mode.
+  ToolMode tool = 1;
+  // Disable model selection state when the tool is selected (e.g. no check mark
+  // on model selection when the tool is selected). Some tools are not
+  // associated with any of the selectable models (e.g. DeepSearch)
+  bool disable_active_model_selection = 2;
+  // The label for the tool in a menu.
+  string menu_label = 3;
+  // The label for the tool in a chip when the tool is selected.
+  string chip_label = 4;
+  // The hint text in the input text field when this tool is selected.
+  string hint_text = 5;
+}

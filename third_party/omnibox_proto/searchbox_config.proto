@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-syntax = 'proto2';
+syntax = 'proto3';
 
 option optimize_for = LITE_RUNTIME;
 option java_package = 'org.chromium.components.omnibox';
@@ -10,12 +10,15 @@ option java_outer_classname = 'SearchboxConfigProto';
 
 package omnibox;
 
-import "aim_models.proto";
-import "aim_tools.proto";
-import "searchbox_config_constraints.proto";
+import "model_mode.proto";
+import "tool_mode.proto";
+import "model_config.proto";
+import "rule_set.proto";
+import "section_config.proto";
+import "tool_config.proto";
 
 // Configuration for the AI searchbox (e.g. input plate and fusebox)
-// Next ID: 4
+// Next ID: 10
 message SearchboxConfig {
   // The rule set to use for the searchbox.
   optional RuleSet rule_set = 1;
@@ -23,4 +26,16 @@ message SearchboxConfig {
   optional ToolMode initial_tool_mode = 2;
   // The initial model mode to use when the searchbox is first rendered.
   optional ModelMode initial_model_mode = 3;
+
+  // Configurations for available tools.
+  repeated ToolConfig tool_configs = 5;
+  // Configurations for available models.
+  repeated ModelConfig model_configs = 6;
+  // Configuration for the tools section in menu.
+  optional SectionConfig tools_section_config = 7;
+  // Configuration for the model section in menu.
+  optional SectionConfig model_section_config = 8;
+  // Default Searchbox input text field hint text.
+  // Current active tools/models takes precedence
+  optional string hint_text = 9;
 }

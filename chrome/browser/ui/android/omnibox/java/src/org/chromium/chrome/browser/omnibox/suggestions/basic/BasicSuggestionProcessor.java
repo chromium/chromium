@@ -93,7 +93,7 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
                 // TODO(crbug.com/437177158): Replace with the correct symbol when it's available.
                 return R.drawable.ic_suggestion_magnifier;
 
-            case SuggestTemplateInfo.IconType.GLOBE_WITH_SEARCH_LOUPE_VALUE:
+            case SuggestTemplateInfo.IconType.GLOBE_WITH_SEARCH_LOOP_VALUE:
                 // TODO(crbug.com/479890202): Replace with the correct symbol when it's available.
                 return R.drawable.ic_suggestion_magnifier;
 

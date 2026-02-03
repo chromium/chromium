@@ -1,0 +1,24 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = 'proto3';
+
+option optimize_for = LITE_RUNTIME;
+option java_package = 'org.chromium.components.omnibox';
+option java_outer_classname = 'ModelConfigProto';
+
+package omnibox;
+
+import "model_mode.proto";
+
+// Configuration for a model mode.
+// Next ID: 4
+message ModelConfig {
+  // The model mode.
+  ModelMode model = 1;
+  // The label for the model in a menu.
+  string menu_label = 2;
+  // The hint text in the input text field when this model is selected.
+  string hint_text = 3;
+}
