@@ -936,7 +936,7 @@ HRESULT GenerateSampleFromVideoFrame(
     gfx::GpuMemoryBufferHandle buffer_handle =
         frame->GetGpuMemoryBufferHandle();
     if (buffer_handle.is_null()) {
-      LOG(ERROR) << "Failed to get GMB for input frame";
+      LOG(ERROR) << "Failed to get GMB handle for input frame";
       return MF_E_INVALID_STREAM_DATA;
     }
 
@@ -956,7 +956,8 @@ HRESULT GenerateSampleFromVideoFrame(
     hr = device1->OpenSharedResource1(
         buffer_handle.dxgi_handle().buffer_handle(),
         IID_PPV_ARGS(&input_texture));
-    RETURN_ON_HR_FAILURE(hr, "Failed to open shared GMB D3D texture", hr);
+    RETURN_ON_HR_FAILURE(
+        hr, "Failed to open shared D3D texture from GMB handle", hr);
 
     if (use_dxgi_buffer) {
       hr = InitializeSampleFromTexture(frame, input_texture.Get(), sample);
