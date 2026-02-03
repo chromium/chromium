@@ -54,6 +54,8 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.text.InputType;
 import android.text.TextUtils;
+import android.util.Pair;
+import android.view.View;
 import android.view.accessibility.AccessibilityNodeInfo;
 
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
@@ -61,6 +63,8 @@ import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.base.AconfigFlaggedApiDelegate;
+import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -109,10 +113,12 @@ public final class AccessibilityNodeInfoUtils {
     /**
      * Helper method to perform a custom toString on a given AccessibilityNodeInfo object.
      *
+     * @param wcax WebContentsAccessibilityImpl object.
      * @param node Object to create a toString for
      * @return String Custom toString result for the given object
      */
     public static String toString(
+            WebContentsAccessibilityImpl wcax,
             @Nullable AccessibilityNodeInfoCompat node,
             boolean includeScreenSizeDependentAttributes) {
         if (node == null) return "";
@@ -252,7 +258,33 @@ public final class AccessibilityNodeInfoUtils {
             builder.append(" partiallyChecked");
         }
 
-        // TODO(crbug.com/443078007): Add extended selection to the expected text.
+        AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
+        if (delegate != null) {
+            Integer nodeId = Integer.parseInt(node.getUniqueId());
+            Integer ancestorNodeId = nodeId;
+
+            while (ancestorNodeId != View.NO_ID) {
+                final int finalAncestorId = ancestorNodeId;
+                AccessibilityNodeInfoCompat ancestor =
+                        ThreadUtils.runOnUiThreadBlocking(
+                                () -> wcax.createAccessibilityNodeInfo(finalAncestorId));
+                if (ancestor == null) {
+                    break;
+                }
+                Pair<Integer, Integer> startPosition = delegate.getExtendedSelectionStart(ancestor);
+                Pair<Integer, Integer> endPosition = delegate.getExtendedSelectionEnd(ancestor);
+                if (startPosition != null || endPosition != null) {
+                    if (startPosition != null && startPosition.first.equals(nodeId)) {
+                        builder.append(" extendedSelectionStart:").append(startPosition.second);
+                    }
+                    if (endPosition != null && endPosition.first.equals(nodeId)) {
+                        builder.append(" extendedSelectionEnd:").append(endPosition.second);
+                    }
+                    break;
+                }
+                ancestorNodeId = wcax.getParentIdForTesting(ancestorNodeId); // IN-TEST
+            }
+        }
 
         // Child objects - print for non-null cases.
         if (node.getCollectionInfo() != null) {

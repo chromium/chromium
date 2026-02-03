@@ -268,6 +268,32 @@ public interface AconfigFlaggedApiDelegate {
     default void clearSelection(AccessibilityNodeInfoCompat info) {}
 
     /**
+     * Calls {@link android.view.accessibility.AccessibilityNodeInfoCompat#getSelection()} if
+     * supported.
+     *
+     * @param info The node for which the selection is queried.
+     * @return Null if selection is empty or feature is not available, otherwise a pair of two
+     *     integers, representing startVirtualDescendantId and startOffset for the selection.
+     */
+    default @Nullable Pair<Integer, Integer> getExtendedSelectionStart(
+            AccessibilityNodeInfoCompat info) {
+        return null;
+    }
+
+    /**
+     * Calls {@link android.view.accessibility.AccessibilityNodeInfoCompat#getSelection()} if
+     * supported.
+     *
+     * @param info The node for which the selection is queried.
+     * @return Null if selection is empty or feature is not available, otherwise a pair of two
+     *     integers, representing endVirtualDescendantId and endOffset for the selection.
+     */
+    default @Nullable Pair<Integer, Integer> getExtendedSelectionEnd(
+            AccessibilityNodeInfoCompat info) {
+        return null;
+    }
+
+    /**
      * @return True if requirements for processing ACTION_SET_EXTENDED_SELECTION are supported by
      *     the platform.
      */
@@ -281,8 +307,7 @@ public interface AconfigFlaggedApiDelegate {
      *
      * @param arguments Arguments sent with the ACTION_SET_EXTENDED_SELECTION action.
      * @return Null if selection is empty or feature is not available, otherwise a pair of two
-     *     integers, representing startVirtualDescendentId and startOffset for the selection start
-     *     node.
+     *     integers, representing startVirtualDescendantId and startOffset for the selection.
      */
     default @Nullable Pair<Integer, Integer> getActionSetExtendedSelectionStartArgument(
             Bundle arguments) {
@@ -295,7 +320,7 @@ public interface AconfigFlaggedApiDelegate {
      *
      * @param arguments Arguments sent with the ACTION_SET_EXTENDED_SELECTION action.
      * @return Null if selection is empty or feature is not available, otherwise a pair of two
-     *     integers, representing startVirtualDescendentId and startOffset for the selection end
+     *     integers, representing startVirtualDescendantId and startOffset for the selection end
      *     node.
      */
     default @Nullable Pair<Integer, Integer> getActionSetExtendedSelectionEndArgument(

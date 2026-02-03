@@ -2912,6 +2912,22 @@ WebContentsAccessibilityAndroid::GetChildIdsForTesting(JNIEnv* env,
   return base::android::ToJavaIntArray(env, child_ids);
 }
 
+jint WebContentsAccessibilityAndroid::GetParentIdForTesting(  // IN-TEST
+    JNIEnv* env,
+    int32_t unique_id) {
+  BrowserAccessibilityAndroid* node = GetAXFromUniqueID(unique_id);
+  if (!node) {
+    return ui::kAXAndroidInvalidViewId;
+  }
+
+  ui::BrowserAccessibility* parent = node->PlatformGetParent();
+  if (!parent) {
+    return ui::kAXAndroidInvalidViewId;
+  }
+
+  return static_cast<BrowserAccessibilityAndroid*>(parent)->GetUniqueId();
+}
+
 ScopedJavaLocalRef<jintArray>
 WebContentsAccessibilityAndroid::GetLabeledByNodeIdsForTesting(
     JNIEnv* env,

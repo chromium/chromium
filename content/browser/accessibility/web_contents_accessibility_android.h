@@ -438,6 +438,8 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
       JNIEnv* env,
       int32_t unique_id);
 
+  jint GetParentIdForTesting(JNIEnv* env, int32_t unique_id);
+
   base::android::ScopedJavaLocalRef<jintArray> GetLabeledByNodeIdsForTesting(
       JNIEnv* env,
       int32_t unique_id);

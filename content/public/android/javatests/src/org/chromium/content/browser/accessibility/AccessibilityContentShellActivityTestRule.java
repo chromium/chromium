@@ -170,8 +170,8 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
         mWcax = getWebContentsAccessibility();
 
         // Empty map to imply no throttle delay for events.
-        Map<Integer, Integer> TestingThrottleDelays = new HashMap<>();
-        mWcax.setThrottleDelayForTesting(TestingThrottleDelays);
+        Map<Integer, Integer> testingThrottleDelays = new HashMap<>();
+        mWcax.setThrottleDelayForTesting(testingThrottleDelays);
 
         mNodeProvider = getAccessibilityNodeProvider();
 
@@ -484,7 +484,7 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
         AccessibilityNodeInfoCompat nodeInfo = createAccessibilityNodeInfoBlocking(rootNodevvId);
         builder.append(
                 AccessibilityNodeInfoUtils.toString(
-                        nodeInfo, includeScreenSizeDependentAttributes));
+                        mWcax, nodeInfo, includeScreenSizeDependentAttributes));
 
         builder.append(getLabeledByString(rootNodevvId));
 
@@ -520,7 +520,7 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
                 .append(indent)
                 .append(
                         AccessibilityNodeInfoUtils.toString(
-                                node, includeScreenSizeDependentAttributes));
+                                mWcax, node, includeScreenSizeDependentAttributes));
         builder.append(getLabeledByString(nodeId));
 
         for (int j = 0; j < node.getChildCount(); ++j) {
