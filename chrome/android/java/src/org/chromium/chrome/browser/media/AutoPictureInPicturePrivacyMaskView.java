@@ -9,11 +9,10 @@ import android.util.AttributeSet;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 
 /**
@@ -25,18 +24,12 @@ public class AutoPictureInPicturePrivacyMaskView extends FrameLayout {
     // Matches fade-in duration used on desktop Chrome.
     private static final int FADE_IN_DURATION_MS = 500;
 
-    public AutoPictureInPicturePrivacyMaskView(
-            @NonNull Context context, @Nullable AttributeSet attrs) {
+    public AutoPictureInPicturePrivacyMaskView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         setBackgroundColor(ContextCompat.getColor(context, R.color.modal_dialog_scrim_color));
         // Consume touch events to block interaction with the underlying content.
         setClickable(true);
 
-        // Trap focus to prevent users from navigating to the underlying content via keyboard or
-        // accessibility tools (e.g. TalkBack).
-        // TODO(crbug.com/459582604): The controller(pending) should also set
-        // IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS on the underlying WebContents container
-        // to prevent linear navigation (swiping) from reaching the obscured content.
         setFocusable(true);
         setFocusableInTouchMode(true);
 

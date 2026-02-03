@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.media;
 import static org.chromium.build.NullUtil.assertNonNull;
 
 import android.app.Activity;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 
@@ -23,7 +24,10 @@ import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.url.GURL;
+
+import java.lang.ref.WeakReference;
 
 /**
  * A controller to manage showing a permission prompt for auto picture-in-picture for documents.
@@ -39,6 +43,15 @@ public class AutoPictureInPicturePermissionController {
     private final Runnable mClosePipCallback;
     private @Nullable AutoPipPermissionDialogView mView;
     private @Nullable AutoPictureInPicturePrivacyMaskView mMaskView;
+
+    // The previous accessibility importance of the WebContents container view. Used to restore
+    // state after the prompt is dismissed.
+    private int mOldAccessibilityImportance;
+
+    // WeakReference to the view that has been obscured from accessibility. This ensures we restore
+    // the state on the exact same view instance we modified, even if the WebContents' container
+    // view changes in the meantime.
+    private @Nullable WeakReference<View> mObscuredViewWeakRef;
 
     /**
      * Shows the permission prompt for auto picture-in-picture if the content setting is "ASK".
@@ -117,6 +130,8 @@ public class AutoPictureInPicturePermissionController {
         rootView.addView(mMaskView);
         mMaskView.show();
 
+        obscureContentFromAccessibility();
+
         mView =
                 new AutoPipPermissionDialogView(
                         activity,
@@ -151,12 +166,57 @@ public class AutoPictureInPicturePermissionController {
 
         // Ensure the helper releases its reference to this controller.
         if (!mWebContents.isDestroyed()) {
+            restoreContentAccessibility();
+
             AutoPictureInPictureTabHelper helper =
                     AutoPictureInPictureTabHelper.fromWebContents(mWebContents);
             if (helper != null && helper.getPermissionController() == this) {
                 helper.setPermissionController(null);
             }
         }
+    }
+
+    /**
+     * Obscures the WebContents from accessibility tools.
+     *
+     * <p>This hides the descendants of the WebContents' container view to prevent accessibility
+     * services from navigating to the underlying content while the permission prompt is shown.
+     */
+    private void obscureContentFromAccessibility() {
+        if (mObscuredViewWeakRef != null) return;
+
+        View containerView = getWebContentsContainerView();
+        if (containerView == null) return;
+
+        mOldAccessibilityImportance = containerView.getImportantForAccessibility();
+        containerView.setImportantForAccessibility(
+                View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
+
+        // Use WeakReference to ensure we restore state on this exact view and avoid leaks.
+        mObscuredViewWeakRef = new WeakReference<>(containerView);
+    }
+
+    /** Restores the previous accessibility importance of the WebContents. */
+    private void restoreContentAccessibility() {
+        if (mObscuredViewWeakRef == null) return;
+
+        View containerView = mObscuredViewWeakRef.get();
+        if (containerView != null) {
+            containerView.setImportantForAccessibility(mOldAccessibilityImportance);
+        }
+
+        mObscuredViewWeakRef.clear();
+        mObscuredViewWeakRef = null;
+    }
+
+    /**
+     * Returns the container view of the WebContents. This is the view that holds the web content
+     * and is part of the view hierarchy that needs to be obscured.
+     */
+    private @Nullable View getWebContentsContainerView() {
+        if (mWebContents.isDestroyed()) return null;
+        ViewAndroidDelegate delegate = mWebContents.getViewAndroidDelegate();
+        return delegate != null ? delegate.getContainerView() : null;
     }
 
     private void onUiResult(int result) {

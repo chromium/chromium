@@ -16,6 +16,7 @@ import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
 import android.os.Looper;
+import android.view.View;
 import android.view.ViewGroup;
 
 import org.junit.After;
@@ -40,6 +41,8 @@ import org.chromium.components.url_formatter.UrlFormatterJni;
 import org.chromium.content_public.browser.Page;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
+import org.chromium.ui.base.ViewAndroidDelegate;
+import org.chromium.ui.test.util.TestViewAndroidDelegate;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -51,12 +54,14 @@ public class AutoPictureInPicturePermissionControllerTest {
     @Mock private AutoPictureInPicturePermissionController.Natives mNativeMock;
     @Mock private UrlFormatter.Natives mUrlFormatterJniMock;
     @Mock private Tab mTab;
+    @Mock private ViewGroup mContainerView;
 
     private static final Runnable NO_OP_CALLBACK = () -> {};
 
     private ActivityController<Activity> mActivityController;
     private Activity mActivity;
     private WebContents mWebContents;
+    private ViewAndroidDelegate mViewAndroidDelegate;
 
     private AutoPictureInPictureTabHelper mTabHelper;
 
@@ -75,6 +80,10 @@ public class AutoPictureInPicturePermissionControllerTest {
 
         when(mTab.getWebContents()).thenReturn(mWebContents);
         lenient().when(mWebContents.getLastCommittedUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
+
+        // Use TestViewAndroidDelegate to avoid mocking final methods
+        mViewAndroidDelegate = new TestViewAndroidDelegate(mContainerView);
+        lenient().when(mWebContents.getViewAndroidDelegate()).thenReturn(mViewAndroidDelegate);
 
         mTabHelper = new AutoPictureInPictureTabHelper(mWebContents);
         lenient()
@@ -110,6 +119,32 @@ public class AutoPictureInPicturePermissionControllerTest {
 
         // Verify controller registration
         Assert.assertNotNull(mTabHelper.getPermissionController());
+    }
+
+    @Test
+    public void testShowPrompt_SetsAccessibilityImportance() {
+        when(mNativeMock.getPermissionStatus(mWebContents)).thenReturn(ContentSetting.ASK);
+        // Simulate existing importance.
+        when(mContainerView.getImportantForAccessibility())
+                .thenReturn(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
+
+        AutoPictureInPicturePermissionController.showPromptIfNeeded(
+                mActivity, mTab, NO_OP_CALLBACK);
+
+        // Verify that the container view's accessibility importance is set to prevent
+        // linear navigation.
+        verify(mContainerView)
+                .setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
+
+        // Capture the controller instance
+        AutoPictureInPicturePermissionController controller = mTabHelper.getPermissionController();
+        Assert.assertNotNull(controller);
+
+        // Dismiss the prompt.
+        controller.dismiss();
+
+        // Verify that the original accessibility importance is restored.
+        verify(mContainerView).setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
     }
 
     @Test
