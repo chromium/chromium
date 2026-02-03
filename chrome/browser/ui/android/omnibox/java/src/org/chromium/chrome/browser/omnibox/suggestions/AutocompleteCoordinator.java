@@ -286,8 +286,8 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
         mMediator.endInput();
     }
 
-    public void onUrlAnimationFinished(boolean hasFocus) {
-        mMediator.onUrlAnimationFinished(hasFocus);
+    public void onUrlAnimationFinished() {
+        mMediator.onUrlAnimationFinished();
     }
 
     /**

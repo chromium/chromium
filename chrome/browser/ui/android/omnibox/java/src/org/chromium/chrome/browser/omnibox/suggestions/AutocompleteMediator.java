@@ -546,13 +546,13 @@ class AutocompleteMediator
      * @see
      *     org.chromium.chrome.browser.omnibox.UrlFocusChangeListener#onUrlAnimationFinished(boolean)
      */
-    void onUrlAnimationFinished(boolean hasFocus) {
+    void onUrlAnimationFinished() {
         // mAnimationDriver has the responsibility of calling propagateOmniboxSessionStateChange if
         // it's present and currently active.
-        if (hasFocus && mAnimationDriver.isAnimationEnabled()) {
+        if (isInInputSession() && mAnimationDriver.isAnimationEnabled()) {
             return;
         }
-        propagateOmniboxSessionStateChange(hasFocus);
+        propagateOmniboxSessionStateChange();
     }
 
     /**
@@ -1255,25 +1255,20 @@ class AutocompleteMediator
         mNewOmniboxEditSessionTimestamp = -1;
         startMeasuringSuggestionRequestToUiModelTime();
 
-        if (mDelegate.isUrlBarFocused()) {
-            if (isInInputSession() && mAutocomplete != null) {
-                mAutocomplete.startZeroSuggest(mAutocompleteInput);
-            }
+        if (isInInputSession() && mAutocomplete != null) {
+            mAutocomplete.startZeroSuggest(mAutocompleteInput);
         }
     }
 
-    /**
-     * Update whether the Omnibox session is active.
-     *
-     * @param isActive whether session is currently active
-     */
+    /** Update whether the Omnibox session is active. */
     @VisibleForTesting
-    void propagateOmniboxSessionStateChange(boolean isActive) {
+    void propagateOmniboxSessionStateChange() {
+        boolean isActive = mAutocompleteInput != null;
         boolean wasActive = mListPropertyModel.get(SuggestionListProperties.OMNIBOX_SESSION_ACTIVE);
-        mListPropertyModel.set(SuggestionListProperties.OMNIBOX_SESSION_ACTIVE, isActive);
 
         if (isActive != wasActive) {
-            mIgnoreOmniboxItemSelection |= isActive; // Reset to default value.
+            mListPropertyModel.set(SuggestionListProperties.OMNIBOX_SESSION_ACTIVE, isActive);
+            mIgnoreOmniboxItemSelection |= isActive;
             if (mOmniboxSuggestionsVisualStateObserver != null) {
                 mOmniboxSuggestionsVisualStateObserver.onOmniboxSessionStateChange(isActive);
             }
@@ -1366,7 +1361,8 @@ class AutocompleteMediator
 
     @Override
     public void onSuggestionDropdownScroll() {
-        assumeNonNull(mAutocompleteInput).setSuggestionsListScrolled();
+        if (mAutocompleteInput == null) return;
+        mAutocompleteInput.setSuggestionsListScrolled();
         mDelegate.setKeyboardVisibility(false, false);
     }
 
@@ -1559,7 +1555,7 @@ class AutocompleteMediator
             driver =
                     new UnsyncedSuggestionsListAnimationDriver(
                             mListPropertyModel,
-                            () -> propagateOmniboxSessionStateChange(true),
+                            () -> propagateOmniboxSessionStateChange(),
                             mDelegate::isToolbarBottomAnchored,
                             mEmbedder::getVerticalTranslationForAnimation,
                             mContext);
