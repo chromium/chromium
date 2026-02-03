@@ -79,6 +79,10 @@ class ContextualTasksComposeboxHandler : public ComposeboxHandler,
 
   void OnTaskChanged();
 
+  void AddFileContextFromBrowser(
+      searchbox::mojom::SelectedFileInfoPtr file_info,
+      AddFileContextCallback callback);
+
   // ContextualSearchboxHandler:
   void OnFileUploadStatusChanged(
       const base::UnguessableToken& file_token,
@@ -105,6 +109,7 @@ class ContextualTasksComposeboxHandler : public ComposeboxHandler,
 
  protected:
   virtual contextual_tasks::ContextualTasksService* GetContextualTasksService();
+  virtual std::optional<base::UnguessableToken> GetLensOverlayToken();
 
  private:
   // Called when the context is retrieved from the context service, for
@@ -123,10 +128,14 @@ class ContextualTasksComposeboxHandler : public ComposeboxHandler,
                                    bool upload_started);
 
   // Called when all tabs have been re-uploaded, to continue query
-  // submission.
+  // submission. `overlay_token` is the token of the initial objects request for
+  // the Lens overlay / CSB, used in the ClientToAimRequest. It needs to be
+  // passed at this point as by the time this function is called the Lens
+  // overlay might have been closed.
   void ContinueCreateAndSendQueryMessage(
       std::string query,
-      std::optional<base::Uuid> original_task_id);
+      std::optional<base::Uuid> original_task_id,
+      std::optional<base::UnguessableToken> overlay_token);
 
   // Returns the tabs that need to be re-uploaded before query submission based
   // on the tabs present in the context.

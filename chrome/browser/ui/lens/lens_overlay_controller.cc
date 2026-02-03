@@ -1717,36 +1717,10 @@ void LensOverlayController::InitializeOverlay(
   // Only start the query flow again if there is no full image response and the
   // side panel is not open. The side panel being open indicates that a full
   // image response could have been received and not passed to the overlay.
-  if (GetLensQueryFlowRouter()->IsOff()) {
-    if (!GetContextualizationController()->GetCurrentPageContextEligibility()) {
-      initialization_data_->initial_screenshot_ = SkBitmap();
-      initialization_data_->page_url_ = GURL();
-      initialization_data_->page_title_ = "";
-    }
-
-    GetLensQueryFlowRouter()->StartQueryFlow(
-        initialization_data_->initial_screenshot_,
-        initialization_data_->page_url_, initialization_data_->page_title_,
-        std::move(initialization_data_->significant_region_boxes_),
-        initialization_data_->page_contents_,
-        initialization_data_->primary_content_type_,
-        initialization_data_->last_retrieved_most_visible_page_,
-        GetUiScaleFactor(), invocation_time_);
-
-#if BUILDFLAG(ENABLE_PDF)
-    // TODO(crbug.com/418825720): When StorePageContentAndContinueInitialization
-    // is called, the contextualization controller does not update its own
-    // contextualization. In this case, the partial PDF text should be sent here
-    // if it is available.
-    if (initialization_data_->primary_content_type_ == lens::MimeType::kPdf) {
-      GetContextualizationController()
-          ->FetchVisiblePageIndexAndGetPartialPdfText(
-              initialization_data_->pdf_page_count_.value(),
-              base::BindOnce(
-                  &LensOverlayController::OnPdfPartialPageTextRetrieved,
-                  weak_factory_.GetWeakPtr()));
-    }
-#endif
+  if (lens_search_controller_->should_route_to_contextual_tasks() ||
+      GetLensQueryFlowRouter()->IsOff()) {
+    StartQueryFlow();
+    FetchPdfTextIfEligible();
   } else {
     // If the query flow is already started, update the page content with
     // the new viewport.
@@ -3129,6 +3103,38 @@ LensOverlayController::GetContextualizationController() {
 lens::LensSessionMetricsLogger*
 LensOverlayController::GetLensSessionMetricsLogger() {
   return lens_search_controller_->lens_session_metrics_logger();
+}
+
+void LensOverlayController::StartQueryFlow() {
+  if (!GetContextualizationController()->GetCurrentPageContextEligibility()) {
+    initialization_data_->initial_screenshot_ = SkBitmap();
+    initialization_data_->page_url_ = GURL();
+    initialization_data_->page_title_ = "";
+  }
+
+  GetLensQueryFlowRouter()->StartQueryFlow(
+      initialization_data_->initial_screenshot_,
+      initialization_data_->page_url_, initialization_data_->page_title_,
+      std::move(initialization_data_->significant_region_boxes_),
+      initialization_data_->page_contents_,
+      initialization_data_->primary_content_type_,
+      initialization_data_->last_retrieved_most_visible_page_,
+      GetUiScaleFactor(), invocation_time_);
+}
+
+void LensOverlayController::FetchPdfTextIfEligible() {
+#if BUILDFLAG(ENABLE_PDF)
+  // TODO(crbug.com/418825720): When StorePageContentAndContinueInitialization
+  // is called, the contextualization controller does not update its own
+  // contextualization. In this case, the partial PDF text should be sent here
+  // if it is available.
+  if (initialization_data_->primary_content_type_ == lens::MimeType::kPdf) {
+    GetContextualizationController()->FetchVisiblePageIndexAndGetPartialPdfText(
+        initialization_data_->pdf_page_count_.value(),
+        base::BindOnce(&LensOverlayController::OnPdfPartialPageTextRetrieved,
+                       weak_factory_.GetWeakPtr()));
+  }
+#endif
 }
 
 void LensOverlayController::MaybeShowMobilePromo() {

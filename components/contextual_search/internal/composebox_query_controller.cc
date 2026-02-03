@@ -430,6 +430,18 @@ void ComposeboxQueryController::CreateSearchUrl(
             last_active_file, search_url_request_info->query_text,
             search_url_request_info->lens_overlay_selection_type,
             search_url_request_info->additional_params);
+
+        // TODO(crbug.com/479613954): Refactor to decouple interaction request
+        // details from CreateSearchUrl.
+        // When initiated from the contextual tasks composebox, the visual
+        // search interaction data is not used in the search URL as it is not
+        // loaded.
+        if (search_url_request_info->invocation_source ==
+            lens::LensOverlayInvocationSource::kContextualTasksComposebox) {
+          latest_interaction_request_data_->interaction_details_used_in_vsint_ =
+              false;
+        }
+
         // Get the encoded visual search interaction log data.
         bool should_send_lns_surface =
             send_lns_surface_ &&
@@ -479,6 +491,18 @@ void ComposeboxQueryController::CreateSearchUrl(
             last_file, search_url_request_info->query_text,
             search_url_request_info->lens_overlay_selection_type,
             search_url_request_info->additional_params);
+
+        // TODO(crbug.com/479613954): Refactor to decouple interaction request
+        // details from CreateSearchUrl.
+        // When initiated from the contextual tasks composebox, the visual
+        // search interaction data is not used in the search URL as it is not
+        // loaded.
+        if (search_url_request_info->invocation_source ==
+            lens::LensOverlayInvocationSource::kContextualTasksComposebox) {
+          latest_interaction_request_data_->interaction_details_used_in_vsint_ =
+              false;
+        }
+
         bool should_send_lns_surface =
             send_lns_surface_ &&
             (!suppress_lns_surface_param_if_no_image_ ||
