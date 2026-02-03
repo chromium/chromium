@@ -13205,6 +13205,7 @@ from previous Chrome versions.
   <int value="-398706729" label="PermissionPredictionsV3:disabled"/>
   <int value="-398623652" label="CCTTargetTranslateLanguage:enabled"/>
   <int value="-398325847" label="HelpAppCrosComponents:enabled"/>
+  <int value="-398280726" label="AutoDocPiPPermissionPromptAndroid:enabled"/>
   <int value="-398012541"
       label="CertificateTransparency2022PolicyAllCerts:enabled"/>
   <int value="-397959190" label="ClipboardHistory:enabled"/>
@@ -14551,6 +14552,7 @@ from previous Chrome versions.
   <int value="65245449" label="FilesBannerFramework:enabled"/>
   <int value="65750425" label="OmniboxMostVisitedTilesDynamicSpacing:disabled"/>
   <int value="66897259" label="ModalPermissionDialogView:enabled"/>
+  <int value="67249017" label="AutoDocPiPPermissionPromptAndroid:disabled"/>
   <int value="67343657"
       label="LensOverlayTextSelectionContextMenuEntrypoint:disabled"/>
   <int value="67639499" label="stop-loading-in-background:disabled"/>

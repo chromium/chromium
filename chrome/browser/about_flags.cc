@@ -9652,6 +9652,11 @@ const FeatureEntry kFeatureEntries[] = {
         // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
+    {"auto-doc-pip-permission-prompt-android",
+     flag_descriptions::kAutoDocPiPPermissionPromptAndroidName,
+     flag_descriptions::kAutoDocPiPPermissionPromptAndroidDescription,
+     kOsAndroid, FEATURE_VALUE_TYPE(media::kAutoDocPiPPermissionPromptAndroid)},
+
     {"auto-picture-in-picture-android",
      flag_descriptions::kAutoPictureInPictureAndroidName,
      flag_descriptions::kAutoPictureInPictureAndroidDescription, kOsAndroid,

@@ -673,6 +673,14 @@
     "expiry_milestone": 148
   },
   {
+    "name": "auto-doc-pip-permission-prompt-android",
+    "owners": [
+      "philyan@chromium.org",
+      "media-dev@chromium.org"
+    ],
+    "expiry_milestone": 156
+  },
+  {
     "name": "auto-framing-override",
     "owners": [ "kamesan@chromium.org", "chromeos-camera-eng@google.com" ],
     "expiry_milestone": 116
