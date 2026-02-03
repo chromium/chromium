@@ -347,6 +347,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/location_bar/badge/coordinator:unit_tests",
     "//ios/chrome/browser/location_bar/badge/ui:unit_tests",
     "//ios/chrome/browser/location_bar/ui_bundled:unit_tests",
+    "//ios/chrome/browser/main/coordinator:unit_tests",
     "//ios/chrome/browser/main/model:unit_tests",
     "//ios/chrome/browser/main/ui_bundled:unit_tests",
     "//ios/chrome/browser/main_content/ui_bundled:unit_tests",

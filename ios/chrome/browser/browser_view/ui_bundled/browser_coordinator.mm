@@ -146,6 +146,7 @@
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_coordinator.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_view_finder_coordinator.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
+#import "ios/chrome/browser/main/coordinator/browser_layout_coordinator.h"
 #import "ios/chrome/browser/main/ui/browser_layout_view_controller.h"
 #import "ios/chrome/browser/metrics/model/tab_usage_recorder_browser_agent.h"
 #import "ios/chrome/browser/mini_map/coordinator/mini_map_coordinator.h"
@@ -717,6 +718,9 @@ const char kChromeAppStoreUrl[] =
   RootDriveFilePickerCoordinator* _driveFilePickerCoordinator;
   GoogleOneCoordinator* _googleOneCoordinator;
 
+  // The coordinator that manages the BrowserLayoutViewController.
+  BrowserLayoutCoordinator* _browserLayoutCoordinator;
+
   // Coordinator to display a web page in Reader Mode UI.
   ReaderModeCoordinator* _readerModeCoordinator;
   ReaderModeBlurOverlayCoordinator* _readerModeBlurOverlayCoordinator;
@@ -900,6 +904,10 @@ const char kChromeAppStoreUrl[] =
 
 - (BOOL)isPlayingTTS {
   return _voiceSearchController.audioPlaying;
+}
+
+- (BrowserLayoutViewController*)browserLayoutViewController {
+  return _browserLayoutCoordinator.viewController;
 }
 
 - (void)setActive:(BOOL)active {
@@ -1238,9 +1246,9 @@ const char kChromeAppStoreUrl[] =
   self.contextMenuProvider = [[ContextMenuConfigurationProvider alloc]
          initWithBrowser:browser
       baseViewController:_viewController];
-  _browserLayoutViewController = [[BrowserLayoutViewController alloc] init];
-  _browserLayoutViewController.incognito =
-      browser->GetProfile()->IsOffTheRecord();
+  _browserLayoutCoordinator =
+      [[BrowserLayoutCoordinator alloc] initWithBrowser:browser];
+  [_browserLayoutCoordinator start];
 }
 
 // Shuts down the BrowserViewController.
@@ -1255,7 +1263,8 @@ const char kChromeAppStoreUrl[] =
   [self.dispatcher stopDispatchingToTarget:_viewController];
   [_viewController shutdown];
   _viewController = nil;
-  _browserLayoutViewController = nil;
+  [_browserLayoutCoordinator stop];
+  _browserLayoutCoordinator = nil;
 }
 
 // Ensure BrowserViewController's view is created
@@ -1513,7 +1522,7 @@ const char kChromeAppStoreUrl[] =
 
   [_dispatcher startDispatchingToTarget:viewController
                             forProtocol:@protocol(BrowserCommands)];
-  _browserLayoutViewController.currentBVC = viewController;
+  _browserLayoutCoordinator.browserViewController = viewController;
 }
 
 // Destroys the browser view controller dependencies.

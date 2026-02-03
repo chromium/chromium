@@ -164,6 +164,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/lens_overlay/model",
     "//ios/chrome/browser/link_to_text/model",
     "//ios/chrome/browser/location_bar/ui_bundled",
+    "//ios/chrome/browser/main/coordinator",
     "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/main/ui",
     "//ios/chrome/browser/main/ui_bundled:default_browser_scene_agent",
