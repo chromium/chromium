@@ -13,6 +13,7 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.view.View;
+import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.TextView;
 
 import androidx.appcompat.widget.DialogTitle;
@@ -209,5 +210,26 @@ public class TabGroupVisualDataDialogManagerUnitTest {
 
         mTabGroupVisualDataDialogManager.onHideDialog();
         verify(mTracker).dismissed(eq(TAB_GROUP_CREATION_DIALOG_SYNC_TEXT_FEATURE));
+    }
+
+    @Test
+    public void testVisualDataDialogDelegate_accessibilityDelegate() {
+        mTabGroupVisualDataDialogManager.showDialog(
+                TAB_GROUP_ID, mTabGroupModelFilter, mDialogController);
+        verify(mModalDialogManager).showDialog(mModelCaptor.capture(), eq(ModalDialogType.APP));
+
+        PropertyModel model = mModelCaptor.getValue();
+        View customView = model.get(ModalDialogProperties.CUSTOM_VIEW);
+        TextView editTextView = customView.findViewById(R.id.title_input_text);
+
+        View.AccessibilityDelegate delegate = editTextView.getAccessibilityDelegate();
+        Assert.assertNotNull(delegate);
+
+        AccessibilityNodeInfo info = AccessibilityNodeInfo.obtain();
+        delegate.onInitializeAccessibilityNodeInfo(editTextView, info);
+
+        String expectedText =
+                mActivity.getString(R.string.accessibility_tab_group_title_field, "0 tabs");
+        Assert.assertEquals(expectedText, info.getText().toString());
     }
 }
