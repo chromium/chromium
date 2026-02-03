@@ -1391,9 +1391,9 @@ void TabDragController::AttachToNewContext(
   // re-attached.
   MaybeResumeTrackingSavedTabGroup();
 
-  AttachImpl();
-
   attached_context_->OwnDragController(std::move(controller));
+
+  AttachImpl();
 }
 
 void TabDragController::AttachImpl() {
