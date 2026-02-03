@@ -46,12 +46,6 @@ namespace {
 using ::enterprise_connectors::BinaryUploadRequest;
 using ::enterprise_connectors::GetBrowserPolicyConnector;
 
-// The default maximum number of concurrent active requests. This is used to
-// limit the number of requests that are actively being uploaded. This is set to
-// default of 15 because it was determined to be a good value through
-// experiments. See http://crbug.com/329293309.
-constexpr int kDefaultMaxParallelActiveRequests = 15;
-
 constexpr base::TimeDelta kAuthTimeout = base::Seconds(10);
 constexpr base::TimeDelta kScanningTimeout = base::Minutes(5);
 
@@ -203,20 +197,13 @@ bool IgnoreErrorResultForResumableUpload(
 
 // static
 size_t CloudBinaryUploadService::GetParallelActiveRequestsMax() {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(switches::kWpMaxParallelActiveRequests)) {
-    int parsed_max;
-    if (base::StringToInt(command_line->GetSwitchValueASCII(
-                              switches::kWpMaxParallelActiveRequests),
-                          &parsed_max) &&
-        parsed_max > 0) {
-      return parsed_max;
-    } else {
-      DVLOG(1) << "wp-max-parallel-active-requests had invalid value";
-    }
+  size_t experiment_max =
+      enterprise_connectors::kParallelContentAnalysisRequestCountMax.Get();
+  if (experiment_max > 0) {
+    return experiment_max;
   }
 
-  return kDefaultMaxParallelActiveRequests;
+  return enterprise_connectors::kDefaultMaxParallelActiveRequests;
 }
 
 CloudBinaryUploadService::CloudBinaryUploadService(Profile* profile)
