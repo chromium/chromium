@@ -314,18 +314,10 @@ class LensOverlayController::UnderlyingWebContentsObserver
 LensOverlayController::LensOverlayController(
     tabs::TabInterface* tab,
     LensSearchController* lens_search_controller,
-    variations::VariationsClient* variations_client,
-    signin::IdentityManager* identity_manager,
-    PrefService* pref_service,
-    syncer::SyncService* sync_service,
-    ThemeService* theme_service)
+    PrefService* pref_service)
     : tab_(tab),
       lens_search_controller_(lens_search_controller),
-      variations_client_(variations_client),
-      identity_manager_(identity_manager),
       pref_service_(pref_service),
-      sync_service_(sync_service),
-      theme_service_(theme_service),
       gen204_controller_(
           std::make_unique<lens::LensOverlayGen204Controller>()) {
   InitializeTutorialIPHUrlMatcher();

@@ -187,13 +187,7 @@ class MockLensOverlayController : public LensOverlayController {
   MockLensOverlayController(tabs::TabInterface* tab,
                             LensSearchController* search_controller,
                             Profile* profile)
-      : LensOverlayController(tab,
-                              search_controller,
-                              nullptr,
-                              nullptr,
-                              profile->GetPrefs(),
-                              nullptr,
-                              nullptr) {}
+      : LensOverlayController(tab, search_controller, profile->GetPrefs()) {}
   ~MockLensOverlayController() override = default;
 
   MOCK_METHOD(void, NotifyResultsPanelOpened, (), (override));

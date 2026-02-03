@@ -505,18 +505,10 @@ class LensOverlayControllerFake : public lens::TestLensOverlayController {
  public:
   LensOverlayControllerFake(tabs::TabInterface* tab,
                             LensSearchController* lens_search_controller,
-                            variations::VariationsClient* variations_client,
-                            signin::IdentityManager* identity_manager,
-                            PrefService* pref_service,
-                            syncer::SyncService* sync_service,
-                            ThemeService* theme_service)
+                            PrefService* pref_service)
       : lens::TestLensOverlayController(tab,
                                         lens_search_controller,
-                                        variations_client,
-                                        identity_manager,
-                                        pref_service,
-                                        sync_service,
-                                        theme_service) {}
+                                        pref_service) {}
 
   void BindOverlay(mojo::PendingReceiver<lens::mojom::LensPageHandler> receiver,
                    mojo::PendingRemote<lens::mojom::LensPage> page) override {
@@ -570,18 +562,14 @@ class LensSearchControllerFake : public lens::TestLensSearchController {
   std::unique_ptr<LensOverlayController> CreateLensOverlayController(
       tabs::TabInterface* tab,
       LensSearchController* lens_search_controller,
-      variations::VariationsClient* variations_client,
-      signin::IdentityManager* identity_manager,
       PrefService* pref_service,
-      syncer::SyncService* sync_service,
       ThemeService* theme_service) override {
     // Set browser color scheme to light mode for consistency.
     theme_service->SetBrowserColorScheme(
         ThemeService::BrowserColorScheme::kLight);
 
     return std::make_unique<LensOverlayControllerFake>(
-        tab, lens_search_controller, variations_client, identity_manager,
-        pref_service, sync_service, theme_service);
+        tab, lens_search_controller, pref_service);
   }
 
   std::unique_ptr<lens::LensOverlayQueryController> CreateLensQueryController(

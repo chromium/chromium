@@ -88,21 +88,9 @@ class LensOverlayUrlResponse;
 }  // namespace proto
 }  // namespace lens
 
-namespace signin {
-class IdentityManager;
-}  // namespace signin
-
-namespace syncer {
-class SyncService;
-}  // namespace syncer
-
 namespace ui {
 class TrackedElement;
 }  // namespace ui
-
-namespace variations {
-class VariationsClient;
-}  // namespace variations
 
 namespace views {
 class View;
@@ -111,7 +99,6 @@ class WebView;
 
 class LensSearchController;
 class PrefService;
-class Profile;
 enum class SidePanelEntryHideReason;
 
 extern void* kLensOverlayPreselectionWidgetIdentifier;
@@ -131,11 +118,7 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
  public:
   LensOverlayController(tabs::TabInterface* tab,
                         LensSearchController* lens_search_controller,
-                        variations::VariationsClient* variations_client,
-                        signin::IdentityManager* identity_manager,
-                        PrefService* pref_service,
-                        syncer::SyncService* sync_service,
-                        ThemeService* theme_service);
+                        PrefService* pref_service);
   ~LensOverlayController() override;
 
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
@@ -232,9 +215,6 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   // Returns whether visual searches should be fulfilled by AIM rather than
   // load immediately in the results panel.
   bool use_aim_for_visual_search() { return use_aim_for_visual_search_; }
-
-  // Returns whether the overlay is in screenshot state.
-  bool is_screenshot_state() { return state_ == State::kScreenshot; }
 
   // Returns invocation time since epoch. Used to set up html source for metric
   // logging.
@@ -1004,10 +984,6 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   // Owns this class.
   raw_ptr<LensSearchController> lens_search_controller_;
 
-  // A monotonically increasing id. This is used to differentiate between
-  // different screenshot attempts.
-  int screenshot_attempt_id_ = 0;
-
   // Tracks the internal state machine.
   State state_ = State::kOff;
 
@@ -1049,21 +1025,8 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   // overlay view is showing.
   std::unique_ptr<UnderlyingWebContentsObserver> tab_contents_observer_;
 
-  // Owned by Profile, and thus guaranteed to outlive this instance.
-  raw_ptr<variations::VariationsClient> variations_client_;
-
-  // Unowned IdentityManager for fetching access tokens. Could be null for
-  // incognito profiles.
-  raw_ptr<signin::IdentityManager> identity_manager_;
-
   // The pref service associated with the current profile.
   raw_ptr<PrefService> pref_service_;
-
-  // The sync service associated with the current profile.
-  raw_ptr<syncer::SyncService> sync_service_;
-
-  // The theme service associated with the current profile.
-  raw_ptr<ThemeService> theme_service_;
 
   // Prevents other features from showing tab-modal UI.
   std::unique_ptr<tabs::ScopedTabModalUI> scoped_tab_modal_ui_;

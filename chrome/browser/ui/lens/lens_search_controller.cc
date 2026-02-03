@@ -142,9 +142,8 @@ void LensSearchController::Initialize(
   // Create Gen204 controller first as query controller depends on it.
   gen204_controller_ = std::make_unique<lens::LensOverlayGen204Controller>();
 
-  lens_overlay_controller_ = CreateLensOverlayController(
-      tab_, this, variations_client, identity_manager, pref_service,
-      sync_service, theme_service);
+  lens_overlay_controller_ =
+      CreateLensOverlayController(tab_, this, pref_service, theme_service);
 
   lens_overlay_side_panel_coordinator_ =
       CreateLensOverlaySidePanelCoordinator();
@@ -642,14 +641,10 @@ std::unique_ptr<LensOverlayController>
 LensSearchController::CreateLensOverlayController(
     tabs::TabInterface* tab,
     LensSearchController* lens_search_controller,
-    variations::VariationsClient* variations_client,
-    signin::IdentityManager* identity_manager,
     PrefService* pref_service,
-    syncer::SyncService* sync_service,
     ThemeService* theme_service) {
-  return std::make_unique<LensOverlayController>(
-      tab, lens_search_controller, variations_client, identity_manager,
-      pref_service, sync_service, theme_service);
+  return std::make_unique<LensOverlayController>(tab, lens_search_controller,
+                                                 pref_service);
 }
 
 std::unique_ptr<lens::LensOverlayQueryController>
