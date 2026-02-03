@@ -18,9 +18,11 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/enterprise/common/proto/synced/browser_events.pb.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
 #include "components/enterprise/connectors/core/content_analysis_delegate_base.h"
 #include "components/enterprise/data_controls/core/browser/test_utils.h"
+#include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
 #include "content/public/browser/clipboard_types.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -596,32 +598,65 @@ TEST_F(PasteAllowedRequestScanningTest, DifferentDestinationSource) {
   auto validator = helper_->CreateValidator();
   base::RunLoop run_loop;
   validator.SetDoneClosure(run_loop.QuitClosure());
-  validator.ExpectSensitiveDataEvent(
-      /*url*/
-      "",
-      /*tab_url*/ "",
-      /*source*/ "https://google.com/",
-      /*destination*/ "",
-      /*filename*/ "Text data",
-      /*sha*/ "",
-      /*trigger*/ "WEB_CONTENT_UPLOAD",
-      /*dlp_verdict*/
-      CreateResult(enterprise_connectors::ContentAnalysisResponse::Result::
-                       TriggeredRule::BLOCK),
-      /*mimetype*/
-      []() {
-        static std::set<std::string> set = {"text/plain"};
-        return &set;
-      }(),
-      /*size*/ 4,
-      /*result*/
-      enterprise_connectors::EventResultToString(
-          enterprise_connectors::EventResult::BLOCKED),
-      /*username*/ "test-user@chromium.org",
-      /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
-      /*scan_id*/ kScanId,
-      /*content_transfer_method*/ std::nullopt,
-      /*user_justification*/ std::nullopt);
+
+  if (base::FeatureList::IsEnabled(
+          policy::kUploadRealtimeReportingEventsUsingProto)) {
+    chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
+
+    expected_event.set_url("");
+    expected_event.set_tab_url("");
+    expected_event.set_source("https://google.com/");
+    expected_event.set_destination("");
+    expected_event.set_file_name("Text data");
+    expected_event.set_content_type("text/plain");
+    expected_event.set_content_size(4);
+    expected_event.set_scan_id(kScanId);
+    expected_event.set_event_result(
+        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_BLOCKED);
+    expected_event.set_clicked_through(false);
+    expected_event.set_trigger(
+        chrome::cros::reporting::proto::DataTransferEventTrigger::
+            WEB_CONTENT_UPLOAD);
+
+    chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule;
+    triggered_rule.set_action(
+        chrome::cros::reporting::proto::TriggeredRuleInfo::BLOCK);
+    triggered_rule.set_rule_name("paste_rule_name");
+
+    *expected_event.add_triggered_rule_info() = triggered_rule;
+
+    expected_event.set_profile_identifier(profile_->GetPath().AsUTF8Unsafe());
+    expected_event.set_profile_user_name("test-user@chromium.org");
+
+    validator.ExpectSensitiveDataEvent(std::move(expected_event));
+  } else {
+    validator.ExpectSensitiveDataEvent(
+        /*url*/
+        "",
+        /*tab_url*/ "",
+        /*source*/ "https://google.com/",
+        /*destination*/ "",
+        /*filename*/ "Text data",
+        /*sha*/ "",
+        /*trigger*/ "WEB_CONTENT_UPLOAD",
+        /*dlp_verdict*/
+        CreateResult(enterprise_connectors::ContentAnalysisResponse::Result::
+                         TriggeredRule::BLOCK),
+        /*mimetype*/
+        []() {
+          static std::set<std::string> set = {"text/plain"};
+          return &set;
+        }(),
+        /*size*/ 4,
+        /*result*/
+        enterprise_connectors::EventResultToString(
+            enterprise_connectors::EventResult::BLOCKED),
+        /*username*/ "test-user@chromium.org",
+        /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
+        /*scan_id*/ kScanId,
+        /*content_transfer_method*/ std::nullopt,
+        /*user_justification*/ std::nullopt);
+  }
 
   auto seqno = ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
       ui::ClipboardBuffer::kCopyPaste);
