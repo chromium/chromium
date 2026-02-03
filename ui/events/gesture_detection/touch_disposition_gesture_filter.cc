@@ -318,10 +318,11 @@ void TouchDispositionGestureFilter::FilterAndSendPacket(
   }
   int gesture_end_index = -1;
 
-  //  If we are in a scroll, there are no gestures, send an empty gesture scroll
-  //  update.
+  //  If we are in a scroll (there was a GestureScrollBegin, and the
+  //  corresponding touch move was not consumed), and there are no gestures,
+  //  send an empty gesture scroll update.
   if (base::FeatureList::IsEnabled(features::kSendEmptyGestureScrollUpdate) &&
-      needs_scroll_ending_event_ &&
+      (needs_scroll_ending_event_ && !scroll_begin_consumed_) &&
       packet.gesture_source() == GestureEventDataPacket::TOUCH_MOVE &&
       packet.gesture_count() == 0) {
     TRACE_EVENT("input", "EmptyGestureScrollUpdate");
@@ -440,6 +441,7 @@ void TouchDispositionGestureFilter::SendGesture(
       ending_event_motion_event_id_ = event.motion_event_id;
       ending_event_primary_tool_type_ = event.primary_tool_type;
       needs_scroll_ending_event_ = true;
+      scroll_begin_consumed_ = state_.current_touch_consumed();
       break;
     case EventType::kGestureScrollEnd:
       needs_scroll_ending_event_ = false;

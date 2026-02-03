@@ -416,6 +416,36 @@ TEST_F(TouchDispositionGestureFilterTest, NotConsumedThenConsumed) {
                             GetAndResetSentGestures()));
 }
 
+// Verifies that empty GSUs are not generated if the touch move for the
+// preceding GestureScrollBegin was consumed (=the scroll was blocked)).
+TEST_F(TouchDispositionGestureFilterTest, NoEmptyGesturesForConsumedBegin) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kSendEmptyGestureScrollUpdate);
+
+  // Send a tap down first so that the source of the GestureScrollBegin will be
+  // TOUCH_MOVE and not TOUCH_START.
+  SendPacket(PressTouchPoint(), Gestures(EventType::kGestureTapDown));
+  SendTouchNotConsumedAckForLastTouch();
+  EXPECT_TRUE(GesturesMatch(Gestures(EventType::kGestureTapDown),
+                            GetAndResetSentGestures()));
+
+  // Send a touch move that would generate a GestureScrollBegin and consume this
+  // touch move (this would be similar to calling preventDefault() in a
+  // touchmove handler).
+  auto touch_id =
+      SendPacket(MoveTouchPoint(), Gestures(EventType::kGestureScrollBegin));
+  SendTouchConsumedAck(touch_id);
+  EXPECT_TRUE(GesturesMatch(
+      Gestures(EventType::kGestureTapCancel, EventType::kGestureScrollBegin),
+      GetAndResetSentGestures()));
+
+  // Send another touch move that does not generate any gestures and verify that
+  // an empty GSU was not generated.
+  SendPacket(MoveTouchPoint(), NoGestures());
+  SendTouchConsumedAckForLastTouch();
+  EXPECT_FALSE(GesturesSent());
+}
+
 TEST_F(TouchDispositionGestureFilterTest, ScrollAlternatelyConsumed) {
   // A consumed touch's gesture should not be sent.
   SendPacket(PressTouchPoint(), Gestures(EventType::kGestureScrollBegin));
