@@ -5920,6 +5920,16 @@ bool Document::SetFocusedElement(Element* new_focused_element,
         // handler shifted focus
         focus_change_blocked = true;
         new_focused_element = nullptr;
+
+        if (ancestor) {
+          auto* new_ancestor = DynamicTo<Element>(
+              FlatTreeTraversal::CommonAncestor(*ancestor, *focused_element_));
+          if (new_ancestor != ancestor) {
+            ancestor->SetHasFocusWithinUpToAncestor(
+                false, new_ancestor,
+                /*need_snap_container_search=*/false);
+          }
+        }
       }
 
       // 'focusout' is a DOM level 3 name for the bubbling blur event.
@@ -5938,6 +5948,16 @@ bool Document::SetFocusedElement(Element* new_focused_element,
         // handler shifted focus
         focus_change_blocked = true;
         new_focused_element = nullptr;
+
+        if (ancestor) {
+          auto* new_ancestor = DynamicTo<Element>(
+              FlatTreeTraversal::CommonAncestor(*ancestor, *focused_element_));
+          if (new_ancestor != ancestor) {
+            ancestor->SetHasFocusWithinUpToAncestor(
+                false, new_ancestor,
+                /*need_snap_container_search=*/false);
+          }
+        }
       }
     }
     // EditContext's activation is synced with the associated element being
