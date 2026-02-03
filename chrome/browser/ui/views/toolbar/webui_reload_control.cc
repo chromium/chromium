@@ -115,7 +115,13 @@ void WebUIReloadControl::ExecuteCommand(int command_id, int event_flags) {
 
 void WebUIReloadControl::OnNavigationStatusChanged() {
   auto* webui_toolbar_ui = webui_toolbar_web_view_->GetWebUIToolbarUI();
-  CHECK(webui_toolbar_ui);
+
+  // If the WebUI toolbar is not ready yet, skip updating the UI state. It will
+  // be synchronized later on initialize.
+  if (!webui_toolbar_ui) {
+    return;
+  }
+
   webui_toolbar_ui->OnNavigationStatusChanged(
       (mode_ == ReloadControl::Mode::kStop)
           ? browser_controls_api::mojom::NavigationState::kLoading

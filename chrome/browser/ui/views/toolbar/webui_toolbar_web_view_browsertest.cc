@@ -16,12 +16,14 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
@@ -87,26 +89,34 @@ class WebUIToolbarWebViewPixelBrowserTest : public InProcessBrowserTest {
                   ui::TrackedElement** element_out,
                   WebUIToolbarWebView** webui_toolbar_view_out,
                   views::WebView** web_view_out) {
+    // Wait for the WebUIToolbarWebView to be available.
+    *webui_toolbar_view_out = nullptr;
     ASSERT_TRUE(base::test::RunUntil([&]() {
-      *element_out = BrowserElements::From(browser())->GetElement(element_id);
-      return *element_out != nullptr;
+      BrowserView* browser_view =
+          BrowserView::GetBrowserViewForBrowser(browser());
+      if (!browser_view || !browser_view->toolbar()) {
+        return false;
+      }
+      ToolbarButtonProvider* provider = browser_view->toolbar();
+      *webui_toolbar_view_out = provider->GetWebUIToolbarViewForTesting();
+      return *webui_toolbar_view_out != nullptr;
     }));
-    ASSERT_TRUE(*element_out);
-
-    ui::TrackedElement* toolbar_element = nullptr;
-    ASSERT_TRUE(base::test::RunUntil([&]() {
-      toolbar_element = BrowserElements::From(browser())->GetElement(
-          kWebUIToolbarElementIdentifier);
-      return toolbar_element != nullptr;
-    }));
-    ASSERT_TRUE(toolbar_element);
-    views::TrackedElementViews* webui_toolbar_view_element =
-        toolbar_element->AsA<views::TrackedElementViews>();
-
-    ASSERT_TRUE(webui_toolbar_view_element);
-    *webui_toolbar_view_out = views::AsViewClass<WebUIToolbarWebView>(
-        webui_toolbar_view_element->view());
     ASSERT_TRUE(*webui_toolbar_view_out);
+
+    if (element_id == kWebUIToolbarElementIdentifier) {
+      // We already have the view, and the Basic test doesn't strictly need the
+      // TrackedElement. ElementTracker might be flaky or slow here.
+      *element_out =
+          views::ElementTrackerViews::GetInstance()->GetElementForView(
+              *webui_toolbar_view_out);
+    } else {
+      ASSERT_TRUE(base::test::RunUntil([&]() {
+        *element_out = BrowserElements::From(browser())->GetElement(element_id);
+        return *element_out != nullptr;
+      }));
+      ASSERT_TRUE(*element_out);
+    }
+
     ASSERT_EQ((*webui_toolbar_view_out)->children().size(), 1u);
     *web_view_out = views::AsViewClass<views::WebView>(
         (*webui_toolbar_view_out)->children()[0].get());
@@ -277,17 +287,24 @@ class WebUIToolbarWebViewStabilityTest : public InProcessBrowserTest {
   }
 
   WebUIToolbarWebView* GetWebUIToolbarWebView() {
-    ui::TrackedElement* element = nullptr;
+    WebUIToolbarWebView* webui_toolbar_view = nullptr;
     if (!base::test::RunUntil([&]() {
-          element = BrowserElements::From(browser())->GetElement(
-              kWebUIToolbarElementIdentifier);
-          return element != nullptr;
+          BrowserView* browser_view =
+              BrowserView::GetBrowserViewForBrowser(browser());
+          if (!browser_view) {
+            return false;
+          }
+          ToolbarView* toolbar = browser_view->toolbar();
+          if (!toolbar) {
+            return false;
+          }
+          ToolbarButtonProvider* provider = toolbar;
+          webui_toolbar_view = provider->GetWebUIToolbarViewForTesting();
+          return webui_toolbar_view != nullptr;
         })) {
       return nullptr;
     }
-    views::TrackedElementViews* views_element =
-        element->AsA<views::TrackedElementViews>();
-    return views::AsViewClass<WebUIToolbarWebView>(views_element->view());
+    return webui_toolbar_view;
   }
 
   content::WebContents* GetWebContents(WebUIToolbarWebView* view) {

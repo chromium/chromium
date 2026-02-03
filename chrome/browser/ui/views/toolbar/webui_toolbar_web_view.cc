@@ -30,6 +30,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/context_menu_params.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/reload_type.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -154,8 +155,9 @@ void WebUIToolbarWebView::AddedToWidget() {
   // before the WebUI acts on it.
   webui::SetBrowserWindowInterface(web_view_->GetWebContents(), browser_);
   web_view_->LoadInitialURL(GURL(chrome::kChromeUIWebUIToolbarURL));
-  GetWebUIToolbarUI()->SetDelegate(this);
-  reload_control_.Init();
+
+  // Do NOT call GetWebUIToolbarUI() here as it may be null.
+  // The reload_control_ will be initialized once the WebUI is ready.
 }
 
 gfx::Size WebUIToolbarWebView::CalculatePreferredSize(
@@ -198,11 +200,26 @@ void WebUIToolbarWebView::HandleContextMenu(
 }
 
 void WebUIToolbarWebView::OnPageInitialized() {
+  if (!reload_control_.is_initialized()) {
+    reload_control_.Init();
+  }
+
   InitialWebUIManager::From(browser_)->OnWebUIToolbarLoaded();
 }
 
 ReloadControl* WebUIToolbarWebView::GetReloadControl() {
   return &reload_control_;
+}
+
+void WebUIToolbarWebView::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
+      !navigation_handle->HasCommitted()) {
+    return;
+  }
+  if (auto* ui = GetWebUIToolbarUI()) {
+    ui->SetDelegate(this);
+  }
 }
 
 void WebUIToolbarWebView::DidFirstVisuallyNonEmptyPaint() {
@@ -297,10 +314,12 @@ void WebUIToolbarWebView::SetTickClockForTesting(const base::TickClock* clock) {
 }
 
 WebUIToolbarUI* WebUIToolbarWebView::GetWebUIToolbarUI() {
-  return web_view_->GetWebContents()
-      ->GetWebUI()
-      ->GetController()
-      ->GetAs<WebUIToolbarUI>();
+  content::WebUI* web_ui = web_view_->web_contents()->GetWebUI();
+  if (!web_ui) {
+    return nullptr;
+  }
+  auto* controller = web_ui->GetController();
+  return controller ? controller->GetAs<WebUIToolbarUI>() : nullptr;
 }
 
 BEGIN_METADATA(WebUIToolbarWebView)
