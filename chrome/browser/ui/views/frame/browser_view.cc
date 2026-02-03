@@ -1974,7 +1974,10 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
     ObserveAppBannerManager(app_banner_manager);
   }
 
-  UpdateUIForContents(new_contents);
+  // When switching tabs within a split, we want to layout to be done
+  // asynchronously in order to ensure the input events are triggered at the
+  // expected position.
+  UpdateUIForContents(new_contents, !tab_change_in_split_view);
 
   if (!IsFullscreen() || !tab_change_in_split_view) {
     RevealTabStripIfNeeded();
@@ -2024,13 +2027,11 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
 
     // Temporarily disable fast resize for to ensure that the new active tab
     // updates its layout.
-    views::WebView* contents_view_to_layout =
-        multi_contents_view_->GetActiveContentsView();
-    CHECK(contents_view_to_layout);
-    const bool original_fast_resize = contents_view_to_layout->GetFastResize();
-    contents_view_to_layout->SetFastResize(false);
+    const bool original_fast_resize =
+        multi_contents_view_->GetActiveContentsView()->GetFastResize();
+    UpdateFastResizeForContentViews(false);
     contents_container_->DeprecatedLayoutImmediately();
-    contents_view_to_layout->SetFastResize(original_fast_resize);
+    UpdateFastResizeForContentViews(original_fast_resize);
   } else if (tab_change_in_split_view) {
     UpdateActiveTabInSplitView();
   }
@@ -2395,13 +2396,8 @@ void BrowserView::ToolbarSizeChanged(bool is_animating) {
     return;
   }
 
-  std::vector<ContentsWebView*> contents_web_views =
-      GetAllVisibleContentsWebViews();
-
   if (is_animating) {
-    for (auto* contents_web_view : contents_web_views) {
-      contents_web_view->SetFastResize(true);
-    }
+    UpdateFastResizeForContentViews(true);
   }
   UpdateUIForContents(GetActiveWebContents());
 
@@ -2413,9 +2409,7 @@ void BrowserView::ToolbarSizeChanged(bool is_animating) {
   }
 
   if (is_animating) {
-    for (auto* contents_web_view : contents_web_views) {
-      contents_web_view->SetFastResize(false);
-    }
+    UpdateFastResizeForContentViews(false);
   }
 
   // When transitioning from animating to not animating we need to make sure the
@@ -2423,7 +2417,7 @@ void BrowserView::ToolbarSizeChanged(bool is_animating) {
   // haven't changed contents_container_ won't get a Layout and we'll end up
   // with a gray rect because the clip wasn't updated.
   if (!is_animating) {
-    for (auto* contents_web_view : contents_web_views) {
+    for (auto* contents_web_view : GetAllVisibleContentsWebViews()) {
       contents_web_view->InvalidateLayout();
     }
     contents_container_->DeprecatedLayoutImmediately();
@@ -2444,18 +2438,13 @@ void BrowserView::ToolbarSizeChanged(bool is_animating) {
 
 void BrowserView::TabDraggingStatusChanged(bool is_dragging) {
 #if !BUILDFLAG(IS_LINUX)
-  std::vector<ContentsWebView*> contents_web_views =
-      GetAllVisibleContentsWebViews();
-
-  for (auto* contents_web_view : contents_web_views) {
-    contents_web_view->SetFastResize(is_dragging);
-  }
+  UpdateFastResizeForContentViews(is_dragging);
 
   if (!is_dragging) {
     // When tab dragging is ended, we need to make sure the web contents get
     // re-layed out. Otherwise we may see web contents get clipped to the window
     // size that was used during dragging.
-    for (ContentsWebView* contents_web_view : contents_web_views) {
+    for (auto* contents_web_view : GetAllVisibleContentsWebViews()) {
       contents_web_view->InvalidateLayout();
     }
     contents_container_->DeprecatedLayoutImmediately();
@@ -5603,7 +5592,8 @@ bool BrowserView::MaybeUpdateDevtools(content::WebContents* contents) {
   return devtools_layout_updated;
 }
 
-void BrowserView::UpdateUIForContents(WebContents* contents) {
+void BrowserView::UpdateUIForContents(WebContents* contents,
+                                      bool should_layout_immediately) {
   TRACE_EVENT0("ui", "BrowserView::UpdateUIForContents");
   bool needs_layout = MaybeShowBookmarkBar(contents);
 
@@ -5616,7 +5606,17 @@ void BrowserView::UpdateUIForContents(WebContents* contents) {
   needs_layout |= MaybeUpdateDevtools(contents);
 
   if (needs_layout) {
-    DeprecatedLayoutImmediately();
+    if (should_layout_immediately) {
+      DeprecatedLayoutImmediately();
+    } else {
+      InvalidateLayout();
+    }
+  }
+}
+
+void BrowserView::UpdateFastResizeForContentViews(bool fast_resize) {
+  for (auto* contents_web_view : GetAllVisibleContentsWebViews()) {
+    contents_web_view->SetFastResize(fast_resize);
   }
 }
 

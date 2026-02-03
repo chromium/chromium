@@ -1000,7 +1000,11 @@ class BrowserView : public BrowserWindow,
   // in response to a change notification from the specified
   // |contents|. |contents| can be null. In this case, all optional UI will be
   // removed.
-  void UpdateUIForContents(content::WebContents* contents);
+  void UpdateUIForContents(content::WebContents* contents,
+                           bool should_layout_immediately = true);
+
+  // Updates fast resize value for all the visible content views.
+  void UpdateFastResizeForContentViews(bool fast_resize);
 
   // Returns the y coordinate of the client area.
   int GetClientAreaTop();
