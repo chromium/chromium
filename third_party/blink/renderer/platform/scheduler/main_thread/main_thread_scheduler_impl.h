@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/platform/scheduler/main_thread/memory_purge_manager.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/page_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/pending_user_input.h"
+#include "third_party/blink/renderer/platform/scheduler/main_thread/performance_helper.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/render_widget_signals.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/use_case.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/user_model.h"
@@ -668,6 +669,8 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
       MainThreadTaskQueue*,
       const base::sequence_manager::TaskQueue::TaskTiming&);
 
+  void ApplyPerformanceState(bool prefer_efficient_scheduling);
+
   // Computes the priority for compositing based on the current use case.
   // Returns nullopt if the use case does not need to set the priority.
   std::optional<TaskPriority> ComputeCompositorPriorityFromUseCase() const;
@@ -780,6 +783,8 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
         has_navigated;
     TraceableState<bool, TRACE_DISABLED_BY_DEFAULT("renderer.scheduler.debug")>
         pause_timers_for_webview;
+    // If true, indicates that CPU performance management is applied.
+    TraceableState<bool, "renderer.scheduler"> restrict_cpu_performance;
     base::TimeTicks background_status_changed_at;
     HashSet<PageSchedulerImpl*> page_schedulers;  // Not owned.
     base::ObserverList<RAILModeObserver>::Unchecked
@@ -921,6 +926,8 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
 
   PollableThreadSafeFlag policy_may_need_update_;
   WeakPersistent<AgentGroupScheduler> current_agent_group_scheduler_;
+
+  PerformanceHelper performance_helper_;
 
   // This is accessed from both the main and IO (IPC) threads. It's incremented
   // when an urgent IPC task is posted and decremented when that IPC task runs

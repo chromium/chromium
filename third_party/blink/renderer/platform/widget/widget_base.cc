@@ -1922,4 +1922,11 @@ bool WidgetBase::AreMainFramesPausedOrDeferred() const {
   return host->MainFrameUpdatesAreDeferred() || host->IsRenderingPaused();
 }
 
+void WidgetBase::RequestEfficientScheduling(
+    const bool prefer_efficient_scheduling) const {
+  if (LayerTreeHost()) [[likely]] {
+    LayerTreeHost()->RequestEfficientScheduling(prefer_efficient_scheduling);
+  }
+}
+
 }  // namespace blink

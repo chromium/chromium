@@ -44,6 +44,7 @@
 #include "components/viz/service/frame_sinks/frame_sink_bundle_impl.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "components/viz/service/layers/layer_context_impl.h"
+#include "components/viz/service/performance_hint/hint_session.h"
 #include "components/viz/service/surfaces/surface.h"
 #include "components/viz/service/surfaces/surface_reference.h"
 #include "components/viz/service/transitions/surface_animation_manager.h"
@@ -761,6 +762,13 @@ SubmitResult CompositorFrameSinkSupport::MaybeSubmitCompositorFrame(
       std::make_unique<PendingFrameDetails>(
           now_time, frame.metadata.trees_in_viz_timing_details,
           surface_manager_));
+
+#if BUILDFLAG(IS_ANDROID)
+  // If the renderer thread has requested a temporary boost for
+  // interaction, we ask ADPF to temporarily lift CPU capacity restrictions.
+  frame_sink_manager_->SetPreferEfficientScheduling(
+      frame.metadata.prefer_efficient_scheduling);
+#endif
 
   // Override the has_damage flag (ignoring invalid data from clients).
   frame.metadata.begin_frame_ack.has_damage = true;

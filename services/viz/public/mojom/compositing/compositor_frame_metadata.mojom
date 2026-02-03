@@ -52,6 +52,10 @@ struct CompositorFrameMetadata {
 
   bool is_mobile_optimized;
 
+  // Android-specific: if true, viz will set a maximum CPU capacity to save
+  // power during e.g. an idle period.
+  bool prefer_efficient_scheduling;
+
   // Contains the metadata required for drawing a delegated ink trail onto the
   // end of a rendered ink stroke. This should only be present when two
   // conditions are met:

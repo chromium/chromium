@@ -18,6 +18,7 @@ CommitState::CommitState(const CommitState& prev)
       is_viewport_mobile_optimized(prev.is_viewport_mobile_optimized),
       may_throttle_if_undrawn_frames(prev.may_throttle_if_undrawn_frames),
       prefers_reduced_motion(prev.prefers_reduced_motion),
+      prefer_efficient_scheduling(prev.prefer_efficient_scheduling),
       browser_controls_params(prev.browser_controls_params),
       event_listener_properties(prev.event_listener_properties),
       bottom_controls_shown_ratio(prev.bottom_controls_shown_ratio),

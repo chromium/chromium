@@ -645,6 +645,26 @@
             ]
         }
     ],
+    "AndroidAdaptiveAdpfEfficiencyMode": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Compositor",
+                    "params": {
+                        "helper_mode": "compositor",
+                        "mode": "adaptive"
+                    },
+                    "enable_features": [
+                        "EnableAdpfEfficiencyMode",
+                        "UsePerformanceHelper"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidAnimateSuggestionsListAppearance": [
         {
             "platforms": [

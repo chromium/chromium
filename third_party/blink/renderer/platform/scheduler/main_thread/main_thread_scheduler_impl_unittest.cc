@@ -132,6 +132,7 @@ class MockWidgetSchedulerDelegate : public WidgetScheduler::Delegate {
 
   MOCK_METHOD(void, RequestBeginMainFrameNotExpected, (bool));
   MOCK_METHOD(bool, AreMainFramesPausedOrDeferred, (), (const, override));
+  MOCK_METHOD(void, RequestEfficientScheduling, (bool), (const, override));
 };
 
 }  // namespace

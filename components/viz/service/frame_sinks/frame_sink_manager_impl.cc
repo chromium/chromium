@@ -40,6 +40,7 @@
 #include "components/viz/service/frame_sinks/video_capture/capturable_frame_sink.h"
 #include "components/viz/service/frame_sinks/video_capture/frame_sink_video_capturer_impl.h"
 #include "components/viz/service/input/input_manager.h"
+#include "components/viz/service/performance_hint/hint_session.h"
 #include "components/viz/service/surfaces/pending_copy_output_request.h"
 #include "components/viz/service/surfaces/surface.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_manager.mojom.h"
@@ -1049,6 +1050,16 @@ void FrameSinkManagerImpl::DiscardPendingCopyOfOutputRequests(
       queue.push(child);
   }
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void FrameSinkManagerImpl::SetPreferEfficientScheduling(
+    bool prefer_efficient_scheduling) const {
+  if (hint_session_factory_) {
+    hint_session_factory_->SetPreferPowerEfficientScheduling(
+        prefer_efficient_scheduling);
+  }
+}
+#endif
 
 void FrameSinkManagerImpl::OnCaptureStarted(const FrameSinkId& id) {
   if (captured_frame_sink_ids_.insert(id).second) {

@@ -408,6 +408,10 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   // Helper to get the non-emulated device scale factor.
   float GetOriginalDeviceScaleFactor() const;
 
+  // Indicates a change in scheduling needs that should be forwarded to viz.
+  void RequestEfficientScheduling(
+      bool prefer_efficient_scheduling) const override;
+
  private:
   static void AssertAreCompatible(const WidgetBase& a, const WidgetBase& b);
 

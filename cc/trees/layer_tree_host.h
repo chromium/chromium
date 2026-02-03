@@ -684,6 +684,13 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
     pending_commit_state()->force_send_metadata_request = true;
   }
 
+  // Requests a cap on CPU performance during idle periods. Forwarded
+  // to ADPF on Android, no-op on other platforms.
+  void RequestEfficientScheduling(bool prefer_efficient_scheduling) {
+    pending_commit_state()->prefer_efficient_scheduling =
+        prefer_efficient_scheduling;
+  }
+
   // Returns the state of |force_send_metadata_request_| and resets the
   // variable to false.
   bool TakeForceSendMetadataRequest();

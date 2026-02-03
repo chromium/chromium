@@ -86,6 +86,7 @@ struct CC_EXPORT CommitState {
   bool is_viewport_mobile_optimized = false;
   bool may_throttle_if_undrawn_frames = true;
   bool prefers_reduced_motion = false;
+  bool prefer_efficient_scheduling = false;
   BrowserControlsParams browser_controls_params;
   std::array<EventListenerProperties, kEventListenerClassCount>
       event_listener_properties = {EventListenerProperties::kNone};

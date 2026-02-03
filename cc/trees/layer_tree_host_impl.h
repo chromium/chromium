@@ -1289,6 +1289,10 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // <meta name="viewport" content="initial-scale=1.0">
   bool is_viewport_mobile_optimized_ = false;
 
+  // If true, forwards a request to viz/ to use ADPF's
+  // setPreferEfficientScheduling API on Android. No-op for other platforms.
+  bool prefer_efficient_scheduling_ = false;
+
   bool prefers_reduced_motion_ = false;
 
   bool may_throttle_if_undrawn_frames_ = true;

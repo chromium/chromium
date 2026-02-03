@@ -814,6 +814,7 @@ void LayerTreeHostImpl::PullLayerTreeHostPropertiesFrom(
   set_viewport_mobile_optimized(commit_state.is_viewport_mobile_optimized);
   SetPrefersReducedMotion(commit_state.prefers_reduced_motion);
   SetMayThrottleIfUndrawnFrames(commit_state.may_throttle_if_undrawn_frames);
+  prefer_efficient_scheduling_ = commit_state.prefer_efficient_scheduling;
 }
 
 void LayerTreeHostImpl::RecordGpuRasterizationHistogram() {
@@ -2978,6 +2979,7 @@ viz::CompositorFrameMetadata LayerTreeHostImpl::MakeCompositorFrameMetadata() {
   }
 
   metadata.is_software = GetDrawMode() != DrawMode::DRAW_MODE_HARDWARE;
+  metadata.prefer_efficient_scheduling = prefer_efficient_scheduling_;
 
   return metadata;
 }

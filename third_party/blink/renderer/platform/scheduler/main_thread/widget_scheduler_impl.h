@@ -60,6 +60,14 @@ class PLATFORM_EXPORT WidgetSchedulerImpl : public WidgetScheduler {
     return begin_frame_not_expected_soon_;
   }
 
+  // Sends a signal to viz indicating that the main thread is not doing anything
+  // CPU intensive, and therefore can be scheduled to save power.
+  void RequestEfficientScheduling(bool prefer_efficient_scheduling) const {
+    if (delegate_) [[likely]] {
+      delegate_->RequestEfficientScheduling(prefer_efficient_scheduling);
+    }
+  }
+
  private:
   scoped_refptr<MainThreadTaskQueue> input_task_queue_;
   scoped_refptr<base::SingleThreadTaskRunner> input_task_runner_;

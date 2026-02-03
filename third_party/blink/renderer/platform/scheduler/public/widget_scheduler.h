@@ -42,6 +42,11 @@ class PLATFORM_EXPORT WidgetScheduler
     // Returns true if main frames updates are paused or deferred for any reason
     // and false otherwise.
     virtual bool AreMainFramesPausedOrDeferred() const = 0;
+
+    // Android: controls whether ADPF should schedule this thread for low power
+    // usage.
+    virtual void RequestEfficientScheduling(
+        bool prefer_efficient_scheduling) const = 0;
   };
 
   virtual ~WidgetScheduler() = default;

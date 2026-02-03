@@ -188,6 +188,10 @@ class VIZ_COMMON_EXPORT CompositorFrameMetadata {
   // Please refer RenderFrameMetadata::is_mobile_optimized for detailed comment.
   bool is_mobile_optimized = false;
 
+  // If true, viz will set an Android-only cap on CPU performance, intended to
+  // reduce power consumption in idle periods.
+  bool prefer_efficient_scheduling = false;
+
   // Contains the metadata required for drawing a delegated ink trail onto the
   // end of a rendered ink stroke. This should only be present when two
   // conditions are met:
