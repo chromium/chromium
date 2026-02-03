@@ -44,7 +44,7 @@ class AutofillAiImportDataBubbleViewBrowsertest
     UiBrowserTest::SetUpOnMainThread();
 
     base::i18n::SetRTLForTesting(IsBrowserLanguageRTL(this->GetParam()));
-    ON_CALL(mock_controller(), GetTitleImagesResourceId())
+    ON_CALL(mock_controller(), GetSaveUpdateDialogTitleImagesResourceId())
         .WillByDefault(testing::Return(
             IDR_AUTOFILL_SAVE_PASSPORT_AND_NATIONAL_ID_CARD_LOTTIE));
   }
@@ -105,7 +105,7 @@ class AutofillAiImportDataBubbleViewBrowsertest
 // a dialog that is close to what most users will see.
 IN_PROC_BROWSER_TEST_P(AutofillAiImportDataBubbleViewBrowsertest,
                        TypicalPassportCase_Save) {
-  ON_CALL(mock_controller(), GetDialogTitle())
+  ON_CALL(mock_controller(), GetSaveUpdateDialogTitle())
       .WillByDefault(testing::Return(l10n_util::GetStringUTF16(
           IDS_AUTOFILL_AI_SAVE_PASSPORT_ENTITY_DIALOG_TITLE)));
   std::vector<EntityAttributeUpdateDetails> details = {
@@ -136,7 +136,7 @@ IN_PROC_BROWSER_TEST_P(AutofillAiImportDataBubbleViewBrowsertest,
 
 IN_PROC_BROWSER_TEST_P(AutofillAiImportDataBubbleViewBrowsertest,
                        TypicalPassportCase_Update) {
-  ON_CALL(mock_controller(), GetDialogTitle())
+  ON_CALL(mock_controller(), GetSaveUpdateDialogTitle())
       .WillByDefault(testing::Return(l10n_util::GetStringUTF16(
           IDS_AUTOFILL_AI_UPDATE_PASSPORT_ENTITY_DIALOG_TITLE)));
   std::vector<EntityAttributeUpdateDetails> details = {
@@ -165,7 +165,7 @@ IN_PROC_BROWSER_TEST_P(AutofillAiImportDataBubbleViewBrowsertest,
 
 IN_PROC_BROWSER_TEST_P(AutofillAiImportDataBubbleViewBrowsertest,
                        WalletableEntity_Save) {
-  ON_CALL(mock_controller(), GetDialogTitle())
+  ON_CALL(mock_controller(), GetSaveUpdateDialogTitle())
       .WillByDefault(testing::Return(l10n_util::GetStringUTF16(
           IDS_AUTOFILL_AI_SAVE_VEHICLE_ENTITY_DIALOG_TITLE)));
   ON_CALL(mock_controller(), IsSavePrompt())
@@ -196,7 +196,7 @@ IN_PROC_BROWSER_TEST_P(AutofillAiImportDataBubbleViewBrowsertest,
 
 IN_PROC_BROWSER_TEST_P(AutofillAiImportDataBubbleViewBrowsertest,
                        WalletableEntity_Update) {
-  ON_CALL(mock_controller(), GetDialogTitle())
+  ON_CALL(mock_controller(), GetSaveUpdateDialogTitle())
       .WillByDefault(testing::Return(l10n_util::GetStringUTF16(
           IDS_AUTOFILL_AI_UPDATE_VEHICLE_ENTITY_DIALOG_TITLE)));
   ON_CALL(mock_controller(), IsSavePrompt())
@@ -228,7 +228,7 @@ IN_PROC_BROWSER_TEST_P(AutofillAiImportDataBubbleViewBrowsertest,
 // This tests corner cases related to attribute names and values sizes.
 IN_PROC_BROWSER_TEST_P(AutofillAiImportDataBubbleViewBrowsertest,
                        LongAttributeNamesAndValues_Update) {
-  ON_CALL(mock_controller(), GetDialogTitle())
+  ON_CALL(mock_controller(), GetSaveUpdateDialogTitle())
       .WillByDefault(testing::Return(l10n_util::GetStringUTF16(
           IDS_AUTOFILL_AI_UPDATE_PASSPORT_ENTITY_DIALOG_TITLE)));
   std::vector<EntityAttributeUpdateDetails> details = {
@@ -267,7 +267,7 @@ IN_PROC_BROWSER_TEST_P(AutofillAiImportDataBubbleViewBrowsertest,
 // This tests corner cases related to attribute names and values sizes.
 IN_PROC_BROWSER_TEST_P(AutofillAiImportDataBubbleViewBrowsertest,
                        LongAttributeNamesAndValues_Save) {
-  ON_CALL(mock_controller(), GetDialogTitle())
+  ON_CALL(mock_controller(), GetSaveUpdateDialogTitle())
       .WillByDefault(testing::Return(l10n_util::GetStringUTF16(
           IDS_AUTOFILL_AI_SAVE_PASSPORT_ENTITY_DIALOG_TITLE)));
   ON_CALL(mock_controller(), IsSavePrompt())

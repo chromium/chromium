@@ -86,9 +86,9 @@ AutofillAiImportDataBubbleView::AutofillAiImportDataBubbleView(
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
   set_margins(GetAutofillAiBubbleInnerMargins());
-  SetAccessibleTitle(controller_->GetDialogTitle());
+  SetAccessibleTitle(controller_->GetSaveUpdateDialogTitle());
   if (!controller_->IsWalletableEntity()) {
-    SetTitle(controller_->GetDialogTitle());
+    SetTitle(controller_->GetSaveUpdateDialogTitle());
   }
   auto* main_content_wrapper =
       AddChildView(views::Builder<views::BoxLayoutView>()
@@ -124,8 +124,9 @@ AutofillAiImportDataBubbleView::AutofillAiImportDataBubbleView(
       ui::mojom::DialogButton::kCancel,
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_NO_THANKS_BUTTON));
-  DialogDelegate::SetButtonLabel(ui::mojom::DialogButton::kOk,
-                                 controller_->GetDialogPrimaryButtonText());
+  DialogDelegate::SetButtonLabel(
+      ui::mojom::DialogButton::kOk,
+      controller_->GetSaveUpdateDialogPrimaryButtonText());
   SetAcceptCallbackWithClose(
       base::BindRepeating(&AutofillAiImportDataBubbleView::OnDialogAccepted,
                           base::Unretained(this)));
@@ -226,7 +227,7 @@ void AutofillAiImportDataBubbleView::Hide() {
 
 void AutofillAiImportDataBubbleView::AddedToWidget() {
   if (controller_->IsSavePrompt()) {
-    int image = controller_->GetTitleImagesResourceId();
+    int image = controller_->GetSaveUpdateDialogTitleImagesResourceId();
     ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
 
     std::unique_ptr<views::ImageView> image_view =
@@ -238,7 +239,7 @@ void AutofillAiImportDataBubbleView::AddedToWidget() {
   }
   if (controller_->IsWalletableEntity()) {
     GetBubbleFrameView()->SetTitleView(
-        CreateWalletBubbleTitleView(controller_->GetDialogTitle()));
+        CreateWalletBubbleTitleView(controller_->GetSaveUpdateDialogTitle()));
   }
 }
 
