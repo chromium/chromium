@@ -2390,15 +2390,12 @@ void RenderWidgetHostImpl::ImeCancelComposition() {
 
 void RenderWidgetHostImpl::RejectPointerLockOrUnlockIfNecessary(
     blink::mojom::PointerLockResult reason) {
-  CHECK(!pending_pointer_lock_request_ || !IsPointerLocked());
+  CHECK(!request_pointer_lock_callback_ || !IsPointerLocked());
   CHECK(reason != blink::mojom::PointerLockResult::kSuccess);
-  if (pending_pointer_lock_request_) {
-    CHECK(request_pointer_lock_callback_);
-    pending_pointer_lock_request_ = false;
+  if (request_pointer_lock_callback_) {
     pointer_lock_raw_movement_ = false;
     std::move(request_pointer_lock_callback_)
         .Run(reason, /*context=*/mojo::NullRemote());
-
   } else if (IsPointerLocked()) {
     view_->UnlockPointer();
   }
@@ -3274,7 +3271,7 @@ void RenderWidgetHostImpl::RequestMouseLock(
     bool from_user_gesture,
     bool unadjusted_movement,
     input::InputRouterImpl::RequestMouseLockCallback response) {
-  if (pending_pointer_lock_request_ || IsPointerLocked()) {
+  if (IsPointerLocked()) {
     std::move(response).Run(blink::mojom::PointerLockResult::kAlreadyLocked,
                             /*context=*/mojo::NullRemote());
     return;
@@ -3288,7 +3285,6 @@ void RenderWidgetHostImpl::RequestMouseLock(
 
   request_pointer_lock_callback_ = std::move(response);
 
-  pending_pointer_lock_request_ = true;
   pointer_lock_raw_movement_ = unadjusted_movement;
   if (!delegate_) {
     // No delegate, reject message.
@@ -3307,11 +3303,6 @@ void RenderWidgetHostImpl::RequestMouseLock(
 void RenderWidgetHostImpl::RequestMouseLockChange(
     bool unadjusted_movement,
     PointerLockContext::RequestMouseLockChangeCallback response) {
-  if (pending_pointer_lock_request_) {
-    std::move(response).Run(blink::mojom::PointerLockResult::kAlreadyLocked);
-    return;
-  }
-
   if (!view_ || !view_->HasFocus()) {
     std::move(response).Run(blink::mojom::PointerLockResult::kWrongDocument);
     return;
@@ -3323,8 +3314,7 @@ void RenderWidgetHostImpl::RequestMouseLockChange(
 void RenderWidgetHostImpl::UnlockPointer() {
   // Got unlock request from renderer. Will update |is_last_unlocked_by_target_|
   // for silent re-lock.
-  const bool was_mouse_locked =
-      !pending_pointer_lock_request_ && IsPointerLocked();
+  const bool was_mouse_locked = IsPointerLocked();
   RejectPointerLockOrUnlockIfNecessary(
       blink::mojom::PointerLockResult::kUserRejected);
   if (was_mouse_locked) {
@@ -3493,14 +3483,11 @@ bool RenderWidgetHostImpl::GotResponseToPointerLockRequest(
   if (response != blink::mojom::PointerLockResult::kSuccess) {
     RejectPointerLockOrUnlockIfNecessary(response);
   }
-  if (!pending_pointer_lock_request_) {
-    // This is possible, e.g., the plugin sends us an unlock request before
-    // the user allows to lock to mouse.
+
+  if (!request_pointer_lock_callback_) {
     return false;
   }
 
-  CHECK(request_pointer_lock_callback_);
-  pending_pointer_lock_request_ = false;
   if (!view_ || !view_->HasFocus()) {
     std::move(request_pointer_lock_callback_)
         .Run(blink::mojom::PointerLockResult::kWrongDocument,

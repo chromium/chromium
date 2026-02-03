@@ -1456,7 +1456,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // back to the original tab, because the content may already have changed.
   bool suppress_events_until_keydown_ = false;
 
-  bool pending_pointer_lock_request_ = false;
   bool pointer_lock_raw_movement_ = false;
   // Stores the keyboard keys to lock while waiting for a pending lock request.
   std::optional<base::flat_set<ui::DomCode>> keyboard_keys_to_lock_;
