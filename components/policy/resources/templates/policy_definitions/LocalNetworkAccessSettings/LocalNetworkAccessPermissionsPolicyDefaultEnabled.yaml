@@ -1,0 +1,46 @@
+owners:
+- cthomp@chromium.org
+- hchao@chromium.org
+- chrome-swan@google.com
+
+caption: Allow Local Network Access (LNA) requests in subframes without explicit delegation
+
+desc: |-
+  By default, the permissions for Local Network Access (LNA) are only allowed to be requested in cross-origin subframes if they are explicitly delegated. This policy can be used to override this default behavior so that LNA permissions are default inherited into subframes, unless explicitly denied in permissions policy.
+
+  If this policy is set to enabled, then subframes are by default delegated all LNA permissions policy features and can make local network requests (triggering the permission prompt).
+
+  If this policy is set to disabled or not set, then subframes must be explicitly delegated the permissions policy feature in order make local network requests and trigger the permission prompt.
+
+  This policy applies to the permissions policy features <ph name="LOCAL_NETWORK_ACCESS_FEATURE_NAME">"local-network-access"</ph>, <ph name="LOOPBACK_NETWORK_FEATURE_NAME">"loopback-network"</ph>, and <ph name="LOCAL_NETWORK_FEATURE_NAME">"local-network"</ph>.
+
+  For more information on Local Network Access, see https://wicg.github.io/local-network-access/ and https://developer.chrome.com/blog/local-network-access.
+
+  For more information on permissions policy, see https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Permissions_Policy.
+
+supported_on:
+- chrome.*:146-
+- chrome_os:146-
+- android:146-
+
+features:
+  dynamic_refresh: false
+  per_profile: false
+
+items:
+- caption: Allow LNA requests in subframes without explicit delegation
+  value: true
+- caption: Do not allow LNA requests in subframes without explicit delegation
+  value: false
+
+type: main
+
+schema:
+  type: boolean
+
+default: false
+
+example_value: true
+
+tags:
+- system-security

@@ -1657,6 +1657,9 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
 
   registry->RegisterListPref(
       prefs::kManagedLocalNetworkAccessIpAddressSpaceOverrides);
+  registry->RegisterBooleanPref(
+      policy::policy_prefs::kLocalNetworkAccessPermissionsPolicyDefaultEnabled,
+      false);
 
   // This is intentionally last.
   RegisterLocalStatePrefsForMigration(registry);

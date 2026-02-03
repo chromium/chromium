@@ -10,3 +10,4 @@ LocalNetworkAccessSettings:
   - LocalNetworkAccessRestrictionsTemporaryOptOut
   - LoopbackNetworkAllowedForUrls
   - LoopbackNetworkBlockedForUrls
+  - LocalNetworkAccessPermissionsPolicyDefaultEnabled

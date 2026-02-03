@@ -223,7 +223,6 @@ class LocalNetworkAccessPoliciesIPOverrideBrowserTest
     : public LocalNetworkAccessPoliciesBrowserTest {
   void SetUpInProcessBrowserTestFixture() override {
     LocalNetworkAccessPoliciesBrowserTest::SetUpInProcessBrowserTestFixture();
-
     // LocalNetworkAccessIpAddressSpaceOverrides does not support dynamic
     // refresh so must be set before browser starts
     policy::PolicyMap policies;
@@ -267,6 +266,121 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPoliciesIPOverrideBrowserTest,
           content::JsReplace("fetch($1).then(response => response.ok)",
                              https_local_server().GetURL("b.com", kLnaPath))),
       content::EvalJsResult::IsError());
+}
+
+class LocalNetworkAccessPoliciesPermissionsPolicyBrowserTest
+    : public LocalNetworkAccessPoliciesBrowserTest {
+  void SetUpInProcessBrowserTestFixture() override {
+    LocalNetworkAccessPoliciesBrowserTest::SetUpInProcessBrowserTestFixture();
+    // LocalNetworkAccessPermissionsPolicyDefaultEnabled does not support
+    // dynamic refresh so must be set before browser starts.
+    policy::PolicyMap policies;
+    SetPolicy(&policies,
+              policy::key::kLocalNetworkAccessPermissionsPolicyDefaultEnabled,
+              base::Value(true));
+    UpdateProviderPolicy(policies);
+  }
+};
+
+// Tests that if the LocalNetworkAccessPermissionsPolicyDefaultEnabled policy
+// is set to `true`, then iframes can request the LNA permissions even if they
+// have not been explicitly delegated via the `allow="local-network"`
+// permissions policy attribute.
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPoliciesPermissionsPolicyBrowserTest,
+                       PermissionsPolicyAllowedByPolicy) {
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), https_public_server().GetURL(
+                          "a.com", "/local_network_access/no-favicon.html")));
+
+  // Enable auto-acceptance of LNA permission request.
+  bubble_factory()->set_response_type(
+      permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
+
+  GURL iframe_url = https_public_server().GetURL(
+      "b.com", "/local_network_access/iframe-fetch.html");
+  GURL lna_url = https_local_server().GetURL("localhost", kLnaPath);
+
+  // Load a cross-origin iframe without explicit permission delegation.
+  // With the policy enabled, it should still be allowed to make LNA requests.
+  constexpr char kScript[] = R"(
+      (async () => {
+        const iframe = document.createElement('iframe');
+        iframe.src = $1;
+        const readyPromise = new Promise(resolve => {
+          window.addEventListener('message', function handler(event) {
+            if (event.data.type === 'ready') {
+              window.removeEventListener('message', handler);
+              resolve();
+            }
+          });
+        });
+        document.body.appendChild(iframe);
+        await readyPromise;
+
+        const resultPromise = new Promise(resolve => {
+          window.addEventListener('message', function handler(event) {
+            if (event.data.type === 'result') {
+              window.removeEventListener('message', handler);
+              resolve(event.data.ok);
+            }
+          });
+        });
+        iframe.contentWindow.postMessage({type: 'fetch', url: $2}, '*');
+        return await resultPromise;
+      })()
+  )";
+
+  EXPECT_EQ(true, content::EvalJs(
+                      web_contents(),
+                      content::JsReplace(kScript, iframe_url, lna_url.spec())));
+}
+
+// Tests that if the LocalNetworkAccessPermissionsPolicyDefaultEnabled policy
+// is set to `true`, then querying
+// `document.featurePolicy.allowsFeature("local-network")` in an iframe returns
+// `true` even if the iframe has  not been explicitly delegated via the
+// `allow="local-network"` permissions policy attribute.
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPoliciesPermissionsPolicyBrowserTest,
+                       FeaturePolicyAllowsFeature) {
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), https_public_server().GetURL(
+                          "a.com", "/local_network_access/no-favicon.html")));
+
+  GURL iframe_url = https_public_server().GetURL(
+      "b.com", "/local_network_access/iframe-allowsfeature.html");
+
+  // Load a cross-origin iframe without explicit permission delegation.
+  // With the policy enabled, the allowsFeature() call should return `true`.
+  constexpr char kScript[] = R"(
+      (async () => {
+        const iframe = document.createElement('iframe');
+        iframe.src = $1;
+        const readyPromise = new Promise(resolve => {
+          window.addEventListener('message', function handler(event) {
+            if (event.data.type === 'ready') {
+              window.removeEventListener('message', handler);
+              resolve();
+            }
+          });
+        });
+        document.body.appendChild(iframe);
+        await readyPromise;
+
+        const resultPromise = new Promise(resolve => {
+          window.addEventListener('message', function handler(event) {
+            if (event.data.type === 'result') {
+              window.removeEventListener('message', handler);
+              resolve(event.data.ok);
+            }
+          });
+        });
+        iframe.contentWindow.postMessage({type: 'allowsFeature'}, '*');
+        return await resultPromise;
+      })()
+  )";
+
+  EXPECT_EQ(true, content::EvalJs(web_contents(),
+                                  content::JsReplace(kScript, iframe_url)));
 }
 
 // Test that using the LNA allow policy override on an HTTP url works in

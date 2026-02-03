@@ -1,0 +1,20 @@
+<html>
+  <head>
+    <link rel="icon" href="data:,">
+  </head>
+  <body>
+    <script>
+      window.addEventListener("message", async (event) => {
+        if (event.data.type === "allowsFeature") {
+          try {
+            const result = document.featurePolicy.allowsFeature("local-network");
+            window.parent.postMessage({ type: "result", ok: result }, "*");
+          } catch (e) {
+            window.parent.postMessage({ type: "result", ok: false, error: e.message }, "*");
+          }
+        }
+      });
+      window.parent.postMessage({ type: "ready" }, "*");
+    </script>
+  </body>
+</html>

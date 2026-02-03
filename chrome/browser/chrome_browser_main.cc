@@ -107,6 +107,7 @@
 #include "components/offline_pages/buildflags/buildflags.h"
 #include "components/policy/core/browser/policy_data_utils.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/sampling_profiler/process_type.h"
 #include "components/sampling_profiler/thread_profiler.h"
@@ -132,6 +133,7 @@
 #include "net/base/net_module.h"
 #include "pdf/buildflags.h"
 #include "rlz/buildflags/buildflags.h"
+#include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/tracing/public/cpp/stack_sampling/tracing_sampler_profiler.h"
 #include "third_party/blink/public/common/origin_trials/origin_trials_settings_provider.h"
@@ -1311,6 +1313,17 @@ int ChromeBrowserMainParts::PreCreateThreadsImpl() {
 
   if (local_state->GetBoolean(prefs::kEnableUnsafeSwiftShader)) {
     command_line->AppendSwitch(switches::kEnableUnsafeSwiftShader);
+  }
+
+  // Add Local Network Access switches as dictated by policy.
+  // We need to set the switch for LNA permissions policy here since it can be
+  // referenced in any process. The ChromeContentBrowserClient will take care
+  // of child processes.
+  if (local_state->GetBoolean(
+          policy::policy_prefs::
+              kLocalNetworkAccessPermissionsPolicyDefaultEnabled)) {
+    command_line->AppendSwitch(
+        network::switches::kLocalNetworkAccessPermissionsPolicyDefaultEnabled);
   }
 
 #if BUILDFLAG(IS_ANDROID)

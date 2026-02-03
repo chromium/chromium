@@ -252,6 +252,12 @@ inline constexpr char kIncognitoModeUrlBlocklist[] =
 inline constexpr char kIncognitoModeUrlAllowlist[] =
     "policy.incognito_mode_url_allowlist";
 
+// A boolean pref indicating whether to default allow Local Network
+// Access permissions policy features.
+// If false, explicit permission delegation is required.
+inline constexpr char kLocalNetworkAccessPermissionsPolicyDefaultEnabled[] =
+    "policy.local_network_access_permissions_policy_default_enabled";
+
 }  // namespace policy_prefs
 }  // namespace policy
 

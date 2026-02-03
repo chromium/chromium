@@ -1428,6 +1428,7 @@ policies:
   1427: LoopbackNetworkAllowedForUrls
   1428: LoopbackNetworkBlockedForUrls
   1429: XSLTEnabled
+  1430: LocalNetworkAccessPermissionsPolicyDefaultEnabled
 
 atomic_groups:
   1: Homepage

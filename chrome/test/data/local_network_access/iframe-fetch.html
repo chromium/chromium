@@ -1,0 +1,20 @@
+<html>
+  <head>
+    <link rel="icon" href="data:,">
+  </head>
+  <body>
+    <script>
+      window.addEventListener("message", async (event) => {
+        if (event.data.type === "fetch") {
+          try {
+            const response = await fetch(event.data.url);
+            window.parent.postMessage({ type: "result", ok: response.ok }, "*");
+          } catch (e) {
+            window.parent.postMessage({ type: "result", ok: false, error: e.message }, "*");
+          }
+        }
+      });
+      window.parent.postMessage({ type: "ready" }, "*");
+    </script>
+  </body>
+</html>
