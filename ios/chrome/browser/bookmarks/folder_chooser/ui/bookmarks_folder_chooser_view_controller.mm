@@ -171,6 +171,9 @@ using bookmarks::BookmarkNode;
 
 - (BOOL)tableView:(UITableView*)tableView
     shouldHighlightRowAtIndexPath:(NSIndexPath*)indexPath {
+  if (self.mutator.UIDisabled) {
+    return NO;
+  }
   NSInteger sectionID =
       [self.tableViewModel sectionIdentifierForSectionIndex:indexPath.section];
   if (sectionID == SectionIdentifierAccountBookmarks) {
@@ -182,6 +185,9 @@ using bookmarks::BookmarkNode;
 
 - (BOOL)tableView:(UITableView*)tableView
     canPerformPrimaryActionForRowAtIndexPath:(NSIndexPath*)indexPath {
+  if (self.mutator.UIDisabled) {
+    return NO;
+  }
   NSInteger sectionID =
       [self.tableViewModel sectionIdentifierForSectionIndex:indexPath.section];
   if (sectionID == SectionIdentifierAccountBookmarks) {
@@ -194,6 +200,9 @@ using bookmarks::BookmarkNode;
 - (void)tableView:(UITableView*)tableView
     performPrimaryActionForRowAtIndexPath:(NSIndexPath*)indexPath {
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
+  if (self.mutator.UIDisabled) {
+    return;
+  }
 
   size_t folderIndex = indexPath.row;
   NSInteger sectionID =
@@ -246,6 +255,10 @@ using bookmarks::BookmarkNode;
 #pragma mark - Actions
 
 - (void)done:(id)sender {
+  if (self.mutator.UIDisabled) {
+    return;
+  }
+  self.mutator.UIDisabled = YES;
   if (_currentlyShowingSearchResults) {
     base::RecordAction(
         base::UserMetricsAction("MobileBookmarksFolderChooserDoneSearch"));
@@ -260,6 +273,10 @@ using bookmarks::BookmarkNode;
 }
 
 - (void)cancel:(id)sender {
+  if (self.mutator.UIDisabled) {
+    return;
+  }
+  self.mutator.UIDisabled = YES;
   base::RecordAction(
       base::UserMetricsAction("MobileBookmarksFolderChooserCanceled"));
   [self.delegate bookmarksFolderChooserViewControllerDidCancel:self];

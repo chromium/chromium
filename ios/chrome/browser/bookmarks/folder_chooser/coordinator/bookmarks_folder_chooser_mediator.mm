@@ -46,6 +46,8 @@ using bookmarks::BookmarkNode;
   std::unique_ptr<SyncObserverBridge> _syncObserverBridge;
 }
 
+@synthesize UIDisabled = _UIDisabled;
+
 - (instancetype)initWithBookmarkModel:(bookmarks::BookmarkModel*)model
                           editedNodes:(std::set<const BookmarkNode*>)editedNodes
                 authenticationService:(AuthenticationService*)authService

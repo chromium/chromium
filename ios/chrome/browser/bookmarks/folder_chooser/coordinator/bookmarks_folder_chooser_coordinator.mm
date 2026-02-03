@@ -208,7 +208,7 @@
 
 - (void)showBookmarksFolderEditorWithParentFolderNode:
     (const bookmarks::BookmarkNode*)parentNode {
-  if (_folderEditorCoordinator) {
+  if (_folderEditorCoordinator || _mediator.UIDisabled) {
     return;
   }
   CHECK(parentNode, base::NotFatalUntil::M150);
@@ -219,6 +219,7 @@
                                browser:self.browser
                       parentFolderNode:parentNode];
   _folderEditorCoordinator.delegate = self;
+  _mediator.UIDisabled = YES;
   [_folderEditorCoordinator start];
 }
 
@@ -259,6 +260,7 @@
     (BookmarksFolderEditorCoordinator*)coordinator {
   CHECK(_folderEditorCoordinator, base::NotFatalUntil::M150);
   [self stopBookmarksFolderEditorCoordinator];
+  _mediator.UIDisabled = NO;
 }
 
 - (void)bookmarksFolderEditorWillCommitTitleChange:

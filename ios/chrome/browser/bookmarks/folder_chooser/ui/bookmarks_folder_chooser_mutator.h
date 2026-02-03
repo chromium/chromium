@@ -19,6 +19,9 @@ class BookmarkNode;
 // not know about BookmarkNode.
 - (void)setSelectedFolderNode:(const bookmarks::BookmarkNode*)folderNode;
 
+// Whether the UI is disabled.
+@property(nonatomic, assign) BOOL UIDisabled;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_BOOKMARKS_FOLDER_CHOOSER_UI_BOOKMARKS_FOLDER_CHOOSER_MUTATOR_H_
