@@ -3056,10 +3056,16 @@ const FeatureEntry::FeatureVariation kShowNewTabAnimationsVariations[] = {
 const FeatureEntry::FeatureParam
     kTabStorageSqlitePrototypeAuthoritativeReads[] = {
         {"authoritative_read_source", "true"}};
+const FeatureEntry::FeatureParam kTabStorageSqlitePrototypeFullMigration[] = {
+    {"authoritative_read_source", "true"},
+    {"allow_full_migration", "true"}};
+
 const FeatureEntry::FeatureVariation kTabStorageSqlitePrototypeVariations[] = {
     {"- Authoritative Read Source",
      kTabStorageSqlitePrototypeAuthoritativeReads,
-     std::size(kTabStorageSqlitePrototypeAuthoritativeReads), nullptr}};
+     std::size(kTabStorageSqlitePrototypeAuthoritativeReads), nullptr},
+    {"- Full Migration", kTabStorageSqlitePrototypeFullMigration,
+     std::size(kTabStorageSqlitePrototypeFullMigration), nullptr}};
 
 #endif  // BUILDFLAG(IS_ANDROID)
 

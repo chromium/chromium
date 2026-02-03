@@ -21,4 +21,13 @@ public final class TabStateStorageFlagHelper {
     public static boolean isStorageAuthoritative() {
         return ChromeFeatureList.sTabStorageSqlitePrototypeAuthoritativeReadSource.getValue();
     }
+
+    /**
+     * Returns whether tab state storage functionality is authoritative as the source of truth and
+     * the legacy store is not required to shadow.
+     */
+    public static boolean allowFullMigration() {
+        return isStorageAuthoritative()
+                && ChromeFeatureList.sTabStorageSqlitePrototypeAllowFullMigration.getValue();
+    }
 }
