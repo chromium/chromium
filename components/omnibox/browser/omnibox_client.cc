@@ -135,6 +135,6 @@ bool OmniboxClient::IsAimPopupEnabled() const {
   return false;
 }
 
-omnibox::ToolMode OmniboxClient::AimToolMode() const {
-  return omnibox::ToolMode::TOOL_MODE_UNSPECIFIED;
+omnibox::InputState OmniboxClient::GetInputState() const {
+  return omnibox::InputState();
 }

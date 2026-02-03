@@ -283,12 +283,12 @@ GURL AddAimToolModeToEndpointUrl(
     TemplateURLRef::SearchTermsArgs search_terms_args,
     const GURL& url_to_modify) {
   GURL modified_url = GURL(url_to_modify);
-  if (search_terms_args.aim_tool_mode !=
+  if (search_terms_args.input_state.active_tool !=
       omnibox::ToolMode::TOOL_MODE_UNSPECIFIED) {
     modified_url = net::AppendOrReplaceQueryParameter(
         url_to_modify, "azm",
         base::NumberToString(
-            static_cast<int>(search_terms_args.aim_tool_mode)));
+            static_cast<int>(search_terms_args.input_state.active_tool)));
   }
   return modified_url;
 }

@@ -636,7 +636,10 @@ TEST_F(ZeroSuggestProviderTest, SendRequestWithoutLensInteractionResponse) {
 
 TEST_F(ZeroSuggestProviderTest, SendRequestWithAimToolMode) {
   AutocompleteInput input = ZeroPrefixInputForComposebox();
-  input.set_aim_tool_mode(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+  input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
+  omnibox::InputState input_state;
+  input_state.active_tool = omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH;
+  input.set_input_state(input_state);
   provider_->Start(input, false);
 
   // Make sure the default provider's suggest endpoint was queried with the

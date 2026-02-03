@@ -936,7 +936,7 @@ void AutocompleteInput::Clear() {
   focus_type_ = metrics::OmniboxFocusType::INTERACTION_DEFAULT;
   terms_prefixed_by_http_or_https_.clear();
   lens_overlay_suggest_inputs_.reset();
-  aim_tool_mode_ = omnibox::ToolMode::TOOL_MODE_UNSPECIFIED;
+  input_state_ = omnibox::InputState();
   https_port_for_testing_ = 0;
   use_fake_https_for_https_upgrade_testing_ = false;
   context_tab_title_.clear();
@@ -954,6 +954,7 @@ size_t AutocompleteInput::EstimateMemoryUsage() const {
   res += base::trace_event::EstimateMemoryUsage(desired_tld_);
   res +=
       base::trace_event::EstimateMemoryUsage(terms_prefixed_by_http_or_https_);
+  res += base::trace_event::EstimateMemoryUsage(input_state_);
   res += base::trace_event::EstimateMemoryUsage(context_tab_title_);
   res += base::trace_event::EstimateMemoryUsage(context_tab_url_);
 

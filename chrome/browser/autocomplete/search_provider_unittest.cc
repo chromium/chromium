@@ -4065,7 +4065,9 @@ TEST_F(SearchProviderTest, VerbatimAimSuggestion) {
     AutocompleteInput input(u"query",
                             metrics::OmniboxEventProto::NTP_COMPOSEBOX,
                             ChromeAutocompleteSchemeClassifier(profile_.get()));
-    input.set_aim_tool_mode(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+    omnibox::InputState input_state;
+    input_state.active_tool = omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH;
+    input.set_input_state(input_state);
     QueryForInput(input);
 
     AutocompleteMatch verbatim_match;
@@ -4080,7 +4082,9 @@ TEST_F(SearchProviderTest, VerbatimAimSuggestion) {
     AutocompleteInput input(u"query",
                             metrics::OmniboxEventProto::NTP_COMPOSEBOX,
                             ChromeAutocompleteSchemeClassifier(profile_.get()));
-    input.set_aim_tool_mode(omnibox::ToolMode::TOOL_MODE_CANVAS);
+    omnibox::InputState input_state;
+    input_state.active_tool = omnibox::ToolMode::TOOL_MODE_CANVAS;
+    input.set_input_state(input_state);
     QueryForInput(input);
 
     AutocompleteMatch verbatim_match;
@@ -4223,7 +4227,9 @@ TEST_F(SearchProviderRequestTest, SendRequestWithAimToolMode) {
   // Start a query.
   AutocompleteInput input(u"foo", metrics::OmniboxEventProto::NTP_COMPOSEBOX,
                           ChromeAutocompleteSchemeClassifier(profile_.get()));
-  input.set_aim_tool_mode(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+  omnibox::InputState input_state;
+  input_state.active_tool = omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH;
+  input.set_input_state(input_state);
   input.set_current_url(GURL("https://www.example.com"));
   provider_->Start(input, false);
 

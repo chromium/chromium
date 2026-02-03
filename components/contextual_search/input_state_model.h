@@ -12,6 +12,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ref.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
+#include "components/omnibox/common/input_state.h"
 #include "third_party/omnibox_proto/aim_input_types.pb.h"
 #include "third_party/omnibox_proto/aim_models.pb.h"
 #include "third_party/omnibox_proto/aim_tools.pb.h"
@@ -20,30 +21,11 @@
 class PrefService;
 namespace contextual_search {
 
+using omnibox::InputState;
 using omnibox::InputType;
 using omnibox::ModelMode;
 using omnibox::SearchboxConfig;
 using omnibox::ToolMode;
-
-// Represents a valid searchbox inputs state.
-// LINT.IfChange(InputState)
-struct InputState {
-  InputState();
-  InputState(const InputState&);
-  ~InputState();
-  // The set of allowed tools, models, and input types.
-  std::vector<ToolMode> allowed_tools;
-  std::vector<ModelMode> allowed_models;
-  std::vector<InputType> allowed_input_types;
-  // The currently active tool and model.
-  ToolMode active_tool;
-  ModelMode active_model;
-  // The set of currently disabled tools, models, and input types.
-  std::vector<ToolMode> disabled_tools;
-  std::vector<ModelMode> disabled_models;
-  std::vector<InputType> disabled_input_types;
-};
-// LINT.ThenChange(//components/omnibox/composebox/composebox_query.mojom:InputState)
 
 // Manages the state of composebox inputs including tools, models, and
 // multimodal inputs.

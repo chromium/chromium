@@ -104,7 +104,7 @@ class ComposeboxOmniboxClient final : public OmniboxClient {
   std::optional<lens::proto::LensOverlaySuggestInputs>
   GetLensOverlaySuggestInputs() const override;
 
-  omnibox::ToolMode AimToolMode() const override;
+  omnibox::InputState GetInputState() const override;
 
  private:
   raw_ptr<WebLocationBar> location_bar_;

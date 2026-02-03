@@ -354,6 +354,8 @@ base::WeakPtr<OmniboxClient> ComposeboxOmniboxClient::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-omnibox::ToolMode ComposeboxOmniboxClient::AimToolMode() const {
-  return [delegate_ composeboxToolMode];
+omnibox::InputState ComposeboxOmniboxClient::GetInputState() const {
+  omnibox::InputState input_state;
+  input_state.active_tool = [delegate_ composeboxToolMode];
+  return input_state;
 }

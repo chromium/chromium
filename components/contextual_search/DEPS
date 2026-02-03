@@ -4,6 +4,7 @@ include_rules = [
   "+components/keyed_service/core",
   "+components/lens",
   "+components/lens/proto/server",
+  "+components/omnibox/common",
   "+components/omnibox/composebox",
   "+components/prefs",
   "+components/policy",

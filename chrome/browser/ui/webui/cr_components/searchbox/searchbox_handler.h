@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
+#include "components/omnibox/common/input_state.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -155,7 +156,7 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
 
   const AutocompleteMatch* GetMatchWithUrl(size_t index, const GURL& url) const;
 
-  virtual omnibox::ToolMode GetAimToolMode() const;
+  virtual omnibox::InputState GetInputState() const;
 
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebContents> web_contents_;

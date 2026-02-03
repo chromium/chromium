@@ -912,3 +912,9 @@ void ContextualSearchboxHandler::OpenUrl(
   }
   contextual_session_handle->ClearSubmittedContextTokens();
 }
+
+// TODO(crbug.com/479566933): Might be better to just get this from the
+// InputStateModel rather than storing it in this handler.
+omnibox::InputState ContextualSearchboxHandler::GetInputState() const {
+  return input_state_ ? *input_state_ : omnibox::InputState();
+}

@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
+#include "components/omnibox/common/input_state.h"
 #include "components/search_engines/search_terms_data.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
@@ -372,10 +373,10 @@ class AutocompleteInput {
         std::move(*lens_overlay_suggest_inputs.release()));
   }
 
-  omnibox::ToolMode aim_tool_mode() const { return aim_tool_mode_; }
+  const omnibox::InputState& input_state() const { return input_state_; }
 
-  void set_aim_tool_mode(const omnibox::ToolMode& aim_tool_mode) {
-    aim_tool_mode_ = aim_tool_mode;
+  void set_input_state(const omnibox::InputState& input_state) {
+    input_state_ = input_state;
   }
   std::u16string context_tab_title() const { return context_tab_title_; }
 
@@ -453,8 +454,9 @@ class AutocompleteInput {
   // the suggest requests.
   std::optional<lens::proto::LensOverlaySuggestInputs>
       lens_overlay_suggest_inputs_;
-  // Tool mode.
-  omnibox::ToolMode aim_tool_mode_ = omnibox::ToolMode::TOOL_MODE_UNSPECIFIED;
+  // Input state. This is specifically the primitive state, with regards to
+  // the tools and models that may be selected.
+  omnibox::InputState input_state_;
 
   // Flags for OmniboxDefaultNavigationsToHttps feature.
   bool should_use_https_as_default_scheme_;

@@ -106,8 +106,9 @@ bool ShouldOnlyShowVerbatimMatches(const AutocompleteInput& input) {
       input.lens_overlay_suggest_inputs().has_value() &&
       !base::FeatureList::IsEnabled(omnibox::kComposeboxAttachmentsTypedState);
   const bool is_image_gen_mode =
-      input.aim_tool_mode() == omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD ||
-      input.aim_tool_mode() == omnibox::ToolMode::TOOL_MODE_IMAGE_GEN;
+      input.input_state().active_tool ==
+          omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD ||
+      input.input_state().active_tool == omnibox::ToolMode::TOOL_MODE_IMAGE_GEN;
 
   // When contextual typed state suggestions are disabled for composebox, or
   // when in image generation mode, do not query suggest and only show
@@ -924,7 +925,7 @@ std::unique_ptr<network::SimpleURLLoader> SearchProvider::CreateSuggestLoader(
   }
   search_term_args.lens_overlay_suggest_inputs =
       input.lens_overlay_suggest_inputs();
-  search_term_args.aim_tool_mode = input.aim_tool_mode();
+  search_term_args.input_state = input.input_state();
 
   const SearchTermsData& search_terms_data =
       client()->GetTemplateURLService()->search_terms_data();
