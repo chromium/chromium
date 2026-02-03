@@ -358,6 +358,12 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     this.$.contextEntrypoint.blur();
   }
 
+  closeMenu() {
+    if (this.contextMenuEnabled_) {
+      this.$.contextEntrypoint.closeMenu();
+    }
+  }
+
   setContextFiles(files: ContextualUpload[]) {
     for (const file of files) {
       if ('tabId' in file) {
