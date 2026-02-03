@@ -138,7 +138,7 @@ jobs:
       - run: cargo check --no-default-features
         env:
           RUSTFLAGS: --cfg compile_error_if_alloc --cfg cxx_experimental_no_alloc ${{env.RUSTFLAGS}}
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         if: matrix.os == 'ubuntu' && matrix.rust == 'nightly' && matrix.cc == '' && matrix.flags == '' && always()
         with:
           name: Cargo.lock
@@ -273,10 +273,8 @@ jobs:
       RUSTDOCFLAGS: -Dwarnings
     steps:
       - uses: actions/checkout@v6
-      - uses: dtolnay/rust-toolchain@master
+      - uses: dtolnay/rust-toolchain@nightly
         with:
-          # https://github.com/rust-lang/rust/issues/148617
-          toolchain: nightly-2025-11-06
           components: rust-src
       - uses: dtolnay/install@cargo-docs-rs
       - run: cargo docs-rs

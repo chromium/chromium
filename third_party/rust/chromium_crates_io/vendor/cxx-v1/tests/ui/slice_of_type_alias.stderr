@@ -4,7 +4,7 @@ error[E0271]: type mismatch resolving `<&[ElementOpaque] as SliceOfExternType>::
 16 |         fn g(slice: &[ElementOpaque]);
    |                     ^^^^^^^^^^^^^^^^ expected `Trivial`, found `Opaque`
    |
-note: required by a bound in `Without::check_slice`
+note: required by a bound in `cxx::private::Without::check_slice`
   --> src/rust_type.rs
    |
    |     pub const fn check_slice<U: SliceOfExternType<Kind = Trivial>>(&self) {}

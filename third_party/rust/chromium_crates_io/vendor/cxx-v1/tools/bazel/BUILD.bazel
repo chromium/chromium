@@ -1,3 +1,5 @@
+load("@apple_support//xcode:xcode_config.bzl", "xcode_config")
+load("@apple_support//xcode:xcode_version.bzl", "xcode_version")
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 
 bzl_library(
@@ -7,13 +9,13 @@ bzl_library(
 )
 
 xcode_version(
-    name = "github_actions_xcode_14_2_0",
-    default_macos_sdk_version = "13.1",
-    version = "14.2",
+    name = "github_actions_xcode_26_2_0",
+    default_macos_sdk_version = "26.2",
+    version = "26.2",
 )
 
 xcode_config(
     name = "github_actions_xcodes",
-    default = ":github_actions_xcode_14_2_0",
-    versions = [":github_actions_xcode_14_2_0"],
+    default = ":github_actions_xcode_26_2_0",
+    versions = [":github_actions_xcode_26_2_0"],
 )

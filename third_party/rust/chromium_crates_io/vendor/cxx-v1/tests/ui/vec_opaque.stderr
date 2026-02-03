@@ -10,18 +10,18 @@ error: needs a cxx::ExternType impl in order to be used as a vector element in V
 11 |         type Job;
    |         ^^^^^^^^
 
-error[E0277]: the trait bound `handle::Job: ImplVec` is not satisfied
+error[E0277]: the trait bound `handle::Job: cxx::private::ImplVec` is not satisfied
   --> tests/ui/vec_opaque.rs:22:14
    |
 22 |         type Job = crate::handle::Job;
    |              ^^^ unsatisfied trait bound
    |
-help: the trait `ImplVec` is not implemented for `handle::Job`
+help: the trait `cxx::private::ImplVec` is not implemented for `handle::Job`
   --> tests/ui/vec_opaque.rs:4:9
    |
  4 |         type Job;
    |         ^^^^^^^^
-note: required by a bound in `require_vec`
+note: required by a bound in `cxx::private::require_vec`
   --> src/rust_type.rs
    |
    | pub fn require_vec<T: ImplVec>() {}

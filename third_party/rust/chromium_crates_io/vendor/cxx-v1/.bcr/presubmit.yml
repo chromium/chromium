@@ -3,7 +3,7 @@ matrix:
     - macos_arm64
     - ubuntu2404
     - windows
-  bazel: [7.x, 8.x]
+  bazel: [8.x, 9.x]
 tasks:
   verify_targets:
     name: Verify build targets

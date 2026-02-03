@@ -11,7 +11,7 @@ note: required because it appears within the type `Pinned`
    |
 10 | pub struct Pinned {
    |            ^^^^^^
-note: required by a bound in `require_unpin`
+note: required by a bound in `cxx::private::require_unpin`
   --> src/rust_type.rs
    |
    | pub fn require_unpin<T: ?Sized + Unpin>() {}

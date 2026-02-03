@@ -4,14 +4,14 @@ error[E0271]: type mismatch resolving `<StringPiece as ExternType>::Id == (f, o,
 11 |         type ByteRange = crate::here::StringPiece;
    |              ^^^^^^^^^ type mismatch resolving `<StringPiece as ExternType>::Id == (f, o, l, l, y, (), B, y, t, e, R, a, n, g, e)`
    |
-note: expected this to be `(f, o, l, l, y, (), B, y, t, e, R, a, n, g, e)`
+note: expected this to be `(cxx::f, cxx::o, cxx::l, cxx::l, cxx::y, (), cxx::B, cxx::y, cxx::t, cxx::e, cxx::R, cxx::a, cxx::n, cxx::g, cxx::e)`
   --> tests/ui/wrong_type_id.rs:1:1
    |
  1 | #[cxx::bridge(namespace = "folly")]
    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-   = note: expected tuple `(f, o, l, l, y, (), B, y, t, e, R, a, n, g, e)`
-              found tuple `(f, o, l, l, y, (), S, t, r, i, n, g, P, i, e, c, e)`
-note: required by a bound in `verify_extern_type`
+   = note: expected tuple `(cxx::f, cxx::o, cxx::l, cxx::l, cxx::y, (), cxx::B, cxx::y, cxx::t, cxx::e, cxx::R, cxx::a, cxx::n, cxx::g, cxx::e)`
+              found tuple `(cxx::f, cxx::o, cxx::l, cxx::l, cxx::y, (), cxx::S, cxx::t, cxx::r, cxx::i, cxx::n, cxx::g, cxx::P, cxx::i, cxx::e, cxx::c, cxx::e)`
+note: required by a bound in `cxx::private::verify_extern_type`
   --> src/extern_type.rs
    |
    | pub fn verify_extern_type<T: ExternType<Id = Id>, Id>() {}
