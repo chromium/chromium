@@ -1369,11 +1369,15 @@ const LayoutResult* BlockLayoutAlgorithm::FinishLayout(
     // of its parent if:
     //  - The block-size differs from the intrinsic size.
     //  - The parent has a definite initial block-size.
-    const LayoutUnit initial_block_size = ComputeInitialBlockSizeForFragment(
-        constraint_space, Node(), BorderPadding(), kIndefiniteSize,
-        border_box_size.inline_size);
-    if (border_box_size.block_size != intrinsic_block_size_ ||
-        initial_block_size != kIndefiniteSize) {
+    //
+    // Note that, for block fragmentation, the values here all refer to the
+    // total block-size of all fragments combined, i.e. the "stitched" size.
+    LayoutUnit stitched_intrinsic_block_size =
+        previously_consumed_block_size + intrinsic_block_size_;
+    if (border_box_size.block_size != stitched_intrinsic_block_size ||
+        ComputeInitialBlockSizeForFragment(
+            constraint_space, Node(), BorderPadding(), kIndefiniteSize,
+            border_box_size.inline_size) != kIndefiniteSize) {
       end_margin_strut = MarginStrut();
     }
   }
