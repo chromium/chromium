@@ -5233,27 +5233,6 @@ inline constexpr char kDrawChromePagesEdgeToEdgeName[] =
 inline constexpr char kDrawChromePagesEdgeToEdgeDescription[] =
     "Enables drawing more native pages and secondary activities edge-to-edge.";
 
-inline constexpr char kDrawCutoutEdgeToEdgeName[] = "DrawCutoutEdgeToEdge";
-inline constexpr char kDrawCutoutEdgeToEdgeDescription[] =
-    "Enables the Android feature Edge-to-Edge Feature to coordinate with the "
-    "Display Cutout for the notch when drawing below the Nav Bar.";
-
-inline constexpr char kEdgeToEdgeBottomChinName[] = "EdgeToEdgeBottomChin";
-inline constexpr char kEdgeToEdgeBottomChinDescription[] =
-    "Enables the scrollable bottom chin for an intermediate Edge-to-Edge "
-    "experience.";
-
-inline constexpr char kEdgeToEdgeEverywhereName[] = "EdgeToEdgeEverywhere";
-inline constexpr char kEdgeToEdgeEverywhereDescription[] =
-    "Enables Chrome to draw below the system bars, all the time. This is "
-    "intended "
-    "to facilitate the transition to edge-to-edge being enforced at the system "
-    "level.";
-
-inline constexpr char kEdgeToEdgeTabletName[] = "EdgeToEdgeTablet";
-inline constexpr char kEdgeToEdgeTabletDescription[] =
-    "Enables the Android feature Edge-to-Edge on tablets";
-
 inline constexpr char kEnableAccessibilityLabeledByName[] =
     "Enable Accessibility LabeledBy";
 inline constexpr char kEnableAccessibilityLabeledByDescription[] =

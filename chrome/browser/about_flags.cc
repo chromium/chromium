@@ -3776,13 +3776,6 @@ const FeatureEntry::Choice kCastMirroringTargetPlayoutDelayChoices[] = {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kEdgeToEdgeTabletFeatureParams[] = {
-    {"e2e_tablet_invisible_bottom_chin_min_width", "768"}};
-const FeatureEntry::FeatureVariation kEdgeToEdgeTabletVariations[] = {
-    {"chin on smaller screens", kEdgeToEdgeTabletFeatureParams,
-     std::size(kEdgeToEdgeTabletFeatureParams), nullptr},
-};
-
 const FeatureEntry::FeatureParam sAndroidThemeModuleParams[] = {
     {"force_theme_module_dependencies", "true"}};
 const FeatureEntry::FeatureVariation kAndroidThemeModuleVariations[] = {
@@ -6242,24 +6235,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kRightEdgeGoesForwardGestureNav)},
 
     // Android Edge to edge
-    {"draw-cutout-edge-to-edge", flag_descriptions::kDrawCutoutEdgeToEdgeName,
-     flag_descriptions::kDrawCutoutEdgeToEdgeDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kDrawCutoutEdgeToEdge)},
     {"draw-chrome-pages-edge-to-edge",
      flag_descriptions::kDrawChromePagesEdgeToEdgeName,
      flag_descriptions::kDrawChromePagesEdgeToEdgeDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kDrawChromePagesEdgeToEdge)},
-    {"edge-to-edge-bottom-chin", flag_descriptions::kEdgeToEdgeBottomChinName,
-     flag_descriptions::kEdgeToEdgeBottomChinDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kEdgeToEdgeBottomChin)},
-    {"edge-to-edge-everywhere", flag_descriptions::kEdgeToEdgeEverywhereName,
-     flag_descriptions::kEdgeToEdgeEverywhereDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kEdgeToEdgeEverywhere)},
-    {"edge-to-edge-tablet", flag_descriptions::kEdgeToEdgeTabletName,
-     flag_descriptions::kEdgeToEdgeTabletDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kEdgeToEdgeTablet,
-                                    kEdgeToEdgeTabletVariations,
-                                    "EdgeToEdgeTablet")},
 
     // Android nav bar color animation
     {"nav-bar-color-animation", flag_descriptions::kNavBarColorAnimationName,

@@ -2396,11 +2396,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "draw-cutout-edge-to-edge",
-    "owners": ["wenyufu@chromium.org", "clhager@google.com", "edge-to-edge@chromium.org"],
-    "expiry_milestone": 145
-  },
-  {
     "name": "drive-fs-mirroring",
     "owners": [ "wenbojie@chromium.org", "fdegros@chromium.org", "simmonsjosh@google.com"],
     "expiry_milestone": 150
@@ -2459,21 +2454,6 @@
     "name": "eche-swa-send-start-signaling",
     "owners": [ "nayebi@google.com", "mavishsu@google.com" ],
     "expiry_milestone": 125
-  },
-  {
-    "name": "edge-to-edge-bottom-chin",
-    "owners": ["clhager@google.com", "wenyufu@google.com", "twellington@chromium.org", "edge-to-edge@chromium.org"],
-    "expiry_milestone": 145
-  },
-  {
-    "name": "edge-to-edge-everywhere",
-    "owners": ["clhager@google.com", "wenyufu@chromium.org","twellington@chromium.org", "edge-to-edge@chromium.org"],
-    "expiry_milestone": 145
-  },
-  {
-    "name": "edge-to-edge-tablet",
-    "owners": ["lazzzis@google.com", "wenyufu@chromium.org","twellington@chromium.org", "edge-to-edge@chromium.org"],
-    "expiry_milestone": 145
   },
   {
     "name": "elastic-overscroll",
