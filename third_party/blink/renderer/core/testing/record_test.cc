@@ -17,6 +17,11 @@ void RecordTest::setStringLongRecord(
   string_long_record_ = arg;
 }
 
+void RecordTest::setStringLongRecordWithDefault(
+    const Vector<std::pair<String, int32_t>>& arg) {
+  setStringLongRecord(arg);
+}
+
 Vector<std::pair<String, int32_t>> RecordTest::getStringLongRecord() {
   return string_long_record_;
 }

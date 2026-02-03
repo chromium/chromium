@@ -27,6 +27,8 @@ class RecordTest final : public ScriptWrappable {
   ~RecordTest() override;
 
   void setStringLongRecord(const Vector<std::pair<String, int32_t>>& arg);
+  void setStringLongRecordWithDefault(
+      const Vector<std::pair<String, int32_t>>& arg);
   Vector<std::pair<String, int32_t>> getStringLongRecord();
 
   void setNullableStringLongRecord(

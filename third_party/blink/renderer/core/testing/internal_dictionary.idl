@@ -34,4 +34,5 @@ dictionary InternalDictionary {
     (InternalEnum or sequence<InternalEnum>) internalEnumOrInternalEnumSequenceMember;
     any anyMember;
     TestCallback callbackFunctionMember;
+    record<DOMString, long> recordMemberWithDefault = {};
 };

@@ -730,22 +730,28 @@ def make_default_value_expr(idl_type, default_value):
         initializer_expr = None  # VectorOf<T>::size() == 0 by default
         assignment_value = "{}()".format(type_info.value_t)
     elif default_value.idl_type.is_object:
-        dictionary = idl_type.unwrap().type_definition_object
-        # Currently "isolate" is the only possible dependency, so whenever
-        # .initializer_deps exists, it must be ["isolate"].
-        if any((make_default_value_expr(member.idl_type,
-                                        member.default_value).initializer_deps)
-               for member in dictionary.members if member.default_value):
-            value = _format("{}::Create(${isolate})",
-                            blink_class_name(dictionary))
-            initializer_expr = value
-            initializer_deps = ["isolate"]
-            assignment_value = value
-            assignment_deps = ["isolate"]
+        if idl_type.unwrap().is_dictionary:
+            dictionary = idl_type.unwrap().type_definition_object
+            # Currently "isolate" is the only possible dependency, so whenever
+            # .initializer_deps exists, it must be ["isolate"].
+            if any((make_default_value_expr(
+                    member.idl_type, member.default_value).initializer_deps)
+                   for member in dictionary.members if member.default_value):
+                value = _format("{}::Create(${isolate})",
+                                blink_class_name(dictionary))
+                initializer_expr = value
+                initializer_deps = ["isolate"]
+                assignment_value = value
+                assignment_deps = ["isolate"]
+            else:
+                value = _format("{}::Create()", blink_class_name(dictionary))
+                initializer_expr = value
+                assignment_value = value
+        elif idl_type.unwrap().is_record:
+            initializer_expr = ""
+            assignment_value = "{}"
         else:
-            value = _format("{}::Create()", blink_class_name(dictionary))
-            initializer_expr = value
-            assignment_value = value
+            assert False, "unexpected type and default value literal combination"
     elif default_value.idl_type.is_boolean:
         value = "true" if default_value.value else "false"
         initializer_expr = value

@@ -157,4 +157,18 @@
    let other_record = recordTest.returnStringByteStringSequenceRecord();
    assert_not_equals(record, other_record, "A new object is returned each time");
  }, "Test sequences in records");
+
+  test(() => {
+   let recordTest = internals.recordTest();
+
+   recordTest.setStringLongRecordWithDefault();
+   assert_equals(Object.keys(recordTest.getStringLongRecord()).length,
+                 0, "Not passing default parameter assumes empty record");
+   recordTest.setStringLongRecordWithDefault({'a': 1});
+   assert_record_equals(recordTest.getStringLongRecord(),
+                        [['a', 1]],
+                        "Passing optional prameter explicitly works");
+ }, "Test handling of optional record params with default value");
+
+
 </script>

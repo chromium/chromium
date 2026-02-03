@@ -29,6 +29,7 @@ PASS dict.doubleOrStringSequenceMember is undefined.
 PASS dict.eventTargetOrNullMember is null
 PASS dict.anyMember is undefined.
 PASS dict.callbackFunctionMember is undefined.
+PASS getAllPropertyNames(dict.recordMemberWithDefault) is []
 
 
 Test for setting undefined
@@ -53,6 +54,7 @@ PASS dict.objectOrNullMemberWithDefault is null
 PASS dict.eventTargetOrNullMember is null
 PASS dict.anyMember is undefined.
 PASS dict.callbackFunctionMember is undefined.
+PASS getAllPropertyNames(dict.recordMemberWithDefault) is []
 
 
 Test for setting valid values
@@ -83,6 +85,7 @@ PASS dict.eventTargetOrNullMember is element1
 PASS dict.internalEnumOrInternalEnumSequenceMember is "foo"
 PASS dict.anyMember is 42
 PASS dict.callbackFunctionMember("A", "B") is "Hi A and B"
+PASS getAllPropertyNames(dict.recordMemberWithDefault) is ["bar", "foo"]
 
 
 Additional test for union type members

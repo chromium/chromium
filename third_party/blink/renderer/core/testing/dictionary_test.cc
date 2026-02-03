@@ -56,6 +56,7 @@ void DictionaryTest::set(v8::Isolate* isolate,
                    InternalEnumOrInternalEnumSequenceMember);
   SAVE_DICT_MEMBER(anyMember, AnyMember);
   SAVE_DICT_MEMBER(callbackFunctionMember, CallbackFunctionMember);
+  SAVE_DICT_MEMBER(recordMemberWithDefault, RecordMemberWithDefault);
 }
 
 InternalDictionary* DictionaryTest::get(v8::Isolate* isolate) {
@@ -146,6 +147,7 @@ void DictionaryTest::RestoreInternalDictionary(
                       InternalEnumOrInternalEnumSequenceMember);
   RESTORE_DICT_MEMBER(anyMember, AnyMember);
   RESTORE_DICT_MEMBER(callbackFunctionMember, CallbackFunctionMember);
+  RESTORE_DICT_MEMBER(recordMemberWithDefault, RecordMemberWithDefault);
 }
 
 void DictionaryTest::RestoreInternalDictionaryDerived(

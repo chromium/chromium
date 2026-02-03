@@ -6,6 +6,7 @@ typedef record<DOMString, long> RecordTypedef;
 
 interface RecordTest {
     void setStringLongRecord(RecordTypedef arg);
+    void setStringLongRecordWithDefault(optional RecordTypedef arg = {});
     RecordTypedef getStringLongRecord();
 
     void setNullableStringLongRecord(RecordTypedef? arg);

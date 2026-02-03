@@ -38,6 +38,7 @@ if (window.internals && internals.dictionaryTest) {
     shouldBeNull('dict.eventTargetOrNullMember');
     shouldBeUndefined('dict.anyMember');
     shouldBeUndefined('dict.callbackFunctionMember');
+    shouldBe('getAllPropertyNames(dict.recordMemberWithDefault)', '[]');
     debug('');
 
     debug('Test for setting undefined');
@@ -64,6 +65,7 @@ if (window.internals && internals.dictionaryTest) {
     shouldBeNull('dict.eventTargetOrNullMember');
     shouldBeUndefined('dict.anyMember');
     shouldBeUndefined('dict.callbackFunctionMember');
+    shouldBe('getAllPropertyNames(dict.recordMemberWithDefault)', '[]');
     debug('');
 
     var element1 = document.createElement('div');
@@ -97,6 +99,7 @@ if (window.internals && internals.dictionaryTest) {
         internalEnumOrInternalEnumSequenceMember: 'foo',
         anyMember: 42,
         callbackFunctionMember: (arg1, arg2) => { return 'Hi ' + arg1 + ' and ' + arg2; },
+        recordMemberWithDefault: {"foo": 42, "bar": 84},
     });
     dict = dictionaryTest.get();
     shouldBe('dict.longMember', '1');
@@ -126,6 +129,7 @@ if (window.internals && internals.dictionaryTest) {
     shouldBeEqualToString('dict.internalEnumOrInternalEnumSequenceMember', 'foo');
     shouldBe('dict.anyMember', '42');
     shouldBeEqualToString('dict.callbackFunctionMember("A", "B")', 'Hi A and B');
+    shouldBe('getAllPropertyNames(dict.recordMemberWithDefault)', '["bar", "foo"]');
     debug('');
 
     debug('Additional test for union type members');

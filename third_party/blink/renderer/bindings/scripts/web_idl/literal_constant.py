@@ -82,7 +82,7 @@ class LiteralConstant(object):
         if self.idl_type.is_sequence:
             return idl_type.is_sequence
         if self.idl_type.is_object:
-            return idl_type.is_dictionary
+            return idl_type.is_dictionary or idl_type.is_record
         if self.idl_type.is_boolean:
             return idl_type.is_boolean
         if self.idl_type.is_integer:
