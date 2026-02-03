@@ -602,9 +602,10 @@ TEST_P(ImageProcessorParamTest, ConvertOneTime_DmabufToDmabuf) {
   EXPECT_TRUE(ip_client->WaitForFrameProcessors());
 }
 
-// Although GpuMemoryBuffer is a cross platform class, code for image processor
-// test is designed only for ChromeOS. So this test runs on ChromeOS only.
-TEST_P(ImageProcessorParamTest, ConvertOneTime_GmbToGmb) {
+// Although MappableSharedImage is a cross platform class, code for image
+// processor test is designed only for ChromeOS. So this test runs on ChromeOS
+// only.
+TEST_P(ImageProcessorParamTest, ConvertOneTime_MappableSIToMappableSI) {
   // Load the test input image. We only need the output image's metadata so we
   // can compare checksums.
   test::Image input_image(BuildSourceFilePath(std::get<0>(GetParam())));
@@ -612,12 +613,10 @@ TEST_P(ImageProcessorParamTest, ConvertOneTime_GmbToGmb) {
   ASSERT_TRUE(input_image.Load());
   ASSERT_TRUE(output_image.LoadMetadata());
   if (!IsFormatTestedForDmabufAndGbm(input_image.PixelFormat())) {
-    GTEST_SKIP() << "Skipping GpuMemoryBuffer format "
-                 << input_image.PixelFormat();
+    GTEST_SKIP() << "Skipping format " << input_image.PixelFormat();
   }
   if (!IsFormatTestedForDmabufAndGbm(output_image.PixelFormat())) {
-    GTEST_SKIP() << "Skipping GpuMemoryBuffer format "
-                 << output_image.PixelFormat();
+    GTEST_SKIP() << "Skipping format " << output_image.PixelFormat();
   }
 
   auto ip_client = CreateImageProcessorClient(
