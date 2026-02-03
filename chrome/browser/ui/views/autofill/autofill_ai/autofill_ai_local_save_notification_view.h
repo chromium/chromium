@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_AUTOFILL_AI_AUTOFILL_AI_LOCAL_SAVE_NOTIFICATION_VIEW_H_
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/views/autofill/autofill_location_bar_bubble.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 

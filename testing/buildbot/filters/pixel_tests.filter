@@ -10,6 +10,7 @@ AccessCodeCastDialogBrowserTest.*
 AccountSettingsPagePixelBrowserTest.*
 ActorUiDomNodeGeometryBrowserTest.*
 ActorUiHandoffButtonControllerPixelTest.*
+*AutofillAiLocalSaveNotificationViewBrowsertest.*
 AddNewAddressProfileTest.*
 AppInfoDialogBrowserTest.*
 AppMenuBrowserTest*.InvokeUi_*
