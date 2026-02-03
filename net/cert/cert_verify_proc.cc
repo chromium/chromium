@@ -286,6 +286,7 @@ void RecordTrustAnchorHistogram(const std::vector<SHA256HashValue>& spki_hashes,
   }
 
   verify_result->has_sha1 =
+      verify_result->has_sha1 ||
       *cert_algorithm == bssl::SignatureAlgorithm::kRsaPkcs1Sha1 ||
       *cert_algorithm == bssl::SignatureAlgorithm::kEcdsaSha1;
   return true;

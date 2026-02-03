@@ -1070,6 +1070,8 @@ class CertVerifyProcInspectSignatureAlgorithmsTest : public ::testing::Test {
     return VerifyChain(
         {// Target
          leaf_params,
+         // Intermediate
+         {bssl::DigestAlgorithm::Sha256, bssl::DigestAlgorithm::Sha256},
          // Root
          {bssl::DigestAlgorithm::Sha256, bssl::DigestAlgorithm::Sha256}});
   }
@@ -1159,6 +1161,10 @@ class CertVerifyProcInspectSignatureAlgorithmsTest : public ::testing::Test {
 // This is a control test to make sure that the test helper
 // VerifyLeaf() works as expected. There is no actual mismatch in the
 // algorithms used here.
+//
+// Also functions as a regression test for crbug.com/481168373, confirming that
+// the SHA-1 status of the leaf is calculated properly when issued by a
+// non-SHA-1 intermediate.
 //
 //  Certificate.signatureAlgorithm:  sha1WithRSASignature
 //  TBSCertificate.algorithm:        sha1WithRSAEncryption
