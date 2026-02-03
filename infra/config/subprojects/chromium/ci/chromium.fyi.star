@@ -2535,6 +2535,20 @@ ci.builder(
     contact_team_email = "chrome-counter-abuse-core@google.com",
 )
 
+consoles.console_view(
+    name = "treesinviz",
+    title = "Trees in Viz",
+    ordering = {
+        None: [
+            "win",
+            "mac",
+            "chromeos",
+            "linux",
+            "android",
+        ],
+    },
+)
+
 fyi_mac_builder(
     name = "mac-treesinviz-enabled-rel",
     description_html = "This builder runs a set of test suites with the TreesInViz feature enabled.",
@@ -2566,10 +2580,17 @@ fyi_mac_builder(
     ),
     builderless = True,
     cores = None,
-    console_view_entry = consoles.console_view_entry(
-        category = "viz",
-        short_name = "mac",
-    ),
+    console_view_entry = [
+        consoles.console_view_entry(
+            category = "viz",
+            short_name = "mac",
+        ),
+        consoles.console_view_entry(
+            console_view = "treesinviz",
+            category = "viz",
+            short_name = "mac",
+        ),
+    ],
     contact_team_email = "chrome-gpu-team@google.com",
 )
 
@@ -2606,10 +2627,17 @@ ci.builder(
         ],
     ),
     os = os.WINDOWS_DEFAULT,
-    console_view_entry = consoles.console_view_entry(
-        category = "viz",
-        short_name = "win",
-    ),
+    console_view_entry = [
+        consoles.console_view_entry(
+            category = "viz",
+            short_name = "win",
+        ),
+        consoles.console_view_entry(
+            console_view = "treesinviz",
+            category = "viz",
+            short_name = "win",
+        ),
+    ],
     contact_team_email = "chrome-gpu-team@google.com",
 )
 
@@ -2645,10 +2673,17 @@ ci.builder(
         ],
     ),
     os = os.LINUX_DEFAULT,
-    console_view_entry = consoles.console_view_entry(
-        category = "viz",
-        short_name = "lcr",
-    ),
+    console_view_entry = [
+        consoles.console_view_entry(
+            category = "viz",
+            short_name = "lcr",
+        ),
+        consoles.console_view_entry(
+            console_view = "treesinviz",
+            category = "viz",
+            short_name = "lcr",
+        ),
+    ],
     contact_team_email = "chrome-gpu-team@google.com",
 )
 
@@ -2696,10 +2731,17 @@ ci.builder(
         os_type = targets.os_type.ANDROID,
     ),
     os = os.LINUX_DEFAULT,
-    console_view_entry = consoles.console_view_entry(
-        category = "viz",
-        short_name = "and",
-    ),
+    console_view_entry = [
+        consoles.console_view_entry(
+            category = "viz",
+            short_name = "and",
+        ),
+        consoles.console_view_entry(
+            console_view = "treesinviz",
+            category = "viz",
+            short_name = "and",
+        ),
+    ],
     contact_team_email = "chrome-gpu-team@google.com",
 )
 
@@ -2733,9 +2775,16 @@ ci.builder(
         mixins = ["linux-jammy"],
     ),
     os = os.LINUX_DEFAULT,
-    console_view_entry = consoles.console_view_entry(
-        category = "viz",
-        short_name = "lnx",
-    ),
+    console_view_entry = [
+        consoles.console_view_entry(
+            category = "viz",
+            short_name = "lnx",
+        ),
+        consoles.console_view_entry(
+            console_view = "treesinviz",
+            category = "viz",
+            short_name = "lnx",
+        ),
+    ],
     contact_team_email = "chrome-gpu-team@google.com",
 )
