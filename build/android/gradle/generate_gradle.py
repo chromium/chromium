@@ -534,9 +534,14 @@ def _GenerateGradleProperties():
 def _GenerateBaseVars(generator, build_vars):
   variables = {}
   # Avoid pre-release SDKs since Studio might not know how to download them.
-  variables['compile_sdk_version'] = (
-      'android-%s' % build_vars['android_sdk_platform_version'])
-  target_sdk_version = build_vars['android_sdk_platform_version']
+  sdk_version = build_vars['android_sdk_platform_version']
+  try:
+    # Convert float versions like "36.1" to integers for AGP compatibility.
+    sdk_version = int(float(sdk_version))
+  except ValueError:
+    pass
+  variables['compile_sdk_version'] = 'android-%s' % sdk_version
+  target_sdk_version = sdk_version
   if str(target_sdk_version).isalpha():
     target_sdk_version = '"{}"'.format(target_sdk_version)
   variables['target_sdk_version'] = target_sdk_version
