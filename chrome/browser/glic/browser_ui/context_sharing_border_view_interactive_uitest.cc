@@ -233,7 +233,6 @@ class ContextSharingBorderViewUiTestBase : public test::InteractiveGlicTest {
     if (!enabled_features.empty()) {
       enabled_features += ",";
     }
-    enabled_features += "GlicActor:glic_actor_policy_control_exemption/true";
 
     features_.InitFromCommandLine(enabled_features, disabled_features);
   }
@@ -1013,7 +1012,8 @@ IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewWithActorGlowUiTest,
   ASSERT_TRUE(actor_keyed_service);
 
   // Create a new task.
-  const actor::TaskId task_id = actor_keyed_service->CreateTask();
+  const actor::TaskId task_id =
+      actor_keyed_service->CreateTask(actor::NoEnterprisePolicyChecker());
   actor_keyed_service->GetTask(task_id)->AddTab(
       browser()->GetActiveTabInterface()->GetHandle(), base::DoNothing());
 
@@ -1076,7 +1076,8 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(actor_keyed_service);
 
   // Create a new task.
-  const actor::TaskId task_id = actor_keyed_service->CreateTask();
+  const actor::TaskId task_id =
+      actor_keyed_service->CreateTask(actor::NoEnterprisePolicyChecker());
   actor_keyed_service->GetTask(task_id)->AddTab(
       browser()->GetActiveTabInterface()->GetHandle(), base::DoNothing());
 

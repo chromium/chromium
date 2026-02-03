@@ -206,11 +206,7 @@ class ExecutionEngineTest : public ChromeRenderViewHostTestHarness {
  public:
   ExecutionEngineTest()
       : ChromeRenderViewHostTestHarness(
-            content::BrowserTaskEnvironment::TimeSource::MOCK_TIME) {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kGlicActor,
-        {{features::kGlicActorPolicyControlExemption.name, "true"}});
-  }
+            content::BrowserTaskEnvironment::TimeSource::MOCK_TIME) {}
   ~ExecutionEngineTest() override = default;
 
   void SetUp() override {
@@ -352,8 +348,6 @@ class ExecutionEngineTest : public ChromeRenderViewHostTestHarness {
 
   MockPolicyChecker no_enterprise_checker_{
       EnterprisePolicyBlockReason::kNotBlocked};
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(ExecutionEngineTest, ActSucceedsOnSupportedUrl) {

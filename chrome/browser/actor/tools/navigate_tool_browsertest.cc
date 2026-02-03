@@ -29,7 +29,7 @@ class ActorNavigateToolBrowserTest : public ActorToolsTest {
   ActorNavigateToolBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {},
+        {features::kGlicActor},
         /*disabled_features=*/{kGlicCrossOriginNavigationGating});
   }
   ~ActorNavigateToolBrowserTest() override = default;
@@ -149,12 +149,13 @@ class ActorNavigateToolRequestBrowserTest
   ActorNavigateToolRequestBrowserTest() {
     if (GetParam()) {
       scoped_feature_list_.InitWithFeatures(
-          /*enabled_features=*/{kGlicNavigateToolUseOpaqueInitiator},
+          /*enabled_features=*/{features::kGlicActor,
+                                kGlicNavigateToolUseOpaqueInitiator},
           /*disabled_features=*/{kGlicCrossOriginNavigationGating});
     } else {
       scoped_feature_list_.InitWithFeatures(
           /*enabled_features=*/
-          {},
+          {features::kGlicActor},
           /*disabled_features=*/{kGlicNavigateToolUseOpaqueInitiator,
                                  kGlicCrossOriginNavigationGating});
     }

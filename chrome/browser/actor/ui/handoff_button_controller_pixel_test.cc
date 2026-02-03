@@ -29,11 +29,7 @@ class ActorUiHandoffButtonControllerPixelTest : public DialogBrowserTest {
  public:
   ActorUiHandoffButtonControllerPixelTest() {
     feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{features::kGlicActor,
-                               {{features::kGlicActorPolicyControlExemption
-                                     .name,
-                                 "true"}}},
-                              {features::kGlicActorUi,
+        /*enabled_features=*/{{features::kGlicActorUi,
                                {{features::kGlicActorUiHandoffButtonName,
                                  "true"}}}},
         /*disabled_features=*/{});
@@ -47,7 +43,8 @@ class ActorUiHandoffButtonControllerPixelTest : public DialogBrowserTest {
   std::string GetNonDialogName() override { return "HandoffButtonWidget"; }
 
   void ShowUi(const std::string& name) override {
-    task_id_ = GetActorKeyedService()->CreateTask();
+    task_id_ =
+        GetActorKeyedService()->CreateTask(actor::NoEnterprisePolicyChecker());
     TestFuture<actor::mojom::ActionResultPtr> future;
     GetActorKeyedService()->GetTask(task_id_)->AddTab(
         browser()->GetActiveTabInterface()->GetHandle(), future.GetCallback());

@@ -98,7 +98,8 @@ void GlicActorTaskManager::CreateTask(
   }
 
   current_task_id_ = actor_keyed_service_->CreateTaskWithOptions(
-      std::move(options), std::move(delegate));
+      &actor_keyed_service_->GetPolicyChecker(), std::move(options),
+      std::move(delegate));
 
   if (!current_task_id_.is_null()) {
     actor_task_state_changed_subscription_ =

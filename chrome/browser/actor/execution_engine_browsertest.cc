@@ -136,10 +136,6 @@ class ExecutionEngineBrowserTest : public InProcessBrowserTest {
                                 base::Unretained(this))) {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/{{features::kGlic, {}},
-                              {features::kGlicActor,
-                               {{features::kGlicActorPolicyControlExemption
-                                     .name,
-                                 "true"}}},
                               {kGlicExternalProtocolActionResultCode, {}},
                               {kGlicCrossOriginNavigationGating,
                                {{"confirm_navigation_to_new_origins",
@@ -167,7 +163,7 @@ class ExecutionEngineBrowserTest : public InProcessBrowserTest {
     }
     ASSERT_TRUE(embedded_https_test_server().Start());
 
-    task_id_ = actor_keyed_service()->CreateTask();
+    task_id_ = actor_keyed_service()->CreateTask(NoEnterprisePolicyChecker());
 
     // Optimization guide uses this histogram to signal initialization in tests.
     optimization_guide::RetryForHistogramUntilCountReached(

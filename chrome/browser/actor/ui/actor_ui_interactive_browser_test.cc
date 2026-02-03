@@ -12,11 +12,7 @@ using actor::ExpectOkResult;
 using actor::TaskId;
 using base::test::TestFuture;
 
-ActorUiInteractiveBrowserTest::ActorUiInteractiveBrowserTest() {
-  scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      features::kGlicActor,
-      {{features::kGlicActorPolicyControlExemption.name, "true"}});
-}
+ActorUiInteractiveBrowserTest::ActorUiInteractiveBrowserTest() = default;
 
 ActorUiInteractiveBrowserTest::~ActorUiInteractiveBrowserTest() = default;
 
@@ -31,7 +27,8 @@ void ActorUiInteractiveBrowserTest::SetUpCommandLine(
 }
 
 void ActorUiInteractiveBrowserTest::StartActingOnTab() {
-  task_id_ = actor_keyed_service()->CreateTask();
+  task_id_ =
+      actor_keyed_service()->CreateTask(actor::NoEnterprisePolicyChecker());
   TestFuture<actor::mojom::ActionResultPtr> future;
   actor_keyed_service()->GetTask(task_id_)->AddTab(
       browser()->GetActiveTabInterface()->GetHandle(), future.GetCallback());

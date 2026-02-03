@@ -306,31 +306,37 @@ void ActorKeyedService::ResetForTesting() {
   active_tasks_.clear();
 }
 
-TaskId ActorKeyedService::CreateTask() {
-  return CreateTaskWithOptions(nullptr, nullptr);
+TaskId ActorKeyedService::CreateTask(
+    const EnterprisePolicyChecker* policy_checker) {
+  return CreateTaskWithOptions(policy_checker, nullptr, nullptr);
 }
 
 TaskId ActorKeyedService::CreateTaskWithOptions(
+    const EnterprisePolicyChecker* policy_checker,
     webui::mojom::TaskOptionsPtr options,
     base::WeakPtr<ActorTaskDelegate> delegate) {
   return CreateTaskImpl(ui::NewUiEventDispatcher(GetActorUiStateManager()),
-                        std::move(options), std::move(delegate));
+                        policy_checker, std::move(options),
+                        std::move(delegate));
 }
 
 TaskId ActorKeyedService::CreateTaskForTesting(
     std::unique_ptr<actor::ui::UiEventDispatcher> ui_event_dispatcher,
+    const EnterprisePolicyChecker* policy_checker,
     webui::mojom::TaskOptionsPtr options,
     base::WeakPtr<ActorTaskDelegate> delegate) {
-  return CreateTaskImpl(std::move(ui_event_dispatcher), std::move(options),
-                        std::move(delegate));
+  return CreateTaskImpl(std::move(ui_event_dispatcher), policy_checker,
+                        std::move(options), std::move(delegate));
 }
 
 TaskId ActorKeyedService::CreateTaskImpl(
     std::unique_ptr<actor::ui::UiEventDispatcher> ui_event_dispatcher,
+    const EnterprisePolicyChecker* policy_checker,
     webui::mojom::TaskOptionsPtr options,
     base::WeakPtr<ActorTaskDelegate> delegate) {
   TRACE_EVENT0("actor", "ActorKeyedService::CreateTask");
-  if (!policy_checker_->CanActOnWeb()) {
+  CHECK(policy_checker);
+  if (!policy_checker->CanActOnWeb()) {
     RecordActorTaskCreated(false);
     GetJournal().Log(GURL(), TaskId(), "ActorKeyedService::CreateTask",
                      JournalDetailsBuilder()
@@ -345,7 +351,7 @@ TaskId ActorKeyedService::CreateTaskImpl(
   const TaskId task_id = next_task_id_.GenerateNextId();
   auto actor_task = std::make_unique<ActorTask>(
       base::PassKey<ActorKeyedService>(), profile_.get(), task_id,
-      std::move(ui_event_dispatcher), std::move(options), policy_checker_.get(),
+      std::move(ui_event_dispatcher), std::move(options), policy_checker,
       std::move(delegate));
 
   const ActorTask::State task_state = actor_task->GetState();

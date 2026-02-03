@@ -12,6 +12,7 @@
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/actor/actor_keyed_service_fake.h"
 #include "chrome/browser/actor/actor_policy_checker.h"
+#include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble.h"
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_controller.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
@@ -38,18 +39,13 @@ class ActorTaskListBubbleControllerTest
       public testing::WithParamInterface<bool> {
  public:
   ActorTaskListBubbleControllerTest() {
-    std::vector<base::test::FeatureRefAndParams> enabled_features = {
-        {features::kGlicActor,
-         {{features::kGlicActorPolicyControlExemption.name, "true"}}}};
-    std::vector<base::test::FeatureRef> disabled_features;
     if (GetParam()) {
-      enabled_features.push_back(
-          {features::kGlicActorUiGlobalTaskIndicator, {}});
+      feature_list_.InitAndEnableFeature(
+          features::kGlicActorUiGlobalTaskIndicator);
     } else {
-      disabled_features.push_back(features::kGlicActorUiGlobalTaskIndicator);
+      feature_list_.InitAndDisableFeature(
+          features::kGlicActorUiGlobalTaskIndicator);
     }
-    feature_list_.InitWithFeaturesAndParameters(std::move(enabled_features),
-                                                std::move(disabled_features));
   }
 
   void SetUp() override {
@@ -158,7 +154,8 @@ TEST_P(ActorTaskListBubbleControllerTest, ShowBubbleRecordsHistogram) {
       actor::ActorKeyedService::Get(profile_.get());
   tabs::GlicActorTaskIconManager* manager =
       tabs::GlicActorTaskIconManagerFactory::GetForProfile(profile_.get());
-  actor::TaskId task_id = actor_service->CreateTask();
+  actor::TaskId task_id =
+      actor_service->CreateTask(actor::NoEnterprisePolicyChecker());
   actor_service->GetTask(task_id)->Pause(true);
   manager->UpdateTaskIconComponents(task_id);
 
@@ -176,7 +173,8 @@ TEST_P(ActorTaskListBubbleControllerTest, ShowBubbleRecordsHistogram) {
   manager->UpdateTaskIconComponents(task_id);
 
   for (int i = 0; i < 3; i++) {
-    actor::TaskId new_task_id = actor_service->CreateTask();
+    actor::TaskId new_task_id =
+        actor_service->CreateTask(actor::NoEnterprisePolicyChecker());
     actor_service->GetTask(new_task_id)->Pause(true);
     manager->UpdateTaskIconComponents(new_task_id);
   }

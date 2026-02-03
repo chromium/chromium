@@ -696,8 +696,10 @@ IN_PROC_BROWSER_TEST_F(ActorFunctionalBrowserTest, PauseAndResumeInactiveTask) {
 IN_PROC_BROWSER_TEST_F(ActorFunctionalBrowserTest,
                        PerformConcurrentAsyncWaitActions) {
   // Manually create tasks via ActorKeyedService.
-  TaskId task_id_1 = actor_keyed_service()->CreateTask();
-  TaskId task_id_2 = actor_keyed_service()->CreateTask();
+  TaskId task_id_1 =
+      actor_keyed_service()->CreateTask(NoEnterprisePolicyChecker());
+  TaskId task_id_2 =
+      actor_keyed_service()->CreateTask(NoEnterprisePolicyChecker());
 
   // Create tabs for each task using CreateActorTab API to ensure a
   // TabObservation is included in its result.

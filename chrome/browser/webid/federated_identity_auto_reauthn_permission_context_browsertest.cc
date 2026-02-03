@@ -24,23 +24,13 @@ namespace {
 class FederatedIdentityAutoReauthnPermissionContextTest
     : public InProcessBrowserTest {
  public:
-  FederatedIdentityAutoReauthnPermissionContextTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{features::kGlicActor,
-                               {{features::kGlicActorPolicyControlExemption
-                                     .name,
-                                 "true"}}}},
-        /*disabled_features=*/{});
-  }
+  FederatedIdentityAutoReauthnPermissionContextTest() = default;
   FederatedIdentityAutoReauthnPermissionContextTest(
       const FederatedIdentityAutoReauthnPermissionContextTest&) = delete;
   FederatedIdentityAutoReauthnPermissionContextTest& operator=(
       const FederatedIdentityAutoReauthnPermissionContextTest&) = delete;
 
   ~FederatedIdentityAutoReauthnPermissionContextTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests PasswordManagerSettingsService correctly hooks itself as a cyclic
@@ -65,8 +55,8 @@ IN_PROC_BROWSER_TEST_F(FederatedIdentityAutoReauthnPermissionContextTest,
 
   // Create actor task and attach it to the current tab.
   auto* actor_service = actor::ActorKeyedService::Get(browser()->profile());
-  actor::TaskId task_id = actor_service->CreateTask();
-
+  actor::TaskId task_id =
+      actor_service->CreateTask(actor::NoEnterprisePolicyChecker());
 
   // Perform an arbitrary action in a tab to put the task into
   // UnderActorControl state and add the tab to the task.

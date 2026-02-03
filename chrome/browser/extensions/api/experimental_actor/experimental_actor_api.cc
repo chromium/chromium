@@ -157,7 +157,8 @@ ExperimentalActorCreateTaskFunction::~ExperimentalActorCreateTaskFunction() =
 
 ExtensionFunction::ResponseAction ExperimentalActorCreateTaskFunction::Run() {
   auto* actor_service = actor::ActorKeyedService::Get(browser_context());
-  actor::TaskId task_id = actor_service->CreateTask();
+  actor::TaskId task_id =
+      actor_service->CreateTask(&actor_service->GetPolicyChecker());
 
   return RespondNow(ArgumentList(
       api::experimental_actor::CreateTask::Results::Create(task_id.value())));

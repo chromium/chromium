@@ -126,14 +126,7 @@ class MockAccountSelectionView : public AccountSelectionView {
 
 class IdentityDialogControllerBrowserTest : public InProcessBrowserTest {
  public:
-  IdentityDialogControllerBrowserTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{features::kGlicActor,
-                               {{features::kGlicActorPolicyControlExemption
-                                     .name,
-                                 "true"}}}},
-        /*disabled_features=*/{});
-  }
+  IdentityDialogControllerBrowserTest() = default;
   ~IdentityDialogControllerBrowserTest() override = default;
   IdentityDialogControllerBrowserTest(IdentityDialogControllerBrowserTest&) =
       delete;
@@ -186,7 +179,8 @@ class IdentityDialogControllerBrowserTest : public InProcessBrowserTest {
         actor::ActorKeyedService::Get(browser()->profile());
     CHECK(actor_service);
 
-    actor::TaskId task_id = actor_service->CreateTask();
+    actor::TaskId task_id =
+        actor_service->CreateTask(actor::NoEnterprisePolicyChecker());
 
     // Perform an arbitrary action in a tab to put the task into
     // UnderActorControl state and add the tab to the task.
@@ -214,9 +208,6 @@ class IdentityDialogControllerBrowserTest : public InProcessBrowserTest {
     actor_service->StopTask(task_id,
                             actor::ActorTask::StoppedReason::kTaskComplete);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(IdentityDialogControllerBrowserTest,

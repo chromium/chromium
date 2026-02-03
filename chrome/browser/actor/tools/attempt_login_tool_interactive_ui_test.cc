@@ -53,8 +53,18 @@ class MockExecutionEngine : public ExecutionEngine {
   MOCK_METHOD(favicon::FaviconService*, GetFaviconService, (), (override));
 };
 
-using AttemptLoginToolInteractiveUiTestBase =
-    InteractiveBrowserTestMixin<ActorToolsTest>;
+class AttemptLoginToolInteractiveUiTestBase
+    : public InteractiveBrowserTestMixin<ActorToolsTest> {
+ public:
+  AttemptLoginToolInteractiveUiTestBase() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kGlicActor,
+        {{features::kGlicActorPolicyControlExemption.name, "true"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
 
 // TODO(crbug.com/441533831): We should migrate the Javascript tests to
 // typescript.

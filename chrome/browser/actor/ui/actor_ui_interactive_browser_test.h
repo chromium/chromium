@@ -32,7 +32,6 @@ class ActorUiInteractiveBrowserTest : public InteractiveBrowserTest {
 
  private:
   actor::TaskId task_id_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 #endif  // CHROME_BROWSER_ACTOR_UI_ACTOR_UI_INTERACTIVE_BROWSER_TEST_H_

@@ -40,7 +40,7 @@ namespace ui {
 class ActorUiStateManagerInterface;
 }
 
-class ActorPolicyChecker;
+class EnterprisePolicyChecker;
 class ActorTaskMetadata;
 class ToolRequest;
 
@@ -76,11 +76,13 @@ class ActorKeyedService : public KeyedService,
   // Starts a new task with an execution engine and returns the new task's id.
   // `options`, when provided, contains information used to initialize the
   // task.
-  TaskId CreateTask();
-  TaskId CreateTaskWithOptions(webui::mojom::TaskOptionsPtr options,
+  TaskId CreateTask(const EnterprisePolicyChecker* policy_checker);
+  TaskId CreateTaskWithOptions(const EnterprisePolicyChecker* policy_checker,
+                               webui::mojom::TaskOptionsPtr options,
                                base::WeakPtr<ActorTaskDelegate> delegate);
   TaskId CreateTaskForTesting(
       std::unique_ptr<actor::ui::UiEventDispatcher> ui_event_dispatcher,
+      const EnterprisePolicyChecker* policy_checker,
       webui::mojom::TaskOptionsPtr options,
       base::WeakPtr<ActorTaskDelegate> delegate);
 
@@ -173,6 +175,7 @@ class ActorKeyedService : public KeyedService,
  private:
   TaskId CreateTaskImpl(
       std::unique_ptr<actor::ui::UiEventDispatcher> ui_event_dispatcher,
+      const EnterprisePolicyChecker* policy_checker,
       webui::mojom::TaskOptionsPtr options,
       base::WeakPtr<ActorTaskDelegate> delegate);
 

@@ -1662,7 +1662,8 @@ class WebAuthnActorBrowserTest : public WebAuthnBrowserTest {
 
   void CreateActingTask() {
     auto* actor_service = actor::ActorKeyedService::Get(browser()->profile());
-    actor::TaskId task_id = actor_service->CreateTask();
+    actor::TaskId task_id =
+        actor_service->CreateTask(actor::NoEnterprisePolicyChecker());
 
     // Perform an arbitrary action in a tab to put the task into
     // UnderActorControl state and add the tab to the task.

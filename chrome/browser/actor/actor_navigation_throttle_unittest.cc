@@ -10,6 +10,7 @@
 #include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
+#include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/browser/navigation_throttle.h"
@@ -28,11 +29,7 @@ using ::testing::Return;
 class ActorNavigationThrottleTest : public ChromeRenderViewHostTestHarness {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{kGlicCrossOriginNavigationGating, {}},
-         {features::kGlicActor,
-          {{features::kGlicActorPolicyControlExemption.name, "true"}}}},
-        {});
+    scoped_feature_list_.InitAndEnableFeature(kGlicCrossOriginNavigationGating);
     ChromeRenderViewHostTestHarness::SetUp();
   }
 
@@ -42,7 +39,7 @@ class ActorNavigationThrottleTest : public ChromeRenderViewHostTestHarness {
 
 TEST_F(ActorNavigationThrottleTest, PrerenderedMainFrame_CancelIfDeferred) {
   ActorKeyedService* service = ActorKeyedService::Get(profile());
-  TaskId task_id = service->CreateTask();
+  TaskId task_id = service->CreateTask(NoEnterprisePolicyChecker());
   ActorTask* task = service->GetTask(task_id);
   ASSERT_TRUE(task);
 
@@ -67,7 +64,7 @@ TEST_F(ActorNavigationThrottleTest, PrerenderedMainFrame_CancelIfDeferred) {
 TEST_F(ActorNavigationThrottleTest, PrerenderedMainFrame_ProceedIfSameOrigin) {
   const GURL kPageUrl("https://example.com");
   ActorKeyedService* service = ActorKeyedService::Get(profile());
-  TaskId task_id = service->CreateTask();
+  TaskId task_id = service->CreateTask(NoEnterprisePolicyChecker());
   ActorTask* task = service->GetTask(task_id);
   ASSERT_TRUE(task);
 

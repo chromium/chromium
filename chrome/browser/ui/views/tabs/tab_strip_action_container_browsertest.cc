@@ -15,6 +15,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_policy_checker.h"
+#include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
 #include "chrome/browser/actor/ui/states/actor_task_nudge_state.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
@@ -97,8 +98,6 @@ class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
 #if BUILDFLAG(ENABLE_GLIC)
             {features::kGlicRollout, {}},
             {features::kGlicFreWarming, {}},
-            {features::kGlicActor,
-             { {features::kGlicActorPolicyControlExemption.name, "true"} }},
             {features::kGlicActorUi,
              { {features::kGlicActorUiTaskIconName, "true"} }},
             {features::kGlicActorUiGlobalTaskIndicator, {}},
@@ -269,7 +268,8 @@ class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
   }
 
   actor::TaskId CreateTask() {
-    actor::TaskId task_id = actor_service()->CreateTask();
+    actor::TaskId task_id =
+        actor_service()->CreateTask(actor::NoEnterprisePolicyChecker());
     actor::ActorTask* task = actor_service()->GetTask(task_id);
     actor::ui::StartTask start_task_event(task_id);
     actor_service()->GetActorUiStateManager()->OnUiEvent(start_task_event);
@@ -675,8 +675,6 @@ class GlicActorGlobalFlagEnabledBrowserTest
             {features::kGlicRollout, {}},
             {features::kGlicFreWarming, {}},
             {features::kGlicActorUiGlobalTaskIndicator, {}},
-            {features::kGlicActor,
-             {{features::kGlicActorPolicyControlExemption.name, "true"}}},
             {features::kGlicActorUi,
              {{features::kGlicActorUiTaskIconName, "true"}}},
             {features::kTabstripDeclutter, {}},
@@ -697,7 +695,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorGlobalFlagEnabledBrowserTest,
   EXPECT_FALSE(GlicActorButtonContainer()->GetVisible());
 
   auto* actor_service = actor::ActorKeyedService::Get(browser()->GetProfile());
-  actor::TaskId task_id = actor_service->CreateTask();
+  actor::TaskId task_id =
+      actor_service->CreateTask(actor::NoEnterprisePolicyChecker());
   actor::ui::StartTask start_task_event(task_id);
   actor_service->GetActorUiStateManager()->OnUiEvent(start_task_event);
   actor_service->StopTask(task_id,
@@ -764,8 +763,6 @@ class GlicActorGlobalFlagDisabledBrowserTest
             {features::kTabOrganization, {}},
             {features::kGlicRollout, {}},
             {features::kGlicFreWarming, {}},
-            {features::kGlicActor,
-             {{features::kGlicActorPolicyControlExemption.name, "true"}}},
             {features::kGlicActorUi,
              {{features::kGlicActorUiTaskIconName, "true"}}},
             {features::kTabstripDeclutter, {}},

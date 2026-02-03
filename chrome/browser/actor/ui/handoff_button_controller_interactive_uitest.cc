@@ -61,8 +61,6 @@ class ActorUiHandoffButtonControllerInteractiveUiTest
             {features::kGlicURLConfig,
              { {features::kGlicGuestURL.name, "about:blank"} }},
 #endif
-            {features::kGlicActor,
-             {{features::kGlicActorPolicyControlExemption.name, "true"}}},
             {features::kGlicHandoffButtonShowInImmersiveMode, {}},
             {features::kGlicHandoffButtonHideWhenOmniboxPopupOpened, {}},
             {features::kGlicActorUi,
@@ -267,8 +265,6 @@ class ActorUiHandoffButtonSplitViewTest
          { {features::kGlicGuestURL.name, "about:blank"} }},
         {features::kGlic, {}},
 #endif
-        {features::kGlicActor,
-         {{features::kGlicActorPolicyControlExemption.name, "true"}}},
         {features::kGlicActorUi,
          {{features::kGlicActorUiHandoffButtonName, "true"}}}};
   }
@@ -377,7 +373,7 @@ class ActorUiHandoffButtonSplitViewTest
     tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(wc);
     ASSERT_NE(tab, nullptr);
 
-    task_id = actor_keyed_service()->CreateTask();
+    task_id = actor_keyed_service()->CreateTask(NoEnterprisePolicyChecker());
     TestFuture<actor::mojom::ActionResultPtr> future;
     actor_keyed_service()->GetTask(task_id)->AddTab(tab->GetHandle(),
                                                     future.GetCallback());

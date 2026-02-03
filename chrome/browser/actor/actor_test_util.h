@@ -277,6 +277,8 @@ class ScopedExecutionEngineFactory {
 
 class MockPolicyChecker : public EnterprisePolicyChecker {
  public:
+  static const MockPolicyChecker* NoEnterprisePolicyChecker();
+
   explicit MockPolicyChecker(EnterprisePolicyBlockReason reason);
   ~MockPolicyChecker();
 
@@ -287,6 +289,10 @@ class MockPolicyChecker : public EnterprisePolicyChecker {
  private:
   EnterprisePolicyBlockReason reason_;
 };
+
+// Returns a passthrough EnterprisePolicyChecker tests can use to avoid policy
+// checks.
+const EnterprisePolicyChecker* NoEnterprisePolicyChecker();
 
 }  // namespace actor
 
