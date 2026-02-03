@@ -47,9 +47,7 @@ int64_t GetLogicalChunkStart(uint32_t chunk_index) {
 EncryptedCacheFile::EncryptedCacheFile(
     std::unique_ptr<disk_cache::CacheFile> file,
     const crypto::ProcessBoundString& primary_key)
-    : file_(std::move(file)), key_(primary_key) {
-  // TODO: crbug.com/476324615 - Generate per-file access key. Handle errors.
-}
+    : file_(std::move(file)), key_(primary_key) {}
 
 EncryptedCacheFile::~EncryptedCacheFile() = default;
 
