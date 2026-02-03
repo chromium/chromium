@@ -301,10 +301,11 @@ void FormTracker::ElementDisappeared(const blink::WebElement& element) {
   submission_triggering_events_.tracked_element_disappeared = true;
 }
 
-void FormTracker::TrackAutofilledElement(const WebFormControlElement& element) {
+void FormTracker::TrackAutofilledElement(FieldRendererId field_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(form_tracker_sequence_checker_);
-  if (!form_util::GetFormControlByRendererId(
-          form_util::GetFieldRendererId(element))) {
+  const WebFormControlElement element =
+      form_util::GetFormControlByRendererId(field_id);
+  if (!element) {
     return;
   }
   if (blink::WebFormElement form_element = element.GetOwningFormForAutofill()) {
@@ -330,8 +331,7 @@ void FormTracker::TrackAutofilledElement(
     const auto& [filled_field_id, filled_form_id] = *it;
     if (base::FeatureList::IsEnabled(
             features::kAutofillAcceptDomMutationAfterAutofillSubmission)) {
-      TrackAutofilledElement(
-          form_util::GetFormControlByRendererId(filled_field_id));
+      TrackAutofilledElement(filled_field_id);
     } else if (WebFormElement form =
                    form_util::GetFormByRendererId(filled_form_id)) {
       UpdateLastInteractedElement(form);
@@ -341,14 +341,14 @@ void FormTracker::TrackAutofilledElement(
   } else {
     for (const auto& [filled_field_id, filled_form_id] :
          filled_fields_and_forms) {
-      WebFormControlElement control_element =
-          form_util::GetFormControlByRendererId(filled_field_id);
-      CHECK(control_element);
       if (base::FeatureList::IsEnabled(
               features::kAutofillAcceptDomMutationAfterAutofillSubmission)) {
-        TrackAutofilledElement(control_element);
-      } else {
+        TrackAutofilledElement(filled_field_id);
+      } else if (WebFormControlElement control_element =
+                     form_util::GetFormControlByRendererId(filled_field_id)) {
         UpdateLastInteractedElement(control_element);
+      } else {
+        NOTREACHED();
       }
     }
   }

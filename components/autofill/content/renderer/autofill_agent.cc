@@ -2099,9 +2099,8 @@ void AutofillAgent::JavaScriptChangedValue(WebFormControlElement element,
   }
 }
 
-void AutofillAgent::TrackAutofilledElement(
-    const WebFormControlElement& element) {
-  form_tracker_->TrackAutofilledElement(element);
+void AutofillAgent::TrackAutofilledElement(FieldRendererId field_id) {
+  form_tracker_->TrackAutofilledElement(field_id);
 }
 
 void AutofillAgent::UpdateStateForTextChange(

@@ -105,12 +105,16 @@ class FormTracker : public content::RenderFrameObserver,
   // form or field won't trigger the regular *DidChange events, the tracker
   // won't be notified of this `element` otherwise. This is currently only used
   // by PWM.
-  void TrackAutofilledElement(const blink::WebFormControlElement& element);
+  void TrackAutofilledElement(FieldRendererId field_id);
 
   // Called in order to update submission data when a form is autofilled.
   // `filled_fields_and_forms` represent the fields and forms that were affected
   // by the corresponding autofill operation  and is used to determine an
   // appropriate single element to track.
+  //
+  // Callers must guarantee that form_util::GetFormByRendererId() and
+  // form_util::GetFormControlByRendererId() find the elements in
+  // `filled_fields_and_forms`.
   void TrackAutofilledElement(
       const base::flat_map<FieldRendererId, FormRendererId>&
           filled_fields_and_forms);

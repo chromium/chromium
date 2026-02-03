@@ -232,7 +232,7 @@ class AutofillAgent : public content::RenderFrameObserver,
                             mojom::SubmissionSource source);
 
   // Instructs `form_tracker_` to track the autofilled `element`.
-  void TrackAutofilledElement(const blink::WebFormControlElement& element);
+  void TrackAutofilledElement(FieldRendererId field_id);
 
   // Function that should be called whenever the value of `element` changes due
   // to user input. This is separate from OnTextFieldValueChanged() as that

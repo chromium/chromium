@@ -851,7 +851,8 @@ void PasswordAutofillAgent::UpdatePasswordStateForTextChange(
 
 void PasswordAutofillAgent::TrackAutofilledElement(
     const WebFormControlElement& element) {
-  autofill_agent_->TrackAutofilledElement(element);
+  autofill_agent_->TrackAutofilledElement(
+      form_util::GetFieldRendererId(element));
 }
 
 void PasswordAutofillAgent::FillPasswordSuggestion(
