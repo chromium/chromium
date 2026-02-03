@@ -40,7 +40,7 @@ export class SkillsDialogAppElement extends CrLitElement {
   protected accessor skill_: Skill = {
     id: '',
     name: '',
-    icon: '',
+    icon: DEFAULT_EMOJI,
     prompt: '',
     // Default to user created since these are added by the user via the UI.
     source: SkillSource.kUserCreated,
@@ -52,8 +52,17 @@ export class SkillsDialogAppElement extends CrLitElement {
     return this.skill_.name.length === 0 || this.skill_.prompt.length === 0;
   }
 
-  protected getEmojiDisplay_(): string {
-    return this.skill_.icon || DEFAULT_EMOJI;
+  /** Initializes dialog. */
+  override async connectedCallback() {
+    super.connectedCallback();
+
+    const initialSkill =
+        (await SkillsDialogBrowserProxy.getInstance().handler.getInitialSkill())
+            .skill;
+    if (initialSkill) {
+      this.skill_ = initialSkill;
+      this.skill_.icon = initialSkill.icon || DEFAULT_EMOJI;
+    }
   }
 
   protected onEmojiBtnClick_(e: Event) {

@@ -70,6 +70,11 @@ void SkillsDialogHandler::ShowEmojiPicker() {
   ui::ShowEmojiPanel();
 }
 
+void SkillsDialogHandler::GetInitialSkill(GetInitialSkillCallback callback) {
+  // TODO(marissashen): Return initial skill from dialog creation.
+  std::move(callback).Run(skills::Skill());
+}
+
 void SkillsDialogHandler::OnRefineSkillResponse(
     DialogHandler::RefineSkillCallback callback,
     OptimizationGuideModelExecutionResult result,

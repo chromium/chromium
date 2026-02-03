@@ -18,7 +18,7 @@ export function getHtml(this: SkillsDialogAppElement) {
         @value-changed="${this.onNameChanged_}">
       <input class="emoji-trigger"
           type="text"
-          .value="${this.getEmojiDisplay_()}"
+          .value="${this.skill_.icon}"
           @click="${this.onEmojiBtnClick_}"
           @input="${this.onEmojiChanged_}"
           @keydown="${this.onEmojiKeyDown_}"

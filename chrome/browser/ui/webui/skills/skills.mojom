@@ -62,9 +62,10 @@ interface DialogHandler {
   // Called when the user clicks the "Cancel" button in the dialog.
   CloseDialog();
 
-  // TODO(marissashen): Add `GetInitialSkill` to pass in initial skill and
-  // dialog state (add/edit).
-
   // Trigger the OS picker
   ShowEmojiPicker();
+
+  // Called when dialog is opened to get the initial skill when
+  // editing/remixing.
+  GetInitialSkill() => (skills.mojom.Skill skill);
 };

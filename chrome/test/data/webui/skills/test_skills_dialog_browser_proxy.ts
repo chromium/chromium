@@ -3,17 +3,29 @@
 // found in the LICENSE file.
 
 import type {Skill} from 'chrome://skills/skill.mojom-webui.js';
+import {SkillSource} from 'chrome://skills/skill.mojom-webui.js';
 import type {DialogHandlerInterface} from 'chrome://skills/skills.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestDialogHandler extends TestBrowserProxy implements
     DialogHandlerInterface {
+  private initialSkill_: Skill = {
+    id: '',
+    name: '',
+    icon: '',
+    prompt: '',
+    source: SkillSource.kUnknown,
+    creationTime: {internalValue: 0n},
+    lastUpdateTime: {internalValue: 0n},
+  };
+
   constructor() {
     super([
       'submitSkill',
       'refineSkill',
       'closeDialog',
       'showEmojiPicker',
+      'getInitialSkill',
     ]);
   }
 
@@ -33,6 +45,15 @@ export class TestDialogHandler extends TestBrowserProxy implements
 
   showEmojiPicker() {
     this.methodCalled('showEmojiPicker');
+  }
+
+  getInitialSkill() {
+    this.methodCalled('getInitialSkill');
+    return Promise.resolve({skill: this.initialSkill_});
+  }
+
+  setInitialSkill(skill: Skill) {
+    this.initialSkill_ = skill;
   }
 }
 

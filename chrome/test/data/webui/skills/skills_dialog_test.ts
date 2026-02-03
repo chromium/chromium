@@ -7,6 +7,8 @@ import 'chrome://skills/skills_dialog_app.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import type {CrTextareaElement} from 'chrome://resources/cr_elements/cr_textarea/cr_textarea.js';
+import type {Skill} from 'chrome://skills/skill.mojom-webui.js';
+import {SkillSource} from 'chrome://skills/skill.mojom-webui.js';
 import type {SkillsDialogAppElement} from 'chrome://skills/skills_dialog_app.js';
 import {SkillsDialogBrowserProxy} from 'chrome://skills/skills_dialog_browser_proxy.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -19,17 +21,48 @@ suite('SkillsDialogAppPage', function() {
   let browserProxy: TestSkillsDialogBrowserProxy;
   let dialogHandler: TestDialogHandler;
 
-  setup(function() {
+  setup(async function() {
     browserProxy = new TestSkillsDialogBrowserProxy();
     SkillsDialogBrowserProxy.setInstance(browserProxy);
     dialogHandler = browserProxy.handler;
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     skillsDialogApp = document.createElement('skills-dialog-app');
     document.body.appendChild(skillsDialogApp);
+    await skillsDialogApp.updateComplete;
   });
 
   test('SkillsDialogAppLoads', function() {
     assertEquals('Add Skill', skillsDialogApp.$['header']!.textContent);
+  });
+
+  test('SkillsDialogPrepopulatesInitialSkill', async function() {
+    const testSkill: Skill = {
+      id: '123',
+      name: 'test skill',
+      icon: '',
+      prompt: 'test prompt',
+      source: SkillSource.kUserCreated,
+      creationTime: {internalValue: 0n},
+      lastUpdateTime: {internalValue: 0n},
+    };
+    dialogHandler.setInitialSkill(testSkill);
+
+    // Re-create the element to pick up the new dialog arguments.
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    skillsDialogApp = document.createElement('skills-dialog-app');
+    document.body.appendChild(skillsDialogApp);
+    await skillsDialogApp.updateComplete;
+
+    assertEquals(
+        '⚡',
+        skillsDialogApp.shadowRoot
+            .querySelector<HTMLInputElement>('.emoji-trigger')!.value);
+    assertEquals(
+        testSkill.name,
+        (skillsDialogApp.$['nameText'] as CrInputElement).value);
+    assertEquals(
+        testSkill.prompt,
+        (skillsDialogApp.$['instructionsText'] as CrTextareaElement).value);
   });
 
   test('SaveButtonDisabledStates', async function() {
