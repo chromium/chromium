@@ -93,8 +93,9 @@ void ProfileManagementFlowController::SwitchToStep(
   new_step_controller->Show(std::move(combined_step_switch_callbacks),
                             reset_state);
 
-  if (initialized_steps_.contains(previous_step)) {
-    initialized_steps_.at(previous_step)->OnHidden();
+  if (auto it = initialized_steps_.find(previous_step);
+      it != initialized_steps_.end()) {
+    it->second->OnHidden();
   }
 }
 
@@ -117,6 +118,7 @@ ProfileManagementFlowController::GetFallbackAccessibleWindowTitle() const {
 void ProfileManagementFlowController::RegisterStep(
     Step step,
     std::unique_ptr<ProfileManagementStepController> step_controller) {
+  CHECK_NE(step_controller, nullptr);
   initialized_steps_[step] = std::move(step_controller);
 }
 
@@ -126,7 +128,7 @@ void ProfileManagementFlowController::UnregisterStep(Step step) {
 }
 
 bool ProfileManagementFlowController::IsStepInitialized(Step step) const {
-  return initialized_steps_.contains(step) && initialized_steps_.at(step);
+  return initialized_steps_.contains(step);
 }
 
 bool ProfileManagementFlowController::HasFlowExited() const {
