@@ -315,7 +315,10 @@ const CGFloat kCloseButtonPadding = 16.0f;
 }
 
 - (void)adjustMarginsToMatchOmniboxWidth {
-  if (!self.omniboxGuide) {
+  // Prevent update when the frame is invalid, can happen during animation:
+  // crbug.com/479184311.
+  if (!self.omniboxGuide || CGRectIsEmpty(self.tableView.frame) ||
+      CGRectIsInfinite(self.tableView.frame)) {
     return;
   }
 
