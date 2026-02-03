@@ -2377,12 +2377,18 @@ def InstallOnAndroid(device, apk_path):
   device.Install(apk_path, reinstall=True, allow_downgrade=True)
   print('Installation succeeded.')
 
-  helper = apk_helper.ApkHelper(apk_path)
-  if _IsWebViewProvider(helper):
-    package_name = helper.GetPackageName()
-    print(f'Detected {apk_path} to be a WebView package. Setting your webview '
-          f'implementation to {package_name}...')
-    device.SetWebViewImplementation(package_name)
+  # TODO(crbug.com/479283691): add _GenerateBundleApks() to support the app
+  # bundle case.
+  if apk_path.endswith('.apk'):
+    helper = apk_helper.ApkHelper(apk_path)
+    if _IsWebViewProvider(helper):
+      package_name = helper.GetPackageName()
+      print(f'Detected {apk_path} to be a WebView package. Setting your '
+            f'WebView implementation to {package_name}...')
+      device.SetWebViewImplementation(package_name)
+  else:
+    print('Warn: this is an app bundle. Unable to change WebView provider '
+          'setting.')
 
 def LaunchOnAndroid(device, apk):
   """Launches the chromium build on a given device."""
