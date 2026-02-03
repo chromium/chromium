@@ -367,7 +367,8 @@ impl Uuid {
 
     /// Creates a UUID using the supplied bytes in little endian order.
     ///
-    /// The individual fields encoded in the buffer will be flipped.
+    /// Note that ordering is applied to each _field_, rather than to the bytes as a whole.
+    /// This ordering is compatible with Microsoft's mixed endian GUID format.
     ///
     /// # Examples
     ///

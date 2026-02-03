@@ -1,7 +1,7 @@
 //! A wrapper type for nil UUIDs that provides a more memory-efficient
 //! `Option<NonNilUuid>` representation.
 
-use std::{fmt, num::NonZeroU128};
+use std::{cmp::Ordering, fmt, num::NonZeroU128};
 
 use crate::{
     error::{Error, ErrorKind},
@@ -32,7 +32,7 @@ use crate::{
 /// may change. It is currently only guaranteed that `NonNilUuid` and `Option<NonNilUuid>`
 /// are the same size as `Uuid`.
 #[repr(transparent)]
-#[derive(Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Copy, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct NonNilUuid(NonZeroU128);
 
 impl fmt::Debug for NonNilUuid {
@@ -56,6 +56,18 @@ impl PartialEq<Uuid> for NonNilUuid {
 impl PartialEq<NonNilUuid> for Uuid {
     fn eq(&self, other: &NonNilUuid) -> bool {
         *self == other.get()
+    }
+}
+
+impl PartialOrd<Uuid> for NonNilUuid {
+    fn partial_cmp(&self, other: &Uuid) -> Option<Ordering> {
+        self.get().partial_cmp(other)
+    }
+}
+
+impl PartialOrd<NonNilUuid> for Uuid {
+    fn partial_cmp(&self, other: &NonNilUuid) -> Option<Ordering> {
+        self.partial_cmp(&other.get())
     }
 }
 
@@ -150,5 +162,40 @@ mod tests {
 
         assert_eq!(format!("{uuid}"), format!("{non_nil}"));
         assert_eq!(format!("{uuid:?}"), format!("{non_nil:?}"));
+    }
+
+    #[test]
+    fn test_non_nil_ord() {
+        let uuid1 = Uuid::from_u128(0x0123456789abcdef0123456789abcdef);
+        let uuid2 = Uuid::from_u128(0x0123456789abcdef0123456789abcdf0);
+
+        let non_nil1 = NonNilUuid::try_from(uuid1).unwrap();
+        let non_nil2 = NonNilUuid::try_from(uuid2).unwrap();
+
+        // Ordering between NonNilUuid instances
+        assert!(non_nil1 < non_nil2);
+        assert!(non_nil2 > non_nil1);
+
+        // Ordering between NonNilUuid and Uuid
+        assert!(non_nil1 < uuid2);
+        assert!(non_nil2 > uuid1);
+
+        // Ordering between Uuid and NonNilUuid
+        assert!(uuid1 < non_nil2);
+        assert!(uuid2 > non_nil1);
+
+        // Equality
+        let non_nil1_copy = NonNilUuid::try_from(uuid1).unwrap();
+        assert_eq!(non_nil1, non_nil1_copy);
+        assert!(non_nil1 <= non_nil1_copy);
+        assert!(non_nil1 >= non_nil1_copy);
+
+        // Equality between NonNilUuid and Uuid
+        assert_eq!(non_nil1, uuid1);
+        assert_eq!(uuid1, non_nil1);
+        assert!(non_nil1 >= uuid1);
+        assert!(non_nil1 <= uuid1);
+        assert!(uuid1 >= non_nil1);
+        assert!(uuid1 <= non_nil1);
     }
 }

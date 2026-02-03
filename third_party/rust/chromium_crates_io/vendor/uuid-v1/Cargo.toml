@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.63.0"
 name = "uuid"
-version = "1.19.0"
+version = "1.20.0"
 authors = [
     "Ashley Mannix<ashleymannix@live.com.au>",
     "Dylan DPC<dylan.dpc@gmail.com>",
@@ -109,7 +109,7 @@ js = [
     "dep:wasm-bindgen",
     "dep:js-sys",
 ]
-macro-diagnostics = ["dep:uuid-macro-internal"]
+macro-diagnostics = []
 md5 = ["dep:md-5"]
 rng = ["dep:getrandom"]
 rng-getrandom = [
@@ -162,7 +162,7 @@ optional = true
 default-features = false
 
 [dependencies.bytemuck]
-version = "1.19.0"
+version = "1.20.0"
 features = ["derive"]
 optional = true
 
@@ -185,17 +185,10 @@ default-features = false
 version = "2"
 optional = true
 
-[dependencies.uuid-macro-internal]
-version = "1.19.0"
-optional = true
-
 [dependencies.zerocopy]
 version = "0.8"
 features = ["derive"]
 optional = true
-
-[dev-dependencies.bincode]
-version = "1.0"
 
 [dev-dependencies.rustversion]
 version = "1"
@@ -216,7 +209,7 @@ version = "1.0.56"
 version = "1.0.52"
 
 [target.'cfg(all(target_arch = "wasm32", any(target_os = "unknown", target_os = "none")))'.dependencies.uuid-rng-internal-lib]
-version = "1.19.0"
+version = "1.20.0"
 optional = true
 package = "uuid-rng-internal"
 

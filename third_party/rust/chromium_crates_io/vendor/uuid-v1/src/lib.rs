@@ -38,7 +38,7 @@
 //!
 //! ```toml
 //! [dependencies.uuid]
-//! version = "1.19.0"
+//! version = "1.20.0"
 //! # Lets you generate random UUIDs
 //! features = [
 //!     "v4",
@@ -99,7 +99,6 @@
 //!
 //! Other crate features can also be useful beyond the version support:
 //!
-//! * `macro-diagnostics` - enhances the diagnostics of `uuid!` macro.
 //! * `serde` - adds the ability to serialize and deserialize a UUID using
 //!   `serde`.
 //! * `borsh` - adds the ability to serialize and deserialize a UUID using
@@ -139,7 +138,7 @@
 //!
 //! ```toml
 //! [dependencies.uuid]
-//! version = "1.19.0"
+//! version = "1.20.0"
 //! features = [
 //!     "v4",
 //!     "v7",
@@ -154,7 +153,7 @@
 //!
 //! ```toml
 //! [dependencies.uuid]
-//! version = "1.19.0"
+//! version = "1.20.0"
 //! default-features = false
 //! ```
 //!
@@ -212,7 +211,7 @@
 #![doc(
     html_logo_url = "https://www.rust-lang.org/logos/rust-logo-128x128-blk-v2.png",
     html_favicon_url = "https://www.rust-lang.org/favicon.ico",
-    html_root_url = "https://docs.rs/uuid/1.19.0"
+    html_root_url = "https://docs.rs/uuid/1.20.0"
 )]
 
 #[cfg(any(feature = "std", test))]
@@ -269,10 +268,6 @@ mod rng;
 mod sha1;
 
 mod external;
-
-#[doc(hidden)]
-#[cfg(feature = "macro-diagnostics")]
-pub extern crate uuid_macro_internal;
 
 #[doc(hidden)]
 pub mod __macro_support {
@@ -813,9 +808,12 @@ impl Uuid {
 
     /// Returns the bytes of the UUID in little-endian order.
     ///
-    /// The bytes will be flipped to convert into little-endian order. This is
-    /// based on the endianness of the UUID, rather than the target environment
+    /// The bytes for each field will be flipped to convert into little-endian order.
+    /// This is based on the endianness of the UUID, rather than the target environment
     /// so bytes will be flipped on both big and little endian machines.
+    ///
+    /// Note that ordering is applied to each _field_, rather than to the bytes as a whole.
+    /// This ordering is compatible with Microsoft's mixed endian GUID format.
     ///
     /// # Examples
     ///

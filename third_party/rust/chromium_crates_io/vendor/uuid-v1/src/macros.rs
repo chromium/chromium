@@ -1,37 +1,3 @@
-macro_rules! define_uuid_macro {
-    {$(#[$doc:meta])*} => {
-        $(#[$doc])*
-        #[cfg(feature = "macro-diagnostics")]
-        #[macro_export]
-        macro_rules! uuid {
-            ($uuid:expr) => {{
-                const OUTPUT: $crate::Uuid = match $crate::Uuid::try_parse($uuid) {
-                    $crate::__macro_support::Ok(u) => u,
-                    $crate::__macro_support::Err(_) => panic!("invalid UUID"),
-                };
-                OUTPUT
-            }};
-            ($uuid:literal) => {{
-                $crate::Uuid::from_bytes($crate::uuid_macro_internal::parse_lit!($uuid))
-            }};
-        }
-
-        $(#[$doc])*
-        #[cfg(not(feature = "macro-diagnostics"))]
-        #[macro_export]
-        macro_rules! uuid {
-            ($uuid:expr) => {{
-                const OUTPUT: $crate::Uuid = match $crate::Uuid::try_parse($uuid) {
-                    $crate::__macro_support::Ok(u) => u,
-                    $crate::__macro_support::Err(_) => panic!("invalid UUID"),
-                };
-                OUTPUT
-            }};
-        }
-    }
-}
-
-define_uuid_macro! {
 /// Parse [`Uuid`][uuid::Uuid]s from string literals at compile time.
 ///
 /// ## Usage
@@ -64,27 +30,16 @@ define_uuid_macro! {
 /// let UUID = uuid!(UUID_STR);
 /// ```
 ///
-/// ## Compilation Failures
-///
-/// Invalid UUIDs are rejected:
-///
-/// ```compile_fail
-/// # use uuid::uuid;
-/// let uuid = uuid!("F9168C5E-ZEB2-4FAA-B6BF-329BF39FA1E4");
-/// ```
-///
-/// Enable the feature `macro-diagnostics` to see the error messages below.
-///
-/// Provides the following compilation error:
-///
-/// ```txt
-/// error: invalid character: expected an optional prefix of `urn:uuid:` followed by [0-9a-fA-F-], found Z at 9
-///     |
-///     |     let id = uuid!("F9168C5E-ZEB2-4FAA-B6BF-329BF39FA1E4");
-///     |                              ^
-/// ```
-///
 /// [uuid::Uuid]: https://docs.rs/uuid/*/uuid/struct.Uuid.html
+#[macro_export]
+macro_rules! uuid {
+    ($uuid:expr) => {{
+        const OUTPUT: $crate::Uuid = match $crate::Uuid::try_parse($uuid) {
+            $crate::__macro_support::Ok(u) => u,
+            $crate::__macro_support::Err(_) => panic!("invalid UUID"),
+        };
+        OUTPUT
+    }};
 }
 
 // Internal macros
