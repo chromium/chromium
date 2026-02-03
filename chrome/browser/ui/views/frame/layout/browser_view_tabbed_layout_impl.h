@@ -99,7 +99,7 @@ class BrowserViewTabbedLayoutImpl : public BrowserViewLayoutImpl {
     // The y-value of the top of the tab strip.
     int top_offset = 0;
     // The relative size of the top outside corner.
-    double top_outside_corner_percent = 1.0;
+    double top_outside_corner_percent = 0.0;
     // The relative size of the top inside corner.
     double top_inside_corner_percent = 0.0;
   };
