@@ -2704,13 +2704,9 @@ void CrostiniManager::OnStartTerminaVm(
 
   // If the vm is already marked "running" run the callback.
   if (response->status() == vm_tools::concierge::VM_STATUS_RUNNING) {
-    if (running_vms_.contains(vm_name)) {
-      running_vms_[vm_name] =
-          VmInfo{VmState::STARTED, std::move(response->vm_info()), true};
-    } else {
-      running_vms_[vm_name] =
-          VmInfo{VmState::STARTED, std::move(response->vm_info()), false};
-    }
+    auto [it, inserted] = running_vms_.try_emplace(vm_name);
+    it->second =
+        VmInfo{VmState::STARTED, std::move(response->vm_info()), !inserted};
     std::move(callback).Run(/*success=*/true);
     return;
   }
