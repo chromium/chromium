@@ -490,22 +490,4 @@ bool RangeInputType::IsDraggedSlider() const {
   return GetSliderThumbElement()->IsActive();
 }
 
-std::unique_ptr<JSONObject> RangeInputType::GetWebMCPParameterSchema() const {
-  auto schema = std::make_unique<JSONObject>();
-  schema->SetString("type", "number");
-  StepRange step_range = CreateStepRange(kRejectAny);
-  // Range input types always have a minimum and maximum, either from
-  // the attributes or from the default values (0 and 100, respectively).
-  schema->SetDouble("minimum", step_range.Minimum().ToDouble());
-  schema->SetDouble("maximum", step_range.Maximum().ToDouble());
-  // Range input types always have a step (default: 1).
-  // This corresponds to multipleOf only when the step base is also
-  // a multiple of the step.
-  Decimal step = step_range.Step();
-  if (step_range.StepBase().Remainder(step).IsZero()) {
-    schema->SetDouble("multipleOf", step.ToDouble());
-  }
-  return schema;
-}
-
 }  // namespace blink

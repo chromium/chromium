@@ -2064,28 +2064,4 @@ bool HTMLSelectElement::ShouldIgnoreDescendantsForOptionTraversals(
          IsA<HTMLHRElement>(element);
 }
 
-std::unique_ptr<JSONObject> HTMLSelectElement::GetWebMCPParameterSchema()
-    const {
-  CHECK(RuntimeEnabledFeatures::WebMCPEnabled());
-  auto schema = std::make_unique<JSONObject>();
-  schema->SetString("type", "string");
-
-  auto one_of = std::make_unique<JSONArray>();
-  for (HTMLOptionElement& option : GetOptionList()) {
-    auto option_object = std::make_unique<JSONObject>();
-    option_object->SetString("const", option.value());
-    option_object->SetString("title", option.textContent());
-    one_of->PushObject(std::move(option_object));
-  }
-  schema->SetArray("oneOf", std::move(one_of));
-
-  return schema;
-}
-
-void HTMLSelectElement::FillWebMCPData(JSONValue& data) {
-  CHECK(RuntimeEnabledFeatures::WebMCPEnabled());
-  String selected_value = GetMCPJSONValue(data);
-  SetValue(selected_value, /*send_events*/ true, WebAutofillState::kNotFilled);
-}
-
 }  // namespace blink

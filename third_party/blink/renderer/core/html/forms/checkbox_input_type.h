@@ -40,8 +40,6 @@ class CheckboxInputType final : public BaseCheckableInputType {
   CheckboxInputType(HTMLInputElement& element)
       : BaseCheckableInputType(Type::kCheckbox, element) {}
   bool ValueMissing(const String&) const;
-  bool SupportsWebMCP() const override { return true; }
-  std::unique_ptr<JSONObject> GetWebMCPParameterSchema() const override;
 
  private:
   void CountUsage() override;

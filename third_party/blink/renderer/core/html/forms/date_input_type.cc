@@ -68,15 +68,6 @@ StepRange DateInputType::CreateStepRange(
       Decimal::FromDouble(DateComponents::MaximumDate()), step_description);
 }
 
-std::unique_ptr<JSONObject> DateInputType::GetWebMCPParameterSchema() const {
-  auto schema = std::make_unique<JSONObject>();
-  schema->SetString("type", "string");
-  schema->SetString("format", "date");
-  // Note that the "minimum" and "maximum" fields must contains numbers;
-  // they cannot be used for dates.
-  return schema;
-}
-
 bool DateInputType::ParseToDateComponentsInternal(const String& string,
                                                   DateComponents* out) const {
   DCHECK(out);

@@ -224,8 +224,6 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
 
   bool IsValidWebMCPForm() const;
   void UpdateMcpDefinitionsIfNeeded();
-  void ExecuteDeclarativeWebMCPFunction(String input_arguments);
-  String UpdateDeclarativeWebMCPInputSchema();
 
   using PastNamesMap = GCedHeapHashMap<AtomicString, Member<Element>>;
 

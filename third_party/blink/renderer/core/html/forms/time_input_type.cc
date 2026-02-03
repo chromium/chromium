@@ -38,7 +38,6 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
-#include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/text/date_components.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "third_party/blink/renderer/platform/wtf/date_math.h"
@@ -181,19 +180,6 @@ String TimeInputType::ReversedRangeOutOfRangeText(
   return GetLocale().QueryString(
       IDS_FORM_VALIDATION_REVERSED_RANGE_OUT_OF_RANGE_TIME,
       LocalizeValue(Serialize(minimum)), LocalizeValue(Serialize(maximum)));
-}
-
-std::unique_ptr<JSONObject> TimeInputType::GetWebMCPParameterSchema() const {
-  auto schema = std::make_unique<JSONObject>();
-  schema->SetString("type", "string");
-  // The regex format is based on the valid time microsyntax in HTML:
-  // https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#times
-  // We cannot use the "time" type from json schema because that accepts
-  // timezone which is not valid for <input type=time>.
-  schema->SetString(
-      "format",
-      "^([01][0-9]|2[0-3]):[0-5][0-9](:[0-5][0-9](\\.[0-9]{1,3})?)?$");
-  return schema;
 }
 
 }  // namespace blink

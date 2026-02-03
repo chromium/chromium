@@ -841,16 +841,4 @@ void HTMLTextAreaElement::SetFocused(bool is_focused,
   TextControlElement::SetFocused(is_focused, focus_type);
 }
 
-std::unique_ptr<JSONObject> HTMLTextAreaElement::GetWebMCPParameterSchema()
-    const {
-  auto schema = std::make_unique<JSONObject>();
-  schema->SetString("type", "string");
-  return schema;
-}
-
-void HTMLTextAreaElement::FillWebMCPData(JSONValue& data) {
-  String selected_value = GetMCPJSONValue(data);
-  SetValue(selected_value);
-}
-
 }  // namespace blink

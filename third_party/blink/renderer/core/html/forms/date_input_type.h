@@ -47,8 +47,6 @@ class DateInputType final : public BaseTemporalInputType {
   bool SetMillisecondToDateComponents(double, DateComponents*) const override;
   bool CanSetSuggestedValue() override;
   void WarnIfValueIsInvalid(const String&) const override;
-  bool SupportsWebMCP() const override { return true; }
-  std::unique_ptr<JSONObject> GetWebMCPParameterSchema() const override;
 
   // BaseTemporalInputType functions
   String FormatDateTimeFieldsState(const DateTimeFieldsState&) const override;

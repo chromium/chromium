@@ -315,29 +315,6 @@ bool HTMLInputElement::IsKeyboardFocusableSlow(
   return input_type_->IsKeyboardFocusableSlow(update_behavior);
 }
 
-bool HTMLInputElement::SupportsWebMCP() const {
-  return input_type_->SupportsWebMCP();
-}
-
-void HTMLInputElement::FillWebMCPData(JSONValue& data) {
-  CHECK(RuntimeEnabledFeatures::WebMCPEnabled());
-  if (type() == input_type_names::kCheckbox) {
-    bool checked = false;
-    if (data.AsBoolean(&checked)) {
-      SetChecked(checked, TextFieldEventBehavior::kDispatchChangeEvent);
-    }
-    return;
-  }
-  String selected_value = GetMCPJSONValue(data);
-  SetValue(selected_value);
-}
-
-std::unique_ptr<JSONObject> HTMLInputElement::GetWebMCPParameterSchema() const {
-  CHECK(RuntimeEnabledFeatures::WebMCPEnabled());
-  CHECK(SupportsWebMCP());
-  return input_type_->GetWebMCPParameterSchema();
-}
-
 bool HTMLInputElement::MayTriggerVirtualKeyboard() const {
   return input_type_->MayTriggerVirtualKeyboard();
 }

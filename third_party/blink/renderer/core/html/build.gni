@@ -164,6 +164,8 @@ blink_core_sources_html = [
   "forms/form_data.h",
   "forms/form_data_event.cc",
   "forms/form_data_event.h",
+  "forms/form_mcp_schema.cc",
+  "forms/form_mcp_schema.h",
   "forms/hidden_input_type.cc",
   "forms/hidden_input_type.h",
   "forms/html_button_element.cc",

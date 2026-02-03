@@ -157,11 +157,6 @@ class CORE_EXPORT HTMLTextAreaElement final : public TextControlElement {
 
   void DidChangeIsCanvasOrInCanvasSubtree() final;
 
-  // Used for the (experimental) declarative WebMCP prototype.
-  bool SupportsWebMCP() const final { return true; }
-  std::unique_ptr<JSONObject> GetWebMCPParameterSchema() const final;
-  void FillWebMCPData(JSONValue& data) final;
-
   unsigned rows_;
   unsigned cols_;
   WrapMethod wrap_;

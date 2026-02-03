@@ -310,7 +310,7 @@ TEST_F(HTMLFormMcpToolTest, FillFormControls_NumberInput_NumberString) {
   SetBodyInnerHTML(
       R"HTML(
     <form id=form toolname="mytool" tooldescription="perform task">
-      <input id=num1 name=num1 type=number>
+      <input id=num1 name=num1 type=number value="7">
     </form>
   )HTML");
 
@@ -325,11 +325,11 @@ TEST_F(HTMLFormMcpToolTest, FillFormControls_NumberInput_NumberString) {
         }
       )JSON";
 
-  EXPECT_TRUE(FillFormControls(*form_element, json_string));
+  EXPECT_FALSE(FillFormControls(*form_element, json_string));
 
   HTMLInputElement* num1 = GetInputElement("num1");
   ASSERT_TRUE(num1);
-  EXPECT_EQ("35", num1->Value());
+  EXPECT_EQ("7", num1->Value());
 }
 
 TEST_F(HTMLFormMcpToolTest, FillFormControls_NumberInput_InvalidString) {
@@ -684,6 +684,37 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_TextInput_PreferAttrOverLabel) {
          "text1": {
            "type": "string",
            "description": "ATTR"
+         }
+      },
+      "required": []
+    }
+  )JSON");
+  ASSERT_TRUE(expected_json);
+  EXPECT_EQ(expected_json->ToJSONString(), actual);
+}
+
+// TODO(crbug.com/475972617): Support duplicate names.
+TEST_F(HTMLFormMcpToolTest, ParameterSchema_TextInput_DuplicateName) {
+  SetBodyInnerHTML(
+      R"HTML(
+    <form id="form" toolname="mytool" tooldescription="perform task">
+      <input name="text1" type="text">
+      <input name="text2" type="text">
+      <input name="text2" type="text">
+    </form>
+  )HTML");
+
+  HTMLFormElement* form_element = GetFormElement("form");
+  ASSERT_TRUE(form_element);
+  ASSERT_TRUE(IsValidWebMCPForm(*form_element));
+  String actual = ComputeInputSchema(*form_element);
+  // test1 is supported, text2 is not.
+  std::unique_ptr<JSONValue> expected_json = ParseJSON(R"JSON(
+    {
+      "type": "object",
+      "properties": {
+         "text1": {
+           "type": "string"
          }
       },
       "required": []
@@ -1402,10 +1433,9 @@ TEST_F(HTMLFormMcpToolTest, FillFormControls_EmptyStringValid) {
   ASSERT_TRUE(IsValidWebMCPForm(*form_element));
 
   String inputs[] = {
-      R"JSON({ "date": "" })JSON",   R"JSON({ "email": "" })JSON",
-      R"JSON({ "number": "" })JSON", R"JSON({ "password": "" })JSON",
-      R"JSON({ "range": "" })JSON",  R"JSON({ "search": "" })JSON",
-      R"JSON({ "tel": "" })JSON",    R"JSON({ "url": "" })JSON",
+      R"JSON({ "date": "" })JSON",     R"JSON({ "email": "" })JSON",
+      R"JSON({ "password": "" })JSON", R"JSON({ "search": "" })JSON",
+      R"JSON({ "tel": "" })JSON",      R"JSON({ "url": "" })JSON",
   };
   for (auto json : inputs) {
     EXPECT_TRUE(FillFormControls(*form_element, json)) << json;

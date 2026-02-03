@@ -151,11 +151,4 @@ bool BaseTextInputType::IsAutoDirectionalityFormAssociated() const {
   return true;
 }
 
-std::unique_ptr<JSONObject> BaseTextInputType::GetWebMCPParameterSchema()
-    const {
-  auto schema = std::make_unique<JSONObject>();
-  schema->SetString("type", "string");
-  return schema;
-}
-
 }  // namespace blink

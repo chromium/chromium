@@ -56,6 +56,7 @@
 #include "third_party/blink/renderer/core/html/forms/form_controller.h"
 #include "third_party/blink/renderer/core/html/forms/form_data.h"
 #include "third_party/blink/renderer/core/html/forms/form_data_event.h"
+#include "third_party/blink/renderer/core/html/forms/form_mcp_schema.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_controls_collection.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
@@ -213,52 +214,13 @@ HTMLFormElement::HTMLFormMcpTool::FillFormControls(
     return WebDocument::ScriptToolError::kInvalidInputArguments;
   }
 
-  HeapHashMap<String, Member<HTMLFormControlElement>> controls_map;
-  for (ListedElement* element : form_->ListedElements()) {
-    if (auto* form_control = DynamicTo<HTMLFormControlElement>(element)) {
-      if (form_control->SupportsWebMCP()) {
-        controls_map.insert(form_control->GetWebMCPParameterName(),
-                            form_control);
-      }
-      if (form_control->IsSuccessfulSubmitButton() && !*submit_button) {
-        *submit_button = form_control;
-      }
-    }
-  }
+  FormMCPSchema mcp_schema(*form_);
+  *submit_button = mcp_schema.SubmitButton();
   if (!*submit_button && require_submit_button) {
     return WebDocument::ScriptToolError::kMissingRequiredSubmitButton;
   }
 
-  // For each entry in `json_obj`, we find the corresponding form control
-  // and queue up a pending action that may lead to a FillWebMCPData() call.
-  //
-  // If any error occurs, all pending actions are dropped, and the form control
-  // states remain unchanged.
-  HeapVector<std::pair<Member<HTMLFormControlElement>, JSONValue*>>
-      controls_to_fill;
-
-  for (wtf_size_t i = 0; i < json_obj->size(); ++i) {
-    JSONObject::Entry entry = json_obj->at(i);
-    const String parameter_name = String(entry.first);
-    blink::JSONValue* contents = entry.second;
-    auto it = controls_map.find(parameter_name);
-    if (it == controls_map.end()) {
-      return WebDocument::ScriptToolError::kInvalidInputArguments;
-    }
-    // TODO(crbug.com/475992364): Maybe validate the data here.
-    if (auto* input = DynamicTo<HTMLInputElement>(it->value.Get())) {
-      String value_str = input->GetMCPJSONValue(*contents);
-      if (!value_str.empty() && input->SanitizeValue(value_str).empty()) {
-        return WebDocument::ScriptToolError::kInvalidInputArguments;
-      }
-    }
-    controls_to_fill.push_back(std::make_pair(it->value, contents));
-  }
-
-  for (const auto& [form_control, json_value] : controls_to_fill) {
-    form_control->FillWebMCPData(*json_value);
-  }
-  return std::nullopt;
+  return mcp_schema.FillData(*json_obj);
 }
 
 void HTMLFormElement::HTMLFormMcpTool::CallDoneCallback(
@@ -277,43 +239,11 @@ void HTMLFormElement::HTMLFormMcpTool::CallDoneCallback(
 }
 
 String HTMLFormElement::HTMLFormMcpTool::ComputeInputSchema() {
-  JSONObject out;
-  out.SetString("type", "object");
-
-  auto required = std::make_unique<JSONArray>();
-  auto properties = std::make_unique<JSONObject>();
-
-  for (ListedElement* element : form_->ListedElements()) {
-    if (auto* form_control = DynamicTo<HTMLFormControlElement>(element)) {
-      if (form_control->SupportsWebMCP()) {
-        String name = form_control->GetWebMCPParameterName();
-        std::unique_ptr<JSONObject> parameter_schema =
-            form_control->GetWebMCPParameterSchema();
-        CHECK(parameter_schema);
-
-        if (String title =
-                form_control->FastGetAttribute(html_names::kToolparamtitleAttr);
-            !title.empty()) {
-          parameter_schema->SetString("title", title);
-        }
-
-        if (String description = form_control->GetWebMCPParameterDescription();
-            !description.empty()) {
-          parameter_schema->SetString("description", description);
-        }
-
-        properties->SetObject(name, std::move(parameter_schema));
-        if (form_control->IsRequired()) {
-          required->PushString(name);
-        }
-      }
-    }
+  FormMCPSchema mcp_schema(*form_);
+  if (auto json = mcp_schema.ComputeJSON()) {
+    return json->ToJSONString();
   }
-
-  out.SetObject("properties", std::move(properties));
-  out.SetArray("required", std::move(required));
-
-  return out.ToJSONString();
+  return "{}";
 }
 
 void HTMLFormElement::HTMLFormMcpTool::Trace(Visitor* visitor) const {

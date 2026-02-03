@@ -434,19 +434,5 @@ bool NumberInputType::SupportsSelectionAPI() const {
   return false;
 }
 
-std::unique_ptr<JSONObject> NumberInputType::GetWebMCPParameterSchema() const {
-  auto schema = std::make_unique<JSONObject>();
-  // TODO(crbug.com/475972617): Consider type:integer for matching StepRanges?
-  schema->SetString("type", "number");
-  StepRange step_range = CreateStepRange(kRejectAny);
-  if (step_range.HasMin()) {
-    schema->SetDouble("minimum", step_range.Minimum().ToDouble());
-  }
-  if (step_range.HasMax()) {
-    schema->SetDouble("maximum", step_range.Maximum().ToDouble());
-  }
-  // TODO(crbug.com/475972617): Add multipleOf?
-  return schema;
-}
 
 }  // namespace blink

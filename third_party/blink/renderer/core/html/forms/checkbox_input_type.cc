@@ -128,11 +128,5 @@ bool CheckboxInputType::ShouldAppearIndeterminate() const {
   return GetElement().indeterminate();
 }
 
-std::unique_ptr<JSONObject> CheckboxInputType::GetWebMCPParameterSchema()
-    const {
-  auto schema = std::make_unique<JSONObject>();
-  schema->SetString("type", "boolean");
-  return schema;
-}
 
 }  // namespace blink

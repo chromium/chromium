@@ -35,7 +35,6 @@
 
 namespace blink {
 
-class JSONObject;
 class ScriptRegexp;
 
 // Base of email, password, search, tel, text, and URL types.
@@ -60,9 +59,6 @@ class BaseTextInputType : public TextFieldInputType {
   bool SupportsSelectionAPI() const override;
   bool PatternMismatchPerValue(const StringView&) const;
   bool IsAutoDirectionalityFormAssociated() const override;
-
-  bool SupportsWebMCP() const override { return true; }
-  std::unique_ptr<JSONObject> GetWebMCPParameterSchema() const override;
 
   // regexp_ and pattern_for_regexp_ are mutable because they are kinds of
   // cache.
