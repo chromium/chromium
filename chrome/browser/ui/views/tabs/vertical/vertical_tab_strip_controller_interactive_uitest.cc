@@ -8,6 +8,8 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_view.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_interactive_test_mixin.h"
@@ -368,6 +370,54 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerInteractiveUiTest,
                 ->GetTabContextMenuController()
                 ->CloseMenu();
           })));
+}
+
+class VerticalTabStripControllerTabGroupFocusingInteractiveUiTest
+    : public VerticalTabsInteractiveTestMixin<InteractiveBrowserTest> {
+ public:
+  const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      override {
+    return {{tabs::kVerticalTabs, {}}, {features::kTabGroupsFocusing, {}}};
+  }
+
+  bool CheckBrowserHasColorOverride() {
+    BrowserWidget* widget =
+        BrowserView::GetBrowserViewForBrowser(browser())->browser_widget();
+    return widget->user_color_override() != std::nullopt;
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    VerticalTabStripControllerTabGroupFocusingInteractiveUiTest,
+    OnTabGroupFocusChangedUpdatesTheme) {
+  RunTestSequence(
+      // Verify Vertical Tabs is showing.
+      WaitForShow(kVerticalTabStripBottomContainerElementId),
+      // Create a second tab.
+      EnsurePresent(kNewTabButtonElementId),
+      PressButton(kNewTabButtonElementId,
+                  ui::test::InteractionTestUtil::InputType::kDontCare),
+      Do([this]() {
+        EXPECT_FALSE(CheckBrowserHasColorOverride());
+        browser()->tab_strip_model()->AddToNewGroup({0, 1});
+      }),
+      WaitForShow(kTabGroupHeaderElementId), Do([this]() {
+        std::optional<tab_groups::TabGroupId> group =
+            browser()->tab_strip_model()->GetActiveTabGroupId();
+        EXPECT_TRUE(group.has_value());
+
+        // Focus on the group, which should override the tab strip color.
+        browser()->tab_strip_model()->SetFocusedGroup(group.value());
+        EXPECT_TRUE(CheckBrowserHasColorOverride());
+
+        // Unset focused group, which should remove the override.
+        browser()->tab_strip_model()->SetFocusedGroup(std::nullopt);
+        EXPECT_FALSE(CheckBrowserHasColorOverride());
+
+        // Focus on the group again, which should override the tab strip color.
+        browser()->tab_strip_model()->SetFocusedGroup(group.value());
+        EXPECT_TRUE(CheckBrowserHasColorOverride());
+      }));
 }
 
 }  // namespace

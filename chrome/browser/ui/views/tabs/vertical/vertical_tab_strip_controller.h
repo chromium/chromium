@@ -32,7 +32,8 @@ class View;
 
 // VerticalTabStripController manages the behavior of the vertical tab strip. It
 // performs a similar functionality as BrowserTabStripController.
-class VerticalTabStripController : public TabContextMenuController::Delegate {
+class VerticalTabStripController : public TabContextMenuController::Delegate,
+                                   public TabStripModelObserver {
  public:
   VerticalTabStripController(TabStripModel* model,
                              BrowserView* browser_view,
@@ -79,10 +80,6 @@ class VerticalTabStripController : public TabContextMenuController::Delegate {
 
   VerticalTabDragHandler& GetDragHandler() { return drag_handler_.get(); }
 
-  void OnTabGroupFocusChanged(
-      std::optional<tab_groups::TabGroupId> new_focused_group_id,
-      std::optional<tab_groups::TabGroupId> old_focused_group_id);
-
  private:
   // TabContextMenuController::Delegate:
   bool IsContextMenuCommandChecked(
@@ -97,6 +94,11 @@ class VerticalTabStripController : public TabContextMenuController::Delegate {
                                  int event_flags) override;
   bool GetContextMenuAccelerator(int command_id,
                                  ui::Accelerator* accelerator) override;
+
+  // TabStripModelObserver:
+  void OnTabGroupFocusChanged(
+      std::optional<tab_groups::TabGroupId> new_focused_group_id,
+      std::optional<tab_groups::TabGroupId> old_focused_group_id) override;
 
   // Used for seek time metrics from the time the mouse enters the tabstrip.
   std::optional<base::TimeTicks> mouse_entered_tabstrip_time_;

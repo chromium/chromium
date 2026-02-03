@@ -12,6 +12,8 @@
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/tabs/tab_group_model.h"
+#include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
@@ -38,6 +40,7 @@ VerticalTabStripController::VerticalTabStripController(
     VerticalTabDragHandler& drag_handler,
     std::unique_ptr<TabMenuModelFactory> menu_model_factory_override)
     : model_(model), browser_view_(browser_view), drag_handler_(drag_handler) {
+  model_->AddObserver(this);
   if (menu_model_factory_override) {
     menu_model_factory_ = std::move(menu_model_factory_override);
   } else {
@@ -46,6 +49,7 @@ VerticalTabStripController::VerticalTabStripController(
 }
 
 VerticalTabStripController::~VerticalTabStripController() {
+  model_->RemoveObserver(this);
   if (context_menu_controller_.get()) {
     context_menu_controller_.reset();
   }
@@ -290,5 +294,20 @@ bool VerticalTabStripController::GetContextMenuAccelerator(
 void VerticalTabStripController::OnTabGroupFocusChanged(
     std::optional<tab_groups::TabGroupId> new_focused_group_id,
     std::optional<tab_groups::TabGroupId> old_focused_group_id) {
-  // TODO(crbug.com/479232024): Implement this.
+  browser_view_->tab_strip_view()->OnTabGroupFocusChanged(new_focused_group_id,
+                                                          old_focused_group_id);
+
+  std::optional<SkColor> color;
+  if (new_focused_group_id.has_value()) {
+    const TabGroup* group =
+        model_->group_model()->GetTabGroup(new_focused_group_id.value());
+    const tab_groups::TabGroupVisualData* visual_data = group->visual_data();
+    const auto* color_provider = browser_view_->GetColorProvider();
+    color = color_provider->GetColor(
+        GetTabGroupDialogColorId(visual_data->color()));
+  }
+
+  browser_view_->browser_widget()->SetUserColorOverride(color);
+  browser_view_->browser_widget()->ThemeChanged();
+  browser_view_->GetWidget()->non_client_view()->frame_view()->SchedulePaint();
 }

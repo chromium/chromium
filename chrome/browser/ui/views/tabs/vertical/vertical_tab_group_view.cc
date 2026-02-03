@@ -235,8 +235,12 @@ std::u16string VerticalTabGroupView::GetGroupContentString() const {
     return std::u16string();
   }
 
-  return tab_groups::GetGroupContentString(
-      GetTabGroupFromNode(collection_node_));
+  const TabGroup* group = GetTabGroupFromNode(collection_node_);
+  if (group->tab_count() == 0) {
+    return std::u16string();
+  }
+
+  return tab_groups::GetGroupContentString(group);
 }
 
 void VerticalTabGroupView::ResetCollectionNode() {
