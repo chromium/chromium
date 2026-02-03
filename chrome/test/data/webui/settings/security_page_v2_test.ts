@@ -94,7 +94,7 @@ suite('Main', function() {
     // Verify that the correct User Action has been recorded.
     assertEquals(1, testMetricsBrowserProxy.getCallCount('recordAction'));
     assertEquals(
-        'SafeBrowsing.Settings.SafeBrowsingRowClicked',
+        'SafeBrowsing.Settings.SafeBrowsingRowExpanded',
         await testMetricsBrowserProxy.whenCalled('recordAction'));
     testMetricsBrowserProxy.resetResolver('recordAction');
 
@@ -117,7 +117,7 @@ suite('Main', function() {
     // Verify that the correct User Action has been recorded.
     assertEquals(1, testMetricsBrowserProxy.getCallCount('recordAction'));
     assertEquals(
-        'SafeBrowsing.Settings.SafeBrowsingRowClicked',
+        'SafeBrowsing.Settings.SafeBrowsingRowExpanded',
         await testMetricsBrowserProxy.whenCalled('recordAction'));
     testMetricsBrowserProxy.resetResolver('recordAction');
 
@@ -158,7 +158,7 @@ suite('Main', function() {
     // Verify that the correct User Action has been recorded.
     assertEquals(1, testMetricsBrowserProxy.getCallCount('recordAction'));
     assertEquals(
-        'SafeBrowsing.Settings.SafeBrowsingRowClicked',
+        'SafeBrowsing.Settings.SafeBrowsingRowExpanded',
         await testMetricsBrowserProxy.whenCalled('recordAction'));
     testMetricsBrowserProxy.resetResolver('recordAction');
 
@@ -202,7 +202,7 @@ suite('Main', function() {
     // Verify that the correct User Action has been recorded.
     assertEquals(1, testMetricsBrowserProxy.getCallCount('recordAction'));
     assertEquals(
-        'SafeBrowsing.Settings.SafeBrowsingRowClicked',
+        'SafeBrowsing.Settings.SafeBrowsingRowExpanded',
         await testMetricsBrowserProxy.whenCalled('recordAction'));
     testMetricsBrowserProxy.resetResolver('recordAction');
 

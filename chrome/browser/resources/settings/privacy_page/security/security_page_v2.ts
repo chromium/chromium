@@ -315,7 +315,7 @@ export class SettingsSecurityPageV2Element extends
       this.interactions_.add(
           SecurityPageV2Interaction.SAFE_BROWSING_ROW_EXPANDED);
       this.metricsBrowserProxy_.recordAction(
-          'SafeBrowsing.Settings.SafeBrowsingRowClicked');
+          'SafeBrowsing.Settings.SafeBrowsingRowExpanded');
     }
   }
 

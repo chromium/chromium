@@ -38889,11 +38889,22 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="SafeBrowsing.Settings.SafeBrowsingRowClicked">
+  <obsolete>Renamed to Settings.SafeBrowsingRowExpanded.</obsolete>
   <owner>yawfrempong@google.com</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <description>
     User clicks the safe browsing row expand arrow in the
     chrome://settings/security page.
+  </description>
+</action>
+
+<action name="SafeBrowsing.Settings.SafeBrowsingRowExpanded">
+  <owner>yawfrempong@google.com</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <description>
+    User clicks the safe browsing row expand arrow in the
+    chrome://settings/security page. This user action is the same as
+    SafeBrowsing.Settings.SafeBrowsingRowClicked but with improved naming.
   </description>
 </action>
 
