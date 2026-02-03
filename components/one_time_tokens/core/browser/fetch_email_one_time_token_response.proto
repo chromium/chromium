@@ -1,0 +1,39 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package google.internal.chrome.passwords.onetimetoken.v1;
+
+option optimize_for = LITE_RUNTIME;
+
+import 'google/protobuf/timestamp.proto';
+
+// Response message for FetchEmailOneTimeToken.
+message FetchEmailOneTimeTokenResponse {
+  // The address of the sender specified in standard email format.
+  string sender_address = 1;
+
+  // The email address that the message was sent to. In many cases this will be
+  // the Gmail address of the user, but it's not guaranteed.
+  string recipient_address = 2;
+
+  // Time when the OTP message was created on the sender's side.
+  google.protobuf.Timestamp created_timestamp = 3;
+
+  // Time when the OTP message was received by the Gmail SMTP servers.
+  google.protobuf.Timestamp received_timestamp = 4;
+
+  // A holder for potentially different types of OneTimeTokens.
+  oneof value {
+    // A one time token represented as a password.
+    OneTimePasswordValue one_time_password = 5;
+  }
+
+  // A wrapper for the value of one time password.
+  message OneTimePasswordValue {
+    // The actual value of the one time password.
+    string one_time_password = 1;
+  }
+}

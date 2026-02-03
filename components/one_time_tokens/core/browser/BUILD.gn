@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//third_party/protobuf/proto_library.gni")
+
 static_library("features") {
   defines = [ "IS_ONE_TIME_TOKENS_IMPL" ]
   sources = [
@@ -37,6 +39,18 @@ static_library("browser") {
     "//components/autofill/core/common:features",
     "//components/keyed_service/core",
   ]
+}
+
+proto_library("fetch_email_one_time_token_request_proto") {
+  sources = [ "fetch_email_one_time_token_request.proto" ]
+}
+
+proto_library("fetch_email_one_time_token_response_proto") {
+  sources = [ "fetch_email_one_time_token_response.proto" ]
+}
+
+proto_library("fetch_email_one_time_token_error_details_proto") {
+  sources = [ "fetch_email_one_time_token_error_details.proto" ]
 }
 
 source_set("unit_tests") {
