@@ -43,7 +43,7 @@ public abstract class MultiInstanceManager {
 
     @VisibleForTesting
     static final String CLOSE_WINDOW_APP_SOURCE_HISTOGRAM =
-            "Android.MultiWindowMode.CloseWindow.AppSource";
+            "Android.MultiWindowMode.CloseWindow.AppSource2";
 
     // These values are persisted to logs. Entries should not be renumbered and numeric values
     // should never be reused.

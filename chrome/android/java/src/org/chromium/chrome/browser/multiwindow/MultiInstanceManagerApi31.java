@@ -1445,9 +1445,10 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
             removeInstanceInfo(instanceId, source);
             TabModelSelector selector =
                     TabWindowManagerSingleton.getInstance().getTabModelSelectorById(instanceId);
-            if (selector != null) {
+            if (selector != null && source != CloseWindowAppSource.NO_TABS_IN_WINDOW) {
                 // Commit all already pending tab closures to ensure that any in-flight closures
-                // complete and we don't get back-from-the-dead tabs.
+                // complete and we don't get back-from-the-dead tabs. Do not initiate this task if
+                // there are no tabs in the window to close.
                 selector.commitAllTabClosures();
 
                 // Close all tabs as the window is closing. Avoid saving closure to the
