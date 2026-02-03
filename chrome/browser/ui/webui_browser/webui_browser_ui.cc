@@ -30,6 +30,7 @@
 #include "components/contextual_search/contextual_search_service.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/guest_contents/browser/guest_contents_host_impl.h"
+#include "components/surface_embed/buildflags/buildflags.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -38,6 +39,11 @@
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/webui/tracked_element/tracked_element_handler.h"
 #include "ui/webui/webui_util.h"
+
+#if BUILDFLAG(ENABLE_SURFACE_EMBED)
+#include "components/surface_embed/common/features.h"
+#include "services/network/public/mojom/content_security_policy.mojom.h"
+#endif  // BUILDFLAG(ENABLE_SURFACE_EMBED)
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
@@ -111,6 +117,20 @@ WebUIBrowserUI::WebUIBrowserUI(content::WebUI* web_ui)
 
   SearchboxHandler::SetupWebUIDataSource(source, Profile::FromWebUI(web_ui));
   source->AddBoolean("composeboxContextDragAndDropEnabled", false);
+
+#if BUILDFLAG(ENABLE_SURFACE_EMBED)
+  source->AddBoolean(
+      "enableSurfaceEmbed",
+      base::FeatureList::IsEnabled(surface_embed::features::kSurfaceEmbed));
+  if (base::FeatureList::IsEnabled(surface_embed::features::kSurfaceEmbed)) {
+    // Allow <embed> elements for the surface embed plugin. Using 'self'
+    // is the most restrictive policy that works since the embed has no src.
+    source->OverrideContentSecurityPolicy(
+        network::mojom::CSPDirectiveName::ObjectSrc, "object-src 'self';");
+  }
+#else
+  source->AddBoolean("enableSurfaceEmbed", false);
+#endif  // BUILDFLAG(ENABLE_SURFACE_EMBED)
 
   // TODO(crbug.com/445510209): Uncomment after installing WebUIOmniboxHandler.
   // source->AddBoolean("reportMetrics", true);

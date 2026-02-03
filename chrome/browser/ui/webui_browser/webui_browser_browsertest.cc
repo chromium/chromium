@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
@@ -13,12 +14,26 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/surface_embed/buildflags/buildflags.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
+
+#if BUILDFLAG(ENABLE_SURFACE_EMBED)
+#include "base/functional/bind.h"
+#include "base/run_loop.h"
+#include "chrome/browser/ui/webui_browser/webui_browser_ui.h"
+#include "components/surface_embed/common/features.h"
+#include "components/viz/common/frame_sinks/copy_output_result.h"
+#include "content/public/browser/render_widget_host_view.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
+#endif  // BUILDFLAG(ENABLE_SURFACE_EMBED)
 
 // Use an anonymous namespace here to avoid colliding with the other
 // WebUIBrowserTest defined in chrome/test/base/ash/web_ui_browser_test.h
@@ -43,6 +58,31 @@ class WebUIBrowserTest : public InProcessBrowserTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+#if BUILDFLAG(ENABLE_SURFACE_EMBED)
+// A WebUIBrowserTest with the SurfaceEmbed feature enabled and pixel output
+// enabled for visual verification.
+class WebUIBrowserSurfaceEmbedPixelTest : public InProcessBrowserTest {
+ public:
+  void SetUp() override {
+    EnablePixelOutput();
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kWebium,
+                              surface_embed::features::kSurfaceEmbed},
+        /*disabled_features=*/{});
+    InProcessBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_https_test_server().Start());
+    InProcessBrowserTest::SetUpOnMainThread();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+#endif  // BUILDFLAG(ENABLE_SURFACE_EMBED)
 
 }  // namespace
 
@@ -240,3 +280,51 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, MAYBE_TabFullscreenEnterAndExit) {
       base::test::RunUntil([window]() { return !window->IsFullscreen(); }));
   EXPECT_FALSE(window->IsFullscreen());
 }
+
+#if BUILDFLAG(ENABLE_SURFACE_EMBED)
+#if BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/451876195): Enable this test for CrOS.
+#define MAYBE_SurfaceEmbedRendersRedRect DISABLED_SurfaceEmbedRendersRedRect
+#else
+#define MAYBE_SurfaceEmbedRendersRedRect SurfaceEmbedRendersRedRect
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+// Verifies that when kSurfaceEmbed is enabled, the WebUI browser (Webium)
+// renders a red rectangle for the tab content. This test will need updated as
+// surface embed support is expanded.
+IN_PROC_BROWSER_TEST_F(WebUIBrowserSurfaceEmbedPixelTest,
+                       MAYBE_SurfaceEmbedRendersRedRect) {
+  // Get the UI WebContents (the embedder/outer frame that contains the <embed>
+  // element with the SurfaceEmbedWebPlugin). We need to capture from this
+  // WebContents since it has the fully composed view including the plugin's
+  // red rectangle. The tab's WebContents won't be included in the rendered
+  // output until SurfaceEmbedConnector connects up the visual output.
+  content::WebContents* ui_web_contents =
+      WebUIBrowserWindow::FromBrowser(browser())
+          ->GetWebUIBrowserUI()
+          ->web_ui()
+          ->GetWebContents();
+
+  EXPECT_TRUE(content::WaitForLoadStop(ui_web_contents));
+
+  // Attempt to capture pixels from the WebContents until we get the expected
+  // output color. The test will timeout if that doesn't happen.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    bool found_expected_color = false;
+    base::RunLoop run_loop;
+    gfx::Rect capture_rect(200, 200, 5, 5);
+    ui_web_contents->GetPrimaryMainFrame()->GetView()->CopyFromSurface(
+        capture_rect, capture_rect.size(), base::TimeDelta(),
+        base::BindLambdaForTesting(
+            [&](const content::CopyFromSurfaceResult& result) {
+              if (result.has_value() && !result.value().bitmap.empty() &&
+                  result.value().bitmap.getColor(0, 0) == SK_ColorRED) {
+                found_expected_color = true;
+              }
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+    return found_expected_color;
+  }));
+}
+#endif  // BUILDFLAG(ENABLE_SURFACE_EMBED)

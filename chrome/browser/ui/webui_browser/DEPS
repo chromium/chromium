@@ -1,3 +1,4 @@
 include_rules = [
     "+components/guest_contents/browser",
+    "+components/surface_embed",
 ]

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from '//resources/js/assert.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement, html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {SecurityIcon} from './browser.mojom-webui.js';
@@ -10,9 +11,12 @@ import {GuestHandlerRemote} from './browser.mojom-webui.js';
 import {BrowserProxy} from './browser_proxy.js';
 import {getCss} from './webview.css.js';
 
+const SURFACE_EMBED_MIME_TYPE = 'application/x-chromium-surface-embed';
+
 export interface WebviewElement {
   $: {
     iframe: HTMLIFrameElement,
+    embed: HTMLEmbedElement,
   };
 }
 
@@ -26,7 +30,12 @@ export class WebviewElement extends CrLitElement {
   }
 
   override render() {
-    return html`<iframe id="iframe"></iframe>`;
+    if (this.enableSurfaceEmbed) {
+      return html`<embed id="embed" type="${SURFACE_EMBED_MIME_TYPE}"
+          data-content-id="${this.guestId}"></embed>`;
+    } else {
+      return html`<iframe id="iframe"></iframe>`;
+    }
   }
 
   static override get properties() {
@@ -38,12 +47,22 @@ export class WebviewElement extends CrLitElement {
   accessor guestId: number = -1;
   private attached: boolean = false;
 
+  // Whether to use surface embed instead of guest contents.
+  protected enableSurfaceEmbed: boolean =
+      loadTimeData.getBoolean('enableSurfaceEmbed');
+
   override async connectedCallback() {
     super.connectedCallback();
     await this.tryToAttach();
   }
 
   protected async tryToAttach() {
+    // For surface embed, the plugin reads data-content-id directly from the
+    // element attributes.
+    if (this.enableSurfaceEmbed) {
+      return;
+    }
+
     if (this.attached || this.guestId === -1) {
       return;
     }
@@ -56,7 +75,13 @@ export class WebviewElement extends CrLitElement {
     this.attachGuestToIframe(this.guestId, this.$.iframe);
   }
 
+  protected getContentElement(): HTMLElement {
+    // Returns whichever content element is currently active based on the mode.
+    return this.enableSurfaceEmbed ? this.$.embed : this.$.iframe;
+  }
+
   private attachGuestToIframe(guestId: number, iframe: HTMLIFrameElement) {
+    assert(!this.enableSurfaceEmbed);
     const iframeContentWindow = iframe.contentWindow;
     assert(iframeContentWindow);
     chrome.browser.attachIframeGuest(guestId, iframeContentWindow);
@@ -64,6 +89,7 @@ export class WebviewElement extends CrLitElement {
 
   private async whenIframeContentWindowAvailable_(iframe: HTMLIFrameElement):
       Promise<void> {
+    assert(!this.enableSurfaceEmbed);
     return new Promise(resolve => {
       // TODO(webium): find a way to get notified when the contentWindow is
       // ready. This is a workaround to poll every 100ms.
@@ -95,7 +121,7 @@ export class TabWebviewElement extends WebviewElement {
   setActive(active: boolean) {
     if (active) {
       this.classList.add('active');
-      this.$.iframe.focus();
+      this.getContentElement().focus();
     } else {
       this.classList.remove('active');
     }

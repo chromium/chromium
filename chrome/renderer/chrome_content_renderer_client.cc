@@ -119,6 +119,7 @@
 #include "components/subresource_filter/content/renderer/subresource_filter_agent.h"
 #include "components/subresource_filter/content/renderer/unverified_ruleset_dealer.h"
 #include "components/subresource_filter/core/common/common_features.h"
+#include "components/surface_embed/buildflags/buildflags.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "components/variations/variations_switches.h"
 #include "components/version_info/version_info.h"
@@ -255,6 +256,11 @@
 #include "components/spellcheck/renderer/spellcheck_panel.h"
 #endif  // BUILDFLAG(HAS_SPELLCHECK_PANEL)
 #endif  // BUILDFLAG(ENABLE_SPELLCHECK)
+
+#if BUILDFLAG(ENABLE_SURFACE_EMBED)
+#include "components/surface_embed/common/features.h"
+#include "components/surface_embed/renderer/create_plugin.h"
+#endif  // BUILDFLAG(ENABLE_SURFACE_EMBED)
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 #include "chrome/renderer/media/chrome_key_systems.h"
@@ -873,6 +879,19 @@ bool ChromeContentRendererClient::OverrideCreatePlugin(
     const WebPluginParams& params,
     WebPlugin** plugin) {
   std::string orig_mime_type = params.mime_type.Utf8();
+
+#if BUILDFLAG(ENABLE_SURFACE_EMBED)
+  if (base::FeatureList::IsEnabled(surface_embed::features::kSurfaceEmbed)) {
+    GURL url = render_frame->GetWebFrame()->GetDocument().Url();
+    if (url.SchemeIs(content::kChromeUIScheme) &&
+        url.host() == chrome::kChromeUIWebuiBrowserHost) {
+      if (surface_embed::MaybeCreatePlugin(render_frame, params, plugin)) {
+        return true;
+      }
+    }
+  }
+#endif  // BUILDFLAG(ENABLE_SURFACE_EMBED)
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // Used for plugins.
   if (!extensions::ExtensionsRendererClient::Get()->OverrideCreatePlugin(
