@@ -10,6 +10,7 @@
 #import "base/json/json_writer.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "components/policy/core/common/policy_pref_names.h"
 #import "components/policy/policy_constants.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/policy/model/policy_app_interface.h"
@@ -25,36 +26,66 @@
 
 namespace {
 
-// Waits until `url` has the expected blocked state.
-void WaitForURLBlockedStatus(const GURL& url, bool blocked) {
-  NSString* nsurl = base::SysUTF8ToNSString(url.spec());
+// Waits until `URL` has the expected blocked state in the given mode.
+void WaitForURLBlockedStatus(const GURL& URL,
+                             bool blocked,
+                             bool incognito = false) {
+  NSString* nsURL = base::SysUTF8ToNSString(URL.spec());
   // TODO(crbug.com/361151875): Fix this long delay and revert this timeout back
   // to base::test::ios::kWaitForActionTimeout
   GREYAssertTrue(base::test::ios::WaitUntilConditionOrTimeout(
                      base::Seconds(25),
                      ^{
-                       return
-                           [PolicyAppInterface isURLBlocked:nsurl] == blocked;
+                       return [PolicyAppInterface
+                                  isURLBlocked:nsURL
+                                   inIncognito:incognito] == blocked;
                      }),
-                 @"Waiting for policy url blocklist to update.");
+                 @"Waiting for policy URL blocklist to update.");
 }
 
-// Sets the policy value for controlling a list of URLs. Sets the blocklist
-// policy when `block_url` is true or sets the allowlist policy otherwise.
-[[nodiscard]] bool SetPolicyValue(const base::Value& value, bool block_url) {
+// Sets the policy value for the given policy key and waits until the new value
+// is applied.
+[[nodiscard]] bool SetPolicy(const base::Value& value, const char* policy_key) {
   const std::optional<std::string> json_value = base::WriteJson(value);
   if (!json_value) {
     return false;
   }
-  const char* policy_key =
-      block_url ? policy::key::kURLBlocklist : policy::key::kURLAllowlist;
-  policy_test_utils::SetPolicy(*json_value, policy_key);
+  [PolicyAppInterface mergePolicyValue:base::SysUTF8ToNSString(*json_value)
+                                forKey:base::SysUTF8ToNSString(policy_key)];
   return base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(10), ^{
     std::optional<base::Value> probed_value = base::JSONReader::Read(
         policy_test_utils::GetValueForPlatformPolicy(policy_key),
         base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     return probed_value && value == *probed_value;
   });
+}
+
+// Sets the URLBlocklist policy value for controlling a list of URLs.
+[[nodiscard]] bool SetURLBlocklist(const base::Value& value) {
+  return SetPolicy(value, policy::key::kURLBlocklist);
+}
+
+// Sets the URLAllowlist policy value for controlling a list of URLs.
+[[nodiscard]] bool SetURLAllowlist(const base::Value& value) {
+  return SetPolicy(value, policy::key::kURLAllowlist);
+}
+
+// Sets the IncognitoModeUrlBlocklist policy value for controlling a list of
+// URLs.
+[[nodiscard]] bool SetIncognitoURLBlocklist(const base::Value& value) {
+  return SetPolicy(value, policy::key::kIncognitoModeUrlBlocklist);
+}
+
+// Sets the IncognitoModeUrlAllowlist policy value for controlling a list of
+// URLs.
+[[nodiscard]] bool SetIncognitoURLAllowlist(const base::Value& value) {
+  return SetPolicy(value, policy::key::kIncognitoModeUrlAllowlist);
+}
+
+// Sets the IncognitoModeUrlAllowlist policy value for controlling a list of
+// URLs.
+[[nodiscard]] bool SetIncognitoAvailability(const base::Value& value) {
+  return SetPolicy(value, policy::key::kIncognitoModeAvailability);
 }
 
 }  // namespace
@@ -90,9 +121,8 @@ void WaitForURLBlockedStatus(const GURL& url, bool blocked) {
 
 // Tests that pages are not blocked when the blocklist exists, but is empty.
 - (void)testEmptyBlocklist {
-  GREYAssertTrue(
-      SetPolicyValue(base::Value(base::ListValue()), /*block_url=*/true),
-      @"policy value couldn't be set");
+  GREYAssertTrue(SetURLBlocklist(base::Value(base::ListValue())),
+                 @"policy value couldn't be set");
 
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo")];
 
@@ -102,8 +132,7 @@ void WaitForURLBlockedStatus(const GURL& url, bool blocked) {
 // Tests that a page load is blocked when the URLBlocklist policy is set to
 // block all URLs.
 - (void)testWildcardBlocklist {
-  GREYAssertTrue(SetPolicyValue(base::Value(base::ListValue().Append("*")),
-                                /*block_url=*/true),
+  GREYAssertTrue(SetURLBlocklist(base::Value(base::ListValue().Append("*"))),
                  @"policy value couldn't be set");
   WaitForURLBlockedStatus(self.testServer->GetURL("/echo"), true);
 
@@ -116,8 +145,7 @@ void WaitForURLBlockedStatus(const GURL& url, bool blocked) {
 
 // Tests that the NTP is not blocked by the wildcard blocklist.
 - (void)testNTPIsNotBlocked {
-  GREYAssertTrue(SetPolicyValue(base::Value(base::ListValue().Append("*")),
-                                /*block_url=*/true),
+  GREYAssertTrue(SetURLBlocklist(base::Value(base::ListValue().Append("*"))),
                  @"policy value couldn't be set");
   WaitForURLBlockedStatus(self.testServer->GetURL("/echo"), true);
 
@@ -128,9 +156,9 @@ void WaitForURLBlockedStatus(const GURL& url, bool blocked) {
 // Tests that a page is blocked when the URLBlocklist policy is set to block a
 // specific URL.
 - (void)testExplicitBlocklist {
-  GREYAssertTrue(SetPolicyValue(base::Value(base::ListValue().Append("*/echo")),
-                                /*block_url=*/true),
-                 @"policy value couldn't be set");
+  GREYAssertTrue(
+      SetURLBlocklist(base::Value(base::ListValue().Append("*/echo"))),
+      @"policy value couldn't be set");
   WaitForURLBlockedStatus(self.testServer->GetURL("/echo"), true);
 
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo")];
@@ -145,20 +173,264 @@ void WaitForURLBlockedStatus(const GURL& url, bool blocked) {
   // The URLBlocklistPolicyHandler will discard policy updates that occur while
   // it is already computing a new blocklist, so wait between calls to set new
   // policy values.
-  GREYAssertTrue(SetPolicyValue(base::Value(base::ListValue().Append("*")),
-                                /*block_url=*/true),
+  GREYAssertTrue(SetURLBlocklist(base::Value(base::ListValue().Append("*"))),
                  @"policy value couldn't be set");
 
   WaitForURLBlockedStatus(self.testServer->GetURL("/testpage"), true);
 
-  GREYAssertTrue(SetPolicyValue(base::Value(base::ListValue().Append("*/echo")),
-                                /*block_url=*/false),
-                 @"policy value couldn't be set");
+  GREYAssertTrue(
+      SetURLAllowlist(base::Value(base::ListValue().Append("*/echo"))),
+      @"policy value couldn't be set");
   WaitForURLBlockedStatus(self.testServer->GetURL("/echo"), false);
 
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo")];
 
   [ChromeEarlGrey waitForWebStateContainingText:"Echo"];
+}
+
+// Tests that URLs can be blocklisted only in Incognito mode.
+- (void)testIncognitoBlocklist {
+  GURL URL = self.testServer->GetURL("/echo");
+
+  // Set a blocklist for Incognito mode.
+  GREYAssertTrue(
+      SetIncognitoURLBlocklist(base::Value(base::ListValue().Append("*"))),
+      @"policy value couldn't be set");
+
+  // Need an incognito tab to check the incognito blocklist.
+  [ChromeEarlGrey openNewIncognitoTab];
+  WaitForURLBlockedStatus(URL, /*blocked=*/true, /*incognito=*/true);
+
+  [ChromeEarlGrey loadURL:URL];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:
+          l10n_util::GetStringUTF8(
+              IDS_ERRORPAGES_HEADING_BLOCKED_IN_INCOGNITO_BY_ADMINISTRATOR)];
+
+  // Check that the URL is NOT blocked in regular mode.
+  [ChromeEarlGrey openNewTab];
+  WaitForURLBlockedStatus(URL, /*blocked=*/false, /*incognito=*/false);
+
+  [ChromeEarlGrey loadURL:URL];
+  [ChromeEarlGrey waitForWebStateContainingText:"Echo"];
+}
+
+// Tests that the allowlist works as an exception to the blocklist in Incognito.
+- (void)testIncognitoAllBlocklistAndAllowlist {
+  GURL allowed_URL = self.testServer->GetURL("/echo");
+  GURL blocked_URL = self.testServer->GetURL("/testpage");
+
+  // Set a blocklist that blocks everything in Incognito.
+  GREYAssertTrue(
+      SetIncognitoURLBlocklist(base::Value(base::ListValue().Append("*"))),
+      @"policy value couldn't be set");
+
+  // Set an allowlist that allows one URL in Incognito.
+  GREYAssertTrue(
+      SetIncognitoURLAllowlist(base::Value(base::ListValue().Append("*/echo"))),
+      @"policy value couldn't be set");
+
+  [ChromeEarlGrey openNewIncognitoTab];
+  WaitForURLBlockedStatus(allowed_URL, /*blocked=*/false, /*incognito=*/true);
+  WaitForURLBlockedStatus(blocked_URL, /*blocked=*/true, /*incognito=*/true);
+
+  [ChromeEarlGrey loadURL:allowed_URL];
+  [ChromeEarlGrey waitForWebStateContainingText:"Echo"];
+
+  [ChromeEarlGrey loadURL:blocked_URL];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:
+          l10n_util::GetStringUTF8(
+              IDS_ERRORPAGES_HEADING_BLOCKED_IN_INCOGNITO_BY_ADMINISTRATOR)];
+}
+
+// Tests that the Incognito blocklist takes precedence over the URL allowlist in
+// Incognito mode.
+- (void)testIncognitoBlocklistAndUrlAllowlist {
+  GURL URL = self.testServer->GetURL("/echo");
+
+  // Set a blocklist for Incognito mode that blocks the URL.
+  GREYAssertTrue(
+      SetIncognitoURLBlocklist(base::Value(base::ListValue().Append("*/echo"))),
+      @"policy value couldn't be set");
+
+  // Set a general URL allowlist that allows the URL.
+  GREYAssertTrue(
+      SetURLAllowlist(base::Value(base::ListValue().Append("*/echo"))),
+      @"policy value couldn't be set");
+
+  // In Incognito, it should be blocked because Incognito blocklist takes
+  // precedence.
+  [ChromeEarlGrey openNewIncognitoTab];
+  WaitForURLBlockedStatus(URL, /*blocked=*/true, /*incognito=*/true);
+
+  [ChromeEarlGrey loadURL:URL];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:
+          l10n_util::GetStringUTF8(
+              IDS_ERRORPAGES_HEADING_BLOCKED_IN_INCOGNITO_BY_ADMINISTRATOR)];
+
+  // In regular mode, it should be allowed by URLAllowlist.
+  [ChromeEarlGrey openNewTab];
+  WaitForURLBlockedStatus(URL, /*blocked=*/false, /*incognito=*/false);
+
+  [ChromeEarlGrey loadURL:URL];
+  [ChromeEarlGrey waitForWebStateContainingText:"Echo"];
+}
+
+// Tests that the Incognito allowlist works as an exception to the URL
+// blocklist, but only in Incognito mode.
+- (void)testUrlBlocklistAndIncognitoAllowlist {
+  GURL URL = self.testServer->GetURL("/echo");
+
+  // Set a general blocklist that blocks the URL.
+  GREYAssertTrue(
+      SetURLBlocklist(base::Value(base::ListValue().Append("*/echo"))),
+      @"policy value couldn't be set");
+
+  // Set an Incognito allowlist that allows the URL.
+  GREYAssertTrue(
+      SetIncognitoURLAllowlist(base::Value(base::ListValue().Append("*/echo"))),
+      @"policy value couldn't be set");
+
+  // In Incognito, it should be allowed.
+  [ChromeEarlGrey openNewIncognitoTab];
+  WaitForURLBlockedStatus(URL, /*blocked=*/false, /*incognito=*/true);
+
+  [ChromeEarlGrey loadURL:URL];
+  [ChromeEarlGrey waitForWebStateContainingText:"Echo"];
+
+  // In regular mode, it should be blocked.
+  [ChromeEarlGrey openNewTab];
+  WaitForURLBlockedStatus(URL, /*blocked=*/true, /*incognito=*/false);
+
+  [ChromeEarlGrey loadURL:URL];
+  [ChromeEarlGrey waitForWebStateContainingText:
+                      l10n_util::GetStringUTF8(
+                          IDS_ERRORPAGES_SUMMARY_BLOCKED_BY_ADMINISTRATOR)];
+}
+
+// Tests that setting only the Incognito allowlist allows specific URLs and
+// blocks others in Incognito mode.
+- (void)testIncognitoAllowlistOnly {
+  GURL allowed_URL = self.testServer->GetURL("/echo");
+  GURL blocked_URL = self.testServer->GetURL("/testpage");
+
+  // Only set the Incognito allowlist.
+  GREYAssertTrue(
+      SetIncognitoURLAllowlist(base::Value(base::ListValue().Append("*/echo"))),
+      @"policy value couldn't be set");
+
+  [ChromeEarlGrey openNewIncognitoTab];
+  WaitForURLBlockedStatus(allowed_URL, /*blocked=*/false, /*incognito=*/true);
+  WaitForURLBlockedStatus(blocked_URL, /*blocked=*/true, /*incognito=*/true);
+
+  [ChromeEarlGrey loadURL:allowed_URL];
+  [ChromeEarlGrey waitForWebStateContainingText:"Echo"];
+
+  [ChromeEarlGrey loadURL:blocked_URL];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:
+          l10n_util::GetStringUTF8(
+              IDS_ERRORPAGES_HEADING_BLOCKED_IN_INCOGNITO_BY_ADMINISTRATOR)];
+}
+
+// Tests that the Incognito allowlist allows specific URLs even if
+// IncognitoModeAvailability is set to disabled.
+- (void)testIncognitoAllowlistAndIncognitoDisabled {
+  GURL allowed_URL = self.testServer->GetURL("/echo");
+  GURL blocked_URL = self.testServer->GetURL("/testpage");
+
+  // Disable Incognito mode generally.
+  GREYAssertTrue(SetIncognitoAvailability(base::Value(static_cast<int>(
+                     policy::IncognitoModeAvailability::kDisabled))),
+                 @"policy value couldn't be set");
+
+  // Set an Incognito allowlist.
+  GREYAssertTrue(
+      SetIncognitoURLAllowlist(base::Value(base::ListValue().Append("*/echo"))),
+      @"policy value couldn't be set");
+  // Even if disabled, the explicitly allowed URLs should be accessible in
+  // Incognito mode.
+  [ChromeEarlGrey openNewIncognitoTab];
+  WaitForURLBlockedStatus(allowed_URL, /*blocked=*/false, /*incognito=*/true);
+  WaitForURLBlockedStatus(blocked_URL, /*blocked=*/true, /*incognito=*/true);
+
+  [ChromeEarlGrey loadURL:allowed_URL];
+  [ChromeEarlGrey waitForWebStateContainingText:"Echo"];
+
+  [ChromeEarlGrey loadURL:blocked_URL];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:
+          l10n_util::GetStringUTF8(
+              IDS_ERRORPAGES_HEADING_BLOCKED_IN_INCOGNITO_BY_ADMINISTRATOR)];
+}
+
+// Checks the blocking rules for both regular and Incognito mode blocklists.
+- (void)testUrlBlocklistAndIncognitoBlocklist {
+  GURL regular_blocked_URL = self.testServer->GetURL("/testpage");
+  GURL incognito_blocked_URL = self.testServer->GetURL("/echo");
+
+  // Set a URLBlocklist that blocks `regular_blocked_URL`.
+  GREYAssertTrue(
+      SetURLBlocklist(base::Value(base::ListValue().Append("*/testpage"))),
+      @"policy value couldn't be set");
+
+  // Set an Incognito blocklist that blocks `incognito_blocked_URL`.
+  GREYAssertTrue(
+      SetIncognitoURLBlocklist(base::Value(base::ListValue().Append("*/echo"))),
+      @"policy value couldn't be set");
+
+  // Regular blocklist blocks in both modes.
+  [ChromeEarlGrey openNewTab];
+  WaitForURLBlockedStatus(regular_blocked_URL, /*blocked=*/true,
+                          /*incognito=*/false);
+  [ChromeEarlGrey openNewIncognitoTab];
+  WaitForURLBlockedStatus(regular_blocked_URL, /*blocked=*/true,
+                          /*incognito=*/true);
+
+  // Incognito blocklist blocks only in Incognito mode.
+  [ChromeEarlGrey openNewTab];
+  WaitForURLBlockedStatus(incognito_blocked_URL, /*blocked=*/false,
+                          /*incognito=*/false);
+  [ChromeEarlGrey openNewIncognitoTab];
+  WaitForURLBlockedStatus(incognito_blocked_URL, /*blocked=*/true,
+                          /*incognito=*/true);
+}
+
+// Checks that the Incognito allowlist allows specific URLs even if
+// IncognitoModeAvailability is set to disabled, and blocklist is set.
+- (void)testIncognitoAllowlistBlocklistAndIncognitoDisabled {
+  GURL allowed_URL = self.testServer->GetURL("/echo");
+  GURL blocked_URL = self.testServer->GetURL("/testpage");
+
+  // Disable Incognito mode generally.
+  GREYAssertTrue(SetIncognitoAvailability(base::Value(static_cast<int>(
+                     policy::IncognitoModeAvailability::kDisabled))),
+                 @"policy value couldn't be set");
+
+  // Set an Incognito allowlist.
+  GREYAssertTrue(
+      SetIncognitoURLAllowlist(base::Value(base::ListValue().Append("*/echo"))),
+      @"policy value couldn't be set");
+
+  // Set an Incognito blocklist.
+  GREYAssertTrue(SetIncognitoURLBlocklist(
+                     base::Value(base::ListValue().Append("*/testpage"))),
+                 @"policy value couldn't be set");
+
+  [ChromeEarlGrey openNewIncognitoTab];
+  WaitForURLBlockedStatus(allowed_URL, /*blocked=*/false, /*incognito=*/true);
+  WaitForURLBlockedStatus(blocked_URL, /*blocked=*/true, /*incognito=*/true);
+
+  [ChromeEarlGrey loadURL:allowed_URL];
+  [ChromeEarlGrey waitForWebStateContainingText:"Echo"];
+
+  [ChromeEarlGrey loadURL:blocked_URL];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:
+          l10n_util::GetStringUTF8(
+              IDS_ERRORPAGES_HEADING_BLOCKED_IN_INCOGNITO_BY_ADMINISTRATOR)];
 }
 
 @end

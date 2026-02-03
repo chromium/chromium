@@ -302,10 +302,13 @@ AppLauncherTabHelper::GetPolicyDecisionAndOptionalAppLaunchRequest(
       ProfileIOS::FromBrowserState(web_state()->GetBrowserState());
   PolicyBlocklistService* blocklistService =
       PolicyBlocklistServiceFactory::GetForProfile(profile);
-  if (blocklistService->GetURLBlocklistState(request_url) ==
+  PolicyBlocklistService::PolicyBlocklistState blocklist_state =
+      blocklistService->GetURLBlocklistStateWithPolicySource(request_url);
+  if (blocklist_state.url_blocklist_state ==
       policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST) {
     return {PolicyDecision::CancelAndDisplayError(
-                policy_url_blocking_util::CreateBlockedUrlError()),
+                policy_url_blocking_util::CreateBlockedUrlError(
+                    blocklist_state.policy_source)),
             kNoAppLaunchRequest};
   }
 

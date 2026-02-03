@@ -11,9 +11,15 @@
 
 namespace policy_url_blocking_util {
 
-NSError* CreateBlockedUrlError() {
+NSError* CreateBlockedUrlError(
+    PolicyBlocklistService::PolicyBlocklistState::PolicySource policy_source) {
+  net::Error err_code =
+      policy_source ==
+              PolicyBlocklistService::PolicyBlocklistState::INCOGNITO_POLICY
+          ? net::ERR_BLOCKED_IN_INCOGNITO_BY_ADMINISTRATOR
+          : net::ERR_BLOCKED_BY_ADMINISTRATOR;
   return [NSError errorWithDomain:net::kNSErrorDomain
-                             code:net::ERR_BLOCKED_BY_ADMINISTRATOR
+                             code:err_code
                          userInfo:nil];
 }
 

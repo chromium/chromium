@@ -145,10 +145,19 @@ std::optional<base::Value> DeserializeValue(NSString* json_value) {
 }
 
 + (BOOL)isURLBlocked:(NSString*)URL {
+  return [self isURLBlocked:URL inIncognito:NO];
+}
+
++ (BOOL)isURLBlocked:(NSString*)URL inIncognito:(BOOL)incognito {
   GURL gurl = GURL(base::SysNSStringToUTF8(URL));
+  ProfileIOS* profile = incognito
+                            ? chrome_test_util::GetCurrentIncognitoProfile()
+                            : chrome_test_util::GetOriginalProfile();
+  if (!profile) {
+    return NO;
+  }
   PolicyBlocklistService* service =
-      PolicyBlocklistServiceFactory::GetForProfile(
-          chrome_test_util::GetOriginalProfile());
+      PolicyBlocklistServiceFactory::GetForProfile(profile);
   return service->GetURLBlocklistState(gurl) ==
          policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST;
 }

@@ -32,6 +32,10 @@
 // URLAllowlist policies.
 + (BOOL)isURLBlocked:(NSString*)URL;
 
+// Returns YES if the given `URL` is blocked by the URLBlocklist and
+// URLAllowlist policies in the given mode.
++ (BOOL)isURLBlocked:(NSString*)URL inIncognito:(BOOL)incognito;
+
 // Sets the browser cloud policy data with a domain.
 + (void)setBrowserCloudPolicyDataWithDomain:(NSString*)domain;
 

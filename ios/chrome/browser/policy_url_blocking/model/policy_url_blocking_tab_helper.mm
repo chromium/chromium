@@ -25,11 +25,14 @@ void PolicyUrlBlockingTabHelper::ShouldAllowRequest(
       ProfileIOS::FromBrowserState(web_state()->GetBrowserState());
   PolicyBlocklistService* service =
       PolicyBlocklistServiceFactory::GetForProfile(profile);
-  if (service->GetURLBlocklistState(gurl) ==
+  PolicyBlocklistService::PolicyBlocklistState blocklist_state =
+      service->GetURLBlocklistStateWithPolicySource(gurl);
+  if (blocklist_state.url_blocklist_state ==
       policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST) {
     return std::move(callback).Run(
         web::WebStatePolicyDecider::PolicyDecision::CancelAndDisplayError(
-            policy_url_blocking_util::CreateBlockedUrlError()));
+            policy_url_blocking_util::CreateBlockedUrlError(
+                blocklist_state.policy_source)));
   }
 
   std::move(callback).Run(web::WebStatePolicyDecider::PolicyDecision::Allow());

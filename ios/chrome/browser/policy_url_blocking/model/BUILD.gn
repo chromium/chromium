@@ -16,7 +16,6 @@ source_set("model") {
     "//components/policy/core/browser",
     "//components/policy/core/common",
     "//ios/chrome/browser/shared/model/profile",
-    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/web/public",
     "//ios/web/public/navigation",
@@ -30,6 +29,7 @@ source_set("util") {
     "policy_url_blocking_util.mm",
   ]
   deps = [
+    "//components/policy/core/browser",
     "//ios/net",
     "//net",
   ]
