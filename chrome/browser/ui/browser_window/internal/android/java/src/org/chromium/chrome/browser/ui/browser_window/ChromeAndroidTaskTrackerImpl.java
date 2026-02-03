@@ -15,6 +15,7 @@ import android.util.ArrayMap;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.JniOnceCallback;
+import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
@@ -62,7 +63,7 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
     private final Map<Integer, ChromeAndroidTask> mPendingTasks = new ArrayMap<>();
 
     /** List of observers currently observing this instance. */
-    private final List<ChromeAndroidTaskTrackerObserver> mObservers = new ArrayList<>();
+    private final ObserverList<ChromeAndroidTaskTrackerObserver> mObservers = new ObserverList<>();
 
     static ChromeAndroidTaskTrackerImpl getInstance() {
         ThreadUtils.assertOnUiThread();
@@ -96,13 +97,17 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
             assert pendingTask != null : "Invalid pendingId provided.";
             pendingTask.addActivityScopedObjects(activityScopedObjects);
             mTasks.put(taskId, pendingTask);
-            mObservers.forEach((observer) -> observer.onTaskAdded(pendingTask));
+            for (var observer : mObservers) {
+                observer.onTaskAdded(pendingTask);
+            }
             return pendingTask;
         }
 
         var newTask = new ChromeAndroidTaskImpl(browserWindowType, activityScopedObjects);
         mTasks.put(taskId, newTask);
-        mObservers.forEach((observer) -> observer.onTaskAdded(newTask));
+        for (var observer : mObservers) {
+            observer.onTaskAdded(newTask);
+        }
         return newTask;
     }
 
@@ -181,14 +186,12 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
 
     @Override
     public void addObserver(ChromeAndroidTaskTrackerObserver observer) {
-        ThreadUtils.assertOnUiThread();
-        mObservers.add(observer);
+        mObservers.addObserver(observer);
     }
 
     @Override
     public boolean removeObserver(ChromeAndroidTaskTrackerObserver observer) {
-        ThreadUtils.assertOnUiThread();
-        return mObservers.remove(observer);
+        return mObservers.removeObserver(observer);
     }
 
     /** Returns an array of the native {@code BrowserWindowInterface} addresses. */
@@ -276,7 +279,9 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
     private void removeInternal(int taskId) {
         var taskRemoved = mTasks.remove(taskId);
         if (taskRemoved != null) {
-            mObservers.forEach((observer) -> observer.onTaskRemoved(taskRemoved));
+            for (var observer : mObservers) {
+                observer.onTaskRemoved(taskRemoved);
+            }
             taskRemoved.destroy();
         }
     }
