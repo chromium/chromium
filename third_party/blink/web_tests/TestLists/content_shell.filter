@@ -36,7 +36,6 @@ external/wpt/background-fetch/fetch.https.window.html
 external/wpt/background-fetch/fetch-uploads.https.window.html
 external/wpt/background-fetch/match.https.window.html
 external/wpt/background-fetch/update-ui.https.window.html
-external/wpt/bluetooth/legacy/*
 external/wpt/client-hints/viewport-size/viewport-size-window-different-dimensions.https.html
 external/wpt/clipboard-apis/async-navigator-clipboard-write-multiple.tentative.https.sub.html
 external/wpt/compat/webkit-box-clamp-bottom-border.html
@@ -206,7 +205,6 @@ external/wpt/css/css-display/display-contents-shadow-dom-1.html
 external/wpt/css/css-display/display-contents-td-001.html
 external/wpt/css/css-display/display-contents-unusual-html-elements-none.html
 external/wpt/css/css-display/select-4-option-optgroup-display-none.html
-external/wpt/css/css-fill-stroke/paint-order-001.html
 external/wpt/css/css-flexbox/align-items-003.htm
 external/wpt/css/css-flexbox/anonymous-flex-item-004.html
 external/wpt/css/css-flexbox/content-height-with-scrollbars.html
@@ -322,7 +320,6 @@ external/wpt/css/css-scroll-anchoring/fullscreen-crash.html
 # Known to be very flaky: https://crbug.com/375047154
 external/wpt/css/css-scrollbars/*
 external/wpt/css/css-scroll-snap/snap-events/scrollsnapchanging/scrollsnapchanging-on-*
-external/wpt/css/css-scroll-snap/snap-after-relayout/changing-scroll-snap-align-nested.tentative.html
 external/wpt/css/css-scroll-snap/snap-after-relayout/multiple-aligned-targets/common-to-both-axes-supercedes-first-in-tree-order.html
 external/wpt/css/css-scroll-snap/snap-after-relayout/multiple-aligned-targets/prefer-common-to-both-axes.html
 external/wpt/css/css-scroll-snap/snap-after-relayout/multiple-aligned-targets/prefer-first-in-tree-order.html
@@ -634,14 +631,11 @@ external/wpt/idle-detection/idle-detection-allowed-by-permissions-policy.https.s
 external/wpt/import-maps/data-driven/resolving.html?scopes.json
 external/wpt/import-maps/multiple-import-maps/resolution-consistency-in-module-tree.html
 external/wpt/IndexedDB/idbindex_getAll.any.*
-external/wpt/IndexedDB/idbindex_getAllRecords.tentative.any.*
-external/wpt/IndexedDB/idbobjectstore_getAllRecords.tentative.any.*
 external/wpt/inert/inert-iframe-hittest.html
 external/wpt/input-events/input-events-exec-command.html
 external/wpt/largest-contentful-paint/broken-image-icon.html
 external/wpt/largest-contentful-paint/multiple-image-same-src.html
 external/wpt/largest-contentful-paint/video-data-uri.html
-external/wpt/long-animation-frame/tentative/loaf-iframe-self.html
 external/wpt/mathml/presentation-markup/fractions/frac-parameters-gap-*
 external/wpt/mathml/presentation-markup/operators/mo-paint-lspace-rspace.html
 external/wpt/mathml/presentation-markup/operators/operator-dictionary-arabic-*
@@ -713,7 +707,6 @@ external/wpt/shadow-dom/focus-navigation/delegatesFocus-highlight-sibling.html
 external/wpt/shadow-dom/focus-navigation/focus-navigation-slot-fallback.html
 external/wpt/shadow-dom/focus-navigation/reading-flow/tentative/grid-order-with-iframe.html
 external/wpt/shadow-dom/reference-target/tentative/*
-external/wpt/speech-api/idlharness.window.html
 external/wpt/speech-api/SpeechSynthesisEvent-properties.html
 external/wpt/speech-api/SpeechSynthesis-pause-resume.tentative.html
 external/wpt/speech-api/SpeechSynthesis-speak-events.html
@@ -964,8 +957,6 @@ external/wpt/speculation-rules/prerender/restriction-background-sync.https.html?
 external/wpt/speculation-rules/prerender/restriction-notification.https.html
 external/wpt/speculation-rules/prerender/restriction-push.https.html
 external/wpt/speculation-rules/prerender/restriction-screen-capture.https.html?target_hint=_blank
-external/wpt/speculation-rules/prerender/restriction-speech-synthesis.html
-virtual/speech-with-unified-autoplay/external/wpt/speech-api/idlharness.window.html
 virtual/speech-with-unified-autoplay/external/wpt/speech-api/SpeechSynthesis*
 virtual/third-party-storage-partitioning/external/wpt/service-workers/service-worker/partitioned-matchAll.tentative.https.html
 virtual/threaded/external/wpt/css/css-backgrounds/background-attachment-fixed-inline-002.html
@@ -979,7 +970,6 @@ virtual/threaded/external/wpt/css/css-backgrounds/background-size/background-siz
 virtual/threaded/external/wpt/css/css-backgrounds/border-bottom-left-radius-010.xht
 virtual/threaded/external/wpt/css/css-backgrounds/table-cell-background-local-003.html
 virtual/threaded/external/wpt/css/css-view-transitions/*
-virtual/threaded/external/wpt/long-animation-frame/tentative/loaf-iframe-self.html
 virtual/threaded-composited-iframes/external/wpt/is-input-pending/tentative/*
 virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/getBoundingClientRect-shy.html
 virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/range-bounding-client-rect-with-display-contents.html
@@ -996,7 +986,6 @@ virtual/view-transition-mpa-serialization/wpt_internal/*
 # https://github.com/web-platform-tests/wpt/issues/48825
 virtual/view-transition-wide-gamut/*
 virtual/view-transition-wide-gamut/wpt_internal/*
-virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/legacy/*
 virtual/webnn-service-on-cpu/*
 virtual/webnn-service-on-npu/*
 virtual/webnn-service-with-gpu/*
