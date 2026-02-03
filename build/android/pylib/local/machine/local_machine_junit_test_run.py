@@ -94,7 +94,8 @@ class LocalMachineJunitTestRun(test_run.TestRun):
                  'android_resource_apk=%s\n' % resource_apk)
       props = [
           'application = android.app.Application',
-          'sdk = 29,36',
+          'sdk = %s' %
+          ('36' if self._test_instance.single_variant else '29,36'),
           ('shadows = org.chromium.testing.local.'
            'CustomShadowApplicationPackageManager'),
       ]

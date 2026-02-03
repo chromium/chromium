@@ -38,6 +38,7 @@ class JunitTestInstance(test_instance.TestInstance):
     self._quiet = args.quiet
     self._external_shard_index = args.test_launcher_shard_index
     self._total_external_shards = args.test_launcher_total_shards
+    self._single_variant = args.single_variant
 
   #override
   def TestType(self):
@@ -123,3 +124,7 @@ class JunitTestInstance(test_instance.TestInstance):
   @property
   def total_external_shards(self):
     return self._total_external_shards
+
+  @property
+  def single_variant(self):
+    return self._single_variant

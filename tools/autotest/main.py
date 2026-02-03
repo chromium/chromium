@@ -469,7 +469,7 @@ def FindTestTargets(target_cache: TargetCache, out_dir: str, paths: list[str],
 def RunTestTargets(out_dir: str, targets: list[str], gtest_filter: str,
                    pref_mapping_filter: str | None, extra_args: list[str],
                    dry_run: bool, no_try_android_wrappers: bool,
-                   no_fast_local_dev: bool) -> None:
+                   no_fast_local_dev: bool, no_single_variant: bool) -> None:
 
   for target in targets:
     target_binary: str = target.split(':')[1]
@@ -480,9 +480,12 @@ def RunTestTargets(out_dir: str, targets: list[str], gtest_filter: str,
       # If the wrapper is not found or disabled use the Desktop target
       # which is an executable.
       path = os.path.join(out_dir, target_binary)
-    elif not no_fast_local_dev:
-      # Usually want this flag when developing locally.
-      extra_args = extra_args + ['--fast-local-dev']
+    else:
+      if not no_fast_local_dev:
+        # Usually want this flag when developing locally.
+        extra_args = extra_args + ['--fast-local-dev']
+      if not no_single_variant:
+        extra_args = extra_args + ['--single-variant']
 
     cmd: list[str] = [path, f'--gtest_filter={gtest_filter}']
     if pref_mapping_filter:
@@ -639,6 +642,10 @@ def main():
                       '--no_fast_local_dev',
                       action='store_true',
                       help='Do not add --fast-local-dev for Android tests.')
+  parser.add_argument('--no-single-variant',
+                      '--no_single_variant',
+                      action='store_true',
+                      help='Do not add --single-variant for Android tests.')
   parser.add_argument('files',
                       metavar='FILE_NAME',
                       nargs='*',
@@ -739,7 +746,7 @@ def main():
 
   RunTestTargets(out_dir, targets, gtest_filter, pref_mapping_filter, _extras,
                  args.dry_run, args.no_try_android_wrappers,
-                 args.no_fast_local_dev)
+                 args.no_fast_local_dev, args.no_single_variant)
 
 
 if __name__ == '__main__':

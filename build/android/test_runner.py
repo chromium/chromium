@@ -197,6 +197,12 @@ def AddCommonOptions(parser):
       action='store_true',
       help='Whether to archive test output locally and generate '
            'a local results detail page.')
+  # This is being added here so that autotest.py can pass the flag without
+  # knowing if it's a robolectric test.
+  parser.add_argument(
+      '--single-variant',
+      action='store_true',
+      help='Run only a single SDK variant of Robolectric tests.')
 
   parser.add_argument('--list-tests',
                       action='store_true',
