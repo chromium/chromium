@@ -1339,7 +1339,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       return;
     }
     const auto& ftd = sharing_manager().GetFocusedTabData();
-    tabs::TabInterface* tab = ftd.focus();
+    tabs::TabInterface* tab = ftd.focus() ? ftd.focus() : ftd.unfocused_tab();
     if (!tab) {
       return;
     }
