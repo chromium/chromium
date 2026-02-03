@@ -11,6 +11,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
@@ -310,4 +311,15 @@ void VerticalTabStripController::OnTabGroupFocusChanged(
   browser_view_->browser_widget()->SetUserColorOverride(color);
   browser_view_->browser_widget()->ThemeChanged();
   browser_view_->GetWidget()->non_client_view()->frame_view()->SchedulePaint();
+}
+
+void VerticalTabStripController::TabKeyboardFocusChangedTo(
+    const tabs::TabInterface* tab) {
+  std::optional<int> tab_index = std::nullopt;
+  if (tab) {
+    tab_index = model_->GetIndexOfTab(tab);
+  }
+
+  browser_view_->browser()->command_controller()->TabKeyboardFocusChangedTo(
+      tab_index);
 }

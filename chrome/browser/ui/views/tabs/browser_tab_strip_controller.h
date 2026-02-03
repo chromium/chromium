@@ -92,7 +92,7 @@ class BrowserTabStripController : public TabStripController,
   void CreateNewTab(NewTabTypes context) override;
   void OnStartedDragging() override;
   void OnStoppedDragging() override;
-  void OnKeyboardFocusedTabChanged(std::optional<int> index) override;
+  void TabKeyboardFocusChangedTo(const tabs::TabInterface* tab) override;
   std::u16string GetGroupTitle(
       const tab_groups::TabGroupId& group_id) const override;
   std::u16string GetGroupContentString(

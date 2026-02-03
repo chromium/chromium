@@ -80,6 +80,10 @@ class VerticalTabStripController : public TabContextMenuController::Delegate,
 
   VerticalTabDragHandler& GetDragHandler() { return drag_handler_.get(); }
 
+  // Notifies BrowserCommandController that the tab with keyboard focus has
+  // changed.
+  void TabKeyboardFocusChangedTo(const tabs::TabInterface* tab);
+
  private:
   // TabContextMenuController::Delegate:
   bool IsContextMenuCommandChecked(

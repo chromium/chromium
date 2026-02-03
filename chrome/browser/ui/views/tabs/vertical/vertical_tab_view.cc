@@ -415,6 +415,23 @@ void VerticalTabView::RemovedFromWidget() {
   UpdateHovered(false);
 }
 
+void VerticalTabView::OnFocus() {
+  views::View::OnFocus();
+
+  if (collection_node_ && collection_node_->GetController()) {
+    collection_node_->GetController()->TabKeyboardFocusChangedTo(
+        GetTabInterface());
+  }
+}
+
+void VerticalTabView::OnBlur() {
+  views::View::OnBlur();
+
+  if (collection_node_ && collection_node_->GetController()) {
+    collection_node_->GetController()->TabKeyboardFocusChangedTo(nullptr);
+  }
+}
+
 void VerticalTabView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   collapsed_ = width() < VerticalTabStripRegionView::kCollapsedWidth;
 

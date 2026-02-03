@@ -852,12 +852,17 @@ void Tab::RemovedFromWidget() {
 
 void Tab::OnFocus() {
   View::OnFocus();
+
+  controller_->TabKeyboardFocusChangedTo(tab_handle_.Get());
   controller_->UpdateHoverCard(this,
                                TabSlotController::HoverCardUpdateType::kFocus);
 }
 
 void Tab::OnBlur() {
   View::OnBlur();
+
+  controller_->TabKeyboardFocusChangedTo(nullptr);
+
   if (!controller_->IsFocusInTabs()) {
     controller_->UpdateHoverCard(
         nullptr, TabSlotController::HoverCardUpdateType::kFocus);

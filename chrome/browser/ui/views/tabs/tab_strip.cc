@@ -1228,7 +1228,6 @@ void TabStrip::AddTabsAt(const std::vector<AddTabData>& tabs_datas) {
     Tab* tab = tabs[index];
     TabRendererData renderer_data = tabs_datas[index].data;
     tab->set_context_menu_controller(&context_menu_controller_);
-    tab->AddObserver(this);
     selected_tabs_.IncrementFrom(tabs_datas[index].index);
 
     // Setting data must come after all state from the model has been updated
@@ -1860,6 +1859,10 @@ void TabStrip::ShowContextMenuForTab(Tab* tab,
   controller_->ShowContextMenuForTab(tab, p, source_type);
 }
 
+void TabStrip::TabKeyboardFocusChangedTo(const tabs::TabInterface* tab) {
+  controller_->TabKeyboardFocusChangedTo(tab);
+}
+
 bool TabStrip::IsActiveTab(const TabSlotView* tab) const {
   std::optional<int> model_index = GetModelIndexOf(tab);
   return model_index.has_value() &&
@@ -2481,22 +2484,6 @@ void TabStrip::OnGestureEvent(ui::GestureEvent* event) {
       break;
   }
   event->SetHandled();
-}
-
-void TabStrip::OnViewFocused(views::View* observed_view) {
-  TabSlotView* slot_view = views::AsViewClass<TabSlotView>(observed_view);
-  if (!slot_view) {
-    return;
-  }
-
-  std::optional<int> index = GetModelIndexOf(slot_view);
-  if (index.has_value()) {
-    controller_->OnKeyboardFocusedTabChanged(index);
-  }
-}
-
-void TabStrip::OnViewBlurred(views::View* observed_view) {
-  controller_->OnKeyboardFocusedTabChanged(std::nullopt);
 }
 
 void TabStrip::OnTouchUiChanged() {

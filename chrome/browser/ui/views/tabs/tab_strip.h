@@ -72,7 +72,6 @@ enum class TabAlert;
 //    DraggedTab, focusing on tasks that require reshuffling other tabs
 //    in response to dragged tabs.
 class TabStrip : public views::View,
-                 public views::ViewObserver,
                  public views::WidgetObserver,
                  public TabContainerController,
                  public TabSlotController,
@@ -282,6 +281,7 @@ class TabStrip : public views::View,
   void ShowContextMenuForTab(Tab* tab,
                              const gfx::Point& p,
                              ui::mojom::MenuSourceType source_type) override;
+  void TabKeyboardFocusChangedTo(const tabs::TabInterface* tab) override;
   bool IsActiveTab(const TabSlotView* tab) const override;
   bool IsTabSelected(const TabSlotView* tab) const override;
   bool IsFocusInTabs() const override;
@@ -405,10 +405,6 @@ class TabStrip : public views::View,
 
   // ui::EventHandler:
   void OnGestureEvent(ui::GestureEvent* event) override;
-
-  // views::ViewObserver:
-  void OnViewFocused(views::View* observed_view) override;
-  void OnViewBlurred(views::View* observed_view) override;
 
   // views::WidgetObserver:
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;

@@ -281,8 +281,8 @@ void FakeBaseTabStripController::OnStartedDragging() {}
 
 void FakeBaseTabStripController::OnStoppedDragging() {}
 
-void FakeBaseTabStripController::OnKeyboardFocusedTabChanged(
-    std::optional<int> index) {}
+void FakeBaseTabStripController::TabKeyboardFocusChangedTo(
+    const tabs::TabInterface* tab) {}
 
 std::u16string FakeBaseTabStripController::GetAccessibleTabName(
     const Tab* tab) const {

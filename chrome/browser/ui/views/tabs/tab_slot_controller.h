@@ -24,6 +24,10 @@ class TabSlotView;
 
 enum class BrowserFrameActiveState;
 
+namespace tabs {
+class TabInterface;
+}
+
 namespace gfx {
 class Point;
 }  // namespace gfx
@@ -113,6 +117,8 @@ class TabSlotController {
   virtual void ShowContextMenuForTab(Tab* tab,
                                      const gfx::Point& p,
                                      ui::mojom::MenuSourceType source_type) = 0;
+
+  virtual void TabKeyboardFocusChangedTo(const tabs::TabInterface* tab) = 0;
 
   // Returns whether `tab` is the active tab. The active tab is the one whose
   // content is shown in the browser.

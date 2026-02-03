@@ -563,8 +563,12 @@ void BrowserTabStripController::OnStoppedDragging() {
   immersive_reveal_lock_.reset();
 }
 
-void BrowserTabStripController::OnKeyboardFocusedTabChanged(
-    std::optional<int> index) {
+void BrowserTabStripController::TabKeyboardFocusChangedTo(
+    const tabs::TabInterface* tab) {
+  std::optional<int> index = std::nullopt;
+  if (tab) {
+    index = model_->GetIndexOfTab(tab);
+  }
   browser_view_->browser()->command_controller()->TabKeyboardFocusChangedTo(
       index);
 }

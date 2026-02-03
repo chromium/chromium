@@ -32,6 +32,10 @@ class TabGroupId;
 class TabGroupVisualData;
 }  // namespace tab_groups
 
+namespace tabs {
+class TabInterface;
+}
+
 namespace ui {
 class Event;
 class ListSelectionModel;
@@ -155,9 +159,8 @@ class TabStripController {
   // from this tabstrip but the user is still dragging the tabs.
   virtual void OnStoppedDragging() = 0;
 
-  // Notifies controller that the index of the tab with keyboard focus changed
-  // to `index`.
-  virtual void OnKeyboardFocusedTabChanged(std::optional<int> index) = 0;
+  // Notifies controller that the tab with keyboard focus changed.
+  virtual void TabKeyboardFocusChangedTo(const tabs::TabInterface* tab) = 0;
 
   // Returns the title of the given `group`.
   virtual std::u16string GetGroupTitle(

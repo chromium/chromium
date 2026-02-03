@@ -70,7 +70,7 @@ class VerticalTabStripView final : public views::View,
       views::ScrollView* scroll_view,
       std::unique_ptr<views::ViewTracker> tracked_view);
 
-  raw_ptr<TabCollectionNode> collection_node_;
+  raw_ptr<TabCollectionNode> collection_node_ = nullptr;
   raw_ptr<views::ScrollView> pinned_tabs_scroll_view_ = nullptr;
   raw_ptr<VerticalPinnedTabContainerView> pinned_tabs_container_view_ = nullptr;
   raw_ptr<views::Separator> tabs_separator_ = nullptr;
