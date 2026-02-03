@@ -1801,15 +1801,6 @@ void RenderTextHarfBuzz::DrawVisualText(internal::SkiaTextRenderer* renderer,
       if (IsNewlineSegment(display_text, segment))
         continue;
 
-      const size_t crash_report_size = 256;
-      DEBUG_ALIAS_FOR_U16CSTR(alias_display_text, display_text.data(),
-                              crash_report_size);
-      DEBUG_ALIAS_FOR_U16CSTR(alias_text, text().data(), crash_report_size);
-      const size_t run_list_size = run_list->runs().size();
-      base::debug::Alias(&run_list_size);
-      const size_t segment_run_size = segment.run;
-      base::debug::Alias(&segment_run_size);
-
       const internal::TextRunHarfBuzz& run = *run_list->runs()[segment.run];
       renderer->SetFillStyle(run.font_params.fill_style);
       renderer->SetStrokeWidth(run.font_params.stroke_width);
