@@ -269,6 +269,7 @@ bool InputStateModel::IsSearchContentSharingEnabled() const {
 
 void InputStateModel::UpdateDisabledTools() {
   // Disable a tool if:
+  // - It is currently active (to prevent re-activation).
   // - Incompatible with the active model.
   // - Incompatible with the current inputs.
   state_.disabled_tools.clear();
@@ -276,6 +277,7 @@ void InputStateModel::UpdateDisabledTools() {
       GetModelRule(rule_set_, state_.active_model);
   for (const auto& tool : state_.allowed_tools) {
     if (tool == state_.active_tool) {
+      state_.disabled_tools.push_back(tool);
       continue;
     }
 
