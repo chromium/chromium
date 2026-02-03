@@ -133,9 +133,9 @@ void DraggingTabsSession::MoveAttachedImpl(gfx::Point point_in_screen,
               base::TimeTicks::Now()));
     }
 
-    if (drag_data_.group_drag_data_.has_value()) {
-      attached_model->MoveGroupTo(drag_data_.group_drag_data_.value().group,
-                                  to_index);
+    if (drag_data_.group_header_drag_data_.has_value()) {
+      attached_model->MoveGroupTo(
+          drag_data_.group_header_drag_data_.value().group, to_index);
     } else {
       attached_model->MoveSelectedTabsTo(
           to_index, CalculateGroupForDraggedTabs(to_index));

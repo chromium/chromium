@@ -397,7 +397,7 @@ bool VerticalTabDragHandlerImpl::IsDraggingPinnedTabs() const {
 
 std::optional<tab_groups::TabGroupId>
 VerticalTabDragHandlerImpl::GetDraggingGroupHeaderId() const {
-  return drag_controller_ ? drag_controller_->GetSessionData().group()
+  return drag_controller_ ? drag_controller_->GetSessionData().group_header_id()
                           : std::nullopt;
 }
 
@@ -535,12 +535,12 @@ void VerticalTabDragHandlerImpl::StoppedDragging() {
   }
 
   const DragSessionData& drag_data = drag_controller_->GetSessionData();
-  if (!drag_data.group_drag_data_.has_value()) {
+  if (!drag_data.group_header_drag_data_.has_value()) {
     return;
   }
   // Offset by 1 to account for the group header.
   const int drag_data_index =
-      1 + drag_data.group_drag_data_->active_tab_index_within_group;
+      1 + drag_data.group_header_drag_data_->active_tab_index_within_group;
   const int index = tab_strip_model_->GetIndexOfWebContents(
       drag_data.tab_drag_data_[drag_data_index].contents);
 

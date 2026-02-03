@@ -445,10 +445,10 @@ TabDragController::Liveness TabDragController::Init(
       std::make_unique<SourceTabStripEmptinessTracker>(
           ref->source_context_->GetTabStripModel(), this);
 
+  const TabStripModel* tab_strip_model =
+      ref->source_context_->GetTabStripModel();
   if (source_view->GetTabSlotViewType() ==
       TabSlotView::ViewType::kTabGroupHeader) {
-    const TabStripModel* tab_strip_model =
-        ref->source_context_->GetTabStripModel();
     const tab_groups::TabGroupId group_id = source_view->group().value();
     const std::optional<tab_groups::TabGroupId> active_group_id =
         tab_strip_model->GetActiveTab()->GetGroup();
@@ -459,13 +459,19 @@ TabDragController::Liveness TabDragController::Init(
          !group_range.is_empty())
             ? tab_strip_model->active_index() - group_range.GetMin()
             : 0;
-    ref->drag_data_.group_drag_data_ = std::make_optional<GroupDragData>(
-        group_id, active_tab_index_within_group);
+    ref->drag_data_.group_header_drag_data_ =
+        std::make_optional<GroupHeaderDragData>(group_id,
+                                                active_tab_index_within_group);
   }
 
   for (TabSlotView* dragging_view : dragging_views) {
     ref->drag_data_.tab_drag_data_.emplace_back(source_context_, dragging_view);
+    if (dragging_view->GetTabSlotViewType() ==
+        TabSlotView::ViewType::kTabGroupHeader) {
+      ref->drag_data_.dragging_groups.insert(*dragging_view->group());
+    }
   }
+
   ref->drag_data_.source_view_index_ =
       std::ranges::find(dragging_views, source_view) - dragging_views.begin();
 
@@ -1925,8 +1931,9 @@ void TabDragController::ResetSelection(TabStripModel* model) {
       // b) this was the source view for the drag
       // c) we're in a header drag, and this tab was active before the drag
       if (!has_one_valid_tab || i == drag_data_.source_view_index_ ||
-          (drag_data_.group_drag_data_.has_value() &&
-           (drag_data_.group_drag_data_.value().active_tab_index_within_group +
+          (drag_data_.group_header_drag_data_.has_value() &&
+           (drag_data_.group_header_drag_data_.value()
+                .active_tab_index_within_group +
             1) == static_cast<int>(i))) {
         // Reset the active/lead to the first tab. If the source tab is still
         // valid we'll reset these again later on.
@@ -2196,7 +2203,7 @@ void TabDragController::CompleteDrag() {
     }
   }
 
-  if (drag_data_.group_drag_data_.has_value()) {
+  if (drag_data_.group_header_drag_data_.has_value()) {
     // Manually reset the selection to just the active tab in the group.
     // For multi tab select keep the selection model as the user used it as the
     // original selection.
@@ -2205,8 +2212,8 @@ void TabDragController::CompleteDrag() {
                                : source_context_->GetTabStripModel();
     ui::ListSelectionModel selection;
     // Offset by 1 to account for the group header.
-    const int drag_data_index =
-        1 + drag_data_.group_drag_data_.value().active_tab_index_within_group;
+    const int drag_data_index = 1 + drag_data_.group_header_drag_data_.value()
+                                        .active_tab_index_within_group;
     const int index = model->GetIndexOfWebContents(
         drag_data_.tab_drag_data_[drag_data_index].contents);
 
@@ -2757,7 +2764,7 @@ void TabDragController::NotifyEventIfTabAddedToGroup() {
 }
 
 void TabDragController::MaybePauseTrackingSavedTabGroup() {
-  if (!drag_data_.group_drag_data_.has_value()) {
+  if (!drag_data_.group_header_drag_data_.has_value()) {
     return;
   }
 
@@ -2770,7 +2777,8 @@ void TabDragController::MaybePauseTrackingSavedTabGroup() {
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(browser->profile());
 
   if (!tab_group_service ||
-      !tab_group_service->GetGroup(drag_data_.group_drag_data_.value().group)) {
+      !tab_group_service->GetGroup(
+          drag_data_.group_header_drag_data_.value().group)) {
     return;
   }
 
@@ -2778,7 +2786,7 @@ void TabDragController::MaybePauseTrackingSavedTabGroup() {
 }
 
 void TabDragController::MaybeResumeTrackingSavedTabGroup() {
-  if (!drag_data_.group_drag_data_.has_value() || !observation_pauser_) {
+  if (!drag_data_.group_header_drag_data_.has_value() || !observation_pauser_) {
     return;
   }
 
