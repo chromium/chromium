@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
@@ -1992,6 +1995,58 @@ TEST_P(VisualRectMappingTest, FractionalSnapping) {
   EXPECT_TRUE(b->MapToVisualRectInAncestorSpace(
       &GetLayoutView(), b_visual_rect_mapper, kUseGeometryMapper));
   EXPECT_EQ(PhysicalRect(75, 0, 100, 100), b_visual_rect_mapper);
+}
+
+TEST_P(VisualRectMappingTest,
+       ViewportMappingIsConsistentWithAndWithoutGeometryMapperUnderPinchZoom) {
+  // Regression test for a slow-path bug: viewport mapping (ancestor == nullptr)
+  // should produce the same result with and without the GeometryMapper fast
+  // path, even when pinch-zoom is active.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      blink::features::kVisualRectMappingApplyLocalVisualViewportTransform);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body { margin: 0; }
+      #target {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 50px;
+        height: 50px;
+        background: green;
+      }
+    </style>
+    <div id="target"></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  // Simulate pinch-zoom by changing the visual viewport scale and location.
+  // The location is in CSS pixels.
+  VisualViewport& visual_viewport =
+      GetDocument().GetPage()->GetVisualViewport();
+  visual_viewport.SetScaleAndLocation(2.f, /*is_pinch_gesture_active=*/true,
+                                      gfx::PointF(0, 20));
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* target = GetLayoutObjectByElementId("target");
+  ASSERT_TRUE(target);
+
+  constexpr VisualRectFlags kBaseFlags = static_cast<VisualRectFlags>(
+      kIgnoreFilters | kVisualRectApplyRemoteViewportTransform);
+
+  gfx::RectF slow_path_rect(0, 0, 50, 50);
+  ASSERT_TRUE(target->MapToVisualRectInAncestorSpace(nullptr, slow_path_rect,
+                                                     kBaseFlags));
+
+  constexpr VisualRectFlags kGeomFlags =
+      static_cast<VisualRectFlags>(kBaseFlags | kUseGeometryMapper);
+  gfx::RectF geometry_mapper_rect(0, 0, 50, 50);
+  ASSERT_TRUE(target->MapToVisualRectInAncestorSpace(
+      nullptr, geometry_mapper_rect, kGeomFlags));
+
+  EXPECT_EQ(gfx::ToEnclosingRect(slow_path_rect),
+            gfx::ToEnclosingRect(geometry_mapper_rect));
 }
 
 }  // namespace blink
