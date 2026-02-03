@@ -390,7 +390,6 @@ source_set("browser_tests") {
     ":test_support",
     ":tools_test_support",
     "ui:event_dispatcher",
-    "//chrome/browser/glic",
     "//chrome/browser/optimization_guide:test_support",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/subscription_eligibility",
@@ -409,6 +408,10 @@ source_set("browser_tests") {
     "//content/test:browsertest_support",
     "//testing/gtest",
   ]
+
+  if (enable_glic) {
+    deps += [ "//chrome/browser/glic" ]
+  }
 
   if (is_android) {
     deps += [ "//chrome/test:test_support_ui_android" ]

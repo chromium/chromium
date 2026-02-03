@@ -300,7 +300,11 @@ class HorizontalTabStripRegionViewWithTabstripTabSearchTest
     : public HorizontalTabStripRegionViewTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    scoped_feature_list_.InitWithFeaturesAndParameters({}, {features::kGlic});
+    scoped_feature_list_.InitWithFeaturesAndParameters({}, {
+#if BUILDFLAG(ENABLE_GLIC)
+                                                               features::kGlic
+#endif
+                                                           });
     HorizontalTabStripRegionViewTest::SetUpCommandLine(command_line);
   }
 
