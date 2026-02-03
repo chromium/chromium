@@ -70,6 +70,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/text/bytes_formatting.h"
 #include "ui/gfx/animation/animation.h"
+#include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/styled_label.h"
@@ -810,6 +811,10 @@ class MemorySaverImprovedFaviconTreatmentTest
   }
 
  private:
+  const gfx::AnimationTestApi::RenderModeResetter disable_rich_animations_ =
+      gfx::AnimationTestApi::SetRichAnimationRenderMode(
+          gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
+
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -823,8 +828,6 @@ IN_PROC_BROWSER_TEST_P(MemorySaverImprovedFaviconTreatmentTest,
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents, GetURL()),
       AddInstrumentedTab(kSecondTabContents, GURL(kOtherPage)),
-      Do(base::BindLambdaForTesting(
-          [=, this]() { GetTabStripView()->StopAnimating(); })),
       TryDiscardTab(0), CheckTabIsDiscarded(0, true),
       NameView(kFirstTabFavicon, base::BindLambdaForTesting([&]() {
                  return views::AsViewClass<views::View>(GetTabIcon(0));
@@ -855,8 +858,6 @@ IN_PROC_BROWSER_TEST_P(MemorySaverImprovedFaviconTreatmentTest,
       AddInstrumentedTab(
           kPerformanceSettingsTab,
           GURL(chrome::GetSettingsUrl(chrome::kPerformanceSubPage))),
-      Do(base::BindLambdaForTesting(
-          [=, this]() { GetTabStripView()->StopAnimating(); })),
       TryDiscardTab(0), CheckTabIsDiscarded(0, true),
       NameView(kFirstTabFavicon, base::BindLambdaForTesting([&]() {
                  return views::AsViewClass<views::View>(GetTabIcon(0));

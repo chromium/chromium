@@ -257,14 +257,6 @@ bool VerticalTabStripRegionView::IsTabStripCloseable() const {
          !drag_handler_->GetDragContext()->GetDragController();
 }
 
-bool VerticalTabStripRegionView::IsAnimating() const {
-  return false;
-}
-
-void VerticalTabStripRegionView::StopAnimating() {
-  // Do nothing.
-}
-
 void VerticalTabStripRegionView::UpdateLoadingAnimations(
     const base::TimeDelta& elapsed_time) {
   for (tabs::TabInterface* tab : *tab_strip_model_) {

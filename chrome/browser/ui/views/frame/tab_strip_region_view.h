@@ -34,8 +34,6 @@ class TabStripRegionView : public views::AccessiblePaneView,
   virtual bool IsTabStripEditable() const = 0;
   virtual void DisableTabStripEditingForTesting() = 0;
   virtual bool IsTabStripCloseable() const = 0;
-  virtual bool IsAnimating() const = 0;
-  virtual void StopAnimating() = 0;
   virtual void UpdateLoadingAnimations(const base::TimeDelta& elapsed_time) = 0;
   virtual std::optional<int> GetFocusedTabIndex() const = 0;
   virtual const TabRendererData& GetTabRendererData(int tab_index) = 0;

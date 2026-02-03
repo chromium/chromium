@@ -600,14 +600,6 @@ bool HorizontalTabStripRegionView::IsTabStripCloseable() const {
   return tab_strip_->IsTabStripCloseable();
 }
 
-bool HorizontalTabStripRegionView::IsAnimating() const {
-  return tab_strip_->IsAnimatingInTabStrip();
-}
-
-void HorizontalTabStripRegionView::StopAnimating() {
-  return tab_strip_->StopAnimating();
-}
-
 void HorizontalTabStripRegionView::UpdateLoadingAnimations(
     const base::TimeDelta& elapsed_time) {
   tab_strip_->UpdateLoadingAnimations(elapsed_time);

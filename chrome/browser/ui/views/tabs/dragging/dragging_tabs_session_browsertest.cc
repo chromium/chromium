@@ -15,6 +15,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/models/list_selection_model.h"
+#include "ui/gfx/animation/animation_test_api.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/view.h"
@@ -40,7 +41,6 @@ class DraggingTabsSessionBrowserTest : public InProcessBrowserTest {
   std::tuple<tabs::TabInterface*, views::View*> AddTab(int index,
                                                        bool foreground) {
     chrome::AddTabAt(browser(), GURL("about:blank"), index, foreground);
-    view_->StopAnimating();
     return std::make_tuple(model_->GetTabAtIndex(index),
                            view_->GetTabAnchorViewAt(index));
   }
@@ -76,6 +76,10 @@ class DraggingTabsSessionBrowserTest : public InProcessBrowserTest {
 
   raw_ptr<TabStripModel> model_;
   raw_ptr<TabStripRegionView> view_;
+
+  const gfx::AnimationTestApi::RenderModeResetter disable_rich_animations_ =
+      gfx::AnimationTestApi::SetRichAnimationRenderMode(
+          gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
 };
 
 // Flaky. http://crbug.com/417465013

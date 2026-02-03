@@ -113,8 +113,6 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
   bool IsTabStripEditable() const override;
   void DisableTabStripEditingForTesting() override;
   bool IsTabStripCloseable() const override;
-  bool IsAnimating() const override;
-  void StopAnimating() override;
   void UpdateLoadingAnimations(const base::TimeDelta& elapsed_time) override;
   std::optional<int> GetFocusedTabIndex() const override;
   const TabRendererData& GetTabRendererData(int tab_index) override;
