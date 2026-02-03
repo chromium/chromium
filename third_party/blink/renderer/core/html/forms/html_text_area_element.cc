@@ -558,6 +558,11 @@ void HTMLTextAreaElement::SetValueCommon(const String& new_value,
   SetNeedsStyleRecalc(
       kSubtreeStyleChange,
       StyleChangeReasonForTracing::Create(style_change_reason::kControlValue));
+  if (LayoutObject* layout_object = GetLayoutObject()) {
+    layout_object
+        ->SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
+            layout_invalidation_reason::kTextControlChanged);
+  }
   SetNeedsValidityCheck();
   if (selection == TextControlSetValueSelection::kSetSelectionToEnd) {
     // Set the caret to the end of the text value except for initialize.
