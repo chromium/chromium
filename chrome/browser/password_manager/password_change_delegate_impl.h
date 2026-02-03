@@ -36,7 +36,6 @@ class ChangePasswordFormFinder;
 class CrossOriginNavigationObserver;
 enum class LoginCheckResult;
 class LoginStateChecker;
-class PasswordChangeHats;
 class Profile;
 
 // This class controls password change process including acceptance of privacy
@@ -164,9 +163,6 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate {
   // The controller for password change views.
   std::unique_ptr<PasswordChangeUIController> ui_controller_;
 
-  // Helper class for handling happiness tracking surveys.
-  std::unique_ptr<PasswordChangeHats> password_change_hats_;
-
   std::unique_ptr<CrossOriginNavigationObserver> navigation_observer_;
 
   base::CallbackListSubscription tab_will_detach_subscription_;
@@ -181,9 +177,6 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate {
   base::CallbackListSubscription otp_fields_detected_subscription_;
 
   ukm::SourceId ukm_source_id_ = ukm::kInvalidSourceId;
-
-  // Whether a blocking challenge (e.g. an OTP) was detected in the main tab.
-  bool blocking_challenge_detected_ = false;
 
   base::WeakPtrFactory<PasswordChangeDelegateImpl> weak_ptr_factory_{this};
 };

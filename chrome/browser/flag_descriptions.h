@@ -5844,12 +5844,6 @@ inline constexpr char kEnableShouldShowPromotionName[] =
 inline constexpr char kEnableShouldShowPromotionDescription[] =
     "Enables showing the promotion banner on chromewebstore page.";
 
-inline constexpr char kImprovedPasswordChangeServiceName[] =
-    "Improved password change service";
-inline constexpr char kImprovedPasswordChangeServiceDescription[] =
-    "Experimental feature, which offers automatic password change to the user "
-    "when they sign in with a credential known to be leaked.";
-
 inline constexpr char kInfiniteTabsFreezingName[] = "Infinite Tabs Freezing";
 inline constexpr char kInfiniteTabsFreezingDescription[] =
     "Freezes eligible tabs which are not in the 5 most recently used ones, to "

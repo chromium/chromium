@@ -123,14 +123,6 @@ constexpr char kHatsSurveyTriggerNtpModules[] = "ntp-modules";
 constexpr char kHatsSurveyTriggerNextPanel[] = "next-panel";
 constexpr char kHatsSurveyTriggerNtpPhotosModuleOptOut[] =
     "ntp-photos-module-opt-out";
-constexpr char kHatsSurveyTriggerPasswordChangeCanceled[] =
-    "password-change-canceled";
-constexpr char kHatsSurveyTriggerPasswordChangeDelayed[] =
-    "password-change-delayed";
-constexpr char kHatsSurveyTriggerPasswordChangeError[] =
-    "password-change-error";
-constexpr char kHatsSurveyTriggerPasswordChangeSuccess[] =
-    "password-change-success";
 constexpr char kHatsSurveyTriggerPerformanceControlsPPM[] = "performance-ppm";
 // The permission prompt trigger permits configuring multiple triggers
 // simultaneously. Each trigger increments a counter at the end -->
@@ -785,65 +777,6 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       &lens::features::kLensOverlaySurvey, kHatsSurveyTriggerLensOverlayResults,
       /*presupplied_trigger_id=*/std::nullopt, std::vector<std::string>{},
       std::vector<std::string>{"ID that's tied to your Google Lens session"});
-
-  // Automated password change surveys.
-  survey_configs.emplace_back(
-      &password_manager::features::kImprovedPasswordChangeService,
-      kHatsSurveyTriggerPasswordChangeSuccess,
-      password_manager::features::kPasswordChangeSuccessSurveyTriggerId.Get(),
-      /*product_specific_bits_data_fields=*/
-      std::vector<std::string>{password_manager::features_util::
-                                   kPasswordChangeSuggestedPasswordsAdoption,
-                               password_manager::features_util::
-                                   kPasswordChangeBlockingChallengeDetected},
-      /*product_specific_string_data_fields=*/
-      std::vector<std::string>{
-          password_manager::features_util::
-              kPasswordChangeBreachedPasswordsCount,
-          password_manager::features_util::kPasswordChangeSavedPasswordsCount,
-          password_manager::features_util::kPasswordChangeRuntime});
-  survey_configs.emplace_back(
-      &password_manager::features::kImprovedPasswordChangeService,
-      kHatsSurveyTriggerPasswordChangeError,
-      password_manager::features::kPasswordChangeErrorSurveyTriggerId.Get(),
-      /*product_specific_bits_data_fields=*/
-      std::vector<std::string>{password_manager::features_util::
-                                   kPasswordChangeSuggestedPasswordsAdoption,
-                               password_manager::features_util::
-                                   kPasswordChangeBlockingChallengeDetected},
-      /*product_specific_string_data_fields=*/
-      std::vector<std::string>{
-          password_manager::features_util::
-              kPasswordChangeBreachedPasswordsCount,
-          password_manager::features_util::kPasswordChangeSavedPasswordsCount,
-          password_manager::features_util::kPasswordChangeRuntime});
-  survey_configs.emplace_back(
-      &password_manager::features::kImprovedPasswordChangeService,
-      kHatsSurveyTriggerPasswordChangeCanceled,
-      password_manager::features::kPasswordChangeCanceledSurveyTriggerId.Get(),
-      /*product_specific_bits_data_fields=*/
-      std::vector<std::string>{password_manager::features_util::
-                                   kPasswordChangeSuggestedPasswordsAdoption,
-                               password_manager::features_util::
-                                   kPasswordChangeBlockingChallengeDetected},
-      /*product_specific_string_data_fields=*/
-      std::vector<std::string>{
-          password_manager::features_util::
-              kPasswordChangeBreachedPasswordsCount,
-          password_manager::features_util::kPasswordChangeSavedPasswordsCount,
-          password_manager::features_util::kPasswordChangeRuntime});
-  survey_configs.emplace_back(
-      &password_manager::features::kImprovedPasswordChangeService,
-      kHatsSurveyTriggerPasswordChangeDelayed,
-      password_manager::features::kPasswordChangeDelayedSurveyTriggerId.Get(),
-      /*product_specific_bits_data_fields=*/
-      std::vector<std::string>{password_manager::features_util::
-                                   kPasswordChangeSuggestedPasswordsAdoption},
-      /*product_specific_string_data_fields=*/
-      std::vector<std::string>{
-          password_manager::features_util::
-              kPasswordChangeBreachedPasswordsCount,
-          password_manager::features_util::kPasswordChangeSavedPasswordsCount});
 
 #else  // BUILDFLAG(IS_ANDROID)
   survey_configs.emplace_back(&chrome::android::kChromeSurveyNextAndroid,

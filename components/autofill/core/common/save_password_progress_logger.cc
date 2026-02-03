@@ -547,8 +547,6 @@ std::string SavePasswordProgressLogger::GetStringFromID(
       return "Automated password change: Saving disabled";
     case STRING_PASSWORD_CHANGE_DISABLED_BY_POLICY:
       return "Automated password change: Disabled by policy";
-    case STRING_PASSWORD_CHANGE_FEATURE_ENABLED:
-      return "Automated password change: Feature enabled";
     case STRING_PASSWORD_CHANGE_UNSUPPORTED_LANGUAGE:
       return "Automated password change: Unsupported language";
     case STRING_PASSWORD_CHANGE_UNSUPPORTED_COUNTRY:

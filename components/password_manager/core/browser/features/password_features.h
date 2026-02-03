@@ -118,9 +118,6 @@ BASE_DECLARE_FEATURE(kFillOnAccountSelect);
 BASE_DECLARE_FEATURE(kFillRecoveryPassword);
 #endif
 
-// Enables improvements to password change functionality.
-BASE_DECLARE_FEATURE(kImprovedPasswordChangeService);
-
 #if BUILDFLAG(IS_IOS)
 
 // Enables the clean up of hanging form extraction requests made by the
@@ -229,24 +226,6 @@ BASE_DECLARE_FEATURE(kUserInterventionForPasswordChange);
 BASE_DECLARE_FEATURE(kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu);
 
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-
-inline constexpr base::FeatureParam<std::string>
-    kPasswordChangeSuccessSurveyTriggerId{
-        &kImprovedPasswordChangeService, "PasswordChangeSuccessSurveyTriggerId",
-        /*default_value=*/""};
-inline constexpr base::FeatureParam<std::string>
-    kPasswordChangeErrorSurveyTriggerId{&kImprovedPasswordChangeService,
-                                        "PasswordChangeErrorSurveyTriggerId",
-                                        /*default_value=*/""};
-inline constexpr base::FeatureParam<std::string>
-    kPasswordChangeCanceledSurveyTriggerId{
-        &kImprovedPasswordChangeService,
-        "PasswordChangeCanceledSurveyTriggerId",
-        /*default_value=*/""};
-inline constexpr base::FeatureParam<std::string>
-    kPasswordChangeDelayedSurveyTriggerId{
-        &kImprovedPasswordChangeService, "PasswordChangeDelayedSurveyTriggerId",
-        /*default_value=*/""};
 
 inline constexpr base::FeatureParam<base::TimeDelta>
     kPasswordChangeThrottleTime{&kThrottlePasswordChangeDialog,

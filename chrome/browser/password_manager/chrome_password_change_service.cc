@@ -295,14 +295,7 @@ PasswordChangeAvailability ChromePasswordChangeService::GetGeneralAvailability()
     return PasswordChangeAvailability::kThrottled;
   }
 
-  const bool result = base::FeatureList::IsEnabled(
-      password_manager::features::kImprovedPasswordChangeService);
-  if (logger) {
-    logger->LogBoolean(Logger::STRING_PASSWORD_CHANGE_FEATURE_ENABLED, result);
-  }
-
-  return result ? PasswordChangeAvailability::kAvailable
-                : PasswordChangeAvailability::kFeatureDisabled;
+  return PasswordChangeAvailability::kAvailable;
 }
 
 PasswordChangeAvailability ChromePasswordChangeService::GetPerSiteAvailability(

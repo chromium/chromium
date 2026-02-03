@@ -38,21 +38,20 @@
 namespace {
 
 struct TestCase {
-  using TupleT = std::tuple<bool, bool, bool, bool, bool>;
+  using TupleT = std::tuple<bool, bool, bool, bool>;
 
   explicit TestCase(TupleT configuration)
       : is_generation_available(std::get<0>(configuration)),
         is_model_execution_allowed(std::get<1>(configuration)),
         is_saving_allowed(std::get<2>(configuration)),
-        is_disabled_by_policy(std::get<3>(configuration)),
-        is_feature_enabled(std::get<4>(configuration)) {}
+        is_disabled_by_policy(std::get<3>(configuration)) {}
 
   bool expected_outcome() const {
 #if BUILDFLAG(IS_ANDROID)
     return false;
 #else
     return is_generation_available & is_model_execution_allowed &
-           is_saving_allowed & is_feature_enabled & !is_disabled_by_policy;
+           is_saving_allowed & !is_disabled_by_policy;
 #endif  // BUILDFLAG(IS_ANDROID)
   }
 
@@ -60,7 +59,6 @@ struct TestCase {
   const bool is_model_execution_allowed;
   const bool is_saving_allowed;
   const bool is_disabled_by_policy;
-  const bool is_feature_enabled;
 };
 
 }  // namespace
@@ -123,8 +121,6 @@ class ChromePasswordChangeServiceBase {
  private:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  base::test::ScopedFeatureList feature_list_{
-      password_manager::features::kImprovedPasswordChangeService};
   autofill::LogRouter log_router_;
   TestingPrefServiceSimple prefs_;
   testing::StrictMock<affiliations::MockAffiliationService>
@@ -395,9 +391,6 @@ class ChromePasswordChangeServiceAvailabilityTest
       public ChromePasswordChangeServiceBase {
  public:
   ChromePasswordChangeServiceAvailabilityTest() {
-    feature_list_.InitWithFeatureState(
-        password_manager::features::kImprovedPasswordChangeService,
-        GetParam().is_feature_enabled);
     if (GetParam().is_disabled_by_policy) {
       constexpr int kPolicyDisabled =
           std::to_underlying(optimization_guide::model_execution::prefs::
@@ -493,7 +486,6 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Combine(testing::Bool(),
                          testing::Bool(),
                          testing::Bool(),
-                         testing::Bool(),
                          testing::Bool())),
     [](const ::testing::TestParamInfo<TestCase>& info) {
       std::string test_name;
@@ -503,6 +495,5 @@ INSTANTIATE_TEST_SUITE_P(
                                                          : "ExecutionOff";
       test_name += info.param.is_saving_allowed ? "SavingOn" : "SavingOff";
       test_name += info.param.is_disabled_by_policy ? "DisabledByPolicy" : "";
-      test_name += info.param.is_feature_enabled ? "FeatureOn" : "FeatureOff";
       return test_name;
     });

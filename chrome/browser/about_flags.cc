@@ -11535,11 +11535,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
-    {"improved-password-change-service",
-     flag_descriptions::kImprovedPasswordChangeServiceName,
-     flag_descriptions::kImprovedPasswordChangeServiceDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::kImprovedPasswordChangeService)},
     {"mark-all-credentials-as-leaked",
      flag_descriptions::kMarkAllCredentialsAsLeakedName,
      flag_descriptions::kMarkAllCredentialsAsLeakedDescription, kOsDesktop,

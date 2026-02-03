@@ -20,7 +20,6 @@
 #include "chrome/browser/password_manager/password_change/change_password_form_waiter.h"
 #include "chrome/browser/password_manager/password_change/cross_origin_navigation_observer.h"
 #include "chrome/browser/password_manager/password_change/login_state_checker.h"
-#include "chrome/browser/password_manager/password_change/password_change_hats.h"
 #include "chrome/browser/password_manager/password_field_classification_model_handler_factory.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -29,8 +28,6 @@
 #include "chrome/browser/ui/autofill/autofill_client_provider_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/hats/hats_service_factory.h"
-#include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/passwords/password_change_ui_controller.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
@@ -275,15 +272,6 @@ void PasswordChangeDelegateImpl::OnOtpNotFound() {
                            STRING_AUTOMATED_PASSWORD_CHANGE_OTP_DISAPPEARED);
   }
 
-  password_change_hats_ = std::make_unique<PasswordChangeHats>(
-      HatsServiceFactory::GetForProfile(profile_,
-                                        /*create_if_necessary=*/true),
-      ProfilePasswordStoreFactory::GetForProfile(
-          profile_, ServiceAccessType::EXPLICIT_ACCESS)
-          .get(),
-      AccountPasswordStoreFactory::GetForProfile(
-          profile_, ServiceAccessType::EXPLICIT_ACCESS)
-          .get());
   if (auto logger = GetLoggerIfAvailable(originator_)) {
     logger->LogMessage(
         BrowserSavePasswordProgressLogger::STRING_PASSWORD_CHANGE_STARTED);
@@ -371,7 +359,6 @@ void PasswordChangeDelegateImpl::OnLoginStateCheckResult(
       ProceedToChangePassword();
       return;
     case LoginCheckResult::kLoggedOut:
-      blocking_challenge_detected_ = true;
       UpdateState(State::kLoginFormDetected);
       return;
     case LoginCheckResult::kError:
@@ -398,10 +385,6 @@ void PasswordChangeDelegateImpl::CancelPasswordChangeFlow() {
   visible_executor_ = nullptr;
 
   UpdateState(State::kCanceled);
-  password_change_hats_->MaybeLaunchSurvey(
-      kHatsSurveyTriggerPasswordChangeCanceled,
-      /*password_change_duration=*/base::Time::Now() - flow_start_time_,
-      blocking_challenge_detected_, originator_);
 }
 
 void PasswordChangeDelegateImpl::OnPasswordChangeFormFound(
@@ -521,11 +504,6 @@ void PasswordChangeDelegateImpl::OpenPasswordChangeTab() {
     submission_verifier_->SavePassword(username_);
     submission_verifier_.reset();
   }
-
-  password_change_hats_->MaybeLaunchSurvey(
-      kHatsSurveyTriggerPasswordChangeError,
-      /*password_change_duration=*/base::Time::Now() - flow_start_time_,
-      blocking_challenge_detected_, web_contents);
 }
 
 void PasswordChangeDelegateImpl::OpenPasswordDetails() {
@@ -568,10 +546,6 @@ void PasswordChangeDelegateImpl::OnPasswordChangeDeclined() {
         BrowserSavePasswordProgressLogger::
             STRING_AUTOMATED_PASSWORD_CHANGE_PASSWORD_CHANGE_DECLINED);
   }
-  password_change_hats_->MaybeLaunchSurvey(
-      kHatsSurveyTriggerPasswordChangeCanceled,
-      /*password_change_duration=*/base::TimeDelta(),
-      blocking_challenge_detected_, originator_);
   // Post task as otherwise ManagePasswordsUIController won't show a bubble
   // until password change has finished.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -703,20 +677,11 @@ void PasswordChangeDelegateImpl::OnChangeFormSubmissionVerified(
                 STRING_AUTOMATED_PASSWORD_CHANGE_SUBMISSION_VERIFIED,
             /*truth_value=*/true);
       }
-
-      base::Time time_now = base::Time::Now();
-      base::TimeDelta password_change_duration_overall =
-          time_now - flow_start_time_;
-
       // Password change was successful. Save new password with an original
       // username.
       submission_verifier_->SavePassword(username_);
       NotifyPasswordChangeFinishedSuccessfully(originator_);
       UpdateState(State::kPasswordSuccessfullyChanged);
-      password_change_hats_->MaybeLaunchSurvey(
-          kHatsSurveyTriggerPasswordChangeSuccess,
-          password_change_duration_overall, blocking_challenge_detected_,
-          originator_);
       submission_verifier_.reset();
       break;
   }
