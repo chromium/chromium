@@ -129,6 +129,9 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Image"/>
   <int value="3" label="ImageGen"/>
   <int value="4" label="DeepResearch"/>
+  <int value="5" label="Canvas"/>
+  <int value="6" label="AutoModel"/>
+  <int value="7" label="ThinkingModel"/>
 </enum>
 
 <!-- LINT.ThenChange(chrome/browser/ui/omnibox/omnibox_context_menu_controller.h:ContextType) -->

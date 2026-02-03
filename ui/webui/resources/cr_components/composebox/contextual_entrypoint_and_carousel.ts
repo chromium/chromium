@@ -595,6 +595,9 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       case ToolMode.kCreateImage:
         this.setInitialMode(ComposeboxToolMode.kImageGen);
         break;
+      case ToolMode.kCanvas:
+        this.setInitialMode(ComposeboxToolMode.kCanvas);
+        break;
       default:
     }
   }

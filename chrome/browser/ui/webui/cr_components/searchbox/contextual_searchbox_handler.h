@@ -161,10 +161,17 @@ class ContextualSearchboxHandler
 
   std::vector<base::UnguessableToken> GetUploadedContextTokens();
 
+  contextual_search::InputStateModel* input_state_model() {
+    return input_state_model_.get();
+  }
+
   // Resets `input_state_model_`.
   void ResetInputStateModel();
   void SetActiveToolMode(omnibox::ToolMode tool) override;
   void SetActiveModelMode(omnibox::ModelMode model) override;
+  // NOTE: This method is only intended for debugging purposes
+  // (chrome://omnibox/aim-eligibility).
+  void InitializeInputStateModelForDebugging();
 
  protected:
   void ComputeAndOpenQueryUrl(
@@ -253,6 +260,8 @@ class ContextualSearchboxHandler
   std::optional<lens::ContextualInputData> context_input_data_;
   // Callback for `InputStateModel` changes.
   void OnInputStateChanged(const contextual_search::InputState& state);
+
+  void InitializeInputStateModel();
 
   std::unique_ptr<contextual_search::InputState> input_state_;
 

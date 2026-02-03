@@ -79,11 +79,14 @@ chromium-metrics-reviews@google.com.
 
 <variants name="ContextType">
   <variant name="" summary="Aggregated across all request sources"/>
+  <variant name=".AutoModel" summary=""/>
+  <variant name=".Canvas" summary=""/>
   <variant name=".DeepResearch" summary=""/>
   <variant name=".File" summary=""/>
   <variant name=".Image" summary=""/>
   <variant name=".ImageGen" summary=""/>
   <variant name=".Tab" summary=""/>
+  <variant name=".ThinkingModel" summary=""/>
 </variants>
 
 <!-- LINT.ThenChange(chrome/browser/ui/omnibox/omnibox_context_menu_controller.h:ContextType) -->
