@@ -1123,6 +1123,7 @@ public class SiteSettingsTest {
     @SmallTest
     @Feature({"Preferences"})
     @Policies.Add({@Policies.Item(key = "BlockThirdPartyCookies", string = "false")})
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/481297705
     public void testBlockThirdPartyCookiesManagedFalse() throws Exception {
         checkDefaultCookiesSettingManaged(false);
         checkThirdPartyCookieBlockingManaged(true);
