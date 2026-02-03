@@ -1019,7 +1019,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBocaCourseWorkMaterialApiEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBocaScreenSharingTeacherEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBocaScreenSharingStudentEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBocaHostAudioEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBocaAudioForKioskEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBocaReceiverCustomPollingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBrightnessControlInSettingsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCaptureModeEducationEnabled();

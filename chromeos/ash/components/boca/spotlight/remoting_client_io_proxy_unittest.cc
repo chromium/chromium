@@ -9,7 +9,6 @@
 #include <string_view>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "base/check_op.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -17,7 +16,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/repeating_test_future.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chromeos/ash/components/boca/spotlight/spotlight_constants.h"
@@ -183,8 +181,6 @@ class RemotingClientIOProxyImplTest : public testing::Test {
             }));
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kBocaAudioForKiosk};
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   scoped_refptr<network::TestSharedURLLoaderFactory>

@@ -119,16 +119,12 @@ void RemotingClientIOProxyImpl::StartCrdClient(
           base::BindRepeating(&RemotingClientIOProxy::Observer::OnFrameReceived,
                               observer_)));
 
-  // Only consume audio when the Boca Audio for Kiosk flag is enabled.
-  std::unique_ptr<SpotlightAudioStreamConsumer> audio_stream_consumer = nullptr;
-  if (ash::features::IsBocaAudioForKioskEnabled()) {
-    audio_stream_consumer =
-        std::make_unique<SpotlightAudioStreamConsumer>(base::BindPostTask(
-            observer_task_runner_,
-            base::BindRepeating(
-                &RemotingClientIOProxy::Observer::OnAudioPacketReceived,
-                observer_)));
-  }
+  std::unique_ptr<SpotlightAudioStreamConsumer> audio_stream_consumer =
+      std::make_unique<SpotlightAudioStreamConsumer>(base::BindPostTask(
+          observer_task_runner_,
+          base::BindRepeating(
+              &RemotingClientIOProxy::Observer::OnAudioPacketReceived,
+              observer_)));
 
   remoting_client_wrapper_ = create_remoting_client_wrapper_cb_.Run(
       base::BindPostTask(
