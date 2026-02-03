@@ -119,7 +119,7 @@ class KeyboardAccessoryView extends LinearLayout {
         private int getItemOffsetInternal(
                 final View view, final RecyclerView parent, RecyclerView.State state) {
             if (parent.getAdapter() == null
-                    || !isLastItem(parent, view, parent.getAdapter().getItemCount())
+                    || !isLastItem(parent, view, state.getItemCount())
                     || !mHasStickyLastItem) {
                 return mHorizontalMargin;
             }
