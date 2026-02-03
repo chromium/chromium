@@ -122,7 +122,7 @@
           self.sceneState.browserProviderInterface.mainBrowserProvider.browser
               ->GetProfile(),
           version_info::GetVersion())) {
-    _promosManager->RegisterPromoForContinuousDisplay(
+    _promosManager->RegisterPromoForSingleDisplay(
         promos_manager::Promo::FullscreenSignin);
     return;
   }
