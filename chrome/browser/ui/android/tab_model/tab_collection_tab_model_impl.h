@@ -177,6 +177,10 @@ class TabCollectionTabModelImpl {
       const tab_groups::TabGroupId& tab_group_id,
       bool allow_detached = false) const;
 
+  // Returns true if the tab group is in either the tab strip or the detached
+  // list.
+  bool HasTabGroup(const tab_groups::TabGroupId& tab_group_id) const;
+
   JavaObjectWeakGlobalRef java_object_;
   raw_ptr<Profile> profile_;
 
