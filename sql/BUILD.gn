@@ -84,6 +84,8 @@ static_library("test_support") {
     "test/scoped_error_expecter.h",
     "test/test_helpers.cc",
     "test/test_helpers.h",
+    "test/test_vfs.cc",
+    "test/test_vfs.h",
   ]
 
   public_deps = [ ":sql" ]

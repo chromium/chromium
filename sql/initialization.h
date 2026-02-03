@@ -5,6 +5,8 @@
 #ifndef SQL_INITIALIZATION_H_
 #define SQL_INITIALIZATION_H_
 
+#include "base/component_export.h"
+
 namespace sql {
 
 // Makes sure that sqlite3_initialize() is called.
@@ -13,7 +15,7 @@ namespace sql {
 //
 // When `create_wrapper` is true, this will create a functionality-modifying
 // wrapper VFS and install it as the default. See `CreateVfsWrapper()`.
-void EnsureSqliteInitialized(bool create_wrapper = true);
+void COMPONENT_EXPORT(SQL) EnsureSqliteInitialized(bool create_wrapper = true);
 
 }  // namespace sql
 

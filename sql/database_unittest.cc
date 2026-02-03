@@ -18,6 +18,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -34,6 +35,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
+#include "base/strings/cstring_view.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
@@ -55,6 +57,7 @@
 #include "sql/statement_id.h"
 #include "sql/test/scoped_error_expecter.h"
 #include "sql/test/test_helpers.h"
+#include "sql/test/test_vfs.h"
 #include "sql/transaction.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -69,7 +72,8 @@ namespace sql {
 
 namespace {
 
-using sql::test::ExecuteWithResult;
+using ::sql::test::ExecuteWithResult;
+using ::sql::test::TestVfs;
 using ::testing::Bool;
 using ::testing::Combine;
 using ::testing::Contains;
@@ -2815,5 +2819,64 @@ TEST_P(ReadOnlySQLDatabaseTest, CreateAndSelect) {
 INSTANTIATE_TEST_SUITE_P(LockingMode,
                          ReadOnlySQLDatabaseTest,
                          Combine(Bool(), Bool(), Bool()));
+
+// An SQLite VFS for testing the Database class.
+class DatabaseTestVfs : public TestVfs {
+ public:
+  int Write(sqlite3_file* file,
+            const void* buffer,
+            int size,
+            sqlite3_int64 offset) override {
+    if (drive_full_) {
+      return SQLITE_FULL;
+    }
+    return TestVfs::Write(file, buffer, size, offset);
+  }
+
+  void set_drive_full(bool drive_full) { drive_full_ = drive_full; }
+
+ private:
+  bool drive_full_ = false;
+};
+
+std::optional<std::vector<int>> ReadInts(Database& db,
+                                         base::cstring_view query) {
+  std::vector<int> result;
+  Statement statement(db.GetUniqueStatement(query));
+  while (statement.Step()) {
+    result.push_back(statement.ColumnInt(0));
+  }
+  if (!statement.Succeeded()) {
+    return std::nullopt;
+  }
+  return result;
+}
+
+class DatabaseDiskFullTest : public Test {
+ public:
+  void SetUp() override {
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    db_path_ = temp_dir_.GetPath().AppendASCII("main.db");
+  }
+
+ protected:
+  DatabaseTestVfs vfs_;
+  base::ScopedTempDir temp_dir_;
+  base::FilePath db_path_;
+};
+
+// Checks that `Database::Raze()` is a no-op when the disk is full.
+TEST_F(DatabaseDiskFullTest, RazeFailsWhenDiskIsFull) {
+  Database db(test::kTestTag);
+  ASSERT_TRUE(db.Open(db_path_));
+  ASSERT_TRUE(db.Execute("CREATE TABLE foo(i)"));
+  ASSERT_TRUE(db.Execute("INSERT INTO foo(i) VALUES(42)"));
+
+  // Force any further writes to fail.
+  vfs_.set_drive_full(true);
+
+  EXPECT_FALSE(db.Raze());
+  EXPECT_THAT(ReadInts(db, "SELECT i FROM foo"), Optional(ElementsAre(42)));
+}
 
 }  // namespace sql
