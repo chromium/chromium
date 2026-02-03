@@ -185,6 +185,15 @@ extern template class PA_EXPORT_TEMPLATE_DECLARE(
 
 }  // namespace internal
 
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+void InstallPartitionAllocWithAdvancedChecks();
+
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+void InstallCustomDispatchForTesting(AllocatorDispatch* dispatch);
+
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+void UninstallCustomDispatch();
+
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 // Provide a ConfigurePartitions() helper, to mimic what Chromium uses. This way
 // we're making it more resilient to ConfigurePartitions() interface changes, so

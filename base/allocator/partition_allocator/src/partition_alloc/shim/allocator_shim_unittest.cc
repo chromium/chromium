@@ -46,9 +46,8 @@
 extern "C" void* __libc_memalign(size_t align, size_t s);
 #endif
 
-#if PA_BUILDFLAG( \
-    ENABLE_ALLOCATOR_SHIM_PARTITION_ALLOC_DISPATCH_WITH_ADVANCED_CHECKS_SUPPORT)
-#include "partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc_with_advanced_checks.h"
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#include "partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
 #endif
 
 // Weak as this is a C11 function, which is not always available. It is also not
@@ -1584,8 +1583,7 @@ TEST_F(AllocatorShimCppOperatorTest, MakeVectorPolymorphicStruct) {
   ASSERT_FALSE(given_alignment_on_delete_);
 }
 
-#if PA_BUILDFLAG( \
-    ENABLE_ALLOCATOR_SHIM_PARTITION_ALLOC_DISPATCH_WITH_ADVANCED_CHECKS_SUPPORT)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 void* MockAllocWithAdvancedChecks(size_t, AllocToken, void*);
 

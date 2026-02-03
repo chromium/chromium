@@ -145,11 +145,6 @@ declare_args() {
 }
 
 declare_args() {
-  # Whether PartitionAlloc dispatch can be replaced with another dispatch with
-  # some more safety checks at runtime or not.  When true, the allocator shim
-  # provides an extended API to swap PartitionAlloc.
-  enable_allocator_shim_partition_alloc_dispatch_with_advanced_checks_support =
-      use_partition_alloc_as_malloc
   # Whether the allocator shim supports alloc token or not. If true, malloc()
   # and operator new() families are injected with an alloc token parameter,
   # which is used to select the partition in PartitionAlloc.
@@ -157,12 +152,8 @@ declare_args() {
   shim_supports_alloc_token = false
 }
 
-assert(
-    !enable_allocator_shim_partition_alloc_dispatch_with_advanced_checks_support || use_partition_alloc_as_malloc,
-    "PartitionAlloc with advanced checks requires PartitionAlloc itself.")
 assert(!is_component_build || is_linux || !shim_supports_alloc_token,
        "In the component build, alloc token is only supported on Linux.")
-
 if (use_allocator_shim && is_win) {
   # It's hard to override CRT's malloc family in every case in the component
   # build, and it's very easy to override it partially and to be inconsistent
