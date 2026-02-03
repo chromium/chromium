@@ -122,7 +122,6 @@
 :host([dark-mode_]) {
   --color-composebox-background: rgba(31, 31, 31, 1);
   --color-composebox-cancel-button: rgba(191, 191, 191, 1);
-  --color-composebox-context-entrypoint-hover-background: rgba(63, 64, 74, 1);
   --color-composebox-file-carousel-divider: rgba(94, 94, 94, 1);
   --color-composebox-file-carousel-remove-gradient-end: rgba(100, 100, 100, 0.2);
   --color-composebox-file-carousel-remove-gradient-start: rgba(100, 100, 100, 0.2);
@@ -174,6 +173,10 @@
   --toolbar-divider-color: rgb(94,94,94);
   --toolbar-menu-background-color: rgb(31, 31, 31);
   --toolbar-text-color: rgb(227,227,227);
+
+  /* Color of Active tool chip */
+  --color-composebox-context-entrypoint-hover-background: rgba(42, 43, 54, 1);
+  --color-searchbox-results-foreground: rgba(255, 255, 255, 1);
 }
 
 [hidden] {
