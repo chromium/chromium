@@ -172,6 +172,13 @@ PasskeyJavaScriptFeature::PasskeyJavaScriptFeature()
 
 PasskeyJavaScriptFeature::~PasskeyJavaScriptFeature() = default;
 
+void PasskeyJavaScriptFeature::RejectPasskeyRequest(
+    web::WebFrame* web_frame,
+    std::string_view request_id) {
+  CallJavaScriptFunction(web_frame, "passkey.rejectPasskeyRequest",
+                         base::ListValue().Append(request_id));
+}
+
 void PasskeyJavaScriptFeature::DeferToRenderer(
     web::WebFrame* web_frame,
     std::string_view request_id,

@@ -66,6 +66,10 @@ class PasskeyJavaScriptFeature : public web::JavaScriptFeature {
   // needed.
   static PasskeyJavaScriptFeature* GetInstance();
 
+  // Rejects the current attestation or registration request.
+  void RejectPasskeyRequest(web::WebFrame* web_frame,
+                            std::string_view request_id);
+
   // Yields the current attestation or registration request back to the OS.
   void DeferToRenderer(web::WebFrame* web_frame,
                        std::string_view request_id,

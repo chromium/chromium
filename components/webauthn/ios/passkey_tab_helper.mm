@@ -531,6 +531,55 @@ void PasskeyTabHelper::StartPasskeyCreation(std::string request_id) {
                                     std::move(client_data_json)));
 }
 
+std::optional<std::pair<std::string, PasskeyRequestParams::RequestType>>
+PasskeyTabHelper::ExtractRequestInfo(const std::string& request_id) {
+  if (registration_requests_.contains(request_id)) {
+    std::optional<RegistrationRequestParams> optional_params =
+        ExtractParamsFromRegistrationRequestsMap(request_id);
+    if (optional_params.has_value()) {
+      return std::make_pair(optional_params->FrameId(),
+                            optional_params->Type());
+    }
+  } else if (assertion_requests_.contains(request_id)) {
+    std::optional<AssertionRequestParams> optional_params =
+        ExtractParamsFromAssertionRequestsMap(request_id);
+    if (optional_params.has_value()) {
+      return std::make_pair(optional_params->FrameId(),
+                            optional_params->Type());
+    }
+  }
+
+  return std::nullopt;
+}
+
+void PasskeyTabHelper::RejectPendingRequest(const std::string& request_id) {
+  auto request_info = ExtractRequestInfo(request_id);
+
+  if (!request_info.has_value()) {
+    // Passkey request not found.
+    return;
+  }
+
+  const std::string& frame_id = request_info->first;
+
+  if (frame_id.empty()) {
+    return;
+  }
+
+  web::WebFrame* web_frame = GetWebFrame(frame_id);
+  if (!web_frame) {
+    return;
+  }
+
+  RejectPasskeyRequest(web_frame, request_id);
+}
+
+void PasskeyTabHelper::RejectPasskeyRequest(web::WebFrame* web_frame,
+                                            const std::string& request_id) {
+  PasskeyJavaScriptFeature::GetInstance()->RejectPasskeyRequest(web_frame,
+                                                                request_id);
+}
+
 void PasskeyTabHelper::DeferToRenderer(
     IOSPasskeyClient::RequestInfo request_info,
     PasskeyRequestParams::RequestType request_type) const {
@@ -552,29 +601,14 @@ void PasskeyTabHelper::DeferToRenderer(
 
 void PasskeyTabHelper::DeferPendingRequestToRenderer(
     const std::string& request_id) {
-  std::string frame_id;
-  PasskeyRequestParams::RequestType request_type;
-  if (registration_requests_.contains(request_id)) {
-    std::optional<RegistrationRequestParams> optional_params =
-        ExtractParamsFromRegistrationRequestsMap(request_id);
-    if (!optional_params.has_value()) {
-      // Passkey request not found.
-      return;
-    }
+  auto request_info = ExtractRequestInfo(request_id);
 
-    frame_id = optional_params->FrameId();
-    request_type = optional_params->Type();
-  } else if (assertion_requests_.contains(request_id)) {
-    std::optional<AssertionRequestParams> optional_params =
-        ExtractParamsFromAssertionRequestsMap(request_id);
-    if (!optional_params.has_value()) {
-      // Passkey request not found.
-      return;
-    }
-
-    frame_id = optional_params->FrameId();
-    request_type = optional_params->Type();
+  if (!request_info.has_value()) {
+    // Passkey request not found.
+    return;
   }
+
+  const auto& [frame_id, request_type] = *request_info;
 
   if (frame_id.empty()) {
     return;

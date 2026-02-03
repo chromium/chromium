@@ -857,6 +857,12 @@ function deferToRenderer(requestId: string, requestType: number): void {
   }
 }
 
+// Function called from C++ to reject a passkey request.
+function rejectPasskeyRequest(requestId: string): void {
+  DeferredPublicKeyCredentialPromise.reject(requestId);
+}
+
+
 // Resolves the credential promise with the provided response.
 function resolveCredentialPromise(
     requestId: string, id64: string, response: AuthenticatorResponse,
@@ -903,6 +909,7 @@ function resolveAttestationRequest(
 const passkey = new CrWebApi('passkey');
 
 passkey.addFunction('deferToRenderer', deferToRenderer);
+passkey.addFunction('rejectPasskeyRequest', rejectPasskeyRequest);
 passkey.addFunction('resolveAssertionRequest', resolveAssertionRequest);
 passkey.addFunction('resolveAttestationRequest', resolveAttestationRequest);
 
