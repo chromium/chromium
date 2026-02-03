@@ -26,6 +26,7 @@
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/password_generation_util.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_digest.h"
@@ -452,5 +453,18 @@ std::u16string GetHumanReadableRealm(const std::string& signon_realm) {
   }
   return base::UTF8ToUTF16(signon_realm);
 }
+
+#if !BUILDFLAG(IS_IOS)
+bool ShouldUploadActorLoginMqls() {
+  return base::FeatureList::IsEnabled(
+             password_manager::features::kActorLoginQualityLogs) &&
+         // Disable MQLS upload if FedCM support is enabled while prototyping to
+         // not upload wrong logs.
+         // TODO(crbug.com/480920277): Remove this check once the prototyping is
+         // complete.
+         !base::FeatureList::IsEnabled(
+             password_manager::features::kActorLoginFederatedLoginSupport);
+}
+#endif  // !BUILDFLAG(IS_IOS)
 
 }  // namespace password_manager_util

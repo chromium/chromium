@@ -195,6 +195,11 @@ bool IsSingleUsernameType(autofill::FieldType type);
 // Returns the prettified version of |signon_realm| to be displayed on the UI.
 std::u16string GetHumanReadableRealm(const std::string& signon_realm);
 
+#if !BUILDFLAG(IS_IOS)
+// Returns true if Actor Login MQLS logs should be uploaded.
+bool ShouldUploadActorLoginMqls();
+#endif  // !BUILDFLAG(IS_IOS)
+
 }  // namespace password_manager_util
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_MANAGER_UTIL_H_

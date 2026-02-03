@@ -173,6 +173,7 @@ source_set("impl") {
     "//components/affiliations/core/browser:affiliations",
     "//components/autofill/core/browser/integrators/glic:actor_form_filling_types",
     "//components/page_load_metrics/browser",
+    "//components/password_manager/core/browser",
     "//components/password_manager/core/browser/features:password_features",
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
