@@ -317,6 +317,10 @@ const char kComposeboxCompactModeDescription[] =
     "Enables the compact composebox, adding attachment or enabling AIM will "
     "expand it to the regular size.";
 
+const char kComposeboxDeepSearchName[] = "Enable Composebox Deep Search";
+extern const char kComposeboxDeepSearchDescription[] =
+    "Enables the deep search advanced tool in Composebox";
+
 const char kComposeboxDevToolsName[] = "Enable Composebox Dev Tools";
 const char kComposeboxDevToolsDescription[] =
     "Enables development tools for the composebox, allowing simulation of "

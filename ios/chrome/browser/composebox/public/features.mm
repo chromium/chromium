@@ -55,6 +55,12 @@ bool ShowComposeboxAdditionalAdvancedTools() {
 
 BASE_FEATURE(kComposeboxCompactMode, base::FEATURE_DISABLED_BY_DEFAULT);
 
+bool ShowDeepSearchTool() {
+  return base::FeatureList::IsEnabled(kComposeboxDeepSearch);
+}
+
+BASE_FEATURE(kComposeboxDeepSearch, base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsComposeboxCompactModeEnabled() {
   return base::FeatureList::IsEnabled(kComposeboxCompactMode);
 }
