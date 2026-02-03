@@ -47,6 +47,7 @@ import org.chromium.components.browser_ui.util.ChromeItemPickerExtras;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatures;
+import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.WindowAndroid;
@@ -178,7 +179,14 @@ public class FuseboxMediator {
             mInput.getRequestTypeSupplier().removeObserver(mOnAutocompleteRequestTypeChanged);
         }
         mInput = input;
+
         if (mInput != null) {
+            // TODO(crbug.com/481365131): there must be a better way to do that.
+            if (mInput.getRequestType() == AutocompleteRequestType.AI_MODE
+                    && mInput.getFocusReason() == OmniboxFocusReason.NTP_AI_MODE) {
+                activateAiMode(AiModeActivationSource.NTP_BUTTON);
+            }
+
             mInput.getRequestTypeSupplier()
                     .addSyncObserverAndCallIfNonNull(mOnAutocompleteRequestTypeChanged);
         }

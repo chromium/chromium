@@ -9,6 +9,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.components.omnibox.AutocompleteRequestType;
+import org.chromium.components.omnibox.OmniboxFocusReason;
 
 /**
  * Handles user interaction with the stubbed Omnibox (a.k.a. fakebox) used in the pages such as NTP

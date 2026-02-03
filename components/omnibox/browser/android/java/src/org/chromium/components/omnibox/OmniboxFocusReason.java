@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.omnibox;
+package org.chromium.components.omnibox;
 
 import androidx.annotation.IntDef;
 
@@ -13,6 +13,7 @@ import java.lang.annotation.RetentionPolicy;
 
 /** A means of tracking which mechanism is being used to focus the omnibox. */
 @IntDef({
+    // LINT.IfChange(OmniboxFocusReason)
     OmniboxFocusReason.OMNIBOX_TAP,
     OmniboxFocusReason.OMNIBOX_LONG_PRESS,
     OmniboxFocusReason.FAKE_BOX_TAP,
@@ -33,6 +34,7 @@ import java.lang.annotation.RetentionPolicy;
     OmniboxFocusReason.ACTIVITY_RECREATION_RESTORATION,
     OmniboxFocusReason.LOCATION_BAR_STATE_RESTORATION,
     OmniboxFocusReason.NTP_AI_MODE,
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:OmniboxFocusReason) -->
 })
 @Retention(RetentionPolicy.SOURCE)
 @NullMarked
@@ -43,7 +45,7 @@ public @interface OmniboxFocusReason {
     int FAKE_BOX_LONG_PRESS = 3;
     int ACCELERATOR_TAP = 4;
     // TAB_SWITCHER_OMNIBOX_TAP has not been used anymore, keep it for record for now.
-    int TAB_SWITCHER_OMNIBOX_TAP = 5;
+    @Deprecated int TAB_SWITCHER_OMNIBOX_TAP = 5;
     int TASKS_SURFACE_FAKE_BOX_TAP = 6;
     int TASKS_SURFACE_FAKE_BOX_LONG_PRESS = 7;
     int DEFAULT_WITH_HARDWARE_KEYBOARD = 8;
@@ -53,9 +55,9 @@ public @interface OmniboxFocusReason {
     int UNFOCUS = 12;
     int QUERY_TILES_NTP_TAP = 13;
     // FOLD_TRANSITION_RESTORATION has not been used anymore, keep it for record for now.
-    int FOLD_TRANSITION_RESTORATION = 14;
+    @Deprecated int FOLD_TRANSITION_RESTORATION = 14;
     // DRAG_DROP_TO_OMNIBOX has not been used anymore, keep it for record for now.
-    int DRAG_DROP_TO_OMNIBOX = 15;
+    @Deprecated int DRAG_DROP_TO_OMNIBOX = 15;
     // Emitted on tap after focus from #8.
     int TAP_AFTER_FOCUS_FROM_KEYBOARD = 16;
     int ACTIVITY_RECREATION_RESTORATION = 17;

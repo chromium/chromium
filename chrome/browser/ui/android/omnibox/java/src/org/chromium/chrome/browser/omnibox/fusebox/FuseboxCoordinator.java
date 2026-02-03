@@ -28,7 +28,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentModelList.FuseboxAttachmentChangeListener;
-import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.AiModeActivationSource;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -236,11 +235,6 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         if (mMediator == null) return;
         mLastBrandedColorScheme = brandedColorScheme;
         mMediator.updateVisualsForState(brandedColorScheme);
-    }
-
-    public void onAiModeActivatedFromNtp() {
-        if (mMediator == null) return;
-        mMediator.activateAiMode(AiModeActivationSource.NTP_BUTTON);
     }
 
     /**

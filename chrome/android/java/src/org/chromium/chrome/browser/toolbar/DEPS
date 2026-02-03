@@ -19,6 +19,7 @@ include_rules = [
   "+components/feature_engagement",
   "+components/browser_ui/bottomsheet/android/java",
   "+components/browser_ui/desktop_windowing/android",
+  "+components/omnibox/browser",
   "+content/public/android/java/src/org/chromium/content_public",
 ]
 

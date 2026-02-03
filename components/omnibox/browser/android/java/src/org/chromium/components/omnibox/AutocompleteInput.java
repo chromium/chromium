@@ -60,6 +60,7 @@ public class AutocompleteInput implements UserData {
     private int mSelectionEnd;
     private @RefineActionUsage int mRefineActionUsage;
     private boolean mSuggestionsListScrolled;
+    private @OmniboxFocusReason int mFocusReason;
     private final SettableNonNullObservableSupplier<@AutocompleteRequestType Integer>
             mRequestTypeSupplier = new ObservableSupplierImpl<>(AutocompleteRequestType.SEARCH);
 
@@ -151,6 +152,17 @@ public class AutocompleteInput implements UserData {
     /** Returns the current page title. */
     public String getPageTitle() {
         return mPageTitle;
+    }
+
+    /** Sets the specific reason that activated the input session. */
+    public AutocompleteInput setFocusReason(@OmniboxFocusReason int focusReason) {
+        mFocusReason = focusReason;
+        return this;
+    }
+
+    /** Returns how the input session was activated. */
+    public @OmniboxFocusReason int getFocusReason() {
+        return mFocusReason;
     }
 
     /** Set the AutocompleteRequestType */
@@ -302,6 +314,7 @@ public class AutocompleteInput implements UserData {
         mSelectionEnd = 0;
         mRefineActionUsage = RefineActionUsage.NOT_USED;
         mPageClassification = PageClassification.BLANK_VALUE;
+        mFocusReason = OmniboxFocusReason.OMNIBOX_TAP;
         mRequestTypeSupplier.set(AutocompleteRequestType.SEARCH);
         mUrlFocusTime = 0;
         mSuggestionsListScrolled = false;

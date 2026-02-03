@@ -1458,6 +1458,8 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="potential NTP impression - no open tab"/>
 </enum>
 
+<!-- LINT.IfChange(OmniboxFocusReason) -->
+
 <enum name="OmniboxFocusReason">
   <int value="0" label="Omnibox tapped."/>
   <int value="1" label="Omnibox long-pressed (obsolete)."/>
@@ -1480,6 +1482,8 @@ chromium-metrics-reviews@google.com.
   <int value="18" label="Location bar state restoration on tab change"/>
   <int value="19" label="NTP AI Mode button."/>
 </enum>
+
+<!-- LINT.ThenChange(//components/omnibox/browser/android/java/src/org/chromium/components/omnibox/OmniboxFocusReason.java:OmniboxFocusReason) -->
 
 <!-- LINT.IfChange(OmniboxJumpStartState) -->
 

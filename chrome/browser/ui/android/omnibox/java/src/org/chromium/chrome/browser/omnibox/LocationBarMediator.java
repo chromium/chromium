@@ -99,6 +99,7 @@ import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatures;
+import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.webapps.AddToHomescreenCoordinator;
 import org.chromium.components.webapps.AppBannerManager;
@@ -246,6 +247,8 @@ class LocationBarMediator
     private @Nullable AutocompleteInput mCurrentInput;
     private final Callback<@AutocompleteRequestType Integer> mAutocompleteRequestTypeObserver =
             this::onAutocompleteRequestTypeChanged;
+    private @AutocompleteRequestType int mPendingRequestType = AutocompleteRequestType.SEARCH;
+    private @OmniboxFocusReason int mPendingFocusReason = OmniboxFocusReason.OMNIBOX_TAP;
     private @Nullable Callback<Boolean> mOnSpecializedFuseboxModeActivatedCallback;
 
     private final ButtonToolbarWidthConsumer mBookmarkButtonToolbarWidthConsumer;
@@ -1003,7 +1006,8 @@ class LocationBarMediator
      * @return true if new input session has been activated.
      */
     @EnsuresNonNullIf("mCurrentInput")
-    private boolean beginOrResumeInput(boolean activateNewSession) {
+    @VisibleForTesting
+    boolean beginOrResumeInput(boolean activateNewSession) {
         // Do not instantiate a new ephemeral session unless we're activating it as well.
         var session =
                 FuseboxSessionState.from(
@@ -1022,7 +1026,11 @@ class LocationBarMediator
 
         session.setSessionActive(true);
         mCurrentInput = session.autocompleteInput;
-        mCurrentInput.getRequestTypeSupplier().addObserver(mAutocompleteRequestTypeObserver);
+        mCurrentInput.setFocusReason(mPendingFocusReason);
+        mCurrentInput.setRequestType(mPendingRequestType);
+        mPendingRequestType = AutocompleteRequestType.SEARCH;
+        mPendingFocusReason = OmniboxFocusReason.OMNIBOX_TAP;
+        mCurrentInput.getRequestTypeSupplier().addSyncObserver(mAutocompleteRequestTypeObserver);
 
         // In the event input session was activated before native initialization we cannot
         // correctly determine the page classification, rendering the AutocompleteInput
@@ -1901,14 +1909,13 @@ class LocationBarMediator
             boolean shouldBeFocused,
             @Nullable String pastedText,
             boolean selectText,
-            int reason,
-            int requestType) {
+            @OmniboxFocusReason int reason,
+            @AutocompleteRequestType int requestType) {
 
         boolean urlHasFocus = mUrlHasFocus;
         if (shouldBeFocused) {
-            if (requestType == AutocompleteRequestType.AI_MODE) {
-                mFuseboxCoordinator.onAiModeActivatedFromNtp();
-            }
+            mPendingRequestType = requestType;
+            mPendingFocusReason = reason;
             if (!urlHasFocus) {
                 recordOmniboxFocusReason(reason);
                 // Record Lens button shown when Omnibox is focused.

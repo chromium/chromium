@@ -106,11 +106,13 @@ import org.chromium.components.browser_ui.accessibility.PageZoomIndicatorCoordin
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
+import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.omnibox.OmniboxFeatures;
+import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -1015,10 +1017,15 @@ public class LocationBarMediatorTest {
                 /* shouldBeFocused= */ true,
                 null,
                 /* selectText= */ false,
-                OmniboxFocusReason.FAKE_BOX_TAP,
+                OmniboxFocusReason.NTP_AI_MODE,
                 AutocompleteRequestType.AI_MODE);
         verify(mUrlCoordinator).requestFocus();
-        verify(mFuseboxCoordinator).onAiModeActivatedFromNtp();
+
+        mMediator.beginOrResumeInput(/* activateNewSession= */ true);
+        ArgumentCaptor<AutocompleteInput> captor = ArgumentCaptor.forClass(AutocompleteInput.class);
+        verify(mFuseboxCoordinator).beginInput(captor.capture());
+
+        assertEquals(OmniboxFocusReason.NTP_AI_MODE, captor.getValue().getFocusReason());
     }
 
     @Test
