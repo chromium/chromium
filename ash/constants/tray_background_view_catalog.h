@@ -39,7 +39,8 @@ enum class TrayBackgroundViewCatalogName {
   kFocusMode = 23,
   kPodsOverflow = 24,
   kMouseKeysStatusArea = 25,
-  kMaxValue = kMouseKeysStatusArea,
+  kChromeCustom = 26,
+  kMaxValue = kChromeCustom,
 };
 
 }  // namespace ash
