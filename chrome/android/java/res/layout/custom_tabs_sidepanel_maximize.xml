@@ -8,6 +8,6 @@ found in the LICENSE file.
 <ImageButton
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/custom_tabs_sidepanel_maximize"
-    style="@style/ToolbarButton"
+    style="@style/ToolbarHoverableButton"
     android:contentDescription="@string/custom_tab_side_sheet_maximize"
     android:paddingHorizontal="@dimen/custom_tabs_toolbar_button_horizontal_padding" />

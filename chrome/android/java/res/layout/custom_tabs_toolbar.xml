@@ -14,14 +14,14 @@ found in the LICENSE file.
     android:layout_height="@dimen/custom_tabs_control_container_height">
     <ImageButton
         android:id="@+id/close_button"
-        style="@style/ToolbarButton"
+        style="@style/ToolbarHoverableButton"
         android:layout_width="@dimen/toolbar_button_width"
         android:paddingHorizontal="@dimen/custom_tabs_toolbar_button_horizontal_padding"
         android:layout_gravity="start|center_vertical"
         android:contentDescription="@string/close_tab" />
     <ViewStub
         android:id="@+id/minimize_button_stub"
-        style="@style/ToolbarButton"
+        style="@style/ToolbarHoverableButton"
         android:inflatedId="@+id/custom_tabs_minimize_button"
         android:layout="@layout/custom_tabs_minimize_button"
         android:layout_gravity="start|center_vertical"
@@ -159,7 +159,7 @@ found in the LICENSE file.
 
         <org.chromium.ui.widget.ChromeImageButton
             android:id="@+id/menu_button"
-            style="@style/ToolbarButton"
+            style="@style/ToolbarHoverableButton"
             android:src="@drawable/ic_more_vert_24dp"
             android:layout_gravity="center"
             android:clickable="true"
@@ -168,7 +168,6 @@ found in the LICENSE file.
             android:paddingHorizontal="@dimen/custom_tabs_toolbar_button_horizontal_padding"
             android:contentDescription="@string/accessibility_toolbar_btn_menu"
             android:tooltipText="@string/accessibility_toolbar_btn_menu"
-            android:background="@null"
             app:tint="@color/default_icon_color_tint_list" />
        <ImageView
            android:id="@+id/menu_dot"

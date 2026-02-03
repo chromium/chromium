@@ -16,14 +16,13 @@ found in the LICENSE file.
 
     <org.chromium.ui.widget.ChromeImageButton
         android:id="@+id/menu_button"
-        style="@style/ToolbarButton"
+        style="@style/ToolbarHoverableButton"
         android:src="@drawable/ic_more_vert_24dp"
         android:layout_gravity="center"
         android:clickable="true"
         android:focusable="true"
         android:contentDescription="@string/accessibility_toolbar_btn_menu"
         android:tooltipText="@string/accessibility_toolbar_btn_menu"
-        android:background="@null"
         android:paddingHorizontal="@dimen/custom_tabs_toolbar_button_horizontal_padding"
         app:tint="@color/default_icon_color_tint_list" />
     <ImageView

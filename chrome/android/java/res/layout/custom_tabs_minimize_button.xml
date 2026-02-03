@@ -13,5 +13,5 @@ found in the LICENSE file.
     android:paddingHorizontal="@dimen/custom_tabs_toolbar_button_horizontal_padding"
     android:layout_marginStart="@dimen/toolbar_button_width"
     android:layout_gravity="start|center_vertical"
-    style="@style/ToolbarButton"
+    style="@style/ToolbarHoverableButton"
     android:contentDescription="@string/custom_tab_minimize"/>
