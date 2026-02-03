@@ -42,6 +42,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "url/gurl.h"
 
 namespace policy {
@@ -51,8 +52,9 @@ namespace {
 // Cleans up the cache directory by removing subdirectories that are not found
 // in |subdirectories_to_keep|. Only caches whose cache directory is found in
 // |subdirectories_to_keep| may be running while the clean-up is in progress.
-void DeleteOrphanedCaches(const base::FilePath& cache_root_dir,
-                          const std::set<std::string>& subdirectories_to_keep) {
+void DeleteOrphanedCaches(
+    const base::FilePath& cache_root_dir,
+    const absl::flat_hash_set<std::string>& subdirectories_to_keep) {
   base::FileEnumerator enumerator(cache_root_dir, false,
                                   base::FileEnumerator::DIRECTORIES);
   for (base::FilePath path = enumerator.Next(); !path.empty();
@@ -274,7 +276,7 @@ void DeviceLocalAccountPolicyService::UpdateAccountList() {
   // Update |policy_brokers_|, keeping existing entries.
   PolicyBrokerMap old_policy_brokers;
   policy_brokers_.swap(old_policy_brokers);
-  std::set<std::string> subdirectories_to_keep;
+  absl::flat_hash_set<std::string> subdirectories_to_keep;
   const std::vector<DeviceLocalAccount> device_local_accounts =
       GetDeviceLocalAccounts(cros_settings_);
   for (const auto& device_local_account : device_local_accounts) {
