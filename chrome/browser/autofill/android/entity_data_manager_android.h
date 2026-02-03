@@ -32,7 +32,7 @@ class AccountSettingService;
 
 // Android wrapper of the EntityDataManager which provides access from the
 // Java layer.
-class EntityDataManagerAndroid {
+class EntityDataManagerAndroid : public autofill::EntityDataManager::Observer {
  public:
   EntityDataManagerAndroid(JNIEnv* env,
                            const jni_zero::JavaRef<jobject>& obj,
@@ -81,11 +81,18 @@ class EntityDataManagerAndroid {
   std::vector<EntityTypeAndroid> GetWritableEntityTypes(JNIEnv* env);
 
  private:
-  ~EntityDataManagerAndroid();
+  ~EntityDataManagerAndroid() override;
+
+  // autofill::EntityDataManager::Observer implementation.
+  void OnEntityInstancesChanged() override;
 
   EntityDataManager& entity_data_manager() {
     return entity_data_manager_.get();
   }
+
+  base::ScopedObservation<autofill::EntityDataManager,
+                          autofill::EntityDataManager::Observer>
+      entity_data_manager_observer_{this};
 
   // Pointer to the java counterpart.
   JavaObjectWeakGlobalRef weak_java_obj_;

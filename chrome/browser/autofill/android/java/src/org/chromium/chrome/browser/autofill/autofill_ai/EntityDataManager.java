@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.autofill.autofill_ai;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
@@ -76,6 +77,14 @@ public class EntityDataManager implements Destroyable {
     public List<EntityType> getWritableEntityTypes() {
         ThreadUtils.assertOnUiThread();
         return EntityDataManagerJni.get().getWritableEntityTypes(mNativeEntityDataManagerAndroid);
+    }
+
+    /** Called by C++ when there is a change in the instances. */
+    @CalledByNative
+    public void onEntityInstancesChanged() {
+        ThreadUtils.assertOnUiThread();
+        // TODO(crbug.com/411324196): Handle entities changes, this should recall
+        // `getEntitiesWithLabels()`.
     }
 
     /** Returns whether the user is eligible for Autofill AI. */

@@ -20,7 +20,6 @@
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/autofill/android/jni_headers/AutofillAiSaveUpdateEntityPrompt_jni.h"
-#include "chrome/browser/autofill/android/jni_headers/EntityDataManager_jni.h"
 
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;

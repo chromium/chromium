@@ -175,6 +175,15 @@ std::vector<EntityTypeAndroid> EntityDataManagerAndroid::GetWritableEntityTypes(
   return entity_types;
 }
 
+void EntityDataManagerAndroid::OnEntityInstancesChanged() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  auto java_obj = weak_java_obj_.get(env);
+  if (java_obj.is_null()) {
+    return;
+  }
+  Java_EntityDataManager_onEntityInstancesChanged(env, java_obj);
+}
+
 }  // namespace autofill
 
 DEFINE_JNI(EntityDataManager)
