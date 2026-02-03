@@ -96,8 +96,7 @@ void NetworkChangeManagerClient::ReconnectToNetworkChangeManager() {
   network_change_manager_->OnNetworkChanged(
       /*dns_changed=*/false,
       network::mojom::IPAddressChangeType::IP_ADDRESS_CHANGE_NONE,
-      /*connection_type_changed=*/true,
-      network::mojom::ConnectionType(connection_type_),
+      /*connection_type_changed=*/true, connection_type_,
       /*connection_subtype_changed=*/true,
       network::mojom::ConnectionSubtype(connection_subtype_));
 }
@@ -224,9 +223,7 @@ void NetworkChangeManagerClient::NotifyObservers(
         ip_address_changed
             ? network::mojom::IPAddressChangeType::IP_ADDRESS_CHANGE_NORMAL
             : network::mojom::IPAddressChangeType::IP_ADDRESS_CHANGE_NONE,
-        connection_type_changed,
-        network::mojom::ConnectionType(connection_type),
-        connection_subtype_changed,
+        connection_type_changed, connection_type, connection_subtype_changed,
         network::mojom::ConnectionSubtype(connection_subtype));
   }
 }

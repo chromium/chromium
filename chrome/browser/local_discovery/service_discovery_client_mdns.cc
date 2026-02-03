@@ -378,7 +378,7 @@ ServiceDiscoveryClientMdns::~ServiceDiscoveryClientMdns() {
 }
 
 void ServiceDiscoveryClientMdns::OnConnectionChanged(
-    network::mojom::ConnectionType type) {
+    net::NetworkChangeNotifier::ConnectionType type) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // Only network changes resets counter.
   restart_attempts_ = 0;

@@ -53,7 +53,7 @@ void NetworkConnectionChangeSimulator::InitializeChromeosConnectionType() {
         /*dns_changed=*/false,
         network::mojom::IPAddressChangeType::IP_ADDRESS_CHANGE_NONE,
         /*connection_type_changed=*/true,
-        network::mojom::ConnectionType::CONNECTION_ETHERNET,
+        net::NetworkChangeNotifier::ConnectionType::CONNECTION_ETHERNET,
         /*connection_subtype_changed=*/false,
         network::mojom::ConnectionSubtype::SUBTYPE_UNKNOWN);
   }
@@ -61,11 +61,11 @@ void NetworkConnectionChangeSimulator::InitializeChromeosConnectionType() {
 #endif
 
 void NetworkConnectionChangeSimulator::SetConnectionType(
-    network::mojom::ConnectionType type) {
+    net::NetworkChangeNotifier::ConnectionType type) {
   network::NetworkConnectionTracker* network_connection_tracker =
       content::GetNetworkConnectionTracker();
-  network::mojom::ConnectionType connection_type =
-      network::mojom::ConnectionType::CONNECTION_UNKNOWN;
+  net::NetworkChangeNotifier::ConnectionType connection_type =
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN;
   run_loop_ = std::make_unique<base::RunLoop>(kRunLoopType);
   network_connection_tracker->AddNetworkConnectionObserver(this);
   SimulateNetworkChange(type);
@@ -89,7 +89,7 @@ void NetworkConnectionChangeSimulator::SetConnectionType(
 
 // static
 void NetworkConnectionChangeSimulator::SimulateNetworkChange(
-    network::mojom::ConnectionType type) {
+    net::NetworkChangeNotifier::ConnectionType type) {
   if (IsOutOfProcessNetworkService()) {
     mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
     content::GetNetworkService()->BindTestInterfaceForTesting(
@@ -99,12 +99,11 @@ void NetworkConnectionChangeSimulator::SimulateNetworkChange(
     run_loop.Run();
     return;
   }
-  net::NetworkChangeNotifier::NotifyObserversOfNetworkChangeForTests(
-      net::NetworkChangeNotifier::ConnectionType(type));
+  net::NetworkChangeNotifier::NotifyObserversOfNetworkChangeForTests(type);
 }
 
 void NetworkConnectionChangeSimulator::OnConnectionChanged(
-    network::mojom::ConnectionType connection_type) {
+    net::NetworkChangeNotifier::ConnectionType connection_type) {
   DCHECK(run_loop_);
   run_loop_->Quit();
 }

@@ -33,13 +33,16 @@ class NetworkConnectionChangeSimulator
 #endif
 
   // Synchronously sets the connection type.
-  void SetConnectionType(network::mojom::ConnectionType connection_type);
+  void SetConnectionType(
+      net::NetworkChangeNotifier::ConnectionType connection_type);
 
  private:
-  static void SimulateNetworkChange(network::mojom::ConnectionType type);
+  static void SimulateNetworkChange(
+      net::NetworkChangeNotifier::ConnectionType type);
 
   // network::NetworkConnectionTracker::NetworkConnectionObserver:
-  void OnConnectionChanged(network::mojom::ConnectionType type) override;
+  void OnConnectionChanged(
+      net::NetworkChangeNotifier::ConnectionType type) override;
 
   std::unique_ptr<base::RunLoop> run_loop_;
 };

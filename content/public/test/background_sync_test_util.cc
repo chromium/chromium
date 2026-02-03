@@ -45,10 +45,10 @@ void SetOnline(WebContents* web_contents, bool online) {
       sync_manager->GetNetworkObserverForTesting();
   if (online) {
     network_observer->NotifyManagerIfConnectionChangedForTesting(
-        network::mojom::ConnectionType::CONNECTION_WIFI);
+        net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI);
   } else {
     network_observer->NotifyManagerIfConnectionChangedForTesting(
-        network::mojom::ConnectionType::CONNECTION_NONE);
+        net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
   }
 
   base::RunLoop().RunUntilIdle();

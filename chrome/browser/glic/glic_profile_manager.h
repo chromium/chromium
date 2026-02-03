@@ -103,7 +103,7 @@ class GlicProfileManager : public ProfileManagerObserver,
   static void SetPrewarmingEnabledForTesting(bool enabled);
   static void ForceProfileForLaunchForTesting(std::optional<Profile*> profile);
   static void ForceConnectionTypeForTesting(
-      std::optional<network::mojom::ConnectionType> type);
+      std::optional<net::NetworkChangeNotifier::ConnectionType> type);
 
   base::WeakPtr<GlicProfileManager> GetWeakPtr();
 

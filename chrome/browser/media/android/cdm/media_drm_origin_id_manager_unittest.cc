@@ -255,7 +255,7 @@ TEST_F(MediaDrmOriginIdManagerTest, PreProvisionFailAtStartup) {
 
   // Trigger a network connection to force pre-provisioning to run again.
   network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
-      network::mojom::ConnectionType::CONNECTION_ETHERNET);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_ETHERNET);
   task_environment_.RunUntilIdle();
 
   // Pre-provisioning should have run again. Should return the same result as if
@@ -433,7 +433,7 @@ TEST_F(MediaDrmOriginIdManagerTest, NetworkChange) {
   // Provisioning will now "succeed", so trigger a network change to
   // unconnected.
   network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
-      network::mojom::ConnectionType::CONNECTION_NONE);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
   task_environment_.RunUntilIdle();
 
   // Check that |kAvailableOriginIds| is still empty.
@@ -446,7 +446,7 @@ TEST_F(MediaDrmOriginIdManagerTest, NetworkChange) {
 
   // Now trigger a network change to connected.
   network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
-      network::mojom::ConnectionType::CONNECTION_ETHERNET);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_ETHERNET);
   task_environment_.RunUntilIdle();
 
   // Pre-provisioning should have run and filled up the list.
@@ -483,7 +483,7 @@ TEST_F(MediaDrmOriginIdManagerTest, NetworkChangeFails) {
   // after several failed attempts.
   for (size_t i = 0; i < kConnectionAttempts + 3; ++i) {
     network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
-        network::mojom::ConnectionType::CONNECTION_ETHERNET);
+        net::NetworkChangeNotifier::ConnectionType::CONNECTION_ETHERNET);
     task_environment_.RunUntilIdle();
   }
 

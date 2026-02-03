@@ -25,12 +25,12 @@ namespace {
 void OnGetConnectionType(
     scoped_refptr<base::TaskRunner> task_runner,
     NetworkConnectionTracker::ConnectionTypeCallback user_callback,
-    network::mojom::ConnectionType connection_type) {
+    net::NetworkChangeNotifier::ConnectionType connection_type) {
   task_runner->PostTask(
       FROM_HERE,
       base::BindOnce(
           [](NetworkConnectionTracker::ConnectionTypeCallback callback,
-             network::mojom::ConnectionType type) {
+             net::NetworkChangeNotifier::ConnectionType type) {
             std::move(callback).Run(type);
           },
           std::move(user_callback), connection_type));
@@ -60,13 +60,13 @@ NetworkConnectionTracker::~NetworkConnectionTracker() {
 }
 
 bool NetworkConnectionTracker::GetConnectionType(
-    network::mojom::ConnectionType* const type,
+    net::NetworkChangeNotifier::ConnectionType* const type,
     ConnectionTypeCallback callback) {
   // |connection_type_| is initialized when NetworkService starts up. In most
   // cases, it won't be kConnectionTypeInvalid and code will return early.
   int32_t type_value = connection_type_.load(std::memory_order_relaxed);
   if (type_value != kConnectionTypeInvalid) {
-    *type = static_cast<network::mojom::ConnectionType>(type_value);
+    *type = static_cast<net::NetworkChangeNotifier::ConnectionType>(type_value);
     return true;
   }
   base::AutoLock lock(lock_);
@@ -74,7 +74,7 @@ bool NetworkConnectionTracker::GetConnectionType(
   // OnInitialConnectionType() is called after first NoBarrier_Load.
   type_value = connection_type_.load(std::memory_order_relaxed);
   if (type_value != kConnectionTypeInvalid) {
-    *type = static_cast<network::mojom::ConnectionType>(type_value);
+    *type = static_cast<net::NetworkChangeNotifier::ConnectionType>(type_value);
     return true;
   }
   if (!task_runner_->RunsTasksInCurrentSequence()) {
@@ -90,27 +90,28 @@ bool NetworkConnectionTracker::GetConnectionType(
 bool NetworkConnectionTracker::IsOffline() const {
   int32_t type_value = connection_type_.load(std::memory_order_relaxed);
   if (type_value != kConnectionTypeInvalid) {
-    auto type = static_cast<network::mojom::ConnectionType>(type_value);
-    return type == network::mojom::ConnectionType::CONNECTION_NONE;
+    auto type =
+        static_cast<net::NetworkChangeNotifier::ConnectionType>(type_value);
+    return type == net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE;
   }
   return true;
 }
 
 // static
 bool NetworkConnectionTracker::IsConnectionCellular(
-    const network::mojom::ConnectionType type) {
+    const net::NetworkChangeNotifier::ConnectionType type) {
   switch (type) {
-    case network::mojom::ConnectionType::CONNECTION_2G:
-    case network::mojom::ConnectionType::CONNECTION_3G:
-    case network::mojom::ConnectionType::CONNECTION_4G:
-    case network::mojom::ConnectionType::CONNECTION_5G:
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_2G:
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_3G:
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_4G:
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_5G:
       return true;
 
-    case network::mojom::ConnectionType::CONNECTION_UNKNOWN:
-    case network::mojom::ConnectionType::CONNECTION_ETHERNET:
-    case network::mojom::ConnectionType::CONNECTION_WIFI:
-    case network::mojom::ConnectionType::CONNECTION_NONE:
-    case network::mojom::ConnectionType::CONNECTION_BLUETOOTH:
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN:
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_ETHERNET:
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI:
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE:
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_BLUETOOTH:
       return false;
   }
 
@@ -142,7 +143,7 @@ NetworkConnectionTracker::NetworkConnectionTracker()
               base::ObserverListPolicy::EXISTING_ONLY)) {}
 
 void NetworkConnectionTracker::OnInitialConnectionType(
-    network::mojom::ConnectionType type) {
+    net::NetworkChangeNotifier::ConnectionType type) {
   base::AutoLock lock(lock_);
   connection_type_.store(static_cast<int32_t>(type), std::memory_order_relaxed);
   while (!connection_type_callbacks_.empty()) {
@@ -152,7 +153,7 @@ void NetworkConnectionTracker::OnInitialConnectionType(
 }
 
 void NetworkConnectionTracker::OnNetworkChanged(
-    network::mojom::ConnectionType type) {
+    net::NetworkChangeNotifier::ConnectionType type) {
   connection_type_.store(static_cast<int32_t>(type), std::memory_order_relaxed);
   network_change_observer_list_->Notify(
       FROM_HERE, &NetworkConnectionObserver::OnConnectionChanged, type);

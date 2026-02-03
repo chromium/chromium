@@ -63,7 +63,8 @@ class SyncSchedulerImpl : public SyncScheduler {
                                   bool has_invalidations) override;
 
   void OnCredentialsUpdated() override;
-  void OnConnectionStatusChange(network::mojom::ConnectionType type) override;
+  void OnConnectionStatusChange(
+      net::NetworkChangeNotifier::ConnectionType type) override;
 
   // SyncCycle::Delegate implementation.
   void OnThrottled(const base::TimeDelta& throttle_duration) override;

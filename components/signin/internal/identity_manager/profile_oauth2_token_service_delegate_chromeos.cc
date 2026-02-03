@@ -510,7 +510,7 @@ void ProfileOAuth2TokenServiceDelegateChromeOS::UpdateAuthError(
 }
 
 void ProfileOAuth2TokenServiceDelegateChromeOS::OnConnectionChanged(
-    network::mojom::ConnectionType type) {
+    net::NetworkChangeNotifier::ConnectionType type) {
   ResetBackOffEntry();
 }
 

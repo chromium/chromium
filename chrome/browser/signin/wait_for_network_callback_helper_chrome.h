@@ -30,7 +30,8 @@ class WaitForNetworkCallbackHelperChrome
   ~WaitForNetworkCallbackHelperChrome() override;
 
   // network::NetworkConnectionTracker::NetworkConnectionObserver:
-  void OnConnectionChanged(network::mojom::ConnectionType type) override;
+  void OnConnectionChanged(
+      net::NetworkChangeNotifier::ConnectionType type) override;
 
   // WaitForNetworkCallbackHelper:
   bool AreNetworkCallsDelayed() override;

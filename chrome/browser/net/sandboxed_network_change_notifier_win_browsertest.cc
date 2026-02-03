@@ -142,11 +142,11 @@ class MockNetworkChangeManagerClient
   // NetworkChangeManagerClient implementation:
   MOCK_METHOD(void,
               OnInitialConnectionType,
-              (network::mojom::ConnectionType type),
+              (net::NetworkChangeNotifier::ConnectionType type),
               (override));
   MOCK_METHOD(void,
               OnNetworkChanged,
-              (network::mojom::ConnectionType type),
+              (net::NetworkChangeNotifier::ConnectionType type),
               (override));
 
  private:
@@ -207,17 +207,20 @@ IN_PROC_BROWSER_TEST_P(SandboxedNetworkChangeNotifierBrowserTest,
 
   // First obtain the initial connection type. Before manipulating any network
   // interfaces.
-  base::test::TestFuture<network::mojom::ConnectionType> connection_future;
+  base::test::TestFuture<net::NetworkChangeNotifier::ConnectionType>
+      connection_future;
   EXPECT_CALL(mock, OnInitialConnectionType)
       .WillOnce(base::test::InvokeFuture(connection_future));
-  network::mojom::ConnectionType connection = connection_future.Get();
+  net::NetworkChangeNotifier::ConnectionType connection =
+      connection_future.Get();
 
   // NetworkChangeManager sends two notifications, the first is always
   // CONNECTION_NONE, followed by the actual ConnectionType. See
   // `network_change_manager.mojom`.
   base::RunLoop run_loop;
-  EXPECT_CALL(
-      mock, OnNetworkChanged(network::mojom::ConnectionType::CONNECTION_NONE));
+  EXPECT_CALL(mock,
+              OnNetworkChanged(
+                  net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE));
   EXPECT_CALL(mock, OnNetworkChanged(connection))
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
 

@@ -5,12 +5,12 @@
 module content.mojom;
 
 import "content/common/agent_scheduling_group.mojom";
-import "content/common/native_types.mojom";
 import "ipc/ipc.mojom";
 import "mojo/public/mojom/base/generic_pending_receiver.mojom";
 import "mojo/public/mojom/base/process_priority.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "services/network/public/mojom/network_change_manager.mojom";
 import "services/network/public/mojom/network_types.mojom";
 import "third_party/blink/public/mojom/browser_interface_broker.mojom";
 import "third_party/blink/public/mojom/cpu_performance.mojom";
@@ -80,8 +80,8 @@ interface Renderer {
 
   // Tells the renderer that the network type has changed so that
   // navigator.onLine and navigator.connection can be updated.
-  OnNetworkConnectionChanged(
-      NetworkConnectionType connection_type, double max_bandwidth_mbps);
+  OnNetworkConnectionChanged(network.mojom.ConnectionType connection_type,
+                             double max_bandwidth_mbps);
 
   // Tells the renderer process that the network quality estimate has changed.
   // EffectiveConnectionType is the connection type whose typical performance is

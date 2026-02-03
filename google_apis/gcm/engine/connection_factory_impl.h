@@ -60,7 +60,8 @@ class GCM_EXPORT ConnectionFactoryImpl
   void SetConnectionListener(ConnectionListener* listener) override;
 
   // NetworkConnectionTracker implementation.
-  void OnConnectionChanged(network::mojom::ConnectionType type) override;
+  void OnConnectionChanged(
+      net::NetworkChangeNotifier::ConnectionType type) override;
 
   // Returns the server to which the factory is currently connected, or if
   // a connection is currently pending, the server to which the next connection

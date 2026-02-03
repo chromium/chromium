@@ -27,8 +27,8 @@ WaitForNetworkCallbackHelperChrome::~WaitForNetworkCallbackHelperChrome() =
     default;
 
 void WaitForNetworkCallbackHelperChrome::OnConnectionChanged(
-    network::mojom::ConnectionType type) {
-  if (type == network::mojom::ConnectionType::CONNECTION_NONE) {
+    net::NetworkChangeNotifier::ConnectionType type) {
+  if (type == net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE) {
     return;
   }
 
@@ -41,12 +41,13 @@ void WaitForNetworkCallbackHelperChrome::OnConnectionChanged(
 
 bool WaitForNetworkCallbackHelperChrome::AreNetworkCallsDelayed() {
   // Don't bother if we don't have any kind of network connection.
-  network::mojom::ConnectionType type;
+  net::NetworkChangeNotifier::ConnectionType type;
   bool sync = content::GetNetworkConnectionTracker()->GetConnectionType(
       &type,
       base::BindOnce(&WaitForNetworkCallbackHelperChrome::OnConnectionChanged,
                      weak_ptr_factory_.GetWeakPtr()));
-  if (!sync || type == network::mojom::ConnectionType::CONNECTION_NONE) {
+  if (!sync ||
+      type == net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE) {
     return true;
   }
 

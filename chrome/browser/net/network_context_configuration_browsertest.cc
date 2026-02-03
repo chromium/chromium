@@ -168,8 +168,9 @@ class ConnectionTypeWaiter
     tracker_->RemoveNetworkConnectionObserver(this);
   }
 
-  void Wait(network::mojom::ConnectionType expected_type) {
-    auto current_type = network::mojom::ConnectionType::CONNECTION_UNKNOWN;
+  void Wait(net::NetworkChangeNotifier::ConnectionType expected_type) {
+    auto current_type =
+        net::NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN;
     for (;;) {
       network::NetworkConnectionTracker::ConnectionTypeCallback callback =
           base::BindOnce(&ConnectionTypeWaiter::OnConnectionChanged,
@@ -185,7 +186,8 @@ class ConnectionTypeWaiter
 
  private:
   // network::NetworkConnectionTracker::NetworkConnectionObserver:
-  void OnConnectionChanged(network::mojom::ConnectionType type) override {
+  void OnConnectionChanged(
+      net::NetworkChangeNotifier::ConnectionType type) override {
     if (run_loop_)
       run_loop_->Quit();
   }
@@ -285,7 +287,7 @@ class NetworkContextConfigurationBrowserTest
     // the connection type to be available to avoid getting notified of the
     // connection change halfway through the test.
     ConnectionTypeWaiter().Wait(
-        network::mojom::ConnectionType::CONNECTION_ETHERNET);
+        net::NetworkChangeNotifier::ConnectionType::CONNECTION_ETHERNET);
 #endif
   }
 

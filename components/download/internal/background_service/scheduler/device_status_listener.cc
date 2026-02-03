@@ -25,22 +25,22 @@ BatteryStatus ToBatteryStatus(
 }
 
 // Converts a ConnectionType to NetworkStatus.
-NetworkStatus ToNetworkStatus(network::mojom::ConnectionType type) {
+NetworkStatus ToNetworkStatus(net::NetworkChangeNotifier::ConnectionType type) {
   switch (type) {
-    case network::mojom::ConnectionType::CONNECTION_ETHERNET:
-    case network::mojom::ConnectionType::CONNECTION_WIFI:
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_ETHERNET:
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI:
       return NetworkStatus::UNMETERED;
-    case network::mojom::ConnectionType::CONNECTION_2G:
-    case network::mojom::ConnectionType::CONNECTION_3G:
-    case network::mojom::ConnectionType::CONNECTION_4G:
-    case network::mojom::ConnectionType::CONNECTION_5G:
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_2G:
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_3G:
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_4G:
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_5G:
       // TODO(crbug.com/40148439): 5G networks may be unmetered. Find a way to
       // detect this and make DeviceStatusListener aware of it.
       return NetworkStatus::METERED;
-    case network::mojom::ConnectionType::CONNECTION_NONE:
-    case network::mojom::ConnectionType::CONNECTION_BLUETOOTH:
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE:
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_BLUETOOTH:
       return NetworkStatus::DISCONNECTED;
-    case network::mojom::ConnectionType::CONNECTION_UNKNOWN:
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN:
 #if BUILDFLAG(IS_ANDROID)
       return NetworkStatus::DISCONNECTED;
 #else
@@ -131,14 +131,14 @@ void DeviceStatusListener::Stop() {
 }
 
 void DeviceStatusListener::OnNetworkStatusReady(
-    network::mojom::ConnectionType type) {
+    net::NetworkChangeNotifier::ConnectionType type) {
   status_.network_status = ToNetworkStatus(type);
   is_valid_state_ = true;
   NotifyStatusChange();
 }
 
 void DeviceStatusListener::OnNetworkChanged(
-    network::mojom::ConnectionType type) {
+    net::NetworkChangeNotifier::ConnectionType type) {
   pending_network_status_ = ToNetworkStatus(type);
 
   if (pending_network_status_ == status_.network_status) {

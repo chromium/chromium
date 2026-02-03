@@ -248,7 +248,7 @@ class NetErrorAutoReloaderBrowserTest : public content::ContentBrowserTest {
         error_page::NetErrorAutoReloader::FromWebContents(wc);
     reloader->DisableConnectionChangeObservationForTesting();
     reloader->OnConnectionChanged(
-        network::mojom::ConnectionType::CONNECTION_WIFI);
+        net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI);
   }
 
   static void SimulateNetworkGoingOffline(content::WebContents* wc) {
@@ -256,7 +256,7 @@ class NetErrorAutoReloaderBrowserTest : public content::ContentBrowserTest {
         error_page::NetErrorAutoReloader::FromWebContents(wc);
     reloader->DisableConnectionChangeObservationForTesting();
     reloader->OnConnectionChanged(
-        network::mojom::ConnectionType::CONNECTION_NONE);
+        net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
   }
 };
 

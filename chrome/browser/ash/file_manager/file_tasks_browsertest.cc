@@ -1821,9 +1821,10 @@ class OneDriveTest : public TestAccountBrowserTest,
   void SetNetworkConnected(const bool connected) {
     content::SetNetworkConnectionTrackerForTesting(nullptr);
     content::SetNetworkConnectionTrackerForTesting(connection_tracker_.get());
-    using enum network::mojom::ConnectionType;
-    connection_tracker_->SetConnectionType(connected ? CONNECTION_WIFI
-                                                     : CONNECTION_NONE);
+    using ConnectionType = net::NetworkChangeNotifier::ConnectionType;
+    connection_tracker_->SetConnectionType(
+        connected ? ConnectionType::CONNECTION_WIFI
+                  : ConnectionType::CONNECTION_NONE);
     SetDriveConnectionStatusForTesting(connected
                                            ? ConnectionStatus::kConnected
                                            : ConnectionStatus::kNoNetwork);

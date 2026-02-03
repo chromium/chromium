@@ -183,14 +183,16 @@ void BoundSessionCookieControllerImpl::Initialize(bool is_new_session) {
 }
 
 void BoundSessionCookieControllerImpl::OnConnectionChanged(
-    network::mojom::ConnectionType type) {
-  if (is_offline_ && type != network::mojom::ConnectionType::CONNECTION_NONE) {
+    net::NetworkChangeNotifier::ConnectionType type) {
+  if (is_offline_ &&
+      type != net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE) {
     // We are back online. Schedule a new cookie rotation if needed.
     MaybeScheduleCookieRotation(
         BoundSessionRefreshCookieFetcher::Trigger::kConnectionChanged);
   }
 
-  is_offline_ = type == network::mojom::ConnectionType::CONNECTION_NONE;
+  is_offline_ =
+      type == net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE;
 }
 
 void BoundSessionCookieControllerImpl::HandleRequestBlockedOnCookie(

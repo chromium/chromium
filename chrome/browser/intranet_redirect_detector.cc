@@ -234,9 +234,10 @@ void IntranetRedirectDetector::OnSimpleLoaderComplete(
 }
 
 void IntranetRedirectDetector::OnConnectionChanged(
-    network::mojom::ConnectionType type) {
-  if (type != network::mojom::ConnectionType::CONNECTION_NONE)
+    net::NetworkChangeNotifier::ConnectionType type) {
+  if (type != net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE) {
     Restart();
+  }
 }
 
 void IntranetRedirectDetector::OnDnsConfigChanged() {

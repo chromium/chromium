@@ -134,7 +134,7 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     content::NetworkConnectionChangeSimulator().SetConnectionType(
-        network::mojom::ConnectionType::CONNECTION_2G);
+        net::NetworkChangeNotifier::ConnectionType::CONNECTION_2G);
 
     // Ensure that kGoogleHost resolves to the localhost where the embedded test
     // server is listening.
@@ -239,12 +239,12 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
 
   void SetNetworkConnectionOffline() {
     content::NetworkConnectionChangeSimulator().SetConnectionType(
-        network::mojom::ConnectionType::CONNECTION_NONE);
+        net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
   }
 
   void SetNetworkConnectionOnline() {
     content::NetworkConnectionChangeSimulator().SetConnectionType(
-        network::mojom::ConnectionType::CONNECTION_2G);
+        net::NetworkChangeNotifier::ConnectionType::CONNECTION_2G);
   }
 
   void SetResponseType(

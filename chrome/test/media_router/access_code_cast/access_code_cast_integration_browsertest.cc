@@ -189,7 +189,7 @@ void AccessCodeCastIntegrationBrowserTest::SetUpOnMainThread() {
   content::SetNetworkConnectionTrackerForTesting(
       network_connection_tracker_.get());
   network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
-      network::mojom::ConnectionType::CONNECTION_WIFI);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI);
   url_loader_interceptor_ =
       std::make_unique<content::URLLoaderInterceptor>(base::BindRepeating(
           &AccessCodeCastIntegrationBrowserTest::InterceptRequest,

@@ -33,8 +33,9 @@ class TestNetworkConnectionObserver
       : num_notifications_(0),
         tracker_(tracker),
         expected_connection_type_(
-            network::mojom::ConnectionType::CONNECTION_UNKNOWN),
-        connection_type_(network::mojom::ConnectionType::CONNECTION_UNKNOWN) {
+            net::NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN),
+        connection_type_(
+            net::NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN) {
     tracker_->AddNetworkConnectionObserver(this);
   }
 
@@ -47,8 +48,8 @@ class TestNetworkConnectionObserver
   }
 
   // Helper to synchronously get connection type from NetworkConnectionTracker.
-  network::mojom::ConnectionType GetConnectionTypeSync() {
-    network::mojom::ConnectionType type;
+  net::NetworkChangeNotifier::ConnectionType GetConnectionTypeSync() {
+    net::NetworkChangeNotifier::ConnectionType type;
     base::RunLoop run_loop;
     bool sync = tracker_->GetConnectionType(
         &type, base::BindOnce(
@@ -60,7 +61,8 @@ class TestNetworkConnectionObserver
   }
 
   // NetworkConnectionObserver implementation:
-  void OnConnectionChanged(network::mojom::ConnectionType type) override {
+  void OnConnectionChanged(
+      net::NetworkChangeNotifier::ConnectionType type) override {
     EXPECT_EQ(type, GetConnectionTypeSync());
 
     num_notifications_++;
@@ -71,7 +73,7 @@ class TestNetworkConnectionObserver
 
   size_t num_notifications() const { return num_notifications_; }
   void WaitForNotification(
-      network::mojom::ConnectionType expected_connection_type) {
+      net::NetworkChangeNotifier::ConnectionType expected_connection_type) {
     expected_connection_type_ = expected_connection_type;
 
     if (connection_type_ == expected_connection_type)
@@ -83,14 +85,15 @@ class TestNetworkConnectionObserver
     run_loop_.reset();
   }
 
-  network::mojom::ConnectionType connection_type() const {
+  net::NetworkChangeNotifier::ConnectionType connection_type() const {
     return connection_type_;
   }
 
  private:
-  static void GetConnectionTypeCallback(base::RunLoop* run_loop,
-                                        network::mojom::ConnectionType* out,
-                                        network::mojom::ConnectionType type) {
+  static void GetConnectionTypeCallback(
+      base::RunLoop* run_loop,
+      net::NetworkChangeNotifier::ConnectionType* out,
+      net::NetworkChangeNotifier::ConnectionType type) {
     *out = type;
     run_loop->Quit();
   }
@@ -99,8 +102,8 @@ class TestNetworkConnectionObserver
   raw_ptr<NetworkConnectionTracker> tracker_;
   // May be null.
   std::unique_ptr<base::RunLoop> run_loop_;
-  network::mojom::ConnectionType expected_connection_type_;
-  network::mojom::ConnectionType connection_type_;
+  net::NetworkChangeNotifier::ConnectionType expected_connection_type_;
+  net::NetworkChangeNotifier::ConnectionType connection_type_;
 };
 
 class TestLeakyNetworkConnectionObserver
@@ -108,7 +111,8 @@ class TestLeakyNetworkConnectionObserver
  public:
   explicit TestLeakyNetworkConnectionObserver(NetworkConnectionTracker* tracker)
       : run_loop_(std::make_unique<base::RunLoop>()),
-        connection_type_(network::mojom::ConnectionType::CONNECTION_UNKNOWN) {
+        connection_type_(
+            net::NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN) {
     tracker->AddLeakyNetworkConnectionObserver(this);
   }
 
@@ -118,7 +122,8 @@ class TestLeakyNetworkConnectionObserver
       const TestLeakyNetworkConnectionObserver&) = delete;
 
   // NetworkConnectionObserver implementation:
-  void OnConnectionChanged(network::mojom::ConnectionType type) override {
+  void OnConnectionChanged(
+      net::NetworkChangeNotifier::ConnectionType type) override {
     connection_type_ = type;
     run_loop_->Quit();
   }
@@ -128,13 +133,13 @@ class TestLeakyNetworkConnectionObserver
     run_loop_ = std::make_unique<base::RunLoop>();
   }
 
-  network::mojom::ConnectionType connection_type() const {
+  net::NetworkChangeNotifier::ConnectionType connection_type() const {
     return connection_type_;
   }
 
  private:
   std::unique_ptr<base::RunLoop> run_loop_;
-  network::mojom::ConnectionType connection_type_;
+  net::NetworkChangeNotifier::ConnectionType connection_type_;
 };
 
 // A helper class to call NetworkConnectionTracker::GetConnectionType().
@@ -142,7 +147,8 @@ class ConnectionTypeGetter {
  public:
   explicit ConnectionTypeGetter(NetworkConnectionTracker* tracker)
       : tracker_(tracker),
-        connection_type_(network::mojom::ConnectionType::CONNECTION_UNKNOWN) {}
+        connection_type_(
+            net::NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN) {}
 
   ConnectionTypeGetter(const ConnectionTypeGetter&) = delete;
   ConnectionTypeGetter& operator=(const ConnectionTypeGetter&) = delete;
@@ -158,18 +164,18 @@ class ConnectionTypeGetter {
   }
 
   void WaitForConnectionType(
-      network::mojom::ConnectionType expected_connection_type) {
+      net::NetworkChangeNotifier::ConnectionType expected_connection_type) {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     run_loop_.Run();
     EXPECT_EQ(expected_connection_type, connection_type_);
   }
 
-  network::mojom::ConnectionType connection_type() const {
+  net::NetworkChangeNotifier::ConnectionType connection_type() const {
     return connection_type_;
   }
 
  private:
-  void OnGetConnectionType(network::mojom::ConnectionType type) {
+  void OnGetConnectionType(net::NetworkChangeNotifier::ConnectionType type) {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     connection_type_ = type;
     run_loop_.Quit();
@@ -177,7 +183,7 @@ class ConnectionTypeGetter {
 
   base::RunLoop run_loop_;
   raw_ptr<NetworkConnectionTracker> tracker_;
-  network::mojom::ConnectionType connection_type_;
+  net::NetworkChangeNotifier::ConnectionType connection_type_;
   THREAD_CHECKER(thread_checker_);
 };
 
@@ -239,7 +245,7 @@ class NetworkConnectionTrackerTest : public testing::Test {
 
 TEST_F(NetworkConnectionTrackerTest, ObserverNotified) {
   Initialize();
-  EXPECT_EQ(network::mojom::ConnectionType::CONNECTION_UNKNOWN,
+  EXPECT_EQ(net::NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN,
             network_connection_observer()->connection_type());
 
   // Simulate a network change.
@@ -247,8 +253,8 @@ TEST_F(NetworkConnectionTrackerTest, ObserverNotified) {
       net::NetworkChangeNotifier::ConnectionType::CONNECTION_3G);
 
   network_connection_observer()->WaitForNotification(
-      network::mojom::ConnectionType::CONNECTION_3G);
-  EXPECT_EQ(network::mojom::ConnectionType::CONNECTION_3G,
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_3G);
+  EXPECT_EQ(net::NetworkChangeNotifier::ConnectionType::CONNECTION_3G,
             network_connection_observer()->connection_type());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, network_connection_observer()->num_notifications());
@@ -265,12 +271,12 @@ TEST_F(NetworkConnectionTrackerTest, UnregisteredObserverNotNotified) {
       net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI);
 
   network_connection_observer2->WaitForNotification(
-      network::mojom::ConnectionType::CONNECTION_WIFI);
-  EXPECT_EQ(network::mojom::ConnectionType::CONNECTION_WIFI,
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI);
+  EXPECT_EQ(net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI,
             network_connection_observer2->connection_type());
   network_connection_observer()->WaitForNotification(
-      network::mojom::ConnectionType::CONNECTION_WIFI);
-  EXPECT_EQ(network::mojom::ConnectionType::CONNECTION_WIFI,
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI);
+  EXPECT_EQ(net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI,
             network_connection_observer()->connection_type());
   base::RunLoop().RunUntilIdle();
 
@@ -280,8 +286,8 @@ TEST_F(NetworkConnectionTrackerTest, UnregisteredObserverNotNotified) {
   SimulateConnectionTypeChange(
       net::NetworkChangeNotifier::ConnectionType::CONNECTION_2G);
   network_connection_observer()->WaitForNotification(
-      network::mojom::ConnectionType::CONNECTION_2G);
-  EXPECT_EQ(network::mojom::ConnectionType::CONNECTION_2G,
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_2G);
+  EXPECT_EQ(net::NetworkChangeNotifier::ConnectionType::CONNECTION_2G,
             network_connection_observer()->connection_type());
   EXPECT_EQ(2u, network_connection_observer()->num_notifications());
 }
@@ -297,7 +303,7 @@ TEST_F(NetworkConnectionTrackerTest, LeakyObserversCanLeak) {
       net::NetworkChangeNotifier::ConnectionType::CONNECTION_3G);
 
   leaky_network_connection_observer->WaitForNotification();
-  EXPECT_EQ(network::mojom::ConnectionType::CONNECTION_3G,
+  EXPECT_EQ(net::NetworkChangeNotifier::ConnectionType::CONNECTION_3G,
             leaky_network_connection_observer->connection_type());
   base::RunLoop().RunUntilIdle();
   // The leaky observer is never unregistered.
@@ -317,16 +323,16 @@ TEST_F(NetworkConnectionTrackerTest, GetConnectionType) {
   EXPECT_FALSE(getter2.GetConnectionType());
 
   getter1.WaitForConnectionType(
-      /*expected_connection_type=*/network::mojom::ConnectionType::
+      /*expected_connection_type=*/net::NetworkChangeNotifier::ConnectionType::
           CONNECTION_3G);
   getter2.WaitForConnectionType(
-      /*expected_connection_type=*/network::mojom::ConnectionType::
+      /*expected_connection_type=*/net::NetworkChangeNotifier::ConnectionType::
           CONNECTION_3G);
 
   ConnectionTypeGetter getter3(network_connection_tracker());
   // This GetConnectionType() should finish synchronously.
   EXPECT_TRUE(getter3.GetConnectionType());
-  EXPECT_EQ(network::mojom::ConnectionType::CONNECTION_3G,
+  EXPECT_EQ(net::NetworkChangeNotifier::ConnectionType::CONNECTION_3G,
             getter3.connection_type());
 }
 
@@ -346,11 +352,11 @@ TEST_F(NetworkConnectionTrackerTest, GetConnectionTypeUnavailable) {
       base::Unretained(network_service_remote->get()));
 
   auto tracker = std::make_unique<NetworkConnectionTracker>(callback);
-  auto type = network::mojom::ConnectionType::CONNECTION_3G;
+  auto type = net::NetworkChangeNotifier::ConnectionType::CONNECTION_3G;
   bool sync = tracker->GetConnectionType(&type, base::DoNothing());
 
   EXPECT_FALSE(sync);
-  EXPECT_EQ(type, network::mojom::ConnectionType::CONNECTION_3G);
+  EXPECT_EQ(type, net::NetworkChangeNotifier::ConnectionType::CONNECTION_3G);
   delete network_service_remote;
 }
 
@@ -376,7 +382,7 @@ class NetworkGetConnectionTest : public NetworkConnectionTrackerTest {
   }
 
   void WaitForConnectionType(
-      network::mojom::ConnectionType expected_connection_type) {
+      net::NetworkChangeNotifier::ConnectionType expected_connection_type) {
     DCHECK(getter_thread_.task_runner()->RunsTasksInCurrentSequence());
     getter_->WaitForConnectionType(expected_connection_type);
   }
@@ -408,15 +414,16 @@ TEST_F(NetworkGetConnectionTest, GetConnectionTypeOnDifferentThread) {
   }
 
   network_connection_tracker()->OnInitialConnectionType(
-      network::mojom::ConnectionType::CONNECTION_3G);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_3G);
   {
     base::RunLoop run_loop;
     getter_thread()->task_runner()->PostTaskAndReply(
         FROM_HERE,
-        base::BindOnce(&NetworkGetConnectionTest::WaitForConnectionType,
-                       base::Unretained(this),
-                       /*expected_connection_type=*/
-                       network::mojom::ConnectionType::CONNECTION_3G),
+        base::BindOnce(
+            &NetworkGetConnectionTest::WaitForConnectionType,
+            base::Unretained(this),
+            /*expected_connection_type=*/
+            net::NetworkChangeNotifier::ConnectionType::CONNECTION_3G),
         base::BindOnce([](base::RunLoop* run_loop) { run_loop->Quit(); },
                        base::Unretained(&run_loop)));
     run_loop.Run();

@@ -92,7 +92,8 @@ ConnectivityCheckerImpl::ConnectivityCheckerImpl(
       cast_metrics_helper_(metrics::CastMetricsHelper::GetInstance()),
       connected_and_time_synced_(false),
       network_connected_(false),
-      connection_type_(network::mojom::ConnectionType::CONNECTION_NONE),
+      connection_type_(
+          net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE),
       check_errors_(0),
       network_changed_pending_(false),
       disconnected_probe_period_(disconnected_probe_period),
@@ -185,7 +186,8 @@ void ConnectivityCheckerImpl::CheckInternal() {
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK(url_loader_factory_);
 
-  auto connection_type = network::mojom::ConnectionType::CONNECTION_UNKNOWN;
+  auto connection_type =
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN;
   bool is_sync = network_connection_tracker_->GetConnectionType(
       &connection_type,
       base::BindOnce(&ConnectivityCheckerImpl::OnConnectionChanged,
@@ -196,7 +198,8 @@ void ConnectivityCheckerImpl::CheckInternal() {
   // synchronously retrieved, since OnConnectionChanged will be triggered later
   // which will cause duplicate checks.
   if (!is_sync ||
-      connection_type == network::mojom::ConnectionType::CONNECTION_NONE) {
+      connection_type ==
+          net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE) {
     return;
   }
 
@@ -245,7 +248,7 @@ void ConnectivityCheckerImpl::SetCastMetricsHelperForTesting(
 }
 
 void ConnectivityCheckerImpl::OnConnectionChanged(
-    network::mojom::ConnectionType type) {
+    net::NetworkChangeNotifier::ConnectionType type) {
   DVLOG(2) << "OnConnectionChanged " << type;
   connection_type_ = type;
 
@@ -268,7 +271,8 @@ void ConnectivityCheckerImpl::OnConnectionChangedInternal() {
   network_changed_pending_ = false;
   Cancel();
 
-  if (connection_type_ == network::mojom::ConnectionType::CONNECTION_NONE) {
+  if (connection_type_ ==
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE) {
     SetConnected(false);
     return;
   }

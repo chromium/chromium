@@ -83,7 +83,8 @@ class IntranetRedirectDetector
                               std::optional<std::string> response_body);
 
   // NetworkConnectionTracker::NetworkConnectionObserver
-  void OnConnectionChanged(network::mojom::ConnectionType type) override;
+  void OnConnectionChanged(
+      net::NetworkChangeNotifier::ConnectionType type) override;
 
   // network::mojom::DnsConfigChangeManagerClient
   void OnDnsConfigChanged() override;

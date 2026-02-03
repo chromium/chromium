@@ -113,7 +113,8 @@ class SyncManagerImpl
   void RefreshTypes(DataTypeSet types) override;
 
   // NetworkConnectionTracker::NetworkConnectionObserver implementation.
-  void OnConnectionChanged(network::mojom::ConnectionType type) override;
+  void OnConnectionChanged(
+      net::NetworkChangeNotifier::ConnectionType type) override;
 
   // NudgeHandler implementation.
   void NudgeForInitialDownload(DataType type) override;

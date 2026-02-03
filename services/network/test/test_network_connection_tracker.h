@@ -5,6 +5,7 @@
 #ifndef SERVICES_NETWORK_TEST_TEST_NETWORK_CONNECTION_TRACKER_H_
 #define SERVICES_NETWORK_TEST_TEST_NETWORK_CONNECTION_TRACKER_H_
 
+#include "net/base/network_change_notifier.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 
 namespace network {
@@ -39,11 +40,11 @@ class TestNetworkConnectionTracker : public NetworkConnectionTracker {
 
   ~TestNetworkConnectionTracker() override;
 
-  bool GetConnectionType(network::mojom::ConnectionType* type,
+  bool GetConnectionType(net::NetworkChangeNotifier::ConnectionType* type,
                          ConnectionTypeCallback callback) override;
 
   // Sets the current connection type and notifies all observers.
-  void SetConnectionType(network::mojom::ConnectionType);
+  void SetConnectionType(net::NetworkChangeNotifier::ConnectionType);
 
   // Sets whether or not GetConnectionType() will respond synchronously.
   void SetRespondSynchronously(bool respond_synchronously);

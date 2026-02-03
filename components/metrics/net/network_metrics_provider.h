@@ -79,7 +79,8 @@ class NetworkMetricsProvider
   void ProvideSystemProfileMetrics(SystemProfileProto* system_profile) override;
 
   // NetworkConnectionObserver:
-  void OnConnectionChanged(network::mojom::ConnectionType type) override;
+  void OnConnectionChanged(
+      net::NetworkChangeNotifier::ConnectionType type) override;
 
   SystemProfileProto::Network::ConnectionType GetConnectionType() const;
 
@@ -100,7 +101,7 @@ class NetworkMetricsProvider
   // True if |connection_type_| changed during the lifetime of the log.
   bool connection_type_is_ambiguous_;
   // The connection type according to network::NetworkConnectionTracker.
-  network::mojom::ConnectionType connection_type_;
+  net::NetworkChangeNotifier::ConnectionType connection_type_;
   // True if the network connection tracker has been initialized.
   bool network_connection_tracker_initialized_;
 

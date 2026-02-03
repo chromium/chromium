@@ -382,7 +382,7 @@ class AttributionManagerImplTest : public testing::Test {
   void ForceGetReportsToSend() { attribution_manager_->GetReportsToSend(); }
 
   void SetConnectionTypeAndWaitForObserversToBeNotified(
-      network::mojom::ConnectionType connection_type) {
+      net::NetworkChangeNotifier::ConnectionType connection_type) {
     network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
         connection_type);
     // Ensure that the network connection observers have been notified before
@@ -593,7 +593,7 @@ TEST_F(AttributionManagerImplTest,
   checkpoint.Call(2);
 
   SetConnectionTypeAndWaitForObserversToBeNotified(
-      network::mojom::ConnectionType::CONNECTION_2G);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_2G);
 
   // Second report delay.
   task_environment_.FastForwardBy(base::Minutes(15));
@@ -1982,13 +1982,13 @@ TEST_F(AttributionManagerImplTest, Offline_NoReportSent) {
   EXPECT_THAT(StoredReports(), SizeIs(1));
 
   SetConnectionTypeAndWaitForObserversToBeNotified(
-      network::mojom::ConnectionType::CONNECTION_NONE);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
   task_environment_.FastForwardBy(kFirstReportingWindow);
 
   checkpoint.Call(1);
 
   SetConnectionTypeAndWaitForObserversToBeNotified(
-      network::mojom::ConnectionType::CONNECTION_UNKNOWN);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN);
 }
 
 TEST_F(AttributionManagerImplTest, Offline_ExpiredReportDeleted) {
@@ -2014,13 +2014,13 @@ TEST_F(AttributionManagerImplTest, Offline_ExpiredReportDeleted) {
   EXPECT_THAT(StoredReports(), SizeIs(2));
 
   SetConnectionTypeAndWaitForObserversToBeNotified(
-      network::mojom::ConnectionType::CONNECTION_NONE);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
   task_environment_.FastForwardBy(kImpressionExpiry + kReportExpiry);
 
   checkpoint.Call(1);
 
   SetConnectionTypeAndWaitForObserversToBeNotified(
-      network::mojom::ConnectionType::CONNECTION_UNKNOWN);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN);
 
   task_environment_.FastForwardBy(kDefaultOfflineReportDelay.max);
   EXPECT_THAT(StoredReports(), IsEmpty());
@@ -2062,7 +2062,7 @@ TEST_F(AttributionManagerImplOnlineConnectionTypeTest,
   EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _));
 
   SetConnectionTypeAndWaitForObserversToBeNotified(
-      network::mojom::ConnectionType::CONNECTION_4G);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_4G);
 
   // Cause any scheduled tasks to run.
   task_environment_.FastForwardBy(base::TimeDelta());
@@ -2173,13 +2173,13 @@ TEST_F(AttributionManagerImplTest, SendReport_RecordsExtraReportDelay2) {
 
   // Prevent the report from being sent until after its original report time.
   SetConnectionTypeAndWaitForObserversToBeNotified(
-      network::mojom::ConnectionType::CONNECTION_NONE);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
   task_environment_.FastForwardBy(kFirstReportingWindow + base::Days(3));
 
   checkpoint.Call(1);
 
   SetConnectionTypeAndWaitForObserversToBeNotified(
-      network::mojom::ConnectionType::CONNECTION_UNKNOWN);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN);
 
   task_environment_.FastForwardBy(kDefaultOfflineReportDelay.max);
 
@@ -2667,7 +2667,7 @@ TEST_F(AttributionManagerImplTest, OnReportSent_RecordReportDelay) {
   }
 
   SetConnectionTypeAndWaitForObserversToBeNotified(
-      network::mojom::ConnectionType::CONNECTION_NONE);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
 
   task_environment_.FastForwardBy(kFirstReportingWindow + base::Days(3));
 
@@ -2690,7 +2690,7 @@ TEST_F(AttributionManagerImplTest, OnReportSent_RecordReportDelay) {
       });
 
   SetConnectionTypeAndWaitForObserversToBeNotified(
-      network::mojom::ConnectionType::CONNECTION_UNKNOWN);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN);
   task_environment_.FastForwardBy(base::Minutes(1));
 
   ASSERT_THAT(report_sent_callbacks, SizeIs(2));

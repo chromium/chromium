@@ -277,7 +277,7 @@ TEST_F(TerminaInstallTest, InstallDlcOffline) {
   auto* network_connection_tracker =
       network::TestNetworkConnectionTracker::GetInstance();
   network_connection_tracker->SetConnectionType(
-      network::mojom::ConnectionType::CONNECTION_NONE);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
 
   TestFuture<TerminaInstaller::InstallResult> result_future;
   termina_installer_->Install(result_future.GetCallback());
@@ -342,7 +342,7 @@ TEST_F(TerminaInstallTest, InstallDlcFallbackOffline) {
   auto* network_connection_tracker =
       network::TestNetworkConnectionTracker::GetInstance();
   network_connection_tracker->SetConnectionType(
-      network::mojom::ConnectionType::CONNECTION_NONE);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
 
   TestFuture<TerminaInstaller::InstallResult> result_future;
   termina_installer_->Install(result_future.GetCallback());
@@ -363,7 +363,7 @@ TEST_F(TerminaInstallTest, InstallDlcFallbackOfflineComponentAlreadyInstalled) {
   auto* network_connection_tracker =
       network::TestNetworkConnectionTracker::GetInstance();
   network_connection_tracker->SetConnectionType(
-      network::mojom::ConnectionType::CONNECTION_NONE);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
 
   TestFuture<TerminaInstaller::InstallResult> result_future;
   termina_installer_->Install(result_future.GetCallback());

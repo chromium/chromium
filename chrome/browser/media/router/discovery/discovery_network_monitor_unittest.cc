@@ -41,7 +41,8 @@ class DiscoveryNetworkMonitorTest : public testing::Test {
     return fake_network_info;
   }
 
-  void ChangeConnectionType(network::mojom::ConnectionType connection_type) {
+  void ChangeConnectionType(
+      net::NetworkChangeNotifier::ConnectionType connection_type) {
     discovery_network_monitor->OnConnectionChanged(connection_type);
   }
 
@@ -73,7 +74,8 @@ TEST_F(DiscoveryNetworkMonitorTest, NetworkIdIsConsistent) {
   discovery_network_monitor->AddObserver(&mock_observer);
   EXPECT_CALL(mock_observer, OnNetworksChanged(_)).WillOnce(capture_network_id);
 
-  ChangeConnectionType(network::mojom::ConnectionType::CONNECTION_ETHERNET);
+  ChangeConnectionType(
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_ETHERNET);
   task_environment.RunUntilIdle();
 
   std::string ethernet_network_id = current_network_id;
@@ -81,20 +83,23 @@ TEST_F(DiscoveryNetworkMonitorTest, NetworkIdIsConsistent) {
   fake_network_info.clear();
   EXPECT_CALL(mock_observer, OnNetworksChanged(_)).WillOnce(capture_network_id);
 
-  ChangeConnectionType(network::mojom::ConnectionType::CONNECTION_NONE);
+  ChangeConnectionType(
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
   task_environment.RunUntilIdle();
 
   fake_network_info = fake_wifi_info;
   EXPECT_CALL(mock_observer, OnNetworksChanged(_)).WillOnce(capture_network_id);
 
-  ChangeConnectionType(network::mojom::ConnectionType::CONNECTION_WIFI);
+  ChangeConnectionType(
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI);
   task_environment.RunUntilIdle();
 
   std::string wifi_network_id = current_network_id;
   fake_network_info = fake_ethernet_info;
   EXPECT_CALL(mock_observer, OnNetworksChanged(_)).WillOnce(capture_network_id);
 
-  ChangeConnectionType(network::mojom::ConnectionType::CONNECTION_ETHERNET);
+  ChangeConnectionType(
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_ETHERNET);
   task_environment.RunUntilIdle();
 
   EXPECT_EQ(ethernet_network_id, current_network_id);
@@ -109,13 +114,15 @@ TEST_F(DiscoveryNetworkMonitorTest, RemoveObserverStopsNotifications) {
   discovery_network_monitor->AddObserver(&mock_observer);
   EXPECT_CALL(mock_observer, OnNetworksChanged(_));
 
-  ChangeConnectionType(network::mojom::ConnectionType::CONNECTION_ETHERNET);
+  ChangeConnectionType(
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_ETHERNET);
   task_environment.RunUntilIdle();
 
   discovery_network_monitor->RemoveObserver(&mock_observer);
   fake_network_info.clear();
 
-  ChangeConnectionType(network::mojom::ConnectionType::CONNECTION_NONE);
+  ChangeConnectionType(
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
   task_environment.RunUntilIdle();
 }
 
@@ -186,7 +193,8 @@ TEST_F(DiscoveryNetworkMonitorTest, GetNetworkIdWithObserver) {
   discovery_network_monitor->AddObserver(&mock_observer);
   EXPECT_CALL(mock_observer, OnNetworksChanged(_));
 
-  ChangeConnectionType(network::mojom::ConnectionType::CONNECTION_ETHERNET);
+  ChangeConnectionType(
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_ETHERNET);
   task_environment.RunUntilIdle();
 
   base::RunLoop loop;

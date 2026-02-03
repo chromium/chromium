@@ -76,7 +76,8 @@ class NetworkConnectionObserverHelper
         this);
   }
 
-  void OnConnectionChanged(network::mojom::ConnectionType type) override {
+  void OnConnectionChanged(
+      net::NetworkChangeNotifier::ConnectionType type) override {
     closure_.Run();
   }
 
@@ -123,28 +124,31 @@ void ConfigureNetworkConnectionTracker(NetworkConnectionType connection_type,
   }
 
   if (connection_type != NetworkConnectionType::Undecided) {
-    network::mojom::ConnectionType mojom_connection_type =
-        network::mojom::ConnectionType::CONNECTION_UNKNOWN;
+    net::NetworkChangeNotifier::ConnectionType mojom_connection_type =
+        net::NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN;
 
     switch (connection_type) {
       case NetworkConnectionType::Undecided:
         NOTREACHED();
 
       case NetworkConnectionType::ConnectionNone:
-        mojom_connection_type = network::mojom::ConnectionType::CONNECTION_NONE;
+        mojom_connection_type =
+            net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE;
         break;
 
       case NetworkConnectionType::ConnectionWifi:
-        mojom_connection_type = network::mojom::ConnectionType::CONNECTION_WIFI;
+        mojom_connection_type =
+            net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI;
         break;
 
       case NetworkConnectionType::Connection4G:
-        mojom_connection_type = network::mojom::ConnectionType::CONNECTION_4G;
+        mojom_connection_type =
+            net::NetworkChangeNotifier::ConnectionType::CONNECTION_4G;
         break;
     }
 
     DCHECK_NE(mojom_connection_type,
-              network::mojom::ConnectionType::CONNECTION_UNKNOWN);
+              net::NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN);
 
     base::RunLoop wait_for_network_type_change;
     NetworkConnectionObserverHelper scoped_observer(

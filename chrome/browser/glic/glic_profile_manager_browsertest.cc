@@ -382,7 +382,7 @@ class GlicProfileManagerPreloadingTest
     // We prevent any premature preloading by disabling it.
     GlicProfileManager::SetPrewarmingEnabledForTesting(false);
     GlicProfileManager::ForceConnectionTypeForTesting(
-        network::mojom::ConnectionType::CONNECTION_WIFI);
+        net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI);
   }
 
   GlicProfileManagerPreloadingTest() : GlicProfileManagerPreloadingTest("0") {}
@@ -412,7 +412,8 @@ class GlicProfileManagerPreloadingTest
     return future.Get();
   }
 
-  void SetConnectionType(network::mojom::ConnectionType connection_type) {
+  void SetConnectionType(
+      net::NetworkChangeNotifier::ConnectionType connection_type) {
     GlicProfileManager::ForceConnectionTypeForTesting(connection_type);
   }
 
@@ -485,7 +486,7 @@ IN_PROC_BROWSER_TEST_P(GlicProfileManagerPreloadingTest,
     GTEST_SKIP() << "This test only applies if prewarming is enabled.";
   }
   ResetPrewarming();
-  SetConnectionType(network::mojom::ConnectionType::CONNECTION_2G);
+  SetConnectionType(net::NetworkChangeNotifier::ConnectionType::CONNECTION_2G);
   EXPECT_EQ(WaitForShouldPreload(),
             GlicPrewarmingChecksResult::kCellularConnection);
 }

@@ -112,7 +112,8 @@ class ConnectivityCheckerImpl
 
   // network::NetworkConnectionTracker::NetworkConnectionObserver
   // implementation:
-  void OnConnectionChanged(network::mojom::ConnectionType type) override;
+  void OnConnectionChanged(
+      net::NetworkChangeNotifier::ConnectionType type) override;
 
   // TimeSyncTracker::Observer implementation:
   void OnTimeSynced() override;
@@ -155,7 +156,7 @@ class ConnectivityCheckerImpl
   // If the device has network connectivity.
   bool network_connected_;
 
-  network::mojom::ConnectionType connection_type_;
+  net::NetworkChangeNotifier::ConnectionType connection_type_;
   // Number of connectivity check errors.
   unsigned int check_errors_;
   bool network_changed_pending_;

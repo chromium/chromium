@@ -6,7 +6,7 @@
 #define COMPONENTS_DOWNLOAD_NETWORK_NETWORK_STATUS_LISTENER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "services/network/public/mojom/network_change_manager.mojom.h"
+#include "net/base/network_change_notifier.h"
 
 namespace download {
 
@@ -20,10 +20,12 @@ class NetworkStatusListener {
   class Observer {
    public:
     // Called after the NetworkStatusListener is initialized and ready to use.
-    virtual void OnNetworkStatusReady(network::mojom::ConnectionType type) = 0;
+    virtual void OnNetworkStatusReady(
+        net::NetworkChangeNotifier::ConnectionType type) = 0;
 
     // Called when the network type is changed.
-    virtual void OnNetworkChanged(network::mojom::ConnectionType type) = 0;
+    virtual void OnNetworkChanged(
+        net::NetworkChangeNotifier::ConnectionType type) = 0;
 
     Observer() = default;
 
@@ -46,7 +48,7 @@ class NetworkStatusListener {
   virtual void Stop() = 0;
 
   // Gets the current connection type.
-  virtual network::mojom::ConnectionType GetConnectionType() = 0;
+  virtual net::NetworkChangeNotifier::ConnectionType GetConnectionType() = 0;
 
  protected:
   NetworkStatusListener();
@@ -56,8 +58,8 @@ class NetworkStatusListener {
   raw_ptr<Observer> observer_ = nullptr;
 
   // The current network status.
-  network::mojom::ConnectionType connection_type_ =
-      network::mojom::ConnectionType::CONNECTION_UNKNOWN;
+  net::NetworkChangeNotifier::ConnectionType connection_type_ =
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN;
 };
 
 }  // namespace download

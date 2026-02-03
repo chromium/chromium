@@ -191,7 +191,7 @@ void BackgroundSyncServiceImplTestHarness::CreateBackgroundSyncContext() {
       background_sync_context_->background_sync_manager()
           ->GetNetworkObserverForTesting();
   network_observer->NotifyManagerIfConnectionChangedForTesting(
-      network::mojom::ConnectionType::CONNECTION_NONE);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
   base::RunLoop().RunUntilIdle();
 }
 

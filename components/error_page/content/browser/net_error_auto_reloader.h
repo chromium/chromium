@@ -61,7 +61,8 @@ class NetErrorAutoReloader
   void OnVisibilityChanged(content::Visibility visibility) override;
 
   // network::NetworkConnectionTracker::NetworkConnectionObserver:
-  void OnConnectionChanged(network::mojom::ConnectionType type) override;
+  void OnConnectionChanged(
+      net::NetworkChangeNotifier::ConnectionType type) override;
 
   // Returns the delay applied when scheduling the next auto-reload of a page
   // after it's already been auto-reloaded `reload_count` times.
@@ -82,7 +83,8 @@ class NetErrorAutoReloader
 
   explicit NetErrorAutoReloader(content::WebContents* web_contents);
 
-  void SetInitialConnectionType(network::mojom::ConnectionType type);
+  void SetInitialConnectionType(
+      net::NetworkChangeNotifier::ConnectionType type);
   bool IsWebContentsVisible();
   void Reset();
   void PauseAutoReloadTimerIfRunning();

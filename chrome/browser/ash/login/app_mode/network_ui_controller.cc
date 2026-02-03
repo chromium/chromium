@@ -35,8 +35,9 @@ base::TimeDelta g_network_wait_time = kKioskNetworkWaitTime;
 
 std::optional<bool> g_can_configure_network_for_testing;
 
-network::mojom::ConnectionType GetCurrentConnectionType() {
-  auto connection_type = network::mojom::ConnectionType::CONNECTION_UNKNOWN;
+net::NetworkChangeNotifier::ConnectionType GetCurrentConnectionType() {
+  auto connection_type =
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN;
   content::GetNetworkConnectionTracker()->GetConnectionType(&connection_type,
                                                             base::DoNothing());
   return connection_type;
@@ -214,7 +215,8 @@ void NetworkUiController::OnNetworkWaitTimeout() {
   DCHECK(network_ui_state_ == NetworkUIState::kNotShowing ||
          network_ui_state_ == NetworkUIState::kWaitingForNetwork);
 
-  network::mojom::ConnectionType connection_type = GetCurrentConnectionType();
+  net::NetworkChangeNotifier::ConnectionType connection_type =
+      GetCurrentConnectionType();
   SYSLOG(WARNING) << __FUNCTION__ << " connection = " << connection_type;
   network_wait_timeout_ = true;
 

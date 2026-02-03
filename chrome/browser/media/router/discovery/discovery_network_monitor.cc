@@ -108,7 +108,8 @@ DiscoveryNetworkMonitor::DiscoveryNetworkMonitor(NetworkInfoFunction strategy)
   // If the current connection type is available, call UpdateNetworkInfo,
   // otherwise let OnConnectionChanged call it when the connection type is
   // ready.
-  auto connection_type = network::mojom::ConnectionType::CONNECTION_UNKNOWN;
+  auto connection_type =
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN;
   if (content::GetNetworkConnectionTracker()->GetConnectionType(
           &connection_type,
           base::BindOnce(&DiscoveryNetworkMonitor::OnConnectionChanged,
@@ -131,7 +132,7 @@ void DiscoveryNetworkMonitor::SetNetworkInfoFunctionForTest(
 }
 
 void DiscoveryNetworkMonitor::OnConnectionChanged(
-    network::mojom::ConnectionType type) {
+    net::NetworkChangeNotifier::ConnectionType type) {
   task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(

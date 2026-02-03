@@ -357,7 +357,8 @@ class UserSessionManager
       OAuth2LoginManager::SessionRestoreState state) override;
 
   // network::NetworkConnectionTracker::NetworkConnectionObserver overrides:
-  void OnConnectionChanged(network::mojom::ConnectionType type) override;
+  void OnConnectionChanged(
+      net::NetworkChangeNotifier::ConnectionType type) override;
 
   // UserSessionManagerDelegate overrides:
   // Used when restoring user sessions after crash.

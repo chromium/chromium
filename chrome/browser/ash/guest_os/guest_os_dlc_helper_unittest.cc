@@ -145,7 +145,7 @@ TEST_F(GuestOsDlcInstallationTest, CancelGracefully) {
 TEST_F(GuestOsDlcInstallationTest, Offline) {
   ASSERT_TRUE(network::TestNetworkConnectionTracker::HasInstance());
   network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
-      network::mojom::ConnectionType::CONNECTION_NONE);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
 
   base::test::TestFuture<GuestOsDlcInstallation::Result> result;
 

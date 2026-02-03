@@ -239,9 +239,10 @@ void CloudPolicyRefreshScheduler::OnStoreError(CloudPolicyStore* store) {
 }
 
 void CloudPolicyRefreshScheduler::OnConnectionChanged(
-    network::mojom::ConnectionType type) {
-  if (type == network::mojom::ConnectionType::CONNECTION_NONE)
+    net::NetworkChangeNotifier::ConnectionType type) {
+  if (type == net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE) {
     return;
+  }
 
   if (client_->last_dm_status() == DM_STATUS_REQUEST_FAILED) {
     RefreshSoon(PolicyFetchReason::kRetryAfterStatusRequestFailed);

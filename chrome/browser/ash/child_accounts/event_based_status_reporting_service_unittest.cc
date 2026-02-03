@@ -183,7 +183,7 @@ class EventBasedStatusReportingServiceTest : public testing::Test {
     user_manager_.Reset();
   }
 
-  void SetConnectionType(network::mojom::ConnectionType type) {
+  void SetConnectionType(net::NetworkChangeNotifier::ConnectionType type) {
     network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
         type);
     task_environment_.RunUntilIdle();
@@ -304,11 +304,13 @@ TEST_F(EventBasedStatusReportingServiceTest, ReportWhenSessionIsActive) {
 }
 
 TEST_F(EventBasedStatusReportingServiceTest, ReportWhenDeviceGoesOnline) {
-  SetConnectionType(network::mojom::ConnectionType::CONNECTION_NONE);
+  SetConnectionType(
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
 
   ASSERT_EQ(
       0, test_consumer_status_reporting_service()->performed_status_reports());
-  SetConnectionType(network::mojom::ConnectionType::CONNECTION_ETHERNET);
+  SetConnectionType(
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_ETHERNET);
   EXPECT_EQ(
       1, test_consumer_status_reporting_service()->performed_status_reports());
 
@@ -350,7 +352,8 @@ TEST_F(EventBasedStatusReportingServiceTest, ReportOnUsageTimeLimitWarning) {
 }
 
 TEST_F(EventBasedStatusReportingServiceTest, ReportForMultipleEvents) {
-  SetConnectionType(network::mojom::ConnectionType::CONNECTION_NONE);
+  SetConnectionType(
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
 
   ASSERT_EQ(
       0, test_consumer_status_reporting_service()->performed_status_reports());
@@ -363,7 +366,8 @@ TEST_F(EventBasedStatusReportingServiceTest, ReportForMultipleEvents) {
   session_manager().SetSessionState(session_manager::SessionState::ACTIVE);
   EXPECT_EQ(
       2, test_consumer_status_reporting_service()->performed_status_reports());
-  SetConnectionType(network::mojom::ConnectionType::CONNECTION_WIFI);
+  SetConnectionType(
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI);
   EXPECT_EQ(
       3, test_consumer_status_reporting_service()->performed_status_reports());
   app_host()->OnPackageAdded(arc::mojom::ArcPackageInfo::New());

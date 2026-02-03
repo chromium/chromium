@@ -324,7 +324,8 @@ void SyncManagerImpl::ShutdownOnSyncThread() {
   initialized_ = false;
 }
 
-void SyncManagerImpl::OnConnectionChanged(network::mojom::ConnectionType type) {
+void SyncManagerImpl::OnConnectionChanged(
+    net::NetworkChangeNotifier::ConnectionType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!observing_network_connectivity_changes_) {
     DVLOG(1) << "Network change dropped.";

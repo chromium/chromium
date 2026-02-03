@@ -116,7 +116,8 @@ class MutableProfileOAuth2TokenServiceDelegate
   void Shutdown() override;
 
   // Overridden from NetworkConnectionTracker::NetworkConnectionObserver.
-  void OnConnectionChanged(network::mojom::ConnectionType type) override;
+  void OnConnectionChanged(
+      net::NetworkChangeNotifier::ConnectionType type) override;
 
   bool FixAccountErrorIfPossible() override;
 

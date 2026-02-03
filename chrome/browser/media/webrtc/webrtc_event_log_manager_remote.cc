@@ -92,11 +92,15 @@ bool TimePointInRange(const base::Time& time_point,
 // Note #1: A device may have multiple connections, so this is not bullet-proof.
 // Note #2: Does not attempt to recognize mobile hotspots.
 bool UploadSupportedUsingConnectionType(
-    network::mojom::ConnectionType connection) {
-  return connection != network::mojom::ConnectionType::CONNECTION_NONE &&
-         connection != network::mojom::ConnectionType::CONNECTION_2G &&
-         connection != network::mojom::ConnectionType::CONNECTION_3G &&
-         connection != network::mojom::ConnectionType::CONNECTION_4G;
+    net::NetworkChangeNotifier::ConnectionType connection) {
+  return connection !=
+             net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE &&
+         connection !=
+             net::NetworkChangeNotifier::ConnectionType::CONNECTION_2G &&
+         connection !=
+             net::NetworkChangeNotifier::ConnectionType::CONNECTION_3G &&
+         connection !=
+             net::NetworkChangeNotifier::ConnectionType::CONNECTION_4G;
 }
 
 // Produce a history file for a given file.
@@ -254,7 +258,7 @@ void WebRtcRemoteEventLogManager::SetNetworkConnectionTracker(
   auto callback =
       base::BindOnce(&WebRtcRemoteEventLogManager::OnConnectionChanged,
                      weak_ptr_factory_->GetWeakPtr());
-  network::mojom::ConnectionType connection_type;
+  net::NetworkChangeNotifier::ConnectionType connection_type;
   const bool sync_answer = network_connection_tracker_->GetConnectionType(
       &connection_type, std::move(callback));
 
@@ -641,7 +645,7 @@ void WebRtcRemoteEventLogManager::RenderProcessHostExitedDestroyed(
 }
 
 void WebRtcRemoteEventLogManager::OnConnectionChanged(
-    network::mojom::ConnectionType type) {
+    net::NetworkChangeNotifier::ConnectionType type) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   // Even if switching from WiFi to Ethernet, or between to WiFi connections,
   // reset the timer (if running) until an upload is permissible due to stable

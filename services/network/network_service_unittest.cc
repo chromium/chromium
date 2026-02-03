@@ -1640,7 +1640,8 @@ class TestNetworkChangeManagerClient
  public:
   explicit TestNetworkChangeManagerClient(
       mojom::NetworkService* network_service)
-      : connection_type_(mojom::ConnectionType::CONNECTION_UNKNOWN) {
+      : connection_type_(
+            net::NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN) {
     mojo::Remote<mojom::NetworkChangeManager> manager_remote;
     network_service->GetNetworkChangeManager(
         manager_remote.BindNewPipeAndPassReceiver());
@@ -1658,20 +1659,22 @@ class TestNetworkChangeManagerClient
   ~TestNetworkChangeManagerClient() override = default;
 
   // NetworkChangeManagerClient implementation:
-  void OnInitialConnectionType(mojom::ConnectionType type) override {
+  void OnInitialConnectionType(
+      net::NetworkChangeNotifier::ConnectionType type) override {
     if (type == connection_type_) {
       run_loop_.Quit();
     }
   }
 
-  void OnNetworkChanged(mojom::ConnectionType type) override {
+  void OnNetworkChanged(
+      net::NetworkChangeNotifier::ConnectionType type) override {
     if (type == connection_type_) {
       run_loop_.Quit();
     }
   }
 
   // Waits for the desired |connection_type| notification.
-  void WaitForNotification(mojom::ConnectionType type) {
+  void WaitForNotification(net::NetworkChangeNotifier::ConnectionType type) {
     connection_type_ = type;
     run_loop_.Run();
   }
@@ -1680,7 +1683,7 @@ class TestNetworkChangeManagerClient
 
  private:
   base::RunLoop run_loop_;
-  mojom::ConnectionType connection_type_;
+  net::NetworkChangeNotifier::ConnectionType connection_type_;
   mojo::Receiver<mojom::NetworkChangeManagerClient> receiver_{this};
 };
 
@@ -1706,7 +1709,8 @@ TEST_F(NetworkChangeTest, NetworkChangeManagerRequest) {
   TestNetworkChangeManagerClient manager_client(service());
   net::NetworkChangeNotifier::NotifyObserversOfNetworkChangeForTests(
       net::NetworkChangeNotifier::CONNECTION_3G);
-  manager_client.WaitForNotification(mojom::ConnectionType::CONNECTION_3G);
+  manager_client.WaitForNotification(
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_3G);
 }
 
 class NetworkServiceNetworkChangeTest : public testing::Test {
@@ -1746,7 +1750,8 @@ TEST_F(NetworkServiceNetworkChangeTest, NetworkChangeManagerRequest) {
   net::NetworkChangeNotifier::NotifyObserversOfNetworkChangeForTests(
       net::NetworkChangeNotifier::CONNECTION_3G);
 
-  manager_client.WaitForNotification(mojom::ConnectionType::CONNECTION_3G);
+  manager_client.WaitForNotification(
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_3G);
 }
 
 class NetworkServiceNetworkDelegateTest : public NetworkServiceTest {

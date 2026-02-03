@@ -249,7 +249,7 @@ TEST_F(PrefetchCanaryCheckerTest, CacheHit) {
 // TODO(crbug.com/40828450): Re-enable; flaky.
 TEST_F(PrefetchCanaryCheckerTest, DISABLED_NetworkConnectionShardsCache) {
   network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
-      network::mojom::ConnectionType::CONNECTION_3G);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_3G);
   RunUntilIdle();
 
   GURL probe_url("https://probe-url.com");
@@ -265,14 +265,14 @@ TEST_F(PrefetchCanaryCheckerTest, DISABLED_NetworkConnectionShardsCache) {
 
   // Changing the network to 4G should reuse the cache.
   network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
-      network::mojom::ConnectionType::CONNECTION_4G);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_4G);
   RunUntilIdle();
   result = checker->CanaryCheckSuccessful();
   EXPECT_TRUE(result.has_value());
 
   // Changing the network to wifi should result in a cache miss and a new check.
   network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
-      network::mojom::ConnectionType::CONNECTION_WIFI);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI);
   RunUntilIdle();
   result = checker->CanaryCheckSuccessful();
   EXPECT_EQ(result, std::nullopt);

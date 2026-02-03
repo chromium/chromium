@@ -127,7 +127,8 @@ class POLICY_EXPORT CloudPolicyRefreshScheduler
 
   // network::NetworkConnectionTracker::NetworkConnectionObserver:
   // Triggered also when the device wakes up.
-  void OnConnectionChanged(network::mojom::ConnectionType type) override;
+  void OnConnectionChanged(
+      net::NetworkChangeNotifier::ConnectionType type) override;
 
   // Overrides clock or tick clock in tests. Returned closure removes the
   // override when destroyed.

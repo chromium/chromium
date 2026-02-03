@@ -43,11 +43,13 @@ class WebAppRunOnOsLoginManager
  private:
   void RunAppsOnOsLogin(AllAppsLock& lock, base::DictValue& debug_value);
 
-  void OnInitialConnectionTypeReceived(network::mojom::ConnectionType type);
+  void OnInitialConnectionTypeReceived(
+      net::NetworkChangeNotifier::ConnectionType type);
 
   // network::NetworkConnectionTracker::NetworkConnectionObserver
   // implementation. Observes network change events.
-  void OnConnectionChanged(network::mojom::ConnectionType type) override;
+  void OnConnectionChanged(
+      net::NetworkChangeNotifier::ConnectionType type) override;
 
   void RunOsLoginAppsAndMaybeUnregisterObserver();
 

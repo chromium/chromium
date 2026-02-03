@@ -495,11 +495,10 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
     std::move(callback).Run();
   }
 
-  void SimulateNetworkChange(network::mojom::ConnectionType type,
+  void SimulateNetworkChange(net::NetworkChangeNotifier::ConnectionType type,
                              SimulateNetworkChangeCallback callback) override {
     DCHECK(!net::NetworkChangeNotifier::CreateIfNeeded());
-    net::NetworkChangeNotifier::NotifyObserversOfNetworkChangeForTests(
-        net::NetworkChangeNotifier::ConnectionType(type));
+    net::NetworkChangeNotifier::NotifyObserversOfNetworkChangeForTests(type);
     std::move(callback).Run();
   }
 

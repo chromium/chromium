@@ -77,7 +77,8 @@ TestNetworkConnectionTracker::TestNetworkConnectionTracker() {
   // Make sure the real NetworkConnectionTracker thinks there's always a
   // connection available. GetConnectionType asynchronisity will be implemented
   // in the override in this class.
-  OnNetworkChanged(network::mojom::ConnectionType::CONNECTION_UNKNOWN);
+  OnNetworkChanged(
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN);
 }
 
 TestNetworkConnectionTracker::~TestNetworkConnectionTracker() {
@@ -86,9 +87,9 @@ TestNetworkConnectionTracker::~TestNetworkConnectionTracker() {
 }
 
 bool TestNetworkConnectionTracker::GetConnectionType(
-    network::mojom::ConnectionType* type,
+    net::NetworkChangeNotifier::ConnectionType* type,
     ConnectionTypeCallback callback) {
-  network::mojom::ConnectionType current_type;
+  net::NetworkChangeNotifier::ConnectionType current_type;
   bool sync = NetworkConnectionTracker::GetConnectionType(&current_type,
                                                           base::DoNothing());
   DCHECK(sync);
@@ -103,7 +104,7 @@ bool TestNetworkConnectionTracker::GetConnectionType(
 }
 
 void TestNetworkConnectionTracker::SetConnectionType(
-    network::mojom::ConnectionType type) {
+    net::NetworkChangeNotifier::ConnectionType type) {
   OnNetworkChanged(type);
 }
 

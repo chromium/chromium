@@ -19,8 +19,7 @@ NetworkChangeManager::NetworkChangeManager(
     std::unique_ptr<net::NetworkChangeNotifier> network_change_notifier)
     : network_change_notifier_(std::move(network_change_notifier)) {
   net::NetworkChangeNotifier::AddNetworkChangeObserver(this);
-  connection_type_ =
-      mojom::ConnectionType(net::NetworkChangeNotifier::GetConnectionType());
+  connection_type_ = net::NetworkChangeNotifier::GetConnectionType();
 }
 
 NetworkChangeManager::~NetworkChangeManager() {
@@ -54,7 +53,7 @@ void NetworkChangeManager::OnNetworkChanged(
     bool dns_changed,
     mojom::IPAddressChangeType ip_address_change_type,
     bool connection_type_changed,
-    mojom::ConnectionType new_connection_type,
+    net::NetworkChangeNotifier::ConnectionType new_connection_type,
     bool connection_subtype_changed,
     mojom::ConnectionSubtype new_connection_subtype) {
   // network_change_notifier_ can be null in unit tests.
@@ -120,9 +119,9 @@ void NetworkChangeManager::NotificationPipeBroken(
 
 void NetworkChangeManager::OnNetworkChanged(
     net::NetworkChangeNotifier::ConnectionType type) {
-  connection_type_ = mojom::ConnectionType(type);
+  connection_type_ = type;
   for (const auto& client : clients_) {
-    client->OnNetworkChanged(connection_type_);
+    client->OnNetworkChanged(type);
   }
 }
 

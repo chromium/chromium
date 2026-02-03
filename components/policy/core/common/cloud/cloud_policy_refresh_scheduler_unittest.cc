@@ -106,7 +106,7 @@ class CloudPolicyRefreshSchedulerTest : public testing::Test {
 
   void NotifyConnectionChanged() {
     network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
-        network::mojom::ConnectionType::CONNECTION_WIFI);
+        net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI);
     base::RunLoop().RunUntilIdle();
   }
 
@@ -469,7 +469,7 @@ TEST_F(CloudPolicyRefreshSchedulerTest, OnConnectionChangedUnregistered) {
 
   auto closure = EmulateSleepThroughLastRefreshTime();
   scheduler->OnConnectionChanged(
-      network::mojom::ConnectionType::CONNECTION_WIFI);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI);
   EXPECT_FALSE(task_runner_->HasPendingTask());
 }
 
@@ -487,7 +487,7 @@ TEST_F(CloudPolicyRefreshSchedulerTest, OnConnectionChangedAfterSleep) {
 
   auto closure = EmulateSleepThroughLastRefreshTime();
   scheduler->OnConnectionChanged(
-      network::mojom::ConnectionType::CONNECTION_WIFI);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI);
   EXPECT_TRUE(task_runner_->HasPendingTask());
   task_runner_->ClearPendingTasks();
 }

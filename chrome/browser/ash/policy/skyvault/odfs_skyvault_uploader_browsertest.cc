@@ -202,7 +202,7 @@ INSTANTIATE_TEST_SUITE_P(SkyVault,
 IN_PROC_BROWSER_TEST_F(OdfsSkyvaultUploaderTest,
                        SuccessfulUploadAfterWaitingForNetwork) {
   network_connection_tracker_->SetConnectionType(
-      network::mojom::ConnectionType::CONNECTION_NONE);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
 
   SetUpMyFiles();
   SetUpODFS();
@@ -226,7 +226,7 @@ IN_PROC_BROWSER_TEST_F(OdfsSkyvaultUploaderTest,
       progress_callback.Get(), upload_callback.GetCallback());
 
   network_connection_tracker_->SetConnectionType(
-      network::mojom::ConnectionType::CONNECTION_ETHERNET);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_ETHERNET);
 
   auto [url, error, upload_root_path] = upload_callback.Get();
   EXPECT_FALSE(error.has_value());

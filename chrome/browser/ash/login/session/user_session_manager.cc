@@ -1159,9 +1159,9 @@ void UserSessionManager::OnSessionRestoreStateChanged(
 }
 
 void UserSessionManager::OnConnectionChanged(
-    network::mojom::ConnectionType type) {
+    net::NetworkChangeNotifier::ConnectionType type) {
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
-  if (type == network::mojom::ConnectionType::CONNECTION_NONE ||
+  if (type == net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE ||
       !user_manager->IsUserLoggedIn() ||
       !user_manager->IsLoggedInAsUserWithGaiaAccount() ||
       user_manager->IsLoggedInAsStub() || IsRunningTest()) {

@@ -82,8 +82,10 @@ class COMPONENTS_DOWNLOAD_EXPORT AutoResumptionHandler
       std::map<std::string, raw_ptr<DownloadItem, CtnExperimental>>;
 
   // NetworkStatusListener::Observer implementation.
-  void OnNetworkStatusReady(network::mojom::ConnectionType type) override;
-  void OnNetworkChanged(network::mojom::ConnectionType type) override;
+  void OnNetworkStatusReady(
+      net::NetworkChangeNotifier::ConnectionType type) override;
+  void OnNetworkChanged(
+      net::NetworkChangeNotifier::ConnectionType type) override;
 
   void ResumePendingDownloads();
 

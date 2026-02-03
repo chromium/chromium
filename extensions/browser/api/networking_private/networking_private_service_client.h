@@ -111,7 +111,8 @@ class NetworkingPrivateServiceClient
   void RemoveObserver(NetworkingPrivateDelegateObserver* observer) override;
 
   // NetworkConnectionTracker::NetworkConnectionObserver implementation.
-  void OnConnectionChanged(network::mojom::ConnectionType type) override;
+  void OnConnectionChanged(
+      net::NetworkChangeNotifier::ConnectionType type) override;
 
  private:
   // Callbacks to extension api function objects. Keep reference to API object

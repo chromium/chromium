@@ -777,7 +777,7 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
 
   // Notify of network change and ensure that request now runs.
   delegate_->OnConnectionChanged(
-      network::mojom::ConnectionType::CONNECTION_WIFI);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI);
   fetcher = delegate_->CreateAccessTokenFetcher(
       account_info_.account_id, delegate_->GetURLLoaderFactory(),
       &access_token_consumer, kNoBindingChallenge);

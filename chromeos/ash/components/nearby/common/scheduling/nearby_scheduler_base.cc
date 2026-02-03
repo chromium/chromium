@@ -167,7 +167,7 @@ void NearbySchedulerBase::OnStop() {
 }
 
 void NearbySchedulerBase::OnConnectionChanged(
-    network::mojom::ConnectionType type) {
+    net::NetworkChangeNotifier::ConnectionType type) {
   if (content::GetNetworkConnectionTracker()->IsOffline()) {
     return;
   }

@@ -31,7 +31,8 @@ class CrostiniBrowserTestBase : public InProcessBrowserTest {
       content::BrowserMainParts* browser_main_parts) override;
   void SetUpOnMainThread() override;
 
-  void SetConnectionType(network::mojom::ConnectionType connection_type);
+  void SetConnectionType(
+      net::NetworkChangeNotifier::ConnectionType connection_type);
 
   void UnregisterTermina();
 

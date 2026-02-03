@@ -128,7 +128,8 @@ class DialRegistry
   void OnError(DialService::DialServiceErrorCode code) override;
 
   // network::NetworkConnectionTracker::NetworkConnectionObserver:
-  void OnConnectionChanged(network::mojom::ConnectionType type) override;
+  void OnConnectionChanged(
+      net::NetworkChangeNotifier::ConnectionType type) override;
 
   // Check whether we are in a state ready to discover and dispatch error
   // notifications if not.

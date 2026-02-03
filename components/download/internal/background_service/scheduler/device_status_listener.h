@@ -53,8 +53,10 @@ class DeviceStatusListener : public NetworkStatusListener::Observer,
 
  protected:
   // NetworkStatusListener::Observer implementation. Visible for testing.
-  void OnNetworkStatusReady(network::mojom::ConnectionType type) override;
-  void OnNetworkChanged(network::mojom::ConnectionType type) override;
+  void OnNetworkStatusReady(
+      net::NetworkChangeNotifier::ConnectionType type) override;
+  void OnNetworkChanged(
+      net::NetworkChangeNotifier::ConnectionType type) override;
 
   // Used to listen to network connectivity changes.
   std::unique_ptr<NetworkStatusListener> network_listener_;

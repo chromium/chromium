@@ -85,7 +85,8 @@ ResourceRequestAllowedNotifier::GetResourceRequestsAllowedState() {
 
 bool ResourceRequestAllowedNotifier::IsOffline() {
   return !connection_initialized_ ||
-         connection_type_ == network::mojom::ConnectionType::CONNECTION_NONE;
+         connection_type_ ==
+             net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE;
 }
 
 bool ResourceRequestAllowedNotifier::ResourceRequestsAllowed() {
@@ -102,7 +103,7 @@ void ResourceRequestAllowedNotifier::SetObserverRequestedForTesting(
 }
 
 void ResourceRequestAllowedNotifier::SetConnectionTypeForTesting(
-    network::mojom::ConnectionType type) {
+    net::NetworkChangeNotifier::ConnectionType type) {
   SetConnectionType(type);
 }
 
@@ -131,9 +132,9 @@ void ResourceRequestAllowedNotifier::OnEulaAccepted() {
 }
 
 void ResourceRequestAllowedNotifier::OnConnectionChanged(
-    network::mojom::ConnectionType type) {
+    net::NetworkChangeNotifier::ConnectionType type) {
   SetConnectionType(type);
-  if (type != network::mojom::ConnectionType::CONNECTION_NONE) {
+  if (type != net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE) {
     DVLOG(1) << "Network came online.";
     // MaybeNotifyObserver() internally guarantees that it will only notify the
     // observer if it's currently waiting for the network to come online.
@@ -142,7 +143,7 @@ void ResourceRequestAllowedNotifier::OnConnectionChanged(
 }
 
 void ResourceRequestAllowedNotifier::SetConnectionType(
-    network::mojom::ConnectionType connection_type) {
+    net::NetworkChangeNotifier::ConnectionType connection_type) {
   connection_type_ = connection_type;
   if (!connection_initialized_) {
     connection_initialized_ = true;

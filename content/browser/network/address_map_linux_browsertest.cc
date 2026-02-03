@@ -286,10 +286,11 @@ class AddressMapLinuxBrowserTest : public ContentBrowserTest {
         mojo::PendingReceiver<network::mojom::NetworkChangeManagerClient>
             receiver)
         : receiver_(this, std::move(receiver)) {}
-    void OnInitialConnectionType(network::mojom::ConnectionType type) override {
-    }
+    void OnInitialConnectionType(
+        net::NetworkChangeNotifier::ConnectionType type) override {}
 
-    void OnNetworkChanged(network::mojom::ConnectionType type) override {
+    void OnNetworkChanged(
+        net::NetworkChangeNotifier::ConnectionType type) override {
       // NetworkChangeNotifier::NetworkChangeObserver will fire a
       // CONNECTION_NONE change right before firing a non-CONNECTION_NONE
       // change. So if this is a CONNECTION_NONE event, only continue the test
@@ -297,7 +298,8 @@ class AddressMapLinuxBrowserTest : public ContentBrowserTest {
       // TODO(mpdenton): set timeouts to zero in the network process so tests
       // run faster.
       if ((expected_connection_type_ == ExpectedConnectionType::kNone ||
-           type != network::mojom::ConnectionType::CONNECTION_NONE) &&
+           type !=
+               net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE) &&
           run_loop_.has_value()) {
         run_loop_->Quit();
       }

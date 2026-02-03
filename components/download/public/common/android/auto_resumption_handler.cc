@@ -57,11 +57,11 @@ const int64_t kWindowStartTimeSeconds = 0;
 // The window end time before which the system should fire the task.
 const int64_t kWindowEndTimeSeconds = 24 * 60 * 60;
 
-bool IsConnected(network::mojom::ConnectionType type) {
+bool IsConnected(net::NetworkChangeNotifier::ConnectionType type) {
   switch (type) {
-    case network::mojom::ConnectionType::CONNECTION_UNKNOWN:
-    case network::mojom::ConnectionType::CONNECTION_NONE:
-    case network::mojom::ConnectionType::CONNECTION_BLUETOOTH:
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN:
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE:
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_BLUETOOTH:
       return false;
     default:
       return true;
@@ -141,14 +141,14 @@ bool AutoResumptionHandler::IsActiveNetworkMetered() const {
 }
 
 void AutoResumptionHandler::OnNetworkStatusReady(
-    network::mojom::ConnectionType type) {
+    net::NetworkChangeNotifier::ConnectionType type) {
   // TODO(xingliu): The API to check network type on all platforms is async now,
   // that early call to IsActiveNetworkMetered() which queries network type
   // might just return a unknown network type.
 }
 
 void AutoResumptionHandler::OnNetworkChanged(
-    network::mojom::ConnectionType type) {
+    net::NetworkChangeNotifier::ConnectionType type) {
   if (!IsConnected(type))
     return;
 

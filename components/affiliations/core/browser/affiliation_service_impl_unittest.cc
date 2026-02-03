@@ -141,7 +141,7 @@ class AffiliationServiceImplTest : public testing::Test {
     network::TestNetworkConnectionTracker* network_connection_tracker =
         network::TestNetworkConnectionTracker::GetInstance();
     network_connection_tracker->SetConnectionType(
-        network::mojom::ConnectionType::CONNECTION_ETHERNET);
+        net::NetworkChangeNotifier::ConnectionType::CONNECTION_ETHERNET);
     base::FilePath database_path;
     ASSERT_TRUE(CreateTemporaryFile(&database_path));
     service_->Init(network_connection_tracker, database_path);

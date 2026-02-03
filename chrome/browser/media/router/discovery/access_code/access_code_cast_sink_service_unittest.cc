@@ -92,7 +92,7 @@ class AccessCodeCastSinkServiceTest : public testing::Test {
     content::SetNetworkConnectionTrackerForTesting(
         network::TestNetworkConnectionTracker::GetInstance());
     network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
-        network::mojom::ConnectionType::CONNECTION_WIFI);
+        net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI);
 
     GetTestingPrefs()->SetManagedPref(::prefs::kEnableMediaRouter,
                                       std::make_unique<base::Value>(true));
@@ -172,7 +172,8 @@ class AccessCodeCastSinkServiceTest : public testing::Test {
     return current_session_expiration_timers().find(sink_id)->second.get();
   }
 
-  void ChangeConnectionType(network::mojom::ConnectionType connection_type) {
+  void ChangeConnectionType(
+      net::NetworkChangeNotifier::ConnectionType connection_type) {
     discovery_network_monitor_->OnConnectionChanged(connection_type);
     task_environment_.RunUntilIdle();
   }
@@ -547,7 +548,8 @@ TEST_F(AccessCodeCastSinkServiceTest, TestChangeNetworksExpiration) {
 
   // Connect to a new network with different sinks.
   fake_network_info_ = fake_wifi_info_;
-  ChangeConnectionType(network::mojom::ConnectionType::CONNECTION_WIFI);
+  ChangeConnectionType(
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI);
 
   task_environment_.FastForwardBy(kNetworkChangeDelay);
 
@@ -600,7 +602,8 @@ TEST_F(AccessCodeCastSinkServiceTest, TestChangeNetworksNoExpiration) {
   }
   // Connect to a new network with different sinks.
   fake_network_info_ = fake_wifi_info_;
-  ChangeConnectionType(network::mojom::ConnectionType::CONNECTION_WIFI);
+  ChangeConnectionType(
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI);
   task_environment_.FastForwardBy(kNetworkChangeDelay);
   task_environment_.AdvanceClock(base::Seconds(75));
 
@@ -723,7 +726,8 @@ TEST_F(AccessCodeCastSinkServiceTest, TestResetExpirationTimersNetworkChange) {
     SetExpirationTimerAndExpectTimerRunning(sink);
   }
   fake_network_info_ = fake_wifi_info_;
-  ChangeConnectionType(network::mojom::ConnectionType::CONNECTION_WIFI);
+  ChangeConnectionType(
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI);
   task_environment_.FastForwardBy(kNetworkChangeDelay);
 
   task_environment_.AdvanceClock(base::Seconds(100));
@@ -815,7 +819,8 @@ TEST_F(AccessCodeCastSinkServiceTest, TestChangeNetworkWithRouteActive) {
       .Times(0);
 
   fake_network_info_ = fake_wifi_info_;
-  ChangeConnectionType(network::mojom::ConnectionType::CONNECTION_WIFI);
+  ChangeConnectionType(
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI);
   task_environment_.FastForwardBy(kNetworkChangeDelay);
 
   // The sink should NOT now be removed from the media router since it was not
@@ -862,7 +867,8 @@ TEST_F(AccessCodeCastSinkServiceTest,
   task_environment_.AdvanceClock(base::Seconds(300));
 
   fake_network_info_ = fake_wifi_info_;
-  ChangeConnectionType(network::mojom::ConnectionType::CONNECTION_WIFI);
+  ChangeConnectionType(
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI);
   task_environment_.FastForwardBy(kNetworkChangeDelay);
 
   // The sink should now be removed from the media router.
@@ -998,7 +1004,7 @@ TEST_F(AccessCodeCastSinkServiceTest, TestOfflineDiscoverSink) {
   MockAddSinkResultCallback mock_callback;
 
   network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
-      network::mojom::ConnectionType::CONNECTION_NONE);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
   EXPECT_CALL(mock_callback,
               Run(AddSinkResultCode::SERVICE_NOT_PRESENT, Eq(std::nullopt)));
 

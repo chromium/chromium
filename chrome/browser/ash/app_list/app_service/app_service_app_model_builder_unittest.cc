@@ -635,7 +635,7 @@ class WebAppBuilderDemoModeTest : public WebAppBuilderTest {
 // This test adds a web app to the app list for demo mode when online.
 TEST_F(WebAppBuilderDemoModeTest, WebAppListOnline) {
   network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
-      network::mojom::ConnectionType::CONNECTION_ETHERNET);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_ETHERNET);
 
   const std::string kAppName = "https://test.com";
   CreateWebApp(kAppName);
@@ -646,7 +646,7 @@ TEST_F(WebAppBuilderDemoModeTest, WebAppListOnline) {
 // This test adds a web app to the app list for demo mode when offline.
 TEST_F(WebAppBuilderDemoModeTest, WebAppListOffline) {
   network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
-      network::mojom::ConnectionType::CONNECTION_NONE);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
 
   const std::string kAppName = "https://test.com";
   CreateWebApp(kAppName);

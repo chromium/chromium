@@ -34,7 +34,7 @@ class NearbyOnDemandSchedulerTest : public ::testing::Test {
         network_connection_tracker_.get());
     pref_service_.registry()->RegisterDictionaryPref(kTestPrefName);
     network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
-        network::mojom::ConnectionType::CONNECTION_WIFI);
+        net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI);
 
     scheduler_ = std::make_unique<NearbyOnDemandScheduler>(
         /*retry_failures=*/true, /*require_connectivity=*/true, kTestPrefName,

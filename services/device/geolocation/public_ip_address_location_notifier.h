@@ -69,7 +69,8 @@ class PublicIpAddressLocationNotifier
   // NetworkConnectionTracker::NetworkConnectionObserver:
   // Network change notifications tend to come in a cluster in a short time, so
   // this just sets a task to run ReactToNetworkChange after a short time.
-  void OnConnectionChanged(network::mojom::ConnectionType type) override;
+  void OnConnectionChanged(
+      net::NetworkChangeNotifier::ConnectionType type) override;
 
   // Actually react to a network change, starting a network geolocation request
   // if any clients are waiting.

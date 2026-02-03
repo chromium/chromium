@@ -5053,7 +5053,7 @@ class ChromeShelfControllerDemoModeTest : public ChromeShelfControllerTestBase {
 
 TEST_F(ChromeShelfControllerDemoModeTest, PinnedAppsOnline) {
   network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
-      network::mojom::ConnectionType::CONNECTION_ETHERNET);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_ETHERNET);
 
   InitShelfControllerWithBrowser();
 
@@ -5106,7 +5106,7 @@ TEST_F(ChromeShelfControllerDemoModeTest, PinnedAppsOnline) {
 
 TEST_F(ChromeShelfControllerDemoModeTest, PinnedAppsOffline) {
   network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
-      network::mojom::ConnectionType::CONNECTION_NONE);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
 
   InitShelfControllerWithBrowser();
 

@@ -31,7 +31,7 @@ IN_PROC_BROWSER_TEST_F(AccessCodeCastHandlerBrowserTest,
   SetUpPrimaryAccountWithHostedDomain(browser()->profile());
 
   network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
-      network::mojom::ConnectionType::CONNECTION_NONE);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
 
   auto* dialog_contents = ShowDialog();
   SetAccessCode("abcdef", dialog_contents);

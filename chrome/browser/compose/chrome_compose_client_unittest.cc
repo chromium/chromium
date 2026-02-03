@@ -4225,7 +4225,7 @@ TEST_F(ChromeComposeClientTest, TestOfflineError) {
 
   // Go offline and then run Compose.
   network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
-      network::mojom::ConnectionType::CONNECTION_NONE);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
   page_handler()->Compose("a user typed this",
                           compose::mojom::InputMode::kPolish, false);
 

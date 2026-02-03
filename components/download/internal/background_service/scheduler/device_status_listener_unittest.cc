@@ -18,9 +18,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using ConnectionType = net::NetworkChangeNotifier::ConnectionType;
 using testing::_;
 using testing::InSequence;
-using ConnectionType = network::mojom::ConnectionType;
 
 namespace download {
 namespace {

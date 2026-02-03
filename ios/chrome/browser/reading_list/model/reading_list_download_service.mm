@@ -237,7 +237,8 @@ void ReadingListDownloadService::DownloadEntry(const GURL& url) {
 
   } else if (entry->FailedDownloadCounter() < kNumberOfFailsBeforeStop) {
     // Try to download the page only if the connection is wifi.
-    auto connection_type = network::mojom::ConnectionType::CONNECTION_UNKNOWN;
+    auto connection_type =
+        net::NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN;
     // GetConnectionType will return false if the type isn't known yet, and
     // connection_type will be unchanged, so we can ignore the return value and
     // let this treat the connection as non-wifi.
@@ -245,7 +246,8 @@ void ReadingListDownloadService::DownloadEntry(const GURL& url) {
         &connection_type,
         base::BindOnce(&ReadingListDownloadService::OnConnectionChanged,
                        weak_ptr_factory_.GetWeakPtr()));
-    if (connection_type == network::mojom::ConnectionType::CONNECTION_WIFI) {
+    if (connection_type ==
+        net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI) {
       // The connection is wifi, download the page.
       reading_list_model_->SetEntryDistilledStateIfExists(
           entry->URL(), ReadingListEntry::PROCESSING);
@@ -325,8 +327,8 @@ void ReadingListDownloadService::OnDeleteEnd(const GURL& url, bool success) {
 }
 
 void ReadingListDownloadService::OnConnectionChanged(
-    network::mojom::ConnectionType type) {
-  if (type == network::mojom::ConnectionType::CONNECTION_NONE) {
+    net::NetworkChangeNotifier::ConnectionType type) {
+  if (type == net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE) {
     had_connection_ = false;
     return;
   }
@@ -337,7 +339,7 @@ void ReadingListDownloadService::OnConnectionChanged(
       ScheduleDownloadEntry(url);
     }
   }
-  if (type == network::mojom::ConnectionType::CONNECTION_WIFI) {
+  if (type == net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI) {
     for (auto& url : url_to_download_wifi_) {
       ScheduleDownloadEntry(url);
     }

@@ -46,14 +46,15 @@ const unsigned int kNumErrorsToNotifyOffline = 3;
 class FakeNetworkConnectionTracker : public network::NetworkConnectionTracker {
  public:
   // Spoof a valid connection type.
-  bool GetConnectionType(network::mojom::ConnectionType* type,
+  bool GetConnectionType(net::NetworkChangeNotifier::ConnectionType* type,
                          ConnectionTypeCallback callback) override {
     check_counter_++;
-    *type = network::mojom::ConnectionType::CONNECTION_UNKNOWN;
+    *type = net::NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN;
     return true;
   }
 
-  void NotifyNetworkTypeChanged(network::mojom::ConnectionType type) {
+  void NotifyNetworkTypeChanged(
+      net::NetworkChangeNotifier::ConnectionType type) {
     OnNetworkChanged(type);
   }
 
@@ -190,7 +191,7 @@ TEST_F(ConnectivityCheckerImplTest, StartsDisconnected) {
 
 TEST_F(ConnectivityCheckerImplTest, DetectsConnected) {
   tracker_->SetConnectionType(
-      network::mojom::ConnectionType::CONNECTION_UNKNOWN);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN);
   ConnectAndCheck();
   EXPECT_TRUE(checker_->Connected());
 }
@@ -202,7 +203,7 @@ class ConnectivityCheckerImplTestParameterized
 TEST_P(ConnectivityCheckerImplTestParameterized,
        RecordsDisconnectDueToBadHttpStatus) {
   tracker_->SetConnectionType(
-      network::mojom::ConnectionType::CONNECTION_UNKNOWN);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN);
   ConnectAndCheck();
   SetResponsesWithStatusCode(GetParam());
   CheckAndExpectRecordedError(
@@ -233,7 +234,7 @@ TEST_P(ConnectivityCheckerImplTestPeriodParameterized,
   const ConnectivityCheckPeriods periods = GetParam();
   const base::TimeDelta margin = base::Milliseconds(100);
   tracker_->SetConnectionType(
-      network::mojom::ConnectionType::CONNECTION_UNKNOWN);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN);
 
   // Initial: disconnected. First Check.
   // Next check is scheduled in disconnected_check_period_.
@@ -255,7 +256,7 @@ TEST_P(ConnectivityCheckerImplTestPeriodParameterized,
   const ConnectivityCheckPeriods periods = GetParam();
   const base::TimeDelta margin = base::Milliseconds(100);
   tracker_->SetConnectionType(
-      network::mojom::ConnectionType::CONNECTION_UNKNOWN);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN);
 
   // Initial: connected. First Check.
   // Next check is scheduled in disconnected_check_period_.
@@ -293,7 +294,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_F(ConnectivityCheckerImplTest, RecordsDisconnectDueToRequestTimeout) {
   tracker_->SetConnectionType(
-      network::mojom::ConnectionType::CONNECTION_UNKNOWN);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN);
   ConnectAndCheck();
 
   // Don't send a response for the request.
@@ -304,7 +305,7 @@ TEST_F(ConnectivityCheckerImplTest, RecordsDisconnectDueToRequestTimeout) {
 
 TEST_F(ConnectivityCheckerImplTest, RecordsDisconnectDueToNetError) {
   tracker_->SetConnectionType(
-      network::mojom::ConnectionType::CONNECTION_UNKNOWN);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN);
   ConnectAndCheck();
 
   // Set up a generic failure
@@ -332,7 +333,7 @@ TEST_F(ConnectivityCheckerImplTest, InitialCheckIsNotDelayed) {
   // is established.
   SetResponsesWithStatusCode(kConnectivitySuccessStatusCode);
   tracker_->SetConnectionType(
-      network::mojom::ConnectionType::CONNECTION_UNKNOWN);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN);
   // Poke the task runner, but don't fast forward the clock, to prove that the
   // check is not a delayed task. We don't want the first check to be delayed
   // after the network is initially connected because a lot of initialization of
@@ -350,14 +351,15 @@ TEST_F(ConnectivityCheckerImplTest, InitialCheck_NoNetwork) {
   // Initialize the network tracker to indicate that there is no connection at
   // first.
   SetResponsesWithStatusCode(kConnectivitySuccessStatusCode);
-  tracker_->SetConnectionType(network::mojom::ConnectionType::CONNECTION_NONE);
+  tracker_->SetConnectionType(
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
   // Network connection still isn't established after flushing tasks.
   task_environment_.FastForwardBy(base::TimeDelta());
   EXPECT_FALSE(checker_->Connected());
   // Establish a connection.
   SetResponsesWithStatusCode(kConnectivitySuccessStatusCode);
   tracker_->SetConnectionType(
-      network::mojom::ConnectionType::CONNECTION_UNKNOWN);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN);
   // Subsequent network checks are delayed due to rate limiting, so the
   // connectivity status doesn't update until delay elapses.
   task_environment_.FastForwardBy(base::TimeDelta());
@@ -381,7 +383,7 @@ TEST_P(ConnectivityCheckerImplTestPeriodicCheck, NoDuplicateConnectedCheck) {
   constexpr base::TimeDelta kCheckRequestDelay = base::Milliseconds(100);
   constexpr unsigned int kRounds = 10;
   tracker_->NotifyNetworkTypeChanged(
-      network::mojom::ConnectionType::CONNECTION_UNKNOWN);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN);
 
   // Initial: connected. First Check.
   // A check is scheduled in connected_check_period_.
@@ -392,7 +394,7 @@ TEST_P(ConnectivityCheckerImplTestPeriodicCheck, NoDuplicateConnectedCheck) {
   task_environment_.FastForwardBy(kCheckRequestDelay);
   SetResponsesWithStatusCode(kConnectivitySuccessStatusCode);
   tracker_->NotifyNetworkTypeChanged(
-      network::mojom::ConnectionType::CONNECTION_WIFI);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI);
 
   // Wait for the internal network change delay.
   // A check will be executed and the next check will be schedule in
@@ -412,7 +414,7 @@ TEST_P(ConnectivityCheckerImplTestPeriodicCheck, NoDuplicateDisconnectedCheck) {
   constexpr base::TimeDelta kCheckRequestDelay = base::Milliseconds(100);
   constexpr unsigned int kRounds = 10;
   tracker_->NotifyNetworkTypeChanged(
-      network::mojom::ConnectionType::CONNECTION_UNKNOWN);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN);
 
   // Initial: disconnected. First Check.
   // A check is scheduled in disconnected_check_period_.
@@ -423,7 +425,7 @@ TEST_P(ConnectivityCheckerImplTestPeriodicCheck, NoDuplicateDisconnectedCheck) {
   task_environment_.FastForwardBy(kCheckRequestDelay);
   SetResponsesWithStatusCode(net::HTTP_INTERNAL_SERVER_ERROR);
   tracker_->NotifyNetworkTypeChanged(
-      network::mojom::ConnectionType::CONNECTION_WIFI);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI);
 
   // Wait for the internal network change delay.
   // A check will be executed and the next check will be schedule in

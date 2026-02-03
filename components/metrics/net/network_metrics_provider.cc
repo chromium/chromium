@@ -59,7 +59,8 @@ NetworkMetricsProvider::NetworkMetricsProvider(
         network_quality_estimator_provider)
     : network_connection_tracker_(nullptr),
       connection_type_is_ambiguous_(false),
-      connection_type_(network::mojom::ConnectionType::CONNECTION_UNKNOWN),
+      connection_type_(
+          net::NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN),
       network_connection_tracker_initialized_(false),
       network_quality_estimator_provider_(
           std::move(network_quality_estimator_provider)),
@@ -95,8 +96,10 @@ void NetworkMetricsProvider::SetNetworkConnectionTracker(
       &connection_type_,
       base::BindOnce(&NetworkMetricsProvider::OnConnectionChanged,
                      weak_ptr_factory_.GetWeakPtr()));
-  if (connection_type_ != network::mojom::ConnectionType::CONNECTION_UNKNOWN)
+  if (connection_type_ !=
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN) {
     network_connection_tracker_initialized_ = true;
+  }
 }
 
 void NetworkMetricsProvider::ProvideSystemProfileMetrics(
@@ -126,8 +129,10 @@ void NetworkMetricsProvider::ProvideSystemProfileMetrics(
                                                    base::DoNothing());
   }
 
-  if (connection_type_ != network::mojom::ConnectionType::CONNECTION_UNKNOWN)
+  if (connection_type_ !=
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN) {
     network_connection_tracker_initialized_ = true;
+  }
   // Reset the "ambiguous" flags, since a new metrics log session has started.
   connection_type_is_ambiguous_ = false;
   min_effective_connection_type_ = effective_connection_type_;
@@ -135,7 +140,7 @@ void NetworkMetricsProvider::ProvideSystemProfileMetrics(
 }
 
 void NetworkMetricsProvider::OnConnectionChanged(
-    network::mojom::ConnectionType type) {
+    net::NetworkChangeNotifier::ConnectionType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // To avoid reporting an ambiguous connection type for users on flaky
   // connections, ignore transitions to the "none" state. Note that the
@@ -143,17 +148,18 @@ void NetworkMetricsProvider::OnConnectionChanged(
   // new UMA logging window begins, so users who genuinely transition to offline
   // mode for an extended duration will still be at least partially represented
   // in the metrics logs.
-  if (type == network::mojom::ConnectionType::CONNECTION_NONE) {
+  if (type == net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE) {
     network_connection_tracker_initialized_ = true;
     return;
   }
 
   DCHECK(network_connection_tracker_initialized_ ||
          connection_type_ ==
-             network::mojom::ConnectionType::CONNECTION_UNKNOWN);
+             net::NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN);
 
   if (type != connection_type_ &&
-      connection_type_ != network::mojom::ConnectionType::CONNECTION_NONE &&
+      connection_type_ !=
+          net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE &&
       network_connection_tracker_initialized_) {
     // If |network_connection_tracker_initialized_| is false, it implies that
     // this is the first connection change callback received from network
@@ -171,23 +177,23 @@ SystemProfileProto::Network::ConnectionType
 NetworkMetricsProvider::GetConnectionType() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   switch (connection_type_) {
-    case network::mojom::ConnectionType::CONNECTION_NONE:
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE:
       return SystemProfileProto::Network::CONNECTION_NONE;
-    case network::mojom::ConnectionType::CONNECTION_UNKNOWN:
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN:
       return SystemProfileProto::Network::CONNECTION_UNKNOWN;
-    case network::mojom::ConnectionType::CONNECTION_ETHERNET:
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_ETHERNET:
       return SystemProfileProto::Network::CONNECTION_ETHERNET;
-    case network::mojom::ConnectionType::CONNECTION_WIFI:
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI:
       return SystemProfileProto::Network::CONNECTION_WIFI;
-    case network::mojom::ConnectionType::CONNECTION_2G:
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_2G:
       return SystemProfileProto::Network::CONNECTION_2G;
-    case network::mojom::ConnectionType::CONNECTION_3G:
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_3G:
       return SystemProfileProto::Network::CONNECTION_3G;
-    case network::mojom::ConnectionType::CONNECTION_4G:
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_4G:
       return SystemProfileProto::Network::CONNECTION_4G;
-    case network::mojom::ConnectionType::CONNECTION_5G:
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_5G:
       return SystemProfileProto::Network::CONNECTION_5G;
-    case network::mojom::ConnectionType::CONNECTION_BLUETOOTH:
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_BLUETOOTH:
       return SystemProfileProto::Network::CONNECTION_BLUETOOTH;
   }
   NOTREACHED();

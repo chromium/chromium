@@ -68,7 +68,8 @@ class ProfileOAuth2TokenServiceDelegateChromeOS
                           const GoogleServiceAuthError& error) override;
 
   // |NetworkConnectionTracker::NetworkConnectionObserver| overrides.
-  void OnConnectionChanged(network::mojom::ConnectionType type) override;
+  void OnConnectionChanged(
+      net::NetworkChangeNotifier::ConnectionType type) override;
 
  private:
   friend class TestProfileOAuth2TokenServiceDelegateChromeOS;

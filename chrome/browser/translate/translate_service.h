@@ -29,8 +29,9 @@ class TranslateService
   // with ShutdownForTesting at the end of the test.
   // If `wait_for_eula` is false, EULA acceptance state is ignored for resource
   // requests.
-  static void InitializeForTesting(network::mojom::ConnectionType type,
-                                   bool wait_for_eula = true);
+  static void InitializeForTesting(
+      net::NetworkChangeNotifier::ConnectionType type,
+      bool wait_for_eula = true);
 
   // Shuts down the TranslateService at the end of a test in a way that the next
   // test can initialize and use the service.

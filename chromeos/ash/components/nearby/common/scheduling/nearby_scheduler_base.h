@@ -80,7 +80,8 @@ class NearbySchedulerBase
   void OnStop() override;
 
   // network::NetworkConnectionTracker::NetworkConnectionObserver:
-  void OnConnectionChanged(network::mojom::ConnectionType type) override;
+  void OnConnectionChanged(
+      net::NetworkChangeNotifier::ConnectionType type) override;
 
   std::optional<base::Time> GetLastAttemptTime() const;
   bool HasPendingImmediateRequest() const;

@@ -96,7 +96,7 @@ void NetworkingPrivateServiceClient::RemoveObserver(
 }
 
 void NetworkingPrivateServiceClient::OnConnectionChanged(
-    network::mojom::ConnectionType type) {
+    net::NetworkChangeNotifier::ConnectionType type) {
   task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&WiFiService::RequestConnectedNetworkUpdate,
                                 base::Unretained(wifi_service_.get())));

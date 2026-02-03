@@ -46,7 +46,8 @@ class ForceSigninVerifier
                                   signin::AccessTokenInfo token_info);
 
   // override network::NetworkConnectionTracker::NetworkConnectionObserver
-  void OnConnectionChanged(network::mojom::ConnectionType type) override;
+  void OnConnectionChanged(
+      net::NetworkChangeNotifier::ConnectionType type) override;
 
   // Cancel any pending or ongoing verification.
   void Cancel();
@@ -68,7 +69,7 @@ class ForceSigninVerifier
   // Send the request if |network_type| is not CONNECTION_NONE and
   // ShouldSendRequest returns true.
   void SendRequestIfNetworkAvailable(
-      network::mojom::ConnectionType network_type);
+      net::NetworkChangeNotifier::ConnectionType network_type);
 
   bool ShouldSendRequest();
 

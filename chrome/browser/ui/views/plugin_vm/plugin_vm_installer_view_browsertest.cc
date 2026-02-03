@@ -82,7 +82,7 @@ class PluginVmInstallerViewBrowserTest : public DialogBrowserTest {
     content::SetNetworkConnectionTrackerForTesting(
         network_connection_tracker_.get());
     network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
-        network::mojom::ConnectionType::CONNECTION_WIFI);
+        net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI);
   }
 
   // DialogBrowserTest:

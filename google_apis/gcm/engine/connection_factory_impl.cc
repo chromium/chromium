@@ -98,12 +98,12 @@ void ConnectionFactoryImpl::Initialize(
   write_callback_ = write_callback;
 
   network_connection_tracker_->AddNetworkConnectionObserver(this);
-  auto type = network::mojom::ConnectionType::CONNECTION_UNKNOWN;
+  auto type = net::NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN;
   if (network_connection_tracker_->GetConnectionType(
           &type, base::BindOnce(&ConnectionFactoryImpl::OnConnectionChanged,
                                 weak_ptr_factory_.GetWeakPtr()))) {
     waiting_for_network_online_ =
-        type == network::mojom::ConnectionType::CONNECTION_NONE;
+        type == net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE;
   }
 }
 
@@ -283,8 +283,8 @@ base::TimeTicks ConnectionFactoryImpl::NextRetryAttempt() const {
 }
 
 void ConnectionFactoryImpl::OnConnectionChanged(
-    network::mojom::ConnectionType type) {
-  if (type == network::mojom::ConnectionType::CONNECTION_NONE) {
+    net::NetworkChangeNotifier::ConnectionType type) {
+  if (type == net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE) {
     DVLOG(1) << "Network lost, resettion connection.";
     waiting_for_network_online_ = true;
 

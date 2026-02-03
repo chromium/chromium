@@ -205,12 +205,12 @@ class AffiliationBackendTest : public testing::Test {
 
   void TurnOnInternetConnection() {
     network_connection_tracker_->SetConnectionType(
-        network::mojom::ConnectionType::CONNECTION_ETHERNET);
+        net::NetworkChangeNotifier::ConnectionType::CONNECTION_ETHERNET);
   }
 
   void TurnOffInternetConnection() {
     network_connection_tracker_->SetConnectionType(
-        network::mojom::ConnectionType::CONNECTION_NONE);
+        net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
   }
 
  private:
@@ -226,7 +226,7 @@ class AffiliationBackendTest : public testing::Test {
     network_connection_tracker_ =
         network::TestNetworkConnectionTracker::CreateInstance();
     network_connection_tracker_->SetConnectionType(
-        network::mojom::ConnectionType::CONNECTION_ETHERNET);
+        net::NetworkChangeNotifier::ConnectionType::CONNECTION_ETHERNET);
     backend_->Initialize(test_shared_loader_factory->Clone(),
                          network_connection_tracker_.get(), db_path_);
     auto fake_fetcher_factory =

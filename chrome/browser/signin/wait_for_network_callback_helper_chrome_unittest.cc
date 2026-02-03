@@ -15,14 +15,16 @@
 class WaitForNetworkCallbackHelperChromeTest : public testing::Test {
  public:
  protected:
-  void SetUpNetworkConnection(bool respond_synchronously,
-                              network::mojom::ConnectionType connection_type) {
+  void SetUpNetworkConnection(
+      bool respond_synchronously,
+      net::NetworkChangeNotifier::ConnectionType connection_type) {
     auto* tracker = network::TestNetworkConnectionTracker::GetInstance();
     tracker->SetRespondSynchronously(respond_synchronously);
     tracker->SetConnectionType(connection_type);
   }
 
-  void SetConnectionType(network::mojom::ConnectionType connection_type) {
+  void SetConnectionType(
+      net::NetworkChangeNotifier::ConnectionType connection_type) {
     network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
         connection_type);
   }
@@ -36,7 +38,8 @@ class WaitForNetworkCallbackHelperChromeTest : public testing::Test {
 TEST_F(WaitForNetworkCallbackHelperChromeTest,
        MetricsCollection_DelayedNetworkCall) {
   base::HistogramTester histogram_tester;
-  SetUpNetworkConnection(true, network::mojom::ConnectionType::CONNECTION_NONE);
+  SetUpNetworkConnection(
+      true, net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
   g_browser_process->network_quality_tracker()
       ->ReportEffectiveConnectionTypeForTesting(
           net::EFFECTIVE_CONNECTION_TYPE_2G);
@@ -50,7 +53,8 @@ TEST_F(WaitForNetworkCallbackHelperChromeTest,
 
 TEST_F(WaitForNetworkCallbackHelperChromeTest,
        DelayNetworkCallRunsImmediatelyWithNetwork) {
-  SetUpNetworkConnection(true, network::mojom::ConnectionType::CONNECTION_3G);
+  SetUpNetworkConnection(
+      true, net::NetworkChangeNotifier::ConnectionType::CONNECTION_3G);
   base::test::TestFuture<void> future;
   helper_.DelayNetworkCall(future.GetCallback());
   EXPECT_TRUE(future.IsReady());
@@ -58,7 +62,8 @@ TEST_F(WaitForNetworkCallbackHelperChromeTest,
 
 TEST_F(WaitForNetworkCallbackHelperChromeTest,
        GetConnectionTypeRespondsAsynchronously) {
-  SetUpNetworkConnection(false, network::mojom::ConnectionType::CONNECTION_3G);
+  SetUpNetworkConnection(
+      false, net::NetworkChangeNotifier::ConnectionType::CONNECTION_3G);
 
   base::test::TestFuture<void> future;
   helper_.DelayNetworkCall(future.GetCallback());
@@ -68,25 +73,27 @@ TEST_F(WaitForNetworkCallbackHelperChromeTest,
 
 TEST_F(WaitForNetworkCallbackHelperChromeTest,
        DelayNetworkCallRunsAfterNetworkChange) {
-  SetUpNetworkConnection(true, network::mojom::ConnectionType::CONNECTION_NONE);
+  SetUpNetworkConnection(
+      true, net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
 
   base::test::TestFuture<void> future;
   helper_.DelayNetworkCall(future.GetCallback());
   EXPECT_FALSE(future.IsReady());
-  SetConnectionType(network::mojom::ConnectionType::CONNECTION_3G);
+  SetConnectionType(net::NetworkChangeNotifier::ConnectionType::CONNECTION_3G);
   EXPECT_TRUE(future.Wait());
 }
 
 TEST_F(WaitForNetworkCallbackHelperChromeTest,
        MutlipleDelayNetworkCallsRunsAfterNetworkChange) {
-  SetUpNetworkConnection(true, network::mojom::ConnectionType::CONNECTION_NONE);
+  SetUpNetworkConnection(
+      true, net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
 
   std::array<base::test::TestFuture<void>, 5> futures;
   for (auto& future : futures) {
     helper_.DelayNetworkCall(future.GetCallback());
     EXPECT_FALSE(future.IsReady());
   }
-  SetConnectionType(network::mojom::ConnectionType::CONNECTION_3G);
+  SetConnectionType(net::NetworkChangeNotifier::ConnectionType::CONNECTION_3G);
   EXPECT_TRUE(futures[0].Wait());
   for (auto& future : futures) {
     EXPECT_TRUE(future.IsReady());

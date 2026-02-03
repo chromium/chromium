@@ -95,9 +95,10 @@ void EventBasedStatusReportingService::OnSessionStateChanged() {
 }
 
 void EventBasedStatusReportingService::OnConnectionChanged(
-    network::mojom::ConnectionType type) {
-  if (type != network::mojom::ConnectionType::CONNECTION_NONE)
+    net::NetworkChangeNotifier::ConnectionType type) {
+  if (type != net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE) {
     RequestStatusReport(StatusReportEvent::kDeviceOnline);
+  }
 }
 
 void EventBasedStatusReportingService::SuspendDone(base::TimeDelta duration) {

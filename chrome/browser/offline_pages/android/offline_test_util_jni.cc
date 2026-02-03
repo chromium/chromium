@@ -118,7 +118,7 @@ class NetworkConnectionObserver
  public:
   // Waits for connection type to change to |type|.
   static void WaitForConnectionType(
-      network::mojom::ConnectionType type_to_wait_for,
+      net::NetworkChangeNotifier::ConnectionType type_to_wait_for,
       base::android::ScopedJavaGlobalRef<jobject> callback) {
     // NetworkConnectionObserver manages it's own lifetime.
     new NetworkConnectionObserver(type_to_wait_for, std::move(callback));
@@ -126,13 +126,13 @@ class NetworkConnectionObserver
 
  private:
   NetworkConnectionObserver(
-      network::mojom::ConnectionType type_to_wait_for,
+      net::NetworkChangeNotifier::ConnectionType type_to_wait_for,
       base::android::ScopedJavaGlobalRef<jobject> callback)
       : type_to_wait_for_(type_to_wait_for), callback_(std::move(callback)) {
     content::GetNetworkConnectionTracker()->AddNetworkConnectionObserver(this);
 
     // Call OnConnectionChanged() with the current state.
-    network::mojom::ConnectionType current_type;
+    net::NetworkChangeNotifier::ConnectionType current_type;
     if (content::GetNetworkConnectionTracker()->GetConnectionType(
             &current_type,
             base::BindOnce(&NetworkConnectionObserver::OnConnectionChanged,
@@ -147,15 +147,16 @@ class NetworkConnectionObserver
   }
 
   // network::NetworkConnectionTracker::NetworkConnectionObserver:
-  void OnConnectionChanged(network::mojom::ConnectionType type) override {
+  void OnConnectionChanged(
+      net::NetworkChangeNotifier::ConnectionType type) override {
     if (type == type_to_wait_for_) {
       base::android::RunRunnableAndroid(callback_);
       delete this;
     }
   }
 
-  network::mojom::ConnectionType type_to_wait_for_ =
-      network::mojom::ConnectionType::CONNECTION_UNKNOWN;
+  net::NetworkChangeNotifier::ConnectionType type_to_wait_for_ =
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN;
   base::android::ScopedJavaGlobalRef<jobject> callback_;
   base::WeakPtrFactory<NetworkConnectionObserver> weak_factory_{this};
 };
@@ -246,9 +247,9 @@ static void JNI_OfflineTestUtil_WaitForConnectivityState(
     JNIEnv* env,
     bool connected,
     const base::android::JavaRef<jobject>& callback) {
-  network::mojom::ConnectionType type =
-      connected ? network::mojom::ConnectionType::CONNECTION_UNKNOWN
-                : network::mojom::ConnectionType::CONNECTION_NONE;
+  net::NetworkChangeNotifier::ConnectionType type =
+      connected ? net::NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN
+                : net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE;
   NetworkConnectionObserver::WaitForConnectionType(
       type, base::android::ScopedJavaGlobalRef<jobject>(env, callback));
 }

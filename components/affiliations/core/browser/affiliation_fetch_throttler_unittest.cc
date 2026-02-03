@@ -86,8 +86,9 @@ class AffiliationFetchThrottlerTest : public testing::Test {
 
   void SimulateHasNetworkConnectivity(bool has_connectivity) {
     network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
-        has_connectivity ? network::mojom::ConnectionType::CONNECTION_ETHERNET
-                         : network::mojom::ConnectionType::CONNECTION_NONE);
+        has_connectivity
+            ? net::NetworkChangeNotifier::ConnectionType::CONNECTION_ETHERNET
+            : net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
     task_environment_.RunUntilIdle();
   }
 

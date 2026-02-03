@@ -74,7 +74,7 @@ void PublicIpAddressLocationNotifier::QueryNextPosition(
 }
 
 void PublicIpAddressLocationNotifier::OnConnectionChanged(
-    network::mojom::ConnectionType type) {
+    net::NetworkChangeNotifier::ConnectionType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Post a cancelable task to react to this network change after a reasonable

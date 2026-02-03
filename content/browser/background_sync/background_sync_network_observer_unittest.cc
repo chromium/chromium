@@ -21,7 +21,7 @@ class BackgroundSyncNetworkObserverTest : public testing::Test {
             base::Unretained(this)));
   }
 
-  void SetNetwork(network::mojom::ConnectionType connection_type) {
+  void SetNetwork(net::NetworkChangeNotifier::ConnectionType connection_type) {
     network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
         connection_type);
     base::RunLoop().RunUntilIdle();
@@ -37,39 +37,39 @@ class BackgroundSyncNetworkObserverTest : public testing::Test {
 };
 
 TEST_F(BackgroundSyncNetworkObserverTest, NetworkChangeInvokesCallback) {
-  SetNetwork(network::mojom::ConnectionType::CONNECTION_NONE);
+  SetNetwork(net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
   network_changed_count_ = 0;
 
-  SetNetwork(network::mojom::ConnectionType::CONNECTION_WIFI);
+  SetNetwork(net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI);
   EXPECT_EQ(1, network_changed_count_);
-  SetNetwork(network::mojom::ConnectionType::CONNECTION_3G);
+  SetNetwork(net::NetworkChangeNotifier::ConnectionType::CONNECTION_3G);
   EXPECT_EQ(2, network_changed_count_);
-  SetNetwork(network::mojom::ConnectionType::CONNECTION_UNKNOWN);
+  SetNetwork(net::NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN);
   EXPECT_EQ(3, network_changed_count_);
-  SetNetwork(network::mojom::ConnectionType::CONNECTION_NONE);
+  SetNetwork(net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
   EXPECT_EQ(4, network_changed_count_);
-  SetNetwork(network::mojom::ConnectionType::CONNECTION_NONE);
+  SetNetwork(net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
   EXPECT_EQ(4, network_changed_count_);
 }
 
 TEST_F(BackgroundSyncNetworkObserverTest, ConditionsMetOnline) {
-  SetNetwork(network::mojom::ConnectionType::CONNECTION_WIFI);
+  SetNetwork(net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI);
   EXPECT_TRUE(network_observer_->NetworkSufficient());
 
-  SetNetwork(network::mojom::ConnectionType::CONNECTION_3G);
+  SetNetwork(net::NetworkChangeNotifier::ConnectionType::CONNECTION_3G);
   EXPECT_TRUE(network_observer_->NetworkSufficient());
 
-  SetNetwork(network::mojom::ConnectionType::CONNECTION_UNKNOWN);
+  SetNetwork(net::NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN);
   EXPECT_TRUE(network_observer_->NetworkSufficient());
 
-  SetNetwork(network::mojom::ConnectionType::CONNECTION_NONE);
+  SetNetwork(net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
   EXPECT_FALSE(network_observer_->NetworkSufficient());
 }
 
 TEST_F(BackgroundSyncNetworkObserverTest, GetNetworkOnConstruction) {
   // We need to emulate being disconnected before creating the network observer.
   network_observer_.reset();
-  SetNetwork(network::mojom::ConnectionType::CONNECTION_NONE);
+  SetNetwork(net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
 
   auto observer =
       std::make_unique<BackgroundSyncNetworkObserver>(base::BindRepeating(

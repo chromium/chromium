@@ -220,7 +220,7 @@ class VariationsHttpHeadersBrowserTest
     InProcessBrowserTest::SetUpOnMainThread();
 
     content::NetworkConnectionChangeSimulator().SetConnectionType(
-        network::mojom::ConnectionType::CONNECTION_ETHERNET);
+        net::NetworkChangeNotifier::ConnectionType::CONNECTION_ETHERNET);
 
     host_resolver()->AddRule("*", "127.0.0.1");
 

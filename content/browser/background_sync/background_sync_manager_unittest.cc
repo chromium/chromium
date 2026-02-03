@@ -226,7 +226,7 @@ class BackgroundSyncManagerTest
     EXPECT_TRUE(sw_registration_2_);
   }
 
-  void SetNetwork(network::mojom::ConnectionType connection_type) {
+  void SetNetwork(net::NetworkChangeNotifier::ConnectionType connection_type) {
     network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
         connection_type);
     if (test_background_sync_manager()) {
@@ -344,7 +344,7 @@ class BackgroundSyncManagerTest
     // the sync event fires by manipulating the network state as needed.
     // NOTE: The setup of the network connection must happen after the
     //       BackgroundSyncManager has been created.
-    SetNetwork(network::mojom::ConnectionType::CONNECTION_NONE);
+    SetNetwork(net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
   }
 
   void InitBackgroundSyncManager() {
@@ -582,14 +582,14 @@ class BackgroundSyncManagerTest
   void SetupForSyncEvent(
       const TestBackgroundSyncManager::DispatchSyncCallback& callback) {
     test_background_sync_manager()->set_dispatch_sync_callback(callback);
-    SetNetwork(network::mojom::ConnectionType::CONNECTION_WIFI);
+    SetNetwork(net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI);
   }
 
   void SetupForPeriodicSyncEvent(
       const TestBackgroundSyncManager::DispatchSyncCallback& callback) {
     test_background_sync_manager()->set_dispatch_periodic_sync_callback(
         callback);
-    SetNetwork(network::mojom::ConnectionType::CONNECTION_WIFI);
+    SetNetwork(net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI);
   }
 
   void DispatchSyncStatusCallback(
@@ -1527,7 +1527,7 @@ TEST_F(BackgroundSyncManagerTest, OverwritePendingRegistration) {
   InitFailedSyncEventTest();
 
   // Prevent the first sync from running so that it stays in a pending state.
-  SetNetwork(network::mojom::ConnectionType::CONNECTION_NONE);
+  SetNetwork(net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
   EXPECT_TRUE(Register(sync_options_1_));
   EXPECT_TRUE(GetRegistration(sync_options_1_));
 
@@ -1536,7 +1536,7 @@ TEST_F(BackgroundSyncManagerTest, OverwritePendingRegistration) {
   EXPECT_TRUE(GetRegistration(sync_options_1_));
 
   // Verify that it only gets to run once.
-  SetNetwork(network::mojom::ConnectionType::CONNECTION_WIFI);
+  SetNetwork(net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, sync_events_called_);
   EXPECT_FALSE(GetRegistration(sync_options_1_));
@@ -1544,7 +1544,7 @@ TEST_F(BackgroundSyncManagerTest, OverwritePendingRegistration) {
 
 TEST_F(BackgroundSyncManagerTest, DisableWhilePending) {
   InitDelayedSyncEventTest();
-  SetNetwork(network::mojom::ConnectionType::CONNECTION_NONE);
+  SetNetwork(net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(Register(sync_options_1_));
 
@@ -1554,7 +1554,7 @@ TEST_F(BackgroundSyncManagerTest, DisableWhilePending) {
   EXPECT_FALSE(Register(sync_options_2_));
 
   test_background_sync_manager()->set_corrupt_backend(false);
-  SetNetwork(network::mojom::ConnectionType::CONNECTION_WIFI);
+  SetNetwork(net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(0, sync_events_called_);
 }
@@ -1581,12 +1581,12 @@ TEST_F(BackgroundSyncManagerTest, DisableWhileFiring) {
 TEST_F(BackgroundSyncManagerTest, FiresOnNetworkChange) {
   InitSyncEventTest();
 
-  SetNetwork(network::mojom::ConnectionType::CONNECTION_NONE);
+  SetNetwork(net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
   EXPECT_TRUE(Register(sync_options_1_));
   EXPECT_EQ(0, sync_events_called_);
   EXPECT_TRUE(GetRegistration(sync_options_1_));
 
-  SetNetwork(network::mojom::ConnectionType::CONNECTION_WIFI);
+  SetNetwork(net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, sync_events_called_);
   EXPECT_FALSE(GetRegistration(sync_options_1_));
@@ -1595,14 +1595,14 @@ TEST_F(BackgroundSyncManagerTest, FiresOnNetworkChange) {
 TEST_F(BackgroundSyncManagerTest, MultipleRegistrationsFireOnNetworkChange) {
   InitSyncEventTest();
 
-  SetNetwork(network::mojom::ConnectionType::CONNECTION_NONE);
+  SetNetwork(net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
   EXPECT_TRUE(Register(sync_options_1_));
   EXPECT_TRUE(Register(sync_options_2_));
   EXPECT_EQ(0, sync_events_called_);
   EXPECT_TRUE(GetRegistration(sync_options_1_));
   EXPECT_TRUE(GetRegistration(sync_options_2_));
 
-  SetNetwork(network::mojom::ConnectionType::CONNECTION_WIFI);
+  SetNetwork(net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI);
 
   EXPECT_EQ(2, sync_events_called_);
   EXPECT_FALSE(GetRegistration(sync_options_1_));
@@ -1613,7 +1613,7 @@ TEST_F(BackgroundSyncManagerTest, FiresOnManagerRestart) {
   InitSyncEventTest();
 
   // Initially the event won't run because there is no network.
-  SetNetwork(network::mojom::ConnectionType::CONNECTION_NONE);
+  SetNetwork(net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
   EXPECT_TRUE(Register(sync_options_1_));
   EXPECT_EQ(0, sync_events_called_);
   EXPECT_TRUE(GetRegistration(sync_options_1_));
@@ -1622,7 +1622,7 @@ TEST_F(BackgroundSyncManagerTest, FiresOnManagerRestart) {
   DeleteBackgroundSyncManager();
 
   // The next time the manager is started, the network is good.
-  SetNetwork(network::mojom::ConnectionType::CONNECTION_WIFI);
+  SetNetwork(net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI);
   SetupBackgroundSyncManager();
   InitSyncEventTest();
 
@@ -1819,7 +1819,7 @@ TEST_F(BackgroundSyncManagerTest, DISABLED_WakeBrowserCalledForOneShotSync) {
   EXPECT_EQ(0, GetController()->run_in_background_count());
   EXPECT_FALSE(IsBrowserWakeupForOneShotSyncScheduled());
 
-  SetNetwork(network::mojom::ConnectionType::CONNECTION_NONE);
+  SetNetwork(net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
   EXPECT_FALSE(IsBrowserWakeupForOneShotSyncScheduled());
 
   // Register a one-shot but it can't fire due to lack of network, wake up is
@@ -1829,7 +1829,7 @@ TEST_F(BackgroundSyncManagerTest, DISABLED_WakeBrowserCalledForOneShotSync) {
 
   // Start the event but it will pause mid-sync due to
   // InitDelayedSyncEventTest() above.
-  SetNetwork(network::mojom::ConnectionType::CONNECTION_WIFI);
+  SetNetwork(net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI);
   EXPECT_TRUE(IsBrowserWakeupForOneShotSyncScheduled());
   EXPECT_TRUE(EqualsSoonestOneShotWakeupDelta(test_background_sync_manager()
                                                   ->background_sync_parameters()
@@ -1851,7 +1851,7 @@ TEST_F(BackgroundSyncManagerTest, WakeBrowserCalledForPeriodicSync) {
   EXPECT_EQ(0, GetController()->run_in_background_periodic_sync_count());
   EXPECT_FALSE(IsBrowserWakeupForPeriodicSyncScheduled());
 
-  SetNetwork(network::mojom::ConnectionType::CONNECTION_NONE);
+  SetNetwork(net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
 
   // Register a periodic Background Sync but it can't fire due to lack of
   // network, wake up is required.
@@ -1866,7 +1866,7 @@ TEST_F(BackgroundSyncManagerTest, WakeBrowserCalledForPeriodicSync) {
 
   // Start the event but it will pause mid-sync due to
   // InitDelayedPeriodicSyncEventTest() above.
-  SetNetwork(network::mojom::ConnectionType::CONNECTION_WIFI);
+  SetNetwork(net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI);
   EXPECT_TRUE(IsBrowserWakeupForPeriodicSyncScheduled());
   EXPECT_TRUE(
       EqualsSoonestPeriodicSyncWakeupDelta(test_background_sync_manager()
@@ -1976,7 +1976,7 @@ TEST_F(BackgroundSyncManagerTest, StaggeredPeriodicSyncRegistrations) {
   base::TimeDelta twelve_hours = base::Hours(12);
   SetPeriodicSyncEventsMinIntervalAndRestartManager(twelve_hours);
   InitPeriodicSyncEventTest();
-  SetNetwork(network::mojom::ConnectionType::CONNECTION_NONE);
+  SetNetwork(net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
 
   // Register a periodic sync.
   base::TimeDelta thirteen_hours = base::Hours(13);
@@ -2002,7 +2002,7 @@ TEST_F(BackgroundSyncManagerTest, StaggeredPeriodicSyncRegistrations) {
   // first registration fires. Expect the next wakeup time to be longer than 1
   // hour, which is the stagger interval between the two registrations.
   test_clock_.Advance(twelve_hours);
-  SetNetwork(network::mojom::ConnectionType::CONNECTION_WIFI);
+  SetNetwork(net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI);
   base::RunLoop().RunUntilIdle();
   EXPECT_GT(GetSoonestWakeupDelta(
                 blink::mojom::BackgroundSyncType::PERIODIC,
@@ -2014,9 +2014,9 @@ TEST_F(BackgroundSyncManagerTest, RelyOnAndroidNetworkDetection) {
   SetRelyOnAndroidNetworkDetectionAndRestartManager(
       /* rely_on_android_network_detection= */ true);
   InitSyncEventTest();
-  SetNetwork(network::mojom::ConnectionType::CONNECTION_NONE);
+  SetNetwork(net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
   EXPECT_TRUE(Register(sync_options_1_));
-  SetNetwork(network::mojom::ConnectionType::CONNECTION_WIFI);
+  SetNetwork(net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI);
   base::RunLoop().RunUntilIdle();
 #if BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(0, sync_events_called_);
@@ -2339,7 +2339,7 @@ TEST_F(BackgroundSyncManagerTest, EmulateDispatchSyncEvent) {
   test_background_sync_manager()->EmulateServiceWorkerOffline(
       sw_registration_id_1_, false);
 
-  SetNetwork(network::mojom::ConnectionType::CONNECTION_NONE);
+  SetNetwork(net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
   was_called = false;
   code = blink::ServiceWorkerStatusCode::kOk;
   test_background_sync_manager()->EmulateDispatchSyncEvent(
@@ -2349,7 +2349,7 @@ TEST_F(BackgroundSyncManagerTest, EmulateDispatchSyncEvent) {
   EXPECT_TRUE(was_called);
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorEventWaitUntilRejected, code);
 
-  SetNetwork(network::mojom::ConnectionType::CONNECTION_WIFI);
+  SetNetwork(net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI);
   was_called = false;
   test_background_sync_manager()->EmulateDispatchSyncEvent(
       "emulated_tag", sw_registration_1_->active_version(), false,

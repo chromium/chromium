@@ -84,8 +84,9 @@ void TranslateService::Shutdown() {
 }
 
 // static
-void TranslateService::InitializeForTesting(network::mojom::ConnectionType type,
-                                            bool wait_for_eula) {
+void TranslateService::InitializeForTesting(
+    net::NetworkChangeNotifier::ConnectionType type,
+    bool wait_for_eula) {
   g_wait_for_eula = wait_for_eula;
 
   translate::TranslateDownloadManager::GetInstance()->ResetForTesting();

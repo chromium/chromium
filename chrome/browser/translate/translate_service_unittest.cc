@@ -70,7 +70,7 @@ TEST(TranslateServiceTest, CheckTranslatableURL) {
 TEST(TranslateServiceTest, DownloadsAndHistoryNotTranslated) {
   content::BrowserTaskEnvironment task_environment;
   TranslateService::InitializeForTesting(
-      network::mojom::ConnectionType::CONNECTION_WIFI);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI);
   EXPECT_FALSE(
       TranslateService::IsTranslatableURL(GURL(chrome::kChromeUIDownloadsURL)));
   EXPECT_FALSE(

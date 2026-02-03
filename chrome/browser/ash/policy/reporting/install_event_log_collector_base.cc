@@ -64,7 +64,7 @@ void InstallEventLogCollectorBase::OnLogout() {
 }
 
 void InstallEventLogCollectorBase::OnConnectionChanged(
-    network::mojom::ConnectionType type) {
+    net::NetworkChangeNotifier::ConnectionType type) {
   const bool currently_online = GetOnlineState();
   if (currently_online == online_) {
     return;

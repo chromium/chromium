@@ -1558,7 +1558,7 @@ void EventRouter::OnAppRegistryCacheWillBeDestroyed(
 }
 
 void EventRouter::OnConnectionChanged(
-    const network::mojom::ConnectionType type) {
+    const net::NetworkChangeNotifier::ConnectionType type) {
   fmp::DeviceConnectionState result =
       content::GetNetworkConnectionTracker()->IsOffline()
           ? fmp::DeviceConnectionState::kOffline

@@ -164,7 +164,7 @@ void AffiliationFetchThrottler::OnBackoffDelayExpiredCallback() {
 }
 
 void AffiliationFetchThrottler::OnConnectionChanged(
-    network::mojom::ConnectionType type) {
+    net::NetworkChangeNotifier::ConnectionType type) {
   bool old_has_network_connectivity = has_network_connectivity_;
   // We reread the connection type here instead of relying on |type| because
   // NetworkConnectionTracker will call this function an extra time with

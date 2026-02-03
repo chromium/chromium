@@ -542,7 +542,7 @@ TEST_F(AggregatableReportSchedulerTest,
 TEST_F(AggregatableReportSchedulerTest,
        NetworkOffline_ReportsAreNotRetrievedUntilOnline) {
   network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
-      network::mojom::ConnectionType::CONNECTION_NONE);  // Offline
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);  // Offline
 
   AggregatableReportRequest example_request =
       aggregation_service::CreateExampleRequest();
@@ -573,7 +573,8 @@ TEST_F(AggregatableReportSchedulerTest,
                                   base::Microseconds(1));
 
   network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
-      network::mojom::ConnectionType::CONNECTION_UNKNOWN);  // Online
+      net::NetworkChangeNotifier::ConnectionType::
+          CONNECTION_UNKNOWN);  // Online
 
   checkpoint.Call(1);
 
@@ -588,7 +589,7 @@ TEST_F(AggregatableReportSchedulerTest,
 TEST_F(AggregatableReportSchedulerTest,
        OnlineConnectionChanges_ReportsAreNotRetrieved) {
   network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
-      network::mojom::ConnectionType::CONNECTION_3G);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_3G);
 
   AggregatableReportRequest example_request =
       aggregation_service::CreateExampleRequest();
@@ -621,7 +622,7 @@ TEST_F(AggregatableReportSchedulerTest,
 
   task_environment_.AdvanceClock(fast_forward_required + base::Microseconds(1));
   network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
-      network::mojom::ConnectionType::CONNECTION_4G);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_4G);
 
   checkpoint.Call(1);
 
@@ -675,7 +676,7 @@ class AggregatableReportSchedulerDeveloperModeTest
 TEST_F(AggregatableReportSchedulerDeveloperModeTest,
        NetworkOffline_ReportsAreSentImmediatelyWhenOnline) {
   network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
-      network::mojom::ConnectionType::CONNECTION_NONE);  // Offline
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);  // Offline
 
   AggregatableReportRequest example_request =
       aggregation_service::CreateExampleRequest();
@@ -708,7 +709,8 @@ TEST_F(AggregatableReportSchedulerDeveloperModeTest,
   checkpoint.Call(1);
 
   network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
-      network::mojom::ConnectionType::CONNECTION_UNKNOWN);  // Online
+      net::NetworkChangeNotifier::ConnectionType::
+          CONNECTION_UNKNOWN);  // Online
 
   // With the developer mode flag, the report should be sent immediately, so all
   // we need to do is run any pending tasks.

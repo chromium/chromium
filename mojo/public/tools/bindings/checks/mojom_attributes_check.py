@@ -108,7 +108,6 @@ _NATIVE_ALLOWLIST = {
     'chrome.mojom.SearchEngineInfo',
     'chrome.mojom.SourceProfile',
     'content.mojom.DropData',
-    'content.mojom.NetworkConnectionType',
     'content.mojom.PageState',
     'content.mojom.PageTransition',
     'content.mojom.WebPluginInfo',

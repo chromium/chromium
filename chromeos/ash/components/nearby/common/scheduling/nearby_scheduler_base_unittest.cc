@@ -137,8 +137,8 @@ class NearbySchedulerBaseTest : public ::testing::Test {
 
   void SetNetworkConnection(bool online) {
     network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
-        online ? network::mojom::ConnectionType::CONNECTION_WIFI
-               : network::mojom::ConnectionType::CONNECTION_NONE);
+        online ? net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI
+               : net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
   }
 
   size_t on_request_call_count() const { return on_request_call_count_; }

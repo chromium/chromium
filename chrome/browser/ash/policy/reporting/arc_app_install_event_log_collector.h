@@ -90,7 +90,8 @@ class ArcAppInstallEventLogCollector : public InstallEventLogCollectorBase,
   // Overrides to handle events from InstallEventLogCollectorBase.
   void OnLoginInternal() override;
   void OnLogoutInternal() override;
-  void OnConnectionStateChanged(network::mojom::ConnectionType type) override;
+  void OnConnectionStateChanged(
+      net::NetworkChangeNotifier::ConnectionType type) override;
 
  private:
   const raw_ptr<Delegate> delegate_;

@@ -69,7 +69,7 @@ class CONTENT_EXPORT ReportSchedulerTimer
 
   ~ReportSchedulerTimer() override;
 
-  network::mojom::ConnectionType connection_type() const;
+  net::NetworkChangeNotifier::ConnectionType connection_type() const;
 
   // Schedules `reporting_time_reached_timer_` to fire at that time, unless the
   // timer is already set to fire earlier.
@@ -85,11 +85,11 @@ class CONTENT_EXPORT ReportSchedulerTimer
   // https://google.github.io/styleguide/cppguide.html#Doing_Work_in_Constructors
   //
   // network::NetworkConnectionTracker::NetworkConnectionObserver:
-  void OnConnectionChanged(network::mojom::ConnectionType) final;
+  void OnConnectionChanged(net::NetworkChangeNotifier::ConnectionType) final;
 
   bool IsOffline() const VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  void UpdateState(network::mojom::ConnectionType)
+  void UpdateState(net::NetworkChangeNotifier::ConnectionType)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Fires whenever a reporting time is reached for a report. Must be updated
@@ -100,8 +100,9 @@ class CONTENT_EXPORT ReportSchedulerTimer
   const std::unique_ptr<Delegate> delegate_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  network::mojom::ConnectionType connection_type_ GUARDED_BY_CONTEXT(
-      sequence_checker_) = network::mojom::ConnectionType::CONNECTION_NONE;
+  net::NetworkChangeNotifier::ConnectionType connection_type_
+      GUARDED_BY_CONTEXT(sequence_checker_) =
+          net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE;
 
   base::ScopedObservation<
       network::NetworkConnectionTracker,

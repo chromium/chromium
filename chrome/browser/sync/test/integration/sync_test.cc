@@ -1104,13 +1104,13 @@ void SyncTest::DisableNetwork() {
           }));
 
   connection_change_simulator_.SetConnectionType(
-      network::mojom::ConnectionType::CONNECTION_NONE);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
 }
 
 void SyncTest::EnableNetwork() {
   url_loader_interceptor_.reset();
   connection_change_simulator_.SetConnectionType(
-      network::mojom::ConnectionType::CONNECTION_ETHERNET);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_ETHERNET);
 }
 
 void SyncTest::TriggerSyncForDataTypes(int index,

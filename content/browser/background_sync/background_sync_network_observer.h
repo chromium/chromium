@@ -42,11 +42,11 @@ class CONTENT_EXPORT BackgroundSyncNetworkObserver
 
   // NetworkConnectionObserver overrides
   void OnConnectionChanged(
-      network::mojom::ConnectionType connection_type) override;
+      net::NetworkChangeNotifier::ConnectionType connection_type) override;
 
   // Allow tests to call NotifyManagerIfConnectionChanged.
   void NotifyManagerIfConnectionChangedForTesting(
-      network::mojom::ConnectionType connection_type);
+      net::NetworkChangeNotifier::ConnectionType connection_type);
 
  private:
   // Finishes setup once we get the NetworkConnectionTracker from the UI thread.
@@ -58,7 +58,7 @@ class CONTENT_EXPORT BackgroundSyncNetworkObserver
 
   // Calls NotifyConnectionChanged if the connection type has changed.
   void NotifyManagerIfConnectionChanged(
-      network::mojom::ConnectionType connection_type);
+      net::NetworkChangeNotifier::ConnectionType connection_type);
 
   void NotifyConnectionChanged();
 
@@ -66,7 +66,7 @@ class CONTENT_EXPORT BackgroundSyncNetworkObserver
   // object.
   raw_ptr<network::NetworkConnectionTracker> network_connection_tracker_;
 
-  network::mojom::ConnectionType connection_type_;
+  net::NetworkChangeNotifier::ConnectionType connection_type_;
 
   // The callback to run when the connection changes.
   base::RepeatingClosure connection_changed_callback_;

@@ -45,7 +45,7 @@ class MockNetworkConnectionTracker : public network::NetworkConnectionTracker {
 
   MOCK_METHOD(bool,
               GetConnectionType,
-              (network::mojom::ConnectionType*,
+              (net::NetworkChangeNotifier::ConnectionType*,
                network::NetworkConnectionTracker::ConnectionTypeCallback));
 };
 
@@ -103,7 +103,8 @@ class DialRegistryTest : public testing::Test {
         list_with_first_second_devices_({first_device_, second_device_}) {
     ON_CALL(mock_tracker_, GetConnectionType(_, _))
         .WillByDefault(DoAll(
-            SetArgPointee<0>(network::mojom::ConnectionType::CONNECTION_WIFI),
+            SetArgPointee<0>(
+                net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI),
             Return(true)));
     registry_->network_connection_tracker_ = &mock_tracker_;
   }
@@ -261,7 +262,7 @@ TEST_F(DialRegistryTest, TestNetworkEventConnectionLost) {
               OnDialError(DialRegistry::DIAL_NETWORK_DISCONNECTED));
   EXPECT_CALL(mock_client_, OnDialDeviceList(empty_list_));
   registry_->OnConnectionChanged(
-      network::mojom::ConnectionType::CONNECTION_NONE);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
   base::RunLoop().RunUntilIdle();
   registry_->OnDiscoveryRequest();
   registry_->OnDiscoveryFinished();
@@ -286,7 +287,7 @@ TEST_F(DialRegistryTest, TestNetworkEventConnectionRestored) {
               OnDialError(DialRegistry::DIAL_NETWORK_DISCONNECTED));
   EXPECT_CALL(mock_client_, OnDialDeviceList(empty_list_));
   registry_->OnConnectionChanged(
-      network::mojom::ConnectionType::CONNECTION_NONE);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
   base::RunLoop().RunUntilIdle();
 
   registry_->OnDiscoveryRequest();
@@ -295,7 +296,7 @@ TEST_F(DialRegistryTest, TestNetworkEventConnectionRestored) {
   EXPECT_CALL(mock_service(), Discover());
   EXPECT_CALL(mock_client_, OnDialDeviceList(empty_list_));
   registry_->OnConnectionChanged(
-      network::mojom::ConnectionType::CONNECTION_WIFI);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_CALL(mock_client_, OnDialDeviceList(list_with_second_device_));
@@ -304,7 +305,7 @@ TEST_F(DialRegistryTest, TestNetworkEventConnectionRestored) {
   registry_->OnDiscoveryFinished();
 
   registry_->OnConnectionChanged(
-      network::mojom::ConnectionType::CONNECTION_ETHERNET);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_ETHERNET);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_CALL(mock_client_, OnDialDeviceList(expected_list3));

@@ -183,7 +183,7 @@ TEST_F(DriveFsSearchTest, Search_OnlineToOffline) {
                        &clock_);
 
   network_connection_tracker_->SetConnectionType(
-      network::mojom::ConnectionType::CONNECTION_NONE);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
 
   MockMojomQuery mojom_query;
   EXPECT_CALL(mock_drivefs_, StartSearchQuery)

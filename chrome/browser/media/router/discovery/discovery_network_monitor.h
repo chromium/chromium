@@ -84,7 +84,8 @@ class DiscoveryNetworkMonitor
   void SetNetworkInfoFunctionForTest(NetworkInfoFunction strategy);
 
   // network::NetworkConnectionTracker::NetworkConnectionObserver overrides.
-  void OnConnectionChanged(network::mojom::ConnectionType type) override;
+  void OnConnectionChanged(
+      net::NetworkChangeNotifier::ConnectionType type) override;
 
   std::string GetNetworkIdOnSequence() const;
   std::string UpdateNetworkInfo();

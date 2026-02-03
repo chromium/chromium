@@ -46,7 +46,7 @@ void WebAppRunOnOsLoginManager::Start() {
     return;
   }
 
-  network::mojom::ConnectionType connection_type;
+  net::NetworkChangeNotifier::ConnectionType connection_type;
   // `GetConnectionType` will execute either synchronously (and return true and
   // store the value in the `connection_type`) or asynchronously (and return
   // false and call `OnInitialConnectionTypeReceived` once it is done).
@@ -104,12 +104,12 @@ void WebAppRunOnOsLoginManager::RunAppsOnOsLogin(AllAppsLock& lock,
 }
 
 void WebAppRunOnOsLoginManager::OnInitialConnectionTypeReceived(
-    network::mojom::ConnectionType type) {
+    net::NetworkChangeNotifier::ConnectionType type) {
   CHECK(!scheduled_run_on_os_login_command_);
 
   // If there is a connection, schedule ROOL and stop listening to the network
   // status.
-  if (type != network::mojom::ConnectionType::CONNECTION_NONE) {
+  if (type != net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE) {
     RunOsLoginAppsAndMaybeUnregisterObserver();
     return;
   }
@@ -119,12 +119,12 @@ void WebAppRunOnOsLoginManager::OnInitialConnectionTypeReceived(
 }
 
 void WebAppRunOnOsLoginManager::OnConnectionChanged(
-    network::mojom::ConnectionType type) {
+    net::NetworkChangeNotifier::ConnectionType type) {
   CHECK(!scheduled_run_on_os_login_command_);
 
   // If there is a connection, schedule ROOL and stop listening to the network
   // status. Otherwise, keep listening.
-  if (type != network::mojom::ConnectionType::CONNECTION_NONE) {
+  if (type != net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE) {
     RunOsLoginAppsAndMaybeUnregisterObserver();
   }
 }

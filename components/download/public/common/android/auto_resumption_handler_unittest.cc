@@ -23,7 +23,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using network::mojom::ConnectionType;
+using ConnectionType = net::NetworkChangeNotifier::ConnectionType;
 using testing::_;
 using testing::NiceMock;
 using testing::Return;

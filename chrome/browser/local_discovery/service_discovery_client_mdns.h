@@ -44,7 +44,8 @@ class ServiceDiscoveryClientMdns
       LocalDomainResolver::IPAddressCallback callback) override;
 
   // network::NetworkConnectionTracker::NetworkConnectionObserver:
-  void OnConnectionChanged(network::mojom::ConnectionType type) override;
+  void OnConnectionChanged(
+      net::NetworkChangeNotifier::ConnectionType type) override;
 
  private:
   ~ServiceDiscoveryClientMdns() override;

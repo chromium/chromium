@@ -31,19 +31,20 @@ void NetworkStatusListenerImpl::Stop() {
   NetworkStatusListener::Stop();
 }
 
-network::mojom::ConnectionType NetworkStatusListenerImpl::GetConnectionType() {
+net::NetworkChangeNotifier::ConnectionType
+NetworkStatusListenerImpl::GetConnectionType() {
   return connection_type_;
 }
 
 void NetworkStatusListenerImpl::OnConnectionChanged(
-    network::mojom::ConnectionType type) {
+    net::NetworkChangeNotifier::ConnectionType type) {
   DCHECK(observer_);
   connection_type_ = type;
   observer_->OnNetworkChanged(type);
 }
 
 void NetworkStatusListenerImpl::OnNetworkStatusReady(
-    network::mojom::ConnectionType type) {
+    net::NetworkChangeNotifier::ConnectionType type) {
   DCHECK(observer_);
   connection_type_ = type;
   observer_->OnNetworkStatusReady(type);

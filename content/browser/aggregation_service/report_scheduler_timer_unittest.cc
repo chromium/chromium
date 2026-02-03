@@ -163,7 +163,7 @@ TEST_F(ReportSchedulerTimerTest, NetworkChange) {
 
   // Go offline
   network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
-      network::mojom::ConnectionType::CONNECTION_NONE);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
 
   task_environment_.FastForwardBy(kExampleTime - base::Time::Now());
 
@@ -171,7 +171,7 @@ TEST_F(ReportSchedulerTimerTest, NetworkChange) {
 
   // Go back online.
   network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
-      network::mojom::ConnectionType::CONNECTION_WIFI);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI);
 
   run_loop.Run();
 }
@@ -180,17 +180,17 @@ TEST_F(ReportSchedulerTimerTest, NetworkChange) {
 // connection tracker is uninitialized.
 TEST(ReportSchedulerTimer, Constructor_AdjustsOfflineReportTimes) {
   constexpr struct {
-    network::mojom::ConnectionType connection_type;
+    net::NetworkChangeNotifier::ConnectionType connection_type;
     bool call_expected;
   } kTestCases[] = {
       // Call is skipped because the browser is offline.
       {
-          network::mojom::ConnectionType::CONNECTION_NONE,
+          net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE,
           false,
       },
       // Call is made because the browser is online.
       {
-          network::mojom::ConnectionType::CONNECTION_ETHERNET,
+          net::NetworkChangeNotifier::ConnectionType::CONNECTION_ETHERNET,
           true,
       },
   };

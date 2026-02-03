@@ -61,7 +61,8 @@ class BoundSessionCookieControllerImpl
   bound_session_credentials::RotationDebugInfo TakeDebugInfo() override;
 
   // network::NetworkConnectionTracker::NetworkConnectionObserver:
-  void OnConnectionChanged(network::mojom::ConnectionType type) override;
+  void OnConnectionChanged(
+      net::NetworkChangeNotifier::ConnectionType type) override;
 
  private:
   friend class BoundSessionCookieControllerImplTest;

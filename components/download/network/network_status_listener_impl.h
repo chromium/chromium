@@ -30,13 +30,14 @@ class NetworkStatusListenerImpl
   // NetworkStatusListener implementation.
   void Start(NetworkStatusListener::Observer* observer) override;
   void Stop() override;
-  network::mojom::ConnectionType GetConnectionType() override;
+  net::NetworkChangeNotifier::ConnectionType GetConnectionType() override;
 
  private:
   // network::NetworkConnectionTracker::NetworkConnectionObserver.
-  void OnConnectionChanged(network::mojom::ConnectionType type) override;
+  void OnConnectionChanged(
+      net::NetworkChangeNotifier::ConnectionType type) override;
 
-  void OnNetworkStatusReady(network::mojom::ConnectionType type);
+  void OnNetworkStatusReady(net::NetworkChangeNotifier::ConnectionType type);
 
   raw_ptr<network::NetworkConnectionTracker> network_connection_tracker_;
 

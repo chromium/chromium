@@ -222,7 +222,8 @@ class OdfsMigrationUploader
       base::OnceCallback<void(base::File::Error)> on_sign_in_cb) override;
 
   // network::NetworkConnectionTracker::NetworkConnectionObserver:
-  void OnConnectionChanged(network::mojom::ConnectionType type) override;
+  void OnConnectionChanged(
+      net::NetworkChangeNotifier::ConnectionType type) override;
 
   // Starts the upload process after establishing network connection.
   void RunInternal();

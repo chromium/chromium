@@ -267,7 +267,8 @@ class OptimizationGuideKeyedServiceBrowserTest
     url_that_redirects_to_no_hints_ =
         https_server_->GetURL("/redirect?https://nohints.com/");
 
-    SetConnectionType(network::mojom::ConnectionType::CONNECTION_2G);
+    SetConnectionType(
+        net::NetworkChangeNotifier::ConnectionType::CONNECTION_2G);
 
     identity_test_env_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
@@ -327,7 +328,8 @@ class OptimizationGuideKeyedServiceBrowserTest
   }
 
   // Sets the connection type that the Network Connection Tracker will report.
-  void SetConnectionType(network::mojom::ConnectionType connection_type) {
+  void SetConnectionType(
+      net::NetworkChangeNotifier::ConnectionType connection_type) {
     network_connection_tracker_->SetConnectionType(connection_type);
   }
 

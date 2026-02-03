@@ -194,7 +194,7 @@ TEST_F(PublicIpAddressLocationNotifierTest,
 
   // Fake a network change notification.
   network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
-      network::mojom::ConnectionType::CONNECTION_UNKNOWN);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN);
   // Wait for the notifier to complete its delayed reaction.
   task_environment_.FastForwardUntilNoTasksRemain();
 
@@ -228,7 +228,7 @@ TEST_F(PublicIpAddressLocationNotifierTest,
   // Fake several consecutive network changes notification.
   for (int i = 0; i < 10; ++i) {
     network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
-        network::mojom::ConnectionType::CONNECTION_UNKNOWN);
+        net::NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN);
     task_environment_.FastForwardBy(base::Seconds(5));
   }
   // Expect still no network request or callback.
@@ -271,7 +271,7 @@ TEST_F(PublicIpAddressLocationNotifierTest, MutipleWaitingQueries) {
 
   // Fake a network change notification.
   network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
-      network::mojom::ConnectionType::CONNECTION_UNKNOWN);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN);
   // Wait for the notifier to complete its delayed reaction.
   task_environment_.FastForwardUntilNoTasksRemain();
 

@@ -93,7 +93,7 @@ class SyncScheduler : public SyncCycle::Delegate {
 
   // Called when the network layer detects a connection status change.
   virtual void OnConnectionStatusChange(
-      network::mojom::ConnectionType type) = 0;
+      net::NetworkChangeNotifier::ConnectionType type) = 0;
 
   // Update pending invalidations state in DataTypeTracker. Called whenever
   // invalidation comes or drops.

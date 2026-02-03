@@ -109,7 +109,7 @@ void DialRegistry::SetClockForTest(base::Clock* clock) {
 }
 
 bool DialRegistry::ReadyToDiscover() {
-  network::mojom::ConnectionType type;
+  net::NetworkChangeNotifier::ConnectionType type;
   // base::Unretained() is safe here because DialRegistry is (indirectly) owned
   // by a singleton and is never freed.
   if (!network_connection_tracker_ ||
@@ -121,7 +121,7 @@ bool DialRegistry::ReadyToDiscover() {
     client_->OnDialError(DIAL_UNKNOWN);
     return false;
   }
-  if (type == network::mojom::ConnectionType::CONNECTION_NONE) {
+  if (type == net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE) {
     client_->OnDialError(DIAL_NETWORK_DISCONNECTED);
     return false;
   }
@@ -323,9 +323,10 @@ void DialRegistry::OnError(DialService::DialServiceErrorCode code) {
   }
 }
 
-void DialRegistry::OnConnectionChanged(network::mojom::ConnectionType type) {
+void DialRegistry::OnConnectionChanged(
+    net::NetworkChangeNotifier::ConnectionType type) {
   switch (type) {
-    case network::mojom::ConnectionType::CONNECTION_NONE:
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE:
       if (dial_) {
         client_->OnDialError(DIAL_NETWORK_DISCONNECTED);
         StopPeriodicDiscovery();
@@ -333,14 +334,14 @@ void DialRegistry::OnConnectionChanged(network::mojom::ConnectionType type) {
         MaybeSendDeviceList();
       }
       break;
-    case network::mojom::ConnectionType::CONNECTION_2G:
-    case network::mojom::ConnectionType::CONNECTION_3G:
-    case network::mojom::ConnectionType::CONNECTION_4G:
-    case network::mojom::ConnectionType::CONNECTION_5G:
-    case network::mojom::ConnectionType::CONNECTION_ETHERNET:
-    case network::mojom::ConnectionType::CONNECTION_WIFI:
-    case network::mojom::ConnectionType::CONNECTION_UNKNOWN:
-    case network::mojom::ConnectionType::CONNECTION_BLUETOOTH:
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_2G:
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_3G:
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_4G:
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_5G:
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_ETHERNET:
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI:
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN:
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_BLUETOOTH:
       if (!dial_) {
         StartPeriodicDiscovery();
       }

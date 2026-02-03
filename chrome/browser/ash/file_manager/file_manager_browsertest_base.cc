@@ -2704,8 +2704,9 @@ void FileManagerBrowserTestBase::SetUpOnMainThread() {
 
   content::NetworkConnectionChangeSimulator network_change_simulator;
   network_change_simulator.SetConnectionType(
-      options.offline ? network::mojom::ConnectionType::CONNECTION_NONE
-                      : network::mojom::ConnectionType::CONNECTION_ETHERNET);
+      options.offline
+          ? net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE
+          : net::NetworkChangeNotifier::ConnectionType::CONNECTION_ETHERNET);
 
   // The test resources are setup: enable and add default ChromeOS component
   // extensions now and not before: crbug.com/831074, crbug.com/804413
@@ -4015,7 +4016,7 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
   if (name == "setDeviceOffline") {
     ash::ShillServiceClient::Get()->GetTestInterface()->ClearServices();
     content::NetworkConnectionChangeSimulator().SetConnectionType(
-        network::mojom::ConnectionType::CONNECTION_NONE);
+        net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
     return;
   }
 

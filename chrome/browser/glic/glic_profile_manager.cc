@@ -38,7 +38,8 @@
 namespace {
 bool g_prewarming_enabled_for_testing_ = true;
 std::optional<Profile*> g_forced_profile_for_launch_;
-std::optional<network::mojom::ConnectionType> g_forced_connection_type_;
+std::optional<net::NetworkChangeNotifier::ConnectionType>
+    g_forced_connection_type_;
 }  // namespace
 
 namespace glic {
@@ -359,7 +360,7 @@ void GlicProfileManager::ForceProfileForLaunchForTesting(
 
 // static
 void GlicProfileManager::ForceConnectionTypeForTesting(
-    std::optional<network::mojom::ConnectionType> connection_type) {
+    std::optional<net::NetworkChangeNotifier::ConnectionType> connection_type) {
   g_forced_connection_type_ = connection_type;
 }
 
@@ -411,7 +412,8 @@ void GlicProfileManager::CanPreloadForProfile(Profile* profile,
   }
 
   auto on_got_connection_type = [](ShouldPreloadCallback callback,
-                                   network::mojom::ConnectionType type) {
+                                   net::NetworkChangeNotifier::ConnectionType
+                                       type) {
     std::move(callback).Run(
         network::NetworkConnectionTracker::IsConnectionCellular(type)
             ? GlicPrewarmingChecksResult::kCellularConnection
@@ -420,7 +422,7 @@ void GlicProfileManager::CanPreloadForProfile(Profile* profile,
   auto callbacks = base::SplitOnceCallback(std::move(callback));
 
   // Attempt to synchronously query the connection type.
-  network::mojom::ConnectionType connection_type;
+  net::NetworkChangeNotifier::ConnectionType connection_type;
   bool synchronously_got_connection_type = false;
   if (g_forced_connection_type_) {
     synchronously_got_connection_type = true;

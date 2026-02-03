@@ -124,7 +124,7 @@ NetErrorAutoReloader::NetErrorAutoReloader(content::WebContents* web_contents)
       connection_tracker_(content::GetNetworkConnectionTracker()) {
   connection_tracker_->AddNetworkConnectionObserver(this);
 
-  network::mojom::ConnectionType connection_type;
+  net::NetworkChangeNotifier::ConnectionType connection_type;
   if (connection_tracker_->GetConnectionType(
           &connection_type,
           base::BindOnce(&NetErrorAutoReloader::SetInitialConnectionType,
@@ -238,8 +238,9 @@ void NetErrorAutoReloader::OnVisibilityChanged(content::Visibility visibility) {
 }
 
 void NetErrorAutoReloader::OnConnectionChanged(
-    network::mojom::ConnectionType type) {
-  is_online_ = (type != network::mojom::ConnectionType::CONNECTION_NONE);
+    net::NetworkChangeNotifier::ConnectionType type) {
+  is_online_ =
+      (type != net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
   if (!is_online_) {
     PauseAutoReloadTimerIfRunning();
   } else if (pending_navigations_.empty()) {
@@ -261,7 +262,7 @@ void NetErrorAutoReloader::DisableConnectionChangeObservationForTesting() {
 }
 
 void NetErrorAutoReloader::SetInitialConnectionType(
-    network::mojom::ConnectionType type) {
+    net::NetworkChangeNotifier::ConnectionType type) {
   // NOTE: Tests may call `DisableConnectionChangeObservationForTesting` to null
   // this out.
   if (connection_tracker_) {

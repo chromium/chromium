@@ -103,7 +103,8 @@ class ReadingListDownloadService
   void OnDeleteEnd(const GURL& url, bool success);
 
   // network::NetworkConnectionTracker::NetworkConnectionObserver:
-  void OnConnectionChanged(network::mojom::ConnectionType type) override;
+  void OnConnectionChanged(
+      net::NetworkChangeNotifier::ConnectionType type) override;
 
   raw_ptr<ReadingListModel> reading_list_model_;
   base::FilePath chrome_profile_path_;

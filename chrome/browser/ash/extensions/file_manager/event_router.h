@@ -214,7 +214,8 @@ class EventRouter
       apps::AppRegistryCache* cache) override;
 
   // network::NetworkConnectionTracker::NetworkConnectionObserver:
-  void OnConnectionChanged(const network::mojom::ConnectionType type) override;
+  void OnConnectionChanged(
+      const net::NetworkChangeNotifier::ConnectionType type) override;
 
   // policy::local_user_files::Observer:
   void OnLocalUserFilesPolicyChanged() override;

@@ -360,8 +360,7 @@ network::mojom::NetworkServiceParamsPtr CreateNetworkServiceParams() {
   network::mojom::NetworkServiceParamsPtr network_service_params =
       network::mojom::NetworkServiceParams::New();
   network_service_params->initial_connection_type =
-      network::mojom::ConnectionType(
-          net::NetworkChangeNotifier::GetConnectionType());
+      net::NetworkChangeNotifier::GetConnectionType();
   network_service_params->initial_connection_subtype =
       network::mojom::ConnectionSubtype(
           net::NetworkChangeNotifier::GetConnectionSubtype());

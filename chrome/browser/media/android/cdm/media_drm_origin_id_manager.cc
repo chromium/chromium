@@ -425,9 +425,11 @@ class MediaDrmOriginIdManager::NetworkObserver
   }
 
   // network::NetworkConnectionTracker::NetworkConnectionObserver
-  void OnConnectionChanged(network::mojom::ConnectionType type) override {
-    if (type == network::mojom::ConnectionType::CONNECTION_NONE)
+  void OnConnectionChanged(
+      net::NetworkChangeNotifier::ConnectionType type) override {
+    if (type == net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE) {
       return;
+    }
 
     ++number_of_attempts_;
     parent_->PreProvisionIfNecessary();

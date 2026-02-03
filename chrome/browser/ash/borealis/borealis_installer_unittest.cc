@@ -159,7 +159,7 @@ TEST_F(BorealisInstallerTest, DeviceOfflineInstallationFails) {
       network_connection_tracker =
           network::TestNetworkConnectionTracker::CreateInstance();
   network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
-      network::mojom::ConnectionType::CONNECTION_NONE);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
 
   StartAndRunToCompletion();
 

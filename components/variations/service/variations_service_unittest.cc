@@ -1009,7 +1009,7 @@ TEST_F(VariationsServiceTest, VariationsServiceStartsRequestOnNetworkChange) {
   // none to connected. This is a regression test for https://crbug.com/826930.
   VariationsService::EnableFetchForTesting();
   network_tracker_->SetConnectionType(
-      network::mojom::ConnectionType::CONNECTION_NONE);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
   TestVariationsService service(
       std::make_unique<web_resource::TestRequestAllowedNotifier>(
           &prefs_, network_tracker_),
@@ -1027,7 +1027,7 @@ TEST_F(VariationsServiceTest, VariationsServiceStartsRequestOnNetworkChange) {
   service.GetResourceRequestAllowedNotifierForTesting()
       ->SetObserverRequestedForTesting(true);
   network_tracker_->SetConnectionType(
-      network::mojom::ConnectionType::CONNECTION_WIFI);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI);
   base::RunLoop().RunUntilIdle();
 
   const int final_request_count = service.request_count();

@@ -327,7 +327,8 @@ void SyncEngine::InitializeInternal(
   drive_service_->AddObserver(this);
 
   service_state_ = REMOTE_SERVICE_TEMPORARY_UNAVAILABLE;
-  auto connection_type = network::mojom::ConnectionType::CONNECTION_NONE;
+  auto connection_type =
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE;
   if (content::GetNetworkConnectionTracker()->GetConnectionType(
           &connection_type, base::BindOnce(&SyncEngine::OnConnectionChanged,
                                            weak_ptr_factory_.GetWeakPtr()))) {
@@ -575,13 +576,14 @@ void SyncEngine::OnRefreshTokenInvalid() {
                                 "Found invalid refresh token."));
 }
 
-void SyncEngine::OnConnectionChanged(network::mojom::ConnectionType type) {
+void SyncEngine::OnConnectionChanged(
+    net::NetworkChangeNotifier::ConnectionType type) {
   if (!sync_worker_)
     return;
 
   bool network_available_old = network_available_;
   network_available_ =
-      (type != network::mojom::ConnectionType::CONNECTION_NONE);
+      (type != net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
 
   if (!network_available_old && network_available_) {
     worker_task_runner_->PostTask(

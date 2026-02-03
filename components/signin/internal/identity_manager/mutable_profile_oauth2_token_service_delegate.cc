@@ -985,7 +985,7 @@ void MutableProfileOAuth2TokenServiceDelegate::Shutdown() {
 }
 
 void MutableProfileOAuth2TokenServiceDelegate::OnConnectionChanged(
-    network::mojom::ConnectionType type) {
+    net::NetworkChangeNotifier::ConnectionType type) {
   // If our network has changed, reset the backoff timer so that errors caused
   // by a previous lack of network connectivity don't prevent new requests.
   ResetBackOffEntry();

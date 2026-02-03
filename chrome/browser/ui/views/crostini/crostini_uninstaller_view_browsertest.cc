@@ -144,7 +144,8 @@ IN_PROC_BROWSER_TEST_F(CrostiniUninstalledUninstallerViewBrowserTest,
                        OfflineUninstallFlowWithoutTermina) {
   base::HistogramTester histogram_tester;
 
-  SetConnectionType(network::mojom::ConnectionType::CONNECTION_NONE);
+  SetConnectionType(
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
 
   ShowUi("default");
   EXPECT_NE(nullptr, ActiveView());

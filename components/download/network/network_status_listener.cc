@@ -18,7 +18,8 @@ void NetworkStatusListener::Stop() {
   observer_ = nullptr;
 }
 
-network::mojom::ConnectionType NetworkStatusListener::GetConnectionType() {
+net::NetworkChangeNotifier::ConnectionType
+NetworkStatusListener::GetConnectionType() {
   return connection_type_;
 }
 

@@ -921,6 +921,10 @@ mojom("url_loader_base") {
           mojom = "network.mojom.NetworkInterface"
           cpp = "::net::NetworkInterface"
         },
+        {
+          mojom = "network.mojom.ConnectionType"
+          cpp = "::net::NetworkChangeNotifier::ConnectionType"
+        },
       ]
       traits_headers =
           [ "//services/network/public/cpp/network_interface_mojom_traits.h" ]

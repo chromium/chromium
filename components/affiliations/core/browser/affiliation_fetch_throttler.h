@@ -141,7 +141,8 @@ class AffiliationFetchThrottler
   void OnBackoffDelayExpiredCallback();
 
   // network::NetworkConnectionTracker::NetworkConnectionObserver:
-  void OnConnectionChanged(network::mojom::ConnectionType type) override;
+  void OnConnectionChanged(
+      net::NetworkChangeNotifier::ConnectionType type) override;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   raw_ptr<network::NetworkConnectionTracker> network_connection_tracker_;

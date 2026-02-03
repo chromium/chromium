@@ -45,7 +45,7 @@ class NearbyExpirationSchedulerTest : public ::testing::Test {
 
     pref_service_.registry()->RegisterDictionaryPref(kTestPrefName);
     network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
-        network::mojom::ConnectionType::CONNECTION_WIFI);
+        net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI);
 
     scheduler_ = std::make_unique<NearbyExpirationScheduler>(
         base::BindRepeating(

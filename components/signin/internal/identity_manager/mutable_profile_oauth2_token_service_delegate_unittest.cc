@@ -1354,7 +1354,7 @@ TEST_P(MutableProfileOAuth2TokenServiceDelegateAccessTokenFetchTest,
 
   // Notify of network change and ensure that request now runs.
   oauth2_service_delegate_->OnConnectionChanged(
-      network::mojom::ConnectionType::CONNECTION_WIFI);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI);
   std::unique_ptr<OAuth2AccessTokenFetcher> fetcher2 =
       oauth2_service_delegate_->CreateAccessTokenFetcher(
           account_id, oauth2_service_delegate_->GetURLLoaderFactory(), this,

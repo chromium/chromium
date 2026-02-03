@@ -83,7 +83,7 @@ class TranslateManagerRenderViewHostAndroidTest
     // expiration delay to a large value by default (in case it was zeroed in a
     // previous test).
     TranslateService::InitializeForTesting(
-        network::mojom::ConnectionType::CONNECTION_WIFI);
+        net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI);
 
     infobars::ContentInfoBarManager::CreateForWebContents(web_contents());
     ChromeTranslateClient::CreateForWebContents(web_contents());

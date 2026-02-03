@@ -18,6 +18,7 @@
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "net/base/network_change_notifier.h"
 #include "services/network/public/mojom/network_change_manager.mojom.h"
 
 namespace network {
@@ -42,13 +43,14 @@ class COMPONENT_EXPORT(NETWORK_CPP) NetworkConnectionTracker
   using BindingCallback = base::RepeatingCallback<void(
       mojo::PendingReceiver<network::mojom::NetworkChangeManager>)>;
   using ConnectionTypeCallback =
-      base::OnceCallback<void(network::mojom::ConnectionType)>;
+      base::OnceCallback<void(net::NetworkChangeNotifier::ConnectionType)>;
 
   class COMPONENT_EXPORT(NETWORK_CPP) NetworkConnectionObserver {
    public:
     // Please refer to NetworkChangeManagerClient::OnNetworkChanged for when
     // this method is invoked.
-    virtual void OnConnectionChanged(network::mojom::ConnectionType type) = 0;
+    virtual void OnConnectionChanged(
+        net::NetworkChangeNotifier::ConnectionType type) = 0;
 
    protected:
     virtual ~NetworkConnectionObserver() {}
@@ -72,8 +74,9 @@ class COMPONENT_EXPORT(NETWORK_CPP) NetworkConnectionTracker
   // is ready. The connection type being available does not imply it is not
   // CONNECTION_UNKNKOWN. This method is thread safe. Please also refer to
   // net::NetworkChangeNotifier::GetConnectionType() for documentation.
-  virtual bool GetConnectionType(network::mojom::ConnectionType* type,
-                                 ConnectionTypeCallback callback);
+  virtual bool GetConnectionType(
+      net::NetworkChangeNotifier::ConnectionType* type,
+      ConnectionTypeCallback callback);
 
   // Returns true if the network is currently in an offline or unknown state.
   bool IsOffline() const;
@@ -83,7 +86,8 @@ class COMPONENT_EXPORT(NETWORK_CPP) NetworkConnectionTracker
   // implementation of GetConnectionType(), it is possible that
   // IsConnectionCellular(GetConnectionType()) returns false even if the
   // current connection is cellular.
-  static bool IsConnectionCellular(network::mojom::ConnectionType type);
+  static bool IsConnectionCellular(
+      net::NetworkChangeNotifier::ConnectionType type);
 
   // Registers |observer| to receive notifications of network changes. The
   // thread on which this is called is the thread on which |observer| will be
@@ -112,8 +116,10 @@ class COMPONENT_EXPORT(NETWORK_CPP) NetworkConnectionTracker
   NetworkConnectionTracker();
 
   // NetworkChangeManagerClient implementation. Protected for testing.
-  void OnInitialConnectionType(network::mojom::ConnectionType type) override;
-  void OnNetworkChanged(network::mojom::ConnectionType type) override;
+  void OnInitialConnectionType(
+      net::NetworkChangeNotifier::ConnectionType type) override;
+  void OnNetworkChanged(
+      net::NetworkChangeNotifier::ConnectionType type) override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(NetworkGetConnectionTest,

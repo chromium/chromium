@@ -101,7 +101,7 @@ class ResourceRequestAllowedNotifier
   void SetWaitingForEulaForTesting(bool waiting);
   void SetObserverRequestedForTesting(bool requested);
   void SetConnectionTypeForTesting(
-      network::mojom::ConnectionType connection_type);
+      net::NetworkChangeNotifier::ConnectionType connection_type);
 
  protected:
   // Notifies the observer if all criteria needed for resource requests are met.
@@ -117,9 +117,11 @@ class ResourceRequestAllowedNotifier
   void OnEulaAccepted() override;
 
   // network::NetworkConnectionTracker::NetworkConnectionObserver overrides:
-  void OnConnectionChanged(network::mojom::ConnectionType type) override;
+  void OnConnectionChanged(
+      net::NetworkChangeNotifier::ConnectionType type) override;
 
-  void SetConnectionType(network::mojom::ConnectionType connection_type);
+  void SetConnectionType(
+      net::NetworkChangeNotifier::ConnectionType connection_type);
   bool IsOffline();
 
   // Name of the command line switch to disable the network activity.
@@ -145,8 +147,8 @@ class ResourceRequestAllowedNotifier
   NetworkConnectionTrackerGetter network_connection_tracker_getter_;
   raw_ptr<network::NetworkConnectionTracker> network_connection_tracker_ =
       nullptr;
-  network::mojom::ConnectionType connection_type_ =
-      network::mojom::ConnectionType::CONNECTION_UNKNOWN;
+  net::NetworkChangeNotifier::ConnectionType connection_type_ =
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN;
   bool connection_initialized_ = false;
 
   base::WeakPtrFactory<ResourceRequestAllowedNotifier> weak_factory_{this};

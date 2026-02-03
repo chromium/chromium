@@ -168,7 +168,8 @@ class WebRtcRemoteEventLogManager final
   void RenderProcessHostExitedDestroyed(int render_process_id);
 
   // network::NetworkConnectionTracker::NetworkConnectionObserver implementation
-  void OnConnectionChanged(network::mojom::ConnectionType type) override;
+  void OnConnectionChanged(
+      net::NetworkChangeNotifier::ConnectionType type) override;
 
   // Unit tests may use this to inject null uploaders, or ones which are
   // directly controlled by the unit test (succeed or fail according to the

@@ -142,7 +142,7 @@ TEST_F(NetworkMetricsProviderTest, ECTAmbiguousOnConnectionTypeChange) {
   // Even with change in the connection type, effective connection types
   // should be reported as 2G.
   network_metrics_provider.OnConnectionChanged(
-      network::mojom::ConnectionType::CONNECTION_2G);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_2G);
   network_metrics_provider.ProvideSystemProfileMetrics(&system_profile);
   EXPECT_EQ(SystemProfileProto::Network::EFFECTIVE_CONNECTION_TYPE_2G,
             system_profile.network().min_effective_connection_type());
@@ -189,7 +189,7 @@ TEST_F(NetworkMetricsProviderTest, ConnectionTypeIsAmbiguous) {
   NetworkMetricsProvider network_metrics_provider(
       network::TestNetworkConnectionTracker::CreateAsyncGetter());
 
-  EXPECT_EQ(network::mojom::ConnectionType::CONNECTION_UNKNOWN,
+  EXPECT_EQ(net::NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN,
             network_metrics_provider.connection_type_);
   EXPECT_FALSE(network_metrics_provider.connection_type_is_ambiguous_);
   EXPECT_FALSE(
@@ -198,8 +198,8 @@ TEST_F(NetworkMetricsProviderTest, ConnectionTypeIsAmbiguous) {
   // When a connection type change callback is received, network change notifier
   // should be marked as initialized.
   network_metrics_provider.OnConnectionChanged(
-      network::mojom::ConnectionType::CONNECTION_2G);
-  EXPECT_EQ(network::mojom::ConnectionType::CONNECTION_2G,
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_2G);
+  EXPECT_EQ(net::NetworkChangeNotifier::ConnectionType::CONNECTION_2G,
             network_metrics_provider.connection_type_);
   // Connection type should not be marked as ambiguous when a delayed connection
   // type change callback is received due to delayed initialization of the
@@ -219,7 +219,7 @@ TEST_F(NetworkMetricsProviderTest, ConnectionTypeIsAmbiguous) {
             system_profile.network().connection_type());
 
   network_metrics_provider.OnConnectionChanged(
-      network::mojom::ConnectionType::CONNECTION_3G);
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_3G);
   EXPECT_TRUE(network_metrics_provider.connection_type_is_ambiguous_);
   EXPECT_TRUE(network_metrics_provider.network_connection_tracker_initialized_);
 

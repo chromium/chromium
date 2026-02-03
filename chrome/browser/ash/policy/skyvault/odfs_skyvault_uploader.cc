@@ -457,7 +457,7 @@ void OdfsMigrationUploader::RequestSignIn(
 }
 
 void OdfsMigrationUploader::OnConnectionChanged(
-    network::mojom::ConnectionType type) {
+    net::NetworkChangeNotifier::ConnectionType type) {
   if (waiting_for_connection_) {
     bool is_online = !content::GetNetworkConnectionTracker()->IsOffline();
     if (is_online) {

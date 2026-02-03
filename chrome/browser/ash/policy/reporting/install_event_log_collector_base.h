@@ -42,7 +42,7 @@ class InstallEventLogCollectorBase
 
   // Called to forward to derived classes changes to the state of connection.
   virtual void OnConnectionStateChanged(
-      network::mojom::ConnectionType type) = 0;
+      net::NetworkChangeNotifier::ConnectionType type) = 0;
 
  private:
   // chromeos::PowerManagerClient::Observer:
@@ -51,7 +51,8 @@ class InstallEventLogCollectorBase
   void SuspendDone(base::TimeDelta sleep_duration) override = 0;
 
   // network::NetworkConnectionTracker::NetworkConnectionObserver:
-  void OnConnectionChanged(network::mojom::ConnectionType type) override;
+  void OnConnectionChanged(
+      net::NetworkChangeNotifier::ConnectionType type) override;
 };
 }  // namespace policy
 

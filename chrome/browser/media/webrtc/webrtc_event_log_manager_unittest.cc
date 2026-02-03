@@ -313,8 +313,8 @@ class WebRtcEventLogManagerTestBase : public ::testing::Test {
   }
 
   void SetUp() override {
-    SetUpNetworkConnection(true,
-                           network::mojom::ConnectionType::CONNECTION_ETHERNET);
+    SetUpNetworkConnection(
+        true, net::NetworkChangeNotifier::ConnectionType::CONNECTION_ETHERNET);
     SetLocalLogsObserver(&local_observer_);
     SetRemoteLogsObserver(&remote_observer_);
     LoadMainTestProfile();
@@ -329,14 +329,16 @@ class WebRtcEventLogManagerTestBase : public ::testing::Test {
 #endif
   }
 
-  void SetUpNetworkConnection(bool respond_synchronously,
-                              network::mojom::ConnectionType connection_type) {
+  void SetUpNetworkConnection(
+      bool respond_synchronously,
+      net::NetworkChangeNotifier::ConnectionType connection_type) {
     auto* tracker = network::TestNetworkConnectionTracker::GetInstance();
     tracker->SetRespondSynchronously(respond_synchronously);
     tracker->SetConnectionType(connection_type);
   }
 
-  void SetConnectionType(network::mojom::ConnectionType connection_type) {
+  void SetConnectionType(
+      net::NetworkChangeNotifier::ConnectionType connection_type) {
     network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
         connection_type);
   }
@@ -1138,8 +1140,8 @@ class WebRtcEventLogManagerTestForNetworkConnectivity
     : public WebRtcEventLogManagerTestBase,
       public ::testing::WithParamInterface<
           std::tuple<bool,
-                     network::mojom::ConnectionType,
-                     network::mojom::ConnectionType>> {
+                     net::NetworkChangeNotifier::ConnectionType,
+                     net::NetworkChangeNotifier::ConnectionType>> {
  public:
   WebRtcEventLogManagerTestForNetworkConnectivity()
       : get_conn_type_is_sync_(std::get<0>(GetParam())),
@@ -1177,8 +1179,8 @@ class WebRtcEventLogManagerTestForNetworkConnectivity
   }
 
   const bool get_conn_type_is_sync_;
-  const network::mojom::ConnectionType supported_type_;
-  const network::mojom::ConnectionType unsupported_type_;
+  const net::NetworkChangeNotifier::ConnectionType supported_type_;
+  const net::NetworkChangeNotifier::ConnectionType unsupported_type_;
 
   base::FilePath browser_context_path_;  // For sanity over the test itself.
   std::list<WebRtcLogFileInfo> expected_files_;
@@ -4863,12 +4865,14 @@ INSTANTIATE_TEST_SUITE_P(
         // Wehther GetConnectionType() responds synchronously.
         ::testing::Bool(),
         // The upload-supporting network type to be used.
-        ::testing::Values(network::mojom::ConnectionType::CONNECTION_ETHERNET,
-                          network::mojom::ConnectionType::CONNECTION_WIFI,
-                          network::mojom::ConnectionType::CONNECTION_UNKNOWN),
+        ::testing::Values(
+            net::NetworkChangeNotifier::ConnectionType::CONNECTION_ETHERNET,
+            net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI,
+            net::NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN),
         // The upload-unsupporting network type to be used.
-        ::testing::Values(network::mojom::ConnectionType::CONNECTION_NONE,
-                          network::mojom::ConnectionType::CONNECTION_4G)));
+        ::testing::Values(
+            net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE,
+            net::NetworkChangeNotifier::ConnectionType::CONNECTION_4G)));
 
 TEST_F(WebRtcEventLogManagerTestUploadDelay, DoNotInitiateUploadBeforeDelay) {
   SetUp(kIntentionallyExcessiveDelayMs);

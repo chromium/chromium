@@ -436,7 +436,6 @@ mojom("mojo_bindings") {
     "frame_messages.mojom",
     "input/input_injector.mojom",
     "media/media_log_records.mojom",
-    "native_types.mojom",
     "navigation_client.mojom",
     "render_message_filter.mojom",
     "renderer.mojom",
@@ -474,10 +473,6 @@ mojom("mojo_bindings") {
           cpp = "::blink::FrameOwnerElementType"
         },
         {
-          mojom = "content.mojom.NetworkConnectionType"
-          cpp = "::net::NetworkChangeNotifier::ConnectionType"
-        },
-        {
           mojom = "content.mojom.SyntheticPinch"
           cpp = "::content::SyntheticPinchGestureParams"
         },
@@ -507,7 +502,6 @@ mojom("mojo_bindings") {
         "//content/common/input/synthetic_smooth_drag_gesture_params.h",
         "//content/common/input/synthetic_smooth_scroll_gesture_params.h",
         "//content/common/input/synthetic_tap_gesture_params.h",
-        "//net/base/network_change_notifier.h",
         "//third_party/blink/public/common/navigation/impression.h",
         "//third_party/blink/public/common/widget/visual_properties.h",
         "//ui/events/types/scroll_types.h",

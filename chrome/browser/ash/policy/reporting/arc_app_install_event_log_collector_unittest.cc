@@ -173,20 +173,22 @@ class ArcAppInstallEventLogCollectorTest : public testing::Test {
         service_path, shill::kStateProperty, base::Value(state));
     base::RunLoop().RunUntilIdle();
 
-    network::mojom::ConnectionType connection_type =
-        network::mojom::ConnectionType::CONNECTION_NONE;
+    net::NetworkChangeNotifier::ConnectionType connection_type =
+        net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE;
     const std::string* network_state =
         network_handler_test_helper_->service_test()
             ->GetServiceProperties(kWifiServicePath)
             ->FindString(shill::kStateProperty);
     if (network_state && *network_state == shill::kStateOnline) {
-      connection_type = network::mojom::ConnectionType::CONNECTION_WIFI;
+      connection_type =
+          net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI;
     }
     network_state = network_handler_test_helper_->service_test()
                         ->GetServiceProperties(kEthernetServicePath)
                         ->FindString(shill::kStateProperty);
     if (network_state && *network_state == shill::kStateOnline) {
-      connection_type = network::mojom::ConnectionType::CONNECTION_ETHERNET;
+      connection_type =
+          net::NetworkChangeNotifier::ConnectionType::CONNECTION_ETHERNET;
     }
     if (observer)
       observer->OnConnectionChanged(connection_type);
