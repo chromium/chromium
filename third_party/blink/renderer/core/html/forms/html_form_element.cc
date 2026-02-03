@@ -246,6 +246,12 @@ HTMLFormElement::HTMLFormMcpTool::FillFormControls(
       return WebDocument::ScriptToolError::kInvalidInputArguments;
     }
     // TODO(crbug.com/475992364): Maybe validate the data here.
+    if (auto* input = DynamicTo<HTMLInputElement>(it->value.Get())) {
+      String value_str = input->GetMCPJSONValue(*contents);
+      if (!value_str.empty() && input->SanitizeValue(value_str).empty()) {
+        return WebDocument::ScriptToolError::kInvalidInputArguments;
+      }
+    }
     controls_to_fill.push_back(std::make_pair(it->value, contents));
   }
 

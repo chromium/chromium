@@ -306,6 +306,58 @@ TEST_F(HTMLFormMcpToolTest, FillFormControls_NumberInput_Double) {
   EXPECT_EQ("3.14", num1->Value());
 }
 
+TEST_F(HTMLFormMcpToolTest, FillFormControls_NumberInput_NumberString) {
+  SetBodyInnerHTML(
+      R"HTML(
+    <form id=form toolname="mytool" tooldescription="perform task">
+      <input id=num1 name=num1 type=number>
+    </form>
+  )HTML");
+
+  HTMLFormElement* form_element = GetFormElement("form");
+  ASSERT_TRUE(form_element);
+  ASSERT_TRUE(IsValidWebMCPForm(*form_element));
+
+  String json_string =
+      R"JSON(
+        {
+          "num1": "35"
+        }
+      )JSON";
+
+  EXPECT_TRUE(FillFormControls(*form_element, json_string));
+
+  HTMLInputElement* num1 = GetInputElement("num1");
+  ASSERT_TRUE(num1);
+  EXPECT_EQ("35", num1->Value());
+}
+
+TEST_F(HTMLFormMcpToolTest, FillFormControls_NumberInput_InvalidString) {
+  SetBodyInnerHTML(
+      R"HTML(
+    <form id=form toolname="mytool" tooldescription="perform task">
+      <input id=num1 name=num1 type=number value=15>
+    </form>
+  )HTML");
+
+  HTMLFormElement* form_element = GetFormElement("form");
+  ASSERT_TRUE(form_element);
+  ASSERT_TRUE(IsValidWebMCPForm(*form_element));
+
+  String json_string =
+      R"JSON(
+        {
+          "num1": "foo"
+        }
+      )JSON";
+
+  EXPECT_FALSE(FillFormControls(*form_element, json_string));
+
+  HTMLInputElement* num1 = GetInputElement("num1");
+  ASSERT_TRUE(num1);
+  EXPECT_EQ("15", num1->Value());
+}
+
 TEST_F(HTMLFormMcpToolTest, FillFormControls_InvalidJsonFailure) {
   SetBodyInnerHTML(
       R"HTML(
@@ -1106,6 +1158,52 @@ TEST_F(HTMLFormMcpToolTest, FillFormControls_TextArea) {
   HTMLTextAreaElement* area1 = GetTextAreaElement("area1");
   ASSERT_TRUE(area1);
   EXPECT_EQ("This is textarea content", area1->Value());
+}
+
+TEST_F(HTMLFormMcpToolTest, FillFormControls_InvalidValue) {
+  SetBodyInnerHTML(
+      R"HTML(
+    <form id=form toolname="mytool" tooldescription="perform task">
+      <input id=date name=date type=date>
+      <input id=number name=number type=number>
+    </form>
+  )HTML");
+
+  HTMLFormElement* form_element = GetFormElement("form");
+  ASSERT_TRUE(form_element);
+  ASSERT_TRUE(IsValidWebMCPForm(*form_element));
+
+  String inputs[] = {
+      R"JSON({ "date": "error" })JSON",
+      R"JSON({ "number": "error" })JSON",
+  };
+  for (auto json : inputs) {
+    EXPECT_FALSE(FillFormControls(*form_element, json)) << json;
+  }
+}
+
+TEST_F(HTMLFormMcpToolTest, FillFormControls_EmptyStringValid) {
+  SetBodyInnerHTML(
+      R"HTML(
+    <form id=form toolname="mytool" tooldescription="perform task">
+      <input id=date name=date type=date>
+      <input id=number name=number type=number>
+      <input id=range name=range type=range>
+    </form>
+  )HTML");
+
+  HTMLFormElement* form_element = GetFormElement("form");
+  ASSERT_TRUE(form_element);
+  ASSERT_TRUE(IsValidWebMCPForm(*form_element));
+
+  String inputs[] = {
+      R"JSON({ "date": "" })JSON",
+      R"JSON({ "number": "" })JSON",
+      R"JSON({ "range": "" })JSON",
+  };
+  for (auto json : inputs) {
+    EXPECT_TRUE(FillFormControls(*form_element, json)) << json;
+  }
 }
 
 }  // namespace blink
