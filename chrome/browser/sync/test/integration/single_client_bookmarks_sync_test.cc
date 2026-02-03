@@ -2747,6 +2747,11 @@ class SingleClientBookmarksWithAccountStorageSyncTest : public SyncTest {
 
   ~SingleClientBookmarksWithAccountStorageSyncTest() override = default;
 
+  // Bookmarks account storage is only supported with sync-transport-only.
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return SetupSyncMode::kSyncTransportOnly;
+  }
+
  private:
   base::test::ScopedFeatureList features_override_{
       switches::kSyncEnableBookmarksInTransportMode};
@@ -2776,7 +2781,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksWithAccountStorageSyncTest,
 
   // Setup a primary account, but don't actually enable Sync-the-feature (so
   // that Sync will start in transport mode).
-  ASSERT_TRUE(SetupSyncWithMode(SetupSyncMode::kSyncTransportOnly));
+  ASSERT_TRUE(SetupSync());
   // Note: Depending on the state of feature flags (specifically
   // kReplaceSyncPromosWithSignInPromos), Bookmarks may or may not be considered
   // selected by default.
@@ -2840,7 +2845,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksWithAccountStorageSyncTest,
 
   // Setup a primary account, but don't actually enable Sync-the-feature (so
   // that Sync will start in transport mode).
-  ASSERT_TRUE(SetupSyncWithMode(SetupSyncMode::kSyncTransportOnly));
+  ASSERT_TRUE(SetupSync());
   // Note: Depending on the state of feature flags (specifically
   // kReplaceSyncPromosWithSignInPromos), Bookmarks may or may not be considered
   // selected by default.
@@ -2918,7 +2923,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksWithAccountStorageSyncTest,
 
   // Setup a primary account, but don't actually enable Sync-the-feature (so
   // that Sync will start in transport mode).
-  ASSERT_TRUE(SetupSyncWithMode(SetupSyncMode::kSyncTransportOnly));
+  ASSERT_TRUE(SetupSync());
   // Note: Depending on the state of feature flags (specifically
   // kReplaceSyncPromosWithSignInPromos), Bookmarks may or may not be considered
   // selected by default.
@@ -2987,7 +2992,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksWithAccountStorageSyncTest,
 
   // Setup a primary account, but don't actually enable Sync-the-feature (so
   // that Sync will start in transport mode).
-  ASSERT_TRUE(SetupSyncWithMode(SetupSyncMode::kSyncTransportOnly));
+  ASSERT_TRUE(SetupSync());
   // Note: Depending on the state of feature flags (specifically
   // kReplaceSyncPromosWithSignInPromos), Bookmarks may or may not be considered
   // selected by default.
@@ -3045,7 +3050,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksWithAccountStorageSyncTest,
 
   // Setup a primary account, but don't actually enable Sync-the-feature (so
   // that Sync will start in transport mode).
-  ASSERT_TRUE(SetupSyncWithMode(SetupSyncMode::kSyncTransportOnly));
+  ASSERT_TRUE(SetupSync());
   // Note: Depending on the state of feature flags (specifically
   // kReplaceSyncPromosWithSignInPromos), Bookmarks may or may not be considered
   // selected by default.
@@ -3104,7 +3109,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksWithAccountStorageSyncTest,
 
   // Setup a primary account, but don't actually enable Sync-the-feature (so
   // that Sync will start in transport mode).
-  ASSERT_TRUE(SetupSyncWithMode(SetupSyncMode::kSyncTransportOnly));
+  ASSERT_TRUE(SetupSync());
   // Note: Depending on the state of feature flags (specifically
   // kReplaceSyncPromosWithSignInPromos), Bookmarks may or may not be considered
   // selected by default.
@@ -3183,7 +3188,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksWithAccountStorageSyncTest,
       ->SetLocalBookmarksLimitForTesting(2);
   // Setup a primary account, but don't actually enable Sync-the-feature (so
   // that Sync will start in transport mode).
-  ASSERT_TRUE(SetupSyncWithMode(SetupSyncMode::kSyncTransportOnly));
+  ASSERT_TRUE(SetupSync());
   // Note: Depending on the state of feature flags (specifically
   // kReplaceSyncPromosWithSignInPromos), Bookmarks may or may not be considered
   // selected by default.
@@ -3243,6 +3248,12 @@ class
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   }
 
+  // The value doesn't matter, since the tests use SetupSyncWithMode(..) to
+  // explicitly pick Sync-the-feature or Sync-the-transport.
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return SetupSyncMode::kSyncTheFeature;
+  }
+
  private:
   base::test::ScopedFeatureList features_override_;
 };
@@ -3268,7 +3279,7 @@ IN_PROC_BROWSER_TEST_F(
   AddFolder(kSingleProfileIndex, /*parent=*/model->bookmark_bar_node(),
             /*index=*/1, kTitle2);
 
-  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(SetupSyncWithMode(SetupSyncMode::kSyncTheFeature));
   ASSERT_TRUE(bookmarks_helper::ServerBookmarksEqualityChecker(
                   {{kTitle1, /*url=*/GURL()}, {kTitle2, /*url=*/GURL()}},
                   /*cryptographer=*/nullptr)
@@ -3348,6 +3359,12 @@ class SingleClientBookmarksSyncTestWithEnabledMigrateSyncingUserToSignedIn
     }
   }
 
+  // The value doesn't matter, since the tests use SetupSyncWithMode(..) to
+  // explicitly pick Sync-the-feature or Sync-the-transport.
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return SetupSyncMode::kSyncTheFeature;
+  }
+
   const std::u16string kTestTitle = u"Test Title";
 
  private:
@@ -3410,7 +3427,7 @@ IN_PROC_BROWSER_TEST_F(
 
   AddURL(kSingleProfileIndex, bookmark_bar, 3, kEmailTitle, kEmailUrl);
 
-  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(SetupSyncWithMode(SetupSyncMode::kSyncTheFeature));
   ASSERT_TRUE(bookmarks_helper::ServerBookmarksEqualityChecker(
                   {{kSocialTitle, GURL()},
                    {kTwitterTitle, kTwitterUrl},
@@ -3581,7 +3598,7 @@ IN_PROC_BROWSER_TEST_F(
   AddFolder(kSingleProfileIndex, kTestTitle);
 
   // Setup sync, wait for its completion, and make sure changes were synced.
-  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(SetupSyncWithMode(SetupSyncMode::kSyncTheFeature));
   ASSERT_TRUE(BookmarkModelMatchesFakeServerChecker(
                   GetBookmarkModel(kSingleProfileIndex),
                   GetSyncService(kSingleProfileIndex), GetFakeServer())
