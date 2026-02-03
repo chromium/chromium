@@ -2305,4 +2305,28 @@ TEST_P(PaintPropertyTreeUpdateTest, ElementCaptureUpdate) {
   EXPECT_TRUE(paint_properties && paint_properties->ElementCaptureEffect());
 }
 
+TEST_P(PaintPropertyTreeUpdateTest, RestrictionTargetIdChange) {
+  // Create an initial state.
+  EffectPaintPropertyNode::State state;
+  state.local_transform_space = &TransformPaintPropertyNode::Root();
+  state.output_clip = &ClipPaintPropertyNode::Root();
+  state.restriction_target_id =
+      RestrictionTargetId(base::Token::CreateRandom());
+
+  auto* node = EffectPaintPropertyNode::Create(EffectPaintPropertyNode::Root(),
+                                               std::move(state));
+
+  // Update with a new state having different restriction_target_id.
+  EffectPaintPropertyNode::State new_state;
+  new_state.local_transform_space = &TransformPaintPropertyNode::Root();
+  new_state.output_clip = &ClipPaintPropertyNode::Root();
+  new_state.restriction_target_id =
+      RestrictionTargetId(base::Token::CreateRandom());
+
+  auto change =
+      node->Update(EffectPaintPropertyNode::Root(), std::move(new_state));
+
+  EXPECT_EQ(PaintPropertyChangeType::kChangedOnlyValues, change);
+}
+
 }  // namespace blink

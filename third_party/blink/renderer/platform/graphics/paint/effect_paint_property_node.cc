@@ -59,6 +59,7 @@ PaintPropertyChangeType EffectPaintPropertyNode::State::ComputeChange(
       compositor_element_id != other.compositor_element_id ||
       view_transition_element_resource_id !=
           other.view_transition_element_resource_id ||
+      restriction_target_id != other.restriction_target_id ||
       self_or_ancestor_participates_in_view_transition !=
           other.self_or_ancestor_participates_in_view_transition ||
       needs_effect_for_2d_scale_transform !=
