@@ -545,16 +545,24 @@ bool KURL::SetProtocol(const String& protocol) {
 
 namespace {
 
-String ParsePortFromStringPosition(const String& value, unsigned port_start) {
+StringView ParsePortFromString(const StringView& value) {
   // "008080junk" needs to be treated as port "8080" and "000" as "0".
-  size_t length = value.length();
-  unsigned port_end = port_start;
-  while (IsASCIIDigit(value[port_end]) && port_end < length)
-    ++port_end;
-  while (value[port_start] == '0' && port_start < port_end - 1)
-    ++port_start;
-
-  return value.Substring(port_start, port_end - port_start);
+  wtf_size_t num_leading_digits = 0;
+  while (num_leading_digits < value.length() &&
+         IsASCIIDigit(value[num_leading_digits])) {
+    ++num_leading_digits;
+  }
+  wtf_size_t num_leading_zeros = 0;
+  while (num_leading_zeros < num_leading_digits &&
+         value[num_leading_zeros] == '0') {
+    ++num_leading_zeros;
+  }
+  // If all digits are zeros, consider the last one significant.
+  if (num_leading_zeros == num_leading_digits && num_leading_zeros) {
+    --num_leading_zeros;
+  }
+  return value.substr(num_leading_zeros,
+                      num_leading_digits - num_leading_zeros);
 }
 
 // Align with https://url.spec.whatwg.org/#host-state step 3, and also with the
@@ -567,19 +575,16 @@ bool IsEndOfHostSpecial(UChar ch) {
   return IsEndOfHost(ch) || ch == '\\';
 }
 
-wtf_size_t FindHostEnd(const String& host, bool is_special) {
+StringView FindHostPart(const StringView& host, bool is_special) {
   wtf_size_t end = host.Find(is_special ? IsEndOfHostSpecial : IsEndOfHost);
-  if (end == kNotFound)
-    end = host.length();
-  return end;
+  return host.substr(0, end);
 }
 
 }  // namespace
 
 void KURL::SetHost(const String& input) {
   String host = RemoveURLWhitespace(input);
-  wtf_size_t value_end = FindHostEnd(host, IsStandard());
-  String truncated_host = host.Substring(0, value_end);
+  StringView truncated_host = FindHostPart(host, IsStandard());
   StringUtf8Adaptor host_utf8(truncated_host);
   url::Replacements<char> replacements;
   replacements.SetHostStr(CharactersOrEmpty(host_utf8));
@@ -592,17 +597,16 @@ void KURL::SetHostAndPort(const String& input) {
   // theoretically should be doing.
 
   String orig_host_and_port = RemoveURLWhitespace(input);
-  wtf_size_t value_end = FindHostEnd(orig_host_and_port, IsStandard());
-  String host_and_port = orig_host_and_port.Substring(0, value_end);
+  StringView host_and_port = FindHostPart(orig_host_and_port, IsStandard());
 
   // This logic for handling IPv6 addresses is adapted from ParseServerInfo in
   // //url/third_party/mozilla/url_parse.cc. There's a slight behaviour
   // difference for compatibility with the tests: the first colon after the
   // address is considered to start the port, instead of the last.
-  wtf_size_t ipv6_terminator = host_and_port.ReverseFind(']');
+  wtf_size_t ipv6_terminator = host_and_port.rfind(']');
   if (ipv6_terminator == kNotFound) {
     ipv6_terminator =
-        host_and_port.StartsWith('[') ? host_and_port.length() : 0;
+        host_and_port.starts_with('[') ? host_and_port.length() : 0;
   }
 
   wtf_size_t colon = host_and_port.find(':', ipv6_terminator);
@@ -611,13 +615,13 @@ void KURL::SetHostAndPort(const String& input) {
   if (colon == 0)
     return;
 
-  String host;
-  String port;
+  StringView host;
+  StringView port;
   if (colon == kNotFound) {
     host = host_and_port;
   } else {
-    host = host_and_port.Substring(0, colon);
-    port = ParsePortFromStringPosition(host_and_port, colon + 1);
+    host = host_and_port.substr(0, colon);
+    port = ParsePortFromString(host_and_port.substr(colon + 1));
   }
 
   // Replace host and port separately in order to maintain the original port if
@@ -650,12 +654,12 @@ void KURL::RemovePort() {
 
 bool KURL::SetPort(const String& input) {
   String port = RemoveURLWhitespace(input);
-  String parsed_port = ParsePortFromStringPosition(port, 0);
+  StringView parsed_port = ParsePortFromString(port);
   if (parsed_port.empty()) {
     return false;
   }
   bool to_uint_ok;
-  unsigned port_value = parsed_port.ToUInt(&to_uint_ok);
+  unsigned port_value = parsed_port.ToString().ToUInt(&to_uint_ok);
   if (port_value > UINT16_MAX || !to_uint_ok) {
     return false;
   }
