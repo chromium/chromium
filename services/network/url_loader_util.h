@@ -88,11 +88,6 @@ std::string GetCookiesFromHeaders(
     const net::HttpRequestHeaders& headers,
     const net::HttpRequestHeaders& cors_exempt_headers);
 
-// Records UMA histograms for request sizes and categorizes them.
-void RecordURLLoaderRequestMetrics(const net::URLRequest& url_request,
-                                   size_t raw_request_line_size,
-                                   size_t raw_request_headers_size);
-
 // Records UMA metrics related to shared dictionary usage for non-cached
 // responses.
 void MaybeRecordSharedDictionaryUsedResponseMetrics(

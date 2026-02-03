@@ -2238,15 +2238,6 @@ void URLLoader::DispatchOnRawRequest(
 
 void URLLoader::DispatchOnRawResponse() {
   if (!emitted_devtools_raw_request_) {
-    // TODO(ortuno): not sure why emitting of metrics is gated upon request not
-    // having been dispatched to DevTools, but this has been so since it raw
-    // header size metrics have been introduced by https://crrev.com/c/5824030.
-    if (url_request_->response_headers()) {
-      // Record request metrics here instead of in NotifyCompleted to account
-      // for redirects.
-      url_loader_util::RecordURLLoaderRequestMetrics(
-          *url_request_, raw_request_line_size_, raw_request_headers_size_);
-    }
     // If there were no raw request headers, we assume no raw response headers
     // either, to make client logic simpler.
     // TODO(caseq): ensure this is actually an invariant?

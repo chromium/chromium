@@ -63,18 +63,6 @@ constexpr uint64_t kAllowedDevToolsCookieSettingOverrides =
     1u << static_cast<int>(
         net::CookieSettingOverride::kSkipTPCDHeuristicsGrant);
 
-bool IsMultiplexedConnection(const net::HttpResponseInfo& response_info) {
-  switch (net::HttpConnectionInfoToCoarse(response_info.connection_info)) {
-    case net::HttpConnectionInfoCoarse::kHTTP1:
-      return false;
-    case net::HttpConnectionInfoCoarse::kHTTP2:
-    case net::HttpConnectionInfoCoarse::kQUIC:
-      return true;
-    case net::HttpConnectionInfoCoarse::kOTHER:
-      return false;
-  }
-}
-
 const char* GetDestinationTypePartString(
     network::mojom::RequestDestination destination) {
   if (destination == network::mojom::RequestDestination::kDocument) {
@@ -454,84 +442,7 @@ std::string GetCookiesFromHeaders(
   return std::move(cookies).value_or(std::string());
 }
 
-void RecordURLLoaderRequestMetrics(const net::URLRequest& url_request,
-                                   size_t raw_request_line_size,
-                                   size_t raw_request_headers_size) {
-  // All histograms recorded here are of the form:
-  // "NetworkService.Requests.{Multiplexed}.{RequestType}.{Method}.{Result}
-  // .{Metric}".
-  // For example:
-  // "NetworkService.Requests.Simple.MainFrame.Get.Success.TotalRequestSize".
-  absl::InlinedVector<std::string_view, 10> histogram_prefix_pieces = {
-      "NetworkService", "Requests"};
 
-  const net::HttpResponseInfo& response_info = url_request.response_info();
-  if (IsMultiplexedConnection(response_info)) {
-    histogram_prefix_pieces.push_back("Multiplexed");
-  } else {
-    histogram_prefix_pieces.push_back("Simple");
-  }
-
-  switch (url_request.isolation_info().request_type()) {
-    case net::IsolationInfo::RequestType::kMainFrame:
-      histogram_prefix_pieces.push_back("MainFrame");
-      break;
-    case net::IsolationInfo::RequestType::kSubFrame:
-    case net::IsolationInfo::RequestType::kOther:
-      // TODO(crbug.com/362787712): Add metrics for other types of requests.
-      return;
-  }
-
-  if (url_request.method() == "GET") {
-    histogram_prefix_pieces.push_back("Get");
-  } else {
-    // Other types of requests need to be handled differently e.g. the total
-    // request size of a POST request needs to include the body.
-    // TODO(crbug.com/362787712): Add metrics for other types of requests.
-    return;
-  }
-
-  const int response_code = response_info.headers->response_code();
-  if (response_code < 199) {
-    // Ignore information responses because they are not complete requests.
-    return;
-  } else if (response_code < 299 || response_code < 399) {
-    // We consider redirects a success.
-    histogram_prefix_pieces.push_back("Success");
-  } else if (response_code < 499) {
-    histogram_prefix_pieces.push_back("ClientError");
-  } else if (response_code < 599) {
-    histogram_prefix_pieces.push_back("ServerError");
-  } else {
-    // Ignore unexpected server response codes.
-    return;
-  }
-
-  auto make_histogram_name =
-      [&histogram_prefix_pieces](std::string_view metric) {
-        histogram_prefix_pieces.push_back(metric);
-        std::string name = base::JoinString(histogram_prefix_pieces, ".");
-        histogram_prefix_pieces.pop_back();
-        return name;
-      };
-
-  base::UmaHistogramCounts100000(make_histogram_name("TotalUrlSize"),
-                                 url_request.url().spec().size());
-
-  // HTTP/2 and HTTP/3 requests don't separate request line from headers so no
-  // need to record header metrics separately.
-  if (!IsMultiplexedConnection(response_info)) {
-    base::UmaHistogramCounts100000(make_histogram_name("TotalHeadersSize"),
-                                   raw_request_headers_size);
-  }
-
-  // For HTTP/2 and HTTP/3 the request line is included in the headers, but
-  // `raw_request_line_size_` is 0 for these requests, so we can add it
-  // unconditionally for all requests.
-  size_t total_request_size = raw_request_headers_size + raw_request_line_size;
-  base::UmaHistogramCounts100000(make_histogram_name("TotalRequestSize"),
-                                 total_request_size);
-}
 
 void MaybeRecordSharedDictionaryUsedResponseMetrics(
     int error_code,
