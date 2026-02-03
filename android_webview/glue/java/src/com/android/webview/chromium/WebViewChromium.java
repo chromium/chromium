@@ -1792,6 +1792,9 @@ class WebViewChromium
     private void loadUrlNoPost(final String url, final Map<String, String> additionalHttpHeaders) {
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.LOAD_URL_ADDITIONAL_HEADERS")) {
+            // These two histograms (the API call one and the timing one) are important for
+            // triggering field traces. The recordWebViewApiCall must be called before we actually
+            // do loadUrl, so be careful if you move it.
             recordWebViewApiCall(
                     ApiCall.LOAD_URL_ADDITIONAL_HEADERS,
                     ApiCallUserAction.WEBVIEW_INSTANCE_LOAD_URL_ADDITIONAL_HEADERS);
@@ -1824,6 +1827,9 @@ class WebViewChromium
 
     private void loadUrlNoPost(final String url) {
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.LOAD_URL")) {
+            // These two histograms (the API call one and the timing one) are important for
+            // triggering field traces. The recordWebViewApiCall must be called before we actually
+            // do loadUrl, so be careful if you move it.
             recordWebViewApiCall(ApiCall.LOAD_URL, ApiCallUserAction.WEBVIEW_INSTANCE_LOAD_URL);
             long startTime = SystemClock.uptimeMillis();
             mAwContents.loadUrl(url);
