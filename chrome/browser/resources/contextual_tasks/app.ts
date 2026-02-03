@@ -186,7 +186,17 @@ export class ContextualTasksAppElement extends CrLitElement {
     chrome.metricsPrivate.recordBoolean(
         'ContextualTasks.WebUI.UserAction.OpenNewThread', true);
     const {url} = await this.browserProxy_.handler.getThreadUrl();
-    this.$.threadFrame.src = url;
+    const newThreadUrl = new URL(url);
+    const currentUrl = new URL(this.$.threadFrame.src);
+    const source = currentUrl.searchParams.get('source');
+    if (source) {
+      newThreadUrl.searchParams.set('source', source);
+    }
+    const aep = currentUrl.searchParams.get('aep');
+    if (aep) {
+      newThreadUrl.searchParams.set('aep', aep);
+    }
+    this.$.threadFrame.src = newThreadUrl.href;
     this.$.composebox.startExpandAnimation();
     this.$.composebox.clearInputAndFocus();
   }
