@@ -16,6 +16,7 @@
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_monitor_source.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -30,6 +31,8 @@ void IgnoreSpeedLimitChange(int speed_limit) {}
 // Verifies that a NSProcessInfoThermalStateDidChangeNotification produces the
 // adequate OnStateChange() call.
 TEST(ThermalStateObserverMacTest, StateChange) {
+  test::TaskEnvironment task_environment;
+
   MockFunction<void(DeviceThermalState)> function;
   // ThermalStateObserverMac sends the current thermal state on construction.
   EXPECT_CALL(function, Call);
@@ -47,6 +50,8 @@ TEST(ThermalStateObserverMacTest, StateChange) {
 }
 
 TEST(ThermalStateObserverMacTest, SpeedChange) {
+  test::TaskEnvironment task_environment;
+
   MockFunction<void(int)> function;
   // ThermalStateObserverMac sends the current speed limit state on
   // construction.

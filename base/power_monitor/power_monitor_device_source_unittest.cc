@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_monitor_source.h"
+#include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -26,6 +27,9 @@ class PowerMonitorDeviceSourceTest : public testing::Test {
   DeviceThermalState GetCurrentThermalState() {
     return power_monitor_device_source_.GetCurrentThermalState();
   }
+
+  // ThermalStateObserverMac posts to the ThreadPool.
+  test::TaskEnvironment task_environment_;
 
   PowerMonitorDeviceSource power_monitor_device_source_;
 };
