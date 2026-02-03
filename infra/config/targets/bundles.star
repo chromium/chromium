@@ -6844,6 +6844,9 @@ targets.bundle(
         ),
         "blink_web_tests": targets.mixin(
             args = ["--additional-driver-flag=--disable-features=TreesInViz"],
+            swarming = targets.swarming(
+                shards = 4,
+            ),
         ),
         "content_browsertests": targets.mixin(
             args = ["--disable-features=TreesInViz"],
@@ -6878,6 +6881,9 @@ targets.bundle(
         ),
         "blink_web_tests": targets.mixin(
             args = ["--additional-driver-flag=--enable-features=TreesInViz"],
+            swarming = targets.swarming(
+                shards = 4,
+            ),
         ),
         "content_browsertests": targets.mixin(
             args = ["--enable-features=TreesInViz"],
@@ -6915,7 +6921,7 @@ targets.bundle(
         ),
         "content_browsertests": targets.mixin(
             swarming = targets.swarming(
-                shards = 8,
+                shards = 20,
             ),
         ),
     },

@@ -105,7 +105,8 @@
           "dimensions": {
             "os": "Ubuntu-22.04"
           },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 4
         },
         "test": "blink_web_tests",
         "test_id_prefix": "ninja://:blink_web_tests/"
