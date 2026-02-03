@@ -94,7 +94,6 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
      * @param profileObservableSupplier The supplier of the current profile.
      * @param tabModelSelectorSupplier The supplier of the tab model selector.
      * @param templateUrlServiceSupplier The supplier of the template URL service.
-     * @param autocompleteRequestTypeSupplier The supplier of the autocomplete request type.
      * @param snackbarManager The snackbar manager to show messages.
      */
     public FuseboxCoordinator(
@@ -172,13 +171,16 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
 
     @VisibleForTesting
     void onProfileAvailable(Profile profile) {
-        // Reset previous Mediator instance in case we migrate to continuous Profile observing.
         if (mMediator != null) {
             mMediator.destroy();
             mMediator = null;
         }
 
-        mComposeboxQueryControllerBridge = ComposeboxQueryControllerBridge.getForProfile(profile);
+        if (mComposeboxQueryControllerBridge != null) {
+            mComposeboxQueryControllerBridge.destroy();
+        }
+        mComposeboxQueryControllerBridge =
+                ComposeboxQueryControllerBridge.createForProfile(profile);
         AutocompleteController.getForProfile(profile)
                 .setComposeboxQueryControllerBridge(mComposeboxQueryControllerBridge);
         if (mComposeboxQueryControllerBridge == null) return;

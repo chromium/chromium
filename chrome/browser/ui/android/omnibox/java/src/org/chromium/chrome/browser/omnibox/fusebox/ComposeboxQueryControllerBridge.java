@@ -48,7 +48,7 @@ public class ComposeboxQueryControllerBridge {
     private ComposeboxQueryControllerBridge() {}
 
     /** Create a new ComposeboxQueryControllerBridge using the given profile. */
-    public static @Nullable ComposeboxQueryControllerBridge getForProfile(Profile profile) {
+    public static @Nullable ComposeboxQueryControllerBridge createForProfile(Profile profile) {
         ComposeboxQueryControllerBridge javaInstance = new ComposeboxQueryControllerBridge();
         long nativeInstance = ComposeboxQueryControllerBridgeJni.get().init(profile, javaInstance);
         if (nativeInstance == 0L) return null;
