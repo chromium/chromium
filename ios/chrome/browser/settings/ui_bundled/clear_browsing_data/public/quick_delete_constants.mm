@@ -30,3 +30,6 @@ NSString* const kQuickDeleteBrowsingDataAutofillIdentifier =
 
 NSString* const kQuickDeleteBrowsingDataFooterIdentifier =
     @"QuickDeleteBrowsingDataFooterIdentifier";
+
+NSString* const kQuickDeleteManageOtherDataCellIdentifier =
+    @"QuickDeleteManageOtherDataCellIdentifier";

@@ -80,6 +80,13 @@ id<GREYMatcher> SignOutLinkMatcher() {
       grey_accessibilityTrait(UIAccessibilityTraitLink), nil);
 }
 
+// Returns a matcher for the "Manage other data" cell.
+id<GREYMatcher> ManageOtherDataCellMatcher() {
+  return grey_allOf(
+      grey_accessibilityID(kQuickDeleteManageOtherDataCellIdentifier),
+      grey_accessibilityTrait(UIAccessibilityTraitButton), nil);
+}
+
 // Returns a matcher for the actual button with the `timeRange` inside the time
 // range popup row.
 id<GREYMatcher> PopupCellWithTimeRange(NSString* timeRange) {
@@ -762,6 +769,18 @@ void NoDeleteBrowsingDataDialogHistogram(
                                            0)),
                                    nil)]
       assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that the "Manage other data" cell is only present when the
+// `kPasswordRemovalFromDeleteBrowsingData` feature is enabled.
+- (void)testManageOtherDataCellVisibility {
+  // Open quick delete browsing data page.
+  [self openQuickDeleteBrowsingDataPage];
+
+  [[EarlGrey selectElementWithMatcher:ManageOtherDataCellMatcher()]
+      assertWithMatcher:[self shouldEnablePasswordRemovalFeature]
+                            ? grey_sufficientlyVisible()
+                            : grey_nil()];
 }
 
 @end

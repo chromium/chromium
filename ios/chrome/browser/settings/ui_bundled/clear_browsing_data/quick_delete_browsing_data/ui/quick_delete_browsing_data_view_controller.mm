@@ -41,7 +41,8 @@ const char kDBDSignOutOfChromeURL[] = "settings://DBDSignOutOfChrome";
 // Section identifiers in the browsing data page table view.
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierBrowsingData = kSectionIdentifierEnumZero,
-  SectionIdentifierFooter,
+  SectionIdentifierBrowsingDataFooter,
+  SectionIdentifierManageOtherData,
 };
 
 // Item identifiers in the browsing data page table view.
@@ -54,6 +55,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   // `kPasswordRemovalFromDeleteBrowsingData` is enabled by default.
   ItemIdentifierPasswords,
   ItemIdentifierAutofill,
+  ItemIdentifierManageOtherData,
 };
 
 // Returns the array of item identifiers for the Browsing Data section.
@@ -140,11 +142,17 @@ NSArray<NSNumber*>* BrowsingDataItemIdentifiers() {
   NSDiffableDataSourceSnapshot* snapshot =
       [[NSDiffableDataSourceSnapshot alloc] init];
   [snapshot appendSectionsWithIdentifiers:@[
-    @(SectionIdentifierBrowsingData), @(SectionIdentifierFooter)
+    @(SectionIdentifierBrowsingData), @(SectionIdentifierBrowsingDataFooter)
   ]];
-
   [snapshot appendItemsWithIdentifiers:BrowsingDataItemIdentifiers()
              intoSectionWithIdentifier:@(SectionIdentifierBrowsingData)];
+
+  if (IsPasswordRemovalFromDeleteBrowsingDataEnabled()) {
+    [snapshot
+        appendSectionsWithIdentifiers:@[ @(SectionIdentifierManageOtherData) ]];
+    [snapshot appendItemsWithIdentifiers:@[ @(ItemIdentifierManageOtherData) ]
+               intoSectionWithIdentifier:@(SectionIdentifierManageOtherData)];
+  }
 
   [_dataSource applySnapshot:snapshot animatingDifferences:NO];
 }
@@ -156,11 +164,24 @@ NSArray<NSNumber*>* BrowsingDataItemIdentifiers() {
   ItemIdentifier itemIdentifier = static_cast<ItemIdentifier>(
       [_dataSource itemIdentifierForIndexPath:indexPath].integerValue);
 
-  // Update selection value for the corresponding cell with `itemIdentifier`.
-  [self toggleSelectionForItemIdentifier:itemIdentifier];
-
-  // Update the snapshot for the selected cell.
-  [self updateSnapshotForItemIdentifier:itemIdentifier];
+  switch (itemIdentifier) {
+    case ItemIdentifierManageOtherData: {
+      // TODO(crbug.com/464552107): Link this tap to navigating to Other Data
+      // Page.
+      return;
+    }
+    case ItemIdentifierHistory:
+    case ItemIdentifierTabs:
+    case ItemIdentifierSiteData:
+    case ItemIdentifierCache:
+    case ItemIdentifierPasswords:
+    case ItemIdentifierAutofill:
+      // Update selection value for the corresponding cell with
+      // `itemIdentifier`.
+      [self toggleSelectionForItemIdentifier:itemIdentifier];
+      // Update the snapshot for the selected cell.
+      [self updateSnapshotForItemIdentifier:itemIdentifier];
+  }
 }
 
 - (UIView*)tableView:(UITableView*)tableView
@@ -168,7 +189,7 @@ NSArray<NSNumber*>* BrowsingDataItemIdentifiers() {
   SectionIdentifier sectionIdentifier = static_cast<SectionIdentifier>(
       [_dataSource sectionIdentifierForIndex:section].integerValue);
   switch (sectionIdentifier) {
-    case SectionIdentifierFooter: {
+    case SectionIdentifierBrowsingDataFooter: {
       if (!_shouldShowFooter) {
         return nil;
       }
@@ -184,9 +205,9 @@ NSArray<NSNumber*>* BrowsingDataItemIdentifiers() {
             withColor:[UIColor colorNamed:kTextSecondaryColor]];
       return footer;
     }
-    case SectionIdentifierBrowsingData: {
+    case SectionIdentifierBrowsingData:
+    case SectionIdentifierManageOtherData:
       return nil;
-    }
   }
   NOTREACHED();
 }
@@ -195,7 +216,8 @@ NSArray<NSNumber*>* BrowsingDataItemIdentifiers() {
     heightForFooterInSection:(NSInteger)section {
   SectionIdentifier sectionIdentifier = static_cast<SectionIdentifier>(
       [_dataSource sectionIdentifierForIndex:section].integerValue);
-  if (sectionIdentifier == SectionIdentifierFooter && _shouldShowFooter) {
+  if (sectionIdentifier == SectionIdentifierBrowsingDataFooter &&
+      _shouldShowFooter) {
     return UITableViewAutomaticDimension;
   }
   return kSectionFooterHeight;
@@ -232,7 +254,9 @@ NSArray<NSNumber*>* BrowsingDataItemIdentifiers() {
   // Reload the footer section.
   NSDiffableDataSourceSnapshot<NSNumber*, NSNumber*>* snapshot =
       [_dataSource snapshot];
-  [snapshot reloadSectionsWithIdentifiers:@[ @(SectionIdentifierFooter) ]];
+  [snapshot reloadSectionsWithIdentifiers:@[
+    @(SectionIdentifierBrowsingDataFooter)
+  ]];
   [_dataSource applySnapshot:snapshot animatingDifferences:YES];
 }
 
@@ -386,6 +410,28 @@ NSArray<NSNumber*>* BrowsingDataItemIdentifiers() {
   return cell;
 }
 
+// Creates the "Manage other data" cell.
+- (UITableViewCell*)createManageOtherDataCell {
+  TableViewCellContentConfiguration* configuration =
+      [[TableViewCellContentConfiguration alloc] init];
+  // TODO(crbug.com/478215117): Change the below strings for the variable
+  // strings given by the QuickDeleteConsumer.
+  configuration.title = @"Manage other Google data";
+  configuration.subtitle = @"Search history and passwords can be deleted in "
+                           @"their management settings";
+
+  UITableViewCell* cell =
+      [TableViewCellContentConfiguration dequeueTableViewCell:self.tableView];
+
+  cell.contentConfiguration = configuration;
+  cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+
+  cell.accessibilityIdentifier = kQuickDeleteManageOtherDataCellIdentifier;
+  cell.accessibilityTraits |= UIAccessibilityTraitButton;
+
+  return cell;
+}
+
 // Returns the cell for the corresponding `itemIdentifier`.
 - (UITableViewCell*)cellForTableView:(UITableView*)tableView
                            indexPath:(NSIndexPath*)indexPath
@@ -445,6 +491,9 @@ NSArray<NSNumber*>* BrowsingDataItemIdentifiers() {
                          selected:_autofillSelected
           accessibilityIdentifier:kQuickDeleteBrowsingDataAutofillIdentifier];
     }
+    case ItemIdentifierManageOtherData: {
+      return [self createManageOtherDataCell];
+    }
   }
 }
 
@@ -486,6 +535,10 @@ NSArray<NSNumber*>* BrowsingDataItemIdentifiers() {
       _autofillSelected = !_autofillSelected;
       break;
     }
+    case ItemIdentifierManageOtherData: {
+      // This item can't be selected.
+      NOTREACHED();
+    }
   }
   [self updateConfirmButtonEnabledStatus];
 }
@@ -516,6 +569,10 @@ NSArray<NSNumber*>* BrowsingDataItemIdentifiers() {
     case ItemIdentifierAutofill: {
       return DefaultSymbolTemplateWithPointSize(kAutofillDataSymbol,
                                                 kDefaultSymbolSize);
+    }
+    case ItemIdentifierManageOtherData: {
+      // This item doesn't have an icon.
+      NOTREACHED();
     }
   }
 }
