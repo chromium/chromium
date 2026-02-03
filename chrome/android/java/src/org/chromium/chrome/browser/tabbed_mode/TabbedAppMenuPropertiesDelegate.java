@@ -1138,17 +1138,12 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                 || !ChromeFeatureList.isEnabled(ChromeFeatureList.GLIC)) {
             return null;
         }
-
-        // TODO(crbug.com/475592540): Add CPA logic to conditionally show Glic Button
-        if (currentTab.isNativePage()) {
-            return new MVCListAdapter.ListItem(
-                    AppMenuHandler.AppMenuItemType.STANDARD,
-                    buildModelForStandardMenuItem(
-                            R.id.glic_menu_id,
-                            R.string.glic_button_entrypoint_ask_gemini_label,
-                            shouldShowIconBeforeItem() ? R.drawable.ic_spark_24dp : 0));
-        }
-        return null;
+        return new MVCListAdapter.ListItem(
+                AppMenuHandler.AppMenuItemType.STANDARD,
+                buildModelForStandardMenuItem(
+                        R.id.glic_menu_id,
+                        R.string.glic_button_entrypoint_ask_gemini_label,
+                        shouldShowIconBeforeItem() ? R.drawable.ic_spark_24dp : Resources.ID_NULL));
     }
 
     /**
