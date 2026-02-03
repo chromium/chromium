@@ -136,7 +136,7 @@ checksum = "38d1115007560874e373613744c6fba374c17688327a71c1476d1a5954cc857b"
 
 [[package]]
 name = "minijinja"
-version = "2.14.0"
+version = "2.15.1"
 dependencies = [
  "aho-corasick",
  "indexmap",

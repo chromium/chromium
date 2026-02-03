@@ -99,7 +99,6 @@ pub(crate) fn get_builtin_filters() -> BTreeMap<Cow<'static, str>, Value> {
         rv.insert("min".into(), Value::from_function(filters::min));
         rv.insert("max".into(), Value::from_function(filters::max));
         rv.insert("sort".into(), Value::from_function(filters::sort));
-        rv.insert("d".into(), Value::from_function(filters::default));
         rv.insert("list".into(), Value::from_function(filters::list));
         rv.insert("string".into(), Value::from_function(filters::string));
         rv.insert("bool".into(), Value::from_function(filters::bool));

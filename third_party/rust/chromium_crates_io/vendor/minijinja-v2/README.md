@@ -1,6 +1,6 @@
 <div align="center">
   <img src="https://github.com/mitsuhiko/minijinja/raw/main/artwork/logo.png" alt="" width=320>
-  <p><strong>MiniJinja: a powerful template engine for Rust with minimal dependencies</strong></p>
+  <p><strong>MiniJinja: a powerful template engine with minimal dependencies</strong></p>
 
 [![License](https://img.shields.io/github/license/mitsuhiko/minijinja)](https://github.com/mitsuhiko/minijinja/blob/main/LICENSE)
 [![Crates.io](https://img.shields.io/crates/d/minijinja.svg)](https://crates.io/crates/minijinja)
@@ -9,9 +9,12 @@
 
 </div>
 
-MiniJinja is a powerful but minimal dependency template engine for Rust which
-is based on the syntax and behavior of the
+MiniJinja is a powerful but minimal dependency template engine
+which is based on the syntax and behavior of the
 [Jinja2](https://jinja.palletsprojects.com/) template engine for Python.
+
+It's implemented in [Rust](https://github.com/mitsuhiko/minijinja/tree/main/minijinja) and [Go](https://github.com/mitsuhiko/minijinja/tree/main/minijinja-go) and is also available via WASM for [JavaScript](https://github.com/mitsuhiko/minijinja/tree/main/minijinja-js)
+and as a [Python extension module](https://github.com/mitsuhiko/minijinja/tree/main/minijinja-py) and as a [command line utility](https://github.com/mitsuhiko/minijinja/tree/main/minijinja-cli).
 
 It's supports all `serde` types and only has it as a single required
 dependency. It supports [a range of features from Jinja2](https://github.com/mitsuhiko/minijinja/blob/main/COMPATIBILITY.md)
@@ -24,7 +27,7 @@ ecosystem of editor integrations.
 ```
 $ cargo tree
 minimal v0.1.0 (examples/minimal)
-└── minijinja v2.14.0 (minijinja)
+└── minijinja v2.15.1 (minijinja)
     └── serde v1.0.144
 ```
 
@@ -53,6 +56,7 @@ powered by a WASM build of MiniJinja.
 * [Descriptive errors](https://github.com/mitsuhiko/minijinja/tree/main/examples/error)
 * Bindings for [JavaScript](https://github.com/mitsuhiko/minijinja/tree/main/minijinja-js),
   [Python](https://github.com/mitsuhiko/minijinja/tree/main/minijinja-py), and [C](https://github.com/mitsuhiko/minijinja/tree/main/minijinja-cabi)
+* Also available for [Go](https://github.com/mitsuhiko/minijinja/tree/main/minijinja-go)
 * Comes with a handy [CLI](https://github.com/mitsuhiko/minijinja/tree/main/minijinja-cli)
 * [Compiles to WebAssembly](https://github.com/mitsuhiko/minijinja-playground/blob/main/src/lib.rs)
 
@@ -97,6 +101,8 @@ If you are stuck with `MiniJinja`, have suggestions or need help, you can use th
   available to Python
 * [minijinja-js](https://github.com/mitsuhiko/minijinja/tree/main/minijinja-js): makes MiniJinja
   available to JavaScript via WASM (for Node and Browser)
+* [minijinja-go](https://github.com/mitsuhiko/minijinja/tree/main/minijinja-go): a native Go
+  implementation of MiniJinja
 * [minijinja-cli](https://github.com/mitsuhiko/minijinja/tree/main/minijinja-cli): a command line utility.
 * [minijinja-cabi](https://github.com/mitsuhiko/minijinja/tree/main/minijinja-cabi): a C binding to MiniJinja.
 
@@ -116,7 +122,7 @@ the engine is used so you can see how it's utilized:
 * Data and Processing:
   * **[Cube](https://cube.dev/docs/product/data-modeling/dynamic/jinja)** uses it [for data modelling](https://github.com/cube-js/cube/tree/db11c121c77c663845242366d3d972b9bc30ae54/packages/cubejs-backend-native/src/template/mj_value)
   * **[PRQL](https://prql-lang.org/)** uses it [to handle DBT style pipelines](https://github.com/PRQL/prql/blob/59fb3cc4b9b6c9e195c928b1ba1134e2c5706ea3/prqlc/prqlc/src/cli/jinja.rs#L21)
-  * **[qsv](https://qsv.dathere.com)** uses it [to render templates from CSV files](https://github.com/jqnatividad/qsv/blob/master/src/cmd/template.rs#L2) and to [construct payloads to post to web services](https://github.com/jqnatividad/qsv/blob/master/src/cmd/fetchpost.rs#L3).
+  * **[qsv](https://qsv.dathere.com)** uses it [to render templates from CSV files](https://github.com/jqnatividad/qsv/blob/master/src/cmd/template.rs#L2), to [construct payloads to post to web services](https://github.com/jqnatividad/qsv/blob/master/src/cmd/fetchpost.rs#L3) and to [infer Data Dictionaries, Descriptions & Tags or Chat with your data](https://github.com/dathere/qsv/blob/master/src/cmd/describegpt.rs#L2).
 
 * HTML Generation:
   * **[Zine](https://github.com/zineland/zine)** uses it to [generate static HTML](https://github.com/zineland/zine/blob/17285efe9f9a63b79a42a738b54d4d730b8cd551/src/engine.rs#L8)
