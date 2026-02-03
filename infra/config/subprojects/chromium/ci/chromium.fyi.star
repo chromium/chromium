@@ -2582,12 +2582,12 @@ fyi_mac_builder(
     cores = None,
     console_view_entry = [
         consoles.console_view_entry(
-            category = "viz",
+            category = "treesinviz",
             short_name = "mac",
         ),
         consoles.console_view_entry(
             console_view = "treesinviz",
-            category = "viz",
+            category = "treesinviz",
             short_name = "mac",
         ),
     ],
@@ -2629,12 +2629,12 @@ ci.builder(
     os = os.WINDOWS_DEFAULT,
     console_view_entry = [
         consoles.console_view_entry(
-            category = "viz",
+            category = "treesinviz",
             short_name = "win",
         ),
         consoles.console_view_entry(
             console_view = "treesinviz",
-            category = "viz",
+            category = "treesinviz",
             short_name = "win",
         ),
     ],
@@ -2675,12 +2675,12 @@ ci.builder(
     os = os.LINUX_DEFAULT,
     console_view_entry = [
         consoles.console_view_entry(
-            category = "viz",
+            category = "treesinviz",
             short_name = "lcr",
         ),
         consoles.console_view_entry(
             console_view = "treesinviz",
-            category = "viz",
+            category = "treesinviz",
             short_name = "lcr",
         ),
     ],
@@ -2733,12 +2733,12 @@ ci.builder(
     os = os.LINUX_DEFAULT,
     console_view_entry = [
         consoles.console_view_entry(
-            category = "viz",
+            category = "treesinviz",
             short_name = "and",
         ),
         consoles.console_view_entry(
             console_view = "treesinviz",
-            category = "viz",
+            category = "treesinviz",
             short_name = "and",
         ),
     ],
@@ -2777,12 +2777,12 @@ ci.builder(
     os = os.LINUX_DEFAULT,
     console_view_entry = [
         consoles.console_view_entry(
-            category = "viz",
+            category = "treesinviz",
             short_name = "lnx",
         ),
         consoles.console_view_entry(
             console_view = "treesinviz",
-            category = "viz",
+            category = "treesinviz",
             short_name = "lnx",
         ),
     ],
