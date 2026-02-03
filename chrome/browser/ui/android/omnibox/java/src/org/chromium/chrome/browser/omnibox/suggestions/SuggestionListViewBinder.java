@@ -102,11 +102,13 @@ class SuggestionListViewBinder {
             boolean drawOver = model.get(SuggestionListProperties.DRAW_OVER_ANCHOR);
             // Note: this assumes the anchor view's z hasn't been modified. If this changes, we'll
             // need to wire that z value so that we choose the correct one here.
-            view.container.setZ(drawOver ? 1.0f : 0.0f);
-            view.dropdown.setElevation(
-                    view.dropdown
-                            .getResources()
-                            .getDimensionPixelSize(R.dimen.omnibox_suggestion_list_elevation));
+            view.container.setTranslationZ(
+                    drawOver
+                            ? view.container
+                                    .getResources()
+                                    .getDimensionPixelSize(
+                                            R.dimen.omnibox_suggestion_list_elevation)
+                            : 0.0f);
         } else if (SuggestionListProperties.IS_LARGE_SCREEN == propertyKey) {
             updateColorScheme(model, view);
             view.container.setShouldClipToOutline(
