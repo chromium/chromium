@@ -26,13 +26,16 @@ BrowserPageHandler* BrowserPageHandler::Create(
                                 std::move(receiver));
 }
 
-void BrowserPageHandler::Navigate(int32_t guest_instance_id, const GURL& src) {
+void BrowserPageHandler::Navigate(
+    const base::UnguessableToken& guest_instance_id,
+    const GURL& src) {
   content::WebContents* guest_contents = webui_controller()->guest_contents();
   content::NavigationController::LoadURLParams load_url_params(src);
   guest_contents->GetController().LoadURLWithParams(load_url_params);
 }
 
-void BrowserPageHandler::GoBack(int32_t guest_instance_id) {
+void BrowserPageHandler::GoBack(
+    const base::UnguessableToken& guest_instance_id) {
   content::WebContents* guest_contents = webui_controller()->guest_contents();
   auto& navigation_controller = guest_contents->GetController();
   if (navigation_controller.CanGoBack()) {
@@ -40,7 +43,8 @@ void BrowserPageHandler::GoBack(int32_t guest_instance_id) {
   }
 }
 
-void BrowserPageHandler::GoForward(int32_t guest_instance_id) {
+void BrowserPageHandler::GoForward(
+    const base::UnguessableToken& guest_instance_id) {
   content::WebContents* guest_contents = webui_controller()->guest_contents();
   auto& navigation_controller = guest_contents->GetController();
   if (navigation_controller.CanGoForward()) {

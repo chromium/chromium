@@ -8,6 +8,6 @@ declare namespace chrome {
   export namespace browser {
     // Attaches a guest contents to an iframe on the page.
     export function attachIframeGuest(
-        guestContentsId: number, contentWindow: Window): void;
+        guestContentsId: string, contentWindow: Window): void;
   }
 }

@@ -44,7 +44,7 @@ GuestContentsHandle* GuestContentsHandle::FromID(GuestId id) {
 GuestContentsHandle::GuestContentsHandle(content::WebContents* web_contents)
     : content::WebContentsUserData<GuestContentsHandle>(*web_contents),
       content::WebContentsObserver(web_contents),
-      id_(GetNextId()) {
+      id_(base::UnguessableToken::Create()) {
   CHECK(!GetGuestContentsMap().contains(id_));
   GetGuestContentsMap()[id_] = this;
 }
@@ -82,11 +82,6 @@ void GuestContentsHandle::DetachFromOuterWebContents() {
 
 void GuestContentsHandle::WebContentsDestroyed() {
   DetachFromOuterWebContents();
-}
-
-GuestId GuestContentsHandle::GetNextId() {
-  static GuestId next_id = 0;
-  return next_id++;
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(GuestContentsHandle);

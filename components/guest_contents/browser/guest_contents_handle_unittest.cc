@@ -68,8 +68,9 @@ TEST_F(GuestContentsHandleTest, CreateAndGetById) {
   EXPECT_EQ(handle, GuestContentsHandle::FromID(id));
 
   // Test invalid ID
-  EXPECT_EQ(nullptr, GuestContentsHandle::FromID(id + 1));
-  EXPECT_EQ(nullptr, GuestContentsHandle::FromID(-1));
+  EXPECT_EQ(nullptr,
+            GuestContentsHandle::FromID(base::UnguessableToken::Create()));
+  EXPECT_EQ(nullptr, GuestContentsHandle::FromID(base::UnguessableToken()));
 
   // Destroy the WebContents, which should destroy the handle
   guest_web_contents().reset();

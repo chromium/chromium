@@ -61,7 +61,7 @@ content::RenderFrame* GetRenderFrame(v8::Local<v8::Value> value) {
   return content::RenderFrame::FromWebFrame(frame);
 }
 
-void AttachIframeGuest(int guest_contents_id,
+void AttachIframeGuest(const std::string& guest_contents_id,
                        v8::Local<v8::Object> content_window) {
   // attachIframeGuest(guestInstanceId, contentWindow)
   // Getting the attach params could destroy the frame while it executes JS,
@@ -77,7 +77,12 @@ void AttachIframeGuest(int guest_contents_id,
   CHECK(parent_frame);
   CHECK(parent_frame->IsWebLocalFrame());
 
-  guest_contents::renderer::SwapRenderFrame(render_frame, guest_contents_id);
+  auto parsed_guest_contents_id =
+      base::UnguessableToken::DeserializeFromString(guest_contents_id);
+  CHECK(parsed_guest_contents_id.has_value());
+
+  guest_contents::renderer::SwapRenderFrame(render_frame,
+                                            *parsed_guest_contents_id);
 }
 
 }  // namespace

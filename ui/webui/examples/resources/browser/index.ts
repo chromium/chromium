@@ -9,8 +9,7 @@ import '/strings.m.js';
 
 interface WebshellServices {
   allowWebviewElementRegistration(callback: ()=>void): void;
-  attachIframeGuest(guestContentsId: number,
-                    contentWindow: Window | null): void
+  attachIframeGuest(guestContentsId: string, contentWindow: Window|null): void
 }
 
 declare var webshell: WebshellServices;
@@ -39,7 +38,7 @@ class BrowserProxy {
 
 class WebviewElement extends HTMLElement {
   public iframeElement: HTMLIFrameElement;
-  private guestContentsId: number;
+  private guestContentsId: string;
 
   constructor() {
     super();
@@ -49,7 +48,7 @@ class WebviewElement extends HTMLElement {
     this.iframeElement.style.padding = "0";
     this.iframeElement.style.flex = '1';
     this.appendChild(this.iframeElement);
-    this.guestContentsId = loadTimeData.getInteger('guest-contents-id');
+    this.guestContentsId = loadTimeData.getString('guest-contents-id');
     console.log('guest-contents-id', this.guestContentsId);
     const iframeContentWindow = this.iframeElement.contentWindow;
     webshell.attachIframeGuest(this.guestContentsId,

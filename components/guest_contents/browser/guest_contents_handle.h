@@ -6,13 +6,14 @@
 #define COMPONENTS_GUEST_CONTENTS_BROWSER_GUEST_CONTENTS_HANDLE_H_
 
 #include "base/sequence_checker.h"
+#include "base/unguessable_token.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace guest_contents {
 
-using GuestId = int;
+using GuestId = base::UnguessableToken;
 
 // A handle for a guest WebContents, uniquely identified by a GuestId. It
 // provides APIs for attaching and detaching the guest WebContents from the
@@ -47,9 +48,7 @@ class GuestContentsHandle
   // content::WebContentsObserver:
   void WebContentsDestroyed() override;
 
-  GuestId GetNextId();
-
-  GuestId id_;
+  base::UnguessableToken id_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

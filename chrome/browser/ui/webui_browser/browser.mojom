@@ -5,6 +5,7 @@
 module webui_browser.mojom;
 
 import "components/browser_apis/tab_strip/tab_strip_api_types.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "url/mojom/url.mojom";
 
@@ -40,7 +41,8 @@ interface Page {
 
   // Shows the side panel UI. The side panel contents is hosted by a guest
   // contents.
-  ShowSidePanel(int32 guest_contents_id, string title);
+  ShowSidePanel(mojo_base.mojom.UnguessableToken guest_contents_id,
+                string title);
 
   // Closes the side panel, destroys the webview.
   CloseSidePanel();
@@ -55,10 +57,11 @@ interface PageHandler {
   // Get the guest id for a tab id and connect up the GuestHandler.
   GetGuestIdForTabId(
       tabs_api.mojom.NodeId tab_id,
-      pending_receiver<GuestHandler> handler) => (int32 guest_id);
+      pending_receiver<GuestHandler> handler)
+      => (mojo_base.mojom.UnguessableToken guest_id);
 
   // Load TabSearch in a guest contents and returns the guest id.
-  LoadTabSearch() => (int32 guest_id);
+  LoadTabSearch() => (mojo_base.mojom.UnguessableToken guest_id);
 
   // Shows the Tab Search bubble.
   ShowTabSearchBubble(string anchor_name);

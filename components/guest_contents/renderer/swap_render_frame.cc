@@ -54,7 +54,7 @@ class GuestContentsService : public base::SupportsUserData::Data {
 }  // namespace
 
 void SwapRenderFrame(content::RenderFrame* render_frame,
-                     int guest_contents_id) {
+                     const base::UnguessableToken& guest_contents_id) {
   // `render_frame` is the outer delegate frame. It must be in the same process
   // as the main frame. If not this CHECK will fail.
   CHECK(render_frame->GetMainRenderFrame());

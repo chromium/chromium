@@ -40,11 +40,11 @@ export class WebviewElement extends CrLitElement {
 
   static override get properties() {
     return {
-      guestId: {type: Number},
+      guestId: {type: String},
     };
   }
 
-  accessor guestId: number = -1;
+  accessor guestId: string = '';
   private attached: boolean = false;
 
   // Whether to use surface embed instead of guest contents.
@@ -63,7 +63,7 @@ export class WebviewElement extends CrLitElement {
       return;
     }
 
-    if (this.attached || this.guestId === -1) {
+    if (this.attached || this.guestId.length === 0) {
       return;
     }
     this.attached = true;
@@ -80,7 +80,7 @@ export class WebviewElement extends CrLitElement {
     return this.enableSurfaceEmbed ? this.$.embed : this.$.iframe;
   }
 
-  private attachGuestToIframe(guestId: number, iframe: HTMLIFrameElement) {
+  private attachGuestToIframe(guestId: string, iframe: HTMLIFrameElement) {
     assert(!this.enableSurfaceEmbed);
     const iframeContentWindow = iframe.contentWindow;
     assert(iframeContentWindow);

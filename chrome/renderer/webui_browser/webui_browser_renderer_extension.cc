@@ -5,6 +5,7 @@
 #include "chrome/renderer/webui_browser/webui_browser_renderer_extension.h"
 
 #include "base/check.h"
+#include "base/unguessable_token.h"
 #include "chrome/common/url_constants.h"
 #include "components/guest_contents/renderer/swap_render_frame.h"
 #include "content/public/common/isolated_world_ids.h"
@@ -57,7 +58,7 @@ content::RenderFrame* GetRenderFrame(v8::Local<v8::Value> value) {
 
 // Implementation of
 // chrome.browser.attachIframeGuest(guestInstanceId, contentWindow)
-void AttachIframeGuest(int guest_contents_id,
+void AttachIframeGuest(std::string guest_contents_id,
                        v8::Local<v8::Object> content_window) {
   content::RenderFrame* iframe_render_frame = GetRenderFrame(content_window);
   CHECK(iframe_render_frame);
@@ -66,8 +67,10 @@ void AttachIframeGuest(int guest_contents_id,
   CHECK(parent_frame);
   CHECK(parent_frame->IsWebLocalFrame());
 
-  guest_contents::renderer::SwapRenderFrame(iframe_render_frame,
-                                            guest_contents_id);
+  guest_contents::renderer::SwapRenderFrame(
+      iframe_render_frame,
+      base::UnguessableToken::DeserializeFromString(guest_contents_id)
+          .value_or(base::UnguessableToken()));
 }
 
 }  // namespace

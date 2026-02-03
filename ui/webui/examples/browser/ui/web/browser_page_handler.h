@@ -28,9 +28,10 @@ class BrowserPageHandler
       mojo::PendingReceiver<webui_examples::mojom::PageHandler> receiver);
 
   // webui_examples::mojom::PageHandler
-  void Navigate(int32_t guest_instance_id, const GURL& src) override;
-  void GoBack(int32_t guest_instance_id) override;
-  void GoForward(int32_t guest_instance_id) override;
+  void Navigate(const base::UnguessableToken& guest_instance_id,
+                const GURL& src) override;
+  void GoBack(const base::UnguessableToken& guest_instance_id) override;
+  void GoForward(const base::UnguessableToken& guest_instance_id) override;
 
   // The WebUI controller goes away before the Document. Clear the raw_ptr
   // to the controller to avoid it becoming dangling.
