@@ -235,6 +235,8 @@ source_set("platform_impls") {
     "portal_remote_desktop_session.h",
     "portal_utils.cc",
     "portal_utils.h",
+    "remote_display_session_manager.cc",
+    "remote_display_session_manager.h",
     "scoped_portal_request.cc",
     "scoped_portal_request.h",
     "scoped_portal_session.cc",
@@ -272,6 +274,7 @@ source_set("platform_impls") {
     "//ui/events/keycodes:xkb",
     "//ui/gfx/x",
   ]
+  libs = [ "systemd" ]
 }
 
 source_set("x11_display_utils") {

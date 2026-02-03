@@ -4,6 +4,8 @@
 
 #include "remoting/host/linux/login_session_reporter_main.h"
 
+#include <systemd/sd-login.h>
+
 #include <string>
 #include <utility>
 
@@ -28,6 +30,29 @@
 #include "remoting/host/mojom/login_session.mojom.h"
 
 namespace remoting {
+
+namespace {
+
+std::string GetSessionId() {
+  // The `XDG_SESSION_ID` environment variable isn't available when the process
+  // is autostarted. This seems to have something to do with the XDG autostart
+  // process now being managed by systemd. So we have to use systemd's API to
+  // query the session ID.
+  char* session_id = nullptr;
+  // Get session ID for the current process (PID 0 means self)
+  int ret = sd_pid_get_session(0, &session_id);
+  if (ret < 0) {
+    // Handle error (e.g., not running in a systemd session)
+    LOG(ERROR) << "Failed to get session ID: " << strerror(-ret);
+    return {};
+  }
+  std::string session_id_string = session_id;
+  // Free the memory allocated by the library
+  free(session_id);
+  return session_id_string;
+}
+
+}  // namespace
 
 int LoginSessionReporterMain(int argc, char** argv) {
   base::AtExitManager exit_manager;
@@ -63,8 +88,7 @@ int LoginSessionReporterMain(int argc, char** argv) {
 
   auto environment = base::Environment::Create();
   mojom::LoginSessionInfoPtr session_info{std::in_place};
-  session_info->xdg_session_id =
-      environment->GetVar("XDG_SESSION_ID").value_or({});
+  session_info->session_id = GetSessionId();
   session_info->xdg_current_desktop =
       environment->GetVar("XDG_CURRENT_DESKTOP").value_or({});
   session_info->dbus_session_bus_address =

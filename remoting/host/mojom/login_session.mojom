@@ -6,8 +6,8 @@ module remoting.mojom;
 
 // Information about the systemd login session.
 struct LoginSessionInfo {
-  // The XDG_SESSION_ID environment variable.
-  string xdg_session_id;
+  // The session ID.
+  string session_id;
 
   // The XDG_CURRENT_DESKTOP environment variable. Typical values are "GNOME"
   // and "KDE".
