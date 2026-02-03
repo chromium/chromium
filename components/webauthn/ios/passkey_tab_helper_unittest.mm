@@ -13,8 +13,10 @@
 #import "components/password_manager/ios/shared_password_controller.h"
 #import "components/webauthn/core/browser/passkey_model.h"
 #import "components/webauthn/core/browser/test_passkey_model.h"
+#import "components/webauthn/ios/fake_ios_passkey_client.h"
 #import "components/webauthn/ios/ios_webauthn_credentials_delegate.h"
 #import "components/webauthn/ios/passkey_java_script_feature.h"
+#import "components/webauthn/ios/passkey_test_util.h"
 #import "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
@@ -44,123 +46,13 @@ namespace {
 
 constexpr char kCredentialId[] = "credential_id";
 constexpr char kCredentialId2[] = "credential_id_2";
-constexpr char kRpId[] = "example.com";
 constexpr char kWellKnownURL[] = "https://example.com/.well-known/webauthn";
 constexpr char kOriginURL[] = "https://example.com";
 constexpr char kRelatedOriginURL[] = "https://example.ca";
-constexpr char kFakeRequestId[] = "1effd8f52a067c8d3a01762d3c41dfd9";
 
 constexpr char kWebAuthenticationIOSContentAreaEventHistogram[] =
     "WebAuthentication.IOS.ContentAreaEvent";
-
-// Converts an std::string to a uint8_t vector.
-std::vector<uint8_t> AsByteVector(std::string str) {
-  return std::vector<uint8_t>(str.begin(), str.end());
-}
-
-// Creates a test passkey using the default rp id.
-sync_pb::WebauthnCredentialSpecifics GetTestPasskey(
-    const std::string& credential_id) {
-  sync_pb::WebauthnCredentialSpecifics passkey;
-  passkey.set_rp_id(kRpId);
-  passkey.set_credential_id(credential_id);
-  passkey.set_sync_id(base::RandBytesAsString(16));
-  passkey.set_user_id(base::RandBytesAsString(16));
-  passkey.set_user_name(base::RandBytesAsString(16));
-  passkey.set_user_display_name(base::RandBytesAsString(16));
-  return passkey;
-}
-
-// Builds PasskeyRequestParams using the default rp id.
-PasskeyRequestParams BuildPasskeyRequestParams(
-    device::UserVerificationRequirement user_verification,
-    std::string request_id = kFakeRequestId,
-    std::string frame_id = web::kMainFakeFrameId) {
-  IOSPasskeyClient::RequestInfo request_info(frame_id, request_id);
-  device::PublicKeyCredentialRpEntity rp_entity(kRpId);
-  std::vector<uint8_t> challenge;
-  PasskeyRequestParams::RequestType request_type =
-      PasskeyRequestParams::RequestType::kModal;
-  PasskeyExtensionData extension_data;
-  return PasskeyRequestParams(std::move(request_info), std::move(rp_entity),
-                              std::move(challenge), user_verification,
-                              request_type, std::move(extension_data));
-}
-
-// Builds RegistrationRequestParams from an exclude credentials list.
-RegistrationRequestParams BuildRegistrationRequestParams(
-    const std::vector<device::PublicKeyCredentialDescriptor>&
-        exclude_credentials,
-    device::UserVerificationRequirement user_verification =
-        device::UserVerificationRequirement::kPreferred,
-    std::string request_id = kFakeRequestId,
-    std::string frame_id = web::kMainFakeFrameId) {
-  device::PublicKeyCredentialUserEntity user_entity;
-  return RegistrationRequestParams(
-      BuildPasskeyRequestParams(user_verification, request_id, frame_id),
-      std::move(user_entity), exclude_credentials);
-}
-
-// Builds AssertionRequestParams from an allow credentials list.
-AssertionRequestParams BuildAssertionRequestParams(
-    const std::vector<device::PublicKeyCredentialDescriptor>& allow_credentials,
-    device::UserVerificationRequirement user_verification =
-        device::UserVerificationRequirement::kPreferred,
-    std::string request_id = kFakeRequestId,
-    std::string frame_id = web::kMainFakeFrameId) {
-  return AssertionRequestParams(
-      BuildPasskeyRequestParams(user_verification, request_id, frame_id),
-      allow_credentials);
-}
-
 }  // namespace
-
-class FakeIOSPasskeyClient : public IOSPasskeyClient {
- public:
-  explicit FakeIOSPasskeyClient(web::WebState* web_state)
-      : delegate_(web_state) {}
-  ~FakeIOSPasskeyClient() override = default;
-
-  void SetIOSPasskeyClientCommandsHandler(
-      id<IOSPasskeyClientCommands> handler) override {}
-  bool PerformUserVerification() override { return false; }
-  void FetchKeys(ReauthenticatePurpose purpose,
-                 KeysFetchedCallback callback) override {
-    if (!callback.is_null()) {
-      std::move(callback).Run({});
-    }
-  }
-
-  void ShowSuggestionBottomSheet(RequestInfo request_info) override {
-    show_suggestion_bottom_sheet_called_ = true;
-  }
-
-  void ShowCreationBottomSheet(RequestInfo request_info) override {
-    show_creation_bottom_sheet_called_ = true;
-  }
-
-  bool DidShowSuggestionBottomSheet() const {
-    return show_suggestion_bottom_sheet_called_;
-  }
-
-  bool DidShowCreationBottomSheet() const {
-    return show_creation_bottom_sheet_called_;
-  }
-
-  void AllowPasskeyCreationInfobar(bool allowed) override {}
-  password_manager::WebAuthnCredentialsDelegate*
-  GetWebAuthnCredentialsDelegateForDriver(
-      IOSPasswordManagerDriver* driver) override {
-    return &delegate_;
-  }
-
-  IOSWebAuthnCredentialsDelegate* delegate() { return &delegate_; }
-
- private:
-  IOSWebAuthnCredentialsDelegate delegate_;
-  bool show_creation_bottom_sheet_called_ = false;
-  bool show_suggestion_bottom_sheet_called_ = false;
-};
 
 class PasskeyTabHelperTest : public PlatformTest {
  public:
