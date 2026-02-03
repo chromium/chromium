@@ -1227,9 +1227,6 @@ public final class ProductionSupportedFlagList {
                 BaseFeatures.REBIND_SERVICE_BATCH_API,
                 "Use a batch API to rebind service connections."),
 
-        // Add new commandline switches and features above. The final entry should have a
-        // trailing comma for cleaner diffs.
-
         // Features for PerfCombined2025_WebView study
         Flag.baseFeature("AsyncSetCookie"),
         Flag.baseFeature("ReducePPMs"),
@@ -1270,5 +1267,8 @@ public final class ProductionSupportedFlagList {
                 ContentFeatures.NO_SELECTION_MENU_CACHING,
                 "When this flag is enabled, the menu which is shown when selecting text will not be"
                         + " cached. Instead, it is recomputed each time it is shown."),
+
+        // Add new commandline switches and features above. The final entry should have a
+        // trailing comma for cleaner diffs.
     };
 }
