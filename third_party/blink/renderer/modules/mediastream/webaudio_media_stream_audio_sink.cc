@@ -28,9 +28,8 @@ WebAudioMediaStreamAudioSink::WebAudioMediaStreamAudioSink(
     MediaStreamComponent* component,
     int context_sample_rate,
     base::TimeDelta platform_buffer_duration)
-    : is_enabled_(false),
+    : is_track_enabled_(component->Enabled()),
       component_(component),
-      track_stopped_(false),
       platform_buffer_duration_(platform_buffer_duration),
       sink_params_(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
                    media::ChannelLayoutConfig::Stereo(),
@@ -50,7 +49,8 @@ WebAudioMediaStreamAudioSink::~WebAudioMediaStreamAudioSink() {
 
   // If the track is still active, it is necessary to notify the track before
   // the source provider goes away.
-  if (!track_stopped_) {
+  base::AutoLock auto_lock(lock_);
+  if (!is_track_stopped_) {
     WebMediaStreamAudioSink::RemoveFromAudioTrack(
         this, WebMediaStreamTrack(component_.Get()));
   }
@@ -106,8 +106,23 @@ void WebAudioMediaStreamAudioSink::OnSetFormat(
 void WebAudioMediaStreamAudioSink::OnReadyStateChanged(
     WebMediaStreamSource::ReadyState state) {
   NON_REENTRANT_SCOPE(ready_state_reentrancy_checker_);
-  if (state == WebMediaStreamSource::kReadyStateEnded)
-    track_stopped_ = true;
+  if (state == WebMediaStreamSource::kReadyStateEnded) {
+    base::AutoLock auto_lock(lock_);
+    is_track_stopped_ = true;
+    if (fifo_) {
+      fifo_->Clear();
+    }
+  }
+}
+
+void WebAudioMediaStreamAudioSink::OnEnabledChanged(bool enabled) {
+  base::AutoLock auto_lock(lock_);
+  is_track_enabled_ = enabled;
+  if (!enabled) {
+    if (fifo_) {
+      fifo_->Clear();
+    }
+  }
 }
 
 void WebAudioMediaStreamAudioSink::OnData(
@@ -119,8 +134,9 @@ void WebAudioMediaStreamAudioSink::OnData(
                static_cast<void*>(this), "frames", audio_bus.frames());
 
   base::AutoLock auto_lock(lock_);
-  if (!is_enabled_)
+  if (!is_sink_enabled_ || is_track_stopped_ || !is_track_enabled_) {
     return;
+  }
 
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("mediastream"),
                "WebAudioMediaStreamAudioSink::OnData under lock");
@@ -181,14 +197,18 @@ void WebAudioMediaStreamAudioSink::ProvideInput(
   }
 
   base::AutoLock auto_lock(lock_);
-  if (!audio_converter_)
+  // If the track is stopped or disabled, output silence.
+  // https://www.w3.org/TR/mediacapture-streams/#track-enabled
+  if (!audio_converter_ || is_track_stopped_ || !is_track_enabled_) {
+    output_wrapper_->Zero();
     return;
+  }
 
   TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("mediastream"),
               "WebAudioMediaStreamAudioSink::ProvideInput under lock",
               "delay (frames)", fifo_->frames());
 
-  is_enabled_ = true;
+  is_sink_enabled_ = true;
   audio_converter_->Convert(output_wrapper_.get());
 }
 

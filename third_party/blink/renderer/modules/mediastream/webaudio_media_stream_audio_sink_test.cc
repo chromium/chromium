@@ -15,8 +15,10 @@
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_pull_fifo.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
@@ -45,13 +47,19 @@ class WebAudioMediaStreamAudioSinkTest : public testing::Test {
                        context_sample_rate,
                        WebAudioMediaStreamAudioSink::kWebAudioRenderBufferSize);
     sink_bus_ = media::AudioBus::Create(sink_params_);
+
+    auto audio_source_ptr = std::make_unique<MediaStreamAudioSource>(
+        scheduler::GetSingleThreadTaskRunnerForTesting(), true);
+    MediaStreamAudioSource* source_ptr = audio_source_ptr.get();
     auto* audio_source = MakeGarbageCollected<MediaStreamSource>(
         String::FromUTF8("dummy_source_id"), MediaStreamSource::kTypeAudio,
         String::FromUTF8("dummy_source_name"), /*remote=*/false,
-        /*platform_source=*/nullptr);
+        std::move(audio_source_ptr));
     component_ = MakeGarbageCollected<MediaStreamComponentImpl>(
         String::FromUTF8("audio_track"), audio_source,
-        std::make_unique<MediaStreamAudioTrack>(true));
+        source_ptr->CreateMediaStreamAudioTrack("audio_track"));
+    source_ptr->ConnectToInitializedTrack(component_);
+
     source_provider_ = std::make_unique<WebAudioMediaStreamAudioSink>(
         component_, context_sample_rate, platform_buffer_duration);
     source_provider_->OnSetFormat(source_params_);
@@ -148,6 +156,76 @@ TEST_F(WebAudioMediaStreamAudioSinkTest,
 
   // Delete the source provider.
   source_provider_.reset();
+}
+
+TEST_F(WebAudioMediaStreamAudioSinkTest, SilenceWhenDisabledOrStopped) {
+  Configure(/*source_sample_rate=*/48000, /*source_buffer_size=*/480,
+            /*context_sample_rate=*/48000,
+            /*platform_buffer_duration=*/base::Milliseconds(10));
+
+  // Point the std::vector into memory owned by |sink_bus_|.
+  std::vector<float*> audio_data(static_cast<size_t>(sink_bus_->channels()));
+  for (int i = 0; i < sink_bus_->channels(); ++i) {
+    audio_data[i] = sink_bus_->channel(i).data();
+  }
+
+  const std::unique_ptr<media::AudioBus> source_bus =
+      media::AudioBus::Create(source_params_);
+  std::ranges::fill(source_bus->channel(0), 0.5f);
+
+  // Enable the |source_provider_| by asking for data.
+  source_provider_->ProvideInput(audio_data, sink_params_.frames_per_buffer());
+
+  // 1. Deliver data and verify it's there.
+  source_provider_->OnData(*source_bus, base::TimeTicks::Now());
+
+  // Internal buffering might require multiple ProvideInput calls.
+  bool found_data = false;
+  for (int i = 0; i < 10; ++i) {
+    sink_bus_->Zero();
+    source_provider_->ProvideInput(audio_data,
+                                   sink_params_.frames_per_buffer());
+    if (std::abs(sink_bus_->channel(0)[0] - 0.5f) < 0.01f) {
+      found_data = true;
+      break;
+    }
+  }
+  EXPECT_TRUE(found_data);
+
+  // 2. Disable track and verify silence.
+  source_provider_->OnEnabledChanged(false);
+  sink_bus_->Zero();
+  source_provider_->ProvideInput(audio_data, sink_params_.frames_per_buffer());
+  for (int c = 0; c < sink_bus_->channels(); ++c) {
+    for (int f = 0; f < sink_bus_->frames(); ++f) {
+      EXPECT_EQ(0.0f, sink_bus_->channel(c)[f]);
+    }
+  }
+
+  // 3. Re-enable, deliver data, and verify it's there.
+  source_provider_->OnEnabledChanged(true);
+  source_provider_->OnData(*source_bus, base::TimeTicks::Now());
+  found_data = false;
+  for (int i = 0; i < 10; ++i) {
+    sink_bus_->Zero();
+    source_provider_->ProvideInput(audio_data,
+                                   sink_params_.frames_per_buffer());
+    if (std::abs(sink_bus_->channel(0)[0] - 0.5f) < 0.01f) {
+      found_data = true;
+      break;
+    }
+  }
+  EXPECT_TRUE(found_data);
+
+  // 4. Stop track and verify silence.
+  MediaStreamAudioTrack::From(component_.Get())->Stop();
+  sink_bus_->Zero();
+  source_provider_->ProvideInput(audio_data, sink_params_.frames_per_buffer());
+  for (int c = 0; c < sink_bus_->channels(); ++c) {
+    for (int f = 0; f < sink_bus_->frames(); ++f) {
+      EXPECT_EQ(0.0f, sink_bus_->channel(c)[f]);
+    }
+  }
 }
 
 class WebAudioMediaStreamAudioSinkFifoTest
