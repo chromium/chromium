@@ -115,7 +115,6 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
-#include "chrome/browser/ui/webui/commerce/product_specifications_disclosure_dialog.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search.mojom.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -134,7 +133,6 @@
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
 #include "components/commerce/core/commerce_utils.h"
-#include "components/commerce/core/mojom/product_specifications.mojom.h"
 #include "components/commerce/core/pref_names.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/favicon/content/content_favicon_driver.h"
@@ -2691,28 +2689,6 @@ void ExecLensRegionSearch(Browser* browser) {
         /*use_fullscreen_capture=*/false, is_google_dsp, entry_point);
   }
 #endif  // BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
-}
-
-void OpenCommerceProductSpecificationsTab(Browser* browser,
-                                          const std::vector<GURL>& urls,
-                                          const int position) {
-  auto* prefs = browser->profile()->GetPrefs();
-  // If user has not accepted the latest disclosure, show the disclosure dialog
-  // first.
-  if (prefs && prefs->GetInteger(
-                   commerce::kProductSpecificationsAcceptedDisclosureVersion) !=
-                   static_cast<int>(commerce::product_specifications::mojom::
-                                        DisclosureVersion::kV1)) {
-    commerce::DialogArgs dialog_args(urls, std::string(), /*set_id=*/"",
-                                     /*in_new_tab=*/true);
-    commerce::ProductSpecificationsDisclosureDialog::ShowDialog(
-        browser->profile(), browser->tab_strip_model()->GetActiveWebContents(),
-        std::move(dialog_args));
-    return;
-  }
-
-  chrome::AddTabAt(browser, commerce::GetProductSpecsTabUrl(urls), position + 1,
-                   true, std::nullopt);
 }
 
 }  // namespace chrome

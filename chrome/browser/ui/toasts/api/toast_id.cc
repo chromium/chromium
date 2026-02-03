@@ -21,8 +21,6 @@ std::string_view GetToastName(ToastId toast_id) {
       return "AddedToReadingList";
     case ToastId::kNonMilestoneUpdate:
       return "NonMilestoneUpdate";
-    case ToastId::kAddedToComparisonTable:
-      return "AddedToComparisonTable";
     case ToastId::kClearBrowsingData:
       return "ClearBrowsingData";
     case ToastId::kPlusAddressOverride:

@@ -30,7 +30,6 @@ class GlicButton;
 class GlicActorTaskIcon;
 }
 class BrowserWindowInterface;
-class ProductSpecificationsButton;
 class GlicAndActorButtonsContainer;
 
 class TabStripActionContainer : public views::View,
@@ -119,9 +118,6 @@ class TabStripActionContainer : public views::View,
     return glic_actor_task_icon_;
   }
 
-  ProductSpecificationsButton* GetProductSpecificationsButton() {
-    return product_specifications_button_;
-  }
   // TabOrganizationObserver
   void OnToggleActionUIState(const Browser* browser, bool should_show) override;
 
@@ -225,9 +221,6 @@ class TabStripActionContainer : public views::View,
   // Helper to handles teardown logic when the task icon is fully gone.
   void FinalizeHideGlicActorTaskIcon();
 
-  // TODO(crbug.com/387356481) make ProductSpecificationsButton a subclass of
-  // TabStripNudgeButton
-  raw_ptr<ProductSpecificationsButton> product_specifications_button_ = nullptr;
   // The button currently holding the lock to be shown/hidden.
   raw_ptr<TabStripNudgeButton> locked_expansion_button_ = nullptr;
   raw_ptr<TabStripNudgeButton> tab_declutter_button_ = nullptr;

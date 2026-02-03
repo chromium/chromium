@@ -46,7 +46,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "chrome/browser/ui/browser_window/public/embedder_browser_window_features.h"
-#include "chrome/browser/ui/commerce/product_specifications_entry_point_controller.h"
 #include "chrome/browser/ui/contextual_search/searchbox_context_data.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/extensions/extension_installed_watcher.h"
@@ -268,19 +267,6 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
     if (search::IsInstantExtendedAPIEnabled()) {
       instant_controller_ = std::make_unique<BrowserInstantController>(
           profile, browser->GetTabStripModel());
-    }
-
-    if (profile->IsRegularProfile()) {
-      auto* shopping_service =
-          commerce::ShoppingServiceFactory::GetForBrowserContext(profile);
-      if (shopping_service && commerce::CanLoadProductSpecificationsFullPageUi(
-                                  shopping_service->GetAccountChecker())) {
-        product_specifications_entry_point_controller_ =
-            GetUserDataFactory()
-                .CreateInstance<
-                    commerce::ProductSpecificationsEntryPointController>(
-                    *browser, browser);
-      }
     }
 
     if (profile->IsRegularProfile() &&

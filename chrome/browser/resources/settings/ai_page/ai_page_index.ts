@@ -76,11 +76,6 @@ export class SettingsAiPageIndexElement extends SettingsAiPageIndexElementBase
         value: () => loadTimeData.getBoolean('showComposeControl'),
       },
 
-      showCompareControl_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('showCompareControl'),
-      },
-
       showHistorySearchControl_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('showHistorySearchControl'),
@@ -100,7 +95,6 @@ export class SettingsAiPageIndexElement extends SettingsAiPageIndexElementBase
   // </if>
   declare private showAiPageAiFeatureSection_: boolean;
   declare private showComposeControl_: boolean;
-  declare private showCompareControl_: boolean;
   declare private showHistorySearchControl_: boolean;
   declare private showTabOrganizationControl_: boolean;
 
@@ -150,11 +144,6 @@ export class SettingsAiPageIndexElement extends SettingsAiPageIndexElementBase
           assert(this.showComposeControl_);
           this.$.viewManager.switchView(
               'compose', 'no-animation', 'no-animation');
-          break;
-        case routes.COMPARE:
-          assert(this.showCompareControl_);
-          this.$.viewManager.switchView(
-              'compare', 'no-animation', 'no-animation');
           break;
         // <if expr="enable_glic">
         case routes.GEMINI:

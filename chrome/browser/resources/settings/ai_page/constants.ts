@@ -36,8 +36,6 @@ export enum AiEnterpriseFeaturePrefName {
       'optimization_guide.model_execution.compose_enterprise_policy_allowed',
   TAB_ORGANIZATION =
       'optimization_guide.model_execution.tab_organization_enterprise_policy_allowed',
-  COMPARE =
-      'optimization_guide.model_execution.tab_compare_settings_enterprise_policy',
   AUTOFILL_AI =
       'optimization_guide.model_execution.autofill_prediction_improvements_enterprise_policy_allowed',
 }
@@ -49,8 +47,6 @@ export enum AiPageActions {
       'Settings.AiPage.HistorySearch.FeatureLinkClicked',
   HISTORY_SEARCH_LEARN_MORE_CLICKED =
       'Settings.AiPage.HistorySearch.LearnMoreClicked',
-  COMPARE_FEATURE_LINK_CLICKED = 'Settings.AiPage.Compare.FeatureLinkClicked',
-  COMPARE_LEARN_MORE_CLICKED = 'Settings.AiPage.Compare.LearnMoreClicked',
   COMPOSE_LEARN_MORE_CLICKED = 'Settings.AiPage.Compose.LearnMoreClicked',
   COMPOSE_PROACTIVE_NUDGE_ENABLED =
       'Settings.AiPage.Compose.ProactiveNudgeEnabled',

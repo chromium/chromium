@@ -34,15 +34,7 @@ class MockCommerceUiTabHelper : public commerce::CommerceUiTabHelper {
   MOCK_METHOD(bool, ShouldShowDiscountsIconView, ());
   MOCK_METHOD(bool, ShouldShowPriceTrackingIconView, ());
   MOCK_METHOD(bool, ShouldShowPriceInsightsIconView, ());
-  MOCK_METHOD(bool, ShouldShowProductSpecificationsIconView, ());
-  MOCK_METHOD(void, OnProductSpecificationsIconClicked, (), (override));
   MOCK_METHOD(bool, IsPriceTracking, ());
-  MOCK_METHOD(bool, IsInRecommendedSet, (), (override));
-  MOCK_METHOD(std::u16string,
-              GetProductSpecificationsLabel,
-              (bool is_added),
-              (override));
-  MOCK_METHOD(std::u16string, GetComparisonSetName, (), (override));
   MOCK_METHOD(void,
               SetPriceTrackingState,
               (bool enable,
@@ -61,7 +53,6 @@ class MockCommerceUiTabHelper : public commerce::CommerceUiTabHelper {
               GetPriceInsightsIconLabelTypeForPage,
               ());
   MOCK_METHOD(const std::vector<commerce::DiscountInfo>&, GetDiscounts, ());
-  MOCK_METHOD(GURL, GetComparisonTableURL, ());
 
  private:
   gfx::Image valid_product_image_;

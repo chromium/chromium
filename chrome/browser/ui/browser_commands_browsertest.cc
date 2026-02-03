@@ -29,10 +29,8 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/tab_search_bubble_host.h"
-#include "chrome/browser/ui/webui/commerce/product_specifications_disclosure_dialog.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/commerce/core/mojom/product_specifications.mojom.h"
 #include "components/commerce/core/pref_names.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -728,39 +726,6 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
   browser()->tab_strip_model()->CloseAllTabs();
   ConvertPopupToTabbedBrowser(popup_browser);
   EXPECT_EQ(false, browser_shutdown::HasShutdownStarted());
-}
-
-IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
-                       OpenProductSpecifications_ShowNewTab) {
-  // Mock that the disclosure dialog has shown.
-  browser()->profile()->GetPrefs()->SetInteger(
-      commerce::kProductSpecificationsAcceptedDisclosureVersion,
-      static_cast<int>(
-          commerce::product_specifications::mojom::DisclosureVersion::kV1));
-
-  int tab_count = browser()->tab_strip_model()->count();
-  chrome::OpenCommerceProductSpecificationsTab(
-      browser(), {GURL("foo.com"), GURL("bar.com")}, 0);
-
-  auto* dialog = commerce::ProductSpecificationsDisclosureDialog::
-      current_instance_for_testing();
-  ASSERT_FALSE(dialog);
-  // No new tab is created since the dialog will block creating new product
-  // specifications tab.
-  ASSERT_EQ(tab_count + 1, browser()->tab_strip_model()->count());
-}
-
-IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
-                       OpenProductSpecifications_ShowDialog) {
-  int tab_count = browser()->tab_strip_model()->count();
-  chrome::OpenCommerceProductSpecificationsTab(
-      browser(), {GURL("foo.com"), GURL("bar.com")}, 0);
-
-  auto* dialog = commerce::ProductSpecificationsDisclosureDialog::
-      current_instance_for_testing();
-  ASSERT_TRUE(dialog);
-  // No new tab is created.
-  ASSERT_EQ(tab_count, browser()->tab_strip_model()->count());
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, AddingToReadingListOpensToast) {

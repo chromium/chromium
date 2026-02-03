@@ -699,47 +699,6 @@ void ShoppingServiceHandler::SetUrlsForProductSpecificationsSet(
 
 void ShoppingServiceHandler::SetProductSpecificationsUserFeedback(
     shopping_service::mojom::UserFeedback feedback) {
-  optimization_guide::proto::UserFeedback user_feedback;
-  switch (feedback) {
-    case shopping_service::mojom::UserFeedback::kThumbsUp:
-      user_feedback =
-          optimization_guide::proto::UserFeedback::USER_FEEDBACK_THUMBS_UP;
-      break;
-    case shopping_service::mojom::UserFeedback::kThumbsDown:
-      user_feedback =
-          optimization_guide::proto::UserFeedback::USER_FEEDBACK_THUMBS_DOWN;
-      break;
-    case shopping_service::mojom::UserFeedback::kUnspecified:
-      user_feedback =
-          optimization_guide::proto::UserFeedback::USER_FEEDBACK_UNSPECIFIED;
-      break;
-  }
-  if (user_feedback ==
-      optimization_guide::proto::UserFeedback::USER_FEEDBACK_THUMBS_DOWN) {
-    // If quality log is enabled, `log_id` of the feedback will be the same as
-    // the `execution_id` of the log entry so that they can be matched later;
-    // otherwise it will be a random ID.
-    std::string log_id =
-        current_log_quality_entry_
-            ? current_log_quality_entry_->log_ai_data_request()
-                  ->model_execution_info()
-                  .execution_id()
-            : commerce::kProductSpecificationsLoggingPrefix +
-                  base::Uuid::GenerateRandomV4().AsLowercaseString();
-    delegate_->ShowFeedbackForProductSpecifications(std::move(log_id));
-  }
-  if (!current_log_quality_entry_) {
-    return;
-  }
-  optimization_guide::proto::LogAiDataRequest* request =
-      current_log_quality_entry_->log_ai_data_request();
-  if (!request) {
-    return;
-  }
-  optimization_guide::proto::ProductSpecificationsQuality* quality_proto =
-          request->mutable_product_specifications()
-          ->mutable_quality();
-  quality_proto->set_user_feedback(user_feedback);
 }
 
 void ShoppingServiceHandler::GetProductSpecificationsFeatureState(

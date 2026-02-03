@@ -432,23 +432,6 @@ IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest,
 
 #endif
 
-// Test case for the comparison table submenu under bookmarks. Only appears when
-// the Compare feature is enabled.
-class AppMenuBrowserTestCompareOnly : public AppMenuBrowserTest {
- public:
-  AppMenuBrowserTestCompareOnly() {
-    scoped_feature_list_.InitAndEnableFeature(commerce::kProductSpecifications);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(AppMenuBrowserTestCompareOnly,
-                       InvokeUi_bookmarks_comparison_tables) {
-  ShowAndVerifyUi();
-}
-
 // Test case for Safety Hub notification.
 IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest, Safety_Hub_shown_notification) {
   auto* mock_sentiment_service = static_cast<MockTrustSafetySentimentService*>(

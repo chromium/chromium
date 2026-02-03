@@ -28,7 +28,8 @@ using ToastIdEnumSet =
 // Toast IDs that have been deprecated and no longer have a registered
 // specification.
 constexpr auto kDeprecatedToastIds =
-    std::to_array<std::underlying_type_t<ToastId>>({/*kLensOverlay=*/4});
+    std::to_array<std::underlying_type_t<ToastId>>(
+        {/*kLensOverlay=*/4, /*kAddedToComparisonTable=*/6});
 
 ToastIdEnumSet GetActiveToastIds() {
   auto result = ToastIdEnumSet::All();

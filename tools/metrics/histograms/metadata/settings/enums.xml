@@ -337,15 +337,6 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Restore the last session and open URLs"/>
 </enum>
 
-<!-- LINT.IfChange(SettingsAiPageCompareInteractions) -->
-
-<enum name="SettingsAiPageCompareInteractions">
-  <int value="0" label="Feature link clicked"/>
-  <int value="1" label="Learn more link clicked"/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/browser/resources/settings/metrics_browser_proxy.ts:AiPageCompareInteractions) -->
-
 <!-- LINT.IfChange(SettingsAiPageComposeInteractions) -->
 
 <enum name="SettingsAiPageComposeInteractions">

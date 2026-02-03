@@ -22,8 +22,6 @@
 #include "chrome/browser/ui/commerce/commerce_page_action_controller.h"
 #include "chrome/browser/ui/commerce/discounts_page_action_controller.h"
 #include "chrome/browser/ui/commerce/price_tracking_page_action_controller.h"
-#include "chrome/browser/ui/commerce/product_specifications_entry_point_controller.h"
-#include "chrome/browser/ui/commerce/product_specifications_page_action_controller.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
@@ -120,13 +118,6 @@ CommerceUiTabHelper::CommerceUiTabHelper(
               weak_ptr_factory_.GetWeakPtr())),
           shopping_service_, image_fetcher_, tracker);
 
-  product_specifications_controller_ =
-      std::make_unique<ProductSpecificationsPageActionController>(
-          GetPageActionControllerNotificationCallback(base::BindRepeating(
-              &CommerceUiTabHelper::UpdateProductSpecificationsIconView,
-              weak_ptr_factory_.GetWeakPtr())),
-          shopping_service_);
-
   discounts_page_action_controller_ =
       std::make_unique<DiscountsPageActionController>(
           GetPageActionControllerNotificationCallback(
@@ -205,24 +196,12 @@ void CommerceUiTabHelper::DidFinishNavigation(
   price_tracking_controller_->ResetForNewNavigation(
       web_contents()->GetLastCommittedURL());
 
-  product_specifications_controller_->ResetForNewNavigation(
-      web_contents()->GetLastCommittedURL());
-
   if (is_price_insights_eligible) {
     // Price insights needs product info to get the product cluster title.
     shopping_service_->GetProductInfoForUrl(
         web_contents()->GetLastCommittedURL(),
         base::BindOnce(&CommerceUiTabHelper::HandleProductInfoResponse,
                        weak_ptr_factory_.GetWeakPtr()));
-  }
-
-  if (BrowserWindowInterface* bwi = tab().GetBrowserWindowInterface()) {
-    auto* product_specifications_entry_point_controller =
-        commerce::ProductSpecificationsEntryPointController::From(bwi);
-    if (product_specifications_entry_point_controller) {
-      product_specifications_entry_point_controller->DidFinishNavigation(
-          web_contents());
-    }
   }
 }
 
@@ -287,11 +266,6 @@ bool CommerceUiTabHelper::ShouldShowPriceInsightsIconView() {
          commerce::IsPriceInsightsEligible(
              shopping_service_->GetAccountChecker()) &&
          price_insights_info_.has_value();
-}
-
-bool CommerceUiTabHelper::ShouldShowProductSpecificationsIconView() {
-  return product_specifications_controller_->ShouldShowForNavigation().value_or(
-      false);
 }
 
 void CommerceUiTabHelper::HandleProductInfoResponse(
@@ -359,11 +333,6 @@ void CommerceUiTabHelper::MaybeComputePageActionToExpand() {
     return;
   }
 
-  if (!product_specifications_controller_->ShouldShowForNavigation()
-           .has_value()) {
-    return;
-  }
-
   if (is_page_action_expansion_computed_for_page_) {
     return;
   }
@@ -377,7 +346,6 @@ void CommerceUiTabHelper::MaybeComputePageActionToExpand() {
                                   price_insights_label_type_);
   }
 
-  UpdateProductSpecificationsIconView();
   UpdateDiscountsIconView();
   UpdatePriceTrackingIconView();
   UpdatePriceInsightsIconView();
@@ -469,44 +437,6 @@ bool CommerceUiTabHelper::IsPriceTracking() {
       price_tracking_controller_->IsPriceTrackingCurrentProduct());
 }
 
-bool CommerceUiTabHelper::IsInRecommendedSet() {
-  return product_specifications_controller_->IsInRecommendedSet();
-}
-
-GURL CommerceUiTabHelper::GetComparisonTableURL() {
-  return product_specifications_controller_->GetComparisonTableURL();
-}
-
-void CommerceUiTabHelper::OnOpenComparePageClicked() {
-  auto* tab_strip_model = tab().GetBrowserWindowInterface()->GetTabStripModel();
-  GURL comparison_table_url = GetComparisonTableURL();
-
-  for (int index = 0; index < tab_strip_model->count(); index++) {
-    auto* tab_web_contents = tab_strip_model->GetWebContentsAt(index);
-    if (tab_web_contents->GetLastCommittedURL() == comparison_table_url) {
-      tab_strip_model->ActivateTabAt(index);
-      return;
-    }
-  }
-
-  int active_index = tab_strip_model->active_index();
-
-  chrome::AddTabAt(
-      tab().GetBrowserWindowInterface()->GetBrowserForMigrationOnly(),
-      comparison_table_url, active_index + 1, true,
-      tab_strip_model->GetTabGroupForTab(active_index));
-}
-
-std::u16string CommerceUiTabHelper::GetComparisonSetName() {
-  return product_specifications_controller_->GetComparisonSetName();
-}
-
-std::u16string CommerceUiTabHelper::GetProductSpecificationsLabel(
-    bool is_added) {
-  return product_specifications_controller_->GetProductSpecificationsLabel(
-      is_added);
-}
-
 const std::vector<DiscountInfo>& CommerceUiTabHelper::GetDiscounts() {
   return discounts_page_action_controller_->GetDiscounts();
 }
@@ -517,14 +447,6 @@ void CommerceUiTabHelper::UpdatePriceTrackingIconView() {
   }
 
   UpdatePageActionIconView(PageActionIconType::kPriceTracking);
-}
-
-void CommerceUiTabHelper::UpdateProductSpecificationsIconView() {
-  // Product specification is being removed as part of the migration.
-  if (base::FeatureList::IsEnabled(features::kPageActionsMigration)) {
-    return;
-  }
-  UpdatePageActionIconView(PageActionIconType::kProductSpecifications);
 }
 
 void CommerceUiTabHelper::MakeShoppingInsightsSidePanelAvailable() {
@@ -660,11 +582,6 @@ void CommerceUiTabHelper::ComputePageActionToExpand() {
     return;
   }
 
-  if (ShouldShowProductSpecificationsIconView()) {
-    page_action_to_expand_ = PageActionIconType::kProductSpecifications;
-    return;
-  }
-
   // Prioritize the price insights icon.
   if (ShouldShowPriceInsightsIconView()) {
     PriceInsightsIconLabelType label_type =
@@ -734,10 +651,6 @@ bool CommerceUiTabHelper::IsPageActionIconExpanded(PageActionIconType type) {
 
 void CommerceUiTabHelper::OnPriceTrackingIconClicked() {
   price_tracking_controller_->OnIconClicked();
-}
-
-void CommerceUiTabHelper::OnProductSpecificationsIconClicked() {
-  product_specifications_controller_->OnIconClicked();
 }
 
 void CommerceUiTabHelper::OnDiscountsCouponCodeCopied() {

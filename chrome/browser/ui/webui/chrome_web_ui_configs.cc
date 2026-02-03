@@ -85,7 +85,6 @@
 #include "chrome/browser/ui/webui/autofill_ml_internals/autofill_ml_internals_ui.h"
 #include "chrome/browser/ui/webui/bookmarks/bookmarks_ui.h"
 #include "chrome/browser/ui/webui/color_pipeline_internals/color_pipeline_internals_ui.h"
-#include "chrome/browser/ui/webui/commerce/product_specifications_ui.h"
 #include "chrome/browser/ui/webui/commerce/shopping_insights_side_panel_ui.h"
 #include "chrome/browser/ui/webui/downloads/downloads_ui.h"
 #include "chrome/browser/ui/webui/feedback/feedback_ui.h"
@@ -348,8 +347,6 @@ void RegisterChromeWebUIConfigs() {
       std::make_unique<on_device_internals::OnDeviceInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<PasswordManagerUIConfig>());
   map.AddWebUIConfig(std::make_unique<PrivacySandboxDialogUIConfig>());
-  map.AddWebUIConfig(
-      std::make_unique<commerce::ProductSpecificationsUIConfig>());
   map.AddWebUIConfig(std::make_unique<ProfileInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<ReadingListUIConfig>());
   map.AddWebUIConfig(std::make_unique<SearchEngineChoiceUIConfig>());

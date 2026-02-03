@@ -57,7 +57,6 @@ build_webui("build") {
     "a11y_page/a11y_page.ts",
     "a11y_page/a11y_page_index.ts",
     "about_page/about_page.ts",
-    "ai_page/ai_compare_subpage.ts",
     "ai_page/ai_info_card.ts",
     "ai_page/ai_logging_info_bullet.ts",
     "ai_page/ai_page.ts",

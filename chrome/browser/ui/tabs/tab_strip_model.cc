@@ -52,7 +52,6 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/commerce/ui_utils.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/features.h"
@@ -2538,15 +2537,6 @@ bool TabStripModel::IsContextMenuCommandEnabled(
     case CommandOrganizeTabs:
       return true;
 
-    case CommandCommerceProductSpecifications: {
-      auto selected_web_contents =
-          GetWebContentsesByIndices(GetIndicesForCommand(context_index));
-      return commerce::IsProductSpecsMultiSelectMenuEnabled(
-                 profile_, GetWebContentsAt(context_index)) &&
-             commerce::IsWebContentsListEligibleForProductSpecs(
-                 selected_web_contents);
-    }
-
 #if BUILDFLAG(ENABLE_GLIC)
     case CommandGlicShareLimit:
       return false;
@@ -2562,11 +2552,6 @@ bool TabStripModel::IsContextMenuCommandEnabled(
     case CommandGlicUnshare:
       return true;
 #endif
-
-    case CommandAddToNewComparisonTable:
-    case CommandAddToExistingComparisonTable:
-      return commerce::IsUrlEligibleForProductSpecs(
-          GetWebContentsAt(context_index)->GetLastCommittedURL());
 
     case CommandCopyURL:
       DCHECK(delegate()->IsForWebApp());
@@ -2950,24 +2935,6 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
       break;
     }
 
-    case CommandCommerceProductSpecifications: {
-      base::UmaHistogramCounts1000(
-          "Tab.ContextMenu.CommerceProductSpecifications.SelectedTabsCount",
-          selection_model_.size());
-      // ProductSpecs can only be triggered on non-incognito profiles.
-      DCHECK(!profile_->IsIncognitoProfile());
-      auto indices = GetIndicesForCommand(context_index);
-      auto selected_web_contents =
-          GetWebContentsesByIndices(GetIndicesForCommand(context_index));
-      auto eligible_urls =
-          commerce::GetListOfProductSpecsEligibleUrls(selected_web_contents);
-      Browser* browser =
-          chrome::FindBrowserWithTab(GetWebContentsAt(context_index));
-      chrome::OpenCommerceProductSpecificationsTab(browser, eligible_urls,
-                                                   indices.back());
-      break;
-    }
-
 #if BUILDFLAG(ENABLE_GLIC)
     case CommandGlicShareLimit:
       base::UmaHistogramCounts1000(
@@ -3026,25 +2993,6 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
       break;
     }
 #endif
-
-    case CommandAddToNewComparisonTable: {
-      base::UmaHistogramCounts1000(
-          "Tab.ContextMenu.AddToNewComparisonTable.SelectedTabsCount",
-          selection_model_.size());
-      const auto& tab_url =
-          GetWebContentsAt(context_index)->GetLastCommittedURL();
-      commerce::OpenProductSpecsTabForUrls({tab_url}, this, context_index);
-
-      break;
-    }
-
-    case CommandAddToExistingComparisonTable: {
-      base::UmaHistogramCounts1000(
-          "Tab.ContextMenu.AddToExistingComparisonTable.SelectedTabsCount",
-          selection_model_.size());
-      // Handled by the existing comparison table submenu model.
-      break;
-    }
 
     case CommandCopyURL: {
       base::UmaHistogramCounts1000("Tab.ContextMenu.CopyURL.SelectedTabsCount",

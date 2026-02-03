@@ -78,7 +78,6 @@ suite('AiPage', function() {
     // Case 1, a subset of the controls should be visible.
     loadTimeData.overrideValues({
       showHistorySearchControl: false,
-      showCompareControl: true,
       showComposeControl: true,
       showTabOrganizationControl: false,
       showPasswordChangeControl: false,
@@ -86,15 +85,11 @@ suite('AiPage', function() {
     resetRouterForTesting();
     await createPage();
 
-    assertEquals(5, metricsBrowserProxy.getCallCount('recordBooleanHistogram'));
+    assertEquals(4, metricsBrowserProxy.getCallCount('recordBooleanHistogram'));
 
     assertFalse(isChildVisible(page, '#historySearchRowV2'));
     await verifyFeatureVisibilityMetrics(
         'Settings.AiPage.ElementVisibility.HistorySearch', false);
-
-    assertTrue(isChildVisible(page, '#compareRowV2'));
-    await verifyFeatureVisibilityMetrics(
-        'Settings.AiPage.ElementVisibility.Compare', true);
 
     assertTrue(isChildVisible(page, '#composeRowV2'));
     await verifyFeatureVisibilityMetrics(
@@ -117,22 +112,17 @@ suite('AiPage', function() {
     // Case 2, a different subset of the controls should be visible.
     loadTimeData.overrideValues({
       showHistorySearchControl: true,
-      showCompareControl: false,
       showComposeControl: false,
       showTabOrganizationControl: true,
       showPasswordChangeControl: true,
     });
     resetRouterForTesting();
     await createPage();
-    assertEquals(5, metricsBrowserProxy.getCallCount('recordBooleanHistogram'));
+    assertEquals(4, metricsBrowserProxy.getCallCount('recordBooleanHistogram'));
 
     assertTrue(isChildVisible(page, '#historySearchRowV2'));
     await verifyFeatureVisibilityMetrics(
         'Settings.AiPage.ElementVisibility.HistorySearch', true);
-
-    assertFalse(isChildVisible(page, '#compareRowV2'));
-    await verifyFeatureVisibilityMetrics(
-        'Settings.AiPage.ElementVisibility.Compare', false);
 
     assertFalse(isChildVisible(page, '#composeRowV2'));
     await verifyFeatureVisibilityMetrics(
@@ -190,29 +180,6 @@ suite('AiPage', function() {
 
     const currentRoute = Router.getInstance().getCurrentRoute();
     assertEquals(routes.HISTORY_SEARCH, currentRoute);
-    assertEquals(routes.AI, currentRoute.parent);
-  });
-
-  test('compareRow', async () => {
-    loadTimeData.overrideValues({
-      showAiPage: true,
-      showCompareControl: true,
-    });
-    resetRouterForTesting();
-    await createPage();
-
-    const compareRow =
-        page.shadowRoot!.querySelector<HTMLElement>('#compareRowV2');
-
-    assertTrue(!!compareRow);
-    assertTrue(isVisible(compareRow));
-    compareRow.click();
-    await verifyFeatureInteractionMetrics(
-        AiPageInteractions.COMPARE_CLICK,
-        'Settings.AiPage.CompareEntryPointClick');
-
-    const currentRoute = Router.getInstance().getCurrentRoute();
-    assertEquals(routes.COMPARE, currentRoute);
     assertEquals(routes.AI, currentRoute.parent);
   });
 

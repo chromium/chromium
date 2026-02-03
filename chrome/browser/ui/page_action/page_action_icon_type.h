@@ -41,7 +41,7 @@ enum class PageActionIconType {
   kMandatoryReauth = 25,
   kPriceInsights = 26,
   // DEPRECATED: kReadAnything = 27,
-  kProductSpecifications = 28,
+  // DEPRECATED: kProductSpecifications = 28,
   kLensOverlay = 29,
   kDiscounts = 30,
   kOptimizationGuide = 31,
@@ -79,8 +79,6 @@ static_assert(static_cast<int>(PageActionIconType::kZoom) == 23);
 static_assert(static_cast<int>(PageActionIconType::kSaveIban) == 24);
 static_assert(static_cast<int>(PageActionIconType::kMandatoryReauth) == 25);
 static_assert(static_cast<int>(PageActionIconType::kPriceInsights) == 26);
-static_assert(static_cast<int>(PageActionIconType::kProductSpecifications) ==
-              28);
 static_assert(static_cast<int>(PageActionIconType::kLensOverlay) == 29);
 static_assert(static_cast<int>(PageActionIconType::kDiscounts) == 30);
 static_assert(static_cast<int>(PageActionIconType::kOptimizationGuide) == 31);

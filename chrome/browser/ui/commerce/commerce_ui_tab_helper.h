@@ -57,7 +57,6 @@ class View;
 namespace commerce {
 
 class DiscountsPageActionController;
-class ProductSpecificationsPageActionController;
 class ShoppingService;
 
 // This tab helper is used to update and maintain the state of UI for commerce
@@ -87,8 +86,6 @@ class CommerceUiTabHelper : public tabs::ContentsObservingTabFeature {
   virtual bool ShouldShowPriceTrackingIconView();
   // Return whether the PriceInsightsIconView is visible.
   virtual bool ShouldShowPriceInsightsIconView();
-  // Return whether the ProductSpecificationsIconView is visible.
-  virtual bool ShouldShowProductSpecificationsIconView();
 
   // Return the page action label. If no label should be shown, return
   // PriceInsightsIconLabelType::kNone.
@@ -100,22 +97,6 @@ class CommerceUiTabHelper : public tabs::ContentsObservingTabFeature {
 
   // Returns whether the current page has a product that is being price tracked.
   virtual bool IsPriceTracking();
-
-  // Returns whether the product in the current page is in the recommended
-  // product specifications set.
-  virtual bool IsInRecommendedSet();
-
-  // A notification that the open button in the added to compare set toast is
-  // clicked. This method will open the compare page in a new tab if the compare
-  // page is not already open in the current window, otherwise it will switch to
-  // that compare page tab.
-  virtual void OnOpenComparePageClicked();
-
-  // Returns the name of the comparison set.
-  virtual std::u16string GetComparisonSetName();
-
-  // Returns the label to show on the product specifications icon.
-  virtual std::u16string GetProductSpecificationsLabel(bool is_added);
 
   // Returns discounts for the last committed URL. A reference to this object
   // should not be kept directly, if one is needed, a copy should be made.
@@ -134,7 +115,6 @@ class CommerceUiTabHelper : public tabs::ContentsObservingTabFeature {
                                      bool is_new_bookmark,
                                      base::OnceCallback<void(bool)> callback);
   void OnPriceInsightsIconClicked();
-  virtual void OnProductSpecificationsIconClicked();
 
   // Return the PriceInsightsInfo for the last fetched product URL. A reference
   // to this object should not be kept directly, if one is needed, a copy should
@@ -182,8 +162,6 @@ class CommerceUiTabHelper : public tabs::ContentsObservingTabFeature {
   virtual std::unique_ptr<views::View> CreateShoppingInsightsWebView(
       SidePanelEntryScope& scope);
 
-  virtual GURL GetComparisonTableURL();
-
  private:
   friend class CommerceUiTabHelperTest;
   friend class ::DiscountsIconViewBrowserTest;
@@ -206,8 +184,6 @@ class CommerceUiTabHelper : public tabs::ContentsObservingTabFeature {
   void UpdatePriceTrackingIconView();
 
   void UpdatePriceInsightsIconView();
-
-  void UpdateProductSpecificationsIconView();
 
   void TriggerUpdateForIconView();
 
@@ -255,8 +231,6 @@ class CommerceUiTabHelper : public tabs::ContentsObservingTabFeature {
   raw_ptr<SidePanelRegistry> side_panel_registry_;
 
   std::unique_ptr<PriceTrackingPageActionController> price_tracking_controller_;
-  std::unique_ptr<ProductSpecificationsPageActionController>
-      product_specifications_controller_;
   std::unique_ptr<DiscountsPageActionController>
       discounts_page_action_controller_;
 

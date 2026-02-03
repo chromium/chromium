@@ -27,7 +27,6 @@ class TabStripActionContainer;
 class TabSearchButton;
 class TabStrip;
 class TabStripScrollContainer;
-class ProductSpecificationsButton;
 class TabSearchPositionMetricsLogger;
 class TabStripControlButton;
 
@@ -161,7 +160,6 @@ class HorizontalTabStripRegionView final : public TabStripRegionView {
   raw_ptr<TabStripScrollContainer> tab_strip_scroll_container_ = nullptr;
   raw_ptr<views::Button> new_tab_button_ = nullptr;
   raw_ptr<TabSearchContainer> tab_search_container_ = nullptr;
-  raw_ptr<ProductSpecificationsButton> product_specifications_button_ = nullptr;
   raw_ptr<TabStripControlButton> unfocus_button_ = nullptr;
 
   // On some platforms for Chrome Refresh, the TabSearchButton should be

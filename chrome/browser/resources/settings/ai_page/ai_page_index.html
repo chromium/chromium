@@ -39,13 +39,6 @@
     </settings-history-search-page>
   </template>
 
-  <template is="dom-if" if="[[showCompareControl_]]">
-    <settings-ai-compare-subpage slot="view" id="compare"
-        data-parent-view-id="parent" prefs="{{prefs}}"
-        route-path$="[[routes_.COMPARE.path]]">
-    </settings-ai-compare-subpage>
-  </template>
-
   <template is="dom-if" if="[[showComposeControl_]]">
     <settings-offer-writing-help-page slot="view" id="compose"
         data-parent-view-id="parent" prefs="{{prefs}}"

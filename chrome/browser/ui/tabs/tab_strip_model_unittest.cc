@@ -6435,62 +6435,6 @@ TEST_P(TabStripModelTest, SelectionChangedForMoveSelectedTabsTo) {
   observer()->ClearStates();
 }
 
-TEST_P(TabStripModelTest, AddToComparisonTable_EnabledForHttps) {
-  std::unique_ptr<content::WebContents> https_web_contents =
-      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
-  content::WebContentsTester::For(https_web_contents.get())
-      ->NavigateAndCommit(GURL("https://example.com"));
-
-  tabstrip()->AppendWebContents(std::move(https_web_contents), true);
-  ASSERT_TRUE(tabstrip()->IsContextMenuCommandEnabled(
-      0, TabStripModel::CommandAddToNewComparisonTable));
-  ASSERT_TRUE(tabstrip()->IsContextMenuCommandEnabled(
-      0, TabStripModel::CommandAddToExistingComparisonTable));
-}
-
-TEST_P(TabStripModelTest, AddToComparisonTable_EnabledForHttp) {
-  std::unique_ptr<content::WebContents> http_web_contents =
-      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
-  content::WebContentsTester::For(http_web_contents.get())
-      ->NavigateAndCommit(GURL("http://example.com"));
-
-  tabstrip()->AppendWebContents(std::move(http_web_contents), true);
-  ASSERT_TRUE(tabstrip()->IsContextMenuCommandEnabled(
-      0, TabStripModel::CommandAddToNewComparisonTable));
-  ASSERT_TRUE(tabstrip()->IsContextMenuCommandEnabled(
-      0, TabStripModel::CommandAddToExistingComparisonTable));
-}
-
-TEST_P(TabStripModelTest, AddToComparisonTable_DisabledForNonHttpOrHttps) {
-  std::unique_ptr<content::WebContents> chrome_web_contents =
-      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
-  content::WebContentsTester::For(chrome_web_contents.get())
-      ->NavigateAndCommit(GURL("chrome://abc"));
-
-  tabstrip()->AppendWebContents(std::move(chrome_web_contents), true);
-  ASSERT_FALSE(tabstrip()->IsContextMenuCommandEnabled(
-      0, TabStripModel::CommandAddToNewComparisonTable));
-  ASSERT_FALSE(tabstrip()->IsContextMenuCommandEnabled(
-      0, TabStripModel::CommandAddToExistingComparisonTable));
-}
-
-TEST_P(TabStripModelTest, AddToComparisonTable_AddToNewTableOpensTab) {
-  GURL url("https://example.com");
-
-  std::unique_ptr<content::WebContents> web_contents =
-      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
-  content::WebContentsTester::For(web_contents.get())->NavigateAndCommit(url);
-  tabstrip()->AppendWebContents(std::move(web_contents), true);
-
-  tabstrip()->ExecuteContextMenuCommand(
-      0, TabStripModel::CommandAddToNewComparisonTable);
-
-  // New Compare tab with the URL should be opened and activated.
-  ASSERT_TRUE(tabstrip()->count() == 2);
-  ASSERT_TRUE(tabstrip()->GetActiveWebContents()->GetVisibleURL() ==
-              commerce::GetProductSpecsTabUrl({url}));
-}
-
 TEST_P(TabStripModelTest, LifecycleCallbacks_SwitchingTabToSplit) {
   // Create three tabs with a split containing tabs 0 and 1.
   ASSERT_NO_FATAL_FAILURE(

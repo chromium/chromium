@@ -331,7 +331,7 @@ export enum CardBenefitsUserAction {
 // LINT.IfChange(AiPageInteractions)
 export enum AiPageInteractions {
   HISTORY_SEARCH_CLICK = 0,
-  COMPARE_CLICK = 1,
+  // COMPARE_CLICK = 1, // DEPRECATED
   COMPOSE_CLICK = 2,
   TAB_ORGANIZATION_CLICK = 3,
   // WALLPAPER_SEARCH_CLICK = 4, // DEPRECATED
@@ -359,23 +359,6 @@ export enum AiPageHistorySearchInteractions {
   MAX_VALUE = 4,
 }
 // LINT.ThenChange(/tools/metrics/histograms/metadata/settings/enums.xml:SettingsAiPageHistorySearchInteractions)
-
-/**
- * Contains all recorded interactions in the AI Compare settings page.
- *
- * These values are persisted to logs. Entries should not be renumbered and
- * numeric values should never be reused.
- *
- * Must be kept in sync with the SettingsAiPageCompareInteractions enum in
- * histograms/metadata/settings/enums.xml
- */
-// LINT.IfChange(AiPageCompareInteractions)
-export enum AiPageCompareInteractions {
-  FEATURE_LINK_CLICKED = 0,
-  LEARN_MORE_LINK_CLICKED = 1,
-  MAX_VALUE = 2,
-}
-// LINT.ThenChange(/tools/metrics/histograms/metadata/settings/enums.xml:SettingsAiPageCompareInteractions)
 
 /**
  * Contains all recorded interactions in the AI Compose settings page.
@@ -660,12 +643,6 @@ export interface MetricsBrowserProxy {
 
   /**
    * Helper function that calls recordHistogram for the
-   * Settings.AiPage.Compare.Interactions histogram
-   */
-  recordAiPageCompareInteractions(interaction: AiPageCompareInteractions): void;
-
-  /**
-   * Helper function that calls recordHistogram for the
    * Settings.AiPage.Compose.Interactions histogram
    */
   recordAiPageComposeInteractions(interaction: AiPageComposeInteractions): void;
@@ -900,15 +877,6 @@ export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
       'Settings.AiPage.HistorySearch.Interactions',
       interaction,
       AiPageHistorySearchInteractions.MAX_VALUE,
-    ]);
-  }
-
-  recordAiPageCompareInteractions(interaction: AiPageCompareInteractions):
-      void {
-    chrome.send('metricsHandler:recordInHistogram', [
-      'Settings.AiPage.Compare.Interactions',
-      interaction,
-      AiPageCompareInteractions.MAX_VALUE,
     ]);
   }
 

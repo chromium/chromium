@@ -257,10 +257,6 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, HistorySearchSubpage) {
   RunTest("settings/ai_history_search_subpage_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsTest, CompareSubpage) {
-  RunTest("settings/ai_compare_subpage_test.js", "mocha.run()");
-}
-
 IN_PROC_BROWSER_TEST_F(SettingsTest, LoggingInfoBullet) {
   RunTest("settings/ai_logging_info_bullet_test.js", "mocha.run()");
 }

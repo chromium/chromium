@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/webui/commerce/product_specifications_disclosure_dialog.h"
 #include "chrome/common/url_constants.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/commerce/core/commerce_feature_list.h"
@@ -117,25 +116,6 @@ void ShoppingUiHandlerDelegate::SwitchToOrOpenTab(const GURL& url) {
   }
 
   NavigateToUrl(browser, url);
-}
-
-void ShoppingUiHandlerDelegate::ShowFeedbackForProductSpecifications(
-    const std::string& log_id) {
-  auto* browser = chrome::FindLastActiveWithProfile(profile_);
-  if (!browser) {
-    return;
-  }
-
-  base::DictValue feedback_metadata;
-  feedback_metadata.Set("log_id", log_id);
-  chrome::ShowFeedbackPage(
-      browser, feedback::kFeedbackSourceAI,
-      /*description_template=*/std::string(),
-      /*description_placeholder_text=*/
-      l10n_util::GetStringUTF8(IDS_COMPARE_FEEDBACK_PLACEHOLDER),
-      /*category_tag=*/"compare",
-      /*extra_diagnostics=*/std::string(),
-      /*autofill_metadata=*/base::DictValue(), std::move(feedback_metadata));
 }
 
 ukm::SourceId ShoppingUiHandlerDelegate::GetCurrentTabUkmSourceId() {

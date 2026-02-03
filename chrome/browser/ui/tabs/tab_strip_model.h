@@ -762,8 +762,6 @@ class TabStripModel {
     CommandAddToNewGroup,
     CommandAddToExistingGroup,
     CommandAddToNewGroupFromMenuItem,
-    CommandAddToNewComparisonTable,
-    CommandAddToExistingComparisonTable,
     CommandAddToSplit,
     CommandSwapWithActiveSplit,
     CommandArrangeSplit,
@@ -774,7 +772,6 @@ class TabStripModel {
     CommandCopyURL,
     CommandGoBack,
     CommandCloseAllTabs,
-    CommandCommerceProductSpecifications,
 #if BUILDFLAG(ENABLE_GLIC)
     CommandGlicShareLimit,
     CommandGlicStartShare,

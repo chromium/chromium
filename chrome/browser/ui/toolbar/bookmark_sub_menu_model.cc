@@ -7,10 +7,8 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/commerce/product_specifications/product_specifications_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/commerce/compare_sub_menu_model.h"
 #include "chrome/browser/ui/toolbar/reading_list_sub_menu_model.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
@@ -26,7 +24,6 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(BookmarkSubMenuModel,
                                       kShowBookmarkSidePanelItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(BookmarkSubMenuModel,
                                       kReadingListMenuItem);
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(BookmarkSubMenuModel, kCompareMenuItem);
 
 // For views and cocoa, we have complex delegate systems to handle
 // injecting the bookmarks to the bookmark submenu. This is done to support
@@ -78,22 +75,6 @@ void BookmarkSubMenuModel::Build(Browser* browser) {
       ui::ImageModel::FromVectorIcon(kReadingListIcon));
   SetElementIdentifierAt(GetIndexOfCommandId(IDC_READING_LIST_MENU).value(),
                          kReadingListMenuItem);
-
-  // Will be null if the product specifications service is unavailable.
-  auto* product_specs_service =
-      commerce::ProductSpecificationsServiceFactory::GetForBrowserContext(
-          browser->profile());
-  if (product_specs_service &&
-      base::FeatureList::IsEnabled(commerce::kProductSpecifications)) {
-    AddSeparator(ui::NORMAL_SEPARATOR);
-    compare_sub_menu_model_ = std::make_unique<commerce::CompareSubMenuModel>(
-        delegate(), browser, product_specs_service);
-    AddSubMenuWithStringIdAndIcon(
-        IDC_COMPARE_MENU, IDS_COMPARE_MENU_LABEL, compare_sub_menu_model_.get(),
-        ui::ImageModel::FromVectorIcon(kCompareIcon, ui::kColorMenuIcon, 16));
-    SetElementIdentifierAt(GetIndexOfCommandId(IDC_COMPARE_MENU).value(),
-                           kCompareMenuItem);
-  }
 
   auto set_icon = [this](int command_id, const gfx::VectorIcon& vector_icon) {
     auto index = GetIndexOfCommandId(command_id);

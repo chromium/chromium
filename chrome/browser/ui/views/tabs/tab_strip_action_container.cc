@@ -26,7 +26,6 @@
 #include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
-#include "chrome/browser/ui/views/commerce/product_specifications_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/glic/glic_actor_task_icon.h"
 #include "chrome/browser/ui/views/tabs/glic/glic_button.h"
@@ -307,20 +306,6 @@ TabStripActionContainer::TabStripActionContainer(
   auto_tab_group_button_ = AddChildView(CreateAutoTabGroupButton());
 
   SetupButtonProperties(auto_tab_group_button_);
-  if (base::FeatureList::IsEnabled(commerce::kProductSpecifications)) {
-    std::unique_ptr<ProductSpecificationsButton> product_specifications_button;
-    product_specifications_button =
-        std::make_unique<ProductSpecificationsButton>(
-            browser_window_interface_,
-            commerce::ProductSpecificationsEntryPointController::From(
-                browser_window_interface_),
-            /*render_tab_search_before_tab_strip_*/ false, this);
-    product_specifications_button->SetProperty(views::kCrossAxisAlignmentKey,
-                                               views::LayoutAlignment::kCenter);
-
-    product_specifications_button_ =
-        AddChildView(std::move(product_specifications_button));
-  }
 
 #if BUILDFLAG(ENABLE_GLIC)
   if (glic::GlicEnabling::IsProfileEligible(
@@ -1118,10 +1103,6 @@ void TabStripActionContainer::UpdateButtonBorders(
   }
   if (tab_declutter_button_) {
     tab_declutter_button_->SetBorder(views::CreateEmptyBorder(border_insets));
-  }
-  if (product_specifications_button_) {
-    product_specifications_button_->SetBorder(
-        views::CreateEmptyBorder(border_insets));
   }
   if (glic_button_) {
 #if BUILDFLAG(ENABLE_GLIC)

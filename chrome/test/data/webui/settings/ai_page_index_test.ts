@@ -36,7 +36,6 @@ suite('AiPageIndex', function() {
     loadTimeData.overrideValues({
       showAiPage: true,
       showAiPageAiFeatureSection: true,
-      showCompareControl: true,
       showComposeControl: true,
       showHistorySearchControl: true,
       showTabOrganizationControl: true,
@@ -76,10 +75,6 @@ suite('AiPageIndex', function() {
     await microtasksFinished();
     assertActiveViews(['compose']);
 
-    Router.getInstance().navigateTo(routes.COMPARE);
-    await microtasksFinished();
-    assertActiveViews(['compare']);
-
     // <if expr="enable_glic">
     Router.getInstance().navigateTo(routes.GEMINI);
     await microtasksFinished();
@@ -115,8 +110,7 @@ suite('AiPageIndex', function() {
 
   // Test that the child views are properly annotated.
   test('DataParentViewId', function() {
-    const childViewsId =
-        ['tabOrganization', 'historySearch', 'compose', 'compare'];
+    const childViewsId = ['tabOrganization', 'historySearch', 'compose'];
     for (const id of childViewsId) {
       assertTrue(!!index.$.viewManager.querySelector(
           `#${id}[slot=view][data-parent-view-id=parent]`));

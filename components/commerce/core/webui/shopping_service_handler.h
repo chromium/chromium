@@ -66,9 +66,6 @@ class ShoppingServiceHandler
 
     virtual void SwitchToOrOpenTab(const GURL& url) = 0;
 
-    virtual void ShowFeedbackForProductSpecifications(
-        const std::string& log_id) = 0;
-
     virtual ukm::SourceId GetCurrentTabUkmSourceId() = 0;
   };
 

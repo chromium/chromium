@@ -37,11 +37,6 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
         value: () => loadTimeData.getBoolean('showComposeControl'),
       },
 
-      showCompareControl_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('showCompareControl'),
-      },
-
       showHistorySearchControl_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('showHistorySearchControl'),
@@ -60,7 +55,6 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
   }
 
   declare private showComposeControl_: boolean;
-  declare private showCompareControl_: boolean;
   declare private showHistorySearchControl_: boolean;
   declare private showTabOrganizationControl_: boolean;
   declare private showPasswordChangeControl_: boolean;
@@ -86,8 +80,6 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
         'Settings.AiPage.ElementVisibility.HistorySearch',
         this.showHistorySearchControl_);
     this.metricsBrowserProxy_.recordBooleanHistogram(
-        'Settings.AiPage.ElementVisibility.Compare', this.showCompareControl_);
-    this.metricsBrowserProxy_.recordBooleanHistogram(
         'Settings.AiPage.ElementVisibility.Compose', this.showComposeControl_);
     this.metricsBrowserProxy_.recordBooleanHistogram(
         'Settings.AiPage.ElementVisibility.TabOrganization',
@@ -104,15 +96,6 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
 
     const router = Router.getInstance();
     router.navigateTo(router.getRoutes().HISTORY_SEARCH);
-  }
-
-  private onCompareRowClick_() {
-    this.recordInteractionMetrics_(
-        AiPageInteractions.COMPARE_CLICK,
-        'Settings.AiPage.CompareEntryPointClick');
-
-    const router = Router.getInstance();
-    router.navigateTo(router.getRoutes().COMPARE);
   }
 
   private onComposeRowClick_() {
@@ -170,10 +153,6 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
       map.set(routes.HISTORY_SEARCH.path, '#historySearchRowV2');
     }
 
-    if (routes.COMPARE) {
-      map.set(routes.COMPARE.path, '#compareRowV2');
-    }
-
     if (routes.OFFER_WRITING_HELP) {
       map.set(routes.OFFER_WRITING_HELP.path, '#composeRowV2');
     }
@@ -188,7 +167,6 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
   // SettingsViewMixin implementation.
   override getAssociatedControlFor(childViewId: string): HTMLElement {
     const ids = [
-      'compare',
       'compose',
       'historySearch',
       'tabOrganization',
@@ -197,10 +175,6 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
 
     let triggerId: string|null = null;
     switch (childViewId) {
-      case 'compare':
-        assert(this.showCompareControl_);
-        triggerId = 'compareRowV2';
-        break;
       case 'compose':
         assert(this.showComposeControl_);
         triggerId = 'composeRowV2';

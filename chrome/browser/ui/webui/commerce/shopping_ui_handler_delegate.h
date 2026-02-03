@@ -36,8 +36,6 @@ class ShoppingUiHandlerDelegate : public ShoppingServiceHandler::Delegate {
 
   void OpenUrlInNewTab(const GURL& url) override;
 
-  void ShowFeedbackForProductSpecifications(const std::string& log_id) override;
-
   // Get the main frame source id from the page load.
   ukm::SourceId GetCurrentTabUkmSourceId() override;
 

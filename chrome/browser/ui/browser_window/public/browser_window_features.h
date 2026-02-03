@@ -146,10 +146,6 @@ namespace chrome {
 class BrowserCommandController;
 }  // namespace chrome
 
-namespace commerce {
-class ProductSpecificationsEntryPointController;
-}  // namespace commerce
-
 namespace contextual_tasks {
 class ActiveTaskContextProvider;
 class ContextualTasksSidePanelCoordinator;
@@ -552,9 +548,6 @@ class BrowserWindowFeatures {
       send_tab_to_self_toolbar_bubble_controller_;
 
   std::unique_ptr<ChromeLabsCoordinator> chrome_labs_coordinator_;
-
-  std::unique_ptr<commerce::ProductSpecificationsEntryPointController>
-      product_specifications_entry_point_controller_;
 
   std::unique_ptr<ImmersiveModeController> immersive_mode_controller_;
 

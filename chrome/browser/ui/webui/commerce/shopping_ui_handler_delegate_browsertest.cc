@@ -213,31 +213,6 @@ IN_PROC_BROWSER_TEST_F(ShoppingUiHandlerDelegateBrowserTest,
 // The feedback dialog on CrOS happens at the system level, which cannot be
 // easily tested here.
 #if !BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(ShoppingUiHandlerDelegateBrowserTest,
-                       TestShowFeedbackForProductSpecifications) {
-  const std::string log_id = "test_id";
-  ASSERT_EQ(nullptr, FeedbackDialog::GetInstanceForTest());
-
-  auto delegate =
-      std::make_unique<commerce::ShoppingUiHandlerDelegate>(profile_);
-  delegate->ShowFeedbackForProductSpecifications(log_id);
-
-  // Feedback dialog should be non-null with correct meta data.
-  CHECK(FeedbackDialog::GetInstanceForTest());
-  EXPECT_EQ(chrome::kChromeUIFeedbackURL,
-            FeedbackDialog::GetInstanceForTest()->GetDialogContentURL());
-  std::optional<base::DictValue> meta_data = base::JSONReader::ReadDict(
-      FeedbackDialog::GetInstanceForTest()->GetDialogArgs(),
-      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
-  ASSERT_TRUE(meta_data.has_value());
-  ASSERT_EQ(*meta_data->FindString("categoryTag"), "compare");
-  std::optional<base::DictValue> ai_meta_data =
-      base::JSONReader::ReadDict(*meta_data->FindString("aiMetadata"),
-                                 base::JSON_PARSE_CHROMIUM_EXTENSIONS);
-  ASSERT_TRUE(ai_meta_data.has_value());
-  ASSERT_EQ(*ai_meta_data->FindString("log_id"), log_id);
-}
-
 // When the user has the page saved locally, an account node is created instead
 // so that the feature can be used.
 IN_PROC_BROWSER_TEST_F(ShoppingUiHandlerDelegateBrowserTest,
