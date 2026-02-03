@@ -174,5 +174,9 @@ SOURCE_DATE_EPOCH="$BUILD_TIMESTAMP" \
   dpkg-buildpackage -b -us -uc
 LD_LIBRARY_PATH=$SAVE_LDLP
 
+# Remove buildinfo references from the changes file as they are not included in
+# the zip and can cause reproducibility issues due to environment differences.
+sed -i '/.buildinfo/d' ../${PACKAGE}_*.changes
+
 mv ../${PACKAGE}_*.deb "$OUTPUT_PATH"/
 mv ../${PACKAGE}_*.changes "$OUTPUT_PATH"/
