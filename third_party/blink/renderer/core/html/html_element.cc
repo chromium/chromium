@@ -2233,7 +2233,7 @@ const HTMLElement* NearestTargetPopoverForInvoker(
         // This code should return the *target popover* for several kinds of
         // potential invokers:
 
-        // Case 1. A <menuitem> element with the `commandfor` attribute.
+        // A <menuitem> element with the `commandfor` attribute.
         if (auto* menu_item = DynamicTo<HTMLMenuItemElement>(test_node)) {
           if (auto* target =
                   DynamicTo<HTMLElement>(menu_item->commandForElement());
@@ -2242,7 +2242,7 @@ const HTMLElement* NearestTargetPopoverForInvoker(
           }
         }
 
-        // Case 2. A <button> element with the `commandfor` attribute.
+        // A <button> element with the `commandfor` attribute.
         if (auto* button = DynamicTo<HTMLButtonElement>(test_node)) {
           if (auto* target =
                   DynamicTo<HTMLElement>(button->commandForElement());
@@ -2251,7 +2251,7 @@ const HTMLElement* NearestTargetPopoverForInvoker(
           }
         }
 
-        // Case 3. An HTMLFormControlElement with the `popovertarget` attribute.
+        // An HTMLFormControlElement with the `popovertarget` attribute.
         if (auto* form_element = DynamicTo<HTMLFormControlElement>(
                 const_cast<Node*>(test_node))) {
           if (auto* target =
@@ -2260,7 +2260,16 @@ const HTMLElement* NearestTargetPopoverForInvoker(
           }
         }
 
-        // Case 4. A select element whose picker is a popover.
+        // An element with the `interestfor` attribute.
+        if (auto* element = DynamicTo<Element>(const_cast<Node*>(test_node))) {
+          if (auto* target =
+                  DynamicTo<HTMLElement>(element->InterestForElement());
+              target && target->IsPopover()) {
+            return target;
+          }
+        }
+
+        // A select element whose picker is a popover.
         if (auto* select = DynamicTo<HTMLSelectElement>(test_node)) {
           if (auto* popover_picker = select->PopoverPickerElement()) {
             if (RuntimeEnabledFeatures::LightDismissFromClickEnabled()) {
@@ -2269,14 +2278,14 @@ const HTMLElement* NearestTargetPopoverForInvoker(
           }
         }
 
-        // Case 5. A customizable combobox whose picker is a popover.
+        // A customizable combobox whose picker is a popover.
         if (auto* input = DynamicTo<HTMLInputElement>(test_node)) {
           if (input->IsBaseAppearanceCombobox()) {
             return input->DataList();
           }
         }
 
-        // Case 6. A custom element button with `ElementInternals.type=button`
+        // A custom element button with `ElementInternals.type=button`
         // with the `popovertarget` attribute or the `commandfor` attribute.
         if (auto* html_element = DynamicTo<HTMLElement>(test_node);
             html_element &&

@@ -2394,7 +2394,8 @@ TEST_F(InterestForTouchscreenTest, ButtonWithInterestFor) {
   EXPECT_EQ(context_menu_data.source_type,
             WebMenuSourceType::kMenuSourceLongPress);
   // Interest is shown immediately for buttons.
-  EXPECT_EQ(button->GetInterestState(), Element::InterestState::kFullInterest);
+  EXPECT_EQ(button->GetInterestState(),
+            Element::InterestState::kExplicitInterest);
 
   // Now simulate the pointerup that happens when the touch is released - this
   // should not lose interest.
@@ -2407,7 +2408,8 @@ TEST_F(InterestForTouchscreenTest, ButtonWithInterestFor) {
   GetWebView()->MainFrameWidget()->HandleInputEvent(
       WebCoalescedInputEvent(pointerup_event, ui::LatencyInfo()));
   document->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
-  EXPECT_EQ(button->GetInterestState(), Element::InterestState::kFullInterest);
+  EXPECT_EQ(button->GetInterestState(),
+            Element::InterestState::kExplicitInterest);
 }
 
 TEST_F(InterestForTouchscreenTest, LinkWithInterestFor) {
@@ -2447,7 +2449,8 @@ TEST_F(InterestForTouchscreenTest, LinkWithInterestFor) {
   EXPECT_EQ(link->GetInterestState(), Element::InterestState::kNoInterest);
   link->ShowInterestNow();
   document->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
-  EXPECT_EQ(link->GetInterestState(), Element::InterestState::kFullInterest);
+  EXPECT_EQ(link->GetInterestState(),
+            Element::InterestState::kExplicitInterest);
 }
 
 }  // namespace blink

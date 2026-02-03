@@ -100,6 +100,7 @@ blink_core_tests_page = [
   "chrome_client_impl_test.cc",
   "chrome_client_test.cc",
   "context_menu_controller_test.cc",
+  "interest_invoker_test.cc",
   "drag_controller_test.cc",
   "drag_image_test.cc",
   "focus_controller_test.cc",

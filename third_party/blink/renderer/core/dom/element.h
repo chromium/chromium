@@ -1321,6 +1321,8 @@ class CORE_EXPORT Element : public ContainerNode {
     kNoInterest,
     // Invoker has full interest.
     kFullInterest,
+    // Invoker has explicit interest (e.g. via long-press or context menu).
+    kExplicitInterest,
   };
 
   enum class InterestLostCancelable {
@@ -1337,7 +1339,7 @@ class CORE_EXPORT Element : public ContainerNode {
   // These are called when interest is actually gained or lost on the element,
   // e.g. after any hover-delays. They return true if the event was *not*
   // cancelled, and the action was performed.
-  bool InterestGained(Element* target);
+  bool InterestGained(Element* target, InterestState state);
   bool InterestLost(
       Element* target,
       InterestLostCancelable = InterestLostCancelable::kCancelable,
