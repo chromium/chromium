@@ -6,12 +6,17 @@
 
 #import "base/barrier_callback.h"
 #import "base/check_deref.h"
+#import "base/check_is_test.h"
 #import "base/task/bind_post_task.h"
 #import "base/task/single_thread_task_runner.h"
 #import "base/task/task_traits.h"
 #import "base/task/thread_pool.h"
 #import "base/threading/scoped_blocking_call.h"
+#import "components/prefs/pref_service.h"
 #import "google_apis/gaia/gaia_id.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/avatar/resized_avatar_cache.h"
 #import "ios/chrome/browser/signin/model/constants.h"
@@ -20,23 +25,18 @@
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/ui/util/image_util.h"
 
-#if BUILDFLAG(ENABLE_WIDGETS_FOR_MIM)
-#import "base/check_is_test.h"
-#import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/shared/model/profile/features.h"
+#if BUILDFLAG(ENABLE_WIDGET_KIT_EXTENSION)
 #import "ios/chrome/browser/widget_kit/model/model_swift.h"  // nogncheck
 #endif
 
 namespace {
 
 // Updates all widget timelines with the updated data.
-#if BUILDFLAG(ENABLE_WIDGETS_FOR_MIM)
 void ReloadAllTimelines() {
+#if BUILDFLAG(ENABLE_WIDGET_KIT_EXTENSION)
   [WidgetTimelinesUpdater reloadAllTimelines];
-}
 #endif
+}
 
 // Stores information about a SystemIdentity.
 class SystemIdentityInfo {
@@ -172,9 +172,7 @@ void WriteAvatars(const SystemIdentityInfoDataList& list) {
       [manager removeItemAtURL:url error:nil];
     }
   }
-#if BUILDFLAG(ENABLE_WIDGETS_FOR_MIM)
   ReloadAllTimelines();
-#endif
 }
 
 // Writes the avatar's image to disk, or delete it if the data is missing.
@@ -193,9 +191,7 @@ void WriteAvatar(const SystemIdentityInfoData& info) {
     NSFileManager* manager = [NSFileManager defaultManager];
     [manager removeItemAtURL:path error:nil];
   }
-#if BUILDFLAG(ENABLE_WIDGETS_FOR_MIM)
   ReloadAllTimelines();
-#endif
 }
 
 // Removes items for unknown accounts from `defaults`.
@@ -279,7 +275,6 @@ void SystemAccountUpdater::UpdateLoadedAccounts() {
 
 void SystemAccountUpdater::HandleMigrationIfNeeded() {
   // Perform migration only if the flag is enabled.
-#if BUILDFLAG(ENABLE_WIDGETS_FOR_MIM)
   PrefService* local_state = GetApplicationContext()->GetLocalState();
 
   if (!local_state) {
@@ -306,5 +301,4 @@ void SystemAccountUpdater::HandleMigrationIfNeeded() {
     local_state->SetBoolean(prefs::kWidgetsForMultiProfile, false);
     ReloadAllTimelines();
   }
-#endif
 }

@@ -16,8 +16,6 @@
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "testing/platform_test.h"
 
-#if BUILDFLAG(ENABLE_WIDGETS_FOR_MIM)
-
 class SystemAccountUpdaterTest : public PlatformTest {
  public:
   SystemAccountUpdaterTest() {
@@ -196,5 +194,3 @@ TEST_F(SystemAccountUpdaterTest, TestSuggestedItemsLastModificationDate) {
         [[items allKeys] containsObject:fake_identity.gaiaId.ToNSString()]);
   }
 }
-
-#endif

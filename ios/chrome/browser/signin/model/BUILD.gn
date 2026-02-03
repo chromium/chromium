@@ -162,7 +162,7 @@ source_set("authentication_service") {
     "//ios/chrome/browser/widget_kit/model:features",
     "//ios/chrome/common/app_group",
   ]
-  if (ios_enable_widget_kit_extension && ios_enable_widgets_for_mim) {
+  if (ios_enable_widget_kit_extension) {
     deps += [ "//ios/chrome/browser/widget_kit/model:model_swift" ]
   }
 }
