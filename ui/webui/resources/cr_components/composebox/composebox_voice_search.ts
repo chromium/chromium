@@ -20,13 +20,13 @@ import {WindowProxy} from './window_proxy.js';
  * enough". The more confident the API is about a transcript, the higher the
  * confidence (number between 0 and 1).
  */
-const RECOGNITION_CONFIDENCE_THRESHOLD: number = 0.5;
+const RECOGNITION_CONFIDENCE_THRESHOLD: number = 0.7;
 
 /**
- * Time in milliseconds to wait before closing the UI if no interaction has
- * occurred.
+ * Time in milliseconds to wait before closing the UI if no interaction
+ * has occurred since start, OR last word spoken. Matches Google3.
  */
-const IDLE_TIMEOUT_MS: number = 8000;
+const IDLE_TIMEOUT_MS: number = 1500;
 
 // The set of controller states.
 enum State {
@@ -127,7 +127,7 @@ export class ComposeboxVoiceSearchElement extends
   constructor() {
     super();
     this.voiceRecognition_ = new window.webkitSpeechRecognition();
-    this.voiceRecognition_.continuous = false;
+    this.voiceRecognition_.continuous = true;
     this.voiceRecognition_.interimResults = true;
     this.voiceRecognition_.lang = window.navigator.language;
     this.voiceRecognition_.onresult = this.onResult_.bind(this);
@@ -167,9 +167,9 @@ export class ComposeboxVoiceSearchElement extends
       // Waiting for query redirect.
       return;
     }
-    if (this.finalResult_) {
-      // Query what we recognized so far.
-      this.onFinalResult_();
+    // If there is text transcribed, process it as final.
+    if (this.transcript_) {
+      this.onFinalResult_(this.transcript_);
       return;
     }
     this.voiceRecognition_.abort();
@@ -203,7 +203,7 @@ export class ComposeboxVoiceSearchElement extends
     // Process final results if is fully final.
     if (!!speechResult && speechResult.isFinal) {
       this.finalResult_ = speechResult[0]!.transcript;
-      this.onFinalResult_();
+      this.onFinalResult_(this.finalResult_);
       return;
     }
 
@@ -213,13 +213,13 @@ export class ComposeboxVoiceSearchElement extends
       const result = resultList[0];  // best guess
       assert(result);
 
+      this.transcript_ += result.transcript;
       if (result.confidence > RECOGNITION_CONFIDENCE_THRESHOLD) {
         this.finalResult_ += result.transcript;  // Displayed
       } else {
         this.interimResult_ += result.transcript;
       }
     }
-    this.transcript_ = this.finalResult_ + this.interimResult_;
     this.fire('transcript-update', this.transcript_);
   }
 
@@ -278,13 +278,13 @@ export class ComposeboxVoiceSearchElement extends
     this.resetState_();
   }
 
-  private onFinalResult_() {
-    if (!this.finalResult_) {
+  private onFinalResult_(result: string) {
+    if (!result) {
       return;
     }
     this.state_ = State.RESULT_FINAL;
     // Metric recorded through this event firing:
-    this.fire('voice-search-final-result', this.finalResult_);
+    this.fire('voice-search-final-result', result);
     this.voiceModeEndCleanup_();
   }
 
@@ -302,6 +302,8 @@ export class ComposeboxVoiceSearchElement extends
     this.interimResult_ = '';
     this.error_ = null;
     this.errorMessage_ = '';
+    WindowProxy.getInstance().clearTimeout(this.timerId_);
+    this.timerId_ = null;
   }
 
   protected onLinkClick_(e: Event) {

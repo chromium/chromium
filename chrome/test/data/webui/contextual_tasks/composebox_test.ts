@@ -1286,7 +1286,7 @@ suite('ContextualTasksComposeboxTest', () => {
             'Voice search button clicked metric count is incorrect');
 
         const voiceSearchElement = (composebox as any).$.voiceSearch;
-        voiceSearchElement.finalResult_ = 'test';
+        voiceSearchElement.transcript_ = 'test';
         voiceSearchElement.onIdleTimeout_();
         await microtasksFinished();
 
