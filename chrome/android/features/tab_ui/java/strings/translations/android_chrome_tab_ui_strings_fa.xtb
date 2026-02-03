@@ -63,7 +63,7 @@
 <translation id="2801787514987684416">اطلاعات فروشگاه نمایش داده شود؟</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{‫<ph name="ONE_CLOSED" /> زبانه بسته شد}one{‫<ph name="MANY_CLOSED" /> زبانه بسته شد}other{‫<ph name="MANY_CLOSED" /> زبانه بسته شد}}</translation>
 <translation id="2894757982205307093">برگه جدید در گروه</translation>
-<translation id="2918484639460781603">رفتن به تنظیمات</translation>
+<translation id="2918484639460781603">رفتن به «تنظیمات»</translation>
 <translation id="2928243913527329289">‏Google | درباره این فروشگاه</translation>
 <translation id="2978860912612699943">{ITEMS_COUNT,plural, =1{‫<ph name="ITEMS_COUNT_ONE" /> مورد انتخاب شده است}one{‫<ph name="ITEMS_COUNT_MANY" /> مورد انتخاب شده است}other{‫<ph name="ITEMS_COUNT_MANY" /> مورد انتخاب شده است}}</translation>
 <translation id="2991702137079525605">{TABS_COUNT,plural, =1{سنجاق کردن زبانه}one{سنجاق کردن زبانه}other{سنجاق کردن زبانه}}</translation>
