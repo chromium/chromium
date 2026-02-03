@@ -55,6 +55,8 @@ extern const base::FeatureParam<bool> kEnableEphemeralContextMenuDescription;
 extern const base::FeatureParam<bool> kEnableViewportImages;
 // Whether to show the model picker in the composebox.
 extern const base::FeatureParam<bool> kShowModelPicker;
+// Whether to show section headers in the context menu.
+extern const base::FeatureParam<bool> kShowContextMenuHeaders;
 // Whether to allow drag and drop files on composebox
 extern const base::FeatureParam<bool> kEnableContextDragAndDrop;
 
