@@ -6,30 +6,17 @@
 
 #include "common.h"
 
-SizedBuf* AllocBuf(size_t cap) {
-    // Use calloc to make incorrect code a little more predictable.
-    // ZAllocBuf relies on AllocBuf actually using calloc, even though the
-    // header does not promise it to callers outside of sizedbuf.c itself.
-    SizedBuf* ret = calloc(sizeof(SizedBuf) + cap, 1);
-    ASSERT(ret, "AllocBuf OOM");
-    ret->cap = cap;
-    return ret;
-}
-
 SizedBuf* ZAllocBuf(size_t len) {
-    // AllocBuf uses calloc, so our promise that this one zeroes out `data`
-    // up to `len` is already met.
-    SizedBuf* ret = AllocBuf(len);
+    SizedBuf* ret = calloc(sizeof(SizedBuf) + len, 1);
     ASSERT(ret, "ZAllocBuf OOM");
-    ret->len = len;
+    ret->len = ret->cap = len;
     return ret;
 }
 
 SizedBuf* AllocBufCopy(const SizedBuf* buf) {
     ASSERT(buf, "AllocBufCopy can't copy out of NULL!");
-    size_t blen = buf->len;
-    ASSERT(blen <= buf->cap, "AllocBufCopy observed corrupt input buffer");
-    return AllocBufCopyBytes(buf->data, blen);
+    ASSERT(buf->len <= buf->cap, "AllocBufCopy observed corrupt input buffer");
+    return AllocBufCopyBytes(buf->data, buf->len);
 }
 
 SizedBuf* AllocBufCopyBytes(const char* data, size_t len) {
@@ -43,7 +30,7 @@ SizedBuf* AllocBufCopyBytes(const char* data, size_t len) {
 
 SizedBuf* AllocBufCopyString(const char* str) {
     ASSERT(str, "AllocBufCopyString can't copy out of NULL!");
-    SizedBuf* ret = AllocBufCopyBytes(str, strlen(str)+1);
+    SizedBuf* ret = AllocBufCopyBytes(str, strlen(str) + 1);
     ret->len -= 1;
     return ret;
 }

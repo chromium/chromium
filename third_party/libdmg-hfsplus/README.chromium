@@ -84,3 +84,13 @@ Local modifications:
       `lzma_sdk` stream" component.
     * `lzma_sdk`'s compression presets are not identical to `xz's`, so the
       exact interpretation of the `--level` flag will be different.
+  * patches/2026-02-02-SizedBuf-dmg-attribute.patch
+    * Adds a new type, `SizedBuf`, containing a `char[]` with allocated capacity
+      `cap` and actual contained data length `len`.
+    * Replaces logic reached from `dmg attribute` codepath to use SizedBuf
+      instead of null-terminated strings to handle placeholders and replacements
+      so values containing embedded null bytes can be used. It is not possible
+      to specify such a string on the command line as of this patch, this only
+      paves the way for such an implementation.
+    * Backwards-compatible: existing string-based function signatures remain
+      in place, as wrappers that call the SizedBuf APIs.
