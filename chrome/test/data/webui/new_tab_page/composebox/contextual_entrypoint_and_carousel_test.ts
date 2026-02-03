@@ -2,16 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ContextualEntrypointAndCarouselElement} from 'chrome://new-tab-page/lazy_load.js';
+import {ComposeboxProxyImpl, ContextualEntrypointAndCarouselElement} from 'chrome://new-tab-page/lazy_load.js';
+import {PageCallbackRouter, PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
+
+import {installMock} from '../test_support.js';
 
 suite('NewTabPageContextualEntrypointAndCarouselTest', () => {
   let element: ContextualEntrypointAndCarouselElement;
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    installMock(
+        PageHandlerRemote,
+        mock => ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
+            mock, new PageCallbackRouter(), new SearchboxPageHandlerRemote(),
+            new SearchboxPageCallbackRouter())));
     element = new ContextualEntrypointAndCarouselElement();
     document.body.appendChild(element);
   });
