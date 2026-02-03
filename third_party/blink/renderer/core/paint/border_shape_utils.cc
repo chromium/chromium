@@ -48,4 +48,34 @@ Path ComputeBorderShapeOuterPath(const ComputedStyle& style,
   return BorderShapePainter::OuterPath(style, outer_reference_rect);
 }
 
+DerivedStroke RelevantSideForBorderShape(const ComputedStyle& style) {
+  DCHECK(style.HasBorderShape());
+
+  BorderEdgeArray edges;
+  style.GetBorderEdgeInfo(edges);
+  style.BorderBlockStartWidth();
+  PhysicalToLogical<BorderEdge> logical_edges(
+      style.GetWritingDirection(), edges[static_cast<unsigned>(BoxSide::kTop)],
+      edges[static_cast<unsigned>(BoxSide::kRight)],
+      edges[static_cast<unsigned>(BoxSide::kBottom)],
+      edges[static_cast<unsigned>(BoxSide::kLeft)]);
+
+  const BorderEdge block_start_edge = logical_edges.BlockStart();
+  const BorderEdge inline_start_edge = logical_edges.InlineStart();
+  const BorderEdge block_end_edge = logical_edges.BlockEnd();
+  const BorderEdge inline_end_edge = logical_edges.InlineEnd();
+
+  const BorderEdge edges_in_order[4] = {block_start_edge, inline_start_edge,
+                                        block_end_edge, inline_end_edge};
+  for (const BorderEdge& edge : edges_in_order) {
+    if (edge.BorderStyle() == EBorderStyle::kNone) {
+      continue;
+    }
+    return DerivedStroke{static_cast<float>(edge.UsedWidth()), edge.GetColor()};
+  }
+  // Return block-start.
+  return DerivedStroke{static_cast<float>(edges_in_order[0].UsedWidth()),
+                       edges_in_order[0].GetColor()};
+}
+
 }  // namespace blink

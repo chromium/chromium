@@ -8,6 +8,8 @@
 
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
+#include "third_party/blink/renderer/core/paint/border_shape_painter.h"
+#include "third_party/blink/renderer/core/paint/border_shape_utils.h"
 #include "third_party/blink/renderer/core/paint/box_border_painter.h"
 #include "third_party/blink/renderer/core/paint/contoured_border_geometry.h"
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
@@ -898,6 +900,16 @@ void OutlinePainter::PaintOutlineRects(
     const Vector<PhysicalRect>& outline_rects,
     const LayoutObject::OutlineInfo& info,
     const ComputedStyle& style) {
+  PaintOutlineRects(paint_info, client, outline_rects, info, style, nullptr);
+}
+
+void OutlinePainter::PaintOutlineRects(
+    const PaintInfo& paint_info,
+    const DisplayItemClient& client,
+    const Vector<PhysicalRect>& outline_rects,
+    const LayoutObject::OutlineInfo& info,
+    const ComputedStyle& style,
+    const LayoutObject* layout_object) {
   DCHECK(style.HasOutline());
   DCHECK(!outline_rects.empty());
 
@@ -925,6 +937,25 @@ void OutlinePainter::PaintOutlineRects(
   visual_rect.Outset(OutlineOutsetExtent(style, info));
   DrawingRecorder recorder(paint_info.context, client, paint_info.phase,
                            visual_rect);
+
+  // Handle border-shape outline: if the element has a border-shape, the outline
+  // should follow the border-shape path instead of the rectangular outline.
+  if (style.HasBorderShape() && layout_object && !style.OutlineStyleIsAuto()) {
+    PhysicalRect border_rect = outline_rects[0];
+    std::optional<BorderShapeReferenceRects> shape_ref_rects =
+        ComputeBorderShapeReferenceRects(border_rect, style, *layout_object);
+    PhysicalRect outer_reference_rect =
+        shape_ref_rects ? shape_ref_rects->outer : border_rect;
+    // TODO(crbug.com/7531762): Border-shape outline painting here uses
+    // BorderShapePainter::PaintOutline which currently doesn't handle
+    // fragmented boxes. See bug for follow-up to support fragmentation and
+    // ensure the outline follows the border-shape across fragments.
+    if (BorderShapePainter::PaintOutline(paint_info.context, style,
+                                         outer_reference_rect, info.width,
+                                         info.offset)) {
+      return;
+    }
+  }
 
   if (style.OutlineStyleIsAuto()) {
     auto corner_radii = GetFocusRingCornerRadii(style, outline_rects[0], info);

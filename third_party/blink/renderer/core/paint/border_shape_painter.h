@@ -34,10 +34,23 @@ class BorderShapePainter {
                     const PhysicalRect& outer_reference_rect,
                     const PhysicalRect& inner_reference_rect);
 
+  // Paints an outline that follows the border-shape path.
+  // Returns true if an outline was painted.
+  static bool PaintOutline(GraphicsContext&,
+                           const ComputedStyle&,
+                           const PhysicalRect& outer_reference_rect,
+                           int outline_width,
+                           int outline_offset);
+
   static Path InnerPath(const ComputedStyle&,
                         const PhysicalRect& inner_reference_rect);
   static Path OuterPath(const ComputedStyle&,
                         const PhysicalRect& outer_reference_rect);
+
+  // Returns an outer path offset by the given amount (positive = outward).
+  static Path OuterPathWithOffset(const ComputedStyle&,
+                                  const PhysicalRect& outer_reference_rect,
+                                  float offset);
 
   static PhysicalBoxStrut VisualOutsets(
       const ComputedStyle&,

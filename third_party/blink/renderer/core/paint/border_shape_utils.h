@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_BORDER_SHAPE_UTILS_H_
 
 #include "third_party/blink/renderer/core/paint/border_shape_painter.h"
+#include "third_party/blink/renderer/platform/graphics/color.h"
 
 namespace blink {
 
@@ -24,6 +25,14 @@ std::optional<BorderShapeReferenceRects> ComputeBorderShapeReferenceRects(
 Path ComputeBorderShapeOuterPath(const ComputedStyle& style,
                                  const PhysicalRect& rect,
                                  const LayoutObject* layout_object);
+
+struct DerivedStroke {
+  float thickness;
+  Color color;
+};
+
+// https://drafts.csswg.org/css-borders-4/#relevant-side-for-border-shape
+DerivedStroke RelevantSideForBorderShape(const ComputedStyle& style);
 
 }  // namespace blink
 

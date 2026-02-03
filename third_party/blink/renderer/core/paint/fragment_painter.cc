@@ -29,7 +29,8 @@ void FragmentPainter::PaintOutline(const PaintInfo& paint_info,
     return;
 
   OutlinePainter::PaintOutlineRects(paint_info, GetDisplayItemClient(),
-                                    outline_rects, info, style_to_use);
+                                    outline_rects, info, style_to_use,
+                                    fragment.GetLayoutObject());
 }
 
 void FragmentPainter::AddURLRectIfNeeded(const PaintInfo& paint_info,
