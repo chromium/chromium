@@ -72,6 +72,7 @@ static_library("keyed_service") {
     "//chrome/browser/ash/net",
     "//chrome/browser/ash/ownership",
     "//chrome/browser/ash/phonehub",
+    "//chrome/browser/ash/platform_keys:keystore_service",
     "//chrome/browser/ash/platform_keys/key_permissions",
     "//chrome/browser/ash/plugin_vm",
     "//chrome/browser/ash/policy/core",

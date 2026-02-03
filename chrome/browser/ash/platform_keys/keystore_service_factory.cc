@@ -2,32 +2,32 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/crosapi/keystore_service_factory_ash.h"
+#include "chrome/browser/ash/platform_keys/keystore_service_factory.h"
 
 #include "base/no_destructor.h"
-#include "chrome/browser/ash/crosapi/keystore_service_ash.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_service_factory.h"
+#include "chrome/browser/ash/platform_keys/keystore_service.h"
 #include "chrome/browser/ash/platform_keys/platform_keys_service_factory.h"
 
-namespace crosapi {
+namespace ash {
 
 // static
-KeystoreServiceAsh* KeystoreServiceFactoryAsh::GetForBrowserContext(
+KeystoreService* KeystoreServiceFactory::GetForBrowserContext(
     content::BrowserContext* context) {
-  return static_cast<KeystoreServiceAsh*>(
-      KeystoreServiceFactoryAsh::GetInstance()->GetServiceForBrowserContext(
+  return static_cast<KeystoreService*>(
+      KeystoreServiceFactory::GetInstance()->GetServiceForBrowserContext(
           context, /*create=*/true));
 }
 
 // static
-KeystoreServiceFactoryAsh* KeystoreServiceFactoryAsh::GetInstance() {
-  static base::NoDestructor<KeystoreServiceFactoryAsh> factory;
+KeystoreServiceFactory* KeystoreServiceFactory::GetInstance() {
+  static base::NoDestructor<KeystoreServiceFactory> factory;
   return factory.get();
 }
 
-KeystoreServiceFactoryAsh::KeystoreServiceFactoryAsh()
+KeystoreServiceFactory::KeystoreServiceFactory()
     : ProfileKeyedServiceFactory(
-          "KeystoreServiceFactoryAsh",
+          "KeystoreServiceFactory",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
               // TODO(crbug.com/40257657): Check if this service is needed in
@@ -37,14 +37,14 @@ KeystoreServiceFactoryAsh::KeystoreServiceFactoryAsh()
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kOriginalOnly)
               .Build()) {
-  DependsOn(ash::platform_keys::PlatformKeysServiceFactory::GetInstance());
-  DependsOn(ash::platform_keys::KeyPermissionsServiceFactory::GetInstance());
+  DependsOn(platform_keys::PlatformKeysServiceFactory::GetInstance());
+  DependsOn(platform_keys::KeyPermissionsServiceFactory::GetInstance());
 }
 
 std::unique_ptr<KeyedService>
-KeystoreServiceFactoryAsh::BuildServiceInstanceForBrowserContext(
+KeystoreServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return std::make_unique<KeystoreServiceAsh>(context);
+  return std::make_unique<KeystoreService>(context);
 }
 
-}  // namespace crosapi
+}  // namespace ash

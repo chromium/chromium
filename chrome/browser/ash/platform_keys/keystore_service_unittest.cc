@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/crosapi/keystore_service_ash.h"
+#include "chrome/browser/ash/platform_keys/keystore_service.h"
 
 #include <initializer_list>
 #include <optional>
@@ -43,11 +43,9 @@
 // forward messages to and from PlatformKeysService, KeyPermissionsService,
 // TpmChallengeKey and correctly re-encode arguments in both directions.
 
-namespace crosapi {
+namespace ash {
 namespace {
 
-using ::ash::platform_keys::MockKeyPermissionsService;
-using ::ash::platform_keys::MockPlatformKeysService;
 using ::attestation::KEY_TYPE_ECC;
 using ::attestation::KEY_TYPE_RSA;
 using ::base::test::RunOnceCallback;
@@ -63,6 +61,8 @@ using ::chromeos::keystore_service_util::MakeRsassaPkcs1v15KeystoreAlgorithm;
 using ::chromeos::platform_keys::HashAlgorithm;
 using ::chromeos::platform_keys::Status;
 using ::chromeos::platform_keys::TokenId;
+using platform_keys::MockKeyPermissionsService;
+using platform_keys::MockPlatformKeysService;
 using ::testing::_;
 using ::testing::DoAll;
 using ::testing::ElementsAre;
@@ -172,13 +172,13 @@ MATCHER_P(StrStartsWith, expected_prefix, "Unexpected string.") {
   return base::StartsWith(arg, expected_prefix);
 }
 
-class KeystoreServiceAshTest : public testing::Test {
+class KeystoreServiceTest : public testing::Test {
  public:
-  KeystoreServiceAshTest()
+  KeystoreServiceTest()
       : keystore_service_(&platform_keys_service_, &key_permissions_service_) {}
-  KeystoreServiceAshTest(const KeystoreServiceAshTest&) = delete;
-  auto operator=(const KeystoreServiceAshTest&) = delete;
-  ~KeystoreServiceAshTest() override = default;
+  KeystoreServiceTest(const KeystoreServiceTest&) = delete;
+  auto operator=(const KeystoreServiceTest&) = delete;
+  ~KeystoreServiceTest() override = default;
 
  protected:
   content::BrowserTaskEnvironment task_environment_{
@@ -186,7 +186,7 @@ class KeystoreServiceAshTest : public testing::Test {
 
   StrictMock<MockPlatformKeysService> platform_keys_service_;
   StrictMock<MockKeyPermissionsService> key_permissions_service_;
-  KeystoreServiceAsh keystore_service_;
+  KeystoreService keystore_service_;
   base::test::MockLog log_;
 };
 
@@ -240,7 +240,7 @@ struct StatusCallbackObserver {
 
 //------------------------------------------------------------------------------
 
-TEST_F(KeystoreServiceAshTest, UserKeystoreRsassaPkcs1v15GenerateKeySuccess) {
+TEST_F(KeystoreServiceTest, UserKeystoreRsassaPkcs1v15GenerateKeySuccess) {
   const unsigned int modulus_length = 2048;
 
   EXPECT_CALL(
@@ -258,7 +258,7 @@ TEST_F(KeystoreServiceAshTest, UserKeystoreRsassaPkcs1v15GenerateKeySuccess) {
   AssertBlobEq(observer.result.value(), GetPublicKeyBin());
 }
 
-TEST_F(KeystoreServiceAshTest, UserKeystoreRsaOaepGenerateKeySuccess) {
+TEST_F(KeystoreServiceTest, UserKeystoreRsaOaepGenerateKeySuccess) {
   const unsigned int modulus_length = 2048;
 
   EXPECT_CALL(
@@ -276,7 +276,7 @@ TEST_F(KeystoreServiceAshTest, UserKeystoreRsaOaepGenerateKeySuccess) {
   AssertBlobEq(observer.result.value(), GetPublicKeyBin());
 }
 
-TEST_F(KeystoreServiceAshTest, DeviceKeystoreEcdsaGenerateKeySuccess) {
+TEST_F(KeystoreServiceTest, DeviceKeystoreEcdsaGenerateKeySuccess) {
   const std::string named_curve = "test_named_curve";
 
   EXPECT_CALL(platform_keys_service_,
@@ -292,7 +292,7 @@ TEST_F(KeystoreServiceAshTest, DeviceKeystoreEcdsaGenerateKeySuccess) {
   AssertBlobEq(observer.result.value(), GetPublicKeyBin());
 }
 
-TEST_F(KeystoreServiceAshTest, DeviceKeystoreRsaAlgoGenerateKeyFail) {
+TEST_F(KeystoreServiceTest, DeviceKeystoreRsaAlgoGenerateKeyFail) {
   EXPECT_CALL(platform_keys_service_, GenerateRSAKey)
       .WillOnce(
           RunOnceCallback<3>(std::vector<uint8_t>(), Status::kErrorInternal));
@@ -308,7 +308,7 @@ TEST_F(KeystoreServiceAshTest, DeviceKeystoreRsaAlgoGenerateKeyFail) {
   AssertErrorEq(observer.result.value(), KeystoreError::kInternal);
 }
 
-TEST_F(KeystoreServiceAshTest, UserKeystoreEcAlgoGenerateKeyFail) {
+TEST_F(KeystoreServiceTest, UserKeystoreEcAlgoGenerateKeyFail) {
   EXPECT_CALL(platform_keys_service_, GenerateECKey)
       .WillOnce(
           RunOnceCallback<2>(std::vector<uint8_t>(), Status::kErrorInternal));
@@ -325,7 +325,7 @@ TEST_F(KeystoreServiceAshTest, UserKeystoreEcAlgoGenerateKeyFail) {
 
 //------------------------------------------------------------------------------
 
-TEST_F(KeystoreServiceAshTest, SignRsaSuccess) {
+TEST_F(KeystoreServiceTest, SignRsaSuccess) {
   // Accepted and returned data are the same. This is not realistic, but doesn't
   // matter here.
   EXPECT_CALL(
@@ -344,7 +344,7 @@ TEST_F(KeystoreServiceAshTest, SignRsaSuccess) {
   AssertBlobEq(observer.result.value(), GetDataBin());
 }
 
-TEST_F(KeystoreServiceAshTest, SignEcSuccess) {
+TEST_F(KeystoreServiceTest, SignEcSuccess) {
   // Accepted and returned data are the same. This is not realistic, but doesn't
   // matter here.
   EXPECT_CALL(platform_keys_service_,
@@ -362,7 +362,7 @@ TEST_F(KeystoreServiceAshTest, SignEcSuccess) {
   AssertBlobEq(observer.result.value(), GetDataBin());
 }
 
-TEST_F(KeystoreServiceAshTest, UsingRsassaPkcs1V15NoneSignSuccess) {
+TEST_F(KeystoreServiceTest, UsingRsassaPkcs1V15NoneSignSuccess) {
   EXPECT_CALL(platform_keys_service_,
               SignRSAPKCS1Raw(std::optional<TokenId>(TokenId::kSystem),
                               GetDataBin(), GetPublicKeyBin(),
@@ -380,7 +380,7 @@ TEST_F(KeystoreServiceAshTest, UsingRsassaPkcs1V15NoneSignSuccess) {
   AssertBlobEq(observer.result.value(), GetDataBin());
 }
 
-TEST_F(KeystoreServiceAshTest, KeyNotAllowedSignFail) {
+TEST_F(KeystoreServiceTest, KeyNotAllowedSignFail) {
   EXPECT_CALL(platform_keys_service_, SignEcdsa)
       .WillOnce(RunOnceCallback<4>(std::vector<uint8_t>(),
                                    Status::kErrorKeyNotAllowedForOperation));
@@ -395,7 +395,7 @@ TEST_F(KeystoreServiceAshTest, KeyNotAllowedSignFail) {
                 KeystoreError::kKeyNotAllowedForOperation);
 }
 
-TEST_F(KeystoreServiceAshTest, UnknownSignSchemeSignFail) {
+TEST_F(KeystoreServiceTest, UnknownSignSchemeSignFail) {
   CallbackObserver<chromeos::KeystoreBinaryResult> observer;
   KeystoreSigningScheme unknown_sign_scheme = KeystoreSigningScheme::kUnknown;
 
@@ -410,7 +410,7 @@ TEST_F(KeystoreServiceAshTest, UnknownSignSchemeSignFail) {
 
 //------------------------------------------------------------------------------
 
-TEST_F(KeystoreServiceAshTest, RemoveKeySuccess) {
+TEST_F(KeystoreServiceTest, RemoveKeySuccess) {
   EXPECT_CALL(platform_keys_service_,
               RemoveKey(TokenId::kSystem, GetPublicKeyBin(), /*callback=*/_))
       .WillOnce(RunOnceCallback<2>(Status::kSuccess));
@@ -423,7 +423,7 @@ TEST_F(KeystoreServiceAshTest, RemoveKeySuccess) {
   EXPECT_EQ(observer.result_is_error, false);
 }
 
-TEST_F(KeystoreServiceAshTest, RemoveKeyFail) {
+TEST_F(KeystoreServiceTest, RemoveKeyFail) {
   EXPECT_CALL(platform_keys_service_,
               RemoveKey(TokenId::kSystem, GetPublicKeyBin(), /*callback=*/_))
       .WillOnce(RunOnceCallback<2>(Status::kErrorKeyNotFound));
@@ -439,7 +439,7 @@ TEST_F(KeystoreServiceAshTest, RemoveKeyFail) {
 
 //------------------------------------------------------------------------------
 
-TEST_F(KeystoreServiceAshTest, SelectClientCertificatesSuccess) {
+TEST_F(KeystoreServiceTest, SelectClientCertificatesSuccess) {
   std::vector<std::vector<uint8_t>> cert_authorities_bin = {
       {1, 2, 3}, {2, 3, 4}, {3, 4, 5}};
   std::vector<std::string> cert_authorities_str = {"\1\2\3", "\2\3\4",
@@ -461,7 +461,7 @@ TEST_F(KeystoreServiceAshTest, SelectClientCertificatesSuccess) {
   AssertCertListEq(observer.result.value().value(), GetCertificateList());
 }
 
-TEST_F(KeystoreServiceAshTest, SelectClientCertificatesFail) {
+TEST_F(KeystoreServiceTest, SelectClientCertificatesFail) {
   EXPECT_CALL(platform_keys_service_, SelectClientCertificates)
       .WillOnce(WithArg<1>([](auto callback) {
         std::move(callback).Run({}, Status::kErrorInternal);
@@ -476,7 +476,7 @@ TEST_F(KeystoreServiceAshTest, SelectClientCertificatesFail) {
 
 //------------------------------------------------------------------------------
 
-TEST_F(KeystoreServiceAshTest, GetKeyTagsSuccess) {
+TEST_F(KeystoreServiceTest, GetKeyTagsSuccess) {
   EXPECT_CALL(key_permissions_service_,
               IsCorporateKey(GetPublicKeyBin(), /*callback=*/_))
       .WillOnce(
@@ -491,7 +491,7 @@ TEST_F(KeystoreServiceAshTest, GetKeyTagsSuccess) {
             static_cast<uint64_t>(chromeos::KeyTag::kCorporate));
 }
 
-TEST_F(KeystoreServiceAshTest, GetKeyTagsFail) {
+TEST_F(KeystoreServiceTest, GetKeyTagsFail) {
   EXPECT_CALL(key_permissions_service_, IsCorporateKey)
       .WillOnce(RunOnceCallback<1>(std::nullopt, Status::kErrorInternal));
 
@@ -504,7 +504,7 @@ TEST_F(KeystoreServiceAshTest, GetKeyTagsFail) {
 
 //------------------------------------------------------------------------------
 
-TEST_F(KeystoreServiceAshTest, AddKeyTagsSuccess) {
+TEST_F(KeystoreServiceTest, AddKeyTagsSuccess) {
   const uint64_t tags = static_cast<uint64_t>(chromeos::KeyTag::kCorporate);
 
   EXPECT_CALL(key_permissions_service_,
@@ -518,7 +518,7 @@ TEST_F(KeystoreServiceAshTest, AddKeyTagsSuccess) {
   EXPECT_EQ(observer.result_is_error, false);
 }
 
-TEST_F(KeystoreServiceAshTest, AddKeyTagsFail) {
+TEST_F(KeystoreServiceTest, AddKeyTagsFail) {
   const uint64_t tags = static_cast<uint64_t>(chromeos::KeyTag::kCorporate);
 
   EXPECT_CALL(key_permissions_service_,
@@ -535,7 +535,7 @@ TEST_F(KeystoreServiceAshTest, AddKeyTagsFail) {
 
 //------------------------------------------------------------------------------
 
-TEST_F(KeystoreServiceAshTest, CanUserGrantPermissionForKey) {
+TEST_F(KeystoreServiceTest, CanUserGrantPermissionForKey) {
   EXPECT_CALL(key_permissions_service_,
               CanUserGrantPermissionForKey(GetPublicKeyBin(), /*callback=*/_))
       .WillOnce(RunOnceCallback<1>(false));
@@ -550,7 +550,7 @@ TEST_F(KeystoreServiceAshTest, CanUserGrantPermissionForKey) {
 
 //------------------------------------------------------------------------------
 
-TEST_F(KeystoreServiceAshTest, SetAttributeForKeySuccess) {
+TEST_F(KeystoreServiceTest, SetAttributeForKeySuccess) {
   EXPECT_CALL(platform_keys_service_,
               SetAttributeForKey(
                   TokenId::kUser, GetPublicKeyBin(),
@@ -569,7 +569,7 @@ TEST_F(KeystoreServiceAshTest, SetAttributeForKeySuccess) {
   EXPECT_EQ(observer.result_is_error, false);
 }
 
-TEST_F(KeystoreServiceAshTest, SetAttributeForKeyFail) {
+TEST_F(KeystoreServiceTest, SetAttributeForKeyFail) {
   EXPECT_CALL(platform_keys_service_,
               SetAttributeForKey(
                   TokenId::kUser, GetPublicKeyBin(),
@@ -591,7 +591,7 @@ TEST_F(KeystoreServiceAshTest, SetAttributeForKeyFail) {
 
 //------------------------------------------------------------------------------
 
-TEST_F(KeystoreServiceAshTest, GetPublicKeySuccess) {
+TEST_F(KeystoreServiceTest, GetPublicKeySuccess) {
   const std::vector<uint8_t> cert_bin =
       CertToBlob(GetCertificateList()->front());
 
@@ -614,7 +614,7 @@ TEST_F(KeystoreServiceAshTest, GetPublicKeySuccess) {
   EXPECT_EQ(params.rsa_params.public_exponent, (std::vector<uint8_t>{1, 0, 1}));
 }
 
-TEST_F(KeystoreServiceAshTest, RsaOaepAlgoGetPublicKeyFail) {
+TEST_F(KeystoreServiceTest, RsaOaepAlgoGetPublicKeyFail) {
   const std::vector<uint8_t> cert_bin =
       CertToBlob(GetCertificateList()->front());
 
@@ -627,7 +627,7 @@ TEST_F(KeystoreServiceAshTest, RsaOaepAlgoGetPublicKeyFail) {
                 KeystoreError::kAlgorithmNotPermittedByCertificate);
 }
 
-TEST_F(KeystoreServiceAshTest, UnknownAlgoGetPublicKeyFail) {
+TEST_F(KeystoreServiceTest, UnknownAlgoGetPublicKeyFail) {
   const std::vector<uint8_t> cert_bin =
       CertToBlob(GetCertificateList()->front());
 
@@ -640,7 +640,7 @@ TEST_F(KeystoreServiceAshTest, UnknownAlgoGetPublicKeyFail) {
                 KeystoreError::kAlgorithmNotPermittedByCertificate);
 }
 
-TEST_F(KeystoreServiceAshTest, BadCertificateGetPublicKeyFail) {
+TEST_F(KeystoreServiceTest, BadCertificateGetPublicKeyFail) {
   // Using some random sequence as certificate.
   const std::vector<uint8_t> bad_cert_bin = {10, 11, 12, 13, 14, 15};
   CallbackObserver<chromeos::GetPublicKeyResult> observer;
@@ -655,7 +655,7 @@ TEST_F(KeystoreServiceAshTest, BadCertificateGetPublicKeyFail) {
 
 //------------------------------------------------------------------------------
 
-TEST_F(KeystoreServiceAshTest, GetKeyStoresEmptySuccess) {
+TEST_F(KeystoreServiceTest, GetKeyStoresEmptySuccess) {
   EXPECT_CALL(platform_keys_service_, GetTokens)
       .WillOnce(RunOnceCallback<0>(std::vector<TokenId>({}), Status::kSuccess));
 
@@ -667,7 +667,7 @@ TEST_F(KeystoreServiceAshTest, GetKeyStoresEmptySuccess) {
   EXPECT_TRUE(observer.result.value().value().empty());
 }
 
-TEST_F(KeystoreServiceAshTest, GetKeyStoresUserSuccess) {
+TEST_F(KeystoreServiceTest, GetKeyStoresUserSuccess) {
   EXPECT_CALL(platform_keys_service_, GetTokens)
       .WillOnce(RunOnceCallback<0>(std::vector<TokenId>({TokenId::kUser}),
                                    Status::kSuccess));
@@ -681,7 +681,7 @@ TEST_F(KeystoreServiceAshTest, GetKeyStoresUserSuccess) {
               ElementsAre(chromeos::KeystoreType::kUser));
 }
 
-TEST_F(KeystoreServiceAshTest, GetKeyStoresDeviceSuccess) {
+TEST_F(KeystoreServiceTest, GetKeyStoresDeviceSuccess) {
   EXPECT_CALL(platform_keys_service_, GetTokens)
       .WillOnce(RunOnceCallback<0>(std::vector<TokenId>({TokenId::kSystem}),
                                    Status::kSuccess));
@@ -695,7 +695,7 @@ TEST_F(KeystoreServiceAshTest, GetKeyStoresDeviceSuccess) {
               ElementsAre(chromeos::KeystoreType::kDevice));
 }
 
-TEST_F(KeystoreServiceAshTest, GetKeyStoresDeviceUserSuccess) {
+TEST_F(KeystoreServiceTest, GetKeyStoresDeviceUserSuccess) {
   EXPECT_CALL(platform_keys_service_, GetTokens)
       .WillOnce(RunOnceCallback<0>(
           std::vector<TokenId>({TokenId::kUser, TokenId::kSystem}),
@@ -711,7 +711,7 @@ TEST_F(KeystoreServiceAshTest, GetKeyStoresDeviceUserSuccess) {
                                    chromeos::KeystoreType::kDevice));
 }
 
-TEST_F(KeystoreServiceAshTest, GetKeyStoresFail) {
+TEST_F(KeystoreServiceTest, GetKeyStoresFail) {
   EXPECT_CALL(platform_keys_service_, GetTokens)
       .WillOnce(
           RunOnceCallback<0>(std::vector<TokenId>({}), Status::kErrorInternal));
@@ -725,7 +725,7 @@ TEST_F(KeystoreServiceAshTest, GetKeyStoresFail) {
 
 //------------------------------------------------------------------------------
 
-TEST_F(KeystoreServiceAshTest, GetCertificatesSuccess) {
+TEST_F(KeystoreServiceTest, GetCertificatesSuccess) {
   EXPECT_CALL(platform_keys_service_,
               GetCertificates(TokenId::kUser, /*callback=*/_))
       .WillOnce(RunOnceCallback<1>(GetCertificateList(), Status::kSuccess));
@@ -739,7 +739,7 @@ TEST_F(KeystoreServiceAshTest, GetCertificatesSuccess) {
   AssertCertListEq(observer.result.value().value(), GetCertificateList());
 }
 
-TEST_F(KeystoreServiceAshTest, InternalErrorThenGetCertificatesFail) {
+TEST_F(KeystoreServiceTest, InternalErrorThenGetCertificatesFail) {
   EXPECT_CALL(platform_keys_service_,
               GetCertificates(TokenId::kUser, /*callback=*/_))
       .WillOnce(RunOnceCallback<1>(std::make_unique<net::CertificateList>(),
@@ -755,7 +755,7 @@ TEST_F(KeystoreServiceAshTest, InternalErrorThenGetCertificatesFail) {
 
 //------------------------------------------------------------------------------
 
-TEST_F(KeystoreServiceAshTest, AddCertificateSuccess) {
+TEST_F(KeystoreServiceTest, AddCertificateSuccess) {
   auto cert_list = GetCertificateList();
 
   EXPECT_CALL(platform_keys_service_,
@@ -772,7 +772,7 @@ TEST_F(KeystoreServiceAshTest, AddCertificateSuccess) {
   EXPECT_EQ(observer.result_is_error, false);
 }
 
-TEST_F(KeystoreServiceAshTest, InvalidCertificateThenAddCertificateFail) {
+TEST_F(KeystoreServiceTest, InvalidCertificateThenAddCertificateFail) {
   auto valid_cert = GetCertificateList()->front();
   StatusCallbackObserver observer;
   // Mocking very long input as a reason for invalid certificate.
@@ -789,7 +789,7 @@ TEST_F(KeystoreServiceAshTest, InvalidCertificateThenAddCertificateFail) {
   EXPECT_EQ(observer.result_error, KeystoreError::kInputTooLong);
 }
 
-TEST_F(KeystoreServiceAshTest, NotParsebleCertThenAddCertificateFail) {
+TEST_F(KeystoreServiceTest, NotParsebleCertThenAddCertificateFail) {
   std::vector<uint8_t> empty_cert_blob;
   StatusCallbackObserver observer;
 
@@ -803,7 +803,7 @@ TEST_F(KeystoreServiceAshTest, NotParsebleCertThenAddCertificateFail) {
 
 //------------------------------------------------------------------------------
 
-TEST_F(KeystoreServiceAshTest, RemoveCertificateSuccess) {
+TEST_F(KeystoreServiceTest, RemoveCertificateSuccess) {
   auto cert_list = GetCertificateList();
 
   EXPECT_CALL(platform_keys_service_,
@@ -820,7 +820,7 @@ TEST_F(KeystoreServiceAshTest, RemoveCertificateSuccess) {
   EXPECT_EQ(observer.result_is_error, false);
 }
 
-TEST_F(KeystoreServiceAshTest, RemoveCertificateFail) {
+TEST_F(KeystoreServiceTest, RemoveCertificateFail) {
   auto cert_list = GetCertificateList();
 
   EXPECT_CALL(platform_keys_service_,
@@ -840,21 +840,21 @@ TEST_F(KeystoreServiceAshTest, RemoveCertificateFail) {
 
 //------------------------------------------------------------------------------
 
-ash::attestation::MockTpmChallengeKey* InjectMockChallengeKey() {
+attestation::MockTpmChallengeKey* InjectMockChallengeKey() {
   auto mock_challenge_key =
-      std::make_unique<ash::attestation::MockTpmChallengeKey>();
-  ash::attestation::MockTpmChallengeKey* challenge_key_ptr =
+      std::make_unique<attestation::MockTpmChallengeKey>();
+  attestation::MockTpmChallengeKey* challenge_key_ptr =
       mock_challenge_key.get();
-  ash::attestation::TpmChallengeKeyFactory::SetForTesting(
+  attestation::TpmChallengeKeyFactory::SetForTesting(
       std::move(mock_challenge_key));
   return challenge_key_ptr;
 }
 
-TEST_F(KeystoreServiceAshTest, ChallengeUserKeyNoMigrateSuccess) {
+TEST_F(KeystoreServiceTest, ChallengeUserKeyNoMigrateSuccess) {
   // Incoming challenge and outgoing challenge response are imitated with the
   // same data blob. It is not realistic, but good enough for this test.
 
-  ash::attestation::MockTpmChallengeKey* challenge_key_ptr =
+  attestation::MockTpmChallengeKey* challenge_key_ptr =
       InjectMockChallengeKey();
 
   EXPECT_CALL(
@@ -866,7 +866,7 @@ TEST_F(KeystoreServiceAshTest, ChallengeUserKeyNoMigrateSuccess) {
                     /*key_name=*/std::string(),
                     /*signals=*/_))
       .WillOnce(RunOnceCallback<2>(
-          ash::attestation::TpmChallengeKeyResult::MakeChallengeResponse(
+          attestation::TpmChallengeKeyResult::MakeChallengeResponse(
               GetDataStr())));
 
   CallbackObserver<chromeos::ChallengeAttestationOnlyKeystoreResult> observer;
@@ -879,11 +879,11 @@ TEST_F(KeystoreServiceAshTest, ChallengeUserKeyNoMigrateSuccess) {
   EXPECT_EQ(observer.result.value().value(), GetDataBin());
 }
 
-TEST_F(KeystoreServiceAshTest, ChallengeUserKeyMigrateSuccess) {
+TEST_F(KeystoreServiceTest, ChallengeUserKeyMigrateSuccess) {
   // Incoming challenge and outgoing challenge response are imitated with the
   // same data blob. It is not realistic, but good enough for this test.
 
-  ash::attestation::MockTpmChallengeKey* challenge_key_ptr =
+  attestation::MockTpmChallengeKey* challenge_key_ptr =
       InjectMockChallengeKey();
 
   EXPECT_CALL(
@@ -895,7 +895,7 @@ TEST_F(KeystoreServiceAshTest, ChallengeUserKeyMigrateSuccess) {
                     /*key_name=*/std::string(),
                     /*signals=*/_))
       .WillOnce(RunOnceCallback<2>(
-          ash::attestation::TpmChallengeKeyResult::MakeChallengeResponse(
+          attestation::TpmChallengeKeyResult::MakeChallengeResponse(
               GetDataStr())));
 
   CallbackObserver<chromeos::ChallengeAttestationOnlyKeystoreResult> observer;
@@ -908,11 +908,11 @@ TEST_F(KeystoreServiceAshTest, ChallengeUserKeyMigrateSuccess) {
   EXPECT_EQ(observer.result.value().value(), GetDataBin());
 }
 
-TEST_F(KeystoreServiceAshTest, ChallengeDeviceKeyNoMigrateSuccess) {
+TEST_F(KeystoreServiceTest, ChallengeDeviceKeyNoMigrateSuccess) {
   // Incoming challenge and outgoing challenge response are imitated with the
   // same data blob. It is not realistic, but good enough for this test.
 
-  ash::attestation::MockTpmChallengeKey* challenge_key_ptr =
+  attestation::MockTpmChallengeKey* challenge_key_ptr =
       InjectMockChallengeKey();
 
   EXPECT_CALL(
@@ -924,7 +924,7 @@ TEST_F(KeystoreServiceAshTest, ChallengeDeviceKeyNoMigrateSuccess) {
                     /*key_name=*/std::string(),
                     /*signals=*/_))
       .WillOnce(RunOnceCallback<2>(
-          ash::attestation::TpmChallengeKeyResult::MakeChallengeResponse(
+          attestation::TpmChallengeKeyResult::MakeChallengeResponse(
               GetDataStr())));
 
   CallbackObserver<chromeos::ChallengeAttestationOnlyKeystoreResult> observer;
@@ -938,11 +938,11 @@ TEST_F(KeystoreServiceAshTest, ChallengeDeviceKeyNoMigrateSuccess) {
   EXPECT_EQ(observer.result.value().value(), GetDataBin());
 }
 
-TEST_F(KeystoreServiceAshTest, ChallengeDeviceKeyMigrateSuccess) {
+TEST_F(KeystoreServiceTest, ChallengeDeviceKeyMigrateSuccess) {
   // Incoming challenge and outgoing challenge response are imitated with the
   // same data blob. It is not realistic, but good enough for this test.
 
-  ash::attestation::MockTpmChallengeKey* challenge_key_ptr =
+  attestation::MockTpmChallengeKey* challenge_key_ptr =
       InjectMockChallengeKey();
 
   EXPECT_CALL(
@@ -954,7 +954,7 @@ TEST_F(KeystoreServiceAshTest, ChallengeDeviceKeyMigrateSuccess) {
                     /*key_name=*/StrStartsWith("attest-ent-machine-keystore-"),
                     /*signals=*/_))
       .WillOnce(RunOnceCallback<2>(
-          ash::attestation::TpmChallengeKeyResult::MakeChallengeResponse(
+          attestation::TpmChallengeKeyResult::MakeChallengeResponse(
               GetDataStr())));
 
   CallbackObserver<chromeos::ChallengeAttestationOnlyKeystoreResult> observer;
@@ -968,11 +968,11 @@ TEST_F(KeystoreServiceAshTest, ChallengeDeviceKeyMigrateSuccess) {
   EXPECT_EQ(observer.result.value().value(), GetDataBin());
 }
 
-TEST_F(KeystoreServiceAshTest, ChallengeUserEcdsaKeyMigrateSuccess) {
+TEST_F(KeystoreServiceTest, ChallengeUserEcdsaKeyMigrateSuccess) {
   // Incoming challenge and outgoing challenge response are imitated with the
   // same data blob. It is not realistic, but good enough for this test.
 
-  ash::attestation::MockTpmChallengeKey* challenge_key_ptr =
+  attestation::MockTpmChallengeKey* challenge_key_ptr =
       InjectMockChallengeKey();
 
   EXPECT_CALL(
@@ -984,7 +984,7 @@ TEST_F(KeystoreServiceAshTest, ChallengeUserEcdsaKeyMigrateSuccess) {
                     /*key_name=*/std::string(),
                     /*signals=*/_))
       .WillOnce(RunOnceCallback<2>(
-          ash::attestation::TpmChallengeKeyResult::MakeChallengeResponse(
+          attestation::TpmChallengeKeyResult::MakeChallengeResponse(
               GetDataStr())));
 
   CallbackObserver<chromeos::ChallengeAttestationOnlyKeystoreResult> observer;
@@ -997,12 +997,12 @@ TEST_F(KeystoreServiceAshTest, ChallengeUserEcdsaKeyMigrateSuccess) {
   EXPECT_EQ(observer.result.value().value(), GetDataBin());
 }
 
-TEST_F(KeystoreServiceAshTest, ChallengeKeyFail) {
-  ash::attestation::MockTpmChallengeKey* challenge_key_ptr =
+TEST_F(KeystoreServiceTest, ChallengeKeyFail) {
+  attestation::MockTpmChallengeKey* challenge_key_ptr =
       InjectMockChallengeKey();
 
-  auto challenge_result = ash::attestation::TpmChallengeKeyResult::MakeError(
-      ash::attestation::TpmChallengeKeyResultCode::kDbusError);
+  auto challenge_result = attestation::TpmChallengeKeyResult::MakeError(
+      attestation::TpmChallengeKeyResultCode::kDbusError);
 
   EXPECT_CALL(
       *challenge_key_ptr,
@@ -1026,7 +1026,7 @@ TEST_F(KeystoreServiceAshTest, ChallengeKeyFail) {
             challenge_result.GetErrorMessage());
 }
 
-TEST_F(KeystoreServiceAshTest, ChallengeRsaOaepKeyFails) {
+TEST_F(KeystoreServiceTest, ChallengeRsaOaepKeyFails) {
   CallbackObserver<chromeos::ChallengeAttestationOnlyKeystoreResult> observer;
 
   keystore_service_.ChallengeAttestationOnlyKeystore(
@@ -1041,4 +1041,4 @@ TEST_F(KeystoreServiceAshTest, ChallengeRsaOaepKeyFails) {
 }
 
 }  // namespace
-}  // namespace crosapi
+}  // namespace ash

@@ -31,9 +31,9 @@ namespace content {
 class BrowserContext;
 }
 
-namespace crosapi {
-class KeystoreServiceAsh;
-}  // namespace crosapi
+namespace ash {
+class KeystoreService;
+}  // namespace ash
 
 namespace chromeos::platform_keys {
 
@@ -218,7 +218,7 @@ class ExtensionKeyPermissionsService {
       extensions_state_store_ = nullptr;
   std::vector<KeyEntry> state_store_entries_;
   const raw_ptr<policy::PolicyService> profile_policies_;
-  const raw_ptr<crosapi::KeystoreServiceAsh> keystore_service_ = nullptr;
+  const raw_ptr<ash::KeystoreService> keystore_service_ = nullptr;
   base::WeakPtrFactory<ExtensionKeyPermissionsService> weak_factory_{this};
 };
 

@@ -41,7 +41,7 @@ include_rules = [
   "+chrome/browser/ash/net",
   "+chrome/browser/ash/ownership",
   "+chrome/browser/ash/phonehub",
-  "+chrome/browser/ash/platform_keys/key_permissions",
+  "+chrome/browser/ash/platform_keys",
   "+chrome/browser/ash/plugin_vm",
   "+chrome/browser/ash/policy/core",
   "+chrome/browser/ash/printing",

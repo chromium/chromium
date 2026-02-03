@@ -12,8 +12,8 @@
 #include <utility>
 #include <vector>
 
-#include "chrome/browser/ash/crosapi/keystore_service_ash.h"
-#include "chrome/browser/ash/crosapi/keystore_service_factory_ash.h"
+#include "chrome/browser/ash/platform_keys/keystore_service.h"
+#include "chrome/browser/ash/platform_keys/keystore_service_factory.h"
 #include "chrome/browser/chromeos/platform_keys/extension_platform_keys_service.h"
 #include "chrome/browser/chromeos/platform_keys/extension_platform_keys_service_factory.h"
 #include "chrome/browser/extensions/api/platform_keys/verify_trust_api_service.h"
@@ -63,10 +63,9 @@ const struct NameValuePair {
 #undef CERT_STATUS_FLAG
 };
 
-crosapi::KeystoreServiceAsh* GetKeystoreService(
+ash::KeystoreService* GetKeystoreService(
     content::BrowserContext* browser_context) {
-  return crosapi::KeystoreServiceFactoryAsh::GetForBrowserContext(
-      browser_context);
+  return ash::KeystoreServiceFactory::GetForBrowserContext(browser_context);
 }
 
 std::optional<KeystoreAlgorithmName> KeystoreAlgorithmNameFromString(

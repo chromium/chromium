@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/crosapi/keystore_service_ash.h"
+#include "chrome/browser/ash/platform_keys/keystore_service.h"
 
 #include <stdint.h>
 
@@ -34,23 +34,23 @@
 #include "net/cert/x509_certificate.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
 
-namespace crosapi {
+namespace ash {
 
 namespace {
 
+using chromeos::ExtensionPlatformKeysService;
 using chromeos::KeystoreAlgorithm;
 using chromeos::KeystoreAlgorithmName;
+using chromeos::KeystoreEcdsaParams;
 using chromeos::KeystoreError;
 using chromeos::KeystoreKeyAttributeType;
 using chromeos::KeystoreType;
+using chromeos::RsaOaepParams;
+using chromeos::RsassaPkcs115Params;
+using chromeos::platform_keys::TokenId;
+using platform_keys::KeyPermissionsService;
+using platform_keys::PlatformKeysService;
 using SigningScheme = chromeos::KeystoreSigningScheme;
-using ::ash::platform_keys::KeyPermissionsService;
-using ::ash::platform_keys::PlatformKeysService;
-using ::chromeos::ExtensionPlatformKeysService;
-using ::chromeos::KeystoreEcdsaParams;
-using ::chromeos::RsaOaepParams;
-using ::chromeos::RsassaPkcs115Params;
-using ::chromeos::platform_keys::TokenId;
 
 // Converts a binary blob to a certificate.
 scoped_refptr<net::X509Certificate> ParseCertificate(
@@ -166,48 +166,47 @@ UnpackKeystoreKeyAttributeType(KeystoreKeyAttributeType keystore_type) {
 
 }  // namespace
 
-KeystoreServiceAsh::KeystoreServiceAsh(content::BrowserContext* fixed_context)
+KeystoreService::KeystoreService(content::BrowserContext* fixed_context)
     : fixed_platform_keys_service_(
-          ash::platform_keys::PlatformKeysServiceFactory::GetForBrowserContext(
+          platform_keys::PlatformKeysServiceFactory::GetForBrowserContext(
               fixed_context)),
       fixed_key_permissions_service_(
-          ash::platform_keys::KeyPermissionsServiceFactory::
-              GetForBrowserContext(fixed_context)) {
+          platform_keys::KeyPermissionsServiceFactory::GetForBrowserContext(
+              fixed_context)) {
   CHECK(fixed_platform_keys_service_);
   CHECK(fixed_key_permissions_service_);
 }
 
-KeystoreServiceAsh::KeystoreServiceAsh(
-    PlatformKeysService* platform_keys_service,
-    KeyPermissionsService* key_permissions_service)
+KeystoreService::KeystoreService(PlatformKeysService* platform_keys_service,
+                                 KeyPermissionsService* key_permissions_service)
     : fixed_platform_keys_service_(platform_keys_service),
       fixed_key_permissions_service_(key_permissions_service) {
   CHECK(fixed_platform_keys_service_);
   CHECK(fixed_key_permissions_service_);
 }
 
-KeystoreServiceAsh::KeystoreServiceAsh() = default;
-KeystoreServiceAsh::~KeystoreServiceAsh() = default;
+KeystoreService::KeystoreService() = default;
+KeystoreService::~KeystoreService() = default;
 
-PlatformKeysService* KeystoreServiceAsh::GetPlatformKeys() {
+PlatformKeysService* KeystoreService::GetPlatformKeys() {
   if (fixed_platform_keys_service_) {
     return fixed_platform_keys_service_;
   }
 
   PlatformKeysService* service =
-      ash::platform_keys::PlatformKeysServiceFactory::GetForBrowserContext(
+      platform_keys::PlatformKeysServiceFactory::GetForBrowserContext(
           ProfileManager::GetPrimaryUserProfile());
   CHECK(service);
   return service;
 }
 
-KeyPermissionsService* KeystoreServiceAsh::GetKeyPermissions() {
+KeyPermissionsService* KeystoreService::GetKeyPermissions() {
   if (fixed_key_permissions_service_) {
     return fixed_key_permissions_service_;
   }
 
   KeyPermissionsService* service =
-      ash::platform_keys::KeyPermissionsServiceFactory::GetForBrowserContext(
+      platform_keys::KeyPermissionsServiceFactory::GetForBrowserContext(
           ProfileManager::GetPrimaryUserProfile());
   CHECK(service);
   return service;
@@ -215,7 +214,7 @@ KeyPermissionsService* KeystoreServiceAsh::GetKeyPermissions() {
 
 //------------------------------------------------------------------------------
 
-void KeystoreServiceAsh::ChallengeAttestationOnlyKeystore(
+void KeystoreService::ChallengeAttestationOnlyKeystore(
     KeystoreType type,
     const std::vector<uint8_t>& challenge,
     bool migrate,
@@ -223,15 +222,15 @@ void KeystoreServiceAsh::ChallengeAttestationOnlyKeystore(
     ChallengeAttestationOnlyKeystoreCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  attestation::KeyType key_crypto_type;
+  ::attestation::KeyType key_crypto_type;
   switch (algorithm) {
     // Use RSA by default for backwards compatibility.
     case KeystoreAlgorithmName::kUnknown:
     case KeystoreAlgorithmName::kRsassaPkcs115:
-      key_crypto_type = attestation::KEY_TYPE_RSA;
+      key_crypto_type = ::attestation::KEY_TYPE_RSA;
       break;
     case KeystoreAlgorithmName::kEcdsa:
-      key_crypto_type = attestation::KEY_TYPE_ECC;
+      key_crypto_type = ::attestation::KEY_TYPE_ECC;
       break;
     case KeystoreAlgorithmName::kRsaOaep:
       std::move(callback).Run(
@@ -240,32 +239,32 @@ void KeystoreServiceAsh::ChallengeAttestationOnlyKeystore(
       return;
   }
 
-  attestation::VerifiedAccessFlow flow_type;
+  ::attestation::VerifiedAccessFlow flow_type;
   switch (type) {
     case KeystoreType::kUser:
-      flow_type = attestation::ENTERPRISE_USER;
+      flow_type = ::attestation::ENTERPRISE_USER;
       break;
     case KeystoreType::kDevice:
-      flow_type = attestation::ENTERPRISE_MACHINE;
+      flow_type = ::attestation::ENTERPRISE_MACHINE;
       break;
   }
   Profile* profile = ProfileManager::GetActiveUserProfile();
 
   std::string key_name_for_spkac;
-  if (migrate && (flow_type == attestation::ENTERPRISE_MACHINE)) {
+  if (migrate && (flow_type == ::attestation::ENTERPRISE_MACHINE)) {
     key_name_for_spkac = base::StrCat(
-        {ash::attestation::kEnterpriseMachineKeyForSpkacPrefix, "keystore-",
+        {attestation::kEnterpriseMachineKeyForSpkacPrefix, "keystore-",
          base::UnguessableToken::Create().ToString()});
   }
 
   // The lifetime of this object is bound to the callback.
-  std::unique_ptr<ash::attestation::TpmChallengeKey> challenge_key =
-      ash::attestation::TpmChallengeKeyFactory::Create();
-  ash::attestation::TpmChallengeKey* challenge_key_ptr = challenge_key.get();
+  std::unique_ptr<attestation::TpmChallengeKey> challenge_key =
+      attestation::TpmChallengeKeyFactory::Create();
+  attestation::TpmChallengeKey* challenge_key_ptr = challenge_key.get();
   outstanding_challenges_.push_back(std::move(challenge_key));
   challenge_key_ptr->BuildResponse(
       flow_type, profile,
-      base::BindOnce(&KeystoreServiceAsh::DidChallengeAttestationOnlyKeystore,
+      base::BindOnce(&KeystoreService::DidChallengeAttestationOnlyKeystore,
                      weak_factory_.GetWeakPtr(), std::move(callback),
                      challenge_key_ptr),
       std::string(challenge.begin(), challenge.end()),
@@ -273,10 +272,10 @@ void KeystoreServiceAsh::ChallengeAttestationOnlyKeystore(
       /*signals=*/std::nullopt);
 }
 
-void KeystoreServiceAsh::DidChallengeAttestationOnlyKeystore(
+void KeystoreService::DidChallengeAttestationOnlyKeystore(
     ChallengeAttestationOnlyKeystoreCallback callback,
     void* challenge_key_ptr,
-    const ash::attestation::TpmChallengeKeyResult& result) {
+    const attestation::TpmChallengeKeyResult& result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   chromeos::ChallengeAttestationOnlyKeystoreResult result_to_return;
   if (result.IsSuccess()) {
@@ -302,14 +301,14 @@ void KeystoreServiceAsh::DidChallengeAttestationOnlyKeystore(
 
 //------------------------------------------------------------------------------
 
-void KeystoreServiceAsh::GetKeyStores(GetKeyStoresCallback callback) {
+void KeystoreService::GetKeyStores(GetKeyStoresCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  GetPlatformKeys()->GetTokens(base::BindOnce(
-      &KeystoreServiceAsh::DidGetKeyStores, std::move(callback)));
+  GetPlatformKeys()->GetTokens(
+      base::BindOnce(&KeystoreService::DidGetKeyStores, std::move(callback)));
 }
 
 // static
-void KeystoreServiceAsh::DidGetKeyStores(
+void KeystoreService::DidGetKeyStores(
     GetKeyStoresCallback callback,
     std::vector<TokenId> platform_keys_token_ids,
     chromeos::platform_keys::Status status) {
@@ -340,7 +339,7 @@ void KeystoreServiceAsh::DidGetKeyStores(
 
 //------------------------------------------------------------------------------
 
-void KeystoreServiceAsh::SelectClientCertificates(
+void KeystoreService::SelectClientCertificates(
     const std::vector<std::vector<uint8_t>>& certificate_authorities,
     SelectClientCertificatesCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -353,12 +352,12 @@ void KeystoreServiceAsh::SelectClientCertificates(
 
   GetPlatformKeys()->SelectClientCertificates(
       std::move(cert_authorities_str),
-      base::BindOnce(&KeystoreServiceAsh::DidSelectClientCertificates,
+      base::BindOnce(&KeystoreService::DidSelectClientCertificates,
                      std::move(callback)));
 }
 
 // static
-void KeystoreServiceAsh::DidSelectClientCertificates(
+void KeystoreService::DidSelectClientCertificates(
     SelectClientCertificatesCallback callback,
     std::unique_ptr<net::CertificateList> matches,
     chromeos::platform_keys::Status status) {
@@ -386,18 +385,18 @@ void KeystoreServiceAsh::DidSelectClientCertificates(
 
 //------------------------------------------------------------------------------
 
-void KeystoreServiceAsh::GetCertificates(KeystoreType keystore,
-                                         GetCertificatesCallback callback) {
+void KeystoreService::GetCertificates(KeystoreType keystore,
+                                      GetCertificatesCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   PlatformKeysService* platform_keys_service = GetPlatformKeys();
   platform_keys_service->GetCertificates(
       KeystoreToToken(keystore),
-      base::BindOnce(&KeystoreServiceAsh::DidGetCertificates,
+      base::BindOnce(&KeystoreService::DidGetCertificates,
                      std::move(callback)));
 }
 
 // static
-void KeystoreServiceAsh::DidGetCertificates(
+void KeystoreService::DidGetCertificates(
     GetCertificatesCallback callback,
     std::unique_ptr<net::CertificateList> certs,
     chromeos::platform_keys::Status status) {
@@ -425,9 +424,9 @@ void KeystoreServiceAsh::DidGetCertificates(
 
 //------------------------------------------------------------------------------
 
-void KeystoreServiceAsh::AddCertificate(KeystoreType keystore,
-                                        const std::vector<uint8_t>& certificate,
-                                        AddCertificateCallback callback) {
+void KeystoreService::AddCertificate(KeystoreType keystore,
+                                     const std::vector<uint8_t>& certificate,
+                                     AddCertificateCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   scoped_refptr<net::X509Certificate> cert_x509 = ParseCertificate(certificate);
   if (!cert_x509.get()) {
@@ -439,11 +438,11 @@ void KeystoreServiceAsh::AddCertificate(KeystoreType keystore,
   PlatformKeysService* platform_keys_service = GetPlatformKeys();
   platform_keys_service->ImportCertificate(
       KeystoreToToken(keystore), cert_x509,
-      base::BindOnce(&KeystoreServiceAsh::DidImportCertificate,
+      base::BindOnce(&KeystoreService::DidImportCertificate,
                      std::move(callback)));
 }
 
-void KeystoreServiceAsh::DidImportCertificate(
+void KeystoreService::DidImportCertificate(
     AddCertificateCallback callback,
     chromeos::platform_keys::Status status) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -458,10 +457,9 @@ void KeystoreServiceAsh::DidImportCertificate(
 
 //------------------------------------------------------------------------------
 
-void KeystoreServiceAsh::RemoveCertificate(
-    KeystoreType keystore,
-    const std::vector<uint8_t>& certificate,
-    RemoveCertificateCallback callback) {
+void KeystoreService::RemoveCertificate(KeystoreType keystore,
+                                        const std::vector<uint8_t>& certificate,
+                                        RemoveCertificateCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   scoped_refptr<net::X509Certificate> cert_x509 = ParseCertificate(certificate);
   if (!cert_x509.get()) {
@@ -473,11 +471,11 @@ void KeystoreServiceAsh::RemoveCertificate(
   PlatformKeysService* platform_keys_service = GetPlatformKeys();
   platform_keys_service->RemoveCertificate(
       KeystoreToToken(keystore), cert_x509,
-      base::BindOnce(&KeystoreServiceAsh::DidRemoveCertificate,
+      base::BindOnce(&KeystoreService::DidRemoveCertificate,
                      std::move(callback)));
 }
 
-void KeystoreServiceAsh::DidRemoveCertificate(
+void KeystoreService::DidRemoveCertificate(
     RemoveCertificateCallback callback,
     chromeos::platform_keys::Status status) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -492,9 +490,9 @@ void KeystoreServiceAsh::DidRemoveCertificate(
 
 //------------------------------------------------------------------------------
 
-void KeystoreServiceAsh::GetPublicKey(const std::vector<uint8_t>& certificate,
-                                      KeystoreAlgorithmName algorithm_name,
-                                      GetPublicKeyCallback callback) {
+void KeystoreService::GetPublicKey(const std::vector<uint8_t>& certificate,
+                                   KeystoreAlgorithmName algorithm_name,
+                                   GetPublicKeyCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (!IsSigningAlgorithm(algorithm_name)) {
@@ -530,9 +528,9 @@ void KeystoreServiceAsh::GetPublicKey(const std::vector<uint8_t>& certificate,
 
 //------------------------------------------------------------------------------
 
-void KeystoreServiceAsh::GenerateKey(KeystoreType keystore,
-                                     KeystoreAlgorithm algorithm,
-                                     GenerateKeyCallback callback) {
+void KeystoreService::GenerateKey(KeystoreType keystore,
+                                  KeystoreAlgorithm algorithm,
+                                  GenerateKeyCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   PlatformKeysService* platform_keys_service = GetPlatformKeys();
   TokenId token_id = KeystoreToToken(keystore);
@@ -541,33 +539,29 @@ void KeystoreServiceAsh::GenerateKey(KeystoreType keystore,
     platform_keys_service->GenerateRSAKey(
         token_id, params->rsa_params.modulus_length,
         params->rsa_params.sw_backed,
-        base::BindOnce(&KeystoreServiceAsh::DidGenerateKey,
-                       std::move(callback)));
+        base::BindOnce(&KeystoreService::DidGenerateKey, std::move(callback)));
     return;
   }
   if (auto* params = std::get_if<KeystoreEcdsaParams>(&algorithm)) {
     platform_keys_service->GenerateECKey(
         token_id, params->named_curve,
-        base::BindOnce(&KeystoreServiceAsh::DidGenerateKey,
-                       std::move(callback)));
+        base::BindOnce(&KeystoreService::DidGenerateKey, std::move(callback)));
     return;
   }
   if (auto* params = std::get_if<RsaOaepParams>(&algorithm)) {
     platform_keys_service->GenerateRSAKey(
         token_id, params->rsa_params.modulus_length,
         params->rsa_params.sw_backed,
-        base::BindOnce(&KeystoreServiceAsh::DidGenerateKey,
-                       std::move(callback)));
+        base::BindOnce(&KeystoreService::DidGenerateKey, std::move(callback)));
     return;
   }
   NOTREACHED();
 }
 
 // static
-void KeystoreServiceAsh::DidGenerateKey(
-    GenerateKeyCallback callback,
-    std::vector<uint8_t> public_key,
-    chromeos::platform_keys::Status status) {
+void KeystoreService::DidGenerateKey(GenerateKeyCallback callback,
+                                     std::vector<uint8_t> public_key,
+                                     chromeos::platform_keys::Status status) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   chromeos::KeystoreBinaryResult result;
   if (status == chromeos::platform_keys::Status::kSuccess) {
@@ -581,18 +575,18 @@ void KeystoreServiceAsh::DidGenerateKey(
 
 //------------------------------------------------------------------------------
 
-void KeystoreServiceAsh::RemoveKey(KeystoreType keystore,
-                                   const std::vector<uint8_t>& public_key,
-                                   RemoveKeyCallback callback) {
+void KeystoreService::RemoveKey(KeystoreType keystore,
+                                const std::vector<uint8_t>& public_key,
+                                RemoveKeyCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   GetPlatformKeys()->RemoveKey(
       KeystoreToToken(keystore), public_key,
-      base::BindOnce(&KeystoreServiceAsh::DidRemoveKey, std::move(callback)));
+      base::BindOnce(&KeystoreService::DidRemoveKey, std::move(callback)));
 }
 
 // static
-void KeystoreServiceAsh::DidRemoveKey(RemoveKeyCallback callback,
-                                      chromeos::platform_keys::Status status) {
+void KeystoreService::DidRemoveKey(RemoveKeyCallback callback,
+                                   chromeos::platform_keys::Status status) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (status == chromeos::platform_keys::Status::kSuccess) {
     std::move(callback).Run(/*is_error=*/false, KeystoreError::kUnknown);
@@ -605,11 +599,11 @@ void KeystoreServiceAsh::DidRemoveKey(RemoveKeyCallback callback,
 
 //------------------------------------------------------------------------------
 
-void KeystoreServiceAsh::Sign(std::optional<KeystoreType> keystore,
-                              const std::vector<uint8_t>& public_key,
-                              SigningScheme scheme,
-                              const std::vector<uint8_t>& data,
-                              SignCallback callback) {
+void KeystoreService::Sign(std::optional<KeystoreType> keystore,
+                           const std::vector<uint8_t>& public_key,
+                           SigningScheme scheme,
+                           const std::vector<uint8_t>& data,
+                           SignCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   std::optional<TokenId> token_id;
@@ -626,7 +620,7 @@ void KeystoreServiceAsh::Sign(std::optional<KeystoreType> keystore,
   }
 
   PlatformKeysService* service = GetPlatformKeys();
-  auto cb = base::BindOnce(&KeystoreServiceAsh::DidSign, std::move(callback));
+  auto cb = base::BindOnce(&KeystoreService::DidSign, std::move(callback));
 
   switch (key_type) {
     case chromeos::platform_keys::KeyType::kRsassaPkcs1V15:
@@ -648,9 +642,9 @@ void KeystoreServiceAsh::Sign(std::optional<KeystoreType> keystore,
 }
 
 // static
-void KeystoreServiceAsh::DidSign(SignCallback callback,
-                                 std::vector<uint8_t> signature,
-                                 chromeos::platform_keys::Status status) {
+void KeystoreService::DidSign(SignCallback callback,
+                              std::vector<uint8_t> signature,
+                              chromeos::platform_keys::Status status) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (status == chromeos::platform_keys::Status::kSuccess) {
@@ -663,19 +657,19 @@ void KeystoreServiceAsh::DidSign(SignCallback callback,
 
 //------------------------------------------------------------------------------
 
-void KeystoreServiceAsh::GetKeyTags(const std::vector<uint8_t>& public_key,
-                                    GetKeyTagsCallback callback) {
+void KeystoreService::GetKeyTags(const std::vector<uint8_t>& public_key,
+                                 GetKeyTagsCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   GetKeyPermissions()->IsCorporateKey(
       public_key,
-      base::BindOnce(&KeystoreServiceAsh::DidGetKeyTags, std::move(callback)));
+      base::BindOnce(&KeystoreService::DidGetKeyTags, std::move(callback)));
 }
 
 // static
-void KeystoreServiceAsh::DidGetKeyTags(GetKeyTagsCallback callback,
-                                       std::optional<bool> corporate,
-                                       chromeos::platform_keys::Status status) {
+void KeystoreService::DidGetKeyTags(GetKeyTagsCallback callback,
+                                    std::optional<bool> corporate,
+                                    chromeos::platform_keys::Status status) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   using KeyTag = chromeos::KeyTag;
 
@@ -701,9 +695,9 @@ void KeystoreServiceAsh::DidGetKeyTags(GetKeyTagsCallback callback,
 
 //------------------------------------------------------------------------------
 
-void KeystoreServiceAsh::AddKeyTags(const std::vector<uint8_t>& public_key,
-                                    uint64_t tags,
-                                    AddKeyTagsCallback callback) {
+void KeystoreService::AddKeyTags(const std::vector<uint8_t>& public_key,
+                                 uint64_t tags,
+                                 AddKeyTagsCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (tags == static_cast<uint64_t>(chromeos::KeyTag::kNoTags)) {
@@ -713,8 +707,8 @@ void KeystoreServiceAsh::AddKeyTags(const std::vector<uint8_t>& public_key,
 
   if (tags == static_cast<uint64_t>(chromeos::KeyTag::kCorporate)) {
     GetKeyPermissions()->SetCorporateKey(
-        public_key, base::BindOnce(&KeystoreServiceAsh::DidAddKeyTags,
-                                   std::move(callback)));
+        public_key,
+        base::BindOnce(&KeystoreService::DidAddKeyTags, std::move(callback)));
     return;
   }
 
@@ -722,8 +716,8 @@ void KeystoreServiceAsh::AddKeyTags(const std::vector<uint8_t>& public_key,
 }
 
 // static
-void KeystoreServiceAsh::DidAddKeyTags(AddKeyTagsCallback callback,
-                                       chromeos::platform_keys::Status status) {
+void KeystoreService::DidAddKeyTags(AddKeyTagsCallback callback,
+                                    chromeos::platform_keys::Status status) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (status == chromeos::platform_keys::Status::kSuccess) {
     std::move(callback).Run(/*is_error=*/false, KeystoreError::kUnknown);
@@ -736,21 +730,17 @@ void KeystoreServiceAsh::DidAddKeyTags(AddKeyTagsCallback callback,
 
 //------------------------------------------------------------------------------
 
-void KeystoreServiceAsh::CanUserGrantPermissionForKey(
+void KeystoreService::CanUserGrantPermissionForKey(
     const std::vector<uint8_t>& public_key,
     CanUserGrantPermissionForKeyCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  // Strictly speaking, crosapi::CanUserGrantPermissionForKeyCallback is a
-  // different type than platform_keys::CanUserGrantPermissionForKeyCallback.
-  // But as long as signatures are the same, we can just pass `callback`.
   GetKeyPermissions()->CanUserGrantPermissionForKey(public_key,
                                                     std::move(callback));
 }
 
 //------------------------------------------------------------------------------
 
-void KeystoreServiceAsh::SetAttributeForKey(
+void KeystoreService::SetAttributeForKey(
     KeystoreType keystore,
     const std::vector<uint8_t>& public_key,
     KeystoreKeyAttributeType keystore_attribute_type,
@@ -766,7 +756,7 @@ void KeystoreServiceAsh::SetAttributeForKey(
   }
 
   PlatformKeysService* service = GetPlatformKeys();
-  auto cb = base::BindOnce(&KeystoreServiceAsh::DidSetAttributeForKey,
+  auto cb = base::BindOnce(&KeystoreService::DidSetAttributeForKey,
                            std::move(callback));
 
   service->SetAttributeForKey(KeystoreToToken(keystore), public_key,
@@ -775,7 +765,7 @@ void KeystoreServiceAsh::SetAttributeForKey(
 }
 
 // static
-void KeystoreServiceAsh::DidSetAttributeForKey(
+void KeystoreService::DidSetAttributeForKey(
     SetAttributeForKeyCallback callback,
     chromeos::platform_keys::Status status) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -787,4 +777,4 @@ void KeystoreServiceAsh::DidSetAttributeForKey(
         chromeos::platform_keys::StatusToKeystoreError(status));
   }
 }
-}  // namespace crosapi
+}  // namespace ash

@@ -17,9 +17,9 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/values.h"
-#include "chrome/browser/ash/crosapi/keystore_service_ash.h"
-#include "chrome/browser/ash/crosapi/keystore_service_factory_ash.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_service_impl.h"
+#include "chrome/browser/ash/platform_keys/keystore_service.h"
+#include "chrome/browser/ash/platform_keys/keystore_service_factory.h"
 #include "chromeos/ash/components/platform_keys/keystore_types.h"
 #include "chromeos/ash/components/platform_keys/platform_keys.h"
 #include "components/policy/core/common/policy_map.h"
@@ -105,15 +105,12 @@ bool PolicyAllowsCorporateKeyUsageForExtension(
 //
 // KeystoreService is expected to always outlive ExtensionKeyPermissionsService
 // because ExtensionKeyPermissionsService instances are owned by
-// ExtensionPlatformKeysService and the factory can return:
-// * an instance owned by CrosapiManager (that is created before profiles and
-// should outlive ExtensionPlatformKeysService)
-// * or an appropriate keyed service that will always exist during
-// ExtensionPlatformKeysService lifetime (because of KeyedService dependencies).
-crosapi::KeystoreServiceAsh* GetKeystoreService(
+// ExtensionPlatformKeysService and the factory returns an appropriate keyed
+// service that will always exist during ExtensionPlatformKeysService lifetime
+// (because of KeyedService dependencies).
+ash::KeystoreService* GetKeystoreService(
     content::BrowserContext* browser_context) {
-  return crosapi::KeystoreServiceFactoryAsh::GetForBrowserContext(
-      browser_context);
+  return ash::KeystoreServiceFactory::GetForBrowserContext(browser_context);
 }
 
 }  // namespace

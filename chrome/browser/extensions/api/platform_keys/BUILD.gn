@@ -33,6 +33,7 @@ source_set("platform_keys") {
 
   deps = [
     "//chrome/browser/ash/crosapi",
+    "//chrome/browser/ash/platform_keys:keystore_service",
     "//chrome/browser/chromeos/platform_keys",
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/platform_keys",

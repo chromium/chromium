@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_CROSAPI_KEYSTORE_SERVICE_ASH_H_
-#define CHROME_BROWSER_ASH_CROSAPI_KEYSTORE_SERVICE_ASH_H_
+#ifndef CHROME_BROWSER_ASH_PLATFORM_KEYS_KEYSTORE_SERVICE_H_
+#define CHROME_BROWSER_ASH_PLATFORM_KEYS_KEYSTORE_SERVICE_H_
 
 #include <stdint.h>
 
@@ -29,15 +29,10 @@ namespace platform_keys {
 class KeyPermissionsService;
 class PlatformKeysService;
 }  // namespace platform_keys
-}  // namespace ash
 
-namespace crosapi {
-
-// TODO(crbug.com/365902693): Update this comment.
-// This class is the ash implementation of the KeystoreService crosapi. It
-// allows lacros to expose blessed extension APIs which can query or modify the
-// system keystores. This class is affine to the UI thread.
-class KeystoreServiceAsh : public KeyedService {
+// This class allows to query or modify the system keystores.
+// This class is affine to the UI thread.
+class KeystoreService : public KeyedService {
  public:
   using KeystoreType = chromeos::KeystoreType;
   using SigningScheme = chromeos::KeystoreSigningScheme;
@@ -70,17 +65,17 @@ class KeystoreServiceAsh : public KeyedService {
   using SetAttributeForKeyCallback =
       base::OnceCallback<void(bool, chromeos::KeystoreError)>;
 
-  explicit KeystoreServiceAsh(content::BrowserContext* fixed_context);
+  explicit KeystoreService(content::BrowserContext* fixed_context);
   // Allows to create the service early. It will use the current primary profile
   // whenever used. The profile should be specified explicitly when possible.
-  KeystoreServiceAsh();
+  KeystoreService();
   // For testing only.
-  explicit KeystoreServiceAsh(
-      ash::platform_keys::PlatformKeysService* platform_keys_service,
-      ash::platform_keys::KeyPermissionsService* key_permissions_service);
-  KeystoreServiceAsh(const KeystoreServiceAsh&) = delete;
-  KeystoreServiceAsh& operator=(const KeystoreServiceAsh&) = delete;
-  ~KeystoreServiceAsh() override;
+  explicit KeystoreService(
+      platform_keys::PlatformKeysService* platform_keys_service,
+      platform_keys::KeyPermissionsService* key_permissions_service);
+  KeystoreService(const KeystoreService&) = delete;
+  KeystoreService& operator=(const KeystoreService&) = delete;
+  ~KeystoreService() override;
 
   void ChallengeAttestationOnlyKeystore(
       chromeos::KeystoreType type,
@@ -133,20 +128,20 @@ class KeystoreServiceAsh : public KeyedService {
   // browser context was passed into constructor, the corresponding
   // PlatformKeysService instance will be used for all operations.
   // Otherwise the class will use an instance for the primary profile.
-  ash::platform_keys::PlatformKeysService* GetPlatformKeys();
+  platform_keys::PlatformKeysService* GetPlatformKeys();
 
   // Returns a correct instance of KeyPermissionsService to use. If a specific
   // browser context was passed into constructor, the corresponding
   // KeyPermissionsService instance will be used for all operations.
   // Otherwise the class will use an instance for the primary profile.
-  ash::platform_keys::KeyPermissionsService* GetKeyPermissions();
+  platform_keys::KeyPermissionsService* GetKeyPermissions();
 
   // |challenge_key_ptr| is used as a opaque identifier to match against the
   // unique_ptr in outstanding_challenges_. It should not be dereferenced.
   void DidChallengeAttestationOnlyKeystore(
       ChallengeAttestationOnlyKeystoreCallback callback,
       void* challenge_key_ptr,
-      const ash::attestation::TpmChallengeKeyResult& result);
+      const attestation::TpmChallengeKeyResult& result);
   static void DidGetKeyStores(
       GetKeyStoresCallback callback,
       const std::vector<chromeos::platform_keys::TokenId>
@@ -182,23 +177,23 @@ class KeystoreServiceAsh : public KeyedService {
   // Can be nullptr, should not be used directly, use GetPlatformKeys() instead.
   // Stores a pointer to a specific PlatformKeysService if it was specified in
   // constructor.
-  const raw_ptr<ash::platform_keys::PlatformKeysService>
+  const raw_ptr<platform_keys::PlatformKeysService>
       fixed_platform_keys_service_ = nullptr;
   // Can be nullptr, should not be used directly, use GetKeyPermissions()
   // instead. Stores a pointer to a specific KeyPermissionsService if it was
   // specified in constructor.
-  const raw_ptr<ash::platform_keys::KeyPermissionsService>
+  const raw_ptr<platform_keys::KeyPermissionsService>
       fixed_key_permissions_service_ = nullptr;
 
   // Container to keep outstanding challenges alive. The challenges should be
   // destroyed together with this service to reduce the chance of them accessing
   // other services that may be deleted by that point.
-  std::vector<std::unique_ptr<ash::attestation::TpmChallengeKey>>
+  std::vector<std::unique_ptr<attestation::TpmChallengeKey>>
       outstanding_challenges_;
 
-  base::WeakPtrFactory<KeystoreServiceAsh> weak_factory_{this};
+  base::WeakPtrFactory<KeystoreService> weak_factory_{this};
 };
 
-}  // namespace crosapi
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_CROSAPI_KEYSTORE_SERVICE_ASH_H_
+#endif  // CHROME_BROWSER_ASH_PLATFORM_KEYS_KEYSTORE_SERVICE_H_

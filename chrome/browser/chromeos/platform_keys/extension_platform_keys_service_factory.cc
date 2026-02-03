@@ -13,7 +13,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
-#include "chrome/browser/ash/crosapi/keystore_service_factory_ash.h"
+#include "chrome/browser/ash/platform_keys/keystore_service_factory.h"
 #include "chrome/browser/chromeos/platform_keys/extension_platform_keys_service.h"
 #include "chrome/browser/ui/platform_keys_certificate_selector_chromeos.h"
 #include "extensions/browser/extension_registry.h"
@@ -94,7 +94,7 @@ ExtensionPlatformKeysServiceFactory::ExtensionPlatformKeysServiceFactory()
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kRedirectedToOriginal)
               .Build()) {
-  DependsOn(crosapi::KeystoreServiceFactoryAsh::GetInstance());
+  DependsOn(ash::KeystoreServiceFactory::GetInstance());
 }
 
 ExtensionPlatformKeysServiceFactory::~ExtensionPlatformKeysServiceFactory() =

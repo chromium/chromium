@@ -19,8 +19,8 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
-#include "chrome/browser/ash/crosapi/keystore_service_ash.h"
-#include "chrome/browser/ash/crosapi/keystore_service_factory_ash.h"
+#include "chrome/browser/ash/platform_keys/keystore_service.h"
+#include "chrome/browser/ash/platform_keys/keystore_service_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/platform_keys/extension_key_permissions_service.h"
 #include "chrome/browser/chromeos/platform_keys/extension_key_permissions_service_factory.h"
@@ -133,16 +133,12 @@ bool IsKeyUsedForSigning(platform_keys::KeyType key_type) {
   }
 }
 
-// Returns appropriate KeystoreService for |browser_context|, which can be:
-// * an instance owned by CrosapiManager (that is created before profiles and
-// should outlive ExtensionPlatformKeysService)
-// * or an appropriate keyed service that will always exist
-// during ExtensionPlatformKeysService lifetime (because of KeyedService
-// dependencies).
-crosapi::KeystoreServiceAsh* GetKeystoreService(
+// Returns the KeystoreService for |browser_context|, which is an appropriate
+// keyed service that will always exist during ExtensionPlatformKeysService
+// lifetime (because of KeyedService dependencies).
+ash::KeystoreService* GetKeystoreService(
     content::BrowserContext* browser_context) {
-  return crosapi::KeystoreServiceFactoryAsh::GetForBrowserContext(
-      browser_context);
+  return ash::KeystoreServiceFactory::GetForBrowserContext(browser_context);
 }
 
 }  // namespace
@@ -191,7 +187,7 @@ class ExtensionPlatformKeysService::GenerateKeyTask : public Task {
 
  protected:
   virtual void GenerateKey(
-      crosapi::KeystoreServiceAsh::GenerateKeyCallback callback) = 0;
+      ash::KeystoreService::GenerateKeyCallback callback) = 0;
 
   platform_keys::TokenId token_id_;
   platform_keys::KeyType key_type_;
@@ -337,7 +333,7 @@ class ExtensionPlatformKeysService::GenerateRSAKeyTask
  private:
   // Generates the RSA key.
   void GenerateKey(
-      crosapi::KeystoreServiceAsh::GenerateKeyCallback callback) override {
+      ash::KeystoreService::GenerateKeyCallback callback) override {
     CHECK(key_type_ == platform_keys::KeyType::kRsassaPkcs1V15 ||
           key_type_ == platform_keys::KeyType::kRsaOaep);
 
@@ -377,7 +373,7 @@ class ExtensionPlatformKeysService::GenerateECKeyTask : public GenerateKeyTask {
  private:
   // Generates the EC key.
   void GenerateKey(
-      crosapi::KeystoreServiceAsh::GenerateKeyCallback callback) override {
+      ash::KeystoreService::GenerateKeyCallback callback) override {
     CHECK(key_type_ == platform_keys::KeyType::kEcdsa);
 
     service_->keystore_service_->GenerateKey(

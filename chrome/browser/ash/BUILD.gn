@@ -40,6 +40,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/login/demo_mode",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/multidevice_setup",
+    "//chrome/browser/ash/platform_keys:keystore_service",
     "//chrome/browser/ash/platform_keys/key_permissions",
     "//chrome/browser/ash/platform_keys/key_permissions:test_support",
     "//chrome/browser/ash/profiles",

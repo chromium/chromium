@@ -12,8 +12,8 @@
 #include <vector>
 
 #include "base/values.h"
-#include "chrome/browser/ash/crosapi/keystore_service_ash.h"
-#include "chrome/browser/ash/crosapi/keystore_service_factory_ash.h"
+#include "chrome/browser/ash/platform_keys/keystore_service.h"
+#include "chrome/browser/ash/platform_keys/keystore_service_factory.h"
 #include "chrome/browser/chromeos/platform_keys/extension_platform_keys_service.h"
 #include "chrome/browser/chromeos/platform_keys/extension_platform_keys_service_factory.h"
 #include "chrome/browser/extensions/api/platform_keys_core/platform_keys_utils.h"
@@ -36,10 +36,9 @@ using chromeos::KeystoreType;
 const char kExtensionDoesNotHavePermission[] =
     "The extension does not have permission to call this function.";
 
-crosapi::KeystoreServiceAsh* GetKeystoreService(
+ash::KeystoreService* GetKeystoreService(
     content::BrowserContext* browser_context) {
-  return crosapi::KeystoreServiceFactoryAsh::GetForBrowserContext(
-      browser_context);
+  return ash::KeystoreServiceFactory::GetForBrowserContext(browser_context);
 }
 
 std::optional<KeystoreType> KeystoreTypeFromString(const std::string& input) {

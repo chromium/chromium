@@ -16,7 +16,6 @@ component("platform_keys") {
   ]
   deps = [
     "//base",
-    "//chromeos/crosapi/mojom",
     "//crypto",
     "//net",
     "//third_party/boringssl",
@@ -25,9 +24,7 @@ component("platform_keys") {
 
 source_set("unit_tests") {
   testonly = true
-
   sources = [ "keystore_service_util_unittest.cc" ]
-
   deps = [
     ":platform_keys",
     "//base",
