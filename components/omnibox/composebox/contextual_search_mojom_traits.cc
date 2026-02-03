@@ -109,8 +109,8 @@ EnumTraits<composebox_query::mojom::InputType, omnibox::InputType>::ToMojom(
       return UsedInputType::kLensImage;
     case omnibox::InputType::INPUT_TYPE_LENS_FILE:
       return UsedInputType::kLensFile;
-    default:
-      return UsedInputType::kUnspecified;
+    case omnibox::InputType::INPUT_TYPE_BROWSER_TAB:
+      return UsedInputType::kBrowserTab;
   }
   NOTREACHED();
 }
