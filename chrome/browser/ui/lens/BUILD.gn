@@ -25,6 +25,7 @@ source_set("lens") {
     "lens_searchbox_controller.h",
     "lens_side_panel_untrusted_ui.h",
     "lens_string_utils.h",
+    "overlay_base_controller.h",
   ]
   friend = [ ":*" ]
   sources = [
@@ -130,6 +131,7 @@ source_set("impl") {
     "lens_side_panel_untrusted_ui.cc",
     "lens_string_utils.cc",
     "lens_url_matcher.cc",
+    "overlay_base_controller.cc",
     "page_content_type_conversions.cc",
   ]
 

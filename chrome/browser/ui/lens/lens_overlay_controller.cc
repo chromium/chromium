@@ -315,9 +315,8 @@ LensOverlayController::LensOverlayController(
     tabs::TabInterface* tab,
     LensSearchController* lens_search_controller,
     PrefService* pref_service)
-    : tab_(tab),
+    : OverlayBaseController(tab, pref_service),
       lens_search_controller_(lens_search_controller),
-      pref_service_(pref_service),
       gen204_controller_(
           std::make_unique<lens::LensOverlayGen204Controller>()) {
   InitializeTutorialIPHUrlMatcher();
@@ -329,7 +328,6 @@ LensOverlayController::LensOverlayController(
 
 LensOverlayController::~LensOverlayController() {
   tab_contents_observer_.reset();
-  state_ = State::kOff;
 }
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(LensOverlayController, kOverlayId);
