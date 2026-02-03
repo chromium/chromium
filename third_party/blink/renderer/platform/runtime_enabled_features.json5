@@ -2606,6 +2606,10 @@
       status: "stable",
     },
     {
+      name: "FixLinebreakForPreTag",
+      status: "stable",
+    },
+    {
       // crbug.com/411739501
       name: "FixNextPositionCalculationInInsertList",
       status: "stable",

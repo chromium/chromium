@@ -45,15 +45,15 @@
     evalAndLog("document.execCommand('InsertText', false, 'b')");
     shouldBeEqualToString("div.innerHTML", "<pre>ab</pre>");
     evalAndLog("document.execCommand('InsertText', false, '\\n')");
-    shouldBeEqualToString("div.innerHTML", "<pre>ab</pre><pre><br></pre>");
+    shouldBeEqualToString("div.innerHTML", "<pre>ab<br><br></pre>");
     evalAndLog("document.execCommand('InsertText', false, 'c')");
-    shouldBeEqualToString("div.innerHTML", "<pre>ab</pre><pre>c</pre>");
+    shouldBeEqualToString("div.innerHTML", "<pre>ab<br>c</pre>");
     evalAndLog("document.execCommand('DefaultParagraphSeparator', false, 'div')");
     evalAndLog("document.execCommand('InsertText', false, '\\n')");
-    shouldBeEqualToString("div.innerHTML", "<pre>ab</pre><pre>c</pre><pre><br></pre>");
+    shouldBeEqualToString("div.innerHTML", "<pre>ab<br>c<br><br></pre>");
     evalAndLog("document.execCommand('Delete')");
     evalAndLog("document.execCommand('InsertParagraph')");
-    shouldBeEqualToString("div.innerHTML", "<pre>ab</pre><pre>c</pre><pre><br></pre>");
+    shouldBeEqualToString("div.innerHTML", "<pre>ab<br>c<br><br></pre>");
 
     debug("\nBreaking out of lists.");
     evalAndLog("div.innerHTML = ''");

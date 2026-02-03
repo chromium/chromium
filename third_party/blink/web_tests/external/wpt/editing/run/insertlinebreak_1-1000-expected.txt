@@ -1,29 +1,13 @@
 This is a testharness.js-based test.
-Found 20 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["insertlinebreak",""]] "<table><tbody data-start=0 data-end=1><tr><td>foo<td>bar<tr><td>baz<td>quz</table>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<table><tbody><tr><td><br></td><td><br></td></tr><tr><td>baz</td><td>quz</td></tr></tbody></table>" but got "<table><tbody><tr><td><br><br></td><td><br></td></tr><tr><td>baz</td><td>quz</td></tr></tbody></table>"
 [FAIL] [["insertlinebreak",""]] "<table><tr><td>fo[o</table>b]ar" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<table><tbody><tr><td>fo<br><br></td></tr></tbody></table>ar" but got "<table><tbody><tr><td>fo<br>ar</td></tr></tbody></table>"
 [FAIL] [["insertlinebreak",""]] "<table><tr><td>[foo]</table>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<table><tbody><tr><td><br><br></td></tr></tbody></table>" but got "<br><br>"
-[FAIL] [["insertlinebreak",""]] "<pre>[]foo</pre>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<pre><br>foo</pre>" but got "<pre>\\nfoo</pre>"
-[FAIL] [["insertlinebreak",""]] "<pre>foo[]</pre>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<pre>foo<br><br></pre>" but got "<pre>foo\\n\\n</pre>"
-[FAIL] [["insertlinebreak",""]] "<pre>foo[]<br></pre>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<pre>foo<br><br></pre>" but got "<pre>foo\\n<br></pre>"
-[FAIL] [["insertlinebreak",""]] "<pre>foo[]bar</pre>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<pre>foo<br>bar</pre>" but got "<pre>foo\\nbar</pre>"
-[FAIL] [["insertlinebreak",""]] "<pre>foo[]<br><br></pre>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<pre>foo<br><br><br></pre>" but got "<pre>foo\\n<br><br></pre>"
-[FAIL] [["insertlinebreak",""]] "<pre>foo<br>{}<br></pre>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<pre>foo<br><br><br></pre>" but got "<pre>foo<br>\\n<br></pre>"
 [FAIL] [["insertlinebreak",""]] "<pre>foo&#10;[]</pre>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<pre>foo\\n<br><br></pre>" but got "<pre>foo\\n\\n</pre>"
-[FAIL] [["insertlinebreak",""]] "<pre>foo[]&#10;</pre>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<pre>foo<br>\\n</pre>" but got "<pre>foo\\n\\n</pre>"
-[FAIL] [["insertlinebreak",""]] "<pre>foo&#10;[]&#10;</pre>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<pre>foo\\n<br>\\n</pre>" but got "<pre>foo\\n\\n\\n</pre>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<pre>foo\\n<br><br></pre>" but got "<pre>foo<br>\\n</pre>"
 [FAIL] [["insertlinebreak",""]] "<xmp>foo[]bar</xmp>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<xmp>foobar</xmp>" but got "<xmp>foo\\nbar</xmp>"
 [FAIL] [["insertlinebreak",""]] "<script>foo[]bar</script>baz" compare innerHTML

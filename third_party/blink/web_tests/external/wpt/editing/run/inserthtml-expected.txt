@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 59 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 60 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["stylewithcss","true"],["inserthtml","ab<b>c</b>d"]] "foo[]bar" queryCommandState("stylewithcss") before
   assert_equals: Wrong result returned expected false but got true
 [FAIL] [["defaultparagraphseparator","div"],["inserthtml","<p>abc"]] "<p>foo[bar]baz" compare innerHTML
@@ -110,6 +110,8 @@ Found 59 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><span><!--foo-->abc<!--bar--></span></p>" but got "<p>abc<span><!--foo--><!--bar--></span></p>"
 [FAIL] [["inserthtml","<!--abc-->"]] "<p><span><!--foo--><br><!--bar--></span>{}</p>" compare innerHTML
   assert_in_array: Unexpected innerHTML (after normalizing inline style) value "<p><!--abc--><span><!--foo--><!--bar--></span></p>" not in array ["<p><span><!--foo--><br><!--bar--></span><!--abc--></p>", "<p><span><!--foo--><!--abc--><br><!--bar--></span></p>"]
+[FAIL] [["inserthtml","<pre>abc</pre>"]] "<pre>12[]34</pre>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<pre>12abc34</pre>" but got "<pre>12abc34<br></pre>"
 [FAIL] [["inserthtml","<pre>abc</pre>"]] "<pre>1[23]4</pre>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<pre>1abc4</pre>" but got "<pre>1abc4<br></pre>"
 [FAIL] [["inserthtml","<pre>abc</pre>"]] "<pre contenteditable=\\"false\\"><span contenteditable>[1234]</span></pre>" compare innerHTML

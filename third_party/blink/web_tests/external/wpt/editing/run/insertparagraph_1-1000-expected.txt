@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 47 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 39 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["defaultparagraphseparator","div"],["insertparagraph",""]] "foo[bar]baz" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div>foo</div><div>baz</div>" but got "foo<div>baz</div>"
 [FAIL] [["defaultparagraphseparator","p"],["insertparagraph",""]] "foo[bar]baz" compare innerHTML
@@ -76,23 +76,7 @@ Found 47 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><p><br></p>" but got "<p>foo<br></p><p><br></p>"
 [FAIL] [["defaultparagraphseparator","p"],["insertparagraph",""]] "<p>foo[]<br></p>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><p><br></p>" but got "<p>foo<br></p><p><br></p>"
-[FAIL] [["insertparagraph",""]] "<pre>[]foo</pre>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<pre><br>foo</pre>" but got "<pre><br></pre><pre>foo</pre>"
-[FAIL] [["insertparagraph",""]] "<pre>foo[]</pre>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<pre>foo<br><br></pre>" but got "<pre>foo</pre><pre><br></pre>"
-[FAIL] [["insertparagraph",""]] "<pre>foo[]<br></pre>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<pre>foo<br><br></pre>" but got "<pre>foo<br></pre><pre><br></pre>"
-[FAIL] [["insertparagraph",""]] "<pre>foo[]bar</pre>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<pre>foo<br>bar</pre>" but got "<pre>foo</pre><pre>bar</pre>"
-[FAIL] [["insertparagraph",""]] "<pre>foo[]<br><br></pre>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<pre>foo<br><br><br></pre>" but got "<pre>foo</pre><pre><br><br></pre>"
-[FAIL] [["insertparagraph",""]] "<pre>foo<br>{}<br></pre>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<pre>foo<br><br><br></pre>" but got "<pre>foo<br><br></pre><pre><br></pre>"
 [FAIL] [["insertparagraph",""]] "<pre>foo&#10;[]</pre>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<pre>foo\\n<br><br></pre>" but got "<pre>foo\\n</pre><pre><br></pre>"
-[FAIL] [["insertparagraph",""]] "<pre>foo[]&#10;</pre>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<pre>foo<br>\\n</pre>" but got "<pre>foo\\n</pre><pre><br></pre>"
-[FAIL] [["insertparagraph",""]] "<pre>foo&#10;[]&#10;</pre>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<pre>foo\\n<br>\\n</pre>" but got "<pre>foo\\n\\n</pre><pre><br></pre>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<pre>foo\\n<br><br></pre>" but got "<pre>foo<br>\\n</pre>"
 Harness: the test ran to completion.
 

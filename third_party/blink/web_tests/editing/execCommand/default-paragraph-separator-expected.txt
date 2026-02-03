@@ -34,15 +34,15 @@ PASS div.innerHTML is "<pre>a</pre>"
 document.execCommand('InsertText', false, 'b')
 PASS div.innerHTML is "<pre>ab</pre>"
 document.execCommand('InsertText', false, '\n')
-PASS div.innerHTML is "<pre>ab</pre><pre><br></pre>"
+PASS div.innerHTML is "<pre>ab<br><br></pre>"
 document.execCommand('InsertText', false, 'c')
-PASS div.innerHTML is "<pre>ab</pre><pre>c</pre>"
+PASS div.innerHTML is "<pre>ab<br>c</pre>"
 document.execCommand('DefaultParagraphSeparator', false, 'div')
 document.execCommand('InsertText', false, '\n')
-PASS div.innerHTML is "<pre>ab</pre><pre>c</pre><pre><br></pre>"
+PASS div.innerHTML is "<pre>ab<br>c<br><br></pre>"
 document.execCommand('Delete')
 document.execCommand('InsertParagraph')
-PASS div.innerHTML is "<pre>ab</pre><pre>c</pre><pre><br></pre>"
+PASS div.innerHTML is "<pre>ab<br>c<br><br></pre>"
 
 Breaking out of lists.
 div.innerHTML = ''
