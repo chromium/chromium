@@ -1277,7 +1277,7 @@ export class SearchboxElement extends SearchboxElementBase implements
   }
 
   protected onModelClick_(e: CustomEvent<{model: ModelMode}>) {
-    this.pageHandler_.setActiveModelMode(e.detail.model);
+    this.openComposebox_([], ToolMode.kUnspecified, e.detail.model);
   }
 
   protected openComposebox_(
