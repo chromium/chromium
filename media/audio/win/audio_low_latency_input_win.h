@@ -179,8 +179,6 @@ class MEDIA_EXPORT WASAPIAudioInputStream
   class EchoCancellationConfig;
   class AudioClientActivationHandler;
 
-  PRINTF_FORMAT(2, 3) void SendLogMessage(const char* format, ...);
-
   // DelegateSimpleThread::Delegate implementation.
   void Run() override;
 

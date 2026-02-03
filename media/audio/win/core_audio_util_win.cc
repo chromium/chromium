@@ -258,12 +258,11 @@ ChannelConfig GuessChannelConfig(WORD channels) {
 }
 
 std::string GetDeviceID(IMMDevice* device) {
-  ScopedCoMem<WCHAR> device_id_com;
-  std::string device_id;
-  if (SUCCEEDED(device->GetId(&device_id_com)))
-    base::WideToUTF8(device_id_com, UNSAFE_TODO(wcslen(device_id_com)),
-                     &device_id);
-  return device_id;
+  base::win::ScopedCoMem<WCHAR> device_id_com;
+  if (FAILED(device->GetId(&device_id_com))) {
+    return std::string();
+  }
+  return base::WideToUTF8(device_id_com.get());
 }
 
 bool IsDeviceActive(IMMDevice* device) {
@@ -286,11 +285,9 @@ HRESULT GetDeviceFriendlyNameInternal(IMMDevice* device,
   if (FAILED(hr))
     return hr;
 
-  if (friendly_name_pv.get().vt == VT_LPWSTR &&
-      friendly_name_pv.get().pwszVal) {
-    base::WideToUTF8(friendly_name_pv.get().pwszVal,
-                     UNSAFE_TODO(wcslen(friendly_name_pv.get().pwszVal)),
-                     friendly_name);
+  const PROPVARIANT& pv = friendly_name_pv.get();
+  if (pv.vt == VT_LPWSTR && pv.pwszVal) {
+    *friendly_name = base::WideToUTF8(std::wstring_view(pv.pwszVal));
   }
 
   return hr;
@@ -953,9 +950,14 @@ HRESULT CoreAudioUtil::GetSharedModeMixFormat(IAudioClient* client,
 
   // Copy the correct number of bytes into |*format| taking into account if
   // the returned structure is correctly extended or not.
-  CHECK_LE(wrapped_format.size(), sizeof(WAVEFORMATEXTENSIBLE))
+  const size_t format_size = wrapped_format.size();
+  CHECK_LE(format_size, sizeof(WAVEFORMATEXTENSIBLE))
       << "Format tag: 0x" << std::hex << wrapped_format->wFormatTag;
-  UNSAFE_TODO(memcpy(format, wrapped_format.get(), wrapped_format.size()));
+  auto dest_span = base::byte_span_from_ref(*format);
+  // SAFETY: Trust that |wrapped_format.size()| returned the right size.
+  auto source_span = UNSAFE_BUFFERS(base::span(
+      reinterpret_cast<const uint8_t*>(wrapped_format.get()), format_size));
+  dest_span.first(format_size).copy_from(source_span);
   DVLOG(2) << CoreAudioUtil::WaveFormatToString(format);
 
   return hr;

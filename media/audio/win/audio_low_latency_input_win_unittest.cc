@@ -200,27 +200,30 @@ class WriteToFileAudioSink : public AudioInputStream::AudioInputCallback {
       : buffer_(0, kMaxBufferSize), bytes_to_write_(0) {
     base::FilePath file_path;
     EXPECT_TRUE(base::PathService::Get(base::DIR_EXE, &file_path));
-    file_path = file_path.AppendASCII(file_name);
-    binary_file_ = base::OpenFile(file_path, "wb");
-    DLOG_IF(ERROR, !binary_file_) << "Failed to open binary PCM data file.";
-    VLOG(0) << ">> Output file: " << file_path.value() << " has been created.";
+    file_to_write_ = file_path.AppendASCII(file_name);
   }
 
   ~WriteToFileAudioSink() override {
+    base::File file(file_to_write_,
+                    base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
     size_t bytes_written = 0;
     while (bytes_written < bytes_to_write_) {
       // Stop writing if no more data is available.
       const base::span<const uint8_t> chunk = buffer_.GetCurrentChunk();
+      bytes_written += chunk.size();
       if (chunk.empty()) {
         break;
       }
 
       // Write recorded data chunk to the file and prepare for next chunk.
-      UNSAFE_TODO(fwrite(chunk.data(), 1, chunk.size(), binary_file_));
+      auto cur_bytes_written = file.WriteAtCurrentPos(chunk);
+      if (!cur_bytes_written.has_value()) {
+        DLOG(ERROR) << "Failed to write binary PCM data file.";
+        break;
+      }
+      bytes_written += cur_bytes_written.value();
       buffer_.Seek(chunk.size());
-      bytes_written += chunk.size();
     }
-    base::CloseFile(binary_file_);
   }
 
   // AudioInputStream::AudioInputCallback implementation.
@@ -246,7 +249,7 @@ class WriteToFileAudioSink : public AudioInputStream::AudioInputCallback {
 
  private:
   media::SeekableBuffer buffer_;
-  raw_ptr<FILE> binary_file_;
+  base::FilePath file_to_write_;
   size_t bytes_to_write_;
 };
 

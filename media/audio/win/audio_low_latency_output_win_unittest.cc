@@ -68,16 +68,15 @@ class ReadFromFileAudioSource : public AudioOutputStream::AudioSourceCallback {
   explicit ReadFromFileAudioSource(const std::string& name)
       : pos_(0),
         previous_call_time_(base::TimeTicks::Now()),
-        text_file_(nullptr),
-        elements_to_write_(0) {
+        text_file_(nullptr) {
     // Reads a test file from media/test/data directory.
     file_ = ReadTestDataFile(name);
 
-    // Creates an array that will store delta times between callbacks.
-    // The content of this array will be written to a text file at
+    // Creates a vector that will store delta times between callbacks.
+    // The content of this vector will be written to a text file at
     // destruction and can then be used for off-line analysis of the exact
     // timing of callbacks. The text file will be stored in media/test/data.
-    delta_times_.reset(new int[kMaxDeltaSamples]);
+    delta_times_.reserve(kMaxDeltaSamples);
   }
 
   ~ReadFromFileAudioSource() override {
@@ -91,13 +90,9 @@ class ReadFromFileAudioSource : public AudioOutputStream::AudioSourceCallback {
     text_file_ = base::OpenFile(file_name, "wt");
     DLOG_IF(ERROR, !text_file_) << "Failed to open log file.";
 
-    // Write the array which contains delta times to a text file.
-    size_t elements_written = 0;
-    while (elements_written < elements_to_write_) {
-      fprintf(text_file_.get(), "%d\n", UNSAFE_TODO(delta_times_[elements_written]));
-      ++elements_written;
+    for (auto delta : delta_times_) {
+      fprintf(text_file_.get(), "%d\n", delta);
     }
-
     base::CloseFile(text_file_);
   }
 
@@ -111,9 +106,8 @@ class ReadFromFileAudioSource : public AudioOutputStream::AudioSourceCallback {
     const base::TimeTicks now_time = base::TimeTicks::Now();
     const int diff = (now_time - previous_call_time_).InMilliseconds();
     previous_call_time_ = now_time;
-    if (elements_to_write_ < kMaxDeltaSamples) {
-      UNSAFE_TODO(delta_times_[elements_to_write_]) = diff;
-      ++elements_to_write_;
+    if (delta_times_.size() < kMaxDeltaSamples) {
+      delta_times_.push_back(diff);
     }
 
     size_t max_size = dest->frames() * dest->channels() * kBitsPerSample / 8;
@@ -140,11 +134,10 @@ class ReadFromFileAudioSource : public AudioOutputStream::AudioSourceCallback {
 
  private:
   scoped_refptr<DecoderBuffer> file_;
-  std::unique_ptr<int[]> delta_times_;
+  std::vector<int> delta_times_;
   size_t pos_;
   base::TimeTicks previous_call_time_;
   raw_ptr<FILE> text_file_;
-  size_t elements_to_write_;
 };
 
 static bool ExclusiveModeIsEnabled() {
