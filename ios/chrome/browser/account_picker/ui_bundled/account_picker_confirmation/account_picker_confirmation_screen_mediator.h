@@ -8,7 +8,8 @@
 #import <Foundation/Foundation.h>
 
 @class AccountPickerConfiguration;
-@class AccountPickerConfirmationScreenMediator;
+@protocol AccountPickerConfirmationScreenMediatorDelegate;
+class AuthenticationService;
 @protocol AccountPickerConfirmationScreenConsumer;
 class ChromeAccountManagerService;
 @protocol SystemIdentity;
@@ -26,9 +27,13 @@ class IdentityManager;
         (ChromeAccountManagerService*)accountManagerService
                   identityManager:(signin::IdentityManager*)identityManager
                     configuration:(AccountPickerConfiguration*)configuration
+            authenticationService:(AuthenticationService*)authenticationService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
+
+@property(nonatomic, weak) id<AccountPickerConfirmationScreenMediatorDelegate>
+    delegate;
 
 @property(nonatomic, strong) id<AccountPickerConfirmationScreenConsumer>
     consumer;

@@ -400,8 +400,10 @@
 
 #pragma mark - AccountPickerConfirmationScreenCoordinatorDelegate
 
-- (void)accountPickerConfirmationScreenCoordinatorCancel:
+- (void)accountPickerConfirmationScreenCoordinatorWantsToBeStopped:
     (AccountPickerConfirmationScreenCoordinator*)coordinator {
+  CHECK_EQ(coordinator, _accountPickerConfirmationScreenCoordinator,
+           base::NotFatalUntil::M151);
   [self.delegate accountPickerCoordinatorWantsToBeStopped:self];
 }
 

@@ -10,6 +10,7 @@ source_set("account_picker_confirmation") {
     "account_picker_confirmation_screen_coordinator_delegate.h",
     "account_picker_confirmation_screen_mediator.h",
     "account_picker_confirmation_screen_mediator.mm",
+    "account_picker_confirmation_screen_mediator_delegate.h",
     "account_picker_confirmation_screen_view_controller.h",
     "account_picker_confirmation_screen_view_controller.mm",
   ]
@@ -38,6 +39,7 @@ source_set("account_picker_confirmation") {
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/signin/model:system_identity",
     "//ios/chrome/browser/signin/model:system_identity_util",

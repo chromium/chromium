@@ -12,7 +12,7 @@
 @protocol AccountPickerConfirmationScreenCoordinatorDelegate <NSObject>
 
 // Called when the user wants to skip the consistency promo.
-- (void)accountPickerConfirmationScreenCoordinatorCancel:
+- (void)accountPickerConfirmationScreenCoordinatorWantsToBeStopped:
     (AccountPickerConfirmationScreenCoordinator*)coordinator;
 
 // Called when the user wants to choose a different identity.
