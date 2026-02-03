@@ -206,7 +206,13 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, ResizeViewSmaller) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, ResizeViewBigger) {
+// TODO(https://crbug.com/481074869): Re-enable this test
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ResizeViewBigger DISABLED_ResizeViewBigger
+#else
+#define MAYBE_ResizeViewBigger ResizeViewBigger
+#endif
+IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, MAYBE_ResizeViewBigger) {
   const int initial_width = VerticalTabStripRegionView::kCollapsedWidth;
 
   // Start this test from the collapsed state.
