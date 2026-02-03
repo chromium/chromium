@@ -108,6 +108,7 @@ if (enable_swift_cxx_interop) {
     ]
 
     _apinotes_deps = []
+    _shim_headers_deps = []
     _inputs = []
     _all_module_data = []
 
@@ -117,23 +118,38 @@ if (enable_swift_cxx_interop) {
       assert(defined(module.sources),
              "Each module in a swift_modulemap must have 'sources'")
       _inputs += module.sources
-      _modulemap_contents += [ "module ${module.name} {" ]
-      _rebased_headers = []
+      _shim_filename = "${module.name}.h"
+      _shim_path = "${target_gen_dir}/${module.name}.h"
+      _shim_abs_path = get_path_info(_shim_path, "abspath")
+      _shim_content = []
+      _shim_content += [
+        "// Generated shim header for module ${module.name}",
+        "#pragma once",
+      ]
       foreach(header, module.sources) {
         _header_path_relative_to_modulemap = rebase_path(header, target_gen_dir)
-        _rebased_headers += [ _header_path_relative_to_modulemap ]
-        _modulemap_contents +=
-            [ "  header \"${_header_path_relative_to_modulemap}\"" ]
+        _shim_content +=
+            [ "#include \"${_header_path_relative_to_modulemap}\"" ]
       }
+
+      # Generate a shim header file.
+      _shim_target_name = "${target_name}_${module.name}_shim"
+      generated_file(_shim_target_name) {
+        outputs = [ _shim_path ]
+        contents = _shim_content
+      }
+      _shim_headers_deps += [ ":${_shim_target_name}" ]
 
       # TODO: propagate API notes to groups
       _all_module_data += [
         {
           name = module.name
-          sources = _rebased_headers
+          sources = [ _shim_abs_path ]
         },
       ]
       _modulemap_contents += [
+        "module ${module.name} {",
+        "  header \"${_shim_filename}\"",
         "  export *",
         "  requires cplusplus",
         "}",
@@ -211,7 +227,7 @@ if (enable_swift_cxx_interop) {
         "//build/config/ios:swift_cxx_interop",
       ]
 
-      deps = _apinotes_deps
+      deps = _apinotes_deps + _shim_headers_deps
 
       metadata = {
         swift_modulemap = _all_module_data
