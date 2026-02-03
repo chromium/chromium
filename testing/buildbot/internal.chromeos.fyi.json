@@ -384,26 +384,6 @@
       },
       {
         "args": [
-          "--vpython-dir=../../vpython_dir_linux_amd64",
-          "--gtest_filter=-PythonUtils.PythonRunTime"
-        ],
-        "autotest_name": "chromium",
-        "cros_board": "brya",
-        "cros_model": "kano",
-        "module_name": "//net:net_unittests",
-        "module_scheme": "gtest",
-        "name": "net_unittests LKGM",
-        "resultdb": {
-          "result_format": "gtest"
-        },
-        "shard_level_retries_on_ctp": 1,
-        "test": "net_unittests",
-        "test_id_prefix": "ninja://net:net_unittests/",
-        "use_lkgm": true,
-        "variant_id": "LKGM"
-      },
-      {
-        "args": [
           "--stop-ui"
         ],
         "autotest_name": "chromium",

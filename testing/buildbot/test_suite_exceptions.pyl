@@ -224,7 +224,7 @@
       },
     },
   },
-  'net_unittests RELEASE_LKGM': {
+  'net_unittests LKGM': {
     # TODO(b/319364912): vpython cannot be delivered via CIPD on skylab builders
     'remove_from': [
       'chromeos-brya-chrome-dchecks-skylab',
