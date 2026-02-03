@@ -233,8 +233,7 @@ UnprivilegedProcessDelegate::UnprivilegedProcessDelegate(
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
     std::unique_ptr<base::CommandLine> target_command)
     : io_task_runner_(io_task_runner),
-      target_command_(std::move(target_command)),
-      event_handler_(nullptr) {}
+      target_command_(std::move(target_command)) {}
 
 UnprivilegedProcessDelegate::~UnprivilegedProcessDelegate() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -427,16 +426,13 @@ void UnprivilegedProcessDelegate::ReportFatalError() {
 void UnprivilegedProcessDelegate::ReportProcessLaunched(
     base::win::ScopedHandle worker_process) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!worker_process_.is_valid());
-
-  worker_process_ = std::move(worker_process);
 
   // Report a handle that can be used to wait for the worker process completion,
   // query information about the process and duplicate handles.
   DWORD desired_access =
       SYNCHRONIZE | PROCESS_DUP_HANDLE | PROCESS_QUERY_INFORMATION;
   HANDLE temp_handle;
-  if (!DuplicateHandle(GetCurrentProcess(), worker_process_.Get(),
+  if (!DuplicateHandle(GetCurrentProcess(), worker_process.Get(),
                        GetCurrentProcess(), &temp_handle, desired_access, FALSE,
                        0)) {
     PLOG(ERROR) << "Failed to duplicate a handle";
@@ -445,7 +441,7 @@ void UnprivilegedProcessDelegate::ReportProcessLaunched(
   }
   ScopedHandle limited_handle(temp_handle);
 
-  event_handler_->OnProcessLaunched(std::move(limited_handle));
+  WatchProcess(std::move(limited_handle));
 }
 
 }  // namespace remoting

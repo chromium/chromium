@@ -19,7 +19,7 @@
 #include "mojo/public/cpp/bindings/generic_pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "remoting/host/mojom/desktop_session.mojom.h"
-#include "remoting/host/win/worker_process_launcher.h"
+#include "remoting/host/win/windows_process_delegate.h"
 
 namespace base {
 class CommandLine;
@@ -35,7 +35,7 @@ namespace remoting {
 // Implements logic for launching and monitoring a worker process under a less
 // privileged user account.
 class UnprivilegedProcessDelegate : public IPC::Listener,
-                                    public WorkerProcessLauncher::Delegate {
+                                    public WindowsProcessDelegate {
  public:
   UnprivilegedProcessDelegate(
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
@@ -75,11 +75,6 @@ class UnprivilegedProcessDelegate : public IPC::Listener,
   // The server end of the IPC channel used to communicate to the worker
   // process.
   std::unique_ptr<IPC::ChannelProxy> channel_;
-
-  raw_ptr<WorkerProcessLauncher> event_handler_;
-
-  // The handle of the worker process, if launched.
-  base::win::ScopedHandle worker_process_;
 
   mojo::AssociatedRemote<mojom::WorkerProcessControl> worker_process_control_;
 

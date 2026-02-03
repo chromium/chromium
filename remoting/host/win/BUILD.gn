@@ -174,8 +174,8 @@ source_set("win") {
     "window_station_and_desktop.h",
     "windows_event_logger.cc",
     "windows_event_logger.h",
-    "worker_process_launcher.cc",
-    "worker_process_launcher.h",
+    "windows_process_delegate.cc",
+    "windows_process_delegate.h",
     "wts_session_change_observer.cc",
     "wts_session_change_observer.h",
     "wts_session_process_delegate.h",
@@ -238,7 +238,6 @@ source_set("unit_tests") {
     "event_trace_data_unittest.cc",
     "mouse_cursor_monitor_win_unittest.cc",
     "rdp_client_unittest.cc",
-    "worker_process_launcher_unittest.cc",
   ]
 
   deps = [

@@ -58,7 +58,7 @@
 #include "remoting/host/win/launch_process_with_token.h"
 #include "remoting/host/win/security_descriptor.h"
 #include "remoting/host/win/unprivileged_process_delegate.h"
-#include "remoting/host/win/worker_process_launcher.h"
+#include "remoting/host/worker_process_launcher.h"
 
 using base::win::ScopedHandle;
 

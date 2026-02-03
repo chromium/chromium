@@ -126,6 +126,7 @@ source_set("common_headers") {
     "sas_injector.h",
     "usage_stats_consent.h",
     "worker_process_ipc_delegate.h",
+    "worker_process_launcher.h",
   ]
   if (!is_chromeos) {
     sources += [ "me2me_desktop_environment.h" ]
@@ -489,6 +490,7 @@ static_library("common") {
     "video_memory_utils.h",
     "webrtc_mouse_cursor_monitor_adaptor.cc",
     "webrtc_mouse_cursor_monitor_adaptor.h",
+    "worker_process_launcher.cc",
     "xsession_chooser_ui.inc",
     "zombie_host_detector.cc",
     "zombie_host_detector.h",
@@ -848,6 +850,7 @@ source_set("unit_tests") {
     "setup/me2me_native_messaging_host_unittest.cc",
     "setup/pin_validator_unittest.cc",
     "webrtc_mouse_cursor_monitor_adaptor_unittest.cc",
+    "worker_process_launcher_unittest.cc",
     "zombie_host_detector_unittest.cc",
   ]
 
@@ -873,6 +876,7 @@ source_set("unit_tests") {
     "//build:branding_buildflags",
     "//components/named_mojo_ipc_server",
     "//components/named_mojo_ipc_server:test_support",
+    "//ipc",
     "//net:test_support",
     "//remoting/base:errors",
     "//remoting/base:session_policies",

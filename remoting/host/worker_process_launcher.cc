@@ -1,10 +1,8 @@
-// Copyright 2012 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/win/worker_process_launcher.h"
-
-#include <Windows.h>
+#include "remoting/host/worker_process_launcher.h"
 
 #include <utility>
 
@@ -15,8 +13,6 @@
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "remoting/host/base/host_exit_codes.h"
 #include "remoting/host/worker_process_ipc_delegate.h"
-
-using base::win::ScopedHandle;
 
 const net::BackoffEntry::Policy kDefaultBackoffPolicy = {
     // Number of initial errors (in sequence) to ignore before applying
@@ -56,7 +52,7 @@ WorkerProcessLauncher::WorkerProcessLauncher(
     WorkerProcessIpcDelegate* ipc_handler)
     : ipc_handler_(ipc_handler),
       launcher_delegate_(std::move(launcher_delegate)),
-      exit_code_(CONTROL_C_EXIT),
+      exit_code_(kInitializationFailed),
       kill_process_timeout_(base::Seconds(kKillProcessTimeoutSeconds)),
       launch_backoff_(&kDefaultBackoffPolicy) {
   DCHECK(ipc_handler_);
@@ -92,19 +88,12 @@ void WorkerProcessLauncher::GetRemoteAssociatedInterface(
   launcher_delegate_->GetRemoteAssociatedInterface(std::move(receiver));
 }
 
-void WorkerProcessLauncher::OnProcessLaunched(
-    base::win::ScopedHandle worker_process) {
+void WorkerProcessLauncher::OnProcessExited(int exit_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!launch_timer_.IsRunning());
-  DCHECK(!process_watcher_.GetWatchedObject());
-  DCHECK(!worker_process_.is_valid());
 
-  if (!process_watcher_.StartWatchingOnce(worker_process.Get(), this)) {
-    StopWorker();
-    return;
-  }
-
-  worker_process_ = std::move(worker_process);
+  exit_code_ = exit_code;
+  process_launched_ = false;
+  StopWorker();
 }
 
 void WorkerProcessLauncher::OnFatalError() {
@@ -143,30 +132,14 @@ void WorkerProcessLauncher::OnAssociatedInterfaceRequest(
   ipc_handler_->OnAssociatedInterfaceRequest(interface_name, std::move(handle));
 }
 
-void WorkerProcessLauncher::OnObjectSignaled(HANDLE object) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!process_watcher_.GetWatchedObject());
-  DCHECK_EQ(exit_code_, CONTROL_C_EXIT);
-  DCHECK_EQ(worker_process_.Get(), object);
-
-  // Get exit code of the worker process if it is available.
-  if (!::GetExitCodeProcess(worker_process_.Get(), &exit_code_)) {
-    PLOG(INFO) << "Failed to query the exit code of the worker process";
-    exit_code_ = CONTROL_C_EXIT;
-  }
-
-  worker_process_.Close();
-  StopWorker();
-}
-
 void WorkerProcessLauncher::LaunchWorker() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!kill_process_timer_.IsRunning());
   DCHECK(!launch_timer_.IsRunning());
-  DCHECK(!process_watcher_.GetWatchedObject());
   DCHECK(!launch_result_timer_.IsRunning());
 
-  exit_code_ = CONTROL_C_EXIT;
+  exit_code_ = kInitializationFailed;
+  process_launched_ = true;
 
   // Make sure launching a process will not take forever.
   launch_result_timer_.Start(FROM_HERE,
@@ -179,7 +152,7 @@ void WorkerProcessLauncher::LaunchWorker() {
 void WorkerProcessLauncher::RecordLaunchResult() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!worker_process_.is_valid()) {
+  if (!process_launched_) {
     LOG(WARNING) << "A worker process failed to start within "
                  << kLaunchResultTimeoutSeconds << " seconds.";
 
@@ -217,9 +190,7 @@ void WorkerProcessLauncher::StopWorker() {
     launch_result_timer_.Stop();
   }
 
-  // Stop monitoring the worker process.
-  process_watcher_.StopWatching();
-  worker_process_.Close();
+  process_launched_ = false;
 
   kill_process_timer_.Stop();
   launcher_delegate_->KillProcess();

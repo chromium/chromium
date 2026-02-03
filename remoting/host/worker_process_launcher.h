@@ -1,9 +1,9 @@
-// Copyright 2012 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_HOST_WIN_WORKER_PROCESS_LAUNCHER_H_
-#define REMOTING_HOST_WIN_WORKER_PROCESS_LAUNCHER_H_
+#ifndef REMOTING_HOST_WORKER_PROCESS_LAUNCHER_H_
+#define REMOTING_HOST_WORKER_PROCESS_LAUNCHER_H_
 
 #include <stdint.h>
 
@@ -13,8 +13,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
-#include "base/win/object_watcher.h"
-#include "base/win/scoped_handle.h"
 #include "mojo/public/cpp/bindings/generic_pending_associated_receiver.h"
 #include "net/base/backoff_entry.h"
 
@@ -35,7 +33,7 @@ class WorkerProcessIpcDelegate;
 // interaction with the spawned process is through WorkerProcessIpcDelegate and
 // Send() method. In case of error the channel is closed and the worker process
 // is terminated.
-class WorkerProcessLauncher : public base::win::ObjectWatcher::Delegate {
+class WorkerProcessLauncher {
  public:
   class Delegate {
    public:
@@ -71,7 +69,7 @@ class WorkerProcessLauncher : public base::win::ObjectWatcher::Delegate {
   WorkerProcessLauncher(const WorkerProcessLauncher&) = delete;
   WorkerProcessLauncher& operator=(const WorkerProcessLauncher&) = delete;
 
-  ~WorkerProcessLauncher() override;
+  ~WorkerProcessLauncher();
 
   // Asks the worker process to crash and generate a dump, and closes the IPC
   // channel. |location| is passed to the worker so that it is on the stack in
@@ -86,10 +84,8 @@ class WorkerProcessLauncher : public base::win::ObjectWatcher::Delegate {
 
   // Notification methods invoked by |Delegate|.
 
-  // Invoked to pass a handle of the launched process back to the caller of
-  // Delegate::LaunchProcess(). The delegate has to make sure that this method
-  // is called before OnChannelConnected().
-  void OnProcessLaunched(base::win::ScopedHandle worker_process);
+  // Called when the process has exited.
+  void OnProcessExited(int exit_code);
 
   // Called when a fatal error occurs (i.e. a failed process launch).
   // The delegate must guarantee that no other notifications are delivered once
@@ -105,10 +101,6 @@ class WorkerProcessLauncher : public base::win::ObjectWatcher::Delegate {
 
  private:
   friend class WorkerProcessLauncherTest;
-
-  // base::win::ObjectWatcher::Delegate implementation used to watch for
-  // the worker process exiting.
-  void OnObjectSignaled(HANDLE object) override;
 
   // Returns true when the object is being destroyed.
   bool stopping() const { return ipc_handler_ == nullptr; }
@@ -138,7 +130,7 @@ class WorkerProcessLauncher : public base::win::ObjectWatcher::Delegate {
 
   // Keeps the exit code of the worker process after it was closed. The exit
   // code is used to determine whether the process has to be restarted.
-  DWORD exit_code_;
+  int exit_code_;
 
   // The timer used to delay termination of the worker process when an IPC error
   // occured or when Crash() request is pending
@@ -153,20 +145,15 @@ class WorkerProcessLauncher : public base::win::ObjectWatcher::Delegate {
   // Timer used to schedule the next attempt to launch the process.
   base::OneShotTimer launch_timer_;
 
-  // Monitors |worker_process_| to detect when the launched process
-  // terminates.
-  base::win::ObjectWatcher process_watcher_;
-
   // Timer used to detect whether a launch attempt was successful or not, and to
   // cancel the launch attempt if it is taking too long.
   base::OneShotTimer launch_result_timer_;
 
-  // The handle of the worker process, if launched.
-  base::win::ScopedHandle worker_process_;
+  bool process_launched_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace remoting
 
-#endif  // REMOTING_HOST_WIN_WORKER_PROCESS_LAUNCHER_H_
+#endif  // REMOTING_HOST_WORKER_PROCESS_LAUNCHER_H_

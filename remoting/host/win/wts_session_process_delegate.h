@@ -11,8 +11,9 @@
 
 #include "base/compiler_specific.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "remoting/host/win/worker_process_launcher.h"
+#include "remoting/host/win/windows_process_delegate.h"
 
 namespace base {
 class CommandLine;
@@ -23,7 +24,7 @@ namespace remoting {
 
 // Implements logic for launching and monitoring a worker process in a different
 // session.
-class WtsSessionProcessDelegate : public WorkerProcessLauncher::Delegate {
+class WtsSessionProcessDelegate : public WindowsProcessDelegate {
  public:
   WtsSessionProcessDelegate(
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
@@ -54,6 +55,8 @@ class WtsSessionProcessDelegate : public WorkerProcessLauncher::Delegate {
   scoped_refptr<Core> core_;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<WtsSessionProcessDelegate> weak_ptr_factory_{this};
 };
 
 }  // namespace remoting

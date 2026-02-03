@@ -16,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/process/process_handle.h"
 #include "base/rand_util.h"
@@ -40,9 +41,9 @@
 #include "remoting/host/mojom/desktop_session.mojom.h"
 #include "remoting/host/win/launch_process_with_token.h"
 #include "remoting/host/win/security_descriptor.h"
-#include "remoting/host/win/worker_process_launcher.h"
 #include "remoting/host/win/wts_terminal_monitor.h"
 #include "remoting/host/worker_process_ipc_delegate.h"
+#include "remoting/host/worker_process_launcher.h"
 
 using base::win::ScopedHandle;
 
@@ -59,7 +60,8 @@ class WtsSessionProcessDelegate::Core
       public base::MessagePumpForIO::IOHandler,
       public IPC::Listener {
  public:
-  Core(scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
+  Core(base::WeakPtr<WtsSessionProcessDelegate> delegate,
+       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
        std::unique_ptr<base::CommandLine> target,
        bool launch_elevated,
        const std::string& channel_security);
@@ -123,6 +125,9 @@ class WtsSessionProcessDelegate::Core
   void ReportFatalError();
   void ReportProcessLaunched(base::win::ScopedHandle worker_process);
 
+  // The delegate object.
+  base::WeakPtr<WtsSessionProcessDelegate> delegate_;
+
   // The task runner all public methods of this class should be called on.
   const scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner_;
 
@@ -173,11 +178,13 @@ class WtsSessionProcessDelegate::Core
 };
 
 WtsSessionProcessDelegate::Core::Core(
+    base::WeakPtr<WtsSessionProcessDelegate> delegate,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
     std::unique_ptr<base::CommandLine> target_command,
     bool launch_elevated,
     const std::string& channel_security)
     : base::MessagePumpForIO::IOHandler(FROM_HERE),
+      delegate_(delegate),
       caller_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       io_task_runner_(std::move(io_task_runner)),
       channel_security_(channel_security),
@@ -242,6 +249,9 @@ void WtsSessionProcessDelegate::Core::LaunchProcess(
   DCHECK(!event_handler_);
 
   event_handler_ = event_handler;
+  if (delegate_) {
+    delegate_->event_handler_ = event_handler;
+  }
   DoLaunchProcess();
 }
 
@@ -589,7 +599,9 @@ void WtsSessionProcessDelegate::Core::ReportProcessLaunched(
   }
   ScopedHandle limited_handle(temp_handle);
 
-  event_handler_->OnProcessLaunched(std::move(limited_handle));
+  if (delegate_) {
+    delegate_->WatchProcess(std::move(limited_handle));
+  }
 }
 
 WtsSessionProcessDelegate::WtsSessionProcessDelegate(
@@ -597,8 +609,9 @@ WtsSessionProcessDelegate::WtsSessionProcessDelegate(
     std::unique_ptr<base::CommandLine> target_command,
     bool launch_elevated,
     const std::string& channel_security) {
-  core_ = new Core(io_task_runner, std::move(target_command), launch_elevated,
-                   channel_security);
+  core_ = base::MakeRefCounted<Core>(weak_ptr_factory_.GetWeakPtr(),
+                                     io_task_runner, std::move(target_command),
+                                     launch_elevated, channel_security);
 }
 
 WtsSessionProcessDelegate::~WtsSessionProcessDelegate() {

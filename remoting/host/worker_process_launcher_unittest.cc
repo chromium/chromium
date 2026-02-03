@@ -1,23 +1,24 @@
-// Copyright 2012 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/win/worker_process_launcher.h"
+#include "remoting/host/worker_process_launcher.h"
 
 #include <stdint.h>
 
 #include <memory>
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/process/process.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/multiprocess_test.h"
 #include "base/test/task_environment.h"
-#include "base/win/scoped_handle.h"
-#include "base/win/scoped_process_information.h"
 #include "ipc/ipc_channel.h"
 #include "ipc/ipc_channel_proxy.h"
 #include "ipc/ipc_listener.h"
@@ -28,12 +29,11 @@
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/host/base/host_exit_codes.h"
 #include "remoting/host/mojom/desktop_session.mojom.h"
-#include "remoting/host/win/launch_process_with_token.h"
 #include "remoting/host/worker_process_ipc_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "testing/multiprocess_func_list.h"
 
-using base::win::ScopedHandle;
 using testing::_;
 using testing::AnyNumber;
 using testing::Expectation;
@@ -144,7 +144,7 @@ class WorkerProcessLauncherTest : public testing::Test, public IPC::Listener {
   void CrashProcess(const base::Location& location);
   void KillProcess();
 
-  void TerminateWorker(DWORD exit_code);
+  void TerminateWorker(int exit_code);
 
   // Connects the client end of the channel (the worker process's end).
   void ConnectClient();
@@ -204,8 +204,8 @@ class WorkerProcessLauncherTest : public testing::Test, public IPC::Listener {
       desktop_session_state_handler_;
   mojo::AssociatedRemote<mojom::WorkerProcessControl> worker_process_control_;
 
-  // An event that is used to emulate the worker process's handle.
-  ScopedHandle worker_process_;
+  // The launched worker process.
+  base::Process worker_process_;
 
   // The internal run loop, used for managing messages.
   base::RunLoop loop_;
@@ -284,15 +284,17 @@ void WorkerProcessLauncherTest::KillProcess() {
   event_handler_ = nullptr;
 
   DisconnectClient();
-  if (worker_process_.is_valid()) {
-    TerminateProcess(worker_process_.Get(), CONTROL_C_EXIT);
-    worker_process_.Close();
-  }
+  TerminateWorker(kSuccessExitCode);
 }
 
-void WorkerProcessLauncherTest::TerminateWorker(DWORD exit_code) {
-  if (worker_process_.is_valid()) {
-    TerminateProcess(worker_process_.Get(), exit_code);
+void WorkerProcessLauncherTest::TerminateWorker(int exit_code) {
+  if (!worker_process_.IsValid()) {
+    return;
+  }
+  ASSERT_TRUE(worker_process_.Terminate(exit_code, /*wait=*/true));
+  worker_process_.Close();
+  if (event_handler_) {
+    event_handler_->OnProcessExited(exit_code);
   }
 }
 
@@ -364,42 +366,21 @@ void WorkerProcessLauncherTest::QuitMainMessageLoop() {
 
 void WorkerProcessLauncherTest::DoLaunchProcess() {
   EXPECT_TRUE(event_handler_);
-  EXPECT_FALSE(worker_process_.is_valid());
+  EXPECT_FALSE(worker_process_.IsValid());
 
-  WCHAR calc[MAX_PATH + 1];
-  ASSERT_GT(ExpandEnvironmentStrings(L"\045SystemRoot\045\\system32\\calc.exe",
-                                     calc, MAX_PATH),
-            0u);
-
-  STARTUPINFOW startup_info = {0};
-  startup_info.cb = sizeof(startup_info);
-
-  PROCESS_INFORMATION temp_process_info = {};
-  ASSERT_TRUE(CreateProcess(nullptr, calc,
-                            nullptr,  // default process attributes
-                            nullptr,  // default thread attributes
-                            FALSE,    // do not inherit handles
-                            CREATE_SUSPENDED,
-                            nullptr,  // no environment
-                            nullptr,  // default current directory
-                            &startup_info, &temp_process_info));
-  base::win::ScopedProcessInformation process_information(temp_process_info);
-  worker_process_.Set(process_information.TakeProcessHandle());
-  ASSERT_TRUE(worker_process_.is_valid());
+  base::CommandLine command_line =
+      base::GetMultiProcessTestChildBaseCommandLine();
 
   mojo::MessagePipe pipe;
   client_channel_handle_ = std::move(pipe.handle0);
 
-  // Wrap the pipe into an IPC channel.
+  worker_process_ = base::SpawnMultiProcessTestChild(
+      "WorkerProcessLauncherTestClient", command_line, {});
+  ASSERT_TRUE(worker_process_.IsValid());
+
   channel_server_ = IPC::ChannelProxy::Create(
       pipe.handle1.release(), IPC::Channel::MODE_SERVER, this, task_runner_,
       base::SingleThreadTaskRunner::GetCurrentDefault());
-
-  HANDLE temp_handle;
-  ASSERT_TRUE(DuplicateHandle(GetCurrentProcess(), worker_process_.Get(),
-                              GetCurrentProcess(), &temp_handle, 0, FALSE,
-                              DUPLICATE_SAME_ACCESS));
-  event_handler_->OnProcessLaunched(ScopedHandle(temp_handle));
 }
 
 TEST_F(WorkerProcessLauncherTest, Start) {
@@ -446,7 +427,7 @@ TEST_F(WorkerProcessLauncherTest, Restart) {
       EXPECT_CALL(server_listener_, OnChannelConnected(_))
           .Times(2)
           .WillOnce(InvokeWithoutArgs(
-              [=, this]() { TerminateWorker(CONTROL_C_EXIT); }))
+              [this]() { TerminateWorker(kSuccessExitCode); }))
           .WillOnce(
               InvokeWithoutArgs(this, &WorkerProcessLauncherTest::StopWorker));
 
@@ -491,7 +472,7 @@ TEST_F(WorkerProcessLauncherTest, PermanentError) {
   EXPECT_CALL(server_listener_, OnChannelConnected(_))
       .Times(1)
       .WillOnce(InvokeWithoutArgs(
-          [=, this] { TerminateWorker(kMinPermanentErrorExitCode); }));
+          [this] { TerminateWorker(kMinPermanentErrorExitCode); }));
   EXPECT_CALL(server_listener_, OnPermanentError(_))
       .Times(1)
       .WillOnce(
@@ -519,7 +500,7 @@ TEST_F(WorkerProcessLauncherTest, Crash) {
   EXPECT_CALL(client_listener_, CrashProcess(_, _, _))
       .Times(1)
       .WillOnce(InvokeWithoutArgs(
-          [=, this]() { TerminateWorker(EXCEPTION_BREAKPOINT); }));
+          [this]() { TerminateWorker(kInitializationFailed); }));
   EXPECT_CALL(server_listener_, OnWorkerProcessStopped()).Times(1);
 
   StartWorker();
@@ -550,6 +531,15 @@ TEST_F(WorkerProcessLauncherTest, CrashAnyway) {
 
   StartWorker();
   Run();
+}
+
+MULTIPROCESS_TEST_MAIN(WorkerProcessLauncherTestClient) {
+  base::test::SingleThreadTaskEnvironment task_environment(
+      base::test::SingleThreadTaskEnvironment::MainThreadType::IO);
+
+  // Keep the process alive until the main process terminates it.
+  base::RunLoop().Run();
+  return 0;
 }
 
 }  // namespace remoting

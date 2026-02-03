@@ -42,11 +42,11 @@
 #include "remoting/host/win/chromoting_lib.h"
 #include "remoting/host/win/host_service.h"
 #include "remoting/host/win/trust_util.h"
-#include "remoting/host/win/worker_process_launcher.h"
 #include "remoting/host/win/wts_session_process_delegate.h"
 #include "remoting/host/win/wts_terminal_monitor.h"
 #include "remoting/host/win/wts_terminal_observer.h"
 #include "remoting/host/worker_process_ipc_delegate.h"
+#include "remoting/host/worker_process_launcher.h"
 
 using base::win::ScopedHandle;
 
