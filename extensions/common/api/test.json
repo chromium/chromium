@@ -328,13 +328,25 @@
       },
       {
         "name": "listenOnce",
+        "description": "Listens to the given event exactly once. This will add a new event listener and remove it after its first invocation. If supplied a function argument, this will add a pending callback to the test so that it won't automatically complete until invoked (see also callbackPass()). If no function is supplied, this returns a promise and does not artifically prolong the lifetime of the test.",
         "type": "function",
         "nocompile": true,
         "parameters": [
           // TODO(cduvall): Make this a $ref to events.Event.
           {"type": "any", "name": "event"},
-          {"type": "function", "name": "func"}
-        ]
+          {
+            "type": "function",
+            "name": "func",
+            "optional": true,
+            "description": "If provided, a function to invoke with the arugments that the event was triggered with."
+          }
+        ],
+        "returns": {
+          "type": "object",
+          "isInstanceOf": "Promise",
+          "optional": true,
+          "description": "A promise that will be resolved when the event has been triggered, and will be resolved with the arguments passed to the event. Clunkily, if only a single argument is passed to the event (common case), the promise will be invoked with that single argument. If multiple arguments are passed to the event, the promise will be resolved with an array of arguments. This is only returned if a function argument is *not* passed to listenOnce()."
+        }
       },
       {
         "name": "listenForever",

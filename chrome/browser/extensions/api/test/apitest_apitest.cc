@@ -591,7 +591,7 @@ IN_PROC_BROWSER_TEST_P(TestAPITestWithContextType,
   EXPECT_TRUE(result_catcher.GetNextResult());
 }
 
-IN_PROC_BROWSER_TEST_P(TestAPITestWithContextType, ListenOnce) {
+IN_PROC_BROWSER_TEST_P(TestAPITestWithContextType, ListenOnceWithoutPromise) {
   ResultCatcher result_catcher;
   static constexpr char kBackgroundJs[] =
       R"(let createdTab;
@@ -600,11 +600,13 @@ IN_PROC_BROWSER_TEST_P(TestAPITestWithContextType, ListenOnce) {
              // Set up a `listenOnce` listener. The test should not complete
              // until this listener is resolved (exactly once), and it should
              // run the callback within.
-             chrome.test.listenOnce(chrome.tabs.onCreated,
-                                    function(tab) {
+             let result = chrome.test.listenOnce(chrome.tabs.onCreated,
+                                                 function(tab) {
                createdTab = tab;
                // The test should end after this.
              });
+             // When passed a callback, listenOnce() should not return anything.
+             chrome.test.assertEq(undefined, result);
              // There should be an onCreated listener from the call above.
              chrome.test.assertTrue(chrome.tabs.onCreated.hasListeners());
              // Trigger the event, which will trigger the listenOnce handler,
@@ -623,6 +625,71 @@ IN_PROC_BROWSER_TEST_P(TestAPITestWithContextType, ListenOnce) {
 
              chrome.test.succeed();
            },
+         ]);)";
+  ASSERT_TRUE(LoadExtensionScriptWithContext(kBackgroundJs, GetParam()));
+  EXPECT_TRUE(result_catcher.GetNextResult());
+}
+
+IN_PROC_BROWSER_TEST_P(TestAPITestWithContextType, ListenOnceWithPromise) {
+  ResultCatcher result_catcher;
+  static constexpr char kBackgroundJs[] =
+      R"(chrome.test.runTests([
+           async function listenOnceWithPromise() {
+             // Set up a `listenOnce` listener. The test should not complete
+             // until this listener is resolved (exactly once), and it should
+             // run the callback within.
+             let eventPromise = chrome.test.listenOnce(chrome.tabs.onCreated);
+             chrome.test.assertTrue(!!eventPromise);
+
+             // There should be an onCreated listener from the call above.
+             chrome.test.assertTrue(chrome.tabs.onCreated.hasListeners());
+
+             // Trigger the event, which will trigger the listenOnce handler,
+             // which should end the test.
+             chrome.tabs.create({});
+
+             let createdTab = await eventPromise;
+
+             // The promise should resolve with the created tab.
+             chrome.test.assertTrue(!!createdTab);
+             // Verify it smells like a tab.
+             chrome.test.assertTrue(createdTab.id >= 0,
+                                    JSON.stringify(createdTab));
+
+             // The listener for tabs.onCreated also should have been removed.
+             chrome.test.assertFalse(chrome.tabs.onCreated.hasListeners());
+
+             chrome.test.succeed();
+           },
+
+           async function listenOnceWithPromiseAndMultipleEventArgs() {
+             // This test is similar to the above, but with an event that
+             // fires with multiple arguments. In this case, the returned
+             // promise is resolved with an array containing the arguments.
+             let eventPromise = chrome.test.listenOnce(chrome.tabs.onMoved);
+
+             let tabs = await chrome.tabs.query({});
+             // There should be an extra tab from the test above.
+             chrome.test.assertTrue(tabs.length > 1);
+             let tab = tabs.find((tab) => { return tab.index == 0; });
+             chrome.test.assertTrue(!!tab);
+             // Move the tab to the second index, triggering the event.
+             chrome.tabs.move(tab.id, {index: 1});
+
+             let args = await eventPromise;
+             // chrome.tabs.onMoved has two arguments...
+             chrome.test.assertTrue(Array.isArray(args));
+             chrome.test.assertEq(2, args.length);
+             // The first argument is the tab ID.
+             chrome.test.assertEq(tab.id, args[0]);
+
+             // The second argument is `moveInfo`; verify it smells like it.
+             chrome.test.assertTrue(!!args[1]);
+             chrome.test.assertEq(args[1].fromIndex, 0);
+             chrome.test.assertEq(args[1].toIndex, 1);
+
+             chrome.test.succeed();
+           }
          ]);)";
   ASSERT_TRUE(LoadExtensionScriptWithContext(kBackgroundJs, GetParam()));
   EXPECT_TRUE(result_catcher.GetNextResult());

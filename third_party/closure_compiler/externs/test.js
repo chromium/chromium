@@ -1,4 +1,4 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -191,8 +191,22 @@ chrome.test.assertPromiseRejects = function(promise, expectedMessage) {};
 chrome.test.callback = function(func, expectedError) {};
 
 /**
+ * Listens to the given event exactly once. This will add a new event listener
+ * and remove it after its first invocation. If supplied a function argument,
+ * this will add a pending callback to the test so that it won't automatically
+ * complete until invoked (see also callbackPass()). If no function is supplied,
+ * this returns a promise and does not artifically prolong the lifetime of the
+ * test.
  * @param {*} event
- * @param {function(): void} func
+ * @param {function(): void=} func If provided, a function to invoke with the
+ *     arugments that the event was triggered with.
+ * @return {Promise} A promise that will be resolved when the event has been
+ *     triggered, and will be resolved with the arguments passed to the event.
+ *     Clunkily, if only a single argument is passed to the event (common case),
+ *     the promise will be invoked with that single argument. If multiple
+ *     arguments are passed to the event, the promise will be resolved with an
+ *     array of arguments. This is only returned if a function argument is *not*
+ *     passed to listenOnce().
  * @see https://developer.chrome.com/extensions/test#method-listenOnce
  */
 chrome.test.listenOnce = function(event, func) {};

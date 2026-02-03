@@ -513,13 +513,35 @@ apiBridge.registerCustomHook(function(api) {
   });
 
   apiFunctions.setHandleRequest('listenOnce', function(event, func) {
-    const callbackCompleted = chromeTest.callbackAdded();
-    const listener = function() {
-      event.removeListener(listener);
-      safeFunctionApply(func, arguments);
-      callbackCompleted();
-    };
-    event.addListener(listener);
+    if (func) {
+      // Callback-based.
+      const callbackCompleted = chromeTest.callbackAdded();
+      const listener = function() {
+        event.removeListener(listener);
+        safeFunctionApply(func, arguments);
+        callbackCompleted();
+      };
+      event.addListener(listener);
+    } else {
+      // Promise-based.
+      return new Promise((resolve) => {
+        const listener = function() {
+          event.removeListener(listener);
+
+          // Resolve the promise. As a clunky convenience, we resolve the
+          // promise directly with the event argument if there's only one. If
+          // there's more than one, we supply the arguments as an array.
+          let args = Array.from(arguments);
+          if (args.length == 1) {
+            resolve(args[0]);
+          } else {
+            resolve(args);
+          }
+        };
+
+        event.addListener(listener);
+      });
+    }
   });
 
   apiFunctions.setHandleRequest('listenForever', function(event, func) {
