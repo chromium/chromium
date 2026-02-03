@@ -251,9 +251,44 @@ DbStatus LocalStorageSqlite::DeleteStorageKeysFromSession(
     std::string session_id,
     std::vector<blink::StorageKey> metadata_to_delete,
     std::vector<MapLocator> maps_to_delete) {
-  // TODO(crbug.com/377242771): Fully implement `DomStorageDatabase` interface
-  // using SQLite.
-  return DbStatus::NotSupported("");
+  // Local storage uses a single global session without clones.  To avoid
+  // orphaned maps, each deleted storage key must also delete its map.
+  CHECK_EQ(session_id, kLocalStorageSessionId);
+  CHECK_EQ(maps_to_delete.size(), metadata_to_delete.size());
+
+  sql::Transaction transaction(database_.get());
+  RETURN_STATUS_ON_ERROR(transaction.Begin());
+
+  // Delete each storage key's metadata from the `maps` table.
+  constexpr const char kDeleteMapMetadata[] =
+      "DELETE FROM maps WHERE storage_key = ?";
+
+  sql::Statement delete_metadata_statement(
+      database_->GetCachedStatement(SQL_FROM_HERE, kDeleteMapMetadata));
+
+  for (const blink::StorageKey& storage_key : metadata_to_delete) {
+    delete_metadata_statement.BindBlob(0, storage_key.Serialize());
+    RETURN_STATUS_ON_ERROR(delete_metadata_statement.Run());
+    delete_metadata_statement.Reset(/*clear_bound_vars=*/true);
+  }
+
+  // Delete the key/value pairs in `maps_to_delete`.
+  for (const MapLocator& map : maps_to_delete) {
+    // A valid `map` must be in `metadata_to_delete` and
+    // `kLocalStorageSessionId`.
+    CHECK_EQ(map.session_ids().size(), 1u);
+    CHECK_EQ(map.session_ids()[0], kLocalStorageSessionId);
+    DCHECK(std::ranges::contains(metadata_to_delete, map.storage_key()));
+
+    ASSIGN_OR_RETURN(std::optional<int64_t> map_id,
+                     FindMapId(map.storage_key()));
+    if (map_id) {
+      DB_RETURN_IF_ERROR(map_entries_table_->DeleteMap(*map_id));
+    }
+  }
+
+  RETURN_STATUS_ON_ERROR(transaction.Commit());
+  return DbStatus::OK();
 }
 
 DbStatus LocalStorageSqlite::DeleteSessions(
