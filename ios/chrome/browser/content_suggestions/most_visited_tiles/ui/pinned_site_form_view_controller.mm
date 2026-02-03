@@ -6,11 +6,14 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/check_op.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/public/metrics.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/public/pinned_site_action.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_item.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_tiles_pinned_site_mutator.h"
+#import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_attributed_string_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
@@ -37,6 +40,19 @@ BOOL IsInputValid(NSString* input) {
              length] > 0;
 }
 
+/// Helper method to generate the disclaimer on the modify site form.
+NSAttributedString* GetDisclaimerForModificationForm() {
+  NSDictionary* attributes = @{
+    NSFontAttributeName :
+        [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote],
+    NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor]
+  };
+  return [[NSMutableAttributedString alloc]
+      initWithString:l10n_util::GetNSString(
+                         IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_FORM_FOOTER)
+          attributes:attributes];
+}
+
 }  // namespace
 
 @interface PinnedSiteFormViewController () <UITableViewDelegate>
@@ -54,8 +70,15 @@ BOOL IsInputValid(NSString* input) {
   /// Current input values.
   NSString* _name;
   NSString* _URL;
-  /// URL validation result.
-  BOOL _urlValidationFailed;
+  /// Disclaimer for the form.
+  NSAttributedString* _disclaimer;
+  /// Whether the error message should be displayed. Usually caused by an
+  /// invalid URL input.
+  BOOL _shouldShowErrorMessage;
+  /// Whether any error has been encountered before form dismissal.
+  BOOL _hasFailedOnce;
+  /// If `YES`, the form is ready to be edited.
+  BOOL _canBeginEditing;
 }
 
 - (instancetype)initWithAction:(PinnedSiteAction)action
@@ -64,8 +87,10 @@ BOOL IsInputValid(NSString* input) {
   if (self) {
     _action = action;
     if (_action == PinnedSiteAction::kModify) {
+      CHECK(item);
       _originalName = item.title;
       _originalURL = base::SysUTF8ToNSString(item.URL.spec());
+      _disclaimer = GetDisclaimerForModificationForm();
     }
     _name = _originalName;
     _URL = _originalURL;
@@ -111,7 +136,7 @@ BOOL IsInputValid(NSString* input) {
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
   RecordPinnedSiteFormUserAction(
-      _action, _urlValidationFailed
+      _action, _hasFailedOnce
                    ? MostVisitedPinSiteFormUserAction::kDismissAfterFailure
                    : MostVisitedPinSiteFormUserAction::kDismissImmediately);
 }
@@ -120,45 +145,32 @@ BOOL IsInputValid(NSString* input) {
 
 - (UIView*)tableView:(UITableView*)tableView
     viewForFooterInSection:(NSInteger)section {
-  NSMutableAttributedString* attributedString;
-  if (_urlValidationFailed) {
-    NSDictionary* attributes = @{
-      NSFontAttributeName :
-          [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote],
-      NSForegroundColorAttributeName : [UIColor colorNamed:kRedColor]
-    };
-    attributedString = [[NSMutableAttributedString alloc]
-        initWithString:
-            l10n_util::GetNSString(
-                IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_FORM_URL_VALIDATION_FAILED)
-            attributes:attributes];
-  }
-  if (_action == PinnedSiteAction::kModify) {
-    NSDictionary* attributes = @{
-      NSFontAttributeName :
-          [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote],
-      NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor]
-    };
-    NSMutableAttributedString* disclaimer = [[NSMutableAttributedString alloc]
-        initWithString:l10n_util::GetNSString(
-                           IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_FORM_FOOTER)
-            attributes:attributes];
-    if (attributedString) {
-      [attributedString appendAttributedString:[[NSAttributedString alloc]
-                                                   initWithString:@"\n"]];
-      [attributedString appendAttributedString:disclaimer];
-    } else if (disclaimer) {
-      attributedString = disclaimer;
-    }
-  }
-  if (!attributedString) {
+  NSAttributedString* footerString = [self footerAttributedString];
+  if (!footerString) {
     return nil;
   }
   TableViewAttributedStringHeaderFooterView* footer =
       DequeueTableViewHeaderFooter<TableViewAttributedStringHeaderFooterView>(
           tableView);
-  [footer setAttributedString:attributedString];
+  [footer setAttributedString:footerString];
   return footer;
+}
+
+#pragma mark - UIResponder
+
+/// To always be able to register key commands via `keyCommands`, the VC must be
+/// able to become first responder.
+- (BOOL)canBecomeFirstResponder {
+  return YES;
+}
+
+- (NSArray*)keyCommands {
+  return @[ UIKeyCommand.cr_close ];
+}
+
+- (void)keyCommand_close {
+  base::RecordAction(base::UserMetricsAction(kMobileKeyCommandClose));
+  [self onCancel];
 }
 
 #pragma mark - Private
@@ -202,6 +214,8 @@ BOOL IsInputValid(NSString* input) {
       cell.textLabel.text = l10n_util::GetNSString(
           IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_FORM_NAME);
       cell.textField.text = _name;
+      cell.textField.placeholder = l10n_util::GetNSString(
+          IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_FORM_NAME);
       [cell.textField addTarget:self
                          action:@selector(nameDidChange:)
                forControlEvents:UIControlEventEditingChanged];
@@ -210,9 +224,17 @@ BOOL IsInputValid(NSString* input) {
       cell.textLabel.text =
           l10n_util::GetNSString(IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_FORM_URL);
       cell.textField.text = _URL;
+      cell.textField.placeholder = @"https://example.com";
+      cell.textField.keyboardType = UIKeyboardTypeURL;
       [cell.textField addTarget:self
                          action:@selector(URLDidChange:)
                forControlEvents:UIControlEventEditingChanged];
+      if (!_canBeginEditing) {
+        /// Auto focus on the URL field so the user could type immediately,
+        /// without having to tap on the cell first.
+        [cell.textField becomeFirstResponder];
+        _canBeginEditing = YES;
+      }
       break;
   }
   return cell;
@@ -227,7 +249,32 @@ BOOL IsInputValid(NSString* input) {
 /// Handler for changes in the `URL` field.
 - (void)URLDidChange:(UITextField*)textField {
   _URL = textField.text;
+  [self setErrorMessageVisibility:NO];
   [self updateApplyButtonState];
+}
+
+/// The footer string based on the current form and error state.
+- (NSAttributedString*)footerAttributedString {
+  NSMutableAttributedString* errorString = nil;
+  if (_shouldShowErrorMessage) {
+    NSDictionary* attributes = @{
+      NSFontAttributeName :
+          [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote],
+      NSForegroundColorAttributeName : [UIColor colorNamed:kRedColor]
+    };
+    errorString = [[NSMutableAttributedString alloc]
+        initWithString:
+            l10n_util::GetNSString(
+                IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_FORM_URL_VALIDATION_FAILED)
+            attributes:attributes];
+  }
+  if (errorString && _disclaimer) {
+    [errorString appendAttributedString:[[NSAttributedString alloc]
+                                            initWithString:@"\n"]];
+    [errorString appendAttributedString:_disclaimer];
+    return errorString;
+  }
+  return errorString ? errorString : _disclaimer;
 }
 
 /// Handles the tap on the "Add" or "Save" button.
@@ -245,22 +292,19 @@ BOOL IsInputValid(NSString* input) {
   }
   if (success) {
     RecordPinnedSiteFormUserAction(
-        _action, _urlValidationFailed
+        _action, _hasFailedOnce
                      ? MostVisitedPinSiteFormUserAction::kApplyAfterFailure
                      : MostVisitedPinSiteFormUserAction::kApplyImmediately);
     [self dismissModal];
   } else {
-    _urlValidationFailed = YES;
-    NSDiffableDataSourceSnapshot* snapshot = [_dataSource snapshot];
-    [snapshot reloadSectionsWithIdentifiers:@[ @(kSection) ]];
-    [_dataSource applySnapshot:snapshot animatingDifferences:NO];
+    [self setErrorMessageVisibility:YES];
   }
 }
 
 /// Handles the tap on the "Cancel" button or swiping down.
 - (void)onCancel {
   RecordPinnedSiteFormUserAction(
-      _action, _urlValidationFailed
+      _action, _hasFailedOnce
                    ? MostVisitedPinSiteFormUserAction::kDismissAfterFailure
                    : MostVisitedPinSiteFormUserAction::kDismissImmediately);
   [self dismissModal];
@@ -271,7 +315,25 @@ BOOL IsInputValid(NSString* input) {
 /// fields.
 - (void)updateApplyButtonState {
   self.navigationItem.rightBarButtonItem.enabled =
-      IsInputValid(_name) && IsInputValid(_URL);
+      IsInputValid(_name) && IsInputValid(_URL) && !_shouldShowErrorMessage;
+}
+
+/// Sets the visibility state of the error message.
+- (void)setErrorMessageVisibility:(BOOL)visible {
+  _hasFailedOnce = _hasFailedOnce || visible;
+  if (_shouldShowErrorMessage == visible) {
+    return;
+  }
+  _shouldShowErrorMessage = visible;
+  [self updateApplyButtonState];
+  /// Update footer.
+  TableViewAttributedStringHeaderFooterView* footer =
+      base::apple::ObjCCastStrict<TableViewAttributedStringHeaderFooterView>(
+          [self.tableView footerViewForSection:kSection]);
+  if (footer) {
+    [footer setAttributedString:[self footerAttributedString]];
+  }
+  [self.tableView performBatchUpdates:nil completion:nil];
 }
 
 /// Dismiss the modal.
