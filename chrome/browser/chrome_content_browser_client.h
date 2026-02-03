@@ -599,6 +599,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   void SessionEnding(std::optional<DWORD> control_type) override;
   bool ShouldEnableAudioProcessHighPriority() override;
   bool ShouldRestrictCoreSharingOnRenderer() override;
+  std::optional<std::wstring> GetWindowsSecurityAttributeName() const override;
 #endif
   void ExposeInterfacesToRenderer(
       service_manager::BinderRegistry* registry,

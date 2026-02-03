@@ -115,6 +115,7 @@ class TestTargetConfig : public TargetConfig {
   void SetFilterEnvironment(bool env) override {}
   bool GetEnvironmentFiltered() override { return false; }
   void SetZeroAppShim() override {}
+  void SetSecurityAttributeName(std::wstring_view name) override {}
 
  private:
   std::vector<std::wstring> blocklisted_dlls_;
@@ -377,6 +378,10 @@ class TestSandboxDelegate : public SandboxDelegate {
   bool CetCompatible() override { return true; }
 
   bool RestrictCoreSharing() override { return false; }
+
+  std::optional<std::wstring> GetSecurityAttributeName() override {
+    return std::nullopt;
+  }
 
  private:
   sandbox::mojom::Sandbox sandbox_type_;

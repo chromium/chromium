@@ -5,6 +5,7 @@
 #include "content/public/browser/sandboxed_process_launcher_delegate.h"
 
 #include <optional>
+#include <string>
 
 #include "build/build_config.h"
 #include "content/public/common/zygote/zygote_buildflags.h"
@@ -12,6 +13,12 @@
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/process_requirement.h"
 #endif  // BUILDFLAG(IS_MAC)
+
+#if BUILDFLAG(IS_WIN)
+#include "base/win/access_token.h"
+#include "content/public/browser/content_browser_client.h"
+#include "content/public/common/content_client.h"
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace content {
 
@@ -53,6 +60,13 @@ bool SandboxedProcessLauncherDelegate::CetCompatible() {
 
 bool SandboxedProcessLauncherDelegate::RestrictCoreSharing() {
   return false;
+}
+
+std::optional<std::wstring>
+SandboxedProcessLauncherDelegate::GetSecurityAttributeName() {
+  return content::GetContentClient()
+      ->browser()
+      ->GetWindowsSecurityAttributeName();
 }
 #endif  // BUILDFLAG(IS_WIN)
 

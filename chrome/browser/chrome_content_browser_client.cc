@@ -429,6 +429,7 @@
 #include "chrome/browser/tracing/tracing_features.h"
 #include "chrome/browser/tracing/windows_system_tracing_client_win.h"
 #include "chrome/install_static/install_util.h"
+#include "chrome/installer/util/isolation_support.h"
 #include "chrome/services/util_win/public/mojom/util_win.mojom.h"
 #include "content/public/browser/tracing_service.h"
 #include "sandbox/win/src/sandbox_policy.h"
@@ -5337,6 +5338,10 @@ bool ChromeContentBrowserClient::ShouldRestrictCoreSharingOnRenderer() {
   return false;
 }
 
+std::optional<std::wstring>
+ChromeContentBrowserClient::GetWindowsSecurityAttributeName() const {
+  return installer::GetIsolationAttributeName();
+}
 #endif  // BUILDFLAG(IS_WIN)
 
 void ChromeContentBrowserClient::

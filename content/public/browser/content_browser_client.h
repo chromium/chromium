@@ -1873,6 +1873,10 @@ class CONTENT_EXPORT ContentBrowserClient {
   // processes are scheduled on the same CPU core as the renderer process.
   virtual bool ShouldRestrictCoreSharingOnRenderer();
 
+  // Obtains the name of the security attribute in the browser process token, to
+  // be used in child process tokens, or nullopt if there is no security
+  // attribute.
+  virtual std::optional<std::wstring> GetWindowsSecurityAttributeName() const;
 #endif
 
   // Binds a new media remoter service to |receiver|, if supported by the

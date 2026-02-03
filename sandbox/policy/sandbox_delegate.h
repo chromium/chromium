@@ -5,6 +5,7 @@
 #ifndef SANDBOX_POLICY_SANDBOX_DELEGATE_H_
 #define SANDBOX_POLICY_SANDBOX_DELEGATE_H_
 
+#include <optional>
 #include <string>
 
 #include "base/process/process.h"
@@ -65,6 +66,11 @@ class SandboxDelegate {
   // Determines if the CPU core running this process can be shared with other
   // processes.
   virtual bool RestrictCoreSharing() = 0;
+
+  // Obtains the name of the security attribute in the browser process token, to
+  // be used in the token of this sandboxed process, or nullopt if there is no
+  // security attribute required.
+  virtual std::optional<std::wstring> GetSecurityAttributeName() = 0;
 #endif  // BUILDFLAG(IS_WIN)
 };
 

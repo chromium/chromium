@@ -255,6 +255,11 @@ class [[clang::lto_visibility_public]] TargetConfig {
 
   // Zeroes pShimData in the child's PEB.
   virtual void SetZeroAppShim() = 0;
+
+  // Sets the name of the Security Attribute whose value will be used to
+  // determine the default DACL of the sandboxed process. This name must match
+  // the name of an existing Security Attribute on the broker.
+  virtual void SetSecurityAttributeName(std::wstring_view name) = 0;
 };
 
 // We need [[clang::lto_visibility_public]] because instances of this class are

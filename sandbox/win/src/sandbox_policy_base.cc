@@ -475,6 +475,10 @@ void ConfigBase::SetZeroAppShim() {
   zero_appshim_ = true;
 }
 
+void ConfigBase::SetSecurityAttributeName(std::wstring_view name) {
+  security_attribute_name_ = name;
+}
+
 TargetTokens::TargetTokens(base::win::AccessToken initial,
                            base::win::AccessToken lockdown)
     : initial_(std::move(initial)), lockdown_(std::move(lockdown)) {}
@@ -590,7 +594,7 @@ base::expected<TargetTokens, ResultCode> PolicyBase::MakeTokens() {
   // with the process and therefore with any thread that is not impersonating.
   std::optional<base::win::AccessToken> primary = CreateRestrictedToken(
       config()->GetLockdownTokenLevel(), integrity_level, TokenType::kPrimary,
-      lockdown_default_dacl, random_sid);
+      lockdown_default_dacl, random_sid, config()->security_attribute_name());
   if (!primary) {
     return base::unexpected(SBOX_ERROR_CANNOT_CREATE_RESTRICTED_TOKEN);
   }
@@ -613,9 +617,10 @@ base::expected<TargetTokens, ResultCode> PolicyBase::MakeTokens() {
   // Create the 'better' token. We use this token as the one that the main
   // thread uses when booting up the process. It should contain most of
   // what we need (before reaching main( ))
-  std::optional<base::win::AccessToken> impersonation = CreateRestrictedToken(
-      config()->GetInitialTokenLevel(), integrity_level,
-      TokenType::kImpersonation, lockdown_default_dacl, random_sid);
+  std::optional<base::win::AccessToken> impersonation =
+      CreateRestrictedToken(config()->GetInitialTokenLevel(), integrity_level,
+                            TokenType::kImpersonation, lockdown_default_dacl,
+                            random_sid, config()->security_attribute_name());
   if (!impersonation) {
     return base::unexpected(SBOX_ERROR_CANNOT_CREATE_RESTRICTED_IMP_TOKEN);
   }

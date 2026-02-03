@@ -5,9 +5,10 @@
 #include "sandbox/win/src/restricted_token_utils.h"
 
 #include <memory>
+#include <optional>
+#include <string>
 #include <vector>
 
-#include <optional>
 #include "base/check.h"
 #include "base/notreached.h"
 #include "base/win/access_token.h"
@@ -34,11 +35,17 @@ std::optional<base::win::AccessToken> CreateRestrictedToken(
     IntegrityLevel integrity_level,
     TokenType token_type,
     bool lockdown_default_dacl,
-    const std::optional<base::win::Sid>& unique_restricted_sid) {
+    const std::optional<base::win::Sid>& unique_restricted_sid,
+    std::optional<std::wstring_view> isolation_security_attribute_name) {
   RestrictedToken restricted_token;
   if (lockdown_default_dacl) {
     restricted_token.SetLockdownDefaultDacl();
   }
+  if (isolation_security_attribute_name) {
+    restricted_token.SetIsolationSecurityAttribute(
+        *isolation_security_attribute_name);
+  }
+
   if (unique_restricted_sid) {
     restricted_token.AddDefaultDaclSid(*unique_restricted_sid,
                                        base::win::SecurityAccessMode::kGrant,

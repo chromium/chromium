@@ -6,6 +6,8 @@
 #define SANDBOX_WIN_SRC_RESTRICTED_TOKEN_UTILS_H_
 
 #include <optional>
+#include <string>
+
 #include "base/win/access_token.h"
 #include "base/win/sid.h"
 #include "base/win/windows_types.h"
@@ -31,6 +33,9 @@ enum class TokenType { kImpersonation, kPrimary };
 // token's restricted SID list defined by `security_level`. This allows a
 // sandbox process to be grant access to itself and its resources but not
 // other sandboxed processes at the same security level.
+// `isolation_security_attribute_name` indicates an optional security attribute
+// name that will be used to create a conditional entry on the token's default
+// DACL to match the value of the caller.
 // If the function succeeds, the return value is the restricted token. If it
 // fails then the return value is empty.
 std::optional<base::win::AccessToken> CreateRestrictedToken(
@@ -38,7 +43,8 @@ std::optional<base::win::AccessToken> CreateRestrictedToken(
     IntegrityLevel integrity_level,
     TokenType token_type,
     bool lockdown_default_dacl,
-    const std::optional<base::win::Sid>& unique_restricted_sid);
+    const std::optional<base::win::Sid>& unique_restricted_sid,
+    std::optional<std::wstring_view> isolation_security_attribute_name);
 
 // Hardens the integrity level policy on a token. Specifically it sets the
 // policy to block read and execute so that a lower privileged process cannot

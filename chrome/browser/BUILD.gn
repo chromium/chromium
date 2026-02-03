@@ -6490,6 +6490,7 @@ static_library("browser") {
       "//chrome/credential_provider/common:common_constants",
       "//chrome/elevation_service:public_headers",
       "//chrome/install_static:install_static_util",
+      "//chrome/installer/util:isolation_support",
       "//chrome/installer/util:with_no_strings",
       "//chrome/notification_helper:constants",
       "//chrome/services/util_win/public/mojom",

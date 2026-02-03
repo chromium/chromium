@@ -515,6 +515,18 @@ ResultCode GenerateConfigForSandboxedProcess(const base::CommandLine& cmd_line,
     }
   }
 
+  if (const auto security_attribute_name = delegate->GetSecurityAttributeName();
+      security_attribute_name.has_value()) {
+    const auto token = base::win::AccessToken::FromCurrentProcess();
+    // Only pass the name to the sandbox config if the attribute is present on
+    // the current process token, otherwise the restricted token cannot be
+    // created. This can happen if the browser is not running isolated.
+    if (token &&
+        token->GetSecurityAttribute(*security_attribute_name).has_value()) {
+      config->SetSecurityAttributeName(*security_attribute_name);
+    }
+  }
+
   if (sandbox_type == Sandbox::kRenderer) {
     // TODO(crbug.com/40088338) Remove if we can reliably not load
     // cryptbase.dll.

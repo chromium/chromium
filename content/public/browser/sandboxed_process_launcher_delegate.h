@@ -6,6 +6,7 @@
 #define CONTENT_PUBLIC_BROWSER_SANDBOXED_PROCESS_LAUNCHER_DELEGATE_H_
 
 #include <optional>
+#include <string>
 
 #include "base/environment.h"
 #include "base/files/scoped_file.h"
@@ -45,6 +46,7 @@ class CONTENT_EXPORT SandboxedProcessLauncherDelegate
   bool ShouldUnsandboxedRunInJob() override;
   bool CetCompatible() override;
   bool RestrictCoreSharing() override;
+  std::optional<std::wstring> GetSecurityAttributeName() override;
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_WIN)
