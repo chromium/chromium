@@ -618,6 +618,7 @@ impl Command {
     ///     println!("{}", m.get_flag("bar"));
     /// }
     /// ```
+    #[allow(clippy::test_attr_in_doctest)]
     pub fn debug_assert(mut self) {
         self.build();
     }

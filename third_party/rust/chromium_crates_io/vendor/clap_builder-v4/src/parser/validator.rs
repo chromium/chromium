@@ -132,8 +132,7 @@ impl<'cmd> Validator<'cmd> {
         }
 
         debug!("Validator::build_conflict_err: name={name:?}");
-        let mut seen = FlatSet::new();
-        let conflicts = conflict_ids
+        let conflict_ids = conflict_ids
             .iter()
             .flat_map(|c_id| {
                 if self.cmd.find_group(c_id).is_some() {
@@ -142,16 +141,18 @@ impl<'cmd> Validator<'cmd> {
                     vec![c_id.clone()]
                 }
             })
-            .filter_map(|c_id| {
-                seen.insert(c_id.clone()).then(|| {
-                    let c_arg = self.cmd.find(&c_id).expect(INTERNAL_ERROR_MSG);
-                    c_arg.to_string()
-                })
+            .collect::<FlatSet<_>>()
+            .into_vec();
+        let conflicts = conflict_ids
+            .iter()
+            .map(|c_id| {
+                let c_arg = self.cmd.find(c_id).expect(INTERNAL_ERROR_MSG);
+                c_arg.to_string()
             })
             .collect();
 
         let former_arg = self.cmd.find(name).expect(INTERNAL_ERROR_MSG);
-        let usg = self.build_conflict_err_usage(matcher, conflict_ids);
+        let usg = self.build_conflict_err_usage(matcher, &conflict_ids);
         Err(Error::argument_conflict(
             self.cmd,
             former_arg.to_string(),

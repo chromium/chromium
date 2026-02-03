@@ -60,6 +60,10 @@ impl<T: PartialEq + Eq> FlatSet<T> {
     {
         self.inner.sort_by_key(f);
     }
+
+    pub(crate) fn into_vec(self) -> Vec<T> {
+        self.inner
+    }
 }
 
 impl<T: PartialEq + Eq> Default for FlatSet<T> {
