@@ -13,10 +13,10 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "content/public/browser/webid/identity_credential_source.h"
 #include "content/public/browser/webid/identity_request_account.h"
 #include "content/public/browser/webid/identity_request_dialog_controller.h"
-#include "content/public/common/content_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-shared.h"
@@ -79,7 +79,7 @@ class ActorLoginFederatedCredentialsFetcherTest : public testing::Test {
 TEST_F(ActorLoginFederatedCredentialsFetcherTest, GetCredentialsSuccess) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      features::kFedCmEmbedderInitiatedLogin);
+      password_manager::features::kActorLoginFederatedLoginSupport);
 
   std::vector<scoped_refptr<content::IdentityRequestAccount>> accounts{
       CreateTestIdentityRequestAccount("test@example.com", "https://idp.com")};
@@ -116,7 +116,7 @@ TEST_F(ActorLoginFederatedCredentialsFetcherTest, GetCredentialsSuccess) {
 TEST_F(ActorLoginFederatedCredentialsFetcherTest, FeatureDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
-      features::kFedCmEmbedderInitiatedLogin);
+      password_manager::features::kActorLoginFederatedLoginSupport);
 
   EXPECT_CALL(mock_identity_source_, GetIdentityCredentialSuggestions).Times(0);
 
@@ -140,7 +140,7 @@ TEST_F(ActorLoginFederatedCredentialsFetcherTest, FeatureDisabled) {
 TEST_F(ActorLoginFederatedCredentialsFetcherTest, NoAccounts) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      features::kFedCmEmbedderInitiatedLogin);
+      password_manager::features::kActorLoginFederatedLoginSupport);
 
   EXPECT_CALL(mock_identity_source_, GetIdentityCredentialSuggestions)
       .WillOnce(base::test::RunOnceCallback<1>(std::nullopt));
@@ -165,7 +165,7 @@ TEST_F(ActorLoginFederatedCredentialsFetcherTest, NoAccounts) {
 TEST_F(ActorLoginFederatedCredentialsFetcherTest, NoSource) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      features::kFedCmEmbedderInitiatedLogin);
+      password_manager::features::kActorLoginFederatedLoginSupport);
 
   base::test::TestFuture<std::vector<Credential>,
                          std::unique_ptr<ActorLoginCredentialsFetcher::Status>>
