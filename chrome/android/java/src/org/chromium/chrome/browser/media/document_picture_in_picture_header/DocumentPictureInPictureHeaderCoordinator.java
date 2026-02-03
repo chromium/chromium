@@ -13,6 +13,7 @@ import org.chromium.components.security_state.ConnectionMaliciousContentStatus;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.url.GURL;
 
 /**
  * Coordinator for the Document Picture-in-Picture (PiP) header.
@@ -40,7 +41,8 @@ public class DocumentPictureInPictureHeaderCoordinator {
             DocumentPictureInPictureHeaderDelegate delegate,
             boolean isBackToTabShown,
             @ConnectionSecurityLevel int securityLevel,
-            @ConnectionMaliciousContentStatus int maliciousContentStatus) {
+            @ConnectionMaliciousContentStatus int maliciousContentStatus,
+            GURL url) {
         PropertyModel model =
                 new PropertyModel.Builder(DocumentPictureInPictureHeaderProperties.ALL_KEYS)
                         .build();
@@ -52,7 +54,8 @@ public class DocumentPictureInPictureHeaderCoordinator {
                         delegate,
                         isBackToTabShown,
                         securityLevel,
-                        maliciousContentStatus);
+                        maliciousContentStatus,
+                        url);
         mPropertyModelChangeProcessor =
                 PropertyModelChangeProcessor.create(
                         model, view, DocumentPictureInPictureHeaderViewBinder::bind);

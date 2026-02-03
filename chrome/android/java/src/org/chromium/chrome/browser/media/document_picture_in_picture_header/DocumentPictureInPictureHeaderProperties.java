@@ -45,6 +45,9 @@ public class DocumentPictureInPictureHeaderProperties {
             new WritableIntPropertyKey();
     public static final WritableObjectPropertyKey<View.OnClickListener>
             ON_SECURITY_ICON_CLICK_LISTENER = new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<String> URL_STRING =
+            new WritableObjectPropertyKey<>();
+    public static final WritableIntPropertyKey BRANDED_COLOR_SCHEME = new WritableIntPropertyKey();
 
     public static final PropertyKey[] ALL_KEYS = {
         IS_SHOWN,
@@ -58,6 +61,8 @@ public class DocumentPictureInPictureHeaderProperties {
         IS_BACK_TO_TAB_SHOWN,
         SECURITY_ICON,
         SECURITY_ICON_CONTENT_DESCRIPTION_RES_ID,
-        ON_SECURITY_ICON_CLICK_LISTENER
+        ON_SECURITY_ICON_CLICK_LISTENER,
+        URL_STRING,
+        BRANDED_COLOR_SCHEME
     };
 }

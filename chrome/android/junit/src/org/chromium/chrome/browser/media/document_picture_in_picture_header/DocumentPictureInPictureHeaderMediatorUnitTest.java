@@ -45,6 +45,8 @@ import org.chromium.components.omnibox.SecurityStatusIcon;
 import org.chromium.components.security_state.ConnectionMaliciousContentStatus;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.util.List;
 
@@ -60,6 +62,10 @@ public class DocumentPictureInPictureHeaderMediatorUnitTest {
 
     private static final int DEFAULT_THEME_COLOR = Color.BLUE;
     private static final ColorStateList DEFAULT_FOCUS_TINT = ColorStateList.valueOf(Color.RED);
+    private static final @BrandedColorScheme int DEFAULT_BRANDED_COLOR_SCHEME =
+            BrandedColorScheme.LIGHT_BRANDED_THEME;
+    private static final GURL HTTPS_URL = JUnitTestGURLs.EXAMPLE_URL;
+    private static final GURL LOCAL_FILE_URL = new GURL("file:///android_asset/index.html");
 
     private Context mContext;
     private PropertyModel mModel;
@@ -75,6 +81,7 @@ public class DocumentPictureInPictureHeaderMediatorUnitTest {
         when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(null);
         when(mThemeColorProvider.getThemeColor()).thenReturn(DEFAULT_THEME_COLOR);
         when(mThemeColorProvider.getActivityFocusTint()).thenReturn(DEFAULT_FOCUS_TINT);
+        when(mThemeColorProvider.getBrandedColorScheme()).thenReturn(DEFAULT_BRANDED_COLOR_SCHEME);
     }
 
     private void createMediator() {
@@ -90,7 +97,8 @@ public class DocumentPictureInPictureHeaderMediatorUnitTest {
                         mDelegate,
                         isBackToTabShown,
                         ConnectionSecurityLevel.SECURE,
-                        ConnectionMaliciousContentStatus.NONE);
+                        ConnectionMaliciousContentStatus.NONE,
+                        HTTPS_URL);
     }
 
     @Test
@@ -110,6 +118,9 @@ public class DocumentPictureInPictureHeaderMediatorUnitTest {
         assertEquals(
                 DEFAULT_FOCUS_TINT,
                 mModel.get(DocumentPictureInPictureHeaderProperties.TINT_COLOR_LIST));
+        assertEquals(
+                DEFAULT_BRANDED_COLOR_SCHEME,
+                (int) mModel.get(DocumentPictureInPictureHeaderProperties.BRANDED_COLOR_SCHEME));
         assertNotNull(
                 mModel.get(DocumentPictureInPictureHeaderProperties.ON_BACK_TO_TAB_CLICK_LISTENER));
         assertNotNull(
@@ -118,6 +129,9 @@ public class DocumentPictureInPictureHeaderMediatorUnitTest {
                 mModel.get(
                         DocumentPictureInPictureHeaderProperties.ON_SECURITY_ICON_CLICK_LISTENER));
         assertTrue(mModel.containsKey(DocumentPictureInPictureHeaderProperties.SECURITY_ICON));
+        assertEquals(
+                HTTPS_URL.getHost(),
+                mModel.get(DocumentPictureInPictureHeaderProperties.URL_STRING));
     }
 
     @Test
@@ -242,10 +256,14 @@ public class DocumentPictureInPictureHeaderMediatorUnitTest {
     public void testTintChanged() {
         createMediator();
         ColorStateList focusTint = ColorStateList.valueOf(Color.GREEN);
-        mMediator.onTintChanged(/* tint= */ null, focusTint, BrandedColorScheme.APP_DEFAULT);
+        @BrandedColorScheme int brandedColorScheme = BrandedColorScheme.DARK_BRANDED_THEME;
+        mMediator.onTintChanged(/* tint= */ null, focusTint, brandedColorScheme);
 
         assertEquals(
                 focusTint, mModel.get(DocumentPictureInPictureHeaderProperties.TINT_COLOR_LIST));
+        assertEquals(
+                brandedColorScheme,
+                (int) mModel.get(DocumentPictureInPictureHeaderProperties.BRANDED_COLOR_SCHEME));
     }
 
     @Test
@@ -280,7 +298,8 @@ public class DocumentPictureInPictureHeaderMediatorUnitTest {
                         mDelegate,
                         /* isBackToTabShown= */ true,
                         securityLevel,
-                        maliciousContentStatus);
+                        maliciousContentStatus,
+                        HTTPS_URL);
 
         int expectedIcon =
                 SecurityStatusIcon.getSecurityIconResource(
@@ -293,5 +312,24 @@ public class DocumentPictureInPictureHeaderMediatorUnitTest {
         assertEquals(
                 expectedIcon,
                 (int) mModel.get(DocumentPictureInPictureHeaderProperties.SECURITY_ICON));
+    }
+
+    @Test
+    @SmallTest
+    public void testLocalFileUrl() {
+        mMediator =
+                new DocumentPictureInPictureHeaderMediator(
+                        mModel,
+                        mDesktopWindowStateManager,
+                        mThemeColorProvider,
+                        mDelegate,
+                        /* isBackToTabShown= */ true,
+                        ConnectionSecurityLevel.SECURE,
+                        ConnectionMaliciousContentStatus.NONE,
+                        LOCAL_FILE_URL);
+
+        assertEquals(
+                LOCAL_FILE_URL.getPath(),
+                mModel.get(DocumentPictureInPictureHeaderProperties.URL_STRING));
     }
 }

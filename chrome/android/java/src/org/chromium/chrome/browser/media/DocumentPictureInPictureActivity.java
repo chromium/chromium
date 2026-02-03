@@ -253,7 +253,8 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
                         // malicious content status if they can change in the same document pip
                         // session.
                         SecurityStateModel.getSecurityLevelForWebContents(mParentWebContents),
-                        SecurityStateModel.getMaliciousContentStatusForWebContents(mWebContents));
+                        SecurityStateModel.getMaliciousContentStatusForWebContents(mWebContents),
+                        mParentWebContents.getVisibleUrl());
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTO_DOC_PIP_PERMISSION_PROMPT_ANDROID)) {
             WebContents webContents = mParentWebContents;

@@ -469,4 +469,5 @@ found in the LICENSE file.
 
     <!-- Document PiP dimensions -->
     <dimen name="document_picture_in_picture_header_icon_size">48dp</dimen>
+    <dimen name="document_picture_in_picture_url_bar_padding">6dp</dimen>
 </resources>

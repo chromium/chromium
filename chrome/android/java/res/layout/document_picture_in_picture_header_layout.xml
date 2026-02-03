@@ -29,11 +29,19 @@ by DocumentPictureInPictureHeaderViewBinder.
             "@dimen/document_picture_in_picture_header_icon_size"
         android:scaleType="center" />
 
-    <!-- TODO(crbug.com/470284885): Remove this when adding the URL view. -->
-    <View
+    <org.chromium.chrome.browser.omnibox.UrlBarApi26
+        android:id="@+id/document_picture_in_picture_header_url_bar"
+        android:background="@null"
+        android:inputType="none"
+        android:singleLine="true"
         android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_height="wrap_content"
+        android:paddingStart=
+            "@dimen/document_picture_in_picture_url_bar_padding"
+        android:paddingEnd="@dimen/document_picture_in_picture_url_bar_padding"
+        android:layout_weight="1"
+        android:enabled="false"
+        style="@style/TextAppearance.TextSmall.Primary" />
 
     <org.chromium.ui.widget.ChromeImageButton
         android:id="@+id/document_picture_in_picture_header_back_to_tab"

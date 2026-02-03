@@ -12,6 +12,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.graphics.Insets;
 
+import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -19,10 +20,12 @@ import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.omnibox.SecurityStatusIcon;
 import org.chromium.components.security_state.ConnectionMaliciousContentStatus;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +41,7 @@ public class DocumentPictureInPictureHeaderMediator
         implements DesktopWindowStateManager.AppHeaderObserver,
                 ThemeColorProvider.ThemeColorObserver,
                 ThemeColorProvider.TintObserver {
+    private static final String TAG = "DocumentPiPHdrMdtr";
     private final PropertyModel mModel;
     private @Nullable AppHeaderState mCurrentHeaderState;
     private final DesktopWindowStateManager mDesktopWindowStateManager;
@@ -54,7 +58,8 @@ public class DocumentPictureInPictureHeaderMediator
             DocumentPictureInPictureHeaderDelegate delegate,
             boolean isBackToTabShown,
             @ConnectionSecurityLevel int securityLevel,
-            @ConnectionMaliciousContentStatus int maliciousContentStatus) {
+            @ConnectionMaliciousContentStatus int maliciousContentStatus,
+            GURL url) {
         mModel = model;
         mThemeColorProvider = themeColorProvider;
         mDelegate = delegate;
@@ -86,6 +91,7 @@ public class DocumentPictureInPictureHeaderMediator
         mModel.set(
                 DocumentPictureInPictureHeaderProperties.SECURITY_ICON_CONTENT_DESCRIPTION_RES_ID,
                 SecurityStatusIcon.getSecurityIconContentDescriptionResourceId(securityLevel));
+        mModel.set(DocumentPictureInPictureHeaderProperties.URL_STRING, getUrlString(url));
 
         mThemeColorProvider.addThemeColorObserver(this);
         mThemeColorProvider.addTintObserver(this);
@@ -134,6 +140,8 @@ public class DocumentPictureInPictureHeaderMediator
             @Nullable ColorStateList activityFocusTint,
             @BrandedColorScheme int brandedColorScheme) {
         mModel.set(DocumentPictureInPictureHeaderProperties.TINT_COLOR_LIST, activityFocusTint);
+        mModel.set(
+                DocumentPictureInPictureHeaderProperties.BRANDED_COLOR_SCHEME, brandedColorScheme);
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -164,6 +172,21 @@ public class DocumentPictureInPictureHeaderMediator
 
         mModel.set(
                 DocumentPictureInPictureHeaderProperties.NON_DRAGGABLE_AREAS, mNonDraggableAreas);
+    }
+
+    private String getUrlString(GURL url) {
+        if (url.getScheme().equals(UrlConstants.FILE_SCHEME)) {
+            // File scheme URLs do not have a host, so we use the path instead.
+            return url.getPath();
+        }
+
+        if (url.getHost().isEmpty()) {
+            Log.w(TAG, "URL has an empty host, falling back to the full URL spec.");
+            // Fallback to the full URL spec if the host is empty.
+            return url.getSpec();
+        }
+
+        return url.getHost();
     }
 
     public void destroy() {

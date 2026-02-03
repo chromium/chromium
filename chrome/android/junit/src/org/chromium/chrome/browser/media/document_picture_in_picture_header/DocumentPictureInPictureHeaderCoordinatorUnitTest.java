@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.security_state.ConnectionMaliciousContentStatus;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
+import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link DocumentPictureInPictureHeaderCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -64,7 +65,8 @@ public class DocumentPictureInPictureHeaderCoordinatorUnitTest {
                         mDelegate,
                         /* isBackToTabShown= */ true,
                         ConnectionSecurityLevel.SECURE,
-                        ConnectionMaliciousContentStatus.NONE);
+                        ConnectionMaliciousContentStatus.NONE,
+                        JUnitTestGURLs.EXAMPLE_URL);
 
         verify(mDesktopWindowStateManager).addObserver(any());
     }
@@ -79,7 +81,8 @@ public class DocumentPictureInPictureHeaderCoordinatorUnitTest {
                         mDelegate,
                         /* isBackToTabShown= */ true,
                         ConnectionSecurityLevel.SECURE,
-                        ConnectionMaliciousContentStatus.NONE);
+                        ConnectionMaliciousContentStatus.NONE,
+                        JUnitTestGURLs.EXAMPLE_URL);
         mCoordinator.destroy();
 
         verify(mDesktopWindowStateManager).removeObserver(any());

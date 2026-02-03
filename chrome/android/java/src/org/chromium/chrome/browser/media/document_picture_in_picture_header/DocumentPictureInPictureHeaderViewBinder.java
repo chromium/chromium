@@ -8,6 +8,7 @@ import android.content.res.ColorStateList;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.StringRes;
 import androidx.core.graphics.Insets;
@@ -15,6 +16,10 @@ import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.omnibox.UrlBar;
+import org.chromium.chrome.browser.omnibox.UrlBar.ScrollType;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -89,6 +94,11 @@ public class DocumentPictureInPictureHeaderViewBinder {
                             model.get(
                                     DocumentPictureInPictureHeaderProperties
                                             .ON_SECURITY_ICON_CLICK_LISTENER));
+        } else if (key == DocumentPictureInPictureHeaderProperties.URL_STRING) {
+            updateUrl(view, model.get(DocumentPictureInPictureHeaderProperties.URL_STRING));
+        } else if (key == DocumentPictureInPictureHeaderProperties.BRANDED_COLOR_SCHEME) {
+            updateBrandedColorScheme(
+                    view, model.get(DocumentPictureInPictureHeaderProperties.BRANDED_COLOR_SCHEME));
         }
     }
 
@@ -102,6 +112,14 @@ public class DocumentPictureInPictureHeaderViewBinder {
         ImageViewCompat.setImageTintList(securityIcon, tintColorList);
     }
 
+    private static void updateBrandedColorScheme(
+            View view, @BrandedColorScheme int brandedColorScheme) {
+        TextView urlBar = view.findViewById(R.id.document_picture_in_picture_header_url_bar);
+        urlBar.setTextColor(
+                OmniboxResourceProvider.getUrlBarPrimaryTextColor(
+                        view.getContext(), brandedColorScheme));
+    }
+
     private static void updateSecurityIconContentDescription(
             View view, @StringRes int descriptionResId) {
         ImageView securityIcon =
@@ -110,5 +128,11 @@ public class DocumentPictureInPictureHeaderViewBinder {
         if (descriptionResId != 0) {
             securityIcon.setContentDescription(view.getResources().getString(descriptionResId));
         }
+    }
+
+    private static void updateUrl(View view, String urlHost) {
+        UrlBar urlBar = view.findViewById(R.id.document_picture_in_picture_header_url_bar);
+        urlBar.setTextWithTruncation(urlHost, ScrollType.NO_SCROLL, /* scrollToIndex= */ -1);
+        urlBar.setTooltipText(urlHost);
     }
 }
