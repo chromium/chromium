@@ -53,6 +53,7 @@ class ContextualTasksPageHandler
   void OpenMyActivityUi() override;
   void OpenHelpUi() override;
   void OpenOnboardingHelpUi() override;
+  void OpenUrl(const GURL& url, WindowOpenDisposition disposition) override;
   void MoveTaskUiToNewTab() override;
   void OnTabClickedFromSourcesMenu(int32_t tab_id, const GURL& url) override;
   void OnFileClickedFromSourcesMenu(const GURL& url) override;

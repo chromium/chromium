@@ -37,10 +37,12 @@ namespace {
 
 constexpr char kMyActivityUrl[] = "https://myactivity.google.com/myactivity";
 
-void OpenUrlInNewTab(content::WebUI* web_ui, const GURL& url) {
+void OpenUrlWithDisposition(content::WebUI* web_ui,
+                            const GURL& url,
+                            WindowOpenDisposition disposition) {
   NavigateParams params(Profile::FromWebUI(web_ui), url,
                         ui::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  params.disposition = disposition;
   Navigate(&params);
 }
 
@@ -160,18 +162,26 @@ void ContextualTasksPageHandler::IsShownInTab(IsShownInTabCallback callback) {
 }
 
 void ContextualTasksPageHandler::OpenMyActivityUi() {
-  OpenUrlInNewTab(web_ui_controller_->web_ui(), GURL(kMyActivityUrl));
+  OpenUrlWithDisposition(web_ui_controller_->web_ui(), GURL(kMyActivityUrl),
+                         WindowOpenDisposition::NEW_FOREGROUND_TAB);
 }
 
 void ContextualTasksPageHandler::OpenHelpUi() {
-  OpenUrlInNewTab(web_ui_controller_->web_ui(),
-                  GURL(contextual_tasks::GetContextualTasksHelpUrl()));
+  OpenUrlWithDisposition(web_ui_controller_->web_ui(),
+                         GURL(contextual_tasks::GetContextualTasksHelpUrl()),
+                         WindowOpenDisposition::NEW_FOREGROUND_TAB);
 }
 
 void ContextualTasksPageHandler::OpenOnboardingHelpUi() {
-  OpenUrlInNewTab(
+  OpenUrlWithDisposition(
       web_ui_controller_->web_ui(),
-      GURL(contextual_tasks::GetContextualTasksOnboardingTooltipHelpUrl()));
+      GURL(contextual_tasks::GetContextualTasksOnboardingTooltipHelpUrl()),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB);
+}
+
+void ContextualTasksPageHandler::OpenUrl(const GURL& url,
+                                         WindowOpenDisposition disposition) {
+  OpenUrlWithDisposition(web_ui_controller_->web_ui(), url, disposition);
 }
 
 void ContextualTasksPageHandler::MoveTaskUiToNewTab() {

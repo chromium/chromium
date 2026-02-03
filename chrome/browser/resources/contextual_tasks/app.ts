@@ -13,6 +13,7 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {Uuid} from 'chrome://resources/mojo/mojo/public/mojom/base/uuid.mojom-webui.js';
 import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
+import {WindowOpenDisposition} from 'chrome://resources/mojo/ui/base/mojom/window_open_disposition.mojom-webui.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
@@ -20,6 +21,12 @@ import type {ContextualTasksComposeboxElement} from './composebox.js';
 import type {BrowserProxy} from './contextual_tasks_browser_proxy.js';
 import {BrowserProxyImpl} from './contextual_tasks_browser_proxy.js';
 import {PostMessageHandler} from './post_message_handler.js';
+
+declare global {
+  interface HTMLElementEventMap {
+    'newwindow': chrome.webviewTag.NewWindowEvent;
+  }
+}
 
 type ChromeEventFunctionType<T> =
     T extends ChromeEvent<infer ListenerType>? ListenerType : never;
@@ -35,6 +42,29 @@ export interface ContextualTasksAppElement {
     composeboxHeaderWrapper: HTMLElement,
     composeboxHeader: HTMLElement,
   };
+}
+
+// Match WindowOpenDispositionToString() in
+// `extensions/browser/guest_view/web_view/web_view_guest.cc`.
+function stringToDisposition(value: string): WindowOpenDisposition {
+  switch (value) {
+    case 'ignore':
+      return WindowOpenDisposition.IGNORE_ACTION;
+    case 'save_to_disk':
+      return WindowOpenDisposition.SAVE_TO_DISK;
+    case 'current_tab':
+      return WindowOpenDisposition.CURRENT_TAB;
+    case 'new_background_tab':
+      return WindowOpenDisposition.NEW_BACKGROUND_TAB;
+    case 'new_foreground_tab':
+      return WindowOpenDisposition.NEW_FOREGROUND_TAB;
+    case 'new_window':
+      return WindowOpenDisposition.NEW_WINDOW;
+    case 'new_popup':
+      return WindowOpenDisposition.NEW_POPUP;
+    default:
+      return WindowOpenDisposition.UNKNOWN;
+  }
 }
 
 // Updates the params for task ID, thread ID, and turn ID in the URL without
@@ -379,6 +409,22 @@ export class ContextualTasksAppElement extends CrLitElement {
           urls: ['<all_urls>'],
         },
         ['blocking']);
+
+    // Keyboard modifier (ctrl, shift, etc) + click inside <webview> is routed
+    // to newwindow event. This listener routes back the event to browser to
+    // make open url work like inside a tab.
+    this.$.threadFrame.addEventListener(
+        'newwindow', (e: chrome.webviewTag.NewWindowEvent) => {
+          const disposition: WindowOpenDisposition =
+              stringToDisposition(e.windowOpenDisposition);
+          if (disposition !== WindowOpenDisposition.UNKNOWN) {
+            this.browserProxy_.handler.openUrl(
+                {url: e.targetUrl}, disposition);
+          } else {
+            console.error(
+                'Unsupported disposition type: ' + e.windowOpenDisposition);
+          }
+        });
 
     // Sets the user agent to the default user agent + the contextual tasks
     // custom suffix.

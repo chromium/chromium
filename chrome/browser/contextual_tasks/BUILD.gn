@@ -210,6 +210,7 @@ if (!is_android) {
     webui_module_path = "/"
     public_deps = [
       "//mojo/public/mojom/base",
+      "//ui/base/mojom",
       "//ui/webui/resources/cr_components/composebox:mojo_bindings",
       "//url/mojom:url_mojom_gurl",
     ]

@@ -132,6 +132,7 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
       'openHelpUi',
       'openMyActivityUi',
       'openOnboardingHelpUi',
+      'openUrl',
       'setTaskId',
       'setThreadTitle',
       'showThreadHistory',
@@ -197,6 +198,10 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
 
   openOnboardingHelpUi() {
     this.methodCalled('openOnboardingHelpUi');
+  }
+
+  openUrl() {
+    this.methodCalled('openUrl');
   }
 
   onboardingTooltipDismissed() {
