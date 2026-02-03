@@ -12,7 +12,7 @@
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
-#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_flat_edge_button.h"
+#include "chrome/browser/ui/views/tabs/shared/tab_strip_flat_edge_button.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -76,7 +76,7 @@ class VerticalTabStripTopContainerTest : public ChromeViewsTestBase {
  protected:
   VerticalTabStripTopContainer* top_container() { return top_container_; }
 
-  VerticalTabStripFlatEdgeButton* tab_search_button() {
+  TabStripFlatEdgeButton* tab_search_button() {
     return top_container_->GetTabSearchButton();
   }
 

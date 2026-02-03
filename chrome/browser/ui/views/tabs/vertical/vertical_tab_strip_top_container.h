@@ -8,7 +8,7 @@
 #include "ui/views/layout/delegating_layout_manager.h"
 #include "ui/views/view.h"
 
-class VerticalTabStripFlatEdgeButton;
+class TabStripFlatEdgeButton;
 class BrowserWindowInterface;
 
 namespace gfx {
@@ -50,12 +50,10 @@ class VerticalTabStripTopContainer : public views::View,
   views::LabelButton* AddTopContainerChildButtonFor(
       actions::ActionId action_id);
   // Creates FlatEdgeButton (Tab Groups & Tab Search).
-  VerticalTabStripFlatEdgeButton* AddFlatEdgeChildButtonFor(
+  TabStripFlatEdgeButton* AddFlatEdgeChildButtonFor(
       actions::ActionId action_id);
 
-  VerticalTabStripFlatEdgeButton* GetTabSearchButton() {
-    return tab_search_button_;
-  }
+  TabStripFlatEdgeButton* GetTabSearchButton() { return tab_search_button_; }
   views::LabelButton* GetCollapseButton() { return collapse_button_; }
 
   bool IsPositionInWindowCaption(const gfx::Point& point);
@@ -81,8 +79,8 @@ class VerticalTabStripTopContainer : public views::View,
   raw_ptr<tabs::VerticalTabStripStateController> state_controller_ = nullptr;
   raw_ptr<actions::ActionItem> root_action_item_ = nullptr;
   raw_ptr<BrowserWindowInterface> browser_ = nullptr;
-  raw_ptr<VerticalTabStripFlatEdgeButton> tab_search_button_ = nullptr;
-  raw_ptr<VerticalTabStripFlatEdgeButton> tab_group_button_ = nullptr;
+  raw_ptr<TabStripFlatEdgeButton> tab_search_button_ = nullptr;
+  raw_ptr<TabStripFlatEdgeButton> tab_group_button_ = nullptr;
   raw_ptr<views::LabelButton> collapse_button_ = nullptr;
 
   raw_ptr<views::MenuButtonController> everything_menu_controller_ = nullptr;

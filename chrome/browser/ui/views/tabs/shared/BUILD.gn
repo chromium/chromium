@@ -1,0 +1,25 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("shared") {
+  sources = [ "tab_strip_flat_edge_button.h" ]
+
+  deps = [
+    "//ui/base/metadata",
+    "//ui/views",
+  ]
+}
+
+source_set("impl") {
+  sources = [ "tab_strip_flat_edge_button.cc" ]
+
+  deps = [
+    ":shared",
+    "//chrome/browser/ui:layout_constants",
+    "//chrome/browser/ui/color:color_headers",
+    "//chrome/browser/ui/views/toolbar",
+    "//ui/actions",
+    "//ui/views",
+  ]
+}

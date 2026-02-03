@@ -7,7 +7,7 @@
 
 #include "ui/views/layout/flex_layout_view.h"
 
-class VerticalTabStripFlatEdgeButton;
+class TabStripFlatEdgeButton;
 
 namespace tabs {
 class VerticalTabStripStateController;
@@ -26,8 +26,7 @@ class VerticalTabStripBottomContainer : public views::FlexLayoutView {
       actions::ActionItem* root_action_item);
   ~VerticalTabStripBottomContainer() override;
 
-  VerticalTabStripFlatEdgeButton* AddChildButtonFor(
-      actions::ActionId action_id);
+  TabStripFlatEdgeButton* AddChildButtonFor(actions::ActionId action_id);
 
   void OnCollapsedStateChanged(
       tabs::VerticalTabStripStateController* state_controller);
@@ -37,7 +36,7 @@ class VerticalTabStripBottomContainer : public views::FlexLayoutView {
       tabs::VerticalTabStripStateController* state_controller);
 
   raw_ptr<actions::ActionItem> root_action_item_ = nullptr;
-  raw_ptr<VerticalTabStripFlatEdgeButton> new_tab_button_ = nullptr;
+  raw_ptr<TabStripFlatEdgeButton> new_tab_button_ = nullptr;
   base::CallbackListSubscription collapsed_state_changed_subscription_;
 
   std::unique_ptr<views::ActionViewController> action_view_controller_;

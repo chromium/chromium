@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_flat_edge_button.h"
+#include "chrome/browser/ui/views/tabs/shared/tab_strip_flat_edge_button.h"
 
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -22,14 +22,14 @@
 #include "ui/views/view_class_properties.h"
 
 namespace {
-class VerticalTabStripFlatEdgeButtonActionViewInterface
+class TabStripFlatEdgeButtonActionViewInterface
     : public views::LabelButtonActionViewInterface {
  public:
-  explicit VerticalTabStripFlatEdgeButtonActionViewInterface(
-      VerticalTabStripFlatEdgeButton* action_view)
+  explicit TabStripFlatEdgeButtonActionViewInterface(
+      TabStripFlatEdgeButton* action_view)
       : views::LabelButtonActionViewInterface(action_view),
         action_view_(action_view) {}
-  ~VerticalTabStripFlatEdgeButtonActionViewInterface() override = default;
+  ~TabStripFlatEdgeButtonActionViewInterface() override = default;
 
   // views::LabelButtonActionViewInterface:
   void ActionItemChangedImpl(actions::ActionItem* action_item) override {
@@ -49,11 +49,11 @@ class VerticalTabStripFlatEdgeButtonActionViewInterface
   }
 
  private:
-  raw_ptr<VerticalTabStripFlatEdgeButton> action_view_ = nullptr;
+  raw_ptr<TabStripFlatEdgeButton> action_view_ = nullptr;
 };
 }  // namespace
 
-VerticalTabStripFlatEdgeButton::VerticalTabStripFlatEdgeButton() {
+TabStripFlatEdgeButton::TabStripFlatEdgeButton() {
   ConfigureInkDropForToolbar(
       this, std::make_unique<views::RoundRectHighlightPathGenerator>(
                 GetToolbarInkDropInsets(this), GetButtonCornerRadii()));
@@ -62,13 +62,11 @@ VerticalTabStripFlatEdgeButton::VerticalTabStripFlatEdgeButton() {
 }
 
 std::unique_ptr<views::ActionViewInterface>
-VerticalTabStripFlatEdgeButton::GetActionViewInterface() {
-  return std::make_unique<VerticalTabStripFlatEdgeButtonActionViewInterface>(
-      this);
+TabStripFlatEdgeButton::GetActionViewInterface() {
+  return std::make_unique<TabStripFlatEdgeButtonActionViewInterface>(this);
 }
 
-void VerticalTabStripFlatEdgeButton::UpdateIcon(
-    const ui::ImageModel& icon_image) {
+void TabStripFlatEdgeButton::UpdateIcon(const ui::ImageModel& icon_image) {
   CHECK(icon_image.IsVectorIcon());
 
   const ui::ImageModel image_model =
@@ -81,13 +79,13 @@ void VerticalTabStripFlatEdgeButton::UpdateIcon(
   SetImageModel(views::Button::STATE_DISABLED, image_model);
 }
 
-void VerticalTabStripFlatEdgeButton::SetInsets(const gfx::Insets& insets) {
+void TabStripFlatEdgeButton::SetInsets(const gfx::Insets& insets) {
   std::unique_ptr<views::LabelButtonBorder> border = CreateDefaultBorder();
   border->set_insets(insets);
   SetBorder(std::move(border));
 }
 
-void VerticalTabStripFlatEdgeButton::OnPaintBackground(gfx::Canvas* canvas) {
+void TabStripFlatEdgeButton::OnPaintBackground(gfx::Canvas* canvas) {
   const SkColor color = GetColorProvider()->GetColor(GetBackgroundColor());
 
   cc::PaintFlags flags;
@@ -98,12 +96,12 @@ void VerticalTabStripFlatEdgeButton::OnPaintBackground(gfx::Canvas* canvas) {
   canvas->sk_canvas()->drawRRect(GetButtonShape(), flags);
 }
 
-bool VerticalTabStripFlatEdgeButton::GetHitTestMask(SkPath* mask) const {
+bool TabStripFlatEdgeButton::GetHitTestMask(SkPath* mask) const {
   *mask = SkPath::RRect(GetButtonShape());
   return true;
 }
 
-void VerticalTabStripFlatEdgeButton::SetFlatEdge(FlatEdge flat_edge) {
+void TabStripFlatEdgeButton::SetFlatEdge(FlatEdge flat_edge) {
   if (flat_edge_ == flat_edge) {
     return;
   }
@@ -116,37 +114,36 @@ void VerticalTabStripFlatEdgeButton::SetFlatEdge(FlatEdge flat_edge) {
   SchedulePaint();
 }
 
-void VerticalTabStripFlatEdgeButton::SetIconSize(int icon_size) {
+void TabStripFlatEdgeButton::SetIconSize(int icon_size) {
   if (icon_size_ == icon_size) {
     return;
   }
   icon_size_ = icon_size;
 }
 
-void VerticalTabStripFlatEdgeButton::AddedToWidget() {
+void TabStripFlatEdgeButton::AddedToWidget() {
   paint_as_active_subscription_ =
       GetWidget()->RegisterPaintAsActiveChangedCallback(base::BindRepeating(
           &View::NotifyViewControllerCallback, base::Unretained(this)));
 }
 
-void VerticalTabStripFlatEdgeButton::RemovedFromWidget() {
+void TabStripFlatEdgeButton::RemovedFromWidget() {
   paint_as_active_subscription_ = {};
 }
 
-ui::ColorId VerticalTabStripFlatEdgeButton::GetForegroundColor() const {
+ui::ColorId TabStripFlatEdgeButton::GetForegroundColor() const {
   return GetWidget() && GetWidget()->ShouldPaintAsActive()
              ? kColorTabSearchButtonCRForegroundFrameActive
              : kColorTabSearchButtonCRForegroundFrameInactive;
 }
 
-ui::ColorId VerticalTabStripFlatEdgeButton::GetBackgroundColor() const {
+ui::ColorId TabStripFlatEdgeButton::GetBackgroundColor() const {
   return GetWidget() && GetWidget()->ShouldPaintAsActive()
              ? kColorNewTabButtonCRBackgroundFrameActive
              : kColorNewTabButtonCRBackgroundFrameInactive;
 }
 
-gfx::RoundedCornersF VerticalTabStripFlatEdgeButton::GetButtonCornerRadii()
-    const {
+gfx::RoundedCornersF TabStripFlatEdgeButton::GetButtonCornerRadii() const {
   int radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
       views::Emphasis::kHigh);
 
@@ -164,7 +161,7 @@ gfx::RoundedCornersF VerticalTabStripFlatEdgeButton::GetButtonCornerRadii()
   }
 }
 
-SkRRect VerticalTabStripFlatEdgeButton::GetButtonShape() const {
+SkRRect TabStripFlatEdgeButton::GetButtonShape() const {
   const gfx::RoundedCornersF corners = GetButtonCornerRadii();
   const SkRect rect = gfx::RectToSkRect(GetLocalBounds());
 
@@ -179,5 +176,5 @@ SkRRect VerticalTabStripFlatEdgeButton::GetButtonShape() const {
   return rrect;
 }
 
-BEGIN_METADATA(VerticalTabStripFlatEdgeButton)
+BEGIN_METADATA(TabStripFlatEdgeButton)
 END_METADATA

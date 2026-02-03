@@ -11,8 +11,8 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_everything_menu.h"
+#include "chrome/browser/ui/views/tabs/shared/tab_strip_flat_edge_button.h"
 #include "chrome/browser/ui/views/tabs/vertical/top_container_button.h"
-#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_flat_edge_button.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/actions/action_view_controller.h"
 #include "ui/views/controls/button/label_button.h"
@@ -247,11 +247,10 @@ views::LabelButton* VerticalTabStripTopContainer::AddTopContainerChildButtonFor(
   return container_button_ptr;
 }
 
-VerticalTabStripFlatEdgeButton*
-VerticalTabStripTopContainer::AddFlatEdgeChildButtonFor(
+TabStripFlatEdgeButton* VerticalTabStripTopContainer::AddFlatEdgeChildButtonFor(
     actions::ActionId action_id) {
-  std::unique_ptr<VerticalTabStripFlatEdgeButton> container_button =
-      std::make_unique<VerticalTabStripFlatEdgeButton>();
+  std::unique_ptr<TabStripFlatEdgeButton> container_button =
+      std::make_unique<TabStripFlatEdgeButton>();
   actions::ActionItem* action_item =
       actions::ActionManager::Get().FindAction(action_id, root_action_item_);
   CHECK(action_item);
@@ -259,7 +258,7 @@ VerticalTabStripTopContainer::AddFlatEdgeChildButtonFor(
   action_view_controller_->CreateActionViewRelationship(
       container_button.get(), action_item->GetAsWeakPtr());
 
-  VerticalTabStripFlatEdgeButton* container_button_ptr =
+  TabStripFlatEdgeButton* container_button_ptr =
       AddChildView(std::move(container_button));
 
   const int raw_container_button_size = GetLayoutConstant(
@@ -331,24 +330,22 @@ void VerticalTabStripTopContainer::UpdateButtonStyles(
     // the flat edge side.
     if (tab_search_button_) {
       tab_search_button_->SetFlatEdge(
-          tab_group_button_ ? VerticalTabStripFlatEdgeButton::FlatEdge::kTop
-                            : VerticalTabStripFlatEdgeButton::FlatEdge::kNone);
+          tab_group_button_ ? TabStripFlatEdgeButton::FlatEdge::kTop
+                            : TabStripFlatEdgeButton::FlatEdge::kNone);
     }
 
     if (tab_group_button_) {
-      tab_group_button_->SetFlatEdge(
-          VerticalTabStripFlatEdgeButton::FlatEdge::kBottom);
+      tab_group_button_->SetFlatEdge(TabStripFlatEdgeButton::FlatEdge::kBottom);
     }
   } else {
     if (tab_search_button_) {
       tab_search_button_->SetFlatEdge(
-          tab_group_button_ ? VerticalTabStripFlatEdgeButton::FlatEdge::kLeft
-                            : VerticalTabStripFlatEdgeButton::FlatEdge::kNone);
+          tab_group_button_ ? TabStripFlatEdgeButton::FlatEdge::kLeft
+                            : TabStripFlatEdgeButton::FlatEdge::kNone);
     }
 
     if (tab_group_button_) {
-      tab_group_button_->SetFlatEdge(
-          VerticalTabStripFlatEdgeButton::FlatEdge::kRight);
+      tab_group_button_->SetFlatEdge(TabStripFlatEdgeButton::FlatEdge::kRight);
     }
   }
 }
