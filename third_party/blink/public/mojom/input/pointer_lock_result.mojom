@@ -17,5 +17,6 @@ enum PointerLockResult {
   kAlreadyLocked,
   kWrongDocument,
   kElementDestroyed,
+  kUserEscapeCooldown,
   kUnknownError // Used for functions that should be overridden and tests.
 };

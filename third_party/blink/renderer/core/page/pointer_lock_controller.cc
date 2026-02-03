@@ -246,6 +246,11 @@ DOMException* PointerLockController::ConvertResultToException(
       return MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kSecurityError,
           "The user has exited the lock before this request was completed.");
+    case mojom::blink::PointerLockResult::kUserEscapeCooldown:
+      return MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kSecurityError,
+          "Pointer lock cannot be acquired immediately after the user has "
+          "exited the lock.");
     case mojom::blink::PointerLockResult::kSuccess:
     case mojom::blink::PointerLockResult::kUnknownError:
       return MakeGarbageCollected<DOMException>(

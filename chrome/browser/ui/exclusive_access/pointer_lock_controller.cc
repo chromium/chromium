@@ -67,7 +67,7 @@ void PointerLockController::RequestToLockPointer(WebContents* web_contents,
     if (base::TimeTicks::Now() <
         last_user_escape_time_ + kEffectiveUserEscapeDuration) {
       web_contents->GotResponseToPointerLockRequest(
-          blink::mojom::PointerLockResult::kUserRejected);
+          blink::mojom::PointerLockResult::kUserEscapeCooldown);
       if (lock_state_callback_for_test_) {
         std::move(lock_state_callback_for_test_).Run();
       }
