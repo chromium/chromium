@@ -1266,6 +1266,12 @@ void WebViewGuest::DidFinishNavigation(
     pending_zoom_factor_ = 0.0;
   }
 
+  // TODO(crbug.com/479918756): This is a temporary fix to ensure that the
+  // transparency is set after the renderer view is created, to prevent a race
+  // condition where the initial SetTransparency call is ignored. This should
+  // be removed once the root cause is fixed.
+  SetTransparency(navigation_handle->GetRenderFrameHost());
+
   base::DictValue args;
   args.Set(guest_view::kUrl, navigation_handle->GetURL().spec());
   args.Set(kInternalVisibleUrl,
@@ -1912,9 +1918,15 @@ void WebViewGuest::SetTransparency(
     return;
   }
 
+  // TODO(crbug.com/479918756): Setting the background color twice is a a
+  // temporary fix to ensure that the transparency is set even if the renderer
+  // has already been set to transparent. Without this, a subsequent call to
+  // SetBackgroundColor(SK_ColorTRANSPARENT) are ignored, causing a stuck state.
   if (allow_transparency_) {
+    view->SetBackgroundColor(SK_ColorWHITE);
     view->SetBackgroundColor(SK_ColorTRANSPARENT);
   } else {
+    view->SetBackgroundColor(SK_ColorTRANSPARENT);
     view->SetBackgroundColor(SK_ColorWHITE);
   }
 }
