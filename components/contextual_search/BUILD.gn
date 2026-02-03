@@ -66,6 +66,7 @@ source_set("public") {
     "//mojo/public/mojom/base",
     "//services/network/public/cpp",
     "//third_party/omnibox_proto",
+    "//third_party/omnibox_proto:omnibox_proto_gen",
     "//url",
   ]
 

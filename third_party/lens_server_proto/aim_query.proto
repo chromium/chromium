@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-syntax = 'proto3';
+edition = "2024";
 
 option optimize_for = LITE_RUNTIME;
 
@@ -12,8 +12,13 @@ import "lens_overlay_request_id.proto";
 import "lens_overlay_visual_input_type.proto";
 import "lens_overlay_visual_search_interaction_data.proto";
 
+message ContextMetadata {
+  string pdf_title = 1;
+}
+
 // The collection of parameters required to execute a Lens query as part of AI
 // Mode.
+// LINT.IfChange(LensImageQueryData)
 message LensImageQueryData {
   // ID for subsequent search requests.
   string search_session_id = 1;
@@ -27,10 +32,18 @@ message LensImageQueryData {
   // The visual input interaction data for the query.
   LensOverlayVisualSearchInteractionData visual_search_interaction_data = 7;
 
+  // Metadata for the context.
+  ContextMetadata context_metadata = 8;
+
   // Deprecated fields to match the Silk LensImageQueryData.
   reserved 3, 5;
 }
+// LINT.ThenChange(
+//     //depot/google3/javascript/search/services/aimode/proto/aim_query.proto:LensImageQueryData,
+//     //depot/google3/search/frontend/silk/apis/aimode/ai_mode.proto:LensImageQueryData
+// )
 
+// LINT.IfChange(ContextTurnMetadata)
 // Metadata for context for the turn.
 message ContextTurnMetadata {
   int64 context_id = 1;
@@ -44,6 +57,35 @@ message ContextTurnMetadata {
   oneof metadata {
     TabMetadata tab_metadata = 2;
   }
+}
+// LINT.ThenChange(
+//     //depot/google3/javascript/search/services/aimode/proto/aim_query.proto:ContextTurnMetadata
+// )
+
+// The AIM model mode that is applied to a query.
+// Next ID: 4
+enum ModelMode {
+  // Unspecified model mode.
+  MODEL_MODE_UNSPECIFIED = 0;
+  // Gemini regular model mode.
+  MODEL_MODE_GEMINI_REGULAR = 1;
+  // Gemini pro model mode.
+  MODEL_MODE_GEMINI_PRO = 2;
+  // Autoroute mode.
+  MODEL_MODE_GEMINI_PRO_AUTOROUTE = 3;
+}
+
+// AIM ToolMode to apply to a query.
+// In the AIM Composebox, tools can be added to a query to enter a
+// specific mode. For example, some modes include "deep search", "create
+// images", and "canvas".
+// Next ID: 8
+enum ToolMode {
+  TOOL_MODE_UNSPECIFIED = 0;
+  TOOL_MODE_DEEP_SEARCH = 1;
+  TOOL_MODE_CANVAS = 2;
+  TOOL_MODE_IMAGE_GEN = 4;
+  TOOL_MODE_IMAGE_GEN_UPLOAD = 7;
 }
 
 // The set of data that's required to generate a response from the LLM.
@@ -70,7 +112,7 @@ message QueryPayload {
   bool use_image_generation = 12;
 
   // CGI params.
-  map<string, string> additional_cgi_params = 9;
+  map<string, string> cgi_params = 9;
 
   // Information about the context that is turn-specific.
   // If a piece of context is not included here, then there is nothing
@@ -78,6 +120,12 @@ message QueryPayload {
   // as is.
   repeated ContextTurnMetadata context_turn_metadata = 14;
 
+  // The model mode to use for this query.
+  ModelMode model_mode = 13;
+
+  // The tool mode to use for this query.
+  ToolMode tool_mode = 15;
+
   // Deprecated fields to match the Silk QueryPayload.
-  reserved 5, 7, 13;
+  reserved 5, 7;
 }

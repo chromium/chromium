@@ -406,7 +406,7 @@ IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
   ASSERT_EQ(submit_query.payload().query_text(), "test query");
 
   // Verify additional params.
-  auto sent_params = submit_query.payload().additional_cgi_params();
+  auto sent_params = submit_query.payload().cgi_params();
   ASSERT_EQ(sent_params.size(), 1ul);
   ASSERT_EQ(sent_params.at("gs_lcrp"), "test_value");
 }
@@ -460,7 +460,7 @@ IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
   ASSERT_EQ(submit_query.payload().query_text(), "test query");
 
   // Verify additional params.
-  auto sent_params = submit_query.payload().additional_cgi_params();
+  auto sent_params = submit_query.payload().cgi_params();
   ASSERT_EQ(sent_params.size(), 1ul);
   ASSERT_EQ(sent_params.at("gs_lcrp"), "test_value");
 }

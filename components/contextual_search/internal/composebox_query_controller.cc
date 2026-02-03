@@ -456,12 +456,16 @@ lens::ClientToAimMessage ComposeboxQueryController::CreateClientToAimRequest(
       create_client_to_aim_request_info->deep_search_selected);
   submit_query->mutable_payload()->set_use_image_generation(
       create_client_to_aim_request_info->create_images_selected);
+  submit_query->mutable_payload()->set_tool_mode(
+      create_client_to_aim_request_info->active_tool);
+  submit_query->mutable_payload()->set_model_mode(
+      create_client_to_aim_request_info->active_model);
 
   // Add additional CGI params.
   for (const auto& param :
        create_client_to_aim_request_info->additional_cgi_params) {
-    (*submit_query->mutable_payload()
-          ->mutable_additional_cgi_params())[param.first] = param.second;
+    (*submit_query->mutable_payload()->mutable_cgi_params())[param.first] =
+        param.second;
   }
 
   // Add context turn metadata.

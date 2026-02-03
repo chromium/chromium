@@ -2,8 +2,8 @@ Name: Lens Protos
 Short Name: lens_overlay_proto
 URL: This is the canonical public repository
 Update Mechanism: Manual
-Version: 858608937
-Date: 2026-01-20
+Version: 864964391
+Date: 2026-02-03
 License: BSD-3-Clause
 License File: LICENSE
 Shipped: yes
@@ -21,5 +21,4 @@ blaze run //lens/chrome/scripts/proto_export -- \
 
 
 Local Modifications:
-Removed broken imports from the output of the export script
-(crbug.com/467044156).
+Unchanged from the output of the export script.
