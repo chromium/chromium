@@ -13,7 +13,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -264,6 +263,9 @@ void MojoVideoDecoderService::Initialize(const VideoDecoderConfig& config,
   // to system instability. Note: This will break decoding entirely for codecs
   // which don't have software fallback, so we use a conservative limit. Most
   // platforms will self-limit and never reach this limit.
+  //
+  // UMA data as of Feb 2026 shows 99% of users have <= 24 active decoders
+  // across all platforms, so if needed this limit could be reduced.
   if (!config.is_encrypted() && g_num_active_mvd_instances >= 128) {
     OnDecoderInitialized(DecoderStatus::Codes::kTooManyDecoders);
     return;
@@ -355,8 +357,6 @@ void MojoVideoDecoderService::Decode(mojom::DecoderBufferPtr buffer,
   if (!is_active_instance_) {
     is_active_instance_ = true;
     g_num_active_mvd_instances++;
-    base::UmaHistogramExactLinear("Media.MojoVideoDecoder.ActiveInstances",
-                                  g_num_active_mvd_instances, 64);
     base::debug::SetCrashKeyString(
         GetNumVideoDecodersCrashKeyString(),
         base::NumberToString(g_num_active_mvd_instances));

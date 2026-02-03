@@ -5901,18 +5901,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.MojoVideoDecoder.ActiveInstances" units="units"
-    expires_after="2026-03-15">
-  <owner>dalecurtis@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Records the number of active MojoVideoDecoderService instances that are
-    alive each time an instance becomes active. An instance is active if
-    Decode() has been called at least once. This provides an estimate of the
-    concurrent hardware resource requirements.
-  </summary>
-</histogram>
-
 <histogram name="Media.MojoVideoDecoder.Decode" units="ms"
     expires_after="never">
 <!-- expires-never: used by ChromeOS test infrastructure -->
