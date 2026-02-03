@@ -672,6 +672,16 @@ void DecoderTemplate<Traits>::OnInitializeDone(media::DecoderStatus status) {
 
   const bool is_flush = pending_request_->type == Request::Type::kFlush;
   if (!status.is_ok()) {
+    if (status.code() == media::DecoderStatus::Codes::kTooManyDecoders) {
+      Shutdown(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kQuotaExceededError,
+          is_flush
+              ? "Unexpectedly ran out of decoders during initialize after "
+                "flush. Close all pending frames and try again."
+              : "Decoder initialization failed, too many decoders in use."));
+      return;
+    }
+
     std::string error_message;
     if (is_flush) {
       error_message = "Error during initialize after flush.";

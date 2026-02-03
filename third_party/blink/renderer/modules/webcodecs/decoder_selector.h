@@ -36,7 +36,7 @@ class DecoderSelector {
   // Emits the result of a single call to SelectDecoder(). Parameter is
   // the initialized Decoder. nullptr if selection failed. The caller owns the
   // Decoder.
-  using SelectDecoderCB = base::OnceCallback<void(std::unique_ptr<Decoder>)>;
+  using SelectDecoderCB = base::OnceCallback<void(DecoderOrError)>;
 
   // Construction can happen on any thread, but all subsequent API calls
   // including destruction must use |task_runner| thread.

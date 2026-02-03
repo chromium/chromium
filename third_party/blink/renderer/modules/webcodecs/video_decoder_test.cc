@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_video_chunk.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_video_chunk_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_video_chunk_type.h"
@@ -38,6 +39,22 @@ namespace {
 
 using testing::_;
 using testing::Unused;
+
+class MockErrorCallbackFunction : public ScriptFunction {
+ public:
+  explicit MockErrorCallbackFunction(v8::Isolate* isolate)
+      : isolate_(isolate) {}
+
+  MOCK_METHOD1(OnError, void(const String&));
+
+  ScriptValue Call(ScriptState* script_state, ScriptValue args) override {
+    OnError(V8DOMException::ToWrappable(isolate_, args.V8Value())->name());
+    return ScriptValue();
+  }
+
+ private:
+  raw_ptr<v8::Isolate> const isolate_;
+};
 
 class FakeVideoDecoder : public VideoDecoder {
  public:
@@ -311,6 +328,57 @@ TEST_F(VideoDecoderTest, ConfigureGeneratesConfigChangeEOS) {
                     media::VideoDecoder::InitCB& init_cb, Unused, Unused) {
         scheduler::GetSequencedTaskRunnerForTesting()->PostTask(
             FROM_HERE, blink::BindOnce(std::move(init_cb), media::OkStatus()));
+        scheduler::GetSequencedTaskRunnerForTesting()->PostTask(
+            FROM_HERE, run_loop.QuitClosure());
+      });
+
+  fake_decoder->configure(CreateVideoConfig(), v8_scope.GetExceptionState());
+  ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
+  run_loop.Run();
+}
+
+TEST_F(VideoDecoderTest, TooManyDecodersGeneratesQuotaExceededError) {
+  V8TestingScope v8_scope;
+  MockFunctionScope mock_functions(v8_scope.GetScriptState());
+
+  auto* init = MakeGarbageCollected<VideoDecoderInit>();
+  init->setOutput(V8VideoFrameOutputCallback::Create(
+      mock_functions.ExpectNoCall()->ToV8Function(v8_scope.GetScriptState())));
+
+  auto* error_callback = MakeGarbageCollected<MockErrorCallbackFunction>(
+      v8_scope.GetScriptState()->GetIsolate());
+  EXPECT_CALL(*error_callback, OnError(DOMException::GetErrorName(
+                                   DOMExceptionCode::kQuotaExceededError)))
+      .Times(1);
+  init->setError(V8WebCodecsErrorCallback::Create(
+      error_callback->ToV8Function(v8_scope.GetScriptState())));
+
+  auto* fake_decoder = CreateFakeDecoder(v8_scope.GetScriptState(), init,
+                                         v8_scope.GetExceptionState());
+
+  fake_decoder->CreateMockSoftwareDecoder();
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*fake_decoder->mock_decoder(), GetMaxDecodeRequests())
+      .WillRepeatedly(testing::Return(4));
+
+  // Due to how this test overrides decoder(), calls to configure() result in
+  // an EOS buffer being sent to the decoder.
+  EXPECT_CALL(*fake_decoder->mock_decoder(), Decode_(_, _))
+      .WillOnce([](scoped_refptr<media::DecoderBuffer> buffer,
+                   media::VideoDecoder::DecodeCB& decode_cb) {
+        scheduler::GetSequencedTaskRunnerForTesting()->PostTask(
+            FROM_HERE,
+            blink::BindOnce(std::move(decode_cb), media::OkStatus()));
+      });
+
+  EXPECT_CALL(*fake_decoder->mock_decoder(), Initialize_(_, _, _, _, _, _))
+      .WillOnce([&](Unused, Unused, Unused,
+                    media::VideoDecoder::InitCB& init_cb, Unused, Unused) {
+        scheduler::GetSequencedTaskRunnerForTesting()->PostTask(
+            FROM_HERE,
+            blink::BindOnce(std::move(init_cb),
+                            media::DecoderStatus::Codes::kTooManyDecoders));
         scheduler::GetSequencedTaskRunnerForTesting()->PostTask(
             FROM_HERE, run_loop.QuitClosure());
       });

@@ -160,6 +160,10 @@ class MEDIA_EXPORT DecoderSelector {
   // should maintain its place when FilterAndSortAvailableDecoders() runs.
   bool prefer_prepended_platform_decoder_ = false;
 
+  // True if Initialize() fails with a DecoderStatus::Codes::kTooManyDecoders.
+  // Used to surface a better error message if we fail to find a decoder.
+  bool ran_out_of_decoders_ = false;
+
   base::WeakPtrFactory<DecoderSelector> weak_this_factory_{this};
 };
 

@@ -149,11 +149,7 @@ void DecoderSelector<StreamType>::OnDecoderSelected(
   // (configure() no longer takes a promise).
   impl_.FinalizeDecoderSelection();
 
-  if (!decoder_or_error.has_value()) {
-    std::move(select_decoder_cb).Run(nullptr);
-  } else {
-    std::move(select_decoder_cb).Run(std::move(decoder_or_error).value());
-  }
+  std::move(select_decoder_cb).Run(std::move(decoder_or_error));
 }
 
 template class MODULES_EXPORT DecoderSelector<media::DemuxerStream::VIDEO>;

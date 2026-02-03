@@ -254,7 +254,8 @@ class MediaVideoTaskWrapper {
     return video_decoders;
   }
 
-  void OnDecoderSelected(std::unique_ptr<media::VideoDecoder> decoder) {
+  void OnDecoderSelected(
+      WebCodecsVideoDecoderSelector::DecoderOrError decoder_or_error) {
     DVLOG(2) << __func__;
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -262,18 +263,17 @@ class MediaVideoTaskWrapper {
     DCHECK(selector_);
     selector_.reset();
 
-    decoder_ = std::move(decoder);
-
     media::DecoderStatus status = media::DecoderStatus::Codes::kOk;
     std::optional<DecoderDetails> decoder_details = std::nullopt;
 
-    if (decoder_) {
+    if (decoder_or_error.has_value()) {
+      decoder_ = std::move(decoder_or_error).value();
       decoder_details = DecoderDetails({decoder_->GetDecoderType(),
                                         decoder_->IsPlatformDecoder(),
                                         decoder_->NeedsBitstreamConversion(),
                                         decoder_->GetMaxDecodeRequests()});
     } else {
-      status = media::DecoderStatus::Codes::kUnsupportedConfig;
+      status = std::move(decoder_or_error).error();
     }
 
     // Fire |init_cb|.

@@ -132,6 +132,7 @@ void DecoderSelector<StreamType>::SelectDecoderInternal(
 
   if (needs_new_decoders) {
     decode_failure_reinit_cause_ = std::nullopt;
+    ran_out_of_decoders_ = false;
     CreateDecoders();
   }
 
@@ -211,6 +212,8 @@ void DecoderSelector<StreamType>::GetAndInitializeNextDecoder() {
 
     if (decode_failure_reinit_cause_.has_value()) {
       ReturnSelectionError(std::move(*decode_failure_reinit_cause_));
+    } else if (ran_out_of_decoders_) {
+      ReturnSelectionError(DecoderStatus::Codes::kTooManyDecoders);
     } else {
       ReturnSelectionError(DecoderStatus::Codes::kUnsupportedConfig);
     }
@@ -243,11 +246,16 @@ void DecoderSelector<StreamType>::OnDecoderInitializeDone(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!status.is_ok()) {
+    if (status.code() == DecoderStatus::Codes::kTooManyDecoders) {
+      ran_out_of_decoders_ = true;
+    }
+
     // Note: Don't track this decode status, as it is the result of decoder
     // selection (initialization) failure.
     MEDIA_LOG(INFO, media_log_)
         << "Cannot select " << decoder_->GetDecoderType() << " for "
-        << DemuxerStream::GetTypeName(StreamType) << " decoding";
+        << DemuxerStream::GetTypeName(StreamType)
+        << " decoding. status=" << status;
 
     // Try the next decoder on the list.
     decoder_ = nullptr;
