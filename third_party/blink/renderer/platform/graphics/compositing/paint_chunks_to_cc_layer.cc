@@ -1315,10 +1315,14 @@ void LayerPropertiesUpdater::UpdateScrollHitTestData(const PaintChunk& chunk) {
   // - the scroll node is not composited.
   if (const auto scroll_translation = hit_test_data.scroll_translation) {
     const auto* scroll_node = scroll_translation->ScrollNode();
-    DCHECK(scroll_node);
-    // TODO(crbug.com/1230615): Remove this when we fix the root cause.
-    if (!scroll_node) {
-      return;
+    if (RuntimeEnabledFeatures::RemoveScrollNodeWorkaroundEnabled()) {
+      CHECK(scroll_node);
+    } else {
+      DCHECK(scroll_node);
+      // TODO(crbug.com/40779139): Remove this when we fix the root cause.
+      if (!scroll_node) {
+        return;
+      }
     }
 
     auto scroll_element_id = scroll_node->GetCompositorElementId();

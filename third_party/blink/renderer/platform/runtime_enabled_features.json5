@@ -4445,6 +4445,11 @@
       status: "stable",
     },
     {
+      // See https://issues.chromium.org/issues/40779139
+      name: "RemoveScrollNodeWorkaround",
+      status: "stable",
+    },
+    {
       // See https://issues.chromium.org/issues/41474791
       name: "RemoveSelectionCanonicalizationInMoveParagraph",
       status: "stable",
