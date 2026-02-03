@@ -523,6 +523,7 @@ class OmniboxEditModelPopupTest : public ::testing::Test {
     MOCK_METHOD(void, OnMatchIconUpdated, (size_t), (override));
     MOCK_METHOD(void, OnContentsChanged, (), (override));
     MOCK_METHOD(void, OnKeywordStateChanged, (bool), (override));
+    MOCK_METHOD(void, OnCharTyped, (base::TimeTicks), (override));
   };
 
   OmniboxEditModelPopupTest() {
@@ -1795,6 +1796,7 @@ class ResultClearingObserver : public OmniboxEditModel::Observer {
     result_->Reset();
   }
   void OnKeywordStateChanged(bool) override {}
+  void OnCharTyped(base::TimeTicks timestamp) override {}
 
  private:
   raw_ptr<AutocompleteResult> result_;

@@ -1313,6 +1313,10 @@ void OmniboxEditModel::OnNavigationLikely(
       navigation_predictor);
 }
 
+void OmniboxEditModel::NotifyObserversCharTyped(base::TimeTicks timestamp) {
+  observers_.Notify(&Observer::OnCharTyped, timestamp);
+}
+
 void OmniboxEditModel::OnPopupDataChanged(
     const std::u16string& temporary_text,
     bool is_temporary_text,

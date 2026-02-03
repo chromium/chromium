@@ -89,6 +89,7 @@ class WebuiOmniboxHandler : public ContextualSearchboxHandler,
   void OnMatchIconUpdated(size_t index) override {}
   void OnContentsChanged() override {}
   void OnKeywordStateChanged(bool is_keyword_selected) override;
+  void OnCharTyped(base::TimeTicks timstamp) override;
 
   // `AimEligibilityService` callback.
   void OnAimEligibilityChanged();

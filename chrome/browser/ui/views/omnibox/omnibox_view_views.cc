@@ -1846,6 +1846,7 @@ void OmniboxViewViews::DoInsertChar(char16_t ch) {
     DCHECK_EQ(latency_histogram_state_, LatencyHistogramState::kNotActive);
     latency_histogram_state_ = LatencyHistogramState::kCharTyped;
     insert_char_time_ = base::TimeTicks::Now();
+    controller()->edit_model()->NotifyObserversCharTyped(insert_char_time_);
   }
   Textfield::DoInsertChar(ch);
 }
