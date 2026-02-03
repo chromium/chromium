@@ -159,7 +159,8 @@ class VideoResourceUpdaterTest : public testing::Test {
     constexpr int kMaxDimension = 5;
     constexpr gfx::Size kSize = gfx::Size(kMaxDimension, kMaxDimension);
     constexpr gfx::Rect kVisibleRect = gfx::Rect(2, 1, 3, 3);
-    static std::array<uint8_t, 2 * kMaxDimension * kMaxDimension> y16_data = {
+    constexpr int kElementCount = 2 * kMaxDimension * kMaxDimension;
+    alignas(uint16_t) static std::array<uint8_t, kElementCount> y16_data = {
         0, 0, 0, 0, 0,    0,    0,    0,    0,    0,
         0, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
         0, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
