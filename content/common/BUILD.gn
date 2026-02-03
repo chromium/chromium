@@ -143,6 +143,7 @@ source_set("common") {
     "media/cdm_info.cc",
     "navigation_params_utils.h",
     "origin_util.cc",
+    "page_state_mojom_traits.h",
     "process_priority_tracker.cc",
     "process_priority_tracker.h",
     "process_type.cc",
@@ -535,6 +536,15 @@ mojom("mojo_bindings") {
           mojom = "content.mojom.PageState"
           cpp = "::blink::PageState"
         },
+      ]
+      traits_headers = [
+        "//content/common/page_state_mojom_traits.h",
+        "//third_party/blink/public/common/page_state/page_state.h",
+      ]
+      traits_public_deps = [ "//third_party/blink/public/common:headers" ]
+    },
+    {
+      types = [
         {
           mojom = "content.mojom.PageTransition"
           cpp = "::ui::PageTransition"
@@ -542,7 +552,6 @@ mojom("mojo_bindings") {
       ]
       traits_headers = [
         "//content/public/common/common_param_traits.h",
-        "//third_party/blink/public/common/page_state/page_state.h",
         "//ui/base/page_transition_types.h",
       ]
     },

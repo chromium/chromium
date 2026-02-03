@@ -6,6 +6,7 @@ module content.mojom;
 
 import "content/common/frame_messages.mojom";
 import "content/public/common/alternative_error_page_override_info.mojom";
+import "mojo/public/mojom/base/byte_string.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "mojo/public/mojom/base/uuid.mojom";
@@ -37,8 +38,23 @@ import "url/mojom/url.mojom";
 [Native]
 enum PageTransition;
 
-[Native]
-struct PageState;
+// Represents the information needed to restore a page's session, including
+// document URLs and form field values, when navigating back and forward
+// through session history.
+struct PageState {
+  // Typical IPC guidance is to avoid sending opaque blobs of data that are
+  // themselves a serialized representation of the actual state. In this
+  // particular case, it is somewhat unavoidable because the serialized data
+  // is versioned and persisted to disk as part of session state. While the
+  // modern serialization uses Mojo (see `blink.mojom.PageState`), legacy
+  // session state was serialized using a bespoke `base::Pickle` format.
+  //
+  // TODO(crbug.com/481025255): Removing support for older `PageState`
+  // serializations (version < 26) should make it possible to plumb the data in
+  // a structured form, i.e. replacing this opaque blob of data with
+  // third_party/blink/public/mojom/page_state/page_state.mojom
+  mojo_base.mojom.ByteString data;
+};
 
 // Parameters structure used in the IPC:
 // - FrameHost.DidCommitProvisionalLoad
