@@ -4354,11 +4354,6 @@ void BrowserView::OnWidgetMove() {
     return;
   }
 
-  // Cancel any tabstrip animations, some of them may be invalidated by the
-  // window being repositioned.
-  // Comment out for one cycle to see if this fixes dist tests.
-  // tabstrip_->DestroyDragController();
-
   // There may be no status bubbles if this is invoked during construction.
   std::vector<StatusBubble*> status_bubbles = GetStatusBubbles();
   for (StatusBubble* status_bubble : status_bubbles) {
