@@ -119,13 +119,16 @@ SkillsSyncBridge::CreateMetadataChangeList() {
 
 std::optional<syncer::ModelError> SkillsSyncBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
-    syncer::EntityChangeList entity_data) {
+    syncer::EntityChangeList entity_changes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // This data type does not store local-only data so the initial merge is the
   // same as an incremental update.
-  return ApplyIncrementalSyncChanges(std::move(metadata_change_list),
-                                     std::move(entity_data));
+  std::optional<syncer::ModelError> error = ApplyIncrementalSyncChanges(
+      std::move(metadata_change_list), std::move(entity_changes));
+  skills_service_->SyncStatusChanged();
+
+  return error;
 }
 
 std::optional<syncer::ModelError> SkillsSyncBridge::ApplyIncrementalSyncChanges(
@@ -243,7 +246,8 @@ void SkillsSyncBridge::ApplyDisableSyncChanges(
   // deleted.
   store_->DeleteAllDataAndMetadata(base::BindOnce(
       &SkillsSyncBridge::OnDatabaseSave, weak_ptr_factory_.GetWeakPtr()));
-  return;
+
+  skills_service_->SyncStatusChanged();
 }
 
 sync_pb::EntitySpecifics
@@ -387,6 +391,10 @@ void SkillsSyncBridge::OnReadAllDataAndMetadata(
   skills_service_observation_.Observe(&skills_service_.get());
 
   change_processor()->ModelReadyToSync(std::move(metadata_batch));
+
+  if (change_processor()->IsTrackingMetadata()) {
+    skills_service_->SyncStatusChanged();
+  }
 }
 
 void SkillsSyncBridge::OnDatabaseSave(

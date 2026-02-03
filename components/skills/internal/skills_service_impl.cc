@@ -61,6 +61,7 @@ void SkillsServiceImpl::NotifySkillChanged(std::string_view skill_id,
 const Skill* SkillsServiceImpl::AddSkill(const std::string& name,
                                          const std::string& icon,
                                          const std::string& prompt) {
+  // TODO(crbug.com/471795213): verify that the service is ready to use.
   CHECK(is_initialized_);
 
   auto skill = std::make_unique<Skill>(
@@ -148,17 +149,26 @@ void SkillsServiceImpl::LoadInitialSkills(
   skills_ = std::move(initial_skills);
   SortSkills();
 
-  // TODO(crbug.com/471795213): consider using tracking metadata to determine if
-  // the initialization is complete.
   is_initialized_ = true;
 
   for (Observer& observer : observers_) {
     observer.OnInitialized();
+    observer.OnStatusChanged();
   }
 }
 
 bool SkillsServiceImpl::IsInitialized() const {
   return is_initialized_;
+}
+
+SkillsService::ServiceStatus SkillsServiceImpl::GetServiceStatus() const {
+  if (!is_initialized_) {
+    return ServiceStatus::kNotInitialized;
+  }
+  if (!sync_bridge_->change_processor()->IsTrackingMetadata()) {
+    return ServiceStatus::kInitializedWaitingForSyncReady;
+  }
+  return ServiceStatus::kReady;
 }
 
 void SkillsServiceImpl::SortSkills() {
@@ -184,6 +194,12 @@ SkillsServiceImpl::GetControllerDelegate() {
     return sync_bridge_->change_processor()->GetControllerDelegate();
   }
   return nullptr;
+}
+
+void SkillsServiceImpl::SyncStatusChanged() {
+  for (Observer& observer : observers_) {
+    observer.OnStatusChanged();
+  }
 }
 
 const Skill* SkillsServiceImpl::AddSkillImpl(std::unique_ptr<Skill> skill,

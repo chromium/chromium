@@ -47,6 +47,7 @@ class SkillsServiceImpl : public SkillsService {
 
   // SkillsService implementation.
   bool IsInitialized() const override;
+  ServiceStatus GetServiceStatus() const override;
   void LoadInitialSkills(
       std::vector<std::unique_ptr<Skill>> initial_skills) override;
   // TODO(crbug.com/475863107) Add strong typing to help caller avoid swapping
@@ -79,6 +80,7 @@ class SkillsServiceImpl : public SkillsService {
   void RemoveObserver(Observer* observer) override;
   base::WeakPtr<syncer::DataTypeControllerDelegate> GetControllerDelegate()
       override;
+  void SyncStatusChanged() override;
 
  private:
   void NotifySkillChanged(std::string_view skill_id,
@@ -100,7 +102,8 @@ class SkillsServiceImpl : public SkillsService {
                        base::Time update_time,
                        UpdateSource update_source);
 
-  // Whether the service is initialized.
+  // Whether the service is initialized, i.e. LoadInitialSkills() has been
+  // called.
   bool is_initialized_ = false;
 
   // Sorts the skills by name in alphabetical order.

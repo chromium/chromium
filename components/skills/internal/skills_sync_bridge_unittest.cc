@@ -105,6 +105,7 @@ class MockSkillsService : public SkillsService {
       UpdateSkill,
       (std::string_view, std::string_view, std::string_view, std::string_view));
   MOCK_METHOD(bool, IsInitialized, (), (const));
+  MOCK_METHOD(ServiceStatus, GetServiceStatus, (), (const));
   MOCK_METHOD(void, DeleteSkill, (std::string_view, UpdateSource));
   MOCK_METHOD(void, FetchDiscoverySkills, ());
   MOCK_METHOD(void, Handle1pSkillsMap, (std::unique_ptr<SkillsMap>));
@@ -113,6 +114,7 @@ class MockSkillsService : public SkillsService {
   MOCK_METHOD(base::WeakPtr<syncer::DataTypeControllerDelegate>,
               GetControllerDelegate,
               ());
+  MOCK_METHOD(void, SyncStatusChanged, ());
 };
 
 class SkillsSyncBridgeTest : public testing::Test {
@@ -352,6 +354,13 @@ TEST_F(SkillsSyncBridgeTest, GetAllDataForDebugging) {
           EntityDataHasSkillSpecifics(EqualsProto(expected_specifics_2))));
 }
 
+TEST_F(SkillsSyncBridgeTest, MergeFullSyncData_Empty) {
+  EXPECT_CALL(mock_skills_service(), SyncStatusChanged);
+  ASSERT_EQ(bridge().MergeFullSyncData(bridge().CreateMetadataChangeList(),
+                                       /*entity_changes=*/{}),
+            std::nullopt);
+}
+
 TEST_F(SkillsSyncBridgeTest, ApplyIncrementalSyncChanges_Update) {
   const std::string kPrompt = "prompt";
   const std::string kName = "name";
@@ -540,6 +549,7 @@ TEST_F(SkillsSyncBridgeTest, ShouldReloadDataOnRestart) {
   EXPECT_CALL(mock_skills_service(),
               LoadInitialSkills(UnorderedElementsAre(
                   Pointee(HasSkill(kSkillId, "name", "icon", "prompt")))));
+  EXPECT_CALL(mock_skills_service(), SyncStatusChanged);
   ResetBridgeAndWaitForInitialization();
 }
 
@@ -575,6 +585,7 @@ TEST_F(SkillsSyncBridgeTest, ShouldDeleteAllDataOnDisableSync) {
           return skill->id == skill_id;
         });
       }));
+  EXPECT_CALL(mock_skills_service(), SyncStatusChanged);
   bridge().ApplyDisableSyncChanges(/*delete_metadata_change_list=*/nullptr);
 
   EXPECT_THAT(GetAllLocalDataFromStore(), IsEmpty());

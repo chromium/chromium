@@ -9,17 +9,25 @@
 #include <utility>
 #include <vector>
 
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/test/mock_callback.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/uuid.h"
 #include "components/optimization_guide/core/hints/mock_optimization_guide_decider.h"
 #include "components/skills/features.h"
 #include "components/skills/proto/skill.pb.h"
 #include "components/skills/public/skill.h"
+#include "components/sync/engine/data_type_activation_response.h"
+#include "components/sync/model/data_type_activation_request.h"
+#include "components/sync/model/data_type_controller_delegate.h"
+#include "components/sync/model/data_type_local_change_processor.h"
 #include "components/sync/test/data_type_store_test_util.h"
+#include "components/sync/test/mock_data_type_worker.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -51,9 +59,8 @@ class MockSkillsServiceImpl : public SkillsServiceImpl {
               (override));
 };
 
-MATCHER_P4(HasSkill, id, name, icon, prompt, "") {
-  return arg.id == id && arg.name == name && arg.icon == icon &&
-         arg.prompt == prompt;
+MATCHER_P3(HasSkill, name, icon, prompt, "") {
+  return arg.name == name && arg.icon == icon && arg.prompt == prompt;
 }
 
 MATCHER_P(HasCreationTime, creation_time, "") {
@@ -71,18 +78,84 @@ class MockObserver : public SkillsService::Observer {
               (std::string_view skill_id,
                SkillsService::UpdateSource update_source));
   MOCK_METHOD(void, OnInitialized, ());
+  MOCK_METHOD(void, OnStatusChanged, ());
 };
 
 class SkillsServiceImplTest : public testing::Test {
  public:
-  void InitService(std::vector<std::unique_ptr<Skill>> initial_skills = {}) {
-    observation_.Reset();
+  SkillsServiceImplTest()
+      : local_store_(syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest(
+            syncer::SKILL)) {}
+
+  // Initializes the service and connects to sync. Data is loaded from the
+  // in-memory storage.
+  void InitService() {
+    InitServiceWithoutSync();
+
+    // Connect to sync and wait for the service to be ready.
+    ConnectSync();
+
+    ASSERT_TRUE(WaitForServiceStatus(SkillsService::ServiceStatus::kReady));
+  }
+
+  // Waits for the service to be in the given status. Returns true if the
+  // service is in the given status, false if the timeout is reached.
+  bool WaitForServiceStatus(SkillsService::ServiceStatus status) {
+    return base::test::RunUntil(
+        [this, status]() { return service_->GetServiceStatus() == status; });
+  }
+
+  // Initializes the service without connecting to sync.
+  void InitServiceWithoutSync() {
+    CHECK(!service_) << "Service already initialized";
+
     service_ = std::make_unique<SkillsServiceImpl>(
         &mock_optimization_guide_decider_, version_info::Channel::UNKNOWN,
-        syncer::DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest(),
+        syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(
+            local_store_.get()),
         test_url_loader_factory_.GetSafeWeakWrapper());
     observation_.Observe(service_.get());
-    service_->LoadInitialSkills(std::move(initial_skills));
+    ASSERT_EQ(service_->GetServiceStatus(),
+              SkillsService::ServiceStatus::kNotInitialized);
+
+    // Wait for the service to be initialized, any status change is enough here.
+    ASSERT_TRUE(base::test::RunUntil([this]() {
+      return service_->GetServiceStatus() !=
+             SkillsService::ServiceStatus::kNotInitialized;
+    }));
+  }
+
+  void ResetService() {
+    observation_.Reset();
+    service_.reset();
+  }
+
+  // Connects to sync and waits until the sync is activated and the initial
+  // download is completed.
+  void ConnectSync() {
+    base::WeakPtr<syncer::DataTypeControllerDelegate> controller_delegate =
+        service_->GetControllerDelegate();
+    CHECK(controller_delegate);
+
+    syncer::DataTypeActivationRequest request;
+    request.error_handler = base::DoNothing();
+    base::test::TestFuture<std::unique_ptr<syncer::DataTypeActivationResponse>>
+        sync_starting_cb;
+    controller_delegate->OnSyncStarting(request,
+                                        sync_starting_cb.GetCallback());
+    ASSERT_TRUE(sync_starting_cb.Wait());
+
+    std::unique_ptr<syncer::DataTypeActivationResponse> response =
+        sync_starting_cb.Take();
+    ASSERT_TRUE(response);
+
+    std::unique_ptr<syncer::MockDataTypeWorker> worker =
+        syncer::MockDataTypeWorker::CreateWorkerAndConnectSync(
+            std::move(response));
+
+    // Simulate an empty update from the server for the initial sync. This is
+    // no-op for the following updates.
+    worker->UpdateFromServer(/*updates=*/{});
   }
 
   ~SkillsServiceImplTest() override = default;
@@ -91,6 +164,7 @@ class SkillsServiceImplTest : public testing::Test {
 
  protected:
   base::test::TaskEnvironment task_environment_;
+  std::unique_ptr<syncer::DataTypeStore> local_store_;
   std::unique_ptr<SkillsServiceImpl> service_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   testing::NiceMock<MockObserver> mock_observer_;
@@ -124,26 +198,53 @@ TEST_F(SkillsServiceImplTest,
 }
 
 TEST_F(SkillsServiceImplTest, LoadInitialSkills) {
-  std::vector<std::unique_ptr<Skill>> initial_skills;
-  initial_skills.push_back(
-      std::make_unique<Skill>("id2", "name2", "icon2", "prompt2"));
-  initial_skills.push_back(
-      std::make_unique<Skill>("id1", "name1", "icon1", "prompt1"));
+  InitService();
 
-  InitService(std::move(initial_skills));
+  // Add some local skills which will be loaded after browser restart.
+  service().AddSkill("name1", "icon1", "prompt1");
+  service().AddSkill("name2", "icon2", "prompt2");
+  ASSERT_THAT(service().GetSkills(),
+              ElementsAre(Pointee(HasSkill("name1", "icon1", "prompt1")),
+                          Pointee(HasSkill("name2", "icon2", "prompt2"))));
 
-  const std::vector<std::unique_ptr<Skill>>& skills = service().GetSkills();
-  ASSERT_EQ(2u, skills.size());
-  EXPECT_EQ("id1", skills[0]->id);
-  EXPECT_EQ("id2", skills[1]->id);
+  // Simulate browser restart, it calls LoadInitialSkills() to load skills from
+  // the disk implicitly.
+  ResetService();
+  InitService();
+
+  EXPECT_THAT(service().GetSkills(),
+              ElementsAre(Pointee(HasSkill("name1", "icon1", "prompt1")),
+                          Pointee(HasSkill("name2", "icon2", "prompt2"))));
+}
+
+TEST_F(SkillsServiceImplTest, NotifyOnServiceStatusChange) {
+  EXPECT_CALL(mock_observer_, OnStatusChanged);
+  InitServiceWithoutSync();
+  testing::Mock::VerifyAndClearExpectations(&mock_observer_);
+
+  EXPECT_EQ(service().GetServiceStatus(),
+            SkillsService::ServiceStatus::kInitializedWaitingForSyncReady);
+
+  EXPECT_CALL(mock_observer_, OnStatusChanged);
+  ConnectSync();
+  EXPECT_TRUE(WaitForServiceStatus(SkillsService::ServiceStatus::kReady));
+  testing::Mock::VerifyAndClearExpectations(&mock_observer_);
+
+  // The service should be ready on browser restart even when sync is not
+  // connected yet.
+  ResetService();
+
+  EXPECT_CALL(mock_observer_, OnStatusChanged).Times(testing::AtLeast(1));
+  InitServiceWithoutSync();
+  EXPECT_TRUE(WaitForServiceStatus(SkillsService::ServiceStatus::kReady));
 }
 
 TEST_F(SkillsServiceImplTest, GetSkillById) {
-  std::vector<std::unique_ptr<Skill>> initial_skills;
-  initial_skills.push_back(
-      std::make_unique<Skill>("id", "name", "icon", "prompt"));
+  InitService();
 
-  InitService(std::move(initial_skills));
+  service().AddOrUpdateSkillFromSync("id", "name", "icon", "prompt",
+                                     /*creation_time=*/base::Time::Now(),
+                                     /*last_update_time=*/base::Time::Now());
 
   const Skill* skill = service().GetSkillById("id");
   ASSERT_NE(nullptr, skill);
@@ -275,10 +376,10 @@ TEST_F(SkillsServiceImplTest, UpdateExistingSkillFromSync) {
   // Only the last update time should be updated.
   ASSERT_EQ(skill, updated_skill);
   EXPECT_THAT(service().GetSkills(),
-              ElementsAre(Pointee(AllOf(
-                  HasSkill(skill->id, "sync name", "sync icon", "sync prompt"),
-                  HasCreationTime(initial_creation_time),
-                  HasLastUpdateTime(new_update_time)))));
+              ElementsAre(Pointee(
+                  AllOf(HasSkill("sync name", "sync icon", "sync prompt"),
+                        HasCreationTime(initial_creation_time),
+                        HasLastUpdateTime(new_update_time)))));
 }
 
 TEST_F(SkillsServiceImplTest, AddSkillFromSync) {
@@ -294,11 +395,10 @@ TEST_F(SkillsServiceImplTest, AddSkillFromSync) {
       "id", "name", "icon", "prompt", creation_time, update_time);
   ASSERT_NE(nullptr, skill);
 
-  EXPECT_THAT(
-      service().GetSkills(),
-      ElementsAre(Pointee(AllOf(HasSkill("id", "name", "icon", "prompt"),
-                                HasCreationTime(creation_time),
-                                HasLastUpdateTime(update_time)))));
+  EXPECT_THAT(service().GetSkills(),
+              ElementsAre(Pointee(AllOf(HasSkill("name", "icon", "prompt"),
+                                        HasCreationTime(creation_time),
+                                        HasLastUpdateTime(update_time)))));
 }
 
 TEST_F(SkillsServiceImplTest, FetchDiscoverySkills_Success) {
