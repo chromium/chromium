@@ -200,14 +200,9 @@ const CSSValue* PositionAnchor::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     CSSParserLocalContext& local_context) const {
-  if (RuntimeEnabledFeatures::CSSPositionAnchorNoneEnabled()) {
-    if (CSSValue* value =
-            css_parsing_utils::ConsumeIdent<CSSValueID::kNone>(stream)) {
-      return value;
-    }
-  }
   if (CSSValue* value =
-          css_parsing_utils::ConsumeIdent<CSSValueID::kAuto>(stream)) {
+          css_parsing_utils::ConsumeIdent<CSSValueID::kNone, CSSValueID::kAuto>(
+              stream)) {
     return value;
   }
   return css_parsing_utils::ConsumeDashedIdent(stream, context, local_context);

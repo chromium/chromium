@@ -105,22 +105,6 @@ class CORE_EXPORT OutOfFlowData final
     return last_successful_position_fallback_.index_;
   }
 
-  // Return the offset caused by scrolling in all containers up to (but not
-  // including) the containing block of this anchored element, at the latest
-  // anchor recalculation point.
-  //
-  // This value is updated at an "anchor recalculation point". This occurs when
-  // the element is initially laid out, and when switching to a different
-  // position option.
-  PhysicalOffset DefaultAnchorScrollShift() const {
-    return default_anchor_scroll_shift_;
-  }
-
-  // See DefaultAnchorScrollShift(). This function returns that offset, except
-  // that it's based on the current scroll offsets, not what the offsets were at
-  // the last "anchor recalculation point".
-  PhysicalOffset PotentialNextDefaultAnchorScrollShift(const LayoutBox&) const;
-
   // Return true if there's any stale successful position fallback data (if
   // `position-try-fallbacks` has changed).
   bool HasStaleFallbackData(const LayoutBox&) const;
@@ -144,8 +128,6 @@ class CORE_EXPORT OutOfFlowData final
   // here. Will be copied to the last_successful_position_fallback_ at next
   // resize observer update.
   SuccessfulPositionFallback new_successful_position_fallback_;
-
-  PhysicalOffset default_anchor_scroll_shift_;
 
   Member<const RememberedScrollOffsets> remembered_scroll_offsets_;
   Member<const RememberedScrollOffsets> pending_remembered_scroll_offsets_;

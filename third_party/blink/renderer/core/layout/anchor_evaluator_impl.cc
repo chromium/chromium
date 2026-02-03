@@ -443,10 +443,6 @@ PhysicalRect AnchorEvaluatorImpl::CalculateAnchorRectWithScrollOffset(
     result = anchor_reference.RectWithoutTransforms();
   }
 
-  if (!RuntimeEnabledFeatures::CSSAnchorUpdateEnabled()) {
-    return result;
-  }
-
   // Update the anchor rect based on remembered (or current) scroll offsets.
   PhysicalOffset scroll_offset = [&]() {
     if (remembered_scroll_offsets_) {

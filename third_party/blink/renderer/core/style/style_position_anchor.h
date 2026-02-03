@@ -26,9 +26,7 @@ class CORE_EXPORT StylePositionAnchor {
       : type_(Type::kName), name_(name) {}
 
   static StylePositionAnchor Initial() {
-    return RuntimeEnabledFeatures::CSSPositionAnchorNoneEnabled()
-               ? StylePositionAnchor(StylePositionAnchor::Type::kNone)
-               : StylePositionAnchor(StylePositionAnchor::Type::kAuto);
+    return StylePositionAnchor(StylePositionAnchor::Type::kNone);
   }
 
   bool operator==(const StylePositionAnchor& o) const {

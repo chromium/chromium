@@ -1328,12 +1328,6 @@
       status: "stable",
     },
     {
-      // An update of anchor positioning (primarily how scrolling affects
-      // layout, but includes other inter-connected changes).
-      name: "CSSAnchorUpdate",
-      status: "stable",
-    },
-    {
       // Let transforms affect anchor() and anchor-size() functions.
       name: "CSSAnchorWithTransforms",
       status: "stable",
@@ -1607,10 +1601,6 @@
       // Ignore the stylesheet encoding when parsing URLs, always using UTF-8.
       // See crbug.com/1485525.
       name: "CSSParserIgnoreCharsetForURLs",
-    },
-    {
-      name: "CSSPositionAnchorNone",
-      status: "stable",
     },
     {
       name: "CSSPositionStickyStaticScrollPosition",
@@ -3802,7 +3792,6 @@
       // This is a spec change since anchor positioning was shipped in Blink.
       // https://issues.chromium.org/issues/408223892
       name: "OriginatingElementIsImplicitAnchor",
-      depends_on: ["CSSPositionAnchorNone"],
       status: "stable",
     },
     {

@@ -4675,11 +4675,7 @@ TEST_F(StyleResolverTest, UseCountPseudoElementImplicitAnchor) {
       left: anchor(right);
     }
   )HTML");
-  if (RuntimeEnabledFeatures::CSSPositionAnchorNoneEnabled()) {
-    EXPECT_FALSE(IsUseCounted(WebFeature::kCSSPseudoElementUsesImplicitAnchor));
-  } else {
-    EXPECT_TRUE(IsUseCounted(WebFeature::kCSSPseudoElementUsesImplicitAnchor));
-  }
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSPseudoElementUsesImplicitAnchor));
 }
 
 TEST_F(StyleResolverTest, FindContainerForElement_LayoutSiblings) {

@@ -173,13 +173,10 @@ class AnchorPositionScrollData
     void Trace(Visitor* visitor) const { visitor->Trace(anchor_element); }
 
     PhysicalOffset TotalOffset() const {
-      if (RuntimeEnabledFeatures::CSSAnchorUpdateEnabled()) {
-        return containers_include_viewport
-                   ? accumulated_adjustment +
-                         anchored_element_container_scroll_offset
-                   : accumulated_adjustment;
-      }
-      return accumulated_adjustment + anchored_element_container_scroll_offset;
+      return containers_include_viewport
+                 ? accumulated_adjustment +
+                       anchored_element_container_scroll_offset
+                 : accumulated_adjustment;
     }
   };
 

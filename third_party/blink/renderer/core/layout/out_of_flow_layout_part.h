@@ -342,12 +342,6 @@ class CORE_EXPORT OutOfFlowLayoutPart {
       const BlockNode& candidate,
       bool is_inside_fragmentation_context) const;
 
-  LogicalRect ApplyPositionAreaOffsets(
-      const LogicalRect& base_rect,
-      const PositionAreaOffsets& offsets,
-      PhysicalOffset default_anchor_scroll_shift,
-      const ContainingBlockInfo& container_info) const;
-
   NodeInfo SetupNodeInfo(const LogicalOofPositionedNode& oof_node);
 
   const LayoutResult* LayoutOOFNode(
@@ -368,7 +362,6 @@ class CORE_EXPORT OutOfFlowLayoutPart {
       AnchorEvaluatorImpl&,
       std::optional<wtf_size_t> option_index,
       bool try_fit_available_space,
-      PhysicalOffset default_anchor_scroll_shift,
       NonOverflowingScrollRange* out_scroll_range);
 
   const LayoutResult* Layout(

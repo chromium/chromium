@@ -237,16 +237,10 @@ std::pair<StyleSelfAlignmentData, StyleSelfAlignmentData>
 PositionArea::AlignJustifySelfFromPhysical(
     WritingDirectionMode container_writing_direction,
     bool is_containing_block_scrollable) const {
-  const OverflowAlignment overflow =
-      is_containing_block_scrollable &&
-              !RuntimeEnabledFeatures::CSSAnchorUpdateEnabled()
-          ? OverflowAlignment::kUnsafe
-          : OverflowAlignment::kDefault;
-
-  StyleSelfAlignmentData align(ItemPosition::kStart, overflow);
-  StyleSelfAlignmentData align_reverse(ItemPosition::kEnd, overflow);
-  StyleSelfAlignmentData justify(ItemPosition::kStart, overflow);
-  StyleSelfAlignmentData justify_reverse(ItemPosition::kEnd, overflow);
+  ItemPosition align = ItemPosition::kStart;
+  ItemPosition align_reverse = ItemPosition::kEnd;
+  ItemPosition justify = ItemPosition::kStart;
+  ItemPosition justify_reverse = ItemPosition::kEnd;
 
   CHECK(!ContainsAny()) << "The 'any' keyword can only be used for "
                            "anchored(fallback) container queries";
@@ -254,11 +248,11 @@ PositionArea::AlignJustifySelfFromPhysical(
   if (FirstStart() == PositionAreaRegion::kTop &&
       FirstEnd() == PositionAreaRegion::kBottom) {
     // 'all' should align with anchor center.
-    align = align_reverse = {ItemPosition::kAnchorCenter, overflow};
+    align = align_reverse = ItemPosition::kAnchorCenter;
   } else if (FirstStart() == PositionAreaRegion::kCenter &&
              FirstEnd() == PositionAreaRegion::kCenter) {
     // 'center' should align with center.
-    align = align_reverse = {ItemPosition::kCenter, overflow};
+    align = align_reverse = ItemPosition::kCenter;
   } else {
     // 'top' and 'top center' aligns with end, 'bottom' and 'center bottom' with
     // start.
@@ -270,11 +264,11 @@ PositionArea::AlignJustifySelfFromPhysical(
   if (SecondStart() == PositionAreaRegion::kLeft &&
       SecondEnd() == PositionAreaRegion::kRight) {
     // 'all' should align with anchor center.
-    justify = justify_reverse = {ItemPosition::kAnchorCenter, overflow};
+    justify = justify_reverse = ItemPosition::kAnchorCenter;
   } else if (SecondStart() == PositionAreaRegion::kCenter &&
              SecondEnd() == PositionAreaRegion::kCenter) {
     // 'center' should align with center.
-    justify = justify_reverse = {ItemPosition::kCenter, overflow};
+    justify = justify_reverse = ItemPosition::kCenter;
   } else {
     // 'left' and 'left center' aligns with end, 'right' and 'center right' with
     // start.
@@ -283,26 +277,12 @@ PositionArea::AlignJustifySelfFromPhysical(
     }
   }
 
-  if (!RuntimeEnabledFeatures::CSSAnchorUpdateEnabled()) {
-    if ((FirstStart() == PositionAreaRegion::kTop &&
-         FirstEnd() == PositionAreaRegion::kTop) ||
-        (FirstStart() == PositionAreaRegion::kBottom &&
-         FirstEnd() == PositionAreaRegion::kBottom)) {
-      align.SetOverflow(OverflowAlignment::kUnsafe);
-      align_reverse.SetOverflow(OverflowAlignment::kUnsafe);
-    }
-    if ((SecondStart() == PositionAreaRegion::kLeft &&
-         SecondEnd() == PositionAreaRegion::kLeft) ||
-        (SecondStart() == PositionAreaRegion::kRight &&
-         SecondEnd() == PositionAreaRegion::kRight)) {
-      justify.SetOverflow(OverflowAlignment::kUnsafe);
-      justify_reverse.SetOverflow(OverflowAlignment::kUnsafe);
-    }
-  }
-
   PhysicalToLogical converter(container_writing_direction, align,
                               justify_reverse, align_reverse, justify);
-  return {converter.BlockStart(), converter.InlineStart()};
+  return {StyleSelfAlignmentData(converter.BlockStart(),
+                                 OverflowAlignment::kDefault),
+          StyleSelfAlignmentData(converter.InlineStart(),
+                                 OverflowAlignment::kDefault)};
 }
 
 AnchorQuery PositionArea::AnchorTop() {

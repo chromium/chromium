@@ -52,23 +52,6 @@ bool OutOfFlowData::ApplyPendingSuccessfulPositionFallbackAndAnchorScrollShift(
   }
 
   if (!new_successful_position_fallback_.IsEmpty()) {
-    // This is an anchor recalculation point, either because the box just got
-    // displayed, or because we switched to a different position option.
-    default_anchor_scroll_shift_ =
-        PotentialNextDefaultAnchorScrollShift(*To<LayoutBox>(layout_object));
-
-    // Record any time an absolutely positioned element switches its fallback
-    // value. Note that we don't track fixed positioned elements since one of
-    // the proposed behaviors doesn't change the behavior of fixed positioned
-    // elements, but does change it for absolutely positioned elements.
-    if (!last_successful_position_fallback_.IsEmpty() &&
-        new_successful_position_fallback_.index_ !=
-            last_successful_position_fallback_.index_ &&
-        layout_object->IsAbsolutePositioned()) {
-      UseCounter::Count(layout_object->GetDocument(),
-                        WebFeature::kAbsposPositionTryFallbacksChange);
-    }
-
     last_successful_position_fallback_ = new_successful_position_fallback_;
     new_successful_position_fallback_.Clear();
 
@@ -92,7 +75,6 @@ bool OutOfFlowData::ApplyPendingSuccessfulPositionFallbackAndAnchorScrollShift(
 void OutOfFlowData::ResetAnchorData() {
   last_successful_position_fallback_.Clear();
   new_successful_position_fallback_.Clear();
-  default_anchor_scroll_shift_ = PhysicalOffset();
   remembered_scroll_offsets_ = nullptr;
   pending_remembered_scroll_offsets_ = nullptr;
 }
@@ -107,15 +89,6 @@ bool OutOfFlowData::InvalidatePositionTryNames(
     }
   }
   return false;
-}
-
-PhysicalOffset OutOfFlowData::PotentialNextDefaultAnchorScrollShift(
-    const LayoutBox& layout_box) const {
-  if (const AnchorPositionScrollData* scroll_data =
-          layout_box.GetAnchorPositionScrollData()) {
-    return scroll_data->TotalOffset();
-  }
-  return PhysicalOffset();
 }
 
 bool OutOfFlowData::HasStaleFallbackData(const LayoutBox& box) const {
