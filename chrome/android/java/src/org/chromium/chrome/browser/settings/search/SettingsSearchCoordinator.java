@@ -719,7 +719,7 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
                     int margin =
                             ViewResizerUtil.computePaddingForWideDisplay(
                                     mActivity, searchBox, minWidePadding);
-                    boolean isOnWideScreen = margin > minWidePadding;
+                    boolean isOnWideScreen = margin >= minWidePadding;
                     int menuWidth = menuView.getWidth();
                     int searchBoxWidth;
                     int queryWidth;
