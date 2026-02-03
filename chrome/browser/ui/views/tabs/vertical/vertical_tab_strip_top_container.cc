@@ -262,6 +262,11 @@ VerticalTabStripTopContainer::AddFlatEdgeChildButtonFor(
   VerticalTabStripFlatEdgeButton* container_button_ptr =
       AddChildView(std::move(container_button));
 
+  const int raw_container_button_size = GetLayoutConstant(
+      LayoutConstant::kVerticalTabStripTopContainerButtonSize);
+  container_button_ptr->SetPreferredSize(
+      gfx::Size(raw_container_button_size, raw_container_button_size));
+
   return container_button_ptr;
 }
 

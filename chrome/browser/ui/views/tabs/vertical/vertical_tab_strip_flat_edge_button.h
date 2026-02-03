@@ -33,6 +33,7 @@ class VerticalTabStripFlatEdgeButton : public views::LabelButton,
   bool GetHitTestMask(SkPath* mask) const override;
 
   void SetFlatEdge(FlatEdge flat_edge);
+  void SetIconSize(int icon_size);
   void UpdateIcon(const ui::ImageModel& icon_image);
   void SetInsets(const gfx::Insets& insets);
 
@@ -46,6 +47,7 @@ class VerticalTabStripFlatEdgeButton : public views::LabelButton,
   SkRRect GetButtonShape() const;
   gfx::RoundedCornersF GetButtonCornerRadii() const;
 
+  int icon_size_ = 0;
   FlatEdge flat_edge_ = FlatEdge::kNone;
   base::CallbackListSubscription paint_as_active_subscription_;
 };

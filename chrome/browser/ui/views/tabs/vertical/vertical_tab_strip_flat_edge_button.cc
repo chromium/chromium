@@ -57,6 +57,8 @@ VerticalTabStripFlatEdgeButton::VerticalTabStripFlatEdgeButton() {
   ConfigureInkDropForToolbar(
       this, std::make_unique<views::RoundRectHighlightPathGenerator>(
                 GetToolbarInkDropInsets(this), GetButtonCornerRadii()));
+  SetIconSize(
+      GetLayoutConstant(LayoutConstant::kVerticalTabStripBottomButtonIconSize));
 }
 
 std::unique_ptr<views::ActionViewInterface>
@@ -69,9 +71,9 @@ void VerticalTabStripFlatEdgeButton::UpdateIcon(
     const ui::ImageModel& icon_image) {
   CHECK(icon_image.IsVectorIcon());
 
-  const ui::ImageModel image_model = ui::ImageModel::FromVectorIcon(
-      *icon_image.GetVectorIcon().vector_icon(), GetForegroundColor(),
-      GetLayoutConstant(LayoutConstant::kVerticalTabStripBottomButtonIconSize));
+  const ui::ImageModel image_model =
+      ui::ImageModel::FromVectorIcon(*icon_image.GetVectorIcon().vector_icon(),
+                                     GetForegroundColor(), icon_size_);
 
   SetImageModel(views::Button::STATE_NORMAL, image_model);
   SetImageModel(views::Button::STATE_HOVERED, image_model);
@@ -114,6 +116,13 @@ void VerticalTabStripFlatEdgeButton::SetFlatEdge(FlatEdge flat_edge) {
   SchedulePaint();
 }
 
+void VerticalTabStripFlatEdgeButton::SetIconSize(int icon_size) {
+  if (icon_size_ == icon_size) {
+    return;
+  }
+  icon_size_ = icon_size;
+}
+
 void VerticalTabStripFlatEdgeButton::AddedToWidget() {
   paint_as_active_subscription_ =
       GetWidget()->RegisterPaintAsActiveChangedCallback(base::BindRepeating(
@@ -126,8 +135,8 @@ void VerticalTabStripFlatEdgeButton::RemovedFromWidget() {
 
 ui::ColorId VerticalTabStripFlatEdgeButton::GetForegroundColor() const {
   return GetWidget() && GetWidget()->ShouldPaintAsActive()
-             ? kColorNewTabButtonForegroundFrameActive
-             : kColorNewTabButtonForegroundFrameInactive;
+             ? kColorTabSearchButtonCRForegroundFrameActive
+             : kColorTabSearchButtonCRForegroundFrameInactive;
 }
 
 ui::ColorId VerticalTabStripFlatEdgeButton::GetBackgroundColor() const {

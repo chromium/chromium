@@ -223,6 +223,14 @@ enum class LayoutConstant {
   // uncollapsed.
   kVerticalTabStripTopButtonContainerHeight,
 
+  // The default height and width of the new tab button for the vertical tab
+  // strip.
+  kVerticalTabStripNewTabButtonSize,
+
+  // The default height and width of the tab groups and tab search buttons for
+  // the vertical tab strip.
+  kVerticalTabStripTopContainerButtonSize,
+
   // The size of the app menu button in a web app browser window.
   kWebAppMenuButtonSize,
 

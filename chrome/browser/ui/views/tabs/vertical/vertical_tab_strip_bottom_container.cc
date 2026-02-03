@@ -54,6 +54,14 @@ VerticalTabStripBottomContainer::AddChildButtonFor(
   raw_container_button->SetHorizontalAlignment(
       gfx::HorizontalAlignment::ALIGN_CENTER);
 
+  const int raw_container_button_size =
+      GetLayoutConstant(LayoutConstant::kVerticalTabStripNewTabButtonSize);
+  raw_container_button->SetPreferredSize(
+      gfx::Size(raw_container_button_size, raw_container_button_size));
+
+  raw_container_button->SetIconSize(
+      GetLayoutConstant(LayoutConstant::kVerticalTabStripTopButtonIconSize));
+
   return raw_container_button;
 }
 
