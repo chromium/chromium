@@ -307,6 +307,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
+#include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/content_accelerators/accelerator_util.h"
@@ -999,12 +1000,16 @@ BrowserView::BrowserView(Browser* browser)
         AddChildView(std::make_unique<CustomFloatingCorner>(
             *this, CustomFloatingCorner::CornerOrientation::kTopLeading,
             views::ShapeContextTokens::kContentSeparatorRadius,
-            CustomFloatingCorner::FrameColor()));
+            CustomFloatingCorner::FrameColor(),
+            ui::kColorBubbleBorderShadowSmall,
+            /*is_vertical_window_edge=*/true));
     vertical_tab_strip_bottom_corner_ =
         AddChildView(std::make_unique<CustomFloatingCorner>(
             *this, CustomFloatingCorner::CornerOrientation::kBottomLeading,
             views::ShapeContextTokens::kContentSeparatorRadius,
-            CustomFloatingCorner::FrameColor()));
+            CustomFloatingCorner::FrameColor(),
+            ui::kColorBubbleBorderShadowSmall,
+            /*is_vertical_window_edge=*/true));
   } else {
     horizontal_tab_strip_region_view_->InitializeTabStrip();
   }

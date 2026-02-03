@@ -47,12 +47,14 @@ CustomFloatingCorner::CustomFloatingCorner(
     CornerOrientation orientation,
     views::ShapeContextTokens corner_radius_token,
     ColorChoice color,
-    std::optional<ui::ColorId> stroke_color)
+    std::optional<ui::ColorId> stroke_color,
+    bool is_vertical_window_edge)
     : CustomCorners(browser_view),
       orientation_(orientation),
       corner_radius_token_(corner_radius_token),
       color_(color),
-      stroke_color_(stroke_color) {
+      stroke_color_(stroke_color),
+      is_vertical_window_edge_(is_vertical_window_edge) {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 }
@@ -87,16 +89,19 @@ void CustomFloatingCorner::SetCornerRadius(
   PreferredSizeChanged();
 }
 
-void CustomFloatingCorner::SetStrokeColor(
-    std::optional<ui::ColorId> stroke_color) {
-  if (stroke_color_ == stroke_color) {
+void CustomFloatingCorner::SetStroke(std::optional<ui::ColorId> stroke_color,
+                                     bool is_vertical_window_edge) {
+  if (stroke_color_ == stroke_color &&
+      is_vertical_window_edge_ == is_vertical_window_edge) {
     return;
   }
 
   const bool size_changed =
-      stroke_color.has_value() != stroke_color_.has_value();
+      stroke_color.has_value() != stroke_color_.has_value() ||
+      is_vertical_window_edge != is_vertical_window_edge_;
 
   stroke_color_ = stroke_color;
+  is_vertical_window_edge_ = is_vertical_window_edge;
   if (size_changed) {
     PreferredSizeChanged();
   } else {
@@ -112,12 +117,17 @@ gfx::Size CustomFloatingCorner::CalculatePreferredSize(
   CHECK(GetLayoutProvider());
   const float corner_radius =
       GetLayoutProvider()->GetCornerRadiusMetric(corner_radius_token_);
-  const float corner_size =
+  const float horizontal_size =
       corner_radius + (stroke_color_ ? views::Separator::kThickness : 0);
-  return gfx::Size(corner_size, corner_size);
+  const float vertical_size =
+      corner_radius + (stroke_color_ && !is_vertical_window_edge_
+                           ? views::Separator::kThickness
+                           : 0);
+  return gfx::Size(horizontal_size, vertical_size);
 }
 
 void CustomFloatingCorner::OnPaint(gfx::Canvas* canvas) {
+  const int kStrokeSize = views::Separator::kThickness;
   const gfx::Rect rect(GetLocalBounds());
 
   gfx::ScopedCanvas scoped(canvas);
@@ -127,9 +137,10 @@ void CustomFloatingCorner::OnPaint(gfx::Canvas* canvas) {
   // corner radius in each dimension, plus the stroke thickness if there is a
   // stroke.
   const bool has_stroke = stroke_color_.has_value();
+  const bool extend_vertical = has_stroke && !is_vertical_window_edge_;
   const SkVector corner_radius(
-      has_stroke ? width() - views::Separator::kThickness : width(),
-      has_stroke ? height() - views::Separator::kThickness : height());
+      has_stroke ? width() - kStrokeSize : width(),
+      extend_vertical ? height() - kStrokeSize : height());
 
   // Because we're painting, we have to account for RTL.
   const CornerOrientation visual_orientation =
@@ -141,13 +152,12 @@ void CustomFloatingCorner::OnPaint(gfx::Canvas* canvas) {
     case CornerOrientation::kTopLeading:
       clip_path.moveTo(0, 0);
       clip_path.lineTo(rect.width(), 0);
-      if (has_stroke) {
-        clip_path.lineTo(rect.width(), views::Separator::kThickness);
+      if (extend_vertical) {
+        clip_path.lineTo(rect.width(), kStrokeSize);
       }
       clip_path.arcTo(corner_radius, 0, SkPathBuilder::kSmall_ArcSize,
                       SkPathDirection::kCCW,
-                      SkPoint(has_stroke ? views::Separator::kThickness : 0,
-                              rect.height()));
+                      SkPoint(has_stroke ? kStrokeSize : 0, rect.height()));
       if (has_stroke) {
         clip_path.lineTo(0, rect.height());
       }
@@ -158,22 +168,28 @@ void CustomFloatingCorner::OnPaint(gfx::Canvas* canvas) {
       clip_path.lineTo(rect.width(), 0);
       clip_path.lineTo(rect.width(), rect.height());
       if (has_stroke) {
-        clip_path.lineTo(rect.width() - views::Separator::kThickness,
-                         rect.height());
+        clip_path.lineTo(rect.width() - kStrokeSize, rect.height());
       }
-      clip_path.arcTo(
-          corner_radius, 0, SkPathBuilder::kSmall_ArcSize,
-          SkPathDirection::kCCW,
-          SkPoint(0, has_stroke ? views::Separator::kThickness : 0));
-      if (has_stroke) {
+      clip_path.arcTo(corner_radius, 0, SkPathBuilder::kSmall_ArcSize,
+                      SkPathDirection::kCCW,
+                      SkPoint(0, extend_vertical ? kStrokeSize : 0));
+      if (extend_vertical) {
         clip_path.lineTo(0, 0);
       }
       break;
     case CornerOrientation::kBottomLeading:
       clip_path.moveTo(0, 0);
-      clip_path.arcTo(corner_radius, 0, SkPathBuilder::kSmall_ArcSize,
-                      SkPathDirection::kCCW,
-                      SkPoint(rect.width(), rect.height()));
+      if (has_stroke) {
+        clip_path.lineTo(kStrokeSize, 0);
+      }
+      clip_path.arcTo(
+          corner_radius, 0, SkPathBuilder::kSmall_ArcSize,
+          SkPathDirection::kCCW,
+          SkPoint(rect.width(), extend_vertical ? rect.height() - kStrokeSize
+                                                : rect.height()));
+      if (extend_vertical) {
+        clip_path.lineTo(rect.width(), rect.height());
+      }
       clip_path.lineTo(0, rect.height());
       clip_path.lineTo(0, 0);
       break;
@@ -196,7 +212,7 @@ void CustomFloatingCorner::OnPaint(gfx::Canvas* canvas) {
   // Maybe draw the stroke.
   if (has_stroke) {
     cc::PaintFlags flags;
-    flags.setStrokeWidth(views::Separator::kThickness * 2);
+    flags.setStrokeWidth(kStrokeSize * 2);
     flags.setColor(GetColorProvider()->GetColor(*stroke_color_));
     flags.setStyle(cc::PaintFlags::kStroke_Style);
     flags.setAntiAlias(true);
@@ -204,20 +220,25 @@ void CustomFloatingCorner::OnPaint(gfx::Canvas* canvas) {
     SkPathBuilder stroke_path;
     switch (visual_orientation) {
       case CornerOrientation::kTopLeading:
-        stroke_path.moveTo(rect.width(), views::Separator::kThickness);
+        stroke_path.moveTo(rect.width(), extend_vertical ? kStrokeSize : 0);
         stroke_path.arcTo(corner_radius, 0, SkPathBuilder::kSmall_ArcSize,
                           SkPathDirection::kCCW,
-                          SkPoint(views::Separator::kThickness, rect.height()));
+                          SkPoint(kStrokeSize, rect.height()));
         break;
       case CornerOrientation::kTopTrailing:
-        stroke_path.moveTo(rect.width() - views::Separator::kThickness,
-                           rect.height());
+        stroke_path.moveTo(rect.width() - kStrokeSize, rect.height());
         stroke_path.arcTo(corner_radius, 0, SkPathBuilder::kSmall_ArcSize,
                           SkPathDirection::kCCW,
-                          SkPoint(0, views::Separator::kThickness));
+                          SkPoint(0, extend_vertical ? kStrokeSize : 0));
         break;
       case CornerOrientation::kBottomLeading:
-        NOTREACHED() << "Stroke not yet implemented for lower corners.";
+        stroke_path.moveTo(kStrokeSize, 0);
+        stroke_path.arcTo(
+            corner_radius, 0, SkPathBuilder::kSmall_ArcSize,
+            SkPathDirection::kCCW,
+            SkPoint(rect.width(), extend_vertical ? rect.height() - kStrokeSize
+                                                  : rect.height()));
+        break;
       case CornerOrientation::kBottomTrailing:
         NOTREACHED() << "Stroke not yet implemented for lower corners.";
     }
