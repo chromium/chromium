@@ -54,12 +54,14 @@ void TabCollectionAnimatingLayoutManager::Delegate::OnAnimationEnded() {}
 TabCollectionAnimatingLayoutManager::TabCollectionAnimatingLayoutManager(
     std::unique_ptr<LayoutManagerBase> target_layout_manager,
     Delegate* delegate,
-    AnimationAxis animation_axis)
+    AnimationAxis animation_axis,
+    bool animate_host_size)
     : target_layout_manager_(
           CHECK_DEREF(AddOwnedLayout(std::move(target_layout_manager)))),
       animation_(this),
       delegate_(delegate),
-      animation_axis_(animation_axis) {
+      animation_axis_(animation_axis),
+      animate_host_size_(animate_host_size) {
   // TODO(crbug.com/459824840): Determine the appropriate animation duration.
   // Currently set to match the duration of TabContainerImpl.
   animation_.SetSlideDuration(
@@ -78,13 +80,31 @@ bool TabCollectionAnimatingLayoutManager::OnViewRemoved(views::View* host,
 
 gfx::Size TabCollectionAnimatingLayoutManager::GetPreferredSize(
     const views::View* host) const {
-  return target_layout_manager_->GetPreferredSize(host);
+  // Update to reflect current content height only in the case where it is less
+  // than the target height. Do so to avoid clipping fade-out animations that
+  // are not reflected in the target.
+  gfx::Size target_preferred_size =
+      target_layout_manager_->GetPreferredSize(host);
+  if (animate_host_size_ &&
+      (target_preferred_size.height() < current_layout_content_height_)) {
+    target_preferred_size.set_height(current_layout_content_height_);
+  }
+  return target_preferred_size;
 }
 
 gfx::Size TabCollectionAnimatingLayoutManager::GetPreferredSize(
     const views::View* host,
     const views::SizeBounds& available_size) const {
-  return target_layout_manager_->GetPreferredSize(host, available_size);
+  // Update to reflect current content height only in the case where it is less
+  // than the target height. Do so to avoid clipping fade-out animations that
+  // are not reflected in the target.
+  gfx::Size target_preferred_size =
+      target_layout_manager_->GetPreferredSize(host, available_size);
+  if (animate_host_size_ &&
+      (target_preferred_size.height() < current_layout_content_height_)) {
+    target_preferred_size.set_height(current_layout_content_height_);
+  }
+  return target_preferred_size;
 }
 
 gfx::Size TabCollectionAnimatingLayoutManager::GetMinimumSize(
@@ -298,6 +318,9 @@ views::ProposedLayout TabCollectionAnimatingLayoutManager::InterpolateLayout(
   // animation.
   result.host_size = target_layout_.host_size;
 
+  // Reset the previously computed total content height.
+  current_layout_content_height_ = 0;
+
   for (views::View* child_view : host_view()->children()) {
     auto target_it = target_view_layout_map_.find(child_view);
     if (target_it != target_view_layout_map_.end()) {
@@ -337,6 +360,8 @@ views::ProposedLayout TabCollectionAnimatingLayoutManager::InterpolateLayout(
         // (e.g. drag-and-drop or split-tabs which explicitly requires no
         // animated transition).
       }
+      current_layout_content_height_ = std::max(
+          current_layout_content_height_, interpolated_child.bounds.bottom());
       result.child_layouts.push_back(interpolated_child);
       continue;
     }
@@ -363,6 +388,9 @@ views::ProposedLayout TabCollectionAnimatingLayoutManager::InterpolateLayout(
       }
       interpolated_child.bounds = gfx::Tween::RectValueBetween(
           value, start_it->second.bounds, target_bounds);
+
+      current_layout_content_height_ = std::max(
+          current_layout_content_height_, interpolated_child.bounds.bottom());
       result.child_layouts.push_back(interpolated_child);
       continue;
     }
@@ -421,6 +449,8 @@ views::ProposedLayout TabCollectionAnimatingLayoutManager::InterpolateLayout(
       interpolated_child.bounds =
           gfx::Tween::RectValueBetween(value, start_bounds, target_bounds);
 
+      current_layout_content_height_ = std::max(
+          current_layout_content_height_, interpolated_child.bounds.bottom());
       result.child_layouts.push_back(interpolated_child);
     }
   }

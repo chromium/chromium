@@ -57,7 +57,8 @@ class TabCollectionAnimatingLayoutManager : public views::LayoutManagerBase,
   explicit TabCollectionAnimatingLayoutManager(
       std::unique_ptr<LayoutManagerBase> target_layout_manager,
       Delegate* delegate = nullptr,
-      AnimationAxis animation_axis = AnimationAxis::kVertical);
+      AnimationAxis animation_axis = AnimationAxis::kVertical,
+      bool animate_host_size = false);
   TabCollectionAnimatingLayoutManager(
       const TabCollectionAnimatingLayoutManager&) = delete;
   TabCollectionAnimatingLayoutManager& operator=(
@@ -167,6 +168,19 @@ class TabCollectionAnimatingLayoutManager : public views::LayoutManagerBase,
   // The axis along which bounds for animate-in and animate-out transitions are
   // interpolated.
   AnimationAxis animation_axis_;
+
+  // Stores the height of the `current_layout_`. Recomputed on each call to
+  // `InterpolateLayout()`. Mutable since this is a cached artifact of
+  // calculating `current_layout_` and does not affect logical constness.
+  mutable int current_layout_content_height_ = 0;
+
+  // True if the manager should animate its preferred size, i.e. the manager
+  // will update the host's preferred size to match the layout calculated in
+  // `current_layout_`. This should be used only when the host's parent is not
+  // using an animating layout manager and instead snaps the host immediately
+  // to its target size. In such cases animating the host's preferred size
+  // avoids clipping close / fade-out animations.
+  const bool animate_host_size_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_TAB_COLLECTION_ANIMATING_LAYOUT_MANAGER_H_
