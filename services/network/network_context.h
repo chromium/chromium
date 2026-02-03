@@ -725,6 +725,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   bool IsNetworkForNonceAndUrlAllowed(const base::UnguessableToken& nonce,
                                       const GURL& url) const;
 
+  // Checks whether host resolution is allowed for `host` given the network
+  // restrictions ID `nonce`.
+  bool IsHostResolutionForNonceAndHostAllowed(
+      const base::UnguessableToken& nonce,
+      const mojom::HostResolverHost& host) const;
+
  private:
   class NetworkContextHttpAuthPreferences : public net::HttpAuthPreferences {
    public:

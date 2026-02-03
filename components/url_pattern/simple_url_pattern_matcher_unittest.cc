@@ -594,4 +594,51 @@ TEST_F(SimpleUrlPatternMatcherTest, CreateWithoutBaseUrl) {
     }
   }
 }
+
+TEST_F(SimpleUrlPatternMatcherTest, HostOnlyMatch) {
+  ASSERT_TRUE(GURL("https://user:pw@example.com:443/foo/bar?potato=baked#baz")
+                  .is_valid());
+
+  // Add escape sequence to the pattern version of the URL.
+  ASSERT_OK_AND_ASSIGN(
+      auto matcher,
+      CreateMatcherWithoutBaseUrl(
+          "https://user\\:pw@example.com:443/foo/bar?potato=baked#baz"));
+
+  // A URL with a different host fails to match.
+  EXPECT_FALSE(matcher->HostOnlyMatch(
+      GURL("https://user:pw@different.net:443/foo/bar?potato=baked#baz")));
+
+  // A URL with the same host should always match, regardless of what the other
+  // components are.
+
+  // Different scheme.
+  EXPECT_TRUE(matcher->HostOnlyMatch(
+      GURL("http://user:pw@example.com:443/foo/bar?potato=baked#baz")));
+
+  // Different port.
+  EXPECT_TRUE(matcher->HostOnlyMatch(
+      GURL("https://user:pw@example.com:80/foo/bar?potato=baked#baz")));
+
+  // Different path.
+  EXPECT_TRUE(matcher->HostOnlyMatch(
+      GURL("https://user:pw@example.com:443/yeet?potato=baked#baz")));
+
+  // Different username.
+  EXPECT_TRUE(matcher->HostOnlyMatch(
+      GURL("https://otheruser:pw@example.com:443/foo/bar?potato=baked#baz")));
+
+  // Different password.
+  EXPECT_TRUE(matcher->HostOnlyMatch(
+      GURL("https://user:otherpw@example.com:443/foo/bar?potato=baked#baz")));
+
+  // Different query.
+  EXPECT_TRUE(matcher->HostOnlyMatch(
+      GURL("https://user:pw@example.com:443/foo/bar?beans=refried#baz")));
+
+  // Different fragment.
+  EXPECT_TRUE(matcher->HostOnlyMatch(
+      GURL("https://user:pw@example.com:443/foo/bar?potato=baked#frobulate")));
+}
+
 }  // namespace url_pattern

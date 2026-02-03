@@ -562,6 +562,10 @@ bool SimpleUrlPatternMatcher::Match(const GURL& url) const {
          search_.Match(url.GetQuery()) && hash_.Match(url.GetRef());
 }
 
+bool SimpleUrlPatternMatcher::HostOnlyMatch(const GURL& url) const {
+  return hostname_.Match(url.GetHost());
+}
+
 SimpleUrlPatternMatcher::~SimpleUrlPatternMatcher() = default;
 
 }  // namespace url_pattern

@@ -4549,6 +4549,10 @@ TEST_F(NetworkContextResolveHostTest,
       std::move(nonces_to_urls), base::BindOnce(revoked.GetCallback()));
   EXPECT_TRUE(revoked.Wait());
   EXPECT_FALSE(network_context->IsNetworkForNonceAndUrlAllowed(nonce, url));
+  auto scheme_host_port = network::mojom::HostResolverHost::NewSchemeHostPort(
+      url::SchemeHostPort(url::kHttpScheme, url.GetHost(), 160));
+  EXPECT_FALSE(network_context->IsHostResolutionForNonceAndHostAllowed(
+      nonce, *scheme_host_port));
 
   // Resolve the host without the network_restrictions_id. The resolve request
   // should succeed.
@@ -4607,6 +4611,10 @@ TEST_F(NetworkContextResolveHostTest,
       std::move(nonces_to_urls), base::BindOnce(revoked.GetCallback()));
   EXPECT_TRUE(revoked.Wait());
   EXPECT_FALSE(network_context->IsNetworkForNonceAndUrlAllowed(nonce, url));
+  auto scheme_host_port = network::mojom::HostResolverHost::NewSchemeHostPort(
+      url::SchemeHostPort(url::kHttpScheme, url.GetHost(), 160));
+  EXPECT_FALSE(network_context->IsHostResolutionForNonceAndHostAllowed(
+      nonce, *scheme_host_port));
 
   // Resolve the host. The resolve request should be disabled.
   network_context->ResolveHost(
@@ -4620,6 +4628,68 @@ TEST_F(NetworkContextResolveHostTest,
   // for network access.
   EXPECT_TRUE(response_client.complete());
   EXPECT_EQ(response_client.result_error(), net::ERR_NETWORK_ACCESS_REVOKED);
+  EXPECT_EQ(0u,
+            network_context->GetNumOutstandingResolveHostRequestsForTesting());
+}
+
+TEST_F(NetworkContextResolveHostTest,
+       ResolveHostSucceedsWithNetworkRestrictionsIDAndSchemeHostPort) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(network::features::kConnectionAllowlists);
+
+  const GURL url = GURL("https://sync.test");
+  auto resolver = std::make_unique<net::MockHostResolver>();
+  resolver->rules()->AddRule(url.GetHost(), "1.2.3.4");
+  resolver->set_synchronous_mode(true);
+  network_service_->set_host_resolver_factory_for_testing(
+      std::make_unique<HostResolverFactory>(std::move(resolver)));
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+
+  const base::UnguessableToken nonce = base::UnguessableToken::Create();
+
+  base::RunLoop run_loop;
+  mojo::Remote<mojom::ResolveHostHandle> control_handle;
+  mojom::ResolveHostParametersPtr optional_parameters =
+      mojom::ResolveHostParameters::New();
+  // Set the network_restrictions_id for the request.
+  optional_parameters->control_handle =
+      control_handle.BindNewPipeAndPassReceiver();
+  optional_parameters->network_restrictions_id = nonce;
+  mojo::PendingRemote<mojom::ResolveHostClient> pending_response_client;
+  TestResolveHostClient response_client(&pending_response_client, &run_loop);
+
+  // Revoke network access for the nonce. Allow requests to `url` to succeed.
+  base::test::TestFuture<void> revoked;
+  mojom::NonceAndAllowlistedPatternsPtr revoked_nonce_pattern =
+      CreateNonceAndAllowlistedPatterns(nonce);
+  revoked_nonce_pattern->allowlisted_patterns.push_back(url.spec());
+  std::vector<network::mojom::NonceAndAllowlistedPatternsPtr> nonces_to_urls;
+  nonces_to_urls.push_back(std::move(revoked_nonce_pattern));
+  network_context->RevokeNetworkForNonces(
+      std::move(nonces_to_urls), base::BindOnce(revoked.GetCallback()));
+  EXPECT_TRUE(revoked.Wait());
+  EXPECT_TRUE(network_context->IsNetworkForNonceAndUrlAllowed(nonce, url));
+  auto scheme_host_port = network::mojom::HostResolverHost::NewSchemeHostPort(
+      url::SchemeHostPort(url::kHttpScheme, url.GetHost(), 160));
+  EXPECT_TRUE(network_context->IsHostResolutionForNonceAndHostAllowed(
+      nonce, *scheme_host_port));
+
+  // Resolve the host.
+  network_context->ResolveHost(
+      network::mojom::HostResolverHost::NewSchemeHostPort(
+          url::SchemeHostPort(url::kHttpScheme, url.GetHost(), 160)),
+      net::NetworkAnonymizationKey(), std::move(optional_parameters),
+      std::move(pending_response_client));
+  run_loop.RunUntilIdle();
+
+  // The resolve request should succeed because the host is allowlisted.
+  EXPECT_EQ(net::OK, response_client.top_level_result_error());
+  EXPECT_EQ(net::OK, response_client.result_error());
+  EXPECT_THAT(
+      response_client.result_addresses().endpoints(),
+      testing::UnorderedElementsAre(CreateExpectedEndPoint("1.2.3.4", 160)));
   EXPECT_EQ(0u,
             network_context->GetNumOutstandingResolveHostRequestsForTesting());
 }
@@ -4661,6 +4731,10 @@ TEST_F(NetworkContextResolveHostTest,
   EXPECT_TRUE(revoked.Wait());
   EXPECT_FALSE(network_context->IsNetworkForNonceAndUrlAllowed(
       nonce, GURL("https://nik.test:160")));
+  auto host_port_pair = network::mojom::HostResolverHost::NewHostPortPair(
+      net::HostPortPair("nik.test", 160));
+  EXPECT_FALSE(network_context->IsHostResolutionForNonceAndHostAllowed(
+      nonce, *host_port_pair));
 
   // Resolve the host without the network_restritctions_id. The resolve request
   // should succeed.
@@ -4718,6 +4792,10 @@ TEST_F(NetworkContextResolveHostTest,
   EXPECT_TRUE(revoked.Wait());
   EXPECT_FALSE(network_context->IsNetworkForNonceAndUrlAllowed(
       nonce, GURL("https://nik.test:160")));
+  auto host_port_pair = network::mojom::HostResolverHost::NewHostPortPair(
+      net::HostPortPair("nik.test", 160));
+  EXPECT_FALSE(network_context->IsHostResolutionForNonceAndHostAllowed(
+      nonce, *host_port_pair));
 
   // Resolve the host with the network_restrictions_id. The resolve request
   // should be disabled.
@@ -4732,6 +4810,194 @@ TEST_F(NetworkContextResolveHostTest,
   // for network access.
   EXPECT_TRUE(response_client.complete());
   EXPECT_EQ(response_client.result_error(), net::ERR_NETWORK_ACCESS_REVOKED);
+  EXPECT_EQ(0u,
+            network_context->GetNumOutstandingResolveHostRequestsForTesting());
+}
+
+TEST_F(NetworkContextResolveHostTest,
+       ResolveHostSucceedsWithNetworkRestrictionsIDAndHostPortPair) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(network::features::kConnectionAllowlists);
+
+  const GURL url = GURL("https://sync.test");
+  auto resolver = std::make_unique<net::MockHostResolver>();
+  resolver->rules()->AddRule(url.GetHost(), "1.2.3.4");
+  resolver->set_synchronous_mode(true);
+  network_service_->set_host_resolver_factory_for_testing(
+      std::make_unique<HostResolverFactory>(std::move(resolver)));
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+
+  const base::UnguessableToken nonce = base::UnguessableToken::Create();
+
+  base::RunLoop run_loop;
+  mojo::Remote<mojom::ResolveHostHandle> control_handle;
+  mojom::ResolveHostParametersPtr optional_parameters =
+      mojom::ResolveHostParameters::New();
+  // Set the network_restrictions_id for the request.
+  optional_parameters->control_handle =
+      control_handle.BindNewPipeAndPassReceiver();
+  optional_parameters->network_restrictions_id = nonce;
+  mojo::PendingRemote<mojom::ResolveHostClient> pending_response_client;
+  TestResolveHostClient response_client(&pending_response_client, &run_loop);
+
+  // Revoke network access for the nonce. Allow requests to `url` to succeed.
+  base::test::TestFuture<void> revoked;
+  mojom::NonceAndAllowlistedPatternsPtr revoked_nonce_pattern =
+      CreateNonceAndAllowlistedPatterns(nonce);
+  revoked_nonce_pattern->allowlisted_patterns.push_back(url.spec());
+  std::vector<network::mojom::NonceAndAllowlistedPatternsPtr> nonces_to_urls;
+  nonces_to_urls.push_back(std::move(revoked_nonce_pattern));
+  network_context->RevokeNetworkForNonces(
+      std::move(nonces_to_urls), base::BindOnce(revoked.GetCallback()));
+  EXPECT_TRUE(revoked.Wait());
+  EXPECT_TRUE(network_context->IsNetworkForNonceAndUrlAllowed(nonce, url));
+  auto host_port_pair = network::mojom::HostResolverHost::NewHostPortPair(
+      net::HostPortPair(url.GetHost(), 160));
+  EXPECT_TRUE(network_context->IsHostResolutionForNonceAndHostAllowed(
+      nonce, *host_port_pair));
+
+  // Resolve the host.
+  network_context->ResolveHost(
+      network::mojom::HostResolverHost::NewHostPortPair(
+          net::HostPortPair(url.GetHost(), 160)),
+      net::NetworkAnonymizationKey(), std::move(optional_parameters),
+      std::move(pending_response_client));
+  run_loop.RunUntilIdle();
+
+  // The resolve request should succeed because the host is allowlisted.
+  EXPECT_EQ(net::OK, response_client.top_level_result_error());
+  EXPECT_EQ(net::OK, response_client.result_error());
+  EXPECT_THAT(
+      response_client.result_addresses().endpoints(),
+      testing::UnorderedElementsAre(CreateExpectedEndPoint("1.2.3.4", 160)));
+  EXPECT_EQ(0u,
+            network_context->GetNumOutstandingResolveHostRequestsForTesting());
+}
+
+TEST_F(NetworkContextResolveHostTest,
+       ResolveHostFailsWithNetworkRestrictionsIDAndInvalidHost) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(network::features::kConnectionAllowlists);
+
+  const GURL url = GURL("https://sync.test");
+  auto resolver = std::make_unique<net::MockHostResolver>();
+  resolver->rules()->AddRule(url.GetHost(), "1.2.3.4");
+  resolver->set_synchronous_mode(true);
+  network_service_->set_host_resolver_factory_for_testing(
+      std::make_unique<HostResolverFactory>(std::move(resolver)));
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+
+  const base::UnguessableToken nonce = base::UnguessableToken::Create();
+
+  base::RunLoop run_loop;
+  mojo::Remote<mojom::ResolveHostHandle> control_handle;
+  mojom::ResolveHostParametersPtr optional_parameters =
+      mojom::ResolveHostParameters::New();
+  // Set the network_restrictions_id for the request.
+  optional_parameters->control_handle =
+      control_handle.BindNewPipeAndPassReceiver();
+  optional_parameters->network_restrictions_id = nonce;
+  mojo::PendingRemote<mojom::ResolveHostClient> pending_response_client;
+  TestResolveHostClient response_client(&pending_response_client, &run_loop);
+
+  // Revoke network access for the nonce. Allow requests to `url` to succeed.
+  base::test::TestFuture<void> revoked;
+  mojom::NonceAndAllowlistedPatternsPtr revoked_nonce_pattern =
+      CreateNonceAndAllowlistedPatterns(nonce);
+  revoked_nonce_pattern->allowlisted_patterns.push_back(url.spec());
+  std::vector<network::mojom::NonceAndAllowlistedPatternsPtr> nonces_to_urls;
+  nonces_to_urls.push_back(std::move(revoked_nonce_pattern));
+  network_context->RevokeNetworkForNonces(
+      std::move(nonces_to_urls), base::BindOnce(revoked.GetCallback()));
+  EXPECT_TRUE(revoked.Wait());
+
+  // Provide an invalid host.
+  auto host_port_pair = network::mojom::HostResolverHost::NewHostPortPair(
+      net::HostPortPair("potato", 160));
+  ASSERT_EQ(host_port_pair->get_host_port_pair().host(), "potato");
+  EXPECT_FALSE(network_context->IsHostResolutionForNonceAndHostAllowed(
+      nonce, *host_port_pair));
+
+  // Resolve the host.
+  network_context->ResolveHost(
+      network::mojom::HostResolverHost::NewHostPortPair(
+          net::HostPortPair("potato", 160)),
+      net::NetworkAnonymizationKey(), std::move(optional_parameters),
+      std::move(pending_response_client));
+  run_loop.RunUntilIdle();
+
+  // The resolve request should fail because the synthetic URL error disabled
+  // network access.
+  EXPECT_TRUE(response_client.complete());
+  EXPECT_EQ(response_client.result_error(), net::ERR_NETWORK_ACCESS_REVOKED);
+  EXPECT_EQ(0u,
+            network_context->GetNumOutstandingResolveHostRequestsForTesting());
+}
+
+TEST_F(NetworkContextResolveHostTest,
+       ResolveHostWithNetworkRestrictionsIDAndFeatureFlagDisabled) {
+  // Common setup. Note the lack of command line flag.
+  const GURL url = GURL("https://sync.test");
+  auto resolver = std::make_unique<net::MockHostResolver>();
+  resolver->rules()->AddRule(url.GetHost(), "1.2.3.4");
+  resolver->rules()->AddRule("wrong.test", "5.6.7.8");
+  resolver->set_synchronous_mode(true);
+  network_service_->set_host_resolver_factory_for_testing(
+      std::make_unique<HostResolverFactory>(std::move(resolver)));
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+
+  const base::UnguessableToken nonce = base::UnguessableToken::Create();
+
+  base::RunLoop run_loop;
+  mojo::Remote<mojom::ResolveHostHandle> control_handle;
+  mojom::ResolveHostParametersPtr optional_parameters =
+      mojom::ResolveHostParameters::New();
+  // Set the network_restrictions_id for the request.
+  optional_parameters->control_handle =
+      control_handle.BindNewPipeAndPassReceiver();
+  optional_parameters->network_restrictions_id = nonce;
+  mojo::PendingRemote<mojom::ResolveHostClient> pending_response_client;
+  TestResolveHostClient response_client(&pending_response_client, &run_loop);
+
+  // Revoke network access for the nonce. Allow requests to `url` to succeed.
+  base::test::TestFuture<void> revoked;
+  mojom::NonceAndAllowlistedPatternsPtr revoked_nonce_pattern =
+      CreateNonceAndAllowlistedPatterns(nonce);
+  revoked_nonce_pattern->allowlisted_patterns.push_back(url.spec());
+  std::vector<network::mojom::NonceAndAllowlistedPatternsPtr> nonces_to_urls;
+  nonces_to_urls.push_back(std::move(revoked_nonce_pattern));
+  network_context->RevokeNetworkForNonces(
+      std::move(nonces_to_urls), base::BindOnce(revoked.GetCallback()));
+  EXPECT_TRUE(revoked.Wait());
+
+  // Now, intentionally try to resolve a URL that does NOT match `url`. We would
+  // normally expect this to fail, but because the feature flag is off, it
+  // should succeed.
+  auto host_port_pair = network::mojom::HostResolverHost::NewHostPortPair(
+      net::HostPortPair("wrong.test", 160));
+  EXPECT_TRUE(network_context->IsHostResolutionForNonceAndHostAllowed(
+      nonce, *host_port_pair));
+
+  // Resolve the host.
+  network_context->ResolveHost(
+      network::mojom::HostResolverHost::NewHostPortPair(
+          net::HostPortPair("wrong.test", 160)),
+      net::NetworkAnonymizationKey(), std::move(optional_parameters),
+      std::move(pending_response_client));
+  run_loop.RunUntilIdle();
+
+  // The resolve request should succeed.
+  EXPECT_EQ(net::OK, response_client.top_level_result_error());
+  EXPECT_EQ(net::OK, response_client.result_error());
+  EXPECT_THAT(
+      response_client.result_addresses().endpoints(),
+      testing::UnorderedElementsAre(CreateExpectedEndPoint("5.6.7.8", 160)));
   EXPECT_EQ(0u,
             network_context->GetNumOutstandingResolveHostRequestsForTesting());
 }

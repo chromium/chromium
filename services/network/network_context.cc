@@ -2009,8 +2009,8 @@ void NetworkContext::ResolveHost(
   bool is_network_disallowed_for_restrictions_id =
       (optional_parameters &&
        optional_parameters->network_restrictions_id.has_value() &&
-       !IsNetworkForNonceAndUrlAllowed(
-           optional_parameters->network_restrictions_id.value(), url));
+       !IsHostResolutionForNonceAndHostAllowed(
+           optional_parameters->network_restrictions_id.value(), *host));
   if (is_network_disallowed_for_nonce ||
       is_network_disallowed_for_restrictions_id) {
     mojo::Remote<mojom::ResolveHostClient> remote_response_client(
@@ -3636,6 +3636,43 @@ bool NetworkContext::IsNetworkForNonceAndUrlAllowed(
     return true;
   }
   // The nonce was revoked and the url isn't exempted.
+  return false;
+}
+
+bool NetworkContext::IsHostResolutionForNonceAndHostAllowed(
+    const base::UnguessableToken& nonce,
+    const mojom::HostResolverHost& host) const {
+  if (!base::FeatureList::IsEnabled(network::features::kConnectionAllowlists)) {
+    return true;
+  }
+
+  if (!network_revocation_nonces_.contains(nonce)) {
+    return true;
+  }
+
+  std::string host_fragment = host.is_host_port_pair()
+                                  ? host.get_host_port_pair().host()
+                                  : host.get_scheme_host_port().host();
+  GURL synthetic_url =
+      GURL(std::string(url::kHttpsScheme) +
+           std::string(url::kStandardSchemeSeparator) + host_fragment);
+  if (!synthetic_url.is_valid()) {
+    return false;
+  }
+
+  // Per
+  // https://wicg.github.io/connection-allowlists/#abstract-opdef-match-a-host-to-a-connection-allowlist,
+  // we need to match `synthetic_url` against a host-only variant against each
+  // URLPattern corresponding to `nonce`.
+  const std::set<std::unique_ptr<url_pattern::SimpleUrlPatternMatcher>>&
+      allowlisted_patterns = network_revocation_nonces_.find(nonce)->second;
+  for (const std::unique_ptr<url_pattern::SimpleUrlPatternMatcher>& pattern :
+       allowlisted_patterns) {
+    if (pattern->HostOnlyMatch(synthetic_url)) {
+      return true;
+    }
+  }
+
   return false;
 }
 
