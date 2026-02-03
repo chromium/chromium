@@ -36,6 +36,8 @@ For generating your own `copilot-intructions.md`, type
   interactions across your team.
 - [.github/resources](./resources/): Prompt files that are resources for use by
   other prompts and instructions.
+- [.github/skills](./skills/): Toggleable and composable capabilities that AI
+  agents can invoke to perform specific tasks.
 
 ## User Specific Prompts
 Users can create their own prompts or instructions that match the regex
