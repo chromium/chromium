@@ -104,11 +104,10 @@ constexpr int kSupportedAcceleratorCommands[] = {
 
 class ProfilePickerWidget : public views::Widget {
  public:
-  explicit ProfilePickerWidget(ProfilePickerView* profile_picker_view)
-      : profile_picker_view_(profile_picker_view) {
+  explicit ProfilePickerWidget(ProfilePickerView* profile_picker_view) {
     views::Widget::InitParams params(
         views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
-    params.delegate = profile_picker_view_;
+    params.delegate = profile_picker_view;
 #if BUILDFLAG(IS_LINUX)
     params.wm_class_name = shell_integration_linux::GetProgramClassName();
     params.wm_class_class = shell_integration_linux::GetProgramClassClass();
@@ -117,9 +116,6 @@ class ProfilePickerWidget : public views::Widget {
     Init(std::move(params));
   }
   ~ProfilePickerWidget() override = default;
-
- private:
-  const raw_ptr<ProfilePickerView, DanglingUntriaged> profile_picker_view_;
 };
 
 // Returns whether the current flow is part of the classic profile picker flow.
