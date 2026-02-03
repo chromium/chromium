@@ -684,9 +684,16 @@ public class NewTabPage
                 NtpCustomizationUtils.canEnableEdgeToEdgeForCustomizedTheme(
                         windowAndroid, mIsTablet);
         if (mCanSupportEdgeToEdgeForCustomizedTheme) {
+            // Apply edge-to-edge adjustments exclusively to phones. These are not required for LFF
+            // devices.
             initTopInsetProviderObserver();
-            initHomepageStateListener();
             initUseLightIconTint();
+        }
+
+        // The listener to observe custom background changes are added in all form factors as long
+        // as the feature is enabled.
+        if (NtpCustomizationUtils.isNtpThemeCustomizationEnabled()) {
+            initHomepageStateListener();
         }
 
         NewTabPageUma.recordContentSuggestionsDisplayStatus(profile);
