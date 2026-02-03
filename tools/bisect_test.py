@@ -1760,6 +1760,10 @@ class MethodTest(BisectTestCase):
 
   def test_ParseCommandLine_DetectArchive_with_apk(self):
     opts = bisect_builds.ParseCommandLine(['-o', '--apk', 'chrome', '-g', '1'])
+    self.assertEqual(opts.archive, 'android-arm64-high')
+
+  def test_ParseCommandLine_DetectArchive_with_apk_Snapshot(self):
+    opts = bisect_builds.ParseCommandLine(['-s', '--apk', 'chrome', '-g', '1'])
     self.assertEqual(opts.archive, 'android-arm64')
 
   def test_ParseCommandLine_DetectArchive_with_ipa(self):

@@ -2623,6 +2623,8 @@ def _DetectArchive(opts=None):
   """Detect the buildbot archive to use based on local environment."""
   if opts:
     if opts.apk:
+      if opts.build_type == 'official':
+        return 'android-arm64-high'
       return 'android-arm64'
     elif opts.ipa:
       return 'ios-simulator'
@@ -2660,6 +2662,10 @@ def ParseCommandLine(args=None):
       opts.archive = archive
     else:
       parser.error('Error: Missing required parameter: --archive')
+
+  if opts.build_type == 'official' and opts.archive == 'android-arm64':
+    print('WARNING: android-arm64 is not supported for official builds (-o). '
+          'Please use android-arm64-high instead.')
 
   if opts.archive not in PATH_CONTEXT[opts.build_type]:
     supported_build_types = [
