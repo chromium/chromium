@@ -64,6 +64,10 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
     ${this.showComposebox_ ? html`
       <div id="dialogAnchor"></div>
       <dialog id="composeboxDialog">
+        ${this.enableThreadsRail_ ? html`
+          <cr-threads-rail id="threadsRail">
+          </cr-threads-rail>
+        ` : ''}
         <cr-composebox id="composebox"
             ?ntp-realbox-next-enabled="${this.ntpRealboxNextEnabled_}"
             ?searchbox-next-enabled="${this.ntpRealboxNextEnabled_}"
@@ -74,10 +78,6 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
             @voice-search-action="${this.onComposeVoiceSearchAction_}"
             searchbox-layout-mode="${this.realboxLayoutMode_}">
         </cr-composebox>
-        ${this.enableThreadsRail_ ? html`
-          <cr-threads-rail id="threadsRail">
-          </cr-threads-rail>
-        ` : ''}
       </dialog>
     ` : ''}
     ${this.showLensUploadDialog_ ? html`
