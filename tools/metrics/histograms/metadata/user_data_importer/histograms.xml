@@ -96,7 +96,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UserDataImporter.{ImportSource}.TotalFailureError"
-    enum="UserDataImportTotalFailureError" expires_after="2026-05-10">
+    enum="UserDataImportTotalFailureError" expires_after="2026-08-02">
   <owner>tmartino@chromium.org</owner>
   <owner>bling-transactions@google.com</owner>
   <summary>

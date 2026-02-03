@@ -91,7 +91,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Content.SharedWorker.Service.LastClientCheckTime" units="ms"
-    expires_after="2026-05-31">
+    expires_after="2026-08-02">
   <owner>annasato@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>

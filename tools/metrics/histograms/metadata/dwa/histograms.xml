@@ -45,7 +45,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DWA.LogUpload.Canceled.CellularConstraint"
-    enum="BooleanCanceled" expires_after="2026-05-03">
+    enum="BooleanCanceled" expires_after="2026-08-02">
   <owner>zhouzj@google.com</owner>
   <owner>kurtosis-team@google.com</owner>
   <summary>

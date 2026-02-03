@@ -135,7 +135,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sql.Database.Raze.FailureReason.{DatabaseTag}"
-    enum="RazeDatabaseFailedReason" expires_after="2026-06-01">
+    enum="RazeDatabaseFailedReason" expires_after="2026-08-02">
   <owner>etienneb@chromium.org</owner>
   <owner>grt@chromium.org</owner>
   <summary>
@@ -146,7 +146,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sql.Database.Raze.UnhandledErrorCode.{DatabaseTag}"
-    enum="SqliteResultCode" expires_after="2026-06-01">
+    enum="SqliteResultCode" expires_after="2026-08-02">
   <owner>etienneb@chromium.org</owner>
   <owner>jpgravel@chromium.org</owner>
   <summary>
@@ -157,7 +157,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sql.Database.RazeTime.{DatabaseTag}" units="microseconds"
-    expires_after="2026-06-01">
+    expires_after="2026-08-02">
   <owner>etienneb@chromium.org</owner>
   <owner>grt@chromium.org</owner>
   <summary>
@@ -170,7 +170,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sql.Database.Statement.Error.{DatabaseTag}"
-    enum="SqliteErrorCode" expires_after="2026-06-01">
+    enum="SqliteErrorCode" expires_after="2026-08-02">
   <owner>etienneb@chromium.org</owner>
   <owner>grt@chromium.org</owner>
   <summary>

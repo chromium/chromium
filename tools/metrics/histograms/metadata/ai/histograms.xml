@@ -252,7 +252,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AI.Session.{SessionType}.ResponseCompleteTime" units="ms"
-    expires_after="2026-05-19">
+    expires_after="2026-08-02">
   <owner>cduvall@chromium.org</owner>
   <owner>src/chrome/browser/ai/OWNERS</owner>
   <summary>

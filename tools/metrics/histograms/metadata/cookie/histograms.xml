@@ -60,7 +60,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.ClockSkew.{SkewDirection}.Subsampled" units="minutes"
-    expires_after="2026-05-31">
+    expires_after="2026-08-02">
   <owner>kyraseevers@chromium.org</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>

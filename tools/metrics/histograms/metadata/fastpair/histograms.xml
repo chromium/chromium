@@ -170,7 +170,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FastPair.SubsequentPairing"
-    enum="FastPairSubsequentSuccessFunnelEvent" expires_after="2026-06-01">
+    enum="FastPairSubsequentSuccessFunnelEvent" expires_after="2026-08-02">
   <owner>jackshira@google.com</owner>
   <owner>dclasson@google.com</owner>
   <owner>brandosocarras@google.com</owner>
@@ -183,7 +183,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FastPair.{FastPairPairingProtocol}.Pairing"
-    enum="FastPairProtocolPairingSteps" expires_after="2026-06-01">
+    enum="FastPairProtocolPairingSteps" expires_after="2026-08-02">
   <owner>jackshira@google.com</owner>
   <owner>dclasson@google.com</owner>
   <owner>brandosocarras@google.com</owner>
