@@ -570,6 +570,13 @@ void BoxFragmentPainter::Paint(const PaintInfo& paint_info) {
     return;
   }
   auto* layout_object = box_fragment_.GetLayoutObject();
+
+  if (layout_object && layout_object->NeedsLayout() &&
+      !layout_object->ChildLayoutBlockedByDisplayLock()) {
+    // TODO(crbug.com/478682594): Remove when done investigating.
+    layout_object->DumpForBug478682594();
+  }
+
   if (GetPhysicalFragment().IsPaintedAtomically() &&
       !box_fragment_.HasSelfPaintingLayer() &&
       paint_info.phase != PaintPhase::kOverlayOverflowControls) {

@@ -34,6 +34,8 @@
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "partition_alloc/partition_alloc.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
@@ -2213,6 +2215,26 @@ String LayoutObject::DebugName() const {
     name.Append(node->DebugName());
   }
   return name.ToString();
+}
+
+void LayoutObject::DumpForBug478682594() const {
+  StringBuilder value_builder;
+  for (const LayoutObject* obj = this; obj; obj = obj->Parent()) {
+    unsigned needs_layout_flags =
+        obj->bitfields_.SelfNeedsFullLayout() |
+        (obj->bitfields_.ChildNeedsFullLayout() << 1) |
+        (obj->bitfields_.NeedsSimplifiedLayout() << 2);
+
+    value_builder.AppendNumber(needs_layout_flags);
+    value_builder.Append(" ");
+    value_builder.Append(obj->DecoratedName());
+    value_builder.Append("; ");
+  }
+
+  auto* key = base::debug::AllocateCrashKeyString(
+      "Bug478682594-layout-tree", base::debug::CrashKeySize::Size1024);
+  base::debug::SetCrashKeyString(key, value_builder.ToString().Ascii().c_str());
+  base::debug::DumpWithoutCrashing();
 }
 
 DOMNodeId LayoutObject::OwnerNodeId(bool is_internal_content) const {
