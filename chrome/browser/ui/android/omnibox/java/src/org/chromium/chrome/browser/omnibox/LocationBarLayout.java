@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.components.browser_ui.widget.CompositeTouchDelegate;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.WindowAndroid;
 
 /** This class represents the location bar where the user types in URLs and search terms. */
 @NullMarked
@@ -150,6 +151,8 @@ public class LocationBarLayout extends ConstraintLayout {
      * @param urlCoordinator The coordinator for interacting with the url bar.
      * @param statusCoordinator The coordinator for interacting with the status icon.
      * @param locationBarDataProvider Provider of LocationBar data, e.g. url and title.
+     * @param windowAndroid WindowAndroid object for the window in which the LocationBarLayout is
+     *     rendered.
      */
     @Initializer
     @CallSuper
@@ -157,7 +160,8 @@ public class LocationBarLayout extends ConstraintLayout {
             AutocompleteCoordinator autocompleteCoordinator,
             UrlBarCoordinator urlCoordinator,
             StatusCoordinator statusCoordinator,
-            LocationBarDataProvider locationBarDataProvider) {
+            LocationBarDataProvider locationBarDataProvider,
+            WindowAndroid windowAndroid) {
         mAutocompleteCoordinator = autocompleteCoordinator;
         mUrlCoordinator = urlCoordinator;
         mStatusCoordinator = statusCoordinator;

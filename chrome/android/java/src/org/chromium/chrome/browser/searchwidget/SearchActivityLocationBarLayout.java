@@ -52,12 +52,14 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
             AutocompleteCoordinator autocompleteCoordinator,
             UrlBarCoordinator urlCoordinator,
             StatusCoordinator statusCoordinator,
-            LocationBarDataProvider locationBarDataProvider) {
+            LocationBarDataProvider locationBarDataProvider,
+            WindowAndroid windowAndroid) {
         super.initialize(
                 autocompleteCoordinator,
                 urlCoordinator,
                 statusCoordinator,
-                locationBarDataProvider);
+                locationBarDataProvider,
+                windowAndroid);
         mIsIncognito = locationBarDataProvider.isIncognitoBranded();
         mPendingSearchPromoDecision = LocaleManager.getInstance().needToCheckForSearchEnginePromo();
         mAutocompleteCoordinator.setShouldPreventOmniboxAutocomplete(mPendingSearchPromoDecision);

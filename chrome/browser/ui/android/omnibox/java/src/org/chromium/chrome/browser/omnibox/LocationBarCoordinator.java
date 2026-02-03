@@ -433,7 +433,8 @@ public class LocationBarCoordinator
                 mAutocompleteCoordinator,
                 mUrlCoordinator,
                 mStatusCoordinator,
-                locationBarDataProvider);
+                locationBarDataProvider,
+                mWindowAndroid);
 
         Callback<Profile> profileObserver =
                 new Callback<>() {

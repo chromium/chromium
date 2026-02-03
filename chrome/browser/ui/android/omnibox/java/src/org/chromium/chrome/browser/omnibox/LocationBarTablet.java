@@ -20,8 +20,13 @@ import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
+import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.ViewUtils;
+import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.widget.Toast;
 
 /** Location bar for tablet form factors. */
@@ -46,9 +51,12 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
     private float mLayoutLeft;
     private float mLayoutRight;
     private int mToolbarStartPaddingDifference;
+    private final int[] mPositionArray = new int[2];
 
     @SuppressWarnings("HidingField")
     private UrlBar mUrlBar;
+
+    private WindowAndroid mWindowAndroid;
 
     /** Constructor used to inflate from XML. */
     public LocationBarTablet(Context context, AttributeSet attrs) {
@@ -324,6 +332,22 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
     }
 
     @Override
+    public void initialize(
+            AutocompleteCoordinator autocompleteCoordinator,
+            UrlBarCoordinator urlCoordinator,
+            StatusCoordinator statusCoordinator,
+            LocationBarDataProvider locationBarDataProvider,
+            WindowAndroid windowAndroid) {
+        super.initialize(
+                autocompleteCoordinator,
+                urlCoordinator,
+                statusCoordinator,
+                locationBarDataProvider,
+                windowAndroid);
+        mWindowAndroid = windowAndroid;
+    }
+
+    @Override
     /* package */ void setLocationBarButtonTranslationForNtpAnimation(float translationX) {
         super.setLocationBarButtonTranslationForNtpAnimation(translationX);
         mBookmarkButton.setTranslationX(translationX);
@@ -338,9 +362,8 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
             int expansionPx =
                     getResources()
                             .getDimensionPixelSize(R.dimen.location_bar_tablet_fusebox_popup_inset);
-            layoutParams.leftMargin = -expansionPx;
-            layoutParams.rightMargin = -expansionPx;
             layoutParams.topMargin = -expansionPx;
+            setMarginsForWindowWidth(layoutParams, expansionPx);
             layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
             layoutParams.gravity = Gravity.TOP;
             setPadding(expansionPx, expansionPx, expansionPx, getPaddingBottom());
@@ -364,5 +387,41 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
             setBackgroundResource(R.drawable.modern_toolbar_tablet_text_box_background);
         }
         setLayoutParams(layoutParams);
+    }
+
+    private void setMarginsForWindowWidth(
+            LinearLayout.LayoutParams layoutParams, int minHorizontalExpansionPx) {
+        Resources resources = getResources();
+        int screenWidthDp = resources.getConfiguration().screenWidthDp;
+        int windowWidthPx = DisplayUtil.dpToPx(mWindowAndroid.getDisplay(), screenWidthDp);
+        int measuredWidth = getMeasuredWidth();
+        int minTabletWidthPx = resources.getDimensionPixelSize(R.dimen.fusebox_min_tablet_width);
+        boolean isPhoneWidthScreen = screenWidthDp < DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP;
+        int targetWidthPx =
+                isPhoneWidthScreen
+                        ? windowWidthPx
+                        : Math.max(minTabletWidthPx, measuredWidth + 2 * minHorizontalExpansionPx);
+
+        ViewUtils.getRelativeLayoutPosition(getRootView(), this, mPositionArray);
+        int currentLeft = mPositionArray[0];
+        // Our view is relatively centered already; make it exactly centered when expanded.
+        boolean isViewApproximatelyCentered = windowWidthPx - 2 * currentLeft <= minTabletWidthPx;
+        if (isViewApproximatelyCentered) {
+            int targetLeft = (windowWidthPx - targetWidthPx) / 2;
+            int targetRight = targetLeft + targetWidthPx;
+
+            int currentRight = currentLeft + measuredWidth;
+            int shiftLeft = targetLeft - currentLeft;
+            int shiftRight = targetRight - currentRight;
+
+            layoutParams.leftMargin = shiftLeft;
+            layoutParams.rightMargin = -shiftRight;
+        } else {
+            // Our view is relatively off-center. Leave it that way, expanding symmetrically from
+            // our current position.
+            int expansionPx = (targetWidthPx - measuredWidth) / 2;
+            layoutParams.leftMargin = -expansionPx;
+            layoutParams.rightMargin = -expansionPx;
+        }
     }
 }
