@@ -185,6 +185,12 @@ class TabStatsTracker :
     // treat exact URL matches as duplicates.
     void ReportTabDuplicateMetrics(bool exclude_fragments);
 
+#if !BUILDFLAG(IS_ANDROID)
+    // Calculate and report metrics on the number of split tabs within the tab
+    // strips.
+    void ReportSplitTabMetrics();
+#endif
+
    protected:
     // Checks if Chrome is running in background with no visible windows,
     // virtual for unittesting.
@@ -360,6 +366,11 @@ class TabStatsTracker::TabStripInterface {
 
   // Returns the count of tabs in this tab strip.
   size_t GetTabCount() const;
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Returns the count of tabs within Split Views in this tab strip.
+  size_t GetSplitTabCount() const;
+#endif
 
   // Returns the active tab for this tab strip. On Android this may return
   // nullptr if the tab's WebContents isn't initialized yet.

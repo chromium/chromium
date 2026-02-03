@@ -179,6 +179,14 @@ size_t TabStatsTracker::TabStripInterface::GetTabCount() const {
   return browser_window_interface()->GetTabStripModel()->count();
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+// Returns the count of tabs within Split Views in this tab strip.
+size_t TabStatsTracker::TabStripInterface::GetSplitTabCount() const {
+  return browser_window_interface()->GetTabStripModel()->ListSplits().size() *
+         2;
+}
+#endif
+
 content::WebContents* TabStatsTracker::TabStripInterface::GetActiveWebContents()
     const {
   return browser_window_interface()->GetTabStripModel()->GetActiveWebContents();
@@ -865,8 +873,9 @@ void TabStatsTracker::UmaStatsReportingDelegate::ReportHeartbeatMetrics(
     const TabStatsDataStore::TabsStats& tab_stats) {
   // Don't report anything if Chrome is running in background with no visible
   // window.
-  if (IsChromeBackgroundedWithoutWindows())
+  if (IsChromeBackgroundedWithoutWindows()) {
     return;
+  }
 
   UmaHistogramCounts10000WithBatteryStateVariant(kTabCountHistogramName,
                                                  tab_stats.total_tab_count);
@@ -876,8 +885,10 @@ void TabStatsTracker::UmaStatsReportingDelegate::ReportHeartbeatMetrics(
     ReportTabDuplicateMetrics(true);
     ReportTabDuplicateMetrics(false);
   }
+
 #if !BUILDFLAG(IS_ANDROID)
-  // Record the width of all open browser windows with tabs.
+  ReportSplitTabMetrics();
+
   TabStripInterface::ForEach([&](const TabStripInterface& tab_strip) {
     if (!tab_strip.IsInNormalBrowser()) {
       return;
@@ -886,6 +897,7 @@ void TabStatsTracker::UmaStatsReportingDelegate::ReportHeartbeatMetrics(
     UmaHistogramCounts10000WithTabStripModeVariant(kTabCountHistogramName,
                                                    tab_strip);
 
+    // Record the width of all open browser windows with tabs.
     const ui::BaseWindow* window =
         tab_strip.browser_window_interface()->GetWindow();
 
@@ -987,6 +999,22 @@ void TabStatsTracker::UmaStatsReportingDelegate::ReportTabDuplicateMetrics(
     }
   }
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+void TabStatsTracker::UmaStatsReportingDelegate::ReportSplitTabMetrics() {
+  int split_tabs = 0;
+  TabStripInterface::ForEach([&](const TabStripInterface& tab_strip) {
+    if (!tab_strip.IsInNormalBrowser()) {
+      return;
+    }
+
+    split_tabs += tab_strip.GetSplitTabCount();
+  });
+
+  base::UmaHistogramCounts10000(
+      base::StrCat({kTabCountHistogramName, ".SplitTabs"}), split_tabs);
+}
+#endif
 
 bool TabStatsTracker::UmaStatsReportingDelegate::
     IsChromeBackgroundedWithoutWindows() {
