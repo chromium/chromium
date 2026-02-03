@@ -174,7 +174,7 @@ views::ProposedLayout VerticalTabGroupView::CalculateProposedLayout(
     height += bounds.height() + kTabVerticalPadding;
     width = std::max(width, bounds.width());
   }
-  // Remove excess padding if needed.
+  // Remove excess padding.
   height -= kTabVerticalPadding;
 
   if (!children.empty()) {
@@ -183,7 +183,12 @@ views::ProposedLayout VerticalTabGroupView::CalculateProposedLayout(
   layouts.child_layouts.emplace_back(
       group_line_.get(), group_line_->GetVisible(), group_line_bounds);
 
+  // Add extra padding below the group if not collapsed.
   const bool is_collapsed = IsCollapsed();
+  if (!is_collapsed) {
+    height += kTabVerticalPadding;
+  }
+
   layouts.host_size = gfx::Size(
       width, is_collapsed
                  ? header_bounds.height() + (2 * kGroupHeaderVerticalMargin)
