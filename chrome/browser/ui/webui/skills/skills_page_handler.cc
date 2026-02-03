@@ -61,6 +61,11 @@ void SkillsPageHandler::GetInitialUserSkills(
   std::move(scoped_callback).Run(std::move(skills));
 }
 
+void SkillsPageHandler::OnDiscoverySkillsUpdated(
+    const SkillsService::SkillsMap* skills_map) {
+  // TODO(crbug.com/475594870): Propagate 1P skills to the UI.
+}
+
 void SkillsPageHandler::OnSkillUpdated(
     std::string_view skill_id,
     SkillsService::UpdateSource update_source) {

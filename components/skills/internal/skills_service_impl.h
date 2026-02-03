@@ -112,6 +112,9 @@ class SkillsServiceImpl : public SkillsService {
   // The list of skills managed by this service.
   std::vector<std::unique_ptr<Skill>> skills_;
 
+  // The map of 1p discovery skills.
+  std::unique_ptr<SkillsMap> first_party_skills_map_;
+
   // The list of observers to be notified on changes.
   base::ObserverList<Observer, /*check_empty=*/true, /*allow_reentrancy=*/false>
       observers_;

@@ -58,6 +58,9 @@ class SkillsService : public KeyedService {
     kReady,
   };
 
+  // Map of id to skill.
+  using SkillsMap = absl::flat_hash_map<std::string, skills::proto::Skill>;
+
   // Observer for the service notifications.
   class Observer : public base::CheckedObserver {
    public:
@@ -77,7 +80,7 @@ class SkillsService : public KeyedService {
     // Called when the service has completed a download of 1P skills. Receives
     // new map or nullptr if map has not changed.
     virtual void OnDiscoverySkillsUpdated(
-        std::unique_ptr<SkillsDownloader::SkillsMap> skills_map) {}
+        const SkillsService::SkillsMap* skills_map) {}
 
     // Called when the service is shutting down. Observers should remove
     // themselves.
@@ -152,8 +155,6 @@ class SkillsService : public KeyedService {
   // nullptr will be returned.
   virtual void FetchDiscoverySkills() = 0;
 
-  // Map of id to skill.
-  using SkillsMap = absl::flat_hash_map<std::string, skills::proto::Skill>;
   // Called on download complete of 1p skills. If the download fails or the file
   // has not been modified skills_map is null. Notifies observers.
   virtual void Handle1pSkillsMap(std::unique_ptr<SkillsMap> skills_map) = 0;

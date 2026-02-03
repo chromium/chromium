@@ -223,8 +223,10 @@ void SkillsServiceImpl::FetchDiscoverySkills() {
 
 void SkillsServiceImpl::Handle1pSkillsMap(
     std::unique_ptr<SkillsMap> skills_map) {
+  first_party_skills_map_ = std::move(skills_map);
+
   for (Observer& observer : observers_) {
-    observer.OnDiscoverySkillsUpdated(std::move(skills_map));
+    observer.OnDiscoverySkillsUpdated(first_party_skills_map_.get());
   }
 }
 
