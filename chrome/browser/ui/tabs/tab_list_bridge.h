@@ -85,6 +85,7 @@ class TabListBridge : public TabListInterface, public TabStripModelObserver {
   void MoveTabGroupToWindow(tab_groups::TabGroupId group_id,
                             SessionID destination_window_id,
                             int destination_index) override;
+  bool IsThisTabListEditable() override;
 
  private:
   // TabStripModelObserver:

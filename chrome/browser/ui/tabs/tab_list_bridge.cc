@@ -590,10 +590,38 @@ void TabListBridge::OnTabStripModelChanged(
   }
 }
 
+bool TabListBridge::IsThisTabListEditable() {
+  TabStripModelDelegate* delegate = tab_strip_->delegate();
+  return delegate->IsTabStripEditable();
+}
+
 // static
 // From //chrome/browser/ui/tabs/tab_list_interface.h
 TabListInterface* TabListInterface::From(
     BrowserWindowInterface* browser_window_interface) {
   return ui::ScopedUnownedUserData<TabListBridge>::Get(
       browser_window_interface->GetUnownedUserDataHost());
+}
+
+// static
+// From //chrome/browser/ui/tabs/tab_list_interface.h
+bool TabListInterface::CanEditTabList(Profile& profile) {
+  std::vector<BrowserWindowInterface*> all_browsers =
+      GetAllBrowserWindowInterfaces();
+  for (auto* browser : all_browsers) {
+    if (browser->GetProfile() != &profile) {
+      continue;
+    }
+
+    TabListInterface* tab_list = From(browser);
+    if (!tab_list) {
+      continue;
+    }
+
+    if (!tab_list->IsThisTabListEditable()) {
+      return false;
+    }
+  }
+
+  return true;
 }

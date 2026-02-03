@@ -14,6 +14,7 @@
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router.h"
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router_factory.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/omnibox/browser/location_bar_model_impl.h"
 #include "components/sessions/core/session_id.h"
@@ -170,4 +171,21 @@ TabListInterface* TabListInterface::From(
     BrowserWindowInterface* browser_window_interface) {
   return ui::ScopedUnownedUserData<TabModel>::Get(
       browser_window_interface->GetUnownedUserDataHost());
+}
+
+// static
+// From //chrome/browser/ui/tabs/tab_list_interface.h
+bool TabListInterface::CanEditTabList(Profile& profile) {
+  for (TabModel* model : TabModelList::models()) {
+    if (model->GetProfile() != &profile ||
+        model->GetTabModelType() != TabModel::TabModelType::kStandard) {
+      continue;
+    }
+
+    if (!model->IsThisTabListEditable()) {
+      return false;
+    }
+  }
+
+  return true;
 }

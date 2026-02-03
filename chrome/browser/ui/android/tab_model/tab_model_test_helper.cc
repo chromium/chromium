@@ -273,6 +273,11 @@ void TestTabModel::MoveTabGroupToWindow(tab_groups::TabGroupId group_id,
   NOTIMPLEMENTED();
 }
 
+bool TestTabModel::IsThisTabListEditable() {
+  NOTIMPLEMENTED();
+  return true;
+}
+
 #if BUILDFLAG(IS_DESKTOP_ANDROID)
 void TestTabModel::AssociateWithBrowserWindow(BrowserWindowInterface* browser) {
   scoped_unowned_user_data_ =
@@ -574,6 +579,11 @@ void OwningTestTabModel::MoveTabGroupToWindow(tab_groups::TabGroupId group_id,
                                               SessionID destination_window_id,
                                               int destination_index) {
   NOTIMPLEMENTED();
+}
+
+bool OwningTestTabModel::IsThisTabListEditable() {
+  NOTIMPLEMENTED();
+  return true;
 }
 
 TabAndroid* OwningTestTabModel::AddEmptyTab(

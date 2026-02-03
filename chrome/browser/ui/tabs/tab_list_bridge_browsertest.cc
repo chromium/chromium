@@ -13,6 +13,7 @@
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_initialized_observer.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_test_utils.h"
@@ -1161,4 +1162,29 @@ IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, Observer_OnTabMoved) {
   EXPECT_EQ(url1, event.tab_url);
   EXPECT_EQ(0, event.from_index);
   EXPECT_EQ(2, event.to_index);
+}
+
+IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, IsTabListEditable) {
+  // Use two tab lists, which means two browsers.
+  Profile* profile = browser()->profile();
+  Browser* browser1 = browser();
+  Browser* browser2 = CreateBrowser(profile);
+
+  TabListInterface* tab_list1 = TabListInterface::From(browser1);
+  TabListInterface* tab_list2 = TabListInterface::From(browser2);
+
+  // By default, tab lists are editable.
+  EXPECT_TRUE(tab_list1->IsThisTabListEditable());
+  EXPECT_TRUE(tab_list2->IsThisTabListEditable());
+  // And the static check should allow editing.
+  EXPECT_TRUE(TabListInterface::CanEditTabList(*profile));
+
+  // Change the first tab list to be un-editable.
+  browser1->window()->DisableTabStripEditingForTesting();
+
+  EXPECT_FALSE(tab_list1->IsThisTabListEditable());
+  EXPECT_TRUE(tab_list2->IsThisTabListEditable());
+  // Since one tab list is ineditable, the global check should not allow
+  // editing.
+  EXPECT_FALSE(TabListInterface::CanEditTabList(*profile));
 }

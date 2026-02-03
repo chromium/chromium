@@ -17,6 +17,7 @@
 #include "url/gurl.h"
 
 class BrowserWindowInterface;
+class Profile;
 class SessionID;
 class TabListInterfaceObserver;
 
@@ -175,6 +176,19 @@ class TabListInterface {
   virtual void MoveTabGroupToWindow(tab_groups::TabGroupId group_id,
                                     SessionID destination_window_id,
                                     int destination_index) = 0;
+
+  // Returns true if *this* tab list is currently editable according to its own
+  // internal state.
+  // NOTE: For most operations, you probably want to use the static
+  // method `CanEditTabList()` below. See also comments there.
+  virtual bool IsThisTabListEditable() = 0;
+
+  // Returns true if the tab list is currently considered editable. This will
+  // return false if *any* tab list for the given `profile` has a tab being
+  // dragged / dropped. This is because, even if the tab list doesn't have a
+  // tab that's being dragged from it, a different drag could be placed into it,
+  // affecting the list.
+  static bool CanEditTabList(Profile& profile);
 };
 
 namespace base {
