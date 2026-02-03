@@ -22,6 +22,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/search_engines/settings/SearchEngineAdapter.java",
     "java/src/org/chromium/chrome/browser/search_engines/settings/SearchEngineSettings.java",
     "java/src/org/chromium/chrome/browser/search_engines/settings/SiteSearchSettings.java",
+    "java/src/org/chromium/chrome/browser/search_engines/settings/custom_search_engine/CustomSearchEngineListPreference.java",
   ]
 
   srcjar_deps = [ ":jni_headers" ]
@@ -59,6 +60,7 @@ android_library("java") {
     "//third_party/androidx:androidx_activity_activity_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
+    "//third_party/androidx:androidx_preference_preference_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_full_java",
@@ -80,6 +82,7 @@ android_resources("java_resources") {
     "java/res/drawable/blocking_choice_dialog_illustration.xml",
     "java/res/drawable/search_sogou.xml",
     "java/res/layout/blocking_choice_dialog.xml",
+    "java/res/layout/custom_search_engine_list_preference.xml",
     "java/res/layout/default_search_engine_dialog_view.xml",
     "java/res/layout/search_engine_choice_header.xml",
     "java/res/layout/search_engine_recent_title.xml",
@@ -87,12 +90,15 @@ android_resources("java_resources") {
     "java/res/layout/search_engine_with_logo.xml",
     "java/res/values/dimens.xml",
     "java/res/values/ids.xml",
+    "java/res/xml/custom_search_engine_preferences.xml",
   ]
   deps = [
     "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//components/browser_ui/settings/android:java_resources",
     "//components/browser_ui/styles/android:java_resources",
     "//components/browser_ui/widget/android:java_resources",
     "//components/strings:components_strings_grd",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
   ]
 }
 

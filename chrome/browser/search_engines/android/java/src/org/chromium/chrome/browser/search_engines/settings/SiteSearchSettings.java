@@ -14,6 +14,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
+import org.chromium.components.browser_ui.settings.SettingsUtils;
 
 /**
  * Fragment for the "Manage search engines and site search" settings page. Displays lists of
@@ -28,6 +29,7 @@ public class SiteSearchSettings extends ChromeBaseSettingsFragment {
     @Override
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
         mPageTitle.set(getString(R.string.manage_search_engines_and_site_search));
+        SettingsUtils.addPreferencesFromResource(this, R.xml.custom_search_engine_preferences);
     }
 
     @Override

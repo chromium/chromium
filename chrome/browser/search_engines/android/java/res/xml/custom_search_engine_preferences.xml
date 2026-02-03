@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<androidx.preference.PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory
+        android:key="custom_search_engine_section"
+        android:title="@string/site_search_search_engines_header"
+        app:allowDividerAbove="true">
+
+        <org.chromium.components.browser_ui.settings.TextMessagePreference
+            android:key="custom_search_engine_description"
+            android:summary="@string/site_search_search_engines_description"
+            app:allowDividerBelow="false" />
+
+        <org.chromium.chrome.browser.search_engines.settings.custom_search_engine.CustomSearchEngineListPreference
+            android:key="custom_search_engine_item_list"
+            android:layout="@layout/custom_search_engine_list_preference"
+            app:allowDividerAbove="false" />
+
+    </PreferenceCategory>
+
+</androidx.preference.PreferenceScreen>
