@@ -91,7 +91,9 @@ bool JingleSessionManager::OnSignalStrategyIncomingStanza(
     return true;
   }
 
-  if (message->action == JingleMessage::ActionType::kSessionInitiate) {
+  // TODO: joedow - Use std::visit(absl::Overload(...), message->payload()) here
+  // once the JingleMessage payload is being populated for incoming messages.
+  if (message->action() == JingleMessage::ActionType::kSessionInitiate) {
     // Description must be present in session-initiate messages.
     DCHECK(message->description.get());
 

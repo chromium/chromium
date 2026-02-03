@@ -16,6 +16,7 @@
 #include "remoting/protocol/content_description.h"
 #include "remoting/protocol/jingle_message_xml_converter.h"
 #include "remoting/protocol/session_plugin.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 
 using jingle_xmpp::QName;
@@ -50,14 +51,46 @@ std::string JingleMessage::GetActionName(ActionType action) {
   return ValueToName(kActionTypes, action);
 }
 
+// static
+JingleMessage::ActionType JingleMessage::ActionFromPayload(
+    const Payload& payload) {
+  return std::visit(absl::Overload(
+                        [](const std::monostate&) {
+                          return JingleMessage::ActionType::kUnknownAction;
+                        },
+                        [](const SessionInitiate&) {
+                          return JingleMessage::ActionType::kSessionInitiate;
+                        },
+                        [](const SessionAccept&) {
+                          return JingleMessage::ActionType::kSessionAccept;
+                        },
+                        [](const SessionInfo&) {
+                          return JingleMessage::ActionType::kSessionInfo;
+                        },
+                        [](const JingleTransportInfo&) {
+                          return JingleMessage::ActionType::kTransportInfo;
+                        },
+                        [](const SessionTerminate&) {
+                          return JingleMessage::ActionType::kSessionTerminate;
+                        }),
+                    payload);
+}
+
 JingleMessage::JingleMessage() = default;
 
 JingleMessage::JingleMessage(const SignalingAddress& to,
-                             ActionType action,
+                             Payload payload,
                              const std::string& sid)
-    : to(to), action(action), sid(sid) {}
+    : to(to), sid(sid) {
+  SetPayload(std::move(payload));
+}
 
 JingleMessage::~JingleMessage() = default;
+
+void JingleMessage::SetPayload(Payload payload) {
+  payload_ = std::move(payload);
+  action_ = ActionFromPayload(payload_);
+}
 
 bool JingleMessage::ParseXml(const jingle_xmpp::XmlElement* stanza,
                              std::string* error) {

@@ -154,7 +154,7 @@ TEST(JingleMessageTest, SessionInitiate) {
   JingleMessage message;
   ParseFormatAndCompare(kTestSessionInitiateMessage, &message);
 
-  EXPECT_EQ(message.action, ActionType::kSessionInitiate);
+  EXPECT_EQ(message.action(), ActionType::kSessionInitiate);
   EXPECT_FALSE(message.description->config()->webrtc_supported());
   EXPECT_TRUE(message.description->config()->ice_supported());
 }
@@ -182,7 +182,7 @@ TEST(JingleMessageTest, SessionInitiateWebrtc) {
   JingleMessage message;
   ParseFormatAndCompare(kTestSessionInitiateMessage, &message);
 
-  EXPECT_EQ(message.action, ActionType::kSessionInitiate);
+  EXPECT_EQ(message.action(), ActionType::kSessionInitiate);
   EXPECT_TRUE(message.description->config()->webrtc_supported());
   EXPECT_FALSE(message.description->config()->ice_supported());
 }
@@ -216,7 +216,7 @@ TEST(JingleMessageTest, SessionInitiateHybrid) {
   JingleMessage message;
   ParseFormatAndCompare(kTestSessionInitiateMessage, &message);
 
-  EXPECT_EQ(message.action, ActionType::kSessionInitiate);
+  EXPECT_EQ(message.action(), ActionType::kSessionInitiate);
   EXPECT_TRUE(message.description->config()->webrtc_supported());
   EXPECT_TRUE(message.description->config()->ice_supported());
 }
@@ -248,7 +248,7 @@ TEST(JingleMessageTest, SessionInitiateNoIce) {
   JingleMessage message;
   ParseJingleMessageFromXml(kTestSessionInitiateMessage, &message);
 
-  EXPECT_EQ(message.action, ActionType::kSessionInitiate);
+  EXPECT_EQ(message.action(), ActionType::kSessionInitiate);
   EXPECT_FALSE(message.description->config()->ice_supported());
 }
 
@@ -278,7 +278,7 @@ TEST(JingleMessageTest, SessionAccept) {
   JingleMessage message;
   ParseFormatAndCompare(kTestSessionAcceptMessage, &message);
 
-  EXPECT_EQ(message.action, ActionType::kSessionAccept);
+  EXPECT_EQ(message.action(), ActionType::kSessionAccept);
   EXPECT_FALSE(message.description->config()->webrtc_supported());
   EXPECT_TRUE(message.description->config()->ice_supported());
 }
@@ -305,7 +305,7 @@ TEST(JingleMessageTest, SessionAcceptWebrtc) {
   JingleMessage message;
   ParseFormatAndCompare(kTestSessionAcceptMessage, &message);
 
-  EXPECT_EQ(message.action, ActionType::kSessionAccept);
+  EXPECT_EQ(message.action(), ActionType::kSessionAccept);
   EXPECT_TRUE(message.description->config()->webrtc_supported());
   EXPECT_FALSE(message.description->config()->ice_supported());
 }
@@ -336,7 +336,7 @@ TEST(JingleMessageTest, SessionAcceptNoIce) {
   JingleMessage message;
   ParseJingleMessageFromXml(kTestSessionAcceptMessage, &message);
 
-  EXPECT_EQ(message.action, ActionType::kSessionAccept);
+  EXPECT_EQ(message.action(), ActionType::kSessionAccept);
   EXPECT_FALSE(message.description->config()->ice_supported());
   EXPECT_FALSE(message.description->config()->webrtc_supported());
 }
@@ -368,7 +368,7 @@ TEST(JingleMessageTest, IceTransportInfo) {
   JingleMessage message;
   ParseFormatAndCompare(kTestIceTransportInfoMessage, &message);
 
-  EXPECT_EQ(message.action, ActionType::kTransportInfo);
+  EXPECT_EQ(message.action(), ActionType::kTransportInfo);
 
   IceTransportInfo transport_info;
   EXPECT_TRUE(transport_info.ParseXml(message.transport_info_legacy.get()));
@@ -386,7 +386,7 @@ TEST(JingleMessageTest, SessionTerminate) {
 
   JingleMessage message;
   ParseFormatAndCompare(kTestSessionTerminateMessage, &message);
-  EXPECT_EQ(message.action, ActionType::kSessionTerminate);
+  EXPECT_EQ(message.action(), ActionType::kSessionTerminate);
 }
 
 TEST(JingleMessageTest, SessionInfo) {
@@ -400,7 +400,7 @@ TEST(JingleMessageTest, SessionInfo) {
   JingleMessage message;
   ParseFormatAndCompare(kTestSessionInfoMessage, &message);
 
-  EXPECT_EQ(message.action, ActionType::kSessionInfo);
+  EXPECT_EQ(message.action(), ActionType::kSessionInfo);
   ASSERT_TRUE(message.info_legacy.get() != nullptr);
   EXPECT_TRUE(message.info_legacy->Name() ==
               jingle_xmpp::QName("urn:xmpp:jingle:1", "test-info"));
@@ -568,7 +568,7 @@ TEST(JingleMessageTest, RemotingErrorCode) {
       ParseFormatAndCompare(message_str.c_str(), &message);
     }
 
-    EXPECT_EQ(message.action, ActionType::kSessionTerminate);
+    EXPECT_EQ(message.action(), ActionType::kSessionTerminate);
     EXPECT_EQ(message.reason, SessionTerminate::Reason::kDecline);
     EXPECT_EQ(message.error_code, error);
   }

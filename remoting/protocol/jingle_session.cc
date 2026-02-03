@@ -146,7 +146,7 @@ class JingleSession::OrderedMessageQueue {
       const std::string& id,
       PendingMessage&& pending_message);
 
-  // Sets the initial ID of the session initiate message.
+  // Sets the initial ID of the session initiate mefssage.
   void SetInitialId(const std::string& id);
 
  private:
@@ -331,8 +331,8 @@ void JingleSession::ContinueAcceptIncomingConnection() {
   }
 
   // Send the session-accept message.
-  std::unique_ptr<JingleMessage> message(new JingleMessage(
-      peer_address_, JingleMessage::ActionType::kSessionAccept, session_id_));
+  auto message = std::make_unique<JingleMessage>(peer_address_, SessionAccept(),
+                                                 session_id_);
 
   std::unique_ptr<jingle_xmpp::XmlElement> auth_message;
   if (authenticator_->state() == Authenticator::MESSAGE_READY) {
@@ -383,8 +383,8 @@ void JingleSession::SendTransportInfo(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK_EQ(state_, AUTHENTICATED);
 
-  std::unique_ptr<JingleMessage> message(new JingleMessage(
-      peer_address_, JingleMessage::ActionType::kTransportInfo, session_id_));
+  auto message = std::make_unique<JingleMessage>(
+      peer_address_, JingleTransportInfo(), session_id_);
   message->transport_info_legacy = std::move(transport_info);
   AddPluginAttachments(message.get());
 
@@ -435,9 +435,8 @@ void JingleSession::Close(protocol::ErrorCode error,
         reason = SessionTerminate::Reason::kGeneralError;
     }
 
-    std::unique_ptr<JingleMessage> message(new JingleMessage(
-        peer_address_, JingleMessage::ActionType::kSessionTerminate,
-        session_id_));
+    auto message = std::make_unique<JingleMessage>(
+        peer_address_, SessionTerminate(), session_id_);
     message->reason = reason;
     message->error_code = error;
     if (!error_details.empty()) {
@@ -480,7 +479,7 @@ void JingleSession::AddPlugin(SessionPlugin* plugin) {
 void JingleSession::SendMessage(std::unique_ptr<JingleMessage> message) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  if (message->action != JingleMessage::ActionType::kSessionTerminate) {
+  if (message->action() != JingleMessage::ActionType::kSessionTerminate) {
     // When the host accepts session-initiate message from a client JID it
     // doesn't recognize it sends session-terminate without session-accept.
     // Attaching plugin information to this session-terminate message may lead
@@ -495,11 +494,11 @@ void JingleSession::SendMessage(std::unique_ptr<JingleMessage> message) {
   auto request = session_manager_->iq_sender()->SendIq(
       std::move(stanza),
       base::BindOnce(&JingleSession::OnMessageResponse, base::Unretained(this),
-                     message->action));
+                     message->action()));
 
   int timeout = kDefaultMessageTimeout;
-  if (message->action == JingleMessage::ActionType::kSessionInitiate ||
-      message->action == JingleMessage::ActionType::kSessionAccept) {
+  if (message->action() == JingleMessage::ActionType::kSessionInitiate ||
+      message->action() == JingleMessage::ActionType::kSessionAccept) {
     timeout = kSessionInitiateAndAcceptTimeout;
   }
   if (request) {
@@ -507,7 +506,7 @@ void JingleSession::SendMessage(std::unique_ptr<JingleMessage> message) {
     pending_requests_.push_back(std::move(request));
   } else {
     LOG(ERROR) << "Failed to send a "
-               << JingleMessage::GetActionName(message->action) << " message";
+               << JingleMessage::GetActionName(message->action()) << " message";
   }
 }
 
@@ -607,7 +606,9 @@ void JingleSession::ProcessIncomingMessage(
     return;
   }
 
-  switch (message->action) {
+  // TODO: joedow - Use std::visit(absl::Overload(...), message->payload()) here
+  // once the JingleMessage payload is being populated for incoming messages.
+  switch (message->action()) {
     case JingleMessage::ActionType::kSessionAccept:
       OnAccept(std::move(message), std::move(reply_callback));
       break;
@@ -820,8 +821,8 @@ void JingleSession::ProcessAuthenticationStep() {
   }
 
   if (authenticator_->state() == Authenticator::MESSAGE_READY) {
-    std::unique_ptr<JingleMessage> message(new JingleMessage(
-        peer_address_, JingleMessage::ActionType::kSessionInfo, session_id_));
+    auto message = std::make_unique<JingleMessage>(peer_address_, SessionInfo(),
+                                                   session_id_);
     message->info_legacy = authenticator_->GetNextMessage();
     DCHECK(message->info_legacy.get());
     SendMessage(std::move(message));
@@ -915,8 +916,8 @@ void JingleSession::SendSessionInitiateMessage() {
   if (state_ != CONNECTING) {
     return;
   }
-  std::unique_ptr<JingleMessage> message(new JingleMessage(
-      peer_address_, JingleMessage::ActionType::kSessionInitiate, session_id_));
+  auto message = std::make_unique<JingleMessage>(
+      peer_address_, SessionInitiate(), session_id_);
   message->initiator =
       session_manager_->signal_strategy_->GetLocalAddress().id();
   message->description = std::make_unique<ContentDescription>(

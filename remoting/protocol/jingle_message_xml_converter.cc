@@ -247,9 +247,10 @@ std::unique_ptr<jingle_xmpp::XmlElement> JingleMessageToXml(
     message.from.SetInMessage(root.get(), SignalingAddress::FROM);
   }
 
-  const char* action_attr = ValueToNameUnchecked(kActionTypes, message.action);
+  const char* action_attr =
+      ValueToNameUnchecked(kActionTypes, message.action());
   if (!action_attr) {
-    LOG(FATAL) << "Invalid action value " << static_cast<int>(message.action);
+    LOG(FATAL) << "Invalid action value " << static_cast<int>(message.action());
   }
   jingle_tag->AddAttr(kQNameAction, action_attr);
 
@@ -257,14 +258,14 @@ std::unique_ptr<jingle_xmpp::XmlElement> JingleMessageToXml(
     jingle_tag->AddElement(new XmlElement(*message.attachments_legacy));
   }
 
-  if (message.action == JingleMessage::ActionType::kSessionInfo) {
+  if (message.action() == JingleMessage::ActionType::kSessionInfo) {
     if (message.info_legacy) {
       jingle_tag->AddElement(new XmlElement(*message.info_legacy));
     }
     return root;
   }
 
-  if (message.action == JingleMessage::ActionType::kSessionInitiate) {
+  if (message.action() == JingleMessage::ActionType::kSessionInitiate) {
     jingle_tag->AddAttr(kQNameInitiator, message.initiator);
   }
 
@@ -294,7 +295,7 @@ std::unique_ptr<jingle_xmpp::XmlElement> JingleMessageToXml(
     }
   }
 
-  if (message.action != JingleMessage::ActionType::kSessionTerminate) {
+  if (message.action() != JingleMessage::ActionType::kSessionTerminate) {
     auto content_tag = std::make_unique<XmlElement>(kQNameContent);
     content_tag->AddAttr(kQNameName,
                          ContentDescription::kChromotingContentName);
@@ -344,9 +345,32 @@ bool JingleMessageFromXml(const jingle_xmpp::XmlElement* stanza,
     *error = "action attribute is missing";
     return false;
   }
-  if (!NameToValue(kActionTypes, action_str, &message->action)) {
+
+  JingleMessage::ActionType action;
+  if (!NameToValue(kActionTypes, action_str, &action)) {
     *error = "Unknown action " + action_str;
     return false;
+  }
+
+  switch (action) {
+    case JingleMessage::ActionType::kSessionInitiate:
+      message->SetPayload(SessionInitiate());
+      break;
+    case JingleMessage::ActionType::kSessionAccept:
+      message->SetPayload(SessionAccept());
+      break;
+    case JingleMessage::ActionType::kSessionTerminate:
+      message->SetPayload(SessionTerminate());
+      break;
+    case JingleMessage::ActionType::kSessionInfo:
+      message->SetPayload(SessionInfo());
+      break;
+    case JingleMessage::ActionType::kTransportInfo:
+      message->SetPayload(JingleTransportInfo());
+      break;
+    default:
+      message->SetPayload(std::monostate());
+      break;
   }
 
   message->sid = jingle_tag->Attr(kQNameSid);
@@ -363,7 +387,7 @@ bool JingleMessageFromXml(const jingle_xmpp::XmlElement* stanza,
     message->attachments_legacy.reset();
   }
 
-  if (message->action == JingleMessage::ActionType::kSessionInfo) {
+  if (message->action() == JingleMessage::ActionType::kSessionInfo) {
     // session-info messages may contain arbitrary information not
     // defined by the Jingle protocol. We don't need to parse it.
     const XmlElement* child = jingle_tag->FirstElement();
@@ -410,7 +434,7 @@ bool JingleMessageFromXml(const jingle_xmpp::XmlElement* stanza,
     message->error_location = error_location_tag->BodyText();
   }
 
-  if (message->action == JingleMessage::ActionType::kSessionTerminate) {
+  if (message->action() == JingleMessage::ActionType::kSessionTerminate) {
     return true;
   }
 
@@ -434,8 +458,8 @@ bool JingleMessageFromXml(const jingle_xmpp::XmlElement* stanza,
   }
 
   message->description.reset();
-  if (message->action == JingleMessage::ActionType::kSessionInitiate ||
-      message->action == JingleMessage::ActionType::kSessionAccept) {
+  if (message->action() == JingleMessage::ActionType::kSessionInitiate ||
+      message->action() == JingleMessage::ActionType::kSessionAccept) {
     const XmlElement* description_tag =
         content_tag->FirstNamed(kQNameDescription);
     if (!description_tag) {
