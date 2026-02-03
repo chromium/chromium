@@ -247,7 +247,8 @@ SANDBOX_TEST(BrokerRemoteSyscallArgHandler, BasicWrite) {
                              memcmp(read_from, write_to, write_size));
 
                          base::UnixDomainSocket::SendMsg(
-                             child_sync_fd, &res, sizeof(res), empty_fd_vec);
+                             child_sync_fd, base::byte_span_from_ref(res),
+                             empty_fd_vec);
                          _exit(1);
                        }),
                        &parent_signal_fd);
@@ -259,7 +260,8 @@ SANDBOX_TEST(BrokerRemoteSyscallArgHandler, BasicWrite) {
 
   // Release child.
   char dummy_char = 'a';
-  base::UnixDomainSocket::SendMsg(parent_signal_fd.get(), &dummy_char, 1,
+  base::UnixDomainSocket::SendMsg(parent_signal_fd.get(),
+                                  base::byte_span_from_ref(dummy_char),
                                   empty_fd_vec);
 
   // Read result of memcmp and assert.

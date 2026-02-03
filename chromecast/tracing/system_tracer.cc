@@ -117,8 +117,9 @@ void SystemTracerImpl::StartTracing(std::string_view categories,
     return;
   }
 
-  if (!base::UnixDomainSocket::SendMsg(connection_fd_.get(), categories.data(),
-                                       categories.size(), std::vector<int>())) {
+  if (!base::UnixDomainSocket::SendMsg(connection_fd_.get(),
+                                       base::as_byte_span(categories),
+                                       std::vector<int>())) {
     PLOG(ERROR) << "sendmsg";
     FailStartTracing();
     return;
@@ -138,10 +139,10 @@ void SystemTracerImpl::StopTracing(const StopTracingCallback& callback) {
     return;
   }
 
-  char stop_tracing_message[] = {0};
+  constexpr uint8_t stop_tracing_message[] = {0};
   if (!base::UnixDomainSocket::SendMsg(
           connection_fd_.get(), stop_tracing_message,
-          sizeof(stop_tracing_message), std::vector<int>())) {
+          std::vector<int>())) {
     PLOG(ERROR) << "sendmsg";
     FailStopTracing();
     return;

@@ -127,7 +127,7 @@ bool Zygote::ProcessRequests() {
     // The receiving code is in
     // content/browser/zygote_host/zygote_host_impl_linux.cc.
     bool r = base::UnixDomainSocket::SendMsg(
-        kZygoteSocketPairFd, kZygoteHelloMessage, sizeof(kZygoteHelloMessage),
+        kZygoteSocketPairFd, base::as_byte_span(kZygoteHelloMessage),
         std::vector<int>());
 #if BUILDFLAG(IS_CHROMEOS)
     LOG_IF(WARNING, !r) << "Sending zygote magic failed";

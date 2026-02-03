@@ -98,8 +98,8 @@ class AudioSocketServiceTest : public testing::TestWithParam<bool> {
       base::CreateSocketPair(&fd1, &fd2);
       connected_socket_ = AdoptUnnamedSocketHandle(std::move(fd1));
       base::UnixDomainSocket::SendMsg(
-          connecting_socket_->ReleaseConnectedSocket(), kSocketMsg,
-          sizeof(kSocketMsg), {fd2.get()});
+          connecting_socket_->ReleaseConnectedSocket(),
+          base::as_byte_span(kSocketMsg), {fd2.get()});
     }
     run_loop_.Run();
   }

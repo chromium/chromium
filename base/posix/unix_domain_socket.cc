@@ -54,11 +54,12 @@ bool UnixDomainSocket::EnableReceiveProcessId(int fd) {
 
 // static
 bool UnixDomainSocket::SendMsg(int fd,
-                               const void* buf,
-                               size_t length,
+                               span<const uint8_t> msg_span,
                                const std::vector<int>& fds) {
   struct msghdr msg = {};
-  struct iovec iov = {const_cast<void*>(buf), length};
+  // `iovec` is a common struct used for IO that requires removing const to the
+  // pointer but the memory is only read when sending messages.
+  struct iovec iov = {const_cast<uint8_t*>(msg_span.data()), msg_span.size()};
   msg.msg_iov = &iov;
   msg.msg_iovlen = 1;
 
@@ -91,7 +92,7 @@ bool UnixDomainSocket::SendMsg(int fd,
   // regarded for SOCK_SEQPACKET in the AF_UNIX domain, but it is mandated by
   // POSIX.
   const ssize_t r = HANDLE_EINTR(sendmsg(fd, &msg, MSG_NOSIGNAL));
-  const bool ret = static_cast<ssize_t>(length) == r;
+  const bool ret = static_cast<ssize_t>(msg_span.size()) == r;
   delete[] control_buffer;
   return ret;
 }
@@ -241,7 +242,7 @@ ssize_t UnixDomainSocket::SendRecvMsgWithFlags(int fd,
   {
     std::vector<int> send_fds;
     send_fds.push_back(send_sock.get());
-    if (!SendMsg(fd, request.data(), request.size(), send_fds)) {
+    if (!SendMsg(fd, request, send_fds)) {
       return -1;
     }
   }

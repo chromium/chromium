@@ -47,8 +47,7 @@ bool ZygoteCommunication::SendMessage(const base::Pickle& data,
       << "(sending " << fds->size() << ", max is "
       << base::UnixDomainSocket::kMaxFileDescriptors << ")";
 
-  return base::UnixDomainSocket::SendMsg(control_fd_.get(), data.data(),
-                                         data.size(),
+  return base::UnixDomainSocket::SendMsg(control_fd_.get(), data,
                                          fds ? *fds : std::vector<int>());
 }
 

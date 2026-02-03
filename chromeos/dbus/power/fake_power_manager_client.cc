@@ -42,8 +42,9 @@ void ArcTimerExpirationCallback(int expiration_fd) {
   // a timerfd expiration. The timerfd API expects this to be the number of
   // expirations, however, more than one expiration isn't tracked currently.
   const uint64_t timer_data = 1;
-  if (!base::UnixDomainSocket::SendMsg(
-          expiration_fd, &timer_data, sizeof(timer_data), std::vector<int>())) {
+  if (!base::UnixDomainSocket::SendMsg(expiration_fd,
+                                       base::byte_span_from_ref(timer_data),
+                                       std::vector<int>())) {
     PLOG(ERROR) << "Failed to indicate timer expiration to the instance";
   }
 }

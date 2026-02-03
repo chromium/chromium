@@ -12,9 +12,8 @@
 namespace content {
 
 bool SendZygoteChildPing(int fd) {
-  return base::UnixDomainSocket::SendMsg(fd, kZygoteChildPingMessage,
-                                         sizeof(kZygoteChildPingMessage),
-                                         std::vector<int>());
+  return base::UnixDomainSocket::SendMsg(
+      fd, base::as_byte_span(kZygoteChildPingMessage), std::vector<int>());
 }
 
 }  // namespace content

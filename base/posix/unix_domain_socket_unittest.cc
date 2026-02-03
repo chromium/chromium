@@ -103,8 +103,8 @@ TEST(UnixDomainSocketTest, RecvPid) {
   ASSERT_TRUE(UnixDomainSocket::EnableReceiveProcessId(recv_sock.get()));
 
   static const char kHello[] = "hello";
-  ASSERT_TRUE(UnixDomainSocket::SendMsg(send_sock.get(), kHello, sizeof(kHello),
-                                        std::vector<int>()));
+  ASSERT_TRUE(UnixDomainSocket::SendMsg(
+      send_sock.get(), base::as_byte_span(kHello), std::vector<int>()));
 
   // Extra receiving buffer space to make sure we really received only
   // sizeof(kHello) bytes and it wasn't just truncated to fit the buffer.
@@ -132,8 +132,8 @@ TEST(UnixDomainSocketTest, RecvPidWithMaxDescriptors) {
   static const char kHello[] = "hello";
   std::vector<int> send_fds(UnixDomainSocket::kMaxFileDescriptors,
                             send_sock.get());
-  ASSERT_TRUE(UnixDomainSocket::SendMsg(send_sock.get(), kHello, sizeof(kHello),
-                                        send_fds));
+  ASSERT_TRUE(UnixDomainSocket::SendMsg(send_sock.get(),
+                                        base::as_byte_span(kHello), send_fds));
 
   // Extra receiving buffer space to make sure we really received only
   // sizeof(kHello) bytes and it wasn't just truncated to fit the buffer.

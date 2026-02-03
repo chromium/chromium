@@ -76,7 +76,8 @@ void SendHello(int fd) {
 
   std::vector<int> send_fds;
   send_fds.push_back(write_pipe.get());
-  CHECK(base::UnixDomainSocket::SendMsg(fd, kHello, sizeof(kHello), send_fds));
+  CHECK(base::UnixDomainSocket::SendMsg(fd, base::as_byte_span(kHello),
+                                        send_fds));
 
   write_pipe.reset();
 

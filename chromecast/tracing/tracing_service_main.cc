@@ -296,11 +296,11 @@ class TraceConnection : public base::MessagePumpEpoll::FdWatcher {
     base::ScopedFD read_end(pipefd[0]);
     base::ScopedFD write_end(pipefd[1]);
 
-    const char response[] = {0};
+    constexpr uint8 response[] = {0};
     std::vector<int> send_fds;
     send_fds.push_back(read_end.get());
     if (!base::UnixDomainSocket::SendMsg(connection_fd_.get(), response,
-                                         sizeof(response), send_fds)) {
+                                         send_fds)) {
       PLOG(ERROR) << "sendmsg";
       return false;
     }

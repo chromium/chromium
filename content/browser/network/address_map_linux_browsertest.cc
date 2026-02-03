@@ -97,8 +97,8 @@ class NCNLinuxMockedNetlinkTestUtil {
     net::test::NetlinkBuffer buffer;
     net::test::MakeAddrMessage(RTM_NEWADDR, IFA_F_TEMPORARY, AF_INET,
                                kTestInterfaceEth, kAddr0, kEmpty, &buffer);
-    base::UnixDomainSocket::SendMsg(fake_netlink_fd_.get(), buffer.data(),
-                                    buffer.size(), {});
+    base::UnixDomainSocket::SendMsg(fake_netlink_fd_.get(),
+                                    base::as_byte_span(buffer), {});
 
     // Receive the RTM_GETLINK request.
     EXPECT_EQ(base::UnixDomainSocket::RecvMsg(fake_netlink_fd_.get(), &request,
@@ -110,8 +110,8 @@ class NCNLinuxMockedNetlinkTestUtil {
     buffer.clear();
     net::test::MakeLinkMessage(RTM_NEWLINK, IFF_UP | IFF_LOWER_UP | IFF_RUNNING,
                                kTestInterfaceEth, &buffer);
-    base::UnixDomainSocket::SendMsg(fake_netlink_fd_.get(), buffer.data(),
-                                    buffer.size(), {});
+    base::UnixDomainSocket::SendMsg(fake_netlink_fd_.get(),
+                                    base::as_byte_span(buffer), {});
   }
 
   void BufferAddAddrMsg(const net::IPAddress address,
@@ -140,8 +140,8 @@ class NCNLinuxMockedNetlinkTestUtil {
   }
 
   void SendBuffer() {
-    base::UnixDomainSocket::SendMsg(fake_netlink_fd_.get(), buffer_.data(),
-                                    buffer_.size(), {});
+    base::UnixDomainSocket::SendMsg(fake_netlink_fd_.get(),
+                                    base::as_byte_span(buffer_), {});
     buffer_.clear();
   }
 

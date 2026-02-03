@@ -73,8 +73,8 @@ class AudioSocketBroker::SocketFdConnection {
   void OnConnected(int result) {
     if (result != net::OK ||
         !base::UnixDomainSocket::SendMsg(
-            connecting_socket_->ReleaseConnectedSocket(), kSocketMsg,
-            sizeof(kSocketMsg), {socket_fd_.get()})) {
+            connecting_socket_->ReleaseConnectedSocket(),
+            base::as_byte_span(kSocketMsg), {socket_fd_.get()})) {
       std::move(connect_callback_).Run(base::ScopedFD());
       return;
     }

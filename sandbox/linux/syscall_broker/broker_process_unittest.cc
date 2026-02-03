@@ -658,8 +658,8 @@ SANDBOX_TEST_ALLOW_NOISE(BrokerProcess, MAYBE_RecvMsgDescriptorLeak) {
   // The broker process should only have a couple spare file descriptors
   // available, but for good measure we send it fd_limit bogus IPCs anyway.
   for (rlim_t i = 0; i < fd_limit; ++i) {
-    SANDBOX_ASSERT(
-        base::UnixDomainSocket::SendMsg(ipc_fd, kBogus, sizeof(kBogus), fds));
+    SANDBOX_ASSERT(base::UnixDomainSocket::SendMsg(
+        ipc_fd, base::as_byte_span(kBogus), fds));
   }
 
   const int fd =

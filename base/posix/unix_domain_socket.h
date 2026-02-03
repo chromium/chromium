@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/containers/span.h"
 #include "base/files/scoped_file.h"
 #include "base/process/process_handle.h"
 #include "build/build_config.h"
@@ -37,13 +38,8 @@ class BASE_EXPORT UnixDomainSocket {
 
   // Use sendmsg to write the given msg and include a vector of file
   // descriptors. Returns true if successful.
-  // TODO(crbug.com/40284755): implement spanified version.
-  // static bool SendMsg(int fd,
-  //                     base::span<const uint8_t> msg,
-  //                     base::span<const int> fds);
   static bool SendMsg(int fd,
-                      const void* msg,
-                      size_t length,
+                      span<const uint8_t> msg,
                       const std::vector<int>& fds);
 
   // Use recvmsg to read a message and an array of file descriptors. Returns
