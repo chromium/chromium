@@ -1927,12 +1927,6 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
       if (state.direct_compositing_reasons) {
         state.compositor_element_id = GetCompositorElementId(
             CompositorElementIdNamespace::kPrimaryEffect);
-
-        if (state.direct_compositing_reasons &
-            CompositingReason::kCanvasChild) {
-          state.canvas_child_id = CompositorElementIdFromDOMNodeId(
-              object_.GetNode()->GetDomNodeId());
-        }
       } else {
         // The effect node CompositorElementId is used to uniquely identify
         // renderpasses so even if we don't need one for animations we still

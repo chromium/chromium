@@ -1165,13 +1165,6 @@ class CompositingSimTest : public PaintTestConfigurations, public SimTest {
     return MainFrame().GetFrameView()->GetPaintArtifactCompositor();
   }
 
-  size_t GetPictureLayerTotalOpCount(const cc::Layer* layer) const {
-    return static_cast<const cc::PictureLayer*>(layer)
-        ->GetRecordingSourceForTesting()
-        .display_list()
-        ->TotalOpCount();
-  }
-
  private:
   void SetUp() override {
     SimTest::SetUp();
@@ -3872,68 +3865,22 @@ TEST_P(CompositingSimTest, CanvasDrawElementLayers) {
         <div id="grandchild_a_wct" style="will-change: transform;">a2</div>
         <div id="grandchild_a_bdf" style="backdrop-filter: blur(10px);">a3</div>
       </div>
-      <div id="child_b" style="background: blue;"></div>
+      <div id="child_b" style="background: blue;">b</div>
       <div id="child_c">c</div>
     </canvas>
   )HTML");
   Compositor().BeginFrame();
 
   // All direct children of canvas get a layer
-  auto* child_a_layer = CcLayerByDOMElementId("child_a");
-  EXPECT_TRUE(child_a_layer);
-  auto* child_b_layer = CcLayerByDOMElementId("child_b");
-  EXPECT_TRUE(child_b_layer);
-  auto* child_c_layer = CcLayerByDOMElementId("child_c");
-  EXPECT_TRUE(child_c_layer);
+  EXPECT_TRUE(CcLayerByDOMElementId("child_a"));
+  EXPECT_TRUE(CcLayerByDOMElementId("child_b"));
+  EXPECT_TRUE(CcLayerByDOMElementId("child_c"));
 
-  // Composited content under canvas, other than direct children, is disabled.
+  // Composited layers are created using normal heuristics for deeper
+  // descendants.
   EXPECT_FALSE(CcLayerByDOMElementId("grandchild_a"));
-  EXPECT_FALSE(CcLayerByDOMElementId("grandchild_a_wct"));
-  EXPECT_FALSE(CcLayerByDOMElementId("grandchild_a_bdf"));
-
-  // The canvas subtree layers should have display items.
-  EXPECT_GT(GetPictureLayerTotalOpCount(child_a_layer), 0u);
-  EXPECT_GT(GetPictureLayerTotalOpCount(child_b_layer), 0u);
-  EXPECT_GT(GetPictureLayerTotalOpCount(child_c_layer), 0u);
-
-  // Ensure canvas_child_id is set correctly.
-  auto* child_a = GetElementById("child_a");
-  auto child_a_id = CompositorElementIdFromDOMNodeId(child_a->GetDomNodeId());
-  EXPECT_EQ(child_a_layer->canvas_child_id(), child_a_id);
-  auto* child_b = GetElementById("child_b");
-  auto child_b_id = CompositorElementIdFromDOMNodeId(child_b->GetDomNodeId());
-  EXPECT_EQ(child_b_layer->canvas_child_id(), child_b_id);
-  auto* child_c = GetElementById("child_c");
-  auto child_c_id = CompositorElementIdFromDOMNodeId(child_c->GetDomNodeId());
-  EXPECT_EQ(child_c_layer->canvas_child_id(), child_c_id);
-
-  // Move #child_a out of the canvas and ensure the layers update.
-  GetDocument().body()->appendChild(child_a);
-  Compositor().BeginFrame();
-  EXPECT_FALSE(CcLayerByDOMElementId("child_a"));
   EXPECT_TRUE(CcLayerByDOMElementId("grandchild_a_wct"));
   EXPECT_TRUE(CcLayerByDOMElementId("grandchild_a_bdf"));
-
-  // Move #child_a back in the canvas and ensure the layers update.
-  auto* canvas_element = GetElementById("canvas");
-  canvas_element->appendChild(child_a);
-  Compositor().BeginFrame();
-  child_a_layer = CcLayerByDOMElementId("child_a");
-  EXPECT_TRUE(child_a_layer);
-  EXPECT_GT(GetPictureLayerTotalOpCount(child_a_layer), 0u);
-  EXPECT_EQ(child_a_layer->canvas_child_id(), child_a_id);
-  EXPECT_FALSE(CcLayerByDOMElementId("grandchild_a_wct"));
-  EXPECT_FALSE(CcLayerByDOMElementId("grandchild_a_bdf"));
-
-  // Removing layoutsubtree from canvas should remove the corresponding layers.
-  canvas_element->removeAttribute(html_names::kLayoutsubtreeAttr);
-  Compositor().BeginFrame();
-  EXPECT_FALSE(CcLayerByDOMElementId("child_a"));
-  EXPECT_FALSE(CcLayerByDOMElementId("child_b"));
-  EXPECT_FALSE(CcLayerByDOMElementId("child_c"));
-  // Non-direct children should still not get layers.
-  EXPECT_FALSE(CcLayerByDOMElementId("grandchild_a_wct"));
-  EXPECT_FALSE(CcLayerByDOMElementId("grandchild_a_bdf"));
 }
 
 }  // namespace blink

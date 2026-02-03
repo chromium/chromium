@@ -682,10 +682,6 @@ bool PendingLayer::UsesSolidColorLayer() const {
           .RequiresCompositingForBackdropFilterMask()) {
     return false;
   }
-  // We need a PictureLayer to draw canvas children with DrawElementImage.
-  if (property_tree_state_.Effect().RequiresCompositingForCanvasChild()) {
-    return false;
-  }
 #if BUILDFLAG(IS_MAC)
   // TODO(crbug.com/922899): Additionally, on Mac, we require that the color is
   // opaque due to the bug. Remove this condition once that bug is fixed.

@@ -331,29 +331,20 @@ bool IsEligibleForElementCapture(const LayoutObject& object) {
 CompositingReasons CompositingReasonFinder::DirectReasonsForPaintProperties(
     const LayoutObject& object,
     const LayoutObject* container_for_fixed_position) {
-  if (object.GetDocument().Printing()) {
+  if (object.GetDocument().Printing())
     return CompositingReason::kNone;
-  }
-
-  CompositingReasons reasons = CompositingReason::kNone;
 
   auto* element = DynamicTo<Element>(object.GetNode());
   if (element && RuntimeEnabledFeatures::CanvasDrawElementEnabled()) {
-    if (element->IsInCanvasSubtree()) [[unlikely]] {
-      auto* canvas_parent =
-          DynamicTo<HTMLCanvasElement>(element->parentElement());
-      if (canvas_parent && canvas_parent->layoutSubtree() &&
-          !canvas_parent->IsInCanvasSubtree()) {
-        reasons |= CompositingReason::kCanvasChild;
-      } else {
-        // Disable compositing for elements in canvas subtrees other than the
-        // direct children of the outermost canvas element.
-        return CompositingReason::kNone;
+    if (auto* canvas = DynamicTo<HTMLCanvasElement>(
+            element->ParentOrShadowHostNode())) [[unlikely]] {
+      if (canvas->layoutSubtree()) {
+        return CompositingReason::kCanvasChild;
       }
     }
   }
 
-  reasons |= CompositingReasonsFor3DSceneLeaf(object);
+  auto reasons = CompositingReasonsFor3DSceneLeaf(object);
 
   if (object.CanHaveAdditionalCompositingReasons())
     reasons |= object.AdditionalCompositingReasons();

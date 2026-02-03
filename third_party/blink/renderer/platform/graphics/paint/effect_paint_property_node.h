@@ -135,10 +135,6 @@ class PLATFORM_EXPORT EffectPaintPropertyNode final
     // Used to associate this effect node with its originating Element.
     RestrictionTargetId restriction_target_id;
 
-    // Used to associate this effect with a direct child of a canvas element
-    // for DrawElementImage.
-    CompositorElementId canvas_child_id;
-
     // When set, the affected elements should avoid doing clipping for
     // optimization purposes (like off-screen clipping). This is set by view
     // transition code to ensure that the element is fully painted since it will
@@ -272,9 +268,6 @@ class PLATFORM_EXPORT EffectPaintPropertyNode final
     return state_.direct_compositing_reasons &
            CompositingReason::kBackdropFilterMask;
   }
-  bool RequiresCompositingForCanvasChild() const {
-    return state_.direct_compositing_reasons & CompositingReason::kCanvasChild;
-  }
 
   bool FlattensAtLeafOf3DScene() const {
     return state_.direct_compositing_reasons &
@@ -362,10 +355,6 @@ class PLATFORM_EXPORT EffectPaintPropertyNode final
 
   const RestrictionTargetId& ElementCaptureId() const {
     return state_.restriction_target_id;
-  }
-
-  const CompositorElementId& GetCanvasChildId() const {
-    return state_.canvas_child_id;
   }
 
   bool SelfOrAncestorParticipatesInViewTransition() const {

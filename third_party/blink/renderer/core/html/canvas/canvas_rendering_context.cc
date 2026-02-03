@@ -219,9 +219,10 @@ std::optional<cc::PaintRecord> CanvasRenderingContext::GetElementPaintRecord(
                                           /*disable_expansion*/ true);
 
   PaintLayerPainter paint_layer_painter = PaintLayerPainter(*layer);
-  paint_layer_painter.Paint(
-      builder.Context(),
-      PaintFlag::kPrivacyPreserving | PaintFlag::kOmitCompositingInfo);
+  paint_layer_painter.Paint(builder.Context(),
+                            PaintFlag::kCanvasElementImage |
+                                PaintFlag::kPrivacyPreserving |
+                                PaintFlag::kOmitCompositingInfo);
 
   // Use the drawn element's local property tree state to start drawing, but
   // then modify this to include effects and clips between the drawn element
