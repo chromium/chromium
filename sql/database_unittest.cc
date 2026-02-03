@@ -2135,7 +2135,7 @@ TEST_P(SQLDatabaseTest, ReOpenWithDifferentJournalMode) {
 
 class SQLDatabaseTestExclusiveFileLockMode
     : public testing::Test,
-      public testing::WithParamInterface<::testing::tuple<bool, bool>> {
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   ~SQLDatabaseTestExclusiveFileLockMode() override = default;
 
