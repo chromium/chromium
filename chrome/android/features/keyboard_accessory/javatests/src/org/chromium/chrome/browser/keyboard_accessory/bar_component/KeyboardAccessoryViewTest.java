@@ -1016,7 +1016,7 @@ public class KeyboardAccessoryViewTest {
         ThreadUtils.runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));
         KeyboardAccessoryView view = mKeyboardAccessoryView.take();
 
-        final @Px int horizontalOffset = 10;
+        final @Px int horizontalOffset = 100;
         final @Px int verticalOffset = 20;
         final @Px int maxWidth = 100;
 
@@ -1050,7 +1050,7 @@ public class KeyboardAccessoryViewTest {
         ThreadUtils.runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));
         KeyboardAccessoryView view = mKeyboardAccessoryView.take();
 
-        final @Px int horizontalOffset = 10;
+        final @Px int horizontalOffset = 100;
         final @Px int verticalOffset = 20;
         final @Px int maxWidth = 100;
 
@@ -1074,6 +1074,36 @@ public class KeyboardAccessoryViewTest {
         assertTrue(view.getClipToOutline());
 
         CriteriaHelper.pollUiThread(() -> view.getTranslationX() == horizontalOffset);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING)
+    public void testUndockedStyleWithDynamicPositioning_ClampedToMargin()
+            throws InterruptedException {
+        ThreadUtils.runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));
+        KeyboardAccessoryView view = mKeyboardAccessoryView.take();
+
+        final @Px int horizontalOffset = 0; // Should be clamped
+        final @Px int verticalOffset = 20;
+        final @Px int maxWidth = 100;
+
+        KeyboardAccessoryStyle style =
+                KeyboardAccessoryStyle.createUndockedKeyboardAccessoryStyle(
+                        horizontalOffset,
+                        verticalOffset,
+                        maxWidth,
+                        KeyboardAccessoryStyle.NotchPosition.TOP);
+
+        ThreadUtils.runOnUiThreadBlocking(() -> view.setStyle(style));
+
+        int expectedMargin =
+                view.getResources()
+                        .getDimensionPixelSize(
+                                R.dimen
+                                        .keyboard_accessory_bar_dynamic_positioning_horizontal_margin);
+
+        CriteriaHelper.pollUiThread(() -> view.getTranslationX() == expectedMargin);
     }
 
     /**

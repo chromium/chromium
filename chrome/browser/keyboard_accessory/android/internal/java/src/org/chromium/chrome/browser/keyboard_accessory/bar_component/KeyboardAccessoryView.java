@@ -66,6 +66,7 @@ class KeyboardAccessoryView extends LinearLayout {
     private int mMaxWidth;
     private int mHorizontalOffset;
     private boolean mAnimateSuggestionsFromTop;
+    private boolean mIsUndocked;
 
     protected RecyclerView mBarItemsView;
     protected RecyclerView mFixedBarItemsView;
@@ -323,6 +324,7 @@ class KeyboardAccessoryView extends LinearLayout {
     void setStyle(KeyboardAccessoryStyle style) {
         mMaxWidth = style.getMaxWidth();
         mHorizontalOffset = style.getHorizontalOffset();
+        mIsUndocked = !style.isDocked();
         CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) getLayoutParams();
         if (style.isDocked()) {
             applyDockedStyle(params, style);
@@ -419,38 +421,88 @@ class KeyboardAccessoryView extends LinearLayout {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        // If a maximum width is defined, ensure the MeasureSpec does not exceed it.
         int availableWidth = MeasureSpec.getSize(widthMeasureSpec);
-        if (mMaxWidth > 0 && mMaxWidth < availableWidth) {
-            int measureMode = MeasureSpec.getMode(widthMeasureSpec);
-            widthMeasureSpec = MeasureSpec.makeMeasureSpec(mMaxWidth, measureMode);
-        }
+        widthMeasureSpec = calculateAccessoryWidthMeasureSpec(widthMeasureSpec);
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
+        if (mIsUndocked
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList
+                                .AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING)) {
+            adjustPositionAndNotch(availableWidth);
+        }
+    }
+
+    private int calculateAccessoryWidthMeasureSpec(int widthMeasureSpec) {
+        // If a maximum width is defined, ensure the MeasureSpec does not exceed it.
+        int availableWidth = MeasureSpec.getSize(widthMeasureSpec);
+        int maxWidth = availableWidth;
+        if (mMaxWidth > 0) {
+            maxWidth = Math.min(mMaxWidth, maxWidth);
+        }
+
+        if (mIsUndocked
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList
+                                .AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING)) {
+            int horizontalMargin =
+                    getResources()
+                            .getDimensionPixelSize(
+                                    R.dimen
+                                            .keyboard_accessory_bar_dynamic_positioning_horizontal_margin);
+            // Reduce the max width by the margins on both sides.
+            maxWidth = Math.min(maxWidth, availableWidth - 2 * horizontalMargin);
+        }
+
+        // If the calculated max width is less than the available width, update the MeasureSpec
+        // to enforce the new maximum width.
+        if (maxWidth < availableWidth) {
+            int measureMode = MeasureSpec.getMode(widthMeasureSpec);
+            widthMeasureSpec = MeasureSpec.makeMeasureSpec(maxWidth, measureMode);
+        }
+        return widthMeasureSpec;
+    }
+
+    private void adjustPositionAndNotch(int availableWidth) {
         // This shifts the keyboard accessory horizontally to the left when can't grow to the right
         // because of the viewport border.
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING)) {
-            int translationX = mHorizontalOffset;
-            // If the preferred offset plus the view's width exceeds the viewport width, the view is
-            // bleeding off the right edge.
-            if (mHorizontalOffset + getMeasuredWidth() > availableWidth) {
-                // Clamp the translation so the right edge of the view aligns with the right edge
-                // of the screen (availableWidth - getMeasuredWidth). Max() ensures that the left
-                // edge of the vierpowrt is not pushed in the process.
-                translationX = Math.max(0, availableWidth - getMeasuredWidth());
-            }
-            setTranslationX(translationX);
+        int translationX = mHorizontalOffset;
+        int horizontalMargin =
+                getResources()
+                        .getDimensionPixelSize(
+                                R.dimen
+                                        .keyboard_accessory_bar_dynamic_positioning_horizontal_margin);
+        // If the preferred offset plus the view's width exceeds the viewport width, the view is
+        // bleeding off the right edge.
+        int maxTranslationX = availableWidth - getMeasuredWidth() - horizontalMargin;
 
-            // The notch needs to be moved to point to the focused field when the accessory is
-            // shifted left.
-            if (getOutlineProvider() instanceof NotchedKeyboardAccessoryOutlineProvider) {
-                NotchedKeyboardAccessoryOutlineProvider provider =
-                        (NotchedKeyboardAccessoryOutlineProvider) getOutlineProvider();
-                provider.setNotchOffsetX(mHorizontalOffset - translationX);
-                // Invalidating triggers regenerating the notch in the correct place.
-                invalidateOutline();
-            }
+        // Clamp to the right edge (prevent bleeding off the right side).
+        translationX = Math.min(translationX, maxTranslationX);
+
+        // Clamp to the left edge (prevent bleeding off the left side).
+        translationX = Math.max(translationX, horizontalMargin);
+
+        setTranslationX(translationX);
+
+        // The notch needs to be moved to point to the focused field when the accessory is
+        // shifted.
+        if (getOutlineProvider() instanceof NotchedKeyboardAccessoryOutlineProvider) {
+            NotchedKeyboardAccessoryOutlineProvider provider =
+                    (NotchedKeyboardAccessoryOutlineProvider) getOutlineProvider();
+
+            // Keyboard Accessory shifted left (translationX < mHorizontalOffset)
+            // The accessory is pushed left to fit on screen. The notch must move right
+            // relative to the view to stay aligned with the field.
+            //
+            // When Keyboard Accessory shifted right (translationX > mHorizontalOffset)
+            // The accessory is pushed right to fit on screen (e.g. clamped by left margin).
+            // The notch doesn't need to be moved relatively to the Keyboard Accessory, because its
+            // defaupt position is the correct one.
+            int notchOffsetX = Math.max(0, mHorizontalOffset - translationX);
+
+            provider.setNotchOffsetX(notchOffsetX);
+            // Invalidating triggers regenerating the notch in the correct place.
+            invalidateOutline();
         }
     }
 
