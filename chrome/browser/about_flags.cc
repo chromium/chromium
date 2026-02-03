@@ -10594,6 +10594,12 @@ const FeatureEntry kFeatureEntries[] = {
          kAndroidTipsNotificationsVariations,
          "AndroidTipsNotifications")},
 
+    {"android-tips-notifications-v2",
+     flag_descriptions::kAndroidTipsNotificationsV2Name,
+     flag_descriptions::kAndroidTipsNotificationsV2Description, kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         segmentation_platform::features::kAndroidTipsNotificationsV2)},
+
     {"history-pane-android", flag_descriptions::kHistoryPaneAndroidName,
      flag_descriptions::kHistoryPaneAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kHistoryPaneAndroid)},

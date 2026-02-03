@@ -163,6 +163,9 @@ bool IsDefaultBrowserMagicStackEnabled();
 // Feature flag for enabling the tips notifications ranker.
 BASE_DECLARE_FEATURE(kAndroidTipsNotifications);
 
+// Feature flag for enabling the tips notifications ranker V2.
+BASE_DECLARE_FEATURE(kAndroidTipsNotificationsV2);
+
 // The prioritization of tips notifications based on trust and safety.
 extern const base::FeatureParam<bool> kTrustAndSafety;
 // The prioritization of tips notifications based on essential features.
