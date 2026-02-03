@@ -462,7 +462,9 @@ public class SignOutCoordinatorTest {
                                     mActivityTestRule
                                             .getActivity()
                                             .findViewById(android.R.id.content),
-                                    null);
+                                    null,
+                                    null,
+                                    mActivityTestRule.getActivity().getModalDialogManager());
                 });
     }
 

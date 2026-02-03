@@ -169,7 +169,7 @@ public class ChromeActivityUnitTest {
         String errorString = "Some error.";
         ViewGroup viewGroup = new BottomContainer(mActivity, null);
         SnackbarManager snackbarManager =
-                Mockito.spy(new SnackbarManager(mActivity, viewGroup, null));
+                Mockito.spy(new SnackbarManager(mActivity, viewGroup, null, null, null));
         ChromeActivity.createWindowErrorSnackbar(errorString, snackbarManager);
         Snackbar snackbar = snackbarManager.getCurrentSnackbarForTesting();
         Mockito.verify(snackbarManager).showSnackbar(ArgumentMatchers.any());

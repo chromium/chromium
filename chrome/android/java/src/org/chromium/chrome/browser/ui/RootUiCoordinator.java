@@ -2150,7 +2150,8 @@ public class RootUiCoordinator
                                     mActivity,
                                     view.findViewById(R.id.bottom_sheet_snackbar_container),
                                     mWindowAndroid,
-                                    mEdgeToEdgeControllerSupplier);
+                                    mEdgeToEdgeControllerSupplier,
+                                    mModalDialogManagerSupplier.get());
                 };
 
         Supplier<OverlayPanelManager> panelManagerSupplier =

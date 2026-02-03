@@ -183,7 +183,13 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
 
             if (!activity.isDestroyed() && !activity.isFinishing()) {
                 mSnackbarManager =
-                        new SnackbarManager(activity, mDialogView.getSnackBarContainer(), null);
+                        new SnackbarManager(
+                                activity,
+                                mDialogView.getSnackBarContainer(),
+                                null,
+                                null,
+                                modalDialogManager);
+
             } else {
                 mSnackbarManager = null;
             }

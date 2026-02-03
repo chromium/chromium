@@ -17,6 +17,8 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 import org.chromium.ui.util.TokenHolder;
 
 /**
@@ -66,8 +68,17 @@ public class AppLanguagePreferenceDelegate {
             LanguageSettings fragment, LanguageItemPickerPreference preference, Profile profile) {
         mActivity = fragment.getActivity();
         mPreference = preference;
+        @Nullable ModalDialogManager modalDialogManager = null;
+        if (mActivity instanceof ModalDialogManagerHolder holder) {
+            modalDialogManager = holder.getModalDialogManager();
+        }
         mSnackbarManager =
-                new SnackbarManager(mActivity, mActivity.findViewById(android.R.id.content), null);
+                new SnackbarManager(
+                        mActivity,
+                        mActivity.findViewById(android.R.id.content),
+                        null,
+                        null,
+                        modalDialogManager);
         mProfile = profile;
     }
 

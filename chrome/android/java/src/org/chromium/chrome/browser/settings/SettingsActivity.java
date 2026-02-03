@@ -325,7 +325,8 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         setStatusBarColor();
         initBottomSheet();
 
-        mSnackbarManagerSupplier.set(new SnackbarManager(this, getContentView(), null));
+        mSnackbarManagerSupplier.set(
+                new SnackbarManager(this, getContentView(), null, null, getModalDialogManager()));
 
         mIntentRequestTracker = IntentRequestTracker.createFromActivity(this);
         if (isContainmentEnabled()) {

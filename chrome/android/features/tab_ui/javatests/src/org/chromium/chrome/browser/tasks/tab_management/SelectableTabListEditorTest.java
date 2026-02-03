@@ -187,7 +187,9 @@ public class SelectableTabListEditorTest {
                             DeviceFormFactor.isNonMultiDisplayContextOnTablet(cta)
                                     ? (ViewGroup) cta.findViewById(R.id.tab_switcher_view_holder)
                                     : compositorViewHolder;
-                    mSnackbarManager = new SnackbarManager(cta, rootView, null);
+                    mSnackbarManager =
+                            new SnackbarManager(
+                                    cta, rootView, null, null, cta.getModalDialogManager());
                     var currentTabGroupModelFilterSupplier =
                             mTabModelSelector.getCurrentTabGroupModelFilterSupplier();
                     mAppHeaderStateProvider =

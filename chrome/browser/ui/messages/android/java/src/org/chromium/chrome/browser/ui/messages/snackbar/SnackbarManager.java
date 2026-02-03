@@ -29,6 +29,8 @@ import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.insets.InsetObserver;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
 import org.chromium.ui.util.TokenHolder;
 
 import java.util.ArrayDeque;
@@ -43,10 +45,16 @@ import java.util.Deque;
  * Otherwise if no action is taken by user during {@link #DEFAULT_SNACKBAR_DURATION_MS}
  * milliseconds, it will call {@link SnackbarController#onDismissNoAction(Object)}. Note, snackbars
  * of {@link Snackbar#TYPE_PERSISTENT} do not get automatically dismissed after a timeout.
+ *
+ * <p>If a modal dialog is shown, any snackbars that are already showing or that begin to show will
+ * wait until all modal dialogs are dismissed and then will begin their timeout countdowns.
  */
 @NullMarked
 public class SnackbarManager
-        implements OnClickListener, ActivityStateListener, InsetObserver.WindowInsetObserver {
+        implements OnClickListener,
+                ActivityStateListener,
+                InsetObserver.WindowInsetObserver,
+                ModalDialogManagerObserver {
     /** Interface that shows the ability to provide a snackbar manager. */
     public interface SnackbarManageable {
         /**
@@ -107,9 +115,11 @@ public class SnackbarManager
 
     private final @Nullable MonotonicObservableSupplier<EdgeToEdgeController>
             mEdgeToEdgeControllerSupplier;
+    private final @Nullable ModalDialogManager mModalDialogManager;
     private @Nullable SnackbarView mView;
     private boolean mActivityInForeground;
     private boolean mIsDisabledForTesting;
+    private boolean mIsModalDialogShowing;
 
     /**
      * Constructs a SnackbarManager to show snackbars in the given window.
@@ -125,7 +135,7 @@ public class SnackbarManager
             Activity activity,
             ViewGroup snackbarParentView,
             @Nullable WindowAndroid windowAndroid) {
-        this(activity, snackbarParentView, windowAndroid, null);
+        this(activity, snackbarParentView, windowAndroid, null, null);
     }
 
     /**
@@ -144,6 +154,27 @@ public class SnackbarManager
             @Nullable WindowAndroid windowAndroid,
             @Nullable MonotonicObservableSupplier<EdgeToEdgeController>
                     edgeToEdgeControllerSupplier) {
+        this(activity, snackbarParentView, windowAndroid, edgeToEdgeControllerSupplier, null);
+    }
+
+    /**
+     * Constructs a SnackbarManager to show snackbars in the given window.
+     *
+     * @param activity The embedding activity.
+     * @param snackbarParentView The ViewGroup used to display this snackbar.
+     * @param windowAndroid The WindowAndroid used for starting animation. If it is null,
+     *     Animator#start is called instead.
+     * @param edgeToEdgeControllerSupplier The supplier publishes the changes of the edge-to-edge
+     *     state and the expected bottom paddings when edge-to-edge is on.
+     * @param modalDialogManager The ModalDialogManager to observe for dialog visibility.
+     */
+    public SnackbarManager(
+            Activity activity,
+            ViewGroup snackbarParentView,
+            @Nullable WindowAndroid windowAndroid,
+            @Nullable MonotonicObservableSupplier<EdgeToEdgeController>
+                    edgeToEdgeControllerSupplier,
+            @Nullable ModalDialogManager modalDialogManager) {
         mActivity = activity;
         mUiThreadHandler = new Handler();
         mOriginalParentView = snackbarParentView;
@@ -156,6 +187,11 @@ public class SnackbarManager
         }
         mIsShowingSupplier = ObservableSuppliers.createNonNull(isShowing());
         mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
+        mModalDialogManager = modalDialogManager;
+        if (mModalDialogManager != null) {
+            mModalDialogManager.addObserver(this);
+            mIsModalDialogShowing = mModalDialogManager.isShowing();
+        }
     }
 
     @Override
@@ -235,7 +271,9 @@ public class SnackbarManager
     public void resetSnackbarTimeout() {
         mUiThreadHandler.removeCallbacks(mHideRunnable);
         Snackbar currentSnackbar = mSnackbars.getCurrent();
-        if (currentSnackbar != null && !currentSnackbar.isTypePersistent()) {
+        if (currentSnackbar != null
+                && !currentSnackbar.isTypePersistent()
+                && !mIsModalDialogShowing) {
             int durationMs = getDuration(currentSnackbar);
             mUiThreadHandler.postDelayed(mHideRunnable, durationMs);
         }
@@ -246,6 +284,18 @@ public class SnackbarManager
     public void onClick(View v) {
         mSnackbars.removeCurrentDueToAction();
         updateView();
+    }
+
+    @Override
+    public void onDialogShown(View dialogView) {
+        mIsModalDialogShowing = true;
+        mUiThreadHandler.removeCallbacks(mHideRunnable);
+    }
+
+    @Override
+    public void onLastDialogDismissed() {
+        mIsModalDialogShowing = false;
+        resetSnackbarTimeout();
     }
 
     /**
@@ -363,7 +413,7 @@ public class SnackbarManager
 
             if (viewChanged) {
                 mUiThreadHandler.removeCallbacks(mHideRunnable);
-                if (!currentSnackbar.isTypePersistent()) {
+                if (!currentSnackbar.isTypePersistent() && !mIsModalDialogShowing) {
                     int durationMs = getDuration(currentSnackbar);
                     mUiThreadHandler.postDelayed(mHideRunnable, durationMs);
                 }

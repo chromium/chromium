@@ -37,7 +37,7 @@ public class BadFlagsSnackbarManagerTest {
         String errorString = "Unsupported flag.";
         ViewGroup viewGroup = new BottomContainer(mActivity, null);
         SnackbarManager snackbarManager =
-                Mockito.spy(new SnackbarManager(mActivity, viewGroup, null));
+                Mockito.spy(new SnackbarManager(mActivity, viewGroup, null, null, null));
         BadFlagsSnackbarManager.createSnackbar(errorString, snackbarManager);
         Snackbar snackbar = snackbarManager.getCurrentSnackbarForTesting();
         Mockito.verify(snackbarManager).showSnackbar(ArgumentMatchers.any());

@@ -304,7 +304,8 @@ public class SearchActivity extends AsyncInitializationActivity
         var contentView = createContentView();
         setContentView(contentView);
         mStartupMetricsTracker.registerSearchActivityViewObserver(contentView);
-        mSnackbarManager = new SnackbarManager(this, contentView, null);
+        mSnackbarManager =
+                new SnackbarManager(this, contentView, null, null, getModalDialogManager());
 
         // Build the search box.
         mSearchBox = contentView.findViewById(R.id.search_location_bar);

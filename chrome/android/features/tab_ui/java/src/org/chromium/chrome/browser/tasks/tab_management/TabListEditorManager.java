@@ -107,7 +107,8 @@ public class TabListEditorManager {
         // default parent view of the snackbar. When shown this will be re-parented inside the
         // TabListCoordinator's SelectableListLayout.
         if (!activity.isDestroyed() && !activity.isFinishing()) {
-            mSnackbarManager = new SnackbarManager(activity, rootView, null);
+            mSnackbarManager =
+                    new SnackbarManager(activity, rootView, null, null, modalDialogManager);
         } else {
             mSnackbarManager = null;
         }

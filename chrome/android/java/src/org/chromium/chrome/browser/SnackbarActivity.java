@@ -33,7 +33,8 @@ public abstract class SnackbarActivity extends SynchronousInitializationActivity
     protected void onCreateInternal(@Nullable Bundle savedInstanceState) {
         super.onCreateInternal(savedInstanceState);
         // TODO(crbug.com/399495650): Add render tests for snackbar padding in edge-to-edge mode.
-        mSnackbarManager = new SnackbarManager(this, getContentView(), null);
+        mSnackbarManager =
+                new SnackbarManager(this, getContentView(), null, null, getModalDialogManager());
     }
 
     @Override

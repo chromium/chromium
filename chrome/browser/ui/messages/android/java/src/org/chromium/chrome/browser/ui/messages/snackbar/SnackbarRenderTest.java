@@ -83,7 +83,13 @@ public class SnackbarRenderTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mParent = mActivity.findViewById(android.R.id.content);
-                    mSnackbarManager = new SnackbarManager(mActivity, mParent, null);
+                    mSnackbarManager =
+                            new SnackbarManager(
+                                    mActivity,
+                                    mParent,
+                                    null,
+                                    null,
+                                    ((BlankUiTestActivity) mActivity).getModalDialogManager());
                     SnackbarManager.setDurationForTesting(10000);
                 });
         CriteriaHelper.pollUiThread(
