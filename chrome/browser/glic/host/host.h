@@ -38,6 +38,7 @@ class WebUIContentsContainer;
 class GlicInstanceMetrics;
 class GlicInstanceMetricsBackwardsCompatibility;
 class EmptyInstanceDelegate;
+class GlicSkillsManager;
 
 // The host owns the WebUI that contains the main glic UI and the web client.
 // TODO(crbug.com/409332639): Better encapsulate details here.
@@ -231,6 +232,8 @@ class Host : public GlicSharingManagerProvider {
 
   // GlicSharingManagerProvider Implementation.
   GlicSharingManager& sharing_manager() override;
+
+  GlicSkillsManager& skills_manager();
 
   Host::InstanceDelegate& instance_delegate();
 
@@ -464,6 +467,9 @@ class Host : public GlicSharingManagerProvider {
   std::optional<PageHandlerInfo> handler_info_;
 
   raw_ptr<GlicSharingManagerProvider> sharing_manager_provider_;
+
+  // Responsible for skill update logic.
+  std::unique_ptr<GlicSkillsManager> skills_manager_;
 
   // The current view in the primary page handler.
   mojom::CurrentView primary_current_view_ = mojom::CurrentView::kConversation;

@@ -19,6 +19,7 @@
 #include "chrome/browser/glic/host/context/glic_sharing_manager_provider.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_page_handler.h"
+#include "chrome/browser/glic/host/glic_skills_manager_impl.h"
 #include "chrome/browser/glic/host/glic_web_contents_warming_pool.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/host/host_metrics.h"
@@ -374,6 +375,13 @@ GlicSharingManager& Host::sharing_manager() {
   return sharing_manager_provider_
              ? sharing_manager_provider_->sharing_manager()
              : glic_service().sharing_manager();
+}
+
+GlicSkillsManager& Host::skills_manager() {
+  if (!skills_manager_) {
+    skills_manager_ = std::make_unique<GlicSkillsManagerImpl>(this);
+  }
+  return *skills_manager_;
 }
 
 Host::InstanceDelegate& Host::instance_delegate() {

@@ -48,6 +48,7 @@
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_annotation_manager.h"
 #include "chrome/browser/glic/host/glic_features.mojom.h"
+#include "chrome/browser/glic/host/glic_skills_manager.h"
 #include "chrome/browser/glic/host/glic_synthetic_trial_manager.h"
 #include "chrome/browser/glic/host/glic_web_client_access.h"
 #include "chrome/browser/glic/host/guest_util.h"
@@ -2054,6 +2055,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     if (!web_client_) {
       return;
     }
+    host().skills_manager().UpdateSkillPreviews(std::nullopt);
     web_client_->NotifySkillPreviewsChanged(GetSkillPreviewsList());
   }
 #endif  // !BUILDFLAG(IS_ANDROID)

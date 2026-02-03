@@ -28,6 +28,22 @@ using ::testing::A;
 using ::testing::Return;
 using ::testing::WithArgs;
 
+class TestTabInterface : public tabs::MockTabInterface {
+ public:
+  TestTabInterface() = default;
+  ~TestTabInterface() override = default;
+
+  ui::UnownedUserDataHost& GetUnownedUserDataHost() override {
+    return user_data_host_;
+  }
+  const ui::UnownedUserDataHost& GetUnownedUserDataHost() const override {
+    return user_data_host_;
+  }
+
+ private:
+  ui::UnownedUserDataHost user_data_host_;
+};
+
 }  // namespace
 
 class SkillsUpdateObserverTest : public ChromeRenderViewHostTestHarness {
@@ -49,7 +65,7 @@ class SkillsUpdateObserverTest : public ChromeRenderViewHostTestHarness {
                                         -> std::unique_ptr<KeyedService> {
                   return std::make_unique<MockOptimizationGuideKeyedService>();
                 })));
-    tab_interface_ = std::make_unique<tabs::MockTabInterface>();
+    tab_interface_ = std::make_unique<TestTabInterface>();
     ON_CALL(*tab_interface_, GetContents).WillByDefault(Return(web_contents()));
     observer_ =
         std::make_unique<skills::SkillsUpdateObserver>(*(tab_interface_.get()));
