@@ -4,3 +4,12 @@ rootWebArea
 ++++++timer
 ++++++++staticText name='This test is for aria-role = timer'
 ++++++++++inlineTextBox name='This test is for aria-role = timer'
+++++++timer containerLiveRelevant='additions text' containerLiveStatus='off' liveRelevant='additions text' liveStatus='off' containerLiveAtomic=false containerLiveBusy=false liveAtomic=false
+++++++++staticText containerLiveRelevant='additions text' containerLiveStatus='off' name='This test is for aria-role = timer' liveRelevant='additions text' containerLiveAtomic=false containerLiveBusy=false liveAtomic=false
+++++++++++inlineTextBox name='This test is for aria-role = timer'
+++++++timer containerLiveRelevant='additions text' containerLiveStatus='polite' liveRelevant='additions text' liveStatus='polite' containerLiveAtomic=false containerLiveBusy=false liveAtomic=false
+++++++++staticText containerLiveRelevant='additions text' containerLiveStatus='polite' name='This test is for aria-role = timer' liveRelevant='additions text' containerLiveAtomic=false containerLiveBusy=false liveAtomic=false
+++++++++++inlineTextBox name='This test is for aria-role = timer'
+++++++timer containerLiveRelevant='additions text' containerLiveStatus='assertive' liveRelevant='additions text' liveStatus='assertive' containerLiveAtomic=false containerLiveBusy=false liveAtomic=false
+++++++++staticText containerLiveRelevant='additions text' containerLiveStatus='assertive' name='This test is for aria-role = timer' liveRelevant='additions text' containerLiveAtomic=false containerLiveBusy=false liveAtomic=false
+++++++++++inlineTextBox name='This test is for aria-role = timer'

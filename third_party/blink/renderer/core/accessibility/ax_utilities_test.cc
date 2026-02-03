@@ -1153,8 +1153,6 @@ TEST(AXUtilitiesTest, TestGetImplicitAriaLive) {
       EXPECT_EQ(result, "polite") << "Role: " << role;
     } else if (role == "alert") {
       EXPECT_EQ(result, "assertive") << "Role: " << role;
-    } else if (role == "marquee" || role == "timer") {
-      EXPECT_EQ(result, "off") << "Role: " << role;
     } else {
       EXPECT_EQ(result, "undefined") << "Role: " << role;
     }

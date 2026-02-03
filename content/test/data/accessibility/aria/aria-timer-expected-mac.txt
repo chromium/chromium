@@ -1,3 +1,9 @@
 AXWebArea
 ++AXGroup AXSubrole=AXApplicationTimer AXRoleDescription='timer'
 ++++AXStaticText AXValue='This test is for aria-role = timer'
+++AXGroup AXSubrole=AXApplicationTimer AXARIALive='off' AXRoleDescription='timer'
+++++AXStaticText AXValue='This test is for aria-role = timer'
+++AXGroup AXSubrole=AXApplicationTimer AXARIALive='polite' AXRoleDescription='timer'
+++++AXStaticText AXValue='This test is for aria-role = timer'
+++AXGroup AXSubrole=AXApplicationTimer AXARIALive='assertive' AXRoleDescription='timer'
+++++AXStaticText AXValue='This test is for aria-role = timer'

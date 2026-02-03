@@ -938,8 +938,7 @@
       name: "marquee",
       nameFrom: ["author"],
       superclasses: ["section"],
-      nameRequired: true,
-      implicitValues: {"aria-live": "off"}
+      nameRequired: true
     },
     {
       name: "math",
@@ -1277,8 +1276,7 @@
     {
       name: "timer",
       nameFrom: ["author"],
-      superclasses: ["status"],
-      implicitValues: {"aria-live": "off"}
+      superclasses: ["status"]
     },
     {
       name: "toolbar",

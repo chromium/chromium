@@ -1,3 +1,9 @@
 ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++ROLE_SYSTEM_CLOCK READONLY
 ++++ROLE_SYSTEM_STATICTEXT name='This test is for aria-role = timer'
+++ROLE_SYSTEM_CLOCK READONLY live:off container-live:off container-relevant:additions text container-atomic:false container-busy:false
+++++ROLE_SYSTEM_STATICTEXT name='This test is for aria-role = timer' container-live:off container-relevant:additions text container-atomic:false container-busy:false
+++ROLE_SYSTEM_CLOCK READONLY live:polite container-live:polite container-relevant:additions text container-atomic:false container-busy:false
+++++ROLE_SYSTEM_STATICTEXT name='This test is for aria-role = timer' container-live:polite container-relevant:additions text container-atomic:false container-busy:false
+++ROLE_SYSTEM_CLOCK READONLY live:assertive container-live:assertive container-relevant:additions text container-atomic:false container-busy:false
+++++ROLE_SYSTEM_STATICTEXT name='This test is for aria-role = timer' container-live:assertive container-relevant:additions text container-atomic:false container-busy:false

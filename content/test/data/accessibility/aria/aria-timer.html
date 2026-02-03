@@ -1,11 +1,20 @@
 <!--
 @MAC-ALLOW:AXRoleDescription='timer'
+@MAC-ALLOW:AXARIALive
+@BLINK-ALLOW:live*
+@BLINK-ALLOW:container*
 @AURALINUX-ALLOW:atomic:*
-@AURALINUX-ALLOW:container-atomic:*
+@AURALINUX-ALLOW:container*
 @AURALINUX-ALLOW:live:*
+@WIN-ALLOW:live*
+@WIN-ALLOW:container*
+@WIN-ALLOW:BUSY*
 -->
 <html>
 <body>
+  <div role="timer" >This test is for aria-role = timer</div>
+  <div role="timer" aria-live="off" >This test is for aria-role = timer</div>
   <div role="timer" aria-live="polite" >This test is for aria-role = timer</div>
+  <div role="timer" aria-live="assertive" >This test is for aria-role = timer</div>
 </body>
 </html>

@@ -1,3 +1,9 @@
 [document web]
-++[timer] atomic:false container-atomic:false live:polite
-++++[static] name='This test is for aria-role = timer' atomic:false container-atomic:false
+++[timer]
+++++[static] name='This test is for aria-role = timer'
+++[timer] atomic:false container-atomic:false container-busy:false container-live:off container-relevant:additions text live:off
+++++[static] name='This test is for aria-role = timer' atomic:false container-atomic:false container-busy:false container-live:off container-relevant:additions text
+++[timer] atomic:false container-atomic:false container-busy:false container-live:polite container-relevant:additions text live:polite
+++++[static] name='This test is for aria-role = timer' atomic:false container-atomic:false container-busy:false container-live:polite container-relevant:additions text
+++[timer] atomic:false container-atomic:false container-busy:false container-live:assertive container-relevant:additions text live:assertive
+++++[static] name='This test is for aria-role = timer' atomic:false container-atomic:false container-busy:false container-live:assertive container-relevant:additions text
