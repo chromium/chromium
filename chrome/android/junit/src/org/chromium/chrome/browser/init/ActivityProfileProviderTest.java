@@ -11,7 +11,6 @@ import android.app.Activity;
 
 import androidx.annotation.Nullable;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -39,20 +38,13 @@ public class ActivityProfileProviderTest {
 
     @Before
     public void setUp() {
-
-        ProfileManager.setLastUsedProfileForTesting(mOriginalProfile);
         mLifecycleDispatcher = new ActivityLifecycleDispatcherImpl(mActivity);
-    }
-
-    @After
-    public void tearDown() {
-        ProfileManager.resetForTesting();
     }
 
     @Test
     public void testProfileManager_AlreadyInitialized() {
         Assert.assertFalse(ProfileManager.isInitialized());
-        ProfileManager.onProfileAdded(mOriginalProfile);
+        ProfileManager.setLastUsedProfileForTesting(mOriginalProfile);
         Assert.assertTrue(ProfileManager.isInitialized());
 
         ActivityProfileProvider provider = new ActivityProfileProvider(mLifecycleDispatcher);
@@ -64,7 +56,7 @@ public class ActivityProfileProviderTest {
     public void testProfileManager_DeferredInitialization() {
         ActivityProfileProvider provider = new ActivityProfileProvider(mLifecycleDispatcher);
         Assert.assertFalse(ProfileManager.isInitialized());
-        ProfileManager.onProfileAdded(mOriginalProfile);
+        ProfileManager.setLastUsedProfileForTesting(mOriginalProfile);
         Assert.assertTrue(ProfileManager.isInitialized());
 
         Assert.assertNotNull(provider.get());
@@ -77,7 +69,7 @@ public class ActivityProfileProviderTest {
         Assert.assertFalse(ProfileManager.isInitialized());
         mLifecycleDispatcher.dispatchOnDestroy();
 
-        ProfileManager.onProfileAdded(mOriginalProfile);
+        ProfileManager.setLastUsedProfileForTesting(mOriginalProfile);
         Assert.assertTrue(ProfileManager.isInitialized());
 
         Assert.assertNull(provider.get());
@@ -88,7 +80,7 @@ public class ActivityProfileProviderTest {
         ActivityProfileProvider providerSupplier =
                 new ActivityProfileProvider(mLifecycleDispatcher);
 
-        ProfileManager.onProfileAdded(mOriginalProfile);
+        ProfileManager.setLastUsedProfileForTesting(mOriginalProfile);
         Assert.assertTrue(ProfileManager.isInitialized());
 
         ProfileProvider provider = providerSupplier.get();
@@ -116,7 +108,7 @@ public class ActivityProfileProviderTest {
                     }
                 };
 
-        ProfileManager.onProfileAdded(mOriginalProfile);
+        ProfileManager.setLastUsedProfileForTesting(mOriginalProfile);
         Assert.assertTrue(ProfileManager.isInitialized());
 
         ProfileProvider provider = providerSupplier.get();

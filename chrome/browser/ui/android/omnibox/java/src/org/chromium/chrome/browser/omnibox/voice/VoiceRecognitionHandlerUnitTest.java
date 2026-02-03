@@ -113,7 +113,6 @@ public class VoiceRecognitionHandlerUnitTest {
         doReturn(mAutocompleteController).when(mAutocompleteControllerJniMock).getForProfile(any());
         UserPrefs.setPrefServiceForTesting(mPrefs);
         doReturn(true).when(mPrefs).getBoolean(Pref.AUDIO_CAPTURE_ALLOWED);
-        ProfileManager.onProfileAdded(mProfile);
         ProfileManager.setLastUsedProfileForTesting(mProfile);
 
         doReturn(DEFAULT_SEARCH_URL).when(mTemplateUrlService).getUrlForVoiceSearchQuery(any());
@@ -144,7 +143,6 @@ public class VoiceRecognitionHandlerUnitTest {
         // will be taken care of here.
         ShadowLooper.shadowMainLooper().idle();
         mHandler.removeObserver(mObserver);
-        ProfileManager.resetForTesting();
     }
 
     /**

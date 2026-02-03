@@ -95,12 +95,12 @@ public class ProfileManager {
      * profile_manager.cc which supports multiple regular profiles.
      */
     public static Profile getLastUsedRegularProfile() {
+        ThreadUtils.assertOnUiThread();
+        if (!sInitialized) {
+            throw new IllegalStateException("Browser hasn't finished initialization yet!");
+        }
         if (sLastUsedProfileForTesting != null) {
             return sLastUsedProfileForTesting;
-        }
-        ThreadUtils.assertOnUiThread();
-        if (!ProfileManager.isInitialized()) {
-            throw new IllegalStateException("Browser hasn't finished initialization yet!");
         }
         return (Profile) ProfileManagerJni.get().getLastUsedRegularProfile();
     }
@@ -125,8 +125,18 @@ public class ProfileManager {
 
     /** Sets for testing the profile to be returned by {@link #getLastUsedRegularProfile()}. */
     public static void setLastUsedProfileForTesting(Profile profile) {
+        boolean wasInitialized = sInitialized;
         sLastUsedProfileForTesting = profile;
-        ResettersForTesting.register(() -> sLastUsedProfileForTesting = null);
+        ResettersForTesting.register(
+                () -> {
+                    sLastUsedProfileForTesting = null;
+                    sInitialized = wasInitialized;
+                });
+
+        // Tests do not necessarily want to run this callback when switching between profiles.
+        if (!wasInitialized) {
+            ThreadUtils.runOnUiThreadBlocking(() -> onProfileAdded(profile));
+        }
     }
 
     public static void resetForTesting() {

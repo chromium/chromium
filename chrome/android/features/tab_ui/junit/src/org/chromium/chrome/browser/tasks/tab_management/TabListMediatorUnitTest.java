@@ -74,7 +74,6 @@ import androidx.test.core.app.ApplicationProvider;
 
 import com.google.protobuf.ByteString;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -121,7 +120,6 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.MockTab;
@@ -561,11 +559,6 @@ public class TabListMediatorUnitTest {
                         })
                 .when(mTabGroupModelFilter)
                 .setTabGroupTitle(any(), anyString());
-    }
-
-    @After
-    public void tearDown() {
-        ProfileManager.resetForTesting();
     }
 
     @Test
