@@ -18,7 +18,9 @@ PaintPropertyChangeType ClipPaintPropertyNode::State::ComputeChange(
       layout_clip_rect_excluding_overlay_scrollbars !=
           other.layout_clip_rect_excluding_overlay_scrollbars ||
       !ClipPathEquals(other.clip_path) ||
-      pixel_moving_filter != other.pixel_moving_filter) {
+      pixel_moving_filter != other.pixel_moving_filter ||
+      expanded_layout_clip_rect_ != other.expanded_layout_clip_rect_ ||
+      precise_layout_clip_rect_ != other.precise_layout_clip_rect_) {
     return PaintPropertyChangeType::kChangedOnlyValues;
   }
   return PaintPropertyChangeType::kUnchanged;

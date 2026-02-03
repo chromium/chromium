@@ -4032,4 +4032,60 @@ TEST_F(CompositorAnimationTriggerTest, NonCompositedAnimation) {
             V8AnimationPlayState::Enum::kRunning);
 }
 
+TEST_P(AnimationCompositorAnimationsTest, ClipExpanderUpdate) {
+  std::unique_ptr<ScopedCompositeClipPathAnimationForTest>
+      scoped_composite_clip_path_animation =
+          std::make_unique<ScopedCompositeClipPathAnimationForTest>(true);
+
+  // Negative insets expand the clip rect.
+  // inset(-0.1px) on 100x100 -> 100.2x100.2. Enclosing int rect: 101x101.
+  // inset(-0.2px) on 100x100 -> 100.4x100.4. Enclosing int rect: 101x101.
+  // The enclosing int rect (paint_clip_rect) remains unchanged, but the
+  // float rect (expanded_layout_clip_rect) changes.
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes anim1 {
+        from { clip-path: inset(0px); }
+        to { clip-path: inset(-0.1px); }
+      }
+      @keyframes anim2 {
+        from { clip-path: inset(0px); }
+        to { clip-path: inset(-0.2px); }
+      }
+      #target {
+        width: 100px;
+        height: 100px;
+        animation: anim1 1000s infinite alternate;
+        will-change: clip-path;
+      }
+    </style>
+    <div id="target"></div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* target = GetDocument().getElementById(AtomicString("target"));
+  const auto* properties =
+      target->GetLayoutObject()->FirstFragment().PaintProperties();
+  gfx::RectF rect = properties->MaskClip()->LayoutClipRect().Rect();
+  // inset(-0.1px) on 100x100 -> 100.2x100.2
+  EXPECT_FLOAT_EQ(-0.1f, rect.x());
+  EXPECT_FLOAT_EQ(-0.1f, rect.y());
+  EXPECT_FLOAT_EQ(100.2f, rect.width());
+  EXPECT_FLOAT_EQ(100.2f, rect.height());
+
+  // Switch to anim2 to trigger a change in the animation bounds.
+  target->setAttribute(html_names::kStyleAttr,
+                       AtomicString("animation-name: anim2"));
+  UpdateAllLifecyclePhasesForTest();
+
+  // After updating to the new animation, the bounds should change.
+  rect = properties->MaskClip()->LayoutClipRect().Rect();
+  // inset(-0.2px) on 100x100 -> 100.4x100.4
+  EXPECT_FLOAT_EQ(-0.2f, rect.x());
+  EXPECT_FLOAT_EQ(-0.2f, rect.y());
+  EXPECT_FLOAT_EQ(100.4f, rect.width());
+  EXPECT_FLOAT_EQ(100.4f, rect.height());
+}
+
 }  // namespace blink
