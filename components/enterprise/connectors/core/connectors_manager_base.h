@@ -92,11 +92,18 @@ class ConnectorsManagerBase {
 
   virtual DataRegion GetDataRegion(AnalysisConnector connector) const = 0;
 
+  // Re-cache analysis connector policy.
+  virtual void OnAnalysisPrefChanged(AnalysisConnector connector);
+
   // Sets up |pref_change_registrar_|. Used by the constructor and
   // SetUpForTesting.
-  virtual void StartObservingPrefs(PrefService* pref_service);
-  void StartObservingPref();
+  void StartObservingPrefs(PrefService* pref_service);
 
+  // Sets up the observer and callback for specific AnalysisConnectorPref.
+  void StartObservingAnalysisPref(AnalysisConnector connector);
+
+  // Sets up the observer and callback for onSecurityEventPref.
+  void StartObservingReportingPref();
 
   const PrefService* prefs() const { return pref_change_registrar_.prefs(); }
 
@@ -128,7 +135,7 @@ class ConnectorsManagerBase {
   void CacheReportingConnectorPolicy();
 
   // Re-cache reporting connector policy.
-  void OnPrefChanged();
+  void OnReportingPrefChanged();
 };
 
 }  // namespace enterprise_connectors

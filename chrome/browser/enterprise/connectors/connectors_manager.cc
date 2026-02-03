@@ -161,7 +161,7 @@ void ConnectorsManager::MaybeCloseLocalContentAnalysisAgentConnection() {
 }
 #endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 
-void ConnectorsManager::OnPrefChanged(AnalysisConnector connector) {
+void ConnectorsManager::OnAnalysisPrefChanged(AnalysisConnector connector) {
   CacheAnalysisConnectorPolicy(connector);
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
   MaybeCloseLocalContentAnalysisAgentConnection();
@@ -189,30 +189,6 @@ DataRegion ConnectorsManager::GetDataRegion(AnalysisConnector connector) const {
   return ChromeDataRegionSettingToEnum(
       pref_service->GetInteger(prefs::kChromeDataRegionSetting));
 #endif
-}
-
-void ConnectorsManager::StartObservingPrefs(PrefService* pref_service) {
-  pref_change_registrar_.Init(pref_service);
-  StartObservingPref(AnalysisConnector::FILE_ATTACHED);
-  StartObservingPref(AnalysisConnector::FILE_DOWNLOADED);
-  StartObservingPref(AnalysisConnector::BULK_DATA_ENTRY);
-  StartObservingPref(AnalysisConnector::PRINT);
-#if BUILDFLAG(IS_CHROMEOS)
-  StartObservingPref(AnalysisConnector::FILE_TRANSFER);
-#endif
-  ConnectorsManagerBase::StartObservingPref();
-}
-
-void ConnectorsManager::StartObservingPref(AnalysisConnector connector) {
-  const char* pref = AnalysisConnectorPref(connector);
-  DCHECK(pref);
-  if (!pref_change_registrar_.IsObserved(pref)) {
-    pref_change_registrar_.Add(
-        pref, base::BindRepeating(
-                  static_cast<void (ConnectorsManager::*)(AnalysisConnector)>(
-                      &ConnectorsManager::OnPrefChanged),
-                  base::Unretained(this), connector));
-  }
 }
 
 }  // namespace enterprise_connectors

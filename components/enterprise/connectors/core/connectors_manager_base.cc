@@ -190,7 +190,7 @@ std::optional<ReportingSettings> ConnectorsManagerBase::GetReportingSettings() {
   return reporting_connector_settings_[0].GetReportingSettings();
 }
 
-void ConnectorsManagerBase::OnPrefChanged() {
+void ConnectorsManagerBase::OnReportingPrefChanged() {
   CacheReportingConnectorPolicy();
   if (!telemetry_observer_callback_.is_null()) {
     telemetry_observer_callback_.Run();
@@ -230,18 +230,45 @@ void ConnectorsManagerBase::CacheReportingConnectorPolicy() {
   }
 }
 
-void ConnectorsManagerBase::StartObservingPrefs(PrefService* pref_service) {
-  pref_change_registrar_.Init(pref_service);
-  StartObservingPref();
+void ConnectorsManagerBase::OnAnalysisPrefChanged(AnalysisConnector connector) {
+  CacheAnalysisConnectorPolicy(connector);
 }
 
-void ConnectorsManagerBase::StartObservingPref() {
+void ConnectorsManagerBase::StartObservingPrefs(PrefService* pref_service) {
+  pref_change_registrar_.Init(pref_service);
+  StartObservingAnalysisPref(AnalysisConnector::FILE_DOWNLOADED);
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+  StartObservingAnalysisPref(AnalysisConnector::FILE_ATTACHED);
+  StartObservingAnalysisPref(AnalysisConnector::BULK_DATA_ENTRY);
+  StartObservingAnalysisPref(AnalysisConnector::PRINT);
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+  StartObservingAnalysisPref(AnalysisConnector::FILE_TRANSFER);
+#endif
+
+  StartObservingReportingPref();
+}
+
+void ConnectorsManagerBase::StartObservingReportingPref() {
   const char* pref = kOnSecurityEventPref;
   DCHECK(pref);
   if (!pref_change_registrar_.IsObserved(pref)) {
     pref_change_registrar_.Add(
-        pref, base::BindRepeating(&ConnectorsManagerBase::OnPrefChanged,
-                                  base::Unretained(this)));
+        pref,
+        base::BindRepeating(&ConnectorsManagerBase::OnReportingPrefChanged,
+                            base::Unretained(this)));
+  }
+}
+
+void ConnectorsManagerBase::StartObservingAnalysisPref(
+    AnalysisConnector connector) {
+  const char* pref = AnalysisConnectorPref(connector);
+  DCHECK(pref);
+  if (!pref_change_registrar_.IsObserved(pref)) {
+    pref_change_registrar_.Add(
+        pref, base::BindRepeating(&ConnectorsManagerBase::OnAnalysisPrefChanged,
+                                  base::Unretained(this), connector));
   }
 }
 
