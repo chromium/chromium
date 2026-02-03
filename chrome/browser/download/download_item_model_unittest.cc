@@ -98,53 +98,45 @@ const base::FilePath::CharType kDefaultDisplayFileName[] =
 // Default URL for a mock download item in DownloadItemModelTest.
 const char kDefaultURL[] = "http://example.com/foo.bar";
 
+class TestChromeDownloadManagerDelegate : public ChromeDownloadManagerDelegate {
+ public:
+  explicit TestChromeDownloadManagerDelegate(Profile* profile)
+      : ChromeDownloadManagerDelegate(profile) {}
+  ~TestChromeDownloadManagerDelegate() override = default;
+
+  // ChromeDownloadManagerDelegate override:
+  bool IsOpenInBrowserPreferredForFile(const base::FilePath& path) override {
+    return true;
+  }
+};
+
 // A DownloadCoreService that returns the TestChromeDownloadManagerDelegate.
 class TestDownloadCoreService : public DownloadCoreServiceImpl {
  public:
   explicit TestDownloadCoreService(Profile* profile);
   ~TestDownloadCoreService() override;
 
-  void set_download_manager_delegate(ChromeDownloadManagerDelegate* delegate) {
-    delegate_ = delegate;
-  }
-
   ChromeDownloadManagerDelegate* GetDownloadManagerDelegate() override;
 
-  raw_ptr<ChromeDownloadManagerDelegate, DanglingUntriaged> delegate_;
+  std::unique_ptr<ChromeDownloadManagerDelegate> delegate_;
 };
 
 TestDownloadCoreService::TestDownloadCoreService(Profile* profile)
-    : DownloadCoreServiceImpl(profile) {}
+    : DownloadCoreServiceImpl(profile),
+      delegate_(std::make_unique<NiceMock<TestChromeDownloadManagerDelegate>>(
+          profile)) {}
 
 TestDownloadCoreService::~TestDownloadCoreService() = default;
 
 ChromeDownloadManagerDelegate*
 TestDownloadCoreService::GetDownloadManagerDelegate() {
-  return delegate_;
+  return delegate_.get();
 }
 
 static std::unique_ptr<KeyedService> CreateTestDownloadCoreService(
     content::BrowserContext* browser_context) {
   return std::make_unique<TestDownloadCoreService>(
       Profile::FromBrowserContext(browser_context));
-}
-
-class TestChromeDownloadManagerDelegate : public ChromeDownloadManagerDelegate {
- public:
-  explicit TestChromeDownloadManagerDelegate(Profile* profile)
-      : ChromeDownloadManagerDelegate(profile) {}
-  ~TestChromeDownloadManagerDelegate() override;
-
-  // ChromeDownloadManagerDelegate override:
-  bool IsOpenInBrowserPreferredForFile(const base::FilePath& path) override;
-};
-
-TestChromeDownloadManagerDelegate::~TestChromeDownloadManagerDelegate() =
-    default;
-
-bool TestChromeDownloadManagerDelegate::IsOpenInBrowserPreferredForFile(
-    const base::FilePath& path) {
-  return true;
 }
 
 class FakeRenameHandler : public download::DownloadItemRenameHandler {
@@ -172,13 +164,9 @@ class DownloadItemModelTest : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(testing_profile_manager_.SetUp());
     profile_ = testing_profile_manager_.CreateTestingProfile("testing_profile");
-    delegate_ =
-        std::make_unique<NiceMock<TestChromeDownloadManagerDelegate>>(profile_);
+
     DownloadCoreServiceFactory::GetInstance()->SetTestingFactory(
         profile_, base::BindRepeating(&CreateTestDownloadCoreService));
-    static_cast<TestDownloadCoreService*>(
-        DownloadCoreServiceFactory::GetForBrowserContext(profile_))
-        ->set_download_manager_delegate(delegate_.get());
   }
 
  protected:
@@ -254,8 +242,7 @@ class DownloadItemModelTest : public testing::Test {
   DownloadItemModel model_;
   base::SimpleTestClock clock_;
   TestingProfileManager testing_profile_manager_;
-  raw_ptr<TestingProfile> profile_;
-  std::unique_ptr<NiceMock<TestChromeDownloadManagerDelegate>> delegate_;
+  raw_ptr<TestingProfile> profile_ = nullptr;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };
