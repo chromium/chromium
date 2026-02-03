@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "build/build_config.h"
+#include "content/common/content_export.h"
 
 static_assert(BUILDFLAG(IS_MAC));
 
@@ -15,7 +16,8 @@ namespace content {
 
 class NativeScreenCapturePicker;
 
-std::unique_ptr<NativeScreenCapturePicker> CreateNativeScreenCapturePickerMac();
+CONTENT_EXPORT std::unique_ptr<NativeScreenCapturePicker>
+CreateNativeScreenCapturePickerMac();
 
 }  // namespace content
 
