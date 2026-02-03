@@ -15079,6 +15079,15 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
+  <metric name="VisibilityRatioAtPlaybackStart">
+    <summary>
+      The visibility ratio of the video element at the time playback started, as
+      a percentage from 0 to 100. 0 means that the element is not visible due to
+      factors like being off-screen, clipped, occluded by other elements, or
+      styled as invisible (e.g., opacity:0). 100 means that the element is fully
+      visible. This value can be unset if nothing is reported.
+    </summary>
+  </metric>
 </event>
 
 <event name="MediaRouter.CastWebSenderExtensionLoadUrl" singular="True">

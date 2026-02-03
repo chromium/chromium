@@ -124,6 +124,7 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
   void SetTimeToMetadata(base::TimeDelta elapsed) override;
   void SetTimeToFirstFrame(base::TimeDelta elapsed) override;
   void SetTimeToPlayReady(base::TimeDelta elapsed) override;
+  void SetVisibilityRatioAtPlaybackStart(double ratio) override;
   void SetVideoPipelineInfo(const VideoPipelineInfo& info) override;
 
   void AcquireWatchTimeRecorder(
@@ -167,6 +168,8 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
   base::TimeDelta time_to_metadata_ = kNoTimestamp;
   base::TimeDelta time_to_first_frame_ = kNoTimestamp;
   base::TimeDelta time_to_play_ready_ = kNoTimestamp;
+
+  std::optional<double> visibility_ratio_at_playback_start_;
 
   std::optional<container_names::MediaContainerName> container_name_;
 };

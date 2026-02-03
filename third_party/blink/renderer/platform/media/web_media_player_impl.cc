@@ -4055,6 +4055,11 @@ void WebMediaPlayerImpl::RecordVideoOcclusionState(
       std::string(occlusion_state));
 }
 
+void WebMediaPlayerImpl::SetVisibilityRatioAtPlaybackStart(double ratio) {
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
+  media_metrics_provider_->SetVisibilityRatioAtPlaybackStart(ratio);
+}
+
 void WebMediaPlayerImpl::RecordAutoPictureInPictureInfo(
     const media::PictureInPictureEventsInfo::AutoPipInfo&
         auto_picture_in_picture_info) {

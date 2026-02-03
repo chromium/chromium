@@ -333,6 +333,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   void UnregisterFrameSinkHierarchy() override;
 
   void RecordVideoOcclusionState(std::string_view occlusion_state) override;
+  void SetVisibilityRatioAtPlaybackStart(double ratio) override;
 
   void RecordAutoPictureInPictureInfo(
       const media::PictureInPictureEventsInfo::AutoPipInfo&

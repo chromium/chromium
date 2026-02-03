@@ -445,6 +445,9 @@ class WebMediaPlayer {
   // `MediaLogEvent` s.
   virtual void RecordVideoOcclusionState(std::string_view occlusion_state) {}
 
+  // Sets the occlusion ratio of the video element at playback start.
+  virtual void SetVisibilityRatioAtPlaybackStart(double ratio) {}
+
   // Request the media player to record auto picture in picture related
   // information. This information helps identify why a request to enter picture
   // in picture automatically is denied/accepted.

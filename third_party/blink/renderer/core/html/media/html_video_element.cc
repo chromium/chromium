@@ -31,6 +31,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "cc/layers/layer.h"
 #include "cc/paint/paint_canvas.h"
+#include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/web_fullscreen_video_status.h"
@@ -329,7 +330,14 @@ void HTMLVideoElement::SetPersistentStateInternal(bool persistent) {
 }
 
 void HTMLVideoElement::CreateVisibilityTrackerIfNeeded() {
-  if (!RuntimeEnabledFeatures::AutoPictureInPictureVideoHeuristicsEnabled()) {
+  const bool autopip_video_heuristics_enabled =
+      RuntimeEnabledFeatures::AutoPictureInPictureVideoHeuristicsEnabled();
+  const bool encryption_media_occlusion_tracking_enabled =
+      base::FeatureList::IsEnabled(media::kEncryptedMediaOcclusionTracking);
+
+  // Exit if neither feature needs the tracker.
+  if (!autopip_video_heuristics_enabled &&
+      !encryption_media_occlusion_tracking_enabled) {
     return;
   }
 
@@ -337,10 +345,13 @@ void HTMLVideoElement::CreateVisibilityTrackerIfNeeded() {
     return;
   }
 
-  // Callback used by |MediaVideoVisibilityTracker| to report whether |this|
-  // meets/does not meet the visibility threshold (kVisibilityThreshold).
-  auto report_visibility_cb = BindRepeating(&HTMLVideoElement::ReportVisibility,
-                                            WrapWeakPersistent(this));
+  MediaVideoVisibilityTracker::ReportVisibilityCb report_visibility_cb;
+  if (autopip_video_heuristics_enabled) {
+    // Callback used by |MediaVideoVisibilityTracker| to report whether |this|
+    // meets/does not meet the visibility threshold (kVisibilityThreshold).
+    report_visibility_cb = BindRepeating(&HTMLVideoElement::ReportVisibility,
+                                         WrapWeakPersistent(this));
+  }
 
   visibility_tracker_ = MakeGarbageCollected<MediaVideoVisibilityTracker>(
       *this, kVisibilityThreshold, std::move(report_visibility_cb));
@@ -351,6 +362,24 @@ void HTMLVideoElement::ReportVisibility(bool meets_visibility_threshold) {
     for (auto& observer : GetMediaPlayerObserverRemoteSet()) {
       observer->OnVideoVisibilityChanged(meets_visibility_threshold);
     }
+  }
+}
+
+void HTMLVideoElement::OnEncryptedMediaInitData() {
+  if (!base::FeatureList::IsEnabled(media::kEncryptedMediaOcclusionTracking)) {
+    return;
+  }
+
+  CreateVisibilityTrackerIfNeeded();
+  if (visibility_tracker_) {
+    visibility_tracker_->RequestVisibilityRatio(BindOnce(
+        &HTMLVideoElement::OnVisibilityRatioReport, WrapWeakPersistent(this)));
+  }
+}
+
+void HTMLVideoElement::OnVisibilityRatioReport(double ratio) {
+  if (GetWebMediaPlayer()) {
+    GetWebMediaPlayer()->SetVisibilityRatioAtPlaybackStart(ratio);
   }
 }
 
@@ -510,8 +539,9 @@ void HTMLVideoElement::DidExitFullscreen() {
 }
 
 void HTMLVideoElement::DidMoveToNewDocument(Document& old_document) {
-  if (image_loader_)
+  if (image_loader_) {
     image_loader_->ElementDidMoveToNewDocument();
+  }
 
   wake_lock_->ElementDidMoveToNewDocument();
 

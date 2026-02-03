@@ -167,6 +167,8 @@ class CORE_EXPORT HTMLMediaElement
   // Whether the media element has encrypted audio or video streams.
   bool IsEncrypted() const;
 
+  virtual void OnEncryptedMediaInitData() {}
+
   bool SupportsSave() const;
   bool SupportsLoop() const;
 

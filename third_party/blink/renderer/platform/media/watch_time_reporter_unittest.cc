@@ -347,6 +347,7 @@ class WatchTimeReporterTest
     void SetTimeToMetadata(base::TimeDelta elapsed) override {}
     void SetTimeToFirstFrame(base::TimeDelta elapsed) override {}
     void SetTimeToPlayReady(base::TimeDelta elapsed) override {}
+    void SetVisibilityRatioAtPlaybackStart(double ratio) override {}
     void SetContainerName(
         media::container_names::MediaContainerName container_name) override {}
     void SetRendererType(media::RendererType renderer_type) override {}

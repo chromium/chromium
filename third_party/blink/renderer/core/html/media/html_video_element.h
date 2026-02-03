@@ -172,6 +172,9 @@ class CORE_EXPORT HTMLVideoElement final
     return visibility_tracker_.Get();
   }
 
+  // HTMLMediaElement overrides.
+  void OnEncryptedMediaInitData() final;
+
  protected:
   // EventTarget overrides.
   void AddedEventListener(const AtomicString& event_type,
@@ -234,6 +237,8 @@ class CORE_EXPORT HTMLVideoElement final
   void CreateVisibilityTrackerIfNeeded();
 
   void ReportVisibility(bool meets_visibility_threshold);
+
+  void OnVisibilityRatioReport(double ratio);
 
   void ResetCache(TimerBase*);
 

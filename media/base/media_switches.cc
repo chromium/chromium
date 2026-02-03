@@ -366,6 +366,10 @@ BASE_FEATURE(kVideoPipForceTrustedForMediaPlaybackForTesting,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+// Enables tracking the occlusion of encrypted video elements.
+BASE_FEATURE(kEncryptedMediaOcclusionTracking,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables user control over muting tab audio from the tab strip.
 BASE_FEATURE(kEnableTabMuting, base::FEATURE_DISABLED_BY_DEFAULT);
 

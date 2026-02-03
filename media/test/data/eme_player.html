@@ -58,6 +58,7 @@
     var emeApp;
     var player;
     var heartbeatCount = 0;
+    var urlParams = new URLSearchParams(window.location.search);
 
     function getTimeRanges(range) {
       const result = [];
@@ -196,7 +197,39 @@
       emeApp.createPlayer()
           .then(function(p) {
               player = p;
-              return play(player.video, testConfig.playCount);
+            if (urlParams.get('occluded') === 'true') {
+              const occluder = document.createElement('div');
+              occluder.style.position = 'absolute';
+              // Position the occluder over the video element.
+              // NOTE: This assumes the video element is already in the DOM and has dimensions.
+              const videoRect = player.video.getBoundingClientRect();
+              occluder.style.left = videoRect.left + window.scrollX + 'px';
+              occluder.style.top = videoRect.top + window.scrollY + 'px';
+              occluder.style.width = videoRect.width + 'px';
+              occluder.style.height = videoRect.height + 'px';
+              occluder.style.backgroundColor = 'rgba(255, 0, 0, 0.5)'; // Semi-transparent red
+              occluder.style.zIndex = '1000';
+              document.body.appendChild(occluder);
+            }
+            if (urlParams.get('partial_occlusion') === 'true') {
+              const occluder = document.createElement('div');
+              occluder.style.position = 'absolute';
+              const videoRect = player.video.getBoundingClientRect();
+              occluder.style.left = videoRect.left + window.scrollX + 'px';
+              occluder.style.top = videoRect.top + window.scrollY + 'px';
+              occluder.style.width = videoRect.width + 'px';
+              occluder.style.height = (videoRect.height / 2) + 'px'; // 50% height
+              occluder.style.backgroundColor = 'rgba(255, 0, 0, 0.5)';
+              occluder.style.zIndex = '1000';
+              document.body.appendChild(occluder);
+            }
+            if (urlParams.get('hidden') === 'true') {
+              player.video.style.visibility = 'hidden';
+            }
+            if (urlParams.get('opacity') === '0') {
+              player.video.style.opacity = '0';
+            }
+            return play(player.video, testConfig.playCount);
           }).catch(function(error) {
               Utils.timeLog(error);
               Utils.failTest('Unable to play video.');

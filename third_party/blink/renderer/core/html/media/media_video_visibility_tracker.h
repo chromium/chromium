@@ -80,6 +80,10 @@ class CORE_EXPORT MediaVideoVisibilityTracker final
   // `visibility_threshold_`.
   using RequestVisibilityCallback = base::OnceCallback<void(bool)>;
 
+  // Callback for reporting the visibility ratio (0.0 to 1.0). This is a one-off
+  // visibility ratio calculation.
+  using RequestVisibilityRatioCallback = base::OnceCallback<void(double)>;
+
   MediaVideoVisibilityTracker(
       HTMLVideoElement& video,
       int visibility_threshold,
@@ -110,6 +114,10 @@ class CORE_EXPORT MediaVideoVisibilityTracker final
   // always takes precedence. Previous ones are immediately run with `false`.
   void RequestVisibility(RequestVisibilityCallback request_visibility_callback);
 
+  // Triggers a one-off visibility ratio computation. The result is provided
+  // via the callback.
+  void RequestVisibilityRatio(RequestVisibilityRatioCallback callback);
+
   void Trace(Visitor*) const override;
 
  private:
@@ -138,11 +146,15 @@ class CORE_EXPORT MediaVideoVisibilityTracker final
       DisplayItemClientId start_after_display_item_client_id) const;
 
   ListBasedHitTestBehavior ComputeOcclusion(const ClientIdsSet& client_ids_set,
-                                            Metrics&,
+                                            Metrics& counts,
                                             const Node& node,
                                             DOMNodeId node_id);
-  bool MeetsVisibilityThreshold(Metrics& counters, const PhysicalRect& rect);
-  void ReportVisibility(bool meets_visibility_threshold);
+
+  bool MeetsVisibilityThreshold(Metrics& counts, const PhysicalRect& rect);
+
+  // Computes the current visibility ratio of the video element (0.0 to 1.0).
+  double ComputeVisibilityRatio();
+
   bool ComputeVisibility();
 
   // Resets the various member variables used by `ComputeOcclusion()`.
@@ -159,8 +171,19 @@ class CORE_EXPORT MediaVideoVisibilityTracker final
   // `DidFinishLifecycleUpdate`.
   void MaybeComputeVisibility(ShouldReportVisibility should_report_visibility);
 
+  // Computes and reports the visibility ratio if requested. This will detach
+  // the tracker if no further tracking is needed.
+  void MaybeComputeVisibilityRatio();
+
   // LocalFrameView::LifecycleNotificationObserver
   void DidFinishLifecycleUpdate(const LocalFrameView&) override;
+
+  // Returns true if the tracker has a valid frame and layout object to compute
+  // visibility.
+  bool HasValidFrameAndLayout() const;
+
+  // Returns true if the document lifecycle is in the PaintClean state.
+  bool IsPaintClean() const;
 
   // `video_element_` creates |this|.
   Member<HTMLVideoElement> video_element_;
@@ -177,9 +200,12 @@ class CORE_EXPORT MediaVideoVisibilityTracker final
   OcclusionState occlusion_state_;
   ReportVisibilityCb report_visibility_cb_;
   RequestVisibilityCallback request_visibility_callback_;
+  RequestVisibilityRatioCallback request_visibility_ratio_callback_;
   base::TimeTicks last_hit_test_timestamp_;
   const base::TimeDelta hit_test_interval_;
   bool meets_visibility_threshold_ = false;
+  double last_visibility_ratio_ = 0.0;
+  bool ratio_requested_ = false;
 
   // Keeps track of the |Document| to which the tracker has registered for
   // lifecycle notifications.

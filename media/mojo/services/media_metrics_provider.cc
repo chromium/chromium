@@ -124,6 +124,11 @@ MediaMetricsProvider::~MediaMetricsProvider() {
   if (time_to_play_ready_ != kNoTimestamp)
     builder.SetTimeToPlayReady(time_to_play_ready_.InMilliseconds());
 
+  if (visibility_ratio_at_playback_start_.has_value()) {
+    builder.SetVisibilityRatioAtPlaybackStart(
+        std::round(visibility_ratio_at_playback_start_.value() * 100));
+  }
+
   builder.Record(ukm_recorder);
   ReportPipelineUMA();
 }
@@ -354,6 +359,10 @@ void MediaMetricsProvider::SetTimeToPlayReady(base::TimeDelta elapsed) {
   DCHECK(IsInitialized());
   DCHECK_EQ(time_to_play_ready_, kNoTimestamp);
   time_to_play_ready_ = elapsed;
+}
+
+void MediaMetricsProvider::SetVisibilityRatioAtPlaybackStart(double ratio) {
+  visibility_ratio_at_playback_start_ = ratio;
 }
 
 void MediaMetricsProvider::SetContainerName(
