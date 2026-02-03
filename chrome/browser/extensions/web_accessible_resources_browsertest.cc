@@ -884,6 +884,11 @@ class DynamicOriginBrowserTest : public ExtensionBrowserTest {
     InstallExtension();
   }
 
+  void TearDownOnMainThread() override {
+    extension_ = nullptr;
+    ExtensionBrowserTest::TearDownOnMainThread();
+  }
+
  protected:
   const Extension* GetExtension() { return extension_; }
 
@@ -911,7 +916,7 @@ class DynamicOriginBrowserTest : public ExtensionBrowserTest {
     DCHECK(extension_);
   }
 
-  raw_ptr<const Extension, DanglingUntriaged> extension_ = nullptr;
+  raw_ptr<const Extension> extension_ = nullptr;
   TestExtensionDir dir_;
 };
 
