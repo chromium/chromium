@@ -67,10 +67,12 @@ public class TabBottomSheetWebUi {
 
     private void resetThinWebView() {
         if (mThinWebView != null) mThinWebView.destroy();
+        ThinWebViewConstraints constraints = new ThinWebViewConstraints();
+        constraints.supportsOpacity = true;
         mThinWebView =
                 ThinWebViewFactory.create(
                         mContext,
-                        new ThinWebViewConstraints(),
+                        constraints,
                         assumeNonNull(mWindowAndroid.getIntentRequestTracker()));
     }
 }

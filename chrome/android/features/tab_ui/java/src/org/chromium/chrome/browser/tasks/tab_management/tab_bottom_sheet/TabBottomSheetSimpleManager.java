@@ -99,7 +99,6 @@ public class TabBottomSheetSimpleManager implements Destroyable {
         }
     }
 
-    @CalledByNative
     public static boolean isOpen(Tab tab, int requestId) {
         TabBottomSheetManager tabBottomSheetManager =
                 TabBottomSheetUtils.getManagerFromWindow(assumeNonNull(tab.getWindowAndroid()));
@@ -116,7 +115,6 @@ public class TabBottomSheetSimpleManager implements Destroyable {
         return false;
     }
 
-    @CalledByNative
     public static @Nullable WebContents getWebContents(Tab tab, int requestId) {
         TabBottomSheetManager tabBottomSheetManager =
                 TabBottomSheetUtils.getManagerFromWindow(assumeNonNull(tab.getWindowAndroid()));

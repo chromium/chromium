@@ -5,6 +5,7 @@
 import("//build/config/android/rules.gni")
 import("//chrome/android/features/android_library_factory_tmpl.gni")
 import("//chrome/common/features.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 import("//tools/grit/grit_rule.gni")
 
 java_strings_grd("java_strings_grd") {
@@ -254,4 +255,8 @@ android_library("test_support_javalib") {
     "//ui/android:ui_no_recycler_view_java",
     "//url:url_java",
   ]
+}
+
+generate_jni("jni_headers") {
+  sources = [ "java/src/org/chromium/chrome/browser/tasks/tab_management/tab_bottom_sheet/TabBottomSheetSimpleManager.java" ]
 }

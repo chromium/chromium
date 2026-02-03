@@ -4,4 +4,7 @@ specific_include_rules = {
     "+ash/frame/frame_view_ash.h",
     "+chromeos/ui/base/window_properties.h"
   ],
+  "glic_side_panel_coordinator_android\.cc": [
+    "+chrome/android/features/tab_ui/jni_headers/TabBottomSheetSimpleManager_jni.h",
+  ]
 }

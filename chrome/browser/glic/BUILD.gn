@@ -132,7 +132,10 @@ source_set("glic") {
   if (!is_android) {
     deps += [ "//chrome/browser/actor:types" ]
   } else {  # is_android
-    deps += [ ":actor_types_for_migration" ]
+    deps += [
+      ":actor_types_for_migration",
+      "//chrome/android/features/tab_ui:jni_headers",
+    ]
   }
 
   if (use_aura) {
@@ -379,7 +382,10 @@ source_set("impl") {
       "//chrome/browser/ui/views/side_panel",
     ]
   } else {  # is_android
-    deps += [ ":actor_types_for_migration" ]
+    deps += [
+      ":actor_types_for_migration",
+      "//chrome/android/features/tab_ui:jni_headers",
+    ]
   }
 
   if (enable_guest_view) {
