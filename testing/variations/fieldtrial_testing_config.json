@@ -28952,6 +28952,24 @@
             ]
         }
     ],
+    "WebRTC-Video-CalculatePsnr": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled,sampling_interval:1000ms"
+                }
+            ]
+        }
+    ],
     "WebRTC-Video-EnableRetransmitAllLayers": [
         {
             "platforms": [

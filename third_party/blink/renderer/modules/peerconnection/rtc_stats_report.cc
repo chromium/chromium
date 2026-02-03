@@ -299,6 +299,7 @@ RTCOutboundRtpStreamStats* ToV8Stat(
       psnr_sum.emplace_back(String::FromUTF8(key), value);
     }
     v8_stat->setPsnrSum(std::move(psnr_sum));
+    SET_STAT(webrtc_stat.psnr_measurements, v8_stat->setPsnrMeasurements);
   }
   SET_STAT(webrtc_stat.total_encode_time, v8_stat->setTotalEncodeTime);
   SET_STAT(webrtc_stat.total_packet_send_delay,
