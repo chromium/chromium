@@ -29,9 +29,12 @@ class TaskAttributionId {
   std::strong_ordering operator<=>(const TaskAttributionId& id) const {
     return value_ <=> id.value_;
   }
-  TaskAttributionId NextId() const { return TaskAttributionId(value_ + 1); }
+
+  static TaskAttributionId NextId() { return TaskAttributionId(next_id_++); }
 
  private:
+  inline static TaskAttributionIdType next_id_ = {1};
+
   TaskAttributionIdType value_ = {0};
 };
 

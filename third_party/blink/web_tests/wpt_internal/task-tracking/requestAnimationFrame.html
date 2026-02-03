@@ -15,7 +15,7 @@ promise_test(() => {
     await new Promise(resolve => setTimeout(resolve, 0));
     requestAnimationFrame(() => {
       try {
-        assert_equals(scheduler.taskId, initialId);
+        assert_equals(scheduler.asyncData, initialId);
         resolve();
       } catch {
         reject("Not an ancestor");
@@ -29,11 +29,11 @@ promise_test(() => {
     const initialId = initializeTaskId();
     await new Promise(resolve => setTimeout(resolve, 0));
     requestAnimationFrame(() => {
-      const intermediateId = scheduler.taskId;
+      const intermediateId = scheduler.asyncData;
       requestAnimationFrame(() => {
         try {
-          assert_equals(scheduler.taskId, initialId);
-          assert_equals(scheduler.taskId, intermediateId);
+          assert_equals(scheduler.asyncData, initialId);
+          assert_equals(scheduler.asyncData, intermediateId);
           resolve();
         } catch {
           reject("Not an ancestor");

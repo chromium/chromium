@@ -14,23 +14,23 @@ promise_test(async t => {
   const initialId = initializeTaskId();
 
   await scheduler.postTask(async () => {
-    assert_equals(scheduler.taskId, initialId);
+    assert_equals(scheduler.asyncData, initialId);
 
     await scheduler.postTask(() => {
-      assert_equals(scheduler.taskId, initialId);
+      assert_equals(scheduler.asyncData, initialId);
     });
 
-    assert_equals(scheduler.taskId, initialId);
+    assert_equals(scheduler.asyncData, initialId);
   });
 }, "postTask chain.");
 
 promise_test(async () => {
     const initialId = initializeTaskId();
     await scheduler.postTask(async () => {
-      assert_equals(scheduler.taskId, initialId,
+      assert_equals(scheduler.asyncData, initialId,
                     "initialId is an ancestor of the currentTaskId");
       await fetch("/resources/blank.html");
-      assert_equals(scheduler.taskId, initialId,
+      assert_equals(scheduler.asyncData, initialId,
                     "initialId is ancestor of fetch continuation.");
     });
 }, "Single postTask with multiple internal awaited tasks");

@@ -22,22 +22,21 @@ class CORE_EXPORT TaskAttributionInfoImpl final
     : public TaskAttributionTaskState,
       public scheduler::TaskAttributionInfo {
  public:
-  TaskAttributionInfoImpl(scheduler::TaskAttributionId,
-                          SoftNavigationContext*,
-                          ResourceTimingContext*);
-
+  TaskAttributionInfoImpl(SoftNavigationContext*,
+                          ResourceTimingContext*,
+                          uint32_t async_data_for_test = 0);
   // `TaskAttributionTaskState` implementation:
   scheduler::TaskAttributionInfo* GetTaskAttributionInfo() override;
   SchedulerTaskContext* GetSchedulerTaskContext() override;
+  bool IsTaskAttributionInfoImpl() const override;
   TaskAttributionTaskState* ForkAndSetVariable(
-      const scheduler::TaskAttributionId,
       ResourceTimingContext*) override;
   TaskAttributionTaskState* ForkAndSetVariable(
-      const scheduler::TaskAttributionId,
       SoftNavigationContext*) override;
 
   // `scheduler::TaskAttributionInfo` implementation:
   scheduler::TaskAttributionId Id() const override;
+  uint32_t AsyncDataForTest() const override;
   SoftNavigationContext* GetSoftNavigationContext() override;
   ResourceTimingContext* GetResourceTimingContext() override;
 
@@ -45,6 +44,7 @@ class CORE_EXPORT TaskAttributionInfoImpl final
 
  private:
   const scheduler::TaskAttributionId id_;
+  const uint32_t async_data_for_test_;
   Member<SoftNavigationContext> soft_navigation_context_;
   Member<ResourceTimingContext> resource_timing_context_;
 };
@@ -54,6 +54,10 @@ struct DowncastTraits<TaskAttributionInfoImpl> {
   // `TaskAttributionInfoImpl` is the only implementation of
   // `scheduler::TaskAttributionInfo`, so this cast is always safe.
   static bool AllowFrom(const scheduler::TaskAttributionInfo&) { return true; }
+  static bool AllowFrom(
+      const TaskAttributionTaskState& task_attribution_task_state) {
+    return task_attribution_task_state.IsTaskAttributionInfoImpl();
+  }
 };
 
 }  // namespace blink

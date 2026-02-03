@@ -86,8 +86,8 @@ class CORE_EXPORT DOMScheduler : public ScriptWrappable,
   ScriptPromise<IDLUndefined> yield(ScriptState*,
                                     ExceptionState&);
 
-  scheduler::TaskAttributionIdType taskId(v8::Isolate*);
-  void setTaskId(v8::Isolate*, scheduler::TaskAttributionIdType);
+  uint32_t asyncData(v8::Isolate*);
+  void setAsyncData(v8::Isolate*, uint32_t);
 
   void ContextDestroyed() override;
 

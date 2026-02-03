@@ -5,7 +5,7 @@
     window.addEventListener('message', e => {
       const port = e.ports?.[0];
       initializeTaskId();
-      port.postMessage(scheduler.taskId);
+      port.postMessage(scheduler.asyncData);
     });
   </script>
 </html>

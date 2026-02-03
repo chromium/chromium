@@ -15,7 +15,7 @@ promise_test(() => {
     await new Promise(resolve => setTimeout(resolve, 0));
     requestIdleCallback(() => {
       try {
-        assert_equals(scheduler.taskId, initialId);
+        assert_equals(scheduler.asyncData, initialId);
         resolve();
       } catch {
         reject("Not an ancestor");

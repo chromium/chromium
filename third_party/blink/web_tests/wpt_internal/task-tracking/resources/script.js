@@ -1,1 +1,1 @@
-  window.results.push(scheduler.taskId == window.initialId);
+  window.results.push(scheduler.asyncData == window.initialId);

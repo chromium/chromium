@@ -15,7 +15,7 @@ promise_test(() => {
     await new Promise(resolve => setInterval(resolve, 0));
     queueMicrotask(() => {
       try {
-        assert_equals(scheduler.taskId, initialId);
+        assert_equals(scheduler.asyncData, initialId);
         resolve();
       } catch {
         reject("Not an ancestor");
@@ -30,7 +30,7 @@ promise_test(() => {
     await new Promise(resolve => setInterval(resolve, 100));
     queueMicrotask(() => {
       try {
-        assert_equals(scheduler.taskId, initialId);
+        assert_equals(scheduler.asyncData, initialId);
         resolve();
       } catch {
         reject("Not an ancestor");
@@ -51,7 +51,7 @@ promise_test(() => {
     }, 100));
     queueMicrotask(() => {
       try {
-        assert_equals(scheduler.taskId, initialId);
+        assert_equals(scheduler.asyncData, initialId);
         resolve();
       } catch {
         reject("Not an ancestor");

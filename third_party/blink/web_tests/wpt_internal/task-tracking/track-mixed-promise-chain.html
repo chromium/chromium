@@ -13,36 +13,36 @@
 const run_promise_test = () => {
   promise_test(async () => {
     return new Promise((resolve, reject) => {
-      const promise_task = scheduler.taskId;
+      const promise_task = scheduler.asyncData;
       fetch("/resources/blank.html")
       .then(response => new Promise(r => {
         // A JS-based promise, resolved when the image loads.
-        assert_equals(scheduler.taskId, parent_task);
-        assert_not_equals(scheduler.taskId, sibling_task);
-        assert_equals(scheduler.taskId, promise_task);
+        assert_equals(scheduler.asyncData, parent_task);
+        assert_not_equals(scheduler.asyncData, sibling_task);
+        assert_equals(scheduler.asyncData, promise_task);
         image_loaded = r;
         fetched_response = response;
         image_can_load();
       }))
       .then(response => {
-        assert_equals(scheduler.taskId, parent_task);
-        assert_not_equals(scheduler.taskId, sibling_task);
-        assert_equals(scheduler.taskId, promise_task);
+        assert_equals(scheduler.asyncData, parent_task);
+        assert_not_equals(scheduler.asyncData, sibling_task);
+        assert_equals(scheduler.asyncData, promise_task);
         return response.text();
       })
       .then(body => {
         return new Promise(interimResolve => {
-          assert_equals(scheduler.taskId, parent_task);
-          assert_not_equals(scheduler.taskId, sibling_task);
-          assert_equals(scheduler.taskId, promise_task);
+          assert_equals(scheduler.asyncData, parent_task);
+          assert_not_equals(scheduler.asyncData, sibling_task);
+          assert_equals(scheduler.asyncData, promise_task);
           interimResolve();
         });
       })
       .then(() => {
         try {
-          assert_equals(scheduler.taskId, parent_task)
-          assert_not_equals(scheduler.taskId, sibling_task);
-          assert_equals(scheduler.taskId, promise_task);
+          assert_equals(scheduler.asyncData, parent_task)
+          assert_not_equals(scheduler.asyncData, sibling_task);
+          assert_equals(scheduler.asyncData, promise_task);
           resolve();
         } catch {
           reject();

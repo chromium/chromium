@@ -14,7 +14,6 @@ class Isolate;
 }  // namespace v8
 
 namespace blink::scheduler {
-class TaskAttributionId;
 class TaskAttributionInfo;
 }  // namespace blink::scheduler
 
@@ -67,14 +66,15 @@ class CORE_EXPORT TaskAttributionTaskState
   // Fork to a new copy, overriding with specified TaskAttributionId and
   // ResourceTimingContext.
   virtual TaskAttributionTaskState* ForkAndSetVariable(
-      const scheduler::TaskAttributionId,
       ResourceTimingContext*) = 0;
 
   // Fork to a new copy, overriding with specified TaskAttributionId and
   // SoftNavigationContext.
   virtual TaskAttributionTaskState* ForkAndSetVariable(
-      const scheduler::TaskAttributionId,
       SoftNavigationContext*) = 0;
+
+  virtual bool IsWebSchedulingTaskState() const { return false; }
+  virtual bool IsTaskAttributionInfoImpl() const { return false; }
 
   virtual void Trace(Visitor*) const {}
 };

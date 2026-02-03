@@ -16,7 +16,7 @@ promise_test(() => {
     await new Promise(r => setTimeout(r, 0));
     queueMicrotask(() => {
       try {
-          assert_equals(scheduler.taskId, initialId);
+          assert_equals(scheduler.asyncData, initialId);
           resolve();
         } catch {
           reject("Queued microtask is not a descendant");
@@ -37,7 +37,7 @@ promise_test(() => {
     })
     .then(() => {
       try {
-        assert_equals(scheduler.taskId, initialId);
+        assert_equals(scheduler.asyncData, initialId);
         resolve();
       } catch {
         reject();
@@ -62,7 +62,7 @@ promise_test(() => {
     })
     .then(() => {
       try {
-        assert_equals(scheduler.taskId, initialId);
+        assert_equals(scheduler.asyncData, initialId);
         resolve();
       } catch {
         reject();
@@ -78,7 +78,7 @@ promise_test(() => {
     const response = await fetch("/resources/blank.html");
     const body = await response.text();
     try {
-      assert_equals(scheduler.taskId, initialId);
+      assert_equals(scheduler.asyncData, initialId);
       resolve();
     } catch {
       reject();
@@ -94,7 +94,7 @@ promise_test(() => {
     await new Promise(r => setTimeout(r, 10));
     try {
       await new Promise((r, rj) => {
-        promiseId = scheduler.taskId;
+        promiseId = scheduler.asyncData;
         rj();
       });
     } catch {
@@ -102,12 +102,12 @@ promise_test(() => {
       // get to you.
     }
     try {
-      assert_equals(scheduler.taskId, initialId);
+      assert_equals(scheduler.asyncData, initialId);
     } catch {
       reject("InitialId is not an ancestor");
     }
     try {
-      assert_equals(scheduler.taskId, promiseId);
+      assert_equals(scheduler.asyncData, promiseId);
       resolve();
     } catch {
       reject("PromiseId is not an ancestor");

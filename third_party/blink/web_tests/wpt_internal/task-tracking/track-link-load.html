@@ -20,7 +20,7 @@
 
     const load = new Promise(resolve => {
       link.onload = t.step_func(() => {
-        assert_equals(scheduler.taskId, initialId);
+        assert_equals(scheduler.asyncData, initialId);
         resolve();
       });
     });
@@ -41,7 +41,7 @@
 
     const preload = new Promise(resolve => {
       link.onload = t.step_func(() => {
-        assert_equals(scheduler.taskId, initialId);
+        assert_equals(scheduler.asyncData, initialId);
         resolve();
       });
     });
@@ -57,7 +57,7 @@
 
     const styleLoad = new Promise(resolve => {
       link.onload = t.step_func(() => {
-        assert_equals(scheduler.taskId, initialId);
+        assert_equals(scheduler.asyncData, initialId);
         resolve();
       });
     });
@@ -73,7 +73,7 @@
     const {promise, resolve} = Promise.withResolvers();
     window.handler = t.step_func(() => {
       delete window.handler;
-      assert_equals(scheduler.taskId, initialId);
+      assert_equals(scheduler.asyncData, initialId);
       resolve();
     });
 
@@ -94,7 +94,7 @@
 
     const p = new Promise(resolve => {
       link.onerror = t.step_func(() => {
-        assert_equals(scheduler.taskId, initialId);
+        assert_equals(scheduler.asyncData, initialId);
         resolve();
       });
     });

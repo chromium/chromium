@@ -15,7 +15,7 @@ promise_test(() => {
     await new Promise(resolve => setTimeout(resolve, 0));
     queueMicrotask(() => {
       try {
-        assert_equals(scheduler.taskId, initialId);
+        assert_equals(scheduler.asyncData, initialId);
         resolve();
       } catch {
         reject("Not an ancestor");
@@ -33,7 +33,7 @@ promise_test(() => {
     });
     queueMicrotask(() => {
       try {
-        assert_equals(scheduler.taskId, initialId);
+        assert_equals(scheduler.asyncData, initialId);
         resolve();
       } catch {
         reject("Not an ancestor");
@@ -44,13 +44,13 @@ promise_test(() => {
    "descendant of the dispatching task");
 
 promise_test(async () => {
-  window.initialId = scheduler.taskId;
+  window.initialId = scheduler.asyncData;
   await new Promise((resolve, reject) => {
     window.resolve = resolve;
     window.reject = reject;
     setTimeout(`
      try {
-       assert_equals(scheduler.taskId, initialId);
+       assert_equals(scheduler.asyncData, initialId);
        resolve();
      } catch {
        reject("Not an ancestor");
@@ -64,7 +64,7 @@ promise_test(() => {
     await new Promise(resolve => setTimeout(resolve, 100));
     queueMicrotask(() => {
       try {
-        assert_equals(scheduler.taskId, initialId);
+        assert_equals(scheduler.asyncData, initialId);
         resolve();
       } catch {
         reject("Not an ancestor");
@@ -77,7 +77,7 @@ promise_test(async () => {
   const initialId = initializeTaskId();
   await new Promise((resolve, reject) => setTimeout(() => {
     try {
-      assert_equals(scheduler.taskId, initialId);
+      assert_equals(scheduler.asyncData, initialId);
       resolve();
     } catch {
       reject("Initial task not identified as ancestor of first setTimeout");
@@ -86,7 +86,7 @@ promise_test(async () => {
   }, 10));
   await new Promise((resolve, reject) => setTimeout(() => {
     try {
-      assert_equals(scheduler.taskId, initialId);
+      assert_equals(scheduler.asyncData, initialId);
       resolve();
     } catch {
       reject("Initial task not identified as ancestor of second setTimeout");
@@ -98,7 +98,7 @@ promise_test(async () => {
   const initialId = initializeTaskId();
   return new Promise((resolve, reject) => {
     try {
-      assert_equals(scheduler.taskId, initialId);
+      assert_equals(scheduler.asyncData, initialId);
       resolve();
     } catch {
       reject("The task is not its own ancestor");
@@ -113,10 +113,10 @@ promise_test(async t => {
   const initialId = initializeTaskId();
 
   const first = new Promise((resolve, reject) => setTimeout(t.step_func(() => {
-    assert_equals(scheduler.taskId, initialId);
+    assert_equals(scheduler.asyncData, initialId);
     firstTaskParent = initializeTaskId();
     setTimeout(t.step_func(() => {
-      firstTaskDescendent = scheduler.taskId;
+      firstTaskDescendent = scheduler.asyncData;
       assert_equals(firstTaskDescendent, firstTaskParent);
       assert_not_equals(firstTaskDescendent, initialId);
       resolve();
@@ -124,13 +124,13 @@ promise_test(async t => {
   }), 15));
 
   const second = new Promise((resolve, reject) => setTimeout(t.step_func(() => {
-    assert_equals(scheduler.taskId, initialId);
+    assert_equals(scheduler.asyncData, initialId);
     const secondTaskParent = initializeTaskId();
     setTimeout(t.step_func(() => {
       try {
-        assert_equals(scheduler.taskId, secondTaskParent);
-        assert_not_equals(scheduler.taskId, firstTaskDescendent);
-        assert_not_equals(scheduler.taskId, initialId);
+        assert_equals(scheduler.asyncData, secondTaskParent);
+        assert_not_equals(scheduler.asyncData, firstTaskDescendent);
+        assert_not_equals(scheduler.asyncData, initialId);
         resolve();
       } catch (e) {
         reject(e);
@@ -144,13 +144,13 @@ promise_test(async t => {
   window.initialId = initializeTaskId();
 
   const first = new Promise((resolve, reject) => setTimeout(t.step_func(() => {
-    assert_equals(scheduler.taskId, initialId);
+    assert_equals(scheduler.asyncData, initialId);
     window.firstTaskParent = initializeTaskId();
     window.resolve1 = resolve;
     window.reject1 = reject;
     setTimeout(`
       try {
-        window.firstTaskDescendent = scheduler.taskId;
+        window.firstTaskDescendent = scheduler.asyncData;
         assert_equals(window.firstTaskDescendent, firstTaskParent);
         assert_not_equals(window.firstTaskDescendent, initialId);
         resolve1();
@@ -162,13 +162,13 @@ promise_test(async t => {
   const second = new Promise((resolve, reject) => setTimeout(t.step_func(() => {
     window.resolve2 = resolve;
     window.reject2 = reject;
-    assert_equals(scheduler.taskId, initialId);
+    assert_equals(scheduler.asyncData, initialId);
     window.secondTaskParent = initializeTaskId();
     setTimeout(`
       try {
-        assert_equals(scheduler.taskId, window.secondTaskParent);
-        assert_not_equals(scheduler.taskId, window.firstTaskDescendent);
-        assert_not_equals(scheduler.taskId, window.initialId);
+        assert_equals(scheduler.asyncData, window.secondTaskParent);
+        assert_not_equals(scheduler.asyncData, window.firstTaskDescendent);
+        assert_not_equals(scheduler.asyncData, window.initialId);
         resolve2();
       } catch {
         reject2("Initial task not identified as ancestor of second setTimeout");
@@ -185,7 +185,7 @@ promise_test(async t => {
 
   await new Promise((resolve, reject) => setTimeout(t.step_func(() => {
     const timeout = () => {
-      assert_equals(scheduler.taskId, initialId);
+      assert_equals(scheduler.asyncData, initialId);
       if (++times < ITERATIONS) {
         setTimeout(t.step_func(timeout), 0);
       } else {

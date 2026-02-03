@@ -13,23 +13,23 @@
 
 const run_await_test = () => {
   promise_test(async () => {
-    const promise_task = scheduler.taskId;
+    const promise_task = scheduler.asyncData;
     const response = await fetch("/resources/blank.html")
     await new Promise(r => {
       // A JS-based promise, resolved when the image loads.
-      assert_equals(scheduler.taskId, parent_task);
-      assert_not_equals(scheduler.taskId, sibling_task);
-      assert_equals(scheduler.taskId, promise_task);
+      assert_equals(scheduler.asyncData, parent_task);
+      assert_not_equals(scheduler.asyncData, sibling_task);
+      assert_equals(scheduler.asyncData, promise_task);
       image_loaded = r;
       image_can_load();
     });
-    assert_equals(scheduler.taskId, parent_task);
+    assert_equals(scheduler.asyncData, parent_task);
     assert_not_equals(scheduler.taskID, sibling_task);
-    assert_equals(scheduler.taskId, promise_task);
+    assert_equals(scheduler.asyncData, promise_task);
     const body = await response.text();
-    assert_equals(scheduler.taskId, parent_task);
-    assert_not_equals(scheduler.taskId, sibling_task);
-    assert_equals(scheduler.taskId, promise_task);
+    assert_equals(scheduler.asyncData, parent_task);
+    assert_not_equals(scheduler.asyncData, sibling_task);
+    assert_equals(scheduler.asyncData, promise_task);
   }, "All microtasks in the await chain after fetching a resource  are " +
      "descendants of the initiating task.");
 };

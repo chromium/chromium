@@ -4,6 +4,6 @@ let nextId = 10000;
 // to descendant tasks and microtasks.
 function initializeTaskId() {
   const id = nextId++;
-  scheduler.taskId = id;
+  scheduler.asyncData = id;
   return id;
 }

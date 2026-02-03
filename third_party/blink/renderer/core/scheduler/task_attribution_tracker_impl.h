@@ -75,8 +75,6 @@ class CORE_EXPORT TaskAttributionTrackerImpl
       TaskScopeType type);
   void OnTaskScopeDestroyed(const TaskScope&) override;
 
-  TaskAttributionId next_task_id_{1};
-
   // A queue of TaskAttributionInfo objects representing tasks that initiated a
   // same-document navigation that was sent to the browser side. They are kept
   // here to ensure the relevant object remains alive (and hence properly

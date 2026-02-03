@@ -16,7 +16,7 @@ const prepare_and_run_test = test => {
 };
 
 const load_image = async () => {
-  sibling_task = scheduler.taskId;
+  sibling_task = scheduler.asyncData;
   await image_can_load_promise;
   const img = new Image();
   img.src = "/images/blue.png?pipe=trickle(d0.05)";

@@ -14,7 +14,7 @@ promise_test((t) => {
     const request = new XMLHttpRequest();
     request.onload = t.step_func(() => {
       try {
-        assert_equals(scheduler.taskId, initialId);
+        assert_equals(scheduler.asyncData, initialId);
         resolve();
       } catch {
         reject("XHR is not a descendant");
@@ -37,7 +37,7 @@ promise_test((t) => {
     // second listener.
     request.addEventListener('load', t.step_func(() => {
       try {
-        assert_equals(scheduler.taskId, initialId);
+        assert_equals(scheduler.asyncData, initialId);
         resolve();
       } catch {
         reject("XHR is not a descendant)");
@@ -54,7 +54,7 @@ promise_test((t) => {
     const request = new XMLHttpRequest();
     request.onreadystatechange= t.step_func(() => {
       try {
-        assert_equals(scheduler.taskId, initialId);
+        assert_equals(scheduler.asyncData, initialId);
       } catch {
         reject("XHR readystatechange is not a descendant");
       }
@@ -78,8 +78,8 @@ promise_test((t) => {
       request = new XMLHttpRequest();
       request.onload = t.step_func(() => {
         try {
-          assert_not_equals(scheduler.taskId, id1);
-          assert_equals(scheduler.taskId, id2);
+          assert_not_equals(scheduler.asyncData, id1);
+          assert_equals(scheduler.asyncData, id2);
           resolve();
         } catch {
           reject("XHR is not a descendant of the correct task");
@@ -90,7 +90,7 @@ promise_test((t) => {
 
     scheduler.postTask(() => {
       id2 = initializeTaskId();
-      assert_equals(scheduler.taskId, id2);
+      assert_equals(scheduler.asyncData, id2);
       request.send();
     });
   });
@@ -112,8 +112,8 @@ promise_test((t) => {
         request.open("GET", "/resources/blank.html");
         request.onload = t.step_func(() => {
           try {
-            assert_equals(scheduler.taskId, id1);
-            assert_not_equals(scheduler.taskId, id2);
+            assert_equals(scheduler.asyncData, id1);
+            assert_not_equals(scheduler.asyncData, id2);
             resolve();
           } catch {
             reject("XHR is not a descendant of the correct task");
@@ -147,7 +147,7 @@ promise_test((t) => {
       const initialId = initializeTaskId();
       const request = new XMLHttpRequest();
       request.addEventListener('load', t.step_func(() => {
-        assert_equals(scheduler.taskId, initialId);
+        assert_equals(scheduler.asyncData, initialId);
         Promise.resolve().then(() => {});
       }));
 
@@ -157,7 +157,7 @@ promise_test((t) => {
       request.addEventListener('load', t.step_func(async () => {
         await new Promise((r) => { innerResolve = r; });
         try {
-          assert_equals(scheduler.taskId, initialId);
+          assert_equals(scheduler.asyncData, initialId);
           resolve();
         } catch (e) {
           reject("XHR is not a descendant");

@@ -17,7 +17,7 @@ const expected = [
   { value: true, name: "External blocking script task" },
 ];
 
-const scriptToEval = `window.results.push(scheduler.taskId == window.initialId);`;
+const scriptToEval = `window.results.push(scheduler.asyncData == window.initialId);`;
 document.write("<script>" + scriptToEval + "<\/script>");
 document.write("<script type=module>" + scriptToEval + "<\/script>");
 document.write("<script src='resources/script.js'><\/script>");

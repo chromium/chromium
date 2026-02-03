@@ -177,13 +177,12 @@ TaskAttributionTrackerImpl::SetTaskStateVariable(
       TaskAttributionTaskState::GetCurrent(isolate_);
 
   TaskAttributionTaskState* next_task_state =
-      previous_task_state ? previous_task_state->ForkAndSetVariable(
-                                next_task_id_, soft_navigation_context)
-                          : MakeGarbageCollected<TaskAttributionInfoImpl>(
-                                next_task_id_, soft_navigation_context,
-                                /*resource_timing_context=*/nullptr);
+      previous_task_state
+          ? previous_task_state->ForkAndSetVariable(soft_navigation_context)
+          : MakeGarbageCollected<TaskAttributionInfoImpl>(
+                soft_navigation_context,
+                /*resource_timing_context=*/nullptr);
 
-  next_task_id_ = next_task_id_.NextId();
   return SetCurrentTaskStateImpl(next_task_state, previous_task_state,
                                  TaskScopeType::kSoftNavigation);
 }
@@ -196,13 +195,10 @@ TaskAttributionTrackerImpl::SetTaskStateVariable(
 
   TaskAttributionTaskState* next_task_state =
       previous_task_state
-          ? previous_task_state->ForkAndSetVariable(next_task_id_,
-                                                    resource_timing_context)
+          ? previous_task_state->ForkAndSetVariable(resource_timing_context)
           : MakeGarbageCollected<TaskAttributionInfoImpl>(
-                next_task_id_, /*soft_navigation_context=*/nullptr,
-                resource_timing_context);
+                /*soft_navigation_context=*/nullptr, resource_timing_context);
 
-  next_task_id_ = next_task_id_.NextId();
   return SetCurrentTaskStateImpl(next_task_state, previous_task_state,
                                  TaskScopeType::kResourceTiming);
 }

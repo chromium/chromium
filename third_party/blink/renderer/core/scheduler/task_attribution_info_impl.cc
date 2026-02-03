@@ -11,10 +11,11 @@
 namespace blink {
 
 TaskAttributionInfoImpl::TaskAttributionInfoImpl(
-    scheduler::TaskAttributionId id,
     SoftNavigationContext* soft_navigation_context,
-    ResourceTimingContext* resource_timing_context)
-    : id_(id),
+    ResourceTimingContext* resource_timing_context,
+    uint32_t async_data_for_test)
+    : id_(scheduler::TaskAttributionId::NextId()),
+      async_data_for_test_(async_data_for_test),
       soft_navigation_context_(soft_navigation_context),
       resource_timing_context_(resource_timing_context) {}
 
@@ -28,18 +29,20 @@ SchedulerTaskContext* TaskAttributionInfoImpl::GetSchedulerTaskContext() {
   return nullptr;
 }
 
-TaskAttributionTaskState* TaskAttributionInfoImpl::ForkAndSetVariable(
-    const scheduler::TaskAttributionId next_task_id,
-    ResourceTimingContext* resource_timing_context) {
-  return MakeGarbageCollected<TaskAttributionInfoImpl>(
-      next_task_id, GetSoftNavigationContext(), resource_timing_context);
+bool TaskAttributionInfoImpl::IsTaskAttributionInfoImpl() const {
+  return true;
 }
 
 TaskAttributionTaskState* TaskAttributionInfoImpl::ForkAndSetVariable(
-    const scheduler::TaskAttributionId next_task_id,
+    ResourceTimingContext* resource_timing_context) {
+  return MakeGarbageCollected<TaskAttributionInfoImpl>(
+      GetSoftNavigationContext(), resource_timing_context, AsyncDataForTest());
+}
+
+TaskAttributionTaskState* TaskAttributionInfoImpl::ForkAndSetVariable(
     SoftNavigationContext* soft_navigation_context) {
   return MakeGarbageCollected<TaskAttributionInfoImpl>(
-      next_task_id, soft_navigation_context, GetResourceTimingContext());
+      soft_navigation_context, GetResourceTimingContext(), AsyncDataForTest());
 }
 
 scheduler::TaskAttributionInfo*
@@ -59,4 +62,7 @@ scheduler::TaskAttributionId TaskAttributionInfoImpl::Id() const {
   return id_;
 }
 
+uint32_t TaskAttributionInfoImpl::AsyncDataForTest() const {
+  return async_data_for_test_;
+}
 }  // namespace blink

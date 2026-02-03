@@ -11,7 +11,7 @@
   promise_test(async t => {
     const initialId = initializeTaskId();
     const transition = document.startViewTransition(() => {
-      assert_equals(scheduler.taskId, initialId);
+      assert_equals(scheduler.asyncData, initialId);
       target.textContent = "This is some different text";
     });
     return transition.finished;

@@ -25,7 +25,7 @@ promise_test(t => {
       try {
         // This is not an ancestor because task attribution doesn't get passed
         // along when the ports get disentangled.
-        assert_not_equals(scheduler.taskId, e.data);
+        assert_not_equals(scheduler.asyncData, e.data);
         resolve();
       } catch(e) {
         reject(e);

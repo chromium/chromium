@@ -36,13 +36,11 @@ class TestTaskAttributionTaskState final : public TaskAttributionTaskState {
   SchedulerTaskContext* GetSchedulerTaskContext() override { return nullptr; }
 
   TaskAttributionTaskState* ForkAndSetVariable(
-      const scheduler::TaskAttributionId,
       ResourceTimingContext*) override {
     return nullptr;
   }
 
   TaskAttributionTaskState* ForkAndSetVariable(
-      const scheduler::TaskAttributionId,
       SoftNavigationContext*) override {
     return nullptr;
   }

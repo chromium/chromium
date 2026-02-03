@@ -223,30 +223,28 @@ SchedulerTaskContext* DOMScheduler::GetSchedulerTaskContextForYield() {
   return can_use_context ? task_context : nullptr;
 }
 
-scheduler::TaskAttributionIdType DOMScheduler::taskId(v8::Isolate* isolate) {
+uint32_t DOMScheduler::asyncData(v8::Isolate* isolate) {
   // `tracker` will be null if TaskAttributionInfrastructureDisabledForTesting
   // is enabled.
   if (auto* tracker = scheduler::TaskAttributionTracker::From(isolate)) {
     // `task_state` is null if there's nothing to propagate.
     if (scheduler::TaskAttributionInfo* task_state =
             tracker->CurrentTaskState()) {
-      return task_state->Id().value();
+      return task_state->AsyncDataForTest();
     }
   }
   return 0;
 }
 
-void DOMScheduler::setTaskId(v8::Isolate* isolate,
-                             scheduler::TaskAttributionIdType task_id) {
+void DOMScheduler::setAsyncData(v8::Isolate* isolate, uint32_t async_data) {
   if (!scheduler::TaskAttributionTracker::From(isolate)) {
     // This will be null if TaskAttributionInfrastructureDisabledForTesting is
     // enabled.
     return;
   }
   auto* task_state = MakeGarbageCollected<TaskAttributionInfoImpl>(
-      scheduler::TaskAttributionId(task_id),
       /*soft_navigation_context=*/nullptr,
-      /*resource_timing_context=*/nullptr);
+      /*resource_timing_context=*/nullptr, async_data);
   TaskAttributionTaskState::SetCurrent(isolate, task_state);
   auto* scheduler = ThreadScheduler::Current()->ToMainThreadScheduler();
   // This test API is only available on the main thread.

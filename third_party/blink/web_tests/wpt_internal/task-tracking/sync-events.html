@@ -22,7 +22,7 @@ function generateTestPromise(t, testType) {
       if (testType == 'continuation') {
         await scheduler.yield();
       }
-      assert_equals(scheduler.taskId, initialId);
+      assert_equals(scheduler.asyncData, initialId);
 
       const request = new XMLHttpRequest();
       // This abort happens synchronously in the background task. Make sure
@@ -45,7 +45,7 @@ function generateTestPromise(t, testType) {
         let didRun = false;
         scheduler.postTask(t.step_func(() => {
           // Also check the task state is propagated here.
-          assert_equals(scheduler.taskId, initialId);
+          assert_equals(scheduler.asyncData, initialId);
           didRun = true;
         }));
 

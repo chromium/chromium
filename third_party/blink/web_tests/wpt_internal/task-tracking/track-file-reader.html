@@ -19,7 +19,7 @@ for (let method of ['readAsText', 'readAsDataURL', 'readAsArrayBuffer', 'readAsB
 
       for (const e of events) {
         reader.addEventListener(e, () => {
-          detected[e] = scheduler.taskId;
+          detected[e] = scheduler.asyncData;
         });
       }
       reader.addEventListener('loadend', resolve);
@@ -47,7 +47,7 @@ promise_test(async () => {
     let detected = 0;
     await new Promise(resolve => {
       reader.addEventListener('loadend', () => {
-        detected = scheduler.taskId;
+        detected = scheduler.asyncData;
         resolve();
       });
       const blob = new Blob(["Blob Loblaw"]);
@@ -66,7 +66,7 @@ promise_test(async () => {
     let count = 0;
     const blob = new Blob(["Blob Loblaw"]);
     reader.addEventListener('loadend', () => {
-      detected.push(scheduler.taskId);
+      detected.push(scheduler.asyncData);
       if (++count == 1) {
         // Initiate another read and check if the task state continues to be
         // propgagted. This would fail, for example, if the reader's task state

@@ -15,7 +15,7 @@ promise_test(t => {
 
   return scheduler.postTask(async _ => {
     // We should be in a new task.
-    const postTaskId = scheduler.taskId;
+    const postTaskId = scheduler.asyncData;
     assert_equals(scriptId, postTaskId,
       "postTaskId should be equal to the script task ID.");
 
@@ -23,7 +23,7 @@ promise_test(t => {
     // Set things up so the abort event listener is an ancestor of this task.
     const controller = new AbortController();
     controller.signal.onabort = t.step_func(() => {
-      assert_equals(scheduler.taskId, postTaskId,
+      assert_equals(scheduler.asyncData, postTaskId,
         "aborted task ID is the same as the postTask ID, as it is fired" +
         " synchronously.");
       eventFired = true;
@@ -34,7 +34,7 @@ promise_test(t => {
     controller.abort();
     assert_true(eventFired);
     // Make sure the previous ID was reset properly.
-    assert_equals(scheduler.taskId, postTaskId);
+    assert_equals(scheduler.asyncData, postTaskId);
   });
 }, "Task tracking should work when a new task scope starts during a microtask");
 

@@ -20,5 +20,7 @@ enum AncestorStatus {
 ] interface Scheduler {
     [CallWith=ScriptState, MeasureAs=SchedulerPostTask, RaisesException] Promise<any> postTask(SchedulerPostTaskCallback callback, optional SchedulerPostTaskOptions options = {});
     [CallWith=ScriptState, MeasureAs=SchedulerYield, RaisesException] Promise<undefined> yield();
-    [RuntimeEnabled=UnexposedTaskIds, CallWith=Isolate, Exposed=Window] attribute unsigned long taskId;
+    // Test-only method for getting and setting data that is propagated asynchronously
+    // via Task Attribution. This is only meant as a means to test Task Attribution.
+    [RuntimeEnabled=UnexposedTaskIds, CallWith=Isolate, Exposed=Window] attribute unsigned long asyncData;
 };

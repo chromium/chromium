@@ -15,7 +15,7 @@ promise_test(async t => {
   frame.srcdoc = `
     <script>
       window.onmessage = function() {
-        parent.postMessage({taskId: scheduler.taskId}, "*");
+        parent.postMessage({taskId: scheduler.asyncData}, "*");
       }
       </scr`+`ipt>
     `;
