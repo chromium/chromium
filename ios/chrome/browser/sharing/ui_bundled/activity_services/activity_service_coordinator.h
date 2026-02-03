@@ -9,7 +9,6 @@
 #import "ios/chrome/browser/sharing/ui_bundled/sharing_scenario.h"
 
 @class SharingParams;
-@protocol SharingPositioner;
 @protocol ActivityServicePresentation;
 @protocol BookmarksCommands;
 class Browser;
@@ -22,16 +21,21 @@ class Browser;
 // Initializes a coordinator instance configured to share the current tab's URL
 // based on `baseViewController` and `browser`, and where `params` contains all
 // necessary values to drive the scenario.
+- (instancetype)
+    initWithBaseViewController:(UIViewController*)baseViewController
+                       browser:(Browser*)browser
+                        params:(SharingParams*)params
+                    sourceItem:(id<UIPopoverPresentationControllerSourceItem>)
+                                   sourceItem NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
                                    browser:(Browser*)browser
                                     params:(SharingParams*)params
+                                sourceView:(UIView*)sourceView
+                                sourceRect:(CGRect)sourceRect
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
-
-// Provider of the share action location.
-@property(nonatomic, readwrite, weak) id<SharingPositioner> positionProvider;
 
 // Provider of share action presentation.
 @property(nonatomic, readwrite, weak) id<ActivityServicePresentation>

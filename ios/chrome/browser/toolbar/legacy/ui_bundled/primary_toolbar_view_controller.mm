@@ -204,6 +204,10 @@ BASE_FEATURE(kPrimaryToolbarViewDidLoadUpdateViews,
   self.view.tabGroupIndicatorView = view;
 }
 
+- (UIView*)shareButton {
+  return self.view.shareButton;
+}
+
 #pragma mark - Property accessors
 
 - (void)setIsNTP:(BOOL)isNTP {
@@ -227,16 +231,6 @@ BASE_FEATURE(kPrimaryToolbarViewDidLoadUpdateViews,
 
 - (BOOL)locationBarIsExpanded {
   return self.view.expanded;
-}
-
-#pragma mark - SharingPositioner
-
-- (UIView*)sourceView {
-  return self.view.shareButton;
-}
-
-- (CGRect)sourceRect {
-  return self.view.shareButton.bounds;
 }
 
 #pragma mark - FullscreenUIElement

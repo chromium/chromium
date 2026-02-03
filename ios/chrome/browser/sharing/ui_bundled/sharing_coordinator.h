@@ -19,33 +19,20 @@ class Browser;
 
 // Creates a coordinator configured to share the current tab's URL using the
 // base `viewController`, a `browser`, `params` with all the necessary values
-// to drive the scenario, and an `originView` from which the scenario was
-// triggered. This initializer also uses the `originView`'s bounds to position
-// the activity view popover on iPad.
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser
-                                    params:(SharingParams*)params
-                                originView:(UIView*)originView;
+// to drive the scenario. `sourceItem` is used to position the share menu.
+- (instancetype)
+    initWithBaseViewController:(UIViewController*)viewController
+                       browser:(Browser*)browser
+                        params:(SharingParams*)params
+                    sourceItem:(id<UIPopoverPresentationControllerSourceItem>)
+                                   sourceItem NS_DESIGNATED_INITIALIZER;
 
-// Creates a coordinator configured to share the URLs specified in `params`.
-// This initializer uses `barButtonItem` to position the activity view popover
-// on iPad.
+// Same as above, but use `sourceView` and `sourceRect` to position the menu.
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
                                     params:(SharingParams*)params
-                                    anchor:(UIBarButtonItem*)barButtonItem;
-
-// Creates a coordinator configured to share the current tab's URL using the
-// base `viewController`, a `browser`, `params` with all the necessary values
-// to drive the scenario. If `barButtonItem` is non-null, it will be used
-// to present the activity view popover on iPad. Otherwise, `originView` and
-// `originRect` will be used to position the activity view popover on iPad.
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser
-                                    params:(SharingParams*)params
-                                originView:(UIView*)originView
-                                originRect:(CGRect)originRect
-                                    anchor:(UIBarButtonItem*)barButtonItem
+                                sourceView:(UIView*)sourceView
+                                sourceRect:(CGRect)sourceRect
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -54,7 +41,7 @@ class Browser;
 
 // If there is a download currently happening, this cancels it and triggers a
 // new coordinator to be created.
-- (void)cancelIfNecessaryAndCreateNewCoordinator;
+- (void)cancelIfNecessaryAndCreateNewCoordinatorFromView:(UIView*)shareButton;
 
 @end
 

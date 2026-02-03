@@ -12,7 +12,6 @@
 #import "ios/chrome/browser/sharing/ui_bundled/qr_generator/qr_generator_view_controller.h"
 #import "ios/chrome/browser/sharing/ui_bundled/sharing_coordinator.h"
 #import "ios/chrome/browser/sharing/ui_bundled/sharing_params.h"
-#import "ios/chrome/browser/sharing/ui_bundled/sharing_positioner.h"
 #import "ios/chrome/browser/sharing/ui_bundled/sharing_scenario.h"
 #import "ios/chrome/common/ui/elements/popover_label_view_controller.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -118,7 +117,7 @@
       initWithBaseViewController:self.viewController
                          browser:self.browser
                           params:params
-                      originView:self.viewController.primaryActionButton];
+                      sourceItem:self.viewController.primaryActionButton];
   [self.sharingCoordinator start];
 }
 

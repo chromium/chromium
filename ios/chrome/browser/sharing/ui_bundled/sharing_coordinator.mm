@@ -25,7 +25,6 @@
 #import "ios/chrome/browser/sharing/ui_bundled/share_download_overlay_coordinator.h"
 #import "ios/chrome/browser/sharing/ui_bundled/share_file_download_metrics.h"
 #import "ios/chrome/browser/sharing/ui_bundled/sharing_params.h"
-#import "ios/chrome/browser/sharing/ui_bundled/sharing_positioner.h"
 #import "ios/web/public/download/crw_web_view_download.h"
 
 // Exposes methods to allow calling the from helper free functions.
@@ -117,8 +116,7 @@ void StartDownloadForWebState(__weak SharingCoordinator* coordinator,
 
 }  // namespace
 
-@interface SharingCoordinator () <SharingPositioner,
-                                  ActivityServicePresentation,
+@interface SharingCoordinator () <ActivityServicePresentation,
                                   CRWWebViewDownloadDelegate,
                                   QRGenerationCommands>
 
@@ -132,12 +130,6 @@ void StartDownloadForWebState(__weak SharingCoordinator* coordinator,
 @property(nonatomic, strong) QRGeneratorCoordinator* qrGeneratorCoordinator;
 
 @property(nonatomic, strong) SharingParams* params;
-
-@property(nonatomic, weak) UIView* originView;
-
-@property(nonatomic, assign) CGRect originRect;
-
-@property(nonatomic, weak) UIBarButtonItem* anchor;
 
 // Path where the downloaded file is saved.
 @property(nonatomic, strong) NSURL* fileNSURL;
@@ -164,49 +156,42 @@ void StartDownloadForWebState(__weak SharingCoordinator* coordinator,
 
 @implementation SharingCoordinator {
   scoped_refptr<base::SequencedTaskRunner> _taskRunner;
+  // The source item for the presentation.
+  id<UIPopoverPresentationControllerSourceItem> _sourceItem;
+  // The source view for the presentation.
+  UIView* _sourceView;
+  // The source rect in the _sourceView for the presentation.
+  CGRect _sourceRect;
 }
 
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser
-                                    params:(SharingParams*)params
-                                originView:(UIView*)originView {
-  DCHECK(originView);
-  self = [self initWithBaseViewController:viewController
-                                  browser:browser
-                                   params:params
-                               originView:originView
-                               originRect:originView.bounds
-                                   anchor:nil];
-  return self;
-}
-
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser
-                                    params:(SharingParams*)params
-                                    anchor:(UIBarButtonItem*)anchor {
-  DCHECK(anchor);
-  self = [self initWithBaseViewController:viewController
-                                  browser:browser
-                                   params:params
-                               originView:nil
-                               originRect:CGRectZero
-                                   anchor:anchor];
-  return self;
-}
-
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser
-                                    params:(SharingParams*)params
-                                originView:(UIView*)originView
-                                originRect:(CGRect)originRect
-                                    anchor:(UIBarButtonItem*)anchor {
+- (instancetype)
+    initWithBaseViewController:(UIViewController*)viewController
+                       browser:(Browser*)browser
+                        params:(SharingParams*)params
+                    sourceItem:(id<UIPopoverPresentationControllerSourceItem>)
+                                   sourceItem {
   DCHECK(params);
   if ((self = [super initWithBaseViewController:viewController
                                         browser:browser])) {
     _params = params;
-    _originView = originView;
-    _originRect = originRect;
-    _anchor = anchor;
+    _sourceItem = sourceItem;
+    _taskRunner = base::ThreadPool::CreateSequencedTaskRunner(
+        {base::TaskPriority::USER_VISIBLE, base::MayBlock()});
+  }
+  return self;
+}
+
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                                    params:(SharingParams*)params
+                                sourceView:(UIView*)sourceView
+                                sourceRect:(CGRect)sourceRect {
+  DCHECK(params);
+  if ((self = [super initWithBaseViewController:viewController
+                                        browser:browser])) {
+    _params = params;
+    _sourceView = sourceView;
+    _sourceRect = sourceRect;
     _taskRunner = base::ThreadPool::CreateSequencedTaskRunner(
         {base::TaskPriority::USER_VISIBLE, base::MayBlock()});
   }
@@ -216,23 +201,23 @@ void StartDownloadForWebState(__weak SharingCoordinator* coordinator,
 // The behaviour is predictable: the coordinator will be stopped, either right
 // now or delayed (in -cancelDownload method). If we are already in the process
 // of cancelling a download, do not call this again.
-- (void)cancelIfNecessaryAndCreateNewCoordinator {
+- (void)cancelIfNecessaryAndCreateNewCoordinatorFromView:(UIView*)shareButton {
   // Download has been cancelled or currently not download (so no overlay).
   if (self.isDownloadCanceled || !self.overlay) {
     // Stop the coordinator now.
-    [self stopAndStartNewCoordinator];
+    [self stopAndStartNewCoordinatorFromView:shareButton];
   } else if (!self.isCancelling) {
     // Delay stopping the coordinator after the download has been cancelled.
     self.shouldRestartCoordinator = YES;
-    [self cancelDownload];
+    [self cancelDownloadFromView:shareButton];
   }
 }
 
 // Stop this coordinator and start a new one.
-- (void)stopAndStartNewCoordinator {
+- (void)stopAndStartNewCoordinatorFromView:(UIView*)shareButton {
   id<ActivityServiceCommands> activityServiceHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ActivityServiceCommands);
-  [activityServiceHandler stopAndStartSharingCoordinator];
+  [activityServiceHandler stopAndStartSharingCoordinatorFromView:shareButton];
 }
 
 #pragma mark - ChromeCoordinator
@@ -258,21 +243,9 @@ void StartDownloadForWebState(__weak SharingCoordinator* coordinator,
 - (void)stop {
   [self activityServiceDidEndPresenting];
   [self hideQRCode];
-  self.originView = nil;
-}
-
-#pragma mark - SharingPositioner
-
-- (UIView*)sourceView {
-  return self.originView;
-}
-
-- (CGRect)sourceRect {
-  return self.originRect;
-}
-
-- (UIBarButtonItem*)barButtonItem {
-  return self.anchor;
+  _sourceItem = nil;
+  _sourceView = nil;
+  _sourceRect = CGRectZero;
 }
 
 #pragma mark - ActivityServicePresentation
@@ -318,12 +291,21 @@ void StartDownloadForWebState(__weak SharingCoordinator* coordinator,
 
 // Starts the share menu feature.
 - (void)startActivityService {
-  self.activityServiceCoordinator = [[ActivityServiceCoordinator alloc]
-      initWithBaseViewController:self.baseViewController
-                         browser:self.browser
-                          params:self.params];
+  if (_sourceItem) {
+    self.activityServiceCoordinator = [[ActivityServiceCoordinator alloc]
+        initWithBaseViewController:self.baseViewController
+                           browser:self.browser
+                            params:self.params
+                        sourceItem:_sourceItem];
+  } else {
+    self.activityServiceCoordinator = [[ActivityServiceCoordinator alloc]
+        initWithBaseViewController:self.baseViewController
+                           browser:self.browser
+                            params:self.params
+                        sourceView:_sourceView
+                        sourceRect:_sourceRect];
+  }
 
-  self.activityServiceCoordinator.positionProvider = self;
   self.activityServiceCoordinator.presentationProvider = self;
   self.activityServiceCoordinator.scopedHandler = self;
 
@@ -402,24 +384,24 @@ void StartDownloadForWebState(__weak SharingCoordinator* coordinator,
 
 #pragma mark - ShareDownloadOverlayCommands
 
-- (void)cancelDownload {
+- (void)cancelDownloadFromView:(UIView*)shareButton {
   [self stopDisplayDownloadOverlay];
   self.isCancelling = YES;
   __weak SharingCoordinator* weakSelf = self;
   [self.download cancelDownload:^{
-    [weakSelf downloadWasCancelled];
+    [weakSelf downloadWasCancelledFromView:shareButton];
   }];
   UMA_HISTOGRAM_ENUMERATION(kOpenInDownloadHistogram,
                             OpenInDownloadResult::kCanceled);
 }
 
-- (void)downloadWasCancelled {
+- (void)downloadWasCancelledFromView:(UIView*)shareButton {
   self.isDownloadCanceled = YES;
   self.isCancelling = NO;
   if (self.shouldRestartCoordinator) {
     // Self will be destroyed after this call so it should not be used
     // anymore.
-    [self stopAndStartNewCoordinator];
+    [self stopAndStartNewCoordinatorFromView:shareButton];
   }
 }
 

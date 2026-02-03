@@ -334,7 +334,7 @@
       initWithBaseViewController:self.recentTabsTableViewController
                          browser:self.browser
                           params:params
-                      originView:view];
+                      sourceItem:view];
   [self.sharingCoordinator start];
 }
 

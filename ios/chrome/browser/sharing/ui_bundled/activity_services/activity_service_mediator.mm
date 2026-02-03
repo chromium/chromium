@@ -38,7 +38,6 @@
 #import "ios/chrome/browser/sharing/ui_bundled/activity_services/data/share_file_data.h"
 #import "ios/chrome/browser/sharing/ui_bundled/activity_services/data/share_image_data.h"
 #import "ios/chrome/browser/sharing/ui_bundled/activity_services/data/share_to_data.h"
-#import "ios/chrome/browser/sharing/ui_bundled/sharing_positioner.h"
 #import "ios/chrome/browser/sync/model/send_tab_to_self_sync_service_factory.h"
 
 @interface ActivityServiceMediator ()

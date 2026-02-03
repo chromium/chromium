@@ -2205,7 +2205,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
       [[SharingCoordinator alloc] initWithBaseViewController:self
                                                      browser:_browser.get()
                                                       params:params
-                                                  originView:cellView];
+                                                  sourceItem:cellView];
   [self.sharingCoordinator start];
 }
 

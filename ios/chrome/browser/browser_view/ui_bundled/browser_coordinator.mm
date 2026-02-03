@@ -296,7 +296,6 @@
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/sharing/ui_bundled/sharing_coordinator.h"
 #import "ios/chrome/browser/sharing/ui_bundled/sharing_params.h"
-#import "ios/chrome/browser/sharing/ui_bundled/sharing_positioner.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_coordinator.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_mediator.h"
 #import "ios/chrome/browser/signin/model/account_consistency_browser_agent.h"
@@ -2091,7 +2090,7 @@ const char kChromeAppStoreUrl[] =
 
 #pragma mark - ActivityServiceCommands
 
-- (void)stopAndStartSharingCoordinator {
+- (void)stopAndStartSharingCoordinatorFromView:(UIView*)shareButton {
   SharingScenario scenario = IsReaderModeActiveInWebState(self.activeWebState)
                                  ? SharingScenario::ShareInReaderMode
                                  : SharingScenario::TabShareButton;
@@ -2100,29 +2099,26 @@ const char kChromeAppStoreUrl[] =
   // Exit fullscreen if needed to make sure that share button is visible.
   _fullscreenController->ExitFullscreen(FullscreenExitReason::kForcedByCode);
 
-  id<SharingPositioner> positioner = _toolbarCoordinator.sharingPositioner;
-  UIBarButtonItem* anchor = nil;
-  if ([positioner respondsToSelector:@selector(barButtonItem)]) {
-    anchor = positioner.barButtonItem;
+  if (!shareButton) {
+    shareButton = _toolbarCoordinator.shareButton;
   }
 
   [self.sharingCoordinator stop];
   self.sharingCoordinator = nil;
-  self.sharingCoordinator = [[SharingCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser
-                          params:params
-                      originView:positioner.sourceView
-                      originRect:positioner.sourceRect
-                          anchor:anchor];
+  self.sharingCoordinator =
+      [[SharingCoordinator alloc] initWithBaseViewController:self.viewController
+                                                     browser:self.browser
+                                                      params:params
+                                                  sourceItem:shareButton];
   [self.sharingCoordinator start];
 }
 
-- (void)showShareSheet {
-  if (!self.sharingCoordinator) {
-    [self stopAndStartSharingCoordinator];
+- (void)showShareSheetFromShareButton:(UIView*)shareButton {
+  if (self.sharingCoordinator) {
+    [self.sharingCoordinator
+        cancelIfNecessaryAndCreateNewCoordinatorFromView:shareButton];
   } else {
-    [self.sharingCoordinator cancelIfNecessaryAndCreateNewCoordinator];
+    [self stopAndStartSharingCoordinatorFromView:shareButton];
   }
 }
 
@@ -2147,7 +2143,7 @@ const char kChromeAppStoreUrl[] =
       [[SharingCoordinator alloc] initWithBaseViewController:self.viewController
                                                      browser:self.browser
                                                       params:params
-                                                  originView:originView];
+                                                  sourceItem:originView];
   [self.sharingCoordinator start];
 }
 
@@ -2158,13 +2154,12 @@ const char kChromeAppStoreUrl[] =
                           additionalText:command.selectedText
                                 scenario:SharingScenario::SharedHighlight];
 
-  self.sharingCoordinator =
-      [[SharingCoordinator alloc] initWithBaseViewController:self.viewController
-                                                     browser:self.browser
-                                                      params:params
-                                                  originView:command.sourceView
-                                                  originRect:command.sourceRect
-                                                      anchor:nil];
+  self.sharingCoordinator = [[SharingCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser
+                          params:params
+                      sourceView:command.sourceView
+                      sourceRect:command.sourceRect];
   [self.sharingCoordinator start];
 }
 
@@ -2174,13 +2169,12 @@ const char kChromeAppStoreUrl[] =
             title:command.title
          scenario:SharingScenario::ShareInWebContextMenu];
 
-  self.sharingCoordinator =
-      [[SharingCoordinator alloc] initWithBaseViewController:self.viewController
-                                                     browser:self.browser
-                                                      params:params
-                                                  originView:command.sourceView
-                                                  originRect:command.sourceRect
-                                                      anchor:nil];
+  self.sharingCoordinator = [[SharingCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser
+                          params:params
+                      sourceView:command.sourceView
+                      sourceRect:command.sourceRect];
   [self.sharingCoordinator start];
 }
 
@@ -2836,7 +2830,7 @@ const char kChromeAppStoreUrl[] =
 
 - (void)hideComposeboxAndShowShareSheet {
   [self hideComposeboxWithCompletion:^{
-    [self showShareSheet];
+    [self showShareSheetFromShareButton:nil];
   }];
 }
 

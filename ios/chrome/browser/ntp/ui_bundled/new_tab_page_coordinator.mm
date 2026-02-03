@@ -1065,7 +1065,7 @@
       initWithBaseViewController:self.NTPViewController
                          browser:self.browser
                           params:params
-                      originView:view];
+                      sourceItem:view];
   [_sharingCoordinator start];
 }
 

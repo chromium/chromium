@@ -685,7 +685,7 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
     case kShareButton: {
       [self.locationBarSteadyView.trailingButton
                  addTarget:self.dispatcher
-                    action:@selector(showShareSheet)
+                    action:@selector(showShareSheetFromShareButton:)
           forControlEvents:UIControlEventTouchUpInside];
 
       // Add self as a target to collect the metrics.
@@ -821,13 +821,15 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
     UIImage* image =
         DefaultSymbolWithPointSize(kShareSymbol, kSymbolImagePointSize);
 
+    __weak UIView* steadyView = _locationBarSteadyView;
     UIAction* shareThisPageAction =
         [UIAction actionWithTitle:l10n_util::GetNSString(
                                       IDS_IOS_TOOLS_MENU_SHARE_THIS_PAGE)
                             image:image
                        identifier:nil
                           handler:^(UIAction* action) {
-                            [weakSelf.dispatcher showShareSheet];
+                            [weakSelf.dispatcher
+                                showShareSheetFromShareButton:steadyView];
                           }];
 
     UIMenu* divider = [UIMenu menuWithTitle:@""
