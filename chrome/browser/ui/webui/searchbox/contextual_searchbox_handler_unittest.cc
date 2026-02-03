@@ -467,28 +467,24 @@ TEST_F(ContextualSearchboxHandlerTest, SubmitQuery_DelayUpload) {
 }
 
 TEST_F(ContextualSearchboxHandlerTest, OnInputStateChanged) {
-  composebox_query::mojom::InputStatePtr received_state_1;
-  composebox_query::mojom::InputStatePtr received_state_2;
+  omnibox::InputState received_state_1;
+  omnibox::InputState received_state_2;
 
   EXPECT_CALL(mock_searchbox_page_, OnInputStateChanged)
       .Times(2)
-      .WillOnce([&](composebox_query::mojom::InputStatePtr state) {
-        received_state_1 = std::move(state);
-      })
-      .WillOnce([&](composebox_query::mojom::InputStatePtr state) {
-        received_state_2 = std::move(state);
-      });
+      .WillOnce(
+          [&](const omnibox::InputState& state) { received_state_1 = state; })
+      .WillOnce(
+          [&](const omnibox::InputState& state) { received_state_2 = state; });
 
   handler().SetActiveToolMode(omnibox::ToolMode::TOOL_MODE_CANVAS);
   mock_searchbox_page_.FlushForTesting();
-  ASSERT_TRUE(received_state_1);
-  EXPECT_EQ(received_state_1->active_tool, omnibox::ToolMode::TOOL_MODE_CANVAS);
+  EXPECT_EQ(received_state_1.active_tool, omnibox::ToolMode::TOOL_MODE_CANVAS);
 
   handler().SetActiveModelMode(omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
   mock_searchbox_page_.FlushForTesting();
-  ASSERT_TRUE(received_state_2);
-  EXPECT_EQ(received_state_2->active_tool, omnibox::ToolMode::TOOL_MODE_CANVAS);
-  EXPECT_EQ(received_state_2->active_model,
+  EXPECT_EQ(received_state_2.active_tool, omnibox::ToolMode::TOOL_MODE_CANVAS);
+  EXPECT_EQ(received_state_2.active_model,
             omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
 }
 TEST_F(ContextualSearchboxHandlerTest, SubmitQueryWithAdditionalParams) {

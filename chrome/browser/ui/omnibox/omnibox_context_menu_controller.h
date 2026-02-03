@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_CONTEXT_MENU_CONTROLLER_H_
 #define CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_CONTEXT_MENU_CONTROLLER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -15,6 +16,7 @@
 #include "base/time/time.h"
 #include "components/contextual_search/input_state_model.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
+#include "components/omnibox/common/input_state.h"
 #include "components/omnibox/composebox/composebox_query.mojom.h"
 #include "ui/menus/simple_menu_model.h"
 #include "url/gurl.h"
@@ -153,7 +155,7 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
   void OnFaviconDataAvailable(
       int command_id,
       const favicon_base::FaviconImageResult& image_result);
-  void OnGetInputState(composebox_query::mojom::InputStatePtr input_state_ptr);
+  void OnGetInputState(const std::optional<omnibox::InputState>& input_state);
 
   void UpdateSearchboxContextToolMode(searchbox::mojom::ToolMode tool_mode);
 
@@ -185,7 +187,7 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
   raw_ptr<FaviconService> favicon_service_;
   int next_command_id_ = 0;
 
-  composebox_query::mojom::InputState input_state_;
+  omnibox::InputState input_state_;
 
   base::WeakPtrFactory<OmniboxContextMenuController> weak_ptr_factory_{this};
 };

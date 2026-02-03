@@ -363,9 +363,9 @@ void OmniboxContextMenuController::OnFaviconDataAvailable(
 }
 
 void OmniboxContextMenuController::OnGetInputState(
-    composebox_query::mojom::InputStatePtr input_state_ptr) {
-  if (input_state_ptr) {
-    input_state_ = *input_state_ptr;
+    const std::optional<omnibox::InputState>& input_state) {
+  if (input_state) {
+    input_state_ = *input_state;
   }
 }
 

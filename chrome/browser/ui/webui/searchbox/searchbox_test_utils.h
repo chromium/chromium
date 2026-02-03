@@ -74,7 +74,7 @@ class MockSearchboxPage : public searchbox::mojom::Page {
   MOCK_METHOD(void, OnTabStripChanged, ());
   MOCK_METHOD(void,
               OnInputStateChanged,
-              (composebox_query::mojom::InputStatePtr),
+              (const omnibox::InputState&),
               (override));
   MOCK_METHOD(void,
               AddFileContext,

@@ -3155,6 +3155,11 @@ suite('NewTabPageRealboxTest', () => {
       disabledModels: [],
       disabledTools: [],
       disabledInputTypes: [],
+      toolConfigs: [],
+      modelConfigs: [],
+      toolsSectionConfig: null,
+      modelSectionConfig: null,
+      hintText: '',
     } as InputState;
     testProxy.callbackRouterRemote.onInputStateChanged(inputState);
     await microtasksFinished();

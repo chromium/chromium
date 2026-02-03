@@ -18,7 +18,6 @@ composebox_query::mojom::FileUploadErrorType ToMojom(FileUploadErrorType type);
 FileUploadErrorType FromMojom(
     composebox_query::mojom::FileUploadErrorType type);
 
-composebox_query::mojom::InputStatePtr ToMojom(const InputState& state);
 }  // namespace contextual_search
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CR_COMPONENTS_SEARCHBOX_CONTEXTUAL_SEARCH_TYPE_CONVERTERS_H_

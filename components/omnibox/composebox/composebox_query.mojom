@@ -84,6 +84,27 @@ enum InputType {
   kBrowserTab = 3,
 };
 
+// Configuration for a tool.
+struct ToolConfig {
+  ToolMode tool;
+  bool disable_active_model_selection;
+  string menu_label;
+  string chip_label;
+  string hint_text;
+};
+
+// Configuration for a model.
+struct ModelConfig {
+  ModelMode model;
+  string menu_label;
+  string hint_text;
+};
+
+// Configuration for a section.
+struct SectionConfig {
+  string header;
+};
+
 // Represents the current state of inputs, models, and tools within AIM.
 // LINT.IfChange(InputState)
 struct InputState {
@@ -103,5 +124,15 @@ struct InputState {
   array<ToolMode> disabled_tools;
   // The set of currently disabled input types.
   array<InputType> disabled_input_types;
+  // Configuration for available tools.
+  array<ToolConfig> tool_configs;
+  // Configuration for available models.
+  array<ModelConfig> model_configs;
+  // Configuration for the tools section.
+  SectionConfig? tools_section_config;
+  // Configuration for the model section.
+  SectionConfig? model_section_config;
+  // Hint text to display in the input.
+  string hint_text;
 };
-// LINT.ThenChange(//components/contextual_search/input_state_model.h:InputState)
+// LINT.ThenChange(//components/omnibox/common/input_state.h:InputState)
