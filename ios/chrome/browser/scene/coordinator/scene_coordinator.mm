@@ -9,6 +9,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #import "components/autofill/core/browser/data_model/payments/credit_card.h"
+#import "components/infobars/core/infobar_manager.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/tab_opening.h"
@@ -24,12 +25,14 @@
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_notification_infobar_delegate.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/history/ui_bundled/history_coordinator.h"
 #import "ios/chrome/browser/history/ui_bundled/history_coordinator_impl.h"
 #import "ios/chrome/browser/incognito_interstitial/ui_bundled/incognito_interstitial_coordinator.h"
 #import "ios/chrome/browser/incognito_interstitial/ui_bundled/incognito_interstitial_coordinator_delegate.h"
+#import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/main/ui/browser_layout_view_controller.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/policy/model/policy_watcher_browser_agent.h"
@@ -45,6 +48,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios_util.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/policy_change_commands.h"
@@ -61,6 +65,9 @@
 #import "ios/chrome/browser/youtube_incognito/coordinator/youtube_incognito_coordinator_delegate.h"
 
 namespace {
+
+// The App Store page for Google Chrome.
+NSString* const kChromeAppStoreURL = @"https://apps.apple.com/app/id535886823";
 
 // Records a SigninFullscreenPromoEvents UMA histogram.
 void RecordIfNeededSigninFullscreenPromoEvent(
@@ -92,6 +99,9 @@ void RecordIfNeededSigninFullscreenPromoEvent(
 
 // The Browser for the current interface.
 @property(nonatomic, readonly) Browser* currentBrowser;
+
+// YES if the Settings view is being dismissed.
+@property(nonatomic, assign) BOOL dismissingSettings;
 
 @end
 
@@ -369,9 +379,29 @@ void RecordIfNeededSigninFullscreenPromoEvent(
   [_safariDataImportCoordinator start];
 }
 
-- (void)stopSafariDataImportCoordinator {
-  [_safariDataImportCoordinator stop];
-  _safariDataImportCoordinator = nil;
+- (void)displaySafariDataImportFromEntryPoint:
+            (SafariDataImportEntryPoint)entryPoint
+                                withUIHandler:
+                                    (id<SafariDataImportUIHandler>)UIHandler {
+  // If presented over settings, the base view controller is the top presented
+  // view controller. Otherwise, it is the active view controller.
+  BOOL presentOverSettings = self.settingsNavigationController &&
+                             entryPoint == SafariDataImportEntryPoint::kSetting;
+  UIViewController* baseViewController = presentOverSettings
+                                             ? self.settingsNavigationController
+                                             : self.activeViewController;
+
+  __weak __typeof(self) weakSelf = self;
+  auto startImport = ^{
+    [weakSelf displaySafariDataImportFromEntryPoint:entryPoint
+                                      withUIHandler:UIHandler
+                                 baseViewController:baseViewController];
+  };
+  if (presentOverSettings) {
+    startImport();
+  } else {
+    [self closePresentedViews:YES completion:startImport];
+  }
 }
 
 - (void)createSafetyCheckSettingsWithReferrer:
@@ -584,12 +614,6 @@ void RecordIfNeededSigninFullscreenPromoEvent(
   [_youtubeIncognitoCoordinator start];
 }
 
-- (void)stopYoutubeIncognitoCoordinator {
-  [_youtubeIncognitoCoordinator stop];
-  _youtubeIncognitoCoordinator.delegate = nil;
-  _youtubeIncognitoCoordinator = nil;
-}
-
 - (void)showIncognitoInterstitialWithUrlLoadParams:
     (const UrlLoadParams&)URLLoadParams {
   DCHECK(_incognitoInterstitialCoordinator == nil);
@@ -602,20 +626,86 @@ void RecordIfNeededSigninFullscreenPromoEvent(
   [_incognitoInterstitialCoordinator start];
 }
 
-- (void)stopIncognitoInterstitialCoordinator {
-  [_incognitoInterstitialCoordinator stop];
-  _incognitoInterstitialCoordinator = nil;
+- (void)showAppStorePage {
+  [[UIApplication sharedApplication]
+                openURL:[NSURL URLWithString:kChromeAppStoreURL]
+                options:@{}
+      completionHandler:nil];
 }
 
-- (void)stopAssistantSheetCoordinator {
-  [_assistantSheetCoordinator stop];
-  _assistantSheetCoordinator = nil;
+- (void)showSigninAccountNotificationFromViewController:
+    (UIViewController*)baseViewController {
+  web::WebState* webState =
+      _regularBrowser->GetWebStateList()->GetActiveWebState();
+  DCHECK(webState);
+  infobars::InfoBarManager* infoBarManager =
+      InfoBarManagerImpl::FromWebState(webState);
+  DCHECK(infoBarManager);
+  CommandDispatcher* dispatcher = _regularBrowser->GetCommandDispatcher();
+  id<SettingsCommands> settingsHandler =
+      HandlerForProtocol(dispatcher, SettingsCommands);
+  SigninNotificationInfoBarDelegate::Create(
+      infoBarManager, self.profile, settingsHandler, baseViewController);
 }
 
-- (void)stopHistoryCoordinator {
-  [_historyCoordinator stop];
-  _historyCoordinator.delegate = nil;
-  _historyCoordinator = nil;
+- (void)showPriceTrackingNotificationsSettings {
+  CHECK(!self.isSigninInProgress);
+  if (self.settingsNavigationController) {
+    __weak SceneCoordinator* weakSelf = self;
+    [self closePresentedViews:NO
+                   completion:^{
+                     [weakSelf openPriceTrackingNotificationsSettings];
+                   }];
+    return;
+  }
+  [self openPriceTrackingNotificationsSettings];
+}
+
+- (void)closePresentedViews {
+  [self closePresentedViews:YES completion:nil];
+}
+
+- (void)closePresentedViews:(BOOL)animated
+                 completion:(ProceduralBlock)completion {
+  // If the Incognito interstitial is active, stop it.
+  [self stopIncognitoInterstitialCoordinator];
+  [self stopYoutubeIncognitoCoordinator];
+
+  // If History is active, stop it.
+  [self stopHistoryCoordinator];
+
+  // If Assistant Sheet is active, stop it.
+  [self stopAssistantSheetCoordinator];
+
+  // If the Safari data import workflow is active, stop it.
+  [self stopSafariDataImportCoordinator];
+
+  __weak __typeof(self) weakSelf = self;
+  ProceduralBlock resetAndDismiss = ^{
+    __typeof(self) strongSelf = weakSelf;
+    // Cleanup Password Checkup after its UI was dismissed.
+    [strongSelf stopPasswordCheckupCoordinator];
+    if (completion) {
+      completion();
+    }
+  };
+
+  if (self.settingsNavigationController && !self.dismissingSettings) {
+    self.dismissingSettings = YES;
+    // `self.signinCoordinator` can be presented on top of the settings, to
+    // present the Trusted Vault reauthentication `self.signinCoordinator` has
+    // to be closed first.
+    // If signinCoordinator is already dismissing, completion execution will
+    // happen when it is done animating.
+    [self stopSigninCoordinatorWithCompletionAnimated:animated];
+    [self stopSettingsAnimated:animated completion:resetAndDismiss];
+    self.dismissingSettings = NO;
+  } else {
+    // `self.signinCoordinator` can be presented without settings, from the
+    // bookmarks or the recent tabs view.
+    [self stopSigninCoordinatorWithCompletionAnimated:animated];
+    resetAndDismiss();
+  }
 }
 
 - (void)showHistory {
@@ -1042,9 +1132,7 @@ void RecordIfNeededSigninFullscreenPromoEvent(
     (IncognitoInterstitialCoordinator*)incognitoInterstitial {
   DCHECK(incognitoInterstitial == _incognitoInterstitialCoordinator);
   [self stopIncognitoInterstitialCoordinator];
-  id<SceneCommands> sceneHandler = HandlerForProtocol(
-      _regularBrowser->GetCommandDispatcher(), SceneCommands);
-  [sceneHandler closePresentedViews];
+  [self closePresentedViews];
 }
 
 #pragma mark - YoutubeIncognitoCoordinatorDelegate
@@ -1053,9 +1141,7 @@ void RecordIfNeededSigninFullscreenPromoEvent(
     (YoutubeIncognitoCoordinator*)youtubeIncognitoCoordinator {
   DCHECK(youtubeIncognitoCoordinator == _youtubeIncognitoCoordinator);
   [self stopYoutubeIncognitoCoordinator];
-  id<SceneCommands> sceneHandler = HandlerForProtocol(
-      _regularBrowser->GetCommandDispatcher(), SceneCommands);
-  [sceneHandler closePresentedViews];
+  [self closePresentedViews];
 }
 
 #pragma mark - PasswordCheckupCoordinatorDelegate
@@ -1085,17 +1171,13 @@ void RecordIfNeededSigninFullscreenPromoEvent(
 #pragma mark - PasswordManagerReauthenticationDelegate
 
 - (void)dismissPasswordManagerAfterFailedReauthentication {
-  id<SceneCommands> sceneHandler = HandlerForProtocol(
-      _regularBrowser->GetCommandDispatcher(), SceneCommands);
-  [sceneHandler closePresentedViews];
+  [self closePresentedViews];
 }
 
 #pragma mark - SettingsNavigationControllerDelegate
 
 - (void)closeSettings {
-  id<SceneCommands> sceneHandler = HandlerForProtocol(
-      _regularBrowser->GetCommandDispatcher(), SceneCommands);
-  [sceneHandler closePresentedViews];
+  [self closePresentedViews];
 }
 
 - (void)settingsWasDismissed {
@@ -1276,6 +1358,38 @@ void RecordIfNeededSigninFullscreenPromoEvent(
   [baseViewController presentViewController:self.settingsNavigationController
                                    animated:YES
                                  completion:nil];
+}
+
+// Stops the Incognito interstitial coordinator.
+- (void)stopIncognitoInterstitialCoordinator {
+  [_incognitoInterstitialCoordinator stop];
+  _incognitoInterstitialCoordinator = nil;
+}
+
+// Stops the Youtube Incognito coordinator.
+- (void)stopYoutubeIncognitoCoordinator {
+  [_youtubeIncognitoCoordinator stop];
+  _youtubeIncognitoCoordinator.delegate = nil;
+  _youtubeIncognitoCoordinator = nil;
+}
+
+// Stops the AssistantSheetcoordinator;
+- (void)stopAssistantSheetCoordinator {
+  [_assistantSheetCoordinator stop];
+  _assistantSheetCoordinator = nil;
+}
+
+// Stops the History coordinator.
+- (void)stopHistoryCoordinator {
+  [_historyCoordinator stop];
+  _historyCoordinator.delegate = nil;
+  _historyCoordinator = nil;
+}
+
+// Stops the Safari Data Import coordinator.
+- (void)stopSafariDataImportCoordinator {
+  [_safariDataImportCoordinator stop];
+  _safariDataImportCoordinator = nil;
 }
 
 @end

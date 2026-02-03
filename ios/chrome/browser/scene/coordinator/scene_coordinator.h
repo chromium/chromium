@@ -116,8 +116,11 @@ enum class WarningType;
                                 (id<SafariDataImportUIHandler>)UIHandler
                        baseViewController:(UIViewController*)baseViewController;
 
-// Stops the Safari Data Import coordinator.
-- (void)stopSafariDataImportCoordinator;
+// Shows the Safari Data Import UI.
+- (void)displaySafariDataImportFromEntryPoint:
+            (SafariDataImportEntryPoint)entryPoint
+                                withUIHandler:
+                                    (id<SafariDataImportUIHandler>)UIHandler;
 
 // Stops the settings navigation controller.
 - (void)stopSettingsAnimated:(BOOL)animated
@@ -144,22 +147,13 @@ enum class WarningType;
 // Shows the History page.
 - (void)showHistory;
 
-// Stops the History coordinator.
-- (void)stopHistoryCoordinator;
-
 // Shows the Youtube Incognito interstitial with the given `URLLoadParams`.
 - (void)showYoutubeIncognitoWithUrlLoadParams:
     (const UrlLoadParams&)URLLoadParams;
 
-// Stops the Youtube Incognito coordinator.
-- (void)stopYoutubeIncognitoCoordinator;
-
 // Shows the Incognito interstitial with the given `URLLoadParams`.
 - (void)showIncognitoInterstitialWithUrlLoadParams:
     (const UrlLoadParams&)URLLoadParams;
-
-// Stops the Incognito interstitial coordinator.
-- (void)stopIncognitoInterstitialCoordinator;
 
 // Shows the settings navigation controller.
 - (void)presentSettingsFromViewController:(UIViewController*)baseViewController;
@@ -192,8 +186,22 @@ enum class WarningType;
 // Opens the assistant sheet.
 - (void)showAssistant;
 
-// Stops the AssistantSheetcoordinator;
-- (void)stopAssistantSheetCoordinator;
+// Shows the application App Store page, if any.
+- (void)showAppStorePage;
+
+// Shows a notification with the signed-in user account.
+- (void)showSigninAccountNotificationFromViewController:
+    (UIViewController*)baseViewController;
+
+// Shows the settings UI for price tracking notifications.
+- (void)showPriceTrackingNotificationsSettings;
+
+// Closes presented views.
+- (void)closePresentedViews;
+
+// Closes presented views.
+- (void)closePresentedViews:(BOOL)animated
+                 completion:(ProceduralBlock)completion;
 
 @end
 

@@ -232,9 +232,6 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 // received.
 const char kContextsToOpen[] = "IOS.NumberOfContextsToOpen";
 
-// The App Store page for Google Chrome.
-NSString* const kChromeAppStoreURL = @"https://apps.apple.com/app/id535886823";
-
 // Enum for IOS.NumberOfContextsToOpen histogram.
 // Keep in sync with "ContextsToOpen" in tools/metrics/histograms/enums.xml.
 enum class ContextsToOpen {
@@ -440,9 +437,6 @@ void OnListFamilyMembersResponse(
 
 // Manages the browser lifecycle.
 @property(nonatomic, strong) BrowserLifecycleManager* browserLifecycleManager;
-
-// YES if the Settings view is being dismissed.
-@property(nonatomic, assign) BOOL dismissingSettings;
 
 // The state of the scene controlled by this object.
 @property(nonatomic, weak, readonly) SceneState* sceneState;
@@ -1740,7 +1734,7 @@ void OnListFamilyMembersResponse(
 }
 
 - (void)closePresentedViews {
-  [self closePresentedViews:YES completion:nullptr];
+  [self.mainCoordinator closePresentedViews];
 }
 
 - (void)prepareTabSwitcher {
@@ -2032,18 +2026,8 @@ using UserFeedbackDataCallback =
 
 - (void)showSigninAccountNotificationFromViewController:
     (UIViewController*)baseViewController {
-  web::WebState* webState =
-      self.mainInterface.browser->GetWebStateList()->GetActiveWebState();
-  DCHECK(webState);
-  infobars::InfoBarManager* infoBarManager =
-      InfoBarManagerImpl::FromWebState(webState);
-  DCHECK(infoBarManager);
-  CommandDispatcher* dispatcher =
-      self.mainInterface.browser->GetCommandDispatcher();
-  id<SettingsCommands> settingsHandler =
-      HandlerForProtocol(dispatcher, SettingsCommands);
-  SigninNotificationInfoBarDelegate::Create(
-      infoBarManager, self.profile, settingsHandler, baseViewController);
+  [self.mainCoordinator
+      showSigninAccountNotificationFromViewController:baseViewController];
 }
 
 - (void)setIncognitoContentVisible:(BOOL)incognitoContentVisible {
@@ -2081,16 +2065,7 @@ using UserFeedbackDataCallback =
 }
 
 - (void)showPriceTrackingNotificationsSettings {
-  CHECK(!self.mainCoordinator.isSigninInProgress);
-  if (self.mainCoordinator.settingsNavigationController) {
-    __weak SceneController* weakSelf = self;
-    [self closePresentedViews:NO
-                   completion:^{
-                     [weakSelf openPriceTrackingNotificationsSettings];
-                   }];
-    return;
-  }
-  [self openPriceTrackingNotificationsSettings];
+  [self.mainCoordinator showPriceTrackingNotificationsSettings];
 }
 
 - (void)openPriceTrackingNotificationsSettings {
@@ -2169,35 +2144,12 @@ using UserFeedbackDataCallback =
             (SafariDataImportEntryPoint)entryPoint
                                 withUIHandler:
                                     (id<SafariDataImportUIHandler>)UIHandler {
-  // If presented over settings, the base view controller is the top presented
-  // view controller. Otherwise, it is the active view controller.
-  BOOL presentOverSettings =
-      self.mainCoordinator.settingsNavigationController &&
-      entryPoint == SafariDataImportEntryPoint::kSetting;
-  UIViewController* baseViewController =
-      presentOverSettings ? self.mainCoordinator.settingsNavigationController
-                          : self.activeViewController;
-
-  __weak __typeof(self.mainCoordinator) weakMainCoordinator =
-      self.mainCoordinator;
-  auto startImport = ^{
-    [weakMainCoordinator
-        displaySafariDataImportFromEntryPoint:entryPoint
-                                withUIHandler:UIHandler
-                           baseViewController:baseViewController];
-  };
-  if (presentOverSettings) {
-    startImport();
-  } else {
-    [self closePresentedViews:YES completion:startImport];
-  }
+  [self.mainCoordinator displaySafariDataImportFromEntryPoint:entryPoint
+                                                withUIHandler:UIHandler];
 }
 
 - (void)showAppStorePage {
-  [[UIApplication sharedApplication]
-                openURL:[NSURL URLWithString:kChromeAppStoreURL]
-                options:@{}
-      completionHandler:nil];
+  [self.mainCoordinator showAppStorePage];
 }
 
 #pragma mark - TabGridCoordinatorDelegate
@@ -3237,47 +3189,7 @@ using UserFeedbackDataCallback =
 // Close Settings, or Signin or the 3rd-party intents Incognito interstitial.
 - (void)closePresentedViews:(BOOL)animated
                  completion:(ProceduralBlock)completion {
-  // If the Incognito interstitial is active, stop it.
-  [self.mainCoordinator stopIncognitoInterstitialCoordinator];
-  [self.mainCoordinator stopYoutubeIncognitoCoordinator];
-
-  // If History is active, stop it.
-  [self.mainCoordinator stopHistoryCoordinator];
-
-  // If Assistant Sheet is active, stop it.
-  [self.mainCoordinator stopAssistantSheetCoordinator];
-
-  // If the Safari data import workflow is active, stop it.
-  [self.mainCoordinator stopSafariDataImportCoordinator];
-
-  __weak __typeof(self) weakSelf = self;
-  ProceduralBlock resetAndDismiss = ^{
-    __typeof(self) strongSelf = weakSelf;
-    // Cleanup Password Checkup after its UI was dismissed.
-    [strongSelf.mainCoordinator stopPasswordCheckupCoordinator];
-    if (completion) {
-      completion();
-    }
-  };
-
-  if (self.mainCoordinator.settingsNavigationController &&
-      !self.dismissingSettings) {
-    self.dismissingSettings = YES;
-    // `self.signinCoordinator` can be presented on top of the settings, to
-    // present the Trusted Vault reauthentication `self.signinCoordinator` has
-    // to be closed first.
-    // If signinCoordinator is already dismissing, completion execution will
-    // happen when it is done animating.
-    [self.mainCoordinator stopSigninCoordinatorWithCompletionAnimated:animated];
-    [self.mainCoordinator stopSettingsAnimated:animated
-                                    completion:resetAndDismiss];
-    self.dismissingSettings = NO;
-  } else {
-    // `self.signinCoordinator` can be presented without settings, from the
-    // bookmarks or the recent tabs view.
-    [self.mainCoordinator stopSigninCoordinatorWithCompletionAnimated:animated];
-    resetAndDismiss();
-  }
+  [self.mainCoordinator closePresentedViews:animated completion:completion];
 }
 
 #pragma mark - WebStateListObserving
