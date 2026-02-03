@@ -326,7 +326,7 @@ static void JNI_Benchmark_SendLargeIntArrayConverted(
 }
 
 static void JNI_Benchmark_SendByteArrayUseView(JNIEnv* env,
-                                               ByteArrayView& array_view) {
+                                               ByteArrayView&& array_view) {
   for (size_t i = 0; i < array_view.size(); i++) {
     DoNotOptimize(array_view.data());
   }

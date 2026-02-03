@@ -113,7 +113,7 @@ void OnNonCredentialReturn(const base::android::JavaRef<jobject>& jcallback,
 
 void OnHybridAssertionInvoked(
     const base::android::JavaRef<jobject>& jcallback) {
-  base::android::RunRunnableAndroid(jcallback);
+  jni_zero::RunRunnable(jcallback);
 }
 
 static int64_t JNI_WebauthnBrowserBridge_CreateNativeWebauthnBrowserBridge(

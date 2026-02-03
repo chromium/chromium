@@ -113,7 +113,7 @@ final class ProfileOAuth2TokenServiceDelegate {
     @MainThread
     void updateAuthErrorForTesting(CoreAccountId accountId, GoogleServiceAuthError authError) {
         ProfileOAuth2TokenServiceDelegateJni.get()
-                .updateAuthErrorFromJava(
+                .updateAuthError(
                         mNativePtr, accountId, authError, /* fireAuthErrorChanged= */ false);
     }
 
@@ -143,7 +143,7 @@ final class ProfileOAuth2TokenServiceDelegate {
          * @param authError The {@link GoogleServiceAuthError} to set for the account.
          * @param fireAuthErrorChanged Whether observers should be notified of this update.
          */
-        void updateAuthErrorFromJava(
+        void updateAuthError(
                 long nativeProfileOAuth2TokenServiceDelegateAndroid,
                 @JniType("CoreAccountId") CoreAccountId accountId,
                 @JniType("GoogleServiceAuthError") GoogleServiceAuthError authError,

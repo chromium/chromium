@@ -5010,8 +5010,8 @@ public class AwContents implements SmartClipProvider {
                 long nativeAwContents,
                 @JniType("std::string") @NonNull String prerenderingUrl,
                 @Nullable AwPrefetchParameters prefetchParameters,
-                @NonNull Runnable activationCallback,
-                @NonNull Runnable errorCallback);
+                @JniType("base::OnceClosure") Runnable activationCallback,
+                @JniType("base::OnceClosure") Runnable errorCallback);
 
         void cancelPrerendering(long nativeAwContents, int prerenderId);
 

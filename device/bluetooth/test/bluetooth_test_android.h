@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "device/bluetooth/bluetooth_common.h"
@@ -200,12 +201,10 @@ class BluetoothTestAndroid : public BluetoothTestBase {
   void OnFakeAdapterStateChanged(JNIEnv* env, const bool powered);
 
   // Posts a task to be run on the current message loop.
-  void PostTaskFromJava(JNIEnv* env,
-                        const base::android::JavaRef<jobject>& runnable);
+  void PostTaskFromJava(base::OnceClosure&& runnable);
 
   // Posts a delayed task to be run on the current message loop.
-  void PostDelayedTaskFromJava(JNIEnv* env,
-                               const base::android::JavaRef<jobject>& runnable,
+  void PostDelayedTaskFromJava(base::OnceClosure&& runnable,
                                int64_t delayMillis);
 
   base::android::ScopedJavaGlobalRef<jobject> j_default_bluetooth_adapter_;

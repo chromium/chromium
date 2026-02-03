@@ -129,11 +129,6 @@ class Fakes {
                 });
     }
 
-    @CalledByNative
-    public static void runRunnable(Runnable r) {
-        r.run();
-    }
-
     /** Fakes android.bluetooth.BluetoothAdapter. */
     static class FakeBluetoothAdapter extends BluetoothAdapterWrapper {
         private final FakeContext mFakeContext;
@@ -1528,10 +1523,14 @@ class Fakes {
     interface Natives {
 
         // Bind to BluetoothTestAndroid::PostTaskFromJava.
-        void postTaskFromJava(long nativeBluetoothTestAndroid, Runnable r);
+        void postTaskFromJava(
+                long nativeBluetoothTestAndroid, @JniType("base::OnceClosure") Runnable r);
 
         // Bind to BluetoothTestAndroid::PostDelayedTaskFromJava.
-        void postDelayedTaskFromJava(long nativeBluetoothTestAndroid, Runnable r, long delayMillis);
+        void postDelayedTaskFromJava(
+                long nativeBluetoothTestAndroid,
+                @JniType("base::OnceClosure") Runnable r,
+                long delayMillis);
 
         // Binds to BluetoothTestAndroid::OnFakeAdapterStateChanged.
         void onFakeAdapterStateChanged(long nativeBluetoothTestAndroid, boolean powered);

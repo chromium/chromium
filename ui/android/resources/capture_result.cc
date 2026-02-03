@@ -48,13 +48,9 @@ ScopedHardwareBufferHandle CaptureResult::GetHardwareBuffer() const {
 
 base::ScopedClosureRunner CaptureResult::GetReleaseCallback() const {
   JNIEnv* env = base::android::AttachCurrentThread();
-  auto j_release_callback = ScopedJavaGlobalRef(
-      Java_CaptureResult_getReleaseCallback(env, java_capture_result_));
-  return base::ScopedClosureRunner(base::BindOnce(
-      [](ScopedJavaGlobalRef<jobject> j_release_callback) {
-        base::android::RunRunnableAndroid(j_release_callback);
-      },
-      std::move(j_release_callback)));
+  base::OnceClosure release_callback =
+      Java_CaptureResult_getReleaseCallback(env, java_capture_result_);
+  return base::ScopedClosureRunner(std::move(release_callback));
 }
 
 }  // namespace ui

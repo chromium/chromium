@@ -27,7 +27,6 @@
 
 using base::android::ConvertUTF16ToJavaString;
 using base::android::ConvertUTF8ToJavaString;
-using base::android::RunRunnableAndroid;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
 using base::android::ToJavaArrayOfStrings;
@@ -176,7 +175,7 @@ void AutocompleteMatch::OnClipboardSuggestionContentUpdated(
     const base::android::JavaRef<jobject>& j_callback) {
   JNIEnv* env = base::android::AttachCurrentThread();
   UpdateClipboardContent(env);
-  RunRunnableAndroid(j_callback);
+  jni_zero::RunRunnable(j_callback);
 }
 
 void AutocompleteMatch::UpdateClipboardContent(JNIEnv* env) {

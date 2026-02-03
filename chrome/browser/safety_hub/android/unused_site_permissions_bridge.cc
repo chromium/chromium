@@ -98,7 +98,7 @@ void RegrantPermissions(Profile* profile, std::string& origin_str) {
 }
 
 void UndoRegrantPermissions(Profile* profile,
-                            PermissionsData& permissions_data) {
+                            const PermissionsData& permissions_data) {
   RevokedPermissionsService* service =
       RevokedPermissionsServiceFactory::GetForProfile(profile);
   CHECK(service);
@@ -134,33 +134,28 @@ std::vector<std::u16string> ContentSettingsTypeToString(
 }
 
 static std::vector<PermissionsData>
-JNI_UnusedSitePermissionsBridge_GetRevokedPermissions(JNIEnv* env,
-                                                      Profile* profile) {
+JNI_UnusedSitePermissionsBridge_GetRevokedPermissions(Profile* profile) {
   return GetRevokedPermissions(profile);
 }
 
 static void JNI_UnusedSitePermissionsBridge_RegrantPermissions(
-    JNIEnv* env,
     Profile* profile,
     std::string& origin_str) {
   RegrantPermissions(profile, origin_str);
 }
 
 static void JNI_UnusedSitePermissionsBridge_UndoRegrantPermissions(
-    JNIEnv* env,
     Profile* profile,
-    PermissionsData& permissions_data) {
+    const PermissionsData& permissions_data) {
   UndoRegrantPermissions(profile, permissions_data);
 }
 
 static void JNI_UnusedSitePermissionsBridge_ClearRevokedPermissionsReviewList(
-    JNIEnv* env,
     Profile* profile) {
   ClearRevokedPermissionsReviewList(profile);
 }
 
 static void JNI_UnusedSitePermissionsBridge_RestoreRevokedPermissionsReviewList(
-    JNIEnv* env,
     Profile* profile,
     std::vector<PermissionsData>& permissions_data_list) {
   RestoreRevokedPermissionsReviewList(profile, permissions_data_list);
@@ -168,7 +163,6 @@ static void JNI_UnusedSitePermissionsBridge_RestoreRevokedPermissionsReviewList(
 
 static std::vector<std::u16string>
 JNI_UnusedSitePermissionsBridge_ContentSettingsTypeToString(
-    JNIEnv* env,
     std::vector<std::int32_t>& content_settings_type_list) {
   return ContentSettingsTypeToString(content_settings_type_list);
 }

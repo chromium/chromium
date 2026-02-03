@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/android/jni_android.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/android/render_widget_host_connector.h"
@@ -160,12 +161,11 @@ class CONTENT_EXPORT WebContentsAndroid {
       JNIEnv* env,
       const base::android::JavaRef<jobject>& view_structure_root,
       const base::android::JavaRef<jobject>& view_structure_builder,
-      const base::android::JavaRef<jobject>& callback);
+      base::OnceClosure&& callback);
 
   base::android::ScopedJavaLocalRef<jstring> GetEncoding(JNIEnv* env) const;
 
-  void Discard(JNIEnv* env,
-               const base::android::JavaRef<jobject>& on_discarded);
+  void Discard(base::OnceClosure&& on_discarded);
 
   void SetOverscrollRefreshHandler(
       JNIEnv* env,
@@ -293,7 +293,7 @@ class CONTENT_EXPORT WebContentsAndroid {
   void AXTreeSnapshotCallback(
       const base::android::JavaRef<jobject>& view_structure_root,
       const base::android::JavaRef<jobject>& view_structure_builder,
-      const base::android::JavaRef<jobject>& callback,
+      base::OnceClosure&& callback,
       ui::AXTreeUpdate& result);
 
   raw_ptr<WebContentsImpl> web_contents_;

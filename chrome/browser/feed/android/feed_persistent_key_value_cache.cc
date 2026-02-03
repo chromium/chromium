@@ -41,8 +41,9 @@ void OnLookupFinished(JNIEnv* env,
 
 void CallRunnable(base::android::ScopedJavaGlobalRef<jobject> runnable,
                   PersistentKeyValueStore::Result result) {
-  if (runnable)
-    base::android::RunRunnableAndroid(runnable);
+  if (runnable) {
+    jni_zero::RunRunnable(runnable);
+  }
 }
 
 PersistentKeyValueStore* GetStore() {
@@ -84,7 +85,9 @@ static void JNI_FeedPersistentKeyValueCache_Put(
 
   PersistentKeyValueStore* store = GetStore();
   if (!store) {
-    base::android::RunRunnableAndroid(j_runnable);
+    if (j_runnable) {
+      jni_zero::RunRunnable(j_runnable);
+    }
     return;
   }
   return store->Put(
@@ -101,7 +104,9 @@ static void JNI_FeedPersistentKeyValueCache_Evict(
 
   PersistentKeyValueStore* store = GetStore();
   if (!store) {
-    base::android::RunRunnableAndroid(j_runnable);
+    if (j_runnable) {
+      jni_zero::RunRunnable(j_runnable);
+    }
     return;
   }
   return store->Delete(

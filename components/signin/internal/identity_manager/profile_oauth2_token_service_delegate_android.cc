@@ -349,14 +349,6 @@ void ProfileOAuth2TokenServiceDelegateAndroid::UpdateAccountList(
   }
 }
 
-void ProfileOAuth2TokenServiceDelegateAndroid::UpdateAuthErrorFromJava(
-    JNIEnv* env,
-    CoreAccountId& core_account_id,
-    GoogleServiceAuthError& auth_error,
-    bool fire_auth_error_changed) {
-  UpdateAuthError(core_account_id, auth_error, fire_auth_error_changed);
-}
-
 void ProfileOAuth2TokenServiceDelegateAndroid::FireRefreshTokensLoaded() {
   DVLOG(1)
       << "ProfileOAuth2TokenServiceDelegateAndroid::FireRefreshTokensLoaded";
@@ -416,7 +408,7 @@ static void JNI_ProfileOAuth2TokenServiceDelegate_OnOAuth2TokenFetched(
     JNIEnv* env,
     const JavaRef<jstring>& authToken,
     const int64_t expiration_time_secs,
-    GoogleServiceAuthError& authError,
+    const GoogleServiceAuthError& authError,
     int64_t nativeCallback) {
   std::string token;
   if (authToken) {

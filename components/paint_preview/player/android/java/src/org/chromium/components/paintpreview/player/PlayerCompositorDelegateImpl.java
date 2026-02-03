@@ -204,7 +204,7 @@ public class PlayerCompositorDelegateImpl implements PlayerCompositorDelegate {
                 @JniType("std::optional<base::UnguessableToken>")
                         @Nullable UnguessableToken frameGuid,
                 Callback<Bitmap> bitmapCallback,
-                Runnable errorCallback,
+                @JniType("base::OnceClosure") Runnable errorCallback,
                 float scaleFactor,
                 int clipX,
                 int clipY,

@@ -68,7 +68,7 @@ void BackgroundSyncLauncher::FireBackgroundSyncEventsImpl(
     last_browser_wakeup_for_periodic_sync_ = base::Time::Now();
   base::RepeatingClosure done_closure = base::BarrierClosure(
       browser_context->GetLoadedStoragePartitionCount(),
-      base::BindOnce(base::android::RunRunnableAndroid,
+      base::BindOnce(jni_zero::RunRunnable,
                      base::android::ScopedJavaGlobalRef<jobject>(j_runnable)));
 
   browser_context->ForEachLoadedStoragePartition(

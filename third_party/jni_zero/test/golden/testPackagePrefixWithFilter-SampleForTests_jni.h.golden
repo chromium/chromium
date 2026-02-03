@@ -24,7 +24,7 @@
 // void CPPClass::Destroy(
 //     JNIEnv* env,
 //     const jni_zero::JavaRef<jobject>& caller,
-//     std::vector<uint8_t>& bytes);
+//     const std::vector<uint8_t>& bytes);
 //
 // static jni_zero::ScopedJavaLocalRef<jclass> JNI_SampleForTests_GetClass(
 //     JNIEnv* env,
@@ -48,9 +48,9 @@
 //     JNIEnv* env,
 //     const jni_zero::JavaRef<jobject>& caller,
 //     const jni_zero::JavaRef<jstring>& param,
-//     jni_zero::ByteArrayView& bytes,
+//     const jni_zero::ByteArrayView& bytes,
 //     jni_zero::tests::CPPClass* convertedType,
-//     std::vector<jni_zero::ScopedJavaLocalRef<jobject>>& nonConvertedArray);
+//     const std::vector<jni_zero::ScopedJavaLocalRef<jobject>>& nonConvertedArray);
 //
 // void CPPClass::IterateAndDoSomethingWithStructB(
 //     JNIEnv* env,
@@ -58,16 +58,16 @@
 //
 // static std::vector<jni_zero::ScopedJavaLocalRef<jobject>> JNI_SampleForTests_ListTest2(
 //     JNIEnv* env,
-//     std::vector<std::string>& items);
+//     const std::vector<std::string>& items);
 //
 // static std::map<std::string, std::string> JNI_SampleForTests_MapTest2(
 //     JNIEnv* env,
-//     std::map<std::string, std::string>& arg0);
+//     const std::map<std::string, std::string>& arg0);
 //
 // int32_t CPPClass::Method(
 //     JNIEnv* env,
 //     const jni_zero::JavaRef<jobject>& caller,
-//     std::vector<std::string>& strings);
+//     const std::vector<std::string>& strings);
 //
 // double CPPClass::InnerClass::MethodOtherP0(
 //     JNIEnv* env,
@@ -75,13 +75,13 @@
 //
 // static std::vector<bool> JNI_SampleForTests_PrimitiveArrays(
 //     JNIEnv* env,
-//     std::vector<uint8_t>& b,
-//     std::vector<uint16_t>& c,
-//     std::vector<int16_t>& s,
-//     std::vector<int32_t>& i,
-//     std::vector<int64_t>& l,
-//     std::vector<float>& f,
-//     std::vector<double>& d);
+//     const std::vector<uint8_t>& b,
+//     const std::vector<uint16_t>& c,
+//     const std::vector<int16_t>& s,
+//     const std::vector<int32_t>& i,
+//     const std::vector<int64_t>& l,
+//     const std::vector<float>& f,
+//     const std::vector<double>& d);
 //
 // jni_zero::ScopedJavaLocalRef<jstring> CPPClass::ReturnAString(
 //     JNIEnv* env,
@@ -330,27 +330,27 @@
           env,                                                                                     \
           caller_ref,                                                                              \
           param_ref,                                                                               \
-          bytes_converted,                                                                         \
-          convertedType_converted,                                                                 \
+          std::move(bytes_converted),                                                              \
+          std::move(convertedType_converted),                                                      \
           nonConvertedArray_converted); }) {                                                       \
         return func_wrapper(                                                                       \
             env,                                                                                   \
             caller_ref,                                                                            \
             param_ref,                                                                             \
-            bytes_converted,                                                                       \
-            convertedType_converted,                                                               \
+            std::move(bytes_converted),                                                            \
+            std::move(convertedType_converted),                                                    \
             nonConvertedArray_converted);                                                          \
       } else if constexpr (requires { func_wrapper(                                                \
           caller_ref,                                                                              \
           param_ref,                                                                               \
-          bytes_converted,                                                                         \
-          convertedType_converted,                                                                 \
+          std::move(bytes_converted),                                                              \
+          std::move(convertedType_converted),                                                      \
           nonConvertedArray_converted); }) {                                                       \
         return func_wrapper(                                                                       \
             caller_ref,                                                                            \
             param_ref,                                                                             \
-            bytes_converted,                                                                       \
-            convertedType_converted,                                                               \
+            std::move(bytes_converted),                                                            \
+            std::move(convertedType_converted),                                                    \
             nonConvertedArray_converted);                                                          \
       } else {                                                                                     \
         static_assert(false, "JNI_SampleForTests_Init() has incorrect signature. It should accept an optional JNIEnv* parameter, plus: (const jni_zero::JavaRef<jobject>&, const jni_zero::JavaRef<jstring>&, jni_zero::ByteArrayView, jni_zero::tests::CPPClass*, std::vector<jni_zero::ScopedJavaLocalRef<jobject>>)"); \

@@ -16,11 +16,13 @@ def _return_type_cpp(java_type):
   return f'jni_zero::ScopedJavaLocalRef<{java_type.to_cpp()}>'
 
 
-def _param_type_cpp(java_type):
+def _param_type_cpp(java_type, use_const=False):
   if converted_type := java_type.converted_type:
     # Drop & when the type is obviously a pointer to avoid "const char *&".
     if not java_type.is_primitive() and not converted_type.endswith('*'):
       converted_type += '&'
+      if use_const and not converted_type.startswith('const '):
+        converted_type = 'const ' + converted_type
     return converted_type
 
   ret = java_type.to_cpp()
@@ -58,7 +60,7 @@ def _entry_point_example(sb, native):
       plist.append('JNIEnv* env')
       if not native.static:
         plist.append('const jni_zero::JavaRef<jobject>& jcaller')
-      plist.extend(f'{_param_type_cpp(p.java_type)} {p.cpp_name()}'
+      plist.extend(f'{_param_type_cpp(p.java_type, True)} {p.cpp_name()}'
                    for p in params)
 
 
@@ -72,6 +74,10 @@ def _prep_param(sb, is_proxy, param):
     with sb.statement():
       sb(f'{java_type.converted_type} {ret} = ')
       convert_type.from_jni_expression(sb, orig_name, java_type)
+    # TODO(crbug.com/469809169): Remove these exceptions.
+    if not java_type.converted_type.startswith(
+        'std::') and java_type.converted_type not in ('GURL', 'url::Origin'):
+      ret = f'std::move({ret})'
     return ret
 
   if java_type.is_primitive():

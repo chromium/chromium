@@ -45,20 +45,25 @@ void BASE_EXPORT RunOptionalStringCallbackAndroid(
 
 void BASE_EXPORT RunByteArrayCallbackAndroid(const JavaRef<jobject>& callback,
                                              const std::vector<uint8_t>& arg);
-
-void BASE_EXPORT RunRunnableAndroid(const JavaRef<jobject>& runnable);
-
 }  // namespace android
 }  // namespace base
 
 namespace jni_zero {
 
 template <>
+inline base::OnceClosure FromJniType<base::OnceClosure>(
+    JNIEnv* env,
+    const JavaRef<jobject>& obj) {
+  return base::BindOnce(&jni_zero::RunRunnable,
+                        jni_zero::ScopedJavaGlobalRef<>(env, obj));
+}
+
+template <>
 inline base::RepeatingClosure FromJniType<base::RepeatingClosure>(
     JNIEnv* env,
     const JavaRef<jobject>& obj) {
-  return base::BindRepeating(&base::android::RunRunnableAndroid,
-                             base::android::ScopedJavaGlobalRef<jobject>(obj));
+  return base::BindRepeating(&jni_zero::RunRunnable,
+                             jni_zero::ScopedJavaGlobalRef<>(env, obj));
 }
 
 }  // namespace jni_zero

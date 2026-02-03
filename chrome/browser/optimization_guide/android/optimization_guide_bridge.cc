@@ -255,7 +255,7 @@ void OptimizationGuideBridge::CanApplyOptimizationOnDemand(
     const JavaRef<jintArray>& optimization_types,
     int32_t request_context,
     const JavaRef<jobject>& java_callback,
-    jni_zero::ByteArrayView& request_context_metadata_serialized) {
+    jni_zero::ByteArrayView&& request_context_metadata_serialized) {
   proto::RequestContextMetadata request_context_metadata_deserialized;
   request_context_metadata_deserialized.ParseFromArray(
       request_context_metadata_serialized.data(),

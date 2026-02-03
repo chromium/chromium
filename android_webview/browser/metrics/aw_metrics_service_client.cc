@@ -847,7 +847,7 @@ JNI_AwMetricsServiceClient_SetOnFinalMetricsCollectedListenerForTesting(
     const base::android::JavaRef<jobject>& listener) {
   AwMetricsServiceClient::GetInstance()
       ->SetOnFinalMetricsCollectedListenerForTesting(base::BindRepeating(
-          base::android::RunRunnableAndroid,
+          jni_zero::RunRunnable,
           base::android::ScopedJavaGlobalRef<jobject>(listener)));
 }
 

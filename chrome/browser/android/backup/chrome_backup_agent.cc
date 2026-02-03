@@ -33,7 +33,7 @@ static void JNI_ChromeBackupAgentImpl_CommitPendingPrefWrites(
 static void JNI_ChromeBackupAgentImpl_MigrateGlobalDataTypePrefsToAccount(
     JNIEnv* env,
     PrefService* pref_service,
-    GaiaId& gaia_id) {
+    const GaiaId& gaia_id) {
   syncer::SyncPrefs sync_prefs(pref_service);
   sync_prefs.MigrateGlobalDataTypePrefsToAccount(pref_service, gaia_id);
 }

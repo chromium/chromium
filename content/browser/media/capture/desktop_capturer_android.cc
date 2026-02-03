@@ -161,7 +161,7 @@ void DesktopCapturerAndroid::ProcessRgbaFrame(int64_t timestamp_ns,
                                               PlaneInfo plane) {
   // Don't process frames if we are no longer doing anything.
   if (finishing_) {
-    base::android::RunRunnableAndroid(plane.release_cb);
+    jni_zero::RunRunnable(plane.release_cb);
     return;
   }
 
@@ -238,7 +238,7 @@ void DesktopCapturerAndroid::ProcessRgbaFrame(int64_t timestamp_ns,
       static_cast<uint32_t>(plane.row_stride.ValueOrDie()),
       webrtc::DesktopRect::MakeSize(size));
 
-  base::android::RunRunnableAndroid(plane.release_cb);
+  jni_zero::RunRunnable(plane.release_cb);
 }
 
 }  // namespace content

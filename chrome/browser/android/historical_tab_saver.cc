@@ -292,7 +292,7 @@ static void JNI_HistoricalTabSaverImpl_CreateHistoricalTab(
 static void JNI_HistoricalTabSaverImpl_CreateHistoricalGroup(
     JNIEnv* env,
     const JavaRef<jobject>& jtab_model,
-    base::Token& tab_group_id_token,
+    const base::Token& tab_group_id_token,
     std::u16string& serialized_saved_tab_group_id,
     std::u16string& title,
     int32_t jcolor,

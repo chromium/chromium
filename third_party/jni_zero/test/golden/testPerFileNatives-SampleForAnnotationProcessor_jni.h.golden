@@ -75,7 +75,7 @@
 // static std::vector<int32_t> JNI_SampleForAnnotationProcessor_TestAllPrimitives(
 //     JNIEnv* env,
 //     int zint,
-//     std::vector<int32_t>& ints,
+//     const std::vector<int32_t>& ints,
 //     int64_t zlong,
 //     const jni_zero::JavaRef<jlongArray>& longs,
 //     int16_t zshort,
@@ -99,18 +99,18 @@
 //     const jni_zero::JavaRef<jobjectArray>& throwables,
 //     const jni_zero::JavaRef<jstring>& string,
 //     const jni_zero::JavaRef<jobjectArray>& strings,
-//     std::string& convertedString,
-//     std::vector<std::string>& convertedStrings,
-//     std::optional<std::string>& optionalString,
+//     const std::string& convertedString,
+//     const std::vector<std::string>& convertedStrings,
+//     const std::optional<std::string>& optionalString,
 //     const jni_zero::JavaRef<jobject>& tStruct,
 //     const jni_zero::JavaRef<jobjectArray>& structs,
 //     const jni_zero::JavaRef<jobject>& obj,
-//     jni_zero::tests::CPPClass& convertedObj,
+//     const jni_zero::tests::CPPClass& convertedObj,
 //     const jni_zero::JavaRef<jobjectArray>& objects,
 //     const jni_zero::JavaRef<jobject>& nestedInterface,
 //     const jni_zero::JavaRef<jobject>& view,
 //     const jni_zero::JavaRef<jobject>& context,
-//     std::vector<jni_zero::tests::CPPClass>& convertedObjects);
+//     const std::vector<jni_zero::tests::CPPClass>& convertedObjects);
 //
 
 // Java to native functions
@@ -619,13 +619,13 @@
       };                                                                                           \
       if constexpr (requires { func_wrapper(                                                       \
           env,                                                                                     \
-          zint_converted,                                                                          \
+          std::move(zint_converted),                                                               \
           ints_converted,                                                                          \
           zlong,                                                                                   \
           longs_ref,                                                                               \
           zshort,                                                                                  \
           shorts_ref,                                                                              \
-          zchar_converted,                                                                         \
+          std::move(zchar_converted),                                                              \
           chars_ref,                                                                               \
           zbyte,                                                                                   \
           bytes_ref,                                                                               \
@@ -637,13 +637,13 @@
           bools_ref); }) {                                                                         \
         return func_wrapper(                                                                       \
             env,                                                                                   \
-            zint_converted,                                                                        \
+            std::move(zint_converted),                                                             \
             ints_converted,                                                                        \
             zlong,                                                                                 \
             longs_ref,                                                                             \
             zshort,                                                                                \
             shorts_ref,                                                                            \
-            zchar_converted,                                                                       \
+            std::move(zchar_converted),                                                            \
             chars_ref,                                                                             \
             zbyte,                                                                                 \
             bytes_ref,                                                                             \
@@ -654,13 +654,13 @@
             zbool,                                                                                 \
             bools_ref);                                                                            \
       } else if constexpr (requires { func_wrapper(                                                \
-          zint_converted,                                                                          \
+          std::move(zint_converted),                                                               \
           ints_converted,                                                                          \
           zlong,                                                                                   \
           longs_ref,                                                                               \
           zshort,                                                                                  \
           shorts_ref,                                                                              \
-          zchar_converted,                                                                         \
+          std::move(zchar_converted),                                                              \
           chars_ref,                                                                               \
           zbyte,                                                                                   \
           bytes_ref,                                                                               \
@@ -671,13 +671,13 @@
           zbool,                                                                                   \
           bools_ref); }) {                                                                         \
         return func_wrapper(                                                                       \
-            zint_converted,                                                                        \
+            std::move(zint_converted),                                                             \
             ints_converted,                                                                        \
             zlong,                                                                                 \
             longs_ref,                                                                             \
             zshort,                                                                                \
             shorts_ref,                                                                            \
-            zchar_converted,                                                                       \
+            std::move(zchar_converted),                                                            \
             chars_ref,                                                                             \
             zbyte,                                                                                 \
             bytes_ref,                                                                             \
@@ -766,7 +766,7 @@
           tStruct_ref,                                                                             \
           structs_ref,                                                                             \
           obj_ref,                                                                                 \
-          convertedObj_converted,                                                                  \
+          std::move(convertedObj_converted),                                                       \
           objects_ref,                                                                             \
           nestedInterface_ref,                                                                     \
           view_ref,                                                                                \
@@ -786,7 +786,7 @@
             tStruct_ref,                                                                           \
             structs_ref,                                                                           \
             obj_ref,                                                                               \
-            convertedObj_converted,                                                                \
+            std::move(convertedObj_converted),                                                     \
             objects_ref,                                                                           \
             nestedInterface_ref,                                                                   \
             view_ref,                                                                              \
@@ -805,7 +805,7 @@
           tStruct_ref,                                                                             \
           structs_ref,                                                                             \
           obj_ref,                                                                                 \
-          convertedObj_converted,                                                                  \
+          std::move(convertedObj_converted),                                                       \
           objects_ref,                                                                             \
           nestedInterface_ref,                                                                     \
           view_ref,                                                                                \
@@ -824,7 +824,7 @@
             tStruct_ref,                                                                           \
             structs_ref,                                                                           \
             obj_ref,                                                                               \
-            convertedObj_converted,                                                                \
+            std::move(convertedObj_converted),                                                     \
             objects_ref,                                                                           \
             nestedInterface_ref,                                                                   \
             view_ref,                                                                              \

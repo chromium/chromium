@@ -87,7 +87,7 @@ static jlong JNI_SampleForTests_Init(
     JNIEnv* env,
     const JavaRef<jobject>& caller,
     const JavaRef<jstring>& param,
-    jni_zero::ByteArrayView& bytes,
+    jni_zero::ByteArrayView&& bytes,
     CPPClass* converted_type,
     std::vector<jni_zero::ScopedJavaLocalRef<jobject>>& non_converted_array) {
   return static_cast<jlong>(bytes.size());
@@ -238,7 +238,7 @@ static void JNI_SampleForAnnotationProcessor_TestSpecialTypes(
     const JavaRef<jobject>& tStruct,
     const JavaRef<jobjectArray>& structs,
     const JavaRef<jobject>& obj,
-    jni_zero::tests::CPPClass& convertedObj,
+    const jni_zero::tests::CPPClass& convertedObj,
     const JavaRef<jobjectArray>& objs,
     const JavaRef<jobject>& nestedInterface,
     const JavaRef<jobject>& view,

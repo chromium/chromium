@@ -18,7 +18,7 @@
 //     JNIEnv* env,
 //     const jni_zero::JavaRef<jobject>& handle);
 //
-// void FooAndroid::BarDelegate::Foo(JNIEnv* env, std::string& arg);
+// void FooAndroid::BarDelegate::Foo(JNIEnv* env, const std::string& arg);
 //
 // void Foo::Bar::CallWithQualifiedObject(JNIEnv* env, const jni_zero::JavaRef<jobject>& jcaller);
 //

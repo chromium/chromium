@@ -13,6 +13,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/feature_list.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 #include "components/feature_engagement/internal/tracker_impl.h"
@@ -104,9 +105,8 @@ class TrackerImplAndroid : public base::SupportsUserData::Data {
   virtual base::android::ScopedJavaLocalRef<jstring>
   GetPendingPriorityNotification(JNIEnv* env);
   virtual void RegisterPriorityNotificationHandler(
-      JNIEnv* env,
-      const base::android::JavaRef<jstring>& jfeature,
-      const base::android::JavaRef<jobject>& jcallback);
+      const std::string& feature,
+      base::OnceClosure&& callback);
   virtual void UnregisterPriorityNotificationHandler(
       JNIEnv* env,
       const base::android::JavaRef<jstring>& jfeature);

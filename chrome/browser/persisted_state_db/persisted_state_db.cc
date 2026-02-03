@@ -27,7 +27,7 @@ void OnUpdateCallback(
   // Callback for save and delete is only used in tests for synchronization.
   // Otherwise the callback is a no-op.
   if (joncomplete_for_testing)
-    base::android::RunRunnableAndroid(joncomplete_for_testing);
+    jni_zero::RunRunnable(joncomplete_for_testing);
 }
 
 void OnLoadCallback(

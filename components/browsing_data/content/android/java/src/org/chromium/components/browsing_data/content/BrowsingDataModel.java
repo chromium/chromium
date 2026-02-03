@@ -5,6 +5,7 @@
 package org.chromium.components.browsing_data.content;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -74,7 +75,9 @@ public class BrowsingDataModel {
                 boolean fetchImportant);
 
         void removeBrowsingData(
-                long nativeBrowsingDataModelAndroid, String host, Runnable completed);
+                long nativeBrowsingDataModelAndroid,
+                @JniType("std::string") String host,
+                @JniType("base::OnceClosure") Runnable completed);
 
         void destroy(long nativeBrowsingDataModelAndroid);
     }

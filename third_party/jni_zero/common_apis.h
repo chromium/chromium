@@ -29,6 +29,14 @@ JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaLocalRef<jobject> ArrayToMap(
     const JavaRef<jobjectArray>& array);
 
 //
+// java.lang.Runnable
+//
+
+// Does not accept "env" to allow it to be used with base::Bind(), and do not
+// offer such an overload to not make &RunRunnable hard to work with.
+JNI_ZERO_COMPONENT_BUILD_EXPORT void RunRunnable(const JavaRef<>& runnable);
+
+//
 // java.util.List
 //
 

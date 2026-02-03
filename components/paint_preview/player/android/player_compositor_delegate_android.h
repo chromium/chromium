@@ -7,6 +7,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/task_runner.h"
@@ -45,7 +46,7 @@ class PlayerCompositorDelegateAndroid : public PlayerCompositorDelegate {
       JNIEnv* env,
       std::optional<base::UnguessableToken>& frame_guid,
       const base::android::JavaRef<jobject>& j_bitmap_callback,
-      const base::android::JavaRef<jobject>& j_error_callback,
+      base::OnceClosure&& error_callback,
       float j_scale_factor,
       int32_t j_clip_x,
       int32_t j_clip_y,
@@ -82,7 +83,7 @@ class PlayerCompositorDelegateAndroid : public PlayerCompositorDelegate {
 
   void OnJavaBitmapCallback(
       const base::android::ScopedJavaGlobalRef<jobject>& j_bitmap_callback,
-      const base::android::ScopedJavaGlobalRef<jobject>& j_error_callback,
+      base::OnceClosure&& error_callback,
       int request_id,
       JavaBitmapResult result);
 

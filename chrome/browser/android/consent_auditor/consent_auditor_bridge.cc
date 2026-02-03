@@ -23,7 +23,7 @@ using base::android::JavaRef;
 static void JNI_ConsentAuditorBridge_RecordConsent(
     JNIEnv* env,
     Profile* profile,
-    GaiaId& gaia_id,
+    const GaiaId& gaia_id,
     int32_t j_feature,
     const JavaRef<jintArray>& j_consent_description,
     int32_t j_consent_confirmation) {

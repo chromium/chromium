@@ -65,7 +65,7 @@ void OnUpdateCallback(
     bool success) {
   DCHECK(success) << "There was an error modifying MerchantSignalDB";
   if (joncomplete_for_testing)
-    base::android::RunRunnableAndroid(joncomplete_for_testing);
+    jni_zero::RunRunnable(joncomplete_for_testing);
 }
 }  // namespace
 

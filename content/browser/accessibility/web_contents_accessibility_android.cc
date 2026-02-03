@@ -2795,7 +2795,7 @@ void WebContentsAccessibilityAndroid::ProcessCompletedAccessibilityTreeSnapshot(
   // We have fulfilled the request for an accessibility tree snapshot, so we can
   // now call the provided Java-side callback to inform original client that the
   // async construction is complete.
-  base::android::RunRunnableAndroid(on_done_callback_);
+  jni_zero::RunRunnable(on_done_callback_);
 }
 
 void WebContentsAccessibilityAndroid::RecursivelyPopulateViewStructureTree(

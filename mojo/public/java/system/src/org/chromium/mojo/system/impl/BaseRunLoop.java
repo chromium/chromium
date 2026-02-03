@@ -4,8 +4,8 @@
 
 package org.chromium.mojo.system.impl;
 
-import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -55,11 +55,6 @@ class BaseRunLoop implements RunLoop {
         mRunLoopID = 0;
     }
 
-    @CalledByNative
-    private static void runRunnable(Runnable runnable) {
-        runnable.run();
-    }
-
     @NativeMethods
     interface Natives {
         long createBaseRunLoop();
@@ -68,7 +63,8 @@ class BaseRunLoop implements RunLoop {
 
         void runUntilIdle();
 
-        void postDelayedTask(long runLoopID, Runnable runnable, long delay);
+        void postDelayedTask(
+                long runLoopID, @JniType("base::OnceClosure") Runnable runnable, long delay);
 
         void deleteMessageLoop(long runLoopID);
     }

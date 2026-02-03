@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #if BUILDFLAG(IS_ANDROID)
@@ -42,12 +43,11 @@ class JniIdentityMutator {
   //   - setting the primary account is allowed,
   //   - the account username is allowed by policy,
   //   - there is not already a primary account set.
-  int32_t SetPrimaryAccount(
-      JNIEnv* env,
-      const CoreAccountId& primary_account_id,
-      int32_t consent_level,
-      int32_t access_point,
-      const base::android::JavaRef<jobject>& j_prefs_committed_callback);
+  int32_t SetPrimaryAccount(JNIEnv* env,
+                            const CoreAccountId& primary_account_id,
+                            int32_t consent_level,
+                            int32_t access_point,
+                            base::OnceClosure&& prefs_committed_callback);
 
   // Removes the primary account and revokes the sync consent, but keep the
   // accounts signed in to the web and the tokens. Returns true if the action

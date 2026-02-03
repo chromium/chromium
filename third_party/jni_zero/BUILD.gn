@@ -22,13 +22,14 @@ generate_jni("generate_jni") {
 generate_jar_jni("system_jni") {
   classes = [
     "android/os/Process.class",
+    "java/lang/Boolean.class",
+    "java/lang/Integer.class",
+    "java/lang/Long.class",
+    "java/lang/Runnable.class",
     "java/util/Arrays.class",
     "java/util/Collection.class",
     "java/util/List.class",
     "java/util/Map.class",
-    "java/lang/Integer.class",
-    "java/lang/Long.class",
-    "java/lang/Boolean.class",
   ]
   visibility = [ ":*" ]
 }

@@ -196,16 +196,12 @@ TrackerImplAndroid::GetPendingPriorityNotification(JNIEnv* env) {
 }
 
 void TrackerImplAndroid::RegisterPriorityNotificationHandler(
-    JNIEnv* env,
-    const base::android::JavaRef<jstring>& jfeature,
-    const base::android::JavaRef<jobject>& jrunnable) {
-  std::string feature = base::android::ConvertJavaStringToUTF8(env, jfeature);
+    const std::string& feature,
+    base::OnceClosure&& runnable) {
   DCHECK(features_.find(feature) != features_.end());
 
-  return tracker_->RegisterPriorityNotificationHandler(
-      *features_[feature],
-      base::BindOnce(&base::android::RunRunnableAndroid,
-                     base::android::ScopedJavaGlobalRef<jobject>(jrunnable)));
+  return tracker_->RegisterPriorityNotificationHandler(*features_[feature],
+                                                       std::move(runnable));
 }
 
 void TrackerImplAndroid::UnregisterPriorityNotificationHandler(

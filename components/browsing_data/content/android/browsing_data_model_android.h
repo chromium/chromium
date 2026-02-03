@@ -8,6 +8,7 @@
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "components/browsing_data/content/browsing_data_model.h"
 
@@ -28,13 +29,12 @@ class BrowsingDataModelAndroid {
       const base::android::JavaRef<jobject>& map,
       bool fetch_important);
 
-  void RemoveBrowsingData(JNIEnv* env,
-                          const base::android::JavaRef<jstring>& host,
-                          const base::android::JavaRef<jobject>& java_callback);
+  void RemoveBrowsingData(const std::string& host,
+                          base::OnceClosure&& java_callback);
 
   // Destroys the BrowsingDataModelAndroid object. This needs to be called on
   // the java side when the object is not in use anymore.
-  void Destroy(JNIEnv* env);
+  void Destroy();
 
  private:
   std::unique_ptr<BrowsingDataModel> browsing_data_model_;

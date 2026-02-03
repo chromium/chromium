@@ -67,16 +67,12 @@ ScopedJavaLocalRef<jobject> BrowsingDataModelAndroid::GetBrowsingDataInfo(
 }
 
 void BrowsingDataModelAndroid::RemoveBrowsingData(
-    JNIEnv* env,
-    const base::android::JavaRef<jstring>& host,
-    const JavaRef<jobject>& java_callback) {
-  browsing_data_model_->RemoveBrowsingData(
-      ConvertJavaStringToUTF8(env, host),
-      base::BindOnce(&base::android::RunRunnableAndroid,
-                     ScopedJavaGlobalRef<jobject>(java_callback)));
+    const std::string& host,
+    base::OnceClosure&& java_callback) {
+  browsing_data_model_->RemoveBrowsingData(host, std::move(java_callback));
 }
 
-void BrowsingDataModelAndroid::Destroy(JNIEnv* env) {
+void BrowsingDataModelAndroid::Destroy() {
   base::ScopedUmaHistogramTimer histogram_timer(
       "Android.BrowsingDataModel.ModelDestructionTime");
   delete this;

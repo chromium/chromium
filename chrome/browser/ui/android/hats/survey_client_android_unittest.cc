@@ -44,12 +44,12 @@ class TestSurveyUiDelegate : public SurveyUiDelegateAndroid {
 
   void AcceptSurvey() {
     DCHECK(on_accepted_callback_);
-    base::android::RunRunnableAndroid(on_accepted_callback_);
+    jni_zero::RunRunnable(on_accepted_callback_);
   }
 
   void DeclineSurvey() {
     DCHECK(on_declined_callback_);
-    base::android::RunRunnableAndroid(on_declined_callback_);
+    jni_zero::RunRunnable(on_declined_callback_);
   }
 
   void ShowSurveyInvitation(

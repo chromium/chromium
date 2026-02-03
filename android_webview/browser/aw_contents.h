@@ -212,8 +212,8 @@ class AwContents : public FindHelper::Listener,
       JNIEnv* env,
       const std::string& prerendering_url,
       const base::android::JavaRef<jobject>& j_prefetch_params,
-      const base::android::JavaRef<jobject>& j_activation_callback,
-      const base::android::JavaRef<jobject>& j_error_callback);
+      base::OnceClosure&& activation_callback,
+      base::OnceClosure&& error_callback);
 
   // `prerender_id` should be a returned value of StartPrerendering(). If a
   // corresponding prerendering has already been canceled or activated, this

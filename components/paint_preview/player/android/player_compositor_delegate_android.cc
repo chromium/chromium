@@ -203,7 +203,7 @@ int32_t PlayerCompositorDelegateAndroid::RequestBitmap(
     JNIEnv* env,
     std::optional<base::UnguessableToken>& frame_guid,
     const JavaRef<jobject>& j_bitmap_callback,
-    const JavaRef<jobject>& j_error_callback,
+    base::OnceClosure&& error_callback,
     float j_scale_factor,
     int32_t j_clip_x,
     int32_t j_clip_y,
@@ -216,13 +216,12 @@ int32_t PlayerCompositorDelegateAndroid::RequestBitmap(
   gfx::Rect rect(j_clip_x, j_clip_y, j_clip_width, j_clip_height);
   auto callback = base::BindPostTask(
       task_runner_,
-      base::BindOnce(
-          &ConvertToJavaBitmap,
-          base::BindPostTaskToCurrentDefault(base::BindOnce(
-              &PlayerCompositorDelegateAndroid::OnJavaBitmapCallback,
-              weak_factory_.GetWeakPtr(),
-              ScopedJavaGlobalRef<jobject>(j_bitmap_callback),
-              ScopedJavaGlobalRef<jobject>(j_error_callback), request_id_))));
+      base::BindOnce(&ConvertToJavaBitmap,
+                     base::BindPostTaskToCurrentDefault(base::BindOnce(
+                         &PlayerCompositorDelegateAndroid::OnJavaBitmapCallback,
+                         weak_factory_.GetWeakPtr(),
+                         ScopedJavaGlobalRef<jobject>(j_bitmap_callback),
+                         std::move(error_callback), request_id_))));
   ++request_id_;
 
   // Callback can skip UI thread.
@@ -245,7 +244,7 @@ void PlayerCompositorDelegateAndroid::CancelAllBitmapRequests(JNIEnv* env) {
 
 void PlayerCompositorDelegateAndroid::OnJavaBitmapCallback(
     const ScopedJavaGlobalRef<jobject>& j_bitmap_callback,
-    const ScopedJavaGlobalRef<jobject>& j_error_callback,
+    base::OnceClosure&& error_callback,
     int request_id,
     JavaBitmapResult result) {
   TRACE_EVENT0("paint_preview", "OnBitmapReceived");
@@ -256,13 +255,13 @@ void PlayerCompositorDelegateAndroid::OnJavaBitmapCallback(
 
   if (result.status ==
       mojom::PaintPreviewCompositor::BitmapStatus::kAllocFailed) {
-    base::android::RunRunnableAndroid(j_error_callback);
+    std::move(error_callback).Run();
     PlayerCompositorDelegate::OnAllocationFailure();
     return;
   }
 
   if (result.status != mojom::PaintPreviewCompositor::BitmapStatus::kSuccess) {
-    base::android::RunRunnableAndroid(j_error_callback);
+    std::move(error_callback).Run();
     return;
   }
 

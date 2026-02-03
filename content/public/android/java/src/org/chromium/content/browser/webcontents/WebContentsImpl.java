@@ -24,6 +24,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -1338,7 +1339,8 @@ public class WebContentsImpl
 
         String getEncoding(long nativeWebContentsAndroid);
 
-        void discard(long nativeWebContentsAndroid, Runnable onDiscarded);
+        void discard(
+                long nativeWebContentsAndroid, @JniType("base::OnceClosure") Runnable onDiscarded);
 
         boolean isLoading(long nativeWebContentsAndroid);
 
@@ -1443,7 +1445,7 @@ public class WebContentsImpl
                 long nativeWebContentsAndroid,
                 ViewStructure viewStructureRoot,
                 ViewStructureBuilder viewStructureBuilder,
-                Runnable doneCallback);
+                @JniType("base::OnceClosure") Runnable doneCallback);
 
         void setOverscrollRefreshHandler(
                 long nativeWebContentsAndroid,

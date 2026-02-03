@@ -697,8 +697,8 @@ void AccountManagedStatusFinder::OutcomeDeterminedAsync(Outcome type) {
 static int64_t JNI_AccountManagedStatusFinder_CreateNativeObject(
     JNIEnv* env,
     IdentityManager* identity_manager,
-    CoreAccountInfo& account,
-    base::RepeatingClosure& callback,
+    const CoreAccountInfo& account,
+    base::RepeatingClosure&& callback,
     int64_t timeout_in_millis) {
   base::TimeDelta timeout = timeout_in_millis < 0
                                 ? base::TimeDelta::Max()

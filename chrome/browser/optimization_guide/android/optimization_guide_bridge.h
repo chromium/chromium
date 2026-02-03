@@ -60,7 +60,7 @@ class OptimizationGuideBridge {
       const base::android::JavaRef<jintArray>& joptimization_types,
       int32_t request_context,
       const base::android::JavaRef<jobject>& java_callback,
-      jni_zero::ByteArrayView& request_context_metadata_serialized);
+      jni_zero::ByteArrayView&& request_context_metadata_serialized);
   void OnNewPushNotification(
       JNIEnv* env,
       const base::android::JavaRef<jbyteArray>& j_encoded_notification);

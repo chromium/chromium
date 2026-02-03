@@ -4,12 +4,14 @@
 
 #include <jni.h>
 
+#include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/single_thread_task_runner.h"
+#include "third_party/jni_zero/common_apis.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "mojo/public/java/system/system_impl_java_jni_headers/BaseRunLoop_jni.h"
@@ -33,25 +35,13 @@ static void JNI_BaseRunLoop_RunUntilIdle(JNIEnv* env) {
   base::RunLoop().RunUntilIdle();
 }
 
-static void RunJavaRunnable(
-    const base::android::ScopedJavaGlobalRef<jobject>& runnable_ref) {
-  Java_BaseRunLoop_runRunnable(base::android::AttachCurrentThread(),
-                               runnable_ref);
-}
-
 static void JNI_BaseRunLoop_PostDelayedTask(JNIEnv* env,
                                             int64_t runLoopID,
-                                            const JavaRef<jobject>& runnable,
+                                            base::OnceClosure&& runnable,
                                             int64_t delay) {
-  base::android::ScopedJavaGlobalRef<jobject> runnable_ref;
-  // ScopedJavaGlobalRef do not hold onto the env reference, so it is safe to
-  // use it across threads. |RunJavaRunnable| will acquire a new JNIEnv before
-  // running the Runnable.
-  runnable_ref.Reset(env, runnable);
   reinterpret_cast<base::SingleThreadTaskExecutor*>(runLoopID)
       ->task_runner()
-      ->PostDelayedTask(FROM_HERE,
-                        base::BindOnce(&RunJavaRunnable, runnable_ref),
+      ->PostDelayedTask(FROM_HERE, std::move(runnable),
                         base::Microseconds(delay));
 }
 

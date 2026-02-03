@@ -35,7 +35,7 @@ CollectionSaveForwarderAndroid::~CollectionSaveForwarderAndroid() = default;
 static int64_t JNI_CollectionSaveForwarder_CreateForTabGroup(
     JNIEnv* env,
     Profile* profile,
-    base::Token& tab_group_id,
+    const base::Token& tab_group_id,
     tabs::TabStripCollection* collection) {
   TabStateStorageService* service =
       TabStateStorageServiceFactory::GetForProfile(profile);

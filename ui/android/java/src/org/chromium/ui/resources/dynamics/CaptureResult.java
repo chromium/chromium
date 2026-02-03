@@ -13,6 +13,7 @@ import androidx.annotation.IntDef;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -98,7 +99,7 @@ public class CaptureResult {
      * @return The {@link Runnable} to release resources, or {@code null} if not applicable.
      */
     @CalledByNative
-    public Runnable getReleaseCallback() {
+    public @JniType("base::OnceClosure") Runnable getReleaseCallback() {
         assert mDestination == Destination.HARDWARE_BUFFER;
         return assertNonNull(mReleaseCallback);
     }

@@ -32,7 +32,7 @@ int32_t JniIdentityMutator::SetPrimaryAccount(
     const CoreAccountId& primary_account_id,
     int32_t j_consent_level,
     int32_t j_access_point,
-    const base::android::JavaRef<jobject>& j_prefs_committed_callback) {
+    base::OnceClosure&& prefs_committed_callback) {
   PrimaryAccountMutator* primary_account_mutator =
       identity_mutator_->GetPrimaryAccountMutator();
   DCHECK(primary_account_mutator);
@@ -41,10 +41,8 @@ int32_t JniIdentityMutator::SetPrimaryAccount(
       primary_account_mutator->SetPrimaryAccount(
           primary_account_id, static_cast<ConsentLevel>(j_consent_level),
           static_cast<signin_metrics::AccessPoint>(j_access_point),
-          base::BindOnce(base::android::RunRunnableAndroid,
-                         base::android::ScopedJavaGlobalRef<jobject>(
-                             j_prefs_committed_callback)));
-  return static_cast<int32_t>(error);
+          std::move(prefs_committed_callback));
+  return std::to_underlying(error);
 }
 
 bool JniIdentityMutator::RemovePrimaryAccountButKeepTokens(

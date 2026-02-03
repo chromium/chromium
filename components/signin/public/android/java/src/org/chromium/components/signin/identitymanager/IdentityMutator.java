@@ -96,7 +96,7 @@ public class IdentityMutator {
                 @JniType("CoreAccountId") CoreAccountId accountId,
                 @ConsentLevel int consentLevel,
                 @SigninAccessPoint int accessPoint,
-                Runnable prefsSavedCallback);
+                @JniType("base::OnceClosure") Runnable prefsSavedCallback);
 
         boolean removePrimaryAccountButKeepTokens(
                 long nativeJniIdentityMutator, @SignoutReason int sourceMetric);

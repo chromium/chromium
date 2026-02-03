@@ -13,6 +13,7 @@
 #include "third_party/jni_zero/system_jni/Long_jni.h"
 #include "third_party/jni_zero/system_jni/Map_jni.h"
 #include "third_party/jni_zero/system_jni/Process_jni.h"
+#include "third_party/jni_zero/system_jni/Runnable_jni.h"
 #include "third_party/jni_zero/system_jni_unchecked_exceptions/ByteBuffer_jni.h"
 
 namespace jni_zero {
@@ -36,6 +37,14 @@ ScopedJavaLocalRef<jobjectArray> MapToArray(JNIEnv* env,
 ScopedJavaLocalRef<jobject> ArrayToMap(JNIEnv* env,
                                        const JavaRef<jobjectArray>& array) {
   return Java_JniUtil_arrayToMap(env, array);
+}
+
+//
+// java.lang.Runnable
+//
+
+void RunRunnable(const JavaRef<>& runnable) {
+  JNI_Runnable::Java_Runnable_run(AttachCurrentThread(), runnable);
 }
 
 //

@@ -1468,18 +1468,9 @@ int32_t AwContents::StartPrerendering(
     JNIEnv* env,
     const std::string& prerendering_url,
     const base::android::JavaRef<jobject>& j_prefetch_params,
-    const base::android::JavaRef<jobject>& j_activation_callback,
-    const base::android::JavaRef<jobject>& j_error_callback) {
+    base::OnceClosure&& activation_callback,
+    base::OnceClosure&& error_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  CHECK(j_activation_callback);
-  CHECK(j_error_callback);
-
-  base::OnceClosure activation_callback =
-      base::BindOnce(&base::android::RunRunnableAndroid,
-                     ScopedJavaGlobalRef<jobject>(env, j_activation_callback));
-  base::OnceClosure error_callback =
-      base::BindOnce(&base::android::RunRunnableAndroid,
-                     ScopedJavaGlobalRef<jobject>(env, j_error_callback));
 
   // Clean up the canceled handles.
   base::EraseIf(prerender_handles_,

@@ -8,6 +8,7 @@
 #include <iterator>
 #include <sstream>
 
+#include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
@@ -70,34 +71,15 @@ void BluetoothTestAndroid::TearDown() {
   BluetoothTestBase::TearDown();
 }
 
-static void RunJavaRunnable(
-    const base::android::ScopedJavaGlobalRef<jobject>& runnable_ref) {
-  Java_Fakes_runRunnable(AttachCurrentThread(), runnable_ref);
+void BluetoothTestAndroid::PostTaskFromJava(base::OnceClosure&& runnable) {
+  task_environment_.GetMainThreadTaskRunner()->PostTask(FROM_HERE,
+                                                        std::move(runnable));
 }
 
-void BluetoothTestAndroid::PostTaskFromJava(JNIEnv* env,
-                                            const JavaRef<jobject>& runnable) {
-  base::android::ScopedJavaGlobalRef<jobject> runnable_ref;
-  // ScopedJavaGlobalRef does not hold onto the env reference, so it is safe to
-  // use it across threads. |RunJavaRunnable| will acquire a new JNIEnv before
-  // running the Runnable.
-  runnable_ref.Reset(env, runnable);
-  task_environment_.GetMainThreadTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&RunJavaRunnable, runnable_ref));
-}
-
-void BluetoothTestAndroid::PostDelayedTaskFromJava(
-    JNIEnv* env,
-    const JavaRef<jobject>& runnable,
-    int64_t delayMillis) {
-  base::android::ScopedJavaGlobalRef<jobject> runnable_ref;
-  // ScopedJavaGlobalRef does not hold onto the env reference, so it is safe to
-  // use it across threads. |RunJavaRunnable| will acquire a new JNIEnv before
-  // running the Runnable.
-  runnable_ref.Reset(env, runnable);
+void BluetoothTestAndroid::PostDelayedTaskFromJava(base::OnceClosure&& runnable,
+                                                   int64_t delayMillis) {
   task_environment_.GetMainThreadTaskRunner()->PostDelayedTask(
-      FROM_HERE, base::BindOnce(&RunJavaRunnable, runnable_ref),
-      base::Milliseconds(delayMillis));
+      FROM_HERE, std::move(runnable), base::Milliseconds(delayMillis));
 }
 
 void BluetoothTestAndroid::InitWithDefaultAdapter() {

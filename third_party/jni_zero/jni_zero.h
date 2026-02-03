@@ -8,6 +8,7 @@
 #include <jni.h>
 
 // IWYU pragma: begin_exports
+#include "third_party/jni_zero/common_apis.h"
 #include "third_party/jni_zero/java_refs.h"
 #include "third_party/jni_zero/jni_export.h"
 #include "third_party/jni_zero/jni_methods.h"
