@@ -1038,7 +1038,8 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
         // is fully scrolled off.
         // TODO(crbug.com/448641122): Let hairline layer owns the adjustment logic.
         int hairlineAdjustment = 0;
-        if (mBrowserControls.isVisibilityForced() && mIsHairlineVisible) {
+        if (mBrowserControls.getBrowserVisibilityDelegate().get() == BrowserControlsState.HIDDEN
+                && mIsHairlineVisible) {
             hairlineAdjustment = -mControlContainer.getToolbarHairlineHeight();
         }
 
