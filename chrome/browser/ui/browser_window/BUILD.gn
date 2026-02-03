@@ -45,9 +45,29 @@ source_set("create_browser_window") {
   ]
 }
 
+if (!is_android) {
+  source_set("interactive_ui_tests") {
+    testonly = true
+
+    # This is in the browser_tests target on Android
+    sources = [ "internal/global_browser_collection_interactive_ui_test.cc" ]
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    deps = [
+      ":browser_window",
+      ":create_browser_window",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser/ui",
+      "//chrome/test:test_support",
+      "//content/test:test_support",
+      "//testing/gtest",
+    ]
+  }
+}
+
 source_set("browser_tests") {
   testonly = true
-  sources = [ "internal/global_browser_collection_browsertest.cc" ]
+  sources = []
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   deps = [
     ":browser_window",
@@ -60,7 +80,10 @@ source_set("browser_tests") {
     "//testing/gtest",
   ]
 
-  if (!is_android) {
+  if (is_android) {
+    # This is in the interactive_ui_tests target on non-Android
+    sources += [ "internal/global_browser_collection_interactive_ui_test.cc" ]
+  } else {
     sources += [
       "internal/create_browser_window_browsertest.cc",
       "internal/profile_browser_collection_non_android_browsertest.cc",

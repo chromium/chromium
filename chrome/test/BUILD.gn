@@ -11612,6 +11612,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/ui/autofill/payments:interactive_ui_tests",
       "//chrome/browser/ui/blocked_content:interactive_ui_tests",
       "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/browser_window:interactive_ui_tests",
       "//chrome/browser/ui/content_settings",
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/exclusive_access:interactive_ui_tests",
