@@ -198,7 +198,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest, Install_NoParams) {
   EXPECT_THAT(app->installed_by(), testing::IsEmpty());
 
   histograms.ExpectBucketCount("Blink.UseCounter.WebDXFeatures",
-                               blink::mojom::WebDXFeature::kDRAFT_WebInstallAPI,
+                               blink::mojom::WebDXFeature::kNavigatorInstall,
                                1);
 
   // Validate browser results.

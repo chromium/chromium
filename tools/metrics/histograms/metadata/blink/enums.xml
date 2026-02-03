@@ -8638,7 +8638,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="243" label="OBSOLETE_LocaleInfoObsoletedGetters"/>
   <int value="244" label="IntlLocaleInfo"/>
   <int value="245" label="ViewTransitionClass"/>
-  <int value="246" label="DRAFT_ReferenceTarget"/>
+  <int value="246" label="Referencetarget"/>
   <int value="247" label="Fedcm"/>
   <int value="248" label="WebOtp"/>
   <int value="249" label="PreservesPitch"/>
@@ -8767,7 +8767,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="372" label="WasmSignExtensionOperators"/>
   <int value="373" label="DRAFT_IncomingCallNotifications"/>
   <int value="374" label="Popover"/>
-  <int value="375" label="DRAFT_WebInstallAPI"/>
+  <int value="375" label="NavigatorInstall"/>
   <int value="376" label="TopLevelAwait"/>
   <int value="377" label="AtomicsPause"/>
   <int value="378" label="LogicalAssignments"/>

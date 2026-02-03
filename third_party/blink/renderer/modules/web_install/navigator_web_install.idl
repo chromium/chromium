@@ -8,7 +8,7 @@
   RuntimeEnabled=WebAppInstallation,
   ImplementedAs=NavigatorWebInstall
 ] partial interface Navigator {
-  [CallWith=ScriptState, RaisesException, MeasureAs="WebDXFeature::kDRAFT_WebInstallAPI"] Promise<WebInstallResult> install();
-  [CallWith=ScriptState, RaisesException, MeasureAs="WebDXFeature::kDRAFT_WebInstallAPI"] Promise<WebInstallResult> install(USVString install_url);
-  [CallWith=ScriptState, RaisesException, MeasureAs="WebDXFeature::kDRAFT_WebInstallAPI"] Promise<WebInstallResult> install(USVString install_url, USVString manifest_id);
+  [CallWith=ScriptState, RaisesException, MeasureAs="WebDXFeature::kNavigatorInstall"] Promise<WebInstallResult> install();
+  [CallWith=ScriptState, RaisesException, MeasureAs="WebDXFeature::kNavigatorInstall"] Promise<WebInstallResult> install(USVString install_url);
+  [CallWith=ScriptState, RaisesException, MeasureAs="WebDXFeature::kNavigatorInstall"] Promise<WebInstallResult> install(USVString install_url, USVString manifest_id);
 };

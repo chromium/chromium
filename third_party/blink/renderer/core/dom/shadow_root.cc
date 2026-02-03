@@ -446,8 +446,7 @@ void ShadowRoot::setReferenceTarget(const AtomicString& reference_target) {
     return;
   }
 
-  UseCounter::CountWebDXFeature(GetDocument(),
-                                WebDXFeature::kDRAFT_ReferenceTarget);
+  UseCounter::CountWebDXFeature(GetDocument(), WebDXFeature::kReferencetarget);
 
   if (referenceTarget() == reference_target) {
     return;

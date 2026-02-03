@@ -271,7 +271,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest,
   histograms.ExpectUniqueSample("WebApp.NewCraftedAppInstalled.ByUser",
                                 /*sample=*/true, 1);
   histograms.ExpectBucketCount("Blink.UseCounter.WebDXFeatures",
-                               blink::mojom::WebDXFeature::kDRAFT_WebInstallAPI,
+                               blink::mojom::WebDXFeature::kNavigatorInstall,
                                1);
 
   histograms.ExpectBucketCount(kInstallResultUma,
@@ -340,7 +340,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest,
   histograms.ExpectUniqueSample("WebApp.NewCraftedAppInstalled.ByUser",
                                 /*sample=*/true, 1);
   histograms.ExpectBucketCount("Blink.UseCounter.WebDXFeatures",
-                               blink::mojom::WebDXFeature::kDRAFT_WebInstallAPI,
+                               blink::mojom::WebDXFeature::kNavigatorInstall,
                                1);
 
   histograms.ExpectBucketCount(kInstallResultUma,
