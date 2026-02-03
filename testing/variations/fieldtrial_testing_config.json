@@ -3540,6 +3540,138 @@
             ]
         }
     ],
+    "AutofillYourSavedInfoHatsSurveysContactInfo": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "en_site_id": "UuDtBUYQd0ugnJ3q1cK0VRmtfk3Y",
+                        "probability": "1.0"
+                    },
+                    "enable_features": [
+                        "ManageContactInfoPerceptionSurvey"
+                    ]
+                }
+            ]
+        }
+    ],
+    "AutofillYourSavedInfoHatsSurveysIdentityDocs": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "en_site_id": "811zfpRVW0ugnJ3q1cK0Xrx1zx6D",
+                        "probability": "1.0"
+                    },
+                    "enable_features": [
+                        "ManageIdentityDocsPerceptionSurvey"
+                    ]
+                }
+            ]
+        }
+    ],
+    "AutofillYourSavedInfoHatsSurveysPasswords": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "en_site_id": "aiz6pApe80ugnJ3q1cK0VEFVxXwp",
+                        "probability": "1.0"
+                    },
+                    "enable_features": [
+                        "ManagePasswordsPerceptionSurvey"
+                    ]
+                }
+            ]
+        }
+    ],
+    "AutofillYourSavedInfoHatsSurveysPayments": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "en_site_id": "5SEr2of3w0ugnJ3q1cK0W5dS4VKB",
+                        "probability": "1.0"
+                    },
+                    "enable_features": [
+                        "ManagePaymentsPerceptionSurvey"
+                    ]
+                }
+            ]
+        }
+    ],
+    "AutofillYourSavedInfoHatsSurveysTravel": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "en_site_id": "39qE7WkY60ugnJ3q1cK0RfbRRKSd",
+                        "probability": "1.0"
+                    },
+                    "enable_features": [
+                        "ManageTravelPerceptionSurvey"
+                    ]
+                }
+            ]
+        }
+    ],
+    "AutofillYourSavedInfoHatsSurveysYourSavedInfo": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "en_site_id": "yQz3bhmYH0ugnJ3q1cK0UjmzS3J3",
+                        "probability": "1.0"
+                    },
+                    "enable_features": [
+                        "ManageYourSavedInfoPerceptionSurvey"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutomatedPasswordChangeStudyModelUsage": [
         {
             "platforms": [
