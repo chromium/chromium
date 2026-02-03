@@ -22,9 +22,8 @@ namespace skills {
 // users via chrome://skills/discover-skills.
 class SkillsDownloader {
  public:
-  // Map of category to fetched skills within that category.
-  using SkillsMap =
-      absl::flat_hash_map<std::string, std::vector<skills::proto::Skill>>;
+  // Map of id to skill.
+  using SkillsMap = absl::flat_hash_map<std::string, skills::proto::Skill>;
 
   explicit SkillsDownloader(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);

@@ -131,7 +131,7 @@ void SkillsDownloader::OnUrlDownloadComplete(
 
   auto skills_map = std::make_unique<SkillsMap>();
   for (auto& skill : *skills_list->mutable_skills()) {
-    (*skills_map)[skill.category()].push_back(std::move(skill));
+    skills_map->insert_or_assign(skill.id(), std::move(skill));
   }
 
   std::move(callback).Run(std::move(skills_map));

@@ -31,6 +31,7 @@ std::string CreateValidSkillsListString() {
   skill->set_name("/test-skill");
   skill->set_category("Test Category");
   skill->set_prompt("Test prompt.");
+  skill->set_id("test-id");
 
   return skills_list.SerializeAsString();
 }
@@ -76,10 +77,9 @@ TEST_F(SkillsDownloaderTest, ReturnsValidSkills) {
   ASSERT_TRUE(result_map);
   ASSERT_EQ(result_map->size(), 1u);
 
-  auto it = result_map->find("Test Category");
+  auto it = result_map->find("test-id");
   ASSERT_NE(it, result_map->end());
-  ASSERT_EQ(it->second.size(), 1u);
-  EXPECT_EQ(it->second[0].name(), "/test-skill");
+  EXPECT_EQ(it->second.name(), "/test-skill");
 }
 
 TEST_F(SkillsDownloaderTest, ReturnsValidSkillsWithRetry) {
@@ -122,7 +122,7 @@ TEST_F(SkillsDownloaderTest, ReturnsValidSkillsWithRetry) {
   second_run_loop.Run();
 
   ASSERT_TRUE(result_map);
-  EXPECT_EQ(result_map->begin()->first, "Test Category");
+  EXPECT_EQ(result_map->begin()->first, "test-id");
 }
 
 TEST_F(SkillsDownloaderTest, ReturnsInvalidProtocolBuffer) {

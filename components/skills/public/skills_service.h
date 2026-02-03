@@ -125,9 +125,8 @@ class SkillsService : public KeyedService {
   // nullptr will be returned.
   virtual void FetchDiscoverySkills() = 0;
 
-  // Map of category to fetched skills within that category.
-  using SkillsMap =
-      absl::flat_hash_map<std::string, std::vector<skills::proto::Skill>>;
+  // Map of id to skill.
+  using SkillsMap = absl::flat_hash_map<std::string, skills::proto::Skill>;
   // Called on download complete of 1p skills. If the download fails or the file
   // has not been modified skills_map is null. Notifies observers.
   virtual void Handle1pSkillsMap(std::unique_ptr<SkillsMap> skills_map) = 0;
