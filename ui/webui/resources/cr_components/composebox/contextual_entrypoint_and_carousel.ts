@@ -808,6 +808,18 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     this.handleToolClick_(e.detail.tool);
   }
 
+  protected handleDeepSearchClick_() {
+    this.handleToolClick_(ComposeboxToolMode.kDeepSearch);
+  }
+
+  protected handleImageGenClick_() {
+    this.handleToolClick_(ComposeboxToolMode.kImageGen);
+  }
+
+  protected handleCanvasClick_() {
+    this.handleToolClick_(ComposeboxToolMode.kCanvas);
+  }
+
   protected handleToolClick_(tool: ComposeboxToolMode) {
     if (this.entrypointName !== 'Realbox') {
       if (this.contextMenuDescriptionEnabled_) {

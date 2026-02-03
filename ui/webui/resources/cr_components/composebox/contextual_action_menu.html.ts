@@ -58,8 +58,8 @@ export function getHtml(this: ContextualActionMenuElement) {
         (this.imageUploadAllowed_ || this.fileUploadAllowed_) ?
         html`<hr/>` : ''}
     ${Array.from(this.supportedTools_.entries()).map(([mode, tool]) => this.isToolAllowed_(mode) ? html`
-      <button id="${tool.id}" class="dropdown-item"
-          @click="${() => this.onToolClick_(mode)}"
+      <button id="${tool.id}" class="dropdown-item" data-mode="${mode}"
+          @click="${this.onToolClick_}"
           ?disabled="${this.isToolDisabled_(mode)}">
         <cr-icon icon="${tool.icon}"></cr-icon>
         ${this.i18n(tool.id)}

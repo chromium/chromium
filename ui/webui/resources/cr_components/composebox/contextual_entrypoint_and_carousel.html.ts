@@ -22,8 +22,7 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
             remove-chip-aria-label="${
             this.i18n('removeToolChipAriaLabel', this.i18n('deepSearch'))}"
             ?visible="${true}"
-            @click="${
-            () => this.handleToolClick_(ComposeboxToolMode.kDeepSearch)}">
+            @click="${this.handleDeepSearchClick_}">
         </cr-composebox-tool-chip>
         `;
       case ComposeboxToolMode.kImageGen:
@@ -34,8 +33,7 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
             remove-chip-aria-label="${
             this.i18n('removeToolChipAriaLabel', this.i18n('createImages'))}"
             ?visible="${true}"
-            @click="${
-            () => this.handleToolClick_(ComposeboxToolMode.kImageGen)}">
+            @click="${this.handleImageGenClick_}">
         </cr-composebox-tool-chip>
         `;
       case ComposeboxToolMode.kCanvas:
@@ -46,7 +44,7 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
             remove-chip-aria-label="${
             this.i18n('removeToolChipAriaLabel', this.i18n('canvas'))}"
             ?visible="${true}"
-            @click="${() => this.handleToolClick_(ComposeboxToolMode.kCanvas)}">
+            @click="${this.handleCanvasClick_}">
         </cr-composebox-tool-chip>
         `;
       default:
@@ -118,10 +116,8 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
             @open-image-upload="${this.openImageUpload_}"
             @open-file-upload="${this.openFileUpload_}"
             @add-tab-context="${this.addTabContext_}"
-            @deep-search-click="${
-              () => this.handleToolClick_(ComposeboxToolMode.kDeepSearch)}"
-            @create-image-click="${
-              () => this.handleToolClick_(ComposeboxToolMode.kImageGen)}"
+            @deep-search-click="${this.handleDeepSearchClick_}"
+            @create-image-click="${this.handleImageGenClick_}"
             @delete-tab-context="${this.onDeleteFile_}"
             .inCreateImageMode="${
               this.activeTool_ === ComposeboxToolMode.kImageGen}"
