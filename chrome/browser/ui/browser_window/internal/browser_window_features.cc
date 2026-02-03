@@ -46,6 +46,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "chrome/browser/ui/browser_window/public/embedder_browser_window_features.h"
+#include "chrome/browser/ui/context_highlight/context_highlight_window_feature.h"
 #include "chrome/browser/ui/contextual_search/searchbox_context_data.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/extensions/extension_installed_watcher.h"
@@ -426,6 +427,9 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
 
   browser_select_file_dialog_controller_ =
       std::make_unique<BrowserSelectFileDialogController>(profile);
+
+  context_highlight_window_feature_ =
+      std::make_unique<ContextHighlightWindowFeature>(*browser);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   profile_customization_bubble_sync_controller_ =
@@ -979,6 +983,8 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   ai_mode_page_action_controller_.reset();
 
   skills_ui_window_controller_.reset();
+
+  context_highlight_window_feature_.reset();
 }
 
 SidePanelUI* BrowserWindowFeatures::side_panel_ui() {

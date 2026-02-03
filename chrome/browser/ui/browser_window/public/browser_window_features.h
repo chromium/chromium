@@ -25,6 +25,7 @@ class GlicActorNudgeController;
 #endif
 
 class ActorUiWindowController;
+class ContextHighlightWindowFeature;
 
 class ActorBorderViewController;
 class ActorTaskListBubbleController;
@@ -808,6 +809,9 @@ class BrowserWindowFeatures {
 #if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<ash::boca::OnTaskLockedController> on_task_locked_controller_;
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+  std::unique_ptr<ContextHighlightWindowFeature>
+      context_highlight_window_feature_;
 
   // Keep this member last to ensure embedder features are torn down first, in
   // reverse order of initialization.

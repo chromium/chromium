@@ -99,6 +99,7 @@
 #include "content/public/browser/render_widget_host_iterator.h"
 #include "content/public/browser/render_widget_host_observer.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/tracked_element_observer.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -1923,6 +1924,16 @@ void RenderWidgetHostImpl::AddInputEventObserver(
 void RenderWidgetHostImpl::RemoveInputEventObserver(
     RenderWidgetHost::InputEventObserver* observer) {
   input_event_observers_.RemoveObserver(observer);
+}
+
+void RenderWidgetHostImpl::AddTrackedElementObserver(
+    TrackedElementObserver* observer) {
+  tracked_element_observers_.AddObserver(observer);
+}
+
+void RenderWidgetHostImpl::RemoveTrackedElementObserver(
+    TrackedElementObserver* observer) {
+  tracked_element_observers_.RemoveObserver(observer);
 }
 
 void RenderWidgetHostImpl::AddObserver(RenderWidgetHostObserver* observer) {
@@ -3885,6 +3896,11 @@ void RenderWidgetHostImpl::OnRenderFrameMetadataChangedAfterActivation(
 
   const auto& metadata =
       render_frame_metadata_provider_.LastRenderFrameMetadata();
+
+  for (TrackedElementObserver& observer : tracked_element_observers_) {
+    observer.OnTrackedElementBoundsChanged(metadata.tracked_element_bounds,
+                                           metadata.device_scale_factor);
+  }
 
   const bool mobile_optimized_state_changed =
       (is_mobile_optimized_ != metadata.is_mobile_optimized);

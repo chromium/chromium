@@ -1293,6 +1293,12 @@ class BrowserView : public BrowserWindow,
   // contents_web_view_.
   raw_ptr<views::View> lens_overlay_view_ = nullptr;
 
+  // The view that contains the AI highlight overlay. The AI highlight overlay
+  // is a UI overlay that is shown on top of the web contents. It therefore must
+  // always have the same bounds as the contents_view_, but also be above the
+  // contents_view_.
+  raw_ptr<views::View> context_highlight_view_ = nullptr;
+
   // Handled by ContentsLayoutManager.
   raw_ptr<views::View> contents_container_ = nullptr;
 

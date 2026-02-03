@@ -116,10 +116,11 @@ namespace content {
 class FrameTree;
 class MockRenderWidgetHost;
 class MockRenderWidgetHostImpl;
-class RenderWidgetHostOwnerDelegate;
 class RenderWidgetHostFactory;
+class RenderWidgetHostOwnerDelegate;
 class SiteInstanceGroup;
 class SyntheticGestureController;
+class TrackedElementObserver;
 class VisibleTimeRequestTrigger;
 
 // This implements the RenderWidgetHost interface that is exposed to
@@ -269,6 +270,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
       RenderWidgetHost::InputEventObserver* observer) override;
   void RemoveInputEventObserver(
       RenderWidgetHost::InputEventObserver* observer) override;
+  void AddTrackedElementObserver(TrackedElementObserver* observer) override;
+  void RemoveTrackedElementObserver(TrackedElementObserver* observer) override;
   void AddObserver(RenderWidgetHostObserver* observer) override;
   void RemoveObserver(RenderWidgetHostObserver* observer) override;
   display::ScreenInfo GetScreenInfo() const override;
@@ -1432,6 +1435,9 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   base::ObserverList<RenderWidgetHost::InputEventObserver>::Unchecked
       ime_input_event_observers_;
 #endif
+
+  // The observers watching for tracked element changes.
+  base::ObserverList<TrackedElementObserver> tracked_element_observers_;
 
   // The observers watching us.
   base::ObserverList<RenderWidgetHostObserver> observers_;

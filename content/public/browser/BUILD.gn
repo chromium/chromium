@@ -462,6 +462,7 @@ source_set("browser_sources") {
     "tracing_service.h",
     "tracing_support.cc",
     "tracing_support.h",
+    "tracked_element_observer.h",
     "trust_token_access_details.cc",
     "trust_token_access_details.h",
     "tts_controller.h",

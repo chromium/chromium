@@ -1,0 +1,9 @@
+include_rules = [
+  "+cc/trees/tracked_element_bounds.h",
+]
+
+specific_include_rules = {
+  "context_highlight_tab_feature_unittest.cc": [
+    "+content/browser/renderer_host/mock_render_widget_host.h",
+  ],
+}

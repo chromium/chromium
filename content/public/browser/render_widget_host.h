@@ -18,6 +18,7 @@
 #include "components/input/input_event_source.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/tracked_element_observer.h"
 #include "content/public/common/drop_data.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -59,6 +60,7 @@ class RenderProcessHost;
 class RenderWidgetHostIterator;
 class RenderWidgetHostObserver;
 class RenderWidgetHostView;
+class TrackedElementObserver;
 
 // A RenderWidgetHost acts as the abstraction for compositing and input
 // functionality. It can exist in 3 different scenarios:
@@ -197,6 +199,10 @@ class CONTENT_EXPORT RenderWidgetHost {
   // crashes, instead you should always ask for it using the accessor.
   virtual RenderWidgetHostView* GetView() = 0;
   virtual const RenderWidgetHostView* GetView() const = 0;
+
+  virtual void AddTrackedElementObserver(TrackedElementObserver* observer) = 0;
+  virtual void RemoveTrackedElementObserver(
+      TrackedElementObserver* observer) = 0;
 
   // Returns true if the renderer is considered unresponsive.
   virtual bool IsCurrentlyUnresponsive() = 0;

@@ -2871,6 +2871,7 @@ static_library("ui") {
       "//chrome/browser/search/background",
       "//chrome/browser/themes",
       "//chrome/browser/ui/autofill/payments",
+      "//chrome/browser/ui/context_highlight",
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/lens:impl",
       "//chrome/browser/ui/wallet",

@@ -88,6 +88,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window_state.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/context_highlight/context_highlight_window_feature.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
@@ -931,8 +932,19 @@ BrowserView::BrowserView(Browser* browser)
   lens_overlay_view_ =
       contents_container->AddChildView(std::move(lens_overlay_view));
 
+  // Create the view that will house the AI highlight overlay.
+  auto context_highlight_view = std::make_unique<views::View>();
+  context_highlight_view->SetProperty(
+      views::kElementIdentifierKey,
+      ContextHighlightWindowFeature::kContextHighlightViewElementId);
+  context_highlight_view->SetVisible(false);
+  context_highlight_view->SetLayoutManager(
+      std::make_unique<views::FillLayout>());
+  context_highlight_view_ =
+      contents_container->AddChildView(std::move(context_highlight_view));
+
   contents_container->SetLayoutManager(std::make_unique<ContentsLayoutManager>(
-      contents_view, lens_overlay_view_));
+      contents_view, lens_overlay_view_, context_highlight_view_));
 
   toolbar_ = top_container_->AddChildView(
       std::make_unique<ToolbarView>(browser_.get(), this));
@@ -1106,6 +1118,7 @@ BrowserView::~BrowserView() {
   multi_contents_view_ = nullptr;
   main_shadow_overlay_ = nullptr;
   lens_overlay_view_ = nullptr;
+  context_highlight_view_ = nullptr;
   window_scrim_view_ = nullptr;
   contents_container_ = nullptr;
   vertical_tab_strip_region_view_ = nullptr;

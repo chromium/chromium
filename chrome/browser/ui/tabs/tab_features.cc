@@ -43,6 +43,7 @@
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
+#include "chrome/browser/ui/context_highlight/context_highlight_tab_feature.h"
 #include "chrome/browser/ui/cookie_controls/roll_back_mode_b_infobar_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
@@ -489,6 +490,9 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
 
   bookmarkbar_preload_pipeline_manager_ =
       std::make_unique<BookmarkBarPreloadPipelineManager>(tab.GetContents());
+
+  context_highlight_tab_feature_ =
+      GetUserDataFactory().CreateInstance<ContextHighlightTabFeature>(tab, tab);
 
   new_tab_page_preload_pipeline_manager_ =
       std::make_unique<NewTabPagePreloadPipelineManager>(tab.GetContents());

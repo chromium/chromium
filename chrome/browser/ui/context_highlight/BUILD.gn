@@ -1,0 +1,68 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+import("//chrome/common/features.gni")
+
+static_library("context_highlight") {
+  if (!is_android) {
+    sources = [
+      "context_highlight_overlay_view.cc",
+      "context_highlight_overlay_view.h",
+      "context_highlight_tab_feature.cc",
+      "context_highlight_tab_feature.h",
+      "context_highlight_window_feature.cc",
+      "context_highlight_window_feature.h",
+    ]
+
+    public_deps = [
+      "//base",
+      "//chrome/browser/ui/browser_window",
+      "//components/tabs:public",
+      "//content/public/browser",
+      "//ui/base/unowned_user_data",
+    ]
+
+    deps = [
+      "//cc",
+      "//cc/paint",
+      "//chrome/browser/ui:browser_element_identifiers",
+      "//chrome/browser/ui/tabs:tabs_public",
+      "//chrome/browser/ui/views/interaction",
+      "//skia",
+      "//ui/base",
+      "//ui/compositor",
+      "//ui/gfx",
+      "//ui/gfx/geometry",
+      "//ui/views",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "context_highlight_overlay_view_unittest.cc",
+    "context_highlight_tab_feature_unittest.cc",
+  ]
+  deps = [
+    ":context_highlight",
+    "//base",
+    "//base/test:test_support",
+    "//cc",
+    "//chrome/test:test_support",
+    "//components/tabs:public",
+    "//components/tabs:test_support",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base/unowned_user_data",
+    "//ui/compositor",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+    "//ui/views",
+    "//ui/views:test_support",
+  ]
+}

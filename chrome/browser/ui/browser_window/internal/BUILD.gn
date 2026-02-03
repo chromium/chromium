@@ -71,6 +71,7 @@ source_set("internal") {
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/bookmarks",
       "//chrome/browser/ui/commerce",
+      "//chrome/browser/ui/context_highlight",
       "//chrome/browser/ui/contextual_search",
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/extensions",
@@ -80,6 +81,7 @@ source_set("internal") {
       "//chrome/browser/ui/promos:controller",
       "//chrome/browser/ui/signin",
       "//chrome/browser/ui/sync",
+      "//chrome/browser/ui/tabs",
       "//chrome/browser/ui/tabs:glic",
       "//chrome/browser/ui/tabs:tab_list_bridge",
       "//chrome/browser/ui/tabs/organization",
@@ -110,6 +112,7 @@ source_set("internal") {
       "//components/profile_metrics",
       "//components/saved_tab_groups/public",
       "//components/search",
+      "//components/tabs:public",
     ]
 
     if (is_win || is_mac) {

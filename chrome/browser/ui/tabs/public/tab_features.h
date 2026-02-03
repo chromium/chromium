@@ -161,12 +161,12 @@ class ProtocolHandlerPickerCoordinator;
 
 namespace tabs {
 
-class TabAlertController;
-class TabInterface;
-class TabDialogManager;
-
+class ContextHighlightTabFeature;
 class InactiveWindowMouseEventController;
+class TabAlertController;
 class TabCreationMetricsController;
+class TabDialogManager;
+class TabInterface;
 
 // This class owns the core controllers for features that are scoped to a given
 // tab. It can be subclassed by tests to perform dependency injection.
@@ -497,6 +497,8 @@ class TabFeatures {
   std::unique_ptr<MemorySaverChipTabHelper> memory_saver_chip_helper_;
 
   std::unique_ptr<TabAlertController> tab_alert_controller_;
+
+  std::unique_ptr<ContextHighlightTabFeature> context_highlight_tab_feature_;
 
   std::unique_ptr<TabUIHelper> tab_ui_helper_;
 

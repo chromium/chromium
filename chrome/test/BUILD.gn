@@ -8513,6 +8513,7 @@ test("unit_tests") {
       "//chrome/browser/tab_group_sync:factories",
       "//chrome/browser/task_manager/common",
       "//chrome/browser/ui/bookmarks:unit_tests",
+      "//chrome/browser/ui/context_highlight:unit_tests",
       "//chrome/browser/ui/extensions",
       "//chrome/browser/ui/extensions:unit_tests",
       "//chrome/browser/ui/passwords:test_support_ui",
