@@ -199,7 +199,7 @@ signin::RestoreData LoadDeviceRestoreDataInternal(
         GetFileInfo(backed_up_sentinel_path, &backed_up_sentinel_info);
     if (file_info_valid && (backed_up_sentinel_info.creation_time <
                             not_backed_up_sentinel_info.creation_time)) {
-      // If the not backed up sentinel was created before the backed up sentinel
+      // If the backed up sentinel was created before the not backed up sentinel
       // file, a device restore happened in a previous run.
       restore_data.last_restore_timestamp =
           not_backed_up_sentinel_info.creation_time;
