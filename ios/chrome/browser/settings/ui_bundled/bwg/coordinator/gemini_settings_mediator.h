@@ -1,9 +1,9 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_BWG_COORDINATOR_BWG_SETTINGS_MEDIATOR_H_
-#define IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_BWG_COORDINATOR_BWG_SETTINGS_MEDIATOR_H_
+#ifndef IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_BWG_COORDINATOR_GEMINI_SETTINGS_MEDIATOR_H_
+#define IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_BWG_COORDINATOR_GEMINI_SETTINGS_MEDIATOR_H_
 
 #import <UIKit/UIKit.h>
 
@@ -14,8 +14,8 @@ class AuthenticationService;
 class PrefService;
 @protocol SceneCommands;
 
-// BWG Mediator.
-@interface BWGSettingsMediator : NSObject <GeminiSettingsMutator>
+// Gemini Mediator.
+@interface GeminiSettingsMediator : NSObject <GeminiSettingsMutator>
 
 // The scene commands handler for this mediator.
 @property(nonatomic, weak) id<SceneCommands> sceneHandler;
@@ -37,4 +37,4 @@ class PrefService;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_BWG_COORDINATOR_BWG_SETTINGS_MEDIATOR_H_
+#endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_BWG_COORDINATOR_GEMINI_SETTINGS_MEDIATOR_H_

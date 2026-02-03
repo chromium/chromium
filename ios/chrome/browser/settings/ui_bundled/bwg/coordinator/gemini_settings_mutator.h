@@ -8,7 +8,7 @@
 class GURL;
 
 // Mutator protocol for the view controller to communicate with the
-// `BWGSettingsMediator`.
+// `GeminiSettingsMediator`.
 @protocol GeminiSettingsMutator
 
 // Handles tap on learn about your choices.

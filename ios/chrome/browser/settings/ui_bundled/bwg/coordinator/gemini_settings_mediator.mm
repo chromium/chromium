@@ -1,8 +1,8 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/settings/ui_bundled/bwg/coordinator/bwg_settings_mediator.h"
+#import "ios/chrome/browser/settings/ui_bundled/bwg/coordinator/gemini_settings_mediator.h"
 
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
@@ -25,10 +25,10 @@ namespace {
 const NSInteger kDynamicSettingsItemTypeOffset = 10000;
 }  // namespace
 
-@interface BWGSettingsMediator () <BooleanObserver>
+@interface GeminiSettingsMediator () <BooleanObserver>
 @end
 
-@implementation BWGSettingsMediator {
+@implementation GeminiSettingsMediator {
   // Accessor for the location preference.
   PrefBackedBoolean* _preciseLocationPref;
   // Accessor for the camera permission preference.
