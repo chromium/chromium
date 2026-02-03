@@ -26,7 +26,6 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationMetricsUtil
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.image_fetcher.ImageFetcher;
 
 import java.util.List;
@@ -211,15 +210,9 @@ public class NtpThemeCollectionsCoordinator {
         String themeCollectionTitle = collection.label;
         int themeCollectionHash = collection.hash;
 
-        @SheetState
-        int currentBottomSheetState =
-                mBottomSheetDelegate.getBottomSheetController().getSheetState();
         if (mNtpSingleThemeCollectionCoordinator != null) {
             mNtpSingleThemeCollectionCoordinator.updateThemeCollection(
-                    collectionId,
-                    themeCollectionTitle,
-                    themeCollectionHash,
-                    currentBottomSheetState);
+                    collectionId, themeCollectionTitle, themeCollectionHash);
         } else {
             mNtpSingleThemeCollectionCoordinator =
                     new NtpSingleThemeCollectionCoordinator(
@@ -230,7 +223,6 @@ public class NtpThemeCollectionsCoordinator {
                             collectionId,
                             themeCollectionTitle,
                             themeCollectionHash,
-                            currentBottomSheetState,
                             mOnDailyRefreshCancelledCallback);
         }
 
@@ -251,10 +243,6 @@ public class NtpThemeCollectionsCoordinator {
     @Nullable NtpSingleThemeCollectionCoordinator
             getNtpSingleThemeCollectionCoordinatorForTesting() {
         return mNtpSingleThemeCollectionCoordinator;
-    }
-
-    NtpThemeCollectionManager getNtpThemeManagerForTesting() {
-        return mNtpThemeCollectionManager;
     }
 
     int getScreenWidthForTesting() {

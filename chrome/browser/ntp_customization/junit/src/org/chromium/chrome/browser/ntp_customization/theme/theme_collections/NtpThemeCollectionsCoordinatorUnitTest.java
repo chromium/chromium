@@ -221,8 +221,7 @@ public class NtpThemeCollectionsCoordinatorUnitTest {
                 .updateThemeCollection(
                         eq(TEST_COLLECTION_ID),
                         eq(TEST_COLLECTION_TITLE),
-                        eq(TEST_COLLECTION_HASH),
-                        eq(BottomSheetController.SheetState.FULL));
+                        eq(TEST_COLLECTION_HASH));
         verify(mBottomSheetDelegate, times(2))
                 .showBottomSheet(eq(BottomSheetType.SINGLE_THEME_COLLECTION));
         histogramWatcher.assertExpected();

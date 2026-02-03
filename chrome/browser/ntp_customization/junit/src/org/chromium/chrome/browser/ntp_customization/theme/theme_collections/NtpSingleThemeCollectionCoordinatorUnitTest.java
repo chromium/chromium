@@ -47,7 +47,6 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.widget.MaterialSwitchWithText;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.url.GURL;
@@ -103,7 +102,6 @@ public class NtpSingleThemeCollectionCoordinatorUnitTest {
                         TEST_COLLECTION_ID,
                         TEST_COLLECTION_TITLE,
                         TEST_COLLECTION_HASH_1,
-                        SheetState.FULL,
                         mOnDailyUpdateCancelledCallback);
 
         ArgumentCaptor<View> viewCaptor = ArgumentCaptor.forClass(View.class);
@@ -191,17 +189,14 @@ public class NtpSingleThemeCollectionCoordinatorUnitTest {
 
         // Title should not be updated with the same title.
         mCoordinator.updateThemeCollection(
-                TEST_COLLECTION_ID, TEST_COLLECTION_TITLE, TEST_COLLECTION_HASH_1, SheetState.FULL);
+                TEST_COLLECTION_ID, TEST_COLLECTION_TITLE, TEST_COLLECTION_HASH_1);
         // `getBackgroundImages` is called once in `setUp()`. No new call should be made.
         verify(mNtpThemeCollectionManager, times(1)).getBackgroundImages(any(), any());
         verify(adapterSpy, times(0)).setItems(any());
 
         // Title should be updated with a new title.
         mCoordinator.updateThemeCollection(
-                NEW_TEST_COLLECTION_ID,
-                NEW_TEST_COLLECTION_TITLE,
-                TEST_COLLECTION_HASH_2,
-                SheetState.FULL);
+                NEW_TEST_COLLECTION_ID, NEW_TEST_COLLECTION_TITLE, TEST_COLLECTION_HASH_2);
         assertEquals(NEW_TEST_COLLECTION_TITLE, title.getText().toString());
         verify(mNtpThemeCollectionManager)
                 .getBackgroundImages(eq(NEW_TEST_COLLECTION_ID), mCallbackCaptor.capture());
@@ -220,31 +215,27 @@ public class NtpSingleThemeCollectionCoordinatorUnitTest {
 
     @Test
     public void testFetchImagesForCollection_expandSheet() {
-        // Case 1: isInitiative is true.
+        // Case 1: Fetch images on initialization.
         verify(mNtpThemeCollectionManager)
                 .getBackgroundImages(eq(TEST_COLLECTION_ID), mCallbackCaptor.capture());
         mCallbackCaptor.getValue().onResult(new ArrayList<>());
         verify(mBottomSheetController).expandSheet();
 
-        // Case 2: previous bottom sheet state is HALF.
+        // Case 2: Fetch images on update.
         mCoordinator.updateThemeCollection(
-                NEW_TEST_COLLECTION_ID,
-                NEW_TEST_COLLECTION_TITLE,
-                TEST_COLLECTION_HASH_2,
-                SheetState.HALF);
+                NEW_TEST_COLLECTION_ID, NEW_TEST_COLLECTION_TITLE, TEST_COLLECTION_HASH_2);
         verify(mNtpThemeCollectionManager)
                 .getBackgroundImages(eq(NEW_TEST_COLLECTION_ID), mCallbackCaptor.capture());
         mCallbackCaptor.getValue().onResult(new ArrayList<>());
         verify(mBottomSheetController, times(2)).expandSheet();
 
-        // Case 3: previous bottom sheet state is not HALF and not initiative.
+        // Case 3: Fetch images on another update.
         mCoordinator.updateThemeCollection(
-                TEST_COLLECTION_ID, TEST_COLLECTION_TITLE, TEST_COLLECTION_HASH_1, SheetState.FULL);
+                TEST_COLLECTION_ID, TEST_COLLECTION_TITLE, TEST_COLLECTION_HASH_1);
         verify(mNtpThemeCollectionManager, times(2))
                 .getBackgroundImages(eq(TEST_COLLECTION_ID), mCallbackCaptor.capture());
         mCallbackCaptor.getValue().onResult(new ArrayList<>());
-        // expandSheet should still be called only twice from previous cases.
-        verify(mBottomSheetController, times(2)).expandSheet();
+        verify(mBottomSheetController, times(3)).expandSheet();
     }
 
     @Test
@@ -409,10 +400,7 @@ public class NtpSingleThemeCollectionCoordinatorUnitTest {
     @Test
     public void testDestroy_recordsCorrectHashAfterUpdate() {
         mCoordinator.updateThemeCollection(
-                NEW_TEST_COLLECTION_ID,
-                NEW_TEST_COLLECTION_TITLE,
-                TEST_COLLECTION_HASH_2,
-                SheetState.FULL);
+                NEW_TEST_COLLECTION_ID, NEW_TEST_COLLECTION_TITLE, TEST_COLLECTION_HASH_2);
 
         MaterialSwitchWithText dailyUpdateSwitch =
                 mBottomSheetView.findViewById(R.id.daily_update_switch_button);

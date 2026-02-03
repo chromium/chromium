@@ -23,11 +23,11 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationMetricsUtils;
 import org.chromium.chrome.browser.ntp_customization.R;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.widget.MaterialSwitchWithText;
 import org.chromium.components.image_fetcher.ImageFetcher;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -55,7 +55,6 @@ public class NtpSingleThemeCollectionCoordinator {
     private String mThemeCollectionId;
     private String mThemeCollectionTitle;
     private int mThemeCollectionHash;
-    private boolean mHasDisplayedBefore;
     private int mScreenWidth;
     // This variable is only used to record metrics.
     private boolean mIsThemeCollectionSelected;
@@ -73,8 +72,6 @@ public class NtpSingleThemeCollectionCoordinator {
      * @param imageFetcher The fetcher to retrieve images.
      * @param collectionId The ID of the current theme collection to display.
      * @param themeCollectionTitle The title of the current theme collection.
-     * @param previousBottomSheetState The bottom sheet state in the previous theme collections
-     *     bottom sheet.
      * @param onDailyRefreshCancelledCallback The callback to run when daily refresh is cancelled.
      */
     NtpSingleThemeCollectionCoordinator(
@@ -85,7 +82,6 @@ public class NtpSingleThemeCollectionCoordinator {
             String collectionId,
             String themeCollectionTitle,
             int themeCollectionHash,
-            @SheetState int previousBottomSheetState,
             Runnable onDailyRefreshCancelledCallback) {
         mContext = context;
         mBottomSheetDelegate = delegate;
@@ -165,7 +161,7 @@ public class NtpSingleThemeCollectionCoordinator {
                                         mSingleThemeCollectionBottomSheetRecyclerView));
 
         // Fetches the images for the current collection.
-        fetchImagesForCollection(previousBottomSheetState);
+        fetchImagesForCollection();
     }
 
     void destroy() {
@@ -222,10 +218,7 @@ public class NtpSingleThemeCollectionCoordinator {
      * Updates the single theme collection bottom sheet based on the given theme collection type.
      */
     void updateThemeCollection(
-            String collectionId,
-            String themeCollectionTitle,
-            int themeCollectionHash,
-            @SheetState int previousBottomSheetState) {
+            String collectionId, String themeCollectionTitle, int themeCollectionHash) {
         if (mThemeCollectionTitle.equals(themeCollectionTitle)) {
             return;
         }
@@ -236,7 +229,7 @@ public class NtpSingleThemeCollectionCoordinator {
         mIsThemeCollectionSelected = false;
 
         mTitle.setText(mThemeCollectionTitle);
-        fetchImagesForCollection(previousBottomSheetState);
+        fetchImagesForCollection();
     }
 
     private void handleThemeCollectionImageClick(View view) {
@@ -266,13 +259,11 @@ public class NtpSingleThemeCollectionCoordinator {
         }
     }
 
-    /**
-     * Fetches the images for the current collection and updates the adapter.
-     *
-     * @param previousBottomSheetState The bottom sheet state in the previous theme collections
-     *     bottom sheet.
-     */
-    private void fetchImagesForCollection(@SheetState int previousBottomSheetState) {
+    /** Fetches the images for the current collection and updates the adapter. */
+    private void fetchImagesForCollection() {
+        // Notify the adapter immediately that the data set is reset.
+        mNtpThemeCollectionsAdapter.setItems(Collections.emptyList());
+
         mNtpThemeCollectionManager.getBackgroundImages(
                 mThemeCollectionId,
                 (images) -> {
@@ -284,13 +275,7 @@ public class NtpSingleThemeCollectionCoordinator {
                     }
                     mNtpThemeCollectionsAdapter.setItems(mThemeCollectionImageList);
 
-                    if (previousBottomSheetState == SheetState.HALF || !mHasDisplayedBefore) {
-                        // The single theme collection bottom sheet will be shown in a half state if
-                        // it's either displayed for the first time or if the previous theme
-                        // collections bottom sheet was in a half state.
-                        mBottomSheetDelegate.getBottomSheetController().expandSheet();
-                        mHasDisplayedBefore = true;
-                    }
+                    mBottomSheetDelegate.getBottomSheetController().expandSheet();
                 });
     }
 
