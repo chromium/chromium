@@ -14,30 +14,15 @@
             }
         },
         "crossbench": {
-            "loadline2-phone": {
-                "display_name": "loadline2_phone.crossbench",
-                "arguments": [
-                    "--debug"
-                ]
-            }
-        }
-    },
-    "1": {
-        "crossbench": {
-            "loadline-phone-fast": {
-                "display_name": "loadline_phone.crossbench",
-                "arguments": [
-                    "--cool-down-threshold=moderate",
-                    "--debug"
-                ]
-            }
-        },
-        "benchmarks": {}
-    },
-    "2": {
-        "crossbench": {
             "motionmark_1.3": {
                 "display_name": "motionmark1.3.crossbench",
+                "arguments": [
+                    "--fileserver",
+                    "--debug"
+                ]
+            },
+            "speedometer_3": {
+                "display_name": "speedometer3.crossbench",
                 "arguments": [
                     "--fileserver",
                     "--debug"
@@ -51,24 +36,91 @@
                     "--extra-browser-args=--force-renderer-accessibility"
                 ]
             },
+            "loadline2-phone": {
+                "display_name": "loadline2_phone.crossbench",
+                "arguments": [
+                    "--debug"
+                ]
+            }
+        }
+    },
+    "1": {
+        "benchmarks": {
+            "jetstream2": {
+                "abridged": false
+            }
+        },
+        "crossbench": {
+            "motionmark_1.3": {
+                "display_name": "motionmark1.3.crossbench",
+                "arguments": [
+                    "--fileserver",
+                    "--debug"
+                ]
+            },
             "speedometer_3": {
                 "display_name": "speedometer3.crossbench",
                 "arguments": [
                     "--fileserver",
                     "--debug"
                 ]
+            },
+            "sp3": {
+                "display_name": "speedometer3.a11y.crossbench",
+                "arguments": [
+                    "--fileserver",
+                    "--debug",
+                    "--extra-browser-args=--force-renderer-accessibility"
+                ]
+            },
+            "loadline-phone-fast": {
+                "display_name": "loadline_phone.crossbench",
+                "arguments": [
+                    "--cool-down-threshold=moderate",
+                    "--debug"
+                ]
+            }
+        }
+    },
+    "2": {
+        "benchmarks": {
+            "jetstream2": {
+                "abridged": false
             }
         },
-        "benchmarks": {}
+        "crossbench": {
+            "motionmark_1.3": {
+                "display_name": "motionmark1.3.crossbench",
+                "arguments": [
+                    "--fileserver",
+                    "--debug"
+                ]
+            },
+            "speedometer_3": {
+                "display_name": "speedometer3.crossbench",
+                "arguments": [
+                    "--fileserver",
+                    "--debug"
+                ]
+            },
+            "sp3": {
+                "display_name": "speedometer3.a11y.crossbench",
+                "arguments": [
+                    "--fileserver",
+                    "--debug",
+                    "--extra-browser-args=--force-renderer-accessibility"
+                ]
+            }
+        }
     },
     "extra_infos": {
-        "num_stories": 7,
-        "predicted_min_shard_time": 480,
+        "num_stories": 15,
+        "predicted_min_shard_time": 490,
         "predicted_min_shard_index": 2,
-        "predicted_max_shard_time": 7000,
+        "predicted_max_shard_time": 7490,
         "predicted_max_shard_index": 1,
-        "shard #0": 1070.0,
-        "shard #1": 7000,
-        "shard #2": 480
+        "shard #0": 1550.0,
+        "shard #1": 7490,
+        "shard #2": 490
     }
 }
