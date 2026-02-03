@@ -67,21 +67,20 @@ ScriptRegexp* EmailInputType::CreateEmailRegexp(v8::Isolate* isolate) {
                                             kTextCaseASCIIInsensitive);
 }
 
-Vector<String> EmailInputType::ParseMultipleValues(const String& value) {
-  Vector<String> values;
-  value.Split(',', true, values);
-  return values;
+Vector<StringView> EmailInputType::ParseMultipleValues(
+    const StringView& value) {
+  return value.Split(',');
 }
 
-String EmailInputType::ConvertEmailAddressToASCII(const ScriptRegexp& regexp,
-                                                  const String& address) {
+String EmailInputType::ConvertEmailAddressToAscii(const ScriptRegexp& regexp,
+                                                  const StringView& address) {
   if (address.ContainsOnlyASCIIOrEmpty())
-    return address;
+    return address.ToString();
 
   wtf_size_t at_position = address.find('@');
   if (at_position == kNotFound)
-    return address;
-  String host = address.Substring(at_position + 1);
+    return address.ToString();
+  String host = address.substr(at_position + 1).ToString();
 
   // UnicodeString ctor for copy-on-write does not work reliably (in debug
   // build.) TODO(jshin): In an unlikely case this is a perf-issue, treat
@@ -101,13 +100,14 @@ String EmailInputType::ConvertEmailAddressToASCII(const ScriptRegexp& regexp,
   idna->nameToASCII(idn_domain_name, domain_name, idna_info, error_code);
   if (U_FAILURE(error_code) || idna_info.hasErrors() ||
       domain_name.length() > kMaximumDomainNameLength)
-    return address;
+    return address.ToString();
 
   StringBuilder builder;
   builder.Append(address, 0, at_position + 1);
   builder.Append(unicode::ToSpan(domain_name));
-  String ascii_email = builder.ToString();
-  return IsValidEmailAddress(regexp, ascii_email) ? ascii_email : address;
+  String ascii_email = builder.ReleaseString();
+  return IsValidEmailAddress(regexp, ascii_email) ? ascii_email
+                                                  : address.ToString();
 }
 
 String EmailInputType::ConvertEmailAddressToUnicode(
@@ -153,7 +153,7 @@ static bool CheckValidDotUsage(const String& domain) {
 }
 
 bool EmailInputType::IsValidEmailAddress(const ScriptRegexp& regexp,
-                                         const String& address) {
+                                         const StringView& address) {
   int address_length = address.length();
   if (!address_length)
     return false;
@@ -193,12 +193,12 @@ String EmailInputType::FindInvalidAddress(const String& value) const {
                ? String()
                : value;
   }
-  Vector<String> addresses = ParseMultipleValues(value);
+  Vector<StringView> addresses = ParseMultipleValues(value);
   for (const auto& address : addresses) {
-    String stripped = StripLeadingAndTrailingHtmlSpaces(address).ToString();
+    StringView stripped = StripLeadingAndTrailingHtmlSpaces(address);
     if (!IsValidEmailAddress(GetElement().GetDocument().EnsureEmailRegexp(),
                              stripped))
-      return stripped;
+      return stripped.ToString();
   }
   return String();
 }
@@ -273,7 +273,7 @@ String EmailInputType::SanitizeValue(const String& proposed_value) const {
   String no_line_break_value = proposed_value.RemoveCharacters(IsHTMLLineBreak);
   if (!GetElement().Multiple())
     return StripLeadingAndTrailingHTMLSpaces(no_line_break_value);
-  Vector<String> addresses = ParseMultipleValues(no_line_break_value);
+  Vector<StringView> addresses = ParseMultipleValues(no_line_break_value);
   StringBuilder stripped_value;
   stripped_value.AppendRange(addresses, ",", [](const auto& address) {
     return StripLeadingAndTrailingHtmlSpaces(address);
@@ -285,14 +285,14 @@ String EmailInputType::ConvertFromVisibleValue(
     const String& visible_value) const {
   String sanitized_value = SanitizeValue(visible_value);
   if (!GetElement().Multiple()) {
-    return ConvertEmailAddressToASCII(
+    return ConvertEmailAddressToAscii(
         GetElement().GetDocument().EnsureEmailRegexp(), sanitized_value);
   }
-  Vector<String> addresses = ParseMultipleValues(sanitized_value);
+  Vector<StringView> addresses = ParseMultipleValues(sanitized_value);
   StringBuilder builder;
   builder.ReserveCapacity(sanitized_value.length());
   builder.AppendRange(addresses, ",", [&](const auto& address) {
-    return ConvertEmailAddressToASCII(
+    return ConvertEmailAddressToAscii(
         GetElement().GetDocument().EnsureEmailRegexp(), address);
   });
   return builder.ReleaseString();
@@ -303,11 +303,11 @@ String EmailInputType::VisibleValue() const {
   if (!GetElement().Multiple())
     return ConvertEmailAddressToUnicode(value);
 
-  Vector<String> addresses = ParseMultipleValues(value);
+  Vector<StringView> addresses = ParseMultipleValues(value);
   StringBuilder builder;
   builder.ReserveCapacity(value.length());
   builder.AppendRange(addresses, ",", [&](const auto& address) {
-    return ConvertEmailAddressToUnicode(address);
+    return ConvertEmailAddressToUnicode(address.ToString());
   });
   return builder.ReleaseString();
 }

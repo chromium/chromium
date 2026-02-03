@@ -12,21 +12,21 @@ namespace blink {
 
 namespace {
 
-void ExpectToSucceed(v8::Isolate* isolate, const String& source) {
+void ExpectToSucceed(v8::Isolate* isolate, const StringView& source) {
   ScriptRegexp* email_regexp = EmailInputType::CreateEmailRegexp(isolate);
   String result =
-      EmailInputType::ConvertEmailAddressToASCII(*email_regexp, source);
+      EmailInputType::ConvertEmailAddressToAscii(*email_regexp, source);
   EXPECT_NE(source, result);
   EXPECT_TRUE(EmailInputType::IsValidEmailAddress(*email_regexp, result));
 }
 
-void ExpectToFail(v8::Isolate* isolate, const String& source) {
+void ExpectToFail(v8::Isolate* isolate, const StringView& source) {
   ScriptRegexp* email_regexp = EmailInputType::CreateEmailRegexp(isolate);
   // Conversion failed.  The resultant value might contains non-ASCII
   // characters, and not a valid email address.
   EXPECT_FALSE(EmailInputType::IsValidEmailAddress(
       *email_regexp,
-      EmailInputType::ConvertEmailAddressToASCII(*email_regexp, source)));
+      EmailInputType::ConvertEmailAddressToAscii(*email_regexp, source)));
 }
 
 }  // namespace

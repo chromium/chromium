@@ -89,7 +89,7 @@ bool BaseTextInputType::TooShort(
 
 bool BaseTextInputType::PatternMismatch(const String& value) const {
   if (IsEmailInputType() && GetElement().Multiple()) {
-    Vector<String> values = EmailInputType::ParseMultipleValues(value);
+    Vector<StringView> values = EmailInputType::ParseMultipleValues(value);
     for (const auto& val : values) {
       if (PatternMismatchPerValue(val))
         return true;
@@ -99,7 +99,7 @@ bool BaseTextInputType::PatternMismatch(const String& value) const {
   return PatternMismatchPerValue(value);
 }
 
-bool BaseTextInputType::PatternMismatchPerValue(const String& value) const {
+bool BaseTextInputType::PatternMismatchPerValue(const StringView& value) const {
   const AtomicString& raw_pattern =
       GetElement().FastGetAttribute(html_names::kPatternAttr);
   UnicodeMode unicode_mode = UnicodeMode::kUnicodeSets;
