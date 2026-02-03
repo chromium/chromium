@@ -25,16 +25,14 @@ std::optional<gpu::SyncToken> CopyRGBATextureToVideoFrame(
   auto* ri = provider->RasterInterface();
   DCHECK(ri);
 
-  // If context is lost for any reason e.g. creating shared image failed, we
-  // cannot distinguish between OOP and non-OOP raster based on GrContext().
   if (ri->GetGraphicsResetStatusKHR() != GL_NO_ERROR) {
     DLOG(ERROR) << "Raster context lost.";
     return std::nullopt;
   }
 
-  // With OOP raster, if RGB->YUV conversion is unsupported, the CopySharedImage
-  // calls will fail on the service side with no ability to detect failure on
-  // the client side. Check for support here and early out if it's unsupported.
+  // If RGB->YUV conversion is unsupported, the CopySharedImage calls will fail
+  // on the service side with no ability to detect failure on the client side.
+  // Check for support here and early out if it's unsupported.
   if (!provider->ContextCapabilities().supports_rgb_to_yuv_conversion) {
     DVLOG(1) << "RGB->YUV conversion not supported";
     return std::nullopt;
