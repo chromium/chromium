@@ -8992,7 +8992,7 @@
 <translation id="7196272782924897510">Басқа құрылғыдағы кіру кілтін пайдалану керек пе?</translation>
 <translation id="7196455519852483601">Тарих деректерінің, cookie файлдарының, сайт деректерінің және басқа деректердің кейбірін немесе барлығын жоюға болады.</translation>
 <translation id="7197682514647286393">Шолу деректерін жылдам жойыңыз</translation>
-<translation id="719791532916917144">Перне тіркесімі</translation>
+<translation id="719791532916917144">Пернелер тіркесімі</translation>
 <translation id="7198503619164954386">Компанияда тіркелген құрылғыны пайдалануыңыз керек.</translation>
 <translation id="7199158086730159431">К&amp;өмек алу</translation>
 <translation id="7199452998289813782"><ph name="DEVICE_NAME" /> құрылғысына трансляциялауды кідірту</translation>
@@ -10470,7 +10470,7 @@
 <translation id="8193195501228940758"><ph name="WEBSITE" /> мазмұнын өшіру</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Құрылғыларыңыз<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8194788147118885421">Әрекетсіз қойындыларды тексеру</translation>
-<translation id="8195265224453131880">Қарқын</translation>
+<translation id="8195265224453131880">Қарқындылық</translation>
 <translation id="8195854162863398249"><ph name="FEATURE_NAME" /> функциясын өшіру</translation>
 <translation id="8195920051450756553">Бір пернені қайтадан іске қосу алдындағы кідіріс</translation>
 <translation id="8197673340773315084">Атау не белгі қосыңыз, мысалы, "Жұмыс" немесе "Жеке".</translation>
@@ -11977,7 +11977,7 @@
 <translation id="9200339982498053969"><ph name="ORIGIN" /> домені <ph name="FOLDERNAME" /> қалтасындағы файлдарды өзгерте алады.</translation>
 <translation id="920045321358709304"><ph name="SEARCH_ENGINE" /> арқылы іздеу</translation>
 <translation id="9201117361710210082">Бұрын көрген</translation>
-<translation id="9201220332032049474">Экран құлпы опциялары</translation>
+<translation id="9201220332032049474">Экран құлпын ашу жолдары</translation>
 <translation id="9201842707396338580">Бірдеңе дұрыс болмады. Құрылғының иесіне немесе әкімшісіне хабарласыңыз. Қате коды: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203296457393252944">Қызыл-жасыл, жасыл түсті ажырату қабілеті әлсіз (дейтераномалия)</translation>
 <translation id="9203398526606335860">&amp;Профильдеу қосылған</translation>

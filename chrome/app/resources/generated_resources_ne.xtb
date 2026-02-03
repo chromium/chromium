@@ -1678,7 +1678,7 @@
 <translation id="2120639962942052471"><ph name="PERMISSION" /> लाई ब्लक गरिएको छ</translation>
 <translation id="2121825465123208577">पुनःआकार मिलाउनुहोस्</translation>
 <translation id="2123766928840368256">कुनै अर्को फाइल छनौट गर्नुहोस्</translation>
-<translation id="2124930039827422115">{1,plural, =1{एक प्रयोगकर्ताले <ph name="AVERAGE_RATING" /> मूल्याङ्कन गर्नुभयो}other{ # प्रयोगकर्ताहरूले <ph name="AVERAGE_RATING" /> मूल्याङ्कन गर्नुभयो}}</translation>
+<translation id="2124930039827422115">{1,plural, =1{एक जना प्रयोगकर्ताले <ph name="AVERAGE_RATING" /> रेटिङ दिनुभएको छ।}other{# जना प्रयोगकर्ताले <ph name="AVERAGE_RATING" /> रेटिङ दिनुभएको छ।}}</translation>
 <translation id="2125715366913703594">एक्स्टेन्सनहरू हेर्नुहोस्</translation>
 <translation id="2126167708562367080">तपाईंका प्रशासकद्वारा सिङ्क असक्षम पारियो।</translation>
 <translation id="2127372758936585790">न्यून-पावर चार्जर</translation>
@@ -8154,7 +8154,7 @@
 <translation id="6602937173026466876">आफ्ना प्रिन्टरहरूमाथि पहुँच राख्नुहोस्</translation>
 <translation id="6602956230557165253">नेभिगेट गर्न बायाँ र दायाँ बाण कुञ्जीहरू प्रयोग गर्नुहोस्।</translation>
 <translation id="6603185457265641428">इतिहास सिंक गर्ने वा नगर्ने भन्ने कुरा छनौट गर्नुहोस्</translation>
-<translation id="6605847144724004692">अझै पनि कुनै पनि प्रयोगकर्ताले मूल्याङ्कन गर्नुभएको छैन।</translation>
+<translation id="6605847144724004692">अहिलेसम्म कुनै पनि प्रयोगकर्ताले रेटिङ दिनुभएको छैन।</translation>
 <translation id="6607831829715835317">थप उपक&amp;रणहरू</translation>
 <translation id="6607890859198268021"><ph name="DOMAIN" /> ले पहिल्यैदेखि <ph name="USER_EMAIL" /> व्यवस्थापन गरिरहेको छ। कुनै अर्को Google खातामार्फत अभिभावकीय नियन्त्रणहरू प्रयोग गर्न सेटअप गरिसकेपछि साइन आउट गर्नुहोस् त्यसपछि साइन इन गर्ने स्क्रिनमा "व्यक्ति थप्नुहोस्" बटन चयन गर्नुहोस्।</translation>
 <translation id="6608166463665411119">eSIM रिसेट गर्नुहोस्</translation>

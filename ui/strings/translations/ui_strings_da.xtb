@@ -4,7 +4,7 @@
 <translation id="1028699632127661925">Sender til <ph name="DEVICE_NAME" />...</translation>
 <translation id="111910763555783249">Notifikationsindstillinger</translation>
 <translation id="1127811143501539442">{DAYS,plural, =1{1 dag siden}one{# dag siden}other{# dage siden}}</translation>
-<translation id="1156623771253174079">{SECONDS,plural, =1{For 1 minut siden}one{For # minut siden}other{For # minutter siden}}</translation>
+<translation id="1156623771253174079">{SECONDS,plural, =1{1 minut siden}one{# minut siden}other{# minutter siden}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1 min.}one{# min.}other{# min.}}</translation>
 <translation id="1178017578188974117">{DAYS,plural, =1{1 dag siden}one{# dag siden}other{# dage siden}}</translation>
 <translation id="1181037720776840403">Fjern</translation>

@@ -63,7 +63,7 @@
 <translation id="2801787514987684416">Ver informações da loja?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> guia fechada}one{<ph name="MANY_CLOSED" /> guia fechada}other{<ph name="MANY_CLOSED" /> guias fechadas}}</translation>
 <translation id="2894757982205307093">Nova guia no grupo</translation>
-<translation id="2918484639460781603">Ir a configurações</translation>
+<translation id="2918484639460781603">Ir para as configurações</translation>
 <translation id="2928243913527329289">Google | Sobre a loja</translation>
 <translation id="2978860912612699943">{ITEMS_COUNT,plural, =1{<ph name="ITEMS_COUNT_ONE" /> selecionado}one{<ph name="ITEMS_COUNT_MANY" /> selecionado}other{<ph name="ITEMS_COUNT_MANY" /> selecionados}}</translation>
 <translation id="2991702137079525605">{TABS_COUNT,plural, =1{Fixar guia}one{Fixar guia}other{Fixar guias}}</translation>

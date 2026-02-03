@@ -733,7 +733,7 @@
 <translation id="3857113360369572832">Откройте <ph name="BEGIN_BOLD" />Настройки Safari<ph name="END_BOLD" />.</translation>
 <translation id="3858860766373142691">Название</translation>
 <translation id="3868495844258915202">Показать URL полностью</translation>
-<translation id="3875783148670536197">Показать</translation>
+<translation id="3875783148670536197">Подробнее</translation>
 <translation id="3878657761594430423">Маркер нижнего экрана</translation>
 <translation id="3885587018298784481">Вступите в семейную группу</translation>
 <translation id="3888230626190453136">Как перейти в режим инкогнито</translation>
@@ -1209,7 +1209,7 @@
 <translation id="562753339521713441">Выполните проверку безопасности</translation>
 <translation id="5628388627414062173">{count,plural, =1{{count} страница в списке для чтения}one{{count} страница в списке для чтения}few{{count} страницы в списке для чтения}many{{count} страниц в списке для чтения}other{{count} страницы в списке для чтения}}</translation>
 <translation id="5632194969640946913">Теперь вы можете искать информацию обо всем, что есть на странице, – о товарах, местах и содержимом текстов.</translation>
-<translation id="5632485077360054581">Показать</translation>
+<translation id="5632485077360054581">Подробнее</translation>
 <translation id="5633237939819267663">{count,plural, =1{Закладка сохранена в папке "{title}".}one{{count} закладка сохранена в папке "{title}".}few{{count} закладки сохранено в папке "{title}".}many{{count} закладок сохранено в папке "{title}".}other{{count} закладки сохранено в папке "{title}".}}</translation>
 <translation id="564170563478022912">Выйти? Несохраненные данные аккаунта будут удалены</translation>
 <translation id="5642707040609478753">Отметить как непрочитанное</translation>
@@ -1472,7 +1472,7 @@
 <translation id="6507973708545996744">Войдите в аккаунт, чтобы синхронизировать список для чтения на всех своих устройствах.</translation>
 <translation id="6518133107902771759">Подтвердить</translation>
 <translation id="6518861084553706202">Вкладки будут закрыты, а пароли, история браузера, файлы cookie и другие данные удалены.</translation>
-<translation id="6523575793810663688">Показать</translation>
+<translation id="6523575793810663688">Подробнее</translation>
 <translation id="6524082013156754186">Сохранить в аккаунте</translation>
 <translation id="6524918542306337007">Режим инкогнито недоступен</translation>
 <translation id="6527208859483186860">фон номер {position} из общего числа {total}</translation>
@@ -2227,7 +2227,7 @@
 <translation id="954667170699278022">Список для чтения</translation>
 <translation id="956066588046842680">Импорт этих данных запрещен правилами вашей организации.</translation>
 <translation id="956218893102219091">Используйте точное местоположение вместо приблизительного на основе IP-адреса, чтобы получать более подходящие результаты от Gemini. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
-<translation id="961856697154696964">Удалить данные браузера</translation>
+<translation id="961856697154696964">Данные  о работе в браузере</translation>
 <translation id="963102227019621224">История приложений и веб-поиска</translation>
 <translation id="966593914872420832">Голосовой поиск</translation>
 <translation id="972084300091883657">{COUNT,plural, =0{Присоединитесь к группе, в которой состоит <ph name="OWNER_NAME" />}=1{Присоединитесь к группе, в которой состоят <ph name="OWNER_NAME" /> и ещё {COUNT} пользователь}one{Присоединитесь к группе, в которой состоят <ph name="OWNER_NAME" /> и ещё {COUNT} пользователь}few{Присоединитесь к группе, в которой состоят <ph name="OWNER_NAME" /> и ещё {COUNT} пользователя}many{Присоединитесь к группе, в которой состоят <ph name="OWNER_NAME" /> и ещё {COUNT} пользователей}other{Присоединитесь к группе, в которой состоят <ph name="OWNER_NAME" /> и ещё {COUNT} пользователя}}</translation>

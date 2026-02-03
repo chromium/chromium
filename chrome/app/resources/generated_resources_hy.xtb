@@ -318,7 +318,7 @@
 <translation id="119944043368869598">Մաքրել բոլորը</translation>
 <translation id="1199814941632954229">Տրամադրվում են հավաստագրեր հավաստագրման այս պրոֆիլների համար</translation>
 <translation id="120069043972472860">Անդիտելի</translation>
-<translation id="1201402288615127009">Հաջորդը</translation>
+<translation id="1201402288615127009">Հաջորդ</translation>
 <translation id="1202116106683864634">Իսկապե՞ս ուզում եք ջնջել այս մուտքի բանալին։</translation>
 <translation id="1202596434010270079">Kiosk հավելվածը թարմացվեց: Հեռացրեք USB հիշողությունը:</translation>
 <translation id="1202892408424955784">Ապրանքներ, որոնց գներին հետևում եք</translation>
@@ -2787,7 +2787,7 @@
 <translation id="2872961005593481000">Անջատել</translation>
 <translation id="2873744479411987024">Որքան բարձր է թարմացման հաճախականությունը, այնքան ավելի սահուն և մանրամասն է էկրանի պատկերը։ Թարմացման բարձր հաճախականությունը կարող է ազդել մարտկոցի աշխատանքի ժամանակի վրա։</translation>
 <translation id="2873956234023215251">Չհաջողվեց տեղադրել հավելվածը։ Սխալ առաջացավ։</translation>
-<translation id="2874939134665556319">Նախորդը</translation>
+<translation id="2874939134665556319">Նախորդ</translation>
 <translation id="2875698561019555027">(Chrome սխալների էջեր)</translation>
 <translation id="2876336351874743617">Մատ 2</translation>
 <translation id="2876369937070532032">Ձեր այցելած որոշ էջերի URL-ներն ուղարկվում են Google-ին, երբ ձեր հաշիվը կամ սարքը վտանգված է</translation>
@@ -4516,7 +4516,7 @@
 <translation id="4044964245574571633">Օգտագործում է տարածք Microsoft OneDrive-ում</translation>
 <translation id="4045196801416070837">Սարքի ազդանշանները</translation>
 <translation id="4046013316139505482">Այս ընդլայնումներին անհրաժեշտ չէ տեսնել և փոխել այս կայքի տվյալները։</translation>
-<translation id="4046123991198612571">Հաջորդը</translation>
+<translation id="4046123991198612571">Հաջորդ</translation>
 <translation id="4046655456159965535">Ջնջե՞լ ցուցադրված տվյալները</translation>
 <translation id="4047345532928475040">Կիրառելի չէ</translation>
 <translation id="4047581153955375979">USB4</translation>
@@ -8296,7 +8296,7 @@
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> ու ևս 1 ներդիր}one{<ph name="PAGE_TITLE" /> ու ևս # ներդիր}other{<ph name="PAGE_TITLE" /> ու ևս # ներդիր}}</translation>
 <translation id="6709357832553498500">Միանալ՝ օգտագործելով <ph name="EXTENSIONNAME" />-ը</translation>
 <translation id="6710172959248731469">Google-ի ծառայությունների կարգավորումներ</translation>
-<translation id="6710213216561001401">Նախորդը</translation>
+<translation id="6710213216561001401">Նախորդ</translation>
 <translation id="6710394144992407503">Վեբ էջերում տեքստ մուտքագրելիս ստուգել ուղղագրական սխալների առկայությունը</translation>
 <translation id="6712943853047024245">Դուք այս օգտանվան հետ արդեն գաղտնաբառ պահել եք <ph name="WEBSITE" /> կայքի համար</translation>
 <translation id="6713233729292711163">Ավելացնել աշխատանքային պրոֆիլ</translation>

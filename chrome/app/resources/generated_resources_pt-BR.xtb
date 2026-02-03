@@ -451,7 +451,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1285625592773741684">A configuração atual de uso de dados é "Dados móveis"</translation>
 <translation id="1285815028662278915">Talvez seus dados móveis não tenham suporte ao ponto de acesso. <ph name="BEGIN_LINK_LEARN_MORE" />Saiba mais<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1286901453440314450">Certificados não confiáveis</translation>
-<translation id="1288037062697528143">O Modo noturno será ativado automaticamente ao anoitecer</translation>
+<translation id="1288037062697528143">O modo noturno será ativado automaticamente ao anoitecer</translation>
 <translation id="1288300545283011870">Propriedades da fala</translation>
 <translation id="1289619947962767206">Essa opção não está mais disponível. Para fazer a apresentação de uma guia, use o <ph name="GOOGLE_MEET" />.</translation>
 <translation id="1291057703584594733">Ao selecionar um gesto já atribuído, ele é removido da ação original.</translation>
@@ -2861,7 +2861,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2916067990491711240">Sair das sessões de visitante gerenciadas</translation>
 <translation id="2916073183900451334">Ao pressionar Tab em uma página da Web, os links e os campos de formulário são destacados</translation>
 <translation id="2916745397441987255">Pesquise extensões</translation>
-<translation id="2918484639460781603">Ir a configurações</translation>
+<translation id="2918484639460781603">Ir para as configurações</translation>
 <translation id="2918484644467055090">Este dispositivo não pode ser inscrito na organização a que sua conta pertence porque ele está marcado para ser gerenciado por outra organização.</translation>
 <translation id="2920346489891435227">Abrir link na visualização à direita</translation>
 <translation id="2920852127376356161">Sem permissão para gerenciar protocolos</translation>
@@ -4661,7 +4661,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="413534985210133938">"<ph name="LOCAL_FOLDER" />" foi salvo apenas neste dispositivo. Se você mover esse favorito para "<ph name="LOCAL_FOLDER" />", ele não vai mais aparecer nos seus outros dispositivos.</translation>
 <translation id="4135370802895537423">Abrir link na visualização à direita</translation>
 <translation id="4135746311382563554">Termos de Serviço Adicionais do Chrome e do ChromeOS</translation>
-<translation id="4136203100490971508">O Modo noturno será desativado automaticamente ao amanhecer</translation>
+<translation id="4136203100490971508">O modo noturno será desativado automaticamente ao amanhecer</translation>
 <translation id="41365691917097717">Se você continuar, a depuração do adb será ativada para a criação e o teste de apps Android. Essa ação permite a instalação de apps Android que não foram verificados pelo Google. Para desativar, será necessária uma redefinição para a configuração original.</translation>
 <translation id="4137923333452716643">Destaque o texto que você quer abrir no modo de leitura</translation>
 <translation id="4138267921960073861">Mostrar nomes de usuários e fotos na tela de login</translation>
@@ -4890,7 +4890,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4298660926525614540">Nomes de armazenamento removíveis</translation>
 <translation id="4299022904780065004">Nova &amp;janela anônima</translation>
 <translation id="4300272766492248925">Abrir app</translation>
-<translation id="4301231341924904092">Mude por mim</translation>
+<translation id="4301231341924904092">Mude para mim</translation>
 <translation id="4301671483919369635">Esta página tem permissão para editar arquivos</translation>
 <translation id="4301697210743228350">{COUNT,plural, =1{# contato não está disponível. Para usar o recurso "<ph name="FEATURE_NAME" />" com esse contato, adicione o endereço de e-mail associado à Conta do Google dele.}one{# contato não está disponível. Para usar o recurso "<ph name="FEATURE_NAME" />" com esse contato, adicione o endereço de e-mail associado à Conta do Google dele.}other{# contatos não estão disponíveis. Para usar o recurso "<ph name="FEATURE_NAME" />" com esses contatos, adicione o endereço de e-mail associado à Conta do Google deles.}}</translation>
 <translation id="4303079906735388947">Configure um novo PIN para sua chave de segurança</translation>
@@ -7378,7 +7378,7 @@ Não exponha nenhuma informação confidencial.</translation>
     Use-a para acessar com facilidade todos os seus favoritos, arquivos e muito mais. Se você não tiver uma conta, crie uma na próxima tela.</translation>
 <translation id="6054138466019582920">Pesquisar nesta página com o Google…</translation>
 <translation id="6054284857788651331">Grupo de guias fechadas recentemente</translation>
-<translation id="6054819000749443354">Abra os Ajustes do Sistema</translation>
+<translation id="6054819000749443354">Abrir os Ajustes do Sistema</translation>
 <translation id="6054961935262556546">Mudar visibilidade</translation>
 <translation id="6055392876709372977">PKCS #1 SHA-256 com criptografia RSA</translation>
 <translation id="6055544610007596637">Instale apps para o dispositivo <ph name="DEVICE_TYPE" /> na Google Play Store</translation>
@@ -9465,7 +9465,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7502528909759062987">Pausar a transmissão da guia para <ph name="DEVICE_NAME" /></translation>
 <translation id="7502804472671406749">As guias compartilhadas podem ser roladas e ampliadas</translation>
 <translation id="7503191893372251637">Tipo de certificado do Netscape</translation>
-<translation id="7503259455663961898">Mude por mim</translation>
+<translation id="7503259455663961898">Mude para mim</translation>
 <translation id="7503985202154027481">Um registro da visita a este site será mantido na sua chave de segurança.</translation>
 <translation id="7504145862399276792">O áudio desta guia está sendo desativado</translation>
 <translation id="750509436279396091">Abrir pasta de downloads</translation>
@@ -11156,7 +11156,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8647385344110255847">Com sua permissão, a criança pode usar o Google Play para instalar apps</translation>
 <translation id="8647834505253004544">Não é um endereço da Web válido</translation>
 <translation id="8648252583955599667"><ph name="GET_HELP_LINK" /> ou <ph name="RE_SCAN_LINK" /></translation>
-<translation id="8648408795949963811">Temperatura da cor do "Modo noturno"</translation>
+<translation id="8648408795949963811">Temperatura da cor do modo noturno</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> quer <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> e mais</translation>
 <translation id="8648889679430451455">Remover dados de personalização</translation>
 <translation id="8649026945479135076">É comum os sites que você visita lembrarem dos seus interesses para personalizar sua experiência. Sites também podem armazenar informações sobre seus interesses com o Chrome.</translation>

@@ -1319,7 +1319,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="3137507986424712703">{COUNT,plural, =0{Tidak ada}=1{data login untuk 1 akun}other{data login untuk # akun}}</translation>
 <translation id="3140646734028448730">Layanan Bisnis</translation>
 <translation id="3141093262818886744">Tetap buka</translation>
-<translation id="3141337053413339205">Alihkan ke tab ini.</translation>
+<translation id="3141337053413339205">Pindah ke tab ini.</translation>
 <translation id="3141641372357166056">Tidak ada keputusan izin</translation>
 <translation id="3144458715650412431">Kebijakan pengujian telah diterapkan. Tinjau dan reset kebijakan di chrome://policy/test. Kebijakan admin tidak akan diterapkan.</translation>
 <translation id="3145945101586104090">Gagal mendekodekan tanggapan</translation>
@@ -2348,7 +2348,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="4780320432697076749">Software Foto</translation>
 <translation id="4780366598804516005">Kotak surat 1</translation>
 <translation id="4785376858512657294">Kelola Akun Google</translation>
-<translation id="4785689107224900852">Alihkan ke tab ini</translation>
+<translation id="4785689107224900852">Pindah ke tab ini</translation>
 <translation id="4785998536350006000">Menelusuri "<ph name="SEARCH_QUERY" />"</translation>
 <translation id="4786804728079074733">Bola voli</translation>
 <translation id="4787182171088676626">Amplop (Halus)</translation>
@@ -3514,7 +3514,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="6671697161687535275">Hapus saran formulir dari Chromium?</translation>
 <translation id="6675846980676550611">AR tidak diizinkan</translation>
 <translation id="6677351035258626477">Makanan Cepat Saji</translation>
-<translation id="6677738644213083042">Alihkan ke tab ini</translation>
+<translation id="6677738644213083042">Pindah ke tab ini</translation>
 <translation id="6679354743514146922">Browser Chrome mencoba mengisi sandi Anda di <ph name="APP_NAME" />.</translation>
 <translation id="6681790815630918386">CVC disimpan</translation>
 <translation id="6683022854667115063">Headphone</translation>

@@ -1068,7 +1068,7 @@
 <translation id="5626134646977739690">Имя:</translation>
 <translation id="5628604359369369630">Не прочитано – доступно офлайн</translation>
 <translation id="5631483240431073854">Управлять открытыми вкладками</translation>
-<translation id="5632485077360054581">Показать</translation>
+<translation id="5632485077360054581">Подробнее</translation>
 <translation id="564121214411935612">Вы вошли как <ph name="USER_NAME" />. Ошибка в аккаунте Google. Открыть настройки.</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />История поиска<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />сведения о других действиях<ph name="END_LINK2" /> могут сохраняться в аккаунте Google.</translation>
 <translation id="5648166631817621825">Последние 7 дней</translation>
@@ -1772,7 +1772,7 @@
 <translation id="8398389123831319859">Чтобы перейти в режим инкогнито, нажмите дважды и удерживайте</translation>
 <translation id="8402673309244746971">Перейти к подпискам</translation>
 <translation id="8413126021676339697">Показать всю историю</translation>
-<translation id="8413795581997394485">Защита от сайтов, расширений и скачиваемых файлов, признанных опасными. Когда вы переходите на сайт, Chrome отправляет обфусцированную часть URL в Google через сервер обеспечения конфиденциальности, который скрывает ваш IP-адрес. Если сайт делает что-то подозрительное, передается полный URL и части контента со страницы.</translation>
+<translation id="8413795581997394485">Защита от сайтов, расширений и скачиваемых файлов, признанных опасными. Когда вы переходите на сайт, Chrome отправляет обфусцированную часть URL в Google через сервер защиты конфиденциальности, который скрывает ваш IP-адрес. Если сайт делает что-то подозрительное, передается полный URL и части контента со страницы.</translation>
 <translation id="8414396119627470038">Вход на сайт <ph name="SITE_ETLD_PLUS_ONE" /> с аккаунтом <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8419144699778179708">История будет удалена, в том числе в окне поиска</translation>
 <translation id="8419244640277402268">Да</translation>
@@ -1941,7 +1941,7 @@
 <translation id="9104217018994036254">Список устройств для отправки вкладки.</translation>
 <translation id="9106148373857059373">Страница сохранения закладки закрыта</translation>
 <translation id="9108808586816295166">Иногда безопасный DNS-сервер может быть недоступен.</translation>
-<translation id="9112483451228487295">Быстрое удаление данных о работе в браузере</translation>
+<translation id="9112483451228487295">Удаление данных</translation>
 <translation id="9124978074365039456">Находите товары, переводите тексты и получайте информацию о том, что вас окружает, используя камеру или фото из галереи.</translation>
 <translation id="9130135798965366513">Чтобы продолжить, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> передаст этому сайту ваши данные (<ph name="FIELDS_STRING" />). Ознакомьтесь с <ph name="BEGIN_LINK1" />политикой конфиденциальности<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />условиями использования<ph name="END_LINK2" /> сайта.</translation>
 <translation id="9131209053278896908">Здесь появятся заблокированные сайты.</translation>
@@ -1978,7 +1978,7 @@
 <translation id="939598580284253335">Ввести кодовую фразу</translation>
 <translation id="945522503751344254">Отправить отзыв</translation>
 <translation id="95817756606698420">В Китае Chrome может использовать для поиска <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" />. Это можно изменить в <ph name="BEGIN_LINK" />Настройках<ph name="END_LINK" />.</translation>
-<translation id="961856697154696964">Удалить данные браузера</translation>
+<translation id="961856697154696964">Данные  о работе в браузере</translation>
 <translation id="963246339335003378">Открыть диспетчер задач</translation>
 <translation id="966131775676567255">Удаление данных из аккаунта</translation>
 <translation id="970715775301869095">Осталось <ph name="MINUTES" /> мин.</translation>

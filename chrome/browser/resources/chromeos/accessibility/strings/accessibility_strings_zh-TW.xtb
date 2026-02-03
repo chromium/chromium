@@ -31,7 +31,7 @@
 <translation id="1175914831232945926">數字</translation>
 <translation id="1186712907912748007">拖曳中，<ph name="GESTURE" />即可結束這個動作。目前暫時無法使用其他表情。</translation>
 <translation id="1188858454923323853">補充</translation>
-<translation id="1189258430971676908">練習區：下拉式清單</translation>
+<translation id="1189258430971676908">練習區：下拉式選單</translation>
 <translation id="1193484659698721586">.input {$$COUNT :number} .match $$COUNT 1{{}} *{{巢狀結構層級 {$$COUNT}}}</translation>
 <translation id="1195238899008218998">後記</translation>
 <translation id="1197088940767939838">橘色</translation>
@@ -1158,7 +1158,7 @@
 <translation id="8651481478098336970">靜音</translation>
 <translation id="8653646212587894517">顯示連結清單</translation>
 <translation id="8656888282555543604">啟用點字記錄功能</translation>
-<translation id="8659501358298941449">下拉式清單</translation>
+<translation id="8659501358298941449">下拉式選單</translation>
 <translation id="8666733765751421568"><ph name="TYPE" />中已沒有其他項目</translation>
 <translation id="867187640362843212">標題 5</translation>
 <translation id="8693391540059827073">我最愛的季節</translation>
@@ -1171,7 +1171,7 @@
 <translation id="875769700429317857"><ph name="FILE_NAME" /> 下載完成</translation>
 <translation id="8767968232364267681">下一個第 4 階標題</translation>
 <translation id="8770473310765924354">離開結構化內容，例如表格</translation>
-<translation id="8775203254697638994">有時候，你會需要從下拉式清單中選取項目。方法如下：首先請按下搜尋鍵 + 空格鍵展開清單。然後使用上下方向鍵選取項目。最後再按下搜尋鍵 + 空格鍵收合清單。</translation>
+<translation id="8775203254697638994">有時候，你會需要從下拉式選單中選取項目。方法如下：首先請按下搜尋鍵 + 空格鍵展開清單。然後使用上下方向鍵選取項目。最後再按下搜尋鍵 + 空格鍵收合清單。</translation>
 <translation id="8779057862865475116">沒有上一個連結</translation>
 <translation id="8796411681063377102">下一個第 3 階標題</translation>
 <translation id="8821891849214789910">停止語音輸入</translation>

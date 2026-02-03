@@ -4957,7 +4957,7 @@
 <translation id="4363262124589131906">「我的雲端硬碟」中的新檔案會自動停止同步至這部 Chromebook</translation>
 <translation id="4364327530094270451">瓜</translation>
 <translation id="4364417397164696363">{ITEM_COUNT,plural, =1{這 1 個項目只會儲存在這部裝置。如要在其他裝置上使用，請儲存到 Google 帳戶。}other{這 {ITEM_COUNT} 個項目只會儲存在這部裝置。如要在其他裝置上使用，請儲存到 Google 帳戶。}}</translation>
-<translation id="4364567974334641491"><ph name="APP_NAME" /> 正在共用視窗。</translation>
+<translation id="4364567974334641491">「<ph name="APP_NAME" />」正在分享視窗。</translation>
 <translation id="4364830672918311045">顯示通知</translation>
 <translation id="4367971618859387374">顯示名稱</translation>
 <translation id="4368960422722232719">在分頁懸停預覽資訊卡上顯示記憶體用量</translation>
@@ -9434,7 +9434,7 @@
 <translation id="7502528909759062987">暫停將分頁投放到「<ph name="DEVICE_NAME" />」</translation>
 <translation id="7502804472671406749">可捲動及縮放已分享的分頁</translation>
 <translation id="7503191893372251637">Netscape 憑證類型</translation>
-<translation id="7503259455663961898">協助我變更</translation>
+<translation id="7503259455663961898">幫我變更</translation>
 <translation id="7503985202154027481">你的安全金鑰會保留你造訪這個網站的記錄。</translation>
 <translation id="7504145862399276792">這個分頁已設為靜音</translation>
 <translation id="750509436279396091">開啟下載內容資料夾</translation>

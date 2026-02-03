@@ -337,7 +337,7 @@
 <translation id="2471632347767899461">در «مرکز راهنمایی» جستجو کنید</translation>
 <translation id="2472163211318554013">‏برای بردن بیشترین بهره از Chrome، به سیستم وارد شوید</translation>
 <translation id="247737702124049222">توضیحات تصویر روشن است</translation>
-<translation id="2479148705183875116">رفتن به تنظیمات</translation>
+<translation id="2479148705183875116">رفتن به «تنظیمات»</translation>
 <translation id="2482878487686419369">اعلان‌ها</translation>
 <translation id="2496180316473517155">سابقه مرور</translation>
 <translation id="2497852260688568942">سرپرستتان همگام‌سازی را غیرفعال کرده است</translation>
@@ -408,7 +408,7 @@
 <translation id="2781151931089541271">۱ ثانیه باقی‌مانده است</translation>
 <translation id="2789486458103222910">تأیید</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{‏‫Chrome یک مورد استفاده مجدد از گذرواژه پیدا کرده است که می‌توانید آن را بهبود دهید}one{‏‫Chrome ‏# مورد استفاده مجدد از گذرواژه پیدا کرده است که می‌توانید آن‌ها را بهبود دهید}other{‏‫Chrome ‏# مورد استفاده مجدد از گذرواژه پیدا کرده است که می‌توانید آن‌ها را بهبود دهید}}</translation>
-<translation id="2794551654724114396">‏اعلان‌های مربوط به دریافت نکات مفید را روشن کنید تا بتوانید بهترین استفاده را از Chrome داشته باشید</translation>
+<translation id="2794551654724114396">‏برای داشتن بهترین تجربه در Chrome، اعلان‌های مربوط به دریافت نکات مفید را روشن کنید</translation>
 <translation id="2800066122460699237">زبانه <ph name="TAB_TITLE" /> بسته خواهد شد</translation>
 <translation id="2805210243313393104">در همه دستگاه‌هایتان به نشانک‌ها و موارد دیگر دسترسی داشته باشید</translation>
 <translation id="2805756323405976993">برنامه‌ها</translation>
@@ -446,7 +446,7 @@
 <translation id="2908243544703713905">داستان‌های خوانده‌نشده آماده است</translation>
 <translation id="2909615210195135082">‏پلتفورم اعلان‌های Google</translation>
 <translation id="2912345083818861431">استفاده از قفل صفحه برای دیدن برگه‌های ناشناس باز</translation>
-<translation id="2918484639460781603">رفتن به تنظیمات</translation>
+<translation id="2918484639460781603">رفتن به «تنظیمات»</translation>
 <translation id="2920713489113095380">‫<ph name="TAB_TITLE" />، زبانه بی‌صدا</translation>
 <translation id="2923908459366352541">نام نامعتبر است</translation>
 <translation id="2932150158123903946">‏فضای ذخیره‌سازی Google <ph name="APP_NAME" /></translation>
@@ -1068,7 +1068,7 @@
 <translation id="5626134646977739690">نام:</translation>
 <translation id="5628604359369369630">خوانده‌نشده - دردسترس درحالت آفلاین</translation>
 <translation id="5631483240431073854">مدیریت کردن برگه‌های باز</translation>
-<translation id="5632485077360054581">نمایش روش انجام کار</translation>
+<translation id="5632485077360054581">نشان دادن روش کار</translation>
 <translation id="564121214411935612">‏با ایمیل <ph name="USER_NAME" /> به سیستم وارد شده‌اید. خطای «حساب Google». تنظیمات را باز می‌کند.</translation>
 <translation id="5641456720590409793">‏ممکن است <ph name="BEGIN_LINK1" />سابقه «جستجو»<ph name="END_LINK1" /> و <ph name="BEGIN_LINK2" />دیگر انواع فعالیت<ph name="END_LINK2" /> در «حساب Google» شما ذخیره شوند</translation>
 <translation id="5648166631817621825">۷ روز گذشته</translation>
@@ -1230,7 +1230,7 @@
 <translation id="6295158916970320988">همه سایت‌ها</translation>
 <translation id="629730747756840877">حساب</translation>
 <translation id="6301526076346731664">باز کردن ابزارهای توسعه‌دهندگان</translation>
-<translation id="630308129961693966">انتخاب کردن موقعیت نوار نشانی</translation>
+<translation id="630308129961693966">انتخاب کردن جای نوار نشانی</translation>
 <translation id="6303969859164067831">خروج از سیستم و خاموش کردن همگام‌سازی</translation>
 <translation id="6307241780749477694">هویت خود را به‌تأیید برسانید تا به همه گذرواژه‌هایتان در این دستگاه دسترسی داشته باشید</translation>
 <translation id="6309082029962045994">‫<ph name="TAB_TITLE" />، زبانه شنیداری سنجاق‌شده چندانتخابی</translation>
@@ -1430,7 +1430,7 @@
 <translation id="6978717888677691380">سایت‌هایی که مسدود کرده‌اید</translation>
 <translation id="6979737339423435258">از ابتدا تا الآن</translation>
 <translation id="6980258170429555165">منو «<ph name="MENU_NAME" />» برجسته شده است.</translation>
-<translation id="6983306615164277634">برای تغییر موقعیت نوار نشانی، همچنین می‌توانید آن را لمس کنید و نگه دارید.</translation>
+<translation id="6983306615164277634">برای تغییر جای نوار نشانی، می‌توانید آن را نیز لمس کنید و نگه دارید.</translation>
 <translation id="6987047470128880212">«حالت ناشناس» در این دستگاه دردسترس نیست</translation>
 <translation id="6996145122199359148">بارگیری این صفحه</translation>
 <translation id="7013762323294215682">این گذرکلید در مدیر گذرواژه‌تان ذخیره خواهد شد. هر کسی که به آن دسترسی داشته باشد می‌تواند از این گذرکلید استفاده کند.</translation>
@@ -1447,7 +1447,7 @@
 <translation id="7077143737582773186">‏کارت SD</translation>
 <translation id="7078916049958741685">‏داده‌های Chrome شما نیز از این دستگاه حذف شود</translation>
 <translation id="7080145768121641840">‫<ph name="TAB_TITLE" />، زبانه بی‌صدای سنجاق‌شده انتخابی</translation>
-<translation id="7084115944294706056">انتخاب کردن موقعیت نوار نشانی</translation>
+<translation id="7084115944294706056">انتخاب کردن جای نوار نشانی</translation>
 <translation id="7085332316435785646">‏انتخاب کنید که آیا سابقه Chrome برای تجربه‌های شخصی‌شده‌تر در سرویس‌های Google لحاظ شود یا نه</translation>
 <translation id="7088681679121566888">‏Chrome به‌روز است</translation>
 <translation id="7098100324909062850">‫<ph name="TAB_TITLE" />، زبانه ناشناس بی‌صدای چندانتخابی</translation>
@@ -1474,7 +1474,7 @@
 <translation id="7177873915659574692">رمزینه پاسخ‌سریع ایجاد نمی‌شود. نشانی وب بیشتر از <ph name="CHARACTER_LIMIT" /> نویسه دارد.</translation>
 <translation id="7180611975245234373">بازآوری</translation>
 <translation id="7182051712900867547">استفاده از حسابی دیگر</translation>
-<translation id="7182520625618447753">برای داشتن تجربه مرور سفارشی‌سازی‌شده، موقعیت نوار نشانی را به بالا یا پایین تغییر دهید</translation>
+<translation id="7182520625618447753">برای داشتن تجربه مرور سفارشی‌سازی‌شده، جای نوار نشانی را به بالا یا پایین تغییر دهید</translation>
 <translation id="7183517696921903380">برگ فیلتر کردن برنامه باز شد.</translation>
 <translation id="7186568385131859684">‏کنترل کنید چگونه از سابقه مرور شما با دیگر داده‌هایتان از همه سرویس‌های Google استفاده شود</translation>
 <translation id="7190921792980745354">‫<ph name="MEMBER_FULL_NAME" /> مسدود شود؟</translation>
@@ -1482,7 +1482,7 @@
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{باید این گذرواژه را همین‌حالا تغییر دهید}one{باید این گذرواژه را همین‌حالا تغییر دهید}other{باید این گذرواژه‌ها را همین‌حالا تغییر دهید}}</translation>
 <translation id="7196215469483532480">شرح «راهنمای حریم خصوصی» به‌صورت کامل باز شده است</translation>
 <translation id="7196455519852483601">می‌توانید همه یا بخشی‌از سابقه، کوکی‌ها، داده‌های سایت، و موارد دیگر را حذف کنید</translation>
-<translation id="7197682514647286393">حذف کردن سریع داده‌های مرور</translation>
+<translation id="7197682514647286393">داده‌های مرور کردن را سریعاً حذف کنید</translation>
 <translation id="7207760545532569765">بازیابی <ph name="TAB_COUNT" /> برگه به‌عنوان برگه‌های جدید پس‌زمینه.</translation>
 <translation id="7217781228893594884">‏پس‌از خروج از Chrome، برگه‌های ناشناس قفل خواهد شد</translation>
 <translation id="7221869452894271364">بار کردن مجدد این صفحه</translation>
@@ -1949,7 +1949,7 @@
 <translation id="9143389653531441385">ثبت‌نام با <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="9148126808321036104">ورود مجدد به سیستم</translation>
 <translation id="9148564897242852377">تغییر وضعیت انتخاب زبانه</translation>
-<translation id="9153056436992761257">موقعیت ترجیحی‌تان را انتخاب کنید</translation>
+<translation id="9153056436992761257">جایی را که دوست دارید انتخاب کنید</translation>
 <translation id="9157212632995922070">برای ادامه کار در <ph name="SITE_ETLD_PLUS_ONE" />، حسابی انتخاب کنید</translation>
 <translation id="9158770349521403363">فقط هم‌رسانی محتوا</translation>
 <translation id="9161172953291434881">آیا درخصوص داده‌هایتان به این سایت اعتماد دارید؟</translation>

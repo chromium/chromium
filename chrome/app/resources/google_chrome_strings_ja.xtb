@@ -454,7 +454,7 @@
 <translation id="6025087594896450715">Google Chrome は <ph name="REMAINING_TIME" /> 後に再起動します</translation>
 <translation id="6040143037577758943">閉じる</translation>
 <translation id="604424701295382420">固定しました。ツールバーの新しいボタンから、Google レンズにアクセスできます</translation>
-<translation id="6046028983725193307">システム音声を共有するには、[システム設定] を開き、Chrome に [システム音声のみを録音] を許可してください。その後、Chrome を再起動する必要があります。</translation>
+<translation id="6046028983725193307">システム音声を共有するには、[システム設定] を開き、Chrome に [システムオーディオ録音のみ] を許可してください。その後、Chrome を再起動する必要があります。</translation>
 <translation id="6069027071882229820">画像としてコピー</translation>
 <translation id="6070348360322141662">セキュリティ強化のため、データは Google Chrome で暗号化されます</translation>
 <translation id="6075300983329039771">組織（<ph name="MANAGER" />）が Chrome にログインするよう求めています</translation>

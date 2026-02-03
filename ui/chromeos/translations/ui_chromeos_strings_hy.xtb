@@ -27,7 +27,7 @@
 <translation id="1178581264944972037">Դադար</translation>
 <translation id="1190144681599273207">Այս ֆայլը քաշելու համար կպահանջվի մոտ <ph name="FILE_SIZE" /> բջջային տվյալների հոսք:</translation>
 <translation id="1194390763418645112">Ֆայլի հասանելիություն հետևյալ URL-ների միջոցով՝ <ph name="RESTRICTED_DESTINATIONS" /></translation>
-<translation id="1201402288615127009">Հաջորդը</translation>
+<translation id="1201402288615127009">Հաջորդ</translation>
 <translation id="1209796539517632982">Անունների ավտոմատ սերվերներ</translation>
 <translation id="1210831758834677569">լաոսերեն</translation>
 <translation id="1221555006497674479">Ընդհանուր դրայվում տարածքը քիչ է։ Մնացել է <ph name="TOTAL_SPACE" />-ի <ph name="REMAINING_PERCENTAGE" />%-ը։</translation>
@@ -730,7 +730,7 @@
 <translation id="6673674183150363784">ֆրանսերեն (Ֆրանսիա)՝ Bépo ստեղնաշարով</translation>
 <translation id="670380500182402678">Փոխարինել բոլորը</translation>
 <translation id="6710022688720561421">Ռոբոտ</translation>
-<translation id="6710213216561001401">Նախորդը</translation>
+<translation id="6710213216561001401">Նախորդ</translation>
 <translation id="6732801395666424405">Վկայագրերը չեն բեռնվել</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6750737795876287924">Ընթացիկ գրացուցակ</translation>

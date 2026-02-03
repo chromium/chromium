@@ -1461,7 +1461,7 @@
 <translation id="197288927597451399">ఉంచండి</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1974043046396539880">CRL పంపిణీ పాయింట్‌లు</translation>
-<translation id="1974060860693918893">అధునాతన సెట్టింగ్‌లు</translation>
+<translation id="1974060860693918893">అడ్వాన్స్‌డ్ సెట్టింగ్స్</translation>
 <translation id="1974159333077206889">అన్ని స్పీకర్‌లతోనూ ఒకేలాంటి ఆడియో</translation>
 <translation id="1975841812214822307">తీసివేయండి...</translation>
 <translation id="1976150099241323601">భద్రతా పరికరానికి సైన్ ఇన్ చేయండి</translation>
@@ -6334,7 +6334,7 @@
 <translation id="5313967007315987356">సైట్‌ను జోడించండి</translation>
 <translation id="5315738755890845852">అదనపు వంకర కలుపు: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">సేవ్ చేయండి</translation>
-<translation id="5319712128756744240">కొత్త పరికరాన్ని పెయిర్ చేయండి</translation>
+<translation id="5319712128756744240">కొత్త డివైజ్‌ను పెయిర్ చేయండి</translation>
 <translation id="5320135788267874712">కొత్త పరికరం పేరు</translation>
 <translation id="532247166573571973">సర్వర్ అందుబాటులో లేకపోవచ్చు. తర్వాత మళ్లీ ట్రై చేయండి.</translation>
 <translation id="5323328004379641163">Chrome లుక్‌ను, అలాగే ఈ పేజీ లుక్‌ను అనుకూలంగా మార్చుకోండి</translation>
@@ -11854,7 +11854,7 @@
 <translation id="9099383880226822604">రెయిన్ ఫారెస్ట్</translation>
 <translation id="910000385680858937">అనుమతించబడింది – <ph name="PERMISSION_DETAILS" />. మీ పరికరానికి మైక్రోఫోన్‌ను కనెక్ట్ చేయండి.</translation>
 <translation id="9100416672768993722">చివరిగా ఉపయోగించిన ఇన్‌పుట్ విధానానికి స్విచ్ చేయడానికి, <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> కీలను నొక్కండి</translation>
-<translation id="9100765901046053179">అధునాతన సెట్టింగ్‌లు</translation>
+<translation id="9100765901046053179">అడ్వాన్స్‌డ్ సెట్టింగ్స్</translation>
 <translation id="9101691533782776290">యాప్‌ను ప్రారంభించండి</translation>
 <translation id="9102610709270966160">ఎక్స్‌టెన్ష‌న్‌ను ప్రారంభించండి</translation>
 <translation id="9102864637938129124">యాడ్‌ల పనితీరు ఎలా ఉంది అనేది సైట్‌లు, అడ్వర్టయిజర్‌లు అర్థం చేసుకోగలరు. ఈ సెట్టింగ్ ఆన్ చేయబడింది.</translation>

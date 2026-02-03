@@ -134,7 +134,7 @@
 <translation id="1414919006379339073">Fechar a janela atual</translation>
 <translation id="1415846719612499304">Mostrar lista de redes. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">Desbloqueie o dispositivo para executar a ação de notificação</translation>
-<translation id="1420408895951708260">Alternar Modo noturno. <ph name="STATE_TEXT" /></translation>
+<translation id="1420408895951708260">ativar/desativar modo noturno. <ph name="STATE_TEXT" /></translation>
 <translation id="1421166164855200062">Grupo sugerido</translation>
 <translation id="1426410128494586442">Sim</translation>
 <translation id="1435537621343861112">Não foi possível iniciar o ditado. Seu microfone está desativado.</translation>
@@ -259,7 +259,7 @@
 <translation id="1830308660060964064">O <ph name="ITEM_TITLE" /> foi liberado</translation>
 <translation id="1831565490995294689">Selecione para abrir: <ph name="APP_TO_OPEN" />.</translation>
 <translation id="1838011306813517425">Configurações de Foco</translation>
-<translation id="1838895407229022812">O Modo noturno está desativado.</translation>
+<translation id="1838895407229022812">O modo noturno está desativado.</translation>
 <translation id="1840920496749066704">°C</translation>
 <translation id="1854180393107901205">Parar transmissão</translation>
 <translation id="1862077610023398675">Ocultar controles</translation>
@@ -1413,7 +1413,7 @@ Nenhum dispositivo conectado.</translation>
 <translation id="5682642926269496722">O Google Assistente não está disponível para a conta de usuário atual.</translation>
 <translation id="5682844616152977671"><ph name="RELATIVE_DATE" /> <ph name="TIME" /></translation>
 <translation id="5689233503102158537">alt + backspace</translation>
-<translation id="5689633613396158040">O Modo noturno facilita a visualização da sua tela ou a leitura com pouca luz. Toque para mudar o horário de ativação do Modo noturno ou desative-o completamente.</translation>
+<translation id="5689633613396158040">O modo noturno facilita a visualização da sua tela ou a leitura com pouca luz. Toque para mudar o horário de ativação do modo noturno ou desative-o completamente.</translation>
 <translation id="5691772641933328258">Impressão digital não reconhecida</translation>
 <translation id="5693255400847650006">Microfone em uso</translation>
 <translation id="5699366815052349604">Atribuir a janela ativa a todos os espaços de trabalho</translation>
@@ -1429,14 +1429,14 @@ Nenhum dispositivo conectado.</translation>
 <translation id="573413375004481890">Este dispositivo não é compatível com essa quantidade de telas. Por isso, uma delas foi desconectada</translation>
 <translation id="574392208103952083">Médio</translation>
 <translation id="5744083938413354016">Arrastar com toque</translation>
-<translation id="5745612484876805746">O Modo noturno será ativado automaticamente ao pôr do sol</translation>
+<translation id="5745612484876805746">O modo noturno será ativado automaticamente ao pôr do sol</translation>
 <translation id="5750765938512549687">Bluetooth desativado</translation>
 <translation id="5758114525425072423">Iniciar o Foco. Timer definido para <ph name="FOCUS_DURATION" />.</translation>
 <translation id="5759522586053040964">Saiba como outras pessoas vão ouvir sua voz. Para interromper, clique no ícone de teste ou feche o painel de videochamada.</translation>
 <translation id="5760866832697883462">Conecte seu dispositivo <ph name="NAME" /></translation>
 <translation id="5762420912707163638">Ativar ou desativar o marcador. <ph name="STATE_TEXT" /> Use o trackpad, a tela touchscreen ou a stylus para desenhar na tela.</translation>
 <translation id="576341972084747908">Fazendo o download do arquivo perigoso <ph name="FILENAME" /></translation>
-<translation id="576453121877257266">O Modo noturno está ativado.</translation>
+<translation id="576453121877257266">O modo noturno está ativado.</translation>
 <translation id="5764569119212455782">Mudar para o último idioma selecionado</translation>
 <translation id="5767730327234918501">O administrador desativou o ponto de acesso.</translation>
 <translation id="5769373120130404283">Tela de privacidade</translation>

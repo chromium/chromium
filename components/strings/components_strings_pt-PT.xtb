@@ -1282,7 +1282,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3090667236485488075">Vidro</translation>
 <translation id="3093122472063815077">Ecrã de progresso do método Comprar agora e pagar depois aberto a meia altura.</translation>
 <translation id="309381737510736393">Quando a sua organização limita a gravação na sua Conta Google, não pode partilhar separadores nem colaborar com outras pessoas</translation>
-<translation id="3094051226187213523">Abrir o Modo de IA com esta sugestão.</translation>
+<translation id="3094051226187213523">Abrir o Modo IA com esta sugestão.</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">Ignorada porque a lista de desativação contém um padrão igual a "*", que é equivalente a desativar a política.</translation>
 <translation id="3098944373717628099">Os seus ficheiros locais vão ser eliminados dentro de 1 hora</translation>
@@ -2543,7 +2543,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5097099694988056070">Estatísticas do dispositivo, como utilização da CPU/RAM.</translation>
 <translation id="5097468150760963273">27 x 39 pol.</translation>
 <translation id="5097501891273180634">A2</translation>
-<translation id="5102512728737175215">Prima Tab e, de seguida, Enter para pedir ao Modo de IA</translation>
+<translation id="5102512728737175215">Prima Tab e, de seguida, Enter para pedir ao Modo IA</translation>
 <translation id="510644072453496781">Cartão (extremidade)</translation>
 <translation id="5106648964679263509">Cartão virtual para a <ph name="BNPL_ISSUER_NAME" /> preenchido</translation>
 <translation id="5108567515277121477">Cartão de fidelidade</translation>
@@ -3064,7 +3064,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5967592137238574583">Editar informações de contacto</translation>
 <translation id="5967867314010545767">Remover do histórico</translation>
 <translation id="5968022600320704045">Nenhum resultado da pesquisa</translation>
-<translation id="5968400720580217226">Modo de IA</translation>
+<translation id="5968400720580217226">Modo IA</translation>
 <translation id="5969199813874624822">Guarde e monitorize o preço</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Sexto rolo</translation>
@@ -3583,7 +3583,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6786145470008421571">Envelope 6 x 9 pol.</translation>
 <translation id="6786747875388722282">Extensões</translation>
 <translation id="6787094689637422836">Estamos a lançar novas funcionalidades de privacidade que lhe dão mais opções sobre os anúncios que vê.</translation>
-<translation id="6788615780749001893">Botão do Modo de IA, prima Enter para pedir ao Modo de IA</translation>
+<translation id="6788615780749001893">Botão do Modo IA, prima Enter para pedir ao Modo IA</translation>
 <translation id="6789062271869667677">Contínuo (longo)</translation>
 <translation id="678982761784843853">IDs de conteúdo protegido</translation>
 <translation id="6790428901817661496">Reproduzir</translation>
@@ -4082,7 +4082,7 @@ Detalhes adicionais:
 <translation id="7569490014721427265">Golfe</translation>
 <translation id="7569952961197462199">Remover o cartão de crédito do Chrome?</translation>
 <translation id="7569983096843329377">Preto</translation>
-<translation id="7571813784389228510">Modo de IA da Google</translation>
+<translation id="7571813784389228510">Modo IA da Google</translation>
 <translation id="7574998639136359461">Equipamento de desportos de inverno</translation>
 <translation id="7575207903026901870">Botão Remover sugestão, prima Enter para remover esta sugestão.</translation>
 <translation id="7575800019233204241">"A sua ligação não é privada" ou "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" ou "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" ou "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" ou "Erro de certificado SSL"</translation>
@@ -4955,7 +4955,7 @@ Detalhes adicionais:
 <translation id="9040341831873780534">Veja os termos aqui</translation>
 <translation id="9042617223719777575">Capacidade elevada</translation>
 <translation id="9042827002460091668">Verifique a ligação à Internet e tente novamente.</translation>
-<translation id="9043161870923715789">Modo de IA</translation>
+<translation id="9043161870923715789">Modo IA</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9046578823518542618"><ph name="URL" /> quer procurar e fazer ligação a qualquer dispositivo na sua rede local</translation>
 <translation id="9046864189129893978">Microfones (<ph name="MICS_COUNT" />)</translation>

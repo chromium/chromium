@@ -12,7 +12,7 @@
 <translation id="1178581264944972037">Դադար</translation>
 <translation id="1181037720776840403">Ջնջել</translation>
 <translation id="1192844206376121885">Կջնջվեն <ph name="ORIGIN" /> կայքի պահած բոլոր տվյալներն ու քուքիները։</translation>
-<translation id="1201402288615127009">Հաջորդը</translation>
+<translation id="1201402288615127009">Հաջորդ</translation>
 <translation id="1240190568154816272">Chrome-ին վերաբերող խորհուրդներ</translation>
 <translation id="1242008676835033345">Զետեղված է <ph name="WEBSITE_URL" /> կայքում</translation>
 <translation id="1263609676484797429">Հպեք «Հավելվածներ»  &gt; «Կանխադրված հավելվածներ»</translation>
@@ -179,7 +179,7 @@ Chrome-ի այս կարգավորումները կառավարվում են լր
 <translation id="2822354292072154809">Վերակայե՞լ բոլոր կայքերի թույլտվությունները <ph name="CHOSEN_OBJECT_NAME" />-ի համար:</translation>
 <translation id="2850913818900871965">Հայցել բջջային տարբերակը</translation>
 <translation id="2870560284913253234">Կայք</translation>
-<translation id="2874939134665556319">Նախորդը</translation>
+<translation id="2874939134665556319">Նախորդ</translation>
 <translation id="2891975107962658722">Արգելեք կայքին տվյալներ պահել ձեր սարքում</translation>
 <translation id="2903493209154104877">Հասցեներ</translation>
 <translation id="2910701580606108292">Պաշտպանված բովանդակություն նվագարկելու թույլտվություն հարցել</translation>
@@ -293,7 +293,7 @@ Chrome-ի այս կարգավորումները կառավարվում են լր
 <translation id="4002066346123236978">Վերնագիր</translation>
 <translation id="4031179711345676612">Խոսափողի օգտագործումը թույլատրված է</translation>
 <translation id="4042597221652780603">Մոտավոր</translation>
-<translation id="4046123991198612571">Հաջորդը</translation>
+<translation id="4046123991198612571">Հաջորդ</translation>
 <translation id="4077310749977440510">Կայքերը սովորաբար կարդում են ձեր սեղմատախտակը այնպիսի գործառույթների համար, ինչպիսին է ձեր պատճենած տեքստի ձևաչափի պահպանումը</translation>
 <translation id="4082080074595021446">Որոշակի կայքերի համար բացառություններն արգելված են, քանի որ Android սարքը բավականաչափ հիշողություն (RAM) չունի։</translation>
 <translation id="4149890623864272035">Իսկապե՞ս ուզում եք ջնջել բոլոր լոկալ տվյալները՝ ներառյալ քուքիները, և զրոյացնել բոլոր թույլտվություններն այս կայքի համար</translation>
