@@ -430,6 +430,7 @@ CGFloat HorizontalMargin() {
         _searchRegularWidthConstraint.active = NO;
         _searchBar.hidden = NO;
         _cancelSearchButton.hidden = NO;
+        _overflowMenuButton.hidden = YES;
         break;
       case TabGridMode::kSelection:
         _selectAllButton.hidden = NO;
@@ -467,6 +468,7 @@ CGFloat HorizontalMargin() {
         _searchRegularWidthConstraint.active = YES;
         _searchBar.hidden = NO;
         _cancelSearchButton.hidden = NO;
+        _overflowMenuButton.hidden = YES;
         break;
       case TabGridMode::kSelection:
         _selectAllButton.hidden = NO;
