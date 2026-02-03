@@ -66,7 +66,7 @@ std::optional<gpu::SyncToken> CopyRGBATextureToVideoFrame(
 
   // Make access to the `dst_video_frame` wait on copy completion. We also
   // update the ReleaseSyncToken here since it's used when the underlying
-  // GpuMemoryBuffer and SharedImage resources are returned to the pool.
+  // SharedImage resources are returned to the pool.
   gpu::RasterScopedAccess::EndAccess(std::move(dst_ri_access));
   gpu::SyncToken completion_sync_token =
       gpu::RasterScopedAccess::EndAccess(std::move(src_ri_access));
