@@ -48,6 +48,13 @@ class DisplaySchedulerWebView : public viz::DisplaySchedulerBase,
       base::flat_set<base::PlatformThreadId> renderer_main_thread_ids,
       base::TimeTicks draw_start,
       viz::HintSession::BoostType boost_type) override {}
+  void OnPresentationFeedback(
+      const gfx::PresentationFeedback& feedback,
+      int64_t choreographer_vsync_id,
+      base::TimeTicks frame_time,
+      base::TimeDelta interval,
+      std::optional<viz::PossibleDeadline> deadline,
+      std::optional<viz::PossibleDeadline> preferred) override {}
 
   // DisplayDamageTracker::Delegate implementation.
   void OnDisplayDamaged(viz::SurfaceId surface_id) override;

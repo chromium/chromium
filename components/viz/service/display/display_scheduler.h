@@ -15,11 +15,13 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/viz/common/display/renderer_settings.h"
+#include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/service/display/display_scheduler_base.h"
 #include "components/viz/service/display/pending_swap_params.h"
 #include "components/viz/service/viz_service_export.h"
+#include "ui/gfx/presentation_feedback.h"
 
 namespace viz {
 
@@ -60,6 +62,13 @@ class VIZ_SERVICE_EXPORT DisplayScheduler
       base::flat_set<base::PlatformThreadId> renderer_main_thread_ids,
       base::TimeTicks draw_start,
       HintSession::BoostType boost_type) override;
+  void OnPresentationFeedback(
+      const gfx::PresentationFeedback& feedback,
+      int64_t choreographer_vsync_id,
+      base::TimeTicks frame_time,
+      base::TimeDelta interval,
+      std::optional<PossibleDeadline> deadline,
+      std::optional<PossibleDeadline> preferred) override;
 
   // DisplayDamageTracker::Delegate implementation.
   void OnDisplayDamaged(SurfaceId surface_id) override;

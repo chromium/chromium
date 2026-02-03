@@ -371,7 +371,10 @@ void SynchronousLayerTreeFrameSink::SubmitCompositorFrame(
     root_support_->SubmitCompositorFrame(root_local_surface_id_,
                                          std::move(embed_frame));
     base::TimeTicks now = base::TimeTicks::Now();
-    display_->DrawAndSwap({now, now});
+    viz::DrawAndSwapParams swap_params;
+    swap_params.begin_frame_args.frame_time = now;
+    swap_params.expected_display_time = now;
+    display_->DrawAndSwap(swap_params);
 
     // We don't track metrics for frames submitted to |display_| but it still
     // expects that every frame will receive a swap ack and presentation

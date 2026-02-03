@@ -11,9 +11,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
+#include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/service/display/display_damage_tracker.h"
 #include "components/viz/service/performance_hint/hint_session.h"
 #include "components/viz/service/viz_service_export.h"
+#include "ui/gfx/presentation_feedback.h"
 
 namespace viz {
 
@@ -23,11 +25,20 @@ class DisplayDamageTracker;
 // |frame_time| is the the start of the VSync interval of this frame.
 // |expected_display_time| is used as video timestamps for capturing frame
 // sinks. DisplayScheduler passes the end of current VSync interval.
-struct DrawAndSwapParams {
-  base::TimeTicks frame_time;
+struct VIZ_SERVICE_EXPORT DrawAndSwapParams {
+  DrawAndSwapParams();
+  DrawAndSwapParams(const DrawAndSwapParams& other);
+  DrawAndSwapParams(DrawAndSwapParams&& other);
+  DrawAndSwapParams& operator=(const DrawAndSwapParams& other);
+  DrawAndSwapParams& operator=(DrawAndSwapParams&& other);
+  ~DrawAndSwapParams();
+
+  BeginFrameArgs begin_frame_args;
   base::TimeTicks expected_display_time;
   int max_pending_swaps = -1;
   std::optional<int64_t> choreographer_vsync_id;
+  std::optional<PossibleDeadline> deadline;
+  std::optional<PossibleDeadline> preferred_deadline;
 };
 
 class VIZ_SERVICE_EXPORT DisplaySchedulerClient {
@@ -62,6 +73,13 @@ class VIZ_SERVICE_EXPORT DisplaySchedulerBase
       base::flat_set<base::PlatformThreadId> renderer_main_thread_ids,
       base::TimeTicks draw_start,
       HintSession::BoostType boost_type) = 0;
+  virtual void OnPresentationFeedback(
+      const gfx::PresentationFeedback& feedback,
+      int64_t choreographer_vsync_id,
+      base::TimeTicks frame_time,
+      base::TimeDelta interval,
+      std::optional<PossibleDeadline> deadline,
+      std::optional<PossibleDeadline> preferred) = 0;
 
  protected:
   raw_ptr<DisplaySchedulerClient> client_ = nullptr;

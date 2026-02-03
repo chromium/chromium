@@ -464,7 +464,10 @@ void HardwareRenderer::OnViz::DrawAndSwapOnViz(
   display_->SetOutputSurfaceClipRect(clip);
 
   auto now = base::TimeTicks::Now();
-  display_->DrawAndSwap({now, now});
+  viz::DrawAndSwapParams params;
+  params.begin_frame_args.frame_time = now;
+  params.expected_display_time = now;
+  display_->DrawAndSwap(params);
 
   child_frame->rendered = true;
   without_gpu_->SetContainedSurfaces(display_->GetContainedSurfaceIds());

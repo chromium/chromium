@@ -83,7 +83,9 @@ class TestLayerTreeFrameSink::TestCompositorFrameSinkSupport
 
     if (!display_->has_scheduler()) {
       // In synchronous mode, we manually issue DrawAndSwap.
-      display_->DrawAndSwap({base::TimeTicks::Now(), base::TimeTicks::Now()});
+      viz::DrawAndSwapParams params;
+      params.expected_display_time = base::TimeTicks::Now();
+      display_->DrawAndSwap(params);
     }
     return result;
   }

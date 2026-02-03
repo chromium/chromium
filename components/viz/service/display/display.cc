@@ -252,15 +252,23 @@ void Display::PresentationGroupTiming::AddPresentationHelper(
 
 void Display::PresentationGroupTiming::OnDraw(
     base::TimeTicks frame_time,
+    base::TimeDelta interval,
     base::TimeTicks draw_start_timestamp,
     base::flat_set<base::PlatformThreadId> animation_thread_ids,
     base::flat_set<base::PlatformThreadId> renderer_main_thread_ids,
-    HintSession::BoostType boost_type) {
+    HintSession::BoostType boost_type,
+    int64_t choreographer_vsync_id,
+    std::optional<PossibleDeadline> deadline,
+    std::optional<PossibleDeadline> preferred) {
   frame_time_ = frame_time;
+  interval_ = interval;
   draw_start_timestamp_ = draw_start_timestamp;
   animation_thread_ids_ = std::move(animation_thread_ids);
   renderer_main_thread_ids_ = std::move(renderer_main_thread_ids);
   boost_type_ = boost_type;
+  choreographer_vsync_id_ = choreographer_vsync_id;
+  deadline_ = std::move(deadline);
+  preferred_ = std::move(preferred);
 }
 
 void Display::PresentationGroupTiming::OnSwap(gfx::SwapTimings timings,
@@ -851,8 +859,8 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
   AggregatedFrame frame;
   {
     FrameIntervalDecider::ScopedAggregate scoped_interval_decider(
-        frame_interval_decider_->WrapAggregate(*surface_manager_,
-                                               params.frame_time));
+        frame_interval_decider_->WrapAggregate(
+            *surface_manager_, params.begin_frame_args.frame_time));
     gfx::Rect target_damage_bounding_rect;
     if (output_surface_->capabilities().supports_target_damage)
       target_damage_bounding_rect = renderer_->GetTargetDamageBoundingRect();
@@ -1054,9 +1062,12 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
     }
 
     presentation_group_timing.OnDraw(
-        params.frame_time, draw_timer->start_time(),
-        std::move(animation_thread_ids), std::move(renderer_main_thread_ids),
-        /*boost_type=*/HintSession::BoostType::kDefault);
+        params.begin_frame_args.frame_time, params.begin_frame_args.interval,
+        draw_timer->start_time(), std::move(animation_thread_ids),
+        std::move(renderer_main_thread_ids),
+        /*boost_type=*/HintSession::BoostType::kDefault,
+        params.choreographer_vsync_id.value_or(0), params.deadline,
+        params.preferred_deadline);
 
     bool has_interactive_frame = false;
     bool has_animated_frame = false;
@@ -1336,6 +1347,14 @@ void Display::DidReceivePresentationFeedback(
   }
 
   presentation_group_timing.OnPresent(copy_feedback);
+  if (scheduler_) {
+    scheduler_->OnPresentationFeedback(
+        copy_feedback, presentation_group_timing.choreographer_vsync_id(),
+        presentation_group_timing.frame_time(),
+        presentation_group_timing.interval(),
+        presentation_group_timing.deadline(),
+        presentation_group_timing.preferred());
+  }
   pending_presentation_group_timings_.pop_front();
 }
 

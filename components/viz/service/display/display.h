@@ -247,20 +247,35 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
     void AddPresentationHelper(
         std::unique_ptr<Surface::PresentationHelper> helper);
     void OnDraw(base::TimeTicks frame_time,
+                base::TimeDelta interval,
                 base::TimeTicks draw_start_timestamp,
                 base::flat_set<base::PlatformThreadId> animation_thread_ids,
                 base::flat_set<base::PlatformThreadId> renderer_main_thread_ids,
-                HintSession::BoostType boost_type);
+                HintSession::BoostType boost_type,
+                int64_t choreographer_vsync_id,
+                std::optional<PossibleDeadline> deadline,
+                std::optional<PossibleDeadline> preferred);
     void OnSwap(gfx::SwapTimings timings, DisplaySchedulerBase* scheduler);
     bool HasSwapped() const { return !swap_timings_.is_null(); }
     void OnPresent(const gfx::PresentationFeedback& feedback);
 
+    base::TimeTicks frame_time() const { return frame_time_; }
+    base::TimeDelta interval() const { return interval_; }
     base::TimeTicks draw_start_timestamp() const {
       return draw_start_timestamp_;
     }
 
+    int64_t choreographer_vsync_id() const { return choreographer_vsync_id_; }
+    const std::optional<PossibleDeadline>& deadline() const {
+      return deadline_;
+    }
+    const std::optional<PossibleDeadline>& preferred() const {
+      return preferred_;
+    }
+
    private:
     base::TimeTicks frame_time_;
+    base::TimeDelta interval_;
     base::TimeTicks draw_start_timestamp_;
     base::flat_set<base::PlatformThreadId> animation_thread_ids_;
     base::flat_set<base::PlatformThreadId> renderer_main_thread_ids_;
@@ -268,6 +283,9 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
     std::vector<std::unique_ptr<Surface::PresentationHelper>>
         presentation_helpers_;
     HintSession::BoostType boost_type_;
+    int64_t choreographer_vsync_id_ = 0;
+    std::optional<PossibleDeadline> deadline_;
+    std::optional<PossibleDeadline> preferred_;
   };
 
   void InitializeRenderer();
