@@ -11,22 +11,29 @@ export function getHtml(this: SkillsDialogAppElement) {
   const MAX_PROMPT_CHAR_COUNT = 20000;
   // clang-format off
   return html`<!--_html_template_start_-->
-<h1 id="header">Add Skill</h1>
-<p id="description" class="description">Skills help simplify and automate repetitive tasks</p>
-<div class="form-group">
-  <cr-input class="no-error stroked" id="nameText" type="text" label="Name"
+<div class="dialog-container">
+  <div class="header-container">
+    <h1 id="header">Add Skill</h1>
+    <p class="description">Skills help simplify and automate repetitive tasks
+    </p>
+  </div>
+  <div class="form-group">
+  <div id="label" class="cr-form-field-label" aria-hidden="true">Name</div>
+  <cr-input class="no-error stroked" id="nameText" type="text"
         placeholder="Simplify For A Kid" .value="${this.skill_.name}"
         @value-changed="${this.onNameChanged_}">
-      <input class="emoji-trigger"
-          type="text"
-          .value="${this.skill_.icon}"
-          @click="${this.onEmojiBtnClick_}"
-          @input="${this.onEmojiChanged_}"
-          @keydown="${this.onEmojiKeyDown_}"
-          title="Choose Icon"
-          aria-label="Choose Icon"
-          slot="inline-prefix">
-    </cr-input>
+    <input class="emoji-trigger"
+        type="text"
+        .value="${this.skill_.icon}"
+        @click="${this.onEmojiBtnClick_}"
+        @input="${this.onEmojiChanged_}"
+        @keydown="${this.onEmojiKeyDown_}"
+        title="Choose Icon"
+        aria-label="Choose Icon"
+        slot="inline-prefix">
+  </cr-input>
+  <div id="label" class="cr-form-field-label" aria-hidden="true">Instructions
+  </div>
   <div class="textarea-wrapper">
     <textarea id="instructionsText" aria-label="Instructions"
         maxlength="${MAX_PROMPT_CHAR_COUNT}"

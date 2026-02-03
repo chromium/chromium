@@ -10,13 +10,14 @@
 #include "chrome/browser/ui/webui/constrained_web_dialog_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/browser_thread.h"
+#include "ui/web_dialogs/web_dialog_delegate.h"
 
 using content::WebContents;
 
 namespace {
 
 // Default width/height of the Skills dialog.
-constexpr gfx::Size kDefaultSize{500, 628};
+constexpr gfx::Size kDefaultSize{448, 397};
 
 }  // namespace
 
@@ -27,16 +28,17 @@ SkillsDialog::SkillsDialog(Profile* profile)
                           ProfileKeepAliveOrigin::kSkillsDialog) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   set_can_close(true);
+  set_can_minimize(false);
   set_can_resize(false);
-  set_can_minimize(true);
+  set_delete_on_close(false);
   set_dialog_content_url(GURL(std::string(content::kChromeUIScheme) + "://" +
                               chrome::kChromeUISkillsHost + "/dialog"));
+  set_dialog_frame_kind(ui::WebDialogDelegate::FrameKind::kDialog);
   set_dialog_modal_type(ui::mojom::ModalType::kNone);
   set_dialog_size(kDefaultSize);
-  // TODO(marissashen): Update to resource once strings are finalized.
-  set_dialog_title(u"Skills");
-  set_show_dialog_title(true);
-  set_delete_on_close(false);
+  set_minimum_dialog_size(kDefaultSize);
+  set_show_close_button(false);
+  set_show_dialog_title(false);
 }
 
 SkillsDialog::~SkillsDialog() {

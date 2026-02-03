@@ -10,21 +10,53 @@
  * #include=cr-shared-style-lit
  * #css_wrapper_metadata_end */
 
+.dialog-container {
+  background-color: var(--color-sys-surface);
+  display: grid;
+  gap: 16px;
+  padding: 12px;
+}
+
+.header-container {
+  display: grid;
+  gap: 4px;
+}
+
 h1 {
-  font-size: 22px;
-  font-weight: 600;
-  margin-bottom: 8px;
-  color: var(--google-grey-900-rgb);
+  color: var(--color-sys-on-surface);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 24px;
+  margin: 0px;
 }
 
 p.description {
+  color: var(--color-sys-on-surface-subtle);
   font-size: 14px;
-  color: var(--google-grey-700-rgb);
-  margin-bottom: 24px;
+  font-weight: 400;
+  line-height: 20px;
+  margin: 0px;
 }
 
 .form-group {
-  margin-bottom: 24px;
+  gap: 16px;
+}
+
+cr-input {
+  --cr-input-border: 1px solid var(--color-sys-neutral-outline);
+  --cr-input-font-size: 12px;
+  --cr-input-padding-bottom: 10px;
+  --cr-input-padding-end: 10px;
+  --cr-input-padding-start: 10px;
+  --cr-input-padding-top: 10px;
+  font-weight: 400;
+}
+
+.cr-form-field-label {
+  --cr-form-field-label-color: var(--color-sys-on-surface);
+  --cr-form-field-label-font-size: 12px;
+  --cr-form-field-label-line-height: 18px;
+  font-weight: 500;
 }
 
 .textarea-wrapper {
@@ -53,7 +85,7 @@ p.description {
 textarea {
   display: block;
   width: 100%;
-  height: 120px;
+  height: 90px;
   box-sizing: border-box;
   resize: none;
   font-family: inherit;
@@ -69,7 +101,7 @@ textarea {
 .textarea-actions {
   display: flex;
   gap: 0;
-  padding: 4px 8px 8px 8px;
+  padding: 0 8px 8px 8px;
   background-color: transparent;
 }
 
@@ -103,14 +135,14 @@ cr-icon-button {
   margin: 0;
   outline: none;
   box-shadow: none;
-  width: 24px;
-  height: 24px;
+  width: 16px;
+  height: 16px;
   align-self: center;
   margin-inline-end: 8px;
   font-family: 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
-  font-size: 20px;
+  font-size: 12px;
   text-align: center;
-  line-height: 24px;
+  line-height: 16px;
   color: var(--cr-primary-text-color);
   cursor: pointer;
   caret-color: transparent;
