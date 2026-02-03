@@ -11,6 +11,7 @@
 
 #include "base/uuid.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
+#include "components/contextual_search/input_state_model.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace content {
@@ -35,15 +36,19 @@ class ContextualSearchWebContentsHelper
   // assignment.
   void SetTaskSession(
       std::optional<base::Uuid> task_id,
-      std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
-          handle) {
+      std::unique_ptr<contextual_search::ContextualSearchSessionHandle> handle,
+      std::unique_ptr<contextual_search::InputStateModel> input_state_model) {
     task_id_ = task_id;
     session_handle_ = std::move(handle);
+    input_state_model_ = std::move(input_state_model);
   }
   // Returns the contextual search session handle. May return nullptr.
   contextual_search::ContextualSearchSessionHandle* session_handle() const {
     return session_handle_.get();
   }
+
+  // Returns the input state model. May return nullptr.
+  std::unique_ptr<contextual_search::InputStateModel> TakeInputStateModel();
 
   // Returns the task ID associated with the current contextual search session.
   // std::nullopt if the web_contents isn't showing a contextual task.
@@ -70,6 +75,7 @@ class ContextualSearchWebContentsHelper
   std::optional<base::Uuid> task_id_;
   std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
       session_handle_;
+  std::unique_ptr<contextual_search::InputStateModel> input_state_model_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

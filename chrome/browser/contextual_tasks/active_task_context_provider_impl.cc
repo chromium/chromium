@@ -120,7 +120,8 @@ void ActiveTaskContextProviderImpl::PrimaryPageChanged(content::Page& page) {
       SessionID tab_id = sessions::SessionTabHelper::IdForTab(web_contents());
       contextual_tasks_service_->DisassociateTabFromTask(*helper->task_id(),
                                                          tab_id);
-      helper->SetTaskSession(/*task_id=*/std::nullopt, /*handle=*/nullptr);
+      helper->SetTaskSession(/*task_id=*/std::nullopt, /*handle=*/nullptr,
+                             /*input_state_model=*/nullptr);
     }
   }
 

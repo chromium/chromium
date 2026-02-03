@@ -258,9 +258,11 @@ void ContextualTasksUiService::OnNavigationToAiPageIntercepted(
   if (contextual_task_web_contents) {
     AssociateWebContentsToTask(contextual_task_web_contents, task.GetTaskId());
     if (session_handle) {
-      ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
-          contextual_task_web_contents)
-          ->SetTaskSession(task.GetTaskId(), std::move(session_handle));
+      auto* helper =
+          ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
+              contextual_task_web_contents);
+      helper->SetTaskSession(task.GetTaskId(), std::move(session_handle),
+                             helper->TakeInputStateModel());
     }
   }
 }
@@ -857,7 +859,8 @@ void ContextualTasksUiService::StartTaskUiInSidePanel(
     AssociateWebContentsToTask(web_contents, task.GetTaskId());
     if (session_handle) {
       ContextualSearchWebContentsHelper::GetOrCreateForWebContents(web_contents)
-          ->SetTaskSession(task.GetTaskId(), std::move(session_handle));
+          ->SetTaskSession(task.GetTaskId(), std::move(session_handle),
+                           /*input_state_model=*/nullptr);
     }
     return;
   }

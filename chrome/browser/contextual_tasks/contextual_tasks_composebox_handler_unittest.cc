@@ -217,7 +217,8 @@ class ContextualTasksComposeboxHandlerTest
         service_->GetSession(contextual_session_handle->session_id(),
                              /*invocation_source=*/std::nullopt);
     ContextualSearchWebContentsHelper::GetOrCreateForWebContents(web_contents())
-        ->SetTaskSession(std::nullopt, std::move(contextual_session_handle));
+        ->SetTaskSession(std::nullopt, std::move(contextual_session_handle),
+                         /*input_state_model=*/nullptr);
 
     mock_ui_ =
         std::make_unique<testing::NiceMock<MockContextualTasksUI>>(&web_ui_);

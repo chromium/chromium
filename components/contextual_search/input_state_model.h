@@ -56,6 +56,9 @@ class InputStateModel {
   explicit InputStateModel(
       contextual_search::ContextualSearchSessionHandle& session_handle,
       const SearchboxConfig& config);
+  InputStateModel(
+      const InputStateModel& other,
+      contextual_search::ContextualSearchSessionHandle& new_session_handle);
   virtual ~InputStateModel();
 
   // Add a subscriber to this model.

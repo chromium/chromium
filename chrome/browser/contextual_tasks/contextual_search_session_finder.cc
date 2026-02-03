@@ -101,7 +101,8 @@ void UpdateContextualSearchWebContentsHelperForTask(
         browser_window->GetProfile()->GetPrefs());
     auto* helper = ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
         web_contents);
-    helper->SetTaskSession(task_id, std::move(session_handle));
+    helper->SetTaskSession(task_id, std::move(session_handle),
+                           /*input_state_model=*/nullptr);
   }
 }
 
