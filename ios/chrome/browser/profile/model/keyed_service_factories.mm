@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/autofill/model/autocomplete_history_manager_factory.h"
 #import "ios/chrome/browser/autofill/model/autofill_image_fetcher_factory.h"
 #import "ios/chrome/browser/autofill/model/autofill_log_router_factory.h"
+#import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/model/strike_database_factory.h"
 #import "ios/chrome/browser/bookmarks/model/account_bookmark_sync_service_factory.h"
@@ -308,6 +309,7 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
   ImageFetcherServiceFactory::GetInstance();
   ImpressionLimitServiceFactory::GetInstance();
   InactiveTabsServiceFactory::GetInstance();
+  IOSAutofillEntityDataManagerFactory::GetInstance();
   IOSChromeAccountPasswordStoreFactory::GetInstance();
   IOSChromeAffiliationServiceFactory::GetInstance();
   IOSChromeAimEligibilityServiceFactory::GetInstance();
