@@ -99,7 +99,6 @@ public class EditorDialogView extends AlwaysDismissedDialog
     private final Activity mActivity;
     private final Context mContext;
     private final Handler mHandler;
-    private final int mHalfRowMargin;
     private final List<FieldView> mFieldViews;
     // TODO(crbug.com/40265078): substitute this with SimpleRecyclerViewMCP.
     private final List<PropertyModelChangeProcessor<PropertyModel, TextFieldView, PropertyKey>>
@@ -164,9 +163,6 @@ public class EditorDialogView extends AlwaysDismissedDialog
         mHandler = new Handler();
         mIsDismissed = false;
 
-        mHalfRowMargin =
-                mContext.getResources()
-                        .getDimensionPixelSize(R.dimen.editor_dialog_section_large_spacing);
         mFieldViews = new ArrayList<>();
         mTextFieldMCPs = new ArrayList<>();
         mDropdownFieldMCPs = new ArrayList<>();
@@ -467,7 +463,11 @@ public class EditorDialogView extends AlwaysDismissedDialog
 
                 firstParams.width = 0;
                 firstParams.weight = 1;
-                MarginLayoutParamsCompat.setMarginEnd(firstParams, mHalfRowMargin);
+                MarginLayoutParamsCompat.setMarginEnd(
+                        firstParams,
+                        mContext.getResources()
+                                .getDimensionPixelSize(
+                                        R.dimen.editor_dialog_section_large_spacing));
                 lastParams.width = 0;
                 lastParams.weight = 1;
 
