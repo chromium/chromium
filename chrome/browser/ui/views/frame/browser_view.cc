@@ -1000,15 +1000,13 @@ BrowserView::BrowserView(Browser* browser)
         AddChildView(std::make_unique<CustomFloatingCorner>(
             *this, CustomFloatingCorner::CornerOrientation::kTopLeading,
             views::ShapeContextTokens::kContentSeparatorRadius,
-            CustomFloatingCorner::FrameColor(),
-            ui::kColorBubbleBorderShadowSmall,
+            CustomFloatingCorner::FrameColor(), kColorVerticalTabStripShadow,
             /*is_vertical_window_edge=*/true));
     vertical_tab_strip_bottom_corner_ =
         AddChildView(std::make_unique<CustomFloatingCorner>(
             *this, CustomFloatingCorner::CornerOrientation::kBottomLeading,
             views::ShapeContextTokens::kContentSeparatorRadius,
-            CustomFloatingCorner::FrameColor(),
-            ui::kColorBubbleBorderShadowSmall,
+            CustomFloatingCorner::FrameColor(), kColorVerticalTabStripShadow,
             /*is_vertical_window_edge=*/true));
   } else {
     horizontal_tab_strip_region_view_->InitializeTabStrip();

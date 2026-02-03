@@ -13,6 +13,7 @@
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/frame/custom_corners_background.h"
@@ -28,7 +29,6 @@
 #include "chrome/browser/ui/views/infobars/infobar_container_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_view.h"
-#include "ui/color/color_id.h"
 #include "ui/gfx/geometry/outsets.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/separator.h"
@@ -1103,7 +1103,7 @@ void BrowserViewTabbedLayoutImpl::DoPostLayoutVisualAdjustments(
 
     // Vertical tabs outline always draws trailing edge.
     CustomCornersBackground::Outline vertical_tabs_outline;
-    vertical_tabs_outline.color = ui::kColorBubbleBorderShadowSmall;
+    vertical_tabs_outline.color = kColorVerticalTabStripShadow;
     vertical_tabs_outline.trailing = true;
     // Top edge is drawn if the layout is below the top of the parent.
     if (views().vertical_tab_strip_region_view->y() > 0) {
