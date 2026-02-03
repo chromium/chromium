@@ -1663,13 +1663,11 @@ const FeatureEntry::FeatureParam kComposeboxNextSingleContextForRealboxNext[] =
     {
         {"NtpComposeboxMaxNumFiles", "1"},
         {"NtpComposeboxShowContextMenu", "true"},
-        {"NtpComposeboxShowComposeboxZps", "true"},
         {"NtpComposeboxShowComposeboxTypedSuggest", "true"},
         {"NtpComposeboxShowRecentTabChip", "true"},
 };
 const FeatureEntry::FeatureParam kComposeboxNextForRealboxNext[] = {
     {"NtpComposeboxShowContextMenu", "true"},
-    {"NtpComposeboxShowComposeboxZps", "true"},
     {"NtpComposeboxShowComposeboxTypedSuggest", "true"},
     {"NtpComposeboxShowRecentTabChip", "true"},
     {"NtpComposeboxContextMenuEnableMultiTabSelection", "true"},
@@ -1677,7 +1675,6 @@ const FeatureEntry::FeatureParam kComposeboxNextForRealboxNext[] = {
 };
 const FeatureEntry::FeatureParam kComposeboxNextWithModelPicker[] = {
     {"NtpComposeboxShowContextMenu", "true"},
-    {"NtpComposeboxShowComposeboxZps", "true"},
     {"NtpComposeboxShowComposeboxTypedSuggest", "true"},
     {"NtpComposeboxShowRecentTabChip", "true"},
     {"NtpComposeboxContextMenuEnableMultiTabSelection", "true"},
