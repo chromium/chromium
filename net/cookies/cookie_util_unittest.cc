@@ -649,10 +649,6 @@ TEST(CookieUtilTest, PrefixedCookies) {
   GURL insecure_url("http://b.a.com");
   GURL trusted_url("http://localhost");
 
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {features::kPrefixCookieHttp, features::kPrefixCookieHostHttp}, {});
-
   struct {
     CookiePrefix prefix;
     GURL url;
@@ -742,6 +738,148 @@ TEST(CookieUtilTest, PrefixedCookies) {
                                                test.secure, test.http_only,
                                                test.domain, test.path),
               test.expect_success);
+  }
+}
+
+TEST(CookieUtilTest, TestHasHiddenPrefixName) {
+  // Test detection of hidden cookie name prefixes in cookie values.
+  // These tests cover __Host- and __Secure- prefixes which are always checked.
+  const struct {
+    const char* value;
+    bool result;
+  } kTestCases[] = {
+      {"", false},
+      {"  ", false},
+      {"foobar=", false},
+      {"foo=bar", false},
+      {" \t ", false},
+      {"\t", false},
+      {"__Secure=-", false},
+      {"__Secure=-abc", false},
+      {"__Secur=e-abc", false},
+      {"__Secureabc", false},
+      {"__Host=-", false},
+      {"__Host=-abc", false},
+      {"__Hos=t-abc", false},
+      {"_Host", false},
+      {"a__Host-abc=123", false},
+      {"a__Secure-abc=123", false},
+      {"__Secure-abc", true},
+      {"__Host-abc", true},
+      {"   __Secure-abc", true},
+      {"\t__Host-", true},
+      {"__Host-=", true},
+      {"__Host-=123", true},
+      {"__host-=123", true},
+      {"__HOST-=123", true},
+      {"__HoSt-=123", true},
+      {"__Host-abc=", true},
+      {"__Host-abc=123", true},
+      {" __Host-abc=123", true},
+      {"    __Host-abc=", true},
+      {"\t\t\t\t\t__Host-abc=123", true},
+      {"\t __Host-abc=", true},
+      {"__Secure-=", true},
+      {"__Secure-=123", true},
+      {"__secure-=123", true},
+      {"__SECURE-=123", true},
+      {"__SeCuRe-=123", true},
+      {"__Secure-abc=", true},
+      {"__Secure-abc=123", true},
+      {" __Secure-abc=123", true},
+      {"    __Secure-abc=", true},
+      {"\t\t\t\t\t__Secure-abc=123", true},
+      {"\t __Secure-abc=", true},
+      {"__Secure-abc=123=d=4=fg=", true},
+  };
+
+  for (auto test_case : kTestCases) {
+    EXPECT_EQ(cookie_util::HasHiddenPrefixName(test_case.value),
+              test_case.result)
+        << test_case.value << " failed check";
+  }
+}
+
+TEST(CookieUtilTest, TestHasHiddenPrefixNameWithHttpPrefix) {
+  // Test __Http- prefix detection.
+  const struct {
+    const char* value;
+    bool result;
+  } kTestCases[] = {
+      {"", false},
+      {"foobar=", false},
+      {"foo=bar", false},
+      {"__Http=-abc", false},
+      {"__Htt=p-abc", false},
+      {"__Httpabc", false},
+      {"a__Http-abc=123", false},
+      {"__Http-", true},
+      {"__Http-abc", true},
+      {"__Http-abc=", true},
+      {"__Http-abc=123", true},
+      {"   __Http-abc", true},
+      {"\t__Http-", true},
+      {"__Http-=", true},
+      {"__Http-=123", true},
+      {"__http-=123", true},
+      {"__HTTP-=123", true},
+      {"__HtTp-=123", true},
+      {" __Http-abc=123", true},
+      {"    __Http-abc=", true},
+      {"\t\t\t\t\t__Http-abc=123", true},
+      {"\t __Http-abc=", true},
+      {"__Http-abc=123=d=4=fg=", true},
+  };
+
+  for (auto test_case : kTestCases) {
+    EXPECT_EQ(cookie_util::HasHiddenPrefixName(test_case.value),
+              test_case.result)
+        << test_case.value << " failed check";
+  }
+}
+
+TEST(CookieUtilTest, TestHasHiddenPrefixNameWithHostHttpPrefix) {
+  // Test __Host-Http- prefix detection.
+  // Note: __Host- is always checked, so any value starting with __Host- will
+  // return true. This test focuses on __Host-Http- specific behavior.
+  const struct {
+    const char* value;
+    bool result;
+  } kTestCases[] = {
+      {"", false},
+      {"foobar=", false},
+      {"foo=bar", false},
+      // These don't start with any prefix, so they should be false.
+      {"a__Host-Http-abc=123", false},
+      // Note: __Host- is already handled by the main check, these should return
+      // true regardless of this feature because they match __Host-.
+      {"__Host-", true},
+      {"__Host-abc", true},
+      {"__Host-Htt=p-abc", true},  // matches __Host- prefix
+      {"__Host-Httpabc", true},    // matches __Host- prefix
+      // __Host-Http- specific cases (also match __Host-):
+      {"__Host-Http-", true},
+      {"__Host-Http-abc", true},
+      {"__Host-Http-abc=", true},
+      {"__Host-Http-abc=123", true},
+      {"   __Host-Http-abc", true},
+      {"\t__Host-Http-", true},
+      {"__Host-Http-=", true},
+      {"__Host-Http-=123", true},
+      {"__host-http-=123", true},
+      {"__HOST-HTTP-=123", true},
+      {"__HoSt-HtTp-=123", true},
+      {" __Host-Http-abc=123", true},
+      {"    __Host-Http-abc=", true},
+      {"\t\t\t\t\t__Host-Http-abc=123", true},
+      {"\t __Host-Http-abc=", true},
+      {"__Host-Http-abc=123=d=4=fg=", true},
+  };
+
+  for (auto test_case : kTestCases) {
+    EXPECT_EQ(cookie_util::HasHiddenPrefixName(test_case.value),
+              test_case.result)
+        << test_case.value << " failed check";
   }
 }
 

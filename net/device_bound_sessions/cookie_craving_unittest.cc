@@ -247,10 +247,6 @@ TEST_F(CookieCravingTest, CreateFailBadDomain) {
 }
 
 TEST_F(CookieCravingTest, CreateFailInvalidPrefix) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {features::kPrefixCookieHttp, features::kPrefixCookieHostHttp}, {});
-
   // __Host- with insecure URL.
   EXPECT_THAT(
       CookieCraving::Create(GURL("http://insecure.test"), "__Host-blah",

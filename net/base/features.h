@@ -180,14 +180,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kSplitCodeCacheByNetworkIsolationKey);
 // See https://github.com/MattMenke2/Explainer---Partition-Network-State.
 NET_EXPORT BASE_DECLARE_FEATURE(kPartitionConnectionsByNetworkIsolationKey);
 
-// "__Http-" prefix for cookies.
-// https://github.com/httpwg/http-extensions/pull/3110
-NET_EXPORT BASE_DECLARE_FEATURE(kPrefixCookieHttp);
-
-// "__HostHttp-" prefix for cookies.
-// https://github.com/httpwg/http-extensions/issues/3111
-NET_EXPORT BASE_DECLARE_FEATURE(kPrefixCookieHostHttp);
-
 // Changes the interval between two search engine preconnect attempts.
 NET_EXPORT BASE_DECLARE_FEATURE(kSearchEnginePreconnectInterval);
 

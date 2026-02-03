@@ -430,7 +430,8 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
   }
 
   if (parsed_cookie.Name() == "") {
-    is_cookie_prefix_valid = !HasHiddenPrefixName(parsed_cookie.Value());
+    is_cookie_prefix_valid =
+        !cookie_util::HasHiddenPrefixName(parsed_cookie.Value());
   }
 
   if (!is_cookie_prefix_valid) {
@@ -717,7 +718,7 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateSanitizedCookie(
         net::CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_PREFIX);
   }
 
-  if (name == "" && HasHiddenPrefixName(value)) {
+  if (name == "" && cookie_util::HasHiddenPrefixName(value)) {
     status->AddExclusionReason(
         net::CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_PREFIX);
   }
@@ -1090,7 +1091,7 @@ CanonicalCookie::IsCanonicalForFromStorage() const {
       break;
   }
 
-  if (Name() == "" && HasHiddenPrefixName(Value())) {
+  if (Name() == "" && cookie_util::HasHiddenPrefixName(Value())) {
     return Fail(CanonicalizationFailure::kEmptyNameWithHiddenPrefix);
   }
 
@@ -1200,32 +1201,6 @@ int CanonicalCookie::GetAndAdjustPortForTrustworthyUrls(
   // Different schemes, or non-default port values should keep the same port
   // value.
   return source_url.EffectiveIntPort();
-}
-
-// static
-bool CanonicalCookie::HasHiddenPrefixName(std::string_view cookie_value) {
-  // Skip BWS as defined by HTTPSEM as SP or HTAB (0x20 or 0x9).
-  std::string_view value_without_BWS =
-      base::TrimString(cookie_value, " \t", base::TRIM_LEADING);
-
-  const std::string_view host_prefix = "__Host-";
-
-  // Compare the value to the host_prefix.
-  if (base::StartsWith(value_without_BWS, host_prefix,
-                       base::CompareCase::INSENSITIVE_ASCII)) {
-    // This value contains a hidden prefix name.
-    return true;
-  }
-
-  // Do a similar check for the secure prefix
-  const std::string_view secure_prefix = "__Secure-";
-
-  if (base::StartsWith(value_without_BWS, secure_prefix,
-                       base::CompareCase::INSENSITIVE_ASCII)) {
-    return true;
-  }
-
-  return false;
 }
 
 // static

@@ -312,6 +312,22 @@ bool CookieWithAccessResultSorter(const CookieWithAccessResult& a,
   return CookieMonster::CookieSorter(&a.cookie, &b.cookie);
 }
 
+// Cookie prefix data structure for the data-driven prefix checking.
+// Order matters: more specific prefixes (like __Host-Http-) must come before
+// less specific ones (like __Host-) to ensure correct matching in
+// GetCookiePrefix.
+struct CookiePrefixData {
+  std::string_view prefix;
+  CookiePrefix prefix_type;
+};
+
+constexpr CookiePrefixData kPrefixes[] = {
+    {"__Secure-", COOKIE_PREFIX_SECURE},
+    {"__Host-Http-", COOKIE_PREFIX_HOSTHTTP},
+    {"__Http-", COOKIE_PREFIX_HTTP},
+    {"__Host-", COOKIE_PREFIX_HOST},
+};
+
 }  // namespace
 
 void FireStorageAccessHistogram(StorageAccessResult result) {
@@ -736,30 +752,27 @@ bool IsOnPath(const std::string_view cookie_path, const std::string_view url_pat
 }
 
 CookiePrefix GetCookiePrefix(std::string_view name) {
-  constexpr std::string_view kSecurePrefix("__Secure-");
-  constexpr std::string_view kHostPrefix("__Host-");
-  constexpr std::string_view kHttpPrefix("__Http-");
-  constexpr std::string_view kHostHttpPrefix("__Host-Http-");
-
-  if (base::StartsWith(name, kSecurePrefix,
-                       base::CompareCase::INSENSITIVE_ASCII)) {
-    return COOKIE_PREFIX_SECURE;
-  }
-  if (base::StartsWith(name, kHttpPrefix,
-                       base::CompareCase::INSENSITIVE_ASCII) &&
-      base::FeatureList::IsEnabled(features::kPrefixCookieHttp)) {
-    return COOKIE_PREFIX_HTTP;
-  }
-  if (base::StartsWith(name, kHostHttpPrefix,
-                       base::CompareCase::INSENSITIVE_ASCII) &&
-      base::FeatureList::IsEnabled(features::kPrefixCookieHostHttp)) {
-    return COOKIE_PREFIX_HOSTHTTP;
-  }
-  if (base::StartsWith(name, kHostPrefix,
-                       base::CompareCase::INSENSITIVE_ASCII)) {
-    return COOKIE_PREFIX_HOST;
+  for (const auto& prefix_data : kPrefixes) {
+    if (base::StartsWith(name, prefix_data.prefix,
+                         base::CompareCase::INSENSITIVE_ASCII)) {
+      return prefix_data.prefix_type;
+    }
   }
   return COOKIE_PREFIX_NONE;
+}
+
+bool HasHiddenPrefixName(std::string_view cookie_value) {
+  // Skip BWS as defined by HTTPSEM as SP or HTAB (0x20 or 0x9).
+  std::string_view value_without_BWS =
+      base::TrimString(cookie_value, " \t", base::TRIM_LEADING);
+
+  for (const auto& prefix_data : kPrefixes) {
+    if (base::StartsWith(value_without_BWS, prefix_data.prefix,
+                         base::CompareCase::INSENSITIVE_ASCII)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 bool IsCookiePrefixValid(CookiePrefix prefix,

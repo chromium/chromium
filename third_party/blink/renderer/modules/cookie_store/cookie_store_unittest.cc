@@ -231,9 +231,6 @@ TEST_F(CookieStoreTest, SetWithMixedCaseDomain) {
 }
 
 TEST_F(CookieStoreTest, SetWithHttpPrefix) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(net::features::kPrefixCookieHttp);
-
   V8TestingScope v8_testing_scope((KURL(kDefaultUrl)));
   CookieStore* cookie_store = CreateCookieStore(v8_testing_scope);
 
@@ -262,9 +259,6 @@ TEST_F(CookieStoreTest, SetWithHttpPrefix) {
 }
 
 TEST_F(CookieStoreTest, SetWithHostHttpPrefix) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(net::features::kPrefixCookieHostHttp);
-
   V8TestingScope v8_testing_scope((KURL(kDefaultUrl)));
   CookieStore* cookie_store = CreateCookieStore(v8_testing_scope);
 
