@@ -357,5 +357,113 @@ IN_PROC_BROWSER_TEST_F(GlicDelegatingSharingManagerBrowserTest,
   EXPECT_EQ(title, "Focused Title");
 }
 
+IN_PROC_BROWSER_TEST_F(GlicDelegatingSharingManagerBrowserTest,
+                       DelegateSwapTriggersPinStatusNotifications) {
+  GlicKeyedService* service =
+      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile());
+  ASSERT_TRUE(service);
+
+  // Create 5 tabs.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+  for (int i = 0; i < 4; ++i) {
+    ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+        browser(), GURL("about:blank"),
+        WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  }
+  TabStripModel* tab_strip = browser()->tab_strip_model();
+  ASSERT_EQ(tab_strip->count(), 5);
+
+  std::vector<tabs::TabHandle> handles;
+  for (int i = 0; i < 5; ++i) {
+    handles.push_back(
+        tabs::TabInterface::GetFromContents(tab_strip->GetWebContentsAt(i))
+            ->GetHandle());
+  }
+
+  // Setup manager 1.
+  tab_strip->ActivateTabAt(0);
+  service->ToggleUI(browser(), /*prevent_close=*/false,
+                    mojom::InvocationSource::kTopChromeButton);
+  auto* instance1 = service->GetInstanceForActiveTab(browser());
+  ASSERT_TRUE(instance1);
+  GlicSharingManager& manager1 = instance1->host().sharing_manager();
+
+  // Pin tabs 0, 1, 2.
+  manager1.UnpinAllTabs(GlicUnpinTrigger::kUnknown);
+  manager1.PinTabs(
+      std::vector<tabs::TabHandle>{handles[0], handles[1], handles[2]},
+      GlicPinTrigger::kContextMenu);
+  EXPECT_EQ(manager1.GetPinnedTabs().size(), 3u);
+
+  // Setup manager 2.
+  tab_strip->ActivateTabAt(3);
+  service->ToggleUI(browser(), /*prevent_close=*/false,
+                    mojom::InvocationSource::kTopChromeButton);
+  auto* instance2 = service->GetInstanceForActiveTab(browser());
+  ASSERT_TRUE(instance2);
+  GlicSharingManager& manager2 = instance2->host().sharing_manager();
+
+  // Ensure separate instances.
+  ASSERT_NE(&manager1, &manager2);
+
+  // Pin tabs 1, 3, 4.
+  manager2.UnpinAllTabs(GlicUnpinTrigger::kUnknown);
+  manager2.PinTabs(
+      std::vector<tabs::TabHandle>{handles[1], handles[3], handles[4]},
+      GlicPinTrigger::kContextMenu);
+  EXPECT_EQ(manager2.GetPinnedTabs().size(), 3u);
+
+  // Set delegate to manager 1.
+  manager_.SetDelegate(&manager1);
+
+  // Verify initial state.
+  EXPECT_THAT(manager_.GetPinnedTabs(),
+              testing::UnorderedElementsAre(handles[0].Get()->GetContents(),
+                                            handles[1].Get()->GetContents(),
+                                            handles[2].Get()->GetContents()));
+
+  // Set up subscription for tab pinning status changes.
+  // Events all fire upon delegate swap, so we must setup assertions ahead of
+  // time.
+  std::vector<std::pair<tabs::TabInterface*, bool>> expected_pin_status_changes;
+
+  // First, verify tabs 0, 1, 2 send unpinned notifications.
+  expected_pin_status_changes.emplace_back(handles[0].Get(), false);
+  expected_pin_status_changes.emplace_back(handles[1].Get(), false);
+  expected_pin_status_changes.emplace_back(handles[2].Get(), false);
+
+  // Then, verify tabs 1, 3, 4 send pinned notifications.
+  expected_pin_status_changes.emplace_back(handles[1].Get(), true);
+  expected_pin_status_changes.emplace_back(handles[3].Get(), true);
+  expected_pin_status_changes.emplace_back(handles[4].Get(), true);
+
+  // Setup subscription to consume status changes and make assertions (in
+  // order).
+  auto pin_status_sub = manager_.AddTabPinningStatusChangedCallback(
+      base::BindLambdaForTesting([&](tabs::TabInterface* tab, bool pinned) {
+        // Grab and verify our next expected status change.
+        auto [expected_tab, expected_pinned] =
+            expected_pin_status_changes.front();
+        EXPECT_EQ(expected_tab, tab);
+        EXPECT_EQ(expected_pinned, pinned);
+        // Remove the expectation so we don't re-check it.
+        expected_pin_status_changes.erase(expected_pin_status_changes.begin());
+      }));
+
+  // Trigger delegate swap.
+  manager_.SetDelegate(&manager2);
+
+  // Verify we triggered all expected notifications.
+  ASSERT_TRUE(expected_pin_status_changes.empty());
+
+  // Verify final state matches manager 2.
+  EXPECT_FALSE(manager_.IsTabPinned(handles[0]));
+  EXPECT_TRUE(manager_.IsTabPinned(handles[1]));
+  EXPECT_FALSE(manager_.IsTabPinned(handles[2]));
+  EXPECT_TRUE(manager_.IsTabPinned(handles[3]));
+  EXPECT_TRUE(manager_.IsTabPinned(handles[4]));
+}
+
 }  // namespace
 }  // namespace glic
