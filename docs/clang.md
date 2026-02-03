@@ -143,3 +143,22 @@ of using the third approach to bisect over LLVM.
 
 * [Updating Clang format binaries](updating_clang_format_binaries.md) has notes
   on how to update clang-format.
+
+* [Toolchain Dashboard](https://commondatastorage.googleapis.com/chromium-browser-clang/toolchain-dashboard.html)
+  tracks how fresh clang, rust, and libc++ are.
+  (Google-internal short link: go/chrome-clang-dash)
+
+* [Chromium Build Time](https://commondatastorage.googleapis.com/chromium-browser-clang/build-time.html)
+  tracks how long Chromium takes to build.
+  (Google-internal short link: go/chrome-build-time)
+
+* [Chromium #include analysis](https://commondatastorage.googleapis.com/chromium-browser-clang/chrome_includes-index.html)
+  tracks which of Chromium's headers contribute most to build time.
+  (Google-internal short link: go/chrome-includes-archive, go/chrome-includes)
+  NOTE: This currently does not handle module headers correctly
+  ([bug](https://issues.chromium.org/issues/435303792)).
+
+* [LLVM #include analysis](https://commondatastorage.googleapis.com/chromium-browser-clang/llvm_includes-index.html)
+  tracks which of LLVM's headers contribute most to LLVM's build time.
+  (LLVM does not use header modules, so it's unaffected by the bug linked to
+  in the previous item.)
