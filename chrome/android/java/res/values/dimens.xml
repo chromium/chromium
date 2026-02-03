@@ -355,7 +355,8 @@ found in the LICENSE file.
     <dimen name="settings_search_ui_height">48dp</dimen>
     <dimen name="settings_search_ui_top_margin">4dp</dimen>
     <dimen name="settings_search_ui_bottom_margin">12dp</dimen>
-    <dimen name="settings_search_icon_padding">16dp</dimen>
+    <dimen name="settings_search_icon_padding">8dp</dimen>
+    <dimen name="settings_search_icon_margin">8dp</dimen>
     <dimen name="settings_detailed_title_padding">10dp</dimen>
     <dimen name="settings_detailed_title_height">48dp</dimen>
     <dimen name="settings_multi_column_divider_size">24dp</dimen>

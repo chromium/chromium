@@ -18,9 +18,12 @@ found in the LICENSE file.
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
+        android:layout_marginStart="@dimen/settings_search_icon_margin"
+        android:layout_marginEnd="@dimen/settings_search_icon_margin"
         android:paddingStart="@dimen/settings_search_icon_padding"
         android:paddingEnd="@dimen/settings_search_icon_padding"
         android:src="@drawable/ic_search_24dp"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
         android:contentDescription="@string/search_in_settings_hint"
         app:tint="@color/default_icon_color_tint_list"/>
     <TextView
