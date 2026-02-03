@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//resources/cr_elements/cr_button/cr_button.js';
+
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {BrowserProxyImpl} from '../browser_proxy.js';
@@ -41,6 +43,39 @@ export class GlicInternalsAppElement extends CrLitElement {
         ({internalsData}) => {
           this.data_ = internalsData;
         });
+  }
+
+  protected onAutopushInputChange(e: Event) {
+    this.data_!.config.autopushGuestUrl = (e.target as HTMLInputElement).value;
+  }
+
+  protected onPreprodInputChange(e: Event) {
+    this.data_!.config.preprodGuestUrl = (e.target as HTMLInputElement).value;
+  }
+
+  protected onProdInputChange(e: Event) {
+    this.data_!.config.prodGuestUrl = (e.target as HTMLInputElement).value;
+  }
+
+  protected onSavePresetsClick_() {
+    const errorMsg =
+        this.shadowRoot.querySelector<HTMLDivElement>('#inputErrorMsg');
+
+    try {
+      // Validate the URL. If we don't validate here, IPC will kill this
+      // renderer on invalid URLs.
+      new URL(this.data_!.config.autopushGuestUrl);
+      new URL(this.data_!.config.preprodGuestUrl);
+      new URL(this.data_!.config.prodGuestUrl);
+    } catch {
+      console.error('Invalid URL: no-op');
+      errorMsg!.classList.remove('hiddenElement');
+      return;
+    }
+    errorMsg!.classList.add('hiddenElement');
+    this.browserProxy_.pageHandler.setGuestUrlPresets(
+        this.data_!.config.autopushGuestUrl, this.data_!.config.preprodGuestUrl,
+        this.data_!.config.prodGuestUrl);
   }
 
   protected getActuationEligibilityString_(eligibility: ActuationEligibility):

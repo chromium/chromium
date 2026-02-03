@@ -146,24 +146,24 @@ std::unique_ptr<GlicSharingManager> CreateSharingManager(
       static_cast<GlicInstanceCoordinatorImpl*>(window_controller));
 }
 
-void SetupGuestUrlPresetPrefs(Profile* profile) {
+void WriteGuestUrlPresetToPrefs(Profile* profile,
+                                const char* switch_name,
+                                const char* pref_name) {
   auto* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(::switches::kGlicGuestUrlPresetAutopush)) {
-    profile->GetPrefs()->SetString(
-        prefs::kGlicGuestUrlPresetAutopush,
-        command_line->GetSwitchValueASCII(
-            ::switches::kGlicGuestUrlPresetAutopush));
+  if (command_line->HasSwitch(switch_name)) {
+    std::string preset_url =
+        GURL(command_line->GetSwitchValueASCII(switch_name)).spec();
+    profile->GetPrefs()->SetString(pref_name, preset_url);
   }
-  if (command_line->HasSwitch(::switches::kGlicGuestUrlPresetPreprod)) {
-    profile->GetPrefs()->SetString(prefs::kGlicGuestUrlPresetPreprod,
-                                   command_line->GetSwitchValueASCII(
-                                       ::switches::kGlicGuestUrlPresetPreprod));
-  }
-  if (command_line->HasSwitch(::switches::kGlicGuestUrlPresetProd)) {
-    profile->GetPrefs()->SetString(
-        prefs::kGlicGuestUrlPresetProd,
-        command_line->GetSwitchValueASCII(::switches::kGlicGuestUrlPresetProd));
-  }
+}
+
+void SetupGuestUrlPresetPrefs(Profile* profile) {
+  WriteGuestUrlPresetToPrefs(profile, ::switches::kGlicGuestUrlPresetAutopush,
+                             prefs::kGlicGuestUrlPresetAutopush);
+  WriteGuestUrlPresetToPrefs(profile, ::switches::kGlicGuestUrlPresetPreprod,
+                             prefs::kGlicGuestUrlPresetPreprod);
+  WriteGuestUrlPresetToPrefs(profile, ::switches::kGlicGuestUrlPresetProd,
+                             prefs::kGlicGuestUrlPresetProd);
 }
 
 }  // namespace

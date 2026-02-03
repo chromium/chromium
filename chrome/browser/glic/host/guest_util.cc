@@ -110,21 +110,28 @@ url::Origin GetGuestOrigin(Profile* profile) {
 
 void MaybeApplyPresetGuestUrl(GURL* guest_url, Profile* profile) {
   if (base::FeatureList::IsEnabled(features::kGlicGuestUrlPresets)) {
+    GURL preset_url;
     switch (features::kGlicGuestUrlPresetType.Get()) {
       case 0:
-        *guest_url = GURL(
+        preset_url = GURL(
             profile->GetPrefs()->GetString(prefs::kGlicGuestUrlPresetAutopush));
         break;
       case 1:
-        *guest_url = GURL(
+        preset_url = GURL(
             profile->GetPrefs()->GetString(prefs::kGlicGuestUrlPresetPreprod));
         break;
       case 2:
-        *guest_url = GURL(
+        preset_url = GURL(
             profile->GetPrefs()->GetString(prefs::kGlicGuestUrlPresetProd));
         break;
       default:
-        break;
+        return;
+    }
+
+    if (preset_url.is_valid()) {
+      *guest_url = preset_url;
+    } else {
+      LOG(ERROR) << "Invalid preset glic guest url, ignoring.";
     }
   }
 }

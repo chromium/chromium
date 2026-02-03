@@ -2508,9 +2508,28 @@ void GlicPageHandler::GetInternalsDataPayload(
   Profile* profile = Profile::FromBrowserContext(browser_context_);
   config->guest_url = GetGuestURL(profile);
   config->fre_guest_url = GetFreURL(profile);
+
+  PrefService* prefs = profile->GetPrefs();
+  config->autopush_guest_url =
+      GURL(prefs->GetString(prefs::kGlicGuestUrlPresetAutopush));
+  config->preprod_guest_url =
+      GURL(prefs->GetString(prefs::kGlicGuestUrlPresetPreprod));
+  config->prod_guest_url =
+      GURL(prefs->GetString(prefs::kGlicGuestUrlPresetProd));
+
   payload->config = std::move(config);
 
   std::move(callback).Run(std::move(payload));
+}
+
+void GlicPageHandler::SetGuestUrlPresets(const GURL& autopush_url,
+                                         const GURL& preprod_url,
+                                         const GURL& prod_url) {
+  PrefService* prefs =
+      Profile::FromBrowserContext(browser_context_)->GetPrefs();
+  prefs->SetString(prefs::kGlicGuestUrlPresetAutopush, autopush_url.spec());
+  prefs->SetString(prefs::kGlicGuestUrlPresetPreprod, preprod_url.spec());
+  prefs->SetString(prefs::kGlicGuestUrlPresetProd, prod_url.spec());
 }
 
 void GlicPageHandler::PanelStateChanged(

@@ -26,3 +26,18 @@ td {
 tr:nth-child(even) {
   background-color: var(--cr-fallback-color-surface-variant);
 }
+
+.presets-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 600px;
+}
+
+cr-button {
+  width: fit-content;
+}
+
+.hiddenElement {
+  visibility: hidden;
+}

@@ -90,6 +90,10 @@ class GlicPageHandler : public glic::mojom::PageHandler,
   void GetInternalsDataPayload(
       GetInternalsDataPayloadCallback callback) override;
 
+  void SetGuestUrlPresets(const GURL& autopush_url,
+                          const GURL& preprod_url,
+                          const GURL& prod_url) override;
+
   // PanelStateObserver implementation.
   void PanelStateChanged(const glic::mojom::PanelState& panel_state,
                          const PanelStateContext& context) override;
