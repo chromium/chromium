@@ -287,6 +287,11 @@
             (webauthn::PasskeyWelcomeScreenPurpose)purpose
                           completion:
                               (webauthn::PasskeyWelcomeScreenAction)completion {
+  if (!_navigationController) {
+    // Presenting welcome screen requires a valid navigation controller, return
+    // early if this view was dismissed before.
+    return;
+  }
   CreateAndPresentPasskeyWelcomeScreen(purpose, _navigationController,
                                        /*delegate=*/self, completion,
                                        _userEmail);
