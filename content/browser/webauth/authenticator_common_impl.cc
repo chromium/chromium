@@ -1501,7 +1501,8 @@ void AuthenticatorCommonImpl::GetCredential(
   }
   req_state_->hints = public_key_options->hints;
 
-  if (options->mediation != Mediation::CONDITIONAL) {
+  if (options->mediation != Mediation::CONDITIONAL &&
+      options->mediation != Mediation::AMBIENT) {
     BeginRequestTimeout(public_key_options->timeout);
   }
 
