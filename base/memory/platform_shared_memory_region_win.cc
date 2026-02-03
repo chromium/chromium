@@ -8,13 +8,18 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <string_view>
+
 #include "base/bits.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/debug/crash_logging.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/process/process_handle.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/types/expected.h"
 #include "partition_alloc/page_allocator.h"
@@ -59,6 +64,22 @@ bool IsSectionSafeToMap(HANDLE handle) {
   return (basic_information.Attributes & SEC_IMAGE) != SEC_IMAGE;
 }
 
+// Sets the value of the "SharedMemoryRegionCreationFailure" crash key to
+// `value`, with an optional error code appended to it. The value will be
+// available in the dump if the process crashes at a later point in time.
+void SetSharedMemoryRegionCreationFailureCrashKey(
+    std::string_view value,
+    std::optional<DWORD> last_error = std::nullopt) {
+  static auto* const crash_key = debug::AllocateCrashKeyString(
+      "SharedMemoryRegionCreationFailure", debug::CrashKeySize::Size32);
+  if (last_error.has_value()) {
+    debug::SetCrashKeyString(
+        crash_key, StrCat({value, "|", NumberToString(last_error.value())}));
+  } else {
+    debug::SetCrashKeyString(crash_key, value);
+  }
+}
+
 // Returns a HANDLE on success and |nullptr| on failure.
 // This function is similar to CreateFileMapping, but removes the permissions
 // WRITE_DAC, WRITE_OWNER, READ_CONTROL, and DELETE.
@@ -77,6 +98,8 @@ HANDLE CreateFileMappingWithReducedPermissions(SECURITY_ATTRIBUTES* sa,
   HANDLE h = CreateFileMapping(INVALID_HANDLE_VALUE, sa, PAGE_READWRITE, 0,
                                static_cast<DWORD>(size), name);
   if (!h) {
+    SetSharedMemoryRegionCreationFailureCrashKey("create-file-mapping",
+                                                 ::GetLastError());
     return nullptr;
   }
 
@@ -85,13 +108,17 @@ HANDLE CreateFileMappingWithReducedPermissions(SECURITY_ATTRIBUTES* sa,
   BOOL success = ::DuplicateHandle(
       process, h, process, &h2, FILE_MAP_READ | FILE_MAP_WRITE | SECTION_QUERY,
       FALSE, 0);
+  const DWORD last_error = ::GetLastError();
   BOOL rv = ::CloseHandle(h);
   DCHECK(rv);
 
   if (!success) {
+    SetSharedMemoryRegionCreationFailureCrashKey("duplicate-handle",
+                                                 last_error);
     return nullptr;
   }
 
+  CHECK(h2);
   return h2;
 }
 
@@ -195,6 +222,7 @@ bool PlatformSharedMemoryRegion::ConvertToUnsafe() {
 PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
                                                               size_t size) {
   if (size == 0) {
+    SetSharedMemoryRegionCreationFailureCrashKey("size-zero");
     return {};
   }
 
@@ -212,6 +240,7 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
   // Aligning may overflow so check that the result doesn't decrease.
   if (rounded_size < size ||
       rounded_size > static_cast<size_t>(std::numeric_limits<int>::max())) {
+    SetSharedMemoryRegionCreationFailureCrashKey("size-too-large");
     return {};
   }
 
@@ -222,12 +251,17 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
   ACL dacl;
   SECURITY_DESCRIPTOR sd;
   if (!InitializeAcl(&dacl, sizeof(dacl), ACL_REVISION)) {
+    SetSharedMemoryRegionCreationFailureCrashKey("init-acl", ::GetLastError());
     return {};
   }
   if (!InitializeSecurityDescriptor(&sd, SECURITY_DESCRIPTOR_REVISION)) {
+    SetSharedMemoryRegionCreationFailureCrashKey("init-security-desc",
+                                                 ::GetLastError());
     return {};
   }
   if (!SetSecurityDescriptorDacl(&sd, TRUE, &dacl, FALSE)) {
+    SetSharedMemoryRegionCreationFailureCrashKey("set-security-desc",
+                                                 ::GetLastError());
     return {};
   }
 
@@ -238,13 +272,15 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
   HANDLE h = CreateFileMappingWithReducedPermissions(
       &sa, rounded_size, name.empty() ? nullptr : as_wcstr(name));
   if (h == nullptr) {
-    // The error is logged within CreateFileMappingWithReducedPermissions().
+    // SetSharedMemoryRegionCreationFailureCrashKey() is invoked inside
+    // CreateFileMappingWithReducedPermissions().
     return {};
   }
 
   win::ScopedHandle scoped_h(h);
   // Check if the shared memory pre-exists.
   if (GetLastError() == ERROR_ALREADY_EXISTS) {
+    SetSharedMemoryRegionCreationFailureCrashKey("already-exists");
     return {};
   }
 
