@@ -465,5 +465,74 @@ IN_PROC_BROWSER_TEST_F(GlicDelegatingSharingManagerBrowserTest,
   EXPECT_TRUE(manager_.IsTabPinned(handles[4]));
 }
 
+IN_PROC_BROWSER_TEST_F(GlicDelegatingSharingManagerBrowserTest,
+                       SetSameDelegateDoesNotTriggerPinNotifications) {
+  GlicKeyedService* service =
+      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile());
+  ASSERT_TRUE(service);
+
+  // Create 3 tabs.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+  for (int i = 0; i < 2; ++i) {
+    ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+        browser(), GURL("about:blank"),
+        WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  }
+  TabStripModel* tab_strip = browser()->tab_strip_model();
+  ASSERT_EQ(tab_strip->count(), 3);
+
+  std::vector<tabs::TabHandle> handles;
+  for (int i = 0; i < 3; ++i) {
+    handles.push_back(
+        tabs::TabInterface::GetFromContents(tab_strip->GetWebContentsAt(i))
+            ->GetHandle());
+  }
+
+  // Setup manager.
+  service->ToggleUI(browser(), /*prevent_close=*/false,
+                    mojom::InvocationSource::kTopChromeButton);
+  auto* instance = service->GetInstanceForActiveTab(browser());
+  ASSERT_TRUE(instance);
+  GlicSharingManager& manager = instance->host().sharing_manager();
+
+  // Pin tabs 0, 1.
+  manager.UnpinAllTabs(GlicUnpinTrigger::kUnknown);
+  manager.PinTabs(std::vector<tabs::TabHandle>{handles[0], handles[1]},
+                  GlicPinTrigger::kContextMenu);
+  EXPECT_EQ(manager.GetPinnedTabs().size(), 2u);
+
+  manager_.SetDelegate(&manager);
+
+  // Verify initial state.
+  EXPECT_THAT(manager_.GetPinnedTabs(),
+              testing::UnorderedElementsAre(handles[0].Get()->GetContents(),
+                                            handles[1].Get()->GetContents()));
+
+  // Setup subscription to consume status changes.
+  bool callback_called = false;
+  auto pin_status_sub = manager_.AddTabPinningStatusChangedCallback(
+      base::BindLambdaForTesting([&](tabs::TabInterface* tab, bool pinned) {
+        callback_called = true;
+      }));
+
+  auto pin_event_sub =
+      manager_.AddTabPinningStatusEventCallback(base::BindLambdaForTesting(
+          [&](tabs::TabInterface* tab, GlicPinningStatusEvent event) {
+            callback_called = true;
+          }));
+
+  // Trigger SetDelegate with same manager.
+  manager_.SetDelegate(&manager);
+
+  // Verify no notifications were fired.
+  EXPECT_FALSE(callback_called);
+
+  // Verify state is still correct.
+  EXPECT_THAT(manager_.GetPinnedTabs(),
+              testing::UnorderedElementsAre(handles[0].Get()->GetContents(),
+                                            handles[1].Get()->GetContents()));
+}
+
 }  // namespace
 }  // namespace glic
