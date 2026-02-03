@@ -521,7 +521,7 @@ public class AutofillProfilesFragmentTest {
     @Feature({"Preferences"})
     public void testDeleteLocalProfile() throws Exception {
         Context context = sSettingsActivityTestRule.getFragment().getContext();
-        setUpMockSyncService(false, new HashSet());
+        setUpMockSyncService(new HashSet());
         testDeleteProfile(
                 "Seb Doe",
                 7 /* toggle + add button + 4 profiles + plus address entry */,
@@ -533,7 +533,7 @@ public class AutofillProfilesFragmentTest {
     @Feature({"Preferences"})
     public void testDeleteSyncableProfile() throws Exception {
         Context context = sSettingsActivityTestRule.getFragment().getContext();
-        setUpMockSyncService(true, Collections.singleton(UserSelectableType.AUTOFILL));
+        setUpMockSyncService(Collections.singleton(UserSelectableType.AUTOFILL));
         testDeleteProfile(
                 "Seb Doe",
                 7 /* toggle + add button + 4 profiles + plus address entry */,
@@ -858,7 +858,7 @@ public class AutofillProfilesFragmentTest {
         when(IdentityServicesProvider.get().getIdentityManager(any()))
                 .thenReturn(mIdentityManagerMock);
         when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(false);
-        setUpMockSyncService(false, new HashSet<>());
+        setUpMockSyncService(new HashSet<>());
 
         verifyAddressProfileIcons(/* expectedLocalIconLayout= */ 0);
     }
@@ -868,7 +868,7 @@ public class AutofillProfilesFragmentTest {
     @Feature({"Preferences"})
     public void testLocalProfiles_NoSync() throws Exception {
         setUpMockPrimaryAccount(TestAccounts.ACCOUNT1);
-        setUpMockSyncService(false, new HashSet<>());
+        setUpMockSyncService(new HashSet<>());
 
         verifyAddressProfileIcons(R.layout.autofill_settings_local_profile_icon);
     }
@@ -878,7 +878,7 @@ public class AutofillProfilesFragmentTest {
     @Feature({"Preferences"})
     public void testDisplayedProfileIcons_AddressesNotSynced() throws Exception {
         setUpMockPrimaryAccount(TestAccounts.ACCOUNT1);
-        setUpMockSyncService(true, new HashSet<>());
+        setUpMockSyncService(new HashSet<>());
 
         verifyAddressProfileIcons(R.layout.autofill_settings_local_profile_icon);
     }
@@ -888,7 +888,7 @@ public class AutofillProfilesFragmentTest {
     @Feature({"Preferences"})
     public void testDisplayedProfileIcons_AddressesSynced() throws Exception {
         setUpMockPrimaryAccount(TestAccounts.ACCOUNT1);
-        setUpMockSyncService(true, Collections.singleton(UserSelectableType.AUTOFILL));
+        setUpMockSyncService(Collections.singleton(UserSelectableType.AUTOFILL));
 
         verifyAddressProfileIcons(/* expectedLocalIconLayout= */ 0);
     }
@@ -897,7 +897,7 @@ public class AutofillProfilesFragmentTest {
     @MediumTest
     public void testSettingsState_thirdPartyMode() throws Exception {
         setUpMockPrimaryAccount(TestAccounts.ACCOUNT1);
-        setUpMockSyncService(true, Collections.singleton(UserSelectableType.AUTOFILL));
+        setUpMockSyncService(Collections.singleton(UserSelectableType.AUTOFILL));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -968,16 +968,16 @@ public class AutofillProfilesFragmentTest {
         // Trigger address profile list rebuild.
         mHelper.setProfile(sAccountProfile);
 
-        CardWithButtonPreference disabled_settings_info_pref =
+        CardWithButtonPreference disabledSettingsInfoPref =
                 autofillProfileFragment.findPreference(
                         AutofillProfilesFragment.DISABLED_SETTINGS_INFO);
-        assertNotNull(disabled_settings_info_pref);
+        assertNotNull(disabledSettingsInfoPref);
         onView(allOf(withId(R.id.icon), isDescendantOfA(withId(R.id.card_layout))))
                 .check(matches(isDisplayed()));
-        String title = disabled_settings_info_pref.getTitle().toString();
+        String title = disabledSettingsInfoPref.getTitle().toString();
         assertThat(title)
                 .isEqualTo(context.getString(R.string.autofill_disable_settings_explanation_title));
-        String summary = disabled_settings_info_pref.getSummary().toString();
+        String summary = disabledSettingsInfoPref.getSummary().toString();
         assertThat(summary)
                 .isEqualTo(context.getString(R.string.autofill_disable_settings_explanation));
 
@@ -1052,10 +1052,9 @@ public class AutofillProfilesFragmentTest {
         when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(true);
     }
 
-    private void setUpMockSyncService(boolean enabled, Set<Integer> selectedTypes) {
+    private void setUpMockSyncService(Set<Integer> selectedTypes) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> SyncServiceFactory.setInstanceForTesting(mSyncService));
-        when(mSyncService.isSyncFeatureEnabled()).thenReturn(enabled);
         when(mSyncService.getSelectedTypes()).thenReturn(selectedTypes);
     }
 }

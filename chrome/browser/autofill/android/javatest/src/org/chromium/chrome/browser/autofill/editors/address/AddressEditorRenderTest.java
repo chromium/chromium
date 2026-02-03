@@ -184,7 +184,6 @@ public class AddressEditorRenderTest {
                         });
         runOnUiThreadBlocking(
                 () -> {
-                    when(mSyncService.isSyncFeatureEnabled()).thenReturn(false);
                     when(mSyncService.getSelectedTypes()).thenReturn(new HashSet());
                     SyncServiceFactory.setInstanceForTesting(mSyncService);
 
