@@ -251,6 +251,42 @@ public final class CronetMetrics extends RequestFinishedInfo.Metrics {
         return mReceivedByteCount;
     }
 
+    public long getRequestStartMicroseconds() {
+        return mRequestStartMicroseconds;
+    }
+
+    public long getDnsStartMicroseconds() {
+        return mDnsStartMicroseconds;
+    }
+
+    public long getDnsEndMicroseconds() {
+        return mDnsEndMicroseconds;
+    }
+
+    public long getConnectStartMicroseconds() {
+        return mConnectStartMicroseconds;
+    }
+
+    public long getConnectEndMicroseconds() {
+        return mConnectEndMicroseconds;
+    }
+
+    public long getSslStartMicroseconds() {
+        return mSslStartMicroseconds;
+    }
+
+    public long getSslEndMicroseconds() {
+        return mSslEndMicroseconds;
+    }
+
+    public long getSendingStartMicroseconds() {
+        return mSendingStartMicroseconds;
+    }
+
+    public long getSendingEndMicroseconds() {
+        return mSendingEndMicroseconds;
+    }
+
     // Package-private as we don't want to expose these in the public Cronet API, for now. These
     // return long, not Date, because we want to preserve the microsecond precision (Date is
     // millisecond precision).
