@@ -60,7 +60,6 @@ component("variations") {
     "metrics.cc",
     "metrics.h",
     "platform_field_trials.h",
-    "pref_names.cc",
     "pref_names.h",
     "processed_study.cc",
     "processed_study.h",

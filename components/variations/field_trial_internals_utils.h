@@ -24,7 +24,7 @@ class VariationsSeed;
 class EntropyProviders;
 
 // This file supports temporary forcing of field trials through the
-// chrome://field-trial-internals page.
+// chrome://metrics-internals/#field-trials page.
 
 // Forced trial expiration:
 // When field trials are forced with field-trial-internals, they remain active
