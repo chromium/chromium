@@ -93,7 +93,13 @@ class DataListIndicatorElement final : public HTMLDivElement {
     DCHECK(ContainingShadowRoot()->IsUserAgent());
     SetShadowPseudoId(shadow_element_names::kPseudoCalendarPickerIndicator);
     setAttribute(html_names::kIdAttr, shadow_element_names::kIdPickerIndicator);
-    SetInlineStyleProperty(CSSPropertyID::kDisplay, CSSValueID::kListItem);
+    if (!RuntimeEnabledFeatures::CustomizableComboboxEnabled()) {
+      // When CustomizableCombobox is enabled, this property is set in the UA
+      // stylesheet. It must be in the UA stylesheet because it uses
+      // -internal-auto-base(), which can only be parsed from the UA
+      // stylesheet.
+      SetInlineStyleProperty(CSSPropertyID::kDisplay, CSSValueID::kListItem);
+    }
     SetInlineStyleProperty(CSSPropertyID::kListStyle, "disclosure-open inside");
     SetInlineStyleProperty(CSSPropertyID::kCounterIncrement, "list-item 0");
     SetInlineStyleProperty(CSSPropertyID::kBlockSize, 1.0,
