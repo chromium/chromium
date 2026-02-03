@@ -51,6 +51,10 @@ const CGFloat kMinVerticalInset = 8.0;
 /// The placeholder leading padding.
 const CGFloat kPlaceholderLeadingPadding = 4.0;
 
+/// The vertical offset added to the text view. This is to align with the
+/// OmniboxTextFieldIOS that OmniboxTextViewIOS replaces.
+const CGFloat kVerticalOffset = 1;
+
 }  // namespace
 
 @interface OmniboxTextViewIOS () <UIGestureRecognizerDelegate,
@@ -1182,7 +1186,7 @@ const CGFloat kPlaceholderLeadingPadding = 4.0;
   CGFloat verticalPadding =
       MAX(kMinVerticalInset * 2.0, (minHeight - lineHeight));
   // Distribute padding.
-  CGFloat topPadding = verticalPadding / 2.0;
+  CGFloat topPadding = verticalPadding / 2.0 + kVerticalOffset;
   CGFloat bottomPadding = verticalPadding - topPadding;
   self.textContainerInset = UIEdgeInsetsMake(topPadding, 0, bottomPadding, 0);
   _placeholderTopConstraint.constant = topPadding;
