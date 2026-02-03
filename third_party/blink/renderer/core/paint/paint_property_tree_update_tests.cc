@@ -2201,6 +2201,35 @@ TEST_P(PaintPropertyTreeUpdateTest, AnchorPositioningScrollUpdate) {
             PaintArtifactCompositor::UpdateType::kNone);
 }
 
+TEST_P(PaintPropertyTreeUpdateTest, NeedsEffectFor2DScaleTransformChange) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #target {
+        width: 100px;
+        height: 100px;
+        transform: scale(2);
+        opacity: 0.5;
+      }
+    </style>
+    <div id='target'></div>
+  )HTML");
+
+  auto* target = GetLayoutObjectByElementId("target");
+  const auto* properties = target->FirstFragment().PaintProperties();
+  EXPECT_TRUE(properties->Effect()->NeedsEffectFor2DScaleTransform());
+
+  // Change transform to a non-2d-scale transform.
+  GetDocument()
+      .getElementById(AtomicString("target"))
+      ->setAttribute(html_names::kStyleAttr,
+                     AtomicString("transform: translate(10px); opacity: 0.5"));
+  UpdateAllLifecyclePhasesForTest();
+
+  // The effect node should still exist (due to opacity), but
+  // NeedsEffectFor2DScaleTransform should be false.
+  EXPECT_FALSE(properties->Effect()->NeedsEffectFor2DScaleTransform());
+}
+
 TEST_P(PaintPropertyTreeUpdateTest, ElementCaptureUpdate) {
   ScopedElementCaptureForTest scoped_element_capture(true);
 

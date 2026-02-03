@@ -60,7 +60,9 @@ PaintPropertyChangeType EffectPaintPropertyNode::State::ComputeChange(
       view_transition_element_resource_id !=
           other.view_transition_element_resource_id ||
       self_or_ancestor_participates_in_view_transition !=
-          other.self_or_ancestor_participates_in_view_transition) {
+          other.self_or_ancestor_participates_in_view_transition ||
+      needs_effect_for_2d_scale_transform !=
+          other.needs_effect_for_2d_scale_transform) {
     return PaintPropertyChangeType::kChangedOnlyValues;
   }
   bool opacity_changed = opacity != other.opacity;
