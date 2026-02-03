@@ -2264,7 +2264,7 @@ class WebViewChromium
     @Override
     public float getScale() {
         // No checkThread() as it is mostly thread safe (workaround for b/10652991).
-        forbidBuilderConfiguration();
+        // This is a ViewDebug exported property - don't forbid builder.
         mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_GET_SCALE);
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.GET_SCALE")) {
             recordWebViewApiCall(ApiCall.GET_SCALE, ApiCallUserAction.WEBVIEW_INSTANCE_GET_SCALE);
@@ -2378,7 +2378,7 @@ class WebViewChromium
 
     @Override
     public String getUrl() {
-        forbidBuilderConfiguration();
+        // This is an inspectable property and a ViewDebug exported property - don't forbid builder.
         mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_GET_URL);
         if (checkNeedsPost()) {
             String ret =
@@ -2400,7 +2400,7 @@ class WebViewChromium
 
     @Override
     public String getOriginalUrl() {
-        forbidBuilderConfiguration();
+        // This is an inspectable property and a ViewDebug exported property - don't forbid builder.
         mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_GET_ORIGINAL_URL);
         if (checkNeedsPost()) {
             String ret =
@@ -2422,7 +2422,7 @@ class WebViewChromium
 
     @Override
     public String getTitle() {
-        forbidBuilderConfiguration();
+        // This is an inspectable property and a ViewDebug exported property - don't forbid builder.
         mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_GET_TITLE);
         if (checkNeedsPost()) {
             String ret =
@@ -2443,7 +2443,7 @@ class WebViewChromium
 
     @Override
     public Bitmap getFavicon() {
-        forbidBuilderConfiguration();
+        // This is an inspectable property - don't forbid builder.
         mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_GET_FAVICON);
         if (checkNeedsPost()) {
             Bitmap ret =
@@ -2472,7 +2472,7 @@ class WebViewChromium
 
     @Override
     public int getProgress() {
-        forbidBuilderConfiguration();
+        // This is an inspectable property - don't forbid builder.
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.GET_PROGRESS")) {
             recordWebViewApiCall(
                     ApiCall.GET_PROGRESS, ApiCallUserAction.WEBVIEW_INSTANCE_GET_PROGRESS);
@@ -2484,7 +2484,7 @@ class WebViewChromium
 
     @Override
     public int getContentHeight() {
-        forbidBuilderConfiguration();
+        // This is an inspectable property and a ViewDebug exported property - don't forbid builder.
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.GET_CONTENT_HEIGHT")) {
             recordWebViewApiCall(
                     ApiCall.GET_CONTENT_HEIGHT,
@@ -2497,7 +2497,7 @@ class WebViewChromium
 
     @Override
     public int getContentWidth() {
-        forbidBuilderConfiguration();
+        // This is a ViewDebug exported property - don't forbid builder.
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.GET_CONTENT_WIDTH")) {
             recordWebViewApiCall(
                     ApiCall.GET_CONTENT_WIDTH,
@@ -3281,13 +3281,13 @@ class WebViewChromium
 
     @Override
     public void dumpViewHierarchyWithProperties(BufferedWriter out, int level) {
-        forbidBuilderConfiguration();
+        // This is a ViewDebug related method - don't forbid builder.
         // Intentional no-op
     }
 
     @Override
     public View findHierarchyView(String className, int hashCode) {
-        forbidBuilderConfiguration();
+        // This is a ViewDebug related method - don't forbid builder.
         // Intentional no-op
         return null;
     }
@@ -3325,7 +3325,7 @@ class WebViewChromium
 
     @Override
     public int getRendererRequestedPriority() {
-        forbidBuilderConfiguration();
+        // This is an inspectable property - don't forbid builder.
         mAwInit.triggerAndWaitForChromiumStarted(
                 CallSite.WEBVIEW_INSTANCE_GET_RENDERER_REQUESTED_PRIORITY);
         try (TraceEvent event =
@@ -3349,7 +3349,7 @@ class WebViewChromium
 
     @Override
     public boolean getRendererPriorityWaivedWhenNotVisible() {
-        forbidBuilderConfiguration();
+        // This is an inspectable property - don't forbid builder.
         mAwInit.triggerAndWaitForChromiumStarted(
                 CallSite.WEBVIEW_INSTANCE_GET_RENDERER_PRIORITY_WAIVED_WHEN_NOT_VISIBLE);
         try (TraceEvent event =
@@ -3436,7 +3436,7 @@ class WebViewChromium
 
     @Override
     public void onProvideContentCaptureStructure(ViewStructure structure, int flags) {
-        forbidBuilderConfiguration();
+        // This is a View method - don't forbid builder.
         mAwInit.triggerAndWaitForChromiumStarted(
                 CallSite.WEBVIEW_INSTANCE_ON_PROVIDE_CONTENT_CAPTURE_STRUCTURE);
         if (ContentCaptureFeatures.isDumpForTestingEnabled()) {
