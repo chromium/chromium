@@ -84,7 +84,7 @@
   {
     "name": "Redress Number",
     "attributes": [ "Name", "Number" ],
-    "obfuscated attributes": [ ],
+    "obfuscated attributes": [ "Number" ],
     "required fields": "any",
     "import constraints": [
       [ "Number" ]
