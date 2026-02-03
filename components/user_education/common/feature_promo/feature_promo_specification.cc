@@ -101,6 +101,7 @@ bool IsAllowedLegacyPromo(const base::Feature& promo_feature) {
           "IPH_PriceTrackingInSidePanel",
           "IPH_ReadingListDiscovery",
           "IPH_ReadingListInSidePanel",
+          "IPH_ResumptionRail",
           "IPH_TabSearch",
       });
   return kAllowedPromoNames.contains(promo_feature.name);

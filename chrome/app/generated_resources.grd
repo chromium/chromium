@@ -12613,6 +12613,14 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
           Your tab groups now automatically save
         </message>
 
+        <message name="IDS_RESUMPTION_RAIL_IPH_TITLE" desc="The title text of an IPH that shows up to educate users about the Resumption Rail feature entrypoint.">
+          Continue your tasks
+        </message>
+
+        <message name="IDS_RESUMPTION_RAIL_IPH_BODY" desc="The text of an IPH that shows up to educate users about the Resumption Rail feature entrypoint.">
+          Quickly switch between your tab groups and your recent AI conversations without losing your place.
+        </message>
+
       <!-- Saved Tab Group Error -->
       <message name="IDS_SAVED_TAB_GROUPS_UNSUPPORTED_ERROR" desc="The text on an error page showing that the URL from the remote device is not supported by the saved tab griups feature and cannot be synced.">
           The URL from the remote device is not supported

@@ -1042,6 +1042,20 @@ void MaybeRegisterChromeFeaturePromos(
                        "Triggered to encourage users to try out the reading "
                        "mode feature.")));
 
+  // kIPHResumptionRailFeature:
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForToastPromo(
+          feature_engagement::kIPHResumptionRailFeature,
+          kVerticalTabStripProjectsButtonElementId,
+          IDS_RESUMPTION_RAIL_IPH_BODY, IDS_RESUMPTION_RAIL_IPH_TITLE,
+          FeaturePromoSpecification::AcceleratorInfo(0))
+          .SetBubbleTitleText(IDS_RESUMPTION_RAIL_IPH_TITLE)
+          .SetBubbleArrow(HelpBubbleArrow::kLeftCenter)
+          .SetBubbleIcon(&vector_icons::kLightbulbOutlineIcon)
+          .SetMetadata(146, "gqueen@chromium.org",
+                       "Triggered to educate users about the Resumption Rail "
+                       "feature entrypoint.")));
+
   // kIPHSideBySidePinnableFeature:
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForCustomAction(

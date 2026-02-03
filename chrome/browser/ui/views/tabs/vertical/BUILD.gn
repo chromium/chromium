@@ -78,6 +78,7 @@ source_set("impl") {
     "//chrome/browser/ui/tabs:utils",
     "//chrome/browser/ui/tabs/projects:impl",
     "//chrome/browser/ui/tabs/saved_tab_groups",
+    "//chrome/browser/ui/user_education",
     "//chrome/browser/ui/views/frame",
     "//chrome/browser/ui/views/tabs/dragging:tab_drag_target",
     "//chrome/browser/ui/views/toolbar",
