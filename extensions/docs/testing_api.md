@@ -326,18 +326,80 @@ const tab = await chrome.tabs.create({url: url});
 <verify state>
 ```
 
-### listenOnce() and listenForever()
-`chrome.test.listenOnce()` and `chrome.test.listenForever()` are utility
-functions used when waiting on different events.  Like `callbackPass()` and
-`callbackFail()` above, they use the test API's internal callback counter,
-allowing the test to finish automatically once all callbacks have been invoked.
-Naturally, they share all the same disadvantages as well.
+### listenOnce()
+`chrome.test.listenOnce()` is a utility function to allow waiting for an event
+to trigger. It comes in two flavors:
 
-`listenOnce()` waits for the event to be invoked a single time, and then
-removes the listener and reduces the internal callback counter.  Calling
-`listenForever()` adds the listener and returns a function to be invoked at any
-point; invoking this function will remove the listener and decrement the
-callback counter.
+#### Promise-based
+The modern version of this method can be used to return a promise, which will
+resolve when the event is triggered. The promise will be resolved either with
+the argument the event is invoked with, if the event has a single argument, or
+with an array of arguments, if the event takes multiple arguments.
+
+This version will not have any implications for the lifetime of the test, and
+can be used seamlessly with `chrome.test.succeed()` and friends.
+
+A simple example with one event argument is the following:
+```js
+let tabCreated = chrome.test.listenOnce(chrome.tabs.onCreated);
+chrome.tabs.create({...});
+let tab = await tabCreated;
+// Verify the created tab.
+chrome.test.succeed();  // Deterministically and clearly end the test.
+```
+
+An event triggered with multiple arguments might look like this:
+```js
+let eventPromise = chrome.test.listenOnce(chrome.tabs.onRemoved);
+chrome.tabs.remove(tabId);
+let args = await eventPromise;
+// chrome.tabs.onRemoved has two arguments...
+let removedTabId = args[0];
+let removeInfo = args[1];
+```
+
+This can be simplified further with destructuring assignment:
+```js
+let [removedTabId, removeInfo] = await eventPromise;
+```
+
+#### Callback-based
+The callback based version of `chrome.test.listenOnce()` takes in an event and
+a function, and the function is invoked when the event fires. This variant uses
+the internal callback counter of the test API, similar to `callbackPass()` and
+`callbackFail()`, and will automatically finish the test when all callbacks have
+been invoked. As such, this has all the same disadvantages of the callback
+counters. Please avoid using these in new tests.
+
+### listenForever()
+`chrome.test.listenForever()` is a utility function that listens for the event
+until some time in the future. It will return a function that can be called to
+stop listening. This also uses the internal callback counter, and the callback
+is considered complete (allowing the test to end) when the function to stop
+listening is called.
+
+```js
+let done = chrome.test.listenForever(chrome.tabs.create, function(tab) {
+  createdTabs.push(tab);
+});
+...  // Create a bunch of tabs.
+// Stops listening. This might automatically end the test, if no other
+// callbacks are pending.
+done();
+```
+
+Generally, prefer using your own listener and remove it using the general
+Event API by calling `removeListener()`, instead of using `listenForever()`:
+
+```js
+const listener = function(tab) { createdTabs.push(tab); };
+chrome.tabs.onCreated.addListener(listener);
+...  // Create a bunch of tabs.
+// Done listening. This won't end the test.
+chrome.tabs.removeListener(listener);
+... // Verify state.
+chrome.test.succeed();
+```
 
 ### getConfig()
 `chrome.test.getConfig()` retrieves the current configuration of the test
