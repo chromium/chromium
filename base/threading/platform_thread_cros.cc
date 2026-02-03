@@ -232,22 +232,25 @@ void SetThreadTypeOtherAttrs(ProcessId process_id,
   SetThreadLatencySensitivity(process_id, thread_id, thread_type);
 }
 
-// Set or reset the RT priority of a thread based on its type
-// and whether the process it is in is backgrounded.
+// Set or reset the RT priority of a thread based on its type.
 // Setting an RT task to CFS retains the task's nice value.
 void SetThreadRTPrioFromType(ProcessId process_id,
                              PlatformThreadId thread_id,
                              ThreadType thread_type) {
-  // TODO(crbug.com/262267726): Fix the issue that when thread type changed
-  // from kRealtimeAudio to other, the scheduling policy is still SCHED_RR.
-  if (thread_type != ThreadType::kRealtimeAudio) {
-    return;
-  }
-
+  struct sched_param prio{};
+  int policy;
   pid_t syscall_tid =
       thread_id == PlatformThread::CurrentId() ? 0 : thread_id.raw();
-  if (sched_setscheduler(syscall_tid, SCHED_RR,
-                         &PlatformThreadChromeOS::kRealTimeAudioPrio) != 0) {
+
+  if (thread_type == ThreadType::kRealtimeAudio) {
+    prio = PlatformThreadChromeOS::kRealTimeAudioPrio;
+    policy = SCHED_RR;
+  } else {
+    prio.sched_priority = 0;
+    policy = SCHED_OTHER;
+  }
+
+  if (sched_setscheduler(syscall_tid, policy, &prio) != 0) {
     DVPLOG(1) << "Failed to set policy/priority for thread " << thread_id;
   }
 }
