@@ -677,6 +677,38 @@ public class AwPrefetchTest extends AwParameterizedTest {
                 mTestServer.getRequestCountForUrl(testPath));
     }
 
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({
+        ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1",
+        "enable-features=ExternalExperimentAllowlist:123/PrefetchStudy,Group1"
+    })
+    public void testPrefetchRequestWithVariationsId() throws Throwable {
+        // The Variations ID (123) must match the entry in the ExternalExperimentAllowlist
+        // defined in the @CommandLineFlags above. The metrics service will only register
+        // IDs that have been explicitly allowlisted for privacy and security reasons.
+        AwPrefetchParameters prefetchParameters =
+                new AwPrefetchParameters(new HashMap<>(), null, true, 123);
+
+        // We expect 1 group to be registered.
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("UMA.ExternalExperiment.GroupCount", 1)
+                        .build();
+
+        // Do the prefetch request.
+        TestAwPrefetchCallback callback = startPrefetchingAndWait(mPrefetchUrl, prefetchParameters);
+
+        // wait then do the checks
+        callback.mOnStatusUpdatedHelper.waitForNext();
+        Assert.assertEquals(
+                AwPrefetchCallback.StatusCode.PREFETCH_RESPONSE_COMPLETED,
+                callback.getOnStatusUpdatedHelper().getStatusCode());
+
+        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
+    }
+
     private String getUrl(final String relativePath) {
         return mTestServer.getURLWithHostName("a.test", relativePath);
     }

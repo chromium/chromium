@@ -25,10 +25,22 @@ public class SupportLibSpeculativeLoadingParametersAdapter {
                         NoVarySearchDataBoundaryInterface.class,
                         speculativeLoadingParams.getNoVarySearchData());
 
+        Integer variationsId = null;
+        try {
+            variationsId = speculativeLoadingParams.getVariationsId();
+        } catch (LinkageError | RuntimeException e) {
+            // This can happen if the app is linked against an older version of the
+            // Support Library boundary interfaces that does not yet include this
+            // method. We catch LinkageError to handle NoSuchMethodError or
+            // AbstractMethodError caused by version skew, and RuntimeException to
+            // handle any unexpected reflection-related issues.
+        }
+
         return new PrefetchParams(
                 speculativeLoadingParams.getAdditionalHeaders(),
                 fromNoVarySearchDataBoundaryInterface(noVarySearchData),
-                speculativeLoadingParams.isJavaScriptEnabled());
+                speculativeLoadingParams.isJavaScriptEnabled(),
+                variationsId);
     }
 
     public static NoVarySearchData fromNoVarySearchDataBoundaryInterface(

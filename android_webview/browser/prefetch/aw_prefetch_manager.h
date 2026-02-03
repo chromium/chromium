@@ -5,6 +5,12 @@
 #ifndef ANDROID_WEBVIEW_BROWSER_PREFETCH_AW_PREFETCH_MANAGER_H_
 #define ANDROID_WEBVIEW_BROWSER_PREFETCH_AW_PREFETCH_MANAGER_H_
 
+#include <jni.h>
+
+#include <optional>
+#include <vector>
+
+#include "base/android/scoped_java_ref.h"
 #include "base/containers/circular_deque.h"
 #include "base/memory/raw_ref.h"
 #include "content/public/browser/browser_context.h"
@@ -79,6 +85,15 @@ class AwPrefetchManager {
       const base::android::JavaRef<jobject>& callback_executor);
 
   void CancelPrefetch(JNIEnv* env, int32_t prefetch_key);
+
+  // Registers an external experiment (synthetic trial) in UMA for the current
+  // prefetch request. The experiment ID is derived from the Variations ID
+  // provided by the embedder.
+  //
+  // This is called during `StartPrefetchRequest()` to ensure the metrics state
+  // reflects the parameters of the most recent request. If no Variations ID is
+  // provided, any previously registered prefetch experiment will be cleared.
+  void SetOrClearExternalPrefetchExperiment(std::optional<int> variations_id);
 
   bool GetIsPrefetchInCacheForTesting(JNIEnv* env, int32_t prefetch_key);
 

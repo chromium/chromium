@@ -19,4 +19,8 @@ public interface SpeculativeLoadingParametersBoundaryInterface {
     @Nullable /* NoVarySearchDataBoundaryInterface */ InvocationHandler getNoVarySearchData();
 
     boolean isJavaScriptEnabled();
+
+    default @Nullable Integer getVariationsId() {
+        return null;
+    }
 }

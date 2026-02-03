@@ -33,6 +33,10 @@ bool GetIsJavaScriptEnabledFromPrefetchParameters(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& prefetch_params);
 
+std::optional<int> GetVariationsIdFromPrefetchParameters(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& prefetch_params);
+
 // TODO(crbug.com/455296998): Remove this code for M145.
 bool GetShouldBypassHttpCacheFromHeaders(net::HttpRequestHeaders& headers,
                                          bool remove_header);

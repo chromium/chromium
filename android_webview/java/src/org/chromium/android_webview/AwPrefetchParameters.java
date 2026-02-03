@@ -26,14 +26,24 @@ public class AwPrefetchParameters {
     private final @NonNull Map<String, String> mAdditionalHeaders;
     private final @Nullable AwNoVarySearchData mExpectedNoVarySearch;
     private final boolean mIsJavascriptEnabled;
+    private final @Nullable Integer mVariationsId;
 
     public AwPrefetchParameters(
             @Nullable Map<String, String> additionalHeaders,
             @Nullable AwNoVarySearchData expectedNoVarySearch,
             boolean isJavascriptEnabled) {
+        this(additionalHeaders, expectedNoVarySearch, isJavascriptEnabled, null);
+    }
+
+    public AwPrefetchParameters(
+            @Nullable Map<String, String> additionalHeaders,
+            @Nullable AwNoVarySearchData expectedNoVarySearch,
+            boolean isJavascriptEnabled,
+            @Nullable Integer variationsId) {
         mAdditionalHeaders = additionalHeaders != null ? additionalHeaders : new HashMap<>();
         mExpectedNoVarySearch = expectedNoVarySearch;
         mIsJavascriptEnabled = isJavascriptEnabled;
+        mVariationsId = variationsId;
     }
 
     @CalledByNative
@@ -52,5 +62,11 @@ public class AwPrefetchParameters {
     @CalledByNative
     public boolean getIsJavascriptEnabled() {
         return mIsJavascriptEnabled;
+    }
+
+    @CalledByNative
+    @Nullable
+    public Integer getVariationsId() {
+        return mVariationsId;
     }
 }

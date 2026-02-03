@@ -7,6 +7,8 @@
 
 #include <optional>
 
+#include "android_webview/browser/metrics/aw_metrics_service_accessor.h"
+#include "android_webview/browser/metrics/aw_metrics_service_client.h"
 #include "android_webview/browser/prefetch/aw_preloading_utils.h"
 #include "android_webview/common/aw_features.h"
 #include "base/android/jni_string.h"
@@ -128,6 +130,11 @@ int AwPrefetchManager::StartPrefetchRequest(
   }
   std::optional<net::HttpNoVarySearchData> expected_no_vary_search =
       GetExpectedNoVarySearchFromPrefetchParameters(env, prefetch_params);
+
+  std::optional<int> variations_id =
+      GetVariationsIdFromPrefetchParameters(env, prefetch_params);
+  SetOrClearExternalPrefetchExperiment(variations_id);
+
   std::unique_ptr<content::PrefetchRequestStatusListener>
       request_status_listener =
           std::make_unique<AwPrefetchRequestStatusListener>(java_obj_, callback,
@@ -191,6 +198,20 @@ void AwPrefetchManager::CancelPrefetch(JNIEnv* env, int32_t prefetch_key) {
   if (it != all_prefetches_map_.end()) {
     all_prefetches_map_.erase(it);
   }
+}
+
+void AwPrefetchManager::SetOrClearExternalPrefetchExperiment(
+    std::optional<int> variations_id) {
+  std::vector<int> experiment_ids;
+  if (variations_id.has_value()) {
+    experiment_ids.push_back(variations_id.value());
+  }
+
+  // Always invoke registration to ensure the metrics state is synchronized
+  // with the current request. Providing an empty ID list is necessary to
+  // clear state from previous requests if the current one lacks a
+  // Variations ID.
+  AwMetricsServiceAccessor::RegisterExternalExperiment(experiment_ids);
 }
 
 bool AwPrefetchManager::GetIsPrefetchInCacheForTesting(JNIEnv* env,

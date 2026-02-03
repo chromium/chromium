@@ -45,6 +45,13 @@ void SyntheticTrialRegistry::RegisterExternalExperiments(
   RegisterExternalExperimentsInternal(experiment_ids, mode);
 }
 
+void SyntheticTrialRegistry::RegisterExternalExperiments(
+    base::PassKey<android_webview::AwMetricsServiceAccessor> pass_key,
+    const std::vector<int>& experiment_ids,
+    SyntheticTrialRegistry::OverrideMode mode) {
+  RegisterExternalExperimentsInternal(experiment_ids, mode);
+}
+
 void SyntheticTrialRegistry::RegisterExternalExperimentsForTesting(
     const std::vector<int>& experiment_ids,
     SyntheticTrialRegistry::OverrideMode mode) {

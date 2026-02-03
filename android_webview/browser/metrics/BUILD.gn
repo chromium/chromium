@@ -12,6 +12,7 @@ source_set("metrics") {
     "aw_component_metrics_provider_delegate.h",
     "aw_metrics_filtering_status_metrics_provider.cc",
     "aw_metrics_filtering_status_metrics_provider.h",
+    "aw_metrics_service_accessor.cc",
     "aw_metrics_service_accessor.h",
     "aw_metrics_service_client.cc",
     "aw_metrics_service_client.h",
@@ -46,5 +47,23 @@ source_set("metrics") {
     "//components/version_info/android:channel_getter",
     "//content/public/browser",
     "//services/resource_coordinator/public/cpp/memory_instrumentation:browser",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "aw_metrics_test_utils.cc",
+    "aw_metrics_test_utils.h",
+  ]
+  deps = [
+    ":metrics",
+    "//base",
+    "//base/test:test_support",
+    "//components/metrics",
+    "//components/metrics:content",
+    "//components/prefs:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
   ]
 }

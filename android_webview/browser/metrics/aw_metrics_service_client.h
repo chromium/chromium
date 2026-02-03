@@ -133,6 +133,7 @@ class AwMetricsServiceClient
   static AwMetricsServiceClient* GetInstance();
   static void SetInstance(
       std::unique_ptr<AwMetricsServiceClient> aw_metrics_service_client);
+  static void ClearInstanceForTesting();
 
   static void RegisterMetricsPrefs(PrefRegistrySimple* registry);
   static base::FilePath GetNoBackupFilesDir();

@@ -164,6 +164,7 @@ class AwMetricsServiceClientTest : public testing::Test {
 
  protected:
   ~AwMetricsServiceClientTest() override {
+    AwMetricsServiceClient::ClearInstanceForTesting();
     // The global allocator has to be detached here so that no metrics created
     // by code called below get stored in it as that would make for potential
     // use-after-free operations if that code is called again.

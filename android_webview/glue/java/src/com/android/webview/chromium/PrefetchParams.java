@@ -19,14 +19,17 @@ public class PrefetchParams {
     public final @Nullable Map<String, String> additionalHeaders;
     public final @Nullable NoVarySearchData expectedNoVarySearch;
     public final boolean isJavascriptEnabled;
+    public final @Nullable Integer variationsId;
 
     public PrefetchParams(
             @Nullable Map<String, String> additionalHeaders,
             @Nullable NoVarySearchData expectedNoVarySearch,
-            boolean isJavascriptEnabled) {
+            boolean isJavascriptEnabled,
+            @Nullable Integer variationsId) {
         this.additionalHeaders = additionalHeaders;
         this.expectedNoVarySearch = expectedNoVarySearch;
         this.isJavascriptEnabled = isJavascriptEnabled;
+        this.variationsId = variationsId;
     }
 
     @NonNull
@@ -38,6 +41,9 @@ public class PrefetchParams {
             expectedNoVarySearch = this.expectedNoVarySearch.toAwNoVarySearchData();
         }
         return new AwPrefetchParameters(
-                this.additionalHeaders, expectedNoVarySearch, this.isJavascriptEnabled);
+                this.additionalHeaders,
+                expectedNoVarySearch,
+                this.isJavascriptEnabled,
+                this.variationsId);
     }
 }
