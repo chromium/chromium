@@ -20,35 +20,6 @@
 # }
 
 TARGET_DEVICES = {
-    'android-pixel2-perf-fyi': {
-        'jetstream2': {
-            'JetStream2': 3,
-        },
-        'speedometer2': {
-            'Speedometer2': 3,
-        },
-        'speedometer3': {
-            'Speedometer3': 3,
-        },
-        'rendering.mobile': {
-            'css_transitions_triggered_style_element': 4,
-            'canvas_animation_no_clear': 4
-        },
-    },
-    'android-pixel2-perf': {
-        'jetstream2': {
-            'JetStream2': 5,
-        },
-        'system_health.common_mobile': 3,
-        'system_health.memory_mobile': 3,
-        'startup.mobile': 10,
-        'speedometer2': {
-            'Speedometer2': 10,
-        },
-        'speedometer3': {
-            'Speedometer3': 10,
-        },
-    },
     'android-go-wembley-perf': {
         'jetstream2': {
             'JetStream2': 5,
