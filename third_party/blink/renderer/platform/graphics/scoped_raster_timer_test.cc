@@ -65,8 +65,8 @@ class ScopedRasterTimerTest : public Test {
     test_context_provider_->SharedImageInterface()->SetCapabilities(
         shared_image_caps);
 
-    InitializeSharedGpuContextRaster(test_context_provider_.get(),
-                                     &image_decode_cache_);
+    InitializeSharedGpuContext(test_context_provider_.get(),
+                               &image_decode_cache_);
     context_provider_wrapper_ = SharedGpuContext::ContextProviderWrapper();
   }
 

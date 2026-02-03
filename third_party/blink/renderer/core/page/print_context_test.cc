@@ -1090,7 +1090,7 @@ class PrintContextOOPRCanvasTest : public PrintContextTest {
         std::make_unique<ScopedAccelerated2dCanvasForTest>(true);
 
     test_context_provider_ = viz::TestContextProvider::CreateRaster();
-    InitializeSharedGpuContextRaster(test_context_provider_.get());
+    InitializeSharedGpuContext(test_context_provider_.get());
 
     PrintContextTest::SetUp();
     accelerated_compositing_scope_ = std::make_unique<

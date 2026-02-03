@@ -55,7 +55,7 @@ class VideoFrameTest : public testing::Test {
  public:
   void SetUp() override {
     test_context_provider_ = viz::TestContextProvider::CreateRaster();
-    InitializeSharedGpuContextRaster(test_context_provider_.get());
+    InitializeSharedGpuContext(test_context_provider_.get());
   }
 
   void TearDown() override { SharedGpuContext::Reset(); }

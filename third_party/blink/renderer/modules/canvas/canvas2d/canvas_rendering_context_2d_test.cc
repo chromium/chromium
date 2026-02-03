@@ -428,8 +428,8 @@ class CanvasRenderingContext2DTest : public CanvasRenderingContext2DTestBase {
  public:
   void CreateContextProvider(SetIsContextLost set_context_lost) override {
     test_context_provider_ = viz::TestContextProvider::CreateRaster();
-    InitializeSharedGpuContextRaster(test_context_provider_.get(),
-                                     /*cache=*/nullptr, set_context_lost);
+    InitializeSharedGpuContext(test_context_provider_.get(),
+                               /*cache=*/nullptr, set_context_lost);
     ConfigureContextProvider(*test_context_provider_);
   }
 };

@@ -173,7 +173,7 @@ TEST_P(HTMLCanvasElementTest, CanvasMemoryUsageGpuAccelerated) {
   GetDocument().GetSettings()->SetScriptEnabled(true);
 
   auto raster_context_provider = viz::TestContextProvider::CreateRaster();
-  InitializeSharedGpuContextRaster(raster_context_provider.get());
+  InitializeSharedGpuContext(raster_context_provider.get());
   ScopedTestingPlatformSupport<GpuCompositingTestPlatform> accelerated_platform;
   GetDocument().GetSettings()->SetAcceleratedCompositingEnabled(true);
 

@@ -66,7 +66,7 @@ class AcceleratedStaticBitmapImageTest : public Test {
  public:
   void SetUp() override {
     context_provider_ = viz::TestContextProvider::CreateRaster();
-    InitializeSharedGpuContextRaster(context_provider_.get());
+    InitializeSharedGpuContext(context_provider_.get());
   }
   void TearDown() override {
     SharedGpuContext::Reset();

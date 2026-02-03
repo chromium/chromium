@@ -41,7 +41,7 @@ class HTMLCanvasPainterTest : public PaintControllerPaintTestBase {
     accelerated_compositing_scope_ = std::make_unique<
         ScopedTestingPlatformSupport<AcceleratedCompositingTestPlatform>>();
     test_context_provider_ = viz::TestContextProvider::CreateRaster();
-    InitializeSharedGpuContextRaster(test_context_provider_.get());
+    InitializeSharedGpuContext(test_context_provider_.get());
     PaintControllerPaintTestBase::SetUp();
   }
 

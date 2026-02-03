@@ -115,8 +115,8 @@ class CanvasResourceProviderTest : public Test {
     test_context_provider_->SharedImageInterface()->SetCapabilities(
         shared_image_caps);
 
-    InitializeSharedGpuContextRaster(test_context_provider_.get(),
-                                     &image_decode_cache_);
+    InitializeSharedGpuContext(test_context_provider_.get(),
+                               &image_decode_cache_);
     context_provider_wrapper_ = SharedGpuContext::ContextProviderWrapper();
   }
 
@@ -306,9 +306,9 @@ TEST_F(CanvasResourceProviderTest,
   // conditions against the test raster interface.
   SharedGpuContext::Reset();
   auto raster_context_provider = viz::TestContextProvider::CreateRaster();
-  InitializeSharedGpuContextRaster(raster_context_provider.get(),
-                                   &image_decode_cache_,
-                                   SetIsContextLost::kSetToFalse);
+  InitializeSharedGpuContext(raster_context_provider.get(),
+                             &image_decode_cache_,
+                             SetIsContextLost::kSetToFalse);
 
   const gpu::SharedImageUsageSet shared_image_usage_flags =
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;

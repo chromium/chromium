@@ -85,7 +85,7 @@ class ImageBitmapTest : public testing::Test {
     image2_ = surface2->makeImageSnapshot();
 
     test_context_provider_ = viz::TestContextProvider::CreateRaster();
-    InitializeSharedGpuContextRaster(test_context_provider_.get());
+    InitializeSharedGpuContext(test_context_provider_.get());
   }
 
   void TearDown() override {

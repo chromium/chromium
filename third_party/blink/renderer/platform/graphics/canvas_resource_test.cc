@@ -65,7 +65,7 @@ TEST(CanvasResourceTest, PrepareTransferableResource_PreservesAlphaType) {
   auto accelerated_compositing_platform = std::make_unique<
       ScopedTestingPlatformSupport<AcceleratedCompositingTestPlatform>>();
   auto test_context_provider = viz::TestContextProvider::CreateRaster();
-  InitializeSharedGpuContextRaster(test_context_provider.get());
+  InitializeSharedGpuContext(test_context_provider.get());
 
   viz::TransferableResource resource;
   CanvasResource::ReleaseCallback release_callback;
@@ -96,7 +96,7 @@ TEST(CanvasResourceTest, PrepareTransferableResource_PreservesAlphaType) {
       &resource, &release_callback, /*needs_verified_synctoken=*/false));
   EXPECT_EQ(resource.GetAlphaType(), kUnpremul_SkAlphaType);
 
-  // InitializeSharedGpuContextRaster() requires SharedGpuContext::Reset()
+  // InitializeSharedGpuContext() requires SharedGpuContext::Reset()
   // at TearDown().
   SharedGpuContext::Reset();
 }

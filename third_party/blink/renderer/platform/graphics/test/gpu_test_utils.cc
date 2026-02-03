@@ -12,10 +12,9 @@
 
 namespace blink {
 
-void InitializeSharedGpuContextRaster(
-    viz::TestContextProvider* test_context_provider,
-    cc::ImageDecodeCache* cache,
-    SetIsContextLost set_context_lost) {
+void InitializeSharedGpuContext(viz::TestContextProvider* test_context_provider,
+                                cc::ImageDecodeCache* cache,
+                                SetIsContextLost set_context_lost) {
   auto factory = [](viz::TestRasterInterface* raster,
                     cc::ImageDecodeCache* cache,
                     viz::TestContextProvider* raster_context_provider,

@@ -17,7 +17,7 @@ namespace blink {
 
 enum class SetIsContextLost { kNotModifyValue, kSetToTrue, kSetToFalse };
 
-void InitializeSharedGpuContextRaster(
+void InitializeSharedGpuContext(
     viz::TestContextProvider* context_provider,
     cc::ImageDecodeCache* cache = nullptr,
     SetIsContextLost set_context_lost = SetIsContextLost::kNotModifyValue);

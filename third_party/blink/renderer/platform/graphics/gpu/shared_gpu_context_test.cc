@@ -101,9 +101,9 @@ class SharedGpuContextTest : public Test {
             task_runner_);
     test_context_provider_ = viz::TestContextProvider::CreateRaster();
 
-    InitializeSharedGpuContextRaster(test_context_provider_.get(),
-                                     /*cache = */ nullptr,
-                                     SetIsContextLost::kSetToFalse);
+    InitializeSharedGpuContext(test_context_provider_.get(),
+                               /*cache = */ nullptr,
+                               SetIsContextLost::kSetToFalse);
   }
 
   void TearDown() override {

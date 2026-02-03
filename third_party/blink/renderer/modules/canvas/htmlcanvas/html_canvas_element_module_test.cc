@@ -163,7 +163,7 @@ TEST_P(HTMLCanvasElementModuleTest, LowLatencyCanvasCompositorFrameOpacity) {
 
   context_provider->UnboundTestRasterInterface()->set_supports_mappable_format(
       format, true);
-  InitializeSharedGpuContextRaster(context_provider.get());
+  InitializeSharedGpuContext(context_provider.get());
 
   // To intercept SubmitCompositorFrame messages sent by a canvas's
   // CanvasResourceDispatcher, we have to override the Mojo

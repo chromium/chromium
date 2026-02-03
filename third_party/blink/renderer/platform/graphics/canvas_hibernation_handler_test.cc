@@ -99,7 +99,7 @@ class CanvasHibernationHandlerTest
 
   void SetUp() override {
     test_context_provider_ = viz::TestContextProvider::CreateRaster();
-    InitializeSharedGpuContextRaster(test_context_provider_.get());
+    InitializeSharedGpuContext(test_context_provider_.get());
 
     // Make sure that we can count tasks correctly in the tests.
     task_environment_.FastForwardUntilNoTasksRemain();

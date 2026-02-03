@@ -25,7 +25,7 @@ class StaticBitmapImageTransformTest : public ::testing::Test {
     test_sii_ = base::MakeRefCounted<gpu::TestSharedImageInterface>();
     SharedGpuContext::Reset();
     test_context_provider_ = viz::TestContextProvider::CreateRaster();
-    InitializeSharedGpuContextRaster(test_context_provider_.get());
+    InitializeSharedGpuContext(test_context_provider_.get());
   }
 
   scoped_refptr<AcceleratedStaticBitmapImage> CreateAccelerated(
