@@ -1200,7 +1200,8 @@ public class ToolbarManager
                         historyDelegate,
                         topControlsStacker,
                         mTabStripTopControlLayer,
-                        homeButtonDisplay);
+                        homeButtonDisplay,
+                        profileSupplier);
         mActionModeController =
                 new ActionModeController(
                         mActivity,
@@ -1964,7 +1965,8 @@ public class ToolbarManager
             HistoryDelegate historyDelegate,
             TopControlsStacker topControlsStacker,
             TabStripTopControlLayer tabStripTopControlLayer,
-            @Nullable HomeButtonDisplay homeButtonDisplay) {
+            @Nullable HomeButtonDisplay homeButtonDisplay,
+            MonotonicObservableSupplier<Profile> profileSupplier) {
         TopToolbarCoordinator toolbar =
                 new TopToolbarCoordinator(
                         controlContainer,
@@ -2002,7 +2004,8 @@ public class ToolbarManager
                         homeButtonDisplay,
                         topControlsStacker,
                         mBrowserControlsSizer,
-                        () -> MultiWindowUtils.getIncognitoInstanceCount(/* activeOnly= */ true));
+                        () -> MultiWindowUtils.getIncognitoInstanceCount(/* activeOnly= */ true),
+                        profileSupplier);
 
         mHomepageStateListener =
                 () -> {

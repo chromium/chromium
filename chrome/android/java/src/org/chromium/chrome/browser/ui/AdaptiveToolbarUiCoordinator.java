@@ -53,6 +53,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.commerce.core.CommerceFeatureUtils;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -126,8 +127,6 @@ public class AdaptiveToolbarUiCoordinator {
         mProfileSupplier = profileSupplier;
         mScrimSupplier = scrimSupplier;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
-        IdentityDiscController identityDiscController =
-                new IdentityDiscController(mContext, profileSupplier);
         mCurrentTabPriceTrackingStateSupplier =
                 new CurrentTabPriceTrackingStateSupplier(
                         mActivityTabProvider.asObservable(), profileSupplier);
@@ -225,7 +224,14 @@ public class AdaptiveToolbarUiCoordinator {
                         bookmarkModelSupplier);
         mAdaptiveToolbarButtonController = adaptiveToolbarButtonController;
         toolbarBehavior.registerPerSurfaceButtons(adaptiveToolbarButtonController, trackerSupplier);
-        mButtonDataProviders = List.of(identityDiscController, adaptiveToolbarButtonController);
+
+        if (SigninFeatureMap.sSigninLevelUpButton.isEnabled()) {
+            mButtonDataProviders = List.of(adaptiveToolbarButtonController);
+        } else {
+            IdentityDiscController identityDiscController =
+                    new IdentityDiscController(mContext, profileSupplier);
+            mButtonDataProviders = List.of(identityDiscController, adaptiveToolbarButtonController);
+        }
     }
 
     /**
