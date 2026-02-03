@@ -91,8 +91,6 @@ extern const base::FeatureParam<bool> kShowSmartCompose;
 extern const base::FeatureParam<bool> kShowSubmit;
 // Whether to show the tools and models in the composebox.
 extern const base::FeatureParam<bool> kShowToolsAndModels;
-// Whether to show canvas in the composebox.
-extern const base::FeatureParam<bool> kShowCanvas;
 // Whether to show the model picker in the composebox.
 extern const base::FeatureParam<bool> kShowModelPicker;
 // Whether to show section headers in the context menu.

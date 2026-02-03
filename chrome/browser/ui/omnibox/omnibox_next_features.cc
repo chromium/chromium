@@ -339,9 +339,6 @@ const base::FeatureParam<bool> kShowToolsAndModels(
     &internal::kWebUIOmniboxAimPopup,
     "ShowToolsAndModels",
     true);
-const base::FeatureParam<bool> kShowCanvas(&internal::kWebUIOmniboxAimPopup,
-                                           "ShowCanvas",
-                                           false);
 const base::FeatureParam<bool> kShowModelPicker(
     &internal::kWebUIOmniboxAimPopup,
     "ShowModelPicker",

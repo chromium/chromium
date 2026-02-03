@@ -121,7 +121,6 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       // AIM composebox where the entrypoint is always visible.
       hideEntrypointButton: {type: Boolean},
       inComposebox: {type: Boolean},
-      showCanvas: {type: Boolean},
       showModelPicker: {type: Boolean},
 
       // =========================================================================
@@ -171,7 +170,6 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   accessor contextMenuGlifAnimationState: GlifAnimationState =
       GlifAnimationState.INELIGIBLE;
   accessor inComposebox: boolean = false;
-  accessor showCanvas: boolean = false;
   accessor showModelPicker: boolean = false;
   accessor isOmniboxInCompactMode_: boolean = false;
 
