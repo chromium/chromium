@@ -1,6 +1,7 @@
 include_rules = [
   "+chromeos/crosapi",
   "+gpu/command_buffer/client",
+  "+gpu/config",
   "+gpu/ipc/client/client_shared_image_interface.h",
   "+media/base",
   "+media/device_monitors",

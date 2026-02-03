@@ -22,6 +22,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
+#include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "media/base/bitrate.h"
 #include "media/base/media_log.h"
 #include "media/base/video_encoder.h"
@@ -44,8 +45,9 @@ class REQUIRES_ANDROID_API(NDK_MEDIA_CODEC_MIN_API) MEDIA_GPU_EXPORT
  public:
   // |runner| - a task runner that will be used for all callbacks and external
   // calls to this instance.
-  explicit NdkVideoEncodeAccelerator(
-      scoped_refptr<base::SequencedTaskRunner> runner);
+  NdkVideoEncodeAccelerator(
+      scoped_refptr<base::SequencedTaskRunner> runner,
+      const gpu::GpuDriverBugWorkarounds& gpu_workarounds);
 
   NdkVideoEncodeAccelerator(const NdkVideoEncodeAccelerator&) = delete;
   NdkVideoEncodeAccelerator& operator=(const NdkVideoEncodeAccelerator&) =
@@ -259,6 +261,9 @@ class REQUIRES_ANDROID_API(NDK_MEDIA_CODEC_MIN_API) MEDIA_GPU_EXPORT
 
   raw_ptr<gpu::SharedImageManager> shared_image_manager_ = nullptr;
   gpu::MemoryTypeTracker memory_type_tracker_{nullptr};
+
+  // The GPU driver bug workarounds.
+  const gpu::GpuDriverBugWorkarounds gpu_workarounds_;
 
   base::WeakPtrFactory<NdkVideoEncodeAccelerator> weak_ptr_factory_{this};
 };

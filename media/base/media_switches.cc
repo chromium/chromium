@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "components/system_media_controls/linux/buildflags/buildflags.h"
+#include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "media/media_buildflags.h"
 #include "ui/gl/gl_features.h"
@@ -1569,6 +1570,14 @@ BASE_FEATURE(kHeadlessLiveCaption, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Allows per-site special processing for media links.
 BASE_FEATURE(kMediaLinkHelpers, base::FEATURE_ENABLED_BY_DEFAULT);
+
+#if BUILDFLAG(IS_ANDROID)
+bool IsAndroidZeroCopyVideoCaptureEnabled(
+    const gpu::GpuDriverBugWorkarounds& gpu_workarounds) {
+  return !gpu_workarounds.disable_android_zero_copy_video_capture &&
+         base::FeatureList::IsEnabled(media::kAndroidZeroCopyVideoCapture);
+}
+#endif
 
 bool IsChromeWideEchoCancellationEnabled() {
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)

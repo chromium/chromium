@@ -78,9 +78,10 @@ std::unique_ptr<VideoEncodeAccelerator> CreateVaapiVEA() {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-std::unique_ptr<VideoEncodeAccelerator> CreateAndroidVEA() {
+std::unique_ptr<VideoEncodeAccelerator> CreateAndroidVEA(
+    const gpu::GpuDriverBugWorkarounds& gpu_workarounds) {
   return base::WrapUnique<VideoEncodeAccelerator>(new NdkVideoEncodeAccelerator(
-      base::SequencedTaskRunner::GetCurrentDefault()));
+      base::SequencedTaskRunner::GetCurrentDefault(), gpu_workarounds));
 }
 #endif
 
@@ -183,7 +184,8 @@ std::vector<VEAFactoryFunction> GetVEAFactoryFunctions(
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-  vea_factory_functions->push_back(base::BindRepeating(&CreateAndroidVEA));
+  vea_factory_functions->push_back(
+      base::BindRepeating(&CreateAndroidVEA, gpu_workarounds));
 #endif
 #if BUILDFLAG(IS_MAC)
   vea_factory_functions->push_back(base::BindRepeating(&CreateVTVEA));

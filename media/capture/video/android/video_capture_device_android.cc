@@ -116,9 +116,11 @@ void notifyVideoCaptureDeviceChanged() {
 }  // anonymous namespace
 
 VideoCaptureDeviceAndroid::VideoCaptureDeviceAndroid(
-    const VideoCaptureDeviceDescriptor& device_descriptor)
+    const VideoCaptureDeviceDescriptor& device_descriptor,
+    const gpu::GpuDriverBugWorkarounds& gpu_workarounds)
     : main_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
-      device_descriptor_(device_descriptor) {}
+      device_descriptor_(device_descriptor),
+      gpu_workarounds_(gpu_workarounds) {}
 
 VideoCaptureDeviceAndroid::~VideoCaptureDeviceAndroid() {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
@@ -148,7 +150,7 @@ void VideoCaptureDeviceAndroid::AllocateAndStart(
   }
 
   bool enable_hardware_buffer_capture =
-      base::FeatureList::IsEnabled(media::kAndroidZeroCopyVideoCapture);
+      media::IsAndroidZeroCopyVideoCaptureEnabled(gpu_workarounds_);
 
   JNIEnv* env = AttachCurrentThread();
   bool ret = Java_VideoCapture_allocate(

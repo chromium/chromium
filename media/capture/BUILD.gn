@@ -154,6 +154,7 @@ component("capture_lib") {
   deps = [
     "//base",
     "//base:i18n",
+    "//gpu/config",
     "//media",
     "//media/capture/mojom:image_capture",
     "//media/capture/mojom:image_capture_types",

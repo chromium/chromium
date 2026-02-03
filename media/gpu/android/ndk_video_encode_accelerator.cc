@@ -522,12 +522,14 @@ NdkVideoEncodeAccelerator::PendingEncode&
 NdkVideoEncodeAccelerator::PendingEncode::operator=(PendingEncode&&) = default;
 
 NdkVideoEncodeAccelerator::NdkVideoEncodeAccelerator(
-    scoped_refptr<base::SequencedTaskRunner> runner)
+    scoped_refptr<base::SequencedTaskRunner> runner,
+    const gpu::GpuDriverBugWorkarounds& gpu_workarounds)
     : task_runner_(std::move(runner)),
       // We just need an arbitrary non-zero value for the first timestamp
       // due to issues with EGL surface path.
       next_timestamp_(base::TimeTicks::Now().since_origin()),
-      use_surface_as_input_(ShouldUseSurfaceInput()) {}
+      use_surface_as_input_(ShouldUseSurfaceInput()),
+      gpu_workarounds_(gpu_workarounds) {}
 
 NdkVideoEncodeAccelerator::~NdkVideoEncodeAccelerator() {
   // It's supposed to be cleared by Destroy(), it basically checks
@@ -548,7 +550,7 @@ NdkVideoEncodeAccelerator::GetSupportedSharedImagePixelFormats() {
       // If kVulkanFromANGLE = true (e.g. Desktop Android)
       // we we get shared images with AngleVulkanImageBacking, NDK VEA can't
       // handle such shared images yet.
-      if (base::FeatureList::IsEnabled(media::kAndroidZeroCopyVideoCapture)) {
+      if (media::IsAndroidZeroCopyVideoCaptureEnabled(gpu_workarounds_)) {
         // If zero-copy camera capture is enabled, let's allow XBGR shared
         // images for testing, even though it breaks the canvas copy case.
         return {PIXEL_FORMAT_XBGR};
@@ -558,7 +560,7 @@ NdkVideoEncodeAccelerator::GetSupportedSharedImagePixelFormats() {
     return {PIXEL_FORMAT_ABGR, PIXEL_FORMAT_XBGR};
   }
 
-  if (base::FeatureList::IsEnabled(media::kAndroidZeroCopyVideoCapture)) {
+  if (media::IsAndroidZeroCopyVideoCaptureEnabled(gpu_workarounds_)) {
     return {PIXEL_FORMAT_ABGR, PIXEL_FORMAT_XBGR};
   }
   return {};

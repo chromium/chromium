@@ -9,6 +9,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/flat_map.h"
+#include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "media/capture/video/android/camera_availability_observer.h"
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video/video_capture_device_factory.h"
@@ -24,7 +25,8 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryAndroid
       int id,
       int64_t nativeVideoCaptureDeviceAndroid);
 
-  VideoCaptureDeviceFactoryAndroid();
+  explicit VideoCaptureDeviceFactoryAndroid(
+      const gpu::GpuDriverBugWorkarounds& gpu_workarounds);
 
   VideoCaptureDeviceFactoryAndroid(const VideoCaptureDeviceFactoryAndroid&) =
       delete;
@@ -54,6 +56,8 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryAndroid
   // an actively used camera is opened again (see https://crbug.com/1138608).
   base::flat_map<std::string, VideoCaptureFormats> supported_formats_cache_;
   base::flat_map<std::string, bool> zooms_cache_;
+
+  const gpu::GpuDriverBugWorkarounds gpu_workarounds_;
 
   CameraAvailabilityObserver camera_availability_observer_;
 };

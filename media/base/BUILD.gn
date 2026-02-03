@@ -415,6 +415,7 @@ source_set("base") {
     "//gpu/command_buffer/client:interface_base",
     "//gpu/command_buffer/client:raster_interface",
     "//gpu/command_buffer/common",
+    "//gpu/config",
     "//gpu/ipc/common",
     "//media/cdm:clear_key_cdm_common",
     "//net",

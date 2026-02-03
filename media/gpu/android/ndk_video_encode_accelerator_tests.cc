@@ -433,7 +433,7 @@ class NdkVideoEncoderAcceleratorTest
   std::unique_ptr<VideoEncodeAccelerator> MakeNdkAccelerator() {
     auto runner = task_environment_.GetMainThreadTaskRunner();
     return base::WrapUnique<VideoEncodeAccelerator>(
-        new NdkVideoEncodeAccelerator(runner));
+        new NdkVideoEncodeAccelerator(runner, gpu::GpuDriverBugWorkarounds()));
   }
 
   void SetCommandBufferHelper() {
@@ -671,6 +671,26 @@ TEST_P(NdkVideoEncoderAcceleratorTest, InitializeAndDestroy) {
   EXPECT_GE(id_to_buffer_.size(), 1u);
   accelerator_.reset();
   EXPECT_FALSE(error_status_.has_value());
+}
+
+TEST_P(NdkVideoEncoderAcceleratorTest, WorkaroundDisablesZeroCopy) {
+  if (!GetParam().use_shared_image || GetParam().use_gl_surface) {
+    GTEST_SKIP() << "Test only relevant for shared image input without surface";
+  }
+
+  std::vector<int32_t> workaround_list;
+  workaround_list.push_back(gpu::DISABLE_ANDROID_ZERO_COPY_VIDEO_CAPTURE);
+  gpu::GpuDriverBugWorkarounds workarounds(workaround_list);
+
+  auto runner = task_environment_.GetMainThreadTaskRunner();
+  auto accelerator =
+      std::make_unique<NdkVideoEncodeAccelerator>(runner, workarounds);
+
+  auto profiles = accelerator->GetSupportedProfiles();
+  for (const auto& profile : profiles) {
+    EXPECT_FALSE(profile.supports_gpu_shared_images);
+    EXPECT_TRUE(profile.gpu_supported_pixel_formats.empty());
+  }
 }
 
 TEST_P(NdkVideoEncoderAcceleratorTest, HandleEncodingError) {

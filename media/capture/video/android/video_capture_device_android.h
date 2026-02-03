@@ -17,6 +17,7 @@
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
+#include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "media/capture/capture_export.h"
 #include "media/capture/video/video_capture_device.h"
 
@@ -71,8 +72,9 @@ class CAPTURE_EXPORT VideoCaptureDeviceAndroid : public VideoCaptureDevice {
 
   VideoCaptureDeviceAndroid() = delete;
 
-  explicit VideoCaptureDeviceAndroid(
-      const VideoCaptureDeviceDescriptor& device_descriptor);
+  VideoCaptureDeviceAndroid(
+      const VideoCaptureDeviceDescriptor& device_descriptor,
+      const gpu::GpuDriverBugWorkarounds& gpu_workarounds);
 
   VideoCaptureDeviceAndroid(const VideoCaptureDeviceAndroid&) = delete;
   VideoCaptureDeviceAndroid& operator=(const VideoCaptureDeviceAndroid&) =
@@ -220,6 +222,8 @@ class CAPTURE_EXPORT VideoCaptureDeviceAndroid : public VideoCaptureDevice {
 
   // Java VideoCaptureAndroid instance.
   base::android::ScopedJavaLocalRef<jobject> j_capture_;
+
+  const gpu::GpuDriverBugWorkarounds gpu_workarounds_;
 
   base::WeakPtrFactory<VideoCaptureDeviceAndroid> weak_ptr_factory_{this};
 };

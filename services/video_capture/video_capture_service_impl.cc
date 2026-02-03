@@ -12,6 +12,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
+#include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/ipc/client/client_shared_image_interface.h"
 #include "media/capture/video/create_video_capture_device_factory.h"
 #include "media/capture/video/fake_video_capture_device_factory.h"
@@ -144,6 +145,20 @@ class VideoCaptureServiceImpl::VizGpuContextProvider
 
     // Notify context lost after new context ready.
     media::VideoCaptureGpuChannelHost::GetInstance().OnContextLost();
+  }
+
+  gpu::GpuDriverBugWorkarounds GetGpuDriverBugWorkarounds() {
+    if (!viz_gpu_) {
+      return gpu::GpuDriverBugWorkarounds();
+    }
+    scoped_refptr<gpu::GpuChannelHost> gpu_channel_host =
+        viz_gpu_->GetGpuChannel();
+    if (!gpu_channel_host) {
+      return gpu::GpuDriverBugWorkarounds();
+    }
+    return gpu::GpuDriverBugWorkarounds(
+        gpu_channel_host->gpu_feature_info()
+            .enabled_gpu_driver_bug_workarounds);
   }
 
  private:
@@ -313,8 +328,18 @@ void VideoCaptureServiceImpl::LazyInitializeDeviceFactory() {
   // The task runner passed to CreateFactory is used for things that need to
   // happen on a "UI thread equivalent", e.g. obtaining screen rotation on
   // Chrome OS.
+  gpu::GpuDriverBugWorkarounds* gpu_workarounds_ptr = nullptr;
+#if BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE)
+  gpu::GpuDriverBugWorkarounds gpu_workarounds;
+  if (viz_gpu_context_provider_) {
+    gpu_workarounds = viz_gpu_context_provider_->GetGpuDriverBugWorkarounds();
+  }
+  gpu_workarounds_ptr = &gpu_workarounds;
+#endif
+
   std::unique_ptr<media::VideoCaptureDeviceFactory> media_device_factory =
-      media::CreateVideoCaptureDeviceFactory(ui_task_runner_);
+      media::CreateVideoCaptureDeviceFactory(ui_task_runner_,
+                                             gpu_workarounds_ptr);
 
   auto video_capture_system = std::make_unique<media::VideoCaptureSystemImpl>(
       std::move(media_device_factory));

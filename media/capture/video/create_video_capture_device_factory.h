@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/task/single_thread_task_runner.h"
+#include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "media/capture/capture_export.h"
 #include "media/capture/video/video_capture_device_factory.h"
 
@@ -17,7 +18,8 @@ bool CAPTURE_EXPORT ShouldUseFakeVideoCaptureDeviceFactory();
 
 std::unique_ptr<VideoCaptureDeviceFactory> CAPTURE_EXPORT
 CreateVideoCaptureDeviceFactory(
-    scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner);
+    scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
+    gpu::GpuDriverBugWorkarounds* gpu_workarounds = nullptr);
 
 }  // namespace media
 
