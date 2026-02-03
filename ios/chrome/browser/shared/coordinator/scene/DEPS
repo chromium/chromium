@@ -25,6 +25,7 @@ include_rules = [
   "+ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h",
   "+ios/chrome/browser/mailto_handler/model",
   "+ios/chrome/browser/main/model",
+  "+ios/chrome/browser/main/ui",
   "+ios/chrome/browser/main/ui_bundled",
   "+ios/chrome/browser/metrics/model",
   "+ios/chrome/browser/ntp/model",

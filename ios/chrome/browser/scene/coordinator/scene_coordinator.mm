@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/history/ui_bundled/history_coordinator_impl.h"
 #import "ios/chrome/browser/incognito_interstitial/ui_bundled/incognito_interstitial_coordinator.h"
 #import "ios/chrome/browser/incognito_interstitial/ui_bundled/incognito_interstitial_coordinator_delegate.h"
+#import "ios/chrome/browser/main/ui/browser_layout_view_controller.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/policy/model/policy_watcher_browser_agent.h"
 #import "ios/chrome/browser/policy/model/policy_watcher_browser_agent_observer_bridge.h"
@@ -218,12 +219,13 @@ void RecordIfNeededSigninFullscreenPromoEvent(
   [_tabGridCoordinator showTabGridPage:page];
 }
 
-- (void)showTabViewController:(UIViewController*)viewController
-                    incognito:(BOOL)incognito
-                   completion:(ProceduralBlock)completion {
-  [_tabGridCoordinator showTabViewController:viewController
-                                   incognito:incognito
-                                  completion:completion];
+- (void)showBrowserLayoutViewController:
+            (BrowserLayoutViewController*)viewController
+                              incognito:(BOOL)incognito
+                             completion:(ProceduralBlock)completion {
+  [_tabGridCoordinator showBrowserLayoutViewController:viewController
+                                             incognito:incognito
+                                            completion:completion];
 }
 
 - (void)setActiveMode:(TabGridMode)mode {

@@ -146,6 +146,7 @@
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_coordinator.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_view_finder_coordinator.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
+#import "ios/chrome/browser/main/ui/browser_layout_view_controller.h"
 #import "ios/chrome/browser/metrics/model/tab_usage_recorder_browser_agent.h"
 #import "ios/chrome/browser/mini_map/coordinator/mini_map_coordinator.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
@@ -1237,6 +1238,9 @@ const char kChromeAppStoreUrl[] =
   self.contextMenuProvider = [[ContextMenuConfigurationProvider alloc]
          initWithBrowser:browser
       baseViewController:_viewController];
+  _browserLayoutViewController = [[BrowserLayoutViewController alloc] init];
+  _browserLayoutViewController.incognito =
+      browser->GetProfile()->IsOffTheRecord();
 }
 
 // Shuts down the BrowserViewController.
@@ -1251,6 +1255,7 @@ const char kChromeAppStoreUrl[] =
   [self.dispatcher stopDispatchingToTarget:_viewController];
   [_viewController shutdown];
   _viewController = nil;
+  _browserLayoutViewController = nil;
 }
 
 // Ensure BrowserViewController's view is created
@@ -1508,6 +1513,7 @@ const char kChromeAppStoreUrl[] =
 
   [_dispatcher startDispatchingToTarget:viewController
                             forProtocol:@protocol(BrowserCommands)];
+  _browserLayoutViewController.currentBVC = viewController;
 }
 
 // Destroys the browser view controller dependencies.

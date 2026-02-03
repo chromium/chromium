@@ -62,7 +62,8 @@
        tabGridTransitionLayoutProvider:
            (id<TabGridTransitionLayoutProviding>)tabGridTransitionLayoutProvider
                  tabGridViewController:(UIViewController*)tabGridViewController
-                  layoutViewController:(UIViewController*)layoutViewController
+           browserLayoutViewController:
+               (UIViewController*)browserLayoutViewController
                      layoutGuideCenter:(LayoutGuideCenter*)layoutGuideCenter
                    isRegularBrowserNTP:(BOOL)isRegularBrowserNTP
                              incognito:(BOOL)incognito {
@@ -74,7 +75,7 @@
     _direction = direction;
     _tabGridTransitionLayoutProvider = tabGridTransitionLayoutProvider;
     _tabGridViewController = tabGridViewController;
-    _browserLayoutViewController = layoutViewController;
+    _browserLayoutViewController = browserLayoutViewController;
     _tabGridCellItem = transitionLayout.activeCell;
     _activeGrid = transitionLayout.activeGrid;
     _pinnedTabsViewController = transitionLayout.pinnedTabs;

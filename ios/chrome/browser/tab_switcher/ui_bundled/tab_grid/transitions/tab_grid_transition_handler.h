@@ -38,7 +38,8 @@ enum class TabGridTransitionType {
        tabGridTransitionLayoutProvider:
            (id<TabGridTransitionLayoutProviding>)tabGridTransitionLayoutProvider
                  tabGridViewController:(UIViewController*)tabGridViewController
-                  layoutViewController:(UIViewController*)layoutViewController
+           browserLayoutViewController:
+               (UIViewController*)browserLayoutViewController
                      layoutGuideCenter:(LayoutGuideCenter*)layoutGuideCenter
                    isRegularBrowserNTP:(BOOL)isRegularBrowserNTP
                              incognito:(BOOL)incognito

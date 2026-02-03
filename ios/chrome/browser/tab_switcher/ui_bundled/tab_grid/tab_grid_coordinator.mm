@@ -239,7 +239,8 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 @property(nonatomic, strong) CommandDispatcher* dispatcher;
 // Container view controller for the BVC to live in; this class's view
 // controller will present this.
-@property(nonatomic, strong) BrowserLayoutViewController* layoutViewController;
+@property(nonatomic, weak)
+    BrowserLayoutViewController* browserLayoutViewController;
 // Handler for the transitions between the TabGrid and the Browser.
 @property(nonatomic, strong)
     LegacyTabGridTransitionHandler* legacyTransitionHandler;
@@ -401,14 +402,14 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 }
 
 - (UIViewController*)activeViewController {
-  if (self.layoutViewController) {
-    return self.layoutViewController.currentBVC;
+  if (self.browserLayoutViewController) {
+    return self.browserLayoutViewController.currentBVC;
   }
   return self.baseViewController;
 }
 
 - (BOOL)isTabGridActive {
-  return self.layoutViewController == nil && !self.firstPresentation;
+  return self.browserLayoutViewController == nil && !self.firstPresentation;
 }
 
 - (void)showTabGridPage:(TabGridPage)page {
@@ -544,7 +545,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
   // If a BVC is currently being presented, dismiss it.  This will trigger any
   // necessary animations.
-  if (self.layoutViewController) {
+  if (self.browserLayoutViewController) {
     [self.baseViewController contentWillAppearAnimated:animated];
     // This is done with a dispatch to make sure that the view isn't added to
     // the view hierarchy right away, as it is not the expectations of the
@@ -571,10 +572,11 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   [self.priceCardMediator logMetrics:TAB_SWITCHER];
 }
 
-- (void)showTabViewController:(UIViewController*)viewController
-                    incognito:(BOOL)incognito
-                   completion:(ProceduralBlock)completion {
-  DCHECK(viewController || self.layoutViewController);
+- (void)showBrowserLayoutViewController:
+            (BrowserLayoutViewController*)viewController
+                              incognito:(BOOL)incognito
+                             completion:(ProceduralBlock)completion {
+  DCHECK(viewController || self.browserLayoutViewController);
 
   SceneState* sceneState = self.regularBrowser->GetSceneState();
   sceneState.tabGridState.tabGridVisible = NO;
@@ -605,11 +607,27 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   sceneState.window.overrideUserInterfaceStyle =
       UIUserInterfaceStyleUnspecified;
 
-  // If another BVC is already being presented, swap this one into the
-  // container.
-  if (self.layoutViewController) {
-    self.layoutViewController.currentBVC = viewController;
-    self.layoutViewController.incognito = incognito;
+  BOOL wasTabGridVisible = sceneState.tabGridState.tabGridVisible;
+  sceneState.tabGridState.tabGridVisible = NO;
+
+  // If another browserLayoutViewController is already being presented, swap
+  // this one into the container.
+  if (self.browserLayoutViewController && !wasTabGridVisible) {
+    if (self.browserLayoutViewController != viewController) {
+      // When swapping between browsers (e.g. Regular <-> Incognito)
+      // without going through the tab grid, we must manually swap the
+      // container views in the hierarchy.
+      CGRect frame = self.browserLayoutViewController.view.frame;
+      [self.browserLayoutViewController.view removeFromSuperview];
+      [self.browserLayoutViewController removeFromParentViewController];
+
+      self.browserLayoutViewController = viewController;
+
+      [self.baseViewController addChildViewController:viewController];
+      viewController.view.frame = frame;
+      [self.baseViewController.view addSubview:viewController.view];
+      [viewController didMoveToParentViewController:self.baseViewController];
+    }
     self.baseViewController.childViewControllerForStatusBarStyle =
         viewController;
     [self.baseViewController setNeedsStatusBarAppearanceUpdate];
@@ -619,12 +637,10 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
     return;
   }
 
-  self.layoutViewController = [[BrowserLayoutViewController alloc] init];
-  self.layoutViewController.currentBVC = viewController;
-  self.layoutViewController.incognito = incognito;
+  self.browserLayoutViewController = viewController;
   // Set fallback presenter, because currentBVC can be nil if the tab grid is
   // up but no tabs exist in current page.
-  self.layoutViewController.fallbackPresenterViewController =
+  self.browserLayoutViewController.fallbackPresenterViewController =
       self.baseViewController;
 
   BOOL animated = !self.animationsDisabledForTesting;
@@ -655,14 +671,12 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
     // the animation can start from the correct cell. Once the animation is
     // complete, reset the tab grid mode.
     [self setActiveMode:TabGridMode::kNormal];
-    Browser* browser = self.layoutViewController.incognito
-                           ? self.incognitoBrowser
-                           : self.regularBrowser;
+    Browser* browser = incognito ? self.incognitoBrowser : self.regularBrowser;
     if (!GetFirstResponderInWindowScene(
             self.baseViewController.view.window.windowScene) &&
         !FindNavigatorShouldBePresentedInBrowser(browser)) {
       // It is possible to already have a first responder (for example the
-      [self.layoutViewController.currentBVC becomeFirstResponder];
+      [self.browserLayoutViewController.currentBVC becomeFirstResponder];
     }
     if (completion) {
       completion();
@@ -671,7 +685,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   };
 
   self.baseViewController.childViewControllerForStatusBarStyle =
-      self.layoutViewController.currentBVC;
+      self.browserLayoutViewController.currentBVC;
 
   [self.baseViewController contentWillDisappearAnimated:animated];
 
@@ -753,7 +767,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                             direction:direction
       tabGridTransitionLayoutProvider:self
                 tabGridViewController:self.baseViewController
-                 layoutViewController:self.layoutViewController
+          browserLayoutViewController:self.browserLayoutViewController
                     layoutGuideCenter:LayoutGuideCenterForBrowser(browser)
                   isRegularBrowserNTP:isRegularBrowserNTP
                             incognito:isIncognito];
@@ -796,20 +810,21 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                                                toTabGroup:(BOOL)toTabGroup
                                                completion:
                                                    (ProceduralBlock)completion {
-  if (!self.layoutViewController) {
+  if (!self.browserLayoutViewController) {
     // It is possible that the Grid is presented twice in a row. Because the
     // detection of "the Browser is visible" is based on a null check of
-    // `self.layoutViewController` which is nullified at the end of the
+    // `self.browserLayoutViewController` which is nullified at the end of the
     // animation, so two animations could be started in a short sequence.
     return;
   }
   self.legacyTransitionHandler =
       [self createTransitionHanlderWithAnimationEnabled:animationEnabled];
-  [self.legacyTransitionHandler transitionFromBrowser:self.layoutViewController
-                                            toTabGrid:self.baseViewController
-                                           toTabGroup:toTabGroup
-                                           activePage:activePage
-                                       withCompletion:completion];
+  [self.legacyTransitionHandler
+      transitionFromBrowser:self.browserLayoutViewController
+                  toTabGrid:self.baseViewController
+                 toTabGroup:toTabGroup
+                 activePage:activePage
+             withCompletion:completion];
 }
 
 // Performs the legacy Tab Grid to Browser transition.
@@ -821,17 +836,18 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                                                    (ProceduralBlock)completion {
   self.legacyTransitionHandler =
       [self createTransitionHanlderWithAnimationEnabled:animationEnabled];
-  [self.legacyTransitionHandler transitionFromTabGrid:self.baseViewController
-                                            toBrowser:self.layoutViewController
-                                           activePage:activePage
-                                       withCompletion:completion];
+  [self.legacyTransitionHandler
+      transitionFromTabGrid:self.baseViewController
+                  toBrowser:self.browserLayoutViewController
+                 activePage:activePage
+             withCompletion:completion];
 }
 
 // Called when the transition from Browser to Tab Grid is complete and whether
 // it `shouldDisplayBringAndroidTabsPrompt`.
 - (void)transitionToGridCompleteForAndroidTabsPrompt:
     (BOOL)shouldDisplayBringAndroidTabsPrompt {
-  self.layoutViewController = nil;
+  self.browserLayoutViewController = nil;
   _frameWhenEntering = self.baseViewController.view.frame;
   [self.baseViewController contentDidAppear];
 
@@ -1793,7 +1809,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                (SnackbarCoordinator*)snackbarCoordinator
                                                 forceBrowserToolbar:
                                                     (BOOL)forceBrowserToolbar {
-  if (!self.layoutViewController.currentBVC) {
+  if (!self.browserLayoutViewController.currentBVC) {
     // The tab grid is being show so use tab grid bottom bar.
     // kTabGridBottomToolbarGuide is stored in the shared layout guide center.
     UIView* tabGridBottomToolbarView = [LayoutGuideCenterForBrowser(nil)
@@ -1802,9 +1818,9 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   }
 
   if (!forceBrowserToolbar &&
-      self.layoutViewController.currentBVC.presentedViewController) {
+      self.browserLayoutViewController.currentBVC.presentedViewController) {
     UIViewController* presentedViewController =
-        self.layoutViewController.currentBVC.presentedViewController;
+        self.browserLayoutViewController.currentBVC.presentedViewController;
 
     // When the presented view is a navigation controller, return the navigation
     // controller's toolbar height.
@@ -1846,7 +1862,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 #pragma mark - TabGroupPositioner
 
 - (UIView*)viewAboveTabGroup {
-  return self.layoutViewController.view;
+  return self.browserLayoutViewController.view;
 }
 
 #pragma mark - LegacyGridTransitionAnimationLayoutProviding

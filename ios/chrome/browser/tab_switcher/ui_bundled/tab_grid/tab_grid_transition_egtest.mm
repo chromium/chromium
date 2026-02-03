@@ -43,7 +43,7 @@ namespace {
 
 // Hides the tab switcher by tapping the switcher button.  Works on both phone
 // and tablet.
-void ShowTabViewController() {
+void HideTabGrid() {
   id<GREYMatcher> matcher = TabGridDoneButton();
   [[EarlGrey selectElementWithMatcher:matcher] performAction:grey_tap()];
 }
@@ -182,7 +182,7 @@ void ExpectIdleHistogramBucketCount(const char* histogram,
 
   // Enter and leave the switcher.
   [ChromeEarlGrey showTabSwitcher];
-  ShowTabViewController();
+  HideTabGrid();
 
   ExpectIdleHistogramCount(kUMATabSwitcherIdleTabGroupsHistogram, 0);
   ExpectIdleHistogramCount(kUMATabSwitcherIdleIncognitoTabGridPageHistogram, 0);
@@ -613,7 +613,7 @@ void ExpectIdleHistogramBucketCount(const char* histogram,
   [[EarlGrey selectElementWithMatcher:TabGridSearchCancelButton()]
       performAction:grey_tap()];
   // Leave switcher by tap "Done" button.
-  ShowTabViewController();
+  HideTabGrid();
 
   ExpectIdleHistogramCount(kUMATabSwitcherIdleTabGroupsHistogram, 0);
   ExpectIdleHistogramCount(kUMATabSwitcherIdleIncognitoTabGridPageHistogram, 0);
@@ -641,7 +641,7 @@ void ExpectIdleHistogramBucketCount(const char* histogram,
       performAction:grey_tap()];
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:TabGridDoneButton()];
-  ShowTabViewController();
+  HideTabGrid();
 
   ExpectIdleHistogramCount(kUMATabSwitcherIdleTabGroupsHistogram, 0);
   ExpectIdleHistogramCount(kUMATabSwitcherIdleIncognitoTabGridPageHistogram, 0);
@@ -679,7 +679,7 @@ void ExpectIdleHistogramBucketCount(const char* histogram,
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:testing::NavigationBarBackButton()]
       performAction:grey_tap()];
-  ShowTabViewController();
+  HideTabGrid();
 
   ExpectIdleHistogramCount(kUMATabSwitcherIdleTabGroupsHistogram, 0);
   ExpectIdleHistogramCount(kUMATabSwitcherIdleIncognitoTabGridPageHistogram, 0);

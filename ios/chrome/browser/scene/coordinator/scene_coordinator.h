@@ -19,6 +19,7 @@ class GURL;
 enum class SafariDataImportEntryPoint;
 @protocol SafariDataImportUIHandler;
 @protocol SceneCommands;
+@class BrowserLayoutViewController;
 @class SceneCoordinator;
 @class SettingsNavigationController;
 @class ShowSigninCommand;
@@ -78,11 +79,12 @@ enum class WarningType;
 // Displays the TabGrid at `page`.
 - (void)showTabGridPage:(TabGridPage)page;
 
-// Displays the given view controller.
+// Displays the given browser layout view controller.
 // Runs the given `completion` block after the view controller is visible.
-- (void)showTabViewController:(UIViewController*)viewController
-                    incognito:(BOOL)incognito
-                   completion:(ProceduralBlock)completion;
+- (void)showBrowserLayoutViewController:
+            (BrowserLayoutViewController*)viewController
+                              incognito:(BOOL)incognito
+                             completion:(ProceduralBlock)completion;
 
 // Sets the `mode` as the active one.
 - (void)setActiveMode:(TabGridMode)mode;

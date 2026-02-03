@@ -24,6 +24,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/history/ui_bundled:coordinator",
     "//ios/chrome/browser/incognito_interstitial/ui_bundled:coordinator",
+    "//ios/chrome/browser/main/ui",
     "//ios/chrome/browser/policy/model:browser_agent",
     "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/safari_data_import/coordinator",

@@ -36,6 +36,10 @@
   return self.coordinator.viewController;
 }
 
+- (BrowserLayoutViewController*)browserLayoutViewController {
+  return self.coordinator.browserLayoutViewController;
+}
+
 - (Browser*)browser {
   return self.coordinator.browser;
 }

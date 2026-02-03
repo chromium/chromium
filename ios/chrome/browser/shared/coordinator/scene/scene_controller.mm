@@ -3232,9 +3232,10 @@ using UserFeedbackDataCallback =
     };
   }
   [self.mainCoordinator
-      showTabViewController:self.currentInterface.viewController
-                  incognito:self.currentInterface.incognito
-                 completion:completion];
+      showBrowserLayoutViewController:self.currentInterface
+                                          .browserLayoutViewController
+                            incognito:self.currentInterface.incognito
+                           completion:completion];
   [HandlerForProtocol(self.currentInterface.browser->GetCommandDispatcher(),
                       SceneCommands)
       setIncognitoContentVisible:self.currentInterface.incognito];
@@ -3373,9 +3374,10 @@ using UserFeedbackDataCallback =
     [self setCurrentInterfaceForMode:mode];
     if (self.mainCoordinator.isTabGridActive) {
       [self.mainCoordinator
-          showTabViewController:self.currentInterface.viewController
-                      incognito:self.currentInterface.incognito
-                     completion:completion];
+          showBrowserLayoutViewController:self.currentInterface
+                                              .browserLayoutViewController
+                                incognito:self.currentInterface.incognito
+                               completion:completion];
       [self setIncognitoContentVisible:self.currentInterface.incognito];
     } else {
       if (completion) {

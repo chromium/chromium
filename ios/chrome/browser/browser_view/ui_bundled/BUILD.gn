@@ -165,6 +165,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/link_to_text/model",
     "//ios/chrome/browser/location_bar/ui_bundled",
     "//ios/chrome/browser/main/model",
+    "//ios/chrome/browser/main/ui",
     "//ios/chrome/browser/main/ui_bundled:default_browser_scene_agent",
     "//ios/chrome/browser/main_content/ui_bundled:ui",
     "//ios/chrome/browser/main_content/ui_bundled:ui_broadcasting_util",
