@@ -29,6 +29,7 @@
 #include "net/base/io_buffer.h"
 #include "net/base/test_completion_callback.h"
 #include "net/disk_cache/disk_cache_test_util.h"
+#include "net/disk_cache/sql/entry_db_handle.h"
 #include "net/disk_cache/sql/sql_backend_constants.h"
 #include "net/disk_cache/sql/sql_entry_impl.h"
 #include "net/test/gtest_util.h"
@@ -117,12 +118,10 @@ class SqlBackendImplTest : public testing::Test {
     CHECK_EQ(future.Get(), net::OK);
     return backend;
   }
-  void WaitUntilInitialized(
-      SqlBackendImpl& backend,
-      const scoped_refptr<SqlBackendImpl::ResIdOrErrorHolder>&
-          res_id_or_error) {
-    CHECK(res_id_or_error);
-    while (!res_id_or_error->data.has_value()) {
+  void WaitUntilInitialized(SqlBackendImpl& backend,
+                            const scoped_refptr<EntryDbHandle>& db_handle) {
+    CHECK(db_handle);
+    while (!db_handle->IsFinished()) {
       FlushQueue(backend);
     }
   }
@@ -1248,16 +1247,13 @@ TEST_F(SqlBackendImplTest, AbortPendingWriteData) {
   // Destroy the backend while the write is in flight.
   backend.reset();
 
-  auto res_id_or_error = static_cast<SqlEntryImpl*>(entry)->res_id_or_error();
-  while (!(res_id_or_error->data.has_value() &&
-           std::holds_alternative<SqlPersistentStore::Error>(
-               *res_id_or_error->data))) {
+  auto db_handle = static_cast<SqlEntryImpl*>(entry)->db_handle();
+  while (!db_handle->GetError().has_value()) {
     FlushQueueInTaskRunners(task_runners);
   }
 
-  // The res_id_or_error should have been set to aborted.
-  EXPECT_EQ(std::get<SqlPersistentStore::Error>(*res_id_or_error->data),
-            SqlPersistentStore::Error::kAborted);
+  // The db_handle should have been set to aborted.
+  EXPECT_EQ(db_handle->GetError(), SqlPersistentStore::Error::kAborted);
 
   entry->Close();
 }
@@ -1304,9 +1300,9 @@ TEST_F(SqlBackendImplTest, DoomedEntriesCleanup) {
   auto* entry2 = CreateEntryAndWriteData(backend.get(), kKey2, kData);
   auto* entry3 = CreateEntryAndWriteData(backend.get(), kKey3, kData);
   WaitUntilInitialized(*backend,
-                       static_cast<SqlEntryImpl*>(entry3)->res_id_or_error());
-  auto res_id = std::get<SqlPersistentStore::ResId>(
-      static_cast<SqlEntryImpl*>(entry3)->res_id_or_error()->data.value());
+                       static_cast<SqlEntryImpl*>(entry3)->db_handle());
+  auto res_id =
+      static_cast<SqlEntryImpl*>(entry3)->db_handle()->GetResId().value();
   entry1->Close();
   entry2->Close();
   entry3->Close();
@@ -1391,15 +1387,14 @@ TEST_F(SqlBackendImplTest, SpeculativeCreateEntry) {
 
   // 2. The res_id should not be available yet.
   auto* sql_entry = static_cast<SqlEntryImpl*>(entry);
-  EXPECT_FALSE(sql_entry->res_id_or_error()->data.has_value());
+  EXPECT_FALSE(sql_entry->db_handle()->IsFinished());
 
   // 3. Wait for the database operation to complete.
-  WaitUntilInitialized(*backend, sql_entry->res_id_or_error());
+  WaitUntilInitialized(*backend, sql_entry->db_handle());
 
   // 4. Now the res_id should be available.
-  ASSERT_TRUE(sql_entry->res_id_or_error()->data.has_value());
-  EXPECT_TRUE(std::holds_alternative<SqlPersistentStore::ResId>(
-      sql_entry->res_id_or_error()->data.value()));
+  EXPECT_TRUE(sql_entry->db_handle()->IsFinished());
+  EXPECT_TRUE(sql_entry->db_handle()->GetResId().has_value());
 
   // 5. Doom the entry.
   entry->Doom();
@@ -1515,18 +1510,15 @@ TEST_F(SqlBackendImplTest, SpeculativeCreateEntryWithDbFailure) {
 
   // 2. The res_id should not be available yet.
   auto* sql_entry = static_cast<SqlEntryImpl*>(entry);
-  EXPECT_FALSE(sql_entry->res_id_or_error()->data.has_value());
+  EXPECT_FALSE(sql_entry->db_handle()->IsFinished());
 
   // 3. Wait for the database operation to complete.
-  WaitUntilInitialized(*backend, sql_entry->res_id_or_error());
+  WaitUntilInitialized(*backend, sql_entry->db_handle());
 
   // 4. Now the res_id should be available and hold a kFailedForTesting.
-  ASSERT_TRUE(sql_entry->res_id_or_error()->data.has_value());
-  ASSERT_TRUE(std::holds_alternative<SqlPersistentStore::Error>(
-      sql_entry->res_id_or_error()->data.value()));
-  EXPECT_EQ(std::get<SqlPersistentStore::Error>(
-                sql_entry->res_id_or_error()->data.value()),
-            SqlPersistentStore::Error::kFailedForTesting);
+  EXPECT_TRUE(sql_entry->db_handle()->IsFinished());
+  EXPECT_THAT(sql_entry->db_handle()->GetError(),
+              SqlPersistentStore::Error::kFailedForTesting);
 
   // 5. Doom the entry.
   entry->Doom();
@@ -1587,7 +1579,7 @@ TEST_F(SqlBackendImplTest,
   ASSERT_TRUE(entry);
 
   auto* sql_entry = static_cast<SqlEntryImpl*>(entry);
-  WaitUntilInitialized(*backend, sql_entry->res_id_or_error());
+  WaitUntilInitialized(*backend, sql_entry->db_handle());
   auto write_buffer = base::MakeRefCounted<net::StringIOBuffer>("data");
   EXPECT_EQ(entry->WriteData(0, 0, write_buffer.get(), write_buffer->size(),
                              base::DoNothing(), false),
@@ -1631,7 +1623,7 @@ TEST_F(SqlBackendImplTest, SpeculativeCreateEntryDbFailureDoom) {
   ASSERT_TRUE(entry);
 
   auto* sql_entry = static_cast<SqlEntryImpl*>(entry);
-  WaitUntilInitialized(*backend, sql_entry->res_id_or_error());
+  WaitUntilInitialized(*backend, sql_entry->db_handle());
 
   entry->Doom();
   EXPECT_TRUE(static_cast<SqlEntryImpl*>(entry)->doomed());
@@ -1802,12 +1794,9 @@ TEST_F(SqlBackendImplTest, OptimisticWriteFailure) {
   EXPECT_THAT(flush_cb1.WaitForResult(), IsOk());
 
   // 7. Verify that the entry is now in an error state.
-  ASSERT_TRUE(sql_entry->res_id_or_error()->data.has_value());
-  ASSERT_TRUE(std::holds_alternative<SqlPersistentStore::Error>(
-      sql_entry->res_id_or_error()->data.value()));
-  EXPECT_EQ(std::get<SqlPersistentStore::Error>(
-                sql_entry->res_id_or_error()->data.value()),
-            SqlPersistentStore::Error::kFailedForTesting);
+  EXPECT_TRUE(sql_entry->db_handle()->IsFinished());
+  EXPECT_THAT(sql_entry->db_handle()->GetError(),
+              SqlPersistentStore::Error::kFailedForTesting);
   EXPECT_EQ(backend->GetOptimisticWriteBufferTotalSizeForTesting(), 0);
 
   // 8. Subsequent writes should fail immediately.
@@ -1870,12 +1859,9 @@ TEST_F(SqlBackendImplTest, OptimisticWriteAfterSpeculativeCreateEntry) {
   auto* sql_entry = static_cast<SqlEntryImpl*>(entry);
 
   // 6. Verify that the entry is now in an error state.
-  ASSERT_TRUE(sql_entry->res_id_or_error()->data.has_value());
-  ASSERT_TRUE(std::holds_alternative<SqlPersistentStore::Error>(
-      sql_entry->res_id_or_error()->data.value()));
-  EXPECT_EQ(std::get<SqlPersistentStore::Error>(
-                sql_entry->res_id_or_error()->data.value()),
-            SqlPersistentStore::Error::kFailedForTesting);
+  EXPECT_TRUE(sql_entry->db_handle()->IsFinished());
+  EXPECT_THAT(sql_entry->db_handle()->GetError(),
+              SqlPersistentStore::Error::kFailedForTesting);
 
   // 7. The buffer size should be set to 0.
   EXPECT_EQ(backend->GetOptimisticWriteBufferTotalSizeForTesting(), 0);
@@ -1908,9 +1894,8 @@ TEST_F(SqlBackendImplTest,
 
   // Check that the first entry has a valid resource ID.
   auto* sql_entry1 = static_cast<SqlEntryImpl*>(entry1);
-  ASSERT_TRUE(sql_entry1->res_id_or_error()->data.has_value());
-  ASSERT_TRUE(std::holds_alternative<SqlPersistentStore::ResId>(
-      sql_entry1->res_id_or_error()->data.value()));
+  EXPECT_TRUE(sql_entry1->db_handle()->IsFinished());
+  EXPECT_TRUE(sql_entry1->db_handle()->GetResId().has_value());
 
   // Simulate a database failure for subsequent operations.
   backend->GetSqlStoreForTest()->SetSimulateDbFailureForTesting(true);
@@ -2022,13 +2007,13 @@ void SqlBackendImplTest::RunDelayedPostInitializationTasksTest() {
   auto* entry1 = CreateEntryAndWriteData(backend.get(), kKey1.string(), kData);
   auto* entry2 = CreateEntryAndWriteData(backend.get(), kKey2.string(), kData);
   WaitUntilInitialized(*backend,
-                       static_cast<SqlEntryImpl*>(entry1)->res_id_or_error());
+                       static_cast<SqlEntryImpl*>(entry1)->db_handle());
   WaitUntilInitialized(*backend,
-                       static_cast<SqlEntryImpl*>(entry2)->res_id_or_error());
-  auto res_id1 = std::get<SqlPersistentStore::ResId>(
-      static_cast<SqlEntryImpl*>(entry1)->res_id_or_error()->data.value());
-  auto res_id2 = std::get<SqlPersistentStore::ResId>(
-      static_cast<SqlEntryImpl*>(entry2)->res_id_or_error()->data.value());
+                       static_cast<SqlEntryImpl*>(entry2)->db_handle());
+  auto res_id1 =
+      static_cast<SqlEntryImpl*>(entry1)->db_handle()->GetResId().value();
+  auto res_id2 =
+      static_cast<SqlEntryImpl*>(entry2)->db_handle()->GetResId().value();
   entry1->Close();
   entry2->Close();
 
@@ -2271,7 +2256,7 @@ TEST_F(SqlBackendImplTest, SetEntryDataHintsWithSpeculativeCreateEntryFailure) {
 
   // 2. Wait for the database operation to complete.
   auto* sql_entry = static_cast<SqlEntryImpl*>(entry);
-  WaitUntilInitialized(*backend, sql_entry->res_id_or_error());
+  WaitUntilInitialized(*backend, sql_entry->db_handle());
   backend->GetSqlStoreForTest()->SetSimulateDbFailureForTesting(false);
 
   // 3. Set an in-memory hint. This should fail silently because the entry has

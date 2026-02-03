@@ -1849,6 +1849,8 @@ component("net") {
     sources += [
       "disk_cache/sql/cache_entry_key.cc",
       "disk_cache/sql/cache_entry_key.h",
+      "disk_cache/sql/entry_db_handle.cc",
+      "disk_cache/sql/entry_db_handle.h",
       "disk_cache/sql/entry_write_buffer.cc",
       "disk_cache/sql/entry_write_buffer.h",
       "disk_cache/sql/eviction_candidate_aggregator.cc",

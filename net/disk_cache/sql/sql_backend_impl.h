@@ -25,6 +25,7 @@
 #include "net/disk_cache/buildflags.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/disk_cache/sql/cache_entry_key.h"
+#include "net/disk_cache/sql/entry_db_handle.h"
 #include "net/disk_cache/sql/entry_write_buffer.h"
 #include "net/disk_cache/sql/exclusive_operation_coordinator.h"
 #include "net/disk_cache/sql/sql_persistent_store.h"
@@ -49,15 +50,6 @@ class SqlEntryImpl;
 // yet implemented, returning `net::ERR_NOT_IMPLEMENTED`.
 class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
  public:
-  // For a speculatively created entry, this holds `std::nullopt` initially, and
-  // when the entry creation task is complete, it will hold either the `ResId`
-  // on success or an `Error` on failure. Otherwise, it just holds a `ResId`.
-  // Callbacks passed to `SqlBackendImpl::PostOrRunNormalOperation()` with the
-  // entry key can expect this to be populated with either a `ResId` or an
-  // `Error`.
-  using ResIdOrErrorHolder = base::RefCountedData<std::optional<
-      std::variant<SqlPersistentStore::ResId, SqlPersistentStore::Error>>>;
-
   // An enumeration of errors that can occur during the fake index file check.
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -139,7 +131,7 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   // single operation.
   void WriteEntryDataAndMetadata(
       const CacheEntryKey& key,
-      const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
+      const scoped_refptr<EntryDbHandle>& db_handle,
       std::optional<int64_t> old_body_end,
       int64_t body_end,
       EntryWriteBuffer buffer,
@@ -155,7 +147,7 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   // If the backend is deleted during execution, the callback will be called
   // with net::ERR_ABORTED.
   int WriteEntryData(const CacheEntryKey& key,
-                     const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
+                     const scoped_refptr<EntryDbHandle>& db_handle,
                      int64_t old_body_end,
                      int64_t body_end,
                      EntryWriteBuffer buffer,
@@ -169,7 +161,7 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   // If the backend is deleted during execution, the callback will be called
   // with net::ERR_ABORTED.
   int ReadEntryData(const CacheEntryKey& key,
-                    const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
+                    const scoped_refptr<EntryDbHandle>& db_handle,
                     int64_t offset,
                     scoped_refptr<net::IOBuffer> buffer,
                     int buf_len,
@@ -184,18 +176,17 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   // with net::ERR_ABORTED.
   RangeResult GetEntryAvailableRange(
       const CacheEntryKey& key,
-      const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
+      const scoped_refptr<EntryDbHandle>& db_handle,
       int64_t offset,
       int len,
       RangeResultCallback callback);
 
   // Sets the in-memory hints for the entry identified by `key` and
-  // `res_id_or_error`. This schedules an operation to update the in-memory
+  // `db_handle`. This schedules an operation to update the in-memory
   // index.
-  void SetEntryDataHints(
-      const CacheEntryKey& key,
-      const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
-      MemoryEntryDataHints hints);
+  void SetEntryDataHints(const CacheEntryKey& key,
+                         const scoped_refptr<EntryDbHandle>& db_handle,
+                         MemoryEntryDataHints hints);
 
   // Sends a dummy operation through the background task runner via the
   // operation coordinator, for unit tests.
@@ -252,21 +243,21 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   // last_used, header). These modifications are queued and applied when the
   // entry is re-activated by `Iterator::OpenNextEntry()`.
   struct InFlightEntryModification {
-    InFlightEntryModification(
-        const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
-        base::Time last_used);
-    InFlightEntryModification(
-        const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
-        base::Time last_used,
-        scoped_refptr<net::GrowableIOBuffer> head,
-        int64_t body_end);
-    InFlightEntryModification(
-        const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
-        int64_t body_end);
+    InFlightEntryModification(const scoped_refptr<EntryDbHandle>& db_handle,
+                              base::Time last_used);
+    InFlightEntryModification(const scoped_refptr<EntryDbHandle>& db_handle,
+                              base::Time last_used,
+                              scoped_refptr<net::GrowableIOBuffer> head);
+    InFlightEntryModification(const scoped_refptr<EntryDbHandle>& db_handle,
+                              base::Time last_used,
+                              scoped_refptr<net::GrowableIOBuffer> head,
+                              int64_t body_end);
+    InFlightEntryModification(const scoped_refptr<EntryDbHandle>& db_handle,
+                              int64_t body_end);
     ~InFlightEntryModification();
     InFlightEntryModification(InFlightEntryModification&&);
 
-    scoped_refptr<ResIdOrErrorHolder> res_id_or_error;
+    scoped_refptr<EntryDbHandle> db_handle;
     std::optional<base::Time> last_used;
     std::optional<scoped_refptr<net::GrowableIOBuffer>> head;
     std::optional<int64_t> body_end;
@@ -325,7 +316,7 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   // Called when the background database operation for a speculative entry
   // creation is finished.
   void OnSpeculativeCreateEntryFinished(
-      const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
+      const scoped_refptr<EntryDbHandle>& db_handle,
       std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle,
       SqlPersistentStore::EntryInfoOrError result);
 
@@ -345,7 +336,7 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   // scheduled as a normal operation via the `ExclusiveOperationCoordinator`.
   void HandleDeleteDoomedEntry(
       const CacheEntryKey& key,
-      const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
+      const scoped_refptr<EntryDbHandle>& db_handle,
       std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle);
 
   // Handles the backend logic for `DoomEntry()`. This method is scheduled as a
@@ -378,7 +369,7 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   // scheduled as a normal operation via the `ExclusiveOperationCoordinator`.
   void HandleWriteEntryDataAndMetadataOperation(
       const CacheEntryKey& key,
-      const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
+      const scoped_refptr<EntryDbHandle>& db_handle,
       std::optional<int64_t> old_body_end,
       EntryWriteBuffer buffer,
       base::Time last_used,
@@ -393,7 +384,7 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   // and forwards the call to the persistent store.
   void HandleWriteEntryDataOperation(
       const CacheEntryKey& key,
-      const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
+      const scoped_refptr<EntryDbHandle>& db_handle,
       int64_t old_body_end,
       EntryWriteBuffer buffer,
       bool truncate,
@@ -406,7 +397,7 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   // forwards the write to the persistent store.
   void HandleOptimisticWriteEntryDataOperation(
       const CacheEntryKey& key,
-      const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
+      const scoped_refptr<EntryDbHandle>& db_handle,
       int64_t old_body_end,
       EntryWriteBuffer buffer,
       bool truncate,
@@ -430,7 +421,7 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   // the call to the persistent store.
   void HandleReadEntryDataOperation(
       const CacheEntryKey& key,
-      const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
+      const scoped_refptr<EntryDbHandle>& db_handle,
       int64_t offset,
       scoped_refptr<net::IOBuffer> buffer,
       int buf_len,
@@ -444,18 +435,18 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   // and forwards the call to the persistent store.
   void HandleGetEntryAvailableRangeOperation(
       const CacheEntryKey& key,
-      const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
+      const scoped_refptr<EntryDbHandle>& db_handle,
       int64_t offset,
       int len,
       RangeResultCallback callback,
       std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle);
 
   // Handles the operation to set in-memory hints. This is called by the
-  // `ExclusiveOperationCoordinator` to ensure that `res_id_or_error` is
+  // `ExclusiveOperationCoordinator` to ensure that `db_handle` is
   // properly set (e.g., if the entry creation is still in progress).
   void HandleSetEntryDataHintsOperation(
       const CacheEntryKey& key,
-      const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
+      const scoped_refptr<EntryDbHandle>& db_handle,
       MemoryEntryDataHints hints,
       std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle);
 

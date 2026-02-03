@@ -7,19 +7,20 @@
 #include "net/base/features.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
+#include "net/disk_cache/sql/entry_db_handle.h"
 #include "net/disk_cache/sql/sql_backend_impl.h"
 
 namespace disk_cache {
 
 SqlEntryImpl::SqlEntryImpl(base::WeakPtr<SqlBackendImpl> backend,
                            CacheEntryKey key,
-                           scoped_refptr<ResIdOrErrorHolder> res_id_or_error,
+                           scoped_refptr<EntryDbHandle> db_handle,
                            base::Time last_used,
                            int64_t body_end,
                            scoped_refptr<net::GrowableIOBuffer> head)
     : backend_(backend),
       key_(key),
-      res_id_or_error_(std::move(res_id_or_error)),
+      db_handle_(std::move(db_handle)),
       last_used_(last_used),
       body_end_(body_end),
       head_(head ? std::move(head)
@@ -57,7 +58,7 @@ SqlEntryImpl::~SqlEntryImpl() {
 
   if (old_body_end.has_value() || metadata_update_needed) {
     backend_->WriteEntryDataAndMetadata(
-        key_, res_id_or_error_, old_body_end, body_end_, std::move(buffer),
+        key_, db_handle_, old_body_end, body_end_, std::move(buffer),
         last_used_, new_hints_, std::move(head_to_send), header_size_delta);
   }
 
@@ -220,7 +221,7 @@ int SqlEntryImpl::ReadDataInternal(int64_t offset,
       },
       weak_factory_.GetWeakPtr(), std::move(callback));
 
-  return backend_->ReadEntryData(key_, res_id_or_error_, offset, buf, buf_len,
+  return backend_->ReadEntryData(key_, db_handle_, offset, buf, buf_len,
                                  body_end_, sparse_reading,
                                  std::move(read_callback));
 }
@@ -293,9 +294,7 @@ int SqlEntryImpl::WriteDataInternal(int64_t offset,
   if (!backend_) {
     return net::ERR_FAILED;
   }
-  if (res_id_or_error_->data.has_value() &&
-      std::holds_alternative<SqlPersistentStore::Error>(
-          res_id_or_error_->data.value())) {
+  if (db_handle_->GetError().has_value()) {
     return net::ERR_FAILED;
   }
 
@@ -356,7 +355,7 @@ int SqlEntryImpl::WriteDataInternal(int64_t offset,
   body_end_ = new_body_end;
 
   return backend_->WriteEntryData(
-      key_, res_id_or_error_, old_body_end, body_end_,
+      key_, db_handle_, old_body_end, body_end_,
       EntryWriteBuffer(buf, buf_len, offset), truncate,
       /*copy_buffer_for_optimistic_write=*/true, std::move(callback));
 }
@@ -375,7 +374,7 @@ void SqlEntryImpl::FlushBuffer() {
   // We pass copy_buffer_for_optimistic_write=false because we are passing
   // ownership of the write buffer to the backend.
   backend_->WriteEntryData(
-      key_, res_id_or_error_, /*old_body_end=*/offset,
+      key_, db_handle_, /*old_body_end=*/offset,
       /*body_end=*/body_end_, std::move(*write_buffer), /*truncate=*/false,
       /*copy_buffer_for_optimistic_write=*/false, base::DoNothing());
 }
@@ -431,7 +430,7 @@ RangeResult SqlEntryImpl::GetAvailableRange(int64_t offset,
     return RangeResult(net::ERR_INVALID_ARGUMENT);
   }
 
-  return backend_->GetEntryAvailableRange(key_, res_id_or_error_, offset, len,
+  return backend_->GetEntryAvailableRange(key_, db_handle_, offset, len,
                                           std::move(callback));
 }
 
@@ -453,7 +452,7 @@ void SqlEntryImpl::SetEntryInMemoryData(uint8_t data) {
   const MemoryEntryDataHints hints(data);
   new_hints_ = hints;
   if (backend_) {
-    backend_->SetEntryDataHints(key_, res_id_or_error_, hints);
+    backend_->SetEntryDataHints(key_, db_handle_, hints);
   }
 }
 
