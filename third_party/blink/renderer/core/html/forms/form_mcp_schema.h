@@ -75,6 +75,8 @@ class CORE_EXPORT FormMCPSchema {
   std::unique_ptr<JSONObject> ComputeCheckboxParameterSchema(
       const ControlVector& controls_for_name,
       bool& required);
+  std::unique_ptr<JSONObject> ComputeRadioParameterSchema(const ControlVector&,
+                                                          bool& required);
 
   bool ValidateParameterData(const String& name, const JSONValue&);
   bool ValidateTextData(const ControlVector& controls_for_name,
@@ -83,6 +85,8 @@ class CORE_EXPORT FormMCPSchema {
                           const JSONValue&);
   bool ValidateCheckboxData(const ControlVector& controls_for_name,
                             const JSONValue&);
+  bool ValidateRadioData(const ControlVector& controls_for_name,
+                         const JSONValue&);
   bool ValidateSelectData(const ControlVector& controls_for_name,
                           const JSONValue&);
 
@@ -91,12 +95,16 @@ class CORE_EXPORT FormMCPSchema {
   void FillNumberData(const ControlVector& controls_for_name, const JSONValue&);
   void FillCheckboxData(const ControlVector& controls_for_name,
                         const JSONValue&);
+  void FillRadioData(const ControlVector& controls_for_name, const JSONValue&);
   void FillSelectData(const ControlVector& controls_for_name, const JSONValue&);
 
   void AddTitle(HTMLFormControlElement&, JSONObject&);
   void AddDescription(HTMLFormControlElement&, JSONObject&);
 
+  String ToolParamTitleAttribute(HTMLFormControlElement&);
+  String ToolParamDescriptionAttribute(HTMLFormControlElement&);
   String ComputeDescription(HTMLFormControlElement&);
+  String LabelText(HTMLFormControlElement&);
 
   void ProcessForm(HTMLFormElement&);
   ControlVector& EnsureControlVector(const String& name);
@@ -108,6 +116,7 @@ class CORE_EXPORT FormMCPSchema {
   bool IsSelect(HTMLFormControlElement&) const;
   bool IsRange(HTMLFormControlElement&) const;
   bool IsCheckbox(HTMLFormControlElement&) const;
+  bool IsRadio(HTMLFormControlElement&) const;
 
   bool IsText(const ControlVector& controls_for_name) const;
   bool IsDate(const ControlVector& controls_for_name) const;
@@ -116,6 +125,7 @@ class CORE_EXPORT FormMCPSchema {
   bool IsSelect(const ControlVector& controls_for_name) const;
   bool IsRange(const ControlVector& controls_for_name) const;
   bool IsCheckbox(const ControlVector& controls_for_name) const;
+  bool IsRadio(const ControlVector& controls_for_name) const;
 
   // Maps a WebMCP parameter name (HTMLFormControlElement::
   // GetWebMCPParameterName()) to a list of form controls.

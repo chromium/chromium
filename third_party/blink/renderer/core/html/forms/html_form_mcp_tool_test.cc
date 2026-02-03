@@ -1442,4 +1442,376 @@ TEST_F(HTMLFormMcpToolTest, FillFormControls_EmptyStringValid) {
   }
 }
 
+TEST_F(HTMLFormMcpToolTest, ParameterSchema_Radio) {
+  SetBodyInnerHTML(
+      R"HTML(
+    <form id="form" toolname="mytool" tooldescription="perform task">
+      <label>
+        <input type=radio name=size value=s>
+        Small
+      </label>
+      <label>
+        <input type=radio name=size value=m>
+        Medium
+      </label>
+      <label>
+        <input type=radio name=size value=l>
+        Large
+      </label>
+    </form>
+  )HTML");
+
+  HTMLFormElement* form_element = GetFormElement("form");
+  ASSERT_TRUE(form_element);
+  ASSERT_TRUE(IsValidWebMCPForm(*form_element));
+  String actual = ComputeInputSchema(*form_element);
+  std::unique_ptr<JSONValue> expected_json = ParseJSON(R"JSON(
+    {
+      "type": "object",
+      "properties": {
+         "size": {
+           "type": "string",
+           "oneOf": [
+             {
+               "const": "s",
+               "title": "Small"
+             },
+             {
+               "const": "m",
+               "title": "Medium"
+             },
+             {
+               "const": "l",
+               "title": "Large"
+             }
+           ]
+         }
+      },
+      "required": []
+    }
+  )JSON");
+  ASSERT_TRUE(expected_json);
+  EXPECT_EQ(expected_json->ToJSONString(), actual);
+}
+
+TEST_F(HTMLFormMcpToolTest, ParameterSchema_Radio_Multiple) {
+  SetBodyInnerHTML(
+      R"HTML(
+    <form id="form" toolname="mytool" tooldescription="perform task">
+      <input type=radio name=size value=s>
+      <input type=radio name=size value=m>
+      <input type=radio name=size value=l>
+      <input type=radio name=item value=hoodie>
+      <input type=radio name=item value=shirt>
+      <input type=radio name=item value=hat>
+    </form>
+  )HTML");
+
+  HTMLFormElement* form_element = GetFormElement("form");
+  ASSERT_TRUE(form_element);
+  ASSERT_TRUE(IsValidWebMCPForm(*form_element));
+  String actual = ComputeInputSchema(*form_element);
+  std::unique_ptr<JSONValue> expected_json = ParseJSON(R"JSON(
+    {
+      "type": "object",
+      "properties": {
+         "size": {
+           "type": "string",
+           "oneOf": [
+             {
+               "const": "s"
+             },
+             {
+               "const": "m"
+             },
+             {
+               "const": "l"
+             }
+           ]
+         },
+         "item": {
+           "type": "string",
+           "oneOf": [
+             {
+               "const": "hoodie"
+             },
+             {
+               "const": "shirt"
+             },
+             {
+               "const": "hat"
+             }
+           ]
+         }
+      },
+      "required": []
+    }
+  )JSON");
+  ASSERT_TRUE(expected_json);
+  EXPECT_EQ(expected_json->ToJSONString(), actual);
+}
+
+TEST_F(HTMLFormMcpToolTest, ParameterSchema_Radio_MixedType) {
+  SetBodyInnerHTML(
+      R"HTML(
+    <form id="form" toolname="mytool" tooldescription="perform task">
+      <input type=text name=foo>
+      <input type=radio name=size value=s>
+      <input type=radio name=size value=m>
+      <input type=radio name=size value=l>
+      <input type=text name=size> <!-- Oops! -->
+    </form>
+  )HTML");
+
+  HTMLFormElement* form_element = GetFormElement("form");
+  ASSERT_TRUE(form_element);
+  ASSERT_TRUE(IsValidWebMCPForm(*form_element));
+  String actual = ComputeInputSchema(*form_element);
+  // No "size" parameter is expected here, because the name is used
+  // for both type=radio and type=text.
+  std::unique_ptr<JSONValue> expected_json = ParseJSON(R"JSON(
+    {
+      "type": "object",
+      "properties": {
+         "foo": {
+           "type": "string"
+         }
+      },
+      "required": []
+    }
+  )JSON");
+  ASSERT_TRUE(expected_json);
+  EXPECT_EQ(expected_json->ToJSONString(), actual);
+}
+
+TEST_F(HTMLFormMcpToolTest, ParameterSchema_Radio_Required) {
+  // The whole parameter becomes required if one of the radio buttons
+  // are required.
+  SetBodyInnerHTML(
+      R"HTML(
+    <form id="form" toolname="mytool" tooldescription="perform task">
+      <input type=radio name=size value=s>
+      <input type=radio name=size value=m required>
+      <input type=radio name=size value=l>
+    </form>
+  )HTML");
+
+  HTMLFormElement* form_element = GetFormElement("form");
+  ASSERT_TRUE(form_element);
+  ASSERT_TRUE(IsValidWebMCPForm(*form_element));
+  String actual = ComputeInputSchema(*form_element);
+  std::unique_ptr<JSONValue> expected_json = ParseJSON(R"JSON(
+    {
+      "type": "object",
+      "properties": {
+         "size": {
+           "type": "string",
+           "oneOf": [
+             {
+               "const": "s"
+             },
+             {
+               "const": "m"
+             },
+             {
+               "const": "l"
+             }
+           ]
+         }
+      },
+      "required": ["size"]
+    }
+  )JSON");
+  ASSERT_TRUE(expected_json);
+  EXPECT_EQ(expected_json->ToJSONString(), actual);
+}
+
+// The toolparamdescription for the parameter (as a whole) is
+// sources from the first <input type=radio> in the group.
+TEST_F(HTMLFormMcpToolTest, ParameterSchema_Radio_ToolParamDescription) {
+  SetBodyInnerHTML(
+      R"HTML(
+    <form id="form" toolname="mytool" tooldescription="perform task">
+      <input type=radio name=size value=s toolparamdescription="DESC">
+      <input type=radio name=size value=m toolparamdescription="ERR1">
+      <input type=radio name=size value=l toolparamdescription="ERR2">
+    </form>
+  )HTML");
+
+  HTMLFormElement* form_element = GetFormElement("form");
+  ASSERT_TRUE(form_element);
+  ASSERT_TRUE(IsValidWebMCPForm(*form_element));
+  String actual = ComputeInputSchema(*form_element);
+  std::unique_ptr<JSONValue> expected_json = ParseJSON(R"JSON(
+    {
+      "type": "object",
+      "properties": {
+         "size": {
+           "type": "string",
+           "oneOf": [
+             {
+               "const": "s"
+             },
+             {
+               "const": "m"
+             },
+             {
+               "const": "l"
+             }
+           ],
+           "description": "DESC"
+         }
+      },
+      "required": []
+    }
+  )JSON");
+  ASSERT_TRUE(expected_json);
+  EXPECT_EQ(expected_json->ToJSONString(), actual);
+}
+
+// The toolparamtitle for the parameter (as a whole) is
+// sources from the first <input type=radio> in the group.
+TEST_F(HTMLFormMcpToolTest, ParameterSchema_Radio_ToolParamTitle) {
+  SetBodyInnerHTML(
+      R"HTML(
+    <form id="form" toolname="mytool" tooldescription="perform task">
+      <input type=radio name=size value=s toolparamtitle="TITLE">
+      <input type=radio name=size value=m toolparamtitle="ERR1">
+      <input type=radio name=size value=l toolparamtitle="ERR2">
+    </form>
+  )HTML");
+
+  HTMLFormElement* form_element = GetFormElement("form");
+  ASSERT_TRUE(form_element);
+  ASSERT_TRUE(IsValidWebMCPForm(*form_element));
+  String actual = ComputeInputSchema(*form_element);
+  std::unique_ptr<JSONValue> expected_json = ParseJSON(R"JSON(
+    {
+      "type": "object",
+      "properties": {
+         "size": {
+           "type": "string",
+           "oneOf": [
+             {
+               "const": "s"
+             },
+             {
+               "const": "m"
+             },
+             {
+               "const": "l"
+             }
+           ],
+           "title": "TITLE"
+         }
+      },
+      "required": []
+    }
+  )JSON");
+  ASSERT_TRUE(expected_json);
+  EXPECT_EQ(expected_json->ToJSONString(), actual);
+}
+
+TEST_F(HTMLFormMcpToolTest, FillFormControls_FillRadio) {
+  SetBodyInnerHTML(
+      R"HTML(
+    <form id="form" toolname="mytool" tooldescription="perform task">
+      <input id=s type=radio name=size value=s>
+      <input id=m type=radio name=size value=m>
+      <input id=l type=radio name=size value=l>
+    </form>
+  )HTML");
+
+  HTMLFormElement* form_element = GetFormElement("form");
+  ASSERT_TRUE(form_element);
+  ASSERT_TRUE(IsValidWebMCPForm(*form_element));
+
+  HTMLInputElement* s = GetInputElement("s");
+  HTMLInputElement* m = GetInputElement("m");
+  HTMLInputElement* l = GetInputElement("l");
+  ASSERT_TRUE(s);
+  ASSERT_TRUE(m);
+  ASSERT_TRUE(l);
+
+  EXPECT_FALSE(s->Checked());
+  EXPECT_FALSE(m->Checked());
+  EXPECT_FALSE(l->Checked());
+
+  {
+    String json_string =
+        R"JSON(
+        {
+          "size": "s"
+        }
+      )JSON";
+    EXPECT_TRUE(FillFormControls(*form_element, json_string));
+    EXPECT_TRUE(s->Checked());
+    EXPECT_FALSE(m->Checked());
+    EXPECT_FALSE(l->Checked());
+  }
+
+  {
+    String json_string =
+        R"JSON(
+        {
+          "size": "m"
+        }
+      )JSON";
+    EXPECT_TRUE(FillFormControls(*form_element, json_string));
+    EXPECT_FALSE(s->Checked());
+    EXPECT_TRUE(m->Checked());
+    EXPECT_FALSE(l->Checked());
+  }
+
+  {
+    String json_string =
+        R"JSON(
+        {
+          "size": "l"
+        }
+      )JSON";
+    EXPECT_TRUE(FillFormControls(*form_element, json_string));
+    EXPECT_FALSE(s->Checked());
+    EXPECT_FALSE(m->Checked());
+    EXPECT_TRUE(l->Checked());
+  }
+}
+
+TEST_F(HTMLFormMcpToolTest, FillFormControls_FillRadio_Invalid) {
+  SetBodyInnerHTML(
+      R"HTML(
+    <form id="form" toolname="mytool" tooldescription="perform task">
+      <input id=s type=radio name=size value=s>
+      <input id=m type=radio name=size value=m>
+      <input id=l type=radio name=size value=l>
+    </form>
+  )HTML");
+
+  HTMLFormElement* form_element = GetFormElement("form");
+  ASSERT_TRUE(form_element);
+  ASSERT_TRUE(IsValidWebMCPForm(*form_element));
+
+  HTMLInputElement* s = GetInputElement("s");
+  HTMLInputElement* m = GetInputElement("m");
+  HTMLInputElement* l = GetInputElement("l");
+  ASSERT_TRUE(s);
+  ASSERT_TRUE(m);
+  ASSERT_TRUE(l);
+
+  EXPECT_FALSE(s->Checked());
+  EXPECT_FALSE(m->Checked());
+  EXPECT_FALSE(l->Checked());
+
+  String json_string =
+      R"JSON(
+      {
+        "size": "xl"
+      }
+    )JSON";
+  EXPECT_FALSE(FillFormControls(*form_element, json_string));
+  EXPECT_FALSE(s->Checked());
+  EXPECT_FALSE(m->Checked());
+  EXPECT_FALSE(l->Checked());
+}
+
 }  // namespace blink

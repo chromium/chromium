@@ -129,6 +129,9 @@ bool FormMCPSchema::ValidateParameterData(const String& name,
   if (IsCheckbox(*controls_for_name)) {
     return ValidateCheckboxData(*controls_for_name, value);
   }
+  if (IsRadio(*controls_for_name)) {
+    return ValidateRadioData(*controls_for_name, value);
+  }
 
   return false;
 }
@@ -171,6 +174,22 @@ bool FormMCPSchema::ValidateCheckboxData(const ControlVector& controls_for_name,
   return controls_for_name.size() == 1u && value.AsBoolean(&unused);
 }
 
+bool FormMCPSchema::ValidateRadioData(const ControlVector& controls_for_name,
+                                      const JSONValue& value) {
+  String string;
+  if (!value.AsString(&string)) {
+    return false;
+  }
+  // Make sure the provided value matches one of the options.
+  for (HTMLFormControlElement* control : controls_for_name) {
+    HTMLInputElement& input = To<HTMLInputElement>(*control);
+    if (input.Value() == string) {
+      return true;
+    }
+  }
+  return false;
+}
+
 bool FormMCPSchema::ValidateSelectData(const ControlVector& controls_for_name,
                                        const JSONValue& value) {
   // TODO(crbug.com/480888831): Check that it's one of the options.
@@ -199,6 +218,8 @@ void FormMCPSchema::FillParameterData(const String& name,
     FillNumberData(*controls_for_name, value);
   } else if (IsCheckbox(*controls_for_name)) {
     FillCheckboxData(*controls_for_name, value);
+  } else if (IsRadio(*controls_for_name)) {
+    FillRadioData(*controls_for_name, value);
   }
 }
 
@@ -214,11 +235,6 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeParameterSchema(
   CHECK(controls_for_name);
 
   name_to_controls_.erase(name);  // Emit this parameter once.
-
-  if (controls_for_name->size() != 1u) {
-    // Not supported yet.
-    return nullptr;
-  }
 
   if (IsText(*controls_for_name)) {
     return ComputeTextParameterSchema(*controls_for_name, required);
@@ -240,6 +256,9 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeParameterSchema(
   }
   if (IsCheckbox(*controls_for_name)) {
     return ComputeCheckboxParameterSchema(*controls_for_name, required);
+  }
+  if (IsRadio(*controls_for_name)) {
+    return ComputeRadioParameterSchema(*controls_for_name, required);
   }
 
   return nullptr;
@@ -388,6 +407,46 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeCheckboxParameterSchema(
   return schema;
 }
 
+std::unique_ptr<JSONObject> FormMCPSchema::ComputeRadioParameterSchema(
+    const ControlVector& controls_for_name,
+    bool& required) {
+  auto schema = std::make_unique<JSONObject>();
+  schema->SetString("type", "string");
+
+  auto one_of = std::make_unique<JSONArray>();
+  for (HTMLFormControlElement* control : controls_for_name) {
+    HTMLInputElement& radio = To<HTMLInputElement>(*control);
+    auto radio_object = std::make_unique<JSONObject>();
+    radio_object->SetString("const", radio.Value());
+    if (String title = LabelText(radio); !title.empty()) {
+      radio_object->SetString("title", title);
+    }
+    one_of->PushObject(std::move(radio_object));
+    required |= radio.IsRequired();
+  }
+  schema->SetArray("oneOf", std::move(one_of));
+
+  // It's not clear yet where to host the toolparamtitle/description
+  // attributes for <input type=radio>. For now, we use the attributes
+  // set on the first radio button of the group.
+  //
+  // https://github.com/webmachinelearning/webmcp/issues/71
+  HTMLFormControlElement* first_radio = controls_for_name.front().Get();
+  CHECK(first_radio);
+  // Note that we should not use AddTitle()/AddDescription() here,
+  // since we don't want e.g. a <label> for a specific radio button
+  // to describe the parameter as a whole.
+  if (String title = ToolParamTitleAttribute(*first_radio); !title.empty()) {
+    schema->SetString("title", title);
+  }
+  if (String description = ToolParamDescriptionAttribute(*first_radio);
+      !description.empty()) {
+    schema->SetString("description", description);
+  }
+
+  return schema;
+}
+
 void FormMCPSchema::FillTextData(const ControlVector& controls_for_name,
                                  const JSONValue& value) {
   String string;
@@ -423,6 +482,20 @@ void FormMCPSchema::FillCheckboxData(const ControlVector& controls_for_name,
   }
 }
 
+void FormMCPSchema::FillRadioData(const ControlVector& controls_for_name,
+                                  const JSONValue& value) {
+  String string;
+  if (!value.AsString(&string)) {
+    return;
+  }
+  for (HTMLFormControlElement* control : controls_for_name) {
+    HTMLInputElement& input = To<HTMLInputElement>(*control);
+    if (input.Value() == string) {
+      input.SetChecked(true, TextFieldEventBehavior::kDispatchChangeEvent);
+    }
+  }
+}
+
 void FormMCPSchema::FillSelectData(const ControlVector& controls_for_name,
                                    const JSONValue& value) {
   String selected_value;
@@ -437,8 +510,7 @@ void FormMCPSchema::FillSelectData(const ControlVector& controls_for_name,
 }
 
 void FormMCPSchema::AddTitle(HTMLFormControlElement& control, JSONObject& obj) {
-  if (String title = control.FastGetAttribute(html_names::kToolparamtitleAttr);
-      !title.empty()) {
+  if (String title = ToolParamTitleAttribute(control); !title.empty()) {
     obj.SetString("title", title);
   }
 }
@@ -450,29 +522,25 @@ void FormMCPSchema::AddDescription(HTMLFormControlElement& control,
   }
 }
 
+String FormMCPSchema::ToolParamTitleAttribute(HTMLFormControlElement& control) {
+  return control.FastGetAttribute(html_names::kToolparamtitleAttr);
+}
+
+String FormMCPSchema::ToolParamDescriptionAttribute(
+    HTMLFormControlElement& control) {
+  return control.FastGetAttribute(html_names::kToolparamdescriptionAttr);
+}
+
 String FormMCPSchema::ComputeDescription(HTMLFormControlElement& control) {
   // Prefer 'toolparamdescription' when present.
-  if (String description =
-          control.FastGetAttribute(html_names::kToolparamdescriptionAttr);
+  if (String description = ToolParamDescriptionAttribute(control);
       !description.empty()) {
     return description;
   }
 
   // Absent a 'toolparamdescription' attribute, use concatenated label text.
-  if (LiveNodeList* list = control.labels()) {
-    StringBuilder builder;
-
-    for (wtf_size_t i = 0; i < list->length(); ++i) {
-      Node* label = list->item(i);
-      if (i != 0) {
-        builder.Append("; ");
-      }
-      builder.Append(label->textContent());
-    }
-
-    if (!builder.empty()) {
-      return builder.ReleaseString();
-    }
+  if (String label_text = LabelText(control); !label_text.empty()) {
+    return label_text;
   }
 
   // Last resort: aria-description.
@@ -482,6 +550,25 @@ String FormMCPSchema::ComputeDescription(HTMLFormControlElement& control) {
     return description;
   }
 
+  return g_null_atom;
+}
+
+String FormMCPSchema::LabelText(HTMLFormControlElement& control) {
+  if (LiveNodeList* list = control.labels()) {
+    StringBuilder builder;
+
+    for (wtf_size_t i = 0; i < list->length(); ++i) {
+      Node* label = list->item(i);
+      if (i != 0) {
+        builder.Append("; ");
+      }
+      builder.Append(label->textContent().StripWhiteSpace());
+    }
+
+    if (!builder.empty()) {
+      return builder.ReleaseString();
+    }
+  }
   return g_null_atom;
 }
 
@@ -553,8 +640,10 @@ bool FormMCPSchema::IsCheckbox(HTMLFormControlElement& control) const {
   return input && input->FormControlType() == FormControlType::kInputCheckbox;
 }
 
-// TODO(crbug.com/475972617): Some of these definitely must support
-// control sizes != 1, e.g. checkbox.
+bool FormMCPSchema::IsRadio(HTMLFormControlElement& control) const {
+  auto* input = DynamicTo<HTMLInputElement>(control);
+  return input && input->FormControlType() == FormControlType::kInputRadio;
+}
 
 bool FormMCPSchema::IsText(const ControlVector& controls_for_name) const {
   return controls_for_name.size() == 1u && IsText(*controls_for_name.front());
@@ -583,6 +672,16 @@ bool FormMCPSchema::IsRange(const ControlVector& controls_for_name) const {
 bool FormMCPSchema::IsCheckbox(const ControlVector& controls_for_name) const {
   return controls_for_name.size() == 1u &&
          IsCheckbox(*controls_for_name.front());
+}
+
+bool FormMCPSchema::IsRadio(const ControlVector& controls_for_name) const {
+  CHECK(!controls_for_name.empty());
+  for (HTMLFormControlElement* control : controls_for_name) {
+    if (!IsRadio(*control)) {
+      return false;
+    }
+  }
+  return true;
 }
 
 }  // namespace blink
