@@ -386,11 +386,6 @@ const base::FeatureParam<bool> kCyclingPlaceholders(&kNtpRealboxNext,
                                                     "CyclingPlaceholders",
                                                     false);
 
-const base::FeatureParam<bool> kShowVoiceSearchInExpandedRealbox(
-    &kNtpRealboxNext,
-    "ShowVoiceSearchInExpandedRealbox",
-    false);
-
 const base::FeatureParam<RealboxLayoutMode>::Option
     kRealboxLayoutModeOptions[] = {
         {RealboxLayoutMode::kTallBottomContext,

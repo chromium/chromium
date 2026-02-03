@@ -348,7 +348,6 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
     lens::features::GetVisualSelectionUpdatesEnableThumbnailSizingTweaks());
   html_source->AddBoolean("steadyComposeboxShowVoiceSearch", false);
   html_source->AddBoolean("expandedComposeboxShowVoiceSearch", false);
-  html_source->AddBoolean("expandedSearchboxShowVoiceSearch", false);
   html_source->AddBoolean("composeboxContextDragAndDropEnabled", false);
   html_source->AddBoolean("composeboxShowRecentTabChip", false);
 

@@ -136,9 +136,6 @@ extern const base::FeatureParam<PlaceholderText> kSteadyPlaceholder;
 // Whether to show a series of cycling placeholder texts on the search input UI.
 extern const base::FeatureParam<bool> kCyclingPlaceholders;
 
-// Whether to show the voice search button in the realbox.
-extern const base::FeatureParam<bool> kShowVoiceSearchInExpandedRealbox;
-
 // Enum for `kRealboxLayoutMode`.
 enum class RealboxLayoutMode {
   kTallBottomContext,

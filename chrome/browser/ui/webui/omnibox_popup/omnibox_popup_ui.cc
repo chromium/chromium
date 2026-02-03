@@ -163,7 +163,6 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
                      omnibox::kShowVoiceSearchInExpandedComposebox.Get());
   source->AddBoolean("steadyComposeboxShowVoiceSearch",
                      omnibox::kShowVoiceSearchInSteadyComposebox.Get());
-  source->AddBoolean("expandedSearchboxShowVoiceSearch", false);
   const std::string searchbox_layout_mode =
       AddContextButtonVariantToSearchboxLayoutMode(
           omnibox::kWebUIOmniboxAimPopupAddContextButtonVariantParam.Get());
