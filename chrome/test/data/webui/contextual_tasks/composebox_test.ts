@@ -1634,8 +1634,11 @@ suite('ContextualTasksComposeboxTest', () => {
 
     const app = document.createElement('contextual-tasks-app') as unknown as
         MockContextualTasksAppElement;
-    app.isZeroState_ = true;
+    app.isZeroState_ = false;
     document.body.appendChild(app);
+    await microtasksFinished();
+    // Mock `isZeroState_` updating value from parent.
+    app.isZeroState_ = true;
     await microtasksFinished();
 
     assertEquals(1, mockSearchboxPageHandler.getCallCount('queryAutocomplete'));
@@ -1666,6 +1669,9 @@ suite('ContextualTasksComposeboxTest', () => {
             MockContextualTasksAppElement;
         app.isZeroState_ = false;
         document.body.appendChild(app);
+        await microtasksFinished();
+        // Mock `isZeroState_` updating value from parent.
+        app.isZeroState_ = false;
         await microtasksFinished();
 
         assertEquals(

@@ -13,6 +13,7 @@ import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './composebox.css.js';
 import {getHtml} from './composebox.html.js';
@@ -189,13 +190,18 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
       });
       this.resizeObserver_.observe(composebox);
     }
+  }
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
     // Get zero state autocomplete matches. If `composeboxShowZps` is true
     // then an autocomplete request will already be being made by
     // cr-composebox and therefore this isn't needed here. We currently
     // aren't showing ZPS in all cases (i.e. for context) which is why
     // this is currently needed.
-    if (this.isZeroState && !this.composeboxShowZps) {
-      composebox.queryAutocomplete(/*clearMatches=*/ false);
+    if (changedProperties.has('isZeroState') && this.isZeroState &&
+        !this.composeboxShowZps) {
+      this.$.composebox.queryAutocomplete(/*clearMatches=*/ false);
     }
   }
 
