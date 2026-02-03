@@ -331,6 +331,12 @@ public class CustomTabActivity extends BaseCustomTabActivity {
     }
 
     @Override
+    protected void onDestroyInternal() {
+        if (mTimeoutHandler != null) mTimeoutHandler.onDestroy();
+        super.onDestroyInternal();
+    }
+
+    @Override
     protected void onUserLeaveHint() {
         if (mOpenTimeRecorder != null) mOpenTimeRecorder.onUserLeaveHint();
         super.onUserLeaveHint();

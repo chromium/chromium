@@ -33,6 +33,8 @@ import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.customtabs.CustomTabsTimeoutOutcome.CustomTabsResetTimeoutOutcome;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 import java.util.concurrent.TimeUnit;
@@ -50,7 +52,7 @@ public class CustomTabActivityTimeoutHandlerUnitTest {
     private CustomTabActivityTimeoutHandler mTimeoutHandler;
 
     private static final int TIMEOUT_MINUTES = 5;
-    private static final Intent sIntentWithExtra = new Intent();
+    private Intent mIntentWithExtra;
     private Context mContext;
     private ShadowPowerManager mShadowPowerManager;
 
@@ -59,14 +61,12 @@ public class CustomTabActivityTimeoutHandlerUnitTest {
         mContext = ApplicationProvider.getApplicationContext();
         ChromeFeatureList.sCctResetMinimumTimeoutMinutes.setForTesting(1);
         ChromeFeatureList.sCctResetMinimumTimeoutMinutesAllowed.setForTesting(1);
-        sIntentWithExtra.removeExtra(CustomTabActivityTimeoutHandler.EXTRA_TIMEOUT_PENDING_INTENT);
-        sIntentWithExtra.removeExtra(CustomTabActivityTimeoutHandler.EXTRA_TIMEOUT_MINUTES);
-        sIntentWithExtra.removeExtra(CustomTabActivityTimeoutHandler.EXTRA_TIMEOUT_MINUTES_ALLOWED);
+        mIntentWithExtra = new Intent();
 
         // Default setup for Chrome experiment. The class is annotated with @EnableFeatures for it.
-        sIntentWithExtra.putExtra(
+        mIntentWithExtra.putExtra(
                 CustomTabActivityTimeoutHandler.EXTRA_TIMEOUT_MINUTES_ALLOWED, TIMEOUT_MINUTES);
-        mTimeoutHandler = new CustomTabActivityTimeoutHandler(mFinishRunnable, sIntentWithExtra);
+        mTimeoutHandler = new CustomTabActivityTimeoutHandler(mFinishRunnable, mIntentWithExtra);
 
         PowerManager powerManager = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
         mShadowPowerManager = shadowOf(powerManager);
@@ -142,7 +142,7 @@ public class CustomTabActivityTimeoutHandlerUnitTest {
 
         // Create a new handler to simulate activity recreation.
         CustomTabActivityTimeoutHandler newTimeoutHandler =
-                new CustomTabActivityTimeoutHandler(mFinishRunnable, sIntentWithExtra);
+                new CustomTabActivityTimeoutHandler(mFinishRunnable, mIntentWithExtra);
         newTimeoutHandler.restoreInstanceState(outState);
 
         // Time advances, and the timeout should trigger as the leave time was restored.
@@ -155,7 +155,7 @@ public class CustomTabActivityTimeoutHandlerUnitTest {
     public void onResume_specifiedTimeoutLessThanMinimumTimeout_minimumTimeoutUsed() {
         int minimumTimeoutMinutes = 10;
         ChromeFeatureList.sCctResetMinimumTimeoutMinutes.setForTesting(minimumTimeoutMinutes);
-        mTimeoutHandler = new CustomTabActivityTimeoutHandler(mFinishRunnable, sIntentWithExtra);
+        mTimeoutHandler = new CustomTabActivityTimeoutHandler(mFinishRunnable, mIntentWithExtra);
 
         mTimeoutHandler.onStop(mContext);
         mFakeTimeTestRule.advanceMillis(TimeUnit.MINUTES.toMillis(TIMEOUT_MINUTES + 1));
@@ -171,9 +171,9 @@ public class CustomTabActivityTimeoutHandlerUnitTest {
 
     @Test
     public void onResume_timeoutElapsed_closingIntentAttached_sendsIntent() throws Exception {
-        sIntentWithExtra.putExtra(
+        mIntentWithExtra.putExtra(
                 CustomTabActivityTimeoutHandler.EXTRA_TIMEOUT_PENDING_INTENT, mPendingIntent);
-        mTimeoutHandler = new CustomTabActivityTimeoutHandler(mFinishRunnable, sIntentWithExtra);
+        mTimeoutHandler = new CustomTabActivityTimeoutHandler(mFinishRunnable, mIntentWithExtra);
         mTimeoutHandler.onStop(mContext);
         mFakeTimeTestRule.advanceMillis(TimeUnit.MINUTES.toMillis(TIMEOUT_MINUTES + 1));
 
@@ -207,9 +207,9 @@ public class CustomTabActivityTimeoutHandlerUnitTest {
     @DisableFeatures(ChromeFeatureList.CCT_RESET_TIMEOUT_ENABLED)
     @EnableFeatures(ChromeFeatureList.CCT_RESET_TIMEOUT_ALLOWED)
     public void onResume_timeoutElapsed_finishesActivity_embedderExperiment() {
-        sIntentWithExtra.putExtra(
+        mIntentWithExtra.putExtra(
                 CustomTabActivityTimeoutHandler.EXTRA_TIMEOUT_MINUTES, TIMEOUT_MINUTES);
-        mTimeoutHandler = new CustomTabActivityTimeoutHandler(mFinishRunnable, sIntentWithExtra);
+        mTimeoutHandler = new CustomTabActivityTimeoutHandler(mFinishRunnable, mIntentWithExtra);
         mTimeoutHandler.onStop(mContext);
         mFakeTimeTestRule.advanceMillis(TimeUnit.MINUTES.toMillis(TIMEOUT_MINUTES + 1));
 
@@ -223,9 +223,9 @@ public class CustomTabActivityTimeoutHandlerUnitTest {
         ChromeFeatureList.CCT_RESET_TIMEOUT_ALLOWED
     })
     public void onResume_flagDisabled_ignoresTimeout_embedderExperiment() {
-        sIntentWithExtra.putExtra(
+        mIntentWithExtra.putExtra(
                 CustomTabActivityTimeoutHandler.EXTRA_TIMEOUT_MINUTES, TIMEOUT_MINUTES);
-        mTimeoutHandler = new CustomTabActivityTimeoutHandler(mFinishRunnable, sIntentWithExtra);
+        mTimeoutHandler = new CustomTabActivityTimeoutHandler(mFinishRunnable, mIntentWithExtra);
         mTimeoutHandler.onStop(mContext);
         mFakeTimeTestRule.advanceMillis(TimeUnit.MINUTES.toMillis(TIMEOUT_MINUTES + 1));
 
@@ -238,13 +238,13 @@ public class CustomTabActivityTimeoutHandlerUnitTest {
     @EnableFeatures(ChromeFeatureList.CCT_RESET_TIMEOUT_ALLOWED)
     public void
             onResume_specifiedTimeoutLessThanMinimumTimeout_minimumTimeoutUsed_embedderExperiment() {
-        sIntentWithExtra.putExtra(
+        mIntentWithExtra.putExtra(
                 CustomTabActivityTimeoutHandler.EXTRA_TIMEOUT_MINUTES, TIMEOUT_MINUTES);
 
         int minimumTimeoutMinutes = 10;
         ChromeFeatureList.sCctResetMinimumTimeoutMinutesAllowed.setForTesting(
                 minimumTimeoutMinutes);
-        mTimeoutHandler = new CustomTabActivityTimeoutHandler(mFinishRunnable, sIntentWithExtra);
+        mTimeoutHandler = new CustomTabActivityTimeoutHandler(mFinishRunnable, mIntentWithExtra);
 
         mTimeoutHandler.onStop(mContext);
         mFakeTimeTestRule.advanceMillis(TimeUnit.MINUTES.toMillis(TIMEOUT_MINUTES + 1));
@@ -266,15 +266,140 @@ public class CustomTabActivityTimeoutHandlerUnitTest {
     public void onResume_bothExtrasPresent_embedderExperimentUsed() {
         int chromeTimeout = 10;
         int embedderTimeout = 5;
-        sIntentWithExtra.putExtra(
+        mIntentWithExtra.putExtra(
                 CustomTabActivityTimeoutHandler.EXTRA_TIMEOUT_MINUTES_ALLOWED, chromeTimeout);
-        sIntentWithExtra.putExtra(
+        mIntentWithExtra.putExtra(
                 CustomTabActivityTimeoutHandler.EXTRA_TIMEOUT_MINUTES, embedderTimeout);
-        mTimeoutHandler = new CustomTabActivityTimeoutHandler(mFinishRunnable, sIntentWithExtra);
+        mTimeoutHandler = new CustomTabActivityTimeoutHandler(mFinishRunnable, mIntentWithExtra);
 
         mTimeoutHandler.onStop(mContext);
         mFakeTimeTestRule.advanceMillis(TimeUnit.MINUTES.toMillis(embedderTimeout + 1));
         mTimeoutHandler.onResume(mContext);
         verify(mFinishRunnable).run();
+    }
+
+    @Test
+    public void onResume_timeoutNotElapsed_recordsReturnedBeforeTimeout() {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                CustomTabsTimeoutOutcome.HISTOGRAM_NAME,
+                                CustomTabsResetTimeoutOutcome.RETURNED_BEFORE_TIMEOUT)
+                        .build();
+        mTimeoutHandler.onStop(mContext);
+        mFakeTimeTestRule.advanceMillis(TimeUnit.MINUTES.toMillis(TIMEOUT_MINUTES - 1));
+
+        mTimeoutHandler.onResume(mContext);
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void onResume_timeoutElapsed_recordsResetTriggeredFallback() {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                CustomTabsTimeoutOutcome.HISTOGRAM_NAME,
+                                CustomTabsResetTimeoutOutcome.RESET_TRIGGERED_FALLBACK)
+                        .build();
+        mTimeoutHandler.onStop(mContext);
+        mFakeTimeTestRule.advanceMillis(TimeUnit.MINUTES.toMillis(TIMEOUT_MINUTES + 1));
+
+        mTimeoutHandler.onResume(mContext);
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void onResume_timeoutElapsed_withIntent_recordsResetTriggeredIntent() throws Exception {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                CustomTabsTimeoutOutcome.HISTOGRAM_NAME,
+                                CustomTabsResetTimeoutOutcome.RESET_TRIGGERED_INTENT)
+                        .build();
+        mIntentWithExtra.putExtra(
+                CustomTabActivityTimeoutHandler.EXTRA_TIMEOUT_PENDING_INTENT, mPendingIntent);
+        mTimeoutHandler = new CustomTabActivityTimeoutHandler(mFinishRunnable, mIntentWithExtra);
+        mTimeoutHandler.onStop(mContext);
+        mFakeTimeTestRule.advanceMillis(TimeUnit.MINUTES.toMillis(TIMEOUT_MINUTES + 1));
+
+        mTimeoutHandler.onResume(mContext);
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void destroy_recordsSessionClosedManually() {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                CustomTabsTimeoutOutcome.HISTOGRAM_NAME,
+                                CustomTabsResetTimeoutOutcome.SESSION_CLOSED_MANUALLY)
+                        .build();
+        mTimeoutHandler.onDestroy();
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void onResume_outcomeRecordedOnlyOnce() {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                CustomTabsTimeoutOutcome.HISTOGRAM_NAME,
+                                CustomTabsResetTimeoutOutcome.RETURNED_BEFORE_TIMEOUT)
+                        .build();
+        mTimeoutHandler.onStop(mContext);
+        mFakeTimeTestRule.advanceMillis(TimeUnit.MINUTES.toMillis(TIMEOUT_MINUTES - 1));
+        mTimeoutHandler.onResume(mContext); // Records RETURNED_BEFORE_TIMEOUT
+
+        // Call onResume again, should not record again.
+        mTimeoutHandler.onResume(mContext);
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.CCT_RESET_TIMEOUT_ENABLED,
+        ChromeFeatureList.CCT_RESET_TIMEOUT_ALLOWED
+    })
+    public void ctor_isEmbedderExperiment_recordsHistogram() {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord("CustomTabs.ResetTimeout.IsFromEmbedder", true)
+                        .build();
+        Intent intent = new Intent();
+        intent.putExtra(CustomTabActivityTimeoutHandler.EXTRA_TIMEOUT_MINUTES, TIMEOUT_MINUTES);
+        new CustomTabActivityTimeoutHandler(mFinishRunnable, intent);
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CCT_RESET_TIMEOUT_ENABLED)
+    @DisableFeatures(ChromeFeatureList.CCT_RESET_TIMEOUT_ALLOWED)
+    public void ctor_isChromeExperiment_recordsHistogram() {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord("CustomTabs.ResetTimeout.IsFromEmbedder", false)
+                        .build();
+        Intent intent = new Intent();
+        intent.putExtra(
+                CustomTabActivityTimeoutHandler.EXTRA_TIMEOUT_MINUTES_ALLOWED, TIMEOUT_MINUTES);
+        new CustomTabActivityTimeoutHandler(mFinishRunnable, intent);
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void onResume_recordsElapsedTime() {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord("CustomTabs.ResetTimeout.ElapsedTimeInMinutesOnReturn")
+                        .build();
+        mTimeoutHandler.onStop(mContext);
+        mFakeTimeTestRule.advanceMillis(TimeUnit.MINUTES.toMillis(TIMEOUT_MINUTES - 1));
+        mTimeoutHandler.onResume(mContext);
+
+        histogramWatcher.assertExpected();
     }
 }

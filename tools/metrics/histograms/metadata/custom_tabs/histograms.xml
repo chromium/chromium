@@ -740,6 +740,50 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="CustomTabs.ResetTimeout.ElapsedTimeInMinutesOnReturn"
+    units="minutes" expires_after="2026-08-01">
+  <owner>tivi@google.com</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    Records the elapsed time in minutes from when the user leaves a Custom Tab
+    until they return. This is recorded for sessions with an active timeout. The
+    value is capped at 3 hours. Recorded upon returning to a CCT. Recorded
+    multiple times throughout the CCT session, but only once per &quot;leave
+    cycle&quot;. (A leave cycle is the period of time starting when the user
+    navigates away from the Custom Tab tracked by activity.onStop until they
+    return tracked by activity.onResume or the CCT is closed tracked by
+    activity.onDestroy.)
+  </summary>
+</histogram>
+
+<histogram name="CustomTabs.ResetTimeout.IsFromEmbedder" enum="Boolean"
+    expires_after="2026-08-01">
+  <owner>tivi@google.com</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    Records whether the Custom Tab timeout was configured by the embedding app
+    (true) or by a Chrome experiment (false). Recorded when a CCT session is
+    started. Recorded once per CCT session.
+  </summary>
+</histogram>
+
+<histogram name="CustomTabs.ResetTimeout.Outcome"
+    enum="CustomTabsResetTimeoutOutcome" expires_after="2026-08-01">
+  <owner>tivi@google.com</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    Records the outcome of Custom Tab sessions that have a configured timeout.
+    This metric captures whether the timeout was triggered and how the session
+    was handled (e.g., closed due to timeout, timeout ignored). Recorded when a
+    CCT session with an active timeout concludes or the timeout condition is
+    evaluated. Recorded multiple times throughout the CCT session, but only once
+    per &quot;leave cycle&quot;(A leave cycle is the period of time starting
+    when the user navigates away from the Custom Tab tracked by activity.onStop
+    until they return tracked by activity.onResume or the CCT is closed tracked
+    by activity.onDestroy.)
+  </summary>
+</histogram>
+
 <histogram
     name="CustomTabs.RetainableSessionsV2.TimeBetweenLaunch{IdentifierType}"
     units="seconds" expires_after="2025-05-11">

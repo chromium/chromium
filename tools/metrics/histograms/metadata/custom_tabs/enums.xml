@@ -153,6 +153,10 @@ chromium-metrics-reviews@google.com.
   <int value="65" label="File Handlers API usage EXTRA_FILE_HANDLERS"/>
   <int value="66"
       label="Custom context menu items EXTRA_CUSTOM_CONTENT_ACTIONS"/>
+  <int value="67" label="Timeout minutes EXTRA_TIMEOUT_MINUTES"/>
+  <int value="68"
+      label="Timeout minutes allowed EXTRA_TIMEOUT_MINUTES_ALLOWED"/>
+  <int value="69" label="Timeout pending intent EXTRA_TIMEOUT_PENDING_INTENT"/>
 </enum>
 
 <!--LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/customtabs/CustomTabsFeatureUsage.java:CustomTabsFeature) -->
@@ -210,6 +214,28 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Partial Custom Tab is a side-sheet"/>
   <int value="3" label="Partial Custom Tab is full-size"/>
 </enum>
+
+<!--LINT.IfChange(CustomTabsResetTimeoutOutcome) -->
+
+<enum name="CustomTabsResetTimeoutOutcome">
+  <summary>
+    The result of every CCT session where a timeout was configured.
+  </summary>
+  <int value="0"
+      label="RETURNED_BEFORE_TIMEOUT: User returned to the foreground before
+             the timer expired."/>
+  <int value="1"
+      label="RESET_TRIGGERED_INTENT: Timeout exceeded; successfully fired the
+             PendingIntent"/>
+  <int value="2"
+      label="RESET_TRIGGERED_FALLBACK: Timeout exceeded; PendingIntent failed
+             or was null, so CCT called finish()"/>
+  <int value="3"
+      label="SESSION_CLOSED_MANUALLY: The user manually closed the CCT before
+             any timeout occurred."/>
+</enum>
+
+<!--LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/customtabs/CustomTabsTimeoutOutcome.java:CustomTabsResetTimeoutOutcome) -->
 
 <enum name="CustomTabsSessionDisconnectStatus">
   <int value="0" label="Unknown"/>

@@ -16,8 +16,10 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.TimeUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.customtabs.CustomTabsTimeoutOutcome.CustomTabsResetTimeoutOutcome;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 import java.util.concurrent.TimeUnit;
@@ -61,6 +63,7 @@ class CustomTabActivityTimeoutHandler {
     private final Runnable mFinishActivityRunnable;
     private final boolean mIsTimeoutEnabled;
     private final int mTimeoutMinutes;
+    private boolean mOutcomeRecorded;
 
     @Nullable private final PendingIntent mEmbedderClosingIntent;
 
@@ -84,7 +87,10 @@ class CustomTabActivityTimeoutHandler {
         if (mIsTimeoutEnabled) {
             // If the embedder experiment is enabled, use the timeout value from the embedder.
             // Otherwise, use the timeout value from the Chrome experiment.
-            if (isTimeoutEnabledForEmbedderExperiment(intent)) {
+            boolean isEmbedderExperiment = isTimeoutEnabledForEmbedderExperiment(intent);
+            RecordHistogram.recordBooleanHistogram(
+                    "CustomTabs.ResetTimeout.IsFromEmbedder", isEmbedderExperiment);
+            if (isEmbedderExperiment) {
                 Log.d(TAG, "Timeout enabled for embedder experiment.");
                 mTimeoutMinutes = getTimeoutMinutesForEmbedderExperiment(intent);
             } else {
@@ -107,6 +113,10 @@ class CustomTabActivityTimeoutHandler {
     /** To be called from {@link Activity#onStop()}. */
     void onStop(Context context) {
         if (!mIsTimeoutEnabled) return;
+
+        // Reset the outcome recorded flag for a new leave cycle. This ensures that an outcome
+        // can be recorded when the user returns or the activity is destroyed.
+        mOutcomeRecorded = false;
 
         PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
         boolean isLockingScreenAction = !powerManager.isInteractive();
@@ -157,6 +167,12 @@ class CustomTabActivityTimeoutHandler {
             long timeoutMillis = TimeUnit.MINUTES.toMillis(mTimeoutMinutes);
             long elapsedTime = TimeUtils.elapsedRealtimeMillis() - mLeaveTimestamp;
 
+            long elapsedTimeInMinutes = TimeUnit.MILLISECONDS.toMinutes(elapsedTime);
+            RecordHistogram.recordExactLinearHistogram(
+                    "CustomTabs.ResetTimeout.ElapsedTimeInMinutesOnReturn",
+                    (int) elapsedTimeInMinutes,
+                    180);
+
             if (elapsedTime >= timeoutMillis) {
                 // Finish the activity if the timeout has elapsed. If an embedder closing intent is
                 // specified, send it, otherwise finish the activity.
@@ -173,14 +189,19 @@ class CustomTabActivityTimeoutHandler {
                                 /* handler= */ null,
                                 /* requiredPermissions= */ null,
                                 /* options= */ options.toBundle());
+                        record(CustomTabsResetTimeoutOutcome.RESET_TRIGGERED_INTENT);
                     } catch (PendingIntent.CanceledException e) {
                         Log.e(TAG, "Failed to send embedder intent: %s", e);
                         mFinishActivityRunnable.run();
+                        record(CustomTabsResetTimeoutOutcome.RESET_TRIGGERED_FALLBACK);
                     }
                     return;
                 } else {
                     mFinishActivityRunnable.run();
+                    record(CustomTabsResetTimeoutOutcome.RESET_TRIGGERED_FALLBACK);
                 }
+            } else {
+                record(CustomTabsResetTimeoutOutcome.RETURNED_BEFORE_TIMEOUT);
             }
         }
         // Reset the timestamp after checking to ensure the timeout logic only runs once per leave.
@@ -199,6 +220,22 @@ class CustomTabActivityTimeoutHandler {
         if (mIsTimeoutEnabled && savedInstanceState != null) {
             mLeaveTimestamp = savedInstanceState.getLong(KEY_LEAVE_TIMESTAMP, -1);
         }
+    }
+
+    /** To be called from {@link Activity#onDestroy()}. */
+    void onDestroy() {
+        // If the activity is destroyed without the timeout being triggered, record it as a manual
+        // close.
+        if (mIsTimeoutEnabled) {
+            record(CustomTabsResetTimeoutOutcome.SESSION_CLOSED_MANUALLY);
+        }
+    }
+
+    private void record(@CustomTabsResetTimeoutOutcome int outcome) {
+        if (mOutcomeRecorded) return;
+
+        CustomTabsTimeoutOutcome.record(outcome);
+        mOutcomeRecorded = true;
     }
 
     private boolean isTimeoutEnabledForChromeExperiment(Intent intent) {

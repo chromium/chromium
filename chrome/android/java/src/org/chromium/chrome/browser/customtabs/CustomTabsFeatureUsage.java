@@ -89,6 +89,9 @@ public class CustomTabsFeatureUsage {
         CustomTabsFeature.EXTRA_LAUNCH_HANDLER,
         CustomTabsFeature.EXTRA_FILE_HANDLERS,
         CustomTabsFeature.EXTRA_CUSTOM_CONTENT_ACTIONS,
+        CustomTabsFeature.EXTRA_TIMEOUT_MINUTES,
+        CustomTabsFeature.EXTRA_TIMEOUT_MINUTES_ALLOWED,
+        CustomTabsFeature.EXTRA_TIMEOUT_PENDING_INTENT,
         CustomTabsFeature.COUNT
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -161,9 +164,12 @@ public class CustomTabsFeatureUsage {
         int EXTRA_LAUNCH_HANDLER = 64;
         int EXTRA_FILE_HANDLERS = 65;
         int EXTRA_CUSTOM_CONTENT_ACTIONS = 66;
+        int EXTRA_TIMEOUT_MINUTES = 67;
+        int EXTRA_TIMEOUT_MINUTES_ALLOWED = 68;
+        int EXTRA_TIMEOUT_PENDING_INTENT = 69;
 
         /** Total count of entries. */
-        int COUNT = 67;
+        int COUNT = 70;
     }
 
     // LINT.ThenChange(/tools/metrics/histograms/metadata/custom_tabs/enums.xml:CustomTabsFeatureUsed)
