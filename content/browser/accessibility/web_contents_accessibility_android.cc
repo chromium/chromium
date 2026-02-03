@@ -2050,7 +2050,14 @@ void WebContentsAccessibilityAndroid::ClearExtendedSelection(JNIEnv* env,
     return;
   }
 
-  node->manager()->SetSelection(ui::BrowserAccessibility::AXRange());
+  ui::BrowserAccessibility::AXPosition start_position =
+      node->CreatePositionForSelectionAt(ax::mojom::kNoSelectionOffset);
+  ui::BrowserAccessibility::AXPosition end_position =
+      node->CreatePositionForSelectionAt(ax::mojom::kNoSelectionOffset);
+
+  // TODO(crbug.com/443078007): Add test.
+  node->manager()->SetSelection(ui::BrowserAccessibility::AXRange(
+      std::move(start_position), std::move(end_position)));
 }
 
 bool WebContentsAccessibilityAndroid::AdjustSlider(JNIEnv* env,
