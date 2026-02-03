@@ -18,6 +18,7 @@ export function getHtml(this: OmniboxAimAppElement) {
       @context-menu-entrypoint-click="${this.onContextualEntryPointClicked_}"
       @close-composebox="${this.onCloseComposebox_}"
       @composebox-submit="${this.onComposeboxSubmit_}"
+      .showMenuOnClick="${false}"
       entrypoint-name="Omnibox">
   </cr-composebox>
 </div>

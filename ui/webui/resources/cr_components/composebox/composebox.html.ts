@@ -100,6 +100,7 @@ export function getHtml(this: ComposeboxElement) {
               carousel-divider, carousel-container, thumbnail"
           in-composebox
           .tabSuggestions="${this.tabSuggestions}"
+          .showMenuOnClick="${this.showMenuOnClick}"
           .entrypointName="${this.entrypointName ? this.entrypointName : 'Composebox'}"
           @add-tab-context="${this.addTabContext_}"
           @open-voice-search="${this.openAimVoiceSearch_}"

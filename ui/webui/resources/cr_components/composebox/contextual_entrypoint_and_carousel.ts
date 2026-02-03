@@ -108,6 +108,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       showLensSearchChip: {reflect: true, type: Boolean},
       searchboxLayoutMode: {type: String},
       tabSuggestions: {type: Array},
+      showMenuOnClick: {type: Boolean},
       entrypointName: {type: String},
       showVoiceSearch: {
         reflect: true,
@@ -160,6 +161,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   accessor showDropdown: boolean = false;
   accessor showLensSearchChip: boolean = false;
   accessor searchboxLayoutMode: string = '';
+  accessor showMenuOnClick: boolean = true;
   accessor entrypointName: string = '';
   accessor tabSuggestions: TabInfo[] = [];
   accessor carouselOnTop_: boolean = false;
