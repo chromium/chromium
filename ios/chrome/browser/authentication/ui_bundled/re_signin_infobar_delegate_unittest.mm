@@ -10,6 +10,7 @@
 #import "base/memory/ptr_util.h"
 #import "components/infobars/core/infobar.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "components/signin/public/base/signin_pref_names.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_presenter.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
@@ -205,6 +206,30 @@ TEST_F(ReSignInInfoBarDelegateTest, TestInfoBarDismissedBySignin) {
   system_identity_manager->AddIdentity(chrome_identity);
   authentication_service()->SignIn(
       chrome_identity, signin_metrics::AccessPoint::kNtpSignedOutIcon);
+  // Test that the info bar has been removed.
+  EXPECT_EQ(InfoBarManagerImpl::FromWebState(web_state())->infobars().size(),
+            0u);
+}
+
+// Tests that the infobar is removed as soon as sign-in becomes disabled.
+TEST_F(ReSignInInfoBarDelegateTest, TestInfoBarDismissedBySigninDisabled) {
+  authentication_service()->SetReauthPromptForSignInAndSync();
+
+  [[resignin_presenter() reject] showReSignin];
+
+  std::unique_ptr<ReSignInInfoBarDelegate> delegate =
+      ReSignInInfoBarDelegate::Create(authentication_service(),
+                                      identity_manager(), resignin_presenter());
+  std::unique_ptr<InfoBarIOS> info_bar_ios = std::make_unique<InfoBarIOS>(
+      InfobarType::kInfobarTypeConfirm, std::move(delegate));
+  InfoBarManagerImpl::FromWebState(web_state())
+      ->AddInfoBar(std::move(info_bar_ios));
+  // Test that the info bar was added.
+  EXPECT_EQ(InfoBarManagerImpl::FromWebState(web_state())->infobars().size(),
+            1u);
+  // Disable sign-in.
+  GetApplicationContext()->GetLocalState()->SetBoolean(
+      prefs::kSigninAllowedOnDevice, false);
   // Test that the info bar has been removed.
   EXPECT_EQ(InfoBarManagerImpl::FromWebState(web_state())->infobars().size(),
             0u);
