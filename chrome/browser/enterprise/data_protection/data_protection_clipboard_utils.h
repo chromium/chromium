@@ -102,6 +102,13 @@ bool ReplaceCopyFromFindBar(std::u16string_view selected_text,
                             content::WebContents* web_contents,
                             std::u16string* replacement);
 
+// Checks if the given `web_contents` is allowed to receive replaced clipboard
+// data, and returns it if so. This is used so `FindBarView` code doesn't always
+// receive blocked pasted data in safe cases like searching a string in the same
+// page it was copied from.
+std::optional<std::u16string> ReplacePasteToFindBar(
+    content::WebContents* web_contents);
+
 }  // namespace enterprise_data_protection
 
 #endif  // CHROME_BROWSER_ENTERPRISE_DATA_PROTECTION_DATA_PROTECTION_CLIPBOARD_UTILS_H_

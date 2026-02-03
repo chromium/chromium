@@ -1313,5 +1313,12 @@ IN_PROC_BROWSER_TEST_P(FindBarViewsUiTest, CopyBlockedByPolicy) {
                                 /* data_dst = */ nullptr, &clipboard_text);
             return base::EqualsASCII(clipboard_text, kExpectedText);
           }),
-      WaitForState(kTextCopiedState, true));
+      WaitForState(kTextCopiedState, true),
+      // Regardless of whether the copied data made it to the clipboard, pasting
+      // it back into the FindBar will result in getting the original text back
+      // as the current policy doesn't block it.
+      WithView(FindBarView::kTextField, [&](views::Textfield* textfield) {
+        textfield->ExecuteCommand(views::Textfield::kPaste, 0);
+        ASSERT_EQ(textfield->GetText(), u"some text");
+      }));
 }

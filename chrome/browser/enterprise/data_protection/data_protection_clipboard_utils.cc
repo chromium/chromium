@@ -11,6 +11,7 @@
 
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/optional_util.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
 #include "chrome/browser/enterprise/data_controls/chrome_clipboard_context.h"
 #include "chrome/browser/enterprise/data_controls/chrome_rules_service.h"
@@ -375,14 +376,9 @@ void OnDataControlsPasteWarning(
 #endif  // BUILDFLAG(IS_ANDROID) || !BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 }
 
-void PasteIfAllowedByDataControls(
+data_controls::Verdict GetPasteVerdict(
     const content::ClipboardEndpoint& source,
-    const content::ClipboardEndpoint& destination,
-    const ui::ClipboardMetadata& metadata,
-    content::ClipboardPasteData clipboard_paste_data,
-    content::ContentBrowserClient::IsClipboardPasteAllowedCallback callback) {
-  DCHECK(!SkipDataControlOrContentAnalysisChecks(destination));
-
+    const content::ClipboardEndpoint& destination) {
   auto verdict = data_controls::ChromeRulesServiceFactory::GetInstance()
                      ->GetForBrowserContext(destination.browser_context())
                      ->GetPasteVerdict(source, destination);
@@ -394,32 +390,49 @@ void PasteIfAllowedByDataControls(
             ->GetPasteVerdict(source, destination),
         std::move(verdict));
   }
+  return verdict;
+}
 
+void PasteIfAllowedByDataControls(
+    const content::ClipboardEndpoint& source,
+    const content::ClipboardEndpoint& destination,
+    const ui::ClipboardMetadata& metadata,
+    content::ClipboardPasteData clipboard_paste_data,
+    content::ContentBrowserClient::IsClipboardPasteAllowedCallback callback) {
+  DCHECK(!SkipDataControlOrContentAnalysisChecks(destination));
+
+  auto verdict = GetPasteVerdict(source, destination);
   auto* factory = GetDialogFactory();
-  if (verdict.level() == data_controls::Rule::Level::kBlock) {
-    MaybeReportDataControlsPaste(source, destination, metadata, verdict);
-    if (factory) {
-      factory->ShowDialogIfNeeded(
-          destination.web_contents(),
-          data_controls::DataControlsDialog::Type::kClipboardPasteBlock);
-    }
-    std::move(callback).Run(std::nullopt);
-    return;
-  } else if (verdict.level() == data_controls::Rule::Level::kWarn) {
-    MaybeReportDataControlsPaste(source, destination, metadata, verdict);
-    if (factory) {
-      factory->ShowDialogIfNeeded(
-          destination.web_contents(),
-          data_controls::DataControlsDialog::Type::kClipboardPasteWarn,
-          base::BindOnce(&OnDataControlsPasteWarning, source, destination,
-                         metadata, std::move(verdict),
-                         std::move(clipboard_paste_data), std::move(callback)));
-    } else {
+  switch (verdict.level()) {
+    case data_controls::Rule::Level::kBlock:
+      MaybeReportDataControlsPaste(source, destination, metadata, verdict);
+      if (factory) {
+        factory->ShowDialogIfNeeded(
+            destination.web_contents(),
+            data_controls::DataControlsDialog::Type::kClipboardPasteBlock);
+      }
       std::move(callback).Run(std::nullopt);
-    }
-    return;
-  } else if (verdict.level() == data_controls::Rule::Level::kReport) {
-    MaybeReportDataControlsPaste(source, destination, metadata, verdict);
+      return;
+    case data_controls::Rule::Level::kWarn:
+      MaybeReportDataControlsPaste(source, destination, metadata, verdict);
+      if (factory) {
+        factory->ShowDialogIfNeeded(
+            destination.web_contents(),
+            data_controls::DataControlsDialog::Type::kClipboardPasteWarn,
+            base::BindOnce(&OnDataControlsPasteWarning, source, destination,
+                           metadata, std::move(verdict),
+                           std::move(clipboard_paste_data),
+                           std::move(callback)));
+      } else {
+        std::move(callback).Run(std::nullopt);
+      }
+      return;
+    case data_controls::Rule::Level::kReport:
+      MaybeReportDataControlsPaste(source, destination, metadata, verdict);
+      break;
+    case data_controls::Rule::Level::kAllow:
+    case data_controls::Rule::Level::kNotSet:
+      break;
   }
 
   // If the data currently being pasted was replaced when it was initially
@@ -855,6 +868,42 @@ bool ReplaceCopyFromFindBar(std::u16string_view selected_text,
         ->AddDataToNextSeqno(data);
   }
   return !replacement->empty();
+}
+
+std::optional<std::u16string> ReplacePasteToFindBar(
+    content::WebContents* web_contents) {
+  ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
+  CHECK(clipboard);
+
+  auto destination = GetValidURLEndpoint(web_contents);
+  if (!destination) {
+    return std::nullopt;
+  }
+
+  std::optional<ui::DataTransferEndpoint> source_dte =
+      clipboard->GetSource(ui::ClipboardBuffer::kCopyPaste);
+  auto source = content::GetSourceClipboardEndpoint(
+      base::OptionalToPtr(source_dte), ui::ClipboardBuffer::kCopyPaste);
+
+  auto verdict = GetPasteVerdict(source, *destination);
+
+  if (verdict.level() == data_controls::Rule::Level::kBlock) {
+    // On a blocked verdict, the find bar is not allowed to get replaced data
+    // tracked internally by the browser.
+    return std::nullopt;
+  }
+
+  const ui::ClipboardSequenceNumberToken& seqno =
+      ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
+          ui::ClipboardBuffer::kCopyPaste);
+
+  if (source.browser_context() &&
+      seqno == data_controls::GetLastReplacedClipboardData().seqno) {
+    return data_controls::GetLastReplacedClipboardData()
+        .clipboard_paste_data.text;
+  }
+
+  return std::nullopt;
 }
 
 }  // namespace enterprise_data_protection

@@ -25,11 +25,13 @@
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/enterprise/connectors/core/features.h"
 #include "components/enterprise/connectors/core/reporting_test_utils.h"
+#include "components/enterprise/data_controls/content/browser/last_replaced_clipboard_data.h"
 #include "components/enterprise/data_controls/core/browser/features.h"
 #include "components/enterprise/data_controls/core/browser/test_utils.h"
 #include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/clipboard_types.h"
 #include "content/public/common/drop_data.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
@@ -2093,7 +2095,8 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   run_loop_bypass.Run();
 }
 
-IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest, FindBar_Allowed) {
+IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
+                       FindBar_CopyAllowed) {
   auto event_validator = event_report_validator_helper_->CreateValidator();
   event_validator.ExpectNoReport();
 
@@ -2103,12 +2106,13 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest, FindBar_Allowed) {
   // Without any restriction, text in the find bar is allowed to be copied and
   // isn't replaced.
   const std::u16string kText = u"foo";
-  std::u16string replacement;
-  EXPECT_FALSE(ReplaceCopyFromFindBar(kText, contents(), &replacement));
-  EXPECT_TRUE(replacement.empty());
+  std::u16string copy_replacement;
+  EXPECT_FALSE(ReplaceCopyFromFindBar(kText, contents(), &copy_replacement));
+  EXPECT_TRUE(copy_replacement.empty());
 }
 
-IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest, FindBar_Blocked) {
+IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
+                       FindBar_CopyBlocked) {
   data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
                                    "name": "block",
                                    "rule_id": "987",
@@ -2154,6 +2158,47 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest, FindBar_Blocked) {
   auto paste_data = paste_future.Get();
   EXPECT_TRUE(paste_data);
   EXPECT_EQ(paste_data->text, kText);
+}
+
+IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest, FindBar_Paste) {
+  // Without any restriction, text pasted in the find bar will be replaced if
+  // necessary.
+  auto paste_replacement = ReplacePasteToFindBar(contents());
+  EXPECT_FALSE(paste_replacement);
+
+  {
+    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste,
+                                     std::make_unique<ui::DataTransferEndpoint>(
+                                         contents()->GetLastCommittedURL()));
+    content::AddSourceDataToClipboardWriter(writer,
+                                            *contents()->GetPrimaryMainFrame());
+    writer.WriteText(u"warning");
+  }
+  content::ClipboardPasteData data;
+  data.text = u"replaced";
+  data_controls::LastReplacedClipboardDataObserver::GetInstance()
+      ->AddDataToNextSeqno(data);
+  ui::ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
+
+  paste_replacement = ReplacePasteToFindBar(contents());
+  EXPECT_TRUE(paste_replacement);
+  EXPECT_EQ(*paste_replacement, u"replaced");
+
+  // With a triggered Data Controls rule, the data isn't replaced.
+  data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
+                                   "name": "block",
+                                   "rule_id": "987",
+                                   "destinations": {
+                                     "urls": ["*"]
+                                   },
+                                   "restrictions": [
+                                     {"class": "CLIPBOARD", "level": "BLOCK"}
+                                   ]
+                                 })"},
+                                 machine_scope());
+
+  paste_replacement = ReplacePasteToFindBar(contents());
+  EXPECT_FALSE(paste_replacement);
 }
 
 IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest, DragAllowed) {
