@@ -14,10 +14,9 @@ export function getHtml(this: ManagementUiElement) {
     @search-changed="${this.onSearchChanged_}" clear-label="$i18n{clearSearch}"
     search-prompt="$i18n{searchPrompt}">
 </cr-toolbar>
-<div id="cr-container-shadow-top"
-    class="cr-container-shadow has-shadow"></div>
-<main id="mainContent">
-   <div class="cr-centered-card-container">
+<main id="mainContent" class="cr-scrollable">
+  <div class="cr-scrollable-top-shadow"></div>
+  <div class="cr-centered-card-container">
     <div class="card">
       <section ?hidden="${!this.managed_}" class="page-subtitle">
         <cr-icon-button class="icon-arrow-back" id="closeButton"

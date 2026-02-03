@@ -71,12 +71,6 @@ p {
   padding-inline: var(--cr-section-padding);
 }
 
-#cr-container-shadow-top {
-  /* Needs to be higher than #container's z-index to appear above
-    * scrollbars. */
-  z-index: 2;
-}
-
 #container {
   align-items: flex-start;
   color: var(--cr-primary-text-color);

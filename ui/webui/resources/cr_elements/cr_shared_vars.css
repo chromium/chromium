@@ -184,11 +184,6 @@ html {
   --cr-toolbar-overlay-animation-duration: 150ms;
   --cr-toolbar-height: 56px;
 
-  --cr-container-shadow-height: 6px;
-  --cr-container-shadow-margin: calc(-1 * var(--cr-container-shadow-height));
-
-  --cr-container-shadow-max-opacity: 1;
-
   /** MD Refresh Styles */
   --cr-card-border-radius: 8px;
   --cr-disabled-opacity: .38;

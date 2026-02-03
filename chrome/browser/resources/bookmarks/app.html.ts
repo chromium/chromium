@@ -11,8 +11,9 @@ export function getHtml(this: BookmarksAppElement) {
   return html`<!--_html_template_start_-->
 <bookmarks-toolbar sidebar-width="${this.sidebarWidth_}" role="banner">
 </bookmarks-toolbar>
-<div id="drop-shadow" class="cr-container-shadow"></div>
 <div id="main-container">
+  <div class="cr-scrollable-top-shadow ${
+      this.toolbarShadow_ ? 'force-on' : ''}"></div>
   <div id="sidebar">
     <div id="sidebar-folders" role="tree" aria-label="$i18n{sidebarAxLabel}">
       <bookmarks-folder-node item-id="0" depth="-1"></bookmarks-folder-node>

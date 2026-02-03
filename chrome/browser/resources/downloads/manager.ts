@@ -64,11 +64,6 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
     return {
       hasDownloads_: {type: Boolean},
 
-      hasShadow_: {
-        type: Boolean,
-        reflect: true,
-      },
-
       inSearchMode_: {type: Boolean},
       items_: {type: Array},
       spinnerActive_: {type: Boolean},
@@ -93,7 +88,6 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
   protected accessor items_: MojomData[] = [];
   protected accessor hasDownloads_: boolean = false;
   // Used for CSS styling.
-  protected accessor hasShadow_: boolean = false;
   protected accessor inSearchMode_: boolean = false;
   protected accessor spinnerActive_: boolean = false;
   protected accessor bypassPromptItemId_: string = '';
@@ -397,7 +391,6 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
       // Approaching the end of the scrollback. Attempt to load more items.
       this.searchService_.loadMore();
     }
-    this.hasShadow_ = container.scrollTop > 0;
   }
 
   protected onSearchChanged_() {

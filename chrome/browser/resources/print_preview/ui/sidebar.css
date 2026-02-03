@@ -36,9 +36,9 @@
 
 /* Print Preview uses lighter box-shadows compared to the default
  * styling. */
-:host #cr-container-shadow-top,
-:host #cr-container-shadow-bottom {
-  box-shadow: inset 0 5px 3px -3px rgba(0, 0, 0, .2);
+.cr-scrollable-top-shadow,
+.cr-scrollable-bottom-shadow {
+  box-shadow: inset 0 5px 6px -3px rgba(0, 0, 0, .4);
 }
 
 .settings-section {

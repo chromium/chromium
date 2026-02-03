@@ -15,9 +15,9 @@ export function getHtml(this: DownloadsManagerElement) {
     @spinner-active-changed="${this.onSpinnerActiveChanged_}"
     @search-changed="${this.onSearchChanged_}">
 </downloads-toolbar>
-<div id="drop-shadow" class="cr-container-shadow"></div>
-<div id="mainContainer" @scroll="${this.onScroll_}"
+<div id="mainContainer" class="cr-scrollable" @scroll="${this.onScroll_}"
     @save-dangerous-click="${this.onSaveDangerousClick_}">
+  <div class="cr-scrollable-top-shadow"></div>
   <managed-footnote ?hidden="${this.inSearchMode_}"></managed-footnote>
   <cr-infinite-list id="downloadsList" .items="${this.items_}"
       role="grid" aria-rowcount="${this.items_.length}"

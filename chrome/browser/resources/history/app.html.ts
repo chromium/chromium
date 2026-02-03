@@ -33,7 +33,6 @@ export function getHtml(this: HistoryAppElement) {
         @search-term-native-input="${this.onToolbarSearchInputNativeInput_}"
         @search-term-cleared="${this.onToolbarSearchCleared_}">
     </history-toolbar>
-    <div id="drop-shadow" class="cr-container-shadow"></div>
     <div id="main-container">
       <history-side-bar id="contentSideBar"
           .selectedPage="${this.selectedPage_}"

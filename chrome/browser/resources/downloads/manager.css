@@ -6,10 +6,11 @@
  * #type=style-lit
  * #import=chrome://resources/cr_elements/cr_hidden_style_lit.css.js
  * #import=chrome://resources/cr_elements/cr_page_host_style_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_scrollable_lit.css.js
  * #import=chrome://resources/cr_elements/cr_shared_style_lit.css.js
  * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
  * #scheme=relative
- * #include=cr-hidden-style-lit cr-page-host-style-lit cr-shared-style-lit
+ * #include=cr-hidden-style-lit cr-page-host-style-lit cr-shared-style-lit cr-scrollable-lit
  * #css_wrapper_metadata_end */
 
 :host {
@@ -33,10 +34,6 @@
   --cr-toolbar-field-max-width: var(--cr-toolbar-center-basis);
   --cr-toolbar-field-width: 100%;
   --cr-toolbar-header-white-space: nowrap;
-}
-
-:host([has-shadow_]) #drop-shadow {
-  opacity: var(--cr-container-shadow-max-opacity);
 }
 
 downloads-item,
