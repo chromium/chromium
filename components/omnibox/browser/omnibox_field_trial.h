@@ -147,8 +147,6 @@ void GetActiveSuggestFieldTrialHashes(std::vector<uint32_t>* field_trial_hash);
 // particular provider, returns the limit. Otherwise returns the default limit.
 size_t GetProviderMaxMatches(AutocompleteProvider::Type provider);
 
-
-
 // ---------------------------------------------------------
 // For the HistoryURL provider new scoring experiment that is part of the
 // bundled omnibox field trial.

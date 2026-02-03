@@ -409,7 +409,6 @@ void ComposeboxQueryController::CreateSearchUrl(
             request_id_generator_.GetNextRequestId(
                 lens::RequestIdUpdateMode::kSearchUrl,
                 last_active_file->request_id.media_type()),
-            last_active_file->mime_type,
             search_url_request_info->invocation_source, lns_surface,
             base::UTF8ToUTF16(search_url_request_info->query_text),
             std::move(search_url_request_info->additional_params)));
