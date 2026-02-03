@@ -151,11 +151,10 @@ void ImageBitmapRenderingContext::Trace(Visitor* visitor) const {
   CanvasRenderingContext::Trace(visitor);
 }
 
-CanvasResourceProviderSharedImage*
-ImageBitmapRenderingContext::GetOrCreateResourceProviderForOffscreenCanvas() {
+bool ImageBitmapRenderingContext::PushFrame() {
   CHECK(Host()->IsOffscreenCanvas());
   if (isContextLost() && !IsContextBeingRestored()) {
-    return nullptr;
+    return false;
   }
 
   if (resource_provider_for_offscreen_canvas_) {
@@ -170,13 +169,12 @@ ImageBitmapRenderingContext::GetOrCreateResourceProviderForOffscreenCanvas() {
       // provider that is now invalid. We can early return here, trying to
       // re-create the provider right away would just fail. We need to let
       // `TryRestoreContextEvent` wait for the GPU process to up again.
-      return nullptr;
+      return false;
     }
-    return resource_provider_for_offscreen_canvas_.get();
   } else {
     if (!Host()->IsValidImageSize() && !Host()->Size().IsEmpty()) {
       LoseContext(CanvasRenderingContext::kInvalidCanvasSize);
-      return nullptr;
+      return false;
     }
 
     gfx::Size surface_size(Host()->width(), Host()->height());
@@ -213,14 +211,9 @@ ImageBitmapRenderingContext::GetOrCreateResourceProviderForOffscreenCanvas() {
           resource_provider_for_offscreen_canvas_.get()->GetType());
       Host()->DidDraw();
     }
-    return resource_provider_for_offscreen_canvas_.get();
   }
-}
 
-bool ImageBitmapRenderingContext::PushFrame() {
-  DCHECK(Host());
-  DCHECK(Host()->IsOffscreenCanvas());
-  if (!GetOrCreateResourceProviderForOffscreenCanvas()) {
+  if (!resource_provider_for_offscreen_canvas_) {
     return false;
   }
 
