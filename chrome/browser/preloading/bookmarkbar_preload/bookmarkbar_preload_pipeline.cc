@@ -8,6 +8,7 @@
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/preloading_features.h"
+#include "chrome/browser/preloading/preloading_utils.h"
 #include "chrome/browser/preloading/prerender/prerender_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -24,9 +25,6 @@ namespace {
 
 constexpr char kHistogramPrerenderBookmarkBarIsPrerenderingSrpUrl[] =
     "Prerender.IsPrerenderingSRPUrl.Embedder_BookmarkBar";
-
-// TODO(crbug.com/413259638): Create `preloading_utils` and move this to it.
-constexpr char kBookmarkBarMetricSuffix[] = "BookmarkBar";
 
 void AttachBookmarkBarNavigationHandleUserData(
     content::NavigationHandle& navigation_handle) {
@@ -84,8 +82,9 @@ void BookmarkBarPreloadPipeline::StartPrefetch(
   }
 
   prefetch_handle_ = web_contents.StartPrefetch(
-      url_, /*use_prefetch_proxy=*/false, kBookmarkBarMetricSuffix,
-      blink::mojom::Referrer(), /*referring_origin=*/std::nullopt,
+      url_, /*use_prefetch_proxy=*/false,
+      preloading_utils::kBookmarkBarMetricSuffix, blink::mojom::Referrer(),
+      /*referring_origin=*/std::nullopt,
       /*no_vary_search_hint=*/std::nullopt, /*priority=*/std::nullopt,
       pipeline_info_, attempt->GetWeakPtr(),
       /*holdback_status_override=*/
@@ -157,7 +156,7 @@ void BookmarkBarPreloadPipeline::StartPrerender(
 
   prerender_handle_ = web_contents.StartPrerendering(
       url_, content::PreloadingTriggerType::kEmbedder,
-      prerender_utils::kBookmarkBarMetricSuffix,
+      preloading_utils::kBookmarkBarMetricSuffix,
       /*additional_headers=*/net::HttpRequestHeaders(),
       /*no_vary_search_hint=*/std::nullopt,
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_AUTO_BOOKMARK),

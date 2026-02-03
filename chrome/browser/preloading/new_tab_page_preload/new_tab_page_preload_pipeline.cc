@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
+#include "chrome/browser/preloading/preloading_utils.h"
 #include "chrome/browser/preloading/prerender/prerender_manager.h"
 #include "chrome/browser/preloading/prerender/prerender_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -25,9 +26,6 @@ namespace {
 
 constexpr char kHistogramPrerenderNTPIsPrerenderingSrpUrl[] =
     "Prerender.IsPrerenderingSRPUrl.Embedder_NewTabPage";
-
-// TODO(crbug.com/413259638): Create `preloading_utils` and move this to it.
-constexpr char kNewTabPageMetricSuffix[] = "NewTabPage";
 
 bool IsSearchUrl(content::WebContents& web_contents, const GURL& url) {
   auto* profile = Profile::FromBrowserContext(web_contents.GetBrowserContext());
@@ -77,8 +75,9 @@ void NewTabPagePreloadPipeline::StartPrefetch(
   }
 
   prefetch_handle_ = web_contents.StartPrefetch(
-      url_, /*use_prefetch_proxy=*/false, kNewTabPageMetricSuffix,
-      blink::mojom::Referrer(), /*referring_origin=*/std::nullopt,
+      url_, /*use_prefetch_proxy=*/false,
+      preloading_utils::kNewTabPageMetricSuffix, blink::mojom::Referrer(),
+      /*referring_origin=*/std::nullopt,
       /*no_vary_search_hint=*/std::nullopt, /*priority=*/std::nullopt,
       pipeline_info_, attempt->GetWeakPtr(),
       /*holdback_status_override=*/
@@ -119,7 +118,7 @@ void NewTabPagePreloadPipeline::StartPrerender(
 
   prerender_handle_ = web_contents.StartPrerendering(
       url_, content::PreloadingTriggerType::kEmbedder,
-      prerender_utils::kNewTabPageMetricSuffix,
+      preloading_utils::kNewTabPageMetricSuffix,
       /*additional_headers=*/net::HttpRequestHeaders(),
       /*no_vary_search_hint=*/std::nullopt,
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_AUTO_BOOKMARK),
