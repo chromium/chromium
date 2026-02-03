@@ -640,6 +640,7 @@ void PreloadHelper::ModulePreloadIfNeeded(
   if (params.as.empty() || params.as == "script") {
     module_type = ModuleType::kJavaScriptOrWasm;
   } else if (allow_style_and_json && params.as == "style") {
+    UseCounter::Count(document, WebFeature::kLinkRelModulePreloadStyle);
     module_type = ModuleType::kCSS;
   } else if (allow_style_and_json && params.as == "json") {
     module_type = ModuleType::kJSON;
