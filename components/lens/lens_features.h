@@ -989,6 +989,16 @@ bool IsLensOverlayEduActionChipDisabledByGlic();
 COMPONENT_EXPORT(LENS_FEATURES)
 int GetLensOverlayEduActionChipMaxShownCount();
 
+// Time required between shows of the EDU action chip. If zero, do not cap.
+COMPONENT_EXPORT(LENS_FEATURES)
+base::TimeDelta GetLensOverlayEduActionChipShowInterval();
+
+// Debounce interval during which function calls are regarded as being part of
+// one showing of the EDU action chip. Needed because a single potential show
+// event can create multiple repeated calls in a short time interval.
+COMPONENT_EXPORT(LENS_FEATURES)
+base::TimeDelta GetLensOverlayEduActionChipShowDebounceInterval();
+
 // Whether to enable keyboard selection in the Lens overlay.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensOverlayKeyboardSelectionEnabled();

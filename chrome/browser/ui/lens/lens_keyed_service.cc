@@ -19,3 +19,11 @@ int LensKeyedService::GetActionChipShownCount() {
 void LensKeyedService::SetActionChipShownCount(int value) {
   action_chip_shown_count_ = value;
 }
+
+base::Time LensKeyedService::GetActionChipLastShownTime() {
+  return action_chip_last_shown_time_;
+}
+
+void LensKeyedService::ResetActionChipLastShownTime() {
+  action_chip_last_shown_time_ = base::Time::Now();
+}

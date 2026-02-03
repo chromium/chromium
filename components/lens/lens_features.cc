@@ -523,6 +523,15 @@ const base::FeatureParam<bool> kLensOverlayEduActionChipDisabledByGlic{
 const base::FeatureParam<int> kLensOverlayEduActionChipMaxShownCount{
     &kLensOverlayEduActionChip, "max-shown-count", 3};
 
+const base::FeatureParam<base::TimeDelta> kLensOverlayEduActionChipShowInterval{
+    &kLensOverlayEduActionChip, "lens-action-chip-show-interval",
+    base::Hours(0)};
+
+const base::FeatureParam<base::TimeDelta>
+    kLensOverlayEduActionChipShowDebounceInterval{
+        &kLensOverlayEduActionChip, "lens-action-chip-show-debounce-interval",
+        base::Seconds(1)};
+
 constexpr base::FeatureParam<std::string> kLensOverlayStraightToSrpQuery{
     &kLensOverlayStraightToSrp, "query", ""};
 
@@ -1228,6 +1237,14 @@ bool IsLensOverlayEduActionChipDisabledByGlic() {
 
 int GetLensOverlayEduActionChipMaxShownCount() {
   return kLensOverlayEduActionChipMaxShownCount.Get();
+}
+
+base::TimeDelta GetLensOverlayEduActionChipShowInterval() {
+  return kLensOverlayEduActionChipShowInterval.Get();
+}
+
+base::TimeDelta GetLensOverlayEduActionChipShowDebounceInterval() {
+  return kLensOverlayEduActionChipShowDebounceInterval.Get();
 }
 
 bool IsLensOverlayKeyboardSelectionEnabled() {

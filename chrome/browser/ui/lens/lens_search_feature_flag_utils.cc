@@ -90,21 +90,39 @@ bool IsAimM3Enabled(Profile* profile) {
 }
 
 bool ShouldShowLensOverlayEduActionChip(Profile* profile) {
+  if (!lens::features::IsLensOverlayEduActionChipEnabled()) {
+    return false;
+  }
+
   LensKeyedService* service = LensKeyedServiceFactory::GetForProfile(
       profile, /*create_if_necessary=*/true);
   if (service == nullptr) {
     return false;
   }
-  int shown_count = service->GetActionChipShownCount();
-  return lens::features::IsLensOverlayEduActionChipEnabled() &&
-         shown_count <=
-             lens::features::GetLensOverlayEduActionChipMaxShownCount();
+
+  if (service->GetActionChipShownCount() >
+      lens::features::GetLensOverlayEduActionChipMaxShownCount()) {
+    return false;
+  }
+
+  base::TimeDelta time_delta =
+      base::Time::Now() - service->GetActionChipLastShownTime();
+  // This function may be called multiple times for a single show. Check that
+  // the debounce interval has passed before considering the current call a
+  // second show attempt.
+  if (time_delta >=
+          lens::features::GetLensOverlayEduActionChipShowDebounceInterval() &&
+      time_delta < lens::features::GetLensOverlayEduActionChipShowInterval()) {
+    return false;
+  }
+  return true;
 }
 
-void IncrementLensOverlayEduActionChipShownCount(Profile* profile) {
+void RecordLensOverlayEduActionChipShown(Profile* profile) {
   LensKeyedService* service = LensKeyedServiceFactory::GetForProfile(
       profile, /*create_if_necessary=*/true);
   service->IncrementActionChipShownCount();
+  service->ResetActionChipLastShownTime();
 }
 
 bool DidUserGrantLensOverlayNeededPermissions(PrefService* pref_service) {
