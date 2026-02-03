@@ -41,7 +41,10 @@ class LobsterServiceTest : public ChromeAshTestBase {
     testing_profile_ = profile_manager_.CreateTestingProfile("profile");
     ash::AnnotatedAccountId::Set(testing_profile_.get(), user->GetAccountId());
     lobster_service_ = std::make_unique<LobsterService>(
-        std::make_unique<MockSnapperProvider>(), testing_profile_.get());
+        std::make_unique<MockSnapperProvider>(), testing_profile_.get(),
+        base::BindRepeating([]() {
+          return TestingBrowserProcess::GetGlobal()->variations_service();
+        }));
   }
 
   void TearDown() override {

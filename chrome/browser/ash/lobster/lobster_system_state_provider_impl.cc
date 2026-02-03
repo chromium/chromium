@@ -14,8 +14,6 @@
 #include "ash/public/cpp/lobster/lobster_system_state.h"
 #include "ash/public/cpp/lobster/lobster_text_input_context.h"
 #include "base/containers/fixed_flat_set.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_consent_status.h"
 #include "chromeos/ash/components/specialized_features/feature_access_checker.h"
 #include "components/prefs/pref_service.h"
@@ -115,14 +113,14 @@ specialized_features::FeatureAccessConfig CreateFeatureAccessConfig() {
 LobsterSystemStateProviderImpl::LobsterSystemStateProviderImpl(
     PrefService* pref,
     signin::IdentityManager* identity_manager,
+    specialized_features::FeatureAccessChecker::VariationsServiceCallback
+        variations_service_callback,
     bool is_in_demo_mode)
     : pref_(pref),
       access_checker_(CreateFeatureAccessConfig(),
                       pref_,
                       identity_manager,
-                      /*variations_service_callback=*/base::BindRepeating([]() {
-                        return g_browser_process->variations_service();
-                      })),
+                      std::move(variations_service_callback)),
       is_in_demo_mode_(is_in_demo_mode) {}
 
 LobsterSystemStateProviderImpl::~LobsterSystemStateProviderImpl() = default;

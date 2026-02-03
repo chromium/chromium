@@ -26,9 +26,11 @@ enum class TabletState;
 class LobsterSystemStateProviderImpl : public LobsterSystemStateProvider,
                                        public display::DisplayObserver {
  public:
-  explicit LobsterSystemStateProviderImpl(
+  LobsterSystemStateProviderImpl(
       PrefService* pref,
       signin::IdentityManager* identity_manager,
+      specialized_features::FeatureAccessChecker::VariationsServiceCallback
+          variations_service_callback,
       bool is_in_demo_mode);
 
   ~LobsterSystemStateProviderImpl() override;

@@ -92,9 +92,13 @@ class LobsterSystemStateProviderImplBaseTest : public testing::Test {
  public:
   LobsterSystemStateProviderImplBaseTest()
       : test_screen_(/*create_display=*/true, /*register_screen=*/true),
-        system_state_provider_(&pref_,
-                               identity_test_environment_.identity_manager(),
-                               /*is_in_demo_mode=*/false),
+        system_state_provider_(
+            &pref_,
+            identity_test_environment_.identity_manager(),
+            base::BindRepeating([]() {
+              return TestingBrowserProcess::GetGlobal()->variations_service();
+            }),
+            /*is_in_demo_mode=*/false),
         metrics_enabled_state_provider_(/*consent=*/false, /*enabled=*/false) {
     // Sets up InputMethodManager
     InputMethodManagerFake::Initialize(new InputMethodManagerFake);

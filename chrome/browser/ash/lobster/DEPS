@@ -12,7 +12,6 @@ include_rules = [
   # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/browser/ash/login/users/fake_chrome_user_manager.h",
   "+chrome/browser/ash/magic_boost",
-  "+chrome/browser/browser_process.h",
   "+chrome/browser/feedback",
   "+chrome/browser/manta",
   "+chrome/browser/profiles",
@@ -28,3 +27,10 @@ include_rules = [
 
   "+content/public/test/test_browser_context.h",
 ]
+
+specific_include_rules = {
+  # Exceptionally allow using g_browser_process for the profile keyed service.
+  "lobster_service_provider\\.cc": [
+    "+chrome/browser/browser_process.h",
+  ],
+}
