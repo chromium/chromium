@@ -307,7 +307,7 @@ struct JingleMessage {
   std::unique_ptr<ContentDescription> description;
 
   // Structured data replacements for XML payloads.
-  using Payload = std::variant<std::monostate,
+  using Payload = std::variant<std::monostate /*unset value*/,
                                SessionInitiate,
                                SessionAccept,
                                SessionInfo,
