@@ -32,6 +32,8 @@
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync_device_info/local_device_info_util.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace send_tab_to_self {
 
@@ -657,8 +659,8 @@ void SendTabToSelfBridge::ComputeTargetDeviceInfoSortedList() {
       });
 
   target_device_info_sorted_list_.clear();
-  std::set<std::string> unique_device_names;
-  std::unordered_map<std::string, int> short_names_counter;
+  absl::flat_hash_set<std::string> unique_device_names;
+  absl::flat_hash_map<std::string, int> short_names_counter;
   for (const syncer::DeviceInfo* device : all_devices) {
     // If the current device is considered expired for our purposes, stop here
     // since the next devices in the vector are at least as expired than this
@@ -695,7 +697,7 @@ void SendTabToSelfBridge::ComputeTargetDeviceInfoSortedList() {
           device->form_factor(), device->last_updated_timestamp());
       target_device_info_sorted_list_.push_back(target_device_info);
 
-      short_names_counter[device_names.short_name]++;
+      ++short_names_counter[device_names.short_name];
     }
   }
   for (auto& device_info : target_device_info_sorted_list_) {
