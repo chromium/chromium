@@ -75,7 +75,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/optimization_guide/model:unit_tests",
     "//ios/chrome/browser/promos_manager/model:constants",
-    "//ios/chrome/browser/promos_manager/model:features",
     "//ios/chrome/browser/promos_manager/model:test_support",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/application_context",

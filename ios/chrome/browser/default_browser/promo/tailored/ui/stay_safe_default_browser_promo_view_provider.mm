@@ -32,8 +32,8 @@ using l10n_util::GetNSString;
   return promos_manager::Promo::StaySafeDefaultBrowser;
 }
 
-- (const base::Feature*)featureEngagmentIdentifier {
-  return &feature_engagement::kIPHiOSPromoStaySafeFeature;
+- (const base::Feature&)featureEngagmentIdentifier {
+  return feature_engagement::kIPHiOSPromoStaySafeFeature;
 }
 
 - (DefaultPromoType)defaultBrowserPromoType {

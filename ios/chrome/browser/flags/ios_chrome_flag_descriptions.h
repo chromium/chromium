@@ -366,9 +366,6 @@ extern const char kFeedSwipeInProductHelpDescription[];
 extern const char kForceStartupSigninPromoName[];
 extern const char kForceStartupSigninPromoDescription[];
 
-extern const char kFullscreenPromosManagerSkipInternalLimitsName[];
-extern const char kFullscreenPromosManagerSkipInternalLimitsDescription[];
-
 extern const char kFullscreenScrollThresholdName[];
 extern const char kFullscreenScrollThresholdDescription[];
 

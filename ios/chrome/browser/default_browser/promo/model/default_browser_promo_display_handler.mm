@@ -24,7 +24,7 @@
 - (PromoConfig)config {
   return PromoConfig(
       promos_manager::Promo::DefaultBrowser,
-      &feature_engagement::kIPHiOSPromoGenericDefaultBrowserFeature);
+      feature_engagement::kIPHiOSPromoGenericDefaultBrowserFeature);
 }
 
 @end

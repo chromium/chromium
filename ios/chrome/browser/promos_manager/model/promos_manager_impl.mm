@@ -19,13 +19,12 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/strcat.h"
 #import "base/time/time.h"
+#import "base/types/to_address.h"
 #import "base/values.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/prefs/pref_service.h"
 #import "components/prefs/scoped_user_pref_update.h"
 #import "ios/chrome/browser/promos_manager/model/constants.h"
-#import "ios/chrome/browser/promos_manager/model/features.h"
-#import "ios/chrome/browser/promos_manager/model/impression_limit.h"
 #import "ios/chrome/browser/promos_manager/model/promo_display_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 
@@ -363,7 +362,7 @@ const base::Feature* PromosManagerImpl::FeatureForPromo(
     return nil;
   }
 
-  return it->feature_engagement_feature;
+  return base::to_address(it->feature_engagement_feature);
 }
 
 // Sort the promos in the order that they will be displayed.

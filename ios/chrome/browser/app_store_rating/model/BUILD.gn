@@ -31,10 +31,7 @@ source_set("features") {
     "features.h",
     "features.mm",
   ]
-  deps = [
-    "//base",
-    "//ios/chrome/browser/promos_manager/model:features",
-  ]
+  deps = [ "//base" ]
 }
 
 source_set("unit_tests") {

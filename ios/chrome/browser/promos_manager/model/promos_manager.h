@@ -16,8 +16,6 @@
 #import "components/keyed_service/core/keyed_service.h"
 #import "ios/chrome/browser/promos_manager/model/promo_config.h"
 
-@class ImpressionLimit;
-
 struct PromoDisplayContext;
 
 namespace promos_manager {

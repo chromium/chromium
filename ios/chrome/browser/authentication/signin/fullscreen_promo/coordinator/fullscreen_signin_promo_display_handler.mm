@@ -25,7 +25,7 @@
 
 - (PromoConfig)config {
   return PromoConfig(promos_manager::Promo::FullscreenSignin,
-                     &feature_engagement::kIPHiOSPromoSigninFullscreenFeature);
+                     feature_engagement::kIPHiOSPromoSigninFullscreenFeature);
 }
 
 @end

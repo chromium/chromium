@@ -20,9 +20,6 @@
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
 #import "ios/chrome/browser/promos_manager/model/constants.h"
-#import "ios/chrome/browser/promos_manager/model/features.h"
-#import "ios/chrome/browser/promos_manager/model/impression_limit.h"
-#import "ios/chrome/browser/promos_manager/model/promo.h"
 #import "ios/chrome/browser/promos_manager/model/promo_config.h"
 #import "ios/chrome/browser/promos_manager/model/promo_display_context.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager.h"
@@ -56,15 +53,6 @@ class PromosManagerImplTest : public PlatformTest {
   PromosManagerImplTest();
   ~PromosManagerImplTest() override;
 
-  // Creates a mock promo without impression limits.
-  Promo* TestPromo();
-
-  // Creates a mock promo with impression limits.
-  Promo* TestPromoWithImpressionLimits();
-
-  // Creates mock impression limits.
-  NSArray<ImpressionLimit*>* TestImpressionLimits();
-
  protected:
   // Creates PromosManager with empty pref data.
   void CreatePromosManager();
@@ -85,30 +73,6 @@ PromosManagerImplTest::PromosManagerImplTest() {
 }
 
 PromosManagerImplTest::~PromosManagerImplTest() {}
-
-NSArray<ImpressionLimit*>* PromosManagerImplTest::TestImpressionLimits() {
-  static NSArray<ImpressionLimit*>* limits;
-  static dispatch_once_t onceToken;
-
-  dispatch_once(&onceToken, ^{
-    ImpressionLimit* oncePerWeek = [[ImpressionLimit alloc] initWithLimit:1
-                                                               forNumDays:7];
-    ImpressionLimit* twicePerMonth = [[ImpressionLimit alloc] initWithLimit:2
-                                                                 forNumDays:31];
-    limits = @[ oncePerWeek, twicePerMonth ];
-  });
-
-  return limits;
-}
-
-Promo* PromosManagerImplTest::TestPromo() {
-  return [[Promo alloc] initWithIdentifier:promos_manager::Promo::Test];
-}
-
-Promo* PromosManagerImplTest::TestPromoWithImpressionLimits() {
-  return [[Promo alloc] initWithIdentifier:promos_manager::Promo::Test
-                       andImpressionLimits:TestImpressionLimits()];
-}
 
 void PromosManagerImplTest::CreatePromosManager() {
   CreatePrefs();
@@ -166,35 +130,6 @@ TEST_F(PromosManagerImplTest, ReturnsNulloptForBadName) {
                    .has_value());
 }
 
-// Tests PromosManagerImplTest::TestPromo() correctly creates one mock promo.
-TEST_F(PromosManagerImplTest, CreatesPromo) {
-  Promo* promo = TestPromo();
-
-  EXPECT_NE(promo, nil);
-  EXPECT_EQ((int)promo.impressionLimits.count, 0);
-}
-
-// Tests PromosManagerImplTest::TestPromoWithImpressionLimits() correctly
-// creates one mock promo with mock impression limits.
-TEST_F(PromosManagerImplTest, CreatesPromoWithImpressionLimits) {
-  Promo* promoWithImpressionLimits = TestPromoWithImpressionLimits();
-
-  EXPECT_NE(promoWithImpressionLimits, nil);
-  EXPECT_EQ((int)promoWithImpressionLimits.impressionLimits.count, 2);
-}
-
-// Tests PromosManagerImplTest::TestImpressionLimits() correctly creates two
-// mock impression limits.
-TEST_F(PromosManagerImplTest, CreatesImpressionLimits) {
-  NSArray<ImpressionLimit*>* impressionLimits = TestImpressionLimits();
-
-  EXPECT_NE(impressionLimits, nil);
-  EXPECT_EQ(impressionLimits[0].numImpressions, 1);
-  EXPECT_EQ(impressionLimits[0].numDays, 7);
-  EXPECT_EQ(impressionLimits[1].numImpressions, 2);
-  EXPECT_EQ(impressionLimits[1].numDays, 31);
-}
-
 // Tests PromosManager::CanShowPromo() correctly allows a promo to be shown
 // because it hasn't met any impression limits.
 TEST_F(PromosManagerImplTest, DecidesCanShowPromo) {
@@ -203,7 +138,7 @@ TEST_F(PromosManagerImplTest, DecidesCanShowPromo) {
   CreatePromosManager();
 
   PromoConfigsSet promoConfigs;
-  promoConfigs.emplace(promos_manager::Promo::Test, &kTestFeatureOne);
+  promoConfigs.emplace(promos_manager::Promo::Test, kTestFeatureOne);
   promos_manager_->InitializePromoConfigs(std::move(promoConfigs));
 
   EXPECT_CALL(mock_tracker_, ShouldTriggerHelpUI(testing::Ref(kTestFeatureOne)))
@@ -220,10 +155,10 @@ TEST_F(PromosManagerImplTest, CanShowPromo_TestPromoSpecificLimits) {
   CreatePromosManager();
 
   PromoConfigsSet promoConfigs;
-  promoConfigs.emplace(promos_manager::Promo::Test, &kTestFeatureOne);
-  promoConfigs.emplace(promos_manager::Promo::AppStoreRating, &kTestFeatureTwo);
+  promoConfigs.emplace(promos_manager::Promo::Test, kTestFeatureOne);
+  promoConfigs.emplace(promos_manager::Promo::AppStoreRating, kTestFeatureTwo);
   promoConfigs.emplace(promos_manager::Promo::CredentialProviderExtension,
-                       &kTestFeatureThree);
+                       kTestFeatureThree);
   promos_manager_->InitializePromoConfigs(std::move(promoConfigs));
 
   // Mock the FET tracker to disallow Test and AppStoreRating due to impression
@@ -301,11 +236,11 @@ TEST_F(PromosManagerImplTest, ReturnsSortPromosBreakingTies) {
 
   PromoConfigsSet promoImpressionLimits;
   promoImpressionLimits.emplace(
-      promos_manager::Promo::CredentialProviderExtension, &kTestFeatureOne);
+      promos_manager::Promo::CredentialProviderExtension, kTestFeatureOne);
   promoImpressionLimits.emplace(promos_manager::Promo::AppStoreRating,
-                                &kTestFeatureTwo);
+                                kTestFeatureTwo);
   promoImpressionLimits.emplace(promos_manager::Promo::DefaultBrowser,
-                                &kTestFeatureThree);
+                                kTestFeatureThree);
   promos_manager_->InitializePromoConfigs(std::move(promoImpressionLimits));
 
   EXPECT_CALL(mock_tracker_, IsInitialized())
@@ -369,11 +304,11 @@ TEST_F(PromosManagerImplTest,
   };
 
   PromoConfigsSet promoImpressionLimits;
-  promoImpressionLimits.emplace(promos_manager::Promo::Test, &kTestFeatureOne);
+  promoImpressionLimits.emplace(promos_manager::Promo::Test, kTestFeatureOne);
   promoImpressionLimits.emplace(promos_manager::Promo::AppStoreRating,
-                                &kTestFeatureTwo);
+                                kTestFeatureTwo);
   promoImpressionLimits.emplace(promos_manager::Promo::DefaultBrowser,
-                                &kTestFeatureThree);
+                                kTestFeatureThree);
   promos_manager_->InitializePromoConfigs(std::move(promoImpressionLimits));
 
   EXPECT_CALL(mock_tracker_, IsInitialized())
@@ -1149,11 +1084,11 @@ TEST_F(PromosManagerImplTest, NextPromoForDisplayReturnsPendingPromo) {
   };
 
   PromoConfigsSet promoConfigs;
-  promoConfigs.emplace(promos_manager::Promo::Test, &kTestFeatureOne);
+  promoConfigs.emplace(promos_manager::Promo::Test, kTestFeatureOne);
   promoConfigs.emplace(promos_manager::Promo::CredentialProviderExtension,
-                       &kTestFeatureTwo);
+                       kTestFeatureTwo);
   promoConfigs.emplace(promos_manager::Promo::AppStoreRating,
-                       &kTestFeatureThree);
+                       kTestFeatureThree);
   promos_manager_->InitializePromoConfigs(std::move(promoConfigs));
 
   // Mock the FET tracker to allow all promos.
@@ -1194,9 +1129,9 @@ TEST_F(PromosManagerImplTest,
 
   PromoConfigsSet promoConfigs;
   promoConfigs.emplace(promos_manager::Promo::PostRestoreSignInFullscreen,
-                       &kTestFeatureOne);
+                       kTestFeatureOne);
   promoConfigs.emplace(promos_manager::Promo::CredentialProviderExtension,
-                       &kTestFeatureTwo);
+                       kTestFeatureTwo);
   promos_manager_->InitializePromoConfigs(std::move(promoConfigs));
 
   // Mock the FET tracker to allow all promos.
@@ -1229,7 +1164,7 @@ TEST_F(PromosManagerImplTest, NextPromoForDisplayWithFreshNtpRequirement) {
   };
 
   PromoConfigsSet promoConfigs;
-  promoConfigs.emplace(promos_manager::Promo::Test, &kTestFeatureOne, nil,
+  promoConfigs.emplace(promos_manager::Promo::Test, kTestFeatureOne,
                        PromoDisplayTime::kFreshNtp);
   promos_manager_->InitializePromoConfigs(std::move(promoConfigs));
 

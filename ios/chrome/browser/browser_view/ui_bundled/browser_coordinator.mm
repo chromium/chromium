@@ -181,7 +181,6 @@
 #import "ios/chrome/browser/print/coordinator/print_coordinator_impl.h"
 #import "ios/chrome/browser/promos_manager/coordinator/promos_manager_coordinator.h"
 #import "ios/chrome/browser/promos_manager/model/app_store_review_swift.h"
-#import "ios/chrome/browser/promos_manager/model/features.h"
 #import "ios/chrome/browser/push_notification/coordinator/notifications_opt_in_coordinator.h"
 #import "ios/chrome/browser/push_notification/coordinator/notifications_opt_in_coordinator_delegate.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"

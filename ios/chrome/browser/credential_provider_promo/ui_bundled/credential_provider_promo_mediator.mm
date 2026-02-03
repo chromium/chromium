@@ -13,7 +13,6 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/credential_provider_promo/ui_bundled/credential_provider_promo_consumer.h"
 #import "ios/chrome/browser/promos_manager/model/constants.h"
-#import "ios/chrome/browser/promos_manager/model/features.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"

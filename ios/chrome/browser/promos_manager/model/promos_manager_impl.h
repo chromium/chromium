@@ -18,7 +18,6 @@
 #import "base/values.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/promos_manager/model/constants.h"
-#import "ios/chrome/browser/promos_manager/model/impression_limit.h"
 #import "ios/chrome/browser/promos_manager/model/promo_config.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager.h"
 

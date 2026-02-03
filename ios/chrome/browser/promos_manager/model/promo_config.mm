@@ -7,10 +7,8 @@
 #import "ios/chrome/browser/promos_manager/model/promo_display_context.h"
 
 PromoConfig::PromoConfig(promos_manager::Promo identifier,
-                         const base::Feature* feature_engagement_feature,
-                         NSArray<ImpressionLimit*>* impression_limits,
+                         const base::Feature& feature_engagement_feature,
                          std::optional<PromoDisplayTime> display_time)
     : identifier(identifier),
       feature_engagement_feature(feature_engagement_feature),
-      impression_limits(impression_limits),
       display_time(display_time) {}

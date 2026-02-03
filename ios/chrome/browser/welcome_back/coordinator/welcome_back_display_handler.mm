@@ -20,7 +20,7 @@
 
 - (PromoConfig)config {
   return PromoConfig(promos_manager::Promo::WelcomeBack,
-                     &feature_engagement::kIPHiOSWelcomeBackFeature);
+                     feature_engagement::kIPHiOSWelcomeBackFeature);
 }
 
 @end

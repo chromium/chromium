@@ -74,7 +74,7 @@
 
 - (PromoConfig)config {
   return PromoConfig([self identifier],
-                     &feature_engagement::kIPHiOSPromoPostRestoreFeature);
+                     feature_engagement::kIPHiOSPromoPostRestoreFeature);
 }
 
 - (void)promoWasDisplayed {

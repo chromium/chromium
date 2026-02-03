@@ -13,7 +13,6 @@ source_set("model") {
   public_deps = [ "//base" ]
   deps = [
     ":constants",
-    ":features",
     ":types",
     "//components/feature_engagement/public",
     "//components/keyed_service/core",
@@ -29,7 +28,6 @@ source_set("factory") {
   ]
   frameworks = [ "Foundation.framework" ]
   deps = [
-    ":features",
     ":internal",
     ":model",
     "//ios/chrome/browser/feature_engagement/model",
@@ -52,7 +50,6 @@ source_set("internal") {
     "//components/prefs",
   ]
   deps = [
-    ":features",
     "//components/feature_engagement/public",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
   ]
@@ -60,10 +57,6 @@ source_set("internal") {
 
 source_set("types") {
   sources = [
-    "impression_limit.h",
-    "impression_limit.mm",
-    "promo.h",
-    "promo.mm",
     "promo_config.h",
     "promo_config.mm",
     "promo_display_context.h",
@@ -85,14 +78,6 @@ source_set("constants") {
 
 swift_source_set("app_store_review_swift") {
   sources = [ "app_store_review_adapter.swift" ]
-  deps = [ "//base" ]
-}
-
-source_set("features") {
-  sources = [
-    "features.h",
-    "features.mm",
-  ]
   deps = [ "//base" ]
 }
 
@@ -137,7 +122,6 @@ source_set("unit_tests") {
   frameworks = [ "Foundation.framework" ]
   deps = [
     ":constants",
-    ":features",
     ":internal",
     ":model",
     ":types",

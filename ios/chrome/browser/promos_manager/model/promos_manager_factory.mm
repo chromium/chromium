@@ -7,7 +7,6 @@
 #import "base/no_destructor.h"
 #import "base/time/default_clock.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
-#import "ios/chrome/browser/promos_manager/model/features.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager_impl.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"

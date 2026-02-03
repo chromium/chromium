@@ -24,7 +24,7 @@
 - (PromoConfig)config {
   return PromoConfig(
       [self identifier],
-      &feature_engagement::kIPHiOSPromoPostRestoreDefaultBrowserFeature);
+      feature_engagement::kIPHiOSPromoPostRestoreDefaultBrowserFeature);
 }
 
 // Conditionally returns the promo identifier (promos_manager::Promo) based on

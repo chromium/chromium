@@ -42,8 +42,8 @@ using l10n_util::GetNSString;
   return promos_manager::Promo::MadeForIOSDefaultBrowser;
 }
 
-- (const base::Feature*)featureEngagmentIdentifier {
-  return &feature_engagement::kIPHiOSPromoMadeForIOSFeature;
+- (const base::Feature&)featureEngagmentIdentifier {
+  return feature_engagement::kIPHiOSPromoMadeForIOSFeature;
 }
 
 - (DefaultPromoType)defaultBrowserPromoType {

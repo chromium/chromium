@@ -34,8 +34,7 @@
 - (PromoConfig)config {
   return PromoConfig(
       promos_manager::Promo::CredentialProviderExtension,
-      &feature_engagement::kIPHiOSPromoCredentialProviderExtensionFeature,
-      @[ [[ImpressionLimit alloc] initWithLimit:3 forNumDays:365] ]);
+      feature_engagement::kIPHiOSPromoCredentialProviderExtensionFeature);
 }
 
 @end

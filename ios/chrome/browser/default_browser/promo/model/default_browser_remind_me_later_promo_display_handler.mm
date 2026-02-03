@@ -24,7 +24,7 @@
 - (PromoConfig)config {
   return PromoConfig(
       promos_manager::Promo::DefaultBrowserRemindMeLater,
-      &feature_engagement::kIPHiOSPromoDefaultBrowserReminderFeature);
+      feature_engagement::kIPHiOSPromoDefaultBrowserReminderFeature);
 }
 
 @end

@@ -18,7 +18,6 @@ source_set("model") {
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/promos_manager/model",
     "//ios/chrome/browser/promos_manager/model:constants",
-    "//ios/chrome/browser/promos_manager/model:features",
     "//ios/chrome/browser/shared/coordinator/scene:observing_scene_agent",
     "//ios/chrome/browser/signin/model:authentication_service",
   ]
@@ -40,7 +39,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/authentication/ui_bundled/signin:features",
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
     "//ios/chrome/browser/promos_manager/model:constants",
-    "//ios/chrome/browser/promos_manager/model:features",
     "//ios/chrome/browser/promos_manager/model:test_support",
     "//ios/chrome/browser/shared/coordinator/scene",
     "//ios/chrome/browser/shared/coordinator/scene/test",

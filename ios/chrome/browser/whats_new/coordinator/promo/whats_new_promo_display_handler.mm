@@ -36,7 +36,7 @@
 
 - (PromoConfig)config {
   return PromoConfig(promos_manager::Promo::WhatsNew,
-                     &feature_engagement::kIPHiOSPromoWhatsNewFeature);
+                     feature_engagement::kIPHiOSPromoWhatsNewFeature);
 }
 
 @end

@@ -25,7 +25,6 @@ source_set("coordinator") {
     "//ios/chrome/browser/promos_manager/coordinator:promos",
     "//ios/chrome/browser/promos_manager/model",
     "//ios/chrome/browser/promos_manager/model:factory",
-    "//ios/chrome/browser/promos_manager/model:features",
     "//ios/chrome/browser/promos_manager/model:types",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/coordinator/scene:observing_scene_agent",

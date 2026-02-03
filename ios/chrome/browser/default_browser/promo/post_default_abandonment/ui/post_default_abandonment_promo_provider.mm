@@ -20,7 +20,7 @@
 - (PromoConfig)config {
   return PromoConfig(
       [self identifier],
-      &feature_engagement::kIPHiOSPostDefaultAbandonmentPromoFeature);
+      feature_engagement::kIPHiOSPostDefaultAbandonmentPromoFeature);
 }
 
 - (promos_manager::Promo)identifier {

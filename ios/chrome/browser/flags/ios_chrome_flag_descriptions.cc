@@ -602,12 +602,6 @@ const char kForceStartupSigninPromoDescription[] =
     "When enabled, the startup sign-in promo is always displayed when starting "
     "Chrome.";
 
-const char kFullscreenPromosManagerSkipInternalLimitsName[] =
-    "Fullscreen Promos Manager (Skip internal Impression Limits)";
-const char kFullscreenPromosManagerSkipInternalLimitsDescription[] =
-    "When enabled, the internal Impression Limits of the Promos Manager will "
-    "be ignored; this is useful for local development.";
-
 const char kFullscreenScrollThresholdName[] = "Fullscreen Scroll Threshold";
 const char kFullscreenScrollThresholdDescription[] =
     "When enabled, scrolling must exceed a small threshold before the web view "

@@ -14,7 +14,6 @@
 #import "base/containers/small_map.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/promos_manager/model/constants.h"
-#import "ios/chrome/browser/promos_manager/model/impression_limit.h"
 #import "ios/chrome/browser/promos_manager/model/promo_config.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager.h"
 #import "testing/gmock/include/gmock/gmock.h"

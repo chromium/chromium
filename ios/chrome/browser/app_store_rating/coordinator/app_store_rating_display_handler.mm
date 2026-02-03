@@ -8,7 +8,6 @@
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/promos_manager/model/constants.h"
-#import "ios/chrome/browser/promos_manager/model/impression_limit.h"
 #import "ios/chrome/browser/promos_manager/model/promo_config.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -29,9 +28,7 @@
 
 - (PromoConfig)config {
   return PromoConfig(promos_manager::Promo::AppStoreRating,
-                     &feature_engagement::kIPHiOSPromoAppStoreFeature,
-                     @[ [[ImpressionLimit alloc] initWithLimit:1
-                                                    forNumDays:365] ]);
+                     feature_engagement::kIPHiOSPromoAppStoreFeature);
 }
 
 @end

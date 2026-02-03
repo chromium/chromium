@@ -8,7 +8,6 @@
 #import <Foundation/Foundation.h>
 
 #import "ios/chrome/browser/promos_manager/model/constants.h"
-#import "ios/chrome/browser/promos_manager/model/impression_limit.h"
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 
 struct PromoConfig;

@@ -45,7 +45,6 @@
 #import "ios/chrome/browser/promos_manager/coordinator/standard_promo_alert_provider.h"
 #import "ios/chrome/browser/promos_manager/coordinator/standard_promo_display_handler.h"
 #import "ios/chrome/browser/promos_manager/coordinator/standard_promo_view_provider.h"
-#import "ios/chrome/browser/promos_manager/model/features.h"
 #import "ios/chrome/browser/promos_manager/model/promo_config.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager_factory.h"
@@ -230,7 +229,7 @@
   if (_currentPromoData.has_value() && !_currentPromoData.value().was_forced) {
     PromoConfigsSet configs = [self promoConfigs];
     auto it = configs.find(_currentPromoData.value().promo);
-    if (it == configs.end() || !it->feature_engagement_feature) {
+    if (it == configs.end()) {
       return;
     }
 

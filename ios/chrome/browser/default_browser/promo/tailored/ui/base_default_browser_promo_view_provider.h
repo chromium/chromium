@@ -28,7 +28,7 @@
 - (promos_manager::Promo)promoIdentifier;
 
 // Should be implemented in subclassses.
-- (const base::Feature*)featureEngagmentIdentifier;
+- (const base::Feature&)featureEngagmentIdentifier;
 
 // Should be implemented in subclasses.
 - (DefaultPromoType)defaultBrowserPromoType;

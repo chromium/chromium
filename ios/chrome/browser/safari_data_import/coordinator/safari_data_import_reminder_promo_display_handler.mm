@@ -47,7 +47,7 @@
 
 - (PromoConfig)config {
   return PromoConfig(promos_manager::Promo::SafariImportRemindMeLater,
-                     &feature_engagement::kIPHiOSSafariImportFeature);
+                     feature_engagement::kIPHiOSSafariImportFeature);
 }
 
 #pragma mark - SafariDataImportUIHandler

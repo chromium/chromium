@@ -156,7 +156,6 @@ source_set("scene") {
     "//ios/chrome/browser/policy/ui_bundled:user_policy_scene_agent",
     "//ios/chrome/browser/policy/ui_bundled/idle:idle_timeout_policy_scene_agent",
     "//ios/chrome/browser/promos_manager/model:factory",
-    "//ios/chrome/browser/promos_manager/model:features",
     "//ios/chrome/browser/promos_manager/model:scene_agent",
     "//ios/chrome/browser/promos_manager/public:utils",
     "//ios/chrome/browser/reading_list/model",

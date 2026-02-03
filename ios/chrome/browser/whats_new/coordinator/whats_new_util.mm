@@ -7,7 +7,6 @@
 #import "base/apple/foundation_util.h"
 #import "base/ios/ios_util.h"
 #import "ios/chrome/browser/promos_manager/model/constants.h"
-#import "ios/chrome/browser/promos_manager/model/features.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/whats_new/public/constants.h"

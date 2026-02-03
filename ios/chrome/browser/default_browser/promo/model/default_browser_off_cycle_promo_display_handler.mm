@@ -24,7 +24,7 @@
 - (PromoConfig)config {
   return PromoConfig(
       promos_manager::Promo::DefaultBrowserOffCycle,
-      &feature_engagement::kIPHiOSDefaultBrowserOffCyclePromoFeature);
+      feature_engagement::kIPHiOSDefaultBrowserOffCyclePromoFeature);
 }
 
 @end

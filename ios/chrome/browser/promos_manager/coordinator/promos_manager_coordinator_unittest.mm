@@ -12,7 +12,6 @@
 #import "ios/chrome/browser/promos_manager/coordinator/bannered_promo_view_provider.h"
 #import "ios/chrome/browser/promos_manager/coordinator/promos_manager_coordinator+Testing.h"
 #import "ios/chrome/browser/promos_manager/coordinator/standard_promo_action_handler.h"
-#import "ios/chrome/browser/promos_manager/model/features.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"

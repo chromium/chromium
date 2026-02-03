@@ -49,7 +49,7 @@ constexpr CGFloat kHelpSymbolSize = 20;
   NOTREACHED();
 }
 
-- (const base::Feature*)featureEngagmentIdentifier {
+- (const base::Feature&)featureEngagmentIdentifier {
   NOTREACHED();
 }
 

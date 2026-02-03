@@ -39,8 +39,8 @@
   return promos_manager::Promo::AllTabsDefaultBrowser;
 }
 
-- (const base::Feature*)featureEngagmentIdentifier {
-  return &feature_engagement::kIPHiOSPromoAllTabsFeature;
+- (const base::Feature&)featureEngagmentIdentifier {
+  return feature_engagement::kIPHiOSPromoAllTabsFeature;
 }
 
 - (DefaultPromoType)defaultBrowserPromoType {

@@ -41,11 +41,11 @@
   if (_showRemindMeLaterVersion) {
     return PromoConfig(
         promos_manager::Promo::DockingPromoRemindMeLater,
-        &feature_engagement::kIPHiOSDockingPromoRemindMeLaterFeature);
+        feature_engagement::kIPHiOSDockingPromoRemindMeLaterFeature);
   }
 
   return PromoConfig(promos_manager::Promo::DockingPromo,
-                     &feature_engagement::kIPHiOSDockingPromoFeature);
+                     feature_engagement::kIPHiOSDockingPromoFeature);
 }
 
 @end

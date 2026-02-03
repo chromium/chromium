@@ -9,7 +9,6 @@
 
 #import "ios/chrome/browser/promos_manager/coordinator/promo_protocol.h"
 #import "ios/chrome/browser/promos_manager/model/constants.h"
-#import "ios/chrome/browser/promos_manager/model/impression_limit.h"
 
 // StandardPromoDisplayHandler enables feature teams to completely handle
 // what happens after their promo, `identifier`, is triggered for display.

@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/app_store_rating/model/features.h"
 
 #import "base/feature_list.h"
-#import "ios/chrome/browser/promos_manager/model/features.h"
 
 BASE_FEATURE(kAppStoreRating, base::FEATURE_ENABLED_BY_DEFAULT);
 

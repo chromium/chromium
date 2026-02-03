@@ -99,7 +99,6 @@ source_set("flags") {
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/policy/model:constants",
     "//ios/chrome/browser/policy/model:policy_util",
-    "//ios/chrome/browser/promos_manager/model:features",
     "//ios/chrome/browser/reader_mode/model:features",
     "//ios/chrome/browser/settings/ui_bundled/clear_browsing_data/public:features",
     "//ios/chrome/browser/settings/ui_bundled/password:features",

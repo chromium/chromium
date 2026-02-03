@@ -82,7 +82,6 @@ source_set("test_support") {
     "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/profile/model:ios_thread",
-    "//ios/chrome/browser/promos_manager/model:features",
     "//ios/chrome/browser/promos_manager/model:test_support",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",
