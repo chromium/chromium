@@ -2743,6 +2743,49 @@ message ExtensionTelemetryReportRequest {
 
     optional DeclarativeNetRequestActionInfo
         declarative_net_request_action_info = 8;
+
+    // DOM access signal information for extension telemetry.
+    // This signal is created whenever an extension attempts to access the DOM
+    // of a web page.
+    message DOMAccessInfo {
+      message DOMAccess {
+        enum AccessType {
+          ACCESS_TYPE_UNSPECIFIED = 0;
+          // A read operation was performed on the DOM.
+          READ = 1;
+          // A write operation was performed on the DOM.
+          WRITE = 2;
+        }
+        // The name of the API used to access the DOM.
+        optional string api_name = 1;
+        // The URL of the page where the DOM was accessed.
+        optional string url = 2;
+        // The type of access that was performed.
+        optional AccessType access_type = 3;
+        // The timestamp of the DOM access in microseconds.
+        optional int64 timestamp_us = 4;
+      }
+      repeated DOMAccess dom_accesses = 1;
+    }
+    optional DOMAccessInfo dom_access_info = 9;
+
+    // Script injection signal information for extension telemetry.
+    // This signal is created whenever an extension for example attempts to
+    // inject a script into a web page.
+    message ScriptInjectionInfo {
+      message ScriptInjection {
+        // The name of the API used to inject the script.
+        optional string api_name = 1;
+        // The arguments passed to the API.
+        optional string args = 2;
+        // The URL of the page where the script was injected.
+        optional string url = 3;
+        // The timestamp of the script injection in microseconds.
+        optional int64 timestamp_us = 4;
+      }
+      repeated ScriptInjection script_injections = 1;
+    }
+    optional ScriptInjectionInfo script_injection_info = 10;
   }
 
   // Single report structure consists of all the signals observed for a
