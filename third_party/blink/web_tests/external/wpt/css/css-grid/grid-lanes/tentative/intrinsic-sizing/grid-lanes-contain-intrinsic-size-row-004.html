@@ -3,15 +3,14 @@
 <title>CSS contain-intrinsic-size: grid definite size, large size</title>
 <link rel="author" title="Celeste Pan" href="mailto:celestepan@microsoft.com">
 <link rel="help" href="https://drafts.csswg.org/css-grid-3">
-<link rel="match" href="grid-lanes-contain-intrinsic-size-column-003-ref.html">
-<meta name="assert" content="contain-intrinsic-size sizes grid container, even if definite tracks are smaller">
+<link rel="match" href="grid-lanes-contain-intrinsic-size-row-004-ref.html">
+<meta name="assert" content="If contain:size is used but not intrinsic block size is defined, block size should be the size of the defined grid axis">
 
 <style>
 #grid {
   border: 3px solid black;
   display: grid-lanes;
-  grid-template-columns: 77px 88px;
-  contain-intrinsic-size: 200px 300px;
+  grid-template-rows: repeat(2, 35px);
   contain: size;
   width: max-content;
   background: lightblue;
@@ -20,7 +19,8 @@
 .item {
   background: lightgreen;
   opacity: 0.5;
-  height: 100px;
+  width: 20px;
+  height: 20px;
 }
 </style>
 

@@ -24,18 +24,34 @@ GridLanesLayoutAlgorithm::GridLanesLayoutAlgorithm(
     const LayoutAlgorithmParams& params)
     : LayoutAlgorithm(params) {
   DCHECK(params.space.IsNewFormattingContext());
+  const auto& node = Node();
+  const auto& constraint_space = GetConstraintSpace();
 
   // At various stages of the algorithm we need to know the grid-lanes
   // available-size. If it's initially indefinite, we need to know the min/max
   // sizes as well. Initialize all these to the same value.
   grid_lanes_available_size_ = grid_lanes_min_available_size_ =
       grid_lanes_max_available_size_ = ChildAvailableSize();
-  ComputeAvailableSizes(BorderScrollbarPadding(), Node(), GetConstraintSpace(),
+  ComputeAvailableSizes(BorderScrollbarPadding(), node, constraint_space,
                         container_builder_, grid_lanes_available_size_,
                         grid_lanes_min_available_size_,
                         grid_lanes_max_available_size_);
+  // If block-size containment applies, compute the block-size ignoring
+  // children.
+  if (grid_lanes_available_size_.block_size == kIndefiniteSize &&
+      node.ShouldApplyBlockSizeContainment()) {
+    contain_intrinsic_block_size_ = ComputeIntrinsicBlockSizeIgnoringChildren();
+    // Resolve the block-size and set the available sizes.
+    const LayoutUnit block_size = ComputeBlockSizeForFragment(
+        constraint_space, node, BorderPadding(), *contain_intrinsic_block_size_,
+        container_builder_.InlineSize());
 
-  // TODO(almaher): Apply block-size containment.
+    grid_lanes_available_size_.block_size =
+        grid_lanes_min_available_size_.block_size =
+            grid_lanes_max_available_size_.block_size =
+                (block_size - BorderScrollbarPadding().BlockSum())
+                    .ClampNegativeToZero();
+  }
 }
 
 MinMaxSizesResult GridLanesLayoutAlgorithm::ComputeMinMaxSizes(
@@ -196,10 +212,15 @@ const LayoutResult* GridLanesLayoutAlgorithm::Layout() {
   // Account for border, scrollbar, and padding in the intrinsic block size.
   intrinsic_block_size_ += BorderScrollbarPadding().BlockSum();
   const auto block_size = ComputeBlockSizeForFragment(
-      GetConstraintSpace(), Node(), BorderPadding(), intrinsic_block_size_,
+      GetConstraintSpace(), Node(), BorderPadding(),
+      contain_intrinsic_block_size_.value_or(intrinsic_block_size_),
       container_builder_.InlineSize());
+  // TODO(celestepan): Possibly call `ClampIntinsicBlockSize`.
   container_builder_.SetFragmentsTotalBlockSize(block_size);
   container_builder_.SetIntrinsicBlockSize(intrinsic_block_size_);
+
+  // TODO(celestepan): Handle `Node().HasLineIfEmpty()` case.
+  // TODO(celestepan): Possibly call `ClampIntrinsicBlockSize` here.
 
   // Place out-of-flow items after setting the intrinsic block size, since
   // out-of-flow items don't contribute to the intrinsic size of the container.
@@ -383,12 +404,7 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItems(
   const LayoutUnit grid_axis_size = track_collection.CalculateSetSpanSize();
   const LayoutUnit current_intrinsic_block_size =
       is_for_columns ? stacking_axis_size : grid_axis_size;
-  // If block size containment is applied, don't set the intrinsic block size
-  // because we would either use the author-provided intrinsic block size, or if
-  // the author didn't provide one, the block size of an empty container.
-  if (!Node().ShouldApplyBlockSizeContainment()) {
-    intrinsic_block_size_ = current_intrinsic_block_size;
-  }
+  intrinsic_block_size_ = current_intrinsic_block_size;
 
   // Apply content alignment/justification. This is an additional offset
   // determined by the intrinsic inline or block size of the grid-lanes
@@ -986,6 +1002,57 @@ LayoutUnit GridLanesLayoutAlgorithm::ContributionSizeForVirtualItem(
       NOTREACHED() << "`kForFreeSpace` should only be used to distribute extra "
                       "space in maximize tracks and stretch auto tracks steps.";
   }
+}
+
+LayoutUnit
+GridLanesLayoutAlgorithm::ComputeIntrinsicBlockSizeIgnoringChildren() {
+  // First check if we've overridden the intrinsic block size.
+  LayoutUnit override_intrinsic_block_size =
+      Node().OverrideIntrinsicContentBlockSize();
+  if (override_intrinsic_block_size == kIndefiniteSize) {
+    if (Style().GridLanesTrackSizingDirection() != kForColumns) {
+      // If we are in rows, we can use the grid-axis size as our block size.
+      bool needs_intrinsic_track_size = false;
+      wtf_size_t start_offset;
+      GridItems grid_lanes_items;
+      Vector<wtf_size_t> collapsed_track_indexes;
+
+      // TODO(almaher): Once support for subgrid is added and we have a sizing
+      // tree similar to grid, we may need to implement and call something
+      // similar to Grid's BuildGridSizingTreeIgnoringChildren() here.
+      GridSizingTrackCollection track_collection = ComputeGridAxisTracks(
+          SizingConstraint::kLayout,
+          /*intrinsic_repeat_track_sizes=*/nullptr,
+          /*should_apply_inline_size_containment=*/false, grid_lanes_items,
+          collapsed_track_indexes, start_offset, needs_intrinsic_track_size);
+
+      // We have a repeat() track definition with an intrinsic sized track(s).
+      // The previous track sizing pass was used to find the track size to apply
+      // to the intrinsic sized track(s). Retrieve that value(s), and re-run
+      // track sizing to get the correct number of automatic repetitions for
+      // the repeat() definition.
+      //
+      // https://www.w3.org/TR/css-grid-3/#masonry-intrinsic-repeat
+      if (needs_intrinsic_track_size) {
+        CHECK(collapsed_track_indexes.empty());
+
+        Vector<LayoutUnit> intrinsic_repeat_track_sizes =
+            GetIntrinsicRepeaterTrackSizes(!grid_lanes_items.IsEmpty(),
+                                           track_collection);
+        track_collection = ComputeGridAxisTracks(
+            SizingConstraint::kLayout, &intrinsic_repeat_track_sizes,
+            /*should_apply_inline_size_containment=*/false, grid_lanes_items,
+            collapsed_track_indexes, start_offset, needs_intrinsic_track_size);
+      }
+
+      override_intrinsic_block_size = track_collection.CalculateSetSpanSize();
+    } else {
+      // If we are in columns, the block size should just be the size of an
+      // empty container.
+      override_intrinsic_block_size = LayoutUnit();
+    }
+  }
+  return override_intrinsic_block_size + BorderScrollbarPadding().BlockSum();
 }
 
 // TODO(almaher): Eventually look into consolidating repeated code with

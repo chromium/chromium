@@ -3,19 +3,18 @@
 <title>CSS contain-intrinsic-size: grid definite size, large size</title>
 <link rel="author" title="Celeste Pan" href="mailto:celestepan@microsoft.com">
 <link rel="help" href="https://drafts.csswg.org/css-grid-3">
-<link rel="match" href="grid-lanes-contain-intrinsic-size-row-003-ref.html">
-<meta name="assert" content="contain-intrinsic-size sizes grid container, even if definite tracks are smaller">
+<link rel="match" href="grid-lanes-contain-intrinsic-size-row-005-ref.html">
+<meta name="assert" content="If contain:size is set, but intrinsic block size is 0 and border, scrollbar, padding is 0, block size should be zero, and the page should be empty.">
 
 <style>
 #grid {
-  border: 3px solid black;
   display: grid-lanes;
-  grid-template-rows: 55px 66px;
-  contain-intrinsic-size: 200px 300px;
+  grid-template-rows: repeat(2, 35px);
   contain: size;
+  contain-intrinsic-block-size: 0;
+  contain-intrinsic-inline-size: 10px;
   width: max-content;
   background: lightblue;
-  grid-gap: 5px;
 }
 .item {
   background: lightgreen;
@@ -25,9 +24,4 @@
 }
 </style>
 
-<div id=grid>
-  <div class=item></div>
-  <div class=item></div>
-  <div class=item></div>
-  <div class=item></div>
-</div>
+<div id=grid></div>
