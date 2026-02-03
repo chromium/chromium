@@ -436,9 +436,12 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   [ChromeEarlGrey sceneOpenURL:GURL("chromewidgetkit://search-widget/search")];
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
-  // Fakebox should be mostly covered.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
-      assertWithMatcher:mostlyNotVisible()];
+  // Fakebox should be mostly covered on iphone. On iPad if there are no
+  // suggestions the fakebox can be seen.
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
+        assertWithMatcher:mostlyNotVisible()];
+  }
 }
 
 // Tests that the fake omnibox width is correctly updated after a rotation.
@@ -822,9 +825,12 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   // page.
   [self focusFakebox];
 
-  // Check the fake omnibox is mostly not visible.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
-      assertWithMatcher:mostlyNotVisible()];
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    // Check the fake omnibox is mostly not visible for iphone only. It can be
+    // shown if there are no results suggestions on iPad.
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
+        assertWithMatcher:mostlyNotVisible()];
+  }
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
@@ -851,9 +857,12 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   // Offset after the fake omnibox has been tapped.
   CGPoint offsetAfterTap = collectionView.contentOffset;
 
-  // Make sure the fake omnibox has been hidden and the collection has moved.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
-      assertWithMatcher:grey_not(grey_sufficientlyVisible())];
+  // Make sure the fake omnibox has been hidden and the collection has moved. On
+  // iPad if there are no suggestions the fakebox can be seen.
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
+        assertWithMatcher:grey_not(grey_sufficientlyVisible())];
+  }
   GREYAssertTrue(offsetAfterTap.y >= origin.y,
                  @"The collection has not moved.");
 
@@ -1083,7 +1092,7 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   // devices, fake omnibox persists and sticks to top.
   if ([ChromeEarlGrey isIPadIdiom]) {
     [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
-        assertWithMatcher:grey_notVisible()];
+        assertWithMatcher:mostlyNotVisible()];
   } else {
     [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
         assertWithMatcher:grey_sufficientlyVisible()];

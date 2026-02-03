@@ -78,7 +78,8 @@ void ScrollToSwitchToTabElement(const GURL& url) {
 
 const char kLongURLPage[] = "This is a webpage with a long URL";
 const char kLongURLTitle[] = "Long URL title";
-const char kLongURL[] = "/thisisaverylongURLforawebpage.html";
+const char kLongURL[] =
+    "/thisisaverylongURLforawebpageandithastobeextralongforipad.html";
 
 // Web page 1.
 const char kPage1[] = "This is the first page";
@@ -556,12 +557,14 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [ChromeEarlGrey waitForKeyboardToAppear];
 
   // Scroll the popup. This swipes from the point located at 50% of the width of
-  // the frame horizontally and most importantly 10% of the height of the frame
-  // vertically. This is necessary if the center of the list's accessibility
-  // frame is not visible, as it is the default start point.
+  // the frame horizontally and most importantly 10% (50% on iPad since it is a
+  // popover not a fullscreen modal) of the height of the frame vertically. This
+  // is necessary if the center of the list's accessibility frame is not
+  // visible, as it is the default start point.
+  CGFloat height = [ChromeEarlGrey isIPadIdiom] ? 0.5 : 0.1;
   [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxPopupList()]
       performAction:grey_swipeFastInDirectionWithStartPoint(kGREYDirectionDown,
-                                                            0.5, 0.1)];
+                                                            0.5, height)];
 
   [[EarlGrey selectElementWithMatcher:row]
       assertWithMatcher:grey_sufficientlyVisible()];

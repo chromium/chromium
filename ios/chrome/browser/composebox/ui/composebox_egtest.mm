@@ -76,6 +76,7 @@ void OpenTabPicker() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   config.features_enabled.push_back(kComposeboxIOS);
+  config.features_enabled.push_back(kComposeboxIpad);
   // Only rely on local conditions for AIM eligibility, so disable the
   // server-side checks.
   config.features_disabled.push_back(omnibox::kAimServerEligibilityEnabled);

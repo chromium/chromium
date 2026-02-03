@@ -915,24 +915,28 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
 
   // Create the typing shield.  It is initially hidden, and is made visible when
   // the keyboard appears.
-  self.typingShield = [[UIButton alloc] initWithFrame:initialViewsRect];
-  self.typingShield.hidden = YES;
-  self.typingShield.autoresizingMask = initialViewAutoresizing;
-  self.typingShield.accessibilityIdentifier = @"Typing Shield";
-  self.typingShield.accessibilityLabel = l10n_util::GetNSString(IDS_CANCEL);
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    self.typingShield.backgroundColor =
-        [UIColor colorNamed:kOmniboxPopoutOverlayColor];
+  if (!IsComposeboxIpadEnabled()) {
+    self.typingShield = [[UIButton alloc] initWithFrame:initialViewsRect];
+    self.typingShield.hidden = YES;
+    self.typingShield.autoresizingMask = initialViewAutoresizing;
+    self.typingShield.accessibilityIdentifier = @"Typing Shield";
+    self.typingShield.accessibilityLabel = l10n_util::GetNSString(IDS_CANCEL);
+    if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+      self.typingShield.backgroundColor =
+          [UIColor colorNamed:kOmniboxPopoutOverlayColor];
+    }
+    [self.typingShield addTarget:self
+                          action:@selector(shieldWasTapped:)
+                forControlEvents:UIControlEventTouchUpInside];
   }
-  [self.typingShield addTarget:self
-                        action:@selector(shieldWasTapped:)
-              forControlEvents:UIControlEventTouchUpInside];
   self.view.autoresizingMask = initialViewAutoresizing;
 
   [self addChildViewController:self.browserContentViewController];
   [self.view addSubview:self.contentArea];
   [self.browserContentViewController didMoveToParentViewController:self];
-  [self.view addSubview:self.typingShield];
+  if (!IsComposeboxIpadEnabled()) {
+    [self.view addSubview:self.typingShield];
+  }
   [super viewDidLoad];
 
   // Install fake status bar for iPad iOS7

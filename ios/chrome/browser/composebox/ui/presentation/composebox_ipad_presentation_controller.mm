@@ -32,6 +32,7 @@ const CGFloat kComposeboxOmniboxLayoutGuideHorizontalMargin = 10.0f;
                        presentingViewController:presenting];
   if (self) {
     _dimmingView = [[UIView alloc] init];
+    _dimmingView.accessibilityIdentifier = @"Typing Shield";
     _dimmingView.backgroundColor =
         [[UIColor blackColor] colorWithAlphaComponent:0.5];
 

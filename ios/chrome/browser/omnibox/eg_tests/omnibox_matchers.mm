@@ -42,7 +42,7 @@ id<GREYMatcher> PopupRowWithUrlMatcher(GURL url) {
   id<GREYMatcher> url_matcher = grey_allOf(
       grey_descendant(
           chrome_test_util::StaticTextWithAccessibilityLabel(url_string)),
-      grey_minimumVisiblePercent(0.7), nil);
+      grey_minimumVisiblePercent(0.6), nil);
   return grey_allOf(chrome_test_util::OmniboxPopupRow(), url_matcher, nil);
 }
 

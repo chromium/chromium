@@ -23,9 +23,11 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "AIMNTPEntrypointTablet",
                         "ComposeboxCompactMode",
                         "ComposeboxForceTop",
-                        "ComposeboxIOS"
+                        "ComposeboxIOS",
+                        "ComposeboxIpad"
                     ],
                     "disable_features": [
                         "ComposeboxAIMDisabled",
