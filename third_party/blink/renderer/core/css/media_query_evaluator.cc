@@ -30,11 +30,12 @@
 #include "third_party/blink/renderer/core/css/media_query_evaluator.h"
 
 #include "base/functional/function_ref.h"
+#include "base/notreached.h"
 #include "third_party/blink/public/common/css/forced_colors.h"
 #include "third_party/blink/public/common/css/navigation_controls.h"
 #include "third_party/blink/public/common/css/scripting.h"
 #include "third_party/blink/public/mojom/device_posture/device_posture_provider.mojom-blink.h"
-#include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom-blink.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/auto_registration.h"
 #include "third_party/blink/renderer/core/css/css_container_values.h"
@@ -47,6 +48,7 @@
 #include "third_party/blink/renderer/core/css/media_features.h"
 #include "third_party/blink/renderer/core/css/media_list.h"
 #include "third_party/blink/renderer/core/css/media_query.h"
+#include "third_party/blink/renderer/core/css/media_query_exp.h"
 #include "third_party/blink/renderer/core/css/media_values.h"
 #include "third_party/blink/renderer/core/css/media_values_dynamic.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
@@ -378,25 +380,25 @@ static bool DisplayModeMediaFeatureEval(const MediaQueryExpValue& value,
     return false;
   }
 
-  blink::mojom::DisplayMode mode = media_values.DisplayMode();
+  mojom::blink::DisplayMode mode = media_values.DisplayMode();
 
   switch (value.Id()) {
     case CSSValueID::kFullscreen:
-      return mode == blink::mojom::DisplayMode::kFullscreen;
+      return mode == mojom::blink::DisplayMode::kFullscreen;
     case CSSValueID::kStandalone:
-      return mode == blink::mojom::DisplayMode::kStandalone;
+      return mode == mojom::blink::DisplayMode::kStandalone;
     case CSSValueID::kMinimalUi:
-      return mode == blink::mojom::DisplayMode::kMinimalUi;
+      return mode == mojom::blink::DisplayMode::kMinimalUi;
     case CSSValueID::kBrowser:
-      return mode == blink::mojom::DisplayMode::kBrowser;
+      return mode == mojom::blink::DisplayMode::kBrowser;
     case CSSValueID::kWindowControlsOverlay:
-      return mode == blink::mojom::DisplayMode::kWindowControlsOverlay;
+      return mode == mojom::blink::DisplayMode::kWindowControlsOverlay;
     case CSSValueID::kBorderless:
-      return mode == blink::mojom::DisplayMode::kBorderless;
+      return mode == mojom::blink::DisplayMode::kBorderless;
     case CSSValueID::kTabbed:
-      return mode == blink::mojom::DisplayMode::kTabbed;
+      return mode == mojom::blink::DisplayMode::kTabbed;
     case CSSValueID::kPictureInPicture:
-      return mode == blink::mojom::DisplayMode::kPictureInPicture;
+      return mode == mojom::blink::DisplayMode::kPictureInPicture;
     default:
       NOTREACHED();
   }
