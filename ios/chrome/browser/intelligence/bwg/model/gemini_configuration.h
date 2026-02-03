@@ -47,12 +47,6 @@ class PageContext;
 @property(nonatomic, assign)
     ios::provider::GeminiLocationPermissionState geminiLocationPermissionState;
 
-// The state of the BWG location permission.
-// TODO(crbug.com/467339718): Remove this property once all callers have
-// migrated.
-@property(nonatomic, assign)
-    ios::provider::GeminiLocationPermissionState BWGLocationPermissionState;
-
 // The state of the BWG PageContext computation.
 @property(nonatomic, assign) ios::provider::BWGPageContextComputationState
     BWGPageContextComputationState;

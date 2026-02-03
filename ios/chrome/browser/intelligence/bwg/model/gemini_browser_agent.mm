@@ -712,8 +712,7 @@ void GeminiBrowserAgent::PresentFloatyWithState(
 
   // Set the location permission state.
   // TODO(crbug.com/426207968): Populate with actual value.
-  // TODO(crbug.com/467339718): Remove the chain assignment after the migration.
-  config.geminiLocationPermissionState = config.BWGLocationPermissionState =
+  config.geminiLocationPermissionState =
       ios::provider::GeminiLocationPermissionState::kUnknown;
 
   // Set the page context itself and page context computation/attachment state

@@ -43,9 +43,6 @@ enum class GeminiLocationPermissionState {
   kEnterpriseDisabled,
 };
 
-// TODO(crbug.com/467339718): Remove this alias once all callers have migrated.
-using BWGLocationPermissionState = GeminiLocationPermissionState;
-
 // Enum representing the page context computation state of the BWG experience.
 // This needs to stay in sync with GCRGeminiPageContextComputationState (and its
 // SDK counterpart).
