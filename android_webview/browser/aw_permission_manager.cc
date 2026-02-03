@@ -6,7 +6,6 @@
 
 #include <memory>
 #include <string>
-#include <unordered_map>
 #include <utility>
 
 #include "android_webview/browser/aw_browser_permission_request_delegate.h"
@@ -31,6 +30,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 
@@ -155,7 +155,7 @@ class LastRequestResultCache {
     return requesting + "," + embedding;
   }
 
-  using StatusMap = std::unordered_map<std::string, PermissionStatus>;
+  using StatusMap = absl::flat_hash_map<std::string, PermissionStatus>;
   StatusMap pmi_result_cache_;
 };
 
