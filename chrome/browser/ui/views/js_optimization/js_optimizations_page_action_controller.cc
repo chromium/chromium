@@ -60,13 +60,8 @@ void JsOptimizationsPageActionController::ShowBubble(
 
 void JsOptimizationsPageActionController::OnBubbleHidden(
     actions::ActionItem* action_item) {
-  action_item->SetIsShowingBubble(false);
-}
-
-void JsOptimizationsPageActionController::OnWidgetDestroying(
-    views::Widget* widget) {
-  widget_observation_.Reset();
   bubble_ = nullptr;
+  action_item->SetIsShowingBubble(false);
 }
 
 views::BubbleDialogModelHost* JsOptimizationsPageActionController::CreateBubble(
@@ -112,7 +107,6 @@ views::BubbleDialogModelHost* JsOptimizationsPageActionController::CreateBubble(
   // TODO(crbug.com/464011395): Refactor to use CLIENT_OWNS_WIDGET.
   views::Widget* const widget =
       views::BubbleDialogDelegate::CreateBubble(std::move(bubble_unique));
-  widget_observation_.Observe(widget);
   widget->Show();
   return bubble;
 }
