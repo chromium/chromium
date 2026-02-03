@@ -257,14 +257,20 @@ bool TabHoverCardController::IsHoverCardShowingForTab(
 void TabHoverCardController::UpdateHoverCard(
     HoverCardAnchorTarget* anchor_target,
     TabSlotController::HoverCardUpdateType update_type) {
-  // Never display a hover card for an invalid tab.
+  
   if (anchor_target && !anchor_target->IsValid()) {
     anchor_target = nullptr;
   }
+  if (hover_card_) {
+    bool window_inactive = !tab_strip_->GetWidget()->IsActive();
+    bool strip_hidden = !tab_strip_->GetWidget()->IsVisibleOnScreen();
+    
+    if (window_inactive || strip_hidden) {
+      anchor_target = nullptr; // Force dismissal
+    }
+  }
 
-  // Update this ASAP so that if we try to fade-in and we have the wrong target
-  // then when the fade timer elapses we won't incorrectly try to fade in on the
-  // wrong tab.
+  // State Sync: Update the target tab observation.
   if (target_tab_ != anchor_target) {
     delayed_show_timer_.Stop();
     target_tab_observation_.Reset();
@@ -274,14 +280,13 @@ void TabHoverCardController::UpdateHoverCard(
     target_tab_ = anchor_target;
   }
 
-  // If there's nothing to attach to then there's no point in creating a card.
-  // Note that this includes a check for whether the tab strip widget is
-  // visible (see crbug.com/454057267).
+  // Return early if there is no card and no reason to create one.
   if (!hover_card_ && (!anchor_target || !tab_strip_->GetWidget() ||
                        !tab_strip_->GetWidget()->IsVisibleOnScreen())) {
     return;
   }
 
+  // Proper Handling of Update Types
   switch (update_type) {
     case TabSlotController::HoverCardUpdateType::kSelectionChanged:
       ResetCardsSeenCount();
@@ -296,18 +301,24 @@ void TabHoverCardController::UpdateHoverCard(
       break;
     case TabSlotController::HoverCardUpdateType::kTabRemoved:
     case TabSlotController::HoverCardUpdateType::kAnimating:
-      // Neither of these cases should have a tab associated.
       DCHECK(!anchor_target);
       break;
     case TabSlotController::HoverCardUpdateType::kEvent:
     case TabSlotController::HoverCardUpdateType::kFocus:
-      // No special action taken for this type of even (yet).
+      // [FIX]: Properly handle focus/event-based dismissal.
+      // If focus moves away from the tabstrip or a system event occurs 
+      // without a target, we must ensure the card hides.
+      if (!anchor_target || !tab_strip_->IsFocusInTabs()) {
+        anchor_target = nullptr;
+      }
       break;
   }
 
+  // 6. Final Execution
   if (anchor_target) {
     UpdateOrShowCard(anchor_target, update_type);
   } else {
+    // If the card is "stuck," this call ensures the animator is triggered or bypassed.
     HideHoverCard();
   }
 }
