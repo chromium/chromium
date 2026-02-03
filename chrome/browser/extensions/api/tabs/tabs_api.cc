@@ -77,6 +77,7 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "components/tabs/public/split_tab_data.h"
 #include "components/webapps/isolated_web_apps/scheme.h"
 #endif
 
@@ -114,6 +115,8 @@ constexpr char kWindowCreateLockedFullscreenUrlCountMismatchError[] =
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 constexpr char kInvalidWindowTypeError[] = "Invalid value for type";
+constexpr char kNoHighlightedTabError[] = "No highlighted tab";
+constexpr char kTabIndexNotFoundError[] = "No tab at index: *.";
 
 #if !BUILDFLAG(IS_ANDROID)
 constexpr char kWindowCreateSupportsOnlySingleIwaUrlError[] =
@@ -2132,6 +2135,101 @@ ExtensionFunction::ResponseAction TabsDuplicateFunction::Run() {
       ArgumentList(tabs::Get::Results::Create(ExtensionTabUtil::CreateTabObject(
           new_contents, scrub_tab_behavior, extension(), new_tab_list,
           new_tab_index))));
+}
+
+ExtensionFunction::ResponseAction TabsHighlightFunction::Run() {
+  std::optional<tabs::Highlight::Params> params =
+      tabs::Highlight::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  // Get the window id from the params; default to current window if omitted.
+  int window_id = params->highlight_info.window_id.value_or(
+      extension_misc::kCurrentWindowId);
+
+  std::string error;
+  WindowController* window_controller =
+      ExtensionTabUtil::GetControllerFromWindowID(
+          ChromeExtensionFunctionDetails(this), window_id, &error);
+  if (!window_controller) {
+    return RespondNow(Error(std::move(error)));
+  }
+
+  // Don't let the extension update the tab if the user is dragging tabs.
+  TabListInterface* tab_list = ExtensionTabUtil::GetEditableTabList(
+      *window_controller->GetBrowserWindowInterface());
+  if (!tab_list) {
+    return RespondNow(Error(ExtensionTabUtil::kTabStripNotEditableError));
+  }
+
+  std::set<int> tab_indices;
+  int active_tab_index = -1;
+  if (params->highlight_info.tabs.as_integers) {
+    std::vector<int>& source = *params->highlight_info.tabs.as_integers;
+    // Make sure they actually specified tabs to select.
+    if (source.empty()) {
+      return RespondNow(Error(kNoHighlightedTabError));
+    }
+
+    // By default, we make the first tab in the list active.
+    active_tab_index = source[0];
+
+    tab_indices.insert(std::make_move_iterator(source.begin()),
+                       std::make_move_iterator(source.end()));
+  } else {
+    EXTENSION_FUNCTION_VALIDATE(params->highlight_info.tabs.as_integer);
+    int tab_index = *params->highlight_info.tabs.as_integer;
+    tab_indices.insert(tab_index);
+    active_tab_index = tab_index;
+  }
+
+  std::set<::tabs::TabHandle> tabs;
+#if !BUILDFLAG(IS_ANDROID)
+  TabStripModel* tab_strip = window_controller->GetBrowser()->tab_strip_model();
+#endif
+  for (int index : tab_indices) {
+    // Make sure the index is in range.
+    if (index < 0 || index >= tab_list->GetTabCount()) {
+      return RespondNow(Error(ErrorUtils::FormatErrorMessage(
+          kTabIndexNotFoundError, base::NumberToString(index))));
+    }
+
+    ::tabs::TabInterface* tab = tab_list->GetTab(index);
+    CHECK(tab);
+    tabs.insert(tab->GetHandle());
+
+    // TODO(https://crbug.com/480192698): When split tabs are available on
+    // android, port this logic.
+#if !BUILDFLAG(IS_ANDROID)
+    // Extend selection for any split tabs.
+    std::optional<split_tabs::SplitTabId> split_id =
+        tab_strip->GetSplitForTab(index);
+    if (!split_id.has_value()) {
+      continue;
+    }
+
+    // All the tabs in a split should be contiguous.
+    std::vector<::tabs::TabInterface*> split_tabs =
+        tab_strip->GetSplitData(split_id.value())->ListTabs();
+    size_t start = tab_strip->GetIndexOfTab(split_tabs[0]);
+    for (size_t i = start; i < start + split_tabs.size(); ++i) {
+      ::tabs::TabInterface* split_tab = tab_list->GetTab(i);
+      CHECK(split_tab);
+      tabs.insert(split_tab->GetHandle());
+    }
+#endif  // !BUILDFLAG(IS_ANDROID)
+  }
+
+  // We just checked all the indices above (of which active_tab_index is a
+  // member), so it must be valid.
+  CHECK(active_tab_index >= 0 && active_tab_index <= tab_list->GetTabCount());
+  ::tabs::TabInterface* active_tab = tab_list->GetTab(active_tab_index);
+
+  tab_list->HighlightTabs(active_tab->GetHandle(), tabs);
+
+  return RespondNow(
+      WithArguments(window_controller->CreateWindowValueForExtension(
+          extension(), WindowController::kPopulateTabs,
+          source_context_type())));
 }
 
 TabsUpdateFunction::TabsUpdateFunction() = default;
