@@ -331,8 +331,6 @@ StatusOr<base::DictValue> SnapshotDatabase(BackingStore::Database& db) {
   return result;
 }
 
-namespace {
-
 Status MigrateDatabase(BackingStore::Database& source,
                        BackingStore::Database& target) {
   const blink::IndexedDBDatabaseMetadata& metadata = source.GetMetadata();
@@ -442,23 +440,6 @@ Status MigrateDatabase(BackingStore::Database& source,
   // Commit the target transaction. We can skip phase one because there are no
   // async blob writing operations.
   return target_txn->CommitPhaseTwo();
-}
-
-}  // namespace
-
-void MigrateBackingStore(BackingStore& source, BackingStore& target) {
-  std::vector<blink::mojom::IDBNameAndVersionPtr> names_and_versions =
-      source.GetDatabaseNamesAndVersions().value();
-
-  for (const auto& name_and_version : names_and_versions) {
-    std::unique_ptr<BackingStore::Database> source_db =
-        source.CreateOrOpenDatabase(name_and_version->name).value();
-    std::unique_ptr<BackingStore::Database> target_db =
-        target.CreateOrOpenDatabase(name_and_version->name).value();
-
-    Status status = MigrateDatabase(*source_db, *target_db);
-    CHECK(status.ok()) << status.ToString();
-  }
 }
 
 }  // namespace content::indexed_db

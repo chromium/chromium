@@ -39,6 +39,17 @@ class CONTENT_EXPORT BackingStoreImpl : public BackingStore {
       base::FunctionRef<bool(const base::FilePath&)> filter =
           [](const base::FilePath&) { return true; });
 
+  // Writes all contents from `source` into `this`. It only works from LevelDB
+  // to SQLite, as any other combination currently has unimplemented portions.
+  //
+  // This operation is potentially destructive on `source`, as it will take
+  // (move) its standalone blob files.
+  //
+  // No PartitionedLockManager-level locks are taken on either backing store,
+  // and it's up to the caller to ensure there will be no other simultaneous
+  // operations.
+  Status MigrateFrom(BackingStore& source);
+
   // BackingStore:
   bool CanOpportunisticallyClose() const override;
   void TearDown(base::WaitableEvent* signal_on_destruction) override;

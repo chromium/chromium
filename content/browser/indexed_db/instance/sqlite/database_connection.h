@@ -79,6 +79,10 @@ class CONTENT_EXPORT DatabaseConnection {
   const IndexedDBDataLossInfo& data_loss_info() const {
     return data_loss_info_;
   }
+  std::list<std::pair<base::FilePath, base::FilePath>>&
+  legacy_blob_files_to_move() {
+    return legacy_blob_files_to_move_;
+  }
 
   // Gets the version of the database that is actually committed. This can be
   // different from the version in `metadata_` during a version change
@@ -474,8 +478,12 @@ class CONTENT_EXPORT DatabaseConnection {
   std::optional<std::set<int64_t>> legacy_blob_files_;
 
   // Only used during migration. This holds the paths to legacy blob files that
-  // must be moved IFF the database portion of the migration succeeds.
-  std::map<int64_t, base::FilePath> legacy_blob_files_to_move_;
+  // must be moved IFF the database portion of the migration succeeds. The first
+  // element of the pair is the source path, and the second is the target path.
+  // The act of moving the files is executed by
+  // `BackingStoreImpl::MigrateFrom()`.
+  std::list<std::pair<base::FilePath, base::FilePath>>
+      legacy_blob_files_to_move_;
 
   // True once `DeleteIdbDatabase` has been called, or if a fatal error occurred
   // that we can't recover from.

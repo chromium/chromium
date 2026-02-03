@@ -1288,31 +1288,6 @@ Status DatabaseConnection::CommitTransactionPhaseTwo(
     metadata_snapshot_.reset();
   }
 
-  // Migration case.
-  if (!legacy_blob_files_to_move_.empty() &&
-      !base::CreateDirectory(GetLegacyBlobDirectory())) {
-    return Status::IOError("Unable to create blob directory");
-  }
-  // First make a pass that verifies the blob files are all there. This occurs
-  // before the second loop to avoid moving *some* of them before running into
-  // errors, thus leaving both DBs in a broken state.
-  for (const auto& [_, file_path] : legacy_blob_files_to_move_) {
-    if (!base::PathExists(file_path)) {
-      return Status::IOError("Migration failed due to missing blob");
-    }
-  }
-  for (const auto& [blob_row_id, file_path] : legacy_blob_files_to_move_) {
-    base::File::Error error;
-    // Note that an error here probably leaves both stores (the one being
-    // migrated from and this one) in a broken state. The most likely reason for
-    // this failure would be that the file is missing from the source store, so
-    // it was already in a broken state.
-    // TODO(crbug.com/419264073): consider handling this more gracefully.
-    if (!base::ReplaceFile(file_path, GetBlobFilePath(blob_row_id), &error)) {
-      return Status::IOError(base::File::ErrorToString(error));
-    }
-  }
-
   return Status::OK();
 }
 
@@ -1902,8 +1877,9 @@ StatusOr<BackingStore::RecordIdentifier> DatabaseConnection::PutRecord(
 
       if (being_migrated_from_leveldb) {
         // The migration case --- move the old file to a new location.
-        legacy_blob_files_to_move_[blob_row_id] =
-            external_object.indexed_db_file_path();
+        legacy_blob_files_to_move_.emplace_back(
+            external_object.indexed_db_file_path(),
+            GetBlobFilePath(blob_row_id));
       } else {
         // Reserve space for overflow chunks, if any.
         int chunk_index = 1;

@@ -10,7 +10,9 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/notimplemented.h"
+#include "base/types/expected_macros.h"
 #include "content/browser/indexed_db/file_path_util.h"
+#include "content/browser/indexed_db/instance/backing_store_util.h"
 #include "content/browser/indexed_db/instance/sqlite/backing_store_database_impl.h"
 #include "content/browser/indexed_db/instance/sqlite/database_connection.h"
 #include "content/browser/indexed_db/status.h"
@@ -165,6 +167,62 @@ void BackingStoreImpl::FlushForTesting() {
 
 void BackingStoreImpl::DestroyConnection(const std::u16string& name) {
   CHECK(open_connections_.erase(name) == 1);
+}
+
+Status BackingStoreImpl::MigrateFrom(BackingStore& source) {
+  CHECK(!in_memory());
+  DCHECK(GetDatabaseNamesAndVersions()->empty());
+
+  ASSIGN_OR_RETURN(
+      std::vector<blink::mojom::IDBNameAndVersionPtr> names_and_versions,
+      source.GetDatabaseNamesAndVersions());
+
+  // All of the files that need to be relocated, across all databases.
+  std::list<std::pair<base::FilePath, base::FilePath>>
+      legacy_blob_files_to_move;
+
+  for (const auto& name_and_version : names_and_versions) {
+    std::unique_ptr<BackingStore::Database> source_db =
+        source.CreateOrOpenDatabase(name_and_version->name).value();
+    std::unique_ptr<BackingStore::Database> target_db =
+        CreateOrOpenDatabase(name_and_version->name).value();
+
+    auto connection_it = open_connections_.find(name_and_version->name);
+    CHECK(connection_it != open_connections_.end());
+    DatabaseConnection* target_connection = connection_it->second.get();
+    CHECK(target_connection->IsZygotic());
+
+    IDB_RETURN_IF_ERROR(MigrateDatabase(*source_db, *target_db));
+
+    auto& files_to_move = target_connection->legacy_blob_files_to_move();
+    if (!files_to_move.empty() &&
+        !base::CreateDirectory(files_to_move.front().second.DirName())) {
+      return Status::IOError("Unable to create blob directory");
+    }
+    legacy_blob_files_to_move.insert(legacy_blob_files_to_move.end(),
+                                     files_to_move.begin(),
+                                     files_to_move.end());
+  }
+
+  // Up to this point, any failure will abort the migration. After this point,
+  // errors are ignored because renaming the files is destructive on `source`.
+
+  for (const auto& [source_file_path, target_file_path] :
+       legacy_blob_files_to_move) {
+    // We ignore errors at this step, because
+    // a) it's largely too late to gracefully go back
+    // b) the most likely error is that the original file is missing or
+    //    unreadable, which would mean that `source` is already in a
+    //    semi-broken state, and the migrated DB will be no worse off.
+    //    Traditionally this has been handled by throwing errors when the blob
+    //    is actually read and letting the page delete or overwrite the
+    //    record, so we maintain that behavior.
+    base::File::Error error;
+    base::ReplaceFile(source_file_path, target_file_path, &error);
+    // TODO(crbug.com/419264073): log `error` to histogram.
+  }
+
+  return Status::OK();
 }
 
 }  // namespace content::indexed_db::sqlite
