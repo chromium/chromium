@@ -1,6 +1,8 @@
 # JNI Zero
 A zero-overhead (or better!) middleware for JNI.
 
+For Googlers, see: go/jnizero.
+
 ## Overview
 JNI (Java Native Interface) is the mechanism that enables Java code to call
 native functions, and native code to call Java functions.
