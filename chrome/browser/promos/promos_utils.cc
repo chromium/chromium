@@ -63,6 +63,8 @@ std::string IOSDesktopPromoHistogramType(PromoType promo_type) {
       return "LensPromo";
     case PromoType::kTabGroups:
       return "TabGroupsPromo";
+    case PromoType::kPriceTracking:
+      return "PriceTrackingPromo";
   }
 }
 
@@ -188,6 +190,7 @@ bool VerifySyncingDatatypes(const syncer::SyncService& sync_service,
     case PromoType::kEnhancedBrowsing:
     case PromoType::kLens:
     case PromoType::kTabGroups:
+    case PromoType::kPriceTracking:
       // TODO(crbug.com/438769954): Verify relevant data types.
       return true;
   }
@@ -301,6 +304,11 @@ IOSPromoPrefsConfig::IOSPromoPrefsConfig(PromoType promo_type) {
       promo_last_impression_timestamp_pref_name =
           promos_prefs::kDesktopToiOSTabGroupsPromoLastImpressionTimestamp;
       break;
+    case PromoType::kPriceTracking:
+#if !BUILDFLAG(IS_ANDROID)
+      promo_feature = &feature_engagement::kIPHiOSPriceTrackingDesktopFeature;
+#endif  // !BUILDFLAG(IS_ANDROID)
+        // TODO(crbug.com/479478830): Add Price Tracking prefs.
   }
 }
 

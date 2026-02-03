@@ -983,6 +983,9 @@ BASE_FEATURE(kIPHiOSEnhancedBrowsingDesktopFeature,
 BASE_FEATURE(kIPHiOSTabGroupsDesktopFeature,
              "IPH_iOSTabGroupsDesktop",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHiOSPriceTrackingDesktopFeature,
+             "IPH_iOSPriceTrackingDesktop",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_IOS)

@@ -103,6 +103,9 @@ CrossPlatformPromosNotificationClient::GetNotificationType(
       case desktop_to_mobile_promos::PromoType::kTabGroups:
         // TODO (crbug.com/479493988): Create the Tab Groups iOS promo.
         break;
+      case desktop_to_mobile_promos::PromoType::kPriceTracking:
+        // TODO (crbug.com/479493988): Create the Price Tracking iOS promo.
+        break;
       case desktop_to_mobile_promos::PromoType::kAddress:
       case desktop_to_mobile_promos::PromoType::kPayment:
         // Promo types not supported for push notifications.
@@ -147,6 +150,9 @@ void CrossPlatformPromosNotificationClient::ShowPromo(
       break;
     case desktop_to_mobile_promos::PromoType::kTabGroups:
       // TODO (crbug.com/479493988): Create the Tab Groups iOS promo.
+      break;
+    case desktop_to_mobile_promos::PromoType::kPriceTracking:
+      // TODO (crbug.com/479493988): Create the Price Tracking iOS promo.
       break;
     case desktop_to_mobile_promos::PromoType::kAddress:
     case desktop_to_mobile_promos::PromoType::kPayment:

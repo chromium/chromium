@@ -275,6 +275,46 @@ IOSPromoConstants::IOSPromoTypeConfigs SetUpTabGroupsBubble(
   }
   return config;
 }
+
+// Creates and returns IOSPromoTypeConfigs for the Price Tracking bubble.
+IOSPromoConstants::IOSPromoTypeConfigs SetUpPriceTrackingBubble(
+    BubbleType bubble_type) {
+  IOSPromoConstants::IOSPromoTypeConfigs config;
+  config.with_header = false;
+  config.decline_button_text_id = IDS_IOS_DESKTOP_PROMO_BUBBLE_BUTTON_DECLINE;
+  switch (bubble_type) {
+    case BubbleType::kQRCode:
+      config.promo_title_id =
+          IDS_IOS_DESKTOP_PRICE_TRACKING_PROMO_BUBBLE_TITLE_QR;
+      config.promo_description_id =
+          IDS_IOS_DESKTOP_PRICE_TRACKING_DESCRIPTION_QR;
+      config.accept_button_text_id =
+          IDS_IOS_DESKTOP_PROMO_BUBBLE_BUTTON_ACCEPT_QR;
+      // TODO (crbug.com/479229912): Add the Price Tracking QR code image once
+      // the URL is provided.
+      break;
+    case BubbleType::kReminder:
+      config.promo_title_id =
+          IDS_IOS_DESKTOP_PRICE_TRACKING_PROMO_BUBBLE_TITLE_REMINDER;
+      config.promo_description_id =
+          IDS_IOS_DESKTOP_PRICE_TRACKING_PROMO_BUBBLE_DESCRIPTION_REMINDER;
+      config.accept_button_text_id =
+          IDS_IOS_DESKTOP_PROMO_BUBBLE_BUTTON_ACCEPT_REMINDER;
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      config.promo_image =
+          ui::ImageModel::FromResourceId(IDR_PRICE_TRACKING_ON_IOS_ICON);
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      break;
+    case BubbleType::kReminderConfirmation: {
+      SetUpBaseReminderConfirmationConfig(config);
+      config.promo_description_id =
+          IDS_IOS_DESKTOP_PRICE_TRACKING_REMINDER_CONFIRMATION;
+      break;
+    }
+  }
+  return config;
+}
+
 }  // namespace
 
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kIOSPromoBubbleElementId);
@@ -366,6 +406,8 @@ IOSPromoConstants::IOSPromoTypeConfigs IOSPromoBubble::SetUpBubble(
       return SetUpLensBubble(bubble_type);
     case PromoType::kTabGroups:
       return SetUpTabGroupsBubble(bubble_type);
+    case PromoType::kPriceTracking:
+      return SetUpPriceTrackingBubble(bubble_type);
   }
 }
 
