@@ -12,11 +12,13 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
+#include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
@@ -220,6 +222,17 @@ void WebUIToolbarWebView::PrimaryMainFrameRenderProcessGone(
   // No recovery if it's a normal termination.
   if (status == base::TERMINATION_STATUS_NORMAL_TERMINATION ||
       status == base::TERMINATION_STATUS_STILL_RUNNING) {
+    return;
+  }
+
+  // Do not recover if the browser is shutting down.
+  if (browser_shutdown::IsTryingToQuit()) {
+    return;
+  }
+
+  // Do not recover if the browser is closing.
+  if (browser_->capabilities() &&
+      browser_->capabilities()->IsAttemptingToCloseBrowser()) {
     return;
   }
 

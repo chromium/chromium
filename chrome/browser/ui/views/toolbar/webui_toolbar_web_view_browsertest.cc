@@ -18,6 +18,7 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -27,6 +28,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
+#include "content/public/browser/javascript_dialog_manager.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -477,6 +479,62 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewStabilityTest,
 
   EXPECT_TRUE(nav_observer.last_navigation_succeeded());
   EXPECT_FALSE(web_contents->IsCrashed());
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewStabilityTest,
+                       CrashDuringBrowserClose) {
+  WebUIToolbarWebView* toolbar_view = GetWebUIToolbarWebView();
+  ASSERT_TRUE(toolbar_view);
+  content::WebContents* web_contents = GetWebContents(toolbar_view);
+  ASSERT_TRUE(web_contents);
+
+  // Add a beforeunload handler to the active tab to pause the close process.
+  ASSERT_TRUE(
+      content::ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      "window.addEventListener('beforeunload', "
+                      "function(event) { event.returnValue = 'Foo'; });"));
+  content::PrepContentsForBeforeUnloadTest(
+      browser()->tab_strip_model()->GetActiveWebContents());
+
+  // Close the window. This should trigger the beforeunload dialog and set the
+  // browser into the "attempting to close" state.
+  browser()->window()->Close();
+
+  // Verify the browser is attempting to close.
+  EXPECT_TRUE(browser()->capabilities()->IsAttemptingToCloseBrowser());
+
+  // Watch for reload.
+  content::NavigationHandleObserver nav_observer(
+      web_contents, GURL(chrome::kChromeUIWebUIToolbarURL));
+
+  // Crash the WebUI renderer.
+  content::RenderProcessHost* process =
+      web_contents->GetPrimaryMainFrame()->GetProcess();
+  content::RenderProcessHostWatcher crash_observer(
+      process, content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+  process->Shutdown(1);
+  crash_observer.Wait();
+
+  // Run the loop to ensure any posted recovery tasks would have started.
+  base::RunLoop run_loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+
+  // Verify that the WebContents is still crashed and no reload happened.
+  EXPECT_TRUE(web_contents->IsCrashed());
+  EXPECT_FALSE(nav_observer.has_committed());
+
+  // Cleanup: Accept the beforeunload dialog to allow the browser to close.
+  ui_test_utils::WaitForAppModalDialog();
+  content::WebContents* active_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::JavaScriptDialogManager* dialog_manager =
+      static_cast<content::WebContentsDelegate*>(browser())
+          ->GetJavaScriptDialogManager(active_web_contents);
+  dialog_manager->HandleJavaScriptDialog(active_web_contents, /*accept=*/true,
+                                         /*prompt_override=*/nullptr);
+  ui_test_utils::WaitForBrowserToClose(browser());
 }
 
 class WebUIReloadButtonBrowserTest : public InProcessBrowserTest {
