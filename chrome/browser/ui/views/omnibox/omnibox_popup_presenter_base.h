@@ -56,6 +56,8 @@ class OmniboxPopupPresenterBase {
   // going to be visible within the popup.
   OmniboxPopupWebUIBaseContent* GetWebUIContent() const;
 
+  virtual std::string_view GetPopupMetricPrefix() const = 0;
+
  protected:
   // The container for the WebUI WebView.
   views::View* GetUIContainer() const;
@@ -80,8 +82,6 @@ class OmniboxPopupPresenterBase {
   }
 
   views::Widget* GetWidget() const { return widget_.get(); }
-
-  virtual std::string_view GetPopupShowToPaintMetric() const = 0;
 
   // The height of the popup content. Can be 0 if not specified.
   int content_height_ = 0;

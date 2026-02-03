@@ -79,5 +79,9 @@ void OmniboxPopupWebUIContent::PrimaryMainFrameRenderProcessGone(
   }
 }
 
+std::string_view OmniboxPopupWebUIContent::GetMetricPrefix() const {
+  return "Omnibox.Popup.WebUI";
+}
+
 BEGIN_METADATA(OmniboxPopupWebUIContent)
 END_METADATA
