@@ -15,7 +15,7 @@ export function getHtml(this: ReloadButtonAppElement) {
     @pointerdown="${this.onReloadButtonPointerDown_}"
     @pointerup="${this.onReloadButtonPointerUp_}"
     @contextmenu="${this.onContextMenu_}"
-    displayingContextMenu="${this.isDisplayingContextMenu_}">
+    displaying-context-menu="${this.isDisplayingContextMenu_}">
 </cr-icon-button>
 <!--_html_template_end_-->`;
 }
