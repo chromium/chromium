@@ -172,16 +172,13 @@ class PLATFORM_EXPORT FixedPoint {
       float end_value) {
     FixedPoint start_position;
     FixedPoint end_position;
-    if (start_value < end_value ||
-        (!RuntimeEnabledFeatures::EquivalentEncompassRoundingEnabled() &&
-         start_value == end_value)) [[likely]] {
+    if (start_value < end_value) [[likely]] {
       start_position = FromFloatFloor(start_value);
       end_position = FromFloatCeil(end_value);
     } else if (start_value > end_value) [[unlikely]] {
       start_position = FromFloatCeil(start_value);
       end_position = FromFloatFloor(end_value);
     } else {
-      CHECK(RuntimeEnabledFeatures::EquivalentEncompassRoundingEnabled());
       start_position = end_position = FromFloatFloor(start_value);
     }
     return {start_position, end_position};
