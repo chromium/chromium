@@ -32,13 +32,16 @@ export class UserSkillsPageElement extends CrLitElement {
   static override get properties() {
     return {
       skills_: {type: Object},
+      addSkillButtonDisabled_: {type: Boolean},
     };
   }
 
   // Map tracking skills by id.
   protected accessor skills_: Map<string, Skill> = new Map();
+  protected accessor addSkillButtonDisabled_: boolean = false;
   private proxy_: SkillsPageBrowserProxy = SkillsPageBrowserProxy.getInstance();
   private listenerIds_: number[] = [];
+  private addSkillButtonDisabledTimer_: number|undefined = undefined;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -64,6 +67,11 @@ export class UserSkillsPageElement extends CrLitElement {
     this.listenerIds_.forEach(
         id => this.proxy_.callbackRouter.removeListener(id));
     this.listenerIds_ = [];
+    if (this.addSkillButtonDisabledTimer_) {
+      clearTimeout(this.addSkillButtonDisabledTimer_);
+      this.addSkillButtonDisabledTimer_ = undefined;
+    }
+    this.addSkillButtonDisabled_ = false;
   }
 
   private updateSkill_(skill: Skill) {
@@ -84,8 +92,17 @@ export class UserSkillsPageElement extends CrLitElement {
   }
 
   protected onAddSkillButtonClick_() {
+    if (this.addSkillButtonDisabled_) {
+      return;
+    }
+    this.addSkillButtonDisabled_ = true;
     SkillsPageBrowserProxy.getInstance().handler.openSkillsDialog(
         SkillsDialogType.kAdd, /*skill=*/ null);
+    // Disable the button temporarily to prevent double-clicking.
+    // The button will open a dialog to block the page, so we can
+    // safely re-enable it after a short period of time.
+    this.addSkillButtonDisabledTimer_ =
+        setTimeout(() => this.addSkillButtonDisabled_ = false, 1000);
   }
 }
 

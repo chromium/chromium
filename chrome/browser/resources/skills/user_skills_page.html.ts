@@ -17,6 +17,7 @@ export function getHtml(this: UserSkillsPageElement) {
     <p id="subtitle">Skills help simplify and automate repetitive tasks</p>
   </div>
   <cr-button id="addSkillButton" class="action-button"
+      ?disabled="${this.addSkillButtonDisabled_}"
       @click="${this.onAddSkillButtonClick_}">
     <cr-icon icon="cr:add" slot="prefix-icon"></cr-icon>
     Add skill
