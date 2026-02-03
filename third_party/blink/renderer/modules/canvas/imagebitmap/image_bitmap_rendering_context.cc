@@ -173,48 +173,48 @@ ImageBitmapRenderingContext::GetOrCreateResourceProviderForOffscreenCanvas() {
       return nullptr;
     }
     return resource_provider_for_offscreen_canvas_.get();
-  }
+  } else {
+    if (!Host()->IsValidImageSize() && !Host()->Size().IsEmpty()) {
+      LoseContext(CanvasRenderingContext::kInvalidCanvasSize);
+      return nullptr;
+    }
 
-  if (!Host()->IsValidImageSize() && !Host()->Size().IsEmpty()) {
-    LoseContext(CanvasRenderingContext::kInvalidCanvasSize);
-    return nullptr;
-  }
+    gfx::Size surface_size(Host()->width(), Host()->height());
+    const SkAlphaType alpha_type = GetAlphaType();
+    const viz::SharedImageFormat format = GetSharedImageFormat();
+    const gfx::ColorSpace color_space = GetColorSpace();
+    if (SharedGpuContext::IsGpuCompositingEnabled()) {
+      resource_provider_for_offscreen_canvas_ =
+          CanvasResourceProvider::CreateSharedImageProvider(
+              Host()->Size(), format, alpha_type, color_space,
+              CanvasResourceProvider::ShouldInitialize::kCallClear,
+              SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
+              gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, Host());
+    } else if (static_cast<OffscreenCanvas*>(Host())->HasPlaceholderCanvas()) {
+      resource_provider_for_offscreen_canvas_ = CanvasResourceProvider::
+          CreateSharedImageProviderForSoftwareCompositor(
+              Host()->Size(), format, alpha_type, color_space,
+              CanvasResourceProvider::ShouldInitialize::kCallClear,
+              SharedGpuContext::SharedImageInterfaceProvider(), Host());
+    }
 
-  gfx::Size surface_size(Host()->width(), Host()->height());
-  const SkAlphaType alpha_type = GetAlphaType();
-  const viz::SharedImageFormat format = GetSharedImageFormat();
-  const gfx::ColorSpace color_space = GetColorSpace();
-  if (SharedGpuContext::IsGpuCompositingEnabled()) {
-    resource_provider_for_offscreen_canvas_ =
-        CanvasResourceProvider::CreateSharedImageProvider(
-            Host()->Size(), format, alpha_type, color_space,
-            CanvasResourceProvider::ShouldInitialize::kCallClear,
-            SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
-            gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, Host());
-  } else if (static_cast<OffscreenCanvas*>(Host())->HasPlaceholderCanvas()) {
-    resource_provider_for_offscreen_canvas_ =
-        CanvasResourceProvider::CreateSharedImageProviderForSoftwareCompositor(
-            Host()->Size(), format, alpha_type, color_space,
-            CanvasResourceProvider::ShouldInitialize::kCallClear,
-            SharedGpuContext::SharedImageInterfaceProvider(), Host());
-  }
+    Host()->UpdateMemoryUsage();
 
-  Host()->UpdateMemoryUsage();
-
-  if (resource_provider_for_offscreen_canvas_.get() &&
-      resource_provider_for_offscreen_canvas_.get()->IsValid()) {
-    // todo(crbug.com/1064363)  Add a separate UMA for Offscreen Canvas usage
-    // and understand if the if (ResourceProvider() &&
-    // ResourceProvider()->IsValid()) is really needed.
-    base::UmaHistogramBoolean(
-        "Blink.Canvas.ResourceProviderIsAccelerated",
-        resource_provider_for_offscreen_canvas_.get()->IsAccelerated());
-    base::UmaHistogramEnumeration(
-        "Blink.Canvas.ResourceProviderType",
-        resource_provider_for_offscreen_canvas_.get()->GetType());
-    Host()->DidDraw();
+    if (resource_provider_for_offscreen_canvas_.get() &&
+        resource_provider_for_offscreen_canvas_.get()->IsValid()) {
+      // todo(crbug.com/1064363)  Add a separate UMA for Offscreen Canvas usage
+      // and understand if the if (ResourceProvider() &&
+      // ResourceProvider()->IsValid()) is really needed.
+      base::UmaHistogramBoolean(
+          "Blink.Canvas.ResourceProviderIsAccelerated",
+          resource_provider_for_offscreen_canvas_.get()->IsAccelerated());
+      base::UmaHistogramEnumeration(
+          "Blink.Canvas.ResourceProviderType",
+          resource_provider_for_offscreen_canvas_.get()->GetType());
+      Host()->DidDraw();
+    }
+    return resource_provider_for_offscreen_canvas_.get();
   }
-  return resource_provider_for_offscreen_canvas_.get();
 }
 
 bool ImageBitmapRenderingContext::PushFrame() {
