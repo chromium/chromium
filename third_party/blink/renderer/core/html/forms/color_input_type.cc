@@ -31,11 +31,11 @@
 #include "third_party/blink/renderer/core/html/forms/color_input_type.h"
 
 #include "third_party/blink/public/mojom/choosers/color_chooser.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
-#include "third_party/blink/renderer/core/css/css_property_names.h"
+#include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser.h"
+#include "third_party/blink/renderer/core/css/parser/css_property_parser.h"
 #include "third_party/blink/renderer/core/dom/events/scoped_event_queue.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
-#include "third_party/blink/renderer/core/events/mouse_event.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -45,17 +45,15 @@
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
-#include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
-#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
-#include "ui/base/ui_base_features.h"
 
 namespace blink {
 
@@ -63,6 +61,10 @@ namespace blink {
 static const unsigned kMaxSuggestions = 1000;
 // Upper limit for the length of the labels for datalist suggestions.
 static const unsigned kMaxSuggestionLabelLength = 1000;
+// Constant for black color value.
+static const char kBlackColorValue[] = "#000000";
+// Default color value when input is empty or invalid.
+static const char kFallbackColorValue[] = "#000000";
 
 static bool IsValidColorString(const String& value) {
   if (value.empty())
@@ -107,8 +109,32 @@ bool ColorInputType::SupportsRequired() const {
 }
 
 String ColorInputType::SanitizeValue(const String& proposed_value) const {
-  if (!IsValidColorString(proposed_value))
-    return "#000000";
+  if (RuntimeEnabledFeatures::ColorInputAcceptsCSSColorsEnabled()) {
+    // 'currentcolor' is resolved to black.
+    if (CssValueKeywordID(proposed_value) == CSSValueID::kCurrentcolor) {
+      return kBlackColorValue;
+    }
+
+    Color color;
+    // Handle most color formats (hex, rgb, hsl, etc.) and System Colors (e.g.
+    // "ActiveBorder").
+    if (CSSParser::ParseColor(color, proposed_value) ||
+        CSSParser::ParseSystemColor(color, proposed_value,
+                                    mojom::blink::ColorScheme::kLight,
+                                    /*color_provider=*/nullptr,
+                                    /*is_in_web_app_scope=*/false)) {
+      // If the input color has transparency, we drop the alpha channel (make
+      // it opaque). Convert to sRGB and serialize as #rrggbb.
+      return Color::FromRGBA32(color.MakeOpaque().Rgb())
+          .SerializeAsCanvasColor()
+          .LowerASCII();
+    }
+    return kFallbackColorValue;
+  }
+
+  if (!IsValidColorString(proposed_value)) {
+    return kFallbackColorValue;
+  }
   return proposed_value.LowerASCII();
 }
 

@@ -1094,6 +1094,15 @@
       name: "CollectWidthAndHeightAsStylesForNestedSvg",
       status: "stable",
     },
+    {
+      // Allows <input type=color> to accept any valid CSS color value
+      // (named colors, rgb(), hsl(), system colors, etc.) in addition to
+      // the legacy 7-character hex format (#rrggbb).
+      // https://crbug.com/40226268
+      // This was added in M146 and can be removed after M148.
+      name: "ColorInputAcceptsCSSColors",
+      status: "stable",
+    },
     // Enable the display-p3-linear color space in CSS.
     // https://chromestatus.com/feature/5162372125818880
     {

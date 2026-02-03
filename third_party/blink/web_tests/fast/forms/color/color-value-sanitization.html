@@ -12,7 +12,7 @@ shouldBeEqualToString('input.value = "#abcdef"; input.value', '#abcdef');
 
 shouldBeEqualToString('input.value = ""; input.value', '#000000');
 shouldBeEqualToString('input.value = "#ghijkl"; input.value', '#000000');
-shouldBeEqualToString('input.value = "#112233ff"; input.value', '#000000');
+shouldBeEqualToString('input.value = "#112233ff"; input.value', '#112233');  // Alpha is dropped
 shouldBeEqualToString('input.value = "ffccaa"; input.value', '#000000');
-shouldBeEqualToString('input.value = " #223344 "; input.value', '#000000');
+shouldBeEqualToString('input.value = " #223344 "; input.value', '#223344');  // Spaces are stripped
 </script>

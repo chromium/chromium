@@ -12,9 +12,9 @@ PASS input.value = "#ABCDEF"; input.value is "#abcdef"
 PASS input.value = "#abcdef"; input.value is "#abcdef"
 PASS input.value = ""; input.value is "#000000"
 PASS input.value = "#ghijkl"; input.value is "#000000"
-PASS input.value = "#112233ff"; input.value is "#000000"
+PASS input.value = "#112233ff"; input.value is "#112233"
 PASS input.value = "ffccaa"; input.value is "#000000"
-PASS input.value = " #223344 "; input.value is "#000000"
+PASS input.value = " #223344 "; input.value is "#223344"
 PASS successfullyParsed is true
 
 TEST COMPLETE
