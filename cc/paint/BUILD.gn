@@ -9,7 +9,6 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 cc_component("paint") {
   output_name = "cc_paint"
   sources = [
-    "canvas_draw_element_ids.h",
     "clear_for_opaque_raster.cc",
     "clear_for_opaque_raster.h",
     "color_filter.cc",

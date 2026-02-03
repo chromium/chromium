@@ -763,9 +763,6 @@ _CONFIG = [
             'display::ScreenInfo',
             'display::ScreenInfos',
 
-            # html-in-canvas
-            'cc::AllCanvasDrawElementIds',
-
             # Terminal value for display id's used across display <-> Blink.
             'display::kInvalidDisplayId',
 

@@ -993,8 +993,7 @@ void PaintArtifactCompositor::Update(
     const PaintArtifact& artifact,
     const ViewportProperties& viewport_properties,
     const StackScrollTranslationVector& scroll_translation_nodes,
-    Vector<std::unique_ptr<cc::ViewTransitionRequest>> transition_requests,
-    cc::AllCanvasDrawElementIds all_canvas_draw_element_ids) {
+    Vector<std::unique_ptr<cc::ViewTransitionRequest>> transition_requests) {
   // See: |UpdateRepaintedLayers| for repaint updates.
   DCHECK_EQ(needs_update_, UpdateType::kFull);
   DCHECK(root_layer_);
@@ -1006,8 +1005,6 @@ void PaintArtifactCompositor::Update(
   cc::LayerTreeHost* host = root_layer_->layer_tree_host();
   if (!host)
     return;
-
-  host->SetCanvasDrawElementIds(std::move(all_canvas_draw_element_ids));
 
   for (auto& request : transition_requests)
     host->AddViewTransitionRequest(std::move(request));

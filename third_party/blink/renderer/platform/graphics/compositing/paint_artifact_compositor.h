@@ -13,7 +13,6 @@
 #include "cc/layers/content_layer_client.h"
 #include "cc/layers/layer_collections.h"
 #include "cc/layers/picture_layer.h"
-#include "cc/paint/canvas_draw_element_ids.h"
 #include "cc/trees/property_tree.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/layers_as_json.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/pending_layer.h"
@@ -191,9 +190,7 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   void Update(const PaintArtifact& artifact,
               const ViewportProperties& viewport_properties,
               const StackScrollTranslationVector& scroll_translation_nodes,
-              Vector<std::unique_ptr<cc::ViewTransitionRequest>> requests,
-              cc::AllCanvasDrawElementIds all_canvas_draw_element_ids =
-                  cc::AllCanvasDrawElementIds());
+              Vector<std::unique_ptr<cc::ViewTransitionRequest>> requests);
 
   bool DirectlyUpdateCompositedOpacityValue(const EffectPaintPropertyNode&);
   bool DirectlyUpdateScrollOffsetTransform(const TransformPaintPropertyNode&);
