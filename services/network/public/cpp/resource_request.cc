@@ -382,6 +382,20 @@ bool ResourceRequest::SavesCookies() const {
          !(load_flags & net::LOAD_DO_NOT_SAVE_COOKIES);
 }
 
+void ResourceRequest::UpdateOnRedirect(const net::RedirectInfo& redirect_info) {
+  url = redirect_info.new_url;
+  method = redirect_info.new_method;
+  referrer = GURL(redirect_info.new_referrer);
+  referrer_policy = redirect_info.new_referrer_policy;
+  site_for_cookies = redirect_info.new_site_for_cookies;
+
+  if (trusted_params) {
+    trusted_params->isolation_info =
+        trusted_params->isolation_info.CreateForRedirect(
+            url::Origin::Create(url));
+  }
+}
+
 net::ReferrerPolicy ReferrerPolicyForUrlRequest(
     mojom::ReferrerPolicy referrer_policy) {
   switch (referrer_policy) {

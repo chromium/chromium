@@ -912,20 +912,7 @@ void PrefetchContainer::UpdateResourceRequest(
         update_headers_params.modified_cors_exempt_headers);
   }
 
-  resource_request_->url = redirect_info.new_url;
-  resource_request_->method = redirect_info.new_method;
-  resource_request_->site_for_cookies = redirect_info.new_site_for_cookies;
-
-  resource_request_->trusted_params->isolation_info =
-      resource_request_->trusted_params->isolation_info.CreateForRedirect(
-          url::Origin::Create(resource_request_->url));
-
-  // Update the ResourceRequest's referrer in case a redirect requires a change
-  // in network context and a new request needs to be started. For
-  // `FollowRedirect()` cases, referrer etc. are updated similarly on the
-  // network service.
-  resource_request_->referrer = GURL(redirect_info.new_referrer);
-  resource_request_->referrer_policy = redirect_info.new_referrer_policy;
+  resource_request_->UpdateOnRedirect(redirect_info);
 
   // Remove `variations::kClientDataHeader` from `resource_request_->headers`,
   // to keep the existing behavior. While `AddXClientDataHeader()` adds

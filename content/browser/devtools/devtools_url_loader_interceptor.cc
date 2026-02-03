@@ -1832,16 +1832,7 @@ void InterceptionJob::FollowRedirect(
   }
   request_cookies_.reset();
 
-  request->method = info.new_method;
-  request->url = info.new_url;
-  request->site_for_cookies = info.new_site_for_cookies;
-  request->referrer_policy = info.new_referrer_policy;
-  request->referrer = GURL(info.new_referrer);
-  if (request->trusted_params) {
-    const auto new_origin = url::Origin::Create(info.new_url);
-    request->trusted_params->isolation_info =
-        request->trusted_params->isolation_info.CreateForRedirect(new_origin);
-  }
+  request->UpdateOnRedirect(info);
   response_metadata_.reset();
 
   UpdateCORSFlag();

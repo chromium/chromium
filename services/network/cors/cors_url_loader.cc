@@ -477,17 +477,7 @@ void CorsURLLoader::FollowRedirect(
   }
 
   const std::string original_method = std::move(request_.method);
-  request_.url = redirect_info_.new_url;
-  request_.method = redirect_info_.new_method;
-  request_.referrer = GURL(redirect_info_.new_referrer);
-  request_.referrer_policy = redirect_info_.new_referrer_policy;
-  request_.site_for_cookies = redirect_info_.new_site_for_cookies;
-
-  if (request_.trusted_params) {
-    request_.trusted_params->isolation_info =
-        request_.trusted_params->isolation_info.CreateForRedirect(
-            url::Origin::Create(request_.url));
-  }
+  request_.UpdateOnRedirect(redirect_info_);
 
   // The request method can be changed to "GET". In this case we need to
   // reset the request body manually.

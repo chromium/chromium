@@ -156,6 +156,14 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   bool SendsCookies() const;
   bool SavesCookies() const;
 
+  // Updates `*this` upon a redirect. This method is to deduplicate the common
+  // `ResourceRequest` modification code based on `RedirectInfo`.
+  // TODO(crbug.com/434292502): Unify more call sites. For example, there are
+  // code locations that do the same thing except for calling
+  // `CreateForRedirect()`. Perhaps such code locations are mergeable, because
+  // `CreateForRedirect()` is no-op when for `RequestType::kOther`.
+  void UpdateOnRedirect(const net::RedirectInfo& redirect_info);
+
   // See comments in network.mojom.URLRequest in url_request.mojom for details
   // of each field.
   // LINT.IfChange(ResourceRequestFields)

@@ -2323,17 +2323,7 @@ void NavigationURLLoaderImpl::FollowRedirect(
   }
 
   const GURL previous_url = resource_request_->url;
-  resource_request_->url = redirect_info_.new_url;
-  resource_request_->method = redirect_info_.new_method;
-  resource_request_->site_for_cookies = redirect_info_.new_site_for_cookies;
-
-  // See if navigation network isolation key needs to be updated.
-  resource_request_->trusted_params->isolation_info =
-      resource_request_->trusted_params->isolation_info.CreateForRedirect(
-          url::Origin::Create(resource_request_->url));
-
-  resource_request_->referrer = GURL(redirect_info_.new_referrer);
-  resource_request_->referrer_policy = redirect_info_.new_referrer_policy;
+  resource_request_->UpdateOnRedirect(redirect_info_);
   resource_request_->navigation_redirect_chain.push_back(
       redirect_info_.new_url);
 

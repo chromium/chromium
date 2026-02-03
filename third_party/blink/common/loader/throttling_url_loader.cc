@@ -809,17 +809,7 @@ void ThrottlingURLLoader::OnReceiveRedirect(
 
   // Update the request in case |FollowRedirectForcingRestart()| is called, and
   // needs to use the request updated for the redirect.
-  network::ResourceRequest& request = start_info_->url_request;
-  request.url = redirect_info.new_url;
-  request.method = redirect_info.new_method;
-  request.site_for_cookies = redirect_info.new_site_for_cookies;
-  request.referrer = GURL(redirect_info.new_referrer);
-  request.referrer_policy = redirect_info.new_referrer_policy;
-  if (request.trusted_params) {
-    request.trusted_params->isolation_info =
-        request.trusted_params->isolation_info.CreateForRedirect(
-            url::Origin::Create(request.url));
-  }
+  start_info_->url_request.UpdateOnRedirect(redirect_info);
 
   // TODO(dhausknecht) at this point we do not actually know if we commit to the
   // redirect or if it will be cancelled. FollowRedirect would be a more
