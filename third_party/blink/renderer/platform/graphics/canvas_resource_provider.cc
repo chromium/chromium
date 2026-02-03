@@ -1849,15 +1849,4 @@ CanvasResourceProvider::CreateSharedImageProvider(
       shared_image_usage_flags, delegate);
 }
 
-std::unique_ptr<CanvasResourceProvider>
-CanvasResourceProvider::CreateWebGPUImageProvider(
-    gfx::Size size,
-    const Canvas2DColorParams& color_params,
-    gpu::SharedImageUsageSet shared_image_usage_flags,
-    Delegate* delegate) {
-  return CreateWebGPUImageProvider(
-      size, color_params.GetSharedImageFormat(), color_params.GetAlphaType(),
-      color_params.GetGfxColorSpace(), shared_image_usage_flags, delegate);
-}
-
 }  // namespace blink

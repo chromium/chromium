@@ -183,12 +183,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
                             gpu::SharedImageUsageSet shared_image_usage_flags,
                             Delegate* delegate = nullptr);
 
-  static std::unique_ptr<CanvasResourceProvider> CreateWebGPUImageProvider(
-      gfx::Size size,
-      const Canvas2DColorParams& color_params,
-      gpu::SharedImageUsageSet shared_image_usage_flags = {},
-      Delegate* delegate = nullptr);
-
   // The ImageOrientationEnum conveys the desired orientation of the image, and
   // should be derived from the source of the bitmap data.
   virtual scoped_refptr<StaticBitmapImage> Snapshot(
