@@ -8977,7 +8977,8 @@ bool ChromeContentBrowserClient::ShouldAllowPrefetchRedirection(
   // don't generate parameters to be identified by search results providers, so
   // the triggering search related urls is avoided. See crbug.com/40282403 for
   // more details.
-  if (embedder_histogram_suffix != preloading_utils::kBookmarkBarMetricSuffix) {
+  if (embedder_histogram_suffix != preloading_utils::kBookmarkBarMetricSuffix &&
+      embedder_histogram_suffix != preloading_utils::kNewTabPageMetricSuffix) {
     return true;
   }
   auto* profile = Profile::FromBrowserContext(&browser_context);

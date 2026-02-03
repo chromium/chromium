@@ -31,6 +31,7 @@
 #include "content/public/test/prefetch_test_util.h"
 #include "content/public/test/preloading_test_util.h"
 #include "content/public/test/prerender_test_util.h"
+#include "net/base/url_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
@@ -52,6 +53,7 @@ constexpr int kPrerenderFailedDuringPrefetch = 86;
 // Following definitions are equal to `content::PrefetchStatus`.
 constexpr int kPrefetchFailedNon2XX = 12;
 constexpr int kPrefetchResponseUsed = 42;
+constexpr int kPrefetchFailedInvalidRedirect = 43;
 
 class NewTabPagePreloadBrowserTest : public PlatformBrowserTest {
  public:
@@ -183,6 +185,38 @@ IN_PROC_BROWSER_TEST_F(NewTabPagePreloadBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_NewTabPage",
       kPrerenderFailedDuringPrefetch, 1);
+}
+
+// Test a scenario which prefetch fails when a search related url in the
+// redirect chain.
+IN_PROC_BROWSER_TEST_F(NewTabPagePreloadBrowserTest,
+                       PreventSearchRelatedRedirect) {
+  base::HistogramTester histogram_tester;
+  StartServer();
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(
+      content::NavigateToURL(GetActiveWebContents(), GetUrl("/empty.html")));
+
+  GURL preload_url =
+      GetUrl("/server-redirect?" +
+             base::EscapeQueryParamValue(
+                 "https://www.google.co.jp/search?q=123", /*use_plus=*/true));
+  {
+    content::test::TestPrefetchWatcher test_prefetch_watcher;
+    GetNewTabPagePreloadPipelineManager()->StartPrefetch(preload_url);
+    // TODO(crbug.com/421941586): There is no existing method to be notified of
+    // event completeness at the moment as mentioned in
+    // https://chromium-review.googlesource.com/c/chromium/src/+/7408336/comment/3da2c289_ff73b245/
+    // Consider plumbing event completeness notification to avoid RunUntilIdle
+    base::RunLoop().RunUntilIdle();
+  }
+
+  // Simulate the navigation and flush the metrics.
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(),
+                                     GetUrl("/empty.html?histogram_flush")));
+  histogram_tester.ExpectUniqueSample("Preloading.Prefetch.PrefetchStatus",
+                                      kPrefetchFailedInvalidRedirect, 1);
 }
 
 }  // namespace
