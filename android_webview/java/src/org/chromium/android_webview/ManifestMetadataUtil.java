@@ -38,6 +38,10 @@ public class ManifestMetadataUtil {
             "android.webkit.WebView.MultiProfileNameTagKey";
 
     // Do not change value, it is used by external AndroidManifest.xml files
+    private static final String ENABLE_CONTENT_RESTRICTION_METADATA_NAME =
+            "android.webkit.WebView.EnableContentRestriction";
+
+    // Do not change value, it is used by external AndroidManifest.xml files
     private static final String METADATA_HOLDER_SERVICE_NAME =
             "android.webkit.MetaDataHolderService";
 
@@ -66,6 +70,7 @@ public class ManifestMetadataUtil {
     public static class MetadataCache {
         private final boolean mIsAppOptedOutFromMetricsCollection;
         private final @Nullable Boolean mSafeBrowsingOptInPreference;
+        private final @Nullable Boolean mEnableContentRestriction;
         private final @Nullable Integer mAppMultiProfileProfileNameTagKey;
         private final boolean mForceSyncBrowserStartup;
 
@@ -81,6 +86,7 @@ public class ManifestMetadataUtil {
             mAppMultiProfileProfileNameTagKey =
                     getAppMultiProfileProfileNameTagKey(metadataHolderServiceMetadata);
             mForceSyncBrowserStartup = shouldForceSyncBrowserStartup(metadataHolderServiceMetadata);
+            mEnableContentRestriction = getContentRestrictionAppOptInPreference(metadataHolderServiceMetadata);
         }
     }
 
@@ -166,6 +172,31 @@ public class ManifestMetadataUtil {
         }
         return metadataHolderServiceMetadata.getBoolean(
                 FORCE_SYNC_BROWSER_STARTUP_METADATA_NAME, false);
+    }
+
+    /**
+     * Checks the application manifest for Content Restriction opt-in preference.
+     *
+     * @return true if app has opted in, false if opted out, and null if no preference specified.
+     */
+    @Nullable
+    public static Boolean getContentRestrictionAppOptInPreference() {
+        return getMetadataCache().mEnableContentRestriction;
+    }
+
+    @VisibleForTesting
+    @Nullable
+    public static Boolean getContentRestrictionAppOptInPreference(
+            @Nullable Bundle metadataHolderServiceMetadata) {
+        Boolean value;
+        if (metadataHolderServiceMetadata != null
+                && metadataHolderServiceMetadata.containsKey(
+                        ENABLE_CONTENT_RESTRICTION_METADATA_NAME)) {
+            value = metadataHolderServiceMetadata.getBoolean(ENABLE_CONTENT_RESTRICTION_METADATA_NAME);
+        } else {
+            value = null;
+        }
+        return value;
     }
 
     /**
