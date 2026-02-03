@@ -975,7 +975,8 @@ constexpr CGFloat kBlueDotInset = 1;
                              colorWithAlphaComponent:0]
                 endColor:TabStripHelper.cellBackgroundColor
               startPoint:CGPointMake(0.0f, 0.5f)
-                endPoint:CGPointMake(1.0f, 0.5f)];
+                endPoint:CGPointMake(1.0f, 0.5f)
+           useEasedCurve:NO];
   gradientView.translatesAutoresizingMaskIntoConstraints = NO;
   return gradientView;
 }

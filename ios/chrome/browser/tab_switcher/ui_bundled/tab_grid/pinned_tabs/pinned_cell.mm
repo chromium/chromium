@@ -446,7 +446,8 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
       [[GradientView alloc] initWithStartColor:transparentColor
                                       endColor:opaqueColor
                                     startPoint:CGPointMake(0.0f, 0.5f)
-                                      endPoint:CGPointMake(1.0f, 0.5f)];
+                                      endPoint:CGPointMake(1.0f, 0.5f)
+                                 useEasedCurve:NO];
   gradientView.translatesAutoresizingMaskIntoConstraints = NO;
   [_headerView addSubview:gradientView];
 

@@ -17,7 +17,8 @@
 - (instancetype)initWithStartColor:(UIColor*)startColor
                           endColor:(UIColor*)endColor
                         startPoint:(CGPoint)startPoint
-                          endPoint:(CGPoint)endPoint NS_DESIGNATED_INITIALIZER;
+                          endPoint:(CGPoint)endPoint
+                     useEasedCurve:(BOOL)easedCurve NS_DESIGNATED_INITIALIZER;
 
 // Initializes the view with a vertical gradient.
 - (instancetype)initWithTopColor:(UIColor*)topColor

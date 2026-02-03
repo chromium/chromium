@@ -392,11 +392,12 @@ const CGFloat kGradientSpacingAboveInstructions = 150;
 - (void)setupGradientView {
   UIColor* startColor = [UIColor.blackColor colorWithAlphaComponent:0];
   UIColor* endColor = [UIColor.blackColor colorWithAlphaComponent:0.6];
-  UIView* gradientView = [[GradientView alloc]
-      initWithStartColor:startColor
-                endColor:endColor
-              startPoint:CGPointMake(0, 0)
-                endPoint:CGPointMake(0, kGradientEndPoint)];
+  UIView* gradientView =
+      [[GradientView alloc] initWithStartColor:startColor
+                                      endColor:endColor
+                                    startPoint:CGPointMake(0, 0)
+                                      endPoint:CGPointMake(0, kGradientEndPoint)
+                                 useEasedCurve:NO];
   gradientView.translatesAutoresizingMaskIntoConstraints = NO;
 
   [self.view insertSubview:gradientView aboveSubview:_scrollView];
