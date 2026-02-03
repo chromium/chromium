@@ -57,6 +57,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/autofill/editors/common/EditorComponentsViewBinder.java",
     "java/src/org/chromium/chrome/browser/autofill/editors/common/EditorDialogToolbar.java",
     "java/src/org/chromium/chrome/browser/autofill/editors/common/EditorObserverForTest.java",
+    "java/src/org/chromium/chrome/browser/autofill/editors/common/EditorViewBase.java",
     "java/src/org/chromium/chrome/browser/autofill/editors/common/dropdown_field/DropdownFieldAdapter.java",
     "java/src/org/chromium/chrome/browser/autofill/editors/common/dropdown_field/DropdownFieldProperties.java",
     "java/src/org/chromium/chrome/browser/autofill/editors/common/dropdown_field/DropdownFieldView.java",

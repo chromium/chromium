@@ -239,9 +239,7 @@ public class AddressEditorRenderTest {
                                             mProfile,
                                             /* saveToDisk= */ false);
                             mAddressEditor.showEditorDialog();
-                            return mAddressEditor
-                                    .getEditorDialogForTesting()
-                                    .getContentViewForTest();
+                            return mAddressEditor.getEditorDialogForTesting().getContentView();
                         });
         mRenderTestRule.render(editor, "edit_new_address_profile");
     }
@@ -262,9 +260,7 @@ public class AddressEditorRenderTest {
                                             mProfile,
                                             /* saveToDisk= */ false);
                             mAddressEditor.showEditorDialog();
-                            return mAddressEditor
-                                    .getEditorDialogForTesting()
-                                    .getContentViewForTest();
+                            return mAddressEditor.getEditorDialogForTesting().getContentView();
                         });
         mRenderTestRule.render(editor, "edit_new_account_address_profile");
     }
@@ -290,9 +286,7 @@ public class AddressEditorRenderTest {
                                             SaveUpdateAddressProfilePromptMode.UPDATE_PROFILE,
                                             /* saveToDisk= */ false);
                             mAddressEditor.showEditorDialog();
-                            return mAddressEditor
-                                    .getEditorDialogForTesting()
-                                    .getContentViewForTest();
+                            return mAddressEditor.getEditorDialogForTesting().getContentView();
                         });
         mRenderTestRule.render(editor, "edit_local_or_syncable_address_profile");
     }
@@ -318,9 +312,7 @@ public class AddressEditorRenderTest {
                                             SaveUpdateAddressProfilePromptMode.SAVE_NEW_PROFILE,
                                             /* saveToDisk= */ false);
                             mAddressEditor.showEditorDialog();
-                            return mAddressEditor
-                                    .getEditorDialogForTesting()
-                                    .getContentViewForTest();
+                            return mAddressEditor.getEditorDialogForTesting().getContentView();
                         });
         mRenderTestRule.render(editor, "edit_account_address_profile");
     }
@@ -346,9 +338,7 @@ public class AddressEditorRenderTest {
                                             SaveUpdateAddressProfilePromptMode.UPDATE_PROFILE,
                                             /* saveToDisk= */ false);
                             mAddressEditor.showEditorDialog();
-                            return mAddressEditor
-                                    .getEditorDialogForTesting()
-                                    .getContentViewForTest();
+                            return mAddressEditor.getEditorDialogForTesting().getContentView();
                         });
         mRenderTestRule.render(editor, "edit_home_address_profile");
     }
@@ -374,9 +364,7 @@ public class AddressEditorRenderTest {
                                             SaveUpdateAddressProfilePromptMode.MIGRATE_PROFILE,
                                             /* saveToDisk= */ false);
                             mAddressEditor.showEditorDialog();
-                            return mAddressEditor
-                                    .getEditorDialogForTesting()
-                                    .getContentViewForTest();
+                            return mAddressEditor.getEditorDialogForTesting().getContentView();
                         });
         mRenderTestRule.render(editor, "migrate_local_or_syncable_address_profile");
     }
