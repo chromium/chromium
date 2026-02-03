@@ -85,13 +85,20 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
     private @MonotonicNonNull DocumentPictureInPictureHeaderCoordinator mHeaderCoordinator;
     private @MonotonicNonNull AppThemeColorProvider mAppThemeColorProvider;
 
+    private static @Nullable WebContents sWebContentsForTesting;
+    // TODO(crbug.com/481216447): Remove this testing bypass once CI supports Android B (API 36).
+    private static boolean sIgnoreSdkVersionForTesting;
+
     @Override
     protected void onPreCreate() {
         super.onPreCreate();
 
         Intent intent = getIntent();
         intent.setExtrasClassLoader(WebContents.class.getClassLoader());
-        WebContents webContents = intent.getParcelableExtra(WEB_CONTENTS_KEY);
+        WebContents webContents =
+                sWebContentsForTesting != null
+                        ? sWebContentsForTesting
+                        : intent.getParcelableExtra(WEB_CONTENTS_KEY);
         if (webContents == null) {
             Log.e(TAG, "WebContents is null, finishing.");
             finish();
@@ -181,7 +188,7 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
     }
 
     private void goIntoPinnedMode() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.BAKLAVA) {
+        if (!sIgnoreSdkVersionForTesting && Build.VERSION.SDK_INT < Build.VERSION_CODES.BAKLAVA) {
             Log.e(TAG, "SDK version is too low, minimum required is 36.");
             finish();
             return;
@@ -407,6 +414,14 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
         public void setContentsBounds(WebContents source, Rect bounds) {
             MultiWindowUtils.moveActivityToBounds(DocumentPictureInPictureActivity.this, bounds);
         }
+    }
+
+    public static void setWebContentsForTesting(WebContents webContents) {
+        sWebContentsForTesting = webContents;
+    }
+
+    public static void setIgnoreSdkVersionForTesting(boolean ignore) {
+        sIgnoreSdkVersionForTesting = ignore;
     }
 
     @NativeMethods

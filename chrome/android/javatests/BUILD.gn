@@ -853,6 +853,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.media") {
 
   sources = [
     "src/org/chromium/chrome/browser/media/AutoPipPermissionDialogViewRenderTest.java",
+    "src/org/chromium/chrome/browser/media/DocumentPictureInPictureActivityTest.java",
     "src/org/chromium/chrome/browser/media/MediaLauncherActivityTest.java",
     "src/org/chromium/chrome/browser/media/MediaViewerUtilsTest.java",
     "src/org/chromium/chrome/browser/media/PictureInPictureActivityBrowserTest.java",
@@ -863,7 +864,10 @@ android_library("chrome_test_java_org.chromium.chrome.browser.media") {
     "src/org/chromium/chrome/browser/media/ui/MediaSessionTest.java",
   ]
 
-  deps = [ ":chrome_test_java_helper" ]
+  deps = [
+    ":chrome_test_java_helper",
+    "//base:flagged_apis_java",
+  ]
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.metrics") {
