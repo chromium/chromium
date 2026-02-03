@@ -277,7 +277,9 @@ const base::FeatureParam<bool> kContextMenuEnableMultiTabSelection(
     "NtpComposeboxContextMenuEnableMultiTabSelection",
     false);
 
-const base::FeatureParam<int> kMaxNumFiles(&kNtpComposebox, "MaxNumFiles", 10);
+const base::FeatureParam<int> kMaxNumFiles(&kNtpComposebox,
+                                           "NtpComposeboxMaxNumFiles",
+                                           10);
 
 const base::FeatureParam<bool> kEnableContextDragAndDrop(
     &kNtpComposebox,
