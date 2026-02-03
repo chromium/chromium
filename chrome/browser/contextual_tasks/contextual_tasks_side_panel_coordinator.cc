@@ -543,6 +543,11 @@ ContextualTasksSidePanelCoordinator::GetCurrentTask() {
           active_tab_interface->GetContents()));
 }
 
+void ContextualTasksSidePanelCoordinator::SetSidePanelIdNotToOverrideForTesting(
+    SidePanelEntry::Id side_panel_id) {
+  side_panel_id_not_to_override_ = side_panel_id;
+}
+
 void ContextualTasksSidePanelCoordinator::UpdateSidePanelVisibility() {
   bool should_be_open = ShouldBeOpen();
 
@@ -631,6 +636,13 @@ bool ContextualTasksSidePanelCoordinator::UpdateWebContentsForActiveTab() {
 }
 
 void ContextualTasksSidePanelCoordinator::OnActiveTabChanged() {
+  // crbug.com/477278769: Do not open side panel if glic side panel is already
+  // open on tab changed.
+  if (side_panel_ui_->IsSidePanelEntryShowing(
+          SidePanelEntry::Key(side_panel_id_not_to_override_))) {
+    UpdateOpenState(/*is_open=*/false);
+  }
+
   bool was_side_panel_open = IsSidePanelOpenForContextualTask();
   bool web_contents_changed = UpdateWebContentsForActiveTab();
   UpdateSidePanelVisibility();
