@@ -20,6 +20,9 @@ class PrefService;
 
 - (instancetype)init NS_UNAVAILABLE;
 
+// Alerts the provider that the guided tour was started.
+- (void)setGuidedTourStarted:(BOOL)started;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_FIRST_RUN_COORDINATOR_FIRST_RUN_POST_ACTION_PROVIDER_H_

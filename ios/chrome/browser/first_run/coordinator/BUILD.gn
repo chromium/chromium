@@ -59,6 +59,22 @@ source_set("coordinator") {
   frameworks = [ "UIKit.framework" ]
 }
 
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "first_run_post_action_provider_unittest.mm" ]
+  deps = [
+    ":first_run_provider",
+    "//base",
+    "//base/test:test_support",
+    "//components/prefs:test_support",
+    "//ios/chrome/browser/first_run/public:features",
+    "//ios/chrome/browser/safari_data_import/model:features",
+    "//ios/chrome/browser/screen/ui_bundled:screen_type",
+    "//ios/chrome/browser/shared/public/features",
+    "//testing/gtest",
+  ]
+}
+
 source_set("first_run_provider") {
   sources = [
     "first_run_post_action_provider.h",

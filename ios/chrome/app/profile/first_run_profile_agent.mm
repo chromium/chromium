@@ -252,6 +252,7 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
 }
 
 - (void)startGuidedTour {
+  [_postActionsProvider setGuidedTourStarted:YES];
   __weak FirstRunProfileAgent* weakSelf = self;
   ProceduralBlock completion = ^{
     [weakSelf showNTPStep];
