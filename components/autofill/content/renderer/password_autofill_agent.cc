@@ -907,11 +907,13 @@ bool PasswordAutofillAgent::FillUsernameAndPasswordElements(
     const std::u16string& password,
     AutofillSuggestionTriggerSource suggestion_source) {
   ClearPreviewedForm();
-  WebFormControlElement focused_element = last_queried_element();
   // TODO(crbug.com/341995827): Remove dependency on `focused_element`. Username
   // filling condition could be made similar to the password one and selection
   // range setting could be skipped.
-  CHECK(focused_element);
+  WebFormControlElement focused_element = last_queried_element();
+  if (!focused_element) {
+    return false;
+  }
   // Call OnFieldAutofilled before WebInputElement::SetAutofillState which may
   // cause frame closing.
   if (password_element && password_generation_agent_) {
@@ -1124,11 +1126,13 @@ void PasswordAutofillAgent::PreviewUsernameAndPasswordElements(
     blink::WebInputElement password_element,
     const std::u16string& username,
     const std::u16string& password) {
-  WebFormControlElement focused_element = last_queried_element();
   // TODO(crbug.com/341995827): Remove dependency on `focused_element` when
   // similar dependency is removed from
   // `PasswordAutofillAgent::FillUsernameAndPasswordElements`.
-  CHECK(focused_element);
+  WebFormControlElement focused_element = last_queried_element();
+  if (!focused_element) {
+    return;
+  }
   if (IsUsernameAmendable(username_element,
                           password_element == focused_element)) {
     DoPreviewField(username_element, username, /*is_password=*/false);
@@ -2091,8 +2095,11 @@ void PasswordAutofillAgent::FireHostSubmitEvent(
 }
 
 void PasswordAutofillAgent::OnFormSubmitted(const FormData& submitted_form) {
-  WebFormElement form_element =
+  const WebFormElement form_element =
       GetFormByRendererId(submitted_form.renderer_id());
+  if (!form_element) {
+    return;
+  }
   std::unique_ptr<RendererSavePasswordProgressLogger> logger;
   if (logging_state_active_) {
     logger = std::make_unique<RendererSavePasswordProgressLogger>(

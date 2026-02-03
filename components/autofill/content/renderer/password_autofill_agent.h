@@ -500,6 +500,8 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   // `password` respectively into them.
   // Uses `suggestion_source` to update the `FieldPropertiesMask` of filled
   // fields.
+  // Returns whether the fields were filled with the requested values
+  // successfully.
   bool FillUsernameAndPasswordElements(
       blink::WebInputElement username_element,
       blink::WebInputElement password_element,
