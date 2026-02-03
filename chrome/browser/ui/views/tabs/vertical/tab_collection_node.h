@@ -23,6 +23,9 @@ class View;
 
 class VerticalTabStripController;
 
+// The individual collection node of the view model. The root
+// node also inherits from this class. It provides extensibility hooks for the
+// views to use to implement things like animations.
 class TabCollectionNode {
  public:
   // Keep the same as TabCollection::Type with a tab.

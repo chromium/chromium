@@ -22,7 +22,8 @@ class ImageView;
 class Label;
 }  // namespace views
 
-// View for a tab group header in the vertical tabstrip.
+// The view for the tab group header. It displays the tab group
+// title, editor icon and the collapsed/expand icon.
 class VerticalTabGroupHeaderView : public views::FlexLayoutView,
                                    public views::ContextMenuController {
   METADATA_HEADER(VerticalTabGroupHeaderView, views::FlexLayoutView)

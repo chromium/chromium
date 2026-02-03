@@ -40,7 +40,11 @@ class TabUnderlineView;
 }
 #endif
 
-// View for a vertical tabstrip's tab.
+// The view class for the tab. It is responsible for painting the
+// tab background and displaying the favicon, title, alert indicators and close
+// button. It handles data changed event and view hierarchy changes to updates
+// its states. The tab view implements its own layout and avoids using
+// FlexLayout for performance reasons.
 class VerticalTabView : public views::View,
                         public views::LayoutDelegate,
                         public views::MaskedTargeterDelegate,
@@ -58,6 +62,7 @@ class VerticalTabView : public views::View,
   void UpdateHovered(bool hovered);
 
   std::optional<SkColor> GetBackgroundColor();
+  SkPath GetPath() const;
 
   const TabCollectionNode* collection_node() const { return collection_node_; }
   const TabStyle* tab_style() { return tab_style_; }
@@ -66,7 +71,6 @@ class VerticalTabView : public views::View,
 
   TabCloseButton* close_button_for_testing() { return close_button_; }
   bool collapsed_for_testing() { return collapsed_; }
-  SkPath GetPath() const;
 
  private:
   // views::View

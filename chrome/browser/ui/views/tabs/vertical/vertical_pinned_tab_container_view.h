@@ -14,7 +14,9 @@
 
 class TabCollectionNode;
 
-// Container for the vertical tabstrip's pinned tabs.
+// The view class that represents the pinned tab region for the
+// vertical tab strip. It manages the layout of all the pinned tabs and serves
+// as the drag target for pinned tabs.
 class VerticalPinnedTabContainerView : public views::View,
                                        public views::LayoutDelegate,
                                        public VerticalDraggedTabsContainer {

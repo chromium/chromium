@@ -21,7 +21,9 @@ class TabCollectionNode;
 class VerticalTabDragHandler;
 class VerticalTabGroupHeaderView;
 
-// Container for a tab group in the vertical tabstrip.
+// The view class for vertical tab group container. It manages layout
+// of the group header, underline and all the tabs within the group. It also
+// handles serves as the drag target for tab dragging.
 class VerticalTabGroupView
     : public views::View,
       public views::LayoutDelegate,

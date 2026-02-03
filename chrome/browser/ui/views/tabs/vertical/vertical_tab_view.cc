@@ -249,6 +249,14 @@ std::optional<SkColor> VerticalTabView::GetBackgroundColor() {
   return std::nullopt;
 }
 
+SkPath VerticalTabView::GetPath() const {
+  const SkScalar corner_radius = SkIntToScalar(
+      GetLayoutConstant(LayoutConstant::kVerticalTabCornerRadius) +
+      (split_ ? GetInsets().height() : 0));
+  return SkPath::RRect(SkRRect::MakeRectXY(gfx::RectToSkRect(GetLocalBounds()),
+                                           corner_radius, corner_radius));
+}
+
 void VerticalTabView::Layout(PassKey) {
   LayoutSuperclass<views::View>(this);
   alert_indicator_->UpdateAlertIndicatorAnimation();
@@ -780,14 +788,6 @@ float VerticalTabView::GetHoverOpacity() const {
                  0.0f, 1.0f);
   return gfx::Tween::FloatValueBetween(t * t, hover_opacity_min_,
                                        hover_opacity_max_);
-}
-
-SkPath VerticalTabView::GetPath() const {
-  const SkScalar corner_radius = SkIntToScalar(
-      GetLayoutConstant(LayoutConstant::kVerticalTabCornerRadius) +
-      (split_ ? GetInsets().height() : 0));
-  return SkPath::RRect(SkRRect::MakeRectXY(gfx::RectToSkRect(GetLocalBounds()),
-                                           corner_radius, corner_radius));
 }
 
 bool VerticalTabView::IsFrameActive() const {

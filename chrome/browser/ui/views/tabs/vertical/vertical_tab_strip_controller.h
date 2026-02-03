@@ -30,8 +30,8 @@ namespace views {
 class View;
 }
 
-// VerticalTabStripController manages the behavior of the vertical tab strip. It
-// performs a similar functionality as BrowserTabStripController.
+// VerticalTabStripController provides APIs for the views to integrate with rest
+// of the browser.
 class VerticalTabStripController : public TabContextMenuController::Delegate,
                                    public TabStripModelObserver {
  public:

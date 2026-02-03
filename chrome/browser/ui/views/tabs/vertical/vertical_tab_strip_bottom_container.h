@@ -17,7 +17,7 @@ namespace views {
 class ActionViewController;
 }  // namespace views
 
-// Bottom container of the vertical tab strip, manages the new tab button.
+// Bottom container of the vertical tab strip which includes the new tab button.
 class VerticalTabStripBottomContainer : public views::FlexLayoutView {
   METADATA_HEADER(VerticalTabStripBottomContainer, views::View)
  public:

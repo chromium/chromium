@@ -17,7 +17,9 @@
 
 class TabStripModel;
 
-// The view model for the VerticalTabStrip.
+// The view model for the tab strip. It is responsible for observing
+// the tab collection hierarchy changes and tab selection and activation changes
+// and creates the view hierarchy.
 class RootTabCollectionNode : public TabCollectionNode,
                               public tabs::TabCollectionObserver,
                               public TabStripModelObserver {

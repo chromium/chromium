@@ -16,7 +16,9 @@
 class TabCollectionNode;
 class VerticalTabDragHandler;
 
-// Container for the vertical tabstrip's unpinned tabs.
+// The view class that represents the unpinned tab region for the
+// vertical tab strip. It manages the layout of the all the unpinned tabs and
+// serves as the drag target for unpinned tabs which aren't grouped.
 class VerticalUnpinnedTabContainerView
     : public views::View,
       public views::LayoutDelegate,

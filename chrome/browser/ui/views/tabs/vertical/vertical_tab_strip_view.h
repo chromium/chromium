@@ -23,7 +23,9 @@ class View;
 class ViewTracker;
 }  // namespace views
 
-// Container that holds the pinned and unpinned tabs in the vertical tab strip.
+// The view class for vertical tab strip which holds the pinned and unpinned
+// regions and associates them to their scroll views. It also is responsible for
+// scrolling to the active tab view when the active tab changes.
 class VerticalTabStripView final : public views::View,
                                    public views::LayoutDelegate,
                                    public TabStripModelObserver {
