@@ -105,7 +105,8 @@ NTPMIAEntrypointVariation GetNTPMIAEntrypointVariation() {
     return NTPMIAEntrypointVariation::kAIMInQuickAction;
   } else {
     // Disabled on iPad.
-    if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET &&
+        !base::FeatureList::IsEnabled(kAIMNTPEntrypointTablet)) {
       return NTPMIAEntrypointVariation::kDisabled;
     }
     // Default value.
