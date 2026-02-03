@@ -138,16 +138,12 @@ void SymphoniaAudioDecoder::Initialize(const AudioDecoderConfig& config,
 
   InitCB bound_init_cb = BindCallbackIfNeeded(std::move(init_cb));
   if (config.is_encrypted()) {
-    MEDIA_LOG(ERROR, media_log_)
-        << "SymphoniaAudioDecoder does not currently support encrypted content";
     std::move(bound_init_cb)
         .Run(DecoderStatus::Codes::kUnsupportedEncryptionMode);
     return;
   }
 
   if (!IsCodecSupported(config.codec())) {
-    MEDIA_LOG(ERROR, media_log_)
-        << "Unsupported codec: " << GetCodecName(config.codec());
     std::move(bound_init_cb)
         .Run(DecoderStatus(DecoderStatus::Codes::kUnsupportedCodec)
                  .WithData("codec", config.codec()));
@@ -157,8 +153,6 @@ void SymphoniaAudioDecoder::Initialize(const AudioDecoderConfig& config,
   // Symphonia does not currently support any of the specific audio codec
   // profiles.
   if (config.profile() != AudioCodecProfile::kUnknown) {
-    MEDIA_LOG(ERROR, media_log_)
-        << "Unsupported profile: " << GetProfileName(config.profile());
     std::move(bound_init_cb)
         .Run(DecoderStatus(DecoderStatus::Codes::kUnsupportedProfile)
                  .WithData("profile", config.profile()));
