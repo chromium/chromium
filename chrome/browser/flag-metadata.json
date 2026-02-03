@@ -1984,7 +1984,7 @@
   {
     "name": "cups-ipp-printing-backend",
     "owners": [ "thestig@chromium.org", "//printing/OWNERS" ],
-    "expiry_milestone": 145
+    "expiry_milestone": 150
   },
   {
     "name": "customize-chrome-side-panel-extensions-card",
