@@ -14,8 +14,8 @@ import {FileUploadStatus} from 'chrome://resources/cr_components/composebox/comp
 import type {ComposeboxFileCarouselElement} from 'chrome://resources/cr_components/composebox/file_carousel.js';
 import {WindowProxy} from 'chrome://resources/cr_components/composebox/window_proxy.js';
 import {GlowAnimationState} from 'chrome://resources/cr_components/search/constants.js';
+import {createAutocompleteMatch, createAutocompleteResultForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import type {AutocompleteMatch, AutocompleteResult} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, type PageRemote as SearchboxPageRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
@@ -89,58 +89,6 @@ function createDragEvent(type: string, files: File[]): DragEvent {
     value: mockDataTransfer,
   });
   return event;
-}
-
-function createAutocompleteMatch(modifiers: Partial<AutocompleteMatch> = {}):
-    AutocompleteMatch {
-  const base: AutocompleteMatch = {
-    allowedToBeDefaultMatch: false,
-    isSearchType: true,
-    contents: 'a suggestion',
-    destinationUrl: {url: `https://google.com/search?q=a+suggestion`},
-    fillIntoEdit: 'a suggestion',
-    type: 'search-suggest',
-
-    // Add all other fields needed to satisfy the AutocompleteMatch type
-    isHidden: false,
-    a11yLabel: '',
-    actions: [],
-    isEnterpriseSearchAggregatorPeopleType: false,
-    swapContentsAndDescription: false,
-    supportsDeletion: false,
-    suggestionGroupId: -1,
-    contentsClass: [{offset: 0, style: 0}],
-    description: '',
-    descriptionClass: [{offset: 0, style: 0}],
-    inlineAutocompletion: '',
-    iconPath: '',
-    iconUrl: {url: ''},
-    imageDominantColor: '',
-    imageUrl: '',
-    isNoncannedAimSuggestion: false,
-    removeButtonA11yLabel: '',
-    isRichSuggestion: false,
-    isWeatherAnswerSuggestion: null,
-    answer: null,
-    tailSuggestCommonPrefix: null,
-    hasInstantKeyword: false,
-    keywordChipHint: '',
-    keywordChipA11y: '',
-  } as AutocompleteMatch;
-
-  return Object.assign(base, modifiers);
-}
-
-function createAutocompleteResult(modifiers: Partial<AutocompleteResult> = {}):
-    AutocompleteResult {
-  const base: AutocompleteResult = {
-    input: '',
-    matches: [],
-    suggestionGroupsMap: {},
-    smartComposeInlineHint: null,
-  };
-
-  return Object.assign(base, modifiers);
 }
 
 class MockSpeechRecognition {
@@ -248,7 +196,7 @@ suite('ContextualTasksComposeboxTest', () => {
       createAutocompleteMatch(),
     ];
     searchboxCallbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResult({
+        createAutocompleteResultForTesting({
           input: testQuery,
           matches: matches,
         }));
@@ -945,7 +893,8 @@ suite('ContextualTasksComposeboxTest', () => {
       createAutocompleteMatch({fillIntoEdit: 'match 2'}),
     ];
     searchboxCallbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResult({input: testQuery, matches: matches}));
+        createAutocompleteResultForTesting(
+            {input: testQuery, matches: matches}));
     await searchboxCallbackRouterRemote.$.flushForTesting();
     mockTimer.tick(0);
 

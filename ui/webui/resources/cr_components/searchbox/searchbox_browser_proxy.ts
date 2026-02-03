@@ -6,13 +6,18 @@
  * @fileoverview This file provides a singleton class that exposes the Mojo
  * handler interface used for bidirectional communication between the
  * <cr-searchbox> or the <cr-searchbox-dropdown> and the browser.
+ *
+ * Testing helpers are located here to prevent duplication across various
+ * WebUI test suites (e.g., New Tab Page, Omnibox Popup, Lens) that share
+ * these Mojo-based searchbox types.
  */
 
-import type {AutocompleteMatch, PageHandlerInterface} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {AutocompleteMatch, AutocompleteResult, PageHandlerInterface} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {PageCallbackRouter, PageHandler} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 
-export function createAutocompleteMatch(): AutocompleteMatch {
-  return {
+export function createAutocompleteMatch(
+    modifiers: Partial<AutocompleteMatch> = {}): AutocompleteMatch {
+  const base: AutocompleteMatch = {
     isHidden: false,
     a11yLabel: '',
     actions: [],
@@ -44,6 +49,36 @@ export function createAutocompleteMatch(): AutocompleteMatch {
     keywordChipHint: '',
     keywordChipA11y: '',
   };
+
+  return Object.assign(base, modifiers);
+}
+
+export function createAutocompleteResultForTesting(
+    modifiers: Partial<AutocompleteResult> = {}): AutocompleteResult {
+  const base: AutocompleteResult = {
+    input: '',
+    matches: [],
+    suggestionGroupsMap: {},
+    smartComposeInlineHint: null,
+  };
+
+  return Object.assign(base, modifiers);
+}
+
+export function createSearchMatchForTesting(
+    modifiers: Partial<AutocompleteMatch> = {}): AutocompleteMatch {
+  const base = createAutocompleteMatch({
+    isSearchType: true,
+    contents: 'hello world',
+    contentsClass: [{offset: 0, style: 0}],
+    description: 'Google search',
+    descriptionClass: [{offset: 0, style: 4}],
+    destinationUrl: {url: 'https://www.google.com/search?q=hello+world'},
+    fillIntoEdit: 'hello world',
+    type: 'search-what-you-typed',
+  });
+
+  return Object.assign(base, modifiers);
 }
 
 export class SearchboxBrowserProxy {
