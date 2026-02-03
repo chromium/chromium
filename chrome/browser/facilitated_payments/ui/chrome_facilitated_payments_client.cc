@@ -223,6 +223,11 @@ void ChromeFacilitatedPaymentsClient::RegisterAllowlists() {
       optimization_guide_decider_->RegisterOptimizationTypes(
           {optimization_guide::proto::EWALLET_MERCHANT_ALLOWLIST});
     }
+    if (base::FeatureList::IsEnabled(
+            payments::facilitated::kEnableIframeForPix)) {
+      optimization_guide_decider_->RegisterOptimizationTypes(
+          {optimization_guide::proto::PIX_PSP_ALLOWLIST});
+    }
     optimization_guide_decider_->RegisterOptimizationTypes(
         {optimization_guide::proto::A2A_MERCHANT_ALLOWLIST});
     optimization_guide_decider_->RegisterOptimizationTypes(

@@ -507,6 +507,69 @@ TEST_P(
 }
 
 TEST_P(PixManagerTestWithAccountLinkingEnabled,
+       CopyTrigger_InIframe_IframeUrlNotAllowlisted_PixValidationNotTriggered) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kEnableIframeForPix);
+
+  GURL main_frame_url("https://merchant.com/");
+  GURL iframe_url("https://unknown-psp.com/");
+  url::Origin origin = url::Origin::Create(main_frame_url);
+
+  // Mock allowlist check to return false.
+  EXPECT_CALL(*optimization_guide_decider_,
+              CanApplyOptimization(
+                  testing::Eq(iframe_url),
+                  testing::Eq(optimization_guide::proto::PIX_PSP_ALLOWLIST),
+                  testing::Matcher<optimization_guide::OptimizationMetadata*>(
+                      testing::Eq(nullptr))))
+      .WillOnce(testing::Return(
+          optimization_guide::OptimizationGuideDecision::kFalse));
+
+  // If the iframe URL is not allowlisted, no validation or API calls should
+  // happen.
+  EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
+
+  pix_manager_->OnPixCodeCopiedToClipboard(
+      main_frame_url, iframe_url, origin, PixCodeRustValidationResult::kDynamic,
+      "00020126370014br.gov.bcb.pix2515www.example.com6304EA3F",
+      ukm::UkmRecorder::GetNewSourceID());
+
+  task_environment_.RunUntilIdle();
+}
+
+TEST_P(PixManagerTestWithAccountLinkingEnabled,
+       CopyTrigger_InIframe_IframeUrlAllowlisted_PixValidationTriggered) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kEnableIframeForPix);
+  payments_data_manager_->AddMaskedBankAccountForTest(
+      CreatePixBankAccount(/*instrument_id=*/1));
+
+  GURL main_frame_url("https://merchant.com/");
+  GURL iframe_url("https://trusted-psp.com/");
+  url::Origin origin = url::Origin::Create(main_frame_url);
+
+  // Mock allowlist check to return true.
+  EXPECT_CALL(*optimization_guide_decider_,
+              CanApplyOptimization(
+                  testing::Eq(iframe_url),
+                  testing::Eq(optimization_guide::proto::PIX_PSP_ALLOWLIST),
+                  testing::Matcher<optimization_guide::OptimizationMetadata*>(
+                      testing::Eq(nullptr))))
+      .WillOnce(testing::Return(
+          optimization_guide::OptimizationGuideDecision::kTrue));
+
+  // Verify that IsAvailable is called.
+  EXPECT_CALL(GetApiClient(), IsAvailable(testing::_));
+
+  pix_manager_->OnPixCodeCopiedToClipboard(
+      main_frame_url, iframe_url, origin, PixCodeRustValidationResult::kDynamic,
+      "00020126370014br.gov.bcb.pix2515www.example.com6304EA3F",
+      ukm::UkmRecorder::GetNewSourceID());
+
+  task_environment_.RunUntilIdle();
+}
+
+TEST_P(PixManagerTestWithAccountLinkingEnabled,
        TestPayFlowCanBeTriggeredOnlyOncePerPageLoad) {
   payments_data_manager_->AddMaskedBankAccountForTest(
       CreatePixBankAccount(/*instrument_id=*/1));

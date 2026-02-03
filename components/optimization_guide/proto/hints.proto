@@ -389,6 +389,9 @@ enum OptimizationType {
   WALLETABLE_PASS_DETECTION_EVENT_PASS_ALLOWLIST = 118;
   // Provides the set of Skills to display on the current page.
   SKILLS = 119;
+  // Provides information about whether the PSP hosts are eligible for Pix
+  // payments.
+  PIX_PSP_ALLOWLIST = 120;
 }
 
 // Presents semantics for how page load URLs should be matched.

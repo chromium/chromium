@@ -227,6 +227,8 @@ std::string GetStringNameForOptimizationType(
       return "AutofillActorIframeOriginAllowlist";
     case proto::OptimizationType::SKILLS:
       return "Skills";
+    case proto::OptimizationType::PIX_PSP_ALLOWLIST:
+      return "PixPspAllowlist";
   }
 
   // The returned string is used to record histograms for the optimization type.

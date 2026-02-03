@@ -117,12 +117,15 @@ TEST_F(ChromeFacilitatedPaymentsClientTest,
   base_client().ShowPixPaymentPrompt({}, base::DoNothing());
 }
 
-// Test that the `EWALLET_MERCHANT_ALLOWLIST` and
-// `PIX_PAYMENT_MERCHANT_ALLOWLIST` optimization type is registered when the
-// `ChromeFacilitatedPaymentClient` is created.
+// Test that the `A2A_MERCHANT_ALLOWLIST`, `EWALLET_MERCHANT_ALLOWLIST`,
+// `PIX_PAYMENT_MERCHANT_ALLOWLIST` and `PIX_PSP_ALLOWLIST` optimization types
+// are registered when the `ChromeFacilitatedPaymentClient` is created.
 TEST_F(ChromeFacilitatedPaymentsClientTest, RegisterAllowlists) {
-  base::test::ScopedFeatureList feature_list(
-      payments::facilitated::kEwalletPayments);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{payments::facilitated::kEwalletPayments,
+                            payments::facilitated::kEnableIframeForPix},
+      /*disabled_features=*/{});
   EXPECT_CALL(optimization_guide_decider_,
               RegisterOptimizationTypes(testing::ElementsAre(
                   optimization_guide::proto::PIX_MERCHANT_ORIGINS_ALLOWLIST)))
@@ -134,6 +137,10 @@ TEST_F(ChromeFacilitatedPaymentsClientTest, RegisterAllowlists) {
   EXPECT_CALL(optimization_guide_decider_,
               RegisterOptimizationTypes(testing::ElementsAre(
                   optimization_guide::proto::EWALLET_MERCHANT_ALLOWLIST)))
+      .Times(1);
+  EXPECT_CALL(optimization_guide_decider_,
+              RegisterOptimizationTypes(testing::ElementsAre(
+                  optimization_guide::proto::PIX_PSP_ALLOWLIST)))
       .Times(1);
 
   // Re-create the client; it should register the allowlist.
@@ -159,6 +166,36 @@ TEST_F(ChromeFacilitatedPaymentsClientTest, RegisterAllowlists_EWalletExpOff) {
   EXPECT_CALL(optimization_guide_decider_,
               RegisterOptimizationTypes(testing::ElementsAre(
                   optimization_guide::proto::EWALLET_MERCHANT_ALLOWLIST)))
+      .Times(0);
+
+  // Re-create the client; it should not register the allowlist.
+  client_ = std::make_unique<ChromeFacilitatedPaymentsClient>(
+      web_contents(), &optimization_guide_decider_);
+}
+
+// Test that the `PIX_PSP_ALLOWLIST` optimization type is not registered when
+// the `ChromeFacilitatedPaymentClient` is created and the iframe experiment is
+// disabled.
+TEST_F(ChromeFacilitatedPaymentsClientTest, RegisterAllowlists_IframeExpOff) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      payments::facilitated::kEnableIframeForPix);
+
+  EXPECT_CALL(optimization_guide_decider_,
+              RegisterOptimizationTypes(testing::ElementsAre(
+                  optimization_guide::proto::A2A_MERCHANT_ALLOWLIST)))
+      .Times(1);
+  EXPECT_CALL(optimization_guide_decider_,
+              RegisterOptimizationTypes(testing::ElementsAre(
+                  optimization_guide::proto::EWALLET_MERCHANT_ALLOWLIST)))
+      .Times(1);
+  EXPECT_CALL(optimization_guide_decider_,
+              RegisterOptimizationTypes(testing::ElementsAre(
+                  optimization_guide::proto::PIX_MERCHANT_ORIGINS_ALLOWLIST)))
+      .Times(1);
+  EXPECT_CALL(optimization_guide_decider_,
+              RegisterOptimizationTypes(testing::ElementsAre(
+                  optimization_guide::proto::PIX_PSP_ALLOWLIST)))
       .Times(0);
 
   // Re-create the client; it should not register the allowlist.

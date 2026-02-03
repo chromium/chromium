@@ -223,6 +223,9 @@ class PixManager {
   // Returns true if the result is [1].
   bool IsMerchantAllowlisted(const GURL& url) const;
 
+  // Returns true if the URL is in the PSP allowlist.
+  bool IsIframeUrlAllowlisted(const GURL& url) const;
+
   // Called by the utility process after validation of the `pix_code`. If the
   // utility processes has disconnected (e.g., due to a crash in the validation
   // code), then `pix_qr_code_type` contains an error string instead of the
@@ -352,8 +355,9 @@ class PixManager {
   // state via a callback.
   UiState ui_state_ = UiState::kHidden;
 
-  // The origin of the Pix payment page that triggered the payment flow.
-  url::Origin pix_payment_page_origin_;
+  // The origin of the Pix payment page on main frame that triggered the payment
+  // flow.
+  url::Origin pix_payment_page_main_frame_origin_;
 
   base::WeakPtrFactory<PixManager> weak_ptr_factory_{this};
 };

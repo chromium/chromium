@@ -466,6 +466,9 @@ chromium-metrics-reviews@google.com.
   <variant name="PixPaymentMerchantAllowlist"
       summary="This optimization provides information about whether a
                merchant can trigger PIX bottom sheet."/>
+  <variant name="PixPspAllowlist"
+      summary="This optimization provides information about whether the PSP
+               hosts are eligible for Pix payments."/>
   <variant name="PriceInsights"
       summary="Returns price insights data for shopping websites"/>
   <variant name="PriceTracking"
