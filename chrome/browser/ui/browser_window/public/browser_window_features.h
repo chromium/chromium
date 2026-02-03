@@ -220,6 +220,10 @@ class SkillsUiWindowController;
 // feature compatible with `UnownedUserDataHost` and then use
 // `GetUserDataFactoryForTesting()` to inject your test-specific feature
 // object(s).
+//
+// Do not add more public accessors. Instead use the UnownedUserData design
+// pattern, see ui/base/unowned_user_data/README.md.
+// TODO(crbug.com/481268779a): Remove existing public accessors.
 class BrowserWindowFeatures {
  public:
   BrowserWindowFeatures();
