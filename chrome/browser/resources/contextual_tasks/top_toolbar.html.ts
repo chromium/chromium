@@ -33,7 +33,7 @@ export function getHtml(this: TopToolbarElement) {
         class="no-overlap" title="Thread History">
     </cr-icon-button>
     <contextual-tasks-favicon-group id="sources"
-        .urls="${this.attachedTabs.map(t => t.url.url)}"
+        .urls="${this.contextInfos.map(t => t.url.url)}"
         title="Sources" @click="${this.onSourcesClick_}"
         ?hidden="${!this.shouldShowSourcesMenuButton_()}">
     </contextual-tasks-favicon-group>
@@ -45,9 +45,7 @@ export function getHtml(this: TopToolbarElement) {
     </cr-icon-button>
   </div>
   <cr-lazy-render-lit id="sourcesMenu" .template="${() => html`
-    <contextual-tasks-sources-menu .attachedTabs="${this.attachedTabs}"
-      .attachedFiles="${this.attachedFiles}"
-      .attachedImages="${this.attachedImages}">
+    <contextual-tasks-sources-menu .contextInfos="${this.contextInfos}">
     </contextual-tasks-sources-menu>`}">
   </cr-lazy-render-lit>
   <cr-lazy-render-lit id="menu" .template="${() => html`

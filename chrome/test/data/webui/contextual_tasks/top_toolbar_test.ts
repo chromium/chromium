@@ -5,6 +5,7 @@
 import 'chrome://contextual-tasks/top_toolbar.js';
 import 'chrome://contextual-tasks/sources_menu.js';
 
+import {ContextType} from 'chrome://contextual-tasks/contextual_tasks.mojom-webui.js';
 import {BrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
 import type {ContextualTasksFaviconGroupElement} from 'chrome://contextual-tasks/favicon_group.js';
 import type {SourcesMenuElement} from 'chrome://contextual-tasks/sources_menu.js';
@@ -91,8 +92,12 @@ suite('TopToolbarTest', () => {
     assertTrue(sourcesButton.hidden);
     assertFalse(!!sourcesButton.shadowRoot.querySelector('.favicon-item'));
 
-    topToolbar.attachedTabs =
-        [{tabId: 1, title: 'Tab 1', url: {url: 'https://example.com'}}];
+    topToolbar.contextInfos = [{
+      title: 'Tab 1',
+      url: {url: 'https://example.com'},
+      type: ContextType.kTab,
+      tabId: 1,
+    }];
     await microtasksFinished();
 
     // After attaching a tab, the sources button should be visible and contain
@@ -102,8 +107,13 @@ suite('TopToolbarTest', () => {
   });
 
   test('handles sources menu interactions', async () => {
-    const tab = {tabId: 1, title: 'Tab 1', url: {url: 'https://example.com'}};
-    topToolbar.attachedTabs = [tab];
+    const tab = {
+      title: 'Tab 1',
+      url: {url: 'https://example.com'},
+      type: ContextType.kTab,
+      tabId: 1,
+    };
+    topToolbar.contextInfos = [tab];
     await microtasksFinished();
 
     const sourcesButton =
@@ -120,9 +130,7 @@ suite('TopToolbarTest', () => {
     assertTrue(!!crActionMenu);
     assertTrue(crActionMenu.open);
 
-    // The first header is "Shared tabs and files", the second (optional) is
-    // "Tabs". We expect only 1 header since we only have one type of item
-    // (tabs) and the "Tabs" header should be hidden.
+    // The header is "Shared tabs and files".
     const headers = sourcesMenuElement.shadowRoot.querySelectorAll('.header');
     assertEquals(1, headers.length);
 
@@ -140,10 +148,12 @@ suite('TopToolbarTest', () => {
 
   test('handles file sources menu interactions', async () => {
     const file = {
-      name: 'Sample Document',
+      title: 'Sample Document',
+      type: ContextType.kPdf,
       url: {url: 'https://example/sample.pdf'},
+      tabId: 0,
     };
-    topToolbar.attachedFiles = [file];
+    topToolbar.contextInfos = [file];
     await microtasksFinished();
 
     const sourcesButton =
@@ -158,7 +168,6 @@ suite('TopToolbarTest', () => {
     assertTrue(!!crActionMenu);
     assertTrue(crActionMenu.open);
 
-    // Expected headers: title, tab and files header
     const headers = sourcesMenuElement.shadowRoot.querySelectorAll('.header');
     assertEquals(1, headers.length);
 
@@ -175,9 +184,11 @@ suite('TopToolbarTest', () => {
   test('handles image sources menu interactions', async () => {
     const image = {
       title: 'Test Image',
+      type: ContextType.kImage,
       url: {url: 'https://www.example.com/example.jpeg'},
+      tabId: 0,
     };
-    topToolbar.attachedImages = [image];
+    topToolbar.contextInfos = [image];
     await microtasksFinished();
 
     const sourcesButton =
@@ -279,10 +290,25 @@ suite('TopToolbarTest', () => {
             '#sources');
     assertTrue(!!sourcesButton);
 
-    topToolbar.attachedTabs = [
-      {tabId: 1, title: 'Tab 1', url: {url: 'https://example.com/1'}},
-      {tabId: 2, title: 'Tab 2', url: {url: 'https://example.com/2'}},
-      {tabId: 3, title: 'Tab 3', url: {url: 'https://example.com/3'}},
+    topToolbar.contextInfos = [
+      {
+        title: 'Tab 1',
+        url: {url: 'https://example.com/1'},
+        type: ContextType.kTab,
+        tabId: 1,
+      },
+      {
+        title: 'Tab 2',
+        url: {url: 'https://example.com/2'},
+        type: ContextType.kTab,
+        tabId: 2,
+      },
+      {
+        title: 'Tab 3',
+        url: {url: 'https://example.com/3'},
+        type: ContextType.kTab,
+        tabId: 3,
+      },
     ];
     await microtasksFinished();
 
@@ -298,11 +324,31 @@ suite('TopToolbarTest', () => {
             '#sources');
     assertTrue(!!sourcesButton);
 
-    topToolbar.attachedTabs = [
-      {tabId: 1, title: 'Tab 1', url: {url: 'https://example.com/1'}},
-      {tabId: 2, title: 'Tab 2', url: {url: 'https://example.com/2'}},
-      {tabId: 3, title: 'Tab 3', url: {url: 'https://example.com/3'}},
-      {tabId: 4, title: 'Tab 4', url: {url: 'https://example.com/4'}},
+    topToolbar.contextInfos = [
+      {
+        title: 'Tab 1',
+        url: {url: 'https://example.com/1'},
+        type: ContextType.kTab,
+        tabId: 1,
+      },
+      {
+        title: 'Tab 2',
+        url: {url: 'https://example.com/2'},
+        type: ContextType.kTab,
+        tabId: 2,
+      },
+      {
+        title: 'Tab 3',
+        url: {url: 'https://example.com/3'},
+        type: ContextType.kTab,
+        tabId: 3,
+      },
+      {
+        title: 'Tab 4',
+        url: {url: 'https://example.com/4'},
+        type: ContextType.kTab,
+        tabId: 4,
+      },
     ];
     await microtasksFinished();
 
