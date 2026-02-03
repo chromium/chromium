@@ -8,10 +8,6 @@
 //! Not all C API functions are included yet. More can be added as-needed by
 //! following the example of existing wrappers.
 
-// We're re-exporting C functions with a different naming convention. We want
-// to keep the same names to make sure the correspondence is clear.
-#![allow(non_snake_case)]
-
 chromium::import! {
   "//mojo/public/rust/system:mojo_c_system_bindings" as raw_ffi;
 }
@@ -19,10 +15,6 @@ chromium::import! {
 use crate::handles::*;
 use crate::internal_options::declare_mojo_options;
 use crate::result::*;
-
-// FOR_RELEASE: These functions take mutable references to enforce thread-safety
-// but I can't find the docs that said that was necessary, so either justify it
-// or take shared refs instead.
 
 bitflags::bitflags! {
     /// The possible flags that can be passed to MojoWriteData
@@ -60,16 +52,15 @@ declare_mojo_options!(MojoWriteDataOptions, flags: raw_ffi::MojoWriteDataFlags);
 /// - `ShouldWait`: If no data can currently be written, but the corresponding
 ///   consumer handle is still open, and `ALL_OR_NONE` was not passed.
 pub fn MojoWriteData(
-    data_pipe_producer_handle: &mut UntypedHandle,
+    data_pipe_producer_handle: &UntypedHandle,
     elements: &[u8],
     flags: WriteFlags,
 ) -> MojoResult<u32> {
     let mut num_elements: u32 = elements.len().try_into().unwrap_or(u32::MAX);
     let options = MojoWriteDataOptions::new(flags.bits());
 
-    // SAFETY: We have exclusive access to the handle so this is thread-safe.
-    // The `UntypedHandle` type guarantees the handle is alive. The pointers are
-    // obtained from references and hence valid. The `num_elements`
+    // SAFETY: The `UntypedHandle` type guarantees the handle is alive. The pointers
+    // are obtained from references and hence valid. The `num_elements`
     // pointer stores the number of bytes in `elements`, so we will not read past
     // the end of `elements`.
     let ret = MojoError::result_from_code(unsafe {
@@ -105,8 +96,8 @@ declare_mojo_options!(MojoReadDataOptions, flags: raw_ffi::MojoReadDataFlags);
 // FOR_RELEASE: We should probably replace this with separate `read`, `discard`,
 // `query`, and `peek` functions. The various caveats in the description are
 // silly, and I see no downside to doing it here.
-// FOR_RELEASE: We might also want fully-safe equivalents that take in an array
-// of known-initialized bytes.
+// FOR_RELEASE: We should also have fully-safe equivalents that take in an array
+// of known-initialized bytes, or allocate the memory themselves.
 
 /// Read as much data as possible from given data pipe into `elements`. On
 /// success, returns the number of bytes read. Flags may be passed to make this
@@ -147,16 +138,15 @@ declare_mojo_options!(MojoReadDataOptions, flags: raw_ffi::MojoReadDataFlags);
 /// - `ShouldWait`: If no data can currently be read, but the corresponding
 ///   consumer handle is still open, and `ALL_OR_NONE` was not passed.
 pub fn MojoReadData(
-    data_pipe_consumer_handle: &mut UntypedHandle,
+    data_pipe_consumer_handle: &UntypedHandle,
     elements: &mut [std::mem::MaybeUninit<u8>],
     flags: ReadFlags,
 ) -> MojoResult<u32> {
     let mut num_elements: u32 = elements.len().try_into().unwrap_or(u32::MAX);
     let options = MojoReadDataOptions::new(flags.bits());
 
-    // SAFETY: We have exclusive access to the handle so this is thread-safe.
-    // The `UntypedHandle` type guarantees the handle is alive. The pointers are
-    // obtained from references and hence valid. The `num_elements`
+    // SAFETY: The `UntypedHandle` type guarantees the handle is alive. The pointers
+    // are obtained from references and hence valid. The `num_elements`
     // pointer stores the number of bytes in `elements`, so we will not write past
     // the end of `elements`.
     let ret = MojoError::result_from_code(unsafe {

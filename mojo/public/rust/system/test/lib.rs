@@ -3,4 +3,3 @@
 // found in the LICENSE file.
 
 mod core_api_unittests;
-mod pure_c_api_unittests;

@@ -9,8 +9,7 @@
 //! performance-critical code may need to use the lower-level types in the
 //! `mojo_rust_system_bindings` crate instead.
 
+pub mod interface;
 pub mod message;
 pub mod message_header;
-// FOR_RELEASE: Re-enable when the lower-level bindings are fully migrated
-// pub mod message_pipe_watcher;
-// pub mod interface;
+pub mod message_pipe_watcher;

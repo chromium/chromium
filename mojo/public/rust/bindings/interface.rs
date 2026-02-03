@@ -186,7 +186,8 @@ use std::marker::PhantomData;
 use std::sync::{Arc, Mutex, Weak};
 
 use sequences::SequencedTaskRunnerHandle;
-use system::message_pipe::{MessageEndpoint, RawMojoMessage};
+use system::message::RawMojoMessage;
+use system::message_pipe::MessageEndpoint;
 use system::mojo_types::{MojoResult, UntypedHandle};
 
 use crate::message::MojomMessage;
@@ -377,8 +378,7 @@ pub mod remote {
 
         /// Create a new Mojo message pipe corresponding to `T`'s interface, and
         /// return the endpoints
-        pub fn new_pipe(
-        ) -> Result<(PendingRemote<T>, super::receiver::PendingReceiver<T>), MojoResult> {
+        pub fn new_pipe() -> MojoResult<(PendingRemote<T>, super::receiver::PendingReceiver<T>)> {
             let (endpoint1, endpoint2) = MessageEndpoint::create_pipe()?;
             return Ok((
                 PendingRemote::new(endpoint1),

@@ -14,7 +14,7 @@ chromium::import! {
 
 use crate::message_header::*;
 use mojom_value_parser::ParsingResult;
-use system::message_pipe::RawMojoMessage;
+use system::message::RawMojoMessage;
 
 /// Represents a Mojom message with a structured header and unstructured
 /// payload.

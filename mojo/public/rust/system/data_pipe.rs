@@ -3,30 +3,18 @@
 // found in the LICENSE file.
 
 chromium::import! {
-  "//mojo/public/rust/system:ffi_new" as mojo_ffi;
+  "//mojo/public/rust/system:ffi_bindings" as mojo_ffi;
 }
 
-use crate::mojo_types::declare_typed_handle;
+use crate::mojo_types::declare_trappable_typed_handle;
 use mojo_ffi::data_pipe;
 use mojo_ffi::{MojoResult, UntypedHandle};
 
 // FOR_RELEASE: Make these arguments to the functions instead of bitfields
 pub use data_pipe::{ReadFlags, WriteFlags};
 
-declare_typed_handle!(DataPipeProducerHandle);
-declare_typed_handle!(DataPipeConsumerHandle);
-
-// FOR_RELEASE: Maybe add this as an optional argument to declare_typed_handle
-impl crate::raw_trap::Trappable for DataPipeConsumerHandle {
-    fn get_untyped_handle(&self) -> &UntypedHandle {
-        &self.handle
-    }
-}
-impl crate::raw_trap::Trappable for DataPipeProducerHandle {
-    fn get_untyped_handle(&self) -> &UntypedHandle {
-        &self.handle
-    }
-}
+declare_trappable_typed_handle!(DataPipeProducerHandle);
+declare_trappable_typed_handle!(DataPipeConsumerHandle);
 
 /// FOR_RELEASE: These impls are a fine starting point, but we can replace them
 /// with more ergonomic interfaces:
@@ -36,17 +24,17 @@ impl crate::raw_trap::Trappable for DataPipeProducerHandle {
 
 impl DataPipeConsumerHandle {
     pub fn read_with_flags(
-        &mut self,
+        &self,
         buf: &mut [std::mem::MaybeUninit<u8>],
         flags: ReadFlags,
     ) -> MojoResult<usize> {
-        data_pipe::MojoReadData(&mut self.handle, buf, flags).map(|n| n.try_into().unwrap())
+        data_pipe::MojoReadData(&self.handle, buf, flags).map(|n| n.try_into().unwrap())
     }
 }
 
 impl DataPipeProducerHandle {
-    pub fn write_with_flags(&mut self, data: &[u8], flags: WriteFlags) -> MojoResult<usize> {
-        data_pipe::MojoWriteData(&mut self.handle, data, flags).map(|n| n.try_into().unwrap())
+    pub fn write_with_flags(&self, data: &[u8], flags: WriteFlags) -> MojoResult<usize> {
+        data_pipe::MojoWriteData(&self.handle, data, flags).map(|n| n.try_into().unwrap())
     }
 }
 

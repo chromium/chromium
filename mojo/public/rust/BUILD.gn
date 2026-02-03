@@ -22,7 +22,8 @@ group("tests") {
   deps = [
     "mojom_value_parser:mojom_value_parser_unittests",
     "sequences:rust_sequences_unittests",
-    "system:system_api_unittests",
+    "system:ffi_unittests",
+    "system:system_bindings_unittests",
   ]
 }
 

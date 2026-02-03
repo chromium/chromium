@@ -30,9 +30,8 @@ fn test_basic_message_write_and_send() {
     let (endpoint_a, endpoint_b) = system::message_pipe::MessageEndpoint::create_pipe().unwrap();
     let (dummy_handle, _) = system::message_pipe::MessageEndpoint::create_pipe().unwrap();
 
-    let hello =
-        system::message_pipe::RawMojoMessage::new_with_data(b"hello", vec![dummy_handle.into()])
-            .unwrap();
+    let hello = system::message::RawMojoMessage::new_with_data(b"hello", vec![dummy_handle.into()])
+        .unwrap();
 
     let write_result = endpoint_b.write(hello);
     expect_true!(write_result.is_ok());
@@ -75,7 +74,7 @@ fn test_basic_message_write_and_send() {
 fn test_data_pipe_write_and_send() {
     test_util::init_mojo_if_needed();
 
-    let (mut producer, mut consumer) = system::data_pipe::create(5).unwrap();
+    let (producer, consumer) = system::data_pipe::create(5).unwrap();
 
     let hello = b"hello";
     let bytes_written =
@@ -185,7 +184,7 @@ fn test_raw_trap_signal_on_readable() {
         }
     }
 
-    let hello = system::message_pipe::RawMojoMessage::new_with_bytes(b"hello").unwrap();
+    let hello = system::message::RawMojoMessage::new_with_bytes(b"hello").unwrap();
     expect_true!(endpoint_b.write(hello).is_ok());
     {
         let list = wait_for_asynchronously_delivered_trap_events(&TEST_TRAP_EVENT_LIST, 1);
@@ -248,14 +247,12 @@ fn test_raw_trap_signal_on_readable() {
 
     // `endpoint_a`` is no longer readable.
     expect_eq!(endpoint_a_event.trigger_context(), 1);
-    // FOR_RELEASE: Check that the error is specifically `FailedPrecondition`.
-    expect_true!(endpoint_a_event.result().is_err());
+    expect_eq!(endpoint_a_event.result(), Err(system::mojo_types::MojoError::FailedPrecondition));
     expect_true!(!endpoint_a_event.signals_state().satisfiable().is_readable());
 
     // `endpoint_b`` was cancelled (dropped).
     expect_eq!(endpoint_b_event.trigger_context(), 2);
-    // FOR_RELEASE: Check that the error is specifically `Cancelled`.
-    expect_true!(endpoint_b_event.result().is_err());
+    expect_eq!(endpoint_b_event.result(), Err(system::mojo_types::MojoError::Cancelled));
 
     drop(trap);
 
@@ -299,7 +296,7 @@ fn test_raw_trap_signal_on_readable() {
     trap.arm(system::trap::ArmingPolicyForBlockingEvents::RearmUntilNoBlockingEvents)
         .expect("Failed to arm trap");
 
-    let hello = system::message_pipe::RawMojoMessage::new_with_bytes(b"hello").unwrap();
+    let hello = system::message::RawMojoMessage::new_with_bytes(b"hello").unwrap();
     let write_result = endpoint_b.write(hello);
     expect_true!(write_result.is_ok());
 
@@ -400,7 +397,7 @@ fn test_trap_multiple_blocking_events() {
         // 2. Trigger the READABLE signal on ep_a by writing to ep_b.
         // This creates a blocking event for each trigger.
         let write_result =
-            ep_b.write(system::message_pipe::RawMojoMessage::new_with_bytes(b"x").unwrap());
+            ep_b.write(system::message::RawMojoMessage::new_with_bytes(b"x").unwrap());
         expect_true!(write_result.is_ok());
         endpoints_a.push(ep_a_arc); // Keep ep_a alive
         endpoints_b.push(ep_b); // Keep ep_a alive
@@ -465,7 +462,7 @@ fn test_raw_trap_signal_on_readable() {
     let trap = system::raw_trap::RawTrap::new(test_trap_event_handler).unwrap();
 
     // Make a data pipe pair and add a trigger to both ends of the pipe.
-    let (mut producer, consumer) = system::data_pipe::create(0).unwrap();
+    let (producer, consumer) = system::data_pipe::create(0).unwrap();
     expect_eq!(
         Ok(()),
         trap.add_trigger(
@@ -539,20 +536,19 @@ fn test_raw_trap_c_layer_attempts_to_remove_context_twice() {
             CONTEXT,
         )
     );
-    // FOR_RELEASE: Check that the result is specifically `AlreadyExists`
-    expect_true!(trap
-        .add_trigger(
+    expect_eq!(
+        trap.add_trigger(
             &consumer,
             system::raw_trap::HandleSignals::READABLE,
             system::raw_trap::TriggerCondition::TriggerWhenSatisfied,
             CONTEXT,
-        )
-        .is_err());
+        ),
+        Err(system::mojo_types::MojoError::AlreadyExists)
+    );
 
     expect_eq!(Ok(()), trap.remove_trigger(CONTEXT));
 
-    // FOR_RELEASE: Check that the result is specifically `NotFound`
-    expect_true!(trap.remove_trigger(CONTEXT).is_err());
+    expect_eq!(trap.remove_trigger(CONTEXT), Err(system::mojo_types::MojoError::NotFound));
 }
 
 #[gtest(RustSystemAPITestSuite, MakeRegularTrap)]
@@ -564,7 +560,7 @@ fn test_make_regular_trap() {
 
 #[gtest(RustSystemAPITestSuite, ReportBadMessage)]
 fn test_report_bad_message() {
-    let msg = system::message_pipe::RawMojoMessage::new_with_bytes(b"moist").unwrap();
+    let msg = system::message::RawMojoMessage::new_with_bytes(b"moist").unwrap();
 
     let err_msg: Arc<Mutex<String>> = Arc::new(Mutex::new("".to_string()));
     let err_msg_clone = err_msg.clone();

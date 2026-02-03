@@ -11,6 +11,7 @@ rust_static_library("system") {
   sources = [
     "data_pipe.rs",
     "lib.rs",
+    "message.rs",
     "message_pipe.rs",
     "mojo_types.rs",
     "raw_trap.rs",
@@ -18,18 +19,23 @@ rust_static_library("system") {
   ]
   allow_unsafe = true
   deps = [
-    ":ffi_new",
-    ":mojo_ffi",
+    ":ffi_bindings",
     "//third_party/rust/bitflags/v2:lib",
   ]
 }
 
-# FOR_RELEASE: Rename this mojo_ffi and get rid of the old one once it's fully
-# implemented.
-rust_static_library("ffi_new") {
+# FOR_RELEASE: This deserves to be its own top-level folder at this point,
+# rather than a subfolder of //system. But what should it be called?
+# Unlike C++, we've got three layers on top of the C bindings:
+# 1. (mostly) Safe, idiomatic, but still low-level FFI bindings (system/ffi)
+# 2. Ergonomic, mid-level bindings (system)
+# 3. High-level, often Mojom-specific code (bindings)
+# C++ just has (2) and (3), building (2) directly on the C code.
+rust_static_library("ffi_bindings") {
   crate_root = "ffi/lib.rs"
   sources = [
     "ffi/data_pipe.rs",
+    "ffi/functions.rs",
     "ffi/handles.rs",
     "ffi/internal_options.rs",
     "ffi/lib.rs",
@@ -49,33 +55,35 @@ rust_static_library("ffi_new") {
 rust_bindgen("mojo_c_system_bindings") {
   header = "//mojo/public/c/system/thunks.h"
   deps = [ "//mojo/public/c/system" ]
-  visibility = [
-    ":ffi_new",
-    ":mojo_ffi",
-  ]
+  visibility = [ ":ffi_bindings" ]
 }
 
-# FOR_RELEASE: Replace this with ffi_new
-rust_static_library("mojo_ffi") {
-  crate_root = "ffi.rs"
-  sources = [ "ffi.rs" ]
-  deps = [ ":mojo_c_system_bindings" ]
-  allow_unsafe = true
-}
-
-rust_static_library("system_api_unittests") {
+rust_static_library("system_bindings_unittests") {
   testonly = true
   is_gtest_unittests = true
   crate_root = "test/lib.rs"
   sources = [
     "test/core_api_unittests.rs",
     "test/lib.rs",
-    "test/pure_c_api_unittests.rs",
   ]
 
   allow_unsafe = true
   deps = [
     ":system",
+    "test_util",
+    "//testing/rust_gtest_interop",
+  ]
+}
+
+rust_static_library("ffi_unittests") {
+  testonly = true
+  is_gtest_unittests = true
+  crate_root = "test/pure_c_api_unittests.rs"
+  sources = [ "test/pure_c_api_unittests.rs" ]
+
+  allow_unsafe = true
+  deps = [
+    ":ffi_bindings",
     "test_util",
     "//testing/rust_gtest_interop",
   ]

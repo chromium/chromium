@@ -4,7 +4,7 @@
 use rust_gtest_interop::prelude::*;
 
 chromium::import! {
-    "//mojo/public/rust/system";
+    "//mojo/public/rust/system:ffi_bindings" as mojo_ffi;
     "//mojo/public/rust/system/test_util";
 }
 
@@ -20,7 +20,7 @@ fn test_ticks() {
     test_util::init_mojo_if_needed();
 
     // get_time_ticks_now should increase monotonically.
-    let ticks: system::mojo_types::MojoTimeTicks = system::mojo_types::get_time_ticks_now();
+    let ticks = mojo_ffi::functions::MojoGetTimeTicksNow();
     assert_ne!(ticks, 0);
 }
 

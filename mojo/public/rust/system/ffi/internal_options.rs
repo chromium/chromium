@@ -9,7 +9,8 @@
 
 // TODO(https://crbug.com/458796903): Most of the bitflags we use have
 // their values manually copied from the corresponding C code. We should tweak
-// bindgen to make those values directly available so instead.
+// bindgen to make those values directly available so instead, then go through
+// all the `bitflags!` invocations in this crate and update them.
 
 // Most FFI functions take an options struct as input which we get from bindgen.
 // Each one contains a `struct_size` member for versioning. We want to make a

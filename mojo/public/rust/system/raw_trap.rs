@@ -7,7 +7,7 @@
 //! small tweaks)
 
 chromium::import! {
-  "//mojo/public/rust/system:ffi_new" as mojo_ffi;
+  "//mojo/public/rust/system:ffi_bindings" as mojo_ffi;
 }
 
 use crate::mojo_types::declare_typed_handle;

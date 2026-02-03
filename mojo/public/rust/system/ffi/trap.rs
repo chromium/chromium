@@ -7,10 +7,6 @@
 //! Not all C API functions are included yet. More can be added as-needed by
 //! following the example of existing wrappers.
 
-// We're re-exporting C functions with a different naming convention. We want
-// to keep the same names to make sure the correspondence is clear.
-#![allow(non_snake_case)]
-
 chromium::import! {
   "//mojo/public/rust/system:mojo_c_system_bindings" as raw_ffi;
 }
