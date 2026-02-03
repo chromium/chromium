@@ -132,6 +132,9 @@ bool FormMCPSchema::ValidateParameterData(const String& name,
   if (IsRadio(*controls_for_name)) {
     return ValidateRadioData(*controls_for_name, value);
   }
+  if (IsColor(*controls_for_name)) {
+    return ValidateTextData(*controls_for_name, value);
+  }
 
   return false;
 }
@@ -220,6 +223,8 @@ void FormMCPSchema::FillParameterData(const String& name,
     FillCheckboxData(*controls_for_name, value);
   } else if (IsRadio(*controls_for_name)) {
     FillRadioData(*controls_for_name, value);
+  } else if (IsColor(*controls_for_name)) {
+    FillTextData(*controls_for_name, value);
   }
 }
 
@@ -259,6 +264,9 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeParameterSchema(
   }
   if (IsRadio(*controls_for_name)) {
     return ComputeRadioParameterSchema(*controls_for_name, required);
+  }
+  if (IsColor(*controls_for_name)) {
+    return ComputeColorParameterSchema(*controls_for_name, required);
   }
 
   return nullptr;
@@ -443,7 +451,24 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeRadioParameterSchema(
       !description.empty()) {
     schema->SetString("description", description);
   }
+  return schema;
+}
 
+std::unique_ptr<JSONObject> FormMCPSchema::ComputeColorParameterSchema(
+    const ControlVector& controls_for_name,
+    bool& required) {
+  HTMLFormControlElement* element = controls_for_name.front().Get();
+  CHECK(element);
+  auto schema = std::make_unique<JSONObject>();
+  schema->SetString("type", "string");
+  // We only support setting color input values to a 6-digit hex rgba value, so
+  // need to make sure that's the only color value syntax the agent uses.
+  // TODO: With the runtime feature ColorInputAcceptsCSSColors enabled, we may
+  // support more color syntaxes.
+  schema->SetString("format", "^#[0-9a-zA-Z]{6}$");
+  AddTitle(*element, *schema);
+  AddDescription(*element, *schema);
+  required = element->IsRequired();
   return schema;
 }
 
@@ -645,6 +670,11 @@ bool FormMCPSchema::IsRadio(HTMLFormControlElement& control) const {
   return input && input->FormControlType() == FormControlType::kInputRadio;
 }
 
+bool FormMCPSchema::IsColor(HTMLFormControlElement& control) const {
+  auto* input = DynamicTo<HTMLInputElement>(control);
+  return input && input->FormControlType() == FormControlType::kInputColor;
+}
+
 bool FormMCPSchema::IsText(const ControlVector& controls_for_name) const {
   return controls_for_name.size() == 1u && IsText(*controls_for_name.front());
 }
@@ -682,6 +712,10 @@ bool FormMCPSchema::IsRadio(const ControlVector& controls_for_name) const {
     }
   }
   return true;
+}
+
+bool FormMCPSchema::IsColor(const ControlVector& controls_for_name) const {
+  return controls_for_name.size() == 1u && IsColor(*controls_for_name.front());
 }
 
 }  // namespace blink

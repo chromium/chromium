@@ -77,6 +77,9 @@ class CORE_EXPORT FormMCPSchema {
       bool& required);
   std::unique_ptr<JSONObject> ComputeRadioParameterSchema(const ControlVector&,
                                                           bool& required);
+  std::unique_ptr<JSONObject> ComputeColorParameterSchema(
+      const ControlVector& controls_for_name,
+      bool& required);
 
   bool ValidateParameterData(const String& name, const JSONValue&);
   bool ValidateTextData(const ControlVector& controls_for_name,
@@ -117,6 +120,7 @@ class CORE_EXPORT FormMCPSchema {
   bool IsRange(HTMLFormControlElement&) const;
   bool IsCheckbox(HTMLFormControlElement&) const;
   bool IsRadio(HTMLFormControlElement&) const;
+  bool IsColor(HTMLFormControlElement&) const;
 
   bool IsText(const ControlVector& controls_for_name) const;
   bool IsDate(const ControlVector& controls_for_name) const;
@@ -126,6 +130,7 @@ class CORE_EXPORT FormMCPSchema {
   bool IsRange(const ControlVector& controls_for_name) const;
   bool IsCheckbox(const ControlVector& controls_for_name) const;
   bool IsRadio(const ControlVector& controls_for_name) const;
+  bool IsColor(const ControlVector& controls_for_name) const;
 
   // Maps a WebMCP parameter name (HTMLFormControlElement::
   // GetWebMCPParameterName()) to a list of form controls.

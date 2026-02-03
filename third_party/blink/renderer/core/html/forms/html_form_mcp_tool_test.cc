@@ -1192,6 +1192,60 @@ TEST_F(HTMLFormMcpToolTest, FillFormControls_TimeInput) {
   EXPECT_EQ("20:20:39", time1->Value());
 }
 
+TEST_F(HTMLFormMcpToolTest, ParameterSchema_ColorInput) {
+  SetBodyInnerHTML(
+      R"HTML(
+    <form id="form" toolname="mytool" tooldescription="perform task">
+      <input name="color1" type="color">
+    </form>
+  )HTML");
+
+  HTMLFormElement* form_element = GetFormElement("form");
+  ASSERT_TRUE(form_element);
+  ASSERT_TRUE(IsValidWebMCPForm(*form_element));
+  String actual = ComputeInputSchema(*form_element);
+  std::unique_ptr<JSONValue> expected_json = ParseJSON(R"JSON(
+    {
+      "type": "object",
+      "properties": {
+         "color1": {
+           "type": "string",
+           "format": "^#[0-9a-zA-Z]{6}$"
+         }
+      },
+      "required": []
+    }
+  )JSON");
+  ASSERT_TRUE(expected_json);
+  EXPECT_EQ(expected_json->ToJSONString(), actual);
+}
+
+TEST_F(HTMLFormMcpToolTest, FillFormControls_ColorInput) {
+  SetBodyInnerHTML(
+      R"HTML(
+    <form id=form toolname="mytool" tooldescription="perform task">
+      <input id=color1 name=color1 type=color>
+    </form>
+  )HTML");
+
+  HTMLFormElement* form_element = GetFormElement("form");
+  ASSERT_TRUE(form_element);
+  ASSERT_TRUE(IsValidWebMCPForm(*form_element));
+
+  String json_string =
+      R"JSON(
+        {
+          "color1": "#FaB000"
+        }
+      )JSON";
+
+  EXPECT_TRUE(FillFormControls(*form_element, json_string));
+
+  HTMLInputElement* color1 = GetInputElement("color1");
+  ASSERT_TRUE(color1);
+  EXPECT_EQ("#fab000", color1->Value());
+}
+
 TEST_F(HTMLFormMcpToolTest, ParameterSchema_TextArea) {
   SetBodyInnerHTML(
       R"HTML(
