@@ -7,6 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/password_manager/actor_login/internal/actor_login_siwg_controller.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_quality_logger_interface.h"
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_delegate.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
@@ -98,6 +99,13 @@ class ActorLoginDelegateImpl
 
   // Fills credentials into a form. Scoped to one `AttemptLogin` request.
   std::unique_ptr<ActorLoginCredentialFiller> credential_filler_;
+
+  // Handles FedCM login. For prototyping purposes this uses heuristics to find
+  // and click the SiwG button. After the prototype, the click will be done
+  // through `ExecutionEngine`.
+  // Scoped to one `AttemptLogin` request.
+  // TODO(crbug.com/479505793): Implement the click without heuristics.
+  std::unique_ptr<ActorLoginSiwgController> siwg_controller_;
 
   base::WeakPtrFactory<ActorLoginDelegateImpl> weak_ptr_factory_{this};
 

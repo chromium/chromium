@@ -15,6 +15,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/expected.h"
 #include "chrome/browser/password_manager/actor_login/internal/actor_login_federated_credentials_fetcher.h"
+#include "chrome/browser/password_manager/actor_login/internal/actor_login_siwg_controller.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/buildflags.h"
@@ -188,7 +189,14 @@ void ActorLoginDelegateImpl::AttemptLogin(
   mqls_logger->SetDomainAndLanguage(
       ChromeTranslateClient::GetManagerFromWebContents(&GetWebContents()),
       origin.GetURL());
-
+  if (credential.type == CredentialType::kFederated) {
+    siwg_controller_ = std::make_unique<ActorLoginSiwgController>(
+        &GetWebContents(), base::BindPostTaskToCurrentDefault(base::BindOnce(
+                               &ActorLoginDelegateImpl::OnAttemptLoginCompleted,
+                               weak_ptr_factory_.GetWeakPtr())));
+    siwg_controller_->StartFederatedLogin(credential);
+    return;
+  }
   credential_filler_ = std::make_unique<ActorLoginCredentialFiller>(
       origin, credential, should_store_permission, client_, mqls_logger,
       attempt_login_tool_start_time,
@@ -252,6 +260,7 @@ void ActorLoginDelegateImpl::OnAttemptLoginCompleted(
   // There shouldn't be a pending request without a pending callback.
   CHECK(pending_attempt_login_callback_);
   credential_filler_.reset();
+  siwg_controller_.reset();
   std::move(pending_attempt_login_callback_).Run(std::move(result));
 }
 

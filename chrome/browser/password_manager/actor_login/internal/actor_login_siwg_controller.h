@@ -31,7 +31,7 @@ namespace actor_login {
 
 // Controller for Sign-in with Google (SiwG) detection and interaction.
 // The flow is as follows:
-// 1. The controller is created and `ClickSiwgButton` is called.
+// 1. The controller is created and `StartFederatedLogin` is called.
 // 2. The controller starts capturing the annotated page content.
 // 3. Once captured, the controller goes through all frames and calls the
 //    renderers to extract potential SiwG buttons.
@@ -56,6 +56,11 @@ class ActorLoginSiwgController : public content::WebContentsObserver {
   ActorLoginSiwgController(const ActorLoginSiwgController&) = delete;
   ActorLoginSiwgController& operator=(const ActorLoginSiwgController&) = delete;
 
+  // Starts the federated login flow. This will notify FedCM API that an
+  // automated login is in progress, and then start the button detection and
+  // click flow.
+  void StartFederatedLogin(const Credential& credential);
+
   // Starts the detection process for SiwG buttons on the current page and
   // clicks the first one found.
   void ClickSiwgButton();
@@ -76,9 +81,13 @@ class ActorLoginSiwgController : public content::WebContentsObserver {
 
   void OnAllFramesScanned(std::vector<FrameSiwgButtonCandidates> results);
 
-  void ClickButton(content::RenderFrameHost* rfh, int dom_node_id);
+  void ClickButton(content::RenderFrameHost* rfh,
+                   int dom_node_id,
+                   actor::mojom::ObservedToolTargetPtr observed_target);
 
   void OnClickFinished(actor::mojom::ActionResultPtr result);
+
+  void OnFederatedLoginCompleted(bool success);
 
   GetPageContentProvider get_page_content_provider_;
   std::unique_ptr<SiwgButtonFinder> siwg_finder_;

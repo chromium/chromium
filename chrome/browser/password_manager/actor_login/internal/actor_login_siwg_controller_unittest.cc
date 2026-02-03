@@ -17,6 +17,7 @@
 #include "base/test/gmock_move_support.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/autofill/mock_autofill_agent.h"
+#include "chrome/browser/webid/federated_actor_login_request.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -156,7 +157,9 @@ TEST_F(ActorLoginSiwgControllerTest, ButtonFound_ClickSucceeded) {
                           &page_content_callback),
       finished_callback.Get());
 
-  controller.ClickSiwgButton();
+  Credential credential;
+  credential.federation_detail = FederationDetail();
+  controller.StartFederatedLogin(credential);
 
   // 1. Simulate Page Content Received with a SiwG button.
   optimization_guide::proto::AnnotatedPageContent page_content;
@@ -189,6 +192,11 @@ TEST_F(ActorLoginSiwgControllerTest, ButtonFound_ClickSucceeded) {
             auto result = actor::mojom::ActionResult::New();
             result->code = actor::mojom::ActionResultCode::kOk;
             std::move(callback).Run(std::move(result));
+
+            // Manually trigger the federated login completion callback.
+            auto* request = FederatedActorLoginRequest::Get(web_contents());
+            ASSERT_TRUE(request);
+            request->on_federated_token_received_callback().Run(true);
           }));
 
   // 4. Verify Success callback.
@@ -216,7 +224,9 @@ TEST_F(ActorLoginSiwgControllerTest, ButtonFound_ClickFailed) {
                           &page_content_callback),
       finished_callback.Get());
 
-  controller.ClickSiwgButton();
+  Credential credential;
+  credential.federation_detail = FederationDetail();
+  controller.StartFederatedLogin(credential);
 
   // 1. Simulate Page Content Received with a SiwG button.
   optimization_guide::proto::AnnotatedPageContent page_content;
@@ -273,7 +283,9 @@ TEST_F(ActorLoginSiwgControllerTest, NoButtonsFound) {
                           &page_content_callback),
       finished_callback.Get());
 
-  controller.ClickSiwgButton();
+  Credential credential;
+  credential.federation_detail = FederationDetail();
+  controller.StartFederatedLogin(credential);
 
   // No buttons in the page content.
   optimization_guide::proto::AnnotatedPageContent page_content;

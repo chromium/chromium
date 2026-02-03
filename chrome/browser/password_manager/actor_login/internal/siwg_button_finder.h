@@ -12,9 +12,14 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/common/actor.mojom.h"
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "url/gurl.h"
+
+namespace content {
+class RenderFrameHost;
+}  // namespace content
 
 namespace actor_login {
 
@@ -27,10 +32,22 @@ class SiwgButtonFinder {
   SiwgButtonFinder(const SiwgButtonFinder&) = delete;
   SiwgButtonFinder& operator=(const SiwgButtonFinder&) = delete;
 
-  // Returns the DOM node ID of the most likely interactable SiwG button if
-  // found.
-  std::optional<int> FindButton(
-      const GURL& last_committed_url,
+  struct SiwgButton {
+    SiwgButton();
+    SiwgButton(int dom_node_id,
+               actor::mojom::ObservedToolTargetPtr observed_target);
+    ~SiwgButton();
+    SiwgButton(SiwgButton&&);
+    SiwgButton& operator=(SiwgButton&&);
+
+    int dom_node_id;
+    // Button's observed target, used for the TOCTOU check.
+    actor::mojom::ObservedToolTargetPtr observed_target;
+  };
+
+  // Returns the most likely interactable SiwG button if found.
+  std::optional<SiwgButton> FindButton(
+      content::RenderFrameHost* rfh,
       const std::vector<autofill::mojom::SiwgButtonDataPtr>& buttons);
 
  private:
@@ -42,6 +59,9 @@ class SiwgButtonFinder {
   std::optional<int> FindGoogleSdkButton(
       const GURL& button_frame_url,
       const std::vector<autofill::mojom::SiwgButtonDataPtr>& buttons);
+
+  const optimization_guide::proto::ContentAttributes* GetContentAttributes(
+      int dom_node_id) const;
 
   optimization_guide::proto::AnnotatedPageContent page_content_;
   // Lookup table for the nodes in the page content. The nodes are owned by the

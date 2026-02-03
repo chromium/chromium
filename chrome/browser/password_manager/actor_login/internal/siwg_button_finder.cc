@@ -11,11 +11,68 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_widget_host_view.h"
+#include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 #include "third_party/re2/src/re2/re2.h"
+#include "ui/gfx/geometry/point_conversions.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace actor_login {
 
 namespace {
+
+// Helper function to create `ObservedToolTarget` mojom struct from
+// `ContentAttributes`.
+// This is duplicated code from `actor::PageTool`. The code is only needed for
+// the E2E prototype and will be removed after.
+// TODO(crbug.com/480920277): Remove this code after the click is handled by the
+// `ExecutionEngine`.
+actor::mojom::ObservedToolTargetPtr ToMojoObservedToolTarget(
+    const optimization_guide::proto::ContentAttributes* attributes,
+    content::RenderFrameHost* rfh) {
+  if (!attributes) {
+    return nullptr;
+  }
+  auto observed_target = actor::mojom::ObservedToolTarget::New();
+  observed_target->node_attribute =
+      blink::mojom::AIPageContentAttributes::New();
+
+  if (attributes->has_common_ancestor_dom_node_id()) {
+    observed_target->node_attribute->dom_node_id =
+        attributes->common_ancestor_dom_node_id();
+  }
+
+  if (attributes->has_geometry()) {
+    observed_target->node_attribute->geometry =
+        blink::mojom::AIPageContentGeometry::New();
+    const auto& geometry = attributes->geometry();
+    const auto& outer_box = geometry.outer_bounding_box();
+    gfx::Rect outer_rect(outer_box.x(), outer_box.y(), outer_box.width(),
+                         outer_box.height());
+
+    const auto& visible_box = geometry.visible_bounding_box();
+    gfx::Rect visible_rect(visible_box.x(), visible_box.y(),
+                           visible_box.width(), visible_box.height());
+
+    if (rfh && rfh->GetView()) {
+      const gfx::Point outer_box_origin_point = gfx::ToRoundedPoint(
+          rfh->GetView()->TransformRootPointToViewCoordSpace(
+              gfx::PointF(outer_rect.origin())));
+      outer_rect.set_origin(outer_box_origin_point);
+
+      const gfx::Point visible_box_origin_point = gfx::ToRoundedPoint(
+          rfh->GetView()->TransformRootPointToViewCoordSpace(
+              gfx::PointF(visible_rect.origin())));
+      visible_rect.set_origin(visible_box_origin_point);
+    }
+
+    observed_target->node_attribute->geometry->outer_bounding_box = outer_rect;
+    observed_target->node_attribute->geometry->visible_bounding_box =
+        visible_rect;
+  }
+  return observed_target;
+}
 
 bool MatchesButtonAttributes(const RE2& regex,
                              const autofill::mojom::SiwgButtonData& button) {
@@ -42,6 +99,16 @@ SiwgButtonFinder::SiwgButtonFinder(
 }
 
 SiwgButtonFinder::~SiwgButtonFinder() = default;
+
+SiwgButtonFinder::SiwgButton::SiwgButton() = default;
+SiwgButtonFinder::SiwgButton::SiwgButton(
+    int dom_node_id,
+    actor::mojom::ObservedToolTargetPtr observed_target)
+    : dom_node_id(dom_node_id), observed_target(std::move(observed_target)) {}
+SiwgButtonFinder::SiwgButton::~SiwgButton() = default;
+SiwgButtonFinder::SiwgButton::SiwgButton(SiwgButton&&) = default;
+SiwgButtonFinder::SiwgButton& SiwgButtonFinder::SiwgButton::operator=(
+    SiwgButton&&) = default;
 
 void SiwgButtonFinder::BuildContentNodeMaps(
     const optimization_guide::proto::ContentNode& node) {
@@ -85,12 +152,13 @@ std::optional<int> SiwgButtonFinder::FindGoogleSdkButton(
   return std::nullopt;
 }
 
-std::optional<int> SiwgButtonFinder::FindButton(
-    const GURL& button_frame_url,
+std::optional<SiwgButtonFinder::SiwgButton> SiwgButtonFinder::FindButton(
+    content::RenderFrameHost* rfh,
     const std::vector<autofill::mojom::SiwgButtonDataPtr>& buttons) {
   if (std::optional<int> button_id =
-          FindGoogleSdkButton(button_frame_url, buttons)) {
-    return button_id;
+          FindGoogleSdkButton(rfh->GetLastCommittedURL(), buttons)) {
+    return SiwgButton{*button_id, ToMojoObservedToolTarget(
+                                      GetContentAttributes(*button_id), rfh)};
   }
 
   // Layer 1: High confidence, direct matching on button labels.
@@ -133,7 +201,9 @@ std::optional<int> SiwgButtonFinder::FindButton(
             base::UTF16ToUTF8(button->text), base::TRIM_ALL))) {
       if (std::optional<int> ancestor_id =
               FindClosestClickableAncestor(*node)) {
-        return ancestor_id;
+        return SiwgButton{
+            *ancestor_id,
+            ToMojoObservedToolTarget(GetContentAttributes(*ancestor_id), rfh)};
       }
     }
 
@@ -147,12 +217,21 @@ std::optional<int> SiwgButtonFinder::FindButton(
 
       if (std::optional<int> ancestor_id =
               FindClosestClickableAncestor(*node)) {
-        return ancestor_id;
+        return SiwgButton{
+            *ancestor_id,
+            ToMojoObservedToolTarget(GetContentAttributes(*ancestor_id), rfh)};
       }
     }
   }
 
   return std::nullopt;
+}
+
+const optimization_guide::proto::ContentAttributes*
+SiwgButtonFinder::GetContentAttributes(int dom_node_id) const {
+  const optimization_guide::proto::ContentNode* node =
+      base::FindPtrOrNull(dom_node_id_to_content_node_, dom_node_id);
+  return node ? &node->content_attributes() : nullptr;
 }
 
 }  // namespace actor_login

@@ -8,15 +8,18 @@
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
+#include "chrome/browser/webid/federated_actor_login_request.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/web_contents.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
+#include "ui/gfx/geometry/point_conversions.h"
 
 namespace actor_login {
 
@@ -55,6 +58,18 @@ ActorLoginSiwgController::ActorLoginSiwgController(
 
 ActorLoginSiwgController::~ActorLoginSiwgController() = default;
 
+void ActorLoginSiwgController::StartFederatedLogin(
+    const Credential& credential) {
+  CHECK(credential.federation_detail);
+  FederatedActorLoginRequest::Set(
+      web_contents(), credential.federation_detail->idp_origin,
+      credential.federation_detail->account_id,
+      base::BindOnce(&ActorLoginSiwgController::OnFederatedLoginCompleted,
+                     weak_ptr_factory_.GetWeakPtr()));
+
+  ClickSiwgButton();
+}
+
 void ActorLoginSiwgController::ClickSiwgButton() {
   get_page_content_provider_.Run(
       web_contents(),
@@ -62,6 +77,21 @@ void ActorLoginSiwgController::ClickSiwgButton() {
           /*on_critical_path=*/false),
       base::BindOnce(&ActorLoginSiwgController::OnPageContentReceived,
                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ActorLoginSiwgController::OnFederatedLoginCompleted(bool success) {
+  if (!on_finished_callback_) {
+    return;
+  }
+  if (success) {
+    std::move(on_finished_callback_)
+        // TODO(crbug.com/478799141): add new status for SiwG success.
+        .Run(LoginStatusResult::kSuccessUsernameAndPasswordFilled);
+  } else {
+    std::move(on_finished_callback_)
+        // TODO(crbug.com/478799141): add new status for SiwG failure.
+        .Run(base::unexpected(ActorLoginError::kFillingNotAllowed));
+  }
 }
 
 void ActorLoginSiwgController::OnPageContentReceived(
@@ -123,10 +153,10 @@ void ActorLoginSiwgController::OnAllFramesScanned(
       // Frame went away.
       continue;
     }
-    std::optional<int> button_id =
-        siwg_finder_->FindButton(rfh->GetLastCommittedURL(), buttons);
-    if (button_id) {
-      ClickButton(rfh, *button_id);
+    std::optional<SiwgButtonFinder::SiwgButton> button =
+        siwg_finder_->FindButton(rfh, buttons);
+    if (button) {
+      ClickButton(rfh, button->dom_node_id, std::move(button->observed_target));
       // Ensure we only click one button.
       // ClickButton is the terminal state of this flow - it will resolve
       // on_finished_callback_ after the click result is received.
@@ -139,8 +169,10 @@ void ActorLoginSiwgController::OnAllFramesScanned(
       .Run(base::unexpected(ActorLoginError::kFillingNotAllowed));
 }
 
-void ActorLoginSiwgController::ClickButton(content::RenderFrameHost* rfh,
-                                           int dom_node_id) {
+void ActorLoginSiwgController::ClickButton(
+    content::RenderFrameHost* rfh,
+    int dom_node_id,
+    actor::mojom::ObservedToolTargetPtr observed_target) {
   // TODO(crbug.com/478798187): Use ActorTask instead of InvokeTool.
   GetLocalRoot(rfh)->GetRemoteAssociatedInterfaces()->GetInterface(
       &chrome_render_frame_);
@@ -151,6 +183,7 @@ void ActorLoginSiwgController::ClickButton(content::RenderFrameHost* rfh,
   click->count = actor::mojom::ClickCount::kSingle;
   invocation->action = actor::mojom::ToolAction::NewClick(std::move(click));
   invocation->target = actor::mojom::ToolTarget::NewDomNodeId(dom_node_id);
+  invocation->observed_target = std::move(observed_target);
 
   chrome_render_frame_->InvokeTool(
       std::move(invocation),
@@ -160,13 +193,13 @@ void ActorLoginSiwgController::ClickButton(content::RenderFrameHost* rfh,
 
 void ActorLoginSiwgController::OnClickFinished(
     actor::mojom::ActionResultPtr result) {
-  CHECK(on_finished_callback_);
+  // If the flow already finished (e.g. federated login completed before click
+  // returned), we don't need to do anything.
+  if (!on_finished_callback_) {
+    return;
+  }
 
-  if (result->code == actor::mojom::ActionResultCode::kOk) {
-    std::move(on_finished_callback_)
-        // TODO(crbug.com/478799141): add new status for SiwG success.
-        .Run(LoginStatusResult::kSuccessUsernameAndPasswordFilled);
-  } else {
+  if (result->code != actor::mojom::ActionResultCode::kOk) {
     std::move(on_finished_callback_)
         // TODO(crbug.com/478799141): add new status for SiwG failure.
         .Run(base::unexpected(ActorLoginError::kFillingNotAllowed));

@@ -7,8 +7,10 @@
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "content/public/browser/web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -47,7 +49,9 @@ ContentNode CreateContentNode(int dom_node_id, bool is_interactable) {
   return node;
 }
 
-TEST(SiwgButtonFinderTest, FindButton_HighConfidenceMatch) {
+class SiwgButtonFinderTest : public ChromeRenderViewHostTestHarness {};
+
+TEST_F(SiwgButtonFinderTest, FindButton_HighConfidenceMatch) {
   AnnotatedPageContent page_content;
   // Root node (interactable container) -> Button node
   *page_content.mutable_root_node() = CreateContentNode(1, true);
@@ -59,10 +63,14 @@ TEST(SiwgButtonFinderTest, FindButton_HighConfidenceMatch) {
   std::vector<SiwgButtonDataPtr> buttons;
   buttons.push_back(CreateButtonData(2, "Sign in with Google"));
 
-  EXPECT_EQ(finder.FindButton(GURL("https://example.com"), buttons), 1);
+  NavigateAndCommit(GURL("https://example.com"));
+  std::optional<SiwgButtonFinder::SiwgButton> result =
+      finder.FindButton(main_rfh(), buttons);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result->dom_node_id, 1);
 }
 
-TEST(SiwgButtonFinderTest, FindButton_NoMatch) {
+TEST_F(SiwgButtonFinderTest, FindButton_NoMatch) {
   AnnotatedPageContent page_content;
   *page_content.mutable_root_node() = CreateContentNode(1, true);
   *page_content.mutable_root_node()->add_children_nodes() =
@@ -73,11 +81,11 @@ TEST(SiwgButtonFinderTest, FindButton_NoMatch) {
   std::vector<SiwgButtonDataPtr> buttons;
   buttons.push_back(CreateButtonData(2, "Random Button"));
 
-  EXPECT_EQ(finder.FindButton(GURL("https://example.com"), buttons),
-            std::nullopt);
+  NavigateAndCommit(GURL("https://example.com"));
+  EXPECT_FALSE(finder.FindButton(main_rfh(), buttons).has_value());
 }
 
-TEST(SiwgButtonFinderTest, FindButton_NoInteractableAncestor) {
+TEST_F(SiwgButtonFinderTest, FindButton_NoInteractableAncestor) {
   AnnotatedPageContent page_content;
   *page_content.mutable_root_node() = CreateContentNode(1, false);
   *page_content.mutable_root_node()->add_children_nodes() =
@@ -88,11 +96,11 @@ TEST(SiwgButtonFinderTest, FindButton_NoInteractableAncestor) {
   std::vector<SiwgButtonDataPtr> buttons;
   buttons.push_back(CreateButtonData(2, "Sign in with Google"));
 
-  EXPECT_EQ(finder.FindButton(GURL("https://example.com"), buttons),
-            std::nullopt);
+  NavigateAndCommit(GURL("https://example.com"));
+  EXPECT_FALSE(finder.FindButton(main_rfh(), buttons).has_value());
 }
 
-TEST(SiwgButtonFinderTest, FindButton_GoogleSdkIframe) {
+TEST_F(SiwgButtonFinderTest, FindButton_GoogleSdkIframe) {
   AnnotatedPageContent page_content;
   // Content structure doesn't matter much for this path as it returns button ID
   // directly.
@@ -107,13 +115,15 @@ TEST(SiwgButtonFinderTest, FindButton_GoogleSdkIframe) {
   buttons.push_back(CreateButtonData(11, "", "span", "button"));
 
   // URL matches the specific Google SDK iframe URL.
-  EXPECT_EQ(finder.FindButton(
-                GURL("https://accounts.google.com/gsi/button?client_id=..."),
-                buttons),
-            10);
+  NavigateAndCommit(
+      GURL("https://accounts.google.com/gsi/button?client_id=..."));
+  std::optional<SiwgButtonFinder::SiwgButton> result =
+      finder.FindButton(main_rfh(), buttons);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result->dom_node_id, 10);
 }
 
-TEST(SiwgButtonFinderTest, FindButton_AttributeMatch) {
+TEST_F(SiwgButtonFinderTest, FindButton_AttributeMatch) {
   AnnotatedPageContent page_content;
   *page_content.mutable_root_node() = CreateContentNode(1, true);
   *page_content.mutable_root_node()->add_children_nodes() =
@@ -126,7 +136,11 @@ TEST(SiwgButtonFinderTest, FindButton_AttributeMatch) {
   buttons.push_back(
       CreateButtonData(2, "Icon", "button", "", "Sign in with Google"));
 
-  EXPECT_EQ(finder.FindButton(GURL("https://example.com"), buttons), 1);
+  NavigateAndCommit(GURL("https://example.com"));
+  std::optional<SiwgButtonFinder::SiwgButton> result =
+      finder.FindButton(main_rfh(), buttons);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result->dom_node_id, 1);
 }
 
 }  // namespace
