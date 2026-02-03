@@ -65,6 +65,11 @@ config("tflite_config") {
     "TF_PATCH_VERSION=" + tf_version_patch,
     "TF_VERSION_SUFFIX=",
   ]
+
+  if (is_win) {
+    cflags = [ "-Wno-sign-compare" ]
+  }
+
   if (is_android) {
     libs = [ "log" ]
   }
