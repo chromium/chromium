@@ -96,6 +96,8 @@ public class TabGroupDialogFacility<
                 declareView(toolbarElement.descendant(withId(R.id.toolbar_new_tab_button)));
         backButtonElement =
                 declareView(toolbarElement.descendant(withId(R.id.toolbar_back_button)));
+        listMenuButtonElement =
+                declareView(toolbarElement.descendant(withId(R.id.toolbar_menu_button)));
     }
 
     @Override
@@ -114,15 +116,6 @@ public class TabGroupDialogFacility<
                                             toolbarElement.descendant(withId(R.id.share_button)));
                         }
                     });
-
-            // Data sharing layout causes the menu button to be hidden due to the rounded corner.
-            listMenuButtonElement =
-                    declareView(
-                            toolbarElement.descendant(withId(R.id.toolbar_menu_button)),
-                            ViewElement.displayingAtLeastOption(51));
-        } else {
-            listMenuButtonElement =
-                    declareView(toolbarElement.descendant(withId(R.id.toolbar_menu_button)));
         }
     }
 

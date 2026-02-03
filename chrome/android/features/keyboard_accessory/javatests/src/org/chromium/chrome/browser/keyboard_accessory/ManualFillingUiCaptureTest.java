@@ -85,8 +85,7 @@ public class ManualFillingUiCaptureTest {
         waitForUnrelatedChromeUi();
         mScreenShooter.shoot("AccessorySheetPasswords");
 
-        whenDisplayed(withId(R.id.passwords_sheet), /* atLeast= */ 51)
-                .perform(scrollToLastElement());
+        whenDisplayed(withId(R.id.passwords_sheet)).perform(scrollToLastElement());
         waitForUnrelatedChromeUi();
         mScreenShooter.shoot("AccessorySheetPasswordsScrolled");
     }
@@ -118,8 +117,7 @@ public class ManualFillingUiCaptureTest {
         waitForUnrelatedChromeUi();
         mScreenShooter.shoot("AccessorySheetPasswordsRTL");
 
-        whenDisplayed(withId(R.id.passwords_sheet), /* atLeast= */ 51)
-                .perform(scrollToLastElement());
+        whenDisplayed(withId(R.id.passwords_sheet)).perform(scrollToLastElement());
         waitForUnrelatedChromeUi();
         mScreenShooter.shoot("AccessorySheetPasswordsScrolledRTL");
     }
@@ -134,7 +132,7 @@ public class ManualFillingUiCaptureTest {
     }
 
     private void waitForSuggestionsInSheet() {
-        whenDisplayed(withId(R.id.keyboard_accessory_sheet_frame), /* atLeast= */ 51);
+        whenDisplayed(withId(R.id.keyboard_accessory_sheet_frame));
         RecyclerViewTestUtils.waitForStableRecyclerView(
                 mActivityTestRule.getActivity().findViewById(R.id.passwords_sheet));
     }

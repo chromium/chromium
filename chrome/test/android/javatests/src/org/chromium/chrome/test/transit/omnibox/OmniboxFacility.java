@@ -49,9 +49,8 @@ public class OmniboxFacility extends Facility<CtaPageStation> {
         // Action buttons are 71% displayed in tablets (though the actual image is fully displayed).
         urlBarElement = declareView(URL_FIELD, ViewElement.unscopedOption());
         statusIconElement = declareOptionalView(STATUS_ICON);
-        micButtonElement = declareOptionalView(MIC_BUTTON, ViewElement.displayingAtLeastOption(50));
-        deleteButtonElement =
-                declareOptionalView(DELETE_BUTTON, ViewElement.displayingAtLeastOption(50));
+        micButtonElement = declareOptionalView(MIC_BUTTON);
+        deleteButtonElement = declareOptionalView(DELETE_BUTTON);
     }
 
     public FakeOmniboxSuggestions getFakeSuggestions() {
