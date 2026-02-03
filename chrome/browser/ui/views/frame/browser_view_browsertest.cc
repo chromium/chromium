@@ -45,6 +45,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
+#include "chrome/browser/ui/views/tabs/tab_accessibility.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -893,13 +894,15 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, AccessibleTabLabel) {
                 l10n_util::GetStringFUTF16(
                     IDS_TAB_AX_LABEL_SPLIT_TAB_LEFT_VIEW_FORMAT,
                     browser()->GetTitleForTab(0))),
-            browser_view()->GetAccessibleTabLabel(0));
+            tabs::GetAccessibleTabLabel(
+                browser()->tab_strip_model()->GetTabAtIndex(0), false));
   EXPECT_EQ(l10n_util::GetStringFUTF16(
                 IDS_TAB_AX_LABEL_PINNED_FORMAT,
                 l10n_util::GetStringFUTF16(
                     IDS_TAB_AX_LABEL_SPLIT_TAB_RIGHT_VIEW_FORMAT,
                     browser()->GetTitleForTab(1))),
-            browser_view()->GetAccessibleTabLabel(1));
+            tabs::GetAccessibleTabLabel(
+                browser()->tab_strip_model()->GetTabAtIndex(1), false));
 
   // Create a split.
   chrome::AddTabAt(browser(), GURL(), -1, true);
@@ -911,11 +914,13 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, AccessibleTabLabel) {
   EXPECT_EQ(
       l10n_util::GetStringFUTF16(IDS_TAB_AX_LABEL_SPLIT_TAB_LEFT_VIEW_FORMAT,
                                  browser()->GetTitleForTab(2)),
-      browser_view()->GetAccessibleTabLabel(2));
+      tabs::GetAccessibleTabLabel(
+          browser()->tab_strip_model()->GetTabAtIndex(2), false));
   EXPECT_EQ(
       l10n_util::GetStringFUTF16(IDS_TAB_AX_LABEL_SPLIT_TAB_RIGHT_VIEW_FORMAT,
                                  browser()->GetTitleForTab(3)),
-      browser_view()->GetAccessibleTabLabel(3));
+      tabs::GetAccessibleTabLabel(
+          browser()->tab_strip_model()->GetTabAtIndex(3), false));
 
   // Create a grouped split.
   chrome::AddTabAt(browser(), GURL(), -1, true);
@@ -930,13 +935,15 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, AccessibleTabLabel) {
                 l10n_util::GetStringFUTF16(
                     IDS_TAB_AX_LABEL_SPLIT_TAB_LEFT_VIEW_FORMAT,
                     browser()->GetTitleForTab(4))),
-            browser_view()->GetAccessibleTabLabel(4));
+            tabs::GetAccessibleTabLabel(
+                browser()->tab_strip_model()->GetTabAtIndex(4), false));
   EXPECT_EQ(l10n_util::GetStringFUTF16(
                 IDS_TAB_AX_LABEL_UNNAMED_GROUP_FORMAT,
                 l10n_util::GetStringFUTF16(
                     IDS_TAB_AX_LABEL_SPLIT_TAB_RIGHT_VIEW_FORMAT,
                     browser()->GetTitleForTab(5))),
-            browser_view()->GetAccessibleTabLabel(5));
+            tabs::GetAccessibleTabLabel(
+                browser()->tab_strip_model()->GetTabAtIndex(5), false));
 }
 
 #if BUILDFLAG(IS_MAC)

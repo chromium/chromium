@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/views/tabs/alert_indicator_button.h"
 #include "chrome/browser/ui/views/tabs/fake_base_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/fake_tab_slot_controller.h"
+#include "chrome/browser/ui/views/tabs/tab_accessibility.h"
 #include "chrome/browser/ui/views/tabs/tab_close_button.h"
 #include "chrome/browser/ui/views/tabs/tab_icon.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_controller.h"
@@ -935,15 +936,12 @@ TEST_F(TabContentsTest, AccessibleNameChanged) {
 
   TabRendererData old_data = tab_strip_->tab_at(0)->data();
   TabRendererData new_data = tab_strip_->tab_at(0)->data();
-  EXPECT_FALSE(
-      tab_strip_->tab_at(0)->ShouldUpdateAccessibleName(old_data, new_data));
+  EXPECT_FALSE(tabs::ShouldUpdateAccessibleName(old_data, new_data));
 
-  EXPECT_FALSE(
-      tab_strip_->tab_at(0)->ShouldUpdateAccessibleName(old_data, new_data));
+  EXPECT_FALSE(tabs::ShouldUpdateAccessibleName(old_data, new_data));
 
   new_data.title = u"new_title";
-  EXPECT_TRUE(
-      tab_strip_->tab_at(0)->ShouldUpdateAccessibleName(old_data, new_data));
+  EXPECT_TRUE(tabs::ShouldUpdateAccessibleName(old_data, new_data));
 }
 
 TEST_F(TabContentsTest, AccessibleNameChangesWithCollaborationMessages) {
@@ -951,8 +949,7 @@ TEST_F(TabContentsTest, AccessibleNameChangesWithCollaborationMessages) {
 
   TabRendererData old_data = tab_strip_->tab_at(0)->data();
   TabRendererData new_data = tab_strip_->tab_at(0)->data();
-  EXPECT_FALSE(
-      tab_strip_->tab_at(0)->ShouldUpdateAccessibleName(old_data, new_data));
+  EXPECT_FALSE(tabs::ShouldUpdateAccessibleName(old_data, new_data));
 
   // Create message for new_data.
   ui::UnownedUserDataHost unowned_user_data_1;
@@ -963,8 +960,7 @@ TEST_F(TabContentsTest, AccessibleNameChangesWithCollaborationMessages) {
       CreateMessage("Name1", CollaborationEvent::TAB_ADDED));
   new_data.collaboration_messaging = collaboration_messaging1->GetWeakPtr();
 
-  EXPECT_TRUE(
-      tab_strip_->tab_at(0)->ShouldUpdateAccessibleName(old_data, new_data));
+  EXPECT_TRUE(tabs::ShouldUpdateAccessibleName(old_data, new_data));
 
   // Create message with a different name for old_data.
   ui::UnownedUserDataHost unowned_user_data_2;
@@ -975,8 +971,7 @@ TEST_F(TabContentsTest, AccessibleNameChangesWithCollaborationMessages) {
       CreateMessage("Name2", CollaborationEvent::TAB_ADDED));
   old_data.collaboration_messaging = collaboration_messaging2->GetWeakPtr();
 
-  EXPECT_TRUE(
-      tab_strip_->tab_at(0)->ShouldUpdateAccessibleName(old_data, new_data));
+  EXPECT_TRUE(tabs::ShouldUpdateAccessibleName(old_data, new_data));
 
   // Create message with a different event for old_data.
   ui::UnownedUserDataHost unowned_user_data_3;
@@ -987,8 +982,7 @@ TEST_F(TabContentsTest, AccessibleNameChangesWithCollaborationMessages) {
       CreateMessage("Name1", CollaborationEvent::TAB_UPDATED));
   old_data.collaboration_messaging = collaboration_messaging3->GetWeakPtr();
 
-  EXPECT_TRUE(
-      tab_strip_->tab_at(0)->ShouldUpdateAccessibleName(old_data, new_data));
+  EXPECT_TRUE(tabs::ShouldUpdateAccessibleName(old_data, new_data));
 
   // Create a duplicate message for old_data.
   ui::UnownedUserDataHost unowned_user_data_4;
@@ -999,8 +993,7 @@ TEST_F(TabContentsTest, AccessibleNameChangesWithCollaborationMessages) {
       CreateMessage("Name1", CollaborationEvent::TAB_ADDED));
   old_data.collaboration_messaging = collaboration_messaging4->GetWeakPtr();
 
-  EXPECT_FALSE(
-      tab_strip_->tab_at(0)->ShouldUpdateAccessibleName(old_data, new_data));
+  EXPECT_FALSE(tabs::ShouldUpdateAccessibleName(old_data, new_data));
 }
 
 TEST_F(TabTest, HideContentsWhenVeryNarrow) {

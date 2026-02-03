@@ -54,6 +54,7 @@
 #include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/views/frame/horizontal_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
+#include "chrome/browser/ui/views/tabs/tab_accessibility.h"
 #include "chrome/browser/ui/views/tabs/tab_context_menu_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_group_accessibility.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
@@ -631,8 +632,9 @@ gfx::Range BrowserTabStripController::ListTabsInGroup(
 
 std::u16string BrowserTabStripController::GetAccessibleTabName(
     const Tab* tab) const {
-  return browser_view_->GetAccessibleTabLabel(
-      tabstrip_->GetModelIndexOf(tab).value(), /*is_for_tab=*/true);
+  int tab_index = tabstrip_->GetModelIndexOf(tab).value();
+  return tabs::GetAccessibleTabLabel(model_->GetTabAtIndex(tab_index),
+                                     /*is_for_tab=*/true);
 }
 
 BrowserWindowInterface* BrowserTabStripController::GetBrowserWindowInterface() {

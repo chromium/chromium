@@ -230,9 +230,6 @@ class Tab : public gfx::AnimationDelegate,
   FRIEND_TEST_ALL_PREFIXES(TabContentsTest,
                            AccessibleNameChangesWithCollaborationMessages);
 
-  bool ShouldUpdateAccessibleName(TabRendererData& old_data,
-                                  TabRendererData& new_data);
-
   // Invoked from Layout to adjust the position of the favicon or alert
   // indicator for pinned tabs. The visual_width parameter is how wide the
   // icon looks (rather than how wide the bounds are).

@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/horizontal_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/location_bar/custom_tab_bar_view.h"
+#include "chrome/browser/ui/views/tabs/tab_accessibility.h"
 #include "chrome/browser/ui/views/tabs/tab_icon.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
@@ -1329,21 +1330,24 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest, PageTitle) {
   EXPECT_EQ(tab_strip->GetWebContentsAt(0)->GetVisibleURL(), start_url);
   EXPECT_EQ(tab_strip->active_index(), 0);
 
-  BrowserView* browser_view =
-      BrowserView::GetBrowserViewForBrowser(app_browser);
-
   // The tab title starts with the tab name, followed by whether it is pinned
   // but may also have more things after that.
-  EXPECT_TRUE(base::StartsWith(browser_view->GetAccessibleTabLabel(0),
-                               u"Tab Strip Customizations - Pinned"));
+  EXPECT_TRUE(
+      base::StartsWith(tabs::GetAccessibleTabLabel(tab_strip->GetTabAtIndex(0),
+                                                   /*is_for_tab=*/false),
+                       u"Tab Strip Customizations - Pinned"));
 
   chrome::NewTab(app_browser);
   content::WaitForLoadStop(tab_strip->GetActiveWebContents());
 
-  EXPECT_TRUE(base::StartsWith(browser_view->GetAccessibleTabLabel(0),
-                               u"Tab Strip Customizations - Pinned"));
-  EXPECT_TRUE(base::StartsWith(browser_view->GetAccessibleTabLabel(1),
-                               u"Favicon only"));
+  EXPECT_TRUE(
+      base::StartsWith(tabs::GetAccessibleTabLabel(tab_strip->GetTabAtIndex(0),
+                                                   /*is_for_tab=*/false),
+                       u"Tab Strip Customizations - Pinned"));
+  EXPECT_TRUE(
+      base::StartsWith(tabs::GetAccessibleTabLabel(tab_strip->GetTabAtIndex(1),
+                                                   /*is_for_tab=*/false),
+                       u"Favicon only"));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

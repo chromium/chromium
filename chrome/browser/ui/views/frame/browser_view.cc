@@ -202,6 +202,7 @@
 #include "chrome/browser/ui/views/tabs/new_tab_button.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_view.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
+#include "chrome/browser/ui/views/tabs/tab_accessibility.h"
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_flat_edge_button.h"
@@ -3855,7 +3856,9 @@ std::u16string BrowserView::GetAccessibleWindowTitleForChannelAndProfile(
   int active_index = browser_->tab_strip_model()->active_index();
   std::u16string title;
   if (active_index > -1) {
-    title = GetAccessibleTabLabel(active_index, /* include_app_name */ false);
+    title =
+        tabs::GetAccessibleTabLabel(browser_->tab_strip_model()->GetActiveTab(),
+                                    /*is_for_tab=*/false);
   } else {
     title = browser_->GetWindowTitleForCurrentTab(false /* include_app_name */);
   }
@@ -3905,7 +3908,8 @@ std::u16string BrowserView::GetAccessibleWindowTitleForChannelAndProfile(
 
 void BrowserView::UpdateAccessibleNameForAllTabs() {
   for (int i = 0; i < browser()->tab_strip_model()->count(); ++i) {
-    std::u16string accessible_title = GetAccessibleTabLabel(i, true);
+    std::u16string accessible_title = tabs::GetAccessibleTabLabel(
+        browser()->tab_strip_model()->GetTabAtIndex(i), /*is_for_tab=*/true);
     views::View* tab = tab_strip_view()->GetTabAnchorViewAt(i);
     CHECK(tab);
     if (accessible_title.empty()) {
@@ -3916,150 +3920,6 @@ void BrowserView::UpdateAccessibleNameForAllTabs() {
     } else {
       tab->GetViewAccessibility().SetName(accessible_title);
     }
-  }
-}
-
-// This function constructs the accessible label for a tab, which is used by
-// assistive technologies to provide meaningful descriptions of the tab's
-// content. The label is based on various properties of the tab, such as the
-// title, group, alerts and memory usage.
-//
-// Note: If any new parameters are added or existing ones are removed that
-// affect the accessible name, ensure that the corresponding logic in
-// Tab::UpdateAccessibleName is updated accordingly to maintain consistency.
-std::u16string BrowserView::GetAccessibleTabLabel(int index,
-                                                  bool is_for_tab) const {
-  std::u16string title = is_for_tab ? browser_->GetTitleForTab(index)
-                                    : browser_->GetWindowTitleForTab(index);
-
-  TabStripModel* tab_strip_model = browser_->GetTabStripModel();
-  tabs::TabInterface* tab = tab_strip_model->GetTabAtIndex(index);
-
-  if (const std::optional<split_tabs::SplitTabId> split = tab->GetSplit()) {
-    const split_tabs::SplitTabData* split_data =
-        tab_strip_model->GetSplitData(split.value());
-    const std::vector<tabs::TabInterface*> tabs_in_split =
-        split_data->ListTabs();
-
-    int tab_index_in_split = std::distance(
-        tabs_in_split.begin(),
-        std::find(tabs_in_split.begin(), tabs_in_split.end(), tab));
-    title = l10n_util::GetStringFUTF16(
-        GetAccessibleTabLabelFormatStringForSplit(
-            split_tabs::SplitTabLayout::kVertical, tab_index_in_split),
-        title);
-  }
-
-  if (const std::optional<tab_groups::TabGroupId> group = tab->GetGroup()) {
-    std::u16string group_title = tab_strip_model->group_model()
-                                     ->GetTabGroup(group.value())
-                                     ->visual_data()
-                                     ->title();
-    if (group_title.empty()) {
-      title = l10n_util::GetStringFUTF16(IDS_TAB_AX_LABEL_UNNAMED_GROUP_FORMAT,
-                                         title);
-    } else {
-      title = l10n_util::GetStringFUTF16(IDS_TAB_AX_LABEL_NAMED_GROUP_FORMAT,
-                                         title, group_title);
-    }
-  }
-
-  // Tab is pinned.
-  if (tab->IsPinned()) {
-    title = l10n_util::GetStringFUTF16(IDS_TAB_AX_LABEL_PINNED_FORMAT, title);
-  }
-
-  const TabRendererData& tab_data = tab_strip_view()->GetTabRendererData(index);
-
-  // Tab has crashed.
-  if (tab_data.is_crashed) {
-    return l10n_util::GetStringFUTF16(IDS_TAB_AX_LABEL_CRASHED_FORMAT, title);
-  }
-
-  // Network error interstitial.
-  if (tab_data.network_state == TabNetworkState::kError) {
-    return l10n_util::GetStringFUTF16(IDS_TAB_AX_LABEL_NETWORK_ERROR_FORMAT,
-                                      title);
-  }
-
-  // Tab has a pending permission request.
-  if (GetLocationBar() && GetLocationBar()->GetChipController() &&
-      GetLocationBar()->GetChipController()->IsPermissionPromptChipVisible()) {
-    return l10n_util::GetStringFUTF16(
-        IDS_TAB_AX_LABEL_PERMISSION_REQUESTED_FORMAT, title);
-  }
-
-  // Alert tab states.
-  const tabs::TabAlertController* tab_alert_controller =
-      tabs::TabAlertController::From(tab);
-  CHECK(tab_alert_controller);
-
-  if (const std::optional<tabs::TabAlert> alert =
-          tab_alert_controller->GetAlertToShow()) {
-    title = l10n_util::GetStringFUTF16(
-        tabs::TabAlertController::GetAccessibleAlertStringId(alert.value()),
-        title);
-  }
-
-  if (tab_data.should_show_discard_status) {
-    title = l10n_util::GetStringFUTF16(IDS_TAB_AX_INACTIVE_TAB, title);
-    if (tab_data.discarded_memory_savings.is_positive()) {
-      title = l10n_util::GetStringFUTF16(
-          IDS_TAB_AX_MEMORY_SAVINGS, title,
-          ui::FormatBytes(tab_data.discarded_memory_savings));
-    }
-  } else if (tab_data.tab_resource_usage &&
-             tab_data.tab_resource_usage->memory_usage().is_positive()) {
-    const base::ByteSize memory_used =
-        tab_data.tab_resource_usage->memory_usage();
-    const bool is_high_memory_usage =
-        tab_data.tab_resource_usage->is_high_memory_usage();
-    if (is_high_memory_usage || is_for_tab) {
-      const int message_id = is_high_memory_usage ? IDS_TAB_AX_HIGH_MEMORY_USAGE
-                                                  : IDS_TAB_AX_MEMORY_USAGE;
-      title = l10n_util::GetStringFUTF16(message_id, title,
-                                         ui::FormatBytes(memory_used));
-    }
-  } else if (tab_data.collaboration_messaging &&
-             tab_data.collaboration_messaging->HasMessage()) {
-    std::u16string given_name = tab_data.collaboration_messaging->given_name();
-
-    switch (tab_data.collaboration_messaging->collaboration_event()) {
-      case collaboration::messaging::CollaborationEvent::TAB_ADDED:
-        title = l10n_util::GetStringFUTF16(
-                    IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_ADDED_THIS_TAB,
-                    given_name) +
-                u", " + title;
-        break;
-      case collaboration::messaging::CollaborationEvent::TAB_UPDATED:
-        title = l10n_util::GetStringFUTF16(
-                    IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_CHANGED_THIS_TAB,
-                    given_name) +
-                u", " + title;
-        break;
-      default:
-        NOTREACHED();
-    }
-  }
-
-  return title;
-}
-
-int BrowserView::GetAccessibleTabLabelFormatStringForSplit(
-    split_tabs::SplitTabLayout layout,
-    int tab_index_in_split) const {
-  switch (layout) {
-    case split_tabs::SplitTabLayout::kVertical:
-      switch (tab_index_in_split) {
-        case 0:
-          return IDS_TAB_AX_LABEL_SPLIT_TAB_LEFT_VIEW_FORMAT;
-        case 1:
-          return IDS_TAB_AX_LABEL_SPLIT_TAB_RIGHT_VIEW_FORMAT;
-        default:
-          NOTREACHED();
-      }
-    default:
-      NOTREACHED();
   }
 }
 

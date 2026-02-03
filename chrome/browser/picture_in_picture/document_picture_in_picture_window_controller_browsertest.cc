@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/picture_in_picture_browser_frame_view.h"
+#include "chrome/browser/ui/views/tabs/tab_accessibility.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
@@ -960,7 +961,8 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
   auto* pip_web_contents = window_controller()->GetChildWebContents();
   ASSERT_NE(nullptr, pip_web_contents);
   WaitForPageLoad(pip_web_contents);
-  auto* browser_view = static_cast<BrowserView*>(
+
+  auto* pip_browser_view = static_cast<BrowserView*>(
       BrowserWindow::FindBrowserWindowWithWebContents(pip_web_contents));
 
   // Verify that the pip window page title is empty and, the opener window page
@@ -974,8 +976,9 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
   // Verify that the accessible label returns the opener window page title, when
   // the pip window page title is not set.
   EXPECT_EQ(base::UTF8ToUTF16(window_page_title),
-            browser_view->GetAccessibleTabLabel(
-                browser()->tab_strip_model()->active_index()));
+            tabs::GetAccessibleTabLabel(
+                pip_browser_view->browser()->tab_strip_model()->GetActiveTab(),
+                /*is_for_tab=*/false));
 
   // Set the pip window page title and ensure that the pip and opener window
   // page titles are different.
@@ -988,8 +991,9 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
   // Verify that, although the pip window page title is set, the accessible
   // label returns the opener window page title.
   EXPECT_EQ(base::UTF8ToUTF16(window_page_title),
-            browser_view->GetAccessibleTabLabel(
-                browser()->tab_strip_model()->active_index()));
+            tabs::GetAccessibleTabLabel(
+                pip_browser_view->browser()->tab_strip_model()->GetActiveTab(),
+                /*is_for_tab=*/false));
 }
 
 // A dialog that checks if the picture-in-picture window is force-tucked

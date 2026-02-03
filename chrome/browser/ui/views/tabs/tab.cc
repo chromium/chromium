@@ -47,6 +47,7 @@
 #include "chrome/browser/ui/views/tabs/alert_indicator_button.h"
 #include "chrome/browser/ui/views/tabs/browser_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
+#include "chrome/browser/ui/views/tabs/tab_accessibility.h"
 #include "chrome/browser/ui/views/tabs/tab_close_button.h"
 #include "chrome/browser/ui/views/tabs/tab_hover_card_bubble_view.h"
 #include "chrome/browser/ui/views/tabs/tab_icon.h"
@@ -965,39 +966,6 @@ bool Tab::HasThumbnail() const {
   return data().thumbnail && data().thumbnail->has_data();
 }
 
-// This function checks for the parameters that influence the accessible name
-// change. Note: If any new parameters are added or existing ones are removed
-// that affect the accessible name, ensure that the corresponding logic in
-// BrowserView::GetAccessibleTabLabel is updated accordingly to maintain
-// consistency.
-bool Tab::ShouldUpdateAccessibleName(TabRendererData& old_data,
-                                     TabRendererData& new_data) {
-  bool has_old_message = old_data.collaboration_messaging &&
-                         old_data.collaboration_messaging->HasMessage();
-  bool has_new_message = new_data.collaboration_messaging &&
-                         new_data.collaboration_messaging->HasMessage();
-  bool collaboration_message_changed = has_old_message != has_new_message;
-  if (!collaboration_message_changed && has_old_message) {
-    // Old and new data have both have messages, so compare the contents.
-    collaboration_message_changed =
-        (old_data.collaboration_messaging->given_name() !=
-         new_data.collaboration_messaging->given_name()) ||
-        (old_data.collaboration_messaging->collaboration_event() !=
-         new_data.collaboration_messaging->collaboration_event());
-  }
-
-  return ((old_data.network_state != new_data.network_state) ||
-          old_data.is_crashed != new_data.is_crashed ||
-          old_data.alert_state != new_data.alert_state ||
-          old_data.should_show_discard_status !=
-              new_data.should_show_discard_status ||
-          old_data.discarded_memory_savings !=
-              new_data.discarded_memory_savings ||
-          old_data.tab_resource_usage != new_data.tab_resource_usage ||
-          old_data.pinned != new_data.pinned ||
-          old_data.title != new_data.title || collaboration_message_changed);
-}
-
 void Tab::SetData(TabRendererData data) {
   DCHECK(GetWidget());
 
@@ -1011,7 +979,7 @@ void Tab::SetData(TabRendererData data) {
   icon_->SetData(data_);
   icon_->SetCanPaintToLayer(controller_->CanPaintThrobberToLayer());
   UpdateTabIconAttention();
-  if (ShouldUpdateAccessibleName(old, data_)) {
+  if (tabs::ShouldUpdateAccessibleName(old, data_)) {
     UpdateAccessibleName();
   }
 

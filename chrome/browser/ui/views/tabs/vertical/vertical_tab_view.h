@@ -122,7 +122,10 @@ class VerticalTabView : public views::View,
 
   void ResetCollectionNode();
 
+  void UpdateAccessibleName();
   void OnDataChanged();
+  void SetSelection(bool selected);
+  void UpdateTabData(tabs::TabInterface* tab);
 
   void UpdateTitle();
   void UpdateBorder();

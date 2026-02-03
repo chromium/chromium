@@ -801,20 +801,6 @@ class BrowserView : public BrowserWindow,
   void OnWillChangeFocus(View* focused_before, View* focused_now) override;
   void OnDidChangeFocus(View* focused_before, View* focused_now) override;
 
-  // Creates an accessible tab label for screen readers that includes the tab
-  // status for the given tab index. This takes the form of
-  // "Page title - Tab state". The optional parameter `is_for_tab` can be set
-  // when getting the label for a tab (instead of a window). Titles for the
-  // window don't include less important messages like memory usage.
-  std::u16string GetAccessibleTabLabel(int index,
-                                       bool is_for_tab = false) const;
-
-  // Gets the string id to format a tab's accessible label if it is part of a
-  // split.
-  int GetAccessibleTabLabelFormatStringForSplit(
-      split_tabs::SplitTabLayout layout,
-      int tab_index_in_split) const;
-
   // Testing interface:
   views::View* GetContentsContainerForTest() { return contents_container_; }
   BrowserViewLayout* GetBrowserViewLayoutForTesting() {
