@@ -11,8 +11,6 @@ chromium::import! {
     "//mojo/public/rust/system/test_util";
 }
 
-use system::mojo_types::Handle;
-
 // Mimics the tests in //mojo/public/c/system/tests/core_api_unittests.cc,
 // but testing the Rust API's guarantees for that functionality rather
 // than the C++ API's.
@@ -32,11 +30,9 @@ fn test_basic_message_write_and_send() {
     let (endpoint_a, endpoint_b) = system::message_pipe::MessageEndpoint::create_pipe().unwrap();
     let (dummy_handle, _) = system::message_pipe::MessageEndpoint::create_pipe().unwrap();
 
-    let hello = system::message_pipe::RawMojoMessage::new_with_data(
-        b"hello",
-        vec![dummy_handle.into_untyped()],
-    )
-    .unwrap();
+    let hello =
+        system::message_pipe::RawMojoMessage::new_with_data(b"hello", vec![dummy_handle.into()])
+            .unwrap();
 
     let write_result = endpoint_b.write(hello);
     expect_true!(write_result.is_ok());
@@ -102,8 +98,6 @@ fn test_data_pipe_write_and_send() {
 
 #[gtest(RustSystemAPITestSuite, MessagePipes_RawTrapSignalOnReadableTest)]
 fn test_raw_trap_signal_on_readable() {
-    /* FOR_RELEASE: Re-enable this test when we migrate message pipes
-
     test_util::init_mojo_if_needed();
 
     // We need a few global values to keep track of our test trap events.
@@ -117,7 +111,7 @@ fn test_raw_trap_signal_on_readable() {
         // simply do nothing. Note that we cannot panic here since this is called
         // from C code.
         if let Ok(mut list) = TEST_TRAP_EVENT_LIST.lock() {
-            list.push(*event);
+            list.push(event.clone());
             TEST_TRAP_EVENT_COND.notify_all();
         }
     }
@@ -159,27 +153,25 @@ fn test_raw_trap_signal_on_readable() {
 
     // Make a message pipe pair and add a trigger to both ends of the pipe.
     let (endpoint_a, endpoint_b) = system::message_pipe::MessageEndpoint::create_pipe().unwrap();
-    expect_eq!(
-        system::mojo_types::MojoResult::Okay,
-        trap.add_trigger(
+    expect_true!(trap
+        .add_trigger(
             &endpoint_a,
-            system::mojo_types::HandleSignals::READABLE,
-            system::raw_trap::TriggerCondition::SignalsSatisfied,
+            system::raw_trap::HandleSignals::READABLE,
+            system::raw_trap::TriggerCondition::TriggerWhenSatisfied,
             1,
         )
-    );
+        .is_ok());
 
-    expect_eq!(
-        system::mojo_types::MojoResult::Okay,
-        trap.add_trigger(
+    expect_true!(trap
+        .add_trigger(
             &endpoint_b,
-            system::mojo_types::HandleSignals::PEER_CLOSED,
-            system::raw_trap::TriggerCondition::SignalsSatisfied,
+            system::raw_trap::HandleSignals::PEER_CLOSED,
+            system::raw_trap::TriggerCondition::TriggerWhenSatisfied,
             2,
         )
-    );
+        .is_ok());
 
-    let mut blocking_events_buf = [std::mem::MaybeUninit::uninit(); 16];
+    let mut blocking_events_buf = [const { std::mem::MaybeUninit::uninit() }; 16];
     // The trap should arm with no blocking events since nothing should be
     // triggered yet.
 
@@ -199,9 +191,9 @@ fn test_raw_trap_signal_on_readable() {
         let list = wait_for_asynchronously_delivered_trap_events(&TEST_TRAP_EVENT_LIST, 1);
         expect_eq!(list.len(), 1);
 
-        let event = list[0];
+        let event = &list[0];
         expect_eq!(event.trigger_context(), 1);
-        expect_eq!(event.result(), system::mojo_types::MojoResult::Okay);
+        expect_true!(event.result().is_ok());
         expect_true!(
             event.signals_state().satisfiable().is_readable(),
             "{:?}",
@@ -219,7 +211,7 @@ fn test_raw_trap_signal_on_readable() {
         system::raw_trap::ArmResult::Blocked(events) => {
             let event = events.first().unwrap();
             expect_eq!(event.trigger_context(), 1);
-            expect_eq!(event.result(), system::mojo_types::MojoResult::Okay);
+            expect_true!(event.result().is_ok());
         }
         system::raw_trap::ArmResult::Failed(e) => {
             expect_true!(false, "unexpected Mojo error {:?}", e)
@@ -249,19 +241,21 @@ fn test_raw_trap_signal_on_readable() {
     // The other indicates that endpoint_b was closed (`Cancelled`).
     let list = wait_for_asynchronously_delivered_trap_events(&TEST_TRAP_EVENT_LIST, 1);
     expect_eq!(list.len(), 2);
-    let (event1, event2) = (list[0], list[1]);
+    let (event1, event2) = (&list[0], &list[1]);
     // Sort the events since the ordering isn't deterministic.
     let (endpoint_a_event, endpoint_b_event) =
         if event1.trigger_context() == 1 { (event1, event2) } else { (event2, event1) };
 
     // `endpoint_a`` is no longer readable.
     expect_eq!(endpoint_a_event.trigger_context(), 1);
-    expect_eq!(endpoint_a_event.result(), system::mojo_types::MojoResult::FailedPrecondition);
+    // FOR_RELEASE: Check that the error is specifically `FailedPrecondition`.
+    expect_true!(endpoint_a_event.result().is_err());
     expect_true!(!endpoint_a_event.signals_state().satisfiable().is_readable());
 
     // `endpoint_b`` was cancelled (dropped).
     expect_eq!(endpoint_b_event.trigger_context(), 2);
-    expect_eq!(endpoint_b_event.result(), system::mojo_types::MojoResult::Cancelled);
+    // FOR_RELEASE: Check that the error is specifically `Cancelled`.
+    expect_true!(endpoint_b_event.result().is_err());
 
     drop(trap);
 
@@ -269,13 +263,10 @@ fn test_raw_trap_signal_on_readable() {
     // `Cancelled` event for removing endpoint_a from the trap (which happens
     // automatically upon dropping `trap`.)
     clear_trap_events(3);
-    */
 }
 
 #[gtest(RustSystemAPITestSuite, MessagePipes_TrapSignalOnReadableTest)]
 fn test_raw_trap_signal_on_readable() {
-    /* FOR_RELEASE: Re-enable this test when we migrate message pipes
-
     test_util::init_mojo_if_needed();
 
     let (endpoint_a, endpoint_b) = system::message_pipe::MessageEndpoint::create_pipe().unwrap();
@@ -293,8 +284,8 @@ fn test_raw_trap_signal_on_readable() {
     let _trigger_id = trap
         .add_trigger(
             &endpoint_a,
-            system::mojo_types::HandleSignals::READABLE,
-            system::trap::TriggerCondition::SignalsSatisfied,
+            system::raw_trap::HandleSignals::READABLE,
+            system::raw_trap::TriggerCondition::TriggerWhenSatisfied,
             move |event| {
                 if event.result().is_ok() {
                     let mut count = hit_count_clone.lock().unwrap();
@@ -317,13 +308,10 @@ fn test_raw_trap_signal_on_readable() {
         condvar.wait_timeout_while(count, std::time::Duration::from_secs(2), |c| *c == 0).unwrap();
 
     expect_eq!(*final_count.0, 1, "Should have fired once");
-    */
 }
 
 #[gtest(RustSystemAPITestSuite, CloseSafeTrapWithActiveTrigger)]
 fn test_close_trap_with_active_trigger() {
-    /* FOR_RELEASE: Re-enable this test when we migrate message pipes
-
     // Trap must do some lifecycle management/teardown of the pointers it encloses
     // when it is `drop`'d.
     //
@@ -335,8 +323,8 @@ fn test_close_trap_with_active_trigger() {
 
     trap.add_trigger(
         &ep_a,
-        system::mojo_types::HandleSignals::READABLE,
-        system::trap::TriggerCondition::SignalsSatisfied,
+        system::raw_trap::HandleSignals::READABLE,
+        system::raw_trap::TriggerCondition::TriggerWhenSatisfied,
         move |event| {
             println!(
                 "Trigger fired with result {:?} and signals {:?}",
@@ -349,12 +337,10 @@ fn test_close_trap_with_active_trigger() {
     .expect("Failed to add trigger");
     drop(trap);
     // `drop` completed without any errors wrt pointer management and such.
-    */
 }
 
 #[gtest(RustSystemAPITestSuite, SafeTrapMultipleBlockingEvents)]
 fn test_trap_multiple_blocking_events() {
-    /* FOR_RELEASE: Re-enable this test when we migrate message pipes
     test_util::init_mojo_if_needed();
     let trap = system::trap::Trap::new().expect("Failed to create safe Trap");
     const NUM_TRIGGERS: usize = 20; // More than MAX_BLOCKING_EVENTS
@@ -372,8 +358,8 @@ fn test_trap_multiple_blocking_events() {
         let ep_a_clone = Arc::clone(&ep_a_arc);
         trap.add_trigger(
             &*ep_a_arc,
-            system::mojo_types::HandleSignals::READABLE,
-            system::trap::TriggerCondition::SignalsSatisfied,
+            system::raw_trap::HandleSignals::READABLE,
+            system::raw_trap::TriggerCondition::TriggerWhenSatisfied,
             move |event| {
                 println!(
                     "Trigger {} fired with result {:?} and signals {:?}",
@@ -437,7 +423,6 @@ fn test_trap_multiple_blocking_events() {
     // (that is, Cancelled returned harmelssly for the various triggers
     // upon removal.)
     drop(trap);
-    */
 }
 
 // We test the majority of our trap functionality via MessagePipes.

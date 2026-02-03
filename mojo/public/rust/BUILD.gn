@@ -13,8 +13,6 @@ group("all") {
     "mojom_value_parser",
     "sequences",
     "system",
-    "system:ffi_new",
-    "system:mojo_c_system_bindings",
   ]
 }
 

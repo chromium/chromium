@@ -33,6 +33,8 @@ rust_static_library("ffi_new") {
     "ffi/handles.rs",
     "ffi/internal_options.rs",
     "ffi/lib.rs",
+    "ffi/message.rs",
+    "ffi/message_pipe.rs",
     "ffi/result.rs",
     "ffi/trap.rs",
   ]
@@ -47,6 +49,10 @@ rust_static_library("ffi_new") {
 rust_bindgen("mojo_c_system_bindings") {
   header = "//mojo/public/c/system/thunks.h"
   deps = [ "//mojo/public/c/system" ]
+  visibility = [
+    ":ffi_new",
+    ":mojo_ffi",
+  ]
 }
 
 # FOR_RELEASE: Replace this with ffi_new

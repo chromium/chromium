@@ -50,13 +50,45 @@ static_assertions::assert_type_eq_all!(raw_ffi::MojoMessageHandle, usize);
 #[derive(Debug)] // Do NOT derive Copy or Clone!
 pub struct UntypedHandle {
     pub(crate) handle_value: std::num::NonZeroUsize,
+    // Private member to force construction using the `wrap_raw_value`
+    // function, which requires explicit use of `unsafe`.
+    _private: (),
 }
 
 impl UntypedHandle {
     /// Create a new UntypedHandle from a raw value.
     /// SAFETY: The value must represent a live, unonwned handle.
     pub unsafe fn wrap_raw_value(raw_value: raw_ffi::MojoHandle) -> Self {
-        Self { handle_value: raw_value.try_into().unwrap() }
+        Self { handle_value: raw_value.try_into().unwrap(), _private: () }
+    }
+
+    // FOR RELEASE(https://crbug.com/458499013): We may want these two
+    // slice-as-pointer functions to move off UntypedHandle and into their
+    // own top level thing, e.g. slice_as_cxx_ptr and whatnot.
+    /// Convert a slice of UntypedHandles into a pointer to their underlying
+    /// handle values.
+    pub fn slice_as_ptr(handles: &[Self]) -> *const raw_ffi::MojoHandle {
+        // Passing nothing must be done explicitly:
+        // https://davidben.net/2024/01/15/empty-slices.html
+        if handles.is_empty() {
+            return std::ptr::null();
+        }
+        // `Self` is a repr(transparent) wrapper for `MojoHandle`, so the
+        // pointer cast is sound.
+        handles.as_ptr().cast()
+    }
+
+    /// Convert a mutable slice of UntypedHandles into a pointer to their
+    /// underlying handle values.
+    pub fn slice_as_mut_ptr(handles: &mut [Self]) -> *mut raw_ffi::MojoHandle {
+        // Passing nothing must be done explicitly:
+        // https://davidben.net/2024/01/15/empty-slices.html
+        if handles.is_empty() {
+            return std::ptr::null_mut();
+        }
+        // `Self` is a repr(transparent) wrapper for `MojoHandle`, so the
+        // pointer cast is sound.
+        handles.as_mut_ptr().cast()
     }
 }
 
@@ -72,17 +104,27 @@ impl Drop for UntypedHandle {
 
 /// A wrapper for the MojoMessageHandle C type which is guaranteed to be live.
 /// This type always represents a Mojo message object.
+///
+/// NOTE: Unlike other types of Mojo API objects, messages are NOT thread-safe
+/// and thus callers of message-related APIs must be careful to restrict usage
+/// of any given `MessageHandle` to a single thread at a time. In Rust, this is
+/// enforced by not implementing the `Sync` trait.
 #[repr(transparent)]
 #[derive(Debug)] // Do NOT derive Copy or Clone!
 pub struct MessageHandle {
     pub(crate) handle_value: std::num::NonZeroUsize,
+    // This member is equivalent to `impl !Sync`, which is currently unstable
+    _phantom_unsync: std::marker::PhantomData<std::cell::Cell<()>>,
 }
 
 impl MessageHandle {
     /// Create a new MessageHandle from a raw value.
     /// SAFETY: The value must represent a live, unonwned handle.
     pub unsafe fn wrap_raw_value(raw_value: raw_ffi::MojoHandle) -> Self {
-        Self { handle_value: raw_value.try_into().unwrap() }
+        Self {
+            handle_value: raw_value.try_into().unwrap(),
+            _phantom_unsync: std::marker::PhantomData,
+        }
     }
 }
 
