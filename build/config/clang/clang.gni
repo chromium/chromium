@@ -84,22 +84,6 @@ declare_args() {
   # Set to true to enable output of ThinLTO index and import files used for
   # creating a Chromium MLGO corpus in the ThinLTO case.
   lld_emit_indexes_and_imports = false
-
-  # Use explicit Clang header modules for libc++.
-  # We'll gradually expand supported platform of modules
-  # (https://crbug.com/40440396).
-  # For details on the current state of modules in Chromium see
-  # https://chromium.googlesource.com/chromium/src/+/main/docs/modules.md
-  #
-  # TODO(https://crbug.com/440260716): Enable for Cronet in AOSP once gn2bp
-  # supports copy targets.
-  use_clang_modules =
-      # Clang modules doesn't work with translation_unit used in codesearch
-      # pipeline http://b/436082487.
-      !enable_kythe_annotations && is_clang &&
-      clang_modules_platform_supported && using_tested_sysroot &&
-      # reclient and icecc don't handle headers in modulemap config.
-      !use_reclient && !is_cronet_for_aosp_build && cc_wrapper != "icecc"
 }
 
 # We don't really need to collect a corpus for the host tools, just for the target.
