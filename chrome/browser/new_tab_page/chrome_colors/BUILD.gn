@@ -4,6 +4,15 @@
 
 import("//build/compiled_action.gni")
 
+# Split into a separate target for build graph optimization.
+source_set("selected_colors_info") {
+  sources = [ "selected_colors_info.h" ]
+  public_deps = [
+    "//chrome/app:generated_resources",
+    "//skia",
+  ]
+}
+
 source_set("chrome_colors") {
   sources = [
     "chrome_colors_util.cc",
@@ -20,11 +29,10 @@ source_set("chrome_colors") {
 }
 
 executable("generate_colors_info") {
-  sources = [
-    "generate_colors_info.cc",
-    "selected_colors_info.h",
-  ]
+  sources = [ "generate_colors_info.cc" ]
   deps = [
+    ":selected_colors_info",
+
     # Avoid adding big generic deps as this target is build for host
     # toolchain. For example, see the problem with adding //chrome in
     # crbug.com/1000916.
@@ -39,4 +47,18 @@ compiled_action("generate_chrome_colors_info") {
   tool = ":generate_colors_info"
   outputs = [ "$target_gen_dir/generated_colors_info.h" ]
   args = rebase_path(outputs, root_build_dir)
+
+  # Restrict visibility to prevent accidental build dependency serialization.
+  # See http://crbug.com/477780634.
+  visibility = [
+    ":chrome_colors",
+    "//chrome/browser",
+    "//chrome/browser/signin:impl",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/profiles:impl",
+    "//chrome/browser/ui/profiles:unit_tests",
+    "//chrome/browser/ui/webui/cr_components/theme_color_picker",
+    "//chrome/browser/ui/webui/signin:profile_impl",
+    "//chrome/test:*",
+  ]
 }

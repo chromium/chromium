@@ -161,7 +161,10 @@ source_set("unit_tests") {
         "profile_colors_util_unittest.cc",
         "profile_customization_synced_theme_waiter_unittest.cc",
       ]
-      deps += [ "//ui/native_theme:test_support" ]
+      deps += [
+        "//chrome/browser/new_tab_page/chrome_colors:generate_chrome_colors_info",
+        "//ui/native_theme:test_support",
+      ]
     }
   }
 

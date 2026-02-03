@@ -201,6 +201,7 @@ source_set("signin_impl") {
 
     deps += [
       ":login_ui_service",
+      "//chrome/browser/new_tab_page/chrome_colors:selected_colors_info",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/sync",
       "//chrome/browser/ui/tabs:tab_strip",
@@ -493,7 +494,10 @@ source_set("unit_tests") {
       "dice_web_signin_intercept_handler_unittest.cc",
       "signin_utils_desktop_unittest.cc",
     ]
-    deps += [ "//chrome/browser/ui/profiles" ]
+    deps += [
+      "//chrome/browser/new_tab_page/chrome_colors:selected_colors_info",
+      "//chrome/browser/ui/profiles",
+    ]
   }
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and

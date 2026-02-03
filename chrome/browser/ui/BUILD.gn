@@ -299,6 +299,8 @@ static_library("ui") {
     "//chrome/browser/image_fetcher",
     "//chrome/browser/media/router:media_router_feature",
     "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
+    "//chrome/browser/new_tab_page/chrome_colors:generate_chrome_colors_info",
+    "//chrome/browser/new_tab_page/chrome_colors:selected_colors_info",
     "//chrome/browser/omnibox",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/page_content_annotations",
