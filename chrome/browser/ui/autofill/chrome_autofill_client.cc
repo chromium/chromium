@@ -1447,6 +1447,15 @@ void ChromeAutofillClient::CloseEntityImportBubble() {
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
+void ChromeAutofillClient::ShowAutofillAiLocalSaveNotification() {
+#if !BUILDFLAG(IS_ANDROID)
+  if (auto* controller = AutofillAiImportDataController::GetOrCreate(
+          web_contents(), GetAppLocale())) {
+    controller->ShowLocalSaveNotification();
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 void ChromeAutofillClient::OnActorTaskStateChange(
     actor::TaskId task_id,

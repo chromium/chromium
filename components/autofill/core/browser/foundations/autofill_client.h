@@ -693,6 +693,10 @@ class AutofillClient {
   // Hides the Autofill AI import bubble if it is currently showing.
   virtual void CloseEntityImportBubble();
 
+  // Shows a bubble informing the user that their data was saved locally because
+  // an upload request to the Wallet server was unsuccessful.
+  virtual void ShowAutofillAiLocalSaveNotification();
+
   virtual void ShowEmailVerifiedToast();
 
   // May return null on platforms where OTPs are not supported.

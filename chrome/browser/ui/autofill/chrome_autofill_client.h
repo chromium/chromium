@@ -237,8 +237,9 @@ class ChromeAutofillClient : public ContentAutofillClient {
       EntityInstance new_entity,
       std::optional<EntityInstance> old_entity,
       bool save_is_synchronous,
-      EntityImportPromptResultCallback prompt_result_callback) override;
-  void CloseEntityImportBubble() override;
+      EntityImportPromptResultCallback prompt_result_callback) final;
+  void CloseEntityImportBubble() final;
+  void ShowAutofillAiLocalSaveNotification() final;
   void ShowEmailVerifiedToast() final;
 
   // TODO(crbug.com/407666146): Create a test API.

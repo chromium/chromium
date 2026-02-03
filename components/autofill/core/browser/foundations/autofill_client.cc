@@ -304,6 +304,10 @@ void AutofillClient::CloseEntityImportBubble() {
   NOTIMPLEMENTED();
 }
 
+void AutofillClient::ShowAutofillAiLocalSaveNotification() {
+  NOTIMPLEMENTED();
+}
+
 void AutofillClient::ShowEmailVerifiedToast() {
   NOTIMPLEMENTED();
 }
