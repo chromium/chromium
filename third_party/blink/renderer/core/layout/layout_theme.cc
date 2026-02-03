@@ -271,6 +271,17 @@ void LayoutTheme::AdjustStyle(const Element* element,
     return;
   }
 
+  AppearanceValue appearance = AdjustAppearanceWithAuthorStyle(
+      AdjustAppearanceWithElementType(builder, element), builder);
+  builder.SetEffectiveAppearance(appearance);
+  DCHECK_NE(appearance, AppearanceValue::kAuto);
+
+  if (RuntimeEnabledFeatures::FixMarkerSuppressionForAppearanceAutoEnabled() &&
+      appearance == AppearanceValue::kNone &&
+      original_appearance == AppearanceValue::kAuto) {
+    return;
+  }
+
   // Force inline and table display styles to be inline-block (except for table-
   // which is block)
   if (builder.Display() == EDisplay::kInline ||
@@ -282,16 +293,13 @@ void LayoutTheme::AdjustStyle(const Element* element,
       builder.Display() == EDisplay::kTableColumnGroup ||
       builder.Display() == EDisplay::kTableColumn ||
       builder.Display() == EDisplay::kTableCell ||
-      builder.Display() == EDisplay::kTableCaption)
+      builder.Display() == EDisplay::kTableCaption) {
     builder.SetDisplay(EDisplay::kInlineBlock);
-  else if (builder.Display() == EDisplay::kListItem ||
-           builder.Display() == EDisplay::kTable)
+  } else if (builder.Display() == EDisplay::kListItem ||
+             builder.Display() == EDisplay::kTable) {
     builder.SetDisplay(EDisplay::kBlock);
+  }
 
-  AppearanceValue appearance = AdjustAppearanceWithAuthorStyle(
-      AdjustAppearanceWithElementType(builder, element), builder);
-  builder.SetEffectiveAppearance(appearance);
-  DCHECK_NE(appearance, AppearanceValue::kAuto);
   if (appearance == AppearanceValue::kNone) {
     return;
   }

@@ -708,7 +708,8 @@
       name: "AvoidMergingStyledSpanWithSiblings",
       status: "stable",
     },
-    { // If the start and end positions are the same in MoveParagraph,
+    {
+      // If the start and end positions are the same in MoveParagraph,
       // there is no need to collapse the whitespace between them.
       // https://crbug.com/406053617
       name: "AvoidNormalizingVisiblePositionsWhenStartEqualsEnd",
@@ -2597,6 +2598,13 @@
     },
     {
       name: "FixLinebreakForPreTag",
+      status: "stable",
+    },
+    {
+      // This fixes the suppression of markers for <details> and
+      // list items for appearance:auto.
+      // This was added in M146 and can be removed after M148.
+      name: "FixMarkerSuppressionForAppearanceAuto",
       status: "stable",
     },
     {
