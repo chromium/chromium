@@ -23,6 +23,7 @@ class AutocompleteState {
     private @Nullable String mAdditionalText;
     private int mSelStart;
     private int mSelEnd;
+    private @Nullable String mSiteSearchLabel;
 
     public AutocompleteState(AutocompleteState a) {
         copyFrom(a);
@@ -33,13 +34,15 @@ class AutocompleteState {
             @Nullable String autocompleteText,
             @Nullable String additionalText,
             int selStart,
-            int selEnd) {
+            int selEnd,
+            @Nullable String siteSearchLabel) {
         set(
                 userText,
                 TextUtils.isEmpty(autocompleteText) ? null : autocompleteText,
                 TextUtils.isEmpty(additionalText) ? null : additionalText,
                 selStart,
-                selEnd);
+                selEnd,
+                siteSearchLabel);
     }
 
     @Initializer
@@ -48,16 +51,24 @@ class AutocompleteState {
             @Nullable String autocompleteText,
             @Nullable String additionalText,
             int selStart,
-            int selEnd) {
+            int selEnd,
+            @Nullable String siteSearchLabel) {
         mUserText = userText;
         mAutocompleteText = autocompleteText;
         mAdditionalText = additionalText;
         mSelStart = selStart;
         mSelEnd = selEnd;
+        mSiteSearchLabel = siteSearchLabel;
     }
 
     public void copyFrom(AutocompleteState a) {
-        set(a.mUserText, a.mAutocompleteText, a.mAdditionalText, a.mSelStart, a.mSelEnd);
+        set(
+                a.mUserText,
+                a.mAutocompleteText,
+                a.mAdditionalText,
+                a.mSelStart,
+                a.mSelEnd,
+                a.mSiteSearchLabel);
     }
 
     public String getUserText() {
@@ -70,6 +81,10 @@ class AutocompleteState {
 
     public @Nullable String getAdditionalText() {
         return mAdditionalText;
+    }
+
+    public @Nullable String getSiteSearchLabel() {
+        return mSiteSearchLabel;
     }
 
     /**
@@ -183,7 +198,8 @@ class AutocompleteState {
         return mUserText.equals(a.mUserText)
                 && Objects.equals(mAutocompleteText, a.mAutocompleteText)
                 && mSelStart == a.mSelStart
-                && mSelEnd == a.mSelEnd;
+                && mSelEnd == a.mSelEnd
+                && Objects.equals(mSiteSearchLabel, a.mSiteSearchLabel);
     }
 
     @Override
@@ -191,17 +207,19 @@ class AutocompleteState {
         return mUserText.hashCode() * 2
                 + (mAutocompleteText != null ? mAutocompleteText.hashCode() : 0) * 3
                 + mSelStart * 5
-                + mSelEnd * 7;
+                + mSelEnd * 7
+                + (mSiteSearchLabel != null ? mSiteSearchLabel.hashCode() : 0) * 11;
     }
 
     @Override
     public String toString() {
         return String.format(
                 Locale.US,
-                "AutocompleteState {[%s][%s] [%d-%d]}",
+                "AutocompleteState {[%s][%s] [%d-%d] [%s]}",
                 mUserText,
                 mAutocompleteText,
                 mSelStart,
-                mSelEnd);
+                mSelEnd,
+                mSiteSearchLabel);
     }
 }
