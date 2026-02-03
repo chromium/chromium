@@ -192,8 +192,6 @@ ImageBitmapRenderingContext::GetOrCreateResourceProviderForOffscreenCanvas() {
             SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
             gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, Host());
   } else if (static_cast<OffscreenCanvas*>(Host())->HasPlaceholderCanvas()) {
-    base::WeakPtr<CanvasResourceDispatcher> dispatcher_weakptr =
-        Host()->GetOrCreateResourceDispatcher()->GetWeakPtr();
     resource_provider_for_offscreen_canvas_ =
         CanvasResourceProvider::CreateSharedImageProviderForSoftwareCompositor(
             Host()->Size(), format, alpha_type, color_space,
