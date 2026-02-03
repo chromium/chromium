@@ -595,6 +595,7 @@ IN_PROC_BROWSER_TEST_P(TestAPITestWithContextType, ListenOnceWithoutPromise) {
   ResultCatcher result_catcher;
   static constexpr char kBackgroundJs[] =
       R"(let createdTab;
+         let invokedCalls = 0;
          chrome.test.runTests([
            async function performListenOnceWithoutPromise() {
              // Set up a `listenOnce` listener. The test should not complete
@@ -623,6 +624,29 @@ IN_PROC_BROWSER_TEST_P(TestAPITestWithContextType, ListenOnceWithoutPromise) {
              // The listener for tabs.onCreated also should have been removed.
              chrome.test.assertFalse(chrome.tabs.onCreated.hasListeners());
 
+             chrome.test.succeed();
+           },
+           async function multiListeners() {
+             // Test that listenOnce() adds a callback to the pending callback
+             // count, so the test will only pass once each listener is
+             // validated.
+             chrome.test.listenOnce(chrome.tabs.onCreated, function() {
+               ++invokedCalls;
+             });
+             chrome.test.listenOnce(chrome.tabs.onMoved, function() {
+               ++invokedCalls;
+             });
+             // Trigger the first listener. The test shouldn't finish, since
+             // there's still a pending callback with the second listener.
+             let tab = await chrome.tabs.create({});
+             chrome.test.assertTrue(!!tab);
+             chrome.test.assertEq(1, invokedCalls);
+             // Move the tab to the previous index; this will trigger the second
+             // listener, ending the test.
+             chrome.tabs.move(tab.id, {index: 0});
+           },
+           async function verifyMultiListenerState() {
+             chrome.test.assertEq(2, invokedCalls);
              chrome.test.succeed();
            },
          ]);)";
