@@ -3698,6 +3698,12 @@ public class StripLayoutHelper
             // Passes startQueuedCloseAnimations as false to prevent clobbering the close animations
             // for any other simultaneously removed views.
             finishAnimations(/* startQueuedCloseAnimations= */ false);
+
+            // TODO(crbug.com/450076798): Unify closing tabs + closing group titles logic.
+            // Set initial state.
+            for (StripLayoutView view : mClosingTabs) view.setIsDying(true);
+            for (StripLayoutView view : mClosingGroupTitles) view.setIsDying(true);
+
             mUpdateHost.requestUpdate();
         }
     }
@@ -3705,11 +3711,6 @@ public class StripLayoutHelper
     private void queueCloseAnimationsIfAny() {
         if (!mCloseAnimationsRequested) return;
         mCloseAnimationsRequested = false;
-
-        // TODO(crbug.com/450076798): Unify closing tabs + closing group titles logic.
-        // Set initial state.
-        for (StripLayoutView view : mClosingTabs) view.setIsDying(true);
-        for (StripLayoutView view : mClosingGroupTitles) view.setIsDying(true);
 
         // Create animators.
         List<Animator> animationList = getTabClosingAnimators();
