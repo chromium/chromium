@@ -13,16 +13,16 @@ namespace site_engagement {
 // tools/metrics/histograms/enums.xml.
 // TODO(calamity): Document each of these engagement types.
 enum class EngagementType {
-  kNavigation,
-  kKeypress,
-  kMouse,
-  kTouchGesture,
-  kScroll,
-  kMediaHidden,
-  kMediaVisible,
-  kWebappShortcutLaunch,
-  kFirstDailyEngagement,
-  kNotificationInteraction,
+  kNavigation = 0,
+  kKeypress = 1,
+  kMouse = 2,
+  kTouchGesture = 3,
+  kScroll = 4,
+  kMediaHidden = 5,
+  kMediaVisible = 6,
+  kWebappShortcutLaunch = 7,
+  kFirstDailyEngagement = 8,
+  kNotificationInteraction = 9,
   kLast,
 };
 
