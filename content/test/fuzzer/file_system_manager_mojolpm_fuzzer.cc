@@ -178,11 +178,10 @@ void FileSystemManagerTestcase::SetUpOnUIThread(
     // Process IDs must be greater than 0.
     uint32_t process_id = i + 1;
 
-    // TODO(crbug.com/379869738) Remove FromUnsafeValue.
-    file_system_manager_impls_[i] = std::make_unique<FileSystemManagerImpl>(
-        ChildProcessId::FromUnsafeValue(process_id), file_system_context_,
-        blob_storage_context_);
     p->Add(process_id, &browser_context_);
+    file_system_manager_impls_[i] = std::make_unique<FileSystemManagerImpl>(
+        p->CreateHandle(process_id), file_system_context_,
+        blob_storage_context_);
   }
 
   GetFuzzerTaskRunner()->PostTask(FROM_HERE, std::move(done_closure));

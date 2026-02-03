@@ -96,8 +96,15 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
     // the capability to upload the requested file.
     bool CanReadFile(const base::FilePath& file);
 
-    // Explicit read permissions check for FileSystemURL specified files.
+    // Explicit permissions checks for FileSystemURL specified files.
     bool CanReadFileSystemFile(const storage::FileSystemURL& url);
+    bool CanWriteFileSystemFile(const storage::FileSystemURL& url);
+    bool CanCreateFileSystemFile(const storage::FileSystemURL& url);
+    bool CanDeleteFileSystemFile(const storage::FileSystemURL& url);
+    bool CanMoveFileSystemFile(const storage::FileSystemURL& src_url,
+                               const storage::FileSystemURL& dest_url);
+    bool CanCopyFileSystemFile(const storage::FileSystemURL& src_url,
+                               const storage::FileSystemURL& dest_url);
 
     // Returns true if the process is permitted to read and modify the data for
     // the given `origin`. For more details, see

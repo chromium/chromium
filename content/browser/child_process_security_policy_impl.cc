@@ -367,6 +367,58 @@ bool ChildProcessSecurityPolicyImpl::Handle::CanReadFileSystemFile(
   return policy->CanReadFileSystemFile(child_id_, url);
 }
 
+bool ChildProcessSecurityPolicyImpl::Handle::CanWriteFileSystemFile(
+    const storage::FileSystemURL& url) {
+  if (!child_id_) {
+    return false;
+  }
+
+  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
+  return policy->CanWriteFileSystemFile(child_id_, url);
+}
+
+bool ChildProcessSecurityPolicyImpl::Handle::CanCreateFileSystemFile(
+    const storage::FileSystemURL& url) {
+  if (!child_id_) {
+    return false;
+  }
+
+  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
+  return policy->CanCreateFileSystemFile(child_id_, url);
+}
+
+bool ChildProcessSecurityPolicyImpl::Handle::CanDeleteFileSystemFile(
+    const storage::FileSystemURL& url) {
+  if (!child_id_) {
+    return false;
+  }
+
+  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
+  return policy->CanDeleteFileSystemFile(child_id_, url);
+}
+
+bool ChildProcessSecurityPolicyImpl::Handle::CanMoveFileSystemFile(
+    const storage::FileSystemURL& src_url,
+    const storage::FileSystemURL& dest_url) {
+  if (!child_id_) {
+    return false;
+  }
+
+  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
+  return policy->CanMoveFileSystemFile(child_id_, src_url, dest_url);
+}
+
+bool ChildProcessSecurityPolicyImpl::Handle::CanCopyFileSystemFile(
+    const storage::FileSystemURL& src_url,
+    const storage::FileSystemURL& dest_url) {
+  if (!child_id_) {
+    return false;
+  }
+
+  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
+  return policy->CanCopyFileSystemFile(child_id_, src_url, dest_url);
+}
+
 bool ChildProcessSecurityPolicyImpl::Handle::CanAccessDataForOrigin(
     const url::Origin& origin) {
   if (!child_id_) {

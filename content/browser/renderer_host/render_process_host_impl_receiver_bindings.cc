@@ -230,7 +230,8 @@ void RenderProcessHostImpl::RegisterMojoInterfaces() {
 #endif
 
   file_system_manager_impl_.reset(new FileSystemManagerImpl(
-      GetID(), storage_partition_impl_->GetFileSystemContext(),
+      ChildProcessSecurityPolicyImpl::GetInstance()->CreateHandle(GetID()),
+      storage_partition_impl_->GetFileSystemContext(),
       ChromeBlobStorageContext::GetFor(GetBrowserContext())));
 
   AddUIThreadInterface(

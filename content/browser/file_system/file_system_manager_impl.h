@@ -18,6 +18,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/services/filesystem/public/mojom/types.mojom.h"
+#include "content/browser/child_process_security_policy_impl.h"
 #include "content/common/content_export.h"
 #include "content/public/common/child_process_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -51,11 +52,14 @@ class ChromeBlobStorageContext;
 class CONTENT_EXPORT FileSystemManagerImpl
     : public blink::mojom::FileSystemManager {
  public:
-  // Constructed and held by the RenderFrameHost and render process host on
-  // the UI thread. Used by render frames (via the RenderFrameHost), workers
-  // and pepper (via the render process host).
+  // Constructed and held by the RenderFrameHost and RenderProcessHost on
+  // the UI thread. Used by render frames (via the RenderFrameHost) and workers
+  // (via RenderProcessHost).
+  // `security_policy_handle` indicates which renderer process this is for and
+  // ensures that the corresponding SecurityState is not deleted while this
+  // instance may still query it.
   FileSystemManagerImpl(
-      ChildProcessId process_id,
+      ChildProcessSecurityPolicyImpl::Handle security_policy_handle,
       scoped_refptr<storage::FileSystemContext> file_system_context,
       scoped_refptr<ChromeBlobStorageContext> blob_storage_context);
 
@@ -296,10 +300,14 @@ class CONTENT_EXPORT FileSystemManagerImpl
       OperationListenerID listener_id);
   void OnConnectionErrorForOpListeners(OperationListenerID listener_id);
 
-  const ChildProcessId process_id_;
   const scoped_refptr<storage::FileSystemContext> context_;
   const scoped_refptr<ChromeBlobStorageContext> blob_storage_context_;
   std::unique_ptr<storage::FileSystemOperationRunner> operation_runner_;
+
+  // Storing a ChildProcessSecurityPolicy::Handle for this instances's renderer
+  // process ensures that the corresponding SecurityState cannot be deleted
+  // while it is still needed.
+  ChildProcessSecurityPolicyImpl::Handle security_policy_handle_;
 
   mojo::ReceiverSet<blink::mojom::FileSystemManager, blink::StorageKey>
       receivers_;
