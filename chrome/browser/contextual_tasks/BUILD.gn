@@ -159,6 +159,7 @@ source_set("ui") {
       "//components/contextual_tasks/public:feature_list",
       "//content/public/browser",
       "//content/public/common",
+      "//third_party/omnibox_proto",
       "//ui/webui",
       "//ui/webui/resources/cr_components/composebox:mojo_bindings",
       "//url",

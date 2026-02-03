@@ -222,6 +222,15 @@ class MockContextualTasksUiService
               (override));
 
   MOCK_METHOD(GURL, GetDefaultAiPageUrl, (), (override));
+  MOCK_METHOD(GURL,
+              GetDefaultAiPageUrlForTask,
+              (const base::Uuid& task_id),
+              (override));
+  MOCK_METHOD(void,
+              SetInitialEntryPointForTask,
+              (const base::Uuid& task_id,
+               omnibox::ChromeAimEntryPoint entry_point),
+              (override));
 };
 
 class MockLensOverlayGen204Controller : public LensOverlayGen204Controller {

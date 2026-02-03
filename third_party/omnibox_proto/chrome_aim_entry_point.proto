@@ -4,11 +4,11 @@
 
 syntax = 'proto2';
 
+package omnibox;
+
 option optimize_for = LITE_RUNTIME;
 option java_package = 'org.chromium.components.omnibox';
 option java_outer_classname = 'ChromeAimEntryPointProto';
-
-package omnibox;
 
 // AIM entry points.
 enum ChromeAimEntryPoint {
@@ -55,4 +55,7 @@ enum ChromeAimEntryPoint {
 
   // AIM is entered from the NTP Threads.
   DESKTOP_CHROME_NTP_THREADS_ENTRY_POINT = 129;
+
+  // AIM is entered from toolbar button to enter cobrowsing mode in Chrome.
+  DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON = 130;
 }

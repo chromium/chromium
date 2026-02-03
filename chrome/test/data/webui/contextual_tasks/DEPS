@@ -1,3 +1,4 @@
 include_rules = [
   "+components/contextual_tasks/public/features.h",
+  "+third_party/omnibox_proto/chrome_aim_entry_point.pb.h",
 ]

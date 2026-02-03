@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class BrowserWindowInterface;
@@ -89,7 +90,9 @@ class ContextualTasksSidePanelCoordinator : public TabStripModelObserver,
 
   // Show the side panel. If |transition_from_tab| is true, trigger the side
   // panel content to animate from the active tab content's bounds.
-  void Show(bool transition_from_tab = false);
+  void Show(bool transition_from_tab = false,
+            omnibox::ChromeAimEntryPoint entry_point =
+                omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT);
 
   // Close the side panel.
   void Close();
@@ -145,11 +148,11 @@ class ContextualTasksSidePanelCoordinator : public TabStripModelObserver,
   ContextualTasksSidePanelCoordinator::WebContentsCacheItem*
   GetWebContentsCacheItemForWebContents(content::WebContents* web_contents);
 
- private:
-  friend class ContextualTasksSidePanelCoordinatorInteractiveUiTest;
-
   // Get the task associated with the active tab.
   std::optional<ContextualTask> GetCurrentTask();
+
+ private:
+  friend class ContextualTasksSidePanelCoordinatorInteractiveUiTest;
 
   // Hide or show side panel base on open state of the current task.
   void UpdateSidePanelVisibility();
@@ -180,7 +183,7 @@ class ContextualTasksSidePanelCoordinator : public TabStripModelObserver,
   content::WebContents* GetSidePanelWebContentsForActiveTab();
 
   // Create a cached WebContents if one does not exist for the current task.
-  void MaybeCreateCachedWebContents();
+  void MaybeCreateCachedWebContents(omnibox::ChromeAimEntryPoint entry_point);
 
   // Create a cached WebContents for a task. For tests only.
   void CreateCachedWebContentsForTesting(base::Uuid task_id, bool is_open);

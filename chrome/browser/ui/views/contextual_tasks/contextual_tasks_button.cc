@@ -26,6 +26,7 @@
 #include "components/prefs/pref_member.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 #include "ui/actions/actions.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -89,26 +90,27 @@ ContextualTasksButton::ContextualTasksButton(
 ContextualTasksButton::~ContextualTasksButton() = default;
 
 void ContextualTasksButton::OnButtonPress() {
-  const auto* coordinator =
+  auto* coordinator =
       contextual_tasks::ContextualTasksSidePanelCoordinator::From(
           browser_window_interface_);
   CHECK(coordinator);
+  // TODO(crbug.com/480218994): Clean up the ToggleContextualTasksSidePanel
+  // browser action, since the logic is now handled in this method.
   if (coordinator->IsSidePanelOpenForContextualTask()) {
     base::RecordAction(base::UserMetricsAction(
         "ContextualTasks.ToolbarButton.UserAction.CloseSidePanel"));
     base::UmaHistogramBoolean(
         "ContextualTasks.ToolbarButton.UserAction.CloseSidePanel", true);
+    coordinator->Close();
   } else {
     base::RecordAction(base::UserMetricsAction(
         "ContextualTasks.ToolbarButton.UserAction.OpenSidePanel"));
     base::UmaHistogramBoolean(
         "ContextualTasks.ToolbarButton.UserAction.OpenSidePanel", true);
+    coordinator->Show(
+        /*transition_from_tab=*/false,
+        omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON);
   }
-
-  actions::ActionManager::Get()
-      .FindAction(kActionSidePanelShowContextualTasks,
-                  browser_window_interface_->GetActions()->root_action_item())
-      ->InvokeAction();
 }
 
 void ContextualTasksButton::OnPinStateChanged() {

@@ -10,6 +10,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/uuid.h"
@@ -144,6 +145,15 @@ EntrypointSource ConvertContextualSearchSourceToEntrypointSource(
     case contextual_search::ContextualSearchSource::kUnknown:
       return EntrypointSource::kFromWeb;
   }
+}
+
+GURL AppendAimEntryPointParam(GURL url,
+                              omnibox::ChromeAimEntryPoint entry_point) {
+  if (entry_point != omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT) {
+    return net::AppendOrReplaceQueryParameter(
+        url, "aep", base::NumberToString(static_cast<int>(entry_point)));
+  }
+  return url;
 }
 
 }  // namespace
@@ -677,12 +687,32 @@ bool ContextualTasksUiService::CookieJarContainsPrimaryAccount() {
   return contextual_tasks::CookieJarContainsPrimaryAccount(identity_manager_);
 }
 
+omnibox::ChromeAimEntryPoint
+ContextualTasksUiService::GetInitialEntryPointForTask(
+    const base::Uuid& task_id) {
+  auto it = task_id_to_entry_point_override_.find(task_id);
+  if (it != task_id_to_entry_point_override_.end()) {
+    return it->second;
+  }
+  return omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT;
+}
+
 GURL ContextualTasksUiService::GetContextualTaskUrlForTask(
     const base::Uuid& task_id) {
   GURL url(chrome::kChromeUIContextualTasksURL);
   url = net::AppendQueryParameter(url, kTaskQueryParam,
                                   task_id.AsLowercaseString());
-  return url;
+  omnibox::ChromeAimEntryPoint entry_point =
+      GetInitialEntryPointForTask(task_id);
+  return AppendAimEntryPointParam(url, entry_point);
+}
+
+void ContextualTasksUiService::SetInitialEntryPointForTask(
+    const base::Uuid& task_id,
+    omnibox::ChromeAimEntryPoint entry_point) {
+  if (entry_point != omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT) {
+    task_id_to_entry_point_override_[task_id] = entry_point;
+  }
 }
 
 std::optional<GURL> ContextualTasksUiService::GetInitialUrlForTask(
@@ -691,7 +721,9 @@ std::optional<GURL> ContextualTasksUiService::GetInitialUrlForTask(
   if (it != task_id_to_creation_url_.end()) {
     GURL url = it->second;
     task_id_to_creation_url_.erase(it);
-    return std::move(url);
+    omnibox::ChromeAimEntryPoint entry_point =
+        GetInitialEntryPointForTask(uuid);
+    return AppendAimEntryPointParam(url, entry_point);
   }
   return std::nullopt;
 }
@@ -700,45 +732,54 @@ void ContextualTasksUiService::GetThreadUrlFromTaskId(
     const base::Uuid& task_id,
     base::OnceCallback<void(GURL)> callback) {
   contextual_tasks_service_->GetTaskById(
-      task_id, base::BindOnce(
-                   [](base::WeakPtr<ContextualTasksUiService> service,
-                      base::OnceCallback<void(GURL)> callback,
-                      std::optional<ContextualTask> task) {
-                     if (!service) {
-                       std::move(callback).Run(GURL());
-                       return;
-                     }
+      task_id,
+      base::BindOnce(
+          [](base::WeakPtr<ContextualTasksUiService> service,
+             const base::Uuid& task_id, base::OnceCallback<void(GURL)> callback,
+             std::optional<ContextualTask> task) {
+            if (!service) {
+              std::move(callback).Run(GURL());
+              return;
+            }
 
-                     GURL url = service->GetDefaultAiPageUrl();
-                     if (!task) {
-                       std::move(callback).Run(url);
-                       return;
-                     }
+            GURL url = service->GetDefaultAiPageUrlForTask(task_id);
+            if (!task) {
+              std::move(callback).Run(url);
+              return;
+            }
 
-                     std::optional<Thread> thread = task->GetThread();
-                     if (!thread) {
-                       std::move(callback).Run(url);
-                       return;
-                     }
+            std::optional<Thread> thread = task->GetThread();
+            if (!thread) {
+              std::move(callback).Run(url);
+              return;
+            }
 
-                     // Attach the thread ID and the most recent turn ID to the
-                     // URL. A query parameter needs to be present, but its
-                     // value is not used for continued threads.
-                     url = net::AppendQueryParameter(url, "q", thread->title);
-                     url = net::AppendQueryParameter(
-                         url, "mstk", thread->conversation_turn_id);
-                     url = net::AppendQueryParameter(url, "mtid",
-                                                     thread->server_id);
+            // Attach the thread ID and the most recent turn ID to the
+            // URL. A query parameter needs to be present, but its
+            // value is not used for continued threads.
+            url = net::AppendQueryParameter(url, "q", thread->title);
+            url = net::AppendQueryParameter(url, "mstk",
+                                            thread->conversation_turn_id);
+            url = net::AppendQueryParameter(url, "mtid", thread->server_id);
 
-                     std::move(callback).Run(url);
-                   },
-                   weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+            std::move(callback).Run(url);
+          },
+          weak_ptr_factory_.GetWeakPtr(), task_id, std::move(callback)));
 }
 
 GURL ContextualTasksUiService::GetDefaultAiPageUrl() {
-  return lens::AppendCommonSearchParametersToURL(
+  GURL url = lens::AppendCommonSearchParametersToURL(
       GURL(GetContextualTasksAiPageUrl()),
       g_browser_process->GetApplicationLocale(), false);
+  return url;
+}
+
+GURL ContextualTasksUiService::GetDefaultAiPageUrlForTask(
+    const base::Uuid& task_id) {
+  GURL url = GetDefaultAiPageUrl();
+  omnibox::ChromeAimEntryPoint entry_point =
+      GetInitialEntryPointForTask(task_id);
+  return AppendAimEntryPointParam(url, entry_point);
 }
 
 void ContextualTasksUiService::OnTaskChanged(
