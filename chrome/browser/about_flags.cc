@@ -10037,6 +10037,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          chrome::android::kTabStripEmptySpaceContextMenuAndroid)},
 
+    {"tab-strip-glic-button-android",
+     flag_descriptions::kTabStripGlicButtonAndroidName,
+     flag_descriptions::kTabStripGlicButtonAndroidDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kTabStripGlicButtonAndroid)},
+
     {"tab-switcher-group-suggestions-android",
      flag_descriptions::kTabSwitcherGroupSuggestionsAndroidName,
      flag_descriptions::kTabSwitcherGroupSuggestionsAndroidDescription,

@@ -13937,6 +13937,7 @@ from previous Chrome versions.
   <int value="-147104075" label="ImprovedPasswordChangeService:enabled"/>
   <int value="-146780296" label="EstablishGpuChannelAsync:enabled"/>
   <int value="-146552997" label="enable-affiliation-based-matching"/>
+  <int value="-146482646" label="TabStripGlicButtonAndroid:enabled"/>
   <int value="-146315671" label="PrivacyAdvisor:enabled"/>
   <int value="-146032762"
       label="CrOSLateBootAudioOffloadCrasDSPToSOF:disabled"/>
@@ -14014,6 +14015,7 @@ from previous Chrome versions.
   <int value="-119055644" label="GenericSensor:enabled"/>
   <int value="-118993417" label="TLS13HardeningForLocalAnchors:disabled"/>
   <int value="-118897826" label="IntensiveWakeUpThrottling:enabled"/>
+  <int value="-118545287" label="TabStripGlicButtonAndroid:disabled"/>
   <int value="-116829440" label="WebNNCoreMLExplicitGPUOrNPU:disabled"/>
   <int value="-116692797" label="HTTPAuthCommittedInterstitials:enabled"/>
   <int value="-115834377" label="EnableUnifiedMultiDeviceSetup:disabled"/>
