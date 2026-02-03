@@ -5,7 +5,6 @@
 import 'chrome://contextual-tasks/top_toolbar.js';
 import 'chrome://contextual-tasks/sources_menu.js';
 
-import {ContextType} from 'chrome://contextual-tasks/contextual_tasks.mojom-webui.js';
 import {BrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
 import type {ContextualTasksFaviconGroupElement} from 'chrome://contextual-tasks/favicon_group.js';
 import type {SourcesMenuElement} from 'chrome://contextual-tasks/sources_menu.js';
@@ -93,10 +92,11 @@ suite('TopToolbarTest', () => {
     assertFalse(!!sourcesButton.shadowRoot.querySelector('.favicon-item'));
 
     topToolbar.contextInfos = [{
-      title: 'Tab 1',
-      url: {url: 'https://example.com'},
-      type: ContextType.kTab,
-      tabId: 1,
+      tab: {
+        title: 'Tab 1',
+        url: {url: 'https://example.com'},
+        tabId: 1,
+      },
     }];
     await microtasksFinished();
 
@@ -110,10 +110,9 @@ suite('TopToolbarTest', () => {
     const tab = {
       title: 'Tab 1',
       url: {url: 'https://example.com'},
-      type: ContextType.kTab,
       tabId: 1,
     };
-    topToolbar.contextInfos = [tab];
+    topToolbar.contextInfos = [{tab: tab}];
     await microtasksFinished();
 
     const sourcesButton =
@@ -149,11 +148,9 @@ suite('TopToolbarTest', () => {
   test('handles file sources menu interactions', async () => {
     const file = {
       title: 'Sample Document',
-      type: ContextType.kPdf,
       url: {url: 'https://example/sample.pdf'},
-      tabId: 0,
     };
-    topToolbar.contextInfos = [file];
+    topToolbar.contextInfos = [{file: file}];
     await microtasksFinished();
 
     const sourcesButton =
@@ -178,17 +175,15 @@ suite('TopToolbarTest', () => {
     fileButton.click();
 
     const url = await proxy.handler.whenCalled('onFileClickedFromSourcesMenu');
-    assertEquals(url, file.url);
+    assertDeepEquals(url, file.url);
   });
 
   test('handles image sources menu interactions', async () => {
     const image = {
       title: 'Test Image',
-      type: ContextType.kImage,
       url: {url: 'https://www.example.com/example.jpeg'},
-      tabId: 0,
     };
-    topToolbar.contextInfos = [image];
+    topToolbar.contextInfos = [{image: image}];
     await microtasksFinished();
 
     const sourcesButton =
@@ -215,7 +210,7 @@ suite('TopToolbarTest', () => {
     imageButton.click();
 
     const url = await proxy.handler.whenCalled('onImageClickedFromSourcesMenu');
-    assertEquals(url, image.url);
+    assertDeepEquals(url, image.url);
   });
 
   test('handles more menu interactions', async () => {
@@ -292,22 +287,25 @@ suite('TopToolbarTest', () => {
 
     topToolbar.contextInfos = [
       {
-        title: 'Tab 1',
-        url: {url: 'https://example.com/1'},
-        type: ContextType.kTab,
-        tabId: 1,
+        tab: {
+          title: 'Tab 1',
+          url: {url: 'https://example.com/1'},
+          tabId: 1,
+        },
       },
       {
-        title: 'Tab 2',
-        url: {url: 'https://example.com/2'},
-        type: ContextType.kTab,
-        tabId: 2,
+        tab: {
+          title: 'Tab 2',
+          url: {url: 'https://example.com/2'},
+          tabId: 2,
+        },
       },
       {
-        title: 'Tab 3',
-        url: {url: 'https://example.com/3'},
-        type: ContextType.kTab,
-        tabId: 3,
+        tab: {
+          title: 'Tab 3',
+          url: {url: 'https://example.com/3'},
+          tabId: 3,
+        },
       },
     ];
     await microtasksFinished();
@@ -326,28 +324,32 @@ suite('TopToolbarTest', () => {
 
     topToolbar.contextInfos = [
       {
-        title: 'Tab 1',
-        url: {url: 'https://example.com/1'},
-        type: ContextType.kTab,
-        tabId: 1,
+        tab: {
+          title: 'Tab 1',
+          url: {url: 'https://example.com/1'},
+          tabId: 1,
+        },
       },
       {
-        title: 'Tab 2',
-        url: {url: 'https://example.com/2'},
-        type: ContextType.kTab,
-        tabId: 2,
+        tab: {
+          title: 'Tab 2',
+          url: {url: 'https://example.com/2'},
+          tabId: 2,
+        },
       },
       {
-        title: 'Tab 3',
-        url: {url: 'https://example.com/3'},
-        type: ContextType.kTab,
-        tabId: 3,
+        tab: {
+          title: 'Tab 3',
+          url: {url: 'https://example.com/3'},
+          tabId: 3,
+        },
       },
       {
-        title: 'Tab 4',
-        url: {url: 'https://example.com/4'},
-        type: ContextType.kTab,
-        tabId: 4,
+        tab: {
+          title: 'Tab 4',
+          url: {url: 'https://example.com/4'},
+          tabId: 4,
+        },
       },
     ];
     await microtasksFinished();

@@ -63,17 +63,14 @@ export class SourcesMenuElement extends CrLitElement {
 
     const currentTarget = e.currentTarget as HTMLElement;
     const index = Number(currentTarget.dataset['index']);
-    const tab = this.contextInfos[index];
+    const tab = this.contextInfos[index]?.tab;
     assert(tab);
 
     chrome.metricsPrivate.recordUserAction(
         'ContextualTasks.WebUI.UserAction.TabFromSourcesMenuClicked');
     chrome.metricsPrivate.recordBoolean(
         'ContextualTasks.WebUI.UserAction.TabFromSourcesMenuClicked', true);
-    if (tab.tabId !== null) {
-      this.browserProxy_.handler.onTabClickedFromSourcesMenu(
-          tab.tabId, tab.url);
-    }
+    this.browserProxy_.handler.onTabClickedFromSourcesMenu(tab.tabId, tab.url);
   }
 
   protected onFileClick_(e: Event) {
@@ -81,7 +78,7 @@ export class SourcesMenuElement extends CrLitElement {
 
     const currentTarget = e.currentTarget as HTMLElement;
     const index = Number(currentTarget.dataset['index']);
-    const file = this.contextInfos[index];
+    const file = this.contextInfos[index]?.file;
     assert(file);
     this.browserProxy_.handler.onFileClickedFromSourcesMenu(file.url);
   }
@@ -89,13 +86,13 @@ export class SourcesMenuElement extends CrLitElement {
   protected onImageClick_(e: Event) {
     this.close();
     const index = Number((e.currentTarget as HTMLElement).dataset['index']);
-    const image = this.contextInfos[index];
+    const image = this.contextInfos[index]?.image;
     assert(image);
     this.browserProxy_.handler.onImageClickedFromSourcesMenu(image.url);
   }
 
-  protected faviconUrl_(item: ContextInfo): string {
-    return getFaviconForPageURL(item.url.url, false);
+  protected faviconUrl_(url: string): string {
+    return getFaviconForPageURL(url, false);
   }
 
   protected getHostname_(url: string): string {

@@ -53,28 +53,35 @@ PopulateContextualResources(contextual_tasks::ContextualTaskContext* context) {
   }
   std::vector<contextual_tasks::mojom::ContextInfoPtr> context_items;
   for (const auto& attachment : context->GetUrlAttachments()) {
-    auto item = contextual_tasks::mojom::ContextInfo::New();
-    item->title = base::UTF16ToUTF8(attachment.GetTitle());
-    item->url = attachment.GetURL();
-
     switch (attachment.GetResourceType()) {
       case contextual_tasks::ResourceType::kWebpage: {
-        item->tab_id = attachment.GetTabSessionId().id();
-        item->type = contextual_tasks::mojom::ContextType::kTab;
+        auto tab_context = contextual_tasks::mojom::TabContext::New();
+        tab_context->title = base::UTF16ToUTF8(attachment.GetTitle());
+        tab_context->url = attachment.GetURL();
+        tab_context->tab_id = attachment.GetTabSessionId().id();
+        context_items.push_back(contextual_tasks::mojom::ContextInfo::NewTab(
+            std::move(tab_context)));
         break;
       }
       case contextual_tasks::ResourceType::kPdf: {
-        item->type = contextual_tasks::mojom::ContextType::kPdf;
+        auto file_context = contextual_tasks::mojom::FileContext::New();
+        file_context->title = base::UTF16ToUTF8(attachment.GetTitle());
+        file_context->url = attachment.GetURL();
+        context_items.push_back(contextual_tasks::mojom::ContextInfo::NewFile(
+            std::move(file_context)));
         break;
       }
       case contextual_tasks::ResourceType::kImage: {
-        item->type = contextual_tasks::mojom::ContextType::kImage;
+        auto image_context = contextual_tasks::mojom::ImageContext::New();
+        image_context->title = base::UTF16ToUTF8(attachment.GetTitle());
+        image_context->url = attachment.GetURL();
+        context_items.push_back(contextual_tasks::mojom::ContextInfo::NewImage(
+            std::move(image_context)));
         break;
       }
       case contextual_tasks::ResourceType::kUnknown:
         break;
     }
-    context_items.push_back(std::move(item));
   }
   return context_items;
 }

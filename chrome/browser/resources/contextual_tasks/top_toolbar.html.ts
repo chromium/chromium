@@ -33,7 +33,8 @@ export function getHtml(this: TopToolbarElement) {
         class="no-overlap" title="Thread History">
     </cr-icon-button>
     <contextual-tasks-favicon-group id="sources"
-        .urls="${this.contextInfos.map(t => t.url.url)}"
+        .urls="${this.contextInfos.map(
+            t => (t.tab?.url.url ?? t.image?.url.url ?? t.file?.url.url)!)}"
         title="Sources" @click="${this.onSourcesClick_}"
         ?hidden="${!this.shouldShowSourcesMenuButton_()}">
     </contextual-tasks-favicon-group>
