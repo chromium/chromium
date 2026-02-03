@@ -23,8 +23,9 @@ export function getHtml(this: ActionChipsElement) {
           <button id="${this.getId_(chip, index) || nothing}"
             class="action-chip ${
                     this.isDeepDiveChip_(chip) ? 'deep-dive-chip' : ''}"
+            data-index="${index}"
             title="${this.getChipTitle_(chip)}"
-            @click="${() => this.handleClick_(chip)}">
+            @click="${this.handleClick_}">
             <div class="action-chip-icon-container ${
                     this.getAdditionalIconClasses_(chip)}">
               ${
@@ -46,8 +47,8 @@ export function getHtml(this: ActionChipsElement) {
             </div>
             ${this.showDismissalUI_ ? html`
               <cr-icon-button
-                class="chip-remove-button"
-                @click="${(e: MouseEvent) => this.removeChip_(chip, e)}">
+                class="chip-remove-button" data-index="${index}"
+                @click="${this.removeChip_}">
               </cr-icon-button>
                 ` : nothing}
           </button>

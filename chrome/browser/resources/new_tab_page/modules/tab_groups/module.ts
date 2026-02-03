@@ -176,7 +176,15 @@ export class ModuleElement extends ModuleElementBase {
     this.showInfoDialog = false;
   }
 
-  protected onCreateNewTabGroupClick_(fromZeroStateCard: boolean) {
+  protected onCreateNewTabGroupClickFromZeroState_() {
+    this.onCreateNewTabGroupClick_(true);
+  }
+
+  protected onCreateNewTabGroupClickFromSteadyState_() {
+    this.onCreateNewTabGroupClick_(false);
+  }
+
+  private onCreateNewTabGroupClick_(fromZeroStateCard: boolean) {
     this.fire('usage');
     const histogram = 'NewTabPage.TabGroups.CreateNewTabGroup';
     recordOccurrence(histogram);
@@ -186,7 +194,10 @@ export class ModuleElement extends ModuleElementBase {
     this.handler_.createNewTabGroup();
   }
 
-  protected onTabGroupClick_(id: string, index: number) {
+  protected onTabGroupClick_(e: Event) {
+    const target = e.currentTarget as HTMLElement;
+    const id = target.dataset['id']!;
+    const index = Number(target.dataset['index']);
     this.fire('usage');
     recordSmallCount('NewTabPage.TabGroups.ClickTabGroupIndex', index);
     this.handler_.openTabGroup(id);
