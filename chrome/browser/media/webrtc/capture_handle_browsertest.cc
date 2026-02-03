@@ -14,6 +14,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
+#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"
@@ -205,11 +206,15 @@ class CaptureHandleBrowserTest : public WebRtcTestBase {
         switches::kEnableExperimentalWebPlatformFeatures);
     command_line->AppendSwitchASCII(
         switches::kAutoSelectTabCaptureSourceByTitle, kCapturedTabTitle);
-    // MSan and GL do not get along so avoid using the GPU with MSan.
+#if defined(MEMORY_SANITIZER)
+    // Force software rendering to avoid GPU process crashes on slow MSan bots.
+    command_line->AppendSwitch(switches::kDisableGpu);
+#else
     // TODO(crbug.com/40260482): Remove the CrOS exception after fixing feature
     // detection in 0c tab capture path as it'll no longer be needed.
-#if !BUILDFLAG(IS_CHROMEOS) && !defined(MEMORY_SANITIZER)
+#if !BUILDFLAG(IS_CHROMEOS)
     command_line->AppendSwitch(switches::kUseGpuInTests);
+#endif
 #endif
   }
 
@@ -498,17 +503,9 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(capturing_tab.ReadCaptureHandle(), "null");
 }
 
-// TODO(https://crbug.com/448444706): Flaky on linux msan.
-#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
-#define MAYBE_CallingSetCaptureHandleConfigWithNewHandleChangesConfigAndFiresEvent \
-  DISABLED_CallingSetCaptureHandleConfigWithNewHandleChangesConfigAndFiresEvent
-#else
-#define MAYBE_CallingSetCaptureHandleConfigWithNewHandleChangesConfigAndFiresEvent \
-  CallingSetCaptureHandleConfigWithNewHandleChangesConfigAndFiresEvent
-#endif
 IN_PROC_BROWSER_TEST_F(
     CaptureHandleBrowserTest,
-    MAYBE_CallingSetCaptureHandleConfigWithNewHandleChangesConfigAndFiresEvent) {
+    CallingSetCaptureHandleConfigWithNewHandleChangesConfigAndFiresEvent) {
   TabInfo captured_tab =
       SetUpCapturedPage(/*expose_origin=*/true, "handle", {"*"});
 
@@ -570,17 +567,9 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(capturing_tab.ReadCaptureHandle(), "null");
 }
 
-// TODO(https://crbug.com/448444706): Flaky on linux msan.
-#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
-#define MAYBE_PermittedOriginsChangeThatAddsCapturerCausesEventAndConfigExposure \
-  DISABLED_PermittedOriginsChangeThatAddsCapturerCausesEventAndConfigExposure
-#else
-#define MAYBE_PermittedOriginsChangeThatAddsCapturerCausesEventAndConfigExposure \
-  PermittedOriginsChangeThatAddsCapturerCausesEventAndConfigExposure
-#endif
 IN_PROC_BROWSER_TEST_F(
     CaptureHandleBrowserTest,
-    MAYBE_PermittedOriginsChangeThatAddsCapturerCausesEventAndConfigExposure) {
+    PermittedOriginsChangeThatAddsCapturerCausesEventAndConfigExposure) {
   TabInfo captured_tab =
       SetUpCapturedPage(/*expose_origin=*/true, "handle", {kArbitraryOrigin});
 
@@ -654,16 +643,8 @@ IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
   EXPECT_EQ(capturing_tab.ReadCaptureHandle(), "null");
 }
 
-// TODO(https://crbug.com/448444706): Flaky on linux msan.
-#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
-#define MAYBE_CrossOriginNavigationClearsTheCaptureHandle \
-  DISABLED_CrossOriginNavigationClearsTheCaptureHandle
-#else
-#define MAYBE_CrossOriginNavigationClearsTheCaptureHandle \
-  CrossOriginNavigationClearsTheCaptureHandle
-#endif
 IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
-                       MAYBE_CrossOriginNavigationClearsTheCaptureHandle) {
+                       CrossOriginNavigationClearsTheCaptureHandle) {
   TabInfo captured_tab =
       SetUpCapturedPage(/*expose_origin=*/true, "handle", {"*"});
 
@@ -685,15 +666,8 @@ IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
   EXPECT_EQ(capturing_tab.ReadCaptureHandle(), "null");
 }
 
-// TODO(https://crbug.com/448444706): failing on linux-msan.
-#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
-#define MAYBE_SelfCaptureSanityWhenPermitted \
-  DISABLED_SelfCaptureSanityWhenPermitted
-#else
-#define MAYBE_SelfCaptureSanityWhenPermitted SelfCaptureSanityWhenPermitted
-#endif
 IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
-                       MAYBE_SelfCaptureSanityWhenPermitted) {
+                       SelfCaptureSanityWhenPermitted) {
   TabInfo tab = SetUpCapturedPage(/*expose_origin=*/true, "handle", {"*"},
                                   /*self_capture=*/true);
   tab.StartCapturing();
@@ -707,16 +681,8 @@ IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
   EXPECT_EQ(tab.ReadCaptureHandle(), tab.capture_handle);
 }
 
-// TODO(https://crbug.com/448444706): failing on linux-msan.
-#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
-#define MAYBE_SelfCaptureSanityWhenNotPermitted \
-  DISABLED_SelfCaptureSanityWhenNotPermitted
-#else
-#define MAYBE_SelfCaptureSanityWhenNotPermitted \
-  SelfCaptureSanityWhenNotPermitted
-#endif
 IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
-                       MAYBE_SelfCaptureSanityWhenNotPermitted) {
+                       SelfCaptureSanityWhenNotPermitted) {
   TabInfo tab =
       SetUpCapturedPage(/*expose_origin=*/true, "handle", {kArbitraryOrigin},
                         /*self_capture=*/true);
@@ -840,16 +806,8 @@ class CaptureHandleBrowserTestPrerender : public CaptureHandleBrowserTest {
 };
 
 // Verifies that pre-rendered pages don't change the capture handle config.
-// TODO(https://crbug.com/448444706): Flaky on linux msan.
-#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
-#define MAYBE_EmptyConfigForCrossDocumentNavigations \
-  DISABLED_EmptyConfigForCrossDocumentNavigations
-#else
-#define MAYBE_EmptyConfigForCrossDocumentNavigations \
-  EmptyConfigForCrossDocumentNavigations
-#endif
 IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTestPrerender,
-                       MAYBE_EmptyConfigForCrossDocumentNavigations) {
+                       EmptyConfigForCrossDocumentNavigations) {
   TabInfo captured_tab =
       SetUpCapturedPage(/*expose_origin=*/true, "handle", {"*"});
   captured_web_contents_ = captured_tab.web_contents;
