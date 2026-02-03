@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<body>
+  <input type="text" aria-label="Text with aria-label">
+  <input type="text" title="Text with title">
+  <label><input type="text">Text with wrapped label</label>
+  <input type="text" id="text1">
+  <label for="text1">Text with for/id label</label>
+  <input type="text" aria-label="Text with value" value="Sample text">
+  <input type="text" id="typed" aria-label="Text with dynamically-set value">
+  <script>
+    document.getElementById('typed').value = "Text content set via JS";
+  </script>
+
+  <input type="search" aria-label="Search with aria-label">
+  <input type="search" title="Search with title">
+  <label><input type="search">Search with wrapped label</label>
+  <input type="search" id="search1">
+  <label for="search1">Search with for/id label</label>
+  <input type="search" aria-label="Search with value" value="search query">
+
+  <input type="number" aria-label="Number with aria-label">
+  <input type="number" title="Number with title">
+  <label><input type="number">Number with wrapped label</label>
+  <input type="number" id="number1">
+  <label for="number1">Number with for/id label</label>
+  <input type="number" aria-label="Number with value" value="42">
+
+  <input type="password" aria-label="Password with aria-label">
+  <input type="password" title="Password with title">
+  <label><input type="password">Password with wrapped label</label>
+  <input type="password" id="password1">
+  <label for="password1">Password with for/id label</label>
+  <input type="password" aria-label="Password with value" value="secret123">
+
+  <input type="email" aria-label="Email with aria-label">
+  <input type="email" title="Email with title">
+  <label><input type="email">Email with wrapped label</label>
+  <input type="email" id="email1">
+  <label for="email1">Email with for/id label</label>
+  <input type="email" aria-label="Email with value" value="test@example.com">
+
+  <input type="tel" aria-label="Phone with aria-label">
+  <input type="tel" title="Phone with title">
+  <label><input type="tel">Phone with wrapped label</label>
+  <input type="tel" id="tel1">
+  <label for="tel1">Phone with for/id label</label>
+  <input type="tel" aria-label="Phone with value" value="+1-555-0123">
+
+  <input type="url" aria-label="URL with aria-label">
+  <input type="url" title="URL with title">
+  <label><input type="url">URL with wrapped label</label>
+  <input type="url" id="url1">
+  <label for="url1">URL with for/id label</label>
+  <input type="url" aria-label="URL with value" value="https://example.com">
+
+  <textarea aria-label="Textarea with aria-label"></textarea>
+  <textarea title="Textarea with title"></textarea>
+  <label><textarea>Textarea with wrapped label</textarea></label>
+  <textarea id="textarea1"></textarea>
+  <label for="textarea1">Textarea with for/id label</label>
+  <textarea aria-label="Textarea with value">This is prefilled text content.</textarea>
+
+  <div role="textbox" aria-label="ARIA textbox with aria-label">Content</div>
+  <div role="textbox" title="ARIA textbox with title">Content</div>
+</body>
+</html>

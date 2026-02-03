@@ -297,6 +297,19 @@ bool RecursiveBuildStructureTree(const ui::AXNode* ax_node,
 
       valid = true;
       break;
+    case ax::mojom::Role::kTextField:
+    case ax::mojom::Role::kTextFieldWithComboBox:
+    case ax::mojom::Role::kSearchBox:
+    case ax::mojom::Role::kSpinButton:
+      tag->fTypeString = chrome_pdf::kPDFStructureTypeForm;
+      tag->fAttributes.appendName(chrome_pdf::kPDFPrintFieldAttributeOwner,
+                                  chrome_pdf::kPDFPrintFieldRoleAttribute,
+                                  chrome_pdf::kPDFRoleTextValueAttribute);
+
+      AppendFormFieldDescFromAccessibleName(ax_node, tag);
+
+      valid = true;
+      break;
     default:
       tag->fTypeString = chrome_pdf::kPDFStructureTypeNonStruct;
       break;
