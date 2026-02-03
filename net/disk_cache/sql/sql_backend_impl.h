@@ -135,19 +135,17 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   // Marks an active entry as doomed and initiates its removal from the store.
   void DoomActiveEntry(SqlEntryImpl& entry);
 
-  // Updates the `last_used` timestamp for an entry.
-  void UpdateEntryLastUsed(
+  // Writes data and updates metadata (header and last_used) for an entry in a
+  // single operation.
+  void WriteEntryDataAndMetadata(
       const CacheEntryKey& key,
       const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
-      base::Time last_used);
-
-  // Updates the header data and `last_used` timestamp for an entry.
-  void UpdateEntryHeaderAndLastUsed(
-      const CacheEntryKey& key,
-      const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
+      std::optional<int64_t> old_body_end,
+      int64_t body_end,
+      EntryWriteBuffer buffer,
       base::Time last_used,
       const std::optional<MemoryEntryDataHints>& new_hints,
-      scoped_refptr<net::GrowableIOBuffer> buffer,
+      scoped_refptr<net::GrowableIOBuffer> head_buffer,
       int64_t header_size_delta);
 
   // Writes data to an entry's body (stream 1). This can be used to write new
@@ -260,7 +258,8 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
     InFlightEntryModification(
         const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
         base::Time last_used,
-        scoped_refptr<net::GrowableIOBuffer> head);
+        scoped_refptr<net::GrowableIOBuffer> head,
+        int64_t body_end);
     InFlightEntryModification(
         const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
         int64_t body_end);
@@ -375,23 +374,16 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
       Int64CompletionOnceCallback callback,
       std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle);
 
-  // Handles the backend logic for `UpdateEntryLastUsed()`. This method is
+  // Handles the backend logic for `WriteEntryDataAndMetadata()`. This method is
   // scheduled as a normal operation via the `ExclusiveOperationCoordinator`.
-  void HandleUpdateEntryLastUsedOperation(
+  void HandleWriteEntryDataAndMetadataOperation(
       const CacheEntryKey& key,
       const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
-      base::Time last_used,
-      PopInFlightEntryModificationRunner pop_in_flight_entry_modification,
-      std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle);
-
-  // Handles the backend logic for `UpdateEntryHeaderAndLastUsed()`. This method
-  // is scheduled as a normal operation via the `ExclusiveOperationCoordinator`.
-  void HandleUpdateEntryHeaderAndLastUsedOperation(
-      const CacheEntryKey& key,
-      const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
+      std::optional<int64_t> old_body_end,
+      EntryWriteBuffer buffer,
       base::Time last_used,
       const std::optional<MemoryEntryDataHints>& new_hints,
-      scoped_refptr<net::GrowableIOBuffer> buffer,
+      scoped_refptr<net::GrowableIOBuffer> head_buffer,
       int64_t header_size_delta,
       PopInFlightEntryModificationRunner pop_in_flight_entry_modification,
       std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle);

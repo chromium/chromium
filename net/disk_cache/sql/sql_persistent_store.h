@@ -325,27 +325,25 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
                                 base::Time last_used,
                                 ErrorCallback callback);
 
-  // Updates the `last_used` timestamp for the entry with the specified
-  // `res_id`. `callback` is invoked with `kOk` on success, or `kNotFound` if
-  // the entry does not exist or is already doomed.
-  void UpdateEntryLastUsedByResId(const CacheEntryKey& key,
-                                  ResId res_id,
-                                  base::Time last_used,
-                                  ErrorCallback callback);
-
-  // Updates the header data (stream 0), `last_used` timestamp, and optionally
-  // the in-memory `hints` for a specific cache entry. The `bytes_usage` for
-  // the entry is adjusted based on `header_size_delta`. `callback` is invoked
-  // with `kOk` on success, `kNotFound` if the entry (matching `key` and
-  // `res_id`) is not found or is doomed, or `kInvalidData` if internal data
-  // consistency checks fail. `buffer` must not be null. `header_size_delta`
-  // is the change in the size of the header data.
-  void UpdateEntryHeaderAndLastUsed(
+  // Writes data and updates metadata (header and last_used) for an entry in a
+  // single operation.
+  // `key` and `res_id` identify the target entry.
+  // `old_body_end`: If provided, indicates that body data should be updated.
+  //                 It represents the expected current size of the body.
+  // `buffer`: contains the body data and offset to write.
+  // `last_used`: The new last used time.
+  // `new_hints`: Optional new hints to set.
+  // `head_buffer`: Optional new header data.
+  // `header_size_delta`: The change in header size.
+  // `callback`: Invoked with the result of the operation.
+  void WriteEntryDataAndMetadata(
       const CacheEntryKey& key,
       ResId res_id,
+      std::optional<int64_t> old_body_end,
+      EntryWriteBuffer buffer,
       base::Time last_used,
       const std::optional<MemoryEntryDataHints>& new_hints,
-      scoped_refptr<net::IOBuffer> buffer,
+      scoped_refptr<net::IOBuffer> head_buffer,
       int64_t header_size_delta,
       ErrorCallback callback);
 

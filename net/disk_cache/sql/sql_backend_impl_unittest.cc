@@ -2637,6 +2637,68 @@ TEST_F(SqlBackendImplTest, WriteBufferingReadAcrossChunks) {
   entry->Close();
 }
 
+TEST_F(SqlBackendImplTest, CombinedWriteAndMetadataUpdate) {
+  auto backend = CreateBackendAndInit();
+
+  TestEntryResultCompletionCallback cb_create;
+  disk_cache::EntryResult create_result = cb_create.GetResult(
+      backend->CreateEntry("key", net::HIGHEST, cb_create.callback()));
+  ASSERT_THAT(create_result.net_error(), IsOk());
+  auto* entry = create_result.ReleaseEntry();
+
+  // Write to stream 0 (header) - this will be buffered in SqlEntryImpl.
+  std::string header_data = "header";
+  auto header_buffer = base::MakeRefCounted<net::StringIOBuffer>(header_data);
+  entry->WriteData(0, 0, header_buffer.get(), header_buffer->size(),
+                   base::DoNothing(), false);
+
+  // Write to stream 1 (body) - this will be buffered in write buffer.
+  std::string body_data = "body";
+  auto body_buffer = base::MakeRefCounted<net::StringIOBuffer>(body_data);
+  entry->WriteData(1, 0, body_buffer.get(), body_buffer->size(),
+                   base::DoNothing(), false);
+
+  // Close the entry. This should trigger a single WriteEntryDataAndMetadata
+  // call that persists both header and body.
+  entry->Close();
+
+  // Flush background tasks.
+  FlushQueue(*backend);
+
+  // Re-open and verify.
+  TestEntryResultCompletionCallback cb_open;
+  disk_cache::EntryResult open_result = cb_open.GetResult(
+      backend->OpenEntry("key", net::HIGHEST, cb_open.callback()));
+  ASSERT_THAT(open_result.net_error(), IsOk());
+  entry = open_result.ReleaseEntry();
+
+  // Check header.
+  auto read_header_buffer =
+      base::MakeRefCounted<net::IOBufferWithSize>(header_data.size());
+  net::TestCompletionCallback cb_read_header;
+  int rv_read_header =
+      entry->ReadData(0, 0, read_header_buffer.get(),
+                      read_header_buffer->size(), cb_read_header.callback());
+  EXPECT_EQ(cb_read_header.GetResult(rv_read_header),
+            static_cast<int>(header_data.size()));
+  EXPECT_EQ(std::string_view(read_header_buffer->data(), header_data.size()),
+            header_data);
+
+  // Check body.
+  auto read_body_buffer =
+      base::MakeRefCounted<net::IOBufferWithSize>(body_data.size());
+  net::TestCompletionCallback cb_read_body;
+  int rv_read_body =
+      entry->ReadData(1, 0, read_body_buffer.get(), read_body_buffer->size(),
+                      cb_read_body.callback());
+  EXPECT_EQ(cb_read_body.GetResult(rv_read_body),
+            static_cast<int>(body_data.size()));
+  EXPECT_EQ(std::string_view(read_body_buffer->data(), body_data.size()),
+            body_data);
+
+  entry->Close();
+}
+
 TEST_F(SqlBackendImplTest, ReadCaching) {
   auto backend = CreateBackendAndInit();
 

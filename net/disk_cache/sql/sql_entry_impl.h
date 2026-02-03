@@ -132,6 +132,10 @@ class NET_EXPORT_PRIVATE SqlEntryImpl final
   // Flushes the write buffer to the backend.
   void FlushBuffer();
 
+  // Consolidates the write buffer and returns it, clearing the internal buffer
+  // state. Returns std::nullopt if the buffer is empty.
+  std::optional<EntryWriteBuffer> TakeWriteBuffer();
+
   base::WeakPtr<SqlBackendImpl> backend_;
 
   // The key for this cache entry.

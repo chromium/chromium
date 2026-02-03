@@ -155,13 +155,28 @@ TEST_F(SqlPersistentStoreQueriesTest, AllQueriesHaveValidPlan) {
             "`--SEARCH resources USING "
             "INDEX index_resources_cache_key_hash_doomed "
             "(cache_key_hash=? AND doomed=?)"},
-           {Query::kUpdateEntryLastUsedByResId_UpdateResourceLastUsed,
+           {Query::kUpdateLastUsed,
             "`--SEARCH resources USING "
             "INTEGER PRIMARY KEY (rowid=?)"},
-           {Query::kUpdateEntryHeaderAndLastUsed_UpdateResource,
+           {Query::kUpdateLastUsedHeader,
             "`--SEARCH resources USING "
             "INTEGER PRIMARY KEY (rowid=?)"},
-           {Query::kUpdateEntryHeaderAndLastUsed_UpdateResourceAndHints,
+           {Query::kUpdateLastUsedHeaderHints,
+            "`--SEARCH resources USING "
+            "INTEGER PRIMARY KEY (rowid=?)"},
+           {Query::kUpdateLastUsedHints,
+            "`--SEARCH resources USING "
+            "INTEGER PRIMARY KEY (rowid=?)"},
+           {Query::kUpdateLastUsedBody,
+            "`--SEARCH resources USING "
+            "INTEGER PRIMARY KEY (rowid=?)"},
+           {Query::kUpdateLastUsedBodyHints,
+            "`--SEARCH resources USING "
+            "INTEGER PRIMARY KEY (rowid=?)"},
+           {Query::kUpdateLastUsedBodyHeader,
+            "`--SEARCH resources USING "
+            "INTEGER PRIMARY KEY (rowid=?)"},
+           {Query::kUpdateLastUsedBodyHeaderHints,
             "`--SEARCH resources USING "
             "INTEGER PRIMARY KEY (rowid=?)"},
            {Query::kWriteEntryData_UpdateResource,

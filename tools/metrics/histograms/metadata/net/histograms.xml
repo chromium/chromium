@@ -152,10 +152,9 @@ chromium-metrics-reviews@google.com.
   <variant name="ReadEntryData"/>
   <variant name="RunEviction"/>
   <variant name="RunEvictionOnIdleTime"/>
-  <variant name="UpdateEntryHeaderAndLastUsed"/>
   <variant name="UpdateEntryLastUsedByKey"/>
-  <variant name="UpdateEntryLastUsedByResId"/>
   <variant name="WriteEntryData"/>
+  <variant name="WriteEntryDataAndMetadata"/>
 </variants>
 
 <!-- LINT.IfChange(StreamSocketCloseReason) -->

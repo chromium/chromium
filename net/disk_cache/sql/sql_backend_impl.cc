@@ -1011,62 +1011,35 @@ void SqlBackendImpl::HandleDeleteDoomedEntry(
           std::move(handle)));
 }
 
-void SqlBackendImpl::UpdateEntryLastUsed(
+void SqlBackendImpl::WriteEntryDataAndMetadata(
     const CacheEntryKey& key,
     const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
-    base::Time last_used) {
-  exclusive_operation_coordinator_.PostOrRunNormalOperation(
-      key,
-      base::BindOnce(
-          &SqlBackendImpl::HandleUpdateEntryLastUsedOperation,
-          weak_factory_.GetWeakPtr(), key, res_id_or_error, last_used,
-          PushInFlightEntryModification(
-              key, InFlightEntryModification(res_id_or_error, last_used))));
-}
-
-void SqlBackendImpl::HandleUpdateEntryLastUsedOperation(
-    const CacheEntryKey& key,
-    const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
-    base::Time last_used,
-    PopInFlightEntryModificationRunner pop_in_flight_entry_modification,
-    std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle) {
-  const auto optional_res_id = GetResId(res_id_or_error);
-  if (!optional_res_id) {
-    // Fail the operation for entries that previously failed a speculative
-    // creation or optimistic write.
-    return;
-  }
-  store_->UpdateEntryLastUsedByResId(
-      key, *optional_res_id, last_used,
-      base::BindOnce([](SqlPersistentStore::Error error) {})
-          .Then(OnceClosureWithBoundArgs(
-              std::move(pop_in_flight_entry_modification)))
-          .Then(OnceClosureWithBoundArgs(std::move(handle))));
-}
-
-void SqlBackendImpl::UpdateEntryHeaderAndLastUsed(
-    const CacheEntryKey& key,
-    const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
+    std::optional<int64_t> old_body_end,
+    int64_t body_end,
+    EntryWriteBuffer buffer,
     base::Time last_used,
     const std::optional<MemoryEntryDataHints>& new_hints,
-    scoped_refptr<net::GrowableIOBuffer> buffer,
+    scoped_refptr<net::GrowableIOBuffer> head_buffer,
     int64_t header_size_delta) {
   exclusive_operation_coordinator_.PostOrRunNormalOperation(
       key, base::BindOnce(
-               &SqlBackendImpl::HandleUpdateEntryHeaderAndLastUsedOperation,
-               weak_factory_.GetWeakPtr(), key, res_id_or_error, last_used,
-               new_hints, std::move(buffer), header_size_delta,
+               &SqlBackendImpl::HandleWriteEntryDataAndMetadataOperation,
+               weak_factory_.GetWeakPtr(), key, res_id_or_error, old_body_end,
+               std::move(buffer), last_used, new_hints, std::move(head_buffer),
+               header_size_delta,
                PushInFlightEntryModification(
                    key, InFlightEntryModification(res_id_or_error, last_used,
-                                                  buffer))));
+                                                  head_buffer, body_end))));
 }
 
-void SqlBackendImpl::HandleUpdateEntryHeaderAndLastUsedOperation(
+void SqlBackendImpl::HandleWriteEntryDataAndMetadataOperation(
     const CacheEntryKey& key,
     const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
+    std::optional<int64_t> old_body_end,
+    EntryWriteBuffer buffer,
     base::Time last_used,
     const std::optional<MemoryEntryDataHints>& new_hints,
-    scoped_refptr<net::GrowableIOBuffer> buffer,
+    scoped_refptr<net::GrowableIOBuffer> head_buffer,
     int64_t header_size_delta,
     PopInFlightEntryModificationRunner pop_in_flight_entry_modification,
     std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle) {
@@ -1078,9 +1051,9 @@ void SqlBackendImpl::HandleUpdateEntryHeaderAndLastUsedOperation(
     CHECK(optional_error.has_value());
     return;
   }
-  store_->UpdateEntryHeaderAndLastUsed(
-      key, *optional_res_id, last_used, new_hints, std::move(buffer),
-      header_size_delta,
+  store_->WriteEntryDataAndMetadata(
+      key, *optional_res_id, old_body_end, std::move(buffer), last_used,
+      new_hints, std::move(head_buffer), header_size_delta,
       base::BindOnce([](SqlPersistentStore::Error error) {})
           .Then(OnceClosureWithBoundArgs(
               std::move(pop_in_flight_entry_modification)))
@@ -1505,10 +1478,12 @@ SqlBackendImpl::InFlightEntryModification::InFlightEntryModification(
 SqlBackendImpl::InFlightEntryModification::InFlightEntryModification(
     const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
     base::Time last_used,
-    scoped_refptr<net::GrowableIOBuffer> head)
+    scoped_refptr<net::GrowableIOBuffer> head,
+    int64_t body_end)
     : res_id_or_error(res_id_or_error),
       last_used(last_used),
-      head(std::move(head)) {}
+      head(std::move(head)),
+      body_end(body_end) {}
 SqlBackendImpl::InFlightEntryModification::InFlightEntryModification(
     const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
     int64_t body_end)

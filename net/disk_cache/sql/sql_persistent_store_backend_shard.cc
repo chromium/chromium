@@ -197,26 +197,20 @@ void SqlPersistentStore::BackendShard::UpdateEntryLastUsedByKey(
       .Then(WrapCallback(std::move(callback)));
 }
 
-void SqlPersistentStore::BackendShard::UpdateEntryLastUsedByResId(
-    ResId res_id,
-    base::Time last_used,
-    ErrorCallback callback) {
-  backend_.AsyncCall(&SqlPersistentStore::Backend::UpdateEntryLastUsedByResId)
-      .WithArgs(res_id, last_used, base::TimeTicks::Now())
-      .Then(WrapCallback(std::move(callback)));
-}
-
-void SqlPersistentStore::BackendShard::UpdateEntryHeaderAndLastUsed(
+void SqlPersistentStore::BackendShard::WriteEntryDataAndMetadata(
     const CacheEntryKey& key,
     ResId res_id,
+    std::optional<int64_t> old_body_end,
+    EntryWriteBuffer buffer,
     base::Time last_used,
     const std::optional<MemoryEntryDataHints>& new_hints,
-    scoped_refptr<net::IOBuffer> buffer,
+    scoped_refptr<net::IOBuffer> head_buffer,
     int64_t header_size_delta,
     ErrorCallback callback) {
-  backend_.AsyncCall(&SqlPersistentStore::Backend::UpdateEntryHeaderAndLastUsed)
-      .WithArgs(key, res_id, last_used, new_hints, std::move(buffer),
-                header_size_delta, base::TimeTicks::Now())
+  backend_.AsyncCall(&SqlPersistentStore::Backend::WriteEntryDataAndMetadata)
+      .WithArgs(key, res_id, old_body_end, std::move(buffer), last_used,
+                new_hints, std::move(head_buffer), header_size_delta,
+                base::TimeTicks::Now())
       .Then(WrapCallbackWithStoreStatus(std::move(callback)));
 }
 
