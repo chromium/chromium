@@ -357,12 +357,6 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
         return ContextResult::kTransientFailure;
       }
 
-      // TODO(penghuang): Merge all SharedContextState::Initialize*()
-      if (!context_state_->IsGLInitialized()) {
-        context_state_->InitializeGL(task_executor_->gpu_preferences(),
-                                     context_group_->feature_info());
-      }
-
       context_ = context_state_->context();
       std::unique_ptr<raster::RasterDecoder> raster_decoder =
           raster::RasterDecoder::Create(
