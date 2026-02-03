@@ -25,6 +25,9 @@ class BookmarkNode;
 // afterwards.
 - (void)deleteBookmark;
 
+// Whether the UI is disabled.
+@property(nonatomic, assign) BOOL UIDisabled;
+
 // TODO(crbug.com/40251848): Remove those accessor and setters.
 // We temporarily use them to facilitate code migration.
 - (const bookmarks::BookmarkNode*)bookmark;

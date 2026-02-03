@@ -53,6 +53,8 @@
   base::WeakPtr<AuthenticationService> _authenticationService;
 }
 
+@synthesize UIDisabled = _UIDisabled;
+
 - (instancetype)
     initWithBookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
              bookmarkNode:(const bookmarks::BookmarkNode*)bookmarkNode
@@ -255,9 +257,10 @@
 }
 
 - (void)deleteBookmark {
-  if (!(self.bookmark && _bookmarkModel->loaded())) {
+  if (!(self.bookmark && _bookmarkModel->loaded()) || self.UIDisabled) {
     return;
   }
+  self.UIDisabled = YES;
   // To stop getting recursive events from committed bookmark editing changes
   // ignore bookmark model updates notifications.
   base::AutoReset<BOOL> autoReset(&self->_ignoresBookmarkModelChanges, YES);

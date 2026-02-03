@@ -245,6 +245,7 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
 }
 
 - (void)dismissBookmarkEditorView {
+  self.mutator.UIDisabled = YES;
   [self.view endEditing:YES];
 
   // Dismiss this controller.
@@ -324,11 +325,17 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
 }
 
 - (void)cancel {
+  if (self.mutator.UIDisabled) {
+    return;
+  }
   base::RecordAction(base::UserMetricsAction("MobileBookmarksEditorCanceled"));
   [self dismissBookmarkEditorView];
 }
 
 - (void)save {
+  if (self.mutator.UIDisabled) {
+    return;
+  }
   base::RecordAction(base::UserMetricsAction("MobileBookmarksEditorSaved"));
   [self.mutator commitBookmarkChangesWithURLString:[self inputURLString]
                                               name:[self inputBookmarkName]];

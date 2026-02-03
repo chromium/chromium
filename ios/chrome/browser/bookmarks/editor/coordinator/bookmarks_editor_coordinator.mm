@@ -147,7 +147,7 @@
 #pragma mark - BookmarksEditorViewControllerDelegate
 
 - (void)moveBookmark {
-  if (_folderChooserCoordinator) {
+  if (_folderChooserCoordinator || _mediator.UIDisabled) {
     // This can occur if the user tap on the button while the previous folder
     // chooser is being dismissed.
     return;
@@ -160,6 +160,7 @@
                            hiddenNodes:hiddenNodes];
   [_folderChooserCoordinator setSelectedFolder:_mediator.folder];
   _folderChooserCoordinator.delegate = self;
+  _mediator.UIDisabled = YES;
   [_folderChooserCoordinator start];
 }
 
@@ -294,6 +295,7 @@
   [_folderChooserCoordinator stop];
   _folderChooserCoordinator.delegate = nil;
   _folderChooserCoordinator = nil;
+  _mediator.UIDisabled = NO;
 }
 
 @end
