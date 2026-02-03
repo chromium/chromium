@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips_generator.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips_metrics.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/tab_id_generator.h"
+#include "components/contextual_search/contextual_search_service.h"
 #include "components/google/core/common/google_util.h"
 #include "components/search/ntp_features.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -128,7 +129,11 @@ void ActionChipsHandler::StartActionChipsRetrieval() {
     return;
   }
 
-  TabInterface* tab = FindMostRecentTab(*web_ui_);
+  TabInterface* tab = nullptr;
+  if (contextual_search::ContextualSearchService::IsContextSharingEnabled(
+          profile_->GetPrefs())) {
+    tab = FindMostRecentTab(*web_ui_);
+  }
 
   const GURL current_url =
       tab != nullptr ? tab->GetContents()->GetLastCommittedURL() : GURL();
