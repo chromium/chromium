@@ -14,7 +14,7 @@ def __step_config(ctx, step_config):
             # TODO(crbug.com/452240479): while we now support grit_strings
             # actions we want to support all grit actions to run remotely and
             # use command_prefix instead of action
-            "action": "__chrome_app_generated_resources_grit.*",
+            "action": "__chrome_app_generated_resources__strings_grit.*",
             "remote": config.get(ctx, "googlechrome"),
             # Only runs on Linux workers.
             "remote_command": "python3",

@@ -50,6 +50,12 @@
 #   grit_flags (optional)
 #       List of strings containing extra command-line flags to pass to Grit.
 #
+#   TODO(crbug.com/452240479): obsolete once all grit actions can run remotely.
+#   grit_action_name_override (optional)
+#       A custom name for the grit action target. This is useful to make
+#       individual grit actions identifiable, for example to find grit_strings
+#       actions.
+#
 #   resource_ids (optional)
 #       Path to a grit "firstidsfile". Default is
 #       //tools/gritsettings/resource_ids. Set to "" to use the value specified
@@ -156,7 +162,33 @@ template("grit") {
     _grit_output_name = target_name
   }
 
+  if (defined(invoker.gritdeps)) {
+    # This action is used to warn about outdated gritdeps files.
+    _check_gritdeps_target = "${target_name}_check_gritdeps"
+    action_with_pydeps(_check_gritdeps_target) {
+      script = grit_info_script
+      inputs = [
+        invoker.gritdeps,
+        invoker.source,
+      ]
+      outputs = [ "$target_gen_dir/${target_name}.check_gritdeps.stamp" ]
+
+      args = [
+        "--check-grit-deps",
+        rebase_path(invoker.gritdeps, root_build_dir),
+        "--stamp",
+        rebase_path(outputs[0], root_build_dir),
+        "--source-root",
+        rebase_path("//", root_build_dir),
+        rebase_path(invoker.source, root_build_dir),
+      ]
+    }
+  }
+
   _grit_custom_target = target_name + "_grit"
+  if (defined(invoker.grit_action_name_override)) {
+    _grit_custom_target = invoker.grit_action_name_override
+  }
   action_with_pydeps(_grit_custom_target) {
     script = "//tools/grit/grit.py"
     inputs = [ invoker.source ]
@@ -328,6 +360,13 @@ template("grit") {
       _gritdeps_lines = read_file(invoker.gritdeps, "list lines")
       _gritdeps_entries = filter_exclude(_gritdeps_lines, [ "#*" ])
       inputs += rebase_path(_gritdeps_entries, ".", "//")
+      deps += [ ":$_check_gritdeps_target" ]
+    }
+  }
+
+  if (defined(invoker.grit_action_name_override)) {
+    group(target_name + "_grit") {
+      public_deps = [ ":$_grit_custom_target" ]
     }
   }
 
@@ -468,6 +507,7 @@ template("grit_strings") {
 
     outputs = _outputs
     grit_flags = _grit_flags
+    grit_action_name_override = "${target_name}__strings_grit"
   }
 }
 
