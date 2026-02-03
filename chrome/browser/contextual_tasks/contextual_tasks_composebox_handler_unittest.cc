@@ -350,6 +350,29 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
                             CreateClientToAimRequestInfo> info) {
         EXPECT_EQ(info->query_text, kQuery);
         EXPECT_THAT(info->file_tokens, testing::Contains(overlay_token));
+        EXPECT_TRUE(info->force_include_latest_interaction_request_data);
+        return lens::ClientToAimMessage();
+      });
+  EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_));
+
+  handler_->CreateAndSendQueryMessage(kQuery);
+}
+
+TEST_F(ContextualTasksComposeboxHandlerTest,
+       CreateAndSendQueryMessage_NoOverlayToken) {
+  std::string kQuery = "direct query";
+
+  EXPECT_CALL(*mock_ui_, GetTaskId())
+      .WillRepeatedly(testing::ReturnRefOfCopy(std::optional<base::Uuid>()));
+  EXPECT_CALL(*handler_, GetLensOverlayToken())
+      .WillOnce(testing::Return(std::nullopt));
+
+  EXPECT_CALL(*mock_controller_, CreateClientToAimRequest(testing::_))
+      .WillOnce([&kQuery](std::unique_ptr<
+                          contextual_search::ContextualSearchContextController::
+                              CreateClientToAimRequestInfo> info) {
+        EXPECT_EQ(info->query_text, kQuery);
+        EXPECT_FALSE(info->force_include_latest_interaction_request_data);
         return lens::ClientToAimMessage();
       });
   EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_));

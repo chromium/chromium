@@ -447,8 +447,8 @@ class ComposeboxQueryController
   ConstructVisualSearchInteractionData(
       const FileInfo* file_info,
       const std::optional<std::string>& query_text,
-      std::optional<lens::LensOverlaySelectionType>
-          lens_overlay_selection_type);
+      std::optional<lens::LensOverlaySelectionType> lens_overlay_selection_type,
+      bool force_include_latest_interaction_request_data);
 
   // The last received cluster info.
   std::optional<lens::LensOverlayClusterInfo> cluster_info_ = std::nullopt;

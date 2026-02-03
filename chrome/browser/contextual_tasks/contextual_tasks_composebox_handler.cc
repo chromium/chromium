@@ -688,6 +688,14 @@ void ContextualTasksComposeboxHandler::ContinueCreateAndSendQueryMessage(
         session_handle->GetUploadedContextTokens());
     if (overlay_token) {
       file_tokens.insert(*overlay_token);
+      // When an overlay token is present, it implies a recent Lens Overlay
+      // interaction, such as a region search. Setting this flag forces the
+      // inclusion of that interaction's data in the request. This is required
+      // to support immediate postmessage-based follow-up queries after the
+      // initial search URL loads, allowing the user to ask follow-up questions
+      // about the same region without re-selecting it.
+      create_client_to_aim_request_info
+          ->force_include_latest_interaction_request_data = true;
     }
     create_client_to_aim_request_info->file_tokens =
         std::move(file_tokens).extract();
@@ -952,6 +960,13 @@ ContextualTasksComposeboxHandler::GetLensSearchController() const {
 std::optional<base::UnguessableToken>
 ContextualTasksComposeboxHandler::GetLensOverlayToken() {
   if (auto* controller = GetLensSearchController()) {
+    // If there is no region selection, then do not return the overlay token.
+    // This is needed to prevent the token from being used in the client to aim
+    // request when a new overlay was opened and no region was selected.
+    if (!controller->lens_overlay_controller()->HasRegionSelection()) {
+      return std::nullopt;
+    }
+
     if (auto* router = controller->query_router()) {
       return router->overlay_tab_context_file_token();
     }
