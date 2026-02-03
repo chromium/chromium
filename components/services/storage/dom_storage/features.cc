@@ -8,4 +8,6 @@ namespace storage {
 
 BASE_FEATURE(kDomStorageSqlite, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kDomStorageSqliteInMemory, base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace storage

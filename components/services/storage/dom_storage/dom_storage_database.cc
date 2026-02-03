@@ -23,6 +23,19 @@
 namespace storage {
 namespace {
 
+// Returns true if the SQLite backend should be used for DOMStorage.
+// `kDomStorageSqlite` enables SQLite for both in-memory and on-disk databases.
+// `kDomStorageSqliteInMemory` enables SQLite only for in-memory databases.
+bool ShouldUseSqliteBackend(const base::FilePath& database_path) {
+  if (base::FeatureList::IsEnabled(kDomStorageSqlite)) {
+    return true;
+  }
+  if (database_path.empty()) {
+    return base::FeatureList::IsEnabled(kDomStorageSqliteInMemory);
+  }
+  return false;
+}
+
 // Constructs an absolute path to the session storage database using
 // `storage_partition_dir`.  For LevelDB, the path is a directory:
 //
@@ -208,7 +221,7 @@ void DomStorageDatabaseFactory::Open(
 
   switch (storage_type) {
     case StorageType::kLocalStorage: {
-      if (base::FeatureList::IsEnabled(kDomStorageSqlite)) {
+      if (ShouldUseSqliteBackend(database_path)) {
         return CreateSequenceBoundDomStorageDatabase<LocalStorageSqlite>(
             std::move(blocking_task_runner), database_path, memory_dump_id,
             base::BindOnce(&OnDatabaseOpened<LocalStorageSqlite>,
@@ -220,7 +233,7 @@ void DomStorageDatabaseFactory::Open(
                          std::move(callback)));
     }
     case StorageType::kSessionStorage: {
-      if (base::FeatureList::IsEnabled(kDomStorageSqlite)) {
+      if (ShouldUseSqliteBackend(database_path)) {
         return CreateSequenceBoundDomStorageDatabase<SessionStorageSqlite>(
             std::move(blocking_task_runner), database_path, memory_dump_id,
             base::BindOnce(&OnDatabaseOpened<SessionStorageSqlite>,

@@ -12,8 +12,17 @@ namespace storage {
 
 // Enable to use a SQLite database with local storage and session storage
 // instead of LevelDB. See "crbug.com/377242771: Migrate DOMStorage to use
-// SQLite" for more details.
+// SQLite" for more details. When enabled, SQLite is used for both in-memory
+// and on-disk storage.
 COMPONENT_EXPORT(STORAGE_FEATURES) BASE_DECLARE_FEATURE(kDomStorageSqlite);
+
+// Enable to use a SQLite database for in-memory local storage and session
+// storage only. When enabled, the SQLite backend will be used for in-memory
+// scenarios (e.g., Incognito mode) while on-disk storage continues to use
+// LevelDB. If `kDomStorageSqlite` is enabled, SQLite is used for all scenarios
+// regardless of this feature's state.
+COMPONENT_EXPORT(STORAGE_FEATURES)
+BASE_DECLARE_FEATURE(kDomStorageSqliteInMemory);
 
 }  // namespace storage
 
