@@ -183,7 +183,7 @@ bool ImageBitmapRenderingContext::PushFrame() {
     const gfx::ColorSpace color_space = GetColorSpace();
     if (SharedGpuContext::IsGpuCompositingEnabled()) {
       resource_provider_for_offscreen_canvas_ =
-          CanvasResourceProvider::CreateSharedImageProvider(
+          CanvasNon2DResourceProviderSharedImage::Create(
               Host()->Size(), format, alpha_type, color_space,
               CanvasResourceProvider::ShouldInitialize::kCallClear,
               SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
