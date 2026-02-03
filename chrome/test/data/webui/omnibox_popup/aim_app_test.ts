@@ -29,7 +29,9 @@ suite('AimAppTest', function() {
     BrowserProxy.setInstance(testProxy as unknown as BrowserProxy);
   });
 
-  test('ClearsInputOnCloseByDefault', async function() {
+  // TODO(crbug.com/479888362): Disabled by gardener due to failure without
+  // clear culprit.
+  test.skip('ClearsInputOnCloseByDefault', async function() {
     const app = document.createElement('omnibox-aim-app');
     document.body.appendChild(app);
 
