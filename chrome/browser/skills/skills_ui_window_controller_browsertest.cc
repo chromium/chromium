@@ -140,6 +140,11 @@ IN_PROC_BROWSER_TEST_F(SkillsUiWindowControllerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SkillsUiWindowControllerBrowserTest,
                        UserFlow_CreateSkill_ThenInvoke) {
+#if BUILDFLAG(ENABLE_GLIC)
+  // Enable Glic late to avoid a crash in GlicTabIndicatorHelper during tab
+  // creation.
+  glic::GlicEnabling::SetBypassEnablementChecksForTesting(true);
+
   // Open Dialog.
   skills::Skill initial_skill(/*id=*/"",
                               /*name=*/"",
@@ -187,10 +192,6 @@ IN_PROC_BROWSER_TEST_F(SkillsUiWindowControllerBrowserTest,
   // Wait for the C++ backend to process the save and close the dialog.
   ASSERT_TRUE(close_future.Wait());
   EXPECT_EQ(nullptr, tab_controller()->GetDialogDelegateForTesting());
-#if BUILDFLAG(ENABLE_GLIC)
-  // Enable Glic late to avoid a crash in GlicTabIndicatorHelper during tab
-  // creation.
-  glic::GlicEnabling::SetBypassEnablementChecksForTesting(true);
 
   // Click the Toast "Try It" button.
   ClickToastActionButton();

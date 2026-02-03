@@ -18,6 +18,10 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/webui/webui_util.h"
 
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/public/glic_enabling.h"
+#endif
+
 namespace skills {
 
 void AddDialogStringResources(content::WebUIDataSource* source) {
@@ -70,7 +74,14 @@ WEB_UI_CONTROLLER_TYPE_IMPL(SkillsUI)
 SkillsUI::~SkillsUI() = default;
 
 bool SkillsUIConfig::IsWebUIEnabled(content::BrowserContext* browser_context) {
-  return base::FeatureList::IsEnabled(features::kSkillsEnabled);
+  // TODO(b/481023023): Show error page instead of disabling the WebUI.
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+#if BUILDFLAG(ENABLE_GLIC)
+  return base::FeatureList::IsEnabled(features::kSkillsEnabled) &&
+         glic::GlicEnabling::IsEnabledForProfile(profile);
+#else
+  return false;
+#endif
 }
 
 }  // namespace skills

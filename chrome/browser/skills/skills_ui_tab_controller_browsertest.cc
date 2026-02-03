@@ -17,6 +17,10 @@
 #include "content/public/test/browser_test_utils.h"
 #include "ui/views/test/widget_test.h"
 
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/public/glic_enabling.h"
+#endif
+
 namespace skills {
 
 class SkillsUiTabControllerBrowserTest : public InProcessBrowserTest {
@@ -182,6 +186,11 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest, DialogIsTabScoped) {
 
 // Verify that the UI Controller (SkillsUI) received the delegate pointer.
 IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest, VerifyWebUIPlumbing) {
+#if BUILDFLAG(ENABLE_GLIC)
+  // Enable Glic late to avoid a crash in GlicTabIndicatorHelper during tab
+  // creation.
+  glic::GlicEnabling::SetBypassEnablementChecksForTesting(true);
+
   // Show the dialog.
   skills::Skill test_skill("id", "skill_name", "icon", "Test Prompt");
   skills_ui_tab_controller()->ShowDialog(test_skill);
@@ -204,11 +213,17 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest, VerifyWebUIPlumbing) {
   ASSERT_TRUE(skills_ui);
 
   EXPECT_TRUE(skills_ui->GetDelegateForTesting());
+  glic::GlicEnabling::SetBypassEnablementChecksForTesting(false);
+#endif
 }
 
 // Verify that clicking the Cancel button closes the dialog.
 IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
                        CancelButtonClosesDialog) {
+#if BUILDFLAG(ENABLE_GLIC)
+  // Enable Glic late to avoid a crash in GlicTabIndicatorHelper during tab
+  // creation.
+  glic::GlicEnabling::SetBypassEnablementChecksForTesting(true);
   skills::Skill test_skill("id", "name", "icon", "prompt");
   skills_ui_tab_controller()->ShowDialog(test_skill);
   EXPECT_TRUE(IsDialogVisible());
@@ -252,6 +267,8 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
   // Wait for native close.
   ASSERT_TRUE(close_future.Wait());
   EXPECT_FALSE(IsDialogVisible());
+  glic::GlicEnabling::SetBypassEnablementChecksForTesting(false);
+#endif
 }
 
 }  // namespace skills
