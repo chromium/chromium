@@ -8,7 +8,6 @@
 #include <iterator>
 #include <memory>
 #include <optional>
-#include <set>
 #include <string>
 #include <tuple>
 #include <vector>
@@ -38,6 +37,7 @@
 #include "google_apis/tasks/tasks_api_requests.h"
 #include "google_apis/tasks/tasks_api_response_types.h"
 #include "google_apis/tasks/tasks_api_task_status.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "ui/base/models/list_model.h"
 
 namespace ash::api {
@@ -508,7 +508,7 @@ void TasksClientImpl::RunGetTaskListsCallbacks(
 
     // Gather existing cached task lists, and clear the ones that are no longer
     // present in the task list.
-    std::set<std::string> abandoned_task_lists;
+    absl::flat_hash_set<std::string> abandoned_task_lists;
     for (const auto& task_list : tasks_in_task_lists_) {
       abandoned_task_lists.insert(task_list.first);
     }
