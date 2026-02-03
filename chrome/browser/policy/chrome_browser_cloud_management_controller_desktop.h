@@ -14,6 +14,7 @@
 #include "chrome/browser/policy/cbcm_invalidations_initializer.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 #include "components/enterprise/client_certificates/core/prefs_certificate_store.h"
+#include "extensions/buildflags/buildflags.h"
 
 namespace instance_id {
 class InstanceIDDriver;
@@ -27,6 +28,7 @@ class LegacyTopicsCleaner;
 namespace policy {
 class ChromeBrowserCloudManagementRegisterWatcher;
 class CloudPolicyInvalidator;
+class ExtensionInstallPolicyInvalidator;
 class FmRegistrationTokenUploader;
 class RemoteCommandsInvalidator;
 
@@ -100,6 +102,10 @@ class ChromeBrowserCloudManagementControllerDesktop
   std::map<int64_t, std::unique_ptr<invalidation::InvalidationListener>>
       invalidation_listener_per_project_;
   std::unique_ptr<CloudPolicyInvalidator> policy_invalidator_;
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  std::unique_ptr<ExtensionInstallPolicyInvalidator>
+      extension_install_invalidator_;
+#endif
   std::vector<std::unique_ptr<FmRegistrationTokenUploader>>
       fm_registration_token_uploaders_;
 

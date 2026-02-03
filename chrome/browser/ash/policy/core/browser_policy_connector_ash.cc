@@ -400,6 +400,9 @@ void BrowserPolicyConnectorAsh::Shutdown() {
     device_cloud_policy_manager_->RemoveDeviceCloudPolicyManagerObserver(this);
   }
 
+  if (device_cloud_policy_invalidator_) {
+    device_cloud_policy_invalidator_->Shutdown();
+  }
   device_cloud_policy_invalidator_.reset();
 
   device_remote_commands_invalidator_.reset();

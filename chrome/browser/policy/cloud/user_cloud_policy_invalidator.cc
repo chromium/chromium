@@ -16,6 +16,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/invalidation/profile_invalidation_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
+#include "components/policy/core/common/features.h"
+#include "extensions/buildflags/buildflags.h"
 
 namespace {
 
@@ -50,7 +52,14 @@ UserCloudPolicyInvalidator::~UserCloudPolicyInvalidator() = default;
 
 void UserCloudPolicyInvalidator::Shutdown() {
   profile_observation_.Reset();
+  invalidator_->Shutdown();
   invalidator_.reset();
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  if (extension_install_invalidator_) {
+    extension_install_invalidator_->Shutdown();
+    extension_install_invalidator_.reset();
+  }
+#endif
 }
 
 void UserCloudPolicyInvalidator::OnProfileInitializationComplete(
@@ -73,6 +82,19 @@ void UserCloudPolicyInvalidator::OnProfileInitializationComplete(
       policy_manager_->core(),
       base::SingleThreadTaskRunner::GetCurrentDefault(),
       base::DefaultClock::GetInstance());
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  if (base::FeatureList::IsEnabled(
+          policy::features::kEnableExtensionInstallPolicyFetching)) {
+    extension_install_invalidator_ =
+        std::make_unique<ExtensionInstallPolicyInvalidator>(
+            PolicyInvalidationScope::kUser,
+            invalidation_provider->GetInvalidationListener(
+                policy::kPolicyInvalidationProjectNumber),
+            policy_manager_->core(),
+            base::SingleThreadTaskRunner::GetCurrentDefault(),
+            base::DefaultClock::GetInstance());
+  }
+#endif
 }
 
 }  // namespace policy

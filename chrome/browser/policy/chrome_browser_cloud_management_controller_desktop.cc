@@ -29,6 +29,7 @@
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/client_data_delegate_desktop.h"
 #include "chrome/browser/policy/cloud/cloud_policy_invalidator.h"
+#include "chrome/browser/policy/cloud/extension_install_policy_invalidator.h"
 #include "chrome/browser/policy/cloud/fm_registration_token_uploader.h"
 #include "chrome/browser/policy/policy_util.h"
 #include "chrome/common/chrome_features.h"
@@ -38,6 +39,7 @@
 #include "components/invalidation/invalidation_listener.h"
 #include "components/invalidation/legacy_topics_cleaner.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
+#include "components/policy/core/common/features.h"
 #include "components/policy/core/common/remote_commands/remote_commands_constants.h"
 #include "components/policy/core/common/remote_commands/remote_commands_invalidator.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -205,7 +207,14 @@ void ChromeBrowserCloudManagementControllerDesktop::OnServiceAccountSet(
 }
 
 void ChromeBrowserCloudManagementControllerDesktop::ShutDown() {
-  policy_invalidator_.reset();
+  if (policy_invalidator_) {
+    policy_invalidator_->Shutdown();
+    policy_invalidator_.reset();
+  }
+  if (extension_install_invalidator_) {
+    extension_install_invalidator_->Shutdown();
+    extension_install_invalidator_.reset();
+  }
   commands_invalidator_.reset();
   fm_registration_token_uploaders_.clear();
   invalidation_listener_per_project_.clear();
@@ -342,6 +351,14 @@ void ChromeBrowserCloudManagementControllerDesktop::StartInvalidations() {
       PolicyInvalidationScope::kCBCM, policy_invalidation_listener, core,
       base::SingleThreadTaskRunner::GetCurrentDefault(),
       base::DefaultClock::GetInstance());
+  if (base::FeatureList::IsEnabled(
+          policy::features::kEnableExtensionInstallPolicyFetching)) {
+    extension_install_invalidator_ =
+        std::make_unique<ExtensionInstallPolicyInvalidator>(
+            PolicyInvalidationScope::kCBCM, policy_invalidation_listener, core,
+            base::SingleThreadTaskRunner::GetCurrentDefault(),
+            base::DefaultClock::GetInstance());
+  }
 
   core->StartRemoteCommandsService(
       std::make_unique<enterprise_commands::CBCMRemoteCommandsFactory>(),

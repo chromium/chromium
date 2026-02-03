@@ -1,36 +1,29 @@
-// Copyright 2013 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_POLICY_CLOUD_CLOUD_POLICY_INVALIDATOR_H_
-#define CHROME_BROWSER_POLICY_CLOUD_CLOUD_POLICY_INVALIDATOR_H_
-
-#include <stdint.h>
+#ifndef CHROME_BROWSER_POLICY_CLOUD_EXTENSION_INSTALL_POLICY_INVALIDATOR_H_
+#define CHROME_BROWSER_POLICY_CLOUD_EXTENSION_INSTALL_POLICY_INVALIDATOR_H_
 
 #include <memory>
-#include <optional>
 #include <string>
 
-#include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
-#include "base/scoped_observation.h"
-#include "base/threading/thread_checker.h"
-#include "base/time/time.h"
 #include "chrome/browser/policy/cloud/policy_invalidator.h"
 #include "components/invalidation/invalidation_listener.h"
-#include "components/policy/core/common/cloud/cloud_policy_core.h"
-#include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/core/common/cloud/policy_invalidation_scope.h"
 
 namespace base {
 class Clock;
 class SequencedTaskRunner;
-}
+}  // namespace base
 
 namespace policy {
 
-// PolicyInvalidator for Chrome browser policies.
-class CloudPolicyInvalidator : public PolicyInvalidator {
+class CloudPolicyCore;
+class CloudPolicyStore;
+
+// PolicyInvalidator for extension install policies.
+class ExtensionInstallPolicyInvalidator : public PolicyInvalidator {
  public:
   // Returns a name of a refresh metric associated with the given scope.
   static const char* GetPolicyRefreshMetricName(PolicyInvalidationScope scope);
@@ -53,43 +46,43 @@ class CloudPolicyInvalidator : public PolicyInvalidator {
   // |device_local_account_id| is a unique identity for invalidator with
   // DeviceLocalAccount |scope| to have unique owner name. May be let empty
   // if scope is not DeviceLocalAccount.
-  CloudPolicyInvalidator(
+  ExtensionInstallPolicyInvalidator(
       PolicyInvalidationScope scope,
       invalidation::InvalidationListener* invalidation_listener,
       CloudPolicyCore* core,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
       const base::Clock* clock,
       const std::string& device_local_account_id = std::string());
-  CloudPolicyInvalidator(const CloudPolicyInvalidator&) = delete;
-  CloudPolicyInvalidator& operator=(const CloudPolicyInvalidator&) = delete;
-  ~CloudPolicyInvalidator() override;
+  ExtensionInstallPolicyInvalidator(const ExtensionInstallPolicyInvalidator&) =
+      delete;
+  ExtensionInstallPolicyInvalidator& operator=(
+      const ExtensionInstallPolicyInvalidator&) = delete;
+  ~ExtensionInstallPolicyInvalidator() override;
 
-  // InvalidationListener::Observer:
   std::string GetType() const override;
 
- protected:
+ private:
   // Handles policy refresh depending on invalidations availability and incoming
   // invalidations.
-  class CloudPolicyInvalidationHandler
+  class ExtensionInstallPolicyInvalidationHandler
       : public PolicyInvalidator::PolicyInvalidationHandler {
    public:
-    CloudPolicyInvalidationHandler(
+    ExtensionInstallPolicyInvalidationHandler(
         PolicyInvalidationScope scope,
         CloudPolicyCore* core,
         const base::Clock* clock,
         scoped_refptr<base::SequencedTaskRunner> task_runner);
 
-    ~CloudPolicyInvalidationHandler() override;
+    ~ExtensionInstallPolicyInvalidationHandler() override;
+
+    CloudPolicyStore* GetCloudPolicyStore() const override;
     const char* GetPolicyRefreshMetricName(
         PolicyInvalidationScope scope) override;
     const char* GetPolicyInvalidationMetricName(
         PolicyInvalidationScope scope) override;
-
-    // Returns the cloud policy store that is handled by this invalidator.
-    CloudPolicyStore* GetCloudPolicyStore() const override;
   };
 };
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_POLICY_CLOUD_CLOUD_POLICY_INVALIDATOR_H_
+#endif  // CHROME_BROWSER_POLICY_CLOUD_EXTENSION_INSTALL_POLICY_INVALIDATOR_H_
