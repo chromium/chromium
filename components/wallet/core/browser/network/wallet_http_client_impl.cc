@@ -34,6 +34,25 @@ namespace {
 constexpr char kSavePassRequestPath[] = "v1/passes:upsert";
 constexpr int kExternalIdNamespaceChrome = 1;
 
+// Returns true if the feature corresponding to the pass's category is enabled.
+bool SatisfiesFeatureRequirements(const WalletPass& pass) {
+  switch (pass.GetPassCategory()) {
+    case PassCategory::kLoyaltyCard:
+    case PassCategory::kEventPass:
+    case PassCategory::kTransitTicket:
+    case PassCategory::kBoardingPass:
+      return base::FeatureList::IsEnabled(kWalletablePassDetection);
+    case PassCategory::kPassport:
+    case PassCategory::kDriverLicense:
+    case PassCategory::kNationalIdentityCard:
+    case PassCategory::kKTN:
+    case PassCategory::kRedressNumber:
+      return base::FeatureList::IsEnabled(kWalletApiPrivatePassesEnabled);
+    case PassCategory::kUnspecified:
+      return false;
+  }
+}
+
 base::DictValue BuildExternalId() {
   base::DictValue external_id;
   external_id.Set("namespace", kExternalIdNamespaceChrome);
@@ -51,78 +70,60 @@ base::DictValue BuildClientInfo() {
   return client_info;
 }
 
-std::string BuildLoyaltyCardRequest(const LoyaltyCard& card) {
-  // TODO(crbug.com/468916773): Migrate to protobuf to ensure type safety.
-  base::DictValue request_dict;
-
-  base::DictValue pass_dict;
-  pass_dict.Set("external_id", BuildExternalId());
-
-  base::DictValue loyalty_card_dict;
-  loyalty_card_dict.Set("merchant_name", card.issuer_name);
-  loyalty_card_dict.Set("loyalty_number", card.member_id);
-  loyalty_card_dict.Set("program_name", card.plan_name);
-  pass_dict.Set("loyalty_card", std::move(loyalty_card_dict));
-
-  request_dict.Set("pass", std::move(pass_dict));
-  request_dict.Set("client_info", BuildClientInfo());
-
-  std::string json_output;
-  base::JSONWriter::Write(request_dict, &json_output);
-  return json_output;
+base::DictValue BuildLoyaltyCardRequest(const LoyaltyCard& card) {
+  return base::DictValue().Set("loyalty_card",
+                               base::DictValue()
+                                   .Set("merchant_name", card.issuer_name)
+                                   .Set("loyalty_number", card.member_id)
+                                   .Set("program_name", card.plan_name));
 }
 
-std::string BuildEventPassRequest(const EventPass& pass) {
-  // TODO(crbug.com/468916773): Implement EventPass request building.
-  return std::string();
-}
-
-std::string BuildBoardingPassRequest(const BoardingPass& pass) {
-  // TODO(crbug.com/468916773): Implement BoardingPass request building.
-  return std::string();
-}
-
-std::string BuildTransitTicketRequest(const TransitTicket& ticket) {
-  // TODO(crbug.com/468916773): Implement TransitTicket request building.
-  return std::string();
-}
-
-std::string BuildPassportRequest(const Passport& passport) {
+base::DictValue BuildPassportRequest(const Passport& passport) {
   // TODO(crbug.com/478783796): Implement Passport request building.
-  return std::string();
+  return base::DictValue();
 }
 
-std::string BuildDriverLicenseRequest(const DriverLicense& license) {
+base::DictValue BuildDriverLicenseRequest(const DriverLicense& license) {
   // TODO(crbug.com/478783796): Implement DriverLicense request building.
-  return std::string();
+  return base::DictValue();
 }
 
-std::string BuildNationalIdentityCardRequest(const NationalIdentityCard& card) {
+base::DictValue BuildNationalIdentityCardRequest(
+    const NationalIdentityCard& card) {
   // TODO(crbug.com/478783796): Implement NationalIdentityCard request building.
-  return std::string();
+  return base::DictValue();
 }
 
-std::string BuildKTNRequest(const KTN& ktn) {
+base::DictValue BuildKTNRequest(const KTN& ktn) {
   // TODO(crbug.com/478783796): Implement KTN request building.
-  return std::string();
+  return base::DictValue();
 }
 
-std::string BuildRedressNumberRequest(const RedressNumber& number) {
+base::DictValue BuildRedressNumberRequest(const RedressNumber& number) {
   // TODO(crbug.com/478783796): Implement RedressNumber request building.
-  return std::string();
+  return base::DictValue();
 }
 
-std::string BuildSavePassRequest(const WalletPass& pass) {
-  // TODO(crbug.com/468916773): Remove non private passes for now.
-  return std::visit(
+base::DictValue BuildPassDict(const WalletPass& pass) {
+  base::DictValue response;
+  if (pass.id) {
+    response.Set("pass_id", *pass.id);
+  }
+  response.Set("external_id", BuildExternalId());
+  response.Merge(std::visit(
       absl::Overload{
           [](const LoyaltyCard& card) { return BuildLoyaltyCardRequest(card); },
-          [](const EventPass& pass) { return BuildEventPassRequest(pass); },
+          [](const EventPass& pass) {
+            NOTIMPLEMENTED();
+            return base::DictValue();
+          },
           [](const BoardingPass& pass) {
-            return BuildBoardingPassRequest(pass);
+            NOTIMPLEMENTED();
+            return base::DictValue();
           },
           [](const TransitTicket& ticket) {
-            return BuildTransitTicketRequest(ticket);
+            NOTIMPLEMENTED();
+            return base::DictValue();
           },
           [](const Passport& passport) {
             return BuildPassportRequest(passport);
@@ -137,8 +138,18 @@ std::string BuildSavePassRequest(const WalletPass& pass) {
           [](const RedressNumber& number) {
             return BuildRedressNumberRequest(number);
           }},
-      pass.pass_data);
+      pass.pass_data));
+  return response;
 }
+
+std::string BuildUpsertPassRequest(const WalletPass& pass) {
+  const base::DictValue request_dict =
+      base::DictValue()
+          .Set("pass", BuildPassDict(pass))
+          .Set("client_info", BuildClientInfo());
+  return base::WriteJson(request_dict).value_or("");
+}
+
 }  // namespace
 
 WalletHttpClientImpl::WalletHttpClientImpl(
@@ -151,9 +162,10 @@ WalletHttpClientImpl::~WalletHttpClientImpl() = default;
 
 void WalletHttpClientImpl::UpsertPass(const WalletPass& pass,
                                       UpsertPassCallback callback) {
+  CHECK(SatisfiesFeatureRequirements(pass));
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   SendRequest(
-      kSavePassRequestPath, BuildSavePassRequest(pass),
+      kSavePassRequestPath, BuildUpsertPassRequest(pass),
       base::BindOnce(&WalletHttpClientImpl::OnUpsertPassResponse,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
