@@ -23,6 +23,7 @@
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/compositor.h"
@@ -262,7 +263,7 @@ void HoldingSpaceTrayIcon::UpdatePreviews(
 
   // Go over the new item list, create previews for new items, and assign new
   // indices to existing items.
-  std::set<std::string> item_ids;
+  absl::flat_hash_set<std::string> item_ids;
   for (size_t index = 0; index < items.size(); ++index) {
     const HoldingSpaceItem* item = items[index];
     DCHECK(item->IsInitialized());
