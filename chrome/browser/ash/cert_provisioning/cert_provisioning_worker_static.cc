@@ -828,7 +828,10 @@ bool CertProvisioningWorkerStatic::ProcessResponseErrors(
     return false;
   }
 
-  request_backoff_.InformOfRequest(true);
+  // Use Reset to explicitly reset a potentially non-zero error count tracked by
+  // BackoffEntry to 0. This assumes that a successful response is a good
+  // indicator that following responses will also be successful.
+  request_backoff_.Reset();
 
   if (error.has_value() &&
       (error.value() == CertProvisioningResponseError::INCONSISTENT_DATA)) {

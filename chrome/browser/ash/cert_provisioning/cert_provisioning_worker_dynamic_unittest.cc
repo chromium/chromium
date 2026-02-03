@@ -178,17 +178,18 @@ constexpr char kEcNamedCurve[] = "P-256";
 // The delays before the first, second and third attempts to fetch the next
 // instruction (in reality they could be a bit smaller because of the 10% jitter
 // that is always subtracted).
-constexpr base::TimeDelta kFetchInstructionFirstDelay = base::Seconds(30);
-constexpr base::TimeDelta kFetchInstructionSecondDelay =
-    kFetchInstructionFirstDelay * 4;
+constexpr base::TimeDelta kFetchInstructionFirstDelay = base::Seconds(5);
+constexpr base::TimeDelta kFetchInstructionSecondDelay = base::Seconds(5);
 constexpr base::TimeDelta kFetchInstructionThirdDelay =
-    kFetchInstructionFirstDelay * 16;
+    kFetchInstructionFirstDelay * 4;
+constexpr base::TimeDelta kFetchInstructionFourthDelay =
+    kFetchInstructionFirstDelay * 16;  // 4 ^ 2
+constexpr base::TimeDelta kFetchInstructionFifthDelay =
+    kFetchInstructionFirstDelay * 64;  // 4 ^ 3
 // Starting with the fourth attempt the next instruction should be fetched with
 // the max delay.
 constexpr base::TimeDelta kFetchInstructionMaxDelay = base::Hours(8);
 constexpr base::TimeDelta kRequestRetryInitialDelay = base::Seconds(30);
-constexpr base::TimeDelta kOnSubscribedFetchInstructionDelay =
-    base::Seconds(30);
 constexpr base::TimeDelta kSmallDelay = base::Milliseconds(500);
 
 const std::string& GetPublicKey(KeyType key_type) {
@@ -689,29 +690,8 @@ TEST_F(CertProvisioningWorkerDynamicTest, SuccessWithAllStepsRsaKeys) {
         .WillOnce(VerifyNoBackendErrorsSeen);
 
     worker.DoStep();
-    EXPECT_EQ(worker.GetState(),
-              CertProvisioningWorkerState::kReadyForNextOperation);
-  }
-  {
-    // A signal that the the client has successfully subscribed to the
-    // invalidations should result in a retry of the waiting action with a
-    // 30 seconds delay. In this particular scenario, the result is still
-    // InstructionNotYetAvailable.
-    testing::InSequence seq;
-
-    EXPECT_GET_NEXT_INSTRUCTION(
-        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
-        base::unexpected(InstructionNotYetAvailable()));
-
-    // kReadyForNextOperation -> kReadyForNextOperation is still reported as a
-    // state change.
-    EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
-        .WillOnce(VerifyNoBackendErrorsSeen);
-
     on_invalidation_event_callback.Run(
         InvalidationEvent::kSuccessfullySubscribed);
-    AdvanceClockAndRunTasks(kOnSubscribedFetchInstructionDelay + kSmallDelay);
-
     EXPECT_EQ(worker.GetState(),
               CertProvisioningWorkerState::kReadyForNextOperation);
   }
@@ -759,7 +739,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, SuccessWithAllStepsRsaKeys) {
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
         .WillOnce(VerifyNoBackendErrorsSeen);
 
-    AdvanceClockAndRunTasks(kFetchInstructionThirdDelay + kSmallDelay);
+    AdvanceClockAndRunTasks(kFetchInstructionFirstDelay + kSmallDelay);
     EXPECT_EQ(worker.GetState(),
               CertProvisioningWorkerState::kReadyForNextOperation);
   }
@@ -804,11 +784,10 @@ TEST_F(CertProvisioningWorkerDynamicTest, SuccessWithAllStepsRsaKeys) {
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
         .WillOnce(VerifyNoBackendErrorsSeen);
 
-    AdvanceClockAndRunTasks(kFetchInstructionSecondDelay + kSmallDelay);
+    AdvanceClockAndRunTasks(kFetchInstructionFirstDelay + kSmallDelay);
     EXPECT_EQ(worker.GetState(),
               CertProvisioningWorkerState::kReadyForNextOperation);
   }
-
   {
     testing::InSequence seq;
 
@@ -844,7 +823,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, SuccessWithAllStepsRsaKeys) {
       "ChromeOS.CertProvisioning.Event.Dynamic.User",
       CertProvisioningEvent::kSuccessfullySubscribedToInvalidationTopic, 1);
   histogram_tester.ExpectTotalCount(
-      "ChromeOS.CertProvisioning.Event.Dynamic.User", 10);
+      "ChromeOS.CertProvisioning.Event.Dynamic.User", 9);
 }
 
 // Checks that the worker makes all necessary requests to other modules during
@@ -914,29 +893,8 @@ TEST_F(CertProvisioningWorkerDynamicTest, SuccessWithAllStepsEcKeys) {
         .WillOnce(VerifyNoBackendErrorsSeen);
 
     worker.DoStep();
-    EXPECT_EQ(worker.GetState(),
-              CertProvisioningWorkerState::kReadyForNextOperation);
-  }
-  {
-    // A signal that the the client has successfully subscribed to the
-    // invalidations should result in a retry of the waiting action with a
-    // 30 seconds delay. In this particular scenario, the result is still
-    // InstructionNotYetAvailable.
-    testing::InSequence seq;
-
-    EXPECT_GET_NEXT_INSTRUCTION(
-        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
-        base::unexpected(InstructionNotYetAvailable()));
-
-    // kReadyForNextOperation -> kReadyForNextOperation is still reported as a
-    // state change.
-    EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
-        .WillOnce(VerifyNoBackendErrorsSeen);
-
     on_invalidation_event_callback.Run(
         InvalidationEvent::kSuccessfullySubscribed);
-    AdvanceClockAndRunTasks(kOnSubscribedFetchInstructionDelay + kSmallDelay);
-
     EXPECT_EQ(worker.GetState(),
               CertProvisioningWorkerState::kReadyForNextOperation);
   }
@@ -984,7 +942,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, SuccessWithAllStepsEcKeys) {
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
         .WillOnce(VerifyNoBackendErrorsSeen);
 
-    AdvanceClockAndRunTasks(kFetchInstructionThirdDelay + kSmallDelay);
+    AdvanceClockAndRunTasks(kFetchInstructionFirstDelay + kSmallDelay);
     EXPECT_EQ(worker.GetState(),
               CertProvisioningWorkerState::kReadyForNextOperation);
   }
@@ -1030,7 +988,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, SuccessWithAllStepsEcKeys) {
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
         .WillOnce(VerifyNoBackendErrorsSeen);
 
-    AdvanceClockAndRunTasks(kFetchInstructionSecondDelay + kSmallDelay);
+    AdvanceClockAndRunTasks(kFetchInstructionFirstDelay + kSmallDelay);
     EXPECT_EQ(worker.GetState(),
               CertProvisioningWorkerState::kReadyForNextOperation);
   }
@@ -1070,7 +1028,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, SuccessWithAllStepsEcKeys) {
       "ChromeOS.CertProvisioning.Event.Dynamic.User",
       CertProvisioningEvent::kSuccessfullySubscribedToInvalidationTopic, 1);
   histogram_tester.ExpectTotalCount(
-      "ChromeOS.CertProvisioning.Event.Dynamic.User", 10);
+      "ChromeOS.CertProvisioning.Event.Dynamic.User", 9);
 }
 
 // Checks that the worker makes all necessary requests to other modules during
@@ -2920,8 +2878,8 @@ TEST_F(CertProvisioningWorkerDynamicTest, FetchNextInstructionWithBackOff) {
               CertProvisioningWorkerState::kReadyForNextOperation);
   }
 
-  // Simulate 4 attempts to fetch the next instruction and check that the worker
-  // waits the correct amount of time between them.
+  // Simulate several attempts to fetch the next instruction and check that the
+  // worker waits the correct amount of time between them.
   VerifyWorkerTriesFetchingNextInstruction(provisioning_process, worker,
                                            kFetchInstructionFirstDelay);
   VerifyWorkerTriesFetchingNextInstruction(provisioning_process, worker,
@@ -2929,7 +2887,38 @@ TEST_F(CertProvisioningWorkerDynamicTest, FetchNextInstructionWithBackOff) {
   VerifyWorkerTriesFetchingNextInstruction(provisioning_process, worker,
                                            kFetchInstructionThirdDelay);
   VerifyWorkerTriesFetchingNextInstruction(provisioning_process, worker,
+                                           kFetchInstructionFourthDelay);
+  VerifyWorkerTriesFetchingNextInstruction(provisioning_process, worker,
+                                           kFetchInstructionFifthDelay);
+  VerifyWorkerTriesFetchingNextInstruction(provisioning_process, worker,
                                            kFetchInstructionMaxDelay);
+
+  {
+    testing::InSequence seq;
+
+    EXPECT_GET_NEXT_INSTRUCTION(
+        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        NextInstructionProofOfPossession(KeyType::kRsa));
+
+    EXPECT_SIGN_RSAPKC1_RAW_OK(
+        SignRSAPKCS1Raw(::testing::Optional(TokenId::kUser), GetDataToSignBin(),
+                        GetPublicKeyBin(KeyType::kRsa), /*callback=*/_));
+
+    EXPECT_UPLOAD_PROOF_OF_POSSESSION(
+        UploadProofOfPossession(Eq(std::ref(provisioning_process)),
+                                GetSignatureStr(),
+                                /*callback=*/_),
+        NoDataResultOk());
+
+    AdvanceClockAndRunTasks(kFetchInstructionMaxDelay + kSmallDelay);
+    EXPECT_EQ(worker.GetState(),
+              CertProvisioningWorkerState::kReadyForNextOperation);
+  }
+
+  // Verify that after successfully getting the next instruction the wait times
+  // are reset.
+  VerifyWorkerTriesFetchingNextInstruction(provisioning_process, worker,
+                                           kFetchInstructionFirstDelay);
 
   {
     testing::InSequence seq;
@@ -2941,7 +2930,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, FetchNextInstructionWithBackOff) {
     EXPECT_IMPORT_CERTIFICATE_OK(
         ImportCertificate(TokenId::kUser, /*certificate=*/_, /*callback=*/_));
 
-    FastForwardBy(kFetchInstructionMaxDelay + kSmallDelay);
+    FastForwardBy(kFetchInstructionSecondDelay + kSmallDelay);
     EXPECT_EQ(worker.GetState(), CertProvisioningWorkerState::kSucceeded);
 
     EXPECT_EQ(callback_observer_.Get<CertProfile>(), cert_profile);

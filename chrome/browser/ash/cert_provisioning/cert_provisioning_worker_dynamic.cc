@@ -65,7 +65,9 @@ namespace {
 constexpr unsigned int kNonVaKeyModulusLengthBits = 2048;
 constexpr char kEcNamedCurve[] = "P-256";
 
-constexpr base::TimeDelta kMinumumTryAgainLaterDelay = base::Seconds(10);
+constexpr base::TimeDelta kMinumumTryAgainLaterDelay = base::Seconds(5);
+constexpr base::TimeDelta kInitialFetchInstructionDelay =
+    kMinumumTryAgainLaterDelay;
 constexpr base::TimeDelta kMaximumFetchInstructionDelay = base::Hours(8);
 constexpr base::TimeDelta kOnSubscribedFetchInstructionDelay =
     base::Seconds(30);
@@ -80,13 +82,15 @@ const net::BackoffEntry::Policy kBackoffPolicy{
     /*entry_lifetime_ms=*/-1,
     /*always_use_initial_delay=*/false};
 
-// Used only for the first 3 attempts, after which
-// `kMaximumFetchInstructionDelay` is used. So the approximate waiting times
-// (ignoring the jitter) are: 30 sec, 2 min, 8 min, 8 hours, 8 hours, ...
+// Used only for the first 4 attempts, after which
+// `kMaximumFetchInstructionDelay` is used. Also an additional
+// kInitialFetchInstructionDelay delay is inserted at the beginning. So the
+// approximate waiting times (ignoring the jitter) are: 5 sec, 5 sec, 20 sec, 80
+// sec, 320 sec, 8 hours, 8 hours, ...
 const net::BackoffEntry::Policy kFetchInstructionBackoffPolicy{
-    /*num_errors_to_ignore=*/0,
+    /*num_errors_to_ignore=*/1,
     /*initial_delay_ms=*/
-    base::Seconds(30).InMilliseconds(),
+    kInitialFetchInstructionDelay.InMilliseconds(),
     /*multiply_factor=*/4.0,
     /*jitter_factor=*/0.10,
     /*maximum_backoff_ms=*/kMaximumFetchInstructionDelay.InMilliseconds(),
@@ -211,6 +215,8 @@ CertProvisioningWorkerDynamic::CertProvisioningWorkerDynamic(
   CHECK(pref_service);
   CHECK(cert_provisioning_client_);
   CHECK(invalidator_);
+
+  LOG(WARNING) << "Started provisioning a certificate" << GetLogInfoBlock();
 }
 
 CertProvisioningWorkerDynamic::~CertProvisioningWorkerDynamic() = default;
@@ -517,7 +523,7 @@ void CertProvisioningWorkerDynamic::OnStartResponse(
     // If VA is disabled, then the server will need to wait for an input from
     // the adapter and is expected to send an invalidation when ready.
     ScheduleNextStep(
-        fetch_instruction_backoff_.GetTimeUntilRelease(),
+        kInitialFetchInstructionDelay,
         /*try_provisioning_on_timeout=*/!ShouldOnlyUseInvalidations());
   }
 }
@@ -778,7 +784,7 @@ void CertProvisioningWorkerDynamic::OnUploadAuthorizationResponse(
       FROM_HERE, CertProvisioningWorkerState::kReadyForNextOperation));
   // Wait for an invalidation or a timeout before doing the next step.
   ScheduleNextStep(
-      fetch_instruction_backoff_.GetTimeUntilRelease(),
+      kInitialFetchInstructionDelay,
       /*try_provisioning_on_timeout=*/!ShouldOnlyUseInvalidations());
 }
 
@@ -879,7 +885,7 @@ void CertProvisioningWorkerDynamic::OnUploadProofOfPossessionResponse(
       FROM_HERE, CertProvisioningWorkerState::kReadyForNextOperation));
   // Wait for an invalidation or a timeout before doing the next step.
   ScheduleNextStep(
-      fetch_instruction_backoff_.GetTimeUntilRelease(),
+      kInitialFetchInstructionDelay,
       /*try_provisioning_on_timeout=*/!ShouldOnlyUseInvalidations());
 }
 
@@ -940,8 +946,11 @@ bool CertProvisioningWorkerDynamic::ProcessResponseErrors(
 
   if (response.has_value()) {
     last_backend_server_error_ = std::nullopt;
-    request_backoff_.InformOfRequest(true);
-    fetch_instruction_backoff_.InformOfRequest(true);
+    // Use Reset to explicitly reset a potentially non-zero error count tracked
+    // by BackoffEntry to 0. This assumes that a successful response is a good
+    // indicator that following responses will also be successful.
+    request_backoff_.Reset();
+    fetch_instruction_backoff_.Reset();
     RecordDmStatusForDynamic(policy::DeviceManagementStatus::DM_STATUS_SUCCESS);
     return true;
   }
@@ -978,7 +987,7 @@ void CertProvisioningWorkerDynamic::ProcessResponseErrors(
     return;
   }
 
-  request_backoff_.InformOfRequest(true);
+  request_backoff_.Reset();
 
   const em::CertProvBackendError& backend_error = error.backend_error;
   RecordCertProvBackendErrorForDynamic(backend_error.error());
@@ -988,7 +997,7 @@ void CertProvisioningWorkerDynamic::ProcessResponseErrors(
                  << GetLogInfoBlock();
 
     fetch_instruction_backoff_.InformOfRequest(false);
-    if (fetch_instruction_backoff_.failure_count() > 2) {
+    if (fetch_instruction_backoff_.failure_count() > 4) {
       fetch_instruction_backoff_.SetCustomReleaseTime(
           base::TimeTicks::Now() + kMaximumFetchInstructionDelay);
     }
@@ -1001,7 +1010,7 @@ void CertProvisioningWorkerDynamic::ProcessResponseErrors(
     return;
   }
 
-  fetch_instruction_backoff_.InformOfRequest(true);
+  fetch_instruction_backoff_.Reset();
 
   if (backend_error.error() == em::CertProvBackendError::INCONSISTENT_DATA ||
       backend_error.error() == em::CertProvBackendError::PROFILE_NOT_FOUND ||
