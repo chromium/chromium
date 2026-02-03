@@ -496,6 +496,41 @@ TEST_F(DnsTaskResultsManagerTest, IPv6TimedoutAfterMetadata) {
                                 IsEmpty(), kMetadata2)));
 }
 
+TEST_F(DnsTaskResultsManagerTest, MetadataAfterIpv6Timeout) {
+  std::unique_ptr<DnsTaskResultsManager> manager = factory().Create();
+
+  // A comes first. Service endpoints creation should be delayed.
+  std::unique_ptr<HostResolverInternalResult> result1 = CreateDataResult(
+      kHostName, {MakeIPEndPoint("192.0.2.1")}, DnsQueryType::A);
+  manager->ProcessDnsTransactionResults(DnsQueryType::A, {result1.get()});
+
+  ASSERT_FALSE(manager->IsMetadataReady());
+  ASSERT_TRUE(manager->GetCurrentEndpoints().empty());
+
+  // AAAA is timed out. Service endpoints should be available without metadatas.
+  FastForwardBy(DnsTaskResultsManager::GetResolutionDelay() +
+                base::Milliseconds(1));
+
+  ASSERT_FALSE(manager->IsMetadataReady());
+  EXPECT_THAT(manager->GetCurrentEndpoints(),
+              ElementsAre(ExpectServiceEndpoint(
+                  ElementsAre(MakeIPEndPoint("192.0.2.1", 443)))));
+
+  // HTTPS is responded after timeout. Service endpoints should be updated.
+  std::unique_ptr<HostResolverInternalResult> result2 =
+      CreateMetadata(kHostName, kMetadatas);
+  manager->ProcessDnsTransactionResults(DnsQueryType::HTTPS, {result2.get()});
+
+  ASSERT_TRUE(manager->IsMetadataReady());
+  EXPECT_THAT(
+      manager->GetCurrentEndpoints(),
+      ElementsAre(
+          ExpectServiceEndpoint(ElementsAre(MakeIPEndPoint("192.0.2.1", 443)),
+                                IsEmpty(), kMetadata1),
+          ExpectServiceEndpoint(ElementsAre(MakeIPEndPoint("192.0.2.1", 443)),
+                                IsEmpty(), kMetadata2)));
+}
+
 TEST_F(DnsTaskResultsManagerTest, IPv4NoDataIPv6TimedoutAfterMetadata) {
   std::unique_ptr<DnsTaskResultsManager> manager = factory().Create();
 

@@ -224,8 +224,9 @@ void DnsTaskResultsManager::ProcessDnsTransactionResults(
     aliases_ = dns_alias_utility::FixUpDnsAliases(aliases_);
   }
 
-  const bool waiting_for_aaaa_response =
-      query_types_.Has(DnsQueryType::AAAA) && !aaaa_response_received_;
+  const bool waiting_for_aaaa_response = query_types_.Has(DnsQueryType::AAAA) &&
+                                         !aaaa_response_received_ &&
+                                         !aaaa_resolution_delay_timed_out_;
   if (waiting_for_aaaa_response) {
     if (query_type == DnsQueryType::A && should_update_endpoints) {
       // A is responded, start the resolution delay timer.
@@ -278,7 +279,15 @@ DnsTaskResultsManager::GetOrCreatePerDomainResult(
 }
 
 void DnsTaskResultsManager::OnAaaaResolutionTimedout() {
+  // The resolution delay timer should only fire while we're still waiting for a
+  // real AAAA response.
   CHECK(!aaaa_response_received_);
+  CHECK(!aaaa_resolution_delay_timed_out_);
+
+  // Treat the delay timer firing as "completion" only for the purpose of
+  // allowing intermediate endpoint updates.
+  aaaa_resolution_delay_timed_out_ = true;
+
   RecordResolutionDelayResult(/*timedout=*/true);
   UpdateEndpoints();
 }
