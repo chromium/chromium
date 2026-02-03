@@ -63,7 +63,6 @@ class MODULES_EXPORT WebAudioMediaStreamAudioSink
               base::TimeTicks estimated_capture_time) override;
   void OnSetFormat(const media::AudioParameters& params) override;
   void OnReadyStateChanged(WebMediaStreamSource::ReadyState state) override;
-  void OnEnabledChanged(bool enabled) override;
 
   // WebAudioSourceProvider implementation.
   void SetClient(WebAudioSourceProviderClient* client) override;
@@ -90,14 +89,8 @@ class MODULES_EXPORT WebAudioMediaStreamAudioSink
 
   std::unique_ptr<media::AudioConverter> audio_converter_ GUARDED_BY(lock_);
   std::unique_ptr<media::AudioFifo> fifo_ GUARDED_BY(lock_);
-  bool is_sink_enabled_ GUARDED_BY(lock_) = false;
+  bool is_enabled_ GUARDED_BY(lock_);
   media::AudioParameters source_params_ GUARDED_BY(lock_);
-
-  // Flag to tell if the track has been stopped or not.
-  bool is_track_stopped_ GUARDED_BY(lock_) = false;
-
-  // Flag to tell if the track is enabled or not.
-  bool is_track_enabled_ GUARDED_BY(lock_) = false;
 
   // Protects the above variables.
   base::Lock lock_;
@@ -110,6 +103,11 @@ class MODULES_EXPORT WebAudioMediaStreamAudioSink
   // No lock protection needed since only accessed in constructor and
   // destructor.
   Persistent<MediaStreamComponent> component_;
+
+  // Flag to tell if the track has been stopped or not.
+  // No lock protection needed since only accessed in constructor, destructor
+  // and OnReadyStateChanged().
+  bool track_stopped_;
 
   // Buffer duration of the output backing up the audio context the sink
   // delivers audio to. Affects how many public ProvideInput() calls can be

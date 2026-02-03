@@ -261,8 +261,8 @@ async function testSilencingOneMediaStream(
         silenceChecker
           ? silenceChecker(msg, detectorNode)
           : assert_true(
-              !msg.data.hasInput || msg.data.isSilent,
-              `Detector in context with rate ${detectorNode.context.sampleRate} should have no input or be silent after operation.`
+              !msg.data.hasInput,
+              `Detector in context with rate ${detectorNode.context.sampleRate} should have no input after operation.`
             );
       });
 
