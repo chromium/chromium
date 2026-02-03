@@ -53,8 +53,6 @@ extern const base::FeatureParam<bool> kShowContextMenuDescription;
 extern const base::FeatureParam<bool> kEnableEphemeralContextMenuDescription;
 // Whether or not to enable viewport images with page context uploads.
 extern const base::FeatureParam<bool> kEnableViewportImages;
-// Whether to show the tools and models in the composebox.
-extern const base::FeatureParam<bool> kShowToolsAndModels;
 // Whether to show the model picker in the composebox.
 extern const base::FeatureParam<bool> kShowModelPicker;
 // Whether to allow drag and drop files on composebox

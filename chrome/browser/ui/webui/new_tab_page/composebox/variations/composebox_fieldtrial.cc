@@ -165,13 +165,9 @@ bool IsDeepSearchEnabled(Profile* profile) {
     return false;
   }
 
-  if (kShowToolsAndModels.Get()) {
-    return true;
-  }
-
   AimEligibilityService* aim_eligibility_service =
       AimEligibilityServiceFactory::GetForProfile(profile);
-  return kShowToolsAndModels.Get() && aim_eligibility_service &&
+  return aim_eligibility_service &&
          aim_eligibility_service->IsDeepSearchEligible();
 }
 
@@ -184,13 +180,9 @@ bool IsCreateImagesEnabled(Profile* profile) {
     return false;
   }
 
-  if (kShowToolsAndModels.Get()) {
-    return true;
-  }
-
   AimEligibilityService* aim_eligibility_service =
       AimEligibilityServiceFactory::GetForProfile(profile);
-  return kShowToolsAndModels.Get() && aim_eligibility_service &&
+  return aim_eligibility_service &&
          aim_eligibility_service->IsCreateImagesEligible();
 }
 
@@ -209,21 +201,22 @@ CreateQueryControllerConfigParams() {
 BASE_FEATURE(kNtpComposebox, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<std::string> kConfigParam(&kNtpComposebox,
-                                                   "ConfigParam",
+                                                   "NtpComposeboxConfigParam",
                                                    "");
 
-const base::FeatureParam<bool> kShowComposeboxZps(&kNtpComposebox,
-                                                  "ShowComposeboxZps",
-                                                  false);
+const base::FeatureParam<bool> kShowComposeboxZps(
+    &kNtpComposebox,
+    "NtpComposeboxShowComposeboxZps",
+    false);
 
 const base::FeatureParam<bool> kShowComposeboxTypedSuggest(
     &kNtpComposebox,
-    "ShowComposeboxTypedSuggest",
+    "NtpComposeboxShowComposeboxTypedSuggest",
     false);
 
 const base::FeatureParam<bool> kShowComposeboxImageSuggestions(
     &kNtpComposebox,
-    "ShowComposeboxImageSuggestions",
+    "NtpComposeboxShowComposeboxImageSuggestions",
     true);
 
 const base::FeatureParam<bool> kAttachPageTitleAndUrlToSuggestRequest(
@@ -232,19 +225,20 @@ const base::FeatureParam<bool> kAttachPageTitleAndUrlToSuggestRequest(
     false);
 
 const base::FeatureParam<bool> kShowContextMenu(&kNtpComposebox,
-                                                "ShowContextMenu",
+                                                "NtpComposeboxShowContextMenu",
                                                 false);
-const base::FeatureParam<bool> kShowRecentTabChip(&kNtpComposebox,
-                                                  "ShowRecentTabChip",
-                                                  false);
+const base::FeatureParam<bool> kShowRecentTabChip(
+    &kNtpComposebox,
+    "NtpComposeboxShowRecentTabChip",
+    false);
 const base::FeatureParam<bool> kShowContextMenuTabPreviews(
     &kNtpComposebox,
-    "ShowContextMenuTabPreviews",
+    "NtpComposeboxShowContextMenuTabPreviews",
     false);
 
 const base::FeatureParam<bool> kShowContextMenuDescription(
     &kNtpComposebox,
-    "ShowContextMenuDescription",
+    "NtpComposeboxShowContextMenuDescription",
     true);
 const base::FeatureParam<bool> kEnableEphemeralContextMenuDescription(
     &kNtpComposebox,
@@ -254,12 +248,8 @@ const base::FeatureParam<bool> kEnableViewportImages(&kNtpComposebox,
                                                      "EnableViewportImages",
                                                      true);
 
-const base::FeatureParam<bool> kShowToolsAndModels(&kNtpComposebox,
-                                                   "ShowToolsAndModels",
-                                                   false);
-
 const base::FeatureParam<bool> kShowModelPicker(&kNtpComposebox,
-                                                "ShowModelPicker",
+                                                "NtpComposeboxShowModelPicker",
                                                 false);
 
 const base::FeatureParam<bool> kShowSubmit(&kNtpComposebox, "ShowSubmit", true);
@@ -274,18 +264,17 @@ const base::FeatureParam<bool> kShowVoiceSearchInExpandedComposebox(
     "ShowVoiceSearchInExpandedComposebox",
     true);
 
-const base::FeatureParam<bool> kShowSmartCompose(&kNtpComposebox,
-                                                 "ShowSmartCompose",
-                                                 true);
+const base::FeatureParam<bool>
+    kShowSmartCompose(&kNtpComposebox, "NtpComposeboxShowSmartCompose", true);
 
 const base::FeatureParam<int> kContextMenuMaxTabSuggestions(
     &kNtpComposebox,
-    "ContextMenuMaxTabSuggestions",
+    "NtpComposeboxContextMenuMaxTabSuggestions",
     5);
 
 const base::FeatureParam<bool> kContextMenuEnableMultiTabSelection(
     &kNtpComposebox,
-    "ContextMenuEnableMultiTabSelection",
+    "NtpComposeboxContextMenuEnableMultiTabSelection",
     false);
 
 const base::FeatureParam<int> kMaxNumFiles(&kNtpComposebox, "MaxNumFiles", 10);
@@ -304,7 +293,7 @@ const base::FeatureParam<bool> kCloseComposeboxByClickOutside(
     true);
 const base::FeatureParam<bool> kAddTabUploadDelayOnRecentTabChipClick(
     &kNtpComposebox,
-    "AddTabUploadDelayOnRecentTabChipClick",
+    "NtpComposeboxAddTabUploadDelayOnRecentTabChipClick",
     false);
 const base::FeatureParam<bool> kEnableThreadsRail(&kNtpComposebox,
                                                   "EnableThreadsRail",
