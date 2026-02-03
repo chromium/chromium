@@ -497,7 +497,8 @@ OAuthConsumer OAuthConsumerRegistry::GetOAuthConsumerFromId(
           /*scopes=*/{contextual_tasks::ShouldUseSearchResultsScope()
                           ? GaiaConstants::kSearchResultsOAuth2Scope
                           : GaiaConstants::kChromeSyncOAuth2Scope,
-                      GaiaConstants::kClearCutOAuth2Scope});
+                      GaiaConstants::kClearCutOAuth2Scope,
+                      GaiaConstants::kLensOAuth2Scope});
     case OAuthConsumerId::kEnterprisePlusAddress:
       return GetOAuthConsumerForEnterprisePlusAddress();
     case OAuthConsumerId::kGlicUserStatus:
