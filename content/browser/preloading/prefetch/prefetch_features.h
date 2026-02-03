@@ -121,6 +121,10 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchAsyncCancelOnCookiesChange);
 // TODO(crbug.com/467177773): Remove it after confirming stability.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchFixHeaderUpdatesOnRedirect);
 
+// Allow starting prefetch request from off the main thread. Please see
+// crbug.com/452389538 for more details.
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchOffTheMainThread);
+
 }  // namespace features
 
 #endif  // CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_FEATURES_H_
