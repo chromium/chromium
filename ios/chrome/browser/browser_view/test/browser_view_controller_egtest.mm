@@ -265,7 +265,6 @@ const char kSecondURLText[] = "You've arrived";
       waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
 }
 
-#if BUILDFLAG(ENABLE_WIDGETS_FOR_MIM)
 // Test that code for opening URLs from Search widgets loads the NTP with the
 // Omnibox focused and switches to the correct account (in the same profile).
 - (void)testOpenSearchWidgetWithoutProfileSwitch {
@@ -403,8 +402,6 @@ const char kSecondURLText[] = "You've arrived";
       waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
   GREYAssertTrue(![SigninEarlGrey isSignedOut], @"Failed to sign-in.");
 }
-
-#endif
 
 #pragma mark - Multiwindow
 

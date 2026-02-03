@@ -186,7 +186,6 @@
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/chrome/browser/whats_new/coordinator/promo/whats_new_scene_agent.h"
-#import "ios/chrome/browser/widget_kit/model/features.h"
 #import "ios/chrome/browser/window_activities/model/window_activity_helpers.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
@@ -205,10 +204,6 @@
 #import "net/base/url_util.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "ui/base/l10n/l10n_util.h"
-
-#if BUILDFLAG(ENABLE_WIDGETS_FOR_MIM)
-#import "ios/chrome/browser/widget_kit/model/model_swift.h"  // nogncheck
-#endif
 
 namespace {
 
@@ -962,11 +957,7 @@ void OnListFamilyMembersResponse(
 }
 
 - (BOOL)widgetURLEligibleForAccountChange:(NSURL*)URL {
-#if BUILDFLAG(ENABLE_WIDGETS_FOR_MIM)
   return [URL.scheme isEqualToString:@"chromewidgetkit"];
-#else
-  return NO;
-#endif
 }
 
 - (BOOL)shareExtensionURLEligibleForAccountChange:(NSURL*)URL {
