@@ -10,7 +10,10 @@ import android.app.role.RoleManager;
 import android.content.Context;
 import android.content.Intent;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils.DefaultBrowserPromoEntryPoint;
 import org.chromium.chrome.browser.util.DefaultBrowserInfo.DefaultBrowserState;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -24,22 +27,26 @@ public class DefaultBrowserPromoManager {
     private final WindowAndroid mWindowAndroid;
     private final DefaultBrowserPromoImpressionCounter mImpressionCounter;
     private final DefaultBrowserStateProvider mStateProvider;
+    @Nullable private final Integer mSource;
 
     /**
      * @param activity Activity to show promo dialogs.
      * @param windowAndroid The {@link WindowAndroid} for sending an intent.
      * @param impressionCounter The {@link DefaultBrowserPromoImpressionCounter}
      * @param stateProvider The {@link DefaultBrowserStateProvider}
+     * @param source The nullable source string for metrics (e.g. App Menu).
      */
     public DefaultBrowserPromoManager(
             Activity activity,
             WindowAndroid windowAndroid,
             DefaultBrowserPromoImpressionCounter impressionCounter,
-            DefaultBrowserStateProvider stateProvider) {
+            DefaultBrowserStateProvider stateProvider,
+            @Nullable @DefaultBrowserPromoEntryPoint Integer source) {
         mActivity = activity;
         mWindowAndroid = windowAndroid;
         mImpressionCounter = impressionCounter;
         mStateProvider = stateProvider;
+        mSource = source;
     }
 
     @SuppressLint({"WrongConstant", "NewApi"})
@@ -57,6 +64,13 @@ public class DefaultBrowserPromoManager {
                             currentState,
                             mStateProvider.getCurrentDefaultBrowserState(),
                             mImpressionCounter.getPromoCount());
+
+                    @DefaultBrowserState
+                    int newState = mStateProvider.getCurrentDefaultBrowserState();
+                    // Source (e.g. App Menu) specific metric.
+                    if (mSource != null) {
+                        DefaultBrowserPromoMetrics.recordOutcome(newState, mSource);
+                    }
                 },
                 null);
     }

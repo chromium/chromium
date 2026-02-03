@@ -1675,6 +1675,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Android.DefaultBrowserPromo.Outcome.AppMenu"
+    enum="AndroidDefaultBrowserPromoOutcomeType" expires_after="2027-01-30">
+  <owner>eleanorlee@google.com</owner>
+  <owner>twellington@chromium.org</owner>
+  <summary>
+    The final default browser state (outcome) after the user has been prompted
+    to set Chrome as the default via the App Menu item. Recorded when the system
+    UI prompting the user to change their default is dismissed.
+  </summary>
+</histogram>
+
 <histogram name="Android.DefaultBrowserPromo.Outcome.{CurrentState}"
     enum="AndroidDefaultBrowserPromoOutcomeType" expires_after="2026-06-28">
   <owner>lazzzis@google.com</owner>

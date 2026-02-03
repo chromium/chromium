@@ -11,6 +11,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.util.DefaultBrowserInfo.DefaultBrowserState;
 
 /**
@@ -73,11 +74,23 @@ public class DefaultBrowserStateProvider {
     @DefaultBrowserState
     int getCurrentDefaultBrowserState(@Nullable ResolveInfo info) {
         if (info == null || info.match == 0) return DefaultBrowserState.NO_DEFAULT; // no default
-        if (TextUtils.equals(
-                ContextUtils.getApplicationContext().getPackageName(),
-                info.activityInfo.packageName)) {
+
+        String defaultPackage = info.activityInfo.packageName;
+        String myPackage = ContextUtils.getApplicationContext().getPackageName();
+        if (TextUtils.equals(myPackage, defaultPackage)) {
             return DefaultBrowserState.CHROME_DEFAULT; // Already default
         }
+
+        //  Check if it is a different Chrome (e.g. the user is in Canary, but Stable is the
+        // default).
+        if (ChromeFeatureList.sDefaultBrowserPromoEntryPoint.isEnabled()) {
+            for (String chromePackage : CHROME_PACKAGE_NAMES) {
+                if (chromePackage.equals(defaultPackage)) {
+                    return DefaultBrowserState.OTHER_CHROME_DEFAULT;
+                }
+            }
+        }
+
         return DefaultBrowserState.OTHER_DEFAULT;
     }
 

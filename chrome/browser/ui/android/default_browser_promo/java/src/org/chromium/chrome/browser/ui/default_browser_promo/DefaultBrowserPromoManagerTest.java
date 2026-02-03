@@ -26,7 +26,10 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils.DefaultBrowserPromoEntryPoint;
 import org.chromium.chrome.browser.util.DefaultBrowserInfo.DefaultBrowserState;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.base.WindowAndroid.IntentCallback;
@@ -125,6 +128,49 @@ public class DefaultBrowserPromoManagerTest {
                 "Android.DefaultBrowserPromo.Outcome.OtherDefault.FifthOrMorePromo");
     }
 
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.DEFAULT_BROWSER_PROMO_ENTRY_POINT + ":show_app_menu_item/true"
+    })
+    public void testRecordOutcomeWithSource() {
+        // Create a Manager with a specific source ("AppMenu").
+        var manager =
+                new DefaultBrowserPromoManager(
+                        mActivity,
+                        mWindowAndroid,
+                        mImpressionCounter,
+                        mStateProvider,
+                        DefaultBrowserPromoEntryPoint.APP_MENU);
+
+        int currentState = DefaultBrowserState.OTHER_DEFAULT;
+        int outcomeState = DefaultBrowserState.CHROME_DEFAULT;
+
+        when(mStateProvider.getCurrentDefaultBrowserState()).thenReturn(currentState, outcomeState);
+
+        // Just return a dummy integer.
+        doReturn(1).when(mWindowAndroid).showCancelableIntent(any(Intent.class), any(), any());
+
+        var histogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.DefaultBrowserPromo.Outcome.AppMenu", outcomeState)
+                        .build();
+
+        // Trigger the promo.
+        manager.promoByRoleManager();
+
+        // 6. Capture the callback.
+        ArgumentCaptor<IntentCallback> onShowCallbackCaptor =
+                ArgumentCaptor.forClass(IntentCallback.class);
+        verify(mWindowAndroid)
+                .showCancelableIntent(eq(mIntent), onShowCallbackCaptor.capture(), any());
+
+        // Trigger the callback. We close the dialog and the histogram records the outcome.
+        onShowCallbackCaptor.getValue().onIntentCompleted(1, null);
+
+        histogram.assertExpected("AppMenu specific outcome should be recorded");
+    }
+
     private void testRecord(
             @DefaultBrowserState int currentState, @DefaultBrowserState int outcomeState) {
         testRecord(currentState, outcomeState, null);
@@ -136,7 +182,11 @@ public class DefaultBrowserPromoManagerTest {
             String extraHistogram) {
         var manager =
                 new DefaultBrowserPromoManager(
-                        mActivity, mWindowAndroid, mImpressionCounter, mStateProvider);
+                        mActivity,
+                        mWindowAndroid,
+                        mImpressionCounter,
+                        mStateProvider,
+                        /* source= */ null);
 
         String outcomeHistogram =
                 currentState == DefaultBrowserState.NO_DEFAULT

@@ -111,7 +111,11 @@ public class DefaultBrowserPromoUtils {
         tracker.notifyEvent("role_manager_default_browser_promos_shown");
         DefaultBrowserPromoManager manager =
                 new DefaultBrowserPromoManager(
-                        activity, windowAndroid, mImpressionCounter, mStateProvider);
+                        activity,
+                        windowAndroid,
+                        mImpressionCounter,
+                        mStateProvider,
+                        /* source= */ null);
         manager.promoByRoleManager();
         return true;
     }
@@ -274,7 +278,6 @@ public class DefaultBrowserPromoUtils {
             @Nullable WindowAndroid windowAndroid,
             @DefaultBrowserPromoEntryPoint int source) {
 
-        String sourceString = getSourceString(source);
         fetchDefaultBrowserInfo(
                 info -> {
                     if (info == null) {
@@ -285,7 +288,7 @@ public class DefaultBrowserPromoUtils {
 
                     // Record the volume/engagement.
                     @DefaultBrowserState int currentState = info.defaultBrowserState;
-                    DefaultBrowserPromoMetrics.recordEntrypointClick(sourceString, currentState);
+                    DefaultBrowserPromoMetrics.recordEntrypointClick(source, currentState);
 
                     // Show the role manager if:
                     // a) Role manager hasn't been shown before AND
@@ -303,24 +306,14 @@ public class DefaultBrowserPromoUtils {
                                         activity,
                                         windowAndroid,
                                         mImpressionCounter,
-                                        mStateProvider);
+                                        mStateProvider,
+                                        source);
                         manager.promoByRoleManager();
                     } else {
                         // Fallback: show the default apps page in Android settings.
                         openSystemDefaultAppsSettings(activity);
                     }
                 });
-    }
-
-    private String getSourceString(@DefaultBrowserPromoEntryPoint int source) {
-        if (source == DefaultBrowserPromoEntryPoint.APP_MENU) {
-            return "AppMenu";
-        } else if (source == DefaultBrowserPromoEntryPoint.SETTINGS) {
-            return "Settings";
-        } else {
-            throw new IllegalArgumentException(
-                    "Unexpected DefaultBrowserPromoEntryPoint: " + source);
-        }
     }
 
     @VisibleForTesting
