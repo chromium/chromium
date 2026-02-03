@@ -55,6 +55,9 @@ BASE_FEATURE(kContextualTasksRemoveTasksWithoutThreadsOrTabAssociations,
 BASE_FEATURE(kEnableNotifyZeroStateRenderedCapability,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kContextualTasksTabListInterfaceObserver,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<bool> kOnlyUseTitlesForSimilarity(
     &kContextualTasksContext,
     "ContextualTasksContextOnlyUseTitles",

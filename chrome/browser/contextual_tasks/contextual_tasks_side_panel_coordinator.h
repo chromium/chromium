@@ -8,9 +8,13 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/tabs/tab_list_interface_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
+#include "components/sessions/core/session_id.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
@@ -48,6 +52,7 @@ class ContextualTasksWebView;
 class ActiveTaskContextProvider;
 
 class ContextualTasksSidePanelCoordinator : public TabStripModelObserver,
+                                            public TabListInterfaceObserver,
                                             public SidePanelEntryObserver,
                                             content::WebContentsObserver {
  public:
@@ -154,6 +159,12 @@ class ContextualTasksSidePanelCoordinator : public TabStripModelObserver,
 
   void SetSidePanelIdNotToOverrideForTesting(SidePanelEntry::Id side_panel_id);
 
+  // TabListInterfaceObserver overrides:
+  void OnTabAdded(tabs::TabInterface* tab, int index) override;
+  void OnActiveTabChanged(tabs::TabInterface* tab) override;
+  void OnTabRemoved(tabs::TabInterface* tab,
+                    TabRemovedReason removed_reason) override;
+
  private:
   friend class ContextualTasksSidePanelCoordinatorInteractiveUiTest;
 
@@ -168,9 +179,6 @@ class ContextualTasksSidePanelCoordinator : public TabStripModelObserver,
   // Update the associated WebContents for active tab. Returns whether the web
   // contents was changed.
   bool UpdateWebContentsForActiveTab();
-
-  // Handle swapping WebContents if thread changes.
-  void OnActiveTabChanged();
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(

@@ -43,6 +43,10 @@ BASE_DECLARE_FEATURE(
 // param.
 BASE_DECLARE_FEATURE(kEnableNotifyZeroStateRenderedCapability);
 
+// Enables use of TabListInterfaceObserver in
+// ContextualTasksSidePanelCoordinator.
+BASE_DECLARE_FEATURE(kContextualTasksTabListInterfaceObserver);
+
 // Enum denoting which entry point can show when enabled.
 enum class EntryPointOption {
   kNoEntryPoint,

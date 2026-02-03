@@ -132,6 +132,8 @@ source_set("ui") {
     ":contextual_tasks",
     ":mojo_bindings",
     "//base",
+    "//chrome/browser/ui/tabs:tab_list_interface",
+    "//components/tabs:public",
     "//third_party/lens_server_proto:lens_overlay_proto",
   ]
 
