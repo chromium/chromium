@@ -2477,9 +2477,13 @@ TEST_P(TabStripModelTest, UnsplitOperation) {
       split_tabs::SplitTabCreatedSource::kToolbarButton);
 
   EXPECT_EQ("0ps 3ps 1p 2 4", GetTabStripStateString(tabstrip()));
+  EXPECT_EQ("active=0 anchor=0 selection=0 1",
+            tabstrip()->selection_model().GetListSelectionModel().ToString());
 
   tabstrip()->RemoveSplit(split_tab_id);
   EXPECT_EQ("0p 3p 1p 2 4", GetTabStripStateString(tabstrip()));
+  EXPECT_EQ("active=0 anchor=0 selection=0",
+            tabstrip()->selection_model().GetListSelectionModel().ToString());
 
   tabstrip()->CloseAllTabs();
   EXPECT_TRUE(tabstrip()->empty());
@@ -4891,8 +4895,20 @@ TEST_P(TabStripModelTest, AddTabToNewGroup) {
   ASSERT_TRUE(tabstrip()->SupportsTabGroups());
 
   tabstrip()->AppendWebContents(CreateWebContents(), false);
+  tabstrip()->AppendWebContents(CreateWebContents(), false);
+  tabstrip()->AppendWebContents(CreateWebContents(), false);
 
-  tabstrip()->AddToNewGroup({0});
+  tabstrip()->ActivateTabAt(
+      2, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
+
+  EXPECT_EQ("active=2 anchor=2 selection=2",
+            tabstrip()->selection_model().GetListSelectionModel().ToString());
+
+  tabstrip()->AddToNewGroup({0, 2});
+
+  EXPECT_EQ("active=1 anchor=1 selection=1",
+            tabstrip()->selection_model().GetListSelectionModel().ToString());
 
   EXPECT_TRUE(tabstrip()->GetTabGroupForTab(0).has_value());
 
@@ -4966,6 +4982,28 @@ TEST_P(TabStripModelTest, AddTabToNewGroupMiddleOfExistingGroup) {
 
   tabstrip()->AddToNewGroup({1, 2});
   EXPECT_EQ("0g0 3g0 1g1 2g1", GetTabStripStateString(tabstrip(), true));
+
+  tabstrip()->CloseAllTabs();
+}
+
+TEST_P(TabStripModelTest,
+       AddActiveTabToExistingGroupVerifyListSelectionModelUpdate) {
+  ASSERT_TRUE(tabstrip()->SupportsTabGroups());
+
+  PrepareTabs(tabstrip(), 7);
+  tabstrip()->ActivateTabAt(0);
+  tabstrip()->AddToNewGroup({3, 4, 5, 6});
+
+  EXPECT_EQ("active=0 anchor=0 selection=0",
+            tabstrip()->selection_model().GetListSelectionModel().ToString());
+
+  std::optional<tab_groups::TabGroupId> group =
+      tabstrip()->GetTabGroupForTab(3);
+
+  tabstrip()->AddToExistingGroup({0}, group.value());
+
+  EXPECT_EQ("active=2 anchor=2 selection=2",
+            tabstrip()->selection_model().GetListSelectionModel().ToString());
 
   tabstrip()->CloseAllTabs();
 }
