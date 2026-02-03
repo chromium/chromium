@@ -1265,17 +1265,14 @@ export class SearchboxElement extends SearchboxElementBase implements
   }
 
   protected setDeepSearchMode_() {
-    this.pageHandler_.setActiveToolMode(ToolMode.kDeepSearch);
     this.openComposebox_([], ToolMode.kDeepSearch);
   }
 
   protected setCreateImageMode_() {
-    this.pageHandler_.setActiveToolMode(ToolMode.kImageGen);
     this.openComposebox_([], ToolMode.kImageGen);
   }
 
   protected setCanvasMode_() {
-    this.pageHandler_.setActiveToolMode(ToolMode.kCanvas);
     this.openComposebox_([], ToolMode.kCanvas);
   }
 
