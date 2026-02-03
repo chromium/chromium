@@ -751,6 +751,9 @@ void VerticalTabView::CloseButtonPressed(const ui::Event& event) {
   if (collection_node_) {
     collection_node_->GetController()->CloseTab(GetTabInterface());
   }
+
+  // Hide the interactive close button while the tab is animating out.
+  close_button_->SetVisible(false);
 }
 
 bool VerticalTabView::IsHoverAnimationActive() const {
