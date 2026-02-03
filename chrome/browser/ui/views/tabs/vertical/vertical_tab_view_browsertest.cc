@@ -6,6 +6,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/run_until.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
@@ -286,6 +287,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, AlertIndicatorDataChanged) {
 // This test doesn't need the EnableTabMuting feature flag because it directly
 // calls NotifyClick() on the button controller.
 IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, AlertIndicatorMute) {
+  base::HistogramTester histogram_tester;
   TabCollectionNode* tab_node = unpinned_collection_node()->children()[0].get();
   VerticalTabView* tab_view =
       views::AsViewClass<VerticalTabView>(tab_node->view());
@@ -305,6 +307,10 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, AlertIndicatorMute) {
   ASSERT_EQ(tabs::TabAlert::kAudioPlaying,
             alert_indicator->alert_state_for_testing());
   ASSERT_FALSE(web_contents->IsAudioMuted());
+  ASSERT_EQ(0,
+            histogram_tester.GetBucketCount("Media.Audio.TabAudioMuted", true));
+  ASSERT_EQ(
+      0, histogram_tester.GetBucketCount("Media.Audio.TabAudioMuted", false));
 
   // After clicking the alert indicator, audio should be muted.
   alert_indicator->button_controller()->NotifyClick();
@@ -313,6 +319,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, AlertIndicatorMute) {
   EXPECT_EQ(tabs::TabAlert::kAudioMuting,
             alert_indicator->alert_state_for_testing());
   EXPECT_TRUE(web_contents->IsAudioMuted());
+  histogram_tester.ExpectBucketCount("Media.Audio.TabAudioMuted", true, 1);
+  histogram_tester.ExpectBucketCount("Media.Audio.TabAudioMuted", false, 0);
 
   // After clicking the alert indicator again, audio should no longer be muted.
   alert_indicator->button_controller()->NotifyClick();
@@ -321,6 +329,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, AlertIndicatorMute) {
   EXPECT_EQ(tabs::TabAlert::kAudioPlaying,
             alert_indicator->alert_state_for_testing());
   EXPECT_FALSE(web_contents->IsAudioMuted());
+  histogram_tester.ExpectBucketCount("Media.Audio.TabAudioMuted", true, 1);
+  histogram_tester.ExpectBucketCount("Media.Audio.TabAudioMuted", false, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, CloseButtonDataChanged) {

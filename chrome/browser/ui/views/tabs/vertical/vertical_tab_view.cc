@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/notimplemented.h"
@@ -564,7 +565,7 @@ bool VerticalTabView::ShouldEnableMuteToggle(int required_width) {
 void VerticalTabView::ToggleTabAudioMute() {
   content::WebContents* const contents = GetTabInterface()->GetContents();
   bool mute = !contents->IsAudioMuted();
-  // TODO(crbug.com/468033457): Log tab audio muted metric.
+  base::UmaHistogramBoolean("Media.Audio.TabAudioMuted", mute);
   SetTabAudioMuted(contents, mute, TabMutedReason::kAudioIndicator,
                    /*extension_id=*/std::string());
 }
