@@ -176,6 +176,21 @@ std::u16string EntityType::GetNameForI18n() const {
   NOTREACHED();
 }
 
+bool EntityType::SupportsMaskedStorage() const {
+  switch (name_) {
+    case EntityTypeName::kDriversLicense:
+    case EntityTypeName::kKnownTravelerNumber:
+    case EntityTypeName::kNationalIdCard:
+    case EntityTypeName::kPassport:
+    case EntityTypeName::kRedressNumber:
+      return true;
+    case EntityTypeName::kFlightReservation:
+    case EntityTypeName::kVehicle:
+      return false;
+  }
+  NOTREACHED();
+}
+
 std::optional<EntityTypeName> ToSafeEntityTypeName(
     std::underlying_type_t<EntityTypeName> raw_value) {
   // We rely here and elsewhere (such as in iteration over

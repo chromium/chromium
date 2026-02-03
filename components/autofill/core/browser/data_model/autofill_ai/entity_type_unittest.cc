@@ -143,5 +143,29 @@ TEST(AutofillEntityTypeTest, ReadOnly) {
   EXPECT_TRUE(EntityType(kFlightReservation).read_only());
 }
 
+// Tests that entity types that support masked storage have at least one
+// obfuscated attribute. Masked storage only makes sense for entities that have
+// obfuscated attributes since all unobfuscated attributes are already
+// transmitted via sync and therefore stored locally.
+TEST(AutofillEntityTypeTest, SupportsMaskedStorage) {
+  for (EntityType t : DenseSet<EntityType>::all()) {
+    EXPECT_TRUE(
+        !t.SupportsMaskedStorage() ||
+        std::ranges::any_of(t.attributes(),
+                            [](AttributeType a) { return a.is_obfuscated(); }))
+        << t;
+  }
+}
+
+// Tests explicitly for some entity types that they support masked storage.
+TEST(AutofillEntityTypeTest, SupportsMaskedStorageSelectTypes) {
+  using enum EntityTypeName;
+  EXPECT_TRUE(EntityType(kDriversLicense).SupportsMaskedStorage());
+  EXPECT_TRUE(EntityType(kKnownTravelerNumber).SupportsMaskedStorage());
+  EXPECT_TRUE(EntityType(kNationalIdCard).SupportsMaskedStorage());
+  EXPECT_TRUE(EntityType(kPassport).SupportsMaskedStorage());
+  EXPECT_TRUE(EntityType(kRedressNumber).SupportsMaskedStorage());
+}
+
 }  // namespace
 }  // namespace autofill

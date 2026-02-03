@@ -144,6 +144,21 @@ base::flat_set<EntityTypeName> GetSaveEntitiesTypesNames(
   return entity_types;
 }
 
+// Returns whether saving `entity` will be synchronous in the UI. This is the
+// case iff the entity is saved locally or if it is written via sync.
+bool IsSaveSynchronous(const EntityInstance& entity) {
+  if (!entity.type().SupportsMaskedStorage()) {
+    return true;
+  }
+  switch (entity.record_type()) {
+    case EntityInstance::RecordType::kLocal:
+      return true;
+    case EntityInstance::RecordType::kServerWallet:
+      return false;
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
 AutofillAiManager::EntityImportPromptCandidate::EntityImportPromptCandidate(
@@ -334,14 +349,15 @@ bool AutofillAiManager::MaybeImportForm(const FormStructure& form,
         base::BindOnce(&AutofillAiManager::HandlePromptResult, GetWeakPtr(),
                        form.ToFormData(), candidate_entity, ukm_source_id, prompt_type);
 
-    std::optional<EntityInstance> entity_instance;
+    std::optional<EntityInstance> old_entity;
     if (prompt_type == AutofillClient::AutofillAiImportPromptType::kUpdate) {
-      entity_instance = *client_->GetEntityDataManager()->GetEntityInstance(
+      old_entity = *client_->GetEntityDataManager()->GetEntityInstance(
           candidate_entity.guid());
     }
-    client_->ShowEntityImportBubble(
-        std::move(candidate_entity), std::move(entity_instance),
-        /*save_is_synchronous=*/true, std::move(prompt_result_callback));
+    const bool is_save_synchronous = IsSaveSynchronous(candidate_entity);
+    client_->ShowEntityImportBubble(std::move(candidate_entity),
+                                    std::move(old_entity), is_save_synchronous,
+                                    std::move(prompt_result_callback));
   }
   return prompt_shown;
 }
@@ -352,6 +368,9 @@ void AutofillAiManager::HandlePromptResult(
     ukm::SourceId ukm_source_id,
     AutofillClient::AutofillAiImportPromptType prompt_type,
     AutofillClient::AutofillAiBubbleResult result) {
+  // TODO(crbug.com/477845712): Handle asynchronous saving and remove this
+  // check.
+  CHECK(IsSaveSynchronous(entity));
   logger_.OnImportPromptResult(form, prompt_type, entity.type(),
                                entity.record_type(), result, ukm_source_id);
   EntityDataManager& entity_manager =
