@@ -314,8 +314,6 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationServiceBrowserTest,
       // Deprecated; should probably be removed.
       {&feature_engagement::kIPHReadingListInSidePanelFeature, std::nullopt,
        "crbug.com/1443078"},
-      {&feature_engagement::kIPHTabSearchFeature, std::nullopt,
-       "crbug.com/1443079"},
   });
 
   // Fetch the list of known IPH from the Feature Engagement system; it is an

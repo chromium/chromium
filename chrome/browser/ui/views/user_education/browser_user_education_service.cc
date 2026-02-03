@@ -1330,16 +1330,6 @@ void MaybeRegisterChromeFeaturePromos(
           .SetMetadata(121, "dpenning@chromium.org",
                        "Triggered when tab organization is accepted.")));
 
-  // kIPHTabSearchFeature:
-  registry.RegisterFeature(
-      std::move(FeaturePromoSpecification::CreateForLegacyPromo(
-                    &feature_engagement::kIPHTabSearchFeature,
-                    kTabSearchButtonElementId, IDS_TAB_SEARCH_PROMO)
-                    .SetBubbleArrow(HelpBubbleArrow::kTopLeft)
-                    .SetMetadata(92, "tluk@chromium.org",
-                                 "Triggered once when there are more than 8 "
-                                 "tabs in the tab strip.")));
-
   // kIPHTabSearchToolbarButtonFeature:
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForToastPromo(

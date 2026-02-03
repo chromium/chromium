@@ -26,7 +26,7 @@ class ProductMessagingControllerUiTest : public InteractiveFeaturePromoTest {
  public:
   ProductMessagingControllerUiTest()
       : InteractiveFeaturePromoTest(UseDefaultTrackerAllowingPromos(
-            {feature_engagement::kIPHTabSearchFeature})) {}
+            {feature_engagement::kIPHDesktopSharedHighlightingFeature})) {}
 
   ~ProductMessagingControllerUiTest() override = default;
 
@@ -77,8 +77,8 @@ class ProductMessagingControllerUiTest : public InteractiveFeaturePromoTest {
 IN_PROC_BROWSER_TEST_F(ProductMessagingControllerUiTest, NoticeBlocksIPH) {
   RunTestSequence(
       QueueNotice(),
-      MaybeShowPromo(feature_engagement::kIPHTabSearchFeature,
+      MaybeShowPromo(feature_engagement::kIPHDesktopSharedHighlightingFeature,
                      user_education::FeaturePromoResult::kBlockedByPromo),
       EnsureHandle(), SetShown(), ReleaseHandle(),
-      MaybeShowPromo(feature_engagement::kIPHTabSearchFeature));
+      MaybeShowPromo(feature_engagement::kIPHDesktopSharedHighlightingFeature));
 }

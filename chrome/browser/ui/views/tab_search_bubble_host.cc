@@ -230,13 +230,6 @@ bool TabSearchBubbleHost::ShowTabSearchBubble(
     observer.OnBubbleInitializing();
   }
 
-  if (auto* const browser = GetBrowser()) {
-    // Close the Tab Search IPH if it is showing.
-    BrowserUserEducationInterface::From(browser)->NotifyFeaturePromoFeatureUsed(
-        feature_engagement::kIPHTabSearchFeature,
-        FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
-  }
-
   bubble_created_time_ = base::TimeTicks::Now();
   webui_bubble_manager_->set_widget_initialization_callback(base::BindOnce(
       [](base::TimeTicks bubble_init_start_time) {

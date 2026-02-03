@@ -909,13 +909,6 @@ void BrowserTabStripController::AddTabs(
   }
 
   tabstrip_->AddTabsAt(std::move(tabs_data));
-
-  // Try to show tab search IPH if needed.
-  constexpr int kTabSearchIPHTriggerThreshold = 8;
-  if (tabstrip_->GetTabCount() >= kTabSearchIPHTriggerThreshold) {
-    BrowserUserEducationInterface::From(GetBrowserWindowInterface())
-        ->MaybeShowFeaturePromo(feature_engagement::kIPHTabSearchFeature);
-  }
 }
 
 bool BrowserTabStripController::IsContextMenuCommandChecked(
