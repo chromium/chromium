@@ -177,15 +177,7 @@ id<GREYMatcher> identityDiscMatcher() {
 }
 
 // Tests that the account menu is not dismissed if the app was backgrounded.
-// TODO(crbug.com/436894248): Test is flaky on simulator. Reenable the test.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testAccountMenuStaysIfAppBackgrounded \
-  FLAKY_testAccountMenuStaysIfAppBackgrounded
-#else
-#define MAYBE_testAccountMenuStaysIfAppBackgrounded \
-  testAccountMenuStaysIfAppBackgrounded
-#endif
-- (void)MAYBE_testAccountMenuStaysIfAppBackgrounded {
+- (void)testAccountMenuStaysIfAppBackgrounded {
   [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
   // Select the identity disc particle.
   [self selectIdentityDiscAndVerify];
