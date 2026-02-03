@@ -30,10 +30,13 @@
 #include "ash/system/overview/overview_button_tray.h"
 #include "ash/system/palette/palette_tray.h"
 #include "ash/system/session/logout_button_tray.h"
+#include "ash/system/status_area_widget_delegate.h"
 #include "ash/system/status_area_widget_test_helper.h"
+#include "ash/system/tray/imaged_tray_icon.h"
 #include "ash/system/tray/status_area_overflow_button_tray.h"
 #include "ash/system/tray/system_tray_notifier.h"
 #include "ash/system/tray/system_tray_observer.h"
+#include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/date_tray.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
@@ -53,16 +56,34 @@
 #include "components/proxy_config/pref_proxy_config_tracker_impl.h"
 #include "components/session_manager/session_manager_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/models/image_model.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_unittest_util.h"
 
 using session_manager::SessionState;
 using testing::NotNull;
 
 namespace ash {
+namespace {
+
+gfx::ImageSkia CreateTextImage(const gfx::Size& size,
+                               SkColor color = SK_ColorBLACK) {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(size.width(), size.height());
+  bitmap.eraseColor(color);
+  auto image = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
+  image.MakeThreadSafe();
+  return image;
+}
+
+}  // namespace
 
 class StatusAreaWidgetTest : public AshTestBase {
  protected:
@@ -759,10 +780,7 @@ class StatusAreaWidgetEcheTest : public AshTestBase {
 TEST_F(StatusAreaWidgetEcheTest, EcheTrayShowHide) {
   StatusAreaWidget* status_area =
       StatusAreaWidgetTestHelper::GetStatusAreaWidget();
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(30, 30);
-  gfx::ImageSkia image_skia = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
-  image_skia.MakeThreadSafe();
+  gfx::ImageSkia image_skia = CreateTextImage({30, 30});
   status_area->eche_tray()->LoadBubble(
       GURL("http://google.com"), gfx::Image(image_skia), u"app 1",
       u"your phone",
@@ -785,10 +803,7 @@ TEST_F(StatusAreaWidgetEcheTest, StatusAreaOpenTrayBubble) {
   StatusAreaWidget* status_area =
       StatusAreaWidgetTestHelper::GetStatusAreaWidget();
   auto* eche_tray = status_area->eche_tray();
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(30, 30);
-  gfx::ImageSkia image_skia = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
-  image_skia.MakeThreadSafe();
+  gfx::ImageSkia image_skia = CreateTextImage({30, 30});
   eche_tray->LoadBubble(
       GURL("http://google.com"), gfx::Image(image_skia), u"app 1",
       u"your phone",
@@ -801,6 +816,216 @@ TEST_F(StatusAreaWidgetEcheTest, StatusAreaOpenTrayBubble) {
   eche_tray->HideBubble();
 
   EXPECT_EQ(nullptr, status_area->open_shelf_pod_bubble());
+}
+
+TEST_F(StatusAreaWidgetTest, AddCustomTrayIcons) {
+  StatusAreaWidget* status_area =
+      StatusAreaWidgetTestHelper::GetStatusAreaWidget();
+  {
+    TrayIconConfiguration configuration;
+    configuration.id = 1;
+    configuration.tool_tip = u"Hello World";
+    gfx::ImageSkia image_skia = CreateTextImage({30, 30});
+    configuration.image = image_skia;
+
+    EXPECT_TRUE(status_area->custom_tray_buttons_ids_for_test().empty());
+    status_area->AddTrayIcon(configuration, base::NullCallback());
+    EXPECT_EQ(status_area->custom_tray_buttons_ids_for_test().size(), 1u);
+
+    const int kExpectedViewId = 10000 + configuration.id;
+    ImagedTrayIcon* icon = static_cast<ImagedTrayIcon*>(
+        status_area->status_area_widget_delegate()->GetViewByID(
+            kExpectedViewId));
+    EXPECT_TRUE(icon);
+    EXPECT_EQ(icon->image_view()->GetTooltipText(), configuration.tool_tip);
+
+    ui::ImageModel actual_model = icon->image_view()->GetImageModel();
+    ASSERT_TRUE(actual_model.IsImage());
+    gfx::ImageSkia actual_image = actual_model.GetImage().AsImageSkia();
+    EXPECT_TRUE(gfx::test::AreBitmapsEqual(*actual_image.bitmap(),
+                                           *image_skia.bitmap()));
+  }
+  {
+    TrayIconConfiguration configuration;
+    configuration.id = 2;
+    configuration.tool_tip = u"Hello World";
+
+    EXPECT_EQ(status_area->custom_tray_buttons_ids_for_test().size(), 1u);
+    status_area->AddTrayIcon(configuration, base::NullCallback());
+    EXPECT_EQ(status_area->custom_tray_buttons_ids_for_test().size(), 2u);
+
+    const int kExpectedViewId = 10000 + configuration.id;
+    ImagedTrayIcon* icon = static_cast<ImagedTrayIcon*>(
+        status_area->status_area_widget_delegate()->GetViewByID(
+            kExpectedViewId));
+    EXPECT_TRUE(icon);
+    EXPECT_EQ(icon->image_view()->GetTooltipText(), configuration.tool_tip);
+
+    ui::ImageModel actual_model = icon->image_view()->GetImageModel();
+    ASSERT_TRUE(actual_model.IsEmpty());
+  }
+  {
+    TrayIconConfiguration configuration;
+    configuration.id = 3;
+    gfx::ImageSkia image_skia = CreateTextImage({30, 30});
+    configuration.image = image_skia;
+
+    EXPECT_EQ(status_area->custom_tray_buttons_ids_for_test().size(), 2u);
+    status_area->AddTrayIcon(configuration, base::NullCallback());
+    EXPECT_EQ(status_area->custom_tray_buttons_ids_for_test().size(), 3u);
+
+    const int kExpectedViewId = 10000 + configuration.id;
+    ImagedTrayIcon* icon = static_cast<ImagedTrayIcon*>(
+        status_area->status_area_widget_delegate()->GetViewByID(
+            kExpectedViewId));
+    EXPECT_TRUE(icon);
+    EXPECT_TRUE(icon->image_view()->GetTooltipText().empty());
+
+    ui::ImageModel actual_model = icon->image_view()->GetImageModel();
+    ASSERT_TRUE(actual_model.IsImage());
+    gfx::ImageSkia actual_image = actual_model.GetImage().AsImageSkia();
+    EXPECT_TRUE(gfx::test::AreBitmapsEqual(*actual_image.bitmap(),
+                                           *image_skia.bitmap()));
+  }
+}
+
+TEST_F(StatusAreaWidgetTest, UpdateCustomTrayIcon) {
+  StatusAreaWidget* status_area =
+      StatusAreaWidgetTestHelper::GetStatusAreaWidget();
+  {
+    // Add the initial icon.
+    TrayIconConfiguration configuration;
+    configuration.id = 1;
+    configuration.tool_tip = u"Hello World";
+
+    gfx::ImageSkia image_skia = CreateTextImage({30, 30});
+    configuration.image = image_skia;
+
+    status_area->AddTrayIcon(configuration, base::NullCallback());
+    EXPECT_EQ(status_area->custom_tray_buttons_ids_for_test().size(), 1u);
+
+    // Verify initial state
+    const int kExpectedViewId = 10000 + configuration.id;
+    ImagedTrayIcon* icon = static_cast<ImagedTrayIcon*>(
+        status_area->status_area_widget_delegate()->GetViewByID(
+            kExpectedViewId));
+    EXPECT_TRUE(icon);
+    EXPECT_EQ(icon->image_view()->GetTooltipText(), configuration.tool_tip);
+
+    ui::ImageModel actual_model = icon->image_view()->GetImageModel();
+    ASSERT_TRUE(actual_model.IsImage());
+    gfx::ImageSkia actual_image = actual_model.GetImage().AsImageSkia();
+    EXPECT_TRUE(gfx::test::AreBitmapsEqual(*actual_image.bitmap(),
+                                           *image_skia.bitmap()));
+  }
+  {
+    // Update the image and tooltip.
+    TrayIconConfiguration configuration;
+    configuration.id = 1;
+    configuration.tool_tip = u"Update Tooltip";
+    gfx::ImageSkia update_image = CreateTextImage({30, 30}, SK_ColorGREEN);
+    configuration.image = update_image;
+
+    status_area->UpdateTrayIcon(configuration);
+    const int kExpectedViewId = 10000 + configuration.id;
+    ImagedTrayIcon* icon = static_cast<ImagedTrayIcon*>(
+        status_area->status_area_widget_delegate()->GetViewByID(
+            kExpectedViewId));
+    EXPECT_TRUE(icon);
+    EXPECT_EQ(icon->image_view()->GetTooltipText(), configuration.tool_tip);
+
+    ui::ImageModel actual_model = icon->image_view()->GetImageModel();
+    ASSERT_TRUE(actual_model.IsImage());
+    gfx::ImageSkia actual_image = actual_model.GetImage().AsImageSkia();
+    EXPECT_TRUE(gfx::test::AreBitmapsEqual(*actual_image.bitmap(),
+                                           *update_image.bitmap()));
+  }
+}
+
+TEST_F(StatusAreaWidgetTest, RemoveCustomTrayIcon) {
+  StatusAreaWidget* status_area =
+      StatusAreaWidgetTestHelper::GetStatusAreaWidget();
+  TrayIconConfiguration configuration_1;
+  configuration_1.id = 1;
+  status_area->AddTrayIcon(configuration_1, base::NullCallback());
+
+  TrayIconConfiguration configuration_2;
+  configuration_2.id = 2;
+  status_area->AddTrayIcon(configuration_2, base::NullCallback());
+
+  EXPECT_EQ(status_area->custom_tray_buttons_ids_for_test().size(), 2u);
+
+  TrayIconConfiguration configuration_3;
+  configuration_3.id = 2;
+  status_area->RemoveTrayIcon(configuration_3);
+  EXPECT_EQ(status_area->custom_tray_buttons_ids_for_test().size(), 1u);
+
+  const int kExpectedViewId = 10000 + configuration_3.id;
+  ImagedTrayIcon* icon = static_cast<ImagedTrayIcon*>(
+      status_area->status_area_widget_delegate()->GetViewByID(kExpectedViewId));
+  EXPECT_FALSE(icon);
+}
+
+TEST_F(StatusAreaWidgetTest, AddingCustomIconsUpdatesCollapsableState) {
+  StatusAreaWidget* status_area =
+      StatusAreaWidgetTestHelper::GetStatusAreaWidget();
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kAshForceStatusAreaCollapsible);
+  EXPECT_EQ(StatusAreaWidget::CollapseState::NOT_COLLAPSIBLE,
+            status_area->collapse_state());
+
+  status_area->overflow_button_tray()->SetVisiblePreferred(true);
+  status_area->virtual_keyboard_tray_for_testing()->SetVisiblePreferred(true);
+  EXPECT_EQ(StatusAreaWidget::CollapseState::NOT_COLLAPSIBLE,
+            status_area->collapse_state());
+
+  // Adding custom icons should update collapsible state.
+  TrayIconConfiguration configuration_1;
+  configuration_1.id = 1;
+  status_area->AddTrayIcon(configuration_1, base::NullCallback());
+
+  EXPECT_EQ(StatusAreaWidget::CollapseState::NOT_COLLAPSIBLE,
+            status_area->collapse_state());
+
+  TrayIconConfiguration configuration_2;
+  configuration_2.id = 2;
+  status_area->AddTrayIcon(configuration_2, base::NullCallback());
+
+  EXPECT_EQ(StatusAreaWidget::CollapseState::COLLAPSED,
+            status_area->collapse_state());
+
+  status_area->RemoveTrayIcon(configuration_1);
+  EXPECT_EQ(StatusAreaWidget::CollapseState::NOT_COLLAPSIBLE,
+            status_area->collapse_state());
+}
+
+TEST_F(StatusAreaWidgetTest, AddingOrRemovingCustomIconUpdatesBounds) {
+  StatusAreaWidget* status_area =
+      StatusAreaWidgetTestHelper::GetStatusAreaWidget();
+  const gfx::Rect initial_bounds = status_area->GetWindowBoundsInScreen();
+  TrayIconConfiguration configuration;
+  configuration.id = 1;
+  status_area->AddTrayIcon(configuration, base::NullCallback());
+
+  const gfx::Rect new_bounds = status_area->GetWindowBoundsInScreen();
+
+  // The new bounds should be able to accommodate the new icon.
+  EXPECT_GE(new_bounds.width() - initial_bounds.width(), kTrayItemSize);
+  {
+    const int kExpectedViewId = 10000 + configuration.id;
+    views::View* icon = status_area->status_area_widget_delegate()->GetViewByID(
+        kExpectedViewId);
+    ASSERT_TRUE(icon);
+    EXPECT_TRUE(icon->GetVisible());
+  }
+
+  // After removing the icon, the status_area should restore to its original
+  // bounds.
+  TrayIconConfiguration remove_configuration;
+  remove_configuration.id = 1;
+  status_area->RemoveTrayIcon(remove_configuration);
+
+  EXPECT_EQ(status_area->GetWindowBoundsInScreen(), initial_bounds);
 }
 
 }  // namespace ash

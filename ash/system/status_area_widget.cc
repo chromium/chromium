@@ -4,8 +4,10 @@
 
 #include "ash/system/status_area_widget.h"
 
+#include <cstdint>
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "ash/annotator/annotation_tray.h"
 #include "ash/capture_mode/stop_recording_button_tray.h"
@@ -49,12 +51,14 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_pin_util.h"
 #include "ash/wm_mode/wm_mode_button_tray.h"
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
 #include "base/functional/callback_forward.h"
 #include "base/i18n/time_formatting.h"
 #include "base/metrics/histogram_macros.h"
 #include "chromeos/ui/base/window_pin_type.h"
+#include "ui/base/models/image_model.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/display.h"
@@ -63,6 +67,16 @@
 #include "ui/message_center/message_center_types.h"
 
 namespace ash {
+namespace {
+
+// Ensures that there is no id collision within the subtree of StatusAreaWidget.
+constexpr uint32_t kCustomIconsBaseId = 10000;
+
+uint32_t GetCustomIconId(const TrayIconConfiguration& configuration) {
+  return configuration.id + kCustomIconsBaseId;
+}
+
+}  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
 // StatusAreaWidget
@@ -650,17 +664,94 @@ void StatusAreaWidget::InitializeTrayButtonsAccessibleNavFocus() {
 
 bool StatusAreaWidget::AddTrayIcon(const TrayIconConfiguration& configuration,
                                    base::RepeatingClosure callback) {
-  return false;
+  const int64_t icon_id = GetCustomIconId(configuration);
+  CHECK(!custom_tray_buttons_ids_.contains(icon_id));
+
+  std::u16string tooltip_text;
+  if (configuration.tool_tip) {
+    tooltip_text = *configuration.tool_tip;
+  }
+
+  ui::ImageModel image_model;
+  if (configuration.image) {
+    image_model = ui::ImageModel::FromImageSkia(*configuration.image);
+  }
+
+  // TODO(b:463430271): Add a new catalog name for custom icons.
+  auto icon = std::make_unique<ImagedTrayIcon>(
+      shelf_, std::move(image_model), std::move(tooltip_text),
+      TrayBackgroundViewCatalogName::kTestCatalogName);
+  icon->SetID(icon_id);
+  icon->SetCallback(std::move(callback));
+  icon->SetVisiblePreferred(true);
+
+  custom_tray_buttons_ids_.insert(icon_id);
+
+  // TODO(b:463430271): Support correct order for `custom_tray_buttons_`.
+  auto* icon_ptr = AddTrayButton(std::move(icon));
+  icon_ptr->Initialize();
+
+  EnsureTrayOrder();
+  CalculateTargetBounds();
+  UpdateLayout(/*animate=*/true);
+  UpdateCollapseState();
+  return true;
 }
 
 bool StatusAreaWidget::UpdateTrayIcon(
     const TrayIconConfiguration& configuration) {
-  return false;
+  const int64_t icon_id = GetCustomIconId(configuration);
+  if (!custom_tray_buttons_ids_.contains(icon_id)) {
+    return false;
+  }
+
+  auto* icon = static_cast<ImagedTrayIcon*>(
+      status_area_widget_delegate_->GetViewByID(icon_id));
+  CHECK(icon);
+
+  auto* image_view = icon->image_view();
+  CHECK(image_view);
+  if (configuration.tool_tip &&
+      configuration.tool_tip != image_view->GetTooltipText()) {
+    image_view->SetTooltipText(*configuration.tool_tip);
+  }
+
+  if (configuration.image) {
+    ui::ImageModel model = ui::ImageModel::FromImageSkia(*configuration.image);
+    if (model != image_view->GetImageModel()) {
+      image_view->SetImage(model);
+    }
+  }
+
+  return true;
 }
 
 bool StatusAreaWidget::RemoveTrayIcon(
     const TrayIconConfiguration& configuration) {
-  return false;
+  const int64_t icon_id = GetCustomIconId(configuration);
+  if (!custom_tray_buttons_ids_.contains(icon_id)) {
+    return false;
+  }
+
+  auto* icon = static_cast<ImagedTrayIcon*>(
+      status_area_widget_delegate_->GetViewByID(icon_id));
+  CHECK(icon);
+
+  icon->SetVisiblePreferred(false);
+
+  auto position = std::find(tray_buttons_.begin(), tray_buttons_.end(), icon);
+  if (position != tray_buttons_.end()) {
+    tray_buttons_.erase(position);
+  }
+
+  custom_tray_buttons_ids_.erase(icon_id);
+  status_area_widget_delegate_->RemoveChildViewT(icon);
+
+  EnsureTrayOrder();
+  CalculateTargetBounds();
+  UpdateLayout(/*animate=*/true);
+  UpdateCollapseState();
+  return true;
 }
 
 void StatusAreaWidget::SetOpenShelfPodBubble(
