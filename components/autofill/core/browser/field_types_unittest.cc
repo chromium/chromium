@@ -155,8 +155,9 @@ TEST(FieldTypesTest, IsValidFieldType) {
       FLIGHT_RESERVATION_DEPARTURE_AIRPORT,
       FLIGHT_RESERVATION_ARRIVAL_AIRPORT,
       FLIGHT_RESERVATION_DEPARTURE_DATE,
+      ADDRESS_HOME_ZIP_AND_CITY,
   };
-  static_assert(FieldType::MAX_VALID_FIELD_TYPE == 207,
+  static_assert(FieldType::MAX_VALID_FIELD_TYPE == 208,
                 "New field type needs to be added to kValidFieldTypes.");
   FieldType kInvalidValue = static_cast<FieldType>(123456);
   ASSERT_FALSE(kValidFieldTypes.count(kInvalidValue));

@@ -592,6 +592,12 @@ std::optional<double> AddressFieldParserNG::FindScoreOfBestMatchingRule(
         return 1.5;
       }
       return std::nullopt;
+    case ADDRESS_HOME_ZIP_AND_CITY:
+      if (context_->client_country == GeoIpCountryCode("FR") &&
+          Match("ZIP_CODE", 1.0) && Match("CITY", 1.0)) {
+        return 1.5;
+      }
+      return std::nullopt;
 
     // Address related fields that we don't parse (yet).
     case DELIVERY_INSTRUCTIONS:

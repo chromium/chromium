@@ -219,6 +219,7 @@ AutofillFieldRedactionReason GetRedactionReason(FieldType field_type) {
     case autofill::ADDRESS_HOME_HOUSE_NUMBER_AND_APT:
     case autofill::ADDRESS_HOME_APT:
     case autofill::ADDRESS_HOME_APT_TYPE:
+    case autofill::ADDRESS_HOME_ZIP_AND_CITY:
     case autofill::ADDRESS_HOME_ZIP_PREFIX:
     case autofill::ADDRESS_HOME_ZIP_SUFFIX:
     case autofill::PHONE_HOME_NUMBER:

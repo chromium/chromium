@@ -598,6 +598,7 @@ std::vector<std::pair<base::test::FeatureRef, bool>> GetWipFeatures(
       {features::kAutofillUseINAddressModel, true},
       {features::kAutofillSupportPhoneticNameForJP, true},
       {features::kAutofillEnableExpirationDateImprovements, true},
+      {features::kAutofillSupportCombinedZipAndCityFR, true},
       {features::kAutofillSupportLastNamePrefix, true},
       {features::kAutofillSupportSplitZipCode, true},
       // Other improvements.

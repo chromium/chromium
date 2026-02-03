@@ -1021,6 +1021,11 @@ Called by update_autofill_enums.py.-->
              value edited"/>
   <int value="13185"
       label="FLIGHT_RESERVATION_DEPARTURE_DATE: Autofilled value accepted"/>
+  <int value="13248"
+      label="ADDRESS_HOME_ZIP_AND_CITY: Not autofilled or autofilled value
+             edited"/>
+  <int value="13249"
+      label="ADDRESS_HOME_ZIP_AND_CITY: Autofilled value accepted"/>
 </enum>
 
 <enum name="AutofilledFieldUserEditingStatus">
@@ -1316,6 +1321,8 @@ Called by update_autofill_enums.py.-->
   <int value="3281" label="FLIGHT_RESERVATION_ARRIVAL_AIRPORT: accepted"/>
   <int value="3296" label="FLIGHT_RESERVATION_DEPARTURE_DATE: edited"/>
   <int value="3297" label="FLIGHT_RESERVATION_DEPARTURE_DATE: accepted"/>
+  <int value="3312" label="ADDRESS_HOME_ZIP_AND_CITY: edited"/>
+  <int value="3313" label="ADDRESS_HOME_ZIP_AND_CITY: accepted"/>
 </enum>
 
 <enum name="AutofillEmailOrLoyaltyCardAcceptanceMetricValue">
@@ -2044,6 +2051,23 @@ Called by update_autofill_enums.py.-->
   <int value="12807" label="ONE_TIME_PASSWORD: False Positive (Empty)"/>
   <int value="12808" label="ONE_TIME_PASSWORD: False Negative (Mismatch)"/>
   <int value="12809" label="ONE_TIME_PASSWORD: False Negative (Unknown)"/>
+  <int value="13056" label="ADDRESS_HOME_ZIP_AND_CITY: True Positive"/>
+  <int value="13057"
+      label="ADDRESS_HOME_ZIP_AND_CITY: True Negative (Ambiguous)"/>
+  <int value="13058"
+      label="ADDRESS_HOME_ZIP_AND_CITY: True Negative (Unknown)"/>
+  <int value="13059" label="ADDRESS_HOME_ZIP_AND_CITY: True Negative (Empty)"/>
+  <int value="13060"
+      label="ADDRESS_HOME_ZIP_AND_CITY: False Positive (Mismatch)"/>
+  <int value="13061"
+      label="ADDRESS_HOME_ZIP_AND_CITY: False Positive (Ambiguous)"/>
+  <int value="13062"
+      label="ADDRESS_HOME_ZIP_AND_CITY: False Positive (Unknown)"/>
+  <int value="13063" label="ADDRESS_HOME_ZIP_AND_CITY: False Positive (Empty)"/>
+  <int value="13064"
+      label="ADDRESS_HOME_ZIP_AND_CITY: False Negative (Mismatch)"/>
+  <int value="13065"
+      label="ADDRESS_HOME_ZIP_AND_CITY: False Negative (Unknown)"/>
 </enum>
 
 <enum name="AutofillFieldType">
@@ -2190,6 +2214,7 @@ Called by update_autofill_enums.py.-->
   <int value="204" label="FLIGHT_RESERVATION_DEPARTURE_AIRPORT"/>
   <int value="205" label="FLIGHT_RESERVATION_ARRIVAL_AIRPORT"/>
   <int value="206" label="FLIGHT_RESERVATION_DEPARTURE_DATE"/>
+  <int value="207" label="ADDRESS_HOME_ZIP_AND_CITY"/>
 </enum>
 
 <enum name="AutofillFilledCardInformationBubbleFieldClicked">
@@ -3870,6 +3895,8 @@ Called by update_autofill_enums.py.-->
   <int value="821" label="FLIGHT_RESERVATION_ARRIVAL_AIRPORT: Accepted"/>
   <int value="824" label="FLIGHT_RESERVATION_DEPARTURE_DATE: Ignored"/>
   <int value="825" label="FLIGHT_RESERVATION_DEPARTURE_DATE: Accepted"/>
+  <int value="828" label="ADDRESS_HOME_ZIP_AND_CITY: Ignored"/>
+  <int value="829" label="ADDRESS_HOME_ZIP_AND_CITY: Accepted"/>
 </enum>
 
 <!-- LINT.IfChange(FormSubmissionOutcomeIOS) -->

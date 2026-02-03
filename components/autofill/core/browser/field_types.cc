@@ -69,6 +69,7 @@ static constexpr auto kTypeNameToFieldType =
          {"ADDRESS_HOME_ZIP", ADDRESS_HOME_ZIP},
          {"ADDRESS_HOME_ZIP_PREFIX", ADDRESS_HOME_ZIP_PREFIX},
          {"ADDRESS_HOME_ZIP_SUFFIX", ADDRESS_HOME_ZIP_SUFFIX},
+         {"ADDRESS_HOME_ZIP_AND_CITY", ADDRESS_HOME_ZIP_AND_CITY},
          {"ADDRESS_HOME_COUNTRY", ADDRESS_HOME_COUNTRY},
          {"CREDIT_CARD_NAME_FULL", CREDIT_CARD_NAME_FULL},
          {"CREDIT_CARD_NUMBER", CREDIT_CARD_NUMBER},
@@ -229,6 +230,7 @@ bool IsFillableFieldType(FieldType field_type) {
     case ADDRESS_HOME_ZIP:
     case ADDRESS_HOME_ZIP_PREFIX:
     case ADDRESS_HOME_ZIP_SUFFIX:
+    case ADDRESS_HOME_ZIP_AND_CITY:
     case ADDRESS_HOME_COUNTRY:
     case ADDRESS_HOME_STREET_ADDRESS:
     case ADDRESS_HOME_SORTING_CODE:
@@ -555,6 +557,8 @@ std::string_view FieldTypeToDeveloperRepresentationString(FieldType type) {
       return "ZIP code prefix";
     case ADDRESS_HOME_ZIP_SUFFIX:
       return "ZIP code suffix";
+    case ADDRESS_HOME_ZIP_AND_CITY:
+      return "ZIP code and city";
     case ADDRESS_HOME_COUNTRY:
       return "Country";
     case ADDRESS_HOME_OVERFLOW:

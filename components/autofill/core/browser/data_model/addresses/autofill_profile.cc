@@ -494,6 +494,7 @@ int AutofillProfile::Compare(const AutofillProfile& profile) const {
                                 ADDRESS_HOME_CITY,
                                 ADDRESS_HOME_STATE,
                                 ADDRESS_HOME_ZIP,
+                                ADDRESS_HOME_ZIP_AND_CITY,
                                 ADDRESS_HOME_SORTING_CODE,
                                 ADDRESS_HOME_COUNTRY,
                                 ADDRESS_HOME_LANDMARK,
@@ -518,7 +519,7 @@ int AutofillProfile::Compare(const AutofillProfile& profile) const {
 
   // When adding field types, ensure that they don't need to be added here and
   // update the last checked value.
-  static_assert(FieldType::MAX_VALID_FIELD_TYPE == 207,
+  static_assert(FieldType::MAX_VALID_FIELD_TYPE == 208,
                 "New field type needs to be reviewed for inclusion in the "
                 "profile comparison logic.");
 

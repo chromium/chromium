@@ -857,6 +857,12 @@ BASE_FEATURE(kAutofillSmsOtpCrowdsourcing, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAutofillStructuredFieldsDisableAddressLines,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables parsing of fields that combine postal code and city in France,
+// e.g. a single field containing "75008 Paris".
+// TODO(crbug.com/465119085): Clean up when launched.
+BASE_FEATURE(kAutofillSupportCombinedZipAndCityFR,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables using custom name model with last name prefixes support.
 BASE_FEATURE(kAutofillSupportLastNamePrefix, base::FEATURE_DISABLED_BY_DEFAULT);
 
