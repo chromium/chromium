@@ -225,6 +225,7 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
 
   if (config.badgeText) {
     _label.text = config.badgeText;
+    _label.textColor = [UIColor colorNamed:kTextPrimaryColor];
   }
 
   _badgeIcon.image = config.badgeImage;
