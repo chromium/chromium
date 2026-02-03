@@ -33,27 +33,29 @@ export function getHtml(this: ContextualEntrypointButtonElement) {
         noink>
     </cr-icon-button>`}`;
   return html`<!--_html_template_start_-->
-    ${this.glifAnimationState !== GlifAnimationState.INELIGIBLE ? html`
-    <div id="glowWrapper" class="glow-container">
-      ${entrypointButton}
-      <div class="aim-gradient-outer-blur aim-c"></div>
-      <div class="aim-gradient-solid aim-c"></div>
-      <div class="aim-background aim-c"
-        @animationend="${this.showContextMenuDescription
-          ? nothing
-          : (e: AnimationEvent) => {
-              this.onAnimationEnd_(e, 'background-fade');
-            }
-        }"></div>
-    </div>
-    ` : entrypointButton}
-  <cr-composebox-contextual-action-menu id="menu"
-      .fileNum="${this.fileNum}"
-      .disabledTabIds="${this.disabledTabIds}"
-      .tabSuggestions="${this.tabSuggestions}"
-      .inputState="${this.inputState}"
-      @close="${this.onMenuClose_}">
-  </cr-composebox-contextual-action-menu>
+    ${this.hasAllowedInputs_() ? html`
+      ${this.glifAnimationState !== GlifAnimationState.INELIGIBLE ? html`
+      <div id="glowWrapper" class="glow-container">
+        ${entrypointButton}
+        <div class="aim-gradient-outer-blur aim-c"></div>
+        <div class="aim-gradient-solid aim-c"></div>
+        <div class="aim-background aim-c"
+          @animationend="${this.showContextMenuDescription
+            ? nothing
+            : (e: AnimationEvent) => {
+                this.onAnimationEnd_(e, 'background-fade');
+              }
+          }"></div>
+      </div>
+      ` : entrypointButton}
+    <cr-composebox-contextual-action-menu id="menu"
+        .fileNum="${this.fileNum}"
+        .disabledTabIds="${this.disabledTabIds}"
+        .tabSuggestions="${this.tabSuggestions}"
+        .inputState="${this.inputState}"
+        @close="${this.onMenuClose_}">
+    </cr-composebox-contextual-action-menu>`
+    : nothing}
 <!--_html_template_end_-->`;
   // clang-format off
 }

@@ -6,6 +6,7 @@ import 'chrome://new-tab-page/strings.m.js';
 import 'chrome://resources/cr_components/composebox/contextual_entrypoint_button.js';
 
 import type {ContextualEntrypointButtonElement} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_button.js';
+import {InputType, ModelMode, ToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {$$, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -17,9 +18,18 @@ suite('ContextualEntrypointButton', () => {
 
     entrypointButton =
         document.createElement('cr-composebox-contextual-entrypoint-button');
-    Object.assign(
-        entrypointButton,
-        {inputsDisabled: false, showContextMenuDescription: false});
+    Object.assign(entrypointButton, {
+      inputState: {
+        allowedModels: [ModelMode.kGeminiPro],
+        allowedTools: [ToolMode.kDeepSearch],
+        allowedInputTypes: [InputType.kBrowserTab],
+        activeModel: ModelMode.kUnspecified,
+        activeTool: ToolMode.kUnspecified,
+        disabledModels: [],
+        disabledTools: [],
+        disabledInputTypes: [],
+      },
+    });
     document.body.appendChild(entrypointButton);
     await microtasksFinished();
   });

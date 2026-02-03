@@ -210,6 +210,14 @@ export class ComposeboxElement extends I18nMixinLit
       canSubmitFilesAndInput_: {type: Boolean},
       showModelPicker: {type: Boolean},
       inputState_: {type: Object},
+      showModelPicker_: {
+        type: Boolean,
+        reflect: true,
+      },
+      hasAllowedInputs_: {
+        type: Boolean,
+        reflect: true,
+      },
     };
   }
 
@@ -270,10 +278,11 @@ export class ComposeboxElement extends I18nMixinLit
       loadTimeData.getBoolean('steadyComposeboxShowVoiceSearch');
   protected showVoiceSearchInExpandedComposebox_: boolean =
       loadTimeData.getBoolean('expandedComposeboxShowVoiceSearch');
-  protected showModelPicker_: boolean =
+  protected accessor showModelPicker_: boolean =
       loadTimeData.valueExists('contextualMenuShowModelPicker') ?
       loadTimeData.getBoolean('contextualMenuShowModelPicker') :
       false;
+  protected accessor hasAllowedInputs_: boolean = false;
   protected dragAndDropHandler_: DragAndDropHandler;
   private showTypedSuggest_: boolean =
       loadTimeData.getBoolean('composeboxShowTypedSuggest');
@@ -425,6 +434,13 @@ export class ComposeboxElement extends I18nMixinLit
         changedPrivateProperties.has('fileUploadsComplete')) {
       this.canSubmitFilesAndInput_ =
           this.submitEnabled_ && this.fileUploadsComplete;
+    }
+
+    if (changedPrivateProperties.has('inputState_')) {
+      this.hasAllowedInputs_ = !!this.inputState_ &&
+          (this.inputState_.allowedModels.length > 0 ||
+           this.inputState_.allowedTools.length > 0 ||
+           this.inputState_.allowedInputTypes.length > 0);
     }
   }
   override updated(changedProperties: PropertyValues<this>) {
