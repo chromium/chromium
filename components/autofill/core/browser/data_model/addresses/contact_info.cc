@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/adapters.h"
 #include "base/i18n/char_iterator.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
@@ -119,13 +120,14 @@ std::set<std::u16string> GetNamePartVariants(std::u16string_view name_part) {
       continue;
     }
     std::vector<std::u16string> new_variants;
+    new_variants.reserve(variants.size() * 2);
     for (const std::u16string& variant : variants) {
       new_variants.push_back(base::CollapseWhitespace(
           base::JoinString({variant, sub_name}, kSpace), true));
       new_variants.push_back(base::CollapseWhitespace(
           base::JoinString({variant, sub_name.substr(0, 1)}, kSpace), true));
     }
-    variants.insert(new_variants.begin(), new_variants.end());
+    variants.insert_range(base::RangeAsRvalues(std::move(new_variants)));
   }
 
   // As a common case, also add the variant that just concatenates all of the

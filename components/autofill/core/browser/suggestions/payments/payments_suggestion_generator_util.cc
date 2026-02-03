@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/check_deref.h"
+#include "base/containers/extend.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
@@ -745,9 +746,8 @@ BnplSuggestionUpdateResult MaybeUpdateDesktopSuggestionsWithBnpl(
       }
       suggestion_update_result.suggestions.push_back(CreateBnplSuggestion(
           std::move(bnpl_issuers), extracted_amount_in_micros));
-      suggestion_update_result.suggestions.insert(
-          suggestion_update_result.suggestions.end(),
-          current_suggestions.begin() + index, current_suggestions.end());
+      base::Extend(suggestion_update_result.suggestions,
+                   current_suggestions.subspan(index));
       suggestion_update_result.is_bnpl_suggestion_added = true;
       return suggestion_update_result;
     }

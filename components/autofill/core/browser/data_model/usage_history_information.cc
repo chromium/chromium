@@ -8,6 +8,7 @@
 #include <cmath>
 
 #include "base/check_op.h"
+#include "base/containers/extend.h"
 #include "base/feature_list.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -68,8 +69,7 @@ void UsageHistoryInformation::MergeUsageHistories(
   set_use_count(std::max(use_count(), other.use_count()));
 
   // Take the `usage_history_size()` latest use dates (nullopts go last).
-  use_dates_.insert(use_dates_.end(), other.use_dates_.begin(),
-                    other.use_dates_.end());
+  base::Extend(use_dates_, other.use_dates_);
   std::ranges::sort(use_dates_, std::greater<>());
   use_dates_.resize(usage_history_size());
 }

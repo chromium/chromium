@@ -1347,10 +1347,8 @@ void BrowserAutofillManager::OnIndividualSuggestionsGenerated(
   // TODO(crbug.com/409962888): Add logic to discard/merge
   // `returned_suggestions` into a single list.
   std::vector<Suggestion> suggestions;
-  for (const auto& [filling_product, filling_suggestions] :
-       returned_suggestions) {
-    suggestions.insert(suggestions.end(), filling_suggestions.begin(),
-                       filling_suggestions.end());
+  for (auto& [filling_product, filling_suggestions] : returned_suggestions) {
+    base::Extend(suggestions, std::move(filling_suggestions));
   }
 
   OnGenerateSuggestionsComplete(form_id, field_id, trigger_source, context,
@@ -1692,12 +1690,8 @@ void BrowserAutofillManager::
   suggestions.reserve(plus_address_suggestions.size() +
                       single_field_suggestions.size());
   // Prioritize plus address over single field form fill suggestions.
-  suggestions.insert(suggestions.cend(),
-                     std::make_move_iterator(plus_address_suggestions.begin()),
-                     std::make_move_iterator(plus_address_suggestions.end()));
-  suggestions.insert(suggestions.cend(),
-                     std::make_move_iterator(single_field_suggestions.begin()),
-                     std::make_move_iterator(single_field_suggestions.end()));
+  base::Extend(suggestions, plus_address_suggestions);
+  base::Extend(suggestions, std::move(single_field_suggestions));
 
   if (suggestions.empty()) {
     // Note the check below is the same done for regular autocomplete
@@ -1828,11 +1822,7 @@ void BrowserAutofillManager::MixPlusAddressAndAddressSuggestions(
         client().GetPlusAddressDelegate()->GetManagePlusAddressSuggestion());
   }
   // Mix both types of suggestions.
-  plus_address_suggestions.insert(
-      plus_address_suggestions.cend(),
-      std::make_move_iterator(address_suggestions.begin()),
-      std::make_move_iterator(address_suggestions.end()));
-
+  base::Extend(plus_address_suggestions, std::move(address_suggestions));
   std::move(callback).Run(/*show_suggestions=*/true,
                           std::move(plus_address_suggestions));
 }

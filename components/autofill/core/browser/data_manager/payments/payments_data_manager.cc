@@ -9,6 +9,7 @@
 #include <variant>
 
 #include "base/android/device_info.h"
+#include "base/containers/extend.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
@@ -982,11 +983,8 @@ std::vector<BnplIssuer> PaymentsDataManager::GetBnplIssuers() const {
 
   std::vector<BnplIssuer> result;
   result.reserve(linked_bnpl_issuers_.size() + unlinked_bnpl_issuers_.size());
-  result.insert(result.end(), linked_bnpl_issuers_.begin(),
-                linked_bnpl_issuers_.end());
-  result.insert(result.end(), unlinked_bnpl_issuers_.begin(),
-                unlinked_bnpl_issuers_.end());
-
+  base::Extend(result, linked_bnpl_issuers_);
+  base::Extend(result, unlinked_bnpl_issuers_);
   return result;
 }
 

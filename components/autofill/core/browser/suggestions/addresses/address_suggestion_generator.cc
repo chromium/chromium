@@ -177,11 +177,10 @@ std::u16string GetFormattedPhoneNumber(const AutofillProfile& profile,
 std::u16string GetFullSuggestionText(const Suggestion& suggestion) {
   std::vector<Suggestion::Text> all_text_parts;
   all_text_parts.push_back(suggestion.main_text);
-  all_text_parts.insert(all_text_parts.end(), suggestion.minor_texts.begin(),
-                        suggestion.minor_texts.end());
+  base::Extend(all_text_parts, suggestion.minor_texts);
 
   for (const std::vector<Suggestion::Text>& label : suggestion.labels) {
-    all_text_parts.insert(all_text_parts.end(), label.begin(), label.end());
+    base::Extend(all_text_parts, label);
   }
 
   return base::CollapseWhitespace(

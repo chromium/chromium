@@ -9,6 +9,7 @@
 
 #include "base/base64.h"
 #include "base/check.h"
+#include "base/containers/extend.h"
 #include "base/pickle.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -1011,12 +1012,8 @@ void PopulateWalletTypesFromSyncData(
       case sync_pb::AutofillWalletSpecifics::MASKED_CREDIT_CARD: {
         wallet_cards.push_back(
             CardFromSpecifics(autofill_specifics.masked_card()));
-
-        std::vector<CreditCardBenefit> benefits_from_specifics =
-            CreditCardBenefitsFromCardSpecifics(
-                autofill_specifics.masked_card());
-        benefits.insert(benefits.end(), benefits_from_specifics.begin(),
-                        benefits_from_specifics.end());
+        base::Extend(benefits, CreditCardBenefitsFromCardSpecifics(
+                                   autofill_specifics.masked_card()));
         break;
       }
       case sync_pb::AutofillWalletSpecifics::POSTAL_ADDRESS:

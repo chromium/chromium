@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/containers/adapters.h"
 #include "base/containers/flat_set.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
@@ -132,12 +133,9 @@ void AddCreditCardOptimizationTypes(
     // optimizations.
     if (base::FeatureList::IsEnabled(
             features::kAutofillEnableCardBenefitsSync)) {
-      auto benefits_optimization_types =
-          GetCardBenefitsOptimizationTypesForCard(*card, payments_data_manager);
-      if (!benefits_optimization_types.empty()) {
-        optimization_types.insert(benefits_optimization_types.begin(),
-                                  benefits_optimization_types.end());
-      }
+      optimization_types.insert_range(
+          base::RangeAsRvalues(GetCardBenefitsOptimizationTypesForCard(
+              *card, payments_data_manager)));
     }
   }
 }

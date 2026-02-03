@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/barrier_callback.h"
+#include "base/containers/extend.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
@@ -517,8 +518,7 @@ FieldClassificationModelHandler::CalculateModelInputHash(
   flattened_data.reserve(flattened_data_size);
   for (const std::vector<FieldClassificationModelEncoder::TokenId>&
            field_tokens : input) {
-    flattened_data.insert(flattened_data.end(), field_tokens.begin(),
-                          field_tokens.end());
+    base::Extend(flattened_data, field_tokens);
   }
 
   return ModelInputHash(base::FastHash(base::as_byte_span(flattened_data)));

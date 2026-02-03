@@ -7,8 +7,10 @@
 #include <numeric>
 #include <ostream>
 #include <string>
+#include <utility>
 #include <vector>
 
+#include "base/containers/extend.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/strings/string_number_conversions.h"
@@ -95,12 +97,8 @@ struct OptionsBuilder {
                                                 OptionsBuilder rhs) {
     lhs.FillUp();
     rhs.FillUp();
-    lhs.values.insert(lhs.values.end(),
-                      std::make_move_iterator(rhs.values.begin()),
-                      std::make_move_iterator(rhs.values.end()));
-    lhs.texts.insert(lhs.texts.end(),
-                     std::make_move_iterator(rhs.texts.begin()),
-                     std::make_move_iterator(rhs.texts.end()));
+    base::Extend(lhs.values, std::move(rhs.values));
+    base::Extend(lhs.texts, std::move(rhs.texts));
     return lhs;
   }
 

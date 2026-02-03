@@ -6,6 +6,7 @@
 #import <variant>
 #import <vector>
 
+#import "base/containers/extend.h"
 #import "base/containers/flat_set.h"
 #import "base/containers/to_vector.h"
 #import "base/strings/strcat.h"
@@ -313,10 +314,8 @@ class TestAutofillManager : public BrowserAutofillManager {
 
   void OnFormsSeen(const std::vector<FormData>& updated_forms,
                    const std::vector<FormGlobalId>& removed_forms) override {
-    seen_forms_.insert(seen_forms_.end(), updated_forms.begin(),
-                       updated_forms.end());
-    removed_forms_.insert(removed_forms_.end(), removed_forms.begin(),
-                          removed_forms.end());
+    base::Extend(seen_forms_, updated_forms);
+    base::Extend(removed_forms_, removed_forms);
     BrowserAutofillManager::OnFormsSeen(updated_forms, removed_forms);
   }
 

@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/check_deref.h"
+#include "base/containers/extend.h"
 #include "base/containers/to_vector.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
@@ -203,7 +204,7 @@ template <typename T>
 std::vector<T> Flattened(const std::vector<std::vector<T>>& xs) {
   std::vector<T> concat;
   for (const auto& x : xs) {
-    concat.insert(concat.end(), x.begin(), x.end());
+    base::Extend(concat, x);
   }
   return concat;
 }
