@@ -12,6 +12,9 @@ source_set("contextual_tasks") {
     "active_task_context_provider_impl.h",
     "ai_mode_context_library_converter.h",
     "contextual_tasks_service_factory.h",
+    "contextual_tasks_ui_interface.h",
+    "contextual_tasks_utils.h",
+    "task_info_delegate.h",
   ]
 
   if (!is_android) {
@@ -25,6 +28,7 @@ source_set("contextual_tasks") {
 
   deps = [
     "//base",
+    "//chrome/browser/ui/browser_window",
     "//components/tabs:public",
   ]
 
@@ -63,6 +67,7 @@ source_set("impl") {
       "contextual_tasks_context_service_factory.cc",
       "contextual_tasks_context_signal_utils.cc",
       "contextual_tasks_context_signal_utils.h",
+      "contextual_tasks_utils.cc",
       "tab_strip_context_decorator.cc",
       "tab_strip_context_decorator.h",
     ]
@@ -125,7 +130,6 @@ if (!is_android) {
       "contextual_tasks_ui_service.h",
       "contextual_tasks_ui_service_factory.h",
       "entry_point_eligibility_manager.h",
-      "task_info_delegate.h",
     ]
 
     public_deps = [

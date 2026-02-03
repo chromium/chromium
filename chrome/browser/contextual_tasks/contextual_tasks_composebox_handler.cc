@@ -147,7 +147,7 @@ constexpr float kByteChangeTolerancePercent = 0.01;
 }  // namespace
 
 ContextualTasksComposeboxHandler::ContextualTasksComposeboxHandler(
-    ContextualTasksUI* ui_controller,
+    contextual_tasks::ContextualTasksUIInterface* web_ui_interface,
     Profile* profile,
     content::WebContents* web_contents,
     mojo::PendingReceiver<composebox::mojom::PageHandler> pending_handler,
@@ -166,7 +166,7 @@ ContextualTasksComposeboxHandler::ContextualTasksComposeboxHandler(
                                                              web_contents,
                                                              this)),
           std::move(get_session_callback)),
-      web_ui_controller_(ui_controller),
+      web_ui_interface_(web_ui_interface),
       contextual_tasks_service_(
           contextual_tasks::ContextualTasksServiceFactory::GetForProfile(
               profile)) {
@@ -203,7 +203,7 @@ void ContextualTasksComposeboxHandler::OnFileUploadStatusChanged(
       return;
     }
 
-    auto task_id = web_ui_controller_->GetTaskId();
+    auto task_id = web_ui_interface_->GetTaskId();
     if (task_id.has_value() && contextual_tasks_service_) {
       contextual_tasks_service_->AssociateTabWithTask(
           task_id.value(), file_info->tab_session_id.value());
@@ -225,7 +225,7 @@ void ContextualTasksComposeboxHandler::SubmitQuery(
 
 void ContextualTasksComposeboxHandler::CreateAndSendQueryMessage(
     const std::string& query) {
-  bool was_overlay_open_on_submit = web_ui_controller_->IsLensOverlayShowing();
+  bool was_overlay_open_on_submit = web_ui_interface_->IsLensOverlayShowing();
 
   // Retrieve the overlay token before closing the overlay, as the controller
   // might be destroyed or reset during closure.
@@ -234,7 +234,7 @@ void ContextualTasksComposeboxHandler::CreateAndSendQueryMessage(
   // Every time a query is submitted, close the Lens overlay if it's open.
   CloseLensOverlay(
       lens::LensOverlayDismissalSource::kContextualTasksQuerySubmitted);
-  std::optional<base::Uuid> task_id = web_ui_controller_->GetTaskId();
+  std::optional<base::Uuid> task_id = web_ui_interface_->GetTaskId();
   auto* contextual_tasks_service = GetContextualTasksService();
   if (!task_id.has_value() || !contextual_tasks_service ||
       was_overlay_open_on_submit) {
@@ -246,7 +246,7 @@ void ContextualTasksComposeboxHandler::CreateAndSendQueryMessage(
   // and fetching the active tab later may result in unexpected behavior.
   tabs::TabHandle active_tab_handle;
   auto* browser_window_interface = webui::GetBrowserWindowInterface(
-      web_ui_controller_->GetWebUIWebContents());
+      web_ui_interface_->GetWebUIWebContents());
   if (browser_window_interface) {
     TabListInterface* tab_list =
         TabListInterface::From(browser_window_interface);
@@ -288,7 +288,7 @@ void ContextualTasksComposeboxHandler::OnContextRetrieved(
     tabs::TabHandle active_tab_handle,
     std::optional<base::Uuid> original_task_id,
     std::unique_ptr<contextual_tasks::ContextualTaskContext> context) {
-  if (!context || web_ui_controller_->GetTaskId() != original_task_id) {
+  if (!context || web_ui_interface_->GetTaskId() != original_task_id) {
     ContinueCreateAndSendQueryMessage(query, original_task_id,
                                       /*overlay_token=*/std::nullopt);
     return;
@@ -355,14 +355,14 @@ void ContextualTasksComposeboxHandler::OnTabContextualizationFetched(
     return;
   }
 
-  if (web_ui_controller_->GetTaskId() != original_task_id) {
+  if (web_ui_interface_->GetTaskId() != original_task_id) {
     barrier_closure.Run();
     return;
   }
 
   if (contextual_tasks::GetIsProtectedPageErrorEnabled() &&
       !page_content_data->is_page_context_eligible.value_or(false)) {
-    web_ui_controller_->OnPageContextEligibilityChecked(false);
+    web_ui_interface_->OnPageContextEligibilityChecked(false);
     barrier_closure.Run();
     return;
   }
@@ -388,7 +388,7 @@ void ContextualTasksComposeboxHandler::OnTabContextReuploadStarted(
     base::RepeatingClosure barrier_closure,
     std::optional<base::Uuid> original_task_id,
     bool upload_started) {
-  if (web_ui_controller_->GetTaskId() != original_task_id) {
+  if (web_ui_interface_->GetTaskId() != original_task_id) {
     barrier_closure.Run();
     return;
   }
@@ -649,7 +649,7 @@ void ContextualTasksComposeboxHandler::ContinueCreateAndSendQueryMessage(
     std::string query,
     std::optional<base::Uuid> original_task_id,
     std::optional<base::UnguessableToken> overlay_token) {
-  if (web_ui_controller_->GetTaskId() != original_task_id) {
+  if (web_ui_interface_->GetTaskId() != original_task_id) {
     return;
   }
   // Create a client to aim message and send it to the page.
@@ -703,13 +703,12 @@ void ContextualTasksComposeboxHandler::ContinueCreateAndSendQueryMessage(
     lens::ClientToAimMessage client_to_page_message =
         session_handle->CreateClientToAimRequest(
             std::move(create_client_to_aim_request_info));
-    web_ui_controller_->PostMessageToWebview(client_to_page_message);
+    web_ui_interface_->PostMessageToWebview(client_to_page_message);
   }
 }
 
 void ContextualTasksComposeboxHandler::HandleFileUpload(bool is_image) {
-  content::WebContents* web_contents =
-      web_ui_controller_->GetWebUIWebContents();
+  content::WebContents* web_contents = web_ui_interface_->GetWebUIWebContents();
   gfx::NativeWindow parent_window = web_contents->GetTopLevelNativeWindow();
 
   if (!file_dialog_) {
@@ -895,7 +894,7 @@ void ContextualTasksComposeboxHandler::DeleteContext(
   bool was_delayed = delayed_tabs_.erase(file_token);
 
   if (from_automatic_chip) {
-    web_ui_controller_->DisableActiveTabContextSuggestion();
+    web_ui_interface_->DisableActiveTabContextSuggestion();
   }
 
   // Clear the visual selection token if it matches the deleted token.
@@ -923,7 +922,7 @@ void ContextualTasksComposeboxHandler::DeleteContext(
   // context.
   if (associated_tab_id.has_value()) {
     auto* browser_window_interface = webui::GetBrowserWindowInterface(
-        web_ui_controller_->GetWebUIWebContents());
+        web_ui_interface_->GetWebUIWebContents());
     auto* active_task_context_provider =
         browser_window_interface
             ? browser_window_interface->GetFeatures()
@@ -944,7 +943,7 @@ void ContextualTasksComposeboxHandler::CloseLensOverlay(
 
 LensSearchController*
 ContextualTasksComposeboxHandler::GetLensSearchController() const {
-  auto* browser = web_ui_controller_->GetBrowser();
+  auto* browser = web_ui_interface_->GetBrowser();
   if (!browser) {
     return nullptr;
   }
@@ -982,7 +981,7 @@ ContextualTasksComposeboxHandler::GetActiveTabContextId() {
   }
 
   auto* browser_window_interface = webui::GetBrowserWindowInterface(
-      web_ui_controller_->GetWebUIWebContents());
+      web_ui_interface_->GetWebUIWebContents());
   if (!browser_window_interface) {
     return std::nullopt;
   }

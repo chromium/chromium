@@ -465,6 +465,10 @@ BrowserWindowInterface* ContextualTasksUI::GetBrowser() {
   return FromWebContents(web_ui()->GetWebContents());
 }
 
+Profile* ContextualTasksUI::GetProfile() {
+  return Profile::FromWebUI(web_ui());
+}
+
 content::WebContents* ContextualTasksUI::GetWebUIWebContents() {
   return web_ui()->GetWebContents();
 }
@@ -787,6 +791,11 @@ void ContextualTasksUI::PushTaskDetailsToPage() {
                         thread_id_.value_or(""), thread_turn_id_.value_or(""));
 }
 
+mojo::Remote<contextual_tasks::mojom::Page>&
+ContextualTasksUI::GetPageRemote() {
+  return page_;
+}
+
 contextual_tasks::ContextualTasksSidePanelCoordinator*
 ContextualTasksUI::GetSidePanelCoordinator() {
   if (!web_ui()->GetWebContents()) {
@@ -805,7 +814,7 @@ ContextualTasksUI::FrameNavObserver::FrameNavObserver(
     content::WebContents* web_contents,
     contextual_tasks::ContextualTasksUiService* ui_service,
     contextual_tasks::ContextualTasksService* contextual_tasks_service,
-    TaskInfoDelegate* task_info_delegate)
+    contextual_tasks::TaskInfoDelegate* task_info_delegate)
     : content::WebContentsObserver(web_contents),
       ui_service_(ui_service),
       contextual_tasks_service_(contextual_tasks_service),

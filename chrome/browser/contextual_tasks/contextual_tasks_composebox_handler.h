@@ -24,7 +24,6 @@
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
 
 class Profile;
-class ContextualTasksUI;
 class LensSearchController;
 
 namespace tabs {
@@ -34,6 +33,7 @@ class TabInterface;
 namespace contextual_tasks {
 struct ContextualTaskContext;
 class ContextualTasksService;
+class ContextualTasksUIInterface;
 struct UrlAttachment;
 }  // namespace contextual_tasks
 
@@ -50,7 +50,7 @@ class ContextualTasksComposeboxHandler : public ComposeboxHandler,
  public:
   friend class ContextualTasksComposeboxHandlerTest;
   ContextualTasksComposeboxHandler(
-      ContextualTasksUI* ui_controller,
+      contextual_tasks::ContextualTasksUIInterface* web_ui_interface,
       Profile* profile,
       content::WebContents* web_contents,
       mojo::PendingReceiver<composebox::mojom::PageHandler> pending_handler,
@@ -177,7 +177,7 @@ class ContextualTasksComposeboxHandler : public ComposeboxHandler,
   // Returns the context ID for the active tab, if any.
   std::optional<int64_t> GetActiveTabContextId();
 
-  raw_ptr<ContextualTasksUI> web_ui_controller_;
+  raw_ptr<contextual_tasks::ContextualTasksUIInterface> web_ui_interface_;
   // The context controller for the current profile. The profile will outlive
   // this class.
   raw_ptr<contextual_tasks::ContextualTasksService> contextual_tasks_service_;

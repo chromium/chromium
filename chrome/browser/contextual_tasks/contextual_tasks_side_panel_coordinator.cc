@@ -18,9 +18,10 @@
 #include "chrome/browser/contextual_tasks/active_task_context_provider.h"
 #include "chrome/browser/contextual_tasks/contextual_search_session_finder.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_interface.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -47,6 +48,8 @@
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/contextual_search/contextual_search_service.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
+#include "components/contextual_tasks/public/contextual_task.h"
+#include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/lens/lens_overlay_dismissal_source.h"
 #include "components/permissions/permission_request_manager.h"
@@ -54,6 +57,7 @@
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/view_type_utils.h"
@@ -498,14 +502,9 @@ ContextualTasksSidePanelCoordinator::
     return nullptr;
   }
   auto* web_contents = web_view_->GetWebContents();
-  auto* web_ui = web_contents->GetWebUI();
-  if (!web_ui) {
-    return nullptr;
-  }
-  auto* contextual_tasks_ui =
-      web_ui->GetController()->GetAs<ContextualTasksUI>();
-  return contextual_tasks_ui
-             ? contextual_tasks_ui->GetOrCreateContextualSessionHandle()
+  auto* web_ui_interface = GetWebUiInterface(web_contents);
+  return web_ui_interface
+             ? web_ui_interface->GetOrCreateContextualSessionHandle()
              : nullptr;
 }
 
@@ -837,14 +836,8 @@ void ContextualTasksSidePanelCoordinator::UpdateContextualTaskUI() {
   }
 
   content::WebContents* web_contents = web_view_->GetWebContents();
-  content::WebUI* web_ui = web_contents ? web_contents->GetWebUI() : nullptr;
-  ContextualTasksUI* contextual_tasks_ui = nullptr;
-  if (web_ui && web_ui->GetController()) {
-    contextual_tasks_ui = web_ui->GetController()->GetAs<ContextualTasksUI>();
-  }
-
-  if (contextual_tasks_ui) {
-    contextual_tasks_ui->OnActiveTabContextStatusChanged();
+  if (auto* web_ui_interface = GetWebUiInterface(web_contents)) {
+    web_ui_interface->OnActiveTabContextStatusChanged();
   }
 }
 
@@ -1016,15 +1009,9 @@ ContextualTasksSidePanelCoordinator::GetAutoSuggestedTabHandle() {
   }
 
   auto* web_contents = web_view_->GetWebContents();
-  auto* web_ui = web_contents->GetWebUI();
-  if (!web_ui) {
-    return std::nullopt;
-  }
-
-  auto* contextual_tasks_ui =
-      web_ui->GetController()->GetAs<ContextualTasksUI>();
-  if (!contextual_tasks_ui ||
-      !contextual_tasks_ui->IsActiveTabContextSuggestionShowing()) {
+  auto* web_ui_interface = GetWebUiInterface(web_contents);
+  if (!web_ui_interface ||
+      !web_ui_interface->IsActiveTabContextSuggestionShowing()) {
     return std::nullopt;
   }
 

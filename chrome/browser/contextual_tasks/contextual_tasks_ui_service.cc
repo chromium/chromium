@@ -20,7 +20,8 @@
 #include "chrome/browser/contextual_tasks/contextual_search_session_finder.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_interface.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
@@ -425,11 +426,9 @@ void ContextualTasksUiService::OnThreadLinkClicked(
   // `contextual_task_contents_ptr` is guaranteed to be alive here, since
   // the ownership of `contextual_task_contents` has been moved to
   // ContextualTasksSidePanelCoordinator.
-  content::WebUI* webui = contextual_task_contents_ptr->GetWebUI();
-  if (webui && webui->GetController()) {
-    webui->GetController()
-        ->GetAs<ContextualTasksUI>()
-        ->OnSidePanelStateChanged();
+  if (auto* web_ui_interface =
+          GetWebUiInterface(contextual_task_contents_ptr)) {
+    web_ui_interface->OnSidePanelStateChanged();
   }
 }
 
@@ -447,10 +446,10 @@ void ContextualTasksUiService::OnSearchResultsNavigationInTab(
 
 void ContextualTasksUiService::OnSearchResultsNavigationInSidePanel(
     content::OpenURLParams url_params,
-    ContextualTasksUI* webui_controller) {
+    ContextualTasksUIInterface* web_ui_interface) {
   url_params.url = lens::AppendCommonSearchParametersToURL(
       url_params.url, g_browser_process->GetApplicationLocale(), false);
-  webui_controller->TransferNavigationToEmbeddedPage(url_params);
+  web_ui_interface->TransferNavigationToEmbeddedPage(url_params);
 }
 
 bool ContextualTasksUiService::HandleNavigation(
@@ -575,12 +574,8 @@ bool ContextualTasksUiService::HandleNavigationImpl(
         }
       } else if (IsValidSearchResultsPage(url_params.url) || is_nav_to_ai) {
         if (!lens::HasCommonSearchQueryParameters(url_params.url)) {
-          ContextualTasksUI* webui_controller = nullptr;
-          if (source_contents->GetWebUI()) {
-            webui_controller = source_contents->GetWebUI()
-                                   ->GetController()
-                                   ->GetAs<ContextualTasksUI>();
-          }
+          ContextualTasksUIInterface* webui_controller =
+              GetWebUiInterface(source_contents);
 
           base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
               FROM_HERE,
@@ -808,8 +803,6 @@ void ContextualTasksUiService::MoveTaskUiToNewTab(
       return;
     }
 
-    content::WebUI* webui = web_contents->GetWebUI();
-
     NavigateParams params(browser, std::move(web_contents));
     params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
     params.transition = ui::PAGE_TRANSITION_LINK;
@@ -817,10 +810,8 @@ void ContextualTasksUiService::MoveTaskUiToNewTab(
 
     // Notify the WebUI that the tab status has changed only after the contents
     // has been moved to a tab.
-    if (webui && webui->GetController()) {
-      webui->GetController()
-          ->GetAs<ContextualTasksUI>()
-          ->OnSidePanelStateChanged();
+    if (auto* web_ui_interface = GetWebUiInterface(web_contents.get())) {
+      web_ui_interface->OnSidePanelStateChanged();
     }
   }
 
@@ -867,13 +858,12 @@ void ContextualTasksUiService::StartTaskUiInSidePanel(
 
   // If the side panel contents already exist, get the WebUI controller to
   // load the URL into the already loaded contextual tasks UI.
-  if (panel_contents->GetWebUI()) {
-    ContextualTasksUI* webui_controller = webui_controller =
-        panel_contents->GetWebUI()->GetController()->GetAs<ContextualTasksUI>();
+  if (ContextualTasksUIInterface* web_ui_interface =
+          GetWebUiInterface(panel_contents)) {
     content::OpenURLParams url_params(
         url, content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
         ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false);
-    webui_controller->TransferNavigationToEmbeddedPage(url_params);
+    web_ui_interface->TransferNavigationToEmbeddedPage(url_params);
   }
 }
 
@@ -931,14 +921,13 @@ void ContextualTasksUiService::OnLensOverlayStateChanged(
   }
 
   auto* panel_contents = coordinator->GetActiveWebContents();
-  if (!panel_contents || !panel_contents->GetWebUI()) {
+  if (!panel_contents) {
     return;
   }
 
-  auto* controller =
-      panel_contents->GetWebUI()->GetController()->GetAs<ContextualTasksUI>();
-  if (controller) {
-    controller->OnLensOverlayStateChanged(is_showing);
+  auto* web_ui_interface = GetWebUiInterface(panel_contents);
+  if (web_ui_interface) {
+    web_ui_interface->OnLensOverlayStateChanged(is_showing);
   }
 }
 
