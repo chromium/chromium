@@ -1,0 +1,42 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_LEGION_COMMON_LEGION_LOGGER_H_
+#define COMPONENTS_LEGION_COMMON_LEGION_LOGGER_H_
+
+#include <string_view>
+
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
+
+namespace legion {
+
+// Handles logging in Legion and notifies observers.
+class LegionLogger {
+ public:
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnLogInfo(std::string_view message) {}
+    virtual void OnLogError(std::string_view message) {}
+  };
+
+  LegionLogger();
+  ~LegionLogger();
+
+  LegionLogger(const LegionLogger&) = delete;
+  LegionLogger& operator=(const LegionLogger&) = delete;
+
+  void LogInfo(std::string_view message);
+  void LogError(std::string_view message);
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
+ private:
+  base::ObserverList<Observer> observers_;
+};
+
+}  // namespace legion
+
+#endif  // COMPONENTS_LEGION_COMMON_LEGION_LOGGER_H_

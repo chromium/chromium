@@ -75,6 +75,7 @@ source_set("legion") {
     ":proto_extras",
     "//base",
     "//components/legion/attestation",
+    "//components/legion/common",
     "//components/legion/crypto",
     "//components/legion/mojom",
     "//components/legion/oak_session_service",
@@ -116,6 +117,7 @@ source_set("unit_tests") {
     "connection_metrics_unittest.cc",
     "connection_timeout_unittest.cc",
     "connection_token_attestation_unittest.cc",
+    "legion_logger_unittest.cc",
     "secure_channel_impl_unittest.cc",
     "secure_session_async_impl_unittest.cc",
   ]
@@ -127,6 +129,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/legion/attestation",
     "//components/legion/attestation:unit_tests",
+    "//components/legion/common",
     "//components/legion/crypto:unit_tests",
     "//components/legion/mojom",
     "//components/legion/phosphor",

@@ -37,6 +37,7 @@ class MockLegionClient : public legion::Client {
                OnPaicMessageRequestCompletedCallback callback,
                const RequestOptions& options),
               (override));
+  MOCK_METHOD(legion::LegionLogger*, GetLogger, (), (override));
 };
 
 }  // namespace legion

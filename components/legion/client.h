@@ -23,6 +23,8 @@ class NetworkContext;
 
 namespace legion {
 
+class LegionLogger;
+
 // Interface for the legion client.
 class Client {
  public:
@@ -90,6 +92,8 @@ class Client {
                                const proto::PaicMessage& request,
                                OnPaicMessageRequestCompletedCallback callback,
                                const RequestOptions& options) = 0;
+
+  virtual LegionLogger* GetLogger() = 0;
 };
 
 }  // namespace legion

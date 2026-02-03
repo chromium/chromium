@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/legion/client.h"
+#include "components/legion/common/legion_logger.h"
 #include "components/legion/connection.h"
 #include "components/legion/connection_factory.h"
 #include "components/legion/legion_common.h"
@@ -56,6 +57,8 @@ class ClientImpl : public Client {
                        OnPaicMessageRequestCompletedCallback callback,
                        const RequestOptions& options) override;
 
+  LegionLogger* GetLogger() override;
+
  private:
   // Callback for when a `SendRequest` operation completes.
   // If the operation is successful, the result will contain the server's
@@ -77,6 +80,8 @@ class ClientImpl : public Client {
   std::unique_ptr<Connection> connection_;
 
   std::unique_ptr<ConnectionFactory> connection_factory_;
+
+  LegionLogger logger_;
 
   base::WeakPtrFactory<ClientImpl> weak_factory_{this};
 };
