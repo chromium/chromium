@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/policy/value_provider/policy_value_provider.h"
 #include "components/policy/core/browser/webui/policy_status_provider.h"
 #include "components/policy/core/browser/webui/policy_webui_constants.h"
+#include "components/policy/core/common/features.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/policy_logger.h"
 
@@ -46,6 +48,8 @@
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/policy/cloud/extension_install_policy_service_factory.h"
+#include "chrome/browser/policy/value_provider/extension_install_policies_value_provider.h"
 #include "chrome/browser/policy/value_provider/extension_policies_value_provider.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
@@ -156,6 +160,16 @@ PolicyValueAndStatusAggregator::CreateDefaultPolicyValueAndStatusAggregator(
   aggregator->AddPolicyValueProvider(
       std::make_unique<ChromePoliciesValueProvider>(profile));
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+  if (base::FeatureList::IsEnabled(
+          policy::features::kEnableExtensionInstallPolicyFetching)) {
+    if (auto* extension_install_policy_service =
+            policy::ExtensionInstallPolicyServiceFactory::GetForBrowserContext(
+                profile)) {
+      aggregator->AddPolicyValueProvider(
+          std::make_unique<ExtensionInstallPoliciesValueProvider>(
+              profile, extension_install_policy_service));
+    }
+  }
   aggregator->AddPolicyValueProvider(
       std::make_unique<ExtensionPoliciesValueProvider>(profile));
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)

@@ -7680,6 +7680,8 @@ static_library("browser") {
       "page_load_metrics/observers/serp_page_load_metrics_observer.h",
       "performance_manager/extension_watcher.cc",
       "performance_manager/extension_watcher.h",
+      "policy/value_provider/extension_install_policies_value_provider.cc",
+      "policy/value_provider/extension_install_policies_value_provider.h",
       "policy/value_provider/extension_policies_value_provider.cc",
       "policy/value_provider/extension_policies_value_provider.h",
       "renderer_context_menu/context_menu_content_type_app_mode.cc",

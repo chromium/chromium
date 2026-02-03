@@ -48,6 +48,9 @@ inline constexpr char kPoliciesKey[] = "policies";
 inline constexpr char kPolicyNamesKey[] = "policyNames";
 inline constexpr char kChromePoliciesId[] = "chrome";
 inline constexpr char kChromePoliciesName[] = "Chrome Policies";
+inline constexpr char kExtensionInstallPoliciesId[] = "extensionInstall";
+inline constexpr char kExtensionInstallPoliciesName[] =
+    "Extension Install Policies";
 
 #if !BUILDFLAG(IS_CHROMEOS)
 inline constexpr char kPrecedencePoliciesId[] = "precedence";
