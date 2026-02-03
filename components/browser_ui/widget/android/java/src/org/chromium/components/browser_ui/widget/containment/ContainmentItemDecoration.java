@@ -42,6 +42,11 @@ public class ContainmentItemDecoration extends RecyclerView.ItemDecoration {
         mUpdateBackgrounds = true;
     }
 
+    /** Returns the {@link ContainmentItemController} used by this decoration. */
+    public ContainmentItemController getStylingController() {
+        return mStylingController;
+    }
+
     /**
      * Updates the preference styles for the preferences.
      *

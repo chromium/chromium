@@ -17,6 +17,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.Settings;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -203,6 +204,9 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
 
     private @Nullable Set<String> mSelectedDomains;
 
+    private final Handler mSearchHandler = new Handler();
+    private @Nullable Runnable mSearchRunnable;
+
     private final SettableMonotonicObservableSupplier<String> mPageTitle =
             ObservableSuppliers.createMonotonic();
     private @MonotonicNonNull SearchViewProvider.Observer mSearchViewObserver;
@@ -292,7 +296,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
             } else {
                 addChosenObjects(sites);
             }
-            notifyPreferencesUpdated();
+            updateContainment();
         }
 
         private Collection<Website> applyFilters(Collection<Website> sites) {
@@ -597,7 +601,13 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                                     ? query != null && !query.isEmpty()
                                     : !mSearch.equals(query);
                     mSearch = query;
-                    if (queryHasChanged) getInfoForOrigins();
+                    if (queryHasChanged) {
+                        if (mSearchRunnable != null) {
+                            mSearchHandler.removeCallbacks(mSearchRunnable);
+                        }
+                        mSearchRunnable = () -> getInfoForOrigins();
+                        mSearchHandler.postDelayed(mSearchRunnable, 200);
+                    }
                 });
 
         if (getSiteSettingsDelegate().isHelpAndFeedbackEnabled()) {
@@ -2020,6 +2030,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
     @Override
     public void onDestroy() {
         super.onDestroy();
+        mSearchHandler.removeCallbacksAndMessages(null);
         if (mSearchViewObserver != null) mSearchViewObserver.onUpdated(false);
     }
 

@@ -5,12 +5,15 @@
 package org.chromium.components.browser_ui.site_settings;
 
 import androidx.preference.PreferenceFragmentCompat;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.settings.FragmentSettingsNavigation;
 import org.chromium.components.browser_ui.settings.PreferenceUpdateObserver;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
+import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.components.browser_ui.widget.containment.ContainmentItemDecoration;
 
 /** Preference fragment for showing the Site Settings UI. */
 @NullMarked
@@ -73,6 +76,38 @@ public abstract class BaseSiteSettingsFragment extends PreferenceFragmentCompat
     protected void notifyPreferencesUpdated() {
         if (mPreferenceUpdateObserver != null) {
             mPreferenceUpdateObserver.onPreferencesUpdated(this);
+        }
+    }
+
+    /**
+     * Updates the containment styling immediately if a decoration is already present. This avoids a
+     * full re-inflation in SettingsActivity.
+     */
+    protected void updateContainment() {
+        if (!getSiteSettingsDelegate().isSettingsContainmentEnabled()) {
+            return;
+        }
+        RecyclerView listView = getListView();
+        ContainmentItemDecoration decoration = null;
+        if (listView != null) {
+            for (int i = 0; i < listView.getItemDecorationCount(); i++) {
+                RecyclerView.ItemDecoration item = listView.getItemDecorationAt(i);
+                if (item instanceof ContainmentItemDecoration containmentItemDecoration) {
+                    decoration = containmentItemDecoration;
+                    break;
+                }
+            }
+        }
+
+        if (decoration != null) {
+            decoration.updatePreferenceStyles(
+                    decoration
+                            .getStylingController()
+                            .generatePreferenceStyles(
+                                    SettingsUtils.getVisiblePreferences(getPreferenceScreen())));
+            listView.invalidateItemDecorations();
+        } else {
+            notifyPreferencesUpdated();
         }
     }
 }
