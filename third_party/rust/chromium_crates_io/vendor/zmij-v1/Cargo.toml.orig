@@ -1,6 +1,6 @@
 [package]
 name = "zmij"
-version = "1.0.16"
+version = "1.0.17"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 categories = ["value-formatting", "no-std", "no-std::no-alloc"]
 description = "A double-to-string conversion algorithm based on Schubfach and yy"
