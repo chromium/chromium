@@ -426,6 +426,14 @@ export class ContextualTasksAppElement extends CrLitElement {
           }
         });
 
+    // Allow downloading files. This is necessary since aim can generate images
+    // for download.
+    this.$.threadFrame.addEventListener('permissionrequest', (e: any) => {
+      if (e.permission === 'download') {
+        e.request.allow();
+      }
+    });
+
     // Sets the user agent to the default user agent + the contextual tasks
     // custom suffix.
     const userAgent = this.$.threadFrame.getUserAgent();
