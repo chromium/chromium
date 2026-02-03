@@ -163,7 +163,10 @@ source_set("eg2_tests") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "manage_accounts_table_view_controller_unittest.mm" ]
+  sources = [
+    "manage_accounts_mediator_unittest.mm",
+    "manage_accounts_table_view_controller_unittest.mm",
+  ]
   deps = [
     ":manage_accounts_ui",
     "//base/test:test_support",

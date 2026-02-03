@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_GOOGLE_SERVICES_MANAGE_ACCOUNTS_MANAGE_ACCOUNTS_MEDIATOR_DELEGATE_H_
 #define IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_GOOGLE_SERVICES_MANAGE_ACCOUNTS_MANAGE_ACCOUNTS_MEDIATOR_DELEGATE_H_
 
+@class ManageAccountsMediator;
 @protocol SystemIdentity;
 
 @protocol ManageAccountsMediatorDelegate <NSObject>
@@ -18,6 +19,10 @@
 
 // Called to sign out.
 - (void)signOutWithItemView:(UIView*)itemView;
+
+// The mediators informs the delegate that sign-in is not possible anymore.
+- (void)manageAccountsMediatorWantsToBeStopped:
+    (ManageAccountsMediator*)manageAccountsMediator;
 
 @end
 

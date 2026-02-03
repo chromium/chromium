@@ -63,6 +63,7 @@ class ManageAccountsTableViewControllerTest
   }
 
   void TearDown() override {
+    [mediator_ disconnect];
     mediator_ = nil;
     show_signout_button_ = NO;
     LegacyChromeTableViewControllerTest::TearDown();

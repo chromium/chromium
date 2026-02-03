@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_observer_bridge.h"
 #import "ios/chrome/browser/signin/model/avatar/avatar_provider.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
@@ -36,7 +37,8 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
-@interface ManageAccountsMediator () <IdentityManagerObserverBridgeDelegate>
+@interface ManageAccountsMediator () <AuthenticationServiceObserving,
+                                      IdentityManagerObserverBridgeDelegate>
 @end
 
 @implementation ManageAccountsMediator {
@@ -46,6 +48,8 @@
   raw_ptr<signin::IdentityManager> _identityManager;
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityManagerObserver;
+  std::unique_ptr<AuthenticationServiceObserverBridge>
+      _authServiceObserverBridge;
 }
 
 - (instancetype)
@@ -53,6 +57,7 @@
         (ChromeAccountManagerService*)accountManagerService
                       authService:(AuthenticationService*)authService
                   identityManager:(signin::IdentityManager*)identityManager {
+  CHECK(authService->SigninEnabled(), base::NotFatalUntil::M152);
   self = [super init];
   if (self) {
     _accountManagerService = accountManagerService;
@@ -61,8 +66,15 @@
     _identityManagerObserver =
         std::make_unique<signin::IdentityManagerObserverBridge>(identityManager,
                                                                 self);
+    _authServiceObserverBridge =
+        std::make_unique<AuthenticationServiceObserverBridge>(authService,
+                                                              self);
   }
   return self;
+}
+
+- (void)dealloc {
+  CHECK(!_authService, base::NotFatalUntil::M152);
 }
 
 - (void)disconnect {
@@ -70,6 +82,7 @@
   _authService = nullptr;
   _identityManager = nullptr;
   _identityManagerObserver.reset();
+  _authServiceObserverBridge.reset();
 }
 
 #pragma mark - AccountsModelIdentityDataSource
@@ -147,6 +160,14 @@
   // Only attempt to pop the top-most view controller once the account list
   // has been dismissed.
   [self.consumer popView];
+}
+
+#pragma mark - AuthenticationServiceObserving
+
+- (void)onServiceStatusChanged {
+  if (!_authService->SigninEnabled()) {
+    [self.delegate manageAccountsMediatorWantsToBeStopped:self];
+  }
 }
 
 #pragma mark - Private

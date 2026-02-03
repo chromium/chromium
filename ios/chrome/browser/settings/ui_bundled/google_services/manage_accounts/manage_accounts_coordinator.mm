@@ -99,6 +99,10 @@ using signin_metrics::PromoAction;
   return self;
 }
 
+- (void)dealloc {
+  CHECK(!_mediator, base::NotFatalUntil::M152);
+}
+
 - (void)start {
   base::RecordAction(base::UserMetricsAction("Signin_AccountsTableView_Open"));
   ProfileIOS* profile = self.profile;
@@ -252,6 +256,12 @@ using signin_metrics::PromoAction;
                       }];
   _signoutCoordinator.delegate = self;
   [_signoutCoordinator start];
+}
+
+- (void)manageAccountsMediatorWantsToBeStopped:
+    (ManageAccountsMediator*)manageAccountsMediator {
+  CHECK_EQ(_mediator, manageAccountsMediator, base::NotFatalUntil::M152);
+  [self closeSettings];
 }
 
 #pragma mark - Private
