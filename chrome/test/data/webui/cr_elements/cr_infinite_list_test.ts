@@ -42,7 +42,7 @@ class TestItem extends CrLitElement {
   accessor name: string = '';
 }
 
-customElements.define('test-item', TestItem);
+customElements.define(TestItem.is, TestItem);
 
 class TestApp extends CrLitElement {
   static get is() {
@@ -82,7 +82,7 @@ class TestApp extends CrLitElement {
   }
 }
 
-customElements.define('test-app', TestApp);
+customElements.define(TestApp.is, TestApp);
 
 function queryItems(infiniteList: CrInfiniteListElement): NodeListOf<TestItem> {
   return infiniteList.querySelectorAll<TestItem>('test-item');

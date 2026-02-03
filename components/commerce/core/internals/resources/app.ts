@@ -43,5 +43,11 @@ export class CommerceInternalsAppElement extends CrLitElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'commerce-internals-app': CommerceInternalsAppElement;
+  }
+}
+
 customElements.define(
     CommerceInternalsAppElement.is, CommerceInternalsAppElement);

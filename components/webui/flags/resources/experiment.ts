@@ -47,6 +47,10 @@ function highlightMatch(searchTerm: string, element: HTMLElement) {
 }
 
 export class ExperimentElement extends CrLitElement {
+  static get is() {
+    return 'flags-experiment';
+  }
+
   static override get styles() {
     return getCss();
   }
@@ -335,4 +339,4 @@ declare global {
   }
 }
 
-customElements.define('flags-experiment', ExperimentElement);
+customElements.define(ExperimentElement.is, ExperimentElement);

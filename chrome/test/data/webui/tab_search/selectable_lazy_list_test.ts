@@ -49,7 +49,7 @@ class TestApp extends CrLitElement {
   private accessor maxHeight_: number = SAMPLE_AVAIL_HEIGHT;
 }
 
-customElements.define('test-app', TestApp);
+customElements.define(TestApp.is, TestApp);
 
 suite('SelectableLazyListTest', () => {
   let selectableList: SelectableLazyListElement;

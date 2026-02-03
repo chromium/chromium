@@ -59,6 +59,10 @@ suite('find-shortcut-lit', () => {
 
   class FindShortcutManualListenLitElement extends
       FindShortcutManualListenLitElementBase {
+    static get is() {
+      return 'find-shortcut-manual-listen-lit';
+    }
+
     override render() {
       return html`<div>Hello World</div><slot id="slotted"></slot>`;
     }
@@ -82,10 +86,15 @@ suite('find-shortcut-lit', () => {
     }
   }
   customElements.define(
-      'find-shortcut-manual-listen-lit', FindShortcutManualListenLitElement);
+      FindShortcutManualListenLitElement.is,
+      FindShortcutManualListenLitElement);
 
   const FindShortcutLitElementBase = FindShortcutMixinLit(CrLitElement);
   class FindShortcutLitElement extends FindShortcutLitElementBase {
+    static get is() {
+      return 'find-shortcut-lit';
+    }
+
     override render() {
       return html`<div>Hello World</div><slot id="slotted"></slot>`;
     }
@@ -109,7 +118,7 @@ suite('find-shortcut-lit', () => {
       return this.hasFocus;
     }
   }
-  customElements.define('find-shortcut-lit', FindShortcutLitElement);
+  customElements.define(FindShortcutLitElement.is, FindShortcutLitElement);
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;

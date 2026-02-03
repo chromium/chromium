@@ -51,4 +51,10 @@ export class SubscriptionListElement extends CrLitElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'subscription-list': SubscriptionListElement;
+  }
+}
+
 customElements.define(SubscriptionListElement.is, SubscriptionListElement);

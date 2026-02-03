@@ -8,8 +8,12 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {assertEquals, assertFalse, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 const TestElementBase = I18nMixinLit(CrLitElement);
-class TestElement extends TestElementBase {}
-customElements.define('test-element', TestElement);
+class TestElement extends TestElementBase {
+  static get is() {
+    return 'test-element';
+  }
+}
+customElements.define(TestElement.is, TestElement);
 
 suite('I18nMixinTestLit', function() {
   const allowedByDefault = '<a href="https://google.com">Google!</a>';

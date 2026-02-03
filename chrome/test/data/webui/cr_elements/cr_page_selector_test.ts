@@ -103,7 +103,7 @@ class TestPageManager extends CrLitElement {
   }
 }
 
-customElements.define('test-page-manager', TestPageManager);
+customElements.define(TestPageManager.is, TestPageManager);
 
 suite('cr-page-selector nested slots', () => {
   let element: TestPageManager;

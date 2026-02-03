@@ -52,4 +52,10 @@ export class ProductViewerAppElement extends CrLitElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'product-viewer-app': ProductViewerAppElement;
+  }
+}
+
 customElements.define(ProductViewerAppElement.is, ProductViewerAppElement);

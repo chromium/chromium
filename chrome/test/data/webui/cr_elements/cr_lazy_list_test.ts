@@ -44,7 +44,7 @@ class TestItem extends CrLitElement {
   accessor name: string = '';
 }
 
-customElements.define('test-item', TestItem);
+customElements.define(TestItem.is, TestItem);
 
 class TestApp extends CrLitElement {
   static get is() {
@@ -85,7 +85,7 @@ class TestApp extends CrLitElement {
   }
 }
 
-customElements.define('test-app', TestApp);
+customElements.define(TestApp.is, TestApp);
 
 class TestDocumentTargetApp extends CrLitElement {
   static get is() {
@@ -113,7 +113,7 @@ class TestDocumentTargetApp extends CrLitElement {
   }
 }
 
-customElements.define('test-document-target-app', TestDocumentTargetApp);
+customElements.define(TestDocumentTargetApp.is, TestDocumentTargetApp);
 
 class TestListPaddingApp extends CrLitElement {
   static get is() {
@@ -145,7 +145,7 @@ class TestListPaddingApp extends CrLitElement {
   }
 }
 
-customElements.define('test-list-padding-app', TestListPaddingApp);
+customElements.define(TestListPaddingApp.is, TestListPaddingApp);
 
 suite('CrLazyListTest', () => {
   let lazyList: CrLazyListElement;

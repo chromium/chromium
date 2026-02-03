@@ -8,8 +8,12 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 const TestElementBase = WebUiListenerMixinLit(CrLitElement);
-class TestElement extends TestElementBase {}
-customElements.define('test-element', TestElement);
+class TestElement extends TestElementBase {
+  static get is() {
+    return 'test-element';
+  }
+}
+customElements.define(TestElement.is, TestElement);
 
 suite('WebUiListenerMixinTest', function() {
   let testElement: TestElement;

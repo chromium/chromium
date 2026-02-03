@@ -68,4 +68,10 @@ export class EligibilityListElement extends CrLitElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'commerce-internals-eligibility-list': EligibilityListElement;
+  }
+}
+
 customElements.define(EligibilityListElement.is, EligibilityListElement);

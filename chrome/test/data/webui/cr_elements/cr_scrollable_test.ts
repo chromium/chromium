@@ -27,7 +27,7 @@ class TestElement extends CrLitElement {
     `;
   }
 }
-customElements.define('test-element', TestElement);
+customElements.define(TestElement.is, TestElement);
 
 suite('cr-scrollable', () => {
   let testElement: TestElement;

@@ -63,7 +63,7 @@ class TestStoreClient extends TestStoreClientBase {
   }
 }
 
-customElements.define('test-store-client', TestStoreClient);
+customElements.define(TestStoreClient.is, TestStoreClient);
 
 suite('bookmarks.Store', function() {
   let store: TestStore;

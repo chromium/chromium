@@ -187,6 +187,10 @@ export interface AudioWaveElement {
  * Voice input visualizer.
  */
 export class AudioWaveElement extends CrLitElement {
+  static get is() {
+    return 'audio-wave';
+  }
+
   static override get styles() {
     return getCss();
   }
@@ -646,4 +650,4 @@ declare global {
   }
 }
 
-customElements.define('audio-wave', AudioWaveElement);
+customElements.define(AudioWaveElement.is, AudioWaveElement);

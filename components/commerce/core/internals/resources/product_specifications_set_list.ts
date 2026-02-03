@@ -51,6 +51,12 @@ export class ProductSpecificationsTableListElement extends CrLitElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'product-specifications-set-list': ProductSpecificationsTableListElement;
+  }
+}
+
 customElements.define(
     ProductSpecificationsTableListElement.is,
     ProductSpecificationsTableListElement);
