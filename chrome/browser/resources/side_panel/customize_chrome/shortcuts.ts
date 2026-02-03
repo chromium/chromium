@@ -47,7 +47,7 @@ export class ShortcutsElement extends CrLitElement {
 
   static override get properties() {
     return {
-      shortcutsType_: {type: Object},
+      shortcutsType_: {type: Number},
       initialized_: {type: Boolean},
       radioSelection_: {type: String},
       show_: {type: Boolean},
@@ -238,7 +238,8 @@ export class ShortcutsElement extends CrLitElement {
     this.setMostVisitedSettings_();
   }
 
-  protected onOptionClick_(type: TileType) {
+  protected onOptionClick_(e: Event) {
+    const type = Number((e.currentTarget as HTMLElement).dataset['type']);
     if (this.shortcutsType_ === type) {
       return;
     }
