@@ -105,8 +105,9 @@ GetOmniboxSuggestionIconTypeForSuggestTemplateInfoIconType(
       return OmniboxSuggestionIconType::kSearch;
     case omnibox::SuggestTemplateInfo_IconType_GLOBE_WITH_SEARCH_LOOP:
     case omnibox::SuggestTemplateInfo_IconType_BANANA:
-    case omnibox::SuggestTemplateInfo_IconType_NOTES_SPARK:
       return OmniboxSuggestionIconType::kSearch;
+    case omnibox::SuggestTemplateInfo_IconType_NOTES_SPARK:
+      return OmniboxSuggestionIconType::kNotesSpark;
     case omnibox::SuggestTemplateInfo_IconType_FAVICON:
       return OmniboxSuggestionIconType::kDefaultFavicon;
     case omnibox::SuggestTemplateInfo_IconType_ICON_TYPE_UNSPECIFIED:
