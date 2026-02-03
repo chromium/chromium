@@ -452,20 +452,16 @@ suite('ContextualTasksComposeboxTest', () => {
     await mockComposeboxPageHandler.whenCalled('handleLensButtonClick');
     assertEquals(
         1, mockComposeboxPageHandler.getCallCount('handleLensButtonClick'));
-  });
 
-  test('LensButtonDisabledWhenOverlayShowing', async () => {
-    const composebox = contextualTasksApp.$.composebox.$.composebox;
-    contextualTasksApp.$.composebox.isSidePanel = true;
-    contextualTasksApp.$.composebox.isLensOverlayShowing = false;
-    await microtasksFinished();
 
+    // A second click should still trigger the same handler and the button
+    // should still be disabled.
     assertFalse(composebox.lensButtonDisabled);
+    lensButton.click();
 
-    contextualTasksApp.$.composebox.isLensOverlayShowing = true;
-    await microtasksFinished();
-
-    assertTrue(composebox.lensButtonDisabled);
+    await mockComposeboxPageHandler.whenCalled('handleLensButtonClick');
+    assertEquals(
+        2, mockComposeboxPageHandler.getCallCount('handleLensButtonClick'));
   });
 
   test('hides composebox and header when hideInput called', async () => {

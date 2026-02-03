@@ -39,7 +39,6 @@ export function getHtml(this: ContextualTasksAppElement) {
           ?hidden="${this.isInBasicMode_}"
           .isZeroState="${this.isZeroState_}"
           .isSidePanel="${!this.isShownInTab_}"
-          .isLensOverlayShowing="${this.isLensOverlayShowing_}"
           .enableNativeZeroStateSuggestions=
               "${this.enableNativeZeroStateSuggestions}">
     </contextual-tasks-composebox>

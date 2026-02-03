@@ -833,6 +833,11 @@ void ContextualTasksComposeboxHandler::ClearFiles() {
 
 void ContextualTasksComposeboxHandler::HandleLensButtonClick() {
   if (auto* controller = GetLensSearchController()) {
+    if (controller->IsShowingUI()) {
+      controller->CloseLensAsync(lens::LensOverlayDismissalSource::
+                                     kContextualTasksComposeboxLensButtonClick);
+      return;
+    }
     controller->SetThumbnailCreatedCallback(base::BindRepeating(
         &ContextualTasksComposeboxHandler::OnLensThumbnailCreated,
         base::Unretained(this)));
