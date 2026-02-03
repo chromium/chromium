@@ -8,65 +8,77 @@
 #include <IOKit/pwr_mgt/IOPMLib.h>
 #include <notify.h>
 
-#include <memory>
-#include <queue>
+#include <tuple>
 
-#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_monitor_source.h"
-#include "base/synchronization/waitable_event.h"
 #include "base/test/task_environment.h"
-#include "testing/gmock/include/gmock/gmock.h"
+#include "base/test/test_future.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using DeviceThermalState = base::PowerThermalObserver::DeviceThermalState;
-using ::testing::Mock;
-using ::testing::MockFunction;
 
 namespace base {
-void IgnoreStateChange(DeviceThermalState state) {}
-void IgnoreSpeedLimitChange(int speed_limit) {}
+
+class ThermalStateObserverMacTest : public testing::Test {
+ public:
+  ThermalStateObserverMacTest() = default;
+  ~ThermalStateObserverMacTest() override = default;
+
+ protected:
+  // MainThreadType::UI is required to pump dispatch_get_main_queue(), which is
+  // used by notify_register_dispatch in the production code.
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::MainThreadType::UI};
+};
 
 // Verifies that a NSProcessInfoThermalStateDidChangeNotification produces the
 // adequate OnStateChange() call.
-TEST(ThermalStateObserverMacTest, StateChange) {
-  test::TaskEnvironment task_environment;
+TEST_F(ThermalStateObserverMacTest, StateChange) {
+  base::test::TestFuture<DeviceThermalState> state_future;
 
-  MockFunction<void(DeviceThermalState)> function;
-  // ThermalStateObserverMac sends the current thermal state on construction.
-  EXPECT_CALL(function, Call);
-  ThermalStateObserverMac observer(
-      BindRepeating(&MockFunction<void(DeviceThermalState)>::Call,
-                    Unretained(&function)),
-      BindRepeating(IgnoreSpeedLimitChange), "ignored key");
-  Mock::VerifyAndClearExpectations(&function);
-  EXPECT_CALL(function, Call(DeviceThermalState::kCritical));
+  // The observer fires the callback with the current state on construction.
+  ThermalStateObserverMac observer(state_future.GetRepeatingCallback(),
+                                   base::DoNothing(), "ignored key");
+
+  // Consume the initial value (likely kUnknown or the actual system state).
+  std::ignore = state_future.Take();
+
+  // Set the specific state we want to test.
   observer.state_for_testing_ = DeviceThermalState::kCritical;
+
+  // Trigger the system notification.
   [NSNotificationCenter.defaultCenter
       postNotificationName:NSProcessInfoThermalStateDidChangeNotification
                     object:nil
                   userInfo:nil];
+
+  EXPECT_EQ(state_future.Take(), DeviceThermalState::kCritical);
 }
 
-TEST(ThermalStateObserverMacTest, SpeedChange) {
-  test::TaskEnvironment task_environment;
-
-  MockFunction<void(int)> function;
-  // ThermalStateObserverMac sends the current speed limit state on
-  // construction.
+TEST_F(ThermalStateObserverMacTest, SpeedChange) {
+  base::test::TestFuture<int> speed_future;
   static constexpr const char* kTestNotificationKey =
       "ThermalStateObserverMacTest_SpeedChange";
-  EXPECT_CALL(function, Call);
-  ThermalStateObserverMac observer(
-      BindRepeating(IgnoreStateChange),
-      BindRepeating(&MockFunction<void(int)>::Call, Unretained(&function)),
-      kTestNotificationKey);
-  Mock::VerifyAndClearExpectations(&function);
-  EXPECT_CALL(function, Call).WillOnce([] {
-    CFRunLoopStop(CFRunLoopGetCurrent());
-  });
-  notify_post(kTestNotificationKey);
-  CFRunLoopRun();
+
+  ThermalStateObserverMac observer(base::DoNothing(),
+                                   speed_future.GetRepeatingCallback(),
+                                   kTestNotificationKey);
+
+  // The observer posts a background task on construction to read the initial
+  // speed limit. Wait for this to complete to ensure the observer is fully
+  // initialized before triggering the notification.
+  EXPECT_NE(speed_future.Take(), -1);
+
+  // Trigger the system notification. Verifying the status ensures the OS
+  // notification system is functioning correctly within the test environment.
+  uint32_t status = notify_post(kTestNotificationKey);
+  ASSERT_EQ(status, NOTIFY_STATUS_OK);
+
+  // Wait for the notification to be processed.
+  EXPECT_NE(speed_future.Take(), -1);
 }
+
 }  // namespace base

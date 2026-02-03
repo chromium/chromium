@@ -81,7 +81,7 @@ BASE_FEATURE_PARAM(int,
                    "LowMemoryDeviceThresholdMB",
                    LOW_MEMORY_DEVICE_THRESHOLD_MB);
 
-BASE_FEATURE(kReducePPMs, FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kReducePPMs, FEATURE_ENABLED_BY_DEFAULT);
 
 // Apply base::ScopedBestEffortExecutionFence to registered task queues as well
 // as the thread pool.
