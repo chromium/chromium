@@ -9258,6 +9258,27 @@
             ]
         }
     ],
+    "DeviceBoundSessionsForGoogle": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "Value": "l2_enabled"
+                    },
+                    "enable_features": [
+                        "DeviceBoundSessionsForRestrictedSites",
+                        "DeviceBoundSessionsForRestrictedSitesExperimentId",
+                        "EnableOAuthMultiloginStandardCookiesBinding",
+                        "UseUnexportableKeyServiceInBrowserProcess"
+                    ]
+                }
+            ]
+        }
+    ],
     "DexFixer": [
         {
             "platforms": [
@@ -17822,22 +17843,6 @@
                     "enable_features": [
                         "EnableOAuthMultiloginCookiesBinding",
                         "EnableOAuthMultiloginCookiesBindingServerExperiment"
-                    ]
-                }
-            ]
-        }
-    ],
-    "OAuthMultiloginStandardCookiesBinding": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableOAuthMultiloginStandardCookiesBinding",
-                        "UseUnexportableKeyServiceInBrowserProcess"
                     ]
                 }
             ]

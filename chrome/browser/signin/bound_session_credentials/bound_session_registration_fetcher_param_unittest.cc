@@ -11,6 +11,7 @@
 #include "base/test/task_environment.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_registration_fetcher.h"
 #include "crypto/signature_verifier.h"
+#include "net/base/features.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -219,6 +220,31 @@ TEST_F(BoundSessionRegistrationFetcherParamTest, WsbetaIsIgnored) {
                 ElementsAre(ECDSA_SHA256, RSA_PKCS1_SHA256));
     EXPECT_EQ(param.challenge(), kChallenge);
   }
+}
+
+TEST_F(BoundSessionRegistrationFetcherParamTest, ExperimentIdAppended) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      net::features::kDeviceBoundSessionsForRestrictedSitesExperimentId,
+      {{"Value", "test_experiment"}});
+
+  GURL registration_request = GURL("https://www.google.com/registration");
+  auto headers =
+      net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200")
+          .AddHeader(
+              "Sec-Session-Google-Registration-List",
+              "(ES256 RS256);path=\"startsession\";challenge=\"Y2hhbGxlbmdl\"")
+          .Build();
+
+  std::vector<BoundSessionRegistrationFetcherParam> maybe_params =
+      BoundSessionRegistrationFetcherParam::CreateFromHeaders(
+          registration_request, headers.get());
+
+  ASSERT_EQ(maybe_params.size(), 1U);
+  const BoundSessionRegistrationFetcherParam& params = maybe_params[0];
+  EXPECT_EQ(params.registration_endpoint(),
+            GURL("https://www.google.com/"
+                 "startsession?experiment_id=test_experiment"));
 }
 
 TEST_F(BoundSessionRegistrationFetcherParamTest, MultipleValidRegistrations) {

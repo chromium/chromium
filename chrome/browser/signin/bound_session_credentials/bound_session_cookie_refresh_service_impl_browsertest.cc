@@ -46,6 +46,8 @@
 #include "crypto/scoped_fake_unexportable_key_provider.h"
 #include "crypto/signature_verifier.h"
 #include "google_apis/gaia/gaia_switches.h"
+#include "net/base/features.h"
+#include "net/base/url_util.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_status_code.h"
@@ -305,6 +307,15 @@ class FakeServer {
  private:
   std::unique_ptr<net::test_server::HttpResponse> HandleRegisterSessionRequest(
       const net::test_server::HttpRequest& request) {
+    std::string expected_query;
+    if (std::string experiment_id_param =
+            net::features::
+                kDeviceBoundSessionsForRestrictedSitesExperimentIdParam.Get();
+        !experiment_id_param.empty()) {
+      expected_query = "experiment_id=" + experiment_id_param;
+    }
+    EXPECT_EQ(request.GetURL().path(), server_params_.registration_path);
+    EXPECT_EQ(request.GetURL().query(), expected_query);
     EXPECT_TRUE(request.has_content);
     EXPECT_TRUE(VerifyRegistrationJwt(request.content));
     auto response = std::make_unique<net::test_server::BasicHttpResponse>();

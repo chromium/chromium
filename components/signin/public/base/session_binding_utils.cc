@@ -106,6 +106,13 @@ std::optional<std::string> CreateHeaderAndPayloadWithCustomPayload(
                        Base64UrlEncode(*payload_serialized)});
 }
 
+GURL RemoveQueryAndFragment(const GURL& original) {
+  GURL::Replacements replacements;
+  replacements.ClearRef();
+  replacements.ClearQuery();
+  return original.ReplaceComponents(replacements);
+}
+
 }  // namespace
 
 std::optional<crypto::SignatureVerifier::SignatureAlgorithm>
@@ -146,7 +153,7 @@ std::optional<std::string> CreateKeyRegistrationHeaderAndPayloadForTokenBinding(
   auto payload =
       base::DictValue()
           .Set("sub", client_id)
-          .Set("aud", registration_url.spec())
+          .Set("aud", RemoveQueryAndFragment(registration_url).spec())
           .Set("jti", Base64UrlEncode(crypto::SHA256HashString(auth_code)))
           // Write out int64_t variable as a double.
           // Note: this may discard some precision, but for `base::Value`
@@ -167,7 +174,7 @@ CreateKeyRegistrationHeaderAndPayloadForSessionBinding(
     base::Time timestamp) {
   auto payload =
       base::DictValue()
-          .Set("aud", registration_url.spec())
+          .Set("aud", RemoveQueryAndFragment(registration_url).spec())
           .Set("jti", challenge)
           // Write out int64_t variable as a double.
           // Note: this may discard some precision, but for `base::Value`
@@ -189,7 +196,7 @@ std::optional<std::string> CreateKeyAssertionHeaderAndPayload(
     std::string_view ephemeral_public_key) {
   auto payload = base::DictValue()
                      .Set("sub", client_id)
-                     .Set("aud", destination_url.spec())
+                     .Set("aud", RemoveQueryAndFragment(destination_url).spec())
                      .Set("jti", challenge)
                      .Set("iss", Base64UrlEncode(crypto::SHA256Hash(pubkey)))
                      .Set("namespace", name_space);
