@@ -6,7 +6,10 @@ module blink.mojom;
 
 // The maximum number of tokens allowed for the input for the Writing Assistance
 // APIs (summarizer, writer, rewriter).
-const uint64 kWritingAssistanceMaxInputTokenSize = 6000;
+// The number is based on the Prompt API's sequence limit of 10240 tokens
+// defined in components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h,
+// while reserving 1024 tokens for the output (i.e. 10240 - 1024 = 9216).
+const uint64 kWritingAssistanceMaxInputTokenSize = 9216;
 
 struct AILanguageCode {
   // BCP 47 language code used for the Built-in AI APIs.
