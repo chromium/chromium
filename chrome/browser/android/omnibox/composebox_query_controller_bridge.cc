@@ -226,7 +226,7 @@ ComposeboxQueryControllerBridge::AddTabContextFromCache(JNIEnv* env,
     return {};
   }
 
-  base::UnguessableToken file_token = base::UnguessableToken::Create();
+  base::UnguessableToken file_token = session_handle_->CreateContextToken();
 
   cache->GetPageContentForTab(
       tab_id, base::BindOnce(
