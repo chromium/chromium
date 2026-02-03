@@ -69,6 +69,8 @@ void TestDefaultDacl(bool restricted_required,
     EXPECT_TRUE(IsSidInDacl(
         dacl, /*allowed=*/true, READ_CONTROL,
         base::win::Sid(base::win::WellKnownSid::kCreatorOwnerRights)));
+    EXPECT_TRUE(IsSidInDacl(dacl, /*allowed=*/true, GENERIC_EXECUTE,
+                            restricted_token.User(), /*conditional=*/false));
     EXPECT_TRUE(IsSidInDacl(dacl, /*allowed=*/true, GENERIC_ALL,
                             restricted_token.User(), /*conditional=*/true));
   }
