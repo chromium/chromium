@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.ui.browser_window;
 
 import android.app.Activity;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
@@ -24,6 +26,12 @@ final class AndroidBrowserWindow {
 
     /** Address of the native {@code AndroidBrowserWindow}. */
     private long mNativeAndroidBrowserWindow;
+
+    /**
+     * Supports the native implementation of {@code BrowserWindowInterface::IsDeleteScheduled()}.
+     * Please see the native code for documentation.
+     */
+    private boolean mIsDeleteScheduled;
 
     AndroidBrowserWindow(ChromeAndroidTask chromeAndroidTask, Profile profile) {
         mChromeAndroidTask = chromeAndroidTask;
@@ -58,11 +66,18 @@ final class AndroidBrowserWindow {
 
     /** Destroys all objects owned by this class. */
     void destroy() {
+        mIsDeleteScheduled = true;
         mAndroidBaseWindow.destroy();
 
         if (mNativeAndroidBrowserWindow != 0) {
             AndroidBrowserWindowJni.get().destroy(mNativeAndroidBrowserWindow);
         }
+    }
+
+    @CalledByNative
+    @VisibleForTesting
+    boolean isDeleteScheduled() {
+        return mIsDeleteScheduled;
     }
 
     long getNativePtrForTesting() {

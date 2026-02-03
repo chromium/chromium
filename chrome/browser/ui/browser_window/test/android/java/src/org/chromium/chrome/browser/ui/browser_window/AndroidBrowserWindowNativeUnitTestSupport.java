@@ -64,6 +64,11 @@ final class AndroidBrowserWindowNativeUnitTestSupport {
     }
 
     @CalledByNative
+    private boolean invokeIsDeleteScheduled() {
+        return mAndroidBrowserWindow.isDeleteScheduled();
+    }
+
+    @CalledByNative
     private void invokeResetAndDestroy() {
         mAndroidBrowserWindow.destroy();
         ProfileManager.resetForTesting();
