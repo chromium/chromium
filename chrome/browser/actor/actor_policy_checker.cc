@@ -240,8 +240,6 @@ ActorPolicyChecker::ActorPolicyChecker(
                              glic::prefs::kGlicActuationOnWebAllowedForURLs),
 #endif  // BUILDFLAG(ENABLE_GLIC)
       journal_(journal.GetSafeRef()) {
-  InitActionBlocklist(profile_);
-
 #if BUILDFLAG(ENABLE_GLIC)
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile_);

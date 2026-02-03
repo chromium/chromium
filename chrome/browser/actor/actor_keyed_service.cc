@@ -120,6 +120,7 @@ ActorKeyedService::ActorKeyedService(Profile* profile) : profile_(profile) {
                           base::Unretained(this)),
       GetJournal());
   profile_observation_.Observe(profile_);
+  actor::InitActionBlocklist(profile_);
 }
 
 void ActorKeyedService::OnProfileInitializationComplete(Profile* profile) {
