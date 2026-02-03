@@ -253,8 +253,6 @@ void WebUIToolbarWebView::PrimaryMainFrameRenderProcessGone(
     return;
   }
 
-  did_recover_from_previous_termination_ = false;
-
   // Reset the crash count if when the reset interval is reached.
   if (clock_->NowTicks() - last_crash_time_ >=
       features::kWebUIReloadButtonCrashRecoverResetInterval.Get()) {
@@ -291,8 +289,9 @@ void WebUIToolbarWebView::PrimaryMainFrameRenderProcessGone(
 
 void WebUIToolbarWebView::RecoverFromRendererCrashOrUnresponsiveness() {
   CHECK(web_view_);
-  CHECK(!did_recover_from_previous_termination_);
-  did_recover_from_previous_termination_ = true;
+  // Note that in some cases the WebView might have been recovered already (e.g.
+  // when the user triggers a reload from the devtools), however we will just
+  // continue with the reload anyway.
   web_view_->web_contents()->GetController().Reload(content::ReloadType::NORMAL,
                                                     /*check_for_repost=*/false);
 }

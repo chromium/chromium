@@ -67,7 +67,7 @@ class WebUIToolbarWebView
 
   void InitializeWebView();
 
-  // Reloads the WebUI toolbar to from crashes or unresponsiveness.
+  // Reloads the WebUI toolbar to recover from crashes or unresponsiveness.
   void RecoverFromRendererCrashOrUnresponsiveness();
 
   chrome::BrowserCommandController* controller() { return controller_; }
@@ -82,7 +82,6 @@ class WebUIToolbarWebView
   bool has_finished_first_non_empty_paint_ = false;
   uint32_t crash_count_ = 0;
   base::TimeTicks last_crash_time_;
-  bool did_recover_from_previous_termination_ = false;
 
   base::WeakPtrFactory<WebUIToolbarWebView> weak_ptr_factory_{this};
 };
