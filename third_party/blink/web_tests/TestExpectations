@@ -2830,26 +2830,6 @@ crbug.com/383880384 [ Win ] external/wpt/css/css-properties-values-api/registere
 # An unexplained failure on headless shell, opened an infra bug.
 crbug.com/410400550 [ Win ] external/wpt/css/motion/animation/offset-path-interpolation-008.html [ Failure ]
 
-# css-values-5 request modifiers
-crbug.com/413411328 external/wpt/css/css-values/urls/cross-origin/url-image-crossorigin-anonymous.sub.html [ Failure ]
-crbug.com/413411328 external/wpt/css/css-values/urls/cross-origin/url-image-crossorigin-use-credentials.sub.html [ Failure ]
-crbug.com/413411328 external/wpt/css/css-values/urls/referrer-policy/no-referrer-when-downgrade/url-image-referrerpolicy-cross-origin.sub.html [ Failure ]
-crbug.com/413411328 external/wpt/css/css-values/urls/referrer-policy/no-referrer-when-downgrade/url-image-referrerpolicy-same-origin.sub.html [ Failure ]
-crbug.com/413411328 external/wpt/css/css-values/urls/referrer-policy/no-referrer/url-image-referrerpolicy-cross-origin.sub.html [ Failure ]
-crbug.com/413411328 external/wpt/css/css-values/urls/referrer-policy/no-referrer/url-image-referrerpolicy-same-origin.sub.html [ Failure ]
-crbug.com/413411328 external/wpt/css/css-values/urls/referrer-policy/origin-when-cross-origin/url-image-referrerpolicy-cross-origin.sub.html [ Failure ]
-crbug.com/413411328 external/wpt/css/css-values/urls/referrer-policy/origin-when-cross-origin/url-image-referrerpolicy-same-origin.sub.html [ Failure ]
-crbug.com/413411328 external/wpt/css/css-values/urls/referrer-policy/origin/url-image-referrerpolicy-cross-origin.sub.html [ Failure ]
-crbug.com/413411328 external/wpt/css/css-values/urls/referrer-policy/origin/url-image-referrerpolicy-same-origin.sub.html [ Failure ]
-crbug.com/413411328 external/wpt/css/css-values/urls/referrer-policy/same-origin/url-image-referrerpolicy-cross-origin.sub.html [ Failure ]
-crbug.com/413411328 external/wpt/css/css-values/urls/referrer-policy/same-origin/url-image-referrerpolicy-same-origin.sub.html [ Failure ]
-crbug.com/413411328 external/wpt/css/css-values/urls/referrer-policy/strict-origin-when-cross-origin/url-image-referrerpolicy-cross-origin.sub.html [ Failure ]
-crbug.com/413411328 external/wpt/css/css-values/urls/referrer-policy/strict-origin-when-cross-origin/url-image-referrerpolicy-same-origin.sub.html [ Failure ]
-crbug.com/413411328 external/wpt/css/css-values/urls/referrer-policy/strict-origin/url-image-referrerpolicy-cross-origin.sub.html [ Failure ]
-crbug.com/413411328 external/wpt/css/css-values/urls/referrer-policy/strict-origin/url-image-referrerpolicy-same-origin.sub.html [ Failure ]
-crbug.com/413411328 external/wpt/css/css-values/urls/referrer-policy/unsafe-url/url-image-referrerpolicy-cross-origin.sub.html [ Failure ]
-crbug.com/413411328 external/wpt/css/css-values/urls/referrer-policy/unsafe-url/url-image-referrerpolicy-same-origin.sub.html [ Failure ]
-
 # Inheritance of zoom on non-inherited properties
 crbug.com/420443621 external/wpt/css/css-viewport/zoom/text-decoration-thickness.html [ Failure ]
 
