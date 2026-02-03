@@ -62,6 +62,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.BooleanSupplier;
 
 /**
  * Coordinator to construct the instance switcher dialog. TODO: Resolve various inconsistencies that
@@ -195,7 +196,7 @@ public class InstanceSwitcherCoordinator {
                 mInstanceListContainer,
                 mActiveInstancesList,
                 mInactiveInstancesList,
-                mIsInactiveListShowing,
+                () -> mIsInactiveListShowing,
                 mNewWindowLayout,
                 mMinCommandItemHeightPx,
                 mItemPaddingHeightPx,
@@ -216,7 +217,7 @@ public class InstanceSwitcherCoordinator {
                                 mInstanceListContainer,
                                 mActiveInstancesList,
                                 mInactiveInstancesList,
-                                mIsInactiveListShowing,
+                                () -> mIsInactiveListShowing,
                                 mNewWindowLayout,
                                 mMinCommandItemHeightPx,
                                 mItemPaddingHeightPx,
@@ -254,7 +255,7 @@ public class InstanceSwitcherCoordinator {
             View instanceListContainer,
             RecyclerView activeInstancesList,
             RecyclerView inactiveInstancesList,
-            boolean isInactiveListShowing,
+            BooleanSupplier isInactiveListShowingSupplier,
             View newWindowLayout,
             int minCommandItemHeightPx,
             int itemPaddingHeightPx,
@@ -272,7 +273,7 @@ public class InstanceSwitcherCoordinator {
                                     instanceListContainer,
                                     activeInstancesList,
                                     inactiveInstancesList,
-                                    isInactiveListShowing,
+                                    isInactiveListShowingSupplier.getAsBoolean(),
                                     newWindowLayout,
                                     minCommandItemHeightPx,
                                     itemPaddingHeightPx);
@@ -293,7 +294,7 @@ public class InstanceSwitcherCoordinator {
                                 instanceListContainer,
                                 activeInstancesList,
                                 inactiveInstancesList,
-                                isInactiveListShowing,
+                                isInactiveListShowingSupplier.getAsBoolean(),
                                 newWindowLayout,
                                 minCommandItemHeightPx,
                                 itemPaddingHeightPx);
@@ -758,7 +759,7 @@ public class InstanceSwitcherCoordinator {
                     assumeNonNull(mInstanceListContainer),
                     assumeNonNull(mActiveInstancesList),
                     assumeNonNull(mInactiveInstancesList),
-                    mIsInactiveListShowing,
+                    () -> mIsInactiveListShowing,
                     assumeNonNull(mNewWindowLayout),
                     mMinCommandItemHeightPx,
                     mItemPaddingHeightPx,
