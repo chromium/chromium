@@ -2980,7 +2980,7 @@
     ]
   },
   {
-    "prefix": "scoped-custom-element-registry",
+    "prefix": "scoped-custom-element-registry-disabled",
     "owners": [
       "masonf@chromium.org",
       "tgivens@microsoft.com",
@@ -2995,7 +2995,7 @@
       "custom-elements/"
     ],
     "args": [
-      "--enable-blink-features=ScopedCustomElementRegistry"
+      "--disable-blink-features=ScopedCustomElementRegistry"
     ],
     "expires": "Jun 1, 2026"
   },
