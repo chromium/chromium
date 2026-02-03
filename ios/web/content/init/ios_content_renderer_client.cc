@@ -27,13 +27,16 @@ void IOSContentRendererClient::RunScriptsAtDocumentStart(
     content::RenderFrame* render_frame) {
   js_injection::JsCommunication* communication =
       js_injection::JsCommunication::Get(render_frame);
-  communication->RunScriptsAtDocumentStart();
+  communication->RunScripts(
+      js_injection::mojom::DocumentInjectionTime::kDocumentStart);
 }
 
 void IOSContentRendererClient::RunScriptsAtDocumentEnd(
     content::RenderFrame* render_frame) {
-  // TODO(crbug.com/40260088): Inject document end scripts from
-  // JavaScriptFeatures.
+  js_injection::JsCommunication* communication =
+      js_injection::JsCommunication::Get(render_frame);
+  communication->RunScripts(
+      js_injection::mojom::DocumentInjectionTime::kDocumentEnd);
 }
 
 void IOSContentRendererClient::PrepareErrorPage(
