@@ -26,7 +26,6 @@ class InternalApiToken {
   InternalApiToken(const InternalApiToken&) = default;
 
   friend class Database;
-  friend class DatabaseTestPeer;
   friend class Recovery;
   friend class Transaction;
   friend struct test::ColumnInfo;
