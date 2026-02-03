@@ -2567,6 +2567,9 @@ void AccessibilityController::OnDisplayTabletStateChanged(
 
 void AccessibilityController::ObservePrefs(PrefService* prefs) {
   DCHECK(prefs);
+  if (active_user_prefs_ == prefs) {
+    return;
+  }
 
   active_user_prefs_ = prefs;
 

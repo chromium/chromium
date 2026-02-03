@@ -225,17 +225,8 @@ bool AccessibilityEventRewriter::RewriteEventForChromeVox(
   // Save continuation for |OnUnhandledSpokenFeedbackEvent()|.
   chromevox_continuation_ = continuation;
 
-  if (!event.IsKeyEvent()) {
-    return false;
-  }
-
-  if (Shell::Get()->accessibility_controller()->GetActiveUserPrefs() &&
-      !Shell::Get()
-           ->accessibility_controller()
-           ->GetActiveUserPrefs()
-           ->GetBoolean(prefs::kAccessibilitySpokenFeedbackEnabled)) {
-    // Check the ChromeVox enabled pref directly, as it's possible for
-    // spoken_feedback().enabled() to return a stale result.
+  if (!Shell::Get()->accessibility_controller()->spoken_feedback().enabled() ||
+      !event.IsKeyEvent()) {
     return false;
   }
 

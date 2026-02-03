@@ -100,7 +100,14 @@ void AccessibilityEventRewriterDelegateImpl::DispatchKeyEventToChromeVoxMv3(
     unsigned int id,
     std::unique_ptr<ui::Event> event) {
   CHECK(::features::IsAccessibilityManifestV3EnabledForChromeVox());
-  CHECK(AccessibilityManager::Get()->IsSpokenFeedbackEnabled());
+  if (!AccessibilityManager::Get()->IsSpokenFeedbackEnabled()) {
+    // This shouldn't be common, but may happen due to the async nature of MV3
+    // and loading/unloading ChromeVox combined with async getting of prefs when
+    // switching profiles. See b:458302114.
+    // AccessibilityManager is the source of truth for whether Spoken Feedback
+    // is enabled since it handles loading/unloading.
+    return;
+  }
   CHECK(event->IsKeyEvent());
   extensions::EventRouter* event_router =
       extensions::EventRouter::Get(AccessibilityManager::Get()->profile());
