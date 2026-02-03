@@ -53,6 +53,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_observer_bridge.h"
 #import "ios/chrome/browser/signin/model/avatar/avatar_provider.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/constants.h"
@@ -85,7 +86,8 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
 
 }  // namespace
 
-@interface ManageSyncSettingsMediator () <IdentityManagerObserverBridgeDelegate>
+@interface ManageSyncSettingsMediator () <AuthenticationServiceObserving,
+                                          IdentityManagerObserverBridgeDelegate>
 
 // Model item for each data types.
 @property(nonatomic, strong) NSArray<TableViewItem*>* syncSwitchItems;
@@ -116,6 +118,9 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   // Observer for `IdentityManager`.
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityManagerObserver;
+  // Observer for `AuthenticationService`.
+  std::unique_ptr<AuthenticationServiceObserverBridge>
+      _authServiceObserverBridge;
   // Authentication service.
   raw_ptr<AuthenticationService> _authenticationService;
   // Account manager service to retrieve Chrome identities.
@@ -136,12 +141,16 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   if (self) {
     DCHECK(syncService);
     CHECK(authenticationService);
+    CHECK(authenticationService->SigninEnabled(), base::NotFatalUntil::M144);
     _syncService = syncService;
     _syncObserver = std::make_unique<SyncObserverBridge>(self, syncService);
     _identityManager = identityManager;
     _identityManagerObserver =
         std::make_unique<signin::IdentityManagerObserverBridge>(identityManager,
                                                                 self);
+    _authServiceObserverBridge =
+        std::make_unique<AuthenticationServiceObserverBridge>(
+            authenticationService, self);
     _authenticationService = authenticationService;
     _chromeAccountManagerService = accountManagerService;
     _signedInIdentity = _authenticationService->GetPrimaryIdentity(
@@ -157,12 +166,17 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   return self;
 }
 
+- (void)dealloc {
+  CHECK(!_authenticationService, base::NotFatalUntil::M152);
+}
+
 - (void)disconnect {
   _syncObserver.reset();
   _syncService = nullptr;
   _consumer = nullptr;
   _identityManager = nullptr;
   _identityManagerObserver.reset();
+  _authServiceObserverBridge.reset();
   _authenticationService = nullptr;
   self.commandHandler = nullptr;
   self.syncErrorHandler = nullptr;
@@ -971,6 +985,14 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
     return NO;
   }
   return YES;
+}
+
+#pragma mark - AuthenticationServiceObserving
+
+- (void)onServiceStatusChanged {
+  if (!_authenticationService->SigninEnabled()) {
+    [self.commandHandler closeManageSyncSettings];
+  }
 }
 
 #pragma mark - ManageSyncSettingsTableViewControllerModelDelegate

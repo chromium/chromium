@@ -10,6 +10,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
+#import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/sync/base/user_selectable_type.h"
@@ -108,6 +109,13 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
                                   profile_.get())
                   prefService:profile_->GetPrefs()];
     mediator_.consumer = consumer_;
+  }
+
+  void TearDown() override {
+    [mediator_ disconnect];
+    mediator_ = nullptr;
+    consumer_ = nullptr;
+    PlatformTest::TearDown();
   }
 
   void CreateManageSyncSettingsMediator(
@@ -443,5 +451,19 @@ TEST_F(ManageSyncSettingsMediatorTest,
   // Test item behavior for EEA users.
   [mediator_ didSelectItem:items[1] cellRect:CGRectZero];
 
+  EXPECT_OCMOCK_VERIFY(mockCommandHandler);
+}
+
+// Tests that the mediator informs the command handler when sign-in becomes
+// disabled.
+TEST_F(ManageSyncSettingsMediatorTest, TestSigninDisabled) {
+  CreateManageSyncSettingsMediator();
+  id mockCommandHandler =
+      OCMProtocolMock(@protocol(ManageSyncSettingsCommandHandler));
+  mediator_.commandHandler = mockCommandHandler;
+
+  OCMExpect([mockCommandHandler closeManageSyncSettings]);
+  GetApplicationContext()->GetLocalState()->SetBoolean(
+      prefs::kSigninAllowedOnDevice, false);
   EXPECT_OCMOCK_VERIFY(mockCommandHandler);
 }
