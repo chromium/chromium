@@ -18,6 +18,7 @@
 #include "chrome/browser/device_api/device_attribute_api.h"
 #include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
 #include "chrome/browser/web_applications/web_app_filter.h"
@@ -110,7 +111,19 @@ std::optional<webapps::AppId> GetAppId(
 }
 
 // Check whether an app with the target origin is in the WebAppRegistrar and is
-// an IWA.
+// a dev mode installed IWA.
+bool IsDevModeInstalledIwaOrigin(content::RenderFrameHost& host,
+                                 const url::Origin& origin) {
+  ASSIGN_OR_RETURN(const web_app::WebAppRegistrar& registrar,
+                   GetRegistrar(host, origin), [] { return false; });
+  ASSIGN_OR_RETURN(webapps::AppId app_id, GetAppId(registrar, origin),
+                   [] { return false; });
+  return registrar.AppMatches(app_id,
+                              web_app::WebAppFilter::IsDevModeIsolatedApp());
+}
+
+// Check whether an app with the target origin is in the WebAppRegistrar and is
+// a force installed IWA.
 bool IsForceInstalledIwaOrigin(content::RenderFrameHost& host,
                                const url::Origin& origin) {
   ASSIGN_OR_RETURN(const web_app::WebAppRegistrar& registrar,
@@ -151,7 +164,8 @@ bool IsTrustedContext(content::RenderFrameHost& host,
     return IsEqualToKioskOrigin(origin);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  return IsForceInstalledIwaOrigin(host, origin);
+  return IsForceInstalledIwaOrigin(host, origin) ||
+         IsDevModeInstalledIwaOrigin(host, origin);
 }
 
 bool IsAllowedByPermissionsPolicy(content::RenderFrameHost& host) {
@@ -308,7 +322,8 @@ void DeviceServiceImpl::GetAnnotatedLocation(
 void DeviceServiceImpl::GetDeviceAttribute(
     void (DeviceAttributeApi::*method)(DeviceAttributeCallback callback),
     DeviceAttributeCallback callback) {
-  if (!IsAffiliatedUser()) {
+  if (!IsAffiliatedUser() &&
+      !IsDevModeInstalledIwaOrigin(render_frame_host(), origin())) {
     device_attribute_api_->ReportNotAffiliatedError(std::move(callback));
     return;
   }

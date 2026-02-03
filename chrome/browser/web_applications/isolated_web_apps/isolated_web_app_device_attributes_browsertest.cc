@@ -19,6 +19,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/test/policy_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/common/chrome_features.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/policy/device_policy/cached_device_policy_updater.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
@@ -65,6 +66,9 @@ constexpr char kManagedUserEmail[] = "example@example.com";
 constexpr GaiaId::Literal kGaiaId("123456");
 constexpr char kTestAffiliationId[] = "test-affiliation-id";
 
+constexpr char kNotAffiliatedErrorMessage[] =
+    "This web API is not allowed if the current profile is not affiliated.";
+
 constexpr char kPermissionsPolicyError[] =
     "Permissions-Policy: device-attributes are disabled.";
 
@@ -76,14 +80,16 @@ constexpr char kChildFrameError[] =
     "This API is allowed only in top level frames.";
 
 struct IsolatedWebAppDeviceAttributesBrowserTestParams {
-  using TupleT = std::tuple<bool, bool, bool>;
+  using TupleT = std::tuple<bool, bool, bool, bool>;
   bool allow_policy;
   bool block_policy;
+  bool user_affiliated;
   bool permissions_policy;
   explicit IsolatedWebAppDeviceAttributesBrowserTestParams(TupleT t)
       : allow_policy(std::get<0>(t)),
         block_policy(std::get<1>(t)),
-        permissions_policy(std::get<2>(t)) {}
+        user_affiliated(std::get<2>(t)),
+        permissions_policy(std::get<3>(t)) {}
 };
 
 }  // namespace
@@ -110,6 +116,7 @@ class IsolatedWebAppDeviceAttributesBrowserTest
  protected:
   bool IsAllowPolicySet() { return GetParam().allow_policy; }
   bool IsBlockPolicySet() { return GetParam().block_policy; }
+  bool IsUserAffiliated() { return GetParam().user_affiliated; }
   bool IsPermissionsPolicyGranted() { return GetParam().permissions_policy; }
 
   void MaybeSetEnterprisePoliciesForOrigin(const std::string& origin) {
@@ -141,7 +148,7 @@ class IsolatedWebAppDeviceAttributesBrowserTest
                                                   kDeviceSerialNumber);
   }
 
-  IsolatedWebAppUrlInfo InstallApp() {
+  IsolatedWebAppUrlInfo InstallTrustedIWA() {
     auto web_bundle_id = test::GetDefaultEd25519WebBundleId();
     auto iwa_url_info =
         web_app::IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
@@ -165,6 +172,18 @@ class IsolatedWebAppDeviceAttributesBrowserTest
     return iwa_url_info;
   }
 
+  web_app::ManifestBuilder GetIwaManifestBuilder() {
+    auto manifest_builder = ManifestBuilder();
+    if (IsPermissionsPolicyGranted()) {
+      manifest_builder.AddPermissionsPolicy(
+          network::mojom::PermissionsPolicyFeature::kDeviceAttributes, true,
+          {});
+    }
+    return manifest_builder;
+  }
+
+  FakeIwaRuntimeDataProviderMixin& data_provider() { return data_provider_; }
+
  private:
   void SetUpPolicies() {
     {
@@ -179,24 +198,13 @@ class IsolatedWebAppDeviceAttributesBrowserTest
       updater.Commit();
     }
 
-    // Mark as affiliated.
-    {
+    if (IsUserAffiliated()) {
       auto updater = user_policy_.RequestPolicyUpdate();
       updater->policy_data()->add_user_affiliation_ids(kTestAffiliationId);
     }
   }
   policy::DevicePolicyBuilder& device_policy() {
     return *(policy_helper_.device_policy());
-  }
-
-  web_app::ManifestBuilder GetIwaManifestBuilder() {
-    auto manifest_builder = ManifestBuilder();
-    if (IsPermissionsPolicyGranted()) {
-      manifest_builder.AddPermissionsPolicy(
-          network::mojom::PermissionsPolicyFeature::kDeviceAttributes, true,
-          {});
-    }
-    return manifest_builder;
   }
 
   ash::DeviceStateMixin device_state_{
@@ -216,9 +224,9 @@ class IsolatedWebAppDeviceAttributesBrowserTest
 
 IN_PROC_BROWSER_TEST_P(IsolatedWebAppDeviceAttributesBrowserTest,
                        ObtainingDeviceAttributes) {
-  IsolatedWebAppUrlInfo url_info = InstallApp();
+  IsolatedWebAppUrlInfo url_info = InstallTrustedIWA();
   const bool device_attributes_should_work =
-      !IsBlockPolicySet() && IsPermissionsPolicyGranted();
+      IsUserAffiliated() && !IsBlockPolicySet() && IsPermissionsPolicyGranted();
   MaybeSetEnterprisePoliciesForOrigin(url_info.origin().Serialize());
 
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
@@ -233,6 +241,8 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppDeviceAttributesBrowserTest,
       std::string expected_error;
       if (!IsPermissionsPolicyGranted()) {
         expected_error = kPermissionsPolicyError;
+      } else if (!IsUserAffiliated()) {
+        expected_error = kNotAffiliatedErrorMessage;
       } else {
         expected_error = kNoDeviceAttributesPermissionErrorMessage;
       }
@@ -244,7 +254,7 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppDeviceAttributesBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(IsolatedWebAppDeviceAttributesBrowserTest,
                        ObtainingDeviceAttributesFromChildFrame) {
-  IsolatedWebAppUrlInfo url_info = InstallApp();
+  IsolatedWebAppUrlInfo url_info = InstallTrustedIWA();
   MaybeSetEnterprisePoliciesForOrigin(url_info.origin().Serialize());
 
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
@@ -277,14 +287,98 @@ INSTANTIATE_TEST_SUITE_P(
         IsolatedWebAppDeviceAttributesBrowserTestParams::TupleT>(
         ::testing::Combine(::testing::Bool(),  // allow policy
                            ::testing::Bool(),  // block policy
+                           ::testing::Bool(),  // user affiliated
                            ::testing::Bool()   // permissions policy
                            )),
     [](const ::testing::TestParamInfo<
         IsolatedWebAppDeviceAttributesBrowserTestParams>& info) {
       return base::StringPrintf(
-          "AllowPolicy%s_BlockPolicy%s_PermissionsPolicy%s",
+          "AllowPolicy%s_BlockPolicy%s_User%s_PermissionsPolicy%s",
           info.param.allow_policy ? "Set" : "Unset",
           info.param.block_policy ? "Set" : "Unset",
+          info.param.user_affiliated ? "Affiliated" : "Unaffiliated",
           info.param.permissions_policy ? "Granted" : "Denied");
     });
+
+class IsolatedWebAppDevModeDeviceAttributesBrowserTest
+    : public IsolatedWebAppDeviceAttributesBrowserTest {
+ public:
+  IsolatedWebAppDevModeDeviceAttributesBrowserTest() {
+    feature_list_.InitAndEnableFeature(features::kIsolatedWebAppDevMode);
+  }
+
+ protected:
+  IsolatedWebAppUrlInfo InstallDevModeIWA() {
+    auto web_bundle_id = test::GetDefaultEd25519WebBundleId();
+    auto iwa_url_info =
+        web_app::IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
+            web_bundle_id);
+
+    data_provider()->Update(
+        [&](auto& update) { update.AddToManagedAllowlist(web_bundle_id); });
+    WebAppTestInstallObserver install_observer(profile());
+    install_observer.BeginListening();
+
+    std::unique_ptr<BundledIsolatedWebApp> bundle =
+        IsolatedWebAppBuilder(GetIwaManifestBuilder())
+            .BuildBundle(web_bundle_id, {test::GetDefaultEd25519KeyPair()});
+    EXPECT_EQ(iwa_url_info,
+              bundle->InstallWithSource(
+                  profile(), &IsolatedWebAppInstallSource::FromDevUi));
+    EXPECT_EQ(install_observer.Wait(), iwa_url_info.app_id());
+    return iwa_url_info;
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(IsolatedWebAppDevModeDeviceAttributesBrowserTest,
+                       ObtainingDeviceAttributesInDevModeInstalledApp) {
+  IsolatedWebAppUrlInfo url_info = InstallDevModeIWA();
+  const bool device_attributes_should_work =
+      !IsBlockPolicySet() && IsPermissionsPolicyGranted();
+  MaybeSetEnterprisePoliciesForOrigin(url_info.origin().Serialize());
+
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+  ASSERT_NE(app_frame, nullptr);
+  ASSERT_EQ(kDeviceAttributeNames.size(),
+            kExpectedDeviceAttributeValues.size());
+  for (size_t i = 0; i < kDeviceAttributeNames.size(); ++i) {
+    if (device_attributes_should_work) {
+      EXPECT_EQ(kExpectedDeviceAttributeValues[i],
+                CallDeviceAttributesApi(app_frame, kDeviceAttributeNames[i]));
+    } else {
+      std::string expected_error;
+      if (!IsPermissionsPolicyGranted()) {
+        expected_error = kPermissionsPolicyError;
+      } else {
+        expected_error = kNoDeviceAttributesPermissionErrorMessage;
+      }
+      EXPECT_THAT(CallDeviceAttributesApi(app_frame, kDeviceAttributeNames[i]),
+                  content::EvalJsResult::ErrorIs(HasSubstr(expected_error)));
+    }
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    IsolatedWebAppDevModeDeviceAttributesBrowserTest,
+    ::testing::ConvertGenerator<
+        IsolatedWebAppDeviceAttributesBrowserTestParams::TupleT>(
+        ::testing::Combine(::testing::Bool(),  // allow policy
+                           ::testing::Bool(),  // block policy
+                           ::testing::Bool(),  // user affiliated
+                           ::testing::Bool()   // permissions policy
+                           )),
+    [](const ::testing::TestParamInfo<
+        IsolatedWebAppDeviceAttributesBrowserTestParams>& info) {
+      return base::StringPrintf(
+          "AllowPolicy%s_BlockPolicy%s_User%s_PermissionsPolicy%s",
+          info.param.allow_policy ? "Set" : "Unset",
+          info.param.block_policy ? "Set" : "Unset",
+          info.param.user_affiliated ? "Affiliated" : "Unaffiliated",
+          info.param.permissions_policy ? "Granted" : "Denied");
+    });
+
 }  // namespace web_app

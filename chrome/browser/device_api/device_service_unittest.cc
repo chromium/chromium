@@ -33,6 +33,7 @@
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -364,11 +365,15 @@ class DeviceAPIServiceIwaTest
   }
 
   web_app::IsolatedWebAppUrlInfo InstallTrustedIWA() {
-    return InstallIWA(/*trusted=*/true);
+    return InstallIWA(InstallType::kPolicy);
   }
 
   web_app::IsolatedWebAppUrlInfo InstallUntrustedIWA() {
-    return InstallIWA(/*trusted=*/false);
+    return InstallIWA(InstallType::kGraphicalInstaller);
+  }
+
+  web_app::IsolatedWebAppUrlInfo InstallDevModeIWA() {
+    return InstallIWA(InstallType::kDevMode);
   }
 
   void ForceUninstall(const web_app::IsolatedWebAppUrlInfo& url_info) {
@@ -405,8 +410,13 @@ class DeviceAPIServiceIwaTest
   bool IsBlockPolicySet() { return std::get<1>(GetParam()); }
   bool IsPermissionsPolicyGranted() { return std::get<2>(GetParam()); }
 
+  void EnableFeature(const base::Feature& param) {
+    feature_list_.InitAndEnableFeature(param);
+  }
+
  private:
-  web_app::IsolatedWebAppUrlInfo InstallIWA(bool trusted) {
+  enum class InstallType { kPolicy, kDevMode, kGraphicalInstaller };
+  web_app::IsolatedWebAppUrlInfo InstallIWA(InstallType install_type) {
     auto manifest_builder = web_app::ManifestBuilder();
     if (IsPermissionsPolicyGranted()) {
       manifest_builder.AddPermissionsPolicy(
@@ -416,19 +426,26 @@ class DeviceAPIServiceIwaTest
     const std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> bundle =
         web_app::IsolatedWebAppBuilder(manifest_builder).BuildBundle();
     bundle->TrustSigningKey();
-    if (trusted) {
-      return bundle
-          ->InstallWithSource(
-              profile(),
-              &web_app::IsolatedWebAppInstallSource::FromExternalPolicy)
-          .value();
-    } else {
-      return bundle->InstallChecked(profile());
+    switch (install_type) {
+      case InstallType::kPolicy:
+        return bundle
+            ->InstallWithSource(
+                profile(),
+                &web_app::IsolatedWebAppInstallSource::FromExternalPolicy)
+            .value();
+      case InstallType::kDevMode:
+        return bundle
+            ->InstallWithSource(
+                profile(), &web_app::IsolatedWebAppInstallSource::FromDevUi)
+            .value();
+      case InstallType::kGraphicalInstaller:
+        return bundle->InstallChecked(profile());
     }
   }
 
   std::unique_ptr<content::RenderViewHostTestEnabler> rvh_test_enabler_;
   std::unique_ptr<content::WebContents> web_contents_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_P(DeviceAPIServiceIwaTest, CheckTrustedApps) {
@@ -491,6 +508,33 @@ TEST_P(DeviceAPIServiceIwaTest, CheckErrorForDefaultUser) {
     ASSERT_FALSE(remote()->is_connected());
     EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
               kPermissionsPolicyMojoErrorMessage);
+  }
+}
+
+TEST_P(DeviceAPIServiceIwaTest, CheckUntrustedAppsWithIwaDevModeFlag) {
+  EnableFeature(features::kIsolatedWebAppDevMode);
+  auto url_info = InstallUntrustedIWA();
+  TryCreatingService(url_info.origin().GetURL(),
+                     std::make_unique<DeviceAttributeApiImpl>());
+  remote()->FlushForTesting();
+  ASSERT_FALSE(remote()->is_connected());
+}
+
+TEST_P(DeviceAPIServiceIwaTest, CheckDevModeInstalledAppsWithIwaDevModeFlag) {
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
+  mojo::test::BadMessageObserver bad_message_observer;
+
+  EnableFeature(features::kIsolatedWebAppDevMode);
+  auto url_info = InstallDevModeIWA();
+  TryCreatingService(url_info.origin().GetURL(),
+                     std::make_unique<DeviceAttributeApiImpl>());
+  remote()->FlushForTesting();
+  if (IsPermissionsPolicyGranted()) {
+    ASSERT_TRUE(remote()->is_connected());
+  } else {
+    ASSERT_FALSE(remote()->is_connected());
+    EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+              "Permissions policy blocks access to Device Attributes.");
   }
 }
 
@@ -702,6 +746,34 @@ TEST_P(DeviceAPIServiceRegularUserIwaTest, CheckTrustedAppsForAffiliatedUser) {
   mojo::test::BadMessageObserver bad_message_observer;
   LoginRegularUser(true);
   auto url_info = InstallTrustedIWA();
+  SetEnterprisePoliciesForOrigin(url_info.origin().Serialize());
+  bool should_work = IsPermissionsPolicyGranted() && !IsBlockPolicySet();
+  TryCreatingService(url_info.origin().GetURL(),
+                     std::make_unique<FakeDeviceAttributeApi>());
+  remote()->FlushForTesting();
+
+  if (IsPermissionsPolicyGranted()) {
+    ASSERT_TRUE(remote()->is_connected());
+    if (should_work) {
+      VerifyCanAccessForAllDeviceAttributesAPIs();
+    } else {
+      VerifyErrorMessageResultForAllDeviceAttributesAPIs(
+          kNoDeviceAttributesPermissionErrorMessage);
+    }
+  } else {
+    ASSERT_FALSE(remote()->is_connected());
+    EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+              kPermissionsPolicyMojoErrorMessage);
+  }
+}
+
+TEST_P(DeviceAPIServiceRegularUserIwaTest,
+       CheckDevModeAppsForUnaffiliatedUser) {
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
+  mojo::test::BadMessageObserver bad_message_observer;
+  EnableFeature(features::kIsolatedWebAppDevMode);
+  LoginRegularUser(/*is_affiliated=*/false);
+  auto url_info = InstallDevModeIWA();
   SetEnterprisePoliciesForOrigin(url_info.origin().Serialize());
   bool should_work = IsPermissionsPolicyGranted() && !IsBlockPolicySet();
   TryCreatingService(url_info.origin().GetURL(),
