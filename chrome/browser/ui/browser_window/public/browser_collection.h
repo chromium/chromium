@@ -30,8 +30,10 @@ class BrowserCollection {
     kActivation,
   };
 
-  // Iterates over all BrowserWindowInstances in this collection present at
-  // the time ForEach() was invoked in a given `order`.
+  // Iterates over all BrowserWindowInstances in this collection present at the
+  // time ForEach() was invoked in a given `order`. If `enumerate_new_browsers`
+  // is true browsers created during iteration will be appended to the end of
+  // the current list of browsers in the order they were created.
   //
   // The return value in the passed-in function indicates whether or not we
   // should continue iterating - true means continue, false means terminate.
@@ -44,7 +46,8 @@ class BrowserCollection {
   //         return true;
   //       });
   void ForEach(base::FunctionRef<bool(BrowserWindowInterface*)> on_browser,
-               Order order = Order::kCreation);
+               Order order = Order::kCreation,
+               bool enumerate_new_browsers = false);
 
   // True if there are no BrowserWindowInterfaces belonging to this collection.
   virtual bool IsEmpty() const = 0;

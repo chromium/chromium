@@ -14,8 +14,10 @@ namespace {
 class BrowserCollectionEnumerator : public BrowserCollectionObserver {
  public:
   BrowserCollectionEnumerator(BrowserCollection* collection,
-                              BrowserCollection::BrowserVector browsers)
-      : browsers_(std::move(browsers)) {
+                              BrowserCollection::BrowserVector browsers,
+                              bool enumerate_new_browsers)
+      : enumerate_new_browsers_(enumerate_new_browsers),
+        browsers_(std::move(browsers)) {
     browser_collection_observer_.Observe(collection);
   }
   BrowserCollectionEnumerator(const BrowserCollectionEnumerator&) = delete;
@@ -33,6 +35,12 @@ class BrowserCollectionEnumerator : public BrowserCollectionObserver {
 
  private:
   // BrowserCollectionObserver:
+  void OnBrowserCreated(BrowserWindowInterface* browser) override {
+    if (enumerate_new_browsers_) {
+      browsers_.push_back(browser);
+    }
+  }
+
   void OnBrowserClosed(BrowserWindowInterface* browser) override {
     // Nullify the closed browser to ensure we skip over it during iteration.
     auto it = std::ranges::find(browsers_, browser);
@@ -41,6 +49,7 @@ class BrowserCollectionEnumerator : public BrowserCollectionObserver {
     }
   }
 
+  bool enumerate_new_browsers_;
   BrowserCollection::BrowserVector browsers_;
   base::ScopedObservation<BrowserCollection, BrowserCollectionObserver>
       browser_collection_observer_{this};
@@ -54,8 +63,10 @@ BrowserCollection::~BrowserCollection() = default;
 
 void BrowserCollection::ForEach(
     base::FunctionRef<bool(BrowserWindowInterface*)> on_browser,
-    Order order) {
-  BrowserCollectionEnumerator(this, GetBrowsers(order)).ForEach(on_browser);
+    Order order,
+    bool enumerate_new_browsers) {
+  BrowserCollectionEnumerator(this, GetBrowsers(order), enumerate_new_browsers)
+      .ForEach(on_browser);
 }
 
 void BrowserCollection::AddObserver(BrowserCollectionObserver* observer) {
