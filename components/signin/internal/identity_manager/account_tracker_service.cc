@@ -813,6 +813,13 @@ void AccountTrackerService::SeedAccountsInfo(
   DVLOG(1) << "AccountTrackerService.SeedAccountsInfo: "
            << " number of accounts " << accounts.size();
 
+  if (primary_account_id) {
+    // The primary account must be present in the account list.
+    CHECK(std::ranges::contains(accounts, *primary_account_id,
+                                &AccountInfo::GetAccountId),
+          base::NotFatalUntil::M148);
+  }
+
   if (should_remove_stale_accounts) {
     // Remove the accounts deleted from the device, but don't remove the primary
     // account.
