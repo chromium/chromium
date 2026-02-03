@@ -6418,6 +6418,7 @@ Called by update_use_counter_feature_enum.py.-->
       label="GeolocationRequestPositionWithPotentiallyUpToDateWatchedCachedPosition"/>
   <int value="5784" label="AnchorCaseSensitiveMatch"/>
   <int value="5785" label="AnchorCaseInsensitiveMatch"/>
+  <int value="5786" label="PrerenderActivationByFormSubmission"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

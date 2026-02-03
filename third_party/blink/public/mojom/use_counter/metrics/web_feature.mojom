@@ -5099,6 +5099,7 @@ enum WebFeature {
   kGeolocationRequestPositionWithPotentiallyUpToDateWatchedCachedPosition = 5783,
   kAnchorCaseSensitiveMatch = 5784,
   kAnchorCaseInsensitiveMatch = 5785,
+  kPrerenderActivationByFormSubmission = 5786,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

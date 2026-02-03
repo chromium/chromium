@@ -374,6 +374,11 @@ bool PrerendererImpl::MaybePrerender(
       NOTREACHED();
   }
 
+  if (candidate->form_submission) {
+    GetContentClient()->browser()->LogWebFeatureForCurrentPage(
+        &rfhi, blink::mojom::WebFeature::kPrerenderActivationByFormSubmission);
+  }
+
   IncrementReceivedPrerendersCountForMetrics(
       PreloadingTriggerTypeFromSpeculationInjectionType(
           candidate->injection_type),

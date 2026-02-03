@@ -1291,4 +1291,43 @@ IN_PROC_BROWSER_TEST_F(PrerenderPrewarmDefaultSearchEngineTest,
       *GetActiveWebContents(), prerender_url_3);
 }
 
+class PrerenderFormSubmissionBrowserTest : public PrerenderBrowserTest {
+ public:
+  PrerenderFormSubmissionBrowserTest() {
+    feature_list_.InitAndEnableFeature(
+        blink::features::kPrerenderActivationByFormSubmission);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PrerenderFormSubmissionBrowserTest, UseCounter) {
+  base::HistogramTester histogram_tester;
+
+  // Navigate to an initial page.
+  GURL url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), url));
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      blink::mojom::WebFeature::kPrerenderActivationByFormSubmission, 0);
+
+  // Trigger prerender with form submission.
+  GURL prerender_url = embedded_test_server()->GetURL("/simple.html?prerender");
+  prerender_helper().AddPrerendersAsync(
+      {prerender_url},
+      /*eagerness=*/std::nullopt,
+      /*no_vary_search_hint=*/std::nullopt,
+      /*target_hint=*/std::string(),
+      /*ruleset_tag=*/std::nullopt,
+      /*world_id=*/content::ISOLATED_WORLD_ID_GLOBAL,
+      /*form_submission=*/true);
+  content::test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(
+      *GetActiveWebContents(), prerender_url);
+
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      blink::mojom::WebFeature::kPrerenderActivationByFormSubmission, 1);
+}
+
 }  // namespace
