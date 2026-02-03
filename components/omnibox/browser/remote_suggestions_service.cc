@@ -279,7 +279,7 @@ GURL AddLensOverlaySuggestInputsDataToEndpointUrl(
   return modified_url;
 }
 
-GURL AddAimToolModeToEndpointUrl(
+GURL AddAimInputStateParamsToEndpointUrl(
     TemplateURLRef::SearchTermsArgs search_terms_args,
     const GURL& url_to_modify) {
   GURL modified_url = GURL(url_to_modify);
@@ -289,6 +289,13 @@ GURL AddAimToolModeToEndpointUrl(
         url_to_modify, "azm",
         base::NumberToString(
             static_cast<int>(search_terms_args.input_state.active_tool)));
+  }
+  if (search_terms_args.input_state.active_model !=
+      omnibox::ModelMode::MODEL_MODE_UNSPECIFIED) {
+    modified_url = net::AppendOrReplaceQueryParameter(
+        modified_url, "sam",
+        base::NumberToString(
+            static_cast<int>(search_terms_args.input_state.active_model)));
   }
   return modified_url;
 }
@@ -382,7 +389,7 @@ GURL RemoteSuggestionsService::EndpointUrl(
       break;
   }
   url = AddLensOverlaySuggestInputsDataToEndpointUrl(search_terms_args, url);
-  url = AddAimToolModeToEndpointUrl(search_terms_args, url);
+  url = AddAimInputStateParamsToEndpointUrl(search_terms_args, url);
 
   return url;
 }
