@@ -733,4 +733,153 @@ TEST_F(LocalStorageSqliteTest,
   EXPECT_EQ(actual_entries, kMapEntries);
 }
 
+// Verifies that `PurgeOrigins()` correctly removes storage data for a matching
+// first-party origin while leaving data for non-matching origins intact.
+TEST_F(LocalStorageSqliteTest, PurgeOriginsWithMatchingOrigin) {
+  std::unique_ptr<LocalStorageSqlite> database;
+  ASSERT_NO_FATAL_FAILURE(OpenInMemory(&database));
+
+  // Insert metadata for two storage keys.
+  const DomStorageDatabase::MapMetadata kInitialMapMetadata[] = {
+      {
+          .map_locator{kFirstMapLocator.Clone()},
+          .last_accessed{base::Time::Now()},
+      },
+      {
+          .map_locator{kSecondMapLocator.Clone()},
+          .last_modified{base::Time::Now()},
+          .total_size{base::ByteSize(200)},
+      },
+  };
+  ASSERT_NO_FATAL_FAILURE(InitializeMetadata(
+      *database, DomStorageDatabase::Metadata(
+                     CloneMapMetadataVector(kInitialMapMetadata))));
+
+  // Insert map key/value pairs for both storage keys.
+  const std::map<DomStorageDatabase::Key, DomStorageDatabase::Value>
+      kFirstMapEntries{
+          {ToBytes("key_1"), ToBytes("value_1")},
+      };
+  ASSERT_NO_FATAL_FAILURE(
+      InsertMapEntries(*database, kFirstMapLocator.Clone(), kFirstMapEntries));
+
+  const std::map<DomStorageDatabase::Key, DomStorageDatabase::Value>
+      kSecondMapEntries{
+          {ToBytes("key_2"), ToBytes("value_2")},
+      };
+  ASSERT_NO_FATAL_FAILURE(InsertMapEntries(*database, kSecondMapLocator.Clone(),
+                                           kSecondMapEntries));
+
+  // Purge the first storage key's origin.
+  std::set<url::Origin> origins_to_purge;
+  origins_to_purge.insert(kFirstMapLocator.storage_key().origin());
+  DbStatus status = database->PurgeOrigins(std::move(origins_to_purge));
+  EXPECT_TRUE(status.ok()) << status.ToString();
+
+  // Verify the first storage key's data was removed.
+  ASSERT_OK_AND_ASSIGN(DomStorageDatabase::Metadata read_metadata,
+                       database->ReadAllMetadata());
+  ExpectEqualsMapMetadataSpan(read_metadata.map_metadata,
+                              base::span_from_ref(kInitialMapMetadata[1]));
+
+  // Verify the first map's key/value pairs were removed.
+  ASSERT_OK_AND_ASSIGN((std::map<DomStorageDatabase::Key,
+                                 DomStorageDatabase::Value> actual_entries),
+                       database->ReadMapKeyValues(kFirstMapLocator.Clone()));
+  EXPECT_EQ(actual_entries.size(), 0u);
+
+  // Verify the second storage key's data remains.
+  ASSERT_OK_AND_ASSIGN(actual_entries,
+                       database->ReadMapKeyValues(kSecondMapLocator.Clone()));
+  EXPECT_EQ(actual_entries, kSecondMapEntries);
+}
+
+// Verifies that `PurgeOrigins()` correctly removes storage data for third-party
+// contexts where the top-level site matches the purged origin.
+TEST_F(LocalStorageSqliteTest, PurgeOriginsWithMatchingThirdPartyContext) {
+  std::unique_ptr<LocalStorageSqlite> database;
+  ASSERT_NO_FATAL_FAILURE(OpenInMemory(&database));
+
+  // Create a first-party storage key.
+  const blink::StorageKey kFirstPartyStorageKey =
+      blink::StorageKey::CreateFromStringForTesting("https://embedded.test");
+
+  const DomStorageDatabase::MapLocator kFirstPartyMapLocator{
+      kLocalStorageSessionId, kFirstPartyStorageKey,
+      /*map_id=*/1};
+
+  // Create a third-party storage key where the top-level site is different
+  // from the origin.
+  const url::Origin kEmbeddedOrigin =
+      url::Origin::Create(GURL("https://embedded.test"));
+
+  const net::SchemefulSite kTopLevelSite(GURL("https://toplevel.test"));
+
+  const blink::StorageKey kThirdPartyStorageKey =
+      blink::StorageKey::Create(kEmbeddedOrigin, kTopLevelSite,
+                                blink::mojom::AncestorChainBit::kCrossSite);
+
+  const DomStorageDatabase::MapLocator kThirdPartyMapLocator{
+      kLocalStorageSessionId, kThirdPartyStorageKey,
+      /*map_id=*/2};
+
+  // Insert metadata for two storage keys.
+  const DomStorageDatabase::MapMetadata kInitialMapMetadata[] = {
+      {
+          .map_locator{kFirstPartyMapLocator.Clone()},
+          .last_accessed{base::Time::Now()},
+      },
+      {
+          .map_locator{kThirdPartyMapLocator.Clone()},
+          .last_modified{base::Time::Now()},
+          .total_size{base::ByteSize(200)},
+      },
+  };
+  ASSERT_NO_FATAL_FAILURE(InitializeMetadata(
+      *database, DomStorageDatabase::Metadata(
+                     CloneMapMetadataVector(kInitialMapMetadata))));
+
+  // Insert map key/value pairs for all storage keys.
+  const std::map<DomStorageDatabase::Key, DomStorageDatabase::Value>
+      kFirstPartyMapEntries{
+          {ToBytes("key_1"), ToBytes("value_1")},
+      };
+  ASSERT_NO_FATAL_FAILURE(InsertMapEntries(
+      *database, kFirstPartyMapLocator.Clone(), kFirstPartyMapEntries));
+
+  const std::map<DomStorageDatabase::Key, DomStorageDatabase::Value>
+      kThirdPartyMapEntries{
+          {ToBytes("key_2"), ToBytes("value_2")},
+      };
+  ASSERT_NO_FATAL_FAILURE(InsertMapEntries(
+      *database, kThirdPartyMapLocator.Clone(), kThirdPartyMapEntries));
+
+  // Purge the top-level site's origin. This should remove the third-party
+  // storage key because its top-level site matches.
+  std::set<url::Origin> origins_to_purge;
+  origins_to_purge.insert(url::Origin::Create(kTopLevelSite.GetURL()));
+  DbStatus status = database->PurgeOrigins(std::move(origins_to_purge));
+  EXPECT_TRUE(status.ok()) << status.ToString();
+
+  // Verify the third-party's metadata was removed.
+  ASSERT_OK_AND_ASSIGN(DomStorageDatabase::Metadata read_metadata,
+                       database->ReadAllMetadata());
+  ExpectEqualsMapMetadataSpan(read_metadata.map_metadata,
+                              base::span_from_ref(kInitialMapMetadata[0]));
+
+  // Verify the third-party map's key/value pairs were removed.
+  ASSERT_OK_AND_ASSIGN(
+      (std::map<DomStorageDatabase::Key, DomStorageDatabase::Value>
+           actual_entries),
+      database->ReadMapKeyValues(DomStorageDatabase::MapLocator(
+          kLocalStorageSessionId, kThirdPartyStorageKey)));
+  EXPECT_EQ(actual_entries.size(), 0u);
+
+  // Verify the first-party map's key/value pairs remain.
+  ASSERT_OK_AND_ASSIGN(
+      actual_entries, database->ReadMapKeyValues(DomStorageDatabase::MapLocator(
+                          kLocalStorageSessionId, kFirstPartyStorageKey)));
+  EXPECT_EQ(actual_entries, kFirstPartyMapEntries);
+}
+
 }  // namespace storage

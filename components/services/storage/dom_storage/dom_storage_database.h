@@ -366,6 +366,11 @@ class DomStorageDatabaseFactory {
   static PassKey CreatePassKeyForTesting();
 };
 
+// A shared implementation of `DomStorageDatabase::PurgeOrigins()` from above.
+// Both LevelDB and SQLite implementations use this helper function.
+DbStatus PurgeOrigins(DomStorageDatabase& database,
+                      std::set<url::Origin> origins);
+
 }  // namespace storage
 
 #endif  // COMPONENTS_SERVICES_STORAGE_DOM_STORAGE_DOM_STORAGE_DATABASE_H_

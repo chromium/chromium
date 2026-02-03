@@ -300,9 +300,7 @@ DbStatus LocalStorageSqlite::DeleteSessions(
 }
 
 DbStatus LocalStorageSqlite::PurgeOrigins(std::set<url::Origin> origins) {
-  // TODO(crbug.com/377242771): Fully implement `DomStorageDatabase` interface
-  // using SQLite.
-  return DbStatus::NotSupported("");
+  return ::storage::PurgeOrigins(*this, std::move(origins));
 }
 
 DbStatus LocalStorageSqlite::RewriteDB() {

@@ -63,8 +63,6 @@ class LocalStorageLevelDB : public DomStorageDatabase {
   using PassKey = base::PassKey<DomStorageDatabaseFactory>;
 
  public:
-  static const int kStaleBucketCutoffInDays = 400;
-
   // Use `DomStorageDatabaseFactory::Open()` to construct a
   // base::SequenceBound<DomStorageDatabase>.
   explicit LocalStorageLevelDB(PassKey);

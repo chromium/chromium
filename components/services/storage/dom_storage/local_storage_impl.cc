@@ -729,7 +729,7 @@ void LocalStorageImpl::OnGotMetaDataToDeleteStaleStorageAreas(
     }
 
     if ((base::Time::Now() - accessed_or_modified_time) >=
-        base::Days(LocalStorageLevelDB::kStaleBucketCutoffInDays)) {
+        base::Days(kLocalStorageStaleBucketCutoffInDays)) {
       // If the storage area has not been accessed or modified within 400 days
       // it can be cleared.
       stale_storage_keys.push_back(storage_key);
