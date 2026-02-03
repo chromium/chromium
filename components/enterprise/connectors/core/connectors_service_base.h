@@ -78,6 +78,11 @@ class ConnectorsServiceBase {
 
   virtual std::optional<ReportingSettings> GetReportingSettings();
 
+  // Get the AnalysisSettings based on the specific url and the connector type.
+  std::optional<AnalysisSettings> GetAnalysisSettings(
+      const GURL& url,
+      AnalysisConnector connector);
+
   virtual std::optional<std::string> GetBrowserDmToken() const = 0;
 
   // Gets custom message if set by the admin.
@@ -129,15 +134,29 @@ class ConnectorsServiceBase {
   // profile is incognito
   virtual bool ConnectorsEnabled() const = 0;
 
+  // Returns a more specific AnalysisSettings based on pref like cloud or local
+  // analysis, or if it should be a profile or browser level scan.
+  std::optional<AnalysisSettings> GetCommonAnalysisSettings(
+      std::optional<AnalysisSettings> settings,
+      AnalysisConnector connector);
+
   // Returns the `PrefService` that should be used by this class to lookup
   // prefs. Should never return nullptr.
   virtual PrefService* GetPrefs() = 0;
   virtual const PrefService* GetPrefs() const = 0;
 
+  // Returns the policy::PolicyScope stored in the given |scope_pref|.
+  virtual policy::PolicyScope GetPolicyScope(const char* scope_pref) const;
+
   // Returns a `policy::CloudPolicyManager` corresponding to a managed user, if
   // one exists.
   virtual policy::CloudPolicyManager* GetManagedUserCloudPolicyManager()
       const = 0;
+
+  // Returns true if the URL is exempt from the analysis for this connector
+  // type.
+  virtual bool IsURLExemptFromAnalysis(const GURL& url,
+                                       AnalysisConnector connector);
 
   void PopulateBrowserMetadata(bool include_device_info,
                                ClientMetadata::Browser* browser_proto);

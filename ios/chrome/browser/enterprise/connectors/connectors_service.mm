@@ -56,11 +56,6 @@ std::string ConnectorsService::GetManagementDomain() {
   return enterprise::GetManagementDomain(policy_scope, profile_);
 }
 
-bool ConnectorsService::IsConnectorEnabled(AnalysisConnector connector) const {
-  // None of the analysis connector policies are supported on iOS.
-  return false;
-}
-
 std::optional<std::string> ConnectorsService::GetBrowserDmToken() const {
   return enterprise::GetBrowserDmToken();
 }

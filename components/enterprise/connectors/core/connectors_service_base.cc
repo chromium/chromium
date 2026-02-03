@@ -12,6 +12,7 @@
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/ukm/scheme_constants.h"
 
 namespace enterprise_connectors {
 
@@ -117,6 +118,62 @@ std::optional<ReportingSettings> ConnectorsServiceBase::GetReportingSettings() {
   return settings;
 }
 
+std::optional<AnalysisSettings> ConnectorsServiceBase::GetAnalysisSettings(
+    const GURL& url,
+    AnalysisConnector connector) {
+  DCHECK_NE(connector, AnalysisConnector::FILE_TRANSFER);
+  if (!ConnectorsEnabled() || IsURLExemptFromAnalysis(url, connector)) {
+    return std::nullopt;
+  }
+
+  if (url.SchemeIsBlob() || url.SchemeIsFileSystem()) {
+    GURL inner = url.inner_url() ? *url.inner_url() : GURL(url.GetPath());
+    return GetCommonAnalysisSettings(
+        connectors_manager_base_->GetAnalysisSettings(inner, connector),
+        connector);
+  }
+
+  return GetCommonAnalysisSettings(
+      connectors_manager_base_->GetAnalysisSettings(url, connector), connector);
+}
+
+std::optional<AnalysisSettings>
+ConnectorsServiceBase::GetCommonAnalysisSettings(
+    std::optional<AnalysisSettings> settings,
+    AnalysisConnector connector) {
+  if (!settings.has_value()) {
+    return std::nullopt;
+  }
+
+#if !BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
+  if (settings->cloud_or_local_settings.is_local_analysis()) {
+    return std::nullopt;
+  }
+#endif
+
+  std::optional<DmToken> dm_token =
+      GetDmToken(AnalysisConnectorScopePref(connector));
+  bool is_cloud = settings.value().cloud_or_local_settings.is_cloud_analysis();
+
+  if (is_cloud) {
+    if (!dm_token.has_value()) {
+      return std::nullopt;
+    }
+
+    std::get<CloudAnalysisSettings>(settings.value().cloud_or_local_settings)
+        .dm_token = dm_token.value().value;
+  }
+
+  settings.value().per_profile =
+      (dm_token.has_value() &&
+       dm_token.value().scope == policy::POLICY_SCOPE_USER) ||
+      GetPolicyScope(AnalysisConnectorScopePref(connector)) ==
+          policy::POLICY_SCOPE_USER;
+  settings.value().client_metadata = BuildClientMetadata(is_cloud);
+
+  return settings;
+}
+
 #if !BUILDFLAG(IS_CHROMEOS)
 std::optional<std::string> ConnectorsServiceBase::GetProfileDmToken() const {
   policy::CloudPolicyManager* policy_manager =
@@ -131,6 +188,11 @@ std::optional<std::string> ConnectorsServiceBase::GetProfileDmToken() const {
   return std::nullopt;
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+policy::PolicyScope ConnectorsServiceBase::GetPolicyScope(
+    const char* scope_pref) const {
+  return static_cast<policy::PolicyScope>(GetPrefs()->GetInteger(scope_pref));
+}
 
 void ConnectorsServiceBase::PopulateBrowserMetadata(
     bool include_device_info,
@@ -242,6 +304,24 @@ std::vector<std::string> ConnectorsServiceBase::GetAnalysisServiceProviderNames(
   }
 
   return connectors_manager_base_->GetAnalysisServiceProviderNames(connector);
+}
+
+bool ConnectorsServiceBase::IsURLExemptFromAnalysis(
+    const GURL& url,
+    AnalysisConnector connector) {
+  if (url.SchemeIs(ukm::kChromeUIScheme)) {
+    return true;
+  }
+
+  // Devtools are only exempt for file attaching and pasting since that doesn't
+  // have a chance of leaking sensitive data.
+  if (url.SchemeIs(ukm::kChromeDevToolsScheme) &&
+      (connector == AnalysisConnector::BULK_DATA_ENTRY ||
+       connector == AnalysisConnector::FILE_ATTACHED)) {
+    return true;
+  }
+
+  return false;
 }
 
 ConnectorsManagerBase*

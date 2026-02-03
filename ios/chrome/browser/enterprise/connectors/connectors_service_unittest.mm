@@ -10,6 +10,7 @@
 #import "base/test/test_file_util.h"
 #import "base/version_info/version_info.h"
 #import "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
+#import "components/enterprise/common/proto/connectors.pb.h"
 #import "components/enterprise/connectors/core/connectors_prefs.h"
 #import "components/enterprise/connectors/core/features.h"
 #import "components/enterprise/connectors/core/reporting_test_utils.h"
@@ -25,6 +26,7 @@
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/identity_test_utils.h"
+#import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/enterprise/connectors/connectors_service_factory.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -40,6 +42,8 @@
 
 namespace enterprise_connectors {
 
+using enterprise_connectors::AnalysisConnector;
+
 namespace {
 
 constexpr char kTestProfileDmToken[] = "profile_dm_token";
@@ -48,6 +52,14 @@ constexpr char kTestClientId[] = "client_id";
 constexpr char kTestProfileEmail[] = "test@example.com";
 constexpr char kTestProfileDomain[] = "example.com";
 constexpr char kTestMachineDomain[] = "machine.com";
+constexpr char kWildcardAnalysisSettingsPref[] = R"([
+  {
+    "service_provider": "google",
+    "enable": [
+      {"url_list": ["*"], "tags": ["dlp", "malware"]}
+    ]
+  }
+])";
 
 class ConnectorsServiceTest : public PlatformTest {
  public:
@@ -101,6 +113,13 @@ class ConnectorsServiceTest : public PlatformTest {
         scoped_refptr<base::SequencedTaskRunner>(),
         network::TestNetworkConnectionTracker::CreateGetter());
 
+    profile()->GetTestingPrefService()->Set(
+        AnalysisConnectorPref(connector()),
+        *base::JSONReader::Read(kWildcardAnalysisSettingsPref,
+                                base::JSON_PARSE_CHROMIUM_EXTENSIONS));
+    profile()->GetTestingPrefService()->SetInteger(
+        AnalysisConnectorScopePref(connector()), policy::POLICY_SCOPE_MACHINE);
+
     GetApplicationContext()
         ->GetBrowserPolicyConnector()
         ->SetMachineLevelUserCloudPolicyManagerForTesting(manager_.get());
@@ -117,6 +136,8 @@ class ConnectorsServiceTest : public PlatformTest {
   signin::IdentityManager* identity_manager() {
     return IdentityManagerFactory::GetForProfile(profile());
   }
+
+  AnalysisConnector connector() { return FILE_DOWNLOADED; }
 
   void MakePrimaryAccountAvailable(const std::string& email) {
     signin::MakePrimaryAccountAvailable(identity_manager(), email,
@@ -373,6 +394,94 @@ TEST_F(ConnectorsServiceTest, BuildClientMetadata_IsCloud) {
   ASSERT_EQ(meta_data->device().os_platform(), policy::GetOSPlatform());
   ASSERT_EQ(meta_data->device().name(), policy::GetDeviceName());
   EXPECT_FALSE(meta_data->is_chrome_os_managed_guest_session());
+}
+
+TEST_F(ConnectorsServiceTest, ExemptURL_WebUI) {
+  auto service = ConnectorsService(profile());
+  for (const char* url :
+       {"chrome://settings", "chrome://help-app/background",
+        "chrome://foo/bar/baz.html", "chrome://foo/bar/baz.html?param=value"}) {
+    auto settings = service.GetAnalysisSettings(GURL(url), connector());
+    ASSERT_FALSE(settings.has_value());
+  }
+}
+
+TEST_F(ConnectorsServiceTest, ExemptURL_ThirdPartyExtensions) {
+  auto service = ConnectorsService(profile());
+  for (const char* url :
+       {"chrome-extension://fake_id", "chrome-extension://fake_id/background",
+        "chrome-extension://fake_id/main.html",
+        "chrome-extension://fake_id/main.html?param=value"}) {
+    ASSERT_TRUE(GURL(url).is_valid());
+    auto settings = service.GetAnalysisSettings(GURL(url), connector());
+    ASSERT_TRUE(settings.has_value());
+  }
+}
+
+TEST_F(ConnectorsServiceTest, ExemptURL_DevTools) {
+  auto service = ConnectorsService(profile());
+
+  for (const char* url :
+       {"devtools://fake_id", "devtools://fake_id/background",
+        "devtools://devtools/main.html",
+        "devtools://devtools/bundled/main.html?param=value"}) {
+    ASSERT_TRUE(GURL(url).is_valid());
+    auto settings = service.GetAnalysisSettings(GURL(url), connector());
+
+    ASSERT_NE(settings.has_value(),
+              connector() == BULK_DATA_ENTRY || connector() == FILE_ATTACHED);
+  }
+}
+
+TEST_F(ConnectorsServiceTest, ExemptURL_BlobAndFilesystem) {
+  auto service = ConnectorsService(profile());
+
+  // Test against wildcard policy.
+  for (const char* url_string :
+       {"blob:https://foo.com", "blob:ftp://foo.com/with/path",
+        "filesystem:http://foo.com/with.extension",
+        "filesystem:http://foo.com/with/path"}) {
+    GURL url(url_string);
+    ASSERT_TRUE(url.is_valid());
+    ASSERT_TRUE(url.SchemeIsFileSystem() || url.SchemeIsBlob());
+    auto settings = service.GetAnalysisSettings(GURL(url), connector());
+    ASSERT_TRUE(settings.has_value());
+  }
+
+  // Test against a specific pattern policy to validate the correct inner URL is
+  // used.
+  profile()->GetTestingPrefService()->Set(
+      AnalysisConnectorPref(connector()),
+      *base::JSONReader::Read(R"([
+        {
+          "service_provider": "google",
+          "enable": [
+            {"url_list": ["foo.com"], "tags": ["dlp", "malware"]}
+          ]
+        }
+      ])",
+                              base::JSON_PARSE_CHROMIUM_EXTENSIONS));
+
+  for (const char* url_string :
+       {"blob:https://foo.com", "blob:ftp://foo.com/with/path",
+        "filesystem:http://foo.com/with.extension",
+        "filesystem:http://foo.com/with/path"}) {
+    GURL url(url_string);
+    ASSERT_TRUE(url.is_valid());
+    ASSERT_TRUE(url.SchemeIsFileSystem() || url.SchemeIsBlob());
+    auto settings = service.GetAnalysisSettings(GURL(url), connector());
+    ASSERT_TRUE(settings.has_value());
+  }
+  for (const char* url_string :
+       {"blob:https://notfoo.com", "blob:ftp://notfoo.com/with/path",
+        "filesystem:http://notfoo.com/with.extension",
+        "filesystem:http://notfoo.com/with/path"}) {
+    GURL url(url_string);
+    ASSERT_TRUE(url.is_valid());
+    ASSERT_TRUE(url.SchemeIsFileSystem() || url.SchemeIsBlob());
+    auto settings = service.GetAnalysisSettings(GURL(url), connector());
+    ASSERT_FALSE(settings.has_value());
+  }
 }
 
 }  // namespace enterprise_connectors

@@ -4,6 +4,7 @@ include_rules = [
   "+components/safe_browsing",
   "+components/security_interstitials/core",
   "+components/policy",
+  "+components/ukm",
   "+components/url_matcher",
   "+crypto",
   "+ui/base/clipboard",

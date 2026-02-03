@@ -80,29 +80,6 @@ std::string GetClientId(Profile* profile) {
   return client_id;
 }
 
-bool IsURLExemptFromAnalysis(const GURL& url, AnalysisConnector connector) {
-  if (url.SchemeIs(content::kChromeUIScheme)) {
-    return true;
-  }
-
-  // Devtools are only exempt for file attaching and pasting since that doesn't
-  // have a chance of leaking sensitive data.
-  if (url.SchemeIs(content::kChromeDevToolsScheme) &&
-      (connector == AnalysisConnector::BULK_DATA_ENTRY ||
-       connector == AnalysisConnector::FILE_ATTACHED)) {
-    return true;
-  }
-
-#if BUILDFLAG(IS_CHROMEOS)
-  if (url.SchemeIs(extensions::kExtensionScheme) &&
-      extension_misc::IsSystemUIApp(url.host())) {
-    return true;
-  }
-#endif
-
-  return false;
-}
-
 #if BUILDFLAG(IS_CHROMEOS)
 std::optional<std::string> GetDeviceDMToken() {
   const enterprise_management::PolicyData* policy_data =
@@ -190,25 +167,6 @@ std::optional<ReportingSettings> ConnectorsService::GetReportingSettings() {
   return ConnectorsServiceBase::GetReportingSettings();
 }
 
-std::optional<AnalysisSettings> ConnectorsService::GetAnalysisSettings(
-    const GURL& url,
-    AnalysisConnector connector) {
-  DCHECK_NE(connector, AnalysisConnector::FILE_TRANSFER);
-  if (!ConnectorsEnabled() || IsURLExemptFromAnalysis(url, connector)) {
-    return std::nullopt;
-  }
-
-  if (url.SchemeIsBlob() || url.SchemeIsFileSystem()) {
-    GURL inner = url.inner_url() ? *url.inner_url() : GURL(url.GetPath());
-    return GetCommonAnalysisSettings(
-        connectors_manager_base_->GetAnalysisSettings(inner, connector),
-        connector);
-  }
-
-  return GetCommonAnalysisSettings(
-      connectors_manager_base_->GetAnalysisSettings(url, connector), connector);
-}
-
 #if BUILDFLAG(IS_CHROMEOS)
 std::optional<AnalysisSettings> ConnectorsService::GetAnalysisSettings(
     const storage::FileSystemURL& source_url,
@@ -228,42 +186,6 @@ std::optional<AnalysisSettings> ConnectorsService::GetAnalysisSettings(
       connector);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-std::optional<AnalysisSettings> ConnectorsService::GetCommonAnalysisSettings(
-    std::optional<AnalysisSettings> settings,
-    AnalysisConnector connector) {
-  if (!settings.has_value()) {
-    return std::nullopt;
-  }
-
-#if !BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
-  if (settings->cloud_or_local_settings.is_local_analysis()) {
-    return std::nullopt;
-  }
-#endif
-
-  std::optional<DmToken> dm_token =
-      GetDmToken(AnalysisConnectorScopePref(connector));
-  bool is_cloud = settings.value().cloud_or_local_settings.is_cloud_analysis();
-
-  if (is_cloud) {
-    if (!dm_token.has_value()) {
-      return std::nullopt;
-    }
-
-    std::get<CloudAnalysisSettings>(settings.value().cloud_or_local_settings)
-        .dm_token = dm_token.value().value;
-  }
-
-  settings.value().per_profile =
-      (dm_token.has_value() &&
-       dm_token.value().scope == policy::POLICY_SCOPE_USER) ||
-      GetPolicyScope(AnalysisConnectorScopePref(connector)) ==
-          policy::POLICY_SCOPE_USER;
-  settings.value().client_metadata = BuildClientMetadata(is_cloud);
-
-  return settings;
-}
 
 std::string ConnectorsService::GetManagementDomain() {
   if (!ConnectorsEnabled()) {
@@ -379,7 +301,7 @@ policy::PolicyScope ConnectorsService::GetPolicyScope(
   // scope should always be POLICY_SCOPE_MACHINE.
   return policy::PolicyScope::POLICY_SCOPE_MACHINE;
 #else
-  return static_cast<policy::PolicyScope>(GetPrefs()->GetInteger(scope_pref));
+  return ConnectorsServiceBase::GetPolicyScope(scope_pref);
 #endif
 }
 
@@ -454,6 +376,18 @@ std::unique_ptr<ClientMetadata> ConnectorsService::BuildClientMetadata(
 #endif
 
   return metadata;
+}
+
+bool ConnectorsService::IsURLExemptFromAnalysis(const GURL& url,
+                                                AnalysisConnector connector) {
+#if BUILDFLAG(IS_CHROMEOS)
+  if (url.SchemeIs(extensions::kExtensionScheme) &&
+      extension_misc::IsSystemUIApp(url.host())) {
+    return true;
+  }
+#endif
+
+  return ConnectorsServiceBase::IsURLExemptFromAnalysis(url, connector);
 }
 
 // ---------------------------------------

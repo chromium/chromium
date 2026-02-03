@@ -74,6 +74,7 @@ source_set("core") {
     "//components/security_interstitials/core:unsafe_resource",
     "//components/signin/public/identity_manager",
     "//components/strings:components_strings_grit",
+    "//components/ukm",
     "//components/url_matcher",
     "//ui/base",
     "//ui/base/clipboard:clipboard_types",
