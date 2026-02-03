@@ -469,7 +469,8 @@ void BwgTabHelper::DidStartNavigation(
           new_url_without_ref,
           optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS,
           base::BindOnce(&BwgTabHelper::OnGeminiEligibilityDecision,
-                         weak_ptr_factory_.GetWeakPtr(), new_url_without_ref));
+                         weak_ptr_factory_.GetWeakPtr(), new_url_without_ref,
+                         can_request_metadata));
     } else {
       optimization_guide_decider_->CanApplyOptimizationOnDemand(
           {new_url_without_ref},
@@ -771,6 +772,7 @@ bool BwgTabHelper::ComputeGeminiEligibility(
 
 void BwgTabHelper::OnGeminiEligibilityDecision(
     const GURL& url_without_ref,
+    bool user_enabled_request_metadata,
     optimization_guide::OptimizationGuideDecision decision,
     const optimization_guide::OptimizationMetadata& metadata) {
   // The URL has changed so the metadata is obsolete.
@@ -786,6 +788,7 @@ void BwgTabHelper::OnGeminiEligibilityDecision(
   ProfileIOS* profile =
       ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
   if (eligible && IsGeminiImageRemixToolEnabled() &&
+      user_enabled_request_metadata &&
       feature_engagement::TrackerFactory::GetForProfile(profile)
           ->WouldTriggerHelpUI(
               feature_engagement::kIPHiOSGeminiImageRemixFeature) &&
@@ -804,13 +807,18 @@ void BwgTabHelper::OnGeminiEligibilityOnDemandDecision(
       decisions.find(optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS);
   if (it == decisions.end()) {
     // If the optimization type is missing, treat it as kTrue.
+    // On demand decisions are made for users who have not enabled metadata
+    // requests (MSBB).
     OnGeminiEligibilityDecision(
-        url_without_ref, optimization_guide::OptimizationGuideDecision::kTrue,
+        url_without_ref, false,
+        optimization_guide::OptimizationGuideDecision::kTrue,
         optimization_guide::OptimizationMetadata());
     return;
   }
 
-  OnGeminiEligibilityDecision(url_without_ref, it->second.decision,
+  // On demand decisions are made for users who have not enabled metadata
+  // requests (MSBB).
+  OnGeminiEligibilityDecision(url_without_ref, false, it->second.decision,
                               it->second.metadata);
 }
 

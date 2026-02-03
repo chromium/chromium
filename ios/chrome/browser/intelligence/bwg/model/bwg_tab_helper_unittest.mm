@@ -20,6 +20,7 @@
 #import "components/optimization_guide/proto/contextual_cueing_metadata.pb.h"
 #import "components/optimization_guide/proto/hints.pb.h"
 #import "components/prefs/testing_pref_service.h"
+#import "components/unified_consent/pref_names.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
@@ -159,8 +160,11 @@ class BwgTabHelperTest : public PlatformTest {
         tab_helper_->zero_state_suggestions_.get());
     suggestions_struct->can_apply = true;
     tab_helper_->current_url_ = url;
+    bool user_enabled = profile_->GetPrefs()->GetBoolean(
+        unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled);
     tab_helper_->OnGeminiEligibilityDecision(
-        url, optimization_guide::OptimizationGuideDecision::kTrue, metadata);
+        url, user_enabled, optimization_guide::OptimizationGuideDecision::kTrue,
+        metadata);
   }
 };
 
@@ -354,7 +358,52 @@ TEST_F(BwgTabHelperTest, TestDidStartNavigation_ShowsImageRemixIPH) {
   feature_engagement::Tracker* tracker = InitializeTracker();
   SimulateFirstRunRecency(tracker, 2);
 
+  profile_->GetPrefs()->SetBoolean(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
+
   OCMExpect([mock_help_handler_
+      presentInProductHelpWithType:InProductHelpType::kGeminiImageRemix]);
+
+  optimization_guide::proto::GlicZeroStateSuggestionsMetadata
+      suggestions_metadata;
+  suggestions_metadata.set_contextual_suggestions_eligible(true);
+  optimization_guide::proto::Any any_metadata;
+  any_metadata.set_type_url(
+      "type.googleapis.com/"
+      "optimization_guide.proto.GlicZeroStateSuggestionsMetadata");
+  suggestions_metadata.SerializeToString(any_metadata.mutable_value());
+  optimization_guide::OptimizationMetadata metadata;
+  metadata.set_any_metadata(any_metadata);
+  SimulateGeminiEligibilityDecisionReceived(web_state_->GetVisibleURL(),
+                                            metadata);
+
+  EXPECT_OCMOCK_VERIFY(mock_help_handler_);
+}
+
+TEST_F(BwgTabHelperTest,
+       TestDidStartNavigation_DoesNotShowImageRemixIPH_WhenNotMSBB) {
+  feature_engagement::test::ScopedIphFeatureList iph_feature_list;
+  iph_feature_list.InitAndEnableFeatures(
+      {feature_engagement::kIPHiOSGeminiImageRemixFeature, kPageActionMenu,
+       kGeminiImageRemixTool, kZeroStateSuggestions});
+
+  web_state_ = std::make_unique<web::FakeWebState>();
+  web_state_->SetBrowserState(profile_.get());
+  BwgTabHelper::CreateForWebState(web_state_.get());
+  tab_helper_ = BwgTabHelper::FromWebState(web_state_.get());
+  tab_helper_->SetBwgCommandsHandler(mock_bwg_handler_);
+  tab_helper_->SetLocationBarBadgeCommandsHandler(
+      mock_location_bar_badge_handler_);
+  tab_helper_->SetHelpCommandsHandler(mock_help_handler_);
+  web_state_->SetCurrentURL(GURL("https://www.chromium.org"));
+
+  feature_engagement::Tracker* tracker = InitializeTracker();
+  SimulateFirstRunRecency(tracker, 2);
+
+  profile_->GetPrefs()->SetBoolean(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, false);
+
+  OCMReject([mock_help_handler_
       presentInProductHelpWithType:InProductHelpType::kGeminiImageRemix]);
 
   optimization_guide::proto::GlicZeroStateSuggestionsMetadata
