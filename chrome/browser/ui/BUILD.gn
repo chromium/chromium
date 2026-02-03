@@ -3495,6 +3495,8 @@ static_library("ui") {
       "views/autofill/address_editor_view.h",
       "views/autofill/autofill_ai/autofill_ai_import_data_bubble_view.cc",
       "views/autofill/autofill_ai/autofill_ai_import_data_bubble_view.h",
+      "views/autofill/autofill_ai/autofill_ai_local_save_notification_view.cc",
+      "views/autofill/autofill_ai/autofill_ai_local_save_notification_view.h",
       "views/autofill/autofill_bubble_handler_impl.cc",
       "views/autofill/autofill_bubble_handler_impl.h",
       "views/autofill/autofill_bubble_utils.cc",

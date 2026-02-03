@@ -63,6 +63,10 @@ class AutofillBubbleHandler {
       content::WebContents* web_contents,
       AutofillAiImportDataController* controller) = 0;
 
+  virtual AutofillBubbleBase* ShowAutofillAiLocalSaveNotification(
+      content::WebContents* web_contents,
+      AutofillAiImportDataController* controller) = 0;
+
   // Opens a save address bubble. The bubble's lifecycle is controlled by its
   // widget, and the controller must handle the widget closing to invalidate
   // the returned pointer, see `SaveAddressBubbleController::OnBubbleClosed()`.

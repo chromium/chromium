@@ -80,6 +80,17 @@ AutofillBubbleBase* TestAutofillBubbleHandler::ShowSaveAutofillAiDataBubble(
   return save_autofill_ai_data_bubble_view_.get();
 }
 
+AutofillBubbleBase*
+TestAutofillBubbleHandler::ShowAutofillAiLocalSaveNotification(
+    content::WebContents* contents,
+    AutofillAiImportDataController* controller) {
+  if (!autofill_ai_local_save_notification_view_) {
+    autofill_ai_local_save_notification_view_ =
+        std::make_unique<TestAutofillBubble>();
+  }
+  return autofill_ai_local_save_notification_view_.get();
+}
+
 AutofillBubbleBase* TestAutofillBubbleHandler::ShowUpdateAddressProfileBubble(
     content::WebContents* contents,
     std::unique_ptr<UpdateAddressBubbleController> controller,

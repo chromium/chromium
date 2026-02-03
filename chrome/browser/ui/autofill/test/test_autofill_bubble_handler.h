@@ -47,6 +47,9 @@ class TestAutofillBubbleHandler : public AutofillBubbleHandler {
   AutofillBubbleBase* ShowSaveAutofillAiDataBubble(
       content::WebContents* web_contents,
       AutofillAiImportDataController* controller) override;
+  AutofillBubbleBase* ShowAutofillAiLocalSaveNotification(
+      content::WebContents* web_contents,
+      AutofillAiImportDataController* controller) override;
   AutofillBubbleBase* ShowSaveAddressProfileBubble(
       content::WebContents* contents,
       std::unique_ptr<SaveAddressBubbleController> controller,
@@ -92,6 +95,7 @@ class TestAutofillBubbleHandler : public AutofillBubbleHandler {
   std::unique_ptr<TestAutofillBubble> update_address_profile_bubble_view_;
   std::unique_ptr<TestAutofillBubble> address_sign_in_promo_bubble_view_;
   std::unique_ptr<TestAutofillBubble> save_autofill_ai_data_bubble_view_;
+  std::unique_ptr<TestAutofillBubble> autofill_ai_local_save_notification_view_;
   std::unique_ptr<TestAutofillBubble> edit_address_profile_bubble_view_;
   std::unique_ptr<TestAutofillBubble> filled_card_information_bubble_view_;
   std::unique_ptr<TestAutofillBubble> virtual_card_enroll_bubble_view_;

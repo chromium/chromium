@@ -114,7 +114,13 @@ void AutofillAiImportDataControllerImpl::ShowPrompt(
 }
 
 void AutofillAiImportDataControllerImpl::ShowLocalSaveNotification() {
-  NOTIMPLEMENTED();
+  if (bubble_view() || !MaySetUpBubble()) {
+    return;
+  }
+
+  was_bubble_shown_ = false;
+  state_ = LocalSaveNotificationState();
+  QueueOrShowBubble();
 }
 
 void AutofillAiImportDataControllerImpl::OnSaveButtonClicked() {
@@ -212,6 +218,11 @@ void AutofillAiImportDataControllerImpl::DoShowBubble() {
       return *browser->window()
           ->GetAutofillBubbleHandler()
           ->ShowSaveAutofillAiDataBubble(web_contents(), this);
+    }
+    if (IsLocalSaveNotification()) {
+      return *browser->window()
+                  ->GetAutofillBubbleHandler()
+                  ->ShowAutofillAiLocalSaveNotification(web_contents(), this);
     }
     NOTREACHED();
   };

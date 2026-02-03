@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/autofill/address_sign_in_promo_view.h"
 #include "chrome/browser/ui/views/autofill/autofill_ai/autofill_ai_import_data_bubble_view.h"
+#include "chrome/browser/ui/views/autofill/autofill_ai/autofill_ai_local_save_notification_view.h"
 #include "chrome/browser/ui/views/autofill/payments/filled_card_information_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/filled_card_information_icon_view.h"
 #include "chrome/browser/ui/views/autofill/payments/manage_saved_iban_bubble_view.h"
@@ -209,6 +210,16 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowSaveAutofillAiDataBubble(
     content::WebContents* web_contents,
     AutofillAiImportDataController* controller) {
   return ShowBubble<AutofillAiImportDataBubbleView>(
+      toolbar_button_provider_, kActionShowAddressesBubbleOrPage,
+      PageActionIconType::kAutofillAddress, /*is_user_gesture=*/false,
+      web_contents, controller);
+}
+
+AutofillBubbleBase*
+AutofillBubbleHandlerImpl::ShowAutofillAiLocalSaveNotification(
+    content::WebContents* web_contents,
+    AutofillAiImportDataController* controller) {
+  return ShowBubble<AutofillAiLocalSaveNotificationView>(
       toolbar_button_provider_, kActionShowAddressesBubbleOrPage,
       PageActionIconType::kAutofillAddress, /*is_user_gesture=*/false,
       web_contents, controller);

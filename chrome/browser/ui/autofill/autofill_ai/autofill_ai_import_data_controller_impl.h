@@ -136,6 +136,10 @@ class AutofillAiImportDataControllerImpl
     return std::get<SaveUpdateState>(state_);
   }
 
+  bool IsLocalSaveNotification() const {
+    return std::holds_alternative<LocalSaveNotificationState>(state_);
+  }
+
   // Runs the callback stored in the `SaveUpdateState` state with `result` if it
   // exists and is non-null.
   void MaybeRunSaveUpdateCallback(
