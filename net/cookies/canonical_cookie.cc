@@ -1075,20 +1075,26 @@ CanonicalCookie::IsCanonicalForFromStorage() const {
   }
 
   CookiePrefix prefix = cookie_util::GetCookiePrefix(Name());
-  switch (prefix) {
-    case COOKIE_PREFIX_HOST:
-      if (!SecureAttribute() || Path() != "/" || Domain().empty() ||
-          Domain()[0] == '.') {
+  // Validate prefix attributes. Pass nullopt for URL since we're loading from
+  // storage and don't have the original URL. When URL is nullopt,
+  // IsCookiePrefixValid uses normalized domain semantics (non-empty, no leading
+  // dot for __Host-).
+  if (!cookie_util::IsCookiePrefixValid(prefix, /*url=*/std::nullopt,
+                                        SecureAttribute(), IsHttpOnly(),
+                                        Domain(), Path())) {
+    switch (prefix) {
+      case COOKIE_PREFIX_HOST:
         return Fail(CanonicalizationFailure::kInvalidHostPrefix);
-      }
-      break;
-    case COOKIE_PREFIX_SECURE:
-      if (!SecureAttribute()) {
+      case COOKIE_PREFIX_SECURE:
         return Fail(CanonicalizationFailure::kInvalidSecurePrefix);
-      }
-      break;
-    default:
-      break;
+      case COOKIE_PREFIX_HTTP:
+        return Fail(CanonicalizationFailure::kInvalidHttpPrefix);
+      case COOKIE_PREFIX_HOSTHTTP:
+        return Fail(CanonicalizationFailure::kInvalidHostHttpPrefix);
+      case COOKIE_PREFIX_NONE:
+      case COOKIE_PREFIX_LAST:
+        break;
+    }
   }
 
   if (Name() == "" && cookie_util::HasHiddenPrefixName(Value())) {
@@ -1264,6 +1270,10 @@ std::ostream& operator<<(std::ostream& os,
         return "kInvalidHostPrefix";
       case CanonicalCookie::CanonicalizationFailure::kInvalidSecurePrefix:
         return "kInvalidSecurePrefix";
+      case CanonicalCookie::CanonicalizationFailure::kInvalidHttpPrefix:
+        return "kInvalidHttpPrefix";
+      case CanonicalCookie::CanonicalizationFailure::kInvalidHostHttpPrefix:
+        return "kInvalidHostHttpPrefix";
       case CanonicalCookie::CanonicalizationFailure::kEmptyNameWithHiddenPrefix:
         return "kEmptyNameWithHiddenPrefix";
       case CanonicalCookie::CanonicalizationFailure::kPartitionedInsecure:

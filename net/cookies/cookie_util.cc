@@ -101,26 +101,44 @@ std::optional<base::Time> SaturatedTimeFromUTCExploded(
   return std::nullopt;
 }
 
-bool HasValidSecurePrefixAttributes(const GURL& url, bool secure) {
-  return secure &&
-         ProvisionalAccessScheme(url) != CookieAccessScheme::kNonCryptographic;
+bool HasValidSecurePrefixAttributes(base::optional_ref<const GURL> url,
+                                    bool secure) {
+  if (!secure) {
+    return false;
+  }
+  // If URL is available, check the scheme; otherwise just require Secure.
+  if (url.has_value()) {
+    return ProvisionalAccessScheme(*url) !=
+           CookieAccessScheme::kNonCryptographic;
+  }
+  return true;
 }
 
 // Tests that a cookie has the attributes for a valid __Host- prefix without
 // testing that the prefix is in the cookie name.
-bool HasValidHostPrefixAttributes(const GURL& url,
+bool HasValidHostPrefixAttributes(base::optional_ref<const GURL> url,
                                   bool secure,
                                   std::string_view domain,
                                   std::string_view path) {
   if (!HasValidSecurePrefixAttributes(url, secure) || path != "/") {
     return false;
   }
-  return domain.empty() || (url.HostIsIPAddress() && url.GetHost() == domain);
+  if (url.has_value()) {
+    // With URL: domain is raw attribute value. Empty means no Domain attribute
+    // (valid for __Host-). Non-empty is only valid for IP addresses where
+    // domain matches host.
+    return domain.empty() ||
+           (url->HostIsIPAddress() && url->GetHost() == domain);
+  }
+  // Without URL (from storage): domain is normalized. Must be non-empty
+  // (host-only cookie has the host as domain) and not start with '.'
+  // (domain cookies start with '.').
+  return !domain.empty() && !domain.starts_with('.');
 }
 
 // Tests that a cookie has the attributes for a valid __Http- prefix without
 // testing that the prefix is in the cookie name.
-bool HasValidHttpPrefixAttributes(const GURL& url,
+bool HasValidHttpPrefixAttributes(base::optional_ref<const GURL> url,
                                   bool secure,
                                   bool http_only) {
   return HasValidSecurePrefixAttributes(url, secure) && http_only;
@@ -784,7 +802,7 @@ bool IsCookiePrefixValid(CookiePrefix prefix,
 }
 
 bool IsCookiePrefixValid(CookiePrefix prefix,
-                         const GURL& url,
+                         base::optional_ref<const GURL> url,
                          bool secure,
                          bool http_only,
                          std::string_view domain,

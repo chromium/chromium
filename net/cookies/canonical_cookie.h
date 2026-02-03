@@ -79,6 +79,8 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
     kInvalidPath,
     kInvalidHostPrefix,
     kInvalidSecurePrefix,
+    kInvalidHttpPrefix,
+    kInvalidHostHttpPrefix,
     kEmptyNameWithHiddenPrefix,
     kPartitionedInsecure,
   };

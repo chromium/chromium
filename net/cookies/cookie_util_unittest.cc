@@ -741,6 +741,77 @@ TEST(CookieUtilTest, PrefixedCookies) {
   }
 }
 
+// Tests for IsCookiePrefixValid with a nullopt URL, which is used
+// when validating cookies loaded from storage. When URL is nullopt, the domain
+// is in normalized form where "example.com" means host-only (valid for
+// __Host-) and ".example.com" means domain cookie (invalid for __Host-).
+TEST(CookieUtilTest, PrefixedCookiesWithoutUrl) {
+  struct {
+    CookiePrefix prefix;
+    bool expect_success;
+    std::string_view description;
+    bool secure = true;
+    bool http_only = true;
+    std::string_view domain = "example.com";  // normalized host-only domain
+    std::string_view path = "/";
+  } kTests[]{
+      {COOKIE_PREFIX_SECURE, /*expect_success=*/true,
+       "__Secure- with Secure attribute"},
+      {COOKIE_PREFIX_SECURE, /*expect_success=*/false,
+       "__Secure- without Secure attribute", /*secure=*/false},
+      {COOKIE_PREFIX_HOST, /*expect_success=*/true,
+       "__Host- valid (host-only domain)"},
+      {COOKIE_PREFIX_HOST, /*expect_success=*/false,
+       "__Host- without Secure attribute", /*secure=*/false, /*http_only=*/true,
+       "example.com", "/"},
+      {COOKIE_PREFIX_HOST, /*expect_success=*/false,
+       "__Host- with domain cookie (leading dot)", /*secure=*/true,
+       /*http_only=*/true, ".example.com", "/"},
+      {COOKIE_PREFIX_HOST, /*expect_success=*/false,
+       "__Host- with empty domain", /*secure=*/true, /*http_only=*/true, "",
+       "/"},
+      {COOKIE_PREFIX_HOST, /*expect_success=*/false,
+       "__Host- with non-root path", /*secure=*/true, /*http_only=*/true,
+       "example.com", "/path"},
+      {COOKIE_PREFIX_HTTP, /*expect_success=*/true,
+       "__Http- with Secure and HttpOnly"},
+      {COOKIE_PREFIX_HTTP, /*expect_success=*/false,
+       "__Http- without Secure attribute", /*secure=*/false,
+       /*http_only=*/true},
+      {COOKIE_PREFIX_HTTP, /*expect_success=*/false,
+       "__Http- without HttpOnly attribute", /*secure=*/true,
+       /*http_only=*/false},
+      {COOKIE_PREFIX_HTTP, /*expect_success=*/true,
+       "__Http- with Secure, HttpOnly, and non-root path", /*secure=*/true,
+       /*http_only=*/true, "example.com", "/path"},
+      {COOKIE_PREFIX_HOSTHTTP, /*expect_success=*/true, "__Host-Http- valid"},
+      {COOKIE_PREFIX_HOSTHTTP, /*expect_success=*/false,
+       "__Host-Http- without Secure attribute", /*secure=*/false,
+       /*http_only=*/true, "example.com", "/"},
+      {COOKIE_PREFIX_HOSTHTTP, /*expect_success=*/false,
+       "__Host-Http- without HttpOnly attribute", /*secure=*/true,
+       /*http_only=*/false, "example.com", "/"},
+      {COOKIE_PREFIX_HOSTHTTP, /*expect_success=*/false,
+       "__Host-Http- with domain cookie (leading dot)", /*secure=*/true,
+       /*http_only=*/true, ".example.com", "/"},
+      {COOKIE_PREFIX_HOSTHTTP, /*expect_success=*/false,
+       "__Host-Http- with empty domain", /*secure=*/true, /*http_only=*/true,
+       "", "/"},
+      {COOKIE_PREFIX_HOSTHTTP, /*expect_success=*/false,
+       "__Host-Http- with non-root path", /*secure=*/true, /*http_only=*/true,
+       "example.com", "/path"},
+      {COOKIE_PREFIX_NONE, /*expect_success=*/true, "No prefix"},
+  };
+
+  for (const auto& test : kTests) {
+    SCOPED_TRACE(test.description);
+    EXPECT_EQ(cookie_util::IsCookiePrefixValid(
+                  test.prefix, /*url=*/std::nullopt, test.secure,
+                  test.http_only, test.domain, test.path),
+              test.expect_success);
+  }
+}
+
 TEST(CookieUtilTest, TestHasHiddenPrefixName) {
   // Test detection of hidden cookie name prefixes in cookie values.
   // These tests cover __Host- and __Secure- prefixes which are always checked.

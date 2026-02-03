@@ -3625,6 +3625,71 @@ TEST(CanonicalCookieTest, IsCanonical) {
                 ->IsCanonical(),
             CanonicalCookie::CanonicalizationFailure::kInvalidSecurePrefix);
 
+  // __Http- prefix cookie with Secure and HttpOnly is valid.
+  EXPECT_TRUE(CanonicalCookie::CreateUnsafeCookieForTesting(
+                  "__Http-A", "B", "x.y", "/", base::Time(), base::Time(),
+                  base::Time(), base::Time(), /*secure=*/true,
+                  /*httponly=*/true, CookieSameSite::NO_RESTRICTION,
+                  COOKIE_PRIORITY_LOW)
+                  ->IsCanonical());
+
+  // __Http- prefix cookie without Secure is invalid.
+  EXPECT_EQ(CanonicalCookie::CreateUnsafeCookieForTesting(
+                "__Http-A", "B", "x.y", "/", base::Time(), base::Time(),
+                base::Time(), base::Time(), /*secure=*/false, /*httponly=*/true,
+                CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
+                ->IsCanonical(),
+            CanonicalCookie::CanonicalizationFailure::kInvalidHttpPrefix);
+
+  // __Http- prefix cookie without HttpOnly is invalid.
+  EXPECT_EQ(CanonicalCookie::CreateUnsafeCookieForTesting(
+                "__Http-A", "B", "x.y", "/", base::Time(), base::Time(),
+                base::Time(), base::Time(), /*secure=*/true, /*httponly=*/false,
+                CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
+                ->IsCanonical(),
+            CanonicalCookie::CanonicalizationFailure::kInvalidHttpPrefix);
+
+  // __Host-Http- prefix cookie with Secure, HttpOnly, Path=/, no Domain is
+  // valid.
+  EXPECT_TRUE(CanonicalCookie::CreateUnsafeCookieForTesting(
+                  "__Host-Http-A", "B", "x.y", "/", base::Time(), base::Time(),
+                  base::Time(), base::Time(), /*secure=*/true,
+                  /*httponly=*/true, CookieSameSite::NO_RESTRICTION,
+                  COOKIE_PRIORITY_LOW)
+                  ->IsCanonical());
+
+  // __Host-Http- prefix cookie without Secure is invalid.
+  EXPECT_EQ(CanonicalCookie::CreateUnsafeCookieForTesting(
+                "__Host-Http-A", "B", "x.y", "/", base::Time(), base::Time(),
+                base::Time(), base::Time(), /*secure=*/false, /*httponly=*/true,
+                CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
+                ->IsCanonical(),
+            CanonicalCookie::CanonicalizationFailure::kInvalidHostHttpPrefix);
+
+  // __Host-Http- prefix cookie without HttpOnly is invalid.
+  EXPECT_EQ(CanonicalCookie::CreateUnsafeCookieForTesting(
+                "__Host-Http-A", "B", "x.y", "/", base::Time(), base::Time(),
+                base::Time(), base::Time(), /*secure=*/true, /*httponly=*/false,
+                CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
+                ->IsCanonical(),
+            CanonicalCookie::CanonicalizationFailure::kInvalidHostHttpPrefix);
+
+  // __Host-Http- prefix cookie with wrong Path is invalid.
+  EXPECT_EQ(CanonicalCookie::CreateUnsafeCookieForTesting(
+                "__Host-Http-A", "B", "x.y", "/foo", base::Time(), base::Time(),
+                base::Time(), base::Time(), /*secure=*/true, /*httponly=*/true,
+                CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
+                ->IsCanonical(),
+            CanonicalCookie::CanonicalizationFailure::kInvalidHostHttpPrefix);
+
+  // __Host-Http- prefix cookie with Domain prefix is invalid.
+  EXPECT_EQ(CanonicalCookie::CreateUnsafeCookieForTesting(
+                "__Host-Http-A", "B", ".x.y", "/", base::Time(), base::Time(),
+                base::Time(), base::Time(), /*secure=*/true, /*httponly=*/true,
+                CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
+                ->IsCanonical(),
+            CanonicalCookie::CanonicalizationFailure::kInvalidHostHttpPrefix);
+
   // Partitioned attribute used correctly (__Host- prefix).
   EXPECT_TRUE(CanonicalCookie::CreateUnsafeCookieForTesting(
                   "__Host-A", "B", "x.y", "/", base::Time(), base::Time(),
@@ -5083,6 +5148,41 @@ TEST(CanonicalCookieTest, FromStorage) {
       CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
       /*partition_key=*/std::nullopt, CookieSourceScheme::kSecure, 80,
       CookieSourceType::kUnknown, CanonicalCookieFromStorageCallSite::kTests));
+
+  // __Http- prefix cookies are valid with Secure and HttpOnly.
+  EXPECT_TRUE(CanonicalCookie::FromStorage(
+      "__Http-A", "B", "www.foo.com", "/bar", two_hours_ago, one_hour_from_now,
+      one_hour_ago, one_hour_ago, /*secure=*/true, /*httponly=*/true,
+      CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
+      /*partition_key=*/std::nullopt, CookieSourceScheme::kSecure, 443,
+      CookieSourceType::kUnknown, CanonicalCookieFromStorageCallSite::kTests));
+
+  // __Http- prefix cookies are invalid without HttpOnly.
+  EXPECT_FALSE(CanonicalCookie::FromStorage(
+      "__Http-A", "B", "www.foo.com", "/bar", two_hours_ago, one_hour_from_now,
+      one_hour_ago, one_hour_ago, /*secure=*/true, /*httponly=*/false,
+      CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
+      /*partition_key=*/std::nullopt, CookieSourceScheme::kSecure, 443,
+      CookieSourceType::kUnknown, CanonicalCookieFromStorageCallSite::kTests));
+
+  // __Host-Http- prefix cookies are valid with Secure, HttpOnly, Path=/, no
+  // Domain.
+  EXPECT_TRUE(CanonicalCookie::FromStorage(
+      "__Host-Http-A", "B", "www.foo.com", "/", two_hours_ago,
+      one_hour_from_now, one_hour_ago, one_hour_ago, /*secure=*/true,
+      /*httponly=*/true, CookieSameSite::NO_RESTRICTION,
+      COOKIE_PRIORITY_DEFAULT,
+      /*partition_key=*/std::nullopt, CookieSourceScheme::kSecure, 443,
+      CookieSourceType::kUnknown, CanonicalCookieFromStorageCallSite::kTests));
+
+  // __Host-Http- prefix cookies are invalid without HttpOnly.
+  EXPECT_FALSE(CanonicalCookie::FromStorage(
+      "__Host-Http-A", "B", "www.foo.com", "/", two_hours_ago,
+      one_hour_from_now, one_hour_ago, one_hour_ago, /*secure=*/true,
+      /*httponly=*/false, CookieSameSite::NO_RESTRICTION,
+      COOKIE_PRIORITY_DEFAULT, /*partition_key=*/std::nullopt,
+      CookieSourceScheme::kSecure, 443, CookieSourceType::kUnknown,
+      CanonicalCookieFromStorageCallSite::kTests));
 
   // If the port information gets corrupted out of the valid range
   // FromStorage() should result in a PORT_INVALID.
