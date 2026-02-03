@@ -253,8 +253,14 @@ void VerticalTabStripRegionView::DisableTabStripEditingForTesting() {
 }
 
 bool VerticalTabStripRegionView::IsTabStripCloseable() const {
-  return !drag_handler_ ||
-         !drag_handler_->GetDragContext()->GetDragController();
+  if (!drag_handler_) {
+    return true;
+  }
+  if (auto* drag_controller =
+          drag_handler_->GetDragContext()->GetDragController()) {
+    return drag_controller->IsMovingLastTab();
+  }
+  return true;
 }
 
 void VerticalTabStripRegionView::UpdateLoadingAnimations(
