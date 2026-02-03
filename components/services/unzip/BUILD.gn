@@ -78,6 +78,9 @@ bundle_data("unit_tests_bundle_data") {
     "//components/test/data/unzip_service/good_archive_prefixed.zip",
     "//components/test/data/unzip_service/good_zip64.zip",
     "//components/test/data/unzip_service/good_zip64_prefixed.zip",
+    "//components/test/data/unzip_service/zip64_in_zip.zip",
+    "//components/test/data/unzip_service/zip64_in_zip64.zip",
+    "//components/test/data/unzip_service/zip_with_two_interesting_zip64s.zip",
   ]
   outputs = [ "{{bundle_resources_dir}}/" +
               "{{source_root_relative_dir}}/{{source_file_part}}" ]

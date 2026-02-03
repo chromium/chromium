@@ -207,7 +207,7 @@ function parseZip(data) {
 
   function uint64(littleEndian = true) {
     return new ByteSpan(
-      data.getUint64(offset, littleEndian),
+      parseInt(data.getBigUint64(offset, littleEndian)),
       offset,
       offset += 8);
   }
@@ -376,7 +376,8 @@ function parseZip(data) {
       "total_disks": uint32(),
     };
 
-    offset = structure.zip64_eocd_locator.z64_eocdr_offset + prefix_length;
+    offset = (
+        structure.zip64_eocd_locator.z64_eocdr_offset.value + prefix_length);
     structure.zip64_eocd_record = {
       "zip64_eocdr_signature": uint32(true, magic),
       "zip64_eocdr_size": uint64(),
@@ -391,8 +392,8 @@ function parseZip(data) {
       "extensible_data": {},
     }
     let remainingSize = (
-        structure.zip64_eocd_record.zip64_eocdr_size.value - 8 - 8 - 8 - 8
-        - 4 - 4 - 2 - 2);
+        structure.zip64_eocd_record.zip64_eocdr_size.value - 8 - 8
+        - 8 - 8 - 4 - 4 - 2 - 2);
     if (remainingSize > 0) {
       structure.zip64_eocd_record.extensible_data = skip(remainingSize);
     }

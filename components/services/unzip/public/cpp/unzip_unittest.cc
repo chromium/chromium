@@ -442,5 +442,83 @@ TEST_F(UnzipTest, DecodeXz_CancelAfterReturn) {
   EXPECT_EQ(call_count, 1);
 }
 
+TEST_F(UnzipTest, UnzipZip64InZip64) {
+  // Unzip outer ZIP.
+  EXPECT_TRUE(DoUnzip(GetArchivePath("zip64_in_zip64.zip"), unzip_dir_));
+  base::FilePath extracted_file = unzip_dir_.Append(FILE_PATH_LITERAL("-"));
+
+  // Confirm the extracted file is a ZIP. If the inner Zip64 is mistakenly
+  // unzipped, this will fail.
+  std::optional<std::vector<uint8_t>> contents =
+      base::ReadFileToBytes(extracted_file);
+  ASSERT_TRUE(contents);
+  ASSERT_TRUE(contents->size() >= 4);
+  ASSERT_EQ((*contents)[0], 0x50);
+  ASSERT_EQ((*contents)[1], 0x4b);
+  ASSERT_EQ((*contents)[2], 0x03);
+  ASSERT_EQ((*contents)[3], 0x04);
+
+  // Extract the inner ZIP.
+  base::FilePath inner_unzip_dir =
+      unzip_dir_.Append(FILE_PATH_LITERAL("inner_out"));
+  ASSERT_TRUE(base::CreateDirectory(inner_unzip_dir));
+  EXPECT_TRUE(DoUnzip(extracted_file, inner_unzip_dir));
+
+  // Confirm the inner file contents.
+  std::string inner_contents;
+  ASSERT_TRUE(base::ReadFileToString(
+      inner_unzip_dir.Append(FILE_PATH_LITERAL("-")), &inner_contents));
+  EXPECT_EQ(inner_contents, "innermost\n");
+}
+
+TEST_F(UnzipTest, UnzipZip64InZip) {
+  // Unzip outer ZIP.
+  EXPECT_TRUE(DoUnzip(GetArchivePath("zip64_in_zip.zip"), unzip_dir_));
+  base::FilePath extracted_file =
+      unzip_dir_.Append(FILE_PATH_LITERAL("zip64.zip"));
+
+  // Confirm the extracted file.
+  std::optional<std::vector<uint8_t>> contents =
+      base::ReadFileToBytes(extracted_file);
+  // If "-" exists but not "zip64.zip", the inner zip64 was unzipped.
+  ASSERT_TRUE(contents) << "Failed to read `zip64.zip`; does `-` exist? "
+                        << base::PathExists(
+                               unzip_dir_.Append(FILE_PATH_LITERAL("-")));
+  ASSERT_TRUE(contents->size() >= 4);
+
+  // Note: If this is instead 'i', the inner ZIP was unzipped.
+  ASSERT_EQ((*contents)[0], 0x50);
+  ASSERT_EQ((*contents)[1], 0x4b);
+  ASSERT_EQ((*contents)[2], 0x03);
+  ASSERT_EQ((*contents)[3], 0x04);
+
+  // Extract the inner ZIP.
+  base::FilePath inner_unzip_dir =
+      unzip_dir_.Append(FILE_PATH_LITERAL("inner_out"));
+  ASSERT_TRUE(base::CreateDirectory(inner_unzip_dir));
+  EXPECT_TRUE(DoUnzip(extracted_file, inner_unzip_dir));
+
+  // Confirm the inner file contents.
+  std::string inner_contents;
+  ASSERT_TRUE(base::ReadFileToString(
+      inner_unzip_dir.Append(FILE_PATH_LITERAL("-")), &inner_contents));
+  EXPECT_EQ(inner_contents, "innermost\n");
+}
+
+// zip_with_two_interesting_zip64s.zip is a non-zip64 zip that contains two
+// zip64s. The second zip64 has the interesting property that the "relative
+// offset" in its zip64 EoCDL, if interpreted as a relative offset in the
+// outer zip, happens to point at the (well-formed) zip64 EoCDR of the first
+// zip64. A parser that simply scans for zip64 EoCDLs is likely to get
+// confused by this.
+TEST_F(UnzipTest, UnzipZipWithInterestingZip64s) {
+  // Unzip outer ZIP.
+  EXPECT_TRUE(DoUnzip(GetArchivePath("zip_with_two_interesting_zip64s.zip"),
+                      unzip_dir_));
+  // Two inner ZIPs. If there's only one, it's probably the contents of the
+  // inner ZIP.
+  EXPECT_EQ(2, CountFiles(unzip_dir_));
+}
+
 }  // namespace
 }  // namespace unzip
