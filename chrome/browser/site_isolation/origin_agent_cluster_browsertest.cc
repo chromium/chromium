@@ -48,11 +48,23 @@ class TestMemoryDetails : public MetricsMemoryDetails {
   // StartFetchAndWait().
   base::HistogramTester* uma() { return uma_.get(); }
 
-  int GetTotalProcessCount() {
+  int GetTotalRelevantProcessCount() {
     std::vector<Bucket> buckets = uma_->GetAllSamples(
         "Memory.RenderProcessHost.Count2.InitializedAndNotDead");
     DCHECK(buckets.size() == 1U);
-    return buckets[0].min;
+    size_t excluded_processes = 0;
+    // Exclude `chrome://` origin renderer processes.
+    // This test only navigates to standard web pages and does not deal with any
+    // `chrome://` urls. Any RENDERER_CHROME process is infra that should not
+    // count towards the test metrics.
+    ProcessData* const chrome_browser = ChromeBrowser();
+    for (ProcessMemoryInformation& process : chrome_browser->processes) {
+      if (process.renderer_type == ProcessMemoryInformation::RENDERER_CHROME) {
+        excluded_processes++;
+      }
+    }
+
+    return buckets[0].min - excluded_processes;
   }
 
   int GetOacProcessCount() {
@@ -70,7 +82,11 @@ class TestMemoryDetails : public MetricsMemoryDetails {
     // The bucket size will be zero when testing with OriginAgentCluster
     // disabled.
     CHECK(buckets.size() == 1U || buckets.size() == 0U);
-    return buckets.size() == 1U ? buckets[0].min : 0;
+    int total = GetTotalRelevantProcessCount();
+    if (total == 0) {
+      return 0;
+    }
+    return (GetOacProcessCount() * 100) / total;
   }
 
  private:
@@ -239,7 +255,7 @@ IN_PROC_BROWSER_TEST_F(OriginAgentClusterBrowserTest,
   scoped_refptr<TestMemoryDetails> details = new TestMemoryDetails();
   details->StartFetchAndWait();
 
-  EXPECT_EQ(2, details->GetTotalProcessCount());
+  EXPECT_EQ(2, details->GetTotalRelevantProcessCount());
   EXPECT_EQ(1, details->GetOacProcessCount());
   EXPECT_EQ(50, details->GetOacProcessCountPercent());
 }
@@ -262,7 +278,7 @@ IN_PROC_BROWSER_TEST_F(OriginAgentClusterDisabledBrowserTest,
   scoped_refptr<TestMemoryDetails> details = new TestMemoryDetails();
   details->StartFetchAndWait();
 
-  EXPECT_EQ(1, details->GetTotalProcessCount());
+  EXPECT_EQ(1, details->GetTotalRelevantProcessCount());
   EXPECT_EQ(0, details->GetOacProcessCount());
   EXPECT_EQ(0, details->GetOacProcessCountPercent());
 }
@@ -281,7 +297,7 @@ IN_PROC_BROWSER_TEST_F(OriginAgentClusterBrowserTest,
   scoped_refptr<TestMemoryDetails> details = new TestMemoryDetails();
   details->StartFetchAndWait();
 
-  EXPECT_EQ(1, details->GetTotalProcessCount());
+  EXPECT_EQ(1, details->GetTotalRelevantProcessCount());
   EXPECT_EQ(0, details->GetOacProcessCount());
   EXPECT_EQ(0, details->GetOacProcessCountPercent());
 }
@@ -308,11 +324,11 @@ IN_PROC_BROWSER_TEST_F(OriginAgentClusterBrowserTest,
     // Even though sub.foo.com doesn't have an OAC opt-in header, it will still
     // be isolated in this case due to the Origin Isolation mode, and thus it
     // should still count as overhead.
-    EXPECT_EQ(2, details->GetTotalProcessCount());
+    EXPECT_EQ(2, details->GetTotalRelevantProcessCount());
     EXPECT_EQ(1, details->GetOacProcessCount());
     EXPECT_EQ(50, details->GetOacProcessCountPercent());
   } else {
-    EXPECT_EQ(1, details->GetTotalProcessCount());
+    EXPECT_EQ(1, details->GetTotalRelevantProcessCount());
     EXPECT_EQ(0, details->GetOacProcessCount());
     EXPECT_EQ(0, details->GetOacProcessCountPercent());
   }
@@ -339,7 +355,7 @@ IN_PROC_BROWSER_TEST_F(OriginAgentClusterBrowserTest,
   scoped_refptr<TestMemoryDetails> details = new TestMemoryDetails();
   details->StartFetchAndWait();
 
-  EXPECT_EQ(3, details->GetTotalProcessCount());
+  EXPECT_EQ(3, details->GetTotalRelevantProcessCount());
   EXPECT_EQ(2, details->GetOacProcessCount());
   EXPECT_EQ(66, details->GetOacProcessCountPercent());
 }
@@ -371,7 +387,7 @@ IN_PROC_BROWSER_TEST_F(OriginAgentClusterBrowserTest,
   scoped_refptr<TestMemoryDetails> details = new TestMemoryDetails();
   details->StartFetchAndWait();
 
-  EXPECT_EQ(4, details->GetTotalProcessCount());
+  EXPECT_EQ(4, details->GetTotalRelevantProcessCount());
   EXPECT_EQ(2, details->GetOacProcessCount());
   EXPECT_EQ(50, details->GetOacProcessCountPercent());
 }
