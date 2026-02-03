@@ -226,8 +226,8 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kStrictHighRankProcessLRU);
 #endif
 #if BUILDFLAG(IS_MAC)
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kTextInputClient);
-CONTENT_EXPORT extern const base::FeatureParam<base::TimeDelta>
-    kTextInputClientIPCTimeout;
+CONTENT_EXPORT BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
+                                          kTextInputClientIPCTimeout);
 #endif
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kTouchpadOverscrollHistoryNavigation);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kTrustedTypesFromLiteral);

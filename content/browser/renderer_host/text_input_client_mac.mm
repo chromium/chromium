@@ -34,18 +34,22 @@ class DefaultAsyncRequestDelegate final
   DefaultAsyncRequestDelegate& operator=(const DefaultAsyncRequestDelegate&) =
       delete;
 
-  void GetCharacterIndexAtPoint(RenderFrameHost* rfh,
-                                const gfx::Point& point) final {
+  void GetCharacterIndexAtPoint(
+      RenderFrameHost* rfh,
+      const TextInputClientMac::RequestToken& request_token,
+      const gfx::Point& point) final {
     RenderFrameHostImpl::From(rfh)
         ->GetAssociatedLocalFrame()
-        ->GetCharacterIndexAtPoint(point);
+        ->GetCharacterIndexAtPoint(request_token.value(), point);
   }
 
-  void GetFirstRectForRange(RenderFrameHost* rfh,
-                            const gfx::Range& range) final {
+  void GetFirstRectForRange(
+      RenderFrameHost* rfh,
+      const TextInputClientMac::RequestToken& request_token,
+      const gfx::Range& range) final {
     RenderFrameHostImpl::From(rfh)
         ->GetAssociatedLocalFrame()
-        ->GetFirstRectForRange(range);
+        ->GetFirstRectForRange(request_token.value(), range);
   }
 };
 
@@ -60,7 +64,6 @@ RenderFrameHostImpl* GetFocusedRenderFrameHostImpl(RenderWidgetHost* widget) {
 
 TextInputClientMac::TextInputClientMac()
     : condition_(&lock_),
-      wait_timeout_(features::kTextInputClientIPCTimeout.Get()),
       async_request_delegate_(std::make_unique<DefaultAsyncRequestDelegate>()) {
 }
 
@@ -109,14 +112,16 @@ uint32_t TextInputClientMac::GetCharacterIndexAtPoint(RenderWidgetHost* rwh,
   }
 
   base::TimeTicks start = base::TimeTicks::Now();
-  base::TimeDelta remaining_timeout = wait_timeout_;
+  base::TimeDelta wait_timeout = features::kTextInputClientIPCTimeout.Get();
+  base::TimeDelta remaining_timeout = wait_timeout;
 
   BeforeRequest();
-  async_request_delegate_->GetCharacterIndexAtPoint(rfhi, point);
+  async_request_delegate_->GetCharacterIndexAtPoint(
+      rfhi, current_request_.value(), point);
   while (!character_index_ && remaining_timeout.is_positive()) {
     base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
     condition_.TimedWait(remaining_timeout);
-    remaining_timeout = start + wait_timeout_ - base::TimeTicks::Now();
+    remaining_timeout = start + wait_timeout - base::TimeTicks::Now();
   }
   // Return a sentinel if no response was received.
   uint32_t index = character_index_.value_or(UINT32_MAX);
@@ -138,14 +143,16 @@ gfx::Rect TextInputClientMac::GetFirstRectForRange(RenderWidgetHost* rwh,
   }
 
   base::TimeTicks start = base::TimeTicks::Now();
-  base::TimeDelta remaining_timeout = wait_timeout_;
+  base::TimeDelta wait_timeout = features::kTextInputClientIPCTimeout.Get();
+  base::TimeDelta remaining_timeout = wait_timeout;
 
   BeforeRequest();
-  async_request_delegate_->GetFirstRectForRange(rfhi, range);
+  async_request_delegate_->GetFirstRectForRange(rfhi, current_request_.value(),
+                                                range);
   while (!first_rect_ && remaining_timeout.is_positive()) {
     base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
     condition_.TimedWait(remaining_timeout);
-    remaining_timeout = start + wait_timeout_ - base::TimeTicks::Now();
+    remaining_timeout = start + wait_timeout - base::TimeTicks::Now();
   }
   // `first_rect_` is in (child) frame coordinate and needs to be transformed to
   // the root frame coordinate.
@@ -163,17 +170,33 @@ gfx::Rect TextInputClientMac::GetFirstRectForRange(RenderWidgetHost* rwh,
   return rect;
 }
 
-void TextInputClientMac::SetCharacterIndexAndSignal(uint32_t index) {
-  lock_.Acquire();
-  character_index_ = index;
-  lock_.Release();
+void TextInputClientMac::SetCharacterIndexAndSignal(
+    const RequestToken& request_token,
+    uint32_t index) {
+  {
+    base::AutoLock lock(lock_);
+    if (!current_request_.has_value() ||
+        current_request_.value() != request_token) {
+      // Stale request.
+      return;
+    }
+    character_index_ = index;
+  }
   condition_.Signal();
 }
 
-void TextInputClientMac::SetFirstRectAndSignal(const gfx::Rect& first_rect) {
-  lock_.Acquire();
-  first_rect_ = first_rect;
-  lock_.Release();
+void TextInputClientMac::SetFirstRectAndSignal(
+    const RequestToken& request_token,
+    const gfx::Rect& first_rect) {
+  {
+    base::AutoLock lock(lock_);
+    if (!current_request_.has_value() ||
+        current_request_.value() != request_token) {
+      // Stale request.
+      return;
+    }
+    first_rect_ = first_rect;
+  }
   condition_.Signal();
 }
 
@@ -186,6 +209,7 @@ void TextInputClientMac::SetAsyncRequestDelegateForTesting(
 }
 
 void TextInputClientMac::SetCharacterIndexWhileLockedForTesting(
+    const RequestToken& request_token,
     uint32_t index) {
   // Drop the lock to signal the condition variable. Tests use this to simulate
   // a GetCharacterIndexAtPoint() response that arrives before the
@@ -193,10 +217,11 @@ void TextInputClientMac::SetCharacterIndexWhileLockedForTesting(
   // sequence) that calls Wait() to preserve ordering.
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   base::AutoUnlock unlock(lock_);
-  SetCharacterIndexAndSignal(index);
+  SetCharacterIndexAndSignal(request_token, index);
 }
 
 void TextInputClientMac::SetFirstRectWhileLockedForTesting(
+    const RequestToken& request_token,
     const gfx::Rect& first_rect) {
   // Drop the lock to signal the condition variable. Tests use this to simulate
   // a GetFirstRectForRange() response that arrives before the
@@ -204,7 +229,7 @@ void TextInputClientMac::SetFirstRectWhileLockedForTesting(
   // sequence) that calls Wait() to preserve ordering.
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   base::AutoUnlock unlock(lock_);
-  SetFirstRectAndSignal(first_rect);
+  SetFirstRectAndSignal(request_token, first_rect);
 }
 
 void TextInputClientMac::BeforeRequest() {
@@ -216,11 +241,15 @@ void TextInputClientMac::BeforeRequest() {
   UMA_HISTOGRAM_LONG_TIMES("TextInputClient.LockWait",
                            delta * base::Time::kMicrosecondsPerMillisecond);
 
+  CHECK(!current_request_.has_value());
+  current_request_ = RequestToken();
   character_index_.reset();
   first_rect_.reset();
 }
 
 void TextInputClientMac::AfterRequest() {
+  CHECK(current_request_.has_value());
+  current_request_.reset();
   lock_.Release();
 }
 

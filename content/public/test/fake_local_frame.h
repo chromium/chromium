@@ -21,6 +21,10 @@
 #include "third_party/blink/public/mojom/input/focus_type.mojom-forward.h"
 #include "third_party/blink/public/mojom/navigation/navigation_api_history_entry_arrays.mojom.h"
 
+namespace base {
+class UnguessableToken;
+}
+
 namespace gfx {
 class Point;
 class Rect;
@@ -120,8 +124,10 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
   void GetSavableResourceLinks(
       GetSavableResourceLinksCallback callback) override;
 #if BUILDFLAG(IS_MAC)
-  void GetCharacterIndexAtPoint(const gfx::Point& point) override;
-  void GetFirstRectForRange(const gfx::Range& range) override;
+  void GetCharacterIndexAtPoint(const base::UnguessableToken& request_token,
+                                const gfx::Point& point) override;
+  void GetFirstRectForRange(const base::UnguessableToken& request_token,
+                            const gfx::Range& range) override;
   void GetStringForRange(const gfx::Range& range,
                          GetStringForRangeCallback callback) override;
 #endif

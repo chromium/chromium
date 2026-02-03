@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/text_input_host_impl.h"
 
+#include "base/unguessable_token.h"
 #include "content/browser/renderer_host/text_input_client_mac.h"
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -20,18 +21,24 @@ void TextInputHostImpl::Create(
                               std::move(receiver));
 }
 
-void TextInputHostImpl::GotCharacterIndexAtPoint(uint32_t index) {
+void TextInputHostImpl::GotCharacterIndexAtPoint(
+    const base::UnguessableToken& request_token,
+    uint32_t index) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TextInputClientMac* service = TextInputClientMac::GetInstance();
-  service->SetCharacterIndexAndSignal(index);
+  service->SetCharacterIndexAndSignal(
+      TextInputClientMac::RequestToken(request_token), index);
 }
 
-void TextInputHostImpl::GotFirstRectForRange(const gfx::Rect& rect) {
+void TextInputHostImpl::GotFirstRectForRange(
+    const base::UnguessableToken& request_token,
+    const gfx::Rect& rect) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TextInputClientMac* service = TextInputClientMac::GetInstance();
-  service->SetFirstRectAndSignal(rect);
+  service->SetFirstRectAndSignal(
+      TextInputClientMac::RequestToken(request_token), rect);
 }
 
 }  // namespace content

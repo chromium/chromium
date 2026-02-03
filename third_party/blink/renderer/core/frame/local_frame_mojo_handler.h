@@ -29,6 +29,10 @@
 #include "third_party/blink/public/mojom/input/text_input_host.mojom-blink.h"
 #endif
 
+namespace base {
+class UnguessableToken;
+}
+
 namespace blink {
 
 class Document;
@@ -170,8 +174,10 @@ class LocalFrameMojoHandler
       int32_t world_id,
       JavaScriptExecuteRequestInIsolatedWorldCallback callback) final;
 #if BUILDFLAG(IS_MAC)
-  void GetCharacterIndexAtPoint(const gfx::Point& point) final;
-  void GetFirstRectForRange(const gfx::Range& range) final;
+  void GetCharacterIndexAtPoint(const base::UnguessableToken& request_token,
+                                const gfx::Point& point) final;
+  void GetFirstRectForRange(const base::UnguessableToken& request_token,
+                            const gfx::Range& range) final;
   void GetStringForRange(const gfx::Range& range,
                          GetStringForRangeCallback callback) final;
 #endif

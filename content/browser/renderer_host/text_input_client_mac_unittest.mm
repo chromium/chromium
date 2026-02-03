@@ -22,6 +22,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "content/browser/renderer_host/text_input_host_impl.h"
 #include "content/common/features.h"
 #include "content/public/browser/browser_thread.h"
@@ -52,14 +53,19 @@ struct TestTraits {
   // parameter.
   static ResponseType TextInputClientGetSync(RenderWidgetHost* rwh);
 
-  // Calls the appropriate Got*() method of `host` with the given `response`,
-  // which will unblock the waiting TextInputClientMac.
-  static void TextInputHostGotResponse(TextInputHostImpl* host,
-                                       ResponseType response);
+  // Calls the appropriate Got*() method of `host` with the given
+  // `request_token` and `response`, which will unblock the waiting
+  // TextInputClientMac.
+  static void TextInputHostGotResponse(
+      TextInputHostImpl* host,
+      const TextInputClientMac::RequestToken& request_token,
+      ResponseType response);
 
   // Synchronously calls a test-only setter method on TextInputClientMac, to
   // simulate a response being received before returning from the delegate.
-  static void TextInputClientSetSync(ResponseType response);
+  static void TextInputClientSetSync(
+      const TextInputClientMac::RequestToken& request_token,
+      ResponseType response);
 
   // Initializes a ResponseType value from an arbitrary integer.
   static constexpr ResponseType CreateResponse(int value);
@@ -75,14 +81,18 @@ struct TestTraits<uint32_t> {
         rwh, gfx::Point(2, 2));
   }
 
-  static void TextInputHostGotResponse(TextInputHostImpl* host,
-                                       uint32_t response) {
-    host->GotCharacterIndexAtPoint(response);
+  static void TextInputHostGotResponse(
+      TextInputHostImpl* host,
+      const TextInputClientMac::RequestToken& request_token,
+      uint32_t response) {
+    host->GotCharacterIndexAtPoint(request_token.value(), response);
   }
 
-  static void TextInputClientSetSync(uint32_t response) {
+  static void TextInputClientSetSync(
+      const TextInputClientMac::RequestToken& request_token,
+      uint32_t response) {
     TextInputClientMac::GetInstance()->SetCharacterIndexWhileLockedForTesting(
-        response);
+        request_token, response);
   }
 
   static constexpr uint32_t CreateResponse(int value) { return value; }
@@ -97,14 +107,18 @@ struct TestTraits<gfx::Rect> {
         rwh, gfx::Range(NSMakeRange(0, 32)));
   }
 
-  static void TextInputHostGotResponse(TextInputHostImpl* host,
-                                       gfx::Rect response) {
-    host->GotFirstRectForRange(response);
+  static void TextInputHostGotResponse(
+      TextInputHostImpl* host,
+      const TextInputClientMac::RequestToken& request_token,
+      gfx::Rect response) {
+    host->GotFirstRectForRange(request_token.value(), response);
   }
 
-  static void TextInputClientSetSync(gfx::Rect response) {
+  static void TextInputClientSetSync(
+      const TextInputClientMac::RequestToken& request_token,
+      gfx::Rect response) {
     TextInputClientMac::GetInstance()->SetFirstRectWhileLockedForTesting(
-        response);
+        request_token, response);
   }
 
   static constexpr gfx::Rect CreateResponse(int value) {
@@ -153,28 +167,38 @@ class FakeAsyncRequestDelegate final
     responses_.emplace(std::move(response), delay);
   }
 
+  size_t NumResponses() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return responses_.size();
+  }
+
   // AsyncRequestDelegate:
 
-  void GetCharacterIndexAtPoint(RenderFrameHost* rfh,
-                                const gfx::Point& point) final {
+  void GetCharacterIndexAtPoint(
+      RenderFrameHost* rfh,
+      const TextInputClientMac::RequestToken& request_token,
+      const gfx::Point& point) final {
     if constexpr (std::is_same_v<ResponseType, uint32_t>) {
-      SendNextResponse(rfh);
+      SendNextResponse(rfh, request_token);
     } else {
       FAIL() << "Wrong test type for GetCharacterIndexAtPoint";
     }
   }
 
-  void GetFirstRectForRange(RenderFrameHost* rfh,
-                            const gfx::Range& range) final {
+  void GetFirstRectForRange(
+      RenderFrameHost* rfh,
+      const TextInputClientMac::RequestToken& request_token,
+      const gfx::Range& range) final {
     if constexpr (std::is_same_v<ResponseType, gfx::Rect>) {
-      SendNextResponse(rfh);
+      SendNextResponse(rfh, request_token);
     } else {
       FAIL() << "Wrong test type for GetFirstRectForRange";
     }
   }
 
  private:
-  void SendNextResponse(RenderFrameHost* rfh) {
+  void SendNextResponse(RenderFrameHost* rfh,
+                        const TextInputClientMac::RequestToken& request_token) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     ASSERT_TRUE(rfh);
     ASSERT_EQ(rfh->GetRenderWidgetHost(), widget_);
@@ -189,13 +213,13 @@ class FakeAsyncRequestDelegate final
       // which must be accessed on the IO thread. This simulates a response that
       // arrives while the calling thread is descheduled, before TextInputClient
       // blocks it.
-      Traits::TextInputClientSetSync(response);
+      Traits::TextInputClientSetSync(request_token, response);
     } else {
       // Unretained is safe since `host_impl_` is deleted on the IO thread.
       GetIOThreadTaskRunner()->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(&Traits::TextInputHostGotResponse,
-                         base::Unretained(host_impl_.get()),
+                         base::Unretained(host_impl_.get()), request_token,
                          std::move(response)),
           delay);
     }
@@ -242,16 +266,20 @@ class TextInputClientMacTest : public content::RenderViewHostTestHarness {
   }
 
   void TearDown() override {
-    // Flush any tasks posted to the IO thread and reply tasks before exiting.
-    GetIOThreadTaskRunner()->PostTaskAndReply(
-        FROM_HERE, base::DoNothing(), task_environment()->QuitClosure());
-    task_environment()->RunUntilQuit();
+    FlushIOThreadAndReplies();
 
     request_delegate_ = nullptr;
     TextInputClientMac::GetInstance()->SetAsyncRequestDelegateForTesting(
         nullptr);
 
     RenderViewHostTestHarness::TearDown();
+  }
+
+  // Flush any tasks posted to the IO thread and their reply tasks.
+  void FlushIOThreadAndReplies() {
+    GetIOThreadTaskRunner()->PostTaskAndReply(
+        FROM_HERE, base::DoNothing(), task_environment()->QuitClosure());
+    task_environment()->RunUntilQuit();
   }
 
   RenderWidgetHost* widget() { return rvh()->GetWidget(); }
@@ -332,12 +360,56 @@ TYPED_TEST_P(TextInputClientMacTest, SyncGetter_Immediate) {
   EXPECT_EQ(Traits::TextInputClientGetSync(this->widget()), kSuccessValue);
 }
 
+// Tests that TextInputClient ignores replies that arrive after it times out.
+TYPED_TEST_P(TextInputClientMacTest, SyncGetter_StaleResult) {
+  using Traits = TestTraits<TypeParam>;
+
+  const TypeParam kStaleValue = Traits::CreateResponse(42);
+  const TypeParam kSuccessValue = Traits::CreateResponse(84);
+
+  // With kTaskDelay = 200ms and timeout = 300ms:
+  // T=0: First request sent.
+  // T=300ms: First request times out, second request sent.
+  // T=400ms: First reply arrives. (Should be ignored.)
+  // T=500ms: Second reply arrives, 200ms after the request.
+  // T=600ms: Second request times out. (Shouldn't reach here, but see below...)
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(features::kTextInputClient,
+                                                  {{"ipc_timeout", "300ms"}});
+
+  this->FocusWebContentsOnMainFrame();
+
+  // Because the timeout is so close to kTaskDelay, with unlucky thread
+  // scheduling it's possible for the first response to arrive before the
+  // timeout is checked, or for the second response to be delayed until after
+  // the timeout. Raising the timeout would make the whole test unreasonably
+  // slow, though. So on an unexpected timeout response, repeat the test.
+  TypeParam first_response;
+  TypeParam second_response;
+  do {
+    // Clear out responses from last time through the loop.
+    this->FlushIOThreadAndReplies();
+    ASSERT_EQ(this->request_delegate().NumResponses(), 0u);
+
+    this->request_delegate().AddResponse(kStaleValue, kTaskDelay * 2);
+    this->request_delegate().AddResponse(kSuccessValue, kTaskDelay);
+
+    first_response = Traits::TextInputClientGetSync(this->widget());
+    second_response = Traits::TextInputClientGetSync(this->widget());
+  } while (first_response != Traits::kTimeoutResponse ||
+           second_response == Traits::kTimeoutResponse);
+  EXPECT_EQ(first_response, Traits::kTimeoutResponse);  // Replaces kStaleValue.
+  EXPECT_EQ(second_response, kSuccessValue);
+}
+
 REGISTER_TYPED_TEST_SUITE_P(TextInputClientMacTest,
                             SyncGetter_NoFocus,
                             SyncGetter_Basic,
                             SyncGetter_Timeout,
                             SyncGetter_NotFound,
-                            SyncGetter_Immediate);
+                            SyncGetter_Immediate,
+                            SyncGetter_StaleResult);
 
 using ResponseTypes = ::testing::Types<uint32_t, gfx::Rect>;
 INSTANTIATE_TYPED_TEST_SUITE_P(ResponseType,

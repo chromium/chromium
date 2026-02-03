@@ -4,6 +4,7 @@
 
 module blink.mojom;
 
+import "mojo/public/mojom/base/unguessable_token.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // Implemented in Browser, this interface defines methods that will be invoked
@@ -18,13 +19,19 @@ interface TextInputHost {
   // blocked at TextInputClientMac to support the reply synchronously with
   // a timeout on Mac. So, it needs a separate message,
   // GotCharacterIndexAtPoint, that runs on BrowserThread::IO and unblocks
-  // BrowserThread::UI.
+  // BrowserThread::UI. `request_token` is a caller-defined request identifier
+  // which allows matching the request on LocalFrame with the TextInputHost
+  // response.
   // [EnableIf=is_mac]
-  GotCharacterIndexAtPoint(uint32 index);
+  GotCharacterIndexAtPoint(mojo_base.mojom.UnguessableToken request_token,
+                           uint32 index);
 
   // Reply for GetFirstRectForRange from LocalFrame. It works in the same
   // manner as GetCharacterIndexAtPoint. The returned rect is in physical
-  // pixels.
+  // pixels. `request_token` is a caller-defined request identifier
+  // which allows matching the request on LocalFrame with the TextInputHost
+  // response.
   // [EnableIf=is_mac]
-  GotFirstRectForRange(gfx.mojom.Rect rect);
+  GotFirstRectForRange(mojo_base.mojom.UnguessableToken request_token,
+                       gfx.mojom.Rect rect);
 };

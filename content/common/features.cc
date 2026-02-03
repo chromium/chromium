@@ -700,8 +700,11 @@ BASE_FEATURE(kStrictHighRankProcessLRU, base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_MAC)
 BASE_FEATURE(kTextInputClient, base::FEATURE_ENABLED_BY_DEFAULT);
-const base::FeatureParam<base::TimeDelta> kTextInputClientIPCTimeout{
-    &kTextInputClient, "ipc_timeout", base::Milliseconds(1500)};
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kTextInputClientIPCTimeout,
+                   &kTextInputClient,
+                   "ipc_timeout",
+                   base::Milliseconds(1500));
 #endif
 
 // Allows swipe left/right from touchpad change browser navigation. Currently

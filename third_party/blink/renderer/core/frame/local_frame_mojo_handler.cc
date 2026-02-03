@@ -7,10 +7,12 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "cc/input/browser_controls_offset_tag_modifications.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/features.h"
@@ -993,16 +995,27 @@ void LocalFrameMojoHandler::JavaScriptExecuteRequestInIsolatedWorld(
 }
 
 #if BUILDFLAG(IS_MAC)
-void LocalFrameMojoHandler::GetCharacterIndexAtPoint(const gfx::Point& point) {
+void LocalFrameMojoHandler::GetCharacterIndexAtPoint(
+    const base::UnguessableToken& request_token,
+    const gfx::Point& point) {
   text_input_host_->GotCharacterIndexAtPoint(
-      frame_->GetCharacterIndexAtPoint(point));
+      request_token, frame_->GetCharacterIndexAtPoint(point));
 }
 
-void LocalFrameMojoHandler::GetFirstRectForRange(const gfx::Range& range) {
+void LocalFrameMojoHandler::GetFirstRectForRange(
+    const base::UnguessableToken& request_token,
+    const gfx::Range& range) {
   gfx::Rect rect;
+  // Always send a reply before returning, with an empty rect on error, to
+  // prevent the browser process from waiting until the end of its timeout.
+  absl::Cleanup send_reply = [&] {
+    text_input_host_->GotFirstRectForRange(request_token, rect);
+  };
+
   WebLocalFrameClient* client = WebLocalFrameImpl::FromFrame(frame_)->Client();
-  if (!client)
+  if (!client) {
     return;
+  }
 
   WebPluginContainerImpl* plugin_container = frame_->GetWebPluginContainer();
   if (plugin_container) {
@@ -1018,8 +1031,6 @@ void LocalFrameMojoHandler::GetFirstRectForRange(const gfx::Range& range) {
         base::checked_cast<uint32_t>(start),
         base::checked_cast<uint32_t>(range.length()), rect);
   }
-
-  text_input_host_->GotFirstRectForRange(rect);
 }
 
 void LocalFrameMojoHandler::GetStringForRange(

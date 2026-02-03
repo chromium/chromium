@@ -10,6 +10,10 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/input/text_input_host.mojom.h"
 
+namespace base {
+class UnguessableToken;
+}
+
 namespace content {
 
 // A class to implement the incoming response messages from the renderer process
@@ -27,8 +31,10 @@ class CONTENT_EXPORT TextInputHostImpl : public blink::mojom::TextInputHost {
       mojo::PendingReceiver<blink::mojom::TextInputHost> receiver);
 
   // blink::mojom::TextInputHost implementation.
-  void GotCharacterIndexAtPoint(uint32_t index) override;
-  void GotFirstRectForRange(const gfx::Rect& rect) override;
+  void GotCharacterIndexAtPoint(const base::UnguessableToken& request_token,
+                                uint32_t index) override;
+  void GotFirstRectForRange(const base::UnguessableToken& request_token,
+                            const gfx::Rect& rect) override;
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);

@@ -1124,14 +1124,18 @@ interface LocalFrame {
 
   // Requests the index of a character in the frame's text stream at the given
   // point. The point is in the viewport coordinate space. Replies using
-  // TextInputHost.
+  // TextInputHost. `request_token` is a caller-defined request identifier which
+  // allows matching the request with the TextInputHost response.
   [EnableIf=is_mac]
-  GetCharacterIndexAtPoint(gfx.mojom.Point location);
+  GetCharacterIndexAtPoint(mojo_base.mojom.UnguessableToken request_token,
+                           gfx.mojom.Point location);
 
   // Requests the rectangle for a given character range. Replies using
-  // TextInputHost.
+  // TextInputHost. `request_token` is a caller-defined request identifier which
+  // allows matching the request with the TextInputHost response.
   [EnableIf=is_mac]
-  GetFirstRectForRange(gfx.mojom.Range range);
+  GetFirstRectForRange(mojo_base.mojom.UnguessableToken request_token,
+                       gfx.mojom.Range range);
 
   // Requests the text fragment in a given range.
   [EnableIf=is_mac]
