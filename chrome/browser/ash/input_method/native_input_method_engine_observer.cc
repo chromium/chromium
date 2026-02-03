@@ -500,7 +500,7 @@ mojom::PhysicalKeyEventPtr CreatePhysicalKeyEventFromKeyEvent(
 uint32_t Utf16ToCodepoint(const std::u16string& str) {
   size_t index = 0;
   base_icu::UChar32 codepoint = 0;
-  base::ReadUnicodeCharacter(str.data(), str.length(), &index, &codepoint);
+  base::ReadUnicodeCharacter(str, &index, &codepoint);
 
   // Should only contain a single codepoint.
   DCHECK_EQ(index, str.length() - 1);

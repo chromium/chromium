@@ -36,7 +36,9 @@ void TruncateStringToSize(base::FilePath::StringType* string, size_t size) {
   for (size_t i = 0; i < string->size(); ++i) {
     base_icu::UChar32 codepoint;
     size_t original_i = i;
-    if (!base::ReadUnicodeCharacter(c_str, size, &i, &codepoint) || i >= size) {
+    if (!base::ReadUnicodeCharacter(std::u16string_view(c_str, size), &i,
+                                    &codepoint) ||
+        i >= size) {
       string->resize(original_i);
       return;
     }

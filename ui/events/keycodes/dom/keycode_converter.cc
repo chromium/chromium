@@ -417,8 +417,7 @@ DomKey KeycodeConverter::KeyStringToDomKey(std::string_view key) {
   const size_t key_length = key.length();
   size_t char_index = 0;
   base_icu::UChar32 character;
-  if (base::ReadUnicodeCharacter(key.data(), key_length, &char_index,
-                                 &character) &&
+  if (base::ReadUnicodeCharacter(key, &char_index, &character) &&
       ++char_index == key_length) {
     return DomKey::FromCharacter(character);
   }

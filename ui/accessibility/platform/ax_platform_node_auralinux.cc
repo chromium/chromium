@@ -1056,8 +1056,9 @@ gunichar GetCharacterAtOffset(AtkText* atk_text, int offset) {
   size_t limited_offset = std::min(static_cast<size_t>(offset), text_length);
 
   base_icu::UChar32 code_point;
-  base::ReadUnicodeCharacter(text.c_str(), text_length + 1, &limited_offset,
-                             &code_point);
+  if (!base::ReadUnicodeCharacter(text, &limited_offset, &code_point)) {
+    return 0;
+  }
   return code_point;
 }
 
@@ -4266,11 +4267,11 @@ AXPlatformNodeAuraLinux::GetHypertextAdjustments() {
   text_unicode_adjustments_.emplace();
 
   std::u16string text = GetHypertext();
-  size_t text_length = text.size();
+  size_t text_length = text.length();
   for (size_t i = 0; i < text_length; i++) {
     base_icu::UChar32 code_point;
     size_t original_i = i;
-    base::ReadUnicodeCharacter(text.c_str(), text_length + 1, &i, &code_point);
+    base::ReadUnicodeCharacter(text, &i, &code_point);
 
     if ((i - original_i + 1) != 1) {
       text_unicode_adjustments_->push_back(

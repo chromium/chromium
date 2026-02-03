@@ -33,8 +33,8 @@ std::string ValidateUTF8(const std::string& str) {
   std::string result;
   for (size_t index = 0; index < str.size(); ++index) {
     base_icu::UChar32 code_point_out;
-    bool is_unicode_char = base::ReadUnicodeCharacter(str.c_str(), str.size(),
-                                                      &index, &code_point_out);
+    bool is_unicode_char =
+        base::ReadUnicodeCharacter(str, &index, &code_point_out);
     constexpr base_icu::UChar32 kFirstNonControlChar = 0x20;
     if (is_unicode_char && (code_point_out >= kFirstNonControlChar)) {
       base::WriteUnicodeCharacter(code_point_out, &result);
