@@ -172,15 +172,9 @@ class ReportingService {
   // Instance of the helper class for uploading logs.
   std::unique_ptr<MetricsLogUploader> log_uploader_;
 
-  // Whether there is a current log upload in progress.
-  bool log_upload_in_progress_;
-
 #if BUILDFLAG(IS_ANDROID)
   // Whether the current log upload was initiated while the app was in the
-  // background. Set only when there is a log upload in progress (i.e. when
-  // `log_upload_in_progress_` above is true).
-  // TODO: crbug.com/420459511 - Consider putting this and
-  // `log_upload_in_progress_` together into a struct.
+  // background. Set only when there is a log upload in progress.
   std::optional<bool> log_upload_initiated_from_background_ = std::nullopt;
 
   // Set when the most recent uploads have failed. Its value will be whether the
