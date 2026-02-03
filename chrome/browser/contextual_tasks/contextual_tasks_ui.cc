@@ -293,6 +293,9 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
                         .input_placeholder_text());
   source->AddBoolean("composeboxSmartComposeEnabled",
                      contextual_tasks::GetEnableContextualTasksSmartCompose());
+  source->AddBoolean("enableNativeZeroStateSuggestions",
+                     contextual_tasks::GetEnableNativeZeroStateSuggestions());
+
   AddContextMenuItemEligibilityLoadTimeData(source, Profile::FromWebUI(web_ui));
   source->AddBoolean("composeboxShowLensSearchChip", false);
   source->AddBoolean("composeboxShowRecentTabChip", false);

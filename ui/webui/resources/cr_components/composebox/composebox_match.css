@@ -11,6 +11,7 @@
 
 :host {
   --input-inline-spacing: 12px;
+  --tab-select-color_: rgba(153, 200, 255, 1);
   outline: none;
   height: var(--cr-composebox-match-height, 44px);
   display: block;
@@ -37,7 +38,14 @@
 }
 
 :host(:is(:focus-visible, [selected])) .container {
-  background-color: var(--color-searchbox-results-background-selected, var(--color-searchbox-results-background-hovered));
+  background-color: var(--color-searchbox-results-background-selected,
+      var(--color-searchbox-results-background-hovered));
+
+  /* Optional match border if '--match-border-size' is set
+   * via ::part. Otherwise, keep it as 0px. */
+  border: var(--match-border-size, 0) solid
+      var(--color-searchbox-results-icon-focused-outline,
+      var(--tab-select-color_));
 }
 
 @media (forced-colors: active) {
@@ -88,7 +96,8 @@
 }
 
 :host(:is(:focus-visible, [selected])) #textContainer {
-  color: var(--color-searchbox-results-foreground-selected, var(--color-composebox-font-light));
+  color: var(--color-searchbox-results-foreground-selected,
+      var(--color-composebox-font-light));
 }
 
 #remove {
@@ -139,4 +148,19 @@
 :host-context([in-deep-search-mode_]) .container {
   border-start-end-radius: 24px;
   border-end-end-radius: 24px;
+}
+
+/* For co-browsing. Must be defined here since cannot be injected via ::part. */
+@keyframes loading-bar-color-change {
+  0% {
+    background-color: var(--color-composebox-loading-start);
+  }
+
+  50% {
+    background-color: var(--color-composebox-loading-end);
+  }
+
+  100% {
+    background-color: var(--color-composebox-loading-start);
+  }
 }

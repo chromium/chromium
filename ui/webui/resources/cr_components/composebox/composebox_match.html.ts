@@ -9,10 +9,12 @@ import type {ComposeboxMatchElement} from './composebox_match.js';
 export function getHtml(this: ComposeboxMatchElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-<div class="container" aria-hidden="true">
-  <div id="focusIndicator"></div>
-  <div id="iconContainer">
-    <div id="icon" style="-webkit-mask-image: url(${this.iconPath_()});"></div>
+<div class="container" aria-hidden="true" part="match-container">
+  <div id="focusIndicator" part="match-focus-indicator"></div>
+  <div id="iconContainer" part="match-icon-container">
+    <div id="icon" part="match-icon"
+        style="-webkit-mask-image: url(${this.iconPath_()});">
+    </div>
   </div>
   <div id="textContainer" part="match-text-container">
     ${this.computeContents_()}

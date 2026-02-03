@@ -1300,6 +1300,8 @@ export class ComposeboxElement extends I18nMixinLit
     }
     this.haveReceivedAutcompleteResponse_ = true;
     this.result_ = result;
+    this.fire('zero-state-result-changed', result);
+
     const hasMatches = this.result_.matches.length > 0;
     const firstMatch = hasMatches ? this.result_.matches[0] : null;
     // Zero suggest matches are not allowed to be default. Therefore, this

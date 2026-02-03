@@ -40,6 +40,7 @@ export interface ContextualTasksAppElement {
     composebox: ContextualTasksComposeboxElement,
     composeboxHeaderWrapper: HTMLElement,
     composeboxHeader: HTMLElement,
+    flexCenterContainer: HTMLElement,
   };
 }
 
@@ -131,9 +132,15 @@ export class ContextualTasksAppElement extends CrLitElement {
       isAiPage_: {type: Boolean, reflect: true},
       isLensOverlayShowing_: {type: Boolean},
       isGhostLoaderVisible_: {type: Boolean, reflect: true},
+      enableNativeZeroStateSuggestions: {
+        type: Boolean,
+        reflect: true,
+      },
     };
   }
 
+  accessor enableNativeZeroStateSuggestions: boolean =
+      loadTimeData.getBoolean('enableNativeZeroStateSuggestions');
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
   protected accessor isAiPage_: boolean = true;
   protected accessor isLensOverlayShowing_: boolean = false;

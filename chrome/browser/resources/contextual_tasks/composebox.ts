@@ -2,16 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//resources/cr_components/composebox/composebox_dropdown.js';
 import '//resources/cr_components/composebox/composebox.js';
 import './onboarding_tooltip.js';
 
 import type {ComposeboxElement} from '//resources/cr_components/composebox/composebox.js';
+import type {ComposeboxDropdownElement} from '//resources/cr_components/composebox/composebox_dropdown.js';
 import {ComposeboxProxyImpl} from '//resources/cr_components/composebox/composebox_proxy.js';
 import {GlowAnimationState} from '//resources/cr_components/search/constants.js';
 import {assert} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import type {PageCallbackRouter as SearchboxPageCallbackRouter, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter as SearchboxPageCallbackRouter, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -30,11 +32,39 @@ function recordVoiceSearchAction(voiceSearchState: VoiceSearchState) {
       'ContextualTasks.VoiceSearch.State', voiceSearchState,
       VoiceSearchState.MAX_VALUE + 1);
 }
+
+function createGhostMatch(): AutocompleteMatch {
+  return {
+    contents: '\u200b',
+    description: '\u200b',
+
+    destinationUrl: {url: ''},
+    type: 'SEARCH_SUGGEST',
+    isSearchType: true,
+    // Server side for contextual tasks should always make suggestions
+    // non-deletable.
+    allowedToBeDeleted: false,
+    fillIntoEdit: '',
+    inlineAutocompletion: '',
+    imageDominantColor: '',
+    isRichSuggestion: false,
+
+    a11yLabel: '',
+    removeButtonA11yLabel: '',
+
+    iconPath: '//resources/cr_components/searchbox/icons/search_spark.svg',
+    contentsClass: [],
+    descriptionClass: [],
+    swapContentsAndDescription: false,
+    supportsDeletion: false,
+  } as unknown as AutocompleteMatch;
+}
 export interface ContextualTasksComposeboxElement {
   $: {
     composebox: ComposeboxElement,
     composeboxContainer: HTMLElement,
     onboardingTooltip: ContextualTasksOnboardingTooltipElement,
+    coBrSuggestionsContainer: ComposeboxDropdownElement,
   };
 }
 
@@ -76,12 +106,30 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
         type: Boolean,
         value: loadTimeData.getBoolean('showOnboardingTooltip'),
       },
+      zeroStateSuggestions_: {type: Object},
+      isLoading_: {type: Boolean, reflect: true},
+      enableNativeZeroStateSuggestions: {type: Boolean},
     };
   }
 
+  accessor enableNativeZeroStateSuggestions: boolean = false;
   accessor isZeroState: boolean = false;
   accessor isSidePanel: boolean = false;
   accessor isLensOverlayShowing: boolean = false;
+
+  protected accessor zeroStateSuggestions_: AutocompleteResult = {
+    input: '',
+
+    suggestionGroupsMap: {},
+
+    matches: Array(5).fill(null).map(() => createGhostMatch()),
+
+    smartComposeInlineHint: null,
+  };
+  /* If suggestions are loading. Set this any time that should hide suggestions
+   * while load next set of suggestions (after attaching image, etc.)
+   */
+  accessor isLoading_ = true;
   protected accessor composeboxHeight_: number = 0;
   protected accessor composeboxDropdownHeight_: number = 0;
   protected accessor isComposeboxFocused_: boolean = false;
@@ -252,6 +300,11 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
     this.onboardingTooltipIsVisible_ = false;
     this.stopObservingResize_();
     this.clearTooltipImpressionTimer_();
+  }
+
+  protected onZeroStateResultReceived_(e: CustomEvent<AutocompleteResult>) {
+    this.isLoading_ = false;
+    this.zeroStateSuggestions_ = e.detail;
   }
 
   private clearTooltipImpressionTimer_() {
