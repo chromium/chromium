@@ -760,6 +760,41 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IndexedDB.SQLite.PutRecord.CompressionRatio" units="%"
+    expires_after="2026-06-01">
+  <owner>leimy@chromium.org</owner>
+  <owner>evanstade@microsoft.com</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    The compression ratio achieved when putting a value in the SQLite-backed
+    IndexedDB. This is calculated as [compressed size] / [original size].
+    Depending on this ratio, the value may or may not be stored in its
+    compressed form.
+  </summary>
+</histogram>
+
+<histogram
+    name="IndexedDB.SQLite.PutRecord.PrecompressionValueSize.{CompressionState}"
+    units="bytes" expires_after="2026-06-01">
+  <owner>leimy@chromium.org</owner>
+  <owner>evanstade@microsoft.com</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    The size of the input data, before being compressed, when putting a record
+    in the SQLite-backed IndexedDB, split by whether the data was compressible
+    enough to be stored compressed. This is NOT logged for values where
+    compression was not even attempted.
+  </summary>
+  <token key="CompressionState">
+    <variant name="Compressed"
+        summary="Compressing achieved the minimum ratio (value was stored
+                 compressed)"/>
+    <variant name="Uncompressed"
+        summary="Compressing did not achieve the minimum ratio (value was
+                 stored uncompressed)"/>
+  </token>
+</histogram>
+
 <histogram name="IndexedDB.SQLite.SpecificEvent.{Mode}"
     enum="IndexedDbSqliteSpecificEvent" expires_after="2026-09-01">
   <owner>leimy@chromium.org</owner>

@@ -1802,11 +1802,21 @@ StatusOr<BackingStore::RecordIdentifier> DatabaseConnection::PutRecord(
                           &compressed_length);
       compression_type = CompressionType::kSnappy;
 #endif
+      base::UmaHistogramPercentage(
+          "IndexedDB.SQLite.PutRecord.CompressionRatio",
+          static_cast<int>(100.0 * compressed_length / bits_span.size()));
+
       if (compressed_length <= bits_span.size() * kMinimumCompressionRatio) {
+        base::UmaHistogramCounts10M(
+            "IndexedDB.SQLite.PutRecord.PrecompressionValueSize.Compressed",
+            bits_span.size());
         compressed_bits.resize(compressed_length);
         bits_copy = std::move(compressed_bits);
         bits_span = base::span(bits_copy);
       } else {
+        base::UmaHistogramCounts10M(
+            "IndexedDB.SQLite.PutRecord.PrecompressionValueSize.Uncompressed",
+            bits_span.size());
         compression_type = CompressionType::kUncompressed;
       }
     }

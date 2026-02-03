@@ -8,10 +8,12 @@
 #include <string>
 #include <string_view>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
+#include "base/rand_util.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -212,6 +214,47 @@ TEST_F(DatabaseConnectionTest, TooNew) {
     EXPECT_EQ(original_version, meta_table.GetVersionNumber());
     EXPECT_EQ(original_compat_version, meta_table.GetCompatibleVersionNumber());
   }
+}
+
+TEST_F(DatabaseConnectionTest, CompressionHistograms) {
+  base::HistogramTester histograms;
+
+  const std::u16string_view kDbName{u"test db"};
+  auto db = OpenDb(kDbName);
+  auto vc =
+      db->CreateTransaction(blink::mojom::IDBTransactionDurability::Default,
+                            blink::mojom::IDBTransactionMode::VersionChange);
+  vc->Begin({});
+  ASSERT_TRUE(
+      vc->CreateObjectStore(kObjectStoreId, u"object store name", {}, true)
+          .ok());
+
+  // Compressible data.
+  std::string compressible_data(1000, 'a');
+  ASSERT_TRUE(
+      vc->PutRecord(kObjectStoreId, kKey, IndexedDBValue(compressible_data, {}))
+          .has_value());
+
+  histograms.ExpectTotalCount("IndexedDB.SQLite.PutRecord.CompressionRatio", 1);
+  histograms.ExpectUniqueSample(
+      "IndexedDB.SQLite.PutRecord.PrecompressionValueSize.Compressed",
+      compressible_data.size(), 1);
+  histograms.ExpectTotalCount(
+      "IndexedDB.SQLite.PutRecord.PrecompressionValueSize.Uncompressed", 0);
+
+  // Data that is not effectively compressible.
+  std::string incompressible_data(1000, 'a');
+  base::RandBytes(base::as_writable_byte_span(incompressible_data));
+  ASSERT_TRUE(vc->PutRecord(kObjectStoreId, blink::IndexedDBKey("key2"),
+                            IndexedDBValue(incompressible_data, {}))
+                  .has_value());
+
+  histograms.ExpectTotalCount("IndexedDB.SQLite.PutRecord.CompressionRatio", 2);
+  histograms.ExpectTotalCount(
+      "IndexedDB.SQLite.PutRecord.PrecompressionValueSize.Compressed", 1);
+  histograms.ExpectUniqueSample(
+      "IndexedDB.SQLite.PutRecord.PrecompressionValueSize.Uncompressed",
+      incompressible_data.size(), 1);
 }
 
 class DatabaseConnectionCorruptionTest : public DatabaseConnectionTest {
