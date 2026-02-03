@@ -157,6 +157,7 @@
 <translation id="164269334534774161">Դուք դիտում եք տվյալ էջի <ph name="CREATION_TIME" />-ի անցանց պատճենը</translation>
 <translation id="1644574205037202324">Պատմություն</translation>
 <translation id="1645262572857218659">Մուտք գործեք <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> հաշվով</translation>
+<translation id="1650979352027263879">Արտաքին տեսքի կարգավորումները հեռացվեցին</translation>
 <translation id="1671236975893690980">Պատրաստվում է ներբեռնման…</translation>
 <translation id="1672586136351118594">Այլևս ցույց չտալ</translation>
 <translation id="1680919990519905526">Գնել Տեսապակու միջոցով <ph name="BEGIN_NEW" />Նորույթ<ph name="END_NEW" /></translation>
@@ -425,6 +426,7 @@
 <translation id="2854916915045135148">Հպեք և պահեք՝ ինկոգնիտո ռեժիմին անցնելու համար</translation>
 <translation id="2860954141821109167">Համոզվեք, որ «Հեռախոս» հավելվածը միացված է այս սարքում</translation>
 <translation id="2861923151411510142">Chrome-ի որոշ գործառույթներ այլևս հասանելի չեն լինի</translation>
+<translation id="286473047976978798">Կիրառե՞լ արտաքին տեսքի կարգավորումները</translation>
 <translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> ու ևս 1 ներդիր}one{<ph name="URL" /> ու ևս <ph name="TAB_COUNT_MANY" /> ներդիր}other{<ph name="URL" /> ու ևս <ph name="TAB_COUNT_MANY" /> ներդիր}}</translation>
 <translation id="2869430948265924908">Մեքենայում ձեր զգայուն բովանդակությունը պաշտպանելու համար դուք պետք է ստեղծեք մեքենայի պրոֆիլի կողպում։  Դա կարող եք անել PIN կոդի, ծածկագրի կամ գաղտնաբառի միջոցով։</translation>
 <translation id="2870560284913253234">Կայք</translation>
@@ -1017,7 +1019,6 @@
 <translation id="5375374982898812658">Ձեզ անմիջապես անհասանելի կդառնա ներդիրների «<ph name="GROUP_NAME" />» խումբը, և այն կջնջվի ձեր բոլոր սարքերից</translation>
 <translation id="5375577065097716013">Որոնել Google Տեսապակու միջոցով <ph name="BEGIN_NEW" />Նոր<ph name="END_NEW" /></translation>
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" />-ը ցանկանում է օգտագործել ձեր թվային դրամապանակի անձնական տեղեկությունները։ Շարունակեք միայն, եթե վստահում եք այս կայքին։ Վտանգավոր կայքերը կարող են ձեզ խաբել՝ բացահայտելու ձեր լրիվ անունը կամ անձը հաստատող փաստաթղթի համարը։</translation>
-<translation id="5394331612381306435">Դուրս գալ ինկոգնիտո ռեժիմից</translation>
 <translation id="5395376160638294582">Համոզվեք, որ միշտ կարող եք օգտվել Chrome-ի տվյալներից ձեր Google հաշվում</translation>
 <translation id="539881862970320163">Հուսալի գաղտնաբառ է առաջարկվում։ Ստեղնաշարը թաքցված է։</translation>
 <translation id="5409881200985013443">Ուղարկե՞լ <ph name="ONE_TIME_CODE" /> կոդը <ph name="CLIENT_NAME" />-ին</translation>
@@ -1372,6 +1373,7 @@
 <translation id="6811034713472274749">Էջը պատրաստ է</translation>
 <translation id="6813359536773993594">{FILE_COUNT,plural, =1{Պատկերներ, 1 պատկեր ցանկում}one{Պատկերներ, # պատկեր ցանկում}other{Պատկերներ, # պատկեր ցանկում}}</translation>
 <translation id="6813446258015311409">Մուտք գործել Chrome, բացված է։</translation>
+<translation id="6815692190508268848">Արտաքին տեսքի կարգավորումները կիրառվեցին</translation>
 <translation id="6817747507826986771">Արագ կիսվեք այս էջով։ Այս դյուրանցումը փոփոխելու համար հպեք դրան և պահեք։</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6820942662346226299">Google գաղտնաբառերի կառավարչի թարմացման պատուհանը փակվեց</translation>
@@ -1493,7 +1495,6 @@
 <translation id="7221869452894271364">Վերաբեռնել այս էջը</translation>
 <translation id="722681077040152344"><ph name="COUNT" /> կայքի բաժանորդագրությունը չեղարկվել է</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{Կնեռբեռնվի 1 ֆայլ}one{Կներբեռնվի # ֆայլ}other{Կներբեռնվի # ֆայլ}}</translation>
-<translation id="7230064152164845085">Անցնել ինկոգնիտո ռեժիմի</translation>
 <translation id="7237724030342645845">Google գաղտնաբառերի կառավարիչը դադարեց աշխատել</translation>
 <translation id="7239496616545081903">Փակել Ընթերցման ռեժիմը</translation>
 <translation id="72415438529550637">Գաղտնաբառի առաջարկը փակված է։</translation>

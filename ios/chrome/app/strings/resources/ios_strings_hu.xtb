@@ -370,6 +370,7 @@
 <translation id="2306265833370324042">A(z) <ph name="SEARCH_ENGINE_NAME" /> részleteinek megjelenítése</translation>
 <translation id="2309265394777270359">Lap bezárása</translation>
 <translation id="2311077293164383652">Rögzített lap bezárása</translation>
+<translation id="2313392466694008052">Kép szerkesztése a Geminivel</translation>
 <translation id="2316129865977710310">Köszönöm, nem</translation>
 <translation id="2320166752086256636">Billentyűzet elrejtése</translation>
 <translation id="2321086116217818302">Jelszavak előkészítése…</translation>
@@ -521,6 +522,7 @@
 <translation id="288655811176831528">Lap bezárása</translation>
 <translation id="2888631381369839306">Az árfigyelési értesítések bekapcsolva</translation>
 <translation id="2893168226686371498">Alapértelmezett böngésző</translation>
+<translation id="2893791155497534382">A jelszavak és az egyéb tevékenységek a kezelési beállításokban törölhetők</translation>
 <translation id="2894757982205307093">Új lap a csoportban</translation>
 <translation id="2902312830803030883">További műveletek</translation>
 <translation id="2904788871580817212">Árcsökkenés a megnyitott lapon: <ph name="PREVIOUS_PRICE" /> helyett <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
@@ -1298,6 +1300,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="5768870767339201169">Ott folytathatja, ahol abbahagyta</translation>
 <translation id="5779117921996157216">{count,plural, =1{{count} jelszavához illetéktelenül hozzáfértek, ez pedig veszélyeztetheti az Ön biztonságát. A biztonság megőrzése érdekében javítsa ki most.}other{{count} jelszavához illetéktelenül hozzáfértek, ez pedig veszélyeztetheti az Ön biztonságát. A biztonság megőrzése érdekében javítsa ki őket most.}}</translation>
 <translation id="5791632441210678828">A Követés feed rendezés gombja.</translation>
+<translation id="5799263916847593256">Nyissa meg az árelőzmények megtekintéséhez</translation>
 <translation id="5803566855766646066">Biztosan elveti ezt az új kártyát?</translation>
 <translation id="5804241973901381774">Engedélyek</translation>
 <translation id="58081802114142635">Tevékenységei javítják a Google AI-t</translation>
@@ -1372,7 +1375,6 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="607620096698446287">A(z) <ph name="FILENAME" /> (<ph name="FILESIZE" />) feltöltése nem sikerült</translation>
 <translation id="6076618233738284461">Webhely kitűzése</translation>
 <translation id="6077126322656614846">Kamera-hozzáférés engedélyezve</translation>
-<translation id="607730456154980869">Gyorsabban kaphat válaszokat a Gemini a Chrome-ban segítségével</translation>
 <translation id="6078236141387574983">A lap magasságának újrabeállítása</translation>
 <translation id="6084848228346514841">Lapok kiválasztása</translation>
 <translation id="6089212833343035912">A Google Jelszókezelő PIN-kódja</translation>
@@ -1641,6 +1643,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="6964300328304469089">Jelenleg kiválasztva: <ph name="NAME" />, <ph name="EMAIL" />. Válasszon fiókot.</translation>
 <translation id="6964760285928603117">Eltávolítás a csoportból</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6967355534157677591">Kép létrehozása – Pro</translation>
 <translation id="6973630695168034713">Mappák</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979737339423435258">Mindenkori</translation>
@@ -1939,7 +1942,6 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="8059533439631660104">Összecsukja a panelt.</translation>
 <translation id="8061584726507121204">Előzmények</translation>
 <translation id="8064946459644399612">Az Új lap oldal beállításai alkalmazva</translation>
-<translation id="8069168488983557089">A legfontosabb tudnivalók és statisztikák segítségével bármilyen témát megérthet</translation>
 <translation id="8069394452933076548">Válassza ki, hogy mikor kerüljenek a legutóbb nem használt lapok az inaktív lapok szakaszba.</translation>
 <translation id="8073670137947914548">Sikeres letöltés</translation>
 <translation id="8076492880354921740">Lapok</translation>

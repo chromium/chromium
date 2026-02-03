@@ -1019,7 +1019,6 @@
 <translation id="5375374982898812658">您将立即失去对标签页分组“<ph name="GROUP_NAME" />”的访问权限，并且该分组将从您的所有设备中删除</translation>
 <translation id="5375577065097716013">使用 Google 智能镜头搜索图片<ph name="BEGIN_NEW" />新<ph name="END_NEW" /></translation>
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> 想使用您数字钱包中的个人信息。除非您信任此网站，否则请勿继续操作。危险网站可能会诱骗您泄露法定全名或身份证号码等信息。</translation>
-<translation id="5394331612381306435">退出无痕模式</translation>
 <translation id="5395376160638294582">请确保您可以一直使用 Google 账号中的 Chrome 数据</translation>
 <translation id="539881862970320163">建议使用安全系数高的密码。键盘已隐藏。</translation>
 <translation id="5409881200985013443">将“<ph name="ONE_TIME_CODE" />”提交至“<ph name="CLIENT_NAME" />”？</translation>
@@ -1494,7 +1493,6 @@
 <translation id="7221869452894271364">重新加载此页</translation>
 <translation id="722681077040152344">不再接收 <ph name="COUNT" /> 个网站的通知</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{有 1 项下载尚待处理}other{有 # 项下载尚待处理}}</translation>
-<translation id="7230064152164845085">切换到无痕模式</translation>
 <translation id="7237724030342645845">Google 密码管理工具已停止运行</translation>
 <translation id="7239496616545081903">隐藏阅读模式</translation>
 <translation id="72415438529550637">已关闭密码建议。</translation>

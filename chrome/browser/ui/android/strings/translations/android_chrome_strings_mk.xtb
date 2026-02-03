@@ -1019,7 +1019,6 @@
 <translation id="5375374982898812658">Веднаш ќе го изгубите пристапот до групата картички „<ph name="GROUP_NAME" />“, а групата картички ќе се избрише од сите ваши уреди</translation>
 <translation id="5375577065097716013">Пребарај слика со Google Lens <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> сака да користи лични податоци од вашиот дигитален паричник. Продолжете само ако му верувате на сајтов. Опасните сајтови може да ве измамат да откриете работи како полното име и презиме или бројот на документот за идентификација.</translation>
-<translation id="5394331612381306435">Излези од „Инкогнито“</translation>
 <translation id="5395376160638294582">Уверете се дека секогаш ќе може да ги користите податоците на Chrome во вашата сметка на Google</translation>
 <translation id="539881862970320163">Предложена е силна лозинка. Тастатурата е скриена.</translation>
 <translation id="5409881200985013443">Да се испрати <ph name="ONE_TIME_CODE" /> на <ph name="CLIENT_NAME" />?</translation>
@@ -1496,7 +1495,6 @@
 <translation id="7221869452894271364">Пак вчитај страница</translation>
 <translation id="722681077040152344">Се отпишавте од <ph name="COUNT" /> сајта</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 преземање чека на ред}one{# преземање чека на ред}other{# преземања чекаат на ред}}</translation>
-<translation id="7230064152164845085">Префрли на „Инкогнито“</translation>
 <translation id="7237724030342645845">Google Password Manager престана да функционира</translation>
 <translation id="7239496616545081903">Скриј го „Режимот за читање“</translation>
 <translation id="72415438529550637">Предлогот за лозинка е затворен.</translation>

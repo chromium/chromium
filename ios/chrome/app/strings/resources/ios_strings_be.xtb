@@ -370,6 +370,7 @@
 <translation id="2306265833370324042">Паказаць падрабязныя звесткі: <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="2309265394777270359">Закрыць укладку</translation>
 <translation id="2311077293164383652">Закрыць замацаваную ўкладку</translation>
+<translation id="2313392466694008052">Рэдагаваць відарыс з дапамогай Gemini</translation>
 <translation id="2316129865977710310">Не, дзякуй</translation>
 <translation id="2320166752086256636">Схаваць клавіятуру</translation>
 <translation id="2321086116217818302">Ідзе падрыхтоўка пароляў…</translation>
@@ -521,6 +522,7 @@
 <translation id="288655811176831528">Закрыць укладку</translation>
 <translation id="2888631381369839306">Апавяшчэнні для адсочвання цэн уключаны</translation>
 <translation id="2893168226686371498">Стандартны браўзер</translation>
+<translation id="2893791155497534382">Паролі і дзеянні можна выдаліць у наладах кіравання імі</translation>
 <translation id="2894757982205307093">Стварыць у групе новую ўкладку</translation>
 <translation id="2902312830803030883">Іншыя дзеянні</translation>
 <translation id="2904788871580817212">На адкрытай укладцы цана знізілася з <ph name="PREVIOUS_PRICE" /> да <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
@@ -1298,6 +1300,7 @@
 <translation id="5768870767339201169">Працягвайце з месца, дзе спыніліся</translation>
 <translation id="5779117921996157216">{count,plural, =1{У вас ёсць {count} раскрыты пароль, што можа паставіць пад пагрозу бяспеку. У мэтах бяспекі выправіце гэта.}one{У вас ёсць {count} раскрыты пароль, што можа паставіць пад пагрозу бяспеку. У мэтах бяспекі выправіце гэта.}few{У вас ёсць {count} раскрытыя паролі, што можа паставіць пад пагрозу бяспеку. У мэтах бяспекі выправіце гэта.}many{У вас ёсць {count} раскрытых пароляў, што можа паставіць пад пагрозу бяспеку. У мэтах бяспекі выправіце гэта.}other{У вас ёсць {count} раскрытага пароля, што можа паставіць пад пагрозу бяспеку. У мэтах бяспекі выправіце гэта.}}</translation>
 <translation id="5791632441210678828">Кнопка для сартавання стужкі "Вы падпісаны".</translation>
+<translation id="5799263916847593256">Адкрыйце, каб паглядзець гісторыю цэн</translation>
 <translation id="5803566855766646066">Сапраўды адхіліць гэту новую картку?</translation>
 <translation id="5804241973901381774">Дазволы</translation>
 <translation id="58081802114142635">Вашы дзеянні паляпшаюць AI ад Google</translation>
@@ -1372,7 +1375,6 @@
 <translation id="607620096698446287">Не ўдалося запампаваць файл "<ph name="FILENAME" />" (<ph name="FILESIZE" />)</translation>
 <translation id="6076618233738284461">Замацаваць сайт</translation>
 <translation id="6077126322656614846">Доступ да камеры дазволены</translation>
-<translation id="607730456154980869">Gemini ў Chrome яшчэ хутчэй адказвае на пытанні</translation>
 <translation id="6078236141387574983">Змяніць вышыню аркуша</translation>
 <translation id="6084848228346514841">Выбраць укладкі</translation>
 <translation id="6089212833343035912">PIN-код Менеджара пароляў Google</translation>
@@ -1641,6 +1643,7 @@
 <translation id="6964300328304469089">Зараз выбрана: <ph name="NAME" />, <ph name="EMAIL" />. Выберыце ўліковы запіс.</translation>
 <translation id="6964760285928603117">Выдаліць з групы</translation>
 <translation id="6965382102122355670">ОК</translation>
+<translation id="6967355534157677591">Стварыць відарыс (Pro)</translation>
 <translation id="6973630695168034713">Папкі</translation>
 <translation id="6979158407327259162">Google Дыск</translation>
 <translation id="6979737339423435258">За ўвесь час</translation>
@@ -1939,7 +1942,6 @@
 <translation id="8059533439631660104">Згортвае раздзел.</translation>
 <translation id="8061584726507121204">Гісторыя</translation>
 <translation id="8064946459644399612">Налады старонкі новай укладкі прыменены</translation>
-<translation id="8069168488983557089">Зводкі з асноўнай інфармацыяй і статыстычнымі паказчыкамі дапамагаюць лепш зразумець тэму</translation>
 <translation id="8069394452933076548">Выберыце, калі ўкладкі, якія даўно не выкарыстоўваліся, павінны перамяшчацца ў раздзел неактыўных укладак.</translation>
 <translation id="8073670137947914548">Спампоўванне завершана</translation>
 <translation id="8076492880354921740">Укладкі</translation>

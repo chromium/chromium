@@ -157,6 +157,7 @@
 <translation id="164269334534774161">Ви переглядаєте офлайн-копію цієї сторінки, створену <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Історія</translation>
 <translation id="1645262572857218659">Увійти через <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="1650979352027263879">Налаштування зовнішнього вигляду вилучено</translation>
 <translation id="1671236975893690980">Очікується завантаження…</translation>
 <translation id="1672586136351118594">Більше не показувати</translation>
 <translation id="1680919990519905526">Купити через Об’єктив <ph name="BEGIN_NEW" />Нове<ph name="END_NEW" /></translation>
@@ -425,6 +426,7 @@
 <translation id="2854916915045135148">Натисніть і утримуйте, щоб перейти в анонімний режим</translation>
 <translation id="2860954141821109167">Переконайтеся, що на цьому пристрої ввімкнено додаток Телефон</translation>
 <translation id="2861923151411510142">Деякі функції Chrome більше не будуть доступними</translation>
+<translation id="286473047976978798">Застосувати налаштування зовнішнього вигляду?</translation>
 <translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> і ще одна вкладка}one{<ph name="URL" /> і ще <ph name="TAB_COUNT_MANY" /> вкладка}few{<ph name="URL" /> і ще <ph name="TAB_COUNT_MANY" /> вкладки}many{<ph name="URL" /> і ще <ph name="TAB_COUNT_MANY" /> вкладок}other{<ph name="URL" /> і ще <ph name="TAB_COUNT_MANY" /> вкладки}}</translation>
 <translation id="2869430948265924908">Щоб захистити конфіденційний контент в автомобілі, необхідно налаштувати блокування профілю за допомогою PIN-коду, коду або пароля.</translation>
 <translation id="2870560284913253234">Сайт</translation>
@@ -1017,7 +1019,6 @@
 <translation id="5375374982898812658">Ви відразу втратите доступ до групи вкладок "<ph name="GROUP_NAME" />", і її буде видалено з усіх ваших пристроїв</translation>
 <translation id="5375577065097716013">Шукати через Об'єктив <ph name="BEGIN_NEW" />Нове<ph name="END_NEW" /></translation>
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> хоче використовувати особисту інформацію з вашого цифрового гаманця. Продовжуйте, лише якщо довіряєте цьому сайту. На небезпечних сайтах вас можуть обманом змусити розкрити своє ім’я або номер офіційного посвідчення особи.</translation>
-<translation id="5394331612381306435">Вийти з анонімного режиму</translation>
 <translation id="5395376160638294582">Подбайте про те, щоб завжди мати змогу використовувати дані Chrome в обліковому записі Google</translation>
 <translation id="539881862970320163">Запропоновано надійний пароль. Клавіатуру сховано.</translation>
 <translation id="5409881200985013443">Надіслати код <ph name="ONE_TIME_CODE" /> на пристрій "<ph name="CLIENT_NAME" />"?</translation>
@@ -1372,6 +1373,7 @@
 <translation id="6811034713472274749">Сторінка готова для перегляду</translation>
 <translation id="6813359536773993594">{FILE_COUNT,plural, =1{Зображення (1 зображення в списку)}one{Зображення (# зображення в списку)}few{Зображення (# зображення в списку)}many{Зображення (# зображень у списку)}other{Зображення (# зображення в списку)}}</translation>
 <translation id="6813446258015311409">Вікно "Увійти в Chrome" відкрите.</translation>
+<translation id="6815692190508268848">Налаштування зовнішнього вигляду застосовано</translation>
 <translation id="6817747507826986771">Швидко діліться цією сторінкою. Щоб змінити функцію цієї кнопки, натисніть і втримуйте її.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6820942662346226299">Екран "Оновлення Google Менеджера паролів" закрито</translation>
@@ -1493,7 +1495,6 @@
 <translation id="7221869452894271364">Перезавантажити цю сторінку</translation>
 <translation id="722681077040152344">Скасовано підписку на стільки сайтів: <ph name="COUNT" /></translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{Очікується 1 завантаження}one{Очікується # завантаження}few{Очікується # завантаження}many{Очікується # завантажень}other{Очікується # завантаження}}</translation>
-<translation id="7230064152164845085">Перейти в анонімний режим</translation>
 <translation id="7237724030342645845">Google Менеджер паролів більше не працює</translation>
 <translation id="7239496616545081903">Закрити режим читання</translation>
 <translation id="72415438529550637">Пропозицію пароля закрито.</translation>

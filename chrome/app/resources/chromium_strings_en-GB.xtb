@@ -32,11 +32,13 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1324107359134968521">Chromium needs Bluetooth access to explore 
  Bluetooth devices. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Detect language</translation>
+<translation id="1330742950061766891">Use Chromium recommended browser settings</translation>
 <translation id="1342274909142618978">Also delete data from Chromium (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">Pinned! You can access image search again from the new button on the toolbar</translation>
 <translation id="1356661055722410047">New! You can translate both text and images on your screen</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1397530502368084401">&amp;Manage Chromium profiles</translation>
+<translation id="1404026649028693342">Always show AI Mode</translation>
 <translation id="141901961143729572">Share your thoughts</translation>
 <translation id="1465192221147974788">To share your window, allow screen recording for Chromium in System Settings.</translation>
 <translation id="1478370723027452770">Get help with Chrome for testing</translation>
@@ -93,6 +95,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2039417478970545937">Settings.</translation>
 <translation id="2049376729098081731">Choose whether to include Chromium history for more personalised experiences in Google services</translation>
 <translation id="2064856577282482477">Click the Customise Chromium button on the new tab page to give Chromium a new look</translation>
+<translation id="2066690553719545730">Always show AI Mode</translation>
 <translation id="2086476982681781442">Chromium blocked this download because the file is deceptive and may make unexpected changes to your device</translation>
 <translation id="208726765006323911">You'll see a prompt to try <ph name="FEATURE_NAME" /> next time you open Chromium iOS.</translation>
 <translation id="2099452623287920103">Your passwords and other Chromium data that you saved in your Google Account will be removed from this device. To use them again in Chromium, sign back in.</translation>
@@ -195,6 +198,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3095811995836568724">Chromium history</translation>
 <translation id="3103660991484857065">The installer failed to uncompress archive. Please download Chromium again.</translation>
 <translation id="310459126943037700">Failed to end task(s).</translation>
+<translation id="3126784891977756556">Keep your passwords, bookmarks and history perfectly synced across devices. Easily access the features that you know and love by updating your default browser to Chromium.</translation>
 <translation id="3130323860337406239">Chromium is using your microphone.</translation>
 <translation id="3130333203120345554">New search</translation>
 <translation id="3137969841538672700">Drag to search</translation>
@@ -307,6 +311,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4304713468139749426">Password Manager</translation>
 <translation id="4334241893986177674">Search this screenshot</translation>
 <translation id="4334294535648607276">Download complete.</translation>
+<translation id="4384993550046411228">Get easy access to the features that you know, love and trust by setting Chromium as your default browser. Chromium will be pinned to your taskbar for quick access.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> requires that you read and accept the following Terms of Service before using this device. These terms do not expand, modify or limit the Chromium OS terms.</translation>
 <translation id="4407044323746248786">Exit Chromium anyway?</translation>
 <translation id="4413205837991854510">Always show image search shortcut</translation>

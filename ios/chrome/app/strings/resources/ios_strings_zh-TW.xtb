@@ -370,6 +370,7 @@
 <translation id="2306265833370324042">顯示 <ph name="SEARCH_ENGINE_NAME" /> 的詳細資料</translation>
 <translation id="2309265394777270359">關閉分頁</translation>
 <translation id="2311077293164383652">關閉固定分頁</translation>
+<translation id="2313392466694008052">使用 Gemini 編輯圖片</translation>
 <translation id="2316129865977710310">不，謝謝</translation>
 <translation id="2320166752086256636">隱藏鍵盤</translation>
 <translation id="2321086116217818302">正在準備匯出密碼…</translation>
@@ -521,6 +522,7 @@
 <translation id="288655811176831528">關閉分頁</translation>
 <translation id="2888631381369839306">價格追蹤通知已開啟</translation>
 <translation id="2893168226686371498">預設瀏覽器</translation>
+<translation id="2893791155497534382">前往相關管理設定即可刪除密碼和其他活動記錄</translation>
 <translation id="2894757982205307093">在群組中新增分頁</translation>
 <translation id="2902312830803030883">更多動作</translation>
 <translation id="2904788871580817212">開啟的分頁中有產品降價，原價為 <ph name="PREVIOUS_PRICE" />，現價為 <ph name="PRICE" />，<ph name="PRODUCT_NAME" />，<ph name="DOMAIN" /></translation>
@@ -1298,6 +1300,7 @@
 <translation id="5768870767339201169">隨時接續先前未完成的進度</translation>
 <translation id="5779117921996157216">{count,plural, =1{你有 {count} 組密碼外洩，可能導致安全性風險。請立即修正以確保安全。}other{你有 {count} 組密碼外洩，可能導致安全性風險。請立即修正以確保安全。}}</translation>
 <translation id="5791632441210678828">用於排序已追蹤動態消息的按鈕。</translation>
+<translation id="5799263916847593256">開啟即可查看價格記錄</translation>
 <translation id="5803566855766646066">確定要捨棄這張新的信用卡嗎？</translation>
 <translation id="5804241973901381774">權限</translation>
 <translation id="58081802114142635">你的活動記錄有助於提升 Google AI 服務品質</translation>
@@ -1372,7 +1375,6 @@
 <translation id="607620096698446287">無法上傳 <ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="6076618233738284461">固定網站</translation>
 <translation id="6077126322656614846">已允許存取相機</translation>
-<translation id="607730456154980869">使用 Chrome 內建 Gemini，更快取得答案</translation>
 <translation id="6078236141387574983">重新調整功能表高度</translation>
 <translation id="6084848228346514841">選取分頁</translation>
 <translation id="6089212833343035912">Google 密碼管理工具 PIN 碼</translation>
@@ -1641,6 +1643,7 @@
 <translation id="6964300328304469089">目前已選取<ph name="NAME" />，<ph name="EMAIL" />。請選擇帳戶。</translation>
 <translation id="6964760285928603117">從群組中移除</translation>
 <translation id="6965382102122355670">確定</translation>
+<translation id="6967355534157677591">生成圖像 (Pro 版)</translation>
 <translation id="6973630695168034713">資料夾</translation>
 <translation id="6979158407327259162">Google 雲端硬碟</translation>
 <translation id="6979737339423435258">不限時間</translation>
@@ -1939,7 +1942,6 @@
 <translation id="8059533439631660104">收合這個專區。</translation>
 <translation id="8061584726507121204">歷史記錄</translation>
 <translation id="8064946459644399612">已套用新分頁偏好設定</translation>
-<translation id="8069168488983557089">取得重點和深入分析，協助你瞭解任何主題</translation>
 <translation id="8069394452933076548">選擇多久後，可以將最近沒有使用的分頁移至閒置分頁區塊。</translation>
 <translation id="8073670137947914548">下載完成</translation>
 <translation id="8076492880354921740">分頁</translation>

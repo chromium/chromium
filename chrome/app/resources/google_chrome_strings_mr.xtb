@@ -41,6 +41,7 @@
 <translation id="137466361146087520">Google Chrome बीटा</translation>
 <translation id="1383876407941801731">शोधा</translation>
 <translation id="1399397803214730675">या कॉंप्युटरत आधीपासून Google Chrome ची अगदी अलिकडील आवृत्ती आहे. सॉफ्टवेअर काम करत नसल्यास, कृपया Google Chrome अनइंस्टॉल करा आणि पुन्हा प्रयत्न करा.</translation>
+<translation id="1404026649028693342">AI मोड नेहमी दाखवा</translation>
 <translation id="141901961143729572">तुमचे विचार शेअर करा</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome is done updating. You can use the latest version as soon as you relaunch. After, your current tabs will reopen.}=1{Chrome अपडेट केले आहे. तुम्ही पुन्हा लाँच केल्यावर नवीनतम आवृत्ती वापरू शकता. त्यानंतर, तुमचे सद्य टॅब पुन्हा उघडतील. तुमची गुप्त विंडो पुन्हा उघडणार नाही.}other{Chrome अपडेट केले आहे. तुम्ही पुन्हा लाँच केल्यावर नवीनतम आवृत्ती वापरू शकता. त्यानंतर, तुमचे सद्य टॅब पुन्हा उघडतील. तुमच्या # गुप्त विंडो पुन्हा उघडणार नाहीत.}}</translation>
 <translation id="1434626383986940139">Chrome Canary Apps</translation>
@@ -64,6 +65,7 @@
 <translation id="1640672724030957280">डाऊनलोड करीत आहे...</translation>
 <translation id="1651617469580841801">तुम्ही Google Lens वापरता, तेव्हा PDFs सह पेजचे शीर्षक, URL आणि आशय Google ला पाठवला जातो. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">ChromeOS Flex बद्दल</translation>
+<translation id="1665867022636014702">Google ने शिफारस केलेली ब्राउझर सेटिंग्ज वापरा</translation>
 <translation id="1674870198290878346">लिंक Chrome गुप्त विंडोमध्ये उघडा</translation>
 <translation id="1682634494516646069">Google Chrome त्याची डेटा डिरेक्टरी वाचू किंवा लिहू शकत नाही:
 
@@ -99,6 +101,7 @@
 <translation id="2026377840141807639">Chrome प्रोफाइलमुळे तुम्हाला वैयक्तिक ब्राउझिंग आणि कामाच्या गोष्टी यांना वेगवेगळे ठेवता येते. आताच नवीन प्रोफाइल जोडा.</translation>
 <translation id="2034233344106846793">Chrome हे शक्य असेल तेव्हा असुरक्षित कनेक्शन HTTPS वर आपोआप अपग्रेड करते</translation>
 <translation id="2039417478970545937">सेटिंग्ज.</translation>
+<translation id="2066690553719545730">AI मोड नेहमी दाखवा</translation>
 <translation id="2091012649849228750">भविष्यातील Google Chrome अपडेट मिळवण्यासाठी, तुमच्याकडे Windows 10 किंवा त्यापुढील आवृत्ती असणे आवश्यक आहे. हा कॉंप्युटर Windows 8 वापरत आहे.</translation>
 <translation id="2094648590148273905">ChromeOS Flex अटी</translation>
 <translation id="2094919256425865063">तरीही Chrome बंद करायचे?</translation>
@@ -356,6 +359,7 @@
 <translation id="4885446229353981848">Google Lens शॉर्टकट नेहमी दाखवा</translation>
 <translation id="4891791193823137474">बॅकग्राउंडमध्ये Google Chrome सुरू द्या</translation>
 <translation id="4895437082222824641">लिंक नवीन Chrome &amp;टॅबमध्ये उघडा</translation>
+<translation id="4896867431081882115">Chrome ला तुमचा डीफॉल्ट ब्राउझर म्हणून सेट करून, तुम्हाला माहीत असलेल्या, आवडणाऱ्या आणि विश्वास असलेल्या वैशिष्ट्यांचा सहज ॲक्सेस मिळवा. झटपट ॲक्सेससाठी Chrome तुमच्या टास्कबारवर पिन केले जाईल.</translation>
 <translation id="4918086044614829423">स्वीकारा</translation>
 <translation id="4918844574251943176">इमेज कॉपी केली</translation>
 <translation id="4926882258455737990">Chrome मधील Gemini सह वेगळे Google खाते वापरण्यासाठी, <ph name="BEGIN_LINK" />नवीन प्रोफाइल तयार करणे<ph name="END_LINK" /> हे करा आणि तुम्हाला हवे असलेले खाते वापरून साइन इन करा</translation>
@@ -559,6 +563,7 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="6885412569789873916">Chrome बीटा ॲप</translation>
 <translation id="6893363893008038481">Chrome मधून खाते काढून टाका</translation>
 <translation id="6896758677409633944">कॉपी करा</translation>
+<translation id="6908182077349113099">तुमचे पासवर्ड, बुकमार्क आणि इतिहास या गोष्टी सर्व डिव्हाइसवर योग्यरीत्या सिंक केलेल्या ठेवा. तुमचा डीफॉल्ट ब्राउझर Chrome वर अपडेट करून, तुम्हाला माहीत असलेली आणि आवडणारी वैशिष्ट्ये सहज ॲक्सेस करा.</translation>
 <translation id="6930294499209825">तुमचे Google सॉफ्टवेअर अप टू डेट ठेवते. ही सेवा बंद केली गेल्यास किंवा थांबवली गेल्यास, तुमचे Google सॉफ्टवेअर अप टू डेट ठेवले जाणार नाही, म्हणजेच उद्भवू शकणाऱ्या धोक्यांचे निराकरण केले जाऊ शकत नाही आणि वैशिष्ट्ये कदाचित काम करणार नाहीत. कोणतेही Google सॉफ्टवेअर ही सेवा वापरत नसल्यास, ती स्वतःला अनइंस्टॉल करते.</translation>
 <translation id="6933858244219479645">ChromeOS सिस्टीम</translation>
 <translation id="6938166777909186039">भविष्यातील Google Chrome अपडेट मिळवण्यासाठी, तुमच्याकडे Windows 10 किंवा त्यापुढील आवृत्ती असणे आवश्यक आहे. हा कॉंप्युटर Windows 8.1 वापरत आहे.</translation>

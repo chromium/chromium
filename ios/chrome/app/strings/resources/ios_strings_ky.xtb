@@ -370,6 +370,7 @@
 <translation id="2306265833370324042"><ph name="SEARCH_ENGINE_NAME" /> чоо-жайын көрсөтүү</translation>
 <translation id="2309265394777270359">Өтмөктү жабуу</translation>
 <translation id="2311077293164383652">Кадалган өтмөктү жабуу</translation>
+<translation id="2313392466694008052">Сүрөттү Gemini менен түзөтүү</translation>
 <translation id="2316129865977710310">Жок, рахмат</translation>
 <translation id="2320166752086256636">Баскычтопту жашыруу</translation>
 <translation id="2321086116217818302">Сырсөздөр даярдалууда…</translation>
@@ -521,6 +522,7 @@
 <translation id="288655811176831528">Өтмөктү жабуу</translation>
 <translation id="2888631381369839306">Бааларга көз салуу билдирмелери күйгүзүлдү</translation>
 <translation id="2893168226686371498">Демейки серепчи</translation>
+<translation id="2893791155497534382">Сырсөздөрдү жана башка аракеттерди алардын параметрлеринен өчүрсөңүз болот</translation>
 <translation id="2894757982205307093">Топтогу жаңы өтмөк</translation>
 <translation id="2902312830803030883">Көбүрөөк аракеттер</translation>
 <translation id="2904788871580817212">Ачылган өтмөктө баа арзандады. <ph name="PRODUCT_NAME" /> баасы <ph name="PREVIOUS_PRICE" /> ордуна <ph name="PRICE" /> болуп калды, <ph name="DOMAIN" /></translation>
@@ -1298,6 +1300,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="5768870767339201169">Кайсы жерден токтосоңуз, ошол жерден улап кетесиз</translation>
 <translation id="5779117921996157216">{count,plural, =1{Коопсуздугуңузду тобокелге салуучу {count} уурдалган сырсөзүңүз бар. Өзүңүздү коргоо үчүн аны оңдоңуз.}other{Коопсуздугуңузду тобокелге салуучу {count} уурдалган сырсөзүңүз бар. Өзүңүздү коргоо үчүн аларды оңдоңуз.}}</translation>
 <translation id="5791632441210678828">Жазылуу түрмөгүн иреттөө баскычы.</translation>
+<translation id="5799263916847593256">Баалардын таржымалын көрүү үчүн ачыңыз</translation>
 <translation id="5803566855766646066">Бул жаңы картаны чын эле өчүрөсүзбү?</translation>
 <translation id="5804241973901381774">Уруксаттар</translation>
 <translation id="58081802114142635">Аракеттериңиз Google'дун жасалма интеллектин жакшыртат</translation>
@@ -1372,7 +1375,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) жүктөлүп берилген жок</translation>
 <translation id="6076618233738284461">Сайтты кадап коюу</translation>
 <translation id="6077126322656614846">Камераны колдонууга уруксат берилди</translation>
-<translation id="607730456154980869">Chrome'догу Gemini менен жоопторду тез алыңыз</translation>
 <translation id="6078236141387574983">Барактын узундугун кайра тууралаңыз</translation>
 <translation id="6084848228346514841">Өтмөктөрдү тандоо</translation>
 <translation id="6089212833343035912">Сырсөздөрдү башкаргычтын PIN коду</translation>
@@ -1641,6 +1643,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="6964300328304469089">Учурда <ph name="NAME" />, <ph name="EMAIL" /> тандалды. Аккаунт тандаңыз.</translation>
 <translation id="6964760285928603117">Топтон алып салуу</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6967355534157677591">Сүрөт түзүү (Pro)</translation>
 <translation id="6973630695168034713">Куржундар</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979737339423435258">Бардыгы</translation>
@@ -1939,7 +1942,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="8059533439631660104">Бөлүмдү жыйыштырат.</translation>
 <translation id="8061584726507121204">Таржымал</translation>
 <translation id="8064946459644399612">Жаңы өтмөк бетинин параметрлери колдонулду</translation>
-<translation id="8069168488983557089">Каалаган теманы түшүнүүгө жардам берген корутундулар жана терең маалыматты алыңыз</translation>
 <translation id="8069394452933076548">Акыркы убакта колдонулбаган өтмөктөр Жигерсиз өтмөк бөлүмүнө качан жылдырыла турганын тандаңыз.</translation>
 <translation id="8073670137947914548">Жүктөлүп алынды</translation>
 <translation id="8076492880354921740">Өтмөктөр</translation>

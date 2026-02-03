@@ -370,6 +370,7 @@
 <translation id="2306265833370324042">Rādīt informāciju par meklētājprogrammu <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="2309265394777270359">Aizvērt cilni</translation>
 <translation id="2311077293164383652">Aizvērt piesprausto cilni</translation>
+<translation id="2313392466694008052">Rediģēt attēlu, izmantojot Gemini</translation>
 <translation id="2316129865977710310">Nē, paldies</translation>
 <translation id="2320166752086256636">Paslēpt tastatūru</translation>
 <translation id="2321086116217818302">Notiek paroļu sagatavošana…</translation>
@@ -521,6 +522,7 @@
 <translation id="288655811176831528">Aizvērt cilni</translation>
 <translation id="2888631381369839306">Cenu izsekošanas paziņojumi ir ieslēgti</translation>
 <translation id="2893168226686371498">Noklusējuma pārlūks</translation>
+<translation id="2893791155497534382">Paroles un citas darbības var dzēst to pārvaldības iestatījumos.</translation>
 <translation id="2894757982205307093">Jauna cilne grupā</translation>
 <translation id="2902312830803030883">Citas darbības</translation>
 <translation id="2904788871580817212">Cenas kritums atvērtajā cilnē no <ph name="PREVIOUS_PRICE" /> uz <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
@@ -1298,6 +1300,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="5768870767339201169">Turpiniet darbu no vietas, kur to pārtraucāt</translation>
 <translation id="5779117921996157216">{count,plural, =1{Jums ir {count} uzlauzta parole, kas var apdraudēt jūsu drošību. Labojiet to tūlīt, lai gādātu par savu drošību.}zero{Jums ir {count} uzlauztas paroles, kas var apdraudēt jūsu drošību. Labojiet tās tūlīt, lai gādātu par savu drošību.}one{Jums ir {count} uzlauzta parole, kas var apdraudēt jūsu drošību. Labojiet tās tūlīt, lai gādātu par savu drošību.}other{Jums ir {count} uzlauztas paroles, kas var apdraudēt jūsu drošību. Labojiet tās tūlīt, lai gādātu par savu drošību.}}</translation>
 <translation id="5791632441210678828">Kārtošanas poga plūsmai Sekojat.</translation>
+<translation id="5799263916847593256">Atvērt, lai skatītu cenu vēsturi</translation>
 <translation id="5803566855766646066">Vai tiešām vēlaties atmest jauno kartīti?</translation>
 <translation id="5804241973901381774">Atļaujas</translation>
 <translation id="58081802114142635">Jūsu darbību dati uzlabo Google MI</translation>
@@ -1372,7 +1375,6 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="607620096698446287">Nevarēja augšupielādēt failu “<ph name="FILENAME" />” (<ph name="FILESIZE" />)</translation>
 <translation id="6076618233738284461">Piespraust vietni</translation>
 <translation id="6077126322656614846">Piekļuve kamerai ir atļauta</translation>
-<translation id="607730456154980869">Iegūstiet atbildes ātrāk, izmantojot Gemini pārlūkā Chrome</translation>
 <translation id="6078236141387574983">Atkārtoti pielāgot lapas augstumu</translation>
 <translation id="6084848228346514841">Atlasīt cilnes</translation>
 <translation id="6089212833343035912">Google paroļu pārvaldnieka PIN</translation>
@@ -1641,6 +1643,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="6964300328304469089">Pašlaik ir atlasīts šāds konts: <ph name="NAME" />, <ph name="EMAIL" />. Izvēlieties kontu.</translation>
 <translation id="6964760285928603117">Noņemt no grupas</translation>
 <translation id="6965382102122355670">Labi</translation>
+<translation id="6967355534157677591">Izveidot attēlu (Pro)</translation>
 <translation id="6973630695168034713">Mapes</translation>
 <translation id="6979158407327259162">Google disks</translation>
 <translation id="6979737339423435258">Visā periodā</translation>
@@ -1939,7 +1942,6 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="8059533439631660104">Sakļauj sadaļu.</translation>
 <translation id="8061584726507121204">Vēsture</translation>
 <translation id="8064946459644399612">Tika lietotas jaunas cilnes lapas preferences</translation>
-<translation id="8069168488983557089">Varat iegūt galvenos secinājumus un ieskatus, kas palīdzēs jums izprast jebkuru tēmu</translation>
 <translation id="8069394452933076548">Izvēlieties, kad uz neaktīvo ciļņu sadaļu tiek pārvietotas cilnes, kas pēdējā laikā nav izmantotas.</translation>
 <translation id="8073670137947914548">Lejupielāde ir pabeigta</translation>
 <translation id="8076492880354921740">Cilnes</translation>

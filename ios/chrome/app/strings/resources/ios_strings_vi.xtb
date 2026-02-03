@@ -753,7 +753,7 @@
 <translation id="3857113360369572832">Mở phần <ph name="BEGIN_BOLD" />Cài đặt Safari<ph name="END_BOLD" /></translation>
 <translation id="3858860766373142691">Tên</translation>
 <translation id="3868495844258915202">Hiện URL đầy đủ</translation>
-<translation id="3875783148670536197">Chỉ cho tôi cách làm</translation>
+<translation id="3875783148670536197">Xem cách làm</translation>
 <translation id="3878657761594430423">Thanh kéo trang</translation>
 <translation id="3885587018298784481">Tham gia nhóm gia đình</translation>
 <translation id="3888230626190453136">Duyệt web ở chế độ ẩn danh</translation>
@@ -1249,7 +1249,7 @@
 <translation id="562753339521713441">Chạy tính năng Kiểm tra an toàn</translation>
 <translation id="5628388627414062173">{count,plural, =1{{count} trang trên danh sách đọc của bạn}other{{count} trang trên danh sách đọc của bạn}}</translation>
 <translation id="5632194969640946913">Bạn có thể tìm hiểu thêm về những gì bạn thấy trên bất kỳ trang nào trong khi duyệt xem trang, chẳng hạn như các sản phẩm, địa điểm và văn bản.</translation>
-<translation id="5632485077360054581">Chỉ cho tôi cách làm</translation>
+<translation id="5632485077360054581">Xem cách làm</translation>
 <translation id="5633237939819267663">{count,plural, =1{Đã lưu dấu trang vào "{title}"}other{Đã lưu {count} dấu trang vào "{title}"}}</translation>
 <translation id="564170563478022912">Đăng xuất? Dữ liệu tài khoản chưa lưu sẽ bị xoá.</translation>
 <translation id="5642707040609478753">Đánh dấu là chưa đọc</translation>
@@ -1375,7 +1375,6 @@
 <translation id="607620096698446287">Không thể tải tệp <ph name="FILENAME" /> (<ph name="FILESIZE" />) lên</translation>
 <translation id="6076618233738284461">Ghim trang web</translation>
 <translation id="6077126322656614846">Đã cho phép truy cập Máy ảnh</translation>
-<translation id="607730456154980869">Nhận câu trả lời nhanh hơn nhờ Gemini trong Chrome</translation>
 <translation id="6078236141387574983">Điều chỉnh lại chiều cao của trang</translation>
 <translation id="6084848228346514841">Chọn các thẻ</translation>
 <translation id="6089212833343035912">Mã PIN của Trình quản lý mật khẩu của Google</translation>
@@ -1513,7 +1512,7 @@
 <translation id="6507973708545996744">Đăng nhập để xem danh sách đọc trên tất cả thiết bị của bạn.</translation>
 <translation id="6518133107902771759">Xác minh</translation>
 <translation id="6518861084553706202">Hệ thống sẽ đóng các thẻ và dữ liệu bị xoá có thể bao gồm mật khẩu, nhật ký duyệt web, cookie và các dữ liệu khác.</translation>
-<translation id="6523575793810663688">Chỉ cho tôi cách làm</translation>
+<translation id="6523575793810663688">Xem cách làm</translation>
 <translation id="6524082013156754186">Lưu vào tài khoản</translation>
 <translation id="6524918542306337007">Không dùng được chế độ ẩn danh</translation>
 <translation id="6527208859483186860">nền số {position} trong tổng số {total} nền</translation>
@@ -1943,7 +1942,6 @@
 <translation id="8059533439631660104">Thu gọn phần.</translation>
 <translation id="8061584726507121204">Nhật ký</translation>
 <translation id="8064946459644399612">Đã áp dụng các lựa chọn ưu tiên của bạn đối với trang Thẻ mới</translation>
-<translation id="8069168488983557089">Nhận thông tin chi tiết và những điểm chính cần lưu ý giúp bạn hiểu rõ chủ đề bất kỳ</translation>
 <translation id="8069394452933076548">Chọn thời điểm di chuyển các thẻ mà gần đây bạn không sử dụng đến phần thẻ không hoạt động.</translation>
 <translation id="8073670137947914548">Đã hoàn tất tải xuống</translation>
 <translation id="8076492880354921740">Thẻ</translation>

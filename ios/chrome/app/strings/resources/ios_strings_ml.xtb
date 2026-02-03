@@ -847,6 +847,7 @@
 <translation id="4181841719683918333">ഭാഷകൾ‌</translation>
 <translation id="4183350924949589798">കൂടുതൽ സുരക്ഷ വേണോ?</translation>
 <translation id="4184063163998877398">{count,plural, =1{ദുർബലമായ {count} പാസ്‌വേഡ്}other{ദുർബലമായ {count} പാസ്‌വേഡുകൾ}}</translation>
+<translation id="4196758674971560031">നിങ്ങൾ സൃഷ്ടിച്ച ടാബ് ഗ്രൂപ്പുകൾ ടാബ് ഗ്രൂപ്പ് വിഭാഗത്തിൽ സംരക്ഷിക്കുകയും നിങ്ങളുടെ ഉപകരണങ്ങളിലുടനീളം അപ്ഡേറ്റ് ചെയ്യുകയും ചെയ്യുന്നു.</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} ഇനം ഈ ഉപകരണത്തിൽ മാത്രമേ സംരക്ഷിച്ചിട്ടുള്ളൂ. മറ്റ് ഉപകരണങ്ങളിൽ ഉപയോഗിക്കാൻ, നിങ്ങളുടെ {email} എന്ന Google Account-ൽ അത് സംരക്ഷിക്കുക.}other{{count} ഇനങ്ങൾ ഈ ഉപകരണത്തിൽ മാത്രമേ സംരക്ഷിച്ചിട്ടുള്ളൂ. മറ്റ് ഉപകരണങ്ങളിൽ ഉപയോഗിക്കുന്നതിന്, നിങ്ങളുടെ {email} എന്ന Google Account-ൽ അവ സംരക്ഷിക്കുക.}}</translation>
 <translation id="4207873326995387292">ബ്രൗസർ വിവരങ്ങൾ</translation>
 <translation id="421070604241073551">ഓണായിരിക്കുമ്പോൾ, ഡാറ്റ നിങ്ങളുടെ Google Account-ൽ സംരക്ഷിക്കും. ഓഫായിരിക്കുമ്പോൾ, ഡാറ്റ ഈ ഉപകരണത്തിൽ മാത്രമേ സംരക്ഷിക്കൂ.</translation>
@@ -1375,7 +1376,6 @@
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) അപ്‌ലോഡ് ചെയ്യാനായില്ല</translation>
 <translation id="6076618233738284461">സൈറ്റ് പിൻ ചെയ്യുക</translation>
 <translation id="6077126322656614846">ക്യാമറ ആക്‌സസ് അനുവദിച്ചിരിക്കുന്നു</translation>
-<translation id="607730456154980869">Chrome-ൽ Gemini ഉപയോഗിച്ച് ഉത്തരങ്ങൾ വേഗത്തിൽ നേടുക</translation>
 <translation id="6078236141387574983">ഷീറ്റിന്റെ ഉയരം പുനഃക്രമീകരിക്കുക</translation>
 <translation id="6084848228346514841">ടാബുകൾ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="6089212833343035912">Google Password Manager പിൻ</translation>
@@ -1508,6 +1508,7 @@
 <translation id="6494931198667773526">അവസാനിക്കുന്നത്</translation>
 <translation id="6503077044568424649">കൂടുതൽ‍ സന്ദര്‍ശിച്ചത്</translation>
 <translation id="6503763061813913607">സുരക്ഷാ പരിശോധനാ അറിയിപ്പുകൾ</translation>
+<translation id="6504541289630702018">നിങ്ങളുടെ ഡെസ്ക്ടോപ്പ് ടാബ് ഗ്രൂപ്പുകൾ എളുപ്പത്തിൽ ആക്സസ് ചെയ്യുക</translation>
 <translation id="6505334220040167806">ടാബ് ഗ്രൂപ്പ് ചുരുക്കുക.</translation>
 <translation id="6506996418997555004">"<ph name="GROUP_NAME" />" ടാബ് ഗ്രൂപ്പ് പങ്കിടുക</translation>
 <translation id="6507973708545996744">വായിക്കാനുള്ളവയുടെ ലിസ്‌റ്റ് നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലും ലഭ്യമാക്കാൻ സെെൻ ഇൻ ചെയ്യുക.</translation>
@@ -1943,7 +1944,6 @@
 <translation id="8059533439631660104">വിഭാഗത്തെ ചുരുക്കുന്നു.</translation>
 <translation id="8061584726507121204">ചരിത്രം</translation>
 <translation id="8064946459644399612">നിങ്ങളുടെ പുതിയ ടാബ് പേജ് മുൻഗണനകൾ ബാധകമാക്കി</translation>
-<translation id="8069168488983557089">ഏത് വിഷയവും മനസ്സിലാക്കാൻ നിങ്ങളെ സഹായിക്കുന്ന പ്രധാന ടേക്ക്എവേകളും സ്ഥിതിവിവരക്കണക്കുകളും നേടുക</translation>
 <translation id="8069394452933076548">അടുത്തിടെ ഉപയോഗിക്കാത്ത ടാബുകൾ നിഷ്‌ക്രിയമായ ടാബ് വിഭാഗത്തിലേക്ക് എപ്പോഴാണ് നീക്കേണ്ടതെന്ന് തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="8073670137947914548">ഡൗൺലോഡ് പൂർത്തിയായി</translation>
 <translation id="8076492880354921740">ടാബുകള്‍‌</translation>
@@ -2139,6 +2139,7 @@
 <translation id="8730621377337864115">പൂർത്തിയാക്കി</translation>
 <translation id="8731268612289859741">സുരക്ഷാ കോഡ്</translation>
 <translation id="87371078663613140">മെനു ബാറിലെ ഓപ്ഷനുകൾ അടുത്തറിയുക</translation>
+<translation id="8739546376441802490">പിൻ ചെയ്ത സൈറ്റ് നിലവിലുണ്ട്</translation>
 <translation id="8741627442233023406">{count,plural, =1{ടാബ് അവലോകനം ചെയ്യുക…}other{എല്ലാ ടാബുകളും അവലോകനം ചെയ്യുക…}}</translation>
 <translation id="8741995161408053644">നിങ്ങളുടെ Google അക്കൗണ്ടിന് <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> എന്നതിൽ മറ്റ് തരത്തിലുള്ള ബ്രൗസിംഗ് ചരിത്രമുണ്ടായിരിക്കാം.</translation>
 <translation id="874599634440689554">ലിങ്ക് സൃഷ്‌ടിക്കുക</translation>

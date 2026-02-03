@@ -1019,7 +1019,6 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="5375374982898812658">"<ph name="GROUP_NAME" />" қойындылар тобын пайдалану рұқсатынан бірден айырылып қаласыз. Бұл топ барлық құрылғыңыздан жойылады.</translation>
 <translation id="5375577065097716013">Суретті Google Lens арқылы іздеу <ph name="BEGIN_NEW" />Жаңа<ph name="END_NEW" /></translation>
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> цифрлық әмияныңыздағы жеке ақпаратыңызды пайдалануға рұқсат сұрайды. Сайтқа сенсеңіз ғана жалғастырыңыз. Қауіпті сайттар толық аты-жөніңіз не жеке куәлік нөмірі сияқты ақпаратты алдап ашқызуы мүмкін.</translation>
-<translation id="5394331612381306435">Инкогнито режимінен ауысу</translation>
 <translation id="5395376160638294582">Google аккаунтыңызда Chrome деректерін үнемі пайдалана алатыныңызға көз жеткізу</translation>
 <translation id="539881862970320163">Күрделі құпия сөз ұсынылған. Пернетақта жасырылды.</translation>
 <translation id="5409881200985013443"><ph name="ONE_TIME_CODE" /> коды <ph name="CLIENT_NAME" /> құрылғысына жіберілсін бе?</translation>
@@ -1496,7 +1495,6 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="7221869452894271364">Бұл бетті қайта жүктеу</translation>
 <translation id="722681077040152344"><ph name="COUNT" /> сайт жазылымын тоқтаттыңыз</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 файл жүктеп алынуы керек}other{# файл жүктеп алынуы керек}}</translation>
-<translation id="7230064152164845085">Инкогнито режиміне ауысу</translation>
 <translation id="7237724030342645845">Google Password Manager жұмысы тоқтады</translation>
 <translation id="7239496616545081903">Оқу режимін жасыру</translation>
 <translation id="72415438529550637">Құпия сөз ұсынысы жабық.</translation>

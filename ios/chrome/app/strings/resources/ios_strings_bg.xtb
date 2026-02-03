@@ -370,6 +370,7 @@
 <translation id="2306265833370324042">Показване на подробностите за <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="2309265394777270359">Затваряне на раздела</translation>
 <translation id="2311077293164383652">Затваряне на фиксирания раздел</translation>
+<translation id="2313392466694008052">Редактиране на изображението с Gemini</translation>
 <translation id="2316129865977710310">Не, благодаря</translation>
 <translation id="2320166752086256636">Скриване на клавиатурата</translation>
 <translation id="2321086116217818302">Паролите се подготвят…</translation>
@@ -521,6 +522,7 @@
 <translation id="288655811176831528">Затваряне на раздела</translation>
 <translation id="2888631381369839306">Известията за проследяване на цената са включени</translation>
 <translation id="2893168226686371498">Браузър по подразбиране</translation>
+<translation id="2893791155497534382">Паролите и друга активност могат да бъдат изтрити от съответните настройки за управление</translation>
 <translation id="2894757982205307093">Нов раздел в групата</translation>
 <translation id="2902312830803030883">Още действия</translation>
 <translation id="2904788871580817212">Цената на <ph name="PRODUCT_NAME" /> в отворения раздел е понижена от <ph name="PREVIOUS_PRICE" /> на <ph name="PRICE" /> в сайта <ph name="DOMAIN" /></translation>
@@ -1298,6 +1300,7 @@
 <translation id="5768870767339201169">Продължавайте оттам, откъдето сте прекъснали</translation>
 <translation id="5779117921996157216">{count,plural, =1{Имате {count} компрометирана парола, която може да представлява риск за сигурността ви. Коригирайте я сега, за да сте в безопасност.}other{Имате {count} компрометирани пароли, които могат да представляват риск за сигурността ви. Коригирайте ги сега, за да сте в безопасност.}}</translation>
 <translation id="5791632441210678828">Бутон за сортиране на емисията „Следено“.</translation>
+<translation id="5799263916847593256">Отворете, за да видите историята на цената</translation>
 <translation id="5803566855766646066">Наистина ли искате да отхвърлите тази нова карта?</translation>
 <translation id="5804241973901381774">Разрешения</translation>
 <translation id="58081802114142635">Активността ви подобрява AI на Google</translation>
@@ -1372,7 +1375,6 @@
 <translation id="607620096698446287">Файлът <ph name="FILENAME" /> (<ph name="FILESIZE" />) не бе качен</translation>
 <translation id="6076618233738284461">Фиксиране на сайта</translation>
 <translation id="6077126322656614846">Достъпът до камерата е разрешен</translation>
-<translation id="607730456154980869">Получавайте отговори по-бързо с Gemini в Chrome</translation>
 <translation id="6078236141387574983">Коригиране на височината на листа</translation>
 <translation id="6084848228346514841">Избиране на раздели</translation>
 <translation id="6089212833343035912">ПИН код за Google Мениджър на пароли</translation>
@@ -1641,6 +1643,7 @@
 <translation id="6964300328304469089">Понастоящем сте избрали: <ph name="NAME" /> (<ph name="EMAIL" />). Изберете профил.</translation>
 <translation id="6964760285928603117">Премахване от групата</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6967355534157677591">Създаване на изображение Pro</translation>
 <translation id="6973630695168034713">Папки</translation>
 <translation id="6979158407327259162">Google Диск</translation>
 <translation id="6979737339423435258">За цялото време</translation>
@@ -1939,7 +1942,6 @@
 <translation id="8059533439631660104">Свива секцията.</translation>
 <translation id="8061584726507121204">История</translation>
 <translation id="8064946459644399612">Предпочитанията ви за новия раздел в браузъра са приложени</translation>
-<translation id="8069168488983557089">Получавайте ключова информация и статистически данни, с чиято помощ ще разбирате всяка тема</translation>
 <translation id="8069394452933076548">Изберете кога разделите, които не сте използвали скоро, да се преместват в секцията за неактивни раздели.</translation>
 <translation id="8073670137947914548">Изтеглянето завърши</translation>
 <translation id="8076492880354921740">Раздели</translation>

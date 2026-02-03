@@ -678,7 +678,7 @@
 <translation id="3540141921715814660">Adicionar aos marcadores</translation>
 <translation id="3546122170015471515">Pré-visualizações do Maps em Google.com</translation>
 <translation id="3547356470684043247">Leia as avaliações dos clientes sobre produtos, serviços ou experiências para tomar decisões informadas com críticas</translation>
-<translation id="3547933853190131743">Pesquisar com Modo de IA</translation>
+<translation id="3547933853190131743">Pesquisar com Modo IA</translation>
 <translation id="3557336313807607643">Adicionar aos contactos</translation>
 <translation id="355765753469272474">Anular</translation>
 <translation id="3565012355885596568">Não foi possível carregar as imagens</translation>
@@ -1230,7 +1230,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="5567439033041178034">SAIBA MAIS</translation>
 <translation id="5578795271662203820">Pesquisar a imagem no <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5579012242779565775">Ocultar Lista de leitura</translation>
-<translation id="5581786858144165447">Perguntar ao Modo de IA</translation>
+<translation id="5581786858144165447">Perguntar ao Modo IA</translation>
 <translation id="5585019845078534178">Cartões</translation>
 <translation id="5591526871732898147">Imagem anexada {index}</translation>
 <translation id="5595485650161345191">Editar morada</translation>
@@ -1344,7 +1344,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="5956112131836209882">Separador do grupo de separadores. <ph name="TAB_INDEX_IN_GROUP" /> de <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Pesquisar com o <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Não é possível criar um link para o realce.</translation>
-<translation id="5968400720580217226">Modo de IA</translation>
+<translation id="5968400720580217226">Modo IA</translation>
 <translation id="5971459446352190251">Pesquisa de códigos QR</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 marcador eliminado}other{{count} marcadores eliminados}}</translation>
 <translation id="5972844218283131174">Desmarcar tudo</translation>
@@ -1375,7 +1375,6 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="607620096698446287">Não foi possível carregar <ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="6076618233738284461">Afixar site</translation>
 <translation id="6077126322656614846">Acesso à câmara permitido</translation>
-<translation id="607730456154980869">Veja respostas mais rapidamente com o Gemini no Chrome</translation>
 <translation id="6078236141387574983">Reajuste a altura da página</translation>
 <translation id="6084848228346514841">Selecionar separadores</translation>
 <translation id="6089212833343035912">PIN do Gestor de Palavras-passe da Google</translation>
@@ -1943,7 +1942,6 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="8059533439631660104">Reduz a secção.</translation>
 <translation id="8061584726507121204">Histórico</translation>
 <translation id="8064946459644399612">Preferências da página Novo separador aplicadas</translation>
-<translation id="8069168488983557089">Veja as principais conclusões e estatísticas que ajudam a compreender qualquer tópico</translation>
 <translation id="8069394452933076548">Escolha quando os separadores que não foram usados recentemente são movidos para a secção de separadores inativos.</translation>
 <translation id="8073670137947914548">Transferência concluída</translation>
 <translation id="8076492880354921740">Separadores</translation>

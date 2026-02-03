@@ -157,6 +157,7 @@
 <translation id="164269334534774161">നിങ്ങൾ ഈ പേജിന്റെ <ph name="CREATION_TIME" /> മുതലുള്ള ഓഫ്‌ലൈൻ പകർപ്പാണ് കാണുന്നത്</translation>
 <translation id="1644574205037202324">ചരിത്രം</translation>
 <translation id="1645262572857218659"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ഉപയോഗിച്ച് സൈൻ ഇൻ ചെയ്യുക</translation>
+<translation id="1650979352027263879">നിങ്ങളുടെ ദൃശ്യപരതാ മുൻഗണനകൾ നീക്കം ചെയ്തു</translation>
 <translation id="1671236975893690980">ഡൗൺലോഡ് തീർച്ചപ്പെടുത്തിയിട്ടില്ല...</translation>
 <translation id="1672586136351118594">വീണ്ടും കാണിക്കരുത്</translation>
 <translation id="1680919990519905526">Google Lens-ലൂടെ ചിത്രം വാങ്ങൂ <ph name="BEGIN_NEW" />പുതിയത്<ph name="END_NEW" /></translation>
@@ -425,6 +426,7 @@
 <translation id="2854916915045135148">അദൃശ്യ മോഡിലേക്ക് മാറാൻ സ്‌പർശിച്ചുപിടിക്കുക</translation>
 <translation id="2860954141821109167">ഈ ഉപകരണത്തിൽ Phone ആപ്പ് പ്രവർത്തനക്ഷമമാക്കിയിട്ടുണ്ടെന്ന് ഉറപ്പാക്കുക</translation>
 <translation id="2861923151411510142">ചില Chrome ഫീച്ചറുകൾ ഇനി ലഭ്യമായിരിക്കില്ല</translation>
+<translation id="286473047976978798">നിങ്ങളുടെ ദൃശ്യപരതാ മുൻഗണനകൾ ബാധകമാക്കണോ?</translation>
 <translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> എന്നതും മറ്റൊരു ടാബും}other{<ph name="URL" /> എന്നതും മറ്റ് <ph name="TAB_COUNT_MANY" /> ടാബുകളും}}</translation>
 <translation id="2869430948265924908">കാറിലെ നിങ്ങളുടെ സൂക്ഷ്‌മമായി കൈകാര്യം ചെയ്യേണ്ട ഉള്ളടക്കം പരിരക്ഷിക്കാൻ, നിങ്ങളൊരു കാർ പ്രൊഫൈൽ ലോക്ക് സൃഷ്‌ടിക്കണം.  ഒരു പിന്നോ കോഡോ പാസ്‌വേഡോ ഉപയോഗിച്ച് നിങ്ങൾക്ക് ഇത് ചെയ്യാനാകും.</translation>
 <translation id="2870560284913253234">സൈറ്റ്</translation>
@@ -1017,7 +1019,6 @@
 <translation id="5375374982898812658">നിങ്ങൾക്ക് ഉടൻ തന്നെ “<ph name="GROUP_NAME" />” ടാബ് ഗ്രൂപ്പിലേക്ക് ആക്‌സസ് നഷ്ടപ്പെടും, അത് നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിൽ നിന്നും ഇല്ലാതാക്കുകയും ചെയ്യും</translation>
 <translation id="5375577065097716013">Google Lens-ലൂടെ ചിത്രം തിരയൂ <ph name="BEGIN_NEW" />പുതിയവ<ph name="END_NEW" /></translation>
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> എന്നതിന് നിങ്ങളുടെ ഡിജിറ്റൽ വാലറ്റിൽ നിന്ന് വ്യക്തിപരമായ വിവരങ്ങൾ ഉപയോഗിക്കണമെന്നുണ്ട്. നിങ്ങൾ ഈ സൈറ്റിനെ വിശ്വസിക്കുന്നുണ്ടെങ്കിൽ മാത്രം തുടരുക. അപകടകരമായ സൈറ്റുകൾ നിങ്ങളുടെ നിയമപരമായ പേര് അല്ലെങ്കിൽ ഐഡി നമ്പർ പോലുള്ള വിവരങ്ങൾ നൽകുന്നതിന് നിങ്ങളെ കബളിപ്പിച്ചേക്കാം.</translation>
-<translation id="5394331612381306435">അദൃശ്യ മോഡിൽ നിന്ന് പുറത്തുകടക്കുക</translation>
 <translation id="5395376160638294582">നിങ്ങളുടെ Google അക്കൗണ്ടിലെ Chrome ഡാറ്റ എല്ലായ്‌പ്പോഴും ഉപയോഗിക്കാനാകുമെന്ന് ഉറപ്പാക്കുക</translation>
 <translation id="539881862970320163">ശക്തമായ പാസ്‌വേഡ് നിർദ്ദേശിച്ചു. കീബോർഡ് മറച്ചിരിക്കുന്നു.</translation>
 <translation id="5409881200985013443"><ph name="CLIENT_NAME" /> എന്നതിൽ <ph name="ONE_TIME_CODE" /> നൽകണോ?</translation>
@@ -1372,6 +1373,7 @@
 <translation id="6811034713472274749">പേജ്, കാണാൻ തയ്യാറാണ്</translation>
 <translation id="6813359536773993594">{FILE_COUNT,plural, =1{ചിത്രങ്ങൾ, ലിസ്റ്റിൽ ഒരു ചിത്രം}other{ചിത്രങ്ങൾ, ലിസ്റ്റിൽ # ചിത്രങ്ങൾ}}</translation>
 <translation id="6813446258015311409">Chrome-ലേക്ക് സെെൻ ഇൻ ചെയ്യുക, തുറന്നു.</translation>
+<translation id="6815692190508268848">നിങ്ങളുടെ ദൃശ്യപരതാ മുൻഗണനകൾ ബാധകമാക്കി</translation>
 <translation id="6817747507826986771">ഈ പേജ് വേഗത്തിൽ പങ്കിടുക. ഈ കുറുക്കുവഴി എഡിറ്റ് ചെയ്യാൻ, സ്‌പർശിച്ചുപിടിക്കുക.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6820942662346226299">Google Password Manager അപ്ഡേറ്റ് അടച്ചു</translation>
@@ -1493,7 +1495,6 @@
 <translation id="7221869452894271364">ഈ പേജ് വീണ്ടും ലോഡ് ചെയ്യുക</translation>
 <translation id="722681077040152344"><ph name="COUNT" /> സൈറ്റുകളിൽ നിന്ന് വരിക്കാരല്ലാതായി</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{ഒരു ഡൗൺലോഡ് തീർച്ചപ്പെടുത്തിയിട്ടില്ല}other{# ഡൗൺലോഡുകൾ തീർച്ചപ്പെടുത്തിയിട്ടില്ല}}</translation>
-<translation id="7230064152164845085">അദൃശ്യ മോഡിലേക്ക് മാറുക</translation>
 <translation id="7237724030342645845">Google Password Manager പ്രവർത്തനം നിർത്തി</translation>
 <translation id="7239496616545081903">റീഡിംഗ് മോഡ് മറയ്ക്കുക</translation>
 <translation id="72415438529550637">പാസവേഡ് നിർദ്ദേശം അടച്ചു.</translation>

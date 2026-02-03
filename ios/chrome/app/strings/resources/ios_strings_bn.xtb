@@ -370,6 +370,7 @@
 <translation id="2306265833370324042"><ph name="SEARCH_ENGINE_NAME" />-এর বিবরণ দেখুন</translation>
 <translation id="2309265394777270359">ট্যাব বন্ধ করুন</translation>
 <translation id="2311077293164383652">পিন করা ট্যাব বন্ধ করুন</translation>
+<translation id="2313392466694008052">Gemini-এর সাহায্যে ছবি এডিট করুন</translation>
 <translation id="2316129865977710310">না, ধন্যবাদ</translation>
 <translation id="2320166752086256636">কীবোর্ড লুকান</translation>
 <translation id="2321086116217818302">পাসওয়ার্ড তৈরি করা হচ্ছে…</translation>
@@ -521,6 +522,7 @@
 <translation id="288655811176831528">ট্যাব বন্ধ করুন</translation>
 <translation id="2888631381369839306">প্রাইস ট্র্যাকিং সম্পর্কিত বিজ্ঞপ্তি চালু করা আছে</translation>
 <translation id="2893168226686371498">ডিফল্ট ব্রাউজার</translation>
+<translation id="2893791155497534382">পাসওয়ার্ড ও অন্যান্য অ্যাক্টিভিটি ম্যানেজমেন্ট সেটিংস থেকে মুছে ফেলা যেতে পারে</translation>
 <translation id="2894757982205307093">গ্রুপে নতুন ট্যাব যোগ করুন</translation>
 <translation id="2902312830803030883">আরও অ্যাকশন</translation>
 <translation id="2904788871580817212">আপনার খোলা ট্যাবে দাম কমার তথ্য, <ph name="PREVIOUS_PRICE" /> থেকে <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
@@ -1299,6 +1301,7 @@
 <translation id="5768870767339201169">আপনি যেখানে শেষ করেছিলেন সেখান থেকে শুরু করুন</translation>
 <translation id="5779117921996157216">{count,plural, =1{আপনার {count}টি চুরি হয়ে যাওয়া পাসওয়ার্ড আছে, এর ফলে আপনার নিরাপত্তা সংক্রান্ত ঝুঁকি তৈরি হতে পারে। নিরাপদে থাকতে এখনই এই সমস্যার সমাধান করুন।}one{আপনার {count}টি চুরি হয়ে যাওয়া পাসওয়ার্ড আছে, এর ফলে আপনার নিরাপত্তা সংক্রান্ত ঝুঁকি তৈরি হতে পারে। নিরাপদে থাকতে এখনই এই সমস্যার সমাধান করুন।}other{আপনার {count}টি চুরি হয়ে যাওয়া পাসওয়ার্ড আছে, এর ফলে আপনার নিরাপত্তা সংক্রান্ত ঝুঁকি তৈরি হতে পারে। নিরাপদে থাকতে এখনই এই সমস্যার সমাধান করুন।}}</translation>
 <translation id="5791632441210678828">এই ফিডের জন্য 'সাজান' বোতাম।</translation>
+<translation id="5799263916847593256">দামের ইতিহাস দেখতে খুলুন</translation>
 <translation id="5803566855766646066">আপনি কি সত্যিই এই নতুন কার্ড বাতিল করতে চান?</translation>
 <translation id="5804241973901381774">অনুমতিগুলি</translation>
 <translation id="58081802114142635">আপনার অ্যাক্টিভিটি Google AI-কে আরও উন্নত করে</translation>
@@ -1373,7 +1376,6 @@
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) আপলোড করা যায়নি</translation>
 <translation id="6076618233738284461">সাইট পিন করুন</translation>
 <translation id="6077126322656614846">ক্যামেরা অ্যাক্সেসের অনুমতি আছে</translation>
-<translation id="607730456154980869">Chrome-এ Gemini ব্যবহার করে আরও দ্রুত উত্তর পান</translation>
 <translation id="6078236141387574983">শিটের উচ্চতা আবার অ্যাডজাস্ট করুন</translation>
 <translation id="6084848228346514841">ট্যাব বেছে নিন</translation>
 <translation id="6089212833343035912">Google Password Manager-এর পিন</translation>
@@ -1642,6 +1644,7 @@
 <translation id="6964300328304469089">বর্তমানে, <ph name="NAME" />, <ph name="EMAIL" /> আইডি বেছে নেওয়া হয়েছে। একটি অ্যাকাউন্ট বেছে নিন।</translation>
 <translation id="6964760285928603117">গ্রুপ থেকে সরান</translation>
 <translation id="6965382102122355670">ঠিক আছে</translation>
+<translation id="6967355534157677591">Pro-তে ছবি তৈরি করুন</translation>
 <translation id="6973630695168034713">ফোল্ডারগুলি</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979737339423435258">শুরু থেকে</translation>
@@ -1940,7 +1943,6 @@
 <translation id="8059533439631660104">বিভাগটি সঙ্কুচন করে।</translation>
 <translation id="8061584726507121204">ইতিহাস</translation>
 <translation id="8064946459644399612">আপনার নতুন ট্যাব পৃষ্ঠা সম্পর্কিত পছন্দ প্রয়োগ করা হয়েছে</translation>
-<translation id="8069168488983557089">যেকোনও বিষয় বোঝার ব্যাপারে সহায়তা পেতে, প্রয়োজনীয় তথ্য ও ইনসাইট পান</translation>
 <translation id="8069394452933076548">যে ট্যাবগুলি সম্প্রতি ব্যবহার করা হয়নি সেগুলি কখন ইনঅ্যাক্টিভ ট্যাব বিভাগে সরানো হবে তা বেছে নিন।</translation>
 <translation id="8073670137947914548">ডাউনলোড হয়ে গেছে</translation>
 <translation id="8076492880354921740">ট্যাবগুলি</translation>

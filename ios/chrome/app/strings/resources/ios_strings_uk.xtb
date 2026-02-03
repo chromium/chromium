@@ -370,6 +370,7 @@
 <translation id="2306265833370324042">Показати інформацію про <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="2309265394777270359">Закрити вкладку</translation>
 <translation id="2311077293164383652">Закрити закріплену вкладку</translation>
+<translation id="2313392466694008052">Редагувати зображення за допомогою Gemini</translation>
 <translation id="2316129865977710310">Ні, дякую</translation>
 <translation id="2320166752086256636">Сховати клавіатуру</translation>
 <translation id="2321086116217818302">Готуються паролі…</translation>
@@ -521,6 +522,7 @@
 <translation id="288655811176831528">Закрити вкладку</translation>
 <translation id="2888631381369839306">Сповіщення про відстеження цін увімкнено</translation>
 <translation id="2893168226686371498">Веб-переглядач за умовчанням</translation>
+<translation id="2893791155497534382">Ви можете видаляти паролі й дані про інші дії у відповідних розділах налаштувань</translation>
 <translation id="2894757982205307093">Нова вкладка в групі</translation>
 <translation id="2902312830803030883">Додаткові дії</translation>
 <translation id="2904788871580817212">Зниження ціни на відкритій вкладці з <ph name="PREVIOUS_PRICE" /> до <ph name="PRICE" /> (<ph name="PRODUCT_NAME" />, <ph name="DOMAIN" />)</translation>
@@ -1298,6 +1300,7 @@
 <translation id="5768870767339201169">Продовжуйте роботу з місця, де ви зупинилися</translation>
 <translation id="5779117921996157216">{count,plural, =1{У вас є {count} зламаний пароль, який може загрожувати вашій безпеці. Змініть його, щоб захистити свої дані.}one{У вас є {count} зламаний пароль, який може загрожувати вашій безпеці. Змініть їх, щоб захистити свої дані.}few{У вас є {count} зламані паролі, які можуть загрожувати вашій безпеці. Змініть їх, щоб захистити свої дані.}many{У вас є {count} зламаних паролів, які можуть загрожувати вашій безпеці. Змініть їх, щоб захистити свої дані.}other{У вас є {count} зламаного пароля, які можуть загрожувати вашій безпеці. Змініть їх, щоб захистити свої дані.}}</translation>
 <translation id="5791632441210678828">Кнопка сортування для фіду підписок.</translation>
+<translation id="5799263916847593256">Відкрийте, щоб переглянути історію цін</translation>
 <translation id="5803566855766646066">Відхилити цю нову картку?</translation>
 <translation id="5804241973901381774">Дозволи</translation>
 <translation id="58081802114142635">Ваша історія дій покращує ШІ від Google</translation>
@@ -1372,7 +1375,6 @@
 <translation id="607620096698446287">Файл "<ph name="FILENAME" />" (<ph name="FILESIZE" />) на вдалося завантажити</translation>
 <translation id="6076618233738284461">Закріпити сайт</translation>
 <translation id="6077126322656614846">Доступ до камери надано</translation>
-<translation id="607730456154980869">Знаходьте відповіді швидше завдяки Gemini у Chrome</translation>
 <translation id="6078236141387574983">Змініть висоту панелі</translation>
 <translation id="6084848228346514841">Виберіть вкладки</translation>
 <translation id="6089212833343035912">PIN-код Google Менеджера паролів</translation>
@@ -1641,6 +1643,7 @@
 <translation id="6964300328304469089">Зараз вибрано: <ph name="NAME" /> (<ph name="EMAIL" />). Виберіть обліковий запис.</translation>
 <translation id="6964760285928603117">Вилучити з групи</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6967355534157677591">Створити зображення за допомогою Pro</translation>
 <translation id="6973630695168034713">Папки</translation>
 <translation id="6979158407327259162">Диск Google</translation>
 <translation id="6979737339423435258">Увесь час</translation>
@@ -1939,7 +1942,6 @@
 <translation id="8059533439631660104">Згортає розділ.</translation>
 <translation id="8061584726507121204">Історія</translation>
 <translation id="8064946459644399612">Налаштування сторінки нової вкладки застосовано</translation>
-<translation id="8069168488983557089">Отримуйте основні висновки й статистичні дані, які допоможуть вам розібратися в будь-якій темі</translation>
 <translation id="8069394452933076548">Укажіть, коли вкладки, якими ви давно не користувалися, мають переміщуватися в розділ "Неактивні вкладки".</translation>
 <translation id="8073670137947914548">Завантаження завершено</translation>
 <translation id="8076492880354921740">Вкладки</translation>

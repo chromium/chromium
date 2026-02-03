@@ -1732,6 +1732,7 @@
 <translation id="2148212683005708350"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="KEY" /></translation>
 <translation id="2148219725039824548">공유를 마운트하는 중에 오류가 발생했습니다. 네트워크에서 지정된 공유를 찾을 수 없습니다.</translation>
 <translation id="2148248734299717598">왼쪽 뷰 닫기</translation>
+<translation id="2148401732477136168">설치된 애플리케이션을 쿼리할 수 없습니다.</translation>
 <translation id="2148756636027685713">포맷을 마쳤습니다.</translation>
 <translation id="2148892889047469596">탭 전송</translation>
 <translation id="2149973817440762519">북마크 수정</translation>
@@ -2519,7 +2520,6 @@
 <translation id="2672142220933875349">잘못된 crx 파일입니다. 압축을 해제하지 못했습니다.</translation>
 <translation id="2672200806060988299">탭 제목과 URL은 Google로 전송되며 기능 개선을 위해 인적 검토자가 이를 확인할 수 있습니다.</translation>
 <translation id="2673135533890720193">방문 기록 확인</translation>
-<translation id="2673397477544385203">로컬에서 사기 탐지 등의 기능을 지원합니다. 사용 중지하면 기기에서 생성형 AI 모델이 삭제되고 이러한 기능이 사용 중지됩니다.</translation>
 <translation id="2673848446870717676">블루투스 기기를 페어링 모드로 설정하고 가까이 두세요. 신뢰하는 기기만 페어링하세요. 페어링된 기기는 이 Chromebook의 모든 계정에 표시됩니다.</translation>
 <translation id="2673873887296220733">파일 1개를 <ph name="CLOUD_PROVIDER" />에 복사하여 여시겠습니까?</translation>
 <translation id="267442004702508783">새로고침</translation>
@@ -3977,7 +3977,6 @@
 <translation id="3678156199662914018">확장 프로그램: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">이 창에서 보는 페이지는 방문 기록에 나타나지 않으며, 로그아웃한 후 쿠키와 같은 다른 흔적을 컴퓨터에 남기지 않습니다. 다운로드한 파일과 생성한 북마크는 보관되지 않습니다.</translation>
 <translation id="3679126865530709868">내장 터치패드</translation>
-<translation id="3680166671911524673">온디바이스 생성형 AI 사용 설정됨</translation>
 <translation id="3680683624079082902">텍스트 음성 변환 음성</translation>
 <translation id="3681017028939109078">화면 분할 시작 시 창 추천 표시</translation>
 <translation id="3681191721636073359">Chrome은 사용자가 이 사이트에서 위치를 사용하지 않으려는 것으로 판단했습니다. 따라서 방해 요소를 줄이기 위해 알림 요청을 표시하지 않습니다.</translation>
@@ -8111,6 +8110,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6532663472409656417">기업 등록됨</translation>
 <translation id="6533315466883598769">Google 번역 사용</translation>
 <translation id="65334502113648172">화살표 키를 눌러 디스플레이 영역을 축소하거나 확대합니다. 디스플레이 영역에서 이동하려면 Shift 키와 +를 누른 다음 화살표 키를 사용하세요.</translation>
+<translation id="6534018044332449019">설치된 애플리케이션이 없습니다.</translation>
 <translation id="6535331821390304775">항상 <ph name="ORIGIN" />에서 연결된 앱에 있는 이 유형의 링크를 열도록 허용</translation>
 <translation id="653659894138286600">문서 및 이미지 스캔</translation>
 <translation id="6538036594527795020"><ph name="APP" /> 언어를 변경합니다. 현재 언어는 <ph name="LANGUAGE" />입니다.</translation>
@@ -10170,6 +10170,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7941179291434537290">테더링 준비:</translation>
 <translation id="7942349550061667556">빨간색</translation>
 <translation id="7942846369224063421">미리 로드된 UI 렌더기</translation>
+<translation id="7943271960579497371">설치된 애플리케이션</translation>
 <translation id="7943368935008348579">PDF 다운로드</translation>
 <translation id="7943837619101191061">위치 추가...</translation>
 <translation id="7944173382284143968">웹사이트에서 새 비밀번호를 저장하기 전에 OTP 확인이 필요합니다. 변경을 완료하려면 수동으로 프로세스를 진행하세요.</translation>

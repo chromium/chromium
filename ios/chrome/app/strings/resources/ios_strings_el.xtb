@@ -370,6 +370,7 @@
 <translation id="2306265833370324042">Εμφάνιση λεπτομερειών <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="2309265394777270359">Κλείσιμο καρτέλας</translation>
 <translation id="2311077293164383652">Κλείσιμο καρφιτσωμένης καρτέλας</translation>
+<translation id="2313392466694008052">Επεξεργασία εικόνας με το Gemini</translation>
 <translation id="2316129865977710310">Όχι, ευχαριστώ</translation>
 <translation id="2320166752086256636">Απόκρυψη πληκτρολογίου</translation>
 <translation id="2321086116217818302">Προετοιμασία κωδικών πρόσβασης…</translation>
@@ -521,6 +522,7 @@
 <translation id="288655811176831528">Κλείσιμο καρτέλας</translation>
 <translation id="2888631381369839306">Οι ειδοποιήσεις παρακολούθησης τιμών ενεργοποιήθηκαν</translation>
 <translation id="2893168226686371498">Προεπιλεγμένο πρόγραμμα περιήγησης</translation>
+<translation id="2893791155497534382">Οι κωδικοί πρόσβασης και άλλη δραστηριότητα μπορούν να διαγραφούν από τις ρυθμίσεις διαχείρισης</translation>
 <translation id="2894757982205307093">Νέα καρτέλα στην ομάδα</translation>
 <translation id="2902312830803030883">Περισσότερες ενέργειες</translation>
 <translation id="2904788871580817212">Πτώση τιμής στην ανοιχτή καρτέλα, από <ph name="PREVIOUS_PRICE" /> σε <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
@@ -1298,6 +1300,7 @@
 <translation id="5768870767339201169">Συνεχίστε από εκεί που σταματήσατε</translation>
 <translation id="5779117921996157216">{count,plural, =1{Έχετε {count} παραβιασμένο κωδικό πρόσβασης που θα μπορούσε να διακυβεύσει την ασφάλειά σας. Επιδιορθώστε τον τώρα για να παραμείνετε ασφαλείς.}other{Έχετε {count} παραβιασμένους κωδικούς πρόσβασης που θα μπορούσαν να διακυβεύσουν την ασφάλειά σας. Επιδιορθώστε τους τώρα για να παραμείνετε ασφαλείς.}}</translation>
 <translation id="5791632441210678828">Κουμπί ταξινόμησης για τη ροή Ακολουθείτε.</translation>
+<translation id="5799263916847593256">Ανοίξτε για να δείτε το ιστορικό τιμών</translation>
 <translation id="5803566855766646066">Είστε βέβαιοι ότι θέλετε να απορρίψετε αυτήν τη νέα κάρτα;</translation>
 <translation id="5804241973901381774">Άδειες</translation>
 <translation id="58081802114142635">Η δραστηριότητά σας βελτιώνει το Google AI</translation>
@@ -1372,7 +1375,6 @@
 <translation id="607620096698446287">Δεν ήταν δυνατή η μεταφόρτωση του αρχείου <ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="6076618233738284461">Καρφίτσωμα ιστοτόπου</translation>
 <translation id="6077126322656614846">Επιτρέπεται η πρόσβαση στην κάμερα.</translation>
-<translation id="607730456154980869">Λάβετε απαντήσεις πιο γρήγορα με το Gemini στο Chrome</translation>
 <translation id="6078236141387574983">Προσαρμόστε ξανά το ύψος του φύλλου</translation>
 <translation id="6084848228346514841">Επιλογή καρτελών</translation>
 <translation id="6089212833343035912">PIN Διαχείρισης κωδικών πρόσβασης Google</translation>
@@ -1642,6 +1644,7 @@
 <translation id="6964300328304469089">Τρέχουσα επιλογή: <ph name="NAME" />, <ph name="EMAIL" />. Επιλέξτε λογαριασμό.</translation>
 <translation id="6964760285928603117">Κατάργηση από την ομάδα</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6967355534157677591">Δημιουργία εικόνας Pro</translation>
 <translation id="6973630695168034713">Φάκελοι</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979737339423435258">Από την αρχή</translation>
@@ -1940,7 +1943,6 @@
 <translation id="8059533439631660104">Σύμπτυξη ενότητας.</translation>
 <translation id="8061584726507121204">Ιστορικό</translation>
 <translation id="8064946459644399612">Εφαρμόστηκαν οι προτιμήσεις σας για τη σελίδα Νέα καρτέλα</translation>
-<translation id="8069168488983557089">Λάβετε βασικά συμπεράσματα και insight που σας βοηθούν να κατανοήσετε οποιοδήποτε θέμα</translation>
 <translation id="8069394452933076548">Επιλέξτε πότε οι καρτέλες που δεν έχουν χρησιμοποιηθεί πρόσφατα μετακινούνται στην ενότητα ανενεργών καρτελών.</translation>
 <translation id="8073670137947914548">Η λήψη ολοκληρώθηκε</translation>
 <translation id="8076492880354921740">Καρτέλες</translation>

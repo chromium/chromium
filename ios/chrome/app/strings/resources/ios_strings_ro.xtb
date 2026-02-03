@@ -370,6 +370,7 @@
 <translation id="2306265833370324042">Afișează detaliile despre <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="2309265394777270359">Închide fila</translation>
 <translation id="2311077293164383652">Închide fila fixată</translation>
+<translation id="2313392466694008052">Editează imaginea cu Gemini</translation>
 <translation id="2316129865977710310">Nu, mulțumesc</translation>
 <translation id="2320166752086256636">Ascunde tastatura</translation>
 <translation id="2321086116217818302">Se pregătesc parolele…</translation>
@@ -521,6 +522,7 @@
 <translation id="288655811176831528">Închide fila</translation>
 <translation id="2888631381369839306">Notificările de urmărire a prețurilor sunt activate</translation>
 <translation id="2893168226686371498">Browserul prestabilit</translation>
+<translation id="2893791155497534382">Parolele și alte activități pot fi șterse din setările de gestionare respective</translation>
 <translation id="2894757982205307093">Filă nouă în grup</translation>
 <translation id="2902312830803030883">Mai multe acțiuni</translation>
 <translation id="2904788871580817212">Scădere de preț în fila deschisă, de la <ph name="PREVIOUS_PRICE" /> la <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
@@ -1298,6 +1300,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="5768870767339201169">Reia de unde ai rămas</translation>
 <translation id="5779117921996157216">{count,plural, =1{Ai {count} parolă compromisă care îți poate periclita securitatea. Remediază problema acum pentru a rămâne în siguranță.}few{Ai {count} parole compromise care îți pot periclita securitatea. Remediază problemele acum pentru a rămâne în siguranță.}other{Ai {count} de parole compromise care îți pot periclita securitatea. Remediază problemele acum pentru a rămâne în siguranță.}}</translation>
 <translation id="5791632441210678828">Buton de sortare pentru feedul Urmărești.</translation>
+<translation id="5799263916847593256">Deschide ca să vezi istoricul prețurilor</translation>
 <translation id="5803566855766646066">Sigur dorești să elimini acest card nou?</translation>
 <translation id="5804241973901381774">Permisiuni</translation>
 <translation id="58081802114142635">Activitatea ta îmbunătățește Google AI</translation>
@@ -1372,7 +1375,6 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) nu s-a putut încărca</translation>
 <translation id="6076618233738284461">Fixează site-ul</translation>
 <translation id="6077126322656614846">Se oferă acces la Camera foto</translation>
-<translation id="607730456154980869">Primește răspunsuri mai rapid cu Gemini în Chrome</translation>
 <translation id="6078236141387574983">Ajustează din nou înălțimea foii</translation>
 <translation id="6084848228346514841">Selectează file</translation>
 <translation id="6089212833343035912">PIN-ul Managerului de parole Google</translation>
@@ -1641,6 +1643,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6964300328304469089">Ai selectat: <ph name="NAME" />, <ph name="EMAIL" />. Alege un cont.</translation>
 <translation id="6964760285928603117">Elimină din grup</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6967355534157677591">Creează o imagine Pro</translation>
 <translation id="6973630695168034713">Dosare</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979737339423435258">Dintotdeauna</translation>
@@ -1939,7 +1942,6 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="8059533439631660104">Restrânge secțiunea.</translation>
 <translation id="8061584726507121204">Istoric</translation>
 <translation id="8064946459644399612">Preferințele pentru pagina Filă nouă au fost aplicate</translation>
-<translation id="8069168488983557089">Obține concluzii și statistici cheie care te ajută să înțelegi orice subiect</translation>
 <translation id="8069394452933076548">Alege momentul în care filele care nu au folosite recent se mută în secțiunea filelor inactive.</translation>
 <translation id="8073670137947914548">Descărcarea s-a finalizat</translation>
 <translation id="8076492880354921740">File</translation>

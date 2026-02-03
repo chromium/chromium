@@ -157,6 +157,7 @@
 <translation id="164269334534774161">Вы праглядаеце пазасеткавую копію гэтай старонкі ад <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Гісторыя</translation>
 <translation id="1645262572857218659">Увайсці праз <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="1650979352027263879">Налады афармлення выдалены</translation>
 <translation id="1671236975893690980">Чакаецца спампоўванне…</translation>
 <translation id="1672586136351118594">Больш не паказваць</translation>
 <translation id="1680919990519905526">Аб’ектыў: пошук тавару<ph name="BEGIN_NEW" />Навінка<ph name="END_NEW" /></translation>
@@ -425,6 +426,7 @@
 <translation id="2854916915045135148">Націсніце і ўтрымлівайце, каб пераключыцца ў рэжым інкогніта</translation>
 <translation id="2860954141821109167">Праверце, ці ўключана на гэтай прыладзе праграма для тэлефона</translation>
 <translation id="2861923151411510142">Некаторыя функцыі Chrome перастануць быць даступнымі</translation>
+<translation id="286473047976978798">Прымяніць налады афармлення?</translation>
 <translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{<ph name="URL" /> і яшчэ 1 укладка}one{<ph name="URL" /> і яшчэ <ph name="TAB_COUNT_MANY" /> укладка}few{<ph name="URL" /> і яшчэ <ph name="TAB_COUNT_MANY" /> укладкі}many{<ph name="URL" /> і яшчэ <ph name="TAB_COUNT_MANY" /> укладак}other{<ph name="URL" /> і яшчэ <ph name="TAB_COUNT_MANY" /> укладкі}}</translation>
 <translation id="2869430948265924908">Каб абараніць вашы канфідэнцыяльныя даныя ў аўтамабілі, неабходна наладзіць блакіроўку профілю.  Зрабіць гэта можна з дапамогай кода блакіроўкі, PIN-кода або пароля.</translation>
 <translation id="2870560284913253234">Сайт</translation>
@@ -1017,7 +1019,6 @@
 <translation id="5375374982898812658">Вы адразу страціце доступ да групы ўкладак "<ph name="GROUP_NAME" />", і яна будзе выдалена з усіх вашых прылад</translation>
 <translation id="5375577065097716013">Шукаць праз Аб’ектыў <ph name="BEGIN_NEW" />Навінка<ph name="END_NEW" /></translation>
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> запытвае магчымасць выкарыстоўваць вашу асабістую інфармацыю з лічбавага кашалька. Працягвайце, толькі калі давяраеце гэтаму сайту. З дапамогай шкодных сайтаў зламыснікі могуць падманам прымусіць вас раскрыць свае даныя, такія як поўнае імя і нумар пасведчання асобы.</translation>
-<translation id="5394331612381306435">Выйсці з рэжыму інкогніта</translation>
 <translation id="5395376160638294582">Падбайце аб тым, каб заўсёды мець доступ да даных Chrome ва Уліковым запісе Google</translation>
 <translation id="539881862970320163">Прапанаваны надзейны пароль. Клавіятура схавана.</translation>
 <translation id="5409881200985013443">Адправіць код <ph name="ONE_TIME_CODE" /> на прыладу "<ph name="CLIENT_NAME" />"?</translation>
@@ -1372,6 +1373,7 @@
 <translation id="6811034713472274749">Старонка гатовая да прагляду</translation>
 <translation id="6813359536773993594">{FILE_COUNT,plural, =1{Відарысы, 1 відарыс у спісе}one{Відарысы, # відарыс у спісе}few{Відарысы, # відарысы ў спісе}many{Відарысы, # відарысаў у спісе}other{Відарысы, # відарыса ў спісе}}</translation>
 <translation id="6813446258015311409">Аркуш "Увайсці ў Chrome" адкрыты.</translation>
+<translation id="6815692190508268848">Налады афармлення прыменены</translation>
 <translation id="6817747507826986771">Хуткае абагульванне гэтай старонкі. Каб змяніць функцыю гэтай кнопкі, націсніце на яе і ўтрымлівайце.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6820942662346226299">Акно для абнаўлення Менеджара пароляў Google закрыта</translation>
@@ -1493,7 +1495,6 @@
 <translation id="7221869452894271364">Перазагрузіце старонку</translation>
 <translation id="722681077040152344">Вы адпісаліся ад сайтаў (<ph name="COUNT" />)</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{Чакаецца 1 спампоўка}one{Чакаецца # спампоўка}few{Чакаецца # спампоўкі}many{Чакаецца # спамповак}other{Чакаецца # спампоўкі}}</translation>
-<translation id="7230064152164845085">Пераключыцца ў рэжым інкогніта</translation>
 <translation id="7237724030342645845">Менеджар пароляў Google перастаў працаваць</translation>
 <translation id="7239496616545081903">Схаваць рэжым чытання</translation>
 <translation id="72415438529550637">Прапанова пароля закрыта.</translation>

@@ -370,6 +370,7 @@
 <translation id="2306265833370324042"><ph name="SEARCH_ENGINE_NAME" /> təfərrüatlarını göstərin</translation>
 <translation id="2309265394777270359">Tabı bağlayın</translation>
 <translation id="2311077293164383652">Sancılmış tabı bağlayın</translation>
+<translation id="2313392466694008052">Şəkli Gemini ilə redaktə edin</translation>
 <translation id="2316129865977710310">Yox, çox sağ olun</translation>
 <translation id="2320166752086256636">Klaviaturanı gizlədin.</translation>
 <translation id="2321086116217818302">Parollar hazırlanır...</translation>
@@ -521,6 +522,7 @@
 <translation id="288655811176831528">Tabı bağlayın</translation>
 <translation id="2888631381369839306">Qiymət izləmə bildirişləri aktiv edilib</translation>
 <translation id="2893168226686371498">Defolt brauzer</translation>
+<translation id="2893791155497534382">Parollar və digər fəaliyyətlər müvafiq idarəetmə ayarlarında silinə bilər</translation>
 <translation id="2894757982205307093">Qrupa yeni tab</translation>
 <translation id="2902312830803030883">Daha çox əməliyyatlar</translation>
 <translation id="2904788871580817212">Açıq tabda qiymət <ph name="PREVIOUS_PRICE" /> məbləğindən <ph name="PRICE" /> məbləğinə düşdü: <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
@@ -1298,6 +1300,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="5768870767339201169">Qaldığınız yerdən davam edin</translation>
 <translation id="5779117921996157216">{count,plural, =1{Təhlükəsizliyi riskə atan {count} oğurlanmış parolunuz var. Təhlükəsizlik üçün bunu indi həll edin.}other{Təhlükəsizliyi riskə atan {count} oğurlanmış parolunuz var. Təhlükəsizlik üçün bunları indi həll edin.}}</translation>
 <translation id="5791632441210678828">İzlənənlər lenti üçün sıralama düyməsi.</translation>
+<translation id="5799263916847593256">Qiymət tarixçəsinə baxmaq üçün açın</translation>
 <translation id="5803566855766646066">Bu yeni kartı silmək istədiyinizə əminsiniz?</translation>
 <translation id="5804241973901381774">İcazələr</translation>
 <translation id="58081802114142635">Fəaliyyətiniz Google Sİ-ni təkmilləşdirir</translation>
@@ -1372,7 +1375,6 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) yüklənmədi</translation>
 <translation id="6076618233738284461">Saytı bərkidin</translation>
 <translation id="6077126322656614846">Kameraya giriş icazəsi verilib</translation>
-<translation id="607730456154980869">Chrome-da Gemini ilə cavabları daha tez əldə edin</translation>
 <translation id="6078236141387574983">Vərəqin hündürlüyünü yenidən tənzimləyin</translation>
 <translation id="6084848228346514841">Tablar seçin</translation>
 <translation id="6089212833343035912">Google Parol Meneceri PIN-i</translation>
@@ -1641,6 +1643,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6964300328304469089">Seçilib: <ph name="NAME" /> (<ph name="EMAIL" />). Hesab seçin.</translation>
 <translation id="6964760285928603117">Qrupdan Çıxarın</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6967355534157677591">Peşəkar şəkil yaradın</translation>
 <translation id="6973630695168034713">Qovluqlar</translation>
 <translation id="6979158407327259162">Google Disk</translation>
 <translation id="6979737339423435258">Hər zaman</translation>
@@ -1939,7 +1942,6 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="8059533439631660104">Bölməni yığcamlaşdırır.</translation>
 <translation id="8061584726507121204">Tarixçə</translation>
 <translation id="8064946459644399612">Yeni Tab səhifəsi tərcihləriniz tətbiq edildi</translation>
-<translation id="8069168488983557089">İstənilən mövzunu başa düşməyinizə kömək edən əsas məqamları və fikirləri əldə edin</translation>
 <translation id="8069394452933076548">Son vaxtlar istifadə edilməyən tabların nə vaxt fəaliyyətsiz tab bölməsinə köçürüləcəyini seçin.</translation>
 <translation id="8073670137947914548">Endirmə tamamlandı</translation>
 <translation id="8076492880354921740">Tablar</translation>
