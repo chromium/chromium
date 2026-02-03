@@ -128,6 +128,7 @@ class FastPairDiscoverableScannerImplTest : public testing::Test {
   }
 
   void TearDown() override {
+    fake_process_manager_ = nullptr;
     process_manager_.reset();
     testing::Test::TearDown();
     discoverable_scanner_.reset();
@@ -160,7 +161,7 @@ class FastPairDiscoverableScannerImplTest : public testing::Test {
     return device_ptr;
   }
 
-  raw_ptr<FakeQuickPairProcessManager, DanglingUntriaged> fake_process_manager_;
+  raw_ptr<FakeQuickPairProcessManager> fake_process_manager_;
   base::test::SingleThreadTaskEnvironment task_environment_;
   NetworkStateTestHelper helper_{/*use_default_devices_and_services=*/true};
   scoped_refptr<FakeFastPairScanner> scanner_;
