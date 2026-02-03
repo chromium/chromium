@@ -43,6 +43,7 @@ import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.ui.KeyboardUtils;
+import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -997,14 +998,54 @@ class LocationBarMediator
     /**
      * Begins a new Omnibox input session.
      *
-     * @param input The input state for the new session. The input may be replaced without going
-     *     through the endInput() (valid -> valid). This is the case for tab switching.
+     * @param activateNewSession Whether to begin a new input session if one is not already active.
+     *     Active input sessions show Autocomplete and focused Omnibox.
+     * @return true if new input session has been activated.
      */
-    private void beginInput(AutocompleteInput input) {
-        mCurrentInput = input;
+    @EnsuresNonNullIf("mCurrentInput")
+    private boolean beginOrResumeInput(boolean activateNewSession) {
+        // Do not instantiate a new ephemeral session unless we're activating it as well.
+        var session =
+                FuseboxSessionState.from(
+                        mLocationBarDataProvider, /* allowEphemeral= */ activateNewSession);
+
+        // Target session must exist and be either active, or activated.
+        if (session == null || !(session.isSessionActive() || activateNewSession)) {
+            endInput();
+            return false;
+        }
+
+        // If we're switching tab (active -> active), just reanchor observer.
+        if (mCurrentInput != null) {
+            mCurrentInput.getRequestTypeSupplier().removeObserver(mAutocompleteRequestTypeObserver);
+        }
+
+        session.setSessionActive(true);
+        mCurrentInput = session.autocompleteInput;
         mCurrentInput.getRequestTypeSupplier().addObserver(mAutocompleteRequestTypeObserver);
-        mAutocompleteCoordinator.beginInput(input);
-        mFuseboxCoordinator.beginInput(input);
+
+        // In the event input session was activated before native initialization we cannot
+        // correctly determine the page classification, rendering the AutocompleteInput
+        // instance not sufficiently valid to facilitate Autocomplete.
+        if (mNativeInitialized) {
+            mAutocompleteCoordinator.beginInput(mCurrentInput);
+            mFuseboxCoordinator.beginInput(mCurrentInput);
+        } else {
+            mDeferredNativeRunnables.add(
+                    () -> {
+                        // mCurrentInput's timeline is fully contained within the mUrlHasFocus'
+                        // timeline. The check below confirms the mUrlHasFocus and ensures
+                        // mCurrentInput is not null.
+                        if (mCurrentInput == null) return;
+                        mCurrentInput.setPageClassification(
+                                mLocationBarDataProvider.getPageClassification(
+                                        /* prefetch= */ false));
+                        mAutocompleteCoordinator.beginInput(mCurrentInput);
+                        mFuseboxCoordinator.beginInput(mCurrentInput);
+                    });
+        }
+
+        return true;
     }
 
     /** Ends the current Omnibox input session. */
@@ -1013,8 +1054,9 @@ class LocationBarMediator
         mAutocompleteCoordinator.endInput();
         mFuseboxCoordinator.endInput();
         mCurrentInput.getRequestTypeSupplier().removeObserver(mAutocompleteRequestTypeObserver);
-        var state = FuseboxSessionState.from(mLocationBarDataProvider.getTab());
-        if (state != null) state.setSessionActive(false);
+        var session =
+                FuseboxSessionState.from(mLocationBarDataProvider, /* allowEphemeral= */ false);
+        if (session != null) session.setSessionActive(false);
         mCurrentInput = null;
     }
 
@@ -1048,7 +1090,7 @@ class LocationBarMediator
         // This call is permitted to happen before anyone else is activated, and
         // must be called before everyone else cleans up.
         if (hasFocus) {
-            beginInput(getAutocompleteInputForCurrentTab());
+            beginOrResumeInput(/* activateNewSession= */ true);
         } else {
             endInput();
         }
@@ -1093,24 +1135,6 @@ class LocationBarMediator
                     });
             mUrlFocusChangeAnimator.start();
         }
-    }
-
-    /**
-     * Creates and initializes a new {@link AutocompleteInput} instance with the current page's
-     * context.
-     *
-     * @return A new {@link AutocompleteInput} instance.
-     */
-    private AutocompleteInput getAutocompleteInputForCurrentTab() {
-        // Maybe restore persisted session state; create a new one otherwise.
-        var state = FuseboxSessionState.from(mLocationBarDataProvider.getTab());
-        var input = state != null ? state.autocompleteInput : new AutocompleteInput();
-        input.setPageClassification(mLocationBarDataProvider.getPageClassification(false));
-        input.setRequestType(AutocompleteRequestType.SEARCH);
-        input.setPageUrl(mLocationBarDataProvider.getCurrentGurl());
-        input.setPageTitle(mLocationBarDataProvider.getTitle());
-        input.setUrlFocusTime(System.currentTimeMillis());
-        return input;
     }
 
     /* package */ void setShouldShowMicButtonWhenUnfocusedForPhone(boolean shouldShow) {
@@ -1616,10 +1640,7 @@ class LocationBarMediator
 
     @VisibleForTesting
     boolean shouldShowMicButton() {
-        if (mCurrentInput != null
-                && mCurrentInput.getRequestType() != AutocompleteRequestType.SEARCH) {
-            return false;
-        }
+        if (mCurrentInput != null && !mCurrentInput.isConventionalRequestType()) return false;
 
         if (isUrlBarFocusedWithUserInput()) return false;
         if (!mNativeInitialized
@@ -1643,10 +1664,7 @@ class LocationBarMediator
 
     @VisibleForTesting
     boolean shouldShowLensButton() {
-        if (mCurrentInput != null
-                && mCurrentInput.getRequestType() != AutocompleteRequestType.SEARCH) {
-            return false;
-        }
+        if (mCurrentInput != null && !mCurrentInput.isConventionalRequestType()) return false;
 
         if (isUrlBarFocusedWithUserInput()) return false;
 
@@ -1802,38 +1820,30 @@ class LocationBarMediator
     @Override
     public void onTabChanged(@Nullable Tab previousTab) {
         // Save the previous tab state.
-        if (previousTab != null) {
-            FuseboxSessionState previousState = FuseboxSessionState.from(previousTab);
-            if (previousState != null) {
-                // No need to apply text, as AutocompleteInput readily tracks that.
-                previousState.setSessionActive(isUrlBarFocused());
-
-                if (mPersistEditingState) {
-                    previousState.autocompleteInput.setSelection(
-                            mUrlCoordinator.getSelectionStart(), mUrlCoordinator.getSelectionEnd());
-                }
-            }
+        if (mCurrentInput != null) {
+            mCurrentInput.setSelection(
+                    mUrlCoordinator.getSelectionStart(), mUrlCoordinator.getSelectionEnd());
         }
 
         // Restore the saved tab state.
-        Tab currentTab = mLocationBarDataProvider.getTab();
-        FuseboxSessionState currentState = FuseboxSessionState.from(currentTab);
-        if (currentState != null && currentState.isSessionActive()) {
-            beginInput(assumeNonNull(currentState).autocompleteInput);
+        if (beginOrResumeInput(/* activateNewSession= */ false)) {
             setUrlBarFocus(
                     /* shouldBeFocused= */ true,
-                    currentState.autocompleteInput.getUserText(),
+                    mCurrentInput.getUserText(),
                     /* selectText= */ false,
                     OmniboxFocusReason.LOCATION_BAR_STATE_RESTORATION,
-                    currentState.autocompleteInput.getRequestType());
+                    mCurrentInput.getRequestType());
             if (mPersistEditingState) {
                 // Need to post this as the url will not apply the text instantly.
                 PostTask.postTask(
                         TaskTraits.UI_USER_VISIBLE,
-                        () ->
+                        () -> {
+                            if (mCurrentInput != null) {
                                 mUrlCoordinator.setSelection(
-                                        currentState.autocompleteInput.getSelectionStart(),
-                                        currentState.autocompleteInput.getSelectionEnd()));
+                                        mCurrentInput.getSelectionStart(),
+                                        mCurrentInput.getSelectionEnd());
+                            }
+                        });
             }
         }
 
@@ -1846,11 +1856,9 @@ class LocationBarMediator
     @Override
     public void onUrlChanged(boolean isTabChanging) {
         if (isTabChanging) {
-            Tab currentTab = mLocationBarDataProvider.getTab();
-            FuseboxSessionState currentState = FuseboxSessionState.from(currentTab);
-            // No need to update URL if the location bar state was already restored in
-            // onTabChanged().
-            if (currentState == null || !currentState.isSessionActive()) {
+            FuseboxSessionState currentSession =
+                    FuseboxSessionState.from(mLocationBarDataProvider, /* allowEphemeral= */ false);
+            if (currentSession == null || !currentSession.isSessionActive()) {
                 updateUrl();
 
                 // Ensure the URL bar loses focus if the tab it was interacting with is changed from
