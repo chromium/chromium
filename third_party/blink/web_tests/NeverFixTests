@@ -130,6 +130,7 @@ crbug.com/41254976 [ Mac ] external/wpt/pointerevents/pointerevent_after_target_
 crbug.com/41254976 [ Mac ] external/wpt/pointerevents/pointerevent_after_target_removed.html?touch [ Skip ]
 crbug.com/41254976 [ Mac ] external/wpt/pointerevents/pointerevent_after_target_removed_interleaved.tentative.html?touch [ Skip ]
 crbug.com/41254976 [ Mac ] external/wpt/pointerevents/pointerevent_attributes.html?touch [ Skip ]
+crbug.com/41254976 [ Mac ] external/wpt/pointerevents/pointerevent_attributes.optional.html?touch [ Skip ]
 crbug.com/41254976 [ Mac ] external/wpt/pointerevents/pointerevent_boundary_events_in_capturing.html?touch [ Skip ]
 crbug.com/41254976 [ Mac ] external/wpt/pointerevents/pointerevent_click_is_a_pointerevent.html?touch [ Skip ]
 crbug.com/41254976 [ Mac ] external/wpt/pointerevents/pointerevent_click_is_a_pointerevent_multiple_clicks.html?touch [ Skip ]

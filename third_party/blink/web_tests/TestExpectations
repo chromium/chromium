@@ -9752,7 +9752,6 @@ crbug.com/480074857 [ Win ] external/wpt/pointerlock/pointerlock-maintains-mouse
 
 # Gardener 2026-01-23
 crbug.com/478074263 [ Mac ] virtual/shared-storage-fenced-frame-mparch/external/wpt/shared-storage/select-url-saved-query-same-origin-multi-query.tentative.https.sub.html [ Failure Pass Timeout ]
-crbug.com/478193880 [ Linux ] external/wpt/pointerevents/pointerevent_attributes.optional.html?touch [ Failure Pass Timeout ]
 crbug.com/478201211 external/wpt/webxr/layers/idlharness.https.window.html [ Failure Pass ]
 
 # Gardener 2026-01-27
@@ -9765,6 +9764,3 @@ crbug.com/479025607 [ Linux ] external/wpt/ai/translator/translator-locale.https
 
 # Gardener 2026-02-02
 crbug.com/479874917 external/wpt/navigation-api/scroll-behavior/manual-scroll-fragment-does-not-exist.html [ Crash Timeout Failure Pass ]
-
-# Gardener 2026-02-03
-crbug.com/478186112 [ Win ] external/wpt/pointerevents#pointerevent_attributes.html?touch [ Timeout Pass ]
