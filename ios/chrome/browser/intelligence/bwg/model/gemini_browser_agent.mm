@@ -587,7 +587,7 @@ void GeminiBrowserAgent::OnActiveWebStateChanged(web::WebState* old_active,
 
 void GeminiBrowserAgent::OnPageContextUpdated(web::WebState* web_state) {
   BwgTabHelper* tab_helper = GetActiveTabHelper(web_state);
-  if (!tab_helper) {
+  if (!tab_helper || !is_floaty_invoked_) {
     return;
   }
 
