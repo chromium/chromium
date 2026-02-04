@@ -25,11 +25,17 @@
 
 // https://www.w3.org/TR/geolocation-API/#position_interface
 
+enum AccuracyMode {
+    "approximate",
+    "precise",
+};
+
 [
     Exposed=Window,
     ImplementedAs=Geoposition
 ] interface GeolocationPosition {
     readonly attribute GeolocationCoordinates coords;
     readonly attribute EpochTimeStamp timestamp;
+    [RuntimeEnabled=ApproximateGeolocationWebVisibleAPI] readonly attribute AccuracyMode accuracyMode;
     [CallWith=ScriptState] object toJSON();
 };

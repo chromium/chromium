@@ -36,6 +36,7 @@
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_accuracy_mode.h"
 #include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
@@ -54,6 +55,7 @@
 
 namespace blink {
 namespace {
+using AccuracyMode = V8AccuracyMode::Enum;
 
 const char kPermissionDeniedErrorMessage[] = "User denied Geolocation";
 const char kFeaturePolicyErrorMessage[] =
@@ -78,8 +80,14 @@ Geoposition* CreateGeoposition(
           ? std::make_optional(position.heading)
           : std::nullopt,
       position.speed >= 0. ? std::optional(position.speed) : std::nullopt);
+  AccuracyMode accuracy_mode = AccuracyMode::kPrecise;
+  if (RuntimeEnabledFeatures::ApproximateGeolocationWebVisibleAPIEnabled()) {
+    accuracy_mode = position.is_precise ? AccuracyMode::kPrecise
+                                        : AccuracyMode::kApproximate;
+  }
   return MakeGarbageCollected<Geoposition>(
-      coordinates, ConvertTimeToEpochTimeStamp(position.timestamp));
+      coordinates, ConvertTimeToEpochTimeStamp(position.timestamp),
+      V8AccuracyMode(accuracy_mode));
 }
 
 GeolocationPositionError* CreatePositionError(

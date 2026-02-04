@@ -33,8 +33,6 @@ public class MockLocationProvider implements LocationProvider {
 
     @Override
     public void start(boolean enableHighAccuracy) {
-        if (mIsRunning) return;
-
         if (mHandlerThread == null) {
             startMockLocationProviderThread();
         }
@@ -42,7 +40,11 @@ public class MockLocationProvider implements LocationProvider {
         mIsRunning = true;
         mEnableHighAccuracy = enableHighAccuracy;
         synchronized (mLock) {
-            mHandler.sendEmptyMessage(UPDATE_LOCATION_MSG);
+            mHandler.removeMessages(UPDATE_LOCATION_MSG);
+            // Sending the message directly might result in a race condition when the location is
+            // expected to be updated, e.g. from approximated to precise. Hence, we delay the
+            // message by 200 milliseconds to account for this.
+            mHandler.sendEmptyMessageDelayed(UPDATE_LOCATION_MSG, 200);
         }
     }
 

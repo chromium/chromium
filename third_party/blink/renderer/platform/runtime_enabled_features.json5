@@ -599,6 +599,10 @@
       base_feature: "none",
     },
     {
+      name: "ApproximateGeolocationWebVisibleAPI",
+      depends_on: ["ApproximateGeolocationPermission"],
+    },
+    {
       name: "AppTitle",
       status: "experimental",
       origin_trial_feature_name: "AppTitle",

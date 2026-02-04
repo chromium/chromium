@@ -22,6 +22,17 @@
                     gotPos, errorCallback, { });
             }
 
+            function getAccuracyMode_getCurrentPosition() {
+                navigator.geolocation.getCurrentPosition(
+                    function(p) { window.document.title = p.accuracyMode; },
+                    errorCallback, { "enableHighAccuracy": true });
+            }
+            function getAccuracyMode_watchPosition() {
+                navigator.geolocation.watchPosition(
+                    function(p) { window.document.title = p.accuracyMode; },
+                    errorCallback, { "enableHighAccuracy": true });
+            }
+
             // The modal permission dialog requires a user gesture to trigger.
             // Hook up a click event listener to run a specified method (which
             // may be changed by the test).

@@ -27,8 +27,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_GEOLOCATION_GEOPOSITION_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
-#include "third_party/blink/renderer/core/timing/epoch_time_stamp.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_accuracy_mode.h"
 #include "third_party/blink/renderer/core/geolocation/geolocation_coordinates.h"
+#include "third_party/blink/renderer/core/timing/epoch_time_stamp.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
@@ -38,8 +39,12 @@ class Geoposition final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  Geoposition(GeolocationCoordinates* coordinates, EpochTimeStamp timestamp)
-      : coordinates_(coordinates), timestamp_(timestamp) {
+  Geoposition(GeolocationCoordinates* coordinates,
+              EpochTimeStamp timestamp,
+              V8AccuracyMode accuracy_mode)
+      : coordinates_(coordinates),
+        timestamp_(timestamp),
+        accuracy_mode_(accuracy_mode) {
     DCHECK(coordinates_);
   }
 
@@ -50,11 +55,13 @@ class Geoposition final : public ScriptWrappable {
 
   EpochTimeStamp timestamp() const { return timestamp_; }
   GeolocationCoordinates* coords() const { return coordinates_.Get(); }
+  V8AccuracyMode accuracyMode() const { return accuracy_mode_; }
   ScriptObject toJSON(ScriptState* script_state) const;
 
  private:
   Member<GeolocationCoordinates> coordinates_;
   EpochTimeStamp timestamp_;
+  blink::V8AccuracyMode accuracy_mode_;
 };
 
 }  // namespace blink

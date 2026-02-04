@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/geolocation/geoposition.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -12,6 +13,9 @@ ScriptObject Geoposition::toJSON(ScriptState* script_state) const {
   V8ObjectBuilder builder(script_state);
   builder.AddInteger("timestamp", timestamp_);
   builder.AddV8Value("coords", coordinates_->toJSON(script_state).V8Object());
+  if (RuntimeEnabledFeatures::ApproximateGeolocationWebVisibleAPIEnabled()) {
+    builder.AddString("accuracyMode", accuracy_mode_.AsStringView());
+  }
   return builder.ToScriptObject();
 }
 

@@ -1678,6 +1678,7 @@
                     },
                     "enable_features": [
                         "ApproximateGeolocationPermission",
+                        "ApproximateGeolocationWebVisibleAPI",
                         "PermissionsPromptSurvey"
                     ]
                 }
