@@ -1,15 +1,7 @@
 <!DOCTYPE html>
 <html>
 <meta name=fuzzy content="maxDifference=0-3; totalPixels=0-2000">
-<head>
-<style type="text/css">
-body {
-    overflow:hidden;
-    margin: 0;
-}
-</style>
-<script src="resources/ad-iframe-writer.js"></script>
-</head>
+<head><script src="resources/ad-iframe-writer.js"></script></head>
 <body>
 <script type="text/javascript">
 if (window.testRunner) {
@@ -17,12 +9,13 @@ if (window.testRunner) {
 }
 
 ad_frame = createAdFrame();
-ad_frame.style.borderWidth = 0;
 ad_frame.width = 100;
-ad_frame.height = 1000;
-// Scroll down to verify that the overlay is drawn correctly for the portion of the
-// frame that is larger than the viewport.
-window.scrollTo(0, 400);
+ad_frame.height = 200;
+
+// Apply absolute positioning to the iframe
+ad_frame.style.position = "absolute";
+ad_frame.style.top = "50px";
+ad_frame.style.left = "50px";
 
 ad_frame.onload = function () {
   // Finish the test after the ad highlight is drawn.

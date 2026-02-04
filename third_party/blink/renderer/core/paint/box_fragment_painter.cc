@@ -395,13 +395,15 @@ bool ShouldDelegatePaintingToViewTransition(const PhysicalBoxFragment& fragment,
   }
 }
 
-// Paints a highlight overlay for elements identified as ads. This supports the
-// "Highlight ads" feature in DevTools.
-void PaintAdHighlightIfNeeded(const PaintInfo& paint_info,
-                              const PhysicalOffset& paint_offset,
-                              const PhysicalBoxFragment& fragment,
-                              const DisplayItemClient& display_item_client,
-                              PaintPhase phase) {
+}  // anonymous namespace
+
+// static
+void BoxFragmentPainter::PaintAdHighlightIfNeeded(
+    const PaintInfo& paint_info,
+    const PhysicalOffset& paint_offset,
+    const PhysicalBoxFragment& fragment,
+    const DisplayItemClient& display_item_client,
+    PaintPhase phase) {
   // The highlight is an overlay, so it should only be painted during the
   // foreground phase, after all element content is drawn.
   if (phase != PaintPhase::kForeground) {
@@ -509,8 +511,6 @@ void PaintAdHighlightIfNeeded(const PaintInfo& paint_info,
   }
 }
 
-}  // anonymous namespace
-
 PhysicalRect BoxFragmentPainter::InkOverflowIncludingFilters() const {
   if (box_item_)
     return box_item_->SelfInkOverflowRect();
@@ -552,17 +552,6 @@ void BoxFragmentPainter::PaintFragment(const PhysicalBoxFragment& fragment,
   } else {
     layout_object->Paint(modified_paint_info);
   }
-
-  PhysicalOffset paint_offset;
-  if (const FragmentData* fragment_data = fragment.GetFragmentData()) {
-    paint_offset = fragment_data->PaintOffset();
-  }
-
-  // Paint the ad highlight last. For this monolithic path (e.g., <img>,
-  // <iframe>), the paint_offset is provided by FragmentData and represents the
-  // fragment's position in the paint layer.
-  PaintAdHighlightIfNeeded(modified_paint_info, paint_offset, fragment,
-                           *layout_object, paint_info.phase);
 }
 
 void BoxFragmentPainter::Paint(const PaintInfo& paint_info) {
