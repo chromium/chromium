@@ -194,6 +194,7 @@ public class SnackbarTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/458057621")
     public void testPersistentQueueStackOrder() {
         final Snackbar stackbar =
                 Snackbar.make(
