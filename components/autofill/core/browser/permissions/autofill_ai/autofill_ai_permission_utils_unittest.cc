@@ -39,6 +39,7 @@ using ::base::BucketsAre;
 using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::Values;
+using enum EntityTypeName;
 
 constexpr auto kAutofillPredictionSettingsDisable =
     std::to_underlying(optimization_guide::model_execution::prefs::
@@ -75,6 +76,16 @@ std::string GetTestSuffix(
       return "kImportToWallet";
   }
   NOTREACHED();
+}
+
+DenseSet<EntityType> GetPrivatePasses() {
+  DenseSet<EntityType> private_passes;
+  for (const EntityType type : DenseSet<EntityType>::all()) {
+    if (type.SupportsMaskedStorage()) {
+      private_passes.insert(type);
+    }
+  }
+  return private_passes;
 }
 
 class MockSyncService : public syncer::TestSyncService {
@@ -140,7 +151,6 @@ class AutofillAiMayPerformActionTest
 // Verifies that the test fixture sets up the client so that everything but
 // opt-in IPH is permitted.
 TEST_P(AutofillAiMayPerformActionTest, ActionsWhenEnabled) {
-  using enum EntityTypeName;
   EXPECT_EQ(
       MayPerformAutofillAiAction(client(), GetParam(), EntityType(kPassport)),
       GetParam() != AutofillAiAction::kIphForOptIn);
@@ -167,7 +177,6 @@ TEST_P(
       DenseSet({AutofillAiAction::kIphForOptIn, AutofillAiAction::kLogToMqls,
                 AutofillAiAction::kServerClassificationModel});
 
-  using enum EntityTypeName;
   EXPECT_EQ(
       MayPerformAutofillAiAction(client(), GetParam(), EntityType(kPassport)),
       !kForbiddenActions.contains(GetParam()));
@@ -179,7 +188,6 @@ TEST_P(AutofillAiMayPerformActionTest,
        ReturnsTrueWhenAvailableByDefault_ExceptForIph) {
   base::test::ScopedFeatureList feature_list{
       features::kAutofillAiAvailableByDefault};
-  using enum EntityTypeName;
   EXPECT_EQ(
       MayPerformAutofillAiAction(client(), GetParam(), EntityType(kPassport)),
       GetParam() != AutofillAiAction::kIphForOptIn);
@@ -188,7 +196,6 @@ TEST_P(AutofillAiMayPerformActionTest,
 // Tests that the server model cannot be run and its cache cannot be used if
 // `kAutofillAiServerModel` is disabled.
 TEST_P(AutofillAiMayPerformActionTest, ModelFeatureOff) {
-  using enum EntityTypeName;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(features::kAutofillAiServerModel);
 
@@ -207,7 +214,6 @@ TEST_P(AutofillAiMayPerformActionTest, ModelFeatureOff) {
 // Tests that the server model cache cannot be used if the feature parameter
 // governing it is false.
 TEST_P(AutofillAiMayPerformActionTest, FeatureParamForModelCacheUseOff) {
-  using enum EntityTypeName;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
       {{features::kAutofillAiServerModel,
@@ -227,7 +233,6 @@ TEST_P(AutofillAiMayPerformActionTest, FeatureParamForModelCacheUseOff) {
 
 // Tests that the opt-in IPH cannot be shown if its feature is off.
 TEST_P(AutofillAiMayPerformActionTest, OptInIphFeatureOff) {
-  using enum EntityTypeName;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
       feature_engagement::kIPHAutofillAiOptInFeature);
@@ -246,7 +251,6 @@ TEST_P(AutofillAiMayPerformActionTest, OptInIphFeatureOff) {
 // is saved in the EntityDataManager.
 TEST_P(AutofillAiMayPerformActionTest,
        ActionsWhenAutofillAiEnterprisePolicyDisabled) {
-  using enum EntityTypeName;
   client().GetPrefs()->SetInteger(
       optimization_guide::prefs::
           kAutofillPredictionImprovementsEnterprisePolicyAllowed,
@@ -282,7 +286,6 @@ TEST_P(AutofillAiMayPerformActionTest,
 // Verifies that IPH, opt-in and list entities are permitted if the user has not
 // opted into AutofillAI.
 TEST_P(AutofillAiMayPerformActionTest, ActionsWhenNotOptedIntoAutofillAi) {
-  using enum EntityTypeName;
   SetAutofillAiOptInStatus(client(), AutofillAiOptInStatus::kOptedOut);
   const bool is_allowed =
       GetParam() == AutofillAiAction::kOptIn ||
@@ -297,7 +300,6 @@ TEST_P(AutofillAiMayPerformActionTest, ActionsWhenNotOptedIntoAutofillAi) {
 // longer opted into AutofillAI, but there is data saved.
 TEST_P(AutofillAiMayPerformActionTest,
        ActionsWhenAutofillNotOptedIntoAutofillAiButDataSaved) {
-  using enum EntityTypeName;
   AddEntity();
   SetAutofillAiOptInStatus(client(), AutofillAiOptInStatus::kOptedOut);
   const bool is_allowed =
@@ -362,7 +364,6 @@ TEST_P(AutofillAiMayPerformActionTest, SignInPending) {
 // Tests that the check whether a client can use model execution features is
 // ignored.
 TEST_P(AutofillAiMayPerformActionTest, CapabilityCheckIgnored) {
-  using enum EntityTypeName;
   AddEntity();
   client().SetCanUseModelExecutionFeatures(false);
   const bool is_allowed = GetParam() != AutofillAiAction::kIphForOptIn;
@@ -374,7 +375,6 @@ TEST_P(AutofillAiMayPerformActionTest, CapabilityCheckIgnored) {
 // Tests that the check whether a client can use model execution features is
 // ignored before opt-in or IPH.
 TEST_P(AutofillAiMayPerformActionTest, CapabilityCheckIgnoredOptedOut) {
-  using enum EntityTypeName;
   SetAutofillAiOptInStatus(client(), AutofillAiOptInStatus::kOptedOut);
   client().SetCanUseModelExecutionFeatures(false);
 
@@ -389,7 +389,6 @@ TEST_P(AutofillAiMayPerformActionTest, CapabilityCheckIgnoredOptedOut) {
 
 // Tests that only filling and cache use are allowed off-the-record.
 TEST_P(AutofillAiMayPerformActionTest, OffTheRecord) {
-  using enum EntityTypeName;
   client().set_is_off_the_record(true);
   const bool is_allowed =
       GetParam() == AutofillAiAction::kFilling ||
@@ -401,7 +400,6 @@ TEST_P(AutofillAiMayPerformActionTest, OffTheRecord) {
 }
 
 TEST_P(AutofillAiMayPerformActionTest, CountryCode) {
-  using enum EntityTypeName;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(features::kAutofillAiIgnoreGeoIp);
   client().SetVariationConfigCountryCode(GeoIpCountryCode("DE"));
@@ -412,7 +410,6 @@ TEST_P(AutofillAiMayPerformActionTest, CountryCode) {
 // Tests that if `kAutofillAiIgnoreGeoIp` and an allowlist is set, the feature
 // is enabled in countries on the allowlist.
 TEST_P(AutofillAiMayPerformActionTest, CountryCodeWithAllowlist) {
-  using enum EntityTypeName;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       features::kAutofillAiIgnoreGeoIp,
@@ -437,7 +434,6 @@ TEST_P(AutofillAiMayPerformActionTest, CountryCodeWithAllowlist) {
 // Tests that if `kAutofillAiIgnoreGeoIp` and a blocklist is set, the feature
 // is disabled only in the countries on the allowlist.
 TEST_P(AutofillAiMayPerformActionTest, CountryCodeWithBlocklist) {
-  using enum EntityTypeName;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       features::kAutofillAiIgnoreGeoIp,
@@ -470,7 +466,6 @@ TEST_P(AutofillAiMayPerformActionTest, CountryCodeWithBlocklist) {
 // Tests that users can edit stored data even if their GeoIP is on the
 // blocklist.
 TEST_P(AutofillAiMayPerformActionTest, CountryCodeWithBlocklistAndSavedData) {
-  using enum EntityTypeName;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       features::kAutofillAiIgnoreGeoIp,
@@ -489,7 +484,6 @@ TEST_P(AutofillAiMayPerformActionTest, CountryCodeWithBlocklistAndSavedData) {
 // Tests that every GeoIP is permitted if `kAutofillAiIgnoreGeoIp` is enabled
 // and no blocklist or allowlist is set.
 TEST_P(AutofillAiMayPerformActionTest, IgnoreGeoIp) {
-  using enum EntityTypeName;
   base::test::ScopedFeatureList feature_list{features::kAutofillAiIgnoreGeoIp};
 
   const bool is_allowed = GetParam() != AutofillAiAction::kIphForOptIn;
@@ -512,7 +506,6 @@ TEST_P(AutofillAiMayPerformActionTest, IgnoreGeoIp) {
 
 // Tests that the blocklist has priority over the allowlist.
 TEST_P(AutofillAiMayPerformActionTest, IgnoreGeoIpBlocklistAndAllowlist) {
-  using enum EntityTypeName;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       features::kAutofillAiIgnoreGeoIp,
@@ -525,7 +518,6 @@ TEST_P(AutofillAiMayPerformActionTest, IgnoreGeoIpBlocklistAndAllowlist) {
 }
 
 TEST_P(AutofillAiMayPerformActionTest, AppLocale) {
-  using enum EntityTypeName;
   client().set_app_locale("de-DE");
 
   const bool is_allowed = GetParam() != AutofillAiAction::kIphForOptIn;
@@ -537,7 +529,6 @@ TEST_P(AutofillAiMayPerformActionTest, AppLocale) {
 // Tests that Wallet-related actions are not available on non-supported
 // countries.
 TEST_P(AutofillAiMayPerformActionTest, kWalletSupportedCountries) {
-  using enum EntityTypeName;
   base::test::ScopedFeatureList feature_list{features::kAutofillAiIgnoreGeoIp};
   // Wallet is not supported in India.
   client().SetVariationConfigCountryCode(GeoIpCountryCode("IN"));
@@ -675,7 +666,6 @@ INSTANTIATE_TEST_SUITE_P(
 // the pref state.
 TEST_P(AutofillAiMayPerformFillOrImportTest,
        PrefsAndEntityAffectMayPerformAutofillAiAction) {
-  using enum EntityTypeName;
   EXPECT_EQ(
       MayPerformAutofillAiAction(client(), action(), EntityType(kPassport)),
       identity_entities_enabled());
@@ -696,57 +686,74 @@ class AutofillAiMayPerformImportToWalletTest
 };
 
 TEST_F(AutofillAiMayPerformImportToWalletTest,
-       ImportToWallet_TrueWhenSyncingWallet) {
+       ImportToWallet_TrueForVehicleWhenSyncingWallet) {
   client().SetWalletStorageEnabled(true);
-  EXPECT_TRUE(MayPerformAutofillAiAction(client(),
-                                         AutofillAiAction::kImportToWallet,
-                                         EntityType(EntityTypeName::kVehicle)));
+  EXPECT_TRUE(MayPerformAutofillAiAction(
+      client(), AutofillAiAction::kImportToWallet, EntityType(kVehicle)));
 }
 
 TEST_F(AutofillAiMayPerformImportToWalletTest,
-       ImportToWallet_FalseWhenWalletPrefDisabled) {
+       ImportToWallet_FalseForVehicleWhenWalletPrefDisabled) {
   client().SetWalletStorageEnabled(false);
-  EXPECT_FALSE(
-      MayPerformAutofillAiAction(client(), AutofillAiAction::kImportToWallet,
-                                 EntityType(EntityTypeName::kVehicle)));
+  EXPECT_FALSE(MayPerformAutofillAiAction(
+      client(), AutofillAiAction::kImportToWallet, EntityType(kVehicle)));
 }
 
 TEST_F(AutofillAiMayPerformImportToWalletTest,
-       ImportToWallet_FalseEntityTypeIsNotWalletable) {
+       ImportToWallet_FalseForPrivatePassesIfFeatureIsOff) {
   client().SetWalletStorageEnabled(true);
-  EXPECT_FALSE(
-      MayPerformAutofillAiAction(client(), AutofillAiAction::kImportToWallet,
-                                 EntityType(EntityTypeName::kPassport)));
+  for (const EntityType entity_type : GetPrivatePasses()) {
+    EXPECT_FALSE(MayPerformAutofillAiAction(
+        client(), AutofillAiAction::kImportToWallet, entity_type))
+        << entity_type;
+  }
 }
 
 TEST_F(AutofillAiMayPerformImportToWalletTest,
-       ImportToWallet_FalseWhenFeatureIsOff) {
+       ImportToWallet_TrueForPrivatePassIfFeatureIsOn) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAiWalletPrivatePasses};
+  client().SetWalletStorageEnabled(true);
+  for (const EntityType entity_type : GetPrivatePasses()) {
+    EXPECT_TRUE(MayPerformAutofillAiAction(
+        client(), AutofillAiAction::kImportToWallet, entity_type))
+        << entity_type;
+  }
+}
+
+TEST_F(AutofillAiMayPerformImportToWalletTest,
+       ImportToWallet_FalseForVehicleWhenFeatureIsOff) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
       features::kAutofillAiWalletVehicleRegistration);
   client().SetWalletStorageEnabled(true);
-  EXPECT_FALSE(
-      MayPerformAutofillAiAction(client(), AutofillAiAction::kImportToWallet,
-                                 EntityType(EntityTypeName::kPassport)));
+  EXPECT_FALSE(MayPerformAutofillAiAction(
+      client(), AutofillAiAction::kImportToWallet, EntityType(kVehicle)));
 }
 
 TEST_F(AutofillAiMayPerformImportToWalletTest,
        ImportToWallet_FalseWhenNotSyncingWallet) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAiWalletPrivatePasses};
   client().GetSyncService()->GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kPayments, false);
   client().SetWalletStorageEnabled(true);
-  EXPECT_FALSE(
-      MayPerformAutofillAiAction(client(), AutofillAiAction::kImportToWallet,
-                                 EntityType(EntityTypeName::kVehicle)));
+  EXPECT_FALSE(MayPerformAutofillAiAction(
+      client(), AutofillAiAction::kImportToWallet, EntityType(kVehicle)));
+  EXPECT_FALSE(MayPerformAutofillAiAction(
+      client(), AutofillAiAction::kImportToWallet, EntityType(kPassport)));
 }
 
 TEST_F(AutofillAiMayPerformImportToWalletTest,
        ImportToWallet_FalseWhenAutofillValuableIsNotActive) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAiWalletPrivatePasses};
   ON_CALL(sync_service(), GetActiveDataTypes())
       .WillByDefault(Return(syncer::DataTypeSet()));
-  EXPECT_FALSE(
-      MayPerformAutofillAiAction(client(), AutofillAiAction::kImportToWallet,
-                                 EntityType(EntityTypeName::kVehicle)));
+  EXPECT_FALSE(MayPerformAutofillAiAction(
+      client(), AutofillAiAction::kImportToWallet, EntityType(kVehicle)));
+  EXPECT_FALSE(MayPerformAutofillAiAction(
+      client(), AutofillAiAction::kImportToWallet, EntityType(kPassport)));
 }
 
 }  // namespace

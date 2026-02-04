@@ -200,6 +200,7 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
       case EntityTypeName::kDriversLicense:
       case EntityTypeName::kRedressNumber:
       case EntityTypeName::kKnownTravelerNumber:
+        return is_enabled(features::kAutofillAiWalletPrivatePasses);
       case EntityTypeName::kFlightReservation:
         return false;
     }
