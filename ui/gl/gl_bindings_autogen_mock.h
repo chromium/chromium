@@ -675,11 +675,6 @@ static GLint GL_BINDING_CALL Mock_glGetAttribLocation(GLuint program,
 static void GL_BINDING_CALL Mock_glGetBooleani_v(GLenum target,
                                                  GLuint index,
                                                  GLboolean* data);
-static void GL_BINDING_CALL Mock_glGetBooleani_vRobustANGLE(GLenum target,
-                                                            GLuint index,
-                                                            GLsizei bufSize,
-                                                            GLsizei* length,
-                                                            GLboolean* data);
 static void GL_BINDING_CALL Mock_glGetBooleanv(GLenum pname, GLboolean* params);
 static void GL_BINDING_CALL Mock_glGetBooleanvRobustANGLE(GLenum pname,
                                                           GLsizei bufSize,
@@ -749,12 +744,6 @@ Mock_glGetFramebufferAttachmentParameterivRobustANGLE(GLenum target,
 static void GL_BINDING_CALL Mock_glGetFramebufferParameteriv(GLenum target,
                                                              GLenum pname,
                                                              GLint* params);
-static void GL_BINDING_CALL
-Mock_glGetFramebufferParameterivRobustANGLE(GLenum target,
-                                            GLenum pname,
-                                            GLsizei bufSize,
-                                            GLsizei* length,
-                                            GLint* params);
 static void GL_BINDING_CALL
 Mock_glGetFramebufferPixelLocalStorageParameterfvANGLE(GLint plane,
                                                        GLenum pname,
@@ -851,11 +840,6 @@ static void GL_BINDING_CALL Mock_glGetObjectPtrLabelKHR(void* ptr,
                                                         char* label);
 static void GL_BINDING_CALL Mock_glGetPointerv(GLenum pname, void** params);
 static void GL_BINDING_CALL Mock_glGetPointervKHR(GLenum pname, void** params);
-static void GL_BINDING_CALL
-Mock_glGetPointervRobustANGLERobustANGLE(GLenum pname,
-                                         GLsizei bufSize,
-                                         GLsizei* length,
-                                         void** params);
 static void GL_BINDING_CALL Mock_glGetProgramBinary(GLuint program,
                                                     GLsizei bufSize,
                                                     GLsizei* length,
@@ -875,13 +859,6 @@ Mock_glGetProgramInterfaceiv(GLuint program,
                              GLenum programInterface,
                              GLenum pname,
                              GLint* params);
-static void GL_BINDING_CALL
-Mock_glGetProgramInterfaceivRobustANGLE(GLuint program,
-                                        GLenum programInterface,
-                                        GLenum pname,
-                                        GLsizei bufSize,
-                                        GLsizei* length,
-                                        GLint* params);
 static void GL_BINDING_CALL Mock_glGetProgramPipelineInfoLog(GLuint pipeline,
                                                              GLsizei bufSize,
                                                              GLsizei* length,
@@ -977,18 +954,6 @@ Mock_glGetRenderbufferParameterivRobustANGLE(GLenum target,
                                              GLsizei bufSize,
                                              GLsizei* length,
                                              GLint* params);
-static void GL_BINDING_CALL
-Mock_glGetSamplerParameterIivRobustANGLE(GLuint sampler,
-                                         GLenum pname,
-                                         GLsizei bufSize,
-                                         GLsizei* length,
-                                         GLint* params);
-static void GL_BINDING_CALL
-Mock_glGetSamplerParameterIuivRobustANGLE(GLuint sampler,
-                                          GLenum pname,
-                                          GLsizei bufSize,
-                                          GLsizei* length,
-                                          GLuint* params);
 static void GL_BINDING_CALL Mock_glGetSamplerParameterfv(GLuint sampler,
                                                          GLenum pname,
                                                          GLfloat* params);
@@ -1066,18 +1031,6 @@ Mock_glGetTexLevelParameterivRobustANGLE(GLenum target,
                                          GLsizei bufSize,
                                          GLsizei* length,
                                          GLint* params);
-static void GL_BINDING_CALL
-Mock_glGetTexParameterIivRobustANGLE(GLenum target,
-                                     GLenum pname,
-                                     GLsizei bufSize,
-                                     GLsizei* length,
-                                     GLint* params);
-static void GL_BINDING_CALL
-Mock_glGetTexParameterIuivRobustANGLE(GLenum target,
-                                      GLenum pname,
-                                      GLsizei bufSize,
-                                      GLsizei* length,
-                                      GLuint* params);
 static void GL_BINDING_CALL Mock_glGetTexParameterfv(GLenum target,
                                                      GLenum pname,
                                                      GLfloat* params);
@@ -1178,21 +1131,6 @@ static void GL_BINDING_CALL Mock_glGetVertexAttribivRobustANGLE(GLuint index,
                                                                 GLsizei bufSize,
                                                                 GLsizei* length,
                                                                 GLint* params);
-static void GL_BINDING_CALL Mock_glGetnUniformfvRobustANGLE(GLuint program,
-                                                            GLint location,
-                                                            GLsizei bufSize,
-                                                            GLsizei* length,
-                                                            GLfloat* params);
-static void GL_BINDING_CALL Mock_glGetnUniformivRobustANGLE(GLuint program,
-                                                            GLint location,
-                                                            GLsizei bufSize,
-                                                            GLsizei* length,
-                                                            GLint* params);
-static void GL_BINDING_CALL Mock_glGetnUniformuivRobustANGLE(GLuint program,
-                                                             GLint location,
-                                                             GLsizei bufSize,
-                                                             GLsizei* length,
-                                                             GLuint* params);
 static void GL_BINDING_CALL Mock_glHint(GLenum target, GLenum mode);
 static void GL_BINDING_CALL Mock_glImportMemoryFdEXT(GLuint memory,
                                                      GLuint64 size,
@@ -1541,17 +1479,6 @@ static void GL_BINDING_CALL Mock_glReadPixelsRobustANGLE(GLint x,
                                                          GLsizei* columns,
                                                          GLsizei* rows,
                                                          void* pixels);
-static void GL_BINDING_CALL Mock_glReadnPixelsRobustANGLE(GLint x,
-                                                          GLint y,
-                                                          GLsizei width,
-                                                          GLsizei height,
-                                                          GLenum format,
-                                                          GLenum type,
-                                                          GLsizei bufSize,
-                                                          GLsizei* length,
-                                                          GLsizei* columns,
-                                                          GLsizei* rows,
-                                                          void* data);
 static void GL_BINDING_CALL Mock_glReleaseShaderCompiler(void);
 static void GL_BINDING_CALL Mock_glReleaseTexturesANGLE(GLuint numTextures,
                                                         const GLuint* textures,
@@ -1597,16 +1524,6 @@ static void GL_BINDING_CALL Mock_glSampleCoverage(GLclampf value,
                                                   GLboolean invert);
 static void GL_BINDING_CALL Mock_glSampleMaski(GLuint maskNumber,
                                                GLbitfield mask);
-static void GL_BINDING_CALL
-Mock_glSamplerParameterIivRobustANGLE(GLuint sampler,
-                                      GLenum pname,
-                                      GLsizei bufSize,
-                                      const GLint* param);
-static void GL_BINDING_CALL
-Mock_glSamplerParameterIuivRobustANGLE(GLuint sampler,
-                                       GLenum pname,
-                                       GLsizei bufSize,
-                                       const GLuint* param);
 static void GL_BINDING_CALL Mock_glSamplerParameterf(GLuint sampler,
                                                      GLenum pname,
                                                      GLfloat param);
@@ -1744,16 +1661,6 @@ static void GL_BINDING_CALL Mock_glTexImage3DRobustANGLE(GLenum target,
                                                          GLenum type,
                                                          GLsizei bufSize,
                                                          const void* pixels);
-static void GL_BINDING_CALL
-Mock_glTexParameterIivRobustANGLE(GLenum target,
-                                  GLenum pname,
-                                  GLsizei bufSize,
-                                  const GLint* params);
-static void GL_BINDING_CALL
-Mock_glTexParameterIuivRobustANGLE(GLenum target,
-                                   GLenum pname,
-                                   GLsizei bufSize,
-                                   const GLuint* params);
 static void GL_BINDING_CALL Mock_glTexParameterf(GLenum target,
                                                  GLenum pname,
                                                  GLfloat param);

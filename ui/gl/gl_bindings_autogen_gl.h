@@ -587,11 +587,6 @@ typedef GLint(GL_BINDING_CALL* glGetAttribLocationProc)(GLuint program,
 typedef void(GL_BINDING_CALL* glGetBooleani_vProc)(GLenum target,
                                                    GLuint index,
                                                    GLboolean* data);
-typedef void(GL_BINDING_CALL* glGetBooleani_vRobustANGLEProc)(GLenum target,
-                                                              GLuint index,
-                                                              GLsizei bufSize,
-                                                              GLsizei* length,
-                                                              GLboolean* data);
 typedef void(GL_BINDING_CALL* glGetBooleanvProc)(GLenum pname,
                                                  GLboolean* params);
 typedef void(GL_BINDING_CALL* glGetBooleanvRobustANGLEProc)(GLenum pname,
@@ -656,12 +651,6 @@ typedef void(
 typedef void(GL_BINDING_CALL* glGetFramebufferParameterivProc)(GLenum target,
                                                                GLenum pname,
                                                                GLint* params);
-typedef void(GL_BINDING_CALL* glGetFramebufferParameterivRobustANGLEProc)(
-    GLenum target,
-    GLenum pname,
-    GLsizei bufSize,
-    GLsizei* length,
-    GLint* params);
 typedef void(
     GL_BINDING_CALL* glGetFramebufferPixelLocalStorageParameterfvANGLEProc)(
     GLint plane,
@@ -742,21 +731,6 @@ typedef void(GL_BINDING_CALL* glGetMultisamplefvRobustANGLEProc)(
     GLsizei bufSize,
     GLsizei* length,
     GLfloat* val);
-typedef void(GL_BINDING_CALL* glGetnUniformfvRobustANGLEProc)(GLuint program,
-                                                              GLint location,
-                                                              GLsizei bufSize,
-                                                              GLsizei* length,
-                                                              GLfloat* params);
-typedef void(GL_BINDING_CALL* glGetnUniformivRobustANGLEProc)(GLuint program,
-                                                              GLint location,
-                                                              GLsizei bufSize,
-                                                              GLsizei* length,
-                                                              GLint* params);
-typedef void(GL_BINDING_CALL* glGetnUniformuivRobustANGLEProc)(GLuint program,
-                                                               GLint location,
-                                                               GLsizei bufSize,
-                                                               GLsizei* length,
-                                                               GLuint* params);
 typedef void(GL_BINDING_CALL* glGetObjectLabelProc)(GLenum identifier,
                                                     GLuint name,
                                                     GLsizei bufSize,
@@ -767,11 +741,6 @@ typedef void(GL_BINDING_CALL* glGetObjectPtrLabelProc)(void* ptr,
                                                        GLsizei* length,
                                                        char* label);
 typedef void(GL_BINDING_CALL* glGetPointervProc)(GLenum pname, void** params);
-typedef void(GL_BINDING_CALL* glGetPointervRobustANGLERobustANGLEProc)(
-    GLenum pname,
-    GLsizei bufSize,
-    GLsizei* length,
-    void** params);
 typedef void(GL_BINDING_CALL* glGetProgramBinaryProc)(GLuint program,
                                                       GLsizei bufSize,
                                                       GLsizei* length,
@@ -785,13 +754,6 @@ typedef void(GL_BINDING_CALL* glGetProgramInterfaceivProc)(
     GLuint program,
     GLenum programInterface,
     GLenum pname,
-    GLint* params);
-typedef void(GL_BINDING_CALL* glGetProgramInterfaceivRobustANGLEProc)(
-    GLuint program,
-    GLenum programInterface,
-    GLenum pname,
-    GLsizei bufSize,
-    GLsizei* length,
     GLint* params);
 typedef void(GL_BINDING_CALL* glGetProgramivProc)(GLuint program,
                                                   GLenum pname,
@@ -895,18 +857,6 @@ typedef void(GL_BINDING_CALL* glGetSamplerParameterfvRobustANGLEProc)(
     GLsizei bufSize,
     GLsizei* length,
     GLfloat* params);
-typedef void(GL_BINDING_CALL* glGetSamplerParameterIivRobustANGLEProc)(
-    GLuint sampler,
-    GLenum pname,
-    GLsizei bufSize,
-    GLsizei* length,
-    GLint* params);
-typedef void(GL_BINDING_CALL* glGetSamplerParameterIuivRobustANGLEProc)(
-    GLuint sampler,
-    GLenum pname,
-    GLsizei bufSize,
-    GLsizei* length,
-    GLuint* params);
 typedef void(GL_BINDING_CALL* glGetSamplerParameterivProc)(GLuint sampler,
                                                            GLenum pname,
                                                            GLint* params);
@@ -976,18 +926,6 @@ typedef void(GL_BINDING_CALL* glGetTexParameterfvRobustANGLEProc)(
     GLsizei bufSize,
     GLsizei* length,
     GLfloat* params);
-typedef void(GL_BINDING_CALL* glGetTexParameterIivRobustANGLEProc)(
-    GLenum target,
-    GLenum pname,
-    GLsizei bufSize,
-    GLsizei* length,
-    GLint* params);
-typedef void(GL_BINDING_CALL* glGetTexParameterIuivRobustANGLEProc)(
-    GLenum target,
-    GLenum pname,
-    GLsizei bufSize,
-    GLsizei* length,
-    GLuint* params);
 typedef void(GL_BINDING_CALL* glGetTexParameterivProc)(GLenum target,
                                                        GLenum pname,
                                                        GLint* params);
@@ -1390,17 +1328,6 @@ typedef void(GL_BINDING_CALL* glPushGroupMarkerEXTProc)(GLsizei length,
                                                         const char* marker);
 typedef void(GL_BINDING_CALL* glQueryCounterProc)(GLuint id, GLenum target);
 typedef void(GL_BINDING_CALL* glReadBufferProc)(GLenum src);
-typedef void(GL_BINDING_CALL* glReadnPixelsRobustANGLEProc)(GLint x,
-                                                            GLint y,
-                                                            GLsizei width,
-                                                            GLsizei height,
-                                                            GLenum format,
-                                                            GLenum type,
-                                                            GLsizei bufSize,
-                                                            GLsizei* length,
-                                                            GLsizei* columns,
-                                                            GLsizei* rows,
-                                                            void* data);
 typedef void(GL_BINDING_CALL* glReadPixelsProc)(GLint x,
                                                 GLint y,
                                                 GLsizei width,
@@ -1468,16 +1395,6 @@ typedef void(GL_BINDING_CALL* glSamplerParameterfvRobustANGLEProc)(
 typedef void(GL_BINDING_CALL* glSamplerParameteriProc)(GLuint sampler,
                                                        GLenum pname,
                                                        GLint param);
-typedef void(GL_BINDING_CALL* glSamplerParameterIivRobustANGLEProc)(
-    GLuint sampler,
-    GLenum pname,
-    GLsizei bufSize,
-    const GLint* param);
-typedef void(GL_BINDING_CALL* glSamplerParameterIuivRobustANGLEProc)(
-    GLuint sampler,
-    GLenum pname,
-    GLsizei bufSize,
-    const GLuint* param);
 typedef void(GL_BINDING_CALL* glSamplerParameterivProc)(GLuint sampler,
                                                         GLenum pname,
                                                         const GLint* params);
@@ -1601,16 +1518,6 @@ typedef void(GL_BINDING_CALL* glTexParameterfvRobustANGLEProc)(
 typedef void(GL_BINDING_CALL* glTexParameteriProc)(GLenum target,
                                                    GLenum pname,
                                                    GLint param);
-typedef void(GL_BINDING_CALL* glTexParameterIivRobustANGLEProc)(
-    GLenum target,
-    GLenum pname,
-    GLsizei bufSize,
-    const GLint* params);
-typedef void(GL_BINDING_CALL* glTexParameterIuivRobustANGLEProc)(
-    GLenum target,
-    GLenum pname,
-    GLsizei bufSize,
-    const GLuint* params);
 typedef void(GL_BINDING_CALL* glTexParameterivProc)(GLenum target,
                                                     GLenum pname,
                                                     const GLint* params);
@@ -2160,7 +2067,6 @@ struct ProcsGL {
   glGetAttachedShadersProc glGetAttachedShadersFn;
   glGetAttribLocationProc glGetAttribLocationFn;
   glGetBooleani_vProc glGetBooleani_vFn;
-  glGetBooleani_vRobustANGLEProc glGetBooleani_vRobustANGLEFn;
   glGetBooleanvProc glGetBooleanvFn;
   glGetBooleanvRobustANGLEProc glGetBooleanvRobustANGLEFn;
   glGetBufferParameteri64vRobustANGLEProc glGetBufferParameteri64vRobustANGLEFn;
@@ -2179,8 +2085,6 @@ struct ProcsGL {
   glGetFramebufferAttachmentParameterivRobustANGLEProc
       glGetFramebufferAttachmentParameterivRobustANGLEFn;
   glGetFramebufferParameterivProc glGetFramebufferParameterivFn;
-  glGetFramebufferParameterivRobustANGLEProc
-      glGetFramebufferParameterivRobustANGLEFn;
   glGetFramebufferPixelLocalStorageParameterfvANGLEProc
       glGetFramebufferPixelLocalStorageParameterfvANGLEFn;
   glGetFramebufferPixelLocalStorageParameterfvRobustANGLEProc
@@ -2203,17 +2107,12 @@ struct ProcsGL {
   glGetInternalformatSampleivNVProc glGetInternalformatSampleivNVFn;
   glGetMultisamplefvProc glGetMultisamplefvFn;
   glGetMultisamplefvRobustANGLEProc glGetMultisamplefvRobustANGLEFn;
-  glGetnUniformfvRobustANGLEProc glGetnUniformfvRobustANGLEFn;
-  glGetnUniformivRobustANGLEProc glGetnUniformivRobustANGLEFn;
-  glGetnUniformuivRobustANGLEProc glGetnUniformuivRobustANGLEFn;
   glGetObjectLabelProc glGetObjectLabelFn;
   glGetObjectPtrLabelProc glGetObjectPtrLabelFn;
   glGetPointervProc glGetPointervFn;
-  glGetPointervRobustANGLERobustANGLEProc glGetPointervRobustANGLERobustANGLEFn;
   glGetProgramBinaryProc glGetProgramBinaryFn;
   glGetProgramInfoLogProc glGetProgramInfoLogFn;
   glGetProgramInterfaceivProc glGetProgramInterfaceivFn;
-  glGetProgramInterfaceivRobustANGLEProc glGetProgramInterfaceivRobustANGLEFn;
   glGetProgramivProc glGetProgramivFn;
   glGetProgramivRobustANGLEProc glGetProgramivRobustANGLEFn;
   glGetProgramPipelineInfoLogProc glGetProgramPipelineInfoLogFn;
@@ -2237,9 +2136,6 @@ struct ProcsGL {
       glGetRenderbufferParameterivRobustANGLEFn;
   glGetSamplerParameterfvProc glGetSamplerParameterfvFn;
   glGetSamplerParameterfvRobustANGLEProc glGetSamplerParameterfvRobustANGLEFn;
-  glGetSamplerParameterIivRobustANGLEProc glGetSamplerParameterIivRobustANGLEFn;
-  glGetSamplerParameterIuivRobustANGLEProc
-      glGetSamplerParameterIuivRobustANGLEFn;
   glGetSamplerParameterivProc glGetSamplerParameterivFn;
   glGetSamplerParameterivRobustANGLEProc glGetSamplerParameterivRobustANGLEFn;
   glGetShaderInfoLogProc glGetShaderInfoLogFn;
@@ -2256,8 +2152,6 @@ struct ProcsGL {
   glGetTexLevelParameterivRobustANGLEProc glGetTexLevelParameterivRobustANGLEFn;
   glGetTexParameterfvProc glGetTexParameterfvFn;
   glGetTexParameterfvRobustANGLEProc glGetTexParameterfvRobustANGLEFn;
-  glGetTexParameterIivRobustANGLEProc glGetTexParameterIivRobustANGLEFn;
-  glGetTexParameterIuivRobustANGLEProc glGetTexParameterIuivRobustANGLEFn;
   glGetTexParameterivProc glGetTexParameterivFn;
   glGetTexParameterivRobustANGLEProc glGetTexParameterivRobustANGLEFn;
   glGetTransformFeedbackVaryingProc glGetTransformFeedbackVaryingFn;
@@ -2377,7 +2271,6 @@ struct ProcsGL {
   glPushGroupMarkerEXTProc glPushGroupMarkerEXTFn;
   glQueryCounterProc glQueryCounterFn;
   glReadBufferProc glReadBufferFn;
-  glReadnPixelsRobustANGLEProc glReadnPixelsRobustANGLEFn;
   glReadPixelsProc glReadPixelsFn;
   glReadPixelsRobustANGLEProc glReadPixelsRobustANGLEFn;
   glReleaseShaderCompilerProc glReleaseShaderCompilerFn;
@@ -2395,8 +2288,6 @@ struct ProcsGL {
   glSamplerParameterfvProc glSamplerParameterfvFn;
   glSamplerParameterfvRobustANGLEProc glSamplerParameterfvRobustANGLEFn;
   glSamplerParameteriProc glSamplerParameteriFn;
-  glSamplerParameterIivRobustANGLEProc glSamplerParameterIivRobustANGLEFn;
-  glSamplerParameterIuivRobustANGLEProc glSamplerParameterIuivRobustANGLEFn;
   glSamplerParameterivProc glSamplerParameterivFn;
   glSamplerParameterivRobustANGLEProc glSamplerParameterivRobustANGLEFn;
   glScissorProc glScissorFn;
@@ -2423,8 +2314,6 @@ struct ProcsGL {
   glTexParameterfvProc glTexParameterfvFn;
   glTexParameterfvRobustANGLEProc glTexParameterfvRobustANGLEFn;
   glTexParameteriProc glTexParameteriFn;
-  glTexParameterIivRobustANGLEProc glTexParameterIivRobustANGLEFn;
-  glTexParameterIuivRobustANGLEProc glTexParameterIuivRobustANGLEFn;
   glTexParameterivProc glTexParameterivFn;
   glTexParameterivRobustANGLEProc glTexParameterivRobustANGLEFn;
   glTexStorage2DEXTProc glTexStorage2DEXTFn;
@@ -3006,11 +2895,6 @@ class GL_EXPORT GLApi {
   virtual void glGetBooleani_vFn(GLenum target,
                                  GLuint index,
                                  GLboolean* data) = 0;
-  virtual void glGetBooleani_vRobustANGLEFn(GLenum target,
-                                            GLuint index,
-                                            GLsizei bufSize,
-                                            GLsizei* length,
-                                            GLboolean* data) = 0;
   virtual void glGetBooleanvFn(GLenum pname, GLboolean* params) = 0;
   virtual void glGetBooleanvRobustANGLEFn(GLenum pname,
                                           GLsizei bufSize,
@@ -3065,11 +2949,6 @@ class GL_EXPORT GLApi {
   virtual void glGetFramebufferParameterivFn(GLenum target,
                                              GLenum pname,
                                              GLint* params) = 0;
-  virtual void glGetFramebufferParameterivRobustANGLEFn(GLenum target,
-                                                        GLenum pname,
-                                                        GLsizei bufSize,
-                                                        GLsizei* length,
-                                                        GLint* params) = 0;
   virtual void glGetFramebufferPixelLocalStorageParameterfvANGLEFn(
       GLint plane,
       GLenum pname,
@@ -3140,21 +3019,6 @@ class GL_EXPORT GLApi {
                                                GLsizei bufSize,
                                                GLsizei* length,
                                                GLfloat* val) = 0;
-  virtual void glGetnUniformfvRobustANGLEFn(GLuint program,
-                                            GLint location,
-                                            GLsizei bufSize,
-                                            GLsizei* length,
-                                            GLfloat* params) = 0;
-  virtual void glGetnUniformivRobustANGLEFn(GLuint program,
-                                            GLint location,
-                                            GLsizei bufSize,
-                                            GLsizei* length,
-                                            GLint* params) = 0;
-  virtual void glGetnUniformuivRobustANGLEFn(GLuint program,
-                                             GLint location,
-                                             GLsizei bufSize,
-                                             GLsizei* length,
-                                             GLuint* params) = 0;
   virtual void glGetObjectLabelFn(GLenum identifier,
                                   GLuint name,
                                   GLsizei bufSize,
@@ -3165,10 +3029,6 @@ class GL_EXPORT GLApi {
                                      GLsizei* length,
                                      char* label) = 0;
   virtual void glGetPointervFn(GLenum pname, void** params) = 0;
-  virtual void glGetPointervRobustANGLERobustANGLEFn(GLenum pname,
-                                                     GLsizei bufSize,
-                                                     GLsizei* length,
-                                                     void** params) = 0;
   virtual void glGetProgramBinaryFn(GLuint program,
                                     GLsizei bufSize,
                                     GLsizei* length,
@@ -3182,12 +3042,6 @@ class GL_EXPORT GLApi {
                                          GLenum programInterface,
                                          GLenum pname,
                                          GLint* params) = 0;
-  virtual void glGetProgramInterfaceivRobustANGLEFn(GLuint program,
-                                                    GLenum programInterface,
-                                                    GLenum pname,
-                                                    GLsizei bufSize,
-                                                    GLsizei* length,
-                                                    GLint* params) = 0;
   virtual void glGetProgramivFn(GLuint program,
                                 GLenum pname,
                                 GLint* params) = 0;
@@ -3275,16 +3129,6 @@ class GL_EXPORT GLApi {
                                                     GLsizei bufSize,
                                                     GLsizei* length,
                                                     GLfloat* params) = 0;
-  virtual void glGetSamplerParameterIivRobustANGLEFn(GLuint sampler,
-                                                     GLenum pname,
-                                                     GLsizei bufSize,
-                                                     GLsizei* length,
-                                                     GLint* params) = 0;
-  virtual void glGetSamplerParameterIuivRobustANGLEFn(GLuint sampler,
-                                                      GLenum pname,
-                                                      GLsizei bufSize,
-                                                      GLsizei* length,
-                                                      GLuint* params) = 0;
   virtual void glGetSamplerParameterivFn(GLuint sampler,
                                          GLenum pname,
                                          GLint* params) = 0;
@@ -3346,16 +3190,6 @@ class GL_EXPORT GLApi {
                                                 GLsizei bufSize,
                                                 GLsizei* length,
                                                 GLfloat* params) = 0;
-  virtual void glGetTexParameterIivRobustANGLEFn(GLenum target,
-                                                 GLenum pname,
-                                                 GLsizei bufSize,
-                                                 GLsizei* length,
-                                                 GLint* params) = 0;
-  virtual void glGetTexParameterIuivRobustANGLEFn(GLenum target,
-                                                  GLenum pname,
-                                                  GLsizei bufSize,
-                                                  GLsizei* length,
-                                                  GLuint* params) = 0;
   virtual void glGetTexParameterivFn(GLenum target,
                                      GLenum pname,
                                      GLint* params) = 0;
@@ -3723,17 +3557,6 @@ class GL_EXPORT GLApi {
   virtual void glPushGroupMarkerEXTFn(GLsizei length, const char* marker) = 0;
   virtual void glQueryCounterFn(GLuint id, GLenum target) = 0;
   virtual void glReadBufferFn(GLenum src) = 0;
-  virtual void glReadnPixelsRobustANGLEFn(GLint x,
-                                          GLint y,
-                                          GLsizei width,
-                                          GLsizei height,
-                                          GLenum format,
-                                          GLenum type,
-                                          GLsizei bufSize,
-                                          GLsizei* length,
-                                          GLsizei* columns,
-                                          GLsizei* rows,
-                                          void* data) = 0;
   virtual void glReadPixelsFn(GLint x,
                               GLint y,
                               GLsizei width,
@@ -3794,14 +3617,6 @@ class GL_EXPORT GLApi {
   virtual void glSamplerParameteriFn(GLuint sampler,
                                      GLenum pname,
                                      GLint param) = 0;
-  virtual void glSamplerParameterIivRobustANGLEFn(GLuint sampler,
-                                                  GLenum pname,
-                                                  GLsizei bufSize,
-                                                  const GLint* param) = 0;
-  virtual void glSamplerParameterIuivRobustANGLEFn(GLuint sampler,
-                                                   GLenum pname,
-                                                   GLsizei bufSize,
-                                                   const GLuint* param) = 0;
   virtual void glSamplerParameterivFn(GLuint sampler,
                                       GLenum pname,
                                       const GLint* params) = 0;
@@ -3911,14 +3726,6 @@ class GL_EXPORT GLApi {
                                              GLsizei bufSize,
                                              const GLfloat* params) = 0;
   virtual void glTexParameteriFn(GLenum target, GLenum pname, GLint param) = 0;
-  virtual void glTexParameterIivRobustANGLEFn(GLenum target,
-                                              GLenum pname,
-                                              GLsizei bufSize,
-                                              const GLint* params) = 0;
-  virtual void glTexParameterIuivRobustANGLEFn(GLenum target,
-                                               GLenum pname,
-                                               GLsizei bufSize,
-                                               const GLuint* params) = 0;
   virtual void glTexParameterivFn(GLenum target,
                                   GLenum pname,
                                   const GLint* params) = 0;
@@ -4428,8 +4235,6 @@ class GL_EXPORT GLApi {
 #define glGetAttachedShaders ::gl::g_current_gl_context->glGetAttachedShadersFn
 #define glGetAttribLocation ::gl::g_current_gl_context->glGetAttribLocationFn
 #define glGetBooleani_v ::gl::g_current_gl_context->glGetBooleani_vFn
-#define glGetBooleani_vRobustANGLE \
-  ::gl::g_current_gl_context->glGetBooleani_vRobustANGLEFn
 #define glGetBooleanv ::gl::g_current_gl_context->glGetBooleanvFn
 #define glGetBooleanvRobustANGLE \
   ::gl::g_current_gl_context->glGetBooleanvRobustANGLEFn
@@ -4456,8 +4261,6 @@ class GL_EXPORT GLApi {
   ::gl::g_current_gl_context->glGetFramebufferAttachmentParameterivRobustANGLEFn
 #define glGetFramebufferParameteriv \
   ::gl::g_current_gl_context->glGetFramebufferParameterivFn
-#define glGetFramebufferParameterivRobustANGLE \
-  ::gl::g_current_gl_context->glGetFramebufferParameterivRobustANGLEFn
 #define glGetFramebufferPixelLocalStorageParameterfvANGLE \
   ::gl::g_current_gl_context                              \
       ->glGetFramebufferPixelLocalStorageParameterfvANGLEFn
@@ -4493,23 +4296,13 @@ class GL_EXPORT GLApi {
 #define glGetMultisamplefv ::gl::g_current_gl_context->glGetMultisamplefvFn
 #define glGetMultisamplefvRobustANGLE \
   ::gl::g_current_gl_context->glGetMultisamplefvRobustANGLEFn
-#define glGetnUniformfvRobustANGLE \
-  ::gl::g_current_gl_context->glGetnUniformfvRobustANGLEFn
-#define glGetnUniformivRobustANGLE \
-  ::gl::g_current_gl_context->glGetnUniformivRobustANGLEFn
-#define glGetnUniformuivRobustANGLE \
-  ::gl::g_current_gl_context->glGetnUniformuivRobustANGLEFn
 #define glGetObjectLabel ::gl::g_current_gl_context->glGetObjectLabelFn
 #define glGetObjectPtrLabel ::gl::g_current_gl_context->glGetObjectPtrLabelFn
 #define glGetPointerv ::gl::g_current_gl_context->glGetPointervFn
-#define glGetPointervRobustANGLERobustANGLE \
-  ::gl::g_current_gl_context->glGetPointervRobustANGLERobustANGLEFn
 #define glGetProgramBinary ::gl::g_current_gl_context->glGetProgramBinaryFn
 #define glGetProgramInfoLog ::gl::g_current_gl_context->glGetProgramInfoLogFn
 #define glGetProgramInterfaceiv \
   ::gl::g_current_gl_context->glGetProgramInterfaceivFn
-#define glGetProgramInterfaceivRobustANGLE \
-  ::gl::g_current_gl_context->glGetProgramInterfaceivRobustANGLEFn
 #define glGetProgramiv ::gl::g_current_gl_context->glGetProgramivFn
 #define glGetProgramivRobustANGLE \
   ::gl::g_current_gl_context->glGetProgramivRobustANGLEFn
@@ -4549,10 +4342,6 @@ class GL_EXPORT GLApi {
   ::gl::g_current_gl_context->glGetSamplerParameterfvFn
 #define glGetSamplerParameterfvRobustANGLE \
   ::gl::g_current_gl_context->glGetSamplerParameterfvRobustANGLEFn
-#define glGetSamplerParameterIivRobustANGLE \
-  ::gl::g_current_gl_context->glGetSamplerParameterIivRobustANGLEFn
-#define glGetSamplerParameterIuivRobustANGLE \
-  ::gl::g_current_gl_context->glGetSamplerParameterIuivRobustANGLEFn
 #define glGetSamplerParameteriv \
   ::gl::g_current_gl_context->glGetSamplerParameterivFn
 #define glGetSamplerParameterivRobustANGLE \
@@ -4578,10 +4367,6 @@ class GL_EXPORT GLApi {
 #define glGetTexParameterfv ::gl::g_current_gl_context->glGetTexParameterfvFn
 #define glGetTexParameterfvRobustANGLE \
   ::gl::g_current_gl_context->glGetTexParameterfvRobustANGLEFn
-#define glGetTexParameterIivRobustANGLE \
-  ::gl::g_current_gl_context->glGetTexParameterIivRobustANGLEFn
-#define glGetTexParameterIuivRobustANGLE \
-  ::gl::g_current_gl_context->glGetTexParameterIuivRobustANGLEFn
 #define glGetTexParameteriv ::gl::g_current_gl_context->glGetTexParameterivFn
 #define glGetTexParameterivRobustANGLE \
   ::gl::g_current_gl_context->glGetTexParameterivRobustANGLEFn
@@ -4745,8 +4530,6 @@ class GL_EXPORT GLApi {
 #define glPushGroupMarkerEXT ::gl::g_current_gl_context->glPushGroupMarkerEXTFn
 #define glQueryCounter ::gl::g_current_gl_context->glQueryCounterFn
 #define glReadBuffer ::gl::g_current_gl_context->glReadBufferFn
-#define glReadnPixelsRobustANGLE \
-  ::gl::g_current_gl_context->glReadnPixelsRobustANGLEFn
 #define glReadPixels ::gl::g_current_gl_context->glReadPixelsFn
 #define glReadPixelsRobustANGLE \
   ::gl::g_current_gl_context->glReadPixelsRobustANGLEFn
@@ -4773,10 +4556,6 @@ class GL_EXPORT GLApi {
 #define glSamplerParameterfvRobustANGLE \
   ::gl::g_current_gl_context->glSamplerParameterfvRobustANGLEFn
 #define glSamplerParameteri ::gl::g_current_gl_context->glSamplerParameteriFn
-#define glSamplerParameterIivRobustANGLE \
-  ::gl::g_current_gl_context->glSamplerParameterIivRobustANGLEFn
-#define glSamplerParameterIuivRobustANGLE \
-  ::gl::g_current_gl_context->glSamplerParameterIuivRobustANGLEFn
 #define glSamplerParameteriv ::gl::g_current_gl_context->glSamplerParameterivFn
 #define glSamplerParameterivRobustANGLE \
   ::gl::g_current_gl_context->glSamplerParameterivRobustANGLEFn
@@ -4810,10 +4589,6 @@ class GL_EXPORT GLApi {
 #define glTexParameterfvRobustANGLE \
   ::gl::g_current_gl_context->glTexParameterfvRobustANGLEFn
 #define glTexParameteri ::gl::g_current_gl_context->glTexParameteriFn
-#define glTexParameterIivRobustANGLE \
-  ::gl::g_current_gl_context->glTexParameterIivRobustANGLEFn
-#define glTexParameterIuivRobustANGLE \
-  ::gl::g_current_gl_context->glTexParameterIuivRobustANGLEFn
 #define glTexParameteriv ::gl::g_current_gl_context->glTexParameterivFn
 #define glTexParameterivRobustANGLE \
   ::gl::g_current_gl_context->glTexParameterivRobustANGLEFn

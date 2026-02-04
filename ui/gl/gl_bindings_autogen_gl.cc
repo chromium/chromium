@@ -1142,12 +1142,6 @@ void DriverGL::InitializeDynamicBindings(GLGetProcAddressProc get_proc_address,
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
-    fn.glGetBooleani_vRobustANGLEFn =
-        reinterpret_cast<glGetBooleani_vRobustANGLEProc>(
-            get_proc_address("glGetBooleani_vRobustANGLE"));
-  }
-
-  if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glGetBooleanvRobustANGLEFn =
         reinterpret_cast<glGetBooleanvRobustANGLEProc>(
             get_proc_address("glGetBooleanvRobustANGLE"));
@@ -1210,12 +1204,6 @@ void DriverGL::InitializeDynamicBindings(GLGetProcAddressProc get_proc_address,
     fn.glGetFramebufferParameterivFn =
         reinterpret_cast<glGetFramebufferParameterivProc>(
             get_proc_address("glGetFramebufferParameteriv"));
-  }
-
-  if (ext.b_GL_ANGLE_robust_client_memory) {
-    fn.glGetFramebufferParameterivRobustANGLEFn =
-        reinterpret_cast<glGetFramebufferParameterivRobustANGLEProc>(
-            get_proc_address("glGetFramebufferParameterivRobustANGLE"));
   }
 
   if (ext.b_GL_ANGLE_shader_pixel_local_storage) {
@@ -1331,24 +1319,6 @@ void DriverGL::InitializeDynamicBindings(GLGetProcAddressProc get_proc_address,
             get_proc_address("glGetMultisamplefvRobustANGLE"));
   }
 
-  if (ext.b_GL_ANGLE_robust_client_memory) {
-    fn.glGetnUniformfvRobustANGLEFn =
-        reinterpret_cast<glGetnUniformfvRobustANGLEProc>(
-            get_proc_address("glGetnUniformfvRobustANGLE"));
-  }
-
-  if (ext.b_GL_ANGLE_robust_client_memory) {
-    fn.glGetnUniformivRobustANGLEFn =
-        reinterpret_cast<glGetnUniformivRobustANGLEProc>(
-            get_proc_address("glGetnUniformivRobustANGLE"));
-  }
-
-  if (ext.b_GL_ANGLE_robust_client_memory) {
-    fn.glGetnUniformuivRobustANGLEFn =
-        reinterpret_cast<glGetnUniformuivRobustANGLEProc>(
-            get_proc_address("glGetnUniformuivRobustANGLE"));
-  }
-
   if (ver->IsAtLeastGLES(3u, 2u)) {
     fn.glGetObjectLabelFn = reinterpret_cast<glGetObjectLabelProc>(
         get_proc_address("glGetObjectLabel"));
@@ -1373,12 +1343,6 @@ void DriverGL::InitializeDynamicBindings(GLGetProcAddressProc get_proc_address,
         get_proc_address("glGetPointervKHR"));
   }
 
-  if (ext.b_GL_ANGLE_robust_client_memory) {
-    fn.glGetPointervRobustANGLERobustANGLEFn =
-        reinterpret_cast<glGetPointervRobustANGLERobustANGLEProc>(
-            get_proc_address("glGetPointervRobustANGLERobustANGLE"));
-  }
-
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glGetProgramBinaryFn = reinterpret_cast<glGetProgramBinaryProc>(
         get_proc_address("glGetProgramBinary"));
@@ -1391,12 +1355,6 @@ void DriverGL::InitializeDynamicBindings(GLGetProcAddressProc get_proc_address,
     fn.glGetProgramInterfaceivFn =
         reinterpret_cast<glGetProgramInterfaceivProc>(
             get_proc_address("glGetProgramInterfaceiv"));
-  }
-
-  if (ext.b_GL_ANGLE_robust_client_memory) {
-    fn.glGetProgramInterfaceivRobustANGLEFn =
-        reinterpret_cast<glGetProgramInterfaceivRobustANGLEProc>(
-            get_proc_address("glGetProgramInterfaceivRobustANGLE"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
@@ -1520,18 +1478,6 @@ void DriverGL::InitializeDynamicBindings(GLGetProcAddressProc get_proc_address,
             get_proc_address("glGetSamplerParameterfvRobustANGLE"));
   }
 
-  if (ext.b_GL_ANGLE_robust_client_memory) {
-    fn.glGetSamplerParameterIivRobustANGLEFn =
-        reinterpret_cast<glGetSamplerParameterIivRobustANGLEProc>(
-            get_proc_address("glGetSamplerParameterIivRobustANGLE"));
-  }
-
-  if (ext.b_GL_ANGLE_robust_client_memory) {
-    fn.glGetSamplerParameterIuivRobustANGLEFn =
-        reinterpret_cast<glGetSamplerParameterIuivRobustANGLEProc>(
-            get_proc_address("glGetSamplerParameterIuivRobustANGLE"));
-  }
-
   if (ver->IsAtLeastGLES(3u, 0u) || ext.b_GL_MESA_sampler_objects) {
     fn.glGetSamplerParameterivFn =
         reinterpret_cast<glGetSamplerParameterivProc>(
@@ -1591,18 +1537,6 @@ void DriverGL::InitializeDynamicBindings(GLGetProcAddressProc get_proc_address,
     fn.glGetTexParameterfvRobustANGLEFn =
         reinterpret_cast<glGetTexParameterfvRobustANGLEProc>(
             get_proc_address("glGetTexParameterfvRobustANGLE"));
-  }
-
-  if (ext.b_GL_ANGLE_robust_client_memory) {
-    fn.glGetTexParameterIivRobustANGLEFn =
-        reinterpret_cast<glGetTexParameterIivRobustANGLEProc>(
-            get_proc_address("glGetTexParameterIivRobustANGLE"));
-  }
-
-  if (ext.b_GL_ANGLE_robust_client_memory) {
-    fn.glGetTexParameterIuivRobustANGLEFn =
-        reinterpret_cast<glGetTexParameterIuivRobustANGLEProc>(
-            get_proc_address("glGetTexParameterIuivRobustANGLE"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
@@ -2150,12 +2084,6 @@ void DriverGL::InitializeDynamicBindings(GLGetProcAddressProc get_proc_address,
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
-    fn.glReadnPixelsRobustANGLEFn =
-        reinterpret_cast<glReadnPixelsRobustANGLEProc>(
-            get_proc_address("glReadnPixelsRobustANGLE"));
-  }
-
-  if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glReadPixelsRobustANGLEFn =
         reinterpret_cast<glReadPixelsRobustANGLEProc>(
             get_proc_address("glReadPixelsRobustANGLE"));
@@ -2232,18 +2160,6 @@ void DriverGL::InitializeDynamicBindings(GLGetProcAddressProc get_proc_address,
   if (ver->IsAtLeastGLES(3u, 0u) || ext.b_GL_MESA_sampler_objects) {
     fn.glSamplerParameteriFn = reinterpret_cast<glSamplerParameteriProc>(
         get_proc_address("glSamplerParameteri"));
-  }
-
-  if (ext.b_GL_ANGLE_robust_client_memory) {
-    fn.glSamplerParameterIivRobustANGLEFn =
-        reinterpret_cast<glSamplerParameterIivRobustANGLEProc>(
-            get_proc_address("glSamplerParameterIivRobustANGLE"));
-  }
-
-  if (ext.b_GL_ANGLE_robust_client_memory) {
-    fn.glSamplerParameterIuivRobustANGLEFn =
-        reinterpret_cast<glSamplerParameterIuivRobustANGLEProc>(
-            get_proc_address("glSamplerParameterIuivRobustANGLE"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u) || ext.b_GL_MESA_sampler_objects) {
@@ -2326,18 +2242,6 @@ void DriverGL::InitializeDynamicBindings(GLGetProcAddressProc get_proc_address,
     fn.glTexParameterfvRobustANGLEFn =
         reinterpret_cast<glTexParameterfvRobustANGLEProc>(
             get_proc_address("glTexParameterfvRobustANGLE"));
-  }
-
-  if (ext.b_GL_ANGLE_robust_client_memory) {
-    fn.glTexParameterIivRobustANGLEFn =
-        reinterpret_cast<glTexParameterIivRobustANGLEProc>(
-            get_proc_address("glTexParameterIivRobustANGLE"));
-  }
-
-  if (ext.b_GL_ANGLE_robust_client_memory) {
-    fn.glTexParameterIuivRobustANGLEFn =
-        reinterpret_cast<glTexParameterIuivRobustANGLEProc>(
-            get_proc_address("glTexParameterIuivRobustANGLE"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
@@ -3595,15 +3499,6 @@ void GLApiBase::glGetBooleani_vFn(GLenum target,
   driver_->fn.glGetBooleani_vFn(target, index, data);
 }
 
-void GLApiBase::glGetBooleani_vRobustANGLEFn(GLenum target,
-                                             GLuint index,
-                                             GLsizei bufSize,
-                                             GLsizei* length,
-                                             GLboolean* data) {
-  driver_->fn.glGetBooleani_vRobustANGLEFn(target, index, bufSize, length,
-                                           data);
-}
-
 void GLApiBase::glGetBooleanvFn(GLenum pname, GLboolean* params) {
   driver_->fn.glGetBooleanvFn(pname, params);
 }
@@ -3710,15 +3605,6 @@ void GLApiBase::glGetFramebufferParameterivFn(GLenum target,
                                               GLenum pname,
                                               GLint* params) {
   driver_->fn.glGetFramebufferParameterivFn(target, pname, params);
-}
-
-void GLApiBase::glGetFramebufferParameterivRobustANGLEFn(GLenum target,
-                                                         GLenum pname,
-                                                         GLsizei bufSize,
-                                                         GLsizei* length,
-                                                         GLint* params) {
-  driver_->fn.glGetFramebufferParameterivRobustANGLEFn(target, pname, bufSize,
-                                                       length, params);
 }
 
 void GLApiBase::glGetFramebufferPixelLocalStorageParameterfvANGLEFn(
@@ -3853,33 +3739,6 @@ void GLApiBase::glGetMultisamplefvRobustANGLEFn(GLenum pname,
                                               val);
 }
 
-void GLApiBase::glGetnUniformfvRobustANGLEFn(GLuint program,
-                                             GLint location,
-                                             GLsizei bufSize,
-                                             GLsizei* length,
-                                             GLfloat* params) {
-  driver_->fn.glGetnUniformfvRobustANGLEFn(program, location, bufSize, length,
-                                           params);
-}
-
-void GLApiBase::glGetnUniformivRobustANGLEFn(GLuint program,
-                                             GLint location,
-                                             GLsizei bufSize,
-                                             GLsizei* length,
-                                             GLint* params) {
-  driver_->fn.glGetnUniformivRobustANGLEFn(program, location, bufSize, length,
-                                           params);
-}
-
-void GLApiBase::glGetnUniformuivRobustANGLEFn(GLuint program,
-                                              GLint location,
-                                              GLsizei bufSize,
-                                              GLsizei* length,
-                                              GLuint* params) {
-  driver_->fn.glGetnUniformuivRobustANGLEFn(program, location, bufSize, length,
-                                            params);
-}
-
 void GLApiBase::glGetObjectLabelFn(GLenum identifier,
                                    GLuint name,
                                    GLsizei bufSize,
@@ -3897,14 +3756,6 @@ void GLApiBase::glGetObjectPtrLabelFn(void* ptr,
 
 void GLApiBase::glGetPointervFn(GLenum pname, void** params) {
   driver_->fn.glGetPointervFn(pname, params);
-}
-
-void GLApiBase::glGetPointervRobustANGLERobustANGLEFn(GLenum pname,
-                                                      GLsizei bufSize,
-                                                      GLsizei* length,
-                                                      void** params) {
-  driver_->fn.glGetPointervRobustANGLERobustANGLEFn(pname, bufSize, length,
-                                                    params);
 }
 
 void GLApiBase::glGetProgramBinaryFn(GLuint program,
@@ -3929,16 +3780,6 @@ void GLApiBase::glGetProgramInterfaceivFn(GLuint program,
                                           GLint* params) {
   driver_->fn.glGetProgramInterfaceivFn(program, programInterface, pname,
                                         params);
-}
-
-void GLApiBase::glGetProgramInterfaceivRobustANGLEFn(GLuint program,
-                                                     GLenum programInterface,
-                                                     GLenum pname,
-                                                     GLsizei bufSize,
-                                                     GLsizei* length,
-                                                     GLint* params) {
-  driver_->fn.glGetProgramInterfaceivRobustANGLEFn(
-      program, programInterface, pname, bufSize, length, params);
 }
 
 void GLApiBase::glGetProgramivFn(GLuint program, GLenum pname, GLint* params) {
@@ -4102,24 +3943,6 @@ void GLApiBase::glGetSamplerParameterfvRobustANGLEFn(GLuint sampler,
                                                    length, params);
 }
 
-void GLApiBase::glGetSamplerParameterIivRobustANGLEFn(GLuint sampler,
-                                                      GLenum pname,
-                                                      GLsizei bufSize,
-                                                      GLsizei* length,
-                                                      GLint* params) {
-  driver_->fn.glGetSamplerParameterIivRobustANGLEFn(sampler, pname, bufSize,
-                                                    length, params);
-}
-
-void GLApiBase::glGetSamplerParameterIuivRobustANGLEFn(GLuint sampler,
-                                                       GLenum pname,
-                                                       GLsizei bufSize,
-                                                       GLsizei* length,
-                                                       GLuint* params) {
-  driver_->fn.glGetSamplerParameterIuivRobustANGLEFn(sampler, pname, bufSize,
-                                                     length, params);
-}
-
 void GLApiBase::glGetSamplerParameterivFn(GLuint sampler,
                                           GLenum pname,
                                           GLint* params) {
@@ -4233,24 +4056,6 @@ void GLApiBase::glGetTexParameterfvRobustANGLEFn(GLenum target,
                                                  GLfloat* params) {
   driver_->fn.glGetTexParameterfvRobustANGLEFn(target, pname, bufSize, length,
                                                params);
-}
-
-void GLApiBase::glGetTexParameterIivRobustANGLEFn(GLenum target,
-                                                  GLenum pname,
-                                                  GLsizei bufSize,
-                                                  GLsizei* length,
-                                                  GLint* params) {
-  driver_->fn.glGetTexParameterIivRobustANGLEFn(target, pname, bufSize, length,
-                                                params);
-}
-
-void GLApiBase::glGetTexParameterIuivRobustANGLEFn(GLenum target,
-                                                   GLenum pname,
-                                                   GLsizei bufSize,
-                                                   GLsizei* length,
-                                                   GLuint* params) {
-  driver_->fn.glGetTexParameterIuivRobustANGLEFn(target, pname, bufSize, length,
-                                                 params);
 }
 
 void GLApiBase::glGetTexParameterivFn(GLenum target,
@@ -4996,21 +4801,6 @@ void GLApiBase::glReadBufferFn(GLenum src) {
   driver_->fn.glReadBufferFn(src);
 }
 
-void GLApiBase::glReadnPixelsRobustANGLEFn(GLint x,
-                                           GLint y,
-                                           GLsizei width,
-                                           GLsizei height,
-                                           GLenum format,
-                                           GLenum type,
-                                           GLsizei bufSize,
-                                           GLsizei* length,
-                                           GLsizei* columns,
-                                           GLsizei* rows,
-                                           void* data) {
-  driver_->fn.glReadnPixelsRobustANGLEFn(x, y, width, height, format, type,
-                                         bufSize, length, columns, rows, data);
-}
-
 void GLApiBase::glReadPixelsFn(GLint x,
                                GLint y,
                                GLsizei width,
@@ -5121,22 +4911,6 @@ void GLApiBase::glSamplerParameteriFn(GLuint sampler,
                                       GLenum pname,
                                       GLint param) {
   driver_->fn.glSamplerParameteriFn(sampler, pname, param);
-}
-
-void GLApiBase::glSamplerParameterIivRobustANGLEFn(GLuint sampler,
-                                                   GLenum pname,
-                                                   GLsizei bufSize,
-                                                   const GLint* param) {
-  driver_->fn.glSamplerParameterIivRobustANGLEFn(sampler, pname, bufSize,
-                                                 param);
-}
-
-void GLApiBase::glSamplerParameterIuivRobustANGLEFn(GLuint sampler,
-                                                    GLenum pname,
-                                                    GLsizei bufSize,
-                                                    const GLuint* param) {
-  driver_->fn.glSamplerParameterIuivRobustANGLEFn(sampler, pname, bufSize,
-                                                  param);
 }
 
 void GLApiBase::glSamplerParameterivFn(GLuint sampler,
@@ -5330,20 +5104,6 @@ void GLApiBase::glTexParameterfvRobustANGLEFn(GLenum target,
 
 void GLApiBase::glTexParameteriFn(GLenum target, GLenum pname, GLint param) {
   driver_->fn.glTexParameteriFn(target, pname, param);
-}
-
-void GLApiBase::glTexParameterIivRobustANGLEFn(GLenum target,
-                                               GLenum pname,
-                                               GLsizei bufSize,
-                                               const GLint* params) {
-  driver_->fn.glTexParameterIivRobustANGLEFn(target, pname, bufSize, params);
-}
-
-void GLApiBase::glTexParameterIuivRobustANGLEFn(GLenum target,
-                                                GLenum pname,
-                                                GLsizei bufSize,
-                                                const GLuint* params) {
-  driver_->fn.glTexParameterIuivRobustANGLEFn(target, pname, bufSize, params);
 }
 
 void GLApiBase::glTexParameterivFn(GLenum target,
@@ -7054,16 +6814,6 @@ void TraceGLApi::glGetBooleani_vFn(GLenum target,
   gl_api_->glGetBooleani_vFn(target, index, data);
 }
 
-void TraceGLApi::glGetBooleani_vRobustANGLEFn(GLenum target,
-                                              GLuint index,
-                                              GLsizei bufSize,
-                                              GLsizei* length,
-                                              GLboolean* data) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu",
-                                "TraceGLAPI::glGetBooleani_vRobustANGLE");
-  gl_api_->glGetBooleani_vRobustANGLEFn(target, index, bufSize, length, data);
-}
-
 void TraceGLApi::glGetBooleanvFn(GLenum pname, GLboolean* params) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glGetBooleanv");
   gl_api_->glGetBooleanvFn(pname, params);
@@ -7192,17 +6942,6 @@ void TraceGLApi::glGetFramebufferParameterivFn(GLenum target,
   TRACE_EVENT_BINARY_EFFICIENT0("gpu",
                                 "TraceGLAPI::glGetFramebufferParameteriv");
   gl_api_->glGetFramebufferParameterivFn(target, pname, params);
-}
-
-void TraceGLApi::glGetFramebufferParameterivRobustANGLEFn(GLenum target,
-                                                          GLenum pname,
-                                                          GLsizei bufSize,
-                                                          GLsizei* length,
-                                                          GLint* params) {
-  TRACE_EVENT_BINARY_EFFICIENT0(
-      "gpu", "TraceGLAPI::glGetFramebufferParameterivRobustANGLE");
-  gl_api_->glGetFramebufferParameterivRobustANGLEFn(target, pname, bufSize,
-                                                    length, params);
 }
 
 void TraceGLApi::glGetFramebufferPixelLocalStorageParameterfvANGLEFn(
@@ -7367,39 +7106,6 @@ void TraceGLApi::glGetMultisamplefvRobustANGLEFn(GLenum pname,
   gl_api_->glGetMultisamplefvRobustANGLEFn(pname, index, bufSize, length, val);
 }
 
-void TraceGLApi::glGetnUniformfvRobustANGLEFn(GLuint program,
-                                              GLint location,
-                                              GLsizei bufSize,
-                                              GLsizei* length,
-                                              GLfloat* params) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu",
-                                "TraceGLAPI::glGetnUniformfvRobustANGLE");
-  gl_api_->glGetnUniformfvRobustANGLEFn(program, location, bufSize, length,
-                                        params);
-}
-
-void TraceGLApi::glGetnUniformivRobustANGLEFn(GLuint program,
-                                              GLint location,
-                                              GLsizei bufSize,
-                                              GLsizei* length,
-                                              GLint* params) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu",
-                                "TraceGLAPI::glGetnUniformivRobustANGLE");
-  gl_api_->glGetnUniformivRobustANGLEFn(program, location, bufSize, length,
-                                        params);
-}
-
-void TraceGLApi::glGetnUniformuivRobustANGLEFn(GLuint program,
-                                               GLint location,
-                                               GLsizei bufSize,
-                                               GLsizei* length,
-                                               GLuint* params) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu",
-                                "TraceGLAPI::glGetnUniformuivRobustANGLE");
-  gl_api_->glGetnUniformuivRobustANGLEFn(program, location, bufSize, length,
-                                         params);
-}
-
 void TraceGLApi::glGetObjectLabelFn(GLenum identifier,
                                     GLuint name,
                                     GLsizei bufSize,
@@ -7420,16 +7126,6 @@ void TraceGLApi::glGetObjectPtrLabelFn(void* ptr,
 void TraceGLApi::glGetPointervFn(GLenum pname, void** params) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glGetPointerv");
   gl_api_->glGetPointervFn(pname, params);
-}
-
-void TraceGLApi::glGetPointervRobustANGLERobustANGLEFn(GLenum pname,
-                                                       GLsizei bufSize,
-                                                       GLsizei* length,
-                                                       void** params) {
-  TRACE_EVENT_BINARY_EFFICIENT0(
-      "gpu", "TraceGLAPI::glGetPointervRobustANGLERobustANGLE");
-  gl_api_->glGetPointervRobustANGLERobustANGLEFn(pname, bufSize, length,
-                                                 params);
 }
 
 void TraceGLApi::glGetProgramBinaryFn(GLuint program,
@@ -7455,18 +7151,6 @@ void TraceGLApi::glGetProgramInterfaceivFn(GLuint program,
                                            GLint* params) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glGetProgramInterfaceiv");
   gl_api_->glGetProgramInterfaceivFn(program, programInterface, pname, params);
-}
-
-void TraceGLApi::glGetProgramInterfaceivRobustANGLEFn(GLuint program,
-                                                      GLenum programInterface,
-                                                      GLenum pname,
-                                                      GLsizei bufSize,
-                                                      GLsizei* length,
-                                                      GLint* params) {
-  TRACE_EVENT_BINARY_EFFICIENT0(
-      "gpu", "TraceGLAPI::glGetProgramInterfaceivRobustANGLE");
-  gl_api_->glGetProgramInterfaceivRobustANGLEFn(program, programInterface,
-                                                pname, bufSize, length, params);
 }
 
 void TraceGLApi::glGetProgramivFn(GLuint program, GLenum pname, GLint* params) {
@@ -7658,28 +7342,6 @@ void TraceGLApi::glGetSamplerParameterfvRobustANGLEFn(GLuint sampler,
                                                 params);
 }
 
-void TraceGLApi::glGetSamplerParameterIivRobustANGLEFn(GLuint sampler,
-                                                       GLenum pname,
-                                                       GLsizei bufSize,
-                                                       GLsizei* length,
-                                                       GLint* params) {
-  TRACE_EVENT_BINARY_EFFICIENT0(
-      "gpu", "TraceGLAPI::glGetSamplerParameterIivRobustANGLE");
-  gl_api_->glGetSamplerParameterIivRobustANGLEFn(sampler, pname, bufSize,
-                                                 length, params);
-}
-
-void TraceGLApi::glGetSamplerParameterIuivRobustANGLEFn(GLuint sampler,
-                                                        GLenum pname,
-                                                        GLsizei bufSize,
-                                                        GLsizei* length,
-                                                        GLuint* params) {
-  TRACE_EVENT_BINARY_EFFICIENT0(
-      "gpu", "TraceGLAPI::glGetSamplerParameterIuivRobustANGLE");
-  gl_api_->glGetSamplerParameterIuivRobustANGLEFn(sampler, pname, bufSize,
-                                                  length, params);
-}
-
 void TraceGLApi::glGetSamplerParameterivFn(GLuint sampler,
                                            GLenum pname,
                                            GLint* params) {
@@ -7813,28 +7475,6 @@ void TraceGLApi::glGetTexParameterfvRobustANGLEFn(GLenum target,
                                 "TraceGLAPI::glGetTexParameterfvRobustANGLE");
   gl_api_->glGetTexParameterfvRobustANGLEFn(target, pname, bufSize, length,
                                             params);
-}
-
-void TraceGLApi::glGetTexParameterIivRobustANGLEFn(GLenum target,
-                                                   GLenum pname,
-                                                   GLsizei bufSize,
-                                                   GLsizei* length,
-                                                   GLint* params) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu",
-                                "TraceGLAPI::glGetTexParameterIivRobustANGLE");
-  gl_api_->glGetTexParameterIivRobustANGLEFn(target, pname, bufSize, length,
-                                             params);
-}
-
-void TraceGLApi::glGetTexParameterIuivRobustANGLEFn(GLenum target,
-                                                    GLenum pname,
-                                                    GLsizei bufSize,
-                                                    GLsizei* length,
-                                                    GLuint* params) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu",
-                                "TraceGLAPI::glGetTexParameterIuivRobustANGLE");
-  gl_api_->glGetTexParameterIuivRobustANGLEFn(target, pname, bufSize, length,
-                                              params);
 }
 
 void TraceGLApi::glGetTexParameterivFn(GLenum target,
@@ -8723,22 +8363,6 @@ void TraceGLApi::glReadBufferFn(GLenum src) {
   gl_api_->glReadBufferFn(src);
 }
 
-void TraceGLApi::glReadnPixelsRobustANGLEFn(GLint x,
-                                            GLint y,
-                                            GLsizei width,
-                                            GLsizei height,
-                                            GLenum format,
-                                            GLenum type,
-                                            GLsizei bufSize,
-                                            GLsizei* length,
-                                            GLsizei* columns,
-                                            GLsizei* rows,
-                                            void* data) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glReadnPixelsRobustANGLE");
-  gl_api_->glReadnPixelsRobustANGLEFn(x, y, width, height, format, type,
-                                      bufSize, length, columns, rows, data);
-}
-
 void TraceGLApi::glReadPixelsFn(GLint x,
                                 GLint y,
                                 GLsizei width,
@@ -8869,24 +8493,6 @@ void TraceGLApi::glSamplerParameteriFn(GLuint sampler,
                                        GLint param) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glSamplerParameteri");
   gl_api_->glSamplerParameteriFn(sampler, pname, param);
-}
-
-void TraceGLApi::glSamplerParameterIivRobustANGLEFn(GLuint sampler,
-                                                    GLenum pname,
-                                                    GLsizei bufSize,
-                                                    const GLint* param) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu",
-                                "TraceGLAPI::glSamplerParameterIivRobustANGLE");
-  gl_api_->glSamplerParameterIivRobustANGLEFn(sampler, pname, bufSize, param);
-}
-
-void TraceGLApi::glSamplerParameterIuivRobustANGLEFn(GLuint sampler,
-                                                     GLenum pname,
-                                                     GLsizei bufSize,
-                                                     const GLuint* param) {
-  TRACE_EVENT_BINARY_EFFICIENT0(
-      "gpu", "TraceGLAPI::glSamplerParameterIuivRobustANGLE");
-  gl_api_->glSamplerParameterIuivRobustANGLEFn(sampler, pname, bufSize, param);
 }
 
 void TraceGLApi::glSamplerParameterivFn(GLuint sampler,
@@ -9108,24 +8714,6 @@ void TraceGLApi::glTexParameterfvRobustANGLEFn(GLenum target,
 void TraceGLApi::glTexParameteriFn(GLenum target, GLenum pname, GLint param) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glTexParameteri");
   gl_api_->glTexParameteriFn(target, pname, param);
-}
-
-void TraceGLApi::glTexParameterIivRobustANGLEFn(GLenum target,
-                                                GLenum pname,
-                                                GLsizei bufSize,
-                                                const GLint* params) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu",
-                                "TraceGLAPI::glTexParameterIivRobustANGLE");
-  gl_api_->glTexParameterIivRobustANGLEFn(target, pname, bufSize, params);
-}
-
-void TraceGLApi::glTexParameterIuivRobustANGLEFn(GLenum target,
-                                                 GLenum pname,
-                                                 GLsizei bufSize,
-                                                 const GLuint* params) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu",
-                                "TraceGLAPI::glTexParameterIuivRobustANGLE");
-  gl_api_->glTexParameterIuivRobustANGLEFn(target, pname, bufSize, params);
 }
 
 void TraceGLApi::glTexParameterivFn(GLenum target,
@@ -11205,18 +10793,6 @@ void LogGLApi::glGetBooleani_vFn(GLenum target, GLuint index, GLboolean* data) {
   gl_api_->glGetBooleani_vFn(target, index, data);
 }
 
-void LogGLApi::glGetBooleani_vRobustANGLEFn(GLenum target,
-                                            GLuint index,
-                                            GLsizei bufSize,
-                                            GLsizei* length,
-                                            GLboolean* data) {
-  GL_SERVICE_LOG("glGetBooleani_vRobustANGLE"
-                 << "(" << GLEnums::GetStringEnum(target) << ", " << index
-                 << ", " << bufSize << ", " << static_cast<const void*>(length)
-                 << ", " << static_cast<const void*>(data) << ")");
-  gl_api_->glGetBooleani_vRobustANGLEFn(target, index, bufSize, length, data);
-}
-
 void LogGLApi::glGetBooleanvFn(GLenum pname, GLboolean* params) {
   GL_SERVICE_LOG("glGetBooleanv" << "(" << GLEnums::GetStringEnum(pname) << ", "
                                  << static_cast<const void*>(params) << ")");
@@ -11393,20 +10969,6 @@ void LogGLApi::glGetFramebufferParameterivFn(GLenum target,
                  << GLEnums::GetStringEnum(pname) << ", "
                  << static_cast<const void*>(params) << ")");
   gl_api_->glGetFramebufferParameterivFn(target, pname, params);
-}
-
-void LogGLApi::glGetFramebufferParameterivRobustANGLEFn(GLenum target,
-                                                        GLenum pname,
-                                                        GLsizei bufSize,
-                                                        GLsizei* length,
-                                                        GLint* params) {
-  GL_SERVICE_LOG("glGetFramebufferParameterivRobustANGLE"
-                 << "(" << GLEnums::GetStringEnum(target) << ", "
-                 << GLEnums::GetStringEnum(pname) << ", " << bufSize << ", "
-                 << static_cast<const void*>(length) << ", "
-                 << static_cast<const void*>(params) << ")");
-  gl_api_->glGetFramebufferParameterivRobustANGLEFn(target, pname, bufSize,
-                                                    length, params);
 }
 
 void LogGLApi::glGetFramebufferPixelLocalStorageParameterfvANGLEFn(
@@ -11603,45 +11165,6 @@ void LogGLApi::glGetMultisamplefvRobustANGLEFn(GLenum pname,
   gl_api_->glGetMultisamplefvRobustANGLEFn(pname, index, bufSize, length, val);
 }
 
-void LogGLApi::glGetnUniformfvRobustANGLEFn(GLuint program,
-                                            GLint location,
-                                            GLsizei bufSize,
-                                            GLsizei* length,
-                                            GLfloat* params) {
-  GL_SERVICE_LOG("glGetnUniformfvRobustANGLE"
-                 << "(" << program << ", " << location << ", " << bufSize
-                 << ", " << static_cast<const void*>(length) << ", "
-                 << static_cast<const void*>(params) << ")");
-  gl_api_->glGetnUniformfvRobustANGLEFn(program, location, bufSize, length,
-                                        params);
-}
-
-void LogGLApi::glGetnUniformivRobustANGLEFn(GLuint program,
-                                            GLint location,
-                                            GLsizei bufSize,
-                                            GLsizei* length,
-                                            GLint* params) {
-  GL_SERVICE_LOG("glGetnUniformivRobustANGLE"
-                 << "(" << program << ", " << location << ", " << bufSize
-                 << ", " << static_cast<const void*>(length) << ", "
-                 << static_cast<const void*>(params) << ")");
-  gl_api_->glGetnUniformivRobustANGLEFn(program, location, bufSize, length,
-                                        params);
-}
-
-void LogGLApi::glGetnUniformuivRobustANGLEFn(GLuint program,
-                                             GLint location,
-                                             GLsizei bufSize,
-                                             GLsizei* length,
-                                             GLuint* params) {
-  GL_SERVICE_LOG("glGetnUniformuivRobustANGLE"
-                 << "(" << program << ", " << location << ", " << bufSize
-                 << ", " << static_cast<const void*>(length) << ", "
-                 << static_cast<const void*>(params) << ")");
-  gl_api_->glGetnUniformuivRobustANGLEFn(program, location, bufSize, length,
-                                         params);
-}
-
 void LogGLApi::glGetObjectLabelFn(GLenum identifier,
                                   GLuint name,
                                   GLsizei bufSize,
@@ -11669,18 +11192,6 @@ void LogGLApi::glGetPointervFn(GLenum pname, void** params) {
   GL_SERVICE_LOG("glGetPointerv" << "(" << GLEnums::GetStringEnum(pname) << ", "
                                  << params << ")");
   gl_api_->glGetPointervFn(pname, params);
-}
-
-void LogGLApi::glGetPointervRobustANGLERobustANGLEFn(GLenum pname,
-                                                     GLsizei bufSize,
-                                                     GLsizei* length,
-                                                     void** params) {
-  GL_SERVICE_LOG("glGetPointervRobustANGLERobustANGLE"
-                 << "(" << GLEnums::GetStringEnum(pname) << ", " << bufSize
-                 << ", " << static_cast<const void*>(length) << ", " << params
-                 << ")");
-  gl_api_->glGetPointervRobustANGLERobustANGLEFn(pname, bufSize, length,
-                                                 params);
 }
 
 void LogGLApi::glGetProgramBinaryFn(GLuint program,
@@ -11717,22 +11228,6 @@ void LogGLApi::glGetProgramInterfaceivFn(GLuint program,
                  << GLEnums::GetStringEnum(pname) << ", "
                  << static_cast<const void*>(params) << ")");
   gl_api_->glGetProgramInterfaceivFn(program, programInterface, pname, params);
-}
-
-void LogGLApi::glGetProgramInterfaceivRobustANGLEFn(GLuint program,
-                                                    GLenum programInterface,
-                                                    GLenum pname,
-                                                    GLsizei bufSize,
-                                                    GLsizei* length,
-                                                    GLint* params) {
-  GL_SERVICE_LOG("glGetProgramInterfaceivRobustANGLE"
-                 << "(" << program << ", "
-                 << GLEnums::GetStringEnum(programInterface) << ", "
-                 << GLEnums::GetStringEnum(pname) << ", " << bufSize << ", "
-                 << static_cast<const void*>(length) << ", "
-                 << static_cast<const void*>(params) << ")");
-  gl_api_->glGetProgramInterfaceivRobustANGLEFn(program, programInterface,
-                                                pname, bufSize, length, params);
 }
 
 void LogGLApi::glGetProgramivFn(GLuint program, GLenum pname, GLint* params) {
@@ -11981,32 +11476,6 @@ void LogGLApi::glGetSamplerParameterfvRobustANGLEFn(GLuint sampler,
                                                 params);
 }
 
-void LogGLApi::glGetSamplerParameterIivRobustANGLEFn(GLuint sampler,
-                                                     GLenum pname,
-                                                     GLsizei bufSize,
-                                                     GLsizei* length,
-                                                     GLint* params) {
-  GL_SERVICE_LOG("glGetSamplerParameterIivRobustANGLE"
-                 << "(" << sampler << ", " << GLEnums::GetStringEnum(pname)
-                 << ", " << bufSize << ", " << static_cast<const void*>(length)
-                 << ", " << static_cast<const void*>(params) << ")");
-  gl_api_->glGetSamplerParameterIivRobustANGLEFn(sampler, pname, bufSize,
-                                                 length, params);
-}
-
-void LogGLApi::glGetSamplerParameterIuivRobustANGLEFn(GLuint sampler,
-                                                      GLenum pname,
-                                                      GLsizei bufSize,
-                                                      GLsizei* length,
-                                                      GLuint* params) {
-  GL_SERVICE_LOG("glGetSamplerParameterIuivRobustANGLE"
-                 << "(" << sampler << ", " << GLEnums::GetStringEnum(pname)
-                 << ", " << bufSize << ", " << static_cast<const void*>(length)
-                 << ", " << static_cast<const void*>(params) << ")");
-  gl_api_->glGetSamplerParameterIuivRobustANGLEFn(sampler, pname, bufSize,
-                                                  length, params);
-}
-
 void LogGLApi::glGetSamplerParameterivFn(GLuint sampler,
                                          GLenum pname,
                                          GLint* params) {
@@ -12184,34 +11653,6 @@ void LogGLApi::glGetTexParameterfvRobustANGLEFn(GLenum target,
                  << static_cast<const void*>(params) << ")");
   gl_api_->glGetTexParameterfvRobustANGLEFn(target, pname, bufSize, length,
                                             params);
-}
-
-void LogGLApi::glGetTexParameterIivRobustANGLEFn(GLenum target,
-                                                 GLenum pname,
-                                                 GLsizei bufSize,
-                                                 GLsizei* length,
-                                                 GLint* params) {
-  GL_SERVICE_LOG("glGetTexParameterIivRobustANGLE"
-                 << "(" << GLEnums::GetStringEnum(target) << ", "
-                 << GLEnums::GetStringEnum(pname) << ", " << bufSize << ", "
-                 << static_cast<const void*>(length) << ", "
-                 << static_cast<const void*>(params) << ")");
-  gl_api_->glGetTexParameterIivRobustANGLEFn(target, pname, bufSize, length,
-                                             params);
-}
-
-void LogGLApi::glGetTexParameterIuivRobustANGLEFn(GLenum target,
-                                                  GLenum pname,
-                                                  GLsizei bufSize,
-                                                  GLsizei* length,
-                                                  GLuint* params) {
-  GL_SERVICE_LOG("glGetTexParameterIuivRobustANGLE"
-                 << "(" << GLEnums::GetStringEnum(target) << ", "
-                 << GLEnums::GetStringEnum(pname) << ", " << bufSize << ", "
-                 << static_cast<const void*>(length) << ", "
-                 << static_cast<const void*>(params) << ")");
-  gl_api_->glGetTexParameterIuivRobustANGLEFn(target, pname, bufSize, length,
-                                              params);
 }
 
 void LogGLApi::glGetTexParameterivFn(GLenum target,
@@ -13310,29 +12751,6 @@ void LogGLApi::glReadBufferFn(GLenum src) {
   gl_api_->glReadBufferFn(src);
 }
 
-void LogGLApi::glReadnPixelsRobustANGLEFn(GLint x,
-                                          GLint y,
-                                          GLsizei width,
-                                          GLsizei height,
-                                          GLenum format,
-                                          GLenum type,
-                                          GLsizei bufSize,
-                                          GLsizei* length,
-                                          GLsizei* columns,
-                                          GLsizei* rows,
-                                          void* data) {
-  GL_SERVICE_LOG("glReadnPixelsRobustANGLE"
-                 << "(" << x << ", " << y << ", " << width << ", " << height
-                 << ", " << GLEnums::GetStringEnum(format) << ", "
-                 << GLEnums::GetStringEnum(type) << ", " << bufSize << ", "
-                 << static_cast<const void*>(length) << ", "
-                 << static_cast<const void*>(columns) << ", "
-                 << static_cast<const void*>(rows) << ", "
-                 << static_cast<const void*>(data) << ")");
-  gl_api_->glReadnPixelsRobustANGLEFn(x, y, width, height, format, type,
-                                      bufSize, length, columns, rows, data);
-}
-
 void LogGLApi::glReadPixelsFn(GLint x,
                               GLint y,
                               GLsizei width,
@@ -13496,28 +12914,6 @@ void LogGLApi::glSamplerParameteriFn(GLuint sampler,
                                        << GLEnums::GetStringEnum(pname) << ", "
                                        << param << ")");
   gl_api_->glSamplerParameteriFn(sampler, pname, param);
-}
-
-void LogGLApi::glSamplerParameterIivRobustANGLEFn(GLuint sampler,
-                                                  GLenum pname,
-                                                  GLsizei bufSize,
-                                                  const GLint* param) {
-  GL_SERVICE_LOG("glSamplerParameterIivRobustANGLE"
-                 << "(" << sampler << ", " << GLEnums::GetStringEnum(pname)
-                 << ", " << bufSize << ", " << static_cast<const void*>(param)
-                 << ")");
-  gl_api_->glSamplerParameterIivRobustANGLEFn(sampler, pname, bufSize, param);
-}
-
-void LogGLApi::glSamplerParameterIuivRobustANGLEFn(GLuint sampler,
-                                                   GLenum pname,
-                                                   GLsizei bufSize,
-                                                   const GLuint* param) {
-  GL_SERVICE_LOG("glSamplerParameterIuivRobustANGLE"
-                 << "(" << sampler << ", " << GLEnums::GetStringEnum(pname)
-                 << ", " << bufSize << ", " << static_cast<const void*>(param)
-                 << ")");
-  gl_api_->glSamplerParameterIuivRobustANGLEFn(sampler, pname, bufSize, param);
 }
 
 void LogGLApi::glSamplerParameterivFn(GLuint sampler,
@@ -13809,28 +13205,6 @@ void LogGLApi::glTexParameteriFn(GLenum target, GLenum pname, GLint param) {
                                    << ", " << GLEnums::GetStringEnum(pname)
                                    << ", " << param << ")");
   gl_api_->glTexParameteriFn(target, pname, param);
-}
-
-void LogGLApi::glTexParameterIivRobustANGLEFn(GLenum target,
-                                              GLenum pname,
-                                              GLsizei bufSize,
-                                              const GLint* params) {
-  GL_SERVICE_LOG("glTexParameterIivRobustANGLE"
-                 << "(" << GLEnums::GetStringEnum(target) << ", "
-                 << GLEnums::GetStringEnum(pname) << ", " << bufSize << ", "
-                 << static_cast<const void*>(params) << ")");
-  gl_api_->glTexParameterIivRobustANGLEFn(target, pname, bufSize, params);
-}
-
-void LogGLApi::glTexParameterIuivRobustANGLEFn(GLenum target,
-                                               GLenum pname,
-                                               GLsizei bufSize,
-                                               const GLuint* params) {
-  GL_SERVICE_LOG("glTexParameterIuivRobustANGLE"
-                 << "(" << GLEnums::GetStringEnum(target) << ", "
-                 << GLEnums::GetStringEnum(pname) << ", " << bufSize << ", "
-                 << static_cast<const void*>(params) << ")");
-  gl_api_->glTexParameterIuivRobustANGLEFn(target, pname, bufSize, params);
 }
 
 void LogGLApi::glTexParameterivFn(GLenum target,
@@ -15531,14 +14905,6 @@ void NoContextGLApi::glGetBooleani_vFn(GLenum target,
   NoContextHelper("glGetBooleani_v");
 }
 
-void NoContextGLApi::glGetBooleani_vRobustANGLEFn(GLenum target,
-                                                  GLuint index,
-                                                  GLsizei bufSize,
-                                                  GLsizei* length,
-                                                  GLboolean* data) {
-  NoContextHelper("glGetBooleani_vRobustANGLE");
-}
-
 void NoContextGLApi::glGetBooleanvFn(GLenum pname, GLboolean* params) {
   NoContextHelper("glGetBooleanv");
 }
@@ -15647,14 +15013,6 @@ void NoContextGLApi::glGetFramebufferParameterivFn(GLenum target,
                                                    GLenum pname,
                                                    GLint* params) {
   NoContextHelper("glGetFramebufferParameteriv");
-}
-
-void NoContextGLApi::glGetFramebufferParameterivRobustANGLEFn(GLenum target,
-                                                              GLenum pname,
-                                                              GLsizei bufSize,
-                                                              GLsizei* length,
-                                                              GLint* params) {
-  NoContextHelper("glGetFramebufferParameterivRobustANGLE");
 }
 
 void NoContextGLApi::glGetFramebufferPixelLocalStorageParameterfvANGLEFn(
@@ -15784,30 +15142,6 @@ void NoContextGLApi::glGetMultisamplefvRobustANGLEFn(GLenum pname,
   NoContextHelper("glGetMultisamplefvRobustANGLE");
 }
 
-void NoContextGLApi::glGetnUniformfvRobustANGLEFn(GLuint program,
-                                                  GLint location,
-                                                  GLsizei bufSize,
-                                                  GLsizei* length,
-                                                  GLfloat* params) {
-  NoContextHelper("glGetnUniformfvRobustANGLE");
-}
-
-void NoContextGLApi::glGetnUniformivRobustANGLEFn(GLuint program,
-                                                  GLint location,
-                                                  GLsizei bufSize,
-                                                  GLsizei* length,
-                                                  GLint* params) {
-  NoContextHelper("glGetnUniformivRobustANGLE");
-}
-
-void NoContextGLApi::glGetnUniformuivRobustANGLEFn(GLuint program,
-                                                   GLint location,
-                                                   GLsizei bufSize,
-                                                   GLsizei* length,
-                                                   GLuint* params) {
-  NoContextHelper("glGetnUniformuivRobustANGLE");
-}
-
 void NoContextGLApi::glGetObjectLabelFn(GLenum identifier,
                                         GLuint name,
                                         GLsizei bufSize,
@@ -15825,13 +15159,6 @@ void NoContextGLApi::glGetObjectPtrLabelFn(void* ptr,
 
 void NoContextGLApi::glGetPointervFn(GLenum pname, void** params) {
   NoContextHelper("glGetPointerv");
-}
-
-void NoContextGLApi::glGetPointervRobustANGLERobustANGLEFn(GLenum pname,
-                                                           GLsizei bufSize,
-                                                           GLsizei* length,
-                                                           void** params) {
-  NoContextHelper("glGetPointervRobustANGLERobustANGLE");
 }
 
 void NoContextGLApi::glGetProgramBinaryFn(GLuint program,
@@ -15854,16 +15181,6 @@ void NoContextGLApi::glGetProgramInterfaceivFn(GLuint program,
                                                GLenum pname,
                                                GLint* params) {
   NoContextHelper("glGetProgramInterfaceiv");
-}
-
-void NoContextGLApi::glGetProgramInterfaceivRobustANGLEFn(
-    GLuint program,
-    GLenum programInterface,
-    GLenum pname,
-    GLsizei bufSize,
-    GLsizei* length,
-    GLint* params) {
-  NoContextHelper("glGetProgramInterfaceivRobustANGLE");
 }
 
 void NoContextGLApi::glGetProgramivFn(GLuint program,
@@ -16025,22 +15342,6 @@ void NoContextGLApi::glGetSamplerParameterfvRobustANGLEFn(GLuint sampler,
   NoContextHelper("glGetSamplerParameterfvRobustANGLE");
 }
 
-void NoContextGLApi::glGetSamplerParameterIivRobustANGLEFn(GLuint sampler,
-                                                           GLenum pname,
-                                                           GLsizei bufSize,
-                                                           GLsizei* length,
-                                                           GLint* params) {
-  NoContextHelper("glGetSamplerParameterIivRobustANGLE");
-}
-
-void NoContextGLApi::glGetSamplerParameterIuivRobustANGLEFn(GLuint sampler,
-                                                            GLenum pname,
-                                                            GLsizei bufSize,
-                                                            GLsizei* length,
-                                                            GLuint* params) {
-  NoContextHelper("glGetSamplerParameterIuivRobustANGLE");
-}
-
 void NoContextGLApi::glGetSamplerParameterivFn(GLuint sampler,
                                                GLenum pname,
                                                GLint* params) {
@@ -16152,22 +15453,6 @@ void NoContextGLApi::glGetTexParameterfvRobustANGLEFn(GLenum target,
                                                       GLsizei* length,
                                                       GLfloat* params) {
   NoContextHelper("glGetTexParameterfvRobustANGLE");
-}
-
-void NoContextGLApi::glGetTexParameterIivRobustANGLEFn(GLenum target,
-                                                       GLenum pname,
-                                                       GLsizei bufSize,
-                                                       GLsizei* length,
-                                                       GLint* params) {
-  NoContextHelper("glGetTexParameterIivRobustANGLE");
-}
-
-void NoContextGLApi::glGetTexParameterIuivRobustANGLEFn(GLenum target,
-                                                        GLenum pname,
-                                                        GLsizei bufSize,
-                                                        GLsizei* length,
-                                                        GLuint* params) {
-  NoContextHelper("glGetTexParameterIuivRobustANGLE");
 }
 
 void NoContextGLApi::glGetTexParameterivFn(GLenum target,
@@ -16907,20 +16192,6 @@ void NoContextGLApi::glReadBufferFn(GLenum src) {
   NoContextHelper("glReadBuffer");
 }
 
-void NoContextGLApi::glReadnPixelsRobustANGLEFn(GLint x,
-                                                GLint y,
-                                                GLsizei width,
-                                                GLsizei height,
-                                                GLenum format,
-                                                GLenum type,
-                                                GLsizei bufSize,
-                                                GLsizei* length,
-                                                GLsizei* columns,
-                                                GLsizei* rows,
-                                                void* data) {
-  NoContextHelper("glReadnPixelsRobustANGLE");
-}
-
 void NoContextGLApi::glReadPixelsFn(GLint x,
                                     GLint y,
                                     GLsizei width,
@@ -17028,20 +16299,6 @@ void NoContextGLApi::glSamplerParameteriFn(GLuint sampler,
                                            GLenum pname,
                                            GLint param) {
   NoContextHelper("glSamplerParameteri");
-}
-
-void NoContextGLApi::glSamplerParameterIivRobustANGLEFn(GLuint sampler,
-                                                        GLenum pname,
-                                                        GLsizei bufSize,
-                                                        const GLint* param) {
-  NoContextHelper("glSamplerParameterIivRobustANGLE");
-}
-
-void NoContextGLApi::glSamplerParameterIuivRobustANGLEFn(GLuint sampler,
-                                                         GLenum pname,
-                                                         GLsizei bufSize,
-                                                         const GLuint* param) {
-  NoContextHelper("glSamplerParameterIuivRobustANGLE");
 }
 
 void NoContextGLApi::glSamplerParameterivFn(GLuint sampler,
@@ -17235,20 +16492,6 @@ void NoContextGLApi::glTexParameteriFn(GLenum target,
                                        GLenum pname,
                                        GLint param) {
   NoContextHelper("glTexParameteri");
-}
-
-void NoContextGLApi::glTexParameterIivRobustANGLEFn(GLenum target,
-                                                    GLenum pname,
-                                                    GLsizei bufSize,
-                                                    const GLint* params) {
-  NoContextHelper("glTexParameterIivRobustANGLE");
-}
-
-void NoContextGLApi::glTexParameterIuivRobustANGLEFn(GLenum target,
-                                                     GLenum pname,
-                                                     GLsizei bufSize,
-                                                     const GLuint* params) {
-  NoContextHelper("glTexParameterIuivRobustANGLE");
 }
 
 void NoContextGLApi::glTexParameterivFn(GLenum target,
