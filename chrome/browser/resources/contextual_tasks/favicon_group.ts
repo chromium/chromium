@@ -6,6 +6,7 @@ import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
+import type {ContextInfo} from './contextual_tasks.mojom-webui.js';
 import {getCss} from './favicon_group.css.js';
 import {getHtml} from './favicon_group.html.js';
 
@@ -26,27 +27,29 @@ export class ContextualTasksFaviconGroupElement extends CrLitElement {
 
   static override get properties() {
     return {
-      urls: {type: Array},
+      contextInfos: {type: Array},
       visibleUrls_: {type: Array},
       remainingCount_: {type: Number},
     };
   }
 
-  accessor urls: string[] = [];
+  accessor contextInfos: ContextInfo[] = [];
   protected accessor visibleUrls_: string[] = [];
   protected accessor remainingCount_: number = 0;
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
-    if (changedProperties.has('urls')) {
-      this.onUrlsChanged_();
+    if (changedProperties.has('contextInfos')) {
+      this.onContextInfosChanged_();
     }
   }
 
-  private onUrlsChanged_() {
-    const numToDisplay = Math.min(this.urls.length, MAX_DISPLAY_COUNT);
-    this.visibleUrls_ = this.urls.slice(0, numToDisplay);
-    this.remainingCount_ = this.urls.length - numToDisplay;
+  private onContextInfosChanged_() {
+    const tabUrls = this.contextInfos.flatMap(
+        (info) => info.tab ? [info.tab.url] : [],
+    );
+    this.visibleUrls_ = tabUrls.slice(0, MAX_DISPLAY_COUNT);
+    this.remainingCount_ = this.contextInfos.length - this.visibleUrls_.length;
   }
 
   protected getFaviconUrl_(url: string): string {
