@@ -23,6 +23,10 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/native_library.h"
+#include "base/synchronization/waitable_event.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/thread_checker.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/switches.h"
@@ -173,6 +177,8 @@ class AdpfHintSession : public HintSession {
   bool ShouldScheduleForEfficiency() const;
   void UpdateEfficiencyHintIfNeeded(const bool);
   void UpdateLastFrameReportTime();
+  void CloseSessionImpl(base::WaitableEvent* session_closed);
+  void SetThreadsImpl(std::vector<int> thread_ids);
 
   const bool rate_limit_boost_;
   const base::TimeDelta rate_limit_boost_min_wait_;
@@ -193,6 +199,9 @@ class AdpfHintSession : public HintSession {
   static constexpr int kMinimumFramesForPerformanceBoost = 4;
   // Stores the most recent efficiency preference sent to ADPF.
   bool prefer_efficiency_applied_ = false;
+
+  // Task runner for making heavier calls to the ADPF API off the Viz thread.
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };
 
 class HintSessionFactoryImpl : public HintSessionFactory {
@@ -224,6 +233,13 @@ class HintSessionFactoryImpl : public HintSessionFactory {
   THREAD_CHECKER(thread_checker_);
 };
 
+bool IsAsyncSetThreadsEnabled() {
+  // Earlier Android versions don't support SetThreads so it's not used at all,
+  // sync or async.
+  return android_get_device_api_level() >= __ANDROID_API_U__ &&
+         base::FeatureList::IsEnabled(features::kEnableADPFAsyncSetThreads);
+}
+
 AdpfHintSession::AdpfHintSession(APerformanceHintSession* session,
                                  HintSessionFactoryImpl* factory,
                                  base::TimeDelta target_duration,
@@ -237,12 +253,34 @@ AdpfHintSession::AdpfHintSession(APerformanceHintSession* session,
       type_(type) {
   DCHECK_CALLED_ON_VALID_THREAD(factory_->thread_checker_);
   factory_->hint_sessions_.insert(this);
+  if (IsAsyncSetThreadsEnabled()) {
+    // USER_BLOCKING because updating the set of threads in the ADPF session
+    // in a timely fashion can affect user-visible behaviors like scroll jank.
+    task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+        {base::MayBlock(), base::TaskPriority::USER_BLOCKING});
+  }
+}
+
+void AdpfHintSession::CloseSessionImpl(base::WaitableEvent* session_closed) {
+  AdpfMethods::Get().APerformanceHint_closeSessionFn(hint_session_);
+  session_closed->Signal();
 }
 
 AdpfHintSession::~AdpfHintSession() {
   DCHECK_CALLED_ON_VALID_THREAD(factory_->thread_checker_);
   factory_->hint_sessions_.erase(this);
-  AdpfMethods::Get().APerformanceHint_closeSessionFn(hint_session_);
+  if (IsAsyncSetThreadsEnabled()) {
+    // Run on a sequenced task runner to make sure that we don't close the
+    // session before the already posted SetThreads tasks are executed.
+    // Otherwise those SetThreads tasks may crash.
+    base::WaitableEvent session_closed;
+    task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&AdpfHintSession::CloseSessionImpl,
+                                  base::Unretained(this), &session_closed));
+    session_closed.Wait();
+  } else {
+    AdpfMethods::Get().APerformanceHint_closeSessionFn(hint_session_);
+  }
 }
 
 void AdpfHintSession::UpdateTargetDuration(base::TimeDelta target_duration) {
@@ -336,6 +374,13 @@ void AdpfHintSession::SetPreferPowerEfficientScheduling(
   }
 }
 
+void AdpfHintSession::SetThreadsImpl(std::vector<int> thread_ids) {
+  int retval = AdpfMethods::Get().APerformanceHint_setThreadsFn(
+      hint_session_, thread_ids.data(), thread_ids.size());
+  TRACE_EVENT_INSTANT("android.adpf", "SetThreads", "thread_ids", thread_ids,
+                      "success", retval == 0);
+}
+
 void AdpfHintSession::SetThreads(
     const base::flat_set<base::PlatformThreadId>& thread_ids) {
   DCHECK_CALLED_ON_VALID_THREAD(factory_->thread_checker_);
@@ -350,10 +395,13 @@ void AdpfHintSession::SetThreads(
   tids.reserve(thread_ids.size());
   std::transform(thread_ids.begin(), thread_ids.end(), std::back_inserter(tids),
                  [](const base::PlatformThreadId& tid) { return tid.raw(); });
-  int retval = AdpfMethods::Get().APerformanceHint_setThreadsFn(
-      hint_session_, tids.data(), tids.size());
-  TRACE_EVENT_INSTANT("android.adpf", "SetThreads", "thread_ids", thread_ids,
-                      "type", type_, "success", retval == 0);
+  if (IsAsyncSetThreadsEnabled()) {
+    task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&AdpfHintSession::SetThreadsImpl,
+                                  base::Unretained(this), std::move(tids)));
+  } else {
+    SetThreadsImpl(std::move(tids));
+  }
 }
 
 void AdpfHintSession::NotifyWorkloadReset() {
