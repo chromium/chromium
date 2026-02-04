@@ -157,9 +157,9 @@
     "expiry_milestone": 130
   },
   {
-    "name": "allow-user-installed-chrome-apps",
-    "owners": ["//apps/DEPRECATION_OWNERS"],
-    "expiry_milestone": 169
+    "name": "allow-non-family-link-url-filter-mode",
+    "owners": ["tju@google.com", "chrome-signin-team@google.com"],
+    "expiry_milestone": 150
   },
   {
     "name": "alt-click-and-six-pack-customization",

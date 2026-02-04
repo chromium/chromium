@@ -11724,14 +11724,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          feature_engagement::kIPHAutofillCreditCardBenefitFeature)},
 
-#if BUILDFLAG(IS_CHROMEOS)
-    {"allow-user-installed-chrome-apps",
-     flag_descriptions::kAllowUserInstalledChromeAppsName,
-     flag_descriptions::kAllowUserInstalledChromeAppsDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(
-         apps::chrome_app_deprecation::kAllowUserInstalledChromeApps)},
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
     {"chrome-web-store-navigation-throttle",
      flag_descriptions::kChromeWebStoreNavigationThrottleName,
