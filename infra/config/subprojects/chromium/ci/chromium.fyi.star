@@ -2638,12 +2638,12 @@ ci.builder(
     ),
     gn_args = gn_args.config(
         configs = [
+            "gpu_tests",
             "release_builder",
             "remoteexec",
+            "minimal_symbols",
             "win",
             "x64",
-            "chrome_with_codecs",
-            "minimal_symbols",
         ],
     ),
     targets = targets.bundle(
@@ -2651,7 +2651,39 @@ ci.builder(
         mixins = [
             "x86-64",
             "win10",
+            "retry_only_failed_tests",
         ],
+        per_test_modifications = {
+            "blink_web_tests": targets.mixin(
+                swarming = targets.swarming(
+                    # blink_web_tests has issues when mixing different CPUs.
+                    # see https://crbug.com/1458859
+                    # As of 2024 Q4, all e2 machines in chromium.tests use
+                    # x86-64-Broadwell_GCE. But, the situation may change when
+                    # GCE replaces the hardwares. If that happens, it needs to
+                    # be updated to run on the most popular CPU platform.
+                    dimensions = {
+                        "cpu": "x86-64-Broadwell_GCE",
+                    },
+                    shards = 12,
+                ),
+            ),
+            "browser_tests": targets.mixin(
+                # Only retry the individual failed tests instead of rerunning
+                # entire shards.
+                # crbug.com/1473501
+                swarming = targets.swarming(
+                    # This is for slow test execution that often becomes a
+                    # critical path of swarming jobs. crbug.com/868114
+                    shards = 55,
+                ),
+            ),
+            "content_browsertests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 8,
+                ),
+            ),
+        },
     ),
     os = os.WINDOWS_DEFAULT,
     console_view_entry = [
