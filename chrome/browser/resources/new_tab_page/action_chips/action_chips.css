@@ -89,7 +89,7 @@
 }
 
 .deep-dive {
-  background-color: var(--color-sys-on-surface-subtle);
+  background-color: var(--color-new-tab-page-action-chip-text-body);
   background-size: 24px;
   -webkit-mask-image: url(chrome://new-tab-page/icons/suggestion.svg);
 }
@@ -100,7 +100,7 @@
 }
 
 .deep-search {
-  background-color: var(--color-sys-on-surface-subtle);
+  background-color: var(--color-new-tab-page-action-chip-text-body);
   background-size: 24px;
   -webkit-mask-image: url(chrome://new-tab-page/icons/deep_search.svg);
 }
@@ -258,7 +258,7 @@
 }
 
 .chip-title {
-  color: var(--color-sys-on-surface);
+  color: var(--color-new-tab-page-action-chip-text-title);
   font-size: 13px;
   font-weight: 500;
   line-height: 20px;
@@ -276,7 +276,7 @@
 }
 
 .chip-body {
-  color: var(--color-sys-on-surface-subtle);
+  color: var(--color-new-tab-page-action-chip-text-body);
   font-size: 12px;
   font-weight: 400;
   line-height: 18px;
