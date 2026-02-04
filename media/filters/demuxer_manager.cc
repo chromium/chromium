@@ -242,7 +242,7 @@ PipelineStatus DemuxerManager::CreateDemuxer(
   }
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
-  if (hls_fallback_ || loaded_url_.path().ends_with(".m3u8")) {
+  if (hls_fallback_ || IsManifestDemuxerURL()) {
     std::unique_ptr<Demuxer> demuxer;
     std::tie(data_source_info_, demuxer) = CreateHlsDemuxer();
     SetDemuxer(std::move(demuxer));
@@ -374,6 +374,10 @@ bool DemuxerManager::IsLiveContent() const {
     return !demuxer_->IsSeekable();
   }
   return false;
+}
+
+bool DemuxerManager::IsManifestDemuxerURL() const {
+  return loaded_url_.path().ends_with(".m3u8");
 }
 
 std::unique_ptr<Demuxer> DemuxerManager::CreateChunkDemuxer() {

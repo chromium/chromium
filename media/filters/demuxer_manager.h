@@ -142,6 +142,7 @@ class MEDIA_EXPORT DemuxerManager {
   bool DataSourceFullyBuffered() const;
   bool IsStreaming() const;
   bool IsLiveContent() const;
+  bool IsManifestDemuxerURL() const;
 
  private:
   // Demuxer creation and helper methods

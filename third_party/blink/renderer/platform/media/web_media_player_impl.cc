@@ -935,6 +935,14 @@ void WebMediaPlayerImpl::DoLoad(LoadType load_type,
     return;
   }
 
+  // `demuxer_manager_` will create a HlsManifestDemuxerEngine for HLS urls
+  // like this based on file extension, which will do a cache-free request for
+  // the manifest. If we request it first here, it will make two requests.
+  if (demuxer_manager_->IsManifestDemuxerURL()) {
+    StartPipeline();
+    return;
+  }
+
   auto data_source = std::make_unique<MultiBufferDataSource>(
       main_task_runner_,
       url_index_->GetByUrl(
