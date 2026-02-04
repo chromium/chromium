@@ -75,6 +75,7 @@ v8.log
 vs-chromium-project.txt
 # Store android emulator artifacts, used by //tools/android/avd/avd.py
 /.android_emulator/
+/.android_emulator_cipd_cache/
 /.clangd/
 /.clangd-index/
 # Settings directories for eclipse

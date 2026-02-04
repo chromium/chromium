@@ -36,6 +36,11 @@ from lib.proto import measures
 # the emulator instance, e.g. emulator binary, system images, AVDs.
 COMMON_CIPD_ROOT = os.path.join(constants.DIR_SOURCE_ROOT, '.android_emulator')
 
+# The fallback cache dir for CIPD to avoid re-downloading. Will be set only when
+# the env var "CIPD_CACHE_DIR" does not exist.
+COMMON_CIPD_CACHE_DIR = os.path.join(constants.DIR_SOURCE_ROOT,
+                                     '.android_emulator_cipd_cache')
+
 # Packages that are needed for runtime.
 _PACKAGES_RUNTIME = object()
 # Packages that are needed during AVD creation.
@@ -922,6 +927,8 @@ class AvdConfig:
       yield cipd_root, pkgs
 
   def _InstallCipdPackages(self, packages, check_version=True):
+    env = os.environ.copy()
+    env.setdefault('CIPD_CACHE_DIR', COMMON_CIPD_CACHE_DIR)
     for cipd_root, pkgs in self._IterCipdPackages(packages,
                                                   check_version=check_version):
       logging.info('Installing packages in %s', cipd_root)
@@ -944,7 +951,7 @@ class AvdConfig:
           cipd_root,
       ]
       try:
-        for line in cmd_helper.IterCmdOutputLines(ensure_cmd):
+        for line in cmd_helper.IterCmdOutputLines(ensure_cmd, env=env):
           logging.info('    %s', line)
       except subprocess.CalledProcessError as e:
         exception_recorder.register(e)
