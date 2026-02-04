@@ -205,7 +205,7 @@ class RawCanonOutputT : public CanonOutputT<T> {
   T fixed_buffer_[fixed_capacity];
 };
 
-// Explicitely instantiate commonly used instatiations.
+// Explicitly instantiate commonly used instantiations.
 extern template class EXPORT_TEMPLATE_DECLARE(COMPONENT_EXPORT(URL))
     CanonOutputT<char>;
 extern template class EXPORT_TEMPLATE_DECLARE(COMPONENT_EXPORT(URL))
@@ -1036,7 +1036,7 @@ class Replacements {
     sources_.path = Placeholder();
     components_.path = Component();
   }
-  // Return the path part of the source string if the path component is alid.
+  // Return the path part of the source string if the path component is valid.
   std::optional<StringViewT> MaybePath() const {
     return components_.path.MaybeAsViewOn(sources_.path);
   }
