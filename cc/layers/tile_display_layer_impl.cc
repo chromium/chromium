@@ -186,10 +186,6 @@ void TileDisplayLayerImpl::AppendQuadsSpecialization(
     const Occlusion& scaled_occlusion,
     const gfx::Vector2d& quad_offset,
     float max_contents_scale) {
-  // Keep track of the tilings that were used so that tilings that are
-  // unused can be considered for removal.
-  ClearLastAppendQuadsScales();
-
   // TODO(crbug.com/40902346): Use CalculateScaledCullRect() to set
   // append_quads_data->checkerboarded_needs_record as PictureLayerImpl does.
 

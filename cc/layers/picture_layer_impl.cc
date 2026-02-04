@@ -285,10 +285,6 @@ void PictureLayerImpl::AppendQuadsSpecialization(
     const Occlusion& scaled_occlusion,
     const gfx::Vector2d& quad_offset,
     float max_contents_scale) {
-  // Keep track of the tilings that were used so that tilings that are
-  // unused can be considered for removal.
-  ClearLastAppendQuadsScales();
-
   // Ignore missing tiles outside of viewport for tile priority. This is
   // normally the same as draw viewport but can be independently overridden by
   // embedders like Android WebView with SetExternalTilePriorityConstraints.

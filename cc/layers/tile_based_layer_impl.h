@@ -278,6 +278,12 @@ void TileBasedLayerImpl<Tiling>::AppendQuads(
     }
   }
 
+  // Clear the set of scales that were used in the previous
+  // AppendQuadsSpecialization() so that subclasses can track the scales used in
+  // *this* invocation in order to determine which scales are now unused and can
+  // be considered for removal.
+  ClearLastAppendQuadsScales();
+
   AppendQuadsSpecialization(context, render_pass, append_quads_data,
                             shared_quad_state, scaled_occlusion, quad_offset,
                             max_contents_scale);
