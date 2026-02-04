@@ -281,6 +281,34 @@ public class AutoPictureInPicturePermissionControllerTest {
         Assert.assertFalse("Allow once should be cleared on navigation", mTabHelper.hasAllowOnce());
     }
 
+    @Test
+    public void testShowPrompt_ReplacesExistingPrompt() {
+        when(mNativeMock.getPermissionStatus(mWebContents)).thenReturn(ContentSetting.ASK);
+
+        // First prompt
+        AutoPictureInPicturePermissionController.showPromptIfNeeded(
+                mActivity, mTab, NO_OP_CALLBACK);
+        AutoPictureInPicturePermissionController firstController =
+                mTabHelper.getPermissionController();
+        Assert.assertNotNull(firstController);
+        ViewGroup rootView = mActivity.findViewById(android.R.id.content);
+        Assert.assertEquals(2, rootView.getChildCount());
+
+        // Second prompt
+        AutoPictureInPicturePermissionController.showPromptIfNeeded(
+                mActivity, mTab, NO_OP_CALLBACK);
+
+        // Verify controller was replaced
+        AutoPictureInPicturePermissionController secondController =
+                mTabHelper.getPermissionController();
+        Assert.assertNotNull(secondController);
+        Assert.assertNotSame(firstController, secondController);
+
+        // Verify UI is still correct (old views removed, new ones added).
+        // If old views weren't removed, we'd have 4 views.
+        Assert.assertEquals(2, rootView.getChildCount());
+    }
+
     private ButtonCompat findButton(AutoPipPermissionDialogView view, String text) {
         ViewGroup buttonContainer =
                 view.findViewById(org.chromium.chrome.R.id.auto_pip_button_container);

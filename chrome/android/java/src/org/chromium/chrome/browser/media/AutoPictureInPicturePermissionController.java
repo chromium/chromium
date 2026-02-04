@@ -72,11 +72,6 @@ public class AutoPictureInPicturePermissionController {
         AutoPictureInPictureTabHelper helper =
                 assertNonNull(AutoPictureInPictureTabHelper.fromWebContents(webContents));
 
-        // Don't show a new prompt if one is already active for this WebContents.
-        if (helper.getPermissionController() != null) {
-            return;
-        }
-
         // If the user already selected "Allow Once" for this WebContents or the permission is not
         // "ASK", we shouldn't create a controller at all.
         if (helper.hasAllowOnce()
