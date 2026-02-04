@@ -318,10 +318,6 @@ BrowserViewTabbedLayoutImpl::CalculateVerticalTabStripAnimation(
   int leading_exclusion_height =
       GetCollapsedVerticalTabStripRelativeTop(params);
   VerticalTabStripAnimation animation;
-
-  // Default is to display the top outside corner.
-  animation.top_outside_corner_percent = 1.0;
-
   // Only need to do additional animation if animating downward.
   if (leading_exclusion_height == 0) {
     return animation;
