@@ -336,15 +336,29 @@ Element* FocusgroupControllerUtils::NextFocusgroupItemInDirection(
       current_item, focus_direction, /*skip_subtree=*/false);
   while (next_element &&
          FlatTreeTraversal::IsDescendantOf(*next_element, *owner)) {
-    // Skip nested focusgroups and opted-out subtrees.
     FocusgroupData next_data = next_element->GetFocusgroupData();
-    if (next_data.behavior == FocusgroupBehavior::kOptOut ||
-        IsActualFocusgroup(next_data)) {
+
+    // Handle opted-out subtrees: skip entirely.
+    if (next_data.behavior == FocusgroupBehavior::kOptOut) {
       next_element =
           traversal_context.NextInDirection(next_element, focus_direction,
                                             /*skip_subtree=*/true);
       continue;
     }
+
+    // Handle nested focusgroups: they can participate as items in the parent
+    // focusgroup if they are keyboard focusable. After checking, we always
+    // skip their subtree since their contents belong to the nested focusgroup.
+    if (IsActualFocusgroup(next_data)) {
+      if (next_element->IsKeyboardFocusableSlow()) {
+        return next_element;
+      }
+      next_element =
+          traversal_context.NextInDirection(next_element, focus_direction,
+                                            /*skip_subtree=*/true);
+      continue;
+    }
+
     if (IsFocusgroupItemWithOwner(next_element, owner)) {
       if (next_element->IsKeyboardFocusableSlow()) {
         return next_element;
@@ -639,26 +653,28 @@ Element* FocusgroupControllerUtils::FirstFocusgroupItemWithin(
     return nullptr;
   }
   FocusgroupVisualOrderTraversalContext traversal_context;
-  for (Element* el = traversal_context.Next(owner, /*skip_subtree=*/false);
-       el && FlatTreeTraversal::IsDescendantOf(*el, *owner);
-       el = traversal_context.Next(el, /*skip_subtree=*/false)) {
-    if (el != owner) {
-      FocusgroupData data = el->GetFocusgroupData();
-      if (data.behavior != FocusgroupBehavior::kNoBehavior) {
-        // Skip nested focusgroup subtree entirely.
-        el = traversal_context.Next(el, /*skip_subtree=*/true);
-        if (!el) {
-          break;
-        }
-        el = traversal_context.Previous(el, /*skip_subtree=*/false);
-        continue;
-      }
-    }
-    if (IsFocusgroupItemWithOwner(el, owner)) {
+  Element* el = traversal_context.Next(owner, /*skip_subtree=*/false);
+  while (el && FlatTreeTraversal::IsDescendantOf(*el, *owner)) {
+    bool skip_subtree = false;
+    FocusgroupData data = el->GetFocusgroupData();
+
+    if (data.behavior == FocusgroupBehavior::kOptOut) {
+      // Skip opted-out subtree entirely.
+      skip_subtree = true;
+    } else if (IsActualFocusgroup(data)) {
+      // Nested focusgroup: check if the owner itself is a focusgroup item, but
+      // skip its subtree as its contents belong to the nested focusgroup.
       if (el->IsKeyboardFocusableSlow()) {
         return el;
       }
+      // Skip nested focusgroup subtree.
+      skip_subtree = true;
+    } else if (IsFocusgroupItemWithOwner(el, owner) &&
+               el->IsKeyboardFocusableSlow()) {
+      return el;
     }
+
+    el = traversal_context.Next(el, skip_subtree);
   }
   return nullptr;
 }
@@ -671,25 +687,27 @@ Element* FocusgroupControllerUtils::LastFocusgroupItemWithin(
 
   FocusgroupVisualOrderTraversalContext traversal_context;
   Element* last = nullptr;
-  for (Element* el = traversal_context.Next(owner, /*skip_subtree=*/false);
-       el && FlatTreeTraversal::IsDescendantOf(*el, *owner);
-       el = traversal_context.Next(el, /*skip_subtree=*/false)) {
-    if (el != owner) {
-      FocusgroupData data = el->GetFocusgroupData();
-      if (data.behavior != FocusgroupBehavior::kNoBehavior) {
-        el = traversal_context.Next(el, /*skip_subtree=*/true);
-        if (!el) {
-          break;
-        }
-        el = traversal_context.Previous(el, /*skip_subtree=*/false);
-        continue;
-      }
-    }
-    if (IsFocusgroupItemWithOwner(el, owner)) {
+  Element* el = traversal_context.Next(owner, /*skip_subtree=*/false);
+  while (el && FlatTreeTraversal::IsDescendantOf(*el, *owner)) {
+    bool skip_subtree = false;
+    FocusgroupData data = el->GetFocusgroupData();
+
+    if (data.behavior == FocusgroupBehavior::kOptOut) {
+      // Skip opted-out subtree entirely.
+      skip_subtree = true;
+    } else if (IsActualFocusgroup(data)) {
+      // Nested focusgroup: check if the owner itself is a focusgroup item, but
+      // skip its subtree as its contents belong to the nested focusgroup.
       if (el->IsKeyboardFocusableSlow()) {
         last = el;
       }
+      skip_subtree = true;
+    } else if (IsFocusgroupItemWithOwner(el, owner) &&
+               el->IsKeyboardFocusableSlow()) {
+      last = el;
     }
+
+    el = traversal_context.Next(el, skip_subtree);
   }
   return last;
 }

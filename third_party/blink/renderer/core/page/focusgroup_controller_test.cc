@@ -731,6 +731,109 @@ TEST_F(FocusgroupControllerTest, IsFocusgroupItemWithOwner) {
   EXPECT_FALSE(utils::IsFocusgroupItemWithOwner(outer_item2, inner_fg));
 }
 
+// Test that a focusable nested focusgroup participates as an item in its parent
+// focusgroup. Arrow navigation should reach the nested focusgroup element
+// itself, and its contents should be skipped.
+TEST_F(FocusgroupControllerTest, NestedFocusgroupParticipatesAsItem) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div id=outer focusgroup="toolbar">
+      <button id=btn1></button>
+      <button id=btn2></button>
+      <div id=inner focusgroup="toolbar" tabindex=0>
+        <button id=inner_btn1></button>
+        <button id=inner_btn2></button>
+      </div>
+      <button id=btn3></button>
+    </div>
+  )HTML");
+
+  auto* outer = GetElementById("outer");
+  auto* btn1 = GetElementById("btn1");
+  auto* btn2 = GetElementById("btn2");
+  auto* inner = GetElementById("inner");
+  auto* inner_btn1 = GetElementById("inner_btn1");
+  auto* inner_btn2 = GetElementById("inner_btn2");
+  auto* btn3 = GetElementById("btn3");
+
+  ASSERT_TRUE(outer);
+  ASSERT_TRUE(btn1);
+  ASSERT_TRUE(btn2);
+  ASSERT_TRUE(inner);
+  ASSERT_TRUE(inner_btn1);
+  ASSERT_TRUE(inner_btn2);
+  ASSERT_TRUE(btn3);
+
+  // The nested focusgroup (inner) should be the first item if it comes first.
+  EXPECT_EQ(utils::FirstFocusgroupItemWithin(outer), btn1);
+
+  // The nested focusgroup should be the last item if it comes last.
+  EXPECT_EQ(utils::LastFocusgroupItemWithin(outer), btn3);
+
+  // Arrow navigation from btn2 should reach the nested focusgroup element.
+  EXPECT_EQ(utils::NextFocusgroupItemInDirection(
+                outer, btn2, FocusgroupDirection::kForwardInline),
+            inner);
+
+  // Arrow navigation from the nested focusgroup should reach btn3.
+  EXPECT_EQ(utils::NextFocusgroupItemInDirection(
+                outer, inner, FocusgroupDirection::kForwardInline),
+            btn3);
+
+  // Arrow navigation backward from btn3 should reach the nested focusgroup.
+  EXPECT_EQ(utils::NextFocusgroupItemInDirection(
+                outer, btn3, FocusgroupDirection::kBackwardInline),
+            inner);
+
+  // Arrow navigation backward from the nested focusgroup should reach btn2.
+  EXPECT_EQ(utils::NextFocusgroupItemInDirection(
+                outer, inner, FocusgroupDirection::kBackwardInline),
+            btn2);
+
+  // Items inside the nested focusgroup should NOT be reachable via outer.
+  EXPECT_NE(utils::NextFocusgroupItemInDirection(
+                outer, btn2, FocusgroupDirection::kForwardInline),
+            inner_btn1);
+  EXPECT_NE(utils::NextFocusgroupItemInDirection(
+                outer, inner, FocusgroupDirection::kForwardInline),
+            inner_btn2);
+}
+
+// Test that a non-focusable nested focusgroup does NOT participate as an item.
+TEST_F(FocusgroupControllerTest, NonFocusableNestedFocusgroupNotAnItem) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div id=outer focusgroup="toolbar">
+      <button id=btn1></button>
+      <div id=inner focusgroup="toolbar">
+        <button id=inner_btn1></button>
+        <button id=inner_btn2></button>
+      </div>
+      <button id=btn2></button>
+    </div>
+  )HTML");
+
+  auto* outer = GetElementById("outer");
+  auto* btn1 = GetElementById("btn1");
+  auto* inner = GetElementById("inner");
+  auto* btn2 = GetElementById("btn2");
+
+  ASSERT_TRUE(outer);
+  ASSERT_TRUE(btn1);
+  ASSERT_TRUE(inner);
+  ASSERT_TRUE(btn2);
+
+  // Arrow navigation from btn1 should skip the non-focusable nested focusgroup
+  // and go directly to btn2.
+  EXPECT_EQ(utils::NextFocusgroupItemInDirection(
+                outer, btn1, FocusgroupDirection::kForwardInline),
+            btn2);
+
+  // Arrow navigation backward from btn2 should skip the non-focusable nested
+  // focusgroup and go directly to btn1.
+  EXPECT_EQ(utils::NextFocusgroupItemInDirection(
+                outer, btn2, FocusgroupDirection::kBackwardInline),
+            btn1);
+}
+
 TEST_F(FocusgroupControllerTest, CellAtIndexInRowBehaviorOnNoCellFound) {
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <table id=table focusgroup="grid">
