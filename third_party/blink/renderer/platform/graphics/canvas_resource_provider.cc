@@ -1060,6 +1060,22 @@ CanvasResourceProvider::CreateSharedImageProviderForSoftwareCompositor(
     ShouldInitialize should_initialize,
     WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
     Delegate* delegate) {
+  return CreateSharedImageProviderForSoftwareCompositorBase<
+      CanvasResourceProviderSharedImage>(
+      size, format, alpha_type, color_space, should_initialize,
+      shared_image_interface_provider, delegate);
+}
+
+template <class T>
+std::unique_ptr<T>
+CanvasResourceProvider::CreateSharedImageProviderForSoftwareCompositorBase(
+    gfx::Size size,
+    viz::SharedImageFormat format,
+    SkAlphaType alpha_type,
+    const gfx::ColorSpace& color_space,
+    ShouldInitialize should_initialize,
+    WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
+    Delegate* delegate) {
   // CanvasResourceProviderSoftwareSharedImage works only with the software
   // compositor.
   if (SharedGpuContext::IsGpuCompositingEnabled()) {
@@ -1069,9 +1085,9 @@ CanvasResourceProvider::CreateSharedImageProviderForSoftwareCompositor(
   CHECK(format == viz::SharedImageFormat::N32Format() ||
         format == viz::SinglePlaneFormat::kRGBA_F16);
 
-  auto provider = std::make_unique<CanvasResourceProviderSharedImage>(
-      size, format, alpha_type, color_space, shared_image_interface_provider,
-      delegate);
+  auto provider =
+      std::make_unique<T>(size, format, alpha_type, color_space,
+                          shared_image_interface_provider, delegate);
   if (provider->IsValid()) {
     if (should_initialize ==
         CanvasResourceProvider::ShouldInitialize::kCallClear)
@@ -1286,6 +1302,21 @@ CanvasNon2DResourceProviderSharedImage::CreateForWebGPU(
       shared_image_usage_flags | gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
           gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE,
       delegate);
+}
+
+std::unique_ptr<CanvasNon2DResourceProviderSharedImage>
+CanvasNon2DResourceProviderSharedImage::CreateForSoftwareCompositor(
+    gfx::Size size,
+    viz::SharedImageFormat format,
+    SkAlphaType alpha_type,
+    const gfx::ColorSpace& color_space,
+    ShouldInitialize initialize_provider,
+    WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
+    Delegate* delegate) {
+  return CreateSharedImageProviderForSoftwareCompositorBase<
+      CanvasNon2DResourceProviderSharedImage>(
+      size, format, alpha_type, color_space, initialize_provider,
+      shared_image_interface_provider, delegate);
 }
 
 CanvasResourceProvider::CanvasImageProvider::CanvasImageProvider(
@@ -1695,6 +1726,20 @@ CanvasNon2DResourceProviderSharedImage::CanvasNon2DResourceProviderSharedImage(
                                         context_provider_wrapper,
                                         is_accelerated,
                                         shared_image_usage_flags,
+                                        delegate) {}
+
+CanvasNon2DResourceProviderSharedImage::CanvasNon2DResourceProviderSharedImage(
+    gfx::Size size,
+    viz::SharedImageFormat format,
+    SkAlphaType alpha_type,
+    const gfx::ColorSpace& color_space,
+    WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
+    Delegate* delegate)
+    : CanvasResourceProviderSharedImage(size,
+                                        format,
+                                        alpha_type,
+                                        color_space,
+                                        shared_image_interface_provider,
                                         delegate) {}
 
 bool CanvasResourceProvider::UnacceleratedWritePixels(

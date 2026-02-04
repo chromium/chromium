@@ -287,6 +287,16 @@ class PLATFORM_EXPORT CanvasResourceProvider
       gpu::SharedImageUsageSet shared_image_usage_flags,
       Delegate* delegate = nullptr);
 
+  template <class T>
+  static std::unique_ptr<T> CreateSharedImageProviderForSoftwareCompositorBase(
+      gfx::Size size,
+      viz::SharedImageFormat format,
+      SkAlphaType alpha_type,
+      const gfx::ColorSpace& color_space,
+      ShouldInitialize initialize_provider,
+      WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
+      Delegate* delegate = nullptr);
+
  private:
   friend class FlushForImageListener;
 
@@ -654,6 +664,16 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
                   gpu::SharedImageUsageSet shared_image_usage_flags = {},
                   Delegate* delegate = nullptr);
 
+  static std::unique_ptr<CanvasNon2DResourceProviderSharedImage>
+  CreateForSoftwareCompositor(
+      gfx::Size size,
+      viz::SharedImageFormat format,
+      SkAlphaType alpha_type,
+      const gfx::ColorSpace& color_space,
+      ShouldInitialize initialize_provider,
+      WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
+      Delegate* delegate = nullptr);
+
   CanvasNon2DResourceProviderSharedImage(
       gfx::Size,
       viz::SharedImageFormat,
@@ -662,6 +682,13 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       bool is_accelerated,
       gpu::SharedImageUsageSet shared_image_usage_flags,
+      Delegate*);
+  CanvasNon2DResourceProviderSharedImage(
+      gfx::Size,
+      viz::SharedImageFormat,
+      SkAlphaType,
+      const gfx::ColorSpace&,
+      WebGraphicsSharedImageInterfaceProvider*,
       Delegate*);
   ~CanvasNon2DResourceProviderSharedImage() override = default;
 
