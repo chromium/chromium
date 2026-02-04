@@ -126,6 +126,10 @@ class MockSurfaceEmbedHost : public mojom::SurfaceEmbedHost {
 
   void SetFocus(bool focused, blink::mojom::FocusType focus_type) override {}
 
+  void SetParentAccessibilityInfo(
+      int32_t ax_node_id,
+      const ::base::UnguessableToken& ax_tree_token) override {}
+
   void OnSurfaceEmbedDisconnected() { surface_embed_.reset(); }
 
   void SetDisconnectCallback(base::OnceClosure callback) {
