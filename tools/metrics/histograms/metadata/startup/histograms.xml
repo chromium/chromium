@@ -124,6 +124,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Startup.Android.Cold.TemperatureMismatch"
+    enum="AndroidColdStartMismatchLocation" expires_after="2026-07-28">
+  <owner>nafisabedin@google.com</owner>
+  <owner>yfriedman@chromium.org</owner>
+  <summary>
+    Records the nature of the disagreement between Clank's ColdStartTracker and
+    Android's ApplicationStartInfo regarding cold start status. The histogram is
+    split by whether Android considers the start component to be an ACTIVITY or
+    OTHER (Service, Broadcast, Provider).
+
+    Recorded only when a mismatch occurs during startup. Only available starting
+    with API Level 36.
+  </summary>
+</histogram>
+
 <histogram
     name="Startup.Android.Cold.TimeToFirstContentfulPaint.{StartActivityType}"
     units="ms" expires_after="2026-06-07">
@@ -693,6 +708,17 @@ chromium-metrics-reviews@google.com.
     Records the component type that was being started which triggered the start
     as determined by Android's ApplicationStartInfo API. Only available starting
     with Android B and above.
+  </summary>
+</histogram>
+
+<histogram name="Startup.Android.Temperature" enum="AndroidStartupTemperature"
+    expires_after="2026-07-28">
+  <owner>nafisabedin@google.com</owner>
+  <owner>yfriedman@chromium.org</owner>
+  <summary>
+    Uses Android's ApplicationStartInfo API to determine the temperature of the
+    start: unset, cold, warm or hot every time Clank is brought to the
+    foreground. Only available starting with API Level 35.
   </summary>
 </histogram>
 

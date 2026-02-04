@@ -15,6 +15,7 @@ import static org.chromium.chrome.browser.ui.IncognitoRestoreAppLaunchDrawBlocke
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
 
 import android.app.Activity;
+import android.app.ApplicationStartInfo;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ShortcutManager;
@@ -43,6 +44,7 @@ import android.view.WindowManager;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
@@ -172,6 +174,8 @@ import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
 import org.chromium.chrome.browser.metrics.AndroidSessionDurationsServiceState;
 import org.chromium.chrome.browser.metrics.LaunchMetrics;
 import org.chromium.chrome.browser.metrics.MainIntentBehaviorMetrics;
+import org.chromium.chrome.browser.metrics.StartupMetricsTracker;
+import org.chromium.chrome.browser.metrics.StartupMetricsTracker.AndroidStartupTemperature;
 import org.chromium.chrome.browser.modaldialog.ChromeTabModalPresenter;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.AllocatedIdInfo;
@@ -1638,6 +1642,12 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                     }
                 });
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            PostTask.postTask(
+                    TaskTraits.BEST_EFFORT_MAY_BLOCK,
+                    ChromeTabbedActivity::recordStartupTemperature);
+        }
+
         // Don't call setInitialOverviewState if 1) we're waiting for the tab's creation or we risk
         // showing a glimpse of the tab selector during start up. 2) on warm startup from an
         // resumption. Defer it to onResumeWitheNative() since it needs to check the latest Intent
@@ -2441,6 +2451,36 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             long currentTimestamp = System.currentTimeMillis();
             prefs.writeLong(ChromePreferenceKeys.FIRST_CTA_START_TIMESTAMP, currentTimestamp);
         }
+    }
+
+    /**
+     * Uses ApplicationStartInfo to record the temperature (Cold, Warm, Hot, Unset) of the current
+     * start.
+     */
+    @RequiresApi(35)
+    private static void recordStartupTemperature() {
+        ApplicationStartInfo startInfo = StartupMetricsTracker.getCurrentApplicationStartInfo();
+        if (startInfo == null) return;
+
+        int androidStartupTemperature = startInfo.getStartType();
+        @AndroidStartupTemperature int temperature;
+        switch (androidStartupTemperature) {
+            case ApplicationStartInfo.START_TYPE_COLD:
+                temperature = AndroidStartupTemperature.COLD;
+                break;
+            case ApplicationStartInfo.START_TYPE_WARM:
+                temperature = AndroidStartupTemperature.WARM;
+                break;
+            case ApplicationStartInfo.START_TYPE_HOT:
+                temperature = AndroidStartupTemperature.HOT;
+                break;
+            case ApplicationStartInfo.START_TYPE_UNSET:
+            default:
+                temperature = AndroidStartupTemperature.UNSET;
+                break;
+        }
+        RecordHistogram.recordEnumeratedHistogram(
+                "Startup.Android.Temperature", temperature, AndroidStartupTemperature.NUM_ENTRIES);
     }
 
     private boolean hasStartWithNativeBeenCalled() {

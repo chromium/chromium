@@ -26,6 +26,32 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<!-- LINT.IfChange(AndroidColdStartMismatchLocation) -->
+
+<enum name="AndroidColdStartMismatchLocation">
+  <int value="0"
+      label="Tracker Cold / System Not Cold (Start Component Activity)"/>
+  <int value="1"
+      label="Tracker Cold / System Not Cold (Start Component Other)"/>
+  <int value="2"
+      label="Tracker Not Cold / System Cold (Start Component Activity)"/>
+  <int value="3"
+      label="Tracker Not Cold / System Cold (Start Component Other)"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/metrics/StartupMetricsTracker.java:AndroidColdStartMismatchLocation) -->
+
+<!-- LINT.IfChange(AndroidStartupTemperature) -->
+
+<enum name="AndroidStartupTemperature">
+  <int value="0" label="Unset"/>
+  <int value="1" label="Cold"/>
+  <int value="2" label="Warm"/>
+  <int value="3" label="Hot"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/metrics/StartupMetricsTracker.java:AndroidStartupTemperature) -->
+
 <enum name="BooleanBringToForegroundReason">
   <int value="0" label="Other"/>
   <int value="1" label="Notification click (within last 5 seconds)"/>
