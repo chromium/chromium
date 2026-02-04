@@ -260,7 +260,7 @@ UICollectionViewCompositionalLayout* GetLayoutForMostVisitedTilesCollectionView(
     [indices addObject:@(i)];
   }
   /// Add the "+" button.
-  if (count < kMaximumItems) {
+  if (!_items.lastObject.isPinned || count < kMaximumItems) {
     [indices addObject:@(kPlusButtonIdentifier)];
   }
   [snapshot appendItemsWithIdentifiers:indices
