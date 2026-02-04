@@ -722,8 +722,7 @@ void Sanitizer::SanitizeElement(Element* element) const {
                name.LocalName().StartsWith("data-")) {
       keep = data_attrs_ == SanitizerBoolWithAbsence::kTrue;
     } else {
-      keep =
-          !allow_attrs_ && (!allow_per_element || allow_per_element->empty());
+      keep = !allow_attrs_ && !allow_per_element;
     }
     if (!keep) {
       element->removeAttribute(name);
