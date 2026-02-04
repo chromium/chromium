@@ -64,9 +64,9 @@ TEST_P(BackingStoreTest, PutGetConsistency) {
   const IndexedDBKey& key = key1_;
   IndexedDBValue& value = value1_;
 
-  auto db_creation_result = backing_store()->CreateOrOpenDatabase(u"name");
-  ASSERT_TRUE(db_creation_result.has_value());
-  BackingStore::Database& db = **db_creation_result;
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<BackingStore::Database> db_ptr,
+                       backing_store()->CreateOrOpenDatabase(u"name"));
+  BackingStore::Database& db = *db_ptr;
 
   {
     std::unique_ptr<BackingStore::Transaction> transaction1 =
@@ -101,9 +101,9 @@ TEST_P(BackingStoreTest, PutBrokenBlob) {
   value.external_objects.emplace_back(
       CreateBlobInfo(u"text/plain", std::nullopt));
 
-  auto db_creation_result = backing_store()->CreateOrOpenDatabase(u"name");
-  ASSERT_TRUE(db_creation_result.has_value());
-  BackingStore::Database& db = **db_creation_result;
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<BackingStore::Database> db_ptr,
+                       backing_store()->CreateOrOpenDatabase(u"name"));
+  BackingStore::Database& db = *db_ptr;
 
   std::unique_ptr<BackingStore::Transaction> transaction =
       db.CreateTransaction(blink::mojom::IDBTransactionDurability::Relaxed,
@@ -160,12 +160,11 @@ TEST_P(BackingStoreTest, RollbackDuringBlobWrite) {
 }
 
 TEST_P(BackingStoreTest, Snapshots) {
-  auto db_creation_result = backing_store()->CreateOrOpenDatabase(u"name");
-  ASSERT_TRUE(db_creation_result.has_value());
-  BackingStore::Database& db = **db_creation_result;
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<BackingStore::Database> db_ptr,
+                       backing_store()->CreateOrOpenDatabase(u"name"));
+  BackingStore::Database& db = *db_ptr;
 
-  StatusOr<base::DictValue> empty_snapshot = SnapshotDatabase(db);
-  ASSERT_TRUE(empty_snapshot.has_value());
+  ASSERT_OK_AND_ASSIGN(base::DictValue empty_snapshot, SnapshotDatabase(db));
 
   CreateObjectStore(db);
 
@@ -188,14 +187,12 @@ TEST_P(BackingStoreTest, Snapshots) {
   };
   add_records(100);
 
-  StatusOr<base::DictValue> snapshot = SnapshotDatabase(db);
-  ASSERT_TRUE(snapshot.has_value());
+  ASSERT_OK_AND_ASSIGN(base::DictValue snapshot, SnapshotDatabase(db));
 
   // Adding a record changes the snapshot.
   add_records(3);
-  StatusOr<base::DictValue> snapshot2 = SnapshotDatabase(db);
-  ASSERT_TRUE(snapshot2.has_value());
-  EXPECT_NE(*snapshot, *snapshot2);
+  ASSERT_OK_AND_ASSIGN(base::DictValue snapshot2, SnapshotDatabase(db));
+  EXPECT_NE(snapshot, snapshot2);
 
   // Updating a value changes the snapshot.
   {
@@ -211,9 +208,8 @@ TEST_P(BackingStoreTest, Snapshots) {
     CommitTransactionAndVerify(*transaction);
   };
 
-  StatusOr<base::DictValue> snapshot3 = SnapshotDatabase(db);
-  ASSERT_TRUE(snapshot3.has_value());
-  EXPECT_NE(*snapshot2, *snapshot3);
+  ASSERT_OK_AND_ASSIGN(base::DictValue snapshot3, SnapshotDatabase(db));
+  EXPECT_NE(snapshot2, snapshot3);
 
   // Changing the updated value back to the original, snapshot should revert
   // too.
@@ -229,25 +225,22 @@ TEST_P(BackingStoreTest, Snapshots) {
                     .has_value());
     CommitTransactionAndVerify(*transaction);
   };
-  StatusOr<base::DictValue> snapshot4 = SnapshotDatabase(db);
-  ASSERT_TRUE(snapshot4.has_value());
-  EXPECT_EQ(*snapshot2, *snapshot4);
+  ASSERT_OK_AND_ASSIGN(base::DictValue snapshot4, SnapshotDatabase(db));
+  EXPECT_EQ(snapshot2, snapshot4);
 
   // Exercise the whole-store hashing code.
   add_records(1000);
-  StatusOr<base::DictValue> snapshot5 = SnapshotDatabase(db);
-  ASSERT_TRUE(snapshot5.has_value());
-  EXPECT_LT(snapshot5->DebugString().size(), snapshot4->DebugString().size());
+  ASSERT_OK_AND_ASSIGN(base::DictValue snapshot5, SnapshotDatabase(db));
+  EXPECT_LT(snapshot5.DebugString().size(), snapshot4.DebugString().size());
 
   add_records(2);
-  StatusOr<base::DictValue> snapshot6 = SnapshotDatabase(db);
-  ASSERT_TRUE(snapshot6.has_value());
-  EXPECT_NE(*snapshot5, *snapshot6);
+  ASSERT_OK_AND_ASSIGN(base::DictValue snapshot6, SnapshotDatabase(db));
+  EXPECT_NE(snapshot5, snapshot6);
   // Size should not have changed since the row would change the digest but not
   // the size of the digest. Note that this sort of cheats because the digest is
   // actually omitted from the debug string due to being a binary, but even if
   // we were to encode it as a string (e.g. with base64), this check would pass.
-  EXPECT_EQ(snapshot6->DebugString().size(), snapshot5->DebugString().size());
+  EXPECT_EQ(snapshot6.DebugString().size(), snapshot5.DebugString().size());
 
   // Delete all records and verify the snapshot works, and is distinct from the
   // one for a database that lacks object stores/indices.
@@ -263,9 +256,9 @@ TEST_P(BackingStoreTest, Snapshots) {
             .ok());
     CommitTransactionAndVerify(*transaction);
   };
-  StatusOr<base::DictValue> no_record_snapshot = SnapshotDatabase(db);
-  ASSERT_TRUE(no_record_snapshot.has_value());
-  EXPECT_NE(*empty_snapshot, *no_record_snapshot);
+  ASSERT_OK_AND_ASSIGN(base::DictValue no_record_snapshot,
+                       SnapshotDatabase(db));
+  EXPECT_NE(empty_snapshot, no_record_snapshot);
 }
 
 // Deleting an index should delete the index metadata and the index data.
@@ -276,13 +269,13 @@ TEST_P(BackingStoreTest, CreateAndDeleteIndex) {
   const int64_t index_id = 999;
   const IndexedDBKeyPath index_key_path(u"index_key");
 
-  auto db = backing_store()->CreateOrOpenDatabase(u"database_name");
-  ASSERT_TRUE(db.has_value());
+  ASSERT_OK_AND_ASSIGN(auto db,
+                       backing_store()->CreateOrOpenDatabase(u"database_name"));
 
   {
     std::unique_ptr<BackingStore::Transaction> transaction =
         CreateAndBeginTransaction(
-            **db, blink::mojom::IDBTransactionMode::VersionChange);
+            *db, blink::mojom::IDBTransactionMode::VersionChange);
     EXPECT_TRUE(transaction
                     ->CreateObjectStore(object_store_id, u"object_store_name",
                                         object_store_key_path,
@@ -300,16 +293,15 @@ TEST_P(BackingStoreTest, CreateAndDeleteIndex) {
     CommitTransactionAndVerify(*transaction);
   }
 
-  EXPECT_EQ((*db)->GetMetadata().object_stores.size(), 1U);
-  auto object_store_it =
-      (*db)->GetMetadata().object_stores.find(object_store_id);
-  ASSERT_NE(object_store_it, (*db)->GetMetadata().object_stores.end());
+  EXPECT_EQ(db->GetMetadata().object_stores.size(), 1U);
+  auto object_store_it = db->GetMetadata().object_stores.find(object_store_id);
+  ASSERT_NE(object_store_it, db->GetMetadata().object_stores.end());
   const IndexedDBObjectStoreMetadata& object_store = object_store_it->second;
   EXPECT_NE(object_store.indexes.end(), object_store.indexes.find(index_id));
 
   {
     auto transaction = CreateAndBeginTransaction(
-        **db, blink::mojom::IDBTransactionMode::VersionChange);
+        *db, blink::mojom::IDBTransactionMode::VersionChange);
 
     auto record =
         transaction->PutRecord(object_store_id, key1_, value1_.Clone());
@@ -356,14 +348,13 @@ TEST_P(BackingStoreTest, CreateDatabase) {
   const IndexedDBKeyPath index_key_path(u"index_key");
 
   {
-    auto db1 = backing_store()->CreateOrOpenDatabase(database_name);
-    ASSERT_TRUE(db1.has_value());
-    UpdateDatabaseVersion(**db1, version);
+    ASSERT_OK_AND_ASSIGN(auto db1,
+                         backing_store()->CreateOrOpenDatabase(database_name));
+    UpdateDatabaseVersion(*db1, version);
 
     std::unique_ptr<indexed_db::BackingStore::Transaction> transaction =
-        (*db1)->CreateTransaction(
-            blink::mojom::IDBTransactionDurability::Relaxed,
-            blink::mojom::IDBTransactionMode::VersionChange);
+        db1->CreateTransaction(blink::mojom::IDBTransactionDurability::Relaxed,
+                               blink::mojom::IDBTransactionMode::VersionChange);
     transaction->Begin(CreateDummyLock());
 
     Status s =
@@ -372,7 +363,7 @@ TEST_P(BackingStoreTest, CreateDatabase) {
     EXPECT_TRUE(s.ok());
 
     const IndexedDBObjectStoreMetadata& object_store =
-        (*db1)->GetMetadata().object_stores.find(object_store_id)->second;
+        db1->GetMetadata().object_stores.find(object_store_id)->second;
     EXPECT_EQ(object_store.id, object_store_id);
 
     s = transaction->CreateIndex(
@@ -388,10 +379,10 @@ TEST_P(BackingStoreTest, CreateDatabase) {
   }
 
   {
-    auto db1 = backing_store()->CreateOrOpenDatabase(database_name);
-    EXPECT_TRUE(db1.has_value());
+    ASSERT_OK_AND_ASSIGN(auto db1,
+                         backing_store()->CreateOrOpenDatabase(database_name));
 
-    const blink::IndexedDBDatabaseMetadata& database = (*db1)->GetMetadata();
+    const blink::IndexedDBDatabaseMetadata& database = db1->GetMetadata();
 
     EXPECT_EQ(1UL, database.object_stores.size());
     const IndexedDBObjectStoreMetadata& object_store =
@@ -411,23 +402,21 @@ TEST_P(BackingStoreTest, CreateDatabase) {
 }
 
 TEST_P(BackingStoreTest, DatabaseExists) {
-  auto db1 = backing_store()->CreateOrOpenDatabase(u"db1");
-  ASSERT_TRUE(db1.has_value());
+  ASSERT_OK_AND_ASSIGN(auto db1, backing_store()->CreateOrOpenDatabase(u"db1"));
 
-  auto db2 = backing_store()->CreateOrOpenDatabase(u"db2");
-  ASSERT_TRUE(db2.has_value());
+  ASSERT_OK_AND_ASSIGN(auto db2, backing_store()->CreateOrOpenDatabase(u"db2"));
 
   // Only databases with non-default versions should be counted as existing by
   // `DatabaseExists()`.
-  UpdateDatabaseVersion(*db1.value(), 1);
+  UpdateDatabaseVersion(*db1, 1);
 
-  StatusOr<bool> db1_exists = backing_store()->DatabaseExists(u"db1");
-  ASSERT_TRUE(db1_exists.has_value());
-  EXPECT_TRUE(*db1_exists);
+  ASSERT_OK_AND_ASSIGN(bool db1_exists,
+                       backing_store()->DatabaseExists(u"db1"));
+  EXPECT_TRUE(db1_exists);
 
-  StatusOr<bool> db2_exists = backing_store()->DatabaseExists(u"db2");
-  ASSERT_TRUE(db2_exists.has_value());
-  EXPECT_FALSE(*db2_exists);
+  ASSERT_OK_AND_ASSIGN(bool db2_exists,
+                       backing_store()->DatabaseExists(u"db2"));
+  EXPECT_FALSE(db2_exists);
 }
 
 TEST_P(BackingStoreTest, DatabaseNamesAreSorted) {
@@ -504,9 +493,9 @@ INSTANTIATE_TEST_SUITE_P(
     });
 
 TEST_P(BackingStoreTestWithExternalObjects, PutGetConsistency) {
-  auto db_creation_result = backing_store()->CreateOrOpenDatabase(u"name");
-  ASSERT_TRUE(db_creation_result.has_value());
-  BackingStore::Database& db = **db_creation_result;
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<BackingStore::Database> db_ptr,
+                       backing_store()->CreateOrOpenDatabase(u"name"));
+  BackingStore::Database& db = *db_ptr;
   {
     // Initiate transaction1 - writing blobs.
     auto transaction1 =
@@ -567,9 +556,9 @@ TEST_P(BackingStoreTestWithExternalObjects, PutGetConsistency) {
 }
 
 TEST_P(BackingStoreTestWithExternalObjects, DeleteRange) {
-  auto db_creation_result = backing_store()->CreateOrOpenDatabase(u"name");
-  ASSERT_TRUE(db_creation_result.has_value());
-  BackingStore::Database& db = **db_creation_result;
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<BackingStore::Database> db_ptr,
+                       backing_store()->CreateOrOpenDatabase(u"name"));
+  BackingStore::Database& db = *db_ptr;
 
   const auto keys =
       std::to_array({IndexedDBKey(u"key0"), IndexedDBKey(u"key1"),
@@ -665,9 +654,9 @@ TEST_P(BackingStoreTestWithExternalObjects, DeleteRange) {
 }
 
 TEST_P(BackingStoreTestWithExternalObjects, DeleteRangeEmptyRange) {
-  auto db_creation_result = backing_store()->CreateOrOpenDatabase(u"name");
-  ASSERT_TRUE(db_creation_result.has_value());
-  BackingStore::Database& db = **db_creation_result;
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<BackingStore::Database> db_ptr,
+                       backing_store()->CreateOrOpenDatabase(u"name"));
+  BackingStore::Database& db = *db_ptr;
 
   const auto keys = std::to_array({
       IndexedDBKey(u"key0"),
@@ -783,9 +772,9 @@ TEST_P(BackingStoreTestWithExternalObjects, ClearObjectStoreObjects) {
 
   const int64_t object_store_id = 999;
 
-  auto db_creation_result = backing_store()->CreateOrOpenDatabase(u"name");
-  ASSERT_TRUE(db_creation_result.has_value());
-  BackingStore::Database& db = **db_creation_result;
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<BackingStore::Database> db_ptr,
+                       backing_store()->CreateOrOpenDatabase(u"name"));
+  BackingStore::Database& db = *db_ptr;
 
   // Create two object stores, to verify that only one gets deleted.
   for (size_t i = 0; i < 2; ++i) {

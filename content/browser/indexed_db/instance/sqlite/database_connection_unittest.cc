@@ -288,12 +288,11 @@ class DatabaseConnectionCorruptionTest : public DatabaseConnectionTest {
 
     StatusOr<IndexedDBValue> value = read_value();
 
-    ASSERT_TRUE(value.has_value());
-    EXPECT_EQ(base::span(value.value().bits), base::span(kValue.bits));
+    ASSERT_OK_AND_ASSIGN(IndexedDBValue value_unwrapped, std::move(value));
+    EXPECT_EQ(base::span(value_unwrapped.bits), base::span(kValue.bits));
 
-    StatusOr<base::DictValue> contents_before_corruption =
-        SnapshotDatabase(*db);
-    ASSERT_TRUE(contents_before_corruption.has_value());
+    ASSERT_OK_AND_ASSIGN(base::DictValue contents_before_corruption,
+                         SnapshotDatabase(*db));
 
     // Close the database and then corrupt it.
     db.reset();
@@ -325,9 +324,9 @@ class DatabaseConnectionCorruptionTest : public DatabaseConnectionTest {
       ASSERT_NO_FATAL_FAILURE(InitializeDbWithOneRecord(*db));
       recovered_value = read_value();
 #else
-      StatusOr<base::DictValue> contents_after_recovery = SnapshotDatabase(*db);
-      ASSERT_TRUE(contents_after_recovery.has_value());
-      EXPECT_EQ(*contents_after_recovery, *contents_before_corruption);
+      ASSERT_OK_AND_ASSIGN(base::DictValue contents_after_recovery,
+                           SnapshotDatabase(*db));
+      EXPECT_EQ(contents_after_recovery, contents_before_corruption);
 #endif
 
       // Read works because the DB was recovered (or, on Fuchsia, was deleted,
