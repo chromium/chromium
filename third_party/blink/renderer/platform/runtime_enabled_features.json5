@@ -4839,7 +4839,7 @@
     {
       // https://issues.chromium.org/issues/40502558
       name: "SelectionRemoveRangeNotFoundError",
-      status: "experimental",
+      status: "stable",
     },
     {
       // https://issues.chromium.org/issues/40502558

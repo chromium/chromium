@@ -728,8 +728,6 @@ void DOMSelection::removeRange(Range* range, ExceptionState& exception_state) {
   if (IsAvailable() && range == temp_range.GetRange()) {
     Selection().Clear();
   } else {
-    UseCounter::Count(DomWindow(),
-                      WebFeature::kSelectionRemoveRangeNotFoundWouldThrow);
     if (RuntimeEnabledFeatures::SelectionRemoveRangeNotFoundErrorEnabled()) {
       exception_state.ThrowDOMException(DOMExceptionCode::kNotFoundError,
                                         "Range not found.");

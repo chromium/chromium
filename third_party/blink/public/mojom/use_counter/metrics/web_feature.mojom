@@ -4989,7 +4989,7 @@ enum WebFeature {
   kSmartCardEstablishContext = 5673,
   kSmartCardConnect = 5674,
   kNavigatorCPUPerformance = 5675,
-  kSelectionRemoveRangeNotFoundWouldThrow = 5676,
+  kOBSOLETE_SelectionRemoveRangeNotFoundWouldThrow = 5676,
   kNestedSvgCssSizingProperties = 5677,
   kCryptoAlgorithmChaCha20Poly1305 = 5678,
   kCryptoAlgorithmMlDsa44 = 5679,
