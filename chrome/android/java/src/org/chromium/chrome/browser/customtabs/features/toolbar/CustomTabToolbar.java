@@ -2566,12 +2566,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         private void updateColors() {
             updateOmniboxBackground();
             updateButtonsTint();
-
-            if (mUrlCoordinator.setBrandedColorScheme(mBrandedColorScheme)) {
-                // Update the URL to make it use the new color scheme.
-                updateUrlBar();
-            }
-
+            mUrlCoordinator.setBrandedColorScheme(mBrandedColorScheme);
             mTitleBar.setTextColor(
                     OmniboxResourceProvider.getUrlBarPrimaryTextColor(
                             getContext(), mBrandedColorScheme));
