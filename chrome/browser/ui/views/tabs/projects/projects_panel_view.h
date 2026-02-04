@@ -85,6 +85,7 @@ class ProjectsPanelView : public views::View, gfx::AnimationDelegate {
 
   void ClosePanel();
 
+  void OnTabGroupButtonPressed(const base::Uuid& group_guid);
   void OnTabGroupMoreButtonPressed(const base::Uuid& group_guid,
                                    views::MenuButton& button);
 

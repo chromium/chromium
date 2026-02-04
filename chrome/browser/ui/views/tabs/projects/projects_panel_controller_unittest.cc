@@ -8,6 +8,8 @@
 
 #include "base/no_destructor.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/test_support/mock_tab_group_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -189,6 +191,22 @@ TEST_F(ProjectsPanelControllerTest, RemovesGroup) {
   const auto& tab_groups = controller->GetTabGroups();
   ASSERT_EQ(1u, tab_groups.size());
   EXPECT_EQ(GetGroup1DayOlder().saved_guid(), tab_groups[0].saved_guid());
+}
+
+TEST_F(ProjectsPanelControllerTest, OpenTabGroupCallsService) {
+  auto controller = GetInitializedController();
+  const base::Uuid uuid =
+      base::Uuid::ParseLowercase("00000000-0000-0000-0000-000000000001");
+
+  EXPECT_CALL(mock_tab_group_sync_service_,
+              OpenTabGroup(testing::Eq(uuid), testing::_))
+      .Times(1);
+
+  testing::NiceMock<MockBrowserWindowInterface> mock_browser_window_interface;
+  EXPECT_CALL(mock_browser_window_interface, GetBrowserForMigrationOnly())
+      .WillOnce(testing::Return(nullptr));
+
+  controller->OpenTabGroup(uuid, &mock_browser_window_interface);
 }
 
 class ProjectsPanelControllerObserverTest : public ProjectsPanelControllerTest {

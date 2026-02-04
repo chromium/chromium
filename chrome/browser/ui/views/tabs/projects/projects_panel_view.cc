@@ -114,6 +114,8 @@ ProjectsPanelView::ProjectsPanelView(BrowserWindowInterface* browser,
   tab_groups_view_ = content_container_->AddChildView(
       std::make_unique<ProjectsPanelTabGroupsView>(
           root_action_item_.get(), action_view_controller_.get(),
+          base::BindRepeating(&ProjectsPanelView::OnTabGroupButtonPressed,
+                              base::Unretained(this)),
           base::BindRepeating(&ProjectsPanelView::OnTabGroupMoreButtonPressed,
                               base::Unretained(this))));
 
@@ -243,6 +245,11 @@ void ProjectsPanelView::ClosePanel() {
   actions::ActionItem* action_item = actions::ActionManager::Get().FindAction(
       kActionToggleProjectsPanel, root_action_item_);
   action_item->InvokeAction();
+}
+
+void ProjectsPanelView::OnTabGroupButtonPressed(const base::Uuid& group_guid) {
+  panel_controller_->OpenTabGroup(group_guid, browser_);
+  ClosePanel();
 }
 
 void ProjectsPanelView::OnTabGroupMoreButtonPressed(

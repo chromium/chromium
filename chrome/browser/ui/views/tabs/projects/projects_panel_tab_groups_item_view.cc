@@ -66,6 +66,7 @@ constexpr int kTrailingIconSize = 16;
 
 ProjectsPanelTabGroupsItemView::ProjectsPanelTabGroupsItemView(
     const tab_groups::SavedTabGroup& group,
+    TabGroupPressedCallback pressed_callback,
     MoreButtonPressedCallback more_button_callback)
     : group_guid_(group.saved_guid()),
       more_button_callback_(std::move(more_button_callback)),
@@ -141,6 +142,12 @@ ProjectsPanelTabGroupsItemView::ProjectsPanelTabGroupsItemView(
           base::Unretained(this)));
   ConfigureInkDropForToolbar(more_button_);
   SetNotifyEnterExitOnChild(true);
+
+  SetCallback(base::BindRepeating(
+      [](TabGroupPressedCallback callback, const base::Uuid& group_guid) {
+        std::move(callback).Run(group_guid);
+      },
+      std::move(pressed_callback), group.saved_guid()));
 
   // This item should expand its width to fit its container, but has a
   // preferred height.

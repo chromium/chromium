@@ -6,6 +6,8 @@
 
 #include <algorithm>
 
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 
 ProjectsPanelController::ProjectsPanelController(
@@ -19,6 +21,14 @@ ProjectsPanelController::~ProjectsPanelController() = default;
 const std::vector<tab_groups::SavedTabGroup>&
 ProjectsPanelController::GetTabGroups() {
   return tab_groups_;
+}
+
+void ProjectsPanelController::OpenTabGroup(const base::Uuid& group_guid,
+                                           BrowserWindowInterface* browser) {
+  tab_group_sync_service_->OpenTabGroup(
+      group_guid, std::make_unique<tab_groups::TabGroupActionContextDesktop>(
+                      browser->GetBrowserForMigrationOnly(),
+                      tab_groups::OpeningSource::kOpenedFromProjectsPanel));
 }
 
 void ProjectsPanelController::AddObserver(Observer* observer) {

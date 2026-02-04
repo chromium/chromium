@@ -27,11 +27,14 @@ class ProjectsPanelTabGroupsItemView : public views::Button {
   METADATA_HEADER(ProjectsPanelTabGroupsItemView, views::Button)
 
  public:
+  using TabGroupPressedCallback =
+      base::RepeatingCallback<void(const base::Uuid&)>;
   using MoreButtonPressedCallback =
       base::RepeatingCallback<void(const base::Uuid&, views::MenuButton&)>;
 
   explicit ProjectsPanelTabGroupsItemView(
       const tab_groups::SavedTabGroup& group,
+      TabGroupPressedCallback pressed_callback = base::DoNothing(),
       MoreButtonPressedCallback more_button_callback = base::DoNothing());
   ProjectsPanelTabGroupsItemView(const ProjectsPanelTabGroupsItemView&) =
       delete;

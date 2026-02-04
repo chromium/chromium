@@ -212,6 +212,20 @@ IN_PROC_BROWSER_TEST_F(ProjectsPanelTabGroupsInteractiveUiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ProjectsPanelTabGroupsInteractiveUiTest,
+                       ClickGroupResumesGroup) {
+  RunTestSequence(
+      WaitForShow(kVerticalTabStripTopContainerElementId),
+      AddTabGroup(u"Test Group"), OpenProjectsPanel(),
+      WaitForShow(kProjectsPanelTabGroupsItemViewElementId), Do([this]() {
+        EXPECT_CALL(*mock_tab_group_service_,
+                    OpenTabGroup(mock_groups_[0].saved_guid(), testing::_))
+            .WillOnce(testing::Return(std::nullopt));
+      }),
+      MoveMouseTo(kProjectsPanelTabGroupsItemViewElementId), ClickMouse(),
+      WaitForHide(kProjectsPanelViewElementId));
+}
+
+IN_PROC_BROWSER_TEST_F(ProjectsPanelTabGroupsInteractiveUiTest,
                        MoreButtonClickShowsMenu) {
   RunTestSequence(
       WaitForShow(kVerticalTabStripTopContainerElementId),

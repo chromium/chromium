@@ -29,9 +29,12 @@ constexpr int kSpacingBetweenChildren = 2;
 ProjectsPanelTabGroupsView::ProjectsPanelTabGroupsView(
     actions::ActionItem* root_action_item,
     views::ActionViewController* action_view_controller,
+    ProjectsPanelTabGroupsItemView::TabGroupPressedCallback
+        tab_group_button_callback,
     ProjectsPanelTabGroupsItemView::MoreButtonPressedCallback
         more_button_callback)
-    : more_button_callback_(std::move(more_button_callback)) {
+    : tab_group_button_callback_(std::move(tab_group_button_callback)),
+      more_button_callback_(std::move(more_button_callback)) {
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>());
   layout->SetOrientation(views::LayoutOrientation::kVertical);
   layout->set_between_child_spacing(kSpacingBetweenChildren);
@@ -49,7 +52,7 @@ void ProjectsPanelTabGroupsView::SetTabGroups(
 
   for (const auto& group : tab_groups) {
     AddChildView(std::make_unique<ProjectsPanelTabGroupsItemView>(
-        group, more_button_callback_));
+        group, tab_group_button_callback_, more_button_callback_));
   }
 
   if (tab_groups.empty()) {

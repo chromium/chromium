@@ -117,8 +117,10 @@ enum class OpeningSource {
   // Desktop only. The group was open from user clicking on the action button of
   // the toast message.
   kOpenedFromToastAction = 10,
+  // Desktop only. the Group was opened from the projects panel.
+  kOpenedFromProjectsPanel = 11,
 
-  kMaxValue = kOpenedFromToastAction,
+  kMaxValue = kOpenedFromProjectsPanel,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:GroupOpeningSource)
 
