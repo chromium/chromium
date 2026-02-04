@@ -13402,6 +13402,7 @@ from previous Chrome versions.
   <int value="-328339709" label="WebFeedAwareness:enabled"/>
   <int value="-327520505" label="RelatedSearchesAlternateUx:enabled"/>
   <int value="-327272022" label="AutofillRejectCompanyBirthyearName:enabled"/>
+  <int value="-326714728" label="AimUsePecApi:disabled"/>
   <int value="-326535569" label="WebNotesStylize:disabled"/>
   <int value="-326083626" label="AppBanners:disabled"/>
   <int value="-325271559" label="NtpRepeatableQueries:enabled"/>
@@ -19506,6 +19507,7 @@ from previous Chrome versions.
   <int value="1761576233" label="OmniboxReportAssistedQueryStats:disabled"/>
   <int value="1761920078"
       label="OverrideSimilarLanguagesForHrefTranslate:enabled"/>
+  <int value="1762013378" label="AimUsePecApi:enabled"/>
   <int value="1762320532" label="AutofillKeyboardAccessory:enabled"/>
   <int value="1762346365"
       label="RevokeNotificationsPermissionIfDisabledOnAppLevel:enabled"/>

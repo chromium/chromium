@@ -7136,6 +7136,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxAimServerEligibilityDescription, kOsAll,
      FEATURE_VALUE_TYPE(omnibox::kAimServerEligibilityEnabled)},
 
+    {"aim-use-pec-api", flag_descriptions::kAimUsePecApiName,
+     flag_descriptions::kAimUsePecApiDescription, kOsAll,
+     FEATURE_VALUE_TYPE(omnibox::kAimUsePecApi)},
+
 #if BUILDFLAG(IS_ANDROID)
     {"omnibox-asynchronous-view-inflation",
      flag_descriptions::kOmniboxAsyncViewInflationName,

@@ -94,6 +94,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "aim-use-pec-api",
+    "owners": ["ananyaseelam@google.com", "mahmadi@chromium.org"],
+    "expiry_milestone": 160
+  },
+  {
     "name": "aimntp-entrypoint-tablet",
     "owners": [ "christianxu@chromium.org", "bling-search@google.com" ],
     "expiry_milestone": 149

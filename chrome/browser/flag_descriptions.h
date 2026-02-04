@@ -5715,6 +5715,11 @@ inline constexpr char kUpdateMenuTypeUpdateAvailable[] = "Update Available";
 inline constexpr char kUpdateMenuTypeUnsupportedOSVersion[] =
     "Unsupported OS Version";
 
+inline constexpr char kAimUsePecApiName[] = "Use PEC API";
+inline constexpr char kAimUsePecApiDescription[] =
+    "When enabled, all composebox context menus will use the `SearchboxConfig` "
+    "from the PEC API.";
+
 inline constexpr char kUpdaterUIName[] = "Chrome Updater UI";
 inline constexpr char kUpdaterUIDescription[] =
     "When enabled, the chrome://updater page is available.";
