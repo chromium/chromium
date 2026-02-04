@@ -208,7 +208,7 @@ public class TabStateStore implements TabPersistentStore {
     public void loadState(boolean ignoreIncognitoFiles) {
         assertInitialized();
 
-        ignoreIncognitoFiles &= !mHasCipherFactory;
+        ignoreIncognitoFiles |= !mHasCipherFactory;
         mModelTrackingManager.setLoadIncognitoTabsOnStart(!ignoreIncognitoFiles);
 
         assert mCombinedTabRestorer == null;
