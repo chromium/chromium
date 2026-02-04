@@ -11857,6 +11857,11 @@ if (!is_android && !is_chromeos_device) {
       } else {
         deps += [ "//chrome/browser/ui/download" ]
       }
+
+      if (is_mac || is_win) {
+        sources += [ "../browser/ui/extensions/settings_overridden_dialog_interactive_uitest.cc" ]
+        deps += ["//chrome/browser/ui/views/extensions:settings_overridden_dialog_view_utils"]
+      }
     }
 
     if (is_linux) {

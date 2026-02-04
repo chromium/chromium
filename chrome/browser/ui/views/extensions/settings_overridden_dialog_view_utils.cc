@@ -4,7 +4,11 @@
 
 #include "chrome/browser/ui/views/extensions/settings_overridden_dialog_view_utils.h"
 
+#include <memory>
+#include <utility>
+
 #include "chrome/browser/ui/views/extensions/rich_radio_button.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/cascading_property.h"
 #include "ui/views/controls/separator.h"
@@ -16,8 +20,10 @@ namespace extensions {
 void AddExplicitChoiceRadioButtons(
     ui::DialogModel::Builder& builder,
     const SettingsOverriddenDialogController::SettingOption& option1,
+    ui::ElementIdentifier id1,
     base::RepeatingClosure callback1,
     const SettingsOverriddenDialogController::SettingOption& option2,
+    ui::ElementIdentifier id2,
     base::RepeatingClosure callback2) {
   constexpr int kExplicitChoiceRadioGroupId = 1;
 
@@ -26,13 +32,17 @@ void AddExplicitChoiceRadioButtons(
           .SetOrientation(views::BoxLayout::Orientation::kVertical)
           .AddChildren(
               views::Builder<views::Separator>(),
-              views::Builder<RichRadioButton>(std::make_unique<RichRadioButton>(
-                  option1.image, option1.text, option1.description,
-                  kExplicitChoiceRadioGroupId, std::move(callback1))),
+              views::Builder<RichRadioButton>(
+                  std::make_unique<RichRadioButton>(
+                      option1.image, option1.text, option1.description,
+                      kExplicitChoiceRadioGroupId, std::move(callback1)))
+                  .SetProperty(views::kElementIdentifierKey, id1),
               views::Builder<views::Separator>(),
-              views::Builder<RichRadioButton>(std::make_unique<RichRadioButton>(
-                  option2.image, option2.text, option2.description,
-                  kExplicitChoiceRadioGroupId, std::move(callback2))),
+              views::Builder<RichRadioButton>(
+                  std::make_unique<RichRadioButton>(
+                      option2.image, option2.text, option2.description,
+                      kExplicitChoiceRadioGroupId, std::move(callback2)))
+                  .SetProperty(views::kElementIdentifierKey, id2),
               views::Builder<views::Separator>())
           .Build();
 

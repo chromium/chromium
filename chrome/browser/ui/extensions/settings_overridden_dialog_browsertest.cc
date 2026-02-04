@@ -294,34 +294,6 @@ IN_PROC_BROWSER_TEST_F(SettingsOverriddenDialogBrowserTest,
   ShowAndVerifyUi();
 }
 
-// Subclass to test the dialog with the explicit-choice feature enabled.
-class SettingsOverriddenExplicitChoiceDialogBrowserTest
-    : public SettingsOverriddenDialogBrowserTest {
- public:
-  SettingsOverriddenExplicitChoiceDialogBrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        extensions_features::kSearchEngineExplicitChoiceDialog);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(SettingsOverriddenExplicitChoiceDialogBrowserTest,
-                       InvokeUi_SearchOverriddenDialog_BackToGoogle) {
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_F(SettingsOverriddenExplicitChoiceDialogBrowserTest,
-                       InvokeUi_SearchOverriddenDialog_BackToOther) {
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_F(SettingsOverriddenExplicitChoiceDialogBrowserTest,
-                       InvokeUi_SearchOverriddenDialog_Generic) {
-  ShowAndVerifyUi();
-}
-
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 ////////////////////////////////////////////////////////////////////////////////

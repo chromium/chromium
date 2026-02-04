@@ -18,8 +18,10 @@ namespace extensions {
 void AddExplicitChoiceRadioButtons(
     ui::DialogModel::Builder& builder,
     const SettingsOverriddenDialogController::SettingOption& option1,
+    ui::ElementIdentifier id1,
     base::RepeatingClosure callback1,
     const SettingsOverriddenDialogController::SettingOption& option2,
+    ui::ElementIdentifier id2,
     base::RepeatingClosure callback2);
 
 }  // namespace extensions
