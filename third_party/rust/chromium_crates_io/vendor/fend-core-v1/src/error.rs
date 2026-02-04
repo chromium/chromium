@@ -15,7 +15,7 @@ pub(crate) enum FendError {
 	ValueTooLarge,
 	ZeroToThePowerOfZero,
 	FactorialComplex,
-	DeserializationError(&'static str),
+	DeserializationError,
 	Wrap(String, Box<dyn error::Error + Send + Sync + 'static>),
 	NoExchangeRatesAvailable,
 	OutOfRange {
@@ -100,7 +100,7 @@ impl fmt::Display for FendError {
 		match self {
 			Self::Interrupted => write!(f, "interrupted"),
 			Self::ParseError(e) => write!(f, "{e}"),
-			Self::DeserializationError(s) => write!(f, "failed to deserialize object: {s}"),
+			Self::DeserializationError => write!(f, "failed to deserialize object"),
 			Self::FactorialComplex => write!(f, "factorial is not supported for complex numbers"),
 			Self::IoError(_) => write!(f, "I/O error"),
 			Self::InvalidBasePrefix => write!(

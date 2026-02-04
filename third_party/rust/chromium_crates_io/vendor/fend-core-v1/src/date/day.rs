@@ -25,7 +25,7 @@ impl Day {
 	pub(crate) fn deserialize(read: &mut impl io::Read) -> FResult<Self> {
 		let n = u8::deserialize(read)?;
 		if n == 0 || n >= 32 {
-			return Err(FendError::DeserializationError("day is out of range"));
+			return Err(FendError::DeserializationError);
 		}
 		Ok(Self::new(n))
 	}

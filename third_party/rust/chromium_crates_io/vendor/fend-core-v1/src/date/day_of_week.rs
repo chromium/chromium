@@ -58,11 +58,7 @@ impl DayOfWeek {
 			4 => Self::Thursday,
 			5 => Self::Friday,
 			6 => Self::Saturday,
-			_ => {
-				return Err(FendError::DeserializationError(
-					"day of week is out of range",
-				));
-			}
+			_ => return Err(FendError::DeserializationError),
 		})
 	}
 }

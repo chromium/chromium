@@ -5,10 +5,10 @@ use crate::num::Exact;
 use crate::num::bigrat::{BigRat, FormattedBigRat};
 use crate::num::{Base, FormattingStyle};
 use crate::result::FResult;
-use crate::serialize::CborValue;
+use crate::serialize::{Deserialize, Serialize};
 use std::cmp::Ordering;
 use std::ops::Neg;
-use std::{fmt, hash};
+use std::{fmt, hash, io};
 
 use super::bigrat;
 use super::biguint::BigUint;
@@ -61,21 +61,26 @@ impl Real {
 		})
 	}
 
-	pub(crate) fn serialize(&self) -> CborValue {
+	pub(crate) fn serialize(&self, write: &mut impl io::Write) -> FResult<()> {
 		match &self.pattern {
-			Pattern::Simple(s) => s.serialize(),
+			Pattern::Simple(s) => {
+				1u8.serialize(write)?;
+				s.serialize(write)?;
+			}
 			Pattern::Pi(n) => {
-				// private use tag
-				CborValue::Tag(80000, Box::new(n.serialize()))
+				2u8.serialize(write)?;
+				n.serialize(write)?;
 			}
 		}
+		Ok(())
 	}
 
-	pub(crate) fn deserialize(value: CborValue) -> FResult<Self> {
+	pub(crate) fn deserialize(read: &mut impl io::Read) -> FResult<Self> {
 		Ok(Self {
-			pattern: match value {
-				CborValue::Tag(80000, inner) => Pattern::Pi(BigRat::deserialize(*inner)?),
-				value => Pattern::Simple(BigRat::deserialize(value)?),
+			pattern: match u8::deserialize(read)? {
+				1 => Pattern::Simple(BigRat::deserialize(read)?),
+				2 => Pattern::Pi(BigRat::deserialize(read)?),
+				_ => return Err(FendError::DeserializationError),
 			},
 		})
 	}
@@ -91,15 +96,41 @@ impl Real {
 		match self.pattern {
 			Pattern::Simple(s) => Ok(s),
 			Pattern::Pi(n) => {
-				// This fraction is the 33th convergent of pi, (in the sense of continued fraction),
-				// and as such, is a "best approximation of the second kind" of pi (see e.g. the
-				// book of Khinchin about continued fractions).
-				// The 33th convergent is the last one with both numerators and denominators
-				// fitting in a u64-container.
-				// The difference between this approximation and pi is less than 10^-37.
-				let num = BigRat::from(2_646_693_125_139_304_345);
-				let den = BigRat::from(842_468_587_426_513_207);
-				let pi = num.div(&den, int)?;
+				let required_accuracy_dp = 20;
+				let mut pi = BigRat::from(0);
+				for k in 0..=(required_accuracy_dp / 14) {
+					let mut term = BigRat::from(1);
+					if k % 2 == 1 {
+						term = -term;
+					}
+					let k = BigRat::from(k);
+					term = term.mul(&BigRat::from(6).mul(&k, int)?.factorial(int)?, int)?;
+					term = term.mul(
+						&BigRat::from(545_140_134)
+							.mul(&k, int)?
+							.add(BigRat::from(13_591_409), int)?,
+						int,
+					)?;
+					term = term.div(&BigRat::from(3).mul(&k, int)?.factorial(int)?, int)?;
+					term = term.div(
+						&k.clone().factorial(int)?.pow(BigRat::from(3), int)?.value,
+						int,
+					)?;
+					term = term.div(
+						&BigRat::from(640_320)
+							.pow(
+								BigRat::from(3)
+									.mul(&k, int)?
+									.add(BigRat::from(3).div(&BigRat::from(2), int)?, int)?,
+								int,
+							)?
+							.value,
+						int,
+					)?;
+					pi = pi.add(term, int)?;
+				}
+				pi = pi.mul(&BigRat::from(12), int)?;
+				pi = pi.pow(-BigRat::from(1), int)?.value;
 				Ok(n.mul(&pi, int)?)
 			}
 		}
@@ -156,28 +187,20 @@ impl Real {
 					// sin(-x) == -sin(x)
 					return Ok(-Self::sin(-s, int)?);
 				}
-				if let Ok(n_times_6) = n.clone().mul(&6.into(), int)?.try_as_usize(int) {
+				if let Ok(integer) = n.clone().mul(&6.into(), int)?.try_as_usize(int) {
 					// values from https://en.wikipedia.org/wiki/Exact_trigonometric_values
-					// sin(n pi) == sin( (6n/6) pi +/- 2 pi )
-					//           == sin( (6n +/- 12)/6 pi ) == sin( (6n%12)/6 pi )
-					match n_times_6 % 12 {
-						// sin(0) == sin(pi) == 0
-						0 | 6 => return Ok(Exact::new(Self::from(0), true)),
-						// sin(pi/6) == sin(5pi/6) == 1/2
-						1 | 5 => {
-							return Exact::new(Self::from(1), true)
-								.div(&Exact::new(2.into(), true), int);
-						}
-						// sin(pi/2) == 1
-						3 => return Ok(Exact::new(Self::from(1), true)),
-						// sin(7pi/6) == sin(11pi/6) == -1/2
-						7 | 11 => {
-							return Exact::new(-Self::from(1), true)
-								.div(&Exact::new(2.into(), true), int);
-						}
-						// sin(3pi/2) == -1
-						9 => return Ok(Exact::new(-Self::from(1), true)),
-						_ => {}
+					if integer.is_multiple_of(6) {
+						return Ok(Exact::new(Self::from(0), true));
+					} else if integer % 12 == 3 {
+						return Ok(Exact::new(Self::from(1), true));
+					} else if integer % 12 == 9 {
+						return Ok(Exact::new(-Self::from(1), true));
+					} else if integer % 12 == 1 || integer % 12 == 5 {
+						return Exact::new(Self::from(1), true)
+							.div(&Exact::new(2.into(), true), int);
+					} else if integer % 12 == 7 || integer % 12 == 11 {
+						return Exact::new(-Self::from(1), true)
+							.div(&Exact::new(2.into(), true), int);
 					}
 				}
 				let s = Self {
@@ -188,48 +211,10 @@ impl Real {
 		})
 	}
 
-	// cos works for all real numbers
 	pub(crate) fn cos<I: Interrupt>(self, int: &I) -> FResult<Exact<Self>> {
-		Ok(match self.pattern {
-			Pattern::Simple(c) => c.cos(int)?.apply(Self::from),
-			Pattern::Pi(n) => {
-				if n < 0.into() {
-					let c = Self {
-						pattern: Pattern::Pi(n),
-					};
-					// cos(-x) == cos(x)
-					return Self::cos(-c, int);
-				}
-				if let Ok(n_times_6) = n.clone().mul(&6.into(), int)?.try_as_usize(int) {
-					// values from https://en.wikipedia.org/wiki/Exact_trigonometric_values
-					// cos(n pi) == cos( (6n/6) pi +/- 2 pi )
-					//           == cos( (6n +/- 12)/6 pi ) == cos( (6n%12)/6 pi )
-					match n_times_6 % 12 {
-						// cos(0) == 1
-						0 => return Ok(Exact::new(Self::from(1), true)),
-						// cos(pi/3) == cos(5pi/3) == 1/2
-						2 | 10 => {
-							return Exact::new(Self::from(1), true)
-								.div(&Exact::new(2.into(), true), int);
-						}
-						// cos(pi/2) == cos(3pi/2) == 0
-						3 | 9 => return Ok(Exact::new(Self::from(0), true)),
-						// cos(2pi/3) == cos(4pi/3) == -1/2
-						4 | 8 => {
-							return Exact::new(-Self::from(1), true)
-								.div(&Exact::new(2.into(), true), int);
-						}
-						// cos(pi) == -1
-						6 => return Ok(Exact::new(-Self::from(1), true)),
-						_ => {}
-					}
-				}
-				let c = Self {
-					pattern: Pattern::Pi(n),
-				};
-				c.approximate(int)?.cos(int)?.apply(Self::from)
-			}
-		})
+		// cos(x) = sin(x + pi/2)
+		let half_pi = Exact::new(Self::pi(), true).div(&Exact::new(Self::from(2), true), int)?;
+		Exact::new(self, true).add(half_pi, int)?.value.sin(int)
 	}
 
 	pub(crate) fn asin<I: Interrupt>(self, int: &I) -> FResult<Self> {
@@ -633,188 +618,5 @@ pub(crate) struct Formatted {
 impl fmt::Display for Formatted {
 	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
 		write!(f, "{}", self.num)
-	}
-}
-
-#[cfg(test)]
-mod tests {
-	use super::*;
-
-	#[test]
-	fn test_pi() {
-		let int = &crate::interrupt::Never;
-		let pi = Real {
-			pattern: Pattern::Pi(BigRat::from(1u64)),
-		};
-		let pi = pi.approximate(int).unwrap();
-		let pi_f64 = pi.clone().into_f64(int).unwrap();
-
-		assert!((pi_f64 - std::f64::consts::PI).abs() < 3. * f64::EPSILON);
-
-		// = 31_415_926_535_897_932_384_626_433_832_795_028_841 / 1O^37
-		let ten_power_37_pi_floor = BigRat::from(BigUint::Large(vec![
-			12_315_011_256_901_221_737,
-			1_703_060_790_043_277_294,
-		]));
-		// = 31_415_926_535_897_932_384_626_433_832_795_028_842 / 1O^37
-		let ten_power_37_pi_ceil = BigRat::from(BigUint::Large(vec![
-			12_315_011_256_901_221_738,
-			1_703_060_790_043_277_294,
-		]));
-		// = 10^37
-		let ten_power_37 = BigRat::from(BigUint::Large(vec![
-			68_739_955_140_067_328,
-			542_101_086_242_752_217,
-		]));
-		let ten_power_minus_37 = BigRat::from(1).div(&ten_power_37, int).unwrap();
-
-		let pi_floor = ten_power_37_pi_floor.mul(&ten_power_minus_37, int).unwrap();
-		let pi_ceil = ten_power_37_pi_ceil.mul(&ten_power_minus_37, int).unwrap();
-
-		// pi_ceil - pi_floor = 10^37
-		assert_eq!(
-			pi_ceil.clone().add(pi_floor.clone().neg(), int).unwrap(),
-			ten_power_minus_37
-		);
-
-		let pi_minus_pi_floor = pi.clone().add(pi_floor.clone().neg(), int).unwrap();
-		let pi_ceil_minus_pi = pi_ceil.clone().add(pi.clone().neg(), int).unwrap();
-
-		// pi_floor < pi < pi_ceil
-		assert!(pi_floor < pi && pi < pi_ceil);
-		// 0 < pi - pi_floor < 10^-37
-		assert!(BigRat::from(0) < pi_minus_pi_floor && pi_minus_pi_floor < ten_power_minus_37);
-		// 0 < pi_ceil - pi < 10^-37
-		assert!(BigRat::from(0) < pi_ceil_minus_pi && pi_ceil_minus_pi < ten_power_minus_37);
-	}
-
-	#[test]
-	fn test_sin_exact_values() {
-		let int = &crate::interrupt::Never;
-		let angles = [
-			(2, 1, -1),  // -2π
-			(11, 6, -1), // -11π/6
-			(3, 2, -1),  // -3π/2
-			(7, 6, -1),  // -7π/6
-			(1, 1, -1),  // -π
-			(5, 6, -1),  // -5π/6
-			(1, 2, -1),  // -π/2
-			(1, 6, -1),  // -π/6
-			(0, 1, 1),   // 0
-			(1, 6, 1),   // π/6
-			(1, 2, 1),   // π/2
-			(5, 6, 1),   // 5π/6
-			(1, 1, 1),   // π
-			(7, 6, 1),   // 7π/6
-			(3, 2, 1),   // 3π/2
-			(11, 6, 1),  // 11π/6
-			(2, 1, 1),   // 2π
-		]
-		.map(|(num, den, sign)| {
-			(
-				Real {
-					pattern: Pattern::Pi(BigRat::from(num).div(&BigRat::from(den), int).unwrap()),
-				},
-				sign,
-			)
-		})
-		.map(|(br, sign)| if sign > 0 { br } else { -br });
-		let expected_sinuses = [
-			(0, 1, 1),  // 0
-			(1, 2, 1),  // 1/2
-			(1, 1, 1),  // 1
-			(1, 2, 1),  // 1/2
-			(0, 1, 1),  // 0
-			(1, 2, -1), // -1/2
-			(1, 1, -1), // -1
-			(1, 2, -1), // -1/2
-			(0, 1, 1),  // 0
-			(1, 2, 1),  // 1/2
-			(1, 1, 1),  // 1
-			(1, 2, 1),  // 1/2
-			(0, 1, 1),  // 0
-			(1, 2, -1), // -1/2
-			(1, 1, -1), // -1
-			(1, 2, -1), // -1/2
-			(0, 1, 1),  // 0
-		]
-		.map(|(num, den, sign)| {
-			(
-				BigRat::from(num).div(&BigRat::from(den), int).unwrap(),
-				sign,
-			)
-		})
-		.map(|(br, sign)| if sign > 0 { br } else { -br });
-
-		let actual_sinuses = angles.map(|r| r.sin(int).unwrap().value);
-
-		for (actual, expected) in actual_sinuses.into_iter().zip(expected_sinuses) {
-			assert_eq!(actual.approximate(int).unwrap(), expected);
-		}
-	}
-
-	#[test]
-	fn test_cos_exact_values() {
-		let int = &crate::interrupt::Never;
-		let angles = [
-			(2, 1, -1), // -2π
-			(5, 3, -1), // -5π/3
-			(3, 2, -1), // -3π/2
-			(4, 3, -1), // -4π/3
-			(1, 1, -1), // -π
-			(2, 3, -1), // -2π/3
-			(1, 2, -1), // -π/2
-			(1, 3, -1), // -π/3
-			(0, 1, 1),  // 0
-			(1, 3, 1),  // π/3
-			(1, 2, 1),  // π/2
-			(2, 3, 1),  // 2π/3
-			(1, 1, 1),  // π
-			(4, 3, 1),  // 4π/3
-			(3, 2, 1),  // 3π/2
-			(5, 3, 1),  // 5π/3
-			(2, 1, 1),  // 2π
-		]
-		.map(|(num, den, sign)| {
-			(
-				Real {
-					pattern: Pattern::Pi(BigRat::from(num).div(&BigRat::from(den), int).unwrap()),
-				},
-				sign,
-			)
-		})
-		.map(|(br, sign)| if sign > 0 { br } else { -br });
-		let expected_cosines = [
-			(1, 1, 1),  // 1
-			(1, 2, 1),  // 1/2
-			(0, 1, 1),  // 0
-			(1, 2, -1), // -1/2
-			(1, 1, -1), // -1
-			(1, 2, -1), // -1/2
-			(0, 1, 1),  // 0
-			(1, 2, 1),  // 1/2
-			(1, 1, 1),  // 1
-			(1, 2, 1),  // 1/2
-			(0, 1, 1),  // 0
-			(1, 2, -1), // -1/2
-			(1, 1, -1), // -1
-			(1, 2, -1), // -1/2
-			(0, 1, 1),  // 0
-			(1, 2, 1),  // 1/2
-			(1, 1, 1),  // 1
-		]
-		.map(|(num, den, sign)| {
-			(
-				BigRat::from(num).div(&BigRat::from(den), int).unwrap(),
-				sign,
-			)
-		})
-		.map(|(br, sign)| if sign > 0 { br } else { -br });
-
-		let actual_cosines = angles.map(|r| r.cos(int).unwrap().value);
-
-		for (actual, expected) in actual_cosines.into_iter().zip(expected_cosines) {
-			assert_eq!(actual.approximate(int).unwrap(), expected);
-		}
 	}
 }

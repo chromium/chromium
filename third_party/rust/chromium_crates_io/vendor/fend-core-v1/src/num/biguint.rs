@@ -1,12 +1,11 @@
 use crate::error::{FendError, Interrupt};
 use crate::format::Format;
 use crate::interrupt::test_int;
-use crate::num::bigrat::sign::Sign;
 use crate::num::{Base, Exact, Range, RangeBound, out_of_range};
 use crate::result::FResult;
-use crate::serialize::CborValue;
+use crate::serialize::{Deserialize, Serialize};
 use std::cmp::{Ordering, max};
-use std::{fmt, hash};
+use std::{fmt, hash, io};
 
 #[derive(Clone)]
 pub(crate) enum BigUint {
@@ -166,15 +165,24 @@ impl BigUint {
 		}
 	}
 
-	fn reduce(&mut self) {
-		let Large(v) = self else {
-			return;
-		};
-		while v.len() > 1 && v[v.len() - 1] == 0 {
-			v.pop();
-		}
-		if v.len() == 1 {
-			*self = Small(v[0]);
+	fn set(&mut self, idx: usize, new_value: u64) {
+		match self {
+			Small(n) => {
+				if idx == 0 {
+					*n = new_value;
+				} else if new_value == 0 {
+					// no need to do anything
+				} else {
+					self.make_large();
+					self.set(idx, new_value);
+				}
+			}
+			Large(value) => {
+				while idx >= value.len() {
+					value.push(0);
+				}
+				value[idx] = new_value;
+			}
 		}
 	}
 
@@ -183,6 +191,27 @@ impl BigUint {
 			Small(_) => 1,
 			Large(value) => value.len(),
 		}
+	}
+
+	fn value_push(&mut self, new: u64) {
+		if new == 0 {
+			return;
+		}
+		self.make_large();
+		match self {
+			Small(_) => unreachable!(),
+			Large(v) => v.push(new),
+		}
+	}
+
+	pub(crate) fn gcd<I: Interrupt>(mut a: Self, mut b: Self, int: &I) -> FResult<Self> {
+		while b >= 1.into() {
+			let r = a.rem(&b, int)?;
+			a = b;
+			b = r;
+		}
+
+		Ok(a)
 	}
 
 	pub(crate) fn pow<I: Interrupt>(a: &Self, b: &Self, int: &I) -> FResult<Self> {
@@ -200,64 +229,37 @@ impl BigUint {
 
 	// computes the exact `n`-th root if possible, otherwise the next lower integer
 	pub(crate) fn root_n<I: Interrupt>(self, n: &Self, int: &I) -> FResult<Exact<Self>> {
-		if self.is_zero() {
+		if self == 0.into() || self == 1.into() || n == &Self::from(1) {
 			return Ok(Exact::new(self, true));
 		}
-		if n.is_zero() {
-			return Err(FendError::DivideByZero);
+		if n.value_len() > 1 {
+			return Err(FendError::OutOfRange {
+				value: Box::new(n.format(&FormatOptions::default(), int)?.value),
+				range: Range {
+					start: RangeBound::Closed(Box::new(1)),
+					end: RangeBound::Closed(Box::new(u64::MAX)),
+				},
+			});
 		}
-		if n == &Self::from(1) {
-			return Ok(Exact::new(self, true));
-		}
-
-		let Ok(n_usize) = n.try_as_usize(int) else {
-			// n is huge (larger than usize::MAX).
-			// root is 1 (unless self is 0 or 1, handled above).
-			return Ok(Exact::new(Self::from(1), false));
-		};
-
-		let self_bits = self.bits();
-		if self_bits < n_usize as u64 {
-			if self == Self::from(1) {
-				return Ok(Exact::new(Self::from(1), true));
-			}
-			return Ok(Exact::new(Self::from(1), false));
-		}
-
-		// Initial guess: 2 ^ ceil(bits / n)
-		let guess_bits = self_bits.div_ceil(n_usize as u64);
-		let mut x = Small(1).lshift_n(&guess_bits.into(), int)?;
-
-		let n_minus_1 = Self::from((n_usize - 1) as u64);
-
-		loop {
+		let max_bits = self.bits() / n.get(0) + 1;
+		let mut low_guess = Self::from(1);
+		let mut high_guess = Small(1).lshift_n(&(max_bits + 1).into(), int)?;
+		let result = loop {
 			test_int(int)?;
+			let mut guess = low_guess.clone().add(&high_guess);
+			guess.rshift(int)?;
 
-			// Newton iteration: x_new = ( (n-1)x + self/x^(n-1) ) / n
-
-			// 1. Calculate x^(n-1)
-			let x_pow_n_minus_1 = Self::pow(&x, &n_minus_1, int)?;
-
-			// 2. Calculate self / x^(n-1)
-			// We discard the remainder (the .1 tuple element).
-			let quotient = self.divmod(&x_pow_n_minus_1, int)?.0;
-
-			// 3. Calculate numerator: (n-1)x + quotient
-			let term1 = x.clone().mul(&n_minus_1, int)?;
-			let numerator = term1.add(&quotient);
-
-			// 4. Calculate x_new: numerator / n
-			let x_new = numerator.div(n, int)?;
-
-			// 5. Check convergence
-			// For integer Newton method starting from above, we stop when x_new >= x
-			if x_new >= x {
-				let check_pow = Self::pow(&x, n, int)?;
-				return Ok(Exact::new(x, check_pow == self));
+			let res = Self::pow(&guess, n, int)?;
+			match res.cmp(&self) {
+				Ordering::Equal => break Exact::new(guess, true),
+				Ordering::Greater => high_guess = guess,
+				Ordering::Less => low_guess = guess,
 			}
-
-			x = x_new;
-		}
+			if high_guess.clone().sub(&low_guess) <= 1.into() {
+				break Exact::new(low_guess, false);
+			}
+		};
+		Ok(result)
 	}
 
 	fn pow_internal<I: Interrupt>(&self, mut exponent: u64, int: &I) -> FResult<Self> {
@@ -275,9 +277,6 @@ impl BigUint {
 	}
 
 	fn lshift<I: Interrupt>(&mut self, int: &I) -> FResult<()> {
-		// Check for interrupts once per call, not per limb.
-		test_int(int)?;
-
 		match self {
 			Small(n) => {
 				if *n & 0xc000_0000_0000_0000 == 0 {
@@ -287,16 +286,15 @@ impl BigUint {
 				}
 			}
 			Large(value) => {
-				// Use a forward pass.
-				// This is cache-friendly and allows the compiler to vectorise.
-				let mut carry = 0;
-				for elem in value.iter_mut() {
-					let new_carry = *elem >> 63;
-					*elem = (*elem << 1) | carry;
-					carry = new_carry;
+				if value[value.len() - 1] & (1_u64 << 63) != 0 {
+					value.push(0);
 				}
-				if carry != 0 {
-					value.push(carry);
+				for i in (0..value.len()).rev() {
+					test_int(int)?;
+					value[i] <<= 1;
+					if i != 0 {
+						value[i] |= value[i - 1] >> 63;
+					}
 				}
 			}
 		}
@@ -304,20 +302,18 @@ impl BigUint {
 	}
 
 	fn rshift<I: Interrupt>(&mut self, int: &I) -> FResult<()> {
-		// Check for interrupts once per call, not per limb.
-		test_int(int)?;
-
 		match self {
 			Small(n) => *n >>= 1,
 			Large(value) => {
-				let len = value.len();
-				if len > 0 {
-					// Forward pass: value[i] takes the high bit of value[i+1]
-					for i in 0..len - 1 {
-						value[i] = (value[i] >> 1) | (value[i + 1] << 63);
-					}
-					// Handle the most significant limb
-					value[len - 1] >>= 1;
+				for i in 0..value.len() {
+					test_int(int)?;
+					value[i] >>= 1;
+					let next = if i + 1 >= value.len() {
+						0
+					} else {
+						value[i + 1]
+					};
+					value[i] |= next << 63;
 				}
 			}
 		}
@@ -325,484 +321,86 @@ impl BigUint {
 	}
 
 	pub(crate) fn divmod<I: Interrupt>(&self, other: &Self, int: &I) -> FResult<(Self, Self)> {
-		if other.is_zero() {
-			return Err(FendError::DivideByZero);
-		}
-		if self.is_zero() {
-			return Ok((0.into(), 0.into()));
-		}
-		if self < other {
-			return Ok((0.into(), self.clone()));
-		}
-		if other == &Self::from(1) {
-			return Ok((self.clone(), 0.into()));
-		}
-
 		if let (Small(a), Small(b)) = (self, other) {
 			if let (Some(div_res), Some(mod_res)) = (a.checked_div(*b), a.checked_rem(*b)) {
 				return Ok((Small(div_res), Small(mod_res)));
 			}
 			return Err(FendError::DivideByZero);
 		}
-
-		self.div_rem_knuth(other, int)
-	}
-
-	fn trailing_zeros(&self) -> u64 {
-		match self {
-			Small(n) => u64::from(n.trailing_zeros()),
-			Large(v) => {
-				let mut count = 0;
-				for &digit in v {
-					if digit == 0 {
-						count += 64;
-					} else {
-						count += u64::from(digit.trailing_zeros());
-						break;
-					}
-				}
-				count
-			}
-		}
-	}
-
-	fn rshift_u64(&mut self, n: u64) {
-		if n == 0 {
-			return;
-		}
-		match self {
-			Small(v) => {
-				if n >= 64 {
-					*v = 0;
-				} else {
-					*v >>= n;
-				}
-			}
-			Large(v) => {
-				let shift_limbs = (n / 64) as usize;
-				let shift_bits = (n % 64) as u32;
-
-				if shift_limbs >= v.len() {
-					*self = Small(0);
-					return;
-				}
-
-				// Shift limbs (whole words) - remove LSBs
-				if shift_limbs > 0 {
-					v.drain(0..shift_limbs);
-				}
-
-				// Shift bits within limbs
-				if shift_bits > 0 {
-					let len = v.len();
-					let inv_shift = 64 - shift_bits;
-					for i in 0..len - 1 {
-						v[i] = (v[i] >> shift_bits) | (v[i + 1] << inv_shift);
-					}
-					v[len - 1] >>= shift_bits;
-				}
-
-				// Clean up
-				while v.last() == Some(&0) {
-					v.pop();
-				}
-				if v.is_empty() {
-					*self = Small(0);
-				}
-			}
-		}
-	}
-
-	fn lshift_u64(&mut self, n: u64) {
-		if n == 0 {
-			return;
-		}
-		match self {
-			Small(v) => {
-				// If it fits in Small, stay Small
-				if n < 64 && u64::from(v.leading_zeros()) >= n {
-					*v <<= n;
-				} else {
-					// promote to Large
-					let mut large = Large(vec![*v]);
-					large.lshift_u64(n);
-					*self = large;
-				}
-			}
-			Large(v) => {
-				let shift_limbs = (n / 64) as usize;
-				let shift_bits = (n % 64) as u32;
-
-				// 1. Shift bits
-				if shift_bits > 0 {
-					let mut carry = 0;
-					let inv_shift = 64 - shift_bits;
-					for x in v.iter_mut() {
-						let next_carry = *x >> inv_shift;
-						*x = (*x << shift_bits) | carry;
-						carry = next_carry;
-					}
-					if carry != 0 {
-						v.push(carry);
-					}
-				}
-
-				// 2. Prepend zero limbs (LSBs)
-				if shift_limbs > 0 {
-					let mut new_vec = vec![0; shift_limbs];
-					new_vec.append(v);
-					*v = new_vec;
-				}
-			}
-		}
-	}
-
-	// Stein's Algorithm (Binary GCD)
-	pub(crate) fn gcd<I: Interrupt>(mut self, mut other: Self, int: &I) -> FResult<Self> {
-		// 1. Handle base cases
-		if self.is_zero() {
-			return Ok(other);
-		}
 		if other.is_zero() {
-			return Ok(self);
+			return Err(FendError::DivideByZero);
 		}
-
-		// 2. Find common power of 2
-		let u_zeros = self.trailing_zeros();
-		let v_zeros = other.trailing_zeros();
-		let common_shift = std::cmp::min(u_zeros, v_zeros);
-
-		// 3. Remove factors of 2 from u and v
-		self.rshift_u64(u_zeros);
-		other.rshift_u64(v_zeros);
-
-		// 4. Main Loop
-		loop {
-			// Invariant: self and other are both odd at the start of loop body
+		if other == &Self::from(1) {
+			return Ok((self.clone(), Self::from(0)));
+		}
+		if self.is_zero() {
+			return Ok((Self::from(0), Self::from(0)));
+		}
+		if self < other {
+			return Ok((Self::from(0), self.clone()));
+		}
+		if self == other {
+			return Ok((Self::from(1), Self::from(0)));
+		}
+		if other == &Self::from(2) {
+			let mut div_result = self.clone();
+			div_result.rshift(int)?;
+			let modulo = self.get(0) & 1;
+			return Ok((div_result, Self::from(modulo)));
+		}
+		// binary long division
+		let mut q = Self::from(0);
+		let mut r = Self::from(0);
+		for i in (0..self.value_len()).rev() {
 			test_int(int)?;
-
-			match self.cmp(&other) {
-				Ordering::Equal => break,
-				Ordering::Greater => {
-					self.sub_assign(&other);
-					let zeros = self.trailing_zeros();
-					self.rshift_u64(zeros);
-				}
-				Ordering::Less => {
-					std::mem::swap(&mut self, &mut other);
-					self.sub_assign(&other);
-					let zeros = self.trailing_zeros();
-					self.rshift_u64(zeros);
+			for j in (0..64).rev() {
+				r.lshift(int)?;
+				let bit_of_self = u64::from((self.get(i) & (1 << j)) != 0);
+				r.set(0, r.get(0) | bit_of_self);
+				if &r >= other {
+					r = r.sub(other);
+					q.set(i, q.get(i) | (1 << j));
 				}
 			}
 		}
-
-		// 5. Restore common power of 2
-		self.lshift_u64(common_shift);
-		Ok(self)
+		Ok((q, r))
 	}
 
-	// Knuth's Algorithm D (The Art of Computer Programming, Vol 2, 4.3.1)
-	#[allow(clippy::cast_possible_truncation, clippy::too_many_lines)]
-	fn div_rem_knuth<I: Interrupt>(&self, other: &Self, int: &I) -> FResult<(Self, Self)> {
-		let mut dividend_digits = match self {
-			Small(n) => vec![*n],
-			Large(v) => v.clone(),
-		};
-		let mut divisor_digits = match other {
-			Small(n) => vec![*n],
-			Large(v) => v.clone(),
-		};
-
-		// Sanitize inputs by removing leading zero limbs (trailing in LE vector).
-		while dividend_digits.len() > 1 && dividend_digits.last() == Some(&0) {
-			dividend_digits.pop();
+	/// computes self *= other
+	fn mul_internal<I: Interrupt>(&mut self, other: &Self, int: &I) -> FResult<()> {
+		if self.is_zero() || other.is_zero() {
+			*self = Self::from(0);
+			return Ok(());
 		}
-		while divisor_digits.len() > 1 && divisor_digits.last() == Some(&0) {
-			divisor_digits.pop();
-		}
-
-		let divisor_len = divisor_digits.len();
-		// shift = number of leading zeros in the most significant digit of the divisor
-		let shift = divisor_digits.last().unwrap().leading_zeros();
-
-		// Normalize divisor (shift left so MSB is 1)
-		if shift > 0 {
-			let mut carry = 0;
-			for digit in &mut divisor_digits {
-				let next_carry = *digit >> (64 - shift);
-				*digit = (*digit << shift) | carry;
-				carry = next_carry;
+		let self_clone = self.clone();
+		self.make_large();
+		match self {
+			Small(_) => unreachable!(),
+			Large(v) => {
+				v.clear();
+				v.push(0);
 			}
 		}
-
-		// Normalize dividend (shift left by same amount)
-		if shift > 0 {
-			let mut carry = 0;
-			for digit in &mut dividend_digits {
-				let next_carry = *digit >> (64 - shift);
-				*digit = (*digit << shift) | carry;
-				carry = next_carry;
-			}
-			if carry != 0 {
-				dividend_digits.push(carry);
-			}
-		}
-
-		// Ensure dividend has a leading zero digit for the algorithm to work comfortably
-		dividend_digits.push(0);
-
-		let delta_len = dividend_digits.len() - divisor_len - 1;
-		let mut quotient_digits = vec![0; delta_len + 1];
-		let divisor_msb = divisor_digits[divisor_len - 1];
-
-		// Iterate 'j' from m down to 0 -> offset
-		for offset in (0..=delta_len).rev() {
+		for i in 0..other.value_len() {
 			test_int(int)?;
-
-			let dividend_high = dividend_digits[offset + divisor_len];
-			let dividend_low = dividend_digits[offset + divisor_len - 1];
-
-			// Estimate q_hat (quotient digit)
-			let mut quotient_estimate = if dividend_high == divisor_msb {
-				u64::MAX
-			} else {
-				let numerator = (u128::from(dividend_high) << 64) | u128::from(dividend_low);
-				(numerator / u128::from(divisor_msb)) as u64
-			};
-
-			// Refine q_hat
-			let divisor_second = if divisor_len >= 2 {
-				divisor_digits[divisor_len - 2]
-			} else {
-				0
-			};
-			let dividend_third = if offset + divisor_len >= 2 {
-				dividend_digits[offset + divisor_len - 2]
-			} else {
-				0
-			};
-
-			let mut remainder = ((u128::from(dividend_high) << 64) | u128::from(dividend_low))
-				.wrapping_sub(u128::from(quotient_estimate) * u128::from(divisor_msb));
-
-			while u128::from(divisor_second) * u128::from(quotient_estimate)
-				> (remainder << 64) | u128::from(dividend_third)
-			{
-				quotient_estimate -= 1;
-				remainder = remainder.wrapping_add(u128::from(divisor_msb));
-				if remainder > u128::from(u64::MAX) {
-					break;
-				}
-			}
-
-			// Multiply and subtract: dividend[offset..] -= quotient_estimate * divisor
-			let mut borrow: u128 = 0;
-			for (i, &divisor_digit) in divisor_digits.iter().enumerate() {
-				let product = u128::from(divisor_digit) * u128::from(quotient_estimate) + borrow;
-				let sub_val = product as u64;
-				borrow = product >> 64;
-
-				let (res, borrowed) = dividend_digits[offset + i].overflowing_sub(sub_val);
-				dividend_digits[offset + i] = res;
-				if borrowed {
-					borrow += 1;
-				}
-			}
-			// Propagate borrow to the top digit
-			let (res, borrowed) =
-				dividend_digits[offset + divisor_len].overflowing_sub(borrow as u64);
-			dividend_digits[offset + divisor_len] = res;
-
-			// If we subtracted too much (borrowed from top), correct by adding back divisor
-			if borrowed {
-				quotient_estimate -= 1;
-				let mut carry: u128 = 0;
-				for (i, &divisor_digit) in divisor_digits.iter().enumerate() {
-					let sum =
-						u128::from(dividend_digits[offset + i]) + u128::from(divisor_digit) + carry;
-					dividend_digits[offset + i] = sum as u64;
-					carry = sum >> 64;
-				}
-				dividend_digits[offset + divisor_len] =
-					dividend_digits[offset + divisor_len].wrapping_add(carry as u64);
-			}
-
-			quotient_digits[offset] = quotient_estimate;
+			self.add_assign_internal(&self_clone, other.get(i), i);
 		}
-
-		// Denormalize remainder (shift right)
-		if shift > 0 {
-			let mut next_high_bits = 0;
-			// Iterate from MSB to LSB
-			for digit in dividend_digits.iter_mut().rev() {
-				let val = *digit;
-				*digit = (val >> shift) | next_high_bits;
-				next_high_bits = val << (64 - shift);
-			}
-		}
-
-		let mut final_quotient = Self::Large(quotient_digits);
-		final_quotient.reduce();
-		let mut final_remainder = Self::Large(dividend_digits);
-		final_remainder.reduce();
-
-		Ok((final_quotient, final_remainder))
+		Ok(())
 	}
 
 	/// computes `self += (other * mul_digit) << (64 * shift)`
-	#[allow(clippy::cast_possible_truncation)]
 	fn add_assign_internal(&mut self, other: &Self, mul_digit: u64, shift: usize) {
-		if mul_digit == 0 {
-			return;
+		let mut carry = 0;
+		for i in 0..max(self.value_len(), other.value_len() + shift) {
+			let a = self.get(i);
+			let b = if i >= shift { other.get(i - shift) } else { 0 };
+			let sum = u128::from(a) + (u128::from(b) * u128::from(mul_digit)) + u128::from(carry);
+			self.set(i, truncate(sum));
+			carry = truncate(sum >> 64);
 		}
-
-		self.make_large();
-		let self_vec = match self {
-			Large(v) => v,
-			Small(_) => unreachable!(),
-		};
-
-		let other_slice = match other {
-			Large(v) => v.as_slice(),
-			Small(v) => std::slice::from_ref(v),
-		};
-
-		let min_len = shift + other_slice.len();
-		if self_vec.len() < min_len {
-			self_vec.resize(min_len, 0);
+		if carry != 0 {
+			self.value_push(carry);
 		}
-
-		let mut carry: u128 = 0;
-		let mul_digit = u128::from(mul_digit);
-
-		// Use zip to iterate specified slices.
-		let target_slice = &mut self_vec[shift..];
-		for (target, &source) in target_slice.iter_mut().zip(other_slice) {
-			let a = u128::from(*target);
-			let b = u128::from(source);
-
-			let sum = a + (b * mul_digit) + carry;
-			*target = sum as u64;
-			carry = sum >> 64;
-		}
-
-		// Propagate carry
-		let mut i = min_len;
-		while carry != 0 {
-			if i < self_vec.len() {
-				let sum = u128::from(self_vec[i]) + carry;
-				self_vec[i] = sum as u64;
-				carry = sum >> 64;
-				i += 1;
-			} else {
-				self_vec.push(carry as u64);
-				break;
-			}
-		}
-	}
-
-	/// computes `self += other << (64 * shift)`
-	#[allow(clippy::cast_possible_truncation)]
-	fn add_assign_shifted(&mut self, other: &Self, shift: usize) {
-		self.make_large();
-		let self_vec = match self {
-			Large(v) => v,
-			Small(_) => unreachable!(),
-		};
-
-		let other_slice = match other {
-			Large(v) => v.as_slice(),
-			Small(v) => std::slice::from_ref(v),
-		};
-
-		let min_len = shift + other_slice.len();
-		if self_vec.len() < min_len {
-			self_vec.resize(min_len, 0);
-		}
-
-		let mut carry: u128 = 0;
-		let target_slice = &mut self_vec[shift..];
-
-		for (target, &source) in target_slice.iter_mut().zip(other_slice) {
-			let a = u128::from(*target);
-			let b = u128::from(source);
-
-			let sum = a + b + carry;
-			*target = sum as u64;
-			carry = sum >> 64;
-		}
-
-		let mut i = min_len;
-		while carry != 0 {
-			if i < self_vec.len() {
-				let sum = u128::from(self_vec[i]) + carry;
-				self_vec[i] = sum as u64;
-				carry = sum >> 64;
-				i += 1;
-			} else {
-				self_vec.push(carry as u64);
-				break;
-			}
-		}
-	}
-
-	#[allow(clippy::cast_possible_truncation)]
-	fn mul_internal_slice(a: &[u64], b: &[u64]) -> Self {
-		if a.is_empty() || b.is_empty() {
-			return Self::from(0);
-		}
-		// Pre-allocate result
-		let mut res = vec![0; a.len() + b.len()];
-
-		for (i, &digit) in b.iter().enumerate() {
-			if digit == 0 {
-				continue;
-			}
-			let mut carry: u128 = 0;
-			let mul_digit = u128::from(digit);
-
-			// Optimized inner loop on slices
-			let target = &mut res[i..];
-			for (dst, &src) in target.iter_mut().zip(a) {
-				let sum = u128::from(*dst) + (u128::from(src) * mul_digit) + carry;
-				*dst = sum as u64;
-				carry = sum >> 64;
-			}
-
-			// Propagate carry
-			let mut k = i + a.len();
-			while carry > 0 {
-				let sum = u128::from(res[k]) + carry;
-				res[k] = sum as u64;
-				carry = sum >> 64;
-				k += 1;
-			}
-		}
-
-		let mut big = Large(res);
-		big.reduce();
-		big
-	}
-
-	#[allow(clippy::cast_possible_truncation)]
-	// Helper to add two slices and return BigUint
-	fn add_slices(a: &[u64], b: &[u64]) -> Self {
-		let max_len = max(a.len(), b.len());
-		let mut res = vec![0; max_len];
-		let mut carry: u128 = 0;
-
-		for i in 0..max_len {
-			let va = if i < a.len() { u128::from(a[i]) } else { 0 };
-			let vb = if i < b.len() { u128::from(b[i]) } else { 0 };
-			let sum = va + vb + carry;
-			res[i] = sum as u64;
-			carry = sum >> 64;
-		}
-		if carry > 0 {
-			res.push(carry as u64);
-		}
-		Large(res)
 	}
 
 	// Note: 0! = 1, 1! = 1
@@ -833,6 +431,20 @@ impl BigUint {
 		Ok(b)
 	}
 
+	pub(crate) fn mul<I: Interrupt>(mut self, other: &Self, int: &I) -> FResult<Self> {
+		if let (Small(a), Small(b)) = (&self, &other)
+			&& let Some(res) = a.checked_mul(*b)
+		{
+			return Ok(Self::from(res));
+		}
+		self.mul_internal(other, int)?;
+		Ok(self)
+	}
+
+	fn rem<I: Interrupt>(&self, other: &Self, int: &I) -> FResult<Self> {
+		Ok(self.divmod(other, int)?.1)
+	}
+
 	pub(crate) fn is_even<I: Interrupt>(&self, int: &I) -> FResult<bool> {
 		Ok(self.divmod(&Self::from(2), int)?.1 == 0.into())
 	}
@@ -846,7 +458,6 @@ impl BigUint {
 		self
 	}
 
-	#[allow(clippy::cast_possible_truncation)]
 	pub(crate) fn sub(self, other: &Self) -> Self {
 		if let (Small(a), Small(b)) = (&self, &other) {
 			return Self::from(a - b);
@@ -859,152 +470,28 @@ impl BigUint {
 		if other.is_zero() {
 			return self;
 		}
-
+		let mut carry = 0; // 0 or 1
 		let mut res = match self {
 			Large(x) => x,
 			Small(v) => vec![v],
 		};
-
-		let other_slice = match other {
-			Large(v) => v.as_slice(),
-			Small(v) => std::slice::from_ref(v),
-		};
-
-		let mut borrow: u128 = 0;
-		let mut i = 0;
-
-		let len = std::cmp::min(res.len(), other_slice.len());
-
-		while i < len {
-			let a = res[i];
-			let b = other_slice[i];
-
-			let sub_val = u128::from(b) + borrow;
-			let (val, new_borrow) = u128::from(a).overflowing_sub(sub_val);
-
-			res[i] = val as u64;
-			borrow = u128::from(new_borrow);
-			i += 1;
+		if res.len() < other.value_len() {
+			res.resize(other.value_len(), 0);
 		}
-
-		while borrow > 0 && i < res.len() {
-			let a = res[i];
-			let (val, new_borrow) = a.overflowing_sub(borrow as u64);
-			res[i] = val;
-			borrow = u128::from(new_borrow);
-			i += 1;
+		for (i, a) in res.iter_mut().enumerate() {
+			let b = other.get(i);
+			if !(b == u64::MAX && carry == 1) && *a >= b + carry {
+				*a = *a - b - carry;
+				carry = 0;
+			} else {
+				let next_digit =
+					u128::from(*a) + ((1_u128) << 64) - u128::from(b) - u128::from(carry);
+				*a = truncate(next_digit);
+				carry = 1;
+			}
 		}
-
-		let mut result = Large(res);
-		result.reduce();
-		result
-	}
-
-	#[allow(clippy::cast_possible_truncation)]
-	fn sub_assign(&mut self, other: &Self) {
-		let other_slice = match other {
-			Large(v) => v.as_slice(),
-			Small(s) => std::slice::from_ref(s),
-		};
-
-		if other_slice.is_empty() {
-			return;
-		}
-
-		self.make_large();
-		let self_vec = match self {
-			Large(v) => v,
-			Small(_) => unreachable!(),
-		};
-
-		let mut borrow: u128 = 0;
-		let len = std::cmp::min(self_vec.len(), other_slice.len());
-
-		for i in 0..len {
-			let val = u128::from(self_vec[i]);
-			let sub = u128::from(other_slice[i]) + borrow;
-			let (res, b) = val.overflowing_sub(sub);
-			self_vec[i] = res as u64;
-			borrow = u128::from(b);
-		}
-
-		let mut i = len;
-		while borrow > 0 && i < self_vec.len() {
-			let val = u128::from(self_vec[i]);
-			let (res, b) = val.overflowing_sub(borrow);
-			self_vec[i] = res as u64;
-			borrow = u128::from(b);
-			i += 1;
-		}
-	}
-
-	pub(crate) fn mul<I: Interrupt>(self, other: &Self, int: &I) -> FResult<Self> {
-		if self.is_zero() || other.is_zero() {
-			return Ok(Self::from(0));
-		}
-
-		let a_slice = match &self {
-			Large(v) => v.as_slice(),
-			Small(s) => std::slice::from_ref(s),
-		};
-		let b_slice = match other {
-			Large(v) => v.as_slice(),
-			Small(s) => std::slice::from_ref(s),
-		};
-
-		// 64 limbs (4096 bits) is the optimal cut-off.
-		if a_slice.len() >= 64 && b_slice.len() >= 64 {
-			return Self::mul_karatsuba_slice(a_slice, b_slice, int);
-		}
-
-		Ok(Self::mul_internal_slice(a_slice, b_slice))
-	}
-
-	fn mul_karatsuba_slice<I: Interrupt>(a: &[u64], b: &[u64], int: &I) -> FResult<Self> {
-		test_int(int)?;
-
-		// Base case: 64 limbs
-		if a.len() < 64 || b.len() < 64 {
-			return Ok(Self::mul_internal_slice(a, b));
-		}
-
-		let m = max(a.len(), b.len()) / 2;
-
-		let a_len = a.len();
-		let a_low = if m < a_len { &a[..m] } else { a };
-		let a_high = if m < a_len { &a[m..] } else { &[] };
-
-		let b_len = b.len();
-		let b_low = if m < b_len { &b[..m] } else { b };
-		let b_high = if m < b_len { &b[m..] } else { &[] };
-
-		let z0 = Self::mul_karatsuba_slice(a_low, b_low, int)?;
-		let z2 = Self::mul_karatsuba_slice(a_high, b_high, int)?;
-
-		let a_sum = Self::add_slices(a_low, a_high);
-		let b_sum = Self::add_slices(b_low, b_high);
-
-		let a_sum_slice = match &a_sum {
-			Large(v) => v.as_slice(),
-			Small(s) => std::slice::from_ref(s),
-		};
-		let b_sum_slice = match &b_sum {
-			Large(v) => v.as_slice(),
-			Small(s) => std::slice::from_ref(s),
-		};
-
-		let z1_raw = Self::mul_karatsuba_slice(a_sum_slice, b_sum_slice, int)?;
-
-		// Use in-place subtraction
-		let mut z1 = z1_raw;
-		z1.sub_assign(&z2);
-		z1.sub_assign(&z0);
-
-		let mut res = z0;
-		res.add_assign_shifted(&z1, m);
-		res.add_assign_shifted(&z2, 2 * m);
-
-		Ok(res)
+		assert_eq!(carry, 0);
+		Large(res)
 	}
 
 	pub(crate) const fn is_definitely_zero(&self) -> bool {
@@ -1021,69 +508,36 @@ impl BigUint {
 		}
 	}
 
-	pub(crate) fn serialize(&self, mut sign: Sign) -> CborValue {
-		let mut x = self.clone();
-		x.reduce();
-		if sign == Sign::Negative {
-			if x.is_zero() {
-				sign = Sign::Positive;
-			} else {
-				x = x.sub(&1.into());
+	pub(crate) fn serialize(&self, write: &mut impl io::Write) -> FResult<()> {
+		match self {
+			Small(x) => {
+				1u8.serialize(write)?;
+				x.serialize(write)?;
 			}
-		}
-		match x {
-			Small(x) => match sign {
-				Sign::Positive => CborValue::Uint(x),
-				Sign::Negative => CborValue::Negative(x),
-			},
 			Large(v) => {
-				let bytes: Vec<_> = v
-					.iter()
-					.rev()
-					.flat_map(|u| u.to_be_bytes())
-					.skip_while(|&b| b == 0)
-					.collect();
-				let tag = match sign {
-					Sign::Negative => 3,
-					Sign::Positive => 2,
-				};
-				CborValue::Tag(tag, Box::new(CborValue::Bytes(bytes)))
+				2u8.serialize(write)?;
+				v.len().serialize(write)?;
+				for b in v {
+					b.serialize(write)?;
+				}
 			}
 		}
+		Ok(())
 	}
 
-	pub(crate) fn deserialize(value: CborValue) -> FResult<(Self, Sign)> {
-		Ok(match value {
-			CborValue::Uint(n) => (Self::Small(n), Sign::Positive),
-			CborValue::Negative(n) => (Self::Small(n.checked_add(1).unwrap()), Sign::Negative),
-			CborValue::Tag(tag @ (2 | 3), inner) => {
-				let CborValue::Bytes(mut b) = *inner else {
-					return Err(FendError::DeserializationError(
-						"biguint with tag 2 or 3 does not contain bytes",
-					));
-				};
-				b.reverse();
-				while b.len() % 8 != 0 {
-					b.push(0);
+	pub(crate) fn deserialize(read: &mut impl io::Read) -> FResult<Self> {
+		let kind = u8::deserialize(read)?;
+		Ok(match kind {
+			1 => Self::Small(u64::deserialize(read)?),
+			2 => {
+				let len = usize::deserialize(read)?;
+				let mut v = Vec::with_capacity(len);
+				for _ in 0..len {
+					v.push(u64::deserialize(read)?);
 				}
-				let (chunks, rem) = b.as_chunks::<8>();
-				assert!(rem.is_empty());
-				let mut v = Self::Large(chunks.iter().map(|&c| u64::from_le_bytes(c)).collect());
-				let sign = match tag {
-					2 => Sign::Positive,
-					3 => {
-						v = v.add(&1.into());
-						Sign::Negative
-					}
-					_ => unreachable!(),
-				};
-				(v, sign)
+				Self::Large(v)
 			}
-			_ => {
-				return Err(FendError::DeserializationError(
-					"biguint must have major type 0, 1 or 6",
-				));
-			}
+			_ => return Err(FendError::DeserializationError),
 		})
 	}
 
@@ -1518,15 +972,6 @@ impl FormattedBigUint {
 
 #[cfg(test)]
 mod tests {
-	use std::io;
-
-	use crate::{
-		format::Format,
-		interrupt::Never,
-		num::biguint::FormatOptions,
-		serialize::{CborValue, Deserialize},
-	};
-
 	use super::BigUint;
 	type Res = Result<(), crate::error::FendError>;
 
@@ -1623,6 +1068,18 @@ mod tests {
 	}
 
 	#[test]
+	fn test_rem() -> Res {
+		let int = &crate::interrupt::Never;
+		let three = BigUint::from(3);
+		assert_eq!(BigUint::from(20).rem(&three, int)?, BigUint::from(2));
+		assert_eq!(BigUint::from(21).rem(&three, int)?, BigUint::from(0));
+		assert_eq!(BigUint::from(22).rem(&three, int)?, BigUint::from(1));
+		assert_eq!(BigUint::from(23).rem(&three, int)?, BigUint::from(2));
+		assert_eq!(BigUint::from(24).rem(&three, int)?, BigUint::from(0));
+		Ok(())
+	}
+
+	#[test]
 	fn test_lshift() -> Res {
 		let int = &crate::interrupt::Never;
 		let mut n = BigUint::from(1);
@@ -1696,19 +1153,5 @@ mod tests {
 			"1000000000000000000000000000000000000000000000000000000000000000000 must lie in the interval [0, 10^66 - 1]"
 		);
 		Ok(())
-	}
-
-	#[test]
-	fn serialisation() {
-		let bytes = b"\xc2\x49\x01\x00\x00\x00\x00\x00\x00\x00\x00";
-		let dec =
-			BigUint::deserialize(CborValue::deserialize(&mut io::Cursor::new(bytes)).unwrap())
-				.unwrap()
-				.0
-				.format(&FormatOptions::default(), &Never)
-				.unwrap()
-				.value
-				.to_string();
-		assert_eq!(dec, "18446744073709551616");
 	}
 }

@@ -5,7 +5,7 @@ use crate::num::dist::Dist;
 use crate::num::{Base, FormattingStyle};
 use crate::result::FResult;
 use crate::scope::Scope;
-use crate::serialize::{CborValue, Deserialize, Serialize};
+use crate::serialize::{Deserialize, Serialize};
 use crate::units::{lookup_default_unit, query_unit_static};
 use crate::{Attrs, DecimalSeparatorStyle, Span, SpanKind};
 use crate::{ast, ident::Ident};
@@ -66,7 +66,7 @@ impl Value {
 	}
 
 	pub(crate) fn serialize(&self, write: &mut impl io::Write) -> FResult<()> {
-		self.value.serialize().serialize(write)?;
+		self.value.serialize(write)?;
 		self.unit.serialize(write)?;
 		self.exact.serialize(write)?;
 		self.base.serialize(write)?;
@@ -77,7 +77,7 @@ impl Value {
 
 	pub(crate) fn deserialize(read: &mut impl io::Read) -> FResult<Self> {
 		Ok(Self {
-			value: Dist::deserialize(CborValue::deserialize(read)?)?,
+			value: Dist::deserialize(read)?,
 			unit: Unit::deserialize(read)?,
 			exact: bool::deserialize(read)?,
 			base: Base::deserialize(read)?,
@@ -1151,7 +1151,7 @@ impl FormattedValue {
 			return;
 		}
 		spans.push(Span {
-			string: self.number.clone(),
+			string: self.number.to_string(),
 			kind: SpanKind::Number,
 		});
 		if !attrs.plain_number {

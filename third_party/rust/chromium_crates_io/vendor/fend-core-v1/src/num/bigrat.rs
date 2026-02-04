@@ -5,9 +5,8 @@ use crate::interrupt::test_int;
 use crate::num::biguint::BigUint;
 use crate::num::{Base, Exact, FormattingStyle, Range, RangeBound};
 use crate::result::FResult;
-use crate::serialize::CborValue;
 use core::f64;
-use std::{cmp, fmt, hash, ops};
+use std::{cmp, fmt, hash, io, ops};
 
 pub(crate) mod sign {
 	use crate::{
@@ -50,7 +49,7 @@ pub(crate) mod sign {
 			Ok(match u8::deserialize(read)? {
 				1 => Self::Negative,
 				2 => Self::Positive,
-				_ => return Err(FendError::DeserializationError("sign must be 1 or 2")),
+				_ => return Err(FendError::DeserializationError),
 			})
 		}
 	}
@@ -120,44 +119,18 @@ impl hash::Hash for BigRat {
 }
 
 impl BigRat {
-	pub(crate) fn serialize(&self) -> CborValue {
-		let num = self.num.serialize(self.sign);
-		if self.den == 1.into() {
-			num
-		} else {
-			let den = self.den.serialize(Sign::Positive);
-			CborValue::Tag(30, Box::new(CborValue::Array(vec![num, den])))
-		}
+	pub(crate) fn serialize(&self, write: &mut impl io::Write) -> FResult<()> {
+		self.sign.serialize(write)?;
+		self.num.serialize(write)?;
+		self.den.serialize(write)?;
+		Ok(())
 	}
 
-	pub(crate) fn deserialize(value: CborValue) -> FResult<Self> {
-		Ok(match value {
-			CborValue::Tag(30, inner) => {
-				if let CborValue::Array(arr) = *inner
-					&& arr.len() == 2
-				{
-					let mut arr = arr.into_iter();
-					let (num, sign) = BigUint::deserialize(arr.next().unwrap())?;
-					let (den, Sign::Positive) = BigUint::deserialize(arr.next().unwrap())? else {
-						return Err(FendError::DeserializationError(
-							"tag 30 denominator must be positive",
-						));
-					};
-					Self { sign, num, den }
-				} else {
-					return Err(FendError::DeserializationError(
-						"tag 30 must contain a length-2 array",
-					));
-				}
-			}
-			value => {
-				let (num, sign) = BigUint::deserialize(value)?;
-				Self {
-					sign,
-					num,
-					den: 1.into(),
-				}
-			}
+	pub(crate) fn deserialize(read: &mut impl io::Read) -> FResult<Self> {
+		Ok(Self {
+			sign: Sign::deserialize(read)?,
+			num: BigUint::deserialize(read)?,
+			den: BigUint::deserialize(read)?,
 		})
 	}
 
@@ -250,15 +223,6 @@ impl BigRat {
 			Exact::new(Self::from(0), true)
 		} else {
 			Exact::new(Self::from_f64(f64::sin(self.into_f64(int)?), int)?, false)
-		})
-	}
-
-	// cos works for all real numbers
-	pub(crate) fn cos<I: Interrupt>(self, int: &I) -> FResult<Exact<Self>> {
-		Ok(if self == 0.into() {
-			Exact::new(Self::from(1), true)
-		} else {
-			Exact::new(Self::from_f64(f64::cos(self.into_f64(int)?), int)?, false)
 		})
 	}
 
@@ -673,27 +637,21 @@ impl BigRat {
 			let num_digits_of_int_part = formatted_integer_part.value.num_digits();
 			// reduce decimal places by however many digits we already printed
 			// in the integer portion
+			//
+			// saturate to zero in case we already exhausted all digits and
+			// shouldn't print any decimal places
+			let dp = sf.saturating_sub(num_digits_of_int_part);
+			if integer_part == 0.into() {
+				// if the integer part is 0, we don't want leading zeroes
+				// after the decimal point to affect the number of non-zero
+				// digits printed
 
-			// If we truncated the integer part (e.g. 12 to 1 sf -> 10),
-			// do NOT try to round up based on the decimal fraction.
-			if num_digits_of_int_part > sf {
-				MaxDigitsToPrint::DecimalPlacesNoRounding(0)
+				// we add 1 to the number of decimal places in this case because
+				// the integer component of '0' shouldn't count against the
+				// number of significant figures
+				MaxDigitsToPrint::DpButIgnoreLeadingZeroes(dp + 1)
 			} else {
-				// saturate to zero in case we already exhausted all digits and
-				// shouldn't print any decimal places
-				let dp = sf.saturating_sub(num_digits_of_int_part);
-				if integer_part == 0.into() {
-					// if the integer part is 0, we don't want leading zeroes
-					// after the decimal point to affect the number of non-zero
-					// digits printed
-
-					// we add 1 to the number of decimal places in this case because
-					// the integer component of '0' shouldn't count against the
-					// number of significant figures
-					MaxDigitsToPrint::DpButIgnoreLeadingZeroes(dp + 1)
-				} else {
-					MaxDigitsToPrint::DecimalPlaces(dp)
-				}
+				MaxDigitsToPrint::DecimalPlaces(dp)
 			}
 		} else {
 			MaxDigitsToPrint::DecimalPlaces(10)
@@ -755,12 +713,6 @@ impl BigRat {
 				test_int(int)?;
 				if num == 0.into() {
 					// reached the end of the number
-					return Err(NextDigitErr::Terminated { round_up: false });
-				}
-				// Explicitly handle the NoRounding case
-				if let MaxDigitsToPrint::DecimalPlacesNoRounding(limit) = max_digits
-					&& i == limit
-				{
 					return Err(NextDigitErr::Terminated { round_up: false });
 				}
 				if max_digits == MaxDigitsToPrint::DecimalPlaces(i)
@@ -898,31 +850,7 @@ impl BigRat {
 						sign
 					};
 					if round_up {
-						let mut chars: Vec<char> = trailing_digits.chars().collect();
-						let mut carry = true;
-						for i in (0..chars.len()).rev() {
-							let c = chars[i];
-							if c == decimal_separator.decimal_separator() {
-								continue;
-							}
-							if let Some(d) = c.to_digit(base.base_as_u8().into()) {
-								if d + 1 < base.base_as_u8().into() {
-									chars[i] =
-										char::from_digit(d + 1, base.base_as_u8().into()).unwrap();
-									carry = false;
-									break;
-								}
-								chars[i] = '0';
-							} else {
-								chars.insert(i + 1, '1');
-								carry = false;
-								break;
-							}
-						}
-						if carry {
-							chars.insert(0, '1');
-						}
-						trailing_digits = chars.into_iter().collect();
+						// todo
 					}
 					// is the number exact, or did we need to truncate?
 					let exact = current_numerator == 0.into();
@@ -1170,8 +1098,6 @@ enum MaxDigitsToPrint {
 	DecimalPlaces(usize),
 	/// Print only the given number of dps, but ignore leading zeroes after the decimal point
 	DpButIgnoreLeadingZeroes(usize),
-	/// Print digits but strictly truncate at the limit (no rounding up)
-	DecimalPlacesNoRounding(usize),
 }
 
 impl ops::Neg for BigRat {

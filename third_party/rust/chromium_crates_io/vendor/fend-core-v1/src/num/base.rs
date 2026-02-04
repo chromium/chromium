@@ -143,11 +143,7 @@ impl Base {
 			3 => BaseEnum::Hex,
 			4 => BaseEnum::Custom(u8::deserialize(read)?),
 			5 => BaseEnum::Plain(u8::deserialize(read)?),
-			_ => {
-				return Err(FendError::DeserializationError(
-					"number base is out of range",
-				));
-			}
+			_ => return Err(FendError::DeserializationError),
 		}))
 	}
 }
