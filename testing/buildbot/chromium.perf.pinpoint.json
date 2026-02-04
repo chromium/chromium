@@ -41,7 +41,7 @@
           "realm": "chromeos:chrome",
           "server": "https://chromeos-swarming.appspot.com",
           "service_account": "chromeos-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 7
+          "shards": 4
         },
         "test": "performance_test_suite_android_trichrome_chrome_google_64_32_bundle",
         "trigger_script": {

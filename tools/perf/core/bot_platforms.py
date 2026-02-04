@@ -1092,7 +1092,10 @@ WIN_ARM64_SNAPDRAGON_ELITE = PerfPlatform(
 ANDROID_BRYA = PerfPlatform(
     name='android-brya-kano-i5-8gb-perf',
     description='Brya SKU kano_12th_Gen_IntelR_CoreTM_i5_1235U_8GB',
-    num_shards=7,
+    # We have enough resources to run at least 7 shards, but currently only
+    # have enough benchmarks to fill 4 shards, so setting num_shards=4 to
+    # avoid wasting resources.
+    num_shards=4,
     benchmark_configs=_ANDROID_AL_BRYA_BENCHMARK_CONFIGS,
     platform_os='android',
     executables=_ANDROID_AL_BRYA_EXECUTABLE_CONFIGS,
