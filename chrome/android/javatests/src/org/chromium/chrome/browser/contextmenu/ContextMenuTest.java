@@ -46,7 +46,6 @@ import org.mockito.stubbing.Answer;
 import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CloseableOnMainThread;
@@ -77,7 +76,6 @@ import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.LensUtils;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
-import org.chromium.chrome.browser.share.ShareDelegateSupplier;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabContextMenuItemDelegate;
 import org.chromium.chrome.browser.tab.TabCreationState;
@@ -1201,7 +1199,7 @@ public class ContextMenuTest {
         ContextMenuPopulatorFactory populatorFactory =
                 new ChromeContextMenuPopulatorFactory(
                         mItemDelegate,
-                        () -> mShareDelegate,
+                        mShareDelegate,
                         ChromeContextMenuPopulator.ContextMenuMode.NORMAL,
                         /* customContentActions= */ List.of());
         Integer[] commonItems = {
@@ -1236,15 +1234,8 @@ public class ContextMenuTest {
 
         Tab tab = mActivityTestRule.getActivityTab();
         // Set share delegate before triggering context menu, so the mocked share delegate is used.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    var supplier =
-                            (SettableMonotonicObservableSupplier<ShareDelegate>)
-                                    ShareDelegateSupplier.from(
-                                            mActivityTestRule.getActivity().getWindowAndroid());
-                    Mockito.doReturn(true).when(mShareDelegate).isSharingHubEnabled();
-                    supplier.set(mShareDelegate);
-                });
+        Mockito.doReturn(true).when(mShareDelegate).isSharingHubEnabled();
+        ChromeContextMenuPopulatorFactory.setShareDelegateForTesting(mShareDelegate);
 
         // Allow all thread policies temporarily in main thread to avoid
         // DiskWrite and UnBufferedIo violations during copying under
@@ -1282,14 +1273,8 @@ public class ContextMenuTest {
         Tab tab = mActivityTestRule.getActivityTab();
 
         // Set share delegate before triggering context menu, so the mocked share delegate is used.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    var supplier =
-                            (SettableMonotonicObservableSupplier<ShareDelegate>)
-                                    ShareDelegateSupplier.from(
-                                            mActivityTestRule.getActivity().getWindowAndroid());
-                    supplier.set(mShareDelegate);
-                });
+        ChromeContextMenuPopulatorFactory.setShareDelegateForTesting(mShareDelegate);
+
         ContextMenuUtils.selectContextMenuItem(
                 InstrumentationRegistry.getInstrumentation(),
                 mActivityTestRule.getActivity(),
@@ -1324,16 +1309,9 @@ public class ContextMenuTest {
     public void testSharePageLongPress() throws Exception {
         DeviceInput.setSupportsPrecisionPointerForTesting(true);
         Tab tab = mActivityTestRule.getActivityTab();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    // Set share delegate before triggering context menu, so the mocked share
-                    // delegate is used.
-                    var supplier =
-                            (SettableMonotonicObservableSupplier<ShareDelegate>)
-                                    ShareDelegateSupplier.from(
-                                            mActivityTestRule.getActivity().getWindowAndroid());
-                    supplier.set(mShareDelegate);
-                });
+
+        // Set share delegate before triggering context menu, so the mocked share delegate is used.
+        ChromeContextMenuPopulatorFactory.setShareDelegateForTesting(mShareDelegate);
 
         ContextMenuUtils.selectContextMenuItem(
                 InstrumentationRegistry.getInstrumentation(),
@@ -1371,16 +1349,9 @@ public class ContextMenuTest {
     public void testSharePageRightClick() throws Exception {
         DeviceInput.setSupportsPrecisionPointerForTesting(true);
         Tab tab = mActivityTestRule.getActivityTab();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    // Set share delegate before triggering context menu, so the mocked share
-                    // delegate is used.
-                    var supplier =
-                            (SettableMonotonicObservableSupplier<ShareDelegate>)
-                                    ShareDelegateSupplier.from(
-                                            mActivityTestRule.getActivity().getWindowAndroid());
-                    supplier.set(mShareDelegate);
-                });
+
+        // Set share delegate before triggering context menu, so the mocked share delegate is used.
+        ChromeContextMenuPopulatorFactory.setShareDelegateForTesting(mShareDelegate);
 
         ContextMenuUtils.selectContextMenuItemFromRightClick(
                 InstrumentationRegistry.getInstrumentation(),

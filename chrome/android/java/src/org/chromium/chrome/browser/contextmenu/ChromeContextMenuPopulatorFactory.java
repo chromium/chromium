@@ -8,6 +8,7 @@ import android.content.Context;
 
 import androidx.browser.customtabs.CustomContentAction;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulator.ContextMenuMode;
@@ -20,23 +21,23 @@ import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulator
 import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulatorFactory;
 
 import java.util.List;
-import java.util.function.Supplier;
 
 /** Factory for creating {@link ContextMenuPopulator}s. */
 @NullMarked
 public class ChromeContextMenuPopulatorFactory implements ContextMenuPopulatorFactory {
+    private static @Nullable ShareDelegate sShareDelegateForTesting;
     private final TabContextMenuItemDelegate mItemDelegate;
-    private final Supplier<@Nullable ShareDelegate> mShareDelegateSupplier;
+    private final @Nullable ShareDelegate mShareDelegate;
     private final @ContextMenuMode int mContextMenuMode;
     private final List<CustomContentAction> mCustomContentActions;
 
     public ChromeContextMenuPopulatorFactory(
             TabContextMenuItemDelegate itemDelegate,
-            Supplier<@Nullable ShareDelegate> shareDelegateSupplier,
+            @Nullable ShareDelegate shareDelegate,
             @ContextMenuMode int contextMenuMode,
             List<CustomContentAction> customContentActions) {
         mItemDelegate = itemDelegate;
-        mShareDelegateSupplier = shareDelegateSupplier;
+        mShareDelegate = shareDelegate;
         mContextMenuMode = contextMenuMode;
         if (ChromeFeatureList.sCctContextualMenuItems.isEnabled()) {
             mCustomContentActions = customContentActions;
@@ -50,12 +51,17 @@ public class ChromeContextMenuPopulatorFactory implements ContextMenuPopulatorFa
         mItemDelegate.onDestroy();
     }
 
+    public static void setShareDelegateForTesting(ShareDelegate shareDelegate) {
+        sShareDelegateForTesting = shareDelegate;
+        ResettersForTesting.register(() -> sShareDelegateForTesting = null);
+    }
+
     @Override
     public ContextMenuPopulator createContextMenuPopulator(
             Context context, ContextMenuParams params, ContextMenuNativeDelegate nativeDelegate) {
         return new ChromeContextMenuPopulator(
                 mItemDelegate,
-                mShareDelegateSupplier,
+                sShareDelegateForTesting != null ? sShareDelegateForTesting : mShareDelegate,
                 mCustomContentActions,
                 mContextMenuMode,
                 context,

@@ -207,7 +207,7 @@ public class ChromeContextMenuPopulatorTest {
                 Mockito.spy(
                         new ChromeContextMenuPopulator(
                                 mItemDelegate,
-                                () -> mShareDelegate,
+                                mShareDelegate,
                                 actions,
                                 mode,
                                 ContextUtils.getApplicationContext(),

@@ -195,7 +195,7 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
                         mSnackbarManagerSupplier,
                         () -> mBottomSheetController,
                         mMultiInstanceManager),
-                mShareDelegateSupplier,
+                mShareDelegateSupplier.get(),
                 ChromeContextMenuPopulator.ContextMenuMode.NORMAL,
                 /* customContentActions= */ List.of());
     }
