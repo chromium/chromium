@@ -2526,11 +2526,32 @@ public class CustomTabIntentDataProviderTest {
     }
 
     @Test
+    public void minimalUiWebapp_properties() {
+        Intent intent = new Intent();
+        intent.putExtra(
+                CustomTabIntentDataProvider.EXTRA_UI_TYPE, CustomTabsUiType.MINIMAL_UI_WEBAPP);
+        setIsTrustedCustomTab(intent);
+
+        CustomTabIntentDataProvider dataProvider =
+                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+
+        assertEquals(CustomTabsUiType.MINIMAL_UI_WEBAPP, dataProvider.getUiType());
+        assertFalse(
+                "Minimal UI Webapp should NOT support optional button",
+                dataProvider.isOptionalButtonSupported());
+        assertEquals(
+                "Minimal UI Webapp should allow Open in Browser",
+                CustomTabsIntent.OPEN_IN_BROWSER_STATE_DEFAULT,
+                dataProvider.getOpenInBrowserButtonState());
+    }
+
+    @Test
     public void uiTypes_openInBrowserButtonState() {
         final int stateDefault = CustomTabsIntent.OPEN_IN_BROWSER_STATE_DEFAULT;
         final int stateOff = CustomTabsIntent.OPEN_IN_BROWSER_STATE_OFF;
 
         assertEquals(stateDefault, getOibStateForType(CustomTabsUiType.DEFAULT));
+        assertEquals(stateDefault, getOibStateForType(CustomTabsUiType.MINIMAL_UI_WEBAPP));
 
         assertEquals(stateOff, getOibStateForType(CustomTabsUiType.NETWORK_BOUND_TAB));
         assertEquals(stateOff, getOibStateForType(CustomTabsUiType.AUTH_TAB));

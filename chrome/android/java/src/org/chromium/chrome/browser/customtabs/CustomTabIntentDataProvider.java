@@ -1068,13 +1068,13 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         switch (type) {
             case CustomTabsUiType.MEDIA_VIEWER:
             case CustomTabsUiType.READER_MODE:
-            case CustomTabsUiType.MINIMAL_UI_WEBAPP:
             case CustomTabsUiType.OFFLINE_PAGE:
             case CustomTabsUiType.AUTH_TAB:
             case CustomTabsUiType.NETWORK_BOUND_TAB:
             case CustomTabsUiType.TRUSTED_WEB_ACTIVITY:
             case CustomTabsUiType.POPUP:
                 return false;
+            case CustomTabsUiType.MINIMAL_UI_WEBAPP:
             case CustomTabsUiType.DEFAULT:
             default:
                 return true;
