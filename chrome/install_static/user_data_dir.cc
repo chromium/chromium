@@ -62,7 +62,7 @@ std::wstring MakeAbsoluteFilePath(const std::wstring& input) {
 
 // The same as GetUserDataDirectory(), but directly queries the global command
 // line object for the --user-data-dir flag. This is the more commonly used
-// function, where GetUserDataDirectory() is used primiarily for testing.
+// function, where GetUserDataDirectory() is used primarily for testing.
 bool GetUserDataDirectoryUsingProcessCommandLine(
     const InstallConstants& mode,
     std::wstring* result,
