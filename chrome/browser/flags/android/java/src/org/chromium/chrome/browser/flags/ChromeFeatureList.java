@@ -652,7 +652,6 @@ public abstract class ChromeFeatureList {
     public static final String TAB_STRIP_DENSITY_CHANGE_ANDROID = "TabStripDensityChangeAndroid";
     public static final String TAB_STRIP_EMPTY_SPACE_CONTEXT_MENU_ANDROID =
             "TabStripEmptySpaceContextMenuAndroid";
-    public static final String TAB_STRIP_GLIC_BUTTON_ANDROID = "TabStripGlicButtonAndroid";
     public static final String TAB_SWITCHER_DRAG_DROP_ANDROID = "TabSwitcherDragDropAndroid";
     public static final String TAB_SWITCHER_GROUP_SUGGESTIONS_ANDROID =
             "TabSwitcherGroupSuggestionsAndroid";

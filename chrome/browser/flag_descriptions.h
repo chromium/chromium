@@ -5684,11 +5684,6 @@ inline constexpr char kTabStripEmptySpaceContextMenuAndroidName[] =
 inline constexpr char kTabStripEmptySpaceContextMenuAndroidDescription[] =
     "Enables the context menu on the empty space of the tab strip.";
 
-inline constexpr char kTabStripGlicButtonAndroidName[] =
-    "Tab Strip Glic Button";
-inline constexpr char kTabStripGlicButtonAndroidDescription[] =
-    "Enables the Glic button on the tab strip.";
-
 inline constexpr char kToolbarSnapshotRefactorName[] =
     "Toolbar Snapshot Refactor";
 inline constexpr char kToolbarSnapshotRefactorDescription[] =
