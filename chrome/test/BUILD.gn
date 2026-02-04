@@ -11653,6 +11653,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/ui/views/new_tab_footer",
       "//chrome/browser/ui/views/page_action",
       "//chrome/browser/ui/views/side_panel",
+      "//chrome/browser/ui/views/tabs/projects:interactive_ui_tests",
       "//chrome/browser/ui/views/tabs/vertical:interactive_ui_tests",
       "//chrome/browser/ui/views/toolbar:interactive_ui_tests",
       "//chrome/browser/ui/views/user_education",

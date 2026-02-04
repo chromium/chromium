@@ -10459,6 +10459,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
           <message name="IDS_RECENT_CHATS_TITLE" desc="In Title Case: The title for the recent chats container in the projects panel.">
             Recent Chats
           </message>
+          <message name="IDS_TAB_GROUP_MORE_OPTIONS" desc="In Title Case: The tooltip for the button in a tab group item that opens the options menu.">
+            More options
+          </message>
         </then>
         <else>
           <message name="IDS_VIEW_PROJECTS_PANEL" desc="The tooltip for the button in the top container that shows the projects panel.">
@@ -10472,6 +10475,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
           </message>
           <message name="IDS_RECENT_CHATS_TITLE" desc="In Title Case: The title for the recent chats container in the projects panel.">
             Recent chats
+          </message>
+          <message name="IDS_TAB_GROUP_MORE_OPTIONS" desc="The tooltip for the button in a tab group item that opens the options menu.">
+            More options
           </message>
         </else>
       </if>

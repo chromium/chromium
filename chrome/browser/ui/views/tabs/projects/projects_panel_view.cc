@@ -8,11 +8,15 @@
 
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/projects/projects_panel_state_controller.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_menu_utils.h"
+#include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_tabs_menu_model.h"
 #include "chrome/browser/ui/views/tabs/projects/layout_constants.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_controller.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_controls_view.h"
@@ -24,11 +28,14 @@
 #include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/actions/action_view_controller.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/button/menu_button.h"
+#include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/event_monitor.h"
 #include "ui/views/layout/flex_layout.h"
@@ -48,11 +55,30 @@ void SetListTitleProperties(views::Label& label) {
 }
 
 static bool disable_animations_for_testing_ = false;
+
+class STGTabsMenuModelWithCallback : public tab_groups::STGTabsMenuModel {
+ public:
+  STGTabsMenuModelWithCallback(BrowserWindowInterface* browser,
+                               tab_groups::TabGroupMenuContext context,
+                               base::RepeatingClosure callback)
+      : tab_groups::STGTabsMenuModel(browser->GetBrowserForMigrationOnly(),
+                                     context),
+        callback_(std::move(callback)) {}
+
+  void ExecuteCommand(int command_id, int event_flags) override {
+    tab_groups::STGTabsMenuModel::ExecuteCommand(command_id, event_flags);
+    callback_.Run();
+  }
+
+ private:
+  base::RepeatingClosure callback_;
+};
 }  // namespace
 
-ProjectsPanelView::ProjectsPanelView(actions::ActionItem* root_action_item,
-                                     Profile* profile)
-    : root_action_item_(root_action_item),
+ProjectsPanelView::ProjectsPanelView(BrowserWindowInterface* browser,
+                                     actions::ActionItem* root_action_item)
+    : browser_(browser),
+      root_action_item_(root_action_item),
       action_view_controller_(std::make_unique<views::ActionViewController>()),
       resize_animation_(this) {
   // The vertical tab strip contains ScrollViews that paint to a layer. This
@@ -73,7 +99,8 @@ ProjectsPanelView::ProjectsPanelView(actions::ActionItem* root_action_item,
       views::CreateSolidBackground(ui::kColorFrameActive));
 
   panel_controller_ = std::make_unique<ProjectsPanelController>(
-      tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile));
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+          browser->GetProfile()));
 
   controls_view_ = content_container_->AddChildView(
       std::make_unique<ProjectsPanelControlsView>(
@@ -86,7 +113,9 @@ ProjectsPanelView::ProjectsPanelView(actions::ActionItem* root_action_item,
 
   tab_groups_view_ = content_container_->AddChildView(
       std::make_unique<ProjectsPanelTabGroupsView>(
-          root_action_item_.get(), action_view_controller_.get()));
+          root_action_item_.get(), action_view_controller_.get(),
+          base::BindRepeating(&ProjectsPanelView::OnTabGroupMoreButtonPressed,
+                              base::Unretained(this))));
 
   if (tabs::IsThreadsInProjectsPanelEnabled()) {
     auto* threads_list_title =
@@ -214,6 +243,37 @@ void ProjectsPanelView::ClosePanel() {
   actions::ActionItem* action_item = actions::ActionManager::Get().FindAction(
       kActionToggleProjectsPanel, root_action_item_);
   action_item->InvokeAction();
+}
+
+void ProjectsPanelView::OnTabGroupMoreButtonPressed(
+    const base::Uuid& group_guid,
+    views::MenuButton& button) {
+  auto* tab_group_service =
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+          browser_->GetProfile());
+
+  auto saved_group = tab_group_service->GetGroup(group_guid);
+  if (!saved_group.has_value()) {
+    return;
+  }
+
+  tab_group_menu_model_ = std::make_unique<STGTabsMenuModelWithCallback>(
+      browser_,
+      tab_groups::TabGroupMenuContext::SAVED_TAB_GROUP_BUTTON_CONTEXT_MENU,
+      base::BindRepeating(&ProjectsPanelView::ClosePanel,
+                          base::Unretained(this)));
+  tab_group_menu_model_->Build(saved_group.value(), base::BindRepeating([]() {
+                                 static int latest_command_id = 0;
+                                 return latest_command_id++;
+                               }));
+
+  tab_group_menu_runner_ = std::make_unique<views::MenuRunner>(
+      tab_group_menu_model_.get(),
+      views::MenuRunner::CONTEXT_MENU | views::MenuRunner::IS_NESTED);
+  tab_group_menu_runner_->RunMenuAt(
+      button.GetWidget(), button.button_controller(),
+      button.GetAnchorBoundsInScreen(), views::MenuAnchorPosition::kTopRight,
+      ui::mojom::MenuSourceType::kMouse);
 }
 
 ProjectsPanelView::MouseEventHandler::MouseEventHandler(

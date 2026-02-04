@@ -4347,6 +4347,7 @@ static_library("browser") {
       "//chrome/browser/ui/views/new_tab_footer",
       "//chrome/browser/ui/views/page_action:impl",
       "//chrome/browser/ui/views/side_panel",
+      "//chrome/browser/ui/views/tabs/projects:impl",
       "//chrome/browser/ui/views/toolbar",
       "//chrome/browser/ui/views/toolbar:impl",
       "//chrome/browser/ui/views/zoom:impl",

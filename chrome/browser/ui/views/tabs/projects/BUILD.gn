@@ -5,31 +5,47 @@
 source_set("projects") {
   sources = [
     "layout_constants.h",
-    "projects_panel_controller.cc",
     "projects_panel_controller.h",
-    "projects_panel_controls_view.cc",
     "projects_panel_controls_view.h",
-    "projects_panel_no_tab_groups_view.cc",
     "projects_panel_no_tab_groups_view.h",
-    "projects_panel_recent_threads_view.cc",
     "projects_panel_recent_threads_view.h",
-    "projects_panel_tab_groups_item_view.cc",
     "projects_panel_tab_groups_item_view.h",
-    "projects_panel_tab_groups_view.cc",
     "projects_panel_tab_groups_view.h",
-    "projects_panel_thread_item_view.cc",
     "projects_panel_thread_item_view.h",
-    "projects_panel_utils.cc",
     "projects_panel_utils.h",
-    "projects_panel_view.cc",
     "projects_panel_view.h",
   ]
 
-  deps = [
+  public_deps = [
     "//base",
+    "//chrome/app/vector_icons",
+    "//chrome/browser/ui/tabs/projects",
+    "//components/saved_tab_groups/public",
+    "//ui/base",
+    "//ui/views",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "projects_panel_controller.cc",
+    "projects_panel_controls_view.cc",
+    "projects_panel_no_tab_groups_view.cc",
+    "projects_panel_recent_threads_view.cc",
+    "projects_panel_tab_groups_item_view.cc",
+    "projects_panel_tab_groups_view.cc",
+    "projects_panel_thread_item_view.cc",
+    "projects_panel_utils.cc",
+    "projects_panel_view.cc",
+  ]
+
+  public_deps = [ ":projects" ]
+
+  deps = [
     "//chrome/app:generated_resources",
     "//chrome/app/vector_icons",
     "//chrome/browser/tab_group_sync:factories",
+    "//chrome/browser/ui",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui:layout_constants",
     "//chrome/browser/ui/actions:actions_headers",
@@ -39,11 +55,10 @@ source_set("projects") {
     "//chrome/browser/ui/tabs/projects:impl",
     "//chrome/browser/ui/tabs/saved_tab_groups",
     "//chrome/browser/ui/views/tabs/vertical",
+    "//chrome/browser/ui/views/toolbar",
     "//components/contextual_tasks/public",
     "//components/saved_tab_groups/public",
     "//ui/actions",
-    "//ui/base",
-    "//ui/views",
   ]
 }
 
@@ -67,5 +82,26 @@ source_set("unit_tests") {
     "//components/sync/base",
     "//ui/views",
     "//ui/views:test_support",
+  ]
+}
+
+source_set("interactive_ui_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "projects_panel_tab_groups_interactive_uitest.cc" ]
+  deps = [
+    ":projects",
+    "//chrome/browser/tab_group_sync:factories",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/tabs:features",
+    "//chrome/browser/ui/tabs/projects",
+    "//chrome/test:test_support",
+    "//components/saved_tab_groups/public",
+    "//components/saved_tab_groups/test_support",
+    "//content/test:test_support",
+    "//ui/base",
+    "//ui/views",
   ]
 }

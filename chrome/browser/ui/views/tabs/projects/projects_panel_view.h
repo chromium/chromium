@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_PROJECTS_PROJECTS_PANEL_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_PROJECTS_PROJECTS_PANEL_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_controls_view.h"
+#include "chrome/browser/ui/views/tabs/projects/projects_panel_tab_groups_item_view.h"
 #include "ui/events/event_observer.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/slide_animation.h"
@@ -20,12 +22,17 @@ namespace gfx {
 class Point;
 }  // namespace gfx
 
+namespace tab_groups {
+class STGTabsMenuModel;
+}
+
 namespace views {
 class ActionViewController;
 class EventMonitor;
+class MenuRunner;
 }  // namespace views
 
-class Profile;
+class BrowserWindowInterface;
 class ProjectsPanelController;
 class ProjectsPanelStateController;
 class ProjectsPanelTabGroupsView;
@@ -36,8 +43,8 @@ class ProjectsPanelView : public views::View, gfx::AnimationDelegate {
   METADATA_HEADER(ProjectsPanelView, views::View)
 
  public:
-  explicit ProjectsPanelView(actions::ActionItem* root_action_item,
-                             Profile* profile);
+  ProjectsPanelView(BrowserWindowInterface* browser,
+                    actions::ActionItem* root_action_item);
   ProjectsPanelView(const ProjectsPanelView&) = delete;
   ProjectsPanelView& operator=(const ProjectsPanelView&) = delete;
   ~ProjectsPanelView() override;
@@ -78,6 +85,10 @@ class ProjectsPanelView : public views::View, gfx::AnimationDelegate {
 
   void ClosePanel();
 
+  void OnTabGroupMoreButtonPressed(const base::Uuid& group_guid,
+                                   views::MenuButton& button);
+
+  const raw_ptr<BrowserWindowInterface> browser_;
   raw_ptr<actions::ActionItem> root_action_item_ = nullptr;
   raw_ptr<views::View> content_container_ = nullptr;
   raw_ptr<ProjectsPanelControlsView> controls_view_ = nullptr;
@@ -97,6 +108,9 @@ class ProjectsPanelView : public views::View, gfx::AnimationDelegate {
   // Handle mouse presses outside the panel.
   MouseEventHandler mouse_event_handler_{this};
   std::unique_ptr<views::EventMonitor> event_monitor_;
+
+  std::unique_ptr<tab_groups::STGTabsMenuModel> tab_group_menu_model_;
+  std::unique_ptr<views::MenuRunner> tab_group_menu_runner_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_PROJECTS_PROJECTS_PANEL_VIEW_H_
