@@ -538,7 +538,7 @@ def get_and_maybe_delete_tests_in_browsertest(
         # MAYBE_ or DISABLED_). Examples can be found here.
         # https://regex101.com/r/l1xnAJ/2
         for match in re.finditer(
-                'IN_PROC_BROWSER_TEST_F[\\(\\w\\s,]+'
+                'IN_PROC_BROWSER_TEST_[PF][\\(\\w\\s,]+'
                 fr'{CoverageTest.TEST_ID_PREFIX}([a-zA-Z0-9._-]+)\)'
                 '\\s*{\n(?:\\s*\\/\\/.*\n)+((?:[^;^}}]+;\n)+)}', file):
             test_steps: List[str] = []

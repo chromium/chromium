@@ -254,7 +254,8 @@ class CoverageTest:
         body += '\n'.join([(f"  helper_.{action.cpp_method};")
                            for action in self.actions])
         fixture = f"{test_partition.test_fixture}"
-        return (f"IN_PROC_BROWSER_TEST_F("
+        macro = "IN_PROC_BROWSER_TEST_P" if test_partition.is_parameterized else "IN_PROC_BROWSER_TEST_F"
+        return (f"{macro}("
                 f"{fixture}, "
                 f"{CoverageTest.TEST_ID_PREFIX}{self.generate_test_name()}) "
                 f"{{\n{body}\n}}")
@@ -295,12 +296,17 @@ class TestPartitionDescription:
         test_fixture: The gtest fixture used when printing the test declaration.
     """
 
-    def __init__(self, action_name_prefixes: Set[str], browsertest_dir: str,
-                 test_file_prefix: str, test_fixture: str):
+    def __init__(self,
+                 action_name_prefixes: Set[str],
+                 browsertest_dir: str,
+                 test_file_prefix: str,
+                 test_fixture: str,
+                 is_parameterized: bool = False):
         self.action_name_prefixes: Set[str] = action_name_prefixes
         self.browsertest_dir: str = browsertest_dir
         self.test_file_prefix: str = test_file_prefix
         self.test_fixture: str = test_fixture
+        self.is_parameterized: bool = is_parameterized
 
     def generate_browsertest_filepath(self, platforms: Set[TestPlatform]):
         """

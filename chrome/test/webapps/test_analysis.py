@@ -62,16 +62,21 @@ def compare_and_print_tests_to_remove_and_add(
                 with open(filename, "r") as f:
                     test_file = f.read()
                 # Find the last test in the test file
-                if re.search(r"IN_PROC_BROWSER_TEST_F(.|\n)*?}\n", test_file):
-                    res = re.finditer(r"IN_PROC_BROWSER_TEST_F(.|\n)*?}\n",
-                                      test_file)
-                    last_test_end_index = list(res)[-1].end()
-                # Find the first closing parenthesis (end of namespace) if
-                # there is no test in the file
-                elif "}" in test_file:
-                    last_test_end_index = test_file.find("}") - 1
+                matches = list(
+                    re.finditer(r"IN_PROC_BROWSER_TEST_[PF](.|\n)*?}\n",
+                                test_file))
+                if matches:
+                    last_test_end_index = matches[-1].end()
                 else:
-                    last_test_end_index = len(test_file)
+                    # If no tests found, try to insert before the last closing brace
+                    # (which is usually the closing namespace).
+                    last_brace_index = test_file.rfind("}")
+                    if last_brace_index != -1:
+                        # Find the start of the line with the last brace to be clean.
+                        last_test_end_index = test_file.rindex(
+                            '\n', 0, last_brace_index) + 1
+                    else:
+                        last_test_end_index = len(test_file)
                 new_content = (test_file[:last_test_end_index] + new_test_str +
                                test_file[last_test_end_index:])
                 with open(filename, "w") as f:
