@@ -1836,6 +1836,7 @@ StatusOr<BackingStore::RecordIdentifier> DatabaseConnection::PutRecord(
   // Insert external objects into relevant tables.
   for (auto& external_object : value.external_objects) {
     int64_t blob_row_id = -1;
+    bool is_empty_blob = false;
     if (external_object.object_type() ==
         IndexedDBExternalObject::ObjectType::kFileSystemAccessHandle) {
       // Write metadata. Blob bytes will be written later in one go, after
@@ -1853,6 +1854,7 @@ StatusOr<BackingStore::RecordIdentifier> DatabaseConnection::PutRecord(
       const int main_chunk_size = base::checked_cast<int>(
           std::min(external_object.size(),
                    base::checked_cast<int64_t>(GetMaxBlobSize().InBytes())));
+      is_empty_blob = external_object.size() == 0;
       const bool being_migrated_from_leveldb =
           !external_object.indexed_db_file_path().empty();
       {
@@ -1865,7 +1867,11 @@ StatusOr<BackingStore::RecordIdentifier> DatabaseConnection::PutRecord(
         statement.BindInt(0, static_cast<int>(external_object.object_type()));
         statement.BindString16(1, external_object.type());
         statement.BindInt64(2, external_object.size());
-        if (being_migrated_from_leveldb) {
+        if (is_empty_blob) {
+          // An empty blob, regardless of whether it's being added by script or
+          // migrated from another store, can be added synchronously.
+          statement.BindBlob(3, base::span<const uint8_t>());
+        } else if (being_migrated_from_leveldb) {
           statement.BindNull(3);
         } else {
           statement.BindBlobForStreaming(3, main_chunk_size);
@@ -1885,7 +1891,9 @@ StatusOr<BackingStore::RecordIdentifier> DatabaseConnection::PutRecord(
 
       blob_row_id = db_->GetLastInsertRowId();
 
-      if (being_migrated_from_leveldb) {
+      if (is_empty_blob) {
+        // No-op.
+      } else if (being_migrated_from_leveldb) {
         // The migration case --- move the old file to a new location.
         legacy_blob_files_to_move_.emplace_back(
             external_object.indexed_db_file_path(),
@@ -1926,12 +1934,14 @@ StatusOr<BackingStore::RecordIdentifier> DatabaseConnection::PutRecord(
       RUN_STATEMENT_RETURN_ON_ERROR(statement);
     }
 
-    auto rv =
-        blobs_staged_for_commit_.emplace(blob_row_id,
-                                         // TODO(crbug.com/419208485): this type
-                                         // is copy only at the moment.
-                                         std::move(external_object));
-    CHECK(rv.second);
+    if (!is_empty_blob) {
+      auto rv =
+          blobs_staged_for_commit_.emplace(blob_row_id,
+                                           // TODO(crbug.com/419208485): this
+                                           // type is copy only at the moment.
+                                           std::move(external_object));
+      CHECK(rv.second);
+    }
   }
   OnRecordsModified(object_store_id);
   return BackingStore::RecordIdentifier{record_row_id, std::move(encoded_key)};
