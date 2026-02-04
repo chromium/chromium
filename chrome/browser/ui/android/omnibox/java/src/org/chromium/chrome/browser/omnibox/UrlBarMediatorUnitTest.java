@@ -41,8 +41,6 @@ import org.chromium.url.GURL;
 @Config(manifest = Config.NONE)
 public class UrlBarMediatorUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock Callback<String> mMockUrlTextListener;
-    @Mock Callback<String> mAnotherUrlTextMockListener;
     @Mock Callback<Boolean> mFocusChangeCallback;
 
     Context mContext;
@@ -344,17 +342,17 @@ public class UrlBarMediatorUnitTest {
         mMediator.setUrlBarHintText("Hint 1");
         Assert.assertTrue(mModel.get(UrlBarProperties.SHOW_HINT_TEXT));
         mMediator.setUrlBarData(baseData, ScrollType.NO_SCROLL, SelectionState.SELECT_END);
-        mMediator.onUrlFocusChange(true);
-        mMediator.onTextChanged("");
+        mModel.get(UrlBarProperties.FOCUS_CHANGE_CALLBACK).onResult(true);
+        mModel.get(UrlBarProperties.TEXT_CHANGE_LISTENER).onResult("");
 
         Assert.assertTrue(mModel.get(UrlBarProperties.SHOW_HINT_TEXT));
 
-        mMediator.onTextChanged("f");
+        mModel.get(UrlBarProperties.TEXT_CHANGE_LISTENER).onResult("f");
         Assert.assertFalse(mModel.get(UrlBarProperties.SHOW_HINT_TEXT));
         mMediator.setUrlBarData(UrlBarData.EMPTY, ScrollType.NO_SCROLL, SelectionState.SELECT_END);
         Assert.assertTrue(mModel.get(UrlBarProperties.SHOW_HINT_TEXT));
 
-        mMediator.onUrlFocusChange(false);
+        mModel.get(UrlBarProperties.FOCUS_CHANGE_CALLBACK).onResult(false);
         Assert.assertTrue(mModel.get(UrlBarProperties.SHOW_HINT_TEXT));
     }
 

@@ -82,8 +82,7 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate {
         mTextChangeListener = listener;
     }
 
-    @VisibleForTesting
-    void onTextChanged(String text) {
+    private void onTextChanged(String text) {
         mTextChangeListener.onResult(text);
         updateShowHintText(text);
     }
@@ -246,8 +245,7 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate {
                 new AutocompleteText(userText, autocompleteText, additionalText));
     }
 
-    @VisibleForTesting
-    void onUrlFocusChange(boolean focus) {
+    private void onUrlFocusChange(boolean focus) {
         mHasFocus = focus;
 
         if (mModel.get(UrlBarProperties.ALLOW_FOCUS)) {
