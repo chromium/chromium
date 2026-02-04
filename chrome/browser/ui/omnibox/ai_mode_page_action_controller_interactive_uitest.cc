@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/check_deref.h"
@@ -14,14 +15,19 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/omnibox/ai_mode_page_action_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "chrome/browser/ui/views/page_action/test_support/page_action_interactive_test_mixin.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "chrome/test/interaction/interactive_browser_window_test.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/interaction/interaction_sequence.h"
+#include "ui/base/interaction/interactive_test.h"
 
 namespace omnibox {
 
@@ -80,51 +86,57 @@ class AiModePageActionControllerInteractiveUiTest
   }
 
   virtual void InitializeFeatures() {
-    std::vector<base::test::FeatureRefAndParams> enabled_features = {{
-        features::kPageActionsMigration,
-        {
-            {
-                features::kPageActionsMigrationAiMode.name,
-                "true",
-            },
-        },
-    }};
-
-    std::vector<base::test::FeatureRef> disabled_features = {
-        kHideAimEntrypointOnUserInput};
-
-    features_.InitWithFeaturesAndParameters(enabled_features,
-                                            disabled_features);
+    features_.InitWithFeaturesAndParameters(
+        /*enabled_features*/ {{
+                                  features::kPageActionsMigration,
+                                  {
+                                      {
+                                          features::kPageActionsMigrationAiMode
+                                              .name,
+                                          "true",
+                                      },
+                                  },
+                              },
+                              {omnibox::kWebUIOmniboxPopup, {}},
+                              {omnibox::internal::kWebUIOmniboxAimPopup, {}}},
+        /*disabled_features*/ {kHideAimEntrypointOnUserInput});
   }
 
-  using PageActionInteractiveTestMixin::WaitForPageActionChipVisible;
-
-  auto WaitForPageActionChipVisible() {
-    MultiStep steps;
-    steps += WaitForPageActionChipVisible(kActionAiMode);
-    return steps;
-  }
-
-  MultiStep OpenTabWithPageUrlAndFocusOmnibox(bool is_ntp = false) {
+  InteractiveTestApi::MultiStep OpenTabWithPageUrlAndFocusOmnibox(
+      bool is_ntp = false) {
     const std::string url =
         is_ntp ? chrome::kChromeUINewTabPageURL : kTestPageUrl;
 
-    return Steps(InstrumentTab(kTabId), NavigateWebContents(kTabId, GURL(url)),
-                 WaitForWebContentsReady(kTabId),
-                 FocusElement(kOmniboxElementId));
+    return Steps(
+        InteractiveBrowserWindowTestApi::InstrumentTab(kTabId),
+        InteractiveBrowserWindowTestApi::NavigateWebContents(kTabId, GURL(url)),
+        InteractiveBrowserWindowTestApi::WaitForWebContentsReady(kTabId),
+        ui::test::InteractiveTestApi::FocusElement(kOmniboxElementId));
   }
 
-  MultiStep OpenOmniboxPopupByTypingASingleZero() {
-    return Steps(SendKeyPress(kOmniboxElementId, ui::VKEY_0));
+  ui::InteractionSequence::StepBuilder OpenOmniboxPopupByTypingASingleZero() {
+    return ui::test::InteractiveTestApi::SendKeyPress(kOmniboxElementId,
+                                                      ui::VKEY_0);
   }
 
-  MultiStep ClosePopupOrBlurOmnibox() {
-    return Steps(SendKeyPress(kOmniboxElementId, ui::VKEY_ESCAPE));
+  ui::InteractionSequence::StepBuilder ClosePopupOrBlurOmnibox() {
+    return ui::test::InteractiveTestApi::SendKeyPress(kOmniboxElementId,
+                                                      ui::VKEY_ESCAPE);
   }
 
-  MultiStep CheckChipVisible(bool visible) {
-    return visible ? Steps(WaitForPageActionChipVisible())
-                   : Steps(WaitForHide(kAiModePageActionIconElementId));
+  InteractiveTestApi::MultiStep CheckChipVisible(bool visible) {
+    return visible
+               ? PageActionInteractiveTestMixin::WaitForPageActionChipVisible(
+                     kActionAiMode)
+               : ui::test::InteractiveTestApi::Steps(
+                     ui::test::InteractiveTestApi::WaitForHide(
+                         kAiModePageActionIconElementId));
+  }
+
+  ui::InteractionSequence::StepBuilder WaitForAimPopup() {
+    return ui::test::InteractiveTestApi::WaitForShow(
+               OmniboxPopupPresenterBase::kRoundedResultsFrame, true)
+        .SetContext(ui::InteractionSequence::ContextMode::kAny);
   }
 
   base::test::ScopedFeatureList features_;
@@ -163,7 +175,7 @@ IN_PROC_BROWSER_TEST_F(AiModePageActionControllerInteractiveUiTest,
       OpenTabWithPageUrlAndFocusOmnibox(/*is_ntp=*/true),
       CheckChipVisible(/*visible=*/true),
       PressButton(kAiModePageActionIconElementId, InputType::kMouse),
-      WaitForWebContentsNavigation(kTabId));
+      WaitForAimPopup());
 
   histogram_tester.ExpectUniqueSample(
       "Omnibox.AimEntrypoint.Activated.ViaKeyboard", false, 1);
@@ -176,7 +188,7 @@ IN_PROC_BROWSER_TEST_F(AiModePageActionControllerInteractiveUiTest,
       OpenTabWithPageUrlAndFocusOmnibox(/*is_ntp=*/true),
       CheckChipVisible(/*visible=*/true),
       PressButton(kAiModePageActionIconElementId, InputType::kKeyboard),
-      WaitForWebContentsNavigation(kTabId));
+      WaitForAimPopup());
 
   histogram_tester.ExpectUniqueSample(
       "Omnibox.AimEntrypoint.Activated.ViaKeyboard", true, 1);
@@ -197,19 +209,21 @@ class AiModePageActionControllerHideEntryPointOnEditInteractiveUiTest
     : public AiModePageActionControllerInteractiveUiTest {
  protected:
   void InitializeFeatures() override {
-    std::vector<base::test::FeatureRefAndParams> enabled_features = {
-        {kHideAimEntrypointOnUserInput, {}},
-        {
-            features::kPageActionsMigration,
-            {
-                {
-                    features::kPageActionsMigrationAiMode.name,
-                    "true",
-                },
-            },
-        }};
-
-    features_.InitWithFeaturesAndParameters(enabled_features, {});
+    features_.InitWithFeaturesAndParameters(
+        /*enabled_features*/ {{kHideAimEntrypointOnUserInput, {}},
+                              {
+                                  features::kPageActionsMigration,
+                                  {
+                                      {
+                                          features::kPageActionsMigrationAiMode
+                                              .name,
+                                          "true",
+                                      },
+                                  },
+                              },
+                              {omnibox::kWebUIOmniboxPopup, {}},
+                              {omnibox::internal::kWebUIOmniboxAimPopup, {}}},
+        /*disabled_features*/ {});
   }
 };
 
