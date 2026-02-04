@@ -358,6 +358,7 @@ public class FuseboxMediator {
     }
 
     private void onAddCurrentTab(Tab tab) {
+        FuseboxMetrics.notifyAttachmentButtonUsed(FuseboxAttachmentButtonType.CURRENT_TAB);
         maybeActivateAiMode(AiModeActivationSource.IMPLICIT);
 
         Set<Integer> currentAttachedIds = mModelList.getAttachedTabIds();
