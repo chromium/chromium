@@ -20,18 +20,21 @@
 namespace extensions {
 
 // TODO(http://crbug.com/461806299):
-// - Ensure the entire compound button activates the radio button when clicked.
+// - 'Escape' key won't close the dialog.
 // - Make accessibility work correctly.
 
 RichRadioButton::RichRadioButton(const ui::ImageModel& image,
                                  const std::u16string& title,
                                  const std::u16string& description,
                                  int group_id,
-                                 base::RepeatingClosure on_selected_callback) {
-  views::RadioButton* radio_button = nullptr;
-
+                                 base::RepeatingClosure on_selected_callback)
+    : views::Button(base::BindRepeating(
+          [](RichRadioButton* view) { view->radio_button_->SetChecked(true); },
+          this)) {
+  SetFocusBehavior(FocusBehavior::NEVER);
   views::Builder<RichRadioButton>(this)
       .SetLayoutManager(std::make_unique<views::FlexLayout>())
+      .SetAccessibleName(title)
       .CustomConfigure(base::BindOnce([](RichRadioButton* view) {
         static_cast<views::FlexLayout*>(view->GetLayoutManager())
             ->SetOrientation(views::LayoutOrientation::kHorizontal)
@@ -61,7 +64,7 @@ RichRadioButton::RichRadioButton(const ui::ImageModel& image,
                           gfx::HorizontalAlignment::ALIGN_LEFT)),
           views::Builder<views::RadioButton>(
               std::make_unique<views::RadioButton>(std::u16string(), group_id))
-              .CopyAddressTo(&radio_button)
+              .CopyAddressTo(&radio_button_)
               .SetProperty(views::kFlexBehaviorKey,
                            views::FlexSpecification().WithAlignment(
                                views::LayoutAlignment::kEnd))
@@ -69,16 +72,20 @@ RichRadioButton::RichRadioButton(const ui::ImageModel& image,
                   title, ax::mojom::NameFrom::kAttributeExplicitlyEmpty))
       .BuildChildren();
 
-  subscription_ = radio_button->AddCheckedChangedCallback(base::BindRepeating(
+  subscription_ = radio_button_->AddCheckedChangedCallback(base::BindRepeating(
       [](views::RadioButton* button, base::RepeatingClosure closure) {
         if (button->GetChecked()) {
           closure.Run();
         }
       },
-      radio_button, std::move(on_selected_callback)));
+      radio_button_, std::move(on_selected_callback)));
 }
 
 RichRadioButton::~RichRadioButton() = default;
+
+bool RichRadioButton::GetCheckedForTesting() const {
+  return radio_button_->GetChecked();
+}
 
 BEGIN_METADATA(RichRadioButton)
 END_METADATA

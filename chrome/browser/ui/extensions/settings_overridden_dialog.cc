@@ -145,7 +145,7 @@ void BuildExplicitChoiceDialog(
               base::Unretained(dialog_delegate)),
           ui::DialogModel::Button::Params()
               .SetLabel(l10n_util::GetStringUTF16(IDS_SAVE))
-              .SetEnabled(true)
+              .SetEnabled(false)
               .SetId(kSettingsOverriddenDialogSaveButtonId))
       .SetCloseActionCallback(
           base::BindOnce(&SettingsOverriddenDialogDelegate::OnDialogClosed,

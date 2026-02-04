@@ -7,6 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/radio_button.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
@@ -24,12 +25,11 @@ namespace extensions {
 // Extensions Views-based dialog.
 //
 // TODO(http://crbug.com/461806299):
-// - Ensure that clicking anywhere on the compound button selects the option.
 // - Ensure that when initially shown, no radio button is selected or focused.
 
-class RichRadioButton : public views::View {
+class RichRadioButton : public views::Button {
  public:
-  METADATA_HEADER(RichRadioButton, views::View)
+  METADATA_HEADER(RichRadioButton, views::Button)
 
  public:
   RichRadioButton(const ui::ImageModel& image,
@@ -39,11 +39,15 @@ class RichRadioButton : public views::View {
                   base::RepeatingClosure on_selected_callback);
   ~RichRadioButton() override;
 
+  // Returns the checked state of the underlying RadioButton.
+  bool GetCheckedForTesting() const;
+
  private:
+  raw_ptr<views::RadioButton> radio_button_ = nullptr;
   base::CallbackListSubscription subscription_;
 };
 
-BEGIN_VIEW_BUILDER(, RichRadioButton, views::View)
+BEGIN_VIEW_BUILDER(, RichRadioButton, views::Button)
 END_VIEW_BUILDER
 
 }  // namespace extensions
