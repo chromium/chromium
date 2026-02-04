@@ -1725,6 +1725,7 @@ class TabListMediator implements TabListNotificationHandler {
         }
 
         if (tabs != null) {
+            assumeNonNull(filter); // Asserted above already.
             int currentTabId = TabModelUtils.getCurrentTabId(filter.getTabModel());
             for (int i = 0; i < tabs.size(); i++) {
                 Tab tab = tabs.get(i);

@@ -17,12 +17,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -43,7 +42,6 @@ public class TabBottomSheetManagerTest {
     private static final int REQUEST_ID = 0;
 
     private ChromeTabbedActivity mActivity;
-    private MonotonicObservableSupplier<Profile> mProfileSupplier;
     private WindowAndroid mWindowAndroid;
     private BottomSheetController mBottomSheetController;
     private TabBottomSheetManager mManager;
@@ -58,30 +56,12 @@ public class TabBottomSheetManagerTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mProfileSupplier =
-                            new MonotonicObservableSupplier<Profile>() {
-                                @Override
-                                public @Nullable Profile addObserver(
-                                        Callback<Profile> obs, int behavior) {
-                                    return null;
-                                }
-
-                                @Override
-                                public void removeObserver(Callback<Profile> obs) {}
-
-                                @Override
-                                public int getObserverCount() {
-                                    return 0;
-                                }
-
-                                @Override
-                                public Profile get() {
-                                    return mActivity
+                    NonNullObservableSupplier<Profile> profileSupplier =
+                            ObservableSuppliers.createNonNull(
+                                    mActivity
                                             .getProfileProviderSupplier()
                                             .get()
-                                            .getOriginalProfile();
-                                }
-                            };
+                                            .getOriginalProfile());
                     mWindowAndroid = mActivity.getWindowAndroid();
                     mBottomSheetController =
                             mActivity.getRootUiCoordinatorForTesting().getBottomSheetController();
@@ -89,7 +69,14 @@ public class TabBottomSheetManagerTest {
                     mToolbar = new TabBottomSheetSimpleToolbar(mActivity);
                     mFusebox = new FrameLayout(mActivity);
 
-                    createManager();
+                    mManager =
+                            new TabBottomSheetManager(
+                                    mActivity,
+                                    profileSupplier,
+                                    mWindowAndroid,
+                                    mActivity.getLifecycleDispatcher(),
+                                    mActivity.getSnackbarManager(),
+                                    mBottomSheetController);
                 });
     }
 
@@ -98,17 +85,6 @@ public class TabBottomSheetManagerTest {
         if (mManager != null) {
             ThreadUtils.runOnUiThreadBlocking(() -> mManager.destroy());
         }
-    }
-
-    private void createManager() {
-        mManager =
-                new TabBottomSheetManager(
-                        mActivity,
-                        mProfileSupplier,
-                        mWindowAndroid,
-                        mActivity.getLifecycleDispatcher(),
-                        mActivity.getSnackbarManager(),
-                        mBottomSheetController);
     }
 
     @Test

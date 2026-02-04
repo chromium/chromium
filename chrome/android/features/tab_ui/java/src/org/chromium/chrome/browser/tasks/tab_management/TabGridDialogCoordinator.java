@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.PAGE_KEY_LISTENER;
 
@@ -403,7 +404,8 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                     public void onDismiss() {
                         assumeNonNull(mColorPickerCoordinator);
                         mMediator.setSelectedTabGroupColor(
-                                mColorPickerCoordinator.getSelectedColorSupplier().get());
+                                assertNonNull(
+                                        mColorPickerCoordinator.getSelectedColorSupplier().get()));
 
                         // Only require a refresh of the tab list if accessed from the GTS,
                         // skip if this is reached from the tab strip as the color will

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.read_later;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 
 import androidx.annotation.Nullable;
@@ -83,13 +85,14 @@ public class ReadingListBackPressHandler implements BackPressHandler, Destroyabl
     private void setupLastUsedState(BookmarkModel bookmarkModel) {
         bookmarkModel.finishLoadingBookmarkModel(
                 () -> {
-                    Profile profile = mActivityTabProvider.get().getProfile();
+                    Profile profile = assumeNonNull(mActivityTabProvider.get()).getProfile();
                     // Note: there's a slight (but unlikely) chance the the user changed the last
                     // used url prior
                     // to tracking it here.
                     BookmarkUiState lastUsedState =
                             BookmarkUiState.createStateFromUrl(
-                                    mBookmarkManagerOpenerSupplier.get().getLastUsedUrl(profile),
+                                    assumeNonNull(mBookmarkManagerOpenerSupplier.get())
+                                            .getLastUsedUrl(profile),
                                     bookmarkModel);
                     mLastUsedParent = lastUsedState.getFolder();
                 });
@@ -106,8 +109,7 @@ public class ReadingListBackPressHandler implements BackPressHandler, Destroyabl
         if (mLastUsedParent == null) {
             mLastUsedParent = new BookmarkId(/* id= */ 0, BookmarkType.READING_LIST);
         }
-        mBookmarkManagerOpenerSupplier
-                .get()
+        assumeNonNull(mBookmarkManagerOpenerSupplier.get())
                 .showBookmarkManager(mActivity, tab, tab.getProfile(), mLastUsedParent);
 
         WebContents webContents = tab.getWebContents();

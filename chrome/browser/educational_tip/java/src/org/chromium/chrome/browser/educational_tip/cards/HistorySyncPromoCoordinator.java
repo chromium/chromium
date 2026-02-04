@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.educational_tip.cards;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import androidx.annotation.DrawableRes;
 
 import org.chromium.base.CallbackController;
@@ -62,7 +64,8 @@ public class HistorySyncPromoCoordinator
                             onModuleClickedCallback.run();
                         });
 
-        Profile profile = mActionDelegate.getProfileSupplier().get().getOriginalProfile();
+        Profile profile =
+                assumeNonNull(mActionDelegate.getProfileSupplier().get()).getOriginalProfile();
         assert profile != null;
 
         mIdentityManager = IdentityServicesProvider.get().getIdentityManager(profile);

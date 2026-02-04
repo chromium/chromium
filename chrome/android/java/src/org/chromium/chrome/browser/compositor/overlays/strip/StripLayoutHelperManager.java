@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.BUTTON_TOUCH_TARGET_SIZE_DP;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.MIN_TAB_WIDTH_DP;
@@ -887,7 +888,7 @@ public class StripLayoutHelperManager
 
         mTabStripTreeProvider.pushAndUpdateStrip(
                 this,
-                mLayerTitleCacheSupplier.get(),
+                assertNonNull(mLayerTitleCacheSupplier.get()),
                 mResourceManager,
                 getActiveStripLayoutHelper().getStripLayoutTabsToRender(),
                 getActiveStripLayoutHelper().getStripLayoutGroupTitlesToRender(),
@@ -1663,9 +1664,10 @@ public class StripLayoutHelperManager
     }
 
     private void updateTitleForTab(Tab tab) {
-        if (mLayerTitleCacheSupplier.get() == null) return;
+        LayerTitleCache layerCache = mLayerTitleCacheSupplier.get();
+        if (layerCache == null) return;
 
-        String title = mLayerTitleCacheSupplier.get().getUpdatedTitle(tab, mDefaultTitle);
+        String title = layerCache.getUpdatedTitle(tab, mDefaultTitle);
         getStripLayoutHelper(tab.isIncognito()).tabTitleChanged(tab.getId(), title);
         mUpdateHost.requestUpdate();
     }

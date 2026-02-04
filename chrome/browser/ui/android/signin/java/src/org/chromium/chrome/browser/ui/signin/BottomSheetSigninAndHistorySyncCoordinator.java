@@ -450,8 +450,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
             mHistorySyncCoordinator = null;
         }
         if (!mIsLegacyFlow && mDialogModel != null) {
-            mModalDialogManagerSupplier
-                    .get()
+            assumeNonNull(mModalDialogManagerSupplier.get())
                     .dismissDialog(mDialogModel, DialogDismissalCause.ACTION_ON_DIALOG_COMPLETED);
         }
 
@@ -659,8 +658,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
         assumeNonNull(mDialogModel);
         mDialogModel.set(ModalDialogProperties.CUSTOM_VIEW, view);
 
-        mModalDialogManagerSupplier
-                .get()
+        assumeNonNull(mModalDialogManagerSupplier.get())
                 .showDialog(
                         mDialogModel,
                         ModalDialogManager.ModalDialogType.APP,

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.history;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Intent;
@@ -74,7 +75,7 @@ public class HistoryActivity extends SnackbarActivity {
                         this,
                         true,
                         getSnackbarManager(),
-                        () -> mBottomSheetController,
+                        () -> assertNonNull(mBottomSheetController),
                         getModalDialogManagerSupplier(),
                         getActivityResultTracker(),
                         /* Supplier<@Nullable Tab>= */ null,

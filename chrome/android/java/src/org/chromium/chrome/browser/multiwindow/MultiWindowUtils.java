@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.multiwindow;
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION.SDK_INT_FULL;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.tabwindow.TabWindowManager.INVALID_WINDOW_ID;
 
 import android.app.Activity;
@@ -329,7 +330,8 @@ public class MultiWindowUtils implements ActivityStateListener {
     public boolean hasAtMostOneTabGroupWithHomepageEnabled(
             TabModelSelector tabModelSelector, TabGroupModelFilter tabGroupModelFilter) {
         int numOfTabs = tabModelSelector.getTotalTabCount();
-        Tab firstTab = tabModelSelector.getCurrentTabModelSupplier().get().getTabAt(0);
+        Tab firstTab =
+                assumeNonNull(tabModelSelector.getCurrentTabModelSupplier().get()).getTabAt(0);
         if (firstTab == null) return true;
         int numOfTabsInGroup = tabGroupModelFilter.getTabCountForGroup(firstTab.getTabGroupId());
 

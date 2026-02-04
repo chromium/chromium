@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.compositor.layouts;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
@@ -658,7 +659,7 @@ public class LayoutManagerImpl
                         mFrameRequestSupplier,
                         mRequestFrameRunnable,
                         selector,
-                        mTabContentManagerSupplier.get(),
+                        assertNonNull(mTabContentManagerSupplier.get()),
                         mBrowserControlsStateProvider,
                         mTopUiThemeColorProvider,
                         getLayoutNeedOffsetTagSupplier());

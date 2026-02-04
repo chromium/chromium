@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.compositor.layouts;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
@@ -203,7 +204,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl implements Accessibil
                 bottomControlsOffsetSupplier);
 
         // Initialize Layouts.
-        TabContentManager content = mTabContentManagerSupplier.get();
+        TabContentManager content = assertNonNull(mTabContentManagerSupplier.get());
         if (mToolbarSwipeLayout != null) {
             mToolbarSwipeLayout.setTabModelSelector(selector);
             mToolbarSwipeLayout.setTabContentManager(content);

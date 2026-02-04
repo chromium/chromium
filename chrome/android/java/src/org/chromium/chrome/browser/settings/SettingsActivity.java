@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.settings;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.annotation.SuppressLint;
@@ -206,7 +207,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                         mSnackbarManagerSupplier,
                         mBottomSheetControllerSupplier,
                         getModalDialogManagerSupplier(),
-                        () -> mSearchCoordinator),
+                        mSearchCoordinator),
                 /* recursive= */ true);
         fragmentManager.registerFragmentLifecycleCallbacks(
                 new WideDisplayPaddingApplier(), /* recursive= */ true);
@@ -243,10 +244,9 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                                 @NonNull Fragment fragment,
                                 @NonNull View v,
                                 @Nullable Bundle savedInstanceState) {
-                            if (!(fragment
-                                    instanceof PreferenceFragmentCompat preferenceFragmentCompat))
-                                return;
-                            postUpdateContainmentOnLayout(preferenceFragmentCompat);
+                            if (fragment instanceof PreferenceFragmentCompat preferenceFragment) {
+                                postUpdateContainmentOnLayout(preferenceFragment);
+                            }
                         }
 
                         @Override
@@ -256,11 +256,9 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                                 mItemDecorations.remove(preferenceFragmentCompat);
                                 ViewTreeObserver.OnGlobalLayoutListener listener =
                                         mGlobalLayoutListeners.remove(preferenceFragmentCompat);
-                                if (listener != null
-                                        && preferenceFragmentCompat.getView() != null) {
-                                    preferenceFragmentCompat
-                                            .getView()
-                                            .getViewTreeObserver()
+                                View view = preferenceFragmentCompat.getView();
+                                if (listener != null && view != null) {
+                                    view.getViewTreeObserver()
                                             .removeOnGlobalLayoutListener(listener);
                                 }
                             }
@@ -763,7 +761,9 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             if (mMissingDeviceLockLauncher == null) {
                 mMissingDeviceLockLauncher =
                         new MissingDeviceLockLauncher(
-                                this, mProfile, getModalDialogManagerSupplier().get());
+                                this,
+                                mProfile,
+                                assertNonNull(getModalDialogManagerSupplier().get()));
             }
             mMissingDeviceLockLauncher.checkPrivateDataIsProtectedByDeviceLock();
         }

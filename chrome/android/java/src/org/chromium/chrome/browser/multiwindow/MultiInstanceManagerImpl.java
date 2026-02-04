@@ -434,7 +434,7 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
 
         killOtherTask();
         RecordUserAction.record("Android.MergeState.Live");
-        mTabModelOrchestratorSupplier.get().mergeState();
+        assumeNonNull(mTabModelOrchestratorSupplier.get()).mergeState();
     }
 
     @SuppressLint("NewApi")

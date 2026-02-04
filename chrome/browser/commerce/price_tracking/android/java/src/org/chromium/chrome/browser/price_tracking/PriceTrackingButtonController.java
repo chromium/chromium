@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.price_tracking;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.view.View;
@@ -137,9 +140,10 @@ public class PriceTrackingButtonController extends BaseButtonDataProvider {
     @Override
     public void onClick(View view) {
         if (mIsCurrentTabPriceTracked) {
-            Profile profile = mProfileSupplier.get();
+            Profile profile = assertNonNull(mProfileSupplier.get());
             PowerBookmarkUtils.setPriceTrackingEnabledWithSnackbars(
-                    mBookmarkModelSupplier.get().getUserBookmarkIdForTab(mActiveTabSupplier.get()),
+                    assumeNonNull(mBookmarkModelSupplier.get())
+                            .getUserBookmarkIdForTab(assertNonNull(mActiveTabSupplier.get())),
                     /* enabled= */ false,
                     mSnackbarManager,
                     view.getResources(),

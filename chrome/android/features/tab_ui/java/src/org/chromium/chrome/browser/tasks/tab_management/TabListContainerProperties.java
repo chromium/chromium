@@ -11,6 +11,7 @@ import androidx.core.util.Pair;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -84,7 +85,7 @@ class TabListContainerProperties {
     public static final PropertyModel.WritableBooleanPropertyKey IS_NON_ZERO_Y_OFFSET =
             new PropertyModel.WritableBooleanPropertyKey();
 
-    public static final WritableObjectPropertyKey<MonotonicObservableSupplier<Boolean>>
+    public static final WritableObjectPropertyKey<NonNullObservableSupplier<Boolean>>
             IS_PINNED_TAB_STRIP_ANIMATING_SUPPLIER = new WritableObjectPropertyKey<>();
 
     /** Keys for {@link TabSwitcherPaneCoordinator}. */

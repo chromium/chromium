@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.content.Context;
 
 import androidx.appcompat.content.res.AppCompatResources;
@@ -136,7 +138,9 @@ public class AdaptiveToolbarUiCoordinator {
                         mContext,
                         mActivityTabProvider,
                         tabModelSelectorSupplier,
-                        () -> ShoppingServiceFactory.getForProfile(profileSupplier.get()),
+                        () ->
+                                ShoppingServiceFactory.getForProfile(
+                                        assertNonNull(profileSupplier.get())),
                         mModalDialogManagerSupplier.get(),
                         bottomSheetController,
                         snackbarManagerSupplier.get(),
@@ -220,7 +224,9 @@ public class AdaptiveToolbarUiCoordinator {
                         profileSupplier,
                         mActivityTabProvider.asObservable(),
                         adaptiveToolbarButtonController,
-                        () -> ShoppingServiceFactory.getForProfile(profileSupplier.get()),
+                        () ->
+                                ShoppingServiceFactory.getForProfile(
+                                        assertNonNull(profileSupplier.get())),
                         bookmarkModelSupplier);
         mAdaptiveToolbarButtonController = adaptiveToolbarButtonController;
         toolbarBehavior.registerPerSurfaceButtons(adaptiveToolbarButtonController, trackerSupplier);
@@ -348,7 +354,8 @@ public class AdaptiveToolbarUiCoordinator {
         // This flag is for discounts and commerce bottom sheet as a feature together.
         if (mCommerceBottomSheetContentCoordinator == null
                 && CommerceFeatureUtils.isDiscountInfoApiEnabled(
-                        ShoppingServiceFactory.getForProfile(mProfileSupplier.get()))) {
+                        ShoppingServiceFactory.getForProfile(
+                                assertNonNull(mProfileSupplier.get())))) {
 
             List<Supplier<CommerceBottomSheetContentProvider>> contentProviderSuppliers =
                     new ArrayList<>();

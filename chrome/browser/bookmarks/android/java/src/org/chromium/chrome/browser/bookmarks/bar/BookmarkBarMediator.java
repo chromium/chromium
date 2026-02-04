@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.bookmarks.bar;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.res.Resources;
@@ -293,8 +296,7 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
         runIfStillRelevantAfterFinishLoadingBookmarkModel(
                 (profileAfterLoading, modelAfterLoading) -> {
                     BookmarkBarUtils.recordClick(BookmarkBarClickType.ALL_BOOKMARKS);
-                    mBookmarkManagerOpenerSupplier
-                            .get()
+                    assumeNonNull(mBookmarkManagerOpenerSupplier.get())
                             .showBookmarkManager(
                                     mActivity,
                                     mCurrentTab,
@@ -305,7 +307,7 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
 
     // TODO(crbug.com/394614166): Handle shift-click to open in new window.
     private void onBookmarkItemClick(BookmarkItem item, int metaState) {
-        final Profile profile = mProfileSupplier.get();
+        final Profile profile = assumeNonNull(mProfileSupplier.get());
 
         if (item.isFolder()) {
             // Get the view of the folder that was clicked.
@@ -425,7 +427,7 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
         model.finishLoadingBookmarkModel(
                 () -> {
                     // Ensure the active profile hasn't changed while loading the model.
-                    final var profileAfterLoading = mProfileSupplier.get();
+                    final var profileAfterLoading = assertNonNull(mProfileSupplier.get());
                     if (!Objects.equals(profile, profileAfterLoading)) return;
 
                     // Ensure the active model hasn't changed while loading the model.
@@ -633,7 +635,8 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
 
     private int getIndexInBookmarksBar(BookmarkItem item) {
         // Get the main data model for all bookmarks for the user.
-        BookmarkModel bookmarkModel = BookmarkModel.getForProfile(mProfileSupplier.get());
+        BookmarkModel bookmarkModel =
+                BookmarkModel.getForProfile(assertNonNull(mProfileSupplier.get()));
         if (bookmarkModel == null) return INVALID_INDEX;
 
         return getBookmarkIdsForModel(bookmarkModel).indexOf(item.getId());
@@ -686,7 +689,8 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
             BookmarkItem bookmarkItem, ModelList children) {
 
         if (sFolderIconBitmap == null) {
-            BookmarkModel bookmarkModel = BookmarkModel.getForProfile(mProfileSupplier.get());
+            BookmarkModel bookmarkModel =
+                    BookmarkModel.getForProfile(assertNonNull(mProfileSupplier.get()));
             Drawable folderIcon =
                     BookmarkViewUtils.getFolderIcon(
                             mActivity,
@@ -746,16 +750,18 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
                         boolean isCtrlPressed = (event.getMetaState() & KeyEvent.META_CTRL_ON) != 0;
 
                         BookmarkBarUtils.recordClick(BookmarkBarClickType.POP_UP_URL);
+                        boolean isOffTheRecord =
+                                assumeNonNull(mProfileSupplier.get()).isOffTheRecord();
                         if (isCtrlPressed) {
                             // Open in new tab.
                             mBookmarkOpener.openBookmarksInNewTabs(
                                     List.of(bookmarkItem.getId()),
-                                    mProfileSupplier.get().isOffTheRecord(),
+                                    isOffTheRecord,
                                     TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND);
                         } else {
                             // Default behavior (open in current tab).
                             mBookmarkOpener.openBookmarkInCurrentTab(
-                                    bookmarkItem.getId(), mProfileSupplier.get().isOffTheRecord());
+                                    bookmarkItem.getId(), isOffTheRecord);
                         }
 
                         // Dismiss the popup after any click.
@@ -790,9 +796,11 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
                                 (v) -> {
                                     // Open url.
                                     BookmarkBarUtils.recordClick(BookmarkBarClickType.POP_UP_URL);
+                                    boolean isOffTheRecord =
+                                            assumeNonNull(mProfileSupplier.get()).isOffTheRecord();
+
                                     mBookmarkOpener.openBookmarkInCurrentTab(
-                                            bookmarkItem.getId(),
-                                            mProfileSupplier.get().isOffTheRecord());
+                                            bookmarkItem.getId(), isOffTheRecord);
                                 })
                         .build();
         if (mImageFetcher != null) {
@@ -933,14 +941,15 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
                 // When not a folder, this must be a URL, which will be opened in either the current
                 // tab or a new tab when Ctrl is also pressed.
                 BookmarkBarUtils.recordClick(BookmarkBarClickType.POP_UP_URL);
+                boolean isOffTheRecord = assumeNonNull(mProfileSupplier.get()).isOffTheRecord();
+
                 if (event.isCtrlPressed()) {
                     mBookmarkOpener.openBookmarksInNewTabs(
                             List.of(bookmarkItem.getId()),
-                            mProfileSupplier.get().isOffTheRecord(),
+                            isOffTheRecord,
                             TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND);
                 } else {
-                    mBookmarkOpener.openBookmarkInCurrentTab(
-                            bookmarkItem.getId(), mProfileSupplier.get().isOffTheRecord());
+                    mBookmarkOpener.openBookmarkInCurrentTab(bookmarkItem.getId(), isOffTheRecord);
                 }
 
                 // Dismiss only when opening a bookmark (webpage) and not a folder, and always

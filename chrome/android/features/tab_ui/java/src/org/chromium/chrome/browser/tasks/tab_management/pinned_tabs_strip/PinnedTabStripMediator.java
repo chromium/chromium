@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management.pinned_tabs_strip;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.ALL_KEYS_TAB_GRID;
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.FAVICON_FETCHER;
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.GRID_CARD_SIZE;
@@ -441,7 +442,8 @@ public class PinnedTabStripMediator {
         }
         if (newFilter != null) {
             newFilter.addObserver(mTabModelObserver);
-            Profile profile = mTabGroupModelFilterSupplier.get().getTabModel().getProfile();
+            Profile profile =
+                    assumeNonNull(mTabGroupModelFilterSupplier.get()).getTabModel().getProfile();
             if (profile == null) return;
             boolean isIncognito = newFilter.getTabModel().isIncognitoBranded();
 

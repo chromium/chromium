@@ -151,7 +151,7 @@ public class ActivityRecreationController {
 
         boolean isTabSwitcherShown = outPersistentState.getBoolean(IS_TAB_SWITCHER_SHOWN, false);
         if (isTabSwitcherShown) {
-            restoreTabSwitcherState(true, mLayoutManagerSupplier.get());
+            restoreTabSwitcherState(true, assertNonNull(mLayoutManagerSupplier.get()));
             if (ChromeFeatureList.sPersistAcrossRebootsDebugLogs.isEnabled()) {
                 Log.i(TAG_PERSIST_ACROSS_REBOOTS, "Restored persistent tab switcher state");
             }

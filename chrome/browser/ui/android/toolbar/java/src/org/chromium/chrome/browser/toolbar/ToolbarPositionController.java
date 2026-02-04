@@ -112,12 +112,12 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
     private static @Nullable Boolean sToolbarShouldShowOnTop;
 
     private final BrowserControlsSizer mBrowserControlsSizer;
-    private final MonotonicObservableSupplier<Boolean> mIsNtpWithFakeboxShowingSupplier;
-    private final MonotonicObservableSupplier<Boolean> mIsIncognitoNtpShowingSupplier;
-    private final MonotonicObservableSupplier<Boolean> mIsTabSwitcherFinishedShowingSupplier;
+    private final NonNullObservableSupplier<Boolean> mIsNtpWithFakeboxShowingSupplier;
+    private final NonNullObservableSupplier<Boolean> mIsIncognitoNtpShowingSupplier;
+    private final NonNullObservableSupplier<Boolean> mIsTabSwitcherFinishedShowingSupplier;
     private final NonNullObservableSupplier<Boolean> mIsOmniboxFocusedSupplier;
-    private final MonotonicObservableSupplier<Boolean> mIsFormFieldFocusedSupplier;
-    private final MonotonicObservableSupplier<Boolean> mIsFindInPageShowingSupplier;
+    private final NonNullObservableSupplier<Boolean> mIsFormFieldFocusedSupplier;
+    private final NonNullObservableSupplier<Boolean> mIsFindInPageShowingSupplier;
     private final ControlContainer mControlContainer;
     private final ToolbarLayout mToolbarLayout;
     private final BottomControlsStacker mBottomControlsStacker;
@@ -188,12 +188,12 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
     public ToolbarPositionController(
             BrowserControlsSizer browserControlsSizer,
             SharedPreferences sharedPreferences,
-            MonotonicObservableSupplier<Boolean> isNtpWithFakeboxShowingSupplier,
-            MonotonicObservableSupplier<Boolean> isIncognitoNtpShowingSupplier,
-            MonotonicObservableSupplier<Boolean> isTabSwitcherFinishedShowingSupplier,
+            NonNullObservableSupplier<Boolean> isNtpWithFakeboxShowingSupplier,
+            NonNullObservableSupplier<Boolean> isIncognitoNtpShowingSupplier,
+            NonNullObservableSupplier<Boolean> isTabSwitcherFinishedShowingSupplier,
             NonNullObservableSupplier<Boolean> isOmniboxFocusedSupplier,
-            MonotonicObservableSupplier<Boolean> isFormFieldFocusedSupplier,
-            MonotonicObservableSupplier<Boolean> isFindInPageShowingSupplier,
+            NonNullObservableSupplier<Boolean> isFormFieldFocusedSupplier,
+            NonNullObservableSupplier<Boolean> isFindInPageShowingSupplier,
             NonNullObservableSupplier<Integer> keyboardAccessoryHeightSupplier,
             KeyboardVisibilityDelegate keyboardVisibilityDelegate,
             ControlContainer controlContainer,

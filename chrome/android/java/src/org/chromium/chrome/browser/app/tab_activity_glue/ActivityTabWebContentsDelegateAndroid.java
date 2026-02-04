@@ -677,7 +677,7 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
             return;
         }
 
-        ModalDialogManager modalDialogManager = mModalDialogManagerSupplier.get();
+        ModalDialogManager modalDialogManager = assertNonNull(mModalDialogManagerSupplier.get());
         ModalDialogProperties.Controller dialogController =
                 new SimpleModalDialogController(
                         modalDialogManager,

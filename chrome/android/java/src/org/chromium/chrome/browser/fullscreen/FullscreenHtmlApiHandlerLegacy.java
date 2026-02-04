@@ -17,7 +17,7 @@ import android.view.WindowManager;
 
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
-import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
@@ -43,7 +43,7 @@ public class FullscreenHtmlApiHandlerLegacy extends FullscreenHtmlApiHandlerBase
      */
     public FullscreenHtmlApiHandlerLegacy(
             Activity activity,
-            MonotonicObservableSupplier<Boolean> areControlsHidden,
+            NonNullObservableSupplier<Boolean> areControlsHidden,
             boolean exitFullscreenOnStop,
             MultiWindowModeStateDispatcher multiWindowDispatcher) {
         super(activity, areControlsHidden, exitFullscreenOnStop, multiWindowDispatcher);

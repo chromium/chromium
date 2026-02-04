@@ -121,7 +121,7 @@ public class TabGroupsPane extends PaneBase {
                             mContext,
                             assertNonNull(mTabGroupModelFilterSupplier.get()),
                             assertNonNull(mProfileProviderSupplier.get()),
-                            mPaneManagerSupplier.get(),
+                            assertNonNull(mPaneManagerSupplier.get()),
                             assertNonNull(mTabGroupUiActionHandlerSupplier.get()),
                             assertNonNull(mModalDialogManagerSupplier.get()),
                             mHairlineVisibilitySupplier::set,

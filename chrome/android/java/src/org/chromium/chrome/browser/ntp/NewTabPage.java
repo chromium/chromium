@@ -1479,7 +1479,7 @@ public class NewTabPage
                         this::onSingleTabCardClicked,
                         /* seeMoreLinkClickedCallback= */ null,
                         () -> mSnapshotSingleTabCardChanged = true,
-                        mTabContentManagerSupplier.get()
+                        assertNonNull(mTabContentManagerSupplier.get())
                         /* tabContentManager= */ ,
                         mIsTablet ? mFeedSurfaceProvider.getUiConfig() : null,
                         /* moduleDelegate= */ null);

@@ -45,7 +45,7 @@ public class OmniboxActionDelegateImpl implements OmniboxActionDelegate {
     private final Runnable mOpenPasswordSettingsCb;
     private final Supplier<@Nullable Tab> mTabSupplier;
     private final @Nullable Runnable mOpenQuickDeleteCb;
-    private final Supplier<TabWindowManager> mTabWindowManagerSupplier;
+    private final Supplier<@Nullable TabWindowManager> mTabWindowManagerSupplier;
     private final BringTabToFrontCallback mBringTabToFrontCallback;
 
     public OmniboxActionDelegateImpl(
@@ -55,7 +55,7 @@ public class OmniboxActionDelegateImpl implements OmniboxActionDelegate {
             Runnable openIncognitoTabCb,
             Runnable openPasswordSettingsCb,
             @Nullable Runnable openQuickDeleteCb,
-            Supplier<TabWindowManager> tabWindowManagerSupplier,
+            Supplier<@Nullable TabWindowManager> tabWindowManagerSupplier,
             BringTabToFrontCallback bringTabToFrontCallback) {
         mContext = context;
         mTabSupplier = tabSupplier;

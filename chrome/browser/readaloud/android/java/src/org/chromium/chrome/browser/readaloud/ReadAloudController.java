@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.readaloud;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.PAUSED;
 import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.PLAYING;
@@ -912,7 +913,7 @@ public class ReadAloudController
      * user opted into "Make searches and browsing better".
      */
     public boolean isAvailable() {
-        return ReadAloudFeatures.isAllowed(mProfileSupplier.get());
+        return ReadAloudFeatures.isAllowed(assertNonNull(mProfileSupplier.get()));
     }
 
     private boolean isTabUnavailableForReadAloud(@Nullable Tab tab) {
@@ -1115,7 +1116,7 @@ public class ReadAloudController
             ReadAloudPlaybackHooksFactory factory =
                     ServiceLoaderUtil.maybeCreate(ReadAloudPlaybackHooksFactory.class);
             if (factory != null) {
-                mPlaybackHooks = factory.getForProfile(mProfileSupplier.get());
+                mPlaybackHooks = factory.getForProfile(assertNonNull(mProfileSupplier.get()));
             } else {
                 // If no downstream factory exists, use an empty instantiation
                 // of the interface using defaults.
@@ -1869,7 +1870,7 @@ public class ReadAloudController
 
     @Override
     public PrefService getPrefService() {
-        return UserPrefs.get(mProfileSupplier.get());
+        return UserPrefs.get(assertNonNull(mProfileSupplier.get()));
     }
 
     @Override

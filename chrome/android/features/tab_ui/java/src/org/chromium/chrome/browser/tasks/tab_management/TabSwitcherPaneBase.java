@@ -96,9 +96,9 @@ public abstract class TabSwitcherPaneBase extends PaneBase
     protected final UserEducationHelper mUserEducationHelper;
     protected final MonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
     protected final MonotonicObservableSupplier<CompositorViewHolder> mCompositorViewHolderSupplier;
-    private final SettableNonNullObservableSupplier<Boolean> mIsVisibleSupplier =
+    protected final SettableNonNullObservableSupplier<Boolean> mIsVisibleSupplier =
             ObservableSuppliers.createNonNull(false);
-    private final SettableNonNullObservableSupplier<Boolean> mIsAnimatingSupplier =
+    protected final SettableNonNullObservableSupplier<Boolean> mIsAnimatingSupplier =
             ObservableSuppliers.createNonNull(false);
     private final SettableNullableObservableSupplier<View> mOverlayViewSupplier =
             ObservableSuppliers.createNullable();
@@ -111,7 +111,7 @@ public abstract class TabSwitcherPaneBase extends PaneBase
     private final TabSwitcherCustomViewManager mTabSwitcherCustomViewManager =
             new TabSwitcherCustomViewManager();
 
-    private final SettableNullableObservableSupplier<TabSwitcherPaneCoordinator>
+    protected final SettableNullableObservableSupplier<TabSwitcherPaneCoordinator>
             mTabSwitcherPaneCoordinatorSupplier = ObservableSuppliers.createNullable();
 
     private final NonNullObservableSupplier<Boolean> mHandleBackPressChangedSupplier =
@@ -598,23 +598,6 @@ public abstract class TabSwitcherPaneBase extends PaneBase
         return mFactory.getTabListMode();
     }
 
-    /**
-     * Returns a supplier for whether the pane is visible onscreen. Note this is not the same as
-     * being focused.
-     */
-    protected MonotonicObservableSupplier<Boolean> getIsVisibleSupplier() {
-        return mIsVisibleSupplier;
-    }
-
-    /**
-     * Holds whether there's an ongoing animation with this Pane and outside the hub. Care must be
-     * taken when reading this supplier as animations do not start synchronously with focus changes,
-     * and a Pane may be shown before the enter animation actually starts.
-     */
-    protected MonotonicObservableSupplier<Boolean> getIsAnimatingSupplier() {
-        return mIsAnimatingSupplier;
-    }
-
     /** Returns whether the pane is focused. */
     protected boolean isFocused() {
         return mPaneHubController != null;
@@ -627,15 +610,8 @@ public abstract class TabSwitcherPaneBase extends PaneBase
 
     /** Returns the current {@link TabSwitcherPaneCoordinator} or null if one doesn't exist. */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    @Nullable
-    TabSwitcherPaneCoordinator getTabSwitcherPaneCoordinator() {
+    @Nullable TabSwitcherPaneCoordinator getTabSwitcherPaneCoordinator() {
         return mTabSwitcherPaneCoordinatorSupplier.get();
-    }
-
-    /** Returns an observable supplier that hold the current coordinator. */
-    protected NullableObservableSupplier<TabSwitcherPaneCoordinator>
-            getTabSwitcherPaneCoordinatorSupplier() {
-        return mTabSwitcherPaneCoordinatorSupplier;
     }
 
     /** Creates a {@link TabSwitcherCoordinator}. */

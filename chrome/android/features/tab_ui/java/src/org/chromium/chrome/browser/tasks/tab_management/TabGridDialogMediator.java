@@ -28,7 +28,7 @@ import org.chromium.base.Token;
 import org.chromium.base.ValueChangedCallback;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.LazyOneshotSupplier;
-import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -168,7 +168,7 @@ public class TabGridDialogMediator
         boolean isVisible();
 
         /** A supplier that returns if the dialog is currently showing or animating. */
-        MonotonicObservableSupplier<Boolean> getShowingOrAnimationSupplier();
+        NonNullObservableSupplier<Boolean> getShowingOrAnimationSupplier();
 
         /**
          * Adds a message card to the UI.

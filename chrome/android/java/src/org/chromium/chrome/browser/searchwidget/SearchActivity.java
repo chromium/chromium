@@ -874,7 +874,8 @@ public class SearchActivity extends AsyncInitializationActivity
 
     @VisibleForTesting
     void recordNavigationTargetType(GURL url) {
-        var templateSvc = TemplateUrlServiceFactory.getForProfile(mProfileSupplier.get());
+        var templateSvc =
+                TemplateUrlServiceFactory.getForProfile(assertNonNull(mProfileSupplier.get()));
         boolean isSearch =
                 templateSvc != null
                         && templateSvc.isSearchResultsPageFromDefaultSearchProvider(url);

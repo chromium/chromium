@@ -11,7 +11,7 @@ import android.view.View;
 
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.lifetime.Destroyable;
-import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -53,7 +53,7 @@ public class TabBottomSheetManager implements Destroyable {
      */
     public TabBottomSheetManager(
             Activity activity,
-            MonotonicObservableSupplier<Profile> profileSupplier,
+            NonNullObservableSupplier<Profile> profileSupplier,
             WindowAndroid windowAndroid,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             SnackbarManager snackbarManager,

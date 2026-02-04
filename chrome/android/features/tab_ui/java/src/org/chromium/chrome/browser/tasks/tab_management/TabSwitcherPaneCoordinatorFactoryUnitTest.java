@@ -9,8 +9,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -83,7 +81,6 @@ import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -340,27 +337,10 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
     }
 
     @Test
-    public void testCreateTabGroupModelFilterSupplier_AlreadyCreated() {
+    public void testCreateTabGroupModelFilterSupplier() {
         when(mTabModelSelector.getModels()).thenReturn(List.of(mTabModel));
 
         var supplier = mFactory.createTabGroupModelFilterSupplier(false);
-        verify(mTabModelSelector, never()).addObserver(any());
-        assertEquals(mTabGroupModelFilter, supplier.get());
-    }
-
-    @Test
-    public void testCreateTabGroupModelFilterSupplier_WaitForChange() {
-        when(mTabModelSelector.getModels()).thenReturn(Collections.emptyList());
-
-        var supplier = mFactory.createTabGroupModelFilterSupplier(false);
-        verify(mTabModelSelector).addObserver(mTabModelSelectorObserverCaptor.capture());
-        assertNull(supplier.get());
-
-        TabModelSelectorObserver observer = mTabModelSelectorObserverCaptor.getValue();
-
-        when(mTabModelSelector.getModels()).thenReturn(List.of(mTabModel));
-        observer.onChange();
-        verify(mTabModelSelector).removeObserver(observer);
         assertEquals(mTabGroupModelFilter, supplier.get());
     }
 }

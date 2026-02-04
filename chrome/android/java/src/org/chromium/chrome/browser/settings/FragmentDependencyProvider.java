@@ -70,7 +70,7 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
     private final OneshotSupplier<SnackbarManager> mSnackbarManagerSupplier;
     private final OneshotSupplier<BottomSheetController> mBottomSheetControllerSupplier;
     private final MonotonicObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
-    private final Supplier<SettingsSearchCoordinator> mSearchCoordinator;
+    private final @Nullable SettingsSearchCoordinator mSearchCoordinator;
 
     public FragmentDependencyProvider(
             Context context,
@@ -78,7 +78,7 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
             OneshotSupplier<SnackbarManager> snackbarManagerSupplier,
             OneshotSupplier<BottomSheetController> bottomSheetControllerSupplier,
             MonotonicObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
-            Supplier<SettingsSearchCoordinator> searchCoordinator) {
+            @Nullable SettingsSearchCoordinator searchCoordinator) {
         mContext = context;
         mProfile = profile;
         mSnackbarManagerSupplier = snackbarManagerSupplier;
@@ -108,8 +108,8 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
         if (fragment instanceof SearchViewProvider f) {
             f.setSearchViewObserver(
                     (open) -> {
-                        if (mSearchCoordinator != null && mSearchCoordinator.get() != null) {
-                            mSearchCoordinator.get().showSearchBar(!open);
+                        if (mSearchCoordinator != null) {
+                            mSearchCoordinator.showSearchBar(!open);
                         }
                     });
         }

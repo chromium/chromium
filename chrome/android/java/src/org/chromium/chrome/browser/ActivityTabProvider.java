@@ -99,15 +99,11 @@ public class ActivityTabProvider implements Destroyable, Supplier<@Nullable Tab>
                     }
 
                     @Override
-                    @SuppressWarnings("NullAway") // https://github.com/uber/NullAway/issues/1209
                     public void onStartedHiding(@LayoutType int layout) {
                         if (mTabModelSelector == null) return;
 
                         if (LayoutType.TAB_SWITCHER == layout) {
-                            // TODO(https://github.com/uber/NullAway/issues/1209): Remove
-                            // assumeNonNull().
-                            Tab tab = assumeNonNull(mTabModelSelector.getCurrentTab());
-                            mObservableSupplier.set(tab);
+                            mObservableSupplier.set(mTabModelSelector.getCurrentTab());
                         }
                     }
                 };
@@ -120,7 +116,7 @@ public class ActivityTabProvider implements Destroyable, Supplier<@Nullable Tab>
     }
 
     @Override
-    public Tab get() {
+    public @Nullable Tab get() {
         return mObservableSupplier.get();
     }
 

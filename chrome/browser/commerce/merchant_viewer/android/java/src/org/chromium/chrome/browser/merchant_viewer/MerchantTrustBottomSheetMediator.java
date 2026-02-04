@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.merchant_viewer;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
@@ -224,7 +225,9 @@ public class MerchantTrustBottomSheetMediator {
             mWebContents = mWebContentsForTesting;
             return;
         }
-        mWebContents = WebContentsFactory.createWebContents(mProfileSupplier.get(), false, false);
+        mWebContents =
+                WebContentsFactory.createWebContents(
+                        assertNonNull(mProfileSupplier.get()), false, false);
         mWebContentView = ContentView.createContentView(mContext, mWebContents);
         final ViewAndroidDelegate delegate =
                 ViewAndroidDelegate.createBasicDelegate(mWebContentView);

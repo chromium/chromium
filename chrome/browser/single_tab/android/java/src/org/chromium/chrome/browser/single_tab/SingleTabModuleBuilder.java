@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.single_tab;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -55,7 +57,6 @@ public class SingleTabModuleBuilder implements ModuleProviderBuilder, ModuleConf
             ModuleDelegate moduleDelegate, Callback<ModuleProvider> onModuleBuiltCallback) {
         ModuleDelegateHost moduleDelegateHost =
                 ((HomeModulesCoordinator) moduleDelegate).getModuleDelegateHost();
-        assert mTabContentManagerSupplier.get() != null;
         Callback<Integer> singleTabCardClickedCallback =
                 (tabId) -> {
                     moduleDelegate.onTabClicked(tabId, ModuleType.SINGLE_TAB);
@@ -77,13 +78,13 @@ public class SingleTabModuleBuilder implements ModuleProviderBuilder, ModuleConf
                 new SingleTabSwitcherCoordinator(
                         mActivity,
                         /* container= */ null,
-                        mTabModelSelectorSupplier.get(),
+                        assertNonNull(mTabModelSelectorSupplier.get()),
                         DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity),
                         trackingTab,
                         singleTabCardClickedCallback,
                         seeMoreLinkClickedCallback,
                         snapshotParentViewRunnable,
-                        mTabContentManagerSupplier.get(),
+                        assertNonNull(mTabContentManagerSupplier.get()),
                         moduleDelegateHost.getUiConfig(),
                         moduleDelegate);
         onModuleBuiltCallback.onResult(singleTabSwitcherCoordinator);

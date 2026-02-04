@@ -39,6 +39,7 @@ import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -165,7 +166,7 @@ class TabListContainerViewBinder {
         } else if (IS_NON_ZERO_Y_OFFSET == propertyKey) {
             updateHairlineVisibility(model, hairline);
         } else if (IS_PINNED_TAB_STRIP_ANIMATING_SUPPLIER == propertyKey) {
-            MonotonicObservableSupplier<Boolean> supplier =
+            NonNullObservableSupplier<Boolean> supplier =
                     model.get(IS_PINNED_TAB_STRIP_ANIMATING_SUPPLIER);
             if (supplier == null) return;
             supplier.addSyncObserverAndCallIfNonNull(
@@ -182,7 +183,7 @@ class TabListContainerViewBinder {
     private static void updateHairlineVisibility(PropertyModel model, ImageView hairline) {
         if (hairline == null) return;
 
-        MonotonicObservableSupplier<Boolean> isAnimatingSupplier =
+        NonNullObservableSupplier<Boolean> isAnimatingSupplier =
                 model.get(IS_PINNED_TAB_STRIP_ANIMATING_SUPPLIER);
         boolean isAnimating = isAnimatingSupplier != null && isAnimatingSupplier.get();
         boolean isYOffsetNonZero = model.get(IS_NON_ZERO_Y_OFFSET);

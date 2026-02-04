@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
@@ -248,7 +249,7 @@ public class TabGroupVisualDataDialogManager {
     }
 
     public @TabGroupColorId int getCurrentColorId() {
-        return mColorPickerCoordinator.getSelectedColorSupplier().get();
+        return assertNonNull(mColorPickerCoordinator.getSelectedColorSupplier().get());
     }
 
     private void setDescriptionText(TabGroupModelFilter filter) {

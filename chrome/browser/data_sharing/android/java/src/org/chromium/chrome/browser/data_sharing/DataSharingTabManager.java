@@ -462,7 +462,8 @@ public class DataSharingTabManager {
 
     private TabGroupModelFilter getTabGroupModelFilter() {
         return assumeNonNull(
-                mTabModelSelectorSupplier.get().getTabGroupModelFilter(/* isIncognito= */ false));
+                assumeNonNull(mTabModelSelectorSupplier.get())
+                        .getTabGroupModelFilter(/* isIncognito= */ false));
     }
 
     /**
@@ -744,8 +745,7 @@ public class DataSharingTabManager {
         if (preview != null) {
             shareParamsBuilder.setPreviewImageBitmap(preview);
         }
-        mShareDelegateSupplier
-                .get()
+        assumeNonNull(mShareDelegateSupplier.get())
                 .share(
                         shareParamsBuilder.build(),
                         chromeShareExtras,
@@ -908,7 +908,7 @@ public class DataSharingTabManager {
         RecentActivityActionHandler recentActivityActionHandler =
                 new RecentActivityActionHandlerImpl(
                         tabGroupSyncService,
-                        mTabModelSelectorSupplier.get(),
+                        assertNonNull(mTabModelSelectorSupplier.get()),
                         mDataSharingTabGroupsDelegate,
                         collaborationId,
                         existingGroup.syncId,

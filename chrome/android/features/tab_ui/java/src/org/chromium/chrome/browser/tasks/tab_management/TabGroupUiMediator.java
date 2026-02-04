@@ -103,12 +103,12 @@ public class TabGroupUiMediator implements BackPressHandler {
 
     /** Wraps a child component's token with information from this component. */
     private static class NestedSnapshot {
-        private final Object mChildSnapshot;
+        private final @Nullable Object mChildSnapshot;
         private final @ColorInt int mBackgroundColor;
         private final int mWidthPx;
 
         /* package */ NestedSnapshot(
-                Object childSnapshot, @ColorInt int backgroundColor, int widthPx) {
+                @Nullable Object childSnapshot, @ColorInt int backgroundColor, int widthPx) {
             mChildSnapshot = childSnapshot;
             mBackgroundColor = backgroundColor;
             mWidthPx = widthPx;

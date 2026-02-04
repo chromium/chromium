@@ -33,7 +33,7 @@ class BaseObservableSupplierImpl<T extends @Nullable Object>
     public void removeObserver(Callback<T> obs) {}
 
     @Override
-    public T get() {
+    public @Nullable T get() {
         return null;
     }
 

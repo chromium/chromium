@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.sync.synced_set_up;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.ntp_customization.ntp_cards.NtpCardsMediator.MODULE_TYPE_TO_USER_PREFS_KEY;
 import static org.chromium.chrome.browser.ui.messages.snackbar.Snackbar.TYPE_ACTION;
 import static org.chromium.chrome.browser.ui.messages.snackbar.Snackbar.UMA_CROSS_DEVICE_SETTING_IMPORT;
@@ -246,7 +247,7 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
     /** Returns the user's current settings. */
     private Map<String, Object> getCurrentSettings() {
         // Assumes mTab.getProfile() is non-null and UserPrefs.areNativePrefsLoaded is true.
-        Profile profile = mActivityTabSupplier.get().getProfile();
+        Profile profile = assumeNonNull(mActivityTabSupplier.get()).getProfile();
         PrefService userPrefs = UserPrefs.get(profile);
         if (userPrefs == null) return Map.of();
 
@@ -266,7 +267,7 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
      */
     private boolean importedSettingsHavePreferenceChange(Map<String, Object> preferences) {
         // Assumes mTab.getProfile() is non-null and UserPrefs.areNativePrefsLoaded is true.
-        Profile profile = mActivityTabSupplier.get().getProfile();
+        Profile profile = assumeNonNull(mActivityTabSupplier.get()).getProfile();
         PrefService userPrefs = UserPrefs.get(profile);
         if (userPrefs == null) {
             return false;
@@ -354,7 +355,7 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
      */
     private void applyUserPrefSettings(Map<String, Object> preferencesToApply) {
         // Assumes mTab.getProfile() is non-null and UserPrefs.areNativePrefsLoaded is true.
-        Profile profile = mActivityTabSupplier.get().getProfile();
+        Profile profile = assumeNonNull(mActivityTabSupplier.get()).getProfile();
         PrefService userPrefs = UserPrefs.get(profile);
         if (userPrefs == null) return;
 

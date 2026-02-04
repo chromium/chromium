@@ -18,6 +18,7 @@ import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -93,9 +94,8 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
                 public void onIncognitoReauthSuccess() {
                     TabGroupModelFilter incognitoTabGroupModelFilter =
                             mIncognitoTabGroupModelFilterSupplier.get();
-                    @Nullable
                     TabSwitcherPaneCoordinator coordinator = getTabSwitcherPaneCoordinator();
-                    if (!getIsVisibleSupplier().get()
+                    if (!mIsVisibleSupplier.get()
                             || coordinator == null
                             || !incognitoTabGroupModelFilter.getTabModel().isActiveModel()) {
                         return;
@@ -279,7 +279,7 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
         }
 
         boolean isNotVisibleOrSelected =
-                !getIsVisibleSupplier().get() || !filter.getTabModel().isActiveModel();
+                !mIsVisibleSupplier.get() || !filter.getTabModel().isActiveModel();
         boolean incognitoReauthShowing = isIncognitoReauthPending();
 
         if (isNotVisibleOrSelected || incognitoReauthShowing) {
@@ -371,11 +371,10 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
     }
 
     private @TabCloseMethod int getFinalTabCloseMethod(TabSwitcherPaneCoordinator paneCoordinator) {
-        Supplier<Integer> recentlySwipedTabIdSupplier =
-                paneCoordinator.getRecentlySwipedTabIdSupplier();
+        int recentlySwipedTabId = paneCoordinator.getRecentlySwipedTabIdSupplier().get();
         Supplier<Boolean> dialogShowingOrAnimationSupplier =
                 paneCoordinator.getTabGridDialogShowingOrAnimationSupplier();
-        boolean wasClosedViaSwipe = wasFinalTabSwiped(recentlySwipedTabIdSupplier);
+        boolean wasClosedViaSwipe = wasFinalTabSwiped(recentlySwipedTabId);
 
         // We can tell if the final tab was closed via the Tab List Editor by checking to see if
         // the Tab List Editor requires a clean up, which is not complete until after we initialize
@@ -383,7 +382,7 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
         boolean wasClosedViaTabListEditor = paneCoordinator.doesTabListEditorNeedCleanup();
 
         boolean isTabGridDialogVisible =
-                dialogShowingOrAnimationSupplier != null && dialogShowingOrAnimationSupplier.get();
+                SupplierUtils.getOr(dialogShowingOrAnimationSupplier, false);
 
         if (isIncognitoReauthShowing()) {
             return TabCloseMethod.CLOSED_WHILE_REAUTH_VISIBLE;
@@ -399,10 +398,8 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
     }
 
     /** Returns whether the final tab was swiped close. */
-    private boolean wasFinalTabSwiped(Supplier<Integer> recentlySwipedTabIdSupplier) {
-        return recentlySwipedTabIdSupplier.get() != null
-                && recentlySwipedTabIdSupplier.get() != Tab.INVALID_TAB_ID
-                && recentlySwipedTabIdSupplier.get() == mLastClosedTabId;
+    private boolean wasFinalTabSwiped(int recentlySwipedTabId) {
+        return recentlySwipedTabId != Tab.INVALID_TAB_ID && recentlySwipedTabId == mLastClosedTabId;
     }
 
     /**

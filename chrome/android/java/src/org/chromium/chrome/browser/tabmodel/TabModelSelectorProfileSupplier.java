@@ -107,7 +107,7 @@ public class TabModelSelectorProfileSupplier
     }
 
     @Override
-    public Profile get() {
+    public @Nullable Profile get() {
         Profile profile = mSupplier.get();
         // TODO(365814339): Convert to checked exception once all callsites are fixed.
         assert profile == null || !profile.shutdownStarted()

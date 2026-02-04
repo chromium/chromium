@@ -103,7 +103,6 @@ import java.util.Set;
         manifest = Config.NONE,
         shadows = {
             SearchActivityUnitTest.ShadowSearchActivityUtils.class,
-            SearchActivityUnitTest.ShadowProfileManager.class,
             SearchActivityUnitTest.ShadowTabBuilder.class,
         })
 @EnableFeatures({
@@ -145,27 +144,6 @@ public class SearchActivityUnitTest {
         @Implementation
         public Tab build() {
             return sMockTab;
-        }
-    }
-
-    @Implements(ProfileManager.class)
-    public static class ShadowProfileManager {
-        public static Profile sProfile;
-
-        static void setProfile(Profile profile) {
-            sProfile = profile;
-            ProfileManager.onProfileAdded(profile);
-            ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        }
-
-        @Implementation
-        public static boolean isInitialized() {
-            return sProfile != null;
-        }
-
-        @Implementation
-        public static Profile getLastUsedRegularProfile() {
-            return sProfile;
         }
     }
 
@@ -224,6 +202,7 @@ public class SearchActivityUnitTest {
         WebContentsFactory.setWebContentsForTesting(mWebContents);
         ShadowTabBuilder.sMockTab = mTab;
         RevenueStats.setCustomTabSearchClientHookForTesting(mSetCustomTabSearchClient);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
     }
 
     @After
@@ -250,6 +229,11 @@ public class SearchActivityUnitTest {
                 .setPageUrl(new GURL(url));
     }
 
+    private void setProfile(Profile profile) {
+        ProfileManager.setLastUsedProfileForTesting(profile);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+    }
+
     @Test
     public void searchActivity_forcesPhoneUi() {
         assertTrue(mActivity.getEmbedderUiOverridesForTesting().isForcedPhoneStyleOmnibox());
@@ -257,6 +241,7 @@ public class SearchActivityUnitTest {
 
     @Test
     public void loadUrl_dispatchResultToCallingActivity() {
+        setProfile(mProfile);
         mActivity.handleNewIntent(buildTestServiceIntent(IntentOrigin.CUSTOM_TAB), false);
 
         ArgumentCaptor<OmniboxLoadUrlParams> captor =
@@ -282,6 +267,7 @@ public class SearchActivityUnitTest {
 
     @Test
     public void loadUrl_openInChromeBrowser() {
+        setProfile(mProfile);
         mActivity.handleNewIntent(
                 buildTestWidgetIntent(IntentOrigin.QUICK_ACTION_SEARCH_WIDGET), false);
 
@@ -686,7 +672,7 @@ public class SearchActivityUnitTest {
 
     @Test
     public void refinePageClassWithProfile_refinesBasicUrlForSearchResultsPage() {
-        ShadowProfileManager.setProfile(mProfile);
+        setProfile(mProfile);
 
         {
             // Simulate Search Results Page.
@@ -778,7 +764,7 @@ public class SearchActivityUnitTest {
         mActivity.handleNewIntent(new Intent(), false);
         doNothing().when(mActivity).finishDeferredInitialization();
 
-        ShadowProfileManager.setProfile(mProfile);
+        setProfile(mProfile);
         mActivity.finishNativeInitialization();
 
         ArgumentCaptor<Callback<Boolean>> captor = ArgumentCaptor.forClass(Callback.class);
@@ -797,7 +783,7 @@ public class SearchActivityUnitTest {
         mActivity.handleNewIntent(new Intent(), false);
         doNothing().when(mActivity).finishDeferredInitialization();
 
-        ShadowProfileManager.setProfile(mProfile);
+        setProfile(mProfile);
         mActivity.finishNativeInitialization();
 
         ArgumentCaptor<Callback<Boolean>> captor = ArgumentCaptor.forClass(Callback.class);
@@ -816,7 +802,7 @@ public class SearchActivityUnitTest {
         doNothing().when(mActivity).finishDeferredInitialization();
         mActivity.handleNewIntent(buildTestServiceIntent(IntentOrigin.UNKNOWN), false);
 
-        ShadowProfileManager.setProfile(mProfile);
+        setProfile(mProfile);
         mActivity.finishNativeInitialization();
 
         ArgumentCaptor<Callback<Boolean>> captor = ArgumentCaptor.forClass(Callback.class);
@@ -847,7 +833,7 @@ public class SearchActivityUnitTest {
         mActivity.handleNewIntent(new Intent(), false);
         doNothing().when(mActivity).finishDeferredInitialization();
 
-        ShadowProfileManager.setProfile(mProfile);
+        setProfile(mProfile);
         mActivity.finishNativeInitialization();
 
         ArgumentCaptor<Callback<Boolean>> captor = ArgumentCaptor.forClass(Callback.class);
@@ -873,7 +859,7 @@ public class SearchActivityUnitTest {
 
         mActivity.handleNewIntent(buildTestServiceIntent(IntentOrigin.HUB), false);
 
-        ShadowProfileManager.setProfile(mProfile);
+        setProfile(mProfile);
         mActivity.finishNativeInitialization();
 
         String expectedText = mActivity.getResources().getString(R.string.hub_search_empty_hint);
@@ -895,7 +881,7 @@ public class SearchActivityUnitTest {
 
         mActivity.handleNewIntent(buildTestServiceIntent(IntentOrigin.HUB), false);
 
-        ShadowProfileManager.setProfile(mProfile);
+        setProfile(mProfile);
         mActivity.finishNativeInitialization();
 
         String expectedText =
@@ -942,7 +928,7 @@ public class SearchActivityUnitTest {
     @Test
     public void createProfileProvider_tracksProfileManager() {
         assertNull(mProfileSupplier.get());
-        ShadowProfileManager.setProfile(mProfile);
+        setProfile(mProfile);
         assertEquals(mProfile, mProfileSupplier.get());
     }
 
@@ -1078,6 +1064,7 @@ public class SearchActivityUnitTest {
 
     @Test
     public void recordNavigationTargetType() {
+        setProfile(mProfile);
         GURL native_url = new GURL(getOriginalNativeNtpUrl());
         GURL search_url = new GURL("https://google.com");
         GURL web_url = new GURL("https://abc.xyz");

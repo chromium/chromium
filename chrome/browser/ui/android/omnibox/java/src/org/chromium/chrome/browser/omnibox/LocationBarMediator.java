@@ -440,12 +440,12 @@ class LocationBarMediator
             TemplateUrlService templateUrlService = mTemplateUrlServiceSupplier.get();
             if (templateUrlService != null) {
                 GeolocationHeader.primeLocationForGeoHeaderIfEnabled(
-                        mProfileSupplier.get(), templateUrlService);
+                        assertNonNull(mProfileSupplier.get()), templateUrlService);
             } else {
                 mTemplateUrlServiceSupplier.onAvailable(
                         (service) -> {
                             GeolocationHeader.primeLocationForGeoHeaderIfEnabled(
-                                    mProfileSupplier.get(), service);
+                                    assertNonNull(mProfileSupplier.get()), service);
                         });
             }
             hintZeroSuggestRefresh();
@@ -747,7 +747,9 @@ class LocationBarMediator
                     TimingMetric.shortUptime("Android.Omnibox.SetGeolocationHeadersTime")) {
                 loadUrlParams.setVerbatimHeaders(
                         GeolocationHeader.getGeoHeader(
-                                url, mProfileSupplier.get(), mTemplateUrlServiceSupplier.get()));
+                                url,
+                                assertNonNull(mProfileSupplier.get()),
+                                mTemplateUrlServiceSupplier.get()));
             }
             loadUrlParams.setTransitionType(
                     omniboxLoadUrlParams.transitionType | PageTransition.FROM_ADDRESS_BAR);
@@ -2233,7 +2235,7 @@ class LocationBarMediator
     public void maybeShowDefaultBrowserPromo() {
         DefaultBrowserPromoUtils.getInstance()
                 .maybeShowDefaultBrowserPromoMessages(
-                        mContext, mWindowAndroid, mProfileSupplier.get());
+                        mContext, mWindowAndroid, assertNonNull(mProfileSupplier.get()));
     }
 
     @Override

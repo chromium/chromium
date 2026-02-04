@@ -212,7 +212,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
                         && ((ChromeTabbedActivity) mActivity).isIncognitoWindow();
         InstanceSwitcherCoordinator.showDialog(
                 mActivity,
-                mModalDialogManagerSupplier.get(),
+                assertNonNull(mModalDialogManagerSupplier.get()),
                 new LargeIconBridge(getProfile()),
                 this,
                 MultiWindowUtils.getMaxInstances(),
@@ -590,7 +590,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         // re-attaching the Tabs to the target activity until they have been cleared from this
         // activity's TabPersistentStore.
         TabPersistentStore tabPersistentStore =
-                mTabModelOrchestratorSupplier.get().getTabPersistentStore();
+                assumeNonNull(mTabModelOrchestratorSupplier.get()).getTabPersistentStore();
         tabPersistentStore.resumeSaveTabList(
                 () -> {
                     targetActivity.onNewIntent(intent);
@@ -608,7 +608,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
             @StringRes int titleId) {
         TargetSelectorCoordinator.showDialog(
                 mActivity,
-                mModalDialogManagerSupplier.get(),
+                assertNonNull(mModalDialogManagerSupplier.get()),
                 new LargeIconBridge(getProfile()),
                 moveCallback,
                 getInstanceInfo(instanceType),
@@ -655,7 +655,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
 
         // Pause writes to TabPersistentStore while detaching the grouped Tabs.
         TabPersistentStore tabPersistentStore =
-                mTabModelOrchestratorSupplier.get().getTabPersistentStore();
+                assumeNonNull(mTabModelOrchestratorSupplier.get()).getTabPersistentStore();
         tabPersistentStore.pauseSaveTabList();
     }
 
@@ -1058,14 +1058,16 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
 
     @Override
     public void onTabStateInitialized() {
-        TabModelSelector selector = mTabModelOrchestratorSupplier.get().getTabModelSelector();
+        TabModelSelector selector =
+                assumeNonNull(mTabModelOrchestratorSupplier.get()).getTabModelSelector();
         assert selector != null;
         writeTabCount(mInstanceId, selector);
     }
 
     @VisibleForTesting
     protected void installTabModelObserver() {
-        TabModelSelector selector = mTabModelOrchestratorSupplier.get().getTabModelSelector();
+        TabModelSelector selector =
+                assumeNonNull(mTabModelOrchestratorSupplier.get()).getTabModelSelector();
         assert selector != null;
         mTabModelObserver =
                 new TabModelSelectorTabModelObserver(selector) {
@@ -1464,7 +1466,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
                         .getTabRemover()
                         .closeTabs(params, /* allowDialog= */ false);
             }
-            mTabModelOrchestratorSupplier.get().cleanupInstance(instanceId);
+            assumeNonNull(mTabModelOrchestratorSupplier.get()).cleanupInstance(instanceId);
         } else {
             MultiInstancePersistentStore.writeMarkedForDeletion(
                     instanceId, /* markedForDeletion= */ true);
@@ -1583,7 +1585,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
 
         // Create the new window and reparent once the TabPersistentStore has resumed.
         TabPersistentStore tabPersistentStore =
-                mTabModelOrchestratorSupplier.get().getTabPersistentStore();
+                assumeNonNull(mTabModelOrchestratorSupplier.get()).getTabPersistentStore();
         tabPersistentStore.resumeSaveTabList(
                 () -> {
                     reparentingTask.begin(mActivity, intent);
@@ -1593,7 +1595,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
 
     private Profile getProfile() {
         TabModelSelector tabModelSelector =
-                mTabModelOrchestratorSupplier.get().getTabModelSelector();
+                assumeNonNull(mTabModelOrchestratorSupplier.get()).getTabModelSelector();
         assumeNonNull(tabModelSelector);
         var profile = tabModelSelector.getCurrentModel().getProfile();
         assert profile != null;

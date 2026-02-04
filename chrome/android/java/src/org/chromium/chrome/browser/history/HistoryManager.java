@@ -121,8 +121,8 @@ public class HistoryManager
      * @param isSeparateActivity Whether the history UI will be shown in a separate activity than
      *     the main Chrome activity.
      * @param snackbarManager The {@link SnackbarManager} used to display snackbars.
-     * @param bottomSheetController Supplier of {@link BottomSheetController} to show app filter
-     *     sheet in.
+     * @param bottomSheetControllerSupplier Supplier of {@link BottomSheetController} to show app
+     *     filter sheet in.
      * @param modalDialogManagerSupplier Supplies the {@link ModalDialogManager}.
      * @param activityResultTracker Tracker of activity results.
      * @param tabSupplier Supplies the current tab, null if the history UI will be shown in a
@@ -145,7 +145,7 @@ public class HistoryManager
             Activity activity,
             boolean isSeparateActivity,
             SnackbarManager snackbarManager,
-            Supplier<BottomSheetController> bottomSheetController,
+            Supplier<BottomSheetController> bottomSheetControllerSupplier,
             Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
             ActivityResultTracker activityResultTracker,
             @Nullable Supplier<@Nullable Tab> tabSupplier,
@@ -205,7 +205,7 @@ public class HistoryManager
                         shouldShowInfoHeader,
                         shouldShowClearData,
                         mSelectionDelegate,
-                        bottomSheetController,
+                        bottomSheetControllerSupplier,
                         modalDialogManagerSupplier,
                         snackbarManager,
                         activityResultTracker,

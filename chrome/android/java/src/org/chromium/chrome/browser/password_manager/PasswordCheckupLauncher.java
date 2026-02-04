@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.password_manager;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import org.jni_zero.CalledByNative;
 
 import org.chromium.build.annotations.NullMarked;
@@ -35,7 +37,7 @@ public class PasswordCheckupLauncher {
         passwordManagerHelper.showPasswordCheckup(
                 windowAndroid.getContext().get(),
                 passwordCheckReferrer,
-                () -> windowAndroid.getModalDialogManager(),
+                () -> assertNonNull(windowAndroid.getModalDialogManager()),
                 accountEmail,
                 new SettingsCustomTabLauncherImpl());
     }

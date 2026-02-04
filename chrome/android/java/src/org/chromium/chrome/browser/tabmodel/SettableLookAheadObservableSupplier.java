@@ -83,7 +83,7 @@ public class SettableLookAheadObservableSupplier<T>
     }
 
     @Override
-    public T get() {
+    public @Nullable T get() {
         return mObservableSupplier.get();
     }
 }

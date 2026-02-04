@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.app.Activity;
 
 import org.chromium.build.annotations.NullMarked;
@@ -45,7 +47,8 @@ public class TabbedMismatchedIndicesHandler implements MismatchedIndicesHandler 
         // index. Save the tab state first to align with the current flow of execution when the
         // store is destroyed.
         var tabModelOrchestrator =
-                tabbedActivityAtRequestedIndex.getTabModelOrchestratorSupplier().get();
+                assertNonNull(
+                        tabbedActivityAtRequestedIndex.getTabModelOrchestratorSupplier().get());
         // If the two activities launched within a short span, simply destroy the persistent store
         // instance of the activity at the requested index, assuming no changes have been made to
         // the tab state during this time.

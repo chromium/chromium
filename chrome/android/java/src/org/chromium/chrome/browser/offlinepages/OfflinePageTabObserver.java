@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.offlinepages;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
@@ -98,7 +99,7 @@ public class OfflinePageTabObserver extends EmptyTabObserver
             SnackbarManager snackbarManager = SnackbarManagerProvider.from(windowAndroid);
             assert tabModelSelectorSupplier != null;
             assert snackbarManager != null;
-            TabModelSelector tabModelSelector = tabModelSelectorSupplier.get();
+            TabModelSelector tabModelSelector = assertNonNull(tabModelSelectorSupplier.get());
             observer =
                     new OfflinePageTabObserver(
                             tabModelSelector,

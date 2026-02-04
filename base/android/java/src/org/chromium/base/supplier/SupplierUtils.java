@@ -113,6 +113,12 @@ public class SupplierUtils {
         return ret == null ? value : ret;
     }
 
+    public static <T extends @Nullable Boolean> boolean getOr(
+            @Nullable Supplier<T> sup, boolean value) {
+        Boolean ret = sup == null ? null : sup.get();
+        return ret == null ? value : ret;
+    }
+
     public static <T extends @Nullable Object> Supplier<T> of(T value) {
         return value == null ? ofNull() : () -> value;
     }

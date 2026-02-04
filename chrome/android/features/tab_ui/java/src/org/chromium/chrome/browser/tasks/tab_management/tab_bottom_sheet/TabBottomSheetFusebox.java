@@ -10,8 +10,9 @@ import android.view.View;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
-import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -35,7 +36,7 @@ public class TabBottomSheetFusebox {
 
     TabBottomSheetFusebox(
             Activity activity,
-            MonotonicObservableSupplier<Profile> profileSupplier,
+            NonNullObservableSupplier<Profile> profileSupplier,
             WindowAndroid windowAndroid,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             Callback<String> loadUrlCallback,
@@ -63,7 +64,7 @@ public class TabBottomSheetFusebox {
                         /* openIncognitoTabCb= */ CallbackUtils.emptyRunnable(),
                         /* openPasswordSettingsCb= */ CallbackUtils.emptyRunnable(),
                         /* openQuickDeleteCb= */ CallbackUtils.emptyRunnable(),
-                        /* tabWindowManagerSupplier= */ () -> null,
+                        /* tabWindowManagerSupplier= */ SupplierUtils.ofNull(),
                         /* bringTabToFrontCallback= */ (tabInfo, url) -> {});
 
         mLocationBarCoordinator =

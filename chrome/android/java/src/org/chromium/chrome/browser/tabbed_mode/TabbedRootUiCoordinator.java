@@ -1644,7 +1644,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mTabBottomSheetManager =
                     new TabBottomSheetManager(
                             mActivity,
-                            mProfileSupplier,
+                            mProfileSupplier.asNonNull(),
                             mWindowAndroid,
                             mActivityLifecycleDispatcher,
                             mSnackbarManagerSupplier.get(),

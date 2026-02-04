@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.incognito;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityManager.AppTask;
@@ -37,7 +39,9 @@ public class IncognitoStartup {
         Profile otrProfile = profileProvider.getOffTheRecordProfile();
         if (otrProfile != null
                 && shouldDestroyIncognitoProfileOnStartup(
-                        tabModelSelectorSupplier.get().getCurrentModel().isIncognito(),
+                        assumeNonNull(tabModelSelectorSupplier.get())
+                                .getCurrentModel()
+                                .isIncognito(),
                         componentNames)) {
             ProfileManager.destroyWhenAppropriate(otrProfile);
         } else {

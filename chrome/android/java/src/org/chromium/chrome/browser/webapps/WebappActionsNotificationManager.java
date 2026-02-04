@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.webapps;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -169,9 +171,7 @@ public class WebappActionsNotificationManager implements PauseResumeWithNativeOb
         if (ACTION_SHARE.equals(intent.getAction())) {
             // Not routing through onMenuOrKeyboardAction to control UMA String.
             Tab tab = customTabActivity.getActivityTab();
-            customTabActivity
-                    .getShareDelegateSupplier()
-                    .get()
+            assumeNonNull(customTabActivity.getShareDelegateSupplier().get())
                     .share(tab, false, ShareOrigin.WEBAPP_NOTIFICATION);
             RecordUserAction.record("Webapp.NotificationShare");
             return true;

@@ -548,13 +548,16 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                 recyclerView.addOnScrollListener(mSearchBoxVisibilityScrollListener);
                 recyclerView.addOnScrollListener(scrollStateChangedListener);
             }
-            mTabGroupModelFilterSupplier.get().getTabModel().addObserver(mTabModelObserver);
+            // TODO(agrieve): mTabGroupModelFilterSupplier can be changed to be NonNull assuming
+            // that this assumeNonNull() is not a bug.
+            assumeNonNull(mTabGroupModelFilterSupplier.get())
+                    .getTabModel()
+                    .addObserver(mTabModelObserver);
             mContainerViewChangeProcessor =
                     PropertyModelChangeProcessor.create(
                             containerViewModel,
                             new TabListContainerViewBinder.ViewHolder(recyclerView, mPaneHairline),
                             TabListContainerViewBinder::bind);
-
             mEdgeToEdgePadAdjuster =
                     new EdgeToEdgePadAdjuster() {
                         @Override
@@ -929,7 +932,9 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     private void onContextMenuFocusableChanged(boolean focusable) {
         if (mContextMenuCoordinator == null) {
             boolean isTabModelIncognito =
-                    mTabGroupModelFilterSupplier.get().getTabModel().isOffTheRecord();
+                    assumeNonNull(mTabGroupModelFilterSupplier.get())
+                            .getTabModel()
+                            .isOffTheRecord();
             String logMessage =
                     "ContextMenuCoordinator is null due to null profile. isTabModelIncognito = "
                             + isTabModelIncognito;
@@ -1202,7 +1207,8 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     }
 
     private boolean isAnyTabPinned() {
-        return mTabGroupModelFilterSupplier.get().getTabModel().getPinnedTabsCount() > 0;
+        return assumeNonNull(mTabGroupModelFilterSupplier.get()).getTabModel().getPinnedTabsCount()
+                > 0;
     }
 
     private void setHairlineVisibility(boolean isYOffsetNonZero) {

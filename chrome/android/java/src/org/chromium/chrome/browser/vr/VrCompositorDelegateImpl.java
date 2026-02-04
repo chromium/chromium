@@ -37,8 +37,7 @@ public class VrCompositorDelegateImpl implements VrCompositorDelegate {
 
     @Override
     public void openNewTab(LoadUrlParams url) {
-        mTabModelSelectorSupplier
-                .get()
+        assumeNonNull(mTabModelSelectorSupplier.get())
                 .openNewTab(
                         url,
                         TabLaunchType.FROM_CHROME_UI,
