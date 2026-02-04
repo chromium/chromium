@@ -66,7 +66,9 @@ class CONTENT_EXPORT ServiceWorkerSyntheticResponseManager {
                     OnReceiveResponseCallback receive_response_callback,
                     OnReceiveRedirectCallback receive_redirect_callback,
                     OnCompleteCallback complete_callback);
-  void StartSyntheticResponse(FetchCallback callback);
+  // Tries to start the synthetic response. Returns true if the synthetic
+  // response is started, otherwise returns false.
+  bool MaybeStartSyntheticResponse(FetchCallback callback);
   SyntheticResponseStatus Status() const { return status_; }
 
   // The static function to override the dry run mode.

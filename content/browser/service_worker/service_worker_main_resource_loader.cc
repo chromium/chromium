@@ -987,6 +987,22 @@ void ServiceWorkerMainResourceLoader::DidDispatchFetchEvent(
                 std::move(body_as_stream));
 }
 
+void ServiceWorkerMainResourceLoader::DidDispatchFetchEventForSyntheticResponse(
+    blink::ServiceWorkerStatusCode status,
+    ServiceWorkerFetchDispatcher::FetchEventResult fetch_result,
+    blink::mojom::FetchAPIResponsePtr response,
+    blink::mojom::ServiceWorkerStreamHandlePtr body_as_stream,
+    blink::mojom::ServiceWorkerFetchEventTimingPtr timing,
+    scoped_refptr<ServiceWorkerVersion> version) {
+  // When it's ready, the header which the service worker locally storead is
+  // passed to the client. To let this information to the renderer, set
+  // `from_synthetic_response` to `response_head_`.
+  response_head_->from_synthetic_response = true;
+  DidDispatchFetchEvent(status, fetch_result, std::move(response),
+                        std::move(body_as_stream), std::move(timing),
+                        std::move(version));
+}
+
 void ServiceWorkerMainResourceLoader::Fallback(
     ResponseHeadUpdateParams response_header_params) {
   CHECK(url_loader_client_.is_bound());
@@ -1119,25 +1135,17 @@ bool ServiceWorkerMainResourceLoader::MaybeStartSyntheticNetworkRequest(
           &ServiceWorkerMainResourceLoader::OnCompleteSyntheticNetworkRequest,
           weak_factory_.GetWeakPtr()));
 
-  switch (synthetic_response_manager_->Status()) {
-    case SyntheticResponseStatus::kNotReady:
-      // When it's not ready, the header is not stored yet. That means we don't
-      // create a synthetic response locally, and wait for the response from the
-      // network.
-      RecordSyntheticResponseEligibility(
-          SyntheticResponseEligibility::kNotEligibleByNoHeaderStored);
-      break;
-    case SyntheticResponseStatus::kReady:
-      // When it's ready, the header which the service worker locally storead is
-      // passed to the client. To let this information to the renderer, set
-      // `from_synthetic_response` to `response_head_`.
-      response_head_->from_synthetic_response = true;
-      synthetic_response_manager_->StartSyntheticResponse(base::BindOnce(
-          &ServiceWorkerMainResourceLoader::DidDispatchFetchEvent,
-          weak_factory_.GetWeakPtr()));
-      RecordSyntheticResponseEligibility(
-          SyntheticResponseEligibility::kEligible);
-      break;
+  if (synthetic_response_manager_->MaybeStartSyntheticResponse(
+          base::BindOnce(&ServiceWorkerMainResourceLoader::
+                             DidDispatchFetchEventForSyntheticResponse,
+                         weak_factory_.GetWeakPtr()))) {
+    RecordSyntheticResponseEligibility(SyntheticResponseEligibility::kEligible);
+  } else {
+    // When it's not ready, the header is not stored yet. That means we don't
+    // create a synthetic response locally, and wait for the response from the
+    // network.
+    RecordSyntheticResponseEligibility(
+        SyntheticResponseEligibility::kNotEligibleByNoHeaderStored);
   }
 
   MaybeSetFetchHandlerBypassOptionForsyntheticResponse(
