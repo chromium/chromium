@@ -115,6 +115,7 @@ public class TabBottomSheetFusebox {
 
     void destroy() {
         mLocationBarCoordinator.destroy();
+        mDataProvider.destroy();
     }
 
     /* Returns the fusebox view */

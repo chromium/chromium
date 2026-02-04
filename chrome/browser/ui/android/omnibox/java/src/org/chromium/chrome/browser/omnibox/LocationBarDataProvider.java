@@ -10,6 +10,7 @@ import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
 
+import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -117,6 +118,9 @@ public interface LocationBarDataProvider {
 
     /** Returns the currently active tab, if there is one. */
     @Nullable Tab getTab();
+
+    /** Returns the UserDataHost linked to the current tab (if present) or context (otherwise). */
+    @Nullable UserDataHost getUserDataHost();
 
     /** Returns whether the LocationBarDataProvider currently has an active tab. */
     boolean hasTab();

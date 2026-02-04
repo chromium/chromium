@@ -253,6 +253,7 @@ public class LocationBarMediatorTest {
     private boolean mNavigateButtonIsVisible;
 
     @Before
+    @SuppressWarnings("DirectInvocationOnMock")
     public void setUp() {
         mContext =
                 new ContextThemeWrapper(
@@ -263,6 +264,9 @@ public class LocationBarMediatorTest {
         SearchEngineUtils.setInstanceForTesting(mSearchEngineUtils);
         doReturn(mUrlBarData).when(mLocationBarDataProvider).getUrlBarData();
         doReturn(mTab).when(mLocationBarDataProvider).getTab();
+        doAnswer(i -> mLocationBarDataProvider.getTab().getUserDataHost())
+                .when(mLocationBarDataProvider)
+                .getUserDataHost();
         doReturn(mNewTabPageDelegate).when(mLocationBarDataProvider).getNewTabPageDelegate();
         doReturn(mWebContents).when(mTab).getWebContents();
         doReturn(mTabModelSelector).when(mTabModelSelectorSupplier).get();
@@ -472,7 +476,7 @@ public class LocationBarMediatorTest {
         verify(mUrlCoordinator)
                 .setAutocompleteText("text", "textWithAutocomplete", "additionalText");
 
-        var state = FuseboxSessionState.from(mLocationBarDataProvider, /* allowEphemeral= */ false);
+        var state = FuseboxSessionState.from(mLocationBarDataProvider);
         state.autocompleteInput.setRequestType(AutocompleteRequestType.AI_MODE);
         mMediator.onSuggestionsChanged(defaultMatch);
         verify(mStatusCoordinator, times(2)).onDefaultMatchClassified(true);
@@ -1639,7 +1643,7 @@ public class LocationBarMediatorTest {
         doReturn("text").when(mUrlCoordinator).getTextWithAutocomplete();
         mMediator.onUrlFocusChange(true);
 
-        var state = FuseboxSessionState.from(mLocationBarDataProvider, /* allowEphemeral= */ false);
+        var state = FuseboxSessionState.from(mLocationBarDataProvider);
         state.autocompleteInput.setRequestType(AutocompleteRequestType.SEARCH);
         assertTrue(mNavigateButtonIsVisible);
 
@@ -1784,8 +1788,7 @@ public class LocationBarMediatorTest {
 
         // Prepare a state to be restored for mTab.
         String newText = "new text";
-        var newState =
-                FuseboxSessionState.from(mLocationBarDataProvider, /* allowEphemeral= */ false);
+        var newState = FuseboxSessionState.from(mLocationBarDataProvider);
         newState.autocompleteInput.setUserText(newText);
         newState.setSessionActive(true);
 
@@ -1799,8 +1802,7 @@ public class LocationBarMediatorTest {
         mTabletMediator.onUrlFocusChange(true);
         String previousText = "previous text";
         // Note: input state is tracked by autocomplete.
-        var previousState =
-                FuseboxSessionState.from(mLocationBarDataProvider, /* allowEphemeral= */ false);
+        var previousState = FuseboxSessionState.from(mLocationBarDataProvider);
         previousState.autocompleteInput.setUserText(previousText);
 
         // Emulate a tab switch from previousTab to mTab.
@@ -1841,8 +1843,7 @@ public class LocationBarMediatorTest {
         String newText = "new text";
         final int newSelectionStart = 2;
         final int newSelectionEnd = 6;
-        var newState =
-                FuseboxSessionState.from(mLocationBarDataProvider, /* allowEphemeral= */ false);
+        var newState = FuseboxSessionState.from(mLocationBarDataProvider);
         newState.autocompleteInput.setUserText(newText);
         newState.autocompleteInput.setSelection(newSelectionStart, newSelectionEnd);
         newState.setSessionActive(true);
@@ -1860,8 +1861,7 @@ public class LocationBarMediatorTest {
         final int previousSelectionEnd = 5;
 
         // Note: input state is tracked by autocomplete.
-        var previousState =
-                FuseboxSessionState.from(mLocationBarDataProvider, /* allowEphemeral= */ false);
+        var previousState = FuseboxSessionState.from(mLocationBarDataProvider);
         previousState.autocompleteInput.setUserText(previousText);
         doReturn(previousSelectionStart).when(mUrlCoordinator).getSelectionStart();
         doReturn(previousSelectionEnd).when(mUrlCoordinator).getSelectionEnd();

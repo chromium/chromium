@@ -22,6 +22,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
@@ -251,6 +252,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
             mChromeAutocompleteSchemeClassifier.destroy();
             mChromeAutocompleteSchemeClassifier = null;
         }
+
         if (mNativeLocationBarModelAndroid == 0) return;
         LocationBarModelJni.get().destroy(mNativeLocationBarModelAndroid);
         mNativeLocationBarModelAndroid = 0;
@@ -317,6 +319,12 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         // we no longer wait for TAB_CLOSED events to remove this tab.  Otherwise there is a chance
         // we use this tab after {@link Tab#destroy()} is called.
         return mTab != null && mTab.isInitialized() && !mTab.isDestroyed();
+    }
+
+    @Override
+    public @Nullable UserDataHost getUserDataHost() {
+        if (!hasTab()) return null;
+        return assumeNonNull(getTab()).getUserDataHost();
     }
 
     @Override

@@ -1009,11 +1009,9 @@ class LocationBarMediator
     @VisibleForTesting
     boolean beginOrResumeInput(boolean activateNewSession) {
         // Do not instantiate a new ephemeral session unless we're activating it as well.
-        var session =
-                FuseboxSessionState.from(
-                        mLocationBarDataProvider, /* allowEphemeral= */ activateNewSession);
+        var session = FuseboxSessionState.from(mLocationBarDataProvider);
 
-        // Target session must exist and be either active, or activated.
+        // Target session must be either active, or activated.
         if (session == null || !(session.isSessionActive() || activateNewSession)) {
             endInput();
             return false;
@@ -1062,9 +1060,8 @@ class LocationBarMediator
         mAutocompleteCoordinator.endInput();
         mFuseboxCoordinator.endInput();
         mCurrentInput.getRequestTypeSupplier().removeObserver(mAutocompleteRequestTypeObserver);
-        var session =
-                FuseboxSessionState.from(mLocationBarDataProvider, /* allowEphemeral= */ false);
-        if (session != null) session.setSessionActive(false);
+        var state = FuseboxSessionState.from(mLocationBarDataProvider);
+        if (state != null) state.setSessionActive(false);
         mCurrentInput = null;
     }
 
@@ -1864,8 +1861,7 @@ class LocationBarMediator
     @Override
     public void onUrlChanged(boolean isTabChanging) {
         if (isTabChanging) {
-            FuseboxSessionState currentSession =
-                    FuseboxSessionState.from(mLocationBarDataProvider, /* allowEphemeral= */ false);
+            var currentSession = FuseboxSessionState.from(mLocationBarDataProvider);
             if (currentSession == null || !currentSession.isSessionActive()) {
                 updateUrl();
 

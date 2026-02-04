@@ -660,6 +660,7 @@ public class SearchActivity extends AsyncInitializationActivity
             mLocationBarCoordinator.destroy();
             mLocationBarCoordinator = null;
         }
+        mSearchBoxDataProvider.destroy();
         mHandler.removeCallbacksAndMessages(null);
         super.onDestroy();
     }

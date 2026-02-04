@@ -12,6 +12,7 @@ import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
 
+import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.build.annotations.NullMarked;
@@ -32,12 +33,17 @@ import org.chromium.url.GURL;
 public class TabBottomSheetFuseboxDataProvider implements LocationBarDataProvider {
     private final NonNullObservableSupplier<@ControlsPosition Integer> mToolbarPosition =
             ObservableSuppliers.createNonNull(ControlsPosition.TOP);
+    private final UserDataHost mUserDataHost = new UserDataHost();
     private @ColorInt int mPrimaryColor;
     private boolean mIsIncognito;
 
     void initialize(Context context, boolean isIncognito) {
         mPrimaryColor = ChromeColors.getPrimaryBackgroundColor(context, isIncognito);
         mIsIncognito = isIncognito;
+    }
+
+    void destroy() {
+        mUserDataHost.destroy();
     }
 
     @Override
@@ -78,6 +84,11 @@ public class TabBottomSheetFuseboxDataProvider implements LocationBarDataProvide
     @Override
     public boolean hasTab() {
         return false;
+    }
+
+    @Override
+    public UserDataHost getUserDataHost() {
+        return mUserDataHost;
     }
 
     @Override

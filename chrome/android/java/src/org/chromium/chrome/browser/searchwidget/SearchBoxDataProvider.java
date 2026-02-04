@@ -9,6 +9,7 @@ import android.content.Context;
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 
+import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.build.annotations.NullMarked;
@@ -28,6 +29,8 @@ import org.chromium.url.GURL;
 class SearchBoxDataProvider implements LocationBarDataProvider {
     private final NonNullObservableSupplier<@ControlsPosition Integer> mToolbarPosition =
             ObservableSuppliers.createNonNull(ControlsPosition.TOP);
+    private final UserDataHost mUserDataHost = new UserDataHost();
+
     private /* PageClassification */ int mPageClassification;
     private @ColorInt int mPrimaryColor;
     private @Nullable GURL mGurl;
@@ -44,6 +47,10 @@ class SearchBoxDataProvider implements LocationBarDataProvider {
     /* package */ void initialize(Context context, boolean isIncognito) {
         mPrimaryColor = ChromeColors.getPrimaryBackgroundColor(context, isIncognito);
         mIsIncognito = isIncognito;
+    }
+
+    public void destroy() {
+        mUserDataHost.destroy();
     }
 
     @Override
@@ -84,6 +91,11 @@ class SearchBoxDataProvider implements LocationBarDataProvider {
     @Override
     public boolean hasTab() {
         return false;
+    }
+
+    @Override
+    public UserDataHost getUserDataHost() {
+        return mUserDataHost;
     }
 
     @Override
