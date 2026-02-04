@@ -143,6 +143,14 @@ struct ForceSaveToCloudPrioritizationTestParams {
   const char* test_name;
 };
 
+std::string GetFileName(const std::string& full_path) {
+#if BUILDFLAG(IS_CHROMEOS)
+  return base::FilePath(full_path).BaseName().AsUTF8Unsafe();
+#else
+  return full_path;
+#endif  // BUILDFLAG(IS_CHROMEOS)
+}
+
 // Helper to generate responses
 enterprise_connectors::ContentAnalysisResponse CreateResponse(
     const std::vector<
@@ -180,6 +188,7 @@ chrome::cros::reporting::proto::UnscannedFileEvent CreateUnscannedFileEvent(
   event.set_destination("");
   event.set_trigger(
       chrome::cros::reporting::proto::DataTransferEventTrigger::FILE_DOWNLOAD);
+
   if (event_result ==
       chrome::cros::reporting::proto::EventResult::EVENT_RESULT_BYPASSED) {
     event.set_clicked_through(true);
@@ -187,7 +196,7 @@ chrome::cros::reporting::proto::UnscannedFileEvent CreateUnscannedFileEvent(
     event.set_clicked_through(false);
   }
 
-  event.set_file_name(file_name);
+  event.set_file_name(GetFileName(file_name));
   event.set_profile_identifier(profile_identifier);
   event.set_profile_user_name(user_name);
 
@@ -228,7 +237,7 @@ CreateDangerousDownloadEvent(
   referrers.set_url("https://example.com/download.exe");
   *event.add_referrers() = referrers;
 
-  event.set_file_name(file_name);
+  event.set_file_name(GetFileName(file_name));
   event.set_profile_identifier(profile_identifier);
   event.set_profile_user_name(user_name);
   event.set_threat_type(threat_type);
@@ -269,8 +278,8 @@ CreateDlpSensitiveDataEventForForceSaveToCloud(
   triggered_rule->set_rule_name("dlp_rule");
   triggered_rule->set_rule_id(0);
 
+  event.set_file_name(GetFileName(file_name));
   event.set_destination(destination);
-  event.set_file_name(file_name);
   event.set_profile_identifier(profile_identifier);
   event.set_profile_user_name(user_name);
 
@@ -2271,12 +2280,14 @@ TEST_P(DeepScanningReportingSourceTypeTest, MultipleFiles) {
         expected_events.emplace_back(expected_event);
       }
 
+      std::vector<std::string> expected_file_names;
+      for (const auto& path : {secondary_files_targets_[0].AsUTF8Unsafe(),
+                               secondary_files_targets_[1].AsUTF8Unsafe()}) {
+        expected_file_names.push_back(GetFileName(path));
+      }
+
       validator.ExpectSensitiveDataEvents(
-          std::move(expected_events),
-          {
-              secondary_files_targets_[0].AsUTF8Unsafe(),
-              secondary_files_targets_[1].AsUTF8Unsafe(),
-          },
+          std::move(expected_events), expected_file_names,
           {
               "DDAB29FF2C393EE52855D21A240EB05F775DF88E3CE347DF759F0C4B80356C3"
               "5",

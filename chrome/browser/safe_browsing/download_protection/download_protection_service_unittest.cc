@@ -199,6 +199,14 @@ const char kAndroidDownloadProtectionOutcomeHistogram[] =
 #endif
 
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+std::string GetFileName(const std::string& full_path) {
+#if BUILDFLAG(IS_CHROMEOS)
+  return base::FilePath(full_path).BaseName().AsUTF8Unsafe();
+#else
+  return full_path;
+#endif  // BUILDFLAG(IS_CHROMEOS)
+}
+
 chrome::cros::reporting::proto::SafeBrowsingDangerousDownloadEvent
 CreateDangerousDownloadEvent(const std::string& profile_identifier,
                              const std::string& file_name) {
@@ -219,8 +227,8 @@ CreateDangerousDownloadEvent(const std::string& profile_identifier,
   event.set_event_result(
       chrome::cros::reporting::proto::EventResult::EVENT_RESULT_BYPASSED);
   event.set_clicked_through(true);
-  event.set_file_name(file_name);
   event.set_profile_identifier(profile_identifier);
+  event.set_file_name(GetFileName(file_name));
 
   chrome::cros::reporting::proto::UrlInfo referrers;
   *event.add_referrers() = referrers;
@@ -248,8 +256,8 @@ CreateDlpSensitiveDataEvent(
   event.set_event_result(
       chrome::cros::reporting::proto::EventResult::EVENT_RESULT_BYPASSED);
   event.set_clicked_through(true);
-  event.set_file_name(file_name);
   event.set_profile_identifier(profile_identifier);
+  event.set_file_name(GetFileName(file_name));
 
   auto* triggered_rule = event.add_triggered_rule_info();
   triggered_rule->set_action(rule_action);
