@@ -77,10 +77,11 @@ String MIMETypeRegistry::GetMIMETypeForExtension(const String& ext) {
   return mime_type;
 }
 
-String MIMETypeRegistry::GetWellKnownMIMETypeForExtension(const String& ext) {
+String MIMETypeRegistry::GetWellKnownMIMETypeForExtension(
+    const StringView& ext) {
   // This method must be thread safe and should not consult the OS/registry.
   std::string mime_type;
-  net::GetWellKnownMimeTypeFromExtension(WebStringToFilePath(ext).value(),
+  net::GetWellKnownMimeTypeFromExtension(StringViewToFilePath(ext).value(),
                                          &mime_type);
   return String::FromUTF8(mime_type);
 }

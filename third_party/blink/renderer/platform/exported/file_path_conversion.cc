@@ -14,14 +14,13 @@
 
 namespace blink {
 
-base::FilePath StringToFilePath(const String& str) {
-  if (str.empty())
+base::FilePath StringViewToFilePath(const StringView& str) {
+  if (str.empty()) {
     return base::FilePath();
-
-  if (!str.Is8Bit()) {
-    return base::FilePath::FromUTF16Unsafe(str.View16());
   }
-
+  if (!str.Is8Bit()) {
+    return base::FilePath::FromUTF16Unsafe(std::u16string_view(str.Span16()));
+  }
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   StringUtf8Adaptor utf8(str);
   return base::FilePath::FromUTF8Unsafe(utf8.AsStringView());
@@ -30,6 +29,10 @@ base::FilePath StringToFilePath(const String& str) {
   return base::FilePath::FromUTF16Unsafe(
       std::u16string(span8.begin(), span8.end()));
 #endif
+}
+
+base::FilePath StringToFilePath(const String& str) {
+  return StringViewToFilePath(str);
 }
 
 base::FilePath WebStringToFilePath(const WebString& web_string) {

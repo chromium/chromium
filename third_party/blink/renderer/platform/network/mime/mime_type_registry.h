@@ -44,7 +44,7 @@ class PLATFORM_EXPORT MIMETypeRegistry {
   enum SupportsType { kNotSupported, kSupported, kMaybeSupported };
 
   static String GetMIMETypeForExtension(const String& extension);
-  static String GetWellKnownMIMETypeForExtension(const String& extension);
+  static String GetWellKnownMIMETypeForExtension(const StringView& extension);
 
   // Checks to see if the given mime type is supported.
   static bool IsSupportedMIMEType(const String& mime_type);
