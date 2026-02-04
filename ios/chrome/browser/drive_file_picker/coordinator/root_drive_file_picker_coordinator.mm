@@ -106,14 +106,15 @@
       initWithRootViewController:_viewController];
 
   _mediator = [[DriveFilePickerMediator alloc]
-      initWithWebState:_webState.get()
-            collection:DriveFilePickerCollection::GetRoot(_currentIdentity)
-               options:DriveFilePickerOptions::Default()];
+           initWithWebState:_webState.get()
+                 collection:DriveFilePickerCollection::GetRoot(_currentIdentity)
+                    options:DriveFilePickerOptions::Default()
+            identityManager:IdentityManagerFactory::GetForProfile(profile)
+      authenticationService:_authenticationService];
   _mediator.delegate = self;
   _mediator.driveFilePickerHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), DriveFilePickerCommands);
   _mediator.driveService = drive::DriveServiceFactory::GetForProfile(profile);
-  _mediator.identityManager = IdentityManagerFactory::GetForProfile(profile);
   _mediator.accountManagerService =
       ChromeAccountManagerServiceFactory::GetForProfile(profile);
   _mediator.imageFetcher = _imageFetcher.get();

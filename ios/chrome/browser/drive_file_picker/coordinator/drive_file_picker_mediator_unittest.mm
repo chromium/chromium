@@ -4,10 +4,15 @@
 
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_mediator.h"
 
+#import "base/memory/raw_ptr.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/image_fetcher/core/cached_image_fetcher.h"
 #import "components/image_fetcher/core/image_data_fetcher.h"
+#import "components/signin/public/base/signin_pref_names.h"
+#import "components/signin/public/identity_manager/identity_test_utils.h"
+#import "components/signin/public/identity_manager/primary_account_mutator.h"
 #import "ios/chrome/browser/drive/model/drive_list.h"
 #import "ios/chrome/browser/drive/model/drive_service_factory.h"
 #import "ios/chrome/browser/drive/model/test_drive_file_downloader.h"
@@ -20,15 +25,25 @@
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_constants.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_consumer.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_item.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/drive_file_picker_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h"
 #import "ios/chrome/browser/web/model/choose_file/fake_choose_file_controller.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -93,6 +108,21 @@ constexpr char kFakeIconURL[] = "http://www.example.com/image";
     didActivateSearch:(BOOL)searchActivated {
 }
 
+@end
+
+// Fake drive file picker commands for `DriveFilePickerMediator`.
+@interface FakeDriveFilePickerCommands : NSObject <DriveFilePickerCommands>
+@property(nonatomic, assign) BOOL hideDriveFilePickerCalled;
+@end
+
+@implementation FakeDriveFilePickerCommands
+- (void)showDriveFilePicker {
+}
+- (void)hideDriveFilePicker {
+  self.hideDriveFilePickerCalled = YES;
+}
+- (void)setDriveFilePickerSelectedIdentity:(id<SystemIdentity>)identity {
+}
 @end
 
 // Fake consumer for `DriveFilePickerMediator`.
@@ -222,7 +252,17 @@ class DriveFilePickerMediatorTest : public PlatformTest {
   void SetUp() final {
     PlatformTest::SetUp();
     scoped_feature_list_.InitAndEnableFeature(kIOSChooseFromDrive);
-    profile_ = TestProfileIOS::Builder().Build();
+    TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(
+        AuthenticationServiceFactory::GetInstance(),
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
+    builder.AddTestingFactory(
+        IdentityManagerFactory::GetInstance(),
+        base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
+                                BuildIdentityManagerForTests));
+    profile_ = std::move(builder).Build();
+    auth_service_ = AuthenticationServiceFactory::GetForProfile(profile_.get());
     drive_service_ = drive::DriveServiceFactory::GetForProfile(profile_.get());
     _identityManager = IdentityManagerFactory::GetForProfile(profile_.get());
     _accountManagerService =
@@ -246,6 +286,8 @@ class DriveFilePickerMediatorTest : public PlatformTest {
     choose_file_tab_helper_->StartChoosingFiles(std::move(controller));
     fake_delegate_ = [[FakeDriveFilePickerMediatorDelegate alloc] init];
     fake_consumer_ = [[FakeDriveFilePickerConsumer alloc] init];
+    fake_drive_file_picker_handler_ =
+        [[FakeDriveFilePickerCommands alloc] init];
     std::unique_ptr<TestDriveList> drive_list =
         std::make_unique<TestDriveList>([FakeSystemIdentity fakeIdentity1]);
     drive_list_ = drive_list.get();
@@ -261,6 +303,9 @@ class DriveFilePickerMediatorTest : public PlatformTest {
   // Initializes `mediator_`.
   void InitializeMediator(DriveFilePickerCollectionType collectionType) {
     id<SystemIdentity> identity = [FakeSystemIdentity fakeIdentity1];
+    signin::MakePrimaryAccountAvailable(
+        _identityManager, base::SysNSStringToUTF8(identity.userEmail),
+        signin::ConsentLevel::kSignin);
     std::unique_ptr<DriveFilePickerCollection> collection;
     switch (collectionType) {
       case DriveFilePickerCollectionType::kRoot:
@@ -286,13 +331,15 @@ class DriveFilePickerMediatorTest : public PlatformTest {
         break;
     }
     mediator_ = [[DriveFilePickerMediator alloc]
-        initWithWebState:web_state_.get()
-              collection:std::move(collection)
-                 options:DriveFilePickerOptions::Default()];
+             initWithWebState:web_state_.get()
+                   collection:std::move(collection)
+                      options:DriveFilePickerOptions::Default()
+              identityManager:_identityManager
+        authenticationService:auth_service_];
     mediator_.delegate = fake_delegate_;
     mediator_.driveService = drive_service_;
-    mediator_.identityManager = _identityManager;
     mediator_.accountManagerService = _accountManagerService;
+    mediator_.driveFilePickerHandler = fake_drive_file_picker_handler_;
     mediator_.imageFetcher = image_fetcher_.get();
     mediator_.metricsHelper = metrics_helper_;
     mediator_.consumer = fake_consumer_;
@@ -322,6 +369,7 @@ class DriveFilePickerMediatorTest : public PlatformTest {
     drive_service_ = nullptr;
     _identityManager = nullptr;
     _accountManagerService = nullptr;
+    auth_service_ = nullptr;
     drive_list_ = nullptr;
     file_downloader_ = nullptr;
     [mediator_ disconnect];
@@ -330,7 +378,9 @@ class DriveFilePickerMediatorTest : public PlatformTest {
   }
 
   using TaskEnvironment = web::WebTaskEnvironment;
-  TaskEnvironment task_environment_{TaskEnvironment::TimeSource::MOCK_TIME};
+  TaskEnvironment task_environment_{TaskEnvironment::MainThreadType::IO,
+                                    TaskEnvironment::TimeSource::MOCK_TIME};
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   base::test::ScopedFeatureList scoped_feature_list_;
   NSMutableSet<NSString*>* images_pending_;
   NSCache<NSString*, UIImage*>* image_cache_;
@@ -341,11 +391,13 @@ class DriveFilePickerMediatorTest : public PlatformTest {
   std::unique_ptr<TestProfileIOS> profile_;
   raw_ptr<signin::IdentityManager> _identityManager;
   raw_ptr<ChromeAccountManagerService> _accountManagerService;
+  raw_ptr<AuthenticationService> auth_service_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_factory_;
   std::unique_ptr<DriveFilePickerImageFetcher> image_fetcher_;
   FakeDriveFilePickerMediatorDelegate* fake_delegate_;
   FakeDriveFilePickerConsumer* fake_consumer_;
+  FakeDriveFilePickerCommands* fake_drive_file_picker_handler_;
   raw_ptr<TestDriveList> drive_list_;
   raw_ptr<TestDriveFileDownloader> file_downloader_;
   DriveFilePickerMetricsHelper* metrics_helper_;
@@ -545,4 +597,26 @@ TEST_F(DriveFilePickerMediatorTest, SelectFilter) {
   // Changing the filter should update the consumer and fetch new items.
   EXPECT_EQ(DriveFilePickerFilter::kOnlyShowPDFs, fake_consumer_.filter);
   EXPECT_TRUE(drive_list_->IsExecutingQuery());
+}
+
+// Tests that signing out closes the file picker.
+TEST_F(DriveFilePickerMediatorTest, SignoutClosesFilePicker) {
+  InitializeMediator(DriveFilePickerCollectionType::kFolder);
+  EXPECT_FALSE(fake_drive_file_picker_handler_.hideDriveFilePickerCalled);
+
+  // Sign out.
+  signin::ClearPrimaryAccount(_identityManager);
+
+  EXPECT_TRUE(fake_drive_file_picker_handler_.hideDriveFilePickerCalled);
+}
+
+// Tests that disabling sign-in closes the file picker.
+TEST_F(DriveFilePickerMediatorTest, SigninDisabledClosesFilePicker) {
+  InitializeMediator(DriveFilePickerCollectionType::kFolder);
+  EXPECT_FALSE(fake_drive_file_picker_handler_.hideDriveFilePickerCalled);
+
+  // Disable sign-in.
+  GetApplicationContext()->GetLocalState()->SetBoolean(
+      prefs::kSigninAllowedOnDevice, false);
+  EXPECT_TRUE(fake_drive_file_picker_handler_.hideDriveFilePickerCalled);
 }

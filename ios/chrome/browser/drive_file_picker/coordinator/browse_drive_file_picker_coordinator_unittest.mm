@@ -4,25 +4,40 @@
 
 #import "ios/chrome/browser/drive_file_picker/coordinator/browse_drive_file_picker_coordinator.h"
 
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
+#import "components/signin/public/identity_manager/identity_test_environment.h"
 #import "ios/chrome/browser/drive/model/drive_list.h"
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_collection.h"
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_image_fetcher.h"
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_metrics_helper.h"
 #import "ios/chrome/browser/drive_file_picker/coordinator/fake_drive_file_picker_handler.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/drive_file_picker_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h"
 #import "ios/chrome/browser/web/model/choose_file/fake_choose_file_controller.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #import "services/network/test/test_url_loader_factory.h"
 #import "testing/platform_test.h"
+
+namespace {
+const FakeSystemIdentity* kPrimaryIdentity = [FakeSystemIdentity fakeIdentity1];
+}
 
 // Test fixture for testing `BrowseDriveFilePickerCoordinator` class.
 class BrowseDriveFilePickerCoordinatorTest : public PlatformTest {
@@ -39,7 +54,16 @@ class BrowseDriveFilePickerCoordinatorTest : public PlatformTest {
     root_view_controller_ = [[UIViewController alloc] init];
     navigation_controller_ = [[UINavigationController alloc]
         initWithRootViewController:root_view_controller_];
-    profile_ = TestProfileIOS::Builder().Build();
+    TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(
+        IdentityManagerFactory::GetInstance(),
+        base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
+                                BuildIdentityManagerForTests));
+    builder.AddTestingFactory(
+        AuthenticationServiceFactory::GetInstance(),
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
+    profile_ = std::move(builder).Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
     handler_ = [[FakeDriveFilePickerHandler alloc] init];
     CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
@@ -54,6 +78,21 @@ class BrowseDriveFilePickerCoordinatorTest : public PlatformTest {
     std::unique_ptr<DriveFilePickerCollection> collection =
         DriveFilePickerCollection::GetRoot(identity)->GetFolder(
             @"Collection title", nil);
+    fake_system_identity_manager_ =
+        FakeSystemIdentityManager::FromSystemIdentityManager(
+            GetApplicationContext()->GetSystemIdentityManager());
+    AuthenticationService* authentication_service =
+        AuthenticationServiceFactory::GetForProfile(profile_.get());
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(profile_.get());
+    fake_system_identity_manager_->AddIdentity(kPrimaryIdentity);
+    signin::MakeAccountAvailable(
+        identity_manager,
+        signin::AccountAvailabilityOptionsBuilder()
+            .WithGaiaId(kPrimaryIdentity.gaiaId)
+            .Build(base::SysNSStringToUTF8(kPrimaryIdentity.userEmail)));
+    authentication_service->SignIn(kPrimaryIdentity,
+                                   signin_metrics::AccessPoint::kUnknown);
     coordinator_ = [[BrowseDriveFilePickerCoordinator alloc]
         initWithBaseNavigationViewController:navigation_controller_
                                      browser:browser_.get()
@@ -81,11 +120,14 @@ class BrowseDriveFilePickerCoordinatorTest : public PlatformTest {
   void TearDown() final {
     [coordinator_ stop];
     coordinator_ = nil;
+    fake_system_identity_manager_ = nil;
     PlatformTest::TearDown();
   }
 
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  raw_ptr<FakeSystemIdentityManager> fake_system_identity_manager_;
   UIViewController* root_view_controller_;
   UINavigationController* navigation_controller_;
   std::unique_ptr<TestProfileIOS> profile_;

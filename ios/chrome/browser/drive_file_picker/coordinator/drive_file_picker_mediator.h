@@ -34,6 +34,7 @@ class WebState;
 }
 
 class ChromeAccountManagerService;
+class AuthenticationService;
 
 // Mediator of the Drive file picker.
 @interface DriveFilePickerMediator : NSObject <DriveFilePickerMutator>
@@ -43,7 +44,6 @@ class ChromeAccountManagerService;
 @property(nonatomic, weak) id<DriveFilePickerConsumer> consumer;
 @property(nonatomic, weak) id<DriveFilePickerCommands> driveFilePickerHandler;
 @property(nonatomic, assign) raw_ptr<drive::DriveService> driveService;
-@property(nonatomic, assign) raw_ptr<signin::IdentityManager> identityManager;
 @property(nonatomic, assign) raw_ptr<ChromeAccountManagerService>
     accountManagerService;
 @property(nonatomic, assign) raw_ptr<DriveFilePickerImageFetcher> imageFetcher;
@@ -57,11 +57,13 @@ class ChromeAccountManagerService;
 @property(nonatomic, assign) std::optional<DriveFilePickerOptions>
     pendingOptions;
 
-// Initializes the mediator with a given `webState`.
+// Initializes the mediator.
 - (instancetype)initWithWebState:(web::WebState*)webState
                       collection:
                           (std::unique_ptr<DriveFilePickerCollection>)collection
                          options:(DriveFilePickerOptions)options
+                 identityManager:(signin::IdentityManager*)identityManager
+           authenticationService:(AuthenticationService*)authenticationService
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

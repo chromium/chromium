@@ -15,6 +15,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/timer/timer.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/drive/model/drive_file_downloader.h"
 #import "ios/chrome/browser/drive/model/drive_list.h"
@@ -30,6 +31,8 @@
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/drive_file_picker_commands.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_observer_bridge.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h"
@@ -53,6 +56,10 @@ constexpr base::TimeDelta kFetchItemsDelayToRetryMax = base::Seconds(10.0);
 constexpr base::TimeDelta kClearItemsDelay = base::Seconds(2.0);
 
 }  // namespace
+
+@interface DriveFilePickerMediator () <AuthenticationServiceObserving,
+                                       IdentityManagerObserverBridgeDelegate>
+@end
 
 @implementation DriveFilePickerMediator {
   base::WeakPtr<web::WebState> _webState;
@@ -98,20 +105,45 @@ constexpr base::TimeDelta kClearItemsDelay = base::Seconds(2.0);
   NSString* _nextPageToken;
   // A helper to report metrics.
   __weak DriveFilePickerMetricsHelper* _metricsHelper;
+  // Identity manager.
+  raw_ptr<signin::IdentityManager> _identityManager;
+  // Authentication service.
+  raw_ptr<AuthenticationService> _authenticationService;
+  // Observer for the identity manager.
+  std::unique_ptr<signin::IdentityManagerObserverBridge>
+      _identityManagerObserverBridge;
+  // Observer for the authentication service.
+  std::unique_ptr<AuthenticationServiceObserverBridge>
+      _authenticationServiceObserverBridge;
 }
 
 - (instancetype)initWithWebState:(web::WebState*)webState
                       collection:
                           (std::unique_ptr<DriveFilePickerCollection>)collection
-                         options:(DriveFilePickerOptions)options {
+                         options:(DriveFilePickerOptions)options
+                 identityManager:(signin::IdentityManager*)identityManager
+           authenticationService:(AuthenticationService*)authenticationService {
   self = [super init];
   if (self) {
     CHECK(webState);
     CHECK(collection);
+    CHECK(identityManager);
+    CHECK(authenticationService);
+    CHECK(identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
     _webState = webState->GetWeakPtr();
     _collection = std::move(collection);
     _options = options;
     _fetchedDriveItems = {};
+    _identityManager = identityManager;
+    _authenticationService = authenticationService;
+
+    _identityManagerObserverBridge =
+        std::make_unique<signin::IdentityManagerObserverBridge>(
+            _identityManager, self);
+    _authenticationServiceObserverBridge =
+        std::make_unique<AuthenticationServiceObserverBridge>(
+            _authenticationService, self);
+
     // Initialize the list of accepted types.
     ChooseFileTabHelper* tab_helper =
         ChooseFileTabHelper::FromWebState(webState);
@@ -121,6 +153,10 @@ constexpr base::TimeDelta kClearItemsDelay = base::Seconds(2.0);
     _allowsMultipleSelection = event.allow_multiple_files;
   }
   return self;
+}
+
+- (void)dealloc {
+  CHECK(!_authenticationService, base::NotFatalUntil::M155);
 }
 
 #pragma mark - Public properties
@@ -176,6 +212,9 @@ constexpr base::TimeDelta kClearItemsDelay = base::Seconds(2.0);
   _driveDownloader = nullptr;
   _accountManagerService = nullptr;
   _identityManager = nullptr;
+  _identityManagerObserverBridge.reset();
+  _authenticationService = nullptr;
+  _authenticationServiceObserverBridge.reset();
   _imageFetcher = nullptr;
 }
 
@@ -1182,6 +1221,28 @@ constexpr base::TimeDelta kClearItemsDelay = base::Seconds(2.0);
   if (_nextPageToken != nextPageToken) {
     _nextPageToken = nextPageToken;
     [self.consumer setNextPageAvailable:(_nextPageToken != nil)];
+  }
+}
+
+#pragma mark - IdentityManagerObserverBridgeDelegate
+
+- (void)onPrimaryAccountChanged:
+    (const signin::PrimaryAccountChangeEvent&)event {
+  switch (event.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
+    case signin::PrimaryAccountChangeEvent::Type::kCleared:
+      [self.driveFilePickerHandler hideDriveFilePicker];
+      break;
+    case signin::PrimaryAccountChangeEvent::Type::kSet:
+    case signin::PrimaryAccountChangeEvent::Type::kNone:
+      break;
+  }
+}
+
+#pragma mark - AuthenticationServiceObserving
+
+- (void)onServiceStatusChanged {
+  if (!_authenticationService->SigninEnabled()) {
+    [self.driveFilePickerHandler hideDriveFilePicker];
   }
 }
 
