@@ -796,12 +796,6 @@ void SetWebAppManifestFields(const WebAppInstallInfo& web_app_info,
   }
 
   web_app.SetPermissionsPolicy(web_app_info.permissions_policy);
-
-  if (web_app.file_handler_approval_state() == ApiApprovalState::kAllowed &&
-      !AreNewFileHandlersASubsetOfOld(web_app.file_handlers(),
-                                      web_app_info.file_handlers)) {
-    web_app.SetFileHandlerApprovalState(ApiApprovalState::kRequiresPrompt);
-  }
   web_app.SetFileHandlers(web_app_info.file_handlers);
   web_app.SetShareTarget(web_app_info.share_target);
   web_app.SetProtocolHandlers(web_app_info.protocol_handlers);

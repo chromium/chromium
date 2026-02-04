@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 
 #include <map>
+#include <optional>
 #include <utility>
 
 #include "ash/constants/web_app_id_constants.h"
@@ -39,6 +40,7 @@
 #include "chrome/browser/web_applications/os_integration/web_app_shortcuts_menu.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/proto/web_app.equal.h"
+#include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/scope_extension_info.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -218,6 +220,42 @@ void ApplyUserDisplayModeSyncMitigations(
   web_app.SetSyncProto(std::move(sync_proto));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+std::optional<ApiApprovalState> AdjustFileHandlerUserApproval(
+    const WebAppRegistrar& registrar,
+    base::optional_ref<const WebApp> existing_app,
+    const WebApp& new_app) {
+  // Reset the previously obtained file handler approval if the new app's file
+  // handlers form a superset of the existing (approved) file handlers.
+  // Force-installed IWAs are exempt from this rule.
+  if (existing_app &&
+      existing_app->file_handler_approval_state() ==
+          ApiApprovalState::kAllowed &&
+      !registrar.AppMatches(new_app.app_id(),
+                            WebAppFilter::PolicyInstalledIsolatedWebApp()) &&
+      !AreNewFileHandlersASubsetOfOld(existing_app->file_handlers(),
+                                      new_app.file_handlers())) {
+    return ApiApprovalState::kRequiresPrompt;
+  }
+
+  // Isolated sub-apps inherit the force installed parent app's file handler
+  // approval.
+  if (new_app.parent_app_id() &&
+      registrar.AppMatches(*new_app.parent_app_id(),
+                           WebAppFilter::PolicyInstalledIsolatedWebApp())) {
+    return registrar.GetAppFileHandlerUserApprovalState(
+        *new_app.parent_app_id());
+  }
+
+  // First-time IWA installations gain a file handler approval; the user can
+  // reset it in settings.
+  if (!existing_app &&
+      new_app.GetSources().Has(WebAppManagement::Type::kIwaPolicy)) {
+    return ApiApprovalState::kAllowed;
+  }
+
+  return std::nullopt;
+}
 
 }  // namespace
 
@@ -664,22 +702,27 @@ void WebAppInstallFinalizer::SetWebAppManifestFieldsAndWriteData(
     std::unique_ptr<WebApp> web_app,
     CommitCallback commit_callback,
     bool skip_icon_writes_on_download_failure) {
-  std::vector<proto::WebAppMigrationSource> old_sources;
-  const WebApp* existing_app =
-      provider_->registrar_unsafe().GetAppById(web_app->app_id());
-  if (existing_app) {
-    old_sources = existing_app->validated_migration_sources();
-  }
+  const auto& registrar = provider_->registrar_unsafe();
+  const WebApp* existing_app = registrar.GetAppById(web_app->app_id());
 
   SetWebAppManifestFields(web_app_info, *web_app,
                           skip_icon_writes_on_download_failure);
+  if (auto approval_state =
+          AdjustFileHandlerUserApproval(registrar, existing_app, *web_app)) {
+    web_app->SetFileHandlerApprovalState(*approval_state);
+  }
 
   // If the validated migration sources change, schedule a command to update
-  // the pending migration info field for all web apps to reflect these changes.
-  if (old_sources != web_app->validated_migration_sources() &&
-      base::FeatureList::IsEnabled(blink::features::kWebAppMigrationApi)) {
-    provider_->scheduler().ScheduleResolveWebAppPendingMigrationInfo(
-        base::DoNothing());
+  // the pending migration info field for all web apps to reflect these
+  // changes.
+  if (base::FeatureList::IsEnabled(blink::features::kWebAppMigrationApi)) {
+    auto old_sources = existing_app
+                           ? existing_app->validated_migration_sources()
+                           : std::vector<proto::WebAppMigrationSource>{};
+    if (old_sources != web_app->validated_migration_sources()) {
+      provider_->scheduler().ScheduleResolveWebAppPendingMigrationInfo(
+          base::DoNothing());
+    }
   }
 
   webapps::AppId app_id = web_app->app_id();

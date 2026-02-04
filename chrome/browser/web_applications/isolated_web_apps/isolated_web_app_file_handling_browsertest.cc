@@ -10,14 +10,27 @@
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/commands/launch_web_app_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/fake_iwa_runtime_data_provider_mixin.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test_update_server.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/policy_test_utils.h"
+#include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
+#include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
+#include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_launch_params.h"
+#include "components/webapps/isolated_web_apps/test_support/signing_keys.h"
+#include "components/webapps/isolated_web_apps/types/iwa_version.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_launcher.h"
+#include "third_party/blink/public/common/features.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
@@ -29,6 +42,8 @@ namespace web_app {
 class IsolatedWebAppFileHandlingBrowserTest
     : public IsolatedWebAppBrowserTestHarness {
  public:
+  IsolatedWebAppFileHandlingBrowserTest() = default;
+
   WebAppFileHandlerManager& file_handler_manager() {
     return WebAppProvider::GetForTest(profile())
         ->os_integration_manager()
@@ -157,5 +172,201 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppFileHandlingBrowserTest,
   EXPECT_EQ(tasks[0].task_descriptor.app_id, app_id);
 }
 #endif
+
+class IsolatedWebAppFileHandlingApprovalBrowserTest
+    : public IsolatedWebAppBrowserTestHarness,
+      public testing::WithParamInterface<ApiApprovalState> {
+ public:
+  IsolatedWebAppFileHandlingApprovalBrowserTest() = default;
+
+ protected:
+  WebAppProvider& provider() { return *WebAppProvider::GetForTest(profile()); }
+
+  IsolatedWebAppUrlInfo InstallApp(IsolatedWebAppBuilder builder) {
+    auto web_bundle_id = test::GetDefaultEd25519WebBundleId();
+    auto iwa_url_info =
+        IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id);
+
+    data_provider_->Update(
+        [&](auto& update) { update.AddToManagedAllowlist(web_bundle_id); });
+
+    WebAppTestInstallObserver observer(profile());
+    observer.BeginListening({iwa_url_info.app_id()});
+
+    update_server_.AddBundle(
+        builder.BuildBundle(web_bundle_id, {test::GetDefaultEd25519KeyPair()}));
+
+    test::AddForceInstalledIwaToPolicy(
+        profile()->GetPrefs(),
+        update_server_.CreateForceInstallPolicyEntry(web_bundle_id));
+
+    EXPECT_EQ(iwa_url_info.app_id(), observer.Wait());
+    return iwa_url_info;
+  }
+
+  void UpdateApp(ManifestBuilder manifest_builder) {
+    auto web_bundle_id = test::GetDefaultEd25519WebBundleId();
+    auto url_info =
+        IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id);
+
+    update_server_.AddBundle(
+        IsolatedWebAppBuilder(std::move(manifest_builder))
+            .BuildBundle(web_bundle_id, {test::GetDefaultEd25519KeyPair()}));
+
+    WebAppTestManifestUpdatedObserver manifest_updated_observer(
+        &provider().install_manager());
+    manifest_updated_observer.BeginListening({url_info.app_id()});
+
+    EXPECT_THAT(
+        provider().isolated_web_app_update_manager().DiscoverUpdatesNow(),
+        testing::Eq(1ul));
+
+    manifest_updated_observer.Wait();
+  }
+
+  base::test::ScopedFeatureList features_{blink::features::kDesktopPWAsSubApps};
+  FakeIwaRuntimeDataProviderMixin data_provider_{&mixin_host_};
+  IsolatedWebAppTestUpdateServer update_server_;
+};
+
+IN_PROC_BROWSER_TEST_P(IsolatedWebAppFileHandlingApprovalBrowserTest,
+                       UpdatePreservesState) {
+  ApiApprovalState target_state = GetParam();
+
+  IsolatedWebAppUrlInfo url_info = InstallApp(IsolatedWebAppBuilder(
+      ManifestBuilder().SetVersion("1.0.0").AddFileHandler(
+          "/", {{"text/*", {".txt"}}})));
+
+  EXPECT_EQ(provider().registrar_unsafe().GetAppFileHandlerUserApprovalState(
+                url_info.app_id()),
+            ApiApprovalState::kAllowed);
+
+  if (target_state == ApiApprovalState::kDisallowed) {
+    base::test::TestFuture<void> future;
+    provider().scheduler().PersistFileHandlersUserChoice(
+        url_info.app_id(), /*allowed=*/false, future.GetCallback());
+    EXPECT_TRUE(future.Wait());
+  }
+
+  EXPECT_EQ(provider().registrar_unsafe().GetAppFileHandlerUserApprovalState(
+                url_info.app_id()),
+            target_state);
+
+  UpdateApp(ManifestBuilder().SetVersion("2.0.0").AddFileHandler(
+      "/", {{"text/*", {".txt"}}, {"application/msword", {".docx"}}}));
+
+  EXPECT_EQ(provider().registrar_unsafe().GetAppFileHandlerUserApprovalState(
+                url_info.app_id()),
+            target_state);
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_P(IsolatedWebAppFileHandlingApprovalBrowserTest,
+                       SubAppInheritsState) {
+  ApiApprovalState target_state = GetParam();
+
+  auto parent_builder =
+      IsolatedWebAppBuilder(
+          ManifestBuilder()
+              .AddFileHandler("/", {{"text/*", {".txt"}}})
+              .AddPermissionsPolicy(
+                  network::mojom::PermissionsPolicyFeature::kSubApps,
+                  /*self=*/true,
+                  /*origins=*/{}))
+          .AddResource("/sub1/page.html", R"(
+            <html>
+              <head>
+                <link rel="manifest" href="./manifest.webmanifest">
+              </head>
+            </html>
+          )",
+                       "text/html")
+          .AddResource("/sub1/manifest.webmanifest", R"({
+             "name": "sub1",
+             "start_url": "page.html",
+             "display": "standalone",
+             "icons": [
+                {
+                  "src": "/sub1/icon.png",
+                  "type": "image/png",
+                  "sizes": "256x256",
+                  "purpose": "any maskable"
+                }
+             ],
+             "file_handlers": [
+               {
+                 "action": "page.html",
+                 "accept": {
+                   "text/plain": [".txt"]
+                 }
+               }
+             ]
+          })",
+                       "application/manifest+json")
+          .AddIconAsPng("/sub1/icon.png", CreateSquareIcon(256, SK_ColorBLUE));
+
+  IsolatedWebAppUrlInfo parent_url_info = InstallApp(std::move(parent_builder));
+  auto parent_app_id = parent_url_info.app_id();
+
+  EXPECT_EQ(provider().registrar_unsafe().GetAppFileHandlerUserApprovalState(
+                parent_app_id),
+            ApiApprovalState::kAllowed);
+
+  if (target_state == ApiApprovalState::kDisallowed) {
+    base::test::TestFuture<void> future;
+    provider().scheduler().PersistFileHandlersUserChoice(
+        parent_app_id, /*allowed=*/false, future.GetCallback());
+    EXPECT_TRUE(future.Wait());
+  }
+
+  EXPECT_EQ(provider().registrar_unsafe().GetAppFileHandlerUserApprovalState(
+                parent_app_id),
+            target_state);
+
+  // 2. Set policy to auto-accept sub-apps for this parent.
+  profile()->GetPrefs()->SetList(
+      prefs::kSubAppsAPIsAllowedWithoutGestureAndAuthorizationForOrigins,
+      base::ListValue().Append(parent_url_info.origin().Serialize()));
+
+  // 3. Open parent app and call navigator.subApps.add.
+  auto* iwa_frame = OpenApp(parent_app_id);
+
+  WebAppTestInstallObserver observer(profile());
+  observer.BeginListening({});
+
+  EXPECT_THAT(EvalJs(iwa_frame, R"(
+    navigator.subApps.add({
+      "/sub1/page.html": {"installURL": "/sub1/page.html"}
+    })
+  )"),
+              content::EvalJsResult::IsOk());
+
+  auto sub_app_id = observer.Wait();
+  EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
+      sub_app_id, WebAppFilter::IsIsolatedSubApp()));
+
+  // 4. Expect that the file handler approval is inherited.
+  EXPECT_EQ(provider().registrar_unsafe().GetAppFileHandlerUserApprovalState(
+                sub_app_id),
+            target_state);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    IsolatedWebAppFileHandlingApprovalBrowserTest,
+    ::testing::Values(ApiApprovalState::kAllowed,
+                      ApiApprovalState::kDisallowed),
+    [](const ::testing::TestParamInfo<
+        IsolatedWebAppFileHandlingApprovalBrowserTest::ParamType>& info) {
+      switch (info.param) {
+        case ApiApprovalState::kAllowed:
+          return "Allowed";
+        case ApiApprovalState::kDisallowed:
+          return "Disallowed";
+        default:
+          NOTREACHED();
+      }
+    });
 
 }  // namespace web_app
