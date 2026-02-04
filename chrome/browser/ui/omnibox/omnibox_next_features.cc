@@ -260,9 +260,8 @@ CreateQueryControllerConfigParams() {
   auto config_params = std::make_unique<
       contextual_search::ContextualSearchContextController::ConfigParams>();
   config_params->send_lns_surface = true;
-  config_params->enable_viewport_images = kEnableViewportImages.Get();
-  config_params->attach_page_title_and_url_to_suggest_requests =
-      kAttachPageTitleAndUrlToSuggestRequest.Get();
+  config_params->enable_viewport_images = true;
+  config_params->attach_page_title_and_url_to_suggest_requests = false;
   return config_params;
 }
 
@@ -284,10 +283,6 @@ const base::FeatureParam<int> kContextMenuMaxTabSuggestions(
     &internal::kWebUIOmniboxAimPopup,
     "Omnibox_ContextMenuMaxTabSuggestions",
     5);
-const base::FeatureParam<bool> kEnableViewportImages(
-    &internal::kWebUIOmniboxAimPopup,
-    "EnableViewportImages",
-    true);
 const base::FeatureParam<int> kMaxNumFiles(&internal::kWebUIOmniboxAimPopup,
                                            "MaxNumFiles",
                                            10);
@@ -362,10 +357,6 @@ const base::FeatureParam<bool> kEnableContextDragAndDrop(
     &internal::kWebUIOmniboxAimPopup,
     "EnableContextDragAndDrop",
     true);
-const base::FeatureParam<bool> kAttachPageTitleAndUrlToSuggestRequest(
-    &internal::kWebUIOmniboxAimPopup,
-    "AttachPageTitleAndUrlToSuggestRequest",
-    false);
 
 FeatureConfig::FeatureConfig() : config(GetNTPComposeboxConfig()) {}
 

@@ -61,8 +61,6 @@ extern const base::FeatureParam<bool> kContextMenuEnableMultiTabSelection;
 extern const base::FeatureParam<int> kContextMenuMaxTabSuggestions;
 // Whether to allow drag and drop files in the composebox.
 extern const base::FeatureParam<bool> kEnableContextDragAndDrop;
-// Whether or not to enable viewport images with page context uploads.
-extern const base::FeatureParam<bool> kEnableViewportImages;
 // The maximum number of file attachments to upload.
 extern const base::FeatureParam<int> kMaxNumFiles;
 // Whether to show image suggestions under the composebox.
@@ -101,8 +99,6 @@ extern const base::FeatureParam<bool> kShowVoiceSearchInSteadyComposebox;
 extern const base::FeatureParam<bool> kShowVoiceSearchInExpandedComposebox;
 // Whether to auto submit voice queries in the composebox.
 extern const base::FeatureParam<bool> kAutoSubmitVoiceSearchQuery;
-// Whether to attach the page title and URL to the suggest request.
-extern const base::FeatureParam<bool> kAttachPageTitleAndUrlToSuggestRequest;
 
 // Returns true if the `kWebUIOmniboxAimPopup` base::Feature is enabled.
 // This does NOT include user eligibility checks. Most UI code should use the
