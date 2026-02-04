@@ -3,5 +3,8 @@
 # found in the LICENSE file.
 
 source_set("intelligence_api") {
-  sources = [ "page_context_wrapper_api.h" ]
+  sources = [
+    "classification_metrics_tab_helper_api.h",
+    "page_context_wrapper_api.h",
+  ]
 }

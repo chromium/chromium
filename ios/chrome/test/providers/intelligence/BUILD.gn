@@ -4,7 +4,10 @@
 
 source_set("intelligence") {
   testonly = true
-  sources = [ "page_context_wrapper_api.mm" ]
+  sources = [
+    "classification_metrics_tab_helper_api.mm",
+    "page_context_wrapper_api.mm",
+  ]
   deps =
       [ "//ios/public/provider/chrome/browser/intelligence:intelligence_api" ]
 }
