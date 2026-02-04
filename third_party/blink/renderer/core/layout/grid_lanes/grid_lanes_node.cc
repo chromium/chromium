@@ -49,9 +49,16 @@ GridLanesItemGroups GridLanesNode::CollectItemGroups(
       continue;
     }
 
+    // Determine baseline-sharing group for this item.
+    std::optional<BaselineGroup> baseline_group = std::nullopt;
+    if (grid_lanes_item->IsBaselineAligned(grid_axis_direction)) {
+      baseline_group = grid_lanes_item->BaselineGroup(grid_axis_direction);
+    }
+
     const auto item_properties = GridLanesItemGroupProperties(
         /*item_span=*/line_resolver.ResolveGridPositionsFromStyle(
-            child.Style(), grid_axis_direction));
+            child.Style(), grid_axis_direction),
+        baseline_group);
 
     const auto& item_span = item_properties.Span();
     // Keep a running sum of unplaced item spans to determine where to
