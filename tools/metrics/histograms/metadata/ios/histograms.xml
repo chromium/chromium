@@ -4993,7 +4993,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.PaymentsBottomSheetV3.TimeToTrigger.{Outcome}" units="ms"
+<histogram name="IOS.PaymentsBottomSheet.TimeToTrigger.{Outcome}" units="ms"
     expires_after="2026-07-01">
   <owner>vincb@google.com</owner>
   <owner>noemies@google.com</owner>
