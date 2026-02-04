@@ -98,6 +98,7 @@ android_library("test_support_java") {
   deps = [
     ":java",
     "//base:base_java",
+    "//base:base_java_test_support",
     "//chrome/browser/profiles/android:java",
     "//third_party/junit",
     "//ui/android:ui_no_recycler_view_java",
@@ -105,11 +106,13 @@ android_library("test_support_java") {
 
   if (enable_extensions_core) {
     sources += [
+      "javatests/src/org/chromium/chrome/browser/ui/extensions/ExtensionTestMessageListener.java",
       "javatests/src/org/chromium/chrome/browser/ui/extensions/ExtensionTestUtils.java",
       "javatests/src/org/chromium/chrome/browser/ui/extensions/FakeExtensionActionsBridge.java",
       "javatests/src/org/chromium/chrome/browser/ui/extensions/FakeExtensionActionsBridgeRule.java",
     ]
     deps += [
+      "//chrome/browser/flags:java",
       "//chrome/browser/ui/browser_window/public/android:java",
       "//content/public/android:content_full_java",
       "//extensions/browser:extension_action_enums",
@@ -125,13 +128,18 @@ static_library("test_support") {
   deps = []
 
   if (enable_extensions_core) {
-    sources += [ "extension_test_utils.cc" ]
+    sources += [
+      "extension_test_message_listener_android.cc",
+      "extension_test_message_listener_android.h",
+      "extension_test_utils.cc",
+    ]
     deps += [
       "//base",
       "//chrome/browser/extensions:test_support",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui/android/extensions:test_support_jni_headers",
       "//chrome/browser/ui/toolbar",
+      "//extensions:test_support",
       "//extensions/browser",
       "//extensions/common",
     ]
@@ -140,7 +148,10 @@ static_library("test_support") {
 
 if (enable_extensions_core) {
   generate_jni("test_support_jni_headers") {
-    sources = [ "javatests/src/org/chromium/chrome/browser/ui/extensions/ExtensionTestUtils.java" ]
+    sources = [
+      "javatests/src/org/chromium/chrome/browser/ui/extensions/ExtensionTestMessageListener.java",
+      "javatests/src/org/chromium/chrome/browser/ui/extensions/ExtensionTestUtils.java",
+    ]
   }
 
   robolectric_library("junit") {
