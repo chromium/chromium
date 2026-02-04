@@ -11,6 +11,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/network_interfaces.h"
 #include "net/base/sys_addrinfo.h"
+#include "net/http/http_status_code.h"
 #include "url/gurl.h"
 
 namespace {
@@ -233,6 +234,14 @@ HttpServer::~HttpServer() = default;
 
 void HttpServer::OnWebSocketRequest(int connection_id,
                                     const net::HttpServerRequestInfo& info) {
+  if (!RequestIsSafeToServe(info, allow_remote_, whitelisted_ips_,
+                            allowed_origins_)) {
+    server_->Send(connection_id, net::HTTP_FORBIDDEN,
+                  "Host header or origin header is specified and is not "
+                  "whitelisted or localhost.",
+                  "text/html", TRAFFIC_ANNOTATION_FOR_TESTS);
+    return;
+  }
   cmd_runner_->PostTask(
       FROM_HERE, base::BindOnce(&HttpHandler::OnWebSocketRequest, handler_,
                                 this, connection_id, info));
