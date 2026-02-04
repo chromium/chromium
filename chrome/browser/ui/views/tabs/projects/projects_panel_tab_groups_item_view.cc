@@ -39,6 +39,10 @@ constexpr auto kMoreButtonSize = gfx::Size(24, 24);
 // margins.
 constexpr int kSpacingBetweenChildren = 10;
 
+// Insets for the more button.
+constexpr gfx::Insets kMoreButtonMargins =
+    gfx::Insets::TLBR(0, kSpacingBetweenChildren, 0, 0);
+
 // Insets for share Tab icon.
 constexpr gfx::Insets kShareIconMargins =
     gfx::Insets::TLBR(4, 4 + kSpacingBetweenChildren, 4, 4);
@@ -51,9 +55,6 @@ constexpr auto kTabGroupsIconMargins = gfx::Insets(6);
 
 // The margins for the Tab groups.
 constexpr auto kTabGroupsItemMargins = gfx::Insets(4);
-
-// The preferred size for the Tab groups item.
-constexpr auto kTabGroupsItemPreferredSize = gfx::Size(0, 32);
 
 // Margins for Tab group title.
 constexpr gfx::Insets kTitleMargins =
@@ -104,7 +105,8 @@ ProjectsPanelTabGroupsItemView::ProjectsPanelTabGroupsItemView(
   title_->SetBackgroundColor(SK_ColorTRANSPARENT);
   title_->SetProperty(
       views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
+      views::FlexSpecification(views::LayoutOrientation::kHorizontal,
+                               views::MinimumFlexSizeRule::kScaleToMinimum,
                                views::MaximumFlexSizeRule::kUnbounded));
 
   if (group.is_shared_tab_group()) {
@@ -135,7 +137,7 @@ ProjectsPanelTabGroupsItemView::ProjectsPanelTabGroupsItemView(
   more_button_->SetTooltipText(more_button_accessibility_label);
   more_button_->SetProperty(views::kElementIdentifierKey,
                             kProjectsPanelTabGroupsItemViewMoreButtonElementId);
-  more_button_->SetProperty(views::kMarginsKey, kShareIconMargins);
+  more_button_->SetProperty(views::kMarginsKey, kMoreButtonMargins);
   more_button_state_subscription_ =
       more_button_->AddStateChangedCallback(base::BindRepeating(
           &ProjectsPanelTabGroupsItemView::OnMoreButtonStateChanged,
@@ -148,10 +150,6 @@ ProjectsPanelTabGroupsItemView::ProjectsPanelTabGroupsItemView(
         std::move(callback).Run(group_guid);
       },
       std::move(pressed_callback), group.saved_guid()));
-
-  // This item should expand its width to fit its container, but has a
-  // preferred height.
-  SetPreferredSize(kTabGroupsItemPreferredSize);
 
   SetProperty(views::kElementIdentifierKey,
               kProjectsPanelTabGroupsItemViewElementId);

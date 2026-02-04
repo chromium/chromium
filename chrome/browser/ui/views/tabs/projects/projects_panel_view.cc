@@ -42,6 +42,7 @@
 #include "ui/views/view_class_properties.h"
 
 namespace {
+constexpr ui::ColorId kProjectPanelBackgroundColor = ui::kColorFrameActive;
 constexpr int kProjectPanelWidth = 240;
 constexpr gfx::Insets kRegionInteriorMargins = gfx::Insets::VH(12, 12);
 // The padding around a list header.
@@ -52,6 +53,21 @@ void SetListTitleProperties(views::Label& label) {
   label.SetTextStyle(views::style::TextStyle::STYLE_HEADLINE_5);
   label.SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_TO_HEAD);
   label.SetProperty(views::kMarginsKey, kListHeaderPadding);
+}
+
+void SetScrollViewProperties(views::ScrollView& scroll_view) {
+  scroll_view.SetBackgroundColor(kProjectPanelBackgroundColor);
+  scroll_view.SetHorizontalScrollBarMode(
+      views::ScrollView::ScrollBarMode::kDisabled);
+  scroll_view.SetVerticalScrollBarMode(
+      views::ScrollView::ScrollBarMode::kHiddenButEnabled);
+  scroll_view.SetOverflowGradientMask(
+      views::ScrollView::GradientDirection::kVertical);
+  scroll_view.SetUseContentsPreferredSize(true);
+  scroll_view.SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kPreferred));
 }
 
 static bool disable_animations_for_testing_ = false;
@@ -96,7 +112,7 @@ ProjectsPanelView::ProjectsPanelView(BrowserWindowInterface* browser,
           views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
                                    views::MaximumFlexSizeRule::kPreferred));
   content_container_->SetBackground(
-      views::CreateSolidBackground(ui::kColorFrameActive));
+      views::CreateSolidBackground(kProjectPanelBackgroundColor));
 
   panel_controller_ = std::make_unique<ProjectsPanelController>(
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(
@@ -111,13 +127,17 @@ ProjectsPanelView::ProjectsPanelView(BrowserWindowInterface* browser,
   groups_list_title->SetText(l10n_util::GetStringUTF16(IDS_TAB_GROUPS_TITLE));
   SetListTitleProperties(*groups_list_title);
 
-  tab_groups_view_ = content_container_->AddChildView(
+  tab_groups_scroll_view_ =
+      content_container_->AddChildView(std::make_unique<views::ScrollView>(
+          views::ScrollView::ScrollWithLayers::kEnabled));
+  tab_groups_view_ = tab_groups_scroll_view_->SetContents(
       std::make_unique<ProjectsPanelTabGroupsView>(
           root_action_item_.get(), action_view_controller_.get(),
           base::BindRepeating(&ProjectsPanelView::OnTabGroupButtonPressed,
                               base::Unretained(this)),
           base::BindRepeating(&ProjectsPanelView::OnTabGroupMoreButtonPressed,
                               base::Unretained(this))));
+  SetScrollViewProperties(*tab_groups_scroll_view_);
 
   if (tabs::IsThreadsInProjectsPanelEnabled()) {
     auto* threads_list_title =
@@ -133,15 +153,7 @@ ProjectsPanelView::ProjectsPanelView(BrowserWindowInterface* browser,
     // available.
     threads_scroll_view_->SetContents(
         std::make_unique<ProjectsPanelRecentThreadsView>(threads_));
-    threads_scroll_view_->SetBackgroundColor(std::nullopt);
-    threads_scroll_view_->SetHorizontalScrollBarMode(
-        views::ScrollView::ScrollBarMode::kDisabled);
-    threads_scroll_view_->SetOverflowGradientMask(
-        views::ScrollView::GradientDirection::kVertical);
-    threads_scroll_view_->SetProperty(
-        views::kFlexBehaviorKey,
-        views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                                 views::MaximumFlexSizeRule::kUnbounded));
+    SetScrollViewProperties(*threads_scroll_view_);
   }
 
   resize_animation_.SetSlideDuration(

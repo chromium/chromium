@@ -94,6 +94,7 @@ class ProjectsPanelView : public views::View, gfx::AnimationDelegate {
   raw_ptr<views::View> content_container_ = nullptr;
   raw_ptr<ProjectsPanelControlsView> controls_view_ = nullptr;
   raw_ptr<ProjectsPanelTabGroupsView> tab_groups_view_ = nullptr;
+  raw_ptr<views::ScrollView> tab_groups_scroll_view_ = nullptr;
   raw_ptr<views::ScrollView> threads_scroll_view_ = nullptr;
 
   // TODO(crbug.com/475300882): Remove once we fetch thread data from the
