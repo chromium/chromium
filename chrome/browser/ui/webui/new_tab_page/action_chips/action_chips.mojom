@@ -44,6 +44,9 @@ interface ActionChipsHandler {
   // Once the retrieval is complete, Page::OnActionChipsChanged is called to
   // notify the UI.
   StartActionChipsRetrieval();
+
+  // Activates a metrics funnel for the session.
+  ActivateMetricsFunnel(string funnel_name);
 };
 
 // Interface for the page-side handler receiving information from the browser.

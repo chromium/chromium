@@ -235,6 +235,14 @@ TEST_F(ContextualSearchboxHandlerTest, SessionStarted) {
   EXPECT_EQ(state_arg, SessionState::kSessionStarted);
 }
 
+TEST_F(ContextualSearchboxHandlerTest, ActivateMetricsFunnel) {
+  auto* metrics_recorder_ptr = GetMetricsRecorderPtr();
+  ASSERT_THAT(metrics_recorder_ptr, testing::NotNull());
+
+  EXPECT_CALL(*metrics_recorder_ptr, ActivateMetricsFunnel("AiMode")).Times(1);
+  handler().ActivateMetricsFunnel("AiMode");
+}
+
 TEST_F(ContextualSearchboxHandlerTest, AddFile_Pdf) {
   searchbox::mojom::SelectedFileInfoPtr file_info =
       searchbox::mojom::SelectedFileInfo::New();

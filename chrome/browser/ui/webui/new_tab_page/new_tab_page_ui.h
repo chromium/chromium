@@ -247,6 +247,11 @@ class NewTabPageUI
   static base::RefCountedMemory* GetFaviconResourceBytes(
       ui::ResourceScaleFactor scale_factor);
 
+  // Lazily creates and returns a reference to the owned contextual search
+  // session handle for `realbox_handler_` and `composebox_handler_`.
+  contextual_search::ContextualSearchSessionHandle*
+  GetOrCreateContextualSessionHandle();
+
  private:
   // new_tab_page::mojom::PageHandlerFactory:
   void CreatePageHandler(
@@ -326,11 +331,6 @@ class NewTabPageUI
   // Based on the current profile and NTP promo controller, determine which
   // type of NTP promos can be shown, if any.
   std::string_view GetNtpPromoType();
-
-  // Lazily creates and returns a reference to the owned contextual search
-  // session handle for `realbox_handler_` and `composebox_handler_`.
-  contextual_search::ContextualSearchSessionHandle*
-  GetOrCreateContextualSessionHandle();
 
   // The counter for NewTabPage.Count UMA metrics.
   static int instance_count_;

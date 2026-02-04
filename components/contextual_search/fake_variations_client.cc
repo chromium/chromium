@@ -12,7 +12,10 @@ bool FakeVariationsClient::IsOffTheRecord() const {
 
 variations::mojom::VariationsHeadersPtr
 FakeVariationsClient::GetVariationsHeaders() const {
-  return variations::mojom::VariationsHeaders::New();
+  auto variations = variations::mojom::VariationsHeaders::New();
+  variations->headers_map.insert(
+      {variations::mojom::GoogleWebVisibility::FIRST_PARTY, "header"});
+  return variations;
 }
 
 }  // namespace contextual_search

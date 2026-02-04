@@ -166,6 +166,7 @@ TEST_F(ContextualSearchServiceTest, PendingContextTokens) {
   auto session_handle = service_->CreateSessionForTesting(
       std::move(mock_controller), std::move(metrics_recorder));
   session_handle->CheckSearchContentSharingSettings(&pref_service_);
+  session_handle->NotifySessionStarted();
 
   // Add some dummy tokens.
   base::UnguessableToken token1 = base::UnguessableToken::Create();
@@ -249,6 +250,7 @@ TEST_F(ContextualSearchServiceTest, FileInfoTest) {
   auto session_handle = service_->CreateSessionForTesting(
       std::move(mock_controller), std::move(metrics_recorder));
   session_handle->CheckSearchContentSharingSettings(&pref_service_);
+  session_handle->NotifySessionStarted();
 
   // Create tokens and FileInfo objects.
   base::UnguessableToken token1 = base::UnguessableToken::Create();
@@ -371,6 +373,7 @@ TEST_F(ContextualSearchServiceTest, NullController) {
       /*invocation_source=*/std::nullopt);
   ASSERT_THAT(session_handle, NotNull());
   session_handle->CheckSearchContentSharingSettings(&pref_service_);
+  session_handle->NotifySessionStarted();
 
   // Add some dummy tokens.
   session_handle->GetUploadedContextTokensForTesting().push_back(

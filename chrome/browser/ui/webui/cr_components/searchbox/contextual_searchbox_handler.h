@@ -169,6 +169,7 @@ class ContextualSearchboxHandler
   void ResetInputStateModel();
   void SetActiveToolMode(omnibox::ToolMode tool) override;
   void SetActiveModelMode(omnibox::ModelMode model) override;
+  void ActivateMetricsFunnel(const std::string& funnel_name) override;
   // NOTE: This method is only intended for debugging purposes
   // (chrome://omnibox/aim-eligibility).
   void InitializeInputStateModelForDebugging();

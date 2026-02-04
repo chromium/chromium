@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <set>
 #include <string>
 
 #include "components/contextual_search/contextual_search_types.h"
@@ -82,6 +83,8 @@ struct SessionMetrics {
   // The number of times a tab with a duplicate title is added as context to the
   // session.
   int tab_with_duplicate_title_clicked_count = 0;
+  // The set of active funnels for this session.
+  std::set<std::string> active_funnels;
 };
 
 class ContextualSearchMetricsRecorder {
@@ -92,6 +95,9 @@ class ContextualSearchMetricsRecorder {
   // Should be called when there are session state changes to keep track of
   // session state metrics. Virtual for testing.
   virtual void NotifySessionStateChanged(SessionState session_state);
+
+  // Activates a funnel for metrics logging.
+  virtual void ActivateMetricsFunnel(const std::string& funnel_name);
 
   virtual void OnFileUploadStatusChanged(
       lens::MimeType file_mime_type,

@@ -1212,6 +1212,7 @@ export class SearchboxElement extends SearchboxElementBase implements
   protected onComposeButtonClick_(e: CustomEvent<ClickEventDetail>) {
     // TODO(crbug.com/463667769): Call submitQuery here since RealboxHandler is
     // now a `ContextualSearchboxHandler`.
+    this.pageHandler_.activateMetricsFunnel('AiModeButton');
     if (!this.composeboxEnabled || this.$.input.value.trim()) {
       // Construct navigation url.
       const searchParams = new URLSearchParams();
@@ -1244,8 +1245,11 @@ export class SearchboxElement extends SearchboxElementBase implements
         !this.isInputEmpty());
   }
 
-  protected onSetToolMode_(
-      e: CustomEvent<{tool: ToolMode, enabled: boolean}>) {
+  protected onContextMenuEntrypointClick_() {
+    this.pageHandler_.activateMetricsFunnel('PlusButton');
+  }
+
+  protected onSetToolMode_(e: CustomEvent<{tool: ToolMode, enabled: boolean}>) {
     this.openComposebox_([], e.detail.tool);
   }
 

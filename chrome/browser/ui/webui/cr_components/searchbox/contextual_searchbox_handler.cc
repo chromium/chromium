@@ -501,6 +501,13 @@ void ContextualSearchboxHandler::SetActiveModelMode(omnibox::ModelMode model) {
   input_state_model_->setActiveModel(model);
 }
 
+void ContextualSearchboxHandler::ActivateMetricsFunnel(
+    const std::string& funnel_name) {
+  if (auto* metrics_recorder = GetMetricsRecorder()) {
+    metrics_recorder->ActivateMetricsFunnel(funnel_name);
+  }
+}
+
 void ContextualSearchboxHandler::InitializeInputStateModelForDebugging() {
   InitializeInputStateModel();
 }
