@@ -191,6 +191,12 @@ const base::FeatureParam<bool> kContextualTasksEnableNativeZeroStateSuggestions(
     "ContextualTasksEnableNativeZeroStateSuggestions",
     false);
 
+const base::FeatureParam<bool>
+    kContextualTasksForceBasicModeIfOpeningThreadHistory(
+        &kContextualTasks,
+        "ContextualTasksForceBasicModeIfOpeningThreadHistory",
+        true);
+
 int GetContextualTasksShowOnboardingTooltipSessionImpressionCap() {
   if (!base::FeatureList::IsEnabled(kContextualTasksShowOnboardingTooltip)) {
     return 0;
@@ -234,6 +240,10 @@ bool GetIsProtectedPageErrorEnabled() {
 
 bool GetIsGhostLoaderEnabled() {
   return kEnableGhostLoader.Get();
+}
+
+bool ShouldForceBasicModeIfOpeningThreadHistory() {
+  return kContextualTasksForceBasicModeIfOpeningThreadHistory.Get();
 }
 
 bool ShouldForceGscInTabMode() {

@@ -186,6 +186,8 @@ export class ContextualTasksAppElement extends CrLitElement {
   // A callback to allow tests to wait until the popstate handler in this class
   // has finished running.
   private popStateFinishedCallbackForTesting_: (() => void)|null = null;
+  private forceBasicModeIfOpeningThreadHistory_: boolean =
+      loadTimeData.getBoolean('forceBasicModeIfOpeningThreadHistory');
 
   override firstUpdated() {
     this.postMessageHandler_ =
@@ -340,6 +342,11 @@ export class ContextualTasksAppElement extends CrLitElement {
     }
 
     const threadUrlAsUrl = new URL(threadUrl);
+    // If the thread URL has parameters to open history, set basic mode.
+    if (this.hasThreadHistoryParams(threadUrlAsUrl) &&
+        this.forceBasicModeIfOpeningThreadHistory_) {
+      this.isInBasicMode_ = true;
+    }
 
     // If the "open_history" param has any value, open the history panel.
     if (webUiUrlOnLoad.searchParams.has('open_history')) {
@@ -515,6 +522,11 @@ export class ContextualTasksAppElement extends CrLitElement {
 
   private setIsGhostLoaderVisible(isVisible: boolean) {
     this.isGhostLoaderVisible_ = isVisible;
+  }
+
+  private hasThreadHistoryParams(url: URL): boolean {
+    return url.searchParams.get('atvm') === '1' ||
+        url.searchParams.get('atvm') === '3';
   }
 
   setPopStateFinishedCallbackForTesting(callback: () => void) {

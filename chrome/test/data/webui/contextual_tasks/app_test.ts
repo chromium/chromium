@@ -5,6 +5,7 @@
 import 'chrome://contextual-tasks/app.js';
 
 import {BrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -368,4 +369,47 @@ suite('ContextualTasksAppTest', function() {
     assertEquals('some-source', finalUrl.searchParams.get('source'));
     assertEquals('some-aep', finalUrl.searchParams.get('aep'));
   });
+
+  test(
+      'does not force enter basic mode when thread history is open if flag is disabled',
+      async () => {
+        loadTimeData.overrideValues(
+            {forceBasicModeIfOpeningThreadHistory: false});
+        const fixtureUrlWithHistory = new URL(fixtureUrl);
+        fixtureUrlWithHistory.searchParams.set('atvm', '1');
+        const proxy = new TestContextualTasksBrowserProxy(
+            fixtureUrlWithHistory.toString());
+        BrowserProxyImpl.setInstance(proxy);
+        proxy.handler.setIsShownInTab(true);
+
+        const appElement = document.createElement('contextual-tasks-app');
+        document.body.appendChild(appElement);
+        await microtasksFinished();
+
+        const composebox =
+            appElement.shadowRoot.querySelector('contextual-tasks-composebox');
+        assertTrue(!!composebox);
+        assertFalse(composebox.hasAttribute('hidden'));
+      });
+
+  test(
+      'force enter basic mode when thread URL has history params', async () => {
+        loadTimeData.overrideValues(
+            {forceBasicModeIfOpeningThreadHistory: true});
+        const fixtureUrlWithHistory = new URL(fixtureUrl);
+        fixtureUrlWithHistory.searchParams.set('atvm', '1');
+        const proxy = new TestContextualTasksBrowserProxy(
+            fixtureUrlWithHistory.toString());
+        BrowserProxyImpl.setInstance(proxy);
+        proxy.handler.setIsShownInTab(true);
+
+        const appElement = document.createElement('contextual-tasks-app');
+        document.body.appendChild(appElement);
+        await microtasksFinished();
+
+        const composebox =
+            appElement.shadowRoot.querySelector('contextual-tasks-composebox');
+        assertTrue(!!composebox);
+        assertTrue(composebox.hasAttribute('hidden'));
+      });
 });

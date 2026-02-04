@@ -142,6 +142,10 @@ extern bool GetIsProtectedPageErrorEnabled();
 // Returns if the ghost loader is enabled.
 extern bool GetIsGhostLoaderEnabled();
 
+// Returns if basic mode should be forced when the thread history is opened
+// before the handshake is complete.
+extern bool ShouldForceBasicModeIfOpeningThreadHistory();
+
 // Returns the base URL for the AI page.
 extern std::string GetContextualTasksAiPageUrl();
 
