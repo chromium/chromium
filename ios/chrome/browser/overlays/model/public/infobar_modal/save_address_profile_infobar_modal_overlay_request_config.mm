@@ -61,6 +61,10 @@ bool SaveAddressProfileModalRequestConfig::IsUpdateModal() const {
 
 void SaveAddressProfileModalRequestConfig::StoreProfileDiff(
     const std::vector<autofill::ProfileValueDifference>& profile_diff) {
+  // TODO(crbug.com/481234059): Convert this to CHECK after investigation.
+  // Based of hypothesis in crbug.com/477044258, `GetProfileDifferenceForUi` is
+  // returning empty.
+  DUMP_WILL_BE_CHECK(!profile_diff.empty());
   for (const auto& row : profile_diff) {
     [profile_diff_
         setObject:@[

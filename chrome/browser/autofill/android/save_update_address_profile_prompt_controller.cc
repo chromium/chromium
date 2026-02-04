@@ -55,6 +55,10 @@ SaveUpdateAddressProfilePromptController::
     const std::string& locale = g_browser_process->GetApplicationLocale();
     differences_for_ui_ =
         GetProfileDifferenceForUi(original_profile_.value(), profile_, locale);
+    // TODO(crbug.com/481234059): Convert this to CHECK after investigation.
+    // Based of hypothesis in crbug.com/477044258, `GetProfileDifferenceForUi`
+    // is returning empty.
+    DUMP_WILL_BE_CHECK(!differences_for_ui_.empty());
     std::tie(old_diff_, new_diff_) = GetDiffFromOldToNewProfile();
   }
   DCHECK(prompt_view_);

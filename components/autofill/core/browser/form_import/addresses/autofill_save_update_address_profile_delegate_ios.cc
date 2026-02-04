@@ -113,9 +113,13 @@ std::u16string AutofillSaveUpdateAddressProfileDelegateIOS::GetDescription()
 }
 
 std::u16string AutofillSaveUpdateAddressProfileDelegateIOS::GetSubtitle() {
-  DCHECK(original_profile_);
+  CHECK(original_profile_);
   std::vector<ProfileValueDifference> differences =
       GetProfileDifferenceForUi(original_profile_.value(), profile_, locale_);
+  // TODO(crbug.com/481234059): Convert this to CHECK after investigation.
+  // Based of hypothesis in crbug.com/477044258, `GetProfileDifferenceForUi` is
+  // returning empty.
+  DUMP_WILL_BE_CHECK(!differences.empty());
   bool address_updated = std::ranges::contains(
       differences, ADDRESS_HOME_ADDRESS, &ProfileValueDifference::type);
   return GetProfileDescription(
