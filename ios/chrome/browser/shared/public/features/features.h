@@ -926,6 +926,9 @@ bool IsEnableNewStartupFlowEnabled();
 // Updates EnableNewStartupFlow NSUserDefaults key if the value was changed.
 void SaveEnableNewStartupFlowForNextStart();
 
+// Resets the cached value for IsEnableNewStartupFlowEnabled, needed for tests.
+void ResetEnableNewStartupFlowEnabledForTesting();
+
 // Flags for Share Ablation study.
 BASE_DECLARE_FEATURE(kDisableShareButton);
 BASE_DECLARE_FEATURE(kShareInOmniboxLongPress);

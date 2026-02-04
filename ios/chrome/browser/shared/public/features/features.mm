@@ -1024,17 +1024,38 @@ NSString* const kNewStartupFlowKey = @"IsEnableNewStartupFlowEnabled";
 
 BASE_FEATURE(kEnableNewStartupFlow, base::FEATURE_DISABLED_BY_DEFAULT);
 
+namespace {
+
+enum class NewStartupFlowStatus {
+  kUnspecified,
+  kEnabled,
+  kDisabled,
+};
+
+// Tracks the cached state for the current session.
+NewStartupFlowStatus startup_flow_status = NewStartupFlowStatus::kUnspecified;
+
+}  // namespace
+
 bool IsEnableNewStartupFlowEnabled() {
-  // Save the value to ensure this is constant during the session.
-  static const bool is_new_startup_flow_available =
-      [[NSUserDefaults standardUserDefaults] boolForKey:kNewStartupFlowKey];
-  return is_new_startup_flow_available;
+  // If we haven't checked the defaults yet this session, do it now.
+  if (startup_flow_status == NewStartupFlowStatus::kUnspecified) {
+    const bool is_enabled =
+        [[NSUserDefaults standardUserDefaults] boolForKey:kNewStartupFlowKey];
+    startup_flow_status = is_enabled ? NewStartupFlowStatus::kEnabled
+                                     : NewStartupFlowStatus::kDisabled;
+  }
+  return startup_flow_status == NewStartupFlowStatus::kEnabled;
 }
 
 void SaveEnableNewStartupFlowForNextStart() {
   const bool enabled = base::FeatureList::IsEnabled(kEnableNewStartupFlow);
   [[NSUserDefaults standardUserDefaults] setBool:enabled
                                           forKey:kNewStartupFlowKey];
+}
+
+void ResetEnableNewStartupFlowEnabledForTesting() {
+  startup_flow_status = NewStartupFlowStatus::kUnspecified;
 }
 
 // Flags for Share Ablation study.

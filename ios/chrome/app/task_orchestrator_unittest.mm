@@ -14,14 +14,18 @@
 
 class TaskOrchestratorTest : public PlatformTest {
  protected:
+  TaskOrchestratorTest() {
+    ResetEnableNewStartupFlowEnabledForTesting();
+    scoped_feature_list_.InitAndEnableFeature(kEnableNewStartupFlow);
+    SaveEnableNewStartupFlowForNextStart();
+  }
+
+  ~TaskOrchestratorTest() override {
+    ResetEnableNewStartupFlowEnabledForTesting();
+  }
+
   void SetUp() override {
     PlatformTest::SetUp();
-
-    [[NSUserDefaults standardUserDefaults]
-        setBool:YES
-         forKey:@"IsEnableNewStartupFlowEnabled"];
-    scoped_feature_list_.InitAndEnableFeature(kEnableNewStartupFlow);
-
     orchestrator_ = [[TaskOrchestrator alloc] init];
   }
 
