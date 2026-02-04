@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "remoting/base/constants.h"
@@ -217,6 +218,125 @@ XmlElement* FormatIceCandidate(
   return result.release();
 }
 
+struct ContentTags {
+  raw_ptr<const XmlElement> content = nullptr;
+  raw_ptr<const XmlElement> webrtc_transport = nullptr;
+  raw_ptr<const XmlElement> ice_transport = nullptr;
+};
+
+bool ParseContentTags(const XmlElement* jingle_tag,
+                      ContentTags& tags,
+                      std::string* error) {
+  tags.content = jingle_tag->FirstNamed(kQNameContent);
+  if (!tags.content) {
+    *error = "content tag is missing";
+    return false;
+  }
+
+  std::string content_name = tags.content->Attr(kQNameName);
+  if (content_name != ContentDescription::kChromotingContentName) {
+    *error = "Unexpected content name: " + content_name;
+    return false;
+  }
+
+  tags.webrtc_transport = tags.content->FirstNamed(kQNameWebrtcTransport);
+  tags.ice_transport = tags.content->FirstNamed(kQNameIceTransport);
+  return true;
+}
+
+bool ParseInitiateOrAccept(const XmlElement* jingle_tag,
+                           JingleMessage::ActionType action,
+                           JingleMessage* message,
+                           std::string* error) {
+  ContentTags tags;
+  if (!ParseContentTags(jingle_tag, tags, error)) {
+    return false;
+  }
+
+  if (tags.webrtc_transport) {
+    message->transport_info_legacy =
+        std::make_unique<XmlElement>(*tags.webrtc_transport);
+  }
+  if (tags.ice_transport) {
+    message->transport_info_legacy =
+        std::make_unique<XmlElement>(*tags.ice_transport);
+  }
+
+  const XmlElement* description_tag =
+      tags.content->FirstNamed(kQNameDescription);
+  if (!description_tag) {
+    *error = "Missing chromoting content description";
+    return false;
+  }
+
+  message->description = ContentDescription::ParseXml(
+      description_tag, tags.webrtc_transport != nullptr);
+  if (!message->description) {
+    *error = "Failed to parse content description";
+    return false;
+  }
+
+  if (action == JingleMessage::ActionType::kSessionInitiate) {
+    message->SetPayload(SessionInitiate());
+  } else {
+    message->SetPayload(SessionAccept());
+  }
+  return true;
+}
+
+bool ParseTransportInfoAction(const XmlElement* jingle_tag,
+                              JingleMessage* message,
+                              std::string* error) {
+  ContentTags tags;
+  if (!ParseContentTags(jingle_tag, tags, error)) {
+    return false;
+  }
+
+  if (tags.webrtc_transport) {
+    message->transport_info_legacy =
+        std::make_unique<XmlElement>(*tags.webrtc_transport);
+  }
+
+  if (tags.ice_transport) {
+    JingleTransportInfo transport_info;
+    if (!JingleTransportInfoFromXml(tags.ice_transport, &transport_info)) {
+      *error = "Failed to parse JingleTransportInfo from XML";
+      return false;
+    }
+    message->SetPayload(std::move(transport_info));
+    message->transport_info_legacy =
+        std::make_unique<XmlElement>(*tags.ice_transport);
+  } else if (tags.webrtc_transport) {
+    // If it's WebRTC transport, we don't have a structured payload yet.
+    // Set an empty JingleTransportInfo so the action is set correctly.
+    message->SetPayload(JingleTransportInfo());
+  } else {
+    *error = "No transport found in transport-info message";
+    return false;
+  }
+
+  return true;
+}
+
+bool ParseSessionInfoAction(const XmlElement* jingle_tag,
+                            const XmlElement* attachments_tag,
+                            JingleMessage* message) {
+  const XmlElement* child = jingle_tag->FirstElement();
+  // Plugin messages are action independent, which should not be considered
+  // as session-info.
+  if (child == attachments_tag) {
+    child = child->NextElement();
+  }
+  if (child) {
+    // session-info is allowed to be empty.
+    message->info_legacy = std::make_unique<XmlElement>(*child);
+  } else {
+    message->info_legacy.reset();
+  }
+  message->SetPayload(SessionInfo());
+  return true;
+}
+
 }  // namespace
 
 bool IsJingleMessage(const jingle_xmpp::XmlElement* stanza) {
@@ -343,6 +463,12 @@ bool JingleMessageFromXml(const jingle_xmpp::XmlElement* stanza,
 
   message->initiator = jingle_tag->Attr(kQNameInitiator);
 
+  message->sid = jingle_tag->Attr(kQNameSid);
+  if (message->sid.empty()) {
+    *error = "sid attribute is missing";
+    return false;
+  }
+
   std::string action_str = jingle_tag->Attr(kQNameAction);
   if (action_str.empty()) {
     *error = "action attribute is missing";
@@ -355,60 +481,12 @@ bool JingleMessageFromXml(const jingle_xmpp::XmlElement* stanza,
     return false;
   }
 
-  switch (action) {
-    case JingleMessage::ActionType::kSessionInitiate:
-      message->SetPayload(SessionInitiate());
-      break;
-    case JingleMessage::ActionType::kSessionAccept:
-      message->SetPayload(SessionAccept());
-      break;
-    case JingleMessage::ActionType::kSessionTerminate:
-      message->SetPayload(SessionTerminate());
-      break;
-    case JingleMessage::ActionType::kSessionInfo:
-      message->SetPayload(SessionInfo());
-      break;
-    case JingleMessage::ActionType::kTransportInfo:
-      // The payload will be set later in the function.
-      // TODO: joedow - Refactor this function.
-      message->payload_ = std::monostate();
-      message->action_ = action;
-      break;
-    default:
-      message->SetPayload(std::monostate());
-      break;
-  }
-
-  message->sid = jingle_tag->Attr(kQNameSid);
-  if (message->sid.empty()) {
-    *error = "sid attribute is missing";
-    return false;
-  }
-
   const XmlElement* attachments_tag = jingle_tag->FirstNamed(kQNameAttachments);
   if (attachments_tag) {
     message->attachments_legacy =
         std::make_unique<XmlElement>(*attachments_tag);
   } else {
     message->attachments_legacy.reset();
-  }
-
-  if (message->action() == JingleMessage::ActionType::kSessionInfo) {
-    // session-info messages may contain arbitrary information not
-    // defined by the Jingle protocol. We don't need to parse it.
-    const XmlElement* child = jingle_tag->FirstElement();
-    // Plugin messages are action independent, which should not be considered as
-    // session-info.
-    if (child == attachments_tag) {
-      child = child->NextElement();
-    }
-    if (child) {
-      // session-info is allowed to be empty.
-      message->info_legacy = std::make_unique<XmlElement>(*child);
-    } else {
-      message->info_legacy.reset();
-    }
-    return true;
   }
 
   const XmlElement* reason_tag = jingle_tag->FirstNamed(kQNameReason);
@@ -440,63 +518,25 @@ bool JingleMessageFromXml(const jingle_xmpp::XmlElement* stanza,
     message->error_location = error_location_tag->BodyText();
   }
 
-  if (message->action() == JingleMessage::ActionType::kSessionTerminate) {
-    return true;
-  }
+  switch (action) {
+    case JingleMessage::ActionType::kSessionInitiate:
+    case JingleMessage::ActionType::kSessionAccept:
+      return ParseInitiateOrAccept(jingle_tag, action, message, error);
 
-  const XmlElement* content_tag = jingle_tag->FirstNamed(kQNameContent);
-  if (!content_tag) {
-    *error = "content tag is missing";
-    return false;
-  }
+    case JingleMessage::ActionType::kTransportInfo:
+      return ParseTransportInfoAction(jingle_tag, message, error);
 
-  std::string content_name = content_tag->Attr(kQNameName);
-  if (content_name != ContentDescription::kChromotingContentName) {
-    *error = "Unexpected content name: " + content_name;
-    return false;
-  }
+    case JingleMessage::ActionType::kSessionTerminate:
+      message->SetPayload(SessionTerminate());
+      return true;
 
-  const XmlElement* webrtc_transport_tag =
-      content_tag->FirstNamed(kQNameWebrtcTransport);
-  if (webrtc_transport_tag) {
-    message->transport_info_legacy =
-        std::make_unique<jingle_xmpp::XmlElement>(*webrtc_transport_tag);
-  }
+    case JingleMessage::ActionType::kSessionInfo:
+      return ParseSessionInfoAction(jingle_tag, attachments_tag, message);
 
-  message->description.reset();
-  if (message->action() == JingleMessage::ActionType::kSessionInitiate ||
-      message->action() == JingleMessage::ActionType::kSessionAccept) {
-    const XmlElement* description_tag =
-        content_tag->FirstNamed(kQNameDescription);
-    if (!description_tag) {
-      *error = "Missing chromoting content description";
+    default:
+      *error = "Unhandled action type";
       return false;
-    }
-
-    message->description = ContentDescription::ParseXml(
-        description_tag, webrtc_transport_tag != nullptr);
-    if (!message->description.get()) {
-      *error = "Failed to parse content description";
-      return false;
-    }
   }
-
-  if (!webrtc_transport_tag) {
-    const XmlElement* ice_transport_tag =
-        content_tag->FirstNamed(kQNameIceTransport);
-    if (ice_transport_tag) {
-      if (message->action() == JingleMessage::ActionType::kTransportInfo) {
-        JingleTransportInfo transport_info;
-        if (JingleTransportInfoFromXml(ice_transport_tag, &transport_info)) {
-          message->SetPayload(std::move(transport_info));
-        }
-      }
-      message->transport_info_legacy =
-          std::make_unique<jingle_xmpp::XmlElement>(*ice_transport_tag);
-    }
-  }
-
-  return true;
 }
 
 std::unique_ptr<jingle_xmpp::XmlElement> JingleTransportInfoToXml(
