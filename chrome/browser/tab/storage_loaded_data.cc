@@ -242,7 +242,9 @@ StorageLoadedData::StorageLoadedData(
       active_tab_index_(active_tab_index),
       context_(std::move(context)) {}
 
-StorageLoadedData::~StorageLoadedData() = default;
+StorageLoadedData::~StorageLoadedData() {
+  observers_.Notify(&Observer::OnDestroyed);
+}
 
 RestoreEntityTracker* StorageLoadedData::GetTracker() const {
   return tracker_.get();

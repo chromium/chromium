@@ -31,6 +31,10 @@ void StorageRestoreOrchestrator::ObserverImpl::OnChildRejected(
   orchestrator_->OnChildRejected(parent);
 }
 
+void StorageRestoreOrchestrator::ObserverImpl::OnDestroyed() {
+  orchestrator_->OnDataDestroyed();
+}
+
 // StorageRestoreOrchestrator implementation.
 StorageRestoreOrchestrator::StorageRestoreOrchestrator(
     TabStripCollection* collection,
@@ -40,12 +44,13 @@ StorageRestoreOrchestrator::StorageRestoreOrchestrator(
       data_observer_(this),
       collection_(collection),
       service_(service),
-      loaded_data_(loaded_data) {
+      loaded_data_(loaded_data),
+      is_data_observer_registered_(true) {
   loaded_data_->RegisterObserver(&data_observer_);
 }
 
 StorageRestoreOrchestrator::~StorageRestoreOrchestrator() {
-  loaded_data_->UnregisterObserver(&data_observer_);
+  OnDataDestroyed();
 }
 
 void StorageRestoreOrchestrator::OnAddChildTab(
@@ -132,6 +137,14 @@ void StorageRestoreOrchestrator::MaybeAddModifiedParent(
   auto [it, inserted] = modified_parents_.try_emplace(id, handle);
   if (!inserted && !it->second.has_value() && handle.has_value()) {
     it->second = handle;
+  }
+}
+
+void StorageRestoreOrchestrator::OnDataDestroyed() {
+  if (is_data_observer_registered_) {
+    DCHECK(loaded_data_);
+    loaded_data_->UnregisterObserver(&data_observer_);
+    is_data_observer_registered_ = false;
   }
 }
 

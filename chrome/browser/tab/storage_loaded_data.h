@@ -60,6 +60,9 @@ class StorageLoadedData {
     // Called when the child of a node is rejected. This occurs when the child
     // is declared invalid or unneeded after loading it.
     virtual void OnChildRejected(StorageId parent) = 0;
+
+    // Called when the StorageLoadedData is destroyed.
+    virtual void OnDestroyed() = 0;
   };
 
   ~StorageLoadedData();

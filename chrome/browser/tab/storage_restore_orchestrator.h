@@ -51,6 +51,7 @@ class StorageRestoreOrchestrator : public TabCollectionObserver {
     explicit ObserverImpl(StorageRestoreOrchestrator* orchestrator);
     ~ObserverImpl() override;
     void OnChildRejected(StorageId parent) override;
+    void OnDestroyed() override;
 
    private:
     raw_ptr<StorageRestoreOrchestrator> orchestrator_;
@@ -60,6 +61,7 @@ class StorageRestoreOrchestrator : public TabCollectionObserver {
   void OnAddChildCollection(const TabCollection::NodeHandle& handle);
   void MaybeAddModifiedParent(const StorageId& id,
                               std::optional<TabCollectionHandle> handle);
+  void OnDataDestroyed();
 
   // Represents default observer methods.
   CollectionStorageObserver default_observer_;
@@ -77,6 +79,8 @@ class StorageRestoreOrchestrator : public TabCollectionObserver {
   // Used to keep track of parents that have had their children vector modified.
   absl::flat_hash_map<StorageId, std::optional<TabCollectionHandle>>
       modified_parents_;
+
+  bool is_data_observer_registered_;
 };
 
 }  // namespace tabs
