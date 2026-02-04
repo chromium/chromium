@@ -66,6 +66,9 @@ class SyncService;
 @property(nonatomic, weak) id<BookmarksFolderEditorViewControllerDelegate>
     delegate;
 
+// Whether the UI is disabled.
+@property(nonatomic, assign) BOOL UIDisabled;
+
 // Snackbar commands handler for this ViewController.
 @property(nonatomic, weak) id<SnackbarCommands> snackbarCommandsHandler;
 

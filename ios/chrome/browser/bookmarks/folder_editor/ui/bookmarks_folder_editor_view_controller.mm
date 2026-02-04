@@ -265,6 +265,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #pragma mark - Actions
 
 - (void)dismiss {
+  if (self.UIDisabled) {
+    return;
+  }
+  self.UIDisabled = YES;
   base::RecordAction(
       base::UserMetricsAction("MobileBookmarksFolderEditorCanceled"));
   [self.view endEditing:YES];
@@ -272,6 +276,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (void)deleteFolder {
+  if (self.UIDisabled) {
+    return;
+  }
+  self.UIDisabled = YES;
   CHECK(_editingExistingFolder, base::NotFatalUntil::M152);
   CHECK(_folder, base::NotFatalUntil::M152);
   base::RecordAction(
@@ -286,6 +294,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (void)saveFolder {
+  if (self.UIDisabled) {
+    return;
+  }
+  self.UIDisabled = YES;
   CHECK(_parentFolder, base::NotFatalUntil::M152);
   base::RecordAction(
       base::UserMetricsAction("MobileBookmarksFolderEditorSaved"));
@@ -330,6 +342,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (void)changeParentFolder {
+  if (self.UIDisabled) {
+    return;
+  }
   base::RecordAction(base::UserMetricsAction(
       "MobileBookmarksFolderEditorOpenedFolderChooser"));
   std::set<const BookmarkNode*> hiddenNodes;
@@ -443,6 +458,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
   CHECK_EQ(tableView, self.tableView, base::NotFatalUntil::M152);
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
+  if (self.UIDisabled) {
+    return;
+  }
   if ([self.tableViewModel itemTypeForIndexPath:indexPath] ==
       ItemTypeParentFolder) {
     [self changeParentFolder];
