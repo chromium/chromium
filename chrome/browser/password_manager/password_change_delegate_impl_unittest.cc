@@ -327,6 +327,10 @@ TEST_F(PasswordChangeDelegateImplTest,
 }
 
 TEST_F(PasswordChangeDelegateImplTest, OtpDetectionProcessed) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      password_manager::features::kUserInterventionForPasswordChange);
+
   SetOptimizationFeatureEnabled(true);
   CreateDelegate();
   base::HistogramTester histogram_tester;

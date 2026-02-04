@@ -600,17 +600,22 @@ void PasswordChangeDelegateImpl::ProceedToChangePassword() {
       base::BindOnce(&PasswordChangeDelegateImpl::OnPasswordChangeFormFound,
                      weak_ptr_factory_.GetWeakPtr()));
 
-  // Even though the user is assumed to be fully signed in by this point in
-  // time, they may still see an OTP during the password change flow, so watch
-  // for this.
-  autofill::ContentAutofillClient* autofill_client =
-      autofill::ContentAutofillClient::FromWebContents(executor());
-  autofill::OtpFieldDetector* otp_field_detector =
-      autofill_client->GetOtpFieldDetector();
-  otp_fields_detected_subscription_ =
-      otp_field_detector->RegisterOtpFieldsDetectedCallback(
-          base::BindRepeating(&PasswordChangeDelegateImpl::OnOtpFieldDetected,
-                              weak_ptr_factory_.GetWeakPtr()));
+  // When interruptions (including OTPs) are detected on a server there is no
+  // need to use local ML model for OTP detection.
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::kUserInterventionForPasswordChange)) {
+    // Even though the user is assumed to be fully signed in by this point in
+    // time, they may still see an OTP during the password change flow, so watch
+    // for this.
+    autofill::ContentAutofillClient* autofill_client =
+        autofill::ContentAutofillClient::FromWebContents(executor());
+    autofill::OtpFieldDetector* otp_field_detector =
+        autofill_client->GetOtpFieldDetector();
+    otp_fields_detected_subscription_ =
+        otp_field_detector->RegisterOtpFieldsDetectedCallback(
+            base::BindRepeating(&PasswordChangeDelegateImpl::OnOtpFieldDetected,
+                                weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 void PasswordChangeDelegateImpl::UpdateState(State new_state) {
