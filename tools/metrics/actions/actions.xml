@@ -26801,6 +26801,46 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileGeminiCameraFlowBegan">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <description>The Gemini camera flow began.</description>
+</action>
+
+<action name="MobileGeminiCameraFlowCameraPickerCancelled">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <description>
+    The user cancelled the camera picker in the Gemini camera flow.
+  </description>
+</action>
+
+<action name="MobileGeminiCameraFlowCameraPickerFinishedWithImage">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <description>
+    The user finished using the camera picker in the Gemini camera flow and an
+    image was included in the camera picker's result.
+  </description>
+</action>
+
+<action name="MobileGeminiCameraFlowCameraPickerFinishedWithoutImage">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <description>
+    The user finished using the camera picker in the Gemini camera flow but no
+    image was included in the camera picker's result.
+  </description>
+</action>
+
+<action name="MobileGeminiCameraFlowCameraPickerPresented">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <description>
+    The camera picker was presented in the Gemini camera flow.
+  </description>
+</action>
+
 <action name="MobileGeminiCameraFlowGeminiCameraPermissionAlertAllow">
   <owner>joepeplowski@google.com</owner>
   <owner>bling-alchemy-eng@google.com</owner>

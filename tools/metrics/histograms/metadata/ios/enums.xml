@@ -745,6 +745,19 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h:IOSGeminiCameraPermissionAlertResult) -->
 
+<!-- LINT.IfChange(IOSGeminiCameraPickerResult) -->
+
+<enum name="IOSGeminiCameraPickerResult">
+  <summary>
+    Enum describing the result of the camera picker in the Gemini camera flow.
+  </summary>
+  <int value="0" label="Cancelled"/>
+  <int value="1" label="Finished without image"/>
+  <int value="2" label="Finished with image"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h:IOSGeminiCameraPickerResult) -->
+
 <!-- LINT.IfChange(IOSGeminiEntryPoint) -->
 
 <enum name="IOSGeminiEntryPoint">
@@ -843,6 +856,22 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(/ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h:IOSGeminiGoToOSSettingsAlertResult) -->
+
+<!-- LINT.IfChange(IOSGeminiOSCameraAuthorizationInitialStatus) -->
+
+<enum name="IOSGeminiOSCameraAuthorizationInitialStatus">
+  <summary>
+    Enum describing the initial OS camera authorization status when the Gemini
+    camera flow begins.
+  </summary>
+  <int value="0" label="Not Determined"/>
+  <int value="1" label="Restricted"/>
+  <int value="2" label="Denied"/>
+  <int value="3" label="Authorized"/>
+  <int value="4" label="Source Type Unavailable"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h:IOSGeminiOSCameraAuthorizationInitialStatus) -->
 
 <!--  LINT.IfChange(IOSGeminiSessionCancellationReason) -->
 

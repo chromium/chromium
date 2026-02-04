@@ -215,6 +215,25 @@ enum class IOSGeminiAspectRatioBucket {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSGeminiAspectRatioBucket)
 
+// Enum for the IOS.Gemini.CameraFlow.OSCameraAuthorization.InitialStatus
+// histogram.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(IOSGeminiOSCameraAuthorizationInitialStatus)
+enum class IOSGeminiOSCameraAuthorizationInitialStatus {
+  kNotDetermined = 0,
+  kRestricted = 1,
+  kDenied = 2,
+  kAuthorized = 3,
+  kSourceTypeUnavailable = 4,
+  kMaxValue = kSourceTypeUnavailable,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSGeminiOSCameraAuthorizationInitialStatus)
+
+// UMA histogram key for
+// IOS.Gemini.CameraFlow.OSCameraAuthorization.InitialStatus.
+extern const char kCameraFlowOSCameraAuthorizationInitialStatusHistogram[];
+
 // Enum for the IOS.Gemini.CameraFlow.OSCameraAuthorization.Result histogram.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -245,6 +264,10 @@ enum class IOSGeminiGoToOSSettingsAlertResult {
 // IOS.Gemini.CameraFlow.GoToOSSettingsAlert.Result.
 extern const char kCameraFlowGoToOSSettingsAlertResultHistogram[];
 
+// UMA histogram key for
+// IOS.Gemini.CameraFlow.GeminiCameraPermission.InitialValue.
+extern const char kCameraFlowGeminiCameraPermissionInitialValueHistogram[];
+
 // Enum for the IOS.Gemini.CameraFlow.GeminiCameraPermissionAlert.Result
 // histogram.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -260,6 +283,22 @@ enum class IOSGeminiCameraPermissionAlertResult {
 // UMA histogram key for
 // IOS.Gemini.CameraFlow.GeminiCameraPermissionAlert.Result.
 extern const char kCameraFlowGeminiCameraPermissionAlertResultHistogram[];
+
+// Enum for the IOS.Gemini.CameraFlow.CameraPicker.Result histogram.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(IOSGeminiCameraPickerResult)
+enum class IOSGeminiCameraPickerResult {
+  kCancelled = 0,
+  kFinishedWithoutImage = 1,
+  kFinishedWithImage = 2,
+  kMaxValue = kFinishedWithImage,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSGeminiCameraPickerResult)
+
+// UMA histogram key for
+// IOS.Gemini.CameraFlow.CameraPicker.Result.
+extern const char kCameraFlowCameraPickerResultHistogram[];
 
 // UMA histogram key for
 // IOS.Gemini.ImageRemix.ContextMenuEntryPoint.AspectRatio.Tapped.
@@ -399,5 +438,31 @@ void RecordGeminiCameraFlowGoToOSSettingsAlertResult(bool accepted);
 
 // Records the result of the Gemini camera permission alert.
 void RecordGeminiCameraFlowGeminiCameraPermissionAlertResult(bool accepted);
+
+// Records that the Gemini camera flow began.
+void RecordGeminiCameraFlowBegan();
+
+// Records the initial OS camera authorization status value.
+void RecordGeminiCameraFlowOSCameraAuthorizationInitialStatus(
+    IOSGeminiOSCameraAuthorizationInitialStatus authorization_status);
+
+// Records the result of an OS-level camera authorization request.
+void RecordGeminiCameraFlowOSAuthorizationResult(bool granted);
+
+// Records the result of the alert directing users to OS settings.
+void RecordGeminiCameraFlowGoToOSSettingsAlertResult(bool accepted);
+
+// Records the initial Gemini camera permission value.
+void RecordGeminiCameraFlowGeminiCameraPermissionInitialValue(bool enabled);
+
+// Records the result of the Gemini camera permission alert.
+void RecordGeminiCameraFlowGeminiCameraPermissionAlertResult(bool accepted);
+
+// Records that the camera picker was presented.
+void RecordGeminiCameraFlowPresentCameraPicker();
+
+// Records the result of the camera picker.
+void RecordGeminiCameraFlowCameraPickerResult(
+    IOSGeminiCameraPickerResult result);
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_METRICS_GEMINI_METRICS_H_

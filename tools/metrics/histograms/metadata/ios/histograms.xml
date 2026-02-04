@@ -2394,6 +2394,29 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="IOS.Gemini.CameraFlow.CameraPicker.Result"
+    enum="IOSGeminiCameraPickerResult" expires_after="2027-01-28">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    Records the result of the OS camera picker operation in the Gemini camera
+    flow. The camera picker appears in the camera flow once the user has granted
+    both OS- and Gemini-level camera permissions and the result is recorded when
+    the camera picker is dismissed.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Gemini.CameraFlow.GeminiCameraPermission.InitialValue"
+    enum="Boolean" expires_after="2027-01-28">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    Records the initial value of the Gemini camera permission setting in the
+    Gemini camera flow. This value is recorded once the camera flow starts and
+    the OS-level camera permission has been granted.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Gemini.CameraFlow.GeminiCameraPermissionAlert.Result"
     enum="IOSGeminiCameraPermissionAlertResult" expires_after="2027-01-27">
   <owner>joepeplowski@google.com</owner>
@@ -2414,6 +2437,17 @@ chromium-metrics-reviews@google.com.
     Records the result of the alert directing users to OS camera settings in the
     Gemini camera flow. This alert appears after starting the camera flow when
     the OS-level camera permission has been denied by the user in the past.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Gemini.CameraFlow.OSCameraAuthorization.InitialStatus"
+    enum="IOSGeminiOSCameraAuthorizationInitialStatus"
+    expires_after="2027-01-28">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    Records the initial status of the OS-level camera authorization setting in
+    the Gemini camera flow. This value is recorded when the camera flow starts.
   </summary>
 </histogram>
 

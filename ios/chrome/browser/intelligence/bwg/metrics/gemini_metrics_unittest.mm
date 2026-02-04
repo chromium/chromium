@@ -21,6 +21,15 @@ const char kCameraFlowGoToOSSettingsAlertGoToSettings[] =
     "MobileGeminiCameraFlowGoToOSSettingsAlertGoToSettings";
 const char kCameraFlowGoToOSSettingsAlertNoThanks[] =
     "MobileGeminiCameraFlowGoToOSSettingsAlertNoThanks";
+const char kCameraFlowBegan[] = "MobileGeminiCameraFlowBegan";
+const char kCameraFlowPresentCameraPicker[] =
+    "MobileGeminiCameraFlowCameraPickerPresented";
+const char kCameraFlowCameraPickerCancelled[] =
+    "MobileGeminiCameraFlowCameraPickerCancelled";
+const char kCameraFlowCameraPickerFinishedWithoutImage[] =
+    "MobileGeminiCameraFlowCameraPickerFinishedWithoutImage";
+const char kCameraFlowCameraPickerFinishedWithImage[] =
+    "MobileGeminiCameraFlowCameraPickerFinishedWithImage";
 }  // namespace
 
 class GeminiMetricsTest : public PlatformTest {
@@ -200,4 +209,69 @@ TEST_F(GeminiMetricsTest, TestResponseLatencyMetrics) {
       kResponseLatencyWithGeneratedImageHistogram, latency, 2);
   histogram_tester_.ExpectTimeBucketCount(
       kResponseLatencyWithoutGeneratedImageHistogram, latency, 2);
+}
+
+TEST_F(GeminiMetricsTest, RecordGeminiCameraFlowBegan) {
+  RecordGeminiCameraFlowBegan();
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(kCameraFlowBegan));
+}
+
+TEST_F(GeminiMetricsTest,
+       RecordGeminiCameraFlowOSCameraAuthorizationInitialStatus) {
+  RecordGeminiCameraFlowOSCameraAuthorizationInitialStatus(
+      IOSGeminiOSCameraAuthorizationInitialStatus::kNotDetermined);
+  histogram_tester_.ExpectUniqueSample(
+      kCameraFlowOSCameraAuthorizationInitialStatusHistogram,
+      IOSGeminiOSCameraAuthorizationInitialStatus::kNotDetermined, 1);
+}
+
+TEST_F(GeminiMetricsTest,
+       RecordGeminiCameraFlowGeminiCameraPermissionInitialValue) {
+  RecordGeminiCameraFlowGeminiCameraPermissionInitialValue(true);
+  histogram_tester_.ExpectUniqueSample(
+      kCameraFlowGeminiCameraPermissionInitialValueHistogram, true, 1);
+}
+
+TEST_F(GeminiMetricsTest, RecordGeminiCameraFlowPresentCameraPicker) {
+  RecordGeminiCameraFlowPresentCameraPicker();
+  EXPECT_EQ(1,
+            user_action_tester_.GetActionCount(kCameraFlowPresentCameraPicker));
+}
+
+TEST_F(GeminiMetricsTest, RecordGeminiCameraFlowCameraPickerResult) {
+  RecordGeminiCameraFlowCameraPickerResult(
+      IOSGeminiCameraPickerResult::kCancelled);
+  histogram_tester_.ExpectUniqueSample(kCameraFlowCameraPickerResultHistogram,
+                                       IOSGeminiCameraPickerResult::kCancelled,
+                                       1);
+  EXPECT_EQ(
+      1, user_action_tester_.GetActionCount(kCameraFlowCameraPickerCancelled));
+  EXPECT_EQ(0, user_action_tester_.GetActionCount(
+                   kCameraFlowCameraPickerFinishedWithoutImage));
+  EXPECT_EQ(0, user_action_tester_.GetActionCount(
+                   kCameraFlowCameraPickerFinishedWithImage));
+
+  RecordGeminiCameraFlowCameraPickerResult(
+      IOSGeminiCameraPickerResult::kFinishedWithoutImage);
+  histogram_tester_.ExpectBucketCount(
+      kCameraFlowCameraPickerResultHistogram,
+      IOSGeminiCameraPickerResult::kFinishedWithoutImage, 1);
+  EXPECT_EQ(
+      1, user_action_tester_.GetActionCount(kCameraFlowCameraPickerCancelled));
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(
+                   kCameraFlowCameraPickerFinishedWithoutImage));
+  EXPECT_EQ(0, user_action_tester_.GetActionCount(
+                   kCameraFlowCameraPickerFinishedWithImage));
+
+  RecordGeminiCameraFlowCameraPickerResult(
+      IOSGeminiCameraPickerResult::kFinishedWithImage);
+  histogram_tester_.ExpectBucketCount(
+      kCameraFlowCameraPickerResultHistogram,
+      IOSGeminiCameraPickerResult::kFinishedWithImage, 1);
+  EXPECT_EQ(
+      1, user_action_tester_.GetActionCount(kCameraFlowCameraPickerCancelled));
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(
+                   kCameraFlowCameraPickerFinishedWithoutImage));
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(
+                   kCameraFlowCameraPickerFinishedWithImage));
 }
