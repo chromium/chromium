@@ -9,6 +9,8 @@
 #include <variant>
 #include <vector>
 
+#include "base/containers/span.h"
+
 class PrefService;
 
 namespace country_codes {
@@ -38,6 +40,9 @@ enum class SearchEngineCountryListOverride {
   kEeaAll,
   // Display the search engines that we default to when the country is unknown.
   kEeaDefault,
+  // Display search engines explicitly set in the currently running automated
+  // test's setup. Requires hardcoding some test overrides.
+  kTestOverride,
 };
 
 // The state of the search engine choice country command line override.
@@ -71,6 +76,13 @@ GetAllEeaRegionPrepopulatedEngines();
 // Returns the set of search engines that is used when the country is unknown.
 std::vector<const TemplateURLPrepopulateData::PrepopulatedEngine*>
 GetDefaultPrepopulatedEngines();
+
+std::vector<const TemplateURLPrepopulateData::PrepopulatedEngine*>
+GetTestOverridePrepopulatedEngines();
+
+void SetPrepopulatedEnginesOverrideForTesting(
+    base::span<const TemplateURLPrepopulateData::PrepopulatedEngine*> engines);
+void ClearPrepopulatedEnginesOverrideForTesting();
 
 }  // namespace regional_capabilities
 

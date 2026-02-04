@@ -10,7 +10,9 @@
 #include <string>
 #include <variant>
 
+#include "base/check_is_test.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "components/country_codes/country_codes.h"
 #include "components/regional_capabilities/eea_countries_ids.h"
@@ -24,9 +26,20 @@ namespace regional_capabilities {
 
 namespace {
 
-using country_codes::CountryId;
-using TemplateURLPrepopulateData::PrepopulatedEngine;
-using TemplateURLPrepopulateData::RegionalSettings;
+using ::country_codes::CountryId;
+using ::TemplateURLPrepopulateData::PrepopulatedEngine;
+using ::TemplateURLPrepopulateData::RegionalSettings;
+
+// Note: These entries are not also injected into
+// TemplateURLPrepopulateData::kAllEngines so simulating the full logic that
+// includes fallbacks is not supported.
+std::optional<std::vector<const PrepopulatedEngine*>>&
+GetPrepopulatedEnginesTestOverride() {
+  static base::NoDestructor<
+      std::optional<std::vector<const PrepopulatedEngine*>>>
+      g_preopulated_engines_test_override;
+  return *g_preopulated_engines_test_override;
+}
 
 // The number of search engines for each country falling into the "top"
 // category.
@@ -55,6 +68,11 @@ void ShufflePrepopulatedEngines(std::vector<const PrepopulatedEngine*>& engines,
 }  // namespace
 
 std::optional<SearchEngineCountryOverride> GetSearchEngineCountryOverride() {
+  if (GetPrepopulatedEnginesTestOverride().has_value()) {
+    CHECK_IS_TEST();
+    return SearchEngineCountryListOverride::kTestOverride;
+  }
+
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (!command_line->HasSwitch(switches::kSearchEngineChoiceCountry)) {
     return std::nullopt;
@@ -149,6 +167,22 @@ std::vector<const PrepopulatedEngine*> GetAllEeaRegionPrepopulatedEngines() {
 
 std::vector<const PrepopulatedEngine*> GetDefaultPrepopulatedEngines() {
   return base::ToVector(GetRegionalSettings(CountryId()).search_engines);
+}
+
+std::vector<const PrepopulatedEngine*> GetTestOverridePrepopulatedEngines() {
+  CHECK_IS_TEST();
+  return GetPrepopulatedEnginesTestOverride().value();
+}
+
+void SetPrepopulatedEnginesOverrideForTesting(  // IN-TEST
+    base::span<const PrepopulatedEngine*> engines) {
+  std::vector<const PrepopulatedEngine*> engines_vector(engines.begin(),
+                                                        engines.end());
+  GetPrepopulatedEnginesTestOverride() = std::move(engines_vector);
+}
+
+void ClearPrepopulatedEnginesOverrideForTesting() {
+  GetPrepopulatedEnginesTestOverride().reset();
 }
 
 }  // namespace regional_capabilities

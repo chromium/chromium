@@ -276,6 +276,8 @@ Program CountryOverrideToProgram(SearchEngineCountryOverride country_override) {
               case SearchEngineCountryListOverride::kEeaAll:
               case SearchEngineCountryListOverride::kEeaDefault:
                 return Program::kWaffle;
+              case SearchEngineCountryListOverride::kTestOverride:
+                return Program::kDefault;
             }
             NOTREACHED();
           },
@@ -331,6 +333,8 @@ RegionalCapabilitiesService::GetRegionalPrepopulatedEngines() {
         return GetAllEeaRegionPrepopulatedEngines();
       case SearchEngineCountryListOverride::kEeaDefault:
         return GetDefaultPrepopulatedEngines();
+      case SearchEngineCountryListOverride::kTestOverride:
+        return GetTestOverridePrepopulatedEngines();
     }
     NOTREACHED();
   }
