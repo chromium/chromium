@@ -44,24 +44,25 @@ void ReadbackBufferShadowTracker::Buffer::Free() {
   readback_buffer_ = {};
 }
 
-void* ReadbackBufferShadowTracker::Buffer::MapReadbackShm(uint32_t offset,
-                                                          uint32_t map_size) {
+base::span<uint8_t> ReadbackBufferShadowTracker::Buffer::MapReadbackShm(
+    uint32_t offset,
+    uint32_t map_size) {
   DCHECK(!is_mapped_);
   if (serial_of_readback_data_ != serial_of_last_write_) {
-    return nullptr;
+    return {};
   }
   if (readback_buffer_.empty()) {
-    return nullptr;
+    return {};
   }
   if (map_size > size_) {
-    return nullptr;
+    return {};
   }
   DCHECK_GE(size_, map_size);
   if (offset > size_ - map_size) {
-    return nullptr;
+    return {};
   }
   is_mapped_ = true;
-  return readback_buffer_.get_at(offset);
+  return readback_buffer_.subspan(offset, map_size);
 }
 
 bool ReadbackBufferShadowTracker::Buffer::UnmapReadbackShm() {

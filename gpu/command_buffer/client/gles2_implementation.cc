@@ -5762,7 +5762,7 @@ void* GLES2Implementation::MapBufferSubDataCHROMIUM(GLuint target,
 
   std::pair<MappedBufferMap::iterator, bool> result =
       mapped_buffers_.insert(std::make_pair(
-          buffer.data(), MappedBuffer(access, shm_id, buffer.data(), shm_offset,
+          buffer.data(), MappedBuffer(access, shm_id, buffer, shm_offset,
                                       target, offset, size)));
   DCHECK(result.second);
   GPU_CLIENT_LOG("  returned " << buffer.data());
@@ -5783,7 +5783,8 @@ void GLES2Implementation::UnmapBufferSubDataCHROMIUM(const void* mem) {
   helper_->BufferSubData(mb.target, mb.offset, mb.size, mb.shm_id,
                          mb.shm_offset);
   InvalidateReadbackBufferShadowDataCHROMIUM(GetBoundBufferHelper(mb.target));
-  mapped_memory_->FreePendingToken(mb.shm_memory, helper_->InsertToken());
+  mapped_memory_->FreePendingToken(mb.shm_memory.data(),
+                                   helper_->InsertToken());
   mapped_buffers_.erase(it);
   CheckGLError();
 }
@@ -5804,8 +5805,9 @@ void GLES2Implementation::RemoveMappedBufferRangeByTarget(GLenum target) {
 void GLES2Implementation::RemoveMappedBufferRangeById(GLuint buffer) {
   if (buffer > 0) {
     auto iter = mapped_buffer_range_map_.find(buffer);
-    if (iter != mapped_buffer_range_map_.end() && iter->second.shm_memory) {
-      mapped_memory_->FreePendingToken(iter->second.shm_memory,
+    if (iter != mapped_buffer_range_map_.end() &&
+        !iter->second.shm_memory.empty()) {
+      mapped_memory_->FreePendingToken(iter->second.shm_memory.data(),
                                        helper_->InsertToken());
       mapped_buffer_range_map_.erase(iter);
     }
@@ -5814,8 +5816,8 @@ void GLES2Implementation::RemoveMappedBufferRangeById(GLuint buffer) {
 
 void GLES2Implementation::ClearMappedBufferRangeMap() {
   for (auto& buffer_range : mapped_buffer_range_map_) {
-    if (buffer_range.second.shm_memory) {
-      mapped_memory_->FreePendingToken(buffer_range.second.shm_memory,
+    if (!buffer_range.second.shm_memory.empty()) {
+      mapped_memory_->FreePendingToken(buffer_range.second.shm_memory.data(),
                                        helper_->InsertToken());
     }
   }
@@ -5824,8 +5826,8 @@ void GLES2Implementation::ClearMappedBufferRangeMap() {
 
 void GLES2Implementation::ClearMappedBufferMap() {
   for (auto& buffer : mapped_buffers_) {
-    if (buffer.second.shm_memory) {
-      mapped_memory_->FreePendingToken(buffer.second.shm_memory,
+    if (!buffer.second.shm_memory.empty()) {
+      mapped_memory_->FreePendingToken(buffer.second.shm_memory.data(),
                                        helper_->InsertToken());
     }
   }
@@ -5834,8 +5836,8 @@ void GLES2Implementation::ClearMappedBufferMap() {
 
 void GLES2Implementation::ClearMappedTextureMap() {
   for (auto& texture : mapped_textures_) {
-    if (texture.second.shm_memory) {
-      mapped_memory_->FreePendingToken(texture.second.shm_memory,
+    if (!texture.second.shm_memory.empty()) {
+      mapped_memory_->FreePendingToken(texture.second.shm_memory.data(),
                                        helper_->InsertToken());
     }
   }
@@ -5857,8 +5859,7 @@ void* GLES2Implementation::MapBufferRange(GLenum target,
 
   GLuint buffer = GetBoundBufferHelper(target);
 
-  // TODO(crbug.com/40285824): Use span instead.
-  void* mem = nullptr;
+  base::span<uint8_t> span_buffer;
 
   // Early return if we have a valid shadow copy for readback
   if (access == GL_MAP_READ_BIT) {
@@ -5877,8 +5878,8 @@ void* GLES2Implementation::MapBufferRange(GLenum target,
     // GL_READBACK_SHADOW_COPIES_UPDATED_CHROMIUM.
     if (auto* buffer_object =
             readback_buffer_shadow_tracker_->GetBuffer(buffer)) {
-      mem = buffer_object->MapReadbackShm(offset, size);
-      if (!mem) {
+      span_buffer = buffer_object->MapReadbackShm(offset, size);
+      if (span_buffer.empty()) {
         // (If there's no valid shadow copy, warn and fall back to usual logic.)
         SendErrorMessage(
             "performance warning: READ-usage buffer was read back without "
@@ -5891,10 +5892,10 @@ void* GLES2Implementation::MapBufferRange(GLenum target,
   // Usual, round-trip path if we're not doing a shadow-copy readback
   int32_t shm_id = 0;
   unsigned int shm_offset = 0;
-  if (!mem) {
-    mem = mapped_memory_->Alloc(size, &shm_id, &shm_offset).data();
+  if (span_buffer.empty()) {
+    span_buffer = mapped_memory_->Alloc(size, &shm_id, &shm_offset);
     auto result = GetResultAs<cmds::MapBufferRange::Result>();
-    if (!mem || !result) {
+    if (span_buffer.empty() || !result) {
       SetGLError(GL_OUT_OF_MEMORY, "glMapBufferRange", "out of memory");
       return nullptr;
     }
@@ -5913,29 +5914,29 @@ void* GLES2Implementation::MapBufferRange(GLenum target,
       if ((access & kInvalidateBits) != 0) {
         // We do not read back from the buffer, therefore, we set the client
         // side memory to zero to avoid uninitialized data.
-        UNSAFE_TODO(memset(mem, 0, size));
+        std::ranges::fill(span_buffer, 0);
       }
     } else {
-      mapped_memory_->Free(mem);
-      mem = nullptr;
+      mapped_memory_->Free(span_buffer.data());
+      span_buffer = {};
     }
   }
 
   // Track this mapping regardless of which path was taken above.
-  if (mem) {
+  if (!span_buffer.empty()) {
     DCHECK_NE(0u, buffer);
     // glMapBufferRange fails on an already mapped buffer.
     DCHECK(mapped_buffer_range_map_.find(buffer) ==
            mapped_buffer_range_map_.end());
-    auto iter = mapped_buffer_range_map_.insert(std::make_pair(
-        buffer,
-        MappedBuffer(access, shm_id, mem, shm_offset, target, offset, size)));
+    auto iter = mapped_buffer_range_map_.insert(
+        std::make_pair(buffer, MappedBuffer(access, shm_id, span_buffer,
+                                            shm_offset, target, offset, size)));
     DCHECK(iter.second);
   }
 
-  GPU_CLIENT_LOG("  returned " << mem);
+  GPU_CLIENT_LOG("  returned " << span_buffer.data());
   CheckGLError();
-  return mem;
+  return span_buffer.data();
 }
 
 GLboolean GLES2Implementation::UnmapBuffer(GLenum target) {
@@ -6037,8 +6038,8 @@ void* GLES2Implementation::MapTexSubImage2DCHROMIUM(GLenum target,
   std::pair<MappedTextureMap::iterator, bool> result =
       mapped_textures_.insert(std::make_pair(
           buffer.data(),
-          MappedTexture(access, shm_id, buffer.data(), shm_offset, target,
-                        level, xoffset, yoffset, width, height, format, type)));
+          MappedTexture(access, shm_id, buffer, shm_offset, target, level,
+                        xoffset, yoffset, width, height, format, type)));
   DCHECK(result.second);
   GPU_CLIENT_LOG("  returned " << buffer.data());
   return buffer.data();
@@ -6058,7 +6059,8 @@ void GLES2Implementation::UnmapTexSubImage2DCHROMIUM(const void* mem) {
   helper_->TexSubImage2D(mt.target, mt.level, mt.xoffset, mt.yoffset, mt.width,
                          mt.height, mt.format, mt.type, mt.shm_id,
                          mt.shm_offset, GL_FALSE);
-  mapped_memory_->FreePendingToken(mt.shm_memory, helper_->InsertToken());
+  mapped_memory_->FreePendingToken(mt.shm_memory.data(),
+                                   helper_->InsertToken());
   mapped_textures_.erase(it);
   CheckGLError();
 }

@@ -39,8 +39,7 @@ class ReadbackBufferShadowTracker {
     void Free();
     void FreePendingToken(int32_t token);
 
-    // TODO(crbug.com/40285824): Return the span instead of a pointer.
-    void* MapReadbackShm(uint32_t offset, uint32_t map_size);
+    base::span<uint8_t> MapReadbackShm(uint32_t offset, uint32_t map_size);
     bool UnmapReadbackShm();
 
     void UpdateSerialTo(uint64_t serial);
