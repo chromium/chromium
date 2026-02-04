@@ -20560,6 +20560,23 @@
             ]
         }
     ],
+    "PolicyDataCollectionEnabled": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PolicyDataCollectionEnabled"
+                    ]
+                }
+            ]
+        }
+    ],
     "PompanoEnabled": [
         {
             "platforms": [
