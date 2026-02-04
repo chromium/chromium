@@ -1889,7 +1889,7 @@ LayoutUnit ColumnLayoutAlgorithm::ConstrainColumnBlockSize(
   size = std::min(size, max);
   size = (size - extra).ClampNegativeToZero();
 
-  if (ShouldWrapColumns() && HasRowHeight()) {
+  if (HasRowHeight()) {
     // Never become taller than used `column-height`.
     size = std::min(size, RemainingRowHeightAtOffset(line_offset));
   }
