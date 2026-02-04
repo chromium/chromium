@@ -131,10 +131,11 @@ crbug.com/425745937 [ fuchsia web-engine-shell fuchsia-board-nelson ] ExpectedCo
 # Flakes on Intel Mac with a larger shifted image
 crbug.com/425653491 [ angle-metal graphite-enabled intel-0x3e9b no-asan no-clang-coverage release sequoia ] ExpectedColor_MediaRecorderFromVideoElement [ Failure ]
 
-# Flakes on Android DEMUXER_ERROR_COULD_NOT_OPEN
+# Flakes on Android and Windows DEMUXER_ERROR_COULD_NOT_OPEN
 crbug.com/426594100 [ android android-pixel-2 graphite-disabled ] ExpectedColor_MediaRecorderFromVideoElement [ RetryOnFailure ]
 crbug.com/426594100 [ android-14 android-pixel-6 graphite-disabled ] ExpectedColor_MediaRecorderFromVideoElement [ RetryOnFailure ]
 crbug.com/426594100 [ mac intel-0x3e9b graphite-disabled asan ] ExpectedColor_MediaRecorderFromVideoElement [ RetryOnFailure ]
+crbug.com/426594100 [ win ] ExpectedColor_MediaRecorderFromVideoElement [ RetryOnFailure ]
 
 # Crop Boundaries Fails
 crbug.com/446124895 [ android android-pixel-10 ] ExpectedColor_MediaRecorderFromVideoElement [ Failure ]

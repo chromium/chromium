@@ -126,6 +126,12 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
   // The output format that ConvertVideoFrameToRGBPixels will write.
   static viz::SharedImageFormat GetRGBPixelsOutputFormat();
 
+  // Return true only if the shared image and texture formats for R and RG
+  // planes for `channel_format` are supported by `raster_context_provider`.
+  static bool MultiPlaneChannelFormatSupported(
+      viz::RasterContextProvider* raster_context_provider,
+      viz::SharedImageFormat::ChannelFormat channel_format);
+
   // Copy the contents of |video_frame| to |texture| of |destination_gl|.
   //
   // The format of |video_frame| must be VideoFrame::NATIVE_TEXTURE.

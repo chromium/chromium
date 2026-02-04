@@ -48,8 +48,10 @@
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/common/mailbox.h"
+#include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "media/base/data_buffer.h"
+#include "media/base/format_utils.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
 #include "media/base/wait_and_replace_sync_token_client.h"
@@ -1346,6 +1348,29 @@ viz::SharedImageFormat PaintCanvasVideoRenderer::GetRGBPixelsOutputFormat() {
   return SHARED_IMAGE_FORMAT;
 }
 
+// static
+bool PaintCanvasVideoRenderer::MultiPlaneChannelFormatSupported(
+    viz::RasterContextProvider* raster_context_provider,
+    viz::SharedImageFormat::ChannelFormat channel_format) {
+  const auto& caps = raster_context_provider->ContextCapabilities();
+  const auto& shared_image_caps =
+      raster_context_provider->SharedImageInterface()->GetCapabilities();
+  // If one-component shared images or RG textures are unsupported, then no
+  // channel formats are supported.
+  if (shared_image_caps.disable_one_component_textures || !caps.texture_rg) {
+    return false;
+  }
+  switch (channel_format) {
+    case viz::SharedImageFormat::ChannelFormat::k8:
+      return !shared_image_caps.disable_r8_shared_images;
+    case viz::SharedImageFormat::ChannelFormat::k10:
+    case viz::SharedImageFormat::ChannelFormat::k16:
+      return caps.texture_norm16;
+    case viz::SharedImageFormat::ChannelFormat::k16F:
+      return shared_image_caps.is_r16f_supported;
+  }
+}
+
 bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
     viz::RasterContextProvider* raster_context_provider,
     gpu::gles2::GLES2Interface* destination_gl,
@@ -1530,6 +1555,19 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
   // Could handle NV12 here as well. See NewSkImageFromVideoFrameYUV.
 
   CHECK(!video_frame->HasSharedImage());
+
+  // If a suitable pixel format for the frame's planes is not present, then
+  // YUV to RGB conversion must be done on the CPU.
+  auto shared_image_format =
+      VideoPixelFormatToSharedImageFormat(video_frame->format());
+  if (!shared_image_format.has_value()) {
+    return false;
+  }
+  if (shared_image_format->is_multi_plane() &&
+      !MultiPlaneChannelFormatSupported(
+          raster_context_provider, shared_image_format->channel_format())) {
+    return false;
+  }
 
   // We copy the contents of the source VideoFrame into the intermediate SI
   // over the raster interface and read out the contents of the intermediate
