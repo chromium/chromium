@@ -38,6 +38,7 @@ import org.chromium.base.test.transit.UiThreadCondition;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.KeyUtils;
+import org.chromium.base.ui.KeyboardUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.omnibox.LocationBarLayout;
 import org.chromium.chrome.browser.omnibox.UrlBar;
@@ -105,7 +106,7 @@ public class OmniboxTestUtils {
      * Create a ViewAction that can be executed on a Suggestion with Action Chips.
      *
      * @param position the index of an {@link
-     *         org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxAction},
+     *     org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxAction},
      * @param action the action to perform.
      */
     public static ViewAction actionOnOmniboxActionAtPosition(int position, ViewAction action) {
@@ -141,9 +142,8 @@ public class OmniboxTestUtils {
     /**
      * Create a new OmniboxTestUtils instance from supplied activity.
      *
-     * This method should be called if the caller intends to retain the instance
-     * for a longer period of time.
-     * For short or single-time uses, consider calling static method below.
+     * <p>This method should be called if the caller intends to retain the instance for a longer
+     * period of time. For short or single-time uses, consider calling static method below.
      */
     public OmniboxTestUtils(@NonNull Activity activity) {
         mActivity = activity;
@@ -186,7 +186,7 @@ public class OmniboxTestUtils {
     public void checkFocus(boolean active) {
         noopTo().waitFor(
                         new UrlBarHasFocusCondition(mUrlBar, active),
-                        new InputMethodManagerIsActiveCondition(mUrlBar, active));
+                        new SoftKeyboardShowingCondition(mUrlBar, active));
     }
 
     /**
@@ -253,8 +253,8 @@ public class OmniboxTestUtils {
     }
 
     /**
-     * Stops any subsequent AutocompleteResults from being generated.
-     * Ensures that no subsequent asynchronous AutocompleteResults could tamper with test execution.
+     * Stops any subsequent AutocompleteResults from being generated. Ensures that no subsequent
+     * asynchronous AutocompleteResults could tamper with test execution.
      */
     public void waitForAutocomplete() {
         AtomicLong previousId = new AtomicLong(-1);
@@ -582,7 +582,7 @@ public class OmniboxTestUtils {
     /**
      * Verify the Composing text in the Omnibox.
      *
-     * Unlike Autocomplete, Composing text enables more finegrained control of the edited text.
+     * <p>Unlike Autocomplete, Composing text enables more finegrained control of the edited text.
      * This is particularly relevant to certain family of languages and input connections, where
      * individual characters or sequences are modified with subsequent keystrokes (eg. T9).
      *
@@ -769,6 +769,27 @@ public class OmniboxTestUtils {
             return mExpectActive
                     ? "InputMethodManager is active"
                     : "InputMethodManager is not active";
+        }
+    }
+
+    public static class SoftKeyboardShowingCondition extends UiThreadCondition {
+        private final View mView;
+        private final boolean mExpectShowing;
+
+        public SoftKeyboardShowingCondition(View view, boolean expectShowing) {
+            mView = view;
+            mExpectShowing = expectShowing;
+        }
+
+        @Override
+        protected ConditionStatus checkWithSuppliers() {
+            boolean isShowing = KeyboardUtils.isAndroidSoftKeyboardShowing(mView);
+            return whether(isShowing == mExpectShowing, "Keyboard showing is %b", isShowing);
+        }
+
+        @Override
+        public String buildDescription() {
+            return mExpectShowing ? "Soft keyboard is showing" : "Soft keyboard is not showing";
         }
     }
 }
