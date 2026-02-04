@@ -195,11 +195,11 @@ void VerticalUnpinnedTabContainerView::HandleTabDragInContainer(
   } else if (auto* group_view =
                  views::AsViewClass<VerticalTabGroupView>(view_at_point)) {
     // Groups themselves are a drag target except when they are collapsed or
-    // if we are in header drag which are the only cases we handle here.
+    // if we are dragging groups, which are the only cases we handle here.
     if (group_view->IsCollapsed()) {
       node = group_view->collection_node();
-    } else if (GetDragHandler().GetDraggingGroupHeaderId().has_value()) {
-      // For header drag check if the point overlaps with the group's header.
+    } else if (GetDragHandler().IsDraggingGroups()) {
+      // For group drag check if the point overlaps with the group's header.
       auto* group_layout = target_layout.GetLayoutFor(group_view);
       CHECK(group_layout);
       if (gfx::Point point_in_group =
@@ -219,7 +219,7 @@ void VerticalUnpinnedTabContainerView::HandleTabDragInContainer(
 VerticalDraggedTabsContainer&
 VerticalUnpinnedTabContainerView::GetTabDragTarget(
     const gfx::Point& point_in_screen) {
-  if (GetDragHandler().GetDraggingGroupHeaderId().has_value()) {
+  if (GetDragHandler().IsDraggingGroups()) {
     // Don't consider other tab group views as a drag target if we're dragging
     // a group header already.
     return *this;

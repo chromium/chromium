@@ -144,6 +144,15 @@ VerticalTabDragHandlerImpl::GetDragInitDataForTabDrag(
       std::get<const tabs::TabInterface*>(source_node.GetNodeData());
   CHECK(source_tab);
 
+  if (!source_tab->IsPinned()) {
+    // A TabSlotView must be added for each dragged group, in addition to the
+    // tabs themselves.
+    auto dragged_groups = GetFullySelectedGroups(selected_tabs);
+    drag_init_data.dragged_views.insert(drag_init_data.dragged_views.end(),
+                                        dragged_groups.begin(),
+                                        dragged_groups.end());
+  }
+
   // Track the node and build a shim view for each selected node.
   for (tabs::TabInterface* tab : selected_tabs) {
     // Filter out selections that don't match the pinned state of the latest
@@ -186,6 +195,29 @@ VerticalTabDragHandlerImpl::GetDragInitDataForGroupHeaderDrag(
     }
   }
   return drag_init_data;
+}
+
+std::vector<TabSlotView*> VerticalTabDragHandlerImpl::GetFullySelectedGroups(
+    const std::unordered_set<raw_ptr<tabs::TabInterface>>& selected_tabs) {
+  std::map<tab_groups::TabGroupId, int> dragged_group_tab_counts;
+  for (tabs::TabInterface* tab : selected_tabs) {
+    if (auto group_id = tab->GetGroup()) {
+      dragged_group_tab_counts[*group_id]++;
+    }
+  }
+
+  std::vector<TabSlotView*> selected_groups;
+  for (const auto& [group_id, dragged_tab_count] : dragged_group_tab_counts) {
+    const auto* group = tab_strip_model_->group_model()->GetTabGroup(group_id);
+    CHECK(group);
+    if (group->tab_count() == dragged_tab_count) {
+      auto* selected_node = GetNodeForTabGroup(group_id);
+      auto& slot_view = GetOrCreateSlotViewForNode(*selected_node);
+      slot_view.SetBoundsRect(selected_node->view()->GetLocalBounds());
+      selected_groups.push_back(&slot_view);
+    }
+  }
+  return selected_groups;
 }
 
 bool VerticalTabDragHandlerImpl::ContinueDrag(views::View& event_source_view,
@@ -352,10 +384,12 @@ void VerticalTabDragHandlerImpl::HandleTabDragOverUnpinnedContainer(
     return;
   }
 
-  if (GetDraggingGroupHeaderId().has_value()) {
+  if (IsDraggingGroups()) {
     return;
   }
 
+  // TODO(crbug.com/439963720): Re-evaluate whether this logic is needed once drag
+  // hit-testing is improved.
   const tabs::TabInterface* selected_tab =
       *tab_strip_model_->selection_model().selected_tabs().cbegin();
 
@@ -395,6 +429,13 @@ bool VerticalTabDragHandlerImpl::IsDraggingPinnedTabs() const {
                      [](const auto& tab_data) { return tab_data.pinned; });
 }
 
+bool VerticalTabDragHandlerImpl::IsDraggingGroups() const {
+  if (!drag_controller_) {
+    return false;
+  }
+  return !drag_controller_->GetSessionData().dragging_groups.empty();
+}
+
 std::optional<tab_groups::TabGroupId>
 VerticalTabDragHandlerImpl::GetDraggingGroupHeaderId() const {
   return drag_controller_ ? drag_controller_->GetSessionData().group_header_id()
@@ -403,17 +444,29 @@ VerticalTabDragHandlerImpl::GetDraggingGroupHeaderId() const {
 
 views::View* VerticalTabDragHandlerImpl::ViewFromTabSlot(
     TabSlotView* view) const {
+  CHECK(drag_controller_);
   auto* slot_view = views::AsViewClass<VerticalTabSlotView>(view);
   CHECK(slot_view);
 
   const TabCollectionNode& node = slot_view->node();
 
-  // If the dragged tab view is in a split, return the split's tab view
-  // instead.
   if (node.type() == TabCollectionNode::Type::TAB) {
     const auto* tab = std::get<const tabs::TabInterface*>(node.GetNodeData());
     CHECK(tab);
+
+    if (auto group_id = tab->GetGroup();
+        group_id && drag_controller_->GetSessionData().dragging_groups.contains(
+                        *group_id)) {
+      // If the tab belongs to a group that is being dragged, return the group's
+      // view instead.
+      const TabCollectionNode* group_node = GetNodeForTabGroup(*group_id);
+      CHECK(group_node);
+      return group_node->view();
+    }
+
     if (tab->IsSplit()) {
+      // If the dragged tab view is in a split, return the split's tab view
+      // instead.
       const TabCollectionNode* split_node =
           root_node_->GetParentNodeForHandle(tab->GetHandle());
       CHECK(split_node);
@@ -538,6 +591,7 @@ void VerticalTabDragHandlerImpl::StoppedDragging() {
   if (!drag_data.group_header_drag_data_.has_value()) {
     return;
   }
+
   // Offset by 1 to account for the group header.
   const int drag_data_index =
       1 + drag_data.group_header_drag_data_->active_tab_index_within_group;
@@ -574,7 +628,13 @@ TabCollectionNode* VerticalTabDragHandlerImpl::GetNodeForContents(
 
 TabCollectionNode* VerticalTabDragHandlerImpl::GetNodeForTabGroup(
     const tab_groups::TabGroupId& group_id) {
-  auto* group = tab_strip_model_->group_model()->GetTabGroup(group_id);
+  return const_cast<TabCollectionNode*>(
+      std::as_const(*this).GetNodeForTabGroup(group_id));
+}
+
+const TabCollectionNode* VerticalTabDragHandlerImpl::GetNodeForTabGroup(
+    const tab_groups::TabGroupId& group_id) const {
+  const auto* group = tab_strip_model_->group_model()->GetTabGroup(group_id);
   CHECK(group);
   return root_node_->GetNodeForHandle(group->GetCollectionHandle());
 }

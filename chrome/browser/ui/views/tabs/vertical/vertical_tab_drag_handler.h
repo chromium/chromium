@@ -56,10 +56,8 @@ class VerticalTabDragHandler {
   // Returns true if there is an ongoing drag that includes a pinned tab.
   virtual bool IsDraggingPinnedTabs() const = 0;
 
-  // Returns the group id of the dragged group header, or null if a group
-  // header is not being dragged.
-  virtual std::optional<tab_groups::TabGroupId> GetDraggingGroupHeaderId()
-      const = 0;
+  // Returns true if there is an ongoing drag where a group is being moved.
+  virtual bool IsDraggingGroups() const = 0;
 
   // For vertical tabs, `TabSlotView` doesn't represent the actual tab
   // view. This method converts `view` to its actual tab view, or nullptr
@@ -95,8 +93,7 @@ class VerticalTabDragHandlerImpl : public VerticalTabDragHandler,
   TabDragContext* GetDragContext() override;
   bool IsViewDragging(const views::View& view) const override;
   bool IsDraggingPinnedTabs() const override;
-  std::optional<tab_groups::TabGroupId> GetDraggingGroupHeaderId()
-      const override;
+  bool IsDraggingGroups() const override;
   views::View* ViewFromTabSlot(TabSlotView* view) const override;
 
   // TabDragContext
@@ -143,9 +140,13 @@ class VerticalTabDragHandlerImpl : public VerticalTabDragHandler,
   DragInitData GetDragInitDataForTabDrag(TabCollectionNode& source_node);
   DragInitData GetDragInitDataForGroupHeaderDrag(
       TabCollectionNode& source_node);
+  std::vector<TabSlotView*> GetFullySelectedGroups(
+      const std::unordered_set<raw_ptr<tabs::TabInterface>>& selected_tabs);
 
   TabCollectionNode* GetNodeForContents(content::WebContents* contents);
   TabCollectionNode* GetNodeForTabGroup(const tab_groups::TabGroupId& group_id);
+  const TabCollectionNode* GetNodeForTabGroup(
+      const tab_groups::TabGroupId& group_id) const;
 
   // Creates a `TabSlotView` for `node`, used for compatibility with the
   // core dragging system. The created slot view is cached in `slot_views_`.
@@ -164,6 +165,10 @@ class VerticalTabDragHandlerImpl : public VerticalTabDragHandler,
   void HandleTabDragOverUnpinnedContainer(
       const TabCollectionNode& node,
       std::optional<DragPositionHint> position_hint);
+
+  // Returns the group id of the dragged group header, or null if the drag
+  // was not initiated by a group header.
+  std::optional<tab_groups::TabGroupId> GetDraggingGroupHeaderId() const;
 
   const raw_ref<TabStripModel> tab_strip_model_;
   const raw_ref<TabCollectionNode> root_node_;

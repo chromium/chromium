@@ -63,6 +63,8 @@ class TabCollectionNode {
   // Returns nullptr if no such node exists.
   TabCollectionNode* GetNodeForHandle(
       const tabs::TabCollectionNodeHandle& handle);
+  const TabCollectionNode* GetNodeForHandle(
+      const tabs::TabCollectionNodeHandle& handle) const;
   TabCollectionNode* GetParentNodeForHandle(
       const tabs::TabCollectionNodeHandle& handle);
   const TabCollectionNode* GetParentNodeForHandle(

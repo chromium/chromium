@@ -175,9 +175,15 @@ void TabCollectionNode::Deinitialize() {
   }
 }
 
-// TODO(crbug.com/450976282): Consider having a map at the root level.
 TabCollectionNode* TabCollectionNode::GetNodeForHandle(
     const tabs::TabCollectionNodeHandle& handle) {
+  return const_cast<TabCollectionNode*>(
+      std::as_const(*this).GetNodeForHandle(handle));
+}
+
+// TODO(crbug.com/450976282): Consider having a map at the root level.
+const TabCollectionNode* TabCollectionNode::GetNodeForHandle(
+    const tabs::TabCollectionNodeHandle& handle) const {
   if (GetHandle() == handle) {
     return this;
   }
