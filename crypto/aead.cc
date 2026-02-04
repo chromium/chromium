@@ -45,8 +45,10 @@ Aead::Aead(AeadAlgorithm algorithm, base::span<const uint8_t> key)
 Aead::~Aead() = default;
 
 void Aead::Init(base::span<const uint8_t> key) {
-  CHECK(EVP_AEAD_CTX_init(ctx_.get(), AeadForAlgorithm(algorithm_), key.data(),
-                          key.size(), EVP_AEAD_DEFAULT_TAG_LENGTH, nullptr));
+  if (EVP_AEAD_CTX_init(ctx_.get(), AeadForAlgorithm(algorithm_), key.data(),
+                        key.size(), EVP_AEAD_DEFAULT_TAG_LENGTH, nullptr)) {
+    initialized_ = true;
+  }
 }
 
 void Aead::Init(const std::string* key) {
@@ -57,6 +59,9 @@ std::vector<uint8_t> Aead::Seal(
     base::span<const uint8_t> plaintext,
     base::span<const uint8_t> nonce,
     base::span<const uint8_t> additional_data) const {
+  if (!initialized_) {
+    return {};
+  }
   const EVP_AEAD* aead = EVP_AEAD_CTX_aead(ctx_.get());
   size_t max_output_length =
       base::CheckAdd(plaintext.size(), EVP_AEAD_max_overhead(aead))
@@ -74,6 +79,10 @@ bool Aead::Seal(std::string_view plaintext,
                 std::string_view nonce,
                 std::string_view additional_data,
                 std::string* ciphertext) const {
+  if (!initialized_) {
+    ciphertext->clear();
+    return false;
+  }
   const EVP_AEAD* aead = EVP_AEAD_CTX_aead(ctx_.get());
   size_t max_output_length =
       base::CheckAdd(plaintext.size(), EVP_AEAD_max_overhead(aead))
@@ -97,6 +106,10 @@ std::optional<std::vector<uint8_t>> Aead::Open(
     base::span<const uint8_t> ciphertext,
     base::span<const uint8_t> nonce,
     base::span<const uint8_t> additional_data) const {
+  if (!initialized_) {
+    return std::nullopt;
+  }
+
   const size_t max_output_length = ciphertext.size();
   std::vector<uint8_t> ret(max_output_length);
 
@@ -114,6 +127,11 @@ bool Aead::Open(std::string_view ciphertext,
                 std::string_view nonce,
                 std::string_view additional_data,
                 std::string* plaintext) const {
+  if (!initialized_) {
+    plaintext->clear();
+    return false;
+  }
+
   const size_t max_output_length = ciphertext.size();
   plaintext->resize(max_output_length);
 
@@ -142,6 +160,9 @@ std::optional<size_t> Aead::Seal(base::span<const uint8_t> plaintext,
                                  base::span<const uint8_t> nonce,
                                  base::span<const uint8_t> additional_data,
                                  base::span<uint8_t> out) const {
+  if (!initialized_) {
+    return std::nullopt;
+  }
   DCHECK_EQ(NonceLength(), nonce.size());
 
   size_t out_len;
@@ -160,6 +181,9 @@ std::optional<size_t> Aead::Open(base::span<const uint8_t> ciphertext,
                                  base::span<const uint8_t> nonce,
                                  base::span<const uint8_t> additional_data,
                                  base::span<uint8_t> out) const {
+  if (!initialized_) {
+    return std::nullopt;
+  }
   DCHECK_EQ(NonceLength(), nonce.size());
   bssl::ScopedEVP_AEAD_CTX ctx;
 

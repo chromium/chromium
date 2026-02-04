@@ -87,4 +87,16 @@ TEST_P(AeadTest, SealOpenWrongKey) {
   EXPECT_EQ(0U, decrypted.size());
 }
 
+TEST_P(AeadTest, SealOpenTooShortKey) {
+  crypto::Aead aead(GetParam());
+  std::array<uint8_t, 1> key;
+  aead.Init(key);
+
+  std::string nonce(aead.NonceLength(), 0);
+  std::string plaintext("this is the plaintext");
+  std::string ad("this is the additional data");
+  std::string ciphertext;
+  EXPECT_FALSE(aead.Seal(plaintext, nonce, ad, &ciphertext));
+}
+
 }  // namespace

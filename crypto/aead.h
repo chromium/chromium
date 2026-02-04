@@ -52,8 +52,8 @@ class CRYPTO_EXPORT Aead {
   // These are only legal to call if the key was not supplied at construction
   // time. The key is copied locally and stored inside |this|.
   //
-  // These CHECK that the passed-in key is of the right length for the given
-  // algorithm.
+  // If the key is of the wrong size for the specified algorithm, or the
+  // receiving object has not been Init()ed, then Seal() and Open() always fail.
   //
   // TODO(https://crbug.com/475891208): remove this.
   void Init(base::span<const uint8_t> key);
@@ -99,6 +99,11 @@ class CRYPTO_EXPORT Aead {
   // two-phase construct-init which is itself deprecated.
   // TODO(https://crbug.com/475891208): remove this
   AeadAlgorithm algorithm_;
+
+  // Whether Init() succeeded, in which case other methods can be used.
+  // Temporary workaround.
+  // TODO(https://crbug.com/478966624): remove this
+  bool initialized_{false};
 };
 
 }  // namespace crypto
