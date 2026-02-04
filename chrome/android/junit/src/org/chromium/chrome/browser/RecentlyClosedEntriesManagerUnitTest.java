@@ -53,6 +53,8 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -638,7 +640,7 @@ public class RecentlyClosedEntriesManagerUnitTest {
     }
 
     @Test
-    public void testOnWindowClosed_NotPermanentDeletion_AddsWindow() {
+    public void testOnWindowsClosed_NotPermanentDeletion_AddsWindow() {
         createRecentlyClosedWindows(/* numOfWindows= */ 1);
         mRecentlyClosedEntriesManager.updateRecentlyClosedEntries();
         RecentlyClosedWindow window =
@@ -651,7 +653,8 @@ public class RecentlyClosedEntriesManagerUnitTest {
                         /* tabCount= */ 1);
         int callbackCount = mEntriesUpdatedCallbackHelper.getCallCount();
 
-        mRecentlyClosedEntriesManager.onWindowClosed(window, /* isPermanentDeletion= */ false);
+        mRecentlyClosedEntriesManager.onWindowsClosed(
+                Collections.singletonList(window), /* isPermanentDeletion= */ false);
 
         List<RecentlyClosedEntry> entries =
                 mRecentlyClosedEntriesManager.getRecentlyClosedEntries();
@@ -661,7 +664,7 @@ public class RecentlyClosedEntriesManagerUnitTest {
     }
 
     @Test
-    public void testOnWindowClosed_PermanentDeletion_RemovesWindow() {
+    public void testOnWindowsClosed_PermanentDeletion_RemovesWindow_SingleWindow() {
         RecentlyClosedWindow window =
                 new RecentlyClosedWindow(
                         /* timestamp= */ 10,
@@ -670,35 +673,72 @@ public class RecentlyClosedEntriesManagerUnitTest {
                         /* title= */ "title",
                         /* activeTabTitle= */ "tab title",
                         /* tabCount= */ 1);
-        mRecentlyClosedEntriesManager.onWindowClosed(window, /* isPermanentDeletion= */ false);
+        mRecentlyClosedEntriesManager.onWindowsClosed(
+                Collections.singletonList(window), /* isPermanentDeletion= */ false);
         assertEquals(1, mRecentlyClosedEntriesManager.getRecentlyClosedEntries().size());
         int callbackCount = mEntriesUpdatedCallbackHelper.getCallCount();
 
-        mRecentlyClosedEntriesManager.onWindowClosed(window, /* isPermanentDeletion= */ true);
+        mRecentlyClosedEntriesManager.onWindowsClosed(
+                Collections.singletonList(window), /* isPermanentDeletion= */ true);
 
         assertEquals(0, mRecentlyClosedEntriesManager.getRecentlyClosedEntries().size());
         assertEquals(callbackCount + 1, mEntriesUpdatedCallbackHelper.getCallCount());
     }
 
     @Test
-    public void testOnWindowClosed_MovesExistingWindowToTop() {
-        createRecentlyClosedWindows(/* numOfWindows= */ 2);
-        mRecentlyClosedEntriesManager.updateRecentlyClosedEntries();
-        List<RecentlyClosedEntry> entries =
-                mRecentlyClosedEntriesManager.getRecentlyClosedEntries();
-        RecentlyClosedWindow olderWindow = (RecentlyClosedWindow) entries.get(1);
+    public void testOnWindowsClosed_PermanentDeletion_RemovesWindow_MultipleWindows() {
+        RecentlyClosedWindow window1 =
+                new RecentlyClosedWindow(
+                        /* timestamp= */ 10,
+                        /* instanceId= */ 2,
+                        /* url= */ "url",
+                        /* title= */ "title",
+                        /* activeTabTitle= */ "tab title",
+                        /* tabCount= */ 1);
+        RecentlyClosedWindow window2 =
+                new RecentlyClosedWindow(
+                        /* timestamp= */ 20,
+                        /* instanceId= */ 3,
+                        /* url= */ "url2",
+                        /* title= */ "title2",
+                        /* activeTabTitle= */ "tab title2",
+                        /* tabCount= */ 2);
+
         int callbackCount = mEntriesUpdatedCallbackHelper.getCallCount();
+        mRecentlyClosedEntriesManager.onWindowsClosed(
+                Arrays.asList(window1, window2), /* isPermanentDeletion= */ false);
+        assertEquals(2, mRecentlyClosedEntriesManager.getRecentlyClosedEntries().size());
+        assertEquals(callbackCount + 1, mEntriesUpdatedCallbackHelper.getCallCount());
 
-        mRecentlyClosedEntriesManager.onWindowClosed(olderWindow, /* isPermanentDeletion= */ false);
-
-        entries = mRecentlyClosedEntriesManager.getRecentlyClosedEntries();
-        assertEquals(2, entries.size());
-        assertEquals(olderWindow, entries.get(0));
+        callbackCount = mEntriesUpdatedCallbackHelper.getCallCount();
+        mRecentlyClosedEntriesManager.onWindowsClosed(
+                Arrays.asList(window1, window2), /* isPermanentDeletion= */ true);
+        assertEquals(0, mRecentlyClosedEntriesManager.getRecentlyClosedEntries().size());
         assertEquals(callbackCount + 1, mEntriesUpdatedCallbackHelper.getCallCount());
     }
 
     @Test
-    public void testOnWindowClosed_ExceedsMaxEntries_ClearWindowStorage() {
+    public void testOnWindowsClosed_MovesExistingWindowsToTop() {
+        createRecentlyClosedWindows(/* numOfWindows= */ 3);
+        mRecentlyClosedEntriesManager.updateRecentlyClosedEntries();
+        List<RecentlyClosedEntry> entries =
+                mRecentlyClosedEntriesManager.getRecentlyClosedEntries();
+        RecentlyClosedWindow window1 = (RecentlyClosedWindow) entries.get(1);
+        RecentlyClosedWindow window2 = (RecentlyClosedWindow) entries.get(2);
+        int callbackCount = mEntriesUpdatedCallbackHelper.getCallCount();
+
+        mRecentlyClosedEntriesManager.onWindowsClosed(
+                Arrays.asList(window1, window2), /* isPermanentDeletion= */ false);
+
+        entries = mRecentlyClosedEntriesManager.getRecentlyClosedEntries();
+        assertEquals(3, entries.size());
+        assertEquals(window1, entries.get(0));
+        assertEquals(window2, entries.get(1));
+        assertEquals(callbackCount + 1, mEntriesUpdatedCallbackHelper.getCallCount());
+    }
+
+    @Test
+    public void testOnWindowsClosed_ExceedsMaxEntries_ClearWindowStorage() {
         int size = 25;
         createRecentlyClosedWindows(/* numOfWindows= */ 25);
         mRecentlyClosedEntriesManager.updateRecentlyClosedEntries();
@@ -706,32 +746,42 @@ public class RecentlyClosedEntriesManagerUnitTest {
                 mRecentlyClosedEntriesManager.getRecentlyClosedEntries();
 
         assertEquals(size, entries.size());
-        RecentlyClosedWindow newWindow =
+        RecentlyClosedWindow newWindow1 =
                 new RecentlyClosedWindow(
                         /* timestamp= */ 10,
-                        /* instanceId= */ 1,
+                        /* instanceId= */ 100,
                         /* url= */ "url",
                         /* title= */ "title",
                         /* activeTabTitle= */ "tab title",
                         /* tabCount= */ 1);
+        RecentlyClosedWindow newWindow2 =
+                new RecentlyClosedWindow(
+                        /* timestamp= */ 20,
+                        /* instanceId= */ 101,
+                        /* url= */ "url2",
+                        /* title= */ "title2",
+                        /* activeTabTitle= */ "tab title2",
+                        /* tabCount= */ 2);
         int callbackCount = mEntriesUpdatedCallbackHelper.getCallCount();
 
-        // Verify the excess window entry is cleaned up from storage.
-        mRecentlyClosedEntriesManager.onWindowClosed(newWindow, /* isPermanentDeletion= */ false);
+        // Verify the excess window entries is cleaned up from storage.
+        mRecentlyClosedEntriesManager.onWindowsClosed(
+                Arrays.asList(newWindow1, newWindow2), /* isPermanentDeletion= */ false);
         ArgumentCaptor<List<Integer>> listCaptor = ArgumentCaptor.forClass(List.class);
         verify(mMultiInstanceManager)
                 .closeWindows(listCaptor.capture(), eq(CloseWindowAppSource.RECENT_TABS));
-        assertEquals(1, listCaptor.getValue().size());
+        assertEquals(2, listCaptor.getValue().size());
         verify(mRecentlyClosedTabManager, never()).clearLeastRecentlyUsedClosedEntries(anyInt());
 
         entries = mRecentlyClosedEntriesManager.getRecentlyClosedEntries();
         assertEquals(25, entries.size());
-        assertEquals(newWindow, entries.get(0));
+        assertEquals(newWindow1, entries.get(0));
+        assertEquals(newWindow2, entries.get(1));
         assertEquals(callbackCount + 1, mEntriesUpdatedCallbackHelper.getCallCount());
     }
 
     @Test
-    public void testOnWindowClosed_ExceedsMaxEntries_ClearSessionEntryStorage() {
+    public void testOnWindowsClosed_ExceedsMaxEntries_ClearSessionEntryStorage() {
         int size = 25;
         createRecentlyClosedWindows(/* numOfWindows= */ 15);
         createSessionRecentlyClosedEntries(/* numOfEntries= */ 10);
@@ -751,7 +801,8 @@ public class RecentlyClosedEntriesManagerUnitTest {
         int callbackCount = mEntriesUpdatedCallbackHelper.getCallCount();
 
         // Verify the excess session entry is cleaned up from storage.
-        mRecentlyClosedEntriesManager.onWindowClosed(newWindow, /* isPermanentDeletion= */ false);
+        mRecentlyClosedEntriesManager.onWindowsClosed(
+                Collections.singletonList(newWindow), /* isPermanentDeletion= */ false);
         verify(mMultiInstanceManager, never()).closeWindows(any(), anyInt());
         verify(mRecentlyClosedTabManager).clearLeastRecentlyUsedClosedEntries(eq(1));
 

@@ -9,6 +9,8 @@ import org.chromium.chrome.browser.multiwindow.InstanceInfo;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
+import java.util.List;
+
 /**
  * Tracks {@link RecentlyClosedEntriesManager}s.
  *
@@ -38,14 +40,14 @@ public interface RecentlyClosedEntriesManagerTracker {
     void destroy(RecentlyClosedEntriesManager manager);
 
     /**
-     * Notifies all {@link RecentlyClosedEntriesManager} instances when an instance is closed.
+     * Notifies all {@link RecentlyClosedEntriesManager} instances when instances are closed.
      * Closure can be system-initiated (for e.g. low-memory kill), app-initiated (for e.g. instance
      * retention expiration) or user-initiated (for e.g. window manager closure).
      *
-     * @param instanceInfo The {@link InstanceInfo} for the closed instance.
+     * @param instanceInfo The list of {@link InstanceInfo} for the closed instances.
      * @param isPermanentDeletion Whether the closed instance is permanently deleted.
      */
-    void onInstanceClosed(InstanceInfo instanceInfo, boolean isPermanentDeletion);
+    void onInstancesClosed(List<InstanceInfo> instanceInfo, boolean isPermanentDeletion);
 
     /**
      * Notifies all {@link RecentlyClosedEntriesManager} instances when an inactive instance is

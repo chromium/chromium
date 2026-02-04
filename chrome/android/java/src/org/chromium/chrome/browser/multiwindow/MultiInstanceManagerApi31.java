@@ -1437,10 +1437,11 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         if (shouldCloseCurrentInstance) {
             closeWindow(mInstanceId, source);
         }
+        notifyInstancesClosed(instanceIds, isPermanentClosureSource(source));
     }
 
     private void closeWindow(int instanceId, @CloseWindowAppSource int source) {
-        boolean shouldPermanentlyDelete = shouldPermanentlyDeleteWindow(source, instanceId);
+        boolean shouldPermanentlyDelete = shouldPermanentlyDeleteWindow(instanceId, source);
         if (shouldPermanentlyDelete) {
             removeInstanceInfo(instanceId, source);
             TabModelSelector selector =
@@ -1483,18 +1484,16 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
             // startup of that instance.
             cleanupSyncedTabGroupsIfLastInstance();
         }
-
-        notifyInstanceClosed(instanceId, shouldPermanentlyDelete);
     }
 
     /**
-     * Notifies the Recent Tabs UI of an instance closure. This method is expected to be called upon
-     * initial reception of a user, system or app initiated signal to close an instance.
+     * Notifies the Recent Tabs UI of instance closures. This method is expected to be called upon
+     * initial reception of a user, system or app initiated signal to close instances.
      *
-     * @param instanceId The id of the instance that was closed.
-     * @param isPermanentDeletion Whether the instance is permanently deleted.
+     * @param instanceIds The list of ids of the instances that were closed.
+     * @param isPermanentDeletion Whether the instances are permanently deleted.
      */
-    private void notifyInstanceClosed(int instanceId, boolean isPermanentDeletion) {
+    private void notifyInstancesClosed(List<Integer> instanceIds, boolean isPermanentDeletion) {
         if (!UiUtils.isRecentlyClosedTabsAndWindowsEnabled()) return;
 
         // Note that instance state (for e.g. taskId) may not be updated if a live activity for the
@@ -1502,44 +1501,59 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         // We will create an InstanceInfo synchronously with adequate information about the closed
         // instance, without relying on completion of an asynchronous activity destruction that may
         // be initiated during this time.
-        InstanceInfo instanceInfo =
-                new InstanceInfo(
-                        instanceId,
-                        /* taskId= */ INVALID_TASK_ID,
-                        InstanceInfo.Type.OTHER,
-                        assumeNonNull(MultiInstancePersistentStore.readActiveTabUrl(instanceId)),
-                        assumeNonNull(MultiInstancePersistentStore.readActiveTabTitle(instanceId)),
-                        MultiInstancePersistentStore.readCustomTitle(instanceId),
-                        MultiInstancePersistentStore.readNormalTabCount(instanceId),
-                        MultiInstancePersistentStore.readIncognitoTabCount(instanceId),
-                        MultiInstancePersistentStore.readIncognitoSelected(instanceId),
-                        MultiInstancePersistentStore.readLastAccessedTime(instanceId),
-                        MultiInstancePersistentStore.readClosureTime(instanceId),
-                        !isPermanentDeletion);
+        List<InstanceInfo> instanceInfoList = new ArrayList();
+        for (int instanceId : instanceIds) {
+            // Do not update the Recent Tabs page if the closed window has no regular tabs.
+            if (!hasRegularTabs(instanceId)) {
+                continue;
+            }
+            InstanceInfo instanceInfo =
+                    new InstanceInfo(
+                            instanceId,
+                            /* taskId= */ INVALID_TASK_ID,
+                            InstanceInfo.Type.OTHER,
+                            assumeNonNull(
+                                    MultiInstancePersistentStore.readActiveTabUrl(instanceId)),
+                            assumeNonNull(
+                                    MultiInstancePersistentStore.readActiveTabTitle(instanceId)),
+                            MultiInstancePersistentStore.readCustomTitle(instanceId),
+                            MultiInstancePersistentStore.readNormalTabCount(instanceId),
+                            MultiInstancePersistentStore.readIncognitoTabCount(instanceId),
+                            MultiInstancePersistentStore.readIncognitoSelected(instanceId),
+                            MultiInstancePersistentStore.readLastAccessedTime(instanceId),
+                            MultiInstancePersistentStore.readClosureTime(instanceId),
+                            !isPermanentDeletion);
+            instanceInfoList.add(instanceInfo);
+        }
 
         RecentlyClosedEntriesManagerTrackerFactory.getInstance()
-                .onInstanceClosed(instanceInfo, isPermanentDeletion);
+                .onInstancesClosed(instanceInfoList, isPermanentDeletion);
     }
 
     /**
      * Returns whether a window should be permanently deleted. If the closure is initiated by the
      * user, it usually means that the instance closure is a "soft closure" and should be preserved
-     * for later restoration via surfaces (like Recent Tabs) or keyboard shortcuts. Instances with
-     * zero normal tab counts(e.g. incognito windows) should never be preserved for restoration.
+     * for later restoration via surfaces (like Recent Tabs) or keyboard shortcuts.
      *
      * <p>A soft closure means the window's {@link InstanceInfo} and {@link TabModel} data are
      * persisted, even though the {@link Activity} and Android task will be removed via {@link
      * Activity#finishAndRemoveTask()}.
      *
      * @param source The window closure source, from {@link CloseWindowAppSource}.
-     * @param instanceId The ID of the instance being acted on.
      */
-    private boolean shouldPermanentlyDeleteWindow(
-            @CloseWindowAppSource int source, int instanceId) {
+    private boolean isPermanentClosureSource(@CloseWindowAppSource int source) {
         if (!UiUtils.isRecentlyClosedTabsAndWindowsEnabled()) return true;
 
-        return MultiInstancePersistentStore.readNormalTabCount(instanceId) == 0
-                || source != CloseWindowAppSource.WINDOW_MANAGER;
+        return source != CloseWindowAppSource.WINDOW_MANAGER;
+    }
+
+    private boolean hasRegularTabs(int instanceId) {
+        return MultiInstancePersistentStore.readNormalTabCount(instanceId) > 0;
+    }
+
+    private boolean shouldPermanentlyDeleteWindow(
+            int instanceId, @CloseWindowAppSource int source) {
+        return isPermanentClosureSource(source) || !hasRegularTabs(instanceId);
     }
 
     @VisibleForTesting
@@ -1616,8 +1630,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         // subsequent task kill will also not be reflected as an instance closure until the Recent
         // Tabs page is reopened.
         if (UiUtils.isRecentlyClosedTabsAndWindowsEnabled()) {
-            int normalTabCount = MultiInstancePersistentStore.readNormalTabCount(mInstanceId);
-            boolean isPermanentDeletion = normalTabCount == 0;
+            boolean isPermanentDeletion = !hasRegularTabs(mInstanceId);
 
             if (!isPermanentDeletion) {
                 MultiInstancePersistentStore.writeClosureTime(mInstanceId);
@@ -1625,7 +1638,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
 
             if (mActivity.isFinishing()) {
                 // Notify Recent Tabs page that the instance is closing.
-                notifyInstanceClosed(mInstanceId, isPermanentDeletion);
+                notifyInstancesClosed(Collections.singletonList(mInstanceId), isPermanentDeletion);
             }
         }
 

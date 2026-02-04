@@ -556,10 +556,10 @@ public class RecentTabsPageTest {
                 mActivity.getRecentlyClosedEntriesManagerForTesting();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    recentlyClosedEntriesManager.onWindowClosed(
-                            window2, /* isPermanentDeletion= */ false);
-                    recentlyClosedEntriesManager.onWindowClosed(
-                            window1, /* isPermanentDeletion= */ false);
+                    recentlyClosedEntriesManager.onWindowsClosed(
+                            Collections.singletonList(window2), /* isPermanentDeletion= */ false);
+                    recentlyClosedEntriesManager.onWindowsClosed(
+                            Collections.singletonList(window1), /* isPermanentDeletion= */ false);
                 });
         assertEquals(2, recentlyClosedEntriesManager.getRecentlyClosedEntries().size());
 
