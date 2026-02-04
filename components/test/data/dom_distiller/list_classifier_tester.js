@@ -4,7 +4,7 @@
 
 /**
  * @fileoverview Test suite for the ListClassifier class in
- * list_classifier.js.
+ * dom_distiller_viewer.js.
  */
 
 suite('ListClassifier', function() {

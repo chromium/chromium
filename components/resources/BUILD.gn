@@ -86,7 +86,6 @@ grit("components_resources") {
 
   deps = [
     ":about_credits",
-    "//components/dom_distiller/core:dom_distiller_viewer_js",
     "//components/neterror/resources:bundle_js",
     "//components/security_interstitials/content/resources:build_ts",
     "//components/security_interstitials/core/browser/resources:bundle_js",

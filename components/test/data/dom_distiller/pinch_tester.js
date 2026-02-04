@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @fileoverview Test suite for the Pincher class in pinch_handler.js.
- */
-
 // TODO(crbug.com/40108835): Consider replacing this class with
 // dispatched touch events.
 class Touch {

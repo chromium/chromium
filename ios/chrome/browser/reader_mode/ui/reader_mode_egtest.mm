@@ -58,7 +58,7 @@ id<GREYMatcher> ReaderModeCustomizationBadge() {
 
 // Base font size for Reader Mode, in pixels. This is the font size that is
 // multiplied by the font scale multipliers. This value is defined in
-// components/dom_distiller/core/javascript/font_size_slider.js.
+// components/dom_distiller/core/javascript/dom_distiller_viewer.js.
 constexpr double kReaderModeBaseFontSize = 16.0;
 
 // Return the number of links on the page.

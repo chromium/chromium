@@ -53,7 +53,7 @@ const char kSansSerifJsFontFamily[] = "sans-serif";
 const char kMonospaceJsFontFamily[] = "monospace";
 const char kLexendJsFontFamily[] = "Lexend";
 
-// LINT.ThenChange(//components/dom_distiller/core/javascript/dom_distiller_viewer_main.js:JSThemesAndFonts)
+// LINT.ThenChange(//components/dom_distiller/core/javascript/dom_distiller_viewer.js:JSThemesAndFonts)
 
 // LINT.IfChange
 

@@ -56,13 +56,12 @@ if (is_ios) {
   if (use_blink) {
     bundle_data("components_tests_distiller_bundle_data") {
       testonly = true
-      deps = [ "//components/dom_distiller/core:dom_distiller_viewer_js" ]
       sources = [
-        "$root_gen_dir/components/dom_distiller/core/javascript/dom_distiller_viewer.js",
         "//third_party/dom_distiller_js/dist/test/data/out/domdistillerjstest.js",
         "//third_party/dom_distiller_js/dist/test/data/war/test.html",
         "//third_party/node/node_modules/chai/index.js",
         "//third_party/node/node_modules/mocha/mocha.js",
+        "dom_distiller/core/javascript/dom_distiller_viewer.js",
         "dom_distiller/core/javascript/domdistiller.js",
         "dom_distiller/core/javascript/extract_features.js",
         "dom_distiller/core/javascript/readability_distiller.js",

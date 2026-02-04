@@ -6,7 +6,7 @@ const SVG_NS = 'http://www.w3.org/2000/svg';
 
 /**
  * @fileoverview Test suite for the ImageClassifier class in
- * image_classifier.js.
+ * dom_distiller_viewer.js.
  */
 
 suite('ImageClassifier', function() {
