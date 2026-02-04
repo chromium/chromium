@@ -163,6 +163,52 @@ class EslintTsTest(unittest.TestCase):
       self.assertFalse(
           e in str(context.exception), f'Found unexpected error: {e}')
 
+  def testWebUiEslintPlugin_InlineEventHandler(self):
+    with self.assertRaises(RuntimeError) as context:
+      self._run_test(
+          ["with_webui_plugin_inline_event_handler_violations.html.ts"])
+
+    _EXPECTED_STRING = "@webui-eslint/inline-event-handler"
+    self.assertTrue(_EXPECTED_STRING in str(context.exception))
+
+    _EXPECTED_ERROR = "Inline event handler for event '%(eventName)s' found on element '%(tagName)s'. Do not use inline arrow functions in templates"
+
+    # The following strings *should* appear in the error output since the events
+    # have inline lambda event handlers.
+    errors = [
+        _EXPECTED_ERROR % {
+            'eventName': 'click',
+            'tagName': 'cr-icon-button',
+        },
+        _EXPECTED_ERROR % {
+            'eventName': 'input',
+            'tagName': 'cr-input',
+        },
+        _EXPECTED_ERROR % {
+            'eventName': 'focus',
+            'tagName': 'cr-button',
+        },
+    ]
+    for e in errors:
+      self.assertTrue(
+          e in str(context.exception), f'Didn\'t find expected error: {e}')
+
+    # The following strings *should not* appear in the error output since the
+    # event handlers are correctly bound to protected methods.
+    non_errors = [
+        _EXPECTED_ERROR % {
+            'eventName': 'change',
+            'tagName': 'select',
+        },
+        _EXPECTED_ERROR % {
+            'eventName': 'blur',
+            'tagName': 'cr-button',
+        },
+    ]
+    for e in non_errors:
+      self.assertFalse(
+          e in str(context.exception), f'Found unexpected error: {e}')
+
 
 if __name__ == "__main__":
   unittest.main()
