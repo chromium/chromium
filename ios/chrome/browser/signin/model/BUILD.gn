@@ -372,10 +372,6 @@ source_set("test_account_info") {
   ]
 }
 
-source_set("trusted_vault") {
-  public_deps = [ "//ios/chrome/browser/signin/model/trusted_vault" ]
-}
-
 source_set("test_constants") {
   testonly = true
   sources = [
