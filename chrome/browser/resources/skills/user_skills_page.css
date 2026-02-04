@@ -27,22 +27,6 @@
   text-align: center;
 }
 
-#headline {
-  font-weight: 500;
-  font-size: 18px;
-  line-height: 24px;
-  margin: 0;
-  color: var(--color-sys-on-surface);
-}
-
-#noticeMessage {
-  font-weight: 400;
-  font-size: 14px;
-  line-height: 20px;
-  color: var(--color-sys-on-surface-subtle);
-  margin: 8px;
-}
-
 #subtitle {
   margin: 0;
   font-weight: 400;

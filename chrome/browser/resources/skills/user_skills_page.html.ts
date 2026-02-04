@@ -29,8 +29,8 @@ ${this.skills_.size === 0 ? html`
           media="(prefers-color-scheme: dark)">
       <img src="images/skills_empty.svg" alt="No skills">
     </picture>
-    <p id="headline">$i18n{emptyStateTitle}</p>
-    <p id="noticeMessage">$i18n{emptyStateDescription}</p>
+    <p class="headline">$i18n{emptyStateTitle}</p>
+    <p class="body-text">$i18n{emptyStateDescription}</p>
     <cr-button id="browseSkillsButton" class="floating-button"
         @click="${this.onExploreButtonClick_}">
       <cr-icon icon="skills:explore" slot="prefix-icon"></cr-icon>

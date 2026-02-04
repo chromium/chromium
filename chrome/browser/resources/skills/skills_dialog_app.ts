@@ -4,10 +4,13 @@
 
 import '/strings.m.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_textarea/cr_textarea.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import './error_page.js';
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {Skill} from './skill.mojom-webui.js';
@@ -37,6 +40,7 @@ export class SkillsDialogAppElement extends CrLitElement {
       skill_: {type: Object},
       canUndoRefine_: {type: Boolean},
       canRedoRefine_: {type: Boolean},
+      shouldShowErrorPage_: {type: Boolean},
     };
   }
 
@@ -54,14 +58,14 @@ export class SkillsDialogAppElement extends CrLitElement {
 
   protected accessor canUndoRefine_: boolean = false;
   protected accessor canRedoRefine_: boolean = false;
-
-  private originalPrompt_: string = '';
-  private refinedPrompt_: string = '';
-
+  protected accessor shouldShowErrorPage_: boolean =
+      !loadTimeData.getBoolean('isGlicEnabled');
   protected get isSaveButtonDisabled() {
     return !this.skill_.name || !this.skill_.prompt ||
         this.skill_.name.length === 0 || this.skill_.prompt.length === 0;
   }
+  private originalPrompt_: string = '';
+  private refinedPrompt_: string = '';
 
   /** Initializes dialog. */
   override async connectedCallback() {

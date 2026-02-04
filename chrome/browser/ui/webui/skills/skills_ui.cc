@@ -25,10 +25,16 @@
 namespace skills {
 
 SkillsUI::SkillsUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
+  Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
-      Profile::FromWebUI(web_ui), chrome::kChromeUISkillsHost);
+      profile, chrome::kChromeUISkillsHost);
   webui::SetupWebUIDataSource(source, kSkillsResources, IDR_SKILLS_SKILLS_HTML);
   source->AddResourcePath("dialog", IDR_SKILLS_SKILLS_DIALOG_HTML);
+  bool isGlicEnabled = false;
+#if BUILDFLAG(ENABLE_GLIC)
+  isGlicEnabled = glic::GlicEnabling::IsEnabledForProfile(profile);
+#endif
+  source->AddBoolean("isGlicEnabled", isGlicEnabled);
   static constexpr webui::LocalizedString kStrings[] = {
       {"cancel", IDS_CANCEL},
       {"edit", IDS_EDIT2},
@@ -46,6 +52,8 @@ SkillsUI::SkillsUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
       {"searchBarPlaceholderText", IDS_SKILL_PAGE_SEARCH_BAR_PLACEHOLDER_TEXT},
       {"skillsTitle", IDS_SKILL_PAGE_TITLE},
       {"mainMenu", IDS_SKILL_PAGE_MAIN_MENU},
+      {"errorPageTitle", IDS_SKILLS_ERROR_PAGE_TITLE},
+      {"errorPageDescription", IDS_SKILLS_ERROR_PAGE_DESCRIPTION},
   };
 
   source->AddLocalizedStrings(kStrings);
@@ -83,14 +91,7 @@ WEB_UI_CONTROLLER_TYPE_IMPL(SkillsUI)
 SkillsUI::~SkillsUI() = default;
 
 bool SkillsUIConfig::IsWebUIEnabled(content::BrowserContext* browser_context) {
-  // TODO(b/481023023): Show error page instead of disabling the WebUI.
-  Profile* profile = Profile::FromBrowserContext(browser_context);
-#if BUILDFLAG(ENABLE_GLIC)
-  return base::FeatureList::IsEnabled(features::kSkillsEnabled) &&
-         glic::GlicEnabling::IsEnabledForProfile(profile);
-#else
-  return false;
-#endif
+  return base::FeatureList::IsEnabled(features::kSkillsEnabled);
 }
 
 }  // namespace skills

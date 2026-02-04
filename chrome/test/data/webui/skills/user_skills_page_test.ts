@@ -39,7 +39,7 @@ suite('UserSkillsPage', function() {
 
     const emptyState = page.$['emptyState'];
     assertTrue(!!emptyState);
-    const notice = page.$['noticeMessage'];
+    const notice = page.shadowRoot.querySelector('.body-text');
     assertTrue(!!notice);
     assertEquals(
         loadTimeData.getString('emptyStateDescription'),

@@ -10,7 +10,8 @@
   <message name="IDS_SKILL_DELETED_TOAST_BODY" desc="Text on the toast action button after a skill is saved" translateable="false">
     Deleted skill
   </message>
-  <!-- chrome://skills page strings -->
+
+  <!-- chrome://skills page -->
   <message name="IDS_SKILL_PAGE_TITLE" desc="Text for the title of the chrome://skills page." translateable="false">
     Skills
   </message>
@@ -19,6 +20,14 @@
   </message>
   <message name="IDS_SKILL_PAGE_MAIN_MENU" desc="Text for the main menu label in the chrome://skills page when the screen is narrow." translateable="false">
     Main menu
+  </message>
+
+  <!-- chrome://skills error page -->
+  <message name="IDS_SKILLS_ERROR_PAGE_TITLE" desc="Title of the error page that occurs when chrome://skills is not accessible" translateable="false">
+    Skills isn't available
+  </message>
+  <message name="IDS_SKILLS_ERROR_PAGE_DESCRIPTION" desc="Description of the error page that occurs when chrome://skills is not accessible" translateable="false">
+    To use Skills, sign in to Chrome with a Google account that has Gemini in Chrome enabled
   </message>
 
   <!-- chrome://skills/browse-skills page-->
