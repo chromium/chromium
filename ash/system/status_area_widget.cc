@@ -320,6 +320,7 @@ void StatusAreaWidget::LogVisiblePodCountMetric() {
       case TrayBackgroundViewCatalogName::kVideoConferenceTray:
       case TrayBackgroundViewCatalogName::kFocusMode:
       case TrayBackgroundViewCatalogName::kMouseKeysStatusArea:
+      case TrayBackgroundViewCatalogName::kChromeCustom:
         if (!tray_button->GetVisible()) {
           continue;
         }
@@ -701,7 +702,7 @@ bool StatusAreaWidget::AddTrayIcon(const TrayIconConfiguration& configuration,
   // TODO(b:463430271): Add a new catalog name for custom icons.
   auto icon = std::make_unique<ImagedTrayIcon>(
       shelf_, std::move(image_model), std::move(tooltip_text),
-      TrayBackgroundViewCatalogName::kTestCatalogName);
+      TrayBackgroundViewCatalogName::kChromeCustom);
   icon->SetID(icon_id);
   icon->SetCallback(std::move(callback));
   icon->SetVisiblePreferred(true);
