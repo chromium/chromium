@@ -53,6 +53,7 @@ constexpr int kGroupHeaderVerticalMargin = 4;
 constexpr int kTabLeadingPadding = 10;
 
 const TabGroup* GetTabGroupFromNode(TabCollectionNode* node) {
+  CHECK(node);
   return static_cast<const tabs::TabGroupTabCollection*>(
              std::get<const tabs::TabCollection*>(node->GetNodeData()))
       ->GetTabGroup();
@@ -202,12 +203,22 @@ void VerticalTabGroupView::OnAttentionStateChanged() {
 
 void VerticalTabGroupView::ToggleCollapsedState(
     ToggleTabGroupCollapsedStateOrigin origin) {
+  // If the group is in the process of being closed, then ignore updates.
+  if (!collection_node_) {
+    return;
+  }
+
   collection_node_->GetController()->ToggleTabGroupCollapsedState(
       GetTabGroupFromNode(collection_node_), origin);
 }
 
 views::Widget* VerticalTabGroupView::ShowGroupEditorBubble(
     bool stop_context_menu_propagation) {
+  // If the group is in the process of being closed, then ignore updates.
+  if (!collection_node_) {
+    return nullptr;
+  }
+
   bool is_tab_strip_collapsed = IsTabStripCollapsed();
   // When the tab strip is collapsed, anchor to the group header, otherwise
   // anchor to the editor bubble button.
@@ -250,10 +261,17 @@ std::u16string VerticalTabGroupView::GetGroupContentString() const {
 
 void VerticalTabGroupView::ResetCollectionNode() {
   attention_indicator_observation_.Reset();
+  node_destroyed_subscription_ = {};
+  data_changed_subscription_ = {};
   collection_node_ = nullptr;
 }
 
 void VerticalTabGroupView::OnDataChanged() {
+  // If the group is in the process of being closed, then ignore updates.
+  if (!collection_node_) {
+    return;
+  }
+
   const TabGroup* group = GetTabGroupFromNode(collection_node_);
   tab_group_visual_data_ = *group->visual_data();
   const bool has_attention =
@@ -336,6 +354,7 @@ void VerticalTabGroupView::HandleTabDragInContainer(
 }
 
 bool VerticalTabGroupView::GetIsShared() {
+  CHECK(collection_node_);
   if (!SupportsDataSharing()) {
     return false;
   }
@@ -353,6 +372,7 @@ bool VerticalTabGroupView::GetIsShared() {
 }
 
 void VerticalTabGroupView::InitHeaderDrag(const ui::MouseEvent& event) {
+  CHECK(collection_node_);
   GetDragHandler().InitializeDrag(*collection_node_, event);
 }
 
