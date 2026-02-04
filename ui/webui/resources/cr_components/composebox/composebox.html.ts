@@ -99,7 +99,7 @@ export function getHtml(this: ComposeboxElement) {
               cr-composebox-file-carousel, upload-container, voice-icon,
               carousel-divider, carousel-container, thumbnail"
           in-composebox
-          .tabSuggestions="${this.tabSuggestions}"
+          .tabSuggestions="${this.tabSuggestions_}"
           .showMenuOnClick="${this.showMenuOnClick}"
           .entrypointName="${this.entrypointName ? this.entrypointName : 'Composebox'}"
           @add-tab-context="${this.addTabContext_}"
@@ -112,6 +112,8 @@ export function getHtml(this: ComposeboxElement) {
           @get-tab-preview="${this.getTabPreview_}"
           @open-file-dialog="${this.onOpenFileDialog_}"
           @context-menu-container-click="${this.searchboxLayoutMode === 'Compact' ?  nothing : this.focusInput}"
+          @context-menu-closed="${this.onContextMenuClosed_}"
+          @context-menu-opened="${this.onContextMenuOpened_}"
           ?show-dropdown="${this.showDropdown_}"
           ?show-recent-tab-chip="${false}"
           .inputState="${this.inputState_}"

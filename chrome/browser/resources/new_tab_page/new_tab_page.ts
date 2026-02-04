@@ -11,7 +11,6 @@
 
 export {GlifAnimationState} from '//resources/cr_components/composebox/context_menu_entrypoint.js';
 export {CustomizeButtonsElement} from 'chrome://new-tab-page/shared/customize_buttons/customize_buttons.js';
-export {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
 export {PlaceholderTextCycler, SearchboxElement} from 'chrome://resources/cr_components/searchbox/searchbox.js';
 export {SearchboxBrowserProxy} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 export {SearchboxIconElement} from 'chrome://resources/cr_components/searchbox/searchbox_icon.js';

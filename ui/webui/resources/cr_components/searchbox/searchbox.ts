@@ -15,6 +15,7 @@ import type {ComposeboxFile, ContextualUpload, FileUpload, TabUpload, TabUploadO
 import {GlifAnimationState} from '//resources/cr_components/composebox/context_menu_entrypoint.js';
 import type {ContextualEntrypointAndCarouselElement} from '//resources/cr_components/composebox/contextual_entrypoint_and_carousel.js';
 import type {ErrorScrimElement} from '//resources/cr_components/composebox/error_scrim.js';
+import type {RecentTabChipElement} from '//resources/cr_components/composebox/recent_tab_chip.js';
 import {GlowAnimationState} from '//resources/cr_components/search/constants.js';
 import {DragAndDropHandler} from '//resources/cr_components/search/drag_drop_handler.js';
 import type {DragAndDropHost} from '//resources/cr_components/search/drag_drop_host.js';
@@ -487,8 +488,10 @@ export class SearchboxElement extends SearchboxElementBase implements
   private autocompleteResultChangedListenerId_: number|null = null;
   private inputTextChangedListenerId_: number|null = null;
   private thumbnailChangedListenerId_: number|null = null;
+  private onTabStripChangedListenerId_: number|null = null;
   private onInputStateChangedListenerId_: number|null = null;
   private placeholderCycler_: PlaceholderTextCycler|null = null;
+  private contextMenuOpened_: boolean = false;
 
   constructor() {
     performance.mark('realbox-creation-start');
@@ -509,6 +512,9 @@ export class SearchboxElement extends SearchboxElementBase implements
     this.thumbnailChangedListenerId_ =
         this.callbackRouter_.setThumbnail.addListener(
             this.onSetThumbnail_.bind(this));
+    this.onTabStripChangedListenerId_ =
+        this.callbackRouter_.onTabStripChanged.addListener(
+            this.refreshTabSuggestions_.bind(this));
     this.onInputStateChangedListenerId_ =
         this.callbackRouter_.onInputStateChanged.addListener(
             this.onInputStateChanged_.bind(this));
@@ -542,6 +548,8 @@ export class SearchboxElement extends SearchboxElementBase implements
     this.callbackRouter_.removeListener(this.inputTextChangedListenerId_);
     assert(this.thumbnailChangedListenerId_);
     this.callbackRouter_.removeListener(this.thumbnailChangedListenerId_);
+    assert(this.onTabStripChangedListenerId_);
+    this.callbackRouter_.removeListener(this.onTabStripChangedListenerId_);
     assert(this.onInputStateChangedListenerId_);
     this.callbackRouter_.removeListener(this.onInputStateChangedListenerId_);
 
@@ -731,7 +739,8 @@ export class SearchboxElement extends SearchboxElementBase implements
     this.pageHandler_.onFocusChanged(true);
     this.placeholderCycler_?.stop();
     if (this.ntpRealboxNextEnabled) {
-      this.refreshTabSuggestions_();
+      // Refresh tab suggestions to ensure the recent tab chip is up to date.
+      this.refreshTabSuggestions_(/*forceRefresh=*/ true);
     }
   }
 
@@ -1173,7 +1182,14 @@ export class SearchboxElement extends SearchboxElementBase implements
     this.openComposebox_([attachment]);
   }
 
-  protected async refreshTabSuggestions_() {
+  protected async refreshTabSuggestions_(forceRefresh: boolean = false) {
+    // Only refresh tab suggestions if the context menu is opened or the recent
+    // tab chip is visible.
+    const requiresRefresh = forceRefresh || this.contextMenuOpened_ ||
+        this.recentTabChipVisible_();
+    if (!requiresRefresh) {
+      return;
+    }
     const {tabs} = await this.pageHandler_.getRecentTabs();
     this.tabSuggestions_ = [...tabs];
   }
@@ -1206,7 +1222,13 @@ export class SearchboxElement extends SearchboxElementBase implements
   }
 
   protected onContextMenuClosed_() {
+    this.contextMenuOpened_ = false;
     this.focusInput();
+  }
+
+  protected onContextMenuOpened_() {
+    this.contextMenuOpened_ = true;
+    this.refreshTabSuggestions_(/*forceRefresh=*/ true);
   }
 
   protected onComposeButtonClick_(e: CustomEvent<ClickEventDetail>) {
@@ -1399,6 +1421,18 @@ export class SearchboxElement extends SearchboxElementBase implements
     this.isDeletingInput_ = lastInputValue.length > newInputValue.length &&
         lastInputValue.startsWith(newInputValue);
     this.lastInput_ = newInput;
+  }
+
+  private recentTabChipVisible_() {
+    if (!this.ntpRealboxNextEnabled) {
+      return false;
+    }
+    const recentTabChip =
+        this.shadowRoot.querySelector<RecentTabChipElement>(
+            'composebox-recent-tab-chip') ||
+        this.$.context.shadowRoot.querySelector<RecentTabChipElement>(
+            'composebox-recent-tab-chip');
+    return !!recentTabChip;
   }
 
   protected getThumbnailTabindex_(): string {

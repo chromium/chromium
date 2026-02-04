@@ -256,6 +256,7 @@ export class OmniboxPopupAppElement extends I18nMixinLit
     if (this.showContextEntrypoint_) {
       this.$.context.blurEntrypoint();
     }
+    this.refreshTabSuggestions_();
   }
 
   protected onResultRepaint_() {
@@ -286,6 +287,11 @@ export class OmniboxPopupAppElement extends I18nMixinLit
       y: e.detail.y,
     };
     this.pageHandler_.showContextMenu(point);
+  }
+
+  protected async refreshTabSuggestions_() {
+    const {tabs} = await this.pageHandler_.getRecentTabs();
+    this.tabSuggestions_ = [...tabs];
   }
 
   protected onLensSearchChipClicked_() {
