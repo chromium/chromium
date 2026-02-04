@@ -149,7 +149,6 @@ void ClearOutdatedIcons(const ntp_tiles::NTPTilesVector& most_visited_data,
                         NSURL* favicons_directory) {
   NSMutableSet<NSString*>* allowed_files_name = [[NSMutableSet alloc] init];
 
-#if BUILDFLAG(ENABLE_WIDGETS_FOR_MIM)
   // Add in `allowed_files_name` information about all profiles.
   NSUserDefaults* shared_defaults = app_group::GetGroupUserDefaults();
   NSDictionary* suggested_items =
@@ -162,13 +161,6 @@ void ClearOutdatedIcons(const ntp_tiles::NTPTilesVector& most_visited_data,
       [allowed_files_name addObject:tile.faviconFileName];
     }
   }
-#else
-  for (size_t i = 0; i < most_visited_data.size(); i++) {
-    const ntp_tiles::NTPTile& ntp_tile = most_visited_data[i];
-    NSString* favicon_file_name = GetFaviconFileName(ntp_tile.url);
-    [allowed_files_name addObject:favicon_file_name];
-  }
-#endif
 
   [[NSFileManager defaultManager] createDirectoryAtURL:favicons_directory
                            withIntermediateDirectories:YES
