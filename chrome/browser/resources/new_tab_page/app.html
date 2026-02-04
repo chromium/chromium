@@ -40,7 +40,9 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
         @click="${this.onScrimClick_}"
         ?hidden="${!this.showScrim_}"></div>
   ` : ''}
-  <div id="searchboxContainer">
+  <div id="searchboxContainer"
+      @focusin="${this.onSearchboxContainerFocusIn_}"
+      @focusout="${this.onSearchboxContainerFocusOut_}">
     <cr-searchbox id="searchbox" ?is-dark="${this.isThemeDark_()}"
         placeholder-text="$i18n{searchBoxPlaceholder}"
         ?color-source-is-baseline="${this.colorSourceIsBaseline}"
@@ -56,7 +58,6 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
         searchbox-layout-mode="${this.realboxLayoutMode_}"
         ?ntp-realbox-next-enabled="${this.ntpRealboxNextEnabled_}"
         ?cycling-placeholders="${this.searchboxCyclingPlaceholders_}"
-        @searchbox-input-focus-changed="${this.onInputFocusChanged_}"
         context-menu-glif-animation-state="${this.contextMenuGlifAnimationState_}"
         ?multi-line-enabled="${this.multiLineEnabled_}">
     </cr-searchbox>
@@ -69,7 +70,6 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
             ?disable-caret-color-animation="${true}"
             @composebox-initialized="${this.onComposeboxInitialized_}"
             @close-composebox="${this.closeComposebox_}"
-            @composebox-input-focus-changed="${this.onInputFocusChanged_}"
             @context-menu-entrypoint-click="${this.onContextMenuEntrypointClick_}"
             @voice-search-action="${this.onComposeVoiceSearchAction_}"
             searchbox-layout-mode="${this.realboxLayoutMode_}">

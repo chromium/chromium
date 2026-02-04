@@ -318,8 +318,7 @@ export class AppElement extends AppElementBase {
       ntpNextFeaturesEnabled_: {type: Boolean},
       maxTilesBeforeShowMore_: {type: Number},
 
-      searchboxInputFocused_: {type: Boolean},
-      composeboxInputFocused_: {type: Boolean},
+      containerFocused_: {type: Boolean},
       /**
        * Whether the scrim is shown in Realbox Next.
        */
@@ -412,8 +411,7 @@ export class AppElement extends AppElementBase {
       loadTimeData.getBoolean('ntpNextFeaturesEnabled');
   protected accessor maxTilesBeforeShowMore_: number =
       loadTimeData.getInteger('maxTilesBeforeShowMore');
-  protected accessor searchboxInputFocused_: boolean = false;
-  protected accessor composeboxInputFocused_: boolean = false;
+  protected accessor containerFocused_: boolean = false;
   protected accessor showScrim_: boolean = false;
   private reducedMotionPreferred_: boolean =
       WindowProxy.getInstance()
@@ -701,8 +699,7 @@ export class AppElement extends AppElementBase {
     if (this.ntpRealboxNextEnabled_ && [
           'showComposebox_',
           'showLensUploadDialog_',
-          'searchboxInputFocused_',
-          'composeboxInputFocused_',
+          'containerFocused_',
         ].some((prop) => changedPrivateProperties.has(prop))) {
       /**
        * The current requirement is that the scrim should be shown when the
@@ -716,11 +713,9 @@ export class AppElement extends AppElementBase {
        * - Without it:
        *   1. A click outside is made.
        *   2. The focusout event first occurs.
-       *   3. composeboxInputFocused_ is set to false.
+       *   3. containerFocused_ is set to false.
        *   4. The scrim is removed.
        *   5. The click event fires.
-       *   6. Since there is no scrim, the onclick handle of the scrim is not
-       *      called.
        * - With it:
        *   1-3. same as above
        *   4. The scrim is kept since showComposebox_ is still true.
@@ -728,7 +723,7 @@ export class AppElement extends AppElementBase {
        *      false, and everything works as desired.
        */
       this.showScrim_ = this.showComposebox_ || this.showLensUploadDialog_ ||
-          this.searchboxInputFocused_ || this.composeboxInputFocused_;
+          this.containerFocused_;
     }
   }
 
@@ -909,6 +904,7 @@ export class AppElement extends AppElementBase {
     if (this.showLensUploadDialog_) {
       this.onCloseLensSearch_();
     }
+    this.containerFocused_ = false;
   }
 
   protected onComposeboxClickOutside_() {
@@ -1423,22 +1419,23 @@ export class AppElement extends AppElementBase {
     return !!this.theme_?.backgroundImage?.attributionUrl;
   }
 
-  protected onInputFocusChanged_(e: CustomEvent<{value: boolean}>) {
-    switch (e.type) {
-      case 'searchbox-input-focus-changed':
-        this.searchboxInputFocused_ = e.detail.value;
-        break;
-      case 'composebox-input-focus-changed':
-        this.composeboxInputFocused_ = e.detail.value;
-        break;
-      default:
-        assertNotReached();
-    }
-  }
-
   protected onRealboxHadSecondarySideChanged_(
       e: CustomEvent<{value: boolean}>) {
     this.realboxHadSecondarySide = e.detail.value;
+  }
+
+  protected onSearchboxContainerFocusIn_() {
+    if (this.ntpRealboxNextEnabled_) {
+      this.containerFocused_ = true;
+    }
+  }
+
+  protected onSearchboxContainerFocusOut_() {
+    if (this.ntpRealboxNextEnabled_) {
+      this.containerFocused_ =
+          this.shadowRoot.getElementById('searchboxContainer')!.matches(
+              ':focus-within');
+    }
   }
 
   protected onModulesShownToUserChanged_(e: CustomEvent<{value: boolean}>) {

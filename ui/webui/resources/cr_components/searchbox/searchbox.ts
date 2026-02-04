@@ -578,12 +578,6 @@ export class SearchboxElement extends SearchboxElementBase implements
       this.showThumbnail = !!this.thumbnailUrl_;
     }
 
-    if (this.ntpRealboxNextEnabled) {
-      if (changedPrivateProperties.has('inputFocused_')) {
-        this.fire('searchbox-input-focus-changed', {value: this.inputFocused_});
-      }
-    }
-
     if (changedPrivateProperties.has('tabSuggestions_')) {
       this.recentTabForChip_ =
           this.tabSuggestions_.find(tab => tab.showInCurrentTabChip) || null;
