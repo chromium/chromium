@@ -1,0 +1,3 @@
+try/linux-autotest-tester
+try/mac-autotest-tester
+try/win-autotest-tester

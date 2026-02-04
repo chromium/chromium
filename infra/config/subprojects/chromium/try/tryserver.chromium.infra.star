@@ -296,3 +296,141 @@ try_.builder(
     siso_keep_going = siso.KEEP_GOING,
     siso_project = siso.project.DEFAULT_UNTRUSTED,
 )
+
+# TODO(crbug.com/479225938) Transition to own autotest recipe once we've confirmed these builders
+# are stable
+try_.builder(
+    name = "linux-autotest-tester",
+    description_html = "Make sure tools/autotest.py remains functional on Linux",
+    executable = "recipe:chromium/generic_script_runner",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            target_platform = builder_config.target_platform.LINUX,
+        ),
+    ),
+    builderless = True,
+    os = os.LINUX_DEFAULT,
+    contact_team_email = "pdeio-chrome-test-infra-mx@google.com",
+    execution_timeout = 2 * time.hour,
+    properties = {
+        "scripts": [
+            {
+                "step_name": "Turn off telemetry",
+                "script": "vpython3",
+                "args": ["third_party/depot_tools/infra_lib/telemetry", "--disable"],
+            },
+            {
+                "step_name": "Set up out/Default directory",
+                "script": "gn",
+                "args": ["gen", "out/Default"],
+            },
+            {
+                "step_name": "test directory",
+                "script": "vpython3",
+                "args": ["tools/autotest.py", "--output-dir", "out/Default", "--run-all", "base/strings"],
+            },
+        ],
+    },
+    # TODO(crbug.com/479225938) Uncomment once we've confirmed these builders are stable
+    # tryjob = try_.job(
+    #     location_filters = [
+    #         "tools/autotest/.+",
+    #         "tools/autotest.py",
+    #     ],
+    # ),
+)
+
+try_.builder(
+    name = "win-autotest-tester",
+    description_html = "Make sure tools/autotest.py remains functional on Windows",
+    executable = "recipe:chromium/generic_script_runner",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            target_platform = builder_config.target_platform.WIN,
+        ),
+    ),
+    builderless = True,
+    os = os.WINDOWS_DEFAULT,
+    contact_team_email = "pdeio-chrome-test-infra-mx@google.com",
+    execution_timeout = 2 * time.hour,
+    properties = {
+        "scripts": [
+            {
+                "step_name": "Turn off telemetry",
+                "script": "vpython3.bat",
+                "args": ["third_party/depot_tools/infra_lib/telemetry", "--disable"],
+            },
+            {
+                "step_name": "Set up out/Default directory",
+                "script": "gn",
+                "args": ["gen", "out/Default"],
+            },
+            {
+                "step_name": "test directory",
+                "script": "vpython3.bat",
+                "args": ["tools/autotest.py", "--output-dir", "out/Default", "--run-all", "base/strings"],
+            },
+        ],
+    },
+    # TODO(crbug.com/479225938) Uncomment once we've confirmed these builders are stable
+    # tryjob = try_.job(
+    #     location_filters = [
+    #         "tools/autotest/.+",
+    #         "tools/autotest.py",
+    #     ],
+    # ),
+)
+
+try_.builder(
+    name = "mac-autotest-tester",
+    description_html = "Make sure tools/autotest.py remains functional on Mac",
+    executable = "recipe:chromium/generic_script_runner",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            target_platform = builder_config.target_platform.MAC,
+        ),
+    ),
+    builderless = True,
+    os = os.MAC_DEFAULT,
+    cpu = cpu.ARM64,
+    contact_team_email = "pdeio-chrome-test-infra-mx@google.com",
+    execution_timeout = 2 * time.hour,
+    properties = {
+        "scripts": [
+            {
+                "step_name": "Turn off telemetry",
+                "script": "vpython3",
+                "args": ["third_party/depot_tools/infra_lib/telemetry", "--disable"],
+            },
+            {
+                "step_name": "Set up out/Default directory",
+                "script": "gn",
+                "args": ["gen", "out/Default"],
+            },
+            {
+                "step_name": "test directory",
+                "script": "vpython3",
+                "args": ["tools/autotest.py", "--output-dir", "out/Default", "--run-all", "base/strings"],
+            },
+        ],
+    },
+    # TODO(crbug.com/479225938) Uncomment once we've confirmed these builders are stable
+    # tryjob = try_.job(
+    #     location_filters = [
+    #         "tools/autotest/.+",
+    #         "tools/autotest.py",
+    #     ],
+    # ),
+)
