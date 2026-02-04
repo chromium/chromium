@@ -2475,8 +2475,6 @@ void Database::OnSqliteError(SqliteErrorCode sqlite_error_code,
   DCHECK_NE(statement != nullptr, sql_statement != nullptr)
       << __func__ << " should either get a Statement or a raw SQL string";
 
-  base::WeakPtr<Database> weak_this =
-      weak_factory_lifetime_tracker_.GetWeakPtr();
   ++handling_error_nesting_;
 
   // Use `base::UmaHistogramSparse` because sqlite result codes aren't
@@ -2523,17 +2521,23 @@ void Database::OnSqliteError(SqliteErrorCode sqlite_error_code,
   std::ignore = IsExpectedSqliteError(static_cast<int>(sqlite_error_code));
 
   if (!error_callback_.is_null()) {
+    base::WeakPtr<Database> weak_this =
+        weak_factory_lifetime_tracker_.GetWeakPtr();
+
     // Create an additional reference to the state in `error_callback_`, so the
     // state doesn't go away if the callback changes `error_callback_` by
     // calling set_error_callback() or reset_error_callback(). This avoids a
     // subtle source of use-after-frees. See https://crbug.com/254584.
     ErrorCallback error_callback_copy = error_callback_;
     error_callback_copy.Run(static_cast<int>(sqlite_error_code), statement);
+
+    // Abort if `error_callback_` deleted this `Database` object.
+    if (!weak_this) {
+      return;
+    }
   }
 
-  if (weak_this) {
-    --weak_this->handling_error_nesting_;
-  }
+  --handling_error_nesting_;
 }
 
 std::string Database::GetDiagnosticInfo(int sqlite_error_code,
