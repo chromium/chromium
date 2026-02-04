@@ -345,7 +345,11 @@ TEST_F(DataControlsReportingTest, PasteInManagedProfile_OSClipboardSource) {
     chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
     expected_event.set_url(kChromiumUrl);
     expected_event.set_tab_url(kChromiumUrl);
+#if BUILDFLAG(IS_CHROMEOS)
+    expected_event.set_source("https://google.com/");
+#else
     expected_event.set_source("CLIPBOARD");
+#endif  // BUILDFLAG(IS_CHROMEOS)
     expected_event.set_destination(kChromiumUrl);
     expected_event.set_content_type("text/plain");
     expected_event.set_content_size(1234);
