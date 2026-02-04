@@ -227,6 +227,12 @@ const ScrollMarkerPseudoElement* GetScrollMarker(const Node* node) {
   if (!element) {
     return nullptr;
   }
+  // Don't try to get scroll marker for the locked elements,
+  // as their style might not have been updated.
+  if (DisplayLockUtilities::IsDisplayLockedPreventingPaint(
+          element, /*inclusive_check=*/true)) {
+    return nullptr;
+  }
   return DynamicTo<ScrollMarkerPseudoElement>(
       element->GetPseudoElement(kPseudoIdScrollMarker));
 }
