@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.view.View;
 import android.view.ViewStub;
 
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -65,7 +66,7 @@ public class NtpSigninPromoCoordinator {
                         profile,
                         activityResultTracker,
                         launcher,
-                        bottomSheetController,
+                        SupplierUtils.of(bottomSheetController),
                         modalDialogManagerSupplier,
                         snackbarManager,
                         deviceLockActivityLauncher,

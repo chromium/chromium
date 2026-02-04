@@ -47,6 +47,7 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.MethodParamAnnotationRule;
 import org.chromium.base.test.params.ParameterAnnotations;
@@ -1180,7 +1181,7 @@ public class SigninPromoCoordinatorTest {
                                     mProfile,
                                     mActivityResultTracker,
                                     mLauncher,
-                                    mBottomSheetController,
+                                    SupplierUtils.of(mBottomSheetController),
                                     mModalDialogManagerSupplier,
                                     mSnackbarManager,
                                     mDeviceLockActivityLauncher,

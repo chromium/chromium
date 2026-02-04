@@ -61,6 +61,7 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -147,7 +148,7 @@ public class HistoryUiTest {
 
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private SnackbarManager mSnackbarManager;
-    @Mock private Supplier<BottomSheetController> mBottomSheetController;
+    @Mock private BottomSheetController mBottomSheetController;
     @Mock private Supplier<ModalDialogManager> mModalDialogManagerSupplier;
     @Mock private ActivityResultTracker mActivityResultTracker;
     @Mock private Profile mProfile;
@@ -210,7 +211,7 @@ public class HistoryUiTest {
                         mActivity,
                         true,
                         mSnackbarManager,
-                        /* bottomSheetController= */ mBottomSheetController,
+                        /* bottomSheetController= */ SupplierUtils.of(mBottomSheetController),
                         /* modalDialogManagerSupplier= */ mModalDialogManagerSupplier,
                         /* activityResultTracker= */ mActivityResultTracker,
                         /* tabSupplier= */ null,
@@ -753,7 +754,7 @@ public class HistoryUiTest {
                         mActivity,
                         true,
                         mSnackbarManager,
-                        /* bottomSheetController= */ mBottomSheetController,
+                        /* bottomSheetController= */ SupplierUtils.of(mBottomSheetController),
                         /* modalDialogManagerSupplier= */ mModalDialogManagerSupplier,
                         /* activityResultTracker= */ mActivityResultTracker,
                         /* tabSupplier= */ null,
@@ -812,7 +813,7 @@ public class HistoryUiTest {
                         mActivity,
                         true,
                         mSnackbarManager,
-                        /* bottomSheetController= */ mBottomSheetController,
+                        /* bottomSheetController= */ SupplierUtils.of(mBottomSheetController),
                         /* modalDialogManagerSupplier= */ mModalDialogManagerSupplier,
                         /* activityResultTracker= */ mActivityResultTracker,
                         /* tabSupplier= */ null,
@@ -853,7 +854,7 @@ public class HistoryUiTest {
                         mActivity,
                         true,
                         mSnackbarManager,
-                        /* bottomSheetController= */ mBottomSheetController,
+                        /* bottomSheetController= */ SupplierUtils.of(mBottomSheetController),
                         /* modalDialogManagerSupplier= */ mModalDialogManagerSupplier,
                         /* activityResultTracker= */ mActivityResultTracker,
                         /* tabSupplier= */ null,
@@ -1033,7 +1034,7 @@ public class HistoryUiTest {
                         mActivity,
                         true,
                         mSnackbarManager,
-                        /* bottomSheetController= */ mBottomSheetController,
+                        /* bottomSheetController= */ SupplierUtils.of(mBottomSheetController),
                         /* modalDialogManagerSupplier= */ mModalDialogManagerSupplier,
                         /* activityResultTracker= */ mActivityResultTracker,
                         /* tabSupplier= */ null,

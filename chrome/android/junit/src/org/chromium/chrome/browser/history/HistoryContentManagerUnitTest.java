@@ -21,6 +21,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -60,7 +61,7 @@ public class HistoryContentManagerUnitTest {
     @Mock private HistoryContentManager.Observer mObserver;
     @Mock private Profile mProfile;
     @Mock private SelectionDelegate<HistoryItem> mSelectionDelegate;
-    @Mock private Supplier<BottomSheetController> mBottomSheetController;
+    @Mock private BottomSheetController mBottomSheetController;
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private Supplier<ModalDialogManager> mModalDialogManagerSupplier;
     @Mock private ActivityResultTracker mActivityResultTracker;
@@ -100,7 +101,7 @@ public class HistoryContentManagerUnitTest {
                         /* shouldShowPrivacyDisclaimers= */ false,
                         /* shouldShowClearDataIfAvailable= */ false,
                         mSelectionDelegate,
-                        mBottomSheetController,
+                        SupplierUtils.of(mBottomSheetController),
                         mModalDialogManagerSupplier,
                         mSnackbarManager,
                         mActivityResultTracker,

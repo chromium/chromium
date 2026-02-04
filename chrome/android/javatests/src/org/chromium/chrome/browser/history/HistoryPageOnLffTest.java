@@ -23,6 +23,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Restriction;
@@ -59,7 +60,7 @@ public class HistoryPageOnLffTest {
 
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private SnackbarManager mSnackbarManager;
-    @Mock private Supplier<BottomSheetController> mBottomSheetController;
+    @Mock private BottomSheetController mBottomSheetController;
     @Mock private Supplier<ModalDialogManager> mModalDialogManagerSupplier;
     @Mock private ActivityResultTracker mActivityResultTracker;
     @Mock private Profile mProfile;
@@ -145,7 +146,7 @@ public class HistoryPageOnLffTest {
                         activity,
                         true,
                         mSnackbarManager,
-                        mBottomSheetController,
+                        SupplierUtils.of(mBottomSheetController),
                         mModalDialogManagerSupplier,
                         mActivityResultTracker,
                         /* Supplier<Tab>= */ null,

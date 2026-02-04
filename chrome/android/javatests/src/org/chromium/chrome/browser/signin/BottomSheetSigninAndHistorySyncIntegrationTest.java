@@ -1177,7 +1177,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
                                             /* delegate= */ mDelegate,
                                             DeviceLockActivityLauncherImpl.get(),
                                             baseActivity.getProfileProviderSupplier(),
-                                            getBottomSheetController(),
+                                            this::getBottomSheetController,
                                             baseActivity.getModalDialogManagerSupplier(),
                                             baseActivity.getSnackbarManager(),
                                             mSigninAccessPoint);
@@ -1263,7 +1263,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
                                             /* delegate= */ mDelegate,
                                             DeviceLockActivityLauncherImpl.get(),
                                             baseActivity.getProfileProviderSupplier(),
-                                            getBottomSheetController(),
+                                            this::getBottomSheetController,
                                             baseActivity.getModalDialogManagerSupplier(),
                                             baseActivity.getSnackbarManager(),
                                             mSigninAccessPoint);

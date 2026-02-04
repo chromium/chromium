@@ -304,7 +304,7 @@ public class BookmarkManagerCoordinator
                         mProfile.getOriginalProfile(),
                         activityResultTracker,
                         SigninAndHistorySyncActivityLauncherImpl.get(),
-                        bottomSheetControllerSupplier.get(),
+                        bottomSheetControllerSupplier,
                         ObservableSuppliers.createMonotonic(mModalDialogManager),
                         snackbarManager,
                         DeviceLockActivityLauncherImpl.get(),

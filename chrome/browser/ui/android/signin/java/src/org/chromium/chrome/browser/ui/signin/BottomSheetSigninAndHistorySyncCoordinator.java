@@ -17,6 +17,7 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.annotation.ColorInt;
 
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -77,7 +78,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
     private final Delegate mDelegate;
     private final DeviceLockActivityLauncher mDeviceLockActivityLauncher;
     private final OneshotSupplier<ProfileProvider> mProfileSupplier;
-    private final BottomSheetController mBottomSheetController;
+    private final Supplier<BottomSheetController> mBottomSheetController;
     private final Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
     private final @Nullable SnackbarManager mSnackbarManager;
     private BottomSheetSigninAndHistorySyncConfig mConfig;
@@ -162,7 +163,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
             BottomSheetSigninAndHistorySyncCoordinator.Delegate delegate,
             DeviceLockActivityLauncher deviceLockActivityLauncher,
             OneshotSupplier<ProfileProvider> profileSupplier,
-            BottomSheetController bottomSheetController,
+            Supplier<BottomSheetController> bottomSheetController,
             Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
             SnackbarManager snackbarManager,
             @SigninAccessPoint int signinAccessPoint) {
@@ -187,7 +188,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
             Delegate delegate,
             DeviceLockActivityLauncher deviceLockActivityLauncher,
             OneshotSupplier<ProfileProvider> profileSupplier,
-            BottomSheetController bottomSheetController,
+            Supplier<BottomSheetController> bottomSheetController,
             Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
             SnackbarManager snackbarManager,
             @SigninAccessPoint int signinAccessPoint) {
@@ -259,7 +260,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
         mDelegate = delegate;
         mDeviceLockActivityLauncher = deviceLockActivityLauncher;
         mProfileSupplier = profileSupplier;
-        mBottomSheetController = bottomSheetController;
+        mBottomSheetController = SupplierUtils.of(bottomSheetController);
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
         mSigninAccessPoint = signinAccessPoint;
         mConfig = config;
@@ -534,7 +535,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
                         mWindowAndroid,
                         mActivity,
                         this,
-                        mBottomSheetController,
+                        mBottomSheetController.get(),
                         mDeviceLockActivityLauncher,
                         signinManager,
                         mConfig.bottomSheetStrings,

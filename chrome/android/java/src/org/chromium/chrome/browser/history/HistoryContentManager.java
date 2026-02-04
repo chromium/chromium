@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.history;
 
 import static android.content.Intent.ACTION_VIEW;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
@@ -136,7 +137,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
     private final @Nullable Runnable mHideSoftKeyboard;
     private final boolean mShowAppFilter;
     private final List<AppInfo> mAppInfoList = new ArrayList<>();
-    private final @Nullable Supplier<BottomSheetController> mBottomSheetController;
+    private final @Nullable Supplier<BottomSheetController> mBottomSheetControllerSupplier;
     private final @Nullable Supplier<@Nullable Tab> mTabSupplier;
     private final AppInfoCache mAppInfoCache;
     private final @Nullable Runnable mOpenHistoryItemCallback;
@@ -201,7 +202,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
                 /* canShowSigninPromo= */ false,
                 hostName,
                 /* selectionDelegate= */ null,
-                /* bottomSheetController= */ null,
+                /* bottomSheetControllerSupplier= */ null,
                 /* modalDialogManagerSupplier= */ null,
                 /* snackbarManager= */ null,
                 /* activityResultTracker= */ null,
@@ -318,7 +319,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
             boolean canShowSigninPromo,
             @Nullable String hostName,
             @Nullable SelectionDelegate<HistoryItem> selectionDelegate,
-            @Nullable Supplier<BottomSheetController> bottomSheetController,
+            @Nullable Supplier<BottomSheetController> bottomSheetControllerSupplier,
             @Nullable Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
             @Nullable SnackbarManager snackbarManager,
             @Nullable ActivityResultTracker activityResultTracker,
@@ -337,7 +338,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         mIsSeparateActivity = isSeparateActivity;
         mIsIncognito = profile.isOffTheRecord();
         mProfile = profile;
-        mBottomSheetController = bottomSheetController;
+        mBottomSheetControllerSupplier = bottomSheetControllerSupplier;
         mHideSoftKeyboard = hideSoftKeyboard;
         mShowAppFilter = showAppFilter;
         mShouldShowPrivacyDisclaimers = shouldShowPrivacyDisclaimers;
@@ -381,7 +382,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
                             profile,
                             assumeNonNull(activityResultTracker),
                             SigninAndHistorySyncActivityLauncherImpl.get(),
-                            assumeNonNull(bottomSheetController).get(),
+                            assertNonNull(bottomSheetControllerSupplier),
                             assumeNonNull(modalDialogManagerSupplier),
                             assumeNonNull(snackbarManager),
                             DeviceLockActivityLauncherImpl.get(),
@@ -817,12 +818,12 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         // to appear at the bottom as expected.
         assumeNonNull(mHideSoftKeyboard).run();
         if (mAppFilterSheet == null) {
-            assert mBottomSheetController != null && mBottomSheetController.get() != null;
+            assert mBottomSheetControllerSupplier != null;
             mAppFilterSheet =
                     new AppFilterCoordinator(
                             mActivity,
                             mActivity.getWindow().getDecorView(),
-                            mBottomSheetController.get(),
+                            mBottomSheetControllerSupplier.get(),
                             this::onAppUpdated,
                             mAppInfoList);
         }

@@ -116,7 +116,7 @@ public class SigninPromoCoordinator
             Profile profile,
             ActivityResultTracker activityResultTracker,
             SigninAndHistorySyncActivityLauncher launcher,
-            BottomSheetController bottomSheetController,
+            Supplier<BottomSheetController> bottomSheetController,
             Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
             SnackbarManager snackbarManager,
             DeviceLockActivityLauncher deviceLockActivityLauncher,

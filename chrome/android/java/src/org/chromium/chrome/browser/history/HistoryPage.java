@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.history;
 import android.app.Activity;
 import android.net.Uri;
 
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -70,7 +71,7 @@ public class HistoryPage extends BasicNativePage {
                         activity,
                         /* isSeparateActivity= */ false,
                         snackbarManager,
-                        () -> bottomSheetController,
+                        SupplierUtils.of(bottomSheetController),
                         modalDialogManagerSupplier,
                         activityResultTracker,
                         tabSupplier,

@@ -95,7 +95,7 @@ public interface SigninAndHistorySyncActivityLauncher {
                     BottomSheetSigninAndHistorySyncCoordinator.Delegate delegate,
                     DeviceLockActivityLauncher deviceLockActivityLauncher,
                     OneshotSupplier<ProfileProvider> profileSupplier,
-                    BottomSheetController bottomSheetController,
+                    Supplier<BottomSheetController> bottomSheetController,
                     Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
                     SnackbarManager snackbarManager,
                     @SigninAccessPoint int signinAccessPoint);

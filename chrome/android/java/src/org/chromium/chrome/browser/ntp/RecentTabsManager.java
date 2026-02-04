@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.RecentlyClosedEntriesManager;
@@ -132,7 +133,7 @@ public class RecentTabsManager
                         profile,
                         activityResultTracker,
                         SigninAndHistorySyncActivityLauncherImpl.get(),
-                        bottomSheetController,
+                        SupplierUtils.of(bottomSheetController),
                         modalDialogManagerSupplier,
                         snackbarManager,
                         DeviceLockActivityLauncherImpl.get(),
