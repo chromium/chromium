@@ -458,6 +458,37 @@ IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest,
   // clang-format on
 }
 
+class GlicActorGeneralUiTestWithoutPolicyExemption
+    : public GlicActorGeneralUiTest {
+ public:
+  GlicActorGeneralUiTestWithoutPolicyExemption() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{features::kGlicActor,
+                               {{features::kGlicActorPolicyControlExemption
+                                     .name,
+                                 "false"}}}},
+        /*disabled_features=*/{});
+  }
+  ~GlicActorGeneralUiTestWithoutPolicyExemption() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTestWithoutPolicyExemption,
+                       CreateTaskFails) {
+  // clang-format off
+  RunTestSequence(
+      DeprecatedOpenGlicWindow(GlicWindowMode::kAttached),
+
+      // Since policy exemption isn't enabled creating a task should fail with
+      // the policy block reason.
+      CreateTask(task_id_, "",
+        mojom::CreateTaskErrorReason::kBlockedByPolicy)
+    );
+  // clang-format on
+}
+
 IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest, CreateActorTabForeground) {
   const GURL task_url =
       embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");

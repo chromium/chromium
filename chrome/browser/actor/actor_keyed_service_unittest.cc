@@ -41,8 +41,6 @@ std::unique_ptr<ui::ActorUiStateManagerInterface> BuildUiStateManagerMock() {
   return ui_state_manager;
 }
 
-constexpr char kActorTaskCreatedHistogram[] = "Actor.Task.Created";
-
 class ActorKeyedServiceTest : public testing::Test {
  public:
   ActorKeyedServiceTest()
@@ -209,15 +207,6 @@ TEST_F(ActorKeyedServiceTest, PausedTaskTabs) {
   // Stop the task. This should remove the tab from the task.
   actor_service->StopTask(id, ActorTask::StoppedReason::kTaskComplete);
   EXPECT_FALSE(task);
-}
-
-TEST_F(ActorKeyedServiceTest, LogsActorTaskCreatedOnCreateTask) {
-  base::HistogramTester histogram_tester;
-  histogram_tester.ExpectTotalCount(kActorTaskCreatedHistogram, 0);
-
-  ActorKeyedService::Get(profile())->CreateTask(NoEnterprisePolicyChecker());
-
-  histogram_tester.ExpectBucketCount(kActorTaskCreatedHistogram, true, 1);
 }
 
 }  // namespace

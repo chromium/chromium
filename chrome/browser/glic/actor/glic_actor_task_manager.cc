@@ -110,15 +110,32 @@ void GlicActorTaskManager::CreateTask(
     return;
   }
 
+  if (!actor_policy_checker_->CanActOnWeb()) {
+    // TODO(bokan): This was moved here to preserve behavior; the failure case
+    // was only counting policy blocks which are a Glic-only concept. However,
+    // the UMA histogram is in Actor which implies it records all sources of
+    // actor tasks. This histogram should probably be migrated to be Glic
+    // namespaced.
+    actor::RecordActorTaskCreated(/*success=*/false);
+    actor_keyed_service_->GetJournal().Log(
+        GURL(), actor::TaskId(), "GlicActorTaskManager::CreateTask",
+        actor::JournalDetailsBuilder()
+            .AddError("Actuation capability disabled")
+            .Build());
+    std::move(callback).Run(
+        base::unexpected(mojom::CreateTaskErrorReason::kBlockedByPolicy));
+    return;
+  }
+
+  actor::RecordActorTaskCreated(true);
   current_task_id_ = actor_keyed_service_->CreateTaskWithOptions(
       &actor_policy_checker_.get(), std::move(options), std::move(delegate));
+  CHECK(!current_task_id_.is_null());
 
-  if (!current_task_id_.is_null()) {
-    actor_task_state_changed_subscription_ =
-        actor_keyed_service_->AddTaskStateChangedCallback(base::BindRepeating(
-            &GlicActorTaskManager::NotifyActorTaskStateChanged,
-            base::Unretained(this)));
-  }
+  actor_task_state_changed_subscription_ =
+      actor_keyed_service_->AddTaskStateChangedCallback(base::BindRepeating(
+          &GlicActorTaskManager::NotifyActorTaskStateChanged,
+          base::Unretained(this)));
 
   std::move(callback).Run(current_task_id_.value());
 }

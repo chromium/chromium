@@ -2386,6 +2386,8 @@ export enum CreateTaskErrorReason {
   // The host already has an existing task in progress. The client must stop it
   // before requesting a new task.
   EXISTING_ACTIVE_TASK = 2,
+  // The user's browser policy or account settings prevent creating actor tasks.
+  BLOCKED_BY_POLICY = 3,
 }
 
 ///////////////////////////////////////////////

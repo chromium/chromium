@@ -1027,6 +1027,45 @@ IN_PROC_BROWSER_TEST_F(ActorFunctionalBrowserTest,
             ActorTask::State::kCreated);
 }
 
+IN_PROC_BROWSER_TEST_F(ActorFunctionalBrowserTest,
+                       LogsActorTaskCreatedOnCreateTask) {
+  base::HistogramTester histogram_tester;
+
+  ASSERT_OK_AND_ASSIGN(TaskId task_id, CreateTask());
+  EXPECT_NE(task_id, TaskId());
+
+  constexpr std::string_view kActorTaskCreatedHistogram = "Actor.Task.Created";
+  histogram_tester.ExpectUniqueSample(kActorTaskCreatedHistogram, true, 1);
+}
+
+class ActorFunctionalBrowserTestWithoutPolicyExemption
+    : public ActorFunctionalBrowserTest {
+ public:
+  ActorFunctionalBrowserTestWithoutPolicyExemption() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{features::kGlicActor,
+                               {{features::kGlicActorPolicyControlExemption
+                                     .name,
+                                 "false"}}}},
+        /*disabled_features=*/{});
+  }
+  ~ActorFunctionalBrowserTestWithoutPolicyExemption() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ActorFunctionalBrowserTestWithoutPolicyExemption,
+                       LogsActorTaskFailedOnCreateTask) {
+  base::HistogramTester histogram_tester;
+
+  base::expected<TaskId, std::string> result = CreateTask();
+  EXPECT_FALSE(result.has_value());
+
+  constexpr std::string_view kActorTaskCreatedHistogram = "Actor.Task.Created";
+  histogram_tester.ExpectUniqueSample(kActorTaskCreatedHistogram, false, 1);
+}
+
 class ActorPageContextMetricsTest : public ActorFunctionalBrowserTest {
  public:
   using ResultCallback =

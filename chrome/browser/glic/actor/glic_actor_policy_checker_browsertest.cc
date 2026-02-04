@@ -206,9 +206,12 @@ class GlicActorPolicyCheckerBrowserTestBase : public NonInteractiveGlicTest {
     return *tab;
   }
 
+  GlicKeyedService* GetGlicKeyedService() {
+    return GlicKeyedServiceFactory::GetGlicKeyedService(GetProfile());
+  }
+
   GlicActorPolicyChecker& GetPolicyChecker() {
-    return GlicKeyedServiceFactory::GetGlicKeyedService(GetProfile())
-        ->actor_policy_checker();
+    return GetGlicKeyedService()->actor_policy_checker();
   }
 
  protected:
@@ -488,17 +491,6 @@ IN_PROC_BROWSER_TEST_F(GlicActorPolicyCheckerBrowserTestManagedBrowser,
             GlicActorPolicyChecker::CannotActReason::kDisabledByPolicy);
 
   ExpectErrorResult(result, actor::mojom::ActionResultCode::kTaskPaused);
-}
-
-IN_PROC_BROWSER_TEST_F(GlicActorPolicyCheckerBrowserTestManagedBrowser,
-                       CannotCreateTaskWhenActOnWebCapabilityIsDisabled) {
-  UpdateGeminiActOnWebPolicy(
-      glic::prefs::GlicActuationOnWebPolicyState::kDisabled);
-  EXPECT_FALSE(GetPolicyChecker().CanActOnWeb());
-
-  auto null_task_id =
-      ActorKeyedService::Get(GetProfile())->CreateTask(&GetPolicyChecker());
-  EXPECT_EQ(null_task_id, actor::TaskId());
 }
 
 IN_PROC_BROWSER_TEST_F(GlicActorPolicyCheckerBrowserTestManagedBrowser,

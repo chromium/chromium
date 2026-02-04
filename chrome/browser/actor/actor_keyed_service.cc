@@ -331,19 +331,8 @@ TaskId ActorKeyedService::CreateTaskImpl(
     webui::mojom::TaskOptionsPtr options,
     base::WeakPtr<ActorTaskDelegate> delegate) {
   TRACE_EVENT0("actor", "ActorKeyedService::CreateTask");
-  CHECK(policy_checker);
-  if (!policy_checker->CanActOnWeb()) {
-    RecordActorTaskCreated(false);
-    GetJournal().Log(GURL(), TaskId(), "ActorKeyedService::CreateTask",
-                     JournalDetailsBuilder()
-                         .AddError("Actuation capability disabled")
-                         .Build());
-    return TaskId();
-  }
-
   GetJournal().Log(GURL(), TaskId(), "ActorKeyedService::CreateTask", {});
 
-  RecordActorTaskCreated(true);
   const TaskId task_id = next_task_id_.GenerateNextId();
   auto actor_task = std::make_unique<ActorTask>(
       base::PassKey<ActorKeyedService>(), profile_.get(), task_id,
