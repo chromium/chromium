@@ -788,18 +788,8 @@ AutofillAiManager::GetMigratePromptCandidates(
           observed_entity.IsSubsetOf(*local_entity)) {
         migrate_candidates.emplace_back(
             AutofillClient::AutofillAiImportPromptType::kMigrate,
-            EntityInstance(
-                local_entity->type(),
-                base::ToVector(local_entity->attributes()),
-                local_entity->guid(), local_entity->nickname(),
-                local_entity->date_modified(), local_entity->use_count(),
-                local_entity->use_date(),
-                EntityInstance::RecordType::kServerWallet,
-                // Entities that are migrated from local to server are never
-                // read-only, since local entities can always be edited by the
-                // users, so can their server counterpart.
-                EntityInstance::AreAttributesReadOnly(false),
-                /*frecency_override=*/""));
+            local_entity->CopyWithNewRecordType(
+                EntityInstance::RecordType::kServerWallet));
       }
     }
   }

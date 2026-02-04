@@ -623,6 +623,13 @@ bool EntityInstance::IsUnmaskedServerEntity() const {
              });
 }
 
+EntityInstance EntityInstance::CopyWithNewRecordType(
+    RecordType record_type) const {
+  EntityInstance new_entity = *this;
+  new_entity.record_type_ = record_type;
+  return new_entity;
+}
+
 EntityInstance::FrecencyOrder::FrecencyOrder(base::Time now) : now_(now) {}
 
 bool EntityInstance::FrecencyOrder::operator()(

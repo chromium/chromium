@@ -400,6 +400,9 @@ class EntityInstance final {
   // server; it is strictly transient and must never be persisted to disk.
   bool IsUnmaskedServerEntity() const;
 
+  // Returns a copy of `this` with the given `record_type`.
+  EntityInstance CopyWithNewRecordType(RecordType record_type) const;
+
   friend bool operator==(const EntityInstance&,
                          const EntityInstance&) = default;
 
