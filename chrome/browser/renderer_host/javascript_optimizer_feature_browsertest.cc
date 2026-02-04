@@ -361,8 +361,8 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     JavascriptOptimizerBrowserTest_OriginKeyedProcessesByDefault,
     ExceptionForSiteDoesNotApplyToSubSite) {
-  if (!content::SiteIsolationPolicy::
-          AreOriginKeyedProcessesEnabledByDefault()) {
+  if (!content::SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault(
+          profile())) {
     GTEST_SKIP()
         << "skipping: OriginKeyedProcessesEnabledByDefault needs to be true";
   }
@@ -421,8 +421,8 @@ IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBrowserTest,
           USER_TRIGGERED));
 
   if (content::AreStrictSiteInstancesEnabled() &&
-      !content::SiteIsolationPolicy::
-          AreOriginKeyedProcessesEnabledByDefault()) {
+      !content::SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault(
+          profile())) {
     // if a.com is isolated already (as is the case with full site isolation)
     // or if DefaultSiteInstanceGroups are enabled, and origin isolation is not
     // used, the navigation to sub.a.com will be made in a SiteInstance with a
@@ -454,7 +454,8 @@ IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBrowserTest,
   ASSERT_TRUE(content::NavigateToURL(
       web_contents(),
       embedded_https_test_server().GetURL("sub.a.com", "/simple.html")));
-  if (content::SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault()) {
+  if (content::SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault(
+          profile())) {
     // Under origin isolation, the rule won't match sub.a.com, so optimizers
     // remain enabled.
     EXPECT_FALSE(AreV8OptimizationsDisabledOnActiveWebContents());

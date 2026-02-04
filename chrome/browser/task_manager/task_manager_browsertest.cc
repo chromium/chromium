@@ -1638,7 +1638,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderTaskBrowserTest, MAYBE_ProperlyShowsTasks) {
       url_formatter::FormatUrl(embedded_test_server()->GetURL(kPrerenderURL));
   ASSERT_NO_FATAL_FAILURE(
       WaitForTaskManagerRows(1, MatchTab(base::UTF16ToUTF8(tab_title))));
-  if (content::SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault() &&
+  if (content::SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault(
+          browser()->profile()) &&
       !server_port.empty()) {
     // When kOriginKeyedProcessesByDefault is enabled, we need to include the
     // port number as the SiteInstance's site_url will include it.
@@ -1912,8 +1913,8 @@ class FencedFrameTaskBrowserTest : public TaskManagerBrowserTest {
     GURL::Replacements replacements;
     replacements.ClearPath();
     replacements.ClearRef();
-    if (!content::SiteIsolationPolicy::
-            AreOriginKeyedProcessesEnabledByDefault()) {
+    if (!content::SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault(
+            browser()->profile())) {
       // Only include the port for origin-isolated urls.
       replacements.ClearPort();
     }

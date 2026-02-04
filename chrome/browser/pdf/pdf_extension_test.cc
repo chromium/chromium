@@ -1752,7 +1752,8 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionIsolatedContentTest, PdfAndHtml) {
             iframe->GetLastCommittedOrigin());
   EXPECT_NE(plugin_frames[0]->GetProcess(), iframe->GetProcess());
   EXPECT_EQ(
-      content::SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault(),
+      content::SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault(
+          browser()->profile()),
       content::HasOriginKeyedProcess(plugin_frames[0]));
 }
 

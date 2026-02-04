@@ -772,7 +772,7 @@ TEST_F(SiteInstanceTest, GetSiteForURL) {
   TestBrowserContext context;
 
   bool origin_keyed_processes_by_default =
-      SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault();
+      SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault(&context);
 
   // Pages are irrelevant.
   GURL test_url = GURL("http://www.google.com/index.html");
@@ -945,7 +945,8 @@ TEST_F(SiteInstanceTest, ProcessLockDoesNotUseEffectiveURL) {
   // (foo.com).
   {
     bool origin_keyed_processes_by_default =
-        SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault();
+        SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault(
+            browser_context.get());
 
     auto site_info = SiteInfo::CreateForTesting(isolation_context, test_url);
     if (origin_keyed_processes_by_default) {
@@ -958,7 +959,8 @@ TEST_F(SiteInstanceTest, ProcessLockDoesNotUseEffectiveURL) {
   }
 
   bool is_origin_keyed_processes_by_default =
-      SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault();
+      SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault(
+          browser_context.get());
   GURL expected_process_lock_url =
       is_origin_keyed_processes_by_default ? test_url : nonapp_site_url;
   AgentClusterKey agent_cluster_key =
@@ -1764,7 +1766,8 @@ TEST_F(SiteInstanceTest, OriginalURL) {
   std::unique_ptr<TestBrowserContext> browser_context(new TestBrowserContext());
 
   bool is_origin_keyed_processes_by_default =
-      SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault();
+      SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault(
+          browser_context.get());
   AgentClusterKey agent_cluster_key =
       is_origin_keyed_processes_by_default
           ? AgentClusterKey::CreateOriginKeyed(

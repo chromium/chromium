@@ -1282,7 +1282,8 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest, DipOriginKeyed) {
 
   // While the AgentClusterKey is origin-keyed, this should not impact the OAC
   // status of the SiteInfo.
-  if (SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault()) {
+  if (SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault(
+          shell()->web_contents()->GetBrowserContext())) {
     EXPECT_EQ(AgentClusterKey::OACStatus::kOriginKeyedByDefault,
               current_si->GetSiteInfo().oac_status());
   } else {

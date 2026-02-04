@@ -20,6 +20,7 @@
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/features.h"
@@ -127,12 +128,66 @@ class OriginAgentClusterBrowserTest
         ->GetProcess();
   }
 
+  std::string GetSameSiteCrossOriginDomain(
+      const std::string& original_hostname) {
+    std::string registrable_domain =
+        net::registry_controlled_domains::GetDomainAndRegistry(
+            original_hostname,
+            net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+
+    // Ensure the new domain is cross-origin but same-site.
+    std::string new_domain = "alt." + registrable_domain;
+
+    // Avoid accidentally using the same subdomain.
+    if (new_domain == original_hostname) {
+      new_domain = "othersub." + registrable_domain;
+    }
+
+    return new_domain;
+  }
+
   bool CanDocumentDomain(std::string from,
                          std::string to,
                          OriginAgentClusterState oac_state) {
+    // This initial navigation is needed to do a browsing instance swap, which
+    // will ensure that the test's actual navigation swaps to a fresh
+    // BrowsingInstance. This is so the correct MockContentBrowserClient is
+    // installed before that BrowsingInstance is created and looks up OAC
+    // isolation policy.
+    EXPECT_TRUE(NavigateToURL(
+        shell(), server()->GetURL("othersite.com", "/empty.html")));
+
     WebContents* contents = Navigate(from, oac_state);
     DCHECK(contents);
-    return EvalJs(contents, SetDocumentDomainTo(to)).ExtractBool();
+
+    // Create a new cross-origin same-site pop-up window that has an OAC header
+    // set to the same value as its opener.
+    Shell* popup_shell =
+        OpenPopup(contents->GetPrimaryMainFrame(),
+                  server()->GetURL(GetSameSiteCrossOriginDomain(from),
+                                   ClusterStateToRelativeURL(oac_state)),
+                  "");
+    EXPECT_TRUE(popup_shell);
+    WebContents* popup_contents = popup_shell->web_contents();
+    DCHECK(popup_contents);
+
+    // Set both document's domains to the same domain.
+    EXPECT_TRUE(ExecJs(contents, SetDocumentDomainTo(to)));
+    EXPECT_TRUE(ExecJs(popup_contents, SetDocumentDomainTo(to)));
+
+    // Attempt to script the popup page's opener.
+    auto result = EvalJs(popup_contents,
+                         "try { "
+                         "  window.opener.location.href; "
+                         "} catch (e) { "
+                         "  'error'; "
+                         "}");
+    if (result.ExtractString() == "error") {
+      return false;
+    }
+
+    return result.ExtractString() ==
+           EvalJs(contents, "window.location.href").ExtractString();
   }
 
   // This tries to set document.domain. But instead of checking whether setting
@@ -179,6 +234,19 @@ class OriginAgentClusterBrowserTest
     return shell()->web_contents();
   }
 
+  std::string ClusterStateToRelativeURL(OriginAgentClusterState state) {
+    switch (state) {
+      case kUnset:
+        return "/empty.html";
+      case kSetTrue:
+        return "/set-header?Origin-Agent-Cluster: ?1";
+      case kSetFalse:
+        return "/set-header?Origin-Agent-Cluster: ?0";
+      case kMalformed:
+        return "/set-header?Origin-Agent-Cluster: potato";
+    }
+  }
+
   // For the purpose of this test, we only care about the Origin-Agent-Cluster:
   // header. The test setup has four pages corresponding to the three valid
   // states (absent, true ("?1"), and false ("?0"), and one malformed one
@@ -186,16 +254,7 @@ class OriginAgentClusterBrowserTest
   // test page.
   WebContents* Navigate(std::string domain,
                         const OriginAgentClusterState state) {
-    switch (state) {
-      case kUnset:
-        return Navigate(domain, "/empty.html");
-      case kSetTrue:
-        return Navigate(domain, "/set-header?Origin-Agent-Cluster: ?1");
-      case kSetFalse:
-        return Navigate(domain, "/set-header?Origin-Agent-Cluster: ?0");
-      case kMalformed:
-        return Navigate(domain, "/set-header?Origin-Agent-Cluster: potato");
-    }
+    return Navigate(domain, ClusterStateToRelativeURL(state));
   }
 
  protected:
@@ -415,9 +474,6 @@ IN_PROC_BROWSER_TEST_P(OriginAgentClusterEnabledBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(OriginAgentClusterEnabledBrowserTest,
                        Policy_SetTrue_Default) {
-  if (AreOriginKeyedProcessesEnabled()) {
-    GTEST_SKIP() << "Disabled until http://crrev.com/c/7529840 lands.";
-  }
   SetEnterprisePolicy(false);
   EXPECT_TRUE(CanDocumentDomain("a.domain.test", "domain.test", kUnset));
 }
@@ -442,9 +498,6 @@ IN_PROC_BROWSER_TEST_P(OriginAgentClusterEnabledBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(OriginAgentClusterEnabledBrowserTest,
                        Policy_SetTrue_Disabled) {
-  if (AreOriginKeyedProcessesEnabled()) {
-    GTEST_SKIP() << "Disabled until http://crrev.com/c/7529840 lands.";
-  }
   SetEnterprisePolicy(false);
   EXPECT_TRUE(CanDocumentDomain("a.domain.test", "domain.test", kSetFalse));
 }
@@ -457,9 +510,6 @@ IN_PROC_BROWSER_TEST_P(OriginAgentClusterEnabledBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(OriginAgentClusterEnabledBrowserTest,
                        Policy_SetTrue_Malformed) {
-  if (AreOriginKeyedProcessesEnabled()) {
-    GTEST_SKIP() << "Disabled until http://crrev.com/c/7529840 lands.";
-  }
   SetEnterprisePolicy(false);
   EXPECT_TRUE(CanDocumentDomain("a.domain.test", "domain.test", kMalformed));
 }
@@ -478,14 +528,16 @@ IN_PROC_BROWSER_TEST_P(OriginAgentClusterEnabledBrowserTest,
   SetEnterprisePolicy(true);
   {
     OriginAgentClusterIsolationState default_isolation_state =
-        OriginAgentClusterIsolationState::CreateForDefaultIsolation(nullptr);
+        OriginAgentClusterIsolationState::CreateForDefaultIsolation(
+            shell()->web_contents()->GetBrowserContext());
     EXPECT_TRUE(default_isolation_state.is_origin_agent_cluster());
   }
   // OAC by default disabled by enterprise policy.
   SetEnterprisePolicy(false);
   {
     OriginAgentClusterIsolationState default_isolation_state =
-        OriginAgentClusterIsolationState::CreateForDefaultIsolation(nullptr);
+        OriginAgentClusterIsolationState::CreateForDefaultIsolation(
+            shell()->web_contents()->GetBrowserContext());
     EXPECT_FALSE(default_isolation_state.is_origin_agent_cluster());
   }
 }

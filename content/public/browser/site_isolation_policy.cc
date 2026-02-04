@@ -110,9 +110,12 @@ bool SiteIsolationPolicy::AreIsolatedSandboxedIframesEnabled() {
 
 // static
 bool SiteIsolationPolicy::IsSitePerProcessOrStricter() {
-  return UseDedicatedProcessesForAllSites() ||
-         IsStrictOriginIsolationEnabled() ||
-         AreOriginKeyedProcessesEnabledByDefault();
+  // !UseDedicatedProcessesForAllSites() guarantees
+  // !AreOriginKeyedProcessesEnabledByDefault() (as that causes an early
+  // return). If UseDedicatedProcessesForAllSites() is true, this function will
+  // early return true, so AreOriginKeyedProcessesEnabledByDefault() doesn't
+  // need to be checked here.
+  return UseDedicatedProcessesForAllSites() || IsStrictOriginIsolationEnabled();
 }
 
 // static
@@ -239,8 +242,15 @@ bool SiteIsolationPolicy::IsOriginAgentClusterEnabled() {
 }
 
 // static
-bool SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault() {
+bool SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault(
+    BrowserContext* browser_context) {
   if (!UseDedicatedProcessesForAllSites()) {
+    return false;
+  }
+
+  if (browser_context &&
+      GetContentClient()->browser()->ShouldDisableOriginAgentClusterDefault(
+          browser_context)) {
     return false;
   }
 
@@ -274,7 +284,7 @@ bool SiteIsolationPolicy::AreOriginAgentClustersEnabledByDefault(
   return IsOriginAgentClusterEnabled() &&
          (base::FeatureList::IsEnabled(
               blink::features::kOriginAgentClusterDefaultEnabled) ||
-          AreOriginKeyedProcessesEnabledByDefault()) &&
+          AreOriginKeyedProcessesEnabledByDefault(browser_context)) &&
          !GetContentClient()->browser()->ShouldDisableOriginAgentClusterDefault(
              browser_context);
 }

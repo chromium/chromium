@@ -414,7 +414,8 @@ IN_PROC_BROWSER_TEST_P(OriginKeyedProcessIsolatedSandboxedIframeTest,
                        DataUrlLoadsWithoutCrashing) {
   bool origin_keyed_processes_by_default_enabled = GetParam();
   EXPECT_EQ(origin_keyed_processes_by_default_enabled,
-            SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault());
+            SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault(
+                shell()->web_contents()->GetBrowserContext()));
   GURL main_url(https_server()->GetURL("foo.a.com", "/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
@@ -482,7 +483,8 @@ IN_PROC_BROWSER_TEST_P(OriginKeyedProcessIsolatedSandboxedIframeTest,
                        DataUrlLoadsInFileURL) {
   bool origin_keyed_processes_by_default_enabled = GetParam();
   EXPECT_EQ(origin_keyed_processes_by_default_enabled,
-            SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault());
+            SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault(
+                shell()->web_contents()->GetBrowserContext()));
   GURL main_url(GetTestUrl("", "title1.html"));
   ASSERT_TRUE(main_url.SchemeIsFile());
   EXPECT_TRUE(NavigateToURL(shell(), main_url));

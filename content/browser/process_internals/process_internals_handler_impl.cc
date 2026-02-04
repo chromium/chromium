@@ -212,7 +212,8 @@ void ProcessInternalsHandlerImpl::GetIsolationMode(
   if (SiteIsolationPolicy::AreIsolatedOriginsEnabled()) {
     modes.push_back("Isolate Origins");
   }
-  if (SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault()) {
+  if (SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault(
+          browser_context_)) {
     modes.push_back("Origin Keyed Processes by Default");
   }
   if (SiteIsolationPolicy::IsStrictOriginIsolationEnabled()) {

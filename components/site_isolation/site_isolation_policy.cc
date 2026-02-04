@@ -185,9 +185,11 @@ bool SiteIsolationPolicy::IsIsolationForOAuthSitesEnabled() {
 }
 
 // static
-bool SiteIsolationPolicy::IsOriginIsolationForJsOptExceptionsEnabled() {
+bool SiteIsolationPolicy::IsOriginIsolationForJsOptExceptionsEnabled(
+    content::BrowserContext* browser_context) {
   if (content::SiteIsolationPolicy::IsStrictOriginIsolationEnabled() ||
-      content::SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault()) {
+      content::SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault(
+          browser_context)) {
     // Origin isolation for JavaScript optimizer exceptions isn't needed if
     // origin isolation is enabled for everything because an origin gets passed
     // into AreV8OptimizationsDisabledForSite() and the return value will match

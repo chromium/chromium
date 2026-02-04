@@ -46,7 +46,8 @@ class SiteIsolationPolicy {
   // IsOriginIsolationForJsOptExceptionsSupported() because
   // IsOriginIsolationForJsOptExceptionsEnabled() returns false if the
   // feature is unneeded due to strict origin isolation being enabled.
-  static bool IsOriginIsolationForJsOptExceptionsEnabled();
+  static bool IsOriginIsolationForJsOptExceptionsEnabled(
+      content::BrowserContext* browser_context);
 
   // Returns whether isolating origins that match JavaScript optimizer
   // exceptions is supported.

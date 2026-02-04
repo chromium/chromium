@@ -2439,7 +2439,7 @@ void ChromeContentBrowserClient::WillComputeSiteForNavigation(
     content::BrowserContext* browser_context,
     const GURL& url) {
   if (!site_isolation::SiteIsolationPolicy::
-          IsOriginIsolationForJsOptExceptionsEnabled()) {
+          IsOriginIsolationForJsOptExceptionsEnabled(browser_context)) {
     return;
   }
 

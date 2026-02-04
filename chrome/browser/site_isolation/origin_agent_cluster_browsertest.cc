@@ -305,13 +305,15 @@ IN_PROC_BROWSER_TEST_F(OriginAgentClusterBrowserTest,
 // We expect the OAC overhead to be zero when no OAC origins are present.
 IN_PROC_BROWSER_TEST_F(OriginAgentClusterBrowserTest,
                        ProcessCountMetricsNoOACs) {
-  bool origin_keyed_processes_by_default =
-      content::SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault();
   GURL start_url(https_server()->GetURL("foo.com", "/iframe.html"));
   GURL sub_origin_url(https_server()->GetURL("sub.foo.com", "/title1.html"));
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
+
+  bool origin_keyed_processes_by_default =
+      content::SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault(
+          web_contents->GetBrowserContext());
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), start_url));
   EXPECT_TRUE(NavigateIframeToURL(web_contents, "test", sub_origin_url));

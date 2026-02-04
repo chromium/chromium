@@ -152,7 +152,7 @@ TEST_F(OriginIsolationForJsOptExceptionsTest,
   feature_list.InitAndDisableFeature(
       site_isolation::features::kOriginIsolationForJsOptExceptions);
   EXPECT_FALSE(
-      SiteIsolationPolicy::IsOriginIsolationForJsOptExceptionsEnabled());
+      SiteIsolationPolicy::IsOriginIsolationForJsOptExceptionsEnabled(nullptr));
 }
 
 TEST_F(OriginIsolationForJsOptExceptionsTest, ReturnsTrueWhenFeatureEnabled) {
@@ -160,7 +160,7 @@ TEST_F(OriginIsolationForJsOptExceptionsTest, ReturnsTrueWhenFeatureEnabled) {
   feature_list.InitAndEnableFeature(
       site_isolation::features::kOriginIsolationForJsOptExceptions);
   EXPECT_TRUE(
-      SiteIsolationPolicy::IsOriginIsolationForJsOptExceptionsEnabled());
+      SiteIsolationPolicy::IsOriginIsolationForJsOptExceptionsEnabled(nullptr));
 }
 
 TEST_F(OriginIsolationForJsOptExceptionsTest,
@@ -171,7 +171,7 @@ TEST_F(OriginIsolationForJsOptExceptionsTest,
        ::features::kStrictOriginIsolation},
       {});
   EXPECT_FALSE(
-      SiteIsolationPolicy::IsOriginIsolationForJsOptExceptionsEnabled());
+      SiteIsolationPolicy::IsOriginIsolationForJsOptExceptionsEnabled(nullptr));
 }
 
 TEST_F(OriginIsolationForJsOptExceptionsTest,
@@ -185,7 +185,7 @@ TEST_F(OriginIsolationForJsOptExceptionsTest,
       switches::kSitePerProcess);
   SetEnableStrictSiteIsolation(true);
   EXPECT_FALSE(
-      SiteIsolationPolicy::IsOriginIsolationForJsOptExceptionsEnabled());
+      SiteIsolationPolicy::IsOriginIsolationForJsOptExceptionsEnabled(nullptr));
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -212,7 +212,7 @@ TEST_F(OriginIsolationForJsOptExceptionsLowMemoryTest,
       {::features::kStrictOriginIsolation,
        ::features::kOriginKeyedProcessesByDefault});
   EXPECT_FALSE(
-      SiteIsolationPolicy::IsOriginIsolationForJsOptExceptionsEnabled());
+      SiteIsolationPolicy::IsOriginIsolationForJsOptExceptionsEnabled(nullptr));
 }
 #endif
 
@@ -241,14 +241,16 @@ TEST_F(OriginKeyedProcessesByDefaultSiteIsolationPolicyTest,
   // still be true, which will enable AreOriginKeyedProcessesEnabledByDefault().
   EXPECT_EQ(
       content::SiteIsolationPolicy::UseDedicatedProcessesForAllSites(),
-      content::SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault());
+      content::SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault(
+          nullptr));
   SetEnableStrictSiteIsolation(true);
   // When this runs on Android, the return value from
   // SiteIsolationContentBrowserClient::ShouldDisableSiteIsolation() may still
   // override our attempt to SetEnableStrictSiteIsolation(true).
   EXPECT_EQ(
       content::SiteIsolationPolicy::UseDedicatedProcessesForAllSites(),
-      content::SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault());
+      content::SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault(
+          nullptr));
 }
 
 class SiteIsolationPolicyTest : public BaseSiteIsolationTest {
@@ -680,7 +682,8 @@ TEST_P(OriginIsolationMemoryThresholdBrowserTest, IsolationThresholds) {
                 IsProcessIsolationForOriginAgentClusterEnabled());
   EXPECT_EQ(
       expected_process_origin_isolation,
-      content::SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault());
+      content::SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault(
+          nullptr));
 }
 
 INSTANTIATE_TEST_SUITE_P(

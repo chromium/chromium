@@ -133,7 +133,8 @@ TEST_F(ChromeSiteIsolationPolicyTest, NoOriginIsolationBelowMemoryThreshold) {
 
   SetOriginMemoryThreshold("768");
   EXPECT_FALSE(
-      content::SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault());
+      content::SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault(
+          nullptr));
 }
 
 TEST_F(ChromeSiteIsolationPolicyTest, OriginIsolationAboveMemoryThreshold) {
@@ -149,7 +150,8 @@ TEST_F(ChromeSiteIsolationPolicyTest, OriginIsolationAboveMemoryThreshold) {
   // AreOriginKeyedProcessesEnabledByDefault().
   EXPECT_EQ(
       content::SiteIsolationPolicy::UseDedicatedProcessesForAllSites(),
-      content::SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault());
+      content::SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault(
+          nullptr));
 }
 
 TEST_F(ChromeSiteIsolationPolicyTest, IsolatedOriginsContainChromeOrigins) {

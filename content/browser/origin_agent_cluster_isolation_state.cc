@@ -21,7 +21,7 @@ OriginAgentClusterIsolationState::CreateForDefaultIsolation(
     // If OAC-by-default is enabled, we also check to see if origin-keyed
     // processes have been enabled as the default.
     bool requires_origin_keyed_process =
-        SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault();
+        SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault(context);
     return CreateForOriginAgentCluster(/*had_oac_request=*/false,
                                        requires_origin_keyed_process);
   }

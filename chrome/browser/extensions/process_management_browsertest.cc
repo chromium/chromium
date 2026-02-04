@@ -462,7 +462,8 @@ IN_PROC_BROWSER_TEST_P(ChromeWebStoreProcessTest,
   // The two non-Webstore urls are same-site, but cross-origin. If
   // kOriginKeyedProcessesByDefault is enabled they will be placed in different
   // processes, otherwise they'll share a process.
-  if (content::SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault()) {
+  if (content::SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault(
+          profile())) {
     EXPECT_NE(non_cws_contents_1->GetPrimaryMainFrame()->GetProcess(),
               non_cws_contents_2->GetPrimaryMainFrame()->GetProcess());
   } else {

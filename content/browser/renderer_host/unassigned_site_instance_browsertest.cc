@@ -150,7 +150,8 @@ class UnassignedSiteInstanceBrowserTest
     GURL result = regular_url();
     GURL::Replacements replacements;
     replacements.ClearPath();
-    if (!SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault()) {
+    if (!SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault(
+            shell()->web_contents()->GetBrowserContext())) {
       // Only include the port for origin-isolated urls.
       replacements.ClearPort();
     }

@@ -235,7 +235,8 @@ IN_PROC_BROWSER_TEST_P(CookieBrowserTest, Cookies) {
               web_contents_http->GetSiteInstance()->GetSiteURL().spec());
     // Create expected site url, including port if origin isolation is enabled.
     std::string expected_site_url =
-        SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault()
+        SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault(
+            shell()->web_contents()->GetBrowserContext())
             ? url::Origin::Create(https_url).GetURL().spec()
             : std::string("https://a.test/");
     EXPECT_EQ(expected_site_url,
