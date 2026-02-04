@@ -4199,12 +4199,26 @@ Keep consistent with active providers. Doesn't need to include every provider in
     takes place.
 
     This histogram captures outcome of reconciliation {ByVariant}.
+
+    Note: For reconciliation sub-types (&quot;ByIdFromAllEngines&quot; or
+    &quot;BySeznamKeyword&quot; for example), success is double-counted,
+    additionally reported into the generic &quot;ByID&quot; or
+    &quot;ByKeyword&quot; type.
   </summary>
+<!-- LINT.IfChange(ByReconciliationVariant) -->
+
   <token key="ByVariant">
     <variant name="ByDomainBasedKeyword" summary="by Domain-based Keyword"/>
-    <variant name="ByID" summary="by ID"/>
+    <variant name="ByID" summary="by ID (from regional list)"/>
     <variant name="ByKeyword" summary="by Keyword"/>
+    <variant name="kByIdFromAllEngines" summary="by ID (from global list)"/>
+    <variant name="kBySeznamKeyword"
+        summary="by Domain-based Keyword (Seznam migration)"/>
+    <variant name="kByYahooKeyword"
+        summary="by Domain-based Keyword (Yahoo migration)"/>
   </token>
+<!-- LINT.ThenChange(//components/search_engines/reconciling_template_url_data_holder.h:ReconciliationType) -->
+
 </histogram>
 
 <histogram name="Omnibox.TemplateUrl.RegulatoryExtension.SearchVariant"

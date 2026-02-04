@@ -39,14 +39,30 @@ class ReconcilingTemplateURLDataHolder {
   // reconcile it with Chrome prepopulated engines.
   const TemplateURLData* Get() const { return search_engine_.get(); }
 
+  // LINT.IfChange(ReconciliationType)
+  enum class ReconciliationType {
+    kNone = 0,
+    kByID = 1,
+    kByKeyword = 2,
+    kByDomainBasedKeyword = 3,
+    kBySeznamKeyword = 4,
+    kByYahooKeyword = 5,
+    kByIdFromAllEngines = 6,
+    kMaxValue = kByIdFromAllEngines
+  };
+  // LINT.ThenChange(
+  // //tools/metrics/histograms/metadata/omnibox/enums.xml:ReconciliationType,
+  // //tools/metrics/histograms/metadata/omnibox/histograms.xml:ByReconciliationVariant)
+
   // Returns the keyword associated with currently set search engine.
   // If the SE definition comes from Play API, applies necessary changes
   // to compute keyword equivalent that can be matched with prepopulated
   // engines. Returns a pair of values:
   // - a string - keyword that can be matched with prepopulated_engines, and
-  // - a boolean - indicating whether returned value had to be computed from
-  //   engine's Search URL.
-  std::pair<std::u16string, bool> GetOrComputeKeyword() const;
+  // - a ReconciliationType - indicating whether returned value had to be
+  // computed from
+  //   engine's Search URL and if so, which kind of change was made.
+  std::pair<std::u16string, ReconciliationType> GetOrComputeKeyword() const;
 
   // Find Chrome built-in Search Engine definitions matching supplied |keyword|.
   // Use sparingly: this method may be moderately expensive to call:
@@ -60,8 +76,14 @@ class ReconcilingTemplateURLDataHolder {
   // Use sparingly: this method may be moderately expensive to call:
   // - iterates lengthy, unsorted PrepopulatedEngine list,
   // - creates TemplateURLData equivalents from PrepopulatedEngine definitions,
-  std::unique_ptr<TemplateURLData> FindMatchingBuiltInDefinitionsById(
-      int prepopulate_id) const;
+  // Returns a pair of values:
+  // - a TemplateURLData unique ptr - the definition that was found, or nullptr
+  // otherwise
+  // - a ReconciliationType - indicating the type of reconciliation that was
+  // used to search for the definition.
+  std::pair<std::unique_ptr<TemplateURLData>, ReconciliationType>
+  FindMatchingBuiltInDefinitionsById(
+      const TemplateURLData& data_to_match) const;
 
  private:
   raw_ref<TemplateURLPrepopulateData::Resolver> prepopulate_data_resolver_;

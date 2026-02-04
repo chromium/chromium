@@ -323,12 +323,19 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/omnibox/browser/lens_suggest_inputs_utils.h:PaywallSignal) -->
 
+<!-- LINT.IfChange(ReconciliationType) -->
+
 <enum name="ReconciliationType">
   <int value="0" label="No Reconciliation"/>
-  <int value="1" label="By prepopulate_id"/>
+  <int value="1" label="By prepopulate_id (region)"/>
   <int value="2" label="By keyword"/>
   <int value="3" label="By domain based keyword"/>
+  <int value="4" label="By keyword (seznam migration)"/>
+  <int value="5" label="By keyword (yahoo migration)"/>
+  <int value="6" label="By prepopulate_id (global)"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/search_engines/reconciling_template_url_data_holder.h:ReconciliationType) -->
 
 <enum name="RegulatoryExtensionVariant">
   <int value="0" label="Default extension"/>
