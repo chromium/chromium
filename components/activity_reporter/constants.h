@@ -5,6 +5,15 @@
 #ifndef COMPONENTS_ACTIVITY_REPORTER_CONSTANTS_H_
 #define COMPONENTS_ACTIVITY_REPORTER_CONSTANTS_H_
 
+#include "components/activity_reporter/buildflags.h"
+
+#if BUILDFLAG(USE_ACTIVITY_REPORTER_INTERNAL_CONSTANTS)
+
+// Delegate to the internal constants header.
+#include "components/activity_reporter/internal/constants.h"
+
+#else
+
 #include <string_view>
 
 namespace activity_reporter {
@@ -17,5 +26,7 @@ inline constexpr std::string_view kUrl =
     "https://update.googleapis.com/service/update2/json";
 
 }  // namespace activity_reporter
+
+#endif  // BUILDFLAG(USE_ACTIVITY_REPORTER_INTERNAL_CONSTANTS)
 
 #endif  // COMPONENTS_ACTIVITY_REPORTER_CONSTANTS_H_

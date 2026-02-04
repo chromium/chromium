@@ -3677,7 +3677,7 @@ deps = {
 
   'src/components/activity_reporter/internal': {
     'url': Var('chrome_git') + '/activity_reporter_internal.git' + '@' +
-        '482b25d85699464e0405664336545a51398d6d90',
+        '0540703a9db51619739c3de547961dd2227d2f26',
     'condition': 'checkout_src_internal',
   },
 
