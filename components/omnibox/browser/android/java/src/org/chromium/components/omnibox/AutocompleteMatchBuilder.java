@@ -50,6 +50,7 @@ public class AutocompleteMatchBuilder {
     private String mInlineAutocompletion;
     private String mAdditionalText;
     private String mTabGroupUuid;
+    private String mAssociatedKeyword;
     private byte[] mSerializedSuggestTemplate;
 
     /**
@@ -102,6 +103,7 @@ public class AutocompleteMatchBuilder {
         mInlineAutocompletion = null;
         mAdditionalText = null;
         mTabGroupUuid = null;
+        mAssociatedKeyword = null;
         mSerializedSuggestTemplate = null;
 
         mDisplayTextClassifications.add(
@@ -144,6 +146,7 @@ public class AutocompleteMatchBuilder {
                 mInlineAutocompletion,
                 mAdditionalText,
                 mTabGroupUuid,
+                mAssociatedKeyword,
                 mSerializedSuggestTemplate);
     }
 
@@ -353,6 +356,15 @@ public class AutocompleteMatchBuilder {
      */
     public AutocompleteMatchBuilder setTabGroupUuid(String tabGroupUuid) {
         mTabGroupUuid = tabGroupUuid;
+        return this;
+    }
+
+    /**
+     * @param associatedKeyword Associated keyword.
+     * @return Omnibox suggestion builder.
+     */
+    public AutocompleteMatchBuilder setAssociatedKeyword(String associatedKeyword) {
+        mAssociatedKeyword = associatedKeyword;
         return this;
     }
 

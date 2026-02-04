@@ -132,6 +132,7 @@ ScopedJavaLocalRef<jobject> AutocompleteMatch::GetOrCreateJavaObject(
           ConvertUTF16ToJavaString(env, additional_text),
           tab_groups::UuidToJavaString(
               env, matching_tab_group_uuid.value_or(base::Uuid())),
+          ConvertUTF16ToJavaString(env, associated_keyword),
           j_suggest_template));
 
   return ScopedJavaLocalRef<jobject>(*java_match_);
