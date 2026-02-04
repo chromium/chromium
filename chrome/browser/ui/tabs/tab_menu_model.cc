@@ -145,44 +145,43 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
   }
   SetElementIdentifierAt(GetItemCount() - 1, kAddNewTabAdjacentMenuItem);
 
-    if (!tab_strip->GetSplitForTab(index).has_value()) {
-      if (tab_strip->GetActiveTab()->IsSplit()) {
-        swap_with_split_submenu_ =
-            std::make_unique<SplitTabSwapMenuModel>(tab_strip, index);
-        AddSubMenuWithStringIdAndIcon(
-            TabStripModel::CommandSwapWithActiveSplit,
-            IDS_TAB_CXMENU_SWAP_WITH_ACTIVE_SPLIT,
-            swap_with_split_submenu_.get(),
-            ui::ImageModel::FromVectorIcon(kSplitSceneIcon, ui::kColorMenuIcon,
-                                           kTabMenuIconSize));
-        const int swap_with_split_index = GetItemCount() - 1;
-        SetEnabledAt(swap_with_split_index, num_tabs == 1);
-        SetElementIdentifierAt(swap_with_split_index, kSwapSplitTabsMenuItem);
-      } else {
-        AddItemWithStringIdAndIcon(
-            TabStripModel::CommandAddToSplit,
-            index == tab_strip->active_index()
-                ? IDS_TAB_CXMENU_ADD_TAB_TO_NEW_SPLIT
-                : IDS_TAB_CXMENU_NEW_SPLIT_WITH_CURRENT,
-            ui::ImageModel::FromVectorIcon(kSplitSceneIcon, ui::kColorMenuIcon,
-                                           kTabMenuIconSize));
-        const int add_to_split_index = GetItemCount() - 1;
-        SetEnabledAt(add_to_split_index, num_tabs == 1 || num_tabs == 2);
-        SetElementIdentifierAt(add_to_split_index, kSplitTabsMenuItem);
-      }
-    } else {
-      arrange_split_view_submenu_ = std::make_unique<SplitTabMenuModel>(
-          tab_strip, SplitTabMenuModel::MenuSource::kTabContextMenu, index);
+  if (!tab_strip->GetSplitForTab(index).has_value()) {
+    if (tab_strip->GetActiveTab()->IsSplit()) {
+      swap_with_split_submenu_ =
+          std::make_unique<SplitTabSwapMenuModel>(tab_strip, index);
       AddSubMenuWithStringIdAndIcon(
-          TabStripModel::CommandArrangeSplit, IDS_TAB_CXMENU_ARRANGE_SPLIT,
-          arrange_split_view_submenu_.get(),
+          TabStripModel::CommandSwapWithActiveSplit,
+          IDS_TAB_CXMENU_SWAP_WITH_ACTIVE_SPLIT, swap_with_split_submenu_.get(),
           ui::ImageModel::FromVectorIcon(kSplitSceneIcon, ui::kColorMenuIcon,
                                          kTabMenuIconSize));
-      SetElementIdentifierAt(GetItemCount() - 1, kArrangeSplitTabsMenuItem);
+      const int swap_with_split_index = GetItemCount() - 1;
+      SetEnabledAt(swap_with_split_index, num_tabs == 1);
+      SetElementIdentifierAt(swap_with_split_index, kSwapSplitTabsMenuItem);
+    } else {
+      AddItemWithStringIdAndIcon(
+          TabStripModel::CommandAddToSplit,
+          index == tab_strip->active_index()
+              ? IDS_TAB_CXMENU_ADD_TAB_TO_NEW_SPLIT
+              : IDS_TAB_CXMENU_NEW_SPLIT_WITH_CURRENT,
+          ui::ImageModel::FromVectorIcon(kSplitSceneIcon, ui::kColorMenuIcon,
+                                         kTabMenuIconSize));
+      const int add_to_split_index = GetItemCount() - 1;
+      SetEnabledAt(add_to_split_index, num_tabs == 1 || num_tabs == 2);
+      SetElementIdentifierAt(add_to_split_index, kSplitTabsMenuItem);
     }
-    SetIsNewFeatureAt(GetItemCount() - 1,
-                      UserEducationService::MaybeShowNewBadge(
-                          tab_strip->profile(), features::kSideBySide));
+  } else {
+    arrange_split_view_submenu_ = std::make_unique<SplitTabMenuModel>(
+        tab_strip, SplitTabMenuModel::MenuSource::kTabContextMenu, index);
+    AddSubMenuWithStringIdAndIcon(
+        TabStripModel::CommandArrangeSplit, IDS_TAB_CXMENU_ARRANGE_SPLIT,
+        arrange_split_view_submenu_.get(),
+        ui::ImageModel::FromVectorIcon(kSplitSceneIcon, ui::kColorMenuIcon,
+                                       kTabMenuIconSize));
+    SetElementIdentifierAt(GetItemCount() - 1, kArrangeSplitTabsMenuItem);
+  }
+  SetIsNewFeatureAt(GetItemCount() - 1,
+                    UserEducationService::MaybeShowNewBadge(
+                        tab_strip->profile(), features::kSideBySide));
 
   if (ExistingTabGroupSubMenuModel::ShouldShowSubmenu(
           tab_strip, index, tab_menu_model_delegate_)) {
