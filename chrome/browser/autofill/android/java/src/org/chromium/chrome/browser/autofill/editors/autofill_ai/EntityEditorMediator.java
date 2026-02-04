@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEdi
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.autofill.autofill_ai.EntityType;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Mediator for the Entity Editor. */
@@ -19,12 +20,11 @@ class EntityEditorMediator {
     EntityEditorMediator() {}
 
     @EnsuresNonNull("mEditorModel")
-    PropertyModel getEditorModel() {
-        // TODO: crbug.com/476755159 - Use strings from the EntityType.
+    PropertyModel getEditorModel(EntityType entityType) {
         if (mEditorModel == null) {
             mEditorModel =
                     new PropertyModel.Builder(EntityEditorProperties.ALL_KEYS)
-                            .with(EDITOR_TITLE, "Add entity")
+                            .with(EDITOR_TITLE, entityType.addEntityTypeString)
                             .build();
         }
         return mEditorModel;

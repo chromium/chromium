@@ -26,6 +26,8 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.autofill.R;
 import org.chromium.chrome.browser.autofill.editors.common.EditorDialogToolbar;
+import org.chromium.components.autofill.autofill_ai.EntityType;
+import org.chromium.components.autofill.autofill_ai.EntityTypeName;
 import org.chromium.ui.base.TestActivity;
 
 @RunWith(BaseRobolectricTestRunner.class)
@@ -38,19 +40,30 @@ public class EntityEditorModuleTest {
     private EntityEditorCoordinator mCoordinator;
     private View mContainerView;
 
+    private EntityType mEntityType;
+
     @Before
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         mActivity = Robolectric.setupActivity(TestActivity.class);
         mCoordinator = new EntityEditorCoordinator(mActivity);
         mContainerView = mCoordinator.getEntityEditorViewForTest().getContainerView();
+
+        mEntityType =
+                new EntityType(
+                        /* typeName= */ EntityTypeName.PASSPORT,
+                        /* isReadOnly= */ false,
+                        /* typeNameAsString= */ "Passport",
+                        /* addEntityTypeString= */ "Add passport",
+                        /* editEntityTypeString= */ "Edit passport",
+                        /* deleteEntityTypeString= */ "Delete passport");
     }
 
     @Test
     @SmallTest
     public void testShowEditorDialog() {
-        mCoordinator.showEditorDialog();
+        mCoordinator.showEditorDialog(mEntityType);
         EditorDialogToolbar toolbar = mContainerView.findViewById(R.id.action_bar);
-        assertEquals("Add entity", toolbar.getTitle());
+        assertEquals(mEntityType.addEntityTypeString, toolbar.getTitle());
     }
 }

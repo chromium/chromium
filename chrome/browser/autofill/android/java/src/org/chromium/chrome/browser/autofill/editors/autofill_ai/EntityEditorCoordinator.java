@@ -8,6 +8,7 @@ import android.app.Activity;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.autofill.autofill_ai.EntityType;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -23,8 +24,8 @@ public class EntityEditorCoordinator {
         mEditorView = new EntityEditorView(activity);
     }
 
-    public void showEditorDialog() {
-        mEditorModel = mMediator.getEditorModel();
+    public void showEditorDialog(EntityType entityType) {
+        mEditorModel = mMediator.getEditorModel(entityType);
         PropertyModelChangeProcessor.create(
                 mEditorModel, mEditorView, EntityEditorViewBinder::bindEditorDialogView);
     }
