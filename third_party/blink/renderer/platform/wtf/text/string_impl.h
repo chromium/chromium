@@ -365,7 +365,7 @@ class WTF_EXPORT StringImpl {
 
     constexpr hw::FixedTag<uint16_t, 8> d16;
     constexpr hw::FixedTag<uint8_t, 16> d8;
-    constexpr size_t kLanes = hw::Lanes(d8);
+    HWY_LANES_CONSTEXPR size_t kLanes = hw::Lanes(d8);
 
     const size_t length = source.size();
     const LChar* src = source.data();
@@ -783,7 +783,7 @@ ALWAYS_INLINE bool SimdEqualIgnoringASCIICase(base::span<const LChar> a,
                                               base::span<const LChar> b) {
   namespace hw = hwy::HWY_NAMESPACE;
   constexpr hw::FixedTag<uint8_t, 16> d;
-  constexpr size_t kLanes = hw::Lanes(d);
+  HWY_LANES_CONSTEXPR size_t kLanes = hw::Lanes(d);
 
   // SAFETY: The SIMD code requires raw buffer access.
   UNSAFE_BUFFERS({
@@ -818,7 +818,7 @@ ALWAYS_INLINE bool SimdEqualIgnoringASCIICase(base::span<const UChar> a,
   namespace hw = hwy::HWY_NAMESPACE;
   constexpr hw::FixedTag<uint16_t, 8> d16;
   constexpr hw::FixedTag<uint8_t, 8> d8;
-  constexpr size_t kLanes = hw::Lanes(d16);
+  HWY_LANES_CONSTEXPR size_t kLanes = hw::Lanes(d16);
 
   // SAFETY: The SIMD code requires raw buffer access.
   UNSAFE_BUFFERS({
@@ -855,7 +855,7 @@ ALWAYS_INLINE bool SimdEqualIgnoringASCIICase(base::span<const UChar> a,
                                               base::span<const UChar> b) {
   namespace hw = hwy::HWY_NAMESPACE;
   constexpr hw::FixedTag<uint16_t, 8> d;
-  constexpr size_t kLanes = hw::Lanes(d);
+  HWY_LANES_CONSTEXPR size_t kLanes = hw::Lanes(d);
 
   // SAFETY: The SIMD code requires raw buffer access.
   UNSAFE_BUFFERS({
