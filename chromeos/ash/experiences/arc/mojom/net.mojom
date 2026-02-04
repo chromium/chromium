@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 39
+// Next MinVersion: 40
 
 // This file defines the mojo interface between the ARC networking stack and
 // Chrome OS. There are three different groups of interactions:
@@ -673,6 +673,9 @@ struct ArcPingTestResult {
 
   // Time elapsed for the ping (milliseconds).
   int64 duration_ms;
+
+  // The errno when ping fails.
+  [MinVersion=39] int32 os_errno;
 };
 
 // Chrome flags that should be passed into ARC via NetInstance::SetUpFlag().
