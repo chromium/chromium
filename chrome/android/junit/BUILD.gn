@@ -1406,7 +1406,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/dom_distiller/ReaderModeIphControllerTest.java",
       "src/org/chromium/chrome/browser/dom_distiller/ReaderModeManagerTest.java",
       "src/org/chromium/chrome/browser/dom_distiller/ReaderModeMetricsTest.java",
-      "src/org/chromium/chrome/browser/dom_distiller/ReaderModePrefsViewTest.java",
+      "src/org/chromium/chrome/browser/dom_distiller/ReaderModePrefsViewUnitTest.java",
       "src/org/chromium/chrome/browser/dom_distiller/ReaderModeToolbarButtonControllerTest.java",
       "src/org/chromium/chrome/browser/dom_distiller/TabDistillabilityProviderTest.java",
       "src/org/chromium/chrome/browser/feed/FeedActionDelegateImplTest.java",

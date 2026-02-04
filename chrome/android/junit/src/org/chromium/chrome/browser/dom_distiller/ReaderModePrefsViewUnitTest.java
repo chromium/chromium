@@ -51,10 +51,11 @@ import org.chromium.ui.base.DeviceFormFactor;
 
 /** Tests for the {@link ReaderModePrefsView} class. */
 @RunWith(BaseRobolectricTestRunner.class)
-public class ReaderModePrefsViewTest {
+public class ReaderModePrefsViewUnitTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    private Activity mActivity;
     private ReaderModePrefsView mReaderModePrefsView;
     private UserActionTester mActionTester;
 
@@ -62,13 +63,14 @@ public class ReaderModePrefsViewTest {
 
     @Before
     public void setUp() {
-        Activity activity = Robolectric.buildActivity(Activity.class).create().get();
-        activity.setTheme(R.style.Theme_BrowserUI_DayNight);
-        FrameLayout parent = new FrameLayout(activity);
+        mActivity = Robolectric.buildActivity(Activity.class).create().get();
+        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        FrameLayout parent = new FrameLayout(mActivity);
 
         when(mDistilledPagePrefs.getTheme()).thenReturn(Theme.LIGHT);
         when(mDistilledPagePrefs.getFontFamily()).thenReturn(FontFamily.SANS_SERIF);
         when(mDistilledPagePrefs.getFontScaling()).thenReturn(1.0f);
+        when(mDistilledPagePrefs.getLinksEnabled()).thenReturn(true);
 
         mReaderModePrefsView = ReaderModePrefsView.create(parent.getContext(), mDistilledPagePrefs);
         mActionTester = new UserActionTester();
@@ -270,6 +272,38 @@ public class ReaderModePrefsViewTest {
         Assert.assertEquals(
                 1, mActionTester.getActionCount("DomDistiller.Android.FontScalingChanged"));
         histograms.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(DomDistillerFeatures.READER_MODE_TOGGLE_LINKS)
+    public void testToggleLinksButton_Enabled() {
+        View toggleLinksButton = mReaderModePrefsView.findViewById(R.id.toggle_links_button);
+        Assert.assertNotNull(toggleLinksButton);
+        assertEquals(View.VISIBLE, toggleLinksButton.getVisibility());
+        Assert.assertEquals(
+                mActivity.getString(R.string.reader_mode_toggle_links_off_accessibility_label),
+                toggleLinksButton.getContentDescription());
+        when(mDistilledPagePrefs.getLinksEnabled()).thenReturn(true);
+        toggleLinksButton.performClick();
+        // Normally this would be driven by DistilledPagePrefs.
+        mReaderModePrefsView.onChangeLinksEnabled(false);
+        verify(mDistilledPagePrefs).setLinksEnabled(false);
+
+        Assert.assertEquals(
+                mActivity.getString(R.string.reader_mode_toggle_links_on_accessibility_label),
+                toggleLinksButton.getContentDescription());
+        when(mDistilledPagePrefs.getLinksEnabled()).thenReturn(false);
+        toggleLinksButton.performClick();
+        verify(mDistilledPagePrefs).setLinksEnabled(true);
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(DomDistillerFeatures.READER_MODE_TOGGLE_LINKS)
+    public void testToggleLinksButton_Disabled() {
+        View toggleLinksButton = mReaderModePrefsView.findViewById(R.id.toggle_links_button);
+        Assert.assertNull(toggleLinksButton);
     }
 
     @Test

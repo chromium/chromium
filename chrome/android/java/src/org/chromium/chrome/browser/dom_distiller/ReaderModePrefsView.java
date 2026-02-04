@@ -17,6 +17,8 @@ import android.text.style.TypefaceSpan;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 
@@ -89,6 +91,7 @@ public class ReaderModePrefsView extends LinearLayout
     private @FontFamily.EnumType int mCurrentFontFamily;
     private Slider mFontScalingSlider;
     private HorizontalScrollView mHorizontalScrollView;
+    private MaterialButton mToggleLinksButton;
 
     private DistilledPagePrefs mDistilledPagePrefs;
 
@@ -130,6 +133,15 @@ public class ReaderModePrefsView extends LinearLayout
     @Override
     public void onFinishInflate() {
         super.onFinishInflate();
+
+        ViewGroup bottomContainer = findViewById(R.id.bottom_container);
+        LayoutInflater.from(getContext())
+                .inflate(
+                        DomDistillerFeatures.sReaderModeToggleLinks.isEnabled()
+                                ? R.layout.reader_mode_prefs_bottom_content_with_toggle_links
+                                : R.layout.reader_mode_prefs_bottom_content,
+                        bottomContainer,
+                        true);
 
         initializeFontButton(R.id.font_sans_serif, FontFamily.SANS_SERIF, 0);
         initializeFontButton(R.id.font_serif, FontFamily.SERIF, 1);
@@ -175,6 +187,15 @@ public class ReaderModePrefsView extends LinearLayout
 
         View themeContainer = findViewById(R.id.theme_container);
         setCollectionInfoAccessibilityDelegate(themeContainer, mThemeButtons.size());
+
+        // TODO: Hide behind a feature flag.
+        mToggleLinksButton = findViewById(R.id.toggle_links_button);
+        if (mToggleLinksButton != null) {
+            mToggleLinksButton.setOnClickListener(
+                    v -> {
+                        mDistilledPagePrefs.setLinksEnabled(!mDistilledPagePrefs.getLinksEnabled());
+                    });
+        }
     }
 
     /**
@@ -280,6 +301,7 @@ public class ReaderModePrefsView extends LinearLayout
         onChangeFontFamily(mCurrentFontFamily);
         onChangeFontScaling(mDistilledPagePrefs.getFontScaling());
         onChangeTheme(mDistilledPagePrefs.getTheme());
+        onChangeLinksEnabled(mDistilledPagePrefs.getLinksEnabled());
     }
 
     private void initializeColorButton(@IdRes int id, final int theme, final int index) {
@@ -365,7 +387,18 @@ public class ReaderModePrefsView extends LinearLayout
 
     @Override
     public void onChangeLinksEnabled(boolean enabled) {
-        // TODO(crbug.com/479819048): Implement this.
+        if (mToggleLinksButton != null) {
+            mToggleLinksButton.setIconResource(
+                    enabled ? R.drawable.ic_link_24dp : R.drawable.ic_link_off_24dp);
+            mToggleLinksButton.setContentDescription(
+                    getContext()
+                            .getString(
+                                    enabled
+                                            ? R.string
+                                                    .reader_mode_toggle_links_off_accessibility_label
+                                            : R.string
+                                                    .reader_mode_toggle_links_on_accessibility_label));
+        }
     }
 
     private void centerSelectedFontButton() {

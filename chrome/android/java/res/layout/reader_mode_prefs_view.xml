@@ -135,57 +135,10 @@ found in the LICENSE file.
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/theme_container"
+        android:id="@+id/bottom_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_horizontal"
-        android:padding="16dp"
-        android:background="@drawable/list_item_background_bottom" >
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/light_mode"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            style="@style/Widget.Material3Expressive.Button.IconButton.Filled"
-            app:backgroundTint="@android:color/white"
-            app:strokeColor=
-                "@color/reader_mode_prefs_theme_button_stroke_color"
-            app:strokeWidth="1dp"
-            android:checkable="true"
-            android:layout_marginEnd="32dp"
-            android:contentDescription=
-                "@string/light_theme_accessibility_label"
-            android:foreground="@drawable/focusable_item_foreground" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/sepia_mode"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            style="@style/Widget.Material3Expressive.Button.IconButton.Filled"
-            app:backgroundTint=
-                "@color/reader_mode_prefs_sepia_theme_button_color"
-            app:strokeColor=
-                "@color/reader_mode_prefs_theme_button_stroke_color"
-            app:strokeWidth="1dp"
-            android:checkable="true"
-            android:layout_marginEnd="32dp"
-            android:contentDescription=
-                "@string/sepia_theme_accessibility_label"
-            android:foreground="@drawable/focusable_item_foreground" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/dark_mode"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            style="@style/Widget.Material3Expressive.Button.IconButton.Filled"
-            app:backgroundTint="@android:color/black"
-            app:strokeColor=
-                "@color/reader_mode_prefs_theme_button_stroke_color"
-            app:strokeWidth="1dp"
-            android:checkable="true"
-            android:contentDescription=
-                "@string/dark_theme_accessibility_label"
-            android:foreground="@drawable/focusable_item_foreground" />
+        android:orientation="horizontal">
     </LinearLayout>
+
 </org.chromium.chrome.browser.dom_distiller.ReaderModePrefsView>
