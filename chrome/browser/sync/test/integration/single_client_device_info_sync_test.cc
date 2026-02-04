@@ -803,8 +803,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientDeviceInfoWithDeviceStatisticsSyncTest,
 }
 
 // TODO(crbug.com/465716865): Figure out why this test sometimes times out on
-// ASan
-#if defined(ADDRESS_SANITIZER)
+// ASan and consistently times out on ChromeOS Debug
+#if defined(ADDRESS_SANITIZER) || (BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG))
 #define MAYBE_ShouldRecordDeviceStatisticsMetrics \
   DISABLED_ShouldRecordDeviceStatisticsMetrics
 #else
