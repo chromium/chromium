@@ -219,9 +219,10 @@ void AppBannerManager::RequestAppBanner() {
   status_reporter_ = std::make_unique<TrackingStatusReporter>();
 
   UpdateState(State::FETCHING_MANIFEST);
-  manager_->GetData(ParamsToGetManifest(),
-                    base::BindOnce(&AppBannerManager::OnDidGetManifest,
-                                   GetWeakPtrForThisNavigation()));
+  manager_->GetData(
+      ParamsToGetManifest(),
+      base::BindOnce(&AppBannerManager::OnDidGetManifest,
+                     weak_factory_for_this_navigation_.GetWeakPtr()));
 }
 
 void AppBannerManager::OnInstall(blink::mojom::DisplayMode display,
@@ -522,6 +523,7 @@ void AppBannerManager::ResetBindings() {
 
 void AppBannerManager::ResetCurrentPageDataInternal() {
   InvalidateWeakPtrsForThisNavigation();
+  weak_factory_for_this_navigation_.InvalidateWeakPtrs();
   load_finished_ = false;
   active_media_players_.clear();
   web_app_data_.reset();
@@ -624,6 +626,7 @@ void AppBannerManager::Stop(InstallableStatusCode code) {
   ReportStatus(code);
 
   InvalidateWeakPtrsForThisNavigation();
+  weak_factory_for_this_navigation_.InvalidateWeakPtrs();
   if (installable_web_app_check_result_ ==
       InstallableWebAppCheckResult::kUnknown) {
     SetInstallableWebAppCheckResult(InstallableWebAppCheckResult::kNo);
@@ -662,8 +665,8 @@ void AppBannerManager::SendBannerPromptRequest() {
       receiver_.BindNewPipeAndPassRemote(), event_.BindNewPipeAndPassReceiver(),
       {GetBannerType()},
       base::BindOnce(&AppBannerManager::OnBannerPromptReply,
-                     GetWeakPtrForThisNavigation(), install_config.value(),
-                     std::move(controller)));
+                     weak_factory_for_this_navigation_.GetWeakPtr(),
+                     install_config.value(), std::move(controller)));
 }
 
 void AppBannerManager::UpdateState(State state) {

@@ -678,11 +678,6 @@ void AppBannerManagerAndroid::OnMlInstallPrediction(
   // TODO(crbug.com/40269982): Implement.
 }
 
-base::WeakPtr<AppBannerManager>
-AppBannerManagerAndroid::GetWeakPtrForThisNavigation() {
-  return weak_factory_.GetWeakPtr();
-}
-
 base::WeakPtr<AppBannerManagerAndroid>
 AppBannerManagerAndroid::GetAndroidWeakPtr() {
   return weak_factory_.GetWeakPtr();

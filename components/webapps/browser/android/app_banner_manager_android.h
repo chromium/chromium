@@ -173,7 +173,6 @@ class AppBannerManagerAndroid
   void MaybeShowAmbientBadge(const InstallBannerConfig& config) override;
   void ShowBannerUi(WebappInstallSource install_source,
                     const InstallBannerConfig& config) override;
-  base::WeakPtr<AppBannerManager> GetWeakPtrForThisNavigation() override;
   void InvalidateWeakPtrsForThisNavigation() override;
   void ResetCurrentPageData() override;
   void InstallableWebAppStatusUpdate() override;

@@ -69,7 +69,6 @@ class AppBannerManagerDesktop
   bool IsRelatedNonWebAppInstalled(
       const blink::Manifest::RelatedApplication& related_app) const override;
   void MaybeShowAmbientBadge(const InstallBannerConfig& config) override;
-  base::WeakPtr<AppBannerManager> GetWeakPtrForThisNavigation() override;
   void InvalidateWeakPtrsForThisNavigation() override;
   void ResetCurrentPageData() override;
   void OnMlInstallPrediction(base::PassKey<MLInstallabilityPromoter>,

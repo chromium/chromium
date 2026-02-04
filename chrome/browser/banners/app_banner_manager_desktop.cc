@@ -133,11 +133,6 @@ AppBannerManagerDesktop::CanRunWebAppInstallableChecks(
   return base::ok();
 }
 
-base::WeakPtr<AppBannerManager>
-AppBannerManagerDesktop::GetWeakPtrForThisNavigation() {
-  return weak_factory_.GetWeakPtr();
-}
-
 void AppBannerManagerDesktop::InvalidateWeakPtrsForThisNavigation() {
   weak_factory_.InvalidateWeakPtrs();
 }

@@ -168,13 +168,7 @@ class AppBannerManagerTest : public AppBannerManager,
     }
   }
 
-  base::WeakPtr<AppBannerManager> GetWeakPtrForThisNavigation() override {
-    return weak_factory_.GetWeakPtr();
-  }
-
-  void InvalidateWeakPtrsForThisNavigation() override {
-    weak_factory_.InvalidateWeakPtrs();
-  }
+  void InvalidateWeakPtrsForThisNavigation() override {}
 
   bool IsSupportedNonWebAppPlatform(
       const std::u16string& platform) const override {
@@ -197,8 +191,6 @@ class AppBannerManagerTest : public AppBannerManager,
  private:
   std::unique_ptr<bool> banner_shown_;
   std::optional<WebappInstallSource> install_source_;
-
-  base::WeakPtrFactory<AppBannerManagerTest> weak_factory_{this};
 };
 
 enum class CheckWebAppExistence { kAsync = 0, kSync = 1, kMaxValue = kSync };

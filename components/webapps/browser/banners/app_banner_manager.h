@@ -288,8 +288,6 @@ class AppBannerManager : public content::WebContentsObserver,
   virtual void ShowBannerUi(WebappInstallSource install_source,
                             const InstallBannerConfig& config) = 0;
 
-  virtual base::WeakPtr<AppBannerManager> GetWeakPtrForThisNavigation() = 0;
-
   // Called when the pipeline is complete - data can be saved, but pending
   // operations should stop.
   virtual void InvalidateWeakPtrsForThisNavigation() = 0;
