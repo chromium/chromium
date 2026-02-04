@@ -371,6 +371,7 @@
   E_CPONLY(kColorHistoryClustersSidePanelCardSecondaryForeground) \
   E_CPONLY(kColorIcon) \
   E_CPONLY(kColorIconDisabled) \
+  E_CPONLY(kColorIconHovered) \
   E_CPONLY(kColorIconSecondary) \
   /* This is declared here so src/components/ can access it, but we expect */ \
   /* this to be set in the embedder. */ \

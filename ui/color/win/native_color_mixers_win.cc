@@ -158,6 +158,7 @@ void AddNativeUiColorMixer(ColorProvider* provider,
   mixer[kColorAlertLowSeverity] = {kColorNativeWindowText};
   mixer[kColorAlertMediumSeverityIcon] = {kColorNativeWindowText};
   mixer[kColorAlertMediumSeverityText] = {kColorNativeWindowText};
+  mixer[kColorIconHovered] = {kColorNativeHighlightText};
   mixer[kColorAlertHighSeverity] = {kColorNativeWindowText};
   mixer[kColorIcon] = {kColorNativeWindowText};
   mixer[kColorMidground] = {kColorNativeWindowText};

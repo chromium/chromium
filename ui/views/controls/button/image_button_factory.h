@@ -30,7 +30,8 @@ CreateVectorImageButtonWithNativeTheme(
     const gfx::VectorIcon& icon,
     std::optional<int> dip_size = std::nullopt,
     ui::ColorId icon_color_id = ui::kColorIcon,
-    ui::ColorId icon_disabled_color_id = ui::kColorIconDisabled);
+    ui::ColorId icon_disabled_color_id = ui::kColorIconDisabled,
+    ui::ColorId icon_hovered_color_id = ui::kColorIconHovered);
 
 // Creates an ImageButton with an ink drop and a centered image in preparation
 // for applying a vector icon with SetImageFromVectorIcon below.
