@@ -7577,6 +7577,7 @@ test("unit_tests") {
 
   if (enable_glic) {
     deps += [
+      "//chrome/browser/actor:unit_tests",
       "//chrome/browser/background/glic:unit_tests",
       "//chrome/browser/glic",
       "//chrome/browser/glic:unit_tests",
@@ -8499,7 +8500,6 @@ test("unit_tests") {
 
     deps += [
       "//chrome/browser/actor",
-      "//chrome/browser/actor:unit_tests",
       "//chrome/browser/actor/ui/task_list_bubble:unit_tests",
       "//chrome/browser/autofill/glic:unit_tests",
       "//chrome/browser/bluetooth",

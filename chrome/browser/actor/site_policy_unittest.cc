@@ -15,6 +15,7 @@
 #include "chrome/browser/actor/origin_checker.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/optimization_guide/core/filters/optimization_hints_component_update_listener.h"
@@ -34,8 +35,11 @@ class ActorSitePolicyTest : public ChromeRenderViewHostTestHarness {
   ~ActorSitePolicyTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        kGlicActionAllowlist, CreateFieldTrialParams());
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /* enabled_features = */ {{features::kGlicActor, {}},
+                                  {kGlicActionAllowlist,
+                                   CreateFieldTrialParams()}},
+        /* disabled_features = */ {});
 
     ChromeRenderViewHostTestHarness::SetUp();
 
@@ -142,7 +146,13 @@ class ActorSitePolicyAllowlistOnlyTest : public ActorSitePolicyTest {
   }
 };
 
-TEST_F(ActorSitePolicyTest, AllowLocalhost) {
+// TODO(crbug.com/480230075): Crashing on Android.
+#if BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+#define MAYBE_AllowLocalhost DISABLED_AllowLocalhost
+#else
+#define MAYBE_AllowLocalhost AllowLocalhost
+#endif
+TEST_F(ActorSitePolicyTest, MAYBE_AllowLocalhost) {
   CheckUrl(GURL("http://localhost/"), true);
   CheckUrl(GURL("http://127.0.0.1/"), true);
   CheckUrl(GURL("http://[::1]/"), true);
@@ -152,7 +162,13 @@ TEST_F(ActorSitePolicyTest, AllowAboutBlank) {
   CheckUrl(GURL(url::kAboutBlankURL), true);
 }
 
-TEST_F(ActorSitePolicyTest, BlockIpAddress) {
+// TODO(crbug.com/480230075): Crashing on Android.
+#if BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+#define MAYBE_BlockIpAddress DISABLED_BlockIpAddress
+#else
+#define MAYBE_BlockIpAddress BlockIpAddress
+#endif
+TEST_F(ActorSitePolicyTest, MAYBE_BlockIpAddress) {
   CheckUrl(GURL("https://8.8.8.8/"), false);
   CheckUrl(GURL("https://[2001:4860:4860::8888]/"), false);
 }

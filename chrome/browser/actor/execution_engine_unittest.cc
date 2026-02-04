@@ -142,6 +142,9 @@ class FakeChromeRenderFrame : public chrome::mojom::ChromeRenderFrame {
       GetCrossDocumentScriptToolResultCallback callback) override {
     std::move(callback).Run("");
   }
+#if BUILDFLAG(IS_ANDROID)
+  void SetCCTClientHeader(const std::string& header) override {}
+#endif
 
  private:
   void Bind(mojo::ScopedInterfaceEndpointHandle handle) {
@@ -205,7 +208,9 @@ class ExecutionEngineTest : public ChromeRenderViewHostTestHarness {
  public:
   ExecutionEngineTest()
       : ChromeRenderViewHostTestHarness(
-            content::BrowserTaskEnvironment::TimeSource::MOCK_TIME) {}
+            content::BrowserTaskEnvironment::TimeSource::MOCK_TIME) {
+    scoped_feature_list_.InitAndEnableFeature(features::kGlicActor);
+  }
   ~ExecutionEngineTest() override = default;
 
   void SetUp() override {
@@ -307,6 +312,7 @@ class ExecutionEngineTest : public ChromeRenderViewHostTestHarness {
   void AssociateTabInterface() { tab_state_.emplace(web_contents()); }
   void ClearTabInterface() { tab_state_.reset(); }
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histograms_;
   FakeChromeRenderFrame fake_chrome_render_frame_;
   std::unique_ptr<ActorTask> task_;
@@ -349,7 +355,13 @@ class ExecutionEngineTest : public ChromeRenderViewHostTestHarness {
       EnterprisePolicyBlockReason::kNotBlocked};
 };
 
-TEST_F(ExecutionEngineTest, ActSucceedsOnSupportedUrl) {
+// TODO(crbug.com/480230075): Crashing on Android.
+#if BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+#define MAYBE_ActSucceedsOnSupportedUrl DISABLED_ActSucceedsOnSupportedUrl
+#else
+#define MAYBE_ActSucceedsOnSupportedUrl ActSucceedsOnSupportedUrl
+#endif
+TEST_F(ExecutionEngineTest, MAYBE_ActSucceedsOnSupportedUrl) {
   EXPECT_CALL(*mock_ui_event_dispatcher_,
               OnPreTool(Property(&ToolRequest::JournalEvent, Eq("Click")), _))
       .Times(1);
@@ -384,7 +396,13 @@ TEST_F(ExecutionEngineTest, ActFailsOnUnsupportedUrl) {
                    MakeClickCallback(kFakeContentNodeId)));
 }
 
-TEST_F(ExecutionEngineTest, UiOnPreToolFails) {
+// TODO(crbug.com/480230075): Crashing on Android.
+#if BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+#define MAYBE_UiOnPreToolFails DISABLED_UiOnPreToolFails
+#else
+#define MAYBE_UiOnPreToolFails UiOnPreToolFails
+#endif
+TEST_F(ExecutionEngineTest, MAYBE_UiOnPreToolFails) {
   EXPECT_CALL(*mock_ui_event_dispatcher_, OnPreTool)
       .WillOnce(UiEventDispatcherCallback<ToolRequest>(
           base::BindRepeating(MakeNotImplementedResult)));
@@ -395,7 +413,13 @@ TEST_F(ExecutionEngineTest, UiOnPreToolFails) {
                                  mojom::ActionResultCode::kNotImplemented, 1);
 }
 
-TEST_F(ExecutionEngineTest, UiOnPostToolFails) {
+// TODO(crbug.com/480230075): Crashing on Android.
+#if BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+#define MAYBE_UiOnPostToolFails DISABLED_UiOnPostToolFails
+#else
+#define MAYBE_UiOnPostToolFails UiOnPostToolFails
+#endif
+TEST_F(ExecutionEngineTest, MAYBE_UiOnPostToolFails) {
   EXPECT_CALL(*mock_ui_event_dispatcher_, OnPreTool).Times(1);
   EXPECT_CALL(*mock_ui_event_dispatcher_, OnPostTool)
       .WillOnce(UiEventDispatcherCallback<ToolRequest>(
@@ -406,7 +430,13 @@ TEST_F(ExecutionEngineTest, UiOnPostToolFails) {
                                  mojom::ActionResultCode::kNotImplemented, 1);
 }
 
-TEST_F(ExecutionEngineTest, ActFailsWhenAddTabFails) {
+// TODO(crbug.com/480230075): Crashing on Android.
+#if BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+#define MAYBE_ActFailsWhenAddTabFails DISABLED_ActFailsWhenAddTabFails
+#else
+#define MAYBE_ActFailsWhenAddTabFails ActFailsWhenAddTabFails
+#endif
+TEST_F(ExecutionEngineTest, MAYBE_ActFailsWhenAddTabFails) {
   EXPECT_CALL(*task_mock_ui_event_dispatcher_,
               OnActorTaskAsyncChange(VariantWith<AddTab>(_), _))
       .WillOnce(UiEventDispatcherCallback<
@@ -420,7 +450,13 @@ TEST_F(ExecutionEngineTest, ActFailsWhenAddTabFails) {
   histograms_.ExpectTotalCount(kActionResultHistogram, 0);
 }
 
-TEST_F(ExecutionEngineTest, ActFailsWhenTabDestroyed) {
+// TODO(crbug.com/480230075): Crashing on Android.
+#if BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+#define MAYBE_ActFailsWhenTabDestroyed DISABLED_ActFailsWhenTabDestroyed
+#else
+#define MAYBE_ActFailsWhenTabDestroyed ActFailsWhenTabDestroyed
+#endif
+TEST_F(ExecutionEngineTest, MAYBE_ActFailsWhenTabDestroyed) {
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("http://localhost/"));
 
@@ -441,7 +477,15 @@ TEST_F(ExecutionEngineTest, ActFailsWhenTabDestroyed) {
                                  mojom::ActionResultCode::kTabWentAway, 1);
 }
 
-TEST_F(ExecutionEngineTest, CrossOriginNavigationBeforeAction) {
+// TODO(crbug.com/480230075): Crashing on Android.
+#if BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+#define MAYBE_CrossOriginNavigationBeforeAction \
+  DISABLED_CrossOriginNavigationBeforeAction
+#else
+#define MAYBE_CrossOriginNavigationBeforeAction \
+  CrossOriginNavigationBeforeAction
+#endif
+TEST_F(ExecutionEngineTest, MAYBE_CrossOriginNavigationBeforeAction) {
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("http://localhost/"));
 
@@ -471,7 +515,13 @@ TEST_F(ExecutionEngineTest, CrossOriginNavigationBeforeAction) {
       1);
 }
 
-TEST_F(ExecutionEngineTest, CancelOngoingAction) {
+// TODO(crbug.com/480230075): Crashing on Android.
+#if BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+#define MAYBE_CancelOngoingAction DISABLED_CancelOngoingAction
+#else
+#define MAYBE_CancelOngoingAction CancelOngoingAction
+#endif
+TEST_F(ExecutionEngineTest, MAYBE_CancelOngoingAction) {
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("http://localhost/"));
 
@@ -495,7 +545,13 @@ TEST_F(ExecutionEngineTest, CancelOngoingAction) {
   ExpectErrorResult(result, mojom::ActionResultCode::kTaskWentAway);
 }
 
-TEST_F(ExecutionEngineTest, ActorTaskCompletedHistogram) {
+// TODO(crbug.com/480230075): Crashing on Android.
+#if BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+#define MAYBE_ActorTaskCompletedHistogram DISABLED_ActorTaskCompletedHistogram
+#else
+#define MAYBE_ActorTaskCompletedHistogram ActorTaskCompletedHistogram
+#endif
+TEST_F(ExecutionEngineTest, MAYBE_ActorTaskCompletedHistogram) {
   base::test::ScopedFeatureList scoped_features;
   scoped_features.InitAndEnableFeatureWithParameters(
       features::kGlicActorUiGlobalTaskIndicator, {});
@@ -540,7 +596,15 @@ TEST_F(ExecutionEngineTest, ActorTaskCompletedHistogram) {
       kActorTaskDurationWallClockCompletedHistogram, task_duration, 1);
 }
 
-TEST_F(ExecutionEngineTest, ActorTaskCompletedWithPauseHistogram) {
+// TODO(crbug.com/480230075): Crashing on Android.
+#if BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+#define MAYBE_ActorTaskCompletedWithPauseHistogram \
+  DISABLED_ActorTaskCompletedWithPauseHistogram
+#else
+#define MAYBE_ActorTaskCompletedWithPauseHistogram \
+  ActorTaskCompletedWithPauseHistogram
+#endif
+TEST_F(ExecutionEngineTest, MAYBE_ActorTaskCompletedWithPauseHistogram) {
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("http://localhost/"));
 
@@ -585,7 +649,13 @@ class ExecutionEngineStopReasonParamTest
   ExecutionEngineStopReasonParamTest() = default;
 };
 
-TEST_P(ExecutionEngineStopReasonParamTest, ActorTaskStoppedHistogram) {
+// TODO(crbug.com/480230075): Crashing on Android.
+#if BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+#define MAYBE_ActorTaskStoppedHistogram DISABLED_ActorTaskStoppedHistogram
+#else
+#define MAYBE_ActorTaskStoppedHistogram ActorTaskStoppedHistogram
+#endif
+TEST_P(ExecutionEngineStopReasonParamTest, MAYBE_ActorTaskStoppedHistogram) {
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("http://localhost/"));
 
@@ -679,7 +749,15 @@ TEST_F(ExecutionEngineTest, ActorTaskCountAndDurationHistograms) {
   histograms_.ExpectBucketCount(kActorTaskInterruptionCompletedHistogram, 2, 1);
 }
 
-TEST_F(ExecutionEngineTest, LatencyInfoAndActionDurationHistogram) {
+// TODO(crbug.com/480230075): Crashing on Android.
+#if BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+#define MAYBE_LatencyInfoAndActionDurationHistogram \
+  DISABLED_LatencyInfoAndActionDurationHistogram
+#else
+#define MAYBE_LatencyInfoAndActionDurationHistogram \
+  LatencyInfoAndActionDurationHistogram
+#endif
+TEST_F(ExecutionEngineTest, MAYBE_LatencyInfoAndActionDurationHistogram) {
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("http://localhost/"));
 
@@ -720,7 +798,14 @@ TEST_F(ExecutionEngineTest, LatencyInfoAndActionDurationHistogram) {
                                     simulated_duration, 1);
 }
 
-TEST_F(ExecutionEngineTest, CompletedWithInterruptHistogram) {
+// TODO(crbug.com/480230075): Crashing on Android.
+#if BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+#define MAYBE_CompletedWithInterruptHistogram \
+  DISABLED_CompletedWithInterruptHistogram
+#else
+#define MAYBE_CompletedWithInterruptHistogram CompletedWithInterruptHistogram
+#endif
+TEST_F(ExecutionEngineTest, MAYBE_CompletedWithInterruptHistogram) {
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("http://localhost/"));
 
@@ -758,7 +843,16 @@ TEST_F(ExecutionEngineTest, CompletedWithInterruptHistogram) {
       1);
 }
 
-TEST_F(ExecutionEngineTest, VisibleNotVisibleActuationCompletedHistogram) {
+// TODO(crbug.com/480230075): Crashing on Android.
+#if BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+#define MAYBE_VisibleNotVisibleActuationCompletedHistogram \
+  DISABLED_VisibleNotVisibleActuationCompletedHistogram
+#else
+#define MAYBE_VisibleNotVisibleActuationCompletedHistogram \
+  VisibleNotVisibleActuationCompletedHistogram
+#endif
+TEST_F(ExecutionEngineTest,
+       MAYBE_VisibleNotVisibleActuationCompletedHistogram) {
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("http://localhost/"));
   task_->AddTab(GetTab()->GetHandle(), base::DoNothing());
@@ -784,8 +878,16 @@ TEST_F(ExecutionEngineTest, VisibleNotVisibleActuationCompletedHistogram) {
       kActorTaskDurationNotVisibleCompletedHistogram, not_visible_duration, 1);
 }
 
+// TODO(crbug.com/480230075): Crashing on Android.
+#if BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+#define MAYBE_VisibleNotVisibleActuationStoppedHistogram \
+  DISABLED_VisibleNotVisibleActuationStoppedHistogram
+#else
+#define MAYBE_VisibleNotVisibleActuationStoppedHistogram \
+  VisibleNotVisibleActuationStoppedHistogram
+#endif
 TEST_P(ExecutionEngineStopReasonParamTest,
-       VisibleNotVisibleActuationStoppedHistogram) {
+       MAYBE_VisibleNotVisibleActuationStoppedHistogram) {
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("http://localhost/"));
   task_->AddTab(GetTab()->GetHandle(), base::DoNothing());
@@ -813,7 +915,16 @@ TEST_P(ExecutionEngineStopReasonParamTest,
       not_visible_duration, 1);
 }
 
-TEST_F(ExecutionEngineTest, VisibleNotVisibleActuationWithPauseHistogram) {
+// TODO(crbug.com/480230075): Crashing on Android.
+#if BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+#define MAYBE_VisibleNotVisibleActuationWithPauseHistogram \
+  DISABLED_VisibleNotVisibleActuationWithPauseHistogram
+#else
+#define MAYBE_VisibleNotVisibleActuationWithPauseHistogram \
+  VisibleNotVisibleActuationWithPauseHistogram
+#endif
+TEST_F(ExecutionEngineTest,
+       MAYBE_VisibleNotVisibleActuationWithPauseHistogram) {
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("http://localhost/"));
   task_->AddTab(GetTab()->GetHandle(), base::DoNothing());
@@ -844,7 +955,16 @@ TEST_F(ExecutionEngineTest, VisibleNotVisibleActuationWithPauseHistogram) {
       kActorTaskDurationNotVisibleCompletedHistogram, base::Milliseconds(0), 1);
 }
 
-TEST_F(ExecutionEngineTest, VisibleNotVisibleActuationWithWaitingHistogram) {
+// TODO(crbug.com/480230075): Crashing on Android.
+#if BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+#define MAYBE_VisibleNotVisibleActuationWithWaitingHistogram \
+  DISABLED_VisibleNotVisibleActuationWithWaitingHistogram
+#else
+#define MAYBE_VisibleNotVisibleActuationWithWaitingHistogram \
+  VisibleNotVisibleActuationWithWaitingHistogram
+#endif
+TEST_F(ExecutionEngineTest,
+       MAYBE_VisibleNotVisibleActuationWithWaitingHistogram) {
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("http://localhost/"));
   task_->AddTab(GetTab()->GetHandle(), base::DoNothing());

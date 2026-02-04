@@ -45,7 +45,9 @@ class ActorKeyedServiceTest : public testing::Test {
  public:
   ActorKeyedServiceTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {}
+        testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {
+    scoped_feature_list_.InitAndEnableFeature(features::kGlicActor);
+  }
   ~ActorKeyedServiceTest() override = default;
 
   // testing::Test:
@@ -68,6 +70,7 @@ class ActorKeyedServiceTest : public testing::Test {
   base::CallbackListSubscription confirm_navigation_subscription_;
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager testing_profile_manager_;
   raw_ptr<TestingProfile> profile_;

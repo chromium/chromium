@@ -6,12 +6,14 @@
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_file.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/test_trace_processor_impl.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/aggregated_journal_file_serializer.h"
 #include "chrome/browser/actor/aggregated_journal_in_memory_serializer.h"
 #include "chrome/common/actor/journal_details_builder.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -32,6 +34,7 @@ class AggregatedJournalTest : public testing::Test {
   // testing::Test:
   void SetUp() override {
     ASSERT_TRUE(testing_profile_manager_.SetUp());
+    scoped_feature_list_.InitAndEnableFeature(features::kGlicActor);
     profile_ = testing_profile_manager_.CreateTestingProfile("profile");
   }
 
@@ -41,6 +44,7 @@ class AggregatedJournalTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager testing_profile_manager_;
   raw_ptr<TestingProfile> profile_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class MockJournalObserver : public AggregatedJournal::Observer {

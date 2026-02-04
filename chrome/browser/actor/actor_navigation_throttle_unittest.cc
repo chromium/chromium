@@ -29,7 +29,10 @@ using ::testing::Return;
 class ActorNavigationThrottleTest : public ChromeRenderViewHostTestHarness {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(kGlicCrossOriginNavigationGating);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{kGlicCrossOriginNavigationGating,
+                              features::kGlicActor},
+        /*disabled_features=*/{});
     ChromeRenderViewHostTestHarness::SetUp();
   }
 
