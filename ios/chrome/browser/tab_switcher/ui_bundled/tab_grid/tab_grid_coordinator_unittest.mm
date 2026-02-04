@@ -77,6 +77,11 @@
 
 @end
 
+// Category to allow access for testing.
+@interface TabGridCoordinator (Testing)
+@property(nonatomic, readonly) UIViewController* viewController;
+@end
+
 namespace {
 
 // Name of the directory where snapshots are saved.
@@ -189,9 +194,7 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
     [coordinator_ stop];
   }
 
-  UIViewController* GetBaseViewController() {
-    return coordinator_.baseViewController;
-  }
+  UIViewController* GetViewController() { return coordinator_.viewController; }
 
  protected:
   web::WebTaskEnvironment task_environment_;
@@ -233,7 +236,7 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
 // Tests that the tab grid view controller is the initial active view
 // controller.
 TEST_F(TabGridCoordinatorTest, InitialActiveViewController) {
-  EXPECT_EQ(GetBaseViewController(), coordinator_.activeViewController);
+  EXPECT_EQ(GetViewController(), coordinator_.activeViewController);
 }
 
 // Tests that it is possible to set a BrowserLayoutViewController without first
@@ -249,7 +252,7 @@ TEST_F(TabGridCoordinatorTest, BrowserLayoutViewControllerBeforeTabSwitcher) {
   [coordinator_ showTabGridPage:TabGridPageIncognitoTabs];
   bool tab_switcher_active = base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForUIElementTimeout, ^bool {
-        return GetBaseViewController() == coordinator_.activeViewController;
+        return GetViewController() == coordinator_.activeViewController;
       });
   EXPECT_TRUE(tab_switcher_active);
 }
@@ -258,7 +261,7 @@ TEST_F(TabGridCoordinatorTest, BrowserLayoutViewControllerBeforeTabSwitcher) {
 // a TabSwitcher.
 TEST_F(TabGridCoordinatorTest, BrowserLayoutViewControllerAfterTabSwitcher) {
   [coordinator_ showTabGridPage:TabGridPageIncognitoTabs];
-  EXPECT_EQ(GetBaseViewController(), coordinator_.activeViewController);
+  EXPECT_EQ(GetViewController(), coordinator_.activeViewController);
 
   layout_view_controller_.currentBVC = normal_tab_view_controller_;
   [coordinator_ showBrowserLayoutViewController:layout_view_controller_
@@ -269,7 +272,7 @@ TEST_F(TabGridCoordinatorTest, BrowserLayoutViewControllerAfterTabSwitcher) {
   [coordinator_ showTabGridPage:TabGridPageIncognitoTabs];
   bool tab_switcher_active = base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForUIElementTimeout, ^bool {
-        return GetBaseViewController() == coordinator_.activeViewController;
+        return GetViewController() == coordinator_.activeViewController;
       });
   EXPECT_TRUE(tab_switcher_active);
 }
@@ -293,10 +296,10 @@ TEST_F(TabGridCoordinatorTest, SwapBrowserLayoutViewControllers) {
 // Tests calling showTabSwitcher twice in a row with the same VC.
 TEST_F(TabGridCoordinatorTest, ShowTabSwitcherTwice) {
   [coordinator_ showTabGridPage:TabGridPageIncognitoTabs];
-  EXPECT_EQ(GetBaseViewController(), coordinator_.activeViewController);
+  EXPECT_EQ(GetViewController(), coordinator_.activeViewController);
 
   [coordinator_ showTabGridPage:TabGridPageIncognitoTabs];
-  EXPECT_EQ(GetBaseViewController(), coordinator_.activeViewController);
+  EXPECT_EQ(GetViewController(), coordinator_.activeViewController);
 }
 
 // Tests calling showBrowserLayoutViewController twice in a row with the same
@@ -359,8 +362,7 @@ TEST_F(TabGridCoordinatorTest, CompletionHandlers) {
 // Tests that the tab grid coordinator sizes its view controller to the window.
 TEST_F(TabGridCoordinatorTest, SizeTabGridCoordinatorViewController) {
   CGRect rect = [UIScreen mainScreen].bounds;
-  EXPECT_TRUE(
-      CGRectEqualToRect(rect, coordinator_.baseViewController.view.frame));
+  EXPECT_TRUE(CGRectEqualToRect(rect, GetViewController().view.frame));
 }
 
 // Tests that the time spent in the tab grid is correctly logged.
