@@ -577,10 +577,12 @@ ChromeWebViewPermissionHelperDelegate::OverridePermissionResult(
     ContentSettingsType type) {
   const url::Origin& origin =
       web_view_guest()->owner_rfh()->GetLastCommittedOrigin();
-  // chrome://glic requires additional permissions, and webview's
-  // permissionrequest API does not handle clipboard access or screen wake lock.
+  // chrome://glic and chrome://contextual-tasks requires additional
+  // permissions, and webview's permissionrequest API does not handle clipboard
+  // access or screen wake lock.
   if (origin.scheme() == content::kChromeUIScheme &&
-      origin.host() == chrome::kChromeUIGlicHost) {
+      (origin.host() == chrome::kChromeUIGlicHost ||
+       origin.host() == chrome::kChromeUIContextualTasksHost)) {
     switch (type) {
       case ContentSettingsType::CLIPBOARD_READ_WRITE:
       case ContentSettingsType::CLIPBOARD_SANITIZED_WRITE:
