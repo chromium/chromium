@@ -75,7 +75,7 @@ scoped_refptr<VideoFrame> CloneVideoFrame(
 
 // Create Dmabuf-backed VideoFrame from |src_frame|. The created VideoFrame
 // doesn't depend on |src_frame|'s lifetime. |src_frame| should be a
-// GpuMemoryBuffer-backed VideoFrame.
+// MappableSharedImage-backed VideoFrame.
 scoped_refptr<VideoFrame> CreateDmabufVideoFrame(
     const VideoFrame* const src_frame);
 
