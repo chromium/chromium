@@ -47,7 +47,6 @@ class StyleDifference {
         property_specific_differences_(0),
         scroll_anchor_disabling_property_changed_(false),
         compositing_reasons_changed_(false),
-        compositable_paint_effect_changed_(false),
         border_radius_changed_(false),
         border_shape_changed_(false),
         transform_data_changed_(false) {}
@@ -62,8 +61,6 @@ class StyleDifference {
     scroll_anchor_disabling_property_changed_ |=
         other.scroll_anchor_disabling_property_changed_;
     compositing_reasons_changed_ |= other.compositing_reasons_changed_;
-    compositable_paint_effect_changed_ |=
-        other.compositable_paint_effect_changed_;
     border_radius_changed_ |= other.border_radius_changed_;
     transform_data_changed_ |= other.transform_data_changed_;
   }
@@ -74,8 +71,8 @@ class StyleDifference {
            layout_type_ || needs_reshape_ || property_specific_differences_ ||
            recompute_visual_overflow_ ||
            scroll_anchor_disabling_property_changed_ ||
-           compositing_reasons_changed_ || compositable_paint_effect_changed_ ||
-           border_radius_changed_ || transform_data_changed_;
+           compositing_reasons_changed_ || border_radius_changed_ ||
+           transform_data_changed_;
   }
 
   // For simple paint invalidation, we can directly invalidate the
@@ -203,12 +200,6 @@ class StyleDifference {
     return compositing_reasons_changed_;
   }
   void SetCompositingReasonsChanged() { compositing_reasons_changed_ = true; }
-  bool CompositablePaintEffectChanged() const {
-    return compositable_paint_effect_changed_;
-  }
-  void SetCompositablePaintEffectChanged() {
-    compositable_paint_effect_changed_ = true;
-  }
   bool BorderRadiusChanged() const { return border_radius_changed_; }
   void SetBorderRadiusChanged() { border_radius_changed_ = true; }
   bool BorderShapeChanged() const { return border_shape_changed_; }
@@ -232,9 +223,6 @@ class StyleDifference {
   unsigned property_specific_differences_ : kPropertyDifferenceCount;
   unsigned scroll_anchor_disabling_property_changed_ : 1;
   unsigned compositing_reasons_changed_ : 1;
-  // Designed for the effects such as background-color, whose animation can be
-  // composited using paint worklet infra.
-  unsigned compositable_paint_effect_changed_ : 1;
   unsigned border_radius_changed_ : 1;
   unsigned border_shape_changed_ : 1;
   unsigned transform_data_changed_ : 1;
@@ -245,7 +233,7 @@ class StyleDifference {
   // data back again with a large read can cause store-to-load forward
   // stalls). Feel free to take bits from here if you need them
   // for something else.
-  unsigned padding_ [[maybe_unused]] : 9;
+  unsigned padding_ [[maybe_unused]] : 10;
 };
 static_assert(sizeof(StyleDifference) == 4, "Remove some padding bits!");
 

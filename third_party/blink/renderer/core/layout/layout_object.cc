@@ -3058,11 +3058,6 @@ void LayoutObject::SetStyle(const ComputedStyle* style,
        diff.CompositingReasonsChanged())) {
     SetNeedsPaintPropertyUpdate();
   }
-
-  if (!IsText() && diff.CompositablePaintEffectChanged()) {
-    SetShouldDoFullPaintInvalidationWithoutLayoutChange(
-        PaintInvalidationReason::kStyle);
-  }
 }
 
 void LayoutObject::UpdateFirstLineImageObservers(
