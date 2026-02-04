@@ -49,21 +49,19 @@
 
 namespace blink {
 
-static String GetContentTypeFromFileName(const String& name,
+static String GetContentTypeFromFileName(const StringView& name,
                                          File::ContentTypeLookupPolicy policy) {
-  String type;
-  wtf_size_t index = name.ReverseFind('.');
+  wtf_size_t index = name.rfind('.');
   if (index != kNotFound) {
+    StringView extension = name.substr(index + 1);
     if (policy == File::kWellKnownContentTypes) {
-      type = MIMETypeRegistry::GetWellKnownMIMETypeForExtension(
-          name.Substring(index + 1));
+      return MIMETypeRegistry::GetWellKnownMIMETypeForExtension(extension);
     } else {
       DCHECK_EQ(policy, File::kAllContentTypes);
-      type =
-          MIMETypeRegistry::GetMIMETypeForExtension(name.Substring(index + 1));
+      return MIMETypeRegistry::GetMIMETypeForExtension(extension);
     }
   }
-  return type;
+  return String();
 }
 
 static scoped_refptr<BlobDataHandle> CreateBlobDataHandleForFileWithType(
@@ -191,8 +189,8 @@ File* File::CreateForFileSystemFile(ExecutionContext& context,
                                     const KURL& url,
                                     const FileMetadata& metadata,
                                     UserVisibility user_visibility) {
-  String content_type = GetContentTypeFromFileName(
-      url.GetPath().ToString(), File::kWellKnownContentTypes);
+  String content_type =
+      GetContentTypeFromFileName(url.GetPath(), File::kWellKnownContentTypes);
   // RegisterBlob doesn't take nullable strings.
   if (content_type.IsNull()) {
     content_type = g_empty_string;
