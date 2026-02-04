@@ -42,6 +42,9 @@
 #include "components/contextual_tasks/public/features.h"
 #include "components/custom_handlers/protocol_handler_navigation_throttle.h"
 #include "components/dom_distiller/content/browser/distiller_page_web_contents.h"
+#include "components/dom_distiller/content/browser/distiller_referrer_throttle.h"
+#include "components/dom_distiller/core/url_constants.h"
+#include "components/dom_distiller/core/url_utils.h"
 #include "components/error_page/content/browser/net_error_auto_reloader.h"
 #include "components/guest_view/buildflags/buildflags.h"
 #include "components/history/content/browser/visited_link_navigation_throttle.h"
@@ -67,7 +70,9 @@
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_features.h"
 #include "pdf/buildflags.h"
+#include "services/network/public/mojom/referrer_policy.mojom.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -590,4 +595,6 @@ void CreateAndAddChromeThrottlesForNavigation(
 
   dom_distiller::DistillerPageWebContents::MaybeCreateAndAddNavigationThrottle(
       registry);
+
+  dom_distiller::DistillerReferrerThrottle::MaybeCreateAndAdd(registry);
 }

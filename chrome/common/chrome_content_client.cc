@@ -206,6 +206,7 @@ void ChromeContentClient::AddAdditionalSchemes(Schemes* schemes) {
 
 #if BUILDFLAG(IS_ANDROID)
   schemes->referrer_schemes.push_back(content::kAndroidAppScheme);
+  schemes->referrer_schemes.push_back(dom_distiller::kDomDistillerScheme);
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)

@@ -18,6 +18,8 @@ static_library("browser") {
     "distiller_javascript_utils.h",
     "distiller_page_web_contents.cc",
     "distiller_page_web_contents.h",
+    "distiller_referrer_throttle.cc",
+    "distiller_referrer_throttle.h",
     "dom_distiller_viewer_source.cc",
     "dom_distiller_viewer_source.h",
     "uma_helper.cc",
@@ -58,6 +60,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "distillable_page_utils_unittest.cc",
+    "distiller_referrer_throttle_unittest.cc",
     "dom_distiller_viewer_source_unittest.cc",
     "uma_helper_unittest.cc",
   ]

@@ -220,7 +220,11 @@ std::string ReplaceHtmlTemplateValues(const mojom::Theme theme,
     csp << "default-src 'none'; ";
     csp << "script-src 'nonce-" << csp_nonce << "'; ";
     // YouTube videos are embedded as an iframe.
-    csp << "frame-src http://www.youtube.com; ";
+    csp << "frame-src https://www.youtube.com "
+           "https://www.youtube-nocookie.com; ";
+
+    // Allow the browser to send a referrer.
+    csp << "referrer strict-origin-when-cross-origin; ";
     csp << "style-src 'unsafe-inline' https://fonts.googleapis.com; ";
     // Allows the fallback font-face from the main stylesheet.
     csp << "font-src https://fonts.gstatic.com; ";
