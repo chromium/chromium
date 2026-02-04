@@ -45,7 +45,6 @@
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "components/url_pattern/simple_url_pattern_matcher.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "content/browser/agent_cluster_key.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
@@ -7381,23 +7380,8 @@ bool NavigationRequest::IsAllowedByConnectionAllowlist() {
     return true;
   }
 
-  for (const auto& url_string :
-       policies->connection_allowlists.enforced->allowlist) {
-    auto matcher = url_pattern::SimpleUrlPatternMatcher::Create(
-        url_string, /*base_url=*/nullptr);
-    if (!matcher.has_value()) {
-      // TODO(crbug.com/447954811): This case should result in an issue
-      // delivered to the devtools console (and ideally we'd avoid it
-      // entirely by parsing these strings as URL Patterns when initially
-      // parsing the header rather than here when enforcing it).
-      continue;
-    }
-    if (matcher.value()->Match(common_params_->url)) {
-      return true;
-    }
-  }
-
-  return false;
+  return network::ConnectionAllowlistMatchesUrl(
+      policies->connection_allowlists.enforced.value(), common_params_->url);
 }
 
 bool NavigationRequest::IsAllowedByCSPDirective(

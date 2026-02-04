@@ -12,6 +12,8 @@
 #include "base/component_export.h"
 #include "services/network/public/mojom/connection_allowlist.mojom-shared.h"
 
+class GURL;
+
 namespace network {
 
 // This implements a data structure holding information from a parsed
@@ -36,6 +38,11 @@ struct COMPONENT_EXPORT(NETWORK_CPP_CONNECTION_ALLOWLIST) ConnectionAllowlist {
   std::optional<std::string> reporting_endpoint;
   std::vector<mojom::ConnectionAllowlistIssue> issues;
 };
+
+COMPONENT_EXPORT(NETWORK_CPP_CONNECTION_ALLOWLIST)
+bool ConnectionAllowlistMatchesUrl(
+    const ConnectionAllowlist& connection_allowlist,
+    const GURL& url);
 
 // The set of allowlists associated with a given response, typemapped for the
 // same reason.

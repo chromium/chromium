@@ -287,10 +287,14 @@ component("connection_allowlist") {
   ]
   deps = [
     ":flags_and_switches",
+    "//components/url_pattern",
     "//net",
     "//services/network/public/mojom:mojom_connection_allowlist_shared",
   ]
-  public_deps = [ "//base" ]
+  public_deps = [
+    "//base",
+    "//url",
+  ]
   defines = [ "IS_NETWORK_CPP_CONNECTION_ALLOWLIST_IMPL" ]
 }
 

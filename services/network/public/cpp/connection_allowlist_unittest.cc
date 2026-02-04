@@ -240,6 +240,25 @@ TEST_F(ConnectionAllowlistParserTest, MultipleLists) {
   ASSERT_EQ(1u, result.enforced->allowlist.size());
   EXPECT_EQ("https://a.example", result.enforced->allowlist[0]);
   EXPECT_FALSE(result.report_only);
+  EXPECT_TRUE(ConnectionAllowlistMatchesUrl(result.enforced.value(),
+                                            GURL("https://a.example")));
+  EXPECT_FALSE(ConnectionAllowlistMatchesUrl(result.enforced.value(),
+                                             GURL("https://c.example")));
+}
+
+TEST_F(ConnectionAllowlistParserTest, IsAllowlisted) {
+  ConnectionAllowlist connection_allowlist;
+  connection_allowlist.allowlist = {"https://a.example/",
+                                    "https://*.b.example/*"};
+
+  EXPECT_TRUE(ConnectionAllowlistMatchesUrl(connection_allowlist,
+                                            GURL("https://a.example/")));
+  EXPECT_TRUE(ConnectionAllowlistMatchesUrl(
+      connection_allowlist, GURL("https://sub.b.example/path")));
+  EXPECT_FALSE(ConnectionAllowlistMatchesUrl(connection_allowlist,
+                                             GURL("https://c.example/")));
+  EXPECT_FALSE(ConnectionAllowlistMatchesUrl(connection_allowlist,
+                                             GURL("http://a.example/")));
 }
 
 }  // namespace network
