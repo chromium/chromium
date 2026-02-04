@@ -508,8 +508,10 @@ const BookmarkNode* GetOtherNode(int index, StoreType store_type) {
              : GetBookmarkModel(index)->other_node();
 }
 
-const BookmarkNode* GetSyncedBookmarksNode(int index) {
-  return GetBookmarkModel(index)->mobile_node();
+const BookmarkNode* GetSyncedBookmarksNode(int index, StoreType store_type) {
+  return (store_type == StoreType::kAccountStore)
+             ? GetBookmarkModel(index)->account_mobile_node()
+             : GetBookmarkModel(index)->mobile_node();
 }
 
 const BookmarkNode* GetManagedNode(int index) {

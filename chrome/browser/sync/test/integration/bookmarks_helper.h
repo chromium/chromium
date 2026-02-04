@@ -73,8 +73,9 @@ enum class StoreType {
     StoreType store_type = StoreType::kLocalOrSyncableStore);
 
 // Used to access the "Synced Bookmarks" node within a particular sync profile.
-// TODO(crbug.com/353425612): Add StoreType parameter.
-[[nodiscard]] const bookmarks::BookmarkNode* GetSyncedBookmarksNode(int index);
+[[nodiscard]] const bookmarks::BookmarkNode* GetSyncedBookmarksNode(
+    int index,
+    StoreType store_type);
 
 // Used to access the "Managed Bookmarks" node for the given profile.
 [[nodiscard]] const bookmarks::BookmarkNode* GetManagedNode(int index);
