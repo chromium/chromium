@@ -120,7 +120,7 @@ const CGFloat kSendButtonDisabledOpacity = 0.5;
 /// The fade view width.
 const CGFloat kFadeViewWidth = 30.0f;
 /// The margin for the close mode button.
-const CGFloat kCloseModeButtonMargin = 6;
+const CGFloat kCloseModeButtonMargin = 4;
 
 /// The size of the close icon in the context indicator buttons.
 const CGFloat kCloseIndicatorSize = 12.0f;
@@ -195,6 +195,8 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   UIButton* _imageGenerationButton;
   /// The button to toggle Canvas mode.
   UIButton* _canvasButton;
+  /// The button to toggle deep search mode.
+  UIButton* _deepSearchButton;
   /// The glow effect around the input plate container.
   UIView<GlowEffect>* _glowEffectView;
   /// The plus button.
@@ -302,6 +304,7 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   [self setupAIMButtonSizeConstraints];
   _imageGenerationButton = [self createImageGenerationButton];
   _canvasButton = [self createCanvasButton];
+  _deepSearchButton = [self createDeepSearchButton];
   [self updatePlusButtonItems];
   [self setupCarouselContainer];
 
@@ -499,6 +502,7 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   [self animateButton:_sendButton hidden:!(controls & kSend)];
   [self animateButton:_imageGenerationButton hidden:!(controls & kCreateImage)];
   [self animateButton:_canvasButton hidden:!(controls & kCanvas)];
+  [self animateButton:_deepSearchButton hidden:!(controls & kDeepSearch)];
   [self animateLeadingImageHidden:!(controls & kLeadingImage)];
 
   [self updateInputPlateStackViewPadding];
@@ -784,6 +788,11 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 // Called when the canvas button in the input plate is tapped.
 - (void)canvasButtonTapped {
   [self.delegate composeboxViewControllerDidTapCanvasButton:self];
+}
+
+// Called when the deep search button in the input plate is tapped.
+- (void)deepSearchButtonTapped {
+  [self.delegate composeboxViewControllerDidTapDeepSearchButton:self];
 }
 
 - (void)plusButtonTouchDown {
@@ -1354,7 +1363,8 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   UIStackView* buttonsStackView =
       [[UIStackView alloc] initWithArrangedSubviews:@[
         _plusButton, _aimButton, _imageGenerationButton, _canvasButton,
-        spacerView, _sendButton, _micButton, _visualSearchButton
+        _deepSearchButton, spacerView, _sendButton, _micButton,
+        _visualSearchButton
       ]];
   buttonsStackView.translatesAutoresizingMaskIntoConstraints = NO;
   [buttonsStackView setCustomSpacing:kShortcutsSpacing afterView:_micButton];
@@ -1961,6 +1971,45 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   config.background.backgroundColor = [_theme canvasButtonBackgroundColor];
   config.baseForegroundColor = [_theme canvasButtonTextColor];
   button.tintColor = [_theme canvasButtonTextColor];
+
+  button.configuration = config;
+
+  [NSLayoutConstraint activateConstraints:@[
+    [button.widthAnchor
+        constraintGreaterThanOrEqualToConstant:kAIMButtonBaseWidth +
+                                               kXButtonWidthInButton]
+  ]];
+
+  [self setupXMarkInButton:button];
+
+  return button;
+}
+
+// Creates a new deep search button to be displayed in the input plate.
+- (UIButton*)createDeepSearchButton {
+  UIButton* button = [UIButton buttonWithType:UIButtonTypeSystem];
+  button.configurationUpdateHandler =
+      [self configurationUpdateHandlerForModeIndicator];
+  button.translatesAutoresizingMaskIntoConstraints = NO;
+  [button addTarget:self
+                action:@selector(deepSearchButtonTapped)
+      forControlEvents:UIControlEventTouchUpInside];
+  button.layer.borderWidth = 0;
+
+  // TODO(crbug.com/481280186): Replace icon once defined.
+  UIButtonConfiguration* config =
+      [self modeIndicatorButtonConfigWithTitle:
+                l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_DEEP_SEARCH_ACTION)
+                                         image:DefaultSymbolWithPointSize(
+                                                   kFindInPageActionSymbol,
+                                                   kAIMButtonSymbolPointSize)];
+  NSDirectionalEdgeInsets insets = kModeIndicatorButtonInsets;
+  insets.trailing = kModeIndicatorButtonInsets.trailing + kXButtonWidthInButton;
+  config.contentInsets = insets;
+
+  config.background.backgroundColor = [_theme deepSearchButtonBackgroundColor];
+  config.baseForegroundColor = [_theme deepSearchButtonTextColor];
+  button.tintColor = [_theme deepSearchButtonTextColor];
 
   button.configuration = config;
 

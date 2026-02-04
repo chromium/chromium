@@ -116,6 +116,18 @@
   }
 }
 
+- (UIColor*)deepSearchButtonTextColor {
+  return [UIColor colorNamed:kTextPrimaryColor];
+}
+
+- (UIColor*)deepSearchButtonBackgroundColor {
+  if (self.isTopInputPlate) {
+    return [UIColor colorNamed:kAimComposeboxButtonBackgroundColor];
+  } else {
+    return [UIColor colorNamed:kSecondaryBackgroundColor];
+  }
+}
+
 - (UIColor*)sendButtonForegroundColorHighlighted:(BOOL)highlighted {
   CGFloat alpha = highlighted ? 0.6 : 1;
   return [[UIColor colorNamed:kSolidWhiteColor] colorWithAlphaComponent:alpha];
