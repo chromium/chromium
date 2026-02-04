@@ -192,8 +192,8 @@ class AILanguageModel::PromptState
   void OnError(blink::mojom::ModelStreamingResponseStatus error,
                blink::mojom::QuotaErrorInfoPtr quota_error_info = nullptr) {
     if (responder_) {
-      AIUtils::SendStreamingStatus(responder_, error,
-                                   std::move(quota_error_info));
+      on_device_ai::SendStreamingStatus(responder_, error,
+                                        std::move(quota_error_info));
     }
     session_.reset();
     responder_.reset();
@@ -518,7 +518,7 @@ AILanguageModel::GetSupportedLanguageBaseCodes() {
   // TODO(crbug.com/394841624): Get supported languages from the model config.
   auto kSupportedBaseLanguages =
       base::MakeFixedFlatSet<std::string_view>({"en", "ja", "es"});
-  return AIUtils::RestrictSupportedLanguagesForFeature(
+  return on_device_ai::RestrictSupportedLanguagesForFeature(
       base::MakeFlatSet<std::string_view>(kSupportedBaseLanguages),
       kAIPromptAPILanguagesEnabled);
 }
@@ -579,7 +579,7 @@ void AILanguageModel::Initialize(
     if (!input) {
       mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
           client_remote(std::move(create_client));
-      AIUtils::SendClientRemoteError(
+      on_device_ai::SendClientRemoteError(
           client_remote,
           blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
       return;
@@ -711,7 +711,7 @@ void AILanguageModel::InitializeGetInputSizeComplete(
   if (!initial_session_ || !token_count) {
     mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
         client_remote(std::move(create_client));
-    AIUtils::SendClientRemoteError(
+    on_device_ai::SendClientRemoteError(
         client_remote,
         blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
     return;
@@ -721,7 +721,7 @@ void AILanguageModel::InitializeGetInputSizeComplete(
   if (*token_count > total_model_tokens) {
     mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
         client_remote(std::move(create_client));
-    AIUtils::SendClientRemoteError(
+    on_device_ai::SendClientRemoteError(
         client_remote,
         blink::mojom::AIManagerCreateClientError::kInitialInputTooLarge,
         blink::mojom::QuotaErrorInfo::New(token_count.value(),
@@ -767,7 +767,7 @@ void AILanguageModel::InitializeSafetyChecksComplete(
   // failure.
   if (safety_result.failed_to_run || safety_result.is_unsafe ||
       safety_result.is_unsupported_language) {
-    AIUtils::SendClientRemoteError(
+    on_device_ai::SendClientRemoteError(
         client,
         blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
     return;
@@ -790,7 +790,7 @@ void AILanguageModel::ForkInternal(
   mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient> remote(
       std::move(client));
   if (!initial_session_ || !model_client_) {
-    AIUtils::SendClientRemoteError(
+    on_device_ai::SendClientRemoteError(
         remote,
         blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
     return;
@@ -818,7 +818,7 @@ void AILanguageModel::PromptInternal(
   if (!initial_session_) {
     mojo::Remote<blink::mojom::ModelStreamingResponder> responder(
         std::move(pending_responder));
-    AIUtils::SendStreamingStatus(
+    on_device_ai::SendStreamingStatus(
         responder,
         blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed);
     return;
@@ -828,7 +828,7 @@ void AILanguageModel::PromptInternal(
   if (!input) {
     mojo::Remote<blink::mojom::ModelStreamingResponder> responder(
         std::move(pending_responder));
-    AIUtils::SendStreamingStatus(
+    on_device_ai::SendStreamingStatus(
         responder,
         blink::mojom::ModelStreamingResponseStatus::kErrorInvalidRequest);
     return;
@@ -911,7 +911,7 @@ void AILanguageModel::OnPromptOutputComplete() {
   auto result = context_->AddContextItem(std::move(item));
   if (result == Context::SpaceReservationResult::kInsufficientSpace) {
     // TODO(crbug.com/421983874): Use a more specific error in this case?
-    AIUtils::SendStreamingStatus(
+    on_device_ai::SendStreamingStatus(
         responder,
         blink::mojom::ModelStreamingResponseStatus::kErrorGenericFailure);
     return;
@@ -952,7 +952,7 @@ void AILanguageModel::AppendInternal(
   if (!initial_session_) {
     mojo::Remote<blink::mojom::ModelStreamingResponder> responder(
         std::move(pending_responder));
-    AIUtils::SendStreamingStatus(
+    on_device_ai::SendStreamingStatus(
         responder,
         blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed);
     return;
@@ -962,7 +962,7 @@ void AILanguageModel::AppendInternal(
   if (!input) {
     mojo::Remote<blink::mojom::ModelStreamingResponder> responder(
         std::move(pending_responder));
-    AIUtils::SendStreamingStatus(
+    on_device_ai::SendStreamingStatus(
         responder,
         blink::mojom::ModelStreamingResponseStatus::kErrorInvalidRequest);
     return;

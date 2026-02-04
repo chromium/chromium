@@ -93,18 +93,18 @@ void AITestUtils::FakeMonitor::ExpectReceivedNormalizedUpdate(
     uint64_t expected_downloaded_bytes,
     uint64_t expected_total_bytes,
     base::OnceClosure callback) {
-  ExpectReceivedUpdate(AIUtils::NormalizeModelDownloadProgress(
+  ExpectReceivedUpdate(on_device_ai::NormalizeModelDownloadProgress(
                            expected_downloaded_bytes, expected_total_bytes),
-                       AIUtils::kNormalizedDownloadProgressMax,
+                       on_device_ai::kNormalizedDownloadProgressMax,
                        std::move(callback));
 }
 
 void AITestUtils::FakeMonitor::ExpectReceivedNormalizedUpdate(
     uint64_t expected_downloaded_bytes,
     uint64_t expected_total_bytes) {
-  ExpectReceivedUpdate(AIUtils::NormalizeModelDownloadProgress(
+  ExpectReceivedUpdate(on_device_ai::NormalizeModelDownloadProgress(
                            expected_downloaded_bytes, expected_total_bytes),
-                       AIUtils::kNormalizedDownloadProgressMax);
+                       on_device_ai::kNormalizedDownloadProgressMax);
 }
 
 void AITestUtils::FakeMonitor::ExpectNoUpdate() {

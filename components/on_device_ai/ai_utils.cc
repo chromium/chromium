@@ -10,8 +10,9 @@
 
 using optimization_guide::OnDeviceError;
 
-// static
-blink::mojom::ModelStreamingResponseStatus AIUtils::ConvertOnDeviceError(
+namespace on_device_ai {
+
+blink::mojom::ModelStreamingResponseStatus ConvertOnDeviceError(
     OnDeviceError error) {
   switch (error) {
     case OnDeviceError::kInvalidRequest:
@@ -33,25 +34,23 @@ blink::mojom::ModelStreamingResponseStatus AIUtils::ConvertOnDeviceError(
   }
 }
 
-// static
-int64_t AIUtils::NormalizeModelDownloadProgress(int64_t bytes_so_far,
-                                                int64_t total_bytes) {
+int64_t NormalizeModelDownloadProgress(int64_t bytes_so_far,
+                                       int64_t total_bytes) {
   // If `bytes_so_far` is zero, we should have downloaded zero bytes
   // out of zero meaning we're at 100%. So set it to
   // `kNormalizedDownloadProgressMax` to avoid dividing by zero.
   if (total_bytes == 0) {
     CHECK_EQ(bytes_so_far, 0);
-    return AIUtils::kNormalizedDownloadProgressMax;
+    return kNormalizedDownloadProgressMax;
   }
 
   double raw_progress_fraction =
       bytes_so_far / static_cast<double>(total_bytes);
 
-  return raw_progress_fraction * AIUtils::kNormalizedDownloadProgressMax;
+  return raw_progress_fraction * kNormalizedDownloadProgressMax;
 }
 
-// static
-base::flat_set<std::string_view> AIUtils::RestrictSupportedLanguagesForFeature(
+base::flat_set<std::string_view> RestrictSupportedLanguagesForFeature(
     const base::flat_set<std::string_view>& supported,
     const base::FeatureParam<std::string>& feature_param) {
   if (feature_param.Get() == "*") {
@@ -82,3 +81,5 @@ base::flat_set<std::string_view> AIUtils::RestrictSupportedLanguagesForFeature(
 
   return supported_languages;
 }
+
+}  // namespace on_device_ai

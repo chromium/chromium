@@ -1065,11 +1065,11 @@ class OnDeviceTranslationProgressMonitorBrowserTest
   }
 
   double NormalizedProgress(uint64_t downloaded_bytes, uint64_t total_bytes) {
-    // `AIUtils::NormalizeModelDownloadProgress` normalizes to 0 - 0x10000
+    // `on_device_ai::NormalizeModelDownloadProgress` normalizes to 0 - 0x10000
     // range. We divide it by 0x10000 (65536) again to get it in the 0.0 - 1.0
     // range.
-    return AIUtils::NormalizeModelDownloadProgress(downloaded_bytes,
-                                                   total_bytes) /
+    return on_device_ai::NormalizeModelDownloadProgress(downloaded_bytes,
+                                                        total_bytes) /
            65536.0;
   }
 

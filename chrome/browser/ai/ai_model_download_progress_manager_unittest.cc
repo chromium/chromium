@@ -157,7 +157,8 @@ TEST_F(AIModelDownloadProgressManagerTest,
 
     // Bytes have been determined so we should receive the first update.
     component.SetTotalBytes(100);
-    monitor.ExpectReceivedUpdate(0, AIUtils::kNormalizedDownloadProgressMax);
+    monitor.ExpectReceivedUpdate(0,
+                                 on_device_ai::kNormalizedDownloadProgressMax);
   }
 
   // Download bytes are undetermined.
@@ -175,7 +176,8 @@ TEST_F(AIModelDownloadProgressManagerTest,
 
     // Bytes have been determined so we should receive the first update.
     component.SetDownloadedBytes(0);
-    monitor.ExpectReceivedUpdate(0, AIUtils::kNormalizedDownloadProgressMax);
+    monitor.ExpectReceivedUpdate(0,
+                                 on_device_ai::kNormalizedDownloadProgressMax);
   }
 
   // Total bytes are undetermined.
@@ -192,7 +194,8 @@ TEST_F(AIModelDownloadProgressManagerTest,
 
     // Bytes have been determined so we should receive the first update.
     component.SetTotalBytes(100);
-    monitor.ExpectReceivedUpdate(0, AIUtils::kNormalizedDownloadProgressMax);
+    monitor.ExpectReceivedUpdate(0,
+                                 on_device_ai::kNormalizedDownloadProgressMax);
   }
 
   // Multiple components with one having undetermined downloaded bytes.
@@ -214,7 +217,8 @@ TEST_F(AIModelDownloadProgressManagerTest,
 
     // Bytes have been determined so we should receive the first update.
     component2.SetDownloadedBytes(0);
-    monitor.ExpectReceivedUpdate(0, AIUtils::kNormalizedDownloadProgressMax);
+    monitor.ExpectReceivedUpdate(0,
+                                 on_device_ai::kNormalizedDownloadProgressMax);
   }
 }
 
@@ -229,7 +233,8 @@ TEST_F(AIModelDownloadProgressManagerTest,
     // We should get the first update since all bytes have been determined.
     manager.AddObserver(monitor.BindNewPipeAndPassRemote(),
                         component.GetImplAsList());
-    monitor.ExpectReceivedUpdate(0, AIUtils::kNormalizedDownloadProgressMax);
+    monitor.ExpectReceivedUpdate(0,
+                                 on_device_ai::kNormalizedDownloadProgressMax);
   }
 
   // Two components.
@@ -245,7 +250,8 @@ TEST_F(AIModelDownloadProgressManagerTest,
     // We should get the first update since all bytes have been determined.
     manager.AddObserver(monitor.BindNewPipeAndPassRemote(),
                         std::move(component_list));
-    monitor.ExpectReceivedUpdate(0, AIUtils::kNormalizedDownloadProgressMax);
+    monitor.ExpectReceivedUpdate(0,
+                                 on_device_ai::kNormalizedDownloadProgressMax);
   }
 }
 
@@ -258,7 +264,7 @@ TEST_F(AIModelDownloadProgressManagerTest, FirstUpdateIsReportedAsZero) {
   // always be `kNormalizedProgressMax` (0x10000).
   manager.AddObserver(monitor.BindNewPipeAndPassRemote(),
                       component.GetImplAsList());
-  monitor.ExpectReceivedUpdate(0, AIUtils::kNormalizedDownloadProgressMax);
+  monitor.ExpectReceivedUpdate(0, on_device_ai::kNormalizedDownloadProgressMax);
 
   // No other events should be fired.
   FastForwardBy(base::Milliseconds(51));
@@ -282,12 +288,12 @@ TEST_F(AIModelDownloadProgressManagerTest, ProgressIsNormalized) {
   // The second update should have its downloaded_bytes normalized.
   uint64_t downloaded_bytes = 15;
   uint64_t normalized_downloaded_bytes =
-      AIUtils::NormalizeModelDownloadProgress(downloaded_bytes,
-                                              component.total_bytes());
+      on_device_ai::NormalizeModelDownloadProgress(downloaded_bytes,
+                                                   component.total_bytes());
 
   component.SetDownloadedBytes(downloaded_bytes);
   monitor.ExpectReceivedUpdate(normalized_downloaded_bytes,
-                               AIUtils::kNormalizedDownloadProgressMax);
+                               on_device_ai::kNormalizedDownloadProgressMax);
 }
 
 TEST_F(AIModelDownloadProgressManagerTest,
@@ -311,13 +317,13 @@ TEST_F(AIModelDownloadProgressManagerTest,
   // The second update shouldn't include any already downloaded bytes.
   uint64_t downloaded_bytes = already_downloaded_bytes + 5;
   uint64_t normalized_downloaded_bytes =
-      AIUtils::NormalizeModelDownloadProgress(
+      on_device_ai::NormalizeModelDownloadProgress(
           downloaded_bytes - already_downloaded_bytes,
           component.total_bytes() - already_downloaded_bytes);
 
   component.SetDownloadedBytes(downloaded_bytes);
   monitor.ExpectReceivedUpdate(normalized_downloaded_bytes,
-                               AIUtils::kNormalizedDownloadProgressMax);
+                               on_device_ai::kNormalizedDownloadProgressMax);
 }
 
 TEST_F(AIModelDownloadProgressManagerTest,
@@ -325,7 +331,7 @@ TEST_F(AIModelDownloadProgressManagerTest,
   AIModelDownloadProgressManager manager;
   AITestUtils::FakeMonitor monitor;
   FakeComponent component(std::nullopt,
-                          AIUtils::kNormalizedDownloadProgressMax * 5);
+                          on_device_ai::kNormalizedDownloadProgressMax * 5);
 
   manager.AddObserver(monitor.BindNewPipeAndPassRemote(),
                       component.GetImplAsList());
@@ -340,13 +346,13 @@ TEST_F(AIModelDownloadProgressManagerTest,
   // Sending less than the total bytes should not send the
   // `kNormalizedDownloadProgressMax`.
   component.SetDownloadedBytes(component.total_bytes() - 1);
-  monitor.ExpectReceivedUpdate(AIUtils::kNormalizedDownloadProgressMax - 1,
-                               AIUtils::kNormalizedDownloadProgressMax);
+  monitor.ExpectReceivedUpdate(on_device_ai::kNormalizedDownloadProgressMax - 1,
+                               on_device_ai::kNormalizedDownloadProgressMax);
 
   // Sending the total bytes should send the `kNormalizedDownloadProgressMax`.
   component.SetDownloadedBytes(component.total_bytes());
-  monitor.ExpectReceivedUpdate(AIUtils::kNormalizedDownloadProgressMax,
-                               AIUtils::kNormalizedDownloadProgressMax);
+  monitor.ExpectReceivedUpdate(on_device_ai::kNormalizedDownloadProgressMax,
+                               on_device_ai::kNormalizedDownloadProgressMax);
 }
 
 TEST_F(AIModelDownloadProgressManagerTest,
@@ -354,7 +360,7 @@ TEST_F(AIModelDownloadProgressManagerTest,
   AIModelDownloadProgressManager manager;
   AITestUtils::FakeMonitor monitor;
   FakeComponent component(std::nullopt,
-                          AIUtils::kNormalizedDownloadProgressMax * 5);
+                          on_device_ai::kNormalizedDownloadProgressMax * 5);
 
   manager.AddObserver(monitor.BindNewPipeAndPassRemote(),
                       component.GetImplAsList());
@@ -363,8 +369,8 @@ TEST_F(AIModelDownloadProgressManagerTest,
   // the the zero and max events should be fired.
   component.SetDownloadedBytes(component.total_bytes());
   monitor.ExpectReceivedNormalizedUpdate(0, component.total_bytes());
-  monitor.ExpectReceivedUpdate(AIUtils::kNormalizedDownloadProgressMax,
-                               AIUtils::kNormalizedDownloadProgressMax);
+  monitor.ExpectReceivedUpdate(on_device_ai::kNormalizedDownloadProgressMax,
+                               on_device_ai::kNormalizedDownloadProgressMax);
 }
 
 TEST_F(AIModelDownloadProgressManagerTest,
@@ -373,9 +379,9 @@ TEST_F(AIModelDownloadProgressManagerTest,
   AITestUtils::FakeMonitor monitor;
 
   manager.AddObserver(monitor.BindNewPipeAndPassRemote(), {});
-  monitor.ExpectReceivedUpdate(0, AIUtils::kNormalizedDownloadProgressMax);
-  monitor.ExpectReceivedUpdate(AIUtils::kNormalizedDownloadProgressMax,
-                               AIUtils::kNormalizedDownloadProgressMax);
+  monitor.ExpectReceivedUpdate(0, on_device_ai::kNormalizedDownloadProgressMax);
+  monitor.ExpectReceivedUpdate(on_device_ai::kNormalizedDownloadProgressMax,
+                               on_device_ai::kNormalizedDownloadProgressMax);
 }
 
 TEST_F(AIModelDownloadProgressManagerTest, OnlyReceivesUpdatesEvery50ms) {
@@ -412,7 +418,7 @@ TEST_F(AIModelDownloadProgressManagerTest, OnlyReceivesUpdatesForNewProgress) {
   // Set its total to twice kNormalizedProgressMax so that there are two raw
   // download progresses that map to every normalized download progress.
   FakeComponent component(std::nullopt,
-                          AIUtils::kNormalizedDownloadProgressMax * 2);
+                          on_device_ai::kNormalizedDownloadProgressMax * 2);
 
   manager.AddObserver(monitor.BindNewPipeAndPassRemote(),
                       component.GetImplAsList());
@@ -443,8 +449,9 @@ TEST_F(AIModelDownloadProgressManagerTest, OnlyReceivesUpdatesForNewProgress) {
   // Shouldn't be able to receive this progress event since it normalizes to a
   // progress we've seen.
   CHECK_EQ(
-      AIUtils::NormalizeModelDownloadProgress(10, component.total_bytes()),
-      AIUtils::NormalizeModelDownloadProgress(11, component.total_bytes()));
+      on_device_ai::NormalizeModelDownloadProgress(10, component.total_bytes()),
+      on_device_ai::NormalizeModelDownloadProgress(11,
+                                                   component.total_bytes()));
   component.SetDownloadedBytes(11);
   FastForwardBy(base::Milliseconds(51));
 }
@@ -513,7 +520,7 @@ TEST_F(AIModelDownloadProgressManagerTest,
   component1.SetDownloadedBytes(component1_downloaded_bytes);
   uint64_t component2_downloaded_bytes = 0;
   component2.SetDownloadedBytes(component2_downloaded_bytes);
-  monitor.ExpectReceivedUpdate(0, AIUtils::kNormalizedDownloadProgressMax);
+  monitor.ExpectReceivedUpdate(0, on_device_ai::kNormalizedDownloadProgressMax);
 
   // Wait more than 50ms so we can receive the next event.
   FastForwardBy(base::Milliseconds(51));
@@ -528,10 +535,11 @@ TEST_F(AIModelDownloadProgressManagerTest,
       component1_downloaded_bytes + component2_downloaded_bytes;
   uint64_t total_bytes = component1.total_bytes() + component2.total_bytes();
   uint64_t normalized_downloaded_bytes =
-      AIUtils::NormalizeModelDownloadProgress(downloaded_bytes, total_bytes);
+      on_device_ai::NormalizeModelDownloadProgress(downloaded_bytes,
+                                                   total_bytes);
 
   monitor.ExpectReceivedUpdate(normalized_downloaded_bytes,
-                               AIUtils::kNormalizedDownloadProgressMax);
+                               on_device_ai::kNormalizedDownloadProgressMax);
 }
 
 TEST_F(AIModelDownloadProgressManagerTest,
@@ -564,7 +572,7 @@ TEST_F(AIModelDownloadProgressManagerTest,
   uint64_t component2_downloaded_bytes = 10;
   already_downloaded_bytes += 10;
   component2.SetDownloadedBytes(component2_downloaded_bytes);
-  monitor.ExpectReceivedUpdate(0, AIUtils::kNormalizedDownloadProgressMax);
+  monitor.ExpectReceivedUpdate(0, on_device_ai::kNormalizedDownloadProgressMax);
 
   // Wait more than 50ms so we can receive the next event.
   FastForwardBy(base::Milliseconds(51));
@@ -578,12 +586,12 @@ TEST_F(AIModelDownloadProgressManagerTest,
       component1_downloaded_bytes + component2_downloaded_bytes;
   uint64_t total_bytes = component1.total_bytes() + component2.total_bytes();
   uint64_t normalized_downloaded_bytes =
-      AIUtils::NormalizeModelDownloadProgress(
+      on_device_ai::NormalizeModelDownloadProgress(
           downloaded_bytes - already_downloaded_bytes,
           total_bytes - already_downloaded_bytes);
 
   monitor.ExpectReceivedUpdate(normalized_downloaded_bytes,
-                               AIUtils::kNormalizedDownloadProgressMax);
+                               on_device_ai::kNormalizedDownloadProgressMax);
 }
 
 TEST_F(AIModelDownloadProgressManagerTest,
@@ -623,7 +631,7 @@ TEST_F(AIModelDownloadProgressManagerTest,
   // Fire the zero progress event by sending events for component 2 and 3.
   component2.SetDownloadedBytes(0);
   component3.SetDownloadedBytes(0);
-  monitor.ExpectReceivedUpdate(0, AIUtils::kNormalizedDownloadProgressMax);
+  monitor.ExpectReceivedUpdate(0, on_device_ai::kNormalizedDownloadProgressMax);
 
   // Wait more than 50ms so we can receive the next event.
   FastForwardBy(base::Milliseconds(51));
@@ -647,9 +655,9 @@ TEST_F(AIModelDownloadProgressManagerTest,
 
   manager.AddObserver(monitor.BindNewPipeAndPassRemote(),
                       std::move(component_list));
-  monitor.ExpectReceivedUpdate(0, AIUtils::kNormalizedDownloadProgressMax);
-  monitor.ExpectReceivedUpdate(AIUtils::kNormalizedDownloadProgressMax,
-                               AIUtils::kNormalizedDownloadProgressMax);
+  monitor.ExpectReceivedUpdate(0, on_device_ai::kNormalizedDownloadProgressMax);
+  monitor.ExpectReceivedUpdate(on_device_ai::kNormalizedDownloadProgressMax,
+                               on_device_ai::kNormalizedDownloadProgressMax);
 }
 
 }  // namespace on_device_ai

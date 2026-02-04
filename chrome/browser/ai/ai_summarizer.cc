@@ -74,7 +74,7 @@ AISummarizer::AISummarizer(
 
 AISummarizer::~AISummarizer() {
   for (auto& responder : responder_set_) {
-    AIUtils::SendStreamingStatus(
+    on_device_ai::SendStreamingStatus(
         responder,
         blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed);
   }
@@ -113,7 +113,7 @@ base::flat_set<std::string_view> AISummarizer::GetSupportedLanguageBaseCodes() {
   // TODO(crbug.com/394841624): Get supported languages from the model config.
   auto kSupportedBaseLanguages =
       base::MakeFixedFlatSet<std::string_view>({"en", "ja", "es"});
-  return AIUtils::RestrictSupportedLanguagesForFeature(
+  return on_device_ai::RestrictSupportedLanguagesForFeature(
       base::MakeFlatSet<std::string_view>(kSupportedBaseLanguages),
       kAISummarizationAPILanguagesEnabled);
 }
@@ -127,7 +127,7 @@ void AISummarizer::Summarize(
   if (!session) {
     mojo::Remote<blink::mojom::ModelStreamingResponder> responder(
         std::move(pending_responder));
-    AIUtils::SendStreamingStatus(
+    on_device_ai::SendStreamingStatus(
         responder,
         blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed);
     return;
@@ -155,14 +155,14 @@ void AISummarizer::DidGetExecutionInputSizeForSummarize(
   }
 
   if (!session_wrapper_.session()) {
-    AIUtils::SendStreamingStatus(
+    on_device_ai::SendStreamingStatus(
         responder,
         blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed);
     return;
   }
 
   if (!result.has_value()) {
-    AIUtils::SendStreamingStatus(
+    on_device_ai::SendStreamingStatus(
         responder,
         blink::mojom::ModelStreamingResponseStatus::kErrorGenericFailure);
     return;
@@ -170,7 +170,7 @@ void AISummarizer::DidGetExecutionInputSizeForSummarize(
 
   uint32_t quota = blink::mojom::kWritingAssistanceMaxInputTokenSize;
   if (result.value() > quota) {
-    AIUtils::SendStreamingStatus(
+    on_device_ai::SendStreamingStatus(
         responder,
         blink::mojom::ModelStreamingResponseStatus::kErrorInputTooLarge,
         blink::mojom::QuotaErrorInfo::New(result.value(), quota));
@@ -193,8 +193,8 @@ void AISummarizer::ModelExecutionCallback(
   }
 
   if (!result.response.has_value()) {
-    AIUtils::SendStreamingStatus(
-        responder, AIUtils::ConvertOnDeviceError(result.response.error()));
+    on_device_ai::SendStreamingStatus(
+        responder, on_device_ai::ConvertOnDeviceError(result.response.error()));
     return;
   }
 

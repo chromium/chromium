@@ -407,7 +407,7 @@ void AIManager::CreateLanguageModel(
                             AILanguageModel::GetSupportedLanguageBaseCodes())) {
     mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
         client_remote(std::move(client));
-    AIUtils::SendClientRemoteError(
+    on_device_ai::SendClientRemoteError(
         client_remote,
         blink::mojom::AIManagerCreateClientError::kUnsupportedLanguage);
     return;
@@ -416,7 +416,7 @@ void AIManager::CreateLanguageModel(
   if (!model_broker_client_) {
     mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
         client_remote(std::move(client));
-    AIUtils::SendClientRemoteError(
+    on_device_ai::SendClientRemoteError(
         client_remote,
         blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
     return;
@@ -436,7 +436,7 @@ void AIManager::CreateLanguageModelInternal(
   if (!model_client) {
     mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
         client_remote(std::move(client));
-    AIUtils::SendClientRemoteError(
+    on_device_ai::SendClientRemoteError(
         client_remote,
         blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
     return;
@@ -471,7 +471,7 @@ void AIManager::CreateLanguageModelInternal(
         !service->GetOnDeviceCapabilities().HasAll(params->capabilities)) {
       mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
           client_remote(std::move(client));
-      AIUtils::SendClientRemoteError(
+      on_device_ai::SendClientRemoteError(
           client_remote,
           blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
       return;
@@ -522,7 +522,7 @@ void AIManager::CreateSummarizer(
                             AISummarizer::GetSupportedLanguageBaseCodes())) {
     mojo::Remote<blink::mojom::AIManagerCreateSummarizerClient> client_remote(
         std::move(client));
-    AIUtils::SendClientRemoteError(
+    on_device_ai::SendClientRemoteError(
         client_remote,
         blink::mojom::AIManagerCreateClientError::kUnsupportedLanguage);
     return;
@@ -531,7 +531,7 @@ void AIManager::CreateSummarizer(
   if (!model_broker_client_) {
     mojo::Remote<blink::mojom::AIManagerCreateSummarizerClient> client_remote(
         std::move(client));
-    AIUtils::SendClientRemoteError(
+    on_device_ai::SendClientRemoteError(
         client_remote,
         blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
     return;
@@ -582,7 +582,7 @@ void AIManager::CreateProofreader(
   if (!CheckAndFixLanguages(options, "Proofreader", supported)) {
     mojo::Remote<blink::mojom::AIManagerCreateProofreaderClient> client_remote(
         std::move(client));
-    AIUtils::SendClientRemoteError(
+    on_device_ai::SendClientRemoteError(
         client_remote,
         blink::mojom::AIManagerCreateClientError::kUnsupportedLanguage);
     return;
@@ -591,7 +591,7 @@ void AIManager::CreateProofreader(
   if (!model_broker_client_) {
     mojo::Remote<blink::mojom::AIManagerCreateProofreaderClient> client_remote(
         std::move(client));
-    AIUtils::SendClientRemoteError(
+    on_device_ai::SendClientRemoteError(
         client_remote,
         blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
     return;
@@ -687,7 +687,7 @@ void AIManager::CreateWriter(
                             AIWriter::GetSupportedLanguageBaseCodes())) {
     mojo::Remote<blink::mojom::AIManagerCreateWriterClient> client_remote(
         std::move(client));
-    AIUtils::SendClientRemoteError(
+    on_device_ai::SendClientRemoteError(
         client_remote,
         blink::mojom::AIManagerCreateClientError::kUnsupportedLanguage);
     return;
@@ -696,7 +696,7 @@ void AIManager::CreateWriter(
   if (!model_broker_client_) {
     mojo::Remote<blink::mojom::AIManagerCreateWriterClient> client_remote(
         std::move(client));
-    AIUtils::SendClientRemoteError(
+    on_device_ai::SendClientRemoteError(
         client_remote,
         blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
     return;
@@ -748,7 +748,7 @@ void AIManager::CreateRewriter(
                             AIRewriter::GetSupportedLanguageBaseCodes())) {
     mojo::Remote<blink::mojom::AIManagerCreateRewriterClient> client_remote(
         std::move(client));
-    AIUtils::SendClientRemoteError(
+    on_device_ai::SendClientRemoteError(
         client_remote,
         blink::mojom::AIManagerCreateClientError::kUnsupportedLanguage);
     return;
@@ -757,7 +757,7 @@ void AIManager::CreateRewriter(
   if (!model_broker_client_) {
     mojo::Remote<blink::mojom::AIManagerCreateRewriterClient> client_remote(
         std::move(client));
-    AIUtils::SendClientRemoteError(
+    on_device_ai::SendClientRemoteError(
         client_remote,
         blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
     return;
@@ -861,7 +861,7 @@ void AIManager::OnSessionCreated(
   mojo::Remote<ClientRemoteInterface> client_remote(std::move(client));
 
   if (!session) {
-    AIUtils::AIUtils::SendClientRemoteError(
+    on_device_ai::SendClientRemoteError(
         client_remote,
         blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
     return;
@@ -900,14 +900,14 @@ void AIManager::OnGotExecutionInputSizeInTokens(
     std::unique_ptr<optimization_guide::OnDeviceSession> session,
     std::optional<uint32_t> result) {
   if (!result.has_value()) {
-    AIUtils::SendClientRemoteError(
+    on_device_ai::SendClientRemoteError(
         client_remote,
         blink::mojom::AIManagerCreateClientError::kUnableToCalculateTokenSize);
     return;
   }
   uint32_t quota = blink::mojom::kWritingAssistanceMaxInputTokenSize;
   if (result.value() > quota) {
-    AIUtils::SendClientRemoteError(
+    on_device_ai::SendClientRemoteError(
         client_remote,
         blink::mojom::AIManagerCreateClientError::kInitialInputTooLarge,
         blink::mojom::QuotaErrorInfo::New(result.value(), quota));

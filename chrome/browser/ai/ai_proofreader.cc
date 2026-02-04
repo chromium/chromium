@@ -27,7 +27,7 @@ AIProofreader::AIProofreader(
 
 AIProofreader::~AIProofreader() {
   for (auto& responder : responder_set_) {
-    AIUtils::SendStreamingStatus(
+    on_device_ai::SendStreamingStatus(
         responder,
         blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed);
   }
@@ -79,7 +79,7 @@ void AIProofreader::StartExecution(
   if (!session_) {
     mojo::Remote<blink::mojom::ModelStreamingResponder> responder(
         std::move(pending_responder));
-    AIUtils::SendStreamingStatus(
+    on_device_ai::SendStreamingStatus(
         responder,
         blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed);
     return;
@@ -108,14 +108,14 @@ void AIProofreader::DidGetExecutionInputSizeForProofread(
   }
 
   if (!session_) {
-    AIUtils::SendStreamingStatus(
+    on_device_ai::SendStreamingStatus(
         responder,
         blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed);
     return;
   }
 
   if (!result.has_value()) {
-    AIUtils::SendStreamingStatus(
+    on_device_ai::SendStreamingStatus(
         responder,
         blink::mojom::ModelStreamingResponseStatus::kErrorGenericFailure);
     return;
@@ -123,7 +123,7 @@ void AIProofreader::DidGetExecutionInputSizeForProofread(
 
   uint32_t quota = blink::mojom::kWritingAssistanceMaxInputTokenSize;
   if (result.value() > quota) {
-    AIUtils::SendStreamingStatus(
+    on_device_ai::SendStreamingStatus(
         responder,
         blink::mojom::ModelStreamingResponseStatus::kErrorInputTooLarge,
         blink::mojom::QuotaErrorInfo::New(result.value(), quota));
@@ -146,8 +146,8 @@ void AIProofreader::ModelExecutionCallback(
   }
 
   if (!result.response.has_value()) {
-    AIUtils::SendStreamingStatus(
-        responder, AIUtils::ConvertOnDeviceError(result.response.error()));
+    on_device_ai::SendStreamingStatus(
+        responder, on_device_ai::ConvertOnDeviceError(result.response.error()));
     return;
   }
 

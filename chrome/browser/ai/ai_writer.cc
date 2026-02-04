@@ -77,7 +77,7 @@ AIWriter::AIWriter(AIContextBoundObjectSet& context_bound_object_set,
 
 AIWriter::~AIWriter() {
   for (auto& responder : responder_set_) {
-    AIUtils::SendStreamingStatus(
+    on_device_ai::SendStreamingStatus(
         responder,
         blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed);
   }
@@ -109,7 +109,7 @@ base::flat_set<std::string_view> AIWriter::GetSupportedLanguageBaseCodes() {
   // TODO(crbug.com/394841624): Get supported languages from the model config.
   auto kSupportedBaseLanguages =
       base::MakeFixedFlatSet<std::string_view>({"en", "ja", "es"});
-  return AIUtils::RestrictSupportedLanguagesForFeature(
+  return on_device_ai::RestrictSupportedLanguagesForFeature(
       base::MakeFlatSet<std::string_view>(kSupportedBaseLanguages),
       kAIWriterAPILanguagesEnabled);
 }
@@ -141,14 +141,14 @@ void AIWriter::DidGetExecutionInputSizeForWrite(
   }
 
   if (!session_wrapper_.session()) {
-    AIUtils::SendStreamingStatus(
+    on_device_ai::SendStreamingStatus(
         responder,
         blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed);
     return;
   }
 
   if (!result.has_value()) {
-    AIUtils::SendStreamingStatus(
+    on_device_ai::SendStreamingStatus(
         responder,
         blink::mojom::ModelStreamingResponseStatus::kErrorGenericFailure);
     return;
@@ -156,7 +156,7 @@ void AIWriter::DidGetExecutionInputSizeForWrite(
 
   uint32_t quota = blink::mojom::kWritingAssistanceMaxInputTokenSize;
   if (result.value() > quota) {
-    AIUtils::SendStreamingStatus(
+    on_device_ai::SendStreamingStatus(
         responder,
         blink::mojom::ModelStreamingResponseStatus::kErrorInputTooLarge,
         blink::mojom::QuotaErrorInfo::New(result.value(), quota));
@@ -178,8 +178,8 @@ void AIWriter::ModelExecutionCallback(
     return;
   }
   if (!result.response.has_value()) {
-    AIUtils::SendStreamingStatus(
-        responder, AIUtils::ConvertOnDeviceError(result.response.error()));
+    on_device_ai::SendStreamingStatus(
+        responder, on_device_ai::ConvertOnDeviceError(result.response.error()));
     return;
   }
 

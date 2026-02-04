@@ -105,10 +105,10 @@ AIModelDownloadProgressManager::Reporter::Reporter(
   // percent.
   if (components_.empty()) {
     observer_remote_->OnDownloadProgressUpdate(
-        0, AIUtils::kNormalizedDownloadProgressMax);
+        0, on_device_ai::kNormalizedDownloadProgressMax);
     observer_remote_->OnDownloadProgressUpdate(
-        AIUtils::kNormalizedDownloadProgressMax,
-        AIUtils::kNormalizedDownloadProgressMax);
+        on_device_ai::kNormalizedDownloadProgressMax,
+        on_device_ai::kNormalizedDownloadProgressMax);
   }
 }
 
@@ -168,7 +168,7 @@ void AIModelDownloadProgressManager::Reporter::ProcessEvent(
 
   // Must always fire the zero progress event first.
   observer_remote_->OnDownloadProgressUpdate(
-      0, AIUtils::kNormalizedDownloadProgressMax);
+      0, on_device_ai::kNormalizedDownloadProgressMax);
 }
 
 void AIModelDownloadProgressManager::Reporter::OnEvent(
@@ -195,7 +195,7 @@ void AIModelDownloadProgressManager::Reporter::OnEvent(
     last_progress_time_ = current_time;
   }
 
-  int normalized_progress = AIUtils::NormalizeModelDownloadProgress(
+  int normalized_progress = on_device_ai::NormalizeModelDownloadProgress(
       components_downloaded_bytes_, components_total_bytes_);
 
   // Don't report progress events we've already sent.
@@ -208,7 +208,7 @@ void AIModelDownloadProgressManager::Reporter::OnEvent(
 
   // Send the progress event to the observer.
   observer_remote_->OnDownloadProgressUpdate(
-      normalized_progress, AIUtils::kNormalizedDownloadProgressMax);
+      normalized_progress, on_device_ai::kNormalizedDownloadProgressMax);
 }
 
 }  // namespace on_device_ai
