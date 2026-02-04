@@ -176,7 +176,7 @@ void ExternalTextureCache::ReferenceUntilGPUIsFinished(
       std::move(mailbox_texture));
 
   device()->queue()->GetHandle().OnSubmittedWorkDone(
-      wgpu::CallbackMode::AllowSpontaneous, callback->UnboundCallback(),
+      wgpu::CallbackMode::AllowProcessEvents, callback->UnboundCallback(),
       callback->AsUserdata());
 
   // Ensure commands are flushed.
