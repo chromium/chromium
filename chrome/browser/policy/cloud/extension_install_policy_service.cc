@@ -306,8 +306,8 @@ void ExtensionInstallPolicyServiceImpl::UserMayInstall(
 bool ExtensionInstallPolicyServiceImpl::UserMayLoad(
     const extensions::Extension* extension,
     std::u16string* error) const {
-  // TODO(crbug.com/477545526): Notify ExtensionService of policy changes so it
-  // re-runs CheckManagementPolicy() to apply the new cached value.
+  // TODO(crbug.com/477545526): Refresh policies when new extensions are
+  // installed.
   return IsExtensionAllowed({extension->id(), extension->VersionString()})
       .value_or(true);
 }
@@ -315,8 +315,8 @@ bool ExtensionInstallPolicyServiceImpl::UserMayLoad(
 bool ExtensionInstallPolicyServiceImpl::MustRemainDisabled(
     const extensions::Extension* extension,
     extensions::disable_reason::DisableReason* reason) const {
-  // TODO(crbug.com/477545526): Notify ExtensionService of policy changes so it
-  // re-runs CheckManagementPolicy() to apply the new cached value.
+  // TODO(crbug.com/477545526): Refresh policies when new extensions are
+  // installed.
   return !IsExtensionAllowed({extension->id(), extension->VersionString()})
               .value_or(true);
 }

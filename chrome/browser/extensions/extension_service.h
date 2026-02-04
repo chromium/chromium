@@ -27,6 +27,7 @@
 #include "chrome/browser/extensions/forced_extensions/force_installed_tracker.h"
 #include "chrome/browser/extensions/omaha_attributes_handler.h"
 #include "chrome/browser/extensions/safe_browsing_verdict_handler.h"
+#include "chrome/browser/policy/cloud/extension_install_policy_service.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/upgrade_detector/upgrade_observer.h"
 #include "components/sync/model/string_ordinal.h"
@@ -123,6 +124,7 @@ class ExtensionService : public ExtensionServiceInterface,
                          public Blocklist::Observer,
                          public CWSInfoService::Observer,
                          public ExtensionManagement::Observer,
+                         public policy::ExtensionInstallPolicyService::Observer,
                          public UpgradeObserver,
                          public ExtensionHostRegistry::Observer,
                          public ProfileManagerObserver {
@@ -157,6 +159,9 @@ class ExtensionService : public ExtensionServiceInterface,
 
   // ExtensionManagement::Observer implementation:
   void OnExtensionManagementSettingsChanged() override;
+
+  // policy::ExtensionInstallPolicyService::Observer implementation:
+  void OnExtensionInstallPolicyUpdated() override;
 
   // Initialize and start all installed extensions.
   void Init();
@@ -404,6 +409,10 @@ class ExtensionService : public ExtensionServiceInterface,
 
   base::ScopedObservation<CWSInfoService, CWSInfoService::Observer>
       cws_info_service_observation_{this};
+
+  base::ScopedObservation<policy::ExtensionInstallPolicyService,
+                          policy::ExtensionInstallPolicyService::Observer>
+      extension_install_policy_observation_{this};
 
   raw_ptr<DelayedInstallManager> delayed_install_manager_;
 
