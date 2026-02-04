@@ -400,7 +400,7 @@ chromium-metrics-reviews@google.com.
     name="InitialWebUI.NewWindow{CreationSource}.BrowserWindow.FirstPaint.{StartPoint}"
     units="ms" expires_after="2026-07-05">
   <owner>mych@chromium.org</owner>
-  <owner>chrome-waap-eng@google.com</owner>
+  <owner>chrome-webium-product-eng@google.com</owner>
   <summary>
     Records the time from {StartPoint} to 'First Paint' of the new browser
     window. {CreationSource}
@@ -426,7 +426,7 @@ chromium-metrics-reviews@google.com.
     name="InitialWebUI.NewWindow{CreationSource}.ReloadButton.{PaintType}.{StartPoint}"
     units="ms" expires_after="2026-07-05">
   <owner>mych@chromium.org</owner>
-  <owner>chrome-waap-eng@google.com</owner>
+  <owner>chrome-webium-product-eng@google.com</owner>
   <summary>
     Records the time from {StartPoint} to first {PaintType} of the Reload Button
     in the new browser window. {CreationSource}
@@ -456,7 +456,7 @@ chromium-metrics-reviews@google.com.
     name="InitialWebUI.ReloadButton.ChangeVisibleModeToNextPaintIn{VisibleMode}"
     units="ms" expires_after="2026-07-05">
   <owner>mych@chromium.org</owner>
-  <owner>chrome-waap-eng@google.com</owner>
+  <owner>chrome-webium-product-eng@google.com</owner>
   <summary>
     Records the latency from the initiation of a visible mode change to the
     first paint of the button in the new {VisibleMode} mode, i.e. the duration
@@ -477,7 +477,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="InitialWebUI.ReloadButton.InputCount"
     enum="ReloadButtonInputType" expires_after="2026-07-05">
   <owner>mych@chromium.org</owner>
-  <owner>chrome-waap-eng@google.com</owner>
+  <owner>chrome-webium-product-eng@google.com</owner>
   <summary>
     Counts the number of times the ReloadButton is activated, sliced by input
     type.
@@ -490,7 +490,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="InitialWebUI.ReloadButton.InputToNextPaint{InputType}"
     units="ms" expires_after="2026-07-05">
   <owner>mych@chromium.org</owner>
-  <owner>chrome-waap-eng@google.com</owner>
+  <owner>chrome-webium-product-eng@google.com</owner>
   <summary>
     Records the latency from a {InputType} input event to the next paint of the
     button.
@@ -507,7 +507,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="InitialWebUI.ReloadButton.InputToReload{InputType}" units="ms"
     expires_after="2026-07-05">
   <owner>mych@chromium.org</owner>
-  <owner>chrome-waap-eng@google.com</owner>
+  <owner>chrome-webium-product-eng@google.com</owner>
   <summary>
     Records the latency from a {InputType} input event to the completion of the
     browser's reload command execution.
@@ -524,7 +524,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="InitialWebUI.ReloadButton.InputToStop{InputType}" units="ms"
     expires_after="2026-07-05">
   <owner>mych@chromium.org</owner>
-  <owner>chrome-waap-eng@google.com</owner>
+  <owner>chrome-webium-product-eng@google.com</owner>
   <summary>
     Records the latency from a {InputType} input event to the completion of the
     browser's stop command execution.
@@ -541,7 +541,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="InitialWebUI.ReloadButton.MouseHoverToNextPaint" units="ms"
     expires_after="2026-07-05">
   <owner>mych@chromium.org</owner>
-  <owner>chrome-waap-eng@google.com</owner>
+  <owner>chrome-webium-product-eng@google.com</owner>
   <summary>
     Records the time from a mouseenter event on the ReloadButton to the
     completion of its immediate visual update (e.g., painted in hovered state).
@@ -554,7 +554,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="InitialWebUI.ReloadButton.MousePressToNextPaint" units="ms"
     expires_after="2026-07-05">
   <owner>mych@chromium.org</owner>
-  <owner>chrome-waap-eng@google.com</owner>
+  <owner>chrome-webium-product-eng@google.com</owner>
   <summary>
     Records the time from a mousedown event on the ReloadButton to the
     completion of its immediate visual update (e.g., painted in pressed state).
@@ -570,7 +570,7 @@ chromium-metrics-reviews@google.com.
     name="InitialWebUI.Startup{Scenario}.BrowserWindow.FirstPaint{StartupTemperature}"
     units="ms" expires_after="2026-07-05">
   <owner>mych@chromium.org</owner>
-  <owner>chrome-waap-eng@google.com</owner>
+  <owner>chrome-webium-product-eng@google.com</owner>
   <summary>
     Records the time from {Scenario} browser application startup to the first
     presentation of the browser window onto the screen{StartupTemperature}.
@@ -603,7 +603,7 @@ chromium-metrics-reviews@google.com.
     name="InitialWebUI.Startup{Scenario}.ReloadButton.{PaintType}{StartupTemperature}"
     units="ms" expires_after="2026-07-05">
   <owner>mych@chromium.org</owner>
-  <owner>chrome-waap-eng@google.com</owner>
+  <owner>chrome-webium-product-eng@google.com</owner>
   <summary>
     Records the time spent initializing a newly constructed ReloadButton in the
     {Scenario} browser application startup with pre/post InitialWebUI (WaaP)
@@ -668,7 +668,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="InitialWebUI.View.Creation" enum="InitialWebUIView"
     expires_after="2026-07-05">
   <owner>mych@chromium.org</owner>
-  <owner>chrome-waap-eng@google.com</owner>
+  <owner>chrome-webium-product-eng@google.com</owner>
   <summary>
     Records the counts of key Initial WebUI views when they are created in the
     constructor. Use this to normalize other metrics.
