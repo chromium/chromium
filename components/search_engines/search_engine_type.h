@@ -98,6 +98,7 @@ enum SearchEngineType {
   SEARCH_ENGINE_FREESPOKE = 78,
   SEARCH_ENGINE_KAGI = 79,
   SEARCH_ENGINE_STARTER_PACK_AI_MODE = 80,
+  SEARCH_ENGINE_YAHOO_JP = 81,
 
   SEARCH_ENGINE_MAX  // Bounding value needed for UMA histogram macro.
 };
