@@ -21451,7 +21451,7 @@
             ]
         }
     ],
-    "ProgressiveAccessibility2": [
+    "ProgressiveAccessibilityPhase2": [
         {
             "platforms": [
                 "android",
@@ -21464,11 +21464,8 @@
             "experiments": [
                 {
                     "name": "Enabled",
-                    "params": {
-                        "progressive_accessibility_mode": "disable_on_hide"
-                    },
                     "enable_features": [
-                        "ProgressiveAccessibility"
+                        "ProgressiveAccessibilityPhase2"
                     ]
                 }
             ]

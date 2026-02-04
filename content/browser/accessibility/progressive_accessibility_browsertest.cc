@@ -22,18 +22,17 @@ namespace content {
 
 namespace {
 
-class ProgressiveAccessibilityTest
-    : public ContentBrowserTest,
-      public testing::WithParamInterface<
-          features::ProgressiveAccessibilityMode> {
+class ProgressiveAccessibilityTest : public ContentBrowserTest,
+                                     public testing::WithParamInterface<bool> {
  protected:
   ProgressiveAccessibilityTest() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        features::kProgressiveAccessibility,
-        {{"progressive_accessibility_mode",
-          GetParam() == features::ProgressiveAccessibilityMode::kDisableOnHide
-              ? "disable_on_hide"
-              : "only_enable"}});
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeature(
+          features::kProgressiveAccessibilityPhase2);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          features::kProgressiveAccessibilityPhase2);
+    }
   }
 
  private:
@@ -105,15 +104,12 @@ IN_PROC_BROWSER_TEST_P(ProgressiveAccessibilityTest, DisableAfterHide) {
     EXPECT_EQ(shell->web_contents()->GetAccessibilityMode(), ui::kAXModeBasic);
   });
 
-  // The initial WebContents does not if this is the DisableOnHide variant.
-  switch (GetParam()) {
-    case features::ProgressiveAccessibilityMode::kOnlyEnable:
-      EXPECT_EQ(shell()->web_contents()->GetAccessibilityMode(),
-                ui::kAXModeBasic);
-      break;
-    case features::ProgressiveAccessibilityMode::kDisableOnHide:
-      EXPECT_EQ(shell()->web_contents()->GetAccessibilityMode(), ui::AXMode());
-      break;
+  // The initial WebContents does not if kProgressiveAccessibilityPhase2 is on.
+  if (!GetParam()) {
+    EXPECT_EQ(shell()->web_contents()->GetAccessibilityMode(),
+              ui::kAXModeBasic);
+  } else {
+    EXPECT_EQ(shell()->web_contents()->GetAccessibilityMode(), ui::AXMode());
   }
 }
 
@@ -203,14 +199,12 @@ IN_PROC_BROWSER_TEST_P(ProgressiveAccessibilityTest,
   EXPECT_EQ(shell()->web_contents()->GetAccessibilityMode(), ui::kAXModeBasic);
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    OnlyEnable,
-    ProgressiveAccessibilityTest,
-    testing::Values(features::ProgressiveAccessibilityMode::kOnlyEnable));
-INSTANTIATE_TEST_SUITE_P(
-    DisableOnHide,
-    ProgressiveAccessibilityTest,
-    testing::Values(features::ProgressiveAccessibilityMode::kDisableOnHide));
+INSTANTIATE_TEST_SUITE_P(Default,
+                         ProgressiveAccessibilityTest,
+                         testing::Values(false));
+INSTANTIATE_TEST_SUITE_P(DisableOnHide,
+                         ProgressiveAccessibilityTest,
+                         testing::Values(true));
 
 }  // namespace
 

@@ -61,9 +61,8 @@ const char kAXModeBundleComplete[] = "complete";
 const char kAXModeBundleOnScreen[] = "on-screen";
 
 // A data holder attached to a WebContents while it is hidden and has
-// accessibility enabled. Used only when the disable_on_hide feature of
-// ProgressiveAccessibility is enabled and an active screen reader has not been
-// detected.
+// accessibility enabled. Used only when the ProgressiveAccessibilityPhase2
+// feature is enabled and an active screen reader has not been detected.
 //
 // An instance of this class is attached to a WebContents when it is hidden
 // (thereby recording the TimeTicks at which the hide event took place). Its
@@ -409,10 +408,10 @@ void BrowserAccessibilityStateImpl::OnAssistiveTechFound(
   const bool was_screenreader_active = ax_platform_.IsScreenReaderActive();
   ax_platform_.NotifyAssistiveTechChanged(assistive_tech);
 
-  // Terminate disable_on_hide if a screen reader has just become active. Do
-  // this without first checking the feature to avoid activating the field trial
-  // when it's not already active. Performing this removal when the feature is
-  // off is harmless.
+  // Terminate kProgressiveAccessibilityPhase2 if a screen reader has just
+  // become active. Do this without first checking the feature to avoid
+  // activating the field trial when it's not already active. Performing this
+  // removal when the feature is off is harmless.
   if (!was_screenreader_active && ax_platform_.IsScreenReaderActive()) {
     // Cancel all disablers. There is one for each WebContents in `last_hidden_`
     // and one for each that has had `AccessibilityDisabler::Schedule()` called.
@@ -757,11 +756,9 @@ void BrowserAccessibilityStateImpl::OnWebContentsInitialized(
     return;
   }
 
-  // Do not set any initial accessibility mode if ProgressiveAccessibility is
-  // enabled and the WebContents is initially hidden. This behavior is the same
-  // for both the only_enable and disable_on_hide variants of the feature.
-  if (web_contents->GetVisibility() == Visibility::HIDDEN &&
-      base::FeatureList::IsEnabled(features::kProgressiveAccessibility)) {
+  // Do not set any initial accessibility mode if the WebContents is initially
+  // hidden.
+  if (web_contents->GetVisibility() == Visibility::HIDDEN) {
     return;
   }
 
@@ -770,13 +767,13 @@ void BrowserAccessibilityStateImpl::OnWebContentsInitialized(
 
 void BrowserAccessibilityStateImpl::OnWebContentsRevealed(
     WebContentsImpl* web_contents) {
-  // Unconditionally cancel the disabler; even if the "disable_on_hide" mode is
-  // not selected. Do this without first checking the feature to avoid
-  // activating the field trial when it's not already active. Performing this
-  // removal when the feature is off is harmless. When the feature is active,
-  // this removal will call OnDisablerDestroyedForWebContents to remove
-  // `web_contents` from `last_hidden_` if the disabler has not yet been
-  // scheduled.
+  // Unconditionally cancel the disabler; even if
+  // kProgressiveAccessibilityPhase2 is not enabled. Do this without first
+  // checking the feature to avoid activating the field trial when it's not
+  // already active. Performing this removal when the feature is off is
+  // harmless. When the feature is active, this removal will call
+  // OnDisablerDestroyedForWebContents to remove `web_contents` from
+  // `last_hidden_` if the disabler has not yet been scheduled.
   AccessibilityDisabler::Remove(web_contents);
 
   const ui::AXMode effective_mode = FilterAccessibilityModeInvariants(
@@ -788,11 +785,6 @@ void BrowserAccessibilityStateImpl::OnWebContentsRevealed(
   // Return early to avoid activating the field trial when accessibility is not
   // enabled.
   if (effective_mode == web_contents->GetAccessibilityMode()) {
-    return;
-  }
-
-  // No special behavior when ProgressiveAccessibility is not enabled.
-  if (!base::FeatureList::IsEnabled(features::kProgressiveAccessibility)) {
     return;
   }
 
@@ -808,16 +800,14 @@ void BrowserAccessibilityStateImpl::OnWebContentsHidden(
     return;
   }
 
-  // No special behavior if ProgressiveAccessibility is not enabled, the
-  // "disable_on_hide" mode is not selected, or if a screen reader has been
-  // detected. This final limitation in in place because screen readers may lose
-  // their "point of regard" if the accessibility tree is destroyed and rebuilt;
-  // and because functional and fast accessibility is required to serve users of
-  // screen readers.
-  if (!base::FeatureList::IsEnabled(features::kProgressiveAccessibility) ||
-      features::kProgressiveAccessibilityModeParam.Get() !=
-          features::ProgressiveAccessibilityMode::kDisableOnHide ||
-      ax_platform_.IsScreenReaderActive()) {
+  // No special behavior if a screen reader has been detected or if
+  // ProgressiveAccessibilityPhase2 is not enabled. The former limitation is in
+  // place because screen readers may lose their "point of regard" if the
+  // accessibility tree is destroyed and rebuilt; and because functional and
+  // fast accessibility is required to serve users of screen readers.
+  if (ax_platform_.IsScreenReaderActive() ||
+      !base::FeatureList::IsEnabled(
+          features::kProgressiveAccessibilityPhase2)) {
     return;
   }
 
@@ -904,13 +894,6 @@ void BrowserAccessibilityStateImpl::ApplyAccessibilityModeToWebContents(
   // sending the empty effective mode one at a time with some delay between
   // each.
   if (effective_mode.is_mode_off()) {
-    web_contents->SetAccessibilityMode(effective_mode);
-    return;
-  }
-
-  // Unconditionally update the WebContents if ProgressiveAccessibility is not
-  // enabled.
-  if (!base::FeatureList::IsEnabled(features::kProgressiveAccessibility)) {
     web_contents->SetAccessibilityMode(effective_mode);
     return;
   }
