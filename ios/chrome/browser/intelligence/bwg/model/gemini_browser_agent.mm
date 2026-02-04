@@ -70,17 +70,26 @@ BWGPageContextComputationStateFromPageContextWrapperError(
 // The floaty has innate padding which causes the floaty to be farther away from
 // the bottom toolbar. To properly position the floaty closer to the toolbar,
 // this constant is used to remove some of that innate padding.
-CGFloat kFloatyIntrinsicPaddingCorrection = 8.0;
+const CGFloat kFloatyIntrinsicPaddingCorrection = 8.0;
 
 // Used for forcing fullscreen progress value.
-CGFloat kFullscreenEnabled = 0.0;
+const CGFloat kFullscreenEnabled = 0.0;
 
 // Used for forcing non-fullscreen progress value.
-CGFloat kFullscreenDisabled = 1.0;
+const CGFloat kFullscreenDisabled = 1.0;
+
+// Used for the duration of the floaty animation when changing opacity.
+const CGFloat kFloatyAnimationDuration = 0.1;
+
+// Opacity for a shown floaty.
+const CGFloat kFloatyShownOpacity = 1.0;
+
+// Opacity for a hidden floaty.
+const CGFloat kFloatyHiddenOpacity = 0.0;
 
 // Used to check if floaty visibility updates are part of a UIView dismissal or
 // presentation.
-double kViewTransitionTime = 0.8;
+const double kViewTransitionTime = 0.8;
 
 }  // namespace
 
@@ -179,16 +188,6 @@ GeminiBrowserAgent::~GeminiBrowserAgent() {
 void GeminiBrowserAgent::OnKeyboardStateChanged(bool is_visible) {
   CHECK(IsGeminiCopresenceEnabled());
   is_keyboard_visible_ = is_visible;
-  if (!fullscreen_controller_ || !is_floaty_invoked_) {
-    return;
-  }
-
-  // Re-trigger the update with the current progress to apply opacity override
-  // if needed.
-  CGFloat offset =
-      GetFloatyOffsetFromFullscreenController(fullscreen_controller_);
-  ios::provider::UpdateOverlayOffsetWithOpacity(
-      offset, fullscreen_controller_->GetProgress());
 }
 
 void GeminiBrowserAgent::StartGeminiFlow(UIViewController* base_view_controller,
@@ -252,7 +251,7 @@ void GeminiBrowserAgent::UpdateForTraitCollection(
   // Update the offset for a device orientation update to landscape or portrait.
   CGFloat offset =
       GetFloatyOffsetFromFullscreenController(fullscreen_controller_);
-  ios::provider::UpdateOverlayOffsetWithOpacity(offset, 1.0);
+  ios::provider::UpdateOverlayOffsetWithOpacity(offset, kFloatyShownOpacity);
 }
 
 void GeminiBrowserAgent::PresentFloaty(UIViewController* base_view_controller,
@@ -510,8 +509,10 @@ void GeminiBrowserAgent::HideFloatyIfInvoked(
       ios::provider::GetCurrentGeminiViewState();
   SetLastShownViewState(current_view_state);
   RecordFloatyHiddenFromSource(source);
-  ios::provider::UpdateGeminiViewState(ios::provider::GeminiViewState::kHidden,
-                                       animated);
+
+  CGFloat offset =
+      GetFloatyOffsetFromFullscreenController(fullscreen_controller_);
+  ios::provider::UpdateOverlayOffsetWithOpacity(offset, kFloatyHiddenOpacity);
 }
 
 void GeminiBrowserAgent::ShowFloatyIfInvoked(
@@ -545,7 +546,14 @@ void GeminiBrowserAgent::ShowFloatyIfInvoked(
   RecordGeminiViewStateHiddenToShown(last_shown_view_state_);
   RecordFloatyShownFromSource(source);
   is_floaty_temporarily_hidden_ = false;
-  ios::provider::UpdateGeminiViewState(last_shown_view_state_, animated);
+
+  CGFloat offset =
+      GetFloatyOffsetFromFullscreenController(fullscreen_controller_);
+  [UIView animateWithDuration:kFloatyAnimationDuration
+                   animations:^{
+                     ios::provider::UpdateOverlayOffsetWithOpacity(
+                         offset, kFloatyShownOpacity);
+                   }];
 }
 
 #pragma mark - TabsDependencyInstaller
@@ -619,6 +627,7 @@ void GeminiBrowserAgent::FullscreenProgressUpdated(
         updateFloatyVisibilityIfEligibleAnimated:NO
                                       fromSource:gemini::FloatyUpdateSource::
                                                      ForcedFromFullscreen];
+    return;
   }
 
   CGFloat offset = GetFloatyOffsetFromFullscreenController(controller);
@@ -630,7 +639,7 @@ void GeminiBrowserAgent::FullscreenProgressUpdated(
     // When the keyboard is visible, force the opacity to 1.0 (fully opaque) to
     // prevent the floaty from disappearing, even if the fullscreen progress is
     // 0 (enabled).
-    ios::provider::UpdateOverlayOffsetWithOpacity(offset, 1.0);
+    ios::provider::UpdateOverlayOffsetWithOpacity(offset, kFloatyShownOpacity);
   } else {
     ios::provider::UpdateOverlayOffsetWithOpacity(offset, progress);
   }

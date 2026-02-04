@@ -3370,12 +3370,18 @@ const char kChromeAppStoreUrl[] =
   GeminiBrowserAgent* geminiBrowserAgent =
       GeminiBrowserAgent::FromBrowser(self.browser);
   BwgService* geminiService = BwgServiceFactory::GetForProfile(self.profile);
-  if (!IsGeminiCopresenceEnabled() || !geminiBrowserAgent || !geminiService) {
+  if (!IsGeminiCopresenceEnabled() || !geminiBrowserAgent || !geminiService ||
+      !self.activeWebState) {
     return;
   }
 
-  // Don't show the floaty if the page is ineligible.
-  if (!geminiService->IsBwgAvailableForWebState(self.activeWebState)) {
+  // Don't show the floaty if the page is ineligible or the active WebState
+  // isn't visible.
+  // TODO(crbug.com/476145805): Move WebState related checks to tab helper.
+  bool eligibleSite =
+      geminiService->IsBwgAvailableForWebState(self.activeWebState);
+  bool isWebStateVisible = self.activeWebState->IsVisible();
+  if (!eligibleSite || !isWebStateVisible) {
     geminiBrowserAgent->HideFloatyIfInvoked(
         animated, gemini::FloatyUpdateSource::IneligibleSite);
     return;
