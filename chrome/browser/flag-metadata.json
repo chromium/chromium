@@ -6712,11 +6712,6 @@
     "expiry_milestone": 125
   },
   {
-    "name": "ntp-drive-module-show-six-files",
-    "owners": [ "pauladedeji@chromium.org", "tiborg@chromium.org" ],
-    "expiry_milestone": 135
-  },
-  {
     "name": "ntp-dummy-modules",
     "owners": [ "pauladedeji@chromium.org", "tiborg@chromium.org" ],
     "expiry_milestone": 108

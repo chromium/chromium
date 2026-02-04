@@ -101,51 +101,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
           }
         }
       })");
-constexpr char kFakeDataWithThreeFiles[] = R"({
-  "item": [
-    {
-      "itemId": "foo",
-      "url": "https://docs.google.com",
-      "driveItem": {
-        "title": "Drive Module Design Doc",
-        "mimeType": "application/vnd.google-apps.document"
-      },
-      "justification": {
-        "unstructuredJustificationDescription": {
-          "textSegment": [{"text": "You opened yesterday"}]
-        }
-      }
-    },
-    {
-      "itemId": "bar",
-      "url": "https://sheets.google.com",
-      "driveItem": {
-        "title": "Monthly Presentation Schedule",
-        "mimeType": "application/vnd.google-apps.spreadsheet"
-      },
-      "justification": {
-        "unstructuredJustificationDescription": {
-          "textSegment": [{"text": "You opened today"}]
-        }
-      }
-    },
-    {
-      "itemId": "baz",
-      "url": "https://slides.google.com",
-      "driveItem": {
-        "title": "File With A Really Really Really Really Really Long Name",
-        "mimeType": "application/vnd.google-apps.presentation"
-      },
-      "justification": {
-        "unstructuredJustificationDescription": {
-          "textSegment": [{"text": "You opened on Monday"}]
-        }
-      }
-    }
-  ]
-}
-)";
-constexpr char kFakeDataWithSixFiles[] = R"({
+constexpr char kFakeData[] = R"({
   "item": [
     {
       "itemId": "foo",
@@ -310,14 +266,9 @@ void DriveService::GetDriveFilesInternal() {
   if (base::GetFieldTrialParamValueByFeature(
           ntp_features::kNtpDriveModule,
           ntp_features::kNtpDriveModuleDataParam) == "fake") {
-    base::FeatureList::IsEnabled(ntp_features::kNtpDriveModuleShowSixFiles)
-        ? data_decoder::DataDecoder::ParseJsonIsolated(
-              kFakeDataWithSixFiles, base::BindOnce(&DriveService::OnJsonParsed,
-                                                    weak_factory_.GetWeakPtr()))
-        : data_decoder::DataDecoder::ParseJsonIsolated(
-              kFakeDataWithThreeFiles,
-              base::BindOnce(&DriveService::OnJsonParsed,
-                             weak_factory_.GetWeakPtr()));
+    data_decoder::DataDecoder::ParseJsonIsolated(
+        kFakeData, base::BindOnce(&DriveService::OnJsonParsed,
+                                  weak_factory_.GetWeakPtr()));
     return;
   }
 
@@ -388,10 +339,7 @@ void DriveService::OnTokenReceived(GoogleServiceAuthError error,
   url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                  kTrafficAnnotation);
   url_loader_->SetRetryOptions(0, network::SimpleURLLoader::RETRY_NEVER);
-  const int kNumFilesRequested =
-      base::FeatureList::IsEnabled(ntp_features::kNtpDriveModuleShowSixFiles)
-          ? 6
-          : 3;
+  const int kNumFilesRequested = 6;
   url_loader_->AttachStringForUpload(
       base::StringPrintf(kRequestBody, kPlatform, application_locale_.c_str(),
                          base::GetFieldTrialParamValueByFeature(

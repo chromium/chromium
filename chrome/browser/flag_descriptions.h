@@ -5990,11 +5990,6 @@ inline constexpr char kNtpDriveModuleSegmentationDescription[] =
     "Uses segmentation data to decide whether to show the Drive module on the "
     "New Tab Page.";
 
-inline constexpr char kNtpDriveModuleShowSixFilesName[] =
-    "NTP Drive Module Show Six Files";
-inline constexpr char kNtpDriveModuleShowSixFilesDescription[] =
-    "Shows six files in the NTP Drive module, instead of three.";
-
 inline constexpr char kNtpDummyModulesName[] = "NTP Dummy Modules";
 inline constexpr char kNtpDummyModulesDescription[] =
     "Adds dummy modules to New Tab Page when 'NTP Modules Redesigned' is "

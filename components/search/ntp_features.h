@@ -37,7 +37,6 @@ BASE_DECLARE_FEATURE(kNtpCustomizeChromeAutoOpen);
 BASE_DECLARE_FEATURE(kNtpDriveModule);
 BASE_DECLARE_FEATURE(kNtpDriveModuleHistorySyncRequirement);
 BASE_DECLARE_FEATURE(kNtpDriveModuleSegmentation);
-BASE_DECLARE_FEATURE(kNtpDriveModuleShowSixFiles);
 #if !defined(OFFICIAL_BUILD)
 BASE_DECLARE_FEATURE(kNtpDummyModules);
 #endif

@@ -100,9 +100,6 @@ BASE_FEATURE(kNtpDriveModuleHistorySyncRequirement,
 // show the Drive module.
 BASE_FEATURE(kNtpDriveModuleSegmentation, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, six files show in the NTP Drive module, instead of three.
-BASE_FEATURE(kNtpDriveModuleShowSixFiles, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, logo will be shown.
 // This is a kill switch. Keep indefinitely.
 BASE_FEATURE(kNtpLogo, base::FEATURE_ENABLED_BY_DEFAULT);
