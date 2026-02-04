@@ -1236,6 +1236,7 @@ test("ui_base_unittests") {
     deps += [
       "//ui/base/cursor",
       "//ui/base/cursor/mojom:cursor_type_shared",
+      "//ui/base/idle:unit_tests",
     ]
   }
 

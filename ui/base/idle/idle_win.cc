@@ -10,8 +10,10 @@
 #include <powrprof.h>
 
 #include "base/callback_list.h"
+#include "base/check_is_test.h"
 #include "base/no_destructor.h"
 #include "ui/base/idle/idle_internal.h"
+#include "ui/base/idle/screensaver_state_observer.h"
 #include "ui/base/win/lock_state.h"
 #include "ui/base/win/session_change_observer.h"
 
@@ -68,9 +70,17 @@ DWORD CalculateIdleTimeInternal() {
 }
 
 bool IsScreensaverRunning() {
-  DWORD result = 0;
-  if (::SystemParametersInfo(SPI_GETSCREENSAVERRUNNING, 0, &result, 0))
-    return result != FALSE;
+  // Use the cached value from the ScreensaverStateObserver if available.
+  // This avoids the slow SystemParametersInfo call on the UI thread.
+  // The observer handles test overrides via ScreensaverStateForTesting().
+  ScreensaverStateObserver* observer = ScreensaverStateObserver::GetInstance();
+  if (observer) {
+    return observer->IsScreensaverRunning();
+  }
+
+  // There should be no production codepaths that reach here, but it is possible
+  // for some test scenarios to do so.
+  CHECK_IS_TEST();
   return false;
 }
 
@@ -89,8 +99,9 @@ int CalculateIdleTime() {
 }
 
 bool CheckIdleStateIsLocked() {
-  if (IdleStateForTesting().has_value())
+  if (IdleStateForTesting().has_value()) {
     return IdleStateForTesting().value() == IDLE_STATE_LOCKED;
+  }
 
   return ui::IsWorkstationLocked() || IsScreensaverRunning();
 }
