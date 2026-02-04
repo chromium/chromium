@@ -309,17 +309,17 @@ BASE_FEATURE(kNoticeQueueForEsb, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNotificationTelemetry, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kNotificationTelemetrySwb, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kNotificationTelemetrySwb, base::FEATURE_ENABLED_BY_DEFAULT);
 constexpr base::FeatureParam<double>
     kNotificationTelemetrySwbReportingProbability{
         &kNotificationTelemetrySwb,
-        "NotificationTelemetrySwbReportingProbability", /*default_value=*/1.0};
+        "NotificationTelemetrySwbReportingProbability", /*default_value=*/0.01};
 constexpr base::FeatureParam<bool> kNotificationTelemetrySwbSendReports{
     &kNotificationTelemetrySwb, "NotificationTelemetrySwbSendReports",
     /*default_value=*/true};
 constexpr base::FeatureParam<int> kNotificationTelemetrySwbPollingInterval{
     &kNotificationTelemetrySwb, "NotificationTelemetrySwbPollingInterval",
-    /*default_value=*/60};
+    /*default_value=*/1440};
 
 BASE_FEATURE(kRedWarningSurvey, base::FEATURE_DISABLED_BY_DEFAULT);
 constexpr base::FeatureParam<std::string> kRedWarningSurveyTriggerId{

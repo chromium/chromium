@@ -259,6 +259,12 @@ TEST_P(NotificationTelemetryServiceTest, Initializes) {
 }
 
 TEST_P(NotificationTelemetryServiceTest, NonEmptyTelemetryStoreAtConstruction) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  base::FieldTrialParams params;
+  params["NotificationTelemetrySwbReportingProbability"] =
+      "1.0";  // Always send a report
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      kNotificationTelemetrySwb, params);
   auto mock_store = std::make_unique<MockNotificationTelemetryStore>();
   std::vector<CSBRR::ServiceWorkerBehavior> existing_entry = {
       MakeServiceWorkerPushBehavior(
@@ -536,6 +542,13 @@ TEST_P(NotificationTelemetryServiceTest, EmptyDbFoundOverTime) {
 // }
 
 TEST_P(NotificationTelemetryServiceTest, OnGetServiceWorkerBehaviors) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  base::FieldTrialParams params;
+  params["NotificationTelemetrySwbReportingProbability"] =
+      "1.0";  // Always send a report
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      kNotificationTelemetrySwb, params);
+
   CSBRR::ServiceWorkerBehavior swb_push_1 = MakeServiceWorkerPushBehavior(
       GURL("https://script.com"),
       std::vector<GURL>{GURL("https://request1.com"),
