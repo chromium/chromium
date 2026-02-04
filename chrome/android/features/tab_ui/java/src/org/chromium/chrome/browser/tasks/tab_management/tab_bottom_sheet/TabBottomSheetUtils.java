@@ -27,13 +27,12 @@ public final class TabBottomSheetUtils {
 
     // Attach TabBottomSheetManager to WindowAndroid.
     // This allows TabBottomSheetManager to be retrieved statically.
-    public static void attachManagerToWindow(
-            WindowAndroid windowAndroid, TabBottomSheetManager manager) {
+    static void attachManagerToWindow(WindowAndroid windowAndroid, TabBottomSheetManager manager) {
         KEY.attachToHost(windowAndroid.getUnownedUserDataHost(), manager);
     }
 
     // Detach TabBottomSheetManager from WindowAndroid.
-    public static void detachManagerFromWindow(WindowAndroid windowAndroid) {
+    static void detachManagerFromWindow(WindowAndroid windowAndroid) {
         KEY.detachFromHost(windowAndroid.getUnownedUserDataHost());
     }
 

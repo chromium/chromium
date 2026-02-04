@@ -8,7 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/rand_util.h"
-#include "chrome/android/features/tab_ui/jni_headers/TabBottomSheetSimpleManager_jni.h"
+#include "chrome/android/features/tab_ui/jni_headers/TabBottomSheetNativeInterface_jni.h"
 #include "chrome/browser/android/tab_android.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
@@ -17,48 +17,44 @@ using base::android::AttachCurrentThread;
 
 namespace glic {
 
-// NEEDS_ANDROID_IMPL: This is only stubbed out with a rudimentary fake for now
-// to get tests working. TODO(b/473636242): Implement for bottom sheet and side
-// panel.
-
 GlicSidePanelCoordinatorAndroid::GlicSidePanelCoordinatorAndroid(
     tabs::TabInterface* tab)
-    : GlicSidePanelCoordinator(tab),
-      tab_(*tab),
-      // Request ID is temporary. Eventually this will get an object like
-      // SidePanelEntry from the bottom sheet manager.
-      request_id_(base::RandInt(0, INT_MAX)) {
+    : GlicSidePanelCoordinator(tab), tab_(*tab) {
   did_activate_subscription_ = tab_->RegisterDidActivate(
       base::BindRepeating(&GlicSidePanelCoordinatorAndroid::OnTabDidActivate,
                           base::Unretained(this)));
   will_deactivate_subscription_ = tab_->RegisterWillDeactivate(
       base::BindRepeating(&GlicSidePanelCoordinatorAndroid::OnTabWillDeactivate,
                           base::Unretained(this)));
+
+  JNIEnv* env = AttachCurrentThread();
+  java_interface_.Reset(Java_TabBottomSheetNativeInterface_Constructor(
+      env, reinterpret_cast<intptr_t>(this), GetTabAndroid()->GetJavaObject()));
 }
 
-GlicSidePanelCoordinatorAndroid::~GlicSidePanelCoordinatorAndroid() = default;
+GlicSidePanelCoordinatorAndroid::~GlicSidePanelCoordinatorAndroid() {
+  Java_TabBottomSheetNativeInterface_destroy(AttachCurrentThread(),
+                                             java_interface_);
+}
 
 void GlicSidePanelCoordinatorAndroid::Show(bool suppress_animations) {
   if (IsShowing()) {
     return;
   }
 
-  TabAndroid* tab_android = GetTabAndroid();
-
   if (!tab_->IsActivated()) {
     SetState(State::kBackgrounded);
     return;
   }
-  Java_TabBottomSheetSimpleManager_show(
-      AttachCurrentThread(), tab_android->GetJavaObject(), request_id_);
+  Java_TabBottomSheetNativeInterface_show(AttachCurrentThread(),
+                                          java_interface_);
   SetState(State::kShown);
 }
 
 void GlicSidePanelCoordinatorAndroid::SetWebContents(
     content::WebContents* web_contents) {
-  TabAndroid* tab_android = GetTabAndroid();
-  Java_TabBottomSheetSimpleManager_setWebContents(
-      AttachCurrentThread(), tab_android->GetJavaObject(),
+  Java_TabBottomSheetNativeInterface_setWebContents(
+      AttachCurrentThread(), java_interface_,
       web_contents ? web_contents->GetJavaWebContents() : nullptr);
 }
 
@@ -67,10 +63,8 @@ void GlicSidePanelCoordinatorAndroid::Close(const CloseOptions& options) {
     return;
   }
 
-  TabAndroid* tab_android = GetTabAndroid();
-
-  Java_TabBottomSheetSimpleManager_close(
-      AttachCurrentThread(), tab_android->GetJavaObject(), request_id_);
+  Java_TabBottomSheetNativeInterface_close(AttachCurrentThread(),
+                                           java_interface_);
   SetState(State::kClosed);
 }
 

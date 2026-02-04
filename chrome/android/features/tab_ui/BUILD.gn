@@ -258,5 +258,5 @@ android_library("test_support_javalib") {
 }
 
 generate_jni("jni_headers") {
-  sources = [ "java/src/org/chromium/chrome/browser/tasks/tab_management/tab_bottom_sheet/TabBottomSheetSimpleManager.java" ]
+  sources = [ "java/src/org/chromium/chrome/browser/tasks/tab_management/tab_bottom_sheet/TabBottomSheetNativeInterface.java" ]
 }

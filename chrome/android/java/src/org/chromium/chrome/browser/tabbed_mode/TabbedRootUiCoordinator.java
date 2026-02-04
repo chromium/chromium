@@ -186,7 +186,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabGroupListFaviconResol
 import org.chromium.chrome.browser.tasks.tab_management.TabUiUtils;
 import org.chromium.chrome.browser.tasks.tab_management.UndoGroupSnackbarController;
 import org.chromium.chrome.browser.tasks.tab_management.tab_bottom_sheet.TabBottomSheetManager;
-import org.chromium.chrome.browser.tasks.tab_management.tab_bottom_sheet.TabBottomSheetSimpleManager;
 import org.chromium.chrome.browser.tasks.tab_management.tab_bottom_sheet.TabBottomSheetUtils;
 import org.chromium.chrome.browser.toolbar.ToolbarButtonInProductHelpController;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
@@ -306,7 +305,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private @Nullable LoadingFullscreenCoordinator mLoadingFullscreenCoordinator;
     private @Nullable BookmarkOpener mBookmarkOpener;
     private @Nullable TabBottomSheetManager mTabBottomSheetManager;
-    private @Nullable TabBottomSheetSimpleManager mTabBottomSheetSimpleManager;
     private final @NonNull MonotonicObservableSupplier<BookmarkManagerOpener>
             mBookmarkManagerOpenerSupplier;
     private @NonNull AdvancedProtectionCoordinator mAdvancedProtectionCoordinator;
@@ -812,10 +810,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         if (mTabBottomSheetManager != null) {
             mTabBottomSheetManager.destroy();
             mTabBottomSheetManager = null;
-        }
-        if (mTabBottomSheetSimpleManager != null) {
-            mTabBottomSheetSimpleManager.destroy();
-            mTabBottomSheetSimpleManager = null;
         }
 
         mCrossDeviceSettingImporter.destroy();
@@ -1649,10 +1643,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             mActivityLifecycleDispatcher,
                             mSnackbarManagerSupplier.get(),
                             getBottomSheetController());
-
-            mTabBottomSheetSimpleManager =
-                    new TabBottomSheetSimpleManager(
-                            mTabModelSelectorSupplier.get().getModel(/* incognito= */ false));
         }
     }
 

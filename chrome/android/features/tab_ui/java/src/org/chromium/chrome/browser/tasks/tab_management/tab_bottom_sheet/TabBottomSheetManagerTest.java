@@ -25,6 +25,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tasks.tab_management.tab_bottom_sheet.TabBottomSheetManager.NativeInterfaceDelegate;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
@@ -94,7 +95,7 @@ public class TabBottomSheetManagerTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mManager.tryToShowBottomSheet(
-                            REQUEST_ID,
+                            NativeInterfaceDelegate.getInstance(),
                             /* shouldShowToolbar= */ true,
                             /* shouldShowFusebox= */ true);
                 });

@@ -37,7 +37,7 @@ public class TabBottomSheetCoordinator {
      * @param context The Android {@link Context}.
      * @param bottomSheetController The {@link BottomSheetController} used to show the bottom sheet.
      */
-    public TabBottomSheetCoordinator(Context context, BottomSheetController bottomSheetController) {
+    TabBottomSheetCoordinator(Context context, BottomSheetController bottomSheetController) {
         mContext = context;
         mBottomSheetController = bottomSheetController;
 
@@ -45,7 +45,7 @@ public class TabBottomSheetCoordinator {
     }
 
     /** Tries to show the bottom sheet. */
-    public boolean tryToShowBottomSheet(
+    boolean tryToShowBottomSheet(
             @Nullable View toolbarView, View webUiView, @Nullable View fuseboxView) {
         if (mIsSheetCurrentlyManagedByController) {
             return false;
@@ -87,17 +87,21 @@ public class TabBottomSheetCoordinator {
         }
     }
 
-    public void closeBottomSheet() {
+    void closeBottomSheet() {
         assert mIsSheetCurrentlyManagedByController : "Sheet not managed by controller";
         mBottomSheetController.hideContent(mSheetContent, false, StateChangeReason.NONE);
     }
 
     // Cleanup methods.
-    public void destroy() {
+    void destroy() {
         if (mIsSheetCurrentlyManagedByController && mSheetContent != null) {
             mBottomSheetController.hideContent(mSheetContent, false, StateChangeReason.NONE);
         }
         cleanupSheetResources();
+    }
+
+    boolean isSheetShowing() {
+        return mIsSheetCurrentlyManagedByController;
     }
 
     private void cleanupSheetResources() {

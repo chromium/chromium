@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_GLIC_PUBLIC_WIDGET_GLIC_SIDE_PANEL_COORDINATOR_ANDROID_H_
 #define CHROME_BROWSER_GLIC_PUBLIC_WIDGET_GLIC_SIDE_PANEL_COORDINATOR_ANDROID_H_
 
+#include "base/android/scoped_java_ref.h"
 #include "base/callback_list.h"
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
@@ -45,7 +46,7 @@ class GlicSidePanelCoordinatorAndroid : public GlicSidePanelCoordinator {
   const raw_ref<tabs::TabInterface> tab_;
   base::CallbackListSubscription did_activate_subscription_;
   base::CallbackListSubscription will_deactivate_subscription_;
-  const int request_id_;
+  base::android::ScopedJavaGlobalRef<jobject> java_interface_;
 };
 
 }  // namespace glic

@@ -28,17 +28,44 @@ import org.chromium.ui.base.WindowAndroid;
 /** Manager class for the tab bottom sheet. */
 @NullMarked
 public class TabBottomSheetManager implements Destroyable {
-    private static final int INVALID_REQUEST_ID = -1;
+
+    // Interface for the native to communicate with the tab bottom sheet manager.
+    interface NativeInterfaceDelegate {
+        /** Inner class to hold the singleton instance. */
+        static class LazyHolder {
+            static final NativeInterfaceDelegate INSTANCE =
+                    new NativeInterfaceDelegate() {
+                        @Override
+                        public void onBottomSheetClosed() {}
+
+                        @Override
+                        public long getRequestId() {
+                            return 0;
+                        }
+                    };
+        }
+
+        static NativeInterfaceDelegate getInstance() {
+            return LazyHolder.INSTANCE;
+        }
+
+        // Method called when the bottom sheet is closed.
+        void onBottomSheetClosed();
+
+        // Method called to get the request id.
+        long getRequestId();
+    }
+
     private final Activity mActivity;
     private final WindowAndroid mWindowAndroid;
     private final BottomSheetController mBottomSheetController;
     private final BottomSheetObserver mBottomSheetObserver;
-    private @SheetState int mSheetState = SheetState.HIDDEN;
-    private int mRequestId = INVALID_REQUEST_ID;
+
     private @Nullable TabBottomSheetToolbar mToolbar;
     private @Nullable TabBottomSheetWebUi mWebUi;
     private @Nullable TabBottomSheetFusebox mFusebox;
     private @Nullable TabBottomSheetCoordinator mTabBottomSheetCoordinator;
+    private @Nullable NativeInterfaceDelegate mNativeInterfaceDelegate;
 
     /**
      * Constructor.
@@ -82,24 +109,21 @@ public class TabBottomSheetManager implements Destroyable {
      * Attempts to show the Tab BottomSheet. The boolean params are temporary, they will be moved
      * into enums later to allow more flexibility.
      *
-     * @param requestId The request id for the bottom sheet.
+     * @param nativeInterfaceDelegate The native interface delegate.
      * @param shouldShowToolbar Whether to show the toolbar.
      * @param shouldShowFusebox Whether to show the fusebox.
      * @return Whether the bottom sheet was shown.
      */
     boolean tryToShowBottomSheet(
-            int requestId, boolean shouldShowToolbar, boolean shouldShowFusebox) {
+            NativeInterfaceDelegate nativeInterfaceDelegate,
+            boolean shouldShowToolbar,
+            boolean shouldShowFusebox) {
         if (TabBottomSheetUtils.isTabBottomSheetEnabled()) {
             assert mWebUi != null : "WebUi should not be null";
             if (mTabBottomSheetCoordinator == null) {
                 mTabBottomSheetCoordinator =
                         new TabBottomSheetCoordinator(mActivity, mBottomSheetController);
             }
-
-            // Handle requests.
-            // Another sheet is showing.
-            if (mSheetState != SheetState.HIDDEN) return false;
-            mRequestId = requestId;
 
             View toolbarView =
                     mToolbar != null && shouldShowToolbar ? mToolbar.getToolbarView() : null;
@@ -110,6 +134,7 @@ public class TabBottomSheetManager implements Destroyable {
                     toolbarView, webUiView, fuseboxView)) {
                 // Successfully showed bottom sheet.
                 mBottomSheetController.addObserver(mBottomSheetObserver);
+                mNativeInterfaceDelegate = nativeInterfaceDelegate;
                 return true;
             }
         }
@@ -117,19 +142,23 @@ public class TabBottomSheetManager implements Destroyable {
         return false;
     }
 
-    void tryToCloseBottomSheet(int requestId) {
-        if (mTabBottomSheetCoordinator != null && mRequestId == requestId) {
+    void detachNativeInterfaceDelegate(NativeInterfaceDelegate delegate) {
+        if (mNativeInterfaceDelegate == delegate) {
+            mNativeInterfaceDelegate = null;
+        }
+    }
+
+    void tryToCloseBottomSheet() {
+        if (mTabBottomSheetCoordinator != null) {
             mTabBottomSheetCoordinator.closeBottomSheet();
         }
     }
 
-    boolean isSheetShowing(int requestId) {
-        return mTabBottomSheetCoordinator != null
-                && mRequestId == requestId
-                && mSheetState != SheetState.HIDDEN;
+    boolean isSheetShowing() {
+        return mTabBottomSheetCoordinator != null && mTabBottomSheetCoordinator.isSheetShowing();
     }
 
-    boolean setWebContents(@Nullable WebContents webContents) {
+    boolean setWebContents(WebContents webContents) {
         if (mWebUi != null) {
             mWebUi.setWebContents(webContents);
             return true;
@@ -137,11 +166,8 @@ public class TabBottomSheetManager implements Destroyable {
         return false;
     }
 
-    @Nullable WebContents getWebContents(int requestId) {
-        if (mWebUi != null && mRequestId == requestId) {
-            return mWebUi.getWebContents();
-        }
-        return null;
+    @Nullable WebContents getWebContents() {
+        return mWebUi != null ? mWebUi.getWebContents() : null;
     }
 
     // Observer methods.
@@ -155,13 +181,15 @@ public class TabBottomSheetManager implements Destroyable {
             }
 
             @Override
-            public void onSheetStateChanged(@SheetState int state, @StateChangeReason int reason) {
-                mSheetState = state;
-            }
+            public void onSheetStateChanged(@SheetState int state, @StateChangeReason int reason) {}
 
             @Override
             public void onSheetClosed(@StateChangeReason int reason) {
                 mBottomSheetController.removeObserver(mBottomSheetObserver);
+                if (mNativeInterfaceDelegate != null) {
+                    mNativeInterfaceDelegate.onBottomSheetClosed();
+                    mNativeInterfaceDelegate = null;
+                }
                 assumeNonNull(mTabBottomSheetCoordinator).destroy();
             }
         };
