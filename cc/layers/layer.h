@@ -558,6 +558,16 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   }
 #endif
 
+  // Set or get the ElementId used to identify this layer as the direct child
+  // of a canvas with layoutsubtree, which can be used for DrawElementImage.
+  void SetCanvasChildId(ElementId id);
+  ElementId canvas_child_id() const {
+    if (const auto& rare_inputs = inputs_.Read(*this).rare_inputs) {
+      return rare_inputs->canvas_child_id;
+    }
+    return ElementId();
+  }
+
   // For layer tree mode only.
   // In layer list mode, use ScrollTree::SetScrollCallbacks() instead.
   // Sets a RepeatingCallback that is run during a main frame, before layers are
@@ -1038,6 +1048,7 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
     // Rare because only used on Android XR platform
     std::vector<ElementId> xr_hit_test_order;
 #endif
+    ElementId canvas_child_id;
     PaintFlags::FilterQuality filter_quality = PaintFlags::FilterQuality::kLow;
     PaintFlags::DynamicRangeLimitMixture dynamic_range_limit{
         PaintFlags::DynamicRangeLimit::kHigh};

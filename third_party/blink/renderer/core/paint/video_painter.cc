@@ -105,7 +105,6 @@ void VideoPainter::PaintReplaced(const PaintInfo& paint_info,
   if (should_display_poster || !force_software_video_paint) {
     // This will display the poster image, if one is present, and otherwise
     // paint nothing.
-
     ImagePainter(layout_video_)
         .PaintIntoRect(context, replaced_rect, visual_rect);
   } else {

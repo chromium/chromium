@@ -1098,6 +1098,7 @@ void PaintArtifactCompositor::Update(
     layer.SetEffectTreeIndex(effect_id);
     bool backface_hidden = transform.IsBackfaceHidden();
     layer.SetShouldCheckBackfaceVisibility(backface_hidden);
+    layer.SetCanvasChildId(effect.CanvasChildId());
 
     if (layer.subtree_property_changed())
       root_layer_->SetNeedsCommit();

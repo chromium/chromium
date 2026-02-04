@@ -154,7 +154,8 @@ class PLATFORM_EXPORT CompositingReason {
         kActiveOpacityAnimation | kWillChangeOpacity | kBackdropFilter |
         kWillChangeBackdropFilter | kWillChangeClipPath |
         kWillChangeMixBlendMode | kActiveBackdropFilterAnimation |
-        kViewTransitionPseudoElement | kTransform3DSceneLeaf | kElementCapture,
+        kViewTransitionPseudoElement | kTransform3DSceneLeaf | kElementCapture |
+        kCanvasChild,
     kDirectReasonsForFilterProperty =
         kActiveFilterAnimation | kWillChangeFilter,
     kDirectReasonsForBackdropFilter = kBackdropFilter |
