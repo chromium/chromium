@@ -10417,8 +10417,8 @@ Keep your key file in a safe place. You will need it to create new versions of y
           <message name="IDS_VERTICAL_TAB_GROUP_MORE_OPTIONS" is_accessibility_with_no_ui="true" desc="In Title Case: The accessibility label for the button in the tab group header that opens the editor bubble.">
             More Options
           </message>
-          <message name="IDS_VERTICAL_TABS_SEND_FEEDBACK" translateable="false" desc="In Title Case: The button in context menu that allows users to send feedback about vertical tabs.">
-            Send Feedback About Vertical Tabs
+          <message name="IDS_VERTICAL_TABS_SEND_FEEDBACK" desc="In Title Case: The button in context menu that allows users to send feedback about vertical tabs.">
+            Send Feedback About the Tab Strip
           </message>
         </then>
         <else>
@@ -10437,8 +10437,8 @@ Keep your key file in a safe place. You will need it to create new versions of y
           <message name="IDS_VERTICAL_TAB_GROUP_MORE_OPTIONS" is_accessibility_with_no_ui="true"  desc="The accessibility label for the button in the tab group header that opens the editor bubble.">
             More options
           </message>
-          <message name="IDS_VERTICAL_TABS_SEND_FEEDBACK" translateable="false" desc="The button in context menu that allows users to send feedback about vertical tabs.">
-            Send feedback about vertical tabs
+          <message name="IDS_VERTICAL_TABS_SEND_FEEDBACK" desc="The button in context menu that allows users to send feedback about vertical tabs.">
+            Send feedback about the tab strip
           </message>
         </else>
       </if>
