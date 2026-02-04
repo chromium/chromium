@@ -11,6 +11,7 @@
 #include <string>
 
 #include "components/contextual_search/contextual_search_types.h"
+#include "components/omnibox/composebox/composebox_query.mojom.h"
 
 namespace base {
 class ElapsedTimer;
@@ -129,11 +130,15 @@ class ContextualSearchMetricsRecorder {
 
   void RecordToolsSubmissionType(SubmissionType submission_type);
 
-  void RecordToolState(SubmissionType submission_type, AimToolState tool_state);
-
   // Records whether the config was parsed successfully.
   static void RecordConfigParseSuccess(ContextualSearchSource source,
                                        bool success);
+
+  // Records the tool mode (i.e. Deep Search, Create Images, etc.).
+  virtual void RecordToolMode(omnibox::ToolMode tool_mode);
+
+  // Records the model mode (i.e. Gemini Pro, Gemini Pro Autoroute, etc.).
+  virtual void RecordModelMode(omnibox::ModelMode model_mode);
 
  private:
   // Called when the session starts to correctly track session

@@ -103,10 +103,23 @@ class MockContextualSearchMetricsRecorder
               NotifySessionStateChanged,
               (contextual_search::SessionState session_state),
               (override));
+  MOCK_METHOD(void, RecordToolMode, (omnibox::ToolMode tool_mode), (override));
+  MOCK_METHOD(void,
+              RecordModelMode,
+              (omnibox::ModelMode model_mode),
+              (override));
 
   void NotifySessionStateChangedBase(
       contextual_search::SessionState session_state) {
     ContextualSearchMetricsRecorder::NotifySessionStateChanged(session_state);
+  }
+
+  void RecordToolModeBase(omnibox::ToolMode tool_mode) {
+    ContextualSearchMetricsRecorder::RecordToolMode(tool_mode);
+  }
+
+  void RecordModelModeBase(omnibox::ModelMode model_mode) {
+    ContextualSearchMetricsRecorder::RecordModelMode(model_mode);
   }
 };
 

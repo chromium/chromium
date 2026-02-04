@@ -170,6 +170,17 @@ chromium-metrics-reviews@google.com.
   <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
 </histogram>
 
+<histogram name="ContextualSearch.Models.{ContextualSearchSource}"
+    enum="ContextualSearchAimModel" expires_after="2026-08-06">
+  <owner>bofengchen@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Tracks the active model selected in the composebox. Recorded when the user
+    switches to a model.
+  </summary>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
 <histogram name="ContextualSearch.Query.FileCount.{ContextualSearchSource}"
     units="count" expires_after="2026-06-07">
   <owner>hujasonx@google.com</owner>
@@ -513,23 +524,15 @@ chromium-metrics-reviews@google.com.
   <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
 </histogram>
 
-<histogram
-    name="ContextualSearch.Tools.{ContextualSearchSubmissionType}.{ContextualSearchSource}"
-    enum="ContextualSearchAimToolState" expires_after="2026-06-10">
-  <owner>ananyaseelam@google.com</owner>
-  <owner>chrome-desktop-ntp@google.com</owner>
+<histogram name="ContextualSearch.Tools.{ContextualSearchSource}"
+    enum="ContextualSearchAimTool" expires_after="2026-08-06">
+  <owner>bofengchen@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
-    Tracks the number of times the {ContextualSearchSubmissionType} tool
-    selected or deselected in the composebox. The metric is only recorded when
-    the {ContextualSearchSubmissionType} tool chip or the create images dropdown
-    item in the composebox context menu is selected.
+    Tracks the active tool selected in the composebox. Recorded when the user
+    switches to a tool.
   </summary>
   <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
-  <token key="ContextualSearchSubmissionType">
-    <variant name="CreateImages" summary="create images"/>
-    <variant name="DeepSearch" summary="deep search"/>
-  </token>
 </histogram>
 
 <histogram

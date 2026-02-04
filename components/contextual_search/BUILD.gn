@@ -57,6 +57,7 @@ source_set("public") {
     "//components/keyed_service/core",
     "//components/lens/proto/server:proto",
     "//components/omnibox/common",
+    "//components/omnibox/composebox:mojo_bindings",
     "//components/prefs",
     "//components/search_engines",
     "//components/sessions",
@@ -66,7 +67,6 @@ source_set("public") {
     "//mojo/public/mojom/base",
     "//services/network/public/cpp",
     "//third_party/omnibox_proto",
-    "//third_party/omnibox_proto:omnibox_proto_gen",
     "//url",
   ]
 

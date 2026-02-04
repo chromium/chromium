@@ -127,17 +127,6 @@ enum class SubmissionType {
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_search/enums.xml:SubmissionType)
 
-// LINT.IfChange(AimToolState)
-
-// Value to hold the state of an AIM Tool.
-enum class AimToolState {
-  kDisabled = 0,
-  kEnabled = 1,
-  kMaxValue = kEnabled,
-};
-
-// LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_search/enums.xml:AimToolState)
-
 // LINT.IfChange(ContextualSearchErrorPage)
 
 // Reasons the contextual search error page appeared.

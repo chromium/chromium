@@ -485,12 +485,18 @@ void ContextualSearchboxHandler::SetActiveToolMode(omnibox::ToolMode tool) {
   if (!input_state_model_) {
     return;
   }
+  if (auto* metrics_recorder = GetMetricsRecorder()) {
+    metrics_recorder->RecordToolMode(tool);
+  }
   input_state_model_->setActiveTool(tool);
 }
 
 void ContextualSearchboxHandler::SetActiveModelMode(omnibox::ModelMode model) {
   if (!input_state_model_) {
     return;
+  }
+  if (auto* metrics_recorder = GetMetricsRecorder()) {
+    metrics_recorder->RecordModelMode(model);
   }
   input_state_model_->setActiveModel(model);
 }

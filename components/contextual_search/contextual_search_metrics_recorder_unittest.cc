@@ -66,8 +66,8 @@ const char kContextualSearchFileSizeImage[] =
     "ContextualSearch.File.Size.Image.Unknown";
 const char kContextualSearchToolsSubmissionType[] =
     "ContextualSearch.Tools.SubmissionType.Unknown";
-const char kContextualSearchDeepSearchToolState[] =
-    "ContextualSearch.Tools.DeepSearch.Unknown";
+const char kContextualSearchToolMode[] = "ContextualSearch.Tools.Unknown";
+const char kContextualSearchModelMode[] = "ContextualSearch.Models.Unknown";
 const char kContextualSearchTabContextAdded[] =
     "ContextualSearch.TabContextAdded.V2.Unknown";
 const char kContextualSearchTabContextAddedFromSuggestionChip[] =
@@ -250,14 +250,20 @@ TEST_F(ContextualSearchMetricsRecorderTest, ToolsSubmissionType) {
                                        SubmissionType::kDeepSearch, 1);
 }
 
-TEST_F(ContextualSearchMetricsRecorderTest, ToolState) {
-  // Setup user flow.
+TEST_F(ContextualSearchMetricsRecorderTest, ToolMode) {
   metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
-  metrics().RecordToolState(SubmissionType::kDeepSearch,
-                            AimToolState::kEnabled);
+  metrics().RecordToolMode(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
+  DestructMetricsRecorder();
+  histogram_tester().ExpectUniqueSample(
+      kContextualSearchToolMode, omnibox::ToolMode::TOOL_MODE_IMAGE_GEN, 1);
+}
 
-  histogram_tester().ExpectBucketCount(kContextualSearchDeepSearchToolState,
-                                       AimToolState::kEnabled, 1);
+TEST_F(ContextualSearchMetricsRecorderTest, ModelMode) {
+  metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
+  metrics().RecordModelMode(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+  DestructMetricsRecorder();
+  histogram_tester().ExpectUniqueSample(
+      kContextualSearchModelMode, omnibox::ModelMode::MODEL_MODE_GEMINI_PRO, 1);
 }
 
 TEST_F(ContextualSearchMetricsRecorderTest, TabContextAdded) {

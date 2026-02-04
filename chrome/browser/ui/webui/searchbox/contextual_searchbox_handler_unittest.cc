@@ -476,16 +476,32 @@ TEST_F(ContextualSearchboxHandlerTest, OnInputStateChanged) {
           [&](const omnibox::InputState& state) { received_state_1 = state; })
       .WillOnce(
           [&](const omnibox::InputState& state) { received_state_2 = state; });
+  EXPECT_CALL(*GetMetricsRecorderPtr(),
+              RecordToolMode(omnibox::ToolMode::TOOL_MODE_CANVAS))
+      .WillOnce(testing::Invoke(
+          GetMetricsRecorderPtr(),
+          &MockContextualSearchMetricsRecorder::RecordToolModeBase));
 
   handler().SetActiveToolMode(omnibox::ToolMode::TOOL_MODE_CANVAS);
   mock_searchbox_page_.FlushForTesting();
   EXPECT_EQ(received_state_1.active_tool, omnibox::ToolMode::TOOL_MODE_CANVAS);
+  histogram_tester().ExpectUniqueSample("ContextualSearch.Tools.NewTabPage",
+                                        omnibox::ToolMode::TOOL_MODE_CANVAS, 1);
+
+  EXPECT_CALL(*GetMetricsRecorderPtr(),
+              RecordModelMode(omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR))
+      .WillOnce(testing::Invoke(
+          GetMetricsRecorderPtr(),
+          &MockContextualSearchMetricsRecorder::RecordModelModeBase));
 
   handler().SetActiveModelMode(omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
   mock_searchbox_page_.FlushForTesting();
   EXPECT_EQ(received_state_2.active_tool, omnibox::ToolMode::TOOL_MODE_CANVAS);
   EXPECT_EQ(received_state_2.active_model,
             omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
+  histogram_tester().ExpectUniqueSample(
+      "ContextualSearch.Models.NewTabPage",
+      omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR, 1);
 }
 TEST_F(ContextualSearchboxHandlerTest, SubmitQueryWithAdditionalParams) {
   // Set deep search tool.
