@@ -110,7 +110,11 @@ public class AutofillAiSaveUpdateEntityPromptTest {
     @Test
     @SmallTest
     public void dialogStrings() {
-        mPrompt.setDialogDetails("title", "positive button text", "negative button text");
+        mPrompt.setDialogDetails(
+                "title",
+                "positive button text",
+                "negative button text",
+                /* isWalletableEntity= */ true);
         mPrompt.show();
         PropertyModel propertyModel = mModalDialogManager.getShownDialogModel();
 
@@ -121,6 +125,7 @@ public class AutofillAiSaveUpdateEntityPromptTest {
         assertEquals(
                 "negative button text",
                 propertyModel.get(ModalDialogProperties.NEGATIVE_BUTTON_TEXT));
+        assertNotNull(propertyModel.get(ModalDialogProperties.TITLE_END_ICON));
     }
 
     @Test

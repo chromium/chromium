@@ -75,7 +75,8 @@ void AutofillAiSaveUpdateEntityPromptViewAndroid::SetContent(
 
   Java_AutofillAiSaveUpdateEntityPrompt_setDialogDetails(
       env, java_object_, controller->GetTitle(),
-      controller->GetPositiveButtonText(), controller->GetNegativeButtonText());
+      controller->GetPositiveButtonText(), controller->GetNegativeButtonText(),
+      controller->IsWalletableEntity());
 
   Java_AutofillAiSaveUpdateEntityPrompt_setEntityUpdateDetails(
       env, java_object_, controller->GetEntityUpdateDetails());

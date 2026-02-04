@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.content.res.AppCompatResources;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
@@ -107,10 +108,16 @@ public class AutofillAiSaveUpdateEntityPrompt {
     void setDialogDetails(
             @JniType("std::u16string") String title,
             @JniType("std::u16string") String positiveButtonText,
-            @JniType("std::u16string") String negativeButtonText) {
+            @JniType("std::u16string") String negativeButtonText,
+            boolean isWalletableEntity) {
         mDialogModel.set(ModalDialogProperties.TITLE, title);
         mDialogModel.set(ModalDialogProperties.POSITIVE_BUTTON_TEXT, positiveButtonText);
         mDialogModel.set(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, negativeButtonText);
+        if (isWalletableEntity) {
+            mDialogModel.set(
+                    ModalDialogProperties.TITLE_END_ICON,
+                    AppCompatResources.getDrawable(mContext, R.drawable.google_wallet_24dp));
+        }
     }
 
     @CalledByNative
