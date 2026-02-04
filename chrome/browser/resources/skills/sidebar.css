@@ -16,3 +16,28 @@
   padding-inline-start: 24px;
   padding-top: 14px;
 }
+
+.separator {
+  border-top: 1px solid var(--cr-separator-color);
+  margin-bottom: 16px;
+  margin-top: 16px;
+}
+
+.footer {
+  color: var(--cr-secondary-text-color);
+  font-size: 13px;
+  line-height: 20px;
+  padding-inline-end: 16px;
+  padding-inline-start: 24px;
+}
+
+.branding {
+  color: var(--color-sys-on-header-primary);
+  font-weight: 500;
+}
+
+.branding cr-icon {
+  height: 13px;
+  width: 13px;
+  vertical-align: middle;
+}

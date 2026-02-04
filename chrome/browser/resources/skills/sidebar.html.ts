@@ -8,7 +8,7 @@ import {type SkillsSidebarElement} from './sidebar.js';
 
 export function getHtml(this: SkillsSidebarElement) {
   // clang-format off
-  return html`
+  return html`<!--_html_template_start_-->
 <cr-menu-selector selectable="a" selected-attribute="selected"
     @iron-activate="${this.onMenuItemActivate_}" .selected="${this.selectedPage}"
     attr-for-selected="data-path">
@@ -19,6 +19,15 @@ export function getHtml(this: SkillsSidebarElement) {
       <div class="name">${menuItem.name}</div>
     </a>
   `)}
-</cr-menu-selector>`;
+</cr-menu-selector>
+<div class="separator"></div>
+<div class="footer">
+  $i18n{footerText}
+  <span class="branding">
+    <cr-icon icon="skills:spark"></cr-icon>
+    $i18n{footerBranding}
+  </span>
+</div>
+<!--_html_template_end_-->`;
   // clang-format on
 }

@@ -21,6 +21,12 @@
   <message name="IDS_SKILL_PAGE_MAIN_MENU" desc="Text for the main menu label in the chrome://skills page when the screen is narrow." translateable="false">
     Main menu
   </message>
+  <message name="IDS_SKILLS_SIDEBAR_FOOTER_TEXT" desc="The text in the sidebar footer explaining the purpose of the tools" translateable="false">
+    Manage the custom workflows you create with
+  </message>
+  <message name="IDS_SKILLS_SIDEBAR_FOOTER_BRANDING" desc="The branding text 'Gemini in Chrome' displayed in the sidebar footer" translateable="false">
+    Gemini in Chrome
+  </message>
 
   <!-- chrome://skills error page -->
   <message name="IDS_SKILLS_ERROR_PAGE_TITLE" desc="Title of the error page that occurs when chrome://skills is not accessible" translateable="false">

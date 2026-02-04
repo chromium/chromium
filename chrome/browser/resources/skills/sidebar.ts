@@ -5,8 +5,8 @@
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {getCss} from './sidebar.css.js';
 import {getHtml} from './sidebar.html.js';

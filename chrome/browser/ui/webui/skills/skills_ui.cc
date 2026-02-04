@@ -55,6 +55,8 @@ SkillsUI::SkillsUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
       {"mainMenu", IDS_SKILL_PAGE_MAIN_MENU},
       {"errorPageTitle", IDS_SKILLS_ERROR_PAGE_TITLE},
       {"errorPageDescription", IDS_SKILLS_ERROR_PAGE_DESCRIPTION},
+      {"footerText", IDS_SKILLS_SIDEBAR_FOOTER_TEXT},
+      {"footerBranding", IDS_SKILLS_SIDEBAR_FOOTER_BRANDING},
   };
 
   source->AddLocalizedStrings(kStrings);
