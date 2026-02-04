@@ -190,12 +190,11 @@ void ArcResizeLockManager::OnWindowPropertyChanged(aura::Window* window,
 
   if (key == ash::kAppIDKey) {
     if (GetAppId(window)) {
-      if (auto it = pending_app_id_callbacks_.find(window);
-          it != pending_app_id_callbacks_.end()) {
-        for (auto& callback : it->second) {
+      if (auto callbacks = pending_app_id_callbacks_.extract(window);
+          callbacks) {
+        for (auto& callback : callbacks.mapped()) {
           std::move(callback).Run();
         }
-        pending_app_id_callbacks_.erase(it);
       }
     }
     return;
