@@ -43,10 +43,10 @@ import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.FieldType;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
-import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.modaldialog.FakeModalDialogManager;
 
 /** Unit tests for {@link SaveUpdateAddressProfilePrompt}. */
@@ -81,7 +81,7 @@ public class SaveUpdateAddressProfilePromptTest {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         when(mIdentityServicesProvider.getIdentityManager(any())).thenReturn(mIdentityManager);
 
-        mActivity = Robolectric.setupActivity(TestActivity.class);
+        mActivity = Robolectric.setupActivity(BlankUiTestActivity.class);
 
         mPromptController =
                 SaveUpdateAddressProfilePromptController.create(

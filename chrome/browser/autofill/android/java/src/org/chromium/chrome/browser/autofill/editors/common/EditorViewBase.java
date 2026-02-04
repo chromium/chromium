@@ -16,7 +16,6 @@ import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.text.method.LinkMovementMethod;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,13 +24,12 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.RelativeLayout.LayoutParams;
-import android.widget.TextView;
 
 import androidx.annotation.StringRes;
-import androidx.appcompat.app.AlertDialog;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.R;
@@ -43,14 +41,20 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.browser_ui.widget.ActionConfirmationDialog;
+import org.chromium.components.browser_ui.widget.ActionConfirmationDialog.ConfirmationDialogHandler;
+import org.chromium.components.browser_ui.widget.ActionConfirmationDialog.DialogDismissType;
 import org.chromium.components.browser_ui.widget.AlwaysDismissedDialog;
 import org.chromium.components.browser_ui.widget.FadingEdgeScrollView;
 import org.chromium.components.browser_ui.widget.FadingEdgeScrollView.EdgeType;
+import org.chromium.components.browser_ui.widget.StrictButtonPressController.ButtonClickResult;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.displaystyle.ViewResizer;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.interpolators.Interpolators;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 import org.chromium.ui.modelutil.ListModel;
 
 import java.util.ArrayList;
@@ -68,6 +72,9 @@ public abstract class EditorViewBase extends AlwaysDismissedDialog
     /** Duration of the animation to hide the UI. */
     private static final int DIALOG_EXIT_ANIMATION_MS = 195;
 
+    private static final String PROFILE_DELETION_CONFIRMATION_DIALOG_SHOWN_HISTOGRAM =
+            "Autofill.ProfileDeletion.Settings.ConfirmationDialogShown";
+
     protected @Nullable static EditorObserverForTest sObserverForTest;
 
     private final Activity mActivity;
@@ -84,7 +91,6 @@ public abstract class EditorViewBase extends AlwaysDismissedDialog
     private Button mDoneButton;
 
     private @Nullable Animator mDialogInOutAnimator;
-    private @Nullable AlertDialog mConfirmationDialog;
 
     private @Nullable String mDeleteConfirmationTitle;
     private @Nullable CharSequence mDeleteConfirmationText;
@@ -429,41 +435,36 @@ public abstract class EditorViewBase extends AlwaysDismissedDialog
     }
 
     private void handleDeleteWithConfirmation(
-            String confirmationTitle,
-            CharSequence confirmationText,
-            @StringRes int primaryButtonTextId) {
-        LayoutInflater inflater = LayoutInflater.from(getContext());
-        View body = inflater.inflate(R.layout.confirmation_dialog_view, null);
-        TextView titleView = body.findViewById(R.id.confirmation_dialog_title);
-        titleView.setText(confirmationTitle);
-        TextView messageView = body.findViewById(R.id.confirmation_dialog_message);
-        messageView.setText(confirmationText);
-        messageView.setMovementMethod(LinkMovementMethod.getInstance());
+            String confirmationTitle, CharSequence confirmationText, int primaryButtonText) {
+        boolean canShowConfirmation = mActivity instanceof ModalDialogManagerHolder;
+        RecordHistogram.recordBooleanHistogram(
+                PROFILE_DELETION_CONFIRMATION_DIALOG_SHOWN_HISTOGRAM, canShowConfirmation);
+        if (!canShowConfirmation) return;
 
-        // TODO(crbug.com/440257087): Migrate to modal dialog to keep it consistent with keyboard
-        // accessory removal dialog.
-        mConfirmationDialog =
-                new AlertDialog.Builder(getContext(), R.style.ThemeOverlay_BrowserUI_AlertDialog)
-                        .setView(body)
-                        .setNegativeButton(
-                                R.string.cancel,
-                                (dialog, which) -> {
-                                    recordDeletionHistogram(/* deleted= */ false);
-                                    dialog.cancel();
-                                    mConfirmationDialog = null;
-                                    if (sObserverForTest != null) {
-                                        sObserverForTest.onEditorReadyToEdit();
-                                    }
-                                })
-                        .setPositiveButton(
-                                primaryButtonTextId,
-                                (dialog, which) -> {
-                                    recordDeletionHistogram(/* deleted= */ true);
-                                    handleDelete();
-                                    mConfirmationDialog = null;
-                                })
-                        .create();
-        mConfirmationDialog.show();
+        ModalDialogManager modalDialogManager =
+                ((ModalDialogManagerHolder) mActivity).getModalDialogManager();
+        var confirmationDialog = new ActionConfirmationDialog(mContext, modalDialogManager);
+        ConfirmationDialogHandler confirmationDialogHandler =
+                (dismissHandler, buttonClickResult, stopShowing) -> {
+                    if (buttonClickResult == ButtonClickResult.POSITIVE) {
+                        recordDeletionHistogram(true);
+                        handleDelete();
+                    } else {
+                        recordDeletionHistogram(false);
+                        if (sObserverForTest != null) {
+                            sObserverForTest.onEditorReadyToEdit();
+                        }
+                    }
+                    return DialogDismissType.DISMISS_IMMEDIATELY;
+                };
+
+        confirmationDialog.show(
+                res -> confirmationTitle,
+                res -> confirmationText,
+                primaryButtonText,
+                R.string.cancel,
+                /* supportStopShowing= */ false,
+                confirmationDialogHandler);
 
         if (sObserverForTest != null) {
             sObserverForTest.onEditorConfirmationDialogShown();
@@ -537,7 +538,11 @@ public abstract class EditorViewBase extends AlwaysDismissedDialog
         return mContentView;
     }
 
-    public @Nullable AlertDialog getConfirmationDialogForTest() {
-        return mConfirmationDialog;
+    /**
+     * @return ModalDialogManager used for confirmation dialogs. Can be used to confirm things
+     *     programmatically. Used only for tests.
+     */
+    public ModalDialogManager getModalDialogManagerForTest() {
+        return ((ModalDialogManagerHolder) mActivity).getModalDialogManager();
     }
 }

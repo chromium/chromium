@@ -53,9 +53,9 @@ import org.chromium.chrome.browser.autofill.editors.common.EditorComponentsPrope
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.FieldType;
 import org.chromium.payments.mojom.PayerErrors;
-import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 
 /** Unit tests for {@link ContactEditor}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -84,7 +84,7 @@ public class ContactEditorTest {
 
     @Before
     public void setUp() {
-        mActivity = Robolectric.setupActivity(TestActivity.class);
+        mActivity = Robolectric.setupActivity(BlankUiTestActivity.class);
 
         when(mEditorDialog.getContext()).thenReturn(mActivity);
     }

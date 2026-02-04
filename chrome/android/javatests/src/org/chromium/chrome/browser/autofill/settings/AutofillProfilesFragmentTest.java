@@ -36,11 +36,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.view.KeyEvent;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.LayoutRes;
-import androidx.appcompat.app.AlertDialog;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.espresso.matcher.ViewMatchers.Visibility;
 import androidx.test.filters.MediumTest;
@@ -92,6 +92,9 @@ import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogProperties;
+import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -476,9 +479,11 @@ public class AutofillProfilesFragmentTest {
         rule.clickInEditorAndWaitForConfirmationDialog(R.id.delete_menu_id);
 
         // Verify the confirmation message is correct.
-        AlertDialog confirmationDialog = editorDialog.getConfirmationDialogForTest();
-        assertNotNull(confirmationDialog);
-        TextView messageView = confirmationDialog.findViewById(R.id.confirmation_dialog_message);
+        ModalDialogManager dialogManager = editorDialog.getModalDialogManagerForTest();
+        assertNotNull(dialogManager);
+        PropertyModel propertyModel = dialogManager.getCurrentPresenterForTest().getDialogModel();
+        View dialogView = propertyModel.get(ModalDialogProperties.CUSTOM_VIEW);
+        TextView messageView = dialogView.findViewById(R.id.description_text_view);
         assertEquals(expectedConfirmationMessage, messageView.getText().toString());
 
         // Click cancel and ensure we return to the editor, then the main list.

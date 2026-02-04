@@ -20,6 +20,8 @@ import org.chromium.chrome.browser.autofill.editors.common.EditorObserverForTest
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
+import org.chromium.ui.modaldialog.ModalDialogProperties;
+import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
 import java.util.concurrent.TimeoutException;
@@ -105,23 +107,29 @@ class AutofillTestRule extends ChromeBrowserTestRule
      */
     protected void clickInConfirmationDialogAndWait(
             final int button, boolean waitForPreferenceUpdate) throws TimeoutException {
-        if (mEditorDialog.getConfirmationDialogForTest() != null) {
-            int callCount = mClickUpdate.getCallCount();
-            int updateCallCount =
-                    ThreadUtils.runOnUiThreadBlocking(
-                            () -> {
-                                int updateCallCountBeforeButtonClick =
-                                        mPreferenceUpdate.getCallCount();
-                                mEditorDialog
-                                        .getConfirmationDialogForTest()
-                                        .getButton(button)
-                                        .performClick();
-                                return updateCallCountBeforeButtonClick;
-                            });
-            mClickUpdate.waitForCallback(callCount);
-            if (waitForPreferenceUpdate) {
-                mPreferenceUpdate.waitForCallback(updateCallCount);
-            }
+        int callCount = mClickUpdate.getCallCount();
+        int updateCallCount =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            int updateCallCountBeforeButtonClick = mPreferenceUpdate.getCallCount();
+                            int buttonType =
+                                    button == android.content.DialogInterface.BUTTON_POSITIVE
+                                            ? ModalDialogProperties.ButtonType.POSITIVE
+                                            : ModalDialogProperties.ButtonType.NEGATIVE;
+
+                            PropertyModel propModel =
+                                    mEditorDialog
+                                            .getModalDialogManagerForTest()
+                                            .getCurrentPresenterForTest()
+                                            .getDialogModel();
+                            propModel
+                                    .get(ModalDialogProperties.CONTROLLER)
+                                    .onClick(propModel, buttonType);
+                            return updateCallCountBeforeButtonClick;
+                        });
+        mClickUpdate.waitForCallback(callCount);
+        if (waitForPreferenceUpdate) {
+            mPreferenceUpdate.waitForCallback(updateCallCount);
         }
     }
 
