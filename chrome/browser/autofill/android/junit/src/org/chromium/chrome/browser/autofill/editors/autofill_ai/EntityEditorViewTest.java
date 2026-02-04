@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.autofill.editors.autofill_ai;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 
@@ -55,5 +57,34 @@ public class EntityEditorViewTest {
 
         EditorDialogToolbar titleBar = mEditorView.getContainerView().findViewById(R.id.action_bar);
         assertEquals("Title", titleBar.getTitle().toString());
+    }
+
+    @Test
+    @SmallTest
+    public void clickDoneButton() {
+        createEditorView();
+
+        Runnable doneRunnable = mock(Runnable.class);
+        mEditorView.setDoneRunnable(doneRunnable);
+
+        mEditorView.getContainerView().findViewById(R.id.editor_dialog_done_button).performClick();
+
+        verify(doneRunnable).run();
+    }
+
+    @Test
+    @SmallTest
+    public void clickCancelButton() {
+        createEditorView();
+
+        Runnable cancelRunnable = mock(Runnable.class);
+        mEditorView.setCancelRunnable(cancelRunnable);
+
+        mEditorView
+                .getContainerView()
+                .findViewById(R.id.payments_edit_cancel_button)
+                .performClick();
+
+        verify(cancelRunnable).run();
     }
 }

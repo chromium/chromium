@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.autofill.editors.autofill_ai;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.CANCEL_RUNNABLE;
+import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.DONE_RUNNABLE;
 import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.EDITOR_TITLE;
 
 import org.chromium.build.annotations.EnsuresNonNull;
@@ -25,8 +28,18 @@ class EntityEditorMediator {
             mEditorModel =
                     new PropertyModel.Builder(EntityEditorProperties.ALL_KEYS)
                             .with(EDITOR_TITLE, entityType.getAddEntityTypeString())
+                            .with(DONE_RUNNABLE, this::onDone)
+                            .with(CANCEL_RUNNABLE, this::onCancel)
                             .build();
         }
         return mEditorModel;
+    }
+
+    private void onCancel() {
+        assumeNonNull(mEditorModel).set(EntityEditorProperties.VISIBLE, false);
+    }
+
+    private void onDone() {
+        assumeNonNull(mEditorModel).set(EntityEditorProperties.VISIBLE, false);
     }
 }

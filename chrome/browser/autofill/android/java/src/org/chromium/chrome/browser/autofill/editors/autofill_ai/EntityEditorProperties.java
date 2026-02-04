@@ -18,8 +18,13 @@ public class EntityEditorProperties {
     public static final WritableBooleanPropertyKey VISIBLE =
             new WritableBooleanPropertyKey("visible");
 
+    public static final ReadableObjectPropertyKey<Runnable> DONE_RUNNABLE =
+            new ReadableObjectPropertyKey<>("done_callback");
+    public static final ReadableObjectPropertyKey<Runnable> CANCEL_RUNNABLE =
+            new ReadableObjectPropertyKey<>("cancel_callback");
+
     public static final PropertyKey[] ALL_KEYS = {
-        EDITOR_TITLE, VISIBLE,
+        EDITOR_TITLE, VISIBLE, DONE_RUNNABLE, CANCEL_RUNNABLE,
     };
 
     private EntityEditorProperties() {}

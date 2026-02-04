@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.autofill.editors.autofill_ai;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
@@ -25,7 +26,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.chrome.browser.autofill.R;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.editors.common.EditorDialogToolbar;
 import org.chromium.components.autofill.autofill_ai.EntityType;
 import org.chromium.components.autofill.autofill_ai.EntityTypeName;
@@ -67,5 +68,21 @@ public class EntityEditorModuleTest {
         EditorDialogToolbar toolbar = mContainerView.findViewById(R.id.action_bar);
         assertEquals(mEntityType.getAddEntityTypeString(), toolbar.getTitle());
         assertTrue(mCoordinator.getEditorModelForTest().get(EntityEditorProperties.VISIBLE));
+    }
+
+    @Test
+    @SmallTest
+    public void testClickDoneButton() {
+        mCoordinator.showEditorDialog(mEntityType);
+        mContainerView.findViewById(R.id.editor_dialog_done_button).performClick();
+        assertFalse(mCoordinator.getEditorModelForTest().get(EntityEditorProperties.VISIBLE));
+    }
+
+    @Test
+    @SmallTest
+    public void testClickCancelButton() {
+        mCoordinator.showEditorDialog(mEntityType);
+        mContainerView.findViewById(R.id.payments_edit_cancel_button).performClick();
+        assertFalse(mCoordinator.getEditorModelForTest().get(EntityEditorProperties.VISIBLE));
     }
 }
