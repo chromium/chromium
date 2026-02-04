@@ -13,9 +13,15 @@ import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import static org.chromium.ui.test.util.ViewUtils.VIEW_GONE;
 import static org.chromium.ui.test.util.ViewUtils.VIEW_NULL;
 import static org.chromium.ui.test.util.ViewUtils.withEventualExpectedViewState;
+
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.test.filters.LargeTest;
 
@@ -28,10 +34,12 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.ui.extensions.ExtensionTestMessageListener;
 import org.chromium.chrome.browser.ui.extensions.ExtensionTestUtils;
 import org.chromium.chrome.browser.ui.extensions.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -50,7 +58,7 @@ import java.nio.charset.StandardCharsets;
 /** End-to-end test for the extension toolbar on Desktop Android. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, ChromeSwitches.TEST_TYPE})
 @DisableFeatures(ExtensionFeatures.EXTENSION_DISABLE_UNSUPPORTED_DEVELOPER)
 public class ExtensionToolbarTest {
     @Rule public TemporaryFolder mTempDir = new TemporaryFolder();
@@ -118,6 +126,63 @@ public class ExtensionToolbarTest {
                                 withContentDescription("Test Extension 2"), VIEW_GONE | VIEW_NULL));
     }
 
+    /**
+     * Tests that clicking on a second extension action will close a first if its popup was open.
+     *
+     * <p>This test corresponds to ClickingOnASecondActionClosesTheFirst test in
+     * chrome/browser/ui/views/extensions/extensions_toolbar_desktop_interactive_uitest.cc.
+     */
+    @Test
+    @LargeTest
+    public void testClickingOnASecondActionClosesTheFirst() throws IOException {
+        String alphaId =
+                loadPopupExtension(
+                        "alpha", "Alpha Extension", "Alpha Action", "alpha popup opened");
+        String betaId =
+                loadPopupExtension("beta", "Beta Extension", "Beta Action", "beta popup opened");
+
+        // Pin both extensions.
+        ExtensionTestUtils.setExtensionActionVisible(mProfile, alphaId, true);
+        ExtensionTestUtils.setExtensionActionVisible(mProfile, betaId, true);
+        ViewUtils.onViewWaiting(withContentDescription("Alpha Extension"))
+                .check(matches(isDisplayed()));
+        ViewUtils.onViewWaiting(withContentDescription("Beta Extension"))
+                .check(matches(isDisplayed()));
+
+        // To start, neither extensions should have any render frames (which here equates to no open
+        // popups).
+        assertEquals(0, ExtensionTestUtils.getRenderFrameHostCount(mProfile, alphaId));
+        assertEquals(0, ExtensionTestUtils.getRenderFrameHostCount(mProfile, betaId));
+
+        // Click on Alpha and wait for it to open the popup.
+        try (ExtensionTestMessageListener listener =
+                new ExtensionTestMessageListener("alpha popup opened")) {
+            clickViewWithContentDescription("Alpha Extension");
+            assertTrue(listener.waitUntilSatisfied());
+        }
+        // Verify that Alpha (and only Alpha) has an active frame (i.e., popup).
+        CriteriaHelper.pollInstrumentationThread(
+                () -> ExtensionTestUtils.getRenderFrameHostCount(mProfile, alphaId) == 1,
+                "Alpha popup did not open");
+        CriteriaHelper.pollInstrumentationThread(
+                () -> ExtensionTestUtils.getRenderFrameHostCount(mProfile, betaId) == 0,
+                "Beta popup should not be open");
+
+        // Click on Beta. This should result in Beta's popup opening and Alpha's closing.
+        try (ExtensionTestMessageListener listener =
+                new ExtensionTestMessageListener("beta popup opened")) {
+            clickViewWithContentDescription("Beta Extension");
+            assertTrue(listener.waitUntilSatisfied());
+        }
+        // Beta (and only Beta) should have an active popup.
+        CriteriaHelper.pollInstrumentationThread(
+                () -> ExtensionTestUtils.getRenderFrameHostCount(mProfile, betaId) == 1,
+                "Beta popup did not open");
+        CriteriaHelper.pollInstrumentationThread(
+                () -> ExtensionTestUtils.getRenderFrameHostCount(mProfile, alphaId) == 0,
+                "Alpha popup should have closed");
+    }
+
     private String loadBasicExtension(String dirName, String name, String actionTitle)
             throws IOException {
         File dir = mTempDir.newFolder(dirName);
@@ -136,9 +201,78 @@ public class ExtensionToolbarTest {
         return ExtensionTestUtils.loadUnpackedExtension(mProfile, dir);
     }
 
+    private String loadPopupExtension(
+            String dirName, String name, String actionTitle, String message) throws IOException {
+        File dir = mTempDir.newFolder(dirName);
+        writeFile(
+                new File(dir, "manifest.json"),
+                String.format(
+                        """
+                        {
+                          "name": "%s",
+                          "manifest_version": 3,
+                          "version": "0.1",
+                          "permissions": ["test"],
+                          "action": { "default_title": "%s", "default_popup": "popup.html" }
+                        }
+                        """,
+                        name, actionTitle));
+        writeFile(new File(dir, "popup.html"), "<html><script src=\"popup.js\"></script></html>");
+        writeFile(
+                new File(dir, "popup.js"),
+                String.format("chrome.test.sendMessage('%s');", message));
+        return ExtensionTestUtils.loadUnpackedExtension(mProfile, dir);
+    }
+
     private void writeFile(File file, String contents) throws IOException {
         try (FileOutputStream outputStream = new FileOutputStream(file)) {
             outputStream.write(contents.getBytes(StandardCharsets.UTF_8));
         }
+    }
+
+    /**
+     * Finds a view with the given content description in the current activity's view hierarchy and
+     * performs a click on it directly on the UI thread.
+     *
+     * <p>This method is used to bypass Espresso's restrictions, specifically the {@code
+     * RootViewWithoutFocusException} which occurs when a focusable popup (like an extension popup)
+     * is open. In such cases, Espresso refuses to interact with the underlying activity window,
+     * necessitating this manual view traversal and click execution.
+     */
+    private void clickViewWithContentDescription(String contentDescription) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    View root =
+                            mActivityTestRule
+                                    .getActivity()
+                                    .getWindow()
+                                    .getDecorView()
+                                    .findViewById(android.R.id.content);
+                    View target = findViewWithContentDescription(root, contentDescription);
+                    if (target == null) {
+                        throw new RuntimeException(
+                                "View with content description '"
+                                        + contentDescription
+                                        + "' not found");
+                    }
+                    target.performClick();
+                });
+    }
+
+    private View findViewWithContentDescription(View view, String contentDescription) {
+        ThreadUtils.assertOnUiThread();
+        if (contentDescription.equals(view.getContentDescription())) {
+            return view;
+        }
+        if (view instanceof ViewGroup group) {
+            for (int i = 0; i < group.getChildCount(); i++) {
+                View child =
+                        findViewWithContentDescription(group.getChildAt(i), contentDescription);
+                if (child != null) {
+                    return child;
+                }
+            }
+        }
+        return null;
     }
 }

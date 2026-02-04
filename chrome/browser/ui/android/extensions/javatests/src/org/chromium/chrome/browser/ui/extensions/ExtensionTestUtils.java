@@ -82,6 +82,21 @@ public class ExtensionTestUtils {
                 });
     }
 
+    /**
+     * Returns the number of active RenderFrameHosts for the given extension.
+     *
+     * @param profile The profile the extension belongs to.
+     * @param extensionId The ID of the extension.
+     * @return The number of active RenderFrameHosts.
+     */
+    public static int getRenderFrameHostCount(Profile profile, String extensionId) {
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    return ExtensionTestUtilsJni.get()
+                            .getRenderFrameHostCount(profile, extensionId);
+                });
+    }
+
     @NativeMethods
     public interface Natives {
         void loadUnpackedExtensionAsync(
@@ -96,5 +111,8 @@ public class ExtensionTestUtils {
                 @JniType("Profile*") Profile profile,
                 @JniType("std::string") String extensionId,
                 boolean visible);
+
+        int getRenderFrameHostCount(
+                @JniType("Profile*") Profile profile, @JniType("std::string") String extensionId);
     }
 }
