@@ -367,11 +367,6 @@ void TabDeclutterController::OnActionUIDismissed(
   ResetAndDoubleNudgeTimer();
 }
 
-void TabDeclutterController::OnActionUIDismissed(
-    base::PassKey<TabStripActionContainer>) {
-  ResetAndDoubleNudgeTimer();
-}
-
 void TabDeclutterController::SetTimerForTesting(
     const base::TickClock* tick_clock,
     scoped_refptr<base::SequencedTaskRunner> task_runner) {

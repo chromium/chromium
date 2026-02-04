@@ -9,8 +9,6 @@
 #include "chrome/browser/glic/browser_ui/glic_button_controller_delegate.h"
 #include "chrome/browser/ui/tabs/glic_nudge_controller.h"
 #include "chrome/browser/ui/tabs/glic_nudge_delegate.h"
-#include "chrome/browser/ui/tabs/organization/tab_declutter_controller.h"
-#include "chrome/browser/ui/tabs/organization/tab_declutter_observer.h"
 #include "chrome/browser/ui/views/tabs/glic/glic_actor_task_icon.h"
 #include "chrome/browser/ui/views/tabs/tab_search_container.h"
 #include "chrome/common/buildflags.h"
@@ -33,10 +31,8 @@ class BrowserWindowInterface;
 class GlicAndActorButtonsContainer;
 
 class TabStripActionContainer : public views::View,
-                                public TabDeclutterObserver,
                                 public views::AnimationDelegateViews,
                                 public views::MouseWatcherListener,
-                                public TabOrganizationObserver,
                                 public GlicNudgeDelegate,
                                 public glic::GlicButtonControllerDelegate {
   METADATA_HEADER(TabStripActionContainer, views::View)
@@ -93,23 +89,13 @@ class TabStripActionContainer : public views::View,
 
   explicit TabStripActionContainer(
       BrowserWindowInterface* browser_window_interface,
-      tabs::TabDeclutterController* tab_declutter_controller,
-      tabs::GlicNudgeController* tab_glic_nudge_controller);
+      tabs::GlicNudgeController* glic_nudge_controller);
   TabStripActionContainer(const TabStripActionContainer&) = delete;
   TabStripActionContainer& operator=(const TabStripActionContainer&) = delete;
   ~TabStripActionContainer() override;
 
-  TabStripNudgeButton* tab_declutter_button() { return tab_declutter_button_; }
-  TabStripNudgeButton* auto_tab_group_button() {
-    return auto_tab_group_button_;
-  }
-
   TabStripNudgeAnimationSession* animation_session_for_testing() {
     return animation_session_.get();
-  }
-
-  TabOrganizationService* tab_organization_service_for_testing() {
-    return tab_organization_service_;
   }
 
   glic::GlicButton* GetGlicButton() { return glic_button_; }
@@ -117,12 +103,6 @@ class TabStripActionContainer : public views::View,
   glic::GlicActorTaskIcon* glic_actor_task_icon() {
     return glic_actor_task_icon_;
   }
-
-  // TabOrganizationObserver
-  void OnToggleActionUIState(const Browser* browser, bool should_show) override;
-
-  // TabDeclutterObserver
-  void OnTriggerDeclutterUIVisibility() override;
 
   // views::MouseWatcherListener:
   void MouseMovedOutOfHost() override;
@@ -148,11 +128,11 @@ class TabStripActionContainer : public views::View,
 
   void UpdateButtonBorders(gfx::Insets button_insets);
 
-  void DidBecomeActive(BrowserWindowInterface* browser);
-  void DidBecomeInactive(BrowserWindowInterface* browser);
-
  private:
   friend class TabStripActionContainerBrowserTest;
+
+  void DidBecomeActive(BrowserWindowInterface* browser);
+  void DidBecomeInactive(BrowserWindowInterface* browser);
 
   void ShowTabStripNudge(TabStripNudgeButton* button);
   void HideTabStripNudge(TabStripNudgeButton* button);
@@ -185,12 +165,6 @@ class TabStripActionContainer : public views::View,
   void UpdateGlicActorButtonContainerBorders();
 #endif
 
-  void OnTabDeclutterButtonClicked();
-  void OnTabDeclutterButtonDismissed();
-
-  void OnAutoTabGroupButtonClicked();
-  void OnAutoTabGroupButtonDismissed();
-
   void OnTabStripNudgeButtonTimeout(TabStripNudgeButton* button);
 
   // View where, if the mouse is currently over its bounds, the expansion state
@@ -214,19 +188,11 @@ class TabStripActionContainer : public views::View,
 
   bool ButtonOwnsAnimation(const TabStripNudgeButton* button) const;
 
-  std::unique_ptr<TabStripNudgeButton> CreateAutoTabGroupButton();
-  std::unique_ptr<TabStripNudgeButton> CreateTabDeclutterButton();
-  void SetupButtonProperties(TabStripNudgeButton* button);
-
   // Helper to handles teardown logic when the task icon is fully gone.
   void FinalizeHideGlicActorTaskIcon();
 
   // The button currently holding the lock to be shown/hidden.
   raw_ptr<TabStripNudgeButton> locked_expansion_button_ = nullptr;
-  raw_ptr<TabStripNudgeButton> tab_declutter_button_ = nullptr;
-  raw_ptr<TabStripNudgeButton> auto_tab_group_button_ = nullptr;
-  raw_ptr<TabOrganizationService> tab_organization_service_ = nullptr;
-  raw_ptr<tabs::TabDeclutterController> tab_declutter_controller_ = nullptr;
   raw_ptr<tabs::GlicNudgeController> glic_nudge_controller_ = nullptr;
 
   raw_ptr<views::Separator> separator_ = nullptr;
@@ -243,12 +209,6 @@ class TabStripActionContainer : public views::View,
   // When locked, the container is unable to change its expanded state.
   // Changes will be staged until after this is unlocked.
   LockedExpansionMode locked_expansion_mode_ = LockedExpansionMode::kNone;
-
-  base::ScopedObservation<TabOrganizationService, TabOrganizationObserver>
-      tab_organization_observation_{this};
-
-  base::ScopedObservation<tabs::TabDeclutterController, TabDeclutterObserver>
-      tab_declutter_observation_{this};
 
   // Prevents other features from showing tabstrip-modal UI.
   std::unique_ptr<ScopedTabStripModalUI> scoped_tab_strip_modal_ui_;

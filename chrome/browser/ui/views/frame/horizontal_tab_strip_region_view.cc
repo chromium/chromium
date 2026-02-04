@@ -239,8 +239,7 @@ HorizontalTabStripRegionView::HorizontalTabStripRegionView(
       (browser->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL)) {
     if (features::HasTabSearchToolbarButton()) {
       tab_strip_action_container = std::make_unique<TabStripActionContainer>(
-          browser, browser->GetFeatures().tab_declutter_controller(),
-          browser->GetFeatures().glic_nudge_controller());
+          browser, browser->GetFeatures().glic_nudge_controller());
 
       tab_strip_action_container->SetProperty(views::kCrossAxisAlignmentKey,
                                               views::LayoutAlignment::kStart);

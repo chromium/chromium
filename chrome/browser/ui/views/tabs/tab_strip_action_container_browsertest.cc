@@ -27,8 +27,6 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/glic_nudge_controller.h"
-#include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
-#include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/controls/rich_hover_button.h"
@@ -94,7 +92,6 @@ class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
   TabStripActionContainerBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {
-            {features::kTabOrganization, {}},
 #if BUILDFLAG(ENABLE_GLIC)
             {features::kGlicRollout, {}},
             {features::kGlicFreWarming, {}},
@@ -102,7 +99,6 @@ class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
              { {features::kGlicActorUiTaskIconName, "true"} }},
             {features::kGlicActorUiGlobalTaskIndicator, {}},
 #endif  // BUILDFLAG(ENABLE_GLIC)
-            {features::kTabstripDeclutter, {}},
             {contextual_cueing::kContextualCueing, {}},
         },
         {});
@@ -110,7 +106,6 @@ class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
 
 #if BUILDFLAG(ENABLE_GLIC)
   void SetUp() override {
-    TabOrganizationUtils::GetInstance()->SetIgnoreOptGuideForTesting(true);
     // This will temporarily disable preloading.
     glic::GlicProfileManager::SetPrewarmingEnabledForTesting(false);
     fre_server_.ServeFilesFromDirectory(
@@ -156,13 +151,6 @@ class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
   }
 
  protected:
-  TabStripNudgeButton* TabDeclutterButton() {
-    return tab_strip_action_container()->tab_declutter_button();
-  }
-  TabStripNudgeButton* AutoTabGroupButton() {
-    return tab_strip_action_container()->auto_tab_group_button();
-  }
-
   glic::GlicButton* GlicNudgeButton() {
     return tab_strip_action_container()->GetGlicButton();
   }
@@ -202,11 +190,7 @@ class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
     tab_strip_action_container()->SetLockedExpansionMode(mode, button);
   }
   void OnButtonClicked(TabStripNudgeButton* button) {
-    if (button == TabDeclutterButton()) {
-      tab_strip_action_container()->OnTabDeclutterButtonClicked();
-    } else if (button == AutoTabGroupButton()) {
-      tab_strip_action_container()->OnAutoTabGroupButtonClicked();
-    } else if (button == GlicNudgeButton()) {
+    if (button == GlicNudgeButton()) {
 #if BUILDFLAG(ENABLE_GLIC)
       tab_strip_action_container()->OnGlicButtonClicked();
 #else
@@ -221,11 +205,7 @@ class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
     }
   }
   void OnButtonDismissed(TabStripNudgeButton* button) {
-    if (button == TabDeclutterButton()) {
-      tab_strip_action_container()->OnTabDeclutterButtonDismissed();
-    } else if (button == AutoTabGroupButton()) {
-      tab_strip_action_container()->OnAutoTabGroupButtonDismissed();
-    } else if (button == GlicNudgeButton()) {
+    if (button == GlicNudgeButton()) {
 #if BUILDFLAG(ENABLE_GLIC)
       tab_strip_action_container()->OnGlicButtonDismissed();
 #else
@@ -289,114 +269,6 @@ class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
 #endif  // BUILDFLAG(ENABLE_GLIC)
   base::test::ScopedFeatureList feature_list_;
 };
-
-IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest, ShowsDeclutterChip) {
-  ASSERT_FALSE(tab_strip_action_container()->animation_session_for_testing());
-
-  ShowTabStripNudgeButton(TabDeclutterButton());
-
-  ASSERT_TRUE(tab_strip_action_container()
-                  ->animation_session_for_testing()
-                  ->expansion_animation()
-                  ->IsShowing());
-}
-
-IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
-                       ShowsAndHidesDeclutterChip) {
-  ASSERT_FALSE(tab_strip_action_container()->animation_session_for_testing());
-
-  ShowTabStripNudgeButton(TabDeclutterButton());
-
-  ASSERT_TRUE(tab_strip_action_container()
-                  ->animation_session_for_testing()
-                  ->expansion_animation()
-                  ->IsShowing());
-
-  // Finish showing declutter chip.
-  ResetAnimation(1);
-  tab_strip_action_container()->GetWidget()->LayoutRootViewIfNecessary();
-
-  // Hide the declutter chip.
-  HideTabStripNudgeButton(TabDeclutterButton());
-
-  ASSERT_TRUE(tab_strip_action_container()
-                  ->animation_session_for_testing()
-                  ->expansion_animation()
-                  ->IsClosing());
-}
-
-IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest, DelaysShow) {
-  ASSERT_FALSE(tab_strip_action_container()->animation_session_for_testing());
-
-  SetLockedExpansionMode(LockedExpansionMode::kWillShow, TabDeclutterButton());
-
-  ShowTabStripNudgeButton(TabDeclutterButton());
-
-  ASSERT_FALSE(tab_strip_action_container()->animation_session_for_testing());
-
-  SetLockedExpansionMode(LockedExpansionMode::kNone, nullptr);
-
-  ASSERT_TRUE(tab_strip_action_container()
-                  ->animation_session_for_testing()
-                  ->expansion_animation()
-                  ->IsShowing());
-}
-
-IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest, DelaysHide) {
-  ASSERT_FALSE(tab_strip_action_container()->animation_session_for_testing());
-
-  ShowTabStripNudgeButton(TabDeclutterButton());
-
-  ResetAnimation(1);
-  tab_strip_action_container()->GetWidget()->LayoutRootViewIfNecessary();
-
-  ASSERT_FALSE(tab_strip_action_container()->animation_session_for_testing());
-
-  SetLockedExpansionMode(LockedExpansionMode::kWillHide, TabDeclutterButton());
-
-  HideTabStripNudgeButton(TabDeclutterButton());
-
-  ASSERT_FALSE(tab_strip_action_container()->animation_session_for_testing());
-
-  SetLockedExpansionMode(LockedExpansionMode::kNone, nullptr);
-
-  ASSERT_TRUE(tab_strip_action_container()
-                  ->animation_session_for_testing()
-                  ->expansion_animation()
-                  ->IsClosing());
-}
-
-IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
-                       ImmediatelyHidesWhenOrganizeButtonClicked) {
-  ShowTabStripNudgeButton(TabDeclutterButton());
-  ResetAnimation(1);
-  tab_strip_action_container()->GetWidget()->LayoutRootViewIfNecessary();
-
-  SetLockedExpansionMode(LockedExpansionMode::kWillHide, TabDeclutterButton());
-
-  OnButtonClicked(TabDeclutterButton());
-
-  EXPECT_TRUE(tab_strip_action_container()
-                  ->animation_session_for_testing()
-                  ->expansion_animation()
-                  ->IsClosing());
-}
-
-IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
-                       ImmediatelyHidesWhenOrganizeButtonDismissed) {
-  ShowTabStripNudgeButton(TabDeclutterButton());
-  ResetAnimation(1);
-  tab_strip_action_container()->GetWidget()->LayoutRootViewIfNecessary();
-
-  SetLockedExpansionMode(LockedExpansionMode::kWillHide, TabDeclutterButton());
-
-  OnButtonDismissed(TabDeclutterButton());
-
-  EXPECT_TRUE(tab_strip_action_container()
-                  ->animation_session_for_testing()
-                  ->expansion_animation()
-                  ->IsClosing());
-}
 
 #if BUILDFLAG(ENABLE_GLIC)
 IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
@@ -671,13 +543,11 @@ class GlicActorGlobalFlagEnabledBrowserTest
   GlicActorGlobalFlagEnabledBrowserTest() {
     features_.InitWithFeaturesAndParameters(
         {
-            {features::kTabOrganization, {}},
             {features::kGlicRollout, {}},
             {features::kGlicFreWarming, {}},
             {features::kGlicActorUiGlobalTaskIndicator, {}},
             {features::kGlicActorUi,
              {{features::kGlicActorUiTaskIconName, "true"}}},
-            {features::kTabstripDeclutter, {}},
             {contextual_cueing::kContextualCueing, {}},
         },
         {});
