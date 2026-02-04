@@ -800,6 +800,11 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_NumberInput) {
       R"HTML(
     <form id="form" toolname="mytool" tooldescription="perform task">
       <input name="num1" type="number" min="10" max="100">
+      <input name="num2" type="number" min="30" max="60" step="10">
+      <input name="num3" type="number" min="15" step="10">
+      <input name="num4" type="number" step="13">
+      <input name="num5" type="number" step="0.1">
+      <input name="num6" type="number" min="0.15" step="0.1">
     </form>
   )HTML");
 
@@ -814,7 +819,30 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_NumberInput) {
          "num1": {
            "type": "number",
            "minimum": 10,
-           "maximum": 100
+           "maximum": 100,
+           "multipleOf": 1
+         },
+         "num2": {
+           "type": "number",
+           "minimum": 30,
+           "maximum": 60,
+           "multipleOf": 10
+         },
+         "num3": {
+           "type": "number",
+           "minimum": 15
+         },
+         "num4": {
+           "type": "number",
+           "multipleOf": 13
+         },
+         "num5": {
+           "type": "number",
+           "multipleOf": 0.1
+         },
+         "num6": {
+           "type": "number",
+           "minimum": 0.15
          }
       },
       "required": []
@@ -842,7 +870,8 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_NumberInput_MinOnly) {
       "properties": {
          "num1": {
            "type": "number",
-           "minimum": 10
+           "minimum": 10,
+           "multipleOf": 1
          }
       },
       "required": []
@@ -870,7 +899,8 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_NumberInput_MaxOnly) {
       "properties": {
          "num1": {
            "type": "number",
-           "maximum": 100
+           "maximum": 100,
+           "multipleOf": 1
          }
       },
       "required": []

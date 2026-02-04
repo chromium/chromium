@@ -372,10 +372,17 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeNumberParameterSchema(
   if (step_range.HasMax()) {
     schema->SetDouble("maximum", step_range.Maximum().ToDouble());
   }
+  if (step_range.HasStep()) {
+    Decimal step = step_range.Step();
+    if (step_range.StepBase().Remainder(step).IsZero()) {
+      // The valid values can be constrained by multipleOf, but only if the step
+      // base is also a multiple of the step.
+      schema->SetDouble("multipleOf", step.ToDouble());
+    }
+  }
   AddTitle(*element, *schema);
   AddDescription(*element, *schema);
   required = element->IsRequired();
-  // TODO(crbug.com/475972617): Add multipleOf?
   return schema;
 }
 
