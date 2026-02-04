@@ -63,6 +63,7 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safety_check/features.h"
 #include "components/saved_tab_groups/public/features.h"
+#include "components/search_engines/search_engines_switches.h"
 #include "components/segmentation_platform/public/features.h"
 #include "components/send_tab_to_self/features.h"
 #include "components/sensitive_content/features.h"
@@ -499,6 +500,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &segmentation_platform::features::kSegmentationPlatformEphemeralCardRanker,
     &sensitive_content::features::kSensitiveContent,
     &sensitive_content::features::kSensitiveContentWhileSwitchingTabs,
+    &switches::kClankDefaultSearchApi,
     &switches::kRestrictLegacySearchEnginePromoOnFormFactors,
     &sync_sessions::kOptimizeAssociateWindowsAndroid,
     &syncer::kSyncEnableNewSyncDashboardUrl,

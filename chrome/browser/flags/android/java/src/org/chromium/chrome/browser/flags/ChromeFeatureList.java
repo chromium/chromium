@@ -358,6 +358,7 @@ public abstract class ChromeFeatureList {
     public static final String CHROME_NATIVE_URL_OVERRIDING = "ChromeNativeUrlOverriding";
     public static final String CHROME_SURVEY_NEXT_ANDROID = "ChromeSurveyNextAndroid";
     public static final String CLAMP_AUTOMOTIVE_SCALING = "ClampAutomotiveScaling";
+    public static final String CLANK_DEFAULT_SEARCH_API = "ClankDefaultSearchApi";
     public static final String CLANK_STARTUP_LATENCY_INJECTION = "ClankStartupLatencyInjection";
     public static final String CLANK_WHATS_NEW = "ClankWhatsNew";
     public static final String CLEAR_INTENT_WHEN_RECREATED = "ClearIntentWhenRecreated";

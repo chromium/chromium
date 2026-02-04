@@ -109,6 +109,7 @@ static_library("flags_android_impl") {
     "//components/safe_browsing/core/common:features",
     "//components/safety_check:features",
     "//components/saved_tab_groups/public:features",
+    "//components/search_engines:search_engines_switches",
     "//components/segmentation_platform/public",
     "//components/send_tab_to_self",
     "//components/sensitive_content:features",
