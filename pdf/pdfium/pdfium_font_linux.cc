@@ -13,14 +13,12 @@
 #include <algorithm>
 #include <limits>
 #include <memory>
-#include <set>
 #include <string>
 #include <utility>
 
 #include "base/check_op.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
-#include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/i18n/encoding_detection.h"
 #include "base/i18n/icu_string_conversions.h"
@@ -30,7 +28,6 @@
 #include "base/posix/eintr_wrapper.h"
 #include "base/sequence_checker.h"
 #include "components/services/font/public/cpp/font_loader.h"
-#include "pdf/pdf_features.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/pdfium/pdfium_font_helpers.h"
 #include "third_party/blink/public/platform/web_font_description.h"
@@ -39,12 +36,6 @@
 namespace chrome_pdf {
 
 namespace {
-
-// Enables enumerating all system fonts via FontConfig instead of just Arial
-// and PDFium's default fonts. This sends all font family names over IPC,
-// which could be large on systems with many fonts.
-// TODO(crbug.com/449573621): Remove this kill switch after a safe rollout.
-BASE_FEATURE(kPdfEnumerateAllSystemFonts, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // GetFontTable loads a specified font table from an open SFNT file.
 //   fd: a file descriptor to the SFNT file. The position doesn't matter.
@@ -195,62 +186,6 @@ class BlinkFontMapper {
     return size;
   }
 
-  // This list is for CPWL_FontMap::GetDefaultFontByCharset().
-  // We pretend to have these font natively and let the browser (or underlying
-  // fontconfig) pick the proper font on the system.
-  //
-  // NOTE: When version 2 is enabled (features::kPdfiumPerRequestFontMatching),
-  // PDFium does NOT call this function. Instead, it calls MapFont() directly
-  // for each font request, eliminating the need for upfront enumeration.
-  void EnumFonts(FPDF_SYSFONTINFO* sysfontinfo, void* mapper) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    CHECK(
-        !base::FeatureList::IsEnabled(features::kPdfiumPerRequestFontMatching));
-
-    if (!base::FeatureList::IsEnabled(kPdfEnumerateAllSystemFonts)) {
-      FPDF_AddInstalledFont(mapper, "Arial", FXFONT_DEFAULT_CHARSET);
-
-      size_t count = FPDF_GetDefaultTTFMapCount();
-      for (size_t i = 0; i < count; ++i) {
-        const FPDF_CharsetFontMap* font_map = FPDF_GetDefaultTTFMapEntry(i);
-        if (font_map) {
-          FPDF_AddInstalledFont(mapper, font_map->fontname, font_map->charset);
-        }
-      }
-      return;
-    }
-
-    std::set<std::pair<std::string, int>> seen_fonts;
-
-    if (sk_sp<SkFontConfigInterface> fci = SkFontConfigInterface::RefGlobal();
-        fci &&
-        fci.get() != SkFontConfigInterface::GetSingletonDirectInterface()) {
-      auto* font_loader = static_cast<font_service::FontLoader*>(fci.get());
-      for (const std::string& family_name : font_loader->ListFamilies()) {
-        CHECK(!family_name.empty());
-        if (bool inserted =
-                seen_fonts.emplace(family_name, FXFONT_DEFAULT_CHARSET).second;
-            inserted) {
-          FPDF_AddInstalledFont(mapper, family_name.c_str(),
-                                FXFONT_DEFAULT_CHARSET);
-        }
-      }
-    }
-
-    size_t count = FPDF_GetDefaultTTFMapCount();
-    for (size_t i = 0; i < count; ++i) {
-      const FPDF_CharsetFontMap* font_map = FPDF_GetDefaultTTFMapEntry(i);
-      if (font_map) {
-        if (bool inserted =
-                seen_fonts.emplace(font_map->fontname, font_map->charset)
-                    .second;
-            inserted) {
-          FPDF_AddInstalledFont(mapper, font_map->fontname, font_map->charset);
-        }
-      }
-    }
-  }
-
  private:
   static base::File* FileFromFontId(FontId font_id) {
     return reinterpret_cast<base::File*>(font_id);
@@ -262,15 +197,6 @@ class BlinkFontMapper {
 BlinkFontMapper& GetBlinkFontMapper() {
   static base::NoDestructor<BlinkFontMapper> mapper;
   return *mapper;
-}
-
-void EnumFonts(FPDF_SYSFONTINFO* sysfontinfo, void* mapper) {
-  if (PDFiumEngine::GetFontMappingMode() != FontMappingMode::kBlink) {
-    CHECK_EQ(PDFiumEngine::GetFontMappingMode(), FontMappingMode::kNoMapping);
-    return;
-  }
-
-  GetBlinkFontMapper().EnumFonts(sysfontinfo, mapper);
 }
 
 void* MapFont(FPDF_SYSFONTINFO*,
@@ -312,7 +238,7 @@ void DeleteFont(FPDF_SYSFONTINFO*, void* font_id) {
 
 FPDF_SYSFONTINFO g_font_info = {.version = 1,
                                 .Release = nullptr,
-                                .EnumFonts = EnumFonts,
+                                .EnumFonts = nullptr,
                                 .MapFont = MapFont,
                                 .GetFont = nullptr,
                                 .GetFontData = GetFontData,
@@ -323,14 +249,10 @@ FPDF_SYSFONTINFO g_font_info = {.version = 1,
 }  // namespace
 
 void InitializeLinuxFontMapper() {
-  // Set version based on feature flag. Version 2 uses per-request font
-  // matching (MapFont called directly) instead of upfront enumeration
-  // (EnumFonts). This eliminates the expensive ListFamilies() IPC.
-  if (base::FeatureList::IsEnabled(features::kPdfiumPerRequestFontMatching)) {
-    g_font_info.version = 2;
-  } else {
-    g_font_info.version = 1;
-  }
+  // Version 2 uses per-request font matching (MapFont called directly) instead
+  // of upfront enumeration (EnumFonts). This eliminates the expensive
+  // ListFamilies() IPC.
+  g_font_info.version = 2;
 
   FPDF_SetSystemFontInfo(&g_font_info);
 }

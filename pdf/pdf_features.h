@@ -33,10 +33,6 @@ BASE_DECLARE_FEATURE(kPdfUseSkiaRenderer);
 extern const base::FeatureParam<bool> kPdfUseSkiaPremultiplied;
 BASE_DECLARE_FEATURE(kPdfXfaSupport);
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-BASE_DECLARE_FEATURE(kPdfiumPerRequestFontMatching);
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-
 #if BUILDFLAG(ENABLE_PDF_INK2)
 BASE_DECLARE_FEATURE(kPdfInk2);
 extern const base::FeatureParam<bool> kPdfInk2TextAnnotations;
