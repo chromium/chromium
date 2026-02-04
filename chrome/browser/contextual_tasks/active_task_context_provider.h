@@ -12,6 +12,9 @@
 #include "base/observer_list_types.h"
 #include "base/uuid.h"
 #include "components/tabs/public/tab_interface.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+
+class BrowserWindowInterface;
 
 namespace contextual_search {
 class ContextualSearchSessionHandle;
@@ -32,12 +35,16 @@ using SessionHandleGetter = base::RepeatingCallback<TaskAndSessionHandle()>;
 // underlining the tabs that are part of the active task.
 class ActiveTaskContextProvider {
  public:
+  DECLARE_USER_DATA(ActiveTaskContextProvider);
+
   class Observer : public base::CheckedObserver {
    public:
     // Called when the set of tabs that are part of the active context changes.
     virtual void OnContextTabsChanged(
         const std::set<tabs::TabHandle>& context_tabs) = 0;
   };
+
+  static ActiveTaskContextProvider* From(BrowserWindowInterface* window);
 
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;

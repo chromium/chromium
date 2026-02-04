@@ -82,8 +82,8 @@ void TabUnderlineViewControllerImpl::Initialize(
 
   if (ShouldUseSignalsForContextualTasks()) {
     contextual_tasks::ActiveTaskContextProvider* active_task_context_provider =
-        browser_window_interface_->GetFeatures()
-            .contextual_tasks_active_task_context_provider();
+        contextual_tasks::ActiveTaskContextProvider::From(
+            browser_window_interface_);
     contextual_task_observation_.Observe(active_task_context_provider);
   }
 

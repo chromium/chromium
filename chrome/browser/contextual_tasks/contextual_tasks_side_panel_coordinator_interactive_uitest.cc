@@ -84,10 +84,8 @@ class ContextualTasksSidePanelCoordinatorInteractiveUiTest
   ~ContextualTasksSidePanelCoordinatorInteractiveUiTest() override = default;
 
   void SetUpTasks() {
-    browser()
-        ->GetFeatures()
-        .contextual_tasks_active_task_context_provider()
-        ->AddObserver(&mock_active_task_context_provider_observer_);
+    ActiveTaskContextProvider::From(browser())->AddObserver(
+        &mock_active_task_context_provider_observer_);
 
     // Add tab1.
     chrome::AddTabAt(browser(), GURL(chrome::kChromeUISettingsURL), -1, false);

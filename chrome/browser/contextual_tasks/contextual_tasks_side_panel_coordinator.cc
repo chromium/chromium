@@ -220,8 +220,7 @@ ContextualTasksSidePanelCoordinator::ContextualTasksSidePanelCoordinator(
     : ContextualTasksSidePanelCoordinator(
           browser_window,
           browser_window->GetFeatures().side_panel_ui(),
-          browser_window->GetFeatures()
-              .contextual_tasks_active_task_context_provider()) {}
+          ActiveTaskContextProvider::From(browser_window)) {}
 
 ContextualTasksSidePanelCoordinator::ContextualTasksSidePanelCoordinator(
     BrowserWindowInterface* browser_window,

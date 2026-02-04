@@ -803,8 +803,7 @@ void ContextualTasksUiService::OnTaskChanged(
         task_id);
 
     auto* active_task_context_provider =
-        browser_window_interface->GetFeatures()
-            .contextual_tasks_active_task_context_provider();
+        ActiveTaskContextProvider::From(browser_window_interface);
     if (active_task_context_provider) {
       active_task_context_provider->RefreshContext();
     }

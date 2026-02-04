@@ -263,11 +263,6 @@ class BrowserWindowFeatures {
     return chrome_labs_coordinator_.get();
   }
 
-  contextual_tasks::ActiveTaskContextProvider*
-  contextual_tasks_active_task_context_provider() {
-    return contextual_tasks_active_task_context_provider_.get();
-  }
-
   media_router::CastBrowserController* cast_browser_controller() {
     return cast_browser_controller_.get();
   }

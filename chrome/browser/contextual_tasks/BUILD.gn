@@ -25,6 +25,7 @@ source_set("contextual_tasks") {
     "//base",
     "//chrome/browser/ui/browser_window",
     "//components/tabs:public",
+    "//ui/base/unowned_user_data",
   ]
 
   public_deps = [
