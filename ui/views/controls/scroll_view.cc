@@ -45,7 +45,7 @@ namespace views {
 namespace {
 
 constexpr float kGradientLeadingFadeStart = 0.0f;
-constexpr float kGradientPixelSize = 10.0f;
+constexpr float kGradientPixelSize = 16.0f;
 constexpr float kGradientTrailingFadeEnd = 1.0f;
 
 // Returns the combined scroll amount given separate x and y offsets. This is
