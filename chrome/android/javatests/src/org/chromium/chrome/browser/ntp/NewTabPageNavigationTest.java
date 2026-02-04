@@ -15,7 +15,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -29,7 +28,6 @@ import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.net.test.EmbeddedTestServer;
-import org.chromium.ui.base.DeviceFormFactor;
 
 /** Tests loading the NTP and navigating between it and other pages. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -92,7 +90,6 @@ public class NewTabPageNavigationTest {
     /** Tests navigating to the tab switcher from the Incognito NTP. */
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/479863847
     public void testNavigateToTabSwitcherFromIncognitoNtp() {
         try (var histogram =
                 HistogramWatcher.newBuilder()
