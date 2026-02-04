@@ -7,10 +7,12 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
+#include "chrome/browser/glic/actor/glic_actor_policy_checker.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/actor/task_id.h"
@@ -32,7 +34,8 @@ namespace glic {
 class GlicActorTaskManager {
  public:
   explicit GlicActorTaskManager(Profile* profile,
-                                actor::ActorKeyedService* actor_keyed_service);
+                                actor::ActorKeyedService* actor_keyed_service,
+                                GlicActorPolicyChecker& actor_policy_checker);
   GlicActorTaskManager(const GlicActorTaskManager&) = delete;
   GlicActorTaskManager& operator=(const GlicActorTaskManager&) = delete;
   ~GlicActorTaskManager();
@@ -64,6 +67,7 @@ class GlicActorTaskManager {
   void MaybeShowDeactivationToastUi();
 
   void CancelTask();
+  void CanActOnWebChanged(bool can_act_on_web);
   bool IsActuating() const;
 
   base::WeakPtr<GlicActorTaskManager> GetWeakPtr();
@@ -99,6 +103,8 @@ class GlicActorTaskManager {
                           actor::ObservationDelayController::Result result);
   void NotifyActorTaskStateChanged(actor::TaskId task_id,
                                    actor::ActorTask::State task_state);
+  void StopTaskImpl(actor::TaskId task_id,
+                    actor::ActorTask::StoppedReason reason);
 
   raw_ptr<Profile> profile_;
   raw_ptr<actor::ActorKeyedService> actor_keyed_service_;
@@ -113,8 +119,12 @@ class GlicActorTaskManager {
   bool attempted_observation_retry_ = false;
   std::unique_ptr<actor::ObservationDelayController> reload_observer_;
 
+  const raw_ref<GlicActorPolicyChecker> actor_policy_checker_;
+
   std::optional<base::CallbackListSubscription>
       actor_task_state_changed_subscription_;
+
+  base::CallbackListSubscription can_act_on_web_changed_subscription_;
 
   base::WeakPtrFactory<GlicActorTaskManager> weak_ptr_factory_{this};
 };

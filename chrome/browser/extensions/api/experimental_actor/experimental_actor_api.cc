@@ -24,6 +24,9 @@
 #include "chrome/browser/ai/ai_data_keyed_service.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/glic/actor/glic_actor_policy_checker.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/journal_details_builder.h"
@@ -156,9 +159,14 @@ ExperimentalActorCreateTaskFunction::~ExperimentalActorCreateTaskFunction() =
     default;
 
 ExtensionFunction::ResponseAction ExperimentalActorCreateTaskFunction::Run() {
+  // TODO(bokan): This is here to preserve behavior but extension API shouldn't
+  // be using Glic enterprise policies and can be removed.
+  auto* glic_service =
+      glic::GlicKeyedServiceFactory::GetGlicKeyedService(browser_context());
+
   auto* actor_service = actor::ActorKeyedService::Get(browser_context());
   actor::TaskId task_id =
-      actor_service->CreateTask(&actor_service->GetPolicyChecker());
+      actor_service->CreateTask(&glic_service->actor_policy_checker());
 
   return RespondNow(ArgumentList(
       api::experimental_actor::CreateTask::Results::Create(task_id.value())));

@@ -25,6 +25,7 @@
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
+#include "chrome/browser/glic/actor/glic_actor_policy_checker.h"
 #include "chrome/browser/glic/actor/glic_actor_task_manager.h"
 #include "chrome/browser/glic/common/future_browser_features.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
@@ -176,6 +177,8 @@ GlicKeyedService::GlicKeyedService(
     contextual_cueing::ContextualCueingService* contextual_cueing_service,
     actor::ActorKeyedService* actor_keyed_service)
     : profile_(profile),
+      actor_policy_checker_(
+          std::make_unique<GlicActorPolicyChecker>(*profile_)),
       enabling_(std::make_unique<GlicEnabling>(
           profile,
           &profile_manager->GetProfileAttributesStorage())),
@@ -204,7 +207,9 @@ GlicKeyedService::GlicKeyedService(
                                     GetSingleInstanceWindowController())
                               : nullptr),
       actor_task_manager_(
-          std::make_unique<GlicActorTaskManager>(profile, actor_keyed_service)),
+          std::make_unique<GlicActorTaskManager>(profile,
+                                                 actor_keyed_service,
+                                                 *actor_policy_checker_)),
 #endif
       tab_data_observer_(std::make_unique<GlicTabDataObserver>()),
       web_contents_warming_pool_(
@@ -914,5 +919,11 @@ void GlicKeyedService::RequestToShowAutofillSuggestionsDialog(
       task_id, std::move(requests), std::move(callback));
 }
 #endif
+
+base::CallbackListSubscription
+GlicKeyedService::AddActOnWebCapabilityChangedCallback(
+    ActOnWebCapabilityChangedCallback callback) {
+  return actor_policy_checker_->AddActOnWebCapabilityChangedCallback(callback);
+}
 
 }  // namespace glic

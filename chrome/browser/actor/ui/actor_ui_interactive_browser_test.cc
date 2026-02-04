@@ -4,8 +4,8 @@
 
 #include "chrome/browser/actor/ui/actor_ui_interactive_browser_test.h"
 
-#include "chrome/browser/actor/actor_policy_checker.h"
 #include "chrome/browser/actor/actor_task_metadata.h"
+#include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/common/chrome_switches.h"
 
 using actor::ExpectOkResult;

@@ -111,8 +111,6 @@ class ActorKeyedService : public KeyedService,
   // The associated ActorUiStateManager for the associated profile.
   ui::ActorUiStateManagerInterface* GetActorUiStateManager();
 
-  ActorPolicyChecker& GetPolicyChecker();
-
   // Returns true if there is a task that is actively (i.e. not paused) acting
   // in the given `tab`.
   bool IsActiveOnTab(const tabs::TabInterface& tab) const;
@@ -144,11 +142,6 @@ class ActorKeyedService : public KeyedService,
       TaskStateChangedCallback callback);
 
   void NotifyTaskStateChanged(TaskId task_id, ActorTask::State state);
-  void OnActOnWebCapabilityChanged(bool can_act_on_web);
-
-  using ActOnWebCapabilityChangedCallback = base::RepeatingCallback<void(bool)>;
-  base::CallbackListSubscription AddActOnWebCapabilityChangedCallback(
-      ActOnWebCapabilityChangedCallback callback);
 
   // Returns the acting task for web_contents. Returns nullptr if acting task
   // does not exist.
@@ -206,13 +199,8 @@ class ActorKeyedService : public KeyedService,
 
   TaskId::Generator next_task_id_;
 
-  std::unique_ptr<ActorPolicyChecker> policy_checker_;
-
   base::RepeatingCallbackList<void(TaskId, ActorTask::State)>
       tab_state_change_callback_list_;
-
-  base::RepeatingCallbackList<ActOnWebCapabilityChangedCallback::RunType>
-      act_on_web_capability_changed_callback_list_;
 
   // Owns this.
   raw_ptr<Profile> profile_;

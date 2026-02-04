@@ -165,10 +165,11 @@
 #endif
 
 #if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/actor/actor_keyed_service_factory.h"
-#include "chrome/browser/actor/actor_policy_checker.h"
+#include "chrome/browser/glic/actor/glic_actor_policy_checker.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/subscription_eligibility/subscription_eligibility_service.h"
 #include "chrome/browser/subscription_eligibility/subscription_eligibility_service_factory.h"
 #endif
@@ -731,10 +732,10 @@ void AddDownloadsStrings(content::WebUIDataSource* html_source) {
 bool IsWebActuationDisabledForEnterprise(Profile* profile) {
   bool can_act_on_web = true;
   if (base::FeatureList::IsEnabled(features::kGlicActor)) {
-    auto* actor_service =
-        actor::ActorKeyedServiceFactory::GetActorKeyedService(profile);
-    if (actor_service) {
-      can_act_on_web = actor_service->GetPolicyChecker().CanActOnWeb();
+    auto* glic_service =
+        glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile);
+    if (glic_service) {
+      can_act_on_web = glic_service->actor_policy_checker().CanActOnWeb();
     }
   }
   return !can_act_on_web;
@@ -750,13 +751,13 @@ bool ShouldShowWebActuationToggle(Profile* profile) {
   }
 
   // If the account is ineligible, hide the toggle.
-  auto* actor_service =
-      actor::ActorKeyedServiceFactory::GetActorKeyedService(profile);
-  if (!actor_service) {
+  auto* glic_service =
+      glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile);
+  if (!glic_service) {
     return false;
   }
-  if (actor_service->GetPolicyChecker().CannotActOnWebReason() ==
-      actor::ActorPolicyChecker::CannotActReason::
+  if (glic_service->actor_policy_checker().CannotActOnWebReason() ==
+      actor::EnterprisePolicyChecker::CannotActReason::
           kAccountCapabilityIneligible) {
     return false;
   }
@@ -767,7 +768,7 @@ bool ShouldShowWebActuationToggle(Profile* profile) {
   // consent card.
 
   const base::flat_set<int32_t>& allowed_tiers =
-      actor::ActorPolicyChecker::GetActorEligibleTiers();
+      glic::GlicActorPolicyChecker::GetActorEligibleTiers();
   // If no tiers are allowed, the toggle should never be shown.
   if (allowed_tiers.empty()) {
     return false;

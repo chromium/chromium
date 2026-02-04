@@ -24,7 +24,6 @@
 #include "base/uuid.h"
 #include "base/version_info/version_info.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
-#include "chrome/browser/actor/actor_policy_checker.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/actor/aggregated_journal_file_serializer.h"
@@ -36,6 +35,7 @@
 #include "chrome/browser/feedback/feedback_uploader_chrome.h"
 #include "chrome/browser/feedback/feedback_uploader_factory_chrome.h"
 #include "chrome/browser/feedback/system_logs/chrome_system_logs_fetcher.h"
+#include "chrome/browser/glic/actor/glic_actor_policy_checker.h"
 #include "chrome/browser/glic/common/future_browser_features.h"
 #include "chrome/browser/glic/fre/fre_util.h"
 #include "chrome/browser/glic/glic_metrics.h"
@@ -611,7 +611,8 @@ class JournalHandler {
 #endif
 
 mojom::ProfileEnablementPtr BuildProfileEnablement(
-    content::BrowserContext* browser_context) {
+    content::BrowserContext* browser_context,
+    const GlicActorPolicyChecker& actor_policy_checker) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
   GlicEnabling::ProfileEnablement enablement =
       GlicEnabling::EnablementForProfile(profile);
@@ -633,9 +634,7 @@ mojom::ProfileEnablementPtr BuildProfileEnablement(
   result->actuation_eligibility =
       mojom::ActuationEligibility::kPlatformUnsupported;
 #else
-  using CannotActReason = actor::ActorPolicyChecker::CannotActReason;
-  actor::ActorPolicyChecker& actor_policy_checker =
-      actor::ActorKeyedService::Get(profile)->GetPolicyChecker();
+  using CannotActReason = GlicActorPolicyChecker::CannotActReason;
   if (actor_policy_checker.CanActOnWeb()) {
     result->actuation_eligibility = mojom::ActuationEligibility::kEligible;
   } else {
@@ -856,14 +855,15 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
             actor_service->AddTaskStateChangedCallback(base::BindRepeating(
                 &GlicWebClientHandler::NotifyActorTaskStateChanged,
                 base::Unretained(this)));
-        // CallbackListSubscription prevents these callbacks from being invoked
-        // when this object is destructed.
-        act_on_web_capability_changed_subscription_ =
-            actor_service->AddActOnWebCapabilityChangedCallback(
-                base::BindRepeating(
-                    &GlicWebClientHandler::NotifyActOnWebCapabilityChanged,
-                    base::Unretained(this)));
       }
+
+      // CallbackListSubscription prevents these callbacks from being invoked
+      // when this object is destructed.
+      act_on_web_capability_changed_subscription_ =
+          glic_service_->AddActOnWebCapabilityChangedCallback(
+              base::BindRepeating(
+                  &GlicWebClientHandler::NotifyActOnWebCapabilityChanged,
+                  base::Unretained(this)));
     }
 
     // NEEDS_ANDROID_IMPL: (crbug.com/477622144) Remove desktop-only
@@ -979,9 +979,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     state->can_act_on_web = false;
 #if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
     if (base::FeatureList::IsEnabled(features::kGlicActor)) {
-      if (auto* actor_service = actor::ActorKeyedService::Get(profile_)) {
-        state->can_act_on_web = actor_service->GetPolicyChecker().CanActOnWeb();
-      }
+      state->can_act_on_web =
+          glic_service_->actor_policy_checker().CanActOnWeb();
     }
 #endif
     state->enable_activate_tab = base::FeatureList::IsEnabled(
@@ -2505,7 +2504,8 @@ void GlicPageHandler::GetInternalsDataPayload(
     GetInternalsDataPayloadCallback callback) {
   mojom::InternalsDataPayloadPtr payload = mojom::InternalsDataPayload::New();
 
-  payload->enablement = BuildProfileEnablement(browser_context_);
+  payload->enablement = BuildProfileEnablement(
+      browser_context_, GetGlicService()->actor_policy_checker());
 
   mojom::ConfigInfoPtr config = mojom::ConfigInfo::New();
   Profile* profile = Profile::FromBrowserContext(browser_context_);

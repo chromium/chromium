@@ -20,10 +20,8 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
-#include "chrome/browser/actor/actor_policy_checker.h"
 #include "chrome/browser/actor/actor_task_delegate.h"
 #include "chrome/browser/actor/aggregated_journal.h"
-#include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/common/actor/task_id.h"
 #include "chrome/common/actor_webui.mojom-forward.h"
@@ -38,6 +36,7 @@ namespace actor {
 
 class ActionTrackerForMetrics;
 class ActorKeyedService;
+class EnterprisePolicyChecker;
 class ExecutionEngine;
 
 namespace ui {

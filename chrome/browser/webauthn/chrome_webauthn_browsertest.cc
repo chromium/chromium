@@ -1633,12 +1633,11 @@ class WebAuthnActorBrowserTest : public WebAuthnBrowserTest {
  public:
   WebAuthnActorBrowserTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{device::kWebAuthnActorCheck, {}},
-                              {password_manager::features::kActorLogin, {}},
-                              {features::kGlicActor,
-                               {{features::kGlicActorPolicyControlExemption
-                                     .name,
-                                 "true"}}}},
+        /*enabled_features=*/
+        {
+            {device::kWebAuthnActorCheck, {}},
+            {password_manager::features::kActorLogin, {}},
+        },
         /*disabled_features=*/{});
   }
 

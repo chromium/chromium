@@ -10,7 +10,6 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/actor/actor_features.h"
-#include "chrome/browser/actor/actor_policy_checker.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/enterprise_policy_checker.h"

@@ -5,7 +5,6 @@
 #include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
-#include "chrome/browser/actor/actor_policy_checker.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_task_metadata.h"
 #include "chrome/browser/actor/resources/grit/actor_browser_resources.h"

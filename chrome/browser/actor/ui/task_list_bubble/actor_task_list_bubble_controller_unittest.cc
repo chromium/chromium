@@ -11,7 +11,6 @@
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/actor/actor_keyed_service_fake.h"
-#include "chrome/browser/actor/actor_policy_checker.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble.h"
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_controller.h"

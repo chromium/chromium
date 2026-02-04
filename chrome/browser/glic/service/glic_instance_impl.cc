@@ -210,8 +210,8 @@ GlicInstanceImpl::GlicInstanceImpl(
       last_deactivation_timestamp_(base::TimeTicks::Now()) {
   if (auto* actor_keyed_service =
           actor::ActorKeyedServiceFactory::GetActorKeyedService(profile_)) {
-    actor_task_manager_ =
-        std::make_unique<GlicActorTaskManager>(profile, actor_keyed_service);
+    actor_task_manager_ = std::make_unique<GlicActorTaskManager>(
+        profile, actor_keyed_service, service_->actor_policy_checker());
   }
 
   browser_collection_observation_.Observe(

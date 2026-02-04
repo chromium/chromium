@@ -2,7 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/actor/actor_policy_checker.h"
+#include "chrome/browser/glic/actor/glic_actor_policy_checker.h"
+
+#include <ostream>
+#include <string_view>
+#include <variant>
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -10,14 +14,17 @@
 #include "base/strings/to_string.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/aggregated_journal.h"
-#include "chrome/browser/actor/site_policy.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/browser_management_service.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/glic_user_status_code.h"
+#include "chrome/browser/glic/glic_user_status_fetcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/subscription_eligibility/subscription_eligibility_service_factory.h"
 #include "chrome/common/actor/journal_details_builder.h"
+#include "chrome/common/actor/task_id.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "components/prefs/pref_service.h"
@@ -27,17 +34,6 @@
 #include "components/variations/service/variations_service.h"
 #include "content/public/browser/web_contents.h"
 
-#if BUILDFLAG(ENABLE_GLIC)
-#include <ostream>
-#include <string_view>
-#include <variant>
-
-#include "chrome/browser/glic/glic_pref_names.h"
-#include "chrome/browser/glic/glic_user_status_code.h"
-#include "chrome/browser/glic/glic_user_status_fetcher.h"
-#endif  // BUILDFLAG(ENABLE_GLIC)
-
-#if BUILDFLAG(ENABLE_GLIC)
 // Traits for base::ToString(). They need to be in the corresponding namespace
 // of the enums.
 namespace features {
@@ -54,7 +50,9 @@ std::ostream& operator<<(std::ostream& os,
 }
 }  // namespace features
 
-namespace glic::prefs {
+namespace glic {
+
+namespace prefs {
 std::ostream& operator<<(std::ostream& os,
                          GlicActuationOnWebPolicyState value) {
   switch (value) {
@@ -64,53 +62,44 @@ std::ostream& operator<<(std::ostream& os,
       return os << "kDisabled";
   }
 }
-}  // namespace glic::prefs
+}  // namespace prefs
 
-namespace actor {
 std::ostream& operator<<(std::ostream& os,
-                         ActorPolicyChecker::CanActOutcome value) {
+                         GlicActorPolicyChecker::CanActOutcome value) {
   switch (value) {
-    case ActorPolicyChecker::CanActOutcome::kYes:
+    case GlicActorPolicyChecker::CanActOutcome::kYes:
       return os << "kYes";
-    case ActorPolicyChecker::CanActOutcome::kNo:
+    case GlicActorPolicyChecker::CanActOutcome::kNo:
       return os << "kNo";
-    case ActorPolicyChecker::CanActOutcome::kByAllowlistOnly:
+    case GlicActorPolicyChecker::CanActOutcome::kByAllowlistOnly:
       return os << "kByAllowlistOnly";
   }
 }
 
 std::ostream& operator<<(std::ostream& os,
-                         ActorPolicyChecker::CannotActReason value) {
+                         GlicActorPolicyChecker::CannotActReason value) {
   switch (value) {
-    case ActorPolicyChecker::CannotActReason::kNone:
+    case GlicActorPolicyChecker::CannotActReason::kNone:
       return os << "kNone";
-    case ActorPolicyChecker::CannotActReason::kAccountCapabilityIneligible:
+    case GlicActorPolicyChecker::CannotActReason::kAccountCapabilityIneligible:
       return os << "kAccountCapabilityIneligible";
-    case ActorPolicyChecker::CannotActReason::kAccountMissingChromeBenefits:
+    case GlicActorPolicyChecker::CannotActReason::kAccountMissingChromeBenefits:
       return os << "kAccountMissingChromeBenefits";
-    case ActorPolicyChecker::CannotActReason::kDisabledByPolicy:
+    case GlicActorPolicyChecker::CannotActReason::kDisabledByPolicy:
       return os << "kDisabledByPolicy";
-    case ActorPolicyChecker::CannotActReason::kEnterpriseWithoutManagement:
+    case GlicActorPolicyChecker::CannotActReason::kEnterpriseWithoutManagement:
       return os << "kEnterpriseWithoutManagement";
   }
 }
 
-std::ostream& operator<<(
-    std::ostream& os,
-    std::variant<ActorPolicyChecker::CannotActReason, std::string_view>
-        value) {
+std::ostream& operator<<(std::ostream& os,
+                         std::variant<GlicActorPolicyChecker::CannotActReason,
+                                      std::string_view> value) {
   std::visit([&os](auto&& arg) { os << arg; }, value);
   return os;
 }
 
-}  // namespace actor
-#endif  // BUILDFLAG(ENABLE_GLIC)
-
-namespace actor {
-
 namespace {
-
-#if BUILDFLAG(ENABLE_GLIC)
 
 bool IsLikelyDogfoodClient() {
   variations::VariationsService* variations_service =
@@ -127,7 +116,7 @@ bool IsBrowserManaged(Profile& profile) {
 }
 
 bool ActuationEnabledForManagedUser(Profile& profile,
-                                    AggregatedJournal& journal) {
+                                    actor::AggregatedJournal& journal) {
   features::GlicActorEnterprisePrefDefault default_pref =
       features::kGlicActorEnterprisePrefDefault.Get();
   auto* pref_service = profile.GetPrefs();
@@ -135,8 +124,8 @@ bool ActuationEnabledForManagedUser(Profile& profile,
   auto capability_pref =
       static_cast<glic::prefs::GlicActuationOnWebPolicyState>(
           pref_service->GetInteger(glic::prefs::kGlicActuationOnWeb));
-  journal.Log(GURL(), TaskId(), "ActuationEnabledForManagedUser",
-              JournalDetailsBuilder()
+  journal.Log(GURL(), actor::TaskId(), "ActuationEnabledForManagedUser",
+              actor::JournalDetailsBuilder()
                   .Add("default_pref", base::ToString(default_pref))
                   .Add("capability_pref", base::ToString(capability_pref))
                   .Build());
@@ -160,7 +149,7 @@ bool HasUrlAllowlist(Profile& profile) {
   return !allowlist.empty();
 }
 
-bool IsEnterpriseAccount(Profile& profile, AggregatedJournal& journal) {
+bool IsEnterpriseAccount(Profile& profile, actor::AggregatedJournal& journal) {
   // Note: both `is_enterprise_account_data_protected` and
   // `AccountInfo::IsManaged()` check for Workspace accounts. They are backed
   // by two different Google API endpoints. Both are checked for completeness.
@@ -195,8 +184,8 @@ bool IsEnterpriseAccount(Profile& profile, AggregatedJournal& journal) {
           account_info.account_id);
   auto is_managed = extended_account_info.IsManaged();
 
-  journal.Log(GURL(), TaskId(), "IsEnterpriseAccount",
-              JournalDetailsBuilder()
+  journal.Log(GURL(), actor::TaskId(), "IsEnterpriseAccount",
+              actor::JournalDetailsBuilder()
                   .Add("is_enterprise_account_data_protected",
                        base::ToString(is_enterprise_account_data_protected))
                   .Add("is_managed", signin::TriboolToString(is_managed))
@@ -208,39 +197,33 @@ bool IsEnterpriseAccount(Profile& profile, AggregatedJournal& journal) {
 
 // TODO(crbug.com/471065012): This is a consumer check so it should be moved to
 // the overall actuation account access check. Placed here for a quick fix.
-bool AccountHasChromeBenefits(Profile& profile, AggregatedJournal& journal) {
+bool AccountHasChromeBenefits(Profile& profile,
+                              actor::AggregatedJournal& journal) {
   subscription_eligibility::SubscriptionEligibilityService*
       subscription_service = subscription_eligibility::
           SubscriptionEligibilityServiceFactory::GetForProfile(&profile);
   CHECK(subscription_service);
   const base::flat_set<int32_t>& eligible_tiers =
-      ActorPolicyChecker::GetActorEligibleTiers();
+      GlicActorPolicyChecker::GetActorEligibleTiers();
   int32_t subscription_tier = subscription_service->GetAiSubscriptionTier();
   journal.Log(
-      GURL(), TaskId(), "AccountHasChromeBenefits",
-      JournalDetailsBuilder()
+      GURL(), actor::TaskId(), "AccountHasChromeBenefits",
+      actor::JournalDetailsBuilder()
           .Add("subscription_tier", subscription_tier)
           .Add("eligible_tiers", features::kGlicActorEligibleTiers.Get())
           .Build());
   return eligible_tiers.contains(subscription_tier);
 }
 
-#endif  // BUILDFLAG(ENABLE_GLIC)
 }  // namespace
 
-ActorPolicyChecker::ActorPolicyChecker(
-    Profile& profile,
-    CanActOnWebChangedCallback change_callback,
-    AggregatedJournal& journal)
+GlicActorPolicyChecker::GlicActorPolicyChecker(Profile& profile)
     : profile_(&profile),
-      change_callback_(change_callback),
-#if BUILDFLAG(ENABLE_GLIC)
       url_blocklist_manager_(profile_->GetPrefs(),
                              glic::prefs::kGlicActuationOnWebBlockedForURLs,
                              glic::prefs::kGlicActuationOnWebAllowedForURLs),
-#endif  // BUILDFLAG(ENABLE_GLIC)
-      journal_(journal.GetSafeRef()) {
-#if BUILDFLAG(ENABLE_GLIC)
+      journal_(
+          actor::ActorKeyedService::Get(profile_)->GetJournal().GetSafeRef()) {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile_);
   if (identity_manager) {
@@ -252,33 +235,30 @@ ActorPolicyChecker::ActorPolicyChecker(
   if (subscription_service) {
     subscription_eligibility_service_observation_.Observe(subscription_service);
   }
-#endif  // BUILDFLAG(ENABLE_GLIC)
 
   std::tie(can_act_on_web_, cannot_act_on_web_reason_) =
       ComputeActOnWebCapability();
 
   pref_change_registrar_.Init(profile_->GetPrefs());
-#if BUILDFLAG(ENABLE_GLIC)
   // Listens to policy changes.
   pref_change_registrar_.Add(
       glic::prefs::kGlicActuationOnWeb,
-      base::BindRepeating(&ActorPolicyChecker::OnPrefOrAccountChanged,
+      base::BindRepeating(&GlicActorPolicyChecker::OnPrefOrAccountChanged,
                           weak_ptr_factory_.GetWeakPtr()));
   url_blocklist_subscription_ = url_blocklist_manager_.AddObserver(
-      base::BindRepeating(&ActorPolicyChecker::OnPrefOrAccountChanged,
+      base::BindRepeating(&GlicActorPolicyChecker::OnPrefOrAccountChanged,
                           weak_ptr_factory_.GetWeakPtr()));
   // Listens to user status changes.
   pref_change_registrar_.Add(
       glic::prefs::kGlicUserStatus,
-      base::BindRepeating(&ActorPolicyChecker::OnPrefOrAccountChanged,
+      base::BindRepeating(&GlicActorPolicyChecker::OnPrefOrAccountChanged,
                           weak_ptr_factory_.GetWeakPtr()));
-#endif  // BUILDFLAG(ENABLE_GLIC)
 }
 
-ActorPolicyChecker::~ActorPolicyChecker() = default;
+GlicActorPolicyChecker::~GlicActorPolicyChecker() = default;
 
 // static
-const base::flat_set<int32_t>& ActorPolicyChecker::GetActorEligibleTiers() {
+const base::flat_set<int32_t>& GlicActorPolicyChecker::GetActorEligibleTiers() {
   static const base::NoDestructor<base::flat_set<int32_t>> eligible_tiers([] {
     std::string tier_list = features::kGlicActorEligibleTiers.Get();
     std::vector<std::string_view> tier_pieces = base::SplitStringPiece(
@@ -296,7 +276,13 @@ const base::flat_set<int32_t>& ActorPolicyChecker::GetActorEligibleTiers() {
   return *eligible_tiers;
 }
 
-void ActorPolicyChecker::OnPrimaryAccountChanged(
+base::CallbackListSubscription
+GlicActorPolicyChecker::AddActOnWebCapabilityChangedCallback(
+    CanActOnWebChangedCallback callback) {
+  return changed_callback_list_.Add(callback);
+}
+
+void GlicActorPolicyChecker::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
   switch (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
     case signin::PrimaryAccountChangeEvent::Type::kSet:
@@ -309,7 +295,8 @@ void ActorPolicyChecker::OnPrimaryAccountChanged(
   }
 }
 
-void ActorPolicyChecker::OnExtendedAccountInfoUpdated(const AccountInfo& info) {
+void GlicActorPolicyChecker::OnExtendedAccountInfoUpdated(
+    const AccountInfo& info) {
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
   if (identity_manager &&
       info.account_id == identity_manager->GetPrimaryAccountId(
@@ -318,7 +305,8 @@ void ActorPolicyChecker::OnExtendedAccountInfoUpdated(const AccountInfo& info) {
   }
 }
 
-void ActorPolicyChecker::OnExtendedAccountInfoRemoved(const AccountInfo& info) {
+void GlicActorPolicyChecker::OnExtendedAccountInfoRemoved(
+    const AccountInfo& info) {
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
   if (identity_manager &&
       info.account_id == identity_manager->GetPrimaryAccountId(
@@ -327,43 +315,40 @@ void ActorPolicyChecker::OnExtendedAccountInfoRemoved(const AccountInfo& info) {
   }
 }
 
-void ActorPolicyChecker::OnAiSubscriptionTierUpdated(
+void GlicActorPolicyChecker::OnAiSubscriptionTierUpdated(
     int32_t new_subscription_tier) {
   OnPrefOrAccountChanged();
 }
 
-bool ActorPolicyChecker::CanActOnWeb() const {
+bool GlicActorPolicyChecker::CanActOnWeb() const {
   return can_act_on_web_ != CanActOutcome::kNo;
 }
 
-ActorPolicyChecker::CannotActReason ActorPolicyChecker::CannotActOnWebReason()
-    const {
+GlicActorPolicyChecker::CannotActReason
+GlicActorPolicyChecker::CannotActOnWebReason() const {
   return cannot_act_on_web_reason_;
 }
 
-void ActorPolicyChecker::OnPrefOrAccountChanged() {
+void GlicActorPolicyChecker::OnPrefOrAccountChanged() {
   auto old_value = can_act_on_web_;
   std::tie(can_act_on_web_, cannot_act_on_web_reason_) =
       ComputeActOnWebCapability();
   if (old_value != can_act_on_web_) {
-    change_callback_.Run(CanActOnWeb());
+    changed_callback_list_.Notify(CanActOnWeb());
   }
 }
 
-std::pair<ActorPolicyChecker::CanActOutcome,
-          ActorPolicyChecker::CannotActReason>
-ActorPolicyChecker::ComputeActOnWebCapability() {
-#if !BUILDFLAG(ENABLE_GLIC)
-  return {CanActOutcome::kYes, CannotActReason::kNone};
-#else
+std::pair<GlicActorPolicyChecker::CanActOutcome,
+          GlicActorPolicyChecker::CannotActReason>
+GlicActorPolicyChecker::ComputeActOnWebCapability() {
   auto log_and_return =
       [&](CanActOutcome outcome,
           std::variant<CannotActReason, std::string_view> reason) {
         CHECK(outcome == CanActOutcome::kYes ||
               std::holds_alternative<CannotActReason>(reason));
-        journal_->Log(GURL(), TaskId(),
-                      "ActorPolicyChecker::ComputeActOnWebCapability",
-                      JournalDetailsBuilder()
+        journal_->Log(GURL(), actor::TaskId(),
+                      "GlicActorPolicyChecker::ComputeActOnWebCapability",
+                      actor::JournalDetailsBuilder()
                           .Add("outcome", base::ToString(outcome))
                           .Add("reasons", base::ToString(reason))
                           .Build());
@@ -398,7 +383,7 @@ ActorPolicyChecker::ComputeActOnWebCapability() {
   if (can_use_model_execution_features != signin::Tribool::kTrue) {
     return log_and_return(
         CanActOutcome::kNo,
-        ActorPolicyChecker::CannotActReason::kAccountCapabilityIneligible);
+        GlicActorPolicyChecker::CannotActReason::kAccountCapabilityIneligible);
   }
 
   bool is_likely_dogfood_client = IsLikelyDogfoodClient();
@@ -463,39 +448,32 @@ ActorPolicyChecker::ComputeActOnWebCapability() {
   //   - Actuation is disabled by policy
   //   - No URL allowlist is present
   return log_and_return(CanActOutcome::kNo, CannotActReason::kDisabledByPolicy);
-#endif  // !BUILDFLAG(ENABLE_GLIC)
 }
 
-EnterprisePolicyBlockReason ActorPolicyChecker::Evaluate(
+actor::EnterprisePolicyBlockReason GlicActorPolicyChecker::Evaluate(
     const GURL& url) const {
-#if !BUILDFLAG(ENABLE_GLIC)
-  return EnterprisePolicyBlockReason::kNotBlocked;
-#else
   const policy::URLBlocklist::URLBlocklistState state =
       url_blocklist_manager_.GetURLBlocklistState(url);
   if (state == policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST) {
-    return EnterprisePolicyBlockReason::kExplicitlyBlocked;
+    return actor::EnterprisePolicyBlockReason::kExplicitlyBlocked;
   }
   if (state == policy::URLBlocklist::URLBlocklistState::URL_IN_ALLOWLIST) {
-    return EnterprisePolicyBlockReason::kExplicitlyAllowed;
+    return actor::EnterprisePolicyBlockReason::kExplicitlyAllowed;
   }
 
   // If the general policy is set to disable acting, then if the url is not in
   // the allow list, we block.
   if (can_act_on_web_ == CanActOutcome::kByAllowlistOnly) {
-    return EnterprisePolicyBlockReason::kExplicitlyBlocked;
+    return actor::EnterprisePolicyBlockReason::kExplicitlyBlocked;
   }
 
-  return EnterprisePolicyBlockReason::kNotBlocked;
-#endif  // !BUILDFLAG(ENABLE_GLIC)
+  return actor::EnterprisePolicyBlockReason::kNotBlocked;
 }
 
-#if BUILDFLAG(ENABLE_GLIC)
 base::CallbackListSubscription
-ActorPolicyChecker::AddUrlListsUpdateObserverForTesting(
+GlicActorPolicyChecker::AddUrlListsUpdateObserverForTesting(
     base::RepeatingClosure callback) {
   return url_blocklist_manager_.AddObserver(std::move(callback));
 }
-#endif  // BUILDFLAG(ENABLE_GLIC)
 
-}  // namespace actor
+}  // namespace glic

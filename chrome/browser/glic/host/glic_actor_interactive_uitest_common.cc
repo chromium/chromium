@@ -18,7 +18,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
-#include "chrome/browser/actor/actor_policy_checker.h"
 #include "chrome/browser/actor/actor_proto_conversion.h"
 #include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/browser/actor/actor_task.h"

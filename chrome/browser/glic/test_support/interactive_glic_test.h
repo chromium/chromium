@@ -23,7 +23,7 @@
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
-#include "chrome/browser/actor/actor_policy_checker.h"
+#include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
@@ -872,8 +872,8 @@ class InteractiveGlicTestMixin : public T {
   // Send a task state update to show the actor task icon in the tab strip.
   void StartTaskAndShowActorTaskIcon() {
     auto actor_service = actor::ActorKeyedService::Get(browser()->GetProfile());
-    actor_service->GetPolicyChecker().SetActOnWebForTesting(true);
-    actor::TaskId task_id = actor_service->CreateTask();
+    actor::TaskId task_id =
+        actor_service->CreateTask(actor::NoEnterprisePolicyChecker());
     actor::ui::StartTask start_task_event(task_id);
     actor_service->GetActorUiStateManager()->OnUiEvent(start_task_event);
   }

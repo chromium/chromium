@@ -15,7 +15,6 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
-#include "chrome/browser/actor/actor_policy_checker.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
 #include "chrome/browser/glic/fre/fre_util.h"
 #include "chrome/browser/glic/fre/glic_fre_dialog_view.h"

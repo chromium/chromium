@@ -518,6 +518,7 @@ source_set("browser_tests") {
   sources = []
   if (!is_android) {
     sources += [
+      "actor/glic_actor_policy_checker_browsertest.cc",
       "glic_browsertest.cc",
       "glic_metrics_browsertest.cc",
       "glic_net_log_browsertest.cc",
@@ -538,6 +539,7 @@ source_set("browser_tests") {
   }
   deps = [
     "//chrome/browser/background/glic",
+    "//chrome/browser/glic/actor",
     "//chrome/browser/glic/common:browser_tests",
     "//chrome/browser/ui/tabs:tab_list_interface",
   ]

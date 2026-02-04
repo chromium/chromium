@@ -10,7 +10,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/actor/actor_keyed_service_fake.h"
-#include "chrome/browser/actor/actor_policy_checker.h"
 #include "chrome/browser/actor/resources/grit/actor_browser_resources.h"
 #include "chrome/browser/actor/ui/actor_ui_metrics.h"
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_controller.h"

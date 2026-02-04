@@ -20,6 +20,11 @@ source_set("experimental_actor") {
     "//chrome/browser/actor",
     "//chrome/browser/ai",
     "//chrome/browser/extensions",
+
+    # TODO(bokan): This is here to preserve behavior but extension API shouldn't
+    # be using Glic enterprise policies and can be removed.
+    "//chrome/browser/glic",
+    "//chrome/browser/glic/actor",
     "//chrome/browser/ui",
   ]
 }

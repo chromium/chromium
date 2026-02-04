@@ -71,24 +71,18 @@ void GlicHandler::OnJavascriptAllowed() {
           glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile)) {
     // Unretained is safe here since our subscription will expire upon our
     // destruction.
-    glic_enabling_subscription_ =
-        std::make_unique<base::CallbackListSubscription>(
-            service->enabling().RegisterAllowedChanged(base::BindRepeating(
-                &GlicHandler::FireOnGlicDisallowedByAdminChanged,
-                base::Unretained(this))));
-  }
+    glic_enabling_subscription_ = service->enabling().RegisterAllowedChanged(
+        base::BindRepeating(&GlicHandler::FireOnGlicDisallowedByAdminChanged,
+                            base::Unretained(this)));
 
-  if (auto* actor_service =
-          actor::ActorKeyedServiceFactory::GetActorKeyedService(profile)) {
-    web_actuation_subscription_ =
-        actor_service->AddActOnWebCapabilityChangedCallback(
-            base::BindRepeating(&GlicHandler::OnWebActuationCapabilityChanged,
-                                base::Unretained(this)));
+    web_actuation_subscription_ = service->AddActOnWebCapabilityChangedCallback(
+        base::BindRepeating(&GlicHandler::OnWebActuationCapabilityChanged,
+                            base::Unretained(this)));
   }
 }
 
 void GlicHandler::OnJavascriptDisallowed() {
-  glic_enabling_subscription_.reset();
+  glic_enabling_subscription_ = {};
   web_actuation_subscription_ = {};
 }
 

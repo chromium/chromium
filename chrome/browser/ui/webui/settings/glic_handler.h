@@ -66,7 +66,7 @@ class GlicHandler : public SettingsPageUIHandler {
   base::CallbackListSubscription web_actuation_subscription_;
 
   // Used to listen to changes in glic enabling status.
-  std::unique_ptr<base::CallbackListSubscription> glic_enabling_subscription_;
+  base::CallbackListSubscription glic_enabling_subscription_;
 };
 
 }  // namespace settings

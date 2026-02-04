@@ -55,6 +55,7 @@ class IdentityManager;
 namespace glic {
 
 class AuthController;
+class GlicActorPolicyChecker;
 class GlicEnabling;
 class GlicFreController;
 class GlicMetrics;
@@ -393,6 +394,14 @@ class GlicKeyedService : public KeyedService,
       AutofillSuggestionSelectedCallback callback) override;
 #endif
 
+  using ActOnWebCapabilityChangedCallback = base::RepeatingCallback<void(bool)>;
+  base::CallbackListSubscription AddActOnWebCapabilityChangedCallback(
+      ActOnWebCapabilityChangedCallback callback);
+
+  GlicActorPolicyChecker& actor_policy_checker() {
+    return *actor_policy_checker_;
+  }
+
  private:
   // A helper function to route GetZeroStateSuggestionsForFocusedTabCallback
   // callbacks.
@@ -417,6 +426,10 @@ class GlicKeyedService : public KeyedService,
   base::RepeatingClosureList user_input_submitted_callback_list_;
 
   raw_ptr<Profile> profile_;
+
+  // Never null - GlicActorTaskManager holds a reference so this must be
+  // destroyed after it.
+  std::unique_ptr<GlicActorPolicyChecker> actor_policy_checker_;
 
   std::unique_ptr<GlicEnabling> enabling_;
   std::unique_ptr<GlicMetrics> metrics_;

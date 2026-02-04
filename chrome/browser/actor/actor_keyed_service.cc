@@ -17,12 +17,12 @@
 #include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/actor/actor_metrics.h"
-#include "chrome/browser/actor/actor_policy_checker.h"
 #include "chrome/browser/actor/actor_proto_conversion.h"
 #include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_task_metadata.h"
 #include "chrome/browser/actor/aggregated_journal.h"
+#include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager.h"
@@ -114,11 +114,6 @@ using ui::ActorUiStateManagerInterface;
 
 ActorKeyedService::ActorKeyedService(Profile* profile) : profile_(profile) {
   actor_ui_state_manager_ = std::make_unique<ui::ActorUiStateManager>(*this);
-  policy_checker_ = std::make_unique<ActorPolicyChecker>(
-      *profile,
-      base::BindRepeating(&ActorKeyedService::OnActOnWebCapabilityChanged,
-                          base::Unretained(this)),
-      GetJournal());
   profile_observation_.Observe(profile_);
   actor::InitActionBlocklist(profile_);
 }
@@ -371,19 +366,6 @@ void ActorKeyedService::NotifyTaskStateChanged(TaskId task_id,
   tab_state_change_callback_list_.Notify(task_id, state);
 }
 
-void ActorKeyedService::OnActOnWebCapabilityChanged(bool can_act_on_web) {
-  if (!can_act_on_web) {
-    StopAllTasks(ActorTask::StoppedReason::kChromeFailure);
-  }
-  act_on_web_capability_changed_callback_list_.Notify(can_act_on_web);
-}
-
-base::CallbackListSubscription
-ActorKeyedService::AddActOnWebCapabilityChangedCallback(
-    ActOnWebCapabilityChangedCallback callback) {
-  return act_on_web_capability_changed_callback_list_.Add(std::move(callback));
-}
-
 void ActorKeyedService::RequestTabObservation(
     tabs::TabInterface& tab,
     TaskId task_id,
@@ -574,10 +556,6 @@ ActorTask* ActorKeyedService::GetTask(TaskId task_id) {
 
 ActorUiStateManagerInterface* ActorKeyedService::GetActorUiStateManager() {
   return actor_ui_state_manager_.get();
-}
-
-ActorPolicyChecker& ActorKeyedService::GetPolicyChecker() {
-  return *policy_checker_;
 }
 
 bool ActorKeyedService::IsActiveOnTab(const tabs::TabInterface& tab) const {

@@ -10,7 +10,6 @@
 #include "build/build_config.h"
 #include "cc/test/pixel_test_utils.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
-#include "chrome/browser/actor/actor_policy_checker.h"
 #include "chrome/browser/actor/actor_task_metadata.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller.h"

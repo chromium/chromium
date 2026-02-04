@@ -4,18 +4,23 @@
 
 source_set("actor") {
   sources = [
+    "glic_actor_policy_checker.cc",
+    "glic_actor_policy_checker.h",
     "glic_actor_task_manager.cc",
     "glic_actor_task_manager.h",
   ]
 
   deps = [
     "//base",
+    "//chrome/browser:browser_process",
     "//chrome/browser/actor",
     "//chrome/browser/actor/ui",
     "//chrome/browser/glic",
     "//chrome/browser/glic:mojo_bindings",
+    "//chrome/browser/signin",
     "//chrome/common:actor_webui_mojom",
     "//components/tabs:public",
+    "//components/variations/service",
     "//mojo/public/mojom/base:protobuf_support",
   ]
 
