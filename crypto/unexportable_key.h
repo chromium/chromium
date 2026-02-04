@@ -83,8 +83,6 @@ class CRYPTO_EXPORT UnexportableSigningKey {
   // Will verify whether the key can be used to sign TLS 1.3 payloads as
   // required by the spec. Specifically, it will verify whether RSA keys
   // support the RSA-PSS algorithm with the expected salt lengths.
-  // TODO(crbug.com/478227256): Missing a signature validation step that may
-  // catch TPMs that support PSS with fixed salt lengths.
   virtual bool SupportsTls13() = 0;
 #endif  // BUILDFLAG(IS_APPLE)
 

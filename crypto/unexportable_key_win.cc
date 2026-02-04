@@ -29,7 +29,9 @@
 #include "base/types/expected.h"
 #include "base/types/optional_util.h"
 #include "crypto/hash.h"
+#include "crypto/keypair.h"
 #include "crypto/random.h"
+#include "crypto/sign.h"
 #include "crypto/unexportable_key.h"
 #include "crypto/unexportable_key_metrics.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
@@ -499,21 +501,11 @@ class RSAKey : public UnexportableSigningKey {
   }
 
   bool SupportsTls13() override {
-    // TLS 1.3 requires support of RSA-PSS algorithm with Salt Length == Hash
-    // Length (32 bytes for SHA-256).
-    BCRYPT_PSS_PADDING_INFO padding_info = {0};
-    padding_info.pszAlgId = BCRYPT_SHA256_ALGORITHM;
-    padding_info.cbSalt = 32;
+    if (!is_compatible_with_tls13.has_value()) {
+      is_compatible_with_tls13 = CanSignPssWithExpectedSaltLength();
+    }
 
-    std::array<uint8_t, 32> dummy_hash;
-    dummy_hash.fill(0xAA);
-    DWORD cb_signature = 0;
-
-    // TODO(crbug.com/478227256): Add signature validation logic that does not
-    // use a Windows API, as it may very well ignore the cbSalt length too.
-    return !FAILED(NCryptSignHash(key_.get(), &padding_info, dummy_hash.data(),
-                                  dummy_hash.size(), nullptr, 0, &cb_signature,
-                                  NCRYPT_SILENT_FLAG | NCRYPT_PAD_PSS_FLAG));
+    return is_compatible_with_tls13.value();
   }
 
   StatefulUnexportableSigningKey* AsStatefulUnexportableSigningKey() override {
@@ -521,10 +513,50 @@ class RSAKey : public UnexportableSigningKey {
   }
 
  private:
+  bool CanSignPssWithExpectedSaltLength() {
+    // TLS 1.3 requires support of RSA-PSS algorithm with Salt Length == Hash
+    // Length (32 bytes for SHA-256).
+    BCRYPT_PSS_PADDING_INFO padding_info = {0};
+    padding_info.pszAlgId = BCRYPT_SHA256_ALGORITHM;
+    padding_info.cbSalt = 32;
+
+    constexpr auto dummy_data = std::to_array<uint8_t>({
+        0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a,
+        0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15,
+        0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f,
+    });
+
+    auto dummy_hash = hash::Sha256(dummy_data);
+    DWORD cb_signature = 0;
+
+    if (FAILED(NCryptSignHash(key_.get(), &padding_info, dummy_hash.data(),
+                              dummy_hash.size(), nullptr, 0, &cb_signature,
+                              NCRYPT_SILENT_FLAG | NCRYPT_PAD_PSS_FLAG))) {
+      return false;
+    }
+
+    std::vector<uint8_t> signature(cb_signature);
+    if (FAILED(NCryptSignHash(key_.get(), &padding_info, dummy_hash.data(),
+                              dummy_hash.size(), signature.data(),
+                              signature.size(), &cb_signature,
+                              NCRYPT_SILENT_FLAG | NCRYPT_PAD_PSS_FLAG))) {
+      return false;
+    }
+
+    auto public_key = keypair::PublicKey::FromSubjectPublicKeyInfo(spki_);
+    if (!public_key) {
+      return false;
+    }
+
+    return sign::Verify(sign::SignatureKind::RSA_PSS_SHA256, public_key.value(),
+                        dummy_data, signature);
+  }
+
   const ProviderType provider_type_;
   ScopedNCryptKey key_;
   const std::vector<uint8_t> wrapped_;
   const std::vector<uint8_t> spki_;
+  std::optional<bool> is_compatible_with_tls13;
 };
 
 // UnexportableKeyProviderWin uses NCrypt and the Platform Crypto
