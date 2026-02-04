@@ -56,8 +56,7 @@ DEFINE_FRAMEWORK_SPECIFIC_METADATA(TrackedElementViews)
 
 // Tracks views associated with a specific ui::ElementIdentifier, whether or not
 // they are visible or attached to a widget.
-class ElementTrackerViews::ElementDataViews : public ViewObserver,
-                                              public WidgetObserver {
+class ElementTrackerViews::ElementDataViews : public ViewObserver {
  public:
   ElementDataViews(ElementTrackerViews* tracker,
                    ui::ElementIdentifier identifier)
