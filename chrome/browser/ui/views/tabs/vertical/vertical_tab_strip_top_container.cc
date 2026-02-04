@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_everything_menu.h"
+#include "chrome/browser/ui/views/tabs/shared/tab_strip_combo_button.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_flat_edge_button.h"
 #include "chrome/browser/ui/views/tabs/vertical/top_container_button.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -44,32 +45,37 @@ VerticalTabStripTopContainer::VerticalTabStripTopContainer(
   collapse_button_->SetProperty(views::kElementIdentifierKey,
                                 kVerticalTabStripCollapseButtonElementId);
 
+  std::unique_ptr<TabStripFlatEdgeButton> tab_group_button;
   if (tabs::IsProjectsPanelFeatureEnabled()) {
-    tab_group_button_ = AddFlatEdgeChildButtonFor(kActionToggleProjectsPanel);
-    tab_group_button_->SetProperty(views::kElementIdentifierKey,
-                                   kVerticalTabStripProjectsButtonElementId);
+    tab_group_button = CreateFlatEdgeButtonFor(kActionToggleProjectsPanel);
+    tab_group_button->SetProperty(views::kElementIdentifierKey,
+                                  kVerticalTabStripProjectsButtonElementId);
   } else if (tab_groups::SavedTabGroupUtils::IsEnabledForProfile(
                  browser_->GetProfile())) {
-    tab_group_button_ = AddFlatEdgeChildButtonFor(kActionTabGroupsMenu);
+    tab_group_button = CreateFlatEdgeButtonFor(kActionTabGroupsMenu);
     // Creating MenuButtonController because tab_group_button is a LabelButton.
     auto controller = std::make_unique<views::MenuButtonController>(
-        tab_group_button_,
+        tab_group_button.get(),
         base::BindRepeating(&VerticalTabStripTopContainer::ShowEverythingMenu,
                             base::Unretained(this)),
         std::make_unique<views::Button::DefaultButtonControllerDelegate>(
-            tab_group_button_));
+            tab_group_button.get()));
     everything_menu_controller_ = controller.get();
 
-    tab_group_button_->SetButtonController(std::move(controller));
-    tab_group_button_->SetProperty(views::kElementIdentifierKey,
-                                   kSavedTabGroupButtonElementId);
+    tab_group_button->SetButtonController(std::move(controller));
+    tab_group_button->SetProperty(views::kElementIdentifierKey,
+                                  kSavedTabGroupButtonElementId);
   }
 
-  tab_search_button_ = AddFlatEdgeChildButtonFor(kActionTabSearch);
-  tab_search_button_->SetProperty(views::kElementIdentifierKey,
-                                  kTabSearchButtonElementId);
+  auto tab_search_button = CreateFlatEdgeButtonFor(kActionTabSearch);
+  tab_search_button->SetProperty(views::kElementIdentifierKey,
+                                 kTabSearchButtonElementId);
 
-  UpdateButtonStyles(state_controller);
+  combo_button_ = AddChildView(std::make_unique<TabStripComboButton>(
+      std::move(tab_group_button), std::move(tab_search_button)));
+  combo_button_->SetOrientation(state_controller->IsCollapsed()
+                                    ? views::LayoutOrientation::kVertical
+                                    : views::LayoutOrientation::kHorizontal);
 }
 
 VerticalTabStripTopContainer::~VerticalTabStripTopContainer() = default;
@@ -82,18 +88,13 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
                                                  : parent()->width(),
                 toolbar_height_);
 
-  std::vector<views::LabelButton*> container_buttons;
+  std::vector<views::View*> container_views;
 
-  CHECK(tab_search_button_);
-  container_buttons.push_back(tab_search_button_);
-
-  // If in incognito mode, the tab groups button will not be visible.
-  if (tab_group_button_) {
-    container_buttons.push_back(tab_group_button_);
-  }
+  CHECK(combo_button_);
+  container_views.push_back(combo_button_);
 
   CHECK(collapse_button_);
-  container_buttons.push_back(collapse_button_);
+  container_views.push_back(collapse_button_);
 
   const int padding =
       GetLayoutConstant(LayoutConstant::kVerticalTabStripTopButtonPadding);
@@ -114,25 +115,12 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
           GetLayoutConstant(LayoutConstant::kVerticalTabStripCollapsedPadding);
     }
 
-    if (tab_group_button_) {
-      const gfx::Size pref_size = tab_group_button_->GetPreferredSize();
+    if (combo_button_) {
+      const gfx::Size pref_size = combo_button_->GetPreferredSize();
       gfx::Rect bounds(std::max(0, (host_size.width() - pref_size.width()) / 2),
                        current_y, pref_size.width(), pref_size.height());
-      layout.child_layouts.emplace_back(
-          tab_group_button_.get(), tab_group_button_->GetVisible(), bounds);
-      host_size.SetToMax(gfx::Size(bounds.right(), 0));
-
-      current_y += pref_size.height() +
-                   GetLayoutConstant(
-                       LayoutConstant::kVerticalTabStripFlatEdgeButtonPadding);
-    }
-
-    if (tab_search_button_) {
-      const gfx::Size pref_size = tab_search_button_->GetPreferredSize();
-      gfx::Rect bounds(std::max(0, (host_size.width() - pref_size.width()) / 2),
-                       current_y, pref_size.width(), pref_size.height());
-      layout.child_layouts.emplace_back(
-          tab_search_button_.get(), tab_search_button_->GetVisible(), bounds);
+      layout.child_layouts.emplace_back(combo_button_.get(),
+                                        combo_button_->GetVisible(), bounds);
       host_size.SetToMax(gfx::Size(bounds.right(), 0));
 
       current_y += pref_size.height() +
@@ -147,8 +135,8 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
     // on one line or not.
     int total_width = caption_button_width_;
     int min_height = 0;
-    for (views::LabelButton* container_button : container_buttons) {
-      const auto preferred = container_button->GetPreferredSize();
+    for (views::View* container_view : container_views) {
+      const auto preferred = container_view->GetPreferredSize();
       total_width += preferred.width();
       min_height = std::max(min_height, preferred.height());
     }
@@ -161,7 +149,7 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
     }
     host_size.SetToMax(gfx::Size(0, min_height));
 
-    total_width += (container_buttons.size() - 1) * padding;
+    total_width += (container_views.size() - 1) * padding;
 
     // If we're trying to get the minimum size, it will ask for layout for size
     // bounds {0, 0}, but overflow is based on available size.
@@ -201,27 +189,17 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
 
     int right_alignment = host_size.width();
 
-    if (tab_search_button_) {
-      const gfx::Size pref_size = tab_search_button_->GetPreferredSize();
+    if (combo_button_) {
+      const gfx::Size pref_size = combo_button_->GetPreferredSize();
       right_alignment -= pref_size.width();
       gfx::Rect bounds(right_alignment,
                        std::max(0, y_baseline - pref_size.height() / 2),
                        pref_size.width(), pref_size.height());
-      layout.child_layouts.emplace_back(
-          tab_search_button_.get(), tab_search_button_->GetVisible(), bounds);
+      layout.child_layouts.emplace_back(combo_button_.get(),
+                                        combo_button_->GetVisible(), bounds);
 
       right_alignment -= GetLayoutConstant(
           LayoutConstant::kVerticalTabStripFlatEdgeButtonPadding);
-    }
-
-    if (tab_group_button_) {
-      const gfx::Size pref_size = tab_search_button_->GetPreferredSize();
-      right_alignment -= pref_size.width();
-      gfx::Rect bounds(right_alignment,
-                       std::max(0, y_baseline - pref_size.height() / 2),
-                       pref_size.width(), pref_size.height());
-      layout.child_layouts.emplace_back(
-          tab_group_button_.get(), tab_group_button_->GetVisible(), bounds);
     }
   }
 
@@ -247,7 +225,8 @@ views::LabelButton* VerticalTabStripTopContainer::AddTopContainerChildButtonFor(
   return container_button_ptr;
 }
 
-TabStripFlatEdgeButton* VerticalTabStripTopContainer::AddFlatEdgeChildButtonFor(
+std::unique_ptr<TabStripFlatEdgeButton>
+VerticalTabStripTopContainer::CreateFlatEdgeButtonFor(
     actions::ActionId action_id) {
   std::unique_ptr<TabStripFlatEdgeButton> container_button =
       std::make_unique<TabStripFlatEdgeButton>();
@@ -258,24 +237,25 @@ TabStripFlatEdgeButton* VerticalTabStripTopContainer::AddFlatEdgeChildButtonFor(
   action_view_controller_->CreateActionViewRelationship(
       container_button.get(), action_item->GetAsWeakPtr());
 
-  TabStripFlatEdgeButton* container_button_ptr =
-      AddChildView(std::move(container_button));
-
   const int raw_container_button_size = GetLayoutConstant(
       LayoutConstant::kVerticalTabStripTopContainerButtonSize);
-  container_button_ptr->SetPreferredSize(
+  container_button->SetPreferredSize(
       gfx::Size(raw_container_button_size, raw_container_button_size));
 
-  return container_button_ptr;
+  return container_button;
+}
+
+TabStripComboButton* VerticalTabStripTopContainer::GetComboButton() {
+  return combo_button_.get();
+}
+
+TabStripFlatEdgeButton* VerticalTabStripTopContainer::GetTabSearchButton() {
+  return combo_button_->end_button();
 }
 
 bool VerticalTabStripTopContainer::IsPositionInWindowCaption(
     const gfx::Point& point) {
-  if (tab_search_button_ && IsHitInView(tab_search_button_, point)) {
-    return false;
-  }
-
-  if (tab_group_button_ && IsHitInView(tab_group_button_, point)) {
+  if (combo_button_ && IsHitInView(combo_button_, point)) {
     return false;
   }
 
@@ -319,34 +299,10 @@ void VerticalTabStripTopContainer::ShowEverythingMenu() {
 
 void VerticalTabStripTopContainer::OnCollapsedStateChanged(
     tabs::VerticalTabStripStateController* controller) {
-  UpdateButtonStyles(controller);
-}
-
-void VerticalTabStripTopContainer::UpdateButtonStyles(
-    tabs::VerticalTabStripStateController* controller) {
-  if (controller->IsCollapsed()) {
-    // Since it is possible for the tab group button to not be visible in
-    // incognito and guest mode, we check for its existence before assigning
-    // the flat edge side.
-    if (tab_search_button_) {
-      tab_search_button_->SetFlatEdge(
-          tab_group_button_ ? TabStripFlatEdgeButton::FlatEdge::kTop
-                            : TabStripFlatEdgeButton::FlatEdge::kNone);
-    }
-
-    if (tab_group_button_) {
-      tab_group_button_->SetFlatEdge(TabStripFlatEdgeButton::FlatEdge::kBottom);
-    }
-  } else {
-    if (tab_search_button_) {
-      tab_search_button_->SetFlatEdge(
-          tab_group_button_ ? TabStripFlatEdgeButton::FlatEdge::kLeft
-                            : TabStripFlatEdgeButton::FlatEdge::kNone);
-    }
-
-    if (tab_group_button_) {
-      tab_group_button_->SetFlatEdge(TabStripFlatEdgeButton::FlatEdge::kRight);
-    }
+  if (combo_button_) {
+    combo_button_->SetOrientation(controller->IsCollapsed()
+                                      ? views::LayoutOrientation::kVertical
+                                      : views::LayoutOrientation::kHorizontal);
   }
 }
 

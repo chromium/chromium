@@ -37,6 +37,8 @@ class TabStripFlatEdgeButton : public views::LabelButton,
   void UpdateIcon(const ui::ImageModel& icon_image);
   void SetInsets(const gfx::Insets& insets);
 
+  FlatEdge flat_edge_for_testing() const { return flat_edge_; }
+
  private:
   // views::View:
   void AddedToWidget() override;

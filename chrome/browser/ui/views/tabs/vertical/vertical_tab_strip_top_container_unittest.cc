@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
+#include "chrome/browser/ui/views/tabs/shared/tab_strip_combo_button.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_flat_edge_button.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -76,8 +77,8 @@ class VerticalTabStripTopContainerTest : public ChromeViewsTestBase {
  protected:
   VerticalTabStripTopContainer* top_container() { return top_container_; }
 
-  TabStripFlatEdgeButton* tab_search_button() {
-    return top_container_->GetTabSearchButton();
+  TabStripComboButton* combo_button() {
+    return top_container_->GetComboButton();
   }
 
   views::LabelButton* collapse_button() {
@@ -108,19 +109,19 @@ TEST_F(VerticalTabStripTopContainerTest, LayoutWithoutExclusionZone) {
   LayoutView();
 
   const gfx::Rect container_bounds = top_container()->bounds();
-  const gfx::Rect search_bounds = tab_search_button()->bounds();
+  const gfx::Rect combo_bounds = combo_button()->bounds();
   const gfx::Rect collapse_bounds = collapse_button()->bounds();
 
-  // The tab search button should be right aligned to the container and
+  // The combo button should be right aligned to the container and
   // vertically centered. Due to rounding, there is an off-by-one error
   // with the vertical centering of the button.
-  EXPECT_EQ(search_bounds.top_right().x(), container_bounds.top_right().x());
-  EXPECT_NEAR(search_bounds.right_center().y(),
+  EXPECT_EQ(combo_bounds.top_right().x(), container_bounds.top_right().x());
+  EXPECT_NEAR(combo_bounds.right_center().y(),
               container_bounds.right_center().y(), 1);
 
-  // The collapse button should be to the left of the tab search button.
-  EXPECT_LT(collapse_bounds.CenterPoint().x(), search_bounds.CenterPoint().x());
-  EXPECT_EQ(collapse_bounds.CenterPoint().y(), search_bounds.CenterPoint().y());
+  // The collapse button should be to the left of the combo button.
+  EXPECT_LT(collapse_bounds.CenterPoint().x(), combo_bounds.CenterPoint().x());
+  EXPECT_EQ(collapse_bounds.CenterPoint().y(), combo_bounds.CenterPoint().y());
 }
 
 TEST_F(VerticalTabStripTopContainerTest, LayoutWithFullWidthExclusionZone) {
@@ -128,14 +129,14 @@ TEST_F(VerticalTabStripTopContainerTest, LayoutWithFullWidthExclusionZone) {
   top_container()->SetToolbarHeightForLayout(1);
   LayoutView();
 
-  const gfx::Rect initial_search_bounds = tab_search_button()->bounds();
+  const gfx::Rect initial_combo_bounds = combo_button()->bounds();
 
   top_container()->SetCaptionButtonWidthForLayout(kTopContainerWidth);
   constexpr int kExclusionHeight = 50;
   top_container()->SetToolbarHeightForLayout(kExclusionHeight);
   LayoutView();
 
-  const gfx::Rect search_bounds = tab_search_button()->bounds();
+  const gfx::Rect combo_bounds = combo_button()->bounds();
   const gfx::Rect collapse_bounds = collapse_button()->bounds();
 
   // Both buttons are shifted down to match the height of the bookmarks bar.
@@ -145,9 +146,8 @@ TEST_F(VerticalTabStripTopContainerTest, LayoutWithFullWidthExclusionZone) {
        GetLayoutConstant(LayoutConstant::kBookmarkBarButtonImageLabelPadding)) /
           2;
 
-  EXPECT_EQ(search_bounds.top_right().x(),
-            initial_search_bounds.top_right().x());
-  EXPECT_EQ(search_bounds.right_center().y(), expected_y_center);
+  EXPECT_EQ(combo_bounds.top_right().x(), initial_combo_bounds.top_right().x());
+  EXPECT_EQ(combo_bounds.right_center().y(), expected_y_center);
 
   EXPECT_EQ(collapse_bounds.x(), 0);
   EXPECT_EQ(collapse_bounds.right_center().y(), expected_y_center);
@@ -159,17 +159,17 @@ TEST_F(VerticalTabStripTopContainerTest, LayoutWithPartialWidthExclusionZone) {
   LayoutView();
 
   const gfx::Rect container_bounds = top_container()->bounds();
-  const gfx::Rect search_bounds = tab_search_button()->bounds();
+  const gfx::Rect combo_bounds = combo_button()->bounds();
   const gfx::Rect collapse_bounds = collapse_button()->bounds();
 
-  // The tab search button should be right aligned to the container and
+  // The combo button should be right aligned to the container and
   // vertically centered. Due to rounding, there is an off-by-one error
   // with the vertical centering of the button.
-  EXPECT_EQ(search_bounds.top_right().x(), container_bounds.top_right().x());
-  EXPECT_NEAR(search_bounds.right_center().y(),
+  EXPECT_EQ(combo_bounds.top_right().x(), container_bounds.top_right().x());
+  EXPECT_NEAR(combo_bounds.right_center().y(),
               container_bounds.right_center().y(), 1);
 
-  // The collapse button should be to the left of the tab search button.
-  EXPECT_LT(collapse_bounds.CenterPoint().x(), search_bounds.CenterPoint().x());
-  EXPECT_EQ(collapse_bounds.CenterPoint().y(), search_bounds.CenterPoint().y());
+  // The collapse button should be to the left of the combo button.
+  EXPECT_LT(collapse_bounds.CenterPoint().x(), combo_bounds.CenterPoint().x());
+  EXPECT_EQ(collapse_bounds.CenterPoint().y(), combo_bounds.CenterPoint().y());
 }

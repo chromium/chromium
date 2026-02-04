@@ -3,7 +3,10 @@
 # found in the LICENSE file.
 
 source_set("shared") {
-  sources = [ "tab_strip_flat_edge_button.h" ]
+  sources = [
+    "tab_strip_combo_button.h",
+    "tab_strip_flat_edge_button.h",
+  ]
 
   deps = [
     "//ui/base/metadata",
@@ -12,14 +15,33 @@ source_set("shared") {
 }
 
 source_set("impl") {
-  sources = [ "tab_strip_flat_edge_button.cc" ]
+  sources = [
+    "tab_strip_combo_button.cc",
+    "tab_strip_flat_edge_button.cc",
+  ]
 
   deps = [
     ":shared",
+    "//base:i18n",
     "//chrome/browser/ui:layout_constants",
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/views/toolbar",
     "//ui/actions",
+    "//ui/views",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "tab_strip_combo_button_unittest.cc" ]
+  deps = [
+    ":impl",
+    "//base/test:test_support",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/views/tabs/shared",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//testing/gtest",
     "//ui/views",
   ]
 }
