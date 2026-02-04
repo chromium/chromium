@@ -53,6 +53,8 @@ build_webui("build") {
     "scope_icon.html.ts",
     "scope_icon.ts",
     "tools.ts",
+    "updater_state/enterprise_companion_state_card.html.ts",
+    "updater_state/enterprise_companion_state_card.ts",
     "updater_state/updater_state.html.ts",
     "updater_state/updater_state.ts",
     "updater_state/updater_state_card.html.ts",
@@ -75,6 +77,7 @@ build_webui("build") {
     "event_list/filter_dialog/type_dialog.css",
     "event_list/raw_event_details.css",
     "updater_shared.css",
+    "updater_state/enterprise_companion_state_card.css",
     "updater_state/updater_state.css",
     "updater_state/updater_state_card.css",
   ]

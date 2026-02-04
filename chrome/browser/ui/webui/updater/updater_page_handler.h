@@ -29,8 +29,10 @@ class UpdaterPageHandler final : public updater_ui::mojom::PageHandler {
    public:
     static scoped_refptr<Delegate> CreateDefault();
 
-    virtual std::optional<base::FilePath> GetInstallDirectory(
+    virtual std::optional<base::FilePath> GetUpdaterInstallDirectory(
         updater::UpdaterScope scope) const = 0;
+    virtual std::optional<base::FilePath>
+    GetEnterpriseCompanionInstallDirectory() const = 0;
     virtual void GetSystemUpdaterState(
         base::OnceCallback<void(const updater::mojom::UpdaterState&)> callback)
         const = 0;
@@ -67,8 +69,10 @@ class UpdaterPageHandler final : public updater_ui::mojom::PageHandler {
 
   void GetAllUpdaterEvents(GetAllUpdaterEventsCallback callback) override;
   void GetUpdaterStates(GetUpdaterStatesCallback callback) override;
+  void GetEnterpriseCompanionState(
+      GetEnterpriseCompanionStateCallback callback) override;
   void GetAppStates(GetAppStatesCallback callback) override;
-  void ShowUpdaterDirectory(updater_ui::mojom::UpdaterScope scope) override;
+  void ShowDirectory(updater_ui::mojom::ShowDirectoryTarget scope) override;
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);

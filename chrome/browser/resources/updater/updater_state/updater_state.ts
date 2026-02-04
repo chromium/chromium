@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import './updater_state_card.js';
+import './enterprise_companion_state_card.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '../icons.html.js';
 
@@ -10,7 +11,7 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {FilePath} from '//resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 
 import {BrowserProxyImpl} from '../browser_proxy.js';
-import type {GetUpdaterStatesResponse, UpdaterState} from '../updater_ui.mojom-webui.js';
+import type {EnterpriseCompanionState, GetEnterpriseCompanionStateResponse, GetUpdaterStatesResponse, UpdaterState} from '../updater_ui.mojom-webui.js';
 
 import {getCss} from './updater_state.css.js';
 import {getHtml} from './updater_state.html.js';
@@ -28,12 +29,15 @@ export class UpdaterStateElement extends CrLitElement {
     return {
       userUpdaterState: {type: Object},
       systemUpdaterState: {type: Object},
+      enterpriseCompanionState: {type: Object},
       error: {type: Boolean},
     };
   }
 
   protected accessor userUpdaterState: UpdaterState|null = null;
   protected accessor systemUpdaterState: UpdaterState|null = null;
+  protected accessor enterpriseCompanionState: EnterpriseCompanionState|null =
+      null;
   protected accessor error: boolean = false;
 
   override connectedCallback() {
@@ -42,6 +46,13 @@ export class UpdaterStateElement extends CrLitElement {
         .then(response => {
           this.userUpdaterState = response.user;
           this.systemUpdaterState = response.system;
+        })
+        .catch(() => {
+          this.error = true;
+        });
+    this.getEnterpriseCompanionState()
+        .then(response => {
+          this.enterpriseCompanionState = response.state;
         })
         .catch(() => {
           this.error = true;
@@ -55,6 +66,13 @@ export class UpdaterStateElement extends CrLitElement {
   private async getUpdaterStates(): Promise<GetUpdaterStatesResponse> {
     return await BrowserProxyImpl.getInstance().handler.getUpdaterStates();
   }
+
+  private async getEnterpriseCompanionState():
+      Promise<GetEnterpriseCompanionStateResponse> {
+    return await BrowserProxyImpl.getInstance()
+        .handler.getEnterpriseCompanionState();
+  }
+
 
   protected filePathToString(filePath: FilePath): string {
     if (typeof filePath.path === 'string') {
@@ -76,9 +94,15 @@ export class UpdaterStateElement extends CrLitElement {
     return !this.error && this.userUpdaterState !== null;
   }
 
+  protected shouldShowEnterpriseCompanionState():
+      this is {enterpriseCompanionState: EnterpriseCompanionState} {
+    return !this.error && this.enterpriseCompanionState !== null;
+  }
+
   protected get shouldShowNoUpdatersFound(): boolean {
     return !this.error && this.systemUpdaterState === null &&
-        this.userUpdaterState === null;
+        this.userUpdaterState === null &&
+        this.enterpriseCompanionState === null;
   }
 }
 

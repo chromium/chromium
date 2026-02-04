@@ -8644,6 +8644,7 @@ test("unit_tests") {
 
       deps += [
         "//chrome/browser/ui/webui/updater:mojo_bindings",
+        "//chrome/enterprise_companion:constants_prod",
         "//chrome/updater:browser_sources",
       ]
     }

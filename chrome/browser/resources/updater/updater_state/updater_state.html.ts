@@ -38,6 +38,13 @@ ${this.shouldShowUserUpdaterState() ? html`
       .policies="${JSON.parse(this.userUpdaterState.policies)}">
   </updater-state-card>
 ` : ''}
+${this.shouldShowEnterpriseCompanionState() ? html`
+  <enterprise-companion-state-card
+      .version="${this.enterpriseCompanionState.version}"
+      .installPath="${this.filePathToString(
+          this.enterpriseCompanionState.installationDirectory)}">
+  </enterprise-companion-state-card>
+` : ''}
 ${this.shouldShowNoUpdatersFound ? html`
   <div id="no-updater-message">$i18n{noUpdaterFound}</div>
 ` : ''}

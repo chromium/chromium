@@ -46,6 +46,22 @@ struct GetUpdaterStatesResponse {
 
 struct GetUpdaterStatesError {};
 
+// A snapshot of a Chrome Enterprise Companion App installation's state.
+struct EnterpriseCompanionState {
+  // The installed version of the application from the perspective of the
+  // updater.
+  string version;
+  // The location on the filesystem of the application's installation.
+  mojo_base.mojom.FilePath installation_directory;
+};
+
+struct GetEnterpriseCompanionStateResponse {
+  // The state of the application or `null` if it is not present on the machine.
+  EnterpriseCompanionState? state;
+};
+
+struct GetEnterpriseCompanionStateError {};
+
 struct AppState {
   // The ASCII AppId of the application this state refers to, in the format
   // defined by the Omaha protocol (see //docs/updater).
@@ -67,9 +83,10 @@ struct GetAppStatesResponse {
 
 struct GetAppStatesError {};
 
-enum UpdaterScope {
-  kSystem,
-  kUser,
+enum ShowDirectoryTarget {
+  kSystemUpdater,
+  kUserUpdater,
+  kEnterpriseCompanionApp,
 };
 
 // Called from TS side of chrome://updater (Renderer -> Browser).
@@ -85,13 +102,20 @@ interface PageHandler {
   GetUpdaterStates()
       => result<GetUpdaterStatesResponse, GetUpdaterStatesError>;
 
+  // Retrieves the state of the Chrome Enterprise Companion App on the system,
+  // if it is installed. It is not an error for the application to not exist on
+  // the machine.
+  GetEnterpriseCompanionState()
+      => result<GetEnterpriseCompanionStateResponse, GetEnterpriseCompanionStateError>;
+
   // Retrieves the states of applications managed by the per-user (for the
   // current user) and per-system updater installations present on the machine.
   GetAppStates() => result<GetAppStatesResponse, GetAppStatesError>;
 
-  // Opens the directory containing the updater installation on the filesystem
-  // at the requested scope. Fails silently if the directory does not exist.
-  ShowUpdaterDirectory(UpdaterScope scope);
+  // Opens a native UI for viewing the directory containing an application's
+  // installation on the filesystem. Fails silently if the directory does not
+  // exist.
+  ShowDirectory(ShowDirectoryTarget scope);
 };
 
 // Called from C++ side of chrome://updater (Browser -> Renderer).

@@ -82,6 +82,11 @@ IN_PROC_BROWSER_TEST_F(UpdaterAppTest, TypeDialogTest) {
           "mocha.run();");
 }
 
+IN_PROC_BROWSER_TEST_F(UpdaterAppTest, EnterpriseCompanionStateCardTest) {
+  RunTest("updater/updater_state/enterprise_companion_state_card_test.js",
+          "mocha.run();");
+}
+
 IN_PROC_BROWSER_TEST_F(UpdaterAppTest, UpdaterStateCardTest) {
   RunTest("updater/updater_state/updater_state_card_test.js", "mocha.run();");
 }
