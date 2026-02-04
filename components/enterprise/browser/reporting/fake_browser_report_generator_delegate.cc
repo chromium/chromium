@@ -39,7 +39,9 @@ void FakeProfileReportGeneratorDelegate::GetSigninUserInfo(
     enterprise_management::ChromeUserProfileInfo* report) {}
 
 void FakeProfileReportGeneratorDelegate::GetAffiliationInfo(
-    enterprise_management::ChromeUserProfileInfo* report) {}
+    enterprise_management::ChromeUserProfileInfo* report) {
+  report->mutable_affiliation()->set_is_affiliated(true);
+}
 
 void FakeProfileReportGeneratorDelegate::GetExtensionInfo(
     enterprise_management::ChromeUserProfileInfo* report) {}

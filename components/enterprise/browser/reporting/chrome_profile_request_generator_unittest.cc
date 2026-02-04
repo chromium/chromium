@@ -290,14 +290,13 @@ class ChromeProfileRequestGeneratorTest
     EXPECT_EQ(1, browser_report.chrome_user_profile_infos_size());
     auto chrome_user_profile_info = browser_report.chrome_user_profile_infos(0);
 
-    // These fields are only filled if status report is enabled.
-    EXPECT_EQ(
-        ObfuscateFilePath(base::FilePath(kProfilePath).AsUTF8Unsafe()) ==
-            chrome_user_profile_info.id(),
-        new_signal_collection_enabled ? true : expect_status_report_only_value);
-    EXPECT_EQ(
-        chrome_user_profile_info.is_detail_available(),
-        new_signal_collection_enabled ? true : expect_status_report_only_value);
+    // These fields are now always filled for profile reports.
+    EXPECT_EQ(base::FilePath(kProfilePath).AsUTF8Unsafe(),
+              chrome_user_profile_info.id());
+    EXPECT_TRUE(chrome_user_profile_info.is_detail_available());
+
+    // Affiliation info is now always included.
+    EXPECT_TRUE(chrome_user_profile_info.has_affiliation());
 
     // `profile_signals_report` is a signals report only sub-proto.
     EXPECT_EQ(chrome_user_profile_info.has_profile_signals_report(),

@@ -108,18 +108,10 @@ void ChromeProfileRequestGenerator::Generate(
   request->GetChromeProfileReportRequest().set_report_type(
       GetReportTypeFromSignalsMode(generation_config.security_signals_mode));
 
-  bool is_signals_only = generation_config.security_signals_mode ==
-                         SecuritySignalsMode::kSignalsOnly;
   bool policies_enabled =
       enterprise_signals::features::IsPolicyDataCollectionEnabled();
 
-  // Early Exit since it's a Signals-Only report with no policies.
-  if (is_signals_only && !policies_enabled) {
-    return OnBaseReportsReady(std::move(request), std::move(callback),
-                              generation_config,
-                              std::make_unique<em::BrowserReport>(),
-                              std::make_unique<em::ChromeUserProfileInfo>());
-  }
+  profile_report_generator_.set_policies_enabled(policies_enabled);
 
   auto barrier_callback = base::BarrierCallback<
       std::variant<std::unique_ptr<em::BrowserReport>,
@@ -130,7 +122,8 @@ void ChromeProfileRequestGenerator::Generate(
                             weak_ptr_factory_.GetWeakPtr(), std::move(request),
                             std::move(callback), generation_config)));
 
-  if (is_signals_only) {
+  if (generation_config.security_signals_mode ==
+      SecuritySignalsMode::kSignalsOnly) {
     barrier_callback.Run(std::make_unique<em::BrowserReport>());
   } else {
     browser_report_generator_.Generate(

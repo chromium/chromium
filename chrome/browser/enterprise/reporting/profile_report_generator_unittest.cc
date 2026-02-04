@@ -292,6 +292,8 @@ TEST_F(ProfileReportGeneratorTest,
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   EXPECT_EQ(report->extensions_size(), 0);
 #endif
+
+  EXPECT_TRUE(report->has_affiliation());
 }
 
 TEST_F(ProfileReportGeneratorTest,

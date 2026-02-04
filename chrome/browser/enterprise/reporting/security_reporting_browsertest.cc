@@ -159,6 +159,10 @@ class SecurityReportingBrowserTest
       return nullptr;
     }
 
+    if (action_name == policy::dm_protocol::kValueRequestPolicy) {
+      return std::make_unique<net::test_server::BasicHttpResponse>();
+    }
+
     if (action_name != policy::dm_protocol::kValueRequestChromeProfileReport) {
       SCOPED_TRACE("Not a Profile report.");
       return nullptr;
@@ -243,16 +247,10 @@ class SecurityReportingBrowserTest
               enterprise::ProfileIdServiceFactory::GetForProfile(GetProfile())
                   ->GetProfileId()
                   .value());
-    if (profile_type ==
-        em::ChromeProfileReportRequest::PROFILE_SECURITY_SIGNALS) {
-      if (is_policy_collection_enabled()) {
-        EXPECT_GT(chrome_user_profile_info.chrome_policies_size(), 0);
-      } else {
-        EXPECT_EQ(chrome_user_profile_info.chrome_policies_size(), 0);
-      }
-
-    } else {
+    if (is_policy_collection_enabled()) {
       EXPECT_GT(chrome_user_profile_info.chrome_policies_size(), 0);
+    } else {
+      EXPECT_EQ(chrome_user_profile_info.chrome_policies_size(), 0);
     }
   }
 

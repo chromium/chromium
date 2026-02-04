@@ -56,9 +56,7 @@ void ProfileReportGenerator::MaybeGenerate(
 
   report_ = std::make_unique<em::ChromeUserProfileInfo>();
 
-#if !BUILDFLAG(IS_CHROMEOS)
   delegate_->GetAffiliationInfo(report_.get());
-#endif
 
   switch (report_type) {
     // TODO(crbug.com/441536805): Rename report type `kFull` to `kBrowser`.
