@@ -214,6 +214,9 @@ void ContextualTasksContextService::OnQueryEmbeddingReady(
     std::vector<passage_embeddings::Embedding> embeddings,
     passage_embeddings::Embedder::TaskId task_id,
     passage_embeddings::ComputeEmbeddingsStatus status) {
+  base::UmaHistogramTimes("ContextualTasks.Context.QueryEmbeddingLatency",
+                          tick_clock_->NowTicks() - start_time);
+
   // Query embedding was not successfully generated.
   if (status != passage_embeddings::ComputeEmbeddingsStatus::kSuccess) {
     AUTO_CONTEXT_LOG(
