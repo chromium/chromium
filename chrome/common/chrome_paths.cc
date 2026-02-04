@@ -468,7 +468,7 @@ bool PathProvider(int key, base::FilePath* result) {
           FILE_PATH_LITERAL("/Library/Google/Chrome/NativeMessagingHosts"));
 #elif BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
       cur = base::FilePath(FILE_PATH_LITERAL(
-          "/Library/Google/ChromeForTesing/NativeMessagingHosts"));
+          "/Library/Google/ChromeForTesting/NativeMessagingHosts"));
 #else
       cur = base::FilePath(FILE_PATH_LITERAL(
           "/Library/Application Support/Chromium/NativeMessagingHosts"));
