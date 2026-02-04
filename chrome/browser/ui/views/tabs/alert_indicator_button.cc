@@ -324,6 +324,11 @@ void AlertIndicatorButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   UpdateEnabledForMuteToggle();
 }
 
+void AlertIndicatorButton::VisibilityChanged(View* starting_from,
+                                             bool is_visible) {
+  UpdateEnabledForMuteToggle();
+}
+
 void AlertIndicatorButton::UpdateSpinnerTheme() {
   CHECK(actor_indicator_spinner_);
   const ui::ColorProvider* color_provider = GetColorProvider();

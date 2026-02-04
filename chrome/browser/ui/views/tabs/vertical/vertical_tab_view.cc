@@ -669,6 +669,7 @@ void VerticalTabView::UpdateTabData(tabs::TabInterface* tab) {
 
   alert_indicator_->TransitionToAlertState(
       tabs::TabAlertController::GetAlertStateToShow(tab_data_.alert_state));
+  alert_indicator_->UpdateEnabledForMuteToggle();
 }
 
 void VerticalTabView::UpdateTitle() {

@@ -931,6 +931,7 @@ void Tab::ActiveStateChanged() {
   UpdateForegroundColors();
   icon_->SetActiveState(IsActive());
   alert_indicator_button_->OnParentTabButtonColorChanged();
+  alert_indicator_button_->UpdateEnabledForMuteToggle();
   DeprecatedLayoutImmediately();
 }
 

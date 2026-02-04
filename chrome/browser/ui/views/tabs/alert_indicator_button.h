@@ -77,9 +77,9 @@ class AlertIndicatorButton : public views::ImageButton,
   void TransitionToAlertState(std::optional<tabs::TabAlert> next_state);
 
   // Determines whether the AlertIndicatorButton will be clickable for toggling
-  // muting.  This should be called whenever the active/inactive state of a tab
-  // has changed.  Internally, TransitionToAlertState() and OnBoundsChanged()
-  // calls this when the TabAlert or the bounds have changed.
+  // muting. This should be called whenever the active/inactive state of a tab
+  // has changed. Internally, this gets called in TransitionToAlertState(),
+  // OnBoundsChanged(), and in VisibilityChanged().
   void UpdateEnabledForMuteToggle();
 
   // Called when the parent tab's button color changes.  Determines whether
@@ -105,6 +105,7 @@ class AlertIndicatorButton : public views::ImageButton,
   View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
+  void VisibilityChanged(View* starting_from, bool is_visible) override;
   void Layout(PassKey) override;
 
   // views::ViewTargeterDelegate
