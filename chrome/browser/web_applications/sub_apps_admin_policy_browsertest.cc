@@ -151,7 +151,7 @@ class SubAppsAdminPolicyTest : public IsolatedWebAppBrowserTestHarness {
   }
 
  protected:
-  base::test::ScopedFeatureList features_{blink::features::kDesktopPWAsSubApps};
+  base::test::ScopedFeatureList features_{blink::features::kSubApps};
 
   std::unique_ptr<net::EmbeddedTestServer> iwa_dev_server_;
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;

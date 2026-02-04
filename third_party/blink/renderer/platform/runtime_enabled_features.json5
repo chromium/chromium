@@ -1910,10 +1910,6 @@
       status: "test",
     },
     {
-      name: "DesktopPWAsSubApps",
-      status: "test",
-    },
-    {
       name: "DeviceAttributes",
       status: {
         "ChromeOS": "stable",
@@ -5206,6 +5202,10 @@
     {
       name: "StylusHandwriting",
       base_feature: "none",
+    },
+    {
+      name: "SubApps",
+      status: "test",
     },
     {
       name: "Svg2Cascade",
