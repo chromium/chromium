@@ -1941,7 +1941,8 @@
       "Win"
     ],
     "bases": [
-      "fast/peerconnection"
+      "fast/peerconnection",
+      "wpt_internal/peerconnection"
     ],
     "args": [
       "--enable-features=LocalNetworkAccessChecks,LocalNetworkAccessChecksWebRTC"

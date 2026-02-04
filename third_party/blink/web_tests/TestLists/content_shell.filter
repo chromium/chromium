@@ -984,3 +984,4 @@ virtual/view-transition-wide-gamut/wpt_internal/*
 virtual/webnn-service-on-cpu/*
 virtual/webnn-service-on-npu/*
 virtual/webnn-service-with-gpu/*
+virtual/lna-webrtc/wpt_internal/*
