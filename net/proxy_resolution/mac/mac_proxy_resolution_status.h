@@ -1,4 +1,4 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,11 @@
 namespace net {
 
 // Enumerates the macOS-specific outcomes produced by the system proxy resolver.
+// Keep in sync with proxy_resolver::mojom::MacProxyStatus.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(MacProxyResolutionStatus)
 enum class MacProxyResolutionStatus {
   kOk = 0,
   kSystemConfigurationError = 1,
@@ -15,7 +20,11 @@ enum class MacProxyResolutionStatus {
   kPacScriptFetchFailed = 3,
   kPacScriptExecutionFailed = 4,
   kEmptyProxyList = 5,
+
+  kMaxValue = kEmptyProxyList,
 };
+// LINT.ThenChange(//services/proxy_resolver/public/mojom/proxy_resolver.mojom:
+//                 MacProxyStatus)
 
 }  // namespace net
 

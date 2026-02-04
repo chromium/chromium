@@ -83,7 +83,10 @@ static_library("utility") {
   }
 
   if (is_mac) {
-    deps += [ "//chrome/services/mac_notifications" ]
+    deps += [
+      "//chrome/services/mac_notifications",
+      "//services/proxy_resolver_mac",
+    ]
   }
 
   if (!is_android) {

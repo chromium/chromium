@@ -13,7 +13,7 @@ import "services/network/public/mojom/network_anonymization_key.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "url/mojom/url.mojom";
 
-[EnableIf=is_win]
+[EnableIf=is_win|is_mac]
 import "services/network/public/mojom/proxy_config.mojom";
 
 // Mirror of net::ProxyResolveDnsOperation.
@@ -112,6 +112,20 @@ enum WinHttpStatus {
 };
 // LINT.ThenChange(//net/proxy_resolution/win/winhttp_status.h:WinHttpStatus)
 
+// macOS-specific system proxy resolution status codes.
+// LINT.IfChange(MacProxyStatus)
+[EnableIf=is_mac]
+enum MacProxyStatus {
+  kOk,
+  kSystemConfigurationError,
+  kCFNetworkExecutePacScriptFailed,
+  kPacScriptFetchFailed,
+  kPacScriptExecutionFailed,
+  kEmptyProxyList,
+};
+// LINT.ThenChange(//net/proxy_resolution/mac/mac_proxy_resolution_status.h:
+//                 MacProxyResolutionStatus)
+
 // Describes the outcome of a system proxy resolution request. Each platform
 // fills in the optional status field guarded by its EnableIf annotation.
 struct SystemProxyResolutionStatus {
@@ -119,12 +133,14 @@ struct SystemProxyResolutionStatus {
   int32 os_error;
 
   [EnableIf=is_win] WinHttpStatus? win_http_status;
+  [EnableIf=is_mac] MacProxyStatus? mac_proxy_status;
 };
 
-[EnableIf=is_win, ServiceSandbox=sandbox.mojom.Sandbox.kProxyResolver]
-// Implemented in the Windows utility process to proxy WinHTTP lookups and
-// invoked from the network service (or Chrome) when --use-system-proxy-resolver
-// is enabled so that proxy resolution happens with the OS configuration.
+[EnableIf=is_win|is_mac, ServiceSandbox=sandbox.mojom.Sandbox.kProxyResolver]
+// Implemented in a utility process to proxy system proxy lookups (WinHTTP on
+// Windows, SystemConfiguration/CFNetwork on macOS) and invoked from the network
+// service (or Chrome) when --use-system-proxy-resolver is enabled so that proxy
+// resolution happens with the OS configuration.
 interface SystemProxyResolver {
   // Resolves proxies for `url` using the system configuration. On success the
   // returned proxy list is populated and `status.os_error` is 0. On failure the

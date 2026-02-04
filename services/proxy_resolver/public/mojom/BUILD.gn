@@ -59,4 +59,19 @@ mojom("mojom") {
       },
     ]
   }
+
+  if (is_mac) {
+    cpp_typemaps += [
+      {
+        types = [
+          {
+            mojom = "proxy_resolver.mojom.MacProxyStatus"
+            cpp = "::net::MacProxyResolutionStatus"
+          },
+        ]
+        traits_headers = [ "//services/proxy_resolver_mac/public/cpp/proxy_resolver_mac_mojom_traits.h" ]
+        traits_sources = [ "//services/proxy_resolver_mac/public/cpp/proxy_resolver_mac_mojom_traits.cc" ]
+      },
+    ]
+  }
 }

@@ -1,0 +1,46 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+
+assert(is_mac)
+
+component("proxy_resolver_mac") {
+  sources = [
+    "mac_system_proxy_resolver_impl.cc",
+    "mac_system_proxy_resolver_impl.h",
+  ]
+
+  deps = [
+    "//base",
+    "//mojo/public/cpp/bindings",
+    "//services/proxy_resolver_mac/mac_api_wrapper",
+    "//url",
+  ]
+
+  public_deps = [
+    "//net",
+    "//services/network/public/cpp",
+    "//services/proxy_resolver/public/mojom",
+  ]
+
+  defines = [ "IS_PROXY_RESOLVER_MAC_IMPL" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "mac_system_proxy_resolver_impl_unittest.cc" ]
+
+  deps = [
+    ":proxy_resolver_mac",
+    "//base",
+    "//base/test:test_support",
+    "//mojo/public/cpp/bindings",
+    "//net",
+    "//services/proxy_resolver/public/mojom",
+    "//services/proxy_resolver_mac/mac_api_wrapper",
+    "//testing/gtest",
+    "//url",
+  ]
+}

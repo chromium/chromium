@@ -73,6 +73,7 @@ include_rules = [
   "+services/network/url_request_context_builder_mojo.h",
   "+services/passage_embeddings",
   "+services/proxy_resolver",
+  "+services/proxy_resolver_mac",
   "+services/proxy_resolver_win",
   "+services/screen_ai",
   "+skia/ext",

@@ -47,6 +47,8 @@
 #if BUILDFLAG(IS_MAC)
 #include "chrome/services/mac_notifications/mac_notification_provider_impl.h"
 #include "chrome/services/system_signals/mac/mac_system_signals_service.h"
+#include "services/proxy_resolver/public/mojom/proxy_resolver.mojom.h"
+#include "services/proxy_resolver_mac/mac_system_proxy_resolver_impl.h"
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_LINUX)
@@ -195,6 +197,13 @@ auto RunMacNotificationService(
     mojo::PendingReceiver<mac_notifications::mojom::MacNotificationProvider>
         receiver) {
   return std::make_unique<mac_notifications::MacNotificationProviderImpl>(
+      std::move(receiver));
+}
+
+auto RunMacSystemProxyResolver(
+    mojo::PendingReceiver<proxy_resolver::mojom::SystemProxyResolver>
+        receiver) {
+  return std::make_unique<proxy_resolver_mac::MacSystemProxyResolverImpl>(
       std::move(receiver));
 }
 #endif  // BUILDFLAG(IS_MAC)
@@ -529,4 +538,7 @@ void RegisterIOThreadServices(mojo::ServiceFactory& services) {
 #if BUILDFLAG(IS_WIN)
   services.Add(RunWindowsSystemProxyResolver);
 #endif  // BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC)
+  services.Add(RunMacSystemProxyResolver);
+#endif  // BUILDFLAG(IS_MAC)
 }

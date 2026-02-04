@@ -1,0 +1,7 @@
+include_rules = [
+  "+mojo/public",
+  "+net/proxy_resolution",
+  "+services/network/public/mojom",
+  "+services/proxy_resolver/public/mojom",
+  "+url",
+]
