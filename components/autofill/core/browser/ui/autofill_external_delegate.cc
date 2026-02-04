@@ -545,10 +545,8 @@ void AutofillExternalDelegate::DidSelectSuggestion(
 
   switch (suggestion.type) {
     case SuggestionType::kUndoOrClear:
-#if !BUILDFLAG(IS_IOS)
       manager_->UndoAutofill(mojom::ActionPersistence::kPreview, query_form_,
                              query_field_);
-#endif
       break;
     case SuggestionType::kAddressEntry:
     case SuggestionType::kCreditCardEntry:
@@ -711,10 +709,8 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       break;
     }
     case SuggestionType::kUndoOrClear:
-#if !BUILDFLAG(IS_IOS)
       manager_->UndoAutofill(mojom::ActionPersistence::kFill, query_form_,
                              query_field_);
-#endif
       break;
     case SuggestionType::kDatalistEntry:
       manager_->driver().RendererShouldAcceptDataListSuggestion(

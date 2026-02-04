@@ -257,8 +257,6 @@ base::flat_set<FieldGlobalId> AutofillDriverIOS::ApplyFormAction(
     const Section& section_for_clear_form_on_ios) {
   switch (action_type) {
     case mojom::FormActionType::kUndo:
-      // TODO(crbug.com/40266549) Add Undo support on iOS.
-      return {};
     case mojom::FormActionType::kFill: {
       auto callback = [&section_for_clear_form_on_ios](
                           AutofillDriver& driver,

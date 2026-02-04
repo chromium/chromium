@@ -391,7 +391,9 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
       suggestion.type == autofill::SuggestionType::kCreditCardEntry ||
       suggestion.type == autofill::SuggestionType::kVirtualCreditCardEntry ||
       suggestion.type ==
-          autofill::SuggestionType::kAddressFieldByFieldFilling) {
+          autofill::SuggestionType::kAddressFieldByFieldFilling ||
+      (base::FeatureList::IsEnabled(kAutofillUndoIos) &&
+       suggestion.type == autofill::SuggestionType::kUndoOrClear)) {
     _pendingAutocompleteFieldID = fieldRendererID;
     if (_suggestionDelegate) {
       autofill::Suggestion autofill_suggestion(suggestion.type);
@@ -491,7 +493,6 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
   FieldToFormLookupMap fieldToFormLookupMap;
 
   for (const auto& field : fields) {
-
     base::DictValue fieldData;
     fieldData.Set("value", field.value);
     fieldData.Set("section", section.ToString());

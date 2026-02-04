@@ -8,6 +8,7 @@
 #import <variant>
 
 #import "base/apple/bundle_locations.h"
+#import "base/functional/callback_helpers.h"
 #import "base/json/json_writer.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
@@ -17,6 +18,8 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/gtest_util.h"
 #import "base/test/ios/wait_util.h"
+#import "base/test/scoped_feature_list.h"
+#import "base/test/test_future.h"
 #import "base/test/test_timeouts.h"
 #import "base/values.h"
 #import "components/autofill/core/browser/autofill_field.h"
@@ -42,6 +45,7 @@
 #import "components/autofill/ios/browser/mock_password_autofill_agent_delegate.h"
 #import "components/autofill/ios/browser/password_autofill_agent.h"
 #import "components/autofill/ios/browser/test_autofill_client_ios.h"
+#import "components/autofill/ios/common/features.h"
 #import "components/autofill/ios/common/field_data_manager_factory_ios.h"
 #import "components/autofill/ios/form_util/form_handlers_java_script_feature.h"
 #import "components/prefs/pref_service.h"
@@ -1116,4 +1120,39 @@ TEST_F(AutofillAgentTests, DidSelectSuggestion_ClearFormEntry) {
   // Check that the completion handler was called after handling the results
   // from the JS call.
   EXPECT_TRUE(completion_handler_called);
+}
+
+// Tests selecting the Undo autofill suggestion.
+TEST_F(AutofillAgentTests, DidSelectSuggestion_Undo) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kAutofillUndoIos);
+
+  // Mock the suggestion delegate that will be called by the "Undo" action
+  autofill::MockAutofillSuggestionDelegate mock_delegate;
+  EXPECT_CALL(mock_delegate,
+              DidAcceptSuggestion(
+                  ::testing::Field(&autofill::Suggestion::type,
+                                   autofill::SuggestionType::kUndoOrClear),
+                  ::testing::_));
+
+  // Show the popup to set the delegate used by didSelectSuggestion.
+  std::vector<autofill::Suggestion> suggestions;
+  suggestions.emplace_back(u"", autofill::SuggestionType::kUndoOrClear);
+  [autofill_agent_ showAutofillPopup:suggestions
+                  suggestionDelegate:mock_delegate.GetWeakPtr()];
+
+  // Select suggestion to trigger undo.
+  FormRendererId form_id(1);
+  FieldRendererId field1_id(2);
+  FormSuggestion* form_suggestion =
+      SimpleFormSuggestion(u"", autofill::SuggestionType::kUndoOrClear);
+  [autofill_agent_ didSelectSuggestion:form_suggestion
+                               atIndex:0
+                                  form:@"single-username-form"
+                        formRendererID:form_id
+                       fieldIdentifier:@"username-field-1"
+                       fieldRendererID:field1_id
+                               frameID:base::SysUTF8ToNSString(kTestFrameId)
+                     completionHandler:^(){
+                     }];
 }
