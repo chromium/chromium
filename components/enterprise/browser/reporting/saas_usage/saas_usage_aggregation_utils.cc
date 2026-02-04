@@ -4,9 +4,15 @@
 
 #include "components/enterprise/browser/reporting/saas_usage/saas_usage_aggregation_utils.h"
 
+#include <string_view>
+#include <utility>
+#include <vector>
+
 #include "base/json/values_util.h"
+#include "base/logging.h"
 #include "base/time/time.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
+#include "components/enterprise/common/proto/synced/saas_usage_report_event.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 
@@ -35,6 +41,45 @@ base::DictValue& GetOrCreateEntry(base::DictValue& report_dict,
   return *entry;
 }
 
+bool IsValidEntry(const base::Value& value, std::string_view domain) {
+  if (!value.is_dict()) {
+    LOG(ERROR) << "Invalid entry for domain: " << domain
+               << ". Prefs may be corrupted.";
+    return false;
+  }
+
+  const base::DictValue& entry = value.GetDict();
+  if (!entry.FindInt(kNavigationCount).has_value()) {
+    LOG(ERROR) << "Invalid navigation count for domain: " << domain
+               << ". Prefs may be corrupted.";
+    return false;
+  }
+  if (!entry.FindList(kEncryptionProtocols)) {
+    LOG(ERROR) << "Invalid encryption protocols type for domain: " << domain
+               << ". Prefs may be corrupted.";
+    return false;
+  }
+  for (const auto& protocol : *entry.FindList(kEncryptionProtocols)) {
+    if (!protocol.GetIfString()) {
+      LOG(ERROR) << "Invalid encryption protocol found for domain: " << domain
+                 << ". Prefs may be corrupted.";
+      return false;
+    }
+  }
+
+  if (!base::ValueToTime(entry.Find(kFirstSeenTime)).has_value()) {
+    LOG(ERROR) << "Invalid first seen time for domain: " << domain
+               << ". Prefs may be corrupted.";
+    return false;
+  }
+  if (!base::ValueToTime(entry.Find(kLastSeenTime)).has_value()) {
+    LOG(ERROR) << "Invalid last seen time for domain: " << domain
+               << ". Prefs may be corrupted.";
+    return false;
+  }
+  return true;
+}
+
 }  // namespace
 
 namespace enterprise_reporting {
@@ -58,6 +103,37 @@ void RecordNavigation(PrefService& pref_service,
   if (!protocols->contains(encryption_protocol)) {
     protocols->Append(encryption_protocol);
   }
+}
+
+void PopulateSaasUsageDomainMetrics(
+    PrefService& pref_service,
+    ::chrome::cros::reporting::proto::SaasUsageReportEvent& report) {
+  for (const auto [domain, entry] : pref_service.GetDict(kSaasUsageReport)) {
+    if (!IsValidEntry(entry, domain)) {
+      continue;
+    }
+    const base::DictValue& dict = entry.GetDict();
+    auto* domain_metrics = report.add_domain_metrics();
+    domain_metrics->set_domain(domain);
+    domain_metrics->set_visit_count(dict.FindInt(kNavigationCount).value());
+    domain_metrics->set_start_time_millis(
+        base::ValueToTime(dict.Find(kFirstSeenTime))
+            .value()
+            .InMillisecondsSinceUnixEpoch());
+    domain_metrics->set_end_time_millis(
+        base::ValueToTime(dict.Find(kLastSeenTime))
+            .value()
+            .InMillisecondsSinceUnixEpoch());
+
+    const base::ListValue* protocols = dict.FindList(kEncryptionProtocols);
+    for (const auto& protocol : *protocols) {
+      domain_metrics->add_encryption_protocols(protocol.GetString());
+    }
+  }
+}
+
+void ClearSaasUsageReport(PrefService& pref_service) {
+  pref_service.ClearPref(kSaasUsageReport);
 }
 
 }  // namespace enterprise_reporting
