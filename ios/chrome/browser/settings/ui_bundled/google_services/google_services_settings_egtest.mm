@@ -261,16 +261,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
                                    IDS_IOS_SIGNOUT_DIALOG_SIGN_OUT_BUTTON)]
       performAction:grey_tap()];
 
-  if (![SigninEarlGrey areSeparateProfilesForManagedAccountsEnabled]) {
-    WaitForSettingDoneButton();
-
-    // Verify that sign-in is disabled.
-    [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
-        performAction:grey_tap()];
-  } else {
-    // Signing out caused a profile switch, which also closed settings.
-    [ChromeEarlGreyUI openSettingsMenu];
-  }
+  // Signing out caused a profile switch, which also closed settings.
+  [ChromeEarlGreyUI openSettingsMenu];
 
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(kSettingsSignInCellId)]

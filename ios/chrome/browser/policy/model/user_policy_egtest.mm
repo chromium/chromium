@@ -143,32 +143,17 @@ void ClearUserPolicyPrefs() {
 }
 
 id<GREYMatcher> ManagedProfileCreationTitleMatcher() {
-  if (![SigninEarlGrey areSeparateProfilesForManagedAccountsEnabled]) {
-    return grey_text(l10n_util::GetNSString(IDS_IOS_MANAGED_SIGNIN_TITLE));
-  }
   return grey_accessibilityLabel(
       l10n_util::GetNSString(IDS_IOS_ENTERPRISE_PROFILE_CREATION_TITLE));
 }
 
 id<GREYMatcher> ManagedProfileCreationSubtitleMatcher() {
-  if (![SigninEarlGrey areSeparateProfilesForManagedAccountsEnabled]) {
-    return grey_text(l10n_util::GetNSStringF(
-        IDS_IOS_MANAGED_SIGNIN_WITH_USER_POLICY_SUBTITLE,
-        base::UTF8ToUTF16(
-            std::string(policy::SignatureProvider::kTestDomain1))));
-  }
   return grey_accessibilityLabel(
       l10n_util::GetNSString(IDS_IOS_ENTERPRISE_PROFILE_CREATION_SUBTITLE));
 }
 
 // Returns a matcher for the sign-in screen "Cancel" button.
 id<GREYMatcher> DeclineManagementButtonMatcher() {
-  if (![SigninEarlGrey areSeparateProfilesForManagedAccountsEnabled]) {
-    return grey_allOf(
-        grey_accessibilityID(@"CancelAlertAction"),
-        [ChromeMatchersAppInterface buttonWithAccessibilityLabelID:IDS_CANCEL],
-        nil);
-  }
   return grey_allOf(chrome_test_util::ButtonStackSecondaryButton(),
                     grey_sufficientlyVisible(), nil);
 }
@@ -363,42 +348,6 @@ id<GREYMatcher> DeclineManagementButtonMatcher() {
   // Verify that the flow was cancelled by validating that the account is
   // not signed in after accepting from the confirmation dialog.
   [SigninEarlGrey verifySignedOut];
-}
-
-// Tests that the managed account confirmation dialog isn't shown if the browser
-// is already managed. Only applies for the sign-in consent level.
-- (void)testSigninFlowConfirmationDialogNotShownWhenAlreadyBrowserPolicies {
-  // With multi profile, the dialog is not shown at all, another screen is shown
-  // that screen will be shown even if the browser is already managed.
-  if ([SigninEarlGrey areSeparateProfilesForManagedAccountsEnabled]) {
-    return;
-  }
-
-  AppLaunchConfiguration config = [self minimalAppConfigurationForTestCase];
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
-
-  FakeSystemIdentity* fakeManagedIdentity = [FakeSystemIdentity
-      identityWithEmail:base::SysUTF8ToNSString(GetTestEmail())];
-  [SigninEarlGrey addFakeIdentity:fakeManagedIdentity];
-
-  // Set a policy to put the browser under management before signing in with the
-  // managed account.
-  SetPolicy(false, policy::key::kAutofillAddressEnabled);
-
-  // Sign-in with the UI flow.
-  [self startSigninFlowUpToConfirmationDialogWithIdentity:fakeManagedIdentity];
-
-  // Disable egtest synchronization to avoid infinite spinner loop.
-  ScopedSynchronizationDisabler disabler;
-
-  // Verify that there is no confirmation dialog.
-  NSString* dialogTitle = l10n_util::GetNSString(IDS_IOS_MANAGED_SIGNIN_TITLE);
-  [[EarlGrey selectElementWithMatcher:grey_text(dialogTitle)]
-      assertWithMatcher:grey_notVisible()];
-
-  // Verify that the flow was successful by validating that the account is
-  // signed in.
-  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeManagedIdentity];
 }
 
 // Tests the chrome://policy page when there are user level policies.

@@ -266,14 +266,6 @@ id<GREYMatcher> identityDiscMatcher() {
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kAccountMenuSignoutButtonId)]
       performAction:grey_tap()];
-  // Confirm "Delete and Signout" alert dialog that data will be cleared is
-  // shown. This dialog is only shown when multi profiles are not available.
-  if (![SigninEarlGrey areSeparateProfilesForManagedAccountsEnabled]) {
-    [[EarlGrey selectElementWithMatcher:
-                   chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
-                       IDS_IOS_SIGNOUT_AND_DELETE_DIALOG_SIGN_OUT_BUTTON)]
-        performAction:grey_tap()];
-  }
   [SigninEarlGrey verifySignedOut];
   [self assertAccountMenuIsNotShown];
 }
@@ -368,15 +360,6 @@ id<GREYMatcher> identityDiscMatcher() {
                                           kAccountMenuSecondaryAccountButtonId)]
       performAction:grey_tap()];
 
-  // Confirm "Delete and Switch" when alert dialog that data will be cleared
-  // is shown. This dialog is only shown when multi profiles are not available.
-  if (![SigninEarlGrey areSeparateProfilesForManagedAccountsEnabled]) {
-    [[EarlGrey selectElementWithMatcher:
-                   chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
-                       IDS_IOS_DATA_NOT_UPLOADED_SWITCH_DIALOG_BUTTON)]
-        performAction:grey_tap()];
-  }
-
   if ([ChromeEarlGrey isIPadIdiom]) {
     // The snackbar shows in test executed locally and during actual usage, but
     // is not always detected on CQ causing flakyness.
@@ -402,9 +385,8 @@ id<GREYMatcher> identityDiscMatcher() {
                                           kAccountMenuSecondaryAccountButtonId)]
       performAction:grey_tap()];
 
-  if ([SigninEarlGrey areSeparateProfilesForManagedAccountsEnabled]) {
-    WaitForEnterpriseOnboardingScreen();
-  }
+  WaitForEnterpriseOnboardingScreen();
+
   // Tap on Continue button to acknowledge signing in with a managed account.
   [[EarlGrey
       selectElementWithMatcher:
@@ -413,13 +395,11 @@ id<GREYMatcher> identityDiscMatcher() {
                   IDS_IOS_MANAGED_SIGNIN_WITH_USER_POLICY_CONTINUE_BUTTON_LABEL)),
               grey_interactable(), nil)] performAction:grey_tap()];
 
-  if ([SigninEarlGrey areSeparateProfilesForManagedAccountsEnabled]) {
-    // Dismiss the history sync screen.
-    [ChromeEarlGrey waitForMatcher:HistoryScreenMatcher()];
-    [[EarlGrey
-        selectElementWithMatcher:chrome_test_util::ButtonStackSecondaryButton()]
-        performAction:grey_tap()];
-  }
+  // Dismiss the history sync screen.
+  [ChromeEarlGrey waitForMatcher:HistoryScreenMatcher()];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonStackSecondaryButton()]
+      performAction:grey_tap()];
 
   if ([ChromeEarlGrey isIPadIdiom]) {
     // The snackbar shows in test executed locally and during actual usage, but
@@ -449,18 +429,8 @@ id<GREYMatcher> identityDiscMatcher() {
                                           kAccountMenuSecondaryAccountButtonId)]
       performAction:grey_tap()];
 
-  // Confirm "Delete and Switch" when alert dialog that data will be cleared
-  // is shown. This dialog is only shown when multi profiles are not available.
-  if (![SigninEarlGrey areSeparateProfilesForManagedAccountsEnabled]) {
-    [[EarlGrey selectElementWithMatcher:
-                   chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
-                       IDS_IOS_DATA_NOT_UPLOADED_SWITCH_DIALOG_BUTTON)]
-        performAction:grey_tap()];
-  }
+  WaitForEnterpriseOnboardingScreen();
 
-  if ([SigninEarlGrey areSeparateProfilesForManagedAccountsEnabled]) {
-    WaitForEnterpriseOnboardingScreen();
-  }
   // Tap on Continue button to acknowledge signing in with a managed account.
   [[EarlGrey
       selectElementWithMatcher:
@@ -469,13 +439,11 @@ id<GREYMatcher> identityDiscMatcher() {
                   IDS_IOS_MANAGED_SIGNIN_WITH_USER_POLICY_CONTINUE_BUTTON_LABEL)),
               grey_interactable(), nil)] performAction:grey_tap()];
 
-  if ([SigninEarlGrey areSeparateProfilesForManagedAccountsEnabled]) {
-    // Dismiss the history sync screen.
-    [ChromeEarlGrey waitForMatcher:HistoryScreenMatcher()];
-    [[EarlGrey
-        selectElementWithMatcher:chrome_test_util::ButtonStackSecondaryButton()]
-        performAction:grey_tap()];
-  }
+  // Dismiss the history sync screen.
+  [ChromeEarlGrey waitForMatcher:HistoryScreenMatcher()];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonStackSecondaryButton()]
+      performAction:grey_tap()];
 
   [SigninEarlGreyUI
       dismissSigninConfirmationSnackbarForIdentity:kManagedIdentity2
