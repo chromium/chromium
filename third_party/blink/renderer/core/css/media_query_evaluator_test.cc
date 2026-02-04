@@ -112,6 +112,7 @@ MediaQueryEvaluatorTestCase g_screen_test_cases[] = {
     {"(display-mode: minimal-ui)", false},
     {"(display-mode: window-controls-overlay)", false},
     {"(display-mode: borderless)", false},
+    {"(display-mode: unframed)", false},
     {"(display-mode: browser)", true},
     {"(display-mode: min-browser)", false},
     {"(display-mode: url(browser))", false},

@@ -393,12 +393,15 @@ static bool DisplayModeMediaFeatureEval(const MediaQueryExpValue& value,
       return mode == mojom::blink::DisplayMode::kBrowser;
     case CSSValueID::kWindowControlsOverlay:
       return mode == mojom::blink::DisplayMode::kWindowControlsOverlay;
+    // TODO(crbug.com/466441366): Stop accepting "borderless".
     case CSSValueID::kBorderless:
       return mode == mojom::blink::DisplayMode::kBorderless;
     case CSSValueID::kTabbed:
       return mode == mojom::blink::DisplayMode::kTabbed;
     case CSSValueID::kPictureInPicture:
       return mode == mojom::blink::DisplayMode::kPictureInPicture;
+    case CSSValueID::kUnframed:
+      return mode == mojom::blink::DisplayMode::kBorderless;
     default:
       NOTREACHED();
   }
