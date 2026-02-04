@@ -165,6 +165,7 @@ const LayoutResult* GridLanesLayoutAlgorithm::Layout() {
   GridItems grid_lanes_items;
   HeapVector<Member<LayoutBox>> oof_children;
   Vector<wtf_size_t> collapsed_track_indexes;
+  const auto& node = Node();
 
   // Never apply inline size containment during the layout pass because size
   // containment is independent from layout.
@@ -203,6 +204,13 @@ const LayoutResult* GridLanesLayoutAlgorithm::Layout() {
                         running_positions, SizingConstraint::kLayout);
   }
 
+  // TODO(layout-dev): This isn't great but matches legacy. Ideally this
+  // would only apply when we have only flexible track(s).
+  if (grid_lanes_items.IsEmpty() && node.HasLineIfEmpty()) {
+    intrinsic_block_size_ = std::max(intrinsic_block_size_,
+                                     node.EmptyLineBlockSize(GetBreakToken()));
+  }
+
   // Create track layout data to support grid-lanes overlay in DevTools.
   std::unique_ptr<GridLayoutData> layout_data(
       std::make_unique<GridLayoutData>());
@@ -219,7 +227,6 @@ const LayoutResult* GridLanesLayoutAlgorithm::Layout() {
   container_builder_.SetFragmentsTotalBlockSize(block_size);
   container_builder_.SetIntrinsicBlockSize(intrinsic_block_size_);
 
-  // TODO(celestepan): Handle `Node().HasLineIfEmpty()` case.
   // TODO(celestepan): Possibly call `ClampIntrinsicBlockSize` here.
 
   // Place out-of-flow items after setting the intrinsic block size, since
