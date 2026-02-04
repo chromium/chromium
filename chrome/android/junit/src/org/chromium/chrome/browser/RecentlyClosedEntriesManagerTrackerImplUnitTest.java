@@ -29,8 +29,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
-import java.util.Collections;
-
 /** Unit tests for {@link RecentlyClosedEntriesManagerTrackerImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
@@ -91,8 +89,7 @@ public class RecentlyClosedEntriesManagerTrackerImplUnitTest {
                         /* lastAccessedTime= */ 1,
                         /* closureTime= */ 3,
                         /* markedForDeletion= */ true);
-        mTracker.onInstancesClosed(
-                Collections.singletonList(info), /* isPermanentDeletion= */ false);
+        mTracker.onInstanceClosed(info, /* isPermanentDeletion= */ false);
 
         assertEquals(1, manager1.getRecentlyClosedEntries().size());
         assertEquals(1, manager2.getRecentlyClosedEntries().size());
@@ -120,8 +117,7 @@ public class RecentlyClosedEntriesManagerTrackerImplUnitTest {
                         /* lastAccessedTime= */ 1,
                         /* closureTime= */ 3,
                         /* markedForDeletion= */ true);
-        mTracker.onInstancesClosed(
-                Collections.singletonList(info), /* isPermanentDeletion= */ false);
+        mTracker.onInstanceClosed(info, /* isPermanentDeletion= */ false);
         assertEquals(1, manager1.getRecentlyClosedEntries().size());
         assertEquals(1, manager2.getRecentlyClosedEntries().size());
 

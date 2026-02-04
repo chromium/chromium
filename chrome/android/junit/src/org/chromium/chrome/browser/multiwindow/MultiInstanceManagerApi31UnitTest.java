@@ -14,7 +14,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doNothing;
@@ -869,7 +868,7 @@ public class MultiInstanceManagerApi31UnitTest {
     }
 
     @Test
-    public void testCloseWindows_OnInstancesClosedInvoked() {
+    public void testCloseWindow_OnInstanceClosedInvoked() {
         // Setup 3 instances.
         assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask56));
         assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask57));
@@ -893,17 +892,16 @@ public class MultiInstanceManagerApi31UnitTest {
         // Verify that closure time is updated.
         assertTrue(MultiInstancePersistentStore.readClosureTime(/* instanceId= */ 1) > initialTime);
 
-        // Verify #onInstancesClosed is invoked.
-        ArgumentCaptor<List<InstanceInfo>> captor = ArgumentCaptor.forClass(List.class);
-        verify(mRecentlyClosedTracker).onInstancesClosed(captor.capture(), eq(false));
+        // Verify #onInstanceClosed is invoked.
+        ArgumentCaptor<InstanceInfo> captor = ArgumentCaptor.forClass(InstanceInfo.class);
+        verify(mRecentlyClosedTracker).onInstanceClosed(captor.capture(), eq(false));
 
         // Verify the captured InstanceInfo.
-        List<InstanceInfo> closedInstanceInfo = captor.getValue();
-        assertEquals("There should be exactly 1 InstanceInfo.", 1, closedInstanceInfo.size());
-        assertEquals("Instance ID should be 1.", 1, closedInstanceInfo.get(0).instanceId);
+        InstanceInfo closedInstanceInfo = captor.getValue();
+        assertEquals("Instance ID should be 1.", 1, closedInstanceInfo.instanceId);
         assertTrue(
                 "markedForDeletion should be true for soft closure.",
-                closedInstanceInfo.get(0).markedForDeletion);
+                closedInstanceInfo.markedForDeletion);
 
         // Verify the soft-closed instance is correctly marked for deletion.
         for (InstanceInfo instanceInfo :
@@ -922,28 +920,6 @@ public class MultiInstanceManagerApi31UnitTest {
                 mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY);
         assertEquals(3, instanceInfoList.size());
         assertFalse(instanceInfoList.get(1).markedForDeletion);
-    }
-
-    @Test
-    public void testCloseWindows_OnInstancesClosedInvoked_MixedIncognitoAndRegularWindows() {
-        assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask56));
-        assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask57));
-        assertEquals(2, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask58));
-        MultiInstancePersistentStore.writeTabCount(
-                2, /* normalTabCount= */ 0, /* incognitoTabCount= */ 1);
-
-        assertEquals(3, mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY).size());
-
-        // Close one regular and one incognito window.
-        mMultiInstanceManager.closeWindows(
-                Arrays.asList(1, 2), CloseWindowAppSource.WINDOW_MANAGER);
-
-        // Verify that #onInstanceClosed is invoked only for regular window.
-        verify(mRecentlyClosedTracker)
-                .onInstancesClosed(
-                        argThat(list -> list.size() == 1 && list.get(0).instanceId == 1),
-                        eq(false));
-        verify(mRecentlyClosedTracker, never()).onInstancesClosed(any(), eq(true));
     }
 
     @Test
@@ -3119,7 +3095,7 @@ public class MultiInstanceManagerApi31UnitTest {
     }
 
     @Test
-    public void testOnDestroy_notifiesInstancesClosed() {
+    public void testOnDestroy_notifiesInstanceClosed() {
         var manager1 = createMultiInstanceManager(mTabbedActivityTask62);
         var manager2 = createMultiInstanceManager(mTabbedActivityTask63);
         assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mTabbedActivityTask62));
@@ -3149,12 +3125,12 @@ public class MultiInstanceManagerApi31UnitTest {
         assertEquals("Closure time should be updated.", 0, closureTime1);
 
         InOrder inOrderVerifier = inOrder(mRecentlyClosedTracker);
-        inOrderVerifier.verify(mRecentlyClosedTracker).onInstancesClosed(any(), eq(false));
-        inOrderVerifier.verify(mRecentlyClosedTracker).onInstancesClosed(any(), eq(true));
+        inOrderVerifier.verify(mRecentlyClosedTracker).onInstanceClosed(any(), eq(false));
+        inOrderVerifier.verify(mRecentlyClosedTracker).onInstanceClosed(any(), eq(true));
     }
 
     @Test
-    public void testOnDestroy_notifyInstancesClosedNotInvoked() {
+    public void testOnDestroy_notifyInstanceClosedNotInvoked() {
         var manager1 = createMultiInstanceManager(mTabbedActivityTask62);
         var manager2 = createMultiInstanceManager(mTabbedActivityTask63);
         assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mTabbedActivityTask62));
@@ -3180,11 +3156,11 @@ public class MultiInstanceManagerApi31UnitTest {
                 /* instanceId= */ 1, /* normalTabCount= */ 0, /* incognitoTabCount= */ 0);
         manager2.onDestroy();
 
-        verify(mRecentlyClosedTracker, never()).onInstancesClosed(any(), anyBoolean());
+        verify(mRecentlyClosedTracker, never()).onInstanceClosed(any(), anyBoolean());
     }
 
     @Test
-    public void testOnDestroy_notifyInstancesClosedNotInvoked_incognitoWindow() {
+    public void testOnDestroy_notifyInstanceClosedNotInvoked_incognitoWindow() {
         var manager1 = createMultiInstanceManager(mTabbedActivityTask62);
         var manager2 = createMultiInstanceManager(mTabbedActivityTask63);
         assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mTabbedActivityTask62));
@@ -3209,8 +3185,8 @@ public class MultiInstanceManagerApi31UnitTest {
         manager2.onDestroy();
 
         InOrder inOrderVerifier = inOrder(mRecentlyClosedTracker);
-        inOrderVerifier.verify(mRecentlyClosedTracker).onInstancesClosed(any(), eq(false));
-        inOrderVerifier.verify(mRecentlyClosedTracker).onInstancesClosed(any(), eq(true));
+        inOrderVerifier.verify(mRecentlyClosedTracker).onInstanceClosed(any(), eq(false));
+        inOrderVerifier.verify(mRecentlyClosedTracker).onInstanceClosed(any(), eq(true));
     }
 
     private TabGroupMetadata getTabGroupMetadata(boolean isIncognito) {

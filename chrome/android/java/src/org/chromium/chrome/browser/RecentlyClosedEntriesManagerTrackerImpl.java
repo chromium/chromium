@@ -15,8 +15,6 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.ntp.RecentlyClosedWindow;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 /** Implements {@link RecentlyClosedEntriesManagerTracker} as a singleton. */
@@ -53,28 +51,23 @@ public final class RecentlyClosedEntriesManagerTrackerImpl
     }
 
     @Override
-    public void onInstancesClosed(
-            List<InstanceInfo> instanceInfoList, boolean isPermanentDeletion) {
-        List<RecentlyClosedWindow> windows = new ArrayList<>();
-        for (InstanceInfo instanceInfo : instanceInfoList) {
-            // Use lastAccessedTime as the closure time if a valid closureTime is not available.
-            long closureTime =
-                    instanceInfo.closureTime > 0
-                            ? instanceInfo.closureTime
-                            : instanceInfo.lastAccessedTime;
-            assert isPermanentDeletion || closureTime > 0 : "Expected a valid window closure time.";
-            RecentlyClosedWindow window =
-                    new RecentlyClosedWindow(
-                            closureTime,
-                            instanceInfo.instanceId,
-                            instanceInfo.url,
-                            instanceInfo.customTitle,
-                            instanceInfo.title,
-                            instanceInfo.tabCount);
-            windows.add(window);
-        }
+    public void onInstanceClosed(InstanceInfo instanceInfo, boolean isPermanentDeletion) {
+        // Use lastAccessedTime as the closure time if a valid closureTime is not available.
+        long closureTime =
+                instanceInfo.closureTime > 0
+                        ? instanceInfo.closureTime
+                        : instanceInfo.lastAccessedTime;
+        assert isPermanentDeletion || closureTime > 0 : "Expected a valid window closure time.";
+        RecentlyClosedWindow window =
+                new RecentlyClosedWindow(
+                        closureTime,
+                        instanceInfo.instanceId,
+                        instanceInfo.url,
+                        instanceInfo.customTitle,
+                        instanceInfo.title,
+                        instanceInfo.tabCount);
         for (RecentlyClosedEntriesManager manager : mManagers) {
-            manager.onWindowsClosed(windows, isPermanentDeletion);
+            manager.onWindowClosed(window, isPermanentDeletion);
         }
     }
 
