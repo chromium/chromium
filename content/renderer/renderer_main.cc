@@ -33,7 +33,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/performance_manager/scenario_api/performance_scenario_memory.h"
-#include "content/child/memory_coordinator/child_memory_consumer_registry.h"
+#include "content/child/memory_coordinator/child_memory_coordinator.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/content_switches_internal.h"
 #include "content/common/features.h"
@@ -237,8 +237,7 @@ int RendererMain(MainFunctionParams parameters) {
   InitializeWebRtcModuleBeforeSandbox();
 
   RendererMemoryCoordinatorPolicy render_memory_coordinator_policy(
-      static_cast<ChildMemoryConsumerRegistry&>(
-          base::MemoryConsumerRegistry::Get()));
+      ChildMemoryCoordinator::Get());
 
   {
     content::ContentRendererClient* client = GetContentClient()->renderer();

@@ -74,7 +74,7 @@
 #include "content/browser/startup_helper.h"
 #include "content/browser/tracing/memory_instrumentation_util.h"
 #include "content/child/field_trial.h"
-#include "content/child/memory_coordinator/child_memory_consumer_registry.h"
+#include "content/child/memory_coordinator/child_memory_coordinator.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/process_priority_tracker.h"
 #include "content/common/pseudonymization_salt.h"
@@ -721,9 +721,9 @@ NO_STACK_PROTECTOR int RunOtherNamedProcessTypeMain(
   // base::MemoryPressureListener API is deleted in favor of
   // base::MemoryConsumer.
   base::MemoryPressureListenerRegistry memory_pressure_listener_registry;
-  // Create the memory consumer registry as early as possible.
-  base::ScopedMemoryConsumerRegistry<ChildMemoryConsumerRegistry>
-      child_memory_consumer_registry;
+  // Create the memory coordinator as early as possible to support
+  // MemoryConsumers that register very early in the process lifetime.
+  ChildMemoryCoordinator child_memory_coordinator;
 
   // The hang watcher needs to be started once the feature list is available
   // but before the IO thread is started.

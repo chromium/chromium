@@ -5,7 +5,7 @@
 #include "content/renderer/memory_coordinator/renderer_memory_coordinator_policy.h"
 
 #include "base/memory_coordinator/traits.h"
-#include "content/child/memory_coordinator/child_memory_consumer_registry.h"
+#include "content/child/memory_coordinator/child_memory_coordinator.h"
 
 namespace content {
 
@@ -29,15 +29,38 @@ RendererMemoryCoordinatorPolicy& RendererMemoryCoordinatorPolicy::Get() {
 }
 
 RendererMemoryCoordinatorPolicy::RendererMemoryCoordinatorPolicy(
-    ChildMemoryConsumerRegistry& registry)
-    : registry_(registry) {
+    ChildMemoryCoordinator& coordinator)
+    : MemoryCoordinatorPolicy(coordinator.policy_manager()),
+      coordinator_(coordinator) {
   CHECK(!g_instance);
   g_instance = this;
+  coordinator_->policy_manager().AddPolicy(this);
 }
 
 RendererMemoryCoordinatorPolicy::~RendererMemoryCoordinatorPolicy() {
   CHECK_EQ(g_instance, this);
   g_instance = nullptr;
+  coordinator_->policy_manager().RemovePolicy(this);
+}
+
+void RendererMemoryCoordinatorPolicy::OnConsumerGroupAdded(
+    std::string_view consumer_id,
+    base::MemoryConsumerTraits traits,
+    ProcessType process_type,
+    ChildProcessId child_process_id) {
+  if (traits.release_gc_references !=
+      base::MemoryConsumerTraits::ReleaseGCReferences::kYes) {
+    return;
+  }
+
+  auto [_, inserted] = consumer_ids_.emplace(consumer_id);
+  CHECK(inserted);
+}
+
+void RendererMemoryCoordinatorPolicy::OnConsumerGroupRemoved(
+    std::string_view consumer_id,
+    ChildProcessId child_process_id) {
+  consumer_ids_.erase(consumer_id);
 }
 
 void RendererMemoryCoordinatorPolicy::OnV8HeapLastResortGC() {
@@ -47,12 +70,9 @@ void RendererMemoryCoordinatorPolicy::OnV8HeapLastResortGC() {
 
   // The V8 heap is full and can't free enough memory. To help the impending GC,
   // notify consumers that retain references to the v8 heap.
-  for (auto& consumer_info : *registry_) {
-    if (consumer_info.traits.release_gc_references ==
-        base::MemoryConsumerTraits::ReleaseGCReferences::kYes) {
-      consumer_info.consumer.UpdateMemoryLimit(0);
-      consumer_info.consumer.ReleaseMemory();
-    }
+  for (const std::string& consumer_id : consumer_ids_) {
+    manager().SetMemoryLimit(this, consumer_id, ChildProcessId(), 0);
+    manager().ReleaseMemory(consumer_id, ChildProcessId());
   }
 
   // Immediately restore the limit if there is no delay.
@@ -68,11 +88,9 @@ void RendererMemoryCoordinatorPolicy::OnV8HeapLastResortGC() {
 }
 
 void RendererMemoryCoordinatorPolicy::OnRestoreLimitTimerFired() {
-  for (auto& consumer_info : *registry_) {
-    if (consumer_info.traits.release_gc_references ==
-        base::MemoryConsumerTraits::ReleaseGCReferences::kYes) {
-      consumer_info.consumer.UpdateMemoryLimit(100);
-    }
+  for (const std::string& consumer_id : consumer_ids_) {
+    manager().SetMemoryLimit(this, consumer_id, ChildProcessId(),
+                             base::MemoryConsumer::kDefaultMemoryLimit);
   }
 }
 

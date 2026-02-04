@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_MEMORY_COORDINATOR_MEMORY_COORDINATOR_POLICY_MANAGER_H_
-#define CONTENT_BROWSER_MEMORY_COORDINATOR_MEMORY_COORDINATOR_POLICY_MANAGER_H_
+#ifndef CONTENT_COMMON_MEMORY_COORDINATOR_MEMORY_COORDINATOR_POLICY_MANAGER_H_
+#define CONTENT_COMMON_MEMORY_COORDINATOR_MEMORY_COORDINATOR_POLICY_MANAGER_H_
 
 #include <memory>
 #include <string>
@@ -11,9 +11,9 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
-#include "content/browser/memory_coordinator/browser_memory_consumer_registry.h"
-#include "content/browser/memory_coordinator/memory_coordinator_policy.h"
 #include "content/common/content_export.h"
+#include "content/common/memory_coordinator/memory_consumer_group_controller.h"
+#include "content/common/memory_coordinator/memory_coordinator_policy.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace content {
@@ -22,7 +22,7 @@ namespace content {
 // requests for consumer groups, ensuring the most restrictive (lowest) limit is
 // always applied.
 class CONTENT_EXPORT MemoryCoordinatorPolicyManager
-    : public BrowserMemoryConsumerRegistry::ConsumerGroupController {
+    : public MemoryConsumerGroupController {
  public:
   MemoryCoordinatorPolicyManager();
   ~MemoryCoordinatorPolicyManager() override;
@@ -39,7 +39,7 @@ class CONTENT_EXPORT MemoryCoordinatorPolicyManager
   // Unregisters a policy with the manager and clears all its associated data.
   void RemovePolicy(MemoryCoordinatorPolicy* policy);
 
-  // BrowserMemoryConsumerRegistry::ConsumerGroupController:
+  // MemoryConsumerGroupController:
   void OnConsumerGroupAdded(std::string_view consumer_id,
                             base::MemoryConsumerTraits traits,
                             ProcessType process_type,
@@ -84,4 +84,4 @@ class CONTENT_EXPORT MemoryCoordinatorPolicyManager
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_MEMORY_COORDINATOR_MEMORY_COORDINATOR_POLICY_MANAGER_H_
+#endif  // CONTENT_COMMON_MEMORY_COORDINATOR_MEMORY_COORDINATOR_POLICY_MANAGER_H_

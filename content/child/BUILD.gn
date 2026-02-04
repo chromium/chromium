@@ -50,6 +50,8 @@ target(link_target_type, "child") {
     "image_decoder_utils.cc",
     "memory_coordinator/child_memory_consumer_registry.cc",
     "memory_coordinator/child_memory_consumer_registry.h",
+    "memory_coordinator/child_memory_coordinator.cc",
+    "memory_coordinator/child_memory_coordinator.h",
     "runtime_features.cc",
     "runtime_features.h",
     "scoped_child_process_reference.cc",

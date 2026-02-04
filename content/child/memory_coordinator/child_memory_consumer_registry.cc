@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "content/public/common/process_type.h"
 
 namespace content {
 
@@ -38,6 +39,12 @@ void ChildMemoryConsumerRegistry::ConsumerGroup::AddMemoryConsumer(
     base::RegisteredMemoryConsumer consumer) {
   CHECK(!std::ranges::contains(memory_consumers_, consumer));
   memory_consumers_.push_back(consumer);
+
+  // Ensure the added consumer is up to date with the current memory limit
+  // applied to this consumer group.
+  if (memory_limit() != base::MemoryConsumer::kDefaultMemoryLimit) {
+    consumer.UpdateMemoryLimit(memory_limit());
+  }
 }
 
 void ChildMemoryConsumerRegistry::ConsumerGroup::RemoveMemoryConsumer(
@@ -48,14 +55,15 @@ void ChildMemoryConsumerRegistry::ConsumerGroup::RemoveMemoryConsumer(
 
 // ChildMemoryConsumerRegistry -------------------------------------------------
 
-ChildMemoryConsumerRegistry::ChildMemoryConsumerRegistry() = default;
+ChildMemoryConsumerRegistry::ChildMemoryConsumerRegistry(
+    MemoryConsumerGroupController& controller)
+    : controller_(controller) {}
 
 ChildMemoryConsumerRegistry::~ChildMemoryConsumerRegistry() {
   NotifyDestruction();
 
   CHECK(consumer_groups_.empty());
   CHECK(child_memory_consumers_.empty());
-  CHECK(consumer_infos_.empty());
 }
 
 void ChildMemoryConsumerRegistry::NotifyReleaseMemory() {
@@ -109,9 +117,8 @@ void ChildMemoryConsumerRegistry::OnMemoryConsumerAdded(
                                std::move(remote));
     }
 
-    // Add to `consumer_infos_` to facilitate iteration by external callers.
-    consumer_infos_.emplace_back(
-        std::string(consumer_id), traits,
+    controller_->OnConsumerGroupAdded(
+        consumer_id, traits, PROCESS_TYPE_UNKNOWN, ChildProcessId(),
         CreateRegisteredMemoryConsumer(&consumer_group));
   }
 
@@ -137,12 +144,7 @@ void ChildMemoryConsumerRegistry::OnMemoryConsumerRemoved(
       child_memory_consumers_.Remove(*receiver_id);
     }
 
-    // Then clean up from `consumer_infos_`.
-    size_t removed = std::erase_if(
-        consumer_infos_, [consumer_id](const ConsumerInfo& consumer_info) {
-          return consumer_info.consumer_id == consumer_id;
-        });
-    CHECK_EQ(removed, 1u);
+    controller_->OnConsumerGroupRemoved(consumer_id, ChildProcessId());
 
     // Also remove the group.
     consumer_groups_.erase(it);

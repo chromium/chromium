@@ -64,7 +64,7 @@ void BrowserMemoryConsumerRegistry::ConsumerGroup::RemoveMemoryConsumer(
 // BrowserMemoryConsumerRegistry -----------------------------------------------
 
 BrowserMemoryConsumerRegistry::BrowserMemoryConsumerRegistry(
-    ConsumerGroupController& controller)
+    MemoryConsumerGroupController& controller)
     : controller_(controller) {}
 
 BrowserMemoryConsumerRegistry::~BrowserMemoryConsumerRegistry() {

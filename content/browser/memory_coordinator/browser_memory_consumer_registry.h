@@ -11,6 +11,7 @@
 #include "base/memory_coordinator/traits.h"
 #include "content/browser/memory_coordinator/child_memory_consumer_registry_host.h"
 #include "content/common/content_export.h"
+#include "content/common/memory_coordinator/memory_consumer_group_controller.h"
 #include "content/public/common/child_process_id.h"
 #include "content/public/common/process_type.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
@@ -26,26 +27,8 @@ class CONTENT_EXPORT BrowserMemoryConsumerRegistry
     : public base::MemoryConsumerRegistry,
       public ChildMemoryConsumerRegistryHost::Delegate {
  public:
-  // An interface that allows an external component to control or act upon
-  // consumer groups.
-  class ConsumerGroupController {
-   public:
-    virtual ~ConsumerGroupController() = default;
-
-    // Called when a new consumer group is added to the registry.
-    virtual void OnConsumerGroupAdded(
-        std::string_view consumer_id,
-        base::MemoryConsumerTraits traits,
-        ProcessType process_type,
-        ChildProcessId child_process_id,
-        base::RegisteredMemoryConsumer consumer) = 0;
-
-    // Called when a consumer group is removed from the registry.
-    virtual void OnConsumerGroupRemoved(std::string_view consumer_id,
-                                        ChildProcessId child_process_id) = 0;
-  };
-
-  explicit BrowserMemoryConsumerRegistry(ConsumerGroupController& controller);
+  explicit BrowserMemoryConsumerRegistry(
+      MemoryConsumerGroupController& controller);
   ~BrowserMemoryConsumerRegistry() override;
 
   // ChildMemoryConsumerRegistryHost::Delegate:
@@ -118,7 +101,7 @@ class CONTENT_EXPORT BrowserMemoryConsumerRegistry
   absl::flat_hash_map<ConsumerGroupKey, std::unique_ptr<ConsumerGroup>>
       consumer_groups_;
 
-  const raw_ref<ConsumerGroupController> controller_;
+  const raw_ref<MemoryConsumerGroupController> controller_;
 };
 
 }  // namespace content

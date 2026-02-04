@@ -16,6 +16,7 @@
 #include "base/memory_coordinator/memory_consumer_registry.h"
 #include "base/memory_coordinator/traits.h"
 #include "content/common/content_export.h"
+#include "content/common/memory_coordinator/memory_consumer_group_controller.h"
 #include "content/common/memory_coordinator/mojom/memory_coordinator.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -31,27 +32,13 @@ class CONTENT_EXPORT ChildMemoryConsumerRegistry
     : public base::MemoryConsumerRegistry,
       public mojom::ChildMemoryConsumer {
  public:
-  ChildMemoryConsumerRegistry();
+  explicit ChildMemoryConsumerRegistry(
+      MemoryConsumerGroupController& controller);
   ~ChildMemoryConsumerRegistry() override;
 
   // mojom::ChildMemoryConsumer:
   void NotifyReleaseMemory() override;
   void NotifyUpdateMemoryLimit(int percentage) override;
-
-  // Details about a group of consumers of the same type.
-  struct ConsumerInfo {
-    // An ID that uniquely identifies the group.
-    std::string consumer_id;
-    // The traits of the consumer group. See "base/memory_coordinator/traits.h"
-    // for a description of all possible traits.
-    base::MemoryConsumerTraits traits;
-    // The interface to notify this consumer group.
-    base::RegisteredMemoryConsumer consumer;
-  };
-  using iterator = std::vector<ConsumerInfo>::iterator;
-
-  iterator begin() { return consumer_infos_.begin(); }
-  iterator end() { return consumer_infos_.end(); }
 
   // Returns the number of consumers with different IDs.
   size_t size() const { return consumer_groups_.size(); }
@@ -106,6 +93,8 @@ class CONTENT_EXPORT ChildMemoryConsumerRegistry
   // Used to register consumers in the child process with the browser process.
   mojo::Remote<mojom::ChildMemoryConsumerRegistryHost> registry_host_;
 
+  const raw_ref<MemoryConsumerGroupController> controller_;
+
   // Contains groups of all MemoryConsumers with the same consumer ID, and their
   // associated mojo::ReceiverId.
   struct ConsumerGroupAndReceiverId {
@@ -123,10 +112,6 @@ class CONTENT_EXPORT ChildMemoryConsumerRegistry
   // browser process exists and is bound in this ReceiverSet.
   mojo::ReceiverSet<mojom::ChildMemoryConsumer, base::RegisteredMemoryConsumer>
       child_memory_consumers_;
-
-  // For each ConsumerGroup, this holds a corresponding ConsumerInfo entry. This
-  // exists to facilitate iteration over existing MemoryConsumers.
-  std::vector<ConsumerInfo> consumer_infos_;
 };
 
 }  // namespace content

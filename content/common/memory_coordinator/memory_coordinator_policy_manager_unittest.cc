@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/memory_coordinator/memory_coordinator_policy_manager.h"
+#include "content/common/memory_coordinator/memory_coordinator_policy_manager.h"
 
 #include <memory>
 
 #include "base/memory_coordinator/mock_memory_consumer.h"
 #include "base/memory_coordinator/traits.h"
 #include "base/test/task_environment.h"
-#include "content/browser/memory_coordinator/browser_memory_consumer_registry.h"
-#include "content/browser/memory_coordinator/memory_coordinator_policy.h"
+#include "content/common/memory_coordinator/memory_coordinator_policy.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -32,7 +31,7 @@ constexpr base::MemoryConsumerTraits kTestTraits1{
 class SimpleMemoryConsumerRegistry : public base::MemoryConsumerRegistry {
  public:
   explicit SimpleMemoryConsumerRegistry(
-      BrowserMemoryConsumerRegistry::ConsumerGroupController& controller)
+      MemoryConsumerGroupController& controller)
       : controller_(controller) {}
   ~SimpleMemoryConsumerRegistry() override { NotifyDestruction(); }
 
@@ -50,8 +49,7 @@ class SimpleMemoryConsumerRegistry : public base::MemoryConsumerRegistry {
     controller_->OnConsumerGroupRemoved(consumer_id, ChildProcessId());
   }
 
-  const raw_ref<BrowserMemoryConsumerRegistry::ConsumerGroupController>
-      controller_;
+  const raw_ref<MemoryConsumerGroupController> controller_;
 };
 
 class MockPolicy : public MemoryCoordinatorPolicy {

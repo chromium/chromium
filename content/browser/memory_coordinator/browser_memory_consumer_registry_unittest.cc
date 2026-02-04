@@ -11,6 +11,7 @@
 #include "base/memory_coordinator/traits.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
+#include "content/common/memory_coordinator/memory_consumer_group_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -57,15 +58,14 @@ constexpr base::MemoryConsumerTraits kTestTraits3{
 
 }  // namespace
 
-class BrowserMemoryConsumerRegistryTest
-    : public Test,
-      public BrowserMemoryConsumerRegistry::ConsumerGroupController {
+class BrowserMemoryConsumerRegistryTest : public Test,
+                                          public MemoryConsumerGroupController {
  protected:
   BrowserMemoryConsumerRegistry& browser_registry() { return registry_.Get(); }
 
   std::vector<ConsumerEntry>& entries() { return entries_; }
 
-  // ConsumerGroupController:
+  // MemoryConsumerGroupController:
   void OnConsumerGroupAdded(std::string_view consumer_id,
                             base::MemoryConsumerTraits traits,
                             ProcessType process_type,
