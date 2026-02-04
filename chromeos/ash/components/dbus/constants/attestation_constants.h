@@ -57,6 +57,9 @@ enum AttestationCertificateProfile {
   // A profile for certificates intended for using the Device Trust Connector on
   // unmanaged devices.
   PROFILE_DEVICE_TRUST_USER_CERTIFICATE = 14,
+  // A profile for certificates intended for authentication and identity on Beam
+  // devices.
+  PROFILE_BEAM_DEVICE_CERTIFICATE = 15,
 };
 
 // Status for operations involving an attestation server.
@@ -111,6 +114,11 @@ extern const char kDeviceSetupKey[];
 // always be stored as a DEVICE_KEY.
 COMPONENT_EXPORT(ASH_DBUS_CONSTANTS)
 extern const char kDeviceTrustConnectorKeyPrefix[];
+
+// A key name for the Beam Device Key.  This key should always be stored
+// as a DEVICE_KEY.
+COMPONENT_EXPORT(ASH_DBUS_CONSTANTS)
+extern const char kBeamDeviceKey[];
 
 }  // namespace ash::attestation
 

@@ -90,6 +90,8 @@ std::optional<::attestation::CertificateProfile> ProfileToAttestationProtoEnum(
       return ::attestation::CertificateProfile::DEVICE_SETUP_CERTIFICATE;
     case PROFILE_DEVICE_TRUST_USER_CERTIFICATE:
       return ::attestation::CertificateProfile::DEVICE_TRUST_USER_CERTIFICATE;
+    case PROFILE_BEAM_DEVICE_CERTIFICATE:
+      return ::attestation::CertificateProfile::BEAM_DEVICE_CERTIFICATE;
     default:
       return {};
   }
