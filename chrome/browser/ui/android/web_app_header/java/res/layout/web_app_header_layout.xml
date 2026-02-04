@@ -64,14 +64,6 @@ found in the LICENSE file.
                 android:visibility="gone"
                 app:tint="@color/default_text_color_list" />
 
-            <FrameLayout
-                android:id="@+id/web_app_menu_button_wrapper"
-                style="@style/HeaderButton"
-                android:visibility="gone">
-                <include
-                    layout="@layout/menu_button" />
-            </FrameLayout>
-
             <org.chromium.ui.widget.ChromeImageButton
                 android:id="@+id/wco_toggle_button"
                 style="@style/HeaderButton"
@@ -79,6 +71,14 @@ found in the LICENSE file.
                 android:contentDescription="@string/web_app_enable_window_controls_overlay_tooltip"
                 android:visibility="gone"
                 app:tint="@color/default_icon_color_tint_list" />
+
+            <FrameLayout
+                android:id="@+id/web_app_menu_button_wrapper"
+                style="@style/HeaderButton"
+                android:visibility="gone">
+                <include
+                    layout="@layout/menu_button" />
+            </FrameLayout>
         </LinearLayout>
     </RelativeLayout>
 </org.chromium.chrome.browser.ui.web_app_header.WebAppHeaderLayout>

@@ -278,9 +278,7 @@ public class WebAppHeaderLayoutCoordinator extends EmptyTabObserver
             initWCOControls();
         }
 
-        if (mDisplayMode == DisplayMode.STANDALONE) {
-            initStandaloneControls();
-        }
+        initMenuButton();
 
         // Determine width of initialized UI controls.
         mUIControlsMinWidthPx = calculateUIControlsMinWidth();
@@ -386,38 +384,18 @@ public class WebAppHeaderLayoutCoordinator extends EmptyTabObserver
                         mHistoryDelegate,
                         /* isWebApp= */ true);
 
-        if (mIsTWA) {
-            mMenuButtonContainer = mView.findViewById(R.id.web_app_menu_button_wrapper);
-            mMenuButtonContainer.setVisibility(View.VISIBLE);
-
-            // TODO(crbug.com/453007852): When ObservableSupplier<E> extends Supplier<@Nullable E>,
-            // remove cast to Supplier<@Nullable MenuButtonState>,
-            mMenuButtonCoordinator =
-                    new MenuButtonCoordinator(
-                            mActivity,
-                            mAppMenuCoordinatorSupplier,
-                            mBrowserStateBrowserControlsVisibilityDelegate,
-                            mActivityWindowAndroid,
-                            /* setUrlBarFocusFunction= */ (should, reason) -> {},
-                            mRequestRenderRunnable,
-                            /* canShowAppUpdateBadge= */ false,
-                            /* isInOverviewModeSupplier= */ () -> false,
-                            mThemeColorProvider,
-                            mIncognitoStateProvider,
-                            (Supplier<@Nullable MenuButtonState>) mMenuButtonStateSupplier,
-                            this::onMenuButtonClicked,
-                            R.id.menu_button_wrapper,
-                            /* visibilityDelegate= */ null,
-                            /* isWebApp= */ true);
-        }
         mMediator.setOnButtonBottomInsetChanged(this::onButtonBottomInsetChanged);
     }
 
-    private void initStandaloneControls() {
+    private void initMenuButton() {
         assert mView != null;
-        assert mMediator != null;
-
-        if (mIsTWA && ChromeFeatureList.sAndroidTwaOriginDisplay.isEnabled()) {
+        assert mMenuButtonContainer == null;
+        assert mMenuButtonCoordinator == null;
+        if (!mIsTWA) return;
+        if (mDisplayMode == DisplayMode.MINIMAL_UI
+                || (ChromeFeatureList.sAndroidTwaOriginDisplay.isEnabled()
+                        && (mDisplayMode == DisplayMode.STANDALONE
+                                || mDisplayMode == DisplayMode.WINDOW_CONTROLS_OVERLAY))) {
             mMenuButtonContainer = mView.findViewById(R.id.web_app_menu_button_wrapper);
             mMenuButtonContainer.setVisibility(View.VISIBLE);
 
