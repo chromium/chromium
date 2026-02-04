@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "net/base/address_tracker_linux.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
 #include "base/functional/callback_helpers.h"
-#include "net/base/address_tracker_linux.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 using net::internal::AddressTrackerLinux;
 
@@ -15,7 +17,7 @@ namespace net::test {
 class AddressTrackerLinuxTest {
  public:
   static void TestHandleMessage(const char* buffer, size_t length) {
-    std::unordered_set<std::string> ignored_interfaces;
+    absl::flat_hash_set<std::string> ignored_interfaces;
     AddressTrackerLinux tracker(base::DoNothing(), base::DoNothing(),
                                 base::DoNothing(), ignored_interfaces);
     NetworkChangeNotifier::IPAddressChangeType address_change_type;

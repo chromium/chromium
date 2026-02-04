@@ -34,6 +34,7 @@
 #include "net/base/ip_address.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/android_info.h"
@@ -169,7 +170,7 @@ class AddressTrackerLinuxTest : public testing::Test {
     return tracker_->GetThreadsWaitingForConnectionTypeInitForTesting();
   }
 
-  std::unordered_set<std::string> ignored_interfaces_;
+  absl::flat_hash_set<std::string> ignored_interfaces_;
   std::unique_ptr<AddressTrackerLinux> tracker_;
   AddressTrackerLinux::GetInterfaceNameFunction original_get_interface_name_;
 

@@ -9,11 +9,12 @@
 #include "chromecast/base/cast_sys_info_util.h"
 #include "chromecast/net/net_switches.h"
 #include "chromecast/public/cast_sys_info.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace chromecast {
 
-std::unordered_set<std::string> GetIgnoredInterfaces() {
-  std::unordered_set<std::string> ignored_interfaces;
+absl::flat_hash_set<std::string> GetIgnoredInterfaces() {
+  absl::flat_hash_set<std::string> ignored_interfaces;
   std::unique_ptr<CastSysInfo> sys_info = CreateSysInfo();
   if (!sys_info->GetApInterface().empty())
     ignored_interfaces.insert(sys_info->GetApInterface());

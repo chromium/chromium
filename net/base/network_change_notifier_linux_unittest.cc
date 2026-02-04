@@ -4,8 +4,6 @@
 
 #include "net/base/network_change_notifier_linux.h"
 
-#include <unordered_set>
-
 #include "base/functional/callback_helpers.h"
 #include "base/test/task_environment.h"
 #include "net/base/address_map_linux.h"
@@ -13,6 +11,7 @@
 #include "net/dns/dns_config_service.h"
 #include "net/dns/system_dns_config_change_notifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace net {
 
@@ -30,7 +29,7 @@ class NetworkChangeNotifierLinuxTest : public testing::Test {
     dns_config_notifier_ = std::make_unique<SystemDnsConfigChangeNotifier>(
         nullptr /* task_runner */, nullptr /* dns_config_service */);
     notifier_ = std::make_unique<NetworkChangeNotifierLinux>(
-        std::unordered_set<std::string>());
+        absl::flat_hash_set<std::string>());
   }
 
   void TearDown() override { base::RunLoop().RunUntilIdle(); }

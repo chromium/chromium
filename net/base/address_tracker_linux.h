@@ -30,6 +30,7 @@
 #include "net/base/ip_address.h"
 #include "net/base/net_export.h"
 #include "net/base/network_change_notifier.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace net::test {
 class AddressTrackerLinuxTest;
@@ -75,7 +76,7 @@ class NET_EXPORT_PRIVATE AddressTrackerLinux : public AddressMapOwnerLinux {
           void(NetworkChangeNotifier::IPAddressChangeType)>& address_callback,
       const base::RepeatingClosure& link_callback,
       const base::RepeatingClosure& tunnel_callback,
-      const std::unordered_set<std::string>& ignored_interfaces,
+      const absl::flat_hash_set<std::string>& ignored_interfaces,
       scoped_refptr<base::SequencedTaskRunner> blocking_thread_runner =
           nullptr);
   ~AddressTrackerLinux() override;
@@ -266,7 +267,7 @@ class NET_EXPORT_PRIVATE AddressTrackerLinux : public AddressMapOwnerLinux {
   std::optional<OnlineLinksDiff> online_links_diff_;
 
   // Set of interface names that should be ignored.
-  const std::unordered_set<std::string> ignored_interfaces_;
+  const absl::flat_hash_set<std::string> ignored_interfaces_;
 
   base::Lock connection_type_lock_;
   bool connection_type_initialized_ GUARDED_BY(connection_type_lock_) = false;
