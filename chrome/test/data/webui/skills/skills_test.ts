@@ -7,13 +7,19 @@ import 'chrome://skills/app.js';
 import {CrRouter} from 'chrome://resources/js/cr_router.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {SkillsAppElement} from 'chrome://skills/app.js';
+import {SkillsPageBrowserProxy} from 'chrome://skills/skills_page_browser_proxy.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
+import {TestSkillsBrowserProxy} from './test_skills_browser_proxy.js';
+
 suite('SkillsAppPage', function() {
   let app: SkillsAppElement;
+  let browserProxy: TestSkillsBrowserProxy;
 
   setup(function() {
+    browserProxy = new TestSkillsBrowserProxy();
+    SkillsPageBrowserProxy.setInstance(browserProxy);
     window.history.replaceState({}, '', '/');
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     CrRouter.resetForTesting();
@@ -141,5 +147,10 @@ suite('SkillsAppPage', function() {
     await backPromise2;
     await microtasksFinished();
     assertEquals('/browse-skills', CrRouter.getInstance().getPath());
+  });
+
+  test('Request1PSkillsOnDiscoverSkillsNavigation', async function() {
+    navigateTo('/browse-skills');
+    await browserProxy.handler.whenCalled('request1PSkills');
   });
 });

@@ -90,6 +90,7 @@ class MockSkillsService : public SkillsService {
               GetSkills,
               (),
               (const));
+  MOCK_METHOD(const SkillsMap&, Get1PSkills, (), (const));
   MOCK_METHOD(const Skill*,
               AddSkill,
               (const std::string&, const std::string&, const std::string&));

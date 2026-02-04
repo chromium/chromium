@@ -18,12 +18,14 @@ import type {CrToolbarElement} from '//resources/cr_elements/cr_toolbar/cr_toolb
 import {CrRouter} from '//resources/js/cr_router.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import type {SkillsSidebarElement} from './sidebar.js';
 import {Page} from './sidebar.js';
+import {SkillsPageBrowserProxy} from './skills_page_browser_proxy.js';
 import type {UserSkillsPageElement} from './user_skills_page.js';
 
 export interface SkillsAppElement {
@@ -63,6 +65,16 @@ export class SkillsAppElement extends CrLitElement {
   protected accessor shouldShowErrorPage_: boolean =
       !loadTimeData.getBoolean('isGlicEnabled');
   private eventTracker_: EventTracker = new EventTracker();
+  private proxy_: SkillsPageBrowserProxy = SkillsPageBrowserProxy.getInstance();
+
+  override updated(changedProperties: PropertyValues) {
+    super.updated(changedProperties as PropertyValues<this>);
+
+    if (changedProperties.has('selectedPage_') &&
+        this.selectedPage_ === Page.DISCOVER_SKILLS) {
+      this.proxy_.handler.request1PSkills();
+    }
+  }
 
   override connectedCallback() {
     super.connectedCallback();

@@ -16,10 +16,6 @@ namespace content {
 class WebContents;
 }  // namespace content
 
-namespace content {
-class WebContents;
-}  // namespace content
-
 class Profile;
 
 namespace skills {
@@ -40,6 +36,8 @@ class SkillsPageHandler : public skills::mojom::PageHandler,
   void OpenSkillsDialog(mojom::SkillsDialogType dialog_type,
                         const std::optional<skills::Skill>& skill) override;
   void GetInitialUserSkills(GetInitialUserSkillsCallback callback) override;
+  void GetInitial1PSkills(GetInitial1PSkillsCallback callback) override;
+  void Request1PSkills() override;
 
   // skills::SkillsService::Observer:
   void OnSkillUpdated(std::string_view skill_id,

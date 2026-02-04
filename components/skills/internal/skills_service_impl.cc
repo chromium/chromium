@@ -4,6 +4,8 @@
 
 #include "components/skills/internal/skills_service_impl.h"
 
+#include "base/memory/weak_ptr.h"
+#include "base/no_destructor.h"
 #include "base/notimplemented.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/uuid.h"
@@ -152,6 +154,12 @@ const std::vector<std::unique_ptr<Skill>>& SkillsServiceImpl::GetSkills()
   return skills_;
 }
 
+const SkillsService::SkillsMap& SkillsServiceImpl::Get1PSkills() const {
+  CHECK(is_initialized_);
+
+  return first_party_skills_map_;
+}
+
 void SkillsServiceImpl::LoadInitialSkills(
     std::vector<std::unique_ptr<Skill>> initial_skills) {
   CHECK(!is_initialized_);
@@ -232,10 +240,16 @@ void SkillsServiceImpl::FetchDiscoverySkills() {
 
 void SkillsServiceImpl::Handle1pSkillsMap(
     std::unique_ptr<SkillsMap> skills_map) {
-  first_party_skills_map_ = std::move(skills_map);
+  SkillsMap* notification_ptr = nullptr;
+  // If skills_map is null, this means we don't have an updated value so we
+  // shouldn't modify the stored 1p map.
+  if (skills_map) {
+    first_party_skills_map_.swap(*skills_map);
+    notification_ptr = &first_party_skills_map_;
+  }
 
   for (Observer& observer : observers_) {
-    observer.OnDiscoverySkillsUpdated(first_party_skills_map_.get());
+    observer.OnDiscoverySkillsUpdated(notification_ptr);
   }
 }
 

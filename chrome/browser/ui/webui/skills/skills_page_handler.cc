@@ -15,6 +15,27 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 
 namespace skills {
+namespace {
+using FirstPartySkillsMap =
+    base::flat_map</*category=*/std::string, std::vector<skills::Skill>>;
+
+FirstPartySkillsMap Translate1PSkillsMap(
+    const SkillsService::SkillsMap& skills_map) {
+  FirstPartySkillsMap translated_map;
+  for (const auto& [id, skill] : skills_map) {
+    skills::Skill translated_skill;
+    translated_skill.id = skill.id();
+    translated_skill.name = skill.name();
+    translated_skill.icon = skill.icon();
+    translated_skill.prompt = skill.prompt();
+    translated_skill.source = sync_pb::SkillSource::SKILL_SOURCE_FIRST_PARTY;
+    translated_map[skill.category()].push_back(std::move(translated_skill));
+  }
+  return translated_map;
+}
+
+}  // namespace
+
 SkillsPageHandler::SkillsPageHandler(
     mojo::PendingReceiver<skills::mojom::PageHandler> receiver,
     mojo::PendingRemote<skills::mojom::SkillsPage> page,
@@ -61,11 +82,6 @@ void SkillsPageHandler::GetInitialUserSkills(
   std::move(scoped_callback).Run(std::move(skills));
 }
 
-void SkillsPageHandler::OnDiscoverySkillsUpdated(
-    const SkillsService::SkillsMap* skills_map) {
-  // TODO(crbug.com/475594870): Propagate 1P skills to the UI.
-}
-
 void SkillsPageHandler::OnSkillUpdated(
     std::string_view skill_id,
     SkillsService::UpdateSource update_source) {
@@ -84,6 +100,37 @@ void SkillsPageHandler::OnSkillUpdated(
 
 void SkillsPageHandler::OnSkillsServiceShuttingDown() {
   service_observation_.Reset();
+}
+
+void SkillsPageHandler::Request1PSkills() {
+  if (auto* service =
+          SkillsServiceFactory::GetForProfile(base::to_address(profile_))) {
+    service->FetchDiscoverySkills();
+  }
+}
+
+void SkillsPageHandler::GetInitial1PSkills(
+    GetInitial1PSkillsCallback callback) {
+  auto scoped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+      std::move(callback), FirstPartySkillsMap());
+  auto* service =
+      SkillsServiceFactory::GetForProfile(base::to_address(profile_));
+  if (!service || !service->IsInitialized()) {
+    return;
+  }
+  std::move(scoped_callback).Run(Translate1PSkillsMap(service->Get1PSkills()));
+}
+
+void SkillsPageHandler::OnDiscoverySkillsUpdated(
+    const SkillsService::SkillsMap* skills_map) {
+  // TODO(b/479029101): Handle the discover skill save error state.
+  if (!skills_map) {
+    return;
+  }
+
+  // If the map exists (even if empty) that means we have an updated list of
+  // skills.
+  page_->Update1PMap(Translate1PSkillsMap(*skills_map));
 }
 
 }  // namespace skills

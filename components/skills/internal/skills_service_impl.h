@@ -76,6 +76,7 @@ class SkillsServiceImpl : public SkillsService {
   const Skill* GetSkillById(std::string_view skill_id) const override;
   void FetchDiscoverySkills() override;
   void Handle1pSkillsMap(std::unique_ptr<SkillsMap> skills_map) override;
+  const SkillsMap& Get1PSkills() const override;
   const std::vector<std::unique_ptr<Skill>>& GetSkills() const override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
@@ -113,8 +114,8 @@ class SkillsServiceImpl : public SkillsService {
   // The list of skills managed by this service.
   std::vector<std::unique_ptr<Skill>> skills_;
 
-  // The map of 1p discovery skills.
-  std::unique_ptr<SkillsMap> first_party_skills_map_;
+  // The map of loaded 1p discovery skills.
+  SkillsMap first_party_skills_map_;
 
   // The list of observers to be notified on changes.
   base::ObserverList<Observer, /*check_empty=*/true, /*allow_reentrancy=*/false>

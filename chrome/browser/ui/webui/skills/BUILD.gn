@@ -24,6 +24,7 @@ source_set("skills") {
     "skills_dialog.h",
     "skills_dialog_delegate.h",
     "skills_dialog_handler.h",
+    "skills_page_handler.h",
     "skills_ui.h",
   ]
 
@@ -31,7 +32,6 @@ source_set("skills") {
     "skills_dialog.cc",
     "skills_dialog_handler.cc",
     "skills_page_handler.cc",
-    "skills_page_handler.h",
     "skills_ui.cc",
   ]
 
@@ -69,7 +69,10 @@ source_set("skills") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "skills_dialog_handler_unittest.cc" ]
+  sources = [
+    "skills_dialog_handler_unittest.cc",
+    "skills_page_handler_unittest.cc",
+  ]
   deps = [
     ":skills",
     "//chrome/browser/optimization_guide:test_support",

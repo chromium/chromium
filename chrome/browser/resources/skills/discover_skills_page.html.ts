@@ -12,9 +12,9 @@ export function getHtml(this: DiscoverSkillsPageElement) {
   /* TODO(b/475606460): Replace this with cards */
   return html`<!--_html_template_start_-->
 ${this.topSkills_().length > 0 ? html`
-<h1 id="topPicksTitle" class="page-title">$i18n{topPicksTitle}</h1>
+<h1 class="page-title">$i18n{topPicksTitle}</h1>
 ${this.topSkills_().map(skill => html`<li>${skill.name}</li>`)}` : ''}
-<h1 id="discoverSkillsTitle" class="page-title">$i18n{browseSkillsTitle}</h1>
+<h1 class="page-title">$i18n{browseSkillsTitle}</h1>
 <div id="discoverCategories">
   ${this.getOtherCategories_().map(category => html`
     <cr-chip ?selected="${this.isCategorySelected_(category)}"

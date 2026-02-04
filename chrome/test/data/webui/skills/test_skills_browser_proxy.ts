@@ -18,5 +18,7 @@ export class TestSkillsBrowserProxy {
         this.callbackRouter.$.bindNewPipeAndPassRemote();
     this.handler.setResultFor(
         'getInitialUserSkills', Promise.resolve({skills: []}));
+    this.handler.setResultFor(
+        'getInitial1PSkills', Promise.resolve({skillMap: {}}));
   }
 }
