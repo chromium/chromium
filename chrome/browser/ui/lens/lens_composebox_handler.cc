@@ -154,15 +154,6 @@ void LensComposeboxHandler::FocusChanged(bool focused) {
   lens_composebox_controller_->OnFocusChanged(focused);
 }
 
-void LensComposeboxHandler::SetDeepSearchMode(bool enabled) {
-  mojo::ReportBadMessage("Deep search not implemented for lens");
-}
-
-void LensComposeboxHandler::SetCreateImageMode(bool enabled,
-                                               bool image_present) {
-  mojo::ReportBadMessage("Create image not implemented for lens");
-}
-
 void LensComposeboxHandler::HandleLensButtonClick() {
   lens_composebox_controller_->ShowLensSelectionOverlay();
 }

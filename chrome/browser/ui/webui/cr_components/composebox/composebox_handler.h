@@ -45,8 +45,6 @@ class ComposeboxHandler : public composebox::mojom::PageHandler,
 
   // composebox::mojom::PageHandler:
   void FocusChanged(bool focused) override;
-  void SetDeepSearchMode(bool enabled) override;
-  void SetCreateImageMode(bool enabled, bool image_present) override;
 
   void HandleLensButtonClick() override;
   void HandleFileUpload(bool is_image) override;
