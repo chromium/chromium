@@ -25,6 +25,11 @@ namespace policy {
 
 namespace {
 
+// To test signature verification with fake_dmserver, add the public key's
+// base64 to your Chromium command line:
+// --policy-verification-key="MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsmjHzdHVrOG5/Je9lF7vG/YN6kfIsI+ishej1T8dQAwmpvPEuca+jHnhkibZri3bP7ti2hsocB1gZblwIQ5XrShSF3TyjYaGR63VjP6zcYGfdGtmTDKNtEVa4QbCRcGlzW0tskNj2Kq5G6VTm+d1wA18yNxUS962e26P/Pw5vQYy/G9Hq2irZphQ4JT7fBUD8qXWYadwV0mPJnUwmaPXo9C4Jtnrf//GoGILxTjWNMWvs5MJrzf8mIDy8ltdzqUOx0QxhyQA983d4cj+3kZok+k8H62KpvVfHwxqoRw54bVxo08vYkjNUmVYe4RAMRROAVhOiZs6BD4PnWbwl2bNjwIDAQAB"
+//
+// and comment out CHECK_IS_TEST() in cloud_policy_validator.cc
 constexpr auto kVerificationPrivateKey = std::to_array<uint8_t>(
     {0x30, 0x82, 0x04, 0xbe, 0x02, 0x01, 0x00, 0x30, 0x0d, 0x06, 0x09, 0x2a,
      0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01, 0x01, 0x05, 0x00, 0x04, 0x82,
