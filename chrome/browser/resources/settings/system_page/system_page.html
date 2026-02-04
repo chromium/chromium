@@ -93,14 +93,28 @@
             hidden$="[[!isProxyDefault_]]"
             aria-label="$i18n{proxySettingsLabel}"></cr-icon-button>
       </div>
-      <div class="cr-row continuation">
-        <div class="flex cr-row-text proxy-multisource-padding">
-          $i18n{proxySettingsYourOrganization}
+      <template is="dom-if" if="[[!prefs.proxy_override_rules.extensionId]]">
+        <div class="cr-row continuation">
+          <div class="flex cr-row-text proxy-multisource-padding">
+            $i18n{proxySettingsYourOrganization}
+          </div>
+          <cr-policy-pref-indicator pref="[[prefs.proxy_override_rules]]"
+              icon-aria-label="$i18n{proxySettingsLabel}">
+          </cr-policy-pref-indicator>
         </div>
-        <cr-policy-pref-indicator pref="[[prefs.proxy_override_rules]]"
-            icon-aria-label="$i18n{proxySettingsLabel}">
-        </cr-policy-pref-indicator>
-      </div>
+      </template>
+      <template is="dom-if" if="[[prefs.proxy_override_rules.extensionId]]">
+        <div class="cr-row continuation">
+          <extension-controlled-indicator class="flex proxy-multisource-padding"
+              extension-id="[[prefs.proxy_override_rules.extensionId]]"
+              extension-name="[[prefs.proxy_override_rules.controlledByName]]"
+              extension-name-only-in-label=
+                  "[[isProxyEnforcedByMultipleSources_]]"
+              extension-can-be-disabled=
+                  "[[prefs.proxy_override_rules.extensionCanBeDisabled]]">
+          </extension-controlled-indicator>
+        </div>
+      </template>
     </div>
     <template is="dom-if" if="[[prefs.proxy.extensionId]]">
       <div class="cr-row continuation">

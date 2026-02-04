@@ -178,6 +178,8 @@ suite('settings system page', function() {
         '#proxyMultipleSourcesLabel')!;
     assertFalse(isVisible(multipleSourcesLabel));
 
+    // Case 1: ProxyOverrideRules is set by policy, proxy is not set (using
+    // system default). Multiple sources should be shown.
     systemPage.set('prefs.proxy_override_rules', {
       key: 'proxy_override_rules',
       type: chrome.settingsPrivate.PrefType.LIST,
@@ -194,12 +196,64 @@ suite('settings system page', function() {
     assertTrue(isVisible(control));
     assertTrue(isVisible(multipleSourcesLabel));
 
+    // Case 2: Both ProxyOverrideRules and proxy are set by policy.
+    // A single combined sources should be shown.
+    systemPage.set('prefs.proxy', {
+      key: 'proxy',
+      type: chrome.settingsPrivate.PrefType.DICTIONARY,
+      value: {mode: 'system'},
+      controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
+      enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+    });
+    flush();
+
+    assertFalse(deviceSettings.hasAttribute('actionable'));
+    assertFalse(isVisible(control));
+    assertFalse(isVisible(multipleSourcesLabel));
+
+    // Case 3: ProxyOverrideRules is set by policy, proxy is set by an
+    // extension. Multiple sources should be shown.
     systemPage.set('prefs.proxy', {
       key: 'proxy',
       type: chrome.settingsPrivate.PrefType.DICTIONARY,
       value: {mode: 'system'},
       controlledBy: chrome.settingsPrivate.ControlledBy.EXTENSION,
-      extensionId: 'blah',
+      extensionId: 'extension-id-1',
+      enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+    });
+    flush();
+
+    assertFalse(deviceSettings.hasAttribute('actionable'));
+    assertTrue(isVisible(control));
+    assertTrue(isVisible(multipleSourcesLabel));
+
+    // Case 4: ProxyOverrideRules and proxy are set by the same extension.
+    // A single combined sources should be shown.
+    systemPage.set('prefs.proxy_override_rules', {
+      key: 'proxy_override_rules',
+      type: chrome.settingsPrivate.PrefType.LIST,
+      value: [{
+        'DestinationMatchers': ['https://app1.com'],
+        'ProxyList': ['HTTPS proxy.app:443'],
+      }],
+      controlledBy: chrome.settingsPrivate.ControlledBy.EXTENSION,
+      extensionId: 'extension-id-1',
+      enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+    });
+    flush();
+
+    assertFalse(deviceSettings.hasAttribute('actionable'));
+    assertFalse(isVisible(control));
+    assertFalse(isVisible(multipleSourcesLabel));
+
+    // Case 5: ProxyOverrideRules and proxy are set by different extension.
+    // Multiple sources should be shown.
+    systemPage.set('prefs.proxy', {
+      key: 'proxy',
+      type: chrome.settingsPrivate.PrefType.DICTIONARY,
+      value: {mode: 'system'},
+      controlledBy: chrome.settingsPrivate.ControlledBy.EXTENSION,
+      extensionId: 'extension-id-2',
       enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
     });
     flush();
