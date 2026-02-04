@@ -79,6 +79,7 @@ TEST_F(BubbleDialogModelHostTest, ElementIDsReportedCorrectly) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kMenuItemId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOkButtonId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kExtraButtonId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kDialogId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kCustomFieldId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kCustomFieldWithFocusableViewId);
   constexpr char16_t kMenuItemText[] = u"Menu Item";
@@ -114,6 +115,7 @@ TEST_F(BubbleDialogModelHostTest, ElementIDsReportedCorrectly) {
 
   auto host = std::make_unique<BubbleDialogModelHost>(
       ui::DialogModel::Builder()
+          .SetElementIdentifier(kDialogId)
           .AddMenuItem(ui::ImageModel(), kMenuItemText, base::DoNothing(),
                        menu_item_params)
           .AddOkButton(base::DoNothing(), ok_button_params)
@@ -144,6 +146,8 @@ TEST_F(BubbleDialogModelHostTest, ElementIDsReportedCorrectly) {
                          kOkButtonId, context));
   EXPECT_NE(nullptr, ui::ElementTracker::GetElementTracker()->GetUniqueElement(
                          kExtraButtonId, context));
+  EXPECT_NE(nullptr, ui::ElementTracker::GetElementTracker()->GetUniqueElement(
+                         kDialogId, context));
   EXPECT_EQ(custom_view_ptr,
             views::ElementTrackerViews::GetInstance()->GetUniqueView(
                 kCustomFieldId, context));

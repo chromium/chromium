@@ -310,7 +310,8 @@ class BubbleDialogModelHostContentsView final : public DialogModelSectionHost {
   // OnFieldAdded etc. has moved into this class.
   BubbleDialogModelHostContentsView(
       ui::DialogModelSection* contents,
-      ui::ElementIdentifier initially_focused_field_id)
+      ui::ElementIdentifier initially_focused_field_id,
+      ui::ElementIdentifier dialog_id)
       : contents_(contents),
         initially_focused_field_id_(initially_focused_field_id),
         on_field_added_subscription_(
@@ -323,6 +324,9 @@ class BubbleDialogModelHostContentsView final : public DialogModelSectionHost {
                 base::Unretained(this)))) {
     // Note that between-child spacing is manually handled using kMarginsKey.
     SetOrientation(views::BoxLayout::Orientation::kVertical);
+    if (dialog_id) {
+      SetProperty(kElementIdentifierKey, dialog_id);
+    }
 
     // Add all fields from the model.
     for (const auto& field : contents_->fields()) {
@@ -800,7 +804,7 @@ std::unique_ptr<DialogModelSectionHost> DialogModelSectionHost::Create(
     ui::DialogModelSection* section,
     ui::ElementIdentifier initially_focused_field_id) {
   return std::make_unique<BubbleDialogModelHostContentsView>(
-      section, initially_focused_field_id);
+      section, initially_focused_field_id, ui::ElementIdentifier());
 }
 
 BEGIN_METADATA(DialogModelSectionHost)
@@ -1090,7 +1094,8 @@ BubbleDialogModelHostContentsView* BubbleDialogModelHost::InitContentsView(
   auto contents_view_unique =
       std::make_unique<BubbleDialogModelHostContentsView>(
           contents,
-          model_->initially_focused_field(DialogModelHost::GetPassKey()));
+          model_->initially_focused_field(DialogModelHost::GetPassKey()),
+          model_->element_identifier(DialogModelHost::GetPassKey()));
 
   BubbleDialogModelHostContentsView* const contents_view =
       contents_view_unique.get();
