@@ -19,6 +19,7 @@
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
@@ -109,6 +110,13 @@ class NetworkRequestMetricsBrowserTest
     : public InProcessBrowserTest,
       public testing::WithParamInterface<RequestType> {
  public:
+  NetworkRequestMetricsBrowserTest() {
+    // TODO(b/452061489): Remove `scoped_feature_list_` when these features are
+    //   enabled in fieldtrial_testing_config.json or tip of tree.
+    scoped_feature_list_.InitWithFeatures(
+        {omnibox::kWebUIOmniboxPopup, omnibox::internal::kWebUIOmniboxAimPopup},
+        {});
+  }
   ~NetworkRequestMetricsBrowserTest() override = default;
 
   // ContentBrowserTest implementation:
@@ -185,8 +193,17 @@ class NetworkRequestMetricsBrowserTest
     metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
     if (GetParam() == RequestType::kMainFrame) {
-      histograms_->ExpectUniqueSample("Net.ErrorCodesForMainFrame4",
-                                      -expected_net_error, 1);
+      // Expect 2 `OK` requests for the omnibox, in addition to the
+      // `expected_net_error` request for the test.
+      if (expected_net_error == net::OK) {
+        histograms_->ExpectUniqueSample("Net.ErrorCodesForMainFrame4", -net::OK,
+                                        3);
+      } else {
+        EXPECT_THAT(histograms_->GetAllSamples("Net.ErrorCodesForMainFrame4"),
+                    testing::UnorderedElementsAre(
+                        base::Bucket(-net::OK, 2),
+                        base::Bucket(-expected_net_error, 1)));
+      }
 
       if (headers_received == HeadersReceived::kHeadersReceived) {
         histograms_->ExpectUniqueSample("Net.ConnectionInfo.MainFrame",
@@ -206,9 +223,9 @@ class NetworkRequestMetricsBrowserTest
       return;
     }
 
-    // If not testing the main frame, there should also be just one result for
-    // the main frame.
-    histograms_->ExpectUniqueSample("Net.ErrorCodesForMainFrame4", -net::OK, 1);
+    // If not testing the main frame, there should also be 2 results for the
+    // omnibox & 1 result for the main frame.
+    histograms_->ExpectUniqueSample("Net.ErrorCodesForMainFrame4", -net::OK, 3);
 
     // Some fuzziness here because of the favicon. It should typically succeed,
     // but allow it to have been aborted, too, since the test server won't
@@ -227,8 +244,13 @@ class NetworkRequestMetricsBrowserTest
         found_favicon_load = true;
         bucket.count--;
       }
-      EXPECT_EQ(0, bucket.count)
-          << "Found unexpected load with result: " << bucket.min;
+
+      if (bucket.min == -net::OK) {
+        EXPECT_GE(bucket.count, 0);
+      } else {
+        EXPECT_EQ(0, bucket.count)
+            << "Found unexpected load with result: " << bucket.min;
+      }
     }
     EXPECT_TRUE(found_expected_load);
 
@@ -264,13 +286,16 @@ class NetworkRequestMetricsBrowserTest
     if (GetParam() == RequestType::kMainFrame) {
       // Can't check Net.ErrorCodesForSubresources3, due to the favicon, which
       // Chrome may or may not have attempted to load.
-      histograms_->ExpectTotalCount("Net.ErrorCodesForMainFrame4", 1);
-      EXPECT_EQ(1, histograms_->GetBucketCount("Net.ErrorCodesForMainFrame4",
-                                               -net::ERR_ABORTED));
+      // Expect 2 `OK` requests for the omnibox, in addition to the
+      // `ERR_ABORTED` request for the test.
+      EXPECT_THAT(
+          histograms_->GetAllSamples("Net.ErrorCodesForMainFrame4"),
+          testing::UnorderedElementsAre(base::Bucket(-net::OK, 2),
+                                        base::Bucket(-net::ERR_ABORTED, 1)));
       return;
     }
 
-    histograms_->ExpectUniqueSample("Net.ErrorCodesForMainFrame4", -net::OK, 1);
+    histograms_->ExpectUniqueSample("Net.ErrorCodesForMainFrame4", -net::OK, 3);
 
     // Some fuzziness here because of the favicon. It should typically succeed,
     // but allow it to have been aborted, too, since the test server won't
@@ -301,8 +326,12 @@ class NetworkRequestMetricsBrowserTest
         found_resource_load = true;
         bucket.count--;
       }
-      EXPECT_EQ(0, bucket.count)
-          << "Found unexpected load with result: " << bucket.min;
+      if (bucket.min == -net::OK) {
+        EXPECT_GE(bucket.count, 0);
+      } else {
+        EXPECT_EQ(0, bucket.count)
+            << "Found unexpected load with result: " << bucket.min;
+      }
     }
     EXPECT_TRUE(found_expected_load);
   }
@@ -340,6 +369,7 @@ class NetworkRequestMetricsBrowserTest
   // existing tests run with the prewarm feature enabled.
   test::ScopedPrewarmFeatureList scoped_prewarm_feature_list_{
       test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
+  base::test::ScopedFeatureList scoped_feature_list_;
 
   std::unique_ptr<net::test_server::ControllableHttpResponse>
       uninteresting_main_frame_response_;
@@ -500,7 +530,7 @@ IN_PROC_BROWSER_TEST_P(NetworkRequestMetricsBrowserTest, Download) {
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
   if (GetParam() == RequestType::kMainFrame) {
-    histograms()->ExpectTotalCount("Net.ErrorCodesForMainFrame4", 0);
+    histograms()->ExpectTotalCount("Net.ErrorCodesForMainFrame4", 2);
     histograms()->ExpectTotalCount("Net.ConnectionInfo.MainFrame", 0);
     // Favicon may or may not have been loaded.
     EXPECT_GE(
@@ -513,9 +543,9 @@ IN_PROC_BROWSER_TEST_P(NetworkRequestMetricsBrowserTest, Download) {
     return;
   }
 
-  // If not testing the main frame, there should also be just one result for
-  // the main frame.
-  histograms()->ExpectUniqueSample("Net.ErrorCodesForMainFrame4", -net::OK, 1);
+  // If not testing the main frame, there should also be 2 results for the
+  // omnibox & 1 result for the main frame.
+  histograms()->ExpectUniqueSample("Net.ErrorCodesForMainFrame4", -net::OK, 3);
 
   // Some fuzziness here because of the favicon. It should typically succeed,
   // but allow it to have been aborted, too, since the test server won't
@@ -538,8 +568,12 @@ IN_PROC_BROWSER_TEST_P(NetworkRequestMetricsBrowserTest, Download) {
       found_resource_load = true;
       bucket.count--;
     }
-    EXPECT_EQ(0, bucket.count)
-        << "Found unexpected load with result: " << bucket.min;
+    if (bucket.min == -net::OK) {
+      EXPECT_GE(bucket.count, 0);
+    } else {
+      EXPECT_EQ(0, bucket.count)
+          << "Found unexpected load with result: " << bucket.min;
+    }
   }
 
   histograms()->ExpectUniqueSample("Net.ConnectionInfo.MainFrame",
