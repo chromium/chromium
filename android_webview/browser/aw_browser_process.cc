@@ -18,10 +18,13 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/path_service.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "components/component_updater/android/component_loader_policy.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/embedder_support/origin_trials/origin_trials_settings_storage.h"
@@ -81,7 +84,13 @@ void recordCacheQuotaFreshness(CacheQuotaFreshness state) {
   base::UmaHistogramEnumeration("Android.WebView.CacheQuotaFreshness", state);
 }
 
-bool g_did_early_perfetto_initialization = false;
+base::WaitableEvent* GetTracingInitEvent() {
+  static base::NoDestructor<base::WaitableEvent> event;
+  return event.get();
+}
+
+bool g_init_tracing_during_browser_main = true;
+bool g_initializing_tracing_on_background_thread = false;
 
 }  // namespace
 
@@ -368,19 +377,46 @@ JNI_AwBrowserProcess_GetComponentLoaderPolicies(JNIEnv* env) {
                                                 GetComponentLoaderPolicies());
 }
 
-static void JNI_AwBrowserProcess_InitPerfetto(JNIEnv* env,
-                                              bool enable_system_backend) {
+static void JNI_AwBrowserProcess_InitTracing(JNIEnv* env,
+                                             bool enable_system_backend,
+                                             bool called_on_background_thread) {
   tracing::InitTracing(/*enable_consumer=*/true,
                        /*will_trace_thread_restart=*/false,
                        /*enable_system_backend=*/enable_system_backend ||
                            tracing::ShouldSetupSystemTracing(),
                        base::NullCallback());
-  g_did_early_perfetto_initialization = true;
+  if (called_on_background_thread) {
+    GetTracingInitEvent()->Signal();
+  }
+}
+
+static void JNI_AwBrowserProcess_MarkTracingInitializedOnBackground(
+    JNIEnv* env) {
+  g_initializing_tracing_on_background_thread = true;
+}
+
+static void JNI_AwBrowserProcess_DisableTracingInitDuringBrowserMain(
+    JNIEnv* env) {
+  g_init_tracing_during_browser_main = false;
 }
 
 // static
-bool AwBrowserProcess::DidEarlyPerfettoInitialization() {
-  return g_did_early_perfetto_initialization;
+void AwBrowserProcess::WaitForBackgroundTracingInit() {
+  if (g_initializing_tracing_on_background_thread) {
+    base::TimeTicks wait_start = base::TimeTicks::Now();
+    GetTracingInitEvent()->Wait();
+    // We only want to log the wait time if the init happened on a background
+    // thread.
+    base::TimeDelta init_wait_time = base::TimeTicks::Now() - wait_start;
+    base::UmaHistogramTimes(
+        "Android.WebView.TracingInit.BackgroundInitMainThreadWaitTime",
+        init_wait_time);
+  }
+}
+
+// static
+bool AwBrowserProcess::ShouldInitTracingDuringBrowserMain() {
+  return g_init_tracing_during_browser_main;
 }
 
 }  // namespace android_webview

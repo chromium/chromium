@@ -90,7 +90,10 @@ public class WebViewCachedFlags {
                                             AwFeatures.WEBVIEW_MOVE_WORK_TO_PROVIDER_INIT,
                                             DefaultState.DISABLED),
                                     Map.entry(
-                                            AwFeatures.WEBVIEW_EARLY_PERFETTO_INIT,
+                                            AwFeatures.WEBVIEW_EARLY_TRACING_INIT,
+                                            DefaultState.DISABLED),
+                                    Map.entry(
+                                            AwFeatures.WEBVIEW_BACKGROUND_TRACING_INIT,
                                             DefaultState.DISABLED),
                                     Map.entry(
                                             AwFeatures.WEBVIEW_EARLY_STARTUP_TRACING,

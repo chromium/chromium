@@ -9269,6 +9269,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.TracingInit.BackgroundInitMainThreadWaitTime"
+    units="ms" expires_after="2026-12-01">
+  <owner>pbirk@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Time spent on the main thread waiting for background tracing init to finish.
+
+    This histogram is emitted a the point where WebView determines if tracing
+    should start on the main browser thread, since that is the point where the
+    startup code assumes that tracing is initialized. The histogram is only
+    emitted if tracing was initialized on a bachground thread, and it measures
+    the time spent waiting on the main thread for this initialization to finish.
+
+    Any values higher than 0 indicate that tracing did not manage to initialize
+    fully on the background thread before the main thread reached the point
+    where tracing is required.
+
+    The purpose of this histogram is to determine if background initialization
+    of tracing provides an overall benefit to WebView Startup Time.
+  </summary>
+</histogram>
+
 <histogram
     name="Android.WebView.UniversalAccess.OriginUrlMismatchInHistoryUtil"
     enum="BooleanAllowed" expires_after="2024-11-03">

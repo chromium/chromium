@@ -403,7 +403,8 @@ bool AwMainDelegate::ShouldInitializePerfetto(InvokedIn invoked_in) {
   if (!is_browser_process) {
     return true;
   }
-  return !AwBrowserProcess::DidEarlyPerfettoInitialization();
+  AwBrowserProcess::WaitForBackgroundTracingInit();
+  return AwBrowserProcess::ShouldInitTracingDuringBrowserMain();
 }
 
 }  // namespace android_webview

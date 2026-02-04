@@ -117,8 +117,15 @@ class AwBrowserProcess {
   GetOriginTrialsSettingsStorage();
   AwContentBrowserClient* GetBrowserClient();
 
-  // Returns true if we manually initialized Perfetto early during startup.
-  static bool DidEarlyPerfettoInitialization();
+  // Returns true if we should init tracing during browser main.
+  // Will return false if tracing was already initialized during factory init,
+  // or disabled by feature flag.
+  static bool ShouldInitTracingDuringBrowserMain();
+
+  // Waits for tracing to be initialized on a background thread.
+  // If tracing is not being initialized on a background thread, this function
+  // returns immediately.
+  static void WaitForBackgroundTracingInit();
 
  private:
   void CreateSafeBrowsingUIManager();

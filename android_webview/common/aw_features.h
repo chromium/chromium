@@ -17,10 +17,13 @@ namespace android_webview::features {
 // Alphabetical:
 BASE_DECLARE_FEATURE(kWebViewAddQuicHints);
 BASE_DECLARE_FEATURE(kWebViewBackForwardCache);
+BASE_DECLARE_FEATURE(kWebViewBackgroundTracingInit);
 // TODO(crbug.com/455296998): Remove this code for M145.
 BASE_DECLARE_FEATURE(kWebViewBypassHttpCacheForPrefetchFromHeader);
 BASE_DECLARE_FEATURE(kWebViewConfigurableLibraryPrefetch);
 BASE_DECLARE_FEATURE(kWebViewContentRestrictionSupport);
+BASE_DECLARE_FEATURE(kWebViewEarlyStartupTracing);
+BASE_DECLARE_FEATURE(kWebViewEarlyTracingInit);
 BASE_DECLARE_FEATURE(kWebViewFileSystemAccess);
 BASE_DECLARE_FEATURE(kWebViewIgnoreDuplicateNavs);
 BASE_DECLARE_FEATURE(kWebViewInvokeZoomPickerOnGSU);
@@ -57,8 +60,6 @@ BASE_DECLARE_FEATURE(kWebViewConnectToComponentProviderInBackground);
 BASE_DECLARE_FEATURE(kAndroidMetricsAsyncMetricLogging);
 BASE_DECLARE_FEATURE(kWebViewReducedSeedExpiration);
 BASE_DECLARE_FEATURE(kWebViewReducedSeedRequestPeriod);
-BASE_DECLARE_FEATURE(kWebViewEarlyStartupTracing);
-BASE_DECLARE_FEATURE(kWebViewEarlyPerfettoInit);
 BASE_DECLARE_FEATURE(kWebViewCacheBoundaryInterfaceMethods);
 BASE_DECLARE_FEATURE(kWebViewOptInToGmsBindServiceOptimization);
 BASE_DECLARE_FEATURE(kWebViewMoveWorkToProviderInit);

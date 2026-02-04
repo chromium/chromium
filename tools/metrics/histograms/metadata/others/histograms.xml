@@ -8558,6 +8558,33 @@ should be kept until we use this API.  -->
   </token>
 </histogram>
 
+<histogram name="Tracing.Init.InitTracing" units="ms"
+    expires_after="2026-12-01">
+  <owner>pbirk@chromium.org</owner>
+  <owner>webview-team@google.com</owner>
+  <owner>chrometto-team@google.com</owner>
+  <summary>
+    Records the total time spent by tracing::InitTracing.
+
+    This histogram is added to investigate the impact of Tracing initialization
+    on WebView startup performance.
+  </summary>
+</histogram>
+
+<histogram name="Tracing.Init.Perfetto.Initialize" units="ms"
+    expires_after="2026-12-01">
+  <owner>pbirk@chromium.org</owner>
+  <owner>webview-team@google.com</owner>
+  <owner>chrometto-team@google.com</owner>
+  <summary>
+    Records the time spent by perfetto::Tracing::Initialize during
+    PerfettoTracedProcess::SetupClientLibrary.
+
+    This histogram is added to investigate the impact of Tracing initialization
+    on WebView startup performance.
+  </summary>
+</histogram>
+
 <histogram name="Tracing.SharedBufferIsValid" enum="BooleanSuccess"
     expires_after="2024-07-28">
   <owner>eseckler@chromium.org</owner>

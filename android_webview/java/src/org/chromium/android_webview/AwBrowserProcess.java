@@ -953,17 +953,37 @@ public final class AwBrowserProcess {
     }
 
     /**
-     * Start Perfetto initialization.
+     * Start tracing initialization.
      *
      * <p>This must only be called <em>before</em> Content startup. If Content Main has already been
-     * called, perfetto will already be initialized, and this method will crash.
+     * called, tracing will already be initialized, and this method will crash.
      *
      * @param enableSystemConsumer Set to {@code true} in order to send Perfetto traces to the
      *     Android system consumer. Equivalent to enabling {@link
      *     org.chromium.services.tracing.TracingServiceFeatures.ENABLE_PERFETTO_SYSTEM_TRACING}
+     * @param runningOnBackgroundThread Indicates that tracing is being initialized on a background
+     *     thread, which will set up the mechanism for Startup to wait for initialization to finish
+     *     before proceeding.
      */
-    public static void initPerfetto(boolean enableSystemConsumer) {
-        AwBrowserProcessJni.get().initPerfetto(enableSystemConsumer);
+    public static void initTracing(
+            boolean enableSystemConsumer, boolean runningOnBackgroundThread) {
+        AwBrowserProcessJni.get().initTracing(enableSystemConsumer, runningOnBackgroundThread);
+    }
+
+    /**
+     * Sets a flag to indicate that tracing will be initialized on a background thread. Should be
+     * set if {@link #initTracing(boolean, boolean)} is called from a background thread.
+     */
+    public static void markTracingInitializedOnBackground() {
+        AwBrowserProcessJni.get().markTracingInitializedOnBackground();
+    }
+
+    /**
+     * Sets a flag to disable tracing init during normal browser main. Should be set if tracing is
+     * initialized earlier during startup.
+     */
+    public static void disableTracingInitDuringBrowserMain() {
+        AwBrowserProcessJni.get().disableTracingInitDuringBrowserMain();
     }
 
     private static void configureDisplayAndroidManager() {
@@ -981,6 +1001,12 @@ public final class AwBrowserProcess {
 
         void onStartupComplete();
 
-        void initPerfetto(@JniType("bool") boolean enableSystemConsumer);
+        void initTracing(
+                @JniType("bool") boolean enableSystemConsumer,
+                @JniType("bool") boolean runningOnBackgroundThread);
+
+        void markTracingInitializedOnBackground();
+
+        void disableTracingInitDuringBrowserMain();
     }
 }

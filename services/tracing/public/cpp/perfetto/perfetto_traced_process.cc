@@ -8,6 +8,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
@@ -353,7 +354,11 @@ void PerfettoTracedProcess::SetupClientLibrary(
   // platforms. In particular, on Windows, Perfetto's stderr log messages are
   // not reliable.
   init_args.log_message_callback = &OnPerfettoLogMessage;
+
+  base::TimeTicks initialize_start = base::TimeTicks::Now();
   perfetto::Tracing::Initialize(init_args);
+  base::UmaHistogramTimes("Tracing.Init.Perfetto.Initialize",
+                          base::TimeTicks::Now() - initialize_start);
 
   base::TrackEvent::Register();
   tracing::TracingSamplerProfiler::RegisterDataSource();

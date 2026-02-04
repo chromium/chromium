@@ -29442,8 +29442,28 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "WebViewEarlyPerfettoInit",
                         "WebViewEarlyStartupTracing"
+                    ]
+                }
+            ]
+        }
+    ],
+    "WebViewEarlyTracingInit": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "BackgroundInit",
+                    "enable_features": [
+                        "WebViewBackgroundTracingInit"
+                    ]
+                },
+                {
+                    "name": "EarlyInit",
+                    "enable_features": [
+                        "WebViewEarlyTracingInit"
                     ]
                 }
             ]
