@@ -10,4 +10,39 @@
   <message name="IDS_SKILL_DELETED_TOAST_BODY" desc="Text on the toast action button after a skill is saved" translateable="false">
     Deleted skill
   </message>
+  <!-- chrome://skills page strings -->
+  <message name="IDS_SKILL_PAGE_TITLE" desc="Text for the title of the chrome://skills page." translateable="false">
+    Skills
+  </message>
+  <message name="IDS_SKILL_PAGE_SEARCH_BAR_PLACEHOLDER_TEXT" desc="Placeholder text for the search bar in the chrome://skills page." translateable="false">
+    Search skills
+  </message>
+  <message name="IDS_SKILL_PAGE_MAIN_MENU" desc="Text for the main menu label in the chrome://skills page when the screen is narrow." translateable="false">
+    Main menu
+  </message>
+
+  <!-- chrome://skills/browse-skills page-->
+  <message name="IDS_SKILL_PAGE_BROWSE_SKILLS_TITLE" desc="Text for the title of the chrome://skills/browse-skills page." translateable="false">
+    Browse skills
+  </message>
+  <message name="IDS_SKILL_PAGE_BROWSE_SKILLS_TOP_PICKS_TITLE" desc="Title for the top skill picks in the chrome://skills/browse-skills page." translateable="false">
+    Our top picks
+  </message>
+  <message name="IDS_SKILL_PAGE_FIRST_PARTY_ADD_SKILL_ERROR_TOAST" desc="Text on the toast if a skill no longer exists in the 1p catalog in the chrome://skills/browse-skills page." translateable="false">
+    Unable to add skill
+  </message>
+
+  <!-- chrome://skills/user-skills page-->
+  <message name="IDS_SKILL_PAGE_EMPTY_STATE_TITLE" desc="Text for the zero state title in the chrome://skills page." translateable="false">
+    You’ll find your skills here
+  </message>
+  <message name="IDS_SKILL_PAGE_EMPTY_STATE_DESCRIPTION" desc="Text for the zero state description in the chrome://skills page." translateable="false">
+    Skills can help you summarize web pages, search for great deals, and more
+  </message>
+  <message name="IDS_SKILL_PAGE_USER_SKILLS_TITLE" desc="Text for the title of the chrome://skills/user-skills page." translateable="false">
+    Your skills
+  </message>
+  <message name="IDS_SKILL_PAGE_USER_SKILLS_DESCRIPTION" desc="Text for the description of the chrome://skills/user-skills page." translateable="false">
+    Skills allow you to easily reuse prompts for repetitive tasks
+  </message>
 </grit-part>

@@ -24,22 +24,31 @@
 
 namespace skills {
 
-void AddDialogStringResources(content::WebUIDataSource* source) {
-  static constexpr webui::LocalizedString kStrings[] = {
-      {"cancel", IDS_CANCEL},
-      {"edit", IDS_EDIT2},
-      {"save", IDS_SAVE},
-  };
-
-  source->AddLocalizedStrings(kStrings);
-}
-
 SkillsUI::SkillsUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       Profile::FromWebUI(web_ui), chrome::kChromeUISkillsHost);
   webui::SetupWebUIDataSource(source, kSkillsResources, IDR_SKILLS_SKILLS_HTML);
   source->AddResourcePath("dialog", IDR_SKILLS_SKILLS_DIALOG_HTML);
-  AddDialogStringResources(source);
+  static constexpr webui::LocalizedString kStrings[] = {
+      {"cancel", IDS_CANCEL},
+      {"edit", IDS_EDIT2},
+      {"save", IDS_SAVE},
+      {"delete", IDS_DELETE},
+      {"add", IDS_ADD},
+      {"browseSkillsTitle", IDS_SKILL_PAGE_BROWSE_SKILLS_TITLE},
+      {"topPicksTitle", IDS_SKILL_PAGE_BROWSE_SKILLS_TOP_PICKS_TITLE},
+      {"firstPartyAddSkillErrorToast",
+       IDS_SKILL_PAGE_FIRST_PARTY_ADD_SKILL_ERROR_TOAST},
+      {"emptyStateTitle", IDS_SKILL_PAGE_EMPTY_STATE_TITLE},
+      {"emptyStateDescription", IDS_SKILL_PAGE_EMPTY_STATE_DESCRIPTION},
+      {"userSkillsTitle", IDS_SKILL_PAGE_USER_SKILLS_TITLE},
+      {"userSkillsDescription", IDS_SKILL_PAGE_USER_SKILLS_DESCRIPTION},
+      {"searchBarPlaceholderText", IDS_SKILL_PAGE_SEARCH_BAR_PLACEHOLDER_TEXT},
+      {"skillsTitle", IDS_SKILL_PAGE_TITLE},
+      {"mainMenu", IDS_SKILL_PAGE_MAIN_MENU},
+  };
+
+  source->AddLocalizedStrings(kStrings);
 }
 
 void SkillsUI::SetSkillsDialogDelegate(

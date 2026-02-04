@@ -5,6 +5,7 @@
 import 'chrome://skills/discover_skills_page.js';
 
 import {CrRouter} from 'chrome://resources/js/cr_router.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {DiscoverSkillsPageElement} from 'chrome://skills/discover_skills_page.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -24,11 +25,14 @@ suite('DiscoverSkillsPage', function() {
   test('InitialPageLoadsCorrectly', function() {
     const title = page.$['topPicksTitle'];
     assertTrue(!!title);
-    assertEquals('Our top picks', title.textContent.trim());
+    assertEquals(
+        loadTimeData.getString('topPicksTitle'), title.textContent.trim());
 
     const discoverTitle = page.$['discoverSkillsTitle'];
     assertTrue(!!discoverTitle);
-    assertEquals('Discover skills', discoverTitle.textContent.trim());
+    assertEquals(
+        loadTimeData.getString('browseSkillsTitle'),
+        discoverTitle.textContent.trim());
   });
 
   test('ChipClickTogglesIcon', async function() {

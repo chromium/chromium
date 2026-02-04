@@ -5,6 +5,7 @@
 import 'chrome://skills/user_skills_page.js';
 
 import {CrRouter} from 'chrome://resources/js/cr_router.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {SkillSource} from 'chrome://skills/skill.mojom-webui.js';
 import {SkillsDialogType} from 'chrome://skills/skills.mojom-webui.js';
 import {SkillsPageBrowserProxy} from 'chrome://skills/skills_page_browser_proxy.js';
@@ -33,14 +34,15 @@ suite('UserSkillsPage', function() {
   test('InitialPageLoadsCorrectly', function() {
     const title = page.$['skillsTitle'];
     assertTrue(!!title);
-    assertEquals('Your skills', title.textContent.trim());
+    assertEquals(
+        loadTimeData.getString('userSkillsTitle'), title.textContent.trim());
 
     const emptyState = page.$['emptyState'];
     assertTrue(!!emptyState);
     const notice = page.$['noticeMessage'];
     assertTrue(!!notice);
     assertEquals(
-        'Skills help simplify and automate repetitive tasks',
+        loadTimeData.getString('emptyStateDescription'),
         notice.textContent.trim());
   });
 

@@ -6,6 +6,7 @@ import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {getCss} from './sidebar.css.js';
 import {getHtml} from './sidebar.html.js';
@@ -18,7 +19,7 @@ interface MenuItem {
 
 export enum Page {
   USER_SKILLS = 'user-skills',
-  DISCOVER_SKILLS = 'discover-skills',
+  DISCOVER_SKILLS = 'browse-skills',
 }
 
 export class SkillsSidebarElement extends CrLitElement {
@@ -32,17 +33,15 @@ export class SkillsSidebarElement extends CrLitElement {
     };
   }
 
-  // TODO(b/475607224): Instead of hardcoding, add resource strings for
-  // the name.
   readonly menuItems: MenuItem[] = [
     {
       icon: 'skills:bolt',
-      name: 'Your skills',
+      name: loadTimeData.getString('userSkillsTitle'),
       page: Page.USER_SKILLS,
     },
     {
       icon: 'skills:explore',
-      name: 'Discover skills',
+      name: loadTimeData.getString('browseSkillsTitle'),
       page: Page.DISCOVER_SKILLS,
     },
   ];
