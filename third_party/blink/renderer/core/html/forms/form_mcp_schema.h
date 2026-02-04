@@ -81,6 +81,14 @@ class CORE_EXPORT FormMCPSchema {
       const ControlVector& controls_for_name,
       bool& required);
 
+  // Compute an array representing the values (as HTMLInputElement::Value()
+  // of the specified controls, suitable for assignment to a 'oneOf' field.
+  // The argument to 'required' will be set if at least one of the controls
+  // are required.
+  std::unique_ptr<JSONArray> ComputeOneOfArray(
+      const ControlVector& controls_for_name,
+      bool& required);
+
   bool ValidateParameterData(const String& name, const JSONValue&);
   bool ValidateTextData(const ControlVector& controls_for_name,
                         const JSONValue&);
@@ -103,6 +111,19 @@ class CORE_EXPORT FormMCPSchema {
 
   void AddTitle(HTMLFormControlElement&, JSONObject&);
   void AddDescription(HTMLFormControlElement&, JSONObject&);
+
+  // It's not clear yet where to host the toolparamtitle/description
+  // attributes for <input type=radio>, or other parameters that are
+  // associated with more than one element. For now, we use the attributes
+  // set on the first control within a group.
+  //
+  // Note that unlike AddTitle()/AddDescription(), this does not try
+  // to find "fallback" values (from <label>, etc) when tool-* attributes
+  // are missing.
+  //
+  // See also: https://github.com/webmachinelearning/webmcp/issues/71
+  void AddTitleAndDescriptionFromToolAttributesOnly(HTMLFormControlElement&,
+                                                    JSONObject&);
 
   String ToolParamTitleAttribute(HTMLFormControlElement&);
   String ToolParamDescriptionAttribute(HTMLFormControlElement&);

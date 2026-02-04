@@ -937,6 +937,282 @@ TEST_F(HTMLFormMcpToolTest, FillFormControls_Checkbox) {
   EXPECT_FALSE(check2->Checked());
 }
 
+TEST_F(HTMLFormMcpToolTest, ParameterSchema_Checkbox_Multiple) {
+  SetBodyInnerHTML(
+      R"HTML(
+    <form id=form toolname="mytool" tooldescription="pick fruits you like">
+      <label>
+        <input id="apple" name="fruit" type="checkbox" value="apple">
+        Apple
+      </label>
+      <label>
+        <input id="melon" name="fruit" type="checkbox" value="melon">
+        Melon
+      </label>
+      <label>
+        <input id="grape" name="fruit" type="checkbox" value="grape">
+        Grape
+      </label>
+    </form>
+  )HTML");
+
+  HTMLFormElement* form_element = GetFormElement("form");
+  ASSERT_TRUE(form_element);
+  ASSERT_TRUE(IsValidWebMCPForm(*form_element));
+  String actual = ComputeInputSchema(*form_element);
+  std::unique_ptr<JSONValue> expected_json = ParseJSON(R"JSON(
+    {
+      "type": "object",
+      "properties": {
+         "fruit": {
+           "type": "array",
+           "items": {
+             "type": "string",
+             "oneOf": [
+               {
+                 "const": "apple",
+                 "title": "Apple"
+               },
+               {
+                 "const": "melon",
+                 "title": "Melon"
+               },
+               {
+                 "const": "grape",
+                 "title": "Grape"
+               }
+             ]
+           },
+           "uniqueItems": true
+         }
+      },
+      "required": []
+    }
+  )JSON");
+  ASSERT_TRUE(expected_json);
+  EXPECT_EQ(expected_json->ToJSONString(), actual);
+}
+
+TEST_F(HTMLFormMcpToolTest, ParameterSchema_Checkbox_ToolParamAttributes) {
+  SetBodyInnerHTML(
+      R"HTML(
+    <form id=form toolname="mytool" tooldescription="pick fruits you like">
+      <input
+        id="apple"
+        name="fruit"
+        type="checkbox"
+        value="apple"
+        toolparamtitle="TITLE"
+        toolparamdescription="DESC"
+        >
+      <input
+        id="melon"
+        name="fruit"
+        type="checkbox"
+        value="melon"
+        toolparamtitle="ERR"
+        toolparamdescription="ERR"
+        >
+      <input id="grape" name="fruit" type="checkbox" value="grape">
+    </form>
+  )HTML");
+
+  HTMLFormElement* form_element = GetFormElement("form");
+  ASSERT_TRUE(form_element);
+  ASSERT_TRUE(IsValidWebMCPForm(*form_element));
+  String actual = ComputeInputSchema(*form_element);
+  std::unique_ptr<JSONValue> expected_json = ParseJSON(R"JSON(
+    {
+      "type": "object",
+      "properties": {
+         "fruit": {
+           "type": "array",
+           "items": {
+             "type": "string",
+             "oneOf": [
+               {
+                 "const": "apple"
+               },
+               {
+                 "const": "melon"
+               },
+               {
+                 "const": "grape"
+               }
+             ]
+           },
+           "uniqueItems": true,
+           "title": "TITLE",
+           "description": "DESC"
+         }
+      },
+      "required": []
+    }
+  )JSON");
+  ASSERT_TRUE(expected_json);
+  EXPECT_EQ(expected_json->ToJSONString(), actual);
+}
+
+TEST_F(HTMLFormMcpToolTest, FillFormControls_CheckboxMultiple) {
+  SetBodyInnerHTML(
+      R"HTML(
+    <form id=form toolname="mytool" tooldescription="pick fruits you like">
+      <input id="apple" name="fruit" type="checkbox" value="apple">
+      <input id="melon" name="fruit" type="checkbox" value="melon">
+      <input id="grape" name="fruit" type="checkbox" value="grape">
+    </form>
+  )HTML");
+
+  HTMLFormElement* form_element = GetFormElement("form");
+  ASSERT_TRUE(form_element);
+  ASSERT_TRUE(IsValidWebMCPForm(*form_element));
+
+  HTMLInputElement* apple = GetInputElement("apple");
+  HTMLInputElement* melon = GetInputElement("melon");
+  HTMLInputElement* grape = GetInputElement("grape");
+  ASSERT_TRUE(apple);
+  ASSERT_TRUE(melon);
+  ASSERT_TRUE(grape);
+  EXPECT_FALSE(apple->Checked());
+  EXPECT_FALSE(melon->Checked());
+  EXPECT_FALSE(grape->Checked());
+
+  // Select some option.
+  EXPECT_TRUE(FillFormControls(*form_element, R"JSON(
+      {
+        "fruit": [ "melon" ]
+      }
+    )JSON"));
+  EXPECT_FALSE(apple->Checked());
+  EXPECT_TRUE(melon->Checked());
+  EXPECT_FALSE(grape->Checked());
+
+  // Select some other option. (Should automatically uncheck other options.)
+  EXPECT_TRUE(FillFormControls(*form_element, R"JSON(
+      {
+        "fruit": [ "grape" ]
+      }
+    )JSON"));
+  EXPECT_FALSE(apple->Checked());
+  EXPECT_FALSE(melon->Checked());
+  EXPECT_TRUE(grape->Checked());
+
+  // Select no options.
+  EXPECT_TRUE(FillFormControls(*form_element, R"JSON(
+      {
+        "fruit": []
+      }
+    )JSON"));
+  EXPECT_FALSE(apple->Checked());
+  EXPECT_FALSE(melon->Checked());
+  EXPECT_FALSE(grape->Checked());
+
+  // Select many options.
+  EXPECT_TRUE(FillFormControls(*form_element, R"JSON(
+      {
+        "fruit": ["melon", "grape", "apple"]
+      }
+    )JSON"));
+  EXPECT_TRUE(apple->Checked());
+  EXPECT_TRUE(melon->Checked());
+  EXPECT_TRUE(grape->Checked());
+
+  // Uncheck one of them.
+  EXPECT_TRUE(FillFormControls(*form_element, R"JSON(
+      {
+        "fruit": ["grape", "apple"]
+      }
+    )JSON"));
+  EXPECT_TRUE(apple->Checked());
+  EXPECT_FALSE(melon->Checked());
+  EXPECT_TRUE(grape->Checked());
+}
+
+TEST_F(HTMLFormMcpToolTest, FillFormControls_CheckboxMultiple_Invalid) {
+  SetBodyInnerHTML(
+      R"HTML(
+    <form id=form toolname="mytool" tooldescription="pick fruits you like">
+      <input id="apple" name="fruit" type="checkbox" value="apple">
+      <input id="melon" name="fruit" type="checkbox" value="melon">
+      <input id="grape" name="fruit" type="checkbox" value="grape">
+    </form>
+  )HTML");
+
+  HTMLFormElement* form_element = GetFormElement("form");
+  ASSERT_TRUE(form_element);
+  ASSERT_TRUE(IsValidWebMCPForm(*form_element));
+
+  HTMLInputElement* apple = GetInputElement("apple");
+  HTMLInputElement* melon = GetInputElement("melon");
+  HTMLInputElement* grape = GetInputElement("grape");
+  ASSERT_TRUE(apple);
+  ASSERT_TRUE(melon);
+  ASSERT_TRUE(grape);
+  EXPECT_FALSE(apple->Checked());
+  EXPECT_FALSE(melon->Checked());
+  EXPECT_FALSE(grape->Checked());
+
+  // Unknown option.
+  EXPECT_FALSE(FillFormControls(*form_element, R"JSON(
+      {
+        "fruit": [ "unknown" ]
+      }
+    )JSON"));
+  EXPECT_FALSE(apple->Checked());
+  EXPECT_FALSE(melon->Checked());
+  EXPECT_FALSE(grape->Checked());
+
+  // Unknown option among valid options.
+  EXPECT_FALSE(FillFormControls(*form_element, R"JSON(
+      {
+        "fruit": [ "apple", "unknown", "grape" ]
+      }
+    )JSON"));
+  EXPECT_FALSE(apple->Checked());
+  EXPECT_FALSE(melon->Checked());
+  EXPECT_FALSE(grape->Checked());
+
+  // Extra option among valid options.
+  EXPECT_FALSE(FillFormControls(*form_element, R"JSON(
+      {
+        "fruit": [ "apple", "melon", "grape", "extra" ]
+      }
+    )JSON"));
+  EXPECT_FALSE(apple->Checked());
+  EXPECT_FALSE(melon->Checked());
+  EXPECT_FALSE(grape->Checked());
+
+  // Non-unique options.
+  EXPECT_FALSE(FillFormControls(*form_element, R"JSON(
+      {
+        "fruit": [ "apple", "melon", "grape", "apple" ]
+      }
+    )JSON"));
+  EXPECT_FALSE(apple->Checked());
+  EXPECT_FALSE(melon->Checked());
+  EXPECT_FALSE(grape->Checked());
+
+  // Invalid data types.
+  EXPECT_FALSE(FillFormControls(*form_element, R"JSON(
+      {
+        "fruit": true
+      }
+    )JSON"));
+  EXPECT_FALSE(FillFormControls(*form_element, R"JSON(
+      {
+        "fruit": {}
+      }
+    )JSON"));
+  EXPECT_FALSE(FillFormControls(*form_element, R"JSON(
+      {
+        "fruit": "melon"
+      }
+    )JSON"));
+  EXPECT_FALSE(apple->Checked());
+  EXPECT_FALSE(melon->Checked());
+  EXPECT_FALSE(grape->Checked());
+}
+
 TEST_F(HTMLFormMcpToolTest, ParameterSchema_RangeInput) {
   SetBodyInnerHTML(
       R"HTML(
