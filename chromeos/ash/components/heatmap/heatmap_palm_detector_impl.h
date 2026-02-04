@@ -7,7 +7,6 @@
 
 #include <optional>
 #include <queue>
-#include <unordered_set>
 
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -15,6 +14,7 @@
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "ui/events/ozone/evdev/heatmap_palm_detector.h"
 
 namespace ash {
@@ -56,7 +56,7 @@ class HeatmapPalmDetectorImpl
   std::string hidraw_path_;
 
   std::queue<TouchRecord> touch_records_;
-  std::unordered_set<int> palm_tracking_ids_;
+  absl::flat_hash_set<int> palm_tracking_ids_;
   base::TimeDelta reconnect_delay_;
   base::OneShotTimer delay_timer_;
 

@@ -25,6 +25,7 @@
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "chromeos/ash/services/secure_channel/single_client_proxy_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace ash::secure_channel {
 
@@ -306,7 +307,7 @@ class SecureChannelMultiplexedChannelImplTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 
   int next_send_message_counter_ = 0;
-  std::unordered_set<int> sent_message_counters_;
+  absl::flat_hash_set<int> sent_message_counters_;
 
   std::unique_ptr<FakeSingleClientProxyImplFactory> fake_proxy_factory_;
 

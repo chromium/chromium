@@ -4,10 +4,8 @@
 
 #include "chrome/browser/ash/borealis/borealis_util.h"
 
-#include <unordered_set>
-
 #include "base/base64.h"
-#include "base/no_destructor.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/process/launch.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -88,7 +86,7 @@ const re2::LazyRE2 kSpuriousGameBlocklist[] = {
 // changed. This is not future-proof, but provides an additional layer of
 // defence for known tools.
 bool IsSteamTool(int id) {
-  static const base::NoDestructor<std::unordered_set<int>> kSteamToolIds({
+  static constexpr auto kSteamToolIds = base::MakeFixedFlatSet<int>({
       1070560,  // Steam Linux Runtime 1.0 (scout)
       1391110,  // Steam Linux Runtime 2.0 (soldier)
       1628350,  // Steam Linux Runtime 3.0 (sniper)
@@ -109,7 +107,7 @@ bool IsSteamTool(int id) {
       2230260,  // Proton Next
       2348590,  // Proton 8.0
   });
-  return kSteamToolIds->contains(id);
+  return kSteamToolIds.contains(id);
 }
 
 }  // namespace

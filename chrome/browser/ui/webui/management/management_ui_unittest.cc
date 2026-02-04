@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/management/management_ui.h"
 
+#include "base/containers/fixed_flat_set.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -14,11 +15,13 @@ class ManagementUITest : public testing::Test {};
 #if BUILDFLAG(IS_CHROMEOS)
 // If the link containing strings will appear as a disclosure add here.
 TEST_F(ManagementUITest, VerifyLinksHaveRemovedVersion) {
-  static const std::unordered_set<int> kHasNoLinkVersionOrNotApplicable{
-      IDS_MANAGEMENT_LOG_UPLOAD_ENABLED, IDS_MANAGEMENT_LEGACY_TECH_REPORT,
-      // Not applicable strings follow.
-      IDS_MANAGEMENT_PROFILE_REPORTING_LEARN_MORE,
-      IDS_MANAGEMENT_DESK_SYNC_OPT_OUT, IDS_MANAGEMENT_DESK_SYNC_LEARN_MORE};
+  static constexpr auto kHasNoLinkVersionOrNotApplicable =
+      base::MakeFixedFlatSet<int>({IDS_MANAGEMENT_LOG_UPLOAD_ENABLED,
+                                   IDS_MANAGEMENT_LEGACY_TECH_REPORT,
+                                   // Not applicable strings follow.
+                                   IDS_MANAGEMENT_PROFILE_REPORTING_LEARN_MORE,
+                                   IDS_MANAGEMENT_DESK_SYNC_OPT_OUT,
+                                   IDS_MANAGEMENT_DESK_SYNC_LEARN_MORE});
 
   std::vector<webui::LocalizedString> localized_strings;
   ManagementUI::GetLocalizedStrings(localized_strings, false);
@@ -33,9 +36,9 @@ TEST_F(ManagementUITest, VerifyLinksHaveRemovedVersion) {
 
 // All disclosure strings that contain a link should not be included.
 TEST_F(ManagementUITest, VerifyLinksRemoved) {
-  static const std::unordered_set<int> kLinkNotApplicable{
-      IDS_MANAGEMENT_PROFILE_REPORTING_LEARN_MORE,
-      IDS_MANAGEMENT_DESK_SYNC_OPT_OUT, IDS_MANAGEMENT_DESK_SYNC_LEARN_MORE};
+  static constexpr auto kLinkNotApplicable = base::MakeFixedFlatSet<int>(
+      {IDS_MANAGEMENT_PROFILE_REPORTING_LEARN_MORE,
+       IDS_MANAGEMENT_DESK_SYNC_OPT_OUT, IDS_MANAGEMENT_DESK_SYNC_LEARN_MORE});
   std::vector<webui::LocalizedString> localized_strings;
   ManagementUI::GetLocalizedStrings(localized_strings, true);
 

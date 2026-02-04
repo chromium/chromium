@@ -9,7 +9,6 @@
 #include <array>
 #include <string>
 #include <string_view>
-#include <unordered_set>
 
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
@@ -45,6 +44,7 @@
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -1273,7 +1273,7 @@ TEST_F(ProfileAttributesStorageTest, ChooseAvatarIconIndexForNewProfile) {
   // the final |icon_index| to add a profile. Multiple checks are needed because
   // ChooseAvatarIconIndexForNewProfile is non-deterministic.
   const int num_iterations = 10;
-  std::unordered_set<int> used_icon_indices;
+  absl::flat_hash_set<int> used_icon_indices;
 
   for (size_t i = 0; i < total_icon_count; ++i) {
     EXPECT_EQ(i, storage()->GetNumberOfProfiles());

@@ -59,6 +59,7 @@
 #include "components/sync_sessions/synced_session.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/vector_icons/vector_icons.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
@@ -145,7 +146,7 @@ struct RecentTabsSubMenuModel::SubMenuItem {
   }
 
   const int parent_id;
-  std::unordered_set<int> child_ids;
+  absl::flat_hash_set<int> child_ids;
   std::unique_ptr<ui::SimpleMenuModel> menu_model;
 };
 

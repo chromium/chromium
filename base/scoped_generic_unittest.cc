@@ -6,13 +6,13 @@
 
 #include <memory>
 #include <unordered_map>
-#include <unordered_set>
 #include <utility>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace base {
 
@@ -161,7 +161,7 @@ struct TrackedIntTraits : public ScopedGenericOwnershipTracking {
   using OwnerMap = std::unordered_map<
       int,
       raw_ptr<const ScopedGeneric<int, TrackedIntTraits>, CtnExperimental>>;
-  TrackedIntTraits(std::unordered_set<int>* freed, OwnerMap* owners)
+  TrackedIntTraits(absl::flat_hash_set<int>* freed, OwnerMap* owners)
       : freed(freed), owners(owners) {}
 
   static int InvalidValue() { return -1; }
@@ -186,7 +186,7 @@ struct TrackedIntTraits : public ScopedGenericOwnershipTracking {
     owners->erase(it);
   }
 
-  raw_ptr<std::unordered_set<int>> freed;
+  raw_ptr<absl::flat_hash_set<int>> freed;
   raw_ptr<OwnerMap> owners;
 };
 
@@ -196,7 +196,7 @@ using ScopedTrackedInt = ScopedGeneric<int, TrackedIntTraits>;
 
 TEST(ScopedGenericTest, OwnershipTracking) {
   TrackedIntTraits::OwnerMap owners;
-  std::unordered_set<int> freed;
+  absl::flat_hash_set<int> freed;
   TrackedIntTraits traits(&freed, &owners);
 
 #define ASSERT_OWNED(value, owner)     \

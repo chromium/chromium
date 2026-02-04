@@ -69,6 +69,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "components/user_education/common/tutorial/tutorial_identifier.h"
 #include "components/user_education/common/tutorial/tutorial_service.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "ui/base/base_window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
@@ -358,7 +359,7 @@ void TabSearchPageHandler::AcceptTabOrganization(
     return;
   }
 
-  std::unordered_set<int> tabs_tab_ids;
+  absl::flat_hash_set<int> tabs_tab_ids;
   for (tab_search::mojom::TabPtr& tab : tabs) {
     tabs_tab_ids.emplace(tab->tab_id);
   }

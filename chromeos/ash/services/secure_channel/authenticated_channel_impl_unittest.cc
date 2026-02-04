@@ -7,7 +7,6 @@
 #include <iterator>
 #include <memory>
 #include <unordered_map>
-#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -23,6 +22,7 @@
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace ash::secure_channel {
 
@@ -139,7 +139,7 @@ class SecureChannelAuthenticatedChannelImplTest : public testing::Test {
 
   int num_times_send_message_called_ = 0;
 
-  std::unordered_set<int> sent_sequence_numbers_;
+  absl::flat_hash_set<int> sent_sequence_numbers_;
 
   raw_ptr<FakeSecureChannelConnection, DanglingUntriaged> fake_secure_channel_;
   std::unique_ptr<FakeAuthenticatedChannelObserver> test_observer_;
