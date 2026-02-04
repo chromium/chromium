@@ -5644,6 +5644,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "inline-pdf-v2",
+    "owners": [ "rathomas@google.com", "clank-large-form-factors@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "input-on-viz",
     "owners": [ "woa-performance-team@google.com", "amanvr@google.com", "jonross@chromium.org", "kartarsingh@google.com", "nuskos@chromium.org" ],
     "expiry_milestone": 150

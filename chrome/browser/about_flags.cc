@@ -7799,6 +7799,12 @@ const FeatureEntry kFeatureEntries[] = {
 
 #endif  // BUILDFLAG(ENABLE_PDF)
 
+#if BUILDFLAG(IS_ANDROID)
+    {"inline-pdf-v2", flag_descriptions::kInlinePdfV2Name,
+     flag_descriptions::kInlinePdfV2Description, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kInlinePdfV2)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(ENABLE_PRINTING)
 #if BUILDFLAG(IS_LINUX)
     {"cups-ipp-printing-backend",

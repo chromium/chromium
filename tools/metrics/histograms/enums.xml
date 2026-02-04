@@ -8887,6 +8887,7 @@ from previous Chrome versions.
   <int value="-1891391298" label="SysUiShouldHoldbackTaskManagement:enabled"/>
   <int value="-1890374564" label="OobeRecommendAppsScreen:disabled"/>
   <int value="-1889151011" label="Cardboard:disabled"/>
+  <int value="-1888958061" label="InlinePdfV2:enabled"/>
   <int value="-1888578524" label="DisplayIdentification:enabled"/>
   <int value="-1888273969" label="tab-capture-upscale-quality"/>
   <int value="-1887862464" label="SpannableInlineAutocomplete:disabled"/>
@@ -13027,6 +13028,7 @@ from previous Chrome versions.
       label="AutofillUpstreamEditableExpirationDate:enabled"/>
   <int value="-468697885" label="ArcInputMethod:enabled"/>
   <int value="-468657548" label="ReduceGpuPriorityOnBackground:enabled"/>
+  <int value="-468226403" label="kInlinePdfV2:enabled"/>
   <int value="-467792766" label="ReengagementNotification:enabled"/>
   <int value="-466925718" label="CCTEphemeralMode:disabled"/>
   <int value="-466704882" label="webview-log-js-console-messages"/>
@@ -16928,6 +16930,7 @@ from previous Chrome versions.
   <int value="871071097" label="MostVisitedTilesReselect:disabled"/>
   <int value="871435095" label="EnableAggregatedMlAppRanking:disabled"/>
   <int value="871713352" label="ImprovedLanguageSettings:enabled"/>
+  <int value="872409871" label="InlinePdfV2:disabled"/>
   <int value="872509587" label="ArcWindowPredictor:enabled"/>
   <int value="873323760" label="MediaFoundationClearPlayback:disabled"/>
   <int value="874614410" label="CSSOverflowForReplacedElements:enabled"/>
@@ -17538,6 +17541,7 @@ from previous Chrome versions.
   <int value="1091750198"
       label="AccessibilityMagnifierFollowsChromeVox:enabled"/>
   <int value="1092296990" label="EnableMultiMonitorsInCrd:disabled"/>
+  <int value="1092534859" label="kInlinePdfV2:disabled"/>
   <int value="1092896354" label="EnableFullscreenAppList:disabled"/>
   <int value="1093305266"
       label="AutofillRemovePaymentsButterDropdown:disabled"/>
