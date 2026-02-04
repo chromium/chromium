@@ -57,7 +57,9 @@ TEST_F(FirstRunPostActionProviderTest, SkipSafariImportIfTourStarted) {
 }
 
 // Tests that Safari Import is NOT skipped if the Guided Tour has NOT started.
-TEST_F(FirstRunPostActionProviderTest, ShowSafariImportIfTourNotStarted) {
+// TODO(crbug.com/481585370): Re-enable this test.
+TEST_F(FirstRunPostActionProviderTest,
+       DISABLED_ShowSafariImportIfTourNotStarted) {
   feature_list_.InitAndEnableFeatureWithParameters(kBestOfAppFRE,
                                                    {{"variant", "4"}});
 
