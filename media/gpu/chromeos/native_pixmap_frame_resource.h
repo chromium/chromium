@@ -127,10 +127,10 @@ class NativePixmapFrameResource : public FrameResource {
   // type STORAGE_DMABUFS is created.
   scoped_refptr<VideoFrame> CreateDmabufVideoFrame() const;
 
-  // CreateMappableVideoFrame() is used to create a VideoFrame from the
-  // underlying NativePixmap. The DMABuf FDs are duplicated and a VideoFrame
-  // with storage type STORAGE_MAPPABLE_SHARED_IMAGE is created.
-  scoped_refptr<VideoFrame> CreateMappableVideoFrame(
+  // CreateMappableSharedImageVideoFrame() is used to create a VideoFrame
+  // from the underlying NativePixmap. The DMABuf FDs are duplicated and a
+  // VideoFrame with storage type STORAGE_MAPPABLE_SHARED_IMAGE is created.
+  scoped_refptr<VideoFrame> CreateMappableSharedImageVideoFrame(
       gpu::SharedImageInterface* sii) const;
 
  private:

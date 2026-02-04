@@ -587,11 +587,13 @@ bool V4L2VideoEncodeAccelerator::AllocateImageProcessorOutputBuffers(
     switch (output_config.storage_type) {
       case VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE:
         CHECK(sii_);
-        image_processor_output_buffers_[i] = CreateMappableVideoFrame(
-            output_config.fourcc.ToVideoPixelFormat(), output_config.size,
-            output_config.visible_rect, output_config.visible_rect.size(),
-            base::TimeDelta(),
-            gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE, sii_.get());
+        image_processor_output_buffers_[i] =
+            CreateMappableSharedImageVideoFrame(
+                output_config.fourcc.ToVideoPixelFormat(), output_config.size,
+                output_config.visible_rect, output_config.visible_rect.size(),
+                base::TimeDelta(),
+                gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
+                sii_.get());
         break;
       default:
         LOG(ERROR) << "Unsupported output storage type of image processor: "

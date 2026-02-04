@@ -489,7 +489,8 @@ scoped_refptr<VideoFrame> NativePixmapFrameResource::CreateDmabufVideoFrame()
   return video_frame;
 }
 
-scoped_refptr<VideoFrame> NativePixmapFrameResource::CreateMappableVideoFrame(
+scoped_refptr<VideoFrame>
+NativePixmapFrameResource::CreateMappableSharedImageVideoFrame(
     gpu::SharedImageInterface* sii) const {
   LOG_ASSERT(buffer_usage_.has_value())
       << "Unsupported conversion from wrapped DMA buffers to "

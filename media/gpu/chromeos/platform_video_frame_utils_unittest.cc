@@ -131,7 +131,7 @@ TEST(PlatformVideoFrameUtilsTest, CreateNativePixmapDmaBuf) {
 
 // TODO(b/230370976): remove this #if/#endif guard. To do so, we need to be able
 // to mock/fake the allocator used by CreatePlatformVideoFrame() and
-// CreateMappableVideoFrame() so that those functions return a
+// CreateMappableSharedImageVideoFrame() so that those functions return a
 // non-nullptr frame on platforms where allocating NV12 buffers is not
 // supported.
 #if BUILDFLAG(IS_CHROMEOS)
@@ -158,9 +158,9 @@ TEST(PlatformVideoFrameUtilsTest, CreateVideoFrame) {
                                      kNaturalSize, kTimeStamp, kBufferUsage);
         break;
       case VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE:
-        frame = CreateMappableVideoFrame(kPixelFormat, kCodedSize, kVisibleRect,
-                                         kNaturalSize, kTimeStamp, kBufferUsage,
-                                         test_sii.get());
+        frame = CreateMappableSharedImageVideoFrame(
+            kPixelFormat, kCodedSize, kVisibleRect, kNaturalSize, kTimeStamp,
+            kBufferUsage, test_sii.get());
         break;
       default:
         NOTREACHED();

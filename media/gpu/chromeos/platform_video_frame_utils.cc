@@ -363,7 +363,7 @@ void UniqueTrackingTokenHelper::SetUniqueTrackingToken(
   metadata.tracking_token = GenerateToken();
 }
 
-scoped_refptr<VideoFrame> CreateMappableVideoFrame(
+scoped_refptr<VideoFrame> CreateMappableSharedImageVideoFrame(
     VideoPixelFormat pixel_format,
     const gfx::Size& coded_size,
     const gfx::Rect& visible_rect,

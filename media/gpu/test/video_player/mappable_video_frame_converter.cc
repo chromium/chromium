@@ -35,7 +35,7 @@ void MappableVideoFrameConverter::ConvertFrameImpl(
   LOG_ASSERT(frame->AsNativePixmapFrameResource())
       << "|frame| is expected to be a NativePixmapFrameResource";
   scoped_refptr<VideoFrame> video_frame =
-      frame->AsNativePixmapFrameResource()->CreateMappableVideoFrame(
+      frame->AsNativePixmapFrameResource()->CreateMappableSharedImageVideoFrame(
           test_sii_.get());
   if (!video_frame) {
     return OnError(FROM_HERE, "Failed to convert FrameResource to VideoFrame.");
