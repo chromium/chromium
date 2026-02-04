@@ -1700,6 +1700,26 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     }
 
     @Test
+    @Config(qualifiers = "sw320dp")
+    @EnableFeatures({
+        ChromeFeatureList.DEFAULT_BROWSER_PROMO_ENTRY_POINT + ":show_app_menu_item/false"
+    })
+    public void testDefaultBrowserPromo_SettingsOnly_HidesAppMenu() {
+        setUpMocksForPageMenu();
+        setMenuOptions(new MenuOptions());
+
+        // Even if the utils say we show it based on eligibility, the feature param false should
+        // hide it.
+        doReturn(true).when(mMockDefaultBrowserPromoUtils).shouldShowAppMenuItemEntryPoint();
+
+        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+
+        assertFalse(
+                "Default Browser Promo item should be hidden by the param",
+                isMenuVisible(modelList, R.id.default_browser_promo_menu_id));
+    }
+
+    @Test
     public void pageZoomMenuOption_NotVisibleInReadingMode() {
         setUpMocksForPageMenu();
         PageZoomUtils.setShouldShowMenuItemForTesting(true);

@@ -876,7 +876,10 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sCrossDeviceTabPaneAndroid =
             newCachedFlag(CROSS_DEVICE_TAB_PANE_ANDROID, false);
     public static final CachedFlag sDefaultBrowserPromoEntryPoint =
-            newCachedFlag(DEFAULT_BROWSER_PROMO_ENTRY_POINT, false);
+            newCachedFlag(
+                    DEFAULT_BROWSER_PROMO_ENTRY_POINT,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sDesktopAndroidLinkCapturing =
             newCachedFlag(DESKTOP_ANDROID_LINK_CAPTURING, false);
     public static final CachedFlag sDesktopUAOnConnectedDisplay =

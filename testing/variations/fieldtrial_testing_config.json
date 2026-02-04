@@ -8792,6 +8792,33 @@
             ]
         }
     ],
+    "DefaultBrowserPromoEntryPoint": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Full",
+                    "params": {
+                        "show_app_menu_item": "true"
+                    },
+                    "enable_features": [
+                        "DefaultBrowserPromoEntryPoint"
+                    ]
+                },
+                {
+                    "name": "Enabled_SettingsOnly",
+                    "params": {
+                        "show_app_menu_item": "false"
+                    },
+                    "enable_features": [
+                        "DefaultBrowserPromoEntryPoint"
+                    ]
+                }
+            ]
+        }
+    ],
     "DefaultBrowserPromoIpadInstructions": [
         {
             "platforms": [
