@@ -80,6 +80,11 @@ inline constexpr char kTabDiscardingExceptionsWithTime[] =
 inline constexpr char kManagedTabDiscardingExceptions[] =
     "performance_tuning.tab_discarding.exceptions_managed";
 
+// The pref storing whether all tabs in the profile are forced to have
+// foreground priority.
+inline constexpr char kForceForegroundPriorityForAllTabs[] =
+    "performance_tuning.force_foreground_priority_for_all_tabs";
+
 // The pref storing whether the discard ring treatment should appear around
 // favicons on tabs.
 inline constexpr char kDiscardRingTreatmentEnabled[] =

@@ -47,6 +47,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
       kTabDiscardingExceptionsWithTime,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterListPref(kManagedTabDiscardingExceptions);
+  registry->RegisterBooleanPref(kForceForegroundPriorityForAllTabs, false);
 }
 
 MemorySaverModeState GetCurrentMemorySaverModeState(PrefService* pref_service) {

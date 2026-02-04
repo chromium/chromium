@@ -1,0 +1,39 @@
+caption: Force foreground priority for all tabs in the profile
+desc: |-
+  This policy controls whether background web content is forced to run at
+  foreground priority.
+
+  By default, the browser optimizes resources by deprioritizing content in
+  background tabs. Enabling this policy overrides that behavior, causing
+  background tabs to be scheduled the same way as the active tab.
+
+  Note that forcing background content to run at foreground priority may
+  slightly impact the responsiveness of the active tab.
+
+  If this policy is set to Enabled, all web content runs at foreground priority
+  regardless of its visibility state.
+
+  If this policy is set to Disabled or not set, the browser determines priority
+  based on standard heuristics (e.g., deprioritizing content that is not
+  visible, not playing audio, not participating in video calls...).
+
+owners:
+- mdanowski@google.com
+- file://components/policy/OWNERS
+supported_on:
+- chrome.*:146-
+- chrome_os:146-
+features:
+  dynamic_refresh: true
+  per_profile: true
+type: main
+schema:
+  type: boolean
+items:
+- caption: Force foreground priority for all tabs
+  value: true
+- caption: Use standard tab prioritization
+  value: false
+default: false
+example_value: true
+tags: []

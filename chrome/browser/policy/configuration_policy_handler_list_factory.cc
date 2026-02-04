@@ -2276,6 +2276,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kTabDiscardingExceptions,
     performance_manager::user_tuning::prefs::kManagedTabDiscardingExceptions,
     base::Value::Type::LIST },
+  { key::kForceForegroundPriorityForAllTabs,
+    performance_manager::user_tuning::prefs::kForceForegroundPriorityForAllTabs,
+    base::Value::Type::BOOLEAN },
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   { key::kStrictMimetypeCheckForWorkerScriptsEnabled,
     prefs::kStrictMimetypeCheckForWorkerScriptsEnabled,
