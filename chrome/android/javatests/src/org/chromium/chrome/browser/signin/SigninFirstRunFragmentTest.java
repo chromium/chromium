@@ -65,6 +65,7 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterizedRunner;
+import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewFinder;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -1390,7 +1391,8 @@ public class SigninFirstRunFragmentTest {
 
     private void checkFragmentWithChildAccount(
             boolean hasDisplayableFullName, boolean hasDisplayableEmail, AccountInfo accountInfo) {
-        ViewUtils.waitForVisibleView(withId(R.id.signin_fre_selected_account));
+        ViewFinder.waitForView(
+                withId(R.id.signin_fre_selected_account), ViewElement.allowDisabledOption());
         verify(mFirstRunPageDelegateMock)
                 .recordLoadCompletedHistograms(LoadPoint.NATIVE_INITIALIZATION);
         onView(allOf(withId(R.id.title), withText(R.string.signin_fre_title)))

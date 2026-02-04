@@ -138,8 +138,7 @@ public class ViewUtils {
      * @param viewMatcher The matcher matching the view that should be waited for.
      */
     public static void waitForVisibleView(Matcher<View> viewMatcher) {
-        ViewFinder.waitForView(
-                viewMatcher, ViewElement.newOptions().allowDisabled().displayingAtLeast(1).build());
+        ViewFinder.waitForView(viewMatcher);
     }
 
     /**
