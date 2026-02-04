@@ -1505,6 +1505,7 @@ if (_is_default_toolchain) {
       "//components/test/data/autofill/",
       "//components/test/data/payments/",
       "//content/test/data/browsing_data/",
+      "//content/test/data/android/approximate_geolocation.html",
       "//content/test/data/android/authenticator.html",
       "//content/test/data/android/auto_downloads_permissions.html",
       "//content/test/data/android/eme_permissions.html",

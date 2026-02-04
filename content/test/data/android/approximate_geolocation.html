@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Approximate Geolocation</title>
+    </head>
+    <body>
+        <button id="get-location-button">Get Location</button>
+        <geolocation accuracymode="approximate" id="geolocation-element-approximate"></geolocation>
+        <geolocation accuracymode="precise" id="geolocation-element-precise"></geolocation>
+        <script>
+          let result;
+
+          async function getAccuracyModeFromAPI() {
+            return (await result).accuracyMode;
+          }
+
+          document.getElementById('get-location-button').addEventListener('click', () => {
+              result = new Promise((resolve, reject) => {
+                navigator.geolocation.getCurrentPosition(resolve, reject);
+              });
+          });
+        </script>
+    </body>
+</html>

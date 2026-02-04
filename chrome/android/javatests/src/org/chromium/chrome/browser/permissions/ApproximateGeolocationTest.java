@@ -26,7 +26,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.permissions.RuntimePermissionTestUtils.RuntimePromptResponse;
 import org.chromium.chrome.browser.permissions.RuntimePermissionTestUtils.TestAndroidPermissionDelegate;
@@ -34,7 +33,8 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.components.browser_ui.site_settings.GeolocationSetting;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.components.browser_ui.widget.RichRadioButtonList;
@@ -42,6 +42,9 @@ import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.permissions.PermissionDialogController;
 import org.chromium.components.permissions.PermissionsAndroidFeatureList;
+import org.chromium.content_public.browser.test.util.DOMUtils;
+import org.chromium.content_public.browser.test.util.JavaScriptUtils;
+import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 
@@ -60,12 +63,16 @@ import java.util.concurrent.TimeUnit;
 @Features.EnableFeatures(PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION)
 @Batch(Batch.PER_CLASS)
 public class ApproximateGeolocationTest {
-    @Rule public PermissionTestRule mPermissionRule = new PermissionTestRule();
+    @Rule
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
-    private static final String TEST_FILE = "/content/test/data/android/geolocation.html";
+    private static final String TEST_FILE =
+            "/content/test/data/android/approximate_geolocation.html";
     private static final int TEST_TIMEOUT = 10000;
 
     private TestAndroidPermissionDelegate mTestAndroidPermissionDelegate;
+    private EmbeddedTestServer mTestServer;
 
     public static class LocationPrecisionParams implements ParameterProvider {
         @Override
@@ -78,13 +85,17 @@ public class ApproximateGeolocationTest {
 
     @Before
     public void setUp() throws Exception {
-        mPermissionRule.setUpActivity();
+        mTestServer = mActivityTestRule.getTestServer();
         RuntimePermissionTestUtils.setupGeolocationSystemMock();
+        mActivityTestRule.startOnBlankPage();
+        mActivityTestRule.loadUrl(mTestServer.getURL(TEST_FILE));
+        setNativeContentSetting();
+        setPermissionDelegate();
     }
 
     /** Sets native ContentSetting value to ASK for geolocation. */
     private void setNativeContentSetting() {
-        final String origin = mPermissionRule.getURL(TEST_FILE);
+        final String origin = mTestServer.getURL(TEST_FILE);
         final int value = ContentSetting.ASK;
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -99,7 +110,19 @@ public class ApproximateGeolocationTest {
                 });
     }
 
-    private void selectLocationPrecision(View dialogView, boolean precise) {
+    private void selectLocationPrecision(boolean precise) {
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    boolean isDialogShownForTest =
+                            PermissionDialogController.getInstance().isDialogShownForTest();
+                    Criteria.checkThat(isDialogShownForTest, Matchers.is(true));
+                },
+                TEST_TIMEOUT,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        ModalDialogManager manager =
+                ThreadUtils.runOnUiThreadBlocking(
+                        mActivityTestRule.getActivity()::getModalDialogManager);
+        View dialogView = manager.getCurrentDialogForTest().get(ModalDialogProperties.CUSTOM_VIEW);
         if (dialogView == null) return;
         View recycler = dialogView.findViewById(R.id.rich_radio_button_list_recycler_view);
         if (recycler == null) return;
@@ -112,8 +135,9 @@ public class ApproximateGeolocationTest {
         ThreadUtils.runOnUiThreadBlocking(() -> radioList.setSelectedItem(targetId));
     }
 
-    private void checkPermission(ChromeActivity activity, boolean precise) throws Exception {
-        final Tab tab = ThreadUtils.runOnUiThreadBlocking(() -> activity.getActivityTab());
+    private void checkPermission(boolean precise) throws Exception {
+        final Tab tab = ThreadUtils.runOnUiThreadBlocking(() -> mActivityTestRule.getActivityTab());
+        final String origin = mTestServer.getURL(TEST_FILE);
         GeolocationSetting actualSetting =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
@@ -121,8 +145,8 @@ public class ApproximateGeolocationTest {
                                         .getGeolocationSettingForOrigin(
                                                 ProfileManager.getLastUsedRegularProfile(),
                                                 ContentSettingsType.GEOLOCATION_WITH_OPTIONS,
-                                                mPermissionRule.getURL(TEST_FILE),
-                                                mPermissionRule.getURL(TEST_FILE)));
+                                                origin,
+                                                origin));
         GeolocationSetting expectedSetting =
                 precise
                         ? new GeolocationSetting(
@@ -139,61 +163,43 @@ public class ApproximateGeolocationTest {
         latch.await(seconds, TimeUnit.SECONDS);
     }
 
-    @Test
-    @MediumTest
-    @ParameterAnnotations.UseMethodParameter(LocationPrecisionParams.class)
-    public void testAccuracyModeAPI(boolean precise) throws Exception {
+    private void clickGetLocationButton() throws Exception {
+        DOMUtils.clickNode(mActivityTestRule.getWebContents(), "get-location-button");
+    }
+
+    private void setPermissionDelegate() {
         String[] requestablePermission =
                 new String[] {
                     Manifest.permission.ACCESS_COARSE_LOCATION,
                     Manifest.permission.ACCESS_FINE_LOCATION
                 };
-        setNativeContentSetting();
         mTestAndroidPermissionDelegate =
                 new TestAndroidPermissionDelegate(
                         requestablePermission, RuntimePromptResponse.GRANT);
-        final ChromeActivity activity = mPermissionRule.getActivity();
-        activity.getWindowAndroid().setAndroidPermissionDelegate(mTestAndroidPermissionDelegate);
-
-        mPermissionRule.setUpUrl(TEST_FILE);
-        waitOnLatch(2);
-
-        Tab tab = mPermissionRule.getActivityTab();
-        String expectedTitle = precise ? "precise" : "approximate";
-
-        mPermissionRule.runJavaScriptCodeInCurrentTab(
-                "functionToRun = 'getAccuracyMode_getCurrentPosition()';");
-        mPermissionRule.runJavaScriptCodeInCurrentTabWithGesture(
-                "getAccuracyMode_getCurrentPosition();");
-
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    boolean isDialogShownForTest =
-                            PermissionDialogController.getInstance().isDialogShownForTest();
-                    Criteria.checkThat(isDialogShownForTest, Matchers.is(true));
-                },
-                TEST_TIMEOUT,
-                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
-
-        // Select precision
-        ModalDialogManager manager =
-                ThreadUtils.runOnUiThreadBlocking(activity::getModalDialogManager);
-        View dialogView = manager.getCurrentDialogForTest().get(ModalDialogProperties.CUSTOM_VIEW);
-
-        selectLocationPrecision(dialogView, precise);
-
-        PermissionTestRule.replyToDialog(PermissionTestRule.PromptDecision.ALLOW, activity);
-        checkPermission(activity, precise);
-
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    String title = ChromeTabUtils.getTitleOnUiThread(tab);
-                    // Wait for title to change to the expected title.
-                    return title.equals(expectedTitle);
-                },
-                "Title was not set to expected value.",
-                TEST_TIMEOUT,
-                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        mActivityTestRule
+                .getActivity()
+                .getWindowAndroid()
+                .setAndroidPermissionDelegate(mTestAndroidPermissionDelegate);
     }
 
+    @Test
+    @MediumTest
+    @ParameterAnnotations.UseMethodParameter(LocationPrecisionParams.class)
+    public void testAccuracyModeAPI(boolean precise) throws Exception {
+        clickGetLocationButton();
+        waitOnLatch(1);
+        selectLocationPrecision(precise);
+
+        PermissionTestRule.replyToDialog(
+                PermissionTestRule.PromptDecision.ALLOW, mActivityTestRule.getActivity());
+        checkPermission(precise);
+
+        String accuracyMode =
+                JavaScriptUtils.runJavascriptWithAsyncResult(
+                        mActivityTestRule.getWebContents(),
+                        "getAccuracyModeFromAPI().then(result =>"
+                                + " domAutomationController.send(result))");
+        String expected = precise ? "precise" : "approximate";
+        Assert.assertEquals(expected, accuracyMode.replace("\"", "").trim());
+    }
 }
