@@ -7819,7 +7819,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SpdyFrameStreamAndSessionFlowControlState"
-    enum="SpdyFrameFlowControlState" expires_after="2026-03-17">
+    enum="SpdyFrameFlowControlState" expires_after="2027-02-02">
   <owner>bashi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -7829,7 +7829,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SpdyHeadersCompressionPercentage" units="%"
-    expires_after="2026-03-17">
+    expires_after="2027-02-02">
   <owner>bashi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -7841,7 +7841,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SpdyIPPoolDomainMatch" enum="SpdyIPPoolDomainMatch"
-    expires_after="2026-03-17">
+    expires_after="2027-02-02">
   <owner>bashi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -7922,14 +7922,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SpdySession.ClosedOnError" enum="NetErrorCodes"
-    expires_after="2026-03-17">
+    expires_after="2027-02-02">
   <owner>bashi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>Net error codes when SpdySession was closed.</summary>
 </histogram>
 
 <histogram name="Net.SpdySession.CreateStreamWithSocketConnected"
-    enum="BooleanSuccess" expires_after="2026-03-17">
+    enum="BooleanSuccess" expires_after="2027-02-02">
   <owner>bashi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>Socket connected status in SpdySession::CreateStream.</summary>
@@ -7979,14 +7979,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SpdySessionErrorDetails2" enum="SpdyProtocolErrorDetails2"
-    expires_after="2026-03-18">
+    expires_after="2027-02-02">
   <owner>bashi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>The type of SPDY Protocol error encountered.</summary>
 </histogram>
 
 <histogram name="Net.SpdySessionErrorDetails_Google2"
-    enum="SpdyProtocolErrorDetails2" expires_after="2026-03-17">
+    enum="SpdyProtocolErrorDetails2" expires_after="2027-02-02">
   <owner>bashi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
