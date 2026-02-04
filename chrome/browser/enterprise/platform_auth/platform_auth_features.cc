@@ -52,13 +52,13 @@ BASE_FEATURE_PARAM(
     "i|Sec-Fetch-Dest;empty|Sec-Fetch-Mode;cors|Sec-Fetch-Site;same-origin");
 
 // The pattern for a SSO URL request path specific to the Okta IdP.
-// The syntax of the pattern must be compatible with ContentSettingsPattern.
+// Format: segments separated with |/|. * is a wildcard matching 1 segment.
 BASE_FEATURE_PARAM(
     std::string,
     kOktaSsoURLPattern,
     &kOktaSSO,
     "OktaSsoURLPattern",
-    "https://*/idp/idx/authenticators/sso_extension/transactions/*/verify");
+    "/idp/idx/authenticators/sso_extension/transactions/*/verify");
 #endif
 
 }  // namespace enterprise_auth

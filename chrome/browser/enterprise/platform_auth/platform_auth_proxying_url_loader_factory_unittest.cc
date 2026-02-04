@@ -338,12 +338,11 @@ TEST_P(PlatformAuthProxyingURLLoaderFactoryInterceptTest,
   base::test::TestFuture<void> request_intercepted_future;
   const GURL url = GURL(params.url);
 
-  if (params.should_intercept) {
-    base::ListValue hosts;
-    hosts.Append(url.host());
-    TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetList(
-        prefs::kExtensibleEnterpriseSSOConfiguredHosts, std::move(hosts));
-  }
+  // This test is meant to verify pattern matching, so the host must be allowed.
+  base::ListValue hosts;
+  hosts.Append(url.host());
+  TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetList(
+      prefs::kExtensibleEnterpriseSSOConfiguredHosts, std::move(hosts));
 
   base::OnceCallback<void(const network::ResourceRequest& request)>
       request_itercepted_callback = base::BindOnce(
