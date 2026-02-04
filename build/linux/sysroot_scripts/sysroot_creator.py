@@ -449,6 +449,36 @@ def hacks_and_patches(install_root: str, script_dir: str, arch: str) -> None:
     replace_in_file(stdlib_h, r"(#include <stddef.h>)",
                     r"\1\n#include <limits.h>")
 
+    # Glibc < 2.34 (like in our Bullseye sysroot) doesn't support
+    # _FORTIFY_SOURCE=3.  We can "upgrade" it by redefining the internal macros
+    # used by the fortified headers to use __builtin_dynamic_object_size instead
+    # of __builtin_object_size. This can be removed when the sysroot is upgraded
+    # from bullseye to bookworm.
+    #
+    # First, allow __USE_FORTIFY_LEVEL to be 3.
+    replace_in_file(
+        features_h, r"(#\s?if\s+_FORTIFY_SOURCE\s?>\s?1)",
+        r"# if _FORTIFY_SOURCE > 2\n"
+        r"#  define __USE_FORTIFY_LEVEL 3\n"
+        r"# elif _FORTIFY_SOURCE > 1")
+    # Second, redefine __bos and __bos0 to use __builtin_dynamic_object_size
+    # when __USE_FORTIFY_LEVEL is 3.
+    cdefs_h = os.path.join(install_root, "usr", "include", TRIPLES[arch],
+                           "sys", "cdefs.h")
+    replace_in_file(
+        cdefs_h, r"(#define\s+__bos\(ptr\)\s+__builtin_object_size\s+"
+        r"\(ptr,\s+__USE_FORTIFY_LEVEL\s+>\s+1\))",
+        r"#if defined(__clang__) && defined(__USE_FORTIFY_LEVEL) && "
+        r"__USE_FORTIFY_LEVEL > 2\n"
+        r"# define __bos(ptr) __builtin_dynamic_object_size (ptr, 1)\n"
+        r"# define __bos0(ptr) __builtin_dynamic_object_size (ptr, 0)\n"
+        r"#else\n"
+        r"\1")
+    replace_in_file(
+        cdefs_h,
+        r"(#define\s+__bos0\(ptr\)\s+__builtin_object_size\s+\(ptr,\s+0\))",
+        r"\1\n#endif")
+
     # Move pkgconfig scripts.
     pkgconfig_dir = os.path.join(install_root, "usr", "lib", "pkgconfig")
     os.makedirs(pkgconfig_dir, exist_ok=True)
