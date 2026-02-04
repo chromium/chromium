@@ -10,8 +10,21 @@ struct LegionResponse {
   string? error;
 };
 
+enum LogLevel {
+  kInfo,
+  kError,
+};
+
+// Interface for the LegionInternals page to receive updates from the browser.
+interface LegionInternalsPage {
+  // Notifies the page about a new log message.
+  OnLogMessage(LogLevel level, string message);
+};
+
 // PageHandler for LegionInternals page.
 interface LegionInternalsPageHandler {
+  // Sets the page that will receive updates.
+  SetPage(pending_remote<LegionInternalsPage> page);
   // Connect to the specified URL. Needs to be called before other methods that
   // require a "current connection".
   Connect(string url, string api_key) => ();

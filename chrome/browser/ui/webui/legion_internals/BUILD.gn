@@ -22,6 +22,7 @@ source_set("legion_internals") {
     "//chrome/common",
     "//components/legion",
     "//components/legion:proto",
+    "//components/legion/common",
     "//components/legion/phosphor",
     "//content/public/browser",
     "//ui/webui",

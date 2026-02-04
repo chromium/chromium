@@ -10,6 +10,10 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 
+namespace base {
+class Location;
+}
+
 namespace legion {
 
 // Handles logging in Legion and notifies observers.
@@ -17,8 +21,10 @@ class LegionLogger {
  public:
   class Observer : public base::CheckedObserver {
    public:
-    virtual void OnLogInfo(std::string_view message) {}
-    virtual void OnLogError(std::string_view message) {}
+    virtual void OnLogInfo(const base::Location& location,
+                           std::string_view message) {}
+    virtual void OnLogError(const base::Location& location,
+                            std::string_view message) {}
   };
 
   LegionLogger();
@@ -27,8 +33,8 @@ class LegionLogger {
   LegionLogger(const LegionLogger&) = delete;
   LegionLogger& operator=(const LegionLogger&) = delete;
 
-  void LogInfo(std::string_view message);
-  void LogError(std::string_view message);
+  void LogInfo(const base::Location& location, std::string_view message);
+  void LogError(const base::Location& location, std::string_view message);
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);

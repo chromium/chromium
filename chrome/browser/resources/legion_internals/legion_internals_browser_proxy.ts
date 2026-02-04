@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {LegionInternalsPageHandlerRemote, LegionResponseMojoType} from './legion_internals.mojom-webui.js';
-import {LegionInternalsPageHandler} from './legion_internals.mojom-webui.js';
+import {LegionInternalsPageCallbackRouter, LegionInternalsPageHandler} from './legion_internals.mojom-webui.js';
 
 /**
  * @fileoverview A browser proxy for the Legion Internals page.
@@ -14,14 +14,19 @@ export interface LegionInternalsBrowserProxy {
   close(): Promise<void>;
   sendRequest(featureName: string, request: string):
       Promise<LegionResponseMojoType>;
+  getCallbackRouter(): LegionInternalsPageCallbackRouter;
 }
 
 export class LegionInternalsBrowserProxyImpl implements
     LegionInternalsBrowserProxy {
   handler: LegionInternalsPageHandlerRemote;
+  callbackRouter: LegionInternalsPageCallbackRouter;
 
   constructor(handler: LegionInternalsPageHandlerRemote) {
     this.handler = handler;
+    this.callbackRouter = new LegionInternalsPageCallbackRouter();
+
+    this.handler.setPage(this.callbackRouter.$.bindNewPipeAndPassRemote());
   }
 
   connect(url: string, apiKey: string): Promise<void> {
@@ -36,6 +41,10 @@ export class LegionInternalsBrowserProxyImpl implements
       Promise<LegionResponseMojoType> {
     const {response} = await this.handler.sendRequest(featureName, request);
     return response;
+  }
+
+  getCallbackRouter(): LegionInternalsPageCallbackRouter {
+    return this.callbackRouter;
   }
 
   static getInstance(): LegionInternalsBrowserProxy {

@@ -9,7 +9,10 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/location.h"
 #include "base/logging.h"
+#include "base/strings/to_string.h"
+#include "components/legion/common/legion_logger.h"
 #include "components/legion/connection.h"
 #include "components/legion/proto/legion.pb.h"
 #include "components/legion/proto_utils/generate_content_response_utils.h"
@@ -149,16 +152,30 @@ void ClientImpl::SendRequest(proto::FeatureName feature_name,
                              proto::LegionRequest legion_request,
                              OnRequestCompletedCallback callback,
                              const RequestOptions& options) {
-  DVLOG(1) << "SendRequest started.";
+  logger_.LogInfo(FROM_HERE, "SendRequest started.");
 
   legion_request.set_feature_name(feature_name);
 
-  GetOrCreateConnection()->Send(std::move(legion_request), options.timeout,
-                                std::move(callback));
+  GetOrCreateConnection()->Send(
+      std::move(legion_request), options.timeout,
+      base::BindOnce(&ClientImpl::OnReponseReceived, weak_factory_.GetWeakPtr(),
+                     std::move(callback)));
+}
+
+void ClientImpl::OnReponseReceived(
+    OnRequestCompletedCallback cb,
+    base::expected<proto::LegionResponse, ErrorCode> legion_response) {
+  if (legion_response.has_value()) {
+    logger_.LogInfo(FROM_HERE, "Response received");
+  } else {
+    logger_.LogError(FROM_HERE,
+                     "Error: " + base::ToString(legion_response.error()));
+  }
+  std::move(cb).Run(legion_response);
 }
 
 void ClientImpl::OnConnectionDisconnected() {
-  DVLOG(1) << "Connection disconnected. Destroying connection.";
+  logger_.LogInfo(FROM_HERE, "Connection disconnected. Destroying connection.");
   connection_.reset();
 }
 

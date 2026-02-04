@@ -13,30 +13,40 @@ found in the LICENSE file.
     <script type="module" src="legion_internals.js"></script>
   </head>
   <body>
-    <div>
-      <label>
-        Server URL:
-        <input type="text" id="legionServerUrl" value="$i18n{default_url}">
-      </label>
-    </div>
-    <div>
-      <label>
-        API Key:
-        <input type="text" id="legionServerApiKey"
-               value="$i18n{default_api_key}">
-      </label>
-    </div>
+    <div id="main-container">
+      <div id="left-column">
+        <div>
+          <label>
+            Server URL:
+            <input type="text" id="legionServerUrl" value="$i18n{default_url}">
+          </label>
+        </div>
+        <div>
+          <label>
+            API Key:
+            <input type="text" id="legionServerApiKey"
+                   value="$i18n{default_api_key}">
+          </label>
+        </div>
 
-    <button id="create-connection-button">Connect</button>
+        <button id="create-connection-button">Connect</button>
 
-    <div id="console" class="hidden">
-      <div id="console-header" class="console-header">Debug console</div>
-      <div id="console-container">
+        <div id="console" class="hidden">
+          <div id="console-header" class="console-header">Debug console</div>
+          <div id="console-container">
+          </div>
+          <div id="input-container">
+            <textarea id="request-input"
+                   placeholder="Type your request..."></textarea>
+            <button id="send-button">Send</button>
+          </div>
+        </div>
       </div>
-      <div id="input-container">
-        <textarea id="request-input"
-               placeholder="Type your request..."></textarea>
-        <button id="send-button">Send</button>
+
+      <div id="logs" class="hidden">
+        <div class="console-header">Logs</div>
+        <div id="logs-container">
+        </div>
       </div>
     </div>
   </body>

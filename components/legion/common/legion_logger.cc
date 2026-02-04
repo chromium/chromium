@@ -14,17 +14,19 @@ LegionLogger::LegionLogger() = default;
 
 LegionLogger::~LegionLogger() = default;
 
-void LegionLogger::LogInfo(std::string_view message) {
-  VLOG(1) << message;
+void LegionLogger::LogInfo(const base::Location& location,
+                           std::string_view message) {
+  VLOG(1) << location.ToString() << ": " << message;
   for (auto& observer : observers_) {
-    observer.OnLogInfo(message);
+    observer.OnLogInfo(location, message);
   }
 }
 
-void LegionLogger::LogError(std::string_view message) {
-  LOG(ERROR) << message;
+void LegionLogger::LogError(const base::Location& location,
+                            std::string_view message) {
+  LOG(ERROR) << location.ToString() << ": " << message;
   for (auto& observer : observers_) {
-    observer.OnLogError(message);
+    observer.OnLogError(location, message);
   }
 }
 

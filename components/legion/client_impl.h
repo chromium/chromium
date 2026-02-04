@@ -75,6 +75,10 @@ class ClientImpl : public Client {
                    OnRequestCompletedCallback callback,
                    const RequestOptions& options);
 
+  void OnReponseReceived(
+      OnRequestCompletedCallback cb,
+      base::expected<proto::LegionResponse, ErrorCode> legion_response);
+
   void OnConnectionDisconnected();
 
   std::unique_ptr<Connection> connection_;

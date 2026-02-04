@@ -6,9 +6,25 @@ import '/strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
+import {LogLevel} from './legion_internals.mojom-webui.js';
 import {LegionInternalsBrowserProxyImpl} from './legion_internals_browser_proxy.js';
 
 const proxy = LegionInternalsBrowserProxyImpl.getInstance();
+
+function registerOnLogMessageListener() {
+  const logsContainer = document.getElementById('logs-container');
+  proxy.getCallbackRouter().onLogMessage.addListener(
+      (level: LogLevel, message: string) => {
+        const logElement = document.createElement('div');
+        logElement.textContent = message;
+        if (level === LogLevel.kError) {
+          logElement.style.color = 'red';
+        } else {
+          logElement.style.color = 'blue';
+        }
+        logsContainer?.appendChild(logElement);
+      });
+}
 
 function registerOnCreateConnectionButtonListener() {
   const connectionConsole = document.getElementById('console');
@@ -26,6 +42,7 @@ function registerOnCreateConnectionButtonListener() {
 
   createConnectionButton.addEventListener('click', () => {
     connectionConsole.classList.remove('hidden');
+    document.getElementById('logs')?.classList.remove('hidden');
     createConnectionButton.classList.add('hidden');
 
     proxy.connect(getServerURL(), getAPIKey()).then(() => {
@@ -83,6 +100,8 @@ function getAPIKey() {
 
 window.onload = function() {
   console.info('window.onload');
+
+  registerOnLogMessageListener();
 
   registerOnCreateConnectionButtonListener();
 

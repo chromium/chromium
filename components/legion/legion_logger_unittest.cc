@@ -16,8 +16,14 @@ using ::testing::_;
 
 class MockObserver : public LegionLogger::Observer {
  public:
-  MOCK_METHOD(void, OnLogInfo, (std::string_view message), (override));
-  MOCK_METHOD(void, OnLogError, (std::string_view message), (override));
+  MOCK_METHOD(void,
+              OnLogInfo,
+              (const base::Location& location, std::string_view message),
+              (override));
+  MOCK_METHOD(void,
+              OnLogError,
+              (const base::Location& location, std::string_view message),
+              (override));
 };
 
 TEST(LegionLoggerTest, NotifiesObserversOnLogging) {
@@ -25,17 +31,17 @@ TEST(LegionLoggerTest, NotifiesObserversOnLogging) {
   MockObserver observer;
   logger.AddObserver(&observer);
 
-  EXPECT_CALL(observer, OnLogInfo("info message"));
-  logger.LogInfo("info message");
+  EXPECT_CALL(observer, OnLogInfo(_, "info message"));
+  logger.LogInfo(FROM_HERE, "info message");
 
-  EXPECT_CALL(observer, OnLogError("error message"));
-  logger.LogError("error message");
+  EXPECT_CALL(observer, OnLogError(_, "error message"));
+  logger.LogError(FROM_HERE, "error message");
 
   logger.RemoveObserver(&observer);
 
   // Should not notify after removal.
-  EXPECT_CALL(observer, OnLogInfo(_)).Times(0);
-  logger.LogInfo("another info message");
+  EXPECT_CALL(observer, OnLogInfo(_, _)).Times(0);
+  logger.LogInfo(FROM_HERE, "another info message");
 }
 
 }  // namespace
