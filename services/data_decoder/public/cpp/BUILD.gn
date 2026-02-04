@@ -32,6 +32,7 @@ source_set("cpp") {
   public_deps = [
     ":safe_xml_parser",
     ":service_provider",
+    ":xml_dom",
     "//base",
     "//net",
     "//services/data_decoder/public/mojom",
@@ -65,6 +66,15 @@ source_set("safe_xml_parser") {
 
   public_deps = [ "//base" ]
   deps = [ "//services/data_decoder/public/mojom:mojom_xml_parser" ]
+}
+
+source_set("xml_dom") {
+  public = [ "xml_dom.h" ]
+
+  sources = [ "xml_dom.cc" ]
+
+  public_deps = [ "//base" ]
+  deps = [ "//third_party/abseil-cpp:absl" ]
 }
 
 source_set("test_support") {

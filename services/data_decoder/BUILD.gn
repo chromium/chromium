@@ -70,6 +70,7 @@ source_set("tests") {
     "public/cpp/safe_web_bundle_parser_unittest.cc",
     "public/cpp/safe_xml_parser_unittest.cc",
     "xml_parser_unittest.cc",
+    "public/cpp/xml_dom_unittest.cc"
   ]
 
   deps = [
