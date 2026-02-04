@@ -754,9 +754,7 @@ def _GeneratedActions() -> set[str]:
   return actions
 
 
-def UpdateXml(
-    original_xml: str, generated_actions_names: set[str] = _GeneratedActions()
-) -> str:
+def UpdateXml(original_xml: str, generated_actions_names: set[str]) -> str:
   actions_dict, comment_nodes, variants_dict = action_utils.ParseActionFile(
       original_xml)
 
@@ -771,13 +769,14 @@ def UpdateXml(
 
   return PrettyPrint(actions_dict, comment_nodes, variants_dict)
 
-def main(argv):
-  presubmit_util.DoPresubmitMain(argv,
-                                 'actions.xml',
-                                 'actions.old.xml',
-                                 UpdateXml,
-                                 script_name='extract_actions.py')
+
+def main():
+  presubmit_util.DoPresubmitMain(
+      'actions.xml',
+      'actions.old.xml',
+      lambda file_content: UpdateXml(file_content, _GeneratedActions()),
+      script_name='extract_actions.py')
 
 
 if '__main__' == __name__:
-  sys.exit(main(sys.argv))
+  main()

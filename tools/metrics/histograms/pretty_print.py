@@ -176,21 +176,17 @@ def main():
                       help="Remove the backup file after a successful run.")
   args = parser.parse_args()
 
-  status = 0
   if 'enums.xml' in args.filepath:
-    status = presubmit_util.DoPresubmit(sys.argv, args.filepath,
+    status = presubmit_util.DoPresubmit(args, args.filepath,
                                         'enums.before.pretty-print.xml',
                                         PrettyPrintEnums)
-
   elif 'histograms' in args.filepath:
-    # Specify the individual directory of histograms.xml.
     status = presubmit_util.DoPresubmit(
-        sys.argv,
-        args.filepath,
-        # The backup filename should be
-        # 'path/to/histograms.before.pretty-print.xml'.
+        args, args.filepath,
         '.before.pretty-print.'.join(args.filepath.rsplit('.', 1)),
         PrettyPrintHistograms)
+  else:
+    status = 0
 
   sys.exit(status)
 
