@@ -15,7 +15,7 @@ import "aim_models.proto";
 import "aim_tools.proto";
 
 // A set of rules that are applied to the input plate or fusebox.
-// Next ID: 7
+// Next ID: 8
 message RuleSet {
   // Server determined allowed tools based on user/geo/platform.
   repeated ToolMode allowed_tools = 1;
@@ -29,6 +29,8 @@ message RuleSet {
   repeated InputTypeRule input_type_rules = 4;
   // Rules for restricting based on models.
   repeated ModelRule model_rules = 6;
+  // Max total allowed input types.
+  optional int32 max_total_inputs = 7;
 }
 
 // Rule for restricting a tool.
