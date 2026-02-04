@@ -407,6 +407,10 @@ bool IsEmptyNTP(const web::WebState* web_state) {
 
   WebStateList* webStateList = browser->GetWebStateList();
   int index = webStateList->active_index();
+  // Return if no active webState.
+  if (index == WebStateList::kInvalidIndex) {
+    return;
+  }
   const TabGroup* tabGroup = webStateList->GetGroupOfWebStateAt(index);
   if (!tabGroup) {
     // Do not show if active tab is not part of a group.

@@ -740,3 +740,30 @@ TEST_F(StartSurfaceSceneAgentTest, OpenNTPAfterFourHoursOutsideActiveGroup) {
 
   [dispatcher_ stopDispatchingToTarget:application_handler_];
 }
+
+// Tests that the app does not crash when the webStateList is empty.
+TEST_F(StartSurfaceSceneAgentTest, AppDoesNotCrashWhenWebStateListEmpty) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  // Setting the ShowTabGroupInGridInactiveDuration to 1 hour.
+  base::FieldTrialParams show_tab_grid_treshold = {
+      {kShowTabGroupInGridInactiveDurationInSeconds, kOneHourTreshold}};
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{kShowTabGroupInGridOnStart, show_tab_grid_treshold}},
+      /*disabled_features=*/{});
+
+  // Within the interval.
+  base::Time time_last_background = base::Time::Now() - base::Hours(2);
+  test::SetStartSurfaceSessionObjectForSceneStateForTesting(
+      scene_state_, time_last_background);
+
+  [dispatcher_ startDispatchingToTarget:application_handler_
+                            forProtocol:@protocol(SceneCommands)];
+
+  WebStateList* web_state_list = GetWebStateList();
+  ASSERT_TRUE(web_state_list->empty());
+
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
+  [dispatcher_ stopDispatchingToTarget:application_handler_];
+}
