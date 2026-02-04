@@ -958,6 +958,9 @@ void CanvasResourceProviderSharedImage::RasterRecord(
 
 sk_sp<SkSurface> CanvasResourceProviderSharedImage::CreateSkSurface() const {
   TRACE_EVENT0("blink", "CanvasResourceProviderSharedImage::CreateSkSurface");
+
+  CHECK(!IsAccelerated());
+
   if (is_software_) {
     const auto props = GetSkSurfaceProps();
     const auto info = SkImageInfo::Make(
@@ -971,13 +974,6 @@ sk_sp<SkSurface> CanvasResourceProviderSharedImage::CreateSkSurface() const {
   }
 
   const auto props = GetSkSurfaceProps();
-  if (is_accelerated_) {
-    // No longer supported post-OOP-C.
-    // TODO(crbug.com/391648152): Replace this conditional with a
-    // CHECK.
-    return nullptr;
-  }
-
   // For software raster path, we render into cpu memory managed internally
   // by SkSurface and copy the rendered results to the GMB before dispatching
   // it to the display compositor.
