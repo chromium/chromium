@@ -7,8 +7,6 @@
 #include <stddef.h>
 
 #include <map>
-#include <set>
-#include <unordered_map>
 #include <utility>
 
 #include "base/compiler_specific.h"
@@ -21,6 +19,8 @@
 #include "components/drive/drive.pb.h"
 #include "components/drive/drive_api_util.h"
 #include "components/drive/file_system_core_util.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
@@ -232,7 +232,7 @@ bool UpgradeOldDBVersion11(leveldb::DB* resource_map) {
   std::unique_ptr<leveldb::Iterator> it(resource_map->NewIterator(options));
 
   // First, get the set of local IDs associated with cache entries.
-  std::set<std::string> cached_entry_ids;
+  absl::flat_hash_set<std::string> cached_entry_ids;
   for (it->SeekToFirst(); it->Valid(); it->Next()) {
     if (IsCacheEntryKey(it->key()))
       cached_entry_ids.insert(GetIdFromCacheEntryKey(it->key()));
@@ -245,7 +245,7 @@ bool UpgradeOldDBVersion11(leveldb::DB* resource_map) {
   std::map<std::string, std::string> local_id_to_resource_id;
   for (it->SeekToFirst(); it->Valid(); it->Next()) {
     const bool is_used_id = IsIdEntryKey(it->key()) &&
-                            cached_entry_ids.count(it->value().ToString());
+                            cached_entry_ids.contains(it->value().ToString());
     if (is_used_id) {
       local_id_to_resource_id[it->value().ToString()] =
           GetResourceIdFromIdEntryKey(it->key());
@@ -372,7 +372,7 @@ bool UpgradeOldDBVersion12(leveldb::DB* resource_map) {
 bool UpgradeOldDBVersion13(leveldb::DB* resource_map) {
   // Before r272134, UpgradeOldDB() was not deleting unused ID entries.
   // Delete unused ID entries to fix crbug.com/374648.
-  std::set<std::string> used_ids;
+  absl::flat_hash_set<std::string> used_ids;
 
   std::unique_ptr<leveldb::Iterator> it(
       resource_map->NewIterator(leveldb::ReadOptions()));
@@ -389,8 +389,9 @@ bool UpgradeOldDBVersion13(leveldb::DB* resource_map) {
 
   leveldb::WriteBatch batch;
   for (it->SeekToFirst(); it->Valid(); it->Next()) {
-    if (IsIdEntryKey(it->key()) && !used_ids.count(it->value().ToString()))
+    if (IsIdEntryKey(it->key()) && !used_ids.contains(it->value().ToString())) {
       batch.Delete(it->key());
+    }
   }
   if (!it->status().ok())
     return false;
@@ -1104,10 +1105,10 @@ bool ResourceMetadataStorage::CheckValidity() {
   }
 
   // First scan. Remember relationships between IDs.
-  typedef std::unordered_map<std::string, std::string> KeyToIdMapping;
+  typedef absl::flat_hash_map<std::string, std::string> KeyToIdMapping;
   KeyToIdMapping local_id_to_resource_id_map;
   KeyToIdMapping child_key_to_local_id_map;
-  std::set<std::string> resource_entries;
+  absl::flat_hash_set<std::string> resource_entries;
   std::string first_resource_entry_key;
   for (it->Next(); it->Valid(); it->Next()) {
     if (IsChildEntryKey(it->key())) {
@@ -1160,9 +1161,7 @@ bool ResourceMetadataStorage::CheckValidity() {
     // If the parent is referenced, then confirm that it exists and check the
     // parent-child relationships.
     if (!entry.parent_local_id().empty()) {
-      const auto parent_mapping_it =
-          resource_entries.find(entry.parent_local_id());
-      if (parent_mapping_it == resource_entries.end()) {
+      if (!resource_entries.contains(entry.parent_local_id())) {
         DLOG(ERROR) << "Parent entry not found.";
         return false;
       }
