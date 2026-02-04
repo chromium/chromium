@@ -232,13 +232,6 @@ JabberId& JabberId::operator=(const JabberId&) = default;
 JabberId& JabberId::operator=(JabberId&&) = default;
 JabberId::~JabberId() = default;
 
-IceCandidate::IceCandidate() = default;
-IceCandidate::IceCandidate(const IceCandidate&) = default;
-IceCandidate::IceCandidate(IceCandidate&&) = default;
-IceCandidate& IceCandidate::operator=(const IceCandidate&) = default;
-IceCandidate& IceCandidate::operator=(IceCandidate&&) = default;
-IceCandidate::~IceCandidate() = default;
-
 SessionDescription::SessionDescription() = default;
 SessionDescription::SessionDescription(const SessionDescription&) = default;
 SessionDescription::SessionDescription(SessionDescription&&) = default;
@@ -262,8 +255,17 @@ IceTransportInfo::NamedCandidate::NamedCandidate() = default;
 
 IceTransportInfo::NamedCandidate::NamedCandidate(
     const std::string& name,
-    const webrtc::Candidate& candidate)
-    : name(name), candidate(candidate) {}
+    const webrtc::Candidate& candidate,
+    std::optional<int> sdp_m_line_index)
+    : name(name), candidate(candidate), sdp_m_line_index(sdp_m_line_index) {}
+
+IceTransportInfo::NamedCandidate::NamedCandidate(const NamedCandidate&) =
+    default;
+IceTransportInfo::NamedCandidate::NamedCandidate(NamedCandidate&&) = default;
+IceTransportInfo::NamedCandidate& IceTransportInfo::NamedCandidate::operator=(
+    const NamedCandidate&) = default;
+IceTransportInfo::NamedCandidate& IceTransportInfo::NamedCandidate::operator=(
+    NamedCandidate&&) = default;
 
 IceTransportInfo::NamedCandidate::~NamedCandidate() = default;
 

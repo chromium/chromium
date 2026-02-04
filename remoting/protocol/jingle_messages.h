@@ -50,29 +50,6 @@ struct JabberId {
   std::string resource_part;
 };
 
-// WebRTC ICE candidate details.
-// https://www.w3.org/TR/webrtc/#rtcicecandidate-interface
-struct IceCandidate {
-  IceCandidate();
-  IceCandidate(const IceCandidate&);
-  IceCandidate(IceCandidate&&);
-  IceCandidate& operator=(const IceCandidate&);
-  IceCandidate& operator=(IceCandidate&&);
-  ~IceCandidate();
-
-  // The ICE candidate string, containing foundation, component, priority,
-  // address, port, type, etc.
-  std::string candidate;
-
-  // If present, identifies the media stream ("mid") associated with the
-  // candidate.
-  std::string sdp_mid;
-
-  // If present, indicates the zero-based index of the m-line in the SDP
-  // associated with the candidate.
-  std::optional<int> sdp_m_line_index;
-};
-
 // WebRTC session description (SDP).
 // https://www.w3.org/TR/webrtc/#rtcsessiondescription-class
 struct SessionDescription {
@@ -132,11 +109,18 @@ struct IceTransportInfo {
   ~IceTransportInfo();
   struct NamedCandidate {
     NamedCandidate();
-    NamedCandidate(const std::string& name, const webrtc::Candidate& candidate);
+    NamedCandidate(const std::string& name,
+                   const webrtc::Candidate& candidate,
+                   std::optional<int> sdp_m_line_index = std::nullopt);
+    NamedCandidate(const NamedCandidate&);
+    NamedCandidate(NamedCandidate&&);
+    NamedCandidate& operator=(const NamedCandidate&);
+    NamedCandidate& operator=(NamedCandidate&&);
     ~NamedCandidate();
 
     std::string name;
     webrtc::Candidate candidate;
+    std::optional<int> sdp_m_line_index;
   };
 
   struct IceCredentials {
@@ -169,7 +153,7 @@ struct JingleTransportInfo {
   ~JingleTransportInfo();
 
   std::vector<IceTransportInfo::IceCredentials> ice_credentials;
-  std::vector<IceCandidate> candidates;
+  std::vector<IceTransportInfo::NamedCandidate> candidates;
 };
 
 struct HostAttributesAttachment {

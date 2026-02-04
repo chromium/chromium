@@ -307,6 +307,9 @@ std::unique_ptr<jingle_xmpp::XmlElement> JingleMessageToXml(
 
     if (message.transport_info_legacy) {
       content_tag->AddElement(new XmlElement(*message.transport_info_legacy));
+    } else if (auto* transport =
+                   std::get_if<JingleTransportInfo>(&message.payload())) {
+      content_tag->AddElement(JingleTransportInfoToXml(*transport).release());
     } else if (message.description &&
                message.description->config()->webrtc_supported()) {
       content_tag->AddElement(new XmlElement(kQNameWebrtcTransport));
@@ -366,7 +369,10 @@ bool JingleMessageFromXml(const jingle_xmpp::XmlElement* stanza,
       message->SetPayload(SessionInfo());
       break;
     case JingleMessage::ActionType::kTransportInfo:
-      message->SetPayload(JingleTransportInfo());
+      // The payload will be set later in the function.
+      // TODO: joedow - Refactor this function.
+      message->payload_ = std::monostate();
+      message->action_ = action;
       break;
     default:
       message->SetPayload(std::monostate());
@@ -479,9 +485,62 @@ bool JingleMessageFromXml(const jingle_xmpp::XmlElement* stanza,
     const XmlElement* ice_transport_tag =
         content_tag->FirstNamed(kQNameIceTransport);
     if (ice_transport_tag) {
+      if (message->action() == JingleMessage::ActionType::kTransportInfo) {
+        JingleTransportInfo transport_info;
+        if (JingleTransportInfoFromXml(ice_transport_tag, &transport_info)) {
+          message->SetPayload(std::move(transport_info));
+        }
+      }
       message->transport_info_legacy =
           std::make_unique<jingle_xmpp::XmlElement>(*ice_transport_tag);
     }
+  }
+
+  return true;
+}
+
+std::unique_ptr<jingle_xmpp::XmlElement> JingleTransportInfoToXml(
+    const JingleTransportInfo& transport) {
+  auto result =
+      std::make_unique<XmlElement>(kQNameIceTransport, /*useDefaultNs=*/true);
+  for (const auto& credentials : transport.ice_credentials) {
+    result->AddElement(FormatIceCredentials(credentials));
+  }
+  for (const auto& candidate : transport.candidates) {
+    result->AddElement(FormatIceCandidate(candidate));
+  }
+  return result;
+}
+
+bool JingleTransportInfoFromXml(const jingle_xmpp::XmlElement* element,
+                                JingleTransportInfo* transport) {
+  if (element->Name() != kQNameIceTransport) {
+    return false;
+  }
+
+  transport->ice_credentials.clear();
+  transport->candidates.clear();
+
+  for (const XmlElement* credentials_tag =
+           element->FirstNamed(kQNameIceCredentials);
+       credentials_tag;
+       credentials_tag = credentials_tag->NextNamed(kQNameIceCredentials)) {
+    IceTransportInfo::IceCredentials credentials;
+    if (!ParseIceCredentials(credentials_tag, &credentials)) {
+      return false;
+    }
+    transport->ice_credentials.push_back(credentials);
+  }
+
+  for (const XmlElement* candidate_tag =
+           element->FirstNamed(kQNameIceCandidate);
+       candidate_tag;
+       candidate_tag = candidate_tag->NextNamed(kQNameIceCandidate)) {
+    IceTransportInfo::NamedCandidate candidate;
+    if (!ParseIceCandidate(candidate_tag, &candidate)) {
+      return false;
+    }
+    transport->candidates.push_back(std::move(candidate));
   }
 
   return true;

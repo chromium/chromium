@@ -16,6 +16,7 @@ namespace remoting::protocol {
 
 struct IceTransportInfo;
 class JingleMessage;
+struct JingleTransportInfo;
 
 // Converts between JingleMessage and its XML representation.
 std::unique_ptr<jingle_xmpp::XmlElement> JingleMessageToXml(
@@ -26,6 +27,12 @@ bool JingleMessageFromXml(const jingle_xmpp::XmlElement* stanza,
 
 // Helper to check if an XML element represents a Jingle message.
 bool IsJingleMessage(const jingle_xmpp::XmlElement* stanza);
+
+// Converts between JingleTransportInfo and its XML representation.
+std::unique_ptr<jingle_xmpp::XmlElement> JingleTransportInfoToXml(
+    const JingleTransportInfo& transport);
+bool JingleTransportInfoFromXml(const jingle_xmpp::XmlElement* element,
+                                JingleTransportInfo* transport);
 
 // Converts between IceTransportInfo and its XML representation.
 std::unique_ptr<jingle_xmpp::XmlElement> IceTransportInfoToXml(
