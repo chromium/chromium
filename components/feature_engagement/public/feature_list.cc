@@ -60,6 +60,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHDownloadInfoBarDownloadsAreFasterFeature,
     &kIPHEphemeralTabFeature,
     &kIPHFeedCardMenuFeature,
+    &kIPHFuseboxAttachmentFeature,
     &kIPHGenericAlwaysTriggerHelpUiFeature,
     &kIPHIdentityDiscFeature,
     &kIPHInstanceSwitcherFeature,

@@ -251,6 +251,8 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_FeedSwipeRefresh" summary="swipe refreshing feeds on NTP"/>
   <variant name="IPH_FollowWhileBrowsing"
       summary="IPH for following the current site"/>
+  <variant name="IPH_FuseboxAttachment"
+      summary="engagement with Fusebox attachments"/>
   <variant name="IPH_GenericAlwaysTriggerHelpUiFeature"
       summary="generic feature to always show help Ui whenever asked"/>
   <variant name="IPH_GlicPromo" summary="Glic promotion"/>

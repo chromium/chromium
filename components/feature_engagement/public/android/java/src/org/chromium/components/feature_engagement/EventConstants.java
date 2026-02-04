@@ -246,6 +246,9 @@ public final class EventConstants {
     /** Appearance in Settings was opened by the user. */
     public static final String SETTINGS_APPEARANCE_OPENED = "settings_appearance_opened";
 
+    /** Fusebox attachment popup was toggled open by the user. */
+    public static final String FUSEBOX_ATTACHMENT_POPUP_USED = "fusebox_attachment_popup_used";
+
     /** Do not instantiate. */
     private EventConstants() {}
 }
