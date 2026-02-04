@@ -142,6 +142,19 @@ class TestLensQueryFlowRouter : public LensQueryFlowRouter {
 
   void ClearMockSessionHandle() { raw_mock_session_handle_ = nullptr; }
 
+  void SetSidePanelSessionHandle(
+      contextual_search::ContextualSearchSessionHandle* handle) {
+    side_panel_session_handle_ = handle;
+  }
+
+  contextual_search::ContextualSearchSessionHandle*
+  GetContextualSearchSessionHandle() const override {
+    if (side_panel_session_handle_) {
+      return side_panel_session_handle_;
+    }
+    return LensQueryFlowRouter::GetContextualSearchSessionHandle();
+  }
+
  private:
   SkBitmap viewport_screenshot_;
   std::unique_ptr<contextual_search::MockContextualSearchSessionHandle>
@@ -152,6 +165,8 @@ class TestLensQueryFlowRouter : public LensQueryFlowRouter {
   // test will seg fault.
   raw_ptr<contextual_search::MockContextualSearchSessionHandle>
       raw_mock_session_handle_;
+  raw_ptr<contextual_search::ContextualSearchSessionHandle>
+      side_panel_session_handle_ = nullptr;
 };
 
 class MockTabContextualizationController
@@ -1269,6 +1284,70 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
 
   // Act: Call the method.
   router.HandleInteractionResponse(std::nullopt, interaction_response);
+}
+
+TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
+       StartQueryFlow_AddsObserver_WhenNoSessionHandle) {
+  // Arrange
+  EXPECT_CALL(*mock_lens_search_controller_,
+              lens_search_contextualization_controller())
+      .WillOnce(Return(contextualization_controller_.get()));
+  TestLensQueryFlowRouter router(mock_lens_search_controller_.get(),
+                                 mock_context_controller_.get(),
+                                 profile_.get());
+
+  GURL example_url("https://example.com");
+  std::string page_title = "Title";
+  lens::MimeType primary_content_type = lens::MimeType::kAnnotatedPageContent;
+  float ui_scale_factor = 1.0f;
+  base::TimeTicks invocation_time = base::TimeTicks::Now();
+
+  // Assert: Expect AddObserver to be called on the controller.
+  EXPECT_CALL(*mock_context_controller_, AddObserver(&router));
+  EXPECT_CALL(*router.mock_session_handle(), NotifySessionStarted());
+  EXPECT_CALL(*router.mock_session_handle(),
+              StartTabContextUploadFlow(_, _, _));
+
+  // Act
+  router.StartQueryFlow(router.GetViewportScreenshot(), example_url, page_title,
+                        {}, {}, primary_content_type, std::nullopt,
+                        ui_scale_factor, invocation_time);
+}
+
+TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
+       StartQueryFlow_DoesNotAddObserver_WhenSessionHandleExists) {
+  // Arrange
+  // Simulate an existing session handle from the side panel.
+  auto side_panel_session_handle =
+      std::make_unique<contextual_search::MockContextualSearchSessionHandle>();
+
+  EXPECT_CALL(*mock_lens_search_controller_,
+              lens_search_contextualization_controller())
+      .WillOnce(Return(contextualization_controller_.get()));
+  TestLensQueryFlowRouter router(mock_lens_search_controller_.get(),
+                                 mock_context_controller_.get(),
+                                 profile_.get());
+
+  router.SetSidePanelSessionHandle(side_panel_session_handle.get());
+
+  GURL example_url("https://example.com");
+  std::string page_title = "Title";
+  lens::MimeType primary_content_type = lens::MimeType::kAnnotatedPageContent;
+  float ui_scale_factor = 1.0f;
+  base::TimeTicks invocation_time = base::TimeTicks::Now();
+
+  // Assert: Expect AddObserver NOT to be called on the controller.
+  EXPECT_CALL(*mock_context_controller_, AddObserver(&router)).Times(0);
+
+  // Expect StartTabContextUploadFlow on the SIDE PANEL handle.
+  EXPECT_CALL(*side_panel_session_handle, CreateContextToken())
+      .WillOnce(Return(base::UnguessableToken::Create()));
+  EXPECT_CALL(*side_panel_session_handle, StartTabContextUploadFlow(_, _, _));
+
+  // Act
+  router.StartQueryFlow(router.GetViewportScreenshot(), example_url, page_title,
+                        {}, {}, primary_content_type, std::nullopt,
+                        ui_scale_factor, invocation_time);
 }
 
 class

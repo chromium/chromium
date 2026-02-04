@@ -92,11 +92,12 @@ void LensQueryFlowRouter::StartQueryFlow(
     if (!GetContextualSearchSessionHandle()) {
       pending_session_handle_ = CreateContextualSearchSessionHandle();
       pending_session_handle_->NotifySessionStarted();
+      // Add observer to listen for file upload status changes. This is only
+      // needed when a new session handle is created as part of this flow as
+      // the response is not used by the overlay otherwise.
+      file_upload_status_observation_.Observe(
+          GetContextualSearchSessionHandle()->GetController());
     }
-
-    // Add observer to listen for file upload status changes.
-    file_upload_status_observation_.Observe(
-        GetContextualSearchSessionHandle()->GetController());
 
     // If permissions have been granted, start uploading the current viewport
     // and page content. If not, store as a callback to be run later.
