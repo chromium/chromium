@@ -397,4 +397,37 @@ TEST_P(HTMLCanvasElementTest, IsCanvasOrInCanvasSubtree) {
   EXPECT_TRUE(nested_input_shadow->IsInCanvasSubtree());
 }
 
+TEST_P(HTMLCanvasElementTest, LayoutsubtreeInvalidation) {
+  SetBodyInnerHTML(R"HTML(<canvas id=canvas></canvas>)HTML");
+  auto* canvas = GetDocument().getElementById(AtomicString("canvas"));
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(canvas->NeedsStyleRecalc());
+
+  // Adding layoutsubtree should cause a style recalc.
+  canvas->setAttribute(html_names::kLayoutsubtreeAttr, AtomicString("true"));
+  EXPECT_TRUE(canvas->NeedsStyleRecalc());
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(canvas->NeedsStyleRecalc());
+
+  // Setting layoutsubtree to the same value should not cause a style recalc.
+  canvas->setAttribute(html_names::kLayoutsubtreeAttr, AtomicString("true"));
+  EXPECT_FALSE(canvas->NeedsStyleRecalc());
+
+  // Setting layoutsubtree to any other value should not cause a style recalc.
+  canvas->setAttribute(html_names::kLayoutsubtreeAttr, AtomicString(""));
+  EXPECT_FALSE(canvas->NeedsStyleRecalc());
+
+  // Removing layoutsubtree should cause a style recalc.
+  canvas->removeAttribute(html_names::kLayoutsubtreeAttr);
+  EXPECT_TRUE(canvas->NeedsStyleRecalc());
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(canvas->NeedsStyleRecalc());
+
+  // Adding layoutsubtree back should cause a style recalc.
+  canvas->setAttribute(html_names::kLayoutsubtreeAttr, AtomicString(""));
+  EXPECT_TRUE(canvas->NeedsStyleRecalc());
+}
+
 }  // namespace blink

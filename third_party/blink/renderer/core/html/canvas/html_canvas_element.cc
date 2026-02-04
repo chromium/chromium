@@ -446,7 +446,11 @@ void HTMLCanvasElement::AttributeChanged(
   HTMLElement::AttributeChanged(params);
   if (RuntimeEnabledFeatures::CanvasDrawElementEnabled() &&
       params.name == html_names::kLayoutsubtreeAttr) {
-    setLayoutSubtree(!params.new_value.IsNull());
+    bool had_layoutsubtree = !params.old_value.IsNull();
+    bool has_layoutsubtree = !params.new_value.IsNull();
+    if (had_layoutsubtree != has_layoutsubtree) {
+      setLayoutSubtree(has_layoutsubtree);
+    }
   }
 }
 
@@ -497,10 +501,6 @@ void HTMLCanvasElement::setWidth(unsigned value,
 }
 
 void HTMLCanvasElement::setLayoutSubtree(bool value) {
-  if (layoutSubtree() == value) {
-    return;
-  }
-
   SetBooleanAttribute(html_names::kLayoutsubtreeAttr, value);
   SetNeedsStyleRecalc(
       kSubtreeStyleChange,
