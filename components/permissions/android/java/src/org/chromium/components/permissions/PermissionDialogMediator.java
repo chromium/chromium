@@ -172,7 +172,16 @@ public class PermissionDialogMediator
                 this,
                 assumeNonNull(mDialogDelegate),
                 view,
-                () -> showFilteredTouchEventDialog(getContext()));
+                () -> showFilteredTouchEventDialogIfPossible());
+    }
+
+    /** Attempts to show the filtered touch event dialog if the dialog delegate is available. */
+    private void showFilteredTouchEventDialogIfPossible() {
+        // The dialog delegate may be null if destroyed before this callback is invoked.
+        // Occasionally observed on HarmonyOS.
+        if (mDialogDelegate == null) return;
+
+        showFilteredTouchEventDialog(getContext());
     }
 
     /**
