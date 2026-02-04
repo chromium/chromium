@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.autofill.editors.autofill_ai;
 
 import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.EDITOR_TITLE;
+import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.VISIBLE;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -27,6 +28,8 @@ public class EntityEditorViewBinder {
             PropertyModel model, EntityEditorView view, PropertyKey propertyKey) {
         if (propertyKey == EDITOR_TITLE) {
             view.setEditorTitle(model.get(EDITOR_TITLE));
+        } else if (propertyKey == VISIBLE) {
+            view.setVisible(model.get(VISIBLE));
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }

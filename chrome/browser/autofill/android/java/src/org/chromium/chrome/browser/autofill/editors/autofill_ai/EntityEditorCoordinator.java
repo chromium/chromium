@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.autofill.editors.autofill_ai;
 
+import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.VISIBLE;
+
 import android.app.Activity;
 
 import org.chromium.build.annotations.NullMarked;
@@ -28,9 +30,14 @@ public class EntityEditorCoordinator {
         mEditorModel = mMediator.getEditorModel(entityType);
         PropertyModelChangeProcessor.create(
                 mEditorModel, mEditorView, EntityEditorViewBinder::bindEditorDialogView);
+        mEditorModel.set(VISIBLE, true);
     }
 
     EntityEditorView getEntityEditorViewForTest() {
         return mEditorView;
+    }
+
+    @Nullable PropertyModel getEditorModelForTest() {
+        return mEditorModel;
     }
 }

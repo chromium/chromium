@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.autofill.editors.autofill_ai;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
 import android.view.View;
@@ -65,5 +66,6 @@ public class EntityEditorModuleTest {
         mCoordinator.showEditorDialog(mEntityType);
         EditorDialogToolbar toolbar = mContainerView.findViewById(R.id.action_bar);
         assertEquals(mEntityType.getAddEntityTypeString(), toolbar.getTitle());
+        assertTrue(mCoordinator.getEditorModelForTest().get(EntityEditorProperties.VISIBLE));
     }
 }
