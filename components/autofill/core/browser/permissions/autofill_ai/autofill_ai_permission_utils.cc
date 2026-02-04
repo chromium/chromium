@@ -265,7 +265,8 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
     case AutofillAiAction::kImportToWallet:
       CHECK(entity_type) << "An entity type is required to check if an entity "
                             "can be upstreamed";
-      return entity_type_can_be_upstreamed(*entity_type);
+      return entity_type_is_enabled_in_settings(*entity_type) &&
+             entity_type_can_be_upstreamed(*entity_type);
     case AutofillAiAction::kFilling:
     case AutofillAiAction::kImport:
     case AutofillAiAction::kIphForOptIn:
