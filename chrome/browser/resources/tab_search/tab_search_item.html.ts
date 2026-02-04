@@ -43,8 +43,13 @@ ${this.isCloseable_() ? html`
         aria-label="${this.ariaLabelForButton_()}"
         iron-icon="${this.closeButtonIcon}" ?noink="${!this.buttonRipples_}"
         no-ripple-on-focus @click="${this.onItemClose_}"
-        title="${this.tooltipForButton_()}">
+        title="${this.tooltipForButton_()}"
+        @focus="${this.onCloseButtonFocus_}" @blur="${this.onCloseButtonBlur_}">
     </cr-icon-button>
+    <cr-tooltip for="closeButton" position="top" offset="0"
+        fit-to-visible-bounds manual-mode>
+      ${this.tooltipForButton_()}
+    </cr-tooltip>
   </div>
 ` : ''}
 <!--_html_template_end_-->`;

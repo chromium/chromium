@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
 import '/strings.m.js';
 
+import type {CrTooltipElement} from 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
 import {MouseHoverableMixinLit} from 'chrome://resources/cr_elements/mouse_hoverable_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
@@ -159,6 +161,21 @@ export class TabSearchItemElement extends TabSearchItemBase {
   protected onItemClose_(e: Event) {
     this.dispatchEvent(new CustomEvent('close'));
     e.stopPropagation();
+  }
+
+  protected onCloseButtonFocus_() {
+    // Manual tooltip control for keyboard focus.
+    const tooltip =
+        this.shadowRoot.querySelector<CrTooltipElement>('cr-tooltip');
+    assert(tooltip);
+    tooltip.show();
+  }
+
+  protected onCloseButtonBlur_() {
+    const tooltip =
+        this.shadowRoot.querySelector<CrTooltipElement>('cr-tooltip');
+    assert(tooltip);
+    tooltip.hide();
   }
 
   protected faviconUrl_(): string {

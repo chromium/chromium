@@ -147,3 +147,8 @@ cr-expand-button {
   height: 1px;
   background-color: var(--cr-separator-color);
 }
+
+tab-search-item:hover,
+tab-search-item:focus-within {
+  content-visibility: visible !important;
+}
