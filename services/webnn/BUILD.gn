@@ -277,7 +277,7 @@ source_set("tests") {
     "webnn_test_utils.h",
   ]
 
-  if ((webnn_use_tflite && !is_win) || is_mac) {
+  if (webnn_use_tflite || is_mac) {
     sources += [
       "webnn_graph_impl_backend_test.cc",
       "webnn_tensor_impl_backend_test.cc",
