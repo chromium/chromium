@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <array>
 #include <memory>
-#include <set>
 #include <string>
 #include <utility>
 
@@ -44,6 +43,7 @@
 #include "device/fido/public/fido_types.h"
 #include "device/fido/public_key.h"
 #include "device/fido/virtual_u2f_device.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/boringssl/src/include/openssl/aes.h"
 #include "third_party/boringssl/src/include/openssl/ec.h"
 #include "third_party/boringssl/src/include/openssl/ec_key.h"
@@ -2758,7 +2758,7 @@ CtapDeviceResponseCode VirtualCtap2Device::OnLargeBlobs(
 
 void VirtualCtap2Device::InitPendingRPs() {
   request_state_.Reset();
-  std::set<std::string> rp_ids;
+  absl::flat_hash_set<std::string> rp_ids;
   for (const auto& registration : mutable_state()->registrations) {
     if (!registration.second.is_resident) {
       continue;
@@ -2766,8 +2766,7 @@ void VirtualCtap2Device::InitPendingRPs() {
     DCHECK(!registration.second.is_u2f);
     DCHECK(registration.second.user);
     DCHECK(registration.second.rp);
-    if (!rp_ids.contains(registration.second.rp->id)) {
-      rp_ids.insert(registration.second.rp->id);
+    if (rp_ids.insert(registration.second.rp->id).second) {
       request_state_.pending_rps.push_back(*registration.second.rp);
     }
   }
