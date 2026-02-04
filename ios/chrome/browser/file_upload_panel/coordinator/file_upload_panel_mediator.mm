@@ -309,8 +309,42 @@ std::optional<base::FilePath> WriteImageToTemporaryLocationForTab(
   CHECK_EQ(nil, mediaInfo[UIImagePickerControllerImageURL])
       << "FileUploadPanelMediator: Image URL should not be set.";
   UIImage* image = mediaInfo[UIImagePickerControllerOriginalImage];
-  CHECK_NE(nil, image)
-      << "FileUploadPanelMediator: Image should have image data.";
+  if (!image) {
+    base::UmaHistogramBoolean(
+        "IOS.FileUploadPanel.NilImageInfo.MediaType",
+        mediaInfo[UIImagePickerControllerMediaType] != nil);
+    base::UmaHistogramBoolean(
+        "IOS.FileUploadPanel.NilImageInfo.OriginalImage",
+        mediaInfo[UIImagePickerControllerOriginalImage] != nil);
+    base::UmaHistogramBoolean(
+        "IOS.FileUploadPanel.NilImageInfo.EditedImage",
+        mediaInfo[UIImagePickerControllerEditedImage] != nil);
+    base::UmaHistogramBoolean(
+        "IOS.FileUploadPanel.NilImageInfo.CropRect",
+        mediaInfo[UIImagePickerControllerCropRect] != nil);
+    base::UmaHistogramBoolean(
+        "IOS.FileUploadPanel.NilImageInfo.MediaURL",
+        mediaInfo[UIImagePickerControllerMediaURL] != nil);
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    base::UmaHistogramBoolean(
+        "IOS.FileUploadPanel.NilImageInfo.ReferenceURL",
+        mediaInfo[UIImagePickerControllerReferenceURL] != nil);
+#pragma clang diagnostic pop
+    base::UmaHistogramBoolean(
+        "IOS.FileUploadPanel.NilImageInfo.MediaMetadata",
+        mediaInfo[UIImagePickerControllerMediaMetadata] != nil);
+    base::UmaHistogramBoolean(
+        "IOS.FileUploadPanel.NilImageInfo.LivePhoto",
+        mediaInfo[UIImagePickerControllerLivePhoto] != nil);
+    base::UmaHistogramBoolean("IOS.FileUploadPanel.NilImageInfo.PHAsset",
+                              mediaInfo[UIImagePickerControllerPHAsset] != nil);
+    base::UmaHistogramBoolean(
+        "IOS.FileUploadPanel.NilImageInfo.ImageURL",
+        mediaInfo[UIImagePickerControllerImageURL] != nil);
+    [self cancelFileSelection];
+    return;
+  }
 
   __weak __typeof(self) weakSelf = self;
   base::ThreadPool::PostTaskAndReplyWithResult(

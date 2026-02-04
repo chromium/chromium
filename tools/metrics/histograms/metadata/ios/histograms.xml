@@ -2106,6 +2106,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.FileUploadPanel.NilImageInfo.{InfoKey}" enum="Boolean"
+    expires_after="2026-09-04">
+  <owner>qpubert@google.com</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Logs whether the {InfoKey} key is present in the info dictionary when the
+    image is nil in the file upload panel. This is used to diagnose why the
+    image is nil.
+  </summary>
+  <token key="InfoKey">
+    <variant name="CropRect"/>
+    <variant name="EditedImage"/>
+    <variant name="ImageURL"/>
+    <variant name="LivePhoto"/>
+    <variant name="MediaMetadata"/>
+    <variant name="MediaType"/>
+    <variant name="MediaURL"/>
+    <variant name="OriginalImage"/>
+    <variant name="PHAsset"/>
+    <variant name="ReferenceURL"/>
+  </token>
+</histogram>
+
 <histogram name="IOS.FileUploadPanel.PhotoPicker.FileCount" units="count"
     expires_after="2026-09-04">
   <owner>qpubert@google.com</owner>
