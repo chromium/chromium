@@ -13,6 +13,7 @@
 #include "components/signin/public/base/gaia_id_hash.h"
 #include "components/signin/public/base/persistent_repeating_timer.h"
 #include "google_apis/gaia/gaia_id.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace signin {
 
@@ -218,7 +219,7 @@ void ActivePrimaryAccountsMetricsRecorder::CleanUpExpiredEntries() {
   // Clean up all entries older than 28 days.
   const base::DictValue& active_accounts =
       local_state_->GetDict(kActiveAccountsPrefName);
-  std::set<std::string> gaia_id_hashes_to_remove;
+  absl::flat_hash_set<std::string> gaia_id_hashes_to_remove;
   for (const auto [gaia_id_hash, last_active] : active_accounts) {
     if (now - base::ValueToTime(last_active).value_or(base::Time()) >
         base::Days(28)) {
