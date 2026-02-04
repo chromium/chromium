@@ -46,6 +46,30 @@ class GlicDelegatingSharingManagerBrowserTest : public NonInteractiveGlicTest {
     NonInteractiveGlicTest::TearDownOnMainThread();
   }
 
+  // Setup tabs for test and return handles. Uses current tab, but if count > 1
+  // then additional tabs will be created.
+  std::vector<tabs::TabHandle> SetupTabs(int count) {
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+    for (int i = 0; i < count - 1; ++i) {
+      EXPECT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+          browser(), GURL("about:blank"),
+          WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+    }
+    TabStripModel* tab_strip = browser()->tab_strip_model();
+
+    std::vector<tabs::TabHandle> handles;
+    for (int i = 0; i < count; ++i) {
+      tabs::TabInterface* tab =
+          tabs::TabInterface::GetFromContents(tab_strip->GetWebContentsAt(i));
+      EXPECT_TRUE(tab);
+      if (tab) {
+        handles.push_back(tab->GetHandle());
+      }
+    }
+    return handles;
+  }
+
  protected:
   GlicDelegatingSharingManager manager_;
 
@@ -99,10 +123,11 @@ IN_PROC_BROWSER_TEST_F(GlicDelegatingSharingManagerBrowserTest,
   ASSERT_TRUE(service);
 
   // Open a tab and verify we can pin it via delegation.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
-  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  std::vector<tabs::TabHandle> handles = SetupTabs(1);
+  ASSERT_FALSE(handles.empty());
+  tabs::TabHandle handle = handles[0];
+  tabs::TabInterface* tab = handle.Get();
   ASSERT_TRUE(tab);
-  tabs::TabHandle handle = tab->GetHandle();
 
   service->ToggleUI(browser(), false,
                     mojom::InvocationSource::kTopChromeButton);
@@ -159,10 +184,11 @@ IN_PROC_BROWSER_TEST_F(GlicDelegatingSharingManagerBrowserTest,
   ASSERT_TRUE(service);
 
   // Open a tab and verify we can pin it via delegation.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
-  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  std::vector<tabs::TabHandle> handles = SetupTabs(1);
+  ASSERT_FALSE(handles.empty());
+  tabs::TabHandle handle = handles[0];
+  tabs::TabInterface* tab = handle.Get();
   ASSERT_TRUE(tab);
-  tabs::TabHandle handle = tab->GetHandle();
 
   service->ToggleUI(browser(), false,
                     mojom::InvocationSource::kTopChromeButton);
@@ -250,10 +276,11 @@ IN_PROC_BROWSER_TEST_F(GlicDelegatingSharingManagerBrowserTest,
   ASSERT_TRUE(service);
 
   // Open a tab.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
-  tabs::TabInterface* tab1 = browser()->tab_strip_model()->GetActiveTab();
+  std::vector<tabs::TabHandle> handles = SetupTabs(1);
+  ASSERT_FALSE(handles.empty());
+  tabs::TabHandle handle1 = handles[0];
+  tabs::TabInterface* tab1 = handle1.Get();
   ASSERT_TRUE(tab1);
-  tabs::TabHandle handle1 = tab1->GetHandle();
 
   service->ToggleUI(browser(), false,
                     mojom::InvocationSource::kTopChromeButton);
@@ -364,22 +391,10 @@ IN_PROC_BROWSER_TEST_F(GlicDelegatingSharingManagerBrowserTest,
   ASSERT_TRUE(service);
 
   // Create 5 tabs.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
-  for (int i = 0; i < 4; ++i) {
-    ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-        browser(), GURL("about:blank"),
-        WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-  }
-  TabStripModel* tab_strip = browser()->tab_strip_model();
-  ASSERT_EQ(tab_strip->count(), 5);
+  std::vector<tabs::TabHandle> handles = SetupTabs(5);
+  ASSERT_EQ(handles.size(), 5u);
 
-  std::vector<tabs::TabHandle> handles;
-  for (int i = 0; i < 5; ++i) {
-    handles.push_back(
-        tabs::TabInterface::GetFromContents(tab_strip->GetWebContentsAt(i))
-            ->GetHandle());
-  }
+  TabStripModel* tab_strip = browser()->tab_strip_model();
 
   // Setup manager 1.
   tab_strip->ActivateTabAt(0);
@@ -472,22 +487,8 @@ IN_PROC_BROWSER_TEST_F(GlicDelegatingSharingManagerBrowserTest,
   ASSERT_TRUE(service);
 
   // Create 3 tabs.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
-  for (int i = 0; i < 2; ++i) {
-    ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-        browser(), GURL("about:blank"),
-        WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-  }
-  TabStripModel* tab_strip = browser()->tab_strip_model();
-  ASSERT_EQ(tab_strip->count(), 3);
-
-  std::vector<tabs::TabHandle> handles;
-  for (int i = 0; i < 3; ++i) {
-    handles.push_back(
-        tabs::TabInterface::GetFromContents(tab_strip->GetWebContentsAt(i))
-            ->GetHandle());
-  }
+  std::vector<tabs::TabHandle> handles = SetupTabs(3);
+  ASSERT_EQ(handles.size(), 3u);
 
   // Setup manager.
   service->ToggleUI(browser(), /*prevent_close=*/false,
