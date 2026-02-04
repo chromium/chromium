@@ -338,8 +338,8 @@ void WarnInvalidKeywordPropertyUsage(CSSPropertyID,
                                      CSSValueID);
 
 const CSSValue* ParseLonghand(CSSPropertyID unresolved_property,
-                              CSSPropertyID current_shorthand,
                               const CSSParserContext&,
+                              CSSParserLocalContext&,
                               CSSParserTokenStream&);
 
 bool ConsumeShorthandVia2Longhands(
@@ -543,7 +543,8 @@ CSSValue* ParseBorderWidthSide(CSSParserTokenStream&,
                                const CSSParserContext&,
                                CSSParserLocalContext&);
 const CSSValue* ParseBorderStyleSide(CSSParserTokenStream&,
-                                     const CSSParserContext&);
+                                     const CSSParserContext&,
+                                     CSSParserLocalContext&);
 
 CSSValue* ConsumeCornerShape(CSSParserTokenStream&,
                              const CSSParserContext&,

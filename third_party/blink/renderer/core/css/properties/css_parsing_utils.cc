@@ -2602,7 +2602,7 @@ bool ConsumeBorderShorthand(CSSParserTokenStream& stream,
       }
     }
     if (!result_style) {
-      result_style = ParseBorderStyleSide(stream, context);
+      result_style = ParseBorderStyleSide(stream, context, local_context);
       if (result_style) {
         ConsumeCommaIncludingWhitespace(stream);
         continue;
@@ -3919,8 +3919,8 @@ void WarnInvalidKeywordPropertyUsage(CSSPropertyID property,
 }
 
 const CSSValue* ParseLonghand(CSSPropertyID unresolved_property,
-                              CSSPropertyID current_shorthand,
                               const CSSParserContext& context,
+                              CSSParserLocalContext& local_context,
                               CSSParserTokenStream& stream) {
   CSSPropertyID property_id = ResolveCSSPropertyID(unresolved_property);
   CSSValueID value_id = stream.Peek().Id();
@@ -3934,10 +3934,6 @@ const CSSValue* ParseLonghand(CSSPropertyID unresolved_property,
     WarnInvalidKeywordPropertyUsage(property_id, context, value_id);
     return nullptr;
   }
-
-  auto local_context =
-      CSSParserLocalContext(CSSPropertyName(unresolved_property))
-          .WithCurrentShorthand(current_shorthand);
 
   const CSSValue* result =
       To<Longhand>(CSSProperty::Get(property_id))
@@ -3954,15 +3950,18 @@ bool ConsumeShorthandVia2Longhands(
   const StylePropertyShorthand::Properties& longhands = shorthand.properties();
   DCHECK_EQ(longhands.size(), 2u);
 
-  const CSSValue* start = ParseLonghand(longhands[0]->PropertyID(),
-                                        shorthand.id(), context, stream);
+  auto local_context = CSSParserLocalContext(CSSPropertyName(shorthand.id()))
+                           .WithCurrentShorthand(shorthand.id());
+
+  const CSSValue* start =
+      ParseLonghand(longhands[0]->PropertyID(), context, local_context, stream);
 
   if (!start) {
     return false;
   }
 
-  const CSSValue* end = ParseLonghand(longhands[1]->PropertyID(),
-                                      shorthand.id(), context, stream);
+  const CSSValue* end =
+      ParseLonghand(longhands[1]->PropertyID(), context, local_context, stream);
 
   if (shorthand.id() == CSSPropertyID::kOverflow && start && end) {
     context.Count(WebFeature::kTwoValuedOverflow);
@@ -3987,23 +3986,27 @@ bool ConsumeShorthandVia4Longhands(
     HeapVector<CSSPropertyValue, 64>& properties) {
   const StylePropertyShorthand::Properties& longhands = shorthand.properties();
   DCHECK_EQ(longhands.size(), 4u);
-  const CSSValue* top = ParseLonghand(longhands[0]->PropertyID(),
-                                      shorthand.id(), context, stream);
+
+  auto local_context = CSSParserLocalContext(CSSPropertyName(shorthand.id()))
+                           .WithCurrentShorthand(shorthand.id());
+
+  const CSSValue* top =
+      ParseLonghand(longhands[0]->PropertyID(), context, local_context, stream);
 
   if (!top) {
     return false;
   }
 
-  const CSSValue* right = ParseLonghand(longhands[1]->PropertyID(),
-                                        shorthand.id(), context, stream);
+  const CSSValue* right =
+      ParseLonghand(longhands[1]->PropertyID(), context, local_context, stream);
 
   const CSSValue* bottom = nullptr;
   const CSSValue* left = nullptr;
   if (right) {
-    bottom = ParseLonghand(longhands[2]->PropertyID(), shorthand.id(), context,
+    bottom = ParseLonghand(longhands[2]->PropertyID(), context, local_context,
                            stream);
     if (bottom) {
-      left = ParseLonghand(longhands[3]->PropertyID(), shorthand.id(), context,
+      left = ParseLonghand(longhands[3]->PropertyID(), context, local_context,
                            stream);
     }
   }
@@ -4044,6 +4047,8 @@ bool ConsumeShorthandGreedilyViaLonghands(
       shorthand.properties();
   bool found_any = false;
   bool found_longhand;
+  auto local_context = CSSParserLocalContext(CSSPropertyName(shorthand.id()))
+                           .WithCurrentShorthand(shorthand.id());
   do {
     found_longhand = false;
     for (size_t i = 0; i < shorthand.length(); ++i) {
@@ -4051,7 +4056,7 @@ bool ConsumeShorthandGreedilyViaLonghands(
         continue;
       }
       longhands[i] = ParseLonghand(shorthand_properties[i]->PropertyID(),
-                                   shorthand.id(), context, stream);
+                                   context, local_context, stream);
 
       if (longhands[i]) {
         found_longhand = true;
@@ -5489,9 +5494,10 @@ CSSValue* ParseBorderWidthSide(CSSParserTokenStream& stream,
 }
 
 const CSSValue* ParseBorderStyleSide(CSSParserTokenStream& stream,
-                                     const CSSParserContext& context) {
-  return ParseLonghand(CSSPropertyID::kBorderLeftStyle, CSSPropertyID::kBorder,
-                       context, stream);
+                                     const CSSParserContext& context,
+                                     CSSParserLocalContext& local_context) {
+  return ParseLonghand(CSSPropertyID::kBorderLeftStyle, context, local_context,
+                       stream);
 }
 
 CSSValue* ConsumeGapDecorationPropertyValue(
