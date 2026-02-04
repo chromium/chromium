@@ -23,11 +23,13 @@ officially supported by the Crubit team.
 '''
 
 import argparse
+import json
 import os
 import platform
 import shutil
 import sys
 import tempfile
+import urllib
 
 from pathlib import Path
 
@@ -48,7 +50,7 @@ sys.path.append(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'crates'))
 from run_cargo import RunCargo
 
-CRUBIT_GIT = 'https://github.com/google/crubit'
+CRUBIT_GIT = 'https://chromium.googlesource.com/external/github.com/google/crubit'
 
 CRUBIT_SRC_DIR = os.path.join(CHROMIUM_DIR, 'third_party',
                               'rust-toolchain-intermediate', 'crubit')
@@ -58,6 +60,14 @@ CC_BINDINGS_FROM_RS_CARGO_TOML_PATH = os.path.join(CRUBIT_SRC_DIR, "cargo",
                                                    "Cargo.toml")
 
 EXE = '.exe' if sys.platform == 'win32' else ''
+
+
+def GetLatestCrubitCommit():
+    """Get the latest commit hash in the Crubit repo."""
+    url = CRUBIT_GIT + '/+/refs/heads/upstream/main?format=JSON'
+    main = json.loads(
+        urllib.request.urlopen(url).read().decode("utf-8").replace(")]}'", ""))
+    return main['commit']
 
 
 def GetCcBindingsFromRsRustFlags():

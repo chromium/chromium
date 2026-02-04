@@ -26,6 +26,7 @@ sys.path.append(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..',
                  'rust'))
 
+from build_crubit import GetLatestCrubitCommit
 from build_rust import RUST_GIT_URL, RUST_SRC_DIR, GetLatestRustCommit
 
 # Path constants.
@@ -101,10 +102,12 @@ is_win = sys.platform.startswith('win32')
 class RustVersion:
   """Holds the nightly Rust version in an explicit format."""
 
-  def __init__(self, git_hash: str, sub_revision: int):
-    self.git_hash = git_hash
-    self.short_git_hash = git_hash[slice(0, 12)]
-    self.sub_revision = sub_revision
+  def __init__(self, rust_git_hash: str, crubit_git_hash: str,
+               sub_revision: int):
+    self.rust_git_hash = rust_git_hash
+    self.crubit_git_hash = crubit_git_hash
+    self.sub_revision = int(sub_revision)
+    self.short_git_hash = rust_git_hash[slice(0, 12)]
 
   def __str__(self) -> str:
     """A string containing the Rust version and sub revision.
@@ -113,10 +116,11 @@ class RustVersion:
     the Rust version being built. It is also unique to a given Rust version and
     subversion.
     """
-    return f'{self.git_hash}-{self.sub_revision}'
+    return f'{self.rust_git_hash}-{self.sub_revision}'
 
   def __eq__(self, o) -> bool:
-    return (self.git_hash == o.git_hash and self.sub_revision == o.sub_revision)
+    return (self.rust_git_hash == o.rust_git_hash
+            and self.sub_revision == o.sub_revision)
 
 
 class ClangVersion:
@@ -141,12 +145,13 @@ class ClangVersion:
             and self.sub_revision == o.sub_revision)
 
 
+REV = '\'([0-9a-z-]+)\''
+SUB_REV = '([0-9]+)'
+
+
 def PatchClangRevision(new_version: ClangVersion) -> ClangVersion:
   with open(CLANG_UPDATE_PY_PATH) as f:
     content = f.read()
-
-  REV = '\'([0-9a-z-]+)\''
-  SUB_REV = '([0-9]+)'
 
   git_describe = re.search(f'CLANG_REVISION = {REV}', content).group(1)
   sub_revision = re.search(f'CLANG_SUB_REVISION = {SUB_REV}', content).group(1)
@@ -167,30 +172,37 @@ def PatchClangRevision(new_version: ClangVersion) -> ClangVersion:
   return old_version
 
 
+def GetOldRustRevision() -> RustVersion:
+  with open(RUST_UPDATE_PY_PATH) as f:
+    content = f.read()
+
+  rust_git_hash = re.search(f'RUST_REVISION = {REV}', content).group(1)
+  crubit_git_hash = re.search(f'CRUBIT_REVISION = {REV}', content).group(1)
+  sub_revision = re.search(f'RUST_SUB_REVISION = {SUB_REV}', content).group(1)
+  return RustVersion(rust_git_hash, crubit_git_hash, sub_revision)
+
+
 def PatchRustRevision(new_version: RustVersion) -> RustVersion:
   with open(RUST_UPDATE_PY_PATH) as f:
     content = f.read()
 
-  REV = '\'([0-9a-z-]+)\''
-  SUB_REV = '([0-9]+)'
-
-  git_hash = re.search(f'RUST_REVISION = {REV}', content).group(1)
-  sub_revision = re.search(f'RUST_SUB_REVISION = {SUB_REV}', content).group(1)
-  old_version = RustVersion(git_hash, sub_revision)
-
   content = re.sub(f'RUST_REVISION = {REV}',
-                   f'RUST_REVISION = \'{new_version.git_hash}\'',
+                   f'RUST_REVISION = \'{new_version.rust_git_hash}\'',
+                   content,
+                   count=1)
+  content = re.sub(f'CRUBIT_REVISION = {REV}',
+                   f'CRUBIT_REVISION = \'{new_version.crubit_git_hash}\'',
                    content,
                    count=1)
   content = re.sub(f'RUST_SUB_REVISION = {SUB_REV}',
                    f'RUST_SUB_REVISION = {new_version.sub_revision}',
                    content,
                    count=1)
+  # TODO(https://crbug.com/460482110): Also change `crubit_revision` in `//DEPS`
+  # after https://crrev.com/c/7426682 lands and sticks.
 
   with open(RUST_UPDATE_PY_PATH, 'w') as f:
     f.write(content)
-
-  return old_version
 
 
 def PatchRustStage0():
@@ -268,6 +280,10 @@ def main():
                       type=str,
                       metavar='SHA1',
                       help='Rust git hash to build the toolchain for.')
+  parser.add_argument('--crubit-git-hash',
+                      type=str,
+                      metavar='SHA1',
+                      help='Crubit git hash to build the toolchain for.')
   parser.add_argument(
       '--rust-sub-revision',
       type=int,
@@ -284,6 +300,10 @@ def main():
                       action='store_true',
                       default=False,
                       help=('Skip updating the rust revision.'))
+  parser.add_argument('--skip-crubit',
+                      action='store_true',
+                      default=False,
+                      help=('Skip updating the crubit revision.'))
   parser.add_argument('--skip-clang',
                       action='store_true',
                       default=False,
@@ -291,8 +311,8 @@ def main():
 
   args = parser.parse_args()
 
-  if args.skip_clang and args.skip_rust:
-    print('Cannot set both --skip-clang and --skip-rust.')
+  if args.skip_clang and args.skip_rust and args.skip_crubit:
+    print('Cannot set all of --skip-clang, --skip-rust, and --skip-crubit.')
     sys.exit(1)
 
   if args.skip_clang:
@@ -310,15 +330,30 @@ def main():
                                  args.clang_sub_revision)
     os.chdir(CHROMIUM_DIR)
 
-  if args.skip_rust:
+  old_rust_version = GetOldRustRevision()
+  if args.skip_rust and args.skip_crubit:
     rust_version = '-skipped-'
   else:
-    if args.rust_git_hash:
+    if args.skip_rust:
+      rust_git_hash = old_rust_version.rust_git_hash
+    elif args.rust_git_hash:
       rust_git_hash = args.rust_git_hash
     else:
       rust_git_hash = GetLatestRustCommit()
+
+    if args.skip_crubit:
+      crubit_git_hash = old_rust_version.crubit_git_hash
+    elif args.crubit_git_hash:
+      crubit_git_hash = args.crubit_git_hash
+    else:
+      crubit_git_hash = GetLatestCrubitCommit()
+
     CheckoutGitRepo("Rust", RUST_GIT_URL, rust_git_hash, RUST_SRC_DIR)
-    rust_version = RustVersion(rust_git_hash, args.rust_sub_revision)
+    rust_version = RustVersion(rust_git_hash, crubit_git_hash,
+                               args.rust_sub_revision)
+    if rust_version == old_rust_version:
+      if rust_version.crubit_git_hash != old_rust_version.crubit_git_hash:
+        rust_version.sub_revision += old_rust_version.sub_revision + 1
     os.chdir(CHROMIUM_DIR)
 
   print(f'Making a patch for Clang {clang_version} and Rust {rust_version}')
@@ -329,12 +364,12 @@ def main():
   old_clang_version = clang_version
   if not args.skip_clang:
     old_clang_version = PatchClangRevision(clang_version)
-  if args.skip_rust:
+  if args.skip_rust and args.skip_crubit:
     assert (clang_version !=
             old_clang_version), ('Change the sub-revision of Clang if there is '
                                  'no major version change.')
   else:
-    old_rust_version = PatchRustRevision(rust_version)
+    PatchRustRevision(rust_version)
     assert (clang_version != old_clang_version
             or rust_version != old_rust_version), (
                 'Change the sub-revision of Clang or Rust if there is '

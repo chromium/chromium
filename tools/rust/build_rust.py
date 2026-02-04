@@ -555,7 +555,7 @@ def MakeVersionStamp(rust_hash, rust_force_head_revision,
 
 
 def GetLatestRustCommit():
-    """Get the latest commit hash in the LLVM monorepo."""
+    """Get the latest commit hash in the Rust repo."""
     url = (
         'https://chromium.googlesource.com/external/' +
         'github.com/rust-lang/rust/+/refs/heads/main?format=JSON'  # nocheck
