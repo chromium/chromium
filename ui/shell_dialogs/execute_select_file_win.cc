@@ -305,8 +305,7 @@ bool RunOpenFileDialog(HWND owner,
       return false;
 
     base::win::ScopedCoMem<wchar_t> display_name;
-    if (FAILED(shell_item->GetDisplayName(SIGDN_DESKTOPABSOLUTEPARSING,
-                                          &display_name))) {
+    if (FAILED(shell_item->GetDisplayName(SIGDN_FILESYSPATH, &display_name))) {
       return false;
     }
 
