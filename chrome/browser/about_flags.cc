@@ -843,33 +843,33 @@ const FeatureEntry::FeatureVariation
 #if !BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam
     kWebUIOmniboxAimPopupAddContextButtonBelowResults[] = {
-        {"AddContextButtonVariant", "below_results"},
+        {"Omnibox_AddContextButtonVariant", "below_results"},
 };
 const FeatureEntry::FeatureParam kWebUIOmniboxAimPopupAddContextButtonInline[] =
     {
-        {"AddContextButtonVariant", "inline"},
+        {"Omnibox_AddContextButtonVariant", "inline"},
 };
 const FeatureEntry::FeatureParam
     kWebUIOmniboxAimPopupAddContextButtonAboveResults[] = {
-        {"AddContextButtonVariant", "above_results"},
+        {"Omnibox_AddContextButtonVariant", "above_results"},
 };
 const FeatureEntry::FeatureParam
     kWebUIOmniboxAimPopupAddContextButtonBelowResultsNoContextualChips[] = {
-        {"AddContextButtonVariant", "below_results"},
-        {"ShowRecentTabChip", "false"},
-        {"ShowLensSearchChip", "false"},
+        {"Omnibox_AddContextButtonVariant", "below_results"},
+        {"Omnibox_ShowRecentTabChip", "false"},
+        {"Omnibox_ShowLensSearchChip", "false"},
 };
 const FeatureEntry::FeatureParam
     kWebUIOmniboxAimPopupAddContextButtonInlineNoContextualChips[] = {
-        {"AddContextButtonVariant", "inline"},
-        {"ShowRecentTabChip", "false"},
-        {"ShowLensSearchChip", "false"},
+        {"Omnibox_AddContextButtonVariant", "inline"},
+        {"Omnibox_ShowRecentTabChip", "false"},
+        {"Omnibox_ShowLensSearchChip", "false"},
 };
 const FeatureEntry::FeatureParam
     kWebUIOmniboxAimPopupAddContextButtonAboveResultsNoContextualChips[] = {
-        {"AddContextButtonVariant", "above_results"},
-        {"ShowRecentTabChip", "false"},
-        {"ShowLensSearchChip", "false"},
+        {"Omnibox_AddContextButtonVariant", "above_results"},
+        {"Omnibox_ShowRecentTabChip", "false"},
+        {"Omnibox_ShowLensSearchChip", "false"},
 };
 
 const FeatureEntry::FeatureVariation kWebUIOmniboxAimPopupVariations[] = {
